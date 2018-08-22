@@ -6,12 +6,12 @@
     <a href="http://www.crmeb.com">
         <img src="https://img.shields.io/badge/Edition-2.3-blue.svg" />
     </a>
-     <a href="https://gitee.com/ZhongBangKeJi/CRMEB">
+     <a href="https://github.com/sugar1569/CRMEB">
         <img src="https://img.shields.io/badge/download-103m-red.svg" />
     </a>
 </p>
 
-## 本项目还在不断开发完善中,如有建议或问题请[在这里提出](https://gitee.com/ZhongBangKeJi/CRMEB/issues/new)
+## 本项目还在不断开发完善中,如有建议或问题请[在这里提出](https://gitee.com/xian_public_state_network/crmeb_free/issues/new)
 ## 项目介绍
    基于ThinkPhp5.0+Vue+EasyWeChat 开发的一套CRMEB多商户商城系统
     
@@ -42,17 +42,20 @@
    
    8.维护:查看系统日志、文件变动效验、刷新网站缓存、在线更新系统、清除数据等功能
 
+   9.强大的权限管理系统
+
 ## 用法
 
-   下载: Git clone https://gitee.com/xian_public_state_network/crmeb_free.git
-    
-   项目依赖:运行环境要求PHP5.5.5以上 文档地址:http://help.crmeb.net/662425?xqzkzo=hxooo3
-    
-   安装:可一键安装和手动安装详细安装方式可查阅文档,文档地址:http://help.crmeb.net/662426
+   下载: 
+
+```
+Git clone https://gitee.com/xian_public_state_network/crmeb_free.git
+```
+    文档地址:https://gitee.com/ZhongBangKeJi/CRMEB/wikis【[查看](https://gitee.com/ZhongBangKeJi/CRMEB/wikis)】
 
 ## 技术亮点
 ~~~
-    1.form-create 表单快速生成 
+    1.form-builder PHP快速生成表单 
     2.前台Vue无刷新流式加载 、购物车Vue组件等
     3.PHPExcel数据导出,导出表格更加美观,可视;
     4.EasyWeChat部署微信开发,微信接入更加快捷,简单;
@@ -197,10 +200,48 @@ www  WEB部署目录（或者子目录）
 │  └─.htaccess          用于apache的重写
 ~~~
 
-## 感谢
-   [form-create](https://www.npmjs.com/package/form-create)  | [PHPExcel](https://github.com/PHPOffice/PHPExcel)  | [Vue](https://github.com/vuejs/vue)
-| [EasyWeChat](https://github.com/overtrue/wechat) | [iview](https://github.com/iview/iview)
+##问题反馈
+在使用中有任何问题，请使用以下联系方式联系我们
 
-## 其他
+QQ群: 116279623
 
-技术交流QQ群：116279623
+Gitee: https://gitee.com/xian_public_state_network/crmeb_free/issues/new
+## 特别鸣谢
+感谢以下的项目,排名不分先后
+
+ThinkPHP：http://www.thinkphp.cn
+
+Bootstrap：http://getbootstrap.com
+
+jQuery：http://jquery.com
+
+iView：https://www.iviewui.com
+
+formCreate : https://github.com/xaboy/form-create
+
+form-builder : https://github.com/xaboy/form-builder
+
+Vue：https://cn.vuejs.org/
+
+font-awesome： https://fontawesome.com/?from=io
+
+animate：https://www.animate.co.jp/
+
+requirejs： http://requirejs.org/
+
+umeditor：http://ueditor.baidu.com/website/umeditor.html
+
+Php：http://www.php.net/
+
+Mysql：https://www.mysql.com/
+
+微信公众号、微信小程序 https://mp.weixin.qq.com
+
+版权信息
+CRMEB v2.3.* 遵循MIT开源协议发布，并提供免费使用。
+
+本项目包含的第三方源码和二进制文件之版权信息另行标注。
+
+版权所有Copyright © 2017-2018 by FastAdmin (https://www.crmeb.com)
+
+All rights reserved。
