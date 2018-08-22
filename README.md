@@ -11,7 +11,7 @@
     </a>
 </p>
 
-## 本项目还在不断开发完善中,如有建议或问题请[在这里提出](https://gitee.com/xian_public_state_network/crmeb_free/issues/new)
+## 本项目还在不断开发完善中,如有建议或问题请[在这里提出](https://gitee.com/ZhongBangKeJi/CRMEB/issues)
 ## 项目介绍
    基于ThinkPhp5.0+Vue+EasyWeChat 开发的一套CRMEB商城系统
     
@@ -49,7 +49,7 @@
    下载: 
 
 ```
-Git clone https://gitee.com/xian_public_state_network/crmeb_free.git
+Git clone https://gitee.com/ZhongBangKeJi/CRMEB.git
 ```
     文档地址:https://gitee.com/ZhongBangKeJi/CRMEB/wikis【[查看](https://gitee.com/ZhongBangKeJi/CRMEB/wikis)】
 
