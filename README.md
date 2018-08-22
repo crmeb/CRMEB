@@ -6,7 +6,7 @@
     <a href="http://www.crmeb.com">
         <img src="https://img.shields.io/badge/Edition-2.3-blue.svg" />
     </a>
-     <a href="https://github.com/sugar1569/CRMEB">
+     <a href="https://gitee.com/ZhongBangKeJi/CRMEB">
         <img src="https://img.shields.io/badge/download-103m-red.svg" />
     </a>
 </p>
