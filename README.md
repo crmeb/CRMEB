@@ -13,7 +13,7 @@
 
 ## 本项目还在不断开发完善中,如有建议或问题请[在这里提出](https://gitee.com/xian_public_state_network/crmeb_free/issues/new)
 ## 项目介绍
-   基于ThinkPhp5.0+Vue+EasyWeChat 开发的一套CRMEB多商户商城系统
+   基于ThinkPhp5.0+Vue+EasyWeChat 开发的一套CRMEB商城系统
     
    CRMEB系统就是集客户关系管理+营销电商系统，能够真正帮助企业基于微信公众号、小程序，实现会员关系管理、数据分析,精准营销的电子商务管理系统。可满足企业零售、批发、分销等各种业务需求
     
@@ -205,7 +205,7 @@ www  WEB部署目录（或者子目录）
 
 QQ群: 116279623
 
-Gitee: https://gitee.com/xian_public_state_network/crmeb_free/issues/new
+Gitee: https://gitee.com/ZhongBangKeJi/CRMEB/issues[提交](http://https://gitee.com/ZhongBangKeJi/CRMEB/issues)
 ## 特别鸣谢
 感谢以下的项目,排名不分先后
 
