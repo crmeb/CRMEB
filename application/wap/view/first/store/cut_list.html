@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport"content="width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no" />
+    <meta name="browsermode" content="application"/>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <!-- 禁止百度转码 -->
+    <meta http-equiv="Cache-Control" content="no-siteapp" />
+    <!-- uc强制竖屏 -->
+    <meta name="screen-orientation" content="portrait">
+    <!-- QQ强制竖屏 -->
+    <meta name="x5-orientation" content="portrait">
+    <link rel="stylesheet" href="{__WAP_PATH}bargain/css/reset.css">
+    <link rel="stylesheet" href="{__WAP_PATH}bargain/css/base.css">
+    <link rel="stylesheet" href="font/iconfont.css">
+    <link rel="stylesheet" href="{__WAP_PATH}bargain/css/swiper.min.css">
+    <link rel="stylesheet" href="{__WAP_PATH}bargain/css/style.css">
+    <script src="{__WAP_PATH}bargain/js/media.js"></script>
+    <script src="{__WAP_PATH}bargain/js/jquery-2.1.4.min.js"></script>
+    <script src="{__WAP_PATH}bargain/js/swiper.min.js"></script>
+    <title>砍价列表</title>
+</head>
+<body>
+<div class="cut-list">
+    <div class="header-bg"></div>
+    <div class="swiper-container swiper-text swiper-no-swiping">
+        <div class="swiper-wrapper">
+            {volist name="bargainUser" id="vo"}
+                <div class="swiper-slide acea-row row-wrap-all">
+                    <img src="{$vo.avatar}">
+                    <span class="ovf">{$vo.info}</span>
+                </div>
+            {/volist}
+        </div>
+    </div>
+    <ul class="cut-ul">
+        {volist name="bargain" id="vo"}
+            <li class="cut-item">
+                <a href="{:Url('Store/cut_con',array('id'=>$vo['id'],'bargainUid'=>0))}">
+                    <div class="picture"><img src="{$vo.image}"></div>
+                    <div class="acea-row row-wrap-all cut-text">
+                        <div class="cut-con">
+                            <p class="name">{$vo.title}</p>
+                            <div class="text"><i class="icon"></i>{$vo.userInfoCount}人正在参加</div>
+                        </div>
+                        <div class="cut-but"><i class="cut-but-icon"></i>最低￥{$vo.min_price}</div>
+                    </div>
+                </a>
+            </li>
+        {/volist}
+    </ul>
+</div>
+<script>
+    var swiper1 = new Swiper('.swiper-text', {
+        direction : 'vertical',
+        autoplayDisableOnInteraction: false,
+        loop : true,
+        noSwiping:true,
+        spaceBetween:10,
+        autoplay:2000
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,70 @@
+*{padding:0;margin:0;}
+body{background: #eee;font-size:14px;color:#555; font-family: Arial,"Microsoft YaHei"; position: relative;height: 100%;}
+a{text-decoration: none;}
+li,em,u{list-style: none;font-style: normal;}
+h1,h2,h3,h4,h5,h6{font-weight: normal;}
+.kf-class{ position: relative;height: 100%;}
+.kj{width: 100%;min-height: 100%; top: 0; left:0; position: relative; height: 100%;  overflow: auto;  -webkit-overflow-scrolling: touch;}
+.msn{width: 100%;border-top: 1px #e5e5e5 solid;position:fixed;bottom: 0;left: 0;right: 0;  }
+.msn_k{width: 100%;height: 50px;background: #f9f9f9;overflow: hidden;}
+.msn_k i{width: 30px;height:30px;margin: 10px 0 0 10px;float:left;background-repeat: no-repeat; background-size:30px;}
+.msn_k i.express_icon{background-image: url(../images/chat_img.png);}
+.msn_k i.img_icon{background-image: url(../images/img_icon.png);}
+.msn_k b{width: 45px;height: 35px;margin: 7.5px 10px 0 0;float:right;border-radius: 5px; background: #59c370; color:#fff; text-align: center;font-weight: normal;line-height: 35px;}
+.msn_k span {float: left;  display: block;  height: 35px;  margin-top: 7.5px;  width: 60%;  margin-left: 4px;}
+.msn_k span input{ width:100%; height:33px; border:1px #e5e5e5 solid; background: #fff;border-radius: 5px; font-size: 16px; color: #555;line-height: 33px;text-indent: 10px; outline:none;box-sizing: border-box;}
+.duihua{width: 100%;padding-bottom: 60px;-webkit-overflow-scrolling: touch;  }
+.duihua img,.duihua img.express{width:22px;height:22px; vertical-align: bottom;margin: 0 2px;}
+.duihua img.img{width:100%;height:auto;vertical-align: bottom;margin: 0 2px;}
+.time{width: 100%;height: 22px;margin-top: 20px;text-align: center;}
+.time p{padding: 3px 7px;background: #cecece;color: #fff;font-size:12px;display: inline-block;border-radius: 4px;}
+.tohua,.myhua{display: block; overflow: hidden;margin-top: 20px;position: relative;}
+.tohua{padding-left: 10px; padding-right: 20%;}
+.myhua{padding-right: 10px; padding-left: 20%;}
+.tou{width: 40px;height: 40px; position: absolute;}
+.tou img{width: 40px;height: 40px; border-radius: 40px;}
+.tohua .tou{left: 10px;}
+.myhua .tou{right: 10px;}
+.ci_ico{width:10px;height: 9px;position: absolute;top: 12.5px;}
+.ci{display: inline-block; padding: 10px 15px; border-radius: 6px; line-height: 22px; font-size: 16px; word-break: break-all; word-wrap:break-word;}
+.tohua .ci_ico{left: 61px;background: url(../images/toci.png) no-repeat;  background-size:10px;}
+.tohua .ci{margin-left: 60px;background: #59c370;color:#fff;}
+.myhua .ci_ico{right: 56px; background: url(../images/myci.png) no-repeat; background-size:10px;}
+.myhua .ci{float:right; margin-right: 55px;background: #fff;color: #555; }
+.prompt{width:100%;height: 100%; position: fixed;z-index: 2;text-align: center;display: none;}
+.prompt p{display: inline-block;background: rgba(0,0,0,0.8);filter:alpha(opacity=80);-moz-opacity:0.8;-khtml-opacity: 0.8;opacity: 0.8;color:#fff;line-height:20px;padding: 5px 10px;border-radius: 5px;font-size: 16px;}
+.prompt p b{color:#71cfff;font-weight: normal;}
+.reward{position: fixed;z-index: 1;background-color: #fff;width: 3rem;height: 3rem;border-radius: .6rem;right: 0;top: 50%;margin-top: -4.5rem;}
+.reward img{width:100%; height:100%;}
+.biaoqing{width: 100%;height: 120px; overflow: hidden;background: #e1e1e1;display: none;position: relative;}
+.biaoqing li{float:left;width: 100%;height: 135px;}
+.biaoqing span{display: block;padding: 10px 10px 0 10px;}
+.biaoqing span div{float:left; width: 14%;padding:5px 0;}
+.biaoqing span div img{width: 24px;height:24px;display: block;margin: 0 auto;}
+.dots{width: 100%;position: absolute;bottom:10px;text-align: center;}
+.dots li{display: inline-block;width: 5px;height: 5px;border-radius: 5px;background: #bbb;margin: 0 2px;cursor: pointer;font-size: 0;float: none;}
+.dots li.active{background: #666;}
+.list{width: 100%;overflow: hidden;background: #fff;}
+.list span{display: block;padding: 10px;overflow: hidden;border-bottom: 1px #eee solid;position: relative;}
+.list span img{width: 50px;height: 50px;border-radius: 5px;float:left;}
+.list span em{padding-left:10px; display: block;overflow: hidden;}
+.list span em h1{width: 70%;height: 25px; color:#222;font-size: 16px;overflow: hidden; float:left;line-height: 25px;font-weight: bold;}
+.list span em h2{width: 28%;height: 25px; color:#aaa;font-size: 12px;line-height: 25px;float:right;text-align: right;}
+.list span em h3{width: 100%;height: 25px; color:#666;font-size: 14px;line-height: 25px;float:left}
+.list span em h4{ position: absolute;font-size: 11px;line-height: 15px; padding:1px 5px; color:#fff;background: #f84848;border-radius: 10px;top: 5px;left: 50px;}
+.list span.server img{width: 35px;height: 35px;float: left;}
+.list span.server h1{display: block; height: 35px;line-height: 35px;font-size: 18px;margin-left: 45px; color:#444;overflow: hidden;}
+.cus_server{background-color:#FFF;}
+.cus_server ul li{overflow:hidden; border-bottom:1px solid #EEEEEE;padding:.2rem; position: relative;}
+.cus_server ul li:last-child{border:none;}
+.cus_server ul li img{float:left;width: .7rem;height: .7rem;border-radius: 50%;}
+.cus_server ul li span{float:left;height: .7rem;line-height: .7rem;padding: 0 .25rem;}
+.cus_server ul li em{position: absolute;right: 0.4rem;top: 50%;height: 15px;display: inline-block;padding: 0em .4em;min-width: 8px;border-radius: 18px;background-color: #ff5a55;color: #FFFFFF;line-height: 1.2;text-align: center;font-size: 12px;vertical-align: middle;margin-top: -7.5px;}
+footer.in-footer .phone { color: #fff; width: 3.8rem; border-right: 1px solid #f4be77;  }
+footer.in-footer{position: fixed; left: 0; bottom: 0; width: 100%;height:1.1rem;padding: 0.1rem 0rem .1rem 0.2rem;background:#ff4e7c;width: 100%;display:-webkit-flex;display:flex;-webkit-flex-wrap:wrap;flex-wrap:wrap;-moz-box-sizing:border-box;-webkit-box-sizing:border-box;-ms-box-sizing:border-box;box-sizing:border-box; z-index: 99;}
+footer.in-footer .img{width: 1.24rem; height: 100%; line-height: 1.1rem;}
+footer.in-footer .img img{width: 0.9rem; height: 0.9rem;}
+footer.in-footer .phone p{font-size: .3rem;overflow: hidden;white-space: nowrap;text-overflow: ellipsis;}
+footer.in-footer .phone span{font-size: .24rem; padding: 0.1rem .1rem 0 0; display: block;overflow: hidden;white-space: nowrap;text-overflow: ellipsis;}
+footer.in-footer .phone-icon{    position: absolute;  right: 0;  top: 0; height: 100%;width: 1.2rem;text-align: center;}
+footer.in-footer .phone-icon span{display: inline-block; width: 100%; height: 100%; cursor: pointer; background-image: url(../images/phone-icon.png); background-size: 0.39rem 0.39rem; background-position: center center; background-repeat: no-repeat;}

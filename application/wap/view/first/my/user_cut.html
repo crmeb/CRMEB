@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport"content="width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no" />
+    <meta name="browsermode" content="application"/>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <!-- 禁止百度转码 -->
+    <meta http-equiv="Cache-Control" content="no-siteapp" />
+    <!-- uc强制竖屏 -->
+    <meta name="screen-orientation" content="portrait">
+    <!-- QQ强制竖屏 -->
+    <meta name="x5-orientation" content="portrait">
+    <link rel="stylesheet" href="{__WAP_PATH}bargain/css/reset.css">
+    <link rel="stylesheet" href="{__WAP_PATH}bargain/css/base.css">
+    <link rel="stylesheet" href="{__WAP_PATH}bargain/font/iconfont.css">
+    <link rel="stylesheet" href="{__WAP_PATH}bargain/css/swiper.min.css">
+    <link rel="stylesheet" href="{__WAP_PATH}bargain/css/style.css">
+    <script src="{__WAP_PATH}bargain/js/media.js"></script>
+    <script src="{__WAP_PATH}bargain/js/jquery-2.1.4.min.js"></script>
+    <script src="{__WAP_PATH}bargain/js/swiper.min.js"></script>
+    {include file="public/requirejs" /}
+    <title>我的砍价</title>
+</head>
+<body>
+<div class="user-cut" id="app">
+    <ul class="usercut-list">
+        <li class="usercut-item" v-for="todo in todos">
+            <div class="acea-row row-wrap-all usercut-ticket">
+                <div class="picture"><img :src="todo.image"></div>
+                <div class="requirement">
+                    <div class="ovf" v-text="todo.title"></div>
+                </div>
+                <!--<div class="acea-row row-wrap-all status" v-if="todo.status == 1">-->
+                    <!--<span>砍价状态：砍价进行中</span>-->
+                    <div class="but" v-if="todo.status == 1" @click="goCut(todo.bargain_id)">继续砍价</div>
+                <!--</div>-->
+                <!--<div class="acea-row row-wrap-all status" v-if="todo.status == 2">-->
+                    <!--<span>砍价状态：砍价失败</span>-->
+                    <div class="but" v-if="todo.status == 2" @click="goCut(todo.bargain_id)">砍价失败</div>
+                <!--</div>-->
+                <!--<div class="acea-row row-wrap-all status" v-if="todo.status == 3">-->
+                    <!--<span>砍价状态：砍价成功</span>-->
+                    <div class="but" v-if="todo.status == 3" @click="goCutList">重砍一个</div>
+                <!--</div>-->
+            </div>
+            <ul class="item-list flex">
+                <li class="item">
+                    <div class="money" v-text="todo.con_price"></div>
+                    <div>当前价</div>
+                </li>
+                <li class="item">
+                    <div class="money" v-text="todo.bargain_price_min"></div>
+                    <div>最低价</div>
+                </li>
+                <li class="item">
+                    <div class="money" v-text="todo.helpCount"></div>
+                    <div>人帮砍</div>
+                </li>
+            </ul>
+            <div class="time">
+                <i class="time-icon"></i>
+                <span class="time_d">{{todo.difftime.days}}</span>天<span class="time_h">{{todo.difftime.hour}}</span>时<span class="time_m">{{todo.difftime.minute}}</span>分<span class="time_s">{{todo.difftime.second}}</span>秒后结束
+            </div>
+        </li>
+    </ul>
+</div>
+<script>
+    window.$list = <?php echo json_encode($list);?>;
+</script>
+<script>
+    requirejs(['vue','store','helper'],function(Vue,storeApi,$h){
+        var app = new Vue({
+            el: '#app',
+            data: {
+                todos: $list
+            },
+            created:function(){
+                this.show_time();
+            },
+            methods:{
+                goCut:function (bargainId) {
+                    location.href = $h.U({
+                        c:'store',
+                        a:'cut_con',
+                        p:{id:bargainId}
+                    });
+                },
+                goCutList:function () {
+                    location.href = $h.U({
+                        c:'store',
+                        a:'cut_list'
+                    });
+                },
+                show_time:function(){
+                    var that = this;
+                    var todos = that.todos;
+                    var len = todos.length,
+                        str={};
+                    function nowTime() {
+                        for (var i = 0; i < len; i++) {
+                            var intDiff = todos[i].stop_time - Date.parse(new Date()) / 1000;
+                            var days = 0, hour = 0, minute = 0, second = 0;
+                            if (intDiff > 0) {
+                                days = Math.floor(intDiff / (60 * 60 * 24));
+                                hour = Math.floor(intDiff / (60 * 60)) - (days * 24);
+                                minute = Math.floor(intDiff / 60) - (days * 24 * 60) - (hour * 60);
+                                second = Math.floor(intDiff) - (days * 24 * 60 * 60) - (hour * 60 * 60) - (minute * 60);
+                                if (days <=9) days = '0' + days;
+                                if (hour <= 9) hour = '0' + hour;
+                                if (minute <= 9) minute = '0' + minute;
+                                if (second <= 9) second = '0' + second;
+                                str={
+                                    days: days,
+                                    hour:hour,
+                                    minute:minute,
+                                    second:second
+                                };
+                            } else {
+                                str={
+                                    days: "00",
+                                    hour:"00",
+                                    minute:"00",
+                                    second:"00",
+                                };
+                            }
+                            that.$set(that.todos[i],'difftime',str);
+                        }
+                    }
+                    nowTime();
+                    var timer = setInterval(nowTime, 1000);
+                }
+            }
+        });
+    });
+</script>
+</body>
+</html>
