@@ -51,7 +51,7 @@
 ```
 Git clone https://gitee.com/ZhongBangKeJi/CRMEB.git
 ```
-    文档地址:https://gitee.com/ZhongBangKeJi/CRMEB/wikis【[查看](https://gitee.com/ZhongBangKeJi/CRMEB/wikis)】
+    文档地址:https://gitee.com/ZhongBangKeJi/CRMEB/wikis
 
 ## 技术亮点
 ~~~
@@ -71,7 +71,7 @@ Git clone https://gitee.com/ZhongBangKeJi/CRMEB.git
 
 QQ群: 116279623
 
-Gitee: https://gitee.com/ZhongBangKeJi/CRMEB/issues[提交](http://https://gitee.com/ZhongBangKeJi/CRMEB/issues)
+Gitee: https://gitee.com/ZhongBangKeJi/CRMEB/issues
 ## 特别鸣谢
 感谢以下的项目,排名不分先后
 
