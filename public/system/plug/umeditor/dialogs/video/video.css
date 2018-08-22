@@ -1,0 +1,59 @@
+@charset "utf-8";
+.edui-dialog-video .edui-video-wrapper{ width: 570px;_width:575px;margin: 10px auto; zoom:1;position: relative}
+.edui-dialog-video .edui-video-tabbody{height:335px;}
+.edui-dialog-video .edui-video-panel { position: absolute;width:100%; height:100%;background: #fff;}
+.edui-dialog-video .edui-video-panel table td{vertical-align: middle;}
+.edui-dialog-video #eduiVideoUrl {
+    width: 470px;
+    height: 21px;
+    line-height: 21px;
+    margin: 8px 5px;
+    background: #FFF;
+    border: 1px solid #d7d7d7;
+}
+.edui-dialog-video #eduiVideoSearchTxt{margin-left:15px;background: #FFF;width:200px;height:21px;line-height:21px;border: 1px solid #d7d7d7;}
+.edui-dialog-video #searchList{width: 570px;overflow: auto;zoom:1;height: 270px;}
+.edui-dialog-video #searchList div{float: left;width: 120px;height: 135px;margin: 5px 15px;}
+.edui-dialog-video #searchList img{margin: 2px 8px;cursor: pointer;border: 2px solid #fff} /*不用缩略图*/
+.edui-dialog-video #searchList p{margin-left: 10px;}
+.edui-dialog-video #eduiVideoType{
+    width: 65px;
+    height: 23px;
+    line-height: 22px;
+    border: 1px solid #d7d7d7;
+}
+.edui-dialog-video #eduiVideoSearchBtn,.edui-dialog-video #eduiVideoSearchReset{
+    /*width: 80px;*/
+    height: 25px;
+    line-height: 25px;
+    background: #eee;
+    border: 1px solid #d7d7d7;
+    cursor: pointer;
+    padding: 0 5px;
+}
+
+
+
+.edui-dialog-video #eduiVideoPreview{width: 420px; margin-left: 10px; _margin-left:5px; height: 280px;background-color: #ddd;float: left}
+.edui-dialog-video #eduiVideoInfo {width: 120px;float: left;margin-left: 10px;_margin-left:7px;}
+.edui-dialog-video .edui-video-wrapper fieldset{
+    border: 1px solid #ddd;
+    padding-left: 5px;
+    margin-bottom: 20px;
+    padding-bottom: 5px;
+    width: 115px;
+}
+.edui-dialog-video .edui-video-wrapper fieldset legend{font-weight: bold;}
+.edui-dialog-video .edui-video-wrapper fieldset p{line-height: 30px;}
+.edui-dialog-video .edui-video-wrapper fieldset input.edui-video-txt{
+    width: 65px;
+    height: 21px;
+    line-height: 21px;
+    margin: 8px 5px;
+    background: #FFF;
+    border: 1px solid #d7d7d7;
+}
+.edui-dialog-video .edui-video-wrapper label.edui-video-url{font-weight: bold;margin-left: 5px;color: #06c;}
+.edui-dialog-video #eduiVideoFloat div{cursor:pointer;opacity: 0.5;filter: alpha(opacity = 50);margin:9px;_margin:5px;width:38px;height:36px;float:left;}
+.edui-dialog-video #eduiVideoFloat .edui-video-focus{opacity: 1;filter: alpha(opacity = 100)}
+.edui-dialog-video .edui-video-wrapper span.edui-video-view{display: inline-block;width: 30px;float: right;cursor: pointer;color: blue}

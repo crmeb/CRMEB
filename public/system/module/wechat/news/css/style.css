@@ -1,0 +1,49 @@
+.news-left{left:20px;width:300px;position:absolute}
+.panel{border-radius:0;padding:0;margin-bottom:20px;background-color:#fff;border:1px solid transparent;-webkit-box-shadow:0 1px 1px rgba(0,0,0,.05);box-shadow:0 1px 1px rgba(0,0,0,.05)}
+.panel-default{border-color:#ddd}
+.panel-heading{color:#333;background-color:#f5f5f5;border-color:#ddd;padding:10px 15px;border-bottom:1px solid transparent;border-top-left-radius:3px;border-top-right-radius:3px}
+.panel-body{padding:15px}
+.news-left .news-item{position:relative;width:280px;height:150px;max-width:270px;overflow:hidden;border:1px solid #ccc;background-size:cover;background-position:center center}
+.transition{-webkit-transition:all .2s linear;-moz-transition:all .2s linear;-o-transition:all .2s linear;transition:all .2s linear}
+.news-left .news-item.active{border:1px solid #44b549!important}
+.news-left .article-add{font-size:22px;text-align:center;display:block;color:#999}
+.news-right{position:absolute;right:20px;left: 340px;}
+.panel-body{padding:14px}
+.form-horizontal .form-group{margin-right:-15px;margin-left:-15px}
+.form-group{margin-bottom:15px}
+.input-group{position:relative;display:table;border-collapse:separate}
+.news-right .input-group-addon{background:#fff;border-radius:0;border-color:#e5e6e7}
+.input-group-addon:first-child{border-right:0}
+.news-right .layui-input{border-radius:0;border:1px solid #e5e6e7;}
+.layui-input,.layui-textarea{display:block;width:100%;padding-left:10px}
+.layui-input,.layui-select,.layui-textarea{height:38px;line-height:36px \9;border:1px solid #e6e6e6;background-color:#fff;border-radius:2px}
+.layui-btn,.layui-input,.layui-select,.layui-textarea,.layui-upload-button{outline:0;transition:all .3s;-webkit-transition:all .3s;box-sizing:border-box}
+label{font-size:100%;font-weight:500;margin-bottom:0}
+label{display:inline-block;max-width:100%;margin-bottom:5px;font-weight:700}
+.nowrap{white-space:nowrap!important}
+.row{margin-right:-15px;margin-left:-15px}
+.btn{outline:none!important}
+.btn-group-sm>.btn,.btn-sm{padding:5px 10px;font-size:12px;line-height:1.5;border-radius:3px}
+.btn{display:inline-block;padding:6px 12px;margin-bottom:0;font-size:14px;font-weight:400;line-height:1.42857143;text-align:center;white-space:nowrap;vertical-align:middle;-ms-touch-action:manipulation;touch-action:manipulation;cursor:pointer;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;background-image:none;border:1px solid transparent;border-radius:4px}
+a{color:#06C;cursor:pointer}
+a{color:#333;text-decoration:none}
+a{color:#337ab7;text-decoration:none}
+a{background-color:transparent}
+.help-block{margin-bottom:0}
+.help-block{display:block;margin-top:5px;margin-bottom:10px;color:#737373}
+.news-right .upload-image-box{width:130px;height:90px;background-size:cover;background-position:center center;border:1px solid rgba(125,125,125,0.1);margin:5px}
+.edui-container{overflow:initial!important}
+button.btn-success.dim{box-shadow:inset 0 0 0 #1872ab,0 5px 0 0 #1872ab,0 10px 5px #999}
+.float-e-margins .btn{margin-bottom:5px}
+button.dim{display:inline-block;color:#fff;text-decoration:none;text-transform:uppercase;text-align:center;padding-top:6px;margin-right:10px;position:relative;cursor:pointer;border-radius:5px;font-weight:600;margin-bottom:20px!important}
+.btn-success{background-color:#1c84c6;border-color:#1c84c6;color:#FFF}
+.btn{border-radius:3px}
+.btn-success{color:#fff;background-color:#5cb85c;border-color:#4cae4c}
+.btn{display:inline-block;padding:6px 12px;margin-bottom:0;font-size:14px;font-weight:400;line-height:1.42857143;text-align:center;white-space:nowrap;vertical-align:middle;-ms-touch-action:manipulation;touch-action:manipulation;cursor:pointer;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;background-image:none;border:1px solid transparent;border-radius:4px}
+button,input,select,textarea{font-family:inherit;font-size:inherit;line-height:inherit}
+button.btn-success.dim:active{box-shadow:inset 0 0 0 #1872ab,0 2px 0 0 #1872ab,0 5px 3px #999}
+button.dim:active{bottom:4px}
+.btn-success.active,.btn-success:active,.open .dropdown-toggle.btn-success{background-image:none}
+.btn-success.active,.btn-success:active,.btn-success:focus,.btn-success:hover,.open .dropdown-toggle.btn-success{background-color:#1a7bb9;border-color:#1a7bb9;color:#FFF}
+.dim{bottom:7px;right:8px;z-index:1003;position:fixed!important}
+.del-news{font-size:20px;background-color:#4c4b4b;padding:0 8px;position:absolute;top:0;right:0;cursor:pointer;color:#fff}
