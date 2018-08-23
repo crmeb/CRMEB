@@ -1,0 +1,62 @@
+<view class="head">
+  <input placeholder='输入订单号'></input>
+  <view class='iconfont icon-xiazai5'></view>
+</view>
+<view class='menu flex'>
+  <view class='item on'>全部</view>
+  <view class='item'>待发货</view>
+  <view class='item'>待收货</view>
+  <view class='item'>已完成</view>
+</view>
+<view class='orders-list'>
+  <view class='items'>
+    <view class='numbers'><text>订单号</text>：201804011215</view>
+    <view class='pay-status flex'>
+      <view class='left-wrapper'>
+        <view class='status-txt'>状态: <text>待发货</text></view>
+        <view class='all-price'>总价: <text>￥598.00</text></view>
+      </view>
+      <view class='right-wrapper'>
+        <view class='buypay'>查看拼团</view>
+      </view>
+    </view>
+    <view class='info-list'>
+      <view class='pro-item flex'>
+        <view class='wrapper flex'>
+          <image src='/images/001.jpg'></image>
+          <view class='item-info flex'>
+            <view class='title'>商品名称商品名称商品名称</view>
+            <view class='res'>产品属性产品属性产品</view>
+            <view class='price'><text>￥</text>199.00<text class='count'>X1</text></view>
+          </view>
+        </view>  
+      </view>
+    </view>
+  </view>
+  <view class='items'>
+    <view class='numbers'><text>订单号</text>：201804011215</view>
+    <view class='pay-status flex'>
+      <view class='left-wrapper'>
+        <view class='status-txt'>状态: <text>待发货</text></view>
+        <view class='all-price'>总价: <text>￥598.00</text></view>
+      </view>
+      <view class='right-wrapper'>
+        <view class='buypay'>查看拼团</view>
+      </view>
+    </view>
+    <view class='info-list'>
+      <view class='pro-item flex'>
+        <view class='wrapper flex'>
+          <image src='/images/001.jpg'></image>
+          <view class='item-info flex'>
+            <view class='title'>商品名称商品名称商品名称</view>
+            <view class='res'>产品属性产品属性产品</view>
+            <view class='price'><text>￥</text>199.00<text class='count'>X1</text></view>
+          </view>
+        </view>  
+      </view>
+    </view>
+  </view>
+</view>
+
+

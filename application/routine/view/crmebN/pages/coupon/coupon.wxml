@@ -1,0 +1,27 @@
+<view class="header-ul flex">
+    <block wx:for="{{headerArray}}">
+        <view data-idx='{{index}}' class='header-li {{_active==index?"active":""}}' bindtap='headertap'>{{item}}</view>
+    </block>
+    <!-- <view class='header-li active'>全部</view> -->
+    <!-- <view class='header-li'>未使用</view>
+    <view class='header-li'>已使用</view>
+    <view class='header-li'>已过期</view> -->
+</view>
+<view class='coupon-ul'>
+    <block wx:for="{{couponArray}}">
+        <view class='coupon-li flex {{(item.status==1||item.status==2)?"coupon-use":""}}'>
+            <view class='coupon-text {{(!item.status)?"use-text":""}}'>
+               <view class='coupon-term'>满{{item.use_min_price}}元使用</view>
+               <view class='coupon-time'>{{item.add_time}}至{{item.end_time}}使用</view>
+            </view>
+            <view class='coupon-text2'>
+                <view class='coupon-money'>￥<text class='coupon-num'>{{item.coupon_price}}</text></view>
+                <view class='coupon-but {{(item.status==1||item.status==-1)?"use-but":""}}' wx:if="{{item.status==0}}" >未使用</view>
+                <view class='coupon-but {{(item.status==1||item.status==-1)?"coupon-use":""}}' wx:if="{{item.status==1}}" >已使用</view>
+                <view class='coupon-but {{(item.status==1||item.status==-1)?"use-text":""}}' wx:if="{{item.status==2}}" >已过期</view>
+            </view>
+            <view class='{{item.status==0?"coupon-new":""}}'></view>
+        </view>
+    </block>
+</view>
+<view class='loading flex'><text class='loadingpic iconfont icon-jiazaizhong' hidden='{{loadinghidden}}'></text><text>{{title}}</text></view>

@@ -1,0 +1,36 @@
+  <view class="model-bg {{show==true ? 'show':''}} {{prostatus==true ? 'show':''}}" bindtap='modelbg'></view>  
+<view class="model-proinfo {{prostatus==true ? 'show':''}}">
+  <view class='hd-wrapper'>
+    <image src='{{url}}{{productSelect.image}}'></image>
+    <view class='txt-info'>
+      <view class='title'>{{productSelect.store_name}}</view>
+      <view class='price'>￥{{productSelect.price}}</view>
+    </view>
+  </view>
+  <view class='bd-wrapper'>
+  <block wx:for="{{productAttr}}">
+    <view class='parameter-item'>
+      <view class='title-bar'>{{item.attr_name}}</view>
+      <view class='item-wrapper'>
+        <block wx:for="{{item.attr_value}}" wx:for-item="items">
+          <view data-key="{{items.attr}}" class='item {{items.check?"sizecolor":""}}' bindtap='tapsize'>{{items.attr}}</view>
+        </block>
+      </view>
+    </view>
+    </block>
+  </view>
+  <view class='count-box flex'>
+    购买数量
+    <view class='count-wrappers flex'>
+      <text data-index="{{index}}" bindtap="bindMinus" class='{{minusStatus}}'>-</text>
+      <input class='num' type="number" value='{{num}}' bindblur='setNumber'/>
+      <!-- <text class='num'>{{num}}</text> -->
+      <text class='add' data-index="{{index}}" bindtap="bindPlus">+</text>
+    </view>
+  </view>
+  <view style='height:100rpx;'></view>
+  <form bindsubmit="subBuy" report-submit='true'> 
+  <button class='foot-wrapper' form-type='submit'>确定</button>  
+    <!-- <view class='foot-wrapper' bindtap='subBuy'>确定</view> -->
+  </form>
+</view> 

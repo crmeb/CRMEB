@@ -1,0 +1,28 @@
+<view class='header flex'>
+  <text class='text'>我的积分</text>
+  <view class='count'>10000</view>
+  <navigator hover-class='none'>获取积分</navigator>
+</view>
+<view class='details-list'>
+  <view class='title'><text>积分明细</text></view>
+  <view class='list-wrapper'>
+    <view class='list-item flex expenditure'>
+      <view class='left-wrapper'>
+        <view class='order-num'>支付订单，订单编号178954654145</view>
+        <view class='time-bar'>2017/10/10 14:50</view>
+      </view> 
+      <view class='right-wrapper'>
+        <text class='status-txt'>-1666</text>积分
+      </view>
+    </view>
+    <view class='list-item flex'>
+      <view class='left-wrapper'>
+        <view class='order-num'>支付订单，订单编号178954654145</view>
+        <view class='time-bar'>2017/10/10 14:50</view>
+      </view> 
+      <view class='right-wrapper'>
+        <text class='status-txt'>-1666</text>积分
+      </view>
+    </view>
+  </view>
+</view>

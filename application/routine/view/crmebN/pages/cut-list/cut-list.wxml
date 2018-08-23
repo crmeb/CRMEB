@@ -1,0 +1,47 @@
+<view class="catlist">
+<block wx:for="{{lovely}}">
+  <image src='{{url}}{{item.img}}' wx:if="{{index == 2}}"></image>
+</block>
+</view>
+<view class="catlist-nav flex">
+   <image src='{{url}}{{titleImage.banner}}'></image>
+    <view class="catlist-list">
+       <swiper  autoplay="{{autoplay}}" interval="{{interval}}" duration="{{duration}}"  indicator-active-color="{{indicatorActivecolor}}"  vertical="{{ vertical}}" circular="{{circular}}">
+          <block wx:for="{{title}}">
+            <swiper-item>
+                <view>{{item.info}}</view> 
+            </swiper-item>
+          </block>
+        </swiper>
+   </view> 
+</view>
+<view class='catlist-ul flex'>
+   <view class='catlist-li' wx:for="{{cutList}}" wx:for-item="item" data-id="{{item.id}}" bindtap='cut'>
+       <image src='{{url}}{{item.image}}' class='li-pic'></image>
+       <view class='catlist-text line' >{{item.title}}</view>
+       <view class='text-color'>
+           <view>最低
+              <text class='color-num'>￥{{item.min_price}}</text>
+              <view class='none-num'>原价￥{{item.price}}</view>
+           </view>
+       </view>
+       <view class='pic-list flex'>
+            <!-- <view class='pic-con'>
+                <block wx:for="{{item.userInfo}}" wx:for-item="items" wx:if="{{index < 2}}">
+                    <image src='{{items}}'></image>
+                </block>
+                <view class='pic-dai'>...</view>
+            </view>  -->
+            <text>{{item.userInfoCount}}人正在参加</text>
+            <view class='color-but'>去砍价</view>
+       </view>
+   </view>
+  
+</view>
+<movable-area class='index-con' >
+  <movable-view class='index-area' direction="all">
+      <navigator url='/pages/index/index' hover-class='none' open-type = "switchTab" >
+      <image src='/images/home.png'></image>
+      </navigator>
+  </movable-view>
+</movable-area>

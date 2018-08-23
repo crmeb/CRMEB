@@ -1,0 +1,7 @@
+<view class='enter'>
+    <image src="{{url}}{{logo}}"></image>
+    <view class='enter-title'>{{name}}</view>
+    <view class='enter-con'>你的信息和数据将受到保护</view>
+    <button class='enter-but flex' open-type="getUserInfo" type="primary" bindtap='getUserInfo' ><icon class='iconfont icon-weixing'></icon>微信授权登录</button> 
+</view>
+

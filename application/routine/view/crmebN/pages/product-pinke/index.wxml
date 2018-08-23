@@ -1,0 +1,129 @@
+<view class='swiper_banner'>
+  <swiper class="swiper-box" indicator-dots="{{indicatorDots}}" autoplay="{{autoplay}}" interval="{{interval}}" duration="{{duration}}" indicator-color="{{indicatorColor}}" indicator-active-color="{{indicatorActivecolor}}">
+    <block wx:for="{{storeInfo.images}}">
+      <swiper-item>
+        <image src="{{url}}{{item}}" class="slide-image"/>
+      </swiper-item>
+    </block>
+  </swiper>
+</view>
+<view class='pro-wrapper'>
+  <view class='pro-infos'>
+    <view class='title'>{{storeInfo.title}}</view>
+    <view class='price-wrapper flex'>
+      <view class='left flex'>
+        <view class='price'><text>￥</text>{{storeInfo.price}}</view>
+        <view class='old-price'>￥{{storeInfo.product_price}}</view>
+      </view>
+    </view>
+  </view>
+</view>
+<view class='pink-list'>
+  <view class='title-bar flex'>
+    <view class='left-wrapper'>{{pinking.length}}人在拼单，可直接参与</view>
+    <view class='right-wrapper' bindtap="showList">查看更多</view>
+  </view>
+  <view class='list-item'>
+  <block wx:for="{{pinking}}" wx:if="{{index < 2}}">
+    <navigator class='item flex' hover-class='none'>
+      <view class='left-wrapper flex' bindtap='goPink' data-id="{{item.id}}">
+        <image src='{{item.avatar}}'></image>
+        <view class='name'>{{item.nickname}}</view>
+      </view>
+      <view class='right-wrapper flex'>
+        <view class='counts-wrapper' bindtap='goPink' data-id="{{item.id}}">
+          <view class='count'>还差<text class='num'>{{item.count}}人</text>拼成</view>
+          <view class='time'>剩余{{item.time.hou}}:{{item.time.min}}:{{item.time.sec}}</view>
+        </view>
+        <form bindsubmit="parameterShow" report-submit='true'> 
+        <input type='text' style="display:none" name="pinkId" value='{{item.id}}'></input>
+          <button class='join' form-type='submit'>去拼单</button>  
+        </form> 
+        <!-- <view class='join' bindtap='parameterShow'>去拼单</view> -->
+      </view>
+    </navigator> 
+    </block>
+  </view>
+</view>
+<view class='evaluate-wrapper' wx:if="{{replyCount}}">
+  <view class='common-title flex'>
+    <view class='line'></view>
+    <view class='iconfont icon-pinglun'></view>
+    <view class='text'>评价</view>
+    <view class='line'></view>
+  </view>
+  <view class='evaluate-hot'>
+    <view class='hot-title'>宝贝评价({{replyCount}})</view>
+    <view class='infos-wrapper'>
+      <view class='user-info flex'>
+        <image class='avatar' src='{{reply.avatar}}'></image>
+        <text class='name'>{{reply.nickname}}</text>
+        <view class='start star{{reply.star}}'></view>
+      </view>
+      <view class='txt-msg'>{{reply.comment}}</view>
+      <view class='time-bar'>{{reply.add_time}}  {{reply.suk}}</view>
+    </view>
+    <navigator wx:if="{{replyCount > 0}}" hover-class="none" url="/pages/comment/comment?productId={{storeInfo.product_id}}">查看全部评价</navigator>
+  </view>
+</view>
+<view class='content-wrapper'>
+  <view class='common-title flex'>
+    <view class='line'></view>
+    <view class='iconfont icon-tupian'></view>
+    <view class='text'>详情</view>
+    <view class='line'></view>
+  </view>
+  <view class='con-box'>
+<template is="wxParse" data="{{wxParseData:description.nodes}}"/>
+  </view>
+</view>
+<view style='height:130rpx;'></view>
+<view class='foot flex'>
+  <view  class='fn-btns flex'>
+    <view class='item'>
+      <view class='iconfont icon-kefu'></view>
+      <text>客服</text>
+    </view>
+    <view class='item' bindtap='setCollect'>
+      <view class="iconfont icon-pingjia {{collect==true?'icon-xingxing':''}}"></view>
+      <text>收藏</text>
+    </view>
+    <view class='item' bindtap='getCar'>
+      <view class='iconfont icon-gouwuche'><span class='item-span'>{{CartCount}}</span></view>
+      <text>购物车</text>
+    </view>
+  </view>
+  <view class='btns-wrapper flex'>
+    <!-- <view class='buy-btn'>加入购物车</view> -->
+    <form class="form-btn" bindsubmit="parameterShow" report-submit='true'> 
+    <input type='text' style="display:none" name="pinkId" value='0'></input>
+      <button class='payment-btn' form-type='submit'>确认下单</button>  
+    </form> 
+  </view>
+</view>
+<!-- <view class="model-bg {{show==true ? 'show':''}} {{prostatus==true ? 'show':''}}" bindtap='modelbg'></view> -->
+<view class="pinklist-model {{show==true ? 'show':''}}">
+  <view class='tit-bar'>正在拼单</view>
+  <scroll-view scroll-y style="max-height:635rpx;">
+     <block wx:for="{{pinking}}" wx:if="{{index < 10}}">
+          <view class='item flex'>
+              <view class='left-wrapper' bindtap='goPink' data-id="{{item.id}}">
+                <image src='{{item.avatar}}'></image>
+                <view class='text-info'>
+                  <view class='name'>{{item.nickname}}<text>还差{{item.count}}人</text></view>
+                  <view class='time'>剩余{{item.time.hou}}:{{item.time.min}}:{{item.time.sec}}</view>
+                </view>
+              </view>
+              <form bindsubmit="parameterShow" report-submit='true'> 
+              <input type='text' style="display:none" name="pinkId" value='{{item.id}}'></input>
+                <button class='right-wrapper' form-type='submit'>去拼单</button>  
+              </form> 
+        </view>
+     </block>
+  </scroll-view>
+  <view class='tips'>仅显示10个正在拼团的人</view>
+  <view class='close' bindtap='close'></view> 
+</view>
+<include src="/pages/foo-tan/foo-tan.wxml"/>
+<import src="/wxParse/wxParse.wxml"/>
+

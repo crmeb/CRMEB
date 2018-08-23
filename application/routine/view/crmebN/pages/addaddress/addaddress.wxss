@@ -1,0 +1,13 @@
+.information{width:100%;height:364rpx;background-color:#ffffff;display:block;}
+.information-li{height:90rpx;padding:0 20rpx;line-height:90rpx;border-bottom:1rpx solid #F7F7F7;}
+.information-li label,.cashNum label{width:170rpx;display:inline-block;}
+.information-li input,.cashNum input{width:100%;height:100%;}
+.placeholder{color:#cccccc;}
+.but{width:710rpx;height:90rpx;line-height:90rpx;text-align:center;background-color:#F84426;color:#ffffff;font-size:32rpx;margin-top:70rpx;}
+.areas{color:#808080;display:inline-block;width:510rpx; overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.map{float:right;font-size:45rpx;color:#F14233;}
+.area{width:137rpx !important;}
+.default{height:90rpx;line-height:90rpx;padding:0 20rpx;background-color:#ffffff;margin-top:20rpx;color:#333333;}
+.duihao{height:45rpx;line-height:45rpx;text-align:center;border-radius:50%;border:1rpx solid #DEDEDE;display:inline-block;width:45rpx;font-size:30rpx;color:#ffffff;margin-right:21rpx;}
+.active{background-color:#F84426;}
+

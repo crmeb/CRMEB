@@ -1,0 +1,20 @@
+/* pages/foo-tan/foo-tan.wxss */
+.model-proinfo{z-index: 80; position: fixed; left: 0; bottom: 0; width: 100%; background-color: #fff; padding: 0 30rpx; box-sizing: border-box; transform: translate3d(0,120%,0); transition: all .3s cubic-bezier(.25,.5,.5,.9);}
+.model-proinfo .hd-wrapper{position: relative;  padding-left: 244rpx;}
+.model-proinfo .hd-wrapper image{width: 214rpx; height: 214rpx; border:10rpx solid #fff; box-sizing: border-box; position: absolute; left: 0; top: -30rpx; box-shadow: 1px 1px 2px 1px #e4e4e4; border-radius: 5px;}
+.model-proinfo .hd-wrapper .txt-info{ width: 445rpx; height: 180rpx; padding-top: 36rpx; box-sizing: border-box;}
+.model-proinfo .hd-wrapper .txt-info .title{display: -webkit-box; display:-moz-box; display:box;-webkit-box-orient: vertical; -moz-box-orient: vertical; -webkit-line-clamp: 2;-moz-line-clamp: 2;overflow: hidden;}
+.model-proinfo .hd-wrapper .txt-info .price{margin-top: 25rpx; font-size: 32rpx; color: #ff3d3d;}
+.model-proinfo .bd-wrapper .parameter-item{padding: 30rpx 0; border-bottom: 1px solid #eaeaea;}
+.model-proinfo .bd-wrapper .item-wrapper{display: flex; flex-wrap: wrap;}
+.model-proinfo .bd-wrapper .item-wrapper .item{height: 58rpx; text-align: center; line-height: 58rpx; background-color: #eeeeee; font-size: 24rpx; border-radius: 3px; margin: 28rpx 35rpx 0 0;padding:0rpx 20rpx;}
+.model-proinfo.show{transform: translate3d(0,0,0);}
+  .count-wrappers{position: absolute; right:20rpx; top:50%;width: 160rpx; height: 47rpx; box-sizing: border-box; border: 1px solid #ddd; border-radius: 3px; align-items: center; margin-top: -23.5rpx;}
+.count-wrappers text{flex: 1;text-align: center; height: 100%; font-size: 36rpx; color:#454545; line-height: 37rpx;}
+.count-wrappers .num{flex: initial;text-align:center;
+width: 66rpx; color: #333; font-size: 28rpx;border-left: 1px solid #ddd;border-right: 1px solid #ddd; line-height: 47rpx;}
+.count-wrappers .disabled{color:#ccc;}   
+.count-box{position: relative; height: 106rpx; line-height: 106rpx;}
+.foot-wrapper{position: absolute; left: 0; bottom: 0; width: 100%; height: 100rpx; line-height: 100rpx; text-align: center; background-color: #ff3d3d; color: #fff;border-radius:0;}
+.model-proinfo.show{transform: translate3d(0,0,0);} 
+.sizecolor{background-color:#FF3D3D! important;color:#fff! important;}

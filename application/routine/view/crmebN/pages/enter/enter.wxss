@@ -1,0 +1,6 @@
+.enter{width:425rpx;text-align:center;margin:168rpx auto 0 auto;display:block;}
+.enter image{width:136rpx;height:136rpx;border-radius:8rpx;}
+.enter-title{color:#333333;font-size:32rpx;margin:45rpx 0 32rpx 0;}
+.enter-con{font-size:26rpx;color:#999999;line-height:1.7;}
+.enter-but{width:360rpx;height:70rpx;border-radius:8rpx;background-color:#319FF5;font-size:26rpx;color:#fff;margin-top:70rpx;align-items:center;justify-content:center;}
+.enter-but icon{font-size:35rpx;margin-right:15rpx;}

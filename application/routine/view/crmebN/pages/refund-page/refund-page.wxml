@@ -1,0 +1,55 @@
+<view class="refundPage">
+      <block wx:for="{{order.cartInfo}}">
+          <view class='refundPage-header flex'>
+              <image src='{{url}}{{item.productInfo.image}}'></image>
+              <view class='header-left'>
+                  <view class='left-title line'>{{item.productInfo.store_name}}</view>
+                  <view class='left-con line'>{{item.productInfo.store_name}}</view>
+                  <view class='left-money' wx:if="{{item.productInfo.attrInfo}}"><text>￥</text>{{item.productInfo.attrInfo.price}}<text>x{{item.cart_num}}</text></view>
+          <view class='left-money' wx:else><text>￥</text>{{item.productInfo.price}}<text class='count'>x{{item.cart_num}}</text></view>
+              </view>
+          </view>
+     </block>
+     <form class='refundPage-form' bindsubmit="subRefund" report-submit='true'>
+         <view class='refundPage-bg'>
+             <view class='refundPage-li flex'>
+               <label class='refunMoney'><text class='refundPage-color'>*</text>退款原因</label>
+                <picker bindchange="bindPickerChange" value="{{index}}" range="{{array}}" class='refundPicker li-left'>
+                    <text class='Bank'>{{array[index]}}</text>
+                    <text class='iconfont icon-xiala bankxia'></text>
+                </picker>
+              </view>
+               <view class='refundPage-li flex'>
+                  <view class='refunMoney'><text class='refundPage-color'>*</text>退货件数</view>
+                  <view class='li-left'>{{order.total_num}}</view>
+              </view> 
+              <view class='refundPage-li flex'>
+                   <view class='refunMoney'><text class='refundPage-color'>*</text>退款金额</view>
+                   <view class='li-left'>￥{{order.pay_price}}</view>
+              </view>
+              <view class='refundPage-li refundPage-lit flex'>
+                 <label class='refunMoney'>特别说明</label>
+                 <textarea placeholder='最多可输入200字' name="refund_reason_wap_explain" placeholder-class='refundPicker' maxlength='200' class='li-left'></textarea>
+              </view>
+              <view class='refundPage-li refundPage-lim'>
+                  <view class='refundPage-up flex'>
+                      <view>上传凭证</view>
+                      <view>(最多可上传3张)</view>
+                  </view>
+                  <view>
+                      <block wx:for="{{dataimg}}">
+                          <view class='up-img'>
+                            <image src='{{url}}{{item}}'></image>
+                            <icon class='iconfont icon-guanbi iconguan' data-index="{{index}}" bindtap='delImg'></icon>
+                          </view>
+                      </block>
+                      <view class='up-img up-imgjia' bindtap='uploadpic' hidden='{{hidden}}'>
+                          <icon class='iconfont icon-zhcc_jiahao iconjia'></icon>
+                           <view class='up-text'>上传凭证</view> 
+                      </view>
+                  </view>
+              </view>
+         </view>
+         <button class='refundPage-but' form-type="submit">申请退款</button>
+     </form>
+</view>

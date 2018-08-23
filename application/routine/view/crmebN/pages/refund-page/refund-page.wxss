@@ -1,0 +1,25 @@
+.refundPage-header{background-color:#fff;padding:20rpx;align-items:center;}
+.refundPage-header image{width:165rpx;height:165rpx;}
+.header-left{margin-left:21rpx;width:522rpx;}
+.header-left .left-title{font-size:28rpx;color:#333333;}
+.header-left .left-con{font-size:26rpx;color:#999999;margin:24rpx 0;}
+.header-left .left-money{font-size:30rpx;color:#FF3D3D;}
+.header-left .left-money text{font-size:24rpx;}
+.header-left .left-money text text{color:#454545;margin-left:10rpx;}
+.refundPage-bg{background-color:#fff;margin:20rpx 0 40rpx 0;} 
+.refundPage-li{height:102rpx;line-height:102rpx;border-bottom:1rpx solid #EEEEEE;margin:0 20rpx;justify-content:space-between;font-size:28rpx;}
+.refundPicker{color:#CCCCCC;}
+.refundPage-lit{height:142rpx;line-height:normal;padding-top:27rpx;}
+.refundPage-lit textarea{height:110rpx;}
+.refundPage-color{color:#FF3D3D;}
+.refunMoney{width:160rpx;}
+.li-left{width:530rpx;overflow:hidden;text-align:right;}
+.refundPage-up{justify-content:space-between;}
+.up-img{width:170rpx;height:170rpx;position:relative;display:inline-block;margin-right:32rpx;vertical-align:top;}
+.up-img image{width:100%;height:100%;border-radius:10rpx;}
+.refundPage-lim{height:302rpx;}
+.iconguan{position:absolute;font-size:45rpx;top:-28rpx;right:0;color:#D81E06;}
+.iconjia{font-size:60rpx;margin:22rpx 0;color:#CCCCCC;}
+.up-imgjia{border:1rpx dashed #CCCCCC;text-align:center;line-height:1;}
+.up-text{color:#CCCCCC;}  
+.refundPage-but{width:710rpx;height:90rpx;line-height:90rpx;text-align:center;background-color:#FF3D3D;color:#fff;font-size:30rpx;}

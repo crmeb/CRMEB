@@ -1,0 +1,9 @@
+.pay-bg{width:703rpx;height:470rpx;background-color:#fff;border-radius:10rpx;margin:20rpx auto 0 auto;}
+.pay-bg .title{font-size:28rpx;color:#c6c6c6;text-align:center;padding-top:60rpx;}
+.pay-bg .input{width:552rpx;border-bottom:1rpx solid #dddddd;margin:48rpx auto 0 auto;font-size:56rpx;color:#333333;justify-content:space-between;align-items:flex-end;}
+.pay-bg .input text{padding-left:106rpx;}
+.pay-bg .input input{padding-right:134rpx;height:94rpx;text-align:center;} 
+.pay-bg .placeholder{font-size:84.5rpx;color:#d0d0d0;}
+.pay-bg .tip{font-size:26rpx;color:#888888;text-align:center;padding:0 30rpx;margin-top:25rpx;}
+.pay-bg .tip text{color:#ef4a49;}
+.pay-bg .but{color:#fff;font-size:30rpx;background-color:#ef4a49;width:550rpx;height:86rpx;border-radius:50rpx;margin-top:46rpx;}

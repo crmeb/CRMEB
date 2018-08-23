@@ -1,0 +1,8 @@
+<view class="error">
+    <view class="iconfont"><image src='/images/error-icon.png'></image></view>
+    <view class='title'>抱歉，您已被禁止登陆</view>
+    <view class='content'>请联系管理员解除被禁止登陆</view>
+    <view class="btn-wrapper">
+        <button class="rest" bindtap='goContact'>联系管理员</button>
+    </view> 
+</view>

@@ -1,0 +1,43 @@
+<view class='spread-header flex'>
+   <view bindtap='spread'>推广人信息</view>
+   <view class='header-on'>粉丝订单</view>
+</view>
+<view class='promotion-down'>
+      <view class='promotion-header flex'>
+        <view class='flex header-order' data-index='0' bindtap='ordertap'>{{allOrder}}<icon class='iconfont icon-xiaosanjiaoxing02 {{currentTab=="0"?"icon-xiaosanjiaoxing01":""}}' data-index='0'></icon></view>
+        <view class='flex header-order' data-index='1' bindtap='ordertap'>{{promoter}}<icon class='iconfont icon-xiaosanjiaoxing02 {{currentTab=="1"?"icon-xiaosanjiaoxing01":""}}' data-class='icon-xiaosanjiaoxing01' data-index='1'></icon></view>
+      </view>
+      <view hidden='{{hiddens}}'>
+          <view class='promotion-xia' hidden='{{currentTab!=="0"}}'>
+            <block wx:for="{{alloeder}}">
+                <view class='xia-li' bindtap='icondui' data-ider='{{index}}'>{{item}}<icon class='iconfont {{icondui==index?"icon-duihao xiad":""}}'></icon></view>
+            </block> 
+          </view>
+          <view class='promotion-xia' hidden='{{currentTab!=="1"}}'>
+            <block wx:for="{{promoterList}}">
+                <view class='xia-li' bindtap='icondui2' data-ider='{{item.uid}}'>{{item.nickname}}<icon class='iconfont {{icondui2==index? "icon-duihao xiad":""}}'></icon></view>
+            </block> 
+          </view>
+      </view>
+</view>
+<view class='order-count flex'><icon class='iconfont icon-tongji'></icon>统计：您的粉丝订单共{{orderconut ? orderconut : 0}}单，总金额为{{ordermoney ? ordermoney : 0}}元</view>
+<view class='promotion-ul '>
+    <view class='promotion-li' wx:for="{{orderlist}}">
+        <view class='li-header flex'>
+            <view class='order-num'>订单号：{{item.order_id}}</view>
+            <view class='order-flag'>{{item._status._title}}</view>
+        </view>
+
+        <view class='li-item flex' wx:for="{{item.cartInfo}}">
+             <image src='{{url}}{{item.productInfo.image}}'></image>
+             <view class='item-text'>
+                 <view class='item-title line2'>{{item.productInfo.store_name}}</view>
+                 <view class='item-time'>下单日期: {{item.add_time}}</view>
+                 <view class='item-money'>￥<text>{{item.productInfo.price}}</text>.00</view>
+             </view>
+        </view>
+      
+    </view>
+   
+</view>
+<view class='zhao' hidden='{{hiddens}}' bindtap='zhaoguan'></view>

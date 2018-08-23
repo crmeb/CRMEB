@@ -1,0 +1,8 @@
+.new-con{padding: 30rpx 34rpx 0;}
+.title-wrapper .title-box{font-size: 40rpx; font-weight: 700; line-height: 1.5;}
+.title-wrapper .title-box .line{display: block; width: 176rpx; height: 5rpx; background-color: #000; margin-top: 35rpx;}
+.time-box{margin-top: 30rpx; font-size: 26rpx; color: #999;}
+.time-box text{margin-right: 35rpx;}
+.content-box{margin-top: 45rpx; font-size: 28rpx; color: #333; line-height: 1.5;}
+.content-box image{width: 100%;}
+@import "/wxParse/wxParse.wxss"; 

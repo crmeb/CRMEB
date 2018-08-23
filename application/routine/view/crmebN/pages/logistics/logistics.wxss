@@ -1,0 +1,33 @@
+.header{width:100%;height:200rpx;padding:0 20rpx;background-color:#ffffff;}
+.header image{width:139rpx;height:139rpx;margin:30rpx 18rpx 30rpx 0;}
+.header-text{margin-top:30rpx;}
+.header-flag{font-size:32rpx;color:#333333;}
+.header-flag .flag{color:#31A122;margin-left:21rpx;}
+.header .express{margin:16rpx 0;font-size:26rpx;color:#999999;}
+.header-number{font-size:26rpx;color:#999999;}
+.log-ul{background-color:#ffffff;padding:40rpx 40rpx 0 40rpx;margin-top:20rpx;}
+.log-li{position:relative;font-size:25.8rpx;color:#999999;}
+.log-yuan{width:21rpx;height:21rpx;border-radius:50%;position:absolute;top:-1rpx;left:-9rpx;background-color:#DDDDDD;}
+.log-info{border-left:1rpx solid #DDDDDD;padding:0 0 70rpx 47rpx;}
+.log-time{font-size:21.11rpx;margin-top:14rpx;}
+.active{background-color:#31A122;}
+.active-text{color:#31A122;}
+.active-text2{color:#454545;}
+.active-line{border-left-color:#31A122;}
+
+.log-title{text-align:center;height:130rpx;width:100%;line-height:130rpx;}
+.log-title .title-line{width:200rpx;height:4rpx;background-color:#999999;}
+.log-title text{display:inline-block;vertical-align:middle;}
+.log-title .title-text{margin:0 15rpx;font-size:30rpx;color:#666666;}
+.log-title .title-pic{font-size:35rpx!important;margin-right:12rpx;}
+.log-like{padding:0 10rpx;justify-content:space-between;flex-wrap:wrap;}
+.log-like .like-list{height:512rpx;width:360rpx;margin-bottom:10rpx;background-color:#FFFFFF;}
+.log-like .list-images{width:360rpx;height:360rpx;}
+.list-text{width:335rpx;padding:14rpx 10rpx 10rpx 10rpx;font-size:30rpx;color:#333333;overflow:hidden;text-overflow:ellipsis;-o-text-overflow:ellipsis;-webkit-text-overflow:ellipsis;-moz-text-overflow:ellipsis;white-space:nowrap;}
+.list-money{padding:0 10rpx;justify-content:space-between;}
+.list-num{font-size:22rpx;color:#ABABAB;}
+.money-red{color:#FF3D3D;font-size:22rpx;margin-top:10rpx;}
+.money-num{font-size:30rpx;display:inline-block;vertical-align:middle;}
+.list-f{display:inline-block;vertical-align:middle;}
+.list-tip{width:30rpx;height:30rpx;line-height:30rpx;text-align:center;background-color:#FF3D3D;color:#ffffff;display:inline-block;margin-left:10rpx;border-radius:5rpx;font-size:18rpx;vertical-align:middle;}
+.list-gwc{width:57rpx;height:57rpx;border-radius:50%;border:2rpx solid #F07864;font-size:32rpx;color:#D81E06;text-align:center;line-height:57rpx;margin-top:13rpx;}

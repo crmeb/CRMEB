@@ -1,0 +1,59 @@
+<view class='refunding flex'>
+    <view class='refunding-ing line'>{{ordercon._status._msg}}</view>
+    <view class='refunding-time line'>{{ordercon.refund_reason_time}}</view>
+</view>
+<view class='refunding-ul'>
+   <view class='refunding-li flex'>
+        <view>退款总金额</view>
+        <view class='li-money'>￥<text>{{ordercon.refund_price}}</text></view>
+   </view>
+   <view class='refunding-li flex'>
+        <view>退回微信账户</view>
+        <view>￥{{ordercon.refund_price}}</view>
+   </view>
+</view>
+<view class='refund-line flex'>
+    <view class='flex yuan-yuan'>
+        <view class='yuan yuan1 yuan-on'></view>
+        <view class='yuan-line  yuan-on'></view>
+        <view wx:if="{{ordercon.refund_status == 1}}" class='iconfont icon-duihao2 yuan-icon yuan-onn'></view>
+        <view wx:if="{{ordercon.refund_status == 1}}" class='yuan-line'></view>
+        <view wx:if="{{ordercon.refund_status == 1}}" class='yuan yuan2'></view>     
+        <view wx:if="{{ordercon.refund_status == 2}}" class='yuan yuan-on'></view> 
+        <view wx:if="{{ordercon.refund_status == 2}}" class='yuan-line yuan-on'></view>
+        <view wx:if="{{ordercon.refund_status == 2}}" class='iconfont icon-duihao2 yuan-icon yuan-onn'></view>    
+    </view>
+    <view class='line-tt flex'>
+        <view>
+          <view class='line-text'>卖家退款</view>
+          <view class='line-time'>{{ordercon.refund_reason_time}}</view>
+        </view>
+        <view>
+            <view class='line-text'>商家审核</view>
+            <view class='line-time'>{{ordercon.refund_reason_time}}</view>
+        </view>
+        <view>
+            <view class='line-text'>退款成功</view>
+            <view class='line-time'>预计24小时内到账</view>
+        </view>
+    </view>
+</view>
+<view class='refund-shop'>
+     <view class='shop-title'>商品信息</view>
+      <block wx:for="{{ordercon.cartInfo}}" wx:for-item="items"> 
+      <view class='shop-xinxi flex'>
+          <image src='{{url}}{{items.productInfo.image}}'></image>
+          <view class='shop-text'>
+              <view class='text-title line'>{{items.productInfo.store_name}}</view>
+              <view class='text-con line'>{{items.productInfo.store_name}}</view>
+          </view>
+      </view>
+     </block>
+     <view class='shop-tui'>
+         <view>退款原因：{{ordercon.refund_reason_wap}}</view>
+         <view>退款金额：￥{{ordercon.refund_price}}</view>
+         <view>申请件数：{{ordercon.total_num}}</view>
+         <view>申请时间：{{ordercon.refund_reason_time}}</view>
+         <view>退款编号：{{ordercon.order_id}}</view>
+     </view>
+</view>

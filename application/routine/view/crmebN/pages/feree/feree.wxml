@@ -1,0 +1,20 @@
+<view class="header">
+    <text class='tuipic'></text>
+    粉丝统计：{{count}}
+</view>
+<view class='feree-ul'>
+   <block wx:for="{{fereeArray}}">
+       <view class='feree-li flex' bindtap='toTwo' data-id="{{item.uid}}">
+           <image src='{{item.avatar}}' class='feree-pic'></image>
+           <view class='feree-conter'>
+               <view class='feree-name'>{{item.nickname}}</view>
+               <view class='feree-text'>
+               <text>关注时间: {{item.add_time}}</text>\r\n\r\n\r\n\r\n
+                <text>消费金额: {{item.price}}</text>
+               </view>
+           </view>
+           <view class="next"><text class='iconfont icon-xiala'></text></view>
+       </view>
+   </block>
+</view>
+<view class='loading flex'><text class='loadingpic iconfont icon-jiazaizhong' hidden='{{loadinghidden}}'></text><text>{{title}}</text></view>

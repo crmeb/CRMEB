@@ -1,0 +1,26 @@
+.refunding{height:200rpx;background-color:#FF3D3D;padding-left:60rpx;color:#fff;flex-direction:column; justify-content: center;}
+.refunding-time{margin-top:26rpx;width:620rpx;}
+.refunding-ing{width:620rpx;}
+.refunding-li{height:100rpx;line-height:100rpx;padding:0 30rpx;border-bottom:1rpx solid #EFEFEF;justify-content:space-between;font-size:28rpx;color:#333333;background-color:#fff;}
+.refunding-li .li-money{color:#FF3D3D;}
+.refunding-li .li-money text{font-size:35rpx;}
+.refund-line{height:166rpx;text-align:center;padding:0 60rpx;flex-direction:column;justify-content:center;}
+.refund-line .line-text{font-size:26rpx;color:#333333;}
+.refund-line .line-time{font-size:20rpx;color:#999999;margin-top:5rpx;}
+.refund-line .yuan{width:18rpx;height:18rpx;border-radius:50%;background-color:#CCCCCC;}
+.refund-line .yuan-icon{font-size:34rpx;color:#CCCCCC;}
+.refund-line .line-tt{justify-content:space-between;margin-top:30rpx;}
+.refund-line .yuan-yuan{justify-content:center;align-items:center;}
+.refund-line .yuan-line{width:207rpx;height:4rpx;background-color:#CCCCCC;}
+.refund-line .yuan1{margin-right:0;}
+.refund-line .yuan2{margin-left:0;}
+.yuan-on{background-color:#4AC375!important;}
+.yuan-onn{color:#4AC375!important;}
+.refund-shop .shop-title{height:80rpx;line-height:80rpx;font-size:28rpx;color:#333333;padding:0 30rpx;border-bottom:1rpx solid #EFEFEF;background-color:#fff;}
+.refund-shop .shop-xinxi{padding:22rpx 30rpx;background-color:#FAFAFA;justify-content:space-between;border-bottom:1rpx solid #EFEFEF;}
+.refund-shop .shop-xinxi image{width:165rpx;height:165rpx;}
+.refund-shop .shop-text{width:500rpx;}
+.refund-shop .text-title{color:#333333;font-size:28rpx;margin-top:14rpx;}
+.refund-shop .text-con{font-size:26rpx;color:#999999;margin-top:24rpx;}
+.refund-shop .shop-tui{height:262rpx;padding:26rpx 30rpx;background-color:#fff;}
+.refund-shop .shop-tui view{font-size:24rpx;color:#999999;margin-bottom:20rpx;}

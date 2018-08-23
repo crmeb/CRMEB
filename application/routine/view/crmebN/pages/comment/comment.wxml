@@ -1,0 +1,24 @@
+<view class="comment">
+   <view class='comment-header'>
+      <text data-index='1' class='{{comm == 1?"comment-on":""}}' bindtap='commentap'>全部({{alllength}})</text>
+      <text data-index='2' class='{{comm == 2?"comment-on":""}}' bindtap='commentap'>最新({{newlength}})</text>
+      <text data-index='3' class='{{comm == 3?"comment-on":""}}' bindtap='commentap'>有图({{piclength}})</text>
+      <!-- <text data-index='4' class='header-cha {{comm == 4?"comment-on":""}}' bindtap='commentap'>差评(2)</text> -->
+   </view>
+   <view class='comment-ul'>
+
+      <view class='comment-li' wx:for="{{uinfo}}">
+          <view class='li-view1'><image src='{{item.avatar}}' class='li-pic li-title'></image><text class='li-title'>{{item.nickname}}</text><view class='start star{{item.star}} li-title'></view></view>
+          <view class='li-text'>{{item.comment}}</view>
+             <view class='flex flex-pic'> 
+          <block wx:for="{{item.pics}}" wx:for-item="items">
+                <image src='{{items}}' class='li-pic2' bindtap='getImagePreview' data-image="{{items}}" data-images="{{item.pics}}"></image>
+          </block>
+             </view> 
+          <view class='li-time'><text>{{item.add_time}}</text>
+           <text>{{item.suk}}</text> 
+          </view>
+      </view>
+     
+   </view>
+</view>

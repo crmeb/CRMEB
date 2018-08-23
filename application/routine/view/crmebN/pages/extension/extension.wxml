@@ -1,0 +1,30 @@
+<view class="header">
+    <view class='header-bg'>
+       <view class='money'>{{userinfo.now_money}}</view>
+       <view class='text'>累计推广金</view>
+    </view>
+    <view class='tip' bindtap='cash'>立即提现</view>
+</view>
+<view class='exten-item'>
+    <view class='exten-list flex'>
+       <view><text class='exten-bg1 exten-bg'></text>昨日推广佣金</view>
+       <view class='exten-money'>{{yearsum}}元</view>
+    </view>
+    <view class='exten-list flex'>
+       <view><text class='exten-bg2 exten-bg'></text>累计可提佣金</view>
+       <view class='exten-money'>{{userinfo.now_money}}元</view>
+    </view>
+    <view class='exten-list flex'>
+       <view><text class='exten-bg3 exten-bg'></text>累计已提佣金</view>
+       <view class='exten-money'>{{extractsum}}元</view>
+    </view>
+    <view class='exten-list flex' bindtap='spread'>
+       <view><text class='exten-bg4 exten-bg'></text>推广详情</view>
+       <view class='exten-money iconfont icon-xiala iconxia'></view>
+    </view>
+</view>
+<!-- <view class='flex extentui'>
+       <view><text class='exten-bg5 exten-bg'></text>推广活动说明</view>
+       <view class='exten-money iconfont icon-xiala iconxia'></view>
+</view> -->
+
