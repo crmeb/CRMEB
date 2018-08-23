@@ -22,6 +22,27 @@
    CRMEB的优势:快速积累客户 会员数据分析 智能转化客户 有效提高销售
 ##  演示地址
    演示站后台:[crmeb_v2.5](http://demo25.crmeb.net) 
+   账号：demo
+   密码：crmeb.com
+   
+## 付费版
+
+淘宝超值版:
+
+CRMEB微信公众号v2.5版：出了以上功能还带砍价、拼团功能
+
+CRMEB微信小程序v2.5版：出了以上功能还带砍价、拼团功能
+
+CRMEB微信公众号小程序打通v2.5版：出了以上功能还带砍价、拼团功能 需要申请微信开放平台
+
+CRMEB微信公众号v2.0版：出了以上功能还带拼团功能
+
+CRMEB微信小程序v2.0版：出了以上功能还带砍价、拼团功能
+
+还有定制开发服务，例如：预约系统、O2O、付费阅读、多店版、多商家版，详情[进入淘宝](https://shop120689819.taobao.com)
+
+官网线下定制服务版：http://www.crmeb.com
+
 ## 功能
 
    1.商品: 能够对商品的状态分类管理 (出售中、待上架、库存中、已售馨、库存警戒、回收站)、添加产品、添加商品分类等功能
@@ -73,6 +94,7 @@ Git clone https://gitee.com/ZhongBangKeJi/CRMEB.git
 QQ群: 116279623
 
 Gitee: https://gitee.com/ZhongBangKeJi/CRMEB/issues
+
 ## 特别鸣谢
 感谢以下的项目,排名不分先后
 
