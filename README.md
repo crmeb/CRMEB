@@ -20,18 +20,18 @@
    CRMEB提供了常用工具进行封装,包括日志工具、数据库在线词典、PHPExcel数据导出、layui.Table 快速生成、Vue购物车组件以及其它常用小工具等
     
    CRMEB的优势:快速积累客户 会员数据分析 智能转化客户 有效提高销售
-##  演示地址
-   演示站后台:[crmeb_v2.5](http://demo25.crmeb.net) 
-   账号：demo
-   密码：crmeb.com
+
    
 ## 技术亮点
 ~~~
-    1.form-builder PHP快速生成表单 
-    2.前台Vue无刷新流式加载 、购物车Vue组件等
-    3.PHPExcel数据导出,导出表格更加美观,可视;
-    4.EasyWeChat部署微信开发,微信接入更加快捷,简单;
-    5.iview ui组件是HTML编写更加便捷
+    1.form-builder PHP快速生成表单；
+    2.前台Vue、RequireJS、node封装所有接口；
+    3.PHPExcel数据导出,导出表格更加美观,可视；
+    4.EasyWeChat部署微信开发,微信接入更加快捷,简单；
+    5.iview ui组件是HTML编写更加便捷；
+    6.后台多任务桌面化操作界面；
+    7.TP5.0+form-builder+layui.table自己封装快速二次开发；
+    8.一键安装
 ~~~
 ## 功能
 
@@ -54,6 +54,12 @@
    8.维护:查看系统日志、文件变动效验、刷新网站缓存、在线更新系统、清除数据等功能
 
    9.强大的权限管理系统
+
+##  演示地址
+   演示站后台:[crmeb_v2.5](http://demo25.crmeb.net) 
+   账号：demo
+   密码：crmeb.com
+
 ## 付费版
 
 淘宝超值版:
