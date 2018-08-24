@@ -2,13 +2,13 @@
 
 namespace app\routine\controller;
 
+use app\admin\model\system\SystemConfig;
+use app\routine\model\routine\RoutineServer;
 use app\routine\model\user\RoutineUser;
-use behavior\routine\RoutineBehavior;
 use service\JsonService;
 use service\UtilService;
 use think\Controller;
 use think\Request;
-use think\Session;
 
 class Login extends Controller{
 
@@ -28,9 +28,10 @@ class Login extends Controller{
         if(!isset($res['openid'])) return JsonService::fail('openid获取失败');
         if(isset($res['unionid'])) $data['unionid'] = $res['unionid'];
         else $data['unionid'] = '';
-        $data['openid'] = $res['openid'];
+        $data['routine_openid'] = $res['openid'];
         $data['session_key'] = $res['session_key'];
         $data['uid'] = RoutineUser::routineOauth($data);
+        $data['status'] = RoutineUser::isUserStatus($data['uid']);
         return JsonService::successful($data);
     }
 
@@ -41,9 +42,38 @@ class Login extends Controller{
      */
     public function setCode($code = ''){
         if($code == '') return [];
-        $routineAppId = 'wx7bc36cccc15e4be2';//小程序appID
-        $routineAppSecret = 'a13757487f35b0ad88c03455b1903c4d';//小程序AppSecret
+        $routineAppId = SystemConfig::getValue('routine_appId');//小程序appID
+        $routineAppSecret = SystemConfig::getValue('routine_appsecret');//小程序AppSecret
         $url = 'https://api.weixin.qq.com/sns/jscode2session?appid='.$routineAppId.'&secret='.$routineAppSecret.'&js_code='.$code.'&grant_type=authorization_code';
-        return json_decode(RoutineBehavior::curlGet($url),true);
+        return json_decode(RoutineServer::curlGet($url),true);
+    }
+
+    /**
+     * 获取网站logo
+     */
+    public function get_enter_logo(){
+        $siteLogo = SystemConfig::getValue('routine_logo');
+        $siteName = SystemConfig::getValue('routine_name');
+        $data['site_logo'] = $siteLogo;
+        $data['site_name'] = $siteName;
+        return JsonService::successful($data);
+    }
+
+    /**
+     * 获取网站顶部颜色
+     */
+    public function get_routine_style(){
+        $routineStyle = SystemConfig::getValue('routine_style');
+        $data['routine_style'] = $routineStyle;
+        return JsonService::successful($data);
+    }
+
+    /**
+     * 获取客服电话
+     */
+    public function get_site_service_phone(){
+        $siteServicePhone = SystemConfig::getValue('site_service_phone');
+        $data['site_service_phone'] = $siteServicePhone;
+        return JsonService::successful($data);
     }
 }
