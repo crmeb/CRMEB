@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- 主机: localhost
--- 生成日期: 2018 �?08 �?24 �?00:32
+-- 生成日期: 2018 �?08 �?24 �?00:42
 -- 服务器版本: 5.5.53
 -- PHP 版本: 7.0.12
 
@@ -1580,14 +1580,24 @@ CREATE TABLE IF NOT EXISTS `eb_system_attachment` (
   `pid` int(10) NOT NULL COMMENT '分类ID0编辑器,1产品图片,2拼团图片,3砍价图片,4秒杀图片,5文章图片,6组合数据图',
   `time` int(11) NOT NULL COMMENT '上传时间',
   PRIMARY KEY (`att_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COMMENT='附件管理表' AUTO_INCREMENT=2 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COMMENT='附件管理表' AUTO_INCREMENT=13 ;
 
 --
 -- 转存表中的数据 `eb_system_attachment`
 --
 
 INSERT INTO `eb_system_attachment` (`att_id`, `name`, `att_dir`, `satt_dir`, `att_size`, `att_type`, `pid`, `time`) VALUES
-(1, '5b7b784d35389.jpg', '\\public\\uploads\\0/20180821\\5b7b784d35389.jpg', '', '67105', 'image/jpeg', 0, 1534818381);
+(2, '5b7f5424a1a59.png', '\\public\\uploads\\0/20180824\\5b7f5424a1a59.png', '', '2628', 'image/png', 0, 1535071268),
+(3, '5b7f542501bd4.png', '\\public\\uploads\\0/20180824\\5b7f542501bd4.png', '', '2148', 'image/png', 0, 1535071269),
+(4, '5b7f5425288f5.png', '\\public\\uploads\\0/20180824\\5b7f5425288f5.png', '', '2020', 'image/png', 0, 1535071269),
+(5, '5b7f5425524f7.png', '\\public\\uploads\\0/20180824\\5b7f5425524f7.png', '', '1708', 'image/png', 0, 1535071269),
+(6, '5b7f54257b159.png', '\\public\\uploads\\0/20180824\\5b7f54257b159.png', '', '2326', 'image/png', 0, 1535071269),
+(7, '5b7f5425a39d2.png', '\\public\\uploads\\0/20180824\\5b7f5425a39d2.png', '', '2446', 'image/png', 0, 1535071269),
+(8, '5b7f5425ce95c.png', '\\public\\uploads\\0/20180824\\5b7f5425ce95c.png', '', '2226', 'image/png', 0, 1535071269),
+(9, '5b7f542607db7.png', '\\public\\uploads\\0/20180824\\5b7f542607db7.png', '', '3451', 'image/png', 0, 1535071270),
+(10, '5b7f54262f2a8.png', '\\public\\uploads\\0/20180824\\5b7f54262f2a8.png', '', '2612', 'image/png', 0, 1535071270),
+(11, '5b7f542664e15.png', '\\public\\uploads\\0/20180824\\5b7f542664e15.png', '', '2596', 'image/png', 0, 1535071270),
+(12, '5b7f542695f48.png', '\\public\\uploads\\0/20180824\\5b7f542695f48.png', '', '2020', 'image/png', 0, 1535071270);
 
 -- --------------------------------------------------------
 
@@ -1823,12 +1833,12 @@ CREATE TABLE IF NOT EXISTS `eb_system_group_data` (
 --
 
 INSERT INTO `eb_system_group_data` (`id`, `gid`, `value`, `add_time`, `sort`, `status`) VALUES
-(52, 32, '{"name":{"type":"input","value":"\\u6211\\u7684\\u79ef\\u5206"},"icon":{"type":"upload","value":"\\/public\\/uploads\\/common\\/s_5aeab2ef8a656.png"},"url":{"type":"input","value":"\\/wap\\/my\\/integral.html"}}', 1513846430, 1, 1),
-(53, 32, '{"name":{"type":"input","value":"\\u4f18\\u60e0\\u5238"},"icon":{"type":"upload","value":"\\/public\\/uploads\\/common\\/s_5aeab3b43f217.png"},"url":{"type":"input","value":"\\/wap\\/my\\/coupon.html"}}', 1513846448, 1, 1),
+(52, 32, '{"name":{"type":"input","value":"\\u6211\\u7684\\u79ef\\u5206"},"icon":{"type":"upload","value":"http:\\/\\/doemo.net\\/public\\/uploads\\/0\\/20180824\\/5b7f542607db7.png"},"url":{"type":"input","value":"\\/wap\\/my\\/integral.html"}}', 1513846430, 1, 1),
+(53, 32, '{"name":{"type":"input","value":"\\u4f18\\u60e0\\u5238"},"icon":{"type":"upload","value":"http:\\/\\/doemo.net\\/public\\/uploads\\/0\\/20180824\\/5b7f54262f2a8.png"},"url":{"type":"input","value":"\\/wap\\/my\\/coupon.html"}}', 1513846448, 1, 1),
 (84, 34, '{"title":{"type":"input","value":"banner3"},"url":{"type":"input","value":"#"},"pic":{"type":"upload","value":"http:\\/\\/shop.crmeb.net\\/public\\/uploads\\/11\\/20180817\\/5b7670c42f24b.jpg"}}', 1522135667, 11, 1),
 (56, 32, '{"name":{"type":"input","value":"\\u5df2\\u6536\\u85cf\\u5546\\u54c1"},"icon":{"type":"upload","value":"\\/public\\/uploads\\/common\\/s_5abc57454d6c7.png"},"url":{"type":"input","value":"\\/wap\\/my\\/collect.html"}}', 1513846605, 1, 1),
 (57, 32, '{"name":{"type":"input","value":"\\u5730\\u5740\\u7ba1\\u7406"},"icon":{"type":"upload","value":"\\/public\\/uploads\\/common\\/s_5abc574fc0570.png"},"url":{"type":"input","value":"\\/wap\\/my\\/address.html"}}', 1513846618, 1, 1),
-(87, 32, '{"name":{"type":"input","value":"\\u6211\\u7684\\u4f59\\u989d"},"icon":{"type":"upload","value":"\\/public\\/uploads\\/common\\/s_5aeab2b4c5f99.png"},"url":{"type":"input","value":"\\/wap\\/my\\/balance.html"}}', 1525330614, 1, 1),
+(87, 32, '{"name":{"type":"input","value":"\\u6211\\u7684\\u4f59\\u989d"},"icon":{"type":"upload","value":"http:\\/\\/doemo.net\\/public\\/uploads\\/0\\/20180824\\/5b7f54257b159.png"},"url":{"type":"input","value":"\\/wap\\/my\\/balance.html"}}', 1525330614, 1, 1),
 (67, 32, '{"name":{"type":"input","value":"\\u804a\\u5929\\u8bb0\\u5f55"},"icon":{"type":"upload","value":"\\/public\\/uploads\\/common\\/s_5abc576dba8a2.png"},"url":{"type":"input","value":"\\/wap\\/service\\/service_new.html"}}', 1515570261, 1, 1),
 (68, 34, '{"title":{"type":"input","value":"banner1"},"url":{"type":"input","value":"#"},"pic":{"type":"upload","value":"http:\\/\\/shop.crmeb.net\\/public\\/uploads\\/editor\\/20180601\\/5b10b2e4b6cf2.jpg"}}', 1515984801, 10, 1),
 (69, 34, '{"title":{"type":"input","value":"banner2"},"url":{"type":"input","value":"#"},"pic":{"type":"upload","value":"http:\\/\\/shop.crmeb.net\\/public\\/uploads\\/editor\\/20180601\\/5b10b2aaa33d8.jpg"}}', 1515984809, 9, 2),
@@ -1840,18 +1850,17 @@ INSERT INTO `eb_system_group_data` (`id`, `gid`, `value`, `add_time`, `sort`, `s
 (107, 37, '{"img":{"type":"upload","value":"http:\\/\\/shop.crmeb.net\\/public\\/uploads\\/8\\/20180817\\/5b768dfd6189a.jpg"}}', 1534496260, 0, 1),
 (88, 37, '{"img":{"type":"upload","value":"http:\\/\\/shop.crmeb.net\\/public\\/uploads\\/editor\\/20180601\\/5b10b2b0969d7.jpg"}}', 1526699754, 2, 1),
 (89, 38, '{"banner":{"type":"upload","value":"http:\\/\\/shop.crmeb.net\\/public\\/uploads\\/editor\\/20180601\\/5b10b2436876e.jpg"}}', 1527153599, 1, 1),
-(86, 32, '{"name":{"type":"input","value":"\\u8054\\u7cfb\\u5ba2\\u670d"},"icon":{"type":"upload","value":"\\/public\\/uploads\\/common\\/s_5aeab3e1d4ecb.png"},"url":{"type":"input","value":"\\/wap\\/index\\/about.html"}}', 1522310836, 1, 1),
+(86, 32, '{"name":{"type":"input","value":"\\u8054\\u7cfb\\u5ba2\\u670d"},"icon":{"type":"upload","value":"http:\\/\\/doemo.net\\/public\\/uploads\\/0\\/20180824\\/5b7f5424a1a59.png"},"url":{"type":"input","value":"\\/wap\\/index\\/about.html"}}', 1522310836, 1, 1),
 (90, 34, '{"title":{"type":"input","value":"1"},"url":{"type":"input","value":"#"},"pic":{"type":"upload","value":"http:\\/\\/shop.crmeb.net\\/public\\/uploads\\/editor\\/20180601\\/5b10b2a4445a8.jpg"}}', 1527823558, 1, 2),
 (91, 37, '{"img":{"type":"upload","value":"http:\\/\\/shop.crmeb.net\\/public\\/uploads\\/editor\\/20180601\\/5b10b2deb5b20.jpg"}}', 1528688012, 1, 1),
-(92, 32, '{"name":{"type":"input","value":"\\u63a8\\u5e7f\\u4f63\\u91d1"},"icon":{"type":"upload","value":"http:\\/\\/shop.crmeb.net\\/public\\/uploads\\/editor\\/20180601\\/5b10b293eaf82.png"},"url":{"type":"input","value":"\\/wap\\/my\\/user_pro.html"}}', 1530688244, 1, 1),
+(92, 32, '{"name":{"type":"input","value":"\\u63a8\\u5e7f\\u4f63\\u91d1"},"icon":{"type":"upload","value":"http:\\/\\/doemo.net\\/public\\/uploads\\/0\\/20180824\\/5b7f54262f2a8.png"},"url":{"type":"input","value":"\\/wap\\/my\\/user_pro.html"}}', 1530688244, 1, 1),
 (99, 47, '{"name":{"type":"input","value":"\\u5206\\u7c7b"},"pic":{"type":"upload","value":"http:\\/\\/shop.crmeb.net\\/public\\/uploads\\/0\\/20180808\\/5b6ab28559200.png"},"url":{"type":"input","value":"\\/pages\\/productSort\\/productSort"},"show":{"type":"radio","value":"\\u662f"}}', 1533721963, 1, 1),
 (100, 47, '{"name":{"type":"input","value":"\\u780d\\u4ef7"},"pic":{"type":"upload","value":"http:\\/\\/shop.crmeb.net\\/public\\/uploads\\/0\\/20180808\\/5b6abd8297e93.png"},"url":{"type":"input","value":"\\/pages\\/cut-list\\/cut-list"},"show":{"type":"radio","value":"\\u5426"}}', 1533722009, 1, 1),
 (101, 47, '{"name":{"type":"input","value":"\\u79d2\\u6740"},"pic":{"type":"upload","value":"http:\\/\\/shop.crmeb.net\\/public\\/uploads\\/0\\/20180808\\/5b6abda83dc2a.png"},"url":{"type":"input","value":"\\/pages\\/miao-list\\/miao-list"},"show":{"type":"radio","value":"\\u5426"}}', 1533722037, 1, 1),
 (102, 47, '{"name":{"type":"input","value":"\\u62fc\\u56e2"},"pic":{"type":"upload","value":"http:\\/\\/shop.crmeb.net\\/public\\/uploads\\/0\\/20180808\\/5b6abdc50d2d1.png"},"url":{"type":"input","value":"\\/pages\\/pink-list\\/index"},"show":{"type":"radio","value":"\\u5426"}}', 1533722063, 1, 1),
 (103, 48, '{"name":{"type":"input","value":"banenr1"},"url":{"type":"input","value":"\\/pages\\/miao-list\\/miao-list"},"pic":{"type":"upload","value":"http:\\/\\/shop.crmeb.net\\/public\\/uploads\\/editor\\/20180601\\/5b10b2d35dc37.jpg"}}', 1533722245, 1, 1),
 (104, 48, '{"name":{"type":"input","value":"banenr2"},"url":{"type":"input","value":"\\/pages\\/pink-list\\/index"},"pic":{"type":"upload","value":"http:\\/\\/shop.crmeb.net\\/public\\/uploads\\/11\\/20180817\\/5b7670c42f24b.jpg"}}', 1533722286, 10, 1),
-(105, 47, '{"name":{"type":"input","value":"\\u54a8\\u8be2"},"pic":{"type":"upload","value":"http:\\/\\/shop.crmeb.net\\/public\\/uploads\\/0\\/20180809\\/5b6bedbcb2f17.png"},"url":{"type":"input","value":"\\/pages\\/new-list\\/new-list"},"show":{"type":"radio","value":"\\u5426"}}', 1533797064, 1, 1),
-(106, 32, '{"name":{"type":"input","value":"\\u6211\\u7684\\u780d\\u4ef7"},"icon":{"type":"upload","value":"http:\\/\\/shop.crmeb.net\\/public\\/uploads\\/0\\/20180809\\/5b6c0c5fdaae5.png"},"url":{"type":"input","value":"\\/wap\\/my\\/user_cut.html"}}', 1533889033, 1, 1);
+(105, 47, '{"name":{"type":"input","value":"\\u54a8\\u8be2"},"pic":{"type":"upload","value":"http:\\/\\/shop.crmeb.net\\/public\\/uploads\\/0\\/20180809\\/5b6bedbcb2f17.png"},"url":{"type":"input","value":"\\/pages\\/new-list\\/new-list"},"show":{"type":"radio","value":"\\u5426"}}', 1533797064, 1, 1);
 
 -- --------------------------------------------------------
 
@@ -1874,7 +1883,7 @@ CREATE TABLE IF NOT EXISTS `eb_system_log` (
   KEY `admin_id` (`admin_id`) USING BTREE,
   KEY `add_time` (`add_time`) USING BTREE,
   KEY `type` (`type`) USING BTREE
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='管理员操作记录表' AUTO_INCREMENT=60 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='管理员操作记录表' AUTO_INCREMENT=122 ;
 
 --
 -- 转存表中的数据 `eb_system_log`
@@ -1939,7 +1948,69 @@ INSERT INTO `eb_system_log` (`id`, `admin_id`, `admin_name`, `path`, `page`, `me
 (56, 1, 'admin', 'admin/store.storeproduct/save/', '未知', 'POST', '127.0.0.1', 'system', 1534818410, 0),
 (57, 1, 'admin', 'admin/store.storeproduct/index/type/1', '出售中商品', 'GET', '127.0.0.1', 'system', 1534818410, 0),
 (58, 1, 'admin', 'admin/store.storeproduct/index/type/1', '出售中商品', 'GET', '127.0.0.1', 'system', 1534818593, 0),
-(59, 1, 'admin', 'admin/store.storeproduct/index/type/1', '出售中商品', 'GET', '127.0.0.1', 'system', 1534819393, 0);
+(59, 1, 'admin', 'admin/store.storeproduct/index/type/1', '出售中商品', 'GET', '127.0.0.1', 'system', 1534819393, 0),
+(60, 1, 'admin', 'admin/setting.systemgroup/index/', '组合数据', 'GET', '127.0.0.1', 'system', 1535071218, 0),
+(61, 1, 'admin', 'admin/setting.systemgroupdata/index/gid/32', '未知', 'GET', '127.0.0.1', 'system', 1535071221, 0),
+(62, 1, 'admin', 'admin/setting.systemgroupdata/delete/id/106', '未知', 'GET', '127.0.0.1', 'system', 1535071224, 0),
+(63, 1, 'admin', 'admin/setting.systemgroupdata/edit/gid/32/id/86', '未知', 'GET', '127.0.0.1', 'system', 1535071226, 0),
+(64, 1, 'admin', 'admin/widget.images/index/fodder/icon', '附件管理', 'GET', '127.0.0.1', 'system', 1535071228, 0),
+(65, 1, 'admin', 'admin/widget.images/index/fodder/icon', '附件管理', 'GET', '127.0.0.1', 'system', 1535071229, 0),
+(66, 1, 'admin', 'admin/widget.images/delete/', '删除图片', 'POST', '127.0.0.1', 'system', 1535071233, 0),
+(67, 1, 'admin', 'admin/widget.images/index/fodder/icon', '附件管理', 'GET', '127.0.0.1', 'system', 1535071234, 0),
+(68, 1, 'admin', 'admin/widget.images/upload/', '上传图片', 'POST', '127.0.0.1', 'system', 1535071268, 0),
+(69, 1, 'admin', 'admin/widget.images/upload/', '上传图片', 'POST', '127.0.0.1', 'system', 1535071269, 0),
+(70, 1, 'admin', 'admin/widget.images/upload/', '上传图片', 'POST', '127.0.0.1', 'system', 1535071269, 0),
+(71, 1, 'admin', 'admin/widget.images/upload/', '上传图片', 'POST', '127.0.0.1', 'system', 1535071269, 0),
+(72, 1, 'admin', 'admin/widget.images/upload/', '上传图片', 'POST', '127.0.0.1', 'system', 1535071269, 0),
+(73, 1, 'admin', 'admin/widget.images/upload/', '上传图片', 'POST', '127.0.0.1', 'system', 1535071269, 0),
+(74, 1, 'admin', 'admin/widget.images/upload/', '上传图片', 'POST', '127.0.0.1', 'system', 1535071269, 0),
+(75, 1, 'admin', 'admin/widget.images/upload/', '上传图片', 'POST', '127.0.0.1', 'system', 1535071270, 0),
+(76, 1, 'admin', 'admin/widget.images/upload/', '上传图片', 'POST', '127.0.0.1', 'system', 1535071270, 0),
+(77, 1, 'admin', 'admin/widget.images/upload/', '上传图片', 'POST', '127.0.0.1', 'system', 1535071270, 0),
+(78, 1, 'admin', 'admin/widget.images/upload/', '上传图片', 'POST', '127.0.0.1', 'system', 1535071270, 0),
+(79, 1, 'admin', 'admin/widget.images/index/fodder/icon', '附件管理', 'GET', '127.0.0.1', 'system', 1535071271, 0),
+(80, 1, 'admin', 'admin/widget.images/index/fodder/icon', '附件管理', 'GET', '127.0.0.1', 'system', 1535071271, 0),
+(81, 1, 'admin', 'admin/widget.images/index/fodder/icon', '附件管理', 'GET', '127.0.0.1', 'system', 1535071271, 0),
+(82, 1, 'admin', 'admin/widget.images/index/fodder/icon', '附件管理', 'GET', '127.0.0.1', 'system', 1535071271, 0),
+(83, 1, 'admin', 'admin/widget.images/index/fodder/icon', '附件管理', 'GET', '127.0.0.1', 'system', 1535071271, 0),
+(84, 1, 'admin', 'admin/widget.images/index/fodder/icon', '附件管理', 'GET', '127.0.0.1', 'system', 1535071271, 0),
+(85, 1, 'admin', 'admin/widget.images/index/fodder/icon', '附件管理', 'GET', '127.0.0.1', 'system', 1535071271, 0),
+(86, 1, 'admin', 'admin/widget.images/index/fodder/icon', '附件管理', 'GET', '127.0.0.1', 'system', 1535071271, 0),
+(87, 1, 'admin', 'admin/widget.images/index/fodder/icon', '附件管理', 'GET', '127.0.0.1', 'system', 1535071271, 0),
+(88, 1, 'admin', 'admin/widget.images/index/fodder/icon', '附件管理', 'GET', '127.0.0.1', 'system', 1535071271, 0),
+(89, 1, 'admin', 'admin/setting.systemgroupdata/update/id/86', '未知', 'POST', '127.0.0.1', 'system', 1535071284, 0),
+(90, 1, 'admin', 'admin/setting.systemgroupdata/index/gid/32', '未知', 'GET', '127.0.0.1', 'system', 1535071286, 0),
+(91, 1, 'admin', 'admin/setting.systemgroupdata/index/gid/32', '未知', 'GET', '127.0.0.1', 'system', 1535071287, 0),
+(92, 1, 'admin', 'admin/setting.systemgroupdata/edit/gid/32/id/52', '未知', 'GET', '127.0.0.1', 'system', 1535071289, 0),
+(93, 1, 'admin', 'admin/widget.images/index/fodder/icon', '附件管理', 'GET', '127.0.0.1', 'system', 1535071290, 0),
+(94, 1, 'admin', 'admin/widget.images/index/fodder/icon', '附件管理', 'GET', '127.0.0.1', 'system', 1535071290, 0),
+(95, 1, 'admin', 'admin/setting.systemgroupdata/update/id/52', '未知', 'POST', '127.0.0.1', 'system', 1535071295, 0),
+(96, 1, 'admin', 'admin/setting.systemgroupdata/index/gid/32', '未知', 'GET', '127.0.0.1', 'system', 1535071296, 0),
+(97, 1, 'admin', 'admin/setting.systemgroupdata/edit/gid/32/id/53', '未知', 'GET', '127.0.0.1', 'system', 1535071298, 0),
+(98, 1, 'admin', 'admin/widget.images/index/fodder/icon', '附件管理', 'GET', '127.0.0.1', 'system', 1535071299, 0),
+(99, 1, 'admin', 'admin/widget.images/index/fodder/icon', '附件管理', 'GET', '127.0.0.1', 'system', 1535071299, 0),
+(100, 1, 'admin', 'admin/setting.systemgroupdata/update/id/53', '未知', 'POST', '127.0.0.1', 'system', 1535071306, 0),
+(101, 1, 'admin', 'admin/setting.systemgroupdata/index/gid/32', '未知', 'GET', '127.0.0.1', 'system', 1535071307, 0),
+(102, 1, 'admin', 'admin/setting.systemgroupdata/edit/gid/32/id/87', '未知', 'GET', '127.0.0.1', 'system', 1535071309, 0),
+(103, 1, 'admin', 'admin/widget.images/index/fodder/icon', '附件管理', 'GET', '127.0.0.1', 'system', 1535071311, 0),
+(104, 1, 'admin', 'admin/widget.images/index/fodder/icon', '附件管理', 'GET', '127.0.0.1', 'system', 1535071311, 0),
+(105, 1, 'admin', 'admin/setting.systemgroupdata/update/id/87', '未知', 'POST', '127.0.0.1', 'system', 1535071315, 0),
+(106, 1, 'admin', 'admin/setting.systemgroupdata/index/gid/32', '未知', 'GET', '127.0.0.1', 'system', 1535071317, 0),
+(107, 1, 'admin', 'admin/setting.systemgroupdata/edit/gid/32/id/86', '未知', 'GET', '127.0.0.1', 'system', 1535071326, 0),
+(108, 1, 'admin', 'admin/widget.images/index/fodder/icon', '附件管理', 'GET', '127.0.0.1', 'system', 1535071329, 0),
+(109, 1, 'admin', 'admin/widget.images/index/fodder/icon', '附件管理', 'GET', '127.0.0.1', 'system', 1535071329, 0),
+(110, 1, 'admin', 'admin/setting.systemgroupdata/update/id/86', '未知', 'POST', '127.0.0.1', 'system', 1535071333, 0),
+(111, 1, 'admin', 'admin/setting.systemgroupdata/index/gid/32', '未知', 'GET', '127.0.0.1', 'system', 1535071334, 0),
+(112, 1, 'admin', 'admin/setting.systemgroupdata/edit/gid/32/id/86', '未知', 'GET', '127.0.0.1', 'system', 1535071336, 0),
+(113, 1, 'admin', 'admin/widget.images/index/fodder/icon', '附件管理', 'GET', '127.0.0.1', 'system', 1535071337, 0),
+(114, 1, 'admin', 'admin/widget.images/index/fodder/icon', '附件管理', 'GET', '127.0.0.1', 'system', 1535071338, 0),
+(115, 1, 'admin', 'admin/setting.systemgroupdata/update/id/86', '未知', 'POST', '127.0.0.1', 'system', 1535071341, 0),
+(116, 1, 'admin', 'admin/setting.systemgroupdata/index/gid/32', '未知', 'GET', '127.0.0.1', 'system', 1535071342, 0),
+(117, 1, 'admin', 'admin/setting.systemgroupdata/edit/gid/32/id/92', '未知', 'GET', '127.0.0.1', 'system', 1535071345, 0),
+(118, 1, 'admin', 'admin/widget.images/index/fodder/icon', '附件管理', 'GET', '127.0.0.1', 'system', 1535071347, 0),
+(119, 1, 'admin', 'admin/widget.images/index/fodder/icon', '附件管理', 'GET', '127.0.0.1', 'system', 1535071347, 0),
+(120, 1, 'admin', 'admin/setting.systemgroupdata/update/id/92', '未知', 'POST', '127.0.0.1', 'system', 1535071352, 0),
+(121, 1, 'admin', 'admin/setting.systemgroupdata/index/gid/32', '未知', 'GET', '127.0.0.1', 'system', 1535071353, 0);
 
 -- --------------------------------------------------------
 
