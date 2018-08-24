@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- 主机: localhost
--- 生成日期: 2018 ?08 ?21 ?03:01
+-- 生成日期: 2018 �?08 �?24 �?00:32
 -- 服务器版本: 5.5.53
 -- PHP 版本: 7.0.12
 
@@ -754,6 +754,81 @@ INSERT INTO `eb_routine_template` (`id`, `tempkey`, `name`, `content`, `tempid`,
 -- --------------------------------------------------------
 
 --
+-- 表的结构 `eb_store_bargain`
+--
+
+CREATE TABLE IF NOT EXISTS `eb_store_bargain` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT COMMENT '砍价产品ID',
+  `product_id` int(11) unsigned NOT NULL COMMENT '关联产品ID',
+  `title` varchar(255) NOT NULL COMMENT '砍价活动名称',
+  `image` varchar(150) NOT NULL COMMENT '砍价活动图片',
+  `unit_name` varchar(16) DEFAULT NULL COMMENT '单位名称',
+  `stock` int(11) unsigned DEFAULT NULL COMMENT '库存',
+  `sales` int(11) unsigned DEFAULT NULL COMMENT '销量',
+  `images` varchar(1000) NOT NULL COMMENT '砍价产品轮播图',
+  `start_time` int(11) unsigned NOT NULL COMMENT '砍价开启时间',
+  `stop_time` int(11) unsigned NOT NULL COMMENT '砍价结束时间',
+  `store_name` varchar(255) DEFAULT NULL COMMENT '砍价产品名称',
+  `price` decimal(8,2) unsigned DEFAULT NULL COMMENT '砍价金额',
+  `min_price` decimal(8,2) unsigned DEFAULT NULL COMMENT '砍价商品最低价',
+  `num` int(11) unsigned DEFAULT NULL COMMENT '每次购买的砍价产品数量',
+  `bargain_max_price` decimal(8,2) unsigned DEFAULT NULL COMMENT '用户每次砍价的最大金额',
+  `bargain_min_price` decimal(8,2) unsigned DEFAULT NULL COMMENT '用户每次砍价的最小金额',
+  `bargain_num` int(11) unsigned NOT NULL DEFAULT '1' COMMENT '用户每次砍价的次数',
+  `status` tinyint(1) unsigned NOT NULL DEFAULT '1' COMMENT '砍价状态 0(到砍价时间不自动开启)  1(到砍价时间自动开启时间)',
+  `description` text COMMENT '砍价详情',
+  `give_integral` decimal(10,2) unsigned NOT NULL DEFAULT '0.00' COMMENT '反多少积分',
+  `info` varchar(255) DEFAULT NULL COMMENT '砍价活动简介',
+  `cost` decimal(8,2) unsigned DEFAULT NULL COMMENT '成本价',
+  `sort` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '排序',
+  `is_hot` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '是否推荐0不推荐1推荐',
+  `is_del` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '是否删除 0未删除 1删除',
+  `add_time` int(11) unsigned NOT NULL COMMENT '添加时间',
+  `is_postage` tinyint(1) unsigned NOT NULL DEFAULT '1' COMMENT '是否包邮 0不包邮 1包邮',
+  `postage` decimal(10,2) unsigned DEFAULT NULL COMMENT '邮费',
+  `rule` text COMMENT '砍价规则',
+  `look` int(11) unsigned DEFAULT '0' COMMENT '砍价产品浏览量',
+  `share` int(11) unsigned DEFAULT '0' COMMENT '砍价产品分享量',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='砍价表' AUTO_INCREMENT=1 ;
+
+-- --------------------------------------------------------
+
+--
+-- 表的结构 `eb_store_bargain_user`
+--
+
+CREATE TABLE IF NOT EXISTS `eb_store_bargain_user` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT COMMENT '用户参与砍价表ID',
+  `uid` int(11) unsigned DEFAULT NULL COMMENT '用户ID',
+  `bargain_id` int(11) unsigned DEFAULT NULL COMMENT '砍价产品id',
+  `bargain_price_min` decimal(8,2) unsigned DEFAULT NULL COMMENT '砍价的最低价',
+  `bargain_price` decimal(8,2) DEFAULT NULL COMMENT '砍价金额',
+  `price` decimal(8,2) unsigned DEFAULT NULL COMMENT '砍掉的价格',
+  `status` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '状态 1参与中 2 活动结束参与失败 3活动结束参与成功',
+  `add_time` int(11) unsigned DEFAULT NULL COMMENT '参与时间',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='用户参与砍价表' AUTO_INCREMENT=1 ;
+
+-- --------------------------------------------------------
+
+--
+-- 表的结构 `eb_store_bargain_user_help`
+--
+
+CREATE TABLE IF NOT EXISTS `eb_store_bargain_user_help` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT COMMENT '砍价用户帮助表ID',
+  `uid` int(11) unsigned DEFAULT NULL COMMENT '帮助的用户id',
+  `bargain_id` int(11) unsigned DEFAULT NULL COMMENT '砍价产品ID',
+  `bargain_user_id` int(11) unsigned DEFAULT NULL COMMENT '用户参与砍价表id',
+  `price` decimal(8,2) unsigned DEFAULT NULL COMMENT '帮助砍价多少金额',
+  `add_time` int(11) unsigned DEFAULT NULL COMMENT '添加时间',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='砍价用户帮助表' AUTO_INCREMENT=1 ;
+
+-- --------------------------------------------------------
+
+--
 -- 表的结构 `eb_store_cart`
 --
 
@@ -800,6 +875,87 @@ CREATE TABLE IF NOT EXISTS `eb_store_category` (
   KEY `sort` (`sort`) USING BTREE,
   KEY `add_time` (`add_time`) USING BTREE
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='商品分类表' AUTO_INCREMENT=1 ;
+
+-- --------------------------------------------------------
+
+--
+-- 表的结构 `eb_store_combination`
+--
+
+CREATE TABLE IF NOT EXISTS `eb_store_combination` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `product_id` int(10) unsigned NOT NULL COMMENT '商品id',
+  `mer_id` int(10) unsigned DEFAULT '0' COMMENT '商户id',
+  `image` varchar(255) NOT NULL COMMENT '推荐图',
+  `images` varchar(1000) NOT NULL COMMENT '轮播图',
+  `title` varchar(255) NOT NULL COMMENT '活动标题',
+  `attr` varchar(255) NOT NULL COMMENT '活动属性',
+  `people` int(2) unsigned NOT NULL COMMENT '参团人数',
+  `info` varchar(255) NOT NULL COMMENT '简介',
+  `price` decimal(10,2) unsigned NOT NULL COMMENT '价格',
+  `sort` int(10) unsigned NOT NULL COMMENT '排序',
+  `sales` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '销量',
+  `stock` int(10) unsigned NOT NULL COMMENT '库存',
+  `add_time` varchar(128) NOT NULL COMMENT '添加时间',
+  `is_host` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '推荐',
+  `is_show` tinyint(1) unsigned NOT NULL COMMENT '产品状态',
+  `is_del` tinyint(1) unsigned NOT NULL DEFAULT '0',
+  `combination` tinyint(1) unsigned NOT NULL DEFAULT '1',
+  `mer_use` tinyint(1) unsigned NOT NULL COMMENT '商户是否可用1可用0不可用',
+  `is_postage` tinyint(1) unsigned NOT NULL COMMENT '是否包邮1是0否',
+  `postage` decimal(10,2) unsigned NOT NULL COMMENT '邮费',
+  `description` text NOT NULL COMMENT '拼团内容',
+  `start_time` int(11) unsigned NOT NULL COMMENT '拼团开始时间',
+  `stop_time` int(11) unsigned NOT NULL COMMENT '拼团结束时间',
+  `cost` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '拼图产品成本',
+  `browse` int(11) DEFAULT '0' COMMENT '浏览量',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='拼团产品表' AUTO_INCREMENT=1 ;
+
+-- --------------------------------------------------------
+
+--
+-- 表的结构 `eb_store_combination_attr`
+--
+
+CREATE TABLE IF NOT EXISTS `eb_store_combination_attr` (
+  `product_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '商品ID',
+  `attr_name` varchar(32) NOT NULL COMMENT '属性名',
+  `attr_values` varchar(256) NOT NULL COMMENT '属性值',
+  KEY `store_id` (`product_id`) USING BTREE
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='商品属性表';
+
+-- --------------------------------------------------------
+
+--
+-- 表的结构 `eb_store_combination_attr_result`
+--
+
+CREATE TABLE IF NOT EXISTS `eb_store_combination_attr_result` (
+  `product_id` int(10) unsigned NOT NULL COMMENT '商品ID',
+  `result` text NOT NULL COMMENT '商品属性参数',
+  `change_time` int(10) unsigned NOT NULL COMMENT '上次修改时间',
+  UNIQUE KEY `product_id` (`product_id`) USING BTREE
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='商品属性详情表';
+
+-- --------------------------------------------------------
+
+--
+-- 表的结构 `eb_store_combination_attr_value`
+--
+
+CREATE TABLE IF NOT EXISTS `eb_store_combination_attr_value` (
+  `product_id` int(10) unsigned NOT NULL COMMENT '商品ID',
+  `suk` varchar(128) NOT NULL COMMENT '商品属性索引值 (attr_value|attr_value[|....])',
+  `stock` int(10) unsigned NOT NULL COMMENT '属性对应的库存',
+  `sales` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '销量',
+  `price` decimal(8,2) unsigned NOT NULL COMMENT '属性金额',
+  `image` varchar(128) DEFAULT NULL COMMENT '图片',
+  `unique` char(8) NOT NULL DEFAULT '' COMMENT '唯一值',
+  `cost` decimal(8,2) unsigned NOT NULL COMMENT '成本价',
+  UNIQUE KEY `unique` (`unique`,`suk`) USING BTREE,
+  KEY `store_id` (`product_id`,`suk`) USING BTREE
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='商品属性值表';
 
 -- --------------------------------------------------------
 
@@ -1368,7 +1524,14 @@ CREATE TABLE IF NOT EXISTS `eb_store_visit` (
   `content` varchar(255) DEFAULT NULL COMMENT '备注描述',
   `add_time` int(11) DEFAULT NULL COMMENT '添加时间',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='产品浏览分析表' AUTO_INCREMENT=1 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='产品浏览分析表' AUTO_INCREMENT=2 ;
+
+--
+-- 转存表中的数据 `eb_store_visit`
+--
+
+INSERT INTO `eb_store_visit` (`id`, `product_id`, `product_type`, `cate_id`, `type`, `uid`, `count`, `content`, `add_time`) VALUES
+(1, 0, 'product', 0, 'search', 1, 1, '0', 1535070682);
 
 -- --------------------------------------------------------
 
@@ -1399,7 +1562,7 @@ CREATE TABLE IF NOT EXISTS `eb_system_admin` (
 --
 
 INSERT INTO `eb_system_admin` (`id`, `account`, `pwd`, `real_name`, `roles`, `last_ip`, `last_time`, `add_time`, `login_count`, `level`, `status`, `is_del`) VALUES
-(1, 'admin', '0192023a7bbd73250516f069df18b500', 'admin', '1', '127.0.0.1', 1534816836, 1534816241, 0, 0, 1, 0);
+(1, 'admin', '0192023a7bbd73250516f069df18b500', 'admin', '1', '127.0.0.1', 1535070363, 1534816241, 0, 0, 1, 0);
 
 -- --------------------------------------------------------
 
@@ -2203,7 +2366,7 @@ CREATE TABLE IF NOT EXISTS `eb_user` (
 --
 
 INSERT INTO `eb_user` (`uid`, `account`, `pwd`, `nickname`, `avatar`, `phone`, `add_time`, `add_ip`, `last_time`, `last_ip`, `now_money`, `integral`, `status`, `level`, `spread_uid`, `user_type`, `is_promoter`, `pay_count`) VALUES
-(1, 'liaofei', 'e10adc3949ba59abbe56e057f20f883e', '等风来，随风去', 'http://thirdwx.qlogo.cn/mmopen/ajNVdqHZLLBaQPPnbg52bgibia1CZDruib1RwibHbBbnfxH1MUwbyz3G0Xub1LNX0ib5RFd7nZvo88gzHwib0OPibyfZQ/132', '', 1528859304, '140.207.54.80', 1534817575, '127.0.0.1', '0.00', '0.00', 1, 0, 0, 'wechat', 0, 0);
+(1, 'liaofei', 'e10adc3949ba59abbe56e057f20f883e', '等风来，随风去', 'http://thirdwx.qlogo.cn/mmopen/ajNVdqHZLLBaQPPnbg52bgibia1CZDruib1RwibHbBbnfxH1MUwbyz3G0Xub1LNX0ib5RFd7nZvo88gzHwib0OPibyfZQ/132', '', 1528859304, '140.207.54.80', 1535070458, '127.0.0.1', '0.00', '0.00', 1, 0, 0, 'wechat', 0, 0);
 
 -- --------------------------------------------------------
 

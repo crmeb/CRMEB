@@ -1,0 +1,10 @@
+# Windows thumbnail cache files
+/runtime
+/.idea
+/application/database.php/
+/application/controller/server/
+/application/view/server/
+/application/model/server/
+/vendor/
+/public/uploads/
+
