@@ -112,32 +112,6 @@
                 </ul>
             </div>
             {/notempty}
-            <div class="buyspell-list" v-cloak="" v-show="combinationList.length > 0">
-                <div class="index-common-title border-1px">
-                    <span class="color-red">拼团 . </span>花少钱买好货 <i class="icon" @click="window.location.href='{:url('store/combination')}'"></i>
-                </div>
-                <div class="product-banner"><img src="{$pinkImage}"></div>
-                <div class="bslist-box">
-                    <div class="bs-item flex" v-for="item in combinationList">
-                        <div class="picture">
-                            <img :src="item.image">
-                        </div>
-                        <div class="bs-item-info flex">
-                            <div class="info-title">{{item.title}}</div>
-                            <div class="count-wrapper">
-                                <span class="price">￥{{item.price}}</span>
-                                <span class="old-price">￥{{item.product_price}}</span>
-                                <span class="count">已拼{{item.sales}}单</span>
-                            </div>
-                            <a class="people-num flex">
-                                <span class="numbers">{{item.people}}人团</span>
-                                <span class="peo-txt" @click="window.location.href='{:url('store/combination_detail',[],false)}/id/'+item.id">去开团</span>
-                                <i class="index-icon people-icon"></i>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
             <!-- 商品分类模板 -->
             <div class="template-prolist" v-cloak="" v-for="item in cateGroupList" v-show="cateGroupList.length > 0">
                 <div class="index-common-title border-1px">

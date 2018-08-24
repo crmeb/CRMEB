@@ -14,7 +14,6 @@
             <div class="menu flex" ref="nav">
                 <div class="item" :class="{on:type === ''}" @click="changeType('')"><span>全部</span></div>
                 <div class="item" :class="{on:type === 0}" @click="changeType(0)"><span>待付款</span></div>
-                <div class="item" :class="{on:type == 11}" @click="changeType(11)"><span>拼团中</span></div>
                 <div class="item" :class="{on:type == 1}" @click="changeType(1)"><span>待发货</span></div>
                 <div class="item" :class="{on:type == 2}" @click="changeType(2)"><span>待收货</span></div>
                 <div class="item" :class="{on:type == 3}" @click="changeType(3)"><span>待评价</span></div>
