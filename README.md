@@ -62,7 +62,7 @@
    9.强大的权限管理系统
 
 ##  演示地址
-   演示站后台:[crmeb_v2.5](http://demo25.crmeb.net) 
+   演示站后台:[<a href='http://demo25.crmeb.net' target="_blank"> crmeb_v2.5 </a>] 
    账号：demo
    密码：crmeb.com
 
@@ -82,7 +82,7 @@ CRMEB微信小程序v2.0版：除了以上功能还带砍价、拼团功能
 
 还有定制开发服务，例如：预约系统、O2O、付费阅读、多店版、多商家版
 
-### 详情[进入淘宝](https://shop120689819.taobao.com)
+### 详情[<a href='https://shop120689819.taobao.com' target="_blank"> 进入淘宝 </a>]
 
 官网线下定制服务版：http://www.crmeb.com
 
