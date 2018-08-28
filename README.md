@@ -75,7 +75,7 @@
 多任务框处理，多窗口处理
 ![输入图片说明](https://images.gitee.com/uploads/images/2018/0828/185255_0d57258c_892944.png "多任务.png")
 
-前台页面请往下看演示微信公众号和小程序吧
+查看更多演示请往下看演示后台、微信公众号和小程序吧
 
 ##  演示地址
    演示站后台:[<a href='http://demo25.crmeb.net' target="_blank"> crmeb_v2.5 </a>]http://demo25.crmeb.net
