@@ -68,7 +68,7 @@ switch ($step) {
     case '2':
 
         if (phpversion() < 5) {
-            die('本系统需要PHP5+MYSQL >=4.1环境，当前PHP版本为：' . phpversion());
+            die('本系统需要PHP5+MYSQL >=5.5.9环境，当前PHP版本为：' . phpversion());
         }
 
         $phpv = @ phpversion();
