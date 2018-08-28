@@ -43,11 +43,11 @@ class RoutineUser extends ModelBasic
             $uid = WechatUser::where('routine_openid',$routineInfo['routine_openid'])->value('uid');
             User::updateWechatUser($routineInfo,$uid);
         }else{
-            if(User::isUserSpread($routine['spid'])) $routineInfo['spread_uid'] = $routine['spid'];//用户上级
-            else $routineInfo['spread_uid'] = 0;
             $routineInfo['add_time'] = time();//用户添加时间
             $routineInfo = WechatUser::set($routineInfo);
-            $res = User::setRoutineUser($routineInfo);
+            if(User::isUserSpread($routine['spid'])) {
+                $res = User::setRoutineUser($routineInfo,$routine['spid']); //用户上级
+            } else  $res = User::setRoutineUser($routineInfo);
             $uid = $res->uid;
         }
         return $uid;
@@ -61,5 +61,11 @@ class RoutineUser extends ModelBasic
     public static function isRoutineUser($uid = 0){
         if(!$uid) return false;
         return WechatUser::where('uid',$uid)->where('user_type','routine')->count();
+    }
+
+    public static function isUserStatus($uid = 0){
+      if(!$uid) return 0;
+      $user = User::getUserInfo($uid);
+      return $user['status'];
     }
 }
