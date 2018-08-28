@@ -64,9 +64,12 @@
    10.强大的权限管理系统
 
 ##  演示地址
-   演示站后台:[<a href='http://demo25.crmeb.net' target="_blank"> crmeb_v2.5 </a>] 
+   演示站后台:[<a href='http://demo25.crmeb.net' target="_blank"> crmeb_v2.5 </a>]http://demo25.crmeb.net
    账号：demo
    密码：crmeb.com
+<div align="center">
+<table><tr><td><img src='https://images.gitee.com/uploads/images/2018/0828/182854_beba4aed_892944.png'/><br>公众号</td><td><img src='https://images.gitee.com/uploads/images/2018/0828/182909_cb2a5e64_892944.png'/><br>小程序</td></tr></table>
+</div>
 
 ## 付费版
 
