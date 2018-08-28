@@ -223,6 +223,7 @@ class StoreProduct extends AuthController
         $form = Form::create(Url::build('update',array('id'=>$id)),[
             Form::select('cate_id','产品分类',explode(',',$product->getData('cate_id')))->setOptions(function(){
                 $list = CategoryModel::getTierList();
+                $menus=[];
                 foreach ($list as $menu){
                     $menus[] = ['value'=>$menu['id'],'label'=>$menu['html'].$menu['cate_name'],'disabled'=>$menu['pid']== 0];//,'disabled'=>$menu['pid']== 0];
                 }
