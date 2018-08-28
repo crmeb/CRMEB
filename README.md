@@ -68,6 +68,8 @@
 
 快速创建复杂表单，不用写页面，编辑表单一样，告别复杂的表单操作
 ![输入图片说明](https://images.gitee.com/uploads/images/2018/0828/184138_7e875536_892944.png "快速创建表单.png")
+表单演示
+![输入图片说明](https://raw.githubusercontent.com/xaboy/form-create/dev/images/sample110.jpg "在这里输入图片标题")
 
 快速创建复杂搜索列表页，无刷新体验
 ![输入图片说明](https://images.gitee.com/uploads/images/2018/0828/184548_52e38ffb_892944.png "会员列表页.png")
@@ -141,9 +143,7 @@ jQuery：http://jquery.com
 
 iView：https://www.iviewui.com
 
-formCreate : https://github.com/xaboy/form-create
-
-form-builder : https://github.com/xaboy/form-builder
+form-builder : https://github.com/xaboy/form-builder（也是参与本项目开发的技术）
 
 Vue：https://cn.vuejs.org/
 
