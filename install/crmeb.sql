@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- 主机: localhost
--- 生成日期: 2018 �?08 �?24 �?00:42
+-- 生成日期: 2018 ?08 ?24 ?00:42
 -- 服务器版本: 5.5.53
 -- PHP 版本: 7.0.12
 
@@ -1808,7 +1808,6 @@ INSERT INTO `eb_system_group` (`id`, `name`, `info`, `config_name`, `fields`) VA
 (35, '商城首页分类按钮', '商城首页分类按钮', 'store_home_menus', '[{"name":"\\u540d\\u79f0","title":"name","type":"input","param":""},{"name":"\\u94fe\\u63a5","title":"url","type":"input","param":""},{"name":"\\u56fe\\u6807","title":"icon","type":"upload","param":""}]'),
 (36, '商城首页滚动新闻', '商城首页滚动新闻', 'store_home_roll_news', '[{"name":"\\u6eda\\u52a8\\u6587\\u5b57","title":"info","type":"input","param":""},{"name":"\\u70b9\\u51fb\\u94fe\\u63a5","title":"url","type":"input","param":""}]'),
 (37, '小程序首页猜你喜欢banner', '小程序首页猜你喜欢banner', 'routine_lovely', '[{"name":"\\u56fe\\u7247","title":"img","type":"upload","param":""}]'),
-(38, '砍价列表图片', '砍价列表顶部图片', 'bargain_banner', '[{"name":"banner","title":"banner","type":"upload","param":""}]'),
 (47, '小程序商城首页分类按钮', '小程序商城首页分类按钮', 'routine_home_menus', '[{"name":"\\u5206\\u7c7b\\u540d\\u79f0","title":"name","type":"input","param":""},{"name":"\\u5206\\u7c7b\\u56fe\\u6807","title":"pic","type":"upload","param":""},{"name":"\\u8df3\\u8f6c\\u8def\\u5f84","title":"url","type":"input","param":""},{"name":"\\u5e95\\u90e8\\u83dc\\u5355","title":"show","type":"radio","param":"\\u662f-\\u5426"}]'),
 (48, '小程序商城首页banner', '小程序商城首页banner', 'routine_home_banner', '[{"name":"\\u6807\\u9898","title":"name","type":"input","param":""},{"name":"\\u94fe\\u63a5","title":"url","type":"input","param":""},{"name":"\\u56fe\\u7247","title":"pic","type":"upload","param":""}]');
 
@@ -1855,9 +1854,7 @@ INSERT INTO `eb_system_group_data` (`id`, `gid`, `value`, `add_time`, `sort`, `s
 (91, 37, '{"img":{"type":"upload","value":"http:\\/\\/shop.crmeb.net\\/public\\/uploads\\/editor\\/20180601\\/5b10b2deb5b20.jpg"}}', 1528688012, 1, 1),
 (92, 32, '{"name":{"type":"input","value":"\\u63a8\\u5e7f\\u4f63\\u91d1"},"icon":{"type":"upload","value":"http:\\/\\/doemo.net\\/public\\/uploads\\/0\\/20180824\\/5b7f54262f2a8.png"},"url":{"type":"input","value":"\\/wap\\/my\\/user_pro.html"}}', 1530688244, 1, 1),
 (99, 47, '{"name":{"type":"input","value":"\\u5206\\u7c7b"},"pic":{"type":"upload","value":"http:\\/\\/shop.crmeb.net\\/public\\/uploads\\/0\\/20180808\\/5b6ab28559200.png"},"url":{"type":"input","value":"\\/pages\\/productSort\\/productSort"},"show":{"type":"radio","value":"\\u662f"}}', 1533721963, 1, 1),
-(100, 47, '{"name":{"type":"input","value":"\\u780d\\u4ef7"},"pic":{"type":"upload","value":"http:\\/\\/shop.crmeb.net\\/public\\/uploads\\/0\\/20180808\\/5b6abd8297e93.png"},"url":{"type":"input","value":"\\/pages\\/cut-list\\/cut-list"},"show":{"type":"radio","value":"\\u5426"}}', 1533722009, 1, 1),
 (101, 47, '{"name":{"type":"input","value":"\\u79d2\\u6740"},"pic":{"type":"upload","value":"http:\\/\\/shop.crmeb.net\\/public\\/uploads\\/0\\/20180808\\/5b6abda83dc2a.png"},"url":{"type":"input","value":"\\/pages\\/miao-list\\/miao-list"},"show":{"type":"radio","value":"\\u5426"}}', 1533722037, 1, 1),
-(102, 47, '{"name":{"type":"input","value":"\\u62fc\\u56e2"},"pic":{"type":"upload","value":"http:\\/\\/shop.crmeb.net\\/public\\/uploads\\/0\\/20180808\\/5b6abdc50d2d1.png"},"url":{"type":"input","value":"\\/pages\\/pink-list\\/index"},"show":{"type":"radio","value":"\\u5426"}}', 1533722063, 1, 1),
 (103, 48, '{"name":{"type":"input","value":"banenr1"},"url":{"type":"input","value":"\\/pages\\/miao-list\\/miao-list"},"pic":{"type":"upload","value":"http:\\/\\/shop.crmeb.net\\/public\\/uploads\\/editor\\/20180601\\/5b10b2d35dc37.jpg"}}', 1533722245, 1, 1),
 (104, 48, '{"name":{"type":"input","value":"banenr2"},"url":{"type":"input","value":"\\/pages\\/pink-list\\/index"},"pic":{"type":"upload","value":"http:\\/\\/shop.crmeb.net\\/public\\/uploads\\/11\\/20180817\\/5b7670c42f24b.jpg"}}', 1533722286, 10, 1),
 (105, 47, '{"name":{"type":"input","value":"\\u54a8\\u8be2"},"pic":{"type":"upload","value":"http:\\/\\/shop.crmeb.net\\/public\\/uploads\\/0\\/20180809\\/5b6bedbcb2f17.png"},"url":{"type":"input","value":"\\/pages\\/new-list\\/new-list"},"show":{"type":"radio","value":"\\u5426"}}', 1533797064, 1, 1);
