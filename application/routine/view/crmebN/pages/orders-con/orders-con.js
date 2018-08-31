@@ -51,7 +51,7 @@ Page({
           var jsConfig = res.data.data.result.jsConfig;
           console.log(jsConfig);
           wx.requestPayment({
-            timeStamp: jsConfig.timestamp,
+            timeStamp: jsConfig.timeStamp,
             nonceStr: jsConfig.nonceStr,
             package: jsConfig.package,
             signType: jsConfig.signType,
