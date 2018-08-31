@@ -7,11 +7,11 @@
     <div class="layui-row layui-col-space15"  id="app">
         <div class="layui-col-md12">
             <div class="layui-card">
-                <div class="layui-card-header">秒杀产品搜索</div>
+                <div class="layui-card-header">拼团产品搜索</div>
                 <div class="layui-card-body">
                     <div class="alert alert-success alert-dismissable">
                         <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>
-                        目前拥有{$countSeckill}个秒杀产品
+                        目前拥有{$countCombination}个拼团产品
                     </div>
                     <form class="layui-form">
                         <div class="layui-form-item">
@@ -22,9 +22,9 @@
                                 </div>
                             </div>
                             <div class="layui-inline">
-                                <label class="layui-form-label">秒杀状态：</label>
+                                <label class="layui-form-label">拼团状态：</label>
                                 <div class="layui-input-inline">
-                                    <select name="status" lay-verify="status">
+                                    <select name="is_show" lay-verify="is_show">
                                         <option value="">全部</option>
                                         <option value="1">开启</option>
                                         <option value="0">关闭</option>
@@ -44,13 +44,58 @@
                 </div>
             </div>
         </div>
+        <div class="layui-col-sm6 layui-col-md3">
+            <div class="layui-card">
+                <div class="layui-card-header">
+                    总展现量
+                    <span class="layui-badge layuiadmin-badge">量</span>
+                </div>
+                <div class="layui-card-body">
+                    <p class="layuiadmin-big-font">{$statistics.browseCount}</p>
+                </div>
+            </div>
+        </div>
+        <div class="layui-col-sm6 layui-col-md3">
+            <div class="layui-card">
+                <div class="layui-card-header">
+                    访客人数
+                    <span class="layui-badge layuiadmin-badge">人</span>
+                </div>
+                <div class="layui-card-body">
+                    <p class="layuiadmin-big-font">{$statistics.visitCount}</p>
+                </div>
+            </div>
+        </div>
+        <div class="layui-col-sm6 layui-col-md3">
+            <div class="layui-card">
+                <div class="layui-card-header">
+                    参与人数
+                    <span class="layui-badge layuiadmin-badge">人</span>
+                </div>
+                <div class="layui-card-body">
+                    <p class="layuiadmin-big-font">{$statistics.partakeCount}</p>
+                </div>
+            </div>
+        </div>
+        <div class="layui-col-sm6 layui-col-md3">
+            <div class="layui-card">
+                <div class="layui-card-header">
+                    成团数量
+                    <span class="layui-badge layuiadmin-badge">量</span>
+                </div>
+                <div class="layui-card-body">
+                    <p class="layuiadmin-big-font">{$statistics.pinkCount}</p>
+                </div>
+            </div>
+        </div>
+        <!-- end-->
         <div class="layui-col-md12">
             <div class="layui-card">
-                <div class="layui-card-header">秒杀产品列表</div>
+                <div class="layui-card-header">拼团产品列表</div>
                 <div class="layui-card-body">
-                    <table class="layui-hide" id="seckillList" lay-filter="seckillList"></table>
+                    <table class="layui-hide" id="combinationList" lay-filter="combinationList"></table>
                     <script type="text/html" id="status">
-                        <input type='checkbox' name='status' lay-skin='switch' value="{{d.id}}" lay-filter='status' lay-text='开启|关闭'  {{ d.status == 1 ? 'checked' : '' }}>
+                        <input type='checkbox' name='status' lay-skin='switch' value="{{d.id}}" lay-filter='status' lay-text='开启|关闭'  {{ d.is_show == 1 ? 'checked' : '' }}>
                     </script>
                     <script type="text/html" id="stopTime">
                         <div class="count-time-{{d.id}}" data-time="{{d._stop_time}}">
@@ -63,11 +108,8 @@
                             <span class="seconds">00</span>
                         </div>
                     </script>
-                    <script type="text/html" id="statusCn">
-                        {{ d.status == 1 ? d.start_name : '关闭' }}
-                    </script>
                     <script type="text/html" id="barDemo">
-                        <button type="button" class="layui-btn layui-btn-xs" onclick="dropdown(this)"><i class="layui-icon layui-icon-util"></i>操作</button>
+                        <button type="button" class="layui-btn layui-btn-xs" onclick="dropdown(this)"><i class="layui-icon layui-icon-edit"></i>操作</button>
                         <ul class="layui-nav-child layui-anim layui-anim-upbit">
                             <li>
                                 <a href="javascript:void(0);" onclick="$eb.createModalFrame('{{d.title}}-编辑','{:Url('edit')}?id={{d.id}}')"><i class="layui-icon layui-icon-edit"></i> 编辑</a>
@@ -88,29 +130,42 @@
 {/block}
 {block name="script"}
 <script src="{__ADMIN_PATH}js/layuiList.js"></script>
-<script src="{__FRAME_PATH}js/content.min.js?v=1.0.0"></script>
 <script>
     layList.form.render();
-    layList.tableList('seckillList',"{:Url('get_seckill_list')}",function () {
+    layList.tableList('combinationList',"{:Url('get_combination_list')}",function () {
         return [
-            {field: 'id', title: '编号', sort: true,width:'5%',event:'id',unresize:true},
-            {field: 'image', title: '产品图片',unresize:true, width: '8%',templet: '<p><img src="{{d.image}}" alt="{{d.title}}" class="open_image" data-image="{{d.image}}"></p>'},
-            {field: 'title', title: '活动标题',width:'14%',unresize:true},
-            {field: 'info', title: '活动简介',width:'17%',unresize:true},
-            {field: 'ot_price', title: '原价',width:'6%',unresize:true},
-            {field: 'price', title: '秒杀价',unresize:true,width:'6%'},
-            {field: 'stock', title: '库存',width:'7%',unresize:true},
-            {field: 'start_name', title: '秒杀状态',width:'13%',toolbar:"#statusCn",unresize:true},
-            {field: 'stop_time', title: '结束时间', width: '13%',toolbar: '#stopTime',unresize:true},
-            {field: 'status', title: '状态',width:'6%',toolbar:"#status",unresize:true},
-            {fixed: 'right', title: '操作', width: '5%', align: 'center', toolbar: '#barDemo',unresize:true}
+            {field: 'id', title: '编号', sort: true,event:'id'},
+            {field: 'image', title: '拼团图片',templet: '<p><img src="{{d.image}}" alt="{{d.title}}" class="open_image" data-image="{{d.image}}"></p>'},
+            {field: 'title', title: '拼团名称'},
+            {field: 'ot_price', title: '原价'},
+            {field: 'price', title: '拼团价'},
+            {field: 'stock', title: '库存'},
+            {field: 'people', title: '拼团人数',templet: '<span>【{{d.people}}】人</span>'},
+            {field: 'count_people_browse', title: '访客人数'},
+            {field: 'browse', title: '展现量'},
+            {field: 'count_people_all', title: '参与人数',templet: '<span>【{{d.count_people_all}}】人</span>'},
+            {field: 'count_people_pink', title: '成团数量',templet: '<span>【{{d.count_people_pink}}】团</span>'},
+            {field: 'browse', title: '浏览量'},
+            {field: 'is_show', title: '产品状态',templet:"#status"},
+            {field: '_stop_time', title: '结束时间',width:'8%',toolbar: '#stopTime'},
+            {fixed: 'right', title: '操作', align: 'center', toolbar: '#barDemo'}
         ]
     });
+    layList.search('search',function(where){
+        layList.reload(where);
+        setTime();
+    });
+    layList.search('export',function(where){
+        location.href=layList.U({c:'ump.store_combination',a:'save_excel',q:{
+            is_show:where.is_show,
+            store_name:where.store_name
+        }});
+    })
     setTime();
-    window.$seckillId = <?php echo json_encode($seckillId);?>;
+    window.$combinationId = <?php echo json_encode($combinationId);?>;
     function setTime() {
         setTimeout(function () {
-            $.each($seckillId,function (index,item) {
+            $.each($combinationId,function (index,item) {
                 $('.count-time-'+item).downCount({
                     date: $('.count-time-'+item).attr('data-time'),
                     offset: +8
@@ -118,10 +173,30 @@
             })
         },3000);
     }
+    layList.switch('status',function (odj,value,name) {
+        if (odj.elem.checked == true) {
+            layList.baseGet(layList.Url({
+                c: 'ump.store_combination',
+                a: 'set_combination_status',
+                p: {status: 1, id: value}
+            }), function (res) {
+                layList.msg(res.msg);
+            });
+        } else {
+            layList.baseGet(layList.Url({
+                c: 'ump.store_combination',
+                a: 'set_combination_status',
+                p: {status: 0, id: value}
+            }), function (res) {
+                layList.msg(res.msg);
+            });
+        }
+    })
     layList.tool(function (event,data,obj) {
         switch (event) {
             case 'delstor':
-                var url=layList.U({c:'ump.store_seckill',a:'delete',q:{id:data.id}});
+                var url=layList.U({c:'ump.store_combination',a:'delete',q:{id:data.id}});
+                console.log(url);
                 $eb.$swal('delete',function(){
                     $eb.axios.get(url).then(function(res){
                         if(res.status == 200 && res.data.code == 200) {
@@ -157,37 +232,11 @@
             'position': 'fixed'
         }).toggle();
     }
-    layList.search('search',function(where){
-        layList.reload(where);
-        setTime();
-    });
-    layList.search('export',function(where){
-        location.href=layList.U({c:'ump.store_seckill',a:'save_excel',q:{status:where.status,store_name:where.store_name}});
-    })
-    layList.switch('status',function (odj,value,name) {
-        if (odj.elem.checked == true) {
-            layList.baseGet(layList.Url({
-                c: 'ump.store_seckill',
-                a: 'set_seckill_status',
-                p: {status: 1, id: value}
-            }), function (res) {
-                layList.msg(res.msg);
-            });
-        } else {
-            layList.baseGet(layList.Url({
-                c: 'ump.store_seckill',
-                a: 'set_seckill_status',
-                p: {status: 0, id: value}
-            }), function (res) {
-                layList.msg(res.msg);
-            });
-        }
-    })
     $('.js-group-btn').on('click',function(){
         $('.js-group-btn').css({zIndex:1});
         $(this).css({zIndex:2});
     });
-    $('#delstor').on('click',function(){
+    $('.delstor').on('click',function(){
         window.t = $(this);
         var _this = $(this),url =_this.data('url');
         $eb.$swal('delete',function(){

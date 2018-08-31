@@ -36,4 +36,18 @@ class UserNotice extends ModelBasic
             }
         });
     }
+
+    /**
+     * 获取用户通知
+     * @param array $where
+     * @return array
+     */
+    public static function getUserList($where = array()){
+        $model = new self;
+        if(isset($where['title']) && $where['title'] != '') $model = $model->where('title','LIKE',"%".$where['title']."%");
+        $model = $model->where('type',2);
+        $model = $model->where('is_send',0);
+        $model = $model->order('id desc');
+        return self::page($model,$where);
+    }
 }
