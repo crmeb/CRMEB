@@ -17,11 +17,10 @@ if (file_exists('./install.lock')) {
     exit;
 }
 @set_time_limit(1000);
-if (phpversion() <= '5.5.9')
-    set_magic_quotes_runtime(0);
-if ('5.4.0' > phpversion()){
+
+if ('5.5.9' > phpversion()){
 	header("Content-type:text/html;charset=utf-8");
-	exit('您的php版本过低，不能安装本软件，请升级到5.4.0或更高版本再安装，谢谢！');
+	exit('您的php版本过低，不能安装本软件，请升级到5.5.9或更高版本再安装，谢谢！');
 }
 
 define("TP_SHOP_VERSION", '20180601');
