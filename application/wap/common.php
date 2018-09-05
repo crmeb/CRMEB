@@ -40,6 +40,7 @@ function setView($uid,$product_id=0,$cate=0,$type='',$product_type = 'product',$
             $Db->where(['id'=>$view['id']])->update(['count'=>$view['count']+1,'add_time'=>time()]);
         }
     }else{
+        $cate = explode(',',$cate)[0];
         $Db->insert([
             'add_time'=>time(),
             'count'=>1,

@@ -38,10 +38,10 @@
       <view>销量:{{storeInfo.sales}}{{storeInfo.unit_name}}</view>
     </view>
   </view>
-  <!-- <view class='block-bar' bindtap='goCoupon'>
+  <view class='block-bar' bindtap='goCoupon'>
     <text class='title'>领券</text>
     <text>领取优惠券 </text>
-  </view> -->
+  </view>
   <!-- <view class='block-bar integral' wx:if="{{storeInfo.give_integral > 0}}">
     <text class='title'>积分</text>
     <text>购买可获得{{storeInfo.give_integral}}积分</text>
