@@ -23,7 +23,7 @@ if ('5.5.9' > phpversion()){
 	exit('您的php版本过低，不能安装本软件，请升级到5.5.9或更高版本再安装，谢谢！');
 }
 
-define("TP_SHOP_VERSION", '20180601');
+define("CRMEB_VERSION", '20180601');
 date_default_timezone_set('PRC');
 error_reporting(E_ALL & ~E_NOTICE);
 header('Content-Type: text/html; charset=UTF-8');
