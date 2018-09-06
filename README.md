@@ -4,10 +4,10 @@
         <img src="https://img.shields.io/badge/OfficialWebsite-CRMEB-yellow.svg" />
     </a>
     <a href="http://www.crmeb.com">
-        <img src="https://img.shields.io/badge/Edition-2.3-blue.svg" />
+        <img src="https://img.shields.io/badge/Edition-2.5-blue.svg" />
     </a>
      <a href="https://github.com/sugar1569/CRMEB">
-        <img src="https://img.shields.io/badge/download-103m-red.svg" />
+        <img src="https://img.shields.io/badge/download-59m-red.svg" />
     </a>
 </p>
 
@@ -64,7 +64,8 @@
    10.强大的权限管理系统
 
 ##  演示地址
-   演示站后台:[<a href='http://demo25.crmeb.net' target="_blank"> crmeb_v2.5 </a>]http://demo25.crmeb.net
+   演示站后台:[<a href='http://demo25.crmeb.net' target="_blank"> crmeb_v2.5 </a>]       
+<a href='http://demo25.crmeb.net' target="_blank">http://demo25.crmeb.net</a>
    账号：demo
    密码：crmeb.com
 <div align="center">
