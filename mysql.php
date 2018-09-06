@@ -4,7 +4,7 @@
 // +----------------------------------------------------------------------
 // | Copyright (c) 2012-2016 http://www.xazbkj.com All rights reserved.
 // +----------------------------------------------------------------------
-// | Author: honor <sugar1569@vip.qq.com>
+// | Author: honor <rongyao_xu@163.com>
 // +----------------------------------------------------------------------
 //访问方法 ／mysql.php?pwd=******&table=表名为空所有表
 session_start();
@@ -17,9 +17,9 @@ header("Content-type:text/html;charset=utf-8");
 $database = array();
 $password = '327677';//访问密码GET['pwd'] 传输
 $database['DB_HOST'] = '127.0.0.1';
-$database['DB_NAME'] = 'shopcrmeb';//数据库名称
-$database['DB_USER'] = 'shopcrmeb';//用户名
-$database['DB_PWD'] = '5FYGH5d6zWZffrmA';//密码
+$database['DB_NAME'] = '';//数据库名称
+$database['DB_USER'] = '';//用户名
+$database['DB_PWD'] = '';//密码
 $char_set = 'UTF8';//数据库编码
 date_default_timezone_set('Asia/Shanghai');
 $mysql_conn = @mysqli_connect("{$database['DB_HOST']}", "{$database['DB_USER']}", "{$database['DB_PWD']}") or die("Mysql connect is error.");
