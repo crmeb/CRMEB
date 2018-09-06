@@ -11,7 +11,10 @@
     </a>
 </p>
 
-## 本项目还在不断开发完善中,如有建议或问题请[在这里提出](https://gitee.com/ZhongBangKeJi/CRMEB/issues)
+## 本项目还在不断开发完善中,如有建议或问题请[在这里提出](https://gitee.com/ZhongBangKeJ
+i/CRMEB/issues)
+
+感兴趣的话可以点击关注：<a href='https://gitee.com/ZhongBangKeJi/CRMEB/stargazers'><img src='https://gitee.com/ZhongBangKeJi/CRMEB/badge/star.svg?theme=white' alt='star'></img></a>
 ## 项目介绍
    基于ThinkPhp5.0+Vue+EasyWeChat 开发的一套CRMEB新零售商城系统
     
