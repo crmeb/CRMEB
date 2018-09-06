@@ -1,20 +1,23 @@
-<h1 align="center"> CRMEB电商管理系统</h1> 
+<h1 align="center"> CRMEB客户管理+电商管理系统</h1> 
 <p align="center">
     <a href="http://www.crmeb.com">
         <img src="https://img.shields.io/badge/OfficialWebsite-CRMEB-yellow.svg" />
     </a>
+<a href="http://www.crmeb.com">
+        <img src="https://img.shields.io/badge/Licence-MIT-green.svg?style=flat" />
+    </a>
     <a href="http://www.crmeb.com">
         <img src="https://img.shields.io/badge/Edition-2.5-blue.svg" />
     </a>
-     <a href="https://github.com/sugar1569/CRMEB">
+     <a href="https://gitee.com/ZhongBangKeJi/CRMEB/repository/archive/master.zip">
         <img src="https://img.shields.io/badge/download-59m-red.svg" />
     </a>
 </p>
 
-## 本项目还在不断开发完善中,如有建议或问题请[在这里提出](https://gitee.com/ZhongBangKeJ
-i/CRMEB/issues)
+## 本项目还在不断开发完善中,如有建议或问题请[在这里提出](https://gitee.com/ZhongBangKeJi/CRMEB/issues)
 
-感兴趣的话可以点击关注：<a href='https://gitee.com/ZhongBangKeJi/CRMEB/stargazers'><img src='https://gitee.com/ZhongBangKeJi/CRMEB/badge/star.svg?theme=white' alt='star'></img></a>
+###如果对您有帮助，您可以点右上角 "Star" 支持一下 谢谢！
+
 ## 项目介绍
    基于ThinkPhp5.0+Vue+EasyWeChat 开发的一套CRMEB新零售商城系统
     
