@@ -26,7 +26,7 @@
                 <li class="nav-header">
                     <div class="dropdown profile-element admin_open">
                         <span>
-                            <img alt="image" class="imgbox" src="{$site_logo}" onerror="javascript:this.src='http://shop.crmeb.net/public/system/images/admin_logo.png';"/>
+                            <img alt="image" class="imgbox" src="{$site_logo}" onerror="javascript:this.src='{__STATIC_PATH}/images/admin_logo.png';"/>
                         </span>
                         <a data-toggle="dropdown" class="dropdown-toggle" href="#">
                             <span class="clear" style="margin-top: 20px;">
