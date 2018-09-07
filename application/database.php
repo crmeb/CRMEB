@@ -6,20 +6,21 @@
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
-// | Author: liu21st <liu21st@gmail.com>
+// | Author: honor <rongyao_xu@163.com>
 // +----------------------------------------------------------------------
 
 return [
     // 数据库类型
     'type'            => 'mysql',
     // 服务器地址
-    'hostname'        => '127.0.0.1',
+    'hostname'        => 'localhost',
     // 数据库名
-    'username'        => 'gitcrmeb',
+    'database'        => 'gitcrmeb',
     // 用户名
     'username'        => 'gitcrmeb',
     // 密码
     'password'        => 'y3NfiJTjRp8PNeee',
+
     // 端口
     'hostport'        => '3306',
     // 连接dsn
