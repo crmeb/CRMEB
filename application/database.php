@@ -15,11 +15,11 @@ return [
     // 服务器地址
     'hostname'        => '127.0.0.1',
     // 数据库名
-    'database'        => '8_21',
+    'username'        => 'gitcrmeb',
     // 用户名
-    'username'        => 'root',
+    'username'        => 'gitcrmeb',
     // 密码
-    'password'        => 'root',
+    'password'        => 'y3NfiJTjRp8PNeee',
     // 端口
     'hostport'        => '3306',
     // 连接dsn
