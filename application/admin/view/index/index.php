@@ -26,11 +26,7 @@
                 <li class="nav-header">
                     <div class="dropdown profile-element admin_open">
                         <span>
-                            {if condition="$site_logo"}
-                            <img alt="image" class="imgbox" src="{$site_logo}"/>
-                            {else/}
-                            <img alt="image" class="" src="{__FRAME_PATH}img/profile_small.jpg" />
-                            {/if}
+                            <img alt="image" class="imgbox" src="{$site_logo}" onerror="javascript:this.src='http://shop.crmeb.net/public/system/images/admin_logo.png';"/>
                         </span>
                         <a data-toggle="dropdown" class="dropdown-toggle" href="#">
                             <span class="clear" style="margin-top: 20px;">
