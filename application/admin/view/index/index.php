@@ -109,7 +109,7 @@
         </div>
         <!--底部版权-->
         <div class="footer"  @touchmove.prevent>
-            <div class="pull-right">&copy; 2014-2018 <a href="http://www.crmeb.com/" target="_blank">西安众邦科技</a>
+            <div class="pull-right">&copy; 2014-2018 <a href="http://www.crmeb.com/" target="_blank">CRMEB</a>
             </div>
         </div>
     </div>
