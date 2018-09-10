@@ -794,11 +794,11 @@
                 parent.$f.closeModal();
 
             });
-            //close
-            $('#close').on('click', function () {
-                parent.$f.closeModal();
-
-            });
+//            //close
+//            $('#close').on('click', function () {
+//                parent.$f.closeModal();
+//
+//            });
 
             //搜索图标
             $("#search").on('input',function () {
