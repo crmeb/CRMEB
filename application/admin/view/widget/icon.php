@@ -24,7 +24,7 @@
         }
         .form-control{
             display: inline-block;
-            width: 75%;
+            width: 85%;
         }
     </style>
 </head>
@@ -33,7 +33,7 @@
     <div class="form-group">
         <input type="email" class="form-control" id="search" placeholder="输入关键词搜索：注意全是英文">
         <button id="qingkong" class="btn btn-default">清空选择</button>
-        <button id="close" class="btn btn-default">关闭</button>
+<!--        <button id="close" class="btn btn-default">关闭</button>-->
     </div>
     <div>
         <h5> v4.3.0新增图标 </h5>
