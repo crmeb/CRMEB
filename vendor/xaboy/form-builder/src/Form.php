@@ -87,7 +87,7 @@ class Form
         'iview-css' => '<link href="https://cdn.jsdelivr.net/npm/iview@2.14.3/dist/styles/iview.css" rel="stylesheet">',
         'iview' => '<script src="https://cdn.jsdelivr.net/npm/iview@2.14.3/dist/iview.min.js"></script>',
         //form-create 版本 1.3.1
-        'form-create' => '<script src="https://cdn.jsdelivr.net/npm/form-create@1.3.3/dist/form-create.min.js"></script>',
+        'form-create' => '<script src="https://cdn.jsdelivr.net/npm/form-create@1.4.2/dist/form-create.min.js"></script>',
         'city-data' => '<script src="https://cdn.jsdelivr.net/npm/form-create/district/province_city.js"></script>',
         'city-area-data' => '<script src="https://cdn.jsdelivr.net/npm/form-create/district/province_city_area.js"></script>'
     ];
