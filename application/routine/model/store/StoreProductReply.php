@@ -52,7 +52,7 @@ class StoreProductReply extends ModelBasic
     public static function getProductReplyList($productId,$order = 'All',$first = 0,$limit = 8)
     {
         $model = self::productValidWhere('A')->where('A.product_id',$productId)
-            ->field('A.product_score,A.service_score,A.comment,A.pics,A.add_time,B.nickname,B.avatar,C.cart_info,A.merchant_reply_content')
+            ->field('A.product_score,A.service_score,A.comment,A.merchant_reply_content,A.merchant_reply_time,A.pics,A.add_time,B.nickname,B.avatar,C.cart_info,A.merchant_reply_content')
             ->join('__USER__ B','A.uid = B.uid')
             ->join('__STORE_ORDER_CART_INFO__ C','A.unique = C.unique');
         $baseOrder = 'A.add_time DESC,A.product_score DESC, A.service_score DESC';
@@ -71,6 +71,7 @@ class StoreProductReply extends ModelBasic
         $res['cart_info'] = json_decode($res['cart_info'],true)?:[];
         $res['suk'] = isset($res['cart_info']['productInfo']['attrInfo']) ? $res['cart_info']['productInfo']['attrInfo']['suk'] : '';
         $res['nickname'] = UtilService::anonymity($res['nickname']);
+        $res['merchant_reply_time'] = date('Y-m-d H:i',$res['merchant_reply_time']);
         $res['add_time'] = date('Y-m-d H:i',$res['add_time']);
         $res['star'] = ceil(($res['product_score'] + $res['service_score'])/2);
         $res['comment'] = $res['comment']?:'此用户没有填写评价';
@@ -86,7 +87,7 @@ class StoreProductReply extends ModelBasic
     public static function getRecProductReply($productId)
     {
         $res = self::productValidWhere('A')->where('A.product_id',$productId)
-            ->field('A.product_score,A.service_score,A.comment,A.pics,A.add_time,B.nickname,B.avatar,C.cart_info')
+            ->field('A.product_score,A.service_score,A.comment,A.merchant_reply_content,A.merchant_reply_time,A.pics,A.add_time,B.nickname,B.avatar,C.cart_info')
             ->join('__USER__ B','A.uid = B.uid')
             ->join('__STORE_ORDER_CART_INFO__ C','A.unique = C.unique')
             ->order('LENGTH(A.comment) DESC,A.product_score DESC, A.service_score DESC, A.add_time DESC')->find();

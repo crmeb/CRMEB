@@ -81,8 +81,7 @@ trait ModelTrait
     public static function page($model = null, $eachFn = null, $params = [], $limit = 20)
     {
         if(is_numeric($eachFn) && is_numeric($model)){
-            parent::page($model,$eachFn);
-            return new self;
+            return parent::page($model,$eachFn);
         }
         
         if(is_numeric($eachFn)){

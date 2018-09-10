@@ -368,7 +368,7 @@ class AuthApi extends AuthController{
      */
     public function my(){
         $this->userInfo['couponCount'] = StoreCouponUser::getUserValidCouponCount($this->userInfo['uid']);
-        $this->userInfo['like'] = StoreProductRelation::getUserIdLike($this->userInfo['uid']);;
+        $this->userInfo['like'] = StoreProductRelation::getUserIdCollect($this->userInfo['uid']);;
         $this->userInfo['orderStatusNum'] = StoreOrder::getOrderStatusNum($this->userInfo['uid']);
         $this->userInfo['notice'] = UserNotice::getNotice($this->userInfo['uid']);
         $this->userInfo['statu'] = (int)SystemConfig::getValue('store_brokerage_statu');
@@ -802,6 +802,8 @@ class AuthApi extends AuthController{
     public function get_order($uni = ''){
         if($uni == '') return JsonService::fail('参数错误');
         $order = StoreOrder::getUserOrderDetail($this->userInfo['uid'],$uni);
+        $order = $order->toArray();
+        $order['add_time'] = date('Y-m-d H:i:s',$order['add_time']);
         if(!$order) return JsonService::fail('订单不存在');
         return JsonService::successful(StoreOrder::tidyOrder($order,true));
     }
@@ -1451,9 +1453,10 @@ class AuthApi extends AuthController{
         header('content-type:image/jpg');
         if(!$this->userInfo['uid']) return JsonService::fail('授权失败，请重新授权');
         $path = 'public/uploads/routine/'.$this->userInfo['uid'].'.jpg';
-        if(file_exists($path)) return JsonService::successful($path);
+        $domain=SystemConfigService::get('site_url').'/';
+        if(file_exists($path)) return JsonService::successful($domain.$path);
         else file_put_contents($path,RoutineCode::getCode($this->userInfo['uid']));
-        return JsonService::successful($path);
+        return JsonService::successful($domain.$path);
     }
 
     /**
@@ -1498,6 +1501,7 @@ class AuthApi extends AuthController{
     public function get_bargain($bargainId = 0){
         if(!$bargainId) return JsonService::fail('参数错误');
         $bargain = StoreBargain::getBargainTerm($bargainId);
+        if(empty($bargain)) return JsonService::fail('砍价已结束');
         $bargain['time'] = time();
         return JsonService::successful($bargain);
     }

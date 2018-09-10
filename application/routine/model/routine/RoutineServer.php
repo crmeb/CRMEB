@@ -1,6 +1,8 @@
 <?php
 namespace  app\routine\model\routine;
 
+use app\admin\model\system\SystemConfig;
+
 class RoutineServer{
     /**
      * curl  get方式
@@ -59,7 +61,9 @@ class RoutineServer{
      * @param string $routineAppSecret
      * @return mixed
      */
-    public static function getAccessToken($routineAppId = 'wx7bc36cccc15e4be2',$routineAppSecret = 'a13757487f35b0ad88c03455b1903c4d'){
+    public static function getAccessToken($routineAppId = '',$routineAppSecret = ''){
+        $routineAppId = SystemConfig::getValue('routine_appId');
+        $routineAppSecret = SystemConfig::getValue('routine_appsecret');
         $url  ="https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=".$routineAppId."&secret=".$routineAppSecret;
         return json_decode(self::curlGet($url),true);
     }

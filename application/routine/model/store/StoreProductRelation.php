@@ -22,12 +22,22 @@ class StoreProductRelation extends ModelBasic
     use ModelTrait;
 
     /**
-     * 获取用户收藏所有产品的个数
+     * 获取用户点赞所有产品的个数
      * @param $uid
      * @return int|string
      */
     public static function getUserIdLike($uid = 0){
         $count = self::where('uid',$uid)->where('type','like')->count();
+        return $count;
+    }
+
+    /**
+     * 获取用户收藏所有产品的个数
+     * @param $uid
+     * @return int|string
+     */
+    public static function getUserIdCollect($uid = 0){
+        $count = self::where('uid',$uid)->where('type','collect')->count();
         return $count;
     }
 

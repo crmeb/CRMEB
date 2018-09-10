@@ -99,7 +99,7 @@ class StoreCart extends ModelBasic
         $productInfoField = 'id,image,slider_image,price,ot_price,vip_price,postage,mer_id,give_integral,cate_id,sales,stock,store_name,store_info,unit_name,is_show,is_del,is_postage,cost';
         $seckillInfoField = 'id,image,price,ot_price,postage,give_integral,sales,stock,title as store_name,unit_name,is_show,is_del,is_postage,cost';
         $bargainInfoField = 'id,image,min_price as price,price as ot_price,postage,give_integral,sales,stock,title as store_name,unit_name,status as is_show,is_del,is_postage,cost';
-        $combinationInfoField = 'id,image,price,ot_price,postage,give_integral,sales,stock,title as store_name,is_show,is_del,is_postage,cost';
+        $combinationInfoField = 'id,image,price,postage,sales,stock,title as store_name,is_show,is_del,is_postage,cost';
         $model = new self();
         $valid = $invalid = [];
         $model = $model->where('uid',$uid)->where('type','product')->where('is_pay',0)

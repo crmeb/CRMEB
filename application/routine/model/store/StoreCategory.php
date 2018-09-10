@@ -21,7 +21,7 @@ class StoreCategory extends ModelBasic
 
     public static function pidBySidList($pid)
     {
-        return self::where('pid',$pid)->field('id,cate_name')->select();
+        return self::where('pid',$pid)->field('id,cate_name,pid')->select();
     }
 
     public static function cateIdByPid($cateId)

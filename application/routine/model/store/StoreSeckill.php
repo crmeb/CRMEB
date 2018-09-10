@@ -96,4 +96,14 @@ class StoreSeckill extends ModelBasic
         }
     }
 
+    /**
+     * 修改秒杀库存
+     * @param int $num
+     * @param int $seckillId
+     * @return bool
+     */
+    public static function decSeckillStock($num = 0,$seckillId = 0){
+        $res = false !== self::where('id',$seckillId)->dec('stock',$num)->inc('sales',$num)->update();
+        return $res;
+    }
 }

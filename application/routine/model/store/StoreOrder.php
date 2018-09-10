@@ -21,6 +21,7 @@ use app\routine\model\user\UserBill;
 use app\routine\model\user\WechatUser;
 use basic\ModelBasic;
 use behavior\wap\StoreProductBehavior;
+use behavior\routine\StoreProductBehavior as StoreProductBehaviorRoutine;
 use behavior\wechat\PaymentBehavior;
 use service\HookService;
 use service\RoutineService;
@@ -515,7 +516,7 @@ class StoreOrder extends ModelBasic
         if(false !== self::edit(['status'=>2],$order['id'],'id') &&
             false !== StoreOrderStatus::status($order['id'],'user_take_delivery','用户已收货')){
             try{
-                HookService::listen('store_product_order_user_take_delivery',$order,$uid,false,StoreProductBehavior::class);
+                HookService::listen('store_product_order_user_take_delivery',$order,$uid,false,StoreProductBehaviorRoutine::class);
             }catch (\Exception $e){
                 return self::setErrorInfo($e->getMessage());
             }
@@ -680,7 +681,8 @@ class StoreOrder extends ModelBasic
         $noTake = self::where('uid',$uid)->where('paid',1)->where('is_del',0)->where('status',1)->where('pay_type','<>','offline')->count();
         $noReply = self::where('uid',$uid)->where('paid',1)->where('is_del',0)->where('status',2)->count();
         $noPink = self::where('o.uid',$uid)->alias('o')->join('StorePink p','o.pink_id = p.id')->where('p.status',1)->where('o.paid',1)->where('o.is_del',0)->where('o.status',0)->where('o.pay_type','<>','offline')->count();
-        return compact('noBuy','noPostage','noTake','noReply','noPink');
+        $noRefund = self::where('uid',$uid)->where('paid',1)->where('is_del',0)->where('refund_status','IN','1,2')->count();
+        return compact('noBuy','noPostage','noTake','noReply','noPink','noRefund');
     }
 
     public static function gainUserIntegral($order)

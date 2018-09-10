@@ -7,9 +7,8 @@
 
 namespace app\routine\model\user;
 
-use app\wap\model\user\WechatUser;
 use basic\ModelBasic;
-use service\WechatService;
+use service\RoutineService;
 use traits\ModelTrait;
 
 class UserRecharge extends ModelBasic
@@ -37,7 +36,7 @@ class UserRecharge extends ModelBasic
 
     public static function jsPay($orderInfo)
     {
-        return WechatService::jsPay(WechatUser::uidToOpenid($orderInfo['uid']),$orderInfo['order_id'],$orderInfo['price'],'user_recharge','用户充值');
+        return RoutineService::payRoutine(WechatUser::uidToOpenid($orderInfo['uid']),$orderInfo['order_id'],$orderInfo['price'],'user_recharge','用户充值');
     }
 
     /**

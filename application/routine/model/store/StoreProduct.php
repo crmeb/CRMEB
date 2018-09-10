@@ -8,7 +8,7 @@
 namespace app\routine\model\store;
 
 
-use app\admin\model\store\StoreProductAttrValue;
+use app\admin\model\store\StoreProductAttrValue as StoreProductAttrValuemodel;
 use basic\ModelBasic;
 use traits\ModelTrait;
 
@@ -137,7 +137,7 @@ class StoreProduct extends ModelBasic
     public static function decProductStock($num,$productId,$unique = '')
     {
         if($unique){
-            $res = false !== StoreProductAttrValue::decProductAttrStock($productId,$unique,$num);
+            $res = false !== StoreProductAttrValuemodel::decProductAttrStock($productId,$unique,$num);
             $res = $res && self::where('id',$productId)->setInc('sales',$num);
         }else{
             $res = false !== self::where('id',$productId)->dec('stock',$num)->inc('sales',$num)->update();

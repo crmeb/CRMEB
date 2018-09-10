@@ -58,12 +58,12 @@ class UpgradeService extends FileService
      * @param array $post_data
      */
     public static function start(){
-        $pach=APP_PATH.'version';
+        $pach=APP_PATH.'version.php';
         $request=Request::instance();
         if(!file_exists($pach)) return self::getRet($pach.'升级文件丢失，请联系管理员');
         $version=@file($pach);
         if(!isset($version[0])) return self::getRet('获取失败');
-        $lv=self::request_post(self::$isNowVersionUrl,['token'=>self::get_token($request->ip())]);
+        $lv=self::request_post(self::$isNowVersionUrl,['token'=>self::get_token()]);
         if(isset($lv['code']) && $lv['code']==200)
             $version_lv=isset($lv['data']['version']) && $lv['data']['version'] ? $lv['data']['version'] : false;
         else

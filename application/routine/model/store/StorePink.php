@@ -117,8 +117,7 @@ class StorePink extends ModelBasic
      * @param $id
      * @return int|string
      */
-    public static function getIsPinkUid($id){
-         $uid = User::getActiveUid();
+    public static function getIsPinkUid($id = 0,$uid = 0){
          $pinkT = self::where('id',$id)->where('uid',$uid)->where('is_refund',0)->count();
          $pink = self::whereOr('k_id',$id)->where('uid',$uid)->where('is_refund',0)->count();
          if($pinkT) return true;
