@@ -62,7 +62,7 @@
                      <li ><a href="{:Url('index',array('pid'=>$vo.id,'fodder'=>$Request.param.fodder))}">{$vo.name}</a></li>
                 {/if}
                 {volist name="$vo.child" id="voo" key="kk"}
-                       <li class="child {if condition="$voo.id eq $pid"} active{/if}"><a href="{:Url('index',array('pid'=>$voo.id,'fodder'=>$Request.param.fodder))}">┣{$voo.name}</a></li>
+                       <li class="child {if condition="$voo.id eq $pid"} active{/if}"><a href="{:Url('index',array('pid'=>$voo.id,'fodder'=>$Request.param.fodder))}">-{$voo.name}</a></li>
                     {/volist}
                 {/volist}
             </ul>
@@ -84,7 +84,7 @@
         <div class="foot-tool">
             <button class="layui-btn layui-btn-sm"  id="upload">上传图片</button>
             <button class="layui-btn layui-btn-normal layui-btn-sm" id="ConfirmChoices">使用选中的图片</button>
-            <button class="layui-btn layui-btn-danger layui-btn-sm" id="close" >关闭</button>
+<!--            <button class="layui-btn layui-btn-danger layui-btn-sm" id="close" >关闭</button>-->
             <div class="page">{$page}</div>
         </div>
     </div>
