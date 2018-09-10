@@ -8,6 +8,7 @@ use app\admin\model\store\StoreProductAttr;
 use app\admin\model\store\StoreProductAttrResult;
 use app\admin\model\store\StoreProductRelation;
 use app\admin\model\system\SystemConfig;
+use service\JsonService;
 use traits\CurdControllerTrait;
 use service\UtilService as Util;
 use service\JsonService as Json;
@@ -41,43 +42,87 @@ class StoreProduct extends AuthController
      */
     public function index()
     {
-        $where = Util::getMore([
-            ['type',$this->request->param('type')],
-            ['cate_id',''],
-            ['is_show',''],
-            ['store_name',''],
-            ['sales',''],
-            ['export',0]
-        ],$this->request);
-        $this->assign('cate',CategoryModel::getTierList());
 
+        $type=$this->request->param('type');
+        //获取分类
+        $this->assign('cate',CategoryModel::getTierList());
         //出售中产品
-        $data = ['is_show'=>1,'is_del'=>0];
-        $onsale =  ProductModel::where($data)->count();
+        $onsale =  ProductModel::where(['is_show'=>1,'is_del'=>0])->count();
         //待上架产品
-        $data = ['is_show'=>0,'is_del'=>0];
-        $forsale =  ProductModel::where($data)->count();
+        $forsale =  ProductModel::where(['is_show'=>0,'is_del'=>0])->count();
         //仓库中产品
-        $data = ['is_del'=>0];
-        $warehouse =  ProductModel::where($data)->count();
+        $warehouse =  ProductModel::where(['is_del'=>0])->count();
         //已经售馨产品
-        $data = ['p.is_show'=>1,'p.is_del'=>0,'pav.stock|p.stock'=>0];
-        $outofstock =  ProductModel::alias('p')
-            ->join('StoreProductAttrValue pav','p.id=pav.product_id','LEFT')
-            ->where($data)->count();
+        $outofstock = ProductModel::getModelObject()->where(ProductModel::setData(4))->count();
         //警戒库存
-        $data = ['p.is_show'=>1,'p.is_del'=>0,'pav.stock|p.stock'=>['elt',1]];
-        $policeforce =  ProductModel::alias('p')
-            ->join('StoreProductAttrValue pav','p.id=pav.product_id','LEFT')
-            ->where($data)->count();
+        $policeforce =ProductModel::getModelObject()->where(ProductModel::setData(5))->count();
         //回收站
-        $data = ['is_del'=>1];
-        $recycle =  ProductModel::where($data)->count();
-        $this->assign(compact('where','onsale','forsale','warehouse','outofstock','policeforce','recycle'));
-        $this->assign(ProductModel::systemPage($where,$this->adminInfo));
+        $recycle =  ProductModel::where(['is_del'=>1])->count();
+
+        $this->assign(compact('type','onsale','forsale','warehouse','outofstock','policeforce','recycle'));
         return $this->fetch();
     }
-
+    /**
+     * 异步查找产品
+     *
+     * @return json
+     */
+    public function product_ist(){
+        $where=Util::getMore([
+            ['page',1],
+            ['limit',20],
+            ['store_name',''],
+            ['cate_id',''],
+            ['excel',0],
+            ['type',$this->request->param('type')]
+        ]);
+        return JsonService::successlayui(ProductModel::ProductList($where));
+    }
+    /**
+     * 设置单个产品上架|下架
+     *
+     * @return json
+     */
+    public function set_show($is_show='',$id=''){
+        ($is_show=='' || $id=='') && JsonService::fail('缺少参数');
+        $res=ProductModel::where(['id'=>$id])->update(['is_show'=>(int)$is_show]);
+        if($res){
+            return JsonService::successful($is_show==1 ? '上架成功':'下架成功');
+        }else{
+            return JsonService::fail($is_show==1 ? '上架失败':'下架失败');
+        }
+    }
+    /**
+     * 快速编辑
+     *
+     * @return json
+     */
+    public function set_product($field='',$id='',$value=''){
+        $field=='' || $id=='' || $value=='' && JsonService::fail('缺少参数');
+        if(ProductModel::where(['id'=>$id])->update([$field=>$value]))
+            return JsonService::successful('保存成功');
+        else
+            return JsonService::fail('保存失败');
+    }
+    /**
+     * 设置批量产品上架
+     *
+     * @return json
+     */
+    public function product_show(){
+        $post=Util::postMore([
+            ['ids',[]]
+        ]);
+        if(empty($post['ids'])){
+            return JsonService::fail('请选择需要上架的产品');
+        }else{
+            $res=ProductModel::where('id','in',$post['ids'])->update(['is_show'=>1]);
+            if($res)
+                return JsonService::successful('上架成功');
+            else
+                return JsonService::fail('上架失败');
+        }
+    }
     /**
      * 显示创建资源表单页.
      *

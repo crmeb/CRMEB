@@ -27,82 +27,101 @@ class StoreProduct extends ModelBasic
     use ModelTrait;
 
     /**
-     * @param $where
+     * 获取连表查询条件
+     * @param $type
      * @return array
      */
-    public static function systemPage($where,$adminInfo){
-        $model = new self;
-        $model = $model->alias('p');
-        if($where['store_name'] != '') $model = $model->where('p.store_name|p.keyword|p.id','LIKE',"%$where[store_name]%");
-        if($where['cate_id'] != '') $model = $model->where('p.cate_id','LIKE',"%$where[cate_id]%");
-        switch ($where['type']){
+    public static function setData($type){
+        switch ((int)$type){
             case 1:
-                $data = ['p.is_show'=>1,'is_del'=>0];
-                $model = $model->where($data);
+                $data = ['p.is_show'=>1,'p.is_del'=>0];
                 break;
             case 2:
-                $data = ['p.is_show'=>0,'is_del'=>0];
-                $model = $model->where($data);
+                $data = ['p.is_show'=>0,'p.is_del'=>0];
                 break;
             case 3:
                 $data = ['p.is_del'=>0];
-                $model = $model->where($data);
                 break;
             case 4:
                 $data = ['p.is_show'=>1,'p.is_del'=>0,'pav.stock|p.stock'=>0];
-                $model = $model->where($data);
                 break;
             case 5:
                 $data = ['p.is_show'=>1,'p.is_del'=>0,'pav.stock|p.stock'=>['elt',1]];
-                $model = $model->where($data);
                 break;
             case 6:
                 $data = ['p.is_del'=>1];
-                $model = $model->where($data);
                 break;
         };
-        $model = $model->field('p.*,sum("pav.stock") as vstock');
-        $model = $model->join('StoreProductAttrValue pav','p.id=pav.product_id','LEFT');
-        $model = $model->group('p.id');
-        $order = '';
-        if($where['sales'] != '') $order .= $where['sales'];
-        $order .= 'p.id desc';
-        $model = $model->order($order);
-        if($where['export'] == 1){
-            $list = $model->select()->toArray();
-            $export = [];
-            foreach ($list as $index=>$item){
-                $cateName = CategoryModel::where('id','IN',$item['cate_id'])->column('cate_name','id');				if(is_array($cateName)){					$cateNameStr = implode(',',$cateName);				}
-                $export[] = [
-                    $item['store_name'],
-                    $item['store_info'],
-                    $cateName,
-                    '￥'.$item['price'],
-                    $item['stock'],
-                    $item['sales'],
-                    StoreProductRelation::where('product_id',$item['id'])->where('type','like')->count(),
-                    StoreProductRelation::where('product_id',$item['id'])->where('type','collect')->count()
-                ];
-                $list[$index] = $item;
+        return isset($data) ? $data: [];
+    }
+    /**
+     * 获取连表MOdel
+     * @param $model
+     * @return object
+     */
+    public static function getModelObject($where=[]){
+        $model=new self();
+        $model=$model->alias('p')->join('StoreProductAttrValue pav','p.id=pav.product_id','LEFT');
+        if(!empty($where)){
+            $model=$model->group('p.id');
+            if(isset($where['type']) && $where['type']!='' && ($data=self::setData($where['type']))){
+                $model = $model->where($data);
             }
-            PHPExcelService::setExcelHeader(['产品名称','产品简介','产品分类','价格','库存','销量','点赞人数','收藏人数'])
-                ->setExcelTile('产品导出','产品信息'.time(),'操作人昵称：'.$adminInfo['real_name'].' 生成时间：'.date('Y-m-d H:i:s',time()))
-                ->setExcelContent($export)
-                ->ExcelSave();
+            if(isset($where['store_name']) && $where['store_name']!=''){
+                $model = $model->where('p.store_name|p.keyword|p.id','LIKE',"%$where[store_name]%");
+            }
+            if(isset($where['cate_id']) && trim($where['cate_id'])!=''){
+                $model = $model->where('p.cate_id','LIKE',"%$where[cate_id]%");
+            }
+            if(isset($where['order']) && $where['order']!=''){
+                $model = $model->order(self::setOrder($where['order']));
+            }
         }
-        return self::page($model,function($item){
+        return $model;
+    }
+    /*
+     * 获取产品列表
+     * @param $where array
+     * @return array
+     *
+     */
+    public static function ProductList($where){
+        $model=self::getModelObject($where)->field(['p.*','sum(pav.stock) as vstock']);
+        if($where['excel']==0) $model=$model->page((int)$where['page'],(int)$where['limit']);
+        $data=($data=$model->select()) && count($data) ? $data->toArray():[];
+        foreach ($data as &$item){
             $cateName = CategoryModel::where('id','IN',$item['cate_id'])->column('cate_name','id');
-            if(is_array($cateName)){
-                $item['cate_name'] = implode(',',$cateName);            }
+            $item['cate_name']=is_array($cateName) ? implode(',',$cateName) : '';
             $item['collect'] = StoreProductRelation::where('product_id',$item['id'])->where('type','collect')->count();//收藏
             $item['like'] = StoreProductRelation::where('product_id',$item['id'])->where('type','like')->count();//点赞
             $item['stock'] = self::getStock($item['id'])>0?self::getStock($item['id']):$item['stock'];//库存
             $item['stock_attr'] = self::getStock($item['id'])>0 ? true : false;//库存
             $item['sales_attr'] = self::getSales($item['id']);//属性销量
             $item['visitor'] = Db::name('store_visit')->where('product_id',$item['id'])->where('product_type','product')->count();
-
-        },$where);
+        }
+        if($where['excel']==1){
+            $export = [];
+            foreach ($data as $index=>$item){
+                $export[] = [
+                    $item['store_name'],
+                    $item['store_info'],
+                    $item['cate_name'],
+                    '￥'.$item['price'],
+                    $item['stock'],
+                    $item['sales'],
+                    $item['like'],
+                    $item['collect']
+                ];
+            }
+            PHPExcelService::setExcelHeader(['产品名称','产品简介','产品分类','价格','库存','销量','点赞人数','收藏人数'])
+                ->setExcelTile('产品导出','产品信息'.time(),' 生成时间：'.date('Y-m-d H:i:s',time()))
+                ->setExcelContent($export)
+                ->ExcelSave();
+        }
+        $count=self::getModelObject($where)->count();
+        return compact('count','data');
     }
+
     public static function getChatrdata($type,$data){
         $legdata=['销量','数量','点赞','收藏'];
         $model=self::setWhereType(self::order('id desc'),$type);
@@ -361,7 +380,7 @@ class StoreProduct extends ModelBasic
             ->select();
         $count=self::setWhere($where)->where('a.is_pay',1)->group('a.product_id')->count();
         foreach ($data as &$item){
-            $item['sum_price']=bcdiv($item['num_product'],$item['price'],true);
+            $item['sum_price']=bcdiv($item['num_product'],$item['price'],2);
         }
         return compact('data','count');
     }
