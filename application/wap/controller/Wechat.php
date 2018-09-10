@@ -18,6 +18,7 @@ class Wechat
      */
     public function serve()
     {
+        ob_clean();
         WechatService::serve();
     }
 
