@@ -26,7 +26,7 @@
                         <a class="refresh" href="javascript:location.reload();">刷新试试</a>
                         <a class="back" href="javascript:void(0);">返回上一页</a>
                     </p>
-                    <p class="tips">cmseb提示您：您可能输入了错误的网址，或者该网页已删除或移动,<span class="nmb">3</span>秒钟后自动跳转</p>
+                    <p class="tips">crmeb提示您：您可能输入了错误的网址，或者该网页已删除或移动,<span class="nmb">3</span>秒钟后自动跳转</p>
                 </div>
             </div>
         </div>
