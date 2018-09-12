@@ -1,6 +1,44 @@
 {extend name="public/container"}
 {block name="head_top"}
 <script src="{__PLUG_PATH}city.js"></script>
+<style>
+    .layui-btn-xs{margin-left: 0px !important;}
+    legend{
+        width: auto;
+        border: none;
+        font-weight: 700 !important;
+    }
+    .site-demo-button{
+        padding-bottom: 20px;
+        padding-left: 10px;
+    }
+    .layui-form-label{
+        width: auto;
+    }
+    .layui-input-block input{
+        width: 50%;
+        height: 34px;
+    }
+    .layui-form-item{
+        margin-bottom: 0;
+    }
+    .layui-input-block .time-w{
+        width: 200px;
+    }
+    .layui-table-body{overflow-x: hidden;}
+    .layui-btn-group button i{
+        line-height: 30px;
+        margin-right: 3px;
+        vertical-align: bottom;
+    }
+    .back-f8{
+        background-color: #F8F8F8;
+    }
+    .layui-input-block button{
+        border: 1px solid #e5e5e5;
+    }
+    .avatar{width: 50px;height: 50px;}
+</style>
 {/block}
 {block name="content"}
 <div class="row">
@@ -130,7 +168,7 @@
                     </div>
                     <div class="layui-form-item">
                         <label class="layui-form-label">
-                            <button class="layui-btn layui-btn-sm" lay-submit="" lay-filter="search" style="font-size:14px;line-height: 9px;">
+                            <button class="layui-btn layui-btn-sm layui-btn-normal" lay-submit="" lay-filter="search" >
                                 <i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>搜索</button>
                         </label>
                     </div>
@@ -151,7 +189,7 @@
                         <button class="layui-btn layui-btn-sm layui-btn-normal" type="button" data-type="set_custom"><i class="fa fa-check-circle-o"></i>发送客服图文消息</button>
 <!--                        <button class="layui-btn layui-btn-sm layui-btn-normal" type="button" data-type="set_template"><i class="fa fa-check-circle-o"></i>发送模板消息</button>-->
                         <button class="layui-btn layui-btn-sm layui-btn-normal" type="button" data-type="set_info"><i class="fa fa-check-circle-o"></i>发送站内消息</button>
-                        <button class="layui-btn layui-btn-sm layui-btn-primary" type="button" data-type="refresh"><i class="layui-icon layui-icon-refresh" ></i>刷新</button>
+                        <button class="layui-btn layui-btn-sm layui-btn-normal" type="button" data-type="refresh"><i class="layui-icon layui-icon-refresh" ></i>刷新</button>
                     </div>
                     <table class="layui-hide" id="userList" lay-filter="userList">
 
