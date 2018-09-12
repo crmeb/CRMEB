@@ -77,10 +77,6 @@
       <text>客服</text>
       </view>
     </button>
-    <view class='item' bindtap='setCollect'>
-      <view class='iconfont icon-pingjia {{collect==true?"icon-xingxing":""}}'></view>
-      <text>收藏</text>
-    </view>
     <view class='item' bindtap='getCar'>
       <view class='iconfont icon-gouwuche'><span class='item-span'>{{CartCount}}</span></view>
       <text>购物车</text>
@@ -104,5 +100,3 @@
 
 <include src="/pages/foo-tan/foo-tan.wxml"/>  
 <import src="/wxParse/wxParse.wxml"/>
- 
-

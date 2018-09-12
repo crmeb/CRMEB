@@ -34,7 +34,7 @@ swiper-item{position: relative; width: 100%;}
 .foot .fn-btns .item .iconfont.icon-xingxing{color: #ff7000;}
 
 
-.foot .btns-wrapper{width: 446rpx; height: 100%; line-height: 110rpx; color: #fff; font-size: 30rpx;}
+.foot .btns-wrapper{width: 688rpx; height: 100%; line-height: 110rpx; color: #fff; font-size: 30rpx;}
 .foot .btns-wrapper view{flex: 1; text-align: center;}
 .foot .btns-wrapper .buy-btn{background-color: #ff7000;}
 .foot .btns-wrapper .payment-btn{background-color: #ff3d3d;}
@@ -53,7 +53,4 @@ swiper-item{position: relative; width: 100%;}
 .item-span{min-width:20rpx;height:20rpx;border-radius:50rpx;background-color:#ff3d3d;color: #fff;display:block;font-size:12rpx;text-align:center;line-height:20rpx;position:absolute;right:23rpx;top:0;}
 .countdown-time text{height:35rpx;padding:0 8rpx;display:inline-block;background-color:#fff;color:#ff3d3d;line-height:35rpx;border-radius:5rpx;margin-top:8rpx;}
   @import "/pages/foo-tan/foo-tan.wxss";  
-  @import "/wxParse/wxParse.wxss"; 
-
-
-
+  @import "/wxParse/wxParse.wxss";

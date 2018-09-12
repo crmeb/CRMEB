@@ -103,9 +103,8 @@ Page({
             success: function (res) {
               wx.hideLoading();
               var data = JSON.parse(res.data);
-              console.log(data);
               if (data.code == 200) {
-                that.data.dataimg.push(data.data.url);
+                that.data.dataimg.push(app.globalData.url+data.data.url);
               }
               that.setData({
                 dataimg: that.data.dataimg
@@ -184,6 +183,11 @@ Page({
               icon: 'success',
               duration: 2000
             })
+            setTimeout(function(){
+              wx.navigateTo({
+                url: '/pages/orders-con/orders-con?order_id=' + that.data.orderId
+              })
+            },1500)
           }else{
             wx.showToast({
               title: res.data.msg,

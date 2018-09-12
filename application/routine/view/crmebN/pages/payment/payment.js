@@ -39,6 +39,14 @@ Page({
       },
       success: function (res) { }
     })
+    if (!e.detail.value.number) {
+      wx.showToast({
+        title: '请输入充值金额',
+        icon: 'none',
+        duration: 1000,
+      })
+      return false;
+    }
     wx.request({
       url: app.globalData.url + '/routine/auth_api/user_wechat_recharge?uid=' + app.globalData.uid,
       method: 'GET',

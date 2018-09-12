@@ -84,24 +84,18 @@
       <view class='iconfont icon-kefu'></view>
       <text>客服</text>
     </view>
-    <view class='item' bindtap='setCollect'>
-      <view class="iconfont icon-pingjia {{collect==true?'icon-xingxing':''}}"></view>
-      <text>收藏</text>
-    </view>
     <view class='item' bindtap='getCar'>
       <view class='iconfont icon-gouwuche'><span class='item-span'>{{CartCount}}</span></view>
       <text>购物车</text>
     </view>
   </view>
   <view class='btns-wrapper flex'>
-    <!-- <view class='buy-btn'>加入购物车</view> -->
-    <form class="form-btn" bindsubmit="parameterShow" report-submit='true'> 
+    <form class="form-btn" bindsubmit="parameterShow" report-submit='true'>
     <input type='text' style="display:none" name="pinkId" value='0'></input>
-      <button class='payment-btn' form-type='submit'>确认下单</button>  
-    </form> 
+      <button class='payment-btn' form-type='submit'>确认下单</button>
+    </form>
   </view>
 </view>
-<!-- <view class="model-bg {{show==true ? 'show':''}} {{prostatus==true ? 'show':''}}" bindtap='modelbg'></view> -->
 <view class="pinklist-model {{show==true ? 'show':''}}">
   <view class='tit-bar'>正在拼单</view>
   <scroll-view scroll-y style="max-height:635rpx;">
@@ -126,4 +120,3 @@
 </view>
 <include src="/pages/foo-tan/foo-tan.wxml"/>
 <import src="/wxParse/wxParse.wxml"/>
-
