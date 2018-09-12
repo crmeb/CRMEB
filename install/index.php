@@ -66,7 +66,7 @@ switch ($step) {
 
     case '2':
 
-        if (phpversion() < 5) {
+        if (phpversion() < 5.5.9) {
             die('本系统需要PHP5+MYSQL >=5.5.9环境，当前PHP版本为：' . phpversion());
         }
 
@@ -190,8 +190,8 @@ switch ($step) {
             }
             mysqli_set_charset($conn, "utf8"); //,character_set_client=binary,sql_mode='';
             $version = mysqli_get_server_info($conn);
-            if ($version < 5.5) {
-                $arr['msg'] = '数据库版本太低! 必须5.5以上';
+            if ($version < 5.1) {
+                $arr['msg'] = '数据库版本太低! 必须5.1以上';
                 echo json_encode($arr);
                 exit;
             }
