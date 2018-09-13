@@ -644,6 +644,17 @@ class StoreOrder extends ModelBasic
         return $list;
     }
 
+    /**
+     * 获取推广人地下用户的订单金额
+     * @param string $uid
+     * @param string $status
+     * @return array
+     */
+    public static function getUserOrderCount($uid = '',$status = ''){
+        $res = self::statusByWhere($status)->where('uid','IN',$uid)->column('pay_price');
+        return $res;
+    }
+
     public static function searchUserOrder($uid,$order_id)
     {
         $order = self::where('uid',$uid)->where('order_id',$order_id)->where('is_del',0)->field('seckill_id,bargain_id,combination_id,id,order_id,pay_price,total_num,total_price,pay_postage,total_postage,paid,status,refund_status,pay_type,coupon_price,deduction_price,delivery_type')

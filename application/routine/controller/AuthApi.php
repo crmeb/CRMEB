@@ -1273,29 +1273,17 @@ class AuthApi extends AuthController{
             ->join('__STORE_ORDER__ B','A.link_id = B.id AND B.uid = '.$uid)->select()->toArray();
         return JsonService::successful($list);
     }
-    /*
-     * 申请提现
-     */
-//    public function user_extract()
-//    {
-//        if(UserExtract::userExtract($this->userInfo,UtilService::postMore([
-//            ['type','','','extract_type'],'real_name','alipay_code','bank_code','bank_address',['price','','','extract_price']
-//        ])))
-//            return JsonService::successful('申请提现成功!');
-//        else
-//            return JsonService::fail(Extract::getErrorInfo());
-//    }
+    
     public function user_extract()
     {   $request = Request::instance();
         $list=$request->param();
         $data=$list['lists'];
-//        dump($data);
-//        dump($this->userInfo);
         if(UserExtract::userExtract($this->userInfo,$data))
             return JsonService::successful('申请提现成功!');
         else
             return JsonService::fail(UserExtract::getErrorInfo());
     }
+
 /*
  * 提现列表
  */
@@ -1315,28 +1303,20 @@ class AuthApi extends AuthController{
      * @param int $first
      * @param int $limit
      */
-    public function subordinateOrderlist($first = 0, $limit = 8)
-    { $request = Request::instance();
+    public function subordinateOrderlist($first = 0, $limit = 8){
+        $request = Request::instance();
         $lists=$request->param();
-        $xuid=$lists['uid'];$status=$lists['status'];
-        if($status==0){
-            $type='';
-        }elseif($status==1){
-            $type=4;
-        }elseif($status==2){
-            $type=3;
-        }else{
-           return false;
-        }
-        if($xuid==0){
-            $arr=User::where('spread_uid',$this->userInfo['uid'])->column('uid');
-            foreach($arr as $v){
-
-                $list = StoreOrder::getUserOrderList($v,$type,$first,$limit);
-            }
-        }else{
-            $list = StoreOrder::getUserOrderList($xuid,$type,$first,$limit);
-        }
+        $xUid = $lists['uid'];
+        $status = $lists['status'];
+        if($status == 0) $type='';
+        elseif($status == 1) $type=4;
+        elseif($status == 2) $type=3;
+        else return false;
+        $list = [];
+        if(!$xUid){
+            $arr = User::where('spread_uid',$this->userInfo['uid'])->column('uid');
+            foreach($arr as $v) $list = StoreOrder::getUserOrderList($v,$type,$first,$limit);
+        }else $list = StoreOrder::getUserOrderList($xUid,$type,$first,$limit);
         foreach ($list as $k=>$order){
             $list[$k] = StoreOrder::tidyOrder($order,true);
             if($list[$k]['_status']['_type'] == 3){
@@ -1354,16 +1334,18 @@ class AuthApi extends AuthController{
      */
     public function subordinateOrderlistmoney()
     {
-        $arr=User::where('spread_uid',$this->userInfo['uid'])->column('uid');
-        foreach($arr as $v){
-            $list = StoreOrder::getUserOrderList($v,$type='');
-        }
-
-        foreach ($list as $k=>$v){
-            $arr[]=$v['pay_price'];
-        }
-        $cont=count($list);
-        $sum=array_sum($arr);
+        $request = Request::instance();
+        $lists=$request->param();
+        $status = $lists['status'];
+        $type = '';
+        if($status == 1) $type = 4;
+        elseif($status == 2) $type = 3;
+        $arr = User::where('spread_uid',$this->userInfo['uid'])->column('uid');
+        $list = StoreOrder::getUserOrderCount(implode(',',$arr),$type);
+        $price = [];
+        foreach ($list as $k=>$v) $price[]=$v['pay_price'];
+        $cont = count($list);
+        $sum = array_sum($price);
         return JsonService::successful(['cont'=>$cont,'sum'=>$sum]);
     }
     /*
