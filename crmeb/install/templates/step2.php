@@ -83,8 +83,8 @@
 		<?php
 		foreach($folder as $dir){
 		     $Testdir = CRMEBDIR.$dir;
-			 echo $Testdir."<br/>";
-		         //dir_create($Testdir);
+//			 echo $Testdir."<br/>";
+		         dir_create($Testdir);
 			 if(TestWrite($Testdir)){
 			     $w = '<span class="correct_span">&radic;</span>可写 ';
 			 }else{
