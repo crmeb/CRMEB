@@ -277,7 +277,7 @@ switch ($step) {
 						mysqli_query($conn,"truncate table ".$val[0]);
 					}		
 				}   	
-				delFile('../public/upload'); // 清空测试图片
+				delFile(CRMEBDIR.'/public/uploads'); // 清空测试图片
 			}
             //读取配置文件，并替换真实配置数据1
             $strConfig = file_get_contents(SITEDIR . 'install/' . $configFile);
@@ -289,8 +289,8 @@ switch ($step) {
             $strConfig = str_replace('#DB_PREFIX#', $dbPrefix, $strConfig);
             $strConfig = str_replace('#DB_CHARSET#', 'utf8', $strConfig);
             // $strConfig = str_replace('#DB_DEBUG#', false, $strConfig);
-            @chmod(SITEDIR . '/application/database.php',0777); //数据库配置文件的地址
-            @file_put_contents(SITEDIR . '/application/database.php', $strConfig); //数据库配置文件的地址
+            @chmod(CRMEBDIR . '/application/database.php',0777); //数据库配置文件的地址
+            @file_put_contents(CRMEBDIR . '/application/database.php', $strConfig); //数据库配置文件的地址
             
             //读取配置文件，并替换换配置
 //            $strConfig = file_get_contents(SITEDIR . '/application/config.php');
@@ -325,7 +325,7 @@ switch ($step) {
     case '5':
     	$ip = get_client_ip();
     	$host = $_SERVER['HTTP_HOST'];
-        $curent_version = file_get_contents(SITEDIR .'/application/version.php');
+        $curent_version = file_get_contents(CRMEBDIR .'/application/version.php');
         $time = time();
         $mt_rand_str = $create_date.sp_random_string(6);
         $str_constant = "<?php".PHP_EOL."define('INSTALL_DATE',".$time.");".PHP_EOL."define('SERIALNUMBER','".$mt_rand_str."');";
