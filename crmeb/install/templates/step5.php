@@ -8,7 +8,7 @@
 <?php 
 $uri = $_SERVER['REQUEST_URI'];
 $root = substr($uri, 0,strpos($uri, "install"));
-$admin = $root."../index.php/Admin/admin/";
+$admin = $root."../index.php/admin/index/";
 ?>
 </head>
 <body>
@@ -21,7 +21,7 @@ $admin = $root."../index.php/Admin/admin/";
       </div>
 	        <div class="bottom tac"> 
 	        <a href="<?php echo 'http://'.$host;?>/index.php/wap/" class="btn">进入前台</a>
-	        <a href="<?php echo 'http://'.$host;?>/index.php//admin/login/index.html" class="btn btn_submit J_install_btn">进入后台</a>
+	        <a href="<?php echo 'http://'.$host;?>/index.php/admin/login/index" class="btn btn_submit J_install_btn">进入后台</a>
       </div>
       <div class=""> </div>
     </div>
