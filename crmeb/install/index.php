@@ -119,9 +119,9 @@ switch ($step) {
         	$err++;
         }
         if(function_exists('bcadd')){
-            $bcadd = '<font color=green>[√]支持</font> ';
+            $BC = '<font color=green>[√]支持</font> ';
         }else{
-            $bcadd= '<font color=red>[×]不支持</font>';
+            $BC = '<font color=red>[×]不支持</font>';
             $err++;
         }
 

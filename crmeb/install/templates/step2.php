@@ -127,9 +127,9 @@
           <td><?php echo $file_put_contents; ?></td>
           <td>--</td>
         </tr> <tr>
-          <td>bcadd</td>
-          <td>建议开启</td>
-          <td><?php echo $bcadd; ?></td>
+          <td>BC</td>
+          <td>必须扩展</td>
+          <td><?php echo $BC; ?></td>
           <td>--</td>
         </tr>
       </table>
