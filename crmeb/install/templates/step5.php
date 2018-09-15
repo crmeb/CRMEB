@@ -20,8 +20,8 @@ $admin = $root."../index.php/Admin/admin/";
 		<p>为了您站点的安全，安装完成后即可将网站根目录下的“install”文件夹删除，或者/install/目录下创建install.lock文件防止重复安装。<p>
       </div>
 	        <div class="bottom tac"> 
-	        <a href="/../index.php/wap/" class="btn">进入前台</a>
-	        <a href="/../index.php//admin/login/index.html" class="btn btn_submit J_install_btn">进入后台</a>
+	        <a href="<?php echo 'http://'.$host;?>/index.php/wap/" class="btn">进入前台</a>
+	        <a href="<?php echo 'http://'.$host;?>/index.php//admin/login/index.html" class="btn btn_submit J_install_btn">进入后台</a>
       </div>
       <div class=""> </div>
     </div>
