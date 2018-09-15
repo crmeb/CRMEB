@@ -315,9 +315,10 @@ Page({
       url: '/pages/buycar/buycar'
     });
   },
-  toAddress:function(){
+  toAddress: function () {
+    var that = this;
     wx.navigateTo({ //跳转至指定页面并关闭其他打开的所有页面（这个最好用在返回至首页的的时候）
-      url: '/pages/addaddress/addaddress?cartId=' + this.data.cartId + '&pinkId=' + that.data.pinkId + '&couponId=' + that.data.couponId
+      url: '/pages/addaddress/addaddress?cartId=' + that.data.cartId + '&pinkId=' + that.data.pinkId + '&couponId=' + that.data.couponId
     })
   },
   getConfirm: function (cartIdsStr){

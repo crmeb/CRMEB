@@ -33,13 +33,13 @@ Page({
       search: e.detail.value
     });
   },
-  getorderlist: function (e) {
+  getorderlist: function () {
     var header = {
       'content-type': 'application/x-www-form-urlencoded',
     };
     var that = this;
     var search = that.data.search;
-    var limit = 4;
+    var limit = 8;
     var orderType = that.data.orderType;
     var first = that.data.first;
     var startpage = limit * first;
@@ -49,7 +49,6 @@ Page({
       method: 'get',
       header: header,
       success: function (res) {
-        console.log(res);
         var $data = res.data.data;
         if (!startpage && !$data.length){
             wx.showToast({
@@ -115,7 +114,7 @@ Page({
    * 页面上拉触底事件的处理函数
    */
   onReachBottom: function () {
-  
+    this.getorderlist();
   },
 
   /**

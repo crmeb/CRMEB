@@ -19,11 +19,11 @@
       <view class='text' >我的积分</view>
     </view>
     <view class='amount-item' bindtap='coupons'>
-      <view class='count'>{{coupon ? coupon : 0}}</view>
+      <view class='count'>{{userinfo.couponCount ? userinfo.couponCount : 0}}</view>
       <view class='text' >优惠券</view>
     </view>
     <view class='amount-item' bindtap='collects'>
-      <view class='count'>{{collect ? collect : 0}}</view>
+      <view class='count'>{{userinfo.like ? userinfo.like : 0}}</view>
       <view class='text' >收藏商品</view>
     </view>
   </view>
@@ -56,6 +56,7 @@
       </view>
       <view class='item'>
         <navigator hover-class="none" url='/pages/refund-order/refund-order'>
+        <view class='item-span' wx:if="{{orderStatusNum.noRefund}}">{{orderStatusNum.noRefund}}</view>
           <image src='/images/dfh.png'></image>
           <view class='text'>退款/售后</view>
         </navigator>
@@ -153,7 +154,3 @@
       </navigator>
   </movable-view>
 </movable-area>
-
-
-
-

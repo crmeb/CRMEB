@@ -38,7 +38,9 @@ class UserExtract extends ModelBasic
     public static function userExtract($userInfo,$data){
         if(!in_array($data['extract_type'],self::$extractType))
             return self::setErrorInfo('提现方式不存在');
-        $balance = bcsub($userInfo['now_money'],$data['money']);
+        $userInfo = User::get($userInfo['uid']);
+        if($data['money'] > $userInfo['now_money']) return self::setErrorInfo('余额不足');;
+        $balance = bcsub($userInfo['now_money'],$data['money'],2);
         $insertData = [
             'uid'=>$userInfo['uid'],
             'extract_type'=>$data['extract_type'],
@@ -84,24 +86,13 @@ class UserExtract extends ModelBasic
         if(!$res1) return self::setErrorInfo('提现失败');
         $res2 = User::edit(['now_money'=>$balance],$userInfo['uid'],'uid');
         $res3 = UserBill::expend('余额提现',$userInfo['uid'],'now_money','extract',$data['money'],$res1['id'],$balance,$mark);
-
         $res = $res2 && $res3;
-//        WechatTemplateService::sendTemplate(
-//            WechatUser::uidToOpenid($userInfo['uid']),
-//            WechatTemplateService::USER_BALANCE_CHANGE,
-//            [
-//                'first'=>'你好,申请余额提现成功!',
-//                'keyword1'=>'余额提现',
-//                'keyword2'=>date('Y-m-d'),
-//                'keyword3'=>$data['money'],
-//                'remark'=>'点击查看我的余额明细'
-//            ],
-//            Url::build('wap/My/balance',[],true,true)
-//            );
-        if($res)
+        self::checkTrans($res);
+        if($res){
+            //发送模板消息
             return true;
-        else
-            return self::setErrorInfo('提现失败!');
+        }
+        else return self::setErrorInfo('提现失败!');
     }
 
     /**
