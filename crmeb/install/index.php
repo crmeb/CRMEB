@@ -235,6 +235,7 @@ switch ($step) {
                 $sql = trim($sqlFormat[$i]);
                 if (strstr($sql, 'CREATE TABLE')) {
                     preg_match('/CREATE TABLE IF NOT EXISTS `eb_([^ ]*)`/is', $sql, $matches);
+                    print_r($matches);exit;
                     mysqli_query($conn,"DROP TABLE IF EXISTS `$matches[1]");
                     $sql = str_replace('`eb_','`'.$dbPrefix,$sql);//替换表前缀
                     $ret = mysqli_query($conn,$sql);
