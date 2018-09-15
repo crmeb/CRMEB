@@ -336,7 +336,6 @@ switch ($step) {
 }
 
 function testwrite($d) {
-    echo $d."<br/>";
     if(is_file($d)){
         if(is_writeable($d)){
             return true;
