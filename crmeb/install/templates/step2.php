@@ -82,7 +82,7 @@
         </tr>
 		<?php
 		foreach($folder as $dir){
-		     $Testdir = SITEDIR.$dir;
+		     $Testdir = CRMEBDIR.$dir;
 			 echo $Testdir."<br/>";
 		         //dir_create($Testdir);
 			 if(TestWrite($Testdir)){
