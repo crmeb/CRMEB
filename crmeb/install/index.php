@@ -125,7 +125,9 @@ switch ($step) {
             'runtime',
             'runtime/cache',
 	    	'runtime/temp',
-	    	'runtime/log',        	
+	    	'runtime/log',
+            'application/database.php',
+            'application/config.php',
         );
         include_once ("./templates/step2.php");
         exit();
