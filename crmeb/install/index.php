@@ -336,7 +336,13 @@ switch ($step) {
 }
 
 function testwrite($d) {
-    if(is_dir($d)){
+    if(is_file($d)){
+        if(is_writeable($d)){
+            return true;
+        }
+        return false;
+
+    }else{
         $tfile = "_test.txt";
         $fp = @fopen($d . "/" . $tfile, "w");
         if (!$fp) {
@@ -345,11 +351,6 @@ function testwrite($d) {
         fclose($fp);
         $rs = @unlink($d . "/" . $tfile);
         if ($rs) {
-            return true;
-        }
-        return false;
-    }else{
-        if(is_writeable($d)){
             return true;
         }
         return false;
