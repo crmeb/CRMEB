@@ -127,7 +127,7 @@ switch ($step) {
 
         
         $folder = array(
-            'install',
+            'crmeb/install',
             'public/uploads',
             'runtime',
             'runtime/cache',
