@@ -27,7 +27,7 @@ define("CRMEB_VERSION", '20180601');
 date_default_timezone_set('PRC');
 error_reporting(E_ALL & ~E_NOTICE);
 header('Content-Type: text/html; charset=UTF-8');
-define('SITEDIR', _dir_path(substr(dirname(__FILE__), 0, -8)));
+define('SITEDIR', _dir_path(substr(dirname(__FILE__), 0, -14)));
 //define('SITEDIR2', substr(SITEDIR,0,-7));
 //echo SITEDIR2;
 //exit;
