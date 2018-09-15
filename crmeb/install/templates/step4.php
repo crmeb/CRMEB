@@ -43,7 +43,7 @@
                         $('#dosubmit').attr("disabled",false);
                         $('#dosubmit').removeAttr("disabled");
                         $('#dosubmit').removeClass("nonext");
-//                        setTimeout('gonext()',2000);
+                        setTimeout('gonext()',2000);
                         return false;
                     }else{
                         reloads(msg.n);
