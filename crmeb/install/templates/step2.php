@@ -84,13 +84,15 @@
 		foreach($folder as $dir){
 		     $Testdir = CRMEBDIR.$dir;
 //			 echo $Testdir."<br/>";
-		         dir_create($Testdir);
-			 if(TestWrite($Testdir)){
-			     $w = '<span class="correct_span">&radic;</span>可写 ';
-			 }else{
-			     $w = '<span class="correct_span error_span">&radic;</span>不可写 ';
-				 $err++;
-			 }
+             dir_create($Testdir);
+             if(testwrite($Testdir)){
+                 $w = '<span class="correct_span">&radic;</span>可写 ';
+             }else{
+                 $w = '<span class="correct_span error_span">&radic;</span>不可写 ';
+                 $err++;
+             }
+
+
 			 if(is_readable($Testdir)){
 			     $r = '<span class="correct_span">&radic;</span>可读' ;
 			 }else{

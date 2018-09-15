@@ -336,17 +336,25 @@ switch ($step) {
 }
 
 function testwrite($d) {
-    $tfile = "_test.txt";
-    $fp = @fopen($d . "/" . $tfile, "w");
-    if (!$fp) {
+    if(is_dir($d)){
+        $tfile = "_test.txt";
+        $fp = @fopen($d . "/" . $tfile, "w");
+        if (!$fp) {
+            return false;
+        }
+        fclose($fp);
+        $rs = @unlink($d . "/" . $tfile);
+        if ($rs) {
+            return true;
+        }
+        return false;
+    }else{
+        if(is_writeable($d)){
+            return true;
+        }
         return false;
     }
-    fclose($fp);
-    $rs = @unlink($d . "/" . $tfile);
-    if ($rs) {
-        return true;
-    }
-    return false;
+
 }
 
 function sql_execute($sql, $tablepre) {
