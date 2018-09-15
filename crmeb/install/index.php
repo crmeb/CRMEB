@@ -118,6 +118,13 @@ switch ($step) {
         	$file_put_contents = '<font color=red>[×]不支持</font>';
         	$err++;
         }
+        if(function_exists('bcadd')){
+            $bcadd = '<font color=green>[√]支持</font> ';
+        }else{
+            $bcadd= '<font color=red>[×]不支持</font>';
+            $err++;
+        }
+
         
         $folder = array(
             'install',

@@ -126,6 +126,11 @@
           <td>建议开启</td>
           <td><?php echo $file_put_contents; ?></td>
           <td>--</td>
+        </tr> <tr>
+          <td>bcadd</td>
+          <td>建议开启</td>
+          <td><?php echo $bcadd; ?></td>
+          <td>--</td>
         </tr>
       </table>
     </div>
