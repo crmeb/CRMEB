@@ -1439,7 +1439,7 @@ CREATE TABLE IF NOT EXISTS `eb_system_config` (
   `sort` int(10) unsigned NOT NULL COMMENT '排序',
   `status` tinyint(1) unsigned NOT NULL COMMENT '是否隐藏',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='配置表' AUTO_INCREMENT=96 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='配置表' AUTO_INCREMENT=1;
 
 --
 -- 转存表中的数据 `eb_system_config`
