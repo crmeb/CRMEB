@@ -9,9 +9,10 @@
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
 use \think\Route;
-
+//兼容模式 不支持伪静态可开启
+//\think\Url::root('index.php?s=');
 Route::group('admin',function(){
-    Route::rule('/index2','admin/Index/index2','get');
+//    Route::rule('/index2','admin/Index/index2','get');
 //    Route::controller('index','admin/Index');
 //    resource('system_menus','SystemMenus');
 //    Route::rule('/menus','SystemMenus','get');
