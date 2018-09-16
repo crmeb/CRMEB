@@ -97,7 +97,6 @@ class UploadService
     {
         self::init();
         $path = self::uploadDir($path,$root);
-        print_r($path);exit;
         $dir = ROOT_PATH . $path;
         if(!self::validDir($dir)) return self::setError('生成上传目录失败,请检查权限!');
         if(!isset($_FILES[$fileName])) return self::setError('上传文件不存在!');
