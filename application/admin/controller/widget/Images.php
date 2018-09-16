@@ -56,7 +56,7 @@ class Images extends AuthController
         $res = Upload::image('file',$pid.'/'.date('Ymd'));
         //产品图片上传记录
         $fileInfo = $res->fileInfo->getinfo();
-        print_r($fileInfo);
+        print_r($res);
         SystemAttachmentModel::attachmentAdd($res->fileInfo->getSaveName(),$fileInfo['size'],$fileInfo['type'],$res->dir,'',$pid);
         $info = array(
 //            "originalName" => $fileInfo['name'],
