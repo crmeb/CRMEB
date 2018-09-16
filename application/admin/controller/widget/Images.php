@@ -56,6 +56,7 @@ class Images extends AuthController
         $res = Upload::image('file',$pid.'/'.date('Ymd'));
         //产品图片上传记录
         $fileInfo = $res->fileInfo->getinfo();
+        //入口是public需要替换⏫图片路径
         if(empty(PUBILC_PATH)){
             $res->dir = str_replace('public/','',$res->dir);
         }
