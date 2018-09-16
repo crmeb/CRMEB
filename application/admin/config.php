@@ -21,12 +21,12 @@ return [
     ],
     // 视图输出字符串内容替换
     'view_replace_str'       => [
-        '{__ADMIN_PATH}'=>__DIR__.'/public/system/',
-        '{__FRAME_PATH}'=>__DIR__.'/public/system/frame/',
-        '{__PLUG_PATH}'=>__DIR__.'/public/static/plug/',
-        '{__MODULE_PATH}'=>__DIR__.'/public/system/module/',
-        '{__STATIC_PATH}'=>__DIR__.'/public/static/',
-        '{__PUBLIC_PATH}'=>__DIR__.'/public/'
+        '{__ADMIN_PATH}'=>PUBILC_PATH.'/system/',
+        '{__FRAME_PATH}'=>PUBILC_PATH.'/system/frame/',
+        '{__PLUG_PATH}'=>PUBILC_PATH.'/static/plug/',
+        '{__MODULE_PATH}'=>PUBILC_PATH.'/system/module/',
+        '{__STATIC_PATH}'=>PUBILC_PATH.'/static/',
+        '{__PUBLIC_PATH}'=>PUBILC_PATH.'/'
     ],
     'system_wechat_tag' => '_system_wechat'
 ];
