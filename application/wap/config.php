@@ -38,9 +38,6 @@ return [
     ],
     // 视图输出字符串内容替换
     'view_replace_str'       => [
-        '{__PLUG_PATH}'=>PUBILC_PATH.'static/plug/',
-        '{__STATIC_PATH}'=>PUBILC_PATH.'static/',
-        '{__PUBLIC_PATH}'=>PUBILC_PATH,
         '{__WAP_PATH}'=>PUBILC_PATH.'wap/first/static/wap/'
     ],
 
