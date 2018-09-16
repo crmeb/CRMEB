@@ -144,13 +144,13 @@ return [
 
     // 视图输出字符串内容替换
     'view_replace_str'       => [
-        '{__ADMIN_PATH}'=>DS.PUBILC_PATH.'system/',
-        '{__FRAME_PATH}'=>DS.PUBILC_PATH.'system/frame/',
-        '{__PLUG_PATH}'=>DS.PUBILC_PATH.'static/plug/',
-        '{__MODULE_PATH}'=>DS.PUBILC_PATH.'system/module/',
-        '{__STATIC_PATH}'=>DS.PUBILC_PATH.'static/',
-        '{__PUBLIC_PATH}'=>DS.PUBILC_PATH,
-        '{__WAP_PATH}'=>DS.PUBILC_PATH.'wap/first/static/'
+        '{__ADMIN_PATH}'=>PUBILC_PATH.'system/',
+        '{__FRAME_PATH}'=>PUBILC_PATH.'system/frame/',
+        '{__PLUG_PATH}'=>PUBILC_PATH.'static/plug/',
+        '{__MODULE_PATH}'=>PUBILC_PATH.'system/module/',
+        '{__STATIC_PATH}'=>PUBILC_PATH.'static/',
+        '{__PUBLIC_PATH}'=>PUBILC_PATH,
+        '{__WAP_PATH}'=>PUBILC_PATH.'wap/first/static/'
     ],
     // 默认跳转页面对应的模板文件
     'dispatch_success_tmpl'  => THINK_PATH . 'tpl' . DS . 'dispatch_jump.tpl',
