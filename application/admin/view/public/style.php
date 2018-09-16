@@ -16,7 +16,7 @@
                 deps:['css!layercss']
             }
         },
-        baseUrl:'//'+location.hostname+'{__PUBLIC_PATH}/',
+        baseUrl:'//'+location.hostname+"/{__PUBLIC_PATH}",
         paths: {
             'static':'static',
             'system':'system',
