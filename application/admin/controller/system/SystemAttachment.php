@@ -24,7 +24,6 @@ class SystemAttachment extends AuthController
         if($res->status==false && $res->error){
             exit(json_encode(['state'=>$res->error]));
         }
-        $fileInfo = $res->fileInfo->getinfo();
         //产品图片上传记录
         $fileInfo = $res->fileInfo->getinfo();
         SystemAttachmentModel::attachmentAdd($res->fileInfo->getSaveName(),$fileInfo['size'],$fileInfo['type'],$res->dir,'',0);
