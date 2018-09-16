@@ -24,6 +24,6 @@ if(file_exists("./install/") && !file_exists("./install/install.lock")){
 // 定义应用目录
 define('APP_PATH', __DIR__ . '/../application/');
 //静态文件目录
-define('PUBILC_PATH', '/');
+define('PUBILC_PATH', '');
 // 加载框架引导文件
 require __DIR__ . '/../thinkphp/start.php';
