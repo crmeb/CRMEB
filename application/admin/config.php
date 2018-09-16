@@ -19,14 +19,5 @@ return [
         // 是否自动开启 SESSION
         'auto_start'     => true,
     ],
-    // 视图输出字符串内容替换
-    'view_replace_str'       => [
-        '{__ADMIN_PATH}'=>PUBILC_PATH.'system/',
-        '{__FRAME_PATH}'=>PUBILC_PATH.'system/frame/',
-        '{__PLUG_PATH}'=>PUBILC_PATH.'static/plug/',
-        '{__MODULE_PATH}'=>PUBILC_PATH.'system/module/',
-        '{__STATIC_PATH}'=>PUBILC_PATH.'static/',
-        '{__PUBLIC_PATH}'=>PUBILC_PATH
-    ],
     'system_wechat_tag' => '_system_wechat'
 ];
