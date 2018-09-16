@@ -150,7 +150,7 @@ return [
         '{__MODULE_PATH}'=>PUBILC_PATH.'system/module/',
         '{__STATIC_PATH}'=>PUBILC_PATH.'static/',
         '{__PUBLIC_PATH}'=>PUBILC_PATH,
-        '{__WAP_PATH}'=>PUBILC_PATH.'wap/'
+        '{__WAP_PATH}'=>PUBILC_PATH.'wap/first/static/'
     ],
     // 默认跳转页面对应的模板文件
     'dispatch_success_tmpl'  => THINK_PATH . 'tpl' . DS . 'dispatch_jump.tpl',
