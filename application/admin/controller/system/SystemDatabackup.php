@@ -25,6 +25,11 @@ class SystemDatabackup extends AuthController
    public function tablelist(Request $request = null)
    {
        $db= new Backup();
-       return Json::successlayui($db->dataList());
+//       $res = [];
+//       $res['code'] = '200';
+//       $res['msg'] = 'sucess';
+//       $res['data'] = $db->dataList();
+//       $res['count'] = count($db->dataList());
+       return Json::result('200','sucess',$db->dataList(),count($db->dataList()));
    }
 }
