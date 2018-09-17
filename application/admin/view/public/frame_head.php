@@ -15,7 +15,7 @@
     <script>
         $eb = parent._mpApi;
         // if(!$eb) top.location.reload();
-        window.controlle="<?php echo think\Request::instance()->controller();?>";
+        window.controlle="<?php echo think\Request::instance()->request()->controller();?>";
         window.module="<?php echo think\Request::instance()->module();?>";
     </script>
 
