@@ -3,6 +3,7 @@ namespace app\admin\controller\system;
 
 use app\admin\controller\AuthController;
 use service\FormBuilder as Form;
+use think\Request;
 use \tp5er\Backup;
 
 /**
@@ -18,9 +19,11 @@ class SystemDatabackup extends AuthController
      */
    public function index(){
 
+       return $this->fetch();
+   }
+   public function tablelist(Request $request = null)
+   {
        $db= new Backup();
-       var_dump($db->dataList());
-//       return $this->fetch('index',['list'=>$db->dataList()]);
-//       return $this->fetch();
+       return Json::successlayui($db->dataList());
    }
 }
