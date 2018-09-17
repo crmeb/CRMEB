@@ -7,7 +7,7 @@
         </div>
         <div class="layui-col-md12">
             <div class="layui-card">
-                <div class="layui-card-header">资金监控日志</div>
+                <div class="layui-card-header">数据库表列表</div>
                 <div class="layui-card-body">
                     <table class="layui-hide" id="userList" lay-filter="userList"></table>
 
@@ -26,9 +26,10 @@
             {field: 'engine', title: '类型'},
             {field: 'data_length', title: '大小'},
             {field: 'update_time', title: '更新时间'},
-            {field: 'collation', title: '字段数'},
+            {field: 'rows', title: '行数'},
         ];
     });
+    layList.reload('',100);
 
 </script>
 {/block}
