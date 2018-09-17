@@ -1,0 +1,19 @@
+{
+    "name": "tp5er/tp5-databackup",
+    "description": "Implement the database backup restore",    
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "tp5er",
+            "email": "tp5er@qq.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.4.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "tp5er\\": "src/"
+        }
+    }
+}

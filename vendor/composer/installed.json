@@ -833,6 +833,59 @@
         ]
     },
     {
+        "name": "topthink/framework",
+        "version": "v5.0.20",
+        "version_normalized": "5.0.20.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/top-think/framework.git",
+            "reference": "e20f6e8cadbbc6e246a0c121c89bfd278f30c76b"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/top-think/framework/zipball/e20f6e8cadbbc6e246a0c121c89bfd278f30c76b",
+            "reference": "e20f6e8cadbbc6e246a0c121c89bfd278f30c76b",
+            "shasum": ""
+        },
+        "require": {
+            "php": ">=5.4.0",
+            "topthink/think-installer": "~1.0"
+        },
+        "require-dev": {
+            "johnkary/phpunit-speedtrap": "^1.0",
+            "mikey179/vfsstream": "~1.6",
+            "phpdocumentor/reflection-docblock": "^2.0",
+            "phploc/phploc": "2.*",
+            "phpunit/phpunit": "4.8.*",
+            "sebastian/phpcpd": "2.*"
+        },
+        "time": "2018-05-11T08:02:47+00:00",
+        "type": "think-framework",
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "think\\": "library/think"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "Apache-2.0"
+        ],
+        "authors": [
+            {
+                "name": "liu21st",
+                "email": "liu21st@gmail.com"
+            }
+        ],
+        "description": "the new thinkphp framework",
+        "homepage": "http://thinkphp.cn/",
+        "keywords": [
+            "framework",
+            "orm",
+            "thinkphp"
+        ]
+    },
+    {
         "name": "topthink/think-captcha",
         "version": "v1.0.7",
         "version_normalized": "1.0.7.0",
@@ -995,6 +1048,44 @@
                 "email": "448901948@qq.com"
             }
         ]
+    },
+    {
+        "name": "tp5er/tp5-databackup",
+        "version": "1.0.0",
+        "version_normalized": "1.0.0.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/tp5er/tp5-databackup.git",
+            "reference": "10abd4383cf78844e1c22584fd823ef1d18e75dc"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/tp5er/tp5-databackup/zipball/10abd4383cf78844e1c22584fd823ef1d18e75dc",
+            "reference": "10abd4383cf78844e1c22584fd823ef1d18e75dc",
+            "shasum": ""
+        },
+        "require": {
+            "php": ">=5.4.0"
+        },
+        "time": "2017-12-29T05:36:58+00:00",
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "tp5er\\": "src/"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "tp5er",
+                "email": "tp5er@qq.com"
+            }
+        ],
+        "description": "Implement the database backup restore"
     },
     {
         "name": "xaboy/form-builder",

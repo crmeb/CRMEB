@@ -6,10 +6,11 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 
 return array(
+    'tp5er\\' => array($vendorDir . '/tp5er/tp5-databackup/src'),
     'think\\migration\\' => array($vendorDir . '/topthink/think-migration/src'),
     'think\\composer\\' => array($vendorDir . '/topthink/think-installer/src'),
     'think\\captcha\\' => array($vendorDir . '/topthink/think-captcha/src'),
-    'think\\' => array($vendorDir . '/topthink/think-image/src'),
+    'think\\' => array($baseDir . '/thinkphp/library/think', $vendorDir . '/topthink/think-image/src'),
     'Symfony\\Polyfill\\Mbstring\\' => array($vendorDir . '/symfony/polyfill-mbstring'),
     'Symfony\\Component\\HttpFoundation\\' => array($vendorDir . '/symfony/http-foundation'),
     'Symfony\\Bridge\\PsrHttpMessage\\' => array($vendorDir . '/symfony/psr-http-message-bridge'),
@@ -24,6 +25,5 @@ return array(
     'GuzzleHttp\\' => array($vendorDir . '/guzzlehttp/guzzle/src'),
     'FormBuilder\\' => array($vendorDir . '/xaboy/form-builder/src'),
     'EasyWeChat\\' => array($vendorDir . '/overtrue/wechat/src'),
-    'FormBuilder\\' => array($vendorDir . '/xaboy/form-builder/src'),
     'Doctrine\\Common\\Cache\\' => array($vendorDir . '/doctrine/cache/lib/Doctrine/Common/Cache'),
 );
