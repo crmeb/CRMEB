@@ -28,8 +28,8 @@
             {field: 'update_time', title: '更新时间'},
             {field: 'rows', title: '行数'},
         ];
-    });
-    layList.reload('',100);
+    },100);
+    layList.reload();
 
 </script>
 {/block}
