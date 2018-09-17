@@ -52,7 +52,7 @@
     var action={
         optimize:function () {
             var tables=layList.getCheckData().getIds('name');
-            if(ids.length){
+            if(tables.length){
                 layList.basePost(layList.Url({a:'optimize',p:{is_echo:1,status:0}}),{tables:tables},function (res) {
                     layList.msg(res.msg);
                     layList.reload();
@@ -62,8 +62,8 @@
             }
         },
         repair:function () {
-            var ids=layList.getCheckData().getIds('name');
-            if(ids.length){
+            var tables=layList.getCheckData().getIds('name');
+            if(tables.length){
                 layList.basePost(layList.Url({a:'repair',p:{is_echo:1,status:0}}),{tables:tables},function (res) {
                     layList.msg(res.msg);
                     layList.reload();
