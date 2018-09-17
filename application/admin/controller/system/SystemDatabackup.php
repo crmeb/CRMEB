@@ -59,6 +59,9 @@ class SystemDatabackup extends AuthController
      */
     public function repair(Request $request = null)
     {
-        return Json::successful($status==0 ? '禁用成功':'解禁成功');
+        $tables = $request->post('tables/a');
+        $db= new Backup();
+        $res = $db->repair($tables);
+        return Json::successful($res ? '修复成功':'修复失败');
     }
 }

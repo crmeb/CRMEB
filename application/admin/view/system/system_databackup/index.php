@@ -55,10 +55,10 @@
             if(tables.length){
                 layList.basePost(layList.Url({a:'optimize'}),{tables:tables},function (res) {
                     layList.msg(res.msg);
-                    layList.reload();
+//                    layList.reload();
                 });
             }else{
-                layList.msg('请选择要封禁的会员');
+                layList.msg('请选择表');
             }
         },
         repair:function () {
@@ -66,10 +66,10 @@
             if(tables.length){
                 layList.basePost(layList.Url({a:'repair'}),{tables:tables},function (res) {
                     layList.msg(res.msg);
-                    layList.reload();
+//                    layList.reload();
                 });
             }else{
-                layList.msg('请选择要封禁的会员');
+                layList.msg('请选择表');
             }
         },
 
