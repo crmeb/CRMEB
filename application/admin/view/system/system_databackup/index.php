@@ -53,7 +53,7 @@
         optimize:function () {
             var tables=layList.getCheckData().getIds('name');
             if(tables.length){
-                layList.basePost(layList.Url({a:'optimize',p:{is_echo:1,status:0}}),{tables:tables},function (res) {
+                layList.basePost(layList.Url({a:'optimize'),{tables:tables},function (res) {
                     layList.msg(res.msg);
                     layList.reload();
                 });
@@ -64,7 +64,7 @@
         repair:function () {
             var tables=layList.getCheckData().getIds('name');
             if(tables.length){
-                layList.basePost(layList.Url({a:'repair',p:{is_echo:1,status:0}}),{tables:tables},function (res) {
+                layList.basePost(layList.Url({a:'repair'}),{tables:tables},function (res) {
                     layList.msg(res.msg);
                     layList.reload();
                 });
