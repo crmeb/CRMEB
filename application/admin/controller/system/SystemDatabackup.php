@@ -30,6 +30,6 @@ class SystemDatabackup extends AuthController
 //       $res['msg'] = 'sucess';
 //       $res['data'] = $db->dataList();
 //       $res['count'] = count($db->dataList());
-       return Json::result(0,'sucess',$db->dataList('',0),count($db->dataList()));
+       return Json::result(0,'sucess',$db->dataList(),count($db->dataList()));
    }
 }
