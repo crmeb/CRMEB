@@ -9,6 +9,12 @@
             <div class="layui-card">
                 <div class="layui-card-header">数据库表列表</div>
                 <div class="layui-card-body">
+                    <div class="layui-btn-group conrelTable">
+                        <button class="layui-btn layui-btn-sm layui-btn-normal" type="button" data-type="set_grant"><i class="fa fa-check-circle-o"></i>备份</button>
+                        <button class="layui-btn layui-btn-sm layui-btn-normal" type="button" data-type="set_custom"><i class="fa fa-check-circle-o"></i>优化表</button>
+                        <button class="layui-btn layui-btn-sm layui-btn-normal" type="button" data-type="set_info"><i class="fa fa-check-circle-o"></i>修复表</button>
+                        <button class="layui-btn layui-btn-sm layui-btn-normal" type="button" data-type="refresh"><i class="layui-icon layui-icon-refresh" ></i>刷新</button>
+                    </div>
                     <table class="layui-hide" id="userList" lay-filter="userList"></table>
                     <script type="text/html" id="barDemo">
                         <button type="button" class="layui-btn layui-btn-xs" lay-event="edit"><i class="layui-icon layui-icon-edit"></i>编辑</button>
