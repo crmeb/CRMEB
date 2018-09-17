@@ -79,7 +79,7 @@ class UploadService
      */
     protected static function uploadDir($path, $root=null)
     {
-        if($root === null) $root = 'public' . DS . 'uploads';
+        if($root === null) $root = 'public/' . 'uploads';
         return $root . DS . $path;
     }
 

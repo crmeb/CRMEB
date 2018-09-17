@@ -4,7 +4,7 @@
         urlArgs: "v=201712230955",
         map: {
             '*': {
-                'css': '/public/static/plug/requirejs/require-css.js'
+                'css': "{__PLUG_PATH}requirejs/require-css.js"
             }
         },
         shim: {
@@ -24,7 +24,7 @@
                 deps: ['css!yduicss']
             }
         },
-        baseUrl: '//' + location.hostname + '/public',
+        baseUrl: '//' + location.hostname + "{__PUBLIC_PATH}",
         paths: {
             'static': 'static',
             'vue': 'static/plug/vue/dist/vue.min',

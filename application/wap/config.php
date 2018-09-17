@@ -36,14 +36,6 @@ return [
         // 标签库标签结束标记
         'taglib_end'   => '}',
     ],
-    // 视图输出字符串内容替换
-    'view_replace_str'       => [
-        '{__PLUG_PATH}'=>'/public/static/plug/',
-        '{__STATIC_PATH}'=>'/public/static/',
-        '{__PUBLIC_PATH}'=>'/public/',
-        '{__WAP_PATH}'=>'/application/wap/view/first/static/wap/'
-    ],
-
     'exception_handle' =>\basic\WapException::class,
     'empty_controller' =>'AuthController'
 ];

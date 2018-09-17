@@ -82,15 +82,22 @@
         </tr>
 		<?php
 		foreach($folder as $dir){
-		     $Testdir = SITEDIR.$dir;
-			 //echo "<br/>";
-		         dir_create($Testdir);
-			 if(TestWrite($Testdir)){
-			     $w = '<span class="correct_span">&radic;</span>可写 ';
-			 }else{
-			     $w = '<span class="correct_span error_span">&radic;</span>不可写 ';
-				 $err++;
-			 }
+		     $Testdir = CRMEBDIR.$dir;
+//			 echo $Testdir."<br/>";
+            if(!is_file($Testdir)){
+                if(!is_dir($Testdir)){
+                    dir_create($Testdir);
+                }
+            }
+
+             if(testwrite($Testdir)){
+                 $w = '<span class="correct_span">&radic;</span>可写 ';
+             }else{
+                 $w = '<span class="correct_span error_span">&radic;</span>不可写 ';
+                 $err++;
+             }
+
+
 			 if(is_readable($Testdir)){
 			     $r = '<span class="correct_span">&radic;</span>可读' ;
 			 }else{
@@ -106,35 +113,7 @@
 		        </tr>
 		<?php
 		}                
-		?>   
-                <tr>
-                  <td>application/database.php</td>
-                  <td>读写</td>
-                  <?php
-                     if (is_writable(SITEDIR.'application/database.php')){
-                        echo "<td><span class='correct_span'>√</span>可写 </td>
-                              <td><span class='correct_span'>√</span>可读</td>";                 
-                     }else{
-                         $err++;
-                        echo "<td><span class='correct_span error_span'>&radic;</span>不可写 </td>
-                              <td><span class='correct_span error_span'>&radic;</span>不可读</td>";                        
-                     }
-                  ?>
-                </tr>            
-                <tr>
-                  <td>application/config.php</td>
-                  <td>读写</td>
-                  <?php
-                     if (is_writable(SITEDIR.'application/config.php')){
-                        echo "<td><span class='correct_span'>√</span>可写 </td>
-                              <td><span class='correct_span'>√</span>可读</td>";                 
-                     }else{
-                         $err++;
-                        echo "<td><span class='correct_span error_span'>&radic;</span>不可写 </td>
-                              <td><span class='correct_span error_span'>&radic;</span>不可读</td>";                        
-                     }
-                  ?>
-                </tr>                                 
+		?>
       </table>
       <table width="100%">
         <tr>
@@ -153,6 +132,11 @@
           <td>file_put_contents</td>
           <td>建议开启</td>
           <td><?php echo $file_put_contents; ?></td>
+          <td>--</td>
+        </tr> <tr>
+          <td>BC</td>
+          <td>必须扩展</td>
+          <td><?php echo $BC; ?></td>
           <td>--</td>
         </tr>
       </table>

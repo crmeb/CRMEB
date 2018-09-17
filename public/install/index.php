@@ -27,10 +27,11 @@ define("CRMEB_VERSION", '20180601');
 date_default_timezone_set('PRC');
 error_reporting(E_ALL & ~E_NOTICE);
 header('Content-Type: text/html; charset=UTF-8');
-define('SITEDIR', _dir_path(substr(dirname(__FILE__), 0, -8)));
+define('SITEDIR', _dir_path(substr(dirname(__FILE__), 0, -8)));//入口文件目录
+define('CRMEBDIR', _dir_path(substr(dirname(__FILE__), 0, -15)));//项目目录
 //define('SITEDIR2', substr(SITEDIR,0,-7));
-//echo SITEDIR2;
-//exit;
+//echo SITEDIR;
+//exit;SITEDIR
 //数据库
 $sqlFile = 'crmeb.sql';
 $configFile = 'config.php';
@@ -66,7 +67,7 @@ switch ($step) {
 
     case '2':
 
-        if (phpversion() < 5.5.9) {
+        if (phpversion() < 5.6) {
             die('本系统需要PHP5+MYSQL >=5.5.9环境，当前PHP版本为：' . phpversion());
         }
 
@@ -118,14 +119,23 @@ switch ($step) {
         	$file_put_contents = '<font color=red>[×]不支持</font>';
         	$err++;
         }
+        if(function_exists('bcadd')){
+            $BC = '<font color=green>[√]支持</font> ';
+        }else{
+            $BC = '<font color=red>[×]不支持</font>';
+            $err++;
+        }
+
         
         $folder = array(
-            'install',
+            'public/install',
             'public/uploads',
             'runtime',
             'runtime/cache',
 	    	'runtime/temp',
-	    	'runtime/log',        	
+	    	'runtime/log',
+            'application/database.php',
+            'application/config.php',
         );
         include_once ("./templates/step2.php");
         exit();
@@ -267,7 +277,7 @@ switch ($step) {
 						mysqli_query($conn,"truncate table ".$val[0]);
 					}		
 				}   	
-				delFile('../public/upload'); // 清空测试图片
+				delFile(CRMEBDIR.'/public/uploads'); // 清空测试图片
 			}
             //读取配置文件，并替换真实配置数据1
             $strConfig = file_get_contents(SITEDIR . 'install/' . $configFile);
@@ -279,8 +289,8 @@ switch ($step) {
             $strConfig = str_replace('#DB_PREFIX#', $dbPrefix, $strConfig);
             $strConfig = str_replace('#DB_CHARSET#', 'utf8', $strConfig);
             // $strConfig = str_replace('#DB_DEBUG#', false, $strConfig);
-            @chmod(SITEDIR . '/application/database.php',0777); //数据库配置文件的地址
-            @file_put_contents(SITEDIR . '/application/database.php', $strConfig); //数据库配置文件的地址
+            @chmod(CRMEBDIR . '/application/database.php',0777); //数据库配置文件的地址
+            @file_put_contents(CRMEBDIR . '/application/database.php', $strConfig); //数据库配置文件的地址
             
             //读取配置文件，并替换换配置
 //            $strConfig = file_get_contents(SITEDIR . '/application/config.php');
@@ -315,7 +325,7 @@ switch ($step) {
     case '5':
     	$ip = get_client_ip();
     	$host = $_SERVER['HTTP_HOST'];
-        $curent_version = file_get_contents(SITEDIR .'/application/version.php');
+        $curent_version = file_get_contents(CRMEBDIR .'/application/version.php');
         $time = time();
         $mt_rand_str = $create_date.sp_random_string(6);
         $str_constant = "<?php".PHP_EOL."define('INSTALL_DATE',".$time.");".PHP_EOL."define('SERIALNUMBER','".$mt_rand_str."');";
@@ -326,17 +336,26 @@ switch ($step) {
 }
 
 function testwrite($d) {
-    $tfile = "_test.txt";
-    $fp = @fopen($d . "/" . $tfile, "w");
-    if (!$fp) {
+    if(is_file($d)){
+        if(is_writeable($d)){
+            return true;
+        }
+        return false;
+
+    }else{
+        $tfile = "_test.txt";
+        $fp = @fopen($d . "/" . $tfile, "w");
+        if (!$fp) {
+            return false;
+        }
+        fclose($fp);
+        $rs = @unlink($d . "/" . $tfile);
+        if ($rs) {
+            return true;
+        }
         return false;
     }
-    fclose($fp);
-    $rs = @unlink($d . "/" . $tfile);
-    if ($rs) {
-        return true;
-    }
-    return false;
+
 }
 
 function sql_execute($sql, $tablepre) {

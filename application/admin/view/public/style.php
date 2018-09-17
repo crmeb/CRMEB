@@ -5,7 +5,7 @@
     requirejs.config({
         map: {
             '*': {
-                'css': '/public/static/plug/requirejs/require-css.js'
+                'css': "{__PUBLIC_PATH}static/plug/requirejs/require-css.js"
             }
         },
         shim:{
@@ -16,7 +16,7 @@
                 deps:['css!layercss']
             }
         },
-        baseUrl:'//'+location.hostname+'/public',
+        baseUrl:'//'+location.hostname+"{__PUBLIC_PATH}",
         paths: {
             'static':'static',
             'system':'system',

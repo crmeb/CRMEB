@@ -20,7 +20,7 @@
 function sensitive_words_filter($str)
 {
     if (!$str) return '';
-    $file = ROOT_PATH. 'public/static/plug/censorwords/CensorWords';
+    $file = ROOT_PATH. PUBILC_PATH.'static/plug/censorwords/CensorWords';
     $words = file($file);
     foreach($words as $word)
     {

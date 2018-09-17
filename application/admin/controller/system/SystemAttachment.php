@@ -24,9 +24,12 @@ class SystemAttachment extends AuthController
         if($res->status==false && $res->error){
             exit(json_encode(['state'=>$res->error]));
         }
-        $fileInfo = $res->fileInfo->getinfo();
         //产品图片上传记录
         $fileInfo = $res->fileInfo->getinfo();
+        //入口是public需要替换图片路径
+        if(strpos(PUBILC_PATH,'public') == false){
+            $res->dir = str_replace('public/','',$res->dir);
+        }
         SystemAttachmentModel::attachmentAdd($res->fileInfo->getSaveName(),$fileInfo['size'],$fileInfo['type'],$res->dir,'',0);
         $info = array(
             "originalName" => $fileInfo['name'],

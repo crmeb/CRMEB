@@ -578,150 +578,6 @@ CREATE TABLE IF NOT EXISTS `eb_routine_form_id` (
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='表单id表记录表' AUTO_INCREMENT=138 ;
 
---
--- 转存表中的数据 `eb_routine_form_id`
---
-
-INSERT INTO `eb_routine_form_id` (`id`, `uid`, `form_id`, `stop_time`, `status`) VALUES
-(1, NULL, '1527218790919', 1527737190, 1),
-(2, NULL, '1527218795445', 1527737195, 1),
-(3, NULL, '1527218802623', 1527737202, 1),
-(4, NULL, '1527219992546', 1527738392, 1),
-(5, NULL, '18ed60695c60477263362db1fcd57711', 1528028492, 1),
-(6, NULL, '4ac27cf74f1874089e7b9978b1655330', 1528028822, 1),
-(7, NULL, 'd1c09ce577252707a6a3d37749e4fb89', 1528041339, 1),
-(8, NULL, '587137c710636610dfac3434468bf59f', 1528041357, 1),
-(9, NULL, 'fd26d2192ac2c9c39f33c4dbca0feb23', 1528041362, 1),
-(10, NULL, 'e1ec0351a083cf7cdb16b01edb33e835', 1528041455, 1),
-(11, NULL, '3f37c5dc20bc4f70f542def3ffc059dc', 1528041457, 1),
-(12, NULL, '999c5282f1be9f952ddb126e38575c8c', 1528073720, 1),
-(13, NULL, '1527555687142', 1528074086, 1),
-(14, NULL, '1527561323929', 1528079722, 1),
-(15, NULL, '1527561340989', 1528079739, 1),
-(16, NULL, '1527561825052', 1528080224, 1),
-(17, NULL, '1527580340878', 1528098739, 1),
-(18, NULL, '1527580488444', 1528098887, 1),
-(19, NULL, '7025a9ade58735b2042eb1736e534cdf', 1528161187, 1),
-(20, NULL, 'b076d5a90fa7e4bd80ac8a9ca2d11f22', 1528161734, 1),
-(21, NULL, 'aca6b85e10199c71edfbd17094660dda', 1528161867, 1),
-(22, NULL, '7c375bfc6f48e99dd3c7ebae27be33be', 1528161872, 1),
-(23, NULL, 'd6cf09152119814664124cd5ef7285f6', 1528161877, 1),
-(24, NULL, '288510d01ec0c14182ea21c162c41e3d', 1528161890, 1),
-(25, NULL, '57ba79e638b3f37903901b12bbb61c65', 1528162265, 1),
-(26, NULL, '1ab1098aff8af0331a6e6d39436b295a', 1528162272, 1),
-(27, NULL, '957bc8ef5ae594f4b21cfd05f499eee3', 1528162389, 1),
-(28, NULL, 'a16f9c7fcbfe27266e4dc15be7157def', 1528162404, 1),
-(29, NULL, 'bbc619f610dac7327861d1021a1a203b', 1528163111, 1),
-(30, NULL, '1527678037164', 1528196436, 1),
-(31, NULL, '1527681662506', 1528200061, 1),
-(32, 167, '1c9b21e4dfa2e7adea3e9232905226ad', 1529464206, 1),
-(33, 108, '1529579041074', 1530097441, 1),
-(34, 201, '1529579324454', 1530097725, 1),
-(35, 204, '1529580872559', 1530099273, 1),
-(36, 200, '8f28fcfb33a0ef769ad41ad04031f9a8', 1530099285, 1),
-(37, 200, '615b8299361adfcf3b8a08851efe77d9', 1530099308, 1),
-(38, 205, '1529582976447', 1530101198, 1),
-(39, 111, '95fef45924f9f18813703cf8e0b0e4ac', 1530185676, 1),
-(40, 200, '153a471c1874e05aeb00ca9209170fac', 1530270537, 1),
-(41, 200, '29bc7c3080f1fada7f08b4408d35d308', 1530270539, 1),
-(42, 200, '36ea9f4451763b3f8746c6eb3abf06d5', 1530270580, 1),
-(43, 214, '1529752200618', 1530270601, 2),
-(44, 220, '1529892780729', 1530411191, 1),
-(45, 220, '1529892787607', 1530411191, 1),
-(46, 220, '1529892787798', 1530411192, 1),
-(47, 220, '1529892787971', 1530411192, 1),
-(48, 220, '1529892787455', 1530411201, 1),
-(49, 220, '1529892786813', 1530411201, 1),
-(50, 220, '1529892787269', 1530411201, 1),
-(51, 220, '1529892784774', 1530411201, 1),
-(52, 220, '1529892788272', 1530411201, 1),
-(53, 220, '1529892788445', 1530411201, 1),
-(54, 220, '1529892788604', 1530411201, 1),
-(55, 220, '1529892788932', 1530411202, 1),
-(56, 220, '1529892789101', 1530411202, 1),
-(57, 220, '1529892789427', 1530411202, 1),
-(58, 220, '1529892789286', 1530411202, 1),
-(59, 220, '1529892789590', 1530411202, 1),
-(60, 220, '1529892789761', 1530411203, 1),
-(61, 220, '1529892788112', 1530411203, 1),
-(62, 220, '1529892789931', 1530411204, 1),
-(63, 220, '1529892790103', 1530411204, 1),
-(64, 220, '1529892790282', 1530411204, 1),
-(65, 220, '1529892790441', 1530411204, 1),
-(66, 220, '1529892790604', 1530411204, 1),
-(67, 108, '1529906238260', 1530424639, 1),
-(68, 233, '7017a68780247b9b6d450940c81a036b', 1530497888, 1),
-(69, 255, '3722157beb438d85215d3b1e6a0aa086', 1530832636, 1),
-(70, 284, '05425d5a66e6ec39bb6dda8fc575897d', 1531527554, 1),
-(71, 284, '7134b20b96e0c52071ca55dd43dcb740', 1531527654, 1),
-(72, 284, '67b8007eb44dea3e21d1303c4627d859', 1531527654, 1),
-(73, 284, '497b10bd921e61951504bb17045ccfb7', 1531527655, 1),
-(74, 284, '998fe23bae16a35c1bc408277bb4833b', 1531527655, 1),
-(75, 284, '33beeecb32f504cc5a56abe698590c28', 1531527655, 1),
-(76, 111, '257c71cf394d97a056aa41143842027e', 1531733488, 2),
-(77, 111, '108808ab96b9482425e27aa1c8b4ed2f', 1531733491, 2),
-(78, 111, '28efdbca8f8bb079c19dbf70dee73c30', 1531733498, 1),
-(79, 111, '155cce7f6101826b000c388c484d1a85', 1531884073, 1),
-(80, 167, '1c41b9236234c363b1635a5e8f7bf4b3', 1531910918, 1),
-(81, 297, '279ae6f7b87db40697959eb399ab4811', 1532307184, 1),
-(82, 297, '59729e139999393a7968466f6a36ade6', 1532307185, 1),
-(83, 313, '1fa36a911ca520d0b1dfbd4a72e1e2e0', 1532421107, 1),
-(84, 331, '1532087781800', 1532606183, 1),
-(85, 331, '1532087817201', 1532606218, 1),
-(86, 3, '1532587856196', 1533106256, 1),
-(87, 3, '1532587873382', 1533106273, 1),
-(88, 3, '1532588350996', 1533106750, 1),
-(89, 2, '80519719e947dc9129e746db73a25f3c', 1533178687, 1),
-(90, 2, '3c9cb2a5fb31674d5558adda1d076cd0', 1533178772, 1),
-(91, 2, '3906bc9da1a9938806098f87d9aac7d5', 1533178889, 1),
-(92, 2, '5b3607db0a11927c1a09ec8d691a0de1', 1533179200, 1),
-(93, 3, '89b61ca46cc27bed2720d0001e9db8e2', 1533194195, 1),
-(94, 36, '1532831506204', 1533349908, 1),
-(95, 16, '420d8468961c963b6c7a39907c1bdd9d', 1533459111, 1),
-(96, 12, '22262a90af8b0ba7d1ed7d4e5eeb86c6', 1533547996, 1),
-(97, 12, '0081bb67e7714757f4a07d5c3e6b086d', 1533547998, 1),
-(98, 4, '42d5fdf09ccb1c9f6fefd09f13ea89fc', 1534132961, 1),
-(99, 38, '25d6321fc7e109d1e35c47737a8aa7e1', 1534147788, 1),
-(100, 38, '863ea4f4a8661938b2c0f202664d9437', 1534147791, 1),
-(101, 38, '31cb89644d2994a54707f9b5ea9e1023', 1534147888, 1),
-(102, 20, '08947883608babebd546c1b5072d3a92', 1534154855, 1),
-(103, 20, '04463a9cebf7f41967578e03256818cb', 1534154856, 1),
-(104, 38, '249b6abfe368e9d9ea4febab1f1d47ba', 1534154912, 1),
-(105, 20, '80e51f277979f68ef81b00580fc09914', 1534154940, 1),
-(106, 69, '5e2b5fd7b165cdaeabe40978456b3db4', 1534157549, 1),
-(107, 69, '4e74f7833fc553e0f8c9c6276fa88d8b', 1534157551, 1),
-(108, 69, '1cc154881ddbe5ac9f67079502e2cd8c', 1534157552, 1),
-(109, 69, '50fd7a788e21384d83ddb10969ae0789', 1534168668, 1),
-(110, 20, '5195192eb3c555f95c9c8826b42dfa04', 1534234252, 1),
-(111, 69, '9f5bfe1cea77be9fc6794270082a934d', 1534327834, 1),
-(112, 69, '55dfdd4d213d43bee59de007c3b16157', 1534327836, 1),
-(113, 69, '5f1b2e497d704b798fca1662cc1c489b', 1534327836, 1),
-(114, 69, '1fae9219e578d6a73156288e23af9f56', 1534327837, 1),
-(115, 69, '4d727c5c756d8527e1e7ba73f817e8cd', 1534327839, 1),
-(116, 90, '1534225778227', 1534744179, 1),
-(117, 90, '1534225780683', 1534744181, 1),
-(118, 90, '1534225782662', 1534744183, 1),
-(119, 9, '053fe37911d3cd904437c7d35b8925df', 1534757449, 1),
-(120, 9, '80008ab3085e3df4ea9885ca3ae4b570', 1534761869, 1),
-(121, 9, '94ccd0ebb24a1c139a193192158626ee', 1534761871, 1),
-(122, 9, '9a50ce063bf17fcc688cebebfb8b3e13', 1534761893, 1),
-(123, 9, '9509be467ad133a10deb2bb9670d3a1e', 1534762146, 1),
-(124, 9, '1ca15780bcf96beb330815019a213e30', 1534762148, 1),
-(125, 9, '4d8fa5bd37b713a4538d44b9fae3ce16', 1534762766, 1),
-(126, 9, '44d847fd08e64a7e9d29047ae8f67684', 1534762772, 1),
-(127, 9, '22db8d2d1575f10e45fe5aca90f1e4a2', 1534907515, 1),
-(128, 9, '3e7f64be264971fe81488717661a2836', 1534907536, 1),
-(129, 9, '12e26cc391d5b420924a22d927395f31', 1534907536, 1),
-(130, 9, '446108a5dcc7267c701d14cd7790d82a', 1534907543, 1),
-(131, 102, '1534405722892', 1534924122, 1),
-(132, 102, '1534405735813', 1534924135, 1),
-(133, 102, '1534405737697', 1534924137, 1),
-(134, 1, '10233218487fdda24f82f521049afc81', 1535005534, 1),
-(135, 91, '426b31051314ac4bc51794a9120ee8ea', 1535012019, 1),
-(136, 91, '917f5643b36171daaf3219b6c7213d55', 1535073308, 1),
-(137, 107, '41b9feea378b755517b6bc886cfd0447', 1535074989, 1);
-
--- --------------------------------------------------------
 
 --
 -- 表的结构 `eb_routine_template`
@@ -1456,58 +1312,6 @@ CREATE TABLE IF NOT EXISTS `eb_store_service_log` (
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='客服用户对话记录表' AUTO_INCREMENT=46 ;
 
---
--- 转存表中的数据 `eb_store_service_log`
---
-
-INSERT INTO `eb_store_service_log` (`id`, `mer_id`, `msn`, `uid`, `to_uid`, `add_time`, `type`, `remind`) VALUES
-(1, 0, '能收到消息吗', 65, 90, 1528875497, NULL, NULL),
-(2, 0, '[拜拜]', 65, 105, 1528875827, NULL, NULL),
-(3, 0, '[亲亲]', 65, 111, 1528875835, NULL, NULL),
-(4, 0, '[害羞]', 72, 65, 1528875934, NULL, NULL),
-(5, 0, '人呢？', 72, 65, 1528875957, NULL, NULL),
-(6, 0, '[大笑]', 168, 65, 1528957108, NULL, NULL),
-(7, 0, '[感觉真好]', 1, 65, 1528960540, NULL, NULL),
-(8, 0, '你好', 169, 90, 1528974505, NULL, NULL),
-(9, 0, '你好', 66, 65, 1528976476, NULL, NULL),
-(10, 0, '哈咯呀', 66, 65, 1528976482, NULL, NULL),
-(11, 0, '在吗', 172, 65, 1529026203, NULL, NULL),
-(12, 0, '你这个没有分销功能吗', 172, 65, 1529026214, NULL, NULL),
-(13, 0, '你好', 171, 90, 1529380637, NULL, NULL),
-(14, 0, '[大喷血]', 171, 90, 1529380649, NULL, NULL),
-(15, 0, 'hi', 176, 65, 1529382467, NULL, NULL),
-(16, 0, '哦你我', 179, 65, 1529400014, NULL, NULL),
-(17, 0, '出来接客', 185, 65, 1529464154, NULL, NULL),
-(18, 0, '源码出售？', 185, 65, 1529464166, NULL, NULL),
-(19, 0, '1', 191, 90, 1529559224, NULL, NULL),
-(20, 0, '<img class="img" src="/public/uploads/wechat/media/75cfd4562cec21da0645.jpg" onclick="img_detail($(this))" />', 191, 65, 1529559261, NULL, NULL),
-(21, 0, '<img class="img" src="/public/uploads/wechat/media/7621770cf214576487ed.jpg" onclick="img_detail($(this))" />', 191, 90, 1529559557, NULL, NULL),
-(22, 0, '你好', 209, 90, 1529639162, NULL, NULL),
-(23, 0, '这是微信聊天吗', 209, 90, 1529639172, NULL, NULL),
-(24, 0, '11', 232, 65, 1529979290, NULL, NULL),
-(25, 0, '明年', 239, 65, 1529996509, NULL, NULL),
-(26, 0, '11', 260, 65, 1530326762, NULL, NULL),
-(27, 0, '你好！', 264, 65, 1530380433, NULL, NULL),
-(28, 0, '999', 261, 65, 1530500304, NULL, NULL),
-(29, 0, '<img class="img" src="/public/uploads/wechat/media/82acc9a85b78bb3996ee.jpg" onclick="img_detail($(this))" />', 264, 90, 1530559560, NULL, NULL),
-(30, 0, '你高', 264, 90, 1530676572, NULL, NULL),
-(31, 0, '。。。', 280, 90, 1531184216, NULL, NULL),
-(32, 0, '你好', 314, 90, 1531972853, NULL, NULL),
-(33, 0, '你好', 327, 266, 1532052844, NULL, NULL),
-(34, 0, '。。。。', 69, 266, 1533459833, NULL, NULL),
-(35, 0, '[大笑]', 81, 266, 1533804713, NULL, NULL),
-(36, 0, '435123123', 69, 266, 1533810766, NULL, NULL),
-(37, 0, '你能回话。', 69, 266, 1533877078, NULL, NULL),
-(38, 0, '[感觉真好]', 69, 266, 1533877086, NULL, NULL),
-(39, 0, '<img class="img" src="/public/uploads/wechat/media/6227b83dd040458976a6.jpg" onclick="img_detail($(this))" />', 69, 266, 1534147509, NULL, NULL),
-(40, 0, '啦啦啦啦', 20, 90, 1534233307, NULL, NULL),
-(41, 0, '国家经济理论，了国家经济', 91, 90, 1534299668, NULL, NULL),
-(42, 0, '斯里兰卡民主社会主义共和国', 91, 90, 1534299681, NULL, NULL),
-(43, 0, '桂林路田林路', 91, 90, 1534299699, NULL, NULL),
-(44, 0, '7989798', 20, 90, 1534299708, NULL, NULL),
-(45, 0, '你以为陪你', 95, 90, 1534303730, NULL, NULL);
-
--- --------------------------------------------------------
 
 --
 -- 表的结构 `eb_store_visit`
@@ -1583,25 +1387,6 @@ CREATE TABLE IF NOT EXISTS `eb_system_attachment` (
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COMMENT='附件管理表' AUTO_INCREMENT=13 ;
 
 --
--- 转存表中的数据 `eb_system_attachment`
---
-
-INSERT INTO `eb_system_attachment` (`att_id`, `name`, `att_dir`, `satt_dir`, `att_size`, `att_type`, `pid`, `time`) VALUES
-(2, '5b7f5424a1a59.png', '\\public\\uploads\\0/20180824\\5b7f5424a1a59.png', '', '2628', 'image/png', 0, 1535071268),
-(3, '5b7f542501bd4.png', '\\public\\uploads\\0/20180824\\5b7f542501bd4.png', '', '2148', 'image/png', 0, 1535071269),
-(4, '5b7f5425288f5.png', '\\public\\uploads\\0/20180824\\5b7f5425288f5.png', '', '2020', 'image/png', 0, 1535071269),
-(5, '5b7f5425524f7.png', '\\public\\uploads\\0/20180824\\5b7f5425524f7.png', '', '1708', 'image/png', 0, 1535071269),
-(6, '5b7f54257b159.png', '\\public\\uploads\\0/20180824\\5b7f54257b159.png', '', '2326', 'image/png', 0, 1535071269),
-(7, '5b7f5425a39d2.png', '\\public\\uploads\\0/20180824\\5b7f5425a39d2.png', '', '2446', 'image/png', 0, 1535071269),
-(8, '5b7f5425ce95c.png', '\\public\\uploads\\0/20180824\\5b7f5425ce95c.png', '', '2226', 'image/png', 0, 1535071269),
-(9, '5b7f542607db7.png', '\\public\\uploads\\0/20180824\\5b7f542607db7.png', '', '3451', 'image/png', 0, 1535071270),
-(10, '5b7f54262f2a8.png', '\\public\\uploads\\0/20180824\\5b7f54262f2a8.png', '', '2612', 'image/png', 0, 1535071270),
-(11, '5b7f542664e15.png', '\\public\\uploads\\0/20180824\\5b7f542664e15.png', '', '2596', 'image/png', 0, 1535071270),
-(12, '5b7f542695f48.png', '\\public\\uploads\\0/20180824\\5b7f542695f48.png', '', '2020', 'image/png', 0, 1535071270);
-
--- --------------------------------------------------------
-
---
 -- 表的结构 `eb_system_attachment_category`
 --
 
@@ -1629,12 +1414,7 @@ INSERT INTO `eb_system_attachment_category` (`id`, `pid`, `name`, `enname`) VALU
 (8, 1, '拼团产品图', ''),
 (9, 1, '秒杀图片', ''),
 (10, 1, '砍价产品图', ''),
-(11, 1, '普通产品图片', ''),
-(21, 0, '衣服', ''),
-(22, 0, '衣服2', ''),
-(23, 0, '衣服3', ''),
-(24, 0, '衣服4', ''),
-(25, 0, '衣服5', '');
+(11, 1, '普通产品图片', '');
 
 -- --------------------------------------------------------
 
@@ -1658,7 +1438,7 @@ CREATE TABLE IF NOT EXISTS `eb_system_config` (
   `sort` int(10) unsigned NOT NULL COMMENT '排序',
   `status` tinyint(1) unsigned NOT NULL COMMENT '是否隐藏',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='配置表' AUTO_INCREMENT=96 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='配置表' AUTO_INCREMENT=1;
 
 --
 -- 转存表中的数据 `eb_system_config`
@@ -1883,135 +1663,6 @@ CREATE TABLE IF NOT EXISTS `eb_system_log` (
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='管理员操作记录表' AUTO_INCREMENT=122 ;
 
 --
--- 转存表中的数据 `eb_system_log`
---
-
-INSERT INTO `eb_system_log` (`id`, `admin_id`, `admin_name`, `path`, `page`, `method`, `ip`, `type`, `add_time`, `merchant_id`) VALUES
-(1, 1, 'admin', 'admin/setting.systemmenus/index/cate/12', '权限规则', 'GET', '127.0.0.1', 'system', 1534816931, 0),
-(2, 1, 'admin', 'admin/setting.systemmenus/index/pid/286', '未知', 'GET', '127.0.0.1', 'system', 1534816936, 0),
-(3, 1, 'admin', 'admin/setting.systemmenus/index/pid/272', '未知', 'GET', '127.0.0.1', 'system', 1534816938, 0),
-(4, 1, 'admin', 'admin/setting.systemmenus/index/pid/333', '未知', 'GET', '127.0.0.1', 'system', 1534816940, 0),
-(5, 1, 'admin', 'admin/setting.systemmenus/index/pid/272', '未知', 'GET', '127.0.0.1', 'system', 1534816941, 0),
-(6, 1, 'admin', 'admin/setting.systemmenus/delete/id/333', '未知', 'GET', '127.0.0.1', 'system', 1534816943, 0),
-(7, 1, 'admin', 'admin/setting.systemmenus/delete/id/238', '未知', 'GET', '127.0.0.1', 'system', 1534816946, 0),
-(8, 1, 'admin', 'admin/setting.systemmenus/index/pid/286', '未知', 'GET', '127.0.0.1', 'system', 1534816947, 0),
-(9, 1, 'admin', 'admin/setting.systemmenus/delete/id/272', '未知', 'GET', '127.0.0.1', 'system', 1534816952, 0),
-(10, 1, 'admin', 'admin/setting.systemmenus/index/pid/271', '未知', 'GET', '127.0.0.1', 'system', 1534816955, 0),
-(11, 1, 'admin', 'admin/setting.systemmenus/index/pid/254', '未知', 'GET', '127.0.0.1', 'system', 1534816956, 0),
-(12, 1, 'admin', 'admin/setting.systemmenus/delete/id/366', '未知', 'GET', '127.0.0.1', 'system', 1534816959, 0),
-(13, 1, 'admin', 'admin/setting.systemmenus/index/pid/366', '未知', 'GET', '127.0.0.1', 'system', 1534816960, 0),
-(14, 1, 'admin', 'admin/setting.systemmenus/delete/id/368', '未知', 'GET', '127.0.0.1', 'system', 1534816963, 0),
-(15, 1, 'admin', 'admin/setting.systemmenus/delete/id/367', '未知', 'GET', '127.0.0.1', 'system', 1534816965, 0),
-(16, 1, 'admin', 'admin/setting.systemmenus/index/pid/254', '未知', 'GET', '127.0.0.1', 'system', 1534816967, 0),
-(17, 1, 'admin', 'admin/setting.systemmenus/index/pid/271', '未知', 'GET', '127.0.0.1', 'system', 1534816967, 0),
-(18, 1, 'admin', 'admin/setting.systemmenus/index/pid/254', '未知', 'GET', '127.0.0.1', 'system', 1534816968, 0),
-(19, 1, 'admin', 'admin/setting.systemmenus/delete/id/366', '未知', 'GET', '127.0.0.1', 'system', 1534816970, 0),
-(20, 1, 'admin', 'admin/setting.systemmenus/index/pid/271', '未知', 'GET', '127.0.0.1', 'system', 1534816972, 0),
-(21, 1, 'admin', 'admin/setting.systemmenus/delete/id/254', '未知', 'GET', '127.0.0.1', 'system', 1534816973, 0),
-(22, 1, 'admin', 'admin/setting.systemmenus/index/pid/286', '未知', 'GET', '127.0.0.1', 'system', 1534816975, 0),
-(23, 1, 'admin', 'admin/setting.systemmenus/delete/id/271', '未知', 'GET', '127.0.0.1', 'system', 1534816981, 0),
-(24, 1, 'admin', 'admin/setting.systemconfig/index/type/3/tab_id/11', '积分配置', 'GET', '127.0.0.1', 'system', 1534817204, 0),
-(25, 1, 'admin', 'admin/ump.userpoint/index/', '积分日志', 'GET', '127.0.0.1', 'system', 1534817205, 0),
-(26, 1, 'admin', 'admin/ump.userpoint/getuserpointbadgelist/', '未知', 'GET', '127.0.0.1', 'system', 1534817205, 0),
-(27, 1, 'admin', 'admin/ump.userpoint/getponitlist/', '未知', 'GET', '127.0.0.1', 'system', 1534817205, 0),
-(28, 1, 'admin', 'admin/ump.storeseckill/index/', '限时秒杀', 'GET', '127.0.0.1', 'system', 1534817206, 0),
-(29, 1, 'admin', 'admin/ump.storeseckill/get_seckill_list/', '未知', 'GET', '127.0.0.1', 'system', 1534817206, 0),
-(30, 1, 'admin', 'admin/ump.storeseckill/index/', '限时秒杀', 'GET', '127.0.0.1', 'system', 1534817234, 0),
-(31, 1, 'admin', 'admin/ump.storeseckill/get_seckill_list/', '未知', 'GET', '127.0.0.1', 'system', 1534817234, 0),
-(32, 1, 'admin', 'admin/setting.systemconfigtab/index/', '配置分类展示页', 'GET', '127.0.0.1', 'system', 1534817606, 0),
-(33, 1, 'admin', 'admin/setting.systemgroup/index/', '组合数据', 'GET', '127.0.0.1', 'system', 1534817611, 0),
-(34, 1, 'admin', 'admin/setting.systemgroup/index/', '组合数据', 'GET', '127.0.0.1', 'system', 1534817632, 0),
-(35, 1, 'admin', 'admin/setting.systemgroup/index/', '组合数据', 'GET', '127.0.0.1', 'system', 1534817643, 0),
-(36, 1, 'admin', 'admin/setting.systemgroup/index/', '组合数据', 'GET', '127.0.0.1', 'system', 1534818052, 0),
-(37, 1, 'admin', 'admin/setting.systemgroupdata/index/gid/35', '未知', 'GET', '127.0.0.1', 'system', 1534818055, 0),
-(38, 1, 'admin', 'admin/setting.systemgroupdata/delete/id/73', '未知', 'GET', '127.0.0.1', 'system', 1534818059, 0),
-(39, 1, 'admin', 'admin/setting.systemgroupdata/index/gid/35', '未知', 'GET', '127.0.0.1', 'system', 1534818060, 0),
-(40, 1, 'admin', 'admin/store.storeproduct/index/type/1', '出售中商品', 'GET', '127.0.0.1', 'system', 1534818142, 0),
-(41, 1, 'admin', 'admin/store.storeproduct/create/', '未知', 'GET', '127.0.0.1', 'system', 1534818144, 0),
-(42, 1, 'admin', 'admin/store.storeproduct/create/', '未知', 'GET', '127.0.0.1', 'system', 1534818200, 0),
-(43, 1, 'admin', 'admin/store.storeproduct/create/', '未知', 'GET', '127.0.0.1', 'system', 1534818356, 0),
-(44, 1, 'admin', 'admin/widget.images/index/fodder/image', '附件管理', 'GET', '127.0.0.1', 'system', 1534818370, 0),
-(45, 1, 'admin', 'admin/widget.images/index/fodder/image', '附件管理', 'GET', '127.0.0.1', 'system', 1534818370, 0),
-(46, 1, 'admin', 'admin/widget.images/index/pid/8/fodder/image', '附件管理', 'GET', '127.0.0.1', 'system', 1534818372, 0),
-(47, 1, 'admin', 'admin/widget.images/index/pid/0/fodder/image', '附件管理', 'GET', '127.0.0.1', 'system', 1534818372, 0),
-(48, 1, 'admin', 'admin/widget.images/upload/pid/0', '上传图片', 'POST', '127.0.0.1', 'system', 1534818380, 0),
-(49, 1, 'admin', 'admin/widget.images/index/pid/0/fodder/image', '附件管理', 'GET', '127.0.0.1', 'system', 1534818382, 0),
-(50, 1, 'admin', 'admin/widget.images/index/fodder/slider_image', '附件管理', 'GET', '127.0.0.1', 'system', 1534818387, 0),
-(51, 1, 'admin', 'admin/widget.images/index/fodder/slider_image', '附件管理', 'GET', '127.0.0.1', 'system', 1534818387, 0),
-(52, 1, 'admin', 'admin/widget.images/index/fodder/slider_image', '附件管理', 'GET', '127.0.0.1', 'system', 1534818389, 0),
-(53, 1, 'admin', 'admin/widget.images/index/fodder/slider_image', '附件管理', 'GET', '127.0.0.1', 'system', 1534818389, 0),
-(54, 1, 'admin', 'admin/widget.images/index/fodder/slider_image', '附件管理', 'GET', '127.0.0.1', 'system', 1534818391, 0),
-(55, 1, 'admin', 'admin/widget.images/index/fodder/slider_image', '附件管理', 'GET', '127.0.0.1', 'system', 1534818391, 0),
-(56, 1, 'admin', 'admin/store.storeproduct/save/', '未知', 'POST', '127.0.0.1', 'system', 1534818410, 0),
-(57, 1, 'admin', 'admin/store.storeproduct/index/type/1', '出售中商品', 'GET', '127.0.0.1', 'system', 1534818410, 0),
-(58, 1, 'admin', 'admin/store.storeproduct/index/type/1', '出售中商品', 'GET', '127.0.0.1', 'system', 1534818593, 0),
-(59, 1, 'admin', 'admin/store.storeproduct/index/type/1', '出售中商品', 'GET', '127.0.0.1', 'system', 1534819393, 0),
-(60, 1, 'admin', 'admin/setting.systemgroup/index/', '组合数据', 'GET', '127.0.0.1', 'system', 1535071218, 0),
-(61, 1, 'admin', 'admin/setting.systemgroupdata/index/gid/32', '未知', 'GET', '127.0.0.1', 'system', 1535071221, 0),
-(62, 1, 'admin', 'admin/setting.systemgroupdata/delete/id/106', '未知', 'GET', '127.0.0.1', 'system', 1535071224, 0),
-(63, 1, 'admin', 'admin/setting.systemgroupdata/edit/gid/32/id/86', '未知', 'GET', '127.0.0.1', 'system', 1535071226, 0),
-(64, 1, 'admin', 'admin/widget.images/index/fodder/icon', '附件管理', 'GET', '127.0.0.1', 'system', 1535071228, 0),
-(65, 1, 'admin', 'admin/widget.images/index/fodder/icon', '附件管理', 'GET', '127.0.0.1', 'system', 1535071229, 0),
-(66, 1, 'admin', 'admin/widget.images/delete/', '删除图片', 'POST', '127.0.0.1', 'system', 1535071233, 0),
-(67, 1, 'admin', 'admin/widget.images/index/fodder/icon', '附件管理', 'GET', '127.0.0.1', 'system', 1535071234, 0),
-(68, 1, 'admin', 'admin/widget.images/upload/', '上传图片', 'POST', '127.0.0.1', 'system', 1535071268, 0),
-(69, 1, 'admin', 'admin/widget.images/upload/', '上传图片', 'POST', '127.0.0.1', 'system', 1535071269, 0),
-(70, 1, 'admin', 'admin/widget.images/upload/', '上传图片', 'POST', '127.0.0.1', 'system', 1535071269, 0),
-(71, 1, 'admin', 'admin/widget.images/upload/', '上传图片', 'POST', '127.0.0.1', 'system', 1535071269, 0),
-(72, 1, 'admin', 'admin/widget.images/upload/', '上传图片', 'POST', '127.0.0.1', 'system', 1535071269, 0),
-(73, 1, 'admin', 'admin/widget.images/upload/', '上传图片', 'POST', '127.0.0.1', 'system', 1535071269, 0),
-(74, 1, 'admin', 'admin/widget.images/upload/', '上传图片', 'POST', '127.0.0.1', 'system', 1535071269, 0),
-(75, 1, 'admin', 'admin/widget.images/upload/', '上传图片', 'POST', '127.0.0.1', 'system', 1535071270, 0),
-(76, 1, 'admin', 'admin/widget.images/upload/', '上传图片', 'POST', '127.0.0.1', 'system', 1535071270, 0),
-(77, 1, 'admin', 'admin/widget.images/upload/', '上传图片', 'POST', '127.0.0.1', 'system', 1535071270, 0),
-(78, 1, 'admin', 'admin/widget.images/upload/', '上传图片', 'POST', '127.0.0.1', 'system', 1535071270, 0),
-(79, 1, 'admin', 'admin/widget.images/index/fodder/icon', '附件管理', 'GET', '127.0.0.1', 'system', 1535071271, 0),
-(80, 1, 'admin', 'admin/widget.images/index/fodder/icon', '附件管理', 'GET', '127.0.0.1', 'system', 1535071271, 0),
-(81, 1, 'admin', 'admin/widget.images/index/fodder/icon', '附件管理', 'GET', '127.0.0.1', 'system', 1535071271, 0),
-(82, 1, 'admin', 'admin/widget.images/index/fodder/icon', '附件管理', 'GET', '127.0.0.1', 'system', 1535071271, 0),
-(83, 1, 'admin', 'admin/widget.images/index/fodder/icon', '附件管理', 'GET', '127.0.0.1', 'system', 1535071271, 0),
-(84, 1, 'admin', 'admin/widget.images/index/fodder/icon', '附件管理', 'GET', '127.0.0.1', 'system', 1535071271, 0),
-(85, 1, 'admin', 'admin/widget.images/index/fodder/icon', '附件管理', 'GET', '127.0.0.1', 'system', 1535071271, 0),
-(86, 1, 'admin', 'admin/widget.images/index/fodder/icon', '附件管理', 'GET', '127.0.0.1', 'system', 1535071271, 0),
-(87, 1, 'admin', 'admin/widget.images/index/fodder/icon', '附件管理', 'GET', '127.0.0.1', 'system', 1535071271, 0),
-(88, 1, 'admin', 'admin/widget.images/index/fodder/icon', '附件管理', 'GET', '127.0.0.1', 'system', 1535071271, 0),
-(89, 1, 'admin', 'admin/setting.systemgroupdata/update/id/86', '未知', 'POST', '127.0.0.1', 'system', 1535071284, 0),
-(90, 1, 'admin', 'admin/setting.systemgroupdata/index/gid/32', '未知', 'GET', '127.0.0.1', 'system', 1535071286, 0),
-(91, 1, 'admin', 'admin/setting.systemgroupdata/index/gid/32', '未知', 'GET', '127.0.0.1', 'system', 1535071287, 0),
-(92, 1, 'admin', 'admin/setting.systemgroupdata/edit/gid/32/id/52', '未知', 'GET', '127.0.0.1', 'system', 1535071289, 0),
-(93, 1, 'admin', 'admin/widget.images/index/fodder/icon', '附件管理', 'GET', '127.0.0.1', 'system', 1535071290, 0),
-(94, 1, 'admin', 'admin/widget.images/index/fodder/icon', '附件管理', 'GET', '127.0.0.1', 'system', 1535071290, 0),
-(95, 1, 'admin', 'admin/setting.systemgroupdata/update/id/52', '未知', 'POST', '127.0.0.1', 'system', 1535071295, 0),
-(96, 1, 'admin', 'admin/setting.systemgroupdata/index/gid/32', '未知', 'GET', '127.0.0.1', 'system', 1535071296, 0),
-(97, 1, 'admin', 'admin/setting.systemgroupdata/edit/gid/32/id/53', '未知', 'GET', '127.0.0.1', 'system', 1535071298, 0),
-(98, 1, 'admin', 'admin/widget.images/index/fodder/icon', '附件管理', 'GET', '127.0.0.1', 'system', 1535071299, 0),
-(99, 1, 'admin', 'admin/widget.images/index/fodder/icon', '附件管理', 'GET', '127.0.0.1', 'system', 1535071299, 0),
-(100, 1, 'admin', 'admin/setting.systemgroupdata/update/id/53', '未知', 'POST', '127.0.0.1', 'system', 1535071306, 0),
-(101, 1, 'admin', 'admin/setting.systemgroupdata/index/gid/32', '未知', 'GET', '127.0.0.1', 'system', 1535071307, 0),
-(102, 1, 'admin', 'admin/setting.systemgroupdata/edit/gid/32/id/87', '未知', 'GET', '127.0.0.1', 'system', 1535071309, 0),
-(103, 1, 'admin', 'admin/widget.images/index/fodder/icon', '附件管理', 'GET', '127.0.0.1', 'system', 1535071311, 0),
-(104, 1, 'admin', 'admin/widget.images/index/fodder/icon', '附件管理', 'GET', '127.0.0.1', 'system', 1535071311, 0),
-(105, 1, 'admin', 'admin/setting.systemgroupdata/update/id/87', '未知', 'POST', '127.0.0.1', 'system', 1535071315, 0),
-(106, 1, 'admin', 'admin/setting.systemgroupdata/index/gid/32', '未知', 'GET', '127.0.0.1', 'system', 1535071317, 0),
-(107, 1, 'admin', 'admin/setting.systemgroupdata/edit/gid/32/id/86', '未知', 'GET', '127.0.0.1', 'system', 1535071326, 0),
-(108, 1, 'admin', 'admin/widget.images/index/fodder/icon', '附件管理', 'GET', '127.0.0.1', 'system', 1535071329, 0),
-(109, 1, 'admin', 'admin/widget.images/index/fodder/icon', '附件管理', 'GET', '127.0.0.1', 'system', 1535071329, 0),
-(110, 1, 'admin', 'admin/setting.systemgroupdata/update/id/86', '未知', 'POST', '127.0.0.1', 'system', 1535071333, 0),
-(111, 1, 'admin', 'admin/setting.systemgroupdata/index/gid/32', '未知', 'GET', '127.0.0.1', 'system', 1535071334, 0),
-(112, 1, 'admin', 'admin/setting.systemgroupdata/edit/gid/32/id/86', '未知', 'GET', '127.0.0.1', 'system', 1535071336, 0),
-(113, 1, 'admin', 'admin/widget.images/index/fodder/icon', '附件管理', 'GET', '127.0.0.1', 'system', 1535071337, 0),
-(114, 1, 'admin', 'admin/widget.images/index/fodder/icon', '附件管理', 'GET', '127.0.0.1', 'system', 1535071338, 0),
-(115, 1, 'admin', 'admin/setting.systemgroupdata/update/id/86', '未知', 'POST', '127.0.0.1', 'system', 1535071341, 0),
-(116, 1, 'admin', 'admin/setting.systemgroupdata/index/gid/32', '未知', 'GET', '127.0.0.1', 'system', 1535071342, 0),
-(117, 1, 'admin', 'admin/setting.systemgroupdata/edit/gid/32/id/92', '未知', 'GET', '127.0.0.1', 'system', 1535071345, 0),
-(118, 1, 'admin', 'admin/widget.images/index/fodder/icon', '附件管理', 'GET', '127.0.0.1', 'system', 1535071347, 0),
-(119, 1, 'admin', 'admin/widget.images/index/fodder/icon', '附件管理', 'GET', '127.0.0.1', 'system', 1535071347, 0),
-(120, 1, 'admin', 'admin/setting.systemgroupdata/update/id/92', '未知', 'POST', '127.0.0.1', 'system', 1535071352, 0),
-(121, 1, 'admin', 'admin/setting.systemgroupdata/index/gid/32', '未知', 'GET', '127.0.0.1', 'system', 1535071353, 0);
-
--- --------------------------------------------------------
-
---
 -- 表的结构 `eb_system_menus`
 --
 
@@ -2052,7 +1703,7 @@ INSERT INTO `eb_system_menus` (`id`, `pid`, `icon`, `menu_name`, `module`, `cont
 (19, 11, '', '图文管理', 'admin', 'wechat.wechatNewsCategory', 'index', '[]', 60, 1, 1),
 (21, 0, 'magic', '维护', 'admin', 'system.system', '', '[]', 1, 1, 1),
 (23, 0, 'laptop', '商品', 'admin', 'store.store', 'index', '[]', 110, 1, 1),
-(24, 23, '', '商品管理', 'admin', 'store.storeProduct', 'index', '[]', 100, 1, 1),
+(24, 23, '', '商品管理', 'admin', 'store.storeProduct', 'index', '{"type":"1"}', 100, 1, 1),
 (25, 23, '', '商品分类', 'admin', 'store.storeCategory', 'index', '[]', 1, 1, 1),
 (26, 285, '', '订单管理', 'admin', 'order.storeOrder', 'index', '[]', 1, 1, 1),
 (30, 354, '', '关键字回复', 'admin', 'wechat.reply', 'keyword', '[]', 85, 1, 1),
@@ -2265,7 +1916,6 @@ INSERT INTO `eb_system_menus` (`id`, `pid`, `icon`, `menu_name`, `module`, `cont
 (287, 0, 'money', '财务', 'admin', '', '', '[]', 103, 1, 1),
 (288, 0, 'line-chart', '数据', 'admin', '', '', '[]', 100, 0, 1),
 (289, 0, 'gear', '设置', 'admin', '', '', '[]', 90, 1, 1),
-(323, 24, '', '出售中商品', 'admin', 'store.storeProduct', 'index', '{"type":"1"}', 100, 1, 1),
 (290, 285, '', '售后服务', 'admin', '', '', '[]', 0, 1, 1),
 (353, 337, '', '分销配置', 'admin', 'setting.systemConfig', 'index', '{"type":"3","tab_id":"9"}', 0, 1, 1),
 (306, 287, '', '财务操作', 'admin', '', '', '[]', 100, 1, 1),
@@ -2274,11 +1924,6 @@ INSERT INTO `eb_system_menus` (`id`, `pid`, `icon`, `menu_name`, `module`, `cont
 (372, 269, '', '首页幻灯片', 'admin', 'setting.system_group_data', 'index', '{"gid":"48"}', 0, 1, 1),
 (312, 307, '', '资金监控', 'admin', 'finance.finance', 'bill', '[]', 0, 1, 1),
 (313, 308, '', '佣金记录', 'admin', 'finance.finance', 'commission_list', '[]', 0, 1, 1),
-(324, 24, '', '仓库中商品', 'admin', 'store.storeProduct', 'index', '{"type":"3"}', 80, 1, 1),
-(325, 24, '', '已售馨商品', 'admin', 'store.storeProduct', 'index', '{"type":"4"}', 70, 1, 1),
-(326, 24, '', '警戒商品', 'admin', 'store.storeProduct', 'index', '{"type":"5"}', 60, 1, 1),
-(327, 24, '', '商品回收站', 'admin', 'store.storeProduct', 'index', '{"type":"6"}', 0, 1, 1),
-(328, 24, '', '待上架商品', 'admin', 'store.storeProduct', 'index', '{"type":"2"}', 90, 1, 1),
 (329, 285, '', '营销订单', 'admin', 'user', 'user', '[]', 0, 0, 1),
 (371, 337, '', '分销员管理', 'admin', 'agent.agentManage', 'index', '[]', 0, 1, 1),
 (354, 11, '', '自动回复', '', '', '', '[]', 80, 1, 1),
@@ -2434,7 +2079,7 @@ CREATE TABLE IF NOT EXISTS `eb_user` (
 --
 
 INSERT INTO `eb_user` (`uid`, `account`, `pwd`, `nickname`, `avatar`, `phone`, `add_time`, `add_ip`, `last_time`, `last_ip`, `now_money`, `integral`, `status`, `level`, `spread_uid`, `user_type`, `is_promoter`, `pay_count`) VALUES
-(1, 'liaofei', 'e10adc3949ba59abbe56e057f20f883e', '等风来，随风去', 'http://thirdwx.qlogo.cn/mmopen/ajNVdqHZLLBaQPPnbg52bgibia1CZDruib1RwibHbBbnfxH1MUwbyz3G0Xub1LNX0ib5RFd7nZvo88gzHwib0OPibyfZQ/132', '', 1528859304, '140.207.54.80', 1535070458, '127.0.0.1', '0.00', '0.00', 1, 0, 0, 'wechat', 0, 0);
+(1, 'crmeb', 'e10adc3949ba59abbe56e057f20f883e', '等风来，随风去', 'http://thirdwx.qlogo.cn/mmopen/ajNVdqHZLLBaQPPnbg52bgibia1CZDruib1RwibHbBbnfxH1MUwbyz3G0Xub1LNX0ib5RFd7nZvo88gzHwib0OPibyfZQ/132', '', 1528859304, '140.207.54.80', 1535070458, '127.0.0.1', '0.00', '0.00', 1, 0, 0, 'wechat', 0, 0);
 
 -- --------------------------------------------------------
 
@@ -2602,33 +2247,6 @@ CREATE TABLE IF NOT EXISTS `eb_user_notice_see` (
 -- 转存表中的数据 `eb_user_notice_see`
 --
 
-INSERT INTO `eb_user_notice_see` (`id`, `nid`, `uid`, `add_time`) VALUES
-(1, 2, 20, 1533784136),
-(2, 3, 20, 1533785982),
-(3, 4, 20, 1533788165),
-(4, 8, 91, 1534229161),
-(5, 7, 91, 1534229210),
-(6, 6, 91, 1534229606),
-(7, 5, 91, 1534229607),
-(8, 12, 91, 1534229611),
-(9, 13, 91, 1534229617),
-(10, 14, 91, 1534236474),
-(11, 16, 91, 1534237723),
-(12, 11, 91, 1534237728),
-(13, 20, 1, 1534297935),
-(14, 21, 9, 1534302665),
-(15, 24, 9, 1534308149),
-(16, 26, 91, 1534316096),
-(17, 23, 9, 1534318276),
-(18, 22, 9, 1534318278),
-(19, 24, 1, 1534406943),
-(20, 22, 1, 1534406944),
-(21, 23, 1, 1534406945),
-(22, 34, 4, 1534497414),
-(23, 24, 4, 1534497421);
-
--- --------------------------------------------------------
-
 --
 -- 表的结构 `eb_user_recharge`
 --
@@ -2733,139 +2351,6 @@ CREATE TABLE IF NOT EXISTS `eb_wechat_qrcode` (
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='微信二维码管理表' AUTO_INCREMENT=126 ;
 
 --
--- 转存表中的数据 `eb_wechat_qrcode`
---
-
-INSERT INTO `eb_wechat_qrcode` (`id`, `third_type`, `third_id`, `ticket`, `expire_seconds`, `status`, `add_time`, `url`, `qrcode_url`, `scan`) VALUES
-(1, 'spread', 345, 'gQF78TwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyTjFNd2dXUDBiRy0xMDAwMHcwMzQAAgQUk1ZbAwQAAAAA', 0, 1, '1532406871', 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=gQF78TwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyTjFNd2dXUDBiRy0xMDAwMHcwMzQAAgQUk1ZbAwQAAAAA', 'http://weixin.qq.com/q/02N1MwgWP0bG-10000w034', 0),
-(2, 'spread', 344, 'gQEa8TwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAybVBsU2hIUDBiRy0xMDAwMGcwM3oAAgQUk1ZbAwQAAAAA', 0, 1, '1532406871', 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=gQEa8TwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAybVBsU2hIUDBiRy0xMDAwMGcwM3oAAgQUk1ZbAwQAAAAA', 'http://weixin.qq.com/q/02mPlShHP0bG-10000g03z', 0),
-(3, 'spread', 343, 'gQGD8DwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyMXYzd2dUUDBiRy0xMDAwMHcwMzgAAgQcdFZbAwQAAAAA', 0, 1, '1532406872', 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=gQGD8DwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyMXYzd2dUUDBiRy0xMDAwMHcwMzgAAgQcdFZbAwQAAAAA', 'http://weixin.qq.com/q/021v3wgTP0bG-10000w038', 0),
-(4, 'spread', 342, 'gQH97zwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyaFJ4ZmhnUDBiRy0xMDAwMGcwM3IAAgQddFZbAwQAAAAA', 0, 1, '1532406872', 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=gQH97zwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyaFJ4ZmhnUDBiRy0xMDAwMGcwM3IAAgQddFZbAwQAAAAA', 'http://weixin.qq.com/q/02hRxfhgP0bG-10000g03r', 0),
-(5, 'spread', 341, 'gQH28DwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAya2RrTmdPUDBiRy0xMDAwMHcwM1QAAgRPgVVbAwQAAAAA', 0, 1, '1532406872', 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=gQH28DwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAya2RrTmdPUDBiRy0xMDAwMHcwM1QAAgRPgVVbAwQAAAAA', 'http://weixin.qq.com/q/02kdkNgOP0bG-10000w03T', 0),
-(6, 'spread', 340, 'gQFP8TwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyR1oxamd0UDBiRy0xMDAwME0wM0sAAgRQgVVbAwQAAAAA', 0, 1, '1532406872', 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=gQFP8TwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyR1oxamd0UDBiRy0xMDAwME0wM0sAAgRQgVVbAwQAAAAA', 'http://weixin.qq.com/q/02GZ1jgtP0bG-10000M03K', 0),
-(7, 'spread', 339, 'gQEq8TwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyaDZkNGhrUDBiRy0xMDAwMHcwM1QAAgRQgVVbAwQAAAAA', 0, 1, '1532406872', 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=gQEq8TwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyaDZkNGhrUDBiRy0xMDAwMHcwM1QAAgRQgVVbAwQAAAAA', 'http://weixin.qq.com/q/02h6d4hkP0bG-10000w03T', 0),
-(8, 'spread', 338, 'gQFF8TwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyR3pGVWhaUDBiRy0xMDAwME0wM04AAgRQgVVbAwQAAAAA', 0, 1, '1532406872', 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=gQFF8TwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyR3pGVWhaUDBiRy0xMDAwME0wM04AAgRQgVVbAwQAAAAA', 'http://weixin.qq.com/q/02GzFUhZP0bG-10000M03N', 0),
-(9, 'spread', 337, 'gQF38TwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyQ2lVSmhQUDBiRy0xMDAwMDAwM1QAAgRQgVVbAwQAAAAA', 0, 1, '1532406873', 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=gQF38TwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyQ2lVSmhQUDBiRy0xMDAwMDAwM1QAAgRQgVVbAwQAAAAA', 'http://weixin.qq.com/q/02CiUJhPP0bG-10000003T', 0),
-(10, 'spread', 336, 'gQGk8DwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyS3l0dGhuUDBiRy0xMDAwMGcwM3EAAgRQgVVbAwQAAAAA', 0, 1, '1532406873', 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=gQGk8DwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyS3l0dGhuUDBiRy0xMDAwMGcwM3EAAgRQgVVbAwQAAAAA', 'http://weixin.qq.com/q/02KytthnP0bG-10000g03q', 0),
-(11, 'spread', 335, 'gQE38TwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyOUlKcGd6UDBiRy0xMDAwMGcwM0IAAgRRgVVbAwQAAAAA', 0, 1, '1532406873', 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=gQE38TwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyOUlKcGd6UDBiRy0xMDAwMGcwM0IAAgRRgVVbAwQAAAAA', 'http://weixin.qq.com/q/029IJpgzP0bG-10000g03B', 0),
-(12, 'spread', 334, 'gQEu8TwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAybDJKUGd1UDBiRy0xMDAwMGcwM1QAAgRRgVVbAwQAAAAA', 0, 1, '1532406873', 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=gQEu8TwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAybDJKUGd1UDBiRy0xMDAwMGcwM1QAAgRRgVVbAwQAAAAA', 'http://weixin.qq.com/q/02l2JPguP0bG-10000g03T', 0),
-(13, 'spread', 333, 'gQEX8TwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAycG1IZWc4UDBiRy0xMDAwMGcwM1YAAgRRgVVbAwQAAAAA', 0, 1, '1532406873', 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=gQEX8TwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAycG1IZWc4UDBiRy0xMDAwMGcwM1YAAgRRgVVbAwQAAAAA', 'http://weixin.qq.com/q/02pmHeg8P0bG-10000g03V', 0),
-(14, 'spread', 332, 'gQEy8TwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyaWhJSWdtUDBiRy0xMDAwMDAwM2QAAgRRgVVbAwQAAAAA', 0, 1, '1532406873', 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=gQEy8TwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyaWhJSWdtUDBiRy0xMDAwMDAwM2QAAgRRgVVbAwQAAAAA', 'http://weixin.qq.com/q/02ihIIgmP0bG-10000003d', 0),
-(15, 'spread', 331, 'gQHh8DwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyb3lfeWhWUDBiRy0xMDAwMDAwM24AAgRRgVVbAwQAAAAA', 0, 1, '1532406873', 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=gQHh8DwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyb3lfeWhWUDBiRy0xMDAwMDAwM24AAgRRgVVbAwQAAAAA', 'http://weixin.qq.com/q/02oy_yhVP0bG-10000003n', 0),
-(16, 'spread', 330, 'gQGk8DwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyZGxwWmdWUDBiRy0xMDAwMHcwM2IAAgRLtFFbAwQAAAAA', 0, 1, '1532406874', 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=gQGk8DwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyZGxwWmdWUDBiRy0xMDAwMHcwM2IAAgRLtFFbAwQAAAAA', 'http://weixin.qq.com/q/02dlpZgVP0bG-10000w03b', 0),
-(17, 'spread', 329, 'gQGc8DwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyVTdmdGd4UDBiRy0xMDAwMHcwM2oAAgSsZVFbAwQAAAAA', 0, 1, '1532406874', 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=gQGc8DwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyVTdmdGd4UDBiRy0xMDAwMHcwM2oAAgSsZVFbAwQAAAAA', 'http://weixin.qq.com/q/02U7ftgxP0bG-10000w03j', 0),
-(18, 'spread', 328, 'gQFz8jwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyNmtKMmhaUDBiRy0xMDAwMDAwMzMAAgSOtC9ZAwQAAAAA', 0, 1, '1532406874', 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=gQFz8jwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyNmtKMmhaUDBiRy0xMDAwMDAwMzMAAgSOtC9ZAwQAAAAA', 'http://weixin.qq.com/q/026kJ2hZP0bG-100000033', 0),
-(19, 'spread', 327, 'gQFM8TwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyWEdTX2czUDBiRy0xMDAwME0wM0EAAgTHay9ZAwQAAAAA', 0, 1, '1532406874', 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=gQFM8TwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyWEdTX2czUDBiRy0xMDAwME0wM0EAAgTHay9ZAwQAAAAA', 'http://weixin.qq.com/q/02XGS_g3P0bG-10000M03A', 0),
-(20, 'spread', 326, 'gQGU8DwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyci03d2hEUDBiRy0xMDAwMHcwM2kAAgQfay9ZAwQAAAAA', 0, 1, '1532406874', 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=gQGU8DwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyci03d2hEUDBiRy0xMDAwMHcwM2kAAgQfay9ZAwQAAAAA', 'http://weixin.qq.com/q/02r-7whDP0bG-10000w03i', 0),
-(21, 'spread', 3, 'gQHM8DwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAybkRjQmhrUDBiRy0xMDAwMDAwM0wAAgRm9lZbAwQAAAAA', 0, 1, '1532425830', 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=gQHM8DwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAybkRjQmhrUDBiRy0xMDAwMDAwM0wAAgRm9lZbAwQAAAAA', 'http://weixin.qq.com/q/02nDcBhkP0bG-10000003L', 0),
-(22, 'spread', 2, 'gQFq8DwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAycXlweGgyUDBiRy0xMDAwME0wM08AAgRm9lZbAwQAAAAA', 0, 1, '1532425830', 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=gQFq8DwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAycXlweGgyUDBiRy0xMDAwME0wM08AAgRm9lZbAwQAAAAA', 'http://weixin.qq.com/q/02qypxh2P0bG-10000M03O', 0),
-(23, 'spread', 1, 'gQFZ8DwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyVFJHMWg1UDBiRy0xeUs5cmhyMWgAAgSufHNbAwQAjScA', 1536887214, 1, '1532425830', 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=gQFZ8DwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyVFJHMWg1UDBiRy0xeUs5cmhyMWgAAgSufHNbAwQAjScA', 'http://weixin.qq.com/q/02TRG1h5P0bG-1yK9rhr1h', 1),
-(24, 'spread', 4, 'gQGu8DwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAydWdhTmdrUDBiRy0xMDAwMGcwM08AAgQJA1dbAwQAAAAA', 0, 1, '1532429065', 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=gQGu8DwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAydWdhTmdrUDBiRy0xMDAwMGcwM08AAgQJA1dbAwQAAAAA', 'http://weixin.qq.com/q/02ugaNgkP0bG-10000g03O', 0),
-(25, 'spread', 7, 'gQHb8DwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyUU1YR2dsUDBiRy0xMDAwMGcwM0cAAgRwxFdbAwQAAAAA', 0, 1, '1532478576', 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=gQHb8DwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyUU1YR2dsUDBiRy0xMDAwMGcwM0cAAgRwxFdbAwQAAAAA', 'http://weixin.qq.com/q/02QMXGglP0bG-10000g03G', 0),
-(26, 'spread', 6, 'gQEe8TwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyNnZKQmh0UDBiRy0xMDAwMDAwMzcAAgRwxFdbAwQAAAAA', 0, 1, '1532478576', 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=gQEe8TwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyNnZKQmh0UDBiRy0xMDAwMDAwMzcAAgRwxFdbAwQAAAAA', 'http://weixin.qq.com/q/026vJBhtP0bG-100000037', 0),
-(27, 'spread', 5, 'gQEA8TwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyYXcxWWg0UDBiRy0xMDAwMDAwM2oAAgRxxFdbAwQAAAAA', 0, 1, '1532478577', 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=gQEA8TwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyYXcxWWg0UDBiRy0xMDAwMDAwM2oAAgRxxFdbAwQAAAAA', 'http://weixin.qq.com/q/02aw1Yh4P0bG-10000003j', 0),
-(28, 'spread', 8, 'gQFF8TwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyYXhxRWhpUDBiRy0xMDAwME0wM28AAgSN31dbAwQAAAAA', 0, 1, '1532485517', 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=gQFF8TwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyYXhxRWhpUDBiRy0xMDAwME0wM28AAgSN31dbAwQAAAAA', 'http://weixin.qq.com/q/02axqEhiP0bG-10000M03o', 0),
-(29, 'spread', 11, 'gQGh8TwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyX0M3R2c3UDBiRy0xMDAwMGcwM0UAAgSdJFhbAwQAAAAA', 0, 1, '1532503198', 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=gQGh8TwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyX0M3R2c3UDBiRy0xMDAwMGcwM0UAAgSdJFhbAwQAAAAA', 'http://weixin.qq.com/q/02_C7Gg7P0bG-10000g03E', 0),
-(30, 'spread', 10, 'gQEi8TwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyN3E1aWd1UDBiRy0xMDAwME0wM3kAAgSeJFhbAwQAAAAA', 0, 1, '1532503198', 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=gQEi8TwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyN3E1aWd1UDBiRy0xMDAwME0wM3kAAgSeJFhbAwQAAAAA', 'http://weixin.qq.com/q/027q5iguP0bG-10000M03y', 0),
-(31, 'spread', 9, 'gQGH8DwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyRW5zbGhfUDBiRy0xeW9Yck5yMVcAAgSYrnNbAwQAjScA', 1536899992, 1, '1532503198', 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=gQGH8DwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyRW5zbGhfUDBiRy0xeW9Yck5yMVcAAgSYrnNbAwQAjScA', 'http://weixin.qq.com/q/02Enslh_P0bG-1yoXrNr1W', 0),
-(32, 'spread', 20, 'gQEY8DwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyM1BRbWgzUDBiRy0xeG1vcXhyMWwAAgRWi3JbAwQAjScA', 1536825430, 1, '1532568916', 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=gQEY8DwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyM1BRbWgzUDBiRy0xeG1vcXhyMWwAAgRWi3JbAwQAjScA', 'http://weixin.qq.com/q/023PQmh3P0bG-1xmoqxr1l', 0),
-(33, 'spread', 19, 'gQGC8DwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyVGExcWh6UDBiRy0xMDAwMDAwM2cAAgRUJVlbAwQAAAAA', 0, 1, '1532568916', 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=gQGC8DwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyVGExcWh6UDBiRy0xMDAwMDAwM2cAAgRUJVlbAwQAAAAA', 'http://weixin.qq.com/q/02Ta1qhzP0bG-10000003g', 0),
-(34, 'spread', 17, 'gQGl8DwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyVFh0QmhGUDBiRy0xMDAwME0wM1AAAgRUJVlbAwQAAAAA', 0, 1, '1532568916', 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=gQGl8DwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyVFh0QmhGUDBiRy0xMDAwME0wM1AAAgRUJVlbAwQAAAAA', 'http://weixin.qq.com/q/02TXtBhFP0bG-10000M03P', 0),
-(35, 'spread', 15, 'gQHE8DwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyQWJ2YWdyUDBiRy0xeVlLNmhyMWMAAgS8oV5bAwQAjScA', 1535520444, 1, '1532568917', 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=gQHE8DwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyQWJ2YWdyUDBiRy0xeVlLNmhyMWMAAgS8oV5bAwQAjScA', 'http://weixin.qq.com/q/02AbvagrP0bG-1yYK6hr1c', 1),
-(36, 'spread', 27, 'gQFR8DoAAAAAAAAAASxodHRwOi8vd2VpeGluLnFxLmNvbS9xL1dVWDlnQm5sWlcwY1E3ZjRsbW4zAAIEOPUXWAMEAAAAAA==', 0, 1, '1532662361', 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=gQFR8DoAAAAAAAAAASxodHRwOi8vd2VpeGluLnFxLmNvbS9xL1dVWDlnQm5sWlcwY1E3ZjRsbW4zAAIEOPUXWAMEAAAAAA==', 'http://weixin.qq.com/q/WUX9gBnlZW0cQ7f4lmn3', 0),
-(37, 'spread', 25, 'gQFV8TwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyLVNBQmdVUDBiRy0xMDAwMGcwM2QAAgRZklpbAwQAAAAA', 0, 1, '1532662361', 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=gQFV8TwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyLVNBQmdVUDBiRy0xMDAwMGcwM2QAAgRZklpbAwQAAAAA', 'http://weixin.qq.com/q/02-SABgUP0bG-10000g03d', 0),
-(38, 'spread', 23, 'gQHL8DwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyRnljdGdVUDBiRy0xMDAwME0wM3QAAgRaklpbAwQAAAAA', 0, 1, '1532662362', 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=gQHL8DwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyRnljdGdVUDBiRy0xMDAwME0wM3QAAgRaklpbAwQAAAAA', 'http://weixin.qq.com/q/02FyctgUP0bG-10000M03t', 0),
-(39, 'spread', 21, 'gQEo8TwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyamtFamdqUDBiRy0xMDAwMDAwMzEAAgRaklpbAwQAAAAA', 0, 1, '1532662362', 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=gQEo8TwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyamtFamdqUDBiRy0xMDAwMDAwMzEAAgRaklpbAwQAAAAA', 'http://weixin.qq.com/q/02jkEjgjP0bG-100000031', 0),
-(40, 'spread', 38, 'gQED8DoAAAAAAAAAASxodHRwOi8vd2VpeGluLnFxLmNvbS9xL05FWDlqV3JsRVcxb1VOcUJsbW4zAAIEaNkiWAMEAAAAAA==', 0, 1, '1532915675', 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=gQED8DoAAAAAAAAAASxodHRwOi8vd2VpeGluLnFxLmNvbS9xL05FWDlqV3JsRVcxb1VOcUJsbW4zAAIEaNkiWAMEAAAAAA==', 'http://weixin.qq.com/q/NEX9jWrlEW1oUNqBlmn3', 0),
-(41, 'spread', 37, 'gQGE8DoAAAAAAAAAASxodHRwOi8vd2VpeGluLnFxLmNvbS9xL3BVVXBUTmZsMlcyZ3ZVdGNRbW4zAAIEpsgiWAMEAAAAAA==', 0, 1, '1532915676', 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=gQGE8DoAAAAAAAAAASxodHRwOi8vd2VpeGluLnFxLmNvbS9xL3BVVXBUTmZsMlcyZ3ZVdGNRbW4zAAIEpsgiWAMEAAAAAA==', 'http://weixin.qq.com/q/pUUpTNfl2W2gvUtcQmn3', 0),
-(42, 'spread', 34, 'gQHL8ToAAAAAAAAAASxodHRwOi8vd2VpeGluLnFxLmNvbS9xL3ZVV001UWZsZG0wUDNGUC01Mm4zAAIEkaEiWAMEAAAAAA==', 0, 1, '1532915676', 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=gQHL8ToAAAAAAAAAASxodHRwOi8vd2VpeGluLnFxLmNvbS9xL3ZVV001UWZsZG0wUDNGUC01Mm4zAAIEkaEiWAMEAAAAAA==', 'http://weixin.qq.com/q/vUWM5Qfldm0P3FP-52n3', 0),
-(43, 'spread', 33, 'gQEX8ToAAAAAAAAAASxodHRwOi8vd2VpeGluLnFxLmNvbS9xL09VWE1hOExsS20xVEU5ZHRwMm4zAAIE7KAiWAMEAAAAAA==', 0, 1, '1532915676', 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=gQEX8ToAAAAAAAAAASxodHRwOi8vd2VpeGluLnFxLmNvbS9xL09VWE1hOExsS20xVEU5ZHRwMm4zAAIE7KAiWAMEAAAAAA==', 'http://weixin.qq.com/q/OUXMa8LlKm1TE9dtp2n3', 0),
-(44, 'spread', 32, 'gQEL8DoAAAAAAAAAASxodHRwOi8vd2VpeGluLnFxLmNvbS9xL2FVVnlrLWZsa0czcGpvZVJHV24zAAIEq1AcWAMEAAAAAA==', 0, 1, '1532915676', 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=gQEL8DoAAAAAAAAAASxodHRwOi8vd2VpeGluLnFxLmNvbS9xL2FVVnlrLWZsa0czcGpvZVJHV24zAAIEq1AcWAMEAAAAAA==', 'http://weixin.qq.com/q/aUVyk-flkG3pjoeRGWn3', 0),
-(45, 'spread', 31, 'gQGk8DoAAAAAAAAAASxodHRwOi8vd2VpeGluLnFxLmNvbS9xL3MwVnBvcG5saFczOEMxMnVBbW4zAAIEKJoZWAMEAAAAAA==', 0, 1, '1532915676', 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=gQGk8DoAAAAAAAAAASxodHRwOi8vd2VpeGluLnFxLmNvbS9xL3MwVnBvcG5saFczOEMxMnVBbW4zAAIEKJoZWAMEAAAAAA==', 'http://weixin.qq.com/q/s0VpopnlhW38C12uAmn3', 0),
-(46, 'spread', 30, 'gQF68DoAAAAAAAAAASxodHRwOi8vd2VpeGluLnFxLmNvbS9xL2drWGhQQlhsZm0wSEtHeERpbW4zAAIEEpgZWAMEAAAAAA==', 0, 1, '1532915676', 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=gQF68DoAAAAAAAAAASxodHRwOi8vd2VpeGluLnFxLmNvbS9xL2drWGhQQlhsZm0wSEtHeERpbW4zAAIEEpgZWAMEAAAAAA==', 'http://weixin.qq.com/q/gkXhPBXlfm0HKGxDimn3', 0),
-(47, 'spread', 44, 'gQE08ToAAAAAAAAAASxodHRwOi8vd2VpeGluLnFxLmNvbS9xL1UwV2Nna0xsZTIwQ0VMMkY5Mm4zAAIE9_8zWAMEAAAAAA==', 0, 1, '1533036102', 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=gQE08ToAAAAAAAAAASxodHRwOi8vd2VpeGluLnFxLmNvbS9xL1UwV2Nna0xsZTIwQ0VMMkY5Mm4zAAIE9_8zWAMEAAAAAA==', 'http://weixin.qq.com/q/U0WcgkLle20CEL2F92n3', 0),
-(48, 'spread', 43, 'gQFl8DoAAAAAAAAAASxodHRwOi8vd2VpeGluLnFxLmNvbS9xLzVrWHhteS1sRTIxcTBRaVptbW4zAAIE7ugzWAMEAAAAAA==', 0, 1, '1533036102', 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=gQFl8DoAAAAAAAAAASxodHRwOi8vd2VpeGluLnFxLmNvbS9xLzVrWHhteS1sRTIxcTBRaVptbW4zAAIE7ugzWAMEAAAAAA==', 'http://weixin.qq.com/q/5kXxmy-lE21q0QiZmmn3', 0),
-(49, 'spread', 42, 'gQEZ8ToAAAAAAAAAASxodHRwOi8vd2VpeGluLnFxLmNvbS9xL1JFVzdVcXJsU20welA2cEQwR24zAAIEgOQzWAMEAAAAAA==', 0, 1, '1533036102', 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=gQEZ8ToAAAAAAAAAASxodHRwOi8vd2VpeGluLnFxLmNvbS9xL1JFVzdVcXJsU20welA2cEQwR24zAAIEgOQzWAMEAAAAAA==', 'http://weixin.qq.com/q/REW7UqrlSm0zP6pD0Gn3', 0),
-(50, 'spread', 41, 'gQGb8DoAAAAAAAAAASxodHRwOi8vd2VpeGluLnFxLmNvbS9xL3BrV3l3X1RsSzIxU0FraTYyV24zAAIEnx8lWAMEAAAAAA==', 0, 1, '1533036102', 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=gQGb8DoAAAAAAAAAASxodHRwOi8vd2VpeGluLnFxLmNvbS9xL3BrV3l3X1RsSzIxU0FraTYyV24zAAIEnx8lWAMEAAAAAA==', 'http://weixin.qq.com/q/pkWyw_TlK21SAki62Wn3', 0),
-(51, 'spread', 40, 'gQFy8DoAAAAAAAAAASxodHRwOi8vd2VpeGluLnFxLmNvbS9xL2VVV182NS1sV0cwaGpwZnQxV24zAAIEzkokWAMEAAAAAA==', 0, 1, '1533036102', 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=gQFy8DoAAAAAAAAAASxodHRwOi8vd2VpeGluLnFxLmNvbS9xL2VVV182NS1sV0cwaGpwZnQxV24zAAIEzkokWAMEAAAAAA==', 'http://weixin.qq.com/q/eUW_65-lWG0hjpft1Wn3', 0),
-(52, 'spread', 39, 'gQFE8ToAAAAAAAAAASxodHRwOi8vd2VpeGluLnFxLmNvbS9xLzkwVVcyMWZsOG0yTF9CbmZmV24zAAIEsN8iWAMEAAAAAA==', 0, 1, '1533036102', 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=gQFE8ToAAAAAAAAAASxodHRwOi8vd2VpeGluLnFxLmNvbS9xLzkwVVcyMWZsOG0yTF9CbmZmV24zAAIEsN8iWAMEAAAAAA==', 'http://weixin.qq.com/q/90UW21fl8m2L_BnffWn3', 0),
-(53, 'spread', 57, 'gQEP8jwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyLW5JSmhOUDBiRy0xMDAwMDAwM2MAAgS7oEZYAwQAAAAA', 0, 1, '1533120232', 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=gQEP8jwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyLW5JSmhOUDBiRy0xMDAwMDAwM2MAAgS7oEZYAwQAAAAA', 'http://weixin.qq.com/q/02-nIJhNP0bG-10000003c', 0),
-(54, 'spread', 55, 'gQEw8DwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyS1dqZGd4UDBiRy0xMDAwMHcwM2sAAgRFPEVYAwQAAAAA', 0, 1, '1533120232', 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=gQEw8DwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyS1dqZGd4UDBiRy0xMDAwMHcwM2sAAgRFPEVYAwQAAAAA', 'http://weixin.qq.com/q/02KWjdgxP0bG-10000w03k', 0),
-(55, 'spread', 54, 'gQHI8DwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAySlRVT2h3UDBiRy0xMDAwMDAwMzAAAgReO0VYAwQAAAAA', 0, 1, '1533120233', 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=gQHI8DwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAySlRVT2h3UDBiRy0xMDAwMDAwMzAAAgReO0VYAwQAAAAA', 'http://weixin.qq.com/q/02JTUOhwP0bG-100000030', 0),
-(56, 'spread', 50, 'gQGr8DoAAAAAAAAAASxodHRwOi8vd2VpeGluLnFxLmNvbS9xLzdFWEJfM25sV1cwZzdRS0RxbW4zAAIEL8c3WAMEAAAAAA==', 0, 1, '1533120233', 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=gQGr8DoAAAAAAAAAASxodHRwOi8vd2VpeGluLnFxLmNvbS9xLzdFWEJfM25sV1cwZzdRS0RxbW4zAAIEL8c3WAMEAAAAAA==', 'http://weixin.qq.com/q/7EXB_3nlWW0g7QKDqmn3', 0),
-(57, 'spread', 49, 'gQHX8DoAAAAAAAAAASxodHRwOi8vd2VpeGluLnFxLmNvbS9xL0ZVV2FoeS1sWUcwWlB2dWQ4V24zAAIE0o83WAMEAAAAAA==', 0, 1, '1533120233', 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=gQHX8DoAAAAAAAAAASxodHRwOi8vd2VpeGluLnFxLmNvbS9xL0ZVV2FoeS1sWUcwWlB2dWQ4V24zAAIE0o83WAMEAAAAAA==', 'http://weixin.qq.com/q/FUWahy-lYG0ZPvud8Wn3', 0),
-(58, 'spread', 48, 'gQF78DoAAAAAAAAAASxodHRwOi8vd2VpeGluLnFxLmNvbS9xL2tFV0tMT3ZsWkcwZDFINGk0V24zAAIETPQ0WAMEAAAAAA==', 0, 1, '1533120233', 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=gQF78DoAAAAAAAAAASxodHRwOi8vd2VpeGluLnFxLmNvbS9xL2tFV0tMT3ZsWkcwZDFINGk0V24zAAIETPQ0WAMEAAAAAA==', 'http://weixin.qq.com/q/kEWKLOvlZG0d1H4i4Wn3', 0),
-(59, 'spread', 46, 'gQHo8DoAAAAAAAAAASxodHRwOi8vd2VpeGluLnFxLmNvbS9xL3lrV3paTTdsTm0xUDR5UUIyR24zAAIEk/IzWAMEAAAAAA==', 0, 1, '1533120233', 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=gQHo8DoAAAAAAAAAASxodHRwOi8vd2VpeGluLnFxLmNvbS9xL3lrV3paTTdsTm0xUDR5UUIyR24zAAIEk/IzWAMEAAAAAA==', 'http://weixin.qq.com/q/ykWzZM7lNm1P4yQB2Gn3', 0),
-(60, 'spread', 64, 'gQHD8DwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAybWNXVWc5UDBiRy0xMDAwME0wMzIAAgQUY1JYAwQAAAAA', 0, 1, '1533264284', 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=gQHD8DwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAybWNXVWc5UDBiRy0xMDAwME0wMzIAAgQUY1JYAwQAAAAA', 'http://weixin.qq.com/q/02mcWUg9P0bG-10000M032', 0),
-(61, 'spread', 62, 'gQHl8DwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyeVJwTmcyUDBiRy0xMDAwME0wM2gAAgRsr1BYAwQAAAAA', 0, 1, '1533264284', 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=gQHl8DwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyeVJwTmcyUDBiRy0xMDAwME0wM2gAAgRsr1BYAwQAAAAA', 'http://weixin.qq.com/q/02yRpNg2P0bG-10000M03h', 0),
-(62, 'spread', 61, 'gQEs8DwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyZXVieWhwUDBiRy0xMDAwMGcwMzQAAgQRc09YAwQAAAAA', 0, 1, '1533264284', 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=gQEs8DwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyZXVieWhwUDBiRy0xMDAwMGcwMzQAAgQRc09YAwQAAAAA', 'http://weixin.qq.com/q/02eubyhpP0bG-10000g034', 0),
-(63, 'spread', 60, 'gQGL8DwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyUmFkdWhzUDBiRy0xMDAwMGcwM2UAAgQx7ExYAwQAAAAA', 0, 1, '1533264284', 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=gQGL8DwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyUmFkdWhzUDBiRy0xMDAwMGcwM2UAAgQx7ExYAwQAAAAA', 'http://weixin.qq.com/q/02RaduhsP0bG-10000g03e', 0),
-(64, 'spread', 59, 'gQFt8TwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyeEVRWmh0UDBiRy0xMDAwMDAwM1oAAgS/5kdYAwQAAAAA', 0, 1, '1533264284', 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=gQFt8TwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyeEVRWmh0UDBiRy0xMDAwMDAwM1oAAgS/5kdYAwQAAAAA', 'http://weixin.qq.com/q/02xEQZhtP0bG-10000003Z', 0),
-(65, 'spread', 67, 'gQH88DwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyaHNxTWdyUDBiRy0xMDAwMDAwM00AAgRColhYAwQAAAAA', 0, 1, '1533295071', 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=gQH88DwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyaHNxTWdyUDBiRy0xMDAwMDAwM00AAgRColhYAwQAAAAA', 'http://weixin.qq.com/q/02hsqMgrP0bG-10000003M', 0),
-(66, 'spread', 66, 'gQH88DwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyME15emdNUDBiRy0xMDAwMGcwM3IAAgSWQ1VYAwQAAAAA', 0, 1, '1533295071', 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=gQH88DwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyME15emdNUDBiRy0xMDAwMGcwM3IAAgSWQ1VYAwQAAAAA', 'http://weixin.qq.com/q/020MyzgMP0bG-10000g03r', 0),
-(67, 'spread', 65, 'gQF/8DwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAydmVWeWh4UDBiRy0xMDAwMGcwM2EAAgRKuFRYAwQAAAAA', 0, 1, '1533295072', 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=gQF/8DwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAydmVWeWh4UDBiRy0xMDAwMGcwM2EAAgRKuFRYAwQAAAAA', 'http://weixin.qq.com/q/02veVyhxP0bG-10000g03a', 0),
-(68, 'spread', 69, 'gQHg8DwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAycm9WS2hIUDBiRy0xMDAwMGcwM3EAAgQ6q1hYAwQAAAAA', 0, 1, '1533539635', 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=gQHg8DwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAycm9WS2hIUDBiRy0xMDAwMGcwM3EAAgQ6q1hYAwQAAAAA', 'http://weixin.qq.com/q/02roVKhHP0bG-10000g03q', 0),
-(69, 'spread', 71, 'gQGD8TwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyZEV5ZGhWUDBiRy0xMDAwME0wM0MAAgSM4GRYAwQAAAAA', 0, 1, '1533622617', 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=gQGD8TwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyZEV5ZGhWUDBiRy0xMDAwME0wM0MAAgSM4GRYAwQAAAAA', 'http://weixin.qq.com/q/02dEydhVP0bG-10000M03C', 0),
-(70, 'spread', 74, 'gQE28TwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyZ24yTGhTUDBiRy0xMDAwME0wM1kAAgQCz2xYAwQAAAAA', 0, 1, '1533779476', 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=gQE28TwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyZ24yTGhTUDBiRy0xMDAwME0wM1kAAgQCz2xYAwQAAAAA', 'http://weixin.qq.com/q/02gn2LhSP0bG-10000M03Y', 0),
-(71, 'spread', 73, 'gQGF8DwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyTlR4S2duUDBiRy0xMDAwMDAwM3EAAgTleGpYAwQAAAAA', 0, 1, '1533779476', 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=gQGF8DwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyTlR4S2duUDBiRy0xMDAwMDAwM3EAAgTleGpYAwQAAAAA', 'http://weixin.qq.com/q/02NTxKgnP0bG-10000003q', 0),
-(72, 'spread', 82, 'gQHe8TwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyZ0haS2dpUDBiRy0xMDAwMGcwM2MAAgTRr9laAwQAAAAA', 0, 1, '1533863539', 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=gQHe8TwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyZ0haS2dpUDBiRy0xMDAwMGcwM2MAAgTRr9laAwQAAAAA', 'http://weixin.qq.com/q/02gHZKgiP0bG-10000g03c', 0),
-(73, 'spread', 81, 'gQHa8TwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAydEljVmdYUDBiRy0xMDAwME0wM28AAgTSr9laAwQAAAAA', 0, 1, '1533863539', 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=gQHa8TwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAydEljVmdYUDBiRy0xMDAwME0wM28AAgTSr9laAwQAAAAA', 'http://weixin.qq.com/q/02tIcVgXP0bG-10000M03o', 0),
-(74, 'spread', 80, 'gQFr8jwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyLUQ0bGg4UDBiRy0xMDAwMGcwM0gAAgTSr9laAwQAAAAA', 0, 1, '1533863539', 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=gQFr8jwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyLUQ0bGg4UDBiRy0xMDAwMGcwM0gAAgTSr9laAwQAAAAA', 'http://weixin.qq.com/q/02-D4lh8P0bG-10000g03H', 0),
-(75, 'spread', 79, 'gQHw8TwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyT1Z0SmdvUDBiRy0xMDAwME0wM1UAAgTSr9laAwQAAAAA', 0, 1, '1533863539', 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=gQHw8TwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyT1Z0SmdvUDBiRy0xMDAwME0wM1UAAgTSr9laAwQAAAAA', 'http://weixin.qq.com/q/02OVtJgoP0bG-10000M03U', 0),
-(76, 'spread', 77, 'gQFd8TwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAycVNuemczUDBiRy0xMDAwME0wM3YAAgQ2sNlaAwQAAAAA', 0, 1, '1533863539', 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=gQFd8TwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAycVNuemczUDBiRy0xMDAwME0wM3YAAgQ2sNlaAwQAAAAA', 'http://weixin.qq.com/q/02qSnzg3P0bG-10000M03v', 0),
-(77, 'spread', 76, 'gQGZ8TwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAycW5JOWdtUDBiRy0xMDAwME0wMzkAAgTYhnVYAwQAAAAA', 0, 1, '1533863540', 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=gQGZ8TwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAycW5JOWdtUDBiRy0xMDAwME0wMzkAAgTYhnVYAwQAAAAA', 'http://weixin.qq.com/q/02qnI9gmP0bG-10000M039', 0),
-(78, 'spread', 86, 'gQEF8jwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyQ080SGhoUDBiRy0xMDAwMHcwM3QAAgTPr9laAwQAAAAA', 0, 1, '1534145730', 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=gQEF8jwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyQ080SGhoUDBiRy0xMDAwMHcwM3QAAgTPr9laAwQAAAAA', 'http://weixin.qq.com/q/02CO4HhhP0bG-10000w03t', 0),
-(79, 'spread', 93, 'gQEG8jwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyWWR5TWdjUDBiRy0xMDAwMDAwM04AAgTMr9laAwQAAAAA', 0, 1, '1534232932', 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=gQEG8jwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyWWR5TWdjUDBiRy0xMDAwMDAwM04AAgTMr9laAwQAAAAA', 'http://weixin.qq.com/q/02YdyMgcP0bG-10000003N', 0),
-(80, 'spread', 92, 'gQHX8TwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyRE44bmdwUDBiRy0xMDAwMHcwM3MAAgTNr9laAwQAAAAA', 0, 1, '1534232932', 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=gQHX8TwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyRE44bmdwUDBiRy0xMDAwMHcwM3MAAgTNr9laAwQAAAAA', 'http://weixin.qq.com/q/02DN8ngpP0bG-10000w03s', 0),
-(81, 'spread', 91, 'gQG78DwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyMkpydWh1UDBiRy0xQ3V1cjFyMUMAAgSe0XNbAwQAjScA', 1536908958, 1, '1534232933', 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=gQG78DwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyMkpydWh1UDBiRy0xQ3V1cjFyMUMAAgSe0XNbAwQAjScA', 'http://weixin.qq.com/q/022JruhuP0bG-1Cuur1r1C', 0),
-(82, 'spread', 90, 'gQEB8jwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyYllPUmh1UDBiRy0xMDAwME0wM0kAAgTNr9laAwQAAAAA', 0, 1, '1534232933', 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=gQEB8jwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyYllPUmh1UDBiRy0xMDAwME0wM0kAAgTNr9laAwQAAAAA', 'http://weixin.qq.com/q/02bYORhuP0bG-10000M03I', 0),
-(83, 'spread', 89, 'gQGT8jwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAydG82MmctUDBiRy0xMDAwMDAwMy0AAgTOr9laAwQAAAAA', 0, 1, '1534232933', 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=gQGT8jwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAydG82MmctUDBiRy0xMDAwMDAwMy0AAgTOr9laAwQAAAAA', 'http://weixin.qq.com/q/02to62g-P0bG-10000003-', 0),
-(84, 'spread', 88, 'gQGQ8TwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyWElybmh4UDBiRy0xMDAwMGcwM3cAAgTOr9laAwQAAAAA', 0, 1, '1534232933', 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=gQGQ8TwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyWElybmh4UDBiRy0xMDAwMGcwM3cAAgTOr9laAwQAAAAA', 'http://weixin.qq.com/q/02XIrnhxP0bG-10000g03w', 0),
-(85, 'spread', 87, 'gQH58TwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyaV9Lc2hlUDBiRy0xMDAwMDAwM1IAAgTPr9laAwQAAAAA', 0, 1, '1534232933', 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=gQH58TwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyaV9Lc2hlUDBiRy0xMDAwMDAwM1IAAgTPr9laAwQAAAAA', 'http://weixin.qq.com/q/02i_KsheP0bG-10000003R', 0),
-(86, 'spread', 85, 'gQF08jwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyMUQyY2h2UDBiRy0xMDAwMDAwM0IAAgTPr9laAwQAAAAA', 0, 1, '1534232934', 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=gQF08jwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyMUQyY2h2UDBiRy0xMDAwMDAwM0IAAgTPr9laAwQAAAAA', 'http://weixin.qq.com/q/021D2chvP0bG-10000003B', 0),
-(87, 'spread', 84, 'gQEi8jwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyZjZWVmdMUDBiRy0xMDAwMGcwM0gAAgTRr9laAwQAAAAA', 0, 1, '1534232934', 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=gQEi8jwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyZjZWVmdMUDBiRy0xMDAwMGcwM0gAAgTRr9laAwQAAAAA', 'http://weixin.qq.com/q/02f6VVgLP0bG-10000g03H', 0),
-(88, 'spread', 83, 'gQHK8TwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyd2pBUGdsUDBiRy0xMDAwME0wM3AAAgTRr9laAwQAAAAA', 0, 1, '1534232934', 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=gQHK8TwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyd2pBUGdsUDBiRy0xMDAwME0wM3AAAgTRr9laAwQAAAAA', 'http://weixin.qq.com/q/02wjAPglP0bG-10000M03p', 0),
-(89, 'spread', 78, 'gQF38TwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAycURIeGdPUDBiRy0xMDAwME0wM3gAAgQ1sNlaAwQAAAAA', 0, 1, '1534232934', 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=gQF38TwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAycURIeGdPUDBiRy0xMDAwME0wM3gAAgQ1sNlaAwQAAAAA', 'http://weixin.qq.com/q/02qDHxgOP0bG-10000M03x', 0),
-(90, 'spread', 75, 'gQG68DwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyRnpRSWdQUDBiRy0xMDAwMHcwM28AAgR_g3VYAwQAAAAA', 0, 1, '1534232934', 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=gQG68DwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyRnpRSWdQUDBiRy0xMDAwMHcwM28AAgR_g3VYAwQAAAAA', 'http://weixin.qq.com/q/02FzQIgPP0bG-10000w03o', 0),
-(91, 'spread', 72, 'gQGu8DwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyeVVOVWdhUDBiRy0xMDAwMHcwM3QAAgQB8GRYAwQAAAAA', 0, 1, '1534239978', 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=gQGu8DwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyeVVOVWdhUDBiRy0xMDAwMHcwM3QAAgQB8GRYAwQAAAAA', 'http://weixin.qq.com/q/02yUNUgaP0bG-10000w03t', 0),
-(92, 'spread', 70, 'gQGr8TwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyT1FLVWhOUDBiRy0xMDAwMDAwMzcAAgQYr1hYAwQAAAAA', 0, 1, '1534239978', 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=gQGr8TwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyT1FLVWhOUDBiRy0xMDAwMDAwMzcAAgQYr1hYAwQAAAAA', 'http://weixin.qq.com/q/02OQKUhNP0bG-100000037', 0),
-(93, 'spread', 68, 'gQE68TwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyYnd6NWhlUDBiRy0xMDAwMHcwMzYAAgTpqlhYAwQAAAAA', 0, 1, '1534239978', 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=gQE68TwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyYnd6NWhlUDBiRy0xMDAwMHcwMzYAAgTpqlhYAwQAAAAA', 'http://weixin.qq.com/q/02bwz5heP0bG-10000w036', 0),
-(94, 'spread', 63, 'gQEr8TwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyU3M1RGhQUDBiRy0xMDAwMHcwM0IAAgTtDVJYAwQAAAAA', 0, 1, '1534239979', 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=gQEr8TwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyU3M1RGhQUDBiRy0xMDAwMHcwM0IAAgTtDVJYAwQAAAAA', 'http://weixin.qq.com/q/02Ss5DhPP0bG-10000w03B', 0),
-(95, 'spread', 58, 'gQF18TwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAydTBPaWdYUDBiRy0xMDAwMDAwM08AAgRHiUdYAwQAAAAA', 0, 1, '1534239979', 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=gQF18TwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAydTBPaWdYUDBiRy0xMDAwMDAwM08AAgRHiUdYAwQAAAAA', 'http://weixin.qq.com/q/02u0OigXP0bG-10000003O', 0),
-(96, 'spread', 56, 'gQFP8TwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyUDg3dGcxUDBiRy0xMDAwMGcwM08AAgTVPUVYAwQAAAAA', 0, 1, '1534239979', 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=gQFP8TwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyUDg3dGcxUDBiRy0xMDAwMGcwM08AAgTVPUVYAwQAAAAA', 'http://weixin.qq.com/q/02P87tg1P0bG-10000g03O', 0),
-(97, 'spread', 13, 'gQHs8DwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAydlJFdmd1UDBiRy0xMDAwMGcwM24AAgTupHJbAwQAAAAA', 0, 1, '1534239982', 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=gQHs8DwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAydlJFdmd1UDBiRy0xMDAwMGcwM24AAgTupHJbAwQAAAAA', 'http://weixin.qq.com/q/02vREvguP0bG-10000g03n', 0),
-(98, 'spread', 12, 'gQFH8TwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAycG9HQWg5UDBiRy0xMDAwMHcwM1oAAgTupHJbAwQAAAAA', 0, 1, '1534239983', 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=gQFH8TwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAycG9HQWg5UDBiRy0xMDAwMHcwM1oAAgTupHJbAwQAAAAA', 'http://weixin.qq.com/q/02poGAh9P0bG-10000w03Z', 0),
-(99, 'spread', 94, 'gQEY8jwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyU29hRWdHUDBiRy0xMDAwME0wM1YAAgTMr9laAwQAAAAA', 0, 1, '1534294997', 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=gQEY8jwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyU29hRWdHUDBiRy0xMDAwME0wM1YAAgTMr9laAwQAAAAA', 'http://weixin.qq.com/q/02SoaEgGP0bG-10000M03V', 0),
-(100, 'spread', 95, 'gQHW8DwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyUjJUT2dSUDBiRy0xejdzcnhyMWMAAgTHj3NbAwQAjScA', 1536892103, 1, '1534295469', 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=gQHW8DwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyUjJUT2dSUDBiRy0xejdzcnhyMWMAAgTHj3NbAwQAjScA', 'http://weixin.qq.com/q/02R2TOgRP0bG-1z7srxr1c', 2),
-(101, 'spread', 45, 'gQEH8ToAAAAAAAAAASxodHRwOi8vd2VpeGluLnFxLmNvbS9xL0lrVUFGSm5sN20yWExNd2FhMm4zAAIEhPAzWAMEAAAAAA==', 0, 1, '1534298167', 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=gQEH8ToAAAAAAAAAASxodHRwOi8vd2VpeGluLnFxLmNvbS9xL0lrVUFGSm5sN20yWExNd2FhMm4zAAIEhPAzWAMEAAAAAA==', 'http://weixin.qq.com/q/IkUAFJnl7m2XLMwaa2n3', 0),
-(102, 'spread', 97, 'gQGz8TwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyZWlHamdJUDBiRy0xMDAwMHcwM3kAAgTLr9laAwQAAAAA', 0, 1, '1534301384', 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=gQGz8TwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyZWlHamdJUDBiRy0xMDAwMHcwM3kAAgTLr9laAwQAAAAA', 'http://weixin.qq.com/q/02eiGjgIP0bG-10000w03y', 0),
-(103, 'spread', 96, 'gQFn8jwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyMEpCOWdoUDBiRy0xMDAwMHcwMzAAAgTLr9laAwQAAAAA', 0, 1, '1534301385', 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=gQFn8jwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyMEpCOWdoUDBiRy0xMDAwMHcwMzAAAgTLr9laAwQAAAAA', 'http://weixin.qq.com/q/020JB9ghP0bG-10000w030', 0),
-(104, 'spread', 98, 'gQEN8jwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyM2RrVGdnUDBiRy0xMDAwMDAwM3IAAgTKr9laAwQAAAAA', 0, 1, '1534312887', 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=gQEN8jwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyM2RrVGdnUDBiRy0xMDAwMDAwM3IAAgTKr9laAwQAAAAA', 'http://weixin.qq.com/q/023dkTggP0bG-10000003r', 0),
-(105, 'spread', 18, 'gQG48TwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyRjQ5YmhfUDBiRy0xMDAwMGcwMzEAAgTEwXNbAwQAAAAA', 0, 1, '1534312900', 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=gQG48TwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyRjQ5YmhfUDBiRy0xMDAwMGcwMzEAAgTEwXNbAwQAAAAA', 'http://weixin.qq.com/q/02F49bh_P0bG-10000g031', 0),
-(106, 'spread', 16, 'gQGw8TwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyWnZuMmhCUDBiRy0xMDAwMDAwMzIAAgTEwXNbAwQAAAAA', 0, 1, '1534312900', 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=gQGw8TwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyWnZuMmhCUDBiRy0xMDAwMDAwMzIAAgTEwXNbAwQAAAAA', 'http://weixin.qq.com/q/02Zvn2hBP0bG-100000032', 0),
-(107, 'spread', 14, 'gQEx8TwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyX2NUbWdTUDBiRy0xMDAwME0wM3EAAgTEwXNbAwQAAAAA', 0, 1, '1534312900', 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=gQEx8TwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyX2NUbWdTUDBiRy0xMDAwME0wM3EAAgTEwXNbAwQAAAAA', 'http://weixin.qq.com/q/02_cTmgSP0bG-10000M03q', 0),
-(108, 'spread', 24, 'gQFO8TwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyUmJIX2dMUDBiRy0xMDAwMDAwM24AAgTd2XRbAwQAAAAA', 0, 1, '1534384605', 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=gQFO8TwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyUmJIX2dMUDBiRy0xMDAwMDAwM24AAgTd2XRbAwQAAAAA', 'http://weixin.qq.com/q/02RbH_gLP0bG-10000003n', 0),
-(109, 'spread', 99, 'gQH58TwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyN2lyN2dmUDBiRy0xMDAwMGcwM1AAAgTVsdlaAwQAAAAA', 0, 1, '1534403314', 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=gQH58TwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyN2lyN2dmUDBiRy0xMDAwMGcwM1AAAgTVsdlaAwQAAAAA', 'http://weixin.qq.com/q/027ir7gfP0bG-10000g03P', 0),
-(110, 'spread', 103, 'gQFn8jwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyQTV0QWhGUDBiRy0xMDAwMGcwMzUAAgSPrQxbAwQAAAAA', 0, 1, '1534405969', 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=gQFn8jwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyQTV0QWhGUDBiRy0xMDAwMGcwMzUAAgSPrQxbAwQAAAAA', 'http://weixin.qq.com/q/02A5tAhFP0bG-10000g035', 0),
-(111, 'spread', 102, 'gQGJ8TwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyZWZzUWdjUDBiRy0xMDAwME0wM2cAAgS62vtaAwQAAAAA', 0, 1, '1534405969', 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=gQGJ8TwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyZWZzUWdjUDBiRy0xMDAwME0wM2cAAgS62vtaAwQAAAAA', 'http://weixin.qq.com/q/02efsQgcP0bG-10000M03g', 0),
-(112, 'spread', 101, 'gQGp8TwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyUlVQVGdfUDBiRy0xMDAwMHcwM00AAgRDht5aAwQAAAAA', 0, 1, '1534405969', 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=gQGp8TwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyUlVQVGdfUDBiRy0xMDAwMHcwM00AAgRDht5aAwQAAAAA', 'http://weixin.qq.com/q/02RUPTg_P0bG-10000w03M', 0),
-(113, 'spread', 100, 'gQG38TwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyNWJycWhsUDBiRy0xMDAwMDAwM0kAAgRDht5aAwQAAAAA', 0, 1, '1534405970', 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=gQG38TwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyNWJycWhsUDBiRy0xMDAwMDAwM0kAAgRDht5aAwQAAAAA', 'http://weixin.qq.com/q/025brqhlP0bG-10000003I', 0),
-(114, 'spread', 22, 'gQFH8TwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyMHZfQ2hBUDBiRy0xMDAwME0wM2wAAgSNMXVbAwQAAAAA', 0, 1, '1534407053', 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=gQFH8TwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyMHZfQ2hBUDBiRy0xMDAwME0wM2wAAgSNMXVbAwQAAAAA', 'http://weixin.qq.com/q/020v_ChAP0bG-10000M03l', 0),
-(115, 'spread', 36, 'gQG18DoAAAAAAAAAASxodHRwOi8vd2VpeGluLnFxLmNvbS9xL0NFWFg0RWpsUkcwOUlfYVR2R24zAAIEXrwiWAMEAAAAAA==', 0, 1, '1534407067', 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=gQG18DoAAAAAAAAAASxodHRwOi8vd2VpeGluLnFxLmNvbS9xL0NFWFg0RWpsUkcwOUlfYVR2R24zAAIEXrwiWAMEAAAAAA==', 'http://weixin.qq.com/q/CEXX4EjlRG09I_aTvGn3', 0),
-(116, 'spread', 35, 'gQEa8joAAAAAAAAAASxodHRwOi8vd2VpeGluLnFxLmNvbS9xLzhFVy1IN3JsVTIwcTFoNFQxR24zAAIEmKEiWAMEAAAAAA==', 0, 1, '1534407067', 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=gQEa8joAAAAAAAAAASxodHRwOi8vd2VpeGluLnFxLmNvbS9xLzhFVy1IN3JsVTIwcTFoNFQxR24zAAIEmKEiWAMEAAAAAA==', 'http://weixin.qq.com/q/8EW-H7rlU20q1h4T1Gn3', 0),
-(117, 'spread', 29, 'gQF/8DoAAAAAAAAAASxodHRwOi8vd2VpeGluLnFxLmNvbS9xL01rV1BrQ1BsRW0xckF0enQ1R24zAAIEy/YXWAMEAAAAAA==', 0, 1, '1534407067', 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=gQF/8DoAAAAAAAAAASxodHRwOi8vd2VpeGluLnFxLmNvbS9xL01rV1BrQ1BsRW0xckF0enQ1R24zAAIEy/YXWAMEAAAAAA==', 'http://weixin.qq.com/q/MkWPkCPlEm1rAtzt5Gn3', 0),
-(118, 'spread', 28, 'gQGN7zoAAAAAAAAAASxodHRwOi8vd2VpeGluLnFxLmNvbS9xL3drV29sVmpsWFcwa2pDeUF3Mm4zAAIEYPYXWAMEAAAAAA==', 0, 1, '1534407067', 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=gQGN7zoAAAAAAAAAASxodHRwOi8vd2VpeGluLnFxLmNvbS9xL3drV29sVmpsWFcwa2pDeUF3Mm4zAAIEYPYXWAMEAAAAAA==', 'http://weixin.qq.com/q/wkWolVjlXW0kjCyAw2n3', 0),
-(119, 'spread', 26, 'gQEc8TwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAycThwWmcwUDBiRy0xMDAwME0wM3AAAgSbMXVbAwQAAAAA', 0, 1, '1534407067', 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=gQEc8TwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAycThwWmcwUDBiRy0xMDAwME0wM3AAAgSbMXVbAwQAAAAA', 'http://weixin.qq.com/q/02q8pZg0P0bG-10000M03p', 0),
-(120, 'spread', 53, 'gQF08DwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAybGd2Y2dKUDBiRy0xMDAwMHcwM00AAgQkKUVYAwQAAAAA', 0, 1, '1534407079', 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=gQF08DwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAybGd2Y2dKUDBiRy0xMDAwMHcwM00AAgQkKUVYAwQAAAAA', 'http://weixin.qq.com/q/02lgvcgJP0bG-10000w03M', 0),
-(121, 'spread', 104, 'gQGx8TwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAydVJpR2hzUDBiRy0xMDAwMGcwM3IAAgSPrQxbAwQAAAAA', 0, 1, '1534408904', 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=gQGx8TwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAydVJpR2hzUDBiRy0xMDAwMGcwM3IAAgSPrQxbAwQAAAAA', 'http://weixin.qq.com/q/02uRiGhsP0bG-10000g03r', 0),
-(122, 'spread', 108, 'gQE_8jwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyMTdBdWdUUDBiRy0xMDAwME0wMzYAAgSL8wxbAwQAAAAA', 0, 1, '1534726889', 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=gQE_8jwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyMTdBdWdUUDBiRy0xMDAwME0wMzYAAgSL8wxbAwQAAAAA', 'http://weixin.qq.com/q/0217AugTP0bG-10000M036', 0),
-(123, 'spread', 107, 'gQH_8TwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyTkFrX2dWUDBiRy0xMDAwME0wMzMAAgSX7QxbAwQAAAAA', 0, 1, '1534726889', 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=gQH_8TwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyTkFrX2dWUDBiRy0xMDAwME0wMzMAAgSX7QxbAwQAAAAA', 'http://weixin.qq.com/q/02NAk_gVP0bG-10000M033', 0),
-(124, 'spread', 106, 'gQEh8jwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyMXdtaWczUDBiRy0xMDAwMDAwM3MAAgSPrQxbAwQAAAAA', 0, 1, '1534726889', 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=gQEh8jwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyMXdtaWczUDBiRy0xMDAwMDAwM3MAAgSPrQxbAwQAAAAA', 'http://weixin.qq.com/q/021wmig3P0bG-10000003s', 0),
-(125, 'spread', 105, 'gQGO8TwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAycHR2RWdoUDBiRy0xMDAwMHcwM2kAAgSPrQxbAwQAAAAA', 0, 1, '1534726890', 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=gQGO8TwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAycHR2RWdoUDBiRy0xMDAwMHcwM2kAAgSPrQxbAwQAAAAA', 'http://weixin.qq.com/q/02ptvEghP0bG-10000w03i', 0);
-
--- --------------------------------------------------------
-
---
 -- 表的结构 `eb_wechat_reply`
 --
 
@@ -2883,25 +2368,6 @@ CREATE TABLE IF NOT EXISTS `eb_wechat_reply` (
   KEY `hide` (`hide`) USING BTREE
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='微信关键字回复表' AUTO_INCREMENT=30 ;
 
---
--- 转存表中的数据 `eb_wechat_reply`
---
-
-INSERT INTO `eb_wechat_reply` (`id`, `key`, `type`, `data`, `status`, `hide`) VALUES
-(1, 'subscribe', 'text', '{"content":"\\u6b22\\u8fce\\u5173\\u6ce8\\u201cCRMEB\\u201d\\u5fae\\u4fe1\\u516c\\u4f17\\u53f7\\uff01\\n\\u540e\\u53f0\\u4f53\\u9a8c\\u5730\\u5740\\uff1ahttp:\\/\\/demo.crmeb.net\\n\\u8d26\\u53f7\\uff1ademo \\u5bc6\\u7801\\uff1acrmeb.com\\n\\u670d\\u52a1\\u7535\\u8bdd\\uff1a400-8888-794"}', 1, 1),
-(9, 'default', 'text', '{"content":"\\u66f4\\u591a\\u54a8\\u8be2\\u8bf7\\u62e8\\u6253\\u70ed\\u7ebf\\u7535\\u8bdd\\uff1a400-8888-794"}', 1, 1),
-(21, '源码', 'text', '{"content":"\\u672a\\u7ecf\\u8fc7\\u5546\\u4e1a\\u6388\\u6743\\uff0c\\u4e0d\\u5f97\\u8fdb\\u884c\\u51fa\\u79df\\u3001\\u51fa\\u552e\\u3001\\u62b5\\u62bc\\u6216\\u53d1\\u653e\\u5b50\\u8bb8\\u53ef\\u8bc1\\u3002\\n\\u4e0b\\u8f7d\\u5730\\u5740\\uff1a\\n\\u94fe\\u63a5\\uff1ahttps:\\/\\/pan.baidu.com\\/s\\/1eMOoxWHvN7KuQTDLhIJjAg \\u5bc6\\u7801\\uff1a55RR"}', 1, 0),
-(20, '演示', 'text', '{"content":"\\u540e\\u53f0\\u6f14\\u793a\\u5730\\u5740\\uff1ahttp:\\/\\/demo.crmeb.net\\/admin\\n\\u6f14\\u793a\\u8d26\\u53f7\\uff1ademo\\n\\u5bc6\\u7801\\uff1acrmeb.com"}', 1, 0),
-(24, '客户常见问题', 'text', '{"content":"http:\\/\\/shop.crmeb.net\\/wap\\/article\\/index\\/cid\\/4"}', 1, 0),
-(25, '开票信息', 'text', '{"content":"\\u516c\\u53f8\\u540d\\u79f0\\uff1a\\u897f\\u5b89\\u4f17\\u90a6\\u7f51\\u7edc\\u79d1\\u6280\\u6709\\u9650\\u516c\\u53f8\\n\\u7eb3\\u7a0e\\u8bc6\\u522b\\u53f7\\uff1a9161010409666664X0\\n\\u5730\\u5740\\uff1a\\u897f\\u5b89\\u5e02\\u83b2\\u6e56\\u533a\\u9f99\\u6e56MOCO\\u56fd\\u9645\\u7b2c1\\u5e621\\u5355\\u514314\\u5c4211411\\u53f7\\u623f\\n\\u5f00\\u6237\\u884c\\u548c\\u8d26\\u53f7\\uff1a\\u6c11\\u751f\\u94f6\\u884c\\u897f\\u5927\\u8857\\u652f\\u884c 691040854"}', 1, 0),
-(22, '微信配置', 'text', '{"content":"\\u6388\\u6743\\u63a5\\u53e3 :\\n\\n\\/wechat\\/index\\/serve\\n\\u652f\\u4ed8api\\u63a5\\u53e3 :\\n\\n\\/wap\\/my\\/\\n\\/wap\\/my\\/order\\/uni\\/\\n\\/wap\\/store\\/confirm_order\\/cartId\\/\\n\\/wap\\/store\\/combination_order\\/\\n\\u5982\\u679c\\u670d\\u52a1\\u5668\\u914d\\u7f6e\\u6ca1\\u6709\\u9690\\u85cfindex.php,\\u8bf7\\u5728\\u63a5\\u53e3\\u524d\\u52a0\\u4e0aindex.php\\n\\u4f8b\\u5982\\uff1ahttp:\\/\\/www.abc.com\\/index.php\\/wechat\\/index\\/serve\\n\\u6a21\\u677f\\u6d88\\u606f\\n\\nIT\\u79d1\\u6280 | \\u4e92\\u8054\\u7f51|\\u7535\\u5b50\\u5546\\u52a1\\nIT\\u79d1\\u6280 | IT\\u8f6f\\u4ef6\\u4e0e\\u670d\\u52a1"}', 1, 0),
-(23, '帮助', 'text', '{"content":"\\u5fae\\u4fe1\\u914d\\u7f6e\\n\\u6f14\\u793a\\n\\u6e90\\u7801\\n\\u5ba2\\u670d\\u7535\\u8bdd\\uff1a400-8888-794"}', 1, 0),
-(26, '对公账户', 'text', '{"content":"\\u6cd5\\u4eba\\u8d26\\u53f7\\uff1a\\n\\u4e2d\\u56fd\\u519c\\u4e1a\\u94f6\\u884c\\u5361\\u53f7\\uff1a622848 0211 3030 15310  \\n\\u7528\\u6237\\u540d\\uff1a\\u8bb8\\u8363\\u8000  \\n\\u5f00\\u6237\\u884c\\u5730\\u5740\\uff1a\\u897f\\u5b89\\u52b3\\u52a8\\u8def\\u652f\\u884c\\n\\n\\n\\u516c\\u53f8\\u652f\\u4ed8\\u5b9d\\uff1a\\n\\u5e10\\u53f7\\uff1a1242777321@qq.com\\n\\u59d3\\u540d\\uff1a\\u897f\\u5b89\\u4f17\\u90a6\\u7f51\\u7edc\\u79d1\\u6280\\u6709\\u9650\\u516c\\u53f8\\n\\n\\u5bf9\\u516c\\u8d26\\u6237\\uff1a\\n\\n\\u516c\\u53f8\\u540d\\u79f0\\uff1a\\u897f\\u5b89\\u4f17\\u90a6\\u7f51\\u7edc\\u79d1\\u6280\\u6709\\u9650\\u516c\\u53f8\\n\\u5f00\\u6237\\u884c\\uff1a\\u4e2d\\u56fd\\u6c11\\u751f\\u94f6\\u884c\\u80a1\\u4efd\\u6709\\u9650\\u516c\\u53f8\\u897f\\u5b89\\u897f\\u5927\\u8857\\u652f\\u884c\\n\\u5e10\\u53f7\\uff1a691040854 "}', 1, 0),
-(27, '银行账号', 'text', '{"content":"\\u6cd5\\u4eba\\u8d26\\u53f7\\uff1a\\n\\u4e2d\\u56fd\\u519c\\u4e1a\\u94f6\\u884c\\u5361\\u53f7\\uff1a622848 0211 3030 15310  \\n\\u7528\\u6237\\u540d\\uff1a\\u8bb8\\u8363\\u8000  \\n\\u5f00\\u6237\\u884c\\u5730\\u5740\\uff1a\\u897f\\u5b89\\u52b3\\u52a8\\u8def\\u652f\\u884c\\n\\u516c\\u53f8\\u652f\\u4ed8\\u5b9d\\uff1a\\n\\u5e10\\u53f7\\uff1a1242777321@qq.com\\n\\u59d3\\u540d\\uff1a\\u897f\\u5b89\\u4f17\\u90a6\\u7f51\\u7edc\\u79d1\\u6280\\u6709\\u9650\\u516c\\u53f8\\n\\u5bf9\\u516c\\u8d26\\u6237\\uff1a\\n\\u516c\\u53f8\\u540d\\u79f0\\uff1a\\u897f\\u5b89\\u4f17\\u90a6\\u7f51\\u7edc\\u79d1\\u6280\\u6709\\u9650\\u516c\\u53f8\\n\\u5f00\\u6237\\u884c\\uff1a\\u4e2d\\u56fd\\u6c11\\u751f\\u94f6\\u884c\\u80a1\\u4efd\\u6709\\u9650\\u516c\\u53f8\\u897f\\u5b89\\u897f\\u5927\\u8857\\u652f\\u884c\\n\\u5e10\\u53f7\\uff1a691040854 "}', 1, 0),
-(28, '案例', 'text', '{"content":"\\u832f\\u8336\\u9547\\u3001\\u7f8e\\u62fc\\u5427\\u3001"}', 1, 0),
-(29, '公司电话', 'text', '{"content":"400-8888-794\\n029-65610380\\n029-68507850"}', 1, 0);
-
--- --------------------------------------------------------
 
 --
 -- 表的结构 `eb_wechat_template`

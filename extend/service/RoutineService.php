@@ -27,10 +27,10 @@ class RoutineService{
         $appid =        self::options()['routine_appId'] ? self::options()['routine_appId'] : '';//如果是公众号 就是公众号的appid
         $mch_id =       self::options()['pay_routine_mchid'] ? self::options()['pay_routine_mchid'] : '';
         $nonce_str =    self::nonce_str();//随机字符串
-        $spbill_create_ip = '118.190.105.59';
+        $spbill_create_ip = self::get_server_ip();
         $total_fee =    $fee*100;//因为充值金额最小是1 而且单位为分 如果是充值1元所以这里需要*100
         $trade_type = 'JSAPI';//交易类型 默认
-        $notify_url = SystemConfigService::get('site_url').Url::build('wechat/Index/notify');
+        $notify_url = SystemConfigService::get('site_url').Url::build('routine/Routine/notify');
         $post['appid'] = $appid;
         $post['attach'] = $attach;
         $post['body'] = $body;
@@ -43,9 +43,6 @@ class RoutineService{
         $post['total_fee'] = $total_fee;//总金额
         $post['trade_type'] = $trade_type;
         $sign = self::sign($post);//签名
-//        dump($sign);
-//        dump($post);
-//        exit();
         $post_xml = '<xml>
            <appid>'.$appid.'</appid>
            <attach>'.$attach.'</attach>
@@ -153,5 +150,20 @@ class RoutineService{
             $data[$tag] = $value;
         }
         return $data;
+    }
+
+    public static function get_server_ip() {
+        if (isset($_SERVER)) {
+            if($_SERVER['SERVER_ADDR']) {
+                $server_ip = $_SERVER['SERVER_ADDR'];
+            }
+            else {
+                $server_ip = $_SERVER['LOCAL_ADDR'];
+            }
+        }
+        else {
+            $server_ip = getenv('SERVER_ADDR');
+        }
+        return $server_ip;
     }
 }
