@@ -48,6 +48,9 @@ class SystemDatabackup extends AuthController
      */
     public function optimize(Request $request = null)
     {
+        $tables = $request->post('tables');
+        $db= new Backup();
+        $db->optimize($tables);
         return Json::successful($status==0 ? '禁用成功':'解禁成功');
     }
 
