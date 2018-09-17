@@ -53,7 +53,7 @@
         optimize:function () {
             var tables=layList.getCheckData().getIds('name');
             if(tables.length){
-                layList.basePost(layList.Url({a:'optimize'),{tables:tables},function (res) {
+                layList.basePost(layList.Url({a:'optimize'}),{tables:tables},function (res) {
                     layList.msg(res.msg);
                     layList.reload();
                 });
