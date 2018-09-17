@@ -113,5 +113,6 @@ web.config
 
 更多帮助文档：https://gitee.com/ZhongBangKeJi/CRMEB/wikis/%E5%BC%80%E5%8F%91%E6%96%87%E6%A1%A3?sort_id=680379
 帮助文档：https://gitee.com/ZhongBangKeJi/CRMEB/wikis
+数据字典：请配置public/mysql.php 访问查看
 技术支持QQ群：116279623
 form-builder帮助文档：https://github.com/xaboy/form-builder
