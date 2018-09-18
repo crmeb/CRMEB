@@ -48,7 +48,6 @@
     //加载sql备份列表
     layList.tableList('fileList',"{:Url('fileList')}",function () {
         return [
-            {type:'checkbox'},
             {field: 'backtime', title: '备份名称'},
             {field: 'part', title: '备注' },
             {field: 'size', title: '大小'},
@@ -69,7 +68,6 @@
                     layList.msg(res.msg);
 //                    layList.reload();
                 });
-                $eb.createModalFrame('详情',layList.Url({a:'edit',p:{uid:data.name}}));
                 break;
             case 'downloadFile':
                 $eb.createModalFrame('详情',layList.Url({a:'edit',p:{uid:data.name}}));
