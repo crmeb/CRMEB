@@ -64,6 +64,7 @@
                 $eb.createModalFrame('详情',layList.Url({a:'edit',p:{time:data.time}}));
                 break;
             case 'delFile':
+                console.log(data);
                 layList.basePost(layList.Url({a:'delFile'}),{filetime:data.time},function (res) {
                     layList.msg(res.msg);
 //                    layList.reload();
