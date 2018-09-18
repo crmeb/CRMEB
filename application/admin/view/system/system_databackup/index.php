@@ -4,6 +4,23 @@
     <div class="col-sm-12">
         <div class="ibox float-e-margins">
             <div class="ibox-title">
+                <h5>数据库备份记录</h5>
+            </div>
+            <div class="ibox-content" style="display: block;">
+                <div class="table-responsive">
+                    <table class="layui-hide" id="fileList" lay-filter="fileList"></table>
+                    <script type="text/html" id="fileListtool">
+                        <button type="button" class="layui-btn layui-btn-xs" lay-event="see"><i class="layui-icon layui-icon-edit"></i>详情</button>
+                    </script>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-12">
+        <div class="ibox float-e-margins">
+            <div class="ibox-title">
                 <h5>数据库表列表</h5>
             </div>
             <div class="ibox-content" style="display: block;">
@@ -25,6 +42,29 @@
 </div>
 <script src="{__ADMIN_PATH}js/layuiList.js"></script>
 <script>
+    //加载sql备份列表
+    layList.tableList('fileList',"{:Url('fileList')}",function () {
+        return [
+            {type:'checkbox'},
+            {field: 'name', title: '表名称'},
+            {field: 'comment', title: '备注' },
+            {field: 'engine', title: '类型'},
+            {field: 'data_length', title: '大小'},
+            {field: 'update_time', title: '更新时间'},
+            {field: 'rows', title: '行数'},
+            {fixed: 'right', title: '操作', width: '10%', align: 'center', toolbar: '#fileListtool'}
+        ];
+    },100);
+    layList.reload();
+    //监听并执行 uid 的排序
+    layList.tool(function (event,data) {
+        var layEvent = event;
+        switch (layEvent){
+            case 'see':
+                $eb.createModalFrame('详情',layList.Url({a:'edit',p:{uid:data.name}}));
+                break;
+        }
+    });
     //加载table
     layList.tableList('userList',"{:Url('tablelist')}",function () {
         return [

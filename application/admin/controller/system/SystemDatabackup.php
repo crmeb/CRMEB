@@ -95,4 +95,12 @@ class SystemDatabackup extends AuthController
         }
         return Json::successful($data? '备份失败'.$data:'备份成功');
     }
+    /**修复表
+     * @param Request|null $request
+     */
+    public function fileList(Request $request = null)
+    {
+        $db = $this->DB;
+        return Json::result(0,'sucess',$db->fileList(),count($db->fileList()));
+    }
 }
