@@ -16,7 +16,7 @@ use \tp5er\Backup;
 class SystemDatabackup extends AuthController
 {
     protected $DB;
-    public function __construct(Request $request = null)
+    public function _initialize()
     {
         $config = array(
             'path' => './backdata/',
