@@ -153,6 +153,7 @@ class Backup
                 $info['time'] = strtotime("{$date} {$time}");
                 $info['name'] = $file->getFilename();
                 $list["{$date} {$time}"] = $info;
+
             }
         }
         return $list;
