@@ -10,7 +10,10 @@
                 <div class="table-responsive">
                     <table class="layui-hide" id="fileList" lay-filter="fileList"></table>
                     <script type="text/html" id="fileListtool">
-                        <button type="button" class="layui-btn layui-btn-xs" lay-event="see"><i class="layui-icon layui-icon-edit"></i>详情</button>
+                        <button type="button" class="layui-btn layui-btn-xs" lay-event="import"><i class="layui-icon layui-icon-edit"></i>倒入</button>
+                        <button type="button" class="layui-btn layui-btn-xs" lay-event="delFile"><i class="layui-icon layui-icon-edit"></i>删除</button>
+                        <button type="button" class="layui-btn layui-btn-xs" lay-event="downloadFile"><i class="layui-icon layui-icon-edit"></i>下载</button>
+
                     </script>
                 </div>
             </div>
@@ -53,13 +56,22 @@
             {field: 'time', title: '时间'},
             {fixed: 'right', title: '操作', width: '10%', align: 'center', toolbar: '#fileListtool'}
         ];
-    },100);
-    layList.reload();
-    //监听并执行 uid 的排序
+    },5);
+    //监听并执行备份列表操作
     layList.tool(function (event,data) {
         var layEvent = event;
         switch (layEvent){
-            case 'see':
+            case 'import':
+                $eb.createModalFrame('详情',layList.Url({a:'edit',p:{time:data.time}}));
+                break;
+            case 'delFile':
+                layList.basePost(layList.Url({a:'optimize'}),{time:data.time},function (res) {
+                    layList.msg(res.msg);
+//                    layList.reload();
+                });
+                $eb.createModalFrame('详情',layList.Url({a:'edit',p:{uid:data.name}}));
+                break;
+            case 'downloadFile':
                 $eb.createModalFrame('详情',layList.Url({a:'edit',p:{uid:data.name}}));
                 break;
         }
@@ -78,7 +90,7 @@
         ];
     },100);
     layList.reload();
-    //监听并执行 uid 的排序
+    //监听并执行操作
     layList.tool(function (event,data) {
         var layEvent = event;
         switch (layEvent){
@@ -87,6 +99,7 @@
                 break;
         }
     });
+    //批量操作
     var action={
         optimize:function () {
             var tables=layList.getCheckData().getIds('name');

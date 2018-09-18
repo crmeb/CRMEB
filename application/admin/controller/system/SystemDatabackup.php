@@ -95,10 +95,9 @@ class SystemDatabackup extends AuthController
         }
         return Json::successful($data? '备份失败'.$data:'备份成功');
     }
-    /**修复表
-     * @param Request|null $request
+    /**获取备份记录表
      */
-    public function fileList(Request $request = null)
+    public function fileList()
     {
         $db = $this->DB;
         $files = $db->fileList();
@@ -110,6 +109,17 @@ class SystemDatabackup extends AuthController
             $data[$key]['compress'] = $t['compress'];
             $data[$key]['time'] = date('Y-m-d H:i:s',$t['time']);
         }
+
+        return Json::result(0,'sucess',$data,count($data));
+    } /**删除备份记录表
+     * @param Request|null $request
+     */
+    public function delFile(Request $request = null)
+    {
+        $time = $request->post('time');
+        $db = $this->DB;
+        $files = $db->delFile($time);
+        var_dump($files);
 
         return Json::result(0,'sucess',$data,count($data));
     }
