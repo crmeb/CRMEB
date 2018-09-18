@@ -118,9 +118,9 @@ class SystemDatabackup extends AuthController
     {
         $time = strtotime($request->post('time'));
         echo $time;
-        $files = $this->DB->delFile($time);
-        var_dump($files);
+        //$files = $this->DB->delFile($time);
+        //var_dump($files);
 
-        return Json::result(0,'sucess',$data,count($data));
+       // return Json::result(0,'sucess',$data,count($data));
     }
 }
