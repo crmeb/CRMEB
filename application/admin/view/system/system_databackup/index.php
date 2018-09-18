@@ -53,7 +53,7 @@
             {field: 'size', title: '大小'},
             {field: 'compress', title: '类型'},
             {field: 'time', title: '时间'},
-            {fixed: 'right', title: '操作', width: '10%', align: 'center', toolbar: '#fileListtool'}
+            {fixed: 'right', title: '操作', width: '20%', align: 'center', toolbar: '#fileListtool'}
         ];
     },5);
     //监听并执行备份列表操作
@@ -64,7 +64,7 @@
                 $eb.createModalFrame('详情',layList.Url({a:'edit',p:{time:data.time}}));
                 break;
             case 'delFile':
-                layList.basePost(layList.Url({a:'optimize'}),{time:data.time},function (res) {
+                layList.basePost(layList.Url({a:'delFile'}),{time:data.time},function (res) {
                     layList.msg(res.msg);
 //                    layList.reload();
                 });
