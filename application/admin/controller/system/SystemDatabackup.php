@@ -60,7 +60,7 @@ class SystemDatabackup extends AuthController
     public function repair(Request $request = null)
     {
         $tables = $request->post('tables/a');
-        $db= new Backup();
+        $db = new Backup();
         $res = $db->repair($tables);
         return Json::successful($res ? '修复成功':'修复失败');
     }
@@ -71,10 +71,14 @@ class SystemDatabackup extends AuthController
     {
         $tables = $request->post('tables/a');
         $db= new Backup();
+        $data = [];
         foreach ($tables as $t){
-            $db->backup($t,0);
+            $res = $db->backup($t,0);
+            if(!$res){
+                $data[] = $t;
+            }
         }
         //$res = $db->backup($tables);
-        //return Json::successful($res ? '修复成功':'修复失败');
+        return Json::successful(count($data) ? '备份成功':'备份失败',$data);
     }
 }
