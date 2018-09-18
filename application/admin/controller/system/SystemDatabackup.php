@@ -19,13 +19,13 @@ class SystemDatabackup extends AuthController
     public function _initialize()
     {
         $config = array(
-            'path' => './back/data/',
+            'path' => './backup/data/',
             //数据库备份路径
             'part' => 20971520,
             //数据库备份卷大小
             'compress' => 1,
             //数据库备份文件是否启用压缩 0不压缩 1 压缩
-            'level' => 9,
+            'level' => 5,
         );
         $this->DB = new Backup($config);
     }
