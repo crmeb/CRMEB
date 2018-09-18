@@ -75,7 +75,7 @@ class SystemDatabackup extends AuthController
         foreach ($tables as $t){
             $res = $db->backup($t,0);
             var_dump($res);
-            if(!$res){
+            if($res == false && $res != 0){
                 $data .= $t.'|';
             }
         }
