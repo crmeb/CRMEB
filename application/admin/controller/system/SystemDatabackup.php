@@ -74,11 +74,12 @@ class SystemDatabackup extends AuthController
         $data = '';
         foreach ($tables as $t){
             $res = $db->backup($t,0);
+            var_dump($res);
             if(!$res){
                 $data .= $t.'|';
             }
         }
-        //$res = $db->backup($tables);
+        echo $data;
         return Json::successful($data? '备份失败'.$data:'备份成功');
     }
 }
