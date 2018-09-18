@@ -101,6 +101,16 @@ class SystemDatabackup extends AuthController
     public function fileList(Request $request = null)
     {
         $db = $this->DB;
+        $files = $db->fileList();
+        $data = [];
+        foreach ($files as $key=>$t){
+            $data['backtime'] = $key;
+            $data['part'] = $t['part'];
+            $data['size'] = $t['size'].'B';
+            $data['compress'] = $t['compress'];
+            $data['time'] = date('Y-m-d H:i:s',$t['backtime']);
+        }
+
         return Json::result(0,'sucess',$db->fileList(),count($db->fileList()));
     }
 }

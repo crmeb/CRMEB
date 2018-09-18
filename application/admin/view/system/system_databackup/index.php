@@ -19,11 +19,11 @@
 </div>
 <div class="row">
     <div class="col-sm-12">
-        <div class="ibox float-e-margins">
+        <div class="ibox">
             <div class="ibox-title">
                 <h5>数据库表列表</h5>
             </div>
-            <div class="ibox-content" style="display: block;">
+            <div class="ibox-content">
                 <div class="table-responsive">
                     <div class="layui-btn-group conrelTable">
                         <button class="layui-btn layui-btn-sm layui-btn-normal" type="button" data-type="backup"><i class="fa fa-check-circle-o"></i>备份</button>
@@ -46,12 +46,11 @@
     layList.tableList('fileList',"{:Url('fileList')}",function () {
         return [
             {type:'checkbox'},
-            {field: 'name', title: '表名称'},
-            {field: 'comment', title: '备注' },
-            {field: 'engine', title: '类型'},
-            {field: 'data_length', title: '大小'},
-            {field: 'update_time', title: '更新时间'},
-            {field: 'rows', title: '行数'},
+            {field: 'backtime', title: '备份名称'},
+            {field: 'part', title: '备注' },
+            {field: 'size', title: '大小'},
+            {field: 'compress', title: '类型'},
+            {field: 'time', title: '时间'},
             {fixed: 'right', title: '操作', width: '10%', align: 'center', toolbar: '#fileListtool'}
         ];
     },100);
