@@ -9,12 +9,27 @@ use \tp5er\Backup;
 
 /**
  * 文件校验控制器
- * Class SystemFile
+ * Class SystemDatabackup
  * @package app\admin\controller\system
  *
  */
 class SystemDatabackup extends AuthController
 {
+    protected $DB;
+    public function __construct(Request $request = null)
+    {
+        $config = array(
+            'path' => './backdata/',
+            //数据库备份路径
+            'part' => 20971520,
+            //数据库备份卷大小
+            'compress' => 1,
+            //数据库备份文件是否启用压缩 0不压缩 1 压缩
+            'level' => 9,
+        );
+        $this->DB = new Backup($config);
+    }
+
     /**
      * 数据类表列表
      */
@@ -29,7 +44,7 @@ class SystemDatabackup extends AuthController
      */
     public function tablelist(Request $request = null)
     {
-       $db= new Backup();
+       $db= $this->DB;
        return Json::result(0,'sucess',$db->dataList(),count($db->dataList()));
     }
 
@@ -49,7 +64,7 @@ class SystemDatabackup extends AuthController
     public function optimize(Request $request = null)
     {
         $tables = $request->post('tables/a');
-        $db= new Backup();
+        $db= $this->DB;
         $res = $db->optimize($tables);
         return Json::successful($res ? '优化成功':'优化失败');
     }
@@ -60,7 +75,7 @@ class SystemDatabackup extends AuthController
     public function repair(Request $request = null)
     {
         $tables = $request->post('tables/a');
-        $db = new Backup();
+        $db = $this->DB;
         $res = $db->repair($tables);
         return Json::successful($res ? '修复成功':'修复失败');
     }
@@ -70,16 +85,14 @@ class SystemDatabackup extends AuthController
     public function backup(Request $request = null)
     {
         $tables = $request->post('tables/a');
-        $db= new Backup();
+        $db= $this->DB;
         $data = '';
         foreach ($tables as $t){
             $res = $db->backup($t,0);
-            var_dump($res);
             if($res == false && $res != 0){
                 $data .= $t.'|';
             }
         }
-        echo $data;
         return Json::successful($data? '备份失败'.$data:'备份成功');
     }
 }
