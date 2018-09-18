@@ -117,6 +117,7 @@ class SystemDatabackup extends AuthController
     public function delFile(Request $request = null)
     {
         $time = strtotime($request->post('time'));
+        echo $time;
         $files = $this->DB->delFile($time);
         var_dump($files);
 
