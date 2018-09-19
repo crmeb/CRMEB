@@ -834,17 +834,17 @@
     },
     {
         "name": "topthink/framework",
-        "version": "v5.0.20",
-        "version_normalized": "5.0.20.0",
+        "version": "v5.0.11",
+        "version_normalized": "5.0.11.0",
         "source": {
             "type": "git",
             "url": "https://github.com/top-think/framework.git",
-            "reference": "e20f6e8cadbbc6e246a0c121c89bfd278f30c76b"
+            "reference": "926c9edb0c2682b14f563cac2c8a93f42f729016"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/top-think/framework/zipball/e20f6e8cadbbc6e246a0c121c89bfd278f30c76b",
-            "reference": "e20f6e8cadbbc6e246a0c121c89bfd278f30c76b",
+            "url": "https://api.github.com/repos/top-think/framework/zipball/926c9edb0c2682b14f563cac2c8a93f42f729016",
+            "reference": "926c9edb0c2682b14f563cac2c8a93f42f729016",
             "shasum": ""
         },
         "require": {
@@ -859,7 +859,7 @@
             "phpunit/phpunit": "4.8.*",
             "sebastian/phpcpd": "2.*"
         },
-        "time": "2018-05-11T08:02:47+00:00",
+        "time": "2017-09-13T03:30:29+00:00",
         "type": "think-framework",
         "installation-source": "dist",
         "autoload": {
@@ -1089,23 +1089,23 @@
     },
     {
         "name": "xaboy/form-builder",
-        "version": "1.2.0",
-        "version_normalized": "1.2.0.0",
+        "version": "1.2.3",
+        "version_normalized": "1.2.3.0",
         "source": {
             "type": "git",
             "url": "https://github.com/xaboy/form-builder.git",
-            "reference": "5b8dd46a14d7868be46f7a51c22f80ac4ced36f2"
+            "reference": "1b11a518429db5828147d5840ea18480586caa0c"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/xaboy/form-builder/zipball/5b8dd46a14d7868be46f7a51c22f80ac4ced36f2",
-            "reference": "5b8dd46a14d7868be46f7a51c22f80ac4ced36f2",
+            "url": "https://api.github.com/repos/xaboy/form-builder/zipball/1b11a518429db5828147d5840ea18480586caa0c",
+            "reference": "1b11a518429db5828147d5840ea18480586caa0c",
             "shasum": ""
         },
         "require": {
             "php": ">=5.4.0"
         },
-        "time": "2018-08-05T14:03:53+00:00",
+        "time": "2018-08-07T06:29:30+00:00",
         "type": "library",
         "installation-source": "dist",
         "autoload": {
