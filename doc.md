@@ -1,4 +1,5 @@
 ## CRMEB开源文档地址：https://gitee.com/ZhongBangKeJi/CRMEB
+
 ## 运行环境
 CRMEB可以支持Windows/Unix服务器环境，需要PHP5.5.9以上，Mysql5.1以上版本支持， 可运行于包括Apache、IIS和nginx在内的多种WEB服务器和模式，支持Mysql数据库，引擎用InnoDB；
 
