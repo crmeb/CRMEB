@@ -62,7 +62,7 @@ class PHPExcelService
      */
     private static function initialize($data,$fun){
 //        vendor("PHPExcel.PHPExcel.PHPExcel");
-//        self::$PHPExcel= new \PHPExcel();
+        self::$PHPExcel= new \PHPExcel();
         if($fun!==null && is_callable($fun)){
             self::$styleArray=$fun();
         }
@@ -177,6 +177,7 @@ class PHPExcelService
             self::$title=$title;
         if(empty($Name)) $Name=time();
         //设置Excel属性
+        self::$PHPExcel = new \PHPExcel();
         self::$PHPExcel ->getProperties()
             ->setCreator("Neo")
             ->setLastModifiedBy("Neo")
