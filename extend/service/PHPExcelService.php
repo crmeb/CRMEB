@@ -87,6 +87,7 @@ class PHPExcelService
      */
     public function setExcelContent($list=null)
     {
+        self::$PHPExcel = new \PHPExcel();
         $sheet=self::$PHPExcel->getActiveSheet();
         foreach(self::$data as $key=>$val){
             $row=self::$cellKey[$key];
