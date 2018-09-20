@@ -157,6 +157,10 @@ class ComposerStaticInit34eab264abc3ceb8f815f4aeec1c4520
             array (
                 0 => __DIR__ . '/..' . '/pimple/pimple/src',
             ),
+            'PHPExcel' => 
+            array (
+                0 => __DIR__ . '/..' . '/phpoffice/phpexcel/Classes',
+            ),
         ),
     );
 
