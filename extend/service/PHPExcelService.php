@@ -1,6 +1,8 @@
 <?php
 namespace service;
 
+use PHPExcel_IOFactory;
+use PHPExcel;
 use service\JsonService as Json;
 use think\Request;
 
@@ -59,8 +61,8 @@ class PHPExcelService
      * return
      */
     private static function initialize($data,$fun){
-        vendor("PHPExcel.PHPExcel.PHPExcel");
-        self::$PHPExcel= new \PHPExcel();
+//        vendor("PHPExcel.PHPExcel.PHPExcel");
+//        self::$PHPExcel= new \PHPExcel();
         if($fun!==null && is_callable($fun)){
             self::$styleArray=$fun();
         }
