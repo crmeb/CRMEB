@@ -58,14 +58,14 @@
         ];
     },5);
     //监听并执行备份列表操作
-    filelist.tool(function (event,data) {
+    layList.tool(function (event,data,filelist) {
         var layEvent = event;
         switch (layEvent){
             case 'import':
                 $eb.createModalFrame('详情',layList.Url({a:'edit',p:{time:data.time}}));
                 break;
             case 'delFile':
-                console.log(data);
+                console.log(data);console.log(filelist);
                 layList.basePost(layList.Url({a:'delFile'}),{filetime:data.time},function (res) {
                     layList.msg(res.msg);
 //                    layList.reload();
