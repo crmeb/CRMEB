@@ -45,8 +45,9 @@
 </div>
 <script src="{__ADMIN_PATH}js/layuiList.js"></script>
 <script>
+    var filelist = '';
     //加载sql备份列表
-    layList.tableList('fileList',"{:Url('fileList')}",function () {
+    filelist = layList.tableList('fileList',"{:Url('fileList')}",function () {
         return [
             {field: 'backtime', title: '备份名称'},
             {field: 'part', title: '备注' },
@@ -57,7 +58,7 @@
         ];
     },5);
     //监听并执行备份列表操作
-    layList.tool(function (event,data) {
+    filelist.tool(function (event,data) {
         var layEvent = event;
         switch (layEvent){
             case 'import':
