@@ -45,9 +45,8 @@
 </div>
 <script src="{__ADMIN_PATH}js/layuiList.js"></script>
 <script>
-    var filelist = '';
     //加载sql备份列表
-    filelist = layList.tableList('fileList',"{:Url('fileList')}",function () {
+    layList.tableList('fileList',"{:Url('fileList')}",function () {
         return [
             {field: 'backtime', title: '备份名称'},
             {field: 'part', title: '备注' },
@@ -58,7 +57,7 @@
         ];
     },5);
     //监听并执行备份列表操作
-    layList.tool(function (event,data,obj) {
+    layList.tool(function (event,data) {
         var layEvent = event;
         switch (layEvent){
             case 'import':
@@ -76,6 +75,8 @@
                 break;
         }
     },'','fileList');
+
+
     //加载table
     layList.tableList('userList',"{:Url('tablelist')}",function () {
         return [
@@ -89,16 +90,16 @@
             {fixed: 'right', title: '操作', width: '10%', align: 'center', toolbar: '#barDemo'}
         ];
     },100);
-    layList.reload();
-    //监听并执行操作
-    layList.tool(function (event,data) {
-        var layEvent = event;
-        switch (layEvent){
-            case 'see':
-                $eb.createModalFrame('详情',layList.Url({a:'edit',p:{tablename:data.name}}));
-                break;
-        }
-    });
+//    layList.reload();
+//    //监听并执行操作
+//    layList.tool(function (event,data) {
+//        var layEvent = event;
+//        switch (layEvent){
+//            case 'see':
+//                $eb.createModalFrame('详情',layList.Url({a:'edit',p:{tablename:data.name}}));
+//                break;
+//        }
+//    });
     //批量操作
     var action={
         optimize:function () {
