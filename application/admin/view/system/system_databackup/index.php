@@ -58,7 +58,7 @@
         ];
     },5);
     //监听并执行备份列表操作
-    layList.tool(function (event,data,filelist) {
+    layList.tool(function (event,data) {
         var layEvent = event;
         switch (layEvent){
             case 'import':
@@ -66,16 +66,16 @@
                 break;
             case 'delFile':
                 console.log(data);console.log(filelist);
-                layList.basePost(layList.Url({a:'delFile'}),{filetime:data.time},function (res) {
+                layList.basePost(layList.Url({a:'delFile'}),{feilname:data.time},function (res) {
                     layList.msg(res.msg);
 //                    layList.reload();
                 });
                 break;
             case 'downloadFile':
-                $eb.createModalFrame('详情',layList.Url({a:'edit',p:{uid:data.name}}));
+                $eb.createModalFrame('详情',layList.Url({a:'edit',p:{feilname:data.name}}));
                 break;
         }
-    });
+    },'','fileList');
     //加载table
     layList.tableList('userList',"{:Url('tablelist')}",function () {
         return [
@@ -95,7 +95,7 @@
         var layEvent = event;
         switch (layEvent){
             case 'see':
-                $eb.createModalFrame('详情',layList.Url({a:'edit',p:{uid:data.name}}));
+                $eb.createModalFrame('详情',layList.Url({a:'edit',p:{tablename:data.name}}));
                 break;
         }
     });
