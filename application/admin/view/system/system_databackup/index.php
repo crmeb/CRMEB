@@ -45,6 +45,19 @@
 </div>
 <script src="{__ADMIN_PATH}js/layuiList.js"></script>
 <script>
+    //加载table
+    layList.tableList('userList',"{:Url('tablelist')}",function () {
+        return [
+            {type:'checkbox'},
+            {field: 'name', title: '表名称'},
+            {field: 'comment', title: '备注' },
+            {field: 'engine', title: '类型'},
+            {field: 'data_length', title: '大小'},
+            {field: 'update_time', title: '更新时间'},
+            {field: 'rows', title: '行数'}
+//            {fixed: 'right', title: '操作', width: '10%', align: 'center', toolbar: '#barDemo'}
+        ];
+    },100);
     //加载sql备份列表
     layList.tableList('fileList',"{:Url('fileList')}",function () {
         return [
@@ -77,19 +90,7 @@
     },'','fileList');
 
 
-    //加载table
-    layList.tableList('userList',"{:Url('tablelist')}",function () {
-        return [
-            {type:'checkbox'},
-            {field: 'name', title: '表名称'},
-            {field: 'comment', title: '备注' },
-            {field: 'engine', title: '类型'},
-            {field: 'data_length', title: '大小'},
-            {field: 'update_time', title: '更新时间'},
-            {field: 'rows', title: '行数'},
-            {fixed: 'right', title: '操作', width: '10%', align: 'center', toolbar: '#barDemo'}
-        ];
-    },100);
+
 //    layList.reload();
 //    //监听并执行操作
 //    layList.tool(function (event,data) {
