@@ -163,10 +163,10 @@
         }
     }
     //监听列表
-    layList.tool = function (EventFn, fieldStr,odj) {
+    layList.tool = function (EventFn, fieldStr,odjs) {
         var that = this;
         // var elemOdj=elemOdj || that.elemOdj
-        var elemOdj=that.elemOdj[odj || this.odj];
+        var elemOdj=that.elemOdj[odjs || this.odj];
         console.log(elemOdj);
         this.table.on('tool(' + elemOdj + ')', function (obj) {
             console.log(obj)
