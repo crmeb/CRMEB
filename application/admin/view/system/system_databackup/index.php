@@ -110,8 +110,9 @@
                 case 'backup':
                     if(tables.length){
                         layList.basePost(layList.Url({a:'backup'}),{tables:tables},function (res) {
-                            layList.msg(res.msg);
-                            buckdata.reload();
+                            layList.msg(res.msg,{icon:1,time:1000}function(){
+                                buckdata.reload();
+                            });
                         });
                     }else{
                         layList.msg('请选择表');
