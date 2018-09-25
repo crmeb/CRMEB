@@ -121,7 +121,8 @@ class SystemDatabackup extends AuthController
         $part = null; $start = null;
         $time = strtotime($request->post('feilname'));
         $db = $this->DB;
-        if(is_numeric($time) && is_null($part) && is_null($start)){
+        $list=session::get('backup_list');
+        if(is_numeric($time) && is_null($part) && is_null($start) && empty($list)){
             $list= $db->getFile('timeverif',$time);
             var_dump($list);
             if(is_array($list)){
