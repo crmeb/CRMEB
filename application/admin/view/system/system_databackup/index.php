@@ -30,17 +30,11 @@
                 <div class="table-responsive">
                     <script type="text/html" id="toolbarDemo">
                         <div class="layui-btn-container">
-                            <button class="layui-btn layui-btn-sm" lay-event="getCheckData">获取选中行数据</button>
-                            <button class="layui-btn layui-btn-sm" lay-event="getCheckLength">获取选中数目</button>
-                            <button class="layui-btn layui-btn-sm" lay-event="isAll">验证是否全选</button>
+                            <button class="layui-btn layui-btn-sm" lay-event="backup">备份</button>
+                            <button class="layui-btn layui-btn-sm" lay-event="optimize">优化表</button>
+                            <button class="layui-btn layui-btn-sm" lay-event="repair">修复表</button>
                         </div>
                     </script>
-                    <div class="layui-btn-group conrelTable">
-                        <button class="layui-btn layui-btn-sm layui-btn-normal" type="button" data-type="backup"><i class="fa fa-check-circle-o"></i>备份</button>
-                        <button class="layui-btn layui-btn-sm layui-btn-normal" type="button" data-type="optimize"><i class="fa fa-check-circle-o"></i>优化表</button>
-                        <button class="layui-btn layui-btn-sm layui-btn-normal" type="button" data-type="repair"><i class="fa fa-check-circle-o"></i>修复表</button>
-                        <button class="layui-btn layui-btn-sm layui-btn-normal" type="button" data-type="refresh"><i class="layui-icon layui-icon-refresh" ></i>刷新</button>
-                    </div>
                     <table class="layui-hide" id="tableListID" lay-filter="tableListID"></table>
                     <script type="text/html" id="barDemo">
                         <button type="button" class="layui-btn layui-btn-xs" lay-event="see"><i class="layui-icon layui-icon-edit"></i>详情</button>
@@ -107,13 +101,23 @@
         //头工具栏事件
         tableList.on('toolbar(tableListID)', function(obj){
             var checkStatus = tableList.checkStatus(obj.config.id);
+            var data = checkStatus.data;
+            var tables = [];
+            $.each(data, function (name, value) {
+                if (value['name'] != undefined) tables.push(value['name']);
+            });
             switch(obj.event){
-                case 'getCheckData':
-                    var data = checkStatus.data;
-                    var tables = [];
-                    $.each(data, function (name, value) {
-                        if (value['name'] != undefined) tables.push(value['name']);
-                    });
+                case 'backup':
+                    if(tables.length){
+                        layList.basePost(layList.Url({a:'backup'}),{tables:tables},function (res) {
+                            layList.msg(res.msg);
+                            filelist.reload();
+                        });
+                    }else{
+                        layList.msg('请选择表');
+                    }
+                    break;
+                case 'optimize':
                     if(tables.length){
                         layList.basePost(layList.Url({a:'optimize'}),{tables:tables},function (res) {
                             layList.msg(res.msg);
@@ -123,12 +127,15 @@
                         layList.msg('请选择表');
                     }
                     break;
-                case 'getCheckLength':
-                    var data = checkStatus.data;
-                    layer.msg('选中了：'+ data.length + ' 个');
-                    break;
-                case 'isAll':
-                    layer.msg(checkStatus.isAll ? '全选': '未全选');
+                case 'repair':
+                    if(tables.length){
+                        layList.basePost(layList.Url({a:'repair'}),{tables:tables},function (res) {
+                            layList.msg(res.msg);
+                            filelist.reload();
+                        });
+                    }else{
+                        layList.msg('请选择表');
+                    }
                     break;
             };
         });
