@@ -49,8 +49,8 @@
     function ipmosrting(time,part = null,start = null) {
         var data = {
             time:time,
-            part:part||null,
-            start:start||null
+            part:part||'',
+            start:start||''
         };
         layList.basePost(layList.Url({a:'import'}),data,function (res) {
             console.log(res);
