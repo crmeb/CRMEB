@@ -47,7 +47,7 @@
 <script src="{__ADMIN_PATH}js/layuiList.js"></script>
 <script>
     function ipmosrting(time,part = null,start = null) {
-        var data = {
+        var datas = {
             time:time,
             part:part,
             start:start
