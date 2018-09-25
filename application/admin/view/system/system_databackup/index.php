@@ -97,7 +97,7 @@
                 {field: 'name', title: '表名称', sort: true},
                 {field: 'comment', title: '备注' },
                 {field: 'engine', title: '类型', sort: true},
-                {field: 'data_length', title: '大小', sort: true},
+                {field: 'data_length', title: '大小', sort: true,totalRow: true},
                 {field: 'update_time', title: '更新时间', sort: true},
                 {field: 'rows', title: '行数'},
                 {fixed: 'right', title: '操作', width: '10%', align: 'center', toolbar: '#barDemo'}
@@ -106,7 +106,7 @@
         });
         //头工具栏事件
         tableList.on('toolbar(tableListID)', function(obj){
-            var checkStatus = tableList.checkStatus(obj.config.id);
+            var checkStatus = tableList.checkStatus('name');
             switch(obj.event){
                 case 'getCheckData':
                     var data = checkStatus.data;
