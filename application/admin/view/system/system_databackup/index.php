@@ -88,7 +88,7 @@
                     layer.confirm('真的倒入该备份吗？', function(index){
                         ipmosrting(data.time);
                         layList.basePost(layList.Url({a:'import'}),{feilname:data.time},function (res) {
-                            setTimeout("ipmosrting(res.data.time,res.data.part,res.data.start)",2000);
+                            setTimeout(ipmosrting(res.data.time,res.data.part,res.data.start),2000);
                         });
                     });
                     break;
