@@ -91,8 +91,8 @@
                     layer.confirm('真的倒入该备份吗？', function(index){
                         var datas = {
                             time:data.time,
-                            part:part,
-                            start:start
+                            part:1,
+                            start:0
                         };
 
                         $.ajax({
