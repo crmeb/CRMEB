@@ -50,7 +50,7 @@
         var fileList = layui.table;
         var tableList = layui.table;
         //加载sql备份列表
-        fileList.render({
+        var buckdata = fileList.render({
             elem: '#fileList'
             ,url:"{:Url('fileList')}"
             ,cols: [[
@@ -72,7 +72,7 @@
                 layer.confirm('真的删除行么', function(index){
                     layList.basePost(layList.Url({a:'delFile'}),{feilname:data.time},function (res) {
                         layList.msg(res.msg);
-//                    layList.reload();
+                         buckdata.reload();
                     });
                     obj.del();
                     layer.close(index);
@@ -111,7 +111,7 @@
                     if(tables.length){
                         layList.basePost(layList.Url({a:'backup'}),{tables:tables},function (res) {
                             layList.msg(res.msg);
-                            fileList.reload();
+                            //fileList.reload();
                         });
                     }else{
                         layList.msg('请选择表');
