@@ -28,6 +28,13 @@
             </div>
             <div class="ibox-content">
                 <div class="table-responsive">
+                    <script type="text/html" id="toolbarDemo">
+                        <div class="layui-btn-container">
+                            <button class="layui-btn layui-btn-sm" lay-event="getCheckData">获取选中行数据</button>
+                            <button class="layui-btn layui-btn-sm" lay-event="getCheckLength">获取选中数目</button>
+                            <button class="layui-btn layui-btn-sm" lay-event="isAll">验证是否全选</button>
+                        </div>
+                    </script>
                     <div class="layui-btn-group conrelTable">
                         <button class="layui-btn layui-btn-sm layui-btn-normal" type="button" data-type="backup"><i class="fa fa-check-circle-o"></i>备份</button>
                         <button class="layui-btn layui-btn-sm layui-btn-normal" type="button" data-type="optimize"><i class="fa fa-check-circle-o"></i>优化表</button>
@@ -46,9 +53,10 @@
 <script src="{__ADMIN_PATH}js/layuiList.js"></script>
 <script>
     layui.use('table', function(){
-        var table = layui.table;
-        //
-        table.render({
+        var fileList = layui.table;
+        var tableList = layui.table;
+        //加载sql备份列表
+        fileList.render({
             elem: '#fileList'
             ,url:"{:Url('fileList')}"
             ,cols: [[
@@ -62,7 +70,7 @@
             ,page: false
         });
         //监听工具条
-        table.on('tool(fileList)', function(obj){
+        fileList.on('tool(fileList)', function(obj){
             var data = obj.data;
             if(obj.event === 'import'){
                 layer.msg('ID：'+ data.id + ' 的查看操作');
@@ -75,20 +83,55 @@
                 layer.alert('编辑行：<br>'+ JSON.stringify(data))
             }
         });
+        //加载table
+        tableList..render({
+            elem: '#tableList'
+            ,url:"{:Url('tablelist')}"
+            ,toolbar: '#toolbarDemo'
+            ,cols: [[
+                {type:'checkbox'},
+                {field: 'name', title: '表名称'},
+                {field: 'comment', title: '备注' },
+                {field: 'engine', title: '类型'},
+                {field: 'data_length', title: '大小'},
+                {field: 'update_time', title: '更新时间'},
+                {field: 'rows', title: '行数'},
+                {fixed: 'right', title: '操作', width: '10%', align: 'center', toolbar: '#barDemo'}
+            ]]
+            ,page: false
+        });
+        //头工具栏事件
+        tableList.on('toolbar(tableList)', function(obj){
+            var checkStatus = table.checkStatus(obj.config.id);
+            switch(obj.event){
+                case 'getCheckData':
+                    var data = checkStatus.data;
+                    layer.alert(JSON.stringify(data));
+                    break;
+                case 'getCheckLength':
+                    var data = checkStatus.data;
+                    layer.msg('选中了：'+ data.length + ' 个');
+                    break;
+                case 'isAll':
+                    layer.msg(checkStatus.isAll ? '全选': '未全选');
+                    break;
+            };
+        });
+
+        //监听并执行操作
+        tableList.on('tool(tableList)', function(obj){
+            var data = obj.data;
+            if(obj.event === 'see'){
+                $eb.createModalFrame('详情',layList.Url({a:'edit',p:{tablename:data.name}}));
+                break;
+            }
+        });
+        //监听工具条
+
 
     });
 /**
-    //加载sql备份列表
-    var filelist = layList.tableList('fileList',"{:Url('fileList')}",function () {
-        return [
-            {field: 'backtime', title: '备份名称'},
-            {field: 'part', title: '备注' },
-            {field: 'size', title: '大小'},
-            {field: 'compress', title: '类型'},
-            {field: 'time', title: '时间'},
-            {fixed: 'right', title: '操作', width: '20%', align: 'center', toolbar: '#fileListtool'}
-        ];
-    },5);
+
     //监听并执行备份列表操作
     layList.tool(function (event,data) {
         var layEvent = event;
