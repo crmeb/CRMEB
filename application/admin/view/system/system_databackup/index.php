@@ -127,7 +127,6 @@
             var data = obj.data;
             if(obj.event === 'see'){
                 $eb.createModalFrame('详情',layList.Url({a:'edit',p:{tablename:data.name}}));
-                break;
             }
         });
 
