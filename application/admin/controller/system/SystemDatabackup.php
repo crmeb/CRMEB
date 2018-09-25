@@ -118,7 +118,7 @@ class SystemDatabackup extends AuthController
      */
     public function import(Request $request = null)
     {
-        $part = $request->post('part')?:null;
+        $part = $request->post('part') ? intval($request->post('part')) :null;
         $start = $request->post('start') === '0' ? 0 : null;
         $time = strtotime($request->post('time'));
         $db = $this->DB;
