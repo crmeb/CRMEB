@@ -34,7 +34,7 @@
                         <button class="layui-btn layui-btn-sm layui-btn-normal" type="button" data-type="repair"><i class="fa fa-check-circle-o"></i>修复表</button>
                         <button class="layui-btn layui-btn-sm layui-btn-normal" type="button" data-type="refresh"><i class="layui-icon layui-icon-refresh" ></i>刷新</button>
                     </div>
-                    <table class="layui-hide" id="userList" lay-filter="userList"></table>
+                    <table class="layui-hide" id="tableList" lay-filter="tableList"></table>
                     <script type="text/html" id="barDemo">
                         <button type="button" class="layui-btn layui-btn-xs" lay-event="see"><i class="layui-icon layui-icon-edit"></i>详情</button>
                     </script>
@@ -45,19 +45,7 @@
 </div>
 <script src="{__ADMIN_PATH}js/layuiList.js"></script>
 <script>
-    //加载table
-    layList.tableList('userList',"{:Url('tablelist')}",function () {
-        return [
-            {type:'checkbox'},
-            {field: 'name', title: '表名称'},
-            {field: 'comment', title: '备注' },
-            {field: 'engine', title: '类型'},
-            {field: 'data_length', title: '大小'},
-            {field: 'update_time', title: '更新时间'},
-            {field: 'rows', title: '行数'}
-//            {fixed: 'right', title: '操作', width: '10%', align: 'center', toolbar: '#barDemo'}
-        ];
-    },100);
+
     //加载sql备份列表
     layList.tableList('fileList',"{:Url('fileList')}",function () {
         return [
@@ -88,6 +76,19 @@
                 break;
         }
     },'','fileList');
+    //加载table
+    layList.tableList('tableList',"{:Url('tablelist')}",function () {
+        return [
+            {type:'checkbox'},
+            {field: 'name', title: '表名称'},
+            {field: 'comment', title: '备注' },
+            {field: 'engine', title: '类型'},
+            {field: 'data_length', title: '大小'},
+            {field: 'update_time', title: '更新时间'},
+            {field: 'rows', title: '行数'}
+//            {fixed: 'right', title: '操作', width: '10%', align: 'center', toolbar: '#barDemo'}
+        ];
+    },100);
 
 
 
