@@ -46,6 +46,26 @@
 </div>
 <script src="{__ADMIN_PATH}js/layuiList.js"></script>
 <script>
+    function ipmosrting(time,part = null,start = null) {
+        var data = {
+            time:time,
+            part:part||null,
+            start:start||null
+        };
+        layList.basePost(layList.Url({a:'import'}),data,function (res) {
+            console.log(res);
+            console.log(res.code);
+            setTimeout(ipmosrting(time,1,0),2000);
+//                if(res.code){
+//                    console.log(res);
+//                    setTimeout(ipmosrting(time,res.data.part,res.data.start),2000);
+//                }else{
+//                    layList.msg(res.msg);
+//                    return false;
+//                }
+
+        });
+    }
     layui.use('table', function(){
         var fileList = layui.table;
         var tableList = layui.table;
@@ -63,26 +83,7 @@
             ]]
             ,page: false
         });
-        function ipmosrting(time,part = null,start = null) {
-            var data = {
-                time:time,
-                part:part||null,
-                start:start||null
-            };
-            layList.basePost(layList.Url({a:'import'}),data,function (res) {
-                console.log(res);
-                console.log(res.code);
-                setTimeout(ipmosrting(time,1,0),2000);
-//                if(res.code){
-//                    console.log(res);
-//                    setTimeout(ipmosrting(time,res.data.part,res.data.start),2000);
-//                }else{
-//                    layList.msg(res.msg);
-//                    return false;
-//                }
 
-            });
-        }
         //监听工具条
         fileList.on('tool(fileList)', function(obj){
             var data = obj.data;
@@ -91,6 +92,7 @@
                 case 'import':
                     layer.confirm('真的倒入该备份吗？', function(index){
                         ipmosrting(data.time);
+                        layer.close(index);
                     });
                     break;
                 case 'delFile':
