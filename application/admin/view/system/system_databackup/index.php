@@ -132,8 +132,8 @@
             $.each(data, function (name, value) {
                 if (value['name'] != undefined) tables.push(value['name']);
             });
-            if(tables.length < 1 || empty(tables)){
-                return;
+            if(tables.length < 1 ){
+                return false;
             }
             switch(obj.event){
                 case 'backup':
