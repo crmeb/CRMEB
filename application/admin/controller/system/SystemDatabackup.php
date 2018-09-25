@@ -101,7 +101,7 @@ class SystemDatabackup extends AuthController
             $data[$key]['compress'] = $t['compress'];
             $data[$key]['time'] = date('Y-m-d H:i:s',$t['time']);
         }
-        return Json::result(200,'sucess',$data,count($data));
+        return Json::result(0,'sucess',$data,count($data));
     }
     /**删除备份记录表
      * @param Request|null $request
@@ -110,7 +110,7 @@ class SystemDatabackup extends AuthController
     {
         $feilname = strtotime($request->post('feilname'));
         $files = $this->DB->delFile($feilname);
-       return Json::result(200,'sucess');
+       return Json::result(0,'sucess');
     }
     /**倒入备份记录表
      * @param Request|null $request
