@@ -114,6 +114,8 @@
                     $.each(data, function (name, value) {
                         if (value['name'] != undefined) ids.push(value['name']);
                     });
+                    console.log(data);
+                    console.log(ids);
                     layer.alert(JSON.stringify(ids));
                     break;
                 case 'getCheckLength':
