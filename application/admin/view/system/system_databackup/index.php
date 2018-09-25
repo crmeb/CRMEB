@@ -72,14 +72,14 @@
             layList.basePost(layList.Url({a:'import'}),data,function (res) {
                 console.log(res);
                 console.log(res.code);
-
-                if(res.code){
-                    console.log(res);
-                    setTimeout(ipmosrting(time,res.data.part,res.data.start),2000);
-                }else{
-                    layList.msg(res.msg);
-                    return false;
-                }
+                setTimeout(ipmosrting(time,1,0),2000);
+//                if(res.code){
+//                    console.log(res);
+//                    setTimeout(ipmosrting(time,res.data.part,res.data.start),2000);
+//                }else{
+//                    layList.msg(res.msg);
+//                    return false;
+//                }
 
             });
         }
