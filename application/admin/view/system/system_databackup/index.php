@@ -41,7 +41,7 @@
                         <button class="layui-btn layui-btn-sm layui-btn-normal" type="button" data-type="repair"><i class="fa fa-check-circle-o"></i>修复表</button>
                         <button class="layui-btn layui-btn-sm layui-btn-normal" type="button" data-type="refresh"><i class="layui-icon layui-icon-refresh" ></i>刷新</button>
                     </div>
-                    <table class="layui-hide" id="tableList" lay-filter="tableList"></table>
+                    <table class="layui-hide" id="tableListID" lay-filter="tableList"></table>
                     <script type="text/html" id="barDemo">
                         <button type="button" class="layui-btn layui-btn-xs" lay-event="see"><i class="layui-icon layui-icon-edit"></i>详情</button>
                     </script>
@@ -89,7 +89,7 @@
         });
         //加载table
         tableList.render({
-            elem: '#tableList'
+            elem: '#tableListID'
             ,url:"{:Url('tablelist')}"
             ,toolbar: '#toolbarDemo'
             ,cols: [[
@@ -105,7 +105,7 @@
             ,page: false
         });
         //头工具栏事件
-        tableList.on('toolbar(tableList)', function(obj){
+        tableList.on('toolbar(tableListID)', function(obj){
             var checkStatus = table.checkStatus(obj.config.id);
             switch(obj.event){
                 case 'getCheckData':
@@ -123,7 +123,7 @@
         });
 
         //监听并执行操作
-        tableList.on('tool(tableList)', function(obj){
+        tableList.on('tool(tableListID)', function(obj){
             var data = obj.data;
             if(obj.event === 'see'){
                 $eb.createModalFrame('详情',layList.Url({a:'edit',p:{tablename:data.name}}));
