@@ -75,7 +75,7 @@
                 $eb.createModalFrame('详情',layList.Url({a:'edit',p:{feilname:data.name}}));
                 break;
         }
-    },'','fileList');
+    },null,'fileList');
     //加载table
     layList.tableList('tableList',"{:Url('tablelist')}",function () {
         return [
