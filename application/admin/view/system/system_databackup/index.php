@@ -106,7 +106,7 @@
         });
         //头工具栏事件
         tableList.on('toolbar(tableListID)', function(obj){
-            var checkStatus = tableList.checkStatus();
+            var checkStatus = tableList.checkStatus(obj.config.id);
             switch(obj.event){
                 case 'getCheckData':
                     var data = checkStatus.data;
