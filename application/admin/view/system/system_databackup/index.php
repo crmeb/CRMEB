@@ -76,6 +76,10 @@
                 layer.msg('ID：'+ data.id + ' 的查看操作');
             } else if(obj.event === 'delFile'){
                 layer.confirm('真的删除行么', function(index){
+                    layList.basePost(layList.Url({a:'delFile'}),{feilname:data.time},function (res) {
+                        layList.msg(res.msg);
+//                    layList.reload();
+                    });
                     obj.del();
                     layer.close(index);
                 });
@@ -128,96 +132,6 @@
         });
 
     });
-/**
 
-    //监听并执行备份列表操作
-    layList.tool(function (event,data) {
-        var layEvent = event;
-        switch (layEvent){
-            case 'import':
-                $eb.createModalFrame('详情',layList.Url({a:'edit',p:{time:data.time}}));
-                break;
-            case 'delFile':
-                console.log(data);
-                layList.basePost(layList.Url({a:'delFile'}),{feilname:data.time},function (res) {
-                    layList.msg(res.msg);
-//                    layList.reload();
-                });
-                break;
-            case 'downloadFile':
-                $eb.createModalFrame('详情',layList.Url({a:'edit',p:{feilname:data.name}}));
-                break;
-        }
-    },null,'fileList');
-    //加载table
-    layList.tableList('tableList',"{:Url('tablelist')}",function () {
-        return [
-            {type:'checkbox'},
-            {field: 'name', title: '表名称'},
-            {field: 'comment', title: '备注' },
-            {field: 'engine', title: '类型'},
-            {field: 'data_length', title: '大小'},
-            {field: 'update_time', title: '更新时间'},
-            {field: 'rows', title: '行数'}
-//            {fixed: 'right', title: '操作', width: '10%', align: 'center', toolbar: '#barDemo'}
-        ];
-    },100);
-
-
-
-//    layList.reload();
-//    //监听并执行操作
-//    layList.tool(function (event,data) {
-//        var layEvent = event;
-//        switch (layEvent){
-//            case 'see':
-//                $eb.createModalFrame('详情',layList.Url({a:'edit',p:{tablename:data.name}}));
-//                break;
-//        }
-//    });
-    //批量操作
-    var action={
-        optimize:function () {
-            var tables=layList.getCheckData().getIds('name');
-            if(tables.length){
-                layList.basePost(layList.Url({a:'optimize'}),{tables:tables},function (res) {
-                    layList.msg(res.msg);
-                    filelist.layList.reload();
-                });
-            }else{
-                layList.msg('请选择表');
-            }
-        },
-        repair:function () {
-            var tables=layList.getCheckData().getIds('name');
-            if(tables.length){
-                layList.basePost(layList.Url({a:'repair'}),{tables:tables},function (res) {
-                    layList.msg(res.msg);
-//                    layList.reload();
-                });
-            }else{
-                layList.msg('请选择表');
-            }
-        },
-        backup:function () {
-            var tables=layList.getCheckData().getIds('name');
-            if(tables.length){
-                layList.basePost(layList.Url({a:'backup'}),{tables:tables},function (res) {
-                    layList.msg(res.msg);
-//                    layList.reload();
-                });
-            }else{
-                layList.msg('请选择表');
-            }
-        },
-
-    };
-    $('.conrelTable').find('button').each(function () {
-        var type=$(this).data('type');
-        $(this).on('click',function () {
-            action[type] && action[type]();
-        })
-    })
-**/
 </script>
 {/block}
