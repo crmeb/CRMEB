@@ -167,6 +167,7 @@
         var that = this;
         // var elemOdj=elemOdj || that.elemOdj
         var elemOdj=that.elemOdj[odj || this.odj];
+        console.log(elemOdj);
         this.table.on('tool(' + elemOdj + ')', function (obj) {
             var data = obj.data, layEvent = obj.event;
             if (typeof EventFn == 'function') {
