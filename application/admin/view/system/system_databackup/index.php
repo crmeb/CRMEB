@@ -72,10 +72,7 @@
                     layer.confirm('真的倒入该备份吗？', function(index){
                         layList.basePost(layList.Url({a:'import'}),{feilname:data.time},function (res) {
                             layList.msg(res.msg);
-                            buckdata.reload();
                         });
-                        obj.del();
-                        layer.close(index);
                     });
                     break;
                 case 'delFile':
