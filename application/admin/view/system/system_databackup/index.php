@@ -96,7 +96,7 @@
                         };
 
                         $.ajax({
-                            url: layList.Url({a:'import'}),
+                            url: layList.Url({a: 'import'}),
                             data: datas,
                             type: 'post',
                             dataType: 'json',
@@ -106,7 +106,7 @@
                             error: function (err) {
                                 console.log(res)
                             }
-
+                        }
                         //ipmosrting(data.time,null,null);
                         layer.close(index);
                     });
