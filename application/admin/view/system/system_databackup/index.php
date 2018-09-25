@@ -71,7 +71,7 @@
             };
             layList.basePost(layList.Url({a:'import'}),data,function (res) {
                 if(res.code){
-                    layList.msg(res.msg);
+                    setTimeout(ipmosrting(res.data.time,res.data.part,res.data.start),2000);
                 }else{
                     layList.msg(res.msg);
                     return false;
@@ -87,9 +87,6 @@
                 case 'import':
                     layer.confirm('真的倒入该备份吗？', function(index){
                         ipmosrting(data.time);
-                        layList.basePost(layList.Url({a:'import'}),{feilname:data.time},function (res) {
-                            setTimeout(ipmosrting(res.data.time,res.data.part,res.data.start),2000);
-                        });
                     });
                     break;
                 case 'delFile':
