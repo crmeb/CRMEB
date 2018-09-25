@@ -84,7 +84,7 @@
             }
         });
         //加载table
-        tableList..render({
+        tableList.render({
             elem: '#tableList'
             ,url:"{:Url('tablelist')}"
             ,toolbar: '#toolbarDemo'
@@ -126,8 +126,6 @@
                 break;
             }
         });
-        //监听工具条
-
 
     });
 /**
