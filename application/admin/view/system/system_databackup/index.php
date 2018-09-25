@@ -90,7 +90,8 @@
                 case 'import':
                     layer.confirm('真的倒入该备份吗？', function(index){
                         layList.basePost(layList.Url({a:'import'}),data,function (res) {
-                            console.log(res);console.log(123);
+                            console.log(123);
+                            console.log(res)
 
 
                         });
