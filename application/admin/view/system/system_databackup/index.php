@@ -28,13 +28,20 @@
             </div>
             <div class="ibox-content">
                 <div class="table-responsive">
+                    <script type="text/html" id="toolbarDemo">
+                        <div class="layui-btn-container">
+                            <button class="layui-btn layui-btn-sm" lay-event="getCheckData">获取选中行数据</button>
+                            <button class="layui-btn layui-btn-sm" lay-event="getCheckLength">获取选中数目</button>
+                            <button class="layui-btn layui-btn-sm" lay-event="isAll">验证是否全选</button>
+                        </div>
+                    </script>
                     <div class="layui-btn-group conrelTable">
                         <button class="layui-btn layui-btn-sm layui-btn-normal" type="button" data-type="backup"><i class="fa fa-check-circle-o"></i>备份</button>
                         <button class="layui-btn layui-btn-sm layui-btn-normal" type="button" data-type="optimize"><i class="fa fa-check-circle-o"></i>优化表</button>
                         <button class="layui-btn layui-btn-sm layui-btn-normal" type="button" data-type="repair"><i class="fa fa-check-circle-o"></i>修复表</button>
                         <button class="layui-btn layui-btn-sm layui-btn-normal" type="button" data-type="refresh"><i class="layui-icon layui-icon-refresh" ></i>刷新</button>
                     </div>
-                    <table class="layui-hide" id="tableList" lay-filter="tableList"></table>
+                    <table class="layui-hide" id="tableListID" lay-filter="tableListID"></table>
                     <script type="text/html" id="barDemo">
                         <button type="button" class="layui-btn layui-btn-xs" lay-event="see"><i class="layui-icon layui-icon-edit"></i>详情</button>
                     </script>
@@ -45,106 +52,85 @@
 </div>
 <script src="{__ADMIN_PATH}js/layuiList.js"></script>
 <script>
-
-    //加载sql备份列表
-    layList.tableList('fileList',"{:Url('fileList')}",function () {
-        return [
-            {field: 'backtime', title: '备份名称'},
-            {field: 'part', title: '备注' },
-            {field: 'size', title: '大小'},
-            {field: 'compress', title: '类型'},
-            {field: 'time', title: '时间'},
-            {fixed: 'right', title: '操作', width: '20%', align: 'center', toolbar: '#fileListtool'}
-        ];
-    },5);
-    //监听并执行备份列表操作
-    layList.tool(function (event,data) {
-        var layEvent = event;
-        switch (layEvent){
-            case 'import':
-                $eb.createModalFrame('详情',layList.Url({a:'edit',p:{time:data.time}}));
-                break;
-            case 'delFile':
-                console.log(data);
-                layList.basePost(layList.Url({a:'delFile'}),{feilname:data.time},function (res) {
-                    layList.msg(res.msg);
+    layui.use('table', function(){
+        var fileList = layui.table;
+        var tableList = layui.table;
+        //加载sql备份列表
+        fileList.render({
+            elem: '#fileList'
+            ,url:"{:Url('fileList')}"
+            ,cols: [[
+                {field: 'backtime', title: '备份名称', sort: true},
+                {field: 'part', title: '备注'},
+                {field: 'size', title: '大小'},
+                {field: 'compress', title: '类型'},
+                {field: 'time', title: '时间'},
+                {fixed: 'right', title: '操作', width: '20%', align: 'center', toolbar: '#fileListtool'}
+            ]]
+            ,page: false
+        });
+        //监听工具条
+        fileList.on('tool(fileList)', function(obj){
+            var data = obj.data;
+            if(obj.event === 'import'){
+                layer.msg('ID：'+ data.id + ' 的查看操作');
+            } else if(obj.event === 'delFile'){
+                layer.confirm('真的删除行么', function(index){
+                    layList.basePost(layList.Url({a:'delFile'}),{feilname:data.time},function (res) {
+                        layList.msg(res.msg);
 //                    layList.reload();
+                    });
+                    obj.del();
+                    layer.close(index);
                 });
-                break;
-            case 'downloadFile':
-                $eb.createModalFrame('详情',layList.Url({a:'edit',p:{feilname:data.name}}));
-                break;
-        }
-    },null,'fileList');
-    //加载table
-    layList.tableList('tableList',"{:Url('tablelist')}",function () {
-        return [
-            {type:'checkbox'},
-            {field: 'name', title: '表名称'},
-            {field: 'comment', title: '备注' },
-            {field: 'engine', title: '类型'},
-            {field: 'data_length', title: '大小'},
-            {field: 'update_time', title: '更新时间'},
-            {field: 'rows', title: '行数'}
-//            {fixed: 'right', title: '操作', width: '10%', align: 'center', toolbar: '#barDemo'}
-        ];
-    },100);
-
-
-
-//    layList.reload();
-//    //监听并执行操作
-//    layList.tool(function (event,data) {
-//        var layEvent = event;
-//        switch (layEvent){
-//            case 'see':
-//                $eb.createModalFrame('详情',layList.Url({a:'edit',p:{tablename:data.name}}));
-//                break;
-//        }
-//    });
-    //批量操作
-    var action={
-        optimize:function () {
-            var tables=layList.getCheckData().getIds('name');
-            if(tables.length){
-                layList.basePost(layList.Url({a:'optimize'}),{tables:tables},function (res) {
-                    layList.msg(res.msg);
-//                    layList.reload();
-                });
-            }else{
-                layList.msg('请选择表');
+            } else if(obj.event === 'downloadFile'){
+                layer.alert('编辑行：<br>'+ JSON.stringify(data))
             }
-        },
-        repair:function () {
-            var tables=layList.getCheckData().getIds('name');
-            if(tables.length){
-                layList.basePost(layList.Url({a:'repair'}),{tables:tables},function (res) {
-                    layList.msg(res.msg);
-//                    layList.reload();
-                });
-            }else{
-                layList.msg('请选择表');
-            }
-        },
-        backup:function () {
-            var tables=layList.getCheckData().getIds('name');
-            if(tables.length){
-                layList.basePost(layList.Url({a:'backup'}),{tables:tables},function (res) {
-                    layList.msg(res.msg);
-//                    layList.reload();
-                });
-            }else{
-                layList.msg('请选择表');
-            }
-        },
+        });
+        //加载table
+        tableList.render({
+            elem: '#tableListID'
+            ,url:"{:Url('tablelist')}"
+            ,toolbar: '#toolbarDemo'
+            ,cols: [[
+                {type:'checkbox'},
+                {field: 'name', title: '表名称', sort: true},
+                {field: 'comment', title: '备注' },
+                {field: 'engine', title: '类型', sort: true},
+                {field: 'data_length', title: '大小', sort: true},
+                {field: 'update_time', title: '更新时间', sort: true},
+                {field: 'rows', title: '行数'},
+                {fixed: 'right', title: '操作', width: '10%', align: 'center', toolbar: '#barDemo'}
+            ]]
+            ,page: false
+        });
+        //头工具栏事件
+        tableList.on('toolbar(tableListID)', function(obj){
+            var checkStatus = tableList.checkStatus(obj.config.id);
+            switch(obj.event){
+                case 'getCheckData':
+                    var data = checkStatus.data;
+                    layer.alert(JSON.stringify(data));
+                    break;
+                case 'getCheckLength':
+                    var data = checkStatus.data;
+                    layer.msg('选中了：'+ data.length + ' 个');
+                    break;
+                case 'isAll':
+                    layer.msg(checkStatus.isAll ? '全选': '未全选');
+                    break;
+            };
+        });
 
-    };
-    $('.conrelTable').find('button').each(function () {
-        var type=$(this).data('type');
-        $(this).on('click',function () {
-            action[type] && action[type]();
-        })
-    })
+        //监听并执行操作
+        tableList.on('tool(tableListID)', function(obj){
+            var data = obj.data;
+            if(obj.event === 'see'){
+                $eb.createModalFrame('详情',layList.Url({a:'edit',p:{tablename:data.name}}));
+            }
+        });
+
+    });
 
 </script>
 {/block}
