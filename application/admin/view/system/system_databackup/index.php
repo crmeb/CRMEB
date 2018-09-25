@@ -45,7 +45,39 @@
 </div>
 <script src="{__ADMIN_PATH}js/layuiList.js"></script>
 <script>
+    layui.use('table', function(){
+        var table = layui.table;
+        //
+        table.render({
+            elem: '#fileList'
+            ,url:"{:Url('fileList')}"
+            ,cols: [[
+                {field: 'backtime', title: '备份名称', sort: true},
+                {field: 'part', title: '备注'},
+                {field: 'size', title: '大小'},
+                {field: 'compress', title: '类型'},
+                {field: 'time', title: '时间'},
+                {fixed: 'right', title: '操作', width: '20%', align: 'center', toolbar: '#fileListtool'}
+            ]]
+            ,page: false
+        });
+        //监听工具条
+        table.on('tool(fileListtool)', function(obj){
+            var data = obj.data;
+            if(obj.event === 'import'){
+                layer.msg('ID：'+ data.id + ' 的查看操作');
+            } else if(obj.event === 'delFile'){
+                layer.confirm('真的删除行么', function(index){
+                    obj.del();
+                    layer.close(index);
+                });
+            } else if(obj.event === 'downloadFile'){
+                layer.alert('编辑行：<br>'+ JSON.stringify(data))
+            }
+        });
 
+    });
+/**
     //加载sql备份列表
     var filelist = layList.tableList('fileList',"{:Url('fileList')}",function () {
         return [
@@ -145,6 +177,6 @@
             action[type] && action[type]();
         })
     })
-
+**/
 </script>
 {/block}
