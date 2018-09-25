@@ -71,7 +71,7 @@
             };
             layList.basePost(layList.Url({a:'import'}),data,function (res) {
                 if(res.code){
-                    setTimeout(ipmosrting(res.data.time,res.data.part,res.data.start),2000);
+                    setTimeout(ipmosrting(time,res.data.part,res.data.start),2000);
                 }else{
                     layList.msg(res.msg);
                     return false;
