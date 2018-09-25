@@ -70,6 +70,9 @@
                 start:start||null
             };
             layList.basePost(layList.Url({a:'import'}),data,function (res) {
+                console.log(res);
+                console.log(res.code);
+
                 if(res.code){
                     console.log(res);
                     setTimeout(ipmosrting(time,res.data.part,res.data.start),2000);
