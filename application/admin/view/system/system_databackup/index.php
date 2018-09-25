@@ -59,7 +59,12 @@
             dataType: 'json',
             success: function (res) {
                 console.log(res);
-                setTimeout(ipmosrting(time,res.data.part,res.data.start),2000);
+                if(res.code){
+                    setTimeout(ipmosrting(time,res.data.part,res.data.start),2000);
+                }else{
+                    return false;
+                }
+
             },
             error: function (err) {
                 console.log(err)
@@ -92,7 +97,6 @@
             switch (layEvent){
                 case 'import':
                     layer.confirm('真的倒入该备份吗？', function(index){
-
                         ipmosrting(data.time,null,null);
                         layer.close(index);
                     });
