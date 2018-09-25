@@ -52,17 +52,20 @@
             part:part,
             start:start
         };
-        layList.basePost(layList.Url({a:'import'}),data,function (res) {
-            console.log(res);console.log(123);
-                if(res.code){
-                    console.log(res);
-                    setTimeout(ipmosrting(time,res.data.part,res.data.start),2000);
-                }else{
-                    layList.msg(res.msg);
-                    return false;
-                }
-
+        $.ajax({
+            url: layList.Url({a: 'import'}),
+            data: datas,
+            type: 'post',
+            dataType: 'json',
+            success: function (res) {
+                console.log(res);
+                setTimeout(ipmosrting(time,res.data.part,res.data.start),2000);
+            },
+            error: function (err) {
+                console.log(err)
+            }
         });
+
     }
     layui.use('table', function(){
         var fileList = layui.table;
@@ -89,24 +92,8 @@
             switch (layEvent){
                 case 'import':
                     layer.confirm('真的倒入该备份吗？', function(index){
-                        var datas = {
-                            time:data.time,
-                            part:1,
-                            start:0
-                        };
-                        $.ajax({
-                            url: layList.Url({a: 'import'}),
-                            data: datas,
-                            type: 'post',
-                            dataType: 'json',
-                            success: function (rem) {
-                                console.log(rem)
-                            },
-                            error: function (err) {
-                                console.log(err)
-                            }
-                        });
-                        //ipmosrting(data.time,null,null);
+
+                        ipmosrting(data.time,null,null);
                         layer.close(index);
                     });
                     break;
