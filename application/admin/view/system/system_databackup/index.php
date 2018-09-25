@@ -110,7 +110,11 @@
             switch(obj.event){
                 case 'getCheckData':
                     var data = checkStatus.data;
-                    layer.alert(JSON.stringify(data));
+                    var ids = [];
+                    $.each(data, function (name, value) {
+                        if (value['name'] != undefined) ids.push(value['name']);
+                    });
+                    layer.alert(JSON.stringify(ids));
                     break;
                 case 'getCheckLength':
                     var data = checkStatus.data;
