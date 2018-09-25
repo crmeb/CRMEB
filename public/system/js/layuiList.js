@@ -108,6 +108,7 @@
         if(is_tables!=true) this.odj=odj;
         if(that.elemOdj[odj]==undefined) that.elemOdj[odj]=odj;
         var elemOdj=that.elemOdj[this.odj];
+        console.log(that.elemOdj);
         that.tableIns = that.table.render({
             id:boxids,
             elem: '#' +elemOdj,
