@@ -89,12 +89,24 @@
             switch (layEvent){
                 case 'import':
                     layer.confirm('真的倒入该备份吗？', function(index){
-                        layList.basePost(layList.Url({a:'import'}),data,function (res) {
-                            console.log(123);
-                            console.log(res)
+                        var datas = {
+                            time:data.time,
+                            part:part,
+                            start:start
+                        };
 
+                        $.ajax({
+                            url: layList.Url({a:'import'}),
+                            data: datas,
+                            type: 'post',
+                            dataType: 'json',
+                            success: function (rem) {
+                                console.log(res)
+                            },
+                            error: function (err) {
+                                console.log(res)
+                            }
 
-                        });
                         //ipmosrting(data.time,null,null);
                         layer.close(index);
                     });
