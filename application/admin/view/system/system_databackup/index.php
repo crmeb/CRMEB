@@ -110,13 +110,18 @@
             switch(obj.event){
                 case 'getCheckData':
                     var data = checkStatus.data;
-                    var ids = [];
+                    var tables = [];
                     $.each(data, function (name, value) {
-                        if (value['name'] != undefined) ids.push(value['name']);
+                        if (value['name'] != undefined) tables.push(value['name']);
                     });
-                    console.log(data);
-                    console.log(ids);
-                    layer.alert(JSON.stringify(ids));
+                    if(tables.length){
+                        layList.basePost(layList.Url({a:'optimize'}),{tables:tables},function (res) {
+                            layList.msg(res.msg);
+                            filelist.reload();
+                        });
+                    }else{
+                        layList.msg('请选择表');
+                    }
                     break;
                 case 'getCheckLength':
                     var data = checkStatus.data;
