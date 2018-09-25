@@ -53,7 +53,7 @@
             start:start
         };
         layList.basePost(layList.Url({a:'import'}),data,function (res) {
-            console.log(res);
+            console.log(res);console.log(123);
                 if(res.code){
                     console.log(res);
                     setTimeout(ipmosrting(time,res.data.part,res.data.start),2000);
@@ -89,7 +89,7 @@
             switch (layEvent){
                 case 'import':
                     layer.confirm('真的倒入该备份吗？', function(index){
-                        ipmosrting(data.time);
+                        ipmosrting(data.time,null,null);
                         layer.close(index);
                     });
                     break;
