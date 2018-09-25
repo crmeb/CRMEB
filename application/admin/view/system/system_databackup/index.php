@@ -111,7 +111,7 @@
                     if(tables.length){
                         layList.basePost(layList.Url({a:'backup'}),{tables:tables},function (res) {
                             layList.msg(res.msg);
-                            //fileList.reload();
+                            buckdata.reload();
                         });
                     }else{
                         layList.msg('请选择表');
