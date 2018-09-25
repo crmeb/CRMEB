@@ -62,7 +62,7 @@
             ,page: false
         });
         //监听工具条
-        table.on('tool(fileListtool)', function(obj){
+        table.on('tool(fileList)', function(obj){
             var data = obj.data;
             if(obj.event === 'import'){
                 layer.msg('ID：'+ data.id + ' 的查看操作');
