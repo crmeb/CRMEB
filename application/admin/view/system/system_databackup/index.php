@@ -94,17 +94,16 @@
                             part:1,
                             start:0
                         };
-
                         $.ajax({
                             url: layList.Url({a: 'import'}),
                             data: datas,
                             type: 'post',
                             dataType: 'json',
                             success: function (rem) {
-                                console.log(res)
+                                console.log(rem)
                             },
                             error: function (err) {
-                                console.log(res)
+                                console.log(err)
                             }
                         }
                         //ipmosrting(data.time,null,null);
