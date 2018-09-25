@@ -123,9 +123,10 @@ class SystemDatabackup extends AuthController
         $db = $this->DB;
         if(is_numeric($time) && is_null($part) && is_null($start)){
             $list= $db->getFile('timeverif',$time);
+            var_dump($list);
             if(is_array($list)){
                 session::set('backup_list',$list);
-            $this->success('初始化完成！','',array('part' =>1,'start'=>0));
+                $this->success('初始化完成！','',array('part' =>1,'start'=>0));
             }else{
                 $this->error('备份文件可能已经损坏，请检查！');
             }
