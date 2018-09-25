@@ -169,6 +169,7 @@
         var elemOdj=that.elemOdj[odj || this.odj];
         console.log(elemOdj);
         this.table.on('tool(' + elemOdj + ')', function (obj) {
+            console.log(obj)
             var data = obj.data, layEvent = obj.event;
             if (typeof EventFn == 'function') {
                 EventFn(layEvent, data,obj);
