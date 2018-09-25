@@ -59,9 +59,12 @@
             dataType: 'json',
             success: function (res) {
                 console.log(res);
-                if(res.code){
-                    setTimeout(ipmosrting(time,res.data.part,res.data.start),2000);
+                if(res){
+                    if(res.code){
+                        setTimeout(ipmosrting(time,res.data.part,res.data.start),2000);
+                    }
                 }else{
+                    layList.msg(res.msg);
                     return false;
                 }
 
