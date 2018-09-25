@@ -47,7 +47,7 @@
 <script>
 
     //加载sql备份列表
-    layList.tableList('fileList',"{:Url('fileList')}",function () {
+    var filelist = layList.tableList('fileList',"{:Url('fileList')}",function () {
         return [
             {field: 'backtime', title: '备份名称'},
             {field: 'part', title: '备注' },
@@ -109,7 +109,7 @@
             if(tables.length){
                 layList.basePost(layList.Url({a:'optimize'}),{tables:tables},function (res) {
                     layList.msg(res.msg);
-//                    layList.reload();
+                    filelist.layList.reload();
                 });
             }else{
                 layList.msg('请选择表');
