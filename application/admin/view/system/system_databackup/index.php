@@ -66,6 +66,32 @@
         //监听工具条
         fileList.on('tool(fileList)', function(obj){
             var data = obj.data;
+            var layEvent = obj.data;
+            switch (layEvent){
+                case 'import':
+                    layer.confirm('真的倒入该备份吗？', function(index){
+                        layList.basePost(layList.Url({a:'import'}),{feilname:data.time},function (res) {
+                            layList.msg(res.msg);
+                            buckdata.reload();
+                        });
+                        obj.del();
+                        layer.close(index);
+                    });
+                    break;
+                case 'delFile':
+                    layer.confirm('真的删除该备份吗？', function(index){
+                        layList.basePost(layList.Url({a:'delFile'}),{feilname:data.time},function (res) {
+                            layList.msg(res.msg);
+                            buckdata.reload();
+                        });
+                        obj.del();
+                        layer.close(index);
+                    });
+                    break;
+                case 'downloadFile':
+                    $eb.createModalFrame('详情',layList.Url({a:'downloadFile',p:{feilname:data.name}}));
+                    break;
+            }
             if(obj.event === 'import'){
                 layer.msg('ID：'+ data.id + ' 的查看操作');
             } else if(obj.event === 'delFile'){
@@ -106,35 +132,26 @@
             $.each(data, function (name, value) {
                 if (value['name'] != undefined) tables.push(value['name']);
             });
+            if(tables.length < 1 || empty(tables)){
+                return;
+            }
             switch(obj.event){
                 case 'backup':
-                    if(tables.length){
-                        layList.basePost(layList.Url({a:'backup'}),{tables:tables},function (res) {
-                            layList.msg(res.msg,{icon:1,time:1000},function(){
-                                buckdata.reload();
-                            });
+                    layList.basePost(layList.Url({a:'backup'}),{tables:tables},function (res) {
+                        layList.msg(res.msg,{icon:1,time:1000},function(){
+                            buckdata.reload();
                         });
-                    }else{
-                        layList.msg('请选择表');
-                    }
+                    });
                     break;
                 case 'optimize':
-                    if(tables.length){
-                        layList.basePost(layList.Url({a:'optimize'}),{tables:tables},function (res) {
-                            layList.msg(res.msg);
-                        });
-                    }else{
-                        layList.msg('请选择表');
-                    }
+                    layList.basePost(layList.Url({a:'optimize'}),{tables:tables},function (res) {
+                        layList.msg(res.msg);
+                    });
                     break;
                 case 'repair':
-                    if(tables.length){
-                        layList.basePost(layList.Url({a:'repair'}),{tables:tables},function (res) {
-                            layList.msg(res.msg);
-                        });
-                    }else{
-                        layList.msg('请选择表');
-                    }
+                    layList.basePost(layList.Url({a:'repair'}),{tables:tables},function (res) {
+                        layList.msg(res.msg);
+                    });
                     break;
             };
         });
