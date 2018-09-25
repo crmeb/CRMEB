@@ -111,7 +111,7 @@
                     if(tables.length){
                         layList.basePost(layList.Url({a:'backup'}),{tables:tables},function (res) {
                             layList.msg(res.msg);
-                            filelist.reload();
+                            fileList.reload();
                         });
                     }else{
                         layList.msg('请选择表');
@@ -121,7 +121,6 @@
                     if(tables.length){
                         layList.basePost(layList.Url({a:'optimize'}),{tables:tables},function (res) {
                             layList.msg(res.msg);
-                            filelist.reload();
                         });
                     }else{
                         layList.msg('请选择表');
@@ -131,7 +130,6 @@
                     if(tables.length){
                         layList.basePost(layList.Url({a:'repair'}),{tables:tables},function (res) {
                             layList.msg(res.msg);
-                            filelist.reload();
                         });
                     }else{
                         layList.msg('请选择表');
