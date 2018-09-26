@@ -225,6 +225,7 @@ class Backup
     public function downloadFile($time, $part = 0)
     {
         $file = $this->getFile('time', $time);
+        var_dump($file);exit;
         $fileName = $file[$part];
         if (file_exists($fileName)) {
             ob_end_clean();
