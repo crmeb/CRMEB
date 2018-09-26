@@ -83,11 +83,12 @@
             elem: '#fileList'
             ,url:"{:Url('fileList')}"
             ,cols: [[
-                {field: 'backtime', title: '备份名称', sort: true},
+                {field: 'time', title: '时间',style:'display:none'},
+                {field: 'filename', title: '备份名称', sort: true},
                 {field: 'part', title: '备注'},
                 {field: 'size', title: '大小'},
                 {field: 'compress', title: '类型'},
-                {field: 'time', title: '时间'},
+                {field: 'backtime', title: '时间'},
                 {fixed: 'right', title: '操作', width: '20%', align: 'center', toolbar: '#fileListtool'}
             ]]
             ,page: false
