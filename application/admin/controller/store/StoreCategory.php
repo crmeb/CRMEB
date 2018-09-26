@@ -61,6 +61,8 @@ class StoreCategory extends AuthController
             Form::radio('is_show','状态',1)->options([['label'=>'显示','value'=>1],['label'=>'隐藏','value'=>0]])
         ]);
         $form->setMethod('post')->setTitle('添加分类');
+        $form->setMethod('post')->setTitle('添加产品')->setSuccessScript('parent.$(".J_iframe:visible")[0].contentWindow.location.reload();');
+
         $this->assign(compact('form'));
         return $this->fetch('public/form-builder');
     }
