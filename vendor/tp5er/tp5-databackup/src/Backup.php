@@ -135,6 +135,7 @@ class Backup
         $glob = new \FilesystemIterator($path, $flag);
         $list = array();
         foreach ($glob as $name => $file) {
+            $info['filename'] = $name;
             if (preg_match('/^\\d{8,8}-\\d{6,6}-\\d+\\.sql(?:\\.gz)?$/', $name)) {
                 $name = sscanf($name, '%4s%2s%2s-%2s%2s%2s-%d');
                 $date = "{$name[0]}-{$name[1]}-{$name[2]}";
@@ -151,7 +152,6 @@ class Backup
                 $extension = strtoupper(pathinfo($file->getFilename(), PATHINFO_EXTENSION));
                 $info['compress'] = $extension === 'SQL' ? '-' : $extension;
                 $info['time'] = strtotime("{$date} {$time}");
-                $info['filename'] = $name;
                 $list["{$date} {$time}"] = $info;
             }
         }
