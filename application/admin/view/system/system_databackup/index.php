@@ -115,7 +115,7 @@
                     });
                     break;
                 case 'downloadFile':
-                    $eb.createModalFrame('详情',layList.Url({a:'downloadFile',p:{feilname:data.name}}));
+                    $eb.createModalFrame('详情',layList.Url({a:'downloadFile',p:{feilname:data.time}}));
                     break;
             }
 
