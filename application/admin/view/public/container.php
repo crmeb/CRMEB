@@ -8,7 +8,8 @@
     {block name="head"}{/block}
 </head>
 <body class="gray-bg">
-<div class="wrapper wrapper-content animated fadeInDown rollIn slideInDown">
+<!--演示地址https://daneden.github.io/animate.css/?-->
+<div class="wrapper wrapper-content animated fadeInDown">
 {block name="content"}{/block}
 {block name="foot"}{/block}
 {block name="script"}{/block}
