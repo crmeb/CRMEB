@@ -83,7 +83,7 @@
             elem: '#fileList'
             ,url:"{:Url('fileList')}"
             ,cols: [[
-                {field: 'time', title: '时间',style:'display:none'},
+//                {field: 'time', title: '时间'},
                 {field: 'filename', title: '备份名称', sort: true},
                 {field: 'part', title: '备注'},
                 {field: 'size', title: '大小'},
