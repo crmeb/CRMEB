@@ -180,7 +180,7 @@ class Backup
                     $gz = preg_match('/^\\d{8,8}-\\d{6,6}-\\d+\\.sql.gz$/', $basename);
                     $list[$match[6]] = array($match[6], $name, $gz);
                 }
-                sort($list);
+                ksort($list);
                 $last = end($list);
                 if (count($list) === $last[0]) {
                     return $list;
