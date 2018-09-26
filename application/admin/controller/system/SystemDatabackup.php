@@ -165,7 +165,7 @@ class SystemDatabackup extends AuthController
      */
     public function downloadFile(Request $request = null)
     {
-        $feilname = intval(strtotime($request->get('feilname')));
-        $this->DB->downloadFile($feilname,1);
+        $time = intval($request->get('feilname'));
+        $this->DB->downloadFile($time,1);
     }
 }
