@@ -151,6 +151,7 @@ class Backup
                 $extension = strtoupper(pathinfo($file->getFilename(), PATHINFO_EXTENSION));
                 $info['compress'] = $extension === 'SQL' ? '-' : $extension;
                 $info['time'] = strtotime("{$date} {$time}");
+                $info['filename'] = $name;
                 $list["{$date} {$time}"] = $info;
             }
         }
