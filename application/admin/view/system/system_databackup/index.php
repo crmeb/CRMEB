@@ -152,9 +152,9 @@
             switch(obj.event){
                 case 'backup':
                     layList.basePost(layList.Url({a:'backup'}),{tables:tables},function (res) {
-                        layer.msg(res.msg,{icon:1,time:1000},function(){
+                        layer.msg(res.msg,{icon:1,time:1000,end:function(){
                             buckdata.reload();
-                        });
+                        }});
                     });
                     break;
                 case 'optimize':
