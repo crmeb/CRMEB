@@ -121,7 +121,7 @@ class SystemDatabackup extends AuthController
     {
         $part = $request->post('part') ? intval($request->post('part')) :null;
         $start = $request->post('start') === '0' ? 0 : null;
-        $time = strtotime($request->post('time'));
+        $time = intval($request->post('time'));
         $db = $this->DB;
         if(is_numeric($time) && is_null($part) && is_null($start)){
             $list= $db->getFile('timeverif',$time);
@@ -166,9 +166,6 @@ class SystemDatabackup extends AuthController
     public function downloadFile(Request $request = null)
     {
         $time = intval($request->param('feilname'));
-        $file_url = $this->DB->downloadFile($time);
-//        $file=fopen($file_url[0],'r');
-//        echo fread($file,filesize($file_url));
-//        fclose($file_url);
+        $this->DB->downloadFile($time);
     }
 }
