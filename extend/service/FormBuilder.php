@@ -20,7 +20,7 @@ class FormBuilder extends Form
      * @param $jscallback null 不执行 1 父级刷新 2 父级刷新关闭弹框 str 自定义
      * @return $this
      */
-    public static function make_post_form($title,array $field,$url,$jscallback = null){
+    public static function make_post_form($title,array $field,$url,$jscallback = 1){
         $form = Form::create($url);//提交地址
         $form->setMethod('POST');//提交方式
         $form->components($field);//表单字段

@@ -46,7 +46,7 @@ class StoreCategory extends AuthController
      */
     public function create()
     {
-        $form = Form::create(Url::build('save'),[
+        $field = [
             Form::select('pid','父级')->setOptions(function(){
                 $list = CategoryModel::getTierList();
                 $menus = [['value'=>0,'label'=>'顶级菜单']];
@@ -59,9 +59,8 @@ class StoreCategory extends AuthController
             Form::frameImageOne('pic','分类图标',Url::build('admin/widget.images/index',array('fodder'=>'pic')))->icon('image'),
             Form::number('sort','排序'),
             Form::radio('is_show','状态',1)->options([['label'=>'显示','value'=>1],['label'=>'隐藏','value'=>0]])
-        ]);
-        $form->setMethod('post')->setTitle('添加产品')->setSuccessScript('parent.$(".J_iframe:visible")[0].contentWindow.location.reload();');
-
+        ];
+        $form = Form::make_post_form('添加产品',$field,Url::build('save'));
         $this->assign(compact('form'));
         return $this->fetch('public/form-builder');
     }
