@@ -75,7 +75,8 @@
         });
 
     }
-    layui.use('table', function(){
+    layui.use(['table', 'layer'], function(){
+        var layer = layui.layer;
         var fileList = layui.table;
         var tableList = layui.table;
         //加载sql备份列表
@@ -83,11 +84,10 @@
             elem: '#fileList'
             ,url:"{:Url('fileList')}"
             ,cols: [[
-//                {field: 'time', title: '时间'},
                 {field: 'filename', title: '备份名称', sort: true},
-                {field: 'part', title: '备注'},
+                {field: 'part', title: 'part'},
                 {field: 'size', title: '大小'},
-                {field: 'compress', title: '类型'},
+                {field: 'compress', title: 'compress'},
                 {field: 'backtime', title: '时间'},
                 {fixed: 'right', title: '操作', width: '20%', align: 'center', toolbar: '#fileListtool'}
             ]]
@@ -108,7 +108,7 @@
                 case 'delFile':
                     layer.confirm('真的删除该备份吗？', function(index){
                         layList.basePost(layList.Url({a:'delFile'}),{feilname:data.time},function (res) {
-                            layList.msg(res.msg);
+                            layer.msg(res.msg);
                             buckdata.reload();
                         });
                         obj.del();
@@ -152,19 +152,19 @@
             switch(obj.event){
                 case 'backup':
                     layList.basePost(layList.Url({a:'backup'}),{tables:tables},function (res) {
-                        layList.msg(res.msg,{icon:1,time:1000},function(){
+                        layer.msg(res.msg,{icon:1,time:1000},function(){
                             buckdata.reload();
                         });
                     });
                     break;
                 case 'optimize':
                     layList.basePost(layList.Url({a:'optimize'}),{tables:tables},function (res) {
-                        layList.msg(res.msg);
+                        layer.msg(res.msg);
                     });
                     break;
                 case 'repair':
                     layList.basePost(layList.Url({a:'repair'}),{tables:tables},function (res) {
-                        layList.msg(res.msg);
+                        layer.msg(res.msg);
                     });
                     break;
             };
