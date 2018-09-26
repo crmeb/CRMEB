@@ -85,7 +85,7 @@ class Article extends AuthController
             }
         }
         $this->assign('all',$all);
-        $this->assign('news',$news);
+        $this->assign('news',$news);print_r($news);
         $this->assign('cid',$cid);
         $this->assign('select',$select);
         return $this->fetch();
