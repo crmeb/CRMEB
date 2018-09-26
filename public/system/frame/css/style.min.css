@@ -15,7 +15,6 @@ a:focus{outline:0}
 .nav .open>a,.nav .open>a:focus,.nav .open>a:hover{background:#fff}
 .nav>li>a i{margin-right:6px}
 .navbar{border:0}
-
 .navbar-default{background-color:transparent;border-color:#2f4050;position:relative}
 .navbar-top-links li{display:inline-block}
 .navbar-top-links li:last-child{margin-right:30px}
