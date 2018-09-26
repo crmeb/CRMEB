@@ -8,7 +8,7 @@
     {block name="head"}{/block}
 </head>
 <body class="gray-bg">
-<div class="wrapper wrapper-content ">
+<div class="wrapper wrapper-content animated fadeInDown">
 {block name="content"}{/block}
 {block name="foot"}{/block}
 {block name="script"}{/block}
