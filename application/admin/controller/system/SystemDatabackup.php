@@ -103,6 +103,7 @@ class SystemDatabackup extends AuthController
             $data[$key]['backtime'] = $key;
             $data[$key]['time'] = $t['time'];
         }
+        ksort($data);
         return Json::result(0,'sucess',$data,count($data));
     }
     /**删除备份记录表
