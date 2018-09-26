@@ -97,9 +97,7 @@ class SystemDatabackup extends AuthController
         var_dump($files);
         $data = [];
         foreach ($files as $key=>$t){
-            $fileName = $db->getFile('timeverif',$t['time']);
-            var_dump($fileName);
-            $data[$key]['filename'] = $fileName;
+            $data[$key]['filename'] = $t['filename'];
             $data[$key]['part'] = $t['part'];
             $data[$key]['size'] = $t['size'].'B';
             $data[$key]['compress'] = $t['compress'];
