@@ -167,8 +167,8 @@ class SystemDatabackup extends AuthController
     {
         $time = intval($request->param('feilname'));
         $file_url = $this->DB->downloadFile($time);
-        $file=fopen($file_url[0],'r');
-        echo fread($file,filesize($file_url));
-        fclose($file_url);
+//        $file=fopen($file_url[0],'r');
+//        echo fread($file,filesize($file_url));
+//        fclose($file_url);
     }
 }
