@@ -6,6 +6,7 @@ use think\Request;
 use service\JsonService as Json;
 use \tp5er\Backup;
 use think\Session;
+use think\Db;
 /**
  * 文件校验控制器
  * Class SystemDatabackup
@@ -49,7 +50,41 @@ class SystemDatabackup extends AuthController
      */
     public function seetable(Request $request = null)
     {
-        parent::__construct($request);
+        $database = config("database.database");
+        $tablename = $request->param('tablename');
+        $res = Db::query("select * from information_schema.columns where table_name = '".$tablename."' and table_schema = '".$database."'" );
+        $html = '';
+        $html .= '<table border="1" cellspacing="0" cellpadding="0" align="center">';
+        $html .= '<tbody><tr><th>字段名</th><th>数据类型</th><th>默认值</th><th>允许非空</th><th>自动递增</th><th>备注</th></tr>';
+        $html .= '';
+        foreach($res AS $f)
+        {
+            $html .= '<td class="c1">' . $f['COLUMN_NAME'] . '</td>';
+            $html .= '<td class="c2">' . $f['COLUMN_TYPE'] . '</td>';
+            $html .= '<td class="c3">' . $f['COLUMN_DEFAULT'] . '</td>';
+            $html .= '<td class="c4">' . $f['IS_NULLABLE'] . '</td>';
+            $html .= '<td class="c5">' . ($f['EXTRA'] == 'auto_increment'?'是':' ') . '</td>';
+            $html .= '<td class="c6">' . $f['COLUMN_COMMENT'] . '</td>';
+            $html .= '</tr>';
+        }
+        $html .= '</tbody></table></p>';
+        $html .= '<p style="text-align:left;margin:20px auto;">总共：' . count($res) . '个字段</p>';
+        $html .= '</body></html>';
+        echo '<style>
+                body,td,th {font-family:"宋体"; font-size:12px;}
+                table,h1,p{width:960px;margin:0px auto;}
+                table{border-collapse:collapse;border:1px solid #CCC;background:#efefef;}
+                table caption{text-align:left; background-color:#fff; line-height:2em; font-size:14px; font-weight:bold; }
+                table th{text-align:left; font-weight:bold;height:26px; line-height:26px; font-size:12px; border:1px solid #CCC;padding-left:5px;}
+                table td{height:20px; font-size:12px; border:1px solid #CCC;background-color:#fff;padding-left:5px;}
+                .c1{ width: 150px;}
+                .c2{ width: 150px;}
+                .c3{ width: 80px;}
+                .c4{ width: 100px;}
+                .c5{ width: 100px;}
+                .c6{ width: 300px;}
+            </style>';
+        echo $html;
     }
     /**
      * 优化表

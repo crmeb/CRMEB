@@ -174,7 +174,7 @@
         tableList.on('tool(tableListID)', function(obj){
             var data = obj.data;
             if(obj.event === 'see'){
-                $eb.createModalFrame('详情',layList.Url({a:'edit',p:{tablename:data.name}}));
+                $eb.createModalFrame('表名:['+data.name+'] '+data.comment,layList.Url({a:'seetable',p:{tablename:data.name}}),{w:1000,h:600});
             }
         });
 
