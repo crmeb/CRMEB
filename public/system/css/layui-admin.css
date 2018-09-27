@@ -1,7 +1,70 @@
 @charset "UTF-8";
+/*
+部分样式重构
+ */
+.layui-form-pane .layui-input, .layui-select, .layui-textarea {
+    height: 32px;
+    line-height: 1.5;
+    padding: 4px 7px;
+    font-size: 12px;
+    border: 1px solid #dddee1;
+    color: #495060;
+    background-color: #fff;
+}
+.layui-card-body {
+}
+.layui-form-pane{
+    /*padding: 20px;*/
+}
+.layui-form-pane .layui-form-label {
+    padding: 5px 15px;
+    height: 32px;
+}
+.layui-fluid {
+    padding: 0;
+}
+.layui-btn-normal{
+    background-color:#0092DC;
+}
+.layui-btn .layui-icon {
+    font-size: 12px;
+}
+.layui-btn-sm i {
+    font-size: 12px!important;
+}
+.layui-form-onswitch {
+    border-color: #0092DC;
+    background-color: #0092DC;
+}
+.layui-table-cell p{
+    height: 20px;
+    line-height: 20px;
+}
+/*table复选框*/
+.layui-table-view .layui-form-checkbox[lay-skin=primary] i {
+    width: 14px;
+    height: 14px;
+}
+.layui-form-checked[lay-skin=primary] i {
+    border-color: #0093DE;
+    background-color: #0093DE;
+    color: #fff;
+}
+.layui-form-checkbox[lay-skin=primary] i {
+    width: 14px;
+    height: 14px;
+    line-height: 12px;
+}
+
 /*后台layui-admin样式*/
+.layui-tab-title .layui-this:after{
+    border-bottom: 2px solid #0092DC !important;
+}
 .layui-form-label{
     width: auto;
+}
+.layui-table-cell {
+    height: auto!important;
 }
 .layui-input-block .layui-admin-input{
     width: 50%;

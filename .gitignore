@@ -2,8 +2,5 @@
 /runtime
 /.idea
 /application/database.php/
-/application/controller/server/
-/application/view/server/
-/application/model/server/
 /public/uploads/
 

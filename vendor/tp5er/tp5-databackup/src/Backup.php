@@ -135,6 +135,7 @@ class Backup
         $glob = new \FilesystemIterator($path, $flag);
         $list = array();
         foreach ($glob as $name => $file) {
+            $info['filename'] = $name;
             if (preg_match('/^\\d{8,8}-\\d{6,6}-\\d+\\.sql(?:\\.gz)?$/', $name)) {
                 $name = sscanf($name, '%4s%2s%2s-%2s%2s%2s-%d');
                 $date = "{$name[0]}-{$name[1]}-{$name[2]}";
@@ -179,6 +180,7 @@ class Backup
                     $gz = preg_match('/^\\d{8,8}-\\d{6,6}-\\d+\\.sql.gz$/', $basename);
                     $list[$match[6]] = array($match[6], $name, $gz);
                 }
+                ksort($list);
                 $last = end($list);
                 if (count($list) === $last[0]) {
                     return $list;

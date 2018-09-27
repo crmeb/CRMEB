@@ -121,6 +121,8 @@ class Article extends AuthController
             'synopsis',
             'share_title',
             'share_synopsis',
+            'is_banner',
+            'is_hot',
             ['visit',0],
             ['sort',0],
             'url',

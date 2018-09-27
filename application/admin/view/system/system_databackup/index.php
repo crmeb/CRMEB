@@ -30,17 +30,11 @@
                 <div class="table-responsive">
                     <script type="text/html" id="toolbarDemo">
                         <div class="layui-btn-container">
-                            <button class="layui-btn layui-btn-sm" lay-event="getCheckData">获取选中行数据</button>
-                            <button class="layui-btn layui-btn-sm" lay-event="getCheckLength">获取选中数目</button>
-                            <button class="layui-btn layui-btn-sm" lay-event="isAll">验证是否全选</button>
+                            <button class="layui-btn layui-btn-sm" lay-event="backup">备份</button>
+                            <button class="layui-btn layui-btn-sm" lay-event="optimize">优化表</button>
+                            <button class="layui-btn layui-btn-sm" lay-event="repair">修复表</button>
                         </div>
                     </script>
-                    <div class="layui-btn-group conrelTable">
-                        <button class="layui-btn layui-btn-sm layui-btn-normal" type="button" data-type="backup"><i class="fa fa-check-circle-o"></i>备份</button>
-                        <button class="layui-btn layui-btn-sm layui-btn-normal" type="button" data-type="optimize"><i class="fa fa-check-circle-o"></i>优化表</button>
-                        <button class="layui-btn layui-btn-sm layui-btn-normal" type="button" data-type="repair"><i class="fa fa-check-circle-o"></i>修复表</button>
-                        <button class="layui-btn layui-btn-sm layui-btn-normal" type="button" data-type="refresh"><i class="layui-icon layui-icon-refresh" ></i>刷新</button>
-                    </div>
                     <table class="layui-hide" id="tableListID" lay-filter="tableListID"></table>
                     <script type="text/html" id="barDemo">
                         <button type="button" class="layui-btn layui-btn-xs" lay-event="see"><i class="layui-icon layui-icon-edit"></i>详情</button>
@@ -52,40 +46,80 @@
 </div>
 <script src="{__ADMIN_PATH}js/layuiList.js"></script>
 <script>
-    layui.use('table', function(){
+    function ipmosrting(time,part = null,start = null) {
+        var datas = {
+            time:time,
+            part:part,
+            start:start
+        };
+        $.ajax({
+            url: layList.Url({a: 'import'}),
+            data: datas,
+            type: 'post',
+            dataType: 'json',
+            success: function (res) {
+                console.log(res);
+                if(res.data){
+                    if(res.code){
+                        setTimeout(ipmosrting(time,res.data.part,res.data.start),2000);
+                    }
+                }else{
+                    layList.msg(res.msg);
+                    return false;
+                }
+
+            },
+            error: function (err) {
+                console.log(err)
+            }
+        });
+
+    }
+    layui.use(['table', 'layer'], function(){
+        var layer = layui.layer;
         var fileList = layui.table;
         var tableList = layui.table;
         //加载sql备份列表
-        fileList.render({
+        var buckdata = fileList.render({
             elem: '#fileList'
             ,url:"{:Url('fileList')}"
             ,cols: [[
-                {field: 'backtime', title: '备份名称', sort: true},
-                {field: 'part', title: '备注'},
+                {field: 'filename', title: '备份名称', sort: true},
+                {field: 'part', title: 'part'},
                 {field: 'size', title: '大小'},
-                {field: 'compress', title: '类型'},
-                {field: 'time', title: '时间'},
+                {field: 'compress', title: 'compress'},
+                {field: 'backtime', title: '时间'},
                 {fixed: 'right', title: '操作', width: '20%', align: 'center', toolbar: '#fileListtool'}
             ]]
             ,page: false
         });
+
         //监听工具条
         fileList.on('tool(fileList)', function(obj){
             var data = obj.data;
-            if(obj.event === 'import'){
-                layer.msg('ID：'+ data.id + ' 的查看操作');
-            } else if(obj.event === 'delFile'){
-                layer.confirm('真的删除行么', function(index){
-                    layList.basePost(layList.Url({a:'delFile'}),{feilname:data.time},function (res) {
-                        layList.msg(res.msg);
-//                    layList.reload();
+            var layEvent = obj.event;
+            switch (layEvent){
+                case 'import':
+                    layer.confirm('真的倒入该备份吗？', function(index){
+                        ipmosrting(data.time,null,null);
+                        layer.close(index);
                     });
-                    obj.del();
-                    layer.close(index);
-                });
-            } else if(obj.event === 'downloadFile'){
-                layer.alert('编辑行：<br>'+ JSON.stringify(data))
+                    break;
+                case 'delFile':
+                    layer.confirm('真的删除该备份吗？', function(index){
+                        layList.basePost(layList.Url({a:'delFile'}),{feilname:data.time},function (res) {
+                            layer.msg(res.msg);
+                            buckdata.reload();
+                        });
+                        obj.del();
+                        layer.close(index);
+                    });
+                    break;
+                case 'downloadFile':
+                    location.href = layList.Url({a:'downloadFile',p:{feilname:data.time}});
+                    break;
             }
+
         });
         //加载table
         tableList.render({
@@ -97,7 +131,7 @@
                 {field: 'name', title: '表名称', sort: true},
                 {field: 'comment', title: '备注' },
                 {field: 'engine', title: '类型', sort: true},
-                {field: 'data_length', title: '大小', sort: true},
+                {field: 'data_length', title: '大小', sort: true,totalRow: true},
                 {field: 'update_time', title: '更新时间', sort: true},
                 {field: 'rows', title: '行数'},
                 {fixed: 'right', title: '操作', width: '10%', align: 'center', toolbar: '#barDemo'}
@@ -107,17 +141,31 @@
         //头工具栏事件
         tableList.on('toolbar(tableListID)', function(obj){
             var checkStatus = tableList.checkStatus(obj.config.id);
+            var data = checkStatus.data;
+            var tables = [];
+            $.each(data, function (name, value) {
+                if (value['name'] != undefined) tables.push(value['name']);
+            });
+            if(tables.length < 1 ){
+                return false;
+            }
             switch(obj.event){
-                case 'getCheckData':
-                    var data = checkStatus.data;
-                    layer.alert(JSON.stringify(data));
+                case 'backup':
+                    layList.basePost(layList.Url({a:'backup'}),{tables:tables},function (res) {
+                        layer.msg(res.msg,{icon:1,time:1000,end:function(){
+                            buckdata.reload();
+                        }});
+                    });
                     break;
-                case 'getCheckLength':
-                    var data = checkStatus.data;
-                    layer.msg('选中了：'+ data.length + ' 个');
+                case 'optimize':
+                    layList.basePost(layList.Url({a:'optimize'}),{tables:tables},function (res) {
+                        layer.msg(res.msg);
+                    });
                     break;
-                case 'isAll':
-                    layer.msg(checkStatus.isAll ? '全选': '未全选');
+                case 'repair':
+                    layList.basePost(layList.Url({a:'repair'}),{tables:tables},function (res) {
+                        layer.msg(res.msg);
+                    });
                     break;
             };
         });
