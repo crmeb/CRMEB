@@ -71,7 +71,13 @@ class StoreProduct extends ModelBasic
                 $model = $model->where('p.store_name|p.keyword|p.id','LIKE',"%$where[store_name]%");
             }
             if(isset($where['cate_id']) && trim($where['cate_id'])!=''){
-                $model = $model->where('p.cate_id','LIKE',"%$where[cate_id]%");
+                $cate=CategoryModel::where('id',$where['cate_id'])->find();
+                if($cate['pid']==0){
+                    $arr=CategoryModel::where('pid',$cate['id'])->column('id');
+                    $model = $model->where('p.cate_id','in',$arr);
+                }else{
+                    $model = $model->where('p.cate_id','LIKE',"%$where[cate_id]%");
+                }
             }
             if(isset($where['order']) && $where['order']!=''){
                 $model = $model->order(self::setOrder($where['order']));
