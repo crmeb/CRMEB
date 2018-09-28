@@ -5,6 +5,8 @@ namespace app\admin\controller\system;
 use app\admin\controller\AuthController;
 use service\CacheService;
 use service\JsonService as Json;
+use think\Log;
+use think\Cache;
 
 /**
  * 首页控制器
@@ -18,29 +20,36 @@ class Clear extends AuthController
     {
         return $this->fetch();
     }
+
+    /**
+     * 刷新数据缓存
+     */
     public function refresh_cache(){
-        if(function_exists('shell_exec')){
-            `php think optimize:schema`;
-            `php think optimize:autoload`;
-            `php think optimize:route`;
-            `php think optimize:config`;
-        }else if(function_exists('exec')){
-            exec('php think optimize:schema');
-            exec('php think optimize:autoload');
-            exec('php think optimize:route');
-            exec('php think optimize:config');
-        }
+        `php think optimize:schema`;
+        `php think optimize:autoload`;
+        `php think optimize:route`;
+        `php think optimize:config`;
         return Json::successful('数据缓存刷新成功!');
     }
+
+    /**
+     * 删除缓存
+     */
     public function delete_cache(){
-        $this->delDirAndFile("./runtime/temp");
-        $this->delDirAndFile("./runtime/cache");
+        Cache::clear();
+        array_map('unlink', glob(TEMP_PATH . '/*.php'));
         return Json::successful('清除缓存成功!');
     }
+
+    /**
+     * 删除日志
+     */
     public function delete_log(){
-        $this->delDirAndFile("./runtime/log");
+        array_map('unlink', glob(LOG_PATH . '/*.log'));
+        $this->delDirAndFile(LOG_PATH);
         return Json::successful('清除日志成功!');
     }
+
     function delDirAndFile($dirName,$subdir=true){
         if ($handle = opendir("$dirName")){
             while(false !== ($item = readdir($handle))){
