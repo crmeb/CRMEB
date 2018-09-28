@@ -54,13 +54,14 @@ class Images extends AuthController
         $pid = input('pid')!=''?input('pid'):0;
 
         $res = Upload::image('file',$pid.'/'.date('Ymd'));
+        $thumbPath = Upload::thumb($res->dir);
         //产品图片上传记录
         $fileInfo = $res->fileInfo->getinfo();
         //入口是public需要替换图片路径
         if(strpos(PUBILC_PATH,'public') == false){
             $res->dir = str_replace('public/','',$res->dir);
         }
-        SystemAttachmentModel::attachmentAdd($res->fileInfo->getSaveName(),$fileInfo['size'],$fileInfo['type'],$res->dir,'',$pid);
+        SystemAttachmentModel::attachmentAdd($res->fileInfo->getSaveName(),$fileInfo['size'],$fileInfo['type'],$res->dir,$thumbPath,$pid);
         $info = array(
 //            "originalName" => $fileInfo['name'],
 //            "name" => $res->fileInfo->getSaveName(),
