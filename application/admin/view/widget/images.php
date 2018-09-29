@@ -77,7 +77,7 @@
             {volist name="list" id="vo"}
             <div class="image-item">
                 <div class="image-delete" data-url="{:Url('delete',array('att_id'=>$vo.att_id))}"></div>
-                <img class="pic" src="{$vo.att_dir|ltrim='.'}" id="{$vo.att_id}"/>
+                <img class="pic" src="{UPLOAD_PATH}{$vo.att_dir|ltrim='.'}" id="{$vo.att_id}"/>
             </div>
             {/volist}
         </div>
