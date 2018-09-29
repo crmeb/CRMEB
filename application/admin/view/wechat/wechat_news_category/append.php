@@ -119,12 +119,10 @@
                             </div>
                         </div>
                     </form>
+                    <button type="button" class="btn btn-w-m btn-info" style="width: 100%;" @click="submit">提交保存图文</button>
                 </div>
             </div>
         </div>
-    </div>
-    <div class="col-sm-8"  style="position: fixed;right:44px;bottom: 0;z-index: 999;text-align: right">
-        <button type="button" class="btn btn-w-m btn-info" style="width: 100%;" @click="submit">提交保存图文</button>
     </div>
 </div>
 {/block}
