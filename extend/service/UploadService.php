@@ -155,7 +155,7 @@ class UploadService
      */
     public static function thumb($filePath, $ratio=8, $pre='s_')
     {
-        $filePath = '.'.ltrim($filePath,'.');
+        $filePath = ROOT_PATH.ltrim(ltrim($filePath,'.'),'/');
         $img = self::openImage($filePath);
         $width = $img->width() * $ratio / 10;
         $height = $img->height() * $ratio / 10;
@@ -163,6 +163,7 @@ class UploadService
         $fileName = basename($filePath);
         $savePath = $dir.DS.$pre.$fileName;
         $img->thumb($width,$height)->save($savePath);
+        $savePath = str_replace(ROOT_PATH,'',$savePath);
         return ltrim($savePath,'.');
     }
 }
