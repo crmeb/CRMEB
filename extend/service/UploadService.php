@@ -157,7 +157,7 @@ class UploadService
      * @param string $pre 前缀
      * @return string 压缩图片路径
      */
-    public static function thumb($filePath, $ratio=8, $pre='s_')
+    public static function thumb($filePath, $ratio=5, $pre='s_')
     {
         $filePath = ltrim($filePath,'/');
         $img = self::openImage($filePath);
