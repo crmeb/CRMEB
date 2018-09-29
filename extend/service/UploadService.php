@@ -163,7 +163,7 @@ class UploadService
         $fileName = basename($filePath);
         $savePath = $dir.DS.$pre.$fileName;
         $img->thumb($width,$height)->save($savePath);
-        $savePath = str_replace(ROOT_PATH,'',$savePath);
+        $savePath = str_replace(ROOT_PATH.'public','',$savePath);
         return ltrim($savePath,'.');
     }
 }
