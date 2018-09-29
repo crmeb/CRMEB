@@ -58,8 +58,7 @@ class Images extends AuthController
         //产品图片上传记录
         $fileInfo = $res->fileInfo->getinfo();
         //入口是public需要替换图片路径
-        $res->dir = str_replace('public/uploads/','',$res->dir);
-
+        $res->dir = str_replace('public/uploads','',$res->dir);
         SystemAttachmentModel::attachmentAdd($res->fileInfo->getSaveName(),$fileInfo['size'],$fileInfo['type'],$res->dir,$thumbPath,$pid);
         $info = array(
 //            "originalName" => $fileInfo['name'],
