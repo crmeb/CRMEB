@@ -47,7 +47,7 @@
 </div>
 <script>
    var base = new Base64();
-    requirejs(['vue','store','better-scroll','helper','wap/crmeb/module/store/shop-card'],function(Vue,storeApi,BScroll,$h,shopCard){
+    requirejs(['vue','store','better-scroll','helper','{__WAP_PATH}crmeb/module/store/shop-card'],function(Vue,storeApi,BScroll,$h,shopCard){
         shopCard.install(Vue);
         var cid = "{$cid}";
         new Vue({
