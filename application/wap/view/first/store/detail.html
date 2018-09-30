@@ -90,7 +90,7 @@
     window.$productAttr = <?php echo json_encode($productAttr) ?: '[]'; ?>;
     window.$productValue = <?php echo json_encode($productValue) ?: '{}'; ?>;</script>
 <script
-    type="text/javascript">    requirejs(['vue', 'axios', 'helper', 'store', '{__WAP_PATH}crmeb/module/store/shop-card'], function (Vue, axios, $h, storeApi, shopCard) {
+    type="text/javascript">    requirejs(['vue', 'axios', 'helper', 'store', '{__WAP_PATH}crmeb/module/store/shop-card.js'], function (Vue, axios, $h, storeApi, shopCard) {
         new Vue({
             el: "#store_detail",
             components: {'shop-card': shopCard},
