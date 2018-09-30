@@ -57,7 +57,7 @@ class AgentManage extends AuthController
         ];
         $uidAll = UserModel::getAll($where);
         $this->assign(compact('limitTimeList','uidAll'));
-        $this->assign(UserModel::systemPage($where));
+        $this->assign(UserModel::agentSystemPage($where));
         return $this->fetch();
     }
 

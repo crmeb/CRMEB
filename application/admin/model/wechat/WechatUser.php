@@ -102,6 +102,49 @@ use service\SystemConfigService;
      * @return array
      */
     public static function systemPage($where = array(),$isall=false){
+        $model = new self;
+        $model = $model->where('openid','NOT NULL');
+        if($where['nickname'] !== '') $model = $model->where('nickname','LIKE',"%$where[nickname]%");
+        if($where['data'] !== ''){
+            list($startTime,$endTime) = explode(' - ',$where['data']);
+            $model = $model->where('add_time','>',strtotime($startTime));
+            $model = $model->where('add_time','<',strtotime($endTime));
+        }
+        if(isset($where['tagid_list']) && $where['tagid_list'] !== ''){
+            $tagid_list = explode(',',$where['tagid_list']);
+            foreach ($tagid_list as $v){
+                $model = $model->where('tagid_list','LIKE',"%$v%");
+            }
+        }
+        if(isset($where['groupid']) && $where['groupid'] !== '-1' ) $model = $model->where('groupid',"$where[groupid]");
+        if(isset($where['sex']) && $where['sex'] !== '' ) $model = $model->where('sex',"$where[sex]");
+        if(isset($where['subscribe']) && $where['subscribe'] !== '' ) $model = $model->where('subscribe',"$where[subscribe]");
+        $model = $model->order('uid desc');
+        if(isset($where['export']) && $where['export'] == 1){
+            $list = $model->select()->toArray();
+            $export = [];
+            foreach ($list as $index=>$item){
+                $export[] = [
+                    $item['nickname'],
+                    $item['sex'],
+                    $item['country'].$item['province'].$item['city'],
+                    $item['subscribe'] == 1? '关注':'未关注',
+                ];
+                $list[$index] = $item;
+            }
+            PHPExcelService::setExcelHeader(['名称','性别','地区','是否关注公众号'])
+                ->setExcelTile('微信用户导出','微信用户导出'.time(),' 生成时间：'.date('Y-m-d H:i:s',time()))
+                ->setExcelContent($export)
+                ->ExcelSave();
+        }
+        return self::page($model,$where);
+    }
+/**
+     * 获取分销用户
+     * @param array $where
+     * @return array
+     */
+    public static function agentSystemPage($where = array(),$isall=false){
         self::setWechatUserOrder();//设置 一级推荐人 二级推荐人 一级推荐人订单 二级推荐人订单 佣金
         $model = new self;
         if($isall==false) {
