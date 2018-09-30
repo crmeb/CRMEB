@@ -19,7 +19,7 @@ class SystemDatabackup extends AuthController
     public function _initialize()
     {
         $config = array(
-            'path' => '.'.PUBILC_PATH.'backup/data/',
+            'path' => '.'.PUBILC_PATH.'/backup/data/',
             //数据库备份路径
             'part' => 20971520,
             //数据库备份卷大小
