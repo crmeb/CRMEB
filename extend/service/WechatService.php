@@ -27,6 +27,9 @@ class WechatService
 {
     private static $instance = null;
 
+    /**获取微信配置参数
+     * @return array
+     */
     public static function options()
     {
         $wechat = SystemConfigService::more(['wechat_appid','wechat_appsecret','wechat_token']);
@@ -59,6 +62,9 @@ class WechatService
         return self::$instance;
     }
 
+    /**
+     * 微信接口
+     */
     public static function serve()
     {
         $wechat = self::application(true);
@@ -364,6 +370,11 @@ class WechatService
         return self::paymentService()->refund($orderNo,$refundNo,$totalFee,$refundFee,$opUserId,$type,$refundAccount,$refundReason);
     }
 
+    /**订单退款
+     * @param $orderNo
+     * @param array $opt
+     * @return bool
+     */
     public static function payOrderRefund($orderNo, array $opt)
     {
         if(!isset($opt['pay_price'])) exception('缺少pay_price');
@@ -409,6 +420,10 @@ class WechatService
         return self::application()->js;
     }
 
+    /** jsSdk
+     * @param string $url
+     * @return array|string
+     */
     public static function jsSdk($url = '')
     {
         $apiList = ['onMenuShareTimeline', 'onMenuShareAppMessage', 'onMenuShareQQ', 'onMenuShareWeibo', 'onMenuShareQZone', 'startRecord', 'stopRecord', 'onVoiceRecordEnd', 'playVoice', 'pauseVoice', 'stopVoice', 'onVoicePlayEnd', 'uploadVoice', 'downloadVoice', 'chooseImage', 'previewImage', 'uploadImage', 'downloadImage', 'translateVoice', 'getNetworkType', 'openLocation', 'getLocation', 'hideOptionMenu', 'showOptionMenu', 'hideMenuItems', 'showMenuItems', 'hideAllNonBaseMenuItem', 'showAllNonBaseMenuItem', 'closeWindow', 'scanQRCode', 'chooseWXPay', 'openProductSpecificView', 'addCard', 'chooseCard', 'openCard'];
