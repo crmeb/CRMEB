@@ -94,7 +94,7 @@ CRMEB微信小程序v2.0版：除了以上功能还带砍价、拼团功能
 
 还有定制开发服务，例如：预约系统、O2O、付费阅读、多店版、多商家版
 
-### 详情[<a href='https://xazbkj.taobao.com/' target="_blank"> 进入淘宝 </a>]
+### 详情[<a href='https://s.click.taobao.com/W7hVkLw' target="_blank"> 进入淘宝 </a>]
 
 官网线下定制服务版：http://www.crmeb.com
 
