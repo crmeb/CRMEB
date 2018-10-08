@@ -3,14 +3,14 @@
 <link href="{__ADMIN_PATH}module/wechat/news/css/index.css" type="text/css" rel="stylesheet">
 {/block}
 {block name="content"}
+<style>
+    tr td img{height: 80px;}
+</style>
 <div class="row">
     <div class="col-sm-12">
         <div class="ibox">
             <div class="ibox-title">
                 <button type="button" class="btn btn-w-m btn-primary" onclick="window.location.href='{:Url('create',array('cid'=>$cid))}'">添加文章</button>
-                <div class="ibox-tools">
-                    <button class="btn btn-white btn-sm" onclick="location.reload()"><i class="fa fa-refresh"></i> 刷新</button>
-                </div>
                 <div style="margin-top: 2rem"></div>
                 <div class="row">
                     <div class="m-b m-l">
