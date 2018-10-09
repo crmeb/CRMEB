@@ -57,6 +57,7 @@ class SystemGroup extends AuthController
     public function save(Request $request)
     {
         $params = Util::postMore([
+            ['id',''],
             ['name',''],
             ['config_name',''],
             ['info',''],
@@ -66,7 +67,10 @@ class SystemGroup extends AuthController
         //数据组名称判断
         if(!$params['name'])return Json::fail('请输入数据组名称！');
         if(!$params['config_name'])return Json::fail('请输入配置名称！');
-        if(GroupModel::be($params['config_name'],'config_name')) return Json::fail('数据关键字已存在！');
+        //判断ID是否存在，存在就是编辑，不存在就是添加
+        if(!$params['id']){
+            if(GroupModel::be($params['config_name'],'config_name')) return Json::fail('数据关键字已存在！');
+        }
         $data["name"] = $params['name'];
         $data["config_name"] = $params['config_name'];
         $data["info"] = $params['info'];
@@ -85,9 +89,36 @@ class SystemGroup extends AuthController
             }
         }
         $data["fields"] = json_encode($data["fields"]);
-        GroupModel::set($data);
-        return Json::successful('添加数据组成功!');
+        //判断ID是否存在，存在就是编辑，不存在就是添加
+        if(!$params['id']) {
+            GroupModel::set($data);
+            return Json::successful('添加数据组成功!');
+        }else{
+            GroupModel::edit($data,$params['id']);
+            return Json::successful('编辑数据组成功!');
+        }
     }
+
+    /**编辑数组
+     * @param $id
+     */
+    public function edit($id)
+    {
+        $Groupinfo = GroupModel::get($id);
+        $fields = json_decode($Groupinfo['fields'],true);
+        $typelist = [];
+        foreach ($fields as $key => $v){
+            $typelist[$key]['name']['value'] = $v['name'];
+            $typelist[$key]['title']['value'] = $v['title'];
+            $typelist[$key]['type']['value'] = $v['type'];
+            $typelist[$key]['param']['value'] = $v['param'];
+        }
+        $Groupinfo['fields'] = json_encode($typelist);
+        $this->assign(compact('Groupinfo'));
+        $this->assign(['title'=>'添加数据组','save'=>Url::build('save')]);
+        return $this->fetch();
+    }
+
     /**
      * 删除指定资源
      *

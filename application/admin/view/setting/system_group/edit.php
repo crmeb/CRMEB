@@ -7,6 +7,7 @@
 <body>
 <div id="form-add" class="mp-form" v-cloak="">
     <i-Form :model="formData" :label-width="80" >
+        <i-input v-model="formData.id" type="hidden" placeholder="请输入数据组名称"></i-input>
         <Form-Item label="数据组名称">
             <i-input v-model="formData.name" placeholder="请输入数据组名称"></i-input>
         </Form-Item>
@@ -27,26 +28,26 @@
                         </i-col>
                     </row>
                     <row>
-                        <i-col span="23">
-                            <Form-Item>
-                                <i-input :placeholder="item.title.placeholder" v-model="item.title.value"></i-input>
-                            </Form-Item>
-                        </i-col>
+                    <i-col span="23">
+                        <Form-Item>
+                            <i-input :placeholder="item.title.placeholder" v-model="item.title.value"></i-input>
+                        </Form-Item>
+                    </i-col>
                     </row>
                     <row>
-                        <i-col span="23">
-                            <Form-Item>
-                                <i-select :placeholder="item.type.placeholder" v-model="item.type.value">
-                                    <i-option value="input">文本框</i-option>
-                                    <i-option value="textarea">多行文本框</i-option>
-                                    <i-option value="radio">单选框</i-option>
-                                    <i-option value="checkbox">多选框</i-option>
-                                    <i-option value="select">下拉选择</i-option>
-                                    <i-option value="upload">单文件上传</i-option>
-                                    <i-option value="uploads">多文件上传</i-option>
-                                </i-select>
-                            </Form-Item>
-                        </i-col>
+                    <i-col span="23">
+                        <Form-Item>
+                            <i-select :placeholder="item.type.placeholder" v-model="item.type.value">
+                                <i-option value="input">文本框</i-option>
+                                <i-option value="textarea">多行文本框</i-option>
+                                <i-option value="radio">单选框</i-option>
+                                <i-option value="checkbox">多选框</i-option>
+                                <i-option value="select">下拉选择</i-option>
+                                <i-option value="upload">单文件上传</i-option>
+                                <i-option value="uploads">多文件上传</i-option>
+                            </i-select>
+                        </Form-Item>
+                    </i-col>
                     </row>
                 </i-col>
                 <i-col span="12">
@@ -57,7 +58,7 @@
                 <i-col span="2" style="display:inline-block; text-align:right;">
                     <i-button type="primary" icon="close-round" @click="removeType(index)"></i-button>
                 </i-col>
-            </row>
+                </row>
             </row>
         </Form-Item>
         <Form-Item><i-button type="primary" @click="addType">添加字段</i-button></Form-Item>
@@ -73,10 +74,11 @@
             el:"#form-add",
             data:{
                 formData:{
-                    name: '',
-                    config_name: '',
-                    typelist: [],
-                    info:''
+                    id: '{$Groupinfo.id}',
+                    name: '{$Groupinfo.name}',
+                    config_name: '{$Groupinfo.config_name}',
+                    typelist: {$Groupinfo.fields},
+                    info:'{$Groupinfo.info}'
                 }
             },
             methods:{
@@ -106,16 +108,16 @@
                 submit: function(){
                     $eb.axios.post("{$save}",this.formData).then((res)=>{
                         if(res.status && res.data.code == 200)
-                            return Promise.resolve(res.data);
-                        else
-                            return Promise.reject(res.data.msg || '添加失败,请稍候再试!');
-                    }).then((res)=>{
+                    return Promise.resolve(res.data);
+                    else
+                    return Promise.reject(res.data.msg || '添加失败,请稍候再试!');
+                }).then((res)=>{
                         $eb.message('success',res.msg || '操作成功!');
-                        $eb.closeModalFrame(window.name);
-                    }).catch((err)=>{
+                    $eb.closeModalFrame(window.name);
+                }).catch((err)=>{
                         this.loading=false;
-                        $eb.message('error',err);
-                    });
+                    $eb.message('error',err);
+                });
                 }
             }
         });

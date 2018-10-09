@@ -46,32 +46,52 @@ class SystemGroupData extends AuthController
         $Fields = GroupModel::getField($gid);
         $f = array();
         foreach ($Fields["fields"] as $key => $value) {
-            if($value["type"] == "input")
-                $f[] = Form::input($value["title"],$value["name"]);
-            else if($value["type"] == "textarea")
-                $f[] = Form::input($value["title"],$value["name"])->type('textarea')->placeholder($value['param']);
-            else if($value["type"] == "radio") {
-                $params = explode("-", $value["param"]);
-                foreach ($params as $index => $param) {
-                    $info[$index]["value"] = $param;
-                    $info[$index]["label"] = $param;
+            $info = [];
+            if(!empty($value["param"])){
+                $value["param"] = str_replace("\r\n","\n",$value["param"]);//防止不兼容
+                $params = explode("\n",$value["param"]);
+                if(is_array($params) && !empty($params)){
+                    foreach ($params as $index => $v) {
+                        $vl = explode('=',$v);
+                        if(!empty($vl[0]) && !empty($vl[1])){
+                            $info[$index]["value"] = $vl[0];
+                            $info[$index]["label"] = $vl[1];
+                        }
+                    }
                 }
-                $f[] = Form::radio($value["title"],$value["name"],$info[0]["value"])->options($info);
-            }else if($value["type"] == "checkbox"){
-                $params = explode("-",$value["param"]);
-                foreach ($params as $index => $param) {
-                    $info[$index]["value"] = $param;
-                    $info[$index]["label"] = $param;
-                }
-                $f[] = Form::checkbox($value["title"],$value["name"],$info[0])->options($info);
-            }else if($value["type"] == "upload")
-                $f[] = Form::frameImageOne($value["title"],$value["name"],Url::build('admin/widget.images/index',array('fodder'=>$value["title"])))->icon('image');
-            else if($value['type'] == 'uploads')
-                $f[] = Form::frameImages($value["title"],$value["name"],Url::build('admin/widget.images/index',array('fodder'=>$value["title"])))->maxLength(5)->icon('images')->width('100%')->height('550px')->spin(0);
+            }
+
+            switch ($value["type"]){
+                case 'input':
+                    $f[] = Form::input($value["title"],$value["name"]);
+                    break;
+                case 'textarea':
+                    $f[] = Form::input($value["title"],$value["name"])->type('textarea')->placeholder($value['param']);
+                    break;
+                case 'radio':
+                    $f[] = Form::radio($value["title"],$value["name"],$info[0]["value"])->options($info);
+                    break;
+                case 'checkbox':
+                    $f[] = Form::checkbox($value["title"],$value["name"],$info[0])->options($info);
+                    break;
+                case 'select':
+                    $f[] = Form::select($value["title"],$value["name"],$info[0])->options($info)->multiple(false);
+                    break;
+                case 'upload':
+                    $f[] = Form::frameImageOne($value["title"],$value["name"],Url::build('admin/widget.images/index',array('fodder'=>$value["title"])))->icon('image');
+                    break;
+                case 'uploads':
+                    $f[] = Form::frameImages($value["title"],$value["name"],Url::build('admin/widget.images/index',array('fodder'=>$value["title"])))->maxLength(5)->icon('images')->width('100%')->height('550px')->spin(0);
+                    break;
+                default:
+                    $f[] = Form::input($value["title"],$value["name"]);
+                    break;
+
+            }
         }
         $f[] = Form::number('sort','排序',1);
         $f[] = Form::radio('status','状态',1)->options([['value'=>1,'label'=>'显示'],['value'=>2,'label'=>'隐藏']]);
-        $form = Form::make_post_form('添加数据',$f,Url::build('save',compact('gid')));
+        $form = Form::make_post_form('添加数据',$f,Url::build('save',compact('gid')),2);
         $this->assign(compact('form'));
         return $this->fetch('public/form-builder');
     }
@@ -127,36 +147,59 @@ class SystemGroupData extends AuthController
         $GroupDataValue = json_decode($GroupData["value"],true);
         $Fields = GroupModel::getField($gid);
         $f = array();
-        foreach ($Fields["fields"] as $key => $value) {
-            if($value["type"] == "input") $f[] = Form::input($value["title"],$value["name"],$GroupDataValue[$value["title"]]["value"]);
-            if($value["type"] == "textarea") $f[] = Form::input($value["title"],$value["name"],$GroupDataValue[$value["title"]]["value"])->type('textarea');
-            if($value["type"] == "radio"){
-                $params = explode("-",$value["param"]);
-                foreach ($params as $index => $param) {
-                    $info[$index]["value"] = $param;
-                    $info[$index]["label"] = $param;
+        foreach ($Fields['fields'] as $key => $value) {
+            $info = [];
+            if(!empty($value["param"])){
+                $value["param"] = str_replace("\r\n","\n",$value["param"]);//防止不兼容
+                $params = explode("\n",$value["param"]);
+                if(is_array($params) && !empty($params)){
+                    foreach ($params as $index => $v) {
+                        $vl = explode('=',$v);
+                        if(!empty($vl[0]) && !empty($vl[1])){
+                            $info[$index]["value"] = $vl[0];
+                            $info[$index]["label"] = $vl[1];
+                        }
+                    }
                 }
-                $f[] = Form::radio($value["title"],$value["name"],$GroupDataValue[$value["title"]]["value"])->options($info);
             }
-            if($value["type"] == "checkbox"){
-                $params = explode("-",$value["param"]);
-                foreach ($params as $index => $param) {
-                    $info[$index]["value"] = $param;
-                    $info[$index]["label"] = $param;
-                }
-                $f[] = Form::checkbox($value["title"],$value["name"],$GroupDataValue[$value["title"]]["value"])->options($info);
-            }
-            if($value["type"] == "upload"){
-               $image = is_string($GroupDataValue[$value["title"]]["value"])?$GroupDataValue[$value["title"]]["value"]:$GroupDataValue[$value["title"]]["value"][0];
-                $f[] = Form::frameImageOne($value["title"],$value["name"],Url::build('admin/widget.images/index',array('fodder'=>$value["title"])),$image)->icon('image');
-            }
-            else if($value['type'] == 'uploads') {
-                $f[] = Form::frameImages($value["title"], $value["name"], Url::build('admin/widget.images/index', array('fodder' => $value["title"])), $GroupDataValue[$value["title"]]["value"])->maxLength(5)->icon('images')->width('100%')->height('550px')->spin(0);
+            switch ($value['type']){
+                case 'input':
+                    $f[] = Form::input($value['title'],$value['name'],$GroupDataValue[$value['title']]['value']);
+                    break;
+                case 'textarea':
+                    $f[] = Form::input($value['title'],$value['name'],$GroupDataValue[$value['title']]['value'])->type('textarea');
+                    break;
+                case 'radio':
+
+                    $f[] = Form::radio($value['title'],$value['name'],$GroupDataValue[$value['title']]['value'])->options($info);
+                    break;
+                 case 'checkbox':
+                     $f[] = Form::checkbox($value['title'],$value['name'],$GroupDataValue[$value['title']]['value'])->options($info);
+                    break;
+                 case 'upload':
+                     if(!empty($GroupDataValue[$value['title']]['value'])){
+                         $image = is_string($GroupDataValue[$value['title']]['value']) ? $GroupDataValue[$value['title']]['value'] : $GroupDataValue[$value['title']]['value'][0];
+                     }else{
+                         $image = '';
+                     }
+                     $f[] = Form::frameImageOne($value['title'],$value['name'],Url::build('admin/widget.images/index',array('fodder'=>$value['title'])),$image)->icon('image');
+                    break;
+                 case 'uploads':
+                     $images = !empty($GroupDataValue[$value['title']]['value']) ? $GroupDataValue[$value['title']]['value']:[];
+                     $f[] = Form::frameImages($value['title'],$value['name'],Url::build('admin/widget.images/index', array('fodder' => $value['title'])),$images)->maxLength(5)->icon('images')->width('100%')->height('550px')->spin(0);
+                    break;
+                 case 'select':
+                     $f[] = Form::select($value['title'],$value['name'],$GroupDataValue[$value['title']]['value'])->setOptions($info);
+                    break;
+                default:
+                    $f[] = Form::input($value['title'],$value['name'],$GroupDataValue[$value['title']]['value']);
+                    break;
+
             }
         }
         $f[] = Form::input('sort','排序',$GroupData["sort"]);
         $f[] = Form::radio('status','状态',$GroupData["status"])->options([['value'=>1,'label'=>'显示'],['value'=>2,'label'=>'隐藏']]);
-        $form = Form::make_post_form('添加用户通知',$f,Url::build('update',compact('id')));
+        $form = Form::make_post_form('添加用户通知',$f,Url::build('update',compact('id')),2);
         $this->assign(compact('form'));
         return $this->fetch('public/form-builder');
     }

@@ -60,7 +60,9 @@
                             </td>
                             {volist name="fields" id="item"}
                                 <td class="text-center">
+                                    {notempty name="$vo.value[$item['title']]['value']"}
                                     {$vo.value[$item['title']]['value']}
+                                    {/notempty}
                                 </td>
                             {/volist}
                             <td class="text-center">

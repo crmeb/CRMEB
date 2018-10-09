@@ -60,6 +60,7 @@
 							</td>
 							<td class="text-center">
 								<a class="btn btn-info btn-xs" href="{:Url('setting.systemGroupData/index',array('gid'=>$vo['id']))}"><i class="fa fa-paste"></i> 数据列表</a>
+								<button class="btn btn-info btn-xs"  onclick="$eb.createModalFrame(this.innerText,'{:Url('edit',array('id'=>$vo['id']))}')" ><i class="fa fa-paste"></i> 编辑</button>
 								<button class="btn btn-warning btn-xs" data-url="{:Url('delete',array('id'=>$vo['id']))}" type="button"><i class="fa fa-warning"></i> 删除</button>
 							</td>
 						</tr>
