@@ -43,8 +43,8 @@
                                 <i-option value="radio">单选框</i-option>
                                 <i-option value="checkbox">多选框</i-option>
                                 <i-option value="select">下拉选择</i-option>
-                                <i-option value="upload">单文件上传</i-option>
-                                <i-option value="uploads">多文件上传</i-option>
+                                <i-option value="upload">单图</i-option>
+                                <i-option value="uploads">多图</i-option>
                             </i-select>
                         </Form-Item>
                     </i-col>
