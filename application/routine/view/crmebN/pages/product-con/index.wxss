@@ -50,5 +50,3 @@ background-color:#fff;padding:8rpx 0;border-radius:0;margin:0;line-height:2;}
 }
 @import "/pages/foo-tan/foo-tan.wxss"; 
 @import "/wxParse/wxParse.wxss"; 
-.wxParse-p{margin-bottom:-4px;}
-
