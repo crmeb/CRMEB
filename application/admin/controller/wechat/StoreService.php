@@ -47,6 +47,7 @@ class StoreService extends AuthController
             ['order_second',''],
             ['subscribe',''],
             ['now_money',''],
+            ['is_promoter',''],
         ],$this->request);
         $this->assign('where',$where);
         $this->assign(UserModel::systemPage($where));
@@ -88,8 +89,8 @@ class StoreService extends AuthController
         $f = array();
         $f[] = Form::frameImageOne('avatar','客服头像',Url::build('admin/widget.images/index',array('fodder'=>'avatar')),$service['avatar'])->icon('image');
         $f[] = Form::input('nickname','客服名称',$service["nickname"]);
-        $f[] = Form::input('content','通知内容')->type('textarea');
-        $f[] = Form::radio('status','状态',$service['status'])->options([['value'=>1,'label'=>'显示'],['value'=>0,'label'=>'隐藏']]);
+        $f[] = Form::switches('notify','订单通知',$service["notify"])->trueValue(1)->falseValue(0)->openStr('开启')->closeStr('关闭');
+        $f[] = Form::radio('status','客服状态',$service['status'])->options([['value'=>1,'label'=>'显示'],['value'=>0,'label'=>'隐藏']]);
         $form = Form::make_post_form('修改数据',$f,Url::build('update',compact('id')));
         $this->assign(compact('form'));
         return $this->fetch('public/form-builder');
@@ -105,7 +106,11 @@ class StoreService extends AuthController
         $params = $request->post();
         if(empty($params["nickname"]))return Json::fail("客服名称不能为空！");
 //        print_r($params);die;
-        $data = array("avatar"=>$params["avatar"],"nickname"=>$params["nickname"],'status'=>$params['status']);
+        $data = array("avatar"=>$params["avatar"]
+        ,"nickname"=>$params["nickname"]
+        ,'status'=>$params['status']
+        ,'notify'=>$params['notify']
+        );
         ServiceModel::edit($data,$id);
         return Json::successful('修改成功!');
     }

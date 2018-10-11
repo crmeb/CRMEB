@@ -8,7 +8,8 @@
 namespace service;
 
 use app\wap\model\user\WechatUser;
-use think\Db;
+use app\admin\model\wechat\WechatTemplate as WechatTemplateModel;
+use app\admin\model\wechat\StoreService as ServiceModel;
 
 class WechatTemplateService
 {
@@ -52,7 +53,7 @@ class WechatTemplateService
 
     public static function sendTemplate($openid,$templateId,array $data,$url = null,$defaultColor = '')
     {
-        $templateinfo = Db::name('WechatTemplate')->where('tempkey',$templateId)->where('status',1)->find();
+        $templateinfo = WechatTemplateModel::where('tempkey',$templateId)->where('status',1)->find();
         if(!$templateinfo) return false;
         try{
             return WechatService::sendTemplate($openid,$templateinfo['tempid'],$data,$url,$defaultColor);
@@ -61,10 +62,22 @@ class WechatTemplateService
         }
     }
 
+    /**服务进度通知
+     * @param array $data
+     * @param null $url
+     * @param string $defaultColor
+     * @return bool
+     */
     public static function sendAdminNoticeTemplate(array $data,$url = null,$defaultColor = '')
     {
-        $adminIds = SystemConfigService::get('site_store_admin_uids');
-        if(!$adminIds || !($adminList = array_unique(array_filter(explode(',',trim($adminIds)))))) return false;
+        $adminIds = explode(',',trim(SystemConfigService::get('site_store_admin_uids')));
+        $kefuIds = ServiceModel::where('notify',1)->column('uid');
+        if(empty($adminIds[0])){
+            $adminList = array_unique($kefuIds);
+        }else{
+            $adminList = array_unique(array_merge($adminIds,$kefuIds));
+        }
+        if(!is_array($adminList) || empty($adminList)) return false;
         foreach ($adminList as $uid){
             try{
                 $openid = WechatUser::uidToOpenid($uid);
