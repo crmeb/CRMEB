@@ -1,6 +1,6 @@
 {extend name="public/container"}
 {block name="content"}
-<div class="layui-fluid" style="background: #fff">
+<div class="layui-fluid" style="background: #fff;margin-top: -10px;">
     <div class="layui-tab layui-tab-brief" lay-filter="tab">
         <ul class="layui-tab-title">
             <li lay-id="list" {eq name='type' value='1'}class="layui-this" {/eq} >

@@ -9,7 +9,7 @@
 </head>
 <body class="gray-bg">
 <!--演示地址https://daneden.github.io/animate.css/?-->
-<div class="wrapper wrapper-content animated fadeInDown">
+<div class="wrapper wrapper-content animated ">
 {block name="content"}{/block}
 {block name="foot"}{/block}
 {block name="script"}{/block}

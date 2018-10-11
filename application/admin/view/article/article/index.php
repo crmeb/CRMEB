@@ -10,7 +10,7 @@
     <div class="col-sm-12">
         <div class="ibox">
             <div class="ibox-title">
-                <button type="button" class="btn btn-w-m btn-primary" onclick="window.location.href='{:Url('create',array('cid'=>$cid))}'">添加文章</button>
+                <button type="button" class="btn btn-w-m btn-primary" onclick="$eb.createModalFrame(this.innerText,'{:Url('create',array('cid'=>$cid))}',{w:1000,h:760})">添加文章</button>
                 <div style="margin-top: 2rem"></div>
                 <div class="row">
                     <div class="m-b m-l">
@@ -54,8 +54,10 @@
                         </td>
 
                         <td class="text-center">
-                            <a href="{:Url('create',array('id'=>$vo['id'],'cid'=>$cid))}">编辑</a>
-                            <a href="javascript:void(0)" data-url="{:Url('delete',array('id'=>$vo['id']))}" class="del_news_one">删除</a>
+                            <button class="btn btn-info btn-xs" type="button"  onclick="$eb.createModalFrame('编辑','{:Url('create',array('id'=>$vo['id'],'cid'=>$cid))}',{w:1000,h:760})"><i class="fa fa-paste"></i> 编辑</button>
+
+                            <button class="btn btn-warning btn-xs del_news_one" data-id="{$vo.id}" type="button" data-url="{:Url('delete',array('id'=>$vo['id']))}" ><i class="fa fa-warning"></i> 删除
+
                         </td>
                     </tr>
                     {/volist}
