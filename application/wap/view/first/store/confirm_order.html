@@ -106,8 +106,9 @@
         var $key = '<?=$orderKey?>';
         var $seckill_id = '<?=$seckill_id?>';
         var $bargain_id = '<?=$bargain_id?>';
+        var wap_path = '{__WAP_PATH}';
 
-        requirejs(['vue','store','helper','wap/first/crmeb/module/store/use-coupon','wap/first/crmeb/module/store/use-address','layer'],function(Vue,storeApi,$h,useCoupon,useAddress,layer){
+        requirejs(['vue','store','helper','{__WAP_PATH}crmeb/module/store/use-coupon.js','{__WAP_PATH}crmeb/module/store/use-address.js','layer'],function(Vue,storeApi,$h,useCoupon,useAddress,layer){
             Vue.use(useCoupon);
             Vue.use(useAddress);
 
