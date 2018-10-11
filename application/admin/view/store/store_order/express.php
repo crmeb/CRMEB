@@ -15,18 +15,18 @@
     <meta name="x5-orientation" content="portrait">
     <title>物流信息</title>
     <link rel="stylesheet" type="text/css" href="/public/static/css/reset.css"/>
-    <link rel="stylesheet" type="text/css" href="/public/wap/crmeb/font/iconfont.css"/>
-    <link rel="stylesheet" type="text/css" href="/public/wap/crmeb/css/style.css?2"/>
+    <link rel="stylesheet" type="text/css" href="{__WAP_PATH}crmeb/font/iconfont.css"/>
+    <link rel="stylesheet" type="text/css" href="{__WAP_PATH}crmeb/css/style.css?2"/>
     <script type="text/javascript" src="/public/static/js/media.js"></script>
     <script type="text/javascript" src="/public/static/plug/jquery-1.10.2.min.js"></script>
-    <script type="text/javascript" src="/public/wap/crmeb/js/common.js"></script>
+    <script type="text/javascript" src="{__WAP_PATH}crmeb/js/common.js"></script>
 </head>
 <body>
 
 <div class="user-order-logistics" style="overflow: hidden;">
     <section>
         <div class="product-info flex">
-            <div class="picture"><img src="/public/wap/crmeb/images/express_icon.jpg"/></div>
+            <div class="picture"><img src="{__WAP_PATH}crmeb/images/express_icon.jpg"/></div>
             <div class="logistics-tip flex">
                 <div class="company">物流公司：{$order.delivery_name}</div>
                 <div class="number">物流单号：{$order.delivery_id}</div>
@@ -35,7 +35,7 @@
         <div class="logistics-info" style="background-color: inherit;">
             <?php if(!$express || $express['status'] != 0){ ?>
                 <div class="empty">
-                    <img src="/public/wap/crmeb/images/empty_address.png">
+                    <img src="{__WAP_PATH}crmeb/images/empty_address.png">
                     <p>暂无查询记录</p>
                 </div>
             <?php }else{ ?>

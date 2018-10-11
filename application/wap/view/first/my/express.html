@@ -4,7 +4,7 @@
 <div class="user-order-logistics">
     <section>
         <div class="product-info flex">
-            <div class="picture"><img src="/public/wap/crmeb/images/express_icon.jpg"/></div>
+            <div class="picture"><img src="{__WAP_PATH}crmeb/images/express_icon.jpg"/></div>
             <div class="logistics-tip flex">
                 <div class="company">物流公司：{$order.delivery_name}</div>
                 <div class="number">物流单号：{$order.delivery_id}</div>
@@ -13,7 +13,7 @@
         <div class="logistics-info" style="background-color: inherit;">
             <?php if(!$express || $express['status'] != 0){ ?>
                 <div class="empty">
-                    <img src="/public/wap/crmeb/images/empty_address.png">
+                    <img src="{__WAP_PATH}crmeb/images/empty_address.png">
                     <p>暂无查询记录</p>
                 </div>
             <?php }else{ ?>
