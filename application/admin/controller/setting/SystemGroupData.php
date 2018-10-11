@@ -78,10 +78,10 @@ class SystemGroupData extends AuthController
                     $f[] = Form::select($value["title"],$value["name"],$info[0])->options($info)->multiple(false);
                     break;
                 case 'upload':
-                    $f[] = Form::frameImageOne($value["title"],$value["name"],Url::build('admin/widget.images/index',array('fodder'=>$value["title"])))->icon('image');
+                    $f[] = Form::frameImageOne($value["title"],$value["name"],Url::build('admin/widget.images/index',array('fodder'=>$value["title"],'big'=>1)))->icon('image');
                     break;
                 case 'uploads':
-                    $f[] = Form::frameImages($value["title"],$value["name"],Url::build('admin/widget.images/index',array('fodder'=>$value["title"])))->maxLength(5)->icon('images')->width('100%')->height('550px')->spin(0);
+                    $f[] = Form::frameImages($value["title"],$value["name"],Url::build('admin/widget.images/index',array('fodder'=>$value["title"],'big'=>1)))->maxLength(5)->icon('images')->width('100%')->height('550px')->spin(0);
                     break;
                 default:
                     $f[] = Form::input($value["title"],$value["name"]);
@@ -182,11 +182,11 @@ class SystemGroupData extends AuthController
                      }else{
                          $image = '';
                      }
-                     $f[] = Form::frameImageOne($value['title'],$value['name'],Url::build('admin/widget.images/index',array('fodder'=>$value['title'])),$image)->icon('image');
+                     $f[] = Form::frameImageOne($value['title'],$value['name'],Url::build('admin/widget.images/index',array('fodder'=>$value['title'],'big'=>1)),$image)->icon('image');
                     break;
                  case 'uploads':
                      $images = !empty($GroupDataValue[$value['title']]['value']) ? $GroupDataValue[$value['title']]['value']:[];
-                     $f[] = Form::frameImages($value['title'],$value['name'],Url::build('admin/widget.images/index', array('fodder' => $value['title'])),$images)->maxLength(5)->icon('images')->width('100%')->height('550px')->spin(0);
+                     $f[] = Form::frameImages($value['title'],$value['name'],Url::build('admin/widget.images/index', array('fodder' => $value['title'],'big'=>1)),$images)->maxLength(5)->icon('images')->width('100%')->height('550px')->spin(0);
                     break;
                  case 'select':
                      $f[] = Form::select($value['title'],$value['name'],$GroupDataValue[$value['title']]['value'])->setOptions($info);
