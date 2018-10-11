@@ -54,3 +54,4 @@ swiper-item{position: relative; width: 100%;}
 .countdown-time text{height:35rpx;padding:0 8rpx;display:inline-block;background-color:#fff;color:#ff3d3d;line-height:35rpx;border-radius:5rpx;margin-top:8rpx;}
   @import "/pages/foo-tan/foo-tan.wxss";  
   @import "/wxParse/wxParse.wxss";
+ .wxParse-p{margin:0;padding:0;}
