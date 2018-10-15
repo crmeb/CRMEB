@@ -87,7 +87,6 @@ class PHPExcelService
      */
     public function setExcelContent($list=null)
     {
-        self::$PHPExcel = new \PHPExcel();
         $sheet=self::$PHPExcel->getActiveSheet();
         foreach(self::$data as $key=>$val){
             $row=self::$cellKey[$key];
@@ -178,7 +177,6 @@ class PHPExcelService
             self::$title=$title;
         if(empty($Name)) $Name=time();
         //设置Excel属性
-        self::$PHPExcel = new \PHPExcel();
         self::$PHPExcel ->getProperties()
             ->setCreator("Neo")
             ->setLastModifiedBy("Neo")

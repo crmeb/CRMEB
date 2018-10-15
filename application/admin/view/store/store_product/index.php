@@ -222,27 +222,26 @@
         var oEvent = arguments.callee.caller.arguments[0] || event;
         oEvent.stopPropagation();
         var offset = $(that).offset();
+        var top=offset.top-$(window).scrollTop();
         var index = $(that).parents('tr').data('index');
         $('.layui-nav-child').each(function (key) {
             if (key != index) {
                 $(this).hide();
             }
         })
-        if($(document).height() < offset.top+$(that).next('ul').height()){
+        if($(document).height() < top+$(that).next('ul').height()){
             $(that).next('ul').css({
                 'padding': 10,
-                'top': offset.top-$(that).next('ul').height()-30,
+                'top': - ($(that).parent('td').height() / 2 + $(that).height() + $(that).next('ul').height()/2),
                 'min-width': 'inherit',
-                'left': offset.left - $(that).width() / 2,
-                'position': 'fixed'
+                'position': 'absolute'
             }).toggle();
         }else{
             $(that).next('ul').css({
                 'padding': 10,
-                'top': offset.top + 30,
+                'top':$(that).parent('td').height() / 2 + $(that).height(),
                 'min-width': 'inherit',
-                'left': offset.left - $(that).width() / 2,
-                'position': 'fixed'
+                'position': 'absolute'
             }).toggle();
         }
     }
