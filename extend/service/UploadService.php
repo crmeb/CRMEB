@@ -159,7 +159,9 @@ class UploadService
      */
     public static function thumb($filePath, $ratio=5, $pre='s_')
     {
-        $filePath = ltrim($filePath,'/');
+        $uname=php_uname('s');
+        if(strstr($uname,'Windows')!==false) $filePath = ltrim($filePath,'\\');
+        else $filePath = ltrim($filePath,'/');
         $img = self::openImage($filePath);
         $width = $img->width() * $ratio / 10;
         $height = $img->height() * $ratio / 10;
