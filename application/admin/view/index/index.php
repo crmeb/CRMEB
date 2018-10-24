@@ -26,11 +26,7 @@
                 <li class="nav-header">
                     <div class="dropdown profile-element admin_open">
                         <span>
-                            {if condition="$site_logo"}
-                            <img alt="image" class="imgbox" src="{$site_logo}"/>
-                            {else/}
-                            <img alt="image" class="" src="{__FRAME_PATH}img/profile_small.jpg" />
-                            {/if}
+                            <img alt="image" class="imgbox" src="{$site_logo}" onerror="javascript:this.src='{__ADMIN_PATH}images/admin_logo.png';"/>
                         </span>
                         <a data-toggle="dropdown" class="dropdown-toggle" href="#">
                             <span class="clear" style="margin-top: 20px;">
@@ -286,7 +282,7 @@
                 console.log(res);
                 var info = eval("("+res+")");
                 var data = info.data;
-                $('#msgcount').html(data.msgcount + '个');
+                $('#msgcount').html(data.msgcount);
                 $('#ordernum').html(data.ordernum + '个');
                 $('#inventory').html(data.inventory + '个');
                 $('#commentnum').html(data.commentnum + '个');
