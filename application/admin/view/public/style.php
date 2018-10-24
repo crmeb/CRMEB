@@ -27,7 +27,7 @@
             'lodash':'static/plug/lodash',
             'layer':'static/plug/layer/layer',
             'layercss':'static/plug/layer/theme/default/layer',
-            'jquery':'static/plug/jquery.min',
+            'jquery':'static/plug/jquery/jquery.min',
             'moment':'static/plug/moment',
 //            'mpBuilder':'system/util/mpBuilder',
             'sweetalert':'static/plug/sweetalert2/sweetalert2.all.min'
