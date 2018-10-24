@@ -1,206 +1,194 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="renderer" content="webkit">
-    <base href="{__FRAME_PATH}">
-    <link href="css/bootstrap.min.css?v=3.4.0" rel="stylesheet">
-    <link href="css/font-awesome.min.css?v=4.3.0" rel="stylesheet">
-
-    <!-- Morris -->
-    <link href="css/plugins/morris/morris-0.4.3.min.css" rel="stylesheet">
-
-    <!-- Gritter -->
-    <link href="js/plugins/gritter/jquery.gritter.css" rel="stylesheet">
-
-    <link href="css/animate.min.css" rel="stylesheet">
-    <link href="css/style.min.css?v=3.0.0" rel="stylesheet">
-
-</head>
-
-<body class="gray-bg">
-<div class="wrapper wrapper-content">
+{extend name="public/container"}
+{block name="head_top"}
+<!-- 全局js -->
+<script src="{__PLUG_PATH}echarts/echarts.common.min.js"></script>
+<script src="{__PLUG_PATH}echarts/theme/macarons.js"></script>
+<script src="{__PLUG_PATH}echarts/theme/westeros.js"></script>
+{/block}
+{block name="content"}
     <div class="row">
-        <div class="col-lg-2">
+        <div class="col-sm-3 ui-sortable">
             <div class="ibox float-e-margins">
                 <div class="ibox-title">
-                    <span class="label label-info pull-right">订单</span>
-                    <h5>待发货订单数</h5>
+                    <span class="label label-danger pull-right">急</span>
+                    <h5>订单</h5>
                 </div>
                 <div class="ibox-content">
                     <h1 class="no-margins">{$topData.orderDeliveryNum}</h1>
+                    <small><a href="{:Url('order.store_order/index')}">待发货</a> </small>
                 </div>
             </div>
         </div>
-        <div class="col-lg-2">
+        <div class="col-sm-3 ui-sortable">
             <div class="ibox float-e-margins">
                 <div class="ibox-title">
-                    <span class="label label-info pull-right">订单</span>
-                    <h5>退换货订单数</h5>
+                    <span class="label label-info pull-right">待</span>
+                    <h5>订单</h5>
                 </div>
                 <div class="ibox-content">
                     <h1 class="no-margins">{$topData.orderRefundNum}</h1>
+                    <small><a href="{:Url('order.store_order/index')}">退换货</a></small>
                 </div>
             </div>
         </div>
-        <div class="col-lg-2">
+        <div class="col-sm-3 ui-sortable" >
             <div class="ibox float-e-margins">
                 <div class="ibox-title">
-                    <span class="label label-info pull-right">商品</span>
-                    <h5>库存预警</h5>
+                    <span class="label label-danger pull-right">急</span>
+                    <h5>商品</h5>
                 </div>
                 <div class="ibox-content">
                     <h1 class="no-margins">{$topData.stockProduct}</h1>
+                    <small><a href="{:Url('store.store_product/index',array('type'=>5))}">库存预警</a></small>
                 </div>
             </div>
         </div>
-        <div class="col-lg-2">
+        <div class="col-sm-3 ui-sortable">
             <div class="ibox float-e-margins">
                 <div class="ibox-title">
-                    <span class="label label-info pull-right">用户</span>
-                    <h5>待处理提现</h5>
+                    <span class="label label-danger pull-right">待</span>
+                    <h5>待提现</h5>
                 </div>
                 <div class="ibox-content">
                     <h1 class="no-margins">{$topData.treatedExtract}</h1>
+                    <small><a href="{:Url('finance.user_extract/index')}">待提现</a></small>
                 </div>
             </div>
         </div>
-        <div class="col-lg-2">
+        <div class="col-sm-3 ui-sortable">
             <div class="ibox float-e-margins">
                 <div class="ibox-title">
-                    <span class="label label-info pull-right">订单</span>
-                    <h5>昨日订单数</h5>
+                    <span class="label label-info pull-right">昨</span>
+                    <h5>订单</h5>
                 </div>
                 <div class="ibox-content">
-                    <h1 class="no-margins">{$topData.orderNum}</h1>
+                    <h1 class="no-margins">{$first_line.d_num.data}</h1>
+                    <div class="stat-percent font-bold text-navy">
+                        {$first_line.d_num.percent}%
+                        {if condition='$first_line.d_num.is_plus egt 0'}<i class="fa {if condition='$first_line.d_num.is_plus eq 1'}fa-level-up{else /}fa-level-down{/if}"></i>{/if}
+                    </div>
+                    <small>昨日订单数</small>
                 </div>
             </div>
         </div>
-        <div class="col-lg-2">
+        <div class="col-sm-3 ui-sortable">
             <div class="ibox float-e-margins">
                 <div class="ibox-title">
-                    <span class="label label-info pull-right">订单</span>
-                    <h5>昨日交易额</h5>
+                    <span class="label label-info pull-right">昨</span>
+                    <h5>交易</h5>
                 </div>
                 <div class="ibox-content">
-                    <h1 class="no-margins">{$topData.orderPriceNum}</h1>
+                    <h1 class="no-margins">{$first_line.d_price.data}</h1>
+                    <div class="stat-percent font-bold text-info">
+                        {$first_line.d_price.percent}%
+                        {if condition='$first_line.d_price.is_plus egt 0'}<i class="fa {if condition='$first_line.d_price.is_plus eq 1'}fa-level-up{else /}fa-level-down{/if}"></i>{/if}
+                    </div>
+                    <small>昨日交易额</small>
                 </div>
             </div>
         </div>
-<!--        <div class="col-lg-3">-->
-<!--            <div class="ibox float-e-margins">-->
-<!--                <div class="ibox-title">-->
-<!--                    <span class="label label-info pull-right">今天</span>-->
-<!--                    <h5>日收入</h5>-->
-<!--                </div>-->
-<!--                <div class="ibox-content">-->
-<!--                    <h1 class="no-margins">{$first_line.d_price.data}</h1>-->
-<!--                    <div class="stat-percent font-bold text-info">-->
-<!--                        {$first_line.d_price.percent}%-->
-<!--                        {if condition='$first_line.d_price.is_plus egt 0'}<i class="fa {if condition='$first_line.d_price.is_plus eq 1'}fa-level-up{else /}fa-level-down{/if}"></i>{/if}-->
-<!--                    </div>-->
-<!--                    <small>总收入</small>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--        </div>-->
-<!--        <div class="col-lg-3">-->
-<!--            <div class="ibox float-e-margins">-->
-<!--                <div class="ibox-title">-->
-<!--                    <span class="label label-success pull-right">月</span>-->
-<!--                    <h5>月收入</h5>-->
-<!--                </div>-->
-<!--                <div class="ibox-content">-->
-<!--                    <h1 class="no-margins">{$first_line.m_price.data}</h1>-->
-<!--                    <div class="stat-percent font-bold text-success">-->
-<!--                        {$first_line.m_price.percent}%-->
-<!--                        {if condition='$first_line.m_price.is_plus egt 0'}<i class="fa {if condition='$first_line.m_price.is_plus eq 1'}fa-level-up{else /}fa-level-down{/if}"></i>{/if}-->
-<!--                    </div>-->
-<!--                    <small>总收入</small>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--        </div>-->
-<!--        <div class="col-lg-3">-->
-<!--            <div class="ibox float-e-margins">-->
-<!--                <div class="ibox-title">-->
-<!--                    <span class="label label-primary pull-right">今天</span>-->
-<!--                    <h5>日增粉丝</h5>-->
-<!--                </div>-->
-<!--                <div class="ibox-content">-->
-<!--                    <h1 class="no-margins">{$first_line.day.data}</h1>-->
-<!--                    <div class="stat-percent font-bold text-navy">-->
-<!--                        {$first_line.day.percent}%-->
-<!--                        {if condition='$first_line.day.is_plus egt 0'}<i class="fa {if condition='$first_line.day.is_plus eq 1'}fa-level-up{else /}fa-level-down{/if}"></i>{/if}-->
-<!--                    </div>-->
-<!--                    <small>新粉丝</small>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--        </div>-->
-<!--        <div class="col-lg-3">-->
-<!--            <div class="ibox float-e-margins">-->
-<!--                <div class="ibox-title">-->
-<!--                    <span class="label label-danger pull-right">月</span>-->
-<!--                    <h5>月增粉丝</h5>-->
-<!--                </div>-->
-<!--                <div class="ibox-content">-->
-<!--                    <h1 class="no-margins">{$first_line.month.data}</h1>-->
-<!--                    <div class="stat-percent font-bold text-danger">-->
-<!--                        {$first_line.month.percent}%-->
-<!--                        {if condition='$first_line.month.is_plus egt 0'}<i class="fa {if condition='$first_line.month.is_plus eq 1'}fa-level-up{else /}fa-level-down{/if}"></i>{/if}-->
-<!--                    </div>-->
-<!--                    <small>新粉丝</small>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--        </div>-->
+        <div class="col-sm-3 ui-sortable">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <span class="label label-info pull-right">今</span>
+                    <h5>粉丝</h5>
+                </div>
+                <div class="ibox-content">
+                    <h1 class="no-margins">{$first_line.day.data}</h1>
+                    <div class="stat-percent font-bold text-info">
+                        {$first_line.day.percent}%
+                        {if condition='$first_line.day.is_plus egt 0'}<i class="fa {if condition='$first_line.day.is_plus eq 1'}fa-level-up{else /}fa-level-down{/if}"></i>{/if}
+                    </div>
+                    <small>今日新增粉丝</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-3 ui-sortable">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <span class="label label-info pull-right">月</span>
+                    <h5>粉丝</h5>
+                </div>
+                <div class="ibox-content">
+                    <h1 class="no-margins">{$first_line.month.data}</h1>
+                    <div class="stat-percent font-bold text-info">
+                        {$first_line.month.percent}%
+                        {if condition='$first_line.month.is_plus egt 0'}<i class="fa {if condition='$first_line.month.is_plus eq 1'}fa-level-up{else /}fa-level-down{/if}"></i>{/if}
+                    </div>
+                    <small>本月新增粉丝</small>
+                </div>
+            </div>
+        </div>
+
     </div>
+<div id="app">
     <div class="row">
         <div class="col-lg-12">
             <div class="ibox float-e-margins">
                 <div class="ibox-title">
                     <h5>订单</h5>
+                    <div class="pull-right">
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-xs btn-white" :class="{'active': active == 'thirtyday'}" v-on:click="getlist('thirtyday')">30天</button>
+                            <button type="button" class="btn btn-xs btn-white" :class="{'active': active == 'week'}" v-on:click="getlist('week')">周</button>
+                            <button type="button" class="btn btn-xs btn-white" :class="{'active': active == 'month'}" v-on:click="getlist('month')">月</button>
+                            <button type="button" class="btn btn-xs btn-white" :class="{'active': active == 'year'}" v-on:click="getlist('year')">年</button>
+                        </div>
+                    </div>
                 </div>
                 <div class="ibox-content">
                     <div class="row">
                         <div class="col-lg-9">
-                            <div class="flot-chart">
-                                <div class="flot-chart-content" id="flot-dashboard-chart1"></div>
-                            </div>
+                            <div class="flot-chart-content echarts" ref="order_echart" id="flot-dashboard-chart1"></div>
                         </div>
                         <div class="col-lg-3">
                             <ul class="stat-list">
                                 <li>
-                                    <h2 class="no-margins ">{$first_line.m_price.data}</h2>
-                                    <small>本月销售额</small>
-                                    <div class="stat-percent">
-                                        {$first_line.m_price.percent}%
-                                        {if condition='$first_line.m_price.is_plus egt 0'}<i class="fa text-navy {if condition='$first_line.m_price.is_plus eq 1'}fa-level-up{else /}fa-level-down{/if}"></i>{/if}
+                                    <h2 class="no-margins ">{{pre_cycleprice}}</h2>
+                                    <small>{{precyclename}}销售额</small>
+                                </li>
+                                <li>
+                                    <h2 class="no-margins ">{{cycleprice}}</h2>
+                                    <small>{{cyclename}}销售额</small>
+                                    <div class="stat-percent text-navy" v-if='cycleprice_is_plus ===1'>
+                                        {{cycleprice_percent}}%
+                                        <i  class="fa fa-level-up"></i>
+                                    </div>
+                                    <div class="stat-percent text-danger" v-else-if='cycleprice_is_plus === -1'>
+                                        {{cycleprice_percent}}%
+                                        <i class="fa fa-level-down"></i>
+                                    </div>
+                                    <div class="stat-percent" v-else>
+                                        {{cycleprice_percent}}%
                                     </div>
                                     <div class="progress progress-mini">
-                                        <div style="width: {$first_line.m_price.percent}%;" class="progress-bar"></div>
+                                        <div :style="{width:cycleprice_percent+'%'}" class="progress-bar box"></div>
                                     </div>
                                 </li>
                                 <li>
-                                    <h2 class="no-margins">{$second_line.order_info.first.data}</h2>
-                                    <small>本月订单总数</small>
-                                    <div class="stat-percent">
-                                        {$second_line.order_info.first.percent}%
-                                        {if condition='$second_line.order_info.first.is_plus egt 0'}<i class="fa text-navy {if condition='$second_line.order_info.first.is_plus eq 1'}fa-level-up{else /}fa-level-down{/if}"></i>{/if}
-                                    </div>
-                                    <div class="progress progress-mini">
-                                        <div style="width: {$second_line.order_info.first.percent}%;" class="progress-bar"></div>
-                                    </div>
+                                    <h2 class="no-margins ">{{pre_cyclecount}}</h2>
+                                    <small>{{precyclename}}订单总数</small>
                                 </li>
                                 <li>
-                                    <h2 class="no-margins ">{$second_line.order_info.second.data}</h2>
-                                    <small>上月订单总数</small>
-                                    <div class="stat-percent">
-                                        {$second_line.order_info.second.percent}%
-                                        {if condition='$second_line.order_info.second.is_plus egt 0'}<i class="fa text-navy {if condition='$second_line.order_info.second.is_plus eq 1'}fa-level-up{else /}fa-level-down{/if}"></i>{/if}
+                                    <h2 class="no-margins">{{cyclecount}}</h2>
+                                    <small>{{cyclename}}订单总数</small>
+                                    <div class="stat-percent text-navy" v-if='cyclecount_is_plus ===1'>
+                                        {{cyclecount_percent}}%
+                                        <i class="fa fa-level-up"></i>
+                                    </div>
+                                    <div class="stat-percent text-danger" v-else-if='cyclecount_is_plus === -1'>
+                                        {{cyclecount_percent}}%
+                                        <i  class="fa fa-level-down"></i>
+                                    </div>
+                                    <div class="stat-percent " v-else>
+                                        {{cyclecount_percent}}%
                                     </div>
                                     <div class="progress progress-mini">
-                                        <div style="width: {$second_line.order_info.second.percent}%;" class="progress-bar"></div>
+                                        <div :style="{width:cyclecount_percent+'%'}" class="progress-bar box"></div>
                                     </div>
                                 </li>
+
+
                             </ul>
                         </div>
                     </div>
@@ -208,17 +196,17 @@
             </div>
         </div>
     </div>
-    <div class="row">
+    <div class="row" >
         <div class="col-lg-12">
             <div class="ibox float-e-margins">
                 <div class="ibox-title">
-                    <h5>收入</h5>
+                    <h5>用户</h5>
                 </div>
                 <div class="ibox-content">
                     <div class="row">
                         <div class="col-lg-12">
                             <div class="flot-chart">
-                                <div class="flot-chart-content" id="flot-dashboard-chart2"></div>
+                                <div class="flot-chart-content" ref="user_echart" id="flot-dashboard-chart2"></div>
                             </div>
                         </div>
                     </div>
@@ -227,188 +215,230 @@
         </div>
     </div>
 </div>
-
-<!-- 全局js -->
-<script src="js/jquery-2.1.1.min.js"></script>
-<script src="js/bootstrap.min.js?v=3.4.0"></script>
-
-
-
-<!-- Flot -->
-<script src="js/plugins/flot/jquery.flot.js"></script>
-<script src="js/plugins/flot/jquery.flot.tooltip.min.js"></script>
-<script src="js/plugins/flot/jquery.flot.spline.js"></script>
-<script src="js/plugins/flot/jquery.flot.resize.js"></script>
-<script src="js/plugins/flot/jquery.flot.pie.js"></script>
-<script src="js/plugins/flot/jquery.flot.symbol.js"></script>
-
-<!-- Peity -->
-<script src="js/plugins/peity/jquery.peity.min.js"></script>
-
-
-<!-- 自定义js -->
-<script src="js/content.min.js?v=1.0.0"></script>
-
-
-<!-- jQuery UI -->
-<script src="js/plugins/jquery-ui/jquery-ui.min.js"></script>
-
-<!-- Jvectormap -->
-<script src="js/plugins/jvectormap/jquery-jvectormap-1.2.2.min.js"></script>
-<script src="js/plugins/jvectormap/jquery-jvectormap-world-mill-en.js"></script>
-
-<!-- EayPIE -->
-<script src="js/plugins/easypiechart/jquery.easypiechart.js"></script>
-
-<!-- Sparkline -->
-<script src="js/plugins/sparkline/jquery.sparkline.min.js"></script>
-
-
-
+{/block}
+{block name="script"}
+<style scoped>
+    .box{width:0px;}
+</style>
 <script>
-    $(document).ready(function(){
-        var a1=[
-            {volist name="second_line.order_count" id="vo"}
-                [c({$vo.y},{$vo.m},{$vo.d}),{$vo.count}],
-            {/volist}
-        ];
-        var a2=[
-            {
-                label:"订单数",
-                data:a1,
-                color:"#1ab394",
-                bars:{
-                    show:true,
-                    align:"center",
-                    barWidth:24*60*60*600,
-                    lineWidth:0
-                }
-            }
-        ];
-        var a3={
-            xaxis:{
-                mode:"time",
-                tickSize:[1,"day"],
-                tickLength:0,
-                axisLabel:"Date",
-                axisLabelUseCanvas:true,
-                axisLabelFontSizePixels:12,
-                axisLabelFontFamily:"Arial",
-                axisLabelPadding:10,
-                color:"#838383",
+     require(['vue','axios','layer'],function(Vue,axios,layer){
+        new Vue({
+            el:"#app",
+            data:{
+                option:{},
+                myChart:{},
+                active:'thirtyday',
+                cyclename:'最近30天',
+                precyclename:'上个30天',
+                cyclecount:0,
+                cycleprice:0,
+                cyclecount_percent:0,
+                cycleprice_percent:0,
+                cyclecount_is_plus:0,
+                cycleprice_is_plus:0,
+                pre_cyclecount:0,
+                pre_cycleprice:0
             },
-            
-            yaxes:[
-                {
-                    position:"left",
-                    max:'{$second_line.order_count_max}',
-                    color:"#838383",
-                    axisLabelUseCanvas:true,
-                    axisLabelFontSizePixels:12,
-                    axisLabelFontFamily:"Arial",
-                    axisLabelPadding:3
+            methods:{
+                info:function () {
+                    var that=this;
+                    axios.get("{:Url('userchart')}").then((res)=>{
+                        that.myChart.user_echart.setOption(that.userchartsetoption(res.data.data));
+                    });
                 },
-            ],
-            legend:{
-                noColumns:1,
-                labelBoxBorderColor:"#000000",
-                position:"nw"
-            },
-            grid:{
-                hoverable:false,
-                borderWidth:0,
-                color:"#838383"
-            }
-        };
-        $.plot($("#flot-dashboard-chart1"),a2,a3);
-
-        var b1=[
-            {volist name="third_line.price_count" id="vo"}
-                [c({$vo.y},{$vo.m},{$vo.d}),{$vo.count}],
-            {/volist}
-        ];
-        var b2=[
-            {
-                label:"总金额",
-                data:b1,
-                color:"#1ab394",
-                bars:{
-                    show:true,
-                    align:"center",
-                    barWidth:24*60*60*600,
-                    lineWidth:0
-                }
-            }
-        ];
-        var b3={
-            xaxis:{
-                mode:"time",
-                tickSize:[1,"day"],
-                tickLength:0,
-                axisLabel:"Date",
-                axisLabelUseCanvas:true,
-                axisLabelFontSizePixels:12,
-                axisLabelFontFamily:"Arial",
-                axisLabelPadding:10,
-                color:"#838383",
-            },
-            yaxes:[
-                {
-                    position:"left",
-                    max:{$third_line.order_count_max},
-                    color:"#838383",
-                    axisLabelUseCanvas:true,
-                    axisLabelFontSizePixels:12,
-                    axisLabelFontFamily:"Arial",
-                    axisLabelPadding:3
+                getlist:function (e) {
+                    var that=this;
+                    var cycle = e!=null ? e :'thirtyday';
+                    axios.get("{:Url('orderchart')}?cycle="+cycle).then((res)=>{
+                            that.myChart.order_echart.clear();
+                            that.myChart.order_echart.setOption(that.orderchartsetoption(res.data.data));
+                            that.active = cycle;
+                            switch (cycle){
+                                case 'thirtyday':
+                                    that.cyclename = '最近30天';
+                                    that.precyclename = '上个30天';
+                                    break;
+                                case 'week':
+                                    that.precyclename = '上周';
+                                    that.cyclename = '本周';
+                                    break;
+                                case 'month':
+                                    that.precyclename = '上月';
+                                    that.cyclename = '本月';
+                                    break;
+                                case 'year':
+                                    that.cyclename = '去年';
+                                    that.precyclename = '今年';
+                                    break;
+                                default:
+                                    break;
+                            }
+                            that.cyclecount = res.data.data.cycle.count.data;
+                            that.cyclecount_percent = res.data.data.cycle.count.percent;
+                            that.cyclecount_is_plus = res.data.data.cycle.count.is_plus;
+                            that.cycleprice = res.data.data.cycle.price.data;
+                            that.cycleprice_percent = res.data.data.cycle.price.percent;
+                            that.cycleprice_is_plus = res.data.data.cycle.price.is_plus;
+                            that.pre_cyclecount = res.data.data.pre_cycle.count.data;
+                            that.pre_cycleprice = res.data.data.pre_cycle.price.data;
+                    });
                 },
-            ],
-            legend:{
-                noColumns:1,
-                labelBoxBorderColor:"#000000",
-                position:"nw"
-            },
-            grid:{
-                hoverable:false,
-                borderWidth:0,
-                color:"#838383"
-            }
-        };
-        $.plot($("#flot-dashboard-chart2"),b2,b3);
+                orderchartsetoption:function(data){
+
+                        this.option = {
+                            tooltip: {
+                                trigger: 'axis',
+                                axisPointer: {
+                                    type: 'cross',
+                                    crossStyle: {
+                                        color: '#999'
+                                    }
+                                }
+                            },
+                            toolbox: {
+                                feature: {
+                                    dataView: {show: true, readOnly: false},
+                                    magicType: {show: true, type: ['line', 'bar']},
+                                    restore: {show: false},
+                                    saveAsImage: {show: true}
+                                }
+                            },
+                            legend: {
+                                data:data.legend
+                            },
+                            grid: {
+                                x: 70,
+                                x2: 50,
+                                y: 60,
+                                y2: 50
+                            },
+                            xAxis: [
+                                {
+                                    type: 'category',
+                                    data: data.xAxis,
+                                    axisPointer: {
+                                        type: 'shadow'
+                                    },
+                                    axisLabel:{
+                                        interval: 0,
+                                        rotate:40
+                                    }
 
 
+                                }
+                            ],
+                            yAxis:[{type : 'value'}],
+//                            yAxis: [
+//                                {
+//                                    type: 'value',
+//                                    name: '',
+//                                    min: 0,
+//                                    max: data.yAxis.maxprice,
+////                                    interval: 0,
+//                                    axisLabel: {
+//                                        formatter: '{value} 元'
+//                                    }
+//                                },
+//                                {
+//                                    type: 'value',
+//                                    name: '',
+//                                    min: 0,
+//                                    max: data.yAxis.maxnum,
+//                                    interval: 5,
+//                                    axisLabel: {
+//                                        formatter: '{value} 个'
+//                                    }
+//                                }
+//                            ],
+                            series: data.series
+                        };
+                    return  this.option;
+                },
+                userchartsetoption:function(data){
+                    this.option = {
+                        tooltip: {
+                            trigger: 'axis',
+                            axisPointer: {
+                                type: 'cross',
+                                crossStyle: {
+                                    color: '#999'
+                                }
+                            }
+                        },
+                        toolbox: {
+                            feature: {
+                                dataView: {show: false, readOnly: false},
+                                magicType: {show: true, type: ['line', 'bar']},
+                                restore: {show: false},
+                                saveAsImage: {show: false}
+                            }
+                        },
+                        legend: {
+                            data:data.legend
+                        },
+                        grid: {
+                            x: 70,
+                            x2: 50,
+                            y: 60,
+                            y2: 50
+                        },
+                        xAxis: [
+                            {
+                                type: 'category',
+                                data: data.xAxis,
+                                axisPointer: {
+                                    type: 'shadow'
+                                }
+                            }
+                        ],
+                        yAxis: [
+                            {
+                                type: 'value',
+                                name: '人数',
+                                min: 0,
+                                max: data.yAxis.maxnum,
+                                interval: 5,
+                                axisLabel: {
+                                    formatter: '{value} 人'
+                                }
+                            }
+                        ],
+//                        series: data.series
+                        series : [ {
+                            name : '人数',
+                            type : 'bar',
+                            barWidth : '50%',
+                            itemStyle: {
+                                normal: {
+                                    label: {
+                                        show: true, //开启显示
+                                        position: 'top', //在上方显示
+                                        textStyle: { //数值样式
+                                            color: '#666',
+                                            fontSize: 12
+                                        }
+                                    }
+                                }
+                            },
+                            data : data.series
+                        } ]
 
-        $(".chart").easyPieChart({
-            barColor:"#f8ac59",scaleLength:5,lineWidth:4,size:80
-        });
-        $(".chart2").easyPieChart({
-            barColor:"#1c84c6",scaleLength:5,lineWidth:4,size:80
-        });
-        function c(j,k,i){
-            return new Date(j,k-1,i).getTime()
-        }
-        var b=null,d=null;
-
-        var f={"US":298,"SA":200,"DE":220,"FR":540,"CN":120,"AU":760,"BR":550,"IN":200,"GB":120,};
-        $("#world-map").vectorMap({
-            map:"world_mill_en",
-            backgroundColor:"transparent",
-            regionStyle:{
-                initial:{
-                    fill:"#e4e4e4","fill-opacity":0.9,stroke:"none","stroke-width":0,"stroke-opacity":0
+                    };
+                    return  this.option;
+                },
+                setChart:function(name,myChartname){
+                    this.myChart[myChartname] = echarts.init(name,'macarons');//初始化echart
                 }
             },
-            series:{
-                regions:[
-                    {
-                        values:f,
-                        scale:["#1ab394","#22d6b1"],
-                        normalizeFunction:"polynomial"
-                    }
-                ]
+            mounted:function () {
+                const self = this;
+                this.setChart(self.$refs.order_echart,'order_echart');//订单图表
+                this.setChart(self.$refs.user_echart,'user_echart');//用户图表
+                this.info();
+                this.getlist();
+
             }
-        })
+        });
     });
 </script>
-</body>
-</html>
+{/block}
