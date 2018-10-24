@@ -249,7 +249,7 @@ class FileService
      * @param string $file
      * @return boolean
      */
-    public function read_file($file)
+    public static function read_file($file)
     {
         return @file_get_contents($file);
     }
@@ -270,7 +270,7 @@ class FileService
      * @param int $dec 显示类型
      * @return int
      */
-    public function byte_format($size,$dec=2)
+    public static function byte_format($size,$dec=2)
     {
         $a = array("B", "KB", "MB", "GB", "TB", "PB","EB","ZB","YB");
         $pos = 0;
@@ -333,9 +333,9 @@ class FileService
      * @param string $file_name 文件路径
      * @return string
      */
-    public function get_ext($file)
+    public static function get_ext($file)
     {
-        $file = $this->dir_replace($file);
+        $file = self::dir_replace($file);
         //return strtolower(substr(strrchr(basename($file), '.'),1));
         //return end(explode(".",$filename ));
         //return strtolower(trim(array_pop(explode('.', $file))));//取得后缀
@@ -458,7 +458,7 @@ class FileService
      * @param string $path 路径
      * @return string
      */
-    public function dir_replace($path)
+    public static function dir_replace($path)
     {
         return str_replace('//','/',str_replace('\\','/',$path));
     }
@@ -468,9 +468,9 @@ class FileService
      * @param string $path 指定路径下的文件
      * @return string $rstr
      */
-    public function get_templtes($path)
+    public static function get_templtes($path)
     {
-        $path = $this->dir_replace($path);
+        $path = self::dir_replace($path);
         if(file_exists($path))
         {
             $fp = fopen($path,'r');
@@ -728,7 +728,7 @@ class FileService
      * @param string $file
      * @return ArrayObject
      */
-    public function list_info($file)
+    public static function list_info($file)
     {
         $dir = array();
         $dir['filename']   = basename($file);//返回路径中的文件名部分。
@@ -741,7 +741,7 @@ class FileService
         $dir['atime']      = fileatime($file);//返回文件的上次访问时间。
         $dir['ctime']      = filectime($file);//返回文件的上次改变时间。
         $dir['perms']      = fileperms($file);//返回文件的权限。
-        $dir['size']       = filesize($file);//返回文件大小。
+        $dir['size']       = self::byte_format(filesize($file),2);//返回文件大小。
         $dir['type']       = filetype($file);//返回文件类型。
         $dir['ext']        = is_file($file) ? pathinfo($file,PATHINFO_EXTENSION) : '';//返回文件后缀名
         $dir['mtime']      = filemtime($file);//返回文件的上次修改时间。
