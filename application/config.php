@@ -144,13 +144,13 @@ return [
 
     // 视图输出字符串内容替换
     'view_replace_str'       => [
-        '{__ADMIN_PATH}'=>PUBILC_PATH.'/system/',
-        '{__FRAME_PATH}'=>PUBILC_PATH.'/system/frame/',
-        '{__PLUG_PATH}'=>PUBILC_PATH.'/static/plug/',
-        '{__MODULE_PATH}'=>PUBILC_PATH.'/system/module/',
-        '{__STATIC_PATH}'=>PUBILC_PATH.'/static/',
-        '{__PUBLIC_PATH}'=>PUBILC_PATH,
-        '{__WAP_PATH}'=>PUBILC_PATH.'/wap/first/'
+        '{__PUBLIC_PATH}' =>  PUBILC_PATH,                 //public 目录
+        '{__STATIC_PATH}' =>  PUBILC_PATH.'static/',       //全局静态目录
+        '{__PLUG_PATH}'   =>  PUBILC_PATH.'static/plug/',  //全局静态插件
+        '{__ADMIN_PATH}'  =>  PUBILC_PATH.'system/',       //后台目录
+        '{__FRAME_PATH}'  =>  PUBILC_PATH.'system/frame/', //后台框架
+        '{__MODULE_PATH}' =>  PUBILC_PATH.'system/module/',//后台模块
+        '{__WAP_PATH}'    =>  PUBILC_PATH.'wap/first/'     //wap静态文件目录 模版1
     ],
     // 默认跳转页面对应的模板文件
     'dispatch_success_tmpl'  => THINK_PATH . 'tpl' . DS . 'dispatch_jump.tpl',
