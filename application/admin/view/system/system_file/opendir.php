@@ -20,14 +20,14 @@
                         <tbody class="">
                         <tr>
                             <td class="text-left" colspan="3">
-                                <span> <i class="fa fa-folder-o"></i> <a href="{:Url('openDir')}?dir={$dir}&superior=1">返回上级</a></span>
+                                <span> <i class="fa fa-folder-o"></i> <a href="{:Url('opendir')}?dir={$dir}&superior=1">返回上级</a></span>
                             </td>
                             <td class="text-center"></td>
                         </tr>
                         {volist name="fileAll['dir']" id="vo"}
                         <tr>
                             <td class="text-left">
-                                <span> <i class="fa fa-folder-o"></i> <a href="{:Url('openDir')}?dir={$dir}&filedir={$vo.filename}">{$vo.filename}</a></span>
+                                <span> <i class="fa fa-folder-o"></i> <a href="{:Url('opendir')}?dir={$dir}&filedir={$vo.filename}">{$vo.filename}</a></span>
                             </td>
                             <td class="text-left">
                                 <span> {$vo.size}</span>
@@ -37,7 +37,7 @@
                             </td>
 
                             <td class="text-center">
-                                <a class="btn btn-info btn-xs" href="{:Url('openDir')}?dir={$dir}&filedir={$vo.filename}"><i class="fa fa-paste"></i> 打开</a>
+                                <a class="btn btn-info btn-xs" href="{:Url('opendir')}?dir={$dir}&filedir={$vo.filename}"><i class="fa fa-paste"></i> 打开</a>
 
                             </td>
                         </tr>
@@ -45,7 +45,7 @@
                         {volist name="fileAll['file']" id="vo"}
                         <tr>
                             <td class="text-left">
-                                <span onclick="$eb.createModalFrame('{$vo.filename}','{:Url('openFile')}?file={$dir}/{$vo.filename}',{w:1260,h:600})"> <i class="fa fa-file-text-o"></i> {$vo.filename}</span>
+                                <span onclick="$eb.createModalFrame('{$vo.filename}','{:Url('openfile')}?file={$dir}/{$vo.filename}',{w:1260,h:600})"> <i class="fa fa-file-text-o"></i> {$vo.filename}</span>
                             </td>
                             <td class="text-left">
                                 <span> {$vo.size}</span>
@@ -55,10 +55,10 @@
                             </td>
 
                             <td class="text-center">
-                                <button class="btn btn-info btn-xs" type="button"  onclick="$eb.createModalFrame('{$vo.filename}','{:Url('openFile')}?file={$dir}/{$vo.filename}',{w:1260,h:660})"><i class="fa fa-paste"></i> 编辑</button>
-<!--                                <button class="btn btn-info btn-xs" type="button"  onclick="$eb.createModalFrame('{$vo.filename}','{:Url('openFile')}?file={$vo.filename}&dir={$dir}',{w:1260,h:600})"><i class="fa fa-paste"></i> 重命名</button>-->
-<!--                                <button class="btn btn-info btn-xs" type="button"  onclick="$eb.createModalFrame('{$vo.filename}','{:Url('openFile')}?file={$vo.filename}&dir={$dir}',{w:1260,h:600})"><i class="fa fa-paste"></i> 删除</button>-->
-<!--                                <button class="btn btn-info btn-xs" type="button"  onclick="$eb.createModalFrame('{$vo.filename}','{:Url('openFile')}?file={$vo.filename}&dir={$dir}',{w:1260,h:600})"><i class="fa fa-paste"></i> 下载</button>-->
+                                <button class="btn btn-info btn-xs" type="button"  onclick="$eb.createModalFrame('{$vo.filename}','{:Url('openfile')}?file={$dir}/{$vo.filename}',{w:1260,h:660})"><i class="fa fa-paste"></i> 编辑</button>
+<!--                                <button class="btn btn-info btn-xs" type="button"  onclick="$eb.createModalFrame('{$vo.filename}','{:Url('openfile')}?file={$vo.filename}&dir={$dir}',{w:1260,h:600})"><i class="fa fa-paste"></i> 重命名</button>-->
+<!--                                <button class="btn btn-info btn-xs" type="button"  onclick="$eb.createModalFrame('{$vo.filename}','{:Url('openfile')}?file={$vo.filename}&dir={$dir}',{w:1260,h:600})"><i class="fa fa-paste"></i> 删除</button>-->
+<!--                                <button class="btn btn-info btn-xs" type="button"  onclick="$eb.createModalFrame('{$vo.filename}','{:Url('openfile')}?file={$vo.filename}&dir={$dir}',{w:1260,h:600})"><i class="fa fa-paste"></i> 下载</button>-->
 
                             </td>
                         </tr>

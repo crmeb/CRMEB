@@ -17,7 +17,7 @@ use service\JsonService as Json;
 class SystemFile extends AuthController
 {
     //打开目录
-    public function openDir($filedir=''){
+    public function opendir($filedir=''){
         $fileAll = array('dir'=>[],'file'=>[]);
         if(Request::instance()->param('superior') && !empty(Request::instance()->param('dir'))){
             $path = '.'.DS.Request::instance()->param('dir');
@@ -43,7 +43,7 @@ class SystemFile extends AuthController
         return $this->fetch();
     }
     //读取文件
-    public function openFile($file='')
+    public function openfile($file='')
     {
         $file = $this->request->param('file');
         if(empty($file))return Json::fail('出现错误');
