@@ -1,5 +1,5 @@
 <!--<script type="text/javascript" src="/static/plug/basket.js"></script>-->
-<script type="text/javascript" src="{__PLUG_PATH}/plug/requirejs/require.js"></script>
+<script type="text/javascript" src="{__PLUG_PATH}requirejs/require.js"></script>
 <?php /*  <script type="text/javascript" src="/static/plug/requirejs/require-basket-load.js"></script>  */ ?>
 <script>
     requirejs.config({
