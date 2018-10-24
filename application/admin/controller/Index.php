@@ -537,7 +537,6 @@ class Index extends AuthController
      */
     public function userchart(){
         header('Content-type:text/json');
-
         $starday = date('Y-m-d',strtotime('-30 day'));
         $yesterday = date('Y-m-d');
 
@@ -550,6 +549,7 @@ class Index extends AuthController
         $data = [];
         $chartdata['legend'] = ['用户数'];//分类
         $chartdata['yAxis']['maxnum'] = 0;//最大值数量
+        if(empty($user_list)) return Json::fail('没有数据');
         foreach ($user_list as $k=>$v){
             $data['day'][] = $v['day'];
             $data['count'][] = $v['count'];
@@ -558,7 +558,6 @@ class Index extends AuthController
         }
         $chartdata['xAxis'] = $data['day'];//X轴值
         $chartdata['series'] = $data['count'];//分类1值
-
         return Json::succ('ok',$chartdata);
     }
 
