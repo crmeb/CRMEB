@@ -1,5 +1,5 @@
 <!--<script type="text/javascript" src="/static/plug/basket.js"></script>-->
-<script type="text/javascript" src="{__ADMIN_PATH}/plug/requirejs/require.js"></script>
+<script type="text/javascript" src="{__PLUG_PATH}/plug/requirejs/require.js"></script>
 <?php /*  <script type="text/javascript" src="/static/plug/requirejs/require-basket-load.js"></script>  */ ?>
 <script>
     requirejs.config({
@@ -27,7 +27,7 @@
             'lodash':'static/plug/lodash',
             'layer':'static/plug/layer/layer',
             'layercss':'static/plug/layer/theme/default/layer',
-            'jquery':'static/plug/jquery-1.10.2.min',
+            'jquery':'static/plug/jquery.min',
             'moment':'static/plug/moment',
 //            'mpBuilder':'system/util/mpBuilder',
             'sweetalert':'static/plug/sweetalert2/sweetalert2.all.min'
