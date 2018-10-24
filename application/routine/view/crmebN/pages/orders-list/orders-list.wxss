@@ -28,3 +28,4 @@
 .state-ytk{color:#333!important;}
 .youfei{font-size:22rpx;}
 .kuang{border:1rpx solid #999!important;background-color:#fff!important;color:#999!important;}
+@import "/pages/home/home.wxss"; 

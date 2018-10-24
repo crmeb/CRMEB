@@ -11,7 +11,6 @@ Page({
   onLoad: function (options) {
     app.setBarColor();
     app.setUserInfo();
-    console.log(options);
     if (options.cartId) {
       this.setData({
         cartId: options.cartId,
@@ -20,6 +19,60 @@ Page({
       })
     }
     this.getAddress();
+  },
+  getWxAddress:function(){
+    var that = this;
+     wx.authorize({
+       scope: 'scope.address',
+       success: function(res) {
+         wx.chooseAddress({
+           success: function(res) {
+             console.log(res);
+             var addressP = {};
+             addressP.province = res.provinceName;
+             addressP.city = res.cityName;
+             addressP.district = res.countyName;
+             wx.request({
+               url: app.globalData.url + '/routine/auth_api/edit_user_address?uid=' + app.globalData.uid,
+               method: 'POST',
+               data: {
+                 address: addressP,
+                 is_default: 0,
+                 real_name: res.userName,
+                 post_code: res.postalCode,
+                 phone: res.telNumber,
+                 detail: res.detailInfo,
+                 id: 0
+               },
+               success: function (res) {
+                 if (res.data.code == 200) {
+                   wx.showToast({
+                     title: '添加成功',
+                     icon: 'success',
+                     duration: 1000
+                   })
+                   that.getAddress();
+                 }
+               }
+             })
+           },
+           fail: function(res) {
+             if (res.errMsg == 'chooseAddress:cancel'){
+               wx.showToast({
+                 title: '取消选择',
+                 icon: 'none',
+                 duration: 1500
+               })
+             }
+           },
+           complete: function(res) {},
+         })
+       },
+       fail: function(res) {
+         console.log(res);
+       },
+       complete: function(res) {},
+     })
   },
   getAddress: function () {
     var that = this;

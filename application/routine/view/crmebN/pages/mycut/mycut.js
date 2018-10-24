@@ -16,11 +16,16 @@ Page({
     countDownSecond:"00"
   },
 
+  setTouchMove: function (e) {
+    var that = this;
+    wxh.home(that, e);
+  },
   /**
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
     app.setBarColor();
+    app.setUserInfo();
     var that = this;
     var timeStamp = "1912245455"
     wxh.time2(timeStamp, that);

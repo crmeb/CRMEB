@@ -12,7 +12,10 @@
         <textarea placeholder='宝贝满足你的期待么？说说你的想法，分享给想买的他们吧~' placeholder-class='placeholder' name = 'comment'></textarea>
         <view class='imgul'>
             <block wx:for="{{dataimg}}">
-               <view class='imgpic'><image src='{{url}}{{item.data.url}}' class='dataimg'></image><icon class='iconfont icon-guanbi guanbi'></icon></view>
+               <view class='imgpic'>
+               <image src='{{item.data.url}}' class='dataimg'></image>
+               <icon class='iconfont icon-guanbi guanbi' data-id='{{index}}' bindtap='delImages'></icon>
+               </view>
             </block>
             <view class='upimg' bindtap='uploadpic' hidden='{{hidden}}'></view>
         </view>

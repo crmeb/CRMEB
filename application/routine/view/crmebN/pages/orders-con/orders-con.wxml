@@ -116,8 +116,6 @@
    <view wx:if="{{ordercon._status._type==1 && ordercon.combination_id}}" class='pay-btn' bindtap='goJoinPink' data-uni='{{ordercon.pink_id}}'>查看拼团</view> 
    <navigator wx:if="{{ordercon._status._type==2 && ordercon.delivery_type == 'express'}}" hover-class="none" url='/pages/logistics/logistics?orderId={{ordercon.order_id}}'><view class='delete-btn' >查看物流</view></navigator>
    <view wx:if="{{ordercon._status._type==2}}" class='pay-btn' bindtap='confirmOrder' data-uni='{{ordercon.order_id}}'>确认收货</view> 
-   <view wx:if="{{ordercon._status._type==4}}" class='delete-btn' bindtap='delOrder' data-uni='{{ordercon.order_id}}'>删除订单</view>
-   <!-- <navigator  wx:if="{{ordercon._status._type==3}}" hover-class="none" url='/pages/product-con/index'><view class='delete-btn'>再次购买</view></navigator> -->
-   <!-- <navigator wx:if="{{ordercon._status._type==3}}" hover-class="none" url='/pages/comment-con/comment-con?order_id={{ordercon.order_id}}'><view class='pay-btn'>立即评价</view></navigator>  -->
+   <view wx:if="{{ordercon._status._type==4 || ordercon._status._type==0}}" class='delete-btn' bindtap='delOrder' data-uni='{{ordercon.order_id}}'>删除订单</view>
    <navigator  wx:if="{{!ordercon.seckill_id && !ordercon.bargain_id && !ordercon.combination_id && (ordercon._status._type==3||ordercon._status._type==4)}}" hover-class="none" bindtap='goIndex'><view class='pay-btn'>再次购买</view></navigator> 
 </view>

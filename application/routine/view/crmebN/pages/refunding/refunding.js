@@ -16,6 +16,7 @@ Page({
    */
   onLoad: function (options) {
     app.setBarColor();
+    app.setUserInfo();
     if (options.id){
         this.setData({
           orderId: options.id

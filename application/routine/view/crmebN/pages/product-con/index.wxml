@@ -15,13 +15,21 @@
     </view>
     <action-sheet hidden="{{actionSheetHidden}}" bindchange="listenerActionSheet" >
       <action-sheet-item >
-          <button open-type="share" class='contact'>发送给朋友</button>
+          <button open-type="share" class='contact' >
+            <view class='iconn'></view>
+            发送给朋友
+          </button>
+          <button class='contact' bindtap='goPoster' >
+            <view class='iconn iconn1'></view>
+            生成海报
+          </button>
+          <!-- <view bindtap='goPoster' class='action-sheet'>
+            <view class='iconn iconn1'></view>
+            生成海报
+          </view> -->
       </action-sheet-item>
-      <!-- <action-sheet-item bindtap='goPhoto' class='action-sheet'>
-      生成海报
-      </action-sheet-item> -->
       <!--自动隐藏action-sheet-->
-      <action-sheet-cancel>取消</action-sheet-cancel>
+      <!-- <action-sheet-cancel>取消</action-sheet-cancel> -->
   </action-sheet>
     <view class='price-wrapper flex'>
       <view class='price'><text>￥</text>{{storeInfo.price}}</view>
@@ -38,10 +46,10 @@
       <view>销量:{{storeInfo.sales}}{{storeInfo.unit_name}}</view>
     </view>
   </view>
-  <!-- <view class='block-bar' bindtap='goCoupon'>
+  <view class='block-bar' bindtap='goCoupon'>
     <text class='title'>领券</text>
     <text>领取优惠券 </text>
-  </view> -->
+  </view>
   <!-- <view class='block-bar integral' wx:if="{{storeInfo.give_integral > 0}}">
     <text class='title'>积分</text>
     <text>购买可获得{{storeInfo.give_integral}}积分</text>
@@ -108,12 +116,6 @@
     <view class='payment-btn' bindtap='goOrder'>确认下单</view>
   </view>
 </view>
-<movable-area class='index-con' >
-  <movable-view class='index-area' direction="all">
-      <navigator url='/pages/index/index' hover-class='none' open-type = "switchTab" >
-      <image src='/images/home.png'></image>
-      </navigator>
-  </movable-view>
-</movable-area>
+<include src="/pages/home/home.wxml"/>
 <include src="/pages/foo-tan/foo-tan.wxml"/>  
 <import src="/wxParse/wxParse.wxml"/>

@@ -12,7 +12,6 @@ Page({
    
   },
   headertaps:function(e){
-    // console.log(e);
       this.setData({
         _active: e.target.dataset.idx
       });

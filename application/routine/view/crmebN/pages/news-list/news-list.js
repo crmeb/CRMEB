@@ -20,6 +20,7 @@ Page({
    */
   onLoad: function (options) {
     app.setBarColor();
+    app.setUserInfo();
     this.getNoticeList();
   },
   getNoticeList:function(){

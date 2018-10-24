@@ -14,3 +14,4 @@
 .bottom-flag{font-size:26rpx;color:#FFA200;}
 .bottom-but{width:140rpx;height:58rpx;text-align:center;line-height:58rpx;border-radius:100rpx;background-color:#FF3D3D;color:#fff;font-size:24rpx;box-shadow:-1rpx 0rpx 5rpx #FF3D3D;}
 .bottom-on{color:#999999!important;}
+@import "/pages/home/home.wxss"; 

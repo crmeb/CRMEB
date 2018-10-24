@@ -24,14 +24,15 @@ class UserRecharge extends ModelBasic
 
     public static function addRecharge($uid,$price,$recharge_type = 'weixin',$paid = 0)
     {
-        $order_id = self::getNewOrderId();
+        $order_id = self::getNewOrderId($uid);
         return self::set(compact('order_id','uid','price','recharge_type','paid'));
     }
 
-    public static function getNewOrderId()
+    public static function getNewOrderId($uid = 0)
     {
+        if(!$uid) return false;
         $count = (int) self::where('add_time',['>=',strtotime(date("Y-m-d"))],['<',strtotime(date("Y-m-d",strtotime('+1 day')))])->count();
-        return 'wx1'.date('YmdHis',time()).(10000+$count+1);
+        return 'wx1'.date('YmdHis',time()).(10000+$count+$uid);
     }
 
     public static function jsPay($orderInfo)

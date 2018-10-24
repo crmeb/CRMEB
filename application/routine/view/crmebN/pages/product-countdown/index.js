@@ -30,6 +30,7 @@ Page({
    */
   onLoad: function (options) {
     app.setBarColor();
+    app.setUserInfo();
     if (options.id){
       this.setData({
         seckillId: options.id

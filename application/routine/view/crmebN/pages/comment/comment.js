@@ -19,7 +19,8 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
-    app.setBarColor();
+    app.setBarColor(); 
+    app.setUserInfo();
     var productId = options.productId;
     this.setData({
       productId: productId

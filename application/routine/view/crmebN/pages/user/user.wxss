@@ -15,9 +15,9 @@ min-width:26rpx;height:26rpx;text-align:center;line-height:26rpx;}
 .title-bar{padding:0 28rpx; height: 88rpx; align-items:  center; justify-content: space-between; border-bottom: 1px solid #f7f7f7; }
 .title-bar navigator{font-size: 24rpx; color:#999;}
 .list-wrapper{ flex-wrap: wrap;  align-items: center;}
-.list-wrapper .item{width: 25%; text-align: center; margin-top:30rpx;position: relative}
+.list-wrapper .item{width: 25%; text-align: center;margin:20rpx 0;position: relative}
 .list-wrapper .item .iconfont{font-size: 45rpx;}
-.list-wrapper .item .text{font-size: 24rpx; color:#555;}
+.list-wrapper .item .text{font-size: 24rpx; color:#555;margin-top:10rpx;}
 
 .orders image{width: 42rpx; height: 45rpx;}
 .orders .list-wrapper{height: 142rpx;}
@@ -37,3 +37,4 @@ min-width:26rpx;height:26rpx;text-align:center;line-height:26rpx;}
 .contact-but{background-color:#ffffff;line-height:normal!important;}
 .contact-but::after{border:none;} 
 .item-span{min-width:26rpx;height:26rpx;border-radius:50rpx;background-color:#ff3d3d;color: #fff;display:block;font-size:20rpx;text-align:center;line-height:26rpx;position:absolute;right:46rpx;top:0;} 
+@import "/pages/home/home.wxss"; 

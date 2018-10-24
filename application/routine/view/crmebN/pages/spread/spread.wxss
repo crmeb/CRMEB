@@ -32,5 +32,6 @@ page{background-color:#fff;}
 .tan-icon{position:absolute;top:-218rpx;right:-153rpx;font-size:30rpx!important;width:60rpx;height:60rpx;text-align:center;line-height:60rpx;background-color:#E0E0E0;color:#A0A0A0;border-radius:50%;}
 .text-infos{display: flex;align-items: center; margin-left:20rpx;}
 .icon-erweima1{position: relative;top:5rpx;margin-right:10rpx;}
+@import "/pages/home/home.wxss"; 
 
 

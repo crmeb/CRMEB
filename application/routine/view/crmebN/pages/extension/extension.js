@@ -8,6 +8,7 @@ Page({
   },
   onLoad: function (options) {
     app.setBarColor();
+    app.setUserInfo();
     var header = {
       'content-type': 'application/x-www-form-urlencoded',
     };

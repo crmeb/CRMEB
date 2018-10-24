@@ -58,7 +58,6 @@ Page({
       method: 'POST',
       header: header,
       success: function (res) {
-        console.log(res.data.data.banner);
         that.setData({
           imgUrls: res.data.data.banner,
           recommendLsit: res.data.data.best,

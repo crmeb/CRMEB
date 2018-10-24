@@ -1,71 +1,63 @@
-// pages/load/load.js
 var app = getApp();
 Page({
-
-  /**
-   * 页面的初始数据
-   */
   data: {
-  
+    logo: '',
+    name: '',
+    spid: 0,
+    url: app.globalData.url,
   },
-
-  /**
-   * 生命周期函数--监听页面加载
-   */
   onLoad: function (options) {
-    if (options.scene) {
-      app.globalData.spid = options.scene;
-    }
+    var that = this;
+    that.getEnterLogo();
     app.setBarColor();
-    app.getUserInfo();
+    if (options.scene) that.data.spid = options.scene;
   },
-
-  /**
-   * 生命周期函数--监听页面初次渲染完成
-   */
-  onReady: function () {
-  
+  getEnterLogo: function () {
+    var that = this;
+    wx.request({
+      url: app.globalData.url + '/routine/login/get_enter_logo',
+      method: 'post',
+      dataType  : 'json',
+      success: function (res) {
+        that.setData({
+          logo: res.data.data.site_logo,
+          name: res.data.data.site_name
+        })
+      }
+    })
   },
-
-  /**
-   * 生命周期函数--监听页面显示
-   */
-  onShow: function () {
-  
+  //获取用户信息并且授权
+  getUserInfo: function(e){
+    var userInfo = e.detail.userInfo;
+    userInfo.spid = this.data.spid;
+    wx.login({
+      success: function (res) {
+        if (res.code) {
+          userInfo.code = res.code;
+          wx.request({
+            url: app.globalData.url + '/routine/login/index',
+            method: 'post',
+            dataType  : 'json',
+            data: {
+              info: userInfo
+            },
+            success: function (res) {
+              app.globalData.uid = res.data.data.uid;
+              if (app.globalData.openPages != '' && app.globalData.openPages != undefined) {//跳转到指定页面
+                wx.navigateTo({
+                  url: app.globalData.openPages
+                })
+              } else {//跳转到首页
+                wx.reLaunch({
+                  url: '/pages/index/index'
+                })
+              }
+            }
+          })
+        } else {
+          console.log('登录失败！' + res.errMsg)
+        }
+      }
+    })
   },
-
-  /**
-   * 生命周期函数--监听页面隐藏
-   */
-  onHide: function () {
-  
-  },
-
-  /**
-   * 生命周期函数--监听页面卸载
-   */
-  onUnload: function () {
-  
-  },
-
-  /**
-   * 页面相关事件处理函数--监听用户下拉动作
-   */
-  onPullDownRefresh: function () {
-  
-  },
-
-  /**
-   * 页面上拉触底事件的处理函数
-   */
-  onReachBottom: function () {
-  
-  },
-
-  /**
-   * 用户点击右上角分享
-   */
-  onShareAppMessage: function () {
-  
-  }
 })

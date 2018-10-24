@@ -876,9 +876,7 @@ class AuthApi extends AuthController{
             ['refund_reason_wap_img',''],
             ['refund_reason_wap_explain',''],
         ],$request);
-        if($data['refund_reason_wap_img']){
-            $data['refund_reason_wap_img'] = explode(',',$data['refund_reason_wap_img']);
-        }
+        if($data['refund_reason_wap_img']) $data['refund_reason_wap_img'] = explode(',',$data['refund_reason_wap_img']);
         if(!$uni || $data['text'] == '') return JsonService::fail('参数错误!');
         $res = StoreOrder::orderApplyRefund($uni,$this->userInfo['uid'],$data['text'],$data['refund_reason_wap_explain'],$data['refund_reason_wap_img']);
         if($res)
@@ -1437,7 +1435,11 @@ class AuthApi extends AuthController{
         $path = 'public/uploads/routine/'.$this->userInfo['uid'].'.jpg';
         $domain=SystemConfigService::get('site_url').'/';
         if(file_exists($path)) return JsonService::successful($domain.$path);
-        else file_put_contents($path,RoutineCode::getCode($this->userInfo['uid']));
+        else{
+            $dir = iconv("UTF-8", "GBK", "public/uploads/routine");
+            mkdir ($dir,0775,true);
+            file_put_contents($path,RoutineCode::getCode($this->userInfo['uid']));
+        }
         return JsonService::successful($domain.$path);
     }
 
@@ -1890,14 +1892,14 @@ class AuthApi extends AuthController{
      * @param string $path
      * @param int $width
      */
-    public function get_pages($path = '',$productId = 0,$width = 430){
-        if($path == '' || !$productId) return JsonService::fail('参数错误'); header('content-type:image/jpg');
-        if(!$this->userInfo['uid']) return JsonService::fail('授权失败，请重新授权');
-        $path = 'public/uploads/routinepage/'.$productId.'.jpg';
-        if(file_exists($path)) return JsonService::successful($path);
-        else file_put_contents($path,RoutineCode::getCode($this->userInfo['uid']));
-        return JsonService::successful($path);
-    }
+//    public function get_pages($path = '',$productId = 0,$width = 430){
+//        if($path == '' || !$productId) return JsonService::fail('参数错误'); header('content-type:image/jpg');
+//        if(!$this->userInfo['uid']) return JsonService::fail('授权失败，请重新授权');
+//        $path = 'public/uploads/routinepage/'.$productId.'.jpg';
+//        if(file_exists($path)) return JsonService::successful($path);
+//        else file_put_contents($path,RoutineCode::getCode($this->userInfo['uid']));
+//        return JsonService::successful($path);
+//    }
 
     /**
      * 文章列表
@@ -1943,6 +1945,26 @@ class AuthApi extends AuthController{
         ArticleModel::edit(['visit'=>$content["visit"]],$id);//增加浏览次数
         return JsonService::successful($content);
     }
+
+    public function poster($id = 0){
+        if(!$id) return JsonService::fail('参数错误');
+        $productInfo = StoreProduct::getValidProduct($id,'store_name,id,price,image,code_path');
+        if(empty($productInfo)) return JsonService::fail('参数错误');
+        if($productInfo['code_path'] == '') {
+            $codePath = 'public/uploads/codepath/product/'.$productInfo['id'].'.jpg';
+            if(!file_exists($codePath)){
+                $dir = iconv("UTF-8", "GBK", "public/uploads/codepath/product");
+                mkdir($dir,0775,true);
+                file_put_contents($codePath,RoutineCode::getPages('pages/product-con/index?id='.$productInfo['id']));
+            }
+            $res = StoreProduct::edit(['code_path'=>$codePath],$id);
+            if($res) $productInfo['code_path'] = $codePath;
+            else return JsonService::fail('没有查看权限');
+        }
+        $posterPath = createPoster($productInfo);
+        return JsonService::successful($posterPath);
+    }
+
 
     /**
      * 刷新数据缓存

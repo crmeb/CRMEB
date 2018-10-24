@@ -378,11 +378,16 @@ class StoreOrder extends ModelBasic
         if(!$res)
             return self::setErrorInfo('申请退款失败!');
         else{
-            try{
-                $adminIds = SystemConfigService::get('site_store_admin_uids');
-                if(!$adminIds || !($adminList = array_unique(array_filter(explode(',',trim($adminIds)))))) return false;
-                RoutineTemplate::sendOrderRefundStatus($order,$refundReasonWap,$adminList);//小程序 发送模板消息
-            }catch (\Exception $e){}
+            $adminIds = SystemConfigService::get('site_store_admin_uids');
+            if(!empty($adminIds)){
+                try{
+                    if(!($adminList = array_unique(array_filter(explode(',',trim($adminIds)))))){
+                        self::setErrorInfo('申请退款成功,');
+                        return false;
+                    }
+                    RoutineTemplate::sendOrderRefundStatus($order,$refundReasonWap,$adminList);//小程序 发送模板消息
+                }catch (\Exception $e){}
+            }
             return true;
         }
     }

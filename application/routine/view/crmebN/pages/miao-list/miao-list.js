@@ -8,8 +8,13 @@ Page({
     lovely:'',
     url: app.globalData.urlImages,
   },
+  setTouchMove: function (e) {
+    var that = this;
+    wxh.home(that, e);
+  },
   onLoad: function (options) {
     app.setBarColor();
+    app.setUserInfo();
     this.getList();
   },
   getList: function () {

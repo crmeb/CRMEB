@@ -11,4 +11,7 @@
 .Maddress{font-size:26rpx;}
 .edit,.del{width:112rpx;height:54rpx;border:1rpx solid #999999;border-radius:8rpx;text-align:center;line-height:54rpx;display:inline-block;font-size:24rpx;}
 .del{margin-left:20rpx;}
-.footer{width:100%;height:100rpx;line-height:100rpx;font-size:30rpx;text-align:center;color:#ffffff;background-color:#FF3D3D;position:fixed;bottom:0;}
+.footer{width:100%;height:100rpx;line-height:100rpx;font-size:30rpx;
+text-align:center;color:#ffffff;background-color:#eb4e2b;position:fixed;bottom:0;}
+.footer .system-address{width:50%;float:left;}
+.footer .weixin-address{width:50%;float:right;background-color:#f3b23e}

@@ -45,10 +45,4 @@
      <view class='tan-footer'>分销二维码</view>
 </view>
 <view class='zhao' hidden='{{hiddens}}' bindtap='tanguan'></view>
-<movable-area class='index-con' >
-  <movable-view class='index-area' direction="all">
-      <navigator url='/pages/index/index' hover-class='none' open-type = "switchTab" >
-      <image src='/images/home.png'></image>
-      </navigator>
-  </movable-view>
-</movable-area>
+<include src="/pages/home/home.wxml"/>

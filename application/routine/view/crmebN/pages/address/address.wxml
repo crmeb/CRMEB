@@ -19,4 +19,8 @@
         </view>
     </block>
 </view>
-<view class='footer' bindtap='addAddress'>新增地址</view>
+<view style='height:80rpx'></view>
+<view class='footer'>
+  <view class='system-address' bindtap='addAddress'>新增地址</view>
+  <view class='weixin-address' bindtap='getWxAddress'>微信地址</view>
+</view>

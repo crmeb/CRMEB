@@ -15,6 +15,14 @@ var carmin = function (that){
       minusStatus: minusStatus
     });
 }
+//返回首页
+var home = function (that, e) {
+  if (e.touches[0].clientY < 500 && e.touches[0].clientY > 0) {
+    that.setData({
+      top: e.touches[0].clientY
+    })
+  }
+}
 //购物车加
 var carjia = function(that){
     var num = that.data.num;
@@ -143,5 +151,6 @@ module.exports = {
   time: time,
   footan: footan,
   tapsize: tapsize,
+  home: home,
   time2: time2
 }

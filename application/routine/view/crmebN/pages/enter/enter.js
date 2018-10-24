@@ -29,7 +29,7 @@ Page({
       dataType  : 'json',
       success: function (res) {
         that.setData({
-          logo: res.data.data.site_logo,
+          logo: app.globalData.url + res.data.data.site_logo,
           name: res.data.data.site_name
         })
       }

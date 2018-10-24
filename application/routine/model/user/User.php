@@ -81,7 +81,9 @@ class User extends ModelBasic
      */
     public static function isUserSpread($uid = 0){
         if(!$uid) return false;
-        $isPromoter = self::where('uid',$uid)->value('is_promoter');
+        $status = (int)SystemConfigService::get('store_brokerage_statu');
+        $isPromoter = true;
+        if($status == 1) $isPromoter = self::where('uid',$uid)->value('is_promoter');
         if($isPromoter) return true;
         else return false;
     }

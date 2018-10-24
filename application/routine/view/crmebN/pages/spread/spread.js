@@ -1,4 +1,5 @@
 var app = getApp();
+var wxh = require('../../utils/wxh.js');
 // pages/spread/spread.js
 Page({
 
@@ -16,6 +17,10 @@ Page({
     hiddens:true
   },
 
+  setTouchMove: function (e) {
+    var that = this;
+    wxh.home(that, e);
+  },
   /**
    * 生命周期函数--监听页面加载
    */

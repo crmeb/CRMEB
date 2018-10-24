@@ -17,9 +17,9 @@
     color: #666;
     line-height: 1.8;
 }
-.wxParse-p{margin-bottom: -4px;}
 view{
     word-break:break-all;
+    margin-bottom: -5rpx;
 }
 .wxParse-inline{
     display: inline;

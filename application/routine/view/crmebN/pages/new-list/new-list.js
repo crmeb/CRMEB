@@ -23,6 +23,7 @@ Page({
    */
   onLoad: function (options) {
     app.setBarColor();
+    app.setUserInfo();
     this.getNewList();
     this.getArticleBanner();
     this.getArticleHot();

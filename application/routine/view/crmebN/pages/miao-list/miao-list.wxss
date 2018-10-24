@@ -17,3 +17,4 @@
 .list-time{position:absolute;bottom:10rpx;font-size:45rpx;left:18rpx;}
 .list-time>text{width:38rpx;height:38rpx;line-height:38rpx;text-align:center;display:inline-block;vertical-align:middle;background-color:#333333;color:#FFFFFF;font-size:20rpx;border-radius:5rpx;margin-right: 16rpx;}
 .list-time-top{background-color:rgba(255, 255, 255, 0.5);position:absolute;bottom:0;width:100%;height:60rpx;}
+@import "/pages/home/home.wxss"; 

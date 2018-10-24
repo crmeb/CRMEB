@@ -18,6 +18,7 @@ Page({
    */
   onLoad: function (options) {
     app.setBarColor();
+    app.setUserInfo();
     this.getorderlist();
   },
   searchSubmit: function () {

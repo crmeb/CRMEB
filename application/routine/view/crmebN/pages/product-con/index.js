@@ -8,6 +8,7 @@ Page({
    * 页面的初始数据
    */
   data: {
+    posterImage:'',//海报路径
     attrName:'',
     attr:'选择商品属性',
     attrValue:'',
@@ -41,6 +42,10 @@ Page({
     CartCount:0,
     status:0,
     actionSheetHidden:true,
+  },
+  setTouchMove: function (e) {
+    var that = this;
+    wxh.home(that, e);
   },
   goPhone: function () {
     wx.request({
@@ -134,6 +139,61 @@ Page({
   listenerActionSheet: function () {
     this.setData({
       actionSheetHidden: !this.data.actionSheetHidden
+    })
+  },
+  savePosterPath:function(){
+    var that = this;
+     wx.downloadFile({
+       url: that.data.posterImage,
+       success: function(res) {
+         var path = res.tempFilePath;
+         wx.saveImageToPhotosAlbum({
+           filePath: path,
+           success: function(res) {
+             wx.showToast({
+               title: '保存成功',
+               icon: 'success',
+               duration: 1500,
+             })
+           },
+           fail: function (res) {
+             wx.showToast({
+               title: '保存失败',
+               icon: 'none',
+               duration: 1500,
+             })
+             },
+           complete: function(res) {},
+         })
+       },
+       fail: function(res) {},
+       complete: function(res) {},
+     })
+  },
+  goPoster:function(){
+    var that = this;
+    wx.request({
+      url: app.globalData.url + '/routine/auth_api/poster?uid=' + app.globalData.uid,
+      method: 'GET',
+      data: {
+        id: that.data.id,
+      },
+      success: function (res) {
+        if(res.data.code == 200){
+          that.setData({
+            posterImage: app.globalData.url + res.data.msg,
+            actionSheetHidden: !that.data.actionSheetHidden
+          })
+          that.savePosterPath();
+        }else{
+          wx.showToast({
+            title: res.data.msg,
+            icon: 'none',
+            duration: 1500,
+            mask: true,
+          })
+        }
+      }
     })
   },
   goPhoto:function(){
