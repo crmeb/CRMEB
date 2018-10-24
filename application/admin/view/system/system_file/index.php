@@ -3,12 +3,15 @@
 <div class="row">
     <div class="col-sm-12">
         <div class="ibox">
+            <div class="ibox-title">
+                <h5>文件校验</h5>
+            </div>
             <div class="ibox-content">
                 <div class="table-responsive">
                     <table class="table table-striped  table-bordered">
                         <thead>
                         <tr>
-                            <th class="text-center">类型</th>
+                            <th class="text-center" width="10%">类型</th>
                             <th class="text-center">文件地址</th>
                             <th class="text-center">校验码</th>
                             <th class="text-center">上次访问时间</th>

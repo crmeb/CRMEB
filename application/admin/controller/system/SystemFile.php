@@ -4,6 +4,9 @@ namespace app\admin\controller\system;
 use app\admin\model\system\SystemFile as SystemFileModel;
 use app\admin\controller\AuthController;
 use service\FormBuilder as Form;
+use think\Request;
+use service\FileService as FileClass;
+use service\JsonService as Json;
 
 /**
  * 文件校验控制器
@@ -13,7 +16,67 @@ use service\FormBuilder as Form;
  */
 class SystemFile extends AuthController
 {
-   public function index(){
+    //打开目录
+    public function openDir($filedir=''){
+        $fileAll = array('dir'=>[],'file'=>[]);
+        if(Request::instance()->param('superior') && !empty(Request::instance()->param('dir'))){
+            $path = '.'.DS.Request::instance()->param('dir');
+            $path = dirname($path);
+        }else{
+            $path = !empty(Request::instance()->param('dir'))?Request::instance()->param('dir'):'.';
+            $path = $path.DS.Request::instance()->param('filedir');
+        }
+        $list = scandir($path);
+        foreach($list as $key=>$v) {
+            if($v !='.' && $v !='..'){
+                if (is_dir($path.'/'.$v)) {
+                    $fileAll['dir'][] = FileClass::list_info($path.'/'.$v);
+                }
+                if(is_file($path.'/'.$v)){
+                    $fileAll['file'][] = FileClass::list_info($path.'/'.$v);
+                }
+            }
+        }
+//        var_dump($fileAll['file']);
+        $dir = ltrim($path,'./');
+        $this->assign(compact('fileAll','dir'));
+        return $this->fetch();
+    }
+    //读取文件
+    public function openFile($file='')
+    {
+        $file = $this->request->param('file');
+        if(empty($file))return Json::fail('出现错误');
+        $filepath  = '.'.DS.$file;
+        $content = htmlspecialchars(FileClass::read_file($filepath));//防止页面内嵌textarea标签
+        $ext = FileClass::get_ext($filepath);
+        $extarray = [
+            'js'=>'text/javascript'
+            ,'php'=>'text/x-php'
+            ,'html'=>'text/html'
+            ,'sql'=>'text/x-mysql'
+            ,'css'=>'text/x-scss'];
+        $mode = empty($extarray[$ext])?'':$extarray[$ext];
+        $this->assign(compact('content','mode','filepath'));
+        return $this->fetch();
+    }
+    //保存文件
+    public function savefile(){
+        $comment = $this->request->post('comment');
+        $filepath = $this->request->post('filepath');
+        if(!empty($comment) && !empty($filepath)){
+            $res = FileClass::write_file($filepath,$comment);
+            if($res){
+                return Json::successful('保存成功!');
+            }else{
+                return Json::fail('保存失败');
+            }
+        }else{
+            return Json::fail('出现错误');
+        }
+
+    }
+    public function index(){
        $app = $this->getDir('./application');
        $extend = $this->getDir('./extend');
        $public = $this->getDir('./public');
@@ -93,32 +156,8 @@ class SystemFile extends AuthController
        $this->assign('cha',$cha);
        return $this->fetch();
    }
-    public function filelist(){
-        $app = $this->getDir('./application');
-        print_r($app);
-        $extend = $this->getDir('./extend');
-        $public = $this->getDir('./public');
-        $arr = array();
-        $arr = array_merge($app,$extend);
-        $arr = array_merge($arr,$public);
-        $fileAll = array();//本地文件
-        foreach ($arr as $k=>$v) {
-            $fp = fopen($v, 'r');
-            if (filesize($v))  $ct = fread($fp, filesize($v));
-            else $ct = null;
-            fclose($fp);
-            $cthash = md5($ct);
-            $update_time = stat($v);
-            $fileAll[$k]['cthash'] = $cthash;
-            $fileAll[$k]['filename'] = $v;
-            $fileAll[$k]['atime'] = $update_time['atime'];
-            $fileAll[$k]['mtime'] = $update_time['mtime'];
-            $fileAll[$k]['ctime'] = $update_time['ctime'];
-        }
 
-//   dump($file);
-   dump($fileAll);
-    }
+
     /**
      * 获取文件夹中的文件 不包括子文件
      * @param $dir
@@ -132,12 +171,10 @@ class SystemFile extends AuthController
         foreach($list as $key=>$v) {
             if($v !='.' && $v !='..'){
                 if (is_dir($dir.'/'.$v)) {
-                    $dirlist[$key]['name'] = $v;
-                    $dirlist[$key]['type'] = 'dir';
+                    $dirlist['dir'][$key] = $v;
                 }
                 if(is_file($dir.'/'.$v)){
-                    $filelist[$key]['name'] = $v;
-                    $filelist[$key]['type'] = 'file';
+                    $filelist['file'][$key] = $v;
                 }
             }
         }
@@ -184,9 +221,9 @@ class SystemFile extends AuthController
             ,Form::input('goods_name2','textarea')->type('textarea')
             ,Form::input('goods_name3','email')->type('email')
             ,Form::input('goods_name4','date')->type('date')
-            ,Form::cityArea('address','cityArea',[
+            ,Form::city('address','cityArea',
                 '陕西省','西安市'
-            ])
+            )
             ,Form::dateRange('limit_time','dateRange',
                 strtotime('- 10 day'),
                 time()
