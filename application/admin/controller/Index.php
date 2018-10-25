@@ -46,27 +46,22 @@ class Index extends AuthController
         $now_day = strtotime(date('Y-m-d'));//今日
         $pre_day = strtotime(date('Y-m-d',strtotime('-1 day')));//昨天时间戳
         $beforyester_day = strtotime(date('Y-m-d',strtotime('-2 day')));//前天时间戳
-        //昨天待发货数量
-        $topData['orderDeliveryNum'] = StoreOrderModel::isMainYesterdayCount($pre_day,$now_day)
-            ->where('status',0)
+        //待发货数量
+        $topData['orderDeliveryNum'] = StoreOrderModel::where('status',0)
             ->where('paid',1)
             ->where('refund_status',0)
             ->count();
-        //昨天退换货订单数
-        $topData['orderRefundNum'] = StoreOrderModel::isMainYesterdayCount($pre_day,$now_day)
-            ->where('paid',1)
-            ->where('refund_status','IN','1,2')
+        //退换货订单数
+        $topData['orderRefundNum'] = StoreOrderModel::where('paid',1)
+            ->where('refund_status','IN','1')
             ->count();
         //库存预警
         $replenishment_num = SystemConfig::getValue('store_stock') > 0 ? SystemConfig::getValue('store_stock') : 20;//库存预警界限
         $topData['stockProduct'] = StoreProduct::where('stock','<=',$replenishment_num)->where('is_del',0)->count();
         //待处理提现
         $topData['treatedExtract'] = UserExtractModel::where('status',0)->count();
-        //昨日订单数
-        $topData['orderNum'] = StoreOrderModel::isMainYesterdayCount($pre_day,$now_day)->count();
-//        //昨日交易额
-//        $orderPriceNum = StoreOrderModel::isMainYesterdayCount($pre_day,$now_day)->field('sum(pay_price) as pay_price')->find()['pay_price'];
-//        $topData['orderPriceNum'] = $orderPriceNum ? $orderPriceNum : 0;
+
+
         //订单数->日
         $now_day_order_p = StoreOrderModel::where('paid',1)->where('pay_time','gt',$now_day)->count();
         $pre_day_order_p = StoreOrderModel::where('paid',1)->where('pay_time','gt',$pre_day)->where('pay_time','lt',$now_day)->count();
@@ -537,6 +532,7 @@ class Index extends AuthController
      */
     public function userchart(){
         header('Content-type:text/json');
+
         $starday = date('Y-m-d',strtotime('-30 day'));
         $yesterday = date('Y-m-d');
 
@@ -549,7 +545,7 @@ class Index extends AuthController
         $data = [];
         $chartdata['legend'] = ['用户数'];//分类
         $chartdata['yAxis']['maxnum'] = 0;//最大值数量
-        if(empty($user_list)) return Json::fail('没有数据');
+        if(empty($user_list))return Json::fail('无数据');
         foreach ($user_list as $k=>$v){
             $data['day'][] = $v['day'];
             $data['count'][] = $v['count'];
@@ -558,6 +554,7 @@ class Index extends AuthController
         }
         $chartdata['xAxis'] = $data['day'];//X轴值
         $chartdata['series'] = $data['count'];//分类1值
+
         return Json::succ('ok',$chartdata);
     }
 
