@@ -817,7 +817,7 @@ body.modal-open{padding-right:inherit!important}
 .invoice-total>tbody>tr>td:last-child{border-bottom:1px solid #DDD;text-align:right;width:15%}
 .middle-box{max-width:400px;z-index:100;margin:0 auto;padding-top:40px}
 .lockscreen.middle-box{width:200px;padding-top:110px}
-.loginscreen.middle-box{width:300px}
+.loginscreen.middle-box{width:340px}
 .loginColumns{max-width:800px;margin:0 auto;padding:100px 20px 20px}
 .passwordBox{max-width:460px;margin:0 auto;padding:100px 20px 20px}
 .logo-name{color:#e6e6e6;font-size:180px;font-weight:800;letter-spacing:-10px;margin-bottom:0}
@@ -1366,8 +1366,8 @@ body.skin-3{background:#3e2c42}
 }
 .btn-default{background-color:#79c7e4;border-color:#79c7e4}
 .btn-default.btn-outline{background-color:#fff;border-color:#c2c2c2}
-.login-group{background-color: #2f4050;padding: 0 20px 20px;color: #111123;}
-.login-logo{font-family:"Microsoft Yahei","Helvetica Neue",Helvetica,Arial,sans-serif;color:#fff;overflow:hidden;margin-top:80%}
+.login-group{margin-top: 30vh;background-color: #00111C;padding: 0 20px 20px;color: #111123;opacity: 0.8;border-radius: 7px;box-shadow: 0 0 10px #3FBEEB;  border: 1px solid #74B5C9;  }
+.login-logo{font-family:"Microsoft Yahei","Helvetica Neue",Helvetica,Arial,sans-serif;color:#fff;overflow:hidden;margin-top:1vh}
 .login-logo img{width:90px}
 .login-logo p{color:#fff;font-weight:300;margin:0}
 .login-bg{background-image:url(../../images/bg-logo.jpg)}
@@ -1383,7 +1383,7 @@ body.skin-3{background:#3e2c42}
     .mini-navbar .dashbard-1{transform:translate3d(0,0,0)}
     .footer{position:fixed;width:100%;left:0;bottom:0;margin:0!important}
     #content-main{height:calc(100% - 80px)}
-    .login-logo{margin-top:21vh}
+    .login-logo{margin-top:1vh}
     .fixed-sidebar.mini-navbar .slimScrollDiv .nav{display: none;}
     .navbar-default .navbar-static-side{display: none;}
 }

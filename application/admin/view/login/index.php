@@ -4,7 +4,9 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="renderer" content="webkit">
-    <title>登录 - CRMEB管理系统</title>
+    <title>登录管理系统 -  Powered by CRMEB!</title>
+    <meta name="generator" content="CRMEB! v2.5" />
+    <meta name="author" content="CRMEB! Team and CRMEB UI Team" />
     <link href="{__FRAME_PATH}css/bootstrap.min.css?v=3.4.0" rel="stylesheet">
     <link href="{__FRAME_PATH}css/font-awesome.min.css?v=4.3.0" rel="stylesheet">
     <link href="{__FRAME_PATH}css/animate.min.css" rel="stylesheet">
@@ -14,13 +16,13 @@
     </script>
 </head>
 <body class="gray-bg login-bg">
+<canvas id="canvas" width="900" height="300" style="position: fixed;top: -50px;width: 60%;left: 20%"></canvas>
 <div class="middle-box text-center loginscreen  animated fadeInDown">
     <div class="login-group">
         <h3 class="login-logo">
             <img src="{__ADMIN_PATH}images/logo.png">
-            <p>CRMEB管理系统</p>
         </h3>
-        <form class="m-t" role="form" action="{:url('verify')}" method="post">
+        <form role="form" action="{:url('verify')}" method="post">
             <div class="form-group">
                 <div class="input-group m-b"><span class="input-group-addon"><i class="fa fa-user"></i> </span>
                     <input type="text" id="account" name="account" placeholder="用户名" placeholder="用户名" class="form-control">
@@ -51,23 +53,18 @@
         </form>
     </div>
 </div>
-<div class="footer" style="    position: fixed;bottom: 0;width: 100%;left: 0;margin: 0;">
-    <div class="pull-right">© 2000-2019 <a href="http://www.crmeb.com/" target="_blank">西安众邦网络科技有限公司</a>
+<div class="footer" style=" position: fixed;bottom: 0;width: 100%;left: 0;margin: 0;opacity: 0.8;">
+    <div class="pull-right">© 2017-2019 <a href="http://www.crmeb.com/" target="_blank">CRMEB</a>
     </div>
 </div>
+
 <!-- 全局js -->
 <script src="{__PLUG_PATH}jquery-1.10.2.min.js"></script>
 <script src="{__FRAME_PATH}js/bootstrap.min.js?v=3.4.0"></script>
+<script src="{__MODULE_PATH}login/flaotfont.js"></script>
+<script src="{__MODULE_PATH}login/ios-parallax.js"></script>
 <script src="{__MODULE_PATH}login/index.js"></script>
 <!--统计代码，可删除-->
 <!--点击刷新验证码-->
-<script>
-    (function captcha(){
-        var $captcha = $('#verify_img'),src = $captcha[0].src;
-        $captcha.on('click',function(){
-            this.src = src+'?'+Date.parse(new Date());
-        });
-    })();
-</script>
 </body>
 </html>

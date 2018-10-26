@@ -11,3 +11,15 @@
         if(!pwd) return showError('请输入密码');
     })
 })(window,jQuery);
+$(document).ready(function() {
+    $('.login-bg').iosParallax({
+        movementFactor: 50
+    });
+});
+
+(function captcha(){
+    var $captcha = $('#verify_img'),src = $captcha[0].src;
+    $captcha.on('click',function(){
+        this.src = src+'?'+Date.parse(new Date());
+    });
+})();
