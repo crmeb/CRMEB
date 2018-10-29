@@ -18,6 +18,8 @@
 
 ###如果对您有帮助，您可以点右上角 "Star" 支持一下 谢谢！
 
+###[帮助文档](https://gitee.com/ZhongBangKeJi/CRMEB/wikis/)
+
 ## 项目介绍
    基于ThinkPhp5.0+Vue+EasyWeChat 开发的一套CRMEB新零售商城系统
     
