@@ -10,50 +10,7 @@
 // +----------------------------------------------------------------------
 
 // 应用公共文件
-/**
- * 获取用户名称
- * @param $uid
- * @return mixed
- */
-function getUserNickname($uid){
-    return \app\admin\model\user\User::where('uid',$uid)->value('nickname');
-}
 
-/**
- * 获取产品名称
- * @param $id
- * @return mixed
- */
-function getProductName($id){
-    return \app\admin\model\store\StoreProduct::where('id',$id)->value('store_name');
-}
-
-/**
- * 获取拼团名称
- * @param $id
- * @return mixed
- */
-function getCombinationTitle($id){
-    return \app\admin\model\store\StoreCombination::where('id',$id)->value('title');
-}
-
-/**
- * 获取订单编号
- * @param $id
- */
-function getOrderId($id){
-    return \app\admin\model\order\StoreOrder::where('id',$id)->value('order_id');
-}
-
-
-/**
- * 根据用户uid获取订单数
- * @param $uid
- * @return int|string
- */
-function getOrderCount($uid){
-    return \app\admin\model\order\StoreOrder::where('uid',$uid)->where('paid',1)->where('refund_status',0)->where('status',2)->count();
-}
 /**
  * 格式化属性
  * @param $arr
@@ -98,6 +55,12 @@ function attrFormat($arr){
     return [$data,$res];
 }
 
+/**
+ * 格式化月份
+ * @param string $time
+ * @param int $ceil
+ * @return array
+ */
 function getMonth($time='',$ceil=0){
     if(empty($time)){
         $firstday = date("Y-m-01",time());
@@ -117,4 +80,25 @@ function getMonth($time='',$ceil=0){
         $lastday = date('Y-m-d', strtotime('this week +'.($ceil+1).' day')) . ' 23:59:59';
     }
     return array($firstday,$lastday);
+}
+/**删除目录下所有文件
+ * @param $path 目录或者文件路径
+ * @param string $ext
+ * @return bool
+ */
+function clearfile($path,$ext = '*.log')
+{
+    $files = (array) glob($path.DS.'*');
+    foreach ($files as $path) {
+        if (is_dir($path)) {
+            $matches = glob($path . '/'.$ext);
+            if (is_array($matches)) {
+                array_map('unlink', $matches);
+            }
+            rmdir($path);
+        } else {
+            unlink($path);
+        }
+    }
+    return true;
 }

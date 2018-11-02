@@ -119,21 +119,20 @@
     });
     layList.tableList('bargainList',"{:Url('get_bargain_list')}",function () {
         return [
-            {field: 'id', title: '编号', sort: true,width:'5%',event:'id',unresize:true},
-            {field: 'image', title: '砍价图片',event:'open_image',unresize:true, width: '8%',templet: '<p><img src="{{d.image}}" alt="{{d.title}}"></p>'},
-            {field: 'title', title: '砍价名称',width:'15%',unresize:true},
-            {field: 'price', title: '砍价价格',width:'6%',unresize:true},
-            {field: 'bargain_min_price', title: '砍价区间',unresize:true,width:'8%',templet: '<span>{{d.bargain_min_price}}~{{d.bargain_max_price}}</span>'},
-            {field: 'min_price', title: '最低价',width:'5%',unresize:true},
-            {field: 'status', title: '砍价状态',width:'8%',unresize:true,templet:"#status"},
-            {field: 'right', title: '活动状态',width:'8%',unresize:true,templet:"#statusCn"},
-            {field: 'count_people_all', title: '参与人数',unresize:true,width:'6%',templet: '<span>【{{d.count_people_all}}】人</span>'},
-            {field: 'count_people_help', title: '帮忙砍价人数',unresize:true,width:'6%',templet: '<span>【{{d.count_people_help}}】人</span>'},
-            {field: 'count_people_success', title: '砍价成功人数',unresize:true,width:'6%',templet: '<span>【{{d.count_people_success}}】人</span>'},
-            {field: 'look', title: '浏览量',width:'6%',unresize:true},
-            {field: 'stock', title: '库存',width:'4%',unresize:true},
-            {fixed: 'right', title: '结束时间', width: '10%',toolbar: '#stopTime',unresize:true},
-            {fixed: 'right', title: '操作', width: '5%', align: 'center', toolbar: '#barDemo'}
+            {field: 'id', title: '编号', sort: true,width:'5%',event:'id'},
+            {field: 'image', title: '砍价图片',event:'open_image', width: '8%',templet: '<p><img src="{{d.image}}" alt="{{d.title}}"></p>'},
+            {field: 'title', title: '砍价名称',width:'10%'},
+            {field: 'price', title: '砍价价格',width:'6%'},
+            {field: 'bargain_min_price', title: '砍价区间',width:'8%',templet: '<span>{{d.bargain_min_price}}~{{d.bargain_max_price}}</span>'},
+            {field: 'min_price', title: '最低价',width:'8%'},
+            {field: 'status', title: '砍价状态',width:'8%',templet:"#status"},
+            {field: 'count_people_all', title: '参与人数',width:'6%',templet: '<span>【{{d.count_people_all}}】人</span>'},
+            {field: 'count_people_help', title: '帮忙砍价人数',width:'6%',templet: '<span>【{{d.count_people_help}}】人</span>'},
+            {field: 'count_people_success', title: '砍价成功人数',width:'6%',templet: '<span>【{{d.count_people_success}}】人</span>'},
+            {field: 'look', title: '浏览量',width:'5%'},
+            {field: 'stock', title: '库存',width:'4%'},
+            {field: '_stop_time', title: '结束时间', width: '10%',toolbar: '#stopTime'},
+            {field: 'right', title: '操作', width: '10%', align: 'center', toolbar: '#barDemo'}
         ]
     });
     // layList.date('time');

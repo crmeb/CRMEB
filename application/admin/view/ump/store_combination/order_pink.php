@@ -36,7 +36,7 @@
                                 <img class="open_image" style="max-width: 80px;" data-image="{$vo.avatar}" src="{$vo.avatar}" alt="{$vo.nickname}">
                             </td>
                             <td class="text-center">
-                                <a href="{:Url('order.storeOrder/index')}?real_name={$vo.order_id_key|getOrderId}">{$vo.order_id}</a>
+                                <a href="{:Url('order.storeOrder/index')}?real_name={$vo.order_id}">{$vo.order_id}</a>
                             </td>
                             <td class="text-center">
                                 ￥{$vo.price}
