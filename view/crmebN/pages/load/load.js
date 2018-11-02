@@ -3,14 +3,12 @@ Page({
   data: {
     logo: '',
     name: '',
-    spid: 0,
     url: app.globalData.url,
   },
   onLoad: function (options) {
     var that = this;
     that.getEnterLogo();
     app.setBarColor();
-    if (options.scene) that.data.spid = options.scene;
   },
   getEnterLogo: function () {
     var that = this;
@@ -29,7 +27,7 @@ Page({
   //获取用户信息并且授权
   getUserInfo: function(e){
     var userInfo = e.detail.userInfo;
-    userInfo.spid = this.data.spid;
+    userInfo.spid = app.globalData.spid;
     wx.login({
       success: function (res) {
         if (res.code) {

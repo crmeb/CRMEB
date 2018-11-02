@@ -287,20 +287,9 @@ Page({
       header: header,
       success: function (res) {
         if (res.data.code == 200) {
-          if (res.data.data.length < 1) {
-            wx.showToast({
-              title: '暂无收货地址，请先添加收货地址',
-              icon: 'none',
-              duration: 1000,
-            })
-            setTimeout(function () {
-              that.toAddress();
-            }, 1100)
-          } else {
-            wx.navigateTo({ //跳转至指定页面并关闭其他打开的所有页面（这个最好用在返回至首页的的时候）
-              url: '/pages/address/address?cartId=' + that.data.cartId + '&pinkId=' + that.data.pinkId + '&couponId=' + that.data.couponId
-            })
-          }
+          wx.navigateTo({ //跳转至指定页面并关闭其他打开的所有页面（这个最好用在返回至首页的的时候）
+            url: '/pages/address/address?cartId=' + that.data.cartId + '&pinkId=' + that.data.pinkId + '&couponId=' + that.data.couponId
+          })
         }
       }
     })
