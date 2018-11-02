@@ -39,7 +39,7 @@ App({
   },
   setUserInfo : function(){
     var that = this;
-    if (that.globalData.uid == null) {//是否存在用户信息，如果不存在跳转到首页1
+    if (that.globalData.uid == null) {//是否存在用户信息，如果不存在跳转到首页123
       wx.showToast({
         title: '用户信息获取失败!',
         icon: 'none',
