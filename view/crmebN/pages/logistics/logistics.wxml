@@ -1,5 +1,5 @@
 <view class="header flex">
-    <image src='/images/wu1.jpg'></image>
+    <image src='/images/express_icon.jpg'></image>
     <view class='header-text'>
         <view class='header-flag'>物流状态
         <text class='flag' wx:if="{{order.status>=2}}">已签收</text>
