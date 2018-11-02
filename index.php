@@ -24,7 +24,7 @@ if(file_exists("./public/install/") && !file_exists("./public/install/install.lo
 // 定义应用目录
 define('APP_PATH', __DIR__ . '/application/');
 //静态文件目录
-define('PUBILC_PATH', '/public');
+define('PUBILC_PATH', '/public/');
 //上传文件目录
 define('UPLOAD_PATH', 'public/uploads');
 // 加载框架引导文件
