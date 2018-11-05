@@ -38,7 +38,7 @@ class SystemAttachment extends ModelBasic
         $model = new self;
         $where['pid'] = $id;
         $model->where($where)->order('att_id desc');
-        return $model->page($model,$where,'',30);
+        return $model->page($model,$where,'',24);
     }
     /**
      * 获取单条信息

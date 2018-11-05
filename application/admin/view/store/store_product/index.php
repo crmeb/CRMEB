@@ -71,7 +71,7 @@
                     <div class="layui-btn-container">
                         {switch name='type'}
                             {case value="1"}
-                                <button class="layui-btn layui-btn-sm" onclick="$eb.createModalFrame(this.innerText,'{:Url('create')}',{h:760,w:900})">添加产品</button>
+                                <button class="layui-btn layui-btn-sm" onclick="$eb.createModalFrame(this.innerText,'{:Url('create')}',{h:760,w:1100})">添加产品</button>
                             {/case}
                             {case value="2"}
                                 <button class="layui-btn layui-btn-sm" data-type="show">批量上架</button>
@@ -110,7 +110,7 @@
                         <button type="button" class="layui-btn layui-btn-xs btn-success" onclick="$eb.createModalFrame('{{d.store_name}}-属性','{:Url('attr')}?id={{d.id}}',{h:700,w:800})">
                             属性
                         </button>
-                        <button type="button" class="layui-btn layui-btn-xs layui-btn-normal" onclick="$eb.createModalFrame('{{d.store_name}}-编辑','{:Url('edit')}?id={{d.id}}')">
+                        <button type="button" class="layui-btn layui-btn-xs layui-btn-normal" onclick="$eb.createModalFrame('{{d.store_name}}-编辑','{:Url('edit')}?id={{d.id}}',{h:760,w:1100})">
                             编辑
                         </button>
                         <button type="button" class="layui-btn layui-btn-xs" onclick="dropdown(this)">操作 <span class="caret"></span></button>
