@@ -15,22 +15,23 @@
 <div class="page-index" id="app-index">
     <section ref="bsDom">
         <div>
-            <div class="search-wrapper">
+            <!--<div class="search-wrapper">
                 <form method="post" @submit.prevent="goSearch">
                     <div class="search-box flex"><input type="text" v-model="keyword" placeholder="商品搜索: 请输入商品关键词"> <a
                             class="index-icon home-btn" href="{:url('my/notice')}">
                             {gt name="notice" value="0"} <b class="count-num">{$notice}</b> {/gt} </a></div>
                 </form>
-            </div>
+            </div>-->
             <!-- 滑动导航 -->
-            <div class="common-slider-nav" ref="xScroll">
+           <!-- <div class="common-slider-nav" ref="xScroll">
                 <ul class="swiper-wrapper">
                     <li class="swiper-slide on"><a href="javascript:void(0);">商城优选</a></li>
+                    <li class="swiper-slide"><a href="{:url('store/combination')}"><img src="{__WAP_PATH}sx/images/pt-bg.png" alt=""></a></li>
                     {volist name="category" id="vo"}
                     <li class="swiper-slide"><a href="{:Url('store/index',['cid'=>$vo['id']])}">{$vo.cate_name}</a></li>
                     {/volist}
                 </ul>
-            </div>
+            </div>-->
             {notempty name="banner"}
             <div class="banner" ref="banners">
                 <ul class="swiper-wrapper">
@@ -112,6 +113,32 @@
                 </ul>
             </div>
             {/notempty}
+            <div class="buyspell-list" v-cloak="" v-show="combinationList.length > 0">
+                <div class="index-common-title border-1px">
+                    <span class="color-red">拼团 . </span>花少钱买好货 <i class="icon" @click="window.location.href='{:url('store/combination')}'"></i>
+                </div>
+                <div class="product-banner"><img src="{$pinkImage}"></div>
+                <div class="bslist-box">
+                    <div class="bs-item flex" v-for="item in combinationList">
+                        <div class="picture">
+                            <img :src="item.image">
+                        </div>
+                        <div class="bs-item-info flex">
+                            <div class="info-title">{{item.title}}</div>
+                            <div class="count-wrapper">
+                                <span class="price">￥{{item.price}}</span>
+                                <span class="old-price">￥{{item.product_price}}</span>
+                                <span class="count">已拼{{item.sales}}单</span>
+                            </div>
+                            <a class="people-num flex">
+                                <span class="numbers">{{item.people}}人团</span>
+                                <span class="peo-txt" @click="window.location.href='{:url('store/combination_detail',[],false)}/id/'+item.id">去开团</span>
+                                <i class="index-icon people-icon"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <!-- 商品分类模板 -->
             <div class="template-prolist" v-cloak="" v-for="item in cateGroupList" v-show="cateGroupList.length > 0">
                 <div class="index-common-title border-1px">
@@ -155,31 +182,41 @@
     </div>
     <span class="nickname"></span>
 </div>
-<div class="lottie-bg"><div id="lottie"></div></div>
-<script>
-    var anim;
-    var elem = document.getElementById('lottie');
-    //elem.style.display = 'none';
-    var animData = {
-        container: elem,
-        renderer: 'svg',
-        loop: true,
-        autoplay: true,
-        rendererSettings: {
-            progressiveLoad:false,
-            imagePreserveAspectRatio: 'xMidYMid meet'
-        },
-        path: '{__WAP_PATH}crmeb/js/animation.json'
-    };
-    anim = lottie.loadAnimation(animData);
-    anim.setSubframe(false);
-    setTimeout(
-        function () {
-            $('.lottie-bg').hide();
-        },2000)
-</script>
+<div class="lottie-bg">
+    <div id="lottie"></div>
+</div>
+
 <script type="text/javascript">
+    function loadCRMEB() {
+        var anim;
+        var elem = document.getElementById('lottie');
+        var animData = {
+            container: elem,
+            renderer: 'svg',
+            loop: true,
+            autoplay: true,
+            rendererSettings: {
+                progressiveLoad: false,
+                imagePreserveAspectRatio: 'xMidYMid meet'
+            },
+            path: '{__WAP_PATH}crmeb/js/animation.json'
+        };
+        anim = lottie.loadAnimation(animData);
+        anim.setSubframe(false);
+        setTimeout(
+            function () {
+                $('.lottie-bg').hide();
+            }, 2000)
+
+    }
+    if(!window.name) {
+        loadCRMEB();
+        window.name = "CRMEB";
+    }else{
+        $('.lottie-bg').hide();
+    }
     var base = new Base64();
+
     (function () {
        var $pinkListUser = <?php echo json_encode($storePink);?>;
        if($pinkListUser.length > 0){
@@ -290,30 +327,21 @@
                     },
                     elInit: function () {
                         that = this;
-                        setTimeout(function(){
-                            var child = that.$refs.xScroll.children[0],liDom = child.getElementsByTagName('li');
+                        if(this.$refs.banners){
+                            var liDom = $(this.$refs.banners).find('li');
                             if(liDom.length > 0 ){
-                                child.style.width = (liDom[0].offsetWidth * liDom.length)+'px';
-                                new BScroll(that.$refs.xScroll,{eventPassthrough : 'vertical',scrollX: true, scrollY: false,observeDOM:false,click:true,probeType:1,cancelable:false});
-//                                that.$nextTick(function(){
-//                                    that.scroll.refresh();
-//                                });
-                            }
-                        });
-                        setTimeout(function () {
-                            if(!that.$refs.banners) return ;
-                            var child = that.$refs.banners.children[0],liDom = child.getElementsByTagName('li');
-                            if(liDom.length > 0 ){
-                                child.style.width = (document.body.offsetWidth * liDom.length)+'px';
-                                Array.prototype.slice.call(liDom).forEach(function (item) {
-                                   item.style.width = document.body.offsetWidth+'px';
+                                liDom.width(document.body.offsetWidth);
+                                $(this.$refs.banners).find('ul').width((document.body.offsetWidth * liDom.length)+'px');
+                                var myBanner = new Swiper('.banner', {
+                                    pagination: '.swiper-pagination',
+                                    paginationClickable: false,
+                                    autoplay: 4500,
+                                    loop: true,
+                                    speed: 2500,
+                                    autoplayDisableOnInteraction: false
                                 });
-                                new BScroll(that.$refs.banners,{eventPassthrough : 'vertical',scrollX: true, scrollY: false,observeDOM:false,click:true,probeType:1,cancelable:false,momentum: false,snap: {loop: false, threshold: 0.1, stepX: document.body.offsetWidth}});
-//                                that.$nextTick(function(){
-//                                    that.scroll.refresh();
-//                                });
                             }
-                        });
+                        }
                         $('.schedule-weight').each(function() {
                             var _this = $(this);
                             var width =  _this.attr('data-width');
@@ -360,4 +388,5 @@
                 }
             })
         });
-    }());</script>{/block}
+    }());</script>
+{/block}

@@ -1,667 +1,492 @@
 {extend name="public/container"}
-{block name="head_top"}
-<link rel="stylesheet" href="{__PLUG_PATH}daterangepicker/daterangepicker.css">
-<link href="{__FRAME_PATH}css/plugins/footable/footable.core.css" rel="stylesheet">
-<script src="{__PLUG_PATH}sweetalert2/sweetalert2.all.min.js"></script>
-<script src="{__PLUG_PATH}moment.js"></script>
-<script src="{__PLUG_PATH}daterangepicker/daterangepicker.js"></script>
-<script src="{__PLUG_PATH}echarts.common.min.js"></script>
-<script src="{__FRAME_PATH}js/plugins/footable/footable.all.min.js"></script>
-<style>
-    .order-top{background-color: #e7eaec;margin-bottom: 20px;width: 100%;height: 80px;line-height: 80px}
-    .order-top .content{text-align: center;width: 20%}
-    .order-top .content .ibox{padding: 15px 0;}
-    .order-top h1{color: #00d2ff}
-</style>
-{/block}
 {block name="content"}
-<div class="row">
-    <div class="col-sm-12">
-        <div class="ibox">
-            <div class="ibox-content">
-                <div class="row">
-<!--                    <div class="col-sm-12 order-top">-->
-<!--                        <div class="col-lg-2 content">-->
-<!--                            <div class="ibox">-->
-<!--                                <div>-->
-<!--                                    <h5>最近7天下单数量</h5>-->
-<!--                                </div>-->
-<!--                                <div>-->
-<!--                                    <h1>{$orderTopData.sevenDayOrderNum}</h1>-->
-<!--                                </div>-->
-<!--                            </div>-->
-<!--                        </div>-->
-<!--                        <div class="col-lg-2 content">-->
-<!--                            <div class="ibox">-->
-<!--                                <div>-->
-<!--                                    <h5>待付款数量</h5>-->
-<!--                                </div>-->
-<!--                                <div>-->
-<!--                                    <h1>{$orderTopData.noPayNum}</h1>-->
-<!--                                </div>-->
-<!--                            </div>-->
-<!--                        </div>-->
-<!--                        <div class="col-lg-3 content">-->
-<!--                            <div class="ibox">-->
-<!--                                <div>-->
-<!--                                    <h5>待发货数量</h5>-->
-<!--                                </div>-->
-<!--                                <div>-->
-<!--                                    <h1>{$orderTopData.noDeliveryNum}</h1>-->
-<!--                                </div>-->
-<!--                            </div>-->
-<!--                        </div>-->
-<!--                        <div class="col-lg-3 content">-->
-<!--                            <div class="ibox">-->
-<!--                                <div>-->
-<!--                                    <h5>退换货数量</h5>-->
-<!--                                </div>-->
-<!--                                <div>-->
-<!--                                    <h1>{$orderTopData.yesRefundNum}</h1>-->
-<!--                                </div>-->
-<!--                            </div>-->
-<!--                        </div>-->
-<!--                        <div class="col-lg-2 content">-->
-<!--                            <div class="ibox">-->
-<!--                                <div>-->
-<!--                                    <h5>7天收入</h5>-->
-<!--                                </div>-->
-<!--                                <div>-->
-<!--                                    <h1>￥{$orderTopData.sevenDayPrice}</h1>-->
-<!--                                </div>-->
-<!--                            </div>-->
-<!--                        </div>-->
-<!--                    </div>-->
-                    <div class="m-b m-l">
-                        <form action="" class="form-inline search-form">
-                            <div class="search-item" data-name="status">
-                                <span class="btn-outline btn-link btn-sm">订单状态：</span>
-                                <button type="button" class="btn btn-sm  btn-outline btn-link" data-value="">全部</button>
-                                <button type="button" class="btn btn-sm  btn-outline btn-link" data-value="0">未支付</button>
-                                <button type="button" class="btn btn-sm  btn-outline btn-link" data-value="1">未发货</button>
-                                <button type="button" class="btn btn-sm  btn-outline btn-link" data-value="2">待收货</button>
-                                <button type="button" class="btn btn-sm  btn-outline btn-link" data-value="3">待评价</button>
-                                <button type="button" class="btn btn-sm  btn-outline btn-link" data-value="4">交易完成</button>
-                                <button type="button" class="btn btn-sm  btn-outline btn-link" data-value="-1">退款中</button>
-                                <button type="button" class="btn btn-sm  btn-outline btn-link" data-value="-2">已退款</button>
-                                <input class="search-item-value" type="hidden" name="status" value="{$where.status}" />
-                            </div>
-                            <div class="search-item" data-name="combination_id">
-                                <span  class="btn-outline btn-link btn-sm">订单类型：</span>
-                                <button type="button" class="btn btn-sm  btn-outline btn-link" data-value="">全部</button>
-                                <button type="button" class="btn btn-sm  btn-outline btn-link" data-value="普通订单">普通订单</button>
-                                <button type="button" class="btn btn-sm  btn-outline btn-link" data-value="拼团订单">拼团订单</button>
-                                <button type="button" class="btn btn-sm  btn-outline btn-link" data-value="秒杀订单">秒杀订单</button>
-                                <input class="search-item-value" type="hidden" name="combination_id" value="{$where.combination_id}" />
-                            </div>
-                            <div class="search-item" data-name="data">
-                                <span  class="btn-outline btn-link btn-sm">创建时间：</span>
-                                <button type="button" class="btn btn-sm  btn-outline btn-link" data-value="{$limitTimeList.yesterday}">昨天</button>
-                                <button type="button" class="btn btn-sm  btn-outline btn-link" data-value="{$limitTimeList.today}">今天</button>
-                                <button type="button" class="btn btn-sm  btn-outline btn-link" data-value="{$limitTimeList.week}">本周</button>
-                                <button type="button" class="btn btn-sm  btn-outline btn-link" data-value="{$limitTimeList.month}">本月</button>
-                                <button type="button" class="btn btn-sm  btn-outline btn-link" data-value="{$limitTimeList.quarter}">本季度</button>
-                                <button type="button" class="btn btn-sm  btn-outline btn-link" data-value="{$limitTimeList.year}">本年</button>
-                                <div class="datepicker" style="display: inline-block;">
-                                    <button type="button" class="btn btn-sm  btn-outline btn-link" data-value="{$where.data?:'no'}">自定义</button>
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15"  id="app">
+        <!--搜索条件-->
+        <div class="layui-col-md12">
+            <div class="layui-card">
+                <div class="layui-card-header">搜索条件</div>
+                <div class="layui-card-body">
+                    <div class="layui-carousel layadmin-carousel layadmin-shortcut" lay-anim="" lay-indicator="inside" lay-arrow="none" style="background:none">
+                        <div class="layui-card-body">
+                            <div class="layui-row layui-col-space10 layui-form-item">
+                                <div class="layui-col-lg12">
+                                    <label class="layui-form-label">订单状态:</label>
+                                    <div class="layui-input-block" v-cloak="">
+                                        <button class="layui-btn layui-btn-sm" :class="{'layui-btn-primary':where.status!==item.value}" @click="where.status = item.value" type="button" v-for="item in orderStatus">{{item.name}}
+                                            <span v-if="item.count!=undefined" :class="item.class!=undefined ? 'layui-badge': 'layui-badge layui-bg-gray' ">{{item.count}}</span></button>
+                                    </div>
                                 </div>
-                                <input class="search-item-value" type="hidden" name="data" value="{$where.data}" />
-                            </div>
-                            <div class="col-sm-4 text-right col-sm-offset-8" style="padding-bottom: 10px;">
-                                <div class="input-group">
-                                    <input size="26" type="text" name="real_name" value="{$where.real_name}" placeholder="请输入姓名、电话、订单编号" class="input-sm form-control">
-                                    <input type="hidden" name="export" value="0">
-                                    <input type="hidden" name="order" id="order">
-                                <span class="input-group-btn">
-                                      <button type="submit" id="no_export" class="btn btn-sm btn-primary"> <i class="fa fa-search" ></i> 搜索</button>
-                                      <button type="submit" id="export" class="btn btn-sm btn-info btn-outline"> <i class="fa fa-exchange" ></i> Excel导出</button>
-                                    <script>
-                                        $('#export').on('click',function(){
-                                            $('input[name=export]').val(1);
-                                        });
-                                        $('#no_export').on('click',function(){
-                                            $('input[name=export]').val(0);
-                                        });
-                                    </script>
-                                  </span>
+                                <div class="layui-col-lg12">
+                                    <label class="layui-form-label">订单类型:</label>
+                                    <div class="layui-input-block" v-cloak="">
+                                        <button class="layui-btn layui-btn-sm" :class="{'layui-btn-primary':where.type!=item.value}" @click="where.type = item.value" type="button" v-for="item in orderType">{{item.name}}
+                                            <span v-if="item.count!=undefined" class="layui-badge layui-bg-gray">{{item.count}}</span></button>
+                                    </div>
+                                </div>
+                                <div class="layui-col-lg12">
+                                    <label class="layui-form-label">创建时间:</label>
+                                    <div class="layui-input-block" data-type="data" v-cloak="">
+                                        <button class="layui-btn layui-btn-sm" type="button" v-for="item in dataList" @click="setData(item)" :class="{'layui-btn-primary':where.data!=item.value}">{{item.name}}</button>
+                                        <button class="layui-btn layui-btn-sm" type="button" ref="time" @click="setData({value:'zd',is_zd:true})" :class="{'layui-btn-primary':where.data!='zd'}">自定义</button>
+                                        <button type="button" class="layui-btn layui-btn-sm layui-btn-primary" v-show="showtime==true" ref="date_time">{$year.0} - {$year.1}</button>
+                                    </div>
+                                </div>
+                                <div class="layui-col-lg12">
+                                    <label class="layui-form-label">订单号:</label>
+                                    <div class="layui-input-block">
+                                        <input type="text" name="real_name" style="width: 50%" v-model="where.real_name" placeholder="请输入姓名、电话、订单编号" class="layui-input">
+                                    </div>
+                                </div>
+                                <div class="layui-col-lg12">
+                                    <div class="layui-input-block">
+                                        <button @click="search" type="button" class="layui-btn layui-btn-sm layui-btn-normal">
+                                            <i class="layui-icon layui-icon-search"></i>搜索</button>
+                                        <button @click="excel" type="button" class="layui-btn layui-btn-warm layui-btn-sm export" type="button">
+                                            <i class="fa fa-floppy-o" style="margin-right: 3px;"></i>导出</button>
+                                        <button @click="refresh" type="reset" class="layui-btn layui-btn-primary layui-btn-sm">
+                                            <i class="layui-icon layui-icon-refresh" ></i>刷新</button>
+                                    </div>
                                 </div>
                             </div>
-                        </form>
-                    </div>
-                </div>
-                <div class="table-responsive ibox-content" style="padding-right: 0;padding-left: 0;overflow:visible">
-                    <div class="row">
-                        <?php $list_num = $list->toArray(); ?>
-                        <div class="col-sm-12 m-b-sm">
-                            <span class="m-xs">售出商品：<strong class="text-danger">{$price.total_num}</strong></span>
-                            <span class="m-xs">订单数量：<strong class="text-danger">{$list_num.total}</strong></span>
-                            <span class="m-xs">订单金额：<strong class="text-danger">￥{$price.pay_price}</strong></span>
-                            <span class="m-xs">退款金额：<strong class="text-danger m-sm">￥{$price.refund_price}</strong></span>
-                            {if condition="$price['pay_price_wx'] GT 0"}
-                            <span class="m-xs">微信支付金额：<strong class="text-danger">￥{$price.pay_price_wx}</strong></span>
-                            {/if}
-                            {if condition="$price['pay_price_yue'] GT 0"}
-                            <span class="m-xs">余额支付金额：<strong class="text-danger">￥{$price.pay_price_yue}</strong></span>
-                            {/if}
-                            {if condition="$price['pay_price_offline'] GT 0"}
-                            <span class="m-xs">线下支付金额：<strong class="text-danger">￥{$price.pay_price_offline}</strong></span>
-                            {/if}
-                            {if condition="$price['pay_price_other'] GT 0"}
-                            <span class="m-xs">线下支付金额：<strong class="text-danger">￥{$price.pay_price_other}</strong></span>
-                            {/if}
-                            {if condition="$price['use_integral'] GT 0"}
-                            <span class="m-xs">积分抵扣：<strong class="text-success">{$price.use_integral} (抵扣金额:￥{$price.deduction_price})</strong></span>
-                            {/if}
-                            {if condition="$price['back_integral'] GT 0"}
-                            <span class="m-xs">退回积分：<strong class="text-success">{$price.back_integral}</strong></span>
-                            {/if}
                         </div>
-                        <!--<div class="col-sm-8 text-left m-b-sm">
-
-                        </div>-->
                     </div>
-                    <table class="footable table table-striped  table-bordered " data-page-size="20">
-                        <thead>
-                        <tr>
-                            <th class="text-center" width="13%">订单号</th>
-                            <th class="text-center" width="10%">用户信息</th>
-                            <th class="text-center" width="42%">商品信息</th>
-                            <th class="text-center" width="8%">
-                                <div class="btn-group">
-                                    <button data-toggle="dropdown" class="btn btn-white btn-xs dropdown-toggle" style="font-weight: bold;background-color: #f5f5f6;border: solid 0;" aria-expanded="false">
-                                        实际支付
-                                        <span class="second caret"></span>
-                                    </button>
-                                    <!-- <span class="caret" data-toggle="dropdown" class="dropdown-toggle" aria-expanded="false"></span>-->
-                                    <ul class="dropdown-menu">
-                                        <li>
-                                            <a class="ordersoft" data-value="">
-                                                <i class="fa fa-arrows-v"></i>   默认排序
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a class="ordersoft" data-value="pay_price asc">
-                                                <i class="fa fa-sort-numeric-asc"></i>    升序
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a class="ordersoft" data-value="pay_price desc">
-                                                <i class="fa fa-sort-numeric-desc"></i>    降序
-                                            </a>
-                                        </li>
-                                    </ul>
-                                </div>
-                            <th class="text-center" width="5%">支付状态</th>
-                            <th class="text-center" width="8%">订单状态</th>
-                            <th class="text-center" width="5%">详情</th>
-                            <th class="text-center" width="10%">操作</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {volist name="list" id="vo"}
-                        <tr>
-                            <td class="text-center">
-                                {$vo.order_id}　<br/>　
-                                <span style="color: {$vo.color};">{$vo.pink_name}</span>　　
-                            </td>
-                            <td class="text-center">
-                                <p><span>{$vo.nickname} / {$vo.uid}</span></p>
-                            </td>
-                            <td>
-                                <?php $info_order = $vo['_info'];?>
-                                {volist name="info_order" id="info"}
-                                {if condition="isset($info['cart_info']['productInfo']['attrInfo']) && !empty($info['cart_info']['productInfo']['attrInfo'])"}
-                                <p>
-                                    <span><img class="open_image" data-image="{$info.cart_info.productInfo.image}" style="width: 30px;height: 30px;cursor: pointer;" src="{$info.cart_info.productInfo.attrInfo.image}" alt="{$info.cart_info.productInfo.store_name}" title="{$info.cart_info.productInfo.store_name}"></span>
-                                    <span>{$info.cart_info.productInfo.store_name}&nbsp;{$info.cart_info.productInfo.attrInfo.suk}</span><span> | ￥{$info.cart_info.truePrice}×{$info.cart_info.cart_num}</span>
-                                </p>
-                                {else/}
-                                <p>
-                                    <span><img class="open_image" data-image="{$info.cart_info.productInfo.image}" style="width: 30px;height: 30px;cursor: pointer;" src="{$info.cart_info.productInfo.image}" alt="{$info.cart_info.productInfo.store_name}" title="{$info.cart_info.productInfo.store_name}"></span>
-                                    <span>{$info.cart_info.productInfo.store_name}</span><span> | ￥{$info.cart_info.truePrice}×{$info.cart_info.cart_num}</span>
-                                </p>
-                                {/if}
-                                {/volist}
-                            </td>
-                            <td class="text-center">
-                                ￥{$vo.pay_price}
-                            </td>
-                            <td class="text-center">
-                                {if condition="$vo['paid'] eq 1"}
-                                <p><span>
-                                           {if condition="$vo['pay_type'] eq 'weixin'"}
-                                           微信支付
-                                           {elseif condition="$vo['pay_type'] eq 'yue'"}
-                                           余额支付
-                                           {elseif condition="$vo['pay_type'] eq 'offline'"}
-                                           线下支付
-                                           {else/}
-                                           其他支付
-                                           {/if}
-                                       </span></p>
-                                {else/}
-                                {if condition="$vo['pay_type'] eq 'offline'"}
-                                <p><span>线下支付</span></p>
-                                <p><button data-pay="{$vo.pay_price}" data-url="{:Url('offline',array('id'=>$vo['id']))}" type="button" class="offline_btn btn btn-w-m btn-white">立即支付</button></p>
-
-                                {else/}
-                                <p><span>未支付</span></p>
-                                {/if}
-                                {/if}
-                            </td>
-                            <td class="text-center">
-                                {if condition="$vo['paid'] eq 0 && $vo['status'] eq 0"}
-                                未支付
-                                {elseif condition="$vo['paid'] eq 1 && $vo['status'] eq 0 && $vo['refund_status'] eq 0"/}
-                                未发货
-                                {elseif condition="$vo['paid'] eq 1 && $vo['status'] eq 1 && $vo['refund_status'] eq 0"/}
-                                待收货
-
-                                {elseif condition="$vo['paid'] eq 1 && $vo['status'] eq 2 && $vo['refund_status'] eq 0"/}
-                                待评价
-                                {elseif condition="$vo['paid'] eq 1 && $vo['status'] eq 3 && $vo['refund_status'] eq 0"/}
-                                交易完成
-                                {elseif condition="$vo['paid'] eq 1 && $vo['refund_status'] eq 1"/}
-                                <b style="color:#f124c7">申请退款</b><br/>
-                                <span>退款原因：{$vo.refund_reason_wap}</span>
-                                {elseif condition="$vo['paid'] eq 1 && $vo['refund_status'] eq 2"/}
-                                已退款
-                                {/if}
-                            </td>
-                            <td class="text-center">
-                                <a class="btn btn-white btn-bitbucket btn-xs" onclick="$eb.createModalFrame('{$vo.nickname}-订单详情','{:Url('order_info',array('oid'=>$vo['id']))}')">
-                                    <i class="fa fa-file-text"></i> 订单详情
-                                </a>
-                            </td>
-                            <td class="text-right">
-                                <span class="input-group-btn js-group-btn" style="min-width: 106px;">
-                                    {if condition="$vo['paid'] eq 0 && $vo['status'] eq 0 && $vo['refund_status'] eq 0"}<!--未支付-->
-                                    <div class="btn-group">
-                                        <button data-toggle="dropdown" class="btn btn-warning btn-xs dropdown-toggle"
-                                                aria-expanded="false">操作
-                                            <span class="caret"></span>
-                                        </button>
-                                        <ul class="dropdown-menu">
-                                            <li>
-                                                <a href="javascript:void(0);" onclick="$eb.createModalFrame('修改订单','{:Url('edit',array('id'=>$vo['id']))}')">
-                                                    <i class="fa fa-file-text"></i> 修改订单
-                                                </a>
-                                            </li>
-                                            <li>
-                                                <a class="save_mark" href="javascript:void(0);"  data-id="{$vo['id']}" data-make="{$vo.remark}" data-url="{:Url('remark')}">
-                                                    <i class="fa fa-paste"></i> 订单备注
-                                                </a>
-                                            </li>
-                                            <li>
-                                                <a href="javascript:void(0);" onclick="$eb.createModalFrame('订单记录','{:Url('order_status',array('oid'=>$vo['id']))}')">
-                                                    <i class="fa fa-newspaper-o"></i> 订单记录
-                                                </a>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                    {elseif condition="$vo['paid'] eq 1 && $vo['status'] eq 0 && $vo['refund_status'] eq 0"/}<!--已支付-->
-
-                                    <button class="btn btn-primary btn-xs" type="button" onclick="$eb.createModalFrame('去发货','{:Url('deliver_goods',array('id'=>$vo['id']))}',{w:400,h:300})"><i class="fa fa-cart-plus"></i> 去发货</button>
-                                    <div class="btn-group">
-                                        <button data-toggle="dropdown" class="btn btn-warning btn-xs dropdown-toggle"
-                                                aria-expanded="false">操作
-                                            <span class="caret"></span>
-                                        </button>
-                                        <ul class="dropdown-menu">
-                                            <li>
-                                                <a  href="javascript:void(0);" onclick="$eb.createModalFrame('去送货','{:Url('delivery',array('id'=>$vo['id']))}',{w:400,h:300})">
-                                                    <i class="fa fa-motorcycle"></i> 去送货
-                                                </a>
-                                            </li>
-                                            <li>
-                                                <a class="save_mark" href="javascript:void(0);"  data-id="{$vo['id']}" data-make="{$vo.remark}" data-url="{:Url('remark')}">
-                                                    <i class="fa fa-paste"></i> 订单备注
-                                                </a>
-                                            </li>
-                                            {if condition="$vo['pay_price'] neq $vo['refund_price']"}
-                                            <li>
-                                                <a href="javascript:void(0);" onclick="$eb.createModalFrame('退款','{:Url('refund_y',array('id'=>$vo['id']))}',{w:400,h:300})">
-                                                    <i class="fa fa-history"></i> 立即退款
-                                                </a>
-                                            </li>
-                                            {/if}
-                                            {if condition="$vo['use_integral'] GT 0 && $vo['use_integral'] EGT $vo['back_integral']"}<!-- 退积分 -->
-                                            <li>
-                                                <a href="javascript:void(0);" onclick="$eb.createModalFrame('退积分','{:Url('integral_back',array('id'=>$vo['id']))}')">
-                                                    <i class="fa fa-history"></i> 退积分
-                                                </a>
-                                            </li>
-                                            {/if}
-                                            <li>
-                                                <a href="javascript:void(0);" onclick="$eb.createModalFrame('订单记录','{:Url('order_status',array('oid'=>$vo['id']))}')">
-                                                    <i class="fa fa-newspaper-o"></i> 订单记录
-                                                </a>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                    {elseif condition="$vo['paid'] eq 1 && $vo['refund_status'] eq 1"/}<!--已支付  退款中-->
-                                      <div class="btn-group">
-                                          <button data-toggle="dropdown" class="btn btn-warning btn-xs dropdown-toggle"
-                                                  aria-expanded="false">操作
-                                              <span class="caret"></span>
-                                          </button>
-                                          <ul class="dropdown-menu">
-                                              {if condition="$vo['use_integral'] GT 0 && $vo['use_integral'] EGT $vo['back_integral']"}<!-- 退积分 -->
-                                              <li>
-                                                  <a class="save_mark" href="javascript:void(0);"  data-id="{$vo['id']}" data-make="{$vo.remark}" data-url="{:Url('remark')}">
-                                                      <i class="fa fa-paste"></i> 订单备注
-                                                  </a>
-                                              </li>
-                                              <li>
-                                                  <a href="javascript:void(0);" onclick="$eb.createModalFrame('退积分','{:Url('integral_back',array('id'=>$vo['id']))}',{w:400,h:300})">
-                                                      <i class="fa fa-history"></i> 退积分
-                                                  </a>
-                                              </li>
-                                              {/if}
-                                              {if condition="$vo['pay_price'] neq $vo['refund_price']"}
-                                              <li>
-                                                  <a href="javascript:void(0);" onclick="$eb.createModalFrame('退款','{:Url('refund_y',array('id'=>$vo['id']))}',{w:400,h:300})">
-                                                      <i class="fa fa-history"></i>立即退款
-                                                  </a>
-                                              </li>
-                                              {/if}
-                                              <li>
-                                                  <a href="javascript:void(0);" onclick="$eb.createModalFrame('不退款','{:Url('refund_n',array('id'=>$vo['id']))}',{w:400,h:300})">
-                                                      <i class="fa fa-openid"></i> 不退款
-                                                  </a>
-                                              </li>
-
-                                              <li>
-                                                  <a href="javascript:void(0);" onclick="$eb.createModalFrame('订单记录','{:Url('order_status',array('oid'=>$vo['id']))}')">
-                                                      <i class="fa fa-newspaper-o"></i> 订单记录
-                                                  </a>
-                                              </li>
-                                          </ul>
-                                      </div>
-                                    {elseif condition="$vo['paid'] eq 1 && $vo['status'] eq 1 && $vo['refund_status'] eq 0"/}<!--已支付 已发货 待收货-->
-                                    <button class="btn btn-default btn-xs" type="button" onclick="$eb.createModalFrame('配送信息','{:Url('distribution',array('id'=>$vo['id']))}')"><i class="fa fa-cart-arrow-down"></i> 配送信息</button>
-                                    <div class="btn-group">
-                                        <button data-toggle="dropdown" class="btn btn-warning btn-xs dropdown-toggle"
-                                                aria-expanded="false">操作
-                                            <span class="caret"></span>
-                                        </button>
-                                        <ul class="dropdown-menu">
-                                            <li>
-                                                <a class="save_mark" href="javascript:void(0);"  data-id="{$vo['id']}" data-make="{$vo.remark}" data-url="{:Url('remark')}">
-                                                    <i class="fa fa-paste"></i> 订单备注
-                                                </a>
-                                            </li>
-                                            <li>
-                                                <a class="danger-btn" href="javascript:void(0);" data-url="{:Url('take_delivery',array('id'=>$vo['id']))}">
-                                                    <i class="fa fa-cart-arrow-down"></i> 已收货
-                                                </a>
-                                            </li>
-                                            {if condition="$vo['pay_price'] neq $vo['refund_price']"}
-                                            <li>
-                                                <a href="javascript:void(0);" onclick="$eb.createModalFrame('退款','{:Url('refund_y',array('id'=>$vo['id']))}')">
-                                                    <i class="fa fa-history"></i> 立即退款
-                                                </a>
-                                            </li>
-                                            {/if}
-                                            {if condition="$vo['use_integral'] GT 0 && $vo['use_integral'] EGT $vo['back_integral']"}<!-- 退积分 -->
-                                            <li>
-                                                <a href="javascript:void(0);" onclick="$eb.createModalFrame('退积分','{:Url('integral_back',array('id'=>$vo['id']))}')">
-                                                    <i class="fa fa-history"></i> 退积分
-                                                </a>
-                                            </li>
-                                            {/if}
-                                            <li>
-                                                <a href="javascript:void(0);" onclick="$eb.createModalFrame('订单记录','{:Url('order_status',array('oid'=>$vo['id']))}')">
-                                                    <i class="fa fa-newspaper-o"></i> 订单记录
-                                                </a>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                    {elseif condition="$vo['paid'] eq 1 && $vo['status'] eq 2 && $vo['refund_status'] eq 0"/}<!--已支付  已收货 待评价-->
-                                    <div class="btn-group">
-                                        <button data-toggle="dropdown" class="btn btn-warning btn-xs dropdown-toggle"
-                                                aria-expanded="false">操作
-                                            <span class="caret"></span>
-                                        </button>
-                                        <ul class="dropdown-menu">
-                                            <li>
-                                                <a class="save_mark" href="javascript:void(0);"  data-id="{$vo['id']}" data-make="{$vo.remark}" data-url="{:Url('remark')}">
-                                                    <i class="fa fa-paste"></i> 订单备注
-                                                </a>
-                                            </li>
-                                            {if condition="$vo['pay_price'] neq $vo['refund_price']"}
-                                            <li>
-                                                <a href="javascript:void(0);" onclick="$eb.createModalFrame('退款','{:Url('refund_y',array('id'=>$vo['id']))}')">
-                                                    <i class="fa fa-history"></i> 立即退款
-                                                </a>
-                                            </li>
-                                            {/if}
-                                            {if condition="$vo['use_integral'] GT 0 && $vo['use_integral'] EGT $vo['back_integral']"}<!-- 退积分 -->
-                                            <li>
-                                                <a href="javascript:void(0);" onclick="$eb.createModalFrame('退积分','{:Url('integral_back',array('id'=>$vo['id']))}')">
-                                                    <i class="fa fa-history"></i> 退积分
-                                                </a>
-                                            </li>
-                                            {/if}
-                                            <li>
-                                                <a href="javascript:void(0);" onclick="$eb.createModalFrame('订单记录','{:Url('order_status',array('oid'=>$vo['id']))}')">
-                                                    <i class="fa fa-newspaper-o"></i> 订单记录
-                                                </a>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                        {elseif condition="$vo['paid'] eq 1 && $vo['status'] eq 3 && $vo['refund_status'] eq 0"/} <!--订单完成 -->
-                                        <div class="btn-group">
-                                            <button data-toggle="dropdown" class="btn btn-warning btn-xs dropdown-toggle"
-                                                    aria-expanded="false">操作
-                                                <span class="caret"></span>
-                                            </button>
-                                            <ul class="dropdown-menu">
-                                                <li>
-                                                    <a class="save_mark" href="javascript:void(0);"  data-id="{$vo['id']}" data-make="{$vo.remark}" data-url="{:Url('remark')}">
-                                                        <i class="fa fa-paste"></i> 订单备注
-                                                    </a>
-                                                </li>
-                                                {if condition="$vo['pay_price'] neq $vo['refund_price']"}
-                                                <li>
-                                                    <a href="javascript:void(0);" onclick="$eb.createModalFrame('退款','{:Url('refund_y',array('id'=>$vo['id']))}')">
-                                                        <i class="fa fa-history"></i> 立即退款
-                                                    </a>
-                                                </li>
-                                                {/if}
-                                                {if condition="$vo['use_integral'] GT 0 && $vo['use_integral'] EGT $vo['back_integral']"}<!-- 退积分 -->
-                                                <li>
-                                                    <a href="javascript:void(0);" onclick="$eb.createModalFrame('退积分','{:Url('integral_back',array('id'=>$vo['id']))}')">
-                                                        <i class="fa fa-history"></i> 退积分
-                                                    </a>
-                                                </li>
-                                                {/if}
-                                                <li>
-                                                    <a href="javascript:void(0);" onclick="$eb.createModalFrame('订单记录','{:Url('order_status',array('oid'=>$vo['id']))}')">
-                                                        <i class="fa fa-newspaper-o"></i> 订单记录
-                                                    </a>
-                                                </li>
-                                            </ul>
-                                        </div>
-{elseif condition="$vo['paid'] eq 1 && $vo['refund_status'] eq 2"/}<!-- 已支付  已退款-->
-
-                                            <div class="btn-group">
-                                                <button data-toggle="dropdown" class="btn btn-warning btn-xs dropdown-toggle"
-                                                        aria-expanded="false">操作
-                                                    <span class="caret"></span>
-                                                </button>
-                                                <ul class="dropdown-menu">
-                                                    <li>
-                                                        <a class="save_mark" href="javascript:void(0);"  data-id="{$vo['id']}" data-make="{$vo.remark}" data-url="{:Url('remark')}">
-                                                            <i class="fa fa-paste"></i> 订单备注
-                                                        </a>
-                                                    </li>
-                                                    {if condition="$vo['use_integral'] GT 0 && $vo['use_integral'] EGT $vo['back_integral']"}<!-- 退积分 -->
-                                                    <li>
-                                                        <a href="javascript:void(0);" onclick="$eb.createModalFrame('退积分','{:Url('integral_back',array('id'=>$vo['id']))}')">
-                                                            <i class="fa fa-history"></i> 退积分
-                                                        </a>
-                                                    </li>
-                                                    {/if}
-                                                    <li>
-                                                        <a href="javascript:void(0);" onclick="$eb.createModalFrame('订单记录','{:Url('order_status',array('oid'=>$vo['id']))}')">
-                                                            <i class="fa fa-newspaper-o"></i> 订单记录
-                                                        </a>
-                                                    </li>
-                                                </ul>
-                                            </div>
-                                    {/if}
-                                </span>
-                            </td>
-                        </tr>
-                        {/volist}
-                        </tbody>
-                    </table>
                 </div>
-                {include file="public/inner_page"}
+            </div>
+        </div>
+        <!--end-->
+        <!-- 中间详细信息-->
+        <div :class="item.col!=undefined ? 'layui-col-sm'+item.col+' '+'layui-col-md'+item.col:'layui-col-sm6 layui-col-md3'" v-for="item in badge" v-cloak="" v-if="item.count > 0">
+            <div class="layui-card">
+                <div class="layui-card-header">
+                    {{item.name}}
+                    <span class="layui-badge layuiadmin-badge" :class="item.background_color">{{item.field}}</span>
+                </div>
+                <div class="layui-card-body">
+                    <p class="layuiadmin-big-font">{{item.count}}</p>
+                    <p v-show="item.content!=undefined">
+                        {{item.content}}
+                        <span class="layuiadmin-span-color">{{item.sum}}<i :class="item.class"></i></span>
+                    </p>
+                </div>
+            </div>
+        </div>
+        <!--enb-->
+    </div>
+    <!--列表-->
+    <div class="layui-row layui-col-space15" >
+        <div class="layui-col-md12">
+            <div class="layui-card">
+                <div class="layui-card-header">订单列表</div>
+                <div class="layui-card-body">
+                    <table class="layui-hide" id="List" lay-filter="List"></table>
+                    <!--订单-->
+                    <script type="text/html" id="order_id">
+                       <h4>{{d.order_id}}</h4>
+                       <span style="color: {{d.color}};">{{d.pink_name}}</span>　　
+                    </script>
+                    <!--用户信息-->
+                    <script type="text/html" id="userinfo">
+                       {{d.nickname==null ? '暂无信息':d.nickname}}/{{d.uid}}
+                    </script>
+                    <!--支付状态-->
+                    <script type="text/html" id="paid">
+                        {{#  if(d.pay_type==1){ }}
+                                <p>{{d.pay_type_name}}</p>
+                        {{#  }else{ }}
+                            {{# if(d.pay_type_info!=undefined){ }}
+                                <p><span>线下支付</span></p>
+                                <p><button type="button" class="btn btn-w-m btn-white">立即支付</button></p>
+                            {{# }else{ }}
+                                <p>{{d.pay_type_name}}</p>
+                            {{# } }}
+                        {{# }; }}
+                    </script>
+                    <!--订单状态-->
+                    <script type="text/html" id="status">
+                       {{d.status_name}}
+                    </script>
+                    <!--商品信息-->
+                    <script type="text/html" id="info">
+                        {{#  layui.each(d._info, function(index, item){ }}
+                        {{#  if(item.cart_info.productInfo.attrInfo!=undefined){ }}
+                        <p>
+                            <span>
+                                <img style="width: 30px;height: 30px;cursor: pointer;" src="{{item.cart_info.productInfo.attrInfo.image}}">
+                            </span>
+                            <span>{{item.cart_info.productInfo.store_name}}&nbsp;{{item.cart_info.productInfo.attrInfo.suk}}</span>
+                            <span> | ￥{{item.cart_info.truePrice}}×{{item.cart_info.cart_num}}</span>
+                        </p>
+                        {{#  }else{ }}
+                        <p>
+                            <span><img style="width: 30px;height: 30px;cursor: pointer;" src="{{item.cart_info.productInfo.image}}"></span>
+                            <span>{{item.cart_info.productInfo.store_name}}</span><span> | ￥{{item.cart_info.truePrice}}×{{item.cart_info.cart_num}}</span>
+                        </p>
+                        {{# } }}
+                        {{#  }); }}
+                    </script>
+                    <!--详情-->
+                    <script type="text/html" id="order_info">
+                        <button class="btn btn-white btn-bitbucket btn-xs" onclick="$eb.createModalFrame('{{d.nickname}}-订单详情','{:Url('order_info')}?oid={{d.id}}')">
+                            <i class="fa fa-file-text"></i> 订单详情
+                        </button>
+                    </script>
+                    <script type="text/html" id="act">
+                        {{#  if(d._status==1){ }}
+                        <button type="button" class="layui-btn layui-btn-xs" onclick="dropdown(this)">操作 <span class="caret"></span></button>
+                        <ul class="layui-nav-child layui-anim layui-anim-upbit">
+                            <li>
+                                <a href="javascript:void(0);" onclick="$eb.createModalFrame('修改订单','{:Url('edit')}?id={{d.id}}')">
+                                    <i class="fa fa-file-text"></i> 修改订单
+                                </a>
+                            </li>
+                            <li>
+                                <a lay-event='marke' href="javascript:void(0);" >
+                                    <i class="fa fa-paste"></i> 订单备注
+                                </a>
+                            </li>
+                            <li>
+                                <a href="javascript:void(0);" onclick="$eb.createModalFrame('订单记录','{:Url('order_status')}?oid={{d.id}}')">
+                                    <i class="fa fa-newspaper-o"></i> 订单记录
+                                </a>
+                            </li>
+                        </ul>
+                        {{#  }else if(d._status==2){ }}
+                        <button class="btn btn-primary btn-xs" type="button" onclick="$eb.createModalFrame('去发货','{:Url('deliver_goods')}?id={{d.id}}',{w:400,h:300})">
+                            <i class="fa fa-cart-plus"></i> 去发货</button>
+                        <button type="button" class="layui-btn layui-btn-xs" onclick="dropdown(this)">操作 <span class="caret"></span></button>
+                        <ul class="layui-nav-child layui-anim layui-anim-upbit">
+                            <li>
+                                <a  href="javascript:void(0);" onclick="$eb.createModalFrame('去送货','{:Url('delivery')}?id={{d.id}}',{w:400,h:300})">
+                                    <i class="fa fa-motorcycle"></i> 去送货
+                                </a>
+                            </li>
+                            <li>
+                                <a lay-event='marke' href="javascript:void(0);" >
+                                    <i class="fa fa-paste"></i> 订单备注
+                                </a>
+                            </li>
+                            {{#  if(d.pay_price!=d.refund_price){ }}
+                            <li>
+                                <a href="javascript:void(0);" onclick="$eb.createModalFrame('退款','{:Url('refund_y')}?id={{d.id}}',{w:400,h:300})">
+                                    <i class="fa fa-history"></i> 立即退款
+                                </a>
+                            </li>
+                            {{#  }else if(d.use_integral > 0 && d.use_integral >= d.back_integral){ }}
+                            <li>
+                                <a href="javascript:void(0);" onclick="$eb.createModalFrame('退积分','{:Url('integral_back')}?id={{d.id}}')">
+                                    <i class="fa fa-history"></i> 退积分
+                                </a>
+                            </li>
+                            {{# } ;}}
+                            <li>
+                                <a href="javascript:void(0);" onclick="$eb.createModalFrame('订单记录','{:Url('order_status')}?oid={{d.id}}')">
+                                    <i class="fa fa-newspaper-o"></i> 订单记录
+                                </a>
+                            </li>
+                        </ul>
+                        {{#  }else if(d._status==3){ }}
+                        <button type="button" class="layui-btn layui-btn-xs" onclick="dropdown(this)">操作 <span class="caret"></span></button>
+                        <ul class="layui-nav-child layui-anim layui-anim-upbit">
+                            <li>
+                                <a  href="javascript:void(0);" onclick="$eb.createModalFrame('去送货','{:Url('delivery')}?id={{d.id}}',{w:400,h:300})">
+                                    <i class="fa fa-motorcycle"></i> 去送货
+                                </a>
+                            </li>
+                            {{#  if(d.use_integral > 0 && d.use_integral >= d.back_integral){ }}
+                            <li>
+                                <a lay-event='marke' href="javascript:void(0);">
+                                    <i class="fa fa-paste"></i> 订单备注
+                                </a>
+                            </li>
+                            <li>
+                                <a href="javascript:void(0);" onclick="$eb.createModalFrame('退积分','{:Url('integral_back')}?id={{d.id}}',{w:400,h:300})">
+                                    <i class="fa fa-history"></i> 退积分
+                                </a>
+                            </li>
+                            {{# }else if(d.pay_price != d.refund_price){ }}
+                            <li>
+                                <a href="javascript:void(0);" onclick="$eb.createModalFrame('退款','{:Url('refund_y')}?id={{d.id}}',{w:400,h:300})">
+                                    <i class="fa fa-history"></i>立即退款
+                                </a>
+                            </li>
+                            {{# } ;}}
+                            <li>
+                                <a href="javascript:void(0);" onclick="$eb.createModalFrame('不退款','{:Url('refund_n')}?id={{d.id}}',{w:400,h:300})">
+                                    <i class="fa fa-openid"></i> 不退款
+                                </a>
+                            </li>
+                            <li>
+                                <a href="javascript:void(0);" onclick="$eb.createModalFrame('订单记录','{:Url('order_status')}?oid={{d.id}}')">
+                                    <i class="fa fa-newspaper-o"></i> 订单记录
+                                </a>
+                            </li>
+                        </ul>
+                        {{#  }else if(d._status==4){ }}
+                        <button class="btn btn-default btn-xs" type="button" onclick="$eb.createModalFrame('配送信息','{:Url('distribution')}?id={{d.id}}')">
+                            <i class="fa fa-cart-arrow-down"></i> 配送信息</button>
+                        <button type="button" class="layui-btn layui-btn-xs" onclick="dropdown(this)">操作 <span class="caret"></span></button>
+                        <ul class="layui-nav-child layui-anim layui-anim-upbit">
+                            <li>
+                                <a lay-event='marke' href="javascript:void(0);" >
+                                    <i class="fa fa-paste"></i> 订单备注
+                                </a>
+                            </li>
+                            <li>
+                                <a lay-event='danger' href="javascript:void(0);">
+                                    <i class="fa fa-cart-arrow-down"></i> 已收货
+                                </a>
+                            </li>
+                            {{#  if(d.pay_price != d.refund_price){ }}
+                            <li>
+                                <a href="javascript:void(0);" onclick="$eb.createModalFrame('退款','{:Url('refund_y')}?id={{d.id}}')">
+                                    <i class="fa fa-history"></i> 立即退款
+                                </a>
+                            </li>
+                            {{# }else if(d.use_integral > 0 && d.use_integral >= d.back_integral){ }}
+                            <li>
+                                <a href="javascript:void(0);" onclick="$eb.createModalFrame('退积分','{:Url('integral_back')}?id={{d.id}}')">
+                                    <i class="fa fa-history"></i> 退积分
+                                </a>
+                            </li>
+                            {{# } }}
+                            <li>
+                                <a href="javascript:void(0);" onclick="$eb.createModalFrame('订单记录','{:Url('order_status')}?oid={{d.id}}')">
+                                    <i class="fa fa-newspaper-o"></i> 订单记录
+                                </a>
+                            </li>
+                        </ul>
+                        {{#  }else if(d._status==5 || d._status==6){ }}
+                        <button type="button" class="layui-btn layui-btn-xs" onclick="dropdown(this)">操作 <span class="caret"></span></button>
+                        <ul class="layui-nav-child layui-anim layui-anim-upbit">
+                            <li>
+                                <a lay-event='marke' href="javascript:void(0);" >
+                                    <i class="fa fa-paste"></i> 订单备注
+                                </a>
+                            </li>
+                            {{#  if(d.pay_price != d.refund_price){ }}
+                            <li>
+                                <a href="javascript:void(0);" onclick="$eb.createModalFrame('退款','{:Url('refund_y')}?id={{d.id}}')">
+                                    <i class="fa fa-history"></i> 立即退款
+                                </a>
+                            </li>
+                            {{# }else if(d.use_integral > 0 && d.use_integral >= d.back_integral){ }}
+                            <li>
+                                <a href="javascript:void(0);" onclick="$eb.createModalFrame('退积分','{:Url('integral_back')}?id={{d.id}}')">
+                                    <i class="fa fa-history"></i> 退积分
+                                </a>
+                            </li>
+                            {{# } }}
+                            <li>
+                                <a href="javascript:void(0);" onclick="$eb.createModalFrame('订单记录','{:Url('order_status')}?oid={{d.id}}')">
+                                    <i class="fa fa-newspaper-o"></i> 订单记录
+                                </a>
+                            </li>
+                        </ul>
+                        {{#  }else if(d._status==7){ }}
+                        <button type="button" class="layui-btn layui-btn-xs" onclick="dropdown(this)">操作 <span class="caret"></span></button>
+                        <ul class="layui-nav-child layui-anim layui-anim-upbit">
+                            <li>
+                                <a lay-event='marke' href="javascript:void(0);" >
+                                    <i class="fa fa-paste"></i> 订单备注
+                                </a>
+                            </li>
+                            {{# if(d.use_integral > 0 && d.use_integral >= d.back_integral){ }}
+                            <li>
+                                <a href="javascript:void(0);" onclick="$eb.createModalFrame('退积分','{:Url('integral_back')}?id={{d.id}}')">
+                                    <i class="fa fa-history"></i> 退积分
+                                </a>
+                            </li>
+                            {{# } }}
+                            <li>
+                                <a href="javascript:void(0);" onclick="$eb.createModalFrame('订单记录','{:Url('order_status')}?oid={{d.id}}')">
+                                    <i class="fa fa-newspaper-o"></i> 订单记录
+                                </a>
+                            </li>
+                        </ul>
+                        {{#  }; }}
+                    </script>
+                </div>
             </div>
         </div>
     </div>
+    <!--end-->
 </div>
-<script src="{__FRAME_PATH}js/content.min.js?v=1.0.0"></script>
+<script src="{__ADMIN_PATH}js/layuiList.js"></script>
 {/block}
 {block name="script"}
 <script>
-
-
-    $(function init(){
-        $('.search-item>.btn').on('click',function(){
-            var that = $(this),value = that.data('value'),p = that.parent(),name = p.data('name'),form = p.parents();
-            form.find('input[name="'+name+'"]').val(value);
-            $('input[name=export]').val(0);
-            form.submit();
-        });
-        $('.search-item-value').each(function(){
-            var that = $(this),name = that.attr('name'), value = that.val(),dom = $('.search-item[data-name="'+name+'"] .btn[data-value="'+value+'"]');
-            dom.eq(0).removeClass('btn-outline btn-link').addClass('btn-primary').siblings().addClass('btn-outline btn-link btn-sm').removeClass('btn-primary')
-        });
+    layList.tableList('List',"{:Url('order_list',['real_name'=>$real_name])}",function (){
+        return [
+            {field: 'order_id', title: '订单号', sort: true,event:'order_id',width:'12%',templet:'#order_id'},
+            {field: 'nickname', title: '用户信息',templet:'#userinfo',width:'10%'},
+            {field: 'info', title: '商品信息',templet:"#info",width:'36%'},
+            {field: 'pay_price', title: '实际支付',width:'8%'},
+            {field: 'paid', title: '支付状态',templet:'#paid',width:'8%'},
+            {field: 'status', title: '订单状态',templet:'#status',width:'8%'},
+            {field: 'order_info', title: '详情',templet:'#order_info',width:'8%'},
+            {field: 'right', title: '操作',align:'center',toolbar:'#act',width:'10%'},
+        ];
     });
-    $('.ordersoft').on('click',function(){
-        var that = $(this),value = that.data('value');
-        $('input[name=order]').val(value);
-        $('input[name=export]').val(0);
-        $('form').submit();
-    });
-    $('.js-group-btn').on('click',function(){
-        $('.js-group-btn').css({zIndex:1});
-        $(this).css({zIndex:2});
-    });
-    $(".open_image").on('click',function (e) {
-        var image = $(this).data('image');
-        $eb.openImage(image);
-    });
-    $('.danger-btn,.btn-danger').on('click',function (e) {
-        window.t = $(this);
-        var _this = $(this),url =_this.data('url');
-        $eb.$swal('delete',function(){
-            $eb.axios.get(url).then(function(res){
-                if(res.status == 200 && res.data.code == 200) {
-                    $eb.$swal('success',res.data.msg);
-                }else
-                    return Promise.reject(res.data.msg || '收货失败')
-            }).catch(function(err){
-                $eb.$swal('error',err);
-            });
-        },{'title':'您确定要修改收货状态吗？','text':'修改后将无法恢复,请谨慎操作！','confirm':'是的，我要修改'})
-    })
-    $('.offline_btn').on('click',function (e) {
-        window.t = $(this);
-        var _this = $(this),url =_this.data('url'),pay_price =_this.data('pay');
-        $eb.$swal('delete',function(){
-            $eb.axios.get(url).then(function(res){
-                if(res.status == 200 && res.data.code == 200) {
-                    $eb.$swal('success',res.data.msg);
-                }else
-                    return Promise.reject(res.data.msg || '收货失败')
-            }).catch(function(err){
-                $eb.$swal('error',err);
-            });
-        },{'title':'您确定要修改已支付'+pay_price+'元的状态吗？','text':'修改后将无法恢复,请谨慎操作！','confirm':'是的，我要修改'})
-    })
-
-    $('.add_mark').on('click',function (e) {
-        var _this = $(this),url =_this.data('url'),id=_this.data('id');
-        $eb.$alert('textarea',{},function (result) {
-            if(result){
-                $.ajax({
-                    url:url,
-                    data:'remark='+result+'&id='+id,
-                    type:'post',
-                    dataType:'json',
-                    success:function (res) {
-                        console.log(res);
-                        if(res.code == 200) {
-                            $eb.$swal('success',res.msg);
-                        }else
-                            $eb.$swal('error',res.msg);
+    layList.tool(function (event,data,obj) {
+        switch (event) {
+            case 'marke':
+                var url =layList.U({c:'order.store_order',a:'remark'}),
+                    id=data.id,
+                    make=data.remark;
+                $eb.$alert('textarea',{title:'请修改内容',value:make},function (result) {
+                    if(result){
+                        $.ajax({
+                            url:url,
+                            data:'remark='+result+'&id='+id,
+                            type:'post',
+                            dataType:'json',
+                            success:function (res) {
+                                if(res.code == 200) {
+                                    $eb.$swal('success',res.msg);
+                                }else
+                                    $eb.$swal('error',res.msg);
+                            }
+                        })
+                    }else{
+                        $eb.$swal('error','请输入要备注的内容');
                     }
-                })
-            }else{
-                $eb.$swal('error','请输入要备注的内容');
-            }
-        });
-    })
-    $('.save_mark').on('click',function (e) {
-        var _this = $(this),url =_this.data('url'),id=_this.data('id'),make=_this.data('make');
-        $eb.$alert('textarea',{title:'请修改内容',value:make},function (result) {
-            if(result){
-                $.ajax({
-                    url:url,
-                    data:'remark='+result+'&id='+id,
-                    type:'post',
-                    dataType:'json',
-                    success:function (res) {
-                        console.log(res);
-                        if(res.code == 200) {
-                            $eb.$swal('success',res.msg);
+                });
+                break;
+            case 'danger':
+                var url =layList.U({c:'order.store_order',a:'take_delivery',p:{id:data.id}});
+                $eb.$swal('delete',function(){
+                    $eb.axios.get(url).then(function(res){
+                        if(res.status == 200 && res.data.code == 200) {
+                            $eb.$swal('success',res.data.msg);
                         }else
-                            $eb.$swal('error',res.msg);
-                    }
-                })
-            }else{
-                $eb.$swal('error','请输入要备注的内容');
-            }
-        });
-    })
-    var dateInput =$('.datepicker');
-    dateInput.daterangepicker({
-        autoUpdateInput: false,
-        "opens": "center",
-        "drops": "down",
-        "ranges": {
-            '今天': [moment(), moment().add(1, 'days')],
-            '昨天': [moment().subtract(1, 'days'), moment()],
-            '上周': [moment().subtract(6, 'days'), moment()],
-            '前30天': [moment().subtract(29, 'days'), moment()],
-            '本月': [moment().startOf('month'), moment().endOf('month')],
-            '上月': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
-        },
-        "locale" : {
-            applyLabel : '确定',
-            cancelLabel : '取消',
-            fromLabel : '起始时间',
-            toLabel : '结束时间',
-            format : 'YYYY/MM/DD',
-            customRangeLabel : '自定义',
-            daysOfWeek : [ '日', '一', '二', '三', '四', '五', '六' ],
-            monthNames : [ '一月', '二月', '三月', '四月', '五月', '六月',
-                '七月', '八月', '九月', '十月', '十一月', '十二月' ],
-            firstDay : 1
+                            return Promise.reject(res.data.msg || '收货失败')
+                    }).catch(function(err){
+                        $eb.$swal('error',err);
+                    });
+                },{'title':'您确定要修改收货状态吗？','text':'修改后将无法恢复,请谨慎操作！','confirm':'是的，我要修改'})
+                break;
         }
-    });
+    })
+    //下拉框
+    $(document).click(function (e) {
+        $('.layui-nav-child').hide();
+    })
+    function dropdown(that){
+        var oEvent = arguments.callee.caller.arguments[0] || event;
+        oEvent.stopPropagation();
+        var offset = $(that).offset();
+        var top=offset.top-$(window).scrollTop();
+        var index = $(that).parents('tr').data('index');
+        $('.layui-nav-child').each(function (key) {
+            if (key != index) {
+                $(this).hide();
+            }
+        })
+        if($(document).height() < top+$(that).next('ul').height()){
+            $(that).next('ul').css({
+                'padding': 10,
+                'top': - ($(that).parents('td').height() / 2 + $(that).height() + $(that).next('ul').height()/2),
+                'min-width': 'inherit',
+                'position': 'absolute'
+            }).toggle();
+        }else{
+            $(that).next('ul').css({
+                'padding': 10,
+                'top':$(that).parents('td').height() / 2 + $(that).height(),
+                'min-width': 'inherit',
+                'position': 'absolute'
+            }).toggle();
+        }
+    }
+    var real_name='<?=$real_name?>';
+    var orderCount=<?=json_encode($orderCount)?>;
+    require(['vue'],function(Vue) {
+        new Vue({
+            el: "#app",
+            data: {
+                badge: [],
+                orderType: [
+                    {name: '全部', value: ''},
+                    {name: '普通订单', value: 1,count:orderCount.general},
+                    {name: '拼团订单', value: 2,count:orderCount.pink},
+                    {name: '秒杀订单', value: 3,count:orderCount.seckill},
+                ],
+                orderStatus: [
+                    {name: '全部', value: ''},
+                    {name: '未支付', value: 0,count:orderCount.wz},
+                    {name: '未发货', value: 1,count:orderCount.wf,class:true},
+                    {name: '待收货', value: 2,count:orderCount.ds},
+                    {name: '待评价', value: 3,count:orderCount.dp},
+                    {name: '交易完成', value: 4,count:orderCount.jy},
+                    {name: '退款中', value: -1,count:orderCount.tk,class:true},
+                    {name: '已退款', value: -2,count:orderCount.yt},
+                ],
+                dataList: [
+                    {name: '全部', value: ''},
+                    {name: '昨天', value: 'yesterday'},
+                    {name: '今天', value: 'today'},
+                    {name: '本周', value: 'week'},
+                    {name: '本月', value: 'month'},
+                    {name: '本季度', value: 'quarter'},
+                    {name: '本年', value: 'year'},
+                ],
+                where:{
+                    data:'',
+                    status:'',
+                    type:'',
+                    real_name:real_name || '',
+                    excel:0,
+                },
+                showtime: false,
+            },
+            watch: {
 
-    dateInput.on('cancel.daterangepicker', function(ev, picker) {
-        //$("input[name=limit_time]").val('');
-    });
-    dateInput.on('apply.daterangepicker', function(ev, picker) {
-        $("input[name=data]").val(picker.startDate.format('YYYY/MM/DD') + ' - ' + picker.endDate.format('YYYY/MM/DD'));
-        $('input[name=export]').val(0);
-        $('form').submit();
+            },
+            methods: {
+                setData:function(item){
+                    var that=this;
+                    if(item.is_zd==true){
+                        that.showtime=true;
+                        this.where.data=this.$refs.date_time.innerText;
+                    }else{
+                        this.showtime=false;
+                        this.where.data=item.value;
+                    }
+                },
+                getBadge:function() {
+                    var that=this;
+                    layList.basePost(layList.Url({c:'order.store_order',a:'getBadge'}),this.where,function (rem) {
+                        that.badge=rem.data;
+                    });
+                },
+                search:function () {
+                    this.getBadge();
+                    layList.reload(this.where);
+                },
+                refresh:function () {
+                    layList.reload();
+                    this.getBadge();
+                },
+                excel:function () {
+                    this.where.excel=1;
+                    location.href=layList.U({c:'order.store_order',a:'order_list',q:this.where});
+                }
+            },
+            mounted:function () {
+                var that=this;
+                that.getBadge();
+                layList.laydate.render({
+                    elem:this.$refs.date_time,
+                    trigger:'click',
+                    eventElem:this.$refs.time,
+                    range:true,
+                    change:function (value){
+                        that.where.data=value;
+                    }
+                });
+            }
+        })
     });
 </script>
 {/block}

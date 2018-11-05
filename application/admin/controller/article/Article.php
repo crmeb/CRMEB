@@ -4,6 +4,7 @@ namespace app\admin\controller\article;
 
 use app\admin\controller\AuthController;
 use service\UtilService as Util;
+use service\PHPTreeService as Phptree;
 use service\JsonService as Json;
 use service\UploadService as Upload;
 use think\Request;
@@ -22,18 +23,24 @@ class Article extends AuthController
      * 显示后台管理员添加的图文
      * @return mixed
      */
-    public function index($cid = 0)
+    public function index($pid = 0)
     {
         $where = Util::getMore([
-            ['title','']
+            ['title',''],
+            ['cid','']
         ],$this->request);
-        if($cid)
-            $where['cid'] = $cid;
-        else
-            $where['cid'] = '';
+        $pid = $this->request->param('pid');
         $this->assign('where',$where);
         $where['merchant'] = 0;//区分是管理员添加的图文显示  0 还是 商户添加的图文显示  1
-        $this->assign('cid',$cid);
+        $catlist = ArticleCategoryModel::where('is_del',0)->select()->toArray();
+        //获取分类列表
+        $tree = Phptree::makeTreeForHtml($catlist);
+        $this->assign(compact('tree'));
+        if($pid){
+            $pids = Util::getChildrenPid($tree,$pid);
+            $where['cid'] = ltrim($pid.$pids);
+        }
+
         $this->assign('cate',ArticleCategoryModel::getTierList());
         $this->assign(ArticleModel::getAll($where));
         return $this->fetch();
@@ -121,8 +128,6 @@ class Article extends AuthController
             'synopsis',
             'share_title',
             'share_synopsis',
-            'is_banner',
-            'is_hot',
             ['visit',0],
             ['sort',0],
             'url',

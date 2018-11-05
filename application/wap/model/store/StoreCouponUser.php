@@ -105,7 +105,7 @@ class StoreCouponUser extends ModelBasic
         $data['coupon_price'] = $couponInfo['coupon_price'];
         $data['use_min_price'] = $couponInfo['use_min_price'];
         $data['add_time'] = time();
-        $data['end_time'] = $couponInfo['add_time']+$couponInfo['coupon_time']*86400;
+        $data['end_time'] = $data['add_time']+$couponInfo['coupon_time']*86400;
         $data['type'] = $type;
         return self::set($data);
     }

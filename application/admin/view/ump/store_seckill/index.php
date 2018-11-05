@@ -103,7 +103,7 @@
             {field: 'start_name', title: '秒杀状态',width:'13%',toolbar:"#statusCn",unresize:true},
             {field: 'stop_time', title: '结束时间', width: '13%',toolbar: '#stopTime',unresize:true},
             {field: 'status', title: '状态',width:'6%',toolbar:"#status",unresize:true},
-            {fixed: 'right', title: '操作', width: '5%', align: 'center', toolbar: '#barDemo',unresize:true}
+            {field: 'right', title: '操作', width: '5%', align: 'center', toolbar: '#barDemo',unresize:true}
         ]
     });
     setTime();

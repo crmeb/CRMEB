@@ -57,7 +57,7 @@
                         {volist name="list" id="vo"}
                         <tr>
                             <td class="text-center">
-                                {$vo.uid|getUserNickname}/{$vo.uid}
+                                {$vo.nickName}/{$vo.uid}
                             </td>
                             <td class="text-center">
                                 {$vo.add_time|date='Y-m-d H:i:s',###}

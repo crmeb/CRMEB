@@ -13,6 +13,7 @@
         </div>
         <div class="product-info">
             <div class="title">{$storeInfo.store_name}</div>
+            <div class="price">￥{$storeInfo.price|floatval}</div>
             <div class="oldprice">原价:￥{$storeInfo.ot_price|floatval}</div>
             <div class="info-amount flex"><span class="current">商品编号：{$storeInfo.id}</span> <span class="">库存:{$storeInfo.stock}{$storeInfo.unit_name}</span>
                 <span class="fr">销量:{$storeInfo.sales}{$storeInfo.unit_name}</span></div>
@@ -20,12 +21,11 @@
             <div class="integral">积分:{$storeInfo.give_integral|floatval} <span>赠送</span></div>
             {/gt}
         </div>
-        <div class="like-it" v-cloak=""><i class="zan-btn iconfont icon-thumbsup"
-                                           :class="{'icon-thumbsup110':product.userLike == true}" @click="like"></i> 点赞
-            <span v-text="product.like_num"></span>次
-        </div>
         <div class="pro-attributes" @click="cardUp" v-show="productAttr && productAttr.length > 0" v-cloak="">选择
             {{productAttrCate}}
+        </div>
+        <div class="like-it" v-cloak=""><i class="zan-btn iconfont icon-thumbsup" :class="{'icon-thumbsup110':product.userLike == true}" @click="like"></i> 点赞
+            <span v-text="product.like_num"></span>次
         </div>
         {notempty name="reply"}
         <div class="item-box">

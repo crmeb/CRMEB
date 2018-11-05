@@ -166,10 +166,12 @@
     function setTime() {
         setTimeout(function () {
             $.each($combinationId,function (index,item) {
-                $('.count-time-'+item).downCount({
-                    date: $('.count-time-'+item).attr('data-time'),
-                    offset: +8
-                });
+               if($('.count-time-'+item).attr('data-time')!=undefined){
+                    $('.count-time-'+item).downCount({
+                        date: $('.count-time-'+item).attr('data-time'),
+                        offset: +8
+                    });
+               }
             })
         },3000);
     }
@@ -196,7 +198,6 @@
         switch (event) {
             case 'delstor':
                 var url=layList.U({c:'ump.store_combination',a:'delete',q:{id:data.id}});
-                console.log(url);
                 $eb.$swal('delete',function(){
                     $eb.axios.get(url).then(function(res){
                         if(res.status == 200 && res.data.code == 200) {
@@ -214,56 +215,33 @@
     $(document).click(function (e) {
         $('.layui-nav-child').hide();
     })
-    function dropdown(that){
+    function dropdown(that) {
         var oEvent = arguments.callee.caller.arguments[0] || event;
         oEvent.stopPropagation();
         var offset = $(that).offset();
-        var top=offset.top-$(window).scrollTop();
         var index = $(that).parents('tr').data('index');
         $('.layui-nav-child').each(function (key) {
             if (key != index) {
                 $(this).hide();
             }
         })
-        if($(document).height() < top+$(that).next('ul').height()){
+        if($(document).height() < offset.top+$(that).next('ul').height()){
             $(that).next('ul').css({
                 'padding': 10,
-                'top': - ($(that).parent('td').height() / 2 + $(that).height() + $(that).next('ul').height()/2),
+                'top': offset.top-$(that).next('ul').height()-30,
                 'min-width': 'inherit',
-                'position': 'absolute'
+                'left': offset.left - $(that).width() / 2,
+                'position': 'fixed'
             }).toggle();
         }else{
             $(that).next('ul').css({
                 'padding': 10,
-                'top':$(that).parent('td').height() / 2 + $(that).height(),
+                'top': offset.top + 30,
                 'min-width': 'inherit',
-                'position': 'absolute'
+                'left': offset.left - $(that).width() / 2,
+                'position': 'fixed'
             }).toggle();
         }
     }
-    $('.js-group-btn').on('click',function(){
-        $('.js-group-btn').css({zIndex:1});
-        $(this).css({zIndex:2});
-    });
-    $('.delstor').on('click',function(){
-        window.t = $(this);
-        var _this = $(this),url =_this.data('url');
-        $eb.$swal('delete',function(){
-            $eb.axios.get(url).then(function(res){
-                console.log(res);
-                if(res.status == 200 && res.data.code == 200) {
-                    $eb.$swal('success',res.data.msg);
-                    _this.parents('tr').remove();
-                }else
-                    return Promise.reject(res.data.msg || '删除失败')
-            }).catch(function(err){
-                $eb.$swal('error',err);
-            });
-        })
-    });
-    $(document).on('click',".open_image",function (e) {
-        var image = $(this).data('image');
-        $eb.openImage(image);
-    })
 </script>
 {/block}

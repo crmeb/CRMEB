@@ -668,8 +668,6 @@ class AuthApi extends AuthController{
             }else
                 return JsonService::fail('添加收货地址失败!');
         }
-
-
     }
 
     /**
@@ -1341,7 +1339,7 @@ class AuthApi extends AuthController{
         $arr = User::where('spread_uid',$this->userInfo['uid'])->column('uid');
         $list = StoreOrder::getUserOrderCount(implode(',',$arr),$type);
         $price = [];
-        foreach ($list as $k=>$v) $price[]=$v['pay_price'];
+        if(!empty($list)) foreach ($list as $k=>$v) $price[]=$v['pay_price'];
         $cont = count($list);
         $sum = array_sum($price);
         return JsonService::successful(['cont'=>$cont,'sum'=>$sum]);
@@ -1433,11 +1431,15 @@ class AuthApi extends AuthController{
         header('content-type:image/jpg');
         if(!$this->userInfo['uid']) return JsonService::fail('授权失败，请重新授权');
         $path = 'public/uploads/routine/'.$this->userInfo['uid'].'.jpg';
-        $domain=SystemConfigService::get('site_url').'/';
+        $domain = SystemConfigService::get('site_url').'/';
+        $domainTop = substr($domain,0,5);
+        if($domainTop != 'https') $domain = 'https:'.substr($domain,5,strlen($domain));
         if(file_exists($path)) return JsonService::successful($domain.$path);
         else{
-            $dir = iconv("UTF-8", "GBK", "public/uploads/routine");
-            mkdir ($dir,0775,true);
+            if(!file_exists('public/uploads/routine')){
+                $dir = iconv("UTF-8", "GBK", "public/uploads/routine");
+                mkdir ($dir,0775,true);
+            }
             file_put_contents($path,RoutineCode::getCode($this->userInfo['uid']));
         }
         return JsonService::successful($domain.$path);

@@ -57,8 +57,8 @@ class StoreProductReply extends ModelBasic
             ->join('__STORE_ORDER_CART_INFO__ C','A.unique = C.unique');
         $baseOrder = 'A.add_time DESC,A.product_score DESC, A.service_score DESC';
         if($order == 'new') $model->order($baseOrder);
-        else if($order == 'pic') $model->where('A.pics',['<>',''],['<>','[]'])->order('LENGTH(A.comment) DESC,'.$baseOrder);
-        else $model->order('LENGTH(A.comment) DESC,'.$baseOrder);
+        else if($order == 'pic') $model->where('A.pics',['<>',''],['<>','[]'])->order('A.add_time DESC,'.$baseOrder);
+        else $model->order('A.add_time DESC,'.$baseOrder);
         $list = $model->limit($first,$limit)->select()->toArray()?:[];
         foreach ($list as $k=>$reply){
             $list[$k] = self::tidyProductReply($reply);
@@ -89,7 +89,7 @@ class StoreProductReply extends ModelBasic
             ->field('A.product_score,A.service_score,A.comment,A.pics,A.add_time,B.nickname,B.avatar,C.cart_info')
             ->join('__USER__ B','A.uid = B.uid')
             ->join('__STORE_ORDER_CART_INFO__ C','A.unique = C.unique')
-            ->order('LENGTH(A.comment) DESC,A.product_score DESC, A.service_score DESC, A.add_time DESC')->find();
+            ->order('A.add_time DESC,A.product_score DESC, A.service_score DESC, A.add_time DESC')->find();
         if(!$res) return null;
         return self::tidyProductReply($res->toArray());
     }
