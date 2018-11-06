@@ -77,8 +77,9 @@ class AuthApi extends AuthController{
      * 获取退款理由
      */
     public function get_refund_reason(){
-        $reason = SystemConfig::getValue('refund_reason')?:[];//退款理由
-        $reason = explode('=',$reason);
+        $reason = SystemConfig::getValue('stor_reason')?:[];//退款理由
+        $reason = str_replace("\r\n","\n",$reason);//防止不兼容
+        $reason = explode("\n",$reason);
         return JsonService::successful($reason);
     }
 
@@ -860,6 +861,7 @@ class AuthApi extends AuthController{
             return JsonService::successful('订单创建成功');
         }
     }
+
 
     /**
      * 申请退款
