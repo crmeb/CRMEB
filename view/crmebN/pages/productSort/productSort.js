@@ -158,7 +158,7 @@ Page({
                 hiddendown: true
             })
         }
-        var SoerErId = 0;
+      var SoerErId = 0; 
         if ($taber >= 0) {
             for (var indexSoerEr in that.data.sorter){
                 if (that.data.sorter[indexSoerEr].id == $taber){
@@ -167,6 +167,7 @@ Page({
                     })
                     SoerErId = that.data.sorter[indexSoerEr].id;
                 }
+              //console.log(that.data.sorter[indexSoerEr].id);
             }
         }else that.setData({total: '全部'})
         that.setData({sid: SoerErId})
@@ -191,6 +192,7 @@ Page({
             }
         }
         that.setData({ hiddendown: true })
+        that.setData({ sid: 0 })
         that.getProductList();
     },
     getCartCount: function () {
@@ -235,7 +237,7 @@ Page({
         var n=t+1;
         if (n%2>0) priceOrder ='asc';
         else priceOrder='desc';
-        var sid = that.data.sid;
+      var sid = that.data.sid; 
         that.setData({ price: priceOrder, t: n, })
         that.getProductList();
     },

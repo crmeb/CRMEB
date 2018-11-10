@@ -24,7 +24,7 @@ function sensitive_words_filter($str)
     $words = file($file);
     foreach($words as $word)
     {
-        $word = str_replace(array("\r\n","\r","\n"," "), '', $word);
+        $word = str_replace(array("\r\n","\r","\n","/","<",">","="," "), '', $word);
         if (!$word) continue;
 
         $ret = preg_match("/$word/", $str, $match);

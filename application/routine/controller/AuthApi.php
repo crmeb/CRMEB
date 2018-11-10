@@ -77,8 +77,9 @@ class AuthApi extends AuthController{
      * 获取退款理由
      */
     public function get_refund_reason(){
-        $reason = SystemConfig::getValue('refund_reason')?:[];//退款理由
-        $reason = explode('=',$reason);
+        $reason = SystemConfig::getValue('stor_reason')?:[];//退款理由
+        $reason = str_replace("\r\n","\n",$reason);//防止不兼容
+        $reason = explode("\n",$reason);
         return JsonService::successful($reason);
     }
 
@@ -861,6 +862,7 @@ class AuthApi extends AuthController{
         }
     }
 
+
     /**
      * 申请退款
      * @param string $uni
@@ -1430,19 +1432,18 @@ class AuthApi extends AuthController{
     public  function get_code(){
         header('content-type:image/jpg');
         if(!$this->userInfo['uid']) return JsonService::fail('授权失败，请重新授权');
-        $path = 'public/uploads/routine/'.$this->userInfo['uid'].'.jpg';
+        $path = makePathToUrl('routine/code');
+        if($path == '')
+            return JsonService::fail('生成上传目录失败,请检查权限!');
+        $picname = $path.DS.$this->userInfo['uid'].'.jpg';
         $domain = SystemConfigService::get('site_url').'/';
         $domainTop = substr($domain,0,5);
         if($domainTop != 'https') $domain = 'https:'.substr($domain,5,strlen($domain));
-        if(file_exists($path)) return JsonService::successful($domain.$path);
+        if(file_exists($picname)) return JsonService::successful($domain.$picname);
         else{
-            if(!file_exists('public/uploads/routine')){
-                $dir = iconv("UTF-8", "GBK", "public/uploads/routine");
-                mkdir ($dir,0775,true);
-            }
-            file_put_contents($path,RoutineCode::getCode($this->userInfo['uid']));
+            file_put_contents($picname,RoutineCode::getCode($this->userInfo['uid']));
         }
-        return JsonService::successful($domain.$path);
+        return JsonService::successful($domain.$picname);
     }
 
     /**
@@ -1952,11 +1953,12 @@ class AuthApi extends AuthController{
         if(!$id) return JsonService::fail('参数错误');
         $productInfo = StoreProduct::getValidProduct($id,'store_name,id,price,image,code_path');
         if(empty($productInfo)) return JsonService::fail('参数错误');
-        if($productInfo['code_path'] == '') {
-            $codePath = 'public/uploads/codepath/product/'.$productInfo['id'].'.jpg';
+        if(strlen($productInfo['code_path'])< 10) {
+            $path = 'public'.DS.'uploads'.DS.'codepath'.DS.'product';
+            $codePath = $path.DS.$productInfo['id'].'.jpg';
             if(!file_exists($codePath)){
-                $dir = iconv("UTF-8", "GBK", "public/uploads/codepath/product");
-                mkdir($dir,0775,true);
+                if(!is_dir($path))
+                    mkdir($path,0777,true);
                 file_put_contents($codePath,RoutineCode::getPages('pages/product-con/index?id='.$productInfo['id']));
             }
             $res = StoreProduct::edit(['code_path'=>$codePath],$id);
@@ -1965,6 +1967,25 @@ class AuthApi extends AuthController{
         }
         $posterPath = createPoster($productInfo);
         return JsonService::successful($posterPath);
+
+//        if(!$id) return JsonService::fail('参数错误');
+//        $productInfo = StoreProduct::getValidProduct($id,'store_name,id,price,image,code_path');
+//        if(empty($productInfo)) return JsonService::fail('参数错误');
+//        if($productInfo['code_path'] == '') {
+//            $path = 'public'.DS.'uploads'.DS.'codepath'.DS.'product';
+//            $codePath = $path.DS.$productInfo['id'].'.jpg';
+//            if(!file_exists($codePath)){
+//                //$dir = iconv("UTF-8", "GBK", "public".DS."uploads".DS."codepath".DS."product");
+//                if(!is_dir($path))
+//                    mkdir($path,0777,true);
+//                file_put_contents($codePath,RoutineCode::getPages('pages/product-con/index?id='.$productInfo['id']));
+//            }
+//            $res = StoreProduct::edit(['code_path'=>$codePath],$id);
+//            if($res) $productInfo['code_path'] = $codePath;
+//            else return JsonService::fail('没有查看权限');
+//        }
+//        $posterPath = createPoster($productInfo);
+//        return JsonService::successful($posterPath);
     }
 
 

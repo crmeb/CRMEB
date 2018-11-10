@@ -24,17 +24,17 @@
         border-radius: 1px;
         background: #e5e5e5;
     }
-    .main .left .nav{margin:0;}
-    .main .left .nav li{padding: 4px;}
+    .main .left .nav{margin:0;padding-bottom: 100px;}
+    .main .left .nav li{padding: 4px;height: 22px;}
     .main .left .nav li.active{background-color: #293846;border-left: 2px solid #19AA8D;}
     .main .left .nav li.active a{color: #a7b1c2;}
     .main .left .nav li.child{padding: 2px;padding-left: 7px;}
     .main .right{width: calc(100% - 117px);float: right;}
     .main .right .right-top{position: fixed;background-color: #fff;  z-index: 1000;width: 100%;padding: 7px 10px 0;height: 38px;border-bottom: 1px solid #e5e5e5;border-top: 1px solid #e5e5e5;}
     .main .right .imagesbox{position: fixed;top:58px;min-height: 200px;height: calc(100% - 88px);;overflow-y: auto;}
-    .main .right .imagesbox .image-item{position: relative;display: inline-block;  width: 15%;  border: 1px solid #e5e5e5;  cursor: default;  margin: 10px 0 0 1%;padding: 0.5%;}
-    .main .right .imagesbox .image-item img{width: 100%;}
-    .main .right .imagesbox .on{background:#f8ac59;}
+    .main .right .imagesbox .image-item{position: relative;display: inline-block;  width: 112px;height: 112px;  border: 1px solid #ECECEC;background-color: #F7F6F6;  cursor: default;  margin: 10px 0 0 10px;padding: 5px;}
+    .main .right .imagesbox .image-item img{width: 112px;height: 112px;}
+    .main .right .imagesbox .on{border: 3px dashed #0092DC;padding: 3px;}
     .main .right .foot-tool{position: fixed;bottom: 0px;width: calc(100% - 117px);background-color:#fff;height: 30px;padding: 7px 10px 0;border-top: 1px solid #e5e5e5;}
     .main .right .foot-tool .page{padding: 0px 10px;float: right;}
     .main .right .foot-tool .page ul{width: 100%}
@@ -62,7 +62,9 @@
                      <li ><a href="{:Url('index',array('pid'=>$vo.id,'fodder'=>$Request.param.fodder,'big'=>$Request.param.big))}">{$vo.name}</a></li>
                 {/if}
                 {volist name="$vo.child" id="voo" key="kk"}
-                       <li class="child {if condition="$voo.id eq $pid"} active{/if}"><a href="{:Url('index',array('pid'=>$voo.id,'fodder'=>$Request.param.fodder,'big'=>$Request.param.big))}">-{$voo.name}</a></li>
+                       <li class="child {if condition="$voo.id eq $pid"} active{/if}">
+                        <a href="{:Url('index',array('pid'=>$voo.id,'fodder'=>$Request.param.fodder,'big'=>$Request.param.big))}">{if condition="$kk eq count($vo.child)"}└{else/}├{/if}{$voo.name}</a>
+                        </li>
                     {/volist}
                 {/volist}
             </ul>

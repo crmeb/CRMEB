@@ -40,8 +40,8 @@ layui.use(['layer','upload'], function() {
             var images = Array.from(self.document.getElementsByTagName('img'));
             images.forEach(function (image) {
                 if(Array.from(image.parentNode.classList).indexOf('on') !== -1 && value.indexOf(image.src) == -1){
-                    // list.push(image.src);
-                    list.push(image.getAttribute("src"));
+                    list.push(image.src);
+                    // list.push(image.getAttribute("src"));
                 }
             });
             parent.$f.changeField(parentinputname,list);
@@ -51,8 +51,8 @@ layui.use(['layer','upload'], function() {
             var images = Array.from(self.document.getElementsByTagName('img'));
             images.forEach(function (image) {
                 if(Array.from(image.parentNode.classList).indexOf('on') !== -1 ){
-                    // parent.changeIMG(parentinputname,image.src);
-                    parent.changeIMG(parentinputname,image.getAttribute("src"));
+                    parent.changeIMG(parentinputname,image.src);
+                    // parent.changeIMG(parentinputname,image.getAttribute("src"));
                 }
             });
             var index = parent.layer.getFrameIndex(window.name);

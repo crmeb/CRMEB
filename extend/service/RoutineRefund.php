@@ -22,6 +22,7 @@ class RoutineRefund
      * @param string $refundDesc 退款原因
      * @return string
      */
+
     public static function doRefund($totalFee, $refundFee, $refundNo, $wxOrderNo='',$orderNo='',$refundDesc = '')
     {
         $config = array(
@@ -94,11 +95,11 @@ class RoutineRefund
         //默认格式为PEM，可以注释
         curl_setopt($ch,CURLOPT_SSLCERTTYPE,'PEM');
 //        curl_setopt($ch,CURLOPT_SSLCERT,getcwd().'/cert/apiclient_cert.pem');
-        curl_setopt($ch,CURLOPT_SSLCERT,realpath('.'.self::options()['pay_routine_client_cert'][0]));
+        curl_setopt($ch,CURLOPT_SSLCERT,realpath('.'.self::options()['pay_routine_client_cert']));
         //默认格式为PEM，可以注释
         curl_setopt($ch,CURLOPT_SSLKEYTYPE,'PEM');
 //        curl_setopt($ch,CURLOPT_SSLKEY,getcwd().'/cert/apiclient_key.pem');
-        curl_setopt($ch,CURLOPT_SSLKEY,realpath('.'.self::options()['pay_routine_client_key'][0]));
+        curl_setopt($ch,CURLOPT_SSLKEY,realpath('.'.self::options()['pay_routine_client_key']));
         //第二种方式，两个文件合成一个.pem文件
 //        curl_setopt($ch,CURLOPT_SSLCERT,getcwd().'/all.pem');
         $data = curl_exec($ch);
