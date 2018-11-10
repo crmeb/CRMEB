@@ -1,7 +1,6 @@
 <?php
 
 namespace app\admin\controller\widget;
-use function Sodium\add;
 use think\Request;
 use think\Url;
 use app\admin\model\system\SystemAttachment as SystemAttachmentModel;
@@ -26,8 +25,8 @@ class Images extends AuthController
      */
    public function index()
    {
-       $pid = input('pid')!=''?input('pid'):0;
-       if(!empty($pid))session('pid',$pid);
+       $pid = input('pid') != NULL ?input('pid'):session('pid');
+       if($pid != NULL)session('pid',$pid);
        if(!empty(session('pid')))$pid = session('pid');
        $this->assign('pid',$pid);
        //分类标题
@@ -39,14 +38,14 @@ class Images extends AuthController
        return $this->fetch('widget/images');
    }
     /**
-     * 编辑器上传图片
+     * 图片管理上传图片
      * @return \think\response\Json
      */
     public function upload()
     {
-        $pid = input('pid')!=''?input('pid'):0;
+        $pid = input('pid')!= NULL ?input('pid'):session('pid');
 
-        $res = Upload::image('file',$pid.'/'.date('Ymd'));
+        $res = Upload::image('file','attach'.DS.date('Y').DS.date('m').DS.date('d'));
         $thumbPath = Upload::thumb($res->dir);
         //产品图片上传记录
         $fileInfo = $res->fileInfo->getinfo();
