@@ -3,12 +3,6 @@
 .layui-table-box{
     overflow: initial;
 }
-.layui-table-body{
-    overflow: initial;
-}
-.layui-table-cell{
-    overflow: initial;
-}
 /*
 部分样式重构
  */
@@ -74,7 +68,9 @@
     width: auto;
 }
 .layui-table-cell {
+    overflow: hidden;
     height: auto!important;
+    white-space:normal,
 }
 .layui-input-block .layui-admin-input{
     width: 50%;
@@ -86,6 +82,7 @@
 .layui-input-block .time-w{
     width: 200px;
 }
+.layui-table-body{overflow: initial;}
 .layui-btn-group button i{
     line-height: 30px;
     margin-right: 3px;

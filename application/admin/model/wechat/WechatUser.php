@@ -155,7 +155,7 @@ use service\SystemConfigService;
                 }
             }
         }
-        $model = $model->where('openid','NOT NULL');
+//        $model = $model->where('openid','NOT NULL');
         if($where['nickname'] !== '') $model = $model->where('nickname','LIKE',"%$where[nickname]%");
         if($where['data'] !== ''){
             list($startTime,$endTime) = explode(' - ',$where['data']);
@@ -203,7 +203,6 @@ use service\SystemConfigService;
             $item['qr_code'] = QrcodeService::getForeverQrcode('spread',$item['uid']);
             $item['extract_count_price'] = UserExtract::getUserCountPrice($item['uid']);//累计提现
             $item['extract_count_num'] = UserExtract::getUserCountNum($item['uid']);//提现次数
-//            $item['qr_code'] = '';
         },$where);
     }
 

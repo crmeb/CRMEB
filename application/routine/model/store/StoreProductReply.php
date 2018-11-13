@@ -66,6 +66,7 @@ class StoreProductReply extends ModelBasic
         return $list;
     }
 
+
     public static function tidyProductReply($res)
     {
         $res['cart_info'] = json_decode($res['cart_info'],true)?:[];
