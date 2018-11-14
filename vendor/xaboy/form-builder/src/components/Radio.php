@@ -46,15 +46,9 @@ class Radio extends FormComponentDriver
         return $this;
     }
 
-    /**
-     * @param string $message
-     * @param string $trigger
-     * @return $this
-     */
-    public function required($message = null, $trigger = 'change')
+    protected function getValidateHandler()
     {
-        $this->setRequired(Helper::getVar($message, '请选择' . $this->title), $trigger);
-        return $this;
+        return Validate::str();
     }
 
     /**

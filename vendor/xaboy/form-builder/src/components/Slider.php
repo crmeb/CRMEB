@@ -65,6 +65,14 @@ class Slider extends FormComponentDriver
         return $this;
     }
 
+    protected function getValidateHandler()
+    {
+        if($this->props['range'] == true)
+            return Validate::arr();
+        else
+            return Validate::num();
+    }
+
     /**
      * @return array
      */

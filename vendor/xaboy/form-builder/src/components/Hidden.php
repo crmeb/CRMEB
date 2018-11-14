@@ -34,6 +34,11 @@ class Hidden extends FormComponentDriver
         static::value($value);
     }
 
+    protected function getValidateHandler()
+    {
+
+    }
+
     /**
      * @return array
      */

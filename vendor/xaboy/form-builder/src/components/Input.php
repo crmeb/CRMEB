@@ -94,33 +94,32 @@ class Input extends FormComponentDriver
      */
     protected function init()
     {
-        $this->placeholder('请输入' . $this->title);
+        $this->placeholder($this->getPlaceHolder());
+    }
+
+    protected function getPlaceHolder($pre = '请输入')
+    {
+        return parent::getPlaceHolder($pre);
+    }
+
+    protected function getValidateHandler()
+    {
+        return Validate::str(Validate::TRIGGER_BLUR);
     }
 
 
     /**
      * 自适应内容高度，仅在 textarea 类型下有效
-     * @param Number $minRows
-     * @param Number $maxRows
+     * @param Bool|Number $minRows
+     * @param null|Number $maxRows
      * @return $this
      */
-    public function autoSize($minRows, $maxRows)
+    public function autoSize($minRows = false, $maxRows = null)
     {
-        $this->props['autosize'] = compact('minRows', 'maxRows');
+
+        $this->props['autosize'] = $maxRows === null ?  boolval($minRows) : compact('minRows', 'maxRows');
         return $this;
     }
-
-    /**
-     * 组件的值为必填
-     * @param string $message
-     * @return $this
-     */
-    public function required($message = null, $trigger = 'blur')
-    {
-        parent::setRequired(Helper::getVar($message, $this->getProps('placeholder')), $trigger);
-        return $this;
-    }
-
 
     /**
      * 生成表单规则

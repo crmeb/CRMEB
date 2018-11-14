@@ -131,6 +131,8 @@ class Article extends AuthController
             ['visit',0],
             ['sort',0],
             'url',
+            ['is_banner',0],
+            ['is_hot',0],
             ['status',1],],$request);
         $data['cid'] = implode(',',$data['cid']);
         $content = $data['content'];

@@ -75,22 +75,7 @@ class Cascader extends FormComponentDriver
      */
     protected function init()
     {
-        $this->placeholder('请选择' . $this->title);
-    }
-
-    /**
-     * @param string $message
-     * @param string $trigger
-     * @return $this
-     */
-    public function required($message = null, $trigger = 'change')
-    {
-        $this->setRequired(
-            Helper::getVar($message, $this->props['placeholder']),
-            $trigger,
-            'array'
-        );
-        return $this;
+        $this->placeholder($this->getPlaceHolder());
     }
 
     /**
@@ -138,6 +123,14 @@ class Cascader extends FormComponentDriver
     public function getType()
     {
         return $this->props['type'];
+    }
+
+    /**
+     * @return Validate
+     */
+    protected function getValidateHandler()
+    {
+        return Validate::arr();
     }
 
     /**

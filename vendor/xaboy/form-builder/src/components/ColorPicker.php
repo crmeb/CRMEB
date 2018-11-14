@@ -60,15 +60,9 @@ class ColorPicker extends FormComponentDriver
         return $this;
     }
 
-    /**
-     * @param string $message
-     * @param string $trigger
-     * @return $this
-     */
-    public function required($message = null, $trigger = 'change')
+    public function getValidateHandler()
     {
-        parent::setRequired(Helper::getVar($message, '请选择' . $this->title), $trigger);
-        return $this;
+        return Validate::str();
     }
 
     /**

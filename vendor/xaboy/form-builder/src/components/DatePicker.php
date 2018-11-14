@@ -94,7 +94,7 @@ class DatePicker extends FormComponentDriver
      */
     protected function init()
     {
-        $this->placeholder('请选择' . $this->title);
+        $this->placeholder($this->getPlaceHolder());
     }
 
     /**
@@ -112,6 +112,14 @@ class DatePicker extends FormComponentDriver
         }
         $this->value = $value;
         return $this;
+    }
+
+    public function getValidateHandler()
+    {
+        if(in_array($this->props['type'],['datetimerange','daterange']))
+            return Validate::arr();
+        else
+            return Validate::date();
     }
 
     /**
