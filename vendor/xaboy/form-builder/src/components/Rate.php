@@ -39,6 +39,11 @@ class Rate extends FormComponentDriver
         'clearable' => 'boolean',
     ];
 
+    protected function getValidateHandler()
+    {
+        return Validate::num();
+    }
+
     /**
      * @return array
      */

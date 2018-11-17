@@ -26,7 +26,7 @@
                 <div class="text">
                     <p class="status">{$msg}！</p>
                     <p class="countdown"><span class="nmb">3</span>秒钟后自动跳转，<a class="back" href="javascript:void(0);">点此手动跳转</a></p>
-                    <p class="tips">crmeb提示您：您访问的页面正在跳转中，请耐心等待…</p>
+                    <p class="tips">CRMEB提示您：您访问的页面正在跳转中，请耐心等待…</p>
                 </div>
             </div>
         </div>

@@ -28,11 +28,6 @@ class Helper
         return $var;
     }
 
-    public static function getVar($var, $default)
-    {
-        return $var === null ? $default : $var;
-    }
-
     public static function getVarType($var)
     {
         if (is_array($var)) return 'array';
@@ -56,7 +51,7 @@ class Helper
         }
         $type = self::getVarType($var);
         if (!in_array($type, $verify))
-            throw new \Exception($title . '类型不为' . implode(',', $verify));
+            throw new \Exception($title . '类型需为' . implode(',', $verify));
     }
 
     public static function getDate($date)

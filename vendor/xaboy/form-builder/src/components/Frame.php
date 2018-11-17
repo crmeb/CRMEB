@@ -87,7 +87,12 @@ class Frame extends FormComponentDriver
      */
     protected function init()
     {
-        $this->frameTitle('请选择' . $this->title);
+        $this->frameTitle($this->getPlaceHolder());
+    }
+
+    protected function getValidateHandler()
+    {
+        return Validate::arr();
     }
 
     /**

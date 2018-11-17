@@ -51,7 +51,17 @@ class InputNumber extends FormComponentDriver
      */
     protected function init()
     {
-        $this->placeholder('请输入' . $this->title);
+        $this->placeholder($this->getPlaceHolder());
+    }
+
+    protected function getPlaceHolder($pre = '请输入')
+    {
+        return parent::getPlaceHolder($pre);
+    }
+
+    protected function getValidateHandler()
+    {
+        return Validate::num(Validate::TRIGGER_BLUR);
     }
 
     /**

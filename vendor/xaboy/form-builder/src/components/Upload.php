@@ -112,15 +112,9 @@ class Upload extends FormComponentDriver
         return $this;
     }
 
-    /**
-     * @param null $message
-     * @param string $trigger
-     * @return $this
-     */
-    public function required($message = null, $trigger = 'change')
+    protected function getPlaceHolder($pre = '请上传')
     {
-        parent::setRequired(Helper::getVar($message, '请上传' . $this->title), $trigger, 'array');
-        return $this;
+        return parent::getPlaceHolder($pre);
     }
 
     /**
@@ -131,6 +125,14 @@ class Upload extends FormComponentDriver
     {
         $this->value = $value;
         return $this;
+    }
+
+    protected function getValidateHandler()
+    {
+        if($this->props['maxLength'] == 1)
+            return Validate::str();
+        else
+            return Validate::arr();
     }
 
     /**

@@ -40,7 +40,8 @@ class Tree extends FormComponentDriver
      */
     protected $props = [
         'type' => self::TYPE_CHECKED,
-        'data' => []
+        'data' => [],
+        'multiple'=>true
     ];
 
     /**
@@ -93,6 +94,14 @@ class Tree extends FormComponentDriver
         }
         $this->value = $value;
         return $this;
+    }
+
+    protected function getValidateHandler()
+    {
+        if($this->props['multiple'])
+            return Validate::arr();
+        else
+            return Validate::str();
     }
 
     /**

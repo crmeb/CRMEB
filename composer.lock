@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ae2e50326d8e83fd299c3350bb0f87d1",
+    "content-hash": "3dd0118e5d08ef728cb0c2f4f7de15a5",
     "packages": [
         {
             "name": "doctrine/cache",
@@ -871,16 +871,16 @@
         },
         {
             "name": "topthink/framework",
-            "version": "v5.0.11",
+            "version": "v5.0.21",
             "source": {
                 "type": "git",
                 "url": "https://github.com/top-think/framework.git",
-                "reference": "926c9edb0c2682b14f563cac2c8a93f42f729016"
+                "reference": "ab826da071a7a47116a7f1d01f72228d6bcf212a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/top-think/framework/zipball/926c9edb0c2682b14f563cac2c8a93f42f729016",
-                "reference": "926c9edb0c2682b14f563cac2c8a93f42f729016",
+                "url": "https://api.github.com/repos/top-think/framework/zipball/ab826da071a7a47116a7f1d01f72228d6bcf212a",
+                "reference": "ab826da071a7a47116a7f1d01f72228d6bcf212a",
                 "shasum": ""
             },
             "require": {
@@ -918,7 +918,7 @@
                 "orm",
                 "thinkphp"
             ],
-            "time": "2017-09-13T03:30:29+00:00"
+            "time": "2018-09-04T09:18:48+00:00"
         },
         {
             "name": "topthink/think-captcha",
@@ -1078,16 +1078,16 @@
         },
         {
             "name": "tp5er/tp5-databackup",
-            "version": "1.0.0",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/tp5er/tp5-databackup.git",
-                "reference": "10abd4383cf78844e1c22584fd823ef1d18e75dc"
+                "reference": "101477abe810fb91bad5c1304a93c5f461db6dc8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/tp5er/tp5-databackup/zipball/10abd4383cf78844e1c22584fd823ef1d18e75dc",
-                "reference": "10abd4383cf78844e1c22584fd823ef1d18e75dc",
+                "url": "https://api.github.com/repos/tp5er/tp5-databackup/zipball/101477abe810fb91bad5c1304a93c5f461db6dc8",
+                "reference": "101477abe810fb91bad5c1304a93c5f461db6dc8",
                 "shasum": ""
             },
             "require": {
@@ -1110,23 +1110,24 @@
                 }
             ],
             "description": "Implement the database backup restore",
-            "time": "2017-12-29T05:36:58+00:00"
+            "time": "2018-04-07T11:20:53+00:00"
         },
         {
             "name": "xaboy/form-builder",
-            "version": "1.2.3",
+            "version": "1.2.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/xaboy/form-builder.git",
-                "reference": "1b11a518429db5828147d5840ea18480586caa0c"
+                "reference": "73cb5be3d9f57680f64d01ab424c4ac5c462f1b8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/xaboy/form-builder/zipball/1b11a518429db5828147d5840ea18480586caa0c",
-                "reference": "1b11a518429db5828147d5840ea18480586caa0c",
+                "url": "https://api.github.com/repos/xaboy/form-builder/zipball/73cb5be3d9f57680f64d01ab424c4ac5c462f1b8",
+                "reference": "73cb5be3d9f57680f64d01ab424c4ac5c462f1b8",
                 "shasum": ""
             },
             "require": {
+                "ext-json": "*",
                 "php": ">=5.4.0"
             },
             "type": "library",
@@ -1147,13 +1148,15 @@
             ],
             "description": "PHP表单生成器，快速生成现代化的form表单。包含复选框、单选框、输入框、下拉选择框等元素以及,省市区三级联动,时间选择,日期选择,颜色选择,文件/图片上传等功能。",
             "homepage": "https://github.com/xaboy/form-builder",
-            "time": "2018-08-07T06:29:30+00:00"
+            "time": "2018-11-13T12:44:31+00:00"
         }
     ],
     "packages-dev": [],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {
+        "tp5er/tp5-databackup": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {

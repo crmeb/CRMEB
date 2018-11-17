@@ -75,7 +75,7 @@ class TimePicker extends FormComponentDriver
      */
     protected function init()
     {
-        $this->placeholder('请选择' . $this->title);
+        $this->placeholder($this->getPlaceHolder());
     }
 
     /**
@@ -107,6 +107,14 @@ class TimePicker extends FormComponentDriver
         }
         $this->value = $value;
         return $this;
+    }
+
+    protected function getValidateHandler()
+    {
+        if($this->props['type'] == 'timerange')
+            return Validate::arr();
+        else
+            return Validate::str();
     }
 
     /**

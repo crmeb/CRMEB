@@ -70,6 +70,11 @@ class Switches extends FormComponentDriver
         return $this;
     }
 
+    protected function getValidateHandler()
+    {
+        return Validate::str();
+    }
+
     /**
      * @return array
      */

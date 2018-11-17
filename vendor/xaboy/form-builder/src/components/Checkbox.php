@@ -56,15 +56,9 @@ class Checkbox extends FormComponentDriver
         return $this;
     }
 
-    /**
-     * @param null $message
-     * @param string $trigger
-     * @return $this
-     */
-    public function required($message = null, $trigger = 'change')
+    protected function getValidateHandler()
     {
-        $this->setRequired(Helper::getVar($message,'请选择'.$this->title),$trigger,'array');
-        return $this;
+        return Validate::arr();
     }
 
     /**
