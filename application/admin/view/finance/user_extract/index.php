@@ -169,115 +169,66 @@
         </div>
 
     </div>
-
 </div>
-
 {/block}
-
 {block name="script"}
-
 <script>
-
     (function(){
-
         $('.j-fail').on('click',function(){
-
             var url = $(this).data('url');
-
             $eb.$alert('textarea',{
-
                 title:'请输入未通过愿意',
-
                 value:'输入信息不完整或有误!',
-
             },function(value){
-
                 $eb.axios.post(url,{message:value}).then(function(res){
-
-                    if(res.data.code == 200)
-
-                        $eb.$swal('success',res.data.msg);
-
-                    else
-
-                        $eb.$swal('error',res.data.msg||'操作失败!');
-
-                });
-
-            });
-
-        });
-
-        $('.j-success').on('click',function(){
-
-            var url = $(this).data('url');
-
-            $eb.$swal('delete',function(){
-
-                $eb.axios.post(url).then(function(res){
-
-                    if(res.data.code == 200)
-
-                        $eb.$swal('success',res.data.msg);
-
-                    else
-
-                        $eb.$swal('error',res.data.msg||'操作失败!');
-
-                });
-
-            },{
-
-                title:'确定审核通过?',
-
-                text:'通过后无法撤销，请谨慎操作！',
-
-                confirm:'审核通过'
-
-            });
-
-        });
-
-        $('.btn-warning').on('click',function(){
-
-            window.t = $(this);
-
-            var _this = $(this),url =_this.data('url');
-
-            $eb.$swal('delete',function(){
-
-                $eb.axios.get(url).then(function(res){
-
-                    if(res.status == 200 && res.data.code == 200) {
-
-                        $eb.$swal('success',res.data.msg);
-
-                        _this.parents('tr').remove();
-
+                    if(res.data.code == 200) {
+                        $eb.$swal('success', res.data.msg);
+                        setTimeout(function () {
+                            window.location.reload();
+                        },1000);
                     }else
-
-                        return Promise.reject(res.data.msg || '删除失败')
-
-                }).catch(function(err){
-
-                    $eb.$swal('error',err);
-
+                        $eb.$swal('error',res.data.msg||'操作失败!');
                 });
-
-            })
-
+            });
         });
-
+        $('.j-success').on('click',function(){
+            var url = $(this).data('url');
+            $eb.$swal('delete',function(){
+                $eb.axios.post(url).then(function(res){
+                    if(res.data.code == 200) {
+                        setTimeout(function () {
+                            window.location.reload();
+                        },1000);
+                        $eb.$swal('success', res.data.msg);
+                    }else
+                        $eb.$swal('error',res.data.msg||'操作失败!');
+                });
+            },{
+                title:'确定审核通过?',
+                text:'通过后无法撤销，请谨慎操作！',
+                confirm:'审核通过'
+            });
+        });
+        $('.btn-warning').on('click',function(){
+            window.t = $(this);
+            var _this = $(this),url =_this.data('url');
+            $eb.$swal('delete',function(){
+                $eb.axios.get(url).then(function(res){
+                    if(res.status == 200 && res.data.code == 200) {
+                        $eb.$swal('success',res.data.msg);
+                        _this.parents('tr').remove();
+                    }else
+                        return Promise.reject(res.data.msg || '删除失败')
+                }).catch(function(err){
+                    $eb.$swal('error',err);
+                });
+            })
+        });
         $(".open_image").on('click',function (e) {
-
             var image = $(this).data('image');
-
             $eb.openImage(image);
-
         })
-
     }());
-
 </script>
 
 {/block}

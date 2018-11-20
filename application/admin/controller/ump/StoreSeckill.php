@@ -60,7 +60,7 @@ class StoreSeckill extends AuthController
         if(is_object($seckillList['list'])) $seckillList['list'] = $seckillList['list']->toArray();
         $data = $seckillList['list']['data'];
         foreach ($data as $k=>$v){
-            $data[$k]['_stop_time'] = date('Y/m/d H:i:s',$v['stop_time']);
+            $data[$k]['_stop_time'] =$v['stop_time'] ?  date('Y/m/d H:i:s',$v['stop_time']) : '';
         }
         return Json::successlayui(['count'=>$seckillList['list']['total'],'data'=>$data]);
     }
@@ -103,6 +103,7 @@ class StoreSeckill extends AuthController
     {
         $data = Util::postMore([
             'title',
+            'product_id',
             'info',
             'unit_name',
             ['image',''],
@@ -159,6 +160,7 @@ class StoreSeckill extends AuthController
         if(!$product) return Json::fail('数据不存在!');
         $f = array();
         $f[] = Form::input('title','产品标题',$product->getData('store_name'));
+        $f[] = Form::hidden('product_id',$id);
         $f[] = Form::input('info','秒杀活动简介',$product->getData('store_info'))->type('textarea');
         $f[] = Form::input('unit_name','单位',$product->getData('unit_name'))->placeholder('个、位');
         $f[] = Form::dateTimeRange('section_time','活动时间');
@@ -170,7 +172,7 @@ class StoreSeckill extends AuthController
         $f[] = Form::number('stock','库存',$product->getData('stock'))->min(0)->precision(0)->col(12);
         $f[] = Form::number('sales','销量',$product->getData('sales'))->min(0)->precision(0)->col(12);
         $f[] = Form::number('sort','排序',$product->getData('sort'))->col(12);
-        $f[] = Form::number('num','单次购买产品个数')->precision(0)->col(12);
+        $f[] = Form::number('num','单次购买产品个数',1)->precision(0)->col(12);
         $f[] = Form::number('give_integral','赠送积分',$product->getData('give_integral'))->min(0)->precision(0)->col(12);
         $f[] = Form::number('postage','邮费',$product->getData('postage'))->min(0)->col(12);
         $f[] = Form::radio('is_postage','是否包邮',$product->getData('is_postage'))->options([['label'=>'是','value'=>1],['label'=>'否','value'=>0]])->col(12);

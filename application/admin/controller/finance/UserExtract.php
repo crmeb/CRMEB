@@ -83,6 +83,10 @@ class UserExtract extends AuthController
     {
         if(!UserExtractModel::be(['id'=>$id,'status'=>0])) return JsonService::fail('操作记录不存在或状态错误!');
         $fail_msg =$request->post();
+        $extract=UserExtractModel::get($id);
+        if(!$extract)  return JsonService::fail('操作记录不存在!');
+        if($extract->status==1)  return JsonService::fail('已经提现,错误操作');
+        if($extract->status==-1)  return JsonService::fail('您的提现申请已被拒绝,请勿重复操作!');
         $res = UserExtractModel::changeFail($id,$fail_msg['message']);
         if($res){
             return JsonService::successful('操作成功!');
@@ -95,6 +99,10 @@ class UserExtract extends AuthController
         if(!UserExtractModel::be(['id'=>$id,'status'=>0]))
             return JsonService::fail('操作记录不存在或状态错误!');
         UserExtractModel::beginTrans();
+        $extract=UserExtractModel::get($id);
+        if(!$extract)  return JsonService::fail('操作记录不存!');
+        if($extract->status==1)  return JsonService::fail('您已提现,请勿重复提现!');
+        if($extract->status==-1)  return JsonService::fail('您的提现申请已被拒绝!');
         $res = UserExtractModel::changeSuccess($id);
         if($res){
             return JsonService::successful('操作成功!');

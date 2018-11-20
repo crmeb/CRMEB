@@ -16,11 +16,17 @@ class UserBill extends ModelBasic
 {
     use ModelTrait;
 
+    protected $insert = ['add_time'];
+
+    protected function setAddTimeAttr()
+    {
+        return time();
+    }
+    
     public static function income($title,$uid,$category,$type,$number,$link_id = 0,$balance = 0,$mark = '',$status = 1){
         $pm = 1;
         return self::set(compact('title','uid','link_id','category','type','number','balance','mark','status','pm'));
     }
-
     //获取柱状图和饼状图数据
     public static function getUserBillChart($where,$category='now_money',$type='brokerage',$pm=1,$zoom=15){
         $model=self::getModelTime($where,new self());
