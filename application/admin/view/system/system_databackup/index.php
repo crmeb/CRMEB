@@ -10,7 +10,7 @@
                 <div class="table-responsive">
                     <table class="layui-hide" id="fileList" lay-filter="fileList"></table>
                     <script type="text/html" id="fileListtool">
-                        <button type="button" class="layui-btn layui-btn-xs" lay-event="import"><i class="layui-icon layui-icon-edit"></i>倒入</button>
+                        <button type="button" class="layui-btn layui-btn-xs" lay-event="import"><i class="layui-icon layui-icon-edit"></i>导入</button>
                         <button type="button" class="layui-btn layui-btn-xs" lay-event="delFile"><i class="layui-icon layui-icon-edit"></i>删除</button>
                         <button type="button" class="layui-btn layui-btn-xs" lay-event="downloadFile"><i class="layui-icon layui-icon-edit"></i>下载</button>
 

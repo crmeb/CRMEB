@@ -1,8 +1,17 @@
 @charset "UTF-8";
-
 .layui-table-box{
     overflow: initial;
 }
+.layui-table-body{
+    overflow: initial;
+}
+.layui-table-cell{
+    overflow: initial;
+}
+.table-responsive{
+    overflow: initial;
+}
+.layui-table img{width: 100% !important;}
 /*
 部分样式重构
  */
@@ -68,9 +77,8 @@
     width: auto;
 }
 .layui-table-cell {
-    overflow: hidden;
+    white-space:normal;
     height: auto!important;
-    white-space:normal,
 }
 .layui-input-block .layui-admin-input{
     width: 50%;
@@ -82,7 +90,7 @@
 .layui-input-block .time-w{
     width: 200px;
 }
-.layui-table-body{overflow: initial;}
+
 .layui-btn-group button i{
     line-height: 30px;
     margin-right: 3px;
