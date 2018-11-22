@@ -5,7 +5,7 @@ namespace app\admin\model\user;
 use traits\ModelTrait;
 use basic\ModelBasic;
 use app\admin\model\wechat\WechatUser;
-
+use think\Db;
 /**
  * 用户消费新增金额明细 model
  * Class User
@@ -101,7 +101,7 @@ class UserBill extends ModelBasic
         $list=self::alias('a')->join('user r','a.uid=r.uid')
             ->where($datawhere)
             ->order('a.number desc')
-            ->join('store_order o','o.id=a.link_id')
+            ->join('__STORE_ORDER__ o','o.id=a.link_id')
             ->field(['o.order_id','FROM_UNIXTIME(a.add_time,"%Y-%c-%d") as add_time','a.uid','o.uid as down_uid','r.nickname','r.avatar','r.spread_uid','r.level','a.number'])
             ->page((int)$where['page'],(int)$where['limit'])
             ->select();
@@ -111,7 +111,7 @@ class UserBill extends ModelBasic
     //获取返佣用户总人数
     public static function getFanCount(){
         $datawhere=['a.category'=>'now_money','a.type'=>'brokerage','a.pm'=>1];
-        return self::alias('a')->join('user r','a.uid=r.uid')->join('store_order o','o.id=a.link_id')->where($datawhere)->count();
+        return self::alias('a')->join('user r','a.uid=r.uid')->join('__STORE_ORDER__ o','o.id=a.link_id')->where($datawhere)->count();
     }
     //获取用户充值数据
     public static function getEchartsRecharge($where,$limit=15){
@@ -145,7 +145,7 @@ class UserBill extends ModelBasic
         count($list) && $list=$list->toArray();
         $count=self::setOneWhere($where,$uid)->count();
         foreach ($list as &$value){
-            $value['order_id']=db('store_order')->where(['order_id'=>$value['link_id']])->value('order_id');
+            $value['order_id']=Db::name('store_order')->where(['order_id'=>$value['link_id']])->value('order_id');
         }
         return ['data'=>$list,'count'=>$count];
     }
