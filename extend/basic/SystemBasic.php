@@ -94,10 +94,21 @@ class SystemBasic extends \think\Controller
             exit($this->fetch('public/success'));
         }
     }
-
+    /**异常抛出
+     * @param $name
+     */
     protected function exception($msg = '无法打开页面')
     {
         $this->assign(compact('msg'));
         exit($this->fetch('public/exception'));
     }
+    /**找不到页面
+     * @param $name
+     */
+    public function _empty($name)
+    {
+        exit($this->fetch('public/404'));
+    }
+
+
 }

@@ -4,6 +4,7 @@ namespace app\admin\model\store;
 
 use basic\ModelBasic;
 use traits\ModelTrait;
+use think\Db;
 
 class StoreCouponUser extends ModelBasic
 {
@@ -38,7 +39,7 @@ class StoreCouponUser extends ModelBasic
                     $coupon['_msg'] = '可使用';
                 }
             }
-            $coupon['integral']=db('store_coupon')->where(['id'=>$coupon['cid']])->value('integral');
+            $coupon['integral']= Db::name('store_coupon')->where(['id'=>$coupon['cid']])->value('integral');
         }
         return $couponList;
     }
@@ -53,7 +54,7 @@ class StoreCouponUser extends ModelBasic
             [
                 'name'=>'总发放优惠券',
                 'field'=>'张',
-                'count'=>self::getModelTime($where,db('store_coupon_issue'))->where('status',1)->sum('total_count'),
+                'count'=>self::getModelTime($where, Db::name('store_coupon_issue'))->where('status',1)->sum('total_count'),
                 'background_color'=>'layui-bg-blue',
                 'col'=>6,
             ],
@@ -69,7 +70,7 @@ class StoreCouponUser extends ModelBasic
     //获取优惠劵图表
     public static function getConponCurve($where,$limit=20){
         //优惠劵发放记录
-        $list=self::getModelTime($where,db('store_coupon_issue')
+        $list=self::getModelTime($where, Db::name('store_coupon_issue')
             ->where('status',1)
             ->field(['FROM_UNIXTIME(add_time,"%Y-%m-%d") as _add_time','sum(total_count) as total_count'])->group('_add_time')->order('_add_time asc'))->select();
         $date=[];

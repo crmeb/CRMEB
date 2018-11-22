@@ -49,7 +49,7 @@ class StoreOrder extends ModelBasic
         }
         $data=($data=$model->page((int)$where['page'],(int)$where['limit'])->select()) && count($data) ? $data->toArray() : [];
         foreach ($data as &$item){
-            $_info = db('store_order_cart_info')->where('oid',$item['id'])->field('cart_info')->select();
+            $_info = Db::name('store_order_cart_info')->where('oid',$item['id'])->field('cart_info')->select();
             foreach ($_info as $k=>$v){
                 $_info[$k]['cart_info'] = json_decode($v['cart_info'],true);
             }
@@ -157,7 +157,7 @@ HTML;
     public static function SaveExcel($list){
         $export = [];
         foreach ($list as $index=>$item){
-            $_info = db('store_order_cart_info')->where('oid',$item['id'])->column('cart_info');
+            $_info = Db::name('store_order_cart_info')->where('oid',$item['id'])->column('cart_info');
             $goodsName = [];
             foreach ($_info as $k=>$v){
                 $v = json_decode($v,true);
@@ -209,7 +209,7 @@ HTML;
                     $payType = '其他支付';
                 }
 
-                $_info = db('store_order_cart_info')->where('oid',$item['id'])->column('cart_info');
+                $_info =  Db::name('store_order_cart_info')->where('oid',$item['id'])->column('cart_info');
                 $goodsName = [];
                 foreach ($_info as $k=>$v){
                     $v = json_decode($v,true);
@@ -237,7 +237,7 @@ HTML;
                 ->ExcelSave();
         }
         return self::page($model,function ($item){
-            $_info = db('store_order_cart_info')->where('oid',$item['id'])->field('cart_info')->select();
+            $_info =  Db::name('store_order_cart_info')->where('oid',$item['id'])->field('cart_info')->select();
             foreach ($_info as $k=>$v){
                 $_info[$k]['cart_info'] = json_decode($v['cart_info'],true);
             }
@@ -513,7 +513,7 @@ HTML;
                     $payType = '其他支付';
                 }
 
-                $_info = db('store_order_cart_info')->where('oid',$item['id'])->column('cart_info');
+                $_info =  Db::name('store_order_cart_info')->where('oid',$item['id'])->column('cart_info');
                 $goodsName = [];
                 foreach ($_info as $k=>$v){
                     $v = json_decode($v,true);
@@ -540,7 +540,7 @@ HTML;
 
         return self::page($model,function ($item){
             $item['nickname'] = WechatUser::where('uid',$item['uid'])->value('nickname');
-            $_info = db('store_order_cart_info')->where('oid',$item['id'])->field('cart_info')->select();
+            $_info =  Db::name('store_order_cart_info')->where('oid',$item['id'])->field('cart_info')->select();
             foreach ($_info as $k=>$v){
                 $_info[$k]['cart_info'] = json_decode($v['cart_info'],true);
             }
