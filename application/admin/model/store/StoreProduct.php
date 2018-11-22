@@ -384,7 +384,7 @@ class StoreProduct extends ModelBasic
         }else{
             $time['data']=isset($where['data'])? $where['data']:'';
         }
-        $model=self::getModelTime($time,db('store_cart')->alias('a')->join('__STORE_PRODUCT__ b','a.product_id=b.id'),'a.add_time');
+        $model=self::getModelTime($time, Db::name('store_cart')->alias('a')->join('__STORE_PRODUCT__ b','a.product_id=b.id'),'a.add_time');
         if(isset($where['title']) && $where['title']!=''){
             $model=$model->where('b.store_name|b.id','like',"%$where[title]%");
         }

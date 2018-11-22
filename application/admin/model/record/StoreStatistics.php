@@ -173,8 +173,8 @@ class StoreStatistics extends ModelBasic
     {
         $trans = self::alias('a')
             ->join('user b', 'a.uid=b.uid')
-            ->join('store_order_cart_info c', 'a.id=c.oid')
-            ->join('store_product d', 'c.product_id=d.id')
+            ->join('__STORE_ORDER_CART_INFO__ c', 'a.id=c.oid')
+            ->join('__STORE_PRODUCT__ d', 'c.product_id=d.id')
             ->field('b.nickname,a.pay_price,d.store_name')
             ->order('a.add_time DESC')
             ->limit('6')
@@ -200,6 +200,8 @@ class StoreStatistics extends ModelBasic
                 $cost=$info['cost'];//成本
                 $export[] = [$time,$price,$zhichu,$cost,$coupon,$deduction,$profit];
             }
+//            ExportService::exportCsv($export,'统计'.time(),['时间','营业额(元)','支出(元)','成本','优惠','积分抵扣','盈利(元)']);
+            dump($export);
             PHPExcelService::setExcelHeader(['时间','营业额(元)','支出(元)','成本','优惠','积分抵扣','盈利(元)'])->setExcelTile('财务统计', '财务统计',date('Y-m-d H:i:s',time()))->setExcelContent($export)->ExcelSave();
         }
     }
