@@ -89,7 +89,7 @@ class StoreOrder extends ModelBasic
                         $item['pay_type_name']='微信支付';
                         break;
                     case 'yue':
-                        $item['pay_type_name']='微信支付';
+                        $item['pay_type_name']='余额支付';
                         break;
                     case 'offline':
                         $item['pay_type_name']='线下支付';
