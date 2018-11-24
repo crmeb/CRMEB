@@ -15,7 +15,7 @@ use app\admin\model\ump\StoreCombinationAttrResult;
 use app\admin\model\ump\StoreCombination as StoreCombinationModel;
 use think\Url;
 use app\admin\model\system\SystemAttachment;
-use app\wap\model\store\StorePink;
+use app\admin\model\ump\StorePink;
 
 /**
  * 拼团管理

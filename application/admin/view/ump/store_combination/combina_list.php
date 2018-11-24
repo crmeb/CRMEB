@@ -51,13 +51,14 @@
                             <th class="text-center">结束时间</th>
                             <th class="text-center">状态</th>
                             <th class="text-center">操作</th>
+
                         </tr>
                         </thead>
                         <tbody class="">
                         {volist name="list" id="vo"}
                         <tr>
                             <td class="text-center">
-                                {$vo.nickName}/{$vo.uid}
+                                {$vo.nickname}/{$vo.uid}
                             </td>
                             <td class="text-center">
                                 {$vo.add_time|date='Y-m-d H:i:s',###}

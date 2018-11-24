@@ -16,14 +16,15 @@ use think\Request;
  */
 class Reply extends AuthController
 {
+    /**关注回复
+     * @return mixed|void
+     */
     public function index()
     {
         if(empty(input('key'))) return $this->failed('请输入参数key');
         if(empty(input('title'))) return $this->failed('请输入参数title');
-        $replay = WechatReply::where('key',input('key'))->find();
-        $replay_arr =!empty($replay) ? $replay->toArray() : [];
-        $replay_arr['data'] = json_decode(isset($replay_arr['data']) ? $replay_arr['data'] : '',true);
-        $this->assign('replay_arr',json_encode($replay_arr));
+        $replay = WechatReply::getDataByKey(input('key'));
+        $this->assign('replay_arr',json_encode($replay));
         $this->assign('key',input('key'));
         $this->assign('title',input('title'));
         return $this->fetch();
@@ -36,10 +37,8 @@ class Reply extends AuthController
         ],$this->request);
 //        dump($where);
 //        exit();
-        if(!empty($where['key'])) $replay = WechatReply::where('key',$where['key'])->find();
-        $replay_arr = $replay->toArray();
+        if(!empty($where['key'])) $replay_arr = WechatReply::getDataByKey($where['key']);
         $replay_arr['code'] = 200;
-        $replay_arr['data'] = json_decode($replay_arr['data'],true);
         if(empty($replay_arr)) {
             $replay_arr['code'] = 0;
         }
@@ -117,10 +116,8 @@ class Reply extends AuthController
     public function info_keyword(){
         $key = input('key');
         if(empty($key)) return $this->failed('参数错误,请重新修改');
-        $replay = WechatReply::where('key',$key)->find();
-        $replay_arr = $replay->toArray();
-        $replay_arr['data'] = json_decode($replay_arr['data'],true);
-        $this->assign('replay_arr',json_encode($replay_arr));
+        $replay = WechatReply::getDataByKey($key);
+        $this->assign('replay_arr',json_encode($replay));
         $this->assign('key',$key);
         $this->assign('dis',2);
         return $this->fetch('add_keyword');

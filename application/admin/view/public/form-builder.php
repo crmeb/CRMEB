@@ -8,6 +8,7 @@
         /*弹框样式修改*/
         .ivu-modal-body{padding: 5;}
         .ivu-modal-confirm-footer{display: none;}
+        .ivu-date-picker {display: inline-block;line-height: normal;width: 280px;}
     </style>
 </head>
 <body>
@@ -19,6 +20,8 @@
         //关闭当前窗口
 //        var index = parent.layer.getFrameIndex(window.name);
 //        parent.layer.close(index);
+        //提交成功后按钮恢复
+        $r.btn.finish();
     };
 	(function () {
 		var create = <?=$form->formScript()?>
