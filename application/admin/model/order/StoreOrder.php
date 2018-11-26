@@ -116,9 +116,11 @@ class StoreOrder extends ModelBasic
             }else if($item['paid']==1 && $item['status']==1 && $item['refund_status']==0){
                 $item['status_name']='待收货';
             }else if($item['paid']==1 && $item['status']==2 && $item['refund_status']==0){
-                $item['status_name']='待评价';
+                $item['status_name']='已收货';
             }else if($item['paid']==1 && $item['status']==3 && $item['refund_status']==0){
                 $item['status_name']='待评价';
+            }else if($item['paid']==1 && $item['status']==4 && $item['refund_status']==0){
+                $item['status_name']='已完成';
             }else if($item['paid']==1 && $item['refund_status']==1){
                 $item['status_name']=<<<HTML
 <b style="color:#f124c7">申请退款</b><br/>
