@@ -17,7 +17,7 @@
 ## 本项目还在不断开发完善中,如有建议或问题请[在这里提出](https://gitee.com/ZhongBangKeJi/CRMEB/issues)
 
 # 如果对您有帮助，您可以点右上角 "Star" 支持一下 谢谢！
-
+##  :point_right: 小程序版：https://gitee.com/ZhongBangKeJi/CRMEB_WeChatMiniProgram
 ## [帮助文档](https://gitee.com/ZhongBangKeJi/CRMEB/wikis/)
 
 ## 项目介绍
