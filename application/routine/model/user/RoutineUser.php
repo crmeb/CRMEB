@@ -41,7 +41,12 @@ class RoutineUser extends ModelBasic
         }else if(WechatUser::be(['routine_openid'=>$routineInfo['routine_openid']])){ //根据小程序openid判断
             WechatUser::edit($routineInfo,$routineInfo['routine_openid'],'routine_openid');
             $uid = WechatUser::where('routine_openid',$routineInfo['routine_openid'])->value('uid');
-            User::updateWechatUser($routineInfo,$uid);
+            if(!User::be(['uid'=>$uid])){
+                $routineInfo = WechatUser::where('uid',$uid)->find();
+                User::setRoutineUser($routineInfo);
+            }else{
+                User::updateWechatUser($routineInfo,$uid);
+            }
         }else{
             $routineInfo['add_time'] = time();//用户添加时间
             $routineInfo = WechatUser::set($routineInfo);

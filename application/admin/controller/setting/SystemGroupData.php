@@ -52,7 +52,7 @@ class SystemGroupData extends AuthController
                 $params = explode("\n",$value["param"]);
                 if(is_array($params) && !empty($params)){
                     foreach ($params as $index => $v) {
-                        $vl = explode('=',$v);
+                        $vl = explode('=>',$v);
                         if(!empty($vl[0]) && !empty($vl[1])){
                             $info[$index]["value"] = $vl[0];
                             $info[$index]["label"] = $vl[1];
@@ -154,7 +154,7 @@ class SystemGroupData extends AuthController
                 $params = explode("\n",$value["param"]);
                 if(is_array($params) && !empty($params)){
                     foreach ($params as $index => $v) {
-                        $vl = explode('=',$v);
+                        $vl = explode('=>',$v);
                         if(!empty($vl[0]) && !empty($vl[1])){
                             $info[$index]["value"] = $vl[0];
                             $info[$index]["label"] = $vl[1];

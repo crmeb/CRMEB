@@ -89,7 +89,7 @@ class StoreOrder extends ModelBasic
                         $item['pay_type_name']='微信支付';
                         break;
                     case 'yue':
-                        $item['pay_type_name']='微信支付';
+                        $item['pay_type_name']='余额支付';
                         break;
                     case 'offline':
                         $item['pay_type_name']='线下支付';
@@ -118,7 +118,7 @@ class StoreOrder extends ModelBasic
             }else if($item['paid']==1 && $item['status']==2 && $item['refund_status']==0){
                 $item['status_name']='待评价';
             }else if($item['paid']==1 && $item['status']==3 && $item['refund_status']==0){
-                $item['status_name']='待评价';
+                $item['status_name']='已完成';
             }else if($item['paid']==1 && $item['refund_status']==1){
                 $item['status_name']=<<<HTML
 <b style="color:#f124c7">申请退款</b><br/>

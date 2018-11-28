@@ -103,11 +103,26 @@ alter table eb_store_order modify column is_channel tinyint(1) comment '支付�
 -- 客服通知
 ALTER TABLE `eb_store_service` ADD `notify` INT(2) NULL DEFAULT '0' COMMENT '订单通知1开启0关闭' AFTER `status`;
 
+--客服消息自动刷新
+ALTER TABLE `eb_store_service_log` CHANGE COLUMN `type` `type` tinyint(1) DEFAULT '0' COMMENT '是否已读（0：否；1：是；）', CHANGE COLUMN `remind` `remind` tinyint(1) DEFAULT '0' COMMENT '是否提醒过';
+
 --v2.5.2  产品表 添加 产品海报图字段
-alter table eb_store_product modify column code_path varchar(64) comment '产品二维码地址(用户小程序海报)';
+ALTER TABLE `eb_store_product` ADD COLUMN `code_path` varchar(64) NOT NULL COMMENT '产品二维码地址(用户小程序海报)' AFTER `browse`;
 
 --v2.5.2  eb_system_group表 添加 产品海报图字段
 UPDATE  eb_system_group SET fields='[{"name":"\u5206\u7c7b\u540d\u79f0","title":"name","type":"input","param":""},{"name":"\u5206\u7c7b\u56fe\u6807","title":"pic","type":"upload","param":""},{"name":"\u8df3\u8f6c\u8def\u5f84","title":"url","type":"select","param":"\/pages\/index\/index=\u5546\u57ce\u9996\u9875\n\/pages\/spread\/spread=\u4e2a\u4eba\u63a8\u5e7f\n\/pages\/coupon\/coupon=\u4f18\u60e0\u5238\n\/pages\/user\/user=\u4e2a\u4eba\u4e2d\u5fc3\n\/pages\/miao-list\/miao-list=\u79d2\u6740\u5217\u8868\n\/pages\/pink-list\/index=\u62fc\u56e2\u5217\u8868\u9875\n\/pages\/cut-list\/cut-list=\u780d\u4ef7\u5217\u8868\n\/pages\/productSort\/productSort=\u5206\u7c7b\u9875\u9762\n\/pages\/address\/address=\u5730\u5740\u5217\u8868\n\/pages\/cash\/cash=\u63d0\u73b0\u9875\u9762\n\/pages\/extension\/extension=\u63a8\u5e7f\u7edf\u8ba1\n\/pages\/main\/main=\u8d26\u6237\u91d1\u989d\n\/pages\/collect\/collect=\u6211\u7684\u6536\u85cf\n\/pages\/promotion-card\/promotion-card=\u63a8\u5e7f\u4e8c\u7ef4\u7801\u9875\u9762\n\/pages\/buycar\/buycar=\u8d2d\u7269\u8f66\u9875\u9762\n\/pages\/news-list\/news-list=\u6d88\u606f\u5217\u8868\u9875\n\/pages\/orders-list\/orders-list=\u8ba2\u5355\u5217\u8868\u9875\u9762\n\/pages\/new-list\/new-list=\u6587\u7ae0\u5217\u8868\u9875"},{"name":"\u5e95\u90e8\u83dc\u5355","title":"show","type":"radio","param":"\u662f=\u662f\n\u5426=\u5426"}]' where id = 47;
 
 --v2.5.2 清空拼团表--
 TRUNCATE table eb_store_pink
+
+--2018-11-26 更新
+ALTER TABLE `eb_user` CHANGE COLUMN `phone` `phone` char(15) COMMENT '手机号码';
+ALTER TABLE `eb_store_product` CHANGE COLUMN `is_bargain` `is_bargain`TINYINT(1) UNSIGNED NULL COMMENT '砍价状态 0未开启 1开启';
+ALTER TABLE `eb_store_seckill` CHANGE COLUMN `description` `description`TEXT CHARACTER SET utf8 COLLATE utf8_general_ci NULL COMMENT '内容';
+ALTER TABLE `eb_store_bargain` CHANGE COLUMN `add_time` `add_time` INT(11)UNSIGNED NULL COMMENT '添加时间';
+ALTER TABLE `eb_store_combination` CHANGE  `attr` `attr`VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL COMMENT '活动属性';
+ALTER TABLE `eb_store_combination` CHANGE COLUMN `mer_use` `mer_use`TINYINT(1) UNSIGNED NULL COMMENT '商户是否可用1可用0不可用';
+ALTER TABLE `eb_store_product_reply` CHANGE COLUMN `merchant_reply_content` `merchant_reply_content` VARCHAR(300) CHARACTER SET utf8 COLLATE utf8_general_ci NULL COMMENT '管理员回复内容';
+ALTER TABLE `eb_store_product_reply` CHANGE COLUMN  `merchant_reply_time` `merchant_reply_time` INT(11) NULL COMMENT '管理员回复时间';
+ALTER TABLE `eb_store_cart` CHANGE COLUMN `combination_id` `combination_id` INT(11) UNSIGNED NULL DEFAULT '0' COMMENT '拼团id';
+ALTER TABLE `eb_store_order` CHANGE COLUMN `combination_id` `combination_id` int(11) UNSIGNED DEFAULT '0' COMMENT '拼团产品id0一般产品';

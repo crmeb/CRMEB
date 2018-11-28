@@ -34,12 +34,18 @@ class Article extends AuthController
         $where['merchant'] = 0;//区分是管理员添加的图文显示  0 还是 商户添加的图文显示  1
         $catlist = ArticleCategoryModel::where('is_del',0)->select()->toArray();
         //获取分类列表
-        $tree = Phptree::makeTreeForHtml($catlist);
-        $this->assign(compact('tree'));
-        if($pid){
-            $pids = Util::getChildrenPid($tree,$pid);
-            $where['cid'] = ltrim($pid.$pids);
+        if($catlist){
+            $tree = Phptree::makeTreeForHtml($catlist);
+            $this->assign(compact('tree'));
+            if($pid){
+                $pids = Util::getChildrenPid($tree,$pid);
+                $where['cid'] = ltrim($pid.$pids);
+            }
+        }else{
+            $tree = [];
+            $this->assign(compact('tree'));
         }
+
 
         $this->assign('cate',ArticleCategoryModel::getTierList());
         $this->assign(ArticleModel::getAll($where));

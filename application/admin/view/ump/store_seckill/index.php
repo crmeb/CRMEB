@@ -90,6 +90,26 @@
 <script src="{__ADMIN_PATH}js/layuiList.js"></script>
 <script src="{__FRAME_PATH}js/content.min.js?v=1.0.0"></script>
 <script>
+    setTime();
+    function setTime() {
+        setTimeout(function () {
+            $eb.axios.get("{:Url('get_seckill_id')}").then(function(res){
+                $.each(res.data.count,function (index,item) {
+                    var time = $('.count-time-'+item).attr('data-time');
+                    if(time != ''){
+                        $('.count-time-'+item).downCount({
+                            date: time,
+                            offset: +8
+                        });
+                    }
+                })
+            }).catch(function(err){
+                console.log(err);
+            });
+        },2000);
+    }
+</script>
+<script>
     layList.form.render();
     layList.tableList('seckillList',"{:Url('get_seckill_list')}",function () {
         return [
@@ -106,18 +126,6 @@
             {field: 'right', title: '操作', width: '5%', align: 'center', toolbar: '#barDemo',unresize:true}
         ]
     });
-    setTime();
-    window.$seckillId = <?php echo json_encode($seckillId);?>;
-    function setTime() {
-        setTimeout(function () {
-            $.each($seckillId,function (index,item) {
-                $('.count-time-'+item).downCount({
-                    date: $('.count-time-'+item).attr('data-time'),
-                    offset: +8
-                });
-            })
-        },3000);
-    }
     layList.tool(function (event,data,obj) {
         switch (event) {
             case 'delstor':

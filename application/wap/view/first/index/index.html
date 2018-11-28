@@ -15,7 +15,7 @@
 <div class="page-index" id="app-index">
     <section ref="bsDom">
         <div>
-            
+
             <!--<div class="search-wrapper">
                 <form method="post" @submit.prevent="goSearch">
                     <div class="search-box flex"><input type="text" v-model="keyword" placeholder="商品搜索: 请输入商品关键词"> <a
@@ -93,6 +93,8 @@
                     <li class="flex">
                         <div class="picture"><img src="{$vo.image}" alt="">
                             <div class="count-down flex countdown" data-time="{$vo.stop_time|date='Y/m/d H:i:s',###}">
+                                <span class="days">00</span>
+                                <em>:</em>
                                 <span class="hours">00</span>
                                 <em>:</em>
                                 <span class="minutes">00</span>
