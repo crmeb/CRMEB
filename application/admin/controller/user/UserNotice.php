@@ -25,8 +25,15 @@ class UserNotice extends AuthController
      */
     public function index()
     {
-        $this->assign(UserNoticeModel::getList());
-        return $this->fetch();
+        if($this->request->isAjax()){
+            $where=Util::getMore([
+                ['page',1],
+                ['limit',20]
+            ]);
+            return Json::successlayui(UserNoticeModel::getList($where));
+        }else{
+            return $this->fetch();
+        }
     }
 
     /**
@@ -289,8 +296,9 @@ class UserNotice extends AuthController
     public function send_user($id = 0,$uid = '')
     {
         if(!$id || $uid == '') return JsonService::fail('参数错误');
-        $uid = ",".$uid.",";
-        UserNoticeModel::edit(array("is_send"=>1,"send_time"=>time(),'uid'=>$uid),$id);
+        $uids = UserNoticeModel::where(['id'=>$id])->value('uid');
+        $uid = rtrim($uids,',').",".$uid.",";
+        UserNoticeModel::edit(array("send_time"=>time(),'uid'=>$uid),$id);
         return Json::successful('发送成功!');
     }
 }
