@@ -78,10 +78,10 @@
       <view class='txt-msg'>{{reply.comment}}</view>
       <view class='time-bar'>{{reply.add_time}}</view>
     </view>
-    <view>
-       <view>管理员回复：</view>
-      <view class='txt-msg'>{{reply.merchant_reply_content}}</view>
-      <view class='time-bar'>{{reply.merchant_reply_time}}</view>
+    <view  wx:if="{{reply.merchant_reply_content != null}}">
+        <view></view>
+        <view class='time-bar'>回复：{{reply.merchant_reply_time}}</view>
+        <view class='txt-msg'>{{reply.merchant_reply_content}}</view>
     </view>
     <navigator wx:if="{{replyCount > 0}}" hover-class="none" url="/pages/comment/comment?productId={{storeInfo.id}}">查看全部评价</navigator>
   </view>

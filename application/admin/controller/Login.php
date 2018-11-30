@@ -36,7 +36,7 @@ class Login extends SystemBasic
         //检验验证码
         if(!captcha_check($verify)) return $this->failed('验证码错误，请重新输入');
         $error  = Session::get('login_error')?:['num'=>0,'time'=>time()];
-        if($error['num'] >=5 && $error['time'] < strtotime('+ 5 minutes'))
+        if($error['num'] >=5 && $error['time'] > strtotime('- 5 minutes'))
             return $this->failed('错误次数过多,请稍候再试!');
         //检验帐号密码
         $res = SystemAdmin::login($account,$pwd);

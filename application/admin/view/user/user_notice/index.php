@@ -117,12 +117,12 @@
                 break;
             case 'warning':
                 window.t = $(this);
-                var _this = $(this),url =layList.U({a:'delete',p:{id:data.id}});
+                var _this = obj,url =layList.U({a:'delete',p:{id:data.id}});
                 $eb.$swal('delete',function(){
                     $eb.axios.get(url).then(function(res){
                         if(res.status == 200 && res.data.code == 200) {
                             $eb.$swal('success',res.data.msg);
-                            _this.parents('tr').remove();
+                            _this.del();
                         }else
                             return Promise.reject(res.data.msg || '删除失败')
                     }).catch(function(err){

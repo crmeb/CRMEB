@@ -200,7 +200,7 @@ use service\SystemConfigService;
                 ->ExcelSave();
         }
         return self::page($model,function ($item){
-            $item['qr_code'] = QrcodeService::getForeverQrcode('spread',$item['uid']);
+            $item['qr_code'] = QrcodeService::getForeverQrcode('spread',$item['uid'])?:'';
             $item['extract_count_price'] = UserExtract::getUserCountPrice($item['uid']);//累计提现
             $item['extract_count_num'] = UserExtract::getUserCountNum($item['uid']);//提现次数
         },$where);

@@ -110,14 +110,14 @@
                         <button type="button" class="layui-btn layui-btn-xs btn-success" onclick="$eb.createModalFrame('{{d.store_name}}-属性','{:Url('attr')}?id={{d.id}}',{h:700,w:800})">
                             属性
                         </button>
-                        <button type="button" class="layui-btn layui-btn-xs layui-btn-normal" onclick="$eb.createModalFrame('{{d.store_name}}-编辑','{:Url('edit')}?id={{d.id}}',{h:760,w:1100})">
+                        <button type="button" class="layui-btn layui-btn-xs layui-btn-normal" onclick="$eb.createModalFrame('{{d.store_name}}-编辑','{:Url('edit')}?id={{d.id}}',{h:700,w:1100})">
                             编辑
                         </button>
                         <button type="button" class="layui-btn layui-btn-xs" onclick="dropdown(this)">操作 <span class="caret"></span></button>
                         <ul class="layui-nav-child layui-anim layui-anim-upbit">
                             <li>
                                 <a href="javascript:void(0);" class="" onclick="$eb.createModalFrame(this.innerText,'{:Url('edit_content')}?id={{d.id}}')">
-                                    <i class="fa fa-pencil"></i> 编辑内容</a>
+                                    <i class="fa fa-pencil"></i> 产品详情</a>
                             </li>
                             <li>
                                 <a href="javascript:void(0);" onclick="$eb.createModalFrame(this.innerText,'{:Url('ump.store_seckill/seckill')}?id={{d.id}}')"">
@@ -197,7 +197,7 @@
                     {field: 'stock', title: '库存',edit:'stock'},
                     {field: 'sort', title: '排序',edit:'sort'},
                     {field: 'sales', title: '销量',sort: true,event:'sales'},
-                    {field: 'status', title: '状态',templet:"#checkboxstatus"},
+//                    {field: 'status', title: '状态',templet:"#checkboxstatus"},
                     {field: 'right', title: '操作',align:'center',toolbar:'#act',width:'14%'},
                 ];
                 break;

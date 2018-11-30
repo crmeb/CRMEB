@@ -6,7 +6,7 @@ swiper-item{position: relative; width: 100%;}
 .pro-wrapper .pro-infos .price-wrapper{margin-top: 10rpx; align-items:center;} 
 .pro-wrapper .pro-infos .price-wrapper .price{font-size: 48rpx; color: #ff3d3d;}
 .pro-wrapper .pro-infos .price-wrapper .price text{font-size: 28rpx;}
-.pro-wrapper .pro-infos .price-wrapper .small-txt{font-size: 24rpx; width: 66rpx; color: #fff; border-radius: 3px; height: 40rpx; line-height: 40rpx; text-align: center;margin-left: 10rpx;}
+.pro-wrapper .pro-infos .price-wrapper .small-txt{font-size: 24rpx; color: #fff; border-radius: 3px; height: 40rpx; line-height: 40rpx; text-align: center;margin-left: 10rpx;padding:0rpx 7rpx}
 .pro-wrapper .pro-infos .price-wrapper .red{background-color: #ff3d3d;} 
 .pro-wrapper .pro-infos .price-wrapper .lv{background-color: #4eb047; }
 .pro-wrapper .pro-infos .price-wrapper .chen{background-color: #ff8000; }

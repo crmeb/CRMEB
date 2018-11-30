@@ -17,9 +17,7 @@ use think\Request;
 use app\admin\model\store\StoreCategory as CategoryModel;
 use app\admin\model\store\StoreProduct as ProductModel;
 use think\Url;
-use app\admin\model\ump\StoreSeckill as StoreSeckillModel;
-use app\admin\model\order\StoreOrder as StoreOrderModel;
-use app\admin\model\ump\StoreBargain as StoreBargainModel;
+
 use app\admin\model\system\SystemAttachment;
 
 
@@ -145,13 +143,13 @@ class StoreProduct extends AuthController
             Form::input('store_info','产品简介')->type('textarea'),
             Form::input('keyword','产品关键字')->placeholder('多个用英文状态下的逗号隔开'),
             Form::input('unit_name','产品单位','件'),
-            Form::frameImageOne('image','产品主图片(305*305px)',Url::build('admin/widget.images/index',array('fodder'=>'image')))->icon('image')->width('100%')->height('550px'),
-            Form::frameImages('slider_image','产品轮播图(640*640px)',Url::build('admin/widget.images/index',array('fodder'=>'slider_image')))->maxLength(5)->icon('images')->width('100%')->height('550px')->spin(0),
+            Form::frameImageOne('image','产品主图片(305*305px)',Url::build('admin/widget.images/index',array('fodder'=>'image')))->icon('image')->width('100%')->height('500px'),
+            Form::frameImages('slider_image','产品轮播图(640*640px)',Url::build('admin/widget.images/index',array('fodder'=>'slider_image')))->maxLength(5)->icon('images')->width('100%')->height('500px')->spin(0),
             Form::number('price','产品售价')->min(0)->col(8),
             Form::number('ot_price','产品市场价')->min(0)->col(8),
             Form::number('give_integral','赠送积分')->min(0)->precision(0)->col(8),
             Form::number('postage','邮费')->min(0)->col(Form::col(8)),
-            Form::number('sales','销量')->min(0)->precision(0)->col(8),
+            Form::number('sales','销量',0)->min(0)->precision(0)->col(8)->readonly(1),
             Form::number('ficti','虚拟销量')->min(0)->precision(0)->col(8),
             Form::number('stock','库存')->min(0)->precision(0)->col(8),
             Form::number('cost','产品成本价')->min(0)->col(8),
@@ -163,8 +161,7 @@ class StoreProduct extends AuthController
             Form::radio('is_new','首发新品',0)->options([['label'=>'是','value'=>1],['label'=>'否','value'=>0]])->col(8),
             Form::radio('is_postage','是否包邮',0)->options([['label'=>'是','value'=>1],['label'=>'否','value'=>0]])->col(8)
         ];
-        $form = Form::create(Url::build('save'));
-        $form->setMethod('post')->setTitle('添加产品')->components($field)->setSuccessScript('parent.$(".J_iframe:visible")[0].contentWindow.location.reload();');
+        $form = Form::make_post_form('添加产品',$field,Url::build('save'),2);
         $this->assign(compact('form'));
         return $this->fetch('public/form-builder');
     }
@@ -265,7 +262,7 @@ class StoreProduct extends AuthController
         if(!$id) return $this->failed('数据不存在');
         $product = ProductModel::get($id);
         if(!$product) return Json::fail('数据不存在!');
-        $form = Form::create(Url::build('update',array('id'=>$id)),[
+        $field = [
             Form::select('cate_id','产品分类',explode(',',$product->getData('cate_id')))->setOptions(function(){
                 $list = CategoryModel::getTierList();
                 $menus=[];
@@ -278,13 +275,13 @@ class StoreProduct extends AuthController
             Form::input('store_info','产品简介',$product->getData('store_info'))->type('textarea'),
             Form::input('keyword','产品关键字',$product->getData('keyword'))->placeholder('多个用英文状态下的逗号隔开'),
             Form::input('unit_name','产品单位',$product->getData('unit_name')),
-            Form::frameImageOne('image','产品主图片(305*305px)',Url::build('admin/widget.images/index',array('fodder'=>'image')),$product->getData('image'))->icon('image')->width('100%')->height('550px'),
-            Form::frameImages('slider_image','产品轮播图(640*640px)',Url::build('admin/widget.images/index',array('fodder'=>'slider_image')),json_decode($product->getData('slider_image'),1))->maxLength(5)->icon('images')->width('100%')->height('550px'),
+            Form::frameImageOne('image','产品主图片(305*305px)',Url::build('admin/widget.images/index',array('fodder'=>'image')),$product->getData('image'))->icon('image')->width('100%')->height('500px'),
+            Form::frameImages('slider_image','产品轮播图(640*640px)',Url::build('admin/widget.images/index',array('fodder'=>'slider_image')),json_decode($product->getData('slider_image'),1))->maxLength(5)->icon('images')->width('100%')->height('500px'),
             Form::number('price','产品售价',$product->getData('price'))->min(0)->precision(2)->col(8),
             Form::number('ot_price','产品市场价',$product->getData('ot_price'))->min(0)->col(8),
             Form::number('give_integral','赠送积分',$product->getData('give_integral'))->min(0)->precision(0)->col(8),
             Form::number('postage','邮费',$product->getData('postage'))->min(0)->col(8),
-            Form::number('sales','销量',$product->getData('sales'))->min(0)->precision(0)->col(8),
+            Form::number('sales','销量',$product->getData('sales'))->min(0)->precision(0)->col(8)->readonly(1),
             Form::number('ficti','虚拟销量',$product->getData('ficti'))->min(0)->precision(0)->col(8),
             Form::number('stock','库存',ProductModel::getStock($id)>0?ProductModel::getStock($id):$product->getData('stock'))->min(0)->precision(0)->col(8),
             Form::number('cost','产品成本价',$product->getData('cost'))->min(0)->col(8),
@@ -295,8 +292,8 @@ class StoreProduct extends AuthController
             Form::radio('is_best','精品推荐',$product->getData('is_best'))->options([['label'=>'是','value'=>1],['label'=>'否','value'=>0]])->col(8),
             Form::radio('is_new','首发新品',$product->getData('is_new'))->options([['label'=>'是','value'=>1],['label'=>'否','value'=>0]])->col(8),
             Form::radio('is_postage','是否包邮',$product->getData('is_postage'))->options([['label'=>'是','value'=>1],['label'=>'否','value'=>0]])->col(8)
-        ]);
-        $form->setMethod('post')->setTitle('编辑产品')->setSuccessScript('parent.$(".J_iframe:visible")[0].contentWindow.location.reload();');
+        ];
+        $form = Form::make_post_form('编辑产品',$field,Url::build('update',array('id'=>$id)),2);
         $this->assign(compact('form'));
         return $this->fetch('public/form-builder');
     }
@@ -325,7 +322,7 @@ class StoreProduct extends AuthController
             'price',
             'sort',
             'stock',
-            'sales',
+//            'sales',
             'ficti',
             ['give_integral',0],
             ['is_show',0],
@@ -350,7 +347,7 @@ class StoreProduct extends AuthController
         if($data['postage'] == '' || $data['postage'] < 0) return Json::fail('请输入邮费');
         if($data['cost'] == '' || $data['cost'] < 0) return Json::fail('请输入产品成本价');
         if($data['stock'] == '' || $data['stock'] < 0) return Json::fail('请输入库存');
-        if($data['sales'] == '' || $data['sales'] < 0) return Json::fail('请输入销量');
+//        if($data['sales'] == '' || $data['sales'] < 0) return Json::fail('请输入销量');
         if($data['give_integral'] < 0) return Json::fail('请输入赠送积分');
         $data['image'] = $data['image'][0];
         $data['slider_image'] = json_encode($data['slider_image']);
@@ -442,11 +439,17 @@ class StoreProduct extends AuthController
     public function delete($id)
     {
         if(!$id) return $this->failed('数据不存在');
-        $data['is_del'] = 1;
-        if(!ProductModel::edit($data,$id))
-            return Json::fail(ProductModel::getErrorInfo('删除失败,请稍候再试!'));
-        else
-            return Json::successful('删除成功!');
+        if(!ProductModel::be(['id'=>$id])) return $this->failed('产品数据不存在');
+        if(ProductModel::be(['id'=>$id,'is_del'=>1])){
+            return Json::fail(ProductModel::getErrorInfo('暂不支持回收站删除产品!'));
+        }else{
+            $data['is_del'] = 1;
+            if(!ProductModel::edit($data,$id))
+                return Json::fail(ProductModel::getErrorInfo('删除失败,请稍候再试!'));
+            else
+                return Json::successful('成功移到回收站!');
+        }
+
     }
 
 

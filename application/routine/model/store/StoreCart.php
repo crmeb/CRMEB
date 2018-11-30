@@ -27,8 +27,12 @@ class StoreCart extends ModelBasic
     {
         if($cart_num < 1) $cart_num = 1;
         if($seckill_id){
-            if(!StoreSeckill::getValidProduct($seckill_id))
+            $StoreSeckillinfo = StoreSeckill::getValidProduct($seckill_id);
+            if(!$StoreSeckillinfo)
                 return self::setErrorInfo('该产品已下架或删除');
+            $userbuycount = StoreOrder::where(['uid'=>$uid,'paid'=>1,'seckill_id'=>$seckill_id])->count();
+            if($StoreSeckillinfo['num'] <= $userbuycount)
+                return self::setErrorInfo('每人限购'.$StoreSeckillinfo['num'].'一件');
             if(StoreSeckill::getProductStock($seckill_id) < $cart_num)
                 return self::setErrorInfo('该产品库存不足'.$cart_num);
             $where = ['type'=>$type,'uid'=>$uid,'product_id'=>$product_id,'product_attr_unique'=>$product_attr_unique,'is_new'=>$is_new,'is_pay'=>0,'is_del'=>0,'seckill_id'=>$seckill_id];

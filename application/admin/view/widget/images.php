@@ -79,10 +79,10 @@
             {volist name="list" id="vo"}
             <div class="image-item">
                 <div class="image-delete" data-url="{:Url('delete',array('att_id'=>$vo.att_id))}"></div>
-                {if condition="$Request.param.big eq 1"}
-                <img class="pic" src="{$vo.att_dir|ltrim='.'}" id="{$vo.att_id}"/>
-                {else/}
+                {if condition="$Request.param.small eq 1"}
                 <img class="pic" src="{$vo.satt_dir|ltrim='.'}" id="{$vo.att_id}"/>
+                {else/}
+                <img class="pic" src="{$vo.att_dir|ltrim='.'}" id="{$vo.att_id}"/>
                 {/if}
             </div>
             {/volist}
