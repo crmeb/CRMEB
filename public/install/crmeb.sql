@@ -614,7 +614,7 @@ CREATE TABLE `eb_store_product` (
   `id` mediumint(11) NOT NULL AUTO_INCREMENT COMMENT '商品id',
   `mer_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '商户Id(0为总后台管理员创建,不为0的时候是商户后台创建)',
   `image` varchar(128) NOT NULL COMMENT '商品图片',
-  `slider_image` varchar(512) NOT NULL COMMENT '轮播图',
+  `slider_image` text NOT NULL COMMENT '轮播图',
   `store_name` varchar(128) NOT NULL COMMENT '商品名称',
   `store_info` varchar(256) NOT NULL COMMENT '商品简介',
   `keyword` varchar(256) NOT NULL COMMENT '关键字',
