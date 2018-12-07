@@ -3,6 +3,7 @@
 {block name="head_top"}
 <link rel="stylesheet" href="{__PLUG_PATH}swiper/swiper-3.4.1.min.css">
 <script type="text/javascript" src="{__PLUG_PATH}swiper/swiper-3.4.1.jquery.min.js"></script>
+<script type="text/javascript" src="{__PLUG_PATH}layer/layer.js"></script>
 <script type="text/javascript" src="{__WAP_PATH}crmeb/js/jquery.downCount.js"></script>
 <style>
     .product-con .product-info{position: relative;}
@@ -33,16 +34,10 @@
                 <img class="logo" src="{$site.wechat_avatar}" alt="">
                 <span>{$site.wechat_name}</span>
             </div>
-            <a class="go" href="javascript:void(0);" @click="qrShow = true">立即关注</a>
+            <a class="go" href="javascript:void(0);" @click="ShowQrcode">立即关注</a>
+            <!--<a class="go" href="javascript:void(0);" @click="qrShow = true">立即关注</a>-->
         </div>
-        <div class="model-bg" :class="{on:qrShow == true}" v-cloak="" @click="qrShow = false" @touchmove.prevent></div>
         {/eq}
-        <div class="rw-code-model" v-cloak="" v-show="qrShow == true">
-            <div class="rw-code-title"><p>{$site.wechat_name}</p ></div>
-            <div class="rw-code-img"><img src="{$site.wechat_qrcode}"></div>
-            <div class="rw-code-tips">长按二维码即可关注公众号</div>
-            <div class="rw-code-close" @click="qrShow = false"></div>
-        </div>
         <div class="banner">
             <ul class="swiper-wrapper">
                 {volist name="storeInfo.images" id="vo"}
@@ -146,8 +141,10 @@
     window.$productAttr = <?php echo json_encode($productAttr)?:'[]'; ?>;
 </script>
 <script type="text/javascript">
+    window.$wechat_qrcode = "{$site.wechat_qrcode}";
+    window.$site_name = "{$site.wechat_name}";
     (function ($) {
-        requirejs(['vue','axios','helper','store','wap/crmeb/module/store/seckill-card'],function(Vue,axios,$h,storeApi,shopCard){
+        requirejs(['vue','axios','helper','store','{__WAP_PATH}crmeb/module/store/seckill-card.js'],function(Vue,axios,$h,storeApi,shopCard){
             var mid = "<?=$mer_id?>";
             new Vue({
                 el:"#store_detail",
@@ -157,6 +154,8 @@
                 data:{
                     cardShow:false,
                     product:$product,
+                    wechatQrcode: $wechat_qrcode,
+                    siteName: $site_name,
                     productAttr:$productAttr || [],
                     productCardInfo:{},
                     status:{
@@ -178,6 +177,18 @@
                     }
                 },
                 methods:{
+                    ShowQrcode:function () {
+                        that = this;
+                        layer.open({
+                            type: 1,
+                            shade: true,
+                            shadeClose : true,
+                            anim  : 2,
+                            area: ['5rem', '5.1rem'],
+                            title: false, //不显示标题
+                            content: '<img src="'+that.wechatQrcode+'" alt="'+that.siteName+'" title="'+that.siteName+'" style="width: 5rem;"/>', //捕获的元素，注意：最好该指定的元素要存放在body最外层，否则可能被其它的相对元素所影响
+                        });
+                    },
                     getProductTag:function(){
                         if(this.product.postage <= 0 || this.product.is_postage == 1)
                             return ('<i class="send-txt">包邮</i>');
@@ -344,7 +355,7 @@
                         this.onMenuShareAll({
                             title:$product.store_name,
                             desc:$product.store_info || $product.store_name,
-                            imgUrl:location.origin+$product.image,
+                            imgUrl:$product.image,
                             link:location.href
                         });
                     });

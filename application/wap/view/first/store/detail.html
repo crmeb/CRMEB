@@ -86,7 +86,9 @@
     <script ref="store_desc_temp" type="text/template">{$storeInfo.description}</script>
     <div style="height:1rem;"></div>
 </div>
-<script>    window.$product = <?php unset($storeInfo['description']); echo json_encode($storeInfo);?>;
+<script>
+    window.$urlShare = "{$urlShare}";
+    window.$product = <?php unset($storeInfo['description']); echo json_encode($storeInfo);?>;
     window.$productAttr = <?php echo json_encode($productAttr) ?: '[]'; ?>;
     window.$productValue = <?php echo json_encode($productValue) ?: '{}'; ?>;</script>
 <script
@@ -225,8 +227,9 @@
                     this.onMenuShareAll({
                         title: $product.store_name,
                         desc: $product.store_info || $product.store_name,
-                        imgUrl: location.origin + $product.image,
-                        link: location.href
+//                        imgUrl: location.origin + $product.image,
+                        imgUrl: $product.image,
+                        link: $urlShare || location.href
                     });
                 });
                 this.$nextTick(function () {

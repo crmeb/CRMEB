@@ -1441,7 +1441,9 @@ class AuthApi extends AuthController{
         if($domainTop != 'https') $domain = 'https:'.substr($domain,5,strlen($domain));
         if(file_exists($picname)) return JsonService::successful($domain.$picname);
         else{
-            file_put_contents($picname,RoutineCode::getCode($this->userInfo['uid']));
+            $res = RoutineCode::getCode($this->userInfo['uid'],$picname);
+            if($res) file_put_contents($picname,$res);
+            else return JsonService::fail('二维码生成失败');
         }
         return JsonService::successful($domain.$picname);
     }
@@ -1949,6 +1951,27 @@ class AuthApi extends AuthController{
         return JsonService::successful($content);
     }
 
+    /**
+     * 产品海报二维码
+     * @param int $id
+     */
+    public function product_promotion_code($id = 0){
+        if(!$id) return JsonService::fail('参数错误');
+        $count = StoreProduct::validWhere()->count();
+        if(!$count) return JsonService::fail('参数错误');
+        $path = 'public'.DS.'uploads'.DS.'codepath'.DS.'product';
+        $codePath = $path.DS.$id.'_'.$this->userInfo['uid'].'.jpg';
+        $domain = SystemConfigService::get('site_url').'/';
+        if(!file_exists($codePath)){
+            if(!is_dir($path)) mkdir($path,0777,true);
+            $res = RoutineCode::getCode($this->userInfo['uid'],$codePath,[],'/pages/product-con/index?id='.$id,'product_spread');
+            if($res) file_put_contents($codePath,$res);
+            else return JsonService::fail('二维码生成失败');
+        }
+        return JsonService::successful($domain.$codePath);
+    }
+
+
     public function poster($id = 0){
         if(!$id) return JsonService::fail('参数错误');
         $productInfo = StoreProduct::getValidProduct($id,'store_name,id,price,image,code_path');
@@ -1957,9 +1980,8 @@ class AuthApi extends AuthController{
             $path = 'public'.DS.'uploads'.DS.'codepath'.DS.'product';
             $codePath = $path.DS.$productInfo['id'].'.jpg';
             if(!file_exists($codePath)){
-                if(!is_dir($path))
-                    mkdir($path,0777,true);
-                file_put_contents($codePath,RoutineCode::getPages('pages/product-con/index?id='.$productInfo['id']));
+                if(!is_dir($path)) mkdir($path,0777,true);
+                $res = file_put_contents($codePath,RoutineCode::getPages('pages/product-con/index?id='.$productInfo['id']));
             }
             $res = StoreProduct::edit(['code_path'=>$codePath],$id);
             if($res) $productInfo['code_path'] = $codePath;

@@ -10,22 +10,32 @@ class RoutineCode{
      * @param array $color 二维码线条颜色
      * @return mixed
      */
-    public static function getCode($uid = 0,$color = array()){
+    public static function getCode($uid = 0,$imgUrl = '',$color = array(),$page = '',$thirdType = 'spread'){
         $accessToken = RoutineServer::get_access_token();
-        $url = "https://api.weixin.qq.com/wxa/getwxacodeunlimit?access_token=".$accessToken;
-        if($uid) $data['scene'] = $uid;
-        else $data['scene'] = 0;
-        if(empty($color)){
-            $color['r'] = 0;
-            $color['g'] = 0;
-            $color['b'] = 0;
-        }
-        $data['page'] = '';
-        $data['width'] = 430;
-        $data['auto_color'] = false;
-        $data['line_color'] = $color;
-        $data['is_hyaline'] = false;
-        return RoutineServer::curlPost($url,json_encode($data));
+        $res = RoutineQrcode::setRoutineQrcodeForever($uid,$thirdType,$page,$imgUrl);
+        if($res){
+            $url = "https://api.weixin.qq.com/wxa/getwxacodeunlimit?access_token=".$accessToken;
+            if($uid) $data['scene'] = $res->id;
+            else $data['scene'] = 0;
+            if(empty($color)){
+                $color['r'] = 0;
+                $color['g'] = 0;
+                $color['b'] = 0;
+            }
+            $data['page'] = '';
+            $data['width'] = 430;
+            $data['auto_color'] = false;
+            $data['line_color'] = $color;
+            $data['is_hyaline'] = false;
+            $resCode = RoutineServer::curlPost($url,json_encode($data));
+            if($resCode){
+                $dataQrcode['status'] = 1;
+                $dataQrcode['url_time'] = time();
+                $res = RoutineQrcode::setRoutineQrcodeFind($res->id,$dataQrcode);
+                if($res) return $resCode;
+                else return false;
+            }else return false;
+        }else return false;
     }
 
     /**
