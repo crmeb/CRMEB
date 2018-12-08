@@ -1,8 +1,6 @@
 <view class='miao-list'>
    <view class='header'>
-     <block wx:for="{{lovely}}">
-       <image wx:if="{{index == 1}}" src='{{url}}{{item.img}}' ></image>
-     </block>
+   <image src='{{url}}{{lovely.img}}'></image>
    </view>
    <view class='list-ul'>
       <block wx:for="{{Arraylist}}" wx:index="{{item}}">

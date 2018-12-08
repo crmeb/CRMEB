@@ -102,7 +102,7 @@ class AuthApi extends AuthController{
         $new = StoreProduct::getNewProduct('id,image,store_name,cate_id,price,unit_name,sort',3);//今日上新
         $hot = StoreProduct::getHotProduct('id,image,store_name,cate_id,price,unit_name,sort',6);//猜你喜欢
         $data['banner'] = $banner;
-        $data['lovely'] = $lovely;
+        $data['lovely'] = $lovely[0];
         $data['menus'] = $menus;
         $data['best'] = $best;
         $data['new'] = $new;
@@ -341,7 +341,7 @@ class AuthApi extends AuthController{
         $lovely = GroupDataService::getData('routine_lovely')?:[];//banner图
         $seckill = StoreSeckill::where('is_del',0)->where('status',1)->where('start_time','<',time())->where('stop_time','>',time())->order('sort desc')->select()->toArray();
         $data['seckill'] = $seckill;
-        $data['lovely'] = $lovely;
+        $data['lovely'] = $lovely[1];
         return JsonService::successful($data);
     }
     /**
@@ -1476,7 +1476,7 @@ class AuthApi extends AuthController{
         $banner = $banner[0];
         $bargainUser = StoreBargainUser::getBargainUserStatusSuccess();
         $data['bargain'] = $bargain;
-        $data['lovely'] = $lovely;
+        $data['lovely'] = $lovely[2];
         $data['banner'] = $banner;
         $data['bargainUser'] = $bargainUser;
         return JsonService::successful($data);
@@ -1730,9 +1730,14 @@ class AuthApi extends AuthController{
         return JsonService::successful($store_combination);
     }
 
+    /**
+     * 获取拼团列表顶部图
+     * @param int $offset
+     * @param int $limit
+     */
     public function get_combination_list_banner(){
         $lovely = GroupDataService::getData('routine_lovely')?:[];//banner图
-        return JsonService::successful($lovely[2]);
+        return JsonService::successful($lovely[3]);
     }
 
     /**
