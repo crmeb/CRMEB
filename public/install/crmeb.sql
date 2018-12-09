@@ -186,6 +186,22 @@ INSERT INTO `eb_routine_template` VALUES ('12', 'AT0177', '订单配送通知', 
 COMMIT;
 
 -- ----------------------------
+--  Table structure for `eb_routine_qrcode`
+-- ----------------------------
+DROP TABLE IF EXISTS `eb_routine_qrcode`;
+CREATE TABLE `eb_routine_qrcode` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '微信二维码ID',
+  `third_type` varchar(32) NOT NULL COMMENT '二维码类型 spread(用户推广) product_spread(产品推广)',
+  `third_id` int(11) unsigned NOT NULL COMMENT '用户id',
+  `status` tinyint(1) unsigned DEFAULT '1' COMMENT '状态 0不可用 1可用',
+  `add_time` varchar(255) DEFAULT NULL COMMENT '添加时间',
+  `page` varchar(255) DEFAULT NULL COMMENT '小程序页面路径带参数',
+  `qrcode_url` varchar(255) DEFAULT NULL COMMENT '小程序二维码路径',
+  `url_time` int(11) unsigned DEFAULT NULL COMMENT '二维码添加时间',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=23 DEFAULT CHARSET=utf8 COMMENT='小程序二维码管理表';
+
+-- ----------------------------
 --  Table structure for `eb_store_bargain`
 -- ----------------------------
 DROP TABLE IF EXISTS `eb_store_bargain`;
