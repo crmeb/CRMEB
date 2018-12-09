@@ -160,7 +160,7 @@ class Index extends AuthController
                     ->group("FROM_UNIXTIME(add_time, '%Y%m%e')")
                     ->order('add_time asc')
                     ->select()->toArray();
-                if(empty($order_list)) return false;
+                if(empty($order_list)) return Json::fail('无数据');
                 foreach ($order_list as $k=>&$v){
                     $order_list[$v['day']] = $v;
                 }

@@ -1,7 +1,8 @@
 <form>
   <view class='head flex'>
     <view class='txt'>购物数量({{cartNum}})</view>
-    <view class='btn' bindtap='btntap'>管理</view>
+    <view class='btn' bindtap='btntap' wx:if='{{!foothidden}}'>管理</view>
+    <view class='btn' bindtap='btntap' wx:if='{{foothidden}}'>取消</view>
   </view>
   <view class='car-list'>
     <block wx:for="{{cartList}}" wx:key>

@@ -87,7 +87,7 @@ class SystemCleardata  extends AuthController
     }
     //修改用户默认密码
     public function userdate(){
-       SystemCleardata::ClearData('user',1);
+//       SystemCleardata::ClearData('user',1);
         $headimgurl= WechatUser::Where('uid',1)->value('headimgurl');
         $data['account']='crmeb';
         $data['pwd']=md5(123456);
@@ -141,7 +141,7 @@ class SystemCleardata  extends AuthController
     }
     //递归删除文件
     function delDirAndFile($dirName,$subdir=true){
-        if ($handle = opendir("$dirName")){
+        if ($handle = @opendir("$dirName")){
             while(false !== ($item = readdir($handle))){
                 if($item != "." && $item != ".."){
                     if(is_dir("$dirName/$item"))
