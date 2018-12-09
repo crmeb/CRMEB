@@ -1236,7 +1236,7 @@ CREATE TABLE `eb_user` (
   `pwd` varchar(32) NOT NULL COMMENT '用户密码',
   `nickname` varchar(16) NOT NULL COMMENT '用户昵称',
   `avatar` varchar(256) NOT NULL COMMENT '用户头像',
-  `phone` char(15) NOT NULL COMMENT '手机号码',
+  `phone` char(15) DEFAULT NULL COMMENT '手机号码',
   `add_time` int(11) unsigned NOT NULL COMMENT '添加时间',
   `add_ip` varchar(16) NOT NULL COMMENT '添加ip',
   `last_time` int(11) unsigned NOT NULL COMMENT '最后一次登录时间',
