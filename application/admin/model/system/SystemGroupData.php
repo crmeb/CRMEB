@@ -28,6 +28,7 @@ class SystemGroupData extends ModelBasic
         $model = new self;
         if($params['gid'] !== '') $model = $model->where('gid',$params['gid']);
         if($params['status'] !== '') $model = $model->where('status',$params['status']);
+        $model = $model->order('sort desc,id ASC');
         return self::page($model,function($item,$key){
             $info = json_decode($item->value,true);
             foreach ($info as $index => $value) {

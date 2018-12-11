@@ -46,9 +46,15 @@ Page({
                   url: app.globalData.openPages
                 })
               } else {//跳转到首页
-                wx.reLaunch({
-                  url: '/pages/index/index'
-                })
+                if(res.data.data.page){
+                    wx.navigateTo({
+                        url: res.data.data.page
+                    })
+                }else{
+                    wx.reLaunch({
+                        url: '/pages/index/index'
+                    })
+                }
               }
             }
           })

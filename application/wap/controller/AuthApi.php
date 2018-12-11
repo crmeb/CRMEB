@@ -307,6 +307,7 @@ class AuthApi extends AuthController
     public function get_user_order_list($type = '',$first = 0, $limit = 8,$search = '')
     {
 //        StoreOrder::delCombination();//删除拼团未支付订单
+        $type=='null' && $type='';
         if($search){
             $order = StoreOrder::searchUserOrder($this->userInfo['uid'],$search)?:[];
             $list = $order == false ? [] : [$order];
@@ -496,10 +497,11 @@ class AuthApi extends AuthController
         if($news) $model->where('is_new',1);
         $baseOrder = '';
         if($priceOrder) $baseOrder = $priceOrder == 'desc' ? 'price DESC' : 'price ASC';
-        if($salesOrder) $baseOrder = $salesOrder == 'desc' ? 'sales DESC' : 'sales ASC';
+//        if($salesOrder) $baseOrder = $salesOrder == 'desc' ? 'sales DESC' : 'sales ASC';
+        if($salesOrder) $baseOrder = $salesOrder == 'desc' ? 'ficti DESC' : 'ficti ASC';
         if($baseOrder) $baseOrder .= ', ';
         $model->order($baseOrder.'sort DESC, add_time DESC');
-        $list = $model->limit($first,$limit)->field('id,store_name,image,sales,price,stock')->select()->toArray();
+        $list = $model->limit($first,$limit)->field('id,store_name,image,sales,ficti,price,stock')->select()->toArray();
         if($list) setView($this->uid,0,$sId,'search','product',$keyword);
         return JsonService::successful($list);
     }
@@ -738,6 +740,16 @@ class AuthApi extends AuthController
             return JsonService::status('SUCCESS','砍价成功');
         }
         else return JsonService::status('ERROR','砍价失败，请稍后再帮助朋友砍价');
+    }
+
+    /**
+     * 砍价分享添加次数
+     * @param int $bargainId
+     */
+    public function add_bargain_share($bargainId = 0){
+        if(!$bargainId) return JsonService::successful();
+        StoreBargain::addBargainShare($bargainId);
+        return JsonService::successful();
     }
 
 }

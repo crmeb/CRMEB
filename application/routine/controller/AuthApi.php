@@ -102,7 +102,7 @@ class AuthApi extends AuthController{
         $new = StoreProduct::getNewProduct('id,image,store_name,cate_id,price,unit_name,sort',3);//今日上新
         $hot = StoreProduct::getHotProduct('id,image,store_name,cate_id,price,unit_name,sort',6);//猜你喜欢
         $data['banner'] = $banner;
-        $data['lovely'] = $lovely;
+        $data['lovely'] = $lovely[0];
         $data['menus'] = $menus;
         $data['best'] = $best;
         $data['new'] = $new;
@@ -235,10 +235,11 @@ class AuthApi extends AuthController{
         if($news!=0) $model->where('is_new',1);
         $baseOrder = '';
         if($priceOrder) $baseOrder = $priceOrder == 'desc' ? 'price DESC' : 'price ASC';
-        if($salesOrder) $baseOrder = $salesOrder == 'desc' ? 'sales DESC' : 'sales ASC';
+//        if($salesOrder) $baseOrder = $salesOrder == 'desc' ? 'sales DESC' : 'sales ASC';//真实销量
+        if($salesOrder) $baseOrder = $salesOrder == 'desc' ? 'ficti DESC' : 'ficti ASC';//虚拟销量
         if($baseOrder) $baseOrder .= ', ';
         $model->order($baseOrder.'sort DESC, add_time DESC');
-        $list = $model->limit($first,$limit)->field('id,store_name,cate_id,image,sales,price,stock')->select()->toArray();
+        $list = $model->limit($first,$limit)->field('id,store_name,cate_id,image,sales,ficti,price,stock')->select()->toArray();
         return JsonService::successful($list);
     }
     /**
@@ -268,7 +269,7 @@ class AuthApi extends AuthController{
             }
         }
         $data['storeInfo'] = $storeInfo;
-        $data['similarity'] = StoreProduct::cateIdBySimilarityProduct($storeInfo['cate_id'],'id,store_name,image,price,sales',4);
+        $data['similarity'] = StoreProduct::cateIdBySimilarityProduct($storeInfo['cate_id'],'id,store_name,image,price,sales,ficti',4);
         $data['productAttr'] = $productAttr;
         $data['productValue'] = $productValue;
         $data['reply'] = StoreProductReply::getRecProductReply($storeInfo['id']);
@@ -341,7 +342,7 @@ class AuthApi extends AuthController{
         $lovely = GroupDataService::getData('routine_lovely')?:[];//banner图
         $seckill = StoreSeckill::where('is_del',0)->where('status',1)->where('start_time','<',time())->where('stop_time','>',time())->order('sort desc')->select()->toArray();
         $data['seckill'] = $seckill;
-        $data['lovely'] = $lovely;
+        $data['lovely'] = $lovely[1];
         return JsonService::successful($data);
     }
     /**
@@ -1441,7 +1442,9 @@ class AuthApi extends AuthController{
         if($domainTop != 'https') $domain = 'https:'.substr($domain,5,strlen($domain));
         if(file_exists($picname)) return JsonService::successful($domain.$picname);
         else{
-            file_put_contents($picname,RoutineCode::getCode($this->userInfo['uid']));
+            $res = RoutineCode::getCode($this->userInfo['uid'],$picname);
+            if($res) file_put_contents($picname,$res);
+            else return JsonService::fail('二维码生成失败');
         }
         return JsonService::successful($domain.$picname);
     }
@@ -1474,7 +1477,7 @@ class AuthApi extends AuthController{
         $banner = $banner[0];
         $bargainUser = StoreBargainUser::getBargainUserStatusSuccess();
         $data['bargain'] = $bargain;
-        $data['lovely'] = $lovely;
+        $data['lovely'] = $lovely[2];
         $data['banner'] = $banner;
         $data['bargainUser'] = $bargainUser;
         return JsonService::successful($data);
@@ -1728,9 +1731,14 @@ class AuthApi extends AuthController{
         return JsonService::successful($store_combination);
     }
 
+    /**
+     * 获取拼团列表顶部图
+     * @param int $offset
+     * @param int $limit
+     */
     public function get_combination_list_banner(){
         $lovely = GroupDataService::getData('routine_lovely')?:[];//banner图
-        return JsonService::successful($lovely[2]);
+        return JsonService::successful($lovely[3]);
     }
 
     /**
@@ -1949,6 +1957,27 @@ class AuthApi extends AuthController{
         return JsonService::successful($content);
     }
 
+    /**
+     * 产品海报二维码
+     * @param int $id
+     */
+    public function product_promotion_code($id = 0){
+        if(!$id) return JsonService::fail('参数错误');
+        $count = StoreProduct::validWhere()->count();
+        if(!$count) return JsonService::fail('参数错误');
+        $path = 'public'.DS.'uploads'.DS.'codepath'.DS.'product';
+        $codePath = $path.DS.$id.'_'.$this->userInfo['uid'].'.jpg';
+        $domain = SystemConfigService::get('site_url').'/';
+        if(!file_exists($codePath)){
+            if(!is_dir($path)) mkdir($path,0777,true);
+            $res = RoutineCode::getCode($this->userInfo['uid'],$codePath,[],'/pages/product-con/index?id='.$id,'product_spread');
+            if($res) file_put_contents($codePath,$res);
+            else return JsonService::fail('二维码生成失败');
+        }
+        return JsonService::successful($domain.$codePath);
+    }
+
+
     public function poster($id = 0){
         if(!$id) return JsonService::fail('参数错误');
         $productInfo = StoreProduct::getValidProduct($id,'store_name,id,price,image,code_path');
@@ -1957,9 +1986,8 @@ class AuthApi extends AuthController{
             $path = 'public'.DS.'uploads'.DS.'codepath'.DS.'product';
             $codePath = $path.DS.$productInfo['id'].'.jpg';
             if(!file_exists($codePath)){
-                if(!is_dir($path))
-                    mkdir($path,0777,true);
-                file_put_contents($codePath,RoutineCode::getPages('pages/product-con/index?id='.$productInfo['id']));
+                if(!is_dir($path)) mkdir($path,0777,true);
+                $res = file_put_contents($codePath,RoutineCode::getPages('pages/product-con/index?id='.$productInfo['id']));
             }
             $res = StoreProduct::edit(['code_path'=>$codePath],$id);
             if($res) $productInfo['code_path'] = $codePath;

@@ -30,7 +30,9 @@ class Login extends Controller{
         else $data['unionid'] = '';
         $data['routine_openid'] = $res['openid'];
         $data['session_key'] = $res['session_key'];
-        $data['uid'] = RoutineUser::routineOauth($data);
+        $dataOauthInfo = RoutineUser::routineOauth($data);
+        $data['uid'] = $dataOauthInfo['uid'];
+        $data['page'] = $dataOauthInfo['page'];
         $data['status'] = RoutineUser::isUserStatus($data['uid']);
         return JsonService::successful($data);
     }

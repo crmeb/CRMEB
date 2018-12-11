@@ -26,6 +26,7 @@ Page({
         sid:'',
         price:'',
         sales:'',
+        ficti: '',
         t:1,
         sortyi:[],
         offset: 0,
@@ -253,7 +254,7 @@ Page({
         var n = t + 1;
         if (n%2>0) salesOrder = 'asc';
         else salesOrder='desc';
-        that.setData({ sales: salesOrder, t: n, })
+      that.setData({ ficti: salesOrder, t: n, })
         that.getProductList();
     },
     navactive2: function (e) {
@@ -554,7 +555,7 @@ Page({
         var cid = that.data.cid;
         var limit = 20;
         var priceOrder = that.data.price;
-        var salesOrder = that.data.sales;
+        var salesOrder = that.data.ficti;
         var offset = 0;
         var startpage = limit * offset;
         wx.request({
@@ -596,7 +597,7 @@ Page({
         var cid = that.data.cid;
         var limit = 20;
         var priceOrder = that.data.price;
-        var salesOrder = that.data.sales;
+        var salesOrder = that.data.ficti;
         var offset = that.data.offset;
         var startpage = limit * offset;
         var header = {

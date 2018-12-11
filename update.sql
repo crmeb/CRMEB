@@ -126,3 +126,17 @@ ALTER TABLE `eb_store_product_reply` CHANGE COLUMN `merchant_reply_content` `mer
 ALTER TABLE `eb_store_product_reply` CHANGE COLUMN  `merchant_reply_time` `merchant_reply_time` INT(11) NULL COMMENT '管理员回复时间';
 ALTER TABLE `eb_store_cart` CHANGE COLUMN `combination_id` `combination_id` INT(11) UNSIGNED NULL DEFAULT '0' COMMENT '拼团id';
 ALTER TABLE `eb_store_order` CHANGE COLUMN `combination_id` `combination_id` int(11) UNSIGNED DEFAULT '0' COMMENT '拼团产品id0一般产品';
+
+--海报表新增
+DROP TABLE IF EXISTS `eb_routine_qrcode`;
+CREATE TABLE `eb_routine_qrcode` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '微信二维码ID',
+  `third_type` varchar(32) NOT NULL COMMENT '二维码类型 spread(用户推广) product_spread(产品推广)',
+  `third_id` int(11) unsigned NOT NULL COMMENT '用户id',
+  `status` tinyint(1) unsigned DEFAULT '1' COMMENT '状态 0不可用 1可用',
+  `add_time` varchar(255) DEFAULT NULL COMMENT '添加时间',
+  `page` varchar(255) DEFAULT NULL COMMENT '小程序页面路径带参数',
+  `qrcode_url` varchar(255) DEFAULT NULL COMMENT '小程序二维码路径',
+  `url_time` int(11) unsigned DEFAULT NULL COMMENT '二维码添加时间',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=23 DEFAULT CHARSET=utf8 COMMENT='小程序二维码管理表';
