@@ -111,7 +111,7 @@ class Store extends AuthController
         $this->assign([
             'urlShare'=>$urlShare,
             'storeInfo'=>$storeInfo,
-            'similarity'=>StoreProduct::cateIdBySimilarityProduct($storeInfo['cate_id'],'id,store_name,image,price,sales',4),
+            'similarity'=>StoreProduct::cateIdBySimilarityProduct($storeInfo['cate_id'],'id,store_name,image,price,sales,ficti',4),
             'productAttr'=>$productAttr,
             'productValue'=>$productValue,
             'reply'=>StoreProductReply::getRecProductReply($storeInfo['id']),

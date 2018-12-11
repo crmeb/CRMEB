@@ -43,7 +43,7 @@
     <view class='count-wrapper flex'>
       <view>原价:￥{{storeInfo.ot_price}}</view>
       <view>库存:{{storeInfo.stock}}{{storeInfo.unit_name}}</view>
-      <view>销量:{{storeInfo.sales}}{{storeInfo.unit_name}}</view>
+      <view>销量:{{storeInfo.ficti}}{{storeInfo.unit_name}}</view>
     </view>
   </view>
   <view class='block-bar' bindtap='goCoupon'>

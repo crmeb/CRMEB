@@ -7,6 +7,7 @@
 
 namespace app\wap\controller;
 
+use app\wap\model\store\StoreCombination;
 use app\wap\model\store\StoreSeckill;
 use app\wap\model\store\StoreCategory;
 use app\wap\model\store\StoreOrder;
@@ -47,7 +48,9 @@ class Index extends AuthController
                ->where('start_time','<',time())->where('stop_time','>',time())
                ->limit($seckillnum)->order('sort desc')->select()->toArray();
         foreach($storeSeckill as $key=>$value){
-            $round=round($value['sales']/$value['stock'],2)*100;
+            if($value['stock']>0)
+            $round = round($value['sales']/$value['stock'],2)*100;
+            else $round = 100;
             if($round<100){
                 $storeSeckill[$key]['round']=$round;
             }else{

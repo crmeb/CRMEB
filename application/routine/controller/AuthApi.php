@@ -235,10 +235,11 @@ class AuthApi extends AuthController{
         if($news!=0) $model->where('is_new',1);
         $baseOrder = '';
         if($priceOrder) $baseOrder = $priceOrder == 'desc' ? 'price DESC' : 'price ASC';
-        if($salesOrder) $baseOrder = $salesOrder == 'desc' ? 'sales DESC' : 'sales ASC';
+//        if($salesOrder) $baseOrder = $salesOrder == 'desc' ? 'sales DESC' : 'sales ASC';//真实销量
+        if($salesOrder) $baseOrder = $salesOrder == 'desc' ? 'ficti DESC' : 'ficti ASC';//虚拟销量
         if($baseOrder) $baseOrder .= ', ';
         $model->order($baseOrder.'sort DESC, add_time DESC');
-        $list = $model->limit($first,$limit)->field('id,store_name,cate_id,image,sales,price,stock')->select()->toArray();
+        $list = $model->limit($first,$limit)->field('id,store_name,cate_id,image,sales,ficti,price,stock')->select()->toArray();
         return JsonService::successful($list);
     }
     /**
@@ -268,7 +269,7 @@ class AuthApi extends AuthController{
             }
         }
         $data['storeInfo'] = $storeInfo;
-        $data['similarity'] = StoreProduct::cateIdBySimilarityProduct($storeInfo['cate_id'],'id,store_name,image,price,sales',4);
+        $data['similarity'] = StoreProduct::cateIdBySimilarityProduct($storeInfo['cate_id'],'id,store_name,image,price,sales,ficti',4);
         $data['productAttr'] = $productAttr;
         $data['productValue'] = $productValue;
         $data['reply'] = StoreProductReply::getRecProductReply($storeInfo['id']);

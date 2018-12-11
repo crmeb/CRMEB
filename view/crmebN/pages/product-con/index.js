@@ -150,61 +150,59 @@ Page({
         })
     },
     // 保存海报图片
-    savePosterPath:function(){
-        var that = this;
-        console.log(that.data.posterImage);
-        wx.getSetting({
-            success(res) {
-                if (!res.authSetting['scope.writePhotosAlbum']) {
-                    wx.openSetting({
-                        success(tag) {
-                            if (tag.authSetting["scope.writePhotosAlbum"]) {  // 用户在设置页选择同意授权
-                                wx.saveImageToPhotosAlbum({
-                                    filePath: that.data.posterImage,
-                                    success: function (res) {
-                                        that.posterImageClose();
-                                        wx.showToast({
-                                            title: '保存成功',
-                                            icon: 'success',
-                                            duration: 1500,
-                                        })
-                                    },
-                                    fail: function (res) {
-                                        wx.showToast({
-                                            title: '保存失败',
-                                            icon: 'none',
-                                            duration: 1500,
-                                        })
-                                    },
-                                    complete: function (res) { },
-                                })
-                            }
-                        }
-                    });
-                } else {
-                    wx.saveImageToPhotosAlbum({
-                        filePath: that.data.posterImage,
-                        success: function (res) {
-                            that.posterImageClose();
-                            wx.showToast({
-                                title: '保存成功',
-                                icon: 'success',
-                                duration: 1500,
-                            })
-                        },
-                        fail: function (res) {
-                            wx.showToast({
-                                title: '保存失败',
-                                icon: 'none',
-                                duration: 1500,
-                            })
-                        },
-                        complete: function (res) { },
-                    })
-                }
+  savePosterPath: function () {
+    var that = this;
+    wx.getSetting({
+      success(res) {
+        if (!res.authSetting['scope.writePhotosAlbum']) {
+          wx.authorize({
+            scope: 'scope.writePhotosAlbum',
+            success() {
+              wx.saveImageToPhotosAlbum({
+                filePath: that.data.posterImage,
+                success: function (res) {
+                  that.posterImageClose();
+                  wx.showToast({
+                    title: '保存成功',
+                    icon: 'success',
+                    duration: 1500,
+                  })
+                },
+                fail: function (res) {
+                  wx.showToast({
+                    title: '保存失败',
+                    icon: 'none',
+                    duration: 1500,
+                  })
+                },
+                complete: function (res) { },
+              })
             }
-        })
-    },
+          })
+        } else {
+          wx.saveImageToPhotosAlbum({
+            filePath: that.data.posterImage,
+            success: function (res) {
+              that.posterImageClose();
+              wx.showToast({
+                title: '保存成功',
+                icon: 'success',
+                duration: 1500,
+              })
+            },
+            fail: function (res) {
+              wx.showToast({
+                title: '保存失败',
+                icon: 'none',
+                duration: 1500,
+              })
+            },
+            complete: function (res) { },
+          })
+        }
+      }
+    })
+  },
     //生成海报获取文字
     textByteLength: function(text, num) {  // text为传入的文本  num为单行显示的字节长度
         let strLength = 0;

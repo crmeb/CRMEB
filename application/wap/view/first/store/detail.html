@@ -16,7 +16,7 @@
             <div class="price">￥{$storeInfo.price|floatval}</div>
             <div class="oldprice">原价:￥{$storeInfo.ot_price|floatval}</div>
             <div class="info-amount flex"><span class="current">商品编号：{$storeInfo.id}</span> <span class="">库存:{$storeInfo.stock}{$storeInfo.unit_name}</span>
-                <span class="fr">销量:{$storeInfo.sales}{$storeInfo.unit_name}</span></div>
+                <span class="fr">销量:{$storeInfo.ficti}{$storeInfo.unit_name}</span></div>
             {gt name="storeInfo['give_integral']" value="0"}
             <div class="integral">积分:{$storeInfo.give_integral|floatval} <span>赠送</span></div>
             {/gt}
@@ -40,26 +40,21 @@
                     </div>
                     <div class="txt-info">{$reply.comment}</div>
                     <div class="pro-parameter"><span>{$reply.add_time}</span> <span>{$reply.suk}</span></div>
-                    {gt name="replyCount" value="1"} <a class="more"
-                                                        href="{:url('reply_list',['productId'=>$storeInfo['id']])}">查看全部评价</a>
+                    {gt name="replyCount" value="1"}
+                    <a class="more"  href="{:url('reply_list',['productId'=>$storeInfo['id']])}">查看全部评价</a>
                     {/gt}
                 </div>
             </div>
         </div>
         {/notempty}
         <div class="item-box">
-            <div class="item-tit"><i class="line"></i><i class="iconfont icon-icon-tupian"></i><span>详情</span><i
-                    class="line"></i></div>
+            <div class="item-tit"><i class="line"></i><i class="iconfont icon-icon-tupian"></i><span>详情</span><i class="line"></i></div>
             <div class="con-box" ref="store_desc"></div>
         </div>
-        <div class="footer-bar flex"><a href="{:Url('Service/service_list',array('mer_id'=>$mer_id))}"> <span
-                    class="iconfont icon-kefu"></span>
-                <p>客服</p></a> <a class="collect-btn iconfont icon-xing1"
-                                 :class="{'icon-xing2':product.userCollect == true}" @click="collect"
-                                 href="javascript:void(0)"><p>收藏</p></a> <a href="{:Url('store/cart')}"> <span
-                    class="iconfont icon-icon-shoppingcart-02"></span>
-                <p>购物车</p>                <span class="cart_num" v-show="cartNum > 0" v-cloak=""
-                                                v-text="cartNum"></span> </a>
+        <div class="footer-bar flex">
+            <a href="{:Url('Service/service_list',array('mer_id'=>$mer_id))}"> <span class="iconfont icon-kefu"></span><p>客服</p></a>
+            <a class="collect-btn iconfont icon-xing1" :class="{'icon-xing2':product.userCollect == true}" @click="collect" href="javascript:void(0)"><p>收藏</p></a>
+            <a href="{:Url('store/cart')}"> <span class="iconfont icon-icon-shoppingcart-02"></span> <p>购物车</p> <span class="cart_num" v-show="cartNum > 0" v-cloak="" v-text="cartNum"></span> </a>
             <div class="big-btn buy-car" @click="cardUp">加入购物车</div>
             <div class="big-btn confirm" @click="cardUp">立即购买</div>
         </div>
@@ -73,7 +68,8 @@
             <li><a href="{:url('store/detail',array('id'=>$store['id']))}">
                     <div class="picture"><img src="{$store.image}"/></div>
                     <div class="pro-info"><p class="title">{$store.store_name}</p>
-                        <p class="conut">已售{$store.sales}</p>
+                        <!--<p class="conut">已售{$store.sales}</p>-->
+                        <p class="conut">已售{$store.ficti}</p>
                         <p class="price">￥{$store.price|floatval}</p></div>
                     <div class="buy-car-btn"><i class="iconfont icon-gouwuche"></i></div>
                 </a></li>
@@ -91,8 +87,8 @@
     window.$product = <?php unset($storeInfo['description']); echo json_encode($storeInfo);?>;
     window.$productAttr = <?php echo json_encode($productAttr) ?: '[]'; ?>;
     window.$productValue = <?php echo json_encode($productValue) ?: '{}'; ?>;</script>
-<script
-    type="text/javascript">    requirejs(['vue', 'axios', 'helper', 'store', '{__WAP_PATH}crmeb/module/store/shop-card.js'], function (Vue, axios, $h, storeApi, shopCard) {
+<script type="text/javascript">
+    requirejs(['vue', 'axios', 'helper', 'store', '{__WAP_PATH}crmeb/module/store/shop-card.js'], function (Vue, axios, $h, storeApi, shopCard) {
         new Vue({
             el: "#store_detail",
             components: {'shop-card': shopCard},
@@ -229,7 +225,7 @@
                         desc: $product.store_info || $product.store_name,
 //                        imgUrl: location.origin + $product.image,
                         imgUrl: $product.image,
-                        link: $urlShare || location.href
+                        link: $urlShare || "{:url('store/detail',array('id'=>$store['id'],'spuid'=>$userInfo['uid']))}"
                     });
                 });
                 this.$nextTick(function () {
