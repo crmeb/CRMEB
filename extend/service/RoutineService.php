@@ -65,13 +65,13 @@ class RoutineService{
         $array = self::xml($xml);//全要大写
         if($array['RETURN_CODE'] == 'SUCCESS' && $array['RESULT_CODE'] == 'SUCCESS'){
             $time = time();
-            $tmp='';//临时数组用于签名
+            $tmp=array();//临时数组用于签名
             $tmp['appId'] = $appid;
             $tmp['nonceStr'] = $nonce_str;
             $tmp['package'] = 'prepay_id='.$array['PREPAY_ID'];
             $tmp['signType'] = 'MD5';
             $tmp['timeStamp'] = "$time";
-
+            $data=array();
             $data['state'] = 1;
             $data['timeStamp'] = "$time";//时间戳
             $data['nonceStr'] = $nonce_str;//随机字符串
@@ -80,6 +80,7 @@ class RoutineService{
             $data['paySign'] = self::sign($tmp);//签名,具体签名方案参见微信公众号支付帮助文档;
             $data['out_trade_no'] = $out_trade_no;
         }else{
+            $data=array();
             $data['state'] = 0;
             $data['text'] = "错误";
             $data['RETURN_CODE'] = $array['RETURN_CODE'];

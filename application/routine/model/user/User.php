@@ -131,7 +131,7 @@ class User extends ModelBasic
         if($storeBrokerageStatu == 1){
             if(!User::be(['uid'=>$userInfoTwo['spread_uid'],'is_promoter'=>1]))  return true;
         }
-        $brokerageRatio = (SystemConfigService::get('store_brokerage_ratio_two') ?: 0)/100;
+        $brokerageRatio = (SystemConfigService::get('store_brokerage_two') ?: 0)/100;
         if($brokerageRatio <= 0) return true;
         $cost = isset($orderInfo['cost']) ? $orderInfo['cost'] : 0;//成本价
         if($cost > $orderInfo['pay_price']) return true;//成本价大于支付价格时直接返回
