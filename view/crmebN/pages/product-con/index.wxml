@@ -78,7 +78,7 @@
       <view class='txt-msg'>{{reply.comment}}</view>
       <view class='time-bar'>{{reply.add_time}}</view>
     </view>
-    <view>
+    <view wx:if="{{reply.merchant_reply_content != null}}">
        <view>管理员回复：</view>
       <view class='txt-msg'>{{reply.merchant_reply_content}}</view>
       <view class='time-bar'>{{reply.merchant_reply_time}}</view>
