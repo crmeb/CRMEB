@@ -138,22 +138,27 @@ class StoreProduct extends AuthController
                     $menus[] = ['value'=>$menu['id'],'label'=>$menu['html'].$menu['cate_name'],'disabled'=>$menu['pid']== 0];//,'disabled'=>$menu['pid']== 0];
                 }
                 return $menus;
-            })->filterable(1)->multiple(1),
-            Form::input('store_name','产品名称')->col(Form::col(24)),
+            })->filterable(1)->multiple(1)->required(),
+            Form::input('store_name','产品名称')->col(Form::col(24))->validateFn(function($validate){
+                $validate->min(5)->max(32);
+            })->required(),
             Form::input('store_info','产品简介')->type('textarea'),
             Form::input('keyword','产品关键字')->placeholder('多个用英文状态下的逗号隔开'),
-            Form::input('unit_name','产品单位','件'),
-            Form::frameImageOne('image','产品主图片(305*305px)',Url::build('admin/widget.images/index',array('fodder'=>'image')))->icon('image')->width('100%')->height('500px'),
-            Form::frameImages('slider_image','产品轮播图(640*640px)',Url::build('admin/widget.images/index',array('fodder'=>'slider_image')))->maxLength(5)->icon('images')->width('100%')->height('500px')->spin(0),
-            Form::number('price','产品售价')->min(0)->col(8),
+            Form::input('unit_name','产品单位','件')->required(),
+            Form::frameImageOne('image','产品主图片(305*305px)',Url::build('admin/widget.images/index',array('fodder'=>'image')))->icon('image')->width('100%')->height('500px')->required(),
+            Form::frameImages('slider_image','产品轮播图(640*640px)',Url::build('admin/widget.images/index',array('fodder'=>'slider_image')))->maxLength(5)->icon('images')->width('100%')->height('500px')->spin(0)
+                ->required()->validateFn(function($validate){
+                $validate->min(1)->max(5);
+            }),
+            Form::number('price','产品售价')->min(0)->col(8)->required(),
             Form::number('ot_price','产品市场价')->min(0)->col(8),
             Form::number('give_integral','赠送积分')->min(0)->precision(0)->col(8),
-            Form::number('postage','邮费')->min(0)->col(Form::col(8)),
+            Form::number('postage','邮费')->min(0)->col(Form::col(8))->required(),
             Form::number('sales','销量',0)->min(0)->precision(0)->col(8)->readonly(1),
             Form::number('ficti','虚拟销量')->min(0)->precision(0)->col(8),
-            Form::number('stock','库存')->min(0)->precision(0)->col(8),
+            Form::number('stock','库存')->min(0)->precision(0)->col(8)->required(),
             Form::number('cost','产品成本价')->min(0)->col(8),
-            Form::number('sort','排序')->col(8),
+            Form::number('sort','排序',0)->col(8)->required(),
             Form::radio('is_show','产品状态',0)->options([['label'=>'上架','value'=>1],['label'=>'下架','value'=>0]])->col(8),
             Form::radio('is_hot','热卖单品',0)->options([['label'=>'是','value'=>1],['label'=>'否','value'=>0]])->col(8),
             Form::radio('is_benefit','促销单品',0)->options([['label'=>'是','value'=>1],['label'=>'否','value'=>0]])->col(8),

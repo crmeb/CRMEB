@@ -75,13 +75,13 @@ class StoreSeckill extends AuthController
     public function create()
     {
         $f = array();
-        $f[] = Form::input('title','产品标题');
-        $f[] = Form::input('info','秒杀活动简介')->type('textarea');
-        $f[] = Form::input('unit_name','单位')->placeholder('个、位');
-        $f[] = Form::dateTimeRange('section_time','活动时间');
-        $f[] = Form::frameImageOne('image','产品主图片(305*305px)',Url::build('admin/widget.images/index',array('fodder'=>'image')))->icon('image');
-        $f[] = Form::frameImages('images','产品轮播图(640*640px)',Url::build('admin/widget.images/index',array('fodder'=>'images')))->maxLength(5)->icon('images');
-        $f[] = Form::number('price','秒杀价')->min(0)->col(12);
+        $f[] = Form::input('title','产品标题')->required();
+        $f[] = Form::input('info','秒杀活动简介')->type('textarea')->required();
+        $f[] = Form::input('unit_name','单位')->placeholder('个、位')->required();
+        $f[] = Form::dateTimeRange('section_time','活动时间')->required();
+        $f[] = Form::frameImageOne('image','产品主图片(305*305px)',Url::build('admin/widget.images/index',array('fodder'=>'image')))->icon('image')->required();
+        $f[] = Form::frameImages('images','产品轮播图(640*640px)',Url::build('admin/widget.images/index',array('fodder'=>'images')))->maxLength(5)->icon('images')->required();
+        $f[] = Form::number('price','秒杀价')->min(0)->col(12)->required();
         $f[] = Form::number('ot_price','原价')->min(0)->col(12);
         $f[] = Form::number('cost','成本价')->min(0)->col(12);
         $f[] = Form::number('stock','库存')->min(0)->precision(0)->col(12);
@@ -93,7 +93,7 @@ class StoreSeckill extends AuthController
         $f[] = Form::radio('is_postage','是否包邮',1)->options([['label'=>'是','value'=>1],['label'=>'否','value'=>0]])->col(12);
         $f[] = Form::radio('is_hot','热门推荐',1)->options([['label'=>'开启','value'=>1],['label'=>'关闭','value'=>0]])->col(12);
         $f[] = Form::radio('status','活动状态',1)->options([['label'=>'开启','value'=>1],['label'=>'关闭','value'=>0]])->col(12);
-        $form = Form::make_post_form('添加用户通知',$f,Url::build('save'));
+        $form = Form::make_post_form('开启秒杀',$f,Url::build('save'));
         $this->assign(compact('form'));
         return $this->fetch('public/form-builder');
     }
