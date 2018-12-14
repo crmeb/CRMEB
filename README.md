@@ -1,3 +1,6 @@
+<p align="center">
+<img src="https://images.gitee.com/uploads/images/2018/1214/151026_2299df23_892944.gif" />
+</p>
 <h1 align="center"> CRMEB客户管理+电商管理系统</h1> 
 <p align="center">
     <a href="http://www.crmeb.com">
