@@ -42,7 +42,7 @@ class StoreCoupon extends AuthController
     public function create()
     {
         $f = array();
-        $f[] = Form::input('title','优惠券名称');
+        $f[] = Form::input('title','优惠券名称')->required();
         $f[] = Form::number('coupon_price','优惠券面值',0)->min(0);
         $f[] = Form::number('use_min_price','优惠券最低消费')->min(0);
         $f[] = Form::number('coupon_time','优惠券有效期限')->min(0);
