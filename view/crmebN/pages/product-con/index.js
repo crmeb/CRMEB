@@ -875,7 +875,7 @@ Page({
     onShareAppMessage: function () {
         var that = this;
         return {
-            title: '小程序',
+            title: that.data.productSelect.store_name,
             path: app.globalData.openPages,
             // imageUrl: that.data.url + that.data.product.image,
             success: function () {
