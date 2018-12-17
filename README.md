@@ -131,6 +131,9 @@ Gitee: https://gitee.com/ZhongBangKeJi/CRMEB/issues
 ## 特别鸣谢
 感谢以下的项目,排名不分先后
 
+form-builder : https://github.com/xaboy/form-builder
+（本项目开发的核心技术）
+
 ThinkPHP：http://www.thinkphp.cn
 
 Bootstrap：http://getbootstrap.com
@@ -138,8 +141,6 @@ Bootstrap：http://getbootstrap.com
 jQuery：http://jquery.com
 
 iView：https://www.iviewui.com
-
-form-builder : https://github.com/xaboy/form-builder（也是参与本项目开发的技术）
 
 Vue：https://cn.vuejs.org/
 
