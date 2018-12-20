@@ -71,7 +71,7 @@
                     <div class="layui-btn-container">
                         {switch name='type'}
                             {case value="1"}
-                                <button class="layui-btn layui-btn-sm" onclick="$eb.createModalFrame(this.innerText,'{:Url('create')}',{h:760,w:1100})">添加产品</button>
+                                <button class="layui-btn layui-btn-sm" onclick="$eb.createModalFrame(this.innerText,'{:Url('create')}',{h:700,w:1100})">添加产品</button>
                             {/case}
                             {case value="2"}
                                 <button class="layui-btn layui-btn-sm" data-type="show">批量上架</button>
@@ -175,15 +175,15 @@
             case 2:
                 join=[
                     {type:'checkbox'},
-                    {field: 'id', title: 'ID', sort: true,event:'id',width:'5%'},
-                    {field: 'image', title: '产品图片',templet:'#image'},
+                    {field: 'id', title: 'ID', sort: true,event:'id',width:'6%'},
+                    {field: 'image', title: '产品图片',templet:'#image',width:'10%'},
                     {field: 'store_name', title: '产品名称',templet:'#store_name'},
-                    {field: 'price', title: '产品价格',edit:'price'},
-                    {field: 'ficti', title: '虚拟销量',edit:'ficti'},
-                    {field: 'stock', title: '库存',edit:'stock'},
-                    {field: 'sort', title: '排序',edit:'sort'},
-                    {field: 'sales', title: '销量',sort: true,event:'sales'},
-                    {field: 'status', title: '状态',templet:"#checkboxstatus"},
+                    {field: 'price', title: '价格',edit:'price',width:'8%'},
+                    {field: 'ficti', title: '虚拟销量',edit:'ficti',width:'8%'},
+                    {field: 'stock', title: '库存',edit:'stock',width:'6%'},
+                    {field: 'sort', title: '排序',edit:'sort',width:'6%'},
+                    {field: 'sales', title: '销量',sort: true,event:'sales',width:'6%'},
+                    {field: 'status', title: '状态',templet:"#checkboxstatus",width:'8%'},
                     {field: 'right', title: '操作',align:'center',toolbar:'#act',width:'14%'},
                 ];
                 break;
