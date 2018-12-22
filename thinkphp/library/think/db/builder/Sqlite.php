@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006~2017 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2006~2018 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
@@ -52,12 +52,18 @@ class Sqlite extends Builder
     /**
      * 字段和表名处理
      * @access protected
-     * @param string $key
+     * @param mixed  $key
      * @param array  $options
      * @return string
      */
-    protected function parseKey($key, $options = [])
+    protected function parseKey($key, $options = [], $strict = false)
     {
+        if (is_numeric($key)) {
+            return $key;
+        } elseif ($key instanceof Expression) {
+            return $key->getValue();
+        }
+
         $key = trim($key);
         if (strpos($key, '.')) {
             list($table, $key) = explode('.', $key, 2);
