@@ -113,17 +113,17 @@
     layList.form.render();
     layList.tableList('seckillList',"{:Url('get_seckill_list')}",function () {
         return [
-            {field: 'id', title: '编号', sort: true,width:'5%',event:'id',unresize:true},
-            {field: 'image', title: '产品图片',unresize:true, width: '8%',templet: '<p><img src="{{d.image}}" alt="{{d.title}}" class="open_image" data-image="{{d.image}}"></p>'},
-            {field: 'title', title: '活动标题',width:'14%',unresize:true},
-            {field: 'info', title: '活动简介',width:'17%',unresize:true},
-            {field: 'ot_price', title: '原价',width:'6%',unresize:true},
-            {field: 'price', title: '秒杀价',unresize:true,width:'6%'},
-            {field: 'stock', title: '库存',width:'7%',unresize:true},
-            {field: 'start_name', title: '秒杀状态',width:'13%',toolbar:"#statusCn",unresize:true},
-            {field: 'stop_time', title: '结束时间', width: '13%',toolbar: '#stopTime',unresize:true},
-            {field: 'status', title: '状态',width:'6%',toolbar:"#status",unresize:true},
-            {field: 'right', title: '操作', width: '5%', align: 'center', toolbar: '#barDemo',unresize:true}
+            {field: 'id', title: 'ID', sort: true,width:'6%',event:'id'},
+            {field: 'image', title: '产品图片', width: '10%',templet: '<p><img src="{{d.image}}" alt="{{d.title}}" class="open_image" data-image="{{d.image}}"></p>'},
+            {field: 'title', title: '活动标题'},
+            {field: 'info', title: '活动简介',width:'20%'},
+            {field: 'ot_price', title: '原价',width:'6%'},
+            {field: 'price', title: '秒杀价',width:'6%'},
+            {field: 'stock', title: '库存',width:'6%'},
+            {field: 'start_name', title: '秒杀状态',width:'8%',toolbar:"#statusCn"},
+            {field: 'stop_time', title: '结束时间', width: '13%',toolbar: '#stopTime'},
+            {field: 'status', title: '状态',width:'6%',toolbar:"#status"},
+            {field: 'right', title: '操作', width: '6%', align: 'center', toolbar: '#barDemo'}
         ]
     });
     layList.tool(function (event,data,obj) {

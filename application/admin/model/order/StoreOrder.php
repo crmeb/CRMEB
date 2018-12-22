@@ -54,6 +54,7 @@ class StoreOrder extends ModelBasic
                 $_info[$k]['cart_info'] = json_decode($v['cart_info'],true);
             }
             $item['_info'] = $_info;
+            $item['add_time'] = date('Y-m-d H:i:s',$item['add_time']);
             if($item['pink_id'] && $item['combination_id']){
                 $pinkStatus = StorePink::where('order_id_key',$item['id'])->value('status');
                 switch ($pinkStatus){
@@ -904,4 +905,21 @@ HTML;
           if(!$uid) return 0;
           return self::where('uid',$uid)->where('paid',1)->where('refund_status',0)->where('status',2)->count();
       }
+    /**
+     * 获取已支付的订单
+     * @param int $is_promoter
+     * @return int|string
+     */
+    public static function getOrderPayCount($is_promoter = 0){
+        return self::where('o.paid',1)->alias('o')->join('User u','u.uid=o.uid')->where('u.is_promoter',$is_promoter)->count();
+    }
+
+    /**
+     * 获取最后一个月已支付的订单
+     * @param int $is_promoter
+     * @return int|string
+     */
+    public static function getOrderPayMonthCount($is_promoter = 0){
+        return self::where('o.paid',1)->alias('o')->whereTime('o.pay_time','last month')->join('User u','u.uid=o.uid')->where('u.is_promoter',$is_promoter)->count();
+    }
 }
