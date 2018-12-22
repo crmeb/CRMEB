@@ -77,7 +77,7 @@ class StoreProductAttr extends ModelBasic
             ];
         }
         foreach ($valueList as $k=>$value){
-            ksort($value['detail'],SORT_STRING);
+            sort($value['detail'],SORT_STRING);
             $suk = implode(',',$value['detail']);
             $valueGroup[$suk] = [
                 'product_id'=>$productId,

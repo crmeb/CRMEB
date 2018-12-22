@@ -82,7 +82,7 @@
                     <table class="layui-hide" id="List" lay-filter="List"></table>
                     <!--订单-->
                     <script type="text/html" id="order_id">
-                       <h4>{{d.order_id}}</h4>
+                       {{d.order_id}}
                        <span style="color: {{d.color}};">{{d.pink_name}}</span>　　
                     </script>
                     <!--用户信息-->
@@ -112,32 +112,32 @@
                         {{#  if(item.cart_info.productInfo.attrInfo!=undefined){ }}
                         <p>
                             <span>
-                                <img style="width: 30px;height: 30px;cursor: pointer;" src="{{item.cart_info.productInfo.attrInfo.image}}">
+                                <img style="width: 30px;height: 30px;margin:0;cursor: pointer;" src="{{item.cart_info.productInfo.attrInfo.image}}">
                             </span>
                             <span>{{item.cart_info.productInfo.store_name}}&nbsp;{{item.cart_info.productInfo.attrInfo.suk}}</span>
                             <span> | ￥{{item.cart_info.truePrice}}×{{item.cart_info.cart_num}}</span>
                         </p>
                         {{#  }else{ }}
                         <p>
-                            <span><img style="width: 30px;height: 30px;cursor: pointer;" src="{{item.cart_info.productInfo.image}}"></span>
+                            <span><img style="width: 30px;height: 30px;margin:0;cursor: pointer;" src="{{item.cart_info.productInfo.image}}"></span>
                             <span>{{item.cart_info.productInfo.store_name}}</span><span> | ￥{{item.cart_info.truePrice}}×{{item.cart_info.cart_num}}</span>
                         </p>
                         {{# } }}
                         {{#  }); }}
                     </script>
-                    <!--详情-->
-                    <script type="text/html" id="order_info">
-                        <button class="btn btn-white btn-bitbucket btn-xs" onclick="$eb.createModalFrame('{{d.nickname}}-订单详情','{:Url('order_info')}?oid={{d.id}}')">
-                            <i class="fa fa-file-text"></i> 订单详情
-                        </button>
-                    </script>
+
                     <script type="text/html" id="act">
                         {{#  if(d._status==1){ }}
                         <button type="button" class="layui-btn layui-btn-xs" onclick="dropdown(this)">操作 <span class="caret"></span></button>
                         <ul class="layui-nav-child layui-anim layui-anim-upbit">
                             <li>
+                                <a href="javascript:void(0);" onclick="$eb.createModalFrame('{{d.nickname}}-订单详情','{:Url('order_info')}?oid={{d.id}}')">
+                                    <i class="fa fa-file-text"></i> 订单详情
+                                </a>
+                            </li>
+                            <li>
                                 <a href="javascript:void(0);" onclick="$eb.createModalFrame('修改订单','{:Url('edit')}?id={{d.id}}')">
-                                    <i class="fa fa-file-text"></i> 修改订单
+                                    <i class="fa fa-edit"></i> 修改订单
                                 </a>
                             </li>
                             <li>
@@ -156,6 +156,11 @@
                             <i class="fa fa-cart-plus"></i> 去发货</button>
                         <button type="button" class="layui-btn layui-btn-xs" onclick="dropdown(this)">操作 <span class="caret"></span></button>
                         <ul class="layui-nav-child layui-anim layui-anim-upbit">
+                            <li>
+                                <a href="javascript:void(0);" onclick="$eb.createModalFrame('{{d.nickname}}-订单详情','{:Url('order_info')}?oid={{d.id}}')">
+                                    <i class="fa fa-file-text"></i> 订单详情
+                                </a>
+                            </li>
                             <li>
                                 <a  href="javascript:void(0);" onclick="$eb.createModalFrame('去送货','{:Url('delivery')}?id={{d.id}}',{w:400,h:300})">
                                     <i class="fa fa-motorcycle"></i> 去送货
@@ -188,6 +193,11 @@
                         {{#  }else if(d._status==3){ }}
                         <button type="button" class="layui-btn layui-btn-xs" onclick="dropdown(this)">操作 <span class="caret"></span></button>
                         <ul class="layui-nav-child layui-anim layui-anim-upbit">
+                            <li>
+                                <a href="javascript:void(0);" onclick="$eb.createModalFrame('{{d.nickname}}-订单详情','{:Url('order_info')}?oid={{d.id}}')">
+                                    <i class="fa fa-file-text"></i> 订单详情
+                                </a>
+                            </li>
                             <li>
                                 <a  href="javascript:void(0);" onclick="$eb.createModalFrame('去送货','{:Url('delivery')}?id={{d.id}}',{w:400,h:300})">
                                     <i class="fa fa-motorcycle"></i> 去送货
@@ -228,6 +238,11 @@
                         <button type="button" class="layui-btn layui-btn-xs" onclick="dropdown(this)">操作 <span class="caret"></span></button>
                         <ul class="layui-nav-child layui-anim layui-anim-upbit">
                             <li>
+                                <a href="javascript:void(0);" onclick="$eb.createModalFrame('{{d.nickname}}-订单详情','{:Url('order_info')}?oid={{d.id}}')">
+                                    <i class="fa fa-file-text"></i> 订单详情
+                                </a>
+                            </li>
+                            <li>
                                 <a lay-event='marke' href="javascript:void(0);" >
                                     <i class="fa fa-paste"></i> 订单备注
                                 </a>
@@ -260,6 +275,11 @@
                         <button type="button" class="layui-btn layui-btn-xs" onclick="dropdown(this)">操作 <span class="caret"></span></button>
                         <ul class="layui-nav-child layui-anim layui-anim-upbit">
                             <li>
+                                <a href="javascript:void(0);" onclick="$eb.createModalFrame('{{d.nickname}}-订单详情','{:Url('order_info')}?oid={{d.id}}')">
+                                    <i class="fa fa-file-text"></i> 订单详情
+                                </a>
+                            </li>
+                            <li>
                                 <a lay-event='marke' href="javascript:void(0);" >
                                     <i class="fa fa-paste"></i> 订单备注
                                 </a>
@@ -286,6 +306,11 @@
                         {{#  }else if(d._status==7){ }}
                         <button type="button" class="layui-btn layui-btn-xs" onclick="dropdown(this)">操作 <span class="caret"></span></button>
                         <ul class="layui-nav-child layui-anim layui-anim-upbit">
+                            <li>
+                                <a href="javascript:void(0);" onclick="$eb.createModalFrame('{{d.nickname}}-订单详情','{:Url('order_info')}?oid={{d.id}}')">
+                                    <i class="fa fa-file-text"></i> 订单详情
+                                </a>
+                            </li>
                             <li>
                                 <a lay-event='marke' href="javascript:void(0);" >
                                     <i class="fa fa-paste"></i> 订单备注
@@ -318,13 +343,13 @@
 <script>
     layList.tableList('List',"{:Url('order_list',['real_name'=>$real_name])}",function (){
         return [
-            {field: 'order_id', title: '订单号', sort: true,event:'order_id',width:'12%',templet:'#order_id'},
+            {field: 'order_id', title: '订单号', sort: true,event:'order_id',width:'14%',templet:'#order_id'},
             {field: 'nickname', title: '用户信息',templet:'#userinfo',width:'10%'},
-            {field: 'info', title: '商品信息',templet:"#info",width:'36%'},
+            {field: 'info', title: '商品信息',templet:"#info"},
             {field: 'pay_price', title: '实际支付',width:'8%'},
             {field: 'paid', title: '支付状态',templet:'#paid',width:'8%'},
             {field: 'status', title: '订单状态',templet:'#status',width:'8%'},
-            {field: 'order_info', title: '详情',templet:'#order_info',width:'8%'},
+            {field: 'add_time', title: '下单时间',width:'10%',sort: true},
             {field: 'right', title: '操作',align:'center',toolbar:'#act',width:'10%'},
         ];
     });

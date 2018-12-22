@@ -135,8 +135,8 @@
     layList.tableList('combinationList',"{:Url('get_combination_list')}",function () {
         return [
             {field: 'id', title: '编号', sort: true,event:'id'},
-            {field: 'image', title: '拼团图片',templet: '<p><img src="{{d.image}}" alt="{{d.title}}" class="open_image" data-image="{{d.image}}"></p>'},
-            {field: 'title', title: '拼团名称'},
+            {field: 'image', title: '拼团图片',width:'10%',templet: '<p><img src="{{d.image}}" alt="{{d.title}}" class="open_image" data-image="{{d.image}}"></p>'},
+            {field: 'title', title: '拼团名称',width:'10%'},
             {field: 'ot_price', title: '原价'},
             {field: 'price', title: '拼团价'},
             {field: 'stock', title: '库存'},

@@ -6,30 +6,43 @@
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
-// | Author: 麦当苗儿 <zuojiazi@vip.qq.com> <http://zjzit.cn>
+// | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
 
-namespace think\db\exception;
+namespace think\db;
 
-use think\exception\DbException;
-
-/**
- * PDO参数绑定异常
- */
-class BindParamException extends DbException
+class Expression
 {
+    /**
+     * 查询表达式
+     *
+     * @var string
+     */
+    protected $value;
 
     /**
-     * BindParamException constructor.
-     * @param string $message
-     * @param array  $config
-     * @param string $sql
-     * @param array    $bind
-     * @param int    $code
+     * 创建一个查询表达式
+     *
+     * @param  string  $value
+     * @return void
      */
-    public function __construct($message, $config, $sql, $bind, $code = 10502)
+    public function __construct($value)
     {
-        $this->setData('Bind Param', $bind);
-        parent::__construct($message, $config, $sql, $code);
+        $this->value = $value;
+    }
+
+    /**
+     * 获取表达式
+     *
+     * @return string
+     */
+    public function getValue()
+    {
+        return $this->value;
+    }
+
+    public function __toString()
+    {
+        return (string) $this->value;
     }
 }

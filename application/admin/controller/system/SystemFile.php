@@ -20,11 +20,11 @@ class SystemFile extends AuthController
     public function opendir($filedir=''){
         $fileAll = array('dir'=>[],'file'=>[]);
         if(Request::instance()->param('superior') && !empty(Request::instance()->param('dir'))){
-            $path = '.'.DS.Request::instance()->param('dir');
+            $path = './'.Request::instance()->param('dir');
             $path = dirname($path);
         }else{
             $path = !empty(Request::instance()->param('dir'))?Request::instance()->param('dir'):'.';
-            $path = $path.DS.Request::instance()->param('filedir');
+            $path = $path.'/'.Request::instance()->param('filedir');
         }
         $list = scandir($path);
         foreach($list as $key=>$v) {
@@ -38,6 +38,9 @@ class SystemFile extends AuthController
             }
         }
 //        var_dump($fileAll['file']);
+        //兼容windows
+        $uname=php_uname('s');
+        if(strstr($uname,'Windows')!==false) $path = ltrim($path,'\\');
         $dir = ltrim($path,'./');
         $this->assign(compact('fileAll','dir'));
         return $this->fetch();
@@ -65,6 +68,10 @@ class SystemFile extends AuthController
         $comment = $this->request->post('comment');
         $filepath = $this->request->post('filepath');
         if(!empty($comment) && !empty($filepath)){
+            //兼容windows
+            $uname=php_uname('s');
+            if(strstr($uname,'Windows')!==false)
+            $filepath = ltrim(str_replace('/', DS, $filepath),'.');
             $res = FileClass::write_file($filepath,$comment);
             if($res){
                 return Json::successful('保存成功!');

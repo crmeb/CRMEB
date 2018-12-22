@@ -1,133 +1,172 @@
 {extend name="public/container"}
 {block name="content"}
-<div class="row">
-    <div class="col-sm-12">
-        <div class="ibox">
-            <div class="ibox-title">
-                <a type="button" class="btn btn-w-m btn-primary" href="{:Url('index')}">分类首页</a>
-                <button type="button" class="btn btn-w-m btn-primary" onclick="$eb.createModalFrame(this.innerText,'{:Url('create')}')">添加分类</button>
-                <div class="ibox-tools">
 
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15"  id="app">
+        <div class="layui-col-md12">
+            <div class="layui-card">
+                <div class="layui-card-header">搜索条件</div>
+                <div class="layui-card-body">
+                    <form class="layui-form layui-form-pane" action="">
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label">所有分类</label>
+                                <div class="layui-input-block">
+                                    <select name="is_show">
+                                        <option value="">是否显示</option>
+                                        <option value="1">显示</option>
+                                        <option value="0">不显示</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label">所有分类</label>
+                                <div class="layui-input-block">
+                                    <select name="pid">
+                                        <option value="">所有菜单</option>
+                                        {volist name="cate" id="vo"}
+                                        <option value="{$vo.id}">{$vo.html}{$vo.cate_name}</option>
+                                        {/volist}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label">产品名称</label>
+                                <div class="layui-input-block">
+                                    <input type="text" name="cate_name" class="layui-input" placeholder="请输入分类名称">
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <div class="layui-input-inline">
+                                    <button class="layui-btn layui-btn-sm layui-btn-normal" lay-submit="search" lay-filter="search">
+                                        <i class="layui-icon layui-icon-search"></i>搜索</button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
                 </div>
             </div>
-            <div class="ibox-content">
-                <div class="row">
-                    <div class="m-b m-l">
-                        <form action="" class="form-inline">
-                            <select name="is_show" aria-controls="editable" class="form-control input-sm">
-                                <option value="">是否显示</option>
-                                <option value="1" {eq name="where.is_show" value="1"}selected="selected"{/eq}>显示</option>
-                                <option value="0" {eq name="where.is_show" value="0"}selected="selected"{/eq}>不显示</option>
-                            </select>
-                            <select name="pid" aria-controls="editable" class="form-control input-sm">
-                                <option value="">所有菜单</option>
-                                {volist name="cate" id="vo"}
-                                <option value="{$vo.id}" {eq name="where.pid" value="$vo.id"}selected="selected"{/eq}>{$vo.html}{$vo.cate_name}</option>
-                                {/volist}
-                            </select>
-                            <div class="input-group">
-                                <input type="text" name="cate_name" value="{$where.cate_name}" placeholder="请输入分类名称" class="input-sm form-control"> <span class="input-group-btn">
-                                    <button type="submit" class="btn btn-sm btn-primary"><i class="fa fa-search" ></i> 搜索</button> </span>
-                            </div>
-                        </form>
+        </div>
+        <!--产品列表-->
+        <div class="layui-col-md12">
+            <div class="layui-card">
+                <div class="layui-card-header">分类列表</div>
+                <div class="layui-card-body">
+                    <div class="alert alert-info" role="alert">
+                        注:点击父级名称可查看子集分类,点击分页首页可返回顶级分类;分类名称和排序可进行快速编辑;
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                     </div>
-
+                    <div class="layui-btn-container">
+                        <a class="layui-btn layui-btn-sm" href="{:Url('index')}">分类首页</a>
+                        <button type="button" class="layui-btn layui-btn-sm" onclick="$eb.createModalFrame(this.innerText,'{:Url('create')}')">添加分类</button>
+                    </div>
+                    <table class="layui-hide" id="List" lay-filter="List"></table>
+                    <script type="text/html" id="pic">
+                        <img style="cursor: pointer" lay-event='open_image' src="{{d.pic}}">
+                    </script>
+                    <script type="text/html" id="is_show">
+                        <input type='checkbox' name='id' lay-skin='switch' value="{{d.id}}" lay-filter='is_show' lay-text='显|隐'  {{ d.is_show == 1 ? 'checked' : '' }}>
+                    </script>
+                    <script type="text/html" id="pid">
+                        <a href="{:Url('index')}?pid={{d.id}}">查看</a>
+                    </script>
+                    <script type="text/html" id="act">
+                        <button class="layui-btn layui-btn-xs" onclick="$eb.createModalFrame('编辑','{:Url('edit')}?id={{d.id}}')">
+                            <i class="fa fa-paste"></i> 编辑
+                        </button>
+                        <button class="layui-btn layui-btn-xs" lay-event='delstor'>
+                            <i class="fa fa-warning"></i> 删除
+                        </button>
+                    </script>
                 </div>
-                <div class="table-responsive" style="overflow:visible">
-                    <table class="table table-striped  table-bordered">
-                        <thead>
-                        <tr>
-
-                            <th class="text-center" style="width: 40px;">编号</th>
-                            <th class="text-center">父级</th>
-                            <th class="text-center">分类名称</th>
-                            <th class="text-center">分类图标</th>
-                            <th class="text-center">排序</th>
-                            <th class="text-center">是否显示</th>
-                            <th class="text-center" width="5%">操作</th>
-                        </tr>
-                        </thead>
-                        <tbody class="">
-                        {volist name="list" id="vo"}
-                        <tr>
-                            <td class="text-center">
-                                {$vo.id}
-                            </td>
-                            <td class="text-center">
-                                {$vo.pid_name}
-                            </td>
-                            <td class="text-center">
-                                <a href="{:Url('index',array('pid'=>$vo['id']))}"> {$vo.cate_name}</a>
-                            </td>
-                            <td class="text-center">
-                                <img src="{$vo.pic}" alt="{$vo.cate_name}" class="open_image" data-image="{$vo.pic}" style="width: 50px;height: 50px;cursor: pointer;">
-                            </td>
-                            <td class="text-center">
-                                {$vo.sort}
-                            </td>
-                            <td class="text-center">
-                                <i class="fa {eq name='vo.is_show' value='1'}fa-check text-navy{else/}fa-close text-danger{/eq}"></i>
-                            </td>
-
-                            <td class="text-center">
-                                <div class="input-group-btn js-group-btn" style="min-width: 106px;">
-                                    <div class="btn-group">
-                                        <button data-toggle="dropdown" class="btn btn-warning btn-xs dropdown-toggle"
-                                                aria-expanded="false">操作
-                                            <span class="caret"></span>
-                                        </button>
-                                        <ul class="dropdown-menu">
-                                            <li>
-                                                <a href="javascript:void(0);"onclick="$eb.createModalFrame('编辑','{:Url('edit',array('id'=>$vo['id']))}')">
-                                                    <i class="fa fa-paste"></i> 编辑
-                                                </a>
-                                            </li>
-                                            <li>
-                                                <a href="javascript:void(0);" class="delstor" data-url="{:Url('delete',array('id'=>$vo['id']))}">
-                                                    <i class="fa fa-warning"></i> 删除
-                                                </a>
-                                            </li>
-
-                                        </ul>
-                                    </div>
-                                </div>
-                            </td>
-                        </tr>
-                        {/volist}
-                        </tbody>
-                    </table>
-                </div>
-                {include file="public/inner_page"}
             </div>
         </div>
     </div>
 </div>
+<script src="{__ADMIN_PATH}js/layuiList.js"></script>
 {/block}
 {block name="script"}
 <script>
-    $('.js-group-btn').on('click',function(){
-        $('.js-group-btn').css({zIndex:1});
-        $(this).css({zIndex:2});
+    setTimeout(function () {
+        $('.alert-info').hide();
+    },3000);
+    //实例化form
+    layList.form.render();
+    //加载列表
+    layList.tableList('List',"{:Url('category_list',['pid'=>$pid])}",function (){
+        return [
+            {field: 'id', title: 'ID', sort: true,event:'id',width:'6%'},
+            {field: 'pid_name', title: '父级'},
+            {field: 'cate_name', title: '分类名称',edit:'cate_name'},
+            {field: 'pid', title: '查看子分类',templet:'#pid'},
+            {field: 'pic', title: '分类图标',templet:'#pic'},
+            {field: 'sort', title: '排序',sort: true,event:'sort',edit:'sort',width:'8%'},
+            {field: 'is_show', title: '状态',templet:'#is_show',width:'6%'},
+            {field: 'right', title: '操作',align:'center',toolbar:'#act',width:'14%'},
+        ];
     });
-    $('.delstor').on('click',function(){
-        window.t = $(this);
-        var _this = $(this),url =_this.data('url');
-        $eb.$swal('delete',function(){
-            $eb.axios.get(url).then(function(res){
-                console.log(res);
-                if(res.status == 200 && res.data.code == 200) {
-                    $eb.$swal('success',res.data.msg);
-                    _this.parents('tr').remove();
-                }else
-                    return Promise.reject(res.data.msg || '删除失败')
-            }).catch(function(err){
-                $eb.$swal('error',err);
+    //自定义方法
+    var action= {
+        set_category: function (field, id, value) {
+            layList.baseGet(layList.Url({
+                c: 'store.store_category',
+                a: 'set_category',
+                q: {field: field, id: id, value: value}
+            }), function (res) {
+                layList.msg(res.msg);
             });
-        })
+        },
+    }
+    //查询
+    layList.search('search',function(where){
+        layList.reload(where);
     });
-    $(".open_image").on('click',function (e) {
-        var image = $(this).data('image');
-        $eb.openImage(image);
+    layList.switch('is_show',function (odj,value) {
+        if(odj.elem.checked==true){
+            layList.baseGet(layList.Url({c:'store.store_category',a:'set_show',p:{is_show:1,id:value}}),function (res) {
+                layList.msg(res.msg);
+            });
+        }else{
+            layList.baseGet(layList.Url({c:'store.store_category',a:'set_show',p:{is_show:0,id:value}}),function (res) {
+                layList.msg(res.msg);
+            });
+        }
+    });
+    //快速编辑
+    layList.edit(function (obj) {
+        var id=obj.data.id,value=obj.value;
+        switch (obj.field) {
+            case 'cate_name':
+                action.set_category('cate_name',id,value);
+                break;
+            case 'sort':
+                action.set_category('sort',id,value);
+                break;
+        }
+    });
+    //监听并执行排序
+    layList.sort(['id','sort'],true);
+    //点击事件绑定
+    layList.tool(function (event,data,obj) {
+        switch (event) {
+            case 'delstor':
+                var url=layList.U({c:'store.store_category',a:'delete',q:{id:data.id}});
+                $eb.$swal('delete',function(){
+                    $eb.axios.get(url).then(function(res){
+                        if(res.status == 200 && res.data.code == 200) {
+                            $eb.$swal('success',res.data.msg);
+                            obj.del();
+                        }else
+                            return Promise.reject(res.data.msg || '删除失败')
+                    }).catch(function(err){
+                        $eb.$swal('error',err);
+                    });
+                })
+                break;
+            case 'open_image':
+                $eb.openImage(data.pic);
+                break;
+        }
     })
 </script>
 {/block}
