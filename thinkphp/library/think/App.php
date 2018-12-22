@@ -552,6 +552,7 @@ class App
         // 获取控制器名
         $controller = strip_tags($result[1] ?: $config['default_controller']);
         $controller = $convert ? strtolower($controller) : $controller;
+
         if (!preg_match('/^[A-Za-z](\w|\.)*$/', $controller)) {
             throw new HttpException(404, 'controller not exists:' . $controller);
         }

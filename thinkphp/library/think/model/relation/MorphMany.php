@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006~2017 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2006~2018 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
@@ -11,6 +11,7 @@
 
 namespace think\model\relation;
 
+use think\Db;
 use think\db\Query;
 use think\Exception;
 use think\Loader;
@@ -82,10 +83,11 @@ class MorphMany extends Relation
     /**
      * 根据关联条件查询当前模型
      * @access public
-     * @param mixed $where 查询条件（数组或者闭包）
+     * @param  mixed  $where 查询条件（数组或者闭包）
+     * @param  mixed  $fields   字段
      * @return Query
      */
-    public function hasWhere($where = [])
+    public function hasWhere($where = [], $fields = null)
     {
         throw new Exception('relation not support: hasWhere');
     }
@@ -200,7 +202,7 @@ class MorphMany extends Relation
         return $this->query->where([
             $this->morphKey  => [
                 'exp',
-                '=' . $this->parent->getTable() . '.' . $this->parent->getPk(),
+                Db::raw('=' . $this->parent->getTable() . '.' . $this->parent->getPk()),
             ],
             $this->morphType => $this->type,
         ])->fetchSql()->count();

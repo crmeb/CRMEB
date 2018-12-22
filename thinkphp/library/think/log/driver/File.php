@@ -12,6 +12,7 @@
 namespace think\log\driver;
 
 use think\App;
+use think\Request;
 
 /**
  * 本地化调试输出到文件
@@ -20,9 +21,11 @@ class File
 {
     protected $config = [
         'time_format' => ' c ',
+        'single'      => false,
         'file_size'   => 2097152,
         'path'        => LOG_PATH,
         'apart_level' => [],
+        'max_files'   => 0,
     ];
 
     protected $writed = [];
@@ -43,8 +46,24 @@ class File
      */
     public function save(array $log = [])
     {
-        $cli         = IS_CLI ? '_cli' : '';
-        $destination = $this->config['path'] . date('Ym') . DS . date('d') . $cli . '.log';
+        if ($this->config['single']) {
+            $destination = $this->config['path'] . 'single.log';
+        } else {
+            $cli = IS_CLI ? '_cli' : '';
+
+            if ($this->config['max_files']) {
+                $filename = date('Ymd') . $cli . '.log';
+                $files    = glob($this->config['path'] . '*.log');
+
+                if (count($files) > $this->config['max_files']) {
+                    unlink($files[0]);
+                }
+            } else {
+                $filename = date('Ym') . '/' . date('d') . $cli . '.log';
+            }
+
+            $destination = $this->config['path'] . $filename;
+        }
 
         $path = dirname($destination);
         !is_dir($path) && mkdir($path, 0755, true);
@@ -60,7 +79,13 @@ class File
             }
             if (in_array($type, $this->config['apart_level'])) {
                 // 独立记录的日志级别
-                $filename = $path . DS . date('d') . '_' . $type . $cli . '.log';
+                if ($this->config['single']) {
+                    $filename = $path . DS . $type . '.log';
+                } elseif ($this->config['max_files']) {
+                    $filename = $path . DS . date('Ymd') . '_' . $type . $cli . '.log';
+                } else {
+                    $filename = $path . DS . date('d') . '_' . $type . $cli . '.log';
+                }
                 $this->write($level, $filename, true);
             } else {
                 $info .= $level;
@@ -76,7 +101,10 @@ class File
     {
         //检测日志文件大小，超过配置大小则备份日志文件重新生成
         if (is_file($destination) && floor($this->config['file_size']) <= filesize($destination)) {
-            rename($destination, dirname($destination) . DS . time() . '-' . basename($destination));
+            try {
+                rename($destination, dirname($destination) . DS . time() . '-' . basename($destination));
+            } catch (\Exception $e) {
+            }
             $this->writed[$destination] = false;
         }
 
@@ -99,11 +127,10 @@ class File
                 $message = '[ info ] ' . $current_uri . $time_str . $memory_str . $file_load . "\r\n" . $message;
             }
             $now     = date($this->config['time_format']);
-            $server  = isset($_SERVER['SERVER_ADDR']) ? $_SERVER['SERVER_ADDR'] : '0.0.0.0';
-            $remote  = isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : '0.0.0.0';
+            $ip      = Request::instance()->ip();
             $method  = isset($_SERVER['REQUEST_METHOD']) ? $_SERVER['REQUEST_METHOD'] : 'CLI';
             $uri     = isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '';
-            $message = "---------------------------------------------------------------\r\n[{$now}] {$server} {$remote} {$method} {$uri}\r\n" . $message;
+            $message = "---------------------------------------------------------------\r\n[{$now}] {$ip} {$method} {$uri}\r\n" . $message;
 
             $this->writed[$destination] = true;
         }

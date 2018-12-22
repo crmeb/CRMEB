@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006~2017 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2006~2018 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
@@ -26,6 +26,8 @@ class File extends Driver
         'path'          => CACHE_PATH,
         'data_compress' => false,
     ];
+
+    protected $expire;
 
     /**
      * 构造函数
@@ -61,10 +63,11 @@ class File extends Driver
     /**
      * 取得变量的存储文件名
      * @access protected
-     * @param string $name 缓存变量名
+     * @param  string $name 缓存变量名
+     * @param  bool   $auto 是否自动创建目录
      * @return string
      */
-    protected function getCacheKey($name)
+    protected function getCacheKey($name, $auto = false)
     {
         $name = md5($name);
         if ($this->options['cache_subdir']) {
@@ -76,7 +79,8 @@ class File extends Driver
         }
         $filename = $this->options['path'] . $name . '.php';
         $dir      = dirname($filename);
-        if (!is_dir($dir)) {
+
+        if ($auto && !is_dir($dir)) {
             mkdir($dir, 0755, true);
         }
         return $filename;
@@ -106,13 +110,15 @@ class File extends Driver
         if (!is_file($filename)) {
             return $default;
         }
-        $content = file_get_contents($filename);
+        $content      = file_get_contents($filename);
+        $this->expire = null;
         if (false !== $content) {
             $expire = (int) substr($content, 8, 12);
-            if (0 != $expire && $_SERVER['REQUEST_TIME'] > filemtime($filename) + $expire) {
+            if (0 != $expire && time() > filemtime($filename) + $expire) {
                 return $default;
             }
-            $content = substr($content, 32);
+            $this->expire = $expire;
+            $content      = substr($content, 32);
             if ($this->options['data_compress'] && function_exists('gzcompress')) {
                 //启用数据压缩
                 $content = gzuncompress($content);
@@ -140,7 +146,7 @@ class File extends Driver
         if ($expire instanceof \DateTime) {
             $expire = $expire->getTimestamp() - time();
         }
-        $filename = $this->getCacheKey($name);
+        $filename = $this->getCacheKey($name, true);
         if ($this->tag && !is_file($filename)) {
             $first = true;
         }
@@ -170,11 +176,14 @@ class File extends Driver
     public function inc($name, $step = 1)
     {
         if ($this->has($name)) {
-            $value = $this->get($name) + $step;
+            $value  = $this->get($name) + $step;
+            $expire = $this->expire;
         } else {
-            $value = $step;
+            $value  = $step;
+            $expire = 0;
         }
-        return $this->set($name, $value, 0) ? $value : false;
+
+        return $this->set($name, $value, $expire) ? $value : false;
     }
 
     /**
@@ -187,11 +196,14 @@ class File extends Driver
     public function dec($name, $step = 1)
     {
         if ($this->has($name)) {
-            $value = $this->get($name) - $step;
+            $value  = $this->get($name) - $step;
+            $expire = $this->expire;
         } else {
-            $value = $step;
+            $value  = -$step;
+            $expire = 0;
         }
-        return $this->set($name, $value, 0) ? $value : false;
+
+        return $this->set($name, $value, $expire) ? $value : false;
     }
 
     /**
@@ -203,7 +215,10 @@ class File extends Driver
     public function rm($name)
     {
         $filename = $this->getCacheKey($name);
-        return $this->unlink($filename);
+        try {
+            return $this->unlink($filename);
+        } catch (\Exception $e) {
+        }
     }
 
     /**
@@ -226,7 +241,10 @@ class File extends Driver
         $files = (array) glob($this->options['path'] . ($this->options['prefix'] ? $this->options['prefix'] . DS : '') . '*');
         foreach ($files as $path) {
             if (is_dir($path)) {
-                array_map('unlink', glob($path . '/*.php'));
+                $matches = glob($path . '/*.php');
+                if (is_array($matches)) {
+                    array_map('unlink', $matches);
+                }
                 rmdir($path);
             } else {
                 unlink($path);
