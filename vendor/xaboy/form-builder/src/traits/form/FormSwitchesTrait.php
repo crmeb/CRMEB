@@ -12,13 +12,16 @@ use FormBuilder\components\Switches;
 
 /**
  * Class FormSwitchesTrait
+ *
  * @package FormBuilder\traits\form
  */
 trait FormSwitchesTrait
 {
     /**
-     * @param $field
-     * @param $title
+     * 开关组件
+     *
+     * @param        $field
+     * @param        $title
      * @param string $value
      * @return Switches
      */

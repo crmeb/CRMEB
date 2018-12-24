@@ -12,14 +12,17 @@ use FormBuilder\components\Upload;
 
 /**
  * Class FormUploadTrait
+ *
  * @package FormBuilder\traits\form
  */
 trait FormUploadTrait
 {
     /**
-     * @param $field
-     * @param $title
-     * @param $action
+     * 上传组件
+     *
+     * @param        $field
+     * @param        $title
+     * @param        $action
      * @param string $value
      * @param string $type
      * @return Upload
@@ -32,24 +35,30 @@ trait FormUploadTrait
     }
 
     /**
-     * @param $field
-     * @param $title
-     * @param $action
+     * 图片上传
+     * value 为 Array类型
+     *
+     * @param       $field
+     * @param       $title
+     * @param       $action
      * @param array $value
      * @return Upload
      */
     public static function uploadImages($field, $title, $action, array $value = [])
     {
         $upload = self::upload($field, $title, $action, $value, Upload::TYPE_IMAGE);
-        $upload->format(['jpg','jpeg','png','gif'])->accept('image/*');
+        $upload->format(['jpg', 'jpeg', 'png', 'gif'])->accept('image/*');
         return $upload;
 
     }
 
     /**
-     * @param $field
-     * @param $title
-     * @param $action
+     * 文件上传
+     * value 为 Array类型
+     *
+     * @param       $field
+     * @param       $title
+     * @param       $action
      * @param array $value
      * @return Upload
      */
@@ -59,23 +68,29 @@ trait FormUploadTrait
     }
 
     /**
-     * @param $field
-     * @param $title
-     * @param $action
+     * 图片上传
+     * value 为  String类型
+     *
+     * @param        $field
+     * @param        $title
+     * @param        $action
      * @param string $value
      * @return Upload
      */
     public static function uploadImageOne($field, $title, $action, $value = '')
     {
         $upload = self::upload($field, $title, $action, $value, Upload::TYPE_IMAGE);
-        $upload->format(['jpg','jpeg','png','gif'])->accept('image/*')->maxLength(1);
+        $upload->format(['jpg', 'jpeg', 'png', 'gif'])->accept('image/*')->maxLength(1);
         return $upload;
     }
 
     /**
-     * @param $field
-     * @param $title
-     * @param $action
+     * 文件上传
+     * value 为  String类型
+     *
+     * @param        $field
+     * @param        $title
+     * @param        $action
      * @param string $value
      * @return Upload
      */

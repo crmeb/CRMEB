@@ -12,13 +12,16 @@ use FormBuilder\components\DatePicker;
 
 /**
  * Class FormDatePickerTrait
+ *
  * @package FormBuilder\traits\form
  */
 trait FormDatePickerTrait
 {
     /**
-     * @param $field
-     * @param $title
+     * 日期组件
+     *
+     * @param        $field
+     * @param        $title
      * @param string $value
      * @param string $type
      * @return DatePicker
@@ -31,8 +34,10 @@ trait FormDatePickerTrait
     }
 
     /**
-     * @param $field
-     * @param $title
+     * 单选日期
+     *
+     * @param        $field
+     * @param        $title
      * @param string $value
      * @return DatePicker
      */
@@ -42,8 +47,24 @@ trait FormDatePickerTrait
     }
 
     /**
-     * @param $field
-     * @param $title
+     * 多选日期
+     *
+     * @param       $field
+     * @param       $title
+     * @param array $value
+     * @return DatePicker
+     */
+    public static function dateMultiple($field, $title, array $value)
+    {
+        $date = self::datePicker($field, $title, $value, DatePicker::TYPE_DATE);
+        return $date->multiple();
+    }
+
+    /**
+     * 日期区间选择
+     *
+     * @param        $field
+     * @param        $title
      * @param string $startDate
      * @param string $endDate
      * @return DatePicker
@@ -54,8 +75,10 @@ trait FormDatePickerTrait
     }
 
     /**
-     * @param $field
-     * @param $title
+     * 单选日期时间
+     *
+     * @param        $field
+     * @param        $title
      * @param string $value
      * @return DatePicker
      */
@@ -65,8 +88,10 @@ trait FormDatePickerTrait
     }
 
     /**
-     * @param $field
-     * @param $title
+     * 日期时间区间选择
+     *
+     * @param        $field
+     * @param        $title
      * @param string $startDate
      * @param string $endDate
      * @return DatePicker
@@ -77,8 +102,10 @@ trait FormDatePickerTrait
     }
 
     /**
-     * @param $field
-     * @param $title
+     * 选择年
+     *
+     * @param        $field
+     * @param        $title
      * @param string $value
      * @return DatePicker
      */
@@ -88,8 +115,10 @@ trait FormDatePickerTrait
     }
 
     /**
-     * @param $field
-     * @param $title
+     * 选择月
+     *
+     * @param        $field
+     * @param        $title
      * @param string $value
      * @return DatePicker
      */

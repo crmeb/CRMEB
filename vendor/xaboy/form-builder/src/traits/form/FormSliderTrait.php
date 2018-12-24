@@ -12,13 +12,16 @@ use FormBuilder\components\Slider;
 
 /**
  * Class FormSliderTrait
+ *
  * @package FormBuilder\traits\form
  */
 trait FormSliderTrait
 {
     /**
-     * @param $field
-     * @param $title
+     * 滑块组件
+     *
+     * @param     $field
+     * @param     $title
      * @param int $value
      * @return Slider
      */
@@ -28,8 +31,10 @@ trait FormSliderTrait
     }
 
     /**
-     * @param $field
-     * @param $title
+     * 区间选择
+     *
+     * @param     $field
+     * @param     $title
      * @param int $start
      * @param int $end
      * @return Slider

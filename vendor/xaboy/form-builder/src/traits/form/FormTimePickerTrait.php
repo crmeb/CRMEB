@@ -12,15 +12,18 @@ use FormBuilder\components\TimePicker;
 
 /**
  * Class FormTimePickerTrait
+ *
  * @package FormBuilder\traits\form
  */
 trait FormTimePickerTrait
 {
     /**
-     * @param $field
-     * @param $title
-     * @param string $value
-     * @param string $type
+     * 时间选择组件
+     *
+     * @param            $field
+     * @param            $title
+     * @param string|int $value
+     * @param string     $type
      * @return TimePicker
      */
     public static function timePicker($field, $title, $value = '', $type = TimePicker::TYPE_TIME)
@@ -29,9 +32,11 @@ trait FormTimePickerTrait
     }
 
     /**
-     * @param $field
-     * @param $title
-     * @param string $value
+     * 事件选择
+     *
+     * @param            $field
+     * @param            $title
+     * @param string|int $value
      * @return TimePicker
      */
     public static function time($field, $title, $value = '')
@@ -40,10 +45,12 @@ trait FormTimePickerTrait
     }
 
     /**
-     * @param $field
-     * @param $title
-     * @param string $startTime
-     * @param string $endTime
+     * 时间区间选择
+     *
+     * @param            $field
+     * @param            $title
+     * @param string|int $startTime
+     * @param string|int $endTime
      * @return TimePicker
      */
     public static function timeRange($field, $title, $startTime = '', $endTime = '')

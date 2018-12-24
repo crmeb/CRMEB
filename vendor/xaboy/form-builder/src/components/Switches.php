@@ -12,6 +12,7 @@ use FormBuilder\FormComponentDriver;
 /**
  * 开关组件
  * Class Switches
+ *
  * @package FormBuilder\components
  * @method $this size(String $size) 开关的尺寸，可选值为large、small、default或者不写。建议开关如果使用了2个汉字的文字，使用 large。
  * @method $this disabled(Boolean $bool) 禁用开关, 默认为false
@@ -50,6 +51,7 @@ class Switches extends FormComponentDriver
 
     /**
      * 自定义显示打开时的内容
+     *
      * @param $open
      * @return $this
      */
@@ -61,6 +63,7 @@ class Switches extends FormComponentDriver
 
     /**
      * 自定义显示关闭时的内容
+     *
      * @param $close
      * @return $this
      */
@@ -70,7 +73,7 @@ class Switches extends FormComponentDriver
         return $this;
     }
 
-    protected function getValidateHandler()
+    public function getValidateHandler()
     {
         return Validate::str();
     }
@@ -88,7 +91,7 @@ class Switches extends FormComponentDriver
             'props' => (object)$this->props,
             'slot' => (object)$this->slot,
             'validate' => $this->validate,
-            'col'=>$this->col
+            'col' => $this->col
         ];
     }
 

@@ -11,13 +11,16 @@ use FormBuilder\components\Checkbox;
 
 /**
  * Class FormCheckBoxTrait
+ *
  * @package FormBuilder\traits\form
  */
 trait FormCheckBoxTrait
 {
     /**
-     * @param $field
-     * @param $title
+     * 多选框组件
+     *
+     * @param       $field
+     * @param       $title
      * @param array $value
      * @return Checkbox
      */

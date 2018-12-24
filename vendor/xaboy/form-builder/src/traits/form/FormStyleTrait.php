@@ -14,12 +14,15 @@ use FormBuilder\components\Row;
 
 /**
  * Class FormStyleTrait
+ *
  * @package FormBuilder\traits\form
  */
 trait FormStyleTrait
 {
 
     /**
+     * 组件布局规则类
+     *
      * @param int $span
      * @return Col
      */
@@ -29,7 +32,9 @@ trait FormStyleTrait
     }
 
     /**
-     * @param int $gutter
+     * 表格布局规则类
+     *
+     * @param int    $gutter
      * @param string $type
      * @param string $align
      * @param string $justify
@@ -38,19 +43,21 @@ trait FormStyleTrait
      */
     public static function row($gutter = 0, $type = '', $align = '', $justify = '', $className = '')
     {
-        return new Row($gutter,$type,$align,$justify,$className);
+        return new Row($gutter, $type, $align, $justify, $className);
     }
 
     /**
-     * @param bool $inline
+     * 表格样式类
+     *
+     * @param bool   $inline
      * @param string $labelPosition
-     * @param int $labelWidth
-     * @param bool $showMessage
+     * @param int    $labelWidth
+     * @param bool   $showMessage
      * @param string $autocomplete
      * @return FormStyle
      */
     public static function style($inline = false, $labelPosition = 'right', $labelWidth = 125, $showMessage = true, $autocomplete = 'off')
     {
-        return new FormStyle($inline,$labelPosition,$labelWidth,$showMessage,$autocomplete);
+        return new FormStyle($inline, $labelPosition, $labelWidth, $showMessage, $autocomplete);
     }
 }

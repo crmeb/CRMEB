@@ -12,14 +12,17 @@ use FormBuilder\components\InputNumber;
 
 /**
  * Class FormInputNumberTrait
+ *
  * @package FormBuilder\traits\form
  */
 trait FormInputNumberTrait
 {
 
     /**
-     * @param $field
-     * @param $title
+     * 数字输入框组件
+     *
+     * @param      $field
+     * @param      $title
      * @param null $value
      * @return InputNumber
      */

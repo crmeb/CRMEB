@@ -8,6 +8,8 @@
 namespace FormBuilder;
 
 
+use FormBuilder\exception\FormBuilderException;
+
 class Helper
 {
     public static function toType($var, $type = 'string')
@@ -42,6 +44,7 @@ class Helper
         return "unknown type";
     }
 
+
     public static function verifyType($var, $verify, $title = '')
     {
         if (!is_array($verify)) $verify = [$verify];
@@ -51,7 +54,7 @@ class Helper
         }
         $type = self::getVarType($var);
         if (!in_array($type, $verify))
-            throw new \Exception($title . '类型需为' . implode(',', $verify));
+            throw new FormBuilderException($title . '类型需为' . implode(',', $verify));
     }
 
     public static function getDate($date)

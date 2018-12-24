@@ -14,6 +14,7 @@ use FormBuilder\Helper;
 /**
  * 时间选择器组件
  * Class TimePicker
+ *
  * @package FormBuilder\components
  * @method $this type(String $type) 显示类型，可选值为 time、timerange
  * @method $this format(String $format) 展示的时间格式, 默认为HH:mm:ss
@@ -81,7 +82,8 @@ class TimePicker extends FormComponentDriver
     /**
      * 下拉列表的时间间隔，数组的三项分别对应小时、分钟、秒。
      * 例如设置为 [1, 15] 时，分钟会显示：00、15、30、45。
-     * @param $h
+     *
+     * @param     $h
      * @param int $i
      * @param int $s
      * @return $this
@@ -109,12 +111,26 @@ class TimePicker extends FormComponentDriver
         return $this;
     }
 
-    protected function getValidateHandler()
+    public function getValidateHandler()
     {
-        if($this->props['type'] == 'timerange')
+        if ($this->props['type'] == 'timerange')
             return Validate::arr();
         else
             return Validate::str();
+    }
+
+
+    public function required($message = null)
+    {
+        $message = $message ?: $this->getPlaceHolder();
+        if ($this->props['type'] == 'timerange') {
+            $this->validate()->fields([
+                '0' => ['required' => true, 'message' => $message],
+                '1' => ['required' => true, 'message' => $message]
+            ], true, $message);
+            return $this;
+        } else
+            return parent::required($message);
     }
 
     /**

@@ -14,6 +14,7 @@ use FormBuilder\Helper;
 /**
  * 颜色选择器组件
  * Class ColorPicker
+ *
  * @package FormBuilder\components
  * @method $this disabled(Boolean $bool) 是否禁用
  * @method $this alpha(Boolean $bool) 是否支持透明度选择, 默认为false
@@ -50,6 +51,7 @@ class ColorPicker extends FormComponentDriver
 
     /**
      * 自定义颜色预设
+     *
      * @param $colors
      * @return $this
      */
@@ -77,7 +79,7 @@ class ColorPicker extends FormComponentDriver
             'value' => $this->value,
             'props' => (object)$this->props,
             'validate' => $this->validate,
-            'col'=>$this->col
+            'col' => $this->col
         ];
     }
 

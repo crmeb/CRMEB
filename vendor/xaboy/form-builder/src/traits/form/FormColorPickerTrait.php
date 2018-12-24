@@ -12,13 +12,16 @@ use FormBuilder\components\ColorPicker;
 
 /**
  * Class FormColorPickerTrait
+ *
  * @package FormBuilder\traits\form
  */
 trait FormColorPickerTrait
 {
     /**
-     * @param $field
-     * @param $title
+     * 颜色选择组件
+     *
+     * @param        $field
+     * @param        $title
      * @param string $value
      * @return ColorPicker
      */
