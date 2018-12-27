@@ -486,6 +486,7 @@
                     });
                 },
                 search:function () {
+                    this.where.excel=0;
                     this.getBadge();
                     layList.reload(this.where);
                 },
