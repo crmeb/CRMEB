@@ -39,61 +39,78 @@ class Validate implements FormComponentInterFace
 
     public static function str($trigger = self::TRIGGER_CHANGE)
     {
-        return new static(self::TYPE_STRING,$trigger);
+        return new self(self::TYPE_STRING, $trigger);
     }
 
     public static function arr($trigger = self::TRIGGER_CHANGE)
     {
-        return new static(self::TYPE_ARRAY,$trigger);
+        return new self(self::TYPE_ARRAY, $trigger);
     }
 
     public static function num($trigger = self::TRIGGER_CHANGE)
     {
-        return new static(self::TYPE_NUMBER,$trigger);
+        return new self(self::TYPE_NUMBER, $trigger);
     }
 
     public static function date($trigger = self::TRIGGER_CHANGE)
     {
-        return new static(self::TYPE_DATE,$trigger);
+        return new self(self::TYPE_DATE, $trigger);
     }
 
-    protected function set($validate, $message = null)
+    public function set($validate, $message = null)
     {
         $this->validate[] = $validate + [
                 'trigger' => $this->trigger,
                 'type' => $this->type,
                 'message' => $message
             ];
+
+        return $this;
+    }
+
+    public function fields(array $fields, $required = null, $message = null)
+    {
+        $data = [];
+        if (!is_null($required))
+            $data['required'] = $required;
+        if (is_null($message))
+            $data['message'] = $message;
+        $data['fields'] = (object)$fields;
+
+        return $this->set($data);
     }
 
     /**
      * 必须为链接
+     *
      * @param  string|null $message
      * @return $this
      */
     public function url($message = null)
     {
         $this->set([
-            'type'=>'url'
-        ],$message);
+            'type' => 'url'
+        ], $message);
         return $this;
     }
 
     /**
      * 必须为邮箱
+     *
      * @param string|null $message
      * @return $this
      */
     public function email($message = null)
     {
         $this->set([
-            'type'=>'email'
-        ],$message);
+            'type' => 'email'
+        ], $message);
         return $this;
     }
 
     /**
      * 必填
+     *
      * @param string|null $message
      * @return $this
      */
@@ -107,6 +124,7 @@ class Validate implements FormComponentInterFace
 
     /**
      * 长度或值必须在这个范围内
+     *
      * @param int         $min
      * @param int         $max
      * @param string|null $message
@@ -123,6 +141,7 @@ class Validate implements FormComponentInterFace
 
     /**
      * 长度或值必须大于这个值
+     *
      * @param int         $min
      * @param string|null $message
      * @return $this
@@ -137,6 +156,7 @@ class Validate implements FormComponentInterFace
 
     /**
      * 长度或值必须小于这个值
+     *
      * @param int         $max
      * @param string|null $message
      * @return $this
@@ -151,6 +171,7 @@ class Validate implements FormComponentInterFace
 
     /**
      * 长度或值必须等于这个值
+     *
      * @param int         $length
      * @param string|null $message
      * @return $this
@@ -158,13 +179,14 @@ class Validate implements FormComponentInterFace
     public function length($length, $message = null)
     {
         $this->set([
-            'length' => (int)$length
+            'len' => (int)$length
         ], $message);
         return $this;
     }
 
     /**
      * 值必须在 list 中
+     *
      * @param array       $list
      * @param string|null $message
      * @return $this
@@ -172,7 +194,7 @@ class Validate implements FormComponentInterFace
     public function enum($list, $message = null)
     {
         $this->set([
-            'type'=>'enum',
+            'type' => 'enum',
             'enum' => (array)$list
         ], $message);
         return $this;

@@ -14,6 +14,7 @@ use FormBuilder\Helper;
 /**
  * 多级联动组件
  * Class Cascader
+ *
  * @package FormBuilder\components
  * @method $this type(String $type) 数据类型, 支持 city_area(省市区三级联动), city (省市二级联动), other (自定义)
  * @method $this disabled(Boolean $bool) 是否禁用选择器
@@ -70,9 +71,6 @@ class Cascader extends FormComponentDriver
         'notFoundText' => 'string',
     ];
 
-    /**
-     *
-     */
     protected function init()
     {
         $this->placeholder($this->getPlaceHolder());
@@ -96,13 +94,14 @@ class Cascader extends FormComponentDriver
      *        "value":"东城区", "label":"东城区"
      *    }]
      *  }
+     *
      * @param array $data
      * @return $this
      */
     public function data(array $data)
     {
-        if(!is_array($this->props['data'])) $this->props['data'] = [];
-        $this->props['data'] = array_merge($this->props['data'],$data);
+        if (!is_array($this->props['data'])) $this->props['data'] = [];
+        $this->props['data'] = array_merge($this->props['data'], $data);
         return $this;
     }
 
@@ -112,12 +111,13 @@ class Cascader extends FormComponentDriver
      */
     public function jsData($var)
     {
-        $this->props['data'] = 'js.'.$var;
+        $this->props['data'] = 'js.' . $var;
         return $this;
     }
 
     /**
      * 获取组件类型
+     *
      * @return mixed
      */
     public function getType()
@@ -128,7 +128,7 @@ class Cascader extends FormComponentDriver
     /**
      * @return Validate
      */
-    protected function getValidateHandler()
+    public function getValidateHandler()
     {
         return Validate::arr();
     }
@@ -145,7 +145,7 @@ class Cascader extends FormComponentDriver
             'value' => $this->value,
             'props' => (object)$this->props,
             'validate' => $this->validate,
-            'col'=>$this->col
+            'col' => $this->col
         ];
     }
 }

@@ -15,6 +15,7 @@ use FormBuilder\traits\component\ComponentOptionsTrait;
 /**
  * 复选框组件
  * Class Checkbox
+ *
  * @package FormBuilder\components
  * @method $this size(String $size) 多选框组的尺寸，可选值为 large、small、default 或者不设置
  */
@@ -36,7 +37,7 @@ class Checkbox extends FormComponentDriver
      * @var array
      */
     protected static $propsRule = [
-        'size'=>'string'
+        'size' => 'string'
     ];
 
     /**
@@ -45,18 +46,18 @@ class Checkbox extends FormComponentDriver
      */
     public function value($value)
     {
-        if($value === null) return $this;
-        if(!is_array($value))
+        if ($value === null) return $this;
+        if (!is_array($value))
             $this->value[] = (string)$value;
-        else{
-            foreach ($value as $v){
-                $this->value[] = (string) $v;
+        else {
+            foreach ($value as $v) {
+                $this->value[] = (string)$v;
             }
         }
         return $this;
     }
 
-    protected function getValidateHandler()
+    public function getValidateHandler()
     {
         return Validate::arr();
     }
@@ -67,23 +68,23 @@ class Checkbox extends FormComponentDriver
     public function build()
     {
         $options = [];
-        foreach ($this->options as $option){
+        foreach ($this->options as $option) {
             if ($option instanceof Option)
                 $options[] = $option->build();
         }
         $value = array_unique($this->value);
-        foreach ($value as $k=>$v){
+        foreach ($value as $k => $v) {
             $value[$k] = (string)$v;
         }
         return [
-            'type'=>$this->name,
-            'field'=>$this->field,
-            'title'=>$this->title,
-            'value'=>$value,
-            'props'=>(object)$this->props,
-            'options'=>$options,
-            'validate'=>$this->validate,
-            'col'=>$this->col
+            'type' => $this->name,
+            'field' => $this->field,
+            'title' => $this->title,
+            'value' => $value,
+            'props' => (object)$this->props,
+            'options' => $options,
+            'validate' => $this->validate,
+            'col' => $this->col
         ];
     }
 

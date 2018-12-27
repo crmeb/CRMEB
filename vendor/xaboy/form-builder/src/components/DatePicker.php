@@ -14,6 +14,7 @@ use FormBuilder\Helper;
 /**
  * 日期选择器组件
  * Class DatePicker
+ *
  * @package FormBuilder\components
  * @method $this type(String $type) 显示类型，可选值为 date、daterange、datetime、datetimerange、year、month
  * @method $this format(String $format) 展示的日期格式, 默认为yyyy-MM-dd HH:mm:ss
@@ -67,7 +68,8 @@ class DatePicker extends FormComponentDriver
      */
     protected $props = [
         'type' => self::TYPE_DATE,
-        'editable' => false
+        'editable' => false,
+        'multiple' => false
     ];
 
     /**
@@ -86,7 +88,7 @@ class DatePicker extends FormComponentDriver
         'editable' => 'boolean',
         'transfer' => 'boolean',
         'splitPanels' => 'boolean',
-        'showWeekNumbers' => 'boolean',
+        'showWeekNumbers' => 'boolean'
     ];
 
     /**
@@ -95,6 +97,22 @@ class DatePicker extends FormComponentDriver
     protected function init()
     {
         $this->placeholder($this->getPlaceHolder());
+    }
+
+    /**
+     * 开启后, 可以选择多个日期, 仅在 date 下可用, 默认为false
+     *
+     * @param bool $bool
+     * @return $this
+     */
+    public function multiple($bool = true)
+    {
+        if ($this->props['type'] == 'date')
+            $this->props['multiple'] = (bool)$bool;
+        else
+            $this->props['multiple'] = false;
+
+        return $this;
     }
 
     /**
@@ -116,10 +134,23 @@ class DatePicker extends FormComponentDriver
 
     public function getValidateHandler()
     {
-        if(in_array($this->props['type'],['datetimerange','daterange']))
+        if (in_array($this->props['type'], ['datetimerange', 'daterange']) || $this->props['multiple'])
             return Validate::arr();
         else
             return Validate::date();
+    }
+
+    public function required($message = null)
+    {
+        $message = $message ?: $this->getPlaceHolder();
+        if (in_array($this->props['type'], ['datetimerange', 'daterange'])) {
+            $this->validate()->fields([
+                '0' => ['required' => true, 'type' => 'date', 'message' => $message],
+                '1' => ['required' => true, 'type' => 'date', 'message' => $message]
+            ], true, $message);
+            return $this;
+        } else
+            return parent::required($message);
     }
 
     /**
@@ -134,7 +165,7 @@ class DatePicker extends FormComponentDriver
             'value' => $this->value,
             'props' => (object)$this->props,
             'validate' => $this->validate,
-            'col'=>$this->col
+            'col' => $this->col
         ];
     }
 

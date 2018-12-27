@@ -10,6 +10,7 @@ namespace FormBuilder\interfaces;
 
 /**
  * Interface FormComponentInterFace
+ *
  * @package FormBuilder\interfaces
  */
 interface FormComponentInterFace
@@ -17,6 +18,7 @@ interface FormComponentInterFace
 
     /**
      * 获取组件的生成规则
+     *
      * @return array
      */
     public function build();

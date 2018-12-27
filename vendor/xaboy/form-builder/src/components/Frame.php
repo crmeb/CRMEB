@@ -14,6 +14,7 @@ use FormBuilder\Helper;
 /**
  * 框架组件
  * Class Frame
+ *
  * @package FormBuilder\components
  * @method $this type(String $type) frame类型, 有input, file, image, 默认为input
  * @method $this src(String $src) iframe地址
@@ -90,7 +91,7 @@ class Frame extends FormComponentDriver
         $this->frameTitle($this->getPlaceHolder());
     }
 
-    protected function getValidateHandler()
+    public function getValidateHandler()
     {
         return Validate::arr();
     }
@@ -111,7 +112,7 @@ class Frame extends FormComponentDriver
             'value' => $value,
             'props' => (object)$this->props,
             'validate' => $this->validate,
-            'col'=>$this->col
+            'col' => $this->col
         ];
     }
 }

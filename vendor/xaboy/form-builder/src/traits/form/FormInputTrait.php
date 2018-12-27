@@ -12,14 +12,16 @@ use FormBuilder\components\Input;
 
 /**
  * Class FormInputTrait
+ *
  * @package FormBuilder\traits\form
  */
 trait FormInputTrait
 {
     /**
-     * 获取input组件
-     * @param $field
-     * @param $title
+     * input输入框组件
+     *
+     * @param        $field
+     * @param        $title
      * @param string $value
      * @param string $type
      * @return Input
@@ -32,8 +34,10 @@ trait FormInputTrait
     }
 
     /**
-     * @param $field
-     * @param $title
+     * text 类型输入框
+     *
+     * @param        $field
+     * @param        $title
      * @param string $value
      * @return Input
      */
@@ -43,8 +47,10 @@ trait FormInputTrait
     }
 
     /**
-     * @param $field
-     * @param $title
+     * password 类型输入框
+     *
+     * @param        $field
+     * @param        $title
      * @param string $value
      * @return Input
      */
@@ -54,8 +60,10 @@ trait FormInputTrait
     }
 
     /**
-     * @param $field
-     * @param $title
+     * textarea 类型输入框
+     *
+     * @param        $field
+     * @param        $title
      * @param string $value
      * @return Input
      */
@@ -65,8 +73,10 @@ trait FormInputTrait
     }
 
     /**
-     * @param $field
-     * @param $title
+     * url 类型输入框
+     *
+     * @param        $field
+     * @param        $title
      * @param string $value
      * @return Input
      */
@@ -76,8 +86,10 @@ trait FormInputTrait
     }
 
     /**
-     * @param $field
-     * @param $title
+     * email 类型输入框
+     *
+     * @param        $field
+     * @param        $title
      * @param string $value
      * @return Input
      */
@@ -87,8 +99,10 @@ trait FormInputTrait
     }
 
     /**
-     * @param $field
-     * @param $title
+     * date 类型输入框
+     *
+     * @param        $field
+     * @param        $title
      * @param string $value
      * @return Input
      */

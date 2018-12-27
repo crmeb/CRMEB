@@ -1127,7 +1127,7 @@ label.skin-lable{position:absolute;right:.24rem;top:.33rem;z-index:2}
 .template-pro-list .item-box ul li .pro-content .pro-infos .count{color:#999;font-size:.2rem}
 .buyspell-list .product-banner,.template-prolist .product-banner{width:100%;height:2.2rem}
 .buyspell-list .product-banner img,.template-prolist .product-banner img{display:block;width:100%;height:100%}
-.page-index .nav{width:100%;padding-bottom:.2rem;background-repeat:no-repeat;-webkit-background-size:100% auto;-moz-background-size:100% auto;background-size:100% auto}
+.page-index .nav{width:100%;padding-bottom:.2rem;background-repeat:no-repeat;-webkit-background-size:100% auto;-moz-background-size:100% auto;background-size:100% auto;padding: 0 .2rem;}
 .page-index .search-wrapper{z-index:99;width:100%;background:#fff}
 .page-index .search-wrapper .search-box{height:.8rem;padding:0 .2rem;-webkit-box-align:center;-moz-box-align:center;-o-box-align:center;-ms-flex-align:center;-webkit-align-items:center;align-items:center;-webkit-box-pack:justify;-moz-box-pack:justify;-o-box-pack:justify;-ms-flex-pack:justify;-webkit-justify-content:space-between;justify-content:space-between;background-color:#eb2f32}
 .page-index .search-wrapper .search-box input{width:5.3rem;height:.58rem;line-height:normal;border:1px solid rgba(255,255,255,.3);padding-left:.65rem;background-image:url(../../sx/images/search-icon.png);background-repeat:no-repeat;-webkit-background-size:.28rem .28rem;-moz-background-size:.28rem .28rem;background-size:.28rem .28rem;background-position:.2rem center;font-size:.22rem;border-radius:5px}
@@ -1137,7 +1137,7 @@ label.skin-lable{position:absolute;right:.24rem;top:.33rem;z-index:2}
 .page-index .nav{width:100%;padding-bottom:.2rem;background-repeat:no-repeat;-webkit-background-size:100% auto;-moz-background-size:100% auto;background-size:100% auto}
 .page-index .nav ul{-webkit-box-align:center;-moz-box-align:center;-o-box-align:center;-ms-flex-align:center;-webkit-align-items:center;align-items:center;-webkit-box-lines:multiple;-moz-box-lines:multiple;-o-box-lines:multiple;-webkit-flex-wrap:wrap;-ms-flex-wrap:wrap;flex-wrap:wrap}
 .page-index .nav li{-webkit-box-flex:1;-moz-box-flex:1;-o-box-flex:1;box-flex:1;-webkit-flex:1 20%;-ms-flex:1 20%;flex:1 20%;margin-top:.2rem;text-align:center}
-.page-index .nav li img{width:.96rem;height:.96rem;border-radius:50%}
+.page-index .nav li img{width:.76rem;height:.76rem;border-radius:50%}
 .page-index .nav li p{margin-top:.1rem;font-size:.22rem}
 .common-slider-nav{background-color:#fff;overflow:hidden;font-size:.22rem}
 .common-slider-nav li{width:1.45rem;height:.68rem;line-height:.68rem;text-align:center}

@@ -14,6 +14,7 @@ use FormBuilder\Helper;
 /**
  * 上传组件
  * Class Upload
+ *
  * @package FormBuilder\components
  * @method $this uploadType(String $uploadType) 上传文件类型，可选值为 image（图片上传），file（文件上传）
  * @method $this action(String $action) 上传的地址
@@ -79,6 +80,7 @@ class Upload extends FormComponentDriver
 
     /**
      * 设置上传的请求头部
+     *
      * @param array $headers
      * @return $this
      */
@@ -92,6 +94,7 @@ class Upload extends FormComponentDriver
      * 支持的文件类型，与 accept 不同的是，
      * format 是识别文件的后缀名，accept 为 input 标签原生的 accept 属性，
      * 会在选择文件时过滤，可以两者结合使用
+     *
      * @param array $headers
      * @return $this
      */
@@ -103,6 +106,7 @@ class Upload extends FormComponentDriver
 
     /**
      * 上传时附带的额外参数
+     *
      * @param array $headers
      * @return $this
      */
@@ -112,7 +116,7 @@ class Upload extends FormComponentDriver
         return $this;
     }
 
-    protected function getPlaceHolder($pre = '请上传')
+    public function getPlaceHolder($pre = '请上传')
     {
         return parent::getPlaceHolder($pre);
     }
@@ -129,10 +133,7 @@ class Upload extends FormComponentDriver
 
     protected function getValidateHandler()
     {
-        if($this->props['maxLength'] == 1)
-            return Validate::str();
-        else
-            return Validate::arr();
+        return Validate::arr();
     }
 
     /**
@@ -147,7 +148,7 @@ class Upload extends FormComponentDriver
             'value' => $this->value,
             'props' => (object)$this->props,
             'validate' => $this->validate,
-            'col'=>$this->col
+            'col' => $this->col
         ];
     }
 }

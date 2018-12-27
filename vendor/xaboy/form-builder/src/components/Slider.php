@@ -14,6 +14,7 @@ use FormBuilder\Helper;
 /**
  * 滑块组件
  * Class Slider
+ *
  * @package FormBuilder\components
  * @method $this min(float $min) 最小值, 默认 0
  * @method $this max(float $max) 最大值, 默认 100
@@ -65,9 +66,9 @@ class Slider extends FormComponentDriver
         return $this;
     }
 
-    protected function getValidateHandler()
+    public function getValidateHandler()
     {
-        if($this->props['range'] == true)
+        if ($this->props['range'] == true)
             return Validate::arr();
         else
             return Validate::num();
@@ -96,7 +97,7 @@ class Slider extends FormComponentDriver
             'value' => $value,
             'props' => (object)$this->props,
             'validate' => $this->validate,
-            'col'=>$this->col
+            'col' => $this->col
         ];
     }
 }

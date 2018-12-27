@@ -13,6 +13,7 @@ use FormBuilder\FormComponentDriver;
 /**
  * 数字输入框组件
  * Class InputNumber
+ *
  * @package FormBuilder\components
  * @method $this max(float $max) 最大值
  * @method $this min(float $min) 最小值
@@ -59,7 +60,7 @@ class InputNumber extends FormComponentDriver
         return parent::getPlaceHolder($pre);
     }
 
-    protected function getValidateHandler()
+    public function getValidateHandler()
     {
         return Validate::num(Validate::TRIGGER_BLUR);
     }
@@ -76,7 +77,7 @@ class InputNumber extends FormComponentDriver
             'value' => $this->value === '' ? '' : (float)$this->value,
             'props' => (object)$this->props,
             'validate' => $this->validate,
-            'col'=>$this->col
+            'col' => $this->col
         ];
     }
 

@@ -14,6 +14,7 @@ use FormBuilder\traits\component\CallPropsTrait;
 /**
  * form表单样式
  * Class FormStyle
+ *
  * @package FormBuilder\components
  * @method $this inline(Boolean $bool) 是否开启行内表单模式
  * @method $this labelPosition(String $labelPosition) 表单域标签的位置，可选值为 left、right、top
@@ -41,20 +42,22 @@ class FormStyle implements FormComponentInterFace
 
     /**
      * FormStyle constructor.
-     * @param bool $inline
+     *
+     * @param bool   $inline
      * @param string $labelPosition
-     * @param int $labelWidth
-     * @param bool $showMessage
+     * @param int    $labelWidth
+     * @param bool   $showMessage
      * @param string $autocomplete
      */
     public function __construct($inline = false, $labelPosition = 'right', $labelWidth = 125, $showMessage = true, $autocomplete = 'off')
     {
-        $this->props = compact('inline','labelPosition','labelWidth','showMessage');
+        $this->props = compact('inline', 'labelPosition', 'labelWidth', 'showMessage');
         $this->autocomplete($autocomplete);
     }
 
     /**
      * 原生的 autocomplete 属性，可选值为 true = off 或 false = on
+     *
      * @param bool $bool
      * @return $this
      */

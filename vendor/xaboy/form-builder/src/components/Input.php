@@ -14,6 +14,7 @@ use FormBuilder\Helper;
 /**
  * Input组件,支持类型text、password、textarea、url、email、date
  * Class Input
+ *
  * @package FormBuilder\components
  * @method $this type(String $type) 输入框类型，可选值为 text、password、textarea、url、email、date;
  * @method $this size(String $size) 输入框尺寸，可选值为large、small、default或者不设置;
@@ -102,7 +103,7 @@ class Input extends FormComponentDriver
         return parent::getPlaceHolder($pre);
     }
 
-    protected function getValidateHandler()
+    public function getValidateHandler()
     {
         return Validate::str(Validate::TRIGGER_BLUR);
     }
@@ -110,6 +111,7 @@ class Input extends FormComponentDriver
 
     /**
      * 自适应内容高度，仅在 textarea 类型下有效
+     *
      * @param Bool|Number $minRows
      * @param null|Number $maxRows
      * @return $this
@@ -117,12 +119,13 @@ class Input extends FormComponentDriver
     public function autoSize($minRows = false, $maxRows = null)
     {
 
-        $this->props['autosize'] = $maxRows === null ?  boolval($minRows) : compact('minRows', 'maxRows');
+        $this->props['autosize'] = $maxRows === null ? boolval($minRows) : compact('minRows', 'maxRows');
         return $this;
     }
 
     /**
      * 生成表单规则
+     *
      * @return array
      */
     public function build()
@@ -134,7 +137,7 @@ class Input extends FormComponentDriver
             'value' => $this->value,
             'props' => (object)$this->props,
             'validate' => $this->validate,
-            'col'=>$this->col
+            'col' => $this->col
         ];
     }
 }

@@ -13,14 +13,17 @@ use FormBuilder\components\TreeData;
 
 /**
  * Class FormTreeTrait
+ *
  * @package FormBuilder\traits\form
  */
 trait FormTreeTrait
 {
     /**
-     * @param $field
-     * @param $title
-     * @param array $value
+     * 树形组件
+     *
+     * @param        $field
+     * @param        $title
+     * @param array  $value
      * @param string $type
      * @return Tree
      */
@@ -30,19 +33,23 @@ trait FormTreeTrait
     }
 
     /**
-     * @param $field
-     * @param $title
+     * 获取选中的值
+     *
+     * @param       $field
+     * @param       $title
      * @param array $value
      * @return Tree
      */
     public static function treeSelected($field, $title, $value = [])
     {
-        return self::tree($field, $title, $value,Tree::TYPE_SELECTED);
+        return self::tree($field, $title, $value, Tree::TYPE_SELECTED);
     }
 
     /**
-     * @param $field
-     * @param $title
+     * 获取勾选的值
+     *
+     * @param       $field
+     * @param       $title
      * @param array $value
      * @return Tree
      */
@@ -52,13 +59,15 @@ trait FormTreeTrait
     }
 
     /**
-     * @param $id
-     * @param $title
+     * 树形组件数据 date 类
+     *
+     * @param       $id
+     * @param       $title
      * @param array $children
      * @return TreeData
      */
     public static function treeData($id, $title, array $children = [])
     {
-        return new TreeData($id,$title,$children);
+        return new TreeData($id, $title, $children);
     }
 }
