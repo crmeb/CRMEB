@@ -5,42 +5,23 @@
  * @day: 2017/12/18
  */
 
-namespace behavior\routine;
+namespace behavior\system;
 
 
-use app\routine\model\store\StoreOrder;
-use app\routine\model\routine\RoutineTemplate;
-use app\routine\model\user\User;
-use app\routine\model\user\WechatUser;
-use app\routine\model\user\UserAddress;
-use app\admin\model\order\StoreOrder as StoreOrderAdminModel;
+
+use app\admin\model\user\User;
+use app\admin\model\user\UserAddress;
+use app\admin\model\user\UserBill;
+use app\admin\model\wechat\WechatUser;
+use basic\ModelBasic;
+use app\admin\model\order\StoreOrder;
 use service\SystemConfigService;
 use service\WechatTemplateService;
 
-class StoreProductBehavior
+class OrderBehavior
 {
-    /**
-     * 用户确认收货
-     * @param $order
-     * @param $uid
-     */
-    public static function storeProductOrderUserTakeDelivery($order, $uid)
-    {
-        $res1 = StoreOrder::gainUserIntegral($order);
-        $res2 = User::backOrderBrokerage($order);
-        StoreOrder::orderTakeAfter($order);
-        $giveCouponMinPrice = SystemConfigService::get('store_give_con_min_price');
-        if($order['total_price'] >= $giveCouponMinPrice) WechatUser::userTakeOrderGiveCoupon($uid);
-        if(!($res1 && $res2)) exception('收货失败!');
-    }
-    /**
-     * 订单创建成功后
-     * @param $oid
-     */
-    public static function storeProductOrderCreate($order,$group)
-    {
-        UserAddress::be(['is_default'=>1,'uid'=>$order['uid']]) || UserAddress::setDefaultAddress($group['addressId'],$order['uid']);
-    }
+
+
 
     /**
      * 修改发货状态  为送货
@@ -49,9 +30,10 @@ class StoreProductBehavior
      * @param $oid
      * $oid  string store_order表中的id
      */
-//    public static function storeProductOrderDeliveryAfter($data,$oid){
-//        StoreOrder::orderPostageAfter($data,$oid);
-//    }
+    public static function storeProductOrderDeliveryAfter($data,$oid){
+        StoreOrder::orderPostageAfter($oid,$data);
+        StoreOrder::sendOrderGoods($oid,$data);
+    }
 
     /**
      * 修改发货状态  为发货
@@ -60,34 +42,11 @@ class StoreProductBehavior
      * @param $oid
      * $oid  string store_order表中的id
      */
-//    public static function storeProductOrderDeliveryGoodsAfter($data,$oid){
-//        StoreOrder::orderPostageAfter($data,$oid);
-//        RoutineTemplate::sendOrderGoods($oid,$data);
-//    }
-
-    /**
-     * 修改状态 为已收货
-     * @param $data
-     *  $data array status  状态为  已收货
-     * @param $oid
-     * $oid  string store_order表中的id
-     */
-    public static function storeProductOrderTakeDeliveryAfter($order,$oid)
-    {
-        $res1 = StoreOrder::gainUserIntegral($order);
-        $res2 = User::backOrderBrokerage($order);
-        StoreOrder::orderTakeAfter($order);
-        if(!($res1 && $res2)) exception('收货失败!');
+    public static function storeProductOrderDeliveryGoodsAfter($data,$oid){
+        StoreOrder::orderPostageAfter($oid,$data);
+        StoreOrder::sendOrderGoods($oid,$data);
     }
 
-    /**
-     * 线下付款
-     * @param $id
-     * $id 订单id
-     */
-    public static function storeProductOrderOffline($id){
-
-    }
 
     /**
      * 修改状态为  已退款
@@ -97,7 +56,7 @@ class StoreProductBehavior
      * $oid  string store_order表中的id
      */
     public static function storeProductOrderRefundYAfter($data,$oid){
-        StoreOrderAdminModel::refundTemplate($data,$oid);
+       StoreOrder::refundTemplate($data,$oid);
     }
 
     /**
@@ -110,7 +69,14 @@ class StoreProductBehavior
     public static function storeProductOrderRefundNAfter($data,$oid){
 
     }
+    /**
+     * 线下付款
+     * @param $id
+     * $id 订单id
+     */
+    public static function storeProductOrderOffline($id){
 
+    }
 
     /**
      * 修改订单状态
@@ -158,17 +124,9 @@ class StoreProductBehavior
      */
     public static function storeProductOrderReply($replyInfo, $cartInfo)
     {
-        StoreOrder::checkOrderOver($cartInfo['oid']);
+        //StoreOrder::checkOrderOver($cartInfo['oid']);
     }
 
-    /**
-     * 订单全部产品评价完
-     * @param $oid
-     */
-    public static function storeProductOrderOver($oid)
-    {
-
-    }
 
     /**
      * 退积分
@@ -181,13 +139,7 @@ class StoreProductBehavior
 
     }
 
-    /**
-     * 加入购物车成功之后
-     * @param array $cartInfo 购物车信息
-     * @param array $userInfo 用户信息
-     */
-    public static function storeProductSetCartAfterAfter($cartInfo, $userInfo)
-    {
 
-    }
+
+
 }
