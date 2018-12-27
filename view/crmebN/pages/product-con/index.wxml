@@ -43,7 +43,7 @@
     <view class='count-wrapper flex'>
       <view>原价:￥{{storeInfo.ot_price}}</view>
       <view>库存:{{storeInfo.stock}}{{storeInfo.unit_name}}</view>
-      <view>销量:{{storeInfo.ficti}}{{storeInfo.unit_name}}</view>
+      <view>销量:{{storeInfo.ficti+storeInfo.sales}}{{storeInfo.unit_name}}</view>
     </view>
   </view>
   <view class='block-bar' bindtap='goCoupon'>
@@ -78,7 +78,7 @@
       <view class='txt-msg'>{{reply.comment}}</view>
       <view class='time-bar'>{{reply.add_time}}</view>
     </view>
-    <view wx:if="{{reply.merchant_reply_content != null}}">
+    <view wx:if="{{reply.merchant_reply_content != ''}}">
        <view>管理员回复：</view>
       <view class='txt-msg'>{{reply.merchant_reply_content}}</view>
       <view class='time-bar'>{{reply.merchant_reply_time}}</view>
