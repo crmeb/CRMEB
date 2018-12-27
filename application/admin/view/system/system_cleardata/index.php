@@ -21,7 +21,7 @@
 <button type="button" class="btn btn-w-m btn-danger btn-primary cleardata" data-url="{:Url('system.SystemCleardata/wechatuserdata')}">清除微信用户</button><br>
 <button type="button" class="btn btn-w-m btn-danger btn-primary cleardata" data-url="{:Url('system.SystemCleardata/articledata')}">清除内容分类</button><br>
 <button type="button" class="btn btn-w-m btn-danger btn-primary cleardata" data-url="{:Url('system.SystemCleardata/uploaddata')}">清除所有附件</button><br>
-<button type="button" class="btn btn-w-m btn-danger btn-primary creatuser" data-url="{:Url('system.SystemCleardata/userdate')}">创建前台用户用户名：crmeb 密码：123456</button>
+<!--<button type="button" class="btn btn-w-m btn-danger btn-primary creatuser" data-url="{:Url('system.SystemCleardata/userdate')}">创建前台用户用户名：crmeb 密码：123456</button>-->
 </div>
 <script>
     $('.cleardata').on('click',function(){
