@@ -188,15 +188,19 @@ class MorphMany extends Relation
     }
 
     /**
-     * 获取关联统计子查询
+     * 创建关联统计子查询
      * @access public
      * @param \Closure $closure 闭包
+     * @param string   $name    统计数据别名
      * @return string
      */
-    public function getRelationCountQuery($closure)
+    public function getRelationCountQuery($closure, &$name = null)
     {
         if ($closure) {
-            call_user_func_array($closure, [ & $this->query]);
+            $return = call_user_func_array($closure, [ & $this->query]);
+            if ($return && is_string($return)) {
+                $name = $return;
+            }
         }
 
         return $this->query->where([
@@ -241,16 +245,29 @@ class MorphMany extends Relation
      */
     public function save($data)
     {
+        $model = $this->make($data);
+
+        return $model->save($data) ? $model : false;
+    }
+
+    /**
+     * 创建关联对象实例
+     * @param array $data
+     * @return Model
+     */
+    public function make($data = [])
+    {
         if ($data instanceof Model) {
             $data = $data->getData();
         }
+
         // 保存关联表数据
         $pk = $this->parent->getPk();
 
-        $model                  = new $this->model;
         $data[$this->morphKey]  = $this->parent->$pk;
         $data[$this->morphType] = $this->type;
-        return $model->save($data) ? $model : false;
+
+        return new $this->model($data);
     }
 
     /**
