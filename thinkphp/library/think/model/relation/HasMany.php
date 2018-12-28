@@ -152,12 +152,16 @@ class HasMany extends Relation
      * 创建关联统计子查询
      * @access public
      * @param \Closure $closure 闭包
+     * @param string   $name    统计数据别名
      * @return string
      */
-    public function getRelationCountQuery($closure)
+    public function getRelationCountQuery($closure, &$name = null)
     {
         if ($closure) {
-            call_user_func_array($closure, [ & $this->query]);
+            $return = call_user_func_array($closure, [ & $this->query]);
+            if ($return && is_string($return)) {
+                $name = $return;
+            }
         }
         $localKey = $this->localKey ?: $this->parent->getPk();
         return $this->query->whereExp($this->foreignKey, '=' . $this->parent->getTable() . '.' . $localKey)->fetchSql()->count();
@@ -198,13 +202,25 @@ class HasMany extends Relation
      */
     public function save($data)
     {
+        $model = $this->make($data);
+        return $model->save($data) ? $model : false;
+    }
+
+    /**
+     * 创建关联对象实例
+     * @param array $data
+     * @return Model
+     */
+    public function make($data = [])
+    {
         if ($data instanceof Model) {
             $data = $data->getData();
         }
+
         // 保存关联表数据
-        $model                   = new $this->model;
         $data[$this->foreignKey] = $this->parent->{$this->localKey};
-        return $model->save($data) ? $model : false;
+
+        return new $this->model($data);
     }
 
     /**

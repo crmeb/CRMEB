@@ -285,4 +285,15 @@ class MorphTo extends Relation
         return $this->parent->setRelation($this->relation, null);
     }
 
+    /**
+     * 创建关联统计子查询
+     * @access public
+     * @param \Closure $closure 闭包
+     * @param string   $name    统计数据别名
+     * @return string
+     */
+    public function getRelationCountQuery($closure, &$name = null)
+    {
+        throw new Exception('relation not support: withCount');
+    }
 }

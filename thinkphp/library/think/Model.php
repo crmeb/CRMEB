@@ -94,6 +94,8 @@ abstract class Model implements \JsonSerializable, \ArrayAccess
     protected $type = [];
     // 是否为更新数据
     protected $isUpdate = false;
+    // 是否使用Replace
+    protected $replace = false;
     // 是否强制更新所有数据
     protected $force = false;
     // 更新条件
@@ -1014,6 +1016,18 @@ abstract class Model implements \JsonSerializable, \ArrayAccess
     }
 
     /**
+     * 新增数据是否使用Replace
+     * @access public
+     * @param  bool $replace
+     * @return $this
+     */
+    public function replace($replace = true)
+    {
+        $this->replace = $replace;
+        return $this;
+    }
+
+    /**
      * 保存当前数据对象
      * @access public
      * @param array  $data     数据
@@ -1028,19 +1042,19 @@ abstract class Model implements \JsonSerializable, \ArrayAccess
             $data     = [];
         }
 
-        if (!empty($data)) {
-            // 数据自动验证
-            if (!$this->validateData($data)) {
-                return false;
-            }
-            // 数据对象赋值
-            foreach ($data as $key => $value) {
-                $this->setAttr($key, $value, $data);
-            }
-            if (!empty($where)) {
-                $this->isUpdate    = true;
-                $this->updateWhere = $where;
-            }
+        // 数据自动验证
+        if (!$this->validateData($data)) {
+            return false;
+        }
+
+        // 数据对象赋值
+        foreach ($data as $key => $value) {
+            $this->setAttr($key, $value, $data);
+        }
+        
+        if (!empty($where)) {
+            $this->isUpdate    = true;
+            $this->updateWhere = $where;
         }
 
         // 自动关联写入
@@ -1163,9 +1177,9 @@ abstract class Model implements \JsonSerializable, \ArrayAccess
             // 检测字段
             $allowFields = $this->checkAllowField(array_merge($this->auto, $this->insert));
             if (!empty($allowFields)) {
-                $result = $this->getQuery()->strict(false)->field($allowFields)->insert($this->data, false, false, $sequence);
+                $result = $this->getQuery()->strict(false)->field($allowFields)->insert($this->data, $this->replace, false, $sequence);
             } else {
-                $result = $this->getQuery()->insert($this->data, false, false, $sequence);
+                $result = $this->getQuery()->insert($this->data, $this->replace, false, $sequence);
             }
 
             // 获取自动增长主键

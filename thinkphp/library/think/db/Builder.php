@@ -98,6 +98,10 @@ abstract class Builder
 
         $result = [];
         foreach ($data as $key => $val) {
+            if ('*' != $options['field'] && !in_array($key, $fields, true)) {
+                continue;
+            }
+
             $item = $this->parseKey($key, $options, true);
             if ($val instanceof Expression) {
                 $result[$item] = $val->getValue();
@@ -115,18 +119,10 @@ abstract class Builder
             } elseif (is_array($val) && !empty($val)) {
                 switch (strtolower($val[0])) {
                     case 'inc':
-//                        $result[$item] = $item . '+' . floatval($val[1]);
-                        if ($key == $val[1]) {
-                            $result[$item] = $this->parseKey($val[1]) . '+' . floatval($val[2]);
-                        }
-
+                        $result[$item] = $item . '+' . floatval($val[1]);
                         break;
                     case 'dec':
-//                        $result[$item] = $item . '-' . floatval($val[1]);
-                        if ($key == $val[1]) {
-                            $result[$item] = $this->parseKey($val[1]) . '-' . floatval($val[2]);
-                        }
-
+                        $result[$item] = $item . '-' . floatval($val[1]);
                         break;
                     case 'exp':
                         throw new Exception('not support data:[' . $val[0] . ']');
