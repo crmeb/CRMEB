@@ -871,16 +871,16 @@
         },
         {
             "name": "topthink/framework",
-            "version": "v5.0.21",
+            "version": "v5.0.23",
             "source": {
                 "type": "git",
                 "url": "https://github.com/top-think/framework.git",
-                "reference": "ab826da071a7a47116a7f1d01f72228d6bcf212a"
+                "reference": "4cbc0b5e93314446243ebc7d5f005f9c32864737"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/top-think/framework/zipball/ab826da071a7a47116a7f1d01f72228d6bcf212a",
-                "reference": "ab826da071a7a47116a7f1d01f72228d6bcf212a",
+                "url": "https://api.github.com/repos/top-think/framework/zipball/4cbc0b5e93314446243ebc7d5f005f9c32864737",
+                "reference": "4cbc0b5e93314446243ebc7d5f005f9c32864737",
                 "shasum": ""
             },
             "require": {
@@ -918,7 +918,7 @@
                 "orm",
                 "thinkphp"
             ],
-            "time": "2018-09-04T09:18:48+00:00"
+            "time": "2018-12-09T12:40:40+00:00"
         },
         {
             "name": "topthink/think-captcha",
