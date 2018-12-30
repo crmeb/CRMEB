@@ -238,7 +238,8 @@ Page({
         var n=t+1;
         if (n%2>0) priceOrder ='asc';
         else priceOrder='desc';
-      var sid = that.data.sid; 
+      var sid = that.data.sid;
+        that.setData({ ficti: ''})
         that.setData({ price: priceOrder, t: n, })
         that.getProductList();
     },
@@ -254,7 +255,8 @@ Page({
         var n = t + 1;
         if (n%2>0) salesOrder = 'asc';
         else salesOrder='desc';
-      that.setData({ ficti: salesOrder, t: n, })
+        that.setData({ price: '' })
+        that.setData({ ficti: salesOrder, t: n, })
         that.getProductList();
     },
     navactive2: function (e) {
@@ -268,6 +270,8 @@ Page({
         if (act == 3) news = 1;
         else news = '';
         if (that.data.news) news = '';
+        that.setData({ price: ''})
+        that.setData({ ficti: ''})
         that.setData({ news: news})
         that.getProductList();
     },
