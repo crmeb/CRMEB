@@ -1,0 +1,17 @@
+.mycut-ul .mycut-li{background-color:#fff;padding:0 20rpx;margin-bottom:20rpx;}
+.mycut-ul .li-top{height:168rpx;justify-content:space-between;align-items:center;}
+.mycut-ul .li-top image{width:128rpx;height:128rpx;}
+.mycut-ul .top-text{width:563rpx;}
+.mycut-ul .top-title{font-size:28rpx;color:#000000;line-height:1.5;}
+.mycut-ul .top-time{font-size:26rpx;color:#333333;margin-top:17rpx;}
+.mycut-ul .top-time text{color:#F60509;}
+.li-center{height:132rpx;border-top:2rpx dashed #DDDDDD;border-bottom:2rpx dashed #DDDDDD;text-align:center;align-items:center;}
+.li-center .center-money{flex:1 25%;}
+.li-center .center-money~.center-money{border-left:2rpx dashed #DDDDDD;}
+.center-flage{font-size:26rpx;color:#333333;margin-top:14rpx;}
+.center-num{color:#FFA200;font-size:32rpx;}
+.li-bottom{padding:0 20rpx;height:90rpx;justify-content:space-between;align-items:center;}
+.bottom-flag{font-size:26rpx;color:#FFA200;}
+.bottom-but{width:140rpx;height:58rpx;text-align:center;line-height:58rpx;border-radius:100rpx;background-color:#FF3D3D;color:#fff;font-size:24rpx;box-shadow:-1rpx 0rpx 5rpx #FF3D3D;}
+.bottom-on{color:#999999!important;}
+@import "/pages/home/home.wxss"; 

@@ -1,0 +1,3 @@
+/* pages/home/home.wxss */
+.view{position: fixed ; /*相对定位*/bottom:50%;height:82rpx;width:82rpx;border-radius:50%;color: white;text-align: center;z-index:99;right:10rpx;margin: 0% 0rpx -41rpx 0%;}
+.view image{width:82rpx;height:82rpx;border-radius:50%;}

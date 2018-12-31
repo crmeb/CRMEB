@@ -1,0 +1,81 @@
+{
+  "_args": [
+    [
+      "requirejs",
+      "F:\\coreCms\\tp5\\public\\system"
+    ]
+  ],
+  "_from": "requirejs@latest",
+  "_id": "requirejs@2.3.5",
+  "_inCache": true,
+  "_installable": true,
+  "_location": "/requirejs",
+  "_nodeVersion": "8.1.0",
+  "_npmOperationalInternal": {
+    "host": "s3://npm-registry-packages",
+    "tmp": "tmp/requirejs-2.3.5.tgz_1503270211869_0.5688834469765425"
+  },
+  "_npmUser": {
+    "email": "jrburke@gmail.com",
+    "name": "jrburke"
+  },
+  "_npmVersion": "5.0.3",
+  "_phantomChildren": {},
+  "_requested": {
+    "name": "requirejs",
+    "raw": "requirejs",
+    "rawSpec": "",
+    "scope": null,
+    "spec": "latest",
+    "type": "tag"
+  },
+  "_requiredBy": [
+    "#USER"
+  ],
+  "_resolved": "https://registry.npmjs.org/requirejs/-/requirejs-2.3.5.tgz",
+  "_shasum": "617b9acbbcb336540ef4914d790323a8d4b861b0",
+  "_shrinkwrap": null,
+  "_spec": "requirejs",
+  "_where": "F:\\coreCms\\tp5\\public\\system",
+  "author": {
+    "email": "jrburke@gmail.com",
+    "name": "James Burke",
+    "url": "http://github.com/jrburke"
+  },
+  "bin": {
+    "r.js": "./bin/r.js",
+    "r_js": "./bin/r.js"
+  },
+  "bugs": {
+    "url": "https://github.com/jrburke/r.js/issues"
+  },
+  "dependencies": {},
+  "description": "Node adapter for RequireJS, for loading AMD modules. Includes RequireJS optimizer",
+  "devDependencies": {},
+  "directories": {},
+  "dist": {
+    "integrity": "sha512-svnO+aNcR/an9Dpi44C7KSAy5fFGLtmPbaaCeQaklUz8BQhS64tWWIIlvEA5jrWICzlO/X9KSzSeXFnZdBu8nw==",
+    "shasum": "617b9acbbcb336540ef4914d790323a8d4b861b0",
+    "tarball": "https://registry.npmjs.org/requirejs/-/requirejs-2.3.5.tgz"
+  },
+  "engines": {
+    "node": ">=0.4.0"
+  },
+  "homepage": "http://github.com/jrburke/r.js",
+  "license": "MIT",
+  "main": "./bin/r.js",
+  "maintainers": [
+    {
+      "email": "jrburke@gmail.com",
+      "name": "jrburke"
+    }
+  ],
+  "name": "requirejs",
+  "optionalDependencies": {},
+  "readme": "ERROR: No README data found!",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jrburke/r.js.git"
+  },
+  "version": "2.3.5"
+}

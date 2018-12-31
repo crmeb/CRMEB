@@ -1,0 +1,128 @@
+<view class='swiper_banner'>
+  <swiper class="swiper-box" indicator-dots="{{indicatorDots}}" autoplay="{{autoplay}}" interval="{{interval}}" duration="{{duration}}" indicator-color="{{indicatorColor}}" indicator-active-color="{{indicatorActivecolor}}">
+    <block wx:for="{{storeInfo.slider_image}}">
+      <swiper-item>
+        <image src="{{url}}{{item}}" class="slide-image"/>
+      </swiper-item>
+    </block>
+  </swiper>
+</view>
+<view class='pro-wrapper'>
+  <view class='pro-infos'>
+    <view class='title'>
+    {{storeInfo.store_name}}
+    <view class="iconfont icon-fenxiang screen-shot" type="primary"  bindtap='listenerActionSheet'></view>
+    </view>
+    <action-sheet hidden="{{actionSheetHidden}}" bindchange="listenerActionSheet" >
+      <action-sheet-item >
+          <button open-type="share" class='contact' >
+            <view class='iconn'></view>
+            发送给朋友
+          </button>
+          <button class='contact' bindtap='goPoster' >
+            <view class='iconn iconn1'></view>
+            生成海报
+          </button>
+          <!-- <view bindtap='goPoster' class='action-sheet'>
+            <view class='iconn iconn1'></view>
+            生成海报
+          </view> -->
+      </action-sheet-item>
+      <!--自动隐藏action-sheet-->
+      <!-- <action-sheet-cancel>取消</action-sheet-cancel> -->
+  </action-sheet>
+    <view class='price-wrapper flex'>
+      <view class='price'><text>￥</text>{{storeInfo.price}}</view>
+      <block wx:for="{{storeKeyWord}}" wx:if="{{index < 4}}">
+        <view class='small-txt red' wx:if="{{!index && item != ''}}">{{item}}</view>
+        <view class='small-txt lv' wx:if="{{index == 1}}">{{item}}</view>
+        <view class='small-txt chen' wx:if="{{index == 2}}">{{item}}</view>
+        <view class='small-txt red' wx:if="{{index == 3}}">{{item}}</view>
+      </block>
+    </view>
+    <view class='count-wrapper flex'>
+      <view>原价:￥{{storeInfo.ot_price}}</view>
+      <view>库存:{{storeInfo.stock}}{{storeInfo.unit_name}}</view>
+      <view>销量:{{storeInfo.ficti+storeInfo.sales}}{{storeInfo.unit_name}}</view>
+    </view>
+  </view>
+  <view class='block-bar' bindtap='goCoupon'>
+    <text class='title'>领券</text>
+    <text>领取优惠券 </text>
+  </view>
+  <!-- <view class='block-bar integral' wx:if="{{storeInfo.give_integral > 0}}">
+    <text class='title'>积分</text>
+    <text>购买可获得{{storeInfo.give_integral}}积分</text>
+  </view> -->
+  <view class='block-bar selected' bindtap='getAttrInfo'>
+    <text class='title'>{{attr}}</text>
+    <text>{{attrValue}}</text>
+  </view>
+</view>
+
+<view class='evaluate-wrapper' wx:if="{{replyCount > 0}}">
+  <view class='common-title flex'>
+    <view class='line'></view>
+    <view class='iconfont icon-pinglun'></view>
+    <view class='text'>评价</view>
+    <view class='line'></view>
+  </view>
+  <view class='evaluate-hot'>
+    <view class='hot-title'>宝贝评价({{replyCount}})</view>
+    <view class='infos-wrapper'>
+      <view class='user-info flex'>
+        <image class='avatar' src='{{reply.avatar}}'></image>
+        <text class='name'>{{reply.nickname}}</text>
+        <view class='start star{{reply.star}}'></view>
+      </view>
+      <view class='txt-msg'>{{reply.comment}}</view>
+      <view class='time-bar'>{{reply.add_time}}</view>
+    </view>
+    <view wx:if="{{reply.merchant_reply_content != ''}}">
+       <view>管理员回复：</view>
+      <view class='txt-msg'>{{reply.merchant_reply_content}}</view>
+      <view class='time-bar'>{{reply.merchant_reply_time}}</view>
+    </view>
+    <navigator wx:if="{{replyCount > 0}}" hover-class="none" url="/pages/comment/comment?productId={{storeInfo.id}}">查看全部评价</navigator>
+  </view>
+</view>
+<view class='content-wrapper'>
+  <view class='common-title flex'>
+    <view class='line'></view>
+    <view class='iconfont icon-tupian'></view>
+    <view class='text'>详情</view>
+    <view class='line'></view>
+  </view>
+  <template is="wxParse" data="{{wxParseData:description.nodes}}"/>
+</view>
+<view style='height:130rpx;'></view>
+<view class='foot flex'>
+  <view  class='fn-btns flex'>
+    <view class='item' bindtap='goPhone'>
+      <view class='iconfont icon-kefu'></view>
+      <text>客服</text>
+    </view>
+    <view class='item' bindtap='setCollect'>
+      <view class='iconfont icon-pingjia {{collect==true?"icon-xingxing":""}}'></view>
+      <text>收藏</text>
+    </view>
+    <view class='item' bindtap='getCar'>
+      <view class='iconfont icon-gouwuche'><span class='item-span'>{{CartCount}}</span></view>
+      <text>购物车</text>
+    </view>
+  </view>
+  <view class='btns-wrapper flex'>
+    <view class='buy-btn' bindtap='parameterShow'>加入购物车</view>
+    <view class='payment-btn' bindtap='goOrder'>确认下单</view>
+  </view>
+</view>
+<view class='poster-pop' wx:if="{{posterImageStatus}}">
+   <image src='/images/poster-close.png' class='close' bindtap='posterImageClose'></image>
+   <image src='{{posterImage}}'></image>
+   <view class='save-poster' bindtap='savePosterPath'>保存到手机</view>
+</view>
+<view class='mask' wx:if="{{posterImageStatus}}"></view>
+<canvas class="canvas" canvas-id='myCanvas' wx:if="{{canvasStatus}}"></canvas>
+<include src="/pages/home/home.wxml"/>
+<include src="/pages/foo-tan/foo-tan.wxml"/>  
+<import src="/wxParse/wxParse.wxml"/>

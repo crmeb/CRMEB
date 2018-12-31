@@ -1,0 +1,44 @@
+<view class="mycut-ul">
+    <block wx:for="{{product}}">
+        <view class='mycut-li'>
+            <view class='li-top flex'>
+              <image src='{{url}}{{item.image}}'></image>
+              <view class='top-text'>
+                  <view class='top-title line2'>{{item.title}}</view>
+                  <view class='top-time'><text>{{item.time.day}}</text>天<text>{{item.time.hou}}</text>时<text>{{item.time.min}}</text>分<text>{{item.time.sec}}</text>秒后结束</view>
+              </view>
+            </view>
+            <view class='li-center flex'>
+              <view class='center-money'>
+                  <view class='center-num'>{{item.bargain_price}}</view>
+                  <view class='center-flage'>原价</view>
+              </view>
+              <view class='center-money'>
+                  <view class='center-num'>{{item.bargain_price-item.price}}</view>
+                  <view class='center-flage'>当前价</view>
+              </view>
+              <view class='center-money'>
+                  <view class='center-num'>{{item.bargain_price_min}}</view>
+                  <view class='center-flage'>最低价</view>
+              </view>
+              <view class='center-money'>
+                  <view class='center-num'>{{item.helpCount}}</view>
+                  <view class='center-flage'>人帮砍</view>
+              </view>
+            </view>
+            <view class='li-bottom flex' wx:if="{{item.status == 1}}">
+                <view class='bottom-flag'>砍价状态：砍价进行中</view>
+                <view class='bottom-but' data-id="{{item.bargain_id}}"  bindtap='goCut'>继续砍价</view>
+            </view>
+            <view class='li-bottom flex' wx:if="{{item.status == 2}}">
+                <view class='bottom-flag bottom-on'>砍价状态：砍价失败</view>
+                <view class='bottom-but'data-id="{{item.bargain_id}}"  bindtap='goCut'>砍价失败</view>
+            </view>
+            <view class='li-bottom flex' wx:if="{{item.status == 3}}">
+                <view class='bottom-flag bottom-on'>砍价状态：砍价成功</view>
+                <view class='bottom-but' data-id="{{item.bargain_id}}"  bindtap='goCutList'>重砍一个</view>
+            </view>
+        </view>
+    </block>
+</view>
+<include src="/pages/home/home.wxml"/>

@@ -1,0 +1,39 @@
+<view class="head">
+  <input placeholder='输入订单号' value="{{search}}" confirm-type="search" bindconfirm="searchSubmit" bindinput="searchInput"></input>
+  <view class='iconfont icon-xiazai5'></view>
+</view>
+<view class='orders-list'>
+  <block wx:for="{{orderlist}}">
+    <view class='items'>
+      <view class='numbers'><text>订单号</text>：{{item.order_id}}</view>
+      <view class='pay-status flex'>
+        <view class='left-wrapper'>
+          <view class='status-txt'>状态: <text>{{item._status._msg}}</text></view>
+          <view class='all-price'>总价: <text>￥{{item.pay_price}}</text></view>
+        </view>
+        <navigator hover-class="none" url='/pages/refunding/refunding?id={{item.order_id}}' > 
+          <view class='right-wrapper'>
+            <view class='buypay'>查看详情</view>
+          </view>
+        </navigator> 
+      </view>
+      <view class='info-list'>
+        <block wx:for="{{item.cartInfo}}">
+          <view class='pro-item flex'>
+            <view class='wrapper flex'>
+              <image src='{{url}}{{item.productInfo.image}}'></image>
+              <view class='item-info flex'>
+                <view class='title'>{{item.productInfo.store_name}}</view>
+                <view class='res'>{{item.productInfo.store_name}}</view>
+                <view class='price' wx:if="{{item.productInfo.attrInfo}}"><text>￥</text>{{item.productInfo.attrInfo.price}}<text class='count'>X{{item.cart_num}}</text></view>
+                <view class='price' wx:else><text>￥</text>{{item.productInfo.price}}<text class='count'>X{{item.cart_num}}</text></view>
+              </view>
+            </view>  
+          </view>
+        </block>
+      </view>
+    </view>
+  </block>
+</view>
+
+

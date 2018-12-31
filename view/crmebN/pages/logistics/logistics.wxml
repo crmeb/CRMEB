@@ -1,0 +1,50 @@
+<view class="header flex">
+    <image src='/images/express_icon.jpg'></image>
+    <view class='header-text'>
+        <view class='header-flag'>物流状态
+        <text class='flag' wx:if="{{order.status>=2}}">已签收</text>
+        <text class='flag' wx:else>未签收</text>
+        
+        </view>
+        <view class='express'>物流公司：{{order.delivery_name}}</view>
+        <view class='header-number'>物流单号：{{order.delivery_id}}</view>
+    </view>
+</view>
+<view class='log-ul'>
+
+   <view class='log-li flex' wx:for="{{express.result.list}}">
+       <view class='log-yuan active'></view>
+       <view class='log-info active-line'>
+           <view class='active-text'>{{item.status}}</view>
+           <view class='log-time'>{{item.time}}</view>
+       </view>     
+   </view>
+ 
+  
+  
+ 
+   
+</view>
+<view class='log-title'>
+        <text class='title-line'></text>
+        <text class='title-text'><text class='iconfont icon-cainixihuan title-pic'></text>猜你喜欢</text>
+        <text class='title-line'></text>
+    </view>
+    <view class='log-like flex'>
+         <block wx:for="{{Arraylike}}">
+             <view class='like-list'>
+              <navigator url="/pages/product-con/index?id={{item.id}}" hover-class="none"    bindtap='details'>
+                           <image src='{{url}}{{item.image}}' class='list-images {{_num==1?"list-images2":""}}'></image>
+                      </navigator>
+                 <!-- <image src='{{url}}{{item.image}}' class='list-images'></image> -->
+                 <view class='list-text'>{{item.store_name}}</view>
+                 <view class='list-money flex'>
+                     <view>
+                        <view class='list-num'>已售{{item.sort}}</view>
+                        <view class='money-red'><text class='list-f'>￥</text><text class='money-num'>{{item.price}}</text><text class='list-tip'>精</text></view>
+                     </view>
+                     <view class='iconfont icon-102 list-gwc' data-id="{{item.id}}" bindtap='cart'></view>
+                 </view>
+             </view>
+         </block>
+    </view>

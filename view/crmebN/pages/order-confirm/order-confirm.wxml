@@ -1,0 +1,80 @@
+<view class='sh-address'>
+  <view class='iconfont icon-dizhi1'></view>
+  <view class='text-wrapper flex' bindtap='getAddress'>
+    <text wx:if="{{addressInfo.length < 1}}">添加收货地址</text>
+    <text wx:else>姓名：{{addressInfo.real_name}} {{addressInfo.phone}}
+    {{addressInfo.province}} {{addressInfo.city}}{{addressInfo.district}} {{addressInfo.detail}}
+    </text>
+  </view>
+</view>
+<view class='pro-list'>
+  <view class='common-title'>商品信息</view>
+  <view class='list-wrapper'>
+    <view class='wrapper'>
+      <view class='item flex' wx:for="{{cartInfo}}">
+        <image src='{{url}}{{item.productInfo.attrInfo.image}}' wx:if="{{item.productInfo.attrInfo}}"></image>
+        <image src='{{url}}{{item.productInfo.image}}' wx:else></image>
+        <view class='pro-info'>
+          <view class='title'>{{item.productInfo.store_name}}</view>
+          <view class='res' wx:if="{{item.productInfo.attrInfo}}">{{item.productInfo.attrInfo.suk}}</view>
+          <view class='price' wx:if="{{item.productInfo.attrInfo}}"><text>￥</text>{{item.productInfo.attrInfo.price}}<text class='count'>x{{item.cart_num}}</text></view>
+          <view class='price' wx:else><text>￥</text>{{item.productInfo.price}}<text class='count'>x{{item.cart_num}}</text></view>
+        </view>
+      </view>
+    </view>
+  </view>
+  <view class='text-wrapper'>
+    <view class='text-item flex'>
+      <text>运费</text>
+      <view class='select-btn'>快递<text>￥{{priceGroup.storePostage}}</text></view>
+    </view>
+    <view class='text-item flex' wx:if="{{!seckillId && !BargainId  && !combinationId}}">
+      <text>优惠券</text>
+      <view class='sale-btn' bindtap='getCoupon' wx:if="{{couponId}}">满{{couponInfo.use_min_price}}减{{couponInfo.coupon_price}}</view>
+      <view class='sale-btn' bindtap='getCoupon' wx:else>选择优惠券</view>
+    </view>
+    <view class='text-item flex inp-wrapper'>
+      <text>买家留言</text>
+      <view class='inp-btn'><input bindinput='bindHideKeyboard' value="" name="mark" placeholder='请填写自己需要注明的信息' ></input></view>
+    </view>
+  </view>
+  <view class='all-price'>
+    共{{cartInfo.length}}件商品   共计：<text>￥{{priceGroup.totalPrice}}</text>
+  </view>
+</view>
+<view class='payment-select'>
+  <view class='common-title'>支付方式</view>
+  <view class='warapper'>
+    <view class='item '>
+      <radio-group >
+          <label class='radio-wrapper'  wx:for="{{cartArr}}">
+              <view class='left-wrapper flex'><view class='iconfont {{item.icon}}'></view> {{item.name}}</view>
+              <radio value="{{index}}" wx:if="{{item.value == payType}}" checked='checked' bindtap="radioChange" data-value="{{item.value}}"></radio>
+              <radio value="{{index}}" wx:else bindtap="radioChange" data-value="{{item.value}}"></radio>
+              <!-- 其他布局代码 -->    
+          </label>   
+      </radio-group>
+      <!-- <view class='left-wrapper'>微信支付</view>
+      <view class='right-wrapper flex'>
+        <view class='checked-btn'>
+          <radio-group bindchange="radioChange" >
+            <label>
+                <radio value="{{index}}"></radio>
+                <view>{{item.name}}</view>
+                    
+            </label>   
+          </radio-group>
+        </view>
+      </view> -->
+    </view>
+  </view>
+</view>
+<view style='height:120rpx;'></view>
+<view class='foot flex'>
+  <view class='text'>
+    合计: <text class='price'>￥{{priceGroup.totalPrice}}{{couponPrice}}</text>
+  </view>
+  <form bindsubmit="subOrder" report-submit='true'>
+   <button class='submit-btn' formType="submit">立即结算</button>
+  </form>
+</view>

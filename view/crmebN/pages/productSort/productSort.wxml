@@ -1,0 +1,69 @@
+<view class='product'>
+    <view class='header flex'>
+       <form bindsubmit="searchSubmit" report-submit='true'>
+           <view class='header-input flex'>
+              <view class='iconfont icon-xiazai5 sou'></view>
+              <input type='text' placeholder='商品搜索: 请输入商品关键词' class='input-text' placeholder-class='placeholder' bindconfirm="searchSubmit" confirm-type='search' name="search"></input>
+           </view>
+       </form>
+       <view class='iconfont icon-gouwuche car' bindtap='goCart'></view>
+       <text class='num'>{{CartCount}}</text>
+    </view>
+    <view class='nav flex'>
+       <view data-act='4' class='nav-li nav-total {{active==0?"nav-active":""}}' bindtap='sort'><view class='total'>{{total}}</view><text class='iconfont icon-xialajiantou nav-iconx'></text></view>
+       <view data-act='1' class='nav-li {{active==1?"nav-active":""}}' bindtap='navactive'>价格
+       <text class='iconfont icon-xiaosanjiaoxing01 sort-s' ></text>
+       <text class='iconfont icon-xiaosanjiaoxing02 sort-x' ></text></view>
+       <view data-act='2' class='nav-li {{active==2?"nav-active":""}}' bindtap='navactive1'>销量
+       <text class='iconfont icon-xiaosanjiaoxing01 sort-s' ></text>
+       <text class='iconfont icon-xiaosanjiaoxing02 sort-x' ></text></view>
+       <view data-act='3' class='nav-li {{active==3?"nav-active":""}}' bindtap='navactive2'>新品</view>
+       <view data-num='{{num}}' class='nav-li iconfont  icon-chanpin nav-tap {{_num==1?"icon-chanpin1":""}}' bindtap='product'></view>
+    </view>
+</view>
+<view class='productSort flex'>
+         <block wx:for="{{Arraylike}}"  >
+         
+             <view class='productSort-list {{_num==1?"productSort-list2":""}}'>
+                      <navigator url="/pages/product-con/index?id={{item.id}}" hover-class="none"    bindtap='details'>
+                           <image src='{{url}}{{item.image}}' class='list-images {{_num==1?"list-images2":""}}'></image>
+                      </navigator>
+                 <view>
+                      <view class='list-text {{_num==1?"list-text2":""}}'>{{item.store_name}}</view>
+                 <view class='list-money flex'>
+                     <view>
+                        <view class='list-num {{_num==1?"list-num2":""}}'>已售{{item.ficti+item.sales}}</view>
+                        <view class='money-red'><text class='list-f'>￥</text><text class='money-num'>{{item.price}}</text><text class='list-oo'></text><text class='list-tip'>精</text></view>
+                     </view>
+                      <view class='iconfont icon-102 list-gwc {{_num==1?"list-gwc2":""}}' data-id="{{item.id}}" bindtap='cart' ></view> 
+                 </view>
+                 </view>
+             </view>
+        
+         </block>
+    </view>
+     <view class='nav-down' hidden='{{hiddendown}}'>
+        <view class='down-title' bindtap='allproduct'>全部商品<text class='iconfont {{taber=="-1"?"icon-duihao sortd":""}}'></text></view>
+        <view class='flex'>
+            <view class='down-yi'>
+                <block wx:for="{{sortyi}}"  >
+                    <view data-idx="{{item.id}}" class='yi-sort {{currentTab==item.id?"sorton":""}}' bindtap='itemdown'>{{item.cate_name}}</view>
+                </block>
+            </view>
+        </view>
+        <view animation="{{animationData}}" class='down-er'>
+            <block wx:for="{{sorter}}">
+              <view class='downs-title' data-ider='{{item.id}}'  bindtap='wholeproduct' wx:if="{{!item.pid}}">
+                {{item.cate_name}}
+                <text class='iconfont {{taber==item.id?"icon-duihao sortd":""}}'></text>
+              </view>
+              <view data-ider='{{item.id}}' class='er-sort' bindtap='itemdowner' wx:if="{{item.pid}}">
+                {{item.cate_name}}
+                <text class='iconfont {{taber==item.id?"icon-duihao sortd":""}}'></text>
+              </view>
+            </block>
+        </view> 
+    </view>
+     <include src="/pages/foo-tan/foo-tan.wxml"/>  
+    <view class='mask' hidden='{{hiddendown}}' bindtap='maskhide' catchtouchmove='touchmove'></view> 
+   

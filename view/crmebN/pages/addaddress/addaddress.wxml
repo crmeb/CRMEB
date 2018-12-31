@@ -1,0 +1,20 @@
+<form bindsubmit="formSubmit">
+        <view class='information'>
+            <view class='information-li flex'><label>姓名</label><input type='text' placeholder='请输入姓名' placeholder-class='placeholder' name="name" value='{{userAddress.real_name}}'/></view>
+            <view class='information-li flex'><label>联系电话</label><input type='number' placeholder-class='placeholder' placeholder='请输入联系电话' name="phone" value='{{userAddress.phone}}'></input></view>
+            <view class='information-li flex'>
+                <label class='area'>所在地区</label>
+                <picker mode="region" bindchange="bindRegionChange" value="{{region}}" custom-item="{{customItem}}">
+                    <text class='areas' data-text="C">{{region[0]}}，{{region[1]}}，{{region[2]}}</text>
+                    <text class='iconfont icon-dizhi map'></text>
+                </picker>
+            </view>
+            <view class='information-li flex'><label>详细地址</label><input type='text' placeholder-class='placeholder' placeholder='请填写具体地址' name="fulladdress" value='{{userAddress.detail}}'></input></view>
+        </view>
+        <view class='default' bindtap='defaulttap'>
+            <text class='iconfont icon-duihao1 duihao {{_num==0?"active":""}}'></text>
+            设置为默认地址
+        </view>
+      <button class='but' formType="submit">立即保存</button>
+</form>
+    

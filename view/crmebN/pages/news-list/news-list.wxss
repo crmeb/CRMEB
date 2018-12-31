@@ -1,0 +1,17 @@
+.news-list{padding: 0 20rpx;}
+.news-list .news-item{margin-top: 20rpx; padding: 0 20rpx 20rpx; background-color: #fff;}
+.news-list .news-item .title-bar{height: 94rpx; border-bottom:1px dashed #e5e5e5; justify-content:space-between; align-items: center;}
+.news-list .news-item .title-bar .time{color: #ccc; font-size: 24rpx;}
+.con-wrapper{padding-top: 18rpx;}
+.news-list .news-item .title-bar .see{align-items:center;}
+.news-list .news-item .title-bar .see .spot{width:12rpx;height:12rpx;border-radius:50%;background-color:red;margin-right:16rpx;}
+.con-wrapper .con-title{font-size: 26rpx;}
+.con-wrapper .con-box{margin-top: 12rpx; color: #999; font-size: 24rpx; display: -webkit-box; display:-moz-box; display:box;-webkit-box-orient: vertical; -moz-box-orient: vertical; -webkit-line-clamp: 2;-moz-line-clamp: 2;overflow: hidden;}
+.look{margin-top: 15rpx; text-align: right; font-size: 22rpx; color: #ff7000;}
+.news-item.cur .con-wrapper .con-box{-webkit-line-clamp: inherit;-moz-line-clamp: inherit;}
+.news-item.cur .look{color: #1cb0fc;}
+.loading{text-align:center;font-size:30rpx;}
+
+
+
+

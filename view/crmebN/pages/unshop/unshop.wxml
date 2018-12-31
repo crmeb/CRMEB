@@ -1,0 +1,26 @@
+<view class='unshop'>
+    <view class='header'>
+        <image src='/images/unshop.jpg' class='header-images'></image>
+        <view class='header-tip'>商品过期不存在</view>
+    </view>
+    <view class='unshop-title'>
+        <text class='title-line'></text>
+        <text class='title-text'><text class='iconfont icon-cainixihuan title-pic'></text>猜你喜欢</text>
+        <text class='title-line'></text>
+    </view>
+    <view class='unshop-like flex'>
+         <block wx:for="{{Arraylike}}">
+             <view class='like-list'>
+                 <image src='{{item.images}}' class='list-images'></image>
+                 <view class='list-text'>{{item.conter}}</view>
+                 <view class='list-money flex'>
+                     <view>
+                        <view class='list-num'>已售{{item.num}}</view>
+                        <view class='money-red'><text class='list-f'>￥</text><text class='money-num'>{{item.money}}</text><text class='list-tip'>精</text></view>
+                     </view>
+                     <view class='iconfont icon-102 list-gwc'></view>
+                 </view>
+             </view>
+         </block>
+    </view>
+</view>

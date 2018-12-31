@@ -1,0 +1,30 @@
+<view class='header flex'>
+  <text class='text'>我的积分</text>
+  <view class='count'>{{userInfo.integral}}</view>
+  <navigator hover-class='none' url="/pages/index/index" open-type='switchTab'>获取积分</navigator>
+</view>
+<view class='details-list'>
+  <view class='title'><text>积分明细</text></view>
+  <view class='list-wrapper'>
+   <block wx:for="{{integralInfo}}">
+    <view class='list-item flex expenditure' wx:if="{{item.pm == 1}}">
+      <view class='left-wrapper'>
+        <view class='order-num'>{{item.mark}}</view>
+        <view class='time-bar'>{{item.add_time}}</view>
+      </view> 
+      <view class='right-wrapper'>
+        <text class='status-txt'>+{{item.number}}</text>积分
+      </view>
+    </view>
+    <view class='list-item flex' wx:else>
+      <view class='left-wrapper'>
+        <view class='order-num'>{{item.mark}}</view>
+        <view class='time-bar'>{{item.add_time}}</view>
+      </view> 
+      <view class='right-wrapper'>
+        <text class='status-txt'>-{{item.number}}</text>积分
+      </view>
+    </view>
+   </block>
+  </view>
+</view>

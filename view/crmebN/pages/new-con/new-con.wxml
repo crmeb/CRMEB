@@ -1,0 +1,15 @@
+<view class='new-con'>
+  <view class='title-wrapper'>
+    <view class='title-box'>
+      <text>{{newContent.title}}</text>
+      <text class='line'></text>
+    </view>
+    <view class='time-box'>
+      <text>时间：{{newContent.add_time}}</text> <text>浏览量：{{newContent.visit}}</text> 
+    </view>
+  </view>
+  <view class='content-box'>
+    <template is="wxParse" data="{{wxParseData:content.nodes}}"/>
+  </view>
+</view>
+<import src="/wxParse/wxParse.wxml"/>

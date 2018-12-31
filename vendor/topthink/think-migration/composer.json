@@ -1,0 +1,22 @@
+{
+  "name": "topthink/think-migration",
+  "authors": [
+    {
+      "name": "yunwuxin",
+      "email": "448901948@qq.com"
+    }
+  ],
+  "license": "Apache-2.0",
+  "autoload": {
+    "psr-4": {
+      "Phinx\\": "phinx/src/Phinx",
+      "think\\migration\\": "src"
+    },
+    "files": [
+      "src/config.php"
+    ]
+  },
+  "require-dev": {
+    "topthink/framework": "^5.0"
+  }
+}

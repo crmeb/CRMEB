@@ -1,0 +1,104 @@
+<view class='swiper_banner'>
+  <swiper class="swiper-box" indicator-dots="{{indicatorDots}}" autoplay="{{autoplay}}" interval="{{interval}}" duration="{{duration}}" indicator-color="{{indicatorColor}}" indicator-active-color="{{indicatorActivecolor}}">
+    <block wx:for="{{SeckillList.images}}">
+      <swiper-item>
+        <image src="{{url}}{{item}}" class="slide-image"/>
+      </swiper-item>
+    </block>
+  </swiper>
+</view>
+<view class='countdown-wrapper flex'>
+  <view class='price-txt flex'>
+    <view class='number'><text>￥</text>{{SeckillList.price}}</view>
+    <view class='old-number'>￥{{SeckillList.ot_price}}</view>
+  </view>
+  <view class='right-wrapper flex'>
+    <view class='title'>距秒杀结束仅剩</view>
+    <view class='countdown-time'>
+       <text>{{countDownHour}}</text>：<text>{{countDownMinute}}</text>：<text>{{countDownSecond}}</text>
+    </view>
+  </view>
+</view>
+<view class='pro-wrapper'>
+  <view class='pro-infos'>
+    <view class='title'>{{SeckillList.title}}</view>
+    <view class='count-wrapper flex'>
+      <view>原价:￥{{SeckillList.ot_price}}</view>
+      <view>库存:{{SeckillList.stock}}{{SeckillList.unit_name}}</view>
+      <view>销量:{{SeckillList.sales}}{{SeckillList.unit_name}}</view>
+    </view>
+  </view>
+  <!-- <view class='block-bar' bindtap='goCoupon'>
+    <text class='title'>领券</text>
+    <text>领取优惠券 </text>
+  </view> -->
+  <!-- <view class='block-bar integral'>
+    <text class='title'>积分</text>
+    <text>购买可获得{{SeckillList.give_integral}}积分</text>
+  </view> -->
+</view>
+
+<view class='evaluate-wrapper' wx:if="{{replyCount > 0}}">
+  <view class='common-title flex'>
+    <view class='line'></view>
+    <view class='iconfont icon-pinglun'></view>
+    <view class='text'>评价</view>
+    <view class='line'></view>
+  </view>
+  <view class='evaluate-hot' >
+    <view class='hot-title'>宝贝评价({{replyCount}})</view>
+    <view class='infos-wrapper'>
+      <view class='user-info flex'>
+        <image class='avatar' src='{{url}}{{reply.avatar}}'></image>
+        <text class='name'>{{reply.nickname}}</text>
+        <view class='start star{{reply.star}}'></view>
+      </view>
+      <view class='txt-msg'>{{reply.comment}}</view>
+      <view class='time-bar'>{{reply.add_time}}</view>
+    </view>
+    <navigator wx:if="{{replyCount > 0}}" hover-class="none" url="/pages/comment/comment?productId={{SeckillList.product_id}}">查看全部评价</navigator>
+  </view>
+</view>
+<view class='content-wrapper'>
+  <view class='common-title flex'>
+    <view class='line'></view>
+    <view class='iconfont icon-tupian'></view>
+    <view class='text'>详情</view>
+    <view class='line'></view>
+  </view>
+   <template is="wxParse" data="{{wxParseData:description.nodes}}"/>
+</view>
+<view style='height:130rpx;'></view>
+<view class='foot flex'>
+  <view  class='fn-btns flex'>
+    <button open-type="contact" class='contact-but'>
+      <view class='item contact-but'>
+      <view class='iconfont icon-kefu'></view>
+      <text>客服</text>
+      </view>
+    </button>
+    <view class='item' bindtap='getCar'>
+      <view class='iconfont icon-gouwuche'><span class='item-span'>{{CartCount}}</span></view>
+      <text>购物车</text>
+    </view>
+  </view>
+   <view class='btns-wrapper flex'> 
+     <form class="form-btn" bindsubmit="parameterShow" report-submit='true'> 
+      <button class='payment-btn' form-type='submit'>确认下单</button>  
+    </form> 
+       <!-- <view class='foot-wrapper' bindtap='subBuy'>确定</view>  -->
+   </view> 
+</view>
+
+<movable-area class='index-con' >
+  <movable-view class='index-area' direction="all">
+      <navigator url='/pages/index/index' hover-class='none' open-type = "switchTab" >
+      <image src='/images/home.png'></image>
+      </navigator>
+  </movable-view>
+</movable-area>
+
+<include src="/pages/foo-tan/foo-tan.wxml"/>  
+<import src="/wxParse/wxParse.wxml"/>
+ 
+

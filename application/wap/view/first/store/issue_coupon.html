@@ -1,0 +1,83 @@
+{extend name="public/container"}
+{block name="title"}领取优惠劵{/block}
+{block name="content"}
+<div class="discount-list" >
+    <section>
+        <header class="flex coupon-menu" style="z-index: 999;">
+            <a class="item on" data-type="" href="javascript:void(0);">全部</a>
+            <a class="item" data-type="new" href="javascript:void(0);">未领取</a>
+            <a class="item" data-type="overdug" href="javascript:void(0);">已领取</a>
+        </header>
+        <div class="list-box" style="margin-bottom: .3rem;">
+            {empty name="lists"}
+            <div class="empty">
+                <img src="{__WAP_PATH}crmeb/images/empty_coupon.png">
+                <p>暂无有效优惠券</p>
+            </div>
+            {else/}
+            <ul>
+                {volist name="lists" id="vo"}
+                {eq name="vo.is_get" value="1"}
+                <li class="coupon-item overdug">
+                    <div class="txt-info">
+                        <div class="con-cell">
+                            <p>满{$vo.use_min_price|floatval}元可用现金券</p>
+                        </div>
+                    </div>
+                    <div class="price">
+                        <span>￥</span>{$vo.coupon_price|floatval}
+                        <p><a href="javascript:void(0);">已领取</a></p>
+                    </div>
+                </li>
+                {else/}
+                <li class="coupon-item new">
+                    <div class="txt-info">
+                        <div class="con-cell">
+                            <p>满{$vo.use_min_price|floatval}元可用现金券</p>
+                        </div>
+                    </div>
+                    <div class="price">
+                        <span>￥</span>{$vo.coupon_price|floatval}
+                        <p><a class="j-issue-coupon" data-id="{$vo.id}" href="javascript:void(0);">领取</a></p>
+                    </div>
+                </li>
+                {/eq}
+                {/volist}
+            </ul>
+            {/empty}
+        </div>
+    </section>
+</div>
+<script>
+    (function(){
+        $('.coupon-menu .item').on('click',function(){
+            var that = $(this),type = that.data('type');
+            $('.list-box .coupon-item').hide();
+            type != '' ? $('.list-box .coupon-item.'+type).show() : $('.list-box .coupon-item').show();
+            that.addClass('on').siblings().removeClass('on');
+        });
+        requirejs(['store','helper'],function(storeApi,$h){
+            var gettingCoupon = false;
+            $('.j-issue-coupon').on('click',function(){
+                if(gettingCoupon) return ;
+                gettingCoupon = true;
+                var that = $(this),id = that.data('id');
+                storeApi.goLogin() && storeApi.userGetCoupon(id,function(){
+                    $h.pushMsgOnce('领取成功!');
+                    that.text('已领取');
+                    that.parents('li').removeClass('new').addClass('overdug');
+                    setTimeout(function(){
+                        gettingCoupon = false;
+                    },300);
+                },function(){
+                    setTimeout(function(){
+                        gettingCoupon = false;
+                    },300);
+                    return true;
+                });
+            });
+        });
+
+    })();
+</script>
+{/block}

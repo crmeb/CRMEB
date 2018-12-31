@@ -1,0 +1,257 @@
+{extend name="public/container"}
+{block name="head_top"}
+<script type="text/javascript" src="{__PLUG_PATH}jquery.downCount.js"></script>
+<script type="text/javascript" src="{__WAP_PATH}crmeb/js/car-model.js"></script>
+<style>
+    .pk-box .pt-info .pt-state .pt-state-info{width: initial;  text-align: center;}
+</style>
+{/block}
+{block name="title"}{$store_combination.title}{/block}
+{block name="content"}
+<body style="background-color:#f5f5f5;">
+    <!-- 拼客 -->
+    <section class="pk-box" id="store_detail">
+        <div class="comfirm-wrapper">
+            <ul class="product_list">
+                <li>
+                    <div class="goods-img pk-list-img"><img src="{$store_combination.image}"></div>
+                    <div class="goods-info pk-list-info">
+                        <div class="goods-detail">
+                            <p class="name">{$store_combination.title}</p>
+                            <p class="pk-list-all"><em>{$pinkT.people}</em>人团·已团<em>{$store_combination.sales}</em>件</p>
+                            <p class="carnum pk-list-carnum">
+                                <span class="price">￥<em>{$pinkT.price}</em><span class="discount">拼团劲省<i><?php echo floatval($store_combination['product_price']-$pinkT['price']);?></i>元</span></span>
+                            </p>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+        <!-- 拼客人数 -->
+        <div class="pk-number">
+            <div class="pk-number-box">
+                <ul>
+                    <li>
+                        <img src="{$pinkT.avatar}"/>
+                        <div class="name">团长</div>
+                    </li>
+                    {volist name="pinkAll" id="vo"}
+                        <li><img src="{$vo.avatar}"/></li>
+                    {/volist}
+                    <?php for ($i=1;$i<=$count;$i++){?>
+                        <li class="unknown"></li>
+                    <?php }?>
+                </ul>
+            </div>
+            <div class="pk-number-con">
+                    {if condition="$pinkBool eq 1 && $userBool"}
+                        <div class="pk-buy"><a href="{:Url('orderPinkOld',['uni'=>$current_pink_order])}">查看订单</a></div>
+                        <div class="pt-info">
+                                <div class="pt-state pt-success">
+                                    <div class="pt-state-info">拼团成功</div>
+                                    <span>商家正在努力发货，请耐心等待</span>
+                                </div>
+                        </div>
+                    {elseif condition="$pinkBool eq 1 && !$userBool"}
+                        <div class="pk-buy"><a href="{:Url('store/combination')}">返回拼团列表</a></div>
+                        <div class="pt-info">
+                            <div class="pt-state pt-success">
+                                <div class="pt-state-info">拼团已完成</div>
+                                <span>请您参加别的拼团</span>
+                            </div>
+                        </div>
+                    {elseif condition="$pinkBool eq 2 && $userBool"}
+                        <div class="pk-buy"><a href="{:Url('orderPinkOld',['uni'=>$current_pink_order])}">查看订单</a></div>
+                        <div class="pt-info">
+                            <div class="pt-state pt-error">
+                                <div class="pt-state-info">拼团时间已到</div>
+                                <span>退款中</span>
+                            </div>
+                        </div>
+                    {elseif condition="$pinkBool eq 3"}
+                        <div class="pk-buy"><a href="{:Url('store/combination')}">返回拼团列表</a></div>
+                        <div class="pt-info">
+                            <div class="pt-state pt-error">
+                                <div class="pt-state-info">拼团已结束</div>
+                                <span>请您参加别的拼团</span>
+                            </div>
+                        </div>
+                    {elseif condition="$pinkBool eq 6"}
+                        <div class="pk-buy"><a href="{:Url('store/combination')}">返回拼团列表</a></div>
+                        <div class="pt-info">
+                            <div class="pt-state pt-error">
+                                <div class="pt-state-info">拼团人数已满</div>
+                                <span>等待订单状态</span>
+                            </div>
+                        </div>
+                    {elseif condition="$pinkBool eq 2 && !$userBool"}
+                        <div class="pk-buy"><a href="{:Url('store/combination')}">返回拼团列表</a></div>
+                        <div class="pt-info">
+                            <div class="pt-state pt-error">
+                                <div class="pt-state-info">拼团已结束</div>
+                                <span>请您参加别的拼团</span>
+                            </div>
+                        </div>
+                    {elseif condition="!$pinkBool && !$userBool"}
+                            <div class="pk-number-con-number">仅剩<em>{$count}</em>个名额</div>
+                            <div class="pk-number-con-time" v-pre>
+                                剩余
+                                <div style="height: .1rem"></div>
+                                <div class="count-time" data-time="{$pinkT.stop_time|date='Y/m/d H:i:s',###}">
+                                    <span class="hours">00</span>
+                                    :
+                                    <span class="minutes">00</span>
+                                    :
+                                    <span class="seconds">00</span>
+                                </div>
+                            </div>
+                            <div class="pk-buy"><a href="javascript:void(0);" @click="goBuy" >一键参团</a></div>
+                            <div class="pt-info">
+                            <div class="pt-state pt-success">
+                                <div class="pt-state-info">正在拼团中...</div>
+<!--                                <span>参加拼团</span>-->
+                            </div>
+                        </div>
+                    {elseif condition="!$pinkBool && $userBool"}
+                            <div class="pk-number-con-number">仅剩<em>{$count}</em>个名额</div>
+                            <div class="pk-number-con-time" v-pre>
+                                剩余
+                                <div style="height: .1rem"></div>
+                                <div class="count-time" data-time="{$pinkT.stop_time|date='Y/m/d H:i:s',###}">
+                                    <span class="hours">00</span>
+                                    :
+                                    <span class="minutes">00</span>
+                                    :
+                                    <span class="seconds">00</span>
+                                </div>
+                            </div>
+                            <div class="pk-buy shares-btn" @click="sharesBtn"><a href="javascript:void(0);">邀请好友</a></div>
+                            <div class="shares-model" style="display: none;"><img style="position: fixed;left: 0;top: 0;width: 100%;height: 100%;" src="{__WAP_PATH}crmeb/images/share-info.png"></div>
+                            <div class="pt-info">
+                            <div class="pt-state pt-success">
+                                <div class="pt-state-info">正在拼团中...</div>
+                                <span></span>
+                            </div>
+                        </div>
+                    {/if}
+            </div>
+        </div>
+        <div class="model-bg"></div>
+        <div class="template-pro-list">
+            <div class="pro-title like-title"><i class="like-line"></i><span>你可能还喜欢</span><i class="like-line right"></i></div>
+            <div class="item-box">
+                <ul class="flex">
+                    {volist name="store_combination_host" id="vo"}
+                        <li>
+                            <a href="{:Url('Store/combination_detail',array('id'=>$vo['id']))}">
+                                <div class="picture"><img src="{$vo.image}" /></div>
+                                <div class="pro-content">
+                                    <div class="pro-name">{$vo.title}</div>
+                                    <div class="pro-infos">
+                                        <span class="price">￥{$vo.price}</span>
+                                        <span class="count fr">已拼{$vo.sales}单</span>
+                                    </div>
+                                </div>
+                            </a>
+                        </li>
+                    {/volist}
+                </ul>
+            </div>
+        </div>
+    </section>
+    <script>
+        $(document).ready(function() {
+            $('.shares-btn').on('click', function(){
+                $('.shares-model').css('display', 'block');
+                $('.shares-model').on('click' , function(){
+                    $(this).css('display', 'none');
+                });
+            });
+            $('.shares-model').on('touchmove',function(e){
+                e.preventDefault();
+            })
+            $('.count-time').downCount({
+                date: $('.count-time').attr('data-time'),
+                offset: +8
+            });
+        });
+    </script>
+    <script type="text/javascript">
+        window.$product = <?php unset($storeInfo['description']); echo json_encode($storeInfo);?>;
+        window.$pinkT = <?php echo json_encode($pinkT);?>;
+        (function ($) {
+            requirejs(['vue', 'axios', 'helper', 'store'], function (Vue, axios, $h, storeApi){
+                new Vue({
+                    el: "#store_detail",
+                    data: {
+                        product: $product,
+                        pinkT: $pinkT,
+                        productValue: {},
+                        productCardInfo: {},
+                        status: {like: false, collect: false},
+                        cartNum: 1
+                    },
+                    methods: {
+                        sharesBtn:function () {
+                            $('.shares-model').css('display', 'block');
+                            $('.shares-model').on('click' , function(){
+                                $(this).css('display', 'none');
+                            });
+                        },
+                        goBuy: function () {
+                            that = this;
+                            storeApi.goBuy({
+                                cartNum: that.cartNum,
+                                productId: this.product.product_id,
+                                combinationId: this.product.id
+                            }, function (cartId) {
+                                location.href = $h.U({
+                                    c: 'store',
+                                    a: 'combination_order',
+                                    q: 'cartId='+cartId+'&pinkId='+that.pinkT.id
+                                });
+                            });
+                        },
+                        setProductCardInfo: function (info) {
+                            info || (info = {});
+                            this.$set(this, 'productCardInfo', {
+                                image: info.image !== undefined ? info.image : this.product.image,
+                                price: info.price !== undefined ? info.price : this.product.price,
+                                stock: info.stock !== undefined ? info.stock : this.product.stock
+                            });
+                        },
+                        pushMsg: function (msg, fn) {
+                            $h.pushMsg(msg, fn)
+                        },
+                        init: function () {
+                            $('.count-time').downCount({
+                                date: $('.count-time').attr('data-time'),
+                                offset: +8
+                            });
+                        },
+                        getCartNum: function () {
+                            var that = this;
+                            storeApi.getCartNum(function (cartNum) {
+                                that.cartNum = cartNum;
+                            });
+                        }
+                    },
+                    mounted: function () {
+                        var wxApi = mapleWx($jssdk(), function () {
+                            this.onMenuShareAll({
+                                title: $product.store_name,
+                                desc: $product.store_name,
+                                imgUrl: location.origin + $product.image,
+                                link: location.href
+                            });
+                        });
+                        this.getCartNum();
+                        this.init();
+                        this.setProductCardInfo();
+                    }
+                });
+            });
+        })($);
+    </script>
+</body>
+{/block}

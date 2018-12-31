@@ -1,0 +1,32 @@
+<view class='miao-list'>
+   <view class='header'>
+   <image src='{{url}}{{lovely.img}}'></image>
+   </view>
+   <view class='list-ul'>
+      <block wx:for="{{Arraylist}}" wx:index="{{item}}">
+          <view class='list-li flex' data-id="{{item.id}}" bindtap='toProduct'>
+              <view class='list-pos'>
+                 <image src='{{url}}{{item.image}}' class='list-pic'></image>
+                 <view class="list-time-top">
+                      <view class='list-time'>
+                            <text>{{item.time.hou}}</text>:
+                            <text>{{item.time.min}}</text>:
+                            <text>{{item.time.sec}}</text>
+                      </view>
+                 </view>
+              </view>
+              <view class='list-text'>
+                <view class='text-text'>{{item.title}}</view>
+                <view class='flex list-left'>
+                    <view>
+                        <view class='text-money'>￥<text class='text-num'>{{item.price}}</text><text class='text-money2'>￥{{item.price}}</text></view>
+                        <view class='text-b'>已抢{{item.sales}}{{item.unit_name}}<text class='text-tiao'><text class='tiao-red'></text></text></view>
+                    </view>
+                    <view class='text-but' hover-class='none'>马上抢</view>
+                </view>
+              </view>
+          </view>
+      </block>
+   </view>
+</view>
+<include src="/pages/home/home.wxml"/>

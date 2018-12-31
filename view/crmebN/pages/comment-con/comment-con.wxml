@@ -1,0 +1,60 @@
+<view class="commcon">
+    <view class='commcon-header flex'>
+       <view class='commcon-pic'><image src='{{url}}{{ordercon.cart_info.productInfo.image}}'></image></view>
+       <view class='commcon-con flex'>
+          <view class='commcon-name'>{{ordercon.cart_info.productInfo.store_name}}</view>
+          <view class='commcon-text'>{{ordercon.cart_info.productInfo.store_name}}</view>
+          <view class='commcon-money'><text>￥</text>{{ordercon.cart_info.productInfo.price}}<text></text><text class='commcon-num'>x{{ordercon.cart_info.cart_num}}</text></view>
+       </view>
+    </view>
+  <form bindsubmit="formSubmit">
+    <view class='commcon-ping'>
+        <textarea placeholder='宝贝满足你的期待么？说说你的想法，分享给想买的他们吧~' placeholder-class='placeholder' name = 'comment'></textarea>
+        <view class='imgul'>
+            <block wx:for="{{dataimg}}">
+               <view class='imgpic'>
+               <image src='{{item.data.url}}' class='dataimg'></image>
+               <icon class='iconfont icon-guanbi guanbi' data-id='{{index}}' bindtap='delImages'></icon>
+               </view>
+            </block>
+            <view class='upimg' bindtap='uploadpic' hidden='{{hidden}}'></view>
+        </view>
+    </view>
+    <view class='commcon-ul flex'>
+       <view class='commcon-li flex'>
+           <text class='li-lien'>商品质量</text>
+           <view class='commconxing li-lien'>
+              <icon bindtap='tapxing' data-index='1' class='iconfont icon-pingjia {{xing>=1?"icon-xingxing1":""}}'></icon>
+              <icon bindtap='tapxing' data-index='2' class='iconfont icon-pingjia {{xing>=2?"icon-xingxing1":""}}'></icon>
+              <icon bindtap='tapxing' data-index='3' class='iconfont icon-pingjia {{xing>=3?"icon-xingxing1":""}}'></icon>
+              <icon bindtap='tapxing' data-index='4' class='iconfont icon-pingjia {{xing>=4?"icon-xingxing1":""}}'></icon>
+              <icon bindtap='tapxing' data-index='5' class='iconfont icon-pingjia {{xing>=5?"icon-xingxing1":""}}'></icon>
+           </view>
+           <text class='li-lien li-lien3' hidden='{{xinghidden}}'>{{xing}}分</text>
+       </view>
+        <view class='commcon-li flex'>
+           <text class='li-lien'>服务态度</text>
+           <view class='commconxing li-lien'>
+              <icon bindtap='tapxing2' data-index='1' class='iconfont icon-pingjia {{xing2>=1?"icon-xingxing1":""}}'></icon>
+              <icon bindtap='tapxing2' data-index='2' class='iconfont icon-pingjia {{xing2>=2?"icon-xingxing1":""}}'></icon>
+              <icon bindtap='tapxing2' data-index='3' class='iconfont icon-pingjia {{xing2>=3?"icon-xingxing1":""}}'></icon>
+              <icon bindtap='tapxing2' data-index='4' class='iconfont icon-pingjia {{xing2>=4?"icon-xingxing1":""}}'></icon>
+              <icon bindtap='tapxing2' data-index='5' class='iconfont icon-pingjia {{xing2>=5?"icon-xingxing1":""}}'></icon>
+           </view>
+           <text class='li-lien li-lien3' hidden='{{xinghidden2}}'>{{xing2}}分</text>
+       </view>
+       <!-- <view class='commcon-li flex'>
+           <text class='li-lien'>物流服务</text>
+          <view class='commconxing li-lien'>
+              <icon bindtap='tapxing3' data-index='1' class='iconfont icon-pingjia {{xing3>=1?"icon-xingxing1":""}}'></icon>
+              <icon bindtap='tapxing3' data-index='2' class='iconfont icon-pingjia {{xing3>=2?"icon-xingxing1":""}}'></icon>
+              <icon bindtap='tapxing3' data-index='3' class='iconfont icon-pingjia {{xing3>=3?"icon-xingxing1":""}}'></icon>
+              <icon bindtap='tapxing3' data-index='4' class='iconfont icon-pingjia {{xing3>=4?"icon-xingxing1":""}}'></icon>
+              <icon bindtap='tapxing3' data-index='5' class='iconfont icon-pingjia {{xing3>=5?"icon-xingxing1":""}}'></icon>
+           </view>
+           <text class='li-lien li-lien3' hidden='{{xinghidden3}}'>{{xing3}}分</text>
+       </view>  -->
+    </view>
+    <button class='commcon-btn' formType="submit">发布评论</button>
+  </form>
+</view>

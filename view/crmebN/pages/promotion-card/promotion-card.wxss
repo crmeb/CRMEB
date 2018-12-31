@@ -1,0 +1,14 @@
+page{
+    background: linear-gradient(top,#ff3d3d 0%,#ff3d3d 100%);
+    background: -webkit-linear-gradient(top, #ff3d3d 0%,#ff3d3d 100%);
+    background: -moz-linear-gradient(top,#ff3d3d 0%,#ff3d3d 100%);
+}
+.promotion-card .title{align-items:center;justify-content:center;color:#fff;margin:108rpx 0 60rpx 0;font-size:36rpx;}
+.promotion-card .title .line{width:166rpx;height:2rpx;background-color:#fff;}
+.promotion-card .title .name{margin:0 30rpx;}
+.promotion-card .white-bg{background-color:#fff;margin:0 53rpx;border-radius:20rpx;text-align:center;padding-bottom:64rpx;}
+.promotion-card .white-bg .pic{width:171rpx;height:171rpx;border-radius:50%;margin-top:63rpx;}
+.promotion-card .white-bg .white-name{font-size:32rpx;color:#333333;margin-top:26rpx;}
+.promotion-card .white-bg .ewm{width:363rpx;height:363rpx;margin:67rpx auto 0 auto;}
+.promotion-card .white-bg .ewm image{width:100%;height:100%;}
+.promotion-card .white-bg .tip{font-size:26rpx;color:#999999;margin-top:51rpx;}

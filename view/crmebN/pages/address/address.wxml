@@ -1,0 +1,26 @@
+<view class="header"></view>
+<view class='address_ul'>
+    <block wx:for="{{addressArray}}">
+        <view class='address_li'>
+             <view class='addressx' data-id="{{item.id}}" bindtap='goOrder'>
+                  <view class='addressName'>收货人：{{item.real_name}}<text class='addressphone'>{{item.phone}}</text></view>
+                 <view class='addressLock'>收货地址：{{item.province}}{{item.city}}{{item.district}}{{item.detail}}</view>
+            </view>
+            <view class='addressc flex'>
+               <view data-idx='{{item.id}}' class='Maddress' bindtap='activetap' >
+                     <text class='iconfont icon-duihao1 Choice {{_num==item.id?"active":""}}' data-idx='{{item.id}}'></text>
+                     设为默认地址
+              </view>
+               <view>
+               <text class='edit' data-id="{{item.id}}" bindtap='editAddress'>编辑</text>
+                <text class='del' data-id="{{item.id}}" bindtap='delAddress'>删除</text>
+               </view> 
+            </view> 
+        </view>
+    </block>
+</view>
+<view style='height:80rpx'></view>
+<view class='footer'>
+  <view class='system-address' bindtap='addAddress'>新增地址</view>
+  <view class='weixin-address' bindtap='getWxAddress'>微信地址</view>
+</view>

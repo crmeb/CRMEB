@@ -1,0 +1,48 @@
+<view class='spread-header flex'>
+   <view class='header-on'>推广人信息</view>
+   <view bindtap='porder'>推广订单</view>
+</view>
+<view class='spread-name'>
+   <view class='spread--bg'>
+      <view class='name-title flex'>
+          <view class='name-name flex'>
+              <text>推广人名称</text>
+              <view class='text-infos'>
+                <text class='iconfont icon-erweima1' bindtap='erm'></text>
+                <text>{{userinfo.nickname}}</text>
+              </view>
+              
+          </view>
+          <view class='name-num'>粉丝数量：{{cont}}</view>
+      </view>
+      <view class='name-money flex'>
+          <view class='money-num flex'>
+             <icon class='iconfont icon-qianbao '></icon><text>推广佣金：{{userinfo.now_money}}元</text>
+          </view>
+          <view class='name-ti' bindtap='cash'>提现</view>
+      </view>
+   </view>
+</view>
+<view class='spread-ul'>
+     <view class='spread-title'>账户明细</view>
+
+     <view class='spread-li flex' wx:for="{{mainArray}}">
+         <view>
+             <view class='li-text' >{{item.mark}}</view>
+             <view class='li-time'>{{item.add_time}}</view>
+         </view>
+         <view>
+             <view class='item-money money-active' wx:if="{{item.pm==1}}">+{{item.number}}元</view>
+           <view class='item-money money-active' wx:else>-{{item.number}}元</view>
+         </view>
+     </view>
+    
+    
+</view>
+<view class='spread-tan' hidden='{{hiddens}}'>
+     <view class='tan-title line'>{{userinfo.nickname}}的推广二维码</view>
+     <view class='ewm-kuang'><image src='{{code}}'></image><view class='iconfont icon-guanbi1 tan-icon' bindtap='tanguan'></view></view>
+     <view class='tan-footer'>分销二维码</view>
+</view>
+<view class='zhao' hidden='{{hiddens}}' bindtap='tanguan'></view>
+<include src="/pages/home/home.wxml"/>

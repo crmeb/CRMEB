@@ -1,0 +1,82 @@
+<form>
+  <view class='head flex'>
+    <view class='txt'>购物数量({{cartNum}})</view>
+    <view class='btn' bindtap='btntap' wx:if='{{!foothidden}}'>管理</view>
+    <view class='btn' bindtap='btntap' wx:if='{{foothidden}}'>取消</view>
+  </view>
+  <view class='car-list'>
+    <block wx:for="{{cartList}}" wx:key>
+        <view class='list-item flex'>
+          <view class='select-btn flex' data-index='{{index}}' bindtap='switchSelect'>
+          <label class="checkbox">
+            <checkbox value="{{index}}" checked="{{item.checked}}" />
+          </label>
+        </view>
+        <view class='picture'><image src='{{url}}{{item.productInfo.image}}'></image></view>
+        <view class='pro-info flex'>
+          <view class='pro-title'>{{item.productInfo.store_name}}</view>
+          <view class='pro-des' wx:if="{{item.productInfo.attrInfo}}">{{item.productInfo.attrInfo.suk}}</view>
+           <view class='pro-price' wx:if="{{item.productInfo.attrInfo}}"><text>￥</text>{{item.productInfo.attrInfo.price}}</view>
+          <view class='pro-price' wx:else><text>￥</text>{{item.productInfo.price}}</view> 
+          <!-- <view class='pro-price'><text>￥</text>{{item.productInfo.attrInfo.price}}</view> -->
+        </view>
+        <view class='count-wrapper flex'>
+          <text data-index="{{index}}" bindtap="numDescClick" class='{{minusStatus}}'>-</text>
+          <!-- <text class='num'>{{item.cart_num}}</text> -->
+           <input class='num' data-item='{{index}}' type="number" value='{{item.cart_num}}' bindblur='setNumber'/>
+          <text class='add' data-index="{{index}}" bindtap="numAddClick">+</text>
+        </view>
+      </view>
+    </block>
+  </view>
+  <!-- 失效页面 -->
+  <view class='fail-list' wx:if="{{cartInvalid.length > 0}}">
+    <view class='title-bar flex'>
+      <text class='line'></text>
+      <text class='txt'>失效商品</text>
+      <text class='line'></text>
+    </view>
+    <view class='fail-item flex' wx:for="{{cartInvalid}}">
+      <view class='pro-img'><image src='{{url}}{{item.productInfo.image}}'></image></view>
+      <view class='pro-infos flex'>
+        <view class='title'>{{item.productInfo.store_name}}</view>
+      <view class='pro-price' wx:if="{{item.productInfo.attrInfo}}"><text>￥</text>{{item.productInfo.attrInfo.price}}</view>
+          <view class='pro-price' wx:else><text>￥</text>{{item.productInfo.price}}</view> 
+          </view>
+      <view class='del-btn' data-id="{{item.id}}" bindtap="cartDel">删除</view>
+    </view>
+  </view>
+  <view style='height:120rpx;'></view>
+  <view class='foot'>
+    <view class='pay-wrapper flex' hidden='{{foothidden}}'>
+      <view class='left-wrapper flex'>
+        <view class='all-select' bindtap="allChecked">
+          <label class="checkbox">
+            <checkbox value="Boolean"  checked="{{isAllSelect}}"/>
+          </label>
+        </view>
+        <view class='txt'>全选</view>
+        <view class='count-num'>
+          <text>合计:</text>￥{{countmoney}}
+        </view>
+      </view>
+      <navigator class='flex' hover-class="none" url="/pages/order-confirm/order-confirm?id={{cartIdsStr}}">
+        <view class='pay-btn'>立即结算</view>
+      </navigator>
+    </view>
+    <view class='delete-wrapper flex'>
+      <view class='left-wrapper flex'>
+        <view class='all-select' bindtap="allChecked">
+          <label class="checkbox">
+            <checkbox value="Boolean"  checked="{{isAllSelect}}"/>
+          </label>
+        </view>
+        <view class='txt'>全选</view>
+      </view>
+      <view class='right-wrapper flex'>
+        <view class='collection-btn' bindtap='collectAll'>移入收藏</view>
+        <view class='delete-btn' bindtap='cartDelAll'>删除</view>
+      </view>
+    </view>
+  </view>
+</form>

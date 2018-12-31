@@ -1,0 +1,121 @@
+<view  class='status-head flex'>
+  <view wx:if="{{ordercon._status._type==0}}" class='status-img status-imgk'></view>
+  <view wx:elif="{{ordercon._status._type==1}}" class='status-img status-imgf'></view>
+  <view wx:elif="{{ordercon._status._type==2}}" class='status-img'></view>
+  <view wx:elif="{{ordercon._status._type==3}}" class='status-img status-imgp'></view>
+  <view wx:elif="{{ordercon._status._type==4}}" class='status-img status-imgw'></view>
+  <view class='status-txt'>
+    <view>{{ordercon._status._msg}}</view>
+    <text>{{ordercon._status._payType}}</text>
+  </view>
+</view>
+<view class='address'>
+  <view class='address-wrapper'>
+    <view class='name'>{{ordercon.real_name}} <text>{{ordercon.user_phone}}</text></view>
+    <view class='address-info'>{{ordercon.user_address}}</view>
+  </view>
+  <view class='iconfont icon-dizhi1'></view>
+</view>
+<view class='text-wrapper' wx:if="{{ordercon.status != 0 }}">
+  <view class='common-title'>配送信息</view>
+  <view wx:if="{{ordercon.delivery_type=='express'}}">
+       <view class='item'>
+        <text>配送方式：</text>发货
+       </view>
+      <view class='item'>
+        <text>快递公司：</text>{{ordercon.delivery_name}}
+      </view>
+      <view class='item'>
+        <text>快递号：</text>{{ordercon.delivery_id}}
+      </view>
+  </view>
+  <view wx:else>
+       <view class='item'>
+        <text>配送方式：</text>送货
+       </view>
+      <view class='item'>
+        <text>配送人员：</text>{{ordercon.delivery_name}}
+      </view>
+       <view class='item flex' data-tel="{{ordercon.delivery_id}}" bindtap='goTel'>
+        <text>配送电话：</text><text class='tel'>{{ordercon.delivery_id}}</text><view class='iconfont icon-dianhua'>
+        </view>
+      </view> 
+  </view>
+</view>
+<view class='pro-list'>
+  <view class='common-title'>商品信息</view>
+  <view class='list-wrapper'>
+    <view class='wrapper'>
+      <block wx:for="{{ordercon.cartInfo}}">
+          <navigator hover-class='none' wx:if="{{!ordercon.seckill_id && !ordercon.bargain_id && !ordercon.combination_id}}" url='/pages/product-con/index?id={{item.productInfo.id}}'>
+              <view class='item flex'>
+                <image src='{{url}}{{item.productInfo.image}}'></image>
+                <view class='pro-info'>
+                  <view class='title'>{{item.productInfo.store_name}}</view>
+                  <view class='res'>{{item.productInfo.store_name}}</view>
+                  <view class='price'><text>￥</text>{{item.productInfo.price}}<text class='count'>x{{item.cart_num}}</text></view>
+                </view>
+                <navigator wx:if="{{ordercon._status._type==3}}" hover-class="none" url='/pages/comment-con/comment-con?unique={{item.unique}}&uni={{ordercon.order_id}}' class='assess-btn'>评价</navigator>
+                <view wx:elif="{{ordercon._status._type==4}}" class='assess-btn off'>已评价</view>
+              </view>
+          </navigator>
+          <navigator hover-class='none' wx:else>
+              <view class='item flex'>
+                <image src='{{url}}{{item.productInfo.image}}'></image>
+                <view class='pro-info'>
+                  <view class='title'>{{item.productInfo.store_name}}</view>
+                  <view class='res'>{{item.productInfo.store_name}}</view>
+                  <view class='price'><text>￥</text>{{item.productInfo.price}}<text class='count'>x{{item.cart_num}}</text></view>
+                </view>
+                <navigator wx:if="{{ordercon._status._type==3}}" hover-class="none" url='/pages/comment-con/comment-con?unique={{item.unique}}' class='assess-btn'>评价</navigator>
+                <view wx:elif="{{ordercon._status._type==4}}" class='assess-btn off'>已评价</view>
+              </view>
+          </navigator>
+      </block>
+    </view>
+  </view>
+  <view class='payment-info'>
+    <view class='infos flex'>
+      <text>运费</text>
+      <text class='count'>￥{{ordercon.pay_postage}}</text>
+    </view>
+    <view class='infos flex'>
+      <text>商品总价</text>
+      <text class='count'>￥{{ordercon.total_price}}</text>
+    </view>
+    <view class='infos flex'>
+      <text>折扣价</text>
+      <text class='count'>￥{{ordercon.deduction_price}}</text>
+    </view>
+  </view>
+</view>
+<view class='all-pay flex'>
+  <text>实付款</text>
+  <text class='count'>￥{{ordercon.pay_price}}</text>
+</view>
+<view class='text-wrapper'>
+  <view class='common-title'>订单信息</view>
+  <view class='item'>
+    <text>订单编号：</text>{{ordercon.order_id}}
+  </view>
+  <view class='item'>
+    <text>下单时间：</text>{{ordercon.add_time}}
+  </view>
+  <view class='item'>
+    <text>支付方式：</text>{{ordercon._status._payType}}
+  </view>
+  <view class='item'>
+    <text wx:if="{{ordercon.paid == 0}}">支付状态：未支付</text>
+    <text wx:else>支付状态：已支付</text>
+  </view>
+</view>
+<view style='height:120rpx;'></view>
+<view class='foot'>
+  <view class='pay-btn' data-id="{{ordercon.order_id}}" bindtap='getPay'  wx:if="{{ordercon._status._type==0}}">立即付款</view> 
+   <navigator wx:elif="{{ordercon._status._type==1}}" hover-class="none" url='/pages/refund-page/refund-page?orderId={{ordercon.order_id}}'><view class='delete-btn'>申请退款</view></navigator> 
+   <view wx:if="{{ordercon._status._type==1 && ordercon.combination_id > 0}}" class='pay-btn' bindtap='goJoinPink' data-uni='{{ordercon.pink_id}}'>查看拼团</view>
+   <navigator wx:if="{{ordercon._status._type==2 && ordercon.delivery_type == 'express'}}" hover-class="none" url='/pages/logistics/logistics?orderId={{ordercon.order_id}}'><view class='delete-btn' >查看物流</view></navigator>
+   <view wx:if="{{ordercon._status._type==2}}" class='pay-btn' bindtap='confirmOrder' data-uni='{{ordercon.order_id}}'>确认收货</view> 
+   <view wx:if="{{ordercon._status._type==4 || ordercon._status._type==0}}" class='delete-btn' bindtap='delOrder' data-uni='{{ordercon.order_id}}'>删除订单</view>
+   <navigator  wx:if="{{!ordercon.seckill_id && !ordercon.bargain_id && !ordercon.combination_id && (ordercon._status._type==3||ordercon._status._type==4)}}" hover-class="none" bindtap='goIndex'><view class='pay-btn'>再次购买</view></navigator> 
+</view>

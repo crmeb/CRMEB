@@ -1,0 +1,27 @@
+.spread-header{height:89rpx;justify-content:space-around;padding:0 30rpx;background-color:#fff;line-height:89rpx;border-bottom:1rpx solid #F7F7F7;z-index:99;position:relative;}
+.spread-header view{font-size:30rpx;color:#333333;}
+.header-on{border-bottom:4rpx solid #FF3D3D;padding:0 20rpx;}
+.promotion-header{height:83rpx;justify-content:space-around;padding:0 30rpx;background-color:#fff;line-height:83rpx;font-size:26rpx;color:#666666;z-index:99;position:relative;}
+.promotion-header icon{font-size:35rpx!important;}
+.header-order{align-items:center;}
+.order-count{height:66rpx;line-height:66rpx;background-color:#FFF1C5;padding:0 20rpx;align-items:center;font-size:24rpx;color:#8B5337;}
+.order-count icon{font-size:36rpx;color:#FF3D3D;margin-right:12rpx;}
+.promotion-ul{margin-top:20rpx;}
+.promotion-li{width:710rpx;background-color:#fff;border-radius:10rpx;margin:0 auto;border:1rpx solid #E9E9E9;}
+.promotion-li~.promotion-li{margin-top:20rpx;}
+.promotion-li .li-header{height:86rpx;justify-content:space-between;padding:0 20rpx;border-bottom:1rpx solid #E9E9E9;align-items:center;}
+.promotion-li .order-num{font-size:26rpx;color:#333333;border-left:4rpx solid #FF3D3D;padding-left:14rpx;}
+.promotion-li .order-flag{width:120rpx;height:52rpx;line-height:52rpx;text-align:center;font-size:24rpx;color:#FF8D10;background-color:#FFF3E5;border-radius:10rpx;}
+.promotion-li .li-item{justify-content:space-between;margin:0 20rpx;align-items:center;height:231rpx;}
+.promotion-li .li-item~.li-item{border-top:1rpx dashed #E9E9E9;}
+.promotion-li .li-item image{width:192rpx;height:192rpx;border-radius:10rpx;}
+.promotion-li .item-text{width:460rpx;}
+.promotion-li .item-title{font-size:28rpx;color:#333333;line-height:1.5;}
+.promotion-li .item-time{font-size:24rpx;color:#ABABAB;margin:17rpx 0;}
+.promotion-li .item-money{font-size:24rpx;color:#FF3D3D;}
+.promotion-li .item-money text{font-size:30rpx;}
+.flag-on{background-color:#EEEEEE!important;color:#999999!important;}
+.promotion-down{position:relative;}
+.promotion-xia{position:absolute;top:83rpx;width:100%;background-color:#fff;z-index:99;}
+.promotion-xia view{height:89rpx;line-height:89rpx;padding:0 40rpx;font-size:26rpx;color:#454545;border-top:1rpx solid #EEEEEE;}
+.xiad{color:#FF3D3D;float:right;font-size:30rpx;}

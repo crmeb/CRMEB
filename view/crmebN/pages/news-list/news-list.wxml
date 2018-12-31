@@ -1,0 +1,17 @@
+<view class='news-list'>
+  <block wx:for="{{newsList}}" wx:key="index">
+    <view class="news-item {{_num==item.id?'cur':''}}" bindtap="lookMore"  data-id="{{item.id}}">
+      <view class='title-bar flex'>
+        
+        <view class='flex see'><view wx:if="{{!item.is_see}}" class='spot'></view>{{item.user}}</view>
+        <text class='time'>{{item.add_time}}</text>
+      </view>
+      <view class='con-wrapper'>
+        <view class='con-title'>{{item.title}}</view>
+        <view class='con-box'>{{item.content}}</view>
+        <view class='look'>{{_num==item.id?'点击收起>>':'查看全文>>'}}</view>
+      </view>
+    </view>
+  </block>
+  <view hidden='{{hidden}}' class='loading'>{{title}}</view>  
+</view> 

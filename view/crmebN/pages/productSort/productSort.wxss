@@ -1,0 +1,52 @@
+.product{position:fixed;top:0;width:100%;z-index:99;}
+.header{height:95rpx;background-color:#ffffff;padding:0 20rpx;justify-content:space-between;position:relative;}
+.header-input{height:60rpx;width:640rpx;border:1rpx solid #EEEEEE;line-height:60rpx;justify-content:space-between;margin-top:17.5rpx;background-color:#F6F6F6;border-radius:7rpx;}
+.input-text{width:578rpx;height:100%;}
+.placeholder{color:#AAAAAA;}
+.sou{font-size:37rpx;color:#939393;padding-left:16rpx;}
+::-webkit-input-placeholder {font-size:26rpx;color:#AAAAAA;}
+:-moz-placeholder {font-size:26rpx;color:#AAAAAA;}
+::-moz-placeholder {font-size:26rpx;color:#AAAAAA;}
+:-ms-input-placeholder {font-size:26rpx;color:#AAAAAA; }
+.car{font-size:55rpx;color:#454545;margin-top:20rpx;}
+.header .num{position:absolute;right:15rpx;top:20rpx;border-radius:50rpx;color:#E3383E;border:1rpx solid #E75E62;font-size:14rpx;background-color:#ffffff;min-width:20rpx;height:20rpx;text-align:center;line-height:20rpx;}
+.nav{width:100%;height:90rpx;line-height:90rpx;border-top:1rpx solid #F7F7F7;background-color:#ffffff;}
+.nav .nav-li{flex:1 20%;text-align:center; color:#454545;position:relative;}
+.nav .nav-li text{margin-left:8rpx;color:#999999;}
+.nav .nav-li .nav-iconx{color:#343434;position:absolute;top:2rpx;}
+.nav .nav-total{position:relative;}
+.nav .total{display:inline-block;white-space:nowrap;overflow:hidden;min-width:39%;max-width:124rpx;}
+.nav .nav-tap{font-size:35rpx;color:#454545 !important; flex:1 10%;}
+.nav .sort-s{position:absolute;top:-4rpx;font-size:31rpx;}
+ .nav .sort-x{position:absolute;top:8rpx;font-size:31rpx;} 
+ .nav-active{color:#000000 !important;}
+.productSort{padding:0 10rpx;justify-content:space-between;flex-wrap:wrap;margin-top:195rpx;}
+.productSort-list{height:512rpx;width:360rpx;margin-bottom:10rpx;background-color:#FFFFFF;}
+.list-images{width:360rpx;height:360rpx;}
+.list-text{width:335rpx;padding:6rpx 10rpx 10rpx 10rpx;font-size:30rpx;color:#333333;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.list-money{padding:0 10rpx;justify-content:space-between;}
+.list-num{font-size:22rpx;color:#ABABAB;}
+/* .list-ling{font-size:22rpx;display:inline-block;vertical-align:bottom;} */
+.list-oo{font-size:24rpx;}
+.money-red{color:#FF3D3D;font-size:22rpx;margin-top:5rpx;position:relative;}
+ .money-num{font-size:30rpx;} 
+.list-tip{width:30rpx;height:30rpx;line-height:30rpx;text-align:center;background-color:#FF3D3D;color:#ffffff;display:inline-block;margin-left:10rpx;border-radius:5rpx;font-size:18rpx;position:absolute;top:3rpx;}
+.list-gwc{width:57rpx;height:57rpx;border-radius:50%;border:2rpx solid #F07864;font-size:32rpx;color:#D81E06;text-align:center;line-height:57rpx;margin-top:13rpx;}
+
+.productSort-list2{height:225rpx;width:100%;display:flex;justify-content:space-between;padding-right:20rpx;}
+.list-images2{width:225rpx;height:225rpx;}
+.list-text2{width:460rpx;word-break:break-all;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;white-space:normal;height:75rpx;padding-top:14rpx;}
+.list-num2{margin:20rpx 0;}
+.list-gwc2{margin-top:45rpx;}  
+
+.nav-down{position:fixed;top:186rpx;background-color:#ffffff;width:100%;z-index:99;}
+.down-title{height:87rpx;line-height:87rpx;padding-left:39rpx;border-bottom:1rpx solid #EEEEEE;border-top:1rpx solid #EEEEEE;}
+.downs-title{height:87rpx;line-height:87rpx;border-bottom:1rpx solid #EEEEEE;border-top:1rpx solid #EEEEEE;}
+.down-yi{width:100%;height:356rpx;overflow-y:scroll;}
+.down-yi .yi-sort{height:87rpx;line-height:87rpx;border-bottom:1rpx solid #EEEEEE;padding-left:39rpx;white-space:nowrap;overflow:hidden;}
+.down-er{background-color:#FAFAFA;width:0%;padding-left:35rpx;height:356rpx;overflow-y:scroll;  position:fixed;right:0;top:273rpx;}
+.down-er .er-sort{height:87rpx;line-height:87rpx;white-space:nowrap;overflow:hidden;}
+.sorton{background-color:#FAFAFA;border-bottom:1rpx solid #FAFAFA !important;}
+.sortd{color:#FF3D3D;float:right;margin-right:40rpx;font-size:30rpx;}
+.mask{position:fixed;top:0;bottom:0;left:0;right:0;background-color:#000000;opacity:0.6;} 
+@import "/pages/foo-tan/foo-tan.wxss"; 

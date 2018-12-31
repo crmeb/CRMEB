@@ -1,0 +1,83 @@
+  {
+    "pages": [
+    "pages/loading/loading",
+    "pages/load/load",
+    "pages/login-status/login-status",
+    "pages/payment/payment",
+    "pages/home/home",
+    "pages/new-con/new-con",
+    "pages/new-list/new-list",
+    "pages/index/index",
+    "pages/refunding/refunding",
+    "pages/miao-list/miao-list",
+    "pages/coupon-status/coupon-status",
+    "pages/addaddress/addaddress",
+    "pages/product-countdown/index",
+    "pages/refund-page/refund-page",
+    "pages/refund-order/refund-order",
+    "pages/spread/spread",
+    "pages/promotion-order/promotion-order",
+    "pages/coupon/coupon",
+    "pages/news-list/news-list",
+    "pages/product-con/index",
+    "pages/comment-con/comment-con",
+    "pages/orderForm/orderForm",
+    "pages/orders-list/orders-list",
+    "pages/comment/comment",
+    "pages/foo-tan/foo-tan",
+    "pages/buycar/buycar",
+    "pages/mycut/mycut",
+    "pages/user/user",
+    "pages/integral-con/integral-con",
+    "pages/orders-con/orders-con",
+    "pages/order-confirm/order-confirm",
+    "pages/productSort/productSort",
+    "pages/address/address",
+    "pages/feree/feree",
+    "pages/feree-two/feree-two",
+    "pages/cash/cash",
+    "pages/logistics/logistics",
+    "pages/extension/extension",
+    "pages/unshop/unshop",
+    "pages/main/main",
+    "pages/collect/collect",
+    "pages/promotion-card/promotion-card"
+  ],
+  "window": {
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#fff",
+    "navigationBarTitleText": "WeChat",
+    "navigationBarTextStyle": "black"
+  },
+  "tabBar": {
+    "backgroundColor": "#FFFFFF",
+    "color": "#999",
+    "selectedColor": "#ff3d3d",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "iconPath": "images/1-1.png",
+        "selectedIconPath": "images/1-2.png",
+        "text": "首页"
+      },
+      {
+        "pagePath": "pages/productSort/productSort",
+        "iconPath": "images/2-1.png",
+        "selectedIconPath": "images/2-2.png",
+        "text": "分类"
+      },
+      {
+        "pagePath": "pages/buycar/buycar",
+        "iconPath": "images/3-1.png",
+        "selectedIconPath": "images/3-2.png",
+        "text": "购物车"
+      },
+      {
+        "pagePath": "pages/user/user",
+        "iconPath": "images/4-1.png",
+        "selectedIconPath": "images/4-2.png",
+        "text": "我的"
+      }
+    ]
+  }
+}

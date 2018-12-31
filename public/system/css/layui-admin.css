@@ -1,0 +1,236 @@
+@charset "UTF-8";
+.layui-btn {
+    background-color: #0092DC;
+}
+.layui-btn-primary:hover {
+    border-color: #0092DC;
+    color: #333;
+}
+.layui-table-box{
+    overflow: initial;
+}
+.layui-table-body{
+    overflow: initial;
+}
+.layui-table-cell{
+    overflow: initial;
+}
+.table-responsive{
+    overflow: initial;
+}
+/*.layui-table img{width: 100% !important;}*/
+/*部分样式重构*/
+.layui-laypage-limits select{
+    height: 26px;
+}
+.layui-card-body {
+}
+
+.layui-table-cell p{
+    height: 20px;
+    line-height: 20px;
+}
+/*table复选框*/
+.layui-table-view .layui-form-checkbox[lay-skin=primary] i {
+    width: 14px;
+    height: 14px;
+}
+
+.layui-laypage a, .layui-laypage button, .layui-laypage input, .layui-laypage select, .layui-laypage span {
+    color:#333 !important;
+}
+.layui-form-checked[lay-skin=primary] i {
+    border-color: #0093DE;
+    background-color: #0093DE;
+    color: #fff;
+}
+.layui-form-checkbox[lay-skin=primary] i {
+    width: 14px;
+    height: 14px;
+    line-height: 12px;
+}
+
+/*后台layui-admin样式*/
+.layui-tab-title .layui-this:after{
+    border-bottom: 2px solid #0092DC !important;
+}
+
+.layui-btn-group button i{
+    line-height: 30px;
+    margin-right: 3px;
+    vertical-align: bottom;
+}
+.back-f8{
+    background-color: #F8F8F8;
+}
+.layui-card-body p.layuiadmin-big-font {
+    font-size: 24px;
+    color: #666;
+    line-height: 36px;
+    padding: 5px 0 10px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    word-break: break-all;
+    white-space: nowrap;
+}
+.layuiadmin-badge, .layuiadmin-btn-group, .layuiadmin-span-color {
+    position: absolute;
+    right: 15px;
+}
+.layuiadmin-badge {
+    top: 50%;
+    margin-top: -9px;
+}
+.layui-nav-child li{
+    text-align: left;
+}
+.layui-btn-xs{margin-left: 0px !important;}
+.site-demo-button{
+    padding-bottom: 20px;
+    padding-left: 10px;
+}
+.avatar{width: 50px;height: 50px;}
+
+/*---------------------------*/
+.backlog-body{
+    padding: 10px 15px;
+    background-color: #f8f8f8;
+    color: #999;
+    border-radius: 2px;
+    transition: all .3s;
+    -webkit-transition: all .3s;
+    overflow: hidden;
+    max-height: 84px;
+}
+.backlog-body h3{
+    margin-bottom: 10px;
+}
+.right-icon{
+    position: absolute;
+    right: 10px;
+}
+.backlog-body p cite {
+    font-style: normal;
+    font-size: 17px;
+    font-weight: 300;
+    color: #009688;
+}
+
+/*----------------------------*/
+.layui-card-body{
+    padding-left: 10px;
+    padding-right: 10px;
+}
+.layuiadmin-span-color i {
+    padding-left: 5px;
+}
+.block-rigit{
+    text-align: right;
+}
+.block-rigit button{
+    width: 100px;
+    letter-spacing: .5em;
+    line-height: 28px;
+}
+.layuiadmin-card-list{
+    padding: 1.6px;
+}
+.layuiadmin-card-list p.layuiadmin-normal-font {
+    padding-bottom: 10px;
+    font-size: 20px;
+    color: #666;
+    line-height: 24px;
+}
+/*-----------------------*/
+.layadmin-text-center{
+    text-align: center;
+}
+/*表格样式*/
+.layui-table-view .layui-table td, .layui-table-view .layui-table th {
+    font-size: 13px;
+    font-weight: bolder;
+}
+.layui-table-cell {
+    white-space:normal;
+    height: auto!important;
+    font-size: 13px;
+    font-weight: normal;
+}
+/*form 样式*/
+
+.layui-form-select .layui-input {
+    padding-right: 30px;
+    cursor: pointer;
+    font-size: 12px;
+    height: 32px;
+}
+.layui-form-select dl {
+    top: 32px;
+    font-size: 12px;
+}
+.layui-form-select dl dd.layui-this {
+    background-color: #0092DC;
+    color: #fff;
+}
+.layui-input{
+    height: 32px;
+    font-size: 12px;
+}
+.layui-input-block .layui-admin-input{
+    width: 50%;
+    font-size: 12px;
+    height: 32px;
+}
+.layui-form-item{
+    margin-bottom: 0;
+}
+.layui-input-block .time-w{
+    width: 200px;
+}
+.layui-form-pane .layui-input, .layui-select, .layui-textarea {
+    height: 34px;
+    line-height: 1.5;
+    padding: 4px 12px;
+    font-size: 12px;
+    border: 1px solid #e5e6e7;
+    color: #333;
+    background-color: #fff;
+}
+.layui-form-pane{
+    /*padding: 20px;*/
+}
+.layui-form-pane .layui-inline .layui-form-label {
+    padding: 5px 15px;
+    height: 34px;
+    line-height: 24px;
+    background: none;
+    border-radius: 5px 0 0 5px;
+}
+.layui-form-item .layui-btn{
+    margin-top: -5px;
+}
+.layui-form-label{
+    width: auto;
+    padding: 6px;
+}
+.layui-fluid {
+    padding: 0;
+}
+.layui-btn-normal{
+    background-color:#0092DC;
+}
+.layui-btn .layui-icon {
+    font-size: 12px;
+}
+.layui-btn-sm i {
+    font-size: 12px!important;
+}
+.layui-form-onswitch {
+    border-color: #0092DC;
+    background-color: #0092DC;
+}
+.layui-btn-primary {
+    border: 1px solid #e5e6e7;
+    background-color: #fff;
+    color: #333;
+}

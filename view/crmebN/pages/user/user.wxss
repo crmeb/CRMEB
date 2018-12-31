@@ -1,0 +1,40 @@
+/* pages/user/user.wxss */
+page{position: relative;}
+.header{width: 100%; height: 400rpx; background-image: linear-gradient(to bottom,#ff6c00,#ff3d3d);flex-direction: column; color: #fff; align-items: center; justify-content: center; font-size: 26rpx;position:relative;}
+.header .system-notification{position: absolute;right: 30rpx;top: 46rpx;font-size:46rpx;}
+.header .system-notification .system-notification-text{position:absolute;top:-5rpx;right:-3rpx;font-size:18rpx;background-color:#fff;border-radius:50%;color:#ff3d3d;
+min-width:26rpx;height:26rpx;text-align:center;line-height:26rpx;}
+.header .avatar{width: 130rpx; height: 130rpx; border-radius: 50%; border: 6rpx solid rgba(255,255,255,.5)}
+.header text{font-size: 22rpx;}
+.header .name{margin: 13rpx 0 7rpx 0;}
+.user-list-warapper{position: absolute; top:330rpx; left: 50%; width: 710rpx; margin-left: -355rpx;}
+.user-list-warapper .item-box{margin-bottom: 30rpx; background-color: #fff; border-radius: 5px; box-shadow: 1px 2px 2px 1px #eee;}
+.amount{height: 150rpx; align-items: center;}
+.amount .amount-item{flex: 1 25%; text-align:  center; font-size: 24rpx; color: #555;}
+.amount .amount-item .count{margin-bottom: 17rpx; font-size: 32rpx; color:#ff3d3d;}
+.title-bar{padding:0 28rpx; height: 88rpx; align-items:  center; justify-content: space-between; border-bottom: 1px solid #f7f7f7; }
+.title-bar navigator{font-size: 24rpx; color:#999;}
+.list-wrapper{ flex-wrap: wrap;  align-items: center;}
+.list-wrapper .item{width: 25%; text-align: center;margin:20rpx 0;position: relative}
+.list-wrapper .item .iconfont{font-size: 45rpx;}
+.list-wrapper .item .text{font-size: 24rpx; color:#555;margin-top:10rpx;}
+
+.orders image{width: 42rpx; height: 45rpx;}
+.orders .list-wrapper{height: 142rpx;}
+.service .list-wrapper{height:auto;padding:0rpx 0 30rpx;min-height:100rpx;}
+.icon-chongzhi{color: #ff3d3d;}
+.icon-wodejifen{color:#ffa800;}
+.icon-wodepintuan{color:#ff5959;}
+.icon-collect{color:#ff8920;}
+.icon-youhuijuan{color:#1dc7ad;}
+.icon-wodetuiguangren{color:#ff865c;}
+.icon-tongzhi{color:#20b3ff;}
+.icon-dizhiguanli{color:#43c885;}
+.icon-liaotian{color:#48c5ff;}
+.icon-custom-service{color:#acdc67;}
+.icon-erweima{color:#fa9552;}
+.icon-er{color: #20b3ff;font-size:46rpx!important;}
+.contact-but{background-color:#ffffff;line-height:normal!important;}
+.contact-but::after{border:none;} 
+.item-span{min-width:26rpx;height:26rpx;border-radius:50rpx;background-color:#ff3d3d;color: #fff;display:block;font-size:20rpx;text-align:center;line-height:26rpx;position:absolute;right:46rpx;top:0;} 
+@import "/pages/home/home.wxss"; 

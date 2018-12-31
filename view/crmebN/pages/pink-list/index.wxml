@@ -1,0 +1,29 @@
+<view class='banner'>
+  <image src='{{banner.img}}'></image>
+</view>
+<view class='pink-list-wrapper'>
+  <block wx:for="{{CombinationList}}">
+    <view class='item flex'>
+      <navigator class='flex' hover-class='none'>
+        <image src='{{url}}{{item.image}}'></image>
+        <view class='pro-info flex'>
+          <view class='title'>{{item.title}}</view>
+          <view class='price-wrapper'>
+            <text>已拼{{item.sales}}单</text>
+            <text class='old-price'>￥{{item.product_price}}</text>
+          </view>
+          <view class='count-wrapper flex'>
+            <view class='price'>开团价：{{item.price}}元</view>
+            <form bindsubmit="goDetail" report-submit='true'>
+            <input type='text' style='display:none' name="id" value="{{item.id}}"></input>
+              <button form-type='submit' class='text-bar'>去开团></button>
+             </form> 
+            <!-- <view class='text-bar'>去开团></view> -->
+            <view class='icon'></view>
+          </view>
+        </view>
+      </navigator>
+    </view>
+  </block>
+</view>
+<include src="/pages/home/home.wxml"/>

@@ -1,0 +1,34 @@
+{extend name="public/container"}
+{block name="title"}物流信息{/block}
+{block name="content"}
+<div class="user-order-logistics">
+    <section>
+        <div class="product-info flex">
+            <div class="picture"><img src="{__WAP_PATH}crmeb/images/express_icon.jpg"/></div>
+            <div class="logistics-tip flex">
+                <div class="company">物流公司：{$order.delivery_name}</div>
+                <div class="number">物流单号：{$order.delivery_id}</div>
+            </div>
+        </div>
+        <div class="logistics-info" style="background-color: inherit;">
+            <?php if(!$express || $express['status'] != 0){ ?>
+                <div class="empty">
+                    <img src="{__WAP_PATH}crmeb/images/empty_address.png">
+                    <p>暂无查询记录</p>
+                </div>
+            <?php }else{ ?>
+            <ul class="flex">
+                {volist name="express.result.list" id="vo"}
+                <li class="clearfix">
+                    <div class="right-wrapper fl">
+                        <p>{$vo.status}</p>
+                        <span>{$vo.time}</span>
+                    </div>
+                </li>
+                {/volist}
+            </ul>
+            <?php } ?>
+        </div>
+    </section>
+</div>
+{/block}

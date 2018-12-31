@@ -1,0 +1,15 @@
+<view class='promotion-card'>
+    <view class='title flex'>
+        <view class='line'></view>
+        <view class='name'>CRMEB小程序</view>
+        <view class='line'></view>
+    </view>
+    <view class='white-bg'>
+         <image src='{{userinfo.avatar}}' class='pic'></image>
+         <view class='white-name'>{{userinfo.nickname}}</view>
+         <view class='ewm'>
+             <image src='{{code}}'></image>
+         </view>
+         <view class='tip'>使用微信扫描二维码关注小程序</view>
+    </view>
+</view>

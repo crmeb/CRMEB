@@ -1,0 +1,97 @@
+<!--banner-->
+<view class='swiper_banner'>
+  <swiper class="swiper-box" style="height:400rpx" indicator-dots="{{indicatorDots}}" autoplay="{{autoplay}}" interval="{{interval}}" duration="{{duration}}" indicator-color="{{indicatorColor}}" indicator-active-color="{{indicatorActivecolor}}">
+    <block wx:for="{{imgUrls}}">
+      <swiper-item>
+        <image bindtap='goUrl' data-url="{{item.url}}" src="{{item.pic}}" class="slide-image"/>
+      </swiper-item>
+    </block>
+  </swiper>
+</view>
+<!-- 导航  -->
+<view class='nav flex'>
+  <block wx:for="{{menus}}">
+    <view class='nav-item'>
+      <navigator class='flex' hover-class="none" url='{{item.url}}' wx:if="{{item.show == '是'}}" open-type='switchTab'>
+        <image src='{{item.pic}}'></image>
+        <view class='nav-title'>{{item.name}}</view>
+      </navigator>
+      <navigator class='flex' hover-class="none" url='{{item.url}}' wx:else>
+        <image src='{{item.pic}}'></image>
+        <view class='nav-title'>{{item.name}}</view>
+      </navigator>
+    </view>
+  </block>
+</view>
+<!-- 精品推荐 -->
+<view class='new-product'>
+  <view class='title-bar' bindtap='torday' >
+    <view class='iconfont icon-jingpintuijian'></view>
+    <text>精品推荐</text>
+    <navigator hover-class="none" class='flex'><text>更多推荐</text><text class='iconfont icon-xiala'></text></navigator>
+  </view>
+  <view class='scroll-product'>
+    <scroll-view class="scroll-view_x" scroll-x style="width: auto;overflow:hidden;">
+      <block wx:for="{{recommendLsit}}">
+        <view class='item'>
+          <navigator hover-class="none" url="/pages/product-con/index?id={{item.id}}">
+            <view class='img-box'><image src='{{url}}{{item.image}}'></image></view>
+            <view class='pro-info'>
+              <view class='pro-title'>{{item.store_name}}</view>
+              <view class='price-small'>￥{{item.price}}</view>
+            </view>
+          </navigator>  
+        </view>
+      </block>  
+    </scroll-view>
+  </view>
+</view>
+<!-- 今日上新 -->
+<view class='today-new'>
+  <view class='title-bar' bindtap='torday'>
+    <view class='iconfont icon-shangxinfuwu'></view>
+    <text>今日上新</text>
+    <navigator hover-class="none" bindtap='torday' class='flex'><text>更多新品</text><text class='iconfont icon-xiala'></text></navigator>
+  </view>
+  <view class='new-pro-wrapper'>
+    <block wx:for="{{newList}}">
+      <view class='item'>
+        <navigator class='flex' hover-class="none" url="/pages/product-con/index?id={{item.id}}">
+          <view class='text-box flex'>
+            <view class='title'>{{item.store_name}}</view>
+            <view class='price'><text>￥</text>{{item.price}}</view>
+          </view>
+          <view class='img-box'><image src='{{url}}{{item.image}}'></image></view>
+        </navigator>
+      </view>
+    </block>
+  </view>
+</view>
+<block  wx:for="{{lovely}}" wx:if="{{index < 1}}">
+  <view class='hot-banner'>
+      <image src='{{url}}{{item.img}}'></image>
+  </view>
+</block>
+<!-- 猜你喜欢 -->
+<view class='product-like'>
+  <view class='title-bar'>
+    <view class='iconfont icon-cainixihuan'></view>
+    <text>猜你喜欢</text>
+  </view>
+  <view class='like-box flex'>
+    <block wx:for="{{likeList}}">
+      <view class='item'>
+        <navigator hover-class="none" url="/pages/product-con/index?id={{item.id}}">
+          <view class='img-box'><image src='{{url}}{{item.image}}'></image></view>
+          <view class='text-info'>
+            <view class='title'>{{item.store_name}}</view>
+            <view class='price'>￥{{item.price}}</view>
+          </view>
+        </navigator>
+      </view>
+    </block>  
+  </view>
+  <view class='loading flex'><icon class='iconfont icon-jiazaizhong loadingpic' hidden='{{hidden}}'></icon>{{title}}</view>
+</view>
+
+

@@ -1,0 +1,26 @@
+.head{position: relative; width: 100%; height: 100rpx; padding: 20rpx; box-sizing: border-box;}
+.head input{width: 100%; height: 60rpx; padding-left: 68rpx; border-radius: 30px; background-color: #fff; border:1px solid #eee; box-sizing: border-box;}
+.head .iconfont{position: absolute; left: 40rpx; top: 34rpx; color: #939393;}
+.menu{background-color: #fff;  border-bottom: 1px solid #f7f7f7;}
+.menu .item{width: 25%;height: 85rpx; line-height: 85rpx; text-align: center; box-sizing: border-box;}
+.menu .item.on{color: #ff3d3d; border-bottom: 1px solid #ff3d3d;}
+.orders-list .items{background-color: #fff; margin-bottom: 20rpx;}
+.orders-list .items .numbers{height: 80rpx; line-height: 80rpx; padding: 0 20rpx; border-bottom: 1px solid #f7f7f7;}
+.orders-list .items .numbers text{color: #999;}
+.pay-status{height: 100rpx;padding: 0 20rpx; border-bottom: 1px solid #f7f7f7; justify-content: space-between; align-items: center;}
+.pay-status .status-txt{font-size: 26rpx; color: #999;} 
+.pay-status .status-txt text{color: #ff3d3d;}
+.pay-status .all-price{font-size: 26rpx; color: #999; margin-top: 10rpx;}
+.pay-status .all-price text{color: #333;}
+.pay-status .right-wrapper .buypay{width: 165rpx; height: 58rpx; line-height: 58rpx; text-align: center; background-color: #ff3d3d; color: #fff; border-radius: 3px;}
+.info-list{padding: 20rpx;}
+.info-list .pro-item{padding: 20rpx 20rpx 0; background-color: #fafafa; }
+.info-list .pro-item .wrapper{width: 100%; justify-content: space-between; border-bottom: 1px dashed #ddd; padding-bottom: 20rpx;}
+.info-list .pro-item image{width: 163rpx; height: 163rpx;}
+.info-list .pro-item .item-info{width: 475rpx; flex-direction: column; justify-content: space-around;}
+.info-list .pro-item .item-info .title{overflow: hidden;white-space: nowrap;text-overflow: ellipsis;}
+.info-list .pro-item .item-info .res{font-size: 26rpx; color: #999;}
+.info-list .pro-item .item-info .price{color: #ff3d3d; font-size: 32rpx;}
+.info-list .pro-item .item-info .price text{font-size: 24rpx;}
+.info-list .pro-item .item-info .price .count{ color: #333; margin-left: 10rpx;}
+.info-list .pro-item:last-child .wrapper{border-bottom: 0;}

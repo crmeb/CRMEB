@@ -1,0 +1,15 @@
+.comment .comment-header{height:100rpx;line-height:100rpx;background-color:#fff;padding:0 20rpx;}
+.comment .comment-header text{height:56rpx;padding:0 18rpx;font-size:24rpx;color:#666666;background-color:#FFE7E7;margin-right:15rpx;display:inline-block;border-radius:50rpx;line-height:56rpx;}
+.comment .header-cha{background-color:#F5F5F5!important;}
+.comment .comment-ul{margin-top:2rpx;}
+.comment .comment-li{background-color:#fff;margin-bottom:10rpx;}
+.comment .li-view1{padding:20rpx 20rpx 29rpx 20rpx;}
+.comment .li-view1 .li-title{display:inline-block;vertical-align:middle;margin-right:12rpx;font-size:28rpx;color:#000000;}
+.comment .li-pic{width:57rpx;height:57rpx;border-radius:50%;}
+.comment .li-text{font-size:26rpx;color:#000000;padding:0 20rpx;}
+.comment .li-time{margin-top:23rpx;font-size:24rpx;color:#888888;padding:0 20rpx 30rpx 20rpx;}
+.comment .li-time text{margin-right:15rpx;}
+.comment .flex-pic{flex-wrap:wrap;justify-content:flex-start;padding:0!important;}
+.comment .li-pic2{width:163rpx;height:163rpx;margin-top:23rpx;margin-left:20rpx;
+}
+.comment-on{background-color:#FF3D3D!important;color:#fff!important;}

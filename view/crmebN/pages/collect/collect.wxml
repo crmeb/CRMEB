@@ -1,0 +1,26 @@
+<view class="collect">
+  <view class='collect-title'>您收藏了<text class='title-num'>{{sum}}</text>件商品</view>
+  <view class='collect-ul'>
+     <block wx:for="{{Arraylist}}">
+      
+         <view class='collect-li flex'>
+           <navigator  url="/pages/product-con/index?id={{item.pid}}" hover-class="none">
+            <view  class='images'>
+               <image src='{{url}}{{item.image}}'></image>
+               <!-- <text class='imagebg'></text> -->
+            </view>
+             </navigator>
+            <view class='li-right'>
+               <view class='text'>{{item.store_name}}</view>
+               <view class='conter'>销量:{{item.sales}}</view>
+               <view class='money flex'>
+                  <view class='money-view on'>￥<text class='moneyNum'>{{item.price}}</text></view>
+                  <view data-id="{{item.pid}}" class='iconfont icon-shanchu del' bindtap='del'></view>
+               </view>
+            </view>   
+            
+         </view>
+        
+     </block>
+  </view>
+</view>

@@ -1,0 +1,30 @@
+<view class="header">
+   <view class='header-bg'>
+      <view class="header-yu">当前余额（元）</view>
+      <view class='header-money'>{{now_money}}</view>
+      <!-- <view class='header-tip'>会员用户充值可享受9折优惠~</view> -->
+   </view>
+</view>
+<view class='main-li flex' bindtap='goPayment'>
+   <view><text class='main-pic main-pic1'></text>立即充值</view>
+   <view class='iconfont icon-xiala main-xia'></view>
+</view>
+<view class='main-li flex' bindtap='indexs'>
+   <view bindtap='indexs'><text class='main-pic main-pic2'></text>进入商城</view>
+   <view class='iconfont icon-xiala main-xia'></view>
+</view>
+<view class='main-li flex main-li3'>
+   <view><text class='main-pic main-pic3'></text>账户明细</view>
+</view>
+<view class='main-con'>
+   <block wx:for="{{mainArray}}">
+      <view class='main-item flex'>
+          <view class='main-text'>
+              <view class='main-number'>{{item.mark}}</view>
+              <view class='main-time'>{{item.add_time}}</view>
+          </view>
+          <view class='item-money money-active' wx:if="{{item.pm==1}}">+{{item.number}}元</view>
+           <view class='item-money money-active' wx:else>-{{item.number}}元</view>
+      </view>
+   </block>
+</view>

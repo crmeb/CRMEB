@@ -1,0 +1,32 @@
+<view class='header'>
+   <view class="money flex" bindtap='cardtap'>{{_num==0?"银行卡":"微信钱包"}}<text class='iconfont icon-xialajiantou cashxia'></text></view>
+    <view class='cashdown' hidden='{{hiddentap}}'>
+        <view class='cashdown-li' data-idnum='0' bindtap='idnumtap'><text class='iconfont icon-msnui-card card'></text><text class='cash-text'>银行卡</text><text class='cashdui iconfont {{_num==0?"icon-duihao":""}}'></text></view>
+        <view class='cashdown-li' data-idnum='1' bindtap='idnumtap'><text class='iconfont icon-weixin weixin'></text><text class='cash-text' >微信钱包</text><text class='cashdui iconfont {{_num==1?"icon-duihao":""}}'></text></view>
+    </view>
+</view>
+    <form bindsubmit="formSubmit">
+        <view class='information' hidden='{{_num==0?false:true}}'>
+            <view class='information-li flex'><label>持卡人</label><input type='text' placeholder-class='placeholder' placeholder='某某人' name="name"/></view>
+            <view class='information-li flex'><label>卡号</label><input type='number' placeholder-class='placeholder' placeholder='请输入银行卡号' name="cardnum"></input></view>
+             <view class='information-li flex'><label>提现金额</label><input type='number' placeholder-class='placeholder' placeholder='最低提现金额为{{minmoney}}' name="money"></input></view>
+            <view class='information-li flex'>
+                <label class='bankname'>银行</label>
+                <picker bindchange="bindPickerChange" value="{{index}}" range="{{array}}">
+                    <text class='Bank'>{{array[index]}}</text>
+                    <text class='iconfont icon-xiala bankxia'></text>
+                </picker>
+            </view>
+           
+         
+        </view>
+        <view class='cash' hidden='{{hidde}}' >
+         <view class='cashNum flex'><label>微信号</label><input type='text' placeholder-class='placeholder' placeholder='微信号' name="weixin"></input></view>
+          <view class='cashNum flex'><label>提现金额</label><input type='number' placeholder-class='placeholder' placeholder='最低提现金额为{{minmoney}}' name="wmoney"></input></view>
+         
+        </view>
+         <view class='balance'>当前用户余额为{{money}}</view>
+      <button class='but' formType="submit">提现</button>
+    </form>
+    <view class='mask' hidden='{{hiddentap}}' bindtap='maskhide'></view>
+    
