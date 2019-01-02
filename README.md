@@ -1,3 +1,6 @@
+<p align="center">
+<img src="https://images.gitee.com/uploads/images/2018/1214/151026_2299df23_892944.gif" />
+</p>
 <h1 align="center"> CRMEB客户管理+电商管理系统</h1> 
 <p align="center">
     <a href="http://www.crmeb.com">
@@ -14,10 +17,10 @@
     </a>
 </p>
 
-## 本项目还在不断开发完善中,如有建议或问题请[在这里提出](https://gitee.com/ZhongBangKeJi/CRMEB/issues)
+## 本项目还在不断开发完善中,如有建议或问题请[官方论坛](http://bbs.crmeb.net)
 
 # 如果对您有帮助，您可以点右上角 "Star" 支持一下 谢谢！
-
+##  :point_right: 小程序版：https://gitee.com/ZhongBangKeJi/CRMEB_WeChatMiniProgram
 ## [帮助文档](https://gitee.com/ZhongBangKeJi/CRMEB/wikis/)
 
 ## 项目介绍
@@ -61,15 +64,17 @@
    5.订单:能够完成用户的订单管理(发货、订单详情、修改订单、订单备注、订单记录、订单退款) 、售后服务 (评论的回复与删除)
    
    6.分销:后台有分销统计管理，分销可以设置人人分销和指定人分销，也可以自己稍微开发一下修改规则，例如下单后成为分销等
+
+   7.数据统计图表统计分析(财务统计、产品统计、会员统计、营销统计、分销统计、交易统计等)
    
-   7.设置:能够完成管理员对网站的商品资料（添加大类、添加小类、商品添加、属性快速生成、商品审查）、商品交易（外理订单、发
+   8.设置:能够完成管理员对网站的商品资料（添加大类、添加小类、商品添加、属性快速生成、商品审查）、商品交易（外理订单、发
         货查询）、会员管理（会员审查）、操作管理（管理员添加、管理员审查、管理员退出）、系统配置、后台通知等功能
         
-   8.内容:管理文章分类 (添加分类、删除分类、修改分类) 、 管理文章
+   9.内容:管理文章分类 (添加分类、删除分类、修改分类) 、 管理文章
    
-   9.维护:查看系统日志、文件变动效验、刷新网站缓存、在线更新系统、清除数据等功能
+   10.维护:查看系统日志、文件变动效验、刷新网站缓存、在线更新系统、清除数据、文件管理等功能
 
-   10.强大的权限管理系统
+   11.强大的权限管理系统
 
 ##  演示地址
    演示站后台:[<a href='http://demo25.crmeb.net' target="_blank"> crmeb_v2.5 </a>]       
@@ -89,10 +94,6 @@ CRMEB微信公众号v2.5版：除了以上功能还带砍价、拼团功能
 CRMEB微信小程序v2.5版：除了以上功能还带砍价、拼团功能
 
 CRMEB微信公众号小程序打通v2.5版：除了以上功能还带砍价、拼团功能 需要申请微信开放平台
-
-CRMEB微信公众号v2.0版：除了以上功能还带拼团功能
-
-CRMEB微信小程序v2.0版：除了以上功能还带砍价、拼团功能
 
 还有定制开发服务，例如：预约系统、O2O、付费阅读、多店版、多商家版
 
@@ -121,7 +122,25 @@ Git clone https://gitee.com/ZhongBangKeJi/CRMEB.git
 
 QQ群: 116279623
 
+官方论坛：http://bbs.crmeb.net
+
 Gitee: https://gitee.com/ZhongBangKeJi/CRMEB/issues
+
+##  系统组件开源项目
+
+#### form-builder
+
+tp5 PHP表单生成器，快速生成现代化的form表单。包含复选框、单选框、输入框、下拉选择框等元素以及,省市区三级联动,时间选择,日期选择,颜色选择,文件/图片上传等功能。
+form-builder : https://github.com/xaboy/form-builder
+#### laravel-form-builder
+
+laravel PHP表单生成器，快速生成现代化的form表单。包含复选框、单选框、输入框、下拉选择框等元素以及,省市区三级联动,时间选择,日期选择,颜色选择,文件/图片上传等功能。
+https://github.com/xaboy/laravel-form-builder
+
+#### form-create
+
+具有动态渲染、数据收集、校验功能的表单生成器，支持双向数据绑定、事件扩展以及自定义组件，可快速生成包含有省市区三级联动、时间选择、日期选择等17种功能组件。 http://fc.gd8.top
+https://github.com/xaboy/form-create
 
 ## 特别鸣谢
 感谢以下的项目,排名不分先后
@@ -133,8 +152,6 @@ Bootstrap：http://getbootstrap.com
 jQuery：http://jquery.com
 
 iView：https://www.iviewui.com
-
-form-builder : https://github.com/xaboy/form-builder（也是参与本项目开发的技术）
 
 Vue：https://cn.vuejs.org/
 
