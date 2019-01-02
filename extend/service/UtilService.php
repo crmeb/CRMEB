@@ -177,6 +177,49 @@ class UtilService
         }
         return $list;
     }
+    /**
+     * 分级返回多维数组
+     * @param $data
+     * @param int $pid
+     * @param string $field
+     * @param string $pk
+     * @param int $level
+     * @return array
+     */
+    public static function getChindNode($data, $pid = 0, $field = 'pid', $pk = 'id', $level = 1)
+    {
+
+        static $list = [];
+        foreach ($data as $k => $res) {
+            if ($res['pid'] == $pid) {
+                $list[] = $res;
+                unset($data[$k]);
+                self::getChindNode($data, $res['id'], $field, $pk, $level + 1);
+
+            }
+        }
+        return $list;
+
+
+    }
+    /**分级返回下级所有分类ID
+     * @param $data
+     * @param string $children
+     * @param string $field
+     * @param string $pk
+     * @return string
+     */
+    public static function getChildrenPid($data,$pid, $field = 'pid', $pk = 'id')
+    {
+        static $pids = '';
+        foreach ($data as $k => $res) {
+            if ($res[$field] == $pid) {
+                $pids .= ','.$res[$pk];
+                self::getChildrenPid($data, $res[$pk], $field, $pk);
+            }
+        }
+        return $pids;
+    }
 
 
     /**

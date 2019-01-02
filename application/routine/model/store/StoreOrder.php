@@ -20,8 +20,7 @@ use app\routine\model\user\UserAddress;
 use app\routine\model\user\UserBill;
 use app\routine\model\user\WechatUser;
 use basic\ModelBasic;
-use behavior\wap\StoreProductBehavior;
-use behavior\routine\StoreProductBehavior as StoreProductBehaviorRoutine;
+use behavior\routine\StoreProductBehavior;
 use behavior\wechat\PaymentBehavior;
 use service\HookService;
 use service\RoutineService;
@@ -521,7 +520,7 @@ class StoreOrder extends ModelBasic
         if(false !== self::edit(['status'=>2],$order['id'],'id') &&
             false !== StoreOrderStatus::status($order['id'],'user_take_delivery','用户已收货')){
             try{
-                HookService::listen('store_product_order_user_take_delivery',$order,$uid,false,StoreProductBehaviorRoutine::class);
+                HookService::listen('store_product_order_user_take_delivery',$order,$uid,false,StoreProductBehavior::class);
             }catch (\Exception $e){
                 return self::setErrorInfo($e->getMessage());
             }

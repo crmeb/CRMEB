@@ -69,7 +69,7 @@ function createPoster($product = array()){
                 'text'=>substr(iconv_substr($product['store_name'],0,mb_strlen($product['store_name']),'utf-8'),0,24).'...',
                 'left'=>50,
                 'top'=>500,
-                'fontPath'=>ROOT_PATH.'public/uploads/poster/simsunb.ttf',     //字体文件
+                'fontPath'=>ROOT_PATH.'public/static/font/simsunb.ttf',     //字体文件
                 'fontSize'=>16,             //字号
                 'fontColor'=>'40,40,40',       //字体颜色
                 'angle'=>0,
@@ -78,7 +78,7 @@ function createPoster($product = array()){
                 'text'=>'￥'.$product['price'],
                 'left'=>50,
                 'top'=>580,
-                'fontPath'=>ROOT_PATH.'public/uploads/poster/simsunb.ttf',     //字体文件
+                'fontPath'=>ROOT_PATH.'public/static/font/simsunb.ttf',     //字体文件
                 'fontSize'=>16,             //字号
                 'fontColor'=>'40,40,40',       //字体颜色
                 'angle'=>0,
@@ -108,7 +108,7 @@ function createPoster($product = array()){
                 'opacity'=>100,
             ),
         ),
-        'background'=>ROOT_PATH.'public/uploads/poster/background.jpg'          //背景图
+        'background'=>ROOT_PATH.UPLOAD_PATH.'/poster/background.jpg'          //背景图
     );
     $imageDefault = array(
         'left'=>0,

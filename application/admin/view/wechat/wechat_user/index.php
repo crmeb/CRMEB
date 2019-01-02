@@ -471,7 +471,7 @@
             }
         }
         var str = chk_value.join(',');
-        var url = "http://"+window.location.host+"/admin/store.store_coupon/grant/id/"+str;
+        var url = "http://"+window.location.host+"/admin/ump.store_coupon/grant/id/"+str;
         $eb.createModalFrame(this.innerText,url,{'w':800});
     })
     $('.news').on('click',function (e) {
@@ -494,7 +494,7 @@
             }
         }
         var str = chk_value.join(',');
-        var url = "http://"+window.location.host+"/admin/wechat.wechat_news_category/send_news/id/"+str;
+        var url = "{:Url('wechat.wechat_news_category/send_news')}?id="+str;
         $eb.createModalFrame(this.innerText,url,{'w':800});
     })
     $('.synchro').on('click',function(){

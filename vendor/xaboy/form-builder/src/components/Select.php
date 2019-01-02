@@ -15,6 +15,7 @@ use FormBuilder\traits\component\ComponentOptionsTrait;
 /**
  * 选择器组件
  * Class Select
+ *
  * @package FormBuilder\components
  * @method $this multiple(Boolean $bool) 是否支持多选, 默认为false
  * @method $this disabled(Boolean $bool) 是否禁用, 默认为false
@@ -63,12 +64,9 @@ class Select extends FormComponentDriver
         'notFoundText' => 'string',
     ];
 
-    /**
-     *
-     */
     protected function init()
     {
-        $this->placeholder('请选择' . $this->title);
+        $this->placeholder($this->getPlaceHolder());
     }
 
     /**
@@ -89,19 +87,12 @@ class Select extends FormComponentDriver
     }
 
 
-    /**
-     * @param null $message
-     * @param string $trigger
-     * @return $this
-     */
-    public function required($message = null, $trigger = 'change')
+    public function getValidateHandler()
     {
-        $this->setRequired(
-            Helper::getVar($message, '请选择' . $this->title),
-            $trigger,
-            $this->props['multiple'] == true ? 'array' : null
-        );
-        return $this;
+        if ($this->props['multiple'] == true)
+            return Validate::arr();
+        else
+            return Validate::str();
     }
 
     /**
@@ -118,9 +109,9 @@ class Select extends FormComponentDriver
         $isArr = is_array($value);
         if ($this->props['multiple'] == false && $isArr)
             $value = isset($value[0]) ? $value[0] : '';
-        else if($isArr){
+        else if ($isArr) {
             $value = array_unique($value);
-            foreach ($value as $k=>$v){
+            foreach ($value as $k => $v) {
                 $value[$k] = (string)$v;
             }
         }
@@ -132,7 +123,7 @@ class Select extends FormComponentDriver
             'props' => (object)$this->props,
             'options' => $options,
             'validate' => $this->validate,
-            'col'=>$this->col
+            'col' => $this->col
         ];
     }
 }

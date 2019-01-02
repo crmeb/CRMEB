@@ -12,11 +12,14 @@ use FormBuilder\components\Hidden;
 
 /**
  * Class FormHiddenTrait
+ *
  * @package FormBuilder\traits\form
  */
 trait FormHiddenTrait
 {
     /**
+     * 隐藏组件
+     *
      * @param $field
      * @param $value
      * @return Hidden

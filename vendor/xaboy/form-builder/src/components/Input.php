@@ -14,6 +14,7 @@ use FormBuilder\Helper;
 /**
  * Input组件,支持类型text、password、textarea、url、email、date
  * Class Input
+ *
  * @package FormBuilder\components
  * @method $this type(String $type) 输入框类型，可选值为 text、password、textarea、url、email、date;
  * @method $this size(String $size) 输入框尺寸，可选值为large、small、default或者不设置;
@@ -94,36 +95,37 @@ class Input extends FormComponentDriver
      */
     protected function init()
     {
-        $this->placeholder('请输入' . $this->title);
+        $this->placeholder($this->getPlaceHolder());
+    }
+
+    protected function getPlaceHolder($pre = '请输入')
+    {
+        return parent::getPlaceHolder($pre);
+    }
+
+    public function getValidateHandler()
+    {
+        return Validate::str(Validate::TRIGGER_BLUR);
     }
 
 
     /**
      * 自适应内容高度，仅在 textarea 类型下有效
-     * @param Number $minRows
-     * @param Number $maxRows
+     *
+     * @param Bool|Number $minRows
+     * @param null|Number $maxRows
      * @return $this
      */
-    public function autoSize($minRows, $maxRows)
+    public function autoSize($minRows = false, $maxRows = null)
     {
-        $this->props['autosize'] = compact('minRows', 'maxRows');
+
+        $this->props['autosize'] = $maxRows === null ? boolval($minRows) : compact('minRows', 'maxRows');
         return $this;
     }
-
-    /**
-     * 组件的值为必填
-     * @param string $message
-     * @return $this
-     */
-    public function required($message = null, $trigger = 'blur')
-    {
-        parent::setRequired(Helper::getVar($message, $this->getProps('placeholder')), $trigger);
-        return $this;
-    }
-
 
     /**
      * 生成表单规则
+     *
      * @return array
      */
     public function build()
@@ -135,7 +137,7 @@ class Input extends FormComponentDriver
             'value' => $this->value,
             'props' => (object)$this->props,
             'validate' => $this->validate,
-            'col'=>$this->col
+            'col' => $this->col
         ];
     }
 }

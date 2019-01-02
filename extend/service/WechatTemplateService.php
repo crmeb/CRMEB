@@ -53,10 +53,10 @@ class WechatTemplateService
 
     public static function sendTemplate($openid,$templateId,array $data,$url = null,$defaultColor = '')
     {
-        $templateinfo = WechatTemplateModel::where('tempkey',$templateId)->where('status',1)->find();
-        if(!$templateinfo) return false;
+        $tempid = WechatTemplateModel::where('tempkey',$templateId)->where('status',1)->value('tempid');
+        if(!$tempid) return false;
         try{
-            return WechatService::sendTemplate($openid,$templateinfo['tempid'],$data,$url,$defaultColor);
+            return WechatService::sendTemplate($openid,$tempid,$data,$url,$defaultColor);
         }catch (\Exception $e){
             return false;
         }

@@ -41,14 +41,21 @@ Page({
             },
             success: function (res) {
               app.globalData.uid = res.data.data.uid;
+              app.globalData.openid = res.data.data.routine_openid;
               if (app.globalData.openPages != '' && app.globalData.openPages != undefined) {//跳转到指定页面
                 wx.navigateTo({
                   url: app.globalData.openPages
                 })
               } else {//跳转到首页
-                wx.reLaunch({
-                  url: '/pages/index/index'
-                })
+                if(res.data.data.page){
+                    wx.navigateTo({
+                        url: res.data.data.page
+                    })
+                }else{
+                    wx.reLaunch({
+                        url: '/pages/index/index'
+                    })
+                }
               }
             }
           })

@@ -33,7 +33,7 @@ Page({
              addressP.city = res.cityName;
              addressP.district = res.countyName;
              wx.request({
-               url: app.globalData.url + '/routine/auth_api/edit_user_address?uid=' + app.globalData.uid,
+               url: app.globalData.url + '/routine/auth_api/edit_user_address?uid=' + app.globalData.uid + '&openid=' + app.globalData.openid,
                method: 'POST',
                data: {
                  address: addressP,

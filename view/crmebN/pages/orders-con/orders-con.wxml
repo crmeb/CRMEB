@@ -113,7 +113,7 @@
 <view class='foot'>
   <view class='pay-btn' data-id="{{ordercon.order_id}}" bindtap='getPay'  wx:if="{{ordercon._status._type==0}}">立即付款</view> 
    <navigator wx:elif="{{ordercon._status._type==1}}" hover-class="none" url='/pages/refund-page/refund-page?orderId={{ordercon.order_id}}'><view class='delete-btn'>申请退款</view></navigator> 
-   <view wx:if="{{ordercon._status._type==1 && ordercon.combination_id}}" class='pay-btn' bindtap='goJoinPink' data-uni='{{ordercon.pink_id}}'>查看拼团</view> 
+   <view wx:if="{{ordercon._status._type==1 && ordercon.combination_id > 0}}" class='pay-btn' bindtap='goJoinPink' data-uni='{{ordercon.pink_id}}'>查看拼团</view>
    <navigator wx:if="{{ordercon._status._type==2 && ordercon.delivery_type == 'express'}}" hover-class="none" url='/pages/logistics/logistics?orderId={{ordercon.order_id}}'><view class='delete-btn' >查看物流</view></navigator>
    <view wx:if="{{ordercon._status._type==2}}" class='pay-btn' bindtap='confirmOrder' data-uni='{{ordercon.order_id}}'>确认收货</view> 
    <view wx:if="{{ordercon._status._type==4 || ordercon._status._type==0}}" class='delete-btn' bindtap='delOrder' data-uni='{{ordercon.order_id}}'>删除订单</view>

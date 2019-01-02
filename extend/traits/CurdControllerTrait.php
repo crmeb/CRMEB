@@ -11,6 +11,10 @@ use think\Request;
 
 trait CurdControllerTrait
 {
+    /**保存数据库
+     * @param $id
+     * @param $field
+     */
     public function change_field($id,$field)
     {
         if(!isset($this->bindModel)) return exception('方法不存在!');

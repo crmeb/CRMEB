@@ -66,6 +66,7 @@
                             <li>签到记录</li>
                             <li>持有优惠劵</li>
                             <li>余额变动记录</li>
+                            <li>推广下线明细</li>
                         </ul>
                         <div class="layui-tab-content" id="content">
                             {volist name='headerList' id='vo'}
@@ -82,7 +83,7 @@
                             </div>
                             {/volist}
                             <div class="layui-tab-item layui-show">
-                                <table class="layui-table" lay-skin="line">
+                                <table class="layui-table" lay-skin="line" v-cloak="">
                                     <thead>
                                         <tr>
                                             <th>订单编号</th>
@@ -118,7 +119,7 @@
                                 <div ref="page_order" v-show="count.order_count > limit" style="text-align: right;"></div>
                             </div>
                             <div class="layui-tab-item">
-                                <table class="layui-table" lay-skin="line">
+                                <table class="layui-table" lay-skin="line" v-cloak="">
                                     <thead>
                                     <tr>
                                         <th>来源/用途</th>
@@ -144,7 +145,7 @@
                                 <div ref="integral_page" v-show="count.integral_count > limit" style="text-align: right;"></div>
                             </div>
                             <div class="layui-tab-item">
-                                <table class="layui-table" lay-skin="line">
+                                <table class="layui-table" lay-skin="line" v-cloak="">
                                     <thead>
                                     <tr>
                                         <th>动作</th>
@@ -168,7 +169,7 @@
                                 <div ref="Sign_page" v-show="count.sign_count > limit" style="text-align: right;"></div>
                             </div>
                             <div class="layui-tab-item">
-                                <table class="layui-table">
+                                <table class="layui-table" v-cloak="">
                                     <thead>
                                     <tr>
                                         <th>优惠券名称</th>
@@ -198,7 +199,7 @@
                                 <div ref="copons_page" v-show="count.coupon_count > limit" style="text-align: right;"></div>
                             </div>
                             <div class="layui-tab-item">
-                                <table class="layui-table">
+                                <table class="layui-table" v-cloak="">
                                     <thead>
                                     <tr>
                                         <th>变动金额</th>
@@ -229,6 +230,37 @@
                                 </table>
                                 <div ref="balancechang_page" v-show="count.balanceChang_count > limit" style="text-align: right;"></div>
                             </div>
+                            <!--推广人-->
+                            <div class="layui-tab-item">
+                                <table class="layui-table" v-cloak="">
+                                    <thead>
+                                    <tr>
+                                        <th>昵称</th>
+                                        <th>余额</th>
+                                        <th>积分</th>
+                                        <th>加入时间</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr v-for="item in SpreadList">
+                                        <td>
+                                            {{item.nickname}}
+                                            <p v-show="item.is_vip">
+                                                <span class="layui-badge layui-bg-orange" v-text="item.vip_name"></span>
+                                            </p>
+                                        </td>
+                                        <td>{{item.now_money}}</td>
+                                        <td>{{item.integral}}</td>
+                                        <td>{{item.add_time}}</td>
+                                    </tr>
+                                    <tr v-show="balanceChangList.length<=0" style="text-align: center">
+                                        <td colspan="4">暂无数据</td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                                <div ref="spread_page" v-show="count.spread_page > limit" style="text-align: right;"></div>
+                            </div>
+                            <!--end-->
                         </div>
                     </div>
                 </div>
@@ -251,13 +283,15 @@
                 SignList:[],
                 CouponsList:[],
                 balanceChangList:[],
+                SpreadList:[],
                 count:count,
                 page:{
                     order_page:1,
                     integral_page:1,
                     sign_page:1,
                     copons_page:1,
-                    balancechang_page:1
+                    balancechang_page:1,
+                    spread_page:1,
                 },
             },
             watch:{
@@ -275,37 +309,34 @@
                 },
                 'page.balancechang_page':function () {
                     this.getOneBalanceChangList();
+                },
+                'page.spread_page':function () {
+                    this.getSpreadList();
                 }
             },
             methods:{
+                getSpreadList:function(){
+                    this.request('getSpreadList',this.page.spread_page,'SpreadList');
+                },
                 getOneorderList:function () {
-                    var that=this;
-                    layList.baseGet(layList.U({a:'getOneorderList',p:{page:this.page.order_page,limit:this.limit,uid:this.uid}}),function (res) {
-                        that.orderList=res.data;
-                    });
+                    this.request('getOneorderList',this.page.order_page,'orderList');
                 },
                 getOneIntegralList:function () {
-                    var that=this;
-                    layList.baseGet(layList.U({a:'getOneIntegralList',p:{page:this.page.integral_page,limit:this.limit,uid:this.uid}}),function (res) {
-                        that.integralList=res.data;
-                    });
+                    this.request('getOneIntegralList',this.page.integral_page,'integralList');
                 },
                 getOneSignList:function () {
-                    var that=this;
-                    layList.baseGet(layList.U({a:'getOneSignList',p:{page:this.page.sign_page,limit:this.limit,uid:this.uid}}),function (res) {
-                        that.SignList=res.data;
-                    });
+                    this.request('getOneSignList',this.page.sign_page,'SignList');
                 },
                 getOneCouponsList:function () {
-                    var that=this;
-                    layList.baseGet(layList.U({a:'getOneCouponsList',p:{page:this.page.copons_page,limit:this.limit,uid:this.uid}}),function (res) {
-                        that.CouponsList=res.data;
-                    });
+                    this.request('getOneCouponsList',this.page.copons_page,'CouponsList');
                 },
                 getOneBalanceChangList:function () {
+                    this.request('getOneBalanceChangList',this.page.balancechang_page,'balanceChangList');
+                },
+                request:function (action,page,name) {
                     var that=this;
-                    layList.baseGet(layList.U({a:'getOneBalanceChangList',p:{page:this.page.balancechang_page,limit:this.limit,uid:this.uid}}),function (res) {
-                        that.balanceChangList=res.data;
+                    layList.baseGet(layList.U({a:action,p:{page:page,limit:this.limit,uid:this.uid}}),function (res) {
+                        that.$set(that,name,res.data)
                     });
                 }
             },
@@ -315,6 +346,7 @@
                 this.getOneSignList();
                 this.getOneCouponsList();
                 this.getOneBalanceChangList();
+                this.getSpreadList();
                 var that=this;
                 layList.laypage.render({
                     elem: that.$refs.page_order
@@ -359,6 +391,16 @@
                     ,theme: '#1E9FFF',
                     jump:function(obj){
                         that.page.balancechang_page=obj.curr;
+                    }
+                });
+
+                layList.laypage.render({
+                    elem: that.$refs.spread_page
+                    ,count:that.count.spread_count
+                    ,limit:that.limit
+                    ,theme: '#1E9FFF',
+                    jump:function(obj){
+                        that.page.spread_page=obj.curr;
                     }
                 });
             }

@@ -27,25 +27,24 @@ class WechatService
 {
     private static $instance = null;
 
-    /**获取微信配置参数
-     * @return array
-     */
     public static function options()
     {
-        $wechat = SystemConfigService::more(['wechat_appid','wechat_appsecret','wechat_token']);
+        $wechat = SystemConfigService::more(['wechat_appid','wechat_appsecret','wechat_token','wechat_encodingaeskey','wechat_encode']);
         $payment = SystemConfigService::more(['pay_weixin_mchid','pay_weixin_client_cert','pay_weixin_client_key','pay_weixin_key','pay_weixin_open']);
         $config = [
-            'app_id'=>isset($wechat['wechat_appid']) ? trim($wechat['wechat_appid']):'',
-            'secret'=>isset($wechat['wechat_appsecret']) ? trim($wechat['wechat_appsecret']):'',
-            'token'=>isset($wechat['wechat_token']) ? trim($wechat['wechat_token']):'',
+            'app_id'=>isset($wechat['wechat_appid']) ? $wechat['wechat_appid']:'',
+            'secret'=>isset($wechat['wechat_appsecret']) ? $wechat['wechat_appsecret']:'',
+            'token'=>isset($wechat['wechat_token']) ? $wechat['wechat_token']:'',
             'guzzle' => [
                 'timeout' => 10.0, // 超时时间（秒）
             ],
         ];
+        if((int)$wechat['wechat_encode']>0 && isset($wechat['wechat_encodingaeskey']) && !empty($wechat['wechat_encodingaeskey']))
+            $config['aes_key'] =  $wechat['wechat_encodingaeskey'];
         if(isset($payment['pay_weixin_open']) && $payment['pay_weixin_open'] == 1){
             $config['payment'] = [
-                'merchant_id'=>trim($payment['pay_weixin_mchid']),
-                'key'=>trim($payment['pay_weixin_key']),
+                'merchant_id'=>$payment['pay_weixin_mchid'],
+                'key'=>$payment['pay_weixin_key'],
                 'cert_path'=>realpath('.'.$payment['pay_weixin_client_cert']),
                 'key_path'=>realpath('.'.$payment['pay_weixin_client_key']),
                 'notify_url'=>SystemConfigService::get('site_url').Url::build('wap/Wechat/notify')
@@ -62,9 +61,6 @@ class WechatService
         return self::$instance;
     }
 
-    /**
-     * 微信接口
-     */
     public static function serve()
     {
         $wechat = self::application(true);
@@ -133,6 +129,7 @@ class WechatService
                     $response = HookService::resultListen('wechat_message_other',$message,null,true,$behavior);
                     break;
             }
+            
             return $response;
         });
     }
@@ -370,11 +367,6 @@ class WechatService
         return self::paymentService()->refund($orderNo,$refundNo,$totalFee,$refundFee,$opUserId,$type,$refundAccount,$refundReason);
     }
 
-    /**订单退款
-     * @param $orderNo
-     * @param array $opt
-     * @return bool
-     */
     public static function payOrderRefund($orderNo, array $opt)
     {
         if(!isset($opt['pay_price'])) exception('缺少pay_price');
@@ -420,10 +412,6 @@ class WechatService
         return self::application()->js;
     }
 
-    /** jsSdk
-     * @param string $url
-     * @return array|string
-     */
     public static function jsSdk($url = '')
     {
         $apiList = ['onMenuShareTimeline', 'onMenuShareAppMessage', 'onMenuShareQQ', 'onMenuShareWeibo', 'onMenuShareQZone', 'startRecord', 'stopRecord', 'onVoiceRecordEnd', 'playVoice', 'pauseVoice', 'stopVoice', 'onVoicePlayEnd', 'uploadVoice', 'downloadVoice', 'chooseImage', 'previewImage', 'uploadImage', 'downloadImage', 'translateVoice', 'getNetworkType', 'openLocation', 'getLocation', 'hideOptionMenu', 'showOptionMenu', 'hideMenuItems', 'showMenuItems', 'hideAllNonBaseMenuItem', 'showAllNonBaseMenuItem', 'closeWindow', 'scanQRCode', 'chooseWXPay', 'openProductSpecificView', 'addCard', 'chooseCard', 'openCard'];

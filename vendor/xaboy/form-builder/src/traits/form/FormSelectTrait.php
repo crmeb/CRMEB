@@ -12,13 +12,16 @@ use FormBuilder\components\Select;
 
 /**
  * Class FormSelectTrait
+ *
  * @package FormBuilder\traits\form
  */
 trait FormSelectTrait
 {
     /**
-     * @param $field
-     * @param $title
+     * 下拉选择组件
+     *
+     * @param        $field
+     * @param        $title
      * @param string $value
      * @return Select
      */
@@ -31,8 +34,10 @@ trait FormSelectTrait
     }
 
     /**
-     * @param $field
-     * @param $title
+     * 多选
+     *
+     * @param       $field
+     * @param       $title
      * @param array $value
      * @return Select
      */
@@ -42,8 +47,10 @@ trait FormSelectTrait
     }
 
     /**
-     * @param $field
-     * @param $title
+     * 单选
+     *
+     * @param        $field
+     * @param        $title
      * @param string $value
      * @return Select
      */

@@ -12,13 +12,16 @@ use FormBuilder\components\Radio;
 
 /**
  * Class FormRadioTrait
+ *
  * @package FormBuilder\traits\form
  */
 trait FormRadioTrait
 {
     /**
-     * @param $field
-     * @param $title
+     * 单选框组件
+     *
+     * @param        $field
+     * @param        $title
      * @param string $value
      * @return Radio
      */

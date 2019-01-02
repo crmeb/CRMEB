@@ -2,7 +2,7 @@
 namespace  app\routine\model\routine;
 
 use app\admin\model\system\SystemConfig;
-
+use think\Db;
 class RoutineServer{
     /**
      * curl  get方式
@@ -73,14 +73,14 @@ class RoutineServer{
      * @return mixed
      */
     public static function get_access_token(){
-        $accessToken = db('routine_access_token')->where('id',1)->find();
+        $accessToken =  Db::name('routine_access_token')->where('id',1)->find();
         if($accessToken['stop_time'] > time()) return $accessToken['access_token'];
         else{
             $accessToken = self::getAccessToken();
             if(isset($accessToken['access_token'])){
                 $data['access_token'] = $accessToken['access_token'];
                 $data['stop_time'] = bcadd($accessToken['expires_in'],time(),0);
-                db('routine_access_token')->where('id',1)->update($data);
+                 Db::name('routine_access_token')->where('id',1)->update($data);
             }
             return $accessToken['access_token'];
         }

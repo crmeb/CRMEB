@@ -99,14 +99,15 @@ class StoreCart extends ModelBasic
         foreach ($list as $k=>$cart) {
             if ($cart['seckill_id']) {
                 $product = StoreSeckill::field($seckillInfoField)
-                    ->find($cart['seckill_id'])->toArray();
+                    ->find($cart['seckill_id']);
             }elseif($cart['bargain_id']){
                 $product = StoreBargain::field($bargainInfoField)
-                    ->find($cart['bargain_id'])->toArray();
+                    ->find($cart['bargain_id']);
             }else{
                 $product = StoreProduct::field($productInfoField)
-                    ->find($cart['product_id'])->toArray();
+                    ->find($cart['product_id']);
             }
+            if(!empty($product)) $product = $product->toArray();
             $cart['productInfo'] = $product;
             //商品不存在
             if (!$product) {

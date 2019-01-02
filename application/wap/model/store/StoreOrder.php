@@ -58,8 +58,8 @@ class StoreOrder extends ModelBasic
 
     public static function getOrderPriceGroup($cartInfo)
     {
-        $storePostage = floatval(SystemConfigService::get('store_postage'))?:0;
-        $storeFreePostage =  floatval(SystemConfigService::get('store_free_postage'))?:0;
+        $storePostage = floatval(SystemConfigService::get('store_postage'))?:0;//基础邮费
+        $storeFreePostage =  floatval(SystemConfigService::get('store_free_postage'))?:0;//满*包邮
         $totalPrice = self::getOrderTotalPrice($cartInfo);
         $costPrice = self::getOrderCostPrice($cartInfo);
         if(!$storeFreePostage) {
@@ -196,7 +196,6 @@ class StoreOrder extends ModelBasic
             $couponPrice = 0;
         }
         if(!$res1) return self::setErrorInfo('使用优惠劵失败!');
-
         //是否包邮
         if((isset($other['offlinePostage'])  && $other['offlinePostage'] && $payType == 'offline')) $payPostage = 0;
         $payPrice = bcadd($payPrice,$payPostage,2);
@@ -572,7 +571,7 @@ class StoreOrder extends ModelBasic
             $status['_msg'] = '已为您退款,感谢您的支持';
             $status['_class'] = 'state-sqtk';
         }else if(!$order['status']){
-            if($order['pink_id']){
+            if(isset($order['pink_id'])){
                 if(StorePink::where('id',$order['pink_id'])->where('status',1)->count()){
                     $status['_type'] = 1;
                     $status['_title'] = '拼团中';

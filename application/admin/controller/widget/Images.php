@@ -1,7 +1,6 @@
 <?php
 
 namespace app\admin\controller\widget;
-use function Sodium\add;
 use think\Request;
 use think\Url;
 use app\admin\model\system\SystemAttachment as SystemAttachmentModel;
@@ -20,22 +19,15 @@ use service\FormBuilder as Form;
  */
 class Images extends AuthController
 {
-    const dir = [
-        0=>['tid'=>0,'name'=>'编辑器','path'=>'editor']
-        ,1=>['tid'=>1,'name'=>'产品图片','path'=>'store/product']
-        ,2=>['tid'=>2,'name'=>'拼团图片','path'=>'store/combination']
-        ,3=>['tid'=>3,'name'=>'砍价图片','path'=>'store/bargain']
-        ,4=>['tid'=>4,'name'=>'秒杀图片','path'=>'store/seckill']
-        ,5=>['tid'=>5,'name'=>'文章图片','path'=>'wechat/image']
-        ,6=>['tid'=>6,'name'=>'组合数据图','path'=>'common']
-    ];
     /**
      * 附件列表
      * @return \think\response\Json
      */
    public function index()
    {
-       $pid = input('pid')!=''?input('pid'):0;
+       $pid = input('pid') != NULL ?input('pid'):session('pid');
+       if($pid != NULL)session('pid',$pid);
+       if(!empty(session('pid')))$pid = session('pid');
        $this->assign('pid',$pid);
        //分类标题
        $typearray = Category::getAll();
@@ -46,17 +38,20 @@ class Images extends AuthController
        return $this->fetch('widget/images');
    }
     /**
-     * 编辑器上传图片
+     * 图片管理上传图片
      * @return \think\response\Json
      */
     public function upload()
     {
-        $pid = input('pid')!=''?input('pid'):0;
-
-        $res = Upload::image('file',$pid.'/'.date('Ymd'));
+        $pid = input('pid')!= NULL ?input('pid'):session('pid');
+        $res = Upload::image('file','attach'.DS.date('Y').DS.date('m').DS.date('d'));
         $thumbPath = Upload::thumb($res->dir);
         //产品图片上传记录
         $fileInfo = $res->fileInfo->getinfo();
+        //入口是public需要替换图片路径
+        if(strpos(PUBILC_PATH,'public') == false){
+            $res->dir = str_replace('public/','',$res->dir);
+        }
         SystemAttachmentModel::attachmentAdd($res->fileInfo->getSaveName(),$fileInfo['size'],$fileInfo['type'],$res->dir,$thumbPath,$pid);
         $info = array(
 //            "originalName" => $fileInfo['name'],
@@ -66,7 +61,7 @@ class Images extends AuthController
 //            "type" => $fileInfo['type'],
 //            "state" => "SUCCESS"
             'code' =>200,
-            'msg'  =>'SUCCESS',
+            'msg'  =>'上传成功',
             'src'  =>$res->dir
         );
         echo json_encode($info);
@@ -92,19 +87,13 @@ class Images extends AuthController
     public function deleteimganddata($att_id){
         $attinfo = SystemAttachmentModel::get($att_id)->toArray();
         if($attinfo){
-            if(strpos($attinfo['att_dir'],'public') !== false){
-                @unlink(ROOT_PATH.ltrim($attinfo['att_dir'],'/'));
-                @unlink(ROOT_PATH.ltrim($attinfo['satt_dir'],'/'));
-            }else{
-                @unlink(ROOT_PATH.ltrim('public'.$attinfo['att_dir'],'/'));
-                @unlink(ROOT_PATH.ltrim('public'.$attinfo['satt_dir'],'/'));
-            }
-
+            @unlink(ROOT_PATH.ltrim($attinfo['att_dir'],'.'));
+            @unlink(ROOT_PATH.ltrim($attinfo['satt_dir'],'.'));
             SystemAttachmentModel::where(['att_id'=>$att_id])->delete();
         }
     }
     /**
-     * 移动图片分类
+     * 移动图片分类显示
      */
     public function moveimg($imgaes){
 
@@ -123,7 +112,7 @@ class Images extends AuthController
         return $this->fetch('public/form-builder');
     }
 
-    /**移动图片
+    /**移动图片分类操作
      * @param Request $request
      * @param $id
      */

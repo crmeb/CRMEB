@@ -3,6 +3,7 @@
 namespace app\admin\controller\agent;
 
 use app\admin\controller\AuthController;
+use app\admin\model\order\StoreOrder;
 use app\admin\model\user\User;
 use app\admin\model\wechat\WechatUser as UserModel;
 use app\admin\library\FormBuilder;
@@ -74,6 +75,7 @@ class AgentManage extends AuthController
             ->order('u.add_time DESC')
             ->select()
             ->toArray();
+        foreach ($list as $key=>$value) $list[$key]['orderCount'] = StoreOrder::getOrderCount($value['uid']);
         $this->assign('list',$list);
         return $this->fetch();
     }

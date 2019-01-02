@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006~2017 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2006~2018 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
@@ -128,7 +128,7 @@ abstract class Paginator implements ArrayAccess, Countable, IteratorAggregate, J
         }
         $url = $path;
         if (!empty($parameters)) {
-            $url .= '?' . urldecode(http_build_query($parameters, null, '&'));
+            $url .= '?' . http_build_query($parameters, null, '&');
         }
         return $url . $this->buildFragment();
     }
@@ -395,7 +395,15 @@ abstract class Paginator implements ArrayAccess, Countable, IteratorAggregate, J
 
     public function __call($name, $arguments)
     {
-        return call_user_func_array([$this->getCollection(), $name], $arguments);
+        $collection = $this->getCollection();
+
+        $result = call_user_func_array([$collection, $name], $arguments);
+
+        if ($result === $collection) {
+            return $this;
+        }
+
+        return $result;
     }
 
 }

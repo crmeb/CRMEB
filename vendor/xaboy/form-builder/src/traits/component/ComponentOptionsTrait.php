@@ -12,6 +12,7 @@ use FormBuilder\components\Option;
 
 /**
  * Class ComponentOptionsTrait
+ *
  * @package FormBuilder\traits\component
  */
 trait ComponentOptionsTrait
@@ -23,10 +24,12 @@ trait ComponentOptionsTrait
 
     /**
      * 设置的选项
-     * @param $value
-     * @param $label
+     *
+     * @param      $value
+     * @param      $label
      * @param bool $disabled
      * @return $this
+     * @throws \FormBuilder\exception\FormBuilderException
      */
     public function option($value, $label, $disabled = false)
     {
@@ -37,9 +40,11 @@ trait ComponentOptionsTrait
 
     /**
      * 批量设置的选项
+     *
      * @param array $options
-     * @param bool $disabled
+     * @param bool  $disabled
      * @return $this
+     * @throws \FormBuilder\exception\FormBuilderException
      */
     public function options(array $options, $disabled = false)
     {
@@ -59,16 +64,17 @@ trait ComponentOptionsTrait
 
     /**
      * 批量设置选项 支持匿名函数
-     * @param $options
+     *
+     * @param      $options
      * @param bool $disabled
      * @return $this
      */
     public function setOptions($options, $disabled = false)
     {
-        if(is_callable($options))
-            return $this->setOptions($options($this),$disabled);
-        else if(is_array($options))
-            return $this->options($options,$disabled);
+        if (is_callable($options))
+            return $this->setOptions($options($this), $disabled);
+        else if (is_array($options))
+            return $this->options($options, $disabled);
         else
             return $this;
     }

@@ -1,9 +1,9 @@
 <?php
-
 namespace app\admin\controller\store;
 
 use app\admin\controller\AuthController;
 use service\FormBuilder as Form;
+use service\JsonService;
 use service\UtilService as Util;
 use service\JsonService as Json;
 use service\UploadService as Upload;
@@ -27,18 +27,51 @@ class StoreCategory extends AuthController
      */
     public function index()
     {
-        $pid = $this->request->param('pid')?$this->request->param('pid'):0;
-        $where = Util::getMore([
-            ['is_show',''],
-            ['pid',$pid],
-            ['cate_name',''],
-        ],$this->request);
-        $this->assign('where',$where);
+        $this->assign('pid',$this->request->get('pid',0));
         $this->assign('cate',CategoryModel::getTierList());
-        $this->assign(CategoryModel::systemPage($where));
         return $this->fetch();
     }
-
+    /*
+     *  异步获取分类列表
+     *  @return json
+     */
+    public function category_list(){
+        $where = Util::getMore([
+            ['is_show',''],
+            ['pid',$this->request->param('pid','')],
+            ['cate_name',''],
+            ['page',1],
+            ['limit',20],
+            ['order','']
+        ]);
+        return JsonService::successlayui(CategoryModel::CategoryList($where));
+    }
+    /**
+     * 设置单个产品上架|下架
+     *
+     * @return json
+     */
+    public function set_show($is_show='',$id=''){
+        ($is_show=='' || $id=='') && JsonService::fail('缺少参数');
+        $res=CategoryModel::where(['id'=>$id])->update(['is_show'=>(int)$is_show]);
+        if($res){
+            return JsonService::successful($is_show==1 ? '显示成功':'隐藏成功');
+        }else{
+            return JsonService::fail($is_show==1 ? '显示失败':'隐藏失败');
+        }
+    }
+    /**
+     * 快速编辑
+     *
+     * @return json
+     */
+    public function set_category($field='',$id='',$value=''){
+        $field=='' || $id=='' || $value=='' && JsonService::fail('缺少参数');
+        if(CategoryModel::where(['id'=>$id])->update([$field=>$value]))
+            return JsonService::successful('保存成功');
+        else
+            return JsonService::fail('保存失败');
+    }
     /**
      * 显示创建资源表单页.
      *
@@ -60,7 +93,7 @@ class StoreCategory extends AuthController
             Form::number('sort','排序'),
             Form::radio('is_show','状态',1)->options([['label'=>'显示','value'=>1],['label'=>'隐藏','value'=>0]])
         ];
-        $form = Form::make_post_form('添加产品',$field,Url::build('save'));
+        $form = Form::make_post_form('添加分类',$field,Url::build('save'),2);
         $this->assign(compact('form'));
         return $this->fetch('public/form-builder');
     }
@@ -119,7 +152,7 @@ class StoreCategory extends AuthController
     {
         $c = CategoryModel::get($id);
         if(!$c) return Json::fail('数据不存在!');
-        $form = Form::create(Url::build('update',array('id'=>$id)),[
+        $field = [
             Form::select('pid','父级',(string)$c->getData('pid'))->setOptions(function() use($id){
                 $list = CategoryModel::getTierList(CategoryModel::where('id','<>',$id));
 //                $list = (Util::sortListTier(CategoryModel::where('id','<>',$id)->select()->toArray(),'顶级','pid','cate_name'));
@@ -133,8 +166,9 @@ class StoreCategory extends AuthController
             Form::frameImageOne('pic','分类图标',Url::build('admin/widget.images/index',array('fodder'=>'pic')),$c->getData('pic'))->icon('image'),
             Form::number('sort','排序',$c->getData('sort')),
             Form::radio('is_show','状态',$c->getData('is_show'))->options([['label'=>'显示','value'=>1],['label'=>'隐藏','value'=>0]])
-        ]);
-        $form->setMethod('post')->setTitle('添加分类');
+        ];
+        $form = Form::make_post_form('编辑分类',$field,Url::build('update',array('id'=>$id)),2);
+
         $this->assign(compact('form'));
         return $this->fetch('public/form-builder');
     }

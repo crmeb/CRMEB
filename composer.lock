@@ -871,16 +871,16 @@
         },
         {
             "name": "topthink/framework",
-            "version": "v5.0.11",
+            "version": "v5.0.23",
             "source": {
                 "type": "git",
                 "url": "https://github.com/top-think/framework.git",
-                "reference": "926c9edb0c2682b14f563cac2c8a93f42f729016"
+                "reference": "4cbc0b5e93314446243ebc7d5f005f9c32864737"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/top-think/framework/zipball/926c9edb0c2682b14f563cac2c8a93f42f729016",
-                "reference": "926c9edb0c2682b14f563cac2c8a93f42f729016",
+                "url": "https://api.github.com/repos/top-think/framework/zipball/4cbc0b5e93314446243ebc7d5f005f9c32864737",
+                "reference": "4cbc0b5e93314446243ebc7d5f005f9c32864737",
                 "shasum": ""
             },
             "require": {
@@ -918,7 +918,7 @@
                 "orm",
                 "thinkphp"
             ],
-            "time": "2017-09-13T03:30:29+00:00"
+            "time": "2018-12-09T12:40:40+00:00"
         },
         {
             "name": "topthink/think-captcha",
@@ -1114,19 +1114,20 @@
         },
         {
             "name": "xaboy/form-builder",
-            "version": "1.2.3",
+            "version": "1.2.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/xaboy/form-builder.git",
-                "reference": "1b11a518429db5828147d5840ea18480586caa0c"
+                "reference": "43d5c0a8f1f1f0fc1f6430b827fbe2b7b0d5b5cf"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/xaboy/form-builder/zipball/1b11a518429db5828147d5840ea18480586caa0c",
-                "reference": "1b11a518429db5828147d5840ea18480586caa0c",
+                "url": "https://api.github.com/repos/xaboy/form-builder/zipball/43d5c0a8f1f1f0fc1f6430b827fbe2b7b0d5b5cf",
+                "reference": "43d5c0a8f1f1f0fc1f6430b827fbe2b7b0d5b5cf",
                 "shasum": ""
             },
             "require": {
+                "ext-json": "*",
                 "php": ">=5.4.0"
             },
             "type": "library",
@@ -1147,7 +1148,7 @@
             ],
             "description": "PHP表单生成器，快速生成现代化的form表单。包含复选框、单选框、输入框、下拉选择框等元素以及,省市区三级联动,时间选择,日期选择,颜色选择,文件/图片上传等功能。",
             "homepage": "https://github.com/xaboy/form-builder",
-            "time": "2018-08-07T06:29:30+00:00"
+            "time": "2018-12-12T12:20:38+00:00"
         }
     ],
     "packages-dev": [],

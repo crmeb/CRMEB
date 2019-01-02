@@ -86,38 +86,5 @@ class RoutineTemplate{
         RoutineFormId::delFormIdOne($formId);
         RoutineTemplateService::sendTemplate(WechatUser::getOpenId($order['uid']),RoutineTemplateService::setTemplateId(RoutineTemplateService::ORDER_PAY_SUCCESS),'',$data,$formId);
     }
-    /**
-     * 订单发货提醒
-     * @param int $oid
-     * @param array $postageData
-     * @return bool
-     */
-    public static function sendOrderGoods($oid = 0,$postageData=array()){
-        if(!$oid || !$postageData) return true;
-        $order = StoreOrder::where('id',$oid)->find();
-        if(!RoutineUser::isRoutineUser($order['uid'])) return true;
-        if($postageData['delivery_type'] == 'send'){//送货
-            $data['keyword1']['value'] =  $order['order_id'];
-            $data['keyword2']['value'] =  $order['delivery_name'];
-            $data['keyword3']['value'] =  $order['delivery_id'];
-            $data['keyword4']['value'] =  date('Y-m-d H:i:s',time());
-            $data['keyword5']['value'] =  '您的商品已经发货请注意查收';
-            $formId = RoutineFormId::getFormIdOne($order['uid']);
-            if($formId){
-                RoutineFormId::delFormIdOne($formId);
-                RoutineTemplateService::sendTemplate(WechatUser::getOpenId($order['uid']),RoutineTemplateService::setTemplateId(RoutineTemplateService::ORDER_DELIVER_SUCCESS),'',$data,$formId);
-            }
-        }else if($postageData['delivery_type'] == 'express'){//发货
-            $data['keyword1']['value'] =  $order['order_id'];
-            $data['keyword2']['value'] =  $order['delivery_name'];
-            $data['keyword3']['value'] =  $order['delivery_id'];
-            $data['keyword4']['value'] =  date('Y-m-d H:i:s',time());
-            $data['keyword5']['value'] =  '您的商品已经发货请注意查收';
-            $formId = RoutineFormId::getFormIdOne($order['uid']);
-            if($formId){
-                RoutineFormId::delFormIdOne($formId);
-                RoutineTemplateService::sendTemplate(WechatUser::getOpenId($order['uid']),RoutineTemplateService::setTemplateId(RoutineTemplateService::ORDER_POSTAGE_SUCCESS),'',$data,$formId);
-            }
-        }
-    }
+
 }

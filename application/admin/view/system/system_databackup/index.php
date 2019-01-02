@@ -10,7 +10,7 @@
                 <div class="table-responsive">
                     <table class="layui-hide" id="fileList" lay-filter="fileList"></table>
                     <script type="text/html" id="fileListtool">
-                        <button type="button" class="layui-btn layui-btn-xs" lay-event="import"><i class="layui-icon layui-icon-edit"></i>倒入</button>
+                        <button type="button" class="layui-btn layui-btn-xs" lay-event="import"><i class="layui-icon layui-icon-edit"></i>导入</button>
                         <button type="button" class="layui-btn layui-btn-xs" lay-event="delFile"><i class="layui-icon layui-icon-edit"></i>删除</button>
                         <button type="button" class="layui-btn layui-btn-xs" lay-event="downloadFile"><i class="layui-icon layui-icon-edit"></i>下载</button>
 
@@ -84,12 +84,12 @@
             elem: '#fileList'
             ,url:"{:Url('fileList')}"
             ,cols: [[
-                {field: 'filename', title: '备份名称', sort: true},
-                {field: 'part', title: 'part'},
-                {field: 'size', title: '大小'},
-                {field: 'compress', title: 'compress'},
-                {field: 'backtime', title: '时间'},
-                {fixed: 'right', title: '操作', width: '20%', align: 'center', toolbar: '#fileListtool'}
+                {field: 'filename', title: '备份名称', sort: true,width:'25%'},
+                {field: 'part', title: 'part',width:'10%'},
+                {field: 'size', title: '大小',width:'10%'},
+                {field: 'compress', title: 'compress',width:'10%'},
+                {field: 'backtime', title: '时间',width:'20%'},
+                {fixed: 'right', title: '操作', width: '25%', align: 'center', toolbar: '#fileListtool'}
             ]]
             ,page: false
         });
@@ -128,11 +128,11 @@
             ,toolbar: '#toolbarDemo'
             ,cols: [[
                 {type:'checkbox'},
-                {field: 'name', title: '表名称', sort: true},
-                {field: 'comment', title: '备注' },
-                {field: 'engine', title: '类型', sort: true},
-                {field: 'data_length', title: '大小', sort: true,totalRow: true},
-                {field: 'update_time', title: '更新时间', sort: true},
+                {field: 'name', title: '表名称', sort: true,width:'20%'},
+                {field: 'comment', title: '备注',width:'20%'},
+                {field: 'engine', title: '类型', sort: true,width:'10%'},
+                {field: 'data_length', title: '大小',width:'10%', sort: true,totalRow: true},
+                {field: 'update_time', title: '更新时间',width:'20%', sort: true},
                 {field: 'rows', title: '行数'},
                 {fixed: 'right', title: '操作', width: '10%', align: 'center', toolbar: '#barDemo'}
             ]]

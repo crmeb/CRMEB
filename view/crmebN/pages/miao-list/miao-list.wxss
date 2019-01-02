@@ -14,7 +14,7 @@
 .list-ul .tiao-red{width:40%;background-color:#FF3D3D;height:100%;display:inline-block;position:absolute;top:0;left:0;border-radius:50rpx;}
 .list-ul .text-but{color:#FFFFFF;font-size:24rpx;background-color:#FF3D3D;width:120rpx;height:50rpx;line-height:50rpx;text-align:center;border-radius:7rpx;margin-top:40rpx;}
 .list-pos{position:relative;}
-.list-time{position:absolute;bottom:10rpx;font-size:45rpx;left:18rpx;}
+.list-time{position:absolute;bottom:10rpx;font-size:25rpx;left:18rpx;}
 .list-time>text{width:38rpx;height:38rpx;line-height:38rpx;text-align:center;display:inline-block;vertical-align:middle;background-color:#333333;color:#FFFFFF;font-size:20rpx;border-radius:5rpx;margin-right: 16rpx;}
 .list-time-top{background-color:rgba(255, 255, 255, 0.5);position:absolute;bottom:0;width:100%;height:60rpx;}
 @import "/pages/home/home.wxss"; 

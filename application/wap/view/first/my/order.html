@@ -171,7 +171,7 @@
                     var that = this;
                     layer.confirm('确定申请退款?',{icon:3},function(index){
                         layer.close(index);
-                        require(['wap/crmeb/module/refund-reason'],function($r){
+                        require(['wap/first/crmeb/module/refund-reason'],function($r){
                             Vue.use($r);
                             that.$orderRefundReason(function(msg){
                                 $h.load();

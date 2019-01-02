@@ -26,6 +26,7 @@ Page({
         sid:'',
         price:'',
         sales:'',
+        ficti: '',
         t:1,
         sortyi:[],
         offset: 0,
@@ -158,7 +159,7 @@ Page({
                 hiddendown: true
             })
         }
-        var SoerErId = 0;
+      var SoerErId = 0; 
         if ($taber >= 0) {
             for (var indexSoerEr in that.data.sorter){
                 if (that.data.sorter[indexSoerEr].id == $taber){
@@ -167,6 +168,7 @@ Page({
                     })
                     SoerErId = that.data.sorter[indexSoerEr].id;
                 }
+              //console.log(that.data.sorter[indexSoerEr].id);
             }
         }else that.setData({total: '全部'})
         that.setData({sid: SoerErId})
@@ -191,6 +193,7 @@ Page({
             }
         }
         that.setData({ hiddendown: true })
+        that.setData({ sid: 0 })
         that.getProductList();
     },
     getCartCount: function () {
@@ -235,7 +238,8 @@ Page({
         var n=t+1;
         if (n%2>0) priceOrder ='asc';
         else priceOrder='desc';
-        var sid = that.data.sid;
+      var sid = that.data.sid;
+        that.setData({ ficti: ''})
         that.setData({ price: priceOrder, t: n, })
         that.getProductList();
     },
@@ -251,7 +255,8 @@ Page({
         var n = t + 1;
         if (n%2>0) salesOrder = 'asc';
         else salesOrder='desc';
-        that.setData({ sales: salesOrder, t: n, })
+        that.setData({ price: '' })
+        that.setData({ ficti: salesOrder, t: n, })
         that.getProductList();
     },
     navactive2: function (e) {
@@ -265,6 +270,8 @@ Page({
         if (act == 3) news = 1;
         else news = '';
         if (that.data.news) news = '';
+        that.setData({ price: ''})
+        that.setData({ ficti: ''})
         that.setData({ news: news})
         that.getProductList();
     },
@@ -552,7 +559,7 @@ Page({
         var cid = that.data.cid;
         var limit = 20;
         var priceOrder = that.data.price;
-        var salesOrder = that.data.sales;
+        var salesOrder = that.data.ficti;
         var offset = 0;
         var startpage = limit * offset;
         wx.request({
@@ -594,7 +601,7 @@ Page({
         var cid = that.data.cid;
         var limit = 20;
         var priceOrder = that.data.price;
-        var salesOrder = that.data.sales;
+        var salesOrder = that.data.ficti;
         var offset = that.data.offset;
         var startpage = limit * offset;
         var header = {

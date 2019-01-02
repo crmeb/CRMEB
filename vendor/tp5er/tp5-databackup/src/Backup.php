@@ -66,14 +66,14 @@ class Backup
     public function setTimeout($time=null)
     {
         if (!is_null($time)) {
-           set_time_limit($time)||ini_set("max_execution_time", $time);
+            set_time_limit($time)||ini_set("max_execution_time", $time);
         }
         return $this;
     }
     /**
      * 设置数据库连接必备参数
      * @param array  $dbconfig   数据库连接配置信息
-     * @return object 
+     * @return object
      */
     public function setDbConn($dbconfig = [])
     {
@@ -88,7 +88,7 @@ class Backup
     /**
      * 设置备份文件名
      * @param Array  $file  文件名字
-     * @return object 
+     * @return object
      */
     public function setFile($file = null)
     {
@@ -118,7 +118,7 @@ class Backup
             if ($type) {
                 $list = $db->query("SHOW FULL COLUMNS FROM {$table}");
             }else{
-                 $list = $db->query("show columns from {$table}");
+                $list = $db->query("show columns from {$table}");
             }
         }
         return array_map('array_change_key_case', $list);
@@ -135,7 +135,7 @@ class Backup
         $glob = new \FilesystemIterator($path, $flag);
         $list = array();
         foreach ($glob as $name => $file) {
-            $info['filename'] = $name;
+            $info['filename'] = $name;//备份文件名称
             if (preg_match('/^\\d{8,8}-\\d{6,6}-\\d+\\.sql(?:\\.gz)?$/', $name)) {
                 $name = sscanf($name, '%4s%2s%2s-%2s%2s%2s-%d');
                 $date = "{$name[0]}-{$name[1]}-{$name[2]}";
@@ -344,7 +344,7 @@ class Backup
     /**
      * 优化表
      * @param  String $tables 表名
-     * @return String $tables  
+     * @return String $tables
      */
     public function optimize($tables = null)
     {
@@ -368,7 +368,7 @@ class Backup
     /**
      * 修复表
      * @param  String $tables 表名
-     * @return String $tables  
+     * @return String $tables
      */
     public function repair($tables = null)
     {

@@ -13,11 +13,12 @@ use FormBuilder\FormComponentDriver;
 /**
  * 树型组件
  * Class Tree
+ *
  * @package FormBuilder\components
  * @method $this type(String $type) 类型，可选值为 checked、selected
- * @method $this multiple(Boolean $bool) 是否支持多选,当`type=selected`并且`multiple=false`,默认为false,值为String或Number类型，其他情况为Array类型
- * @method $this showCheckbox(Boolean $bool) 是否显示多选框,默认为false
- * @method $this emptyText(String $emptyText) 没有数据时的提示,默认为'暂无数据'
+ * @method $this multiple(Boolean $bool) 是否支持多选, 当`type=selected`并且`multiple=false`, 默认为false, 值为String或Number类型，其他情况为Array类型
+ * @method $this showCheckbox(Boolean $bool) 是否显示多选框, 默认为false
+ * @method $this emptyText(String $emptyText) 没有数据时的提示, 默认为'暂无数据'
  */
 class Tree extends FormComponentDriver
 {
@@ -40,7 +41,8 @@ class Tree extends FormComponentDriver
      */
     protected $props = [
         'type' => self::TYPE_CHECKED,
-        'data' => []
+        'data' => [],
+        'multiple' => true
     ];
 
     /**
@@ -59,8 +61,8 @@ class Tree extends FormComponentDriver
      */
     public function data(array $treeData)
     {
-        if(!is_array($this->props['data'])) $this->props['data'] = [];
-        foreach ($treeData as $child){
+        if (!is_array($this->props['data'])) $this->props['data'] = [];
+        foreach ($treeData as $child) {
             $this->props['data'][] = $child instanceof TreeData
                 ? $child->build()
                 : $child;
@@ -74,7 +76,7 @@ class Tree extends FormComponentDriver
      */
     public function jsData($var)
     {
-        $this->props['data'] = 'js.'.$var;
+        $this->props['data'] = 'js.' . $var;
         return $this;
     }
 
@@ -84,15 +86,23 @@ class Tree extends FormComponentDriver
      */
     public function value($value)
     {
-        if(is_array($value)){
-            foreach ($value as $k=>$v){
+        if (is_array($value)) {
+            foreach ($value as $k => $v) {
                 $value[$k] = (string)$v;
             }
-        }else{
+        } else {
             $value = (string)$value;
         }
         $this->value = $value;
         return $this;
+    }
+
+    public function getValidateHandler()
+    {
+        if ($this->props['multiple'])
+            return Validate::arr();
+        else
+            return Validate::str();
     }
 
     /**
@@ -107,7 +117,7 @@ class Tree extends FormComponentDriver
             'value' => $this->value,
             'props' => (object)$this->props,
             'validate' => $this->validate,
-            'col'=>$this->col
+            'col' => $this->col
         ];
     }
 

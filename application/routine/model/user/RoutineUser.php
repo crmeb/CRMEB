@@ -7,6 +7,7 @@
 
 namespace app\routine\model\user;
 
+use app\routine\model\routine\RoutineQrcode;
 use basic\ModelBasic;
 use traits\ModelTrait;
 use app\routine\model\user\User;
@@ -33,6 +34,16 @@ class RoutineUser extends ModelBasic
         $routineInfo['session_key'] = $routine['session_key'];//会话密匙
         $routineInfo['unionid'] = $routine['unionid'];//用户在开放平台的唯一标识符
         $routineInfo['user_type'] = 'routine';//用户类型
+        $page = '';//跳转小程序的页面
+        $spid = 0;//绑定关系uid
+        //获取是否有扫码进小程序
+        if($routine['spid']){
+            $info = RoutineQrcode::getRoutineQrcodeFindType($routine['spid']);
+            if($info){
+                $spid = $info['third_id'];
+                $page = $info['page'];
+            }
+        }
         //  判断unionid  存在根据unionid判断
         if($routineInfo['unionid'] != '' && WechatUser::be(['unionid'=>$routineInfo['unionid']])){
             WechatUser::edit($routineInfo,$routineInfo['unionid'],'unionid');
@@ -45,12 +56,14 @@ class RoutineUser extends ModelBasic
         }else{
             $routineInfo['add_time'] = time();//用户添加时间
             $routineInfo = WechatUser::set($routineInfo);
-            if(User::isUserSpread($routine['spid'])) {
-                $res = User::setRoutineUser($routineInfo,$routine['spid']); //用户上级
-            } else  $res = User::setRoutineUser($routineInfo);
+            if(User::isUserSpread($spid)) {
+                $res = User::setRoutineUser($routineInfo,$spid); //用户上级
+            }else $res = User::setRoutineUser($routineInfo);
             $uid = $res->uid;
         }
-        return $uid;
+        $data['page'] = $page;
+        $data['uid'] = $uid;
+        return $data;
     }
 
     /**

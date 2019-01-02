@@ -1,5 +1,9 @@
-# form-builder
-
+<p align="center">
+    <a href="https://github.com/xaboy/form-builder">
+        <img width="200" src="http://file.lotkk.com/form-builder.png">
+    </a>
+</p>
+<h1 align="center">form-builder</h1>
 <p align="center">
     <img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="MIT" />
   <a href="https://github.com/xaboy">
@@ -17,19 +21,31 @@
 PHP表单生成器，快速生成现代化的form表单。包含复选框、单选框、输入框、下拉选择框等元素以及省市区三级联动、时间选择、日期选择、颜色选择、树型、文件/图片上传等功能。
 </p>
 
+> 1.2.4 版本支持字段验证 
 
 #### 如果对您有帮助，您可以点右上角 "Star" 支持一下 谢谢！
  
 #### 本项目还在不断开发完善中,如有建议或问题请[在这里提出](https://github.com/xaboy/form-builder/issues/new)
 
 
+## 更新说明
+
+#### 1.2.7 (2018-12-12)
+- 完善时间选择组件,日期选择组件验证规则
+- 新增 fields 类型验证规则
+- 新增 使用 view 方法生成时,表单只能被创建一次
+- 修复一些小问题
+
 ## 安装
 `composer require xaboy/form-builder`
 
 ## 示例
 
-![https://raw.githubusercontent.com/xaboy/form-builder/master/demo.jpg](https://raw.githubusercontent.com/xaboy/form-builder/master/demo.jpg)
+![https://raw.githubusercontent.com/xaboy/form-create/master/images/sample110.jpg](https://raw.githubusercontent.com/xaboy/form-create/master/images/sample110.jpg)
 
+## 演示地址
+演示站后台:[ crmeb_v2.5 ]
+http://demo25.crmeb.net 账号：demo 密码：crmeb.com
 
 ### 例子 (TP框架)
 
@@ -267,7 +283,8 @@ echo $html;
 ## 以下组件公共方法
 * **col($span)** 配置col栅格规则,传入0-24的数字或`Col`类,默认为24
 * **value($value)** 设置组件的值
-* **validate(array $validate)** 添加验证规则
+* **validateAs(array $validate)** 添加验证规则
+* **validate()** 设置验证规则[规则说明](https://github.com/xaboy/form-builder/blob/master/src/components/Validate.php)
 
 ## 组件
 `namespace \FormBuilder\Form`

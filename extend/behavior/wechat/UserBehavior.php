@@ -21,7 +21,16 @@ class UserBehavior
     public static function wechatOauthAfter($openid,$wechatInfo)
     {
         Cookie::set('is_login',1);
-        if(WechatUser::be(['openid'=>$wechatInfo['openid']])){
+        if(isset($wechatInfo['unionid']) && $wechatInfo['unionid'] != '' && WechatUser::be(['unionid'=>$wechatInfo['unionid']])){
+            WechatUser::edit($wechatInfo,$wechatInfo['unionid'],'unionid');
+            $uid = WechatUser::where('unionid',$wechatInfo['unionid'])->value('uid');
+            if(!User::be(['uid'=>$uid])){
+                $wechatInfo = WechatUser::where('uid',$uid)->find();
+                User::setWechatUser($wechatInfo);
+            }else{
+                User::updateWechatUser($wechatInfo,$uid);
+            }
+        }else if(WechatUser::be(['openid'=>$wechatInfo['openid']])){
             WechatUser::edit($wechatInfo,$wechatInfo['openid'],'openid');
             User::updateWechatUser($wechatInfo,WechatUser::openidToUid($wechatInfo['openid']));
         }else{

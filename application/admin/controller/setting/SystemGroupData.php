@@ -52,7 +52,7 @@ class SystemGroupData extends AuthController
                 $params = explode("\n",$value["param"]);
                 if(is_array($params) && !empty($params)){
                     foreach ($params as $index => $v) {
-                        $vl = explode('=',$v);
+                        $vl = explode('=>',$v);
                         if(!empty($vl[0]) && !empty($vl[1])){
                             $info[$index]["value"] = $vl[0];
                             $info[$index]["label"] = $vl[1];
@@ -109,7 +109,8 @@ class SystemGroupData extends AuthController
         foreach ($params as $key => $param) {
             foreach ($Fields['fields'] as $index => $field) {
                 if($key == $field["title"]){
-                    if($param == "" || count($param) == 0)
+//                    if($param == "" || count($param) == 0)
+                    if($param == "")
                         return Json::fail($field["name"]."不能为空！");
                     else{
                         $value[$key]["type"] = $field["type"];
@@ -154,7 +155,7 @@ class SystemGroupData extends AuthController
                 $params = explode("\n",$value["param"]);
                 if(is_array($params) && !empty($params)){
                     foreach ($params as $index => $v) {
-                        $vl = explode('=',$v);
+                        $vl = explode('=>',$v);
                         if(!empty($vl[0]) && !empty($vl[1])){
                             $info[$index]["value"] = $vl[0];
                             $info[$index]["label"] = $vl[1];
@@ -162,37 +163,38 @@ class SystemGroupData extends AuthController
                     }
                 }
             }
+            $fvalue = isset($GroupDataValue[$value['title']]['value'])?$GroupDataValue[$value['title']]['value']:'';
             switch ($value['type']){
                 case 'input':
-                    $f[] = Form::input($value['title'],$value['name'],$GroupDataValue[$value['title']]['value']);
+                    $f[] = Form::input($value['title'],$value['name'],$fvalue);
                     break;
                 case 'textarea':
-                    $f[] = Form::input($value['title'],$value['name'],$GroupDataValue[$value['title']]['value'])->type('textarea');
+                    $f[] = Form::input($value['title'],$value['name'],$fvalue)->type('textarea');
                     break;
                 case 'radio':
 
-                    $f[] = Form::radio($value['title'],$value['name'],$GroupDataValue[$value['title']]['value'])->options($info);
+                    $f[] = Form::radio($value['title'],$value['name'],$fvalue)->options($info);
                     break;
                  case 'checkbox':
-                     $f[] = Form::checkbox($value['title'],$value['name'],$GroupDataValue[$value['title']]['value'])->options($info);
+                     $f[] = Form::checkbox($value['title'],$value['name'],$fvalue)->options($info);
                     break;
                  case 'upload':
-                     if(!empty($GroupDataValue[$value['title']]['value'])){
-                         $image = is_string($GroupDataValue[$value['title']]['value']) ? $GroupDataValue[$value['title']]['value'] : $GroupDataValue[$value['title']]['value'][0];
+                     if(!empty($fvalue)){
+                         $image = is_string($fvalue) ? $fvalue : $fvalue[0];
                      }else{
                          $image = '';
                      }
                      $f[] = Form::frameImageOne($value['title'],$value['name'],Url::build('admin/widget.images/index',array('fodder'=>$value['title'],'big'=>1)),$image)->icon('image');
                     break;
                  case 'uploads':
-                     $images = !empty($GroupDataValue[$value['title']]['value']) ? $GroupDataValue[$value['title']]['value']:[];
+                     $images = !empty($fvalue) ? $fvalue:[];
                      $f[] = Form::frameImages($value['title'],$value['name'],Url::build('admin/widget.images/index', array('fodder' => $value['title'],'big'=>1)),$images)->maxLength(5)->icon('images')->width('100%')->height('550px')->spin(0);
                     break;
                  case 'select':
-                     $f[] = Form::select($value['title'],$value['name'],$GroupDataValue[$value['title']]['value'])->setOptions($info);
+                     $f[] = Form::select($value['title'],$value['name'],$fvalue)->setOptions($info);
                     break;
                 default:
-                    $f[] = Form::input($value['title'],$value['name'],$GroupDataValue[$value['title']]['value']);
+                    $f[] = Form::input($value['title'],$value['name'],$fvalue);
                     break;
 
             }

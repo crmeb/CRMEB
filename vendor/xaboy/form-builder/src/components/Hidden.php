@@ -13,6 +13,7 @@ use FormBuilder\FormComponentDriver;
 /**
  * hidden组件
  * Class Hidden
+ *
  * @package FormBuilder\components
  */
 class Hidden extends FormComponentDriver
@@ -25,6 +26,7 @@ class Hidden extends FormComponentDriver
 
     /**
      * Hidden constructor.
+     *
      * @param String $field
      * @param String $value
      */
@@ -32,6 +34,11 @@ class Hidden extends FormComponentDriver
     {
         $this->field = (string)$field;
         static::value($value);
+    }
+
+    protected function getValidateHandler()
+    {
+
     }
 
     /**

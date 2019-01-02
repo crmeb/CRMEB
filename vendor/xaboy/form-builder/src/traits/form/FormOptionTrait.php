@@ -12,18 +12,22 @@ use FormBuilder\components\Option;
 
 /**
  * Class FormOptionTrait
+ *
  * @package FormBuilder\traits\form
  */
 trait FormOptionTrait
 {
     /**
-     * @param $value
+     * 获取选择类组件 option 类
+     *
+     * @param        $value
      * @param string $label
-     * @param bool $disabled
+     * @param bool   $disabled
      * @return Option
+     * @throws \FormBuilder\exception\FormBuilderException
      */
     public static function option($value, $label = '', $disabled = false)
     {
-        return new Option($value,$label,$disabled);
+        return new Option($value, $label, $disabled);
     }
 }

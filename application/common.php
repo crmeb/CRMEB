@@ -24,7 +24,7 @@ function sensitive_words_filter($str)
     $words = file($file);
     foreach($words as $word)
     {
-        $word = str_replace(array("\r\n","\r","\n"," "), '', $word);
+        $word = str_replace(array("\r\n","\r","\n","/","<",">","="," "), '', $word);
         if (!$word) continue;
 
         $ret = preg_match("/$word/", $str, $match);
@@ -33,4 +33,28 @@ function sensitive_words_filter($str)
         }
     }
     return '';
+}
+
+/**
+ * 上传路径转化,默认路径 UPLOAD_PATH
+ * $type 类型
+ */
+function makePathToUrl($path,$type = 2)
+{
+    $path =  DS.ltrim(rtrim($path));
+    switch ($type){
+        case 1:
+            $path .= DS.date('Y');
+            break;
+        case 2:
+            $path .=  DS.date('Y').DS.date('m');
+            break;
+        case 3:
+            $path .=  DS.date('Y').DS.date('m').DS.date('d');
+            break;
+    }
+    if (is_dir(ROOT_PATH.UPLOAD_PATH.$path) == true || mkdir(ROOT_PATH.UPLOAD_PATH.$path, 0777, true) == true) {
+        return trim(str_replace(DS, '/',UPLOAD_PATH.$path),'.');
+    }else return '';
+
 }

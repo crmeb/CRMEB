@@ -60,11 +60,14 @@ class StoreSeckill extends AuthController
         if(is_object($seckillList['list'])) $seckillList['list'] = $seckillList['list']->toArray();
         $data = $seckillList['list']['data'];
         foreach ($data as $k=>$v){
-            $data[$k]['_stop_time'] = date('Y/m/d H:i:s',$v['stop_time']);
+            $data[$k]['_stop_time'] =$v['stop_time'] ?  date('Y/m/d H:i:s',$v['stop_time']) : '';
         }
         return Json::successlayui(['count'=>$seckillList['list']['total'],'data'=>$data]);
     }
 
+    public function get_seckill_id(){
+        return Json::successlayui(StoreSeckillModel::getSeckillIdAll());
+    }
     /**
      * 添加秒杀产品
      * @return form-builder
@@ -103,6 +106,7 @@ class StoreSeckill extends AuthController
     {
         $data = Util::postMore([
             'title',
+            'product_id',
             'info',
             'unit_name',
             ['image',''],
@@ -124,6 +128,7 @@ class StoreSeckill extends AuthController
         ],$request);
         if(!$data['title']) return Json::fail('请输入产品标题');
         if(!$data['unit_name']) return Json::fail('请输入产品单位');
+        if(!$data['product_id']) return Json::fail('产品ID不能为空');
 //        var_dump($this->request->post());
         if(count($data['section_time'])<1) return Json::fail('请选择活动时间');
         $data['start_time'] = strtotime($data['section_time'][0]);
@@ -159,6 +164,7 @@ class StoreSeckill extends AuthController
         if(!$product) return Json::fail('数据不存在!');
         $f = array();
         $f[] = Form::input('title','产品标题',$product->getData('store_name'));
+        $f[] = Form::hidden('product_id',$id);
         $f[] = Form::input('info','秒杀活动简介',$product->getData('store_info'))->type('textarea');
         $f[] = Form::input('unit_name','单位',$product->getData('unit_name'))->placeholder('个、位');
         $f[] = Form::dateTimeRange('section_time','活动时间');
@@ -170,7 +176,7 @@ class StoreSeckill extends AuthController
         $f[] = Form::number('stock','库存',$product->getData('stock'))->min(0)->precision(0)->col(12);
         $f[] = Form::number('sales','销量',$product->getData('sales'))->min(0)->precision(0)->col(12);
         $f[] = Form::number('sort','排序',$product->getData('sort'))->col(12);
-        $f[] = Form::number('num','单次购买产品个数')->precision(0)->col(12);
+        $f[] = Form::number('num','单次购买产品个数',1)->precision(0)->col(12);
         $f[] = Form::number('give_integral','赠送积分',$product->getData('give_integral'))->min(0)->precision(0)->col(12);
         $f[] = Form::number('postage','邮费',$product->getData('postage'))->min(0)->col(12);
         $f[] = Form::radio('is_postage','是否包邮',$product->getData('is_postage'))->options([['label'=>'是','value'=>1],['label'=>'否','value'=>0]])->col(12);
@@ -212,6 +218,7 @@ class StoreSeckill extends AuthController
         $product = StoreSeckillModel::get($id);
         if(!$product) return Json::fail('数据不存在!');
         $f = array();
+        $f[] = Form::hidden('product_id',$product->getData('product_id'));
         $f[] = Form::input('title','产品标题',$product->getData('title'));
         $f[] = Form::input('info','秒杀活动简介',$product->getData('info'))->type('textarea');
         $f[] = Form::input('unit_name','单位',$product->getData('unit_name'))->placeholder('个、位');
@@ -219,7 +226,7 @@ class StoreSeckill extends AuthController
         $f[] = Form::frameImageOne('image','产品主图片(305*305px)',Url::build('admin/widget.images/index',array('fodder'=>'image')),$product->getData('image'))->icon('image');
         $f[] = Form::frameImages('images','产品轮播图(640*640px)',Url::build('admin/widget.images/index',array('fodder'=>'images')),json_decode($product->getData('images')))->maxLength(5)->icon('images');
         $f[] = Form::number('price','秒杀价',$product->getData('price'))->min(0)->col(12);
-        $f[] = Form::number('ot_price','原价',$product->getData('price'))->min(0)->col(12);
+        $f[] = Form::number('ot_price','原价',$product->getData('ot_price'))->min(0)->col(12);
         $f[] = Form::number('cost','成本价',$product->getData('cost'))->min(0)->col(12);
         $f[] = Form::number('stock','库存',$product->getData('stock'))->min(0)->precision(0)->col(12);
         $f[] = Form::number('sales','销量',$product->getData('sales'))->min(0)->precision(0)->col(12);

@@ -33,7 +33,7 @@ use service\SystemConfigService;
     protected $insert = ['add_time'];
 
      /**
-      * 用uid获得openid
+      * 用uid获得 微信openid
       * @param $uid
       * @return mixed
       */
@@ -44,6 +44,21 @@ use service\SystemConfigService;
          if($openid && !$update) return $openid;
          $openid = self::where('uid',$uid)->value('openid');
          if(!$openid) exception('对应的openid不存在!');
+         Cache::set($cacheName,$openid,0);
+         return $openid;
+     }
+     /**
+      * 用uid获得 小程序 openid
+      * @param $uid
+      * @return mixed
+      */
+     public static function uidToRoutineOpenid($uid,$update = false)
+     {
+         $cacheName = 'routine_openid'.$uid;
+         $openid = Cache::get($cacheName);
+         if($openid && !$update) return $openid;
+         $openid = self::where('uid',$uid)->value('routine_openid');
+         if(!$openid) exception('对应的routine_openid不存在!');
          Cache::set($cacheName,$openid,0);
          return $openid;
      }
@@ -145,7 +160,7 @@ use service\SystemConfigService;
      * @return array
      */
     public static function agentSystemPage($where = array(),$isall=false){
-        self::setWechatUserOrder();//设置 一级推荐人 二级推荐人 一级推荐人订单 二级推荐人订单 佣金
+//        self::setWechatUserOrder();//设置 一级推荐人 二级推荐人 一级推荐人订单 二级推荐人订单 佣金
         $model = new self;
         if($isall==false) {
             $status = (int)SystemConfigService::get('store_brokerage_statu');
@@ -155,7 +170,7 @@ use service\SystemConfigService;
                 }
             }
         }
-        $model = $model->where('openid','NOT NULL');
+//        $model = $model->where('openid','NOT NULL');
         if($where['nickname'] !== '') $model = $model->where('nickname','LIKE',"%$where[nickname]%");
         if($where['data'] !== ''){
             list($startTime,$endTime) = explode(' - ',$where['data']);
@@ -203,7 +218,6 @@ use service\SystemConfigService;
             $item['qr_code'] = QrcodeService::getForeverQrcode('spread',$item['uid']);
             $item['extract_count_price'] = UserExtract::getUserCountPrice($item['uid']);//累计提现
             $item['extract_count_num'] = UserExtract::getUserCountNum($item['uid']);//提现次数
-//            $item['qr_code'] = '';
         },$where);
     }
 

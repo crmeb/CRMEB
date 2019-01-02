@@ -12,14 +12,17 @@ use FormBuilder\components\Frame;
 
 /**
  * Class FormFrameTrait
+ *
  * @package FormBuilder\traits\form
  */
 trait FormFrameTrait
 {
     /**
-     * @param $field
-     * @param $title
-     * @param $src
+     * 框架组件
+     *
+     * @param        $field
+     * @param        $title
+     * @param        $src
      * @param string $value
      * @param string $type
      * @return Frame
@@ -33,9 +36,12 @@ trait FormFrameTrait
     }
 
     /**
-     * @param $field
-     * @param $title
-     * @param $src
+     * 使用input  类型显示,多选
+     * value为Array类型
+     *
+     * @param       $field
+     * @param       $title
+     * @param       $src
      * @param array $value
      * @return Frame
      */
@@ -45,9 +51,12 @@ trait FormFrameTrait
     }
 
     /**
-     * @param $field
-     * @param $title
-     * @param $src
+     * 使用文件类型显示,多选
+     * value为Array类型
+     *
+     * @param       $field
+     * @param       $title
+     * @param       $src
      * @param array $value
      * @return Frame
      */
@@ -57,9 +66,12 @@ trait FormFrameTrait
     }
 
     /**
-     * @param $field
-     * @param $title
-     * @param $src
+     * 使用文件类型显示,多选
+     * value为Array类型
+     *
+     * @param       $field
+     * @param       $title
+     * @param       $src
      * @param array $value
      * @return Frame
      */
@@ -69,9 +81,12 @@ trait FormFrameTrait
     }
 
     /**
-     * @param $field
-     * @param $title
-     * @param $src
+     * 使用input  类型显示,单选
+     * value为String类型
+     *
+     * @param        $field
+     * @param        $title
+     * @param        $src
      * @param string $value
      * @return Frame
      */
@@ -81,9 +96,12 @@ trait FormFrameTrait
     }
 
     /**
-     * @param $field
-     * @param $title
-     * @param $src
+     * 使用文件类型显示,单选
+     * value为String类型
+     *
+     * @param        $field
+     * @param        $title
+     * @param        $src
      * @param string $value
      * @return Frame
      */
@@ -93,9 +111,12 @@ trait FormFrameTrait
     }
 
     /**
-     * @param $field
-     * @param $title
-     * @param $src
+     * 使用文件类型显示,单选
+     * value为String类型
+     *
+     * @param        $field
+     * @param        $title
+     * @param        $src
      * @param string $value
      * @return Frame
      */

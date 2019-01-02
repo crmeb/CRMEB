@@ -43,7 +43,7 @@
     <view class='count-wrapper flex'>
       <view>原价:￥{{storeInfo.ot_price}}</view>
       <view>库存:{{storeInfo.stock}}{{storeInfo.unit_name}}</view>
-      <view>销量:{{storeInfo.sales}}{{storeInfo.unit_name}}</view>
+      <view>销量:{{storeInfo.ficti+storeInfo.sales}}{{storeInfo.unit_name}}</view>
     </view>
   </view>
   <view class='block-bar' bindtap='goCoupon'>
@@ -78,7 +78,7 @@
       <view class='txt-msg'>{{reply.comment}}</view>
       <view class='time-bar'>{{reply.add_time}}</view>
     </view>
-    <view>
+    <view wx:if="{{reply.merchant_reply_content != ''}}">
        <view>管理员回复：</view>
       <view class='txt-msg'>{{reply.merchant_reply_content}}</view>
       <view class='time-bar'>{{reply.merchant_reply_time}}</view>
@@ -116,6 +116,13 @@
     <view class='payment-btn' bindtap='goOrder'>确认下单</view>
   </view>
 </view>
+<view class='poster-pop' wx:if="{{posterImageStatus}}">
+   <image src='/images/poster-close.png' class='close' bindtap='posterImageClose'></image>
+   <image src='{{posterImage}}'></image>
+   <view class='save-poster' bindtap='savePosterPath'>保存到手机</view>
+</view>
+<view class='mask' wx:if="{{posterImageStatus}}"></view>
+<canvas class="canvas" canvas-id='myCanvas' wx:if="{{canvasStatus}}"></canvas>
 <include src="/pages/home/home.wxml"/>
 <include src="/pages/foo-tan/foo-tan.wxml"/>  
 <import src="/wxParse/wxParse.wxml"/>

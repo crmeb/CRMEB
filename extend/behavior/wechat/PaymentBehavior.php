@@ -113,6 +113,11 @@ class PaymentBehavior
         WechatService::payOrderRefund($orderNo,$opt);
     }
 
+    /**
+     * 小程序支付订单退款
+     * @param $orderNo
+     * @param array $opt
+     */
     public static function routinePayOrderRefund($orderNo, array $opt)
     {
         $refundDesc = isset($opt['desc']) ? $opt['desc'] : '';

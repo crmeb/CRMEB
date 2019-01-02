@@ -15,6 +15,7 @@ use FormBuilder\traits\component\ComponentOptionsTrait;
 /**
  * 单选框组件
  * Class Radio
+ *
  * @package FormBuilder\components
  * @method $this size(String $size) 单选框的尺寸，可选值为 large、small、default 或者不设置
  * @method $this vertical(Boolean $bool) 是否垂直排列，按钮样式下无效
@@ -38,6 +39,7 @@ class Radio extends FormComponentDriver
 
     /**
      * 使用按钮样式
+     *
      * @return $this
      */
     public function button()
@@ -46,15 +48,9 @@ class Radio extends FormComponentDriver
         return $this;
     }
 
-    /**
-     * @param string $message
-     * @param string $trigger
-     * @return $this
-     */
-    public function required($message = null, $trigger = 'change')
+    public function getValidateHandler()
     {
-        $this->setRequired(Helper::getVar($message, '请选择' . $this->title), $trigger);
-        return $this;
+        return Validate::str();
     }
 
     /**
@@ -75,7 +71,7 @@ class Radio extends FormComponentDriver
             'props' => (object)$this->props,
             'options' => $options,
             'validate' => $this->validate,
-            'col'=>$this->col
+            'col' => $this->col
         ];
     }
 }

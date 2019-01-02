@@ -78,13 +78,7 @@
                 </a>
             </div>
             {/volist}
-            {eq name="userInfo.is_promoter" value="1"}
-            <?php /*  <div class="item">
-                  <a class="con-cell" href="/wap/my/user_pro.html">
-                      <img src="/public/uploads/common/5abc57ea40c8c.png" alt="">
-                      <p>我的余额</p>
-                  </a>
-              </div>  */ ?>
+            {if condition="$statu == 2 || $userInfo['is_promoter'] == 1"}
             <div class="item">
                 <a class="con-cell" href="/wap/my/spread_list.html">
                     <img src="/public/uploads/common/5abc5804670d2.png" alt="">
@@ -97,7 +91,7 @@
                     <p>推广二维码</p>
                 </a>
             </div>
-            {/eq}
+            {/if}
         </div>
     </section>
     {include file="public/store_menu"}

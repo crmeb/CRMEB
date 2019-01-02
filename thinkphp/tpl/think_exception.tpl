@@ -319,7 +319,7 @@
         
             <div class="info">
                 <div>
-                    <h2>[<?php echo $code; ?>] <?php echo sprintf('%s in %s', parse_class($name), parse_file($file, $line)); ?></h2>
+                    <h2>[<?php echo $code; ?>]&nbsp;<?php echo sprintf('%s in %s', parse_class($name), parse_file($file, $line)); ?></h2>
                 </div>
                 <div><h1><?php echo nl2br(htmlentities($message)); ?></h1></div>
             </div>

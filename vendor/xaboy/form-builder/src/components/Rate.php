@@ -13,6 +13,7 @@ use FormBuilder\FormComponentDriver;
 /**
  * 评分组件
  * Class Rate
+ *
  * @package FormBuilder\components
  * @method $this count(int $star) star 总数, 默认为 5
  * @method $this allowHalf(Boolean $bool) 是否允许半选, 默认为 false
@@ -39,6 +40,11 @@ class Rate extends FormComponentDriver
         'clearable' => 'boolean',
     ];
 
+    public function getValidateHandler()
+    {
+        return Validate::num();
+    }
+
     /**
      * @return array
      */
@@ -51,7 +57,7 @@ class Rate extends FormComponentDriver
             'value' => (float)$this->value,
             'props' => (object)$this->props,
             'validate' => $this->validate,
-            'col'=>$this->col
+            'col' => $this->col
         ];
     }
 }

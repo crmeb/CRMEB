@@ -9,7 +9,9 @@ namespace FormBuilder;
 
 use FormBuilder\components\Cascader;
 use FormBuilder\components\FormStyle;
+use FormBuilder\components\Hidden;
 use FormBuilder\components\Row;
+use FormBuilder\exception\FormBuilderException;
 use FormBuilder\traits\form\FormCascaderTrait;
 use FormBuilder\traits\form\FormCheckBoxTrait;
 use FormBuilder\traits\form\FormColorPickerTrait;
@@ -28,9 +30,11 @@ use FormBuilder\traits\form\FormTimePickerTrait;
 use FormBuilder\traits\form\FormTreeTrait;
 use FormBuilder\traits\form\FormUploadTrait;
 use FormBuilder\traits\form\FormOptionTrait;
+use FormBuilder\traits\form\FormValidateTrait;
 
 /**
  * Class Form
+ *
  * @package FormBuilder
  */
 class Form
@@ -52,16 +56,19 @@ class Form
         FormTimePickerTrait,
         FormTreeTrait,
         FormStyleTrait,
-        FormOptionTrait;
+        FormOptionTrait,
+        FormValidateTrait;
 
     /**
      * 三级联动 加载省市数据
+     *
      * @var bool
      */
     protected $loadCityData = false;
 
     /**
      * 三级联动 加载省市区数据
+     *
      * @var bool
      */
     protected $loadCityAreaData = false;
@@ -85,11 +92,32 @@ class Form
         //iview 版本 2.14.3
         'iview-css' => '<link href="https://cdn.jsdelivr.net/npm/iview@2.14.3/dist/styles/iview.css" rel="stylesheet">',
         'iview' => '<script src="https://cdn.jsdelivr.net/npm/iview@2.14.3/dist/iview.min.js"></script>',
-        //form-create 版本 1.3.3
-        'form-create' => '<script src="https://cdn.jsdelivr.net/npm/form-create@1.4.0/dist/form-create.min.js"></script>',
+        //form-create 版本 1.4.5
+        'form-create' => '<script src="https://cdn.jsdelivr.net/npm/form-create@1.4.5/dist/form-create.min.js"></script>',
         'city-data' => '<script src="https://cdn.jsdelivr.net/npm/form-create/district/province_city.js"></script>',
         'city-area-data' => '<script src="https://cdn.jsdelivr.net/npm/form-create/district/province_city_area.js"></script>'
     ];
+
+    /**
+     * 加载 jquery
+     *
+     * @var bool
+     */
+    protected $linkJq = true;
+
+    /**
+     * 加载 vue
+     *
+     * @var bool
+     */
+    protected $linkVue = true;
+
+    /**
+     * 加载 iview
+     *
+     * @var bool
+     */
+    protected $linkIview = true;
 
     /**
      * @var string
@@ -98,30 +126,39 @@ class Form
 
     /**
      * 网页标题
+     *
      * @var string
      */
     protected $title = 'formBuilder';
 
     /**
      * 提交地址
+     *
      * @var string
      */
     protected $action = '';
 
     /**
      * 表单id
+     *
      * @var string
      */
     protected $id = '';
 
     /**
      * 提交方式
+     *
      * @var string
      */
     protected $method = 'post';
 
+    protected $resetBtn = false;
+
+    protected $submitBtn = true;
+
     /**
      * 表单配置
+     *
      * @var array|mixed
      */
     protected $config = [
@@ -137,13 +174,43 @@ class Form
 
     /**
      * Form constructor.
+     *
      * @param string $action 提交地址
-     * @param array $components 组件
+     * @param array  $components 组件
      */
     public function __construct($action = '', array $components = [])
     {
         $this->components($components);
         $this->action = $action;
+    }
+
+    public static function json()
+    {
+        return new Json();
+    }
+
+    /**
+     * @param bool $linkJq
+     */
+    public function setLinkJq($linkJq)
+    {
+        $this->linkJq = (bool)$linkJq;
+    }
+
+    /**
+     * @param bool $linkVue
+     */
+    public function setLinkVue($linkVue)
+    {
+        $this->linkVue = (bool)$linkVue;
+    }
+
+    /**
+     * @param bool $linkIview
+     */
+    public function setLinkIview($linkIview)
+    {
+        $this->linkIview = (bool)$linkIview;
     }
 
     /**
@@ -168,7 +235,7 @@ class Form
      */
     public function components(array $components = [])
     {
-        foreach ($components as $component){
+        foreach ($components as $component) {
             $this->append($component);
         }
         return $this;
@@ -205,6 +272,7 @@ class Form
     /**
      * 表单提交后成功执行的js地址
      * formCreate.formSuccess(formData,$f)
+     *
      * @param string $successScript
      * @return $this
      */
@@ -243,6 +311,7 @@ class Form
 
     /**
      * 提交地址
+     *
      * @param string $action
      * @return $this
      */
@@ -266,7 +335,7 @@ class Form
      */
     public function getConfig($key = '')
     {
-        if($key =='')
+        if ($key == '')
             return $this->config;
         else
             return isset($this->config[$key]) ? $this->config[$key] : null;
@@ -274,6 +343,7 @@ class Form
 
     /**
      * 提交方式
+     *
      * @param string $method
      * @return $this
      */
@@ -285,6 +355,7 @@ class Form
 
     /**
      * 标题
+     *
      * @return string
      */
     public function getTitle()
@@ -305,13 +376,14 @@ class Form
 
     /**
      * 追加组件
+     *
      * @param FormComponentDriver $component
      * @return $this
      */
     public function append(FormComponentDriver $component)
     {
         $field = $component->getField();
-        if(!isset($this->components[$field]))
+        if (!isset($this->components[$field]))
             $this->fields[] = $field;
         $this->components[$field] = $component;
         $this->checkLoadData($component);
@@ -320,13 +392,14 @@ class Form
 
     /**
      * 开头插入组件
+     *
      * @param FormComponentDriver $component
      * @return $this
      */
     public function prepend(FormComponentDriver $component)
     {
         $field = $component->getField();
-        if(!isset($this->components[$field]))
+        if (!isset($this->components[$field]))
             array_unshift($this->fields, $field);
         $this->components[$field] = $component;
         $this->checkLoadData($component);
@@ -334,14 +407,16 @@ class Form
     }
 
     /**
+     * 是否需要引入省市区数据
+     *
      * @param FormComponentDriver $component
      */
     protected function checkLoadData(FormComponentDriver $component)
     {
-        if(
+        if (
             $component instanceof Cascader
             && ($this->loadCityData == false || $this->loadCityAreaData == false)
-        ){
+        ) {
             $type = $component->getType();
             if ($type == Cascader::TYPE_CITY)
                 $this->loadCityData = true;
@@ -352,16 +427,27 @@ class Form
 
     /**
      * 获得表单规则
+     *
      * @return array
+     * @throws FormBuilderException
      */
     public function getRules()
     {
         $rules = [];
+        $fields = [];
         foreach ($this->fields as $field) {
             $component = $this->components[$field];
             if (!($component instanceof FormComponentDriver))
                 continue;
-            $rules[] = $component->build();
+            $field = $component->getField();
+            if (in_array($field, $fields))
+                throw new FormBuilderException($field . '字段已重复,请保证组件 field 无重复');
+
+            $fields[] = $field;
+            $rule = $component->build();
+            if (!$component instanceof Hidden)
+                $rule['validate'] = array_merge(isset($rule['validate']) ? $rule['validate'] : [], $component->validate()->build());
+            $rules[] = $rule;
         }
         return $rules;
     }
@@ -369,6 +455,7 @@ class Form
 
     /**
      * 获取表单视图
+     *
      * @return string
      */
     public function view()
@@ -382,6 +469,7 @@ class Form
 
     /**
      * 获取表单生成器所需全部js
+     *
      * @return array
      */
     public function script()
@@ -391,13 +479,13 @@ class Form
 
     /**
      * 获取生成表单的js代码
+     *
      * @return string
      */
     public function formScript()
     {
         ob_start();
         $form = $this;
-        $rule = $this->getRules();
         require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . 'view' . DIRECTORY_SEPARATOR . 'formScript.php';
         $script = ob_get_clean();
         return $script;
@@ -406,29 +494,77 @@ class Form
 
     /**
      * 获取表单生成器所需js
+     *
      * @return array
      */
     public function getScript()
     {
         $_script = $this->script;
         $script = [
-            $_script['iview-css'],
-            $_script['jq'],
-            $_script['vue'],
-            $_script['iview'],
             $_script['form-create']
         ];
         if ($this->loadCityAreaData == true)
             $script[] = $_script['city-area-data'];
         if ($this->loadCityData == true)
             $script[] = $_script['city-data'];
-        return $script;
+        if ($this->linkJq)
+            $script[] = $_script['jq'];
+        if ($this->linkIview) {
+            $script[] = $_script['iview'];
+            $script[] = $_script['iview-css'];
+        }
+        if ($this->linkVue)
+            $script[] = $_script['vue'];
+        return array_reverse($script);
+    }
+
+    /**
+     * 是否隐藏提交按钮(默认显示)
+     *
+     * @param bool $isShow
+     * @return Form
+     */
+    public function hiddenSubmitBtn($isShow = false)
+    {
+        $this->submitBtn = !(bool)$isShow;
+
+        return $this;
+    }
+
+    /**
+     * 是否隐藏重置按钮(默认隐藏)
+     *
+     * @param bool $isShow
+     * @return Form
+     */
+    public function hiddenResetBtn($isShow = false)
+    {
+        $this->resetBtn = !(bool)$isShow;
+
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isResetBtn()
+    {
+        return $this->resetBtn;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isSubmitBtn()
+    {
+        return $this->submitBtn;
     }
 
     /**
      * 生成表单快捷方法
+     *
      * @param string $action
-     * @param array $components
+     * @param array  $components
      * @return Form
      */
     public static function create($action, array $components = [])

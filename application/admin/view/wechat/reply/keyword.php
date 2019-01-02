@@ -64,7 +64,7 @@
                                 {/switch}
                             </td>
 
-                            <td class="text-center">
+                            <td class="text-right">
                                 <button class="btn btn-info btn-xs" type="button"  onclick="window.location.href='{:Url('info_keyword',array('key'=>$vo['key']))}'" ><i class="fa fa-paste"></i> 编辑</button>
                                 <button class="btn btn-warning btn-xs" data-url="{:Url('delete',array('id'=>$vo['id']))}" type="button"><i class="fa fa-warning"></i> 删除
                                 </button>

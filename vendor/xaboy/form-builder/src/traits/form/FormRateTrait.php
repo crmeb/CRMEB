@@ -12,17 +12,20 @@ use FormBuilder\components\Rate;
 
 /**
  * Class FormRateTrait
+ *
  * @package FormBuilder\traits\form
  */
 trait FormRateTrait
 {
     /**
-     * @param $field
-     * @param $title
-     * @param number $value
+     * 评分选择组件
+     *
+     * @param        $field
+     * @param        $title
+     * @param  float $value
      * @return Rate
      */
-    public static function rate($field, $title, $value = 0)
+    public static function rate($field, $title, $value = 0.0)
     {
         return new Rate($field, $title, (float)$value);
     }

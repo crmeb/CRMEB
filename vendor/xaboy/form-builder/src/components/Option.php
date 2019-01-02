@@ -13,6 +13,7 @@ use FormBuilder\Helper;
 
 /**
  * Class Option
+ *
  * @package FormBuilder\components
  */
 class Option implements FormComponentInterFace
@@ -25,9 +26,11 @@ class Option implements FormComponentInterFace
 
     /**
      * Option constructor.
-     * @param $value
+     *
+     * @param        $value
      * @param string $label
-     * @param bool $disabled
+     * @param bool   $disabled
+     * @throws \FormBuilder\exception\FormBuilderException
      */
     public function __construct($value, $label = '', $disabled = false)
     {
@@ -40,6 +43,7 @@ class Option implements FormComponentInterFace
     /**
      * @param $value
      * @param $label
+     * @throws \FormBuilder\exception\FormBuilderException
      */
     public static function verify($value, $label)
     {

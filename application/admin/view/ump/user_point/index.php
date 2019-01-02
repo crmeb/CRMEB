@@ -88,7 +88,7 @@
                 layList.form.render();
                 layList.tableList('userList',"{:Url('getponitlist')}",function () {
                     return [
-                        {field: 'id', title: '编号', sort: true,event:'uid'},
+                        {field: 'id', title: 'ID', sort: true,event:'uid',width:'8%'},
                         {field: 'title', title: '标题' },
                         {field: 'balance', title: '积分余量',sort:true,event:'now_money'},
                         {field: 'number', title: '明细数字',sort:true},

@@ -59,9 +59,9 @@ class StoreProductBehavior
      * @param $oid
      * $oid  string store_order表中的id
      */
-    public static function storeProductOrderDeliveryAfter($data,$oid){
-        StoreOrder::orderPostageAfter($data,$oid);
-    }
+//    public static function storeProductOrderDeliveryAfter($data,$oid){
+//        StoreOrder::orderPostageAfter($data,$oid);
+//    }
 
     /**
      * 修改发货状态  为发货
@@ -70,9 +70,9 @@ class StoreProductBehavior
      * @param $oid
      * $oid  string store_order表中的id
      */
-    public static function storeProductOrderDeliveryGoodsAfter($data,$oid){
-        StoreOrder::orderPostageAfter($data,$oid);
-    }
+//    public static function storeProductOrderDeliveryGoodsAfter($data,$oid){
+//        StoreOrder::orderPostageAfter($data,$oid);
+//    }
 
     /**
      * 修改状态 为已收货

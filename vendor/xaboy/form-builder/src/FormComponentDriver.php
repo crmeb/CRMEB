@@ -8,11 +8,13 @@
 namespace FormBuilder;
 
 use FormBuilder\components\Col;
+use FormBuilder\components\Validate;
 use FormBuilder\interfaces\FormComponentInterFace;
 use FormBuilder\traits\component\CallPropsTrait;
 
 /**
  * Class FormComponentDriver
+ *
  * @package FormBuilder
  */
 abstract class FormComponentDriver implements FormComponentInterFace
@@ -20,54 +22,66 @@ abstract class FormComponentDriver implements FormComponentInterFace
     use CallPropsTrait;
     /**
      * 字段名
+     *
      * @var String
      */
     protected $field;
 
     /**
      * 字段昵称
+     *
      * @var String
      */
     protected $title;
 
     /**
      * 组件名称
+     *
      * @var String
      */
     protected $name;
 
     /**
      * 组件的规则
+     *
      * @var array
      */
     protected $props = [];
 
     /**
      * 字段的值
+     *
      * @var
      */
     protected $value = '';
 
     /**
      * 栅格规则
+     *
      * @var array
      */
     protected $col = [];
 
     /**
      * 字段验证规则
+     *
      * @var array
      */
     protected $validate = [];
 
+
+    protected $validateHandler = null;
+
     /**
      * 组件属性设置规则
+     *
      * @var array
      */
     protected static $propsRule = [];
 
     /**
      * FormComponentDriver constructor.
+     *
      * @param String $field 字段名
      * @param String $title 字段昵称
      * @param String $value 字段值
@@ -94,9 +108,9 @@ abstract class FormComponentDriver implements FormComponentInterFace
      */
     public function col($span)
     {
-        if($span instanceof Col)
+        if ($span instanceof Col)
             $this->col = $span->build();
-        else if(is_numeric($span))
+        else if (is_numeric($span))
             $this->col['span'] = $span;
         return $this;
     }
@@ -104,6 +118,7 @@ abstract class FormComponentDriver implements FormComponentInterFace
 
     /**
      * 批量设置组件的规则
+     *
      * @param array $props
      * @return $this
      */
@@ -117,6 +132,7 @@ abstract class FormComponentDriver implements FormComponentInterFace
 
     /**
      * 获取组件的规则
+     *
      * @param $name
      * @return mixed|null
      */
@@ -127,7 +143,8 @@ abstract class FormComponentDriver implements FormComponentInterFace
 
     /**
      * 设置组件的值
-     * @param $value
+     *
+     * @param        $value
      * @param string $default
      * @return $this
      */
@@ -140,6 +157,7 @@ abstract class FormComponentDriver implements FormComponentInterFace
 
     /**
      * 获取组件的值
+     *
      * @return string
      */
     public function getValue()
@@ -149,6 +167,7 @@ abstract class FormComponentDriver implements FormComponentInterFace
 
     /**
      * 获取组件的字段名
+     *
      * @return String
      */
     public function getField()
@@ -158,6 +177,7 @@ abstract class FormComponentDriver implements FormComponentInterFace
 
     /**
      * 设置组件的昵称
+     *
      * @return String
      */
     public function getTitle()
@@ -166,40 +186,63 @@ abstract class FormComponentDriver implements FormComponentInterFace
     }
 
     /**
-     * @param bool $required
+     * @param string|null $message
      * @return $this
      */
-    public function required($required = true)
+    public function required($message = null)
     {
-        $this->props['required'] = (bool)$required;
+        $this->validate()->required($message ?: $this->getPlaceHolder());
+        $this->props['required'] = true;
         return $this;
     }
 
     /**
-     * 设置组件的值为必填
-     * @param null $message
-     * @return $this
+     * @param string $pre
+     * @return string
      */
-    protected function setRequired($message = '', $trigger = 'change', $type = null)
+    protected function getPlaceHolder($pre = '请选择')
     {
-        $validate = [
-            'required' => true,
-            'message' => $message,
-            'trigger' => $trigger
-        ];
-        if ($type !== null) $validate['type'] = $type;
-        $this->validate[] = $validate;
-        return $this;
+        return $pre . $this->title;
     }
 
     /**
      * 添加验证规则
+     *
      * @param array $validate
      * @return $this
      */
-    public function validate(array $validate)
+    public function validateAs(array $validate)
     {
-        $this->validate = array_merge($this->validate,$validate);
+        $this->validate = array_merge($this->validate, $validate);
+        return $this;
+    }
+
+    /**
+     * @return Validate
+     */
+    abstract protected function getValidateHandler();
+
+    /**
+     * @param bool $clear
+     * @return Validate
+     */
+    public function validate($clear = false)
+    {
+        if ($clear || is_null($this->validateHandler))
+            $this->validateHandler = $this->getValidateHandler();
+
+        return $this->validateHandler;
+    }
+
+    public function validateFn($callback, $clear = false)
+    {
+        if (is_callable($callback)) $callback($this->validate($clear));
+        return $this;
+    }
+
+    public function setValidate(Validate $validate)
+    {
+        $this->validateHandler = $validate;
         return $this;
     }
 

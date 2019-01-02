@@ -1,5 +1,5 @@
-express_icon.jpgexpress_icon.jpgexpress_{
-  "pages": [
+  {
+    "pages": [
     "pages/loading/loading",
     "pages/load/load",
     "pages/login-status/login-status",

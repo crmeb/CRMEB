@@ -39,7 +39,7 @@ swiper-item{position: relative; width: 100%;}
 .foot .btns-wrapper .buy-btn{background-color: #ff7000;}
 .foot .btns-wrapper .payment-btn{background-color: #ff3d3d;}
 
-.countdown-wrapper{width: 100%; height:100rpx; padding: 0 20rpx; background-color: #ff3d3d;color: #fff; box-sizing: border-box; justify-content: space-between; align-items: center;}
+.countdown-wrapper{width: 100%; height:100rpx; padding: 0 20rpx; background-color: #ff3d3d;color: #fff; box-sizing: border-box; justify-content: space-between; align-items: center;margin-bottom: 0rpx;}
 .price-txt{align-items: center;}
 .price-txt .number{font-size: 48rpx;}
 .price-txt .number text{font-size: 28rpx;}

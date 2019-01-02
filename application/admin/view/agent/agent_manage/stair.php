@@ -28,7 +28,7 @@
                                     {$vo.add_time|date="Y-m-d H:i:s",###}
                                 </td>
                                 <td class="text-center">
-                                    {$vo.uid|getOrderCount}
+                                    {$vo.orderCount}
                                 </td>
                                 <td class="text-center">
                                     {$vo.now_money}
