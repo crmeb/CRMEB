@@ -7,17 +7,12 @@
 
 namespace app\admin\model\store;
 
-use app\admin\model\wechat\WechatUser;
-use app\admin\model\system\Merchant;
 use service\PHPExcelService;
 use think\Db;
 use traits\ModelTrait;
 use basic\ModelBasic;
 use app\admin\model\store\StoreCategory as CategoryModel;
 use app\admin\model\order\StoreOrder;
-use app\admin\model\ump\StoreSeckill as StoreSeckillModel;
-use app\admin\model\ump\StoreCombination as StoreCombinationModel;
-use app\admin\model\ump\StoreBargain as StoreBargainModel;
 use app\admin\model\system\SystemConfig;
 
 /**
@@ -33,22 +28,22 @@ class StoreProduct extends ModelBasic
      * @param $id
      */
     public static function proDelete($id){
-        //删除产品
-        //删除属性
-        //删除秒杀
-        //删除拼团
-        //删除砍价
-        //删除拼团
-        $model=new self();
-        self::beginTrans();
-        $res0 = $model::del($id);
-        $res1 = StoreSeckillModel::where(['product_id'=>$id])->delete();
-        $res2 = StoreCombinationModel::where(['product_id'=>$id])->delete();
-        $res3 = StoreBargainModel::where(['product_id'=>$id])->delete();
-        //。。。。
-        $res = $res0 && $res1 && $res2 && $res3;
-        self::checkTrans($res);
-        return $res;
+//        //删除产品
+//        //删除属性
+//        //删除秒杀
+//        //删除拼团
+//        //删除砍价
+//        //删除拼团
+//        $model=new self();
+//        self::beginTrans();
+//        $res0 = $model::del($id);
+//        $res1 = StoreSeckillModel::where(['product_id'=>$id])->delete();
+//        $res2 = StoreCombinationModel::where(['product_id'=>$id])->delete();
+//        $res3 = StoreBargainModel::where(['product_id'=>$id])->delete();
+//        //。。。。
+//        $res = $res0 && $res1 && $res2 && $res3;
+//        self::checkTrans($res);
+//        return $res;
     }
     /**
      * 获取连表查询条件
