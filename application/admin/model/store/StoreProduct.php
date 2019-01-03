@@ -95,13 +95,43 @@ class StoreProduct extends ModelBasic
                 $model = $model->where('p.store_name|p.keyword|p.id','LIKE',"%$where[store_name]%");
             }
             if(isset($where['cate_id']) && trim($where['cate_id'])!=''){
-                $model = $model->where('p.cate_id','LIKE',"%$where[cate_id]%");
+                $catid1 = $where['cate_id'].',';//匹配最前面的cateid
+                $catid2 = ','.$where['cate_id'].',';//匹配中间的cateid
+                $catid3 = ','.$where['cate_id'];//匹配后面的cateid
+                $catid4 = $where['cate_id'];//匹配全等的cateid
+//                $model = $model->whereOr('p.cate_id','LIKE',["%$catid%",$catidab]);
+                $sql = " LIKE '$catid1%' OR `cate_id` LIKE '%$catid2%' OR `cate_id` LIKE '%$catid3' OR `cate_id`=$catid4";
+                $model->where(self::getPidSql($where['cate_id']));
             }
             if(isset($where['order']) && $where['order']!=''){
                 $model = $model->order(self::setOrder($where['order']));
             }
         }
         return $model;
+    }
+
+    /**根据cateid查询产品 拼sql语句
+     * @param $cateid
+     * @return string
+     */
+    protected static function getCateSql($cateid){
+        $lcateid = $cateid.',%';//匹配最前面的cateid
+        $ccatid = '%,'.$cateid.',%';//匹配中间的cateid
+        $ratidid = '%,'.$cateid;//匹配后面的cateid
+        return  " `cate_id` LIKE '$lcateid' OR `cate_id` LIKE '$ccatid' OR `cate_id` LIKE '$ratidid' OR `cate_id`=$cateid";
+    }
+
+    /** 如果有子分类查询子分类获取拼接查询sql
+     * @param $cateid
+     * @return string
+     */
+    protected static function getPidSql($cateid){
+
+        $sql = self::getCateSql($cateid);
+        $ids = CategoryModel::where('pid', $cateid)->column('id');
+        //查询如果有子分类获取子分类查询sql语句
+        if($ids) foreach ($ids as $v) $sql .= " OR ".self::getcatesql($v);
+        return $sql;
     }
     /*
      * 获取产品列表
@@ -114,7 +144,7 @@ class StoreProduct extends ModelBasic
         if($where['excel']==0) $model=$model->page((int)$where['page'],(int)$where['limit']);
         $data=($data=$model->select()) && count($data) ? $data->toArray():[];
         foreach ($data as &$item){
-            $cateName = CategoryModel::where('id','IN',$item['cate_id'])->column('cate_name','id');
+            $cateName = CategoryModel::where('id', 'IN', $item['cate_id'])->column('cate_name', 'id');
             $item['cate_name']=is_array($cateName) ? implode(',',$cateName) : '';
             $item['collect'] = StoreProductRelation::where('product_id',$item['id'])->where('type','collect')->count();//收藏
             $item['like'] = StoreProductRelation::where('product_id',$item['id'])->where('type','like')->count();//点赞
