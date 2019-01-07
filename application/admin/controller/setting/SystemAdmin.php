@@ -180,6 +180,9 @@ class SystemAdmin extends AuthController
         return $this->fetch();
     }
 
+    /**保存个人资料
+     * @param Request $request
+     */
     public function setAdminInfo(Request $request){
         $adminInfo = $this->adminInfo;//获取当前登录的管理员
         if($request->isPost()){
