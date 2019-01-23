@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ae2e50326d8e83fd299c3350bb0f87d1",
+    "content-hash": "ea77e5047084835254d437402863700f",
     "packages": [
         {
             "name": "doctrine/cache",
@@ -870,17 +870,60 @@
             "time": "2016-09-14T18:37:20+00:00"
         },
         {
-            "name": "topthink/framework",
-            "version": "v5.0.23",
+            "name": "taskphp/taskphp",
+            "version": "dev-master",
             "source": {
                 "type": "git",
-                "url": "https://github.com/top-think/framework.git",
-                "reference": "4cbc0b5e93314446243ebc7d5f005f9c32864737"
+                "url": "https://github.com/qq8044023/taskPHP.git",
+                "reference": "0faf4342887c14149273de84aaeb120aa9aa4c19"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/top-think/framework/zipball/4cbc0b5e93314446243ebc7d5f005f9c32864737",
-                "reference": "4cbc0b5e93314446243ebc7d5f005f9c32864737",
+                "url": "https://api.github.com/repos/qq8044023/taskPHP/zipball/0faf4342887c14149273de84aaeb120aa9aa4c19",
+                "reference": "0faf4342887c14149273de84aaeb120aa9aa4c19",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.6.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "taskphp\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "cunzhang",
+                    "email": "8044023@qq.com"
+                }
+            ],
+            "description": "taskphp for PHP 5.6",
+            "homepage": "https://github.com/qq8044023/taskPHP",
+            "keywords": [
+                "phptask",
+                "task",
+                "taskphp",
+                "timePHP"
+            ],
+            "time": "2018-11-07T02:59:53+00:00"
+        },
+        {
+            "name": "topthink/framework",
+            "version": "v5.0.24",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/top-think/framework.git",
+                "reference": "c255c22b2f5fa30f320ecf6c1d29f7740eb3e8be"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/top-think/framework/zipball/c255c22b2f5fa30f320ecf6c1d29f7740eb3e8be",
+                "reference": "c255c22b2f5fa30f320ecf6c1d29f7740eb3e8be",
                 "shasum": ""
             },
             "require": {
@@ -918,7 +961,7 @@
                 "orm",
                 "thinkphp"
             ],
-            "time": "2018-12-09T12:40:40+00:00"
+            "time": "2019-01-11T08:04:58+00:00"
         },
         {
             "name": "topthink/think-captcha",
@@ -955,6 +998,42 @@
             ],
             "description": "captcha package for thinkphp5",
             "time": "2016-07-06T01:47:11+00:00"
+        },
+        {
+            "name": "topthink/think-helper",
+            "version": "v1.0.7",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/top-think/think-helper.git",
+                "reference": "5f92178606c8ce131d36b37a57c58eb71e55f019"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/top-think/think-helper/zipball/5f92178606c8ce131d36b37a57c58eb71e55f019",
+                "reference": "5f92178606c8ce131d36b37a57c58eb71e55f019",
+                "shasum": ""
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "think\\helper\\": "src"
+                },
+                "files": [
+                    "src/helper.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "Apache-2.0"
+            ],
+            "authors": [
+                {
+                    "name": "yunwuxin",
+                    "email": "448901948@qq.com"
+                }
+            ],
+            "description": "The ThinkPHP5 Helper Package",
+            "time": "2018-10-05T00:43:21+00:00"
         },
         {
             "name": "topthink/think-image",
@@ -1078,16 +1157,16 @@
         },
         {
             "name": "tp5er/tp5-databackup",
-            "version": "1.0.0",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/tp5er/tp5-databackup.git",
-                "reference": "10abd4383cf78844e1c22584fd823ef1d18e75dc"
+                "reference": "101477abe810fb91bad5c1304a93c5f461db6dc8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/tp5er/tp5-databackup/zipball/10abd4383cf78844e1c22584fd823ef1d18e75dc",
-                "reference": "10abd4383cf78844e1c22584fd823ef1d18e75dc",
+                "url": "https://api.github.com/repos/tp5er/tp5-databackup/zipball/101477abe810fb91bad5c1304a93c5f461db6dc8",
+                "reference": "101477abe810fb91bad5c1304a93c5f461db6dc8",
                 "shasum": ""
             },
             "require": {
@@ -1110,7 +1189,7 @@
                 }
             ],
             "description": "Implement the database backup restore",
-            "time": "2017-12-29T05:36:58+00:00"
+            "time": "2018-04-07T11:20:53+00:00"
         },
         {
             "name": "xaboy/form-builder",
@@ -1154,7 +1233,10 @@
     "packages-dev": [],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {
+        "tp5er/tp5-databackup": 20,
+        "taskphp/taskphp": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {

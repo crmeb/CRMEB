@@ -100,6 +100,16 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate, JsonSeria
     }
 
     /**
+     * 返回数组中所有的值组成的新 Collection 实例
+     * @access public
+     * @return static
+     */
+    public function values()
+    {
+        return new static(array_values($this->items));
+    }
+
+    /**
      * 合并数组并返回一个新的 Collection 实例
      * @access public
      * @param  mixed $items 新的数据
@@ -273,7 +283,7 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate, JsonSeria
 
         $result = [];
         foreach ($this->items as $row) {
-            $key    = $value    = null;
+            $key    = $value = null;
             $keySet = $valueSet = false;
 
             if (null !== $indexKey && array_key_exists($indexKey, $row)) {
@@ -309,7 +319,7 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate, JsonSeria
      */
     public function sort(callable $callback = null)
     {
-        $items = $this->items;
+        $items    = $this->items;
         $callback = $callback ?: function ($a, $b) {
             return $a == $b ? 0 : (($a < $b) ? -1 : 1);
         };

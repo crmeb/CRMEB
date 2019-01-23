@@ -245,9 +245,19 @@ class MorphMany extends Relation
      */
     public function save($data)
     {
-        $model = $this->make($data);
+        if ($data instanceof Model) {
+            $data = $data->getData();
+        }
 
-        return $model->save($data) ? $model : false;
+        // 保存关联表数据
+        $pk = $this->parent->getPk();
+
+        $data[$this->morphKey]  = $this->parent->$pk;
+        $data[$this->morphType] = $this->type;
+
+        $model = new $this->model();
+
+        return $model->save() ? $model : false;
     }
 
     /**

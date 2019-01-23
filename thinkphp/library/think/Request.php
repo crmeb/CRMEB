@@ -415,7 +415,7 @@ class Request
                 foreach (Config::get('pathinfo_fetch') as $type) {
                     if (!empty($_SERVER[$type])) {
                         $_SERVER['PATH_INFO'] = (0 === strpos($_SERVER[$type], $_SERVER['SCRIPT_NAME'])) ?
-                            substr($_SERVER[$type], strlen($_SERVER['SCRIPT_NAME'])) : $_SERVER[$type];
+                        substr($_SERVER[$type], strlen($_SERVER['SCRIPT_NAME'])) : $_SERVER[$type];
                         break;
                     }
                 }
@@ -522,8 +522,14 @@ class Request
             return $this->server('REQUEST_METHOD') ?: 'GET';
         } elseif (!$this->method) {
             if (isset($_POST[Config::get('var_method')])) {
-                $this->method = strtoupper($_POST[Config::get('var_method')]);
-                $this->{$this->method}($_POST);
+                $method = strtoupper($_POST[Config::get('var_method')]);
+                if (in_array($method, ['GET', 'POST', 'DELETE', 'PUT', 'PATCH'])) {
+                    $this->method = $method;
+                    $this->{$this->method}($_POST);
+                } else {
+                    $this->method = 'POST';
+                }
+                unset($_POST[Config::get('var_method')]);
             } elseif (isset($_SERVER['HTTP_X_HTTP_METHOD_OVERRIDE'])) {
                 $this->method = strtoupper($_SERVER['HTTP_X_HTTP_METHOD_OVERRIDE']);
             } else {
@@ -672,8 +678,8 @@ class Request
     public function route($name = '', $default = null, $filter = '')
     {
         if (is_array($name)) {
-            $this->param      = [];
-            $this->mergeParam = false;
+            $this->param        = [];
+            $this->mergeParam   = false;
             return $this->route = array_merge($this->route, $name);
         }
         return $this->input($this->route, $name, $default, $filter);
@@ -719,8 +725,8 @@ class Request
             }
         }
         if (is_array($name)) {
-            $this->param      = [];
-            $this->mergeParam = false;
+            $this->param       = [];
+            $this->mergeParam  = false;
             return $this->post = array_merge($this->post, $name);
         }
         return $this->input($this->post, $name, $default, $filter);
@@ -792,8 +798,8 @@ class Request
             $this->request = $_REQUEST;
         }
         if (is_array($name)) {
-            $this->param      = [];
-            $this->mergeParam = false;
+            $this->param          = [];
+            $this->mergeParam     = false;
             return $this->request = array_merge($this->request, $name);
         }
         return $this->input($this->request, $name, $default, $filter);
@@ -1294,7 +1300,7 @@ class Request
      */
     public function ip($type = 0, $adv = true)
     {
-        $type = $type ? 1 : 0;
+        $type      = $type ? 1 : 0;
         static $ip = null;
         if (null !== $ip) {
             return $ip[$type];
@@ -1633,7 +1639,7 @@ class Request
                 throw new \think\exception\HttpResponseException($response);
             } elseif (Cache::has($key)) {
                 list($content, $header) = Cache::get($key);
-                $response = Response::create($content)->header($header);
+                $response               = Response::create($content)->header($header);
                 throw new \think\exception\HttpResponseException($response);
             } else {
                 $this->cache = [$key, $expire, $tag];

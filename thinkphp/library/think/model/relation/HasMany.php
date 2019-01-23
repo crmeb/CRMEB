@@ -202,7 +202,14 @@ class HasMany extends Relation
      */
     public function save($data)
     {
-        $model = $this->make($data);
+        if ($data instanceof Model) {
+            $data = $data->getData();
+        }
+
+        // 保存关联表数据
+        $data[$this->foreignKey] = $this->parent->{$this->localKey};
+
+        $model = new $this->model();
         return $model->save($data) ? $model : false;
     }
 

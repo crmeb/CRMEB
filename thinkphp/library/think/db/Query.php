@@ -54,7 +54,7 @@ class Query
     // 回调事件
     private static $event = [];
     // 读取主库
-    private static $readMaster = [];
+    protected static $readMaster = [];
 
     /**
      * 构造函数
