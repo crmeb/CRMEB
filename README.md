@@ -99,6 +99,8 @@ CRMEB微信公众号小程序打通v2.5版：除了以上功能还带砍价、�
 
 ### 详情[<a href='https://s.click.taobao.com/W7hVkLw' target="_blank"> 进入淘宝 </a>]
 
+[![输入图片说明](https://images.gitee.com/uploads/images/2019/0122/114739_a48f5bfd_892944.gif "taobao(1).gif")](https://s.click.taobao.com/W7hVkLw)
+
 官网线下定制服务版：http://www.crmeb.com
 
 ## 用法
