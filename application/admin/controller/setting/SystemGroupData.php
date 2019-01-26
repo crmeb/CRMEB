@@ -221,7 +221,7 @@ class SystemGroupData extends AuthController
         foreach ($params as $key => $param) {
             foreach ($Fields['fields'] as $index => $field) {
                 if($key == $field["title"]){
-                    if($param == "" || count($param) == 0)
+                    if(!$param)
                         return Json::fail($field["name"]."不能为空！");
                     else{
                         $value[$key]["type"] = $field["type"];
