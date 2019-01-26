@@ -98,7 +98,7 @@
 </body>
 </html>
 <script>
-    var pid = {$pid};//当前图片分类ID
+    var pid = {$pid+0};//当前图片分类ID
     var parentinputname = '{$Request.param.fodder}';//父级input name
     var uploadurl = "{:Url('upload',array('pid'=>$Request.param.pid))}"; //上传图片地址
     var deleteurl = "{:Url('delete')}";//删除图片地址

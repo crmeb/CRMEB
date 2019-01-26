@@ -25,9 +25,13 @@ class Images extends AuthController
      */
    public function index()
    {
-       $pid = input('pid') != NULL ?input('pid'):session('pid');
-       if($pid != NULL)session('pid',$pid);
-       if(!empty(session('pid')))$pid = session('pid');
+       $pid = 0;
+       if(input('pid') && is_numeric(input('pid'))){
+           $pid = input('pid');
+           session('pid',$pid);
+       }else{
+           $pid = session('pid')?session('pid'):0;
+       }
        $this->assign('pid',$pid);
        //分类标题
        $typearray = Category::getAll();
