@@ -2,7 +2,7 @@
 namespace service;
 use think\Url;
 use service\HttpService;
-
+use think\Request;
 
 /**
  * 小程序支付
@@ -19,6 +19,7 @@ class RoutineService{
      * @param $body $body  提示
      * @return mixed
      */
+    //TODO 小程序支付
     public static function payRoutine($openid,$out_trade_no,$fee,$attach,$body){
         $payment = SystemConfigService::more(['site_url','routine_appId','routine_appsecret','pay_routine_mchid','pay_routine_client_cert','pay_routine_client_key','pay_routine_key','pay_weixin_open']);
         $config = array(
@@ -32,10 +33,11 @@ class RoutineService{
             'body' => $body,
             'mch_id' => $config['mch_id'],
             'nonce_str' => self::nonce_str(),//随机字符串
-            'notify_url' => $payment['site_url'].Url::build('routine/Routine/notify'),
+//            'notify_url' => $payment['site_url'].Url::build('routine/Routine/notify'),
+            'notify_url' => Request::instance()->domain().Url::build('/routine/Routine/notify'),
             'openid' => $openid,
             'out_trade_no' => $out_trade_no,
-            'spbill_create_ip' => self::get_server_ip()?:'127.0.0.1',//终端的ip
+            'spbill_create_ip' => Request::instance()->ip()?:'127.0.0.1',//终端的ip
             'total_fee' => $fee*100,       //单位 转为分
             'trade_type' => 'JSAPI'//交易类型 默认
         );
