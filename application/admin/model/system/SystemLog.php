@@ -84,6 +84,8 @@ class SystemLog extends ModelBasic
         $model = new self;
         $model = $model->alias('l');
         if($where['pages'] !== '') $model = $model->where('l.page','LIKE',"%$where[pages]%");
+        if($where['path'] !== '') $model = $model->where('l.path','LIKE',"%$where[path]%");
+        if($where['ip'] !== '') $model = $model->where('l.ip','LIKE',"%$where[ip]%");
         if($where['admin_id'] != '')
             $adminIds = $where['admin_id'];
         else
@@ -99,13 +101,11 @@ class SystemLog extends ModelBasic
         return self::page($model,$where);
     }
     /**
-     * @day
      * 删除超过90天的日志
      */
-    public static function deleteLog($day = 90){
+    public static function deleteLog(){
         $model = new self;
-        $times = $day*86400;
-        $model->where('add_time','<',time()-$times);
+        $model->where('add_time','<',time()-7776000);
         $model->delete();
     }
 }

@@ -24,6 +24,12 @@
                             </div>
                             <div class="input-group">
                                 <input type="text" name="pages" value="{$where.pages}" placeholder="请输入行为" class="input-sm form-control"> <span class="input-group-btn">
+                            </div>
+                            <div class="input-group">
+                                <input type="text" name="path" value="{$where.path}" placeholder="请输入链接" class="input-sm form-control"> <span class="input-group-btn">
+                            </div>
+                            <div class="input-group">
+                                <input type="text" name="ip" value="{$where.ip}" placeholder="请输入ip" class="input-sm form-control"> <span class="input-group-btn">
                                     <button type="submit" class="btn btn-sm btn-primary"><i class="fa fa-search" ></i> 搜索</button> </span>
                             </div>
                         </form>
@@ -42,6 +48,7 @@
                             <th class="text-center">操作时间</th>
                         </tr>
                         </thead>
+
                         <tbody class="">
                         {volist name="list" id="vo"}
                         <tr>
