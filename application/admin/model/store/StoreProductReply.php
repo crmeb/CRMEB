@@ -19,6 +19,10 @@ class StoreProductReply extends ModelBasic
 {
     use ModelTrait;
 
+    protected function getPicsAttr($value)
+    {
+        return json_decode($value,true);
+    }
     /**
      * @param $where
      * @return array
@@ -38,6 +42,7 @@ class StoreProductReply extends ModelBasic
         $model = $model->join('__STORE_PRODUCT__ p','p.id=r.product_id');
         $model = $model->where('r.is_del',0);
         $model = $model->field('r.*,u.nickname,u.headimgurl,p.store_name');
+        $model = $model->order('r.add_time desc,r.is_reply asc');
         return self::page($model,function($itme){
 
         },$where);

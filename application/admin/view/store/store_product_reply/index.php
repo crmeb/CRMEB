@@ -53,7 +53,8 @@
                             </div>
                             <div class="social-body">
                                 <p>{$vo.comment}
-                                    <?php $image = json_decode($vo['pics'],true);?>
+                                    <br/>
+                                    <?php $image = isset($vo['pics'][0])?explode(",",$vo['pics'][0]):'';?>
                                     {if condition="$image"}
                                     {volist name="image" id="v"}
                                     <img src="{$v}" alt="{$vo.store_name}" class="open_image" data-image="{$v}" style="width: 50px;height: 50px;cursor: pointer;">
