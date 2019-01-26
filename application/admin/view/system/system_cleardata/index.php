@@ -12,15 +12,17 @@
     <hr>
 </div>
 <div class="row panel">
-<button type="button" class="btn btn-w-m btn-danger btn-primary cleardata" data-url="{:Url('system.SystemCleardata/UserRelevant')}">清除用户数据</button><br>
-<button type="button" class="btn btn-w-m btn-danger btn-primary cleardata" data-url="{:Url('system.SystemCleardata/storedata')}">清除商城数据</button><br>
-<button type="button" class="btn btn-w-m btn-danger btn-primary cleardata" data-url="{:Url('system.SystemCleardata/categorydata')}">清除产品分类</button><br>
-<button type="button" class="btn btn-w-m btn-danger btn-primary cleardata" data-url="{:Url('system.SystemCleardata/orderdata')}">清除订单数据</button><br>
-<button type="button" class="btn btn-w-m btn-danger btn-primary cleardata" data-url="{:Url('system.SystemCleardata/kefudata')}">清除客服数据</button><br>
-<button type="button" class="btn btn-w-m btn-danger btn-primary cleardata" data-url="{:Url('system.SystemCleardata/wechatdata')}">清除微信数据</button><br>
-<button type="button" class="btn btn-w-m btn-danger btn-primary cleardata" data-url="{:Url('system.SystemCleardata/wechatuserdata')}">清除微信用户</button><br>
-<button type="button" class="btn btn-w-m btn-danger btn-primary cleardata" data-url="{:Url('system.SystemCleardata/articledata')}">清除内容分类</button><br>
-<button type="button" class="btn btn-w-m btn-danger btn-primary cleardata" data-url="{:Url('system.SystemCleardata/uploaddata')}">清除所有附件</button><br>
+
+<button type="button" class="btn btn-w-m btn-danger btn-primary cleardata" data-url="{:Url('system.SystemCleardata/userRelevantData')}">清除用户数据</button><br>
+<button type="button" class="btn btn-w-m btn-danger btn-primary cleardata" data-url="{:Url('system.SystemCleardata/storeData')}">清除商城数据</button><br>
+<button type="button" class="btn btn-w-m btn-danger btn-primary cleardata" data-url="{:Url('system.SystemCleardata/categoryData')}">清除产品分类</button><br>
+<button type="button" class="btn btn-w-m btn-danger btn-primary cleardata" data-url="{:Url('system.SystemCleardata/orderData')}">清除订单数据</button><br>
+<button type="button" class="btn btn-w-m btn-danger btn-primary cleardata" data-url="{:Url('system.SystemCleardata/kefuData')}">清除客服数据</button><br>
+<button type="button" class="btn btn-w-m btn-danger btn-primary cleardata" data-url="{:Url('system.SystemCleardata/wechatData')}">清除微信数据</button><br>
+<button type="button" class="btn btn-w-m btn-danger btn-primary cleardata" data-url="{:Url('system.SystemCleardata/wechatuserData')}">清除微信用户</button><br>
+<button type="button" class="btn btn-w-m btn-danger btn-primary cleardata" data-url="{:Url('system.SystemCleardata/articleData')}">清除内容分类</button><br>
+<button type="button" class="btn btn-w-m btn-danger btn-primary cleardata" data-url="{:Url('system.SystemCleardata/uploadData')}">清除所有附件</button><br>
+<button type="button" class="btn btn-w-m btn-danger btn-primary cleardata" data-url="{:Url('system.SystemCleardata/systemdata')}">清除系统记录</button><br>
 <!--<button type="button" class="btn btn-w-m btn-danger btn-primary creatuser" data-url="{:Url('system.SystemCleardata/userdate')}">创建前台用户用户名：crmeb 密码：123456</button>-->
 </div>
 <script>
