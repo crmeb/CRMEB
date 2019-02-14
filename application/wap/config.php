@@ -10,6 +10,12 @@
 // +----------------------------------------------------------------------
 
 return [
+    // 默认控制器名
+    'default_controller'     => 'Index',
+    // 默认操作名
+    'default_action'         => 'index',
+    // 自动搜索控制器
+    'controller_auto_search' => true,
     'session'                => [
         // SESSION 前缀
         'prefix'         => 'wap',
@@ -36,6 +42,14 @@ return [
         // 标签库标签结束标记
         'taglib_end'   => '}',
     ],
-    'exception_handle' =>\basic\WapException::class,
+    // 视图输出字符串内容替换
+    'view_replace_str'       => [
+        '{__PLUG_PATH}'=>PUBILC_PATH.'static/plug/',
+        '{__STATIC_PATH}'=>PUBILC_PATH.'static/',
+        '{__PUBLIC_PATH}'=>PUBILC_PATH,
+        '{__WAP_PATH}'=>PUBILC_PATH.'wap/first/'
+    ],
+    //wap异常处理
+    'exception_handle' => \app\wap\controller\WapException::class,
     'empty_controller' =>'AuthController'
 ];
