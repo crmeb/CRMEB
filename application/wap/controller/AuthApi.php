@@ -312,7 +312,7 @@ class AuthApi extends AuthController
             $order = StoreOrder::searchUserOrder($this->userInfo['uid'],$search)?:[];
             $list = $order == false ? [] : [$order];
         }else{
-            if($type == 'first') $type = '';
+            if(!is_numeric($type)) $type = '';
             $list = StoreOrder::getUserOrderList($this->userInfo['uid'],$type,$first,$limit);
         }
         foreach ($list as $k=>$order){
@@ -484,7 +484,10 @@ class AuthApi extends AuthController
 
     public function get_product_list($keyword = '', $cId = 0,$sId = 0,$priceOrder = '', $salesOrder = '', $news = 0, $first = 0, $limit = 8)
     {
-        if(!empty($keyword)) $keyword = base64_decode(htmlspecialchars($keyword));
+        if(!empty($keyword)){
+            $encodedData = str_replace(' ','+',$keyword);
+            $keyword = base64_decode(htmlspecialchars($encodedData));
+        }
         $model = StoreProduct::validWhere();
         if($cId && $sId){
             $model->where('cate_id',$sId);
