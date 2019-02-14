@@ -58,8 +58,8 @@ class StoreOrder extends ModelBasic
 
     public static function getOrderPriceGroup($cartInfo)
     {
-        $storePostage = floatval(SystemConfigService::get('store_postage'))?:0;//基础邮费
-        $storeFreePostage =  floatval(SystemConfigService::get('store_free_postage'))?:0;//满*包邮
+        $storePostage = floatval(SystemConfigService::get('store_postage'))?:0;
+        $storeFreePostage =  floatval(SystemConfigService::get('store_free_postage'))?:0;
         $totalPrice = self::getOrderTotalPrice($cartInfo);
         $costPrice = self::getOrderCostPrice($cartInfo);
         if(!$storeFreePostage) {
@@ -481,7 +481,7 @@ class StoreOrder extends ModelBasic
     {
         $openid = WechatUser::uidToOpenid($order['uid']);
         WechatTemplateService::sendTemplate($openid,WechatTemplateService::ORDER_TAKE_SUCCESS,[
-            'first'=>'亲，您的订单以成功签收，快去评价一下吧',
+            'first'=>'亲，您的订单已成功签收，快去评价一下吧',
             'keyword1'=>$order['order_id'],
             'keyword2'=>'已收货',
             'keyword3'=>date('Y/m/d H:i',time()),
