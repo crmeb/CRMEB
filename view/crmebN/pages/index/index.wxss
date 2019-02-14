@@ -42,3 +42,26 @@
 .product-like .like-box .item .text-info .title{overflow: hidden;white-space: nowrap;text-overflow: ellipsis;}
 .product-like .like-box .item .text-info .price{color:#ff3d3d;}
 
+.new-product2{margin-top: 30rpx; background-color: #fff;}
+.scroll-product2{width: 100%; overflow: hidden; white-space: nowrap; padding:25rpx 0 35rpx 30rpx; box-sizing: border-box;}
+.scroll-product2 .item{width: 304rpx;margin-right: 28rpx; display: inline-block;border:1rpx solid #eee;border-radius:20rpx;}
+.scroll-product2 .item .img-box{width: 100%; height: 304rpx;}
+.scroll-product2 .item .img-box image{width: 100%; height: 304rpx;border-radius:20rpx 20rpx 0 0;}
+.scroll-product2 .item .pro-info .price-small{color: #ff3d3d;font-size:26rpx;
+margin-top:10rpx;text-align:center;}
+.scroll-product2 .item .pro-info .pro-title{text-align:center;margin-top:25rpx;}
+.scroll-product2 .item .pro-info .buy{width:250rpx;height:54rpx;background-color:#e6413a;border-radius:50rpx;font-size:24rpx;color:#fff;align-items:center;justify-content:center;margin:17rpx auto 25rpx auto;}
+.scroll-product2 .item .pro-info .buy image{width:27rpx;height:26rpx;margin-right:12rpx;}
+
+
+.new-pro-wrapper2{padding: 0 30rpx;}
+.new-pro-wrapper2 .item navigator{width: 100%; padding:36rpx 0; border-bottom: 1px solid #eee; justify-content: space-between; box-sizing: border-box;flex-direction:row-reverse;}
+.new-pro-wrapper2 .item .text-box{width:470rpx; flex-direction: column; justify-content: space-around;}
+.new-pro-wrapper2 .item .text-box .salePrice{width:210rpx;height:46rpx;text-align:center;line-height:46rpx;font-size:20rpx;color:#fff;background-image:linear-gradient(to right,#ff6248 0%,#ff3e1e 100%);border-radius:30rpx 0 30rpx 0rpx;margin-top:18rpx;}
+.new-pro-wrapper2 .item .text-box .salePrice text{font-size:24rpx;}
+.new-pro-wrapper2 .item .text-box .title{display: -webkit-box; display:-moz-box; display:box;-webkit-box-orient: vertical; -moz-box-orient: vertical; -webkit-line-clamp: 1;-moz-line-clamp: 1;overflow: hidden;}
+.new-pro-wrapper2 .item .text-box .price{color: #999; font-size:24rpx;justify-content:space-between;align-items:center;}
+.new-pro-wrapper2 .item .text-box .price .dailyPrice{text-decoration:line-through;}
+.new-pro-wrapper2 .item .text-box .price text{font-size: 28rpx;}
+.new-pro-wrapper2 .item .img-box image{width:188rpx; height:188rpx;border-radius:10rpx;}
+

@@ -15,6 +15,7 @@ Page({
     cartInfo : [],
     cartId : '',
     priceGroup :[],
+    totalPrice:0,
     orderKey:'',
     seckillId:0,
     BargainId:0,
@@ -27,7 +28,7 @@ Page({
     url: app.globalData.urlImages,
     addressId:0,
     couponId:0,
-    couponPrice:'',
+    couponPrice:0,
     couponInfo:[],
     addressInfo:[],
     mark:'',
@@ -70,6 +71,7 @@ Page({
     } 
     that.getaddressInfo();
     that.getCouponRope();
+   
   },
   bindHideKeyboard:function(e){
      this.setData({
@@ -183,7 +185,7 @@ Page({
               },
               fail: function(res) {
                 wx.showToast({
-                  title: '支付失败',
+                  title: '支付取消',
                   icon: 'none',
                   duration: 1000,
                 })
@@ -232,7 +234,8 @@ Page({
             if (res.data.code == 200) {
               that.setData({
                 couponInfo: res.data.data,
-                couponPrice: '-' + res.data.data.coupon_price
+                // couponPrice: '-' + res.data.data.coupon_price,
+                totalPrice: Number(that.data.totalPrice) - Number(res.data.data.coupon_price)
               })
             }else{
               that.setData({
@@ -263,7 +266,7 @@ Page({
         })
       }else{
         wx.request({
-          url: app.globalData.url + '/routine/auth_api/user_default_address?uid=' + app.globalData.uid,
+          url: app.globalData.url + '/routine/auth_api/user_default_address?uid=' + app.globalData.uid+ '&openid=' + app.globalData.openid,
           method: 'GET',
           success: function (res) {
             if (res.data.code == 200) {
@@ -282,7 +285,7 @@ Page({
       'content-type': 'application/x-www-form-urlencoded'
     };
     wx.request({
-      url: app.globalData.url + '/routine/auth_api/user_address_list?uid=' + app.globalData.uid,
+      url: app.globalData.url + '/routine/auth_api/user_address_list?uid=' + app.globalData.uid + '&openid=' + app.globalData.openid,
       method: 'POST',
       header: header,
       success: function (res) {
@@ -332,6 +335,7 @@ Page({
             offlinePostage: res.data.data.offlinePostage,
             orderKey: res.data.data.orderKey, 
             priceGroup: res.data.data.priceGroup,
+            totalPrice: Number(res.data.data.priceGroup.totalPrice) + Number(res.data.data.priceGroup.storePostage),
             cartId: res.data.data.cartId,
             seckillId: res.data.data.seckill_id,
             usableCoupon: res.data.data.usableCoupon

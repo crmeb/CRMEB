@@ -136,7 +136,10 @@ class StoreBargainUserHelp extends ModelBasic
         $coverPrice = StoreBargainUser::getBargainUserDiffPrice($bargainId,$bargainUserId);//用户可以砍掉的金额
         $bargainUserTableId = StoreBargainUser::getBargainUserTableId($bargainId,$bargainUserId);
         $alreadyPrice= StoreBargainUser::getBargainUserPrice($bargainUserTableId);//用户已经砍掉的价格
-        return bcmul(bcdiv($alreadyPrice,$coverPrice,2),100,0);
+        if($alreadyPrice)
+            return bcmul(bcdiv($alreadyPrice,$coverPrice,2),100,0);
+        else
+            return 100;
     }
 }
 

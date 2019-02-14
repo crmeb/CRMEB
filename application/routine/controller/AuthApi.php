@@ -6,7 +6,6 @@ use app\routine\model\routine\RoutineCode;
 use app\routine\model\routine\RoutineFormId;
 use app\routine\model\routine\RoutineTemplate;
 use app\routine\model\store\StoreCombination;
-use behavior\routine\RoutineBehavior;
 use service\JsonService;
 use service\GroupDataService;
 use service\RoutineBizDataCrypt;
@@ -14,10 +13,10 @@ use service\SystemConfigService;
 use service\UploadService;
 use service\UtilService;
 use think\Request;
-use behavior\wap\StoreProductBehavior;
 use service\WechatTemplateService;
 use service\CacheService;
 use service\HookService;
+use behavior\StoreProductBehavior;
 use think\Url;
 use app\routine\model\store\StoreCouponUser;
 use app\routine\model\store\StoreOrder;
@@ -54,14 +53,6 @@ use app\routine\model\article\Article as ArticleModel;
  * Class AuthApi
  * @package app\routine\controller
  *
- *
- *
- *
- * https://qipei.9gt.net/routine/auth_api/index  首页
- * https://qipei.9gt.net/routine/auth_api/store  分类页面
- * https://qipei.9gt.net/routine/auth_api/get_pid_cate  一级分类
- * https://qipei.9gt.net/routine/auth_api/get_id_cate  二级分类
- * https://qipei.9gt.net/routine/auth_api/get_product_list  分类页面产品
  */
 class AuthApi extends AuthController{
 
@@ -88,7 +79,8 @@ class AuthApi extends AuthController{
      */
     public function get_user_extract_bank(){
         $extractBank = SystemConfig::getValue('user_extract_bank')?:[];//提现银行
-        $extractBank = explode('=',$extractBank);
+        $extractBank = str_replace("\r\n","\n",$extractBank);//防止不兼容
+        $extractBank = explode("\n",$extractBank);
         return JsonService::successful($extractBank);
     }
     /**
@@ -99,14 +91,18 @@ class AuthApi extends AuthController{
         $menus = GroupDataService::getData('routine_home_menus')?:[];//banner图
         $lovely = GroupDataService::getData('routine_lovely')?:[];//猜你喜欢图
         $best = StoreProduct::getBestProduct('id,image,store_name,cate_id,price,unit_name,sort',8);//精品推荐
-        $new = StoreProduct::getNewProduct('id,image,store_name,cate_id,price,unit_name,sort',3);//今日上新
-        $hot = StoreProduct::getHotProduct('id,image,store_name,cate_id,price,unit_name,sort',6);//猜你喜欢
+        $new = StoreProduct::getNewProduct('id,image,store_name,cate_id,price,unit_name,sort',3);//首发
+        $hot = StoreProduct::getHotProduct('id,image,store_name,cate_id,price,unit_name,sort',8);//热卖
+        $benefit = StoreProduct::getBenefitProduct('id,image,store_name,cate_id,price,ot_price,stock,unit_name,sort',3);//促销
+        $like = StoreProduct::getHotProduct('id,image,store_name,cate_id,price,unit_name,sort',6);//猜你喜欢
         $data['banner'] = $banner;
         $data['lovely'] = $lovely[0];
         $data['menus'] = $menus;
         $data['best'] = $best;
         $data['new'] = $new;
         $data['hot'] = $hot;
+        $data['benefit'] = $benefit;
+        $data['like'] = $like;
         return JsonService::successful($data);
     }
 
@@ -738,14 +734,16 @@ class AuthApi extends AuthController{
                 $orderInfo = StoreOrder::where('order_id',$orderId)->find();
                 if(!$orderInfo || !isset($orderInfo['paid'])) exception('支付订单不存在!');
                 if($orderInfo['paid']) exception('支付已支付!');
+                //如果支付金额为0
                 if(bcsub((float)$orderInfo['pay_price'],0,2) <= 0){
+                    //创建订单jspay支付
                     if(StoreOrder::jsPayPrice($orderId,$this->userInfo['uid'],$formId))
                         return JsonService::status('success','微信支付成功',$info);
                     else
                         return JsonService::status('pay_error',StoreOrder::getErrorInfo());
                 }else{
                     try{
-                        $jsConfig = StoreOrder::jsPay($orderId);
+                        $jsConfig = StoreOrder::jsPay($orderId);//创建订单jspay
                     }catch (\Exception $e){
                         return JsonService::status('pay_error',$e->getMessage(),$info);
                     }
@@ -832,22 +830,23 @@ class AuthApi extends AuthController{
         else
             return JsonService::fail(StoreOrder::getErrorInfo());
     }
-
+    //TODO 支付订单
     /**
      * 支付订单
      * @param string $uni
      * @return \think\response\Json
      */
-    public function pay_order($uni = '')
+    public function pay_order($uni = '',$paytype='weixin')
     {
         if(!$uni) return JsonService::fail('参数错误!');
         $order= StoreOrder::getUserOrderDetail($this->userInfo['uid'],$uni);
         if(!$order) return JsonService::fail('订单不存在!');
         if($order['paid']) return JsonService::fail('该订单已支付!');
         if($order['pink_id']) if(StorePink::isPinkStatus($order['pink_id'])) return JsonService::fail('该订单已失效!');
+        $order['pay_type'] = $paytype;//重新支付选择支付方式
         if($order['pay_type'] == 'weixin'){
             try{
-                $jsConfig = StoreOrder::jsPay($order);
+                $jsConfig = StoreOrder::jsPay($order);//订单列表发起支付
             }catch (\Exception $e){
                 return JsonService::fail($e->getMessage());
             }
@@ -1342,7 +1341,8 @@ class AuthApi extends AuthController{
         $arr = User::where('spread_uid',$this->userInfo['uid'])->column('uid');
         $list = StoreOrder::getUserOrderCount(implode(',',$arr),$type);
         $price = [];
-        if(!empty($list)) foreach ($list as $k=>$v) $price[]=$v['pay_price'];
+//        if(!empty($list)) foreach ($list as $k=>$v) $price[]=$v['pay_price'];
+        if(!empty($list)) foreach ($list as $k=>$v) $price[]=$v;
         $cont = count($list);
         $sum = array_sum($price);
         return JsonService::successful(['cont'=>$cont,'sum'=>$sum]);
@@ -1436,7 +1436,7 @@ class AuthApi extends AuthController{
         $path = makePathToUrl('routine/code');
         if($path == '')
             return JsonService::fail('生成上传目录失败,请检查权限!');
-        $picname = $path.DS.$this->userInfo['uid'].'.jpg';
+        $picname = $path.'/'.$this->userInfo['uid'].'.jpg';
         $domain = SystemConfigService::get('site_url').'/';
         $domainTop = substr($domain,0,5);
         if($domainTop != 'https') $domain = 'https:'.substr($domain,5,strlen($domain));
@@ -1738,7 +1738,8 @@ class AuthApi extends AuthController{
      */
     public function get_combination_list_banner(){
         $lovely = GroupDataService::getData('routine_lovely')?:[];//banner图
-        return JsonService::successful($lovely[3]);
+        $pic = isset($lovely[3])?$lovely[3]:'';
+        return JsonService::successful($pic);
     }
 
     /**
@@ -1965,8 +1966,8 @@ class AuthApi extends AuthController{
         if(!$id) return JsonService::fail('参数错误');
         $count = StoreProduct::validWhere()->count();
         if(!$count) return JsonService::fail('参数错误');
-        $path = 'public'.DS.'uploads'.DS.'codepath'.DS.'product';
-        $codePath = $path.DS.$id.'_'.$this->userInfo['uid'].'.jpg';
+        $path = UPLOAD_PATH.'/codepath/product/';
+        $codePath = $path.$id.'_'.$this->userInfo['uid'].'.jpg';
         $domain = SystemConfigService::get('site_url').'/';
         if(!file_exists($codePath)){
             if(!is_dir($path)) mkdir($path,0777,true);

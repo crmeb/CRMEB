@@ -17,8 +17,10 @@ Page({
     duration: 500,//动画播放的时长;
     indicatorColor: "rgba(51, 51, 51, .3)",
     indicatorActivecolor: "#ffffff",
-    recommendLsit:[],
+    recommendList:[],
     newList:[],
+    hotList:[],
+    benefitList:[],
     likeList:[],
     offset: 0,
     title: "玩命加载中...",
@@ -60,11 +62,13 @@ Page({
       success: function (res) {
         that.setData({
           imgUrls: res.data.data.banner,
-          recommendLsit: res.data.data.best,
-          newList: res.data.data.new,
-          lovely: res.data.data.lovely,
-          menus: res.data.data.menus,
-          likeList: res.data.data.hot
+          recommendList: res.data.data.best,//精品
+          newList: res.data.data.new,//首发新品
+          hotList: res.data.data.hot,//热卖单品
+          benefitList: res.data.data.benefit,//促销
+          lovely: res.data.data.lovely,//猜猜你喜欢上面广告位
+          menus: res.data.data.menus,//导航
+          likeList: res.data.data.like//猜猜喜欢
         })
       }
     })

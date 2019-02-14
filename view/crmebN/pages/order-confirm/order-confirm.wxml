@@ -47,12 +47,14 @@
   <view class='warapper'>
     <view class='item '>
       <radio-group >
-          <label class='radio-wrapper'  wx:for="{{cartArr}}">
-              <view class='left-wrapper flex'><view class='iconfont {{item.icon}}'></view> {{item.name}}</view>
-              <radio value="{{index}}" wx:if="{{item.value == payType}}" checked='checked' bindtap="radioChange" data-value="{{item.value}}"></radio>
-              <radio value="{{index}}" wx:else bindtap="radioChange" data-value="{{item.value}}"></radio>
-              <!-- 其他布局代码 -->    
-          </label>   
+      <label class='radio-wrapper' wx:for="{{cartArr}}" bindtap="radioChange" data-value="{{item.value}}">
+        <view class='left-wrapper flex'>
+        <view class='iconfont {{item.icon}}'></view> {{item.name}}
+        </view>
+        <radio value="{{index}}" wx:if="{{item.value == payType}}" checked='checked' ></radio>
+        <radio value="{{index}}" wx:else></radio>
+      <!-- 其他布局代码 --> 
+      </label>
       </radio-group>
       <!-- <view class='left-wrapper'>微信支付</view>
       <view class='right-wrapper flex'>
@@ -72,7 +74,7 @@
 <view style='height:120rpx;'></view>
 <view class='foot flex'>
   <view class='text'>
-    合计: <text class='price'>￥{{priceGroup.totalPrice}}{{couponPrice}}</text>
+    合计: <text class='price'>￥{{totalPrice}}</text>
   </view>
   <form bindsubmit="subOrder" report-submit='true'>
    <button class='submit-btn' formType="submit">立即结算</button>

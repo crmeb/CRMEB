@@ -5,7 +5,7 @@
 <view class='refunding-ul'>
    <view class='refunding-li flex'>
         <view>退款总金额</view>
-        <view class='li-money'>￥<text>{{ordercon.refund_price}}</text></view>
+        <view class='li-money'>￥<text>{{ordercon.pay_price}}</text></view>
    </view>
    <view class='refunding-li flex'>
         <view>退回微信账户</view>

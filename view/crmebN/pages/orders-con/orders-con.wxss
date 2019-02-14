@@ -42,5 +42,6 @@
 .foot view{width: 160rpx; height: 58rpx; line-height: 56rpx; text-align: center; box-sizing: border-box; border: 1px solid #999; color: #aaa; border-radius: 30px; font-size: 24rpx;}
 .foot view.pay-btn{background-color: #ff3d3d;border: 0; color: #fff;} 
 .delete-btn{margin-right: 20rpx;display:block;}
+@import "/pages/home/home.wxss";
 
 

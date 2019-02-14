@@ -7,7 +7,7 @@
 
 namespace app\routine\model\store;
 
-use behavior\wap\StoreProductBehavior;
+use behavior\routine\StoreProductBehavior;
 use service\HookService;
 use traits\ModelTrait;
 use basic\ModelBasic;

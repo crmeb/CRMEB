@@ -71,7 +71,7 @@ Page({
                 duration: 1000,
               })
               that.setData({
-                now_money: parseInt(that.data.now_money) + parseInt(e.detail.value.number)
+                now_money: parseFloat(that.data.now_money) + parseFloat(e.detail.value.number)
               });
               setTimeout(function () {
                 wx.navigateTo({

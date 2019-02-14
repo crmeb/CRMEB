@@ -46,6 +46,7 @@ class StoreProduct extends ModelBasic
         return $model->select();
     }
 
+
     /**
      * 热卖产品
      * @param string $field

@@ -26,7 +26,7 @@ use service\HookService;
 use service\RoutineService;
 use service\SystemConfigService;
 use service\WechatService;
-use service\WechatTemplateService;
+use service\RoutineTemplateService;
 use think\Cache;
 use think\Url;
 use traits\ModelTrait;
@@ -56,25 +56,35 @@ class StoreOrder extends ModelBasic
         return json_decode($value,true);
     }
 
+    /**获取订单组信息
+     * @param $cartInfo
+     * @return array
+     */
     public static function getOrderPriceGroup($cartInfo)
     {
-        $storePostage = floatval(SystemConfigService::get('store_postage'))?:0;
-        $storeFreePostage =  floatval(SystemConfigService::get('store_free_postage'))?:0;
-        $totalPrice = self::getOrderTotalPrice($cartInfo);
-        $costPrice = self::getOrderCostPrice($cartInfo);
+        $storePostage = floatval(SystemConfigService::get('store_postage'))?:0;//邮费基础价
+        $storeFreePostage =  floatval(SystemConfigService::get('store_free_postage'))?:0;//满额包邮
+        $totalPrice = self::getOrderTotalPrice($cartInfo);//获取订单总金额
+        $costPrice = self::getOrderCostPrice($cartInfo);//获取订单成本价
+        //如果满额包邮等于0
         if(!$storeFreePostage) {
             $storePostage = 0;
         }else{
             foreach ($cartInfo as $cart){
-                if(!$cart['productInfo']['is_postage'])
+                if(!$cart['productInfo']['is_postage'])//若果产品不包邮
                     $storePostage = bcadd($storePostage,$cart['productInfo']['postage'],2);
 
             }
-            if($storeFreePostage <= $totalPrice) $storePostage = 0;
+            if($storeFreePostage <= $totalPrice) $storePostage = 0;//如果总价大于等于满额包邮 邮费等于0
         }
+//        $totalPrice = bcadd($totalPrice,$storePostage,2);
         return compact('storePostage','storeFreePostage','totalPrice','costPrice');
     }
 
+    /**获取订单总金额
+     * @param $cartInfo
+     * @return int|string
+     */
     public static function getOrderTotalPrice($cartInfo)
     {
         $totalPrice = 0;
@@ -83,6 +93,11 @@ class StoreOrder extends ModelBasic
         }
         return $totalPrice;
     }
+
+    /**获取订单成本价
+     * @param $cartInfo
+     * @return int|string
+     */
     public static function getOrderCostPrice($cartInfo)
     {
         $costPrice=0;
@@ -164,6 +179,20 @@ class StoreOrder extends ModelBasic
         Cache::clear('user_order_'.$uid.$key);
     }
 
+    /**生成订单
+     * @param $uid
+     * @param $key
+     * @param $addressId
+     * @param $payType
+     * @param bool $useIntegral
+     * @param int $couponId
+     * @param string $mark
+     * @param int $combinationId
+     * @param int $pinkId
+     * @param int $seckill_id
+     * @param int $bargain_id
+     * @return bool|object
+     */
     public static function cacheKeyCreateOrder($uid,$key,$addressId,$payType,$useIntegral = false,$couponId = 0,$mark = '',$combinationId = 0,$pinkId = 0,$seckill_id=0,$bargain_id=0)
     {
         if(!array_key_exists($payType,self::$payType)) return self::setErrorInfo('选择支付方式有误!');
@@ -296,7 +325,7 @@ class StoreOrder extends ModelBasic
         $key = substr($orderId,16);
         return 'wx'.$ymd.date('His').$key;
     }
-
+    //TODO JS支付
     public static function jsPay($orderId,$field = 'order_id')
     {
         if(is_string($orderId))
@@ -309,20 +338,20 @@ class StoreOrder extends ModelBasic
         $openid = WechatUser::getOpenId($orderInfo['uid']);
         return RoutineService::payRoutine($openid,$orderInfo['order_id'],$orderInfo['pay_price'],'productr',SystemConfigService::get('site_name'));
     }
-
+    //TODO 余额支付
     public static function yuePay($order_id,$uid,$formId = '')
     {
         $orderInfo = self::where('uid',$uid)->where('order_id',$order_id)->where('is_del',0)->find();
         if(!$orderInfo) return self::setErrorInfo('订单不存在!');
         if($orderInfo['paid']) return self::setErrorInfo('该订单已支付!');
-        if($orderInfo['pay_type'] != 'yue') return self::setErrorInfo('该订单不能使用余额支付!');
+//        if($orderInfo['pay_type'] != 'yue') return self::setErrorInfo('该订单不能使用余额支付!');
         $userInfo = User::getUserInfo($uid);
         if($userInfo['now_money'] < $orderInfo['pay_price'])
             return self::setErrorInfo('余额不足'.floatval($orderInfo['pay_price']));
         self::beginTrans();
         $res1 = false !== User::bcDec($uid,'now_money',$orderInfo['pay_price'],'uid');
         $res2 = UserBill::expend('购买商品',$uid,'now_money','pay_product',$orderInfo['pay_price'],$orderInfo['id'],$userInfo['now_money'],'余额支付'.floatval($orderInfo['pay_price']).'元购买商品');
-        $res3 = self::paySuccess($order_id,$formId);
+        $res3 = self::paySuccess($order_id,'yue',$formId);//余额支付成功
         try{
 //            HookService::listen('yue_pay_product',$userInfo,$orderInfo,false,PaymentBehavior::class);
         }catch (\Exception $e){
@@ -347,7 +376,7 @@ class StoreOrder extends ModelBasic
         $userInfo = User::getUserInfo($uid);
         self::beginTrans();
         $res1 = UserBill::expend('购买商品',$uid,'now_money','pay_product',$orderInfo['pay_price'],$orderInfo['id'],$userInfo['now_money'],'微信支付'.floatval($orderInfo['pay_price']).'元购买商品');
-        $res2 = self::paySuccess($order_id,$formId);
+        $res2 = self::paySuccess($order_id,'weixin',$formId);//微信支付为0时
         $res = $res1 && $res2;
         self::checkTrans($res);
         return $res;
@@ -394,14 +423,15 @@ class StoreOrder extends ModelBasic
     /**
      * //TODO 支付成功后
      * @param $orderId
+     * @param $paytype
      * @param $notify
      * @return bool
      */
-    public static function paySuccess($orderId,$formId = '')
+    public static function paySuccess($orderId,$paytype='weixin',$formId = '')
     {
         $order = self::where('order_id',$orderId)->find();
         $resPink = true;
-        $res1 = self::where('order_id',$orderId)->update(['paid'=>1,'pay_time'=>time()]);
+        $res1 = self::where('order_id',$orderId)->update(['paid'=>1,'pay_type'=>$paytype,'pay_time'=>time()]);//订单改为支付
         User::bcInc($order['uid'],'pay_count',1,'uid');
         if($order->combination_id && $res1 && !$order->refund_status) $resPink = StorePink::createPink($order);//创建拼团
         $oid = self::where('order_id',$orderId)->value('id');
@@ -414,20 +444,20 @@ class StoreOrder extends ModelBasic
     public static function createOrderTemplate($order)
     {
         $goodsName = StoreOrderCartInfo::getProductNameList($order['id']);
-        WechatTemplateService::sendTemplate(WechatUser::getOpenId($order['uid']),WechatTemplateService::ORDER_CREATE, [
+        RoutineTemplateService::sendTemplate(WechatUser::getOpenId($order['uid']),RoutineTemplateService::ORDER_CREATE, [
             'first'=>'亲，您购买的商品已支付成功',
             'keyword1'=>date('Y/m/d H:i',$order['add_time']),
             'keyword2'=>implode(',',$goodsName),
             'keyword3'=>$order['order_id'],
             'remark'=>'点击查看订单详情'
         ],Url::build('/wap/My/order',['uni'=>$order['order_id']],true,true));
-        WechatTemplateService::sendAdminNoticeTemplate([
-            'first'=>"亲,您有一个新订单 \n订单号:{$order['order_id']}",
-            'keyword1'=>'新订单',
-            'keyword2'=>'线下支付',
-            'keyword3'=>date('Y/m/d H:i',time()),
-            'remark'=>'请及时处理'
-        ]);
+//        RoutineTemplateService::sendAdminNoticeTemplate([
+//            'first'=>"亲,您有一个新订单 \n订单号:{$order['order_id']}",
+//            'keyword1'=>'新订单',
+//            'keyword2'=>'线下支付',
+//            'keyword3'=>date('Y/m/d H:i',time()),
+//            'remark'=>'请及时处理'
+//        ]);
     }
 
     public static function getUserOrderDetail($uid,$key)
@@ -459,7 +489,7 @@ class StoreOrder extends ModelBasic
                 'keyword4'=>$postageData['delivery_name'],
                 'keyword5'=>$postageData['delivery_id']
             ]);
-            WechatTemplateService::sendTemplate($openid,WechatTemplateService::ORDER_DELIVER_SUCCESS,$group,$url);
+            RoutineTemplateService::sendTemplate($openid,RoutineTemplateService::ORDER_DELIVER_SUCCESS,$group,$url);
 
         }else if($postageData['delivery_type'] == 'express'){//发货
             $group = array_merge($group,[
@@ -467,21 +497,21 @@ class StoreOrder extends ModelBasic
                 'keyword2'=>$postageData['delivery_name'],
                 'keyword3'=>$postageData['delivery_id']
             ]);
-            WechatTemplateService::sendTemplate($openid,WechatTemplateService::ORDER_POSTAGE_SUCCESS,$group,$url);
+            RoutineTemplateService::sendTemplate($openid,RoutineTemplateService::ORDER_POSTAGE_SUCCESS,$group,$url);
         }
     }
 
     public static function orderTakeAfter($order)
     {
-        $openid = WechatUser::getOpenId($order['uid']);
-        WechatTemplateService::sendTemplate($openid,WechatTemplateService::ORDER_TAKE_SUCCESS,[
-            'first'=>'亲，您的订单以成功签收，快去评价一下吧',
-            'keyword1'=>$order['order_id'],
-            'keyword2'=>'已收货',
-            'keyword3'=>date('Y/m/d H:i',time()),
-            'keyword4'=>implode(',',StoreOrderCartInfo::getProductNameList($order['id'])),
-            'remark'=>'点击查看订单详情'
-        ],Url::build('My/order',['uni'=>$order['order_id']],true,true));
+//        $openid = WechatUser::getOpenId($order['uid']);
+//        RoutineTemplateService::sendTemplate($openid,RoutineTemplateService::ORDER_TAKE_SUCCESS,[
+//            'first'=>'亲，您的订单已成功签收，快去评价一下吧',
+//            'keyword1'=>$order['order_id'],
+//            'keyword2'=>'已收货',
+//            'keyword3'=>date('Y/m/d H:i',time()),
+//            'keyword4'=>implode(',',StoreOrderCartInfo::getProductNameList($order['id'])),
+//            'remark'=>'点击查看订单详情'
+//        ],Url::build('My/order',['uni'=>$order['order_id']],true,true));
     }
 
     /**
