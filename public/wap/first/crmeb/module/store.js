@@ -2,7 +2,7 @@
     typeof define == 'function' && define('store',['axios','helper'],factory);
 })(this,function(axios,$h){
     axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
-    axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
+    axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;charset=utf-8';
     return {
         baseGet:function(url,successCallback,errorCallback){
             axios.get(url).then(function(res){
@@ -416,6 +416,13 @@
                 c:'public_api',
                 a:'get_category_product_list',
                 p:{limit:limit}
+            }),successCallback,errorCallback);
+        },
+        getPublicProductList:function(p,successCallback,errorCallback){
+            this.baseGet($h.U({
+                c:'public_api',
+                a:'get_product_list',
+                p:p
             }),successCallback,errorCallback);
         },
         getBestProductList:function(p,successCallback,errorCallback){
