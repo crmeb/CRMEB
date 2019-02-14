@@ -134,6 +134,7 @@ switch ($step) {
             'runtime/cache',
 	    	'runtime/temp',
 	    	'runtime/log',
+	    	'runtime/schema',
             'application/database.php',
             'application/config.php',
         );
@@ -260,11 +261,21 @@ switch ($step) {
 
 
 			// 清空测试数据			
-			if($_POST['demo'] != 'demo')
+			if(!$_POST['demo'])
 			{				
 				$result = mysqli_query($conn,"show tables");      
-				$tables=mysqli_fetch_all($result,MYSQLI_ASSOC);//参数MYSQL_ASSOC、MYSQLI_NUM、MYSQLI_BOTH规定产生数组类型
-				$bl_table = array('eb_system_config','eb_system_config_tab','eb_system_menus','eb_system_file','eb_express','eb_system_group','eb_system_group_data');
+				$tables=mysqli_fetch_all($result);//参数MYSQL_ASSOC、MYSQLI_NUM、MYSQLI_BOTH规定产生数组类型
+				$bl_table = array('eb_system_admin'
+                ,'eb_system_role'
+                ,'eb_system_config'
+                ,'eb_system_config_tab'
+                ,'eb_system_menus'
+                ,'eb_system_file'
+                ,'eb_express'
+                ,'eb_system_group'
+                ,'eb_system_group_data'
+                ,'eb_wechat_template'
+                ,'eb_routine_template');
 				foreach($bl_table as $k => $v)
 				{
 					$bl_table[$k] = str_replace('eb_',$dbPrefix,$v);
