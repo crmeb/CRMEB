@@ -10,7 +10,7 @@ namespace app\admin\model\system;
 
 use traits\ModelTrait;
 use basic\ModelBasic;
-use behavior\system\SystemBehavior;
+use behavior\admin\SystemBehavior;
 use service\HookService;
 use think\Session;
 

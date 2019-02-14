@@ -174,13 +174,13 @@ class SystemAdmin extends AuthController
     /**
      * 个人资料 展示
      * */
-    public function admininfo(){
+    public function adminInfo(){
         $adminInfo = $this->adminInfo;//获取当前登录的管理员
         $this->assign('adminInfo',$adminInfo);
         return $this->fetch();
     }
 
-    /**保存个人资料
+    /**保存信息
      * @param Request $request
      */
     public function setAdminInfo(Request $request){

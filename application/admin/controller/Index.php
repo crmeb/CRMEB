@@ -57,7 +57,7 @@ class Index extends AuthController
             ->count();
         //库存预警
         $replenishment_num = SystemConfig::getValue('store_stock') > 0 ? SystemConfig::getValue('store_stock') : 20;//库存预警界限
-        $topData['stockProduct'] = StoreProduct::where('stock','<=',$replenishment_num)->where('is_del',0)->count();
+        $topData['stockProduct'] = StoreProduct::where('stock','<=',$replenishment_num)->where('is_show',1)->where('is_del',0)->count();
         //待处理提现
         $topData['treatedExtract'] = UserExtractModel::where('status',0)->count();
 
@@ -567,7 +567,7 @@ class Index extends AuthController
         $data = [];
         $data['ordernum'] = StoreOrderModel::statusByWhere(1)->count();//待发货
         $replenishment_num = SystemConfig::getValue('store_stock') > 0 ? SystemConfig::getValue('store_stock') : 2;//库存预警界限
-        $data['inventory'] = ProductModel::where('stock','<=',$replenishment_num)->where('is_del',0)->count();//库存
+        $data['inventory'] = ProductModel::where('stock','<=',$replenishment_num)->where('is_show',1)->where('is_del',0)->count();//库存
         $data['commentnum'] = StoreProductReplyModel::where('is_reply',0)->count();//评论
         $data['reflectnum'] = UserExtractModel::where('status',0)->count();;//提现
         $data['msgcount'] = intval($data['ordernum'])+intval($data['inventory'])+intval($data['commentnum'])+intval($data['reflectnum']);

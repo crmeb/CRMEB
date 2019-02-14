@@ -75,7 +75,7 @@ class AgentManage extends AuthController
             ->order('u.add_time DESC')
             ->select()
             ->toArray();
-        foreach ($list as $key=>$value) $list[$key]['orderCount'] = StoreOrder::getOrderCount($value['uid']);
+        foreach ($list as $key=>$value) $list[$key]['orderCount'] = StoreOrder::getOrderCount($value['uid'])?:0;
         $this->assign('list',$list);
         return $this->fetch();
     }

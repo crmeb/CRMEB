@@ -65,7 +65,8 @@ class StoreProduct extends ModelBasic
                 $data = ['p.is_show'=>1,'p.is_del'=>0,'pav.stock|p.stock'=>0];
                 break;
             case 5:
-                $data = ['p.is_show'=>1,'p.is_del'=>0,'pav.stock|p.stock'=>['elt',1]];
+                $min = SystemConfig::getValue('store_stock');
+                $data = ['p.is_show'=>1,'p.is_del'=>0,'pav.stock|p.stock'=>['elt',$min]];
                 break;
             case 6:
                 $data = ['p.is_del'=>1];

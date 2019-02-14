@@ -22,7 +22,13 @@ class UserBill extends ModelBasic
     {
         return time();
     }
-    
+    //修改积分减少积分记录
+    public static function expend($title,$uid,$category,$type,$number,$link_id = 0,$balance = 0,$mark = '',$status = 1)
+    {
+        $pm = 0;
+        return self::set(compact('title','uid','link_id','category','type','number','balance','mark','status','pm'));
+    }
+    //修改积分增加积分记录
     public static function income($title,$uid,$category,$type,$number,$link_id = 0,$balance = 0,$mark = '',$status = 1){
         $pm = 1;
         return self::set(compact('title','uid','link_id','category','type','number','balance','mark','status','pm'));

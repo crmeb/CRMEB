@@ -4,9 +4,8 @@ namespace app\admin\controller;
 
 use app\admin\model\system\SystemAdmin;
 use app\admin\model\system\SystemMenus;
-use app\admin\model\system\SystemRole;
-use basic\SystemBasic;
-use behavior\system\SystemBehavior;
+use app\admin\model\system\SystemRole;;
+use behavior\admin\SystemBehavior;
 use service\HookService;
 use think\Url;
 

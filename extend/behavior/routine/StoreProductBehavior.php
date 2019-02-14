@@ -20,6 +20,25 @@ use service\WechatTemplateService;
 class StoreProductBehavior
 {
     /**
+     * 取消点赞产品后
+     * @param $productId
+     * @param $uid
+     */
+    public static function storeProductUnLikeAfter($productId, $uid)
+    {
+
+    }
+
+    /**
+     * 点赞产品后
+     * @param $product
+     * @param $uid
+     */
+    public static function storeProductLikeAfter($product, $uid)
+    {
+
+    }
+    /**
      * 用户确认收货
      * @param $order
      * @param $uid

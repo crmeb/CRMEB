@@ -20,6 +20,9 @@ class UserBehavior
      */
     public static function wechatOauthAfter($openid,$wechatInfo)
     {
+//        echo "调试中";
+//        var_dump($wechatInfo);
+        $wechatInfo['nickname'] = filterEmoji($wechatInfo['nickname']);
         Cookie::set('is_login',1);
         if(isset($wechatInfo['unionid']) && $wechatInfo['unionid'] != '' && WechatUser::be(['unionid'=>$wechatInfo['unionid']])){
             WechatUser::edit($wechatInfo,$wechatInfo['unionid'],'unionid');

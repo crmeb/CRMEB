@@ -19,19 +19,19 @@ return [
         // 是否自动开启 SESSION
         'auto_start'     => true,
     ],
-    'app_debug'              => false,
+    'app_debug'              => true,
     // 应用Trace
     'app_trace'              => false,
 
-    'exception_handle' =>\basic\AdminException::class,
+    'exception_handle' => app\admin\controller\AdminException::class,
     'empty_controller' =>'Index',
     // 视图输出字符串内容替换
     'view_replace_str'       => [
-        '{__ADMIN_PATH}'   => PUBILC_PATH.'system/',//后台
-        '{__FRAME_PATH}'   => PUBILC_PATH.'system/frame/',//H+框架
-        '{__PLUG_PATH}'    => PUBILC_PATH.'static/plug/',//前后台通用
-        '{__MODULE_PATH}'  => PUBILC_PATH.'system/module/',//后台功能模块
-        '{__STATIC_PATH}'  => PUBILC_PATH.'static/',//全站通用
-        '{__PUBLIC_PATH}'  => PUBILC_PATH,//静态资源路径
+        '{__PUBLIC_PATH}' =>  PUBILC_PATH,                 //public 目录
+        '{__STATIC_PATH}' =>  PUBILC_PATH.'static/',       //全局静态目录
+        '{__PLUG_PATH}'   =>  PUBILC_PATH.'static/plug/',  //全局静态插件
+        '{__ADMIN_PATH}'  =>  PUBILC_PATH.'system/',       //后台目录
+        '{__FRAME_PATH}'  =>  PUBILC_PATH.'system/frame/', //后台框架
+        '{__MODULE_PATH}' =>  PUBILC_PATH.'system/module/',//后台模块
     ]
 ];

@@ -5,7 +5,7 @@
         <div class="ibox">
             <div class="ibox-title">
                 <a type="button" class="btn btn-w-m btn-primary" href="{:Url('index')}">规则首页</a>
-                <button type="button" class="btn btn-w-m btn-primary" onclick="$eb.createModalFrame(this.innerText,'{:Url('create',array('cid'=>0))}')">添加规则</button>
+                <button type="button" class="btn btn-w-m btn-primary" onclick="$eb.createModalFrame(this.innerText,'{$addurl}')">添加规则</button>
                 <div class="ibox-tools">
 
                 </div>

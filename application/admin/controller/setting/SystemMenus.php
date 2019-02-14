@@ -38,7 +38,8 @@ class SystemMenus extends AuthController
             ['pid',$pid]
         ],$this->request);
         $this->assign(MenusModel::getAdminPage($params));
-        $this->assign(compact('params'));
+        $addurl = Url::build('create',['cid'=>input('pid')]);
+        $this->assign(compact('params','addurl'));
         return $this->fetch();
     }
 
@@ -50,7 +51,9 @@ class SystemMenus extends AuthController
      */
     public function create($cid = 0)
     {
-        $form = Form::create(Url::build('save'),[
+        $controller = '';
+        if($cid)$controller = MenusModel::where('id',$cid)->value('controller')?:'';
+        $field = [
             Form::input('menu_name','按钮名称')->required('按钮名称必填'),
             Form::select('pid','父级id',$cid)->setOptions(function(){
                 $list = (Util::sortListTier(MenusModel::all()->toArray(),'顶级','pid','menu_name'));
@@ -61,14 +64,14 @@ class SystemMenus extends AuthController
                 return $menus;
             })->filterable(1),
             Form::select('module','模块名')->options([['label'=>'总后台','value'=>'admin']]),
-            Form::input('controller','控制器名'),
+            Form::input('controller','控制器名',$controller),
             Form::input('action','方法名'),
             Form::input('params','参数')->placeholder('举例:a/123/b/234'),
             Form::frameInputOne('icon','图标',Url::build('admin/widget.widgets/icon',array('fodder'=>'icon')))->icon('ionic'),
             Form::number('sort','排序',0),
-            Form::radio('is_show','是否菜单',1)->options([['value'=>0,'label'=>'隐藏'],['value'=>1,'label'=>'显示(菜单只显示三级)']]),
-        ]);
-        $form->setMethod('post')->setTitle('添加权限');
+            Form::radio('is_show','是否菜单',0)->options([['value'=>0,'label'=>'隐藏'],['value'=>1,'label'=>'显示(菜单只显示三级)']])
+        ];
+        $form = Form::make_post_form('添加权限',$field,Url::build('save'),3);
         $this->assign(compact('form'));
         return $this->fetch('public/form-builder');
     }
@@ -107,7 +110,7 @@ class SystemMenus extends AuthController
     {
         $menu = MenusModel::get($id);
         if(!$menu) return Json::fail('数据不存在!');
-        $form = Form::create(Url::build('update',array('id'=>$id)),[
+        $field = [
             Form::input('menu_name','按钮名称',$menu['menu_name']),
             Form::select('pid','父级id',(string)$menu->getData('pid'))->setOptions(function()use($id){
                 $list = (Util::sortListTier(MenusModel::where('id','<>',$id)->select()->toArray(),'顶级','pid','menu_name'));
@@ -117,15 +120,15 @@ class SystemMenus extends AuthController
                 }
                 return $menus;
             })->filterable(1),
-            Form::select('module','模块名',$menu['module'])->options([['label'=>'总后台','value'=>'admin'],['label'=>'总后台1','value'=>'admin1']]),
+            Form::select('module','模块名',$menu['module'])->options([['label'=>'总后台','value'=>'admin']]),
             Form::input('controller','控制器名',$menu['controller']),
             Form::input('action','方法名',$menu['action']),
             Form::input('params','参数',MenusModel::paramStr($menu['params']))->placeholder('举例:a/123/b/234'),
             Form::frameInputOne('icon','图标',Url::build('admin/widget.widgets/icon',array('fodder'=>'icon')),$menu['icon'])->icon('ionic'),
             Form::number('sort','排序',$menu['sort']),
             Form::radio('is_show','是否菜单',$menu['is_show'])->options([['value'=>0,'label'=>'隐藏'],['value'=>1,'label'=>'显示(菜单只显示三级)']])
-        ]);
-        $form->setMethod('post')->setTitle('编辑权限');
+        ];
+        $form = Form::make_post_form('添加权限',$field,Url::build('update',array('id'=>$id)),3);
         $this->assign(compact('form'));
         return $this->fetch('public/form-builder');
     }

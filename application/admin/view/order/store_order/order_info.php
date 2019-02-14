@@ -10,10 +10,10 @@
                 </div>
                 <div class="panel-body">
                     <div class="row show-grid">
-                        <div class="col-xs-6" >用户昵称: {$userInfo.nickname}</div>
-                        <div class="col-xs-6">收货人: {$orderInfo.real_name}</div>
-                        <div class="col-xs-6">联系电话: {$orderInfo.user_phone}</div>
-                        <div class="col-xs-6">收货地址: {$orderInfo.user_address}</div>
+                        <div class="col-xs-12" >用户昵称: {$userInfo.nickname}</div>
+                        <div class="col-xs-12">收货人: {$orderInfo.real_name}</div>
+                        <div class="col-xs-12">联系电话: {$orderInfo.user_phone}</div>
+                        <div class="col-xs-12">收货地址: {$orderInfo.user_address}</div>
                     </div>
                 </div>
             </div>
@@ -46,11 +46,12 @@
                         <div class="col-xs-6">商品总数: {$orderInfo.total_num}</div>
                         <div class="col-xs-6">商品总价: ￥{$orderInfo.total_price}</div>
                         <div class="col-xs-6">支付邮费: ￥{$orderInfo.total_postage}</div>
+                        <div class="col-xs-6">优惠券金额: ￥{$orderInfo.coupon_price}</div>
                         <div class="col-xs-6">实际支付: ￥{$orderInfo.pay_price}</div>
                         {if condition="$orderInfo['refund_price'] GT 0"}
                         <div class="col-xs-6" style="color: #f1a417">退款金额: ￥{$orderInfo.refund_price}</div>
                         {/if}
-                        {if condition="$orderInfo['deduction_price'] GT 0"}
+                        {if condition="$orderInfo['use_integral'] GT 0"}
                         <div class="col-xs-6" style="color: #f1a417">使用积分: {$orderInfo.use_integral}积分(抵扣了￥{$orderInfo.deduction_price})</div>
                         {/if}
                         {if condition="$orderInfo['back_integral'] GT 0"}
@@ -59,15 +60,15 @@
                         <div class="col-xs-6">创建时间: {$orderInfo.add_time|date="Y/m/d H:i",###}</div>
                         <div class="col-xs-6">支付方式:
                             {if condition="$orderInfo['paid'] eq 1"}
-                                           {if condition="$orderInfo['pay_type'] eq 'weixin'"}
-                                           微信支付
-                                           {elseif condition="$orderInfo['pay_type'] eq 'yue'"}
-                                           余额支付
-                                           {elseif condition="$orderInfo['pay_type'] eq 'offline'"}
-                                           线下支付
-                                           {else/}
-                                           其他支付
-                                           {/if}
+                               {if condition="$orderInfo['pay_type'] eq 'weixin'"}
+                               微信支付
+                               {elseif condition="$orderInfo['pay_type'] eq 'yue'"}
+                               余额支付
+                               {elseif condition="$orderInfo['pay_type'] eq 'offline'"}
+                               线下支付
+                               {else/}
+                               其他支付
+                               {/if}
                             {else/}
                             {if condition="$orderInfo['pay_type'] eq 'offline'"}
                             线下支付
@@ -80,8 +81,9 @@
                         <div class="col-xs-6">支付时间: {$orderInfo.pay_time|date="Y/m/d H:i",###}</div>
                         {/notempty}
                         <div class="col-xs-6" style="color: #ff0005">用户备注: {$orderInfo.mark?:'无'}</div>
-                        <div class="col-xs-6" style="color: #733b5c">商家备注: {$orderInfo.remark?:'无'}</div>
                         <div class="col-xs-6" style="color: #733AF9">推广人: {if $spread}{$spread}{else}无{/if}</div>
+                        <div class="col-xs-6" style="color: #733b5c">商家备注: {$orderInfo.remark?:'无'}</div>
+
                     </div>
                 </div>
             </div>
