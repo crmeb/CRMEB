@@ -17,10 +17,15 @@ class FormBuilder extends Form
      * @param $title
      * @param array $field
      * @param $url
-     * @param $jscallback null 不执行 1 父级刷新 2 父级刷新关闭弹框 str 自定义
+     * @param $jscallback $f.submitStatus({loading: false}); 成功按钮状态false
+     * 1 父级刷新 不能再提交
+     * 2 父级刷新关闭弹框 不能再提交 成功关闭
+     * 3 父页面刷新可以重复添加 可以再次提交
+     * 4 不能再提交
+     * str 自定义
      * @return $this
      */
-    public static function make_post_form($title,array $field,$url,$jscallback = 1){
+    public static function make_post_form($title,array $field,$url,$jscallback = 2){
         $form = Form::create($url);//提交地址
         $form->setMethod('POST');//提交方式
         $form->components($field);//表单字段
@@ -32,6 +37,12 @@ class FormBuilder extends Form
                 break;
             case 2:
                 $js = 'parent.$(".J_iframe:visible")[0].contentWindow.location.reload(); setTimeout(function(){parent.layer.close(parent.layer.getFrameIndex(window.name));},2000);';//提交成功父级页面刷新并关闭当前页面
+                break;
+            case 3:
+                $js = 'parent.$(".J_iframe:visible")[0].contentWindow.location.reload();$r.btn.disabled(false);$r.btn.finish();';//提交成功父级页面刷新继续添加
+                break;
+            case 4:
+                $js = '$r.btn.disabled(false);$r.btn.finish();';//提交成功不能再提交
                 break;
             default:
                 $js = $jscallback;

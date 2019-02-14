@@ -35,6 +35,31 @@ class RoutineTemplateService{
         if($tempKey == '')return '';
         return Db::name('RoutineTemplate')->where('tempkey',$tempKey)->where('status',1)->value('tempid');
     }
+    /**服务进度通知
+     * @param array $data
+     * @param null $url
+     * @param string $defaultColor
+     * @return bool
+     */
+    public static function sendAdminNoticeTemplate(array $data,$url = null,$defaultColor = '')
+    {
+//        $adminIds = explode(',',trim(SystemConfigService::get('site_store_admin_uids')));
+//        $kefuIds = ServiceModel::where('notify',1)->column('uid');
+//        if(empty($adminIds[0])){
+//            $adminList = array_unique($kefuIds);
+//        }else{
+//            $adminList = array_unique(array_merge($adminIds,$kefuIds));
+//        }
+//        if(!is_array($adminList) || empty($adminList)) return false;
+//        foreach ($adminList as $uid){
+//            try{
+//                $openid = WechatUser::uidToOpenid($uid);
+//            }catch (\Exception $e){
+//                continue;
+//            }
+//            self::sendTemplate($openid,self::ADMIN_NOTICE,$data,$url,$defaultColor);
+//        }
+    }
     /**
      * 获取小程序模板库所有标题列表
      * @param string $accessToken
