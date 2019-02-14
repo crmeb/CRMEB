@@ -22,6 +22,7 @@ use EasyWeChat\Payment\Order;
 use EasyWeChat\Server\Guard;
 use EasyWeChat\Support\XML;
 use think\Url;
+use think\Request;
 
 class WechatService
 {
@@ -47,7 +48,8 @@ class WechatService
                 'key'=>$payment['pay_weixin_key'],
                 'cert_path'=>realpath('.'.$payment['pay_weixin_client_cert']),
                 'key_path'=>realpath('.'.$payment['pay_weixin_client_key']),
-                'notify_url'=>SystemConfigService::get('site_url').Url::build('wap/Wechat/notify')
+                //'notify_url'=>SystemConfigService::get('site_url').Url::build('wap/Wechat/notify')
+                'notify_url'=>Request::instance()->domain().Url::build('wap/Wechat/notify')
             ];
         }
         return $config;
