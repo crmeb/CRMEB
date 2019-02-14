@@ -22,7 +22,7 @@ class RoutineUser extends ModelBasic
      * @return mixed
      */
     public static function routineOauth($routine){
-        $routineInfo['nickname'] = $routine['nickName'];//姓名
+        $routineInfo['nickname'] = filterEmoji($routine['nickName']);//姓名
         $routineInfo['sex'] = $routine['gender'];//性别
         $routineInfo['language'] = $routine['language'];//语言
         $routineInfo['city'] = $routine['city'];//城市

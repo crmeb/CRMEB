@@ -35,6 +35,16 @@ class WechatUser extends ModelBasic
         return $openid;
     }
 
+    /**
+     * 用openid获得uid
+     * @param $uid
+     * @return mixed
+     */
+    public static function openidTouid($openid)
+    {
+        return  self::where('routine_openid',$openid)->value('uid');
+    }
+
     public static function userTakeOrderGiveCoupon($uid)
     {
         $couponId = SystemConfigService::get('store_order_give_coupon');
