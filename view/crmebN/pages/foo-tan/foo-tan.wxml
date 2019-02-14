@@ -4,7 +4,10 @@
     <image src='{{url}}{{productSelect.image}}'></image>
     <view class='txt-info'>
       <view class='title'>{{productSelect.store_name}}</view>
-      <view class='price'>￥{{productSelect.price}}</view>
+      <view class='num flex'>
+          <view class='price'>￥{{productSelect.price}}</view>
+          <view class='stock'>库存：{{productSelect.stock}}{{storeInfo.unit_name}}</view>
+      </view>
     </view>
   </view>
   <view class='bd-wrapper'>
