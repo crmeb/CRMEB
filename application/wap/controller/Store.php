@@ -311,6 +311,7 @@ class Store extends AuthController
             'site'=>SystemConfigService::more(['wechat_qrcode','wechat_name','wechat_avatar']),
             'isFollow'=>$isFollow
         ]);
+//        var_dump(SystemConfigService::more(['wechat_qrcode','wechat_name','wechat_avatar']));die;
         return $this->fetch();
     }
 
@@ -329,7 +330,7 @@ class Store extends AuthController
         //砍价产品
         $bargain = StoreBargain::getBargainTerm($id);
         $bargain['time'] = time();
-        $description = htmlspecialchars_decode($bargain['description']);
+        $description = isset($bargain['description'])?htmlspecialchars_decode($bargain['description']):'';
         $rule = isset($bargain['rule']) ? htmlspecialchars_decode($bargain['rule']) : '';
         if(!$bargainUid)
             //判断当前登录人是不是砍价
