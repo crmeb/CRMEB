@@ -80,7 +80,7 @@ Page({
     var addressP = {};
     if (name == "") {
       warn = '请输入姓名';
-    } else if (!/^1(3|4|5|7|8)\d{9}$/i.test(phone)) {
+    } else if (!/^1(3|4|5|7|8|9)\d{9}$/i.test(phone)) {
       warn = '您输入的手机号有误'
     } else if (area == '["省","市","区"]'){
       warn = '请选择地区';
