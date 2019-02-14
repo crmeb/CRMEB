@@ -60,7 +60,7 @@
   </view>
 </view>
 
-<view class='evaluate-wrapper' wx:if="{{replyCount > 0}}">
+<view class='evaluate-wrapper' wx:if="{{replyCount}}">
   <view class='common-title flex'>
     <view class='line'></view>
     <view class='iconfont icon-pinglun'></view>
@@ -76,12 +76,13 @@
         <view class='start star{{reply.star}}'></view>
       </view>
       <view class='txt-msg'>{{reply.comment}}</view>
-      <view class='time-bar'>{{reply.add_time}}</view>
+      <view class='time-bar'>评论时间:{{reply.add_time}}</view>
     </view>
-    <view wx:if="{{reply.merchant_reply_content != ''}}">
-       <view>管理员回复：</view>
-      <view class='txt-msg'>{{reply.merchant_reply_content}}</view>
-      <view class='time-bar'>{{reply.merchant_reply_time}}</view>
+    <view wx:if="{{reply.merchant_reply_content}}">
+      <view class='txt-msg'>
+      回复：{{reply.merchant_reply_content}}
+      </view>
+      <view class='time-bar'>回复时间:{{reply.merchant_reply_time}}</view>
     </view>
     <navigator wx:if="{{replyCount > 0}}" hover-class="none" url="/pages/comment/comment?productId={{storeInfo.id}}">查看全部评价</navigator>
   </view>

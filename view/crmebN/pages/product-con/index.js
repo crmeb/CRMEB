@@ -874,6 +874,9 @@ Page({
      */
     onShareAppMessage: function () {
         var that = this;
+        that.setData({
+          actionSheetHidden: !that.data.actionSheetHidden
+        })
         return {
             title: that.data.productSelect.store_name,
             path: app.globalData.openPages,
