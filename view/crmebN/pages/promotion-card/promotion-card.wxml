@@ -1,7 +1,7 @@
 <view class='promotion-card'>
     <view class='title flex'>
         <view class='line'></view>
-        <view class='name'>CRMEB小程序</view>
+        <view class='name'>推荐小程序</view>
         <view class='line'></view>
     </view>
     <view class='white-bg'>
