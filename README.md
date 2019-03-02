@@ -82,7 +82,7 @@
    账号：demo
    密码：crmeb.com
 <div align="center">
-<table><tr><td><img src='https://images.gitee.com/uploads/images/2018/0828/182854_beba4aed_892944.png'/><br>公众号</td><td><img src='https://images.gitee.com/uploads/images/2018/0828/182909_cb2a5e64_892944.png'/><br>小程序</td></tr></table>
+<table><tr><td><img src='https://images.gitee.com/uploads/images/2018/0828/182854_beba4aed_892944.png'/><br>公众号</td><td><img src='https://images.gitee.com/uploads/images/2019/0302/114329_5f41f8fd_892944.jpeg' width='100px'/><br>小程序</td></tr></table>
 </div>
 
 ## 付费版
