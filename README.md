@@ -81,9 +81,9 @@
 <a href='http://demo25.crmeb.net' target="_blank">http://demo25.crmeb.net</a>
    账号：demo
    密码：crmeb.com
-<div align="center">
-<table><tr><td><img src='https://images.gitee.com/uploads/images/2018/0828/182854_beba4aed_892944.png'/><br>公众号</td><td><img src='https://images.gitee.com/uploads/images/2019/0302/114329_5f41f8fd_892944.jpeg' /><br>小程序</td></tr></table>
-</div>
+
+![输入图片说明](https://images.gitee.com/uploads/images/2019/0302/165543_801cf1e6_892944.jpeg "二维码.jpg")
+
 
 ## 付费版
 
