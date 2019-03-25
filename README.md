@@ -122,7 +122,7 @@ Git clone https://gitee.com/ZhongBangKeJi/CRMEB.git
 
 在使用中有任何问题，请使用以下联系方式联系我们
 
-QQ群: 116279623
+QQ群: 69741389
 
 官方论坛：http://bbs.crmeb.net
 
