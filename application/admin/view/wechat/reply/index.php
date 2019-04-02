@@ -216,7 +216,7 @@
             methods: {
                 submit: function(){
                     if(!this.check()) return false;
-                    $eb.axios.post("{:Url('save',array('key'=>$key,'title'=>$title))}",{key:this.key,status:this.status,data:this.dataGroup[this.type],type:this.type}).then(function(res){
+                    $eb.axios.post("{:Url('save',array('key'=>$key))}",{key:this.key,status:this.status,data:this.dataGroup[this.type],type:this.type}).then(function(res){
                         if(res.status == 200 && res.data.code == 200){
                             $eb.message('success','设置成功!');
                         }
