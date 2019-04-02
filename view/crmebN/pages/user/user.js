@@ -124,6 +124,48 @@ Page({
       complete: function (res) { },
     })
   },
+  getPhoneNumber: function (res){
+    var that = this;
+    if (res.detail.errMsg == "getPhoneNumber:ok"){
+        var pdata = {};
+        pdata.iv = encodeURI(res.detail.iv);
+        pdata.encryptedData = res.detail.encryptedData;
+        pdata.session_key = wx.getStorageSync('session_key');//获取上一步获取的session_key
+        wx.request({
+          url: app.globalData.url + '/routine/auth_api/bind_mobile?uid=' + app.globalData.uid,
+          method: 'post',
+          dataType  : 'json',
+          data: {
+            info: pdata
+          },
+          success: function (res) {
+            if(res.data.code == 200){
+              wx.showToast({
+                title: '绑定成功',
+                icon: 'success',
+                duration: 2000
+              })
+              that.setData({
+                ['userinfo.phone'] : true
+              })
+
+            }else{
+              wx.showToast({
+                title: '绑定失败',
+                icon: 'none',
+                duration: 2000
+              })
+            }
+          },
+        })
+    } else {
+      wx.showToast({
+        title: '取消授权',
+        icon: 'none',
+        duration: 2000
+      })
+    }
+  }
    /**
    * 生命周期函数--我的砍价
    */

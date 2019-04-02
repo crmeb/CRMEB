@@ -1,0 +1,45 @@
+<view class='sign'>      
+    <view class='header'>
+       <view class='top flex'>
+          <view class='left flex'>
+             <view class='pictrue'><image src='{{userinfo.avatar}}'></image></view>
+             <view class='text'>
+                 <view>{{userinfo.nickname}}</view>
+                 <view class='Paragraph'>{{userinfo.integral}}</view>
+             </view>
+          </view>
+          <navigator class='right flex' url='/pages/integral-con/integral-con'>
+             <view class='ico'><image src='/images/fenlei.png'></image></view>
+             <view>明细</view>
+          </navigator>
+       </view>
+   </view>
+   <view class='blocks'>
+      <view class="signbtn">
+        <button class='but color' hover-class='none' wx:if="{{userinfo.is_sign}}">已签到</button>
+        <button class='but' bindtap='sign' wx:else>立即签到</button>
+      </view>
+      <view class='lock'></view>
+   </view>
+   <view class='blocks blocks2'>
+      <view class='tip'>已累计签到</view>
+      <view class='list2 flex'>
+         <view class='item'>{{sign_count[0]}}</view>
+         <view class='item'>{{sign_count[1]}}</view>
+         <view class='item'>{{sign_count[2]}}</view>
+         <view class='item'>{{sign_count[3]}}</view>
+         <view class='data'>天</view>
+      </view>
+      <view class='tip2'>据说累计签到第{{day}}天可获得超额积分，一定要坚持签到哦~~~</view>
+      <view class='list3'>
+         <view class='item flex' wx:for="{{sign_list}}" wx:key="key">
+            <view>
+               <view class='name line1'>{{item.title}}</view>
+               <view class='data'>{{item.add_time}}</view>
+            </view>
+            <view class='num'>+{{item.number}}</view>
+         </view>
+         <view class='loading'>{{title}}<text hidden='{{loaged}}' class='iconfont icon-xiangyou'></text></view>
+      </view>
+   </view>
+</view>

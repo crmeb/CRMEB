@@ -3,6 +3,7 @@
   
   <image src='{{userinfo.avatar}}' class='avatar'></image>
   <view class='name'>{{userinfo.nickname}}</view>
+  <button class='getPhoneNumber' wx:if="{{!userinfo.phone}}"  open-type="getPhoneNumber" bindgetphonenumber="getPhoneNumber">绑定手机号</button> 
   <!-- <text wx:if="{{userinfo.level==0}}">[普通用户]</text> -->
   <view class='notice'>
     <view class='iconfont '></view>
@@ -77,13 +78,13 @@
       <view class='item' bindtap='extension' wx:if="{{userinfo.is_promoter && userinfo.statu == 1}}">
         <navigator hover-class="none">
           <view class='iconfont icon-wodetuiguangren'></view>
-          <view class='text'>我的推广人</view>
+          <view class='text'>我推广的人</view>
         </navigator>
       </view>
       <view class='item' bindtap='extension' wx:elif="{{userinfo.statu == 2}}">
         <navigator hover-class="none">
           <view class='iconfont icon-wodetuiguangren'></view>
-          <view class='text'>我的推广人</view>
+          <view class='text'>我推广的人</view>
         </navigator>
       </view>
       <view class='item' bindtap='myextension' wx:if="{{userinfo.is_promoter && userinfo.statu == 1}}">
@@ -122,6 +123,12 @@
         <navigator hover-class="none" url="/pages/address/address">
           <view class='iconfont icon-dizhiguanli'></view>
           <view class='text'>地址管理</view>
+        </navigator>
+      </view>
+      <view class='item'>
+        <navigator hover-class="none" url="/pages/sign/sign">
+          <view class='user-sign'></view>
+          <view class='text'>我要签到</view>
         </navigator>
       </view>
     </view>
