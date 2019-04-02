@@ -5,6 +5,7 @@ use app\routine\model\store\StoreOrder;
 use app\routine\model\user\RoutineUser;
 use app\routine\model\user\WechatUser;
 use service\RoutineTemplateService;
+use service\ProgramTemplateService;
 
 /**
  * 小程序模板消息
@@ -26,7 +27,7 @@ class RoutineTemplate{
         else if($order['pay_type'] == 'offline') $data['keyword4']['value'] =  '线下支付';
         $data['keyword5']['value'] = '已成功退款';
         RoutineFormId::delFormIdOne($formId);
-        RoutineTemplateService::sendTemplate(WechatUser::getOpenId($order['uid']),RoutineTemplateService::setTemplateId(RoutineTemplateService::ORDER_REFUND_SUCCESS),'',$data,$formId);
+        ProgramTemplateService::sendTemplate(WechatUser::getOpenId($order['uid']),RoutineTemplateService::ORDER_REFUND_SUCCESS,$data, $formId);
     }
     /**
      * 用户申请退款给管理员发送消息
@@ -44,7 +45,7 @@ class RoutineTemplate{
             $formId = RoutineFormId::getFormIdOne($order['uid']);
             if($formId){
                 RoutineFormId::delFormIdOne($formId);
-                RoutineTemplateService::sendTemplate(WechatUser::getOpenId($uid),RoutineTemplateService::setTemplateId(RoutineTemplateService::ORDER_REFUND_STATUS),'',$data,$formId);
+                ProgramTemplateService::sendTemplate(WechatUser::getOpenId($uid),RoutineTemplateService::ORDER_REFUND_STATUS,$data, $formId);
             }
         }
     }
@@ -64,7 +65,7 @@ class RoutineTemplate{
         $formId = RoutineFormId::getFormIdOne($bargainUserId);
         if($formId){
             $dataFormId['formId'] = $formId;
-            RoutineTemplateService::sendTemplate(WechatUser::getOpenId($bargainUser['uid']),RoutineTemplateService::setTemplateId(RoutineTemplateService::BARGAIN_SUCCESS),'',$data,$formId);
+            ProgramTemplateService::sendTemplate(WechatUser::getOpenId($bargainUser['uid']),RoutineTemplateService::BARGAIN_SUCCESS,$data, $formId);
         }
     }
     /**
@@ -82,9 +83,54 @@ class RoutineTemplate{
         $data['keyword4']['value'] =  $order['pay_price'];
         if($order['pay_type'] == 'yue') $data['keyword5']['value'] =  '余额支付';
         else if($order['pay_type'] == 'weixin') $data['keyword5']['value'] =  '微信支付';
-//        else if($order['pay_type'] == 'offline') $data['keyword5']['value'] =  '线下支付';
+        else if($order['pay_type'] == 'offline') $data['keyword5']['value'] =  '线下支付';
         RoutineFormId::delFormIdOne($formId);
-        RoutineTemplateService::sendTemplate(WechatUser::getOpenId($order['uid']),RoutineTemplateService::setTemplateId(RoutineTemplateService::ORDER_PAY_SUCCESS),'',$data,$formId);
+        $link = 'pages/orders-con/orders-con?uid='.$order['uid'].'&order_id='.$orderId;
+        ProgramTemplateService::sendTemplate(WechatUser::getOpenId($order['uid']),RoutineTemplateService::ORDER_PAY_SUCCESS,$data, $formId,$link);
     }
+
+    /** 订单发货模版消息
+     * @param $order
+     * @return bool
+     */
+    public static function sendOrderPostage($order){
+        $routine_openid = WechatUser::getOpenId($order['uid']);
+        if(!$routine_openid) return true;
+        $tempdata = [
+            'keyword1' =>  $order['order_id'],
+            'keyword2' =>  $order['delivery_name'],
+            'keyword3' =>  $order['delivery_id'],
+            'keyword4' =>  date('Y-m-d H:i:s',time()),
+            'keyword5' =>  '您的商品已经发货请注意查收',
+        ];
+        $formId = RoutineFormId::getFormIdOne($order['uid']);
+        if($formId){
+            RoutineFormId::delFormIdOne($formId);
+            $link = 'pages/orders-con/orders-con?uid='.$order['uid'].'&order_id='.$order['order_id'];
+            ProgramTemplateService::sendTemplate($routine_openid,RoutineTemplateService::ORDER_POSTAGE_SUCCESS,$tempdata, $formId, $link);
+        }
+    }
+    /** 订单送货模版消息
+     * @param $order
+     * @return bool
+     */
+    public static function sendOrderDelivery($order){
+        $routine_openid = WechatUser::getOpenId($order['uid']);
+        if(!$routine_openid) return true;
+        $tempdata = [
+            'keyword1' =>  $order['order_id'],
+            'keyword2' =>  $order['delivery_name'],
+            'keyword3' =>  $order['delivery_id'],
+            'keyword4' =>  date('Y-m-d H:i:s',time()),
+            'keyword5' =>  '您的商品已经在配送请注意查收',
+        ];
+        $formId = RoutineFormId::getFormIdOne($order['uid']);
+        if($formId){
+            RoutineFormId::delFormIdOne($formId);
+            $link = 'pages/orders-con/orders-con?uid='.$order['uid'].'&order_id='.$order['order_id'];
+            ProgramTemplateService::sendTemplate($routine_openid,RoutineTemplateService::ORDER_DELIVER_SUCCESS,$tempdata, $formId, $link);
+        }
+    }
+
 
 }

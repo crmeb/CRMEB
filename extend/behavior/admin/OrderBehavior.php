@@ -7,14 +7,16 @@
 
 namespace behavior\admin;
 
+use app\admin\model\routine\RoutineFormId;
+use basic\ModelBasic;
 use app\admin\model\user\User;
+use app\admin\model\order\StoreOrder as AdminStoreOrder;
 use app\admin\model\user\UserAddress;
 use app\admin\model\user\UserBill;
 use app\admin\model\wechat\WechatUser;
-use basic\ModelBasic;
-use app\admin\model\order\StoreOrder;
 use service\SystemConfigService;
 use service\WechatTemplateService;
+use service\RoutineTemplateService;
 
 class OrderBehavior
 {
@@ -29,8 +31,8 @@ class OrderBehavior
      * $oid  string store_order表中的id
      */
     public static function storeProductOrderDeliveryAfter($data,$oid){
-        StoreOrder::orderPostageAfter($oid,$data);
-        StoreOrder::sendOrderGoods($oid,$data);
+        AdminStoreOrder::orderPostageAfter($oid,$data);
+//        AdminStoreOrder::sendOrderGoods($oid,$data);
     }
 
     /**
@@ -41,8 +43,24 @@ class OrderBehavior
      * $oid  string store_order表中的id
      */
     public static function storeProductOrderDeliveryGoodsAfter($data,$oid){
-        StoreOrder::orderPostageAfter($oid,$data);
-        StoreOrder::sendOrderGoods($oid,$data);
+        AdminStoreOrder::orderPostageAfter($oid,$data);
+//        AdminStoreOrder::sendOrderGoods($oid,$data);
+    }
+
+    /**
+     * 后台修改状态 为已收货
+     * @param $data
+     *  $data array status  状态为  已收货
+     * @param $oid
+     * $oid  string store_order表中的id
+     */
+    public static function storeProductOrderTakeDelivery($order)
+    {
+
+        $res1 = AdminStoreOrder::gainUserIntegral($order);
+        $res2 = User::backOrderBrokerage($order);
+        AdminStoreOrder::orderTakeAfter($order);
+        if(!($res1 && $res2)) exception('收货失败!');
     }
 
 
@@ -54,7 +72,8 @@ class OrderBehavior
      * $oid  string store_order表中的id
      */
     public static function storeProductOrderRefundYAfter($data,$oid){
-       StoreOrder::refundTemplate($data,$oid);
+        if($data['is_channel']) AdminStoreOrder::refundRoutineTemplate($oid); //TODO 小程序余额退款模板消息
+        else AdminStoreOrder::refundTemplate($data,$oid);//TODO 公众号余额退款模板消息
     }
 
     /**
@@ -104,7 +123,7 @@ class OrderBehavior
      */
     public static function storeProductOrderApplyRefundAfter($oid, $uid)
     {
-        $order = StoreOrder::where('id',$oid)->find();
+        $order = AdminStoreOrder::where('id',$oid)->find();
         WechatTemplateService::sendAdminNoticeTemplate([
             'first'=>"亲,您有一个订单申请退款 \n订单号:{$order['order_id']}",
             'keyword1'=>'申请退款',
@@ -134,6 +153,18 @@ class OrderBehavior
      * $back_integral 退多少积分
      */
     public static function storeOrderIntegralBack($product,$back_integral){
+
+    }
+
+    /**
+     * TODO  后台余额退款
+     * @param $product
+     * @param $refund_data
+     */
+    public static function storeOrderYueRefund($product,$refund_data)
+    {
+        $res = AdminStoreOrder::integralBack($product['id']);
+        if(!$res) exception('退积分失败!');
 
     }
 
