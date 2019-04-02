@@ -48,7 +48,7 @@ Page({
     wx.showActionSheet({
       itemList: ['微信支付', '余额支付'],
       success(res) {
-        console.log(res.tapIndex)
+        // console.log(res.tapIndex)
         if (res.tapIndex == 0) {//微信支付
           wx.request({
             url: app.globalData.url + '/routine/auth_api/pay_order?uid=' + app.globalData.uid + '&uni=' + e.target.dataset.id + '&paytype=weixin',
@@ -57,9 +57,9 @@ Page({
               var data = res.data.data;
               if (res.data.code == 200) {
                 var jsConfig = res.data.data.result.jsConfig;
-                console.log(jsConfig);
+                // console.log(jsConfig);
                 wx.requestPayment({
-                  timeStamp: jsConfig.timeStamp,
+                  timeStamp: jsConfig.timestamp,
                   nonceStr: jsConfig.nonceStr,
                   package: jsConfig.package,
                   signType: jsConfig.signType,
@@ -94,6 +94,12 @@ Page({
                       })
                     }
                   },
+                })
+              }else{
+                wx.showToast({
+                  title: res.data.msg,
+                  icon: 'fail',
+                  duration: 2000
                 })
               }
             },
@@ -157,7 +163,7 @@ Page({
           var jsConfig = res.data.data.result.jsConfig;
           console.log(jsConfig);
           wx.requestPayment({
-            timeStamp: jsConfig.timeStamp,
+            timeStamp: jsConfig.timestamp,
             nonceStr: jsConfig.nonceStr,
             package: jsConfig.package,
             signType: jsConfig.signType,
@@ -344,6 +350,28 @@ Page({
     wx.switchTab({
       url: '/pages/index/index'
     })
+  },
+  goAgain:function(e){
+    var that = this;
+    var uni = e.currentTarget.dataset.uni;
+    wx.request({
+      url: app.globalData.url + '/routine/auth_api/again_order?uid=' + app.globalData.uid,
+      data: { uni: uni },
+      method: 'get',
+      success: function (res) {
+        if (res.data.code == 200) {
+          wx.navigateTo({
+            url: '/pages/order-confirm/order-confirm?id=' + res.data.data,
+          })
+        } else {
+          wx.showToast({
+            title: res.data.msg,
+            icon: 'none',
+            duration: 2000
+          })
+        }
+      }
+    });
   },
   /**
    * 生命周期函数--监听页面初次渲染完成

@@ -127,6 +127,18 @@ class StoreCouponUser extends ModelBasic
         return self::where('id',$id)->update(['status'=>1,'use_time'=>time()]);
     }
 
+    /**
+     * TODO 恢复优惠券
+     * @param $id
+     * @return StoreCouponUser|bool
+     */
+    public static function recoverCoupon($id)
+    {
+        $status = self::where('id',$id)->value('status');
+        if($status) return self::where('id',$id)->update(['status'=>0,'use_time'=>'']);
+        else return true;
+    }
+
     public static function addUserCoupon($uid,$cid,$type = 'get')
     {
         $couponInfo = StoreCoupon::find($cid);

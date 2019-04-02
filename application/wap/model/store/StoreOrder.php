@@ -213,7 +213,7 @@ class StoreOrder extends ModelBasic
                 $res2 = false !== User::bcDec($userInfo['uid'],'integral',$usedIntegral,'uid');
                 $payPrice = 0;
             }
-            $res2 = $res2 && false != UserBill::expend('积分抵扣',$uid,'integral','deduction',$usedIntegral,$key,$userInfo['integral'],'购买商品使用'.floatval($usedIntegral).'积分抵扣'.floatval($deductionPrice).'元');
+            $res2 = $res2 && false != UserBill::expend('积分抵扣',$uid,'integral','deduction',$usedIntegral,$key,bcsub($userInfo['integral'],$usedIntegral,2),'购买商品使用'.floatval($usedIntegral).'积分抵扣'.floatval($deductionPrice).'元');
         }else{
             $deductionPrice = 0;
             $usedIntegral = 0;
@@ -319,7 +319,7 @@ class StoreOrder extends ModelBasic
             return self::setErrorInfo('余额不足'.floatval($orderInfo['pay_price']));
         self::beginTrans();
         $res1 = false !== User::bcDec($uid,'now_money',$orderInfo['pay_price'],'uid');
-        $res2 = UserBill::expend('购买商品',$uid,'now_money','pay_product',$orderInfo['pay_price'],$orderInfo['id'],$userInfo['now_money'],'余额支付'.floatval($orderInfo['pay_price']).'元购买商品');
+        $res2 = UserBill::expend('购买商品',$uid,'now_money','pay_product',$orderInfo['pay_price'],$orderInfo['id'],bcsub($userInfo['now_money'],$orderInfo['pay_price'],2),'余额支付'.floatval($orderInfo['pay_price']).'元购买商品');
         $res3 = self::paySuccess($order_id);
         try{
             HookService::listen('yue_pay_product',$userInfo,$orderInfo,false,PaymentBehavior::class);
@@ -684,7 +684,7 @@ class StoreOrder extends ModelBasic
         $noBuy = self::where('uid',$uid)->where('paid',0)->where('is_del',0)->where('pay_type','<>','offline')->where('refund_status',0)->count();
         $noPostageNoPink = self::where('o.uid',$uid)->alias('o')->where('o.paid',1)->where('o.pink_id',0)->where('o.is_del',0)->where('o.status',0)->where('o.pay_type','<>','offline')->where('o.refund_status',0)->count();
         $noPostageYesPink = self::where('o.uid',$uid)->alias('o')->join('StorePink p','o.pink_id = p.id')->where('p.status',2)->where('o.paid',1)->where('o.is_del',0)->where('o.status',0)->where('o.refund_status',0)->where('o.pay_type','<>','offline')->count();
-        $noPostage = bcadd($noPostageNoPink,$noPostageYesPink);
+        $noPostage = bcadd($noPostageNoPink,$noPostageYesPink,0);
         $noTake = self::where('uid',$uid)->where('paid',1)->where('is_del',0)->where('status',1)->where('pay_type','<>','offline')->where('refund_status',0)->count();
         $noReply = self::where('uid',$uid)->where('paid',1)->where('is_del',0)->where('status',2)->where('refund_status',0)->count();
         $noPink = self::where('o.uid',$uid)->alias('o')->join('StorePink p','o.pink_id = p.id')->where('p.status',1)->where('o.paid',1)->where('o.is_del',0)->where('o.status',0)->where('o.pay_type','<>','offline')->where('o.refund_status',0)->count();
@@ -697,7 +697,7 @@ class StoreOrder extends ModelBasic
             $userInfo = User::getUserInfo($order['uid']);
             ModelBasic::beginTrans();
             $res1 = false != User::where('uid',$userInfo['uid'])->update(['integral'=>bcadd($userInfo['integral'],$order['gain_integral'],2)]);
-            $res2 = false != UserBill::income('购买商品赠送积分',$order['uid'],'integral','gain',$order['gain_integral'],$order['id'],$userInfo['integral'],'购买商品赠送'.floatval($order['gain_integral']).'积分');
+            $res2 = false != UserBill::income('购买商品赠送积分',$order['uid'],'integral','gain',$order['gain_integral'],$order['id'],bcadd($userInfo['integral'],$order['gain_integral'],2),'购买商品赠送'.floatval($order['gain_integral']).'积分');
             $res = $res1 && $res2;
             ModelBasic::checkTrans($res);
             return $res;

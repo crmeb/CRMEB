@@ -13,18 +13,27 @@ use app\routine\model\store\StoreOrder as StoreOrderRoutineModel;
 use app\wap\model\store\StoreOrder as StoreOrderWapModel;
 use app\wap\model\user\UserRecharge;
 use service\HookService;
-use service\RoutineRefund;
 use service\WechatService;
+use service\MiniProgramService;
 
 class PaymentBehavior
 {
 
     /**
-     * 下单成功之后
+     * 公众号下单成功之后
      * @param $order
      * @param $prepay_id
      */
     public static function wechatPaymentPrepare($order, $prepay_id)
+    {
+
+    }
+    /**
+     * 小程序下单成功之后
+     * @param $order
+     * @param $prepay_id
+     */
+    public static function wechatPaymentPrepareProgram($order, $prepay_id)
     {
 
     }
@@ -121,7 +130,8 @@ class PaymentBehavior
     public static function routinePayOrderRefund($orderNo, array $opt)
     {
         $refundDesc = isset($opt['desc']) ? $opt['desc'] : '';
-        $res = RoutineRefund::doRefund($opt['pay_price'],$opt['refund_price'],$orderNo,'',$orderNo,$refundDesc);
+        $res = MiniProgramService::payOrderRefund($orderNo,$opt);//2.5.36
+//        $res = RoutineRefund::doRefund($opt['pay_price'],$opt['refund_price'],$orderNo,'',$orderNo,$refundDesc);
     }
 
     /**

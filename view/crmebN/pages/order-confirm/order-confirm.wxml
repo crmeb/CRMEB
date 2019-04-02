@@ -28,10 +28,20 @@
       <text>运费</text>
       <view class='select-btn'>快递<text>￥{{priceGroup.storePostage}}</text></view>
     </view>
-    <view class='text-item flex' wx:if="{{!seckillId && !BargainId  && !combinationId}}">
+    <view class='text-item flex' wx:if="{{seckillId == 0 && BargainId == 0  && combinationId == 0}}">
       <text>优惠券</text>
       <view class='sale-btn' bindtap='getCoupon' wx:if="{{couponId}}">满{{couponInfo.use_min_price}}减{{couponInfo.coupon_price}}</view>
       <view class='sale-btn' bindtap='getCoupon' wx:else>选择优惠券</view>
+    </view>
+    <view class='text-item flex' wx:if="{{seckillId == 0 && BargainId == 0  && combinationId == 0}}">
+      <view>
+      <text>可用积分：{{userInfo.integral}}</text>
+      <text wx:if="{{statusIntegral == true}}" style='color:red;'>{{priceIntegral}}</text>
+      </view>
+      
+      <checkbox-group bindchange="checkboxChange">
+        <checkbox value="1"/>
+      </checkbox-group>
     </view>
     <view class='text-item flex inp-wrapper'>
       <text>买家留言</text>

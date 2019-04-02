@@ -52,8 +52,9 @@
                 <image src='{{url}}{{item.productInfo.image}}'></image>
                 <view class='pro-info'>
                   <view class='title'>{{item.productInfo.store_name}}</view>
-                  <view class='res'>{{item.productInfo.store_name}}</view>
-                  <view class='price'><text>￥</text>{{item.productInfo.price}}<text class='count'>x{{item.cart_num}}</text></view>
+                  <view class='res' wx:if="{{item.productInfo.attrInfo}}">{{item.productInfo.attrInfo.suk}}</view>
+          <view class='price' wx:if="{{item.productInfo.attrInfo}}"><text>￥</text>{{item.productInfo.attrInfo.price}}<text class='count'>x{{item.cart_num}}</text></view>
+          <view class='price' wx:else><text>￥</text>{{item.productInfo.price}}<text class='count'>x{{item.cart_num}}</text></view>
                 </view>
                 <navigator wx:if="{{ordercon._status._type==3}}" hover-class="none" url='/pages/comment-con/comment-con?unique={{item.unique}}&uni={{ordercon.order_id}}' class='assess-btn'>评价</navigator>
                 <view wx:elif="{{ordercon._status._type==4}}" class='assess-btn off'>已评价</view>
@@ -85,7 +86,7 @@
     </view>
     <view class='infos flex'>
       <text>折扣价</text>
-      <text class='count'>￥{{ordercon.deduction_price}}</text>
+      <text class='count'>￥{{ordercon.favourable_price}}</text>
     </view>
   </view>
 </view>
@@ -117,6 +118,6 @@
    <navigator wx:if="{{ordercon._status._type==2 && ordercon.delivery_type == 'express'}}" hover-class="none" url='/pages/logistics/logistics?orderId={{ordercon.order_id}}'><view class='delete-btn' >查看物流</view></navigator>
    <view wx:if="{{ordercon._status._type==2}}" class='pay-btn' bindtap='confirmOrder' data-uni='{{ordercon.order_id}}'>确认收货</view> 
    <view wx:if="{{ordercon._status._type==4 || ordercon._status._type==0}}" class='delete-btn' bindtap='delOrder' data-uni='{{ordercon.order_id}}'>删除订单</view>
-   <navigator  wx:if="{{!ordercon.seckill_id && !ordercon.bargain_id && !ordercon.combination_id && (ordercon._status._type==3||ordercon._status._type==4)}}" hover-class="none" bindtap='goIndex'><view class='pay-btn'>再次购买</view></navigator> 
+   <navigator  wx:if="{{!ordercon.seckill_id && !ordercon.bargain_id && !ordercon.combination_id && (ordercon._status._type==3||ordercon._status._type==4)}}" hover-class="none"><view class='pay-btn' bindtap='goAgain' data-uni='{{ordercon.order_id}}'>再次购买</view></navigator> 
 </view>
 <include src="/pages/home/home.wxml"/>

@@ -58,7 +58,7 @@ radio .wx-radio-input.wx-radio-input-checked::before{
    transform:translate(-50%, -50%) scale(1);
    -webkit-transform:translate(-50%, -50%) scale(1);
 }
-
+checkbox .wx-checkbox-input{border-radius: 50%;width:40rpx;height: 40rpx;}
 .foot{position: fixed; left: 0; bottom: 0; width: 100%;  border-top: 1px solid #eee; background-color: #fff; justify-content: space-between; align-items: center;}
 .foot .submit-btn{width: 275rpx; height: 100rpx; line-height: 100rpx; background-color: #ff3d3d; color: #fff; text-align: center; border-radius:0;
 }

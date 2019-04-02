@@ -52,7 +52,7 @@ class StoreCouponIssue extends ModelBasic
             $issueCouponInfo['remain_count'] -= 1;
             $res3 = false !== $issueCouponInfo->save();
         }
-        $res = $res1 && $res2 & $res3;
+        $res = $res1 && $res2 && $res3;
         self::checkTrans($res);
         return $res;
     }
