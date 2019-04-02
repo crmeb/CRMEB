@@ -3,19 +3,19 @@
 <head>
 	<meta charset="UTF-8">
 	<title><?=$form->getTitle()?></title>
-<!--    <script src="https://cdn.bootcss.com/vue/2.5.13/vue.min.js"></script>-->
-<!--    <link href="https://cdn.jsdelivr.net/npm/iview@2.14.3/dist/styles/iview.css" rel="stylesheet">-->
-<!--    <script src="https://cdn.jsdelivr.net/npm/iview@2.14.3/dist/iview.min.js"></script>-->
-<!--    <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>-->
-<!--    <script src="https://cdn.jsdelivr.net/npm/form-create/district/province_city.js"></script>-->
-<!--    <script src="https://cdn.jsdelivr.net/npm/form-create@1.5.5/dist/form-create.min.js"></script>-->
-
-    <script src="{__PLUG_PATH}vue/dist/vue.min.js"></script>
-    <link href="{__PLUG_PATH}iview/dist/styles/iview.css" rel="stylesheet">
-    <script src="{__PLUG_PATH}iview/dist/iview.min.js"></script>
-    <script src="{__PLUG_PATH}jquery/jquery.min.js"></script>
-    <script src="{__PLUG_PATH}form-create/province_city.js"></script>
-    <script src="{__PLUG_PATH}form-create/form-create.min.js"></script>
+    <script src="https://unpkg.com/jquery@3.3.1/dist/jquery.min.js"></script>
+    <script src="https://unpkg.com/vue@2.5.13/dist/vue.min.js"></script>
+    <link href="https://unpkg.com/iview@2.14.3/dist/styles/iview.css" rel="stylesheet">
+    <script src="https://unpkg.com/iview@2.14.3/dist/iview.min.js"></script>
+    <script src="https://unpkg.com/form-create@1.5.5/dist/form-create.min.js"></script>
+    <script src="https://unpkg.com/form-create@1.5.5/district/province_city.js"></script>
+    <script src="https://unpkg.com/form-create@1.5.5/district/province_city_area.js"></script>
+<!--    <script src="{__PLUG_PATH}vue/dist/vue.min.js"></script>-->
+<!--    <link href="{__PLUG_PATH}iview/dist/styles/iview.css" rel="stylesheet">-->
+<!--    <script src="{__PLUG_PATH}iview/dist/iview.min.js"></script>-->
+<!--    <script src="{__PLUG_PATH}jquery/jquery.min.js"></script>-->
+<!--    <script src="{__PLUG_PATH}form-create/province_city.js"></script>-->
+<!--    <script src="{__PLUG_PATH}form-create/form-create.min.js"></script>-->
     <style>
         /*弹框样式修改*/
         .ivu-modal-body{padding: 5;}
