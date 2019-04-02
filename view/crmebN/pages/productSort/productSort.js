@@ -187,7 +187,7 @@ Page({
         for(var i=0;i<len;i++){
             if (arr[i].id == that.data.cid){
                 that.setData({
-                    total: arr[i].cate_name+ '/全部',
+                    total: arr[i].cate_name+ '全部',
                     taber: $taber
                 })
             }
@@ -218,6 +218,7 @@ Page({
             cid: '',
             sid: '',
             hiddendown: true,
+            total: '全部商品'
         })
         that.getProductList();
     },

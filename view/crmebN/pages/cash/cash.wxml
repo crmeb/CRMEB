@@ -7,7 +7,7 @@
 </view>
     <form bindsubmit="formSubmit">
         <view class='information' hidden='{{_num==0?false:true}}'>
-            <view class='information-li flex'><label>持卡人</label><input type='text' placeholder-class='placeholder' placeholder='某某人' name="name"/></view>
+            <view class='information-li flex'><label>持卡人</label><input type='text' placeholder-class='placeholder' placeholder='真实姓名' name="name"/></view>
             <view class='information-li flex'><label>卡号</label><input type='number' placeholder-class='placeholder' placeholder='请输入银行卡号' name="cardnum"></input></view>
              <view class='information-li flex'><label>提现金额</label><input type='number' placeholder-class='placeholder' placeholder='最低提现金额为{{minmoney}}' name="money"></input></view>
             <view class='information-li flex'>

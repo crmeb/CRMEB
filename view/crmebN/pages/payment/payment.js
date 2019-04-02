@@ -59,7 +59,7 @@ Page({
         var jsConfig = res.data.data;
         if (res.data.code == 200) {
           wx.requestPayment({
-            timeStamp: jsConfig.timeStamp,
+            timeStamp: jsConfig.timestamp,
             nonceStr: jsConfig.nonceStr,
             package: jsConfig.package,
             signType: jsConfig.signType,

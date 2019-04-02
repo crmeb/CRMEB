@@ -163,8 +163,13 @@ Page({
         wx.showToast({
           title: res.data.msg,
           icon: 'success',
-          duration: 1500
+          duration: 1000
         })
+        setTimeout(function () {
+          wx.navigateTo({
+            url: "pages/user/user"
+          })
+        }, 1200)
       }
     })
   }

@@ -1,4 +1,5 @@
 var app = getApp();
+var util = require('../../utils/util.js');
 // pages/promotion-order/promotion-order.js
 Page({
   data: {
@@ -119,8 +120,12 @@ Page({
      header: header,
      success: function (res) { 
        if (res.data.code==200){
+         var data = res.data.data;
+         for (var index in data){
+           data[index].add_time = util.tsFormatTime(data[index].add_time, 'Y-M-D');
+         }
          that.setData({
-           orderlist: res.data.data
+           orderlist: data
          })
        }else{
        that.setData({

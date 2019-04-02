@@ -28,7 +28,7 @@ Page({
   getSiteServicePhone:function(){
     var that = this;
     wx.request({
-      url: app.globalData.url + '/routine/login/get_site_service_phone',
+      url: app.globalData.url + '/routine/logins/get_site_service_phone',
       method: 'post',
       dataType  : 'json',
       success: function (res) {

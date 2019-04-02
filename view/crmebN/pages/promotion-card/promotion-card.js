@@ -8,7 +8,8 @@ Page({
   data: {
     url: app.globalData.url,
     code:'',
-    userinfo: app.globalData
+    userinfo: [],
+    routine_name: ''
   },
 
   /**
@@ -21,14 +22,15 @@ Page({
     var header = {
       'content-type': 'application/x-www-form-urlencoded',
     };
+    that.setData({
+      routine_name:app.globalData.config.routine_name
+    })
     wx.request({
       url: app.globalData.url + '/routine/auth_api/my?uid=' + app.globalData.uid,
       method: 'POST',
       header: header,
       success: function (res) {
-        console.log(res)
         if (res.data.code == 200) {
-
           that.setData({
             userinfo: res.data.data
           })
@@ -47,7 +49,7 @@ Page({
     };
     var that = this;
     wx.request({
-      url: app.globalData.url + '/routine/auth_api/get_code?uid=' + app.globalData.uid,
+      url: app.globalData.url + '/routine/auth_api/get_routine_code?uid=' + app.globalData.uid,
       method: 'get',
       header: header,
       success: function (res) {

@@ -19,7 +19,7 @@
                 <view class='text-text'>{{item.title}}</view>
                 <view class='flex list-left'>
                     <view>
-                        <view class='text-money'>￥<text class='text-num'>{{item.price}}</text><text class='text-money2'>￥{{item.price}}</text></view>
+                        <view class='text-money'>￥<text class='text-num'>{{item.price}}</text><text class='text-money2'>￥{{item.ot_price}}</text></view>
                         <view class='text-b'>已抢{{item.sales}}{{item.unit_name}}<text class='text-tiao'><text class='tiao-red'></text></text></view>
                     </view>
                     <view class='text-but' hover-class='none'>马上抢</view>

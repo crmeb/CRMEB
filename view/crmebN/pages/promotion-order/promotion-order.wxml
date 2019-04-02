@@ -28,12 +28,12 @@
             <view class='order-flag'>{{item._status._title}}</view>
         </view>
 
-        <view class='li-item flex' wx:for="{{item.cartInfo}}">
-             <image src='{{url}}{{item.productInfo.image}}'></image>
+        <view class='li-item flex' wx:for="{{item.cartInfo}}" wx:key wx:for-item="itemCart">
+             <image src='{{url}}{{itemCart.productInfo.image}}'></image>
              <view class='item-text'>
-                 <view class='item-title line2'>{{item.productInfo.store_name}}</view>
+                 <view class='item-title line2'>{{itemCart.productInfo.store_name}}</view>
                  <view class='item-time'>下单日期: {{item.add_time}}</view>
-                 <view class='item-money'>￥<text>{{item.productInfo.price}}</text>.00</view>
+                 <view class='item-money'>￥<text>{{itemCart.productInfo.price}}</text></view>
              </view>
         </view>
       

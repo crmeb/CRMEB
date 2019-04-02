@@ -1,5 +1,3 @@
-var URl = 'https://qipei.9gt.net';
-// var apikey = '?appid=21&appkey=zb34e7d15453e97507ef794cf7b051zbefvgfdedfgt'
 //购物车减
 var carmin = function (that){
     var num = that.data.num;
@@ -144,8 +142,6 @@ var tapsize = function(that,e){
   })
 }
 module.exports = {
-  URl: URl,//要引用的函数 xx:xx
-  // apikey: apikey,
   carmin: carmin,
   carjia: carjia,
   time: time,

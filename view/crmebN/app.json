@@ -1,7 +1,7 @@
-  {
-    "pages": [
+{
+  "pages": [
     "pages/loading/loading",
-    "pages/load/load",
+    "pages/sign/sign",
     "pages/login-status/login-status",
     "pages/payment/payment",
     "pages/home/home",

@@ -29,6 +29,7 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
+    app.globalData.openPages = '/pages/product-countdown/index?id=' + options.id + '&scene=' + app.globalData.uid;
     app.setBarColor();
     app.setUserInfo();
     if (options.id){
@@ -89,16 +90,28 @@ Page({
         id: that.data.seckillId
       },
       success: function (res) {
-        console.log(res);
-        that.setData({
-          SeckillList: res.data.data.storeInfo,
-          replyCount: res.data.data.replyCount,
-          reply: res.data.data.reply
-        });
-        var timeStamp = that.data.SeckillList.stop_time;
-        wxh.time(timeStamp, that);
-        WxParse.wxParse('description', 'html', that.data.SeckillList.description, that, 0);
-      }
+        if(res.data.code == 200){
+          that.setData({
+            SeckillList: res.data.data.storeInfo,
+            replyCount: res.data.data.replyCount,
+            reply: res.data.data.reply
+          });
+          var timeStamp = that.data.SeckillList.stop_time;
+          wxh.time(timeStamp, that);
+          WxParse.wxParse('description', 'html', that.data.SeckillList.description, that, 0);
+        }else{
+          if (app.globalData.uid == null) {//是否存在用户信息，如果不存在跳转到首页
+            setTimeout(function () { wx.navigateTo({ url: '/pages/loading/loading' }) }, 1500)
+          } else {
+            wx.showToast({
+              title: res.data.msg,
+              icon: 'none',
+              duration: 1000
+            });
+            setTimeout(function () { wx.navigateBack({}); }, 1200);
+          }
+        }
+       }
     })
   },
   parameterShow: function (e) {
@@ -248,6 +261,17 @@ Page({
    * 用户点击右上角分享
    */
   onShareAppMessage: function () {
-
+    return {
+      title: that.data.productSelect.store_name,
+      path: app.globalData.openPages,
+      // imageUrl: that.data.url + that.data.product.image,
+      success: function () {
+        wx.showToast({
+          title: '分享成功',
+          icon: 'success',
+          duration: 2000
+        })
+      }
+    }
   }
 })
