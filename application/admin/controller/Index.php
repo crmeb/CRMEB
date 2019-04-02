@@ -156,8 +156,8 @@ class Index extends AuthController
                     $datalist[date('m-d',strtotime($i.' day'))] = date('m-d',strtotime($i.' day'));
                 }
                 $order_list = StoreOrderModel::where('add_time','between time',[$datebefor,$dateafter])
-                    ->field("FROM_UNIXTIME(add_time,'%m-%e') as day,count(*) as count,sum(pay_price) as price")
-                    ->group("FROM_UNIXTIME(add_time, '%Y%m%e')")
+                    ->field("FROM_UNIXTIME(add_time,'%m-%d') as day,count(*) as count,sum(pay_price) as price")
+                    ->group("FROM_UNIXTIME(add_time, '%Y%m%d')")
                     ->order('add_time asc')
                     ->select()->toArray();
                 if(empty($order_list)) return Json::fail('无数据');
