@@ -68,7 +68,7 @@ class WechatTemplateService
      * @param string $defaultColor
      * @return bool
      */
-    public static function sendAdminNoticeTemplate(array $data,$url = null,$defaultColor = '')
+    public static function sendAdminNoticeTemplate(array $data,$url = 'pages/index/index',$defaultColor = '')
     {
         $adminIds = explode(',',trim(SystemConfigService::get('site_store_admin_uids')));
         $kefuIds = ServiceModel::where('notify',1)->column('uid');

@@ -21,7 +21,9 @@ class FormBuilder extends Form
      * 1 父级刷新 不能再提交
      * 2 父级刷新关闭弹框 不能再提交 成功关闭
      * 3 父页面刷新可以重复添加 可以再次提交
-     * 4 不能再提交
+     * 4 父级不刷新 不能再提交
+     * 5 父级不刷新 不能再提交 关闭弹窗
+     * 6 父级不刷新 当前窗口刷新
      * str 自定义
      * @return $this
      */
@@ -43,6 +45,12 @@ class FormBuilder extends Form
                 break;
             case 4:
                 $js = '$r.btn.disabled(false);$r.btn.finish();';//提交成功不能再提交
+                break;
+            case 5:
+                $js = '$r.btn.disabled(false);$r.btn.finish();setTimeout(function(){parent.layer.close(parent.layer.getFrameIndex(window.name));},2000);';//父级不刷新 不能再提交 关闭弹窗
+                break;
+            case 6:
+                $js = 'setTimeout(function(){window.location.reload(),2000});';//父级不刷新 当前窗口刷新
                 break;
             default:
                 $js = $jscallback;

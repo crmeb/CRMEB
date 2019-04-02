@@ -9,6 +9,7 @@ namespace service;
 
 
 use app\admin\model\system\SystemConfig;
+use service\CacheService as Cache;
 
 /** 获取系统配置服务类
  * Class SystemConfigService
@@ -34,16 +35,28 @@ class SystemConfigService
      */
     public static function get($key)
     {
-        return SystemConfig::getValue($key);
+        $cacheName = 'config_'.$key;
+        $config = Cache::get($cacheName);
+        if($config) return $config;
+        $config = SystemConfig::getValue($key);
+        Cache::set($cacheName,$config);
+        return $config;
     }
 
     /** 获取多个配置
      * @param $keys ',' 隔开
      * @return array
      */
-    public static function more($keys)
+    public static function more($keys,$update = false)
     {
-        return SystemConfig::getMore($keys);
+        $keys = is_array($keys) ? implode(',',$keys) : $keys;
+        $cacheName = 'more_'.$keys;
+        $config = Cache::get($cacheName);
+        if($config && !$update) return $config;
+        $config = SystemConfig::getMore($keys);
+        if(!$config) exception('对应的配置不存在!');
+        Cache::set($cacheName,$config);
+        return $config;
     }
 
     /**获取全部配置
@@ -51,7 +64,13 @@ class SystemConfigService
      */
     public static function getAll()
     {
-        return SystemConfig::getAllConfig()?:[];
+        $cacheName = 'config_all';
+        $config = Cache::get($cacheName);
+        if($config) return $config;
+        $config = SystemConfig::getAllConfig()?:[];
+        if(!$config) exception('对应的配置不存在!');
+        Cache::set($cacheName,$config);
+        return $config;
     }
 
 }
