@@ -13,7 +13,6 @@
                             <select name="is_reply" aria-controls="editable" class="form-control input-sm">
                                 <option value="">评论状态</option>
                                 <option value="0" {eq name="where.is_reply" value="0"}selected="selected"{/eq}>未回复</option>
-<!--                                <option value="1" {eq name="where.is_reply" value="1"}selected="selected"{/eq}>客户已评价且管理员未回复</option>-->
                                 <option value="2" {eq name="where.is_reply" value="2"}selected="selected"{/eq}>已回复</option>
                             </select>
                             <div class="input-group">
@@ -40,111 +39,57 @@
                                     <li><a href="#" class="delete" data-url="{:Url('delete',array('id'=>$vo['id']))}">删除</a></li>
                                 </ul>
                             </div>
-                            <div class="social-avatar">
-                                <a href="" class="pull-left">
-                                    <img alt="image" src="{$vo.headimgurl}">
-                                </a>
-                                <div class="media-body">
-                                    <a href="#">
-                                        {$vo.nickname}
+                                <div class="social-avatar">
+                                    <a href="" class="pull-left">
+                                        <img alt="image" src="{$vo.headimgurl}">
                                     </a>
-                                    <small class="text-muted">{$vo.add_time|date='Y-m-d H:i:s',###} 来自产品: {$vo.store_name}</small>
-                                </div>
-                            </div>
-                            <div class="social-body">
-                                <p>{$vo.comment}
-                                    <br/>
-                                    <?php $image = isset($vo['pics'][0])?explode(",",$vo['pics'][0]):'';?>
-                                    {if condition="$image"}
-                                    {volist name="image" id="v"}
-                                    <img src="{$v}" alt="{$vo.store_name}" class="open_image" data-image="{$v}" style="width: 50px;height: 50px;cursor: pointer;">
-                                    {/volist}
-                                    {else/}
-                                    [无图]
-                                    {/if}
-                                </p>
-                            </div>
-                            {if condition="$vo['merchant_reply_content']"}
-                            <div class="social-footer">
-                                <div class="social-comment">
-                                    <div class="media-body">回复时间：<small class="text-muted">{$vo.merchant_reply_time|date='Y-m-d H:i:s',###}</small></div>
                                     <div class="media-body">
-                                        <p>{$vo['merchant_reply_content']}</p>
+                                        <a href="#">
+                                            {$vo.nickname}
+                                        </a>
+                                        <small class="text-muted">{$vo.add_time|date='Y-m-d H:i:s',###} 来自产品: {$vo.store_name}</small>
                                     </div>
                                 </div>
-                            </div>
-                            {/if}
+                                <div class="social-body">
+                                    <div class="well">
+                                        {$vo.comment}
+                                        <br/>
+                                        <?php  if(!empty($vo['pics'])) $image = explode(",",$vo['pics'][0]); else $image = [];?>
+                                        {if condition="$image"}
+                                            {volist name="image" id="v"}
+                                            <img src="{$v}"  class="open_image m-t-sm" data-image="{$v}" style="width: 50px;height: 50px;cursor: pointer;">
+                                            {/volist}
+                                        {/if}
+                                    </div>
+
+                                        <p class="text-right">
+                                        <div class="btn-group">
+                                            {if condition="$vo['is_reply'] eq 2"}
+                                            <button class="btn btn-info btn-xs reply_update"  data-url="{:Url('set_reply')}"  data-content="{$vo['merchant_reply_content']}" data-id="{$vo['id']}"><i class="fa fa-paste"></i> 编辑</button>
+                                            {else/}
+                                            <button class="btn btn-primary btn-xs reply"  data-url="{:Url('set_reply')}" data-id="{$vo['id']}"><i class="fa fa-comments"></i> 回复</button>
+                                            {/if}
+                                            <button class="btn btn-warning btn-xs delete" data-url="{:Url('delete',array('id'=>$vo['id']))}"><i class="fa fa-times"></i> 删除</button>
+                                        </div>
+                                        </p>
+
+
+                                </div>
+                                {if condition="$vo['merchant_reply_content']"}
+                                <div class="social-footer">
+                                    <div class="social-comment">
+                                        <div class="media-body">回复时间：<small class="text-muted">{$vo.merchant_reply_time|date='Y-m-d H:i:s',###}</small></div>
+                                    </div>
+                                        <div class="well m">
+                                            <p>{$vo['merchant_reply_content']}</p>
+                                        </div>
+
+                                </div>
+                                {/if}
                         </div>
                     </div>
                     {/volist}
                 </div>
-               <!-- <div class="table-responsive">
-                    <table class="table table-striped  table-bordered">
-                        <thead>
-                        <tr>
-                            <th class="text-center">编号</th>
-                            <th class="text-center">产品名称</th>
-                            <th class="text-center">评论人</th>
-                            <th class="text-center">评论内容</th>
-                            <th class="text-center">评论图片</th>
-                            <th class="text-center">评论时间</th>
-                            <th class="text-center">回复内容</th>
-                            <th class="text-center">操作</th>
-                        </tr>
-                        </thead>
-                        <tbody class="">
-                        {volist name="list" id="vo"}
-                        <tr>
-                            <td class="text-center">
-                                {$vo.id}
-                            </td>
-                            <td class="text-center">
-                                {$vo.store_name}
-                            </td>
-                            <td class="text-center">
-                                {$vo.nickname}
-                            </td>
-                            <td class="text-center">
-                                {$vo.comment}
-                            </td>
-                            <td class="text-center">
-                                <?php /*$image = json_decode($vo['pics'],true);*/?>
-                                {if condition="$image"}
-                                {volist name="image" id="v"}
-                                <img src="{$v}" alt="{$vo.store_name}" class="open_image" data-image="{$v}" style="width: 50px;height: 50px;cursor: pointer;">
-                                {/volist}
-                                {else/}
-                                无图
-                                {/if}
-                            </td>
-                            <td class="text-center">
-                                {$vo.add_time|date='Y-m-d H:i:s',###}
-                            </td>
-                            <td class="text-center">
-                                {if condition="$vo['merchant_reply_content']"}
-                                {$vo['merchant_reply_content']}
-                                <br/>
-                                {$vo.merchant_reply_time|date='Y-m-d H:i:s',###}
-                                {elseif condition="$vo['comment']"/}
-                                <button class="reply btn btn-primary btn-xs" data-url="{:Url('set_reply')}" data-id="{$vo['id']}" type="button"><i class="fa fa-eyedropper"></i> 回复
-                                </button>
-                                {else/}
-                                未评论
-                                {/if}
-                            </td>
-                            <td class="text-center">
-                                {if condition="$vo['is_reply'] eq 2"}
-                                <button class="reply_update btn btn-info btn-xs" data-url="{:Url('edit_reply')}" data-content="{$vo['merchant_reply_content']}" data-id="{$vo['id']}" type="button"><i class="fa fa-paste"></i> 修改
-                                </button>
-                                {/if}
-                                <button class="btn btn-warning btn-xs" data-url="{:Url('delete',array('id'=>$vo['id']))}" type="button"><i class="fa fa-warning"></i> 删除
-                                </button>
-                            </td>
-                        </tr>
-                        {/volist}
-                        </tbody>
-                    </table>
-                </div>-->
                 {include file="public/inner_page"}
             </div>
         </div>
