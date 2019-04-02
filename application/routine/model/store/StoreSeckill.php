@@ -106,4 +106,17 @@ class StoreSeckill extends ModelBasic
         $res = false !== self::where('id',$seckillId)->dec('stock',$num)->inc('sales',$num)->update();
         return $res;
     }
+
+    /**
+     * TODO  判断是否可以出售
+     * @param $id
+     * @param int $cartNum
+     * @return int|string
+     * @throws \think\Exception
+     */
+    public static function isValidCartSeckill($id,$cartNum = 1){
+        if(!$id) return false;
+        $time = time();
+        return self::where('id',$id)->where('is_del',0)->where('status',1)->where('stock','>',$cartNum)->where('start_time','<',$time)->where('stop_time','>',$time)->count();
+    }
 }

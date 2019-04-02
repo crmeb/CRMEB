@@ -25,7 +25,6 @@ class StoreProduct extends ModelBasic
     {
         return self::where('is_del',0)->where('is_show',1)->where('id',$productId)->field($field)->find();
     }
-
     public static function validWhere()
     {
         return self::where('is_del',0)->where('is_show',1)->where('mer_id',0);
@@ -45,7 +44,6 @@ class StoreProduct extends ModelBasic
         if($limit) $model->limit($limit);
         return $model->select();
     }
-
 
     /**
      * 热卖产品
@@ -145,5 +143,17 @@ class StoreProduct extends ModelBasic
         }
         return $res;
     }
+
+    /**
+     * TODO  判断是否可以出售
+     * @param $id
+     * @param int $cartNum
+     * @return int|string
+     * @throws \think\Exception
+     */
+    public static function isValidCartProduct($id,$cartNum =1){
+        return self::where('is_del',0)->where('is_show',1)->where('id',$id)->where('stock','>',$cartNum)->count();
+    }
+
 
 }
