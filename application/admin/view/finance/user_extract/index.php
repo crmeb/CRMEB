@@ -30,6 +30,7 @@
                                 <option value="">提现方式</option>
                                 <option value="alipay" {eq name="where.extract_type" value="alipay" }selected="selected"{/eq}>支付宝</option>
                                 <option value="bank" {eq name="where.extract_type" value="bank"}selected="selected"{/eq}>银行卡</option>
+                                <option value="weixin" {eq name="where.extract_type" value="weixin"}selected="selected"{/eq}>微信</option>
                             </select>
                             <div class="input-group">
 
@@ -98,14 +99,18 @@
 
                             </td>
 
-                            <td class="text-center">
-                                姓名:{$vo.real_name}<br>
-                                {if condition="$vo['extract_type'] eq 'bank'"}
+                            <td class="text-left">
 
+                                {if condition="$vo['extract_type'] eq 'bank'"}
+                                姓名:{$vo.real_name}<br>
                                  银行卡号:{$vo.bank_code}
                                 <br/>
                                  银行开户地址:{$vo.bank_address}
+                                {elseif condition="$vo['extract_type'] eq 'weixin'"/}
+                                昵称:{$vo.nickname}<br>
+                                微信号号:{$vo.wechat}
                                 {else/}
+                                姓名:{$vo.real_name}<br>
                                   支付宝号:{$vo.alipay_code}
                                 {/if}
                             </td>
