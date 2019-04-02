@@ -1,7 +1,7 @@
 <!--banner-->
 <view class='swiper_banner'>
   <swiper class="swiper-box" style="height:400rpx" indicator-dots="{{indicatorDots}}" autoplay="{{autoplay}}" interval="{{interval}}" duration="{{duration}}" indicator-color="{{indicatorColor}}" indicator-active-color="{{indicatorActivecolor}}">
-    <block wx:for="{{imgUrls}}">
+    <block wx:for="{{imgUrls}}" wx:key="key">
       <swiper-item>
         <image bindtap='goUrl' data-url="{{item.url}}" src="{{item.pic}}" class="slide-image"/>
       </swiper-item>
@@ -10,7 +10,7 @@
 </view>
 <!-- 导航  -->
 <view class='nav flex'>
-  <block wx:for="{{menus}}">
+  <block wx:for="{{menus}}" wx:key="key">
     <view class='nav-item'>
       <navigator class='flex' hover-class="none" url='{{item.url}}' wx:if="{{item.show == '是'}}" open-type='switchTab'>
         <image src='{{item.pic}}'></image>
@@ -32,7 +32,7 @@
   </view>
   <view class='scroll-product'>
     <scroll-view class="scroll-view_x" scroll-x style="width: auto;overflow:hidden;">
-      <block wx:for="{{recommendList}}">
+      <block wx:for="{{recommendList}}" wx:key="key">
         <view class='item'>
           <navigator hover-class="none" url="/pages/product-con/index?id={{item.id}}">
             <view class='img-box'><image src='{{url}}{{item.image}}'></image></view>
@@ -54,7 +54,7 @@
     <navigator hover-class="none" bindtap='torday' class='flex'><text>更多新品</text><text class='iconfont icon-xiala'></text></navigator>
   </view>
   <view class='new-pro-wrapper'>
-    <block wx:for="{{newList}}">
+    <block wx:for="{{newList}}" wx:key="key">
       <view class='item'>
         <navigator class='flex' hover-class="none" url="/pages/product-con/index?id={{item.id}}">
           <view class='text-box flex'>
@@ -76,7 +76,7 @@
   </view>
   <view class='scroll-product2'>
     <scroll-view class="scroll-view_x" scroll-x style="width: auto;overflow:hidden;">
-      <block wx:for="{{hotList}}">
+      <block wx:for="{{hotList}}" wx:key="key">
         <view class='item'>
           <navigator hover-class="none" url="/pages/product-con/index?id={{item.id}}">
             <view class='img-box'><image src='{{url}}{{item.image}}'></image></view>
@@ -98,7 +98,7 @@
     <navigator hover-class="none" bindtap='torday' class='flex'><text>更多新品</text><text class='iconfont icon-xiala'></text></navigator>
   </view>
   <view class='new-pro-wrapper2'>
-    <block wx:for="{{benefitList}}">
+    <block wx:for="{{benefitList}}" wx:key="key">
       <view class='item'>
         <navigator class='flex' hover-class="none" url="/pages/product-con/index?id={{item.id}}">
           <view class='text-box flex'>
@@ -115,7 +115,7 @@
     </block>
   </view>
 </view>
-<block  wx:for="{{lovely}}" wx:if="{{index < 1}}">
+<block  wx:for="{{lovely}}" wx:if="{{index < 1}}" wx:key="key">
   <view class='hot-banner'>
       <image src='{{url}}{{item.img}}'></image>
   </view>
@@ -127,7 +127,7 @@
     <text>猜你喜欢</text>
   </view>
   <view class='like-box flex'>
-    <block wx:for="{{likeList}}">
+    <block wx:for="{{likeList}}" wx:key="key">
       <view class='item'>
         <navigator hover-class="none" url="/pages/product-con/index?id={{item.id}}">
           <view class='img-box'><image src='{{url}}{{item.image}}'></image></view>

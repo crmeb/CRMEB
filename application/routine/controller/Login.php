@@ -7,6 +7,7 @@ use app\routine\model\routine\RoutineServer;
 use app\routine\model\user\RoutineUser;
 use service\JsonService;
 use service\UtilService;
+use service\MiniProgramService;
 use think\Controller;
 use think\Request;
 
@@ -22,8 +23,12 @@ class Login extends Controller{
 
     public function index(Request $request){
         $data = UtilService::postMore([['info',[]]],$request);//获取前台传的code
+//        var_dump($data);
+//        var_dump(MiniProgramService::encryptor($data->code));
         $data = $data['info'];
         unset($data['info']);
+//        var_dump(MiniProgramService::getUserInfo($data['code']));
+
         $res = $this->setCode($data['code']);
         if(!isset($res['openid'])) return JsonService::fail('openid获取失败');
         if(isset($res['unionid'])) $data['unionid'] = $res['unionid'];

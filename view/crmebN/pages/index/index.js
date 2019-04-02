@@ -44,9 +44,20 @@ Page({
   onLoad: function (options) {
     app.setBarColor();
     var that = this;
-    if (options.spid){
-      app.globalData.spid = options.spid
+    if (app.globalData.config !=null){
+      wx.setNavigationBarTitle({
+        title: app.globalData.config.routine_name,
+      })
+    }else{
+      wx.setNavigationBarTitle({
+        title: '商城首页',
+      })
     }
+    
+    // if (options.spid){
+    //   app.globalData.spid = options.spid;
+    //   console.log(options);
+    // }
     app.setUserInfo();
     that.getIndexInfo();
   },
@@ -153,8 +164,8 @@ Page({
   onShareAppMessage: function () {
     var that = this;
     return {
-      title: '小程序',
-      path: '/pages/index/index?spid=' + app.globalData.uid,
+      title: app.globalData.config.routine_name,
+      path: '/pages/index/index?scene=' + app.globalData.uid,
       // imageUrl: that.data.url + that.data.product.image,
       success: function () {
         wx.showToast({

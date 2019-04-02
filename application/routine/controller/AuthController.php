@@ -20,7 +20,6 @@ class AuthController extends Controller
     protected function _initialize()
     {
         parent::_initialize();
-
         if (strpos($_SERVER['HTTP_USER_AGENT'], 'MicroMessenger') !== false) {
             if(!empty(input('openid'))){
                 $uid = WechatUser::openidTouid(input('openid'));

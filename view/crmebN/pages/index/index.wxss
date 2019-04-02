@@ -49,7 +49,7 @@
 .scroll-product2 .item .img-box image{width: 100%; height: 304rpx;border-radius:20rpx 20rpx 0 0;}
 .scroll-product2 .item .pro-info .price-small{color: #ff3d3d;font-size:26rpx;
 margin-top:10rpx;text-align:center;}
-.scroll-product2 .item .pro-info .pro-title{text-align:center;margin-top:25rpx;}
+.scroll-product2 .item .pro-info .pro-title{text-align:center;margin-top:25rpx;overflow:hidden;padding:0 10rpx;}
 .scroll-product2 .item .pro-info .buy{width:250rpx;height:54rpx;background-color:#e6413a;border-radius:50rpx;font-size:24rpx;color:#fff;align-items:center;justify-content:center;margin:17rpx auto 25rpx auto;}
 .scroll-product2 .item .pro-info .buy image{width:27rpx;height:26rpx;margin-right:12rpx;}
 

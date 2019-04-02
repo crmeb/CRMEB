@@ -4,6 +4,33 @@ namespace  app\routine\model\routine;
 
 class RoutineCode{
 
+
+    /**
+     * TODO  获取分销二维码 2.5.36更新
+     * @param int $uid
+     * @param string $page
+     * @param int $productId
+     * @param array $color
+     * @return bool|mixed
+     */
+    public static function getRoutineCode($uid = 0,$page = '',$productId = 0,$color = array()){
+        $accessToken = RoutineServer::get_access_token();
+        $url = "https://api.weixin.qq.com/wxa/getwxacodeunlimit?access_token=".$accessToken;
+        $data['scene'] = $uid.'-'.$productId;
+        if(empty($color)){
+            $color['r'] = 0;
+            $color['g'] = 0;
+            $color['b'] = 0;
+        }
+        $data['page'] = $page;
+        $data['width'] = 430;
+        $data['auto_color'] = false;
+        $data['line_color'] = $color;
+        $data['is_hyaline'] = false;
+        $resCode = RoutineServer::curlPost($url,json_encode($data));
+        if($resCode) return $resCode;
+        else return false;
+    }
     /**
      * 获取分销二维码
      * @param int $uid  yonghuID
@@ -12,7 +39,7 @@ class RoutineCode{
      */
     public static function getCode($uid = 0,$imgUrl = '',$color = array(),$page = '',$thirdType = 'spread'){
         $accessToken = RoutineServer::get_access_token();
-        $res = RoutineQrcode::setRoutineQrcodeForever($uid,$thirdType,$page,$imgUrl);
+        $res = RoutineQrcode::getRoutineQrCode($uid,$thirdType,$page,$imgUrl);
         if($res){
             $url = "https://api.weixin.qq.com/wxa/getwxacodeunlimit?access_token=".$accessToken;
             if($uid) $data['scene'] = $res->id;

@@ -39,6 +39,13 @@ class WechatUser extends ModelBasic
         if(!isset($userInfo['subscribe']) || !$userInfo['subscribe'] || !isset($userInfo['openid']))
             exception('请关注公众号!');
         $userInfo['tagid_list'] = implode(',',$userInfo['tagid_list']);
+        //判断 unionid 是否存在
+        if(isset($userInfo['unionid'])){
+            $wechatInfo = self::where('unionid',$userInfo['unionid'])->find();
+            if($wechatInfo){
+                return self::edit($userInfo,$userInfo['unionid'],'unionid');
+            }
+        }
         self::beginTrans();
         $wechatUser = self::set($userInfo);
         if(!$wechatUser){
@@ -54,6 +61,9 @@ class WechatUser extends ModelBasic
         return $wechatUser;
     }
 
+    /**关注送优惠券
+     * @param $openid
+     */
     public static function userFirstSubGiveCoupon($openid)
     {
         $couponId = SystemConfigService::get('wechat_first_sub_give_coupon');
