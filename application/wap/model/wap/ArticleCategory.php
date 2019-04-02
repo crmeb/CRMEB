@@ -20,6 +20,7 @@ class ArticleCategory extends ModelBasic
 
     public static function cidByArticleList($cid, $first, $limit, $field = '*')
     {
+        $model = new self();
         $model = Db::name('article');
         //if ($cid) $model->where("CONCAT(',',cid,',')", 'LIKE', "'%,$cid,%'");
         if ($cid) $model->where('cid',$cid);

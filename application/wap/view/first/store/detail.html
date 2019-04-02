@@ -69,7 +69,7 @@
                     <div class="picture"><img src="{$store.image}"/></div>
                     <div class="pro-info"><p class="title">{$store.store_name}</p>
                         <!--<p class="conut">已售{$store.sales}</p>-->
-                        <p class="conut">已售{$store.ficti}</p>
+                        <p class="conut">已售{$store.ficti+$store.sales}</p>
                         <p class="price">￥{$store.price|floatval}</p></div>
                     <div class="buy-car-btn"><i class="iconfont icon-gouwuche"></i></div>
                 </a></li>

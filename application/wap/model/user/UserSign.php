@@ -40,7 +40,7 @@ class UserSign
         $max = SystemConfigService::get('sx_sign_max_int')?:5;
         $integral = rand($min,$max);
         ModelBasic::beginTrans();
-        $res1 = UserBill::income('用户签到',$uid,'integral','sign',$integral,0,$userInfo['integral'],'签到获得'.floatval($integral).'积分');
+        $res1 = UserBill::income('用户签到',$uid,'integral','sign',$integral,0,bcadd($userInfo['integral'],$integral,2),'签到获得'.floatval($integral).'积分');
         $res2 = User::bcInc($uid,'integral',$integral,'uid');
         $res = $res1 && $res2;
         ModelBasic::checkTrans($res);
