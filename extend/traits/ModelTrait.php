@@ -42,8 +42,10 @@ trait ModelTrait
     {
         $model = new self;
         if(!$field) $field = $model->getPk();
-        return false !== $model->update($data,[$field=>$id]);
+//        return false !== $model->update($data,[$field=>$id]);
+        return 0 < $model->update($data,[$field=>$id])->result;
     }
+
 
     /**
      * 查询一条数据是否存在

@@ -1680,7 +1680,7 @@ abstract class Model implements \JsonSerializable, \ArrayAccess
         if (!empty($field)) {
             $model->allowField($field);
         }
-        $result = $model->isUpdate(true)->save($data, $where);
+        $model->result = $model->isUpdate(true)->save($data, $where);
         return $model;
     }
 
