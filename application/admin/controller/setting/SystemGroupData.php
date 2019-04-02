@@ -47,20 +47,19 @@ class SystemGroupData extends AuthController
         $f = array();
         foreach ($Fields["fields"] as $key => $value) {
             $info = [];
-            if(!empty($value["param"])){
+            if(isset($value["param"])){
                 $value["param"] = str_replace("\r\n","\n",$value["param"]);//防止不兼容
                 $params = explode("\n",$value["param"]);
                 if(is_array($params) && !empty($params)){
                     foreach ($params as $index => $v) {
                         $vl = explode('=>',$v);
-                        if(!empty($vl[0]) && !empty($vl[1])){
+                        if(isset($vl[0]) && isset($vl[1]) && count($vl)){
                             $info[$index]["value"] = $vl[0];
                             $info[$index]["label"] = $vl[1];
                         }
                     }
                 }
             }
-
             switch ($value["type"]){
                 case 'input':
                     $f[] = Form::input($value["title"],$value["name"]);
@@ -109,17 +108,23 @@ class SystemGroupData extends AuthController
         foreach ($params as $key => $param) {
             foreach ($Fields['fields'] as $index => $field) {
                 if($key == $field["title"]){
-//                    if($param == "" || count($param) == 0)
-                    if($param == "")
-                        return Json::fail($field["name"]."不能为空！");
-                    else{
-                        $value[$key]["type"] = $field["type"];
-                        $value[$key]["value"] = $param;
-                    }
+                  if($field['type'] == 'radio'){
+                      $radioParam = explode("\n",$field["param"]);
+                      if(is_array($radioParam) && !empty($radioParam)){
+                          foreach ($radioParam as $radioIndex => &$radioItem) {
+                              $radioItemCut = explode('=>',$radioItem);
+                              if(isset($radioItemCut[0]) && isset($radioItemCut[1]) && $radioItemCut[0] == $param) $param = $radioItemCut[1];
+                          }
+                      }
+                  }
+                  if($param == "") return Json::fail($field["name"]."不能为空！");
+                  else{
+                    $value[$key]["type"] = $field["type"];
+                    $value[$key]["value"] = $param;
+                  }
                 }
             }
         }
-
         $data = array("gid"=>$gid,"add_time"=>time(),"value"=>json_encode($value),"sort"=>$params["sort"],"status"=>$params["status"]);
         GroupDataModel::set($data);
         return Json::successful('添加数据成功!');
@@ -150,20 +155,32 @@ class SystemGroupData extends AuthController
         $f = array();
         foreach ($Fields['fields'] as $key => $value) {
             $info = [];
-            if(!empty($value["param"])){
+            if(isset($value["param"])){
                 $value["param"] = str_replace("\r\n","\n",$value["param"]);//防止不兼容
                 $params = explode("\n",$value["param"]);
                 if(is_array($params) && !empty($params)){
                     foreach ($params as $index => $v) {
                         $vl = explode('=>',$v);
-                        if(!empty($vl[0]) && !empty($vl[1])){
+                        if(isset($vl[0]) && isset($vl[1])){
                             $info[$index]["value"] = $vl[0];
                             $info[$index]["label"] = $vl[1];
                         }
                     }
                 }
             }
-            $fvalue = isset($GroupDataValue[$value['title']]['value'])?$GroupDataValue[$value['title']]['value']:'';
+            if(isset($value['type']) && $value['type'] == 'radio'){
+                if(count($info)){
+                    foreach ($info as $radioKey=>&$radioItem){
+                        if(is_array($radioItem) &&
+                            count($radioItem) == 2 &&
+                            isset($GroupDataValue[$value['title']]['value']) &&
+                            strlen(trim($GroupDataValue[$value['title']]['value'])) &&
+                            $radioItem['label'] === $GroupDataValue[$value['title']]['value']){
+                            $fvalue = $radioItem['value'];
+                        }
+                    }
+                }
+            }else $fvalue = isset($GroupDataValue[$value['title']]['value'])?$GroupDataValue[$value['title']]['value']:'';
             switch ($value['type']){
                 case 'input':
                     $f[] = Form::input($value['title'],$value['name'],$fvalue);
@@ -221,6 +238,15 @@ class SystemGroupData extends AuthController
         foreach ($params as $key => $param) {
             foreach ($Fields['fields'] as $index => $field) {
                 if($key == $field["title"]){
+                    if($field['type'] == 'radio'){
+                        $radioParam = explode("\n",$field["param"]);
+                        if(is_array($radioParam) && !empty($radioParam)){
+                            foreach ($radioParam as $radioIndex => &$radioItem) {
+                                $radioItemCut = explode('=>',$radioItem);
+                                if(isset($radioItemCut[0]) && isset($radioItemCut[1]) && $radioItemCut[0] == $param) $param = $radioItemCut[1];
+                            }
+                        }
+                    }
                     if(!$param)
                         return Json::fail($field["name"]."不能为空！");
                     else{
