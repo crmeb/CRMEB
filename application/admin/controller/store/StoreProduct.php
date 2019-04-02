@@ -348,7 +348,7 @@ class StoreProduct extends AuthController
         if(!$id) return $this->failed('数据不存在!');
         $result = StoreProductAttrResult::getResult($id);
         $image = ProductModel::where('id',$id)->value('image');
-        $this->assign(compact('id','result','product','image'));
+        $this->assign(compact('id','result','image'));
         return $this->fetch();
     }
     /**
@@ -426,10 +426,15 @@ class StoreProduct extends AuthController
      */
     public function delete($id)
     {
+
         if(!$id) return $this->failed('数据不存在');
         if(!ProductModel::be(['id'=>$id])) return $this->failed('产品数据不存在');
         if(ProductModel::be(['id'=>$id,'is_del'=>1])){
-            return Json::fail(ProductModel::getErrorInfo('暂不支持回收站删除产品!'));
+            $data['is_del'] = 0;
+            if(!ProductModel::edit($data,$id))
+                return Json::fail(ProductModel::getErrorInfo('恢复失败,请稍候再试!'));
+            else
+                return Json::successful('成功恢复产品!');
         }else{
             $data['is_del'] = 1;
             if(!ProductModel::edit($data,$id))
