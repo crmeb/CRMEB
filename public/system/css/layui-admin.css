@@ -18,7 +18,7 @@
 .table-responsive{
     overflow: initial;
 }
-/*.layui-table img{width: 100% !important;}*/
+.layui-table img{margin: 0px -10px;width: calc(100% + 20px);height: calc(100% + 20px);}
 /*部分样式重构*/
 .layui-laypage-limits select{
     height: 26px;
@@ -155,6 +155,7 @@
     height: auto!important;
     font-size: 13px;
     font-weight: normal;
+    word-wrap: break-word;
 }
 /*form 样式*/
 
