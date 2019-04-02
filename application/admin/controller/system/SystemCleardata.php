@@ -130,9 +130,9 @@ class SystemclearData  extends AuthController
     public  function  clearData($table_name,$status){
         $table_name = Config::get('database')['prefix'].$table_name;
         if($status){
-            @db::query('TRUNCATE TABLE '.$table_name);
+            @db::execute('TRUNCATE TABLE '.$table_name);
         }else{
-            @db::query('DELETE FROM'.$table_name);
+            @db::execute('DELETE FROM'.$table_name);
         }
 
     }
