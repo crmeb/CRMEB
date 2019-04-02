@@ -8,7 +8,7 @@ namespace app\admin\model\routine;
 
 use traits\ModelTrait;
 use basic\ModelBasic;
-
+use think\Cache;
 /**
  * 小程序模板消息Model
  * Class RoutineTemplate
@@ -28,5 +28,13 @@ class RoutineTemplate extends ModelBasic
         if($where['name'] !== '') $model = $model->where('name','LIKE',"%$where[name]%");
         if($where['status'] !== '') $model = $model->where('status',$where['status']);
         return self::page($model);
+    }
+
+    /**
+     * 根据模版编号获取模版ID
+     * @param $tempkey
+     */
+    public static function getTempid($tempkey){
+        return self::where('tempkey',$tempkey)->where('status',1)->cache(true,3600)->value('tempid');
     }
 }

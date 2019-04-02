@@ -59,6 +59,28 @@
             <div class="layui-card">
                 <div class="layui-card-header">其他详情</div>
                 <div class="layui-card-body">
+                    <div class="layui-row layui-col-space15">
+                    {volist name='headerList' id='vo'}
+                    <div class="layui-col-xs3" style="margin-bottom: 10px ">
+                        <div class="layui-card">
+                            <div class="layui-card-header">
+                                {$vo.title}
+                                <span class="layui-badge layuiadmin-badge {if isset($vo.class) && $vo.class}{$vo.class}{else}layui-bg-blue{/if}">{$vo.key}</span>
+                            </div>
+                            <div class="layui-card-body">
+                                <p class="layuiadmin-big-font">{$vo.value}</p>
+                            </div>
+                        </div>
+                    </div>
+                    {/volist}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="layui-col-md12 layui-col-sm12 layui-col-lg12">
+            <div class="layui-card">
+                <div class="layui-card-header">其他记录</div>
+                <div class="layui-card-body">
                     <div class="layui-tab layui-tab-card">
                         <ul class="layui-tab-title">
                             <li class="layui-this">消费能力</li>
@@ -69,19 +91,6 @@
                             <li>推广下线明细</li>
                         </ul>
                         <div class="layui-tab-content" id="content">
-                            {volist name='headerList' id='vo'}
-                            <div class="layui-col-xs3" style="margin-bottom: 10px ">
-                                <div class="layui-card">
-                                    <div class="layui-card-header">
-                                        {$vo.title}
-                                        <span class="layui-badge layuiadmin-badge {if isset($vo.class) && $vo.class}{$vo.class}{else}layui-bg-blue{/if}">{$vo.key}</span>
-                                    </div>
-                                    <div class="layui-card-body">
-                                        <p class="layuiadmin-big-font">{$vo.value}</p>
-                                    </div>
-                                </div>
-                            </div>
-                            {/volist}
                             <div class="layui-tab-item layui-show">
                                 <table class="layui-table" lay-skin="line" v-cloak="">
                                     <thead>

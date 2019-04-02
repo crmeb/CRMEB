@@ -49,7 +49,7 @@ class UserExtract extends ModelBasic
         $uid=$data['uid'];
         $status = -1;
         $User= User::find(['uid'=>$uid])->toArray();
-        UserBill::income('提现失败',$uid,'now_money','extract',$extract_number,$id,$User['now_money'],$mark);
+        UserBill::income('提现失败',$uid,'now_money','extract',$extract_number,$id,bcadd($User['now_money'],$extract_number,2),$mark);
         User::bcInc($uid,'now_money',$extract_number,'uid');
         if($User['user_type'] == 'wechat'){
             WechatTemplateService::sendTemplate(WechatUser::uidToOpenid($uid),WechatTemplateService::USER_BALANCE_CHANGE,[

@@ -82,29 +82,30 @@
                     <table class="layui-hide" id="List" lay-filter="List"></table>
                     <!--订单-->
                     <script type="text/html" id="order_id">
-                       {{d.order_id}}
-                       <span style="color: {{d.color}};">{{d.pink_name}}</span>　　
+                        {{d.order_id}}<br/>
+                        <span style="color: {{d.color}};">{{d.pink_name}}</span><br/>　
+                        {{#  if(d.is_del == 1){ }}<span style="color: {{d.color}};">用户已删除</span>{{# } }}　
                     </script>
                     <!--用户信息-->
                     <script type="text/html" id="userinfo">
-                       {{d.nickname==null ? '暂无信息':d.nickname}}/{{d.uid}}
+                        {{d.nickname==null ? '暂无信息':d.nickname}}/{{d.uid}}
                     </script>
                     <!--支付状态-->
                     <script type="text/html" id="paid">
                         {{#  if(d.pay_type==1){ }}
-                                <p>{{d.pay_type_name}}</p>
+                        <p>{{d.pay_type_name}}</p>
                         {{#  }else{ }}
-                            {{# if(d.pay_type_info!=undefined){ }}
-                                <p><span>线下支付</span></p>
-                                <p><button type="button" class="btn btn-w-m btn-white">立即支付</button></p>
-                            {{# }else{ }}
-                                <p>{{d.pay_type_name}}</p>
-                            {{# } }}
+                        {{# if(d.pay_type_info!=undefined){ }}
+                        <p><span>线下支付</span></p>
+                        <p><button type="button" class="btn btn-w-m btn-white">立即支付</button></p>
+                        {{# }else{ }}
+                        <p>{{d.pay_type_name}}</p>
+                        {{# } }}
                         {{# }; }}
                     </script>
                     <!--订单状态-->
                     <script type="text/html" id="status">
-                       {{d.status_name}}
+                        {{d.status_name}}
                     </script>
                     <!--商品信息-->
                     <script type="text/html" id="info">
@@ -171,7 +172,7 @@
                                     <i class="fa fa-paste"></i> 订单备注
                                 </a>
                             </li>
-                            {{#  if(d.pay_price!=d.refund_price){ }}
+                            {{#  if(Math.floor(d.pay_price) > Math.floor(d.refund_price)){ }}
                             <li>
                                 <a href="javascript:void(0);" onclick="$eb.createModalFrame('退款','{:Url('refund_y')}?id={{d.id}}',{w:400,h:300})">
                                     <i class="fa fa-history"></i> 立即退款
@@ -214,7 +215,8 @@
                                     <i class="fa fa-history"></i> 退积分
                                 </a>
                             </li>
-                            {{# }else if(d.pay_price != d.refund_price){ }}
+                            {{#  };}}
+                            {{# if(Math.floor(d.pay_price) > Math.floor(d.refund_price)){ }}
                             <li>
                                 <a href="javascript:void(0);" onclick="$eb.createModalFrame('退款','{:Url('refund_y')}?id={{d.id}}',{w:400,h:300})">
                                     <i class="fa fa-history"></i>立即退款
@@ -252,7 +254,7 @@
                                     <i class="fa fa-cart-arrow-down"></i> 已收货
                                 </a>
                             </li>
-                            {{#  if(d.pay_price != d.refund_price){ }}
+                            {{#  if(Math.floor(d.pay_price) > Math.floor(d.refund_price)){ }}
                             <li>
                                 <a href="javascript:void(0);" onclick="$eb.createModalFrame('退款','{:Url('refund_y')}?id={{d.id}}')">
                                     <i class="fa fa-history"></i> 立即退款
@@ -284,13 +286,14 @@
                                     <i class="fa fa-paste"></i> 订单备注
                                 </a>
                             </li>
-                            {{#  if(d.pay_price != d.refund_price){ }}
+                            {{#  if(Math.floor(d.pay_price) > Math.floor(d.refund_price)){ }}
                             <li>
                                 <a href="javascript:void(0);" onclick="$eb.createModalFrame('退款','{:Url('refund_y')}?id={{d.id}}')">
                                     <i class="fa fa-history"></i> 立即退款
                                 </a>
                             </li>
-                            {{# }else if(d.use_integral > 0 && d.use_integral >= d.back_integral){ }}
+                            {{# };}}
+                            {{# if(d.use_integral > 0 && d.use_integral >= d.back_integral){ }}
                             <li>
                                 <a href="javascript:void(0);" onclick="$eb.createModalFrame('退积分','{:Url('integral_back')}?id={{d.id}}')">
                                     <i class="fa fa-history"></i> 退积分
@@ -316,6 +319,13 @@
                                     <i class="fa fa-paste"></i> 订单备注
                                 </a>
                             </li>
+                            {{#  if(Math.floor(d.pay_price) > Math.floor(d.refund_price)){ }}
+                            <li>
+                                <a href="javascript:void(0);" onclick="$eb.createModalFrame('退款','{:Url('refund_y')}?id={{d.id}}')">
+                                    <i class="fa fa-history"></i> 立即退款
+                                </a>
+                            </li>
+                            {{# } }}
                             {{# if(d.use_integral > 0 && d.use_integral >= d.back_integral){ }}
                             <li>
                                 <a href="javascript:void(0);" onclick="$eb.createModalFrame('退积分','{:Url('integral_back')}?id={{d.id}}')">
@@ -436,6 +446,7 @@
                     {name: '普通订单', value: 1,count:orderCount.general},
                     {name: '拼团订单', value: 2,count:orderCount.pink},
                     {name: '秒杀订单', value: 3,count:orderCount.seckill},
+                    {name: '砍价订单', value: 4,count:orderCount.bargain},
                 ],
                 orderStatus: [
                     {name: '全部', value: ''},
