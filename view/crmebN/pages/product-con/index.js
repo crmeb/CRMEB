@@ -84,65 +84,64 @@ Page({
     /**
      * 生命周期函数--监听页面加载
      */
-    onLoad: function (options) {
-        // console.log(options);
-        // return ;
-        app.globalData.openPages = '/pages/product-con/index?id=' + options.id;
-        app.setBarColor();
-        var that = this;
-        app.setUserInfo();
-        that.getCartCount();
-        that.setData({
-            id: options.id
-        })
-        var header = {
-            'content-type': 'application/x-www-form-urlencoded',
-        };
-        wx.request({
-            url: app.globalData.url + '/routine/auth_api/details?uid=' + app.globalData.uid,
-            method: 'POST',
-            data:{
-                id:that.data.id
-            },
-            header: header,
-            success: function (res) {
-                if(res.data.code == 200){
-                    var image = "productSelect.image";
-                    var store_name = "productSelect.store_name";
-                    var price = "productSelect.price";
-                    var unique = "productSelect.unique";
-                    var stock = "productSelect.stock";
-                    that.setData({
-                        storeInfo: res.data.data.storeInfo,
-                        storeKeyWord: res.data.data.storeInfo.keyword.split(","),
-                        similarity: res.data.data.similarity,
-                        productAttr: res.data.data.productAttr,
-                        productValue: res.data.data.productValue,
-                        reply: res.data.data.reply,
-                        replyCount: res.data.data.replyCount,
-                        description: res.data.data.storeInfo.description,
-                        collect:res.data.data.storeInfo.userCollect,
-                        [image]: res.data.data.storeInfo.image,
-                        [stock]: res.data.data.storeInfo.stock,
-                        [store_name]: res.data.data.storeInfo.store_name,
-                        [price]: res.data.data.storeInfo.price,
-                        [unique]: ''
-                    })
-                    that.downloadFilestoreImage();
-                    that.downloadFilePromotionCode();
-                    WxParse.wxParse('description', 'html', that.data.description, that, 0);
-                }else{
-                    wx.showToast({
-                        title: res.data.msg,
-                        icon: 'none',
-                        duration: 1000
-                    })
-                    setTimeout(function(){
-                        wx.navigateBack({});
-                    },1200)
-                }
+  onLoad: function (options) {
+      var that = this;
+      var pages = getCurrentPages();
+      if (pages.length != 2 && !options.hasOwnProperty('id')) return false;
+      app.globalData.openPages = '/pages/product-con/index?id=' + options.id + '&scene=' + app.globalData.uid;
+      app.setBarColor();
+      that.setData({ id: options.id });
+      that.getProductInfo();
+    },
+    getProductInfo:function(){
+      var that = this;
+      var header = { 'content-type': 'application/x-www-form-urlencoded' };
+      wx.request({
+        url: app.globalData.url + '/routine/auth_api/details?uid=' + app.globalData.uid,
+        method: 'POST',
+        data: { id: that.data.id },
+        header: header,
+        success: function (res) {
+          if (res.data.code == 200) {
+            var image = "productSelect.image";
+            var store_name = "productSelect.store_name";
+            var price = "productSelect.price";
+            var unique = "productSelect.unique";
+            var stock = "productSelect.stock";
+            that.setData({
+              storeInfo: res.data.data.storeInfo,
+              storeKeyWord: res.data.data.storeInfo.keyword.split(","),
+              similarity: res.data.data.similarity,
+              productAttr: res.data.data.productAttr,
+              productValue: res.data.data.productValue,
+              reply: res.data.data.reply,
+              replyCount: res.data.data.replyCount,
+              description: res.data.data.storeInfo.description,
+              collect: res.data.data.storeInfo.userCollect,
+              [image]: res.data.data.storeInfo.image,
+              [stock]: res.data.data.storeInfo.stock,
+              [store_name]: res.data.data.storeInfo.store_name,
+              [price]: res.data.data.storeInfo.price,
+              [unique]: ''
+            })
+            that.getCartCount();
+            that.downloadFilestoreImage();
+            that.downloadFilePromotionCode();
+            WxParse.wxParse('description', 'html', that.data.description, that, 0);
+          } else {
+            if (app.globalData.uid == null) {//是否存在用户信息，如果不存在跳转到首页
+              setTimeout(function () { wx.navigateTo({ url: '/pages/loading/loading' }) }, 1500)
+            } else {
+              wx.showToast({
+                title: res.data.msg,
+                icon: 'none',
+                duration: 1000
+              });
+              setTimeout(function () { wx.navigateBack({}); }, 1200);
             }
-        })
+          }
+        }
+      })
     },
     listenerActionSheet: function () {
         this.setData({
@@ -257,7 +256,7 @@ Page({
     downloadFilePromotionCode:function(){
         var that = this;
         wx.request({
-            url: app.globalData.url + '/routine/auth_api/product_promotion_code?uid=' + app.globalData.uid,
+          url: app.globalData.url + '/routine/auth_api/product_promotion_routine_code?uid=' + app.globalData.uid,
             method: 'GET',
             data: { id: that.data.id, },
             success: function (res) {
@@ -287,7 +286,6 @@ Page({
         })
         that.setData({ canvasStatus: true });
         const arr2 = ['/images/posterbackgd.png', that.data.storeImage, that.data.PromotionCode];
-        console.log(arr2);
         if (arr2[2] == '') {
             wx.request({
                 url: app.globalData.url + '/routine/auth_api/product_promotion_code?uid=' + app.globalData.uid,
@@ -412,32 +410,6 @@ Page({
                 },
             })
         }
-    },
-    goPhoto:function(){
-        var that = this;
-        wx.showActionSheet({
-            itemList: ['发送给朋友', '生成海报'],
-            success: function (res) {
-                if (res.tapIndex){
-                    wx.request({
-                        url: app.globalData.url + '/routine/auth_api/get_pages?uid=' + app.globalData.uid,
-                        method: 'GET',
-                        data: {
-                            path: app.globalData.openPages,
-                            productId: that.data.id
-                        },
-                        success: function (res) {
-                            console.log(res);
-                        }
-                    })
-                }else{
-                    that.onShareAppMessage();
-                }
-            },
-            fail: function (res) {
-                console.log(res.errMsg)
-            }
-        })
     },
     parameterShow: function () {
         var that = this;
@@ -879,7 +851,7 @@ Page({
         })
         return {
             title: that.data.productSelect.store_name,
-            path: app.globalData.openPages,
+             path: app.globalData.openPages,
             // imageUrl: that.data.url + that.data.product.image,
             success: function () {
                 wx.showToast({

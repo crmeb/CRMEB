@@ -20,10 +20,10 @@ class RoutineQrcode extends ModelBasic {
      * @param int $thirdId
      * @return object
      */
-    public static function setRoutineQrcodeForever($thirdId = 0,$thirdType = 'spread',$page = '',$imgUrl = ''){
+    public static function setRoutineQrCodeForever($thirdId = 0,$thirdType = 'spread',$page = '',$imgUrl = ''){
        $data['third_type'] = $thirdType;
        $data['third_id'] = $thirdId;
-       $data['status'] = 0;
+       $data['status'] = 1;
        $data['add_time'] = time();
        $data['page'] = $page;
        $data['url_time'] = '';
@@ -68,6 +68,31 @@ class RoutineQrcode extends ModelBasic {
         $count = self::getRoutineQrcodeFind($id);
         if(!$count) return false;
         return self::where('id',$id)->where('status',1)->field($field)->find();
+    }
+
+    /**
+     * TODO 根据用户编号和二维码类型查看分销二维码是否存在
+     * @param int $thirdId
+     * @param string $thirdType
+     * @return int|string
+     * @throws \think\Exception
+     */
+    public static function getRoutineQrCodeCount($thirdId = 0,$thirdType = 'spread'){
+        return self::where('third_id',$thirdId)->where('third_type',$thirdType)->count();
+    }
+
+    /**
+     * TODO 根据用户编号和二维码类型获取分销二维码
+     * @param int $thirdId
+     * @param string $thirdType
+     * @return bool|mixed|object
+     * @throws \think\Exception
+     */
+    public static function getRoutineQrCode($thirdId = 0,$thirdType = 'spread',$page = '',$imgUrl = ''){
+        if(!$thirdId) return false;
+        $count = self::getRoutineQrCodeCount($thirdId,$thirdType);
+        if($count) return self::where('third_id',$thirdId)->where('third_type',$thirdType)->find();
+        else return self::setRoutineQrCodeForever($thirdId,$thirdType,$page,$imgUrl);
     }
 
 
