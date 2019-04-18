@@ -115,7 +115,7 @@ class StoreBargainUser extends ModelBasic
      */
     public static function getBargainUserDiffPrice($bargainId = 0,$bargainUserId = 0){
         $price = self::where('bargain_id',$bargainId)->where('uid',$bargainUserId)->field('bargain_price,bargain_price_min')->find()->toArray();
-        return (float)bcsub($price['bargain_price'],$price['bargain_price_min'],0);
+        return (float)bcsub($price['bargain_price'],$price['bargain_price_min'],2);
     }
 
     /**

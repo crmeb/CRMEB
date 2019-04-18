@@ -156,4 +156,15 @@ class StoreBargain extends ModelBasic
         if(!$id) return false;
         return self::where('id',$id)->inc('look',1)->update();
     }
+
+    /**
+     * TODO  判断是否可以出售
+     * @param $id
+     * @param int $cartNum
+     * @return int|string
+     * @throws \think\Exception
+     */
+    public static function isValidCartBargain($id,$cartNum = 1){
+       return self::validWhere()->where('id',$id)->where('stock','>',$cartNum)->count();
+    }
 }

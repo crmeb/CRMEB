@@ -157,4 +157,15 @@ class StoreCombination extends ModelBasic
         return $model->count();
     }
 
+    /**
+     * TODO  判断是否可以出售
+     * @param $id
+     * @param int $cartNum
+     * @return int|string
+     * @throws \think\Exception
+     */
+    public static function isValidCartCombination($id,$cartNum = 1){
+        return self::where('id',$id)->where('is_del',0)->where('is_show',1)->where('stock','>',$cartNum)->count();
+    }
+
 }
