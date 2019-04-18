@@ -68,6 +68,30 @@ class PublicApi
         return JsonService::successful($result);
     }
 
+    /** 首页获取推荐产品
+     * @param int $first
+     * @param int $limit
+     */
+    public function get_product_list($first = 0,$limit = 8)
+    {
+        $StoreProductmodel = StoreProduct::validWhere();
+        if(input('type')=='is_best')
+            $StoreProductmodel = $StoreProductmodel->where('is_best',1);
+        if(input('type')=='is_hot')
+            $StoreProductmodel = $StoreProductmodel->where('is_hot',1);
+        if(input('type')=='is_benefit')
+            $StoreProductmodel = $StoreProductmodel->where('is_benefit',1);
+        if(input('type')=='is_new')
+            $StoreProductmodel = $StoreProductmodel->where('is_new',1);
+        if(input('type')=='is_postage')
+            $StoreProductmodel = $StoreProductmodel->where('is_postage',1);
+
+        $list = $StoreProductmodel->where('mer_id',0)->order('is_best DESC,sort DESC,add_time DESC')
+            ->limit($first,$limit)->field('id,image,store_name,sales,price,unit_name')->select()->toArray();
+
+        return JsonService::successful($list);
+    }
+
     public function get_best_product_list($first = 0,$limit = 8)
     {
         $list = StoreProduct::validWhere()->where('mer_id',0)->order('is_best DESC,sort DESC,add_time DESC')
