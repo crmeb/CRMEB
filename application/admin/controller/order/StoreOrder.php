@@ -242,7 +242,7 @@ class StoreOrder extends AuthController
                         }
                         return $menus;
                     })->filterable(1);
-            $f[] = Form::input('delivery_id','快递单号')->number(1);
+            $f[] = Form::input('delivery_id','快递单号');
             $form = Form::make_post_form('修改订单',$f,Url::build('updateDeliveryGoods',array('id'=>$id)),5);
             $this->assign(compact('form'));
             return $this->fetch('public/form-builder');
