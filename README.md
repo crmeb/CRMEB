@@ -32,7 +32,7 @@
 
    CRMEB二次开发：
 
-1.本源码遵循MIT开源协议，系统采用TP5.0框架；
+1.本源码遵循GPL3.0开源协议，系统采用TP5.0框架；
 
 2.后台采用form-builder组件和后台多任务操作框架，方便快速开发增删改、封装layui.table 可快速开发数据列表页面、PHPExcel数据导出、数据库在线词典、日志小工具、系统参数配置、系统强大完善的权限控制、系统菜单配置、组合数据模型等这些都是为了方便二次开发而准备的；
 
@@ -134,15 +134,6 @@ Gitee: https://gitee.com/ZhongBangKeJi/CRMEB/issues
 
 tp5 PHP表单生成器，快速生成现代化的form表单。包含复选框、单选框、输入框、下拉选择框等元素以及,省市区三级联动,时间选择,日期选择,颜色选择,文件/图片上传等功能。
 form-builder : https://github.com/xaboy/form-builder
-#### laravel-form-builder
-
-laravel PHP表单生成器，快速生成现代化的form表单。包含复选框、单选框、输入框、下拉选择框等元素以及,省市区三级联动,时间选择,日期选择,颜色选择,文件/图片上传等功能。
-https://github.com/xaboy/laravel-form-builder
-
-#### form-create
-
-具有动态渲染、数据收集、校验功能的表单生成器，支持双向数据绑定、事件扩展以及自定义组件，可快速生成包含有省市区三级联动、时间选择、日期选择等17种功能组件。 http://fc.gd8.top
-https://github.com/xaboy/form-create
 
 ## 特别鸣谢
 感谢以下的项目,排名不分先后
@@ -172,7 +163,7 @@ Mysql：https://www.mysql.com/
 微信公众号、微信小程序 https://mp.weixin.qq.com
 
 版权信息
-CRMEB v2.3.* 遵循MIT开源协议发布，并提供免费使用。
+CRMEB v2.5.* 遵循GPL3.0开源协议发布，并提供免费使用。
 
 本项目包含的第三方源码和二进制文件之版权信息另行标注。
 
