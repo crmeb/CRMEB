@@ -471,7 +471,8 @@
             }
         }
         var str = chk_value.join(',');
-        var url = "http://"+window.location.host+"/admin/ump.store_coupon/grant/id/"+str;
+//        var url = "http://"+window.location.host+"/admin/ump.store_coupon/grant/id/"+str;
+        var url = "{:Url('ump.store_coupon/grant')}?id="+str;
         $eb.createModalFrame(this.innerText,url,{'w':800});
     })
     $('.news').on('click',function (e) {
