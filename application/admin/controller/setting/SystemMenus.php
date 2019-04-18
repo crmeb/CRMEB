@@ -53,10 +53,13 @@ class SystemMenus extends AuthController
     {
         $controller = '';
         if($cid)$controller = MenusModel::where('id',$cid)->value('controller')?:'';
+//        var_dump(MenusModel::order('pid ASC,sort DESC,id DESC')->all()->toArray());
         $field = [
             Form::input('menu_name','按钮名称')->required('按钮名称必填'),
             Form::select('pid','父级id',$cid)->setOptions(function(){
-                $list = (Util::sortListTier(MenusModel::all()->toArray(),'顶级','pid','menu_name'));
+                $list = (Util::sortListTier(MenusModel::all(function($m){
+                    $m->order('sort DESC,id ASC');
+                })->toArray(),'顶级','pid','menu_name'));
                 $menus = [['value'=>0,'label'=>'顶级按钮']];
                 foreach ($list as $menu){
                     $menus[] = ['value'=>$menu['id'],'label'=>$menu['html'].$menu['menu_name']];
@@ -113,7 +116,9 @@ class SystemMenus extends AuthController
         $field = [
             Form::input('menu_name','按钮名称',$menu['menu_name']),
             Form::select('pid','父级id',(string)$menu->getData('pid'))->setOptions(function()use($id){
-                $list = (Util::sortListTier(MenusModel::where('id','<>',$id)->select()->toArray(),'顶级','pid','menu_name'));
+                $list = (Util::sortListTier(MenusModel::all(function($m){
+                    $m->order('sort DESC,id ASC');
+                })->toArray(),'顶级','pid','menu_name'));
                 $menus = [['value'=>0,'label'=>'顶级按钮']];
                 foreach ($list as $menu){
                     $menus[] = ['value'=>$menu['id'],'label'=>$menu['html'].$menu['menu_name']];
