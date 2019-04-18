@@ -2,10 +2,12 @@
 <script type="text/javascript" src="{__PLUG_PATH}requirejs/require.js"></script>
 <?php /*  <script type="text/javascript" src="/static/plug/requirejs/require-basket-load.js"></script>  */ ?>
 <script>
+    var hostname = location.hostname;
+    if(location.port) hostname += ':' + location.port;
     requirejs.config({
         map: {
             '*': {
-                'css': "{__PUBLIC_PATH}static/plug/requirejs/require-css.js"
+                'css': '{__PUBLIC_PATH}static/plug/requirejs/require-css.js'
             }
         },
         shim:{
@@ -16,7 +18,7 @@
                 deps:['css!layercss']
             }
         },
-        baseUrl:'//'+location.hostname+"{__PUBLIC_PATH}",
+        baseUrl:'//'+hostname+'{__PUBLIC_PATH}',
         paths: {
             'static':'static',
             'system':'system',
@@ -29,7 +31,6 @@
             'layercss':'static/plug/layer/theme/default/layer',
             'jquery':'static/plug/jquery/jquery.min',
             'moment':'static/plug/moment',
-//            'mpBuilder':'system/util/mpBuilder',
             'sweetalert':'static/plug/sweetalert2/sweetalert2.all.min'
 
         },
