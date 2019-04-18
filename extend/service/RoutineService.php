@@ -33,7 +33,7 @@ class RoutineService{
             'body' => $body,
             'mch_id' => $config['mch_id'],
             'nonce_str' => self::nonce_str(),//随机字符串
-//            'notify_url' => $payment['site_url'].Url::build('routine/Routine/notify'),
+//            'notify_url' => $payment['site_url'].Url::build('/routine/Routine/notify'),
             'notify_url' => Request::instance()->domain().Url::build('/routine/Routine/notify'),
             'openid' => $openid,
             'out_trade_no' => $out_trade_no,
