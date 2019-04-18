@@ -123,7 +123,7 @@ class SystemMenus extends ModelBasic
 //        if($params['access'] !== '') $model = $model->where('access',$params['access']);//子管理员是否可用
         if($params['pid'] !== ''&& !$params['keyword'] ) $model = $model->where('pid',$params['pid']);
         if($params['keyword'] !== '') $model = $model->where('menu_name|id|pid','LIKE',"%$params[keyword]%");
-        $model = $model->order('sort DESC,id DESC');
+        $model = $model->order('sort DESC,id ASC');
         return self::page($model,$params);
     }
 
@@ -144,7 +144,9 @@ class SystemMenus extends ModelBasic
         return self::where('action',$action)
             ->where('controller',lcfirst($controller))
             ->where('module',lcfirst($module))
-            ->where('params',['=',$params],['=','[]'],'or')->order('id DESC')->value('menu_name');
+            ->where('params',['=',$params],['=','[]'],'or')
+            ->order('id DESC')
+            ->value('menu_name');
     }
 
 }
