@@ -25,32 +25,42 @@ class Clear extends AuthController
      * 刷新数据缓存
      */
     public function refresh_cache(){
-        `php think optimize:schema`;
-        `php think optimize:autoload`;
-        `php think optimize:route`;
-        `php think optimize:config`;
+        if(function_exists('shell_exec')){
+            `php think optimize:schema`;
+            `php think optimize:autoload`;
+            `php think optimize:route`;
+            `php think optimize:config`;
+        }else if(function_exists('exec')){
+            exec('php think optimize:schema');
+            exec('php think optimize:autoload');
+            exec('php think optimize:route');
+            exec('php think optimize:config');
+        }else{
+            return Json::successful('请开启shell_exec或者exec函数!');
+        }
         return Json::successful('数据缓存刷新成功!');
     }
-
     /**
      * 删除缓存
      */
     public function delete_cache(){
-        Cache::clear();
-        array_map('unlink', glob(TEMP_PATH . '/*.php'));
+        $this->delDirAndFile(TEMP_PATH);
+        $this->delDirAndFile(CACHE_PATH);
         return Json::successful('清除缓存成功!');
     }
-
     /**
      * 删除日志
      */
     public function delete_log(){
-        array_map('unlink', glob(LOG_PATH . '/*.log'));
         $this->delDirAndFile(LOG_PATH);
         return Json::successful('清除日志成功!');
     }
 
-    function delDirAndFile($dirName,$subdir=true){
+    /** 递归删除文件
+     * @param $dirName
+     * @param bool $subdir
+     */
+    function delDirAndFile($dirName,$subdir = true){
         if ($handle = opendir("$dirName")){
             while(false !== ($item = readdir($handle))){
                 if($item != "." && $item != ".."){
