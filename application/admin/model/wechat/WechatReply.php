@@ -187,9 +187,7 @@ class WechatReply extends ModelBasic
     public static function reply($key,$default=''){
         $res = self::where('key',$key)->where('status','1')->find();
         if(empty($res)) $res = self::where('key','default')->where('status','1')->find();
-        if(empty($res)){
-            return WechatService::textMessage($default);
-        }
+        if(empty($res)) return WechatService::transfer();
         $res['data'] = json_decode($res['data'],true);
         if($res['type'] == 'text'){
             return WechatService::textMessage($res['data']['content']);
