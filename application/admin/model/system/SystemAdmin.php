@@ -146,8 +146,7 @@ class SystemAdmin extends ModelBasic
     public static function systemPage($where){
         $model = new self;
         if($where['name'] != ''){
-            $model = $model->where('account','LIKE',"%$where[name]%");
-            $model = $model->where('real_name','LIKE',"%$where[name]%");
+            $model = $model->where('account|real_name','LIKE',"%$where[name]%");
         }
         if($where['roles'] != '')
             $model = $model->where("CONCAT(',',roles,',')  LIKE '%,$where[roles],%'");
