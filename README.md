@@ -23,6 +23,19 @@
 ##  :point_right: 小程序版：https://gitee.com/ZhongBangKeJi/CRMEB_WeChatMiniProgram
 ## [帮助文档](http://help.crmeb.net)
 
+## CRMEB推荐服务器配置
+
+```
+CPU：2核
+内存：4G
+实例规格：突发性能t5实例
+带宽：2M
+系统：CentOS 7.4 64位(推荐)
+价格：936元/年 2386.8 元/三年
+```
+[查看服务器](https://promotion.aliyun.com/ntms/yunparter/invite.html?userCode=dligum2z)
+
+
 ## 项目介绍
    基于ThinkPhp5.0+Vue+EasyWeChat 开发的一套CRMEB新零售商城系统
     
