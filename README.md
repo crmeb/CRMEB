@@ -17,14 +17,23 @@
     </a>
 </p>
 
-## 本项目还在不断开发完善中,如有建议或问题请[官方论坛](http://bbs.crmeb.net)
-
-# 如果对您有帮助，您可以点右上角 "Star" 支持一下 谢谢！
-##  :point_right: 小程序版：https://gitee.com/ZhongBangKeJi/CRMEB_WeChatMiniProgram
-## 帮助文档：https://www.kancloud.cn/crmeb/crmeb/662420
-
+### 如果对您有帮助，您可以点右上角 "Star" 支持一下 谢谢！
+### 纯小程序版：https://gitee.com/ZhongBangKeJi/CRMEB_WeChatMiniProgram
+### 帮助文档：https://www.kancloud.cn/crmeb/crmeb/662420
+### 本项目还在不断开发完善中,如有建议或问题请官方论坛反馈，论坛地址:http://bbs.crmeb.net
 ## CRMEB推荐服务器配置
+入门级配置
+```
+CPU：1核
+内存：1G
+实例规格：突发性能t5实例
+带宽：1M
+系统：CentOS 7.4 64位(推荐)
+价格：366元/年 933.3 元/三年
+```
+<a href="https://promotion.aliyun.com/ntms/yunparter/invite.html?userCode=dligum2z">查看服务器详情</a>
 
+标准级配置
 ```
 CPU：2核
 内存：4G
