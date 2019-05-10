@@ -1,0 +1,11 @@
+.payment-status{background-color:#fff;margin:195rpx 30rpx 0 30rpx;border-radius:10rpx;padding:1rpx 0 28rpx 0;}
+.payment-status .iconfont{font-size:70rpx;width:140rpx;height:140rpx;border-radius:50%;color:#fff;text-align:center;line-height:140rpx;text-shadow:0px 4px 0px #df1e14;border:6rpx solid #f5f5f5;margin:-76rpx auto 0 auto;background-color:#999;}
+.payment-status .iconfont.fail{text-shadow:0px 4px 0px #7a7a7a;}
+.payment-status .status{font-size:32rpx;font-weight:bold;text-align:center;margin:25rpx 0 37rpx 0;}
+.payment-status .wrapper{border:1rpx solid #eee;margin:0 30rpx 47rpx 30rpx;padding:35rpx 0;border-left:0;border-right:0;}
+.payment-status .wrapper .item{font-size:28rpx;color:#282828;}
+.payment-status .wrapper .item~.item{margin-top:20rpx;}
+.payment-status .wrapper .item .itemCom{color:#666;}
+.payment-status .returnBnt{width:630rpx;height:86rpx;border-radius:50rpx;color:#fff;font-size:30rpx;text-align:center;line-height:86rpx;margin:0 auto 20rpx auto;}
+
+

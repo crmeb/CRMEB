@@ -1,0 +1,28 @@
+@import '/app.wxss';
+.product-window{position:fixed;bottom:0;width:100%;left:0;background-color:#fff;z-index:88;border-radius:16rpx 16rpx 0 0;padding-bottom:140rpx;transform:translate3d(0,100%,0);transition:all .3s cubic-bezier(.25,.5,.5,.9);}
+.product-window.on{transform:translate3d(0,0,0);}
+.product-window .textpic{padding:0 130rpx 0 30rpx;margin-top:29rpx;position:relative;}
+.product-window .textpic .pictrue{width:150rpx;height:150rpx;}
+.product-window .textpic .pictrue image{width:100%;height:100%;border-radius:10rpx;}
+.product-window .textpic .text{width:410rpx;font-size:32rpx;color:#202020;}
+.product-window .textpic .text .money{font-size:24rpx;margin-top:40rpx;}
+.product-window .textpic .text .money .num{font-size:36rpx;}
+.product-window .textpic .text .money .stock{color:#999;margin-left:18rpx;}
+.product-window .textpic .iconfont{position:absolute;right:30rpx;top:-5rpx;font-size:35rpx;color:#8a8a8a;}
+.product-window .productWinList{max-height:395rpx;overflow:auto;margin-top:36rpx;}
+.product-window .productWinList .item~.item{margin-top:36rpx;}
+.product-window .productWinList .item .title{font-size:30rpx;color:#999;padding:0 30rpx;}
+.product-window .productWinList .item .listn{padding:0 30rpx 0 16rpx;}
+.product-window .productWinList .item .listn .itemn{border:1px solid #bbb;font-size:26rpx;color:#282828;padding:7rpx 33rpx;border-radius:6rpx;margin:14rpx 0 0 14rpx;}
+.product-window .productWinList .item .listn .itemn.on{color:#fff;background-color:#ff3700;border-color:#ff3700;}
+.product-window .cart{margin-top:36rpx;padding:0 30rpx;}
+.product-window .cart .title{font-size:30rpx;color:#999;}
+.product-window .cart .carnum{height:54rpx;margin-top:24rpx;}
+.product-window .cart .carnum view{border:1px solid #a4a4a4;width:84rpx;text-align:center;height:100%;line-height:54rpx;color:#a4a4a4;font-size:45rpx;}
+.product-window .cart .carnum .reduce{border-right:0;border-radius:6rpx 0 0 6rpx;line-height:48rpx;}
+.product-window .cart .carnum .reduce.on{border-color:#e3e3e3;color:#dedede;}
+.product-window .cart .carnum .plus{border-left:0;border-radius:0 6rpx 6rpx 0;line-height:46rpx;}
+.product-window .cart .carnum .plus.on{border-color:#e3e3e3;color:#dedede;}
+.product-window .cart .carnum .num{color:#282828;font-size:28rpx;}
+
+

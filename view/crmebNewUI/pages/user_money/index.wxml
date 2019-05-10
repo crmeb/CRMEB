@@ -1,0 +1,97 @@
+<navbar parameter='{{parameter}}'></navbar>
+<view class='my-account'>
+   <view class='wrapper'>
+      <view class='header'>
+         <view class='headerCon'>
+              <view class='account acea-row row-top row-between'>
+                  <view class='assets'>
+                    <view>总资产(元)</view>
+                    <view class='money'>{{userInfo.now_money || 0}}</view>
+                  </view>
+                  <navigator hover-class='none' url='/pages/user_payment/index' class='recharge font-color'>充值</navigator>
+              </view>
+              <view class='cumulative acea-row row-top'>
+                <view class='item'>
+                    <view>累计充值(元)</view>
+                    <view class='money'>{{userInfo.recharge || 0}}</view>
+                </view>
+                <view class='item'>
+                    <view>累计消费(元)</view>
+                    <view class='money'>{{userInfo.orderStatusSum || 0}}</view>
+                </view>
+              </view>
+         </view>
+      </view>
+      <view class='nav acea-row row-middle'>
+         <navigator class='item' hover-class='none' url='/pages/user_bill/index'>
+            <view class='pictrue'><image src='/images/record1.png'></image></view>
+            <view>账单记录</view>
+         </navigator>
+         <navigator class='item' hover-class='none' url='/pages/user_bill/index?type=1'>
+            <view class='pictrue'><image src='/images/record2.png'></image></view>
+            <view>消费记录</view>
+         </navigator>
+         <navigator class='item' hover-class='none' url='/pages/user_bill/index?type=2'>
+            <view class='pictrue'><image src='/images/record3.png'></image></view>
+            <view>充值记录</view>
+         </navigator>
+         <navigator class='item' hover-class='none' url='/pages/user_integral/index'>
+            <view class='pictrue'><image src='/images/record4.png'></image></view>
+            <view>积分中心</view>
+         </navigator>
+      </view>
+      <view class='advert acea-row row-between-wrapper'>
+         <navigator class='item acea-row row-between-wrapper' hover-class='none' url='/pages/user_sgin/index'>
+            <view class='text'>
+               <view class='name'>签到领积分</view>
+               <view>赚积分抵现金</view>
+            </view>
+            <view class='pictrue'><image src='/images/gift.png'></image></view>
+         </navigator>
+         <navigator class='item on acea-row row-between-wrapper' hover-class='none' url='/pages/user_get_coupon/index'>
+            <view class='text'>
+               <view class='name'>领取优惠券</view>
+               <view>满减享优惠</view>
+            </view>
+            <view class='pictrue'><image src='/images/money.png'></image></view>
+         </navigator>
+      </view>
+      <view class='list'>
+         <view class='item acea-row row-between-wrapper'>
+            <view class='picTxt acea-row row-between-wrapper'>
+               <view class='iconfont icon-hebingxingzhuang'></view>
+               <view class='text'>
+                  <view class='line1'>最新拼团活动</view>
+                  <view class='infor line1'>最新的优惠商品上架拼团</view>
+               </view>
+            </view>
+            <navigator hover-class='none' url='/pages/activity/goods_combination/index' class='bnt' wx:if="{{activity.is_pink}}">立即参与</navigator>
+            <view class='bnt end' wx:else>已结束</view>
+         </view>
+         <view class='item acea-row row-between-wrapper'>
+            <view class='picTxt acea-row row-between-wrapper'>
+               <view class='iconfont icon-miaosha yellow'></view>
+               <view class='text'>
+                  <view class='line1'>当前限时秒杀</view>
+                  <view class='infor line1'>最新商品秒杀进行中</view>
+               </view>
+            </view>
+            <navigator hover-class='none' url='/pages/activity/goods_seckill/index' class='bnt' wx:if="{{activity.is_seckill}}">立即参与</navigator>
+            <view class='bnt end' wx:else>已结束</view>
+         </view>
+         <view class='item acea-row row-between-wrapper'>
+            <view class='picTxt acea-row row-between-wrapper'>
+               <view class='iconfont icon-kanjia1 green'></view>
+               <view class='text'>
+                  <view class='line1'>砍价活动</view>
+                  <view class='infor line1'>呼朋唤友来砍价</view>
+               </view>
+            </view>
+            <navigator hover-class='none' url='/pages/activity/goods_bargain/index' class='bnt' wx:if="{{activity.is_bargin}}">立即参与</navigator>
+            <view class='bnt end' wx:else>已结束</view>
+         </view>
+      </view>
+   </view>
+   <recommend host_product="{{host_product}}"></recommend>
+</view>
+<authorize bind:onLoadFun='onLoadFun'></authorize>

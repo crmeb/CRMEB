@@ -1,0 +1,17 @@
+       <view class='promotionGood'>
+          <block wx:for="{{benefit}}" wx:key>
+           <navigator class='item acea-row row-between-wrapper' url='/pages/goods_details/index?id={{item.id}}'>
+              <view class='pictrue'><image src='{{item.image}}'></image></view>
+              <view class='text'>
+                 <view class='name line1'>{{item.store_name}}</view>
+                 <view class='sp-money acea-row'>
+                   <view class='moneyCon'>促销价: ￥<text class='num'>{{item.price}}</text></view>
+                 </view>
+                 <view class='acea-row row-between-wrapper'>
+                   <view class='money'>日常价：￥{{item.ot_price}}</view>
+                   <view>仅剩：{{item.stock}}{{item.unit_name}}</view>
+                 </view>
+              </view>
+           </navigator>
+          </block> 
+       </view>

@@ -1,0 +1,11 @@
+@import '/app.wxss';
+.promotionGood{padding:0 30rpx;}
+.promotionGood .item{border-bottom:1rpx solid #eee;height:250rpx;}
+.promotionGood .item .pictrue{width:188rpx;height:188rpx;}
+.promotionGood .item .pictrue image{width:100%;height:100%;border-radius:8rpx;}
+.promotionGood .item .text{font-size:24rpx;color:#999;width:472rpx;}
+.promotionGood .item .text .name{font-size:30rpx;color:#333;}
+.promotionGood .item .text .sp-money{margin:34rpx 0 20rpx 0;}
+.promotionGood .item .text .sp-money .moneyCon{padding:0 18rpx;background-color:red;height:46rpx;line-height:46rpx;background-image:linear-gradient(to right,#ff6248 0%,#ff3e1e 100%);font-size:20rpx;color:#fff;border-radius:24rpx 3rpx 24rpx 3rpx;}
+.promotionGood .item .text .sp-money .moneyCon .num{font-size:24rpx;}
+.promotionGood .item .text .money{text-decoration:line-through;}

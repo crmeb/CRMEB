@@ -1,0 +1,76 @@
+<navbar parameter='{{parameter}}'></navbar>
+<view class='my-order'>
+  <view class='header bg-color'>
+    <view class='picTxt acea-row row-between-wrapper'>
+      <view class='text'>
+        <view class='name'>订单信息</view>
+        <view>消费订单：{{orderData.order_count || 0}}   总消费：￥{{orderData.sum_price || 0}}</view>
+      </view>
+      <view class='pictrue'><image src='/images/orderTime.png'></image></view>
+    </view>
+  </view>
+  <view class='nav acea-row row-around'>
+     <view class='item {{orderStatus==0 ? "on": ""}}' data-status="0" bindtap="statusClick">
+        <view>待付款</view>
+        <view class='num'>{{orderData.unpaid_count || 0}}</view>
+     </view>
+     <view class='item {{orderStatus==1 ? "on": ""}}' data-status="1" bindtap="statusClick">
+        <view>待发货</view>
+        <view class='num'>{{orderData.unshipped_count || 0}}</view>
+     </view>
+     <view class='item {{orderStatus==2 ? "on": ""}}' data-status="2" bindtap="statusClick">
+        <view>待收货</view>
+        <view class='num '>{{orderData.received_count || 0}}</view>
+     </view>
+     <view class='item {{orderStatus==3 ? "on": ""}}' data-status="3" bindtap="statusClick">
+        <view>待评价</view>
+        <view class='num'>{{orderData.evaluated_count || 0}}</view>
+     </view>
+     <view class='item {{orderStatus==4 ? "on": ""}}' data-status="4" bindtap="statusClick">
+        <view>已完成</view>
+        <view class='num'>{{orderData.complete_count || 0}}</view>
+     </view>
+  </view>
+  <view class='list'>
+     <view class='item' wx:for="{{orderList}}" wx:key>
+        <view bindtap='goOrderDetails' data-order_id="{{item.order_id}}">
+          <view class='title acea-row row-between-wrapper'>
+            <view>{{item._add_time}}</view>
+            <view wx:if="{{item._status._type == 0}}" class='font-color'>待付款</view>
+              <view wx:elif="{{item._status._type == 1}}" class='font-color'>待发货</view>
+              <view wx:elif="{{item._status._type == 2}}" class='font-color'>待收货</view>
+              <view wx:elif="{{item._status._type == 3}}" class='font-color'>待评价</view>
+              <view wx:elif="{{item._status._type == 4}}" class='font-color'>已完成</view>
+          </view>
+          <view class='item-info acea-row row-between row-top' wx:for="{{item.cartInfo}}" wx:key> 
+            <view class='pictrue'><image src='{{item.productInfo.image}}'></image></view>
+            <view class='text acea-row row-between'>
+                <view class='name line2'>{{item.productInfo.store_name}}</view>
+                <view class='money'>
+                  <view>￥{{item.productInfo.price}}</view>
+                  <view>x{{item.cart_num}}</view>
+                </view>
+            </view>
+          </view>
+          <view class='totalPrice'>共{{item.cartInfo.length || 0}}件商品，总金额 <text class='money font-color'>￥{{item.pay_price}}</text></view>
+        </view>
+        <view class='bottom acea-row row-right row-middle'>
+           <view class='bnt cancelBnt' wx:if="{{item._status._type==0}}" data-index="{{index}}" data-order_id="{{item.order_id}}" bindtap='cancelOrder'>取消订单</view>
+           <view class='bnt bg-color' wx:if="{{item._status._type == 0}}" data-order_id="{{item.order_id}}" bindtap='goOrderDetails'>立即付款</view>
+           <view class='bnt bg-color' wx:elif="{{item._status._type == 1}}" data-order_id="{{item.order_id}}" bindtap='goOrderDetails'>查看详情</view>
+            <view class='bnt bg-color' wx:elif="{{item._status._type == 2 && item.delivery_type == 'express'}}" data-order_id="{{item.order_id}}" bindtap='goOrderDetails'>查看详情</view>
+            <view class='bnt bg-color' wx:elif="{{item._status._type == 3}}" data-order_id="{{item.order_id}}" bindtap='goOrderDetails'>去评价</view>
+             <view class='bnt bg-color' wx:elif="{{item.seckill_id < 1 && item.bargain_id < 1 && item.combination_id < 1 && item._status._type == 4}}" data-order_id="{{item.order_id}}" bindtap='goOrderDetails'>再次购买</view>
+             <view class='bnt bg-color' wx:else data-order_id="{{item.order_id}}" data-index="{{index}}" bindtap='delOrder'>删除订单</view>
+        </view>
+     </view>
+  </view>
+  <view class='loadingicon acea-row row-center-wrapper' wx:if="{{loading}}">
+        <text class='loading iconfont icon-jiazai' hidden='{{loading==false}}'></text>{{loadTitle}}
+     </view>
+</view>
+<view class='noCart' wx:if="{{orderList.length == 0 && page > 1}}">
+     <view class='pictrue'><image src='/images/noOrder.png'></image></view>
+  </view>
+<authorize bind:onLoadFun='onLoadFun'></authorize>
+<home></home>

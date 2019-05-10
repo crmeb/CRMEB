@@ -1,0 +1,30 @@
+<view class='product-window {{attribute.cartAttr==true?"on":""}}'>
+   <view class='textpic acea-row row-between-wrapper'>
+      <view class='pictrue'><image src='{{productSelect.image}}'></image></view>
+      <view class='text'>
+         <view class='line1'>{{productSelect.store_name}}</view>
+         <view class='money font-color'>
+          ￥<text class='num'>{{productSelect.price}}</text>
+          <text class='stock'>库存: {{productSelect.stock}}</text>
+         </view>
+      </view>
+      <view class='iconfont icon-guanbi' bindtap='close'></view>
+   </view>
+   <view class='productWinList'>
+      <view class='item' wx:for='{{productAttr}}' wx:key>
+         <view class='title'>{{item.attr_name}}</view>
+         <view class='listn acea-row row-middle'>
+            <view class='itemn {{item.checked==itemn.attr ?"on":""}}' wx:for='{{item.attr_value}}' wx:for-item='itemn' wx:for-index='indexn' data-indexw='{{index}}' data-indexn='{{indexn}}' bindtap='tapAttr' wx:key>{{itemn.attr}}</view>
+         </view>
+      </view>
+   </view>
+   <view class='cart'>
+       <view class='title'>数量</view>
+       <view class='carnum acea-row row-left'>
+          <view class='reduce {{productSelect.cart_num <= 1 ? "on":""}}' bindtap='CartNumDes'>-</view>
+          <view class='num'>{{productSelect.cart_num}}</view>
+          <view class='plus {{productSelect.cart_num >= productSelect.stock || productSelect.is_on ? "on":""}}' bindtap='CartNumInt'>+</view>
+       </view>
+   </view>
+</view>
+<view class='mask' catchtouchmove="true" hidden='{{attribute.cartAttr==false}}' bindtap='close'></view>

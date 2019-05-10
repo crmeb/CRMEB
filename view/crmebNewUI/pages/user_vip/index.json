@@ -1,0 +1,8 @@
+{
+  "usingComponents": {
+    "navbar": "/components/navbar/index",
+    "recommend": "/components/recommend/index",
+    "authorize": "/components/authorize/authorize"
+  },
+  "navigationBarTextStyle": "white"
+}

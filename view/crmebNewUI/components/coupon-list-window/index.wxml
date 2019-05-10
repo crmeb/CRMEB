@@ -1,0 +1,20 @@
+<view class='coupon-list-window {{coupon.coupon==true?"on":""}}'>
+   <view class='title'>优惠券<text class='iconfont icon-guanbi' bindtap='close'></text></view>
+   <view class='coupon-list' wx:if="{{coupon.list.length}}">
+      <view class='item acea-row row-center-wrapper' wx:for="{{coupon.list}}" bindtap='getCouponUser' data-index='{{index}}' data-id="{{item.id}}" wx:key>
+        <view class='money'>￥<text class='num'>{{item.coupon_price}}</text></view>
+        <view class='text'>
+            <view class='condition line1'>购物满{{item.use_min_price}}元可用</view>
+            <view class='data acea-row row-between-wrapper'>
+              <view>{{item.add_time}}-{{item.end_time}}</view>
+              <view class='bnt gray' wx:if="{{item.is_use}}">{{item.use_title || '已领取'}}</view>
+              <view class='bnt bg-color' wx:else>{{coupon.statusTile || '立即领取'}}</view>
+            </view>
+        </view>
+      </view>
+   </view>
+   <!-- 无优惠券 -->
+   <view class='pictrue' wx:else><image src='/images/noCoupon.png'></image></view>
+</view>
+<view class='mask' catchtouchmove="true" hidden='{{coupon.coupon==false}}' bindtap='close'></view>
+

@@ -1,0 +1,8 @@
+{
+  "usingComponents": {
+    "productConSwiper": "/components/productConSwiper/index",
+    "home": "/components/home/index",
+    "product-window": "/components/product-window/index",
+    "navbar": "/components/navbar/index"
+  }
+}

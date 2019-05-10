@@ -1,0 +1,30 @@
+.order-submission .line{width:100%;height:3rpx;}
+.order-submission .line image{width:100%;height:100%;display:block;}
+.order-submission .address{padding:28rpx 30rpx;background-color:#fff;}
+.order-submission .address .addressCon{width:610rpx;font-size:26rpx;color:#666;}
+.order-submission .address .addressCon .name{font-size:30rpx;color:#282828;font-weight:bold;margin-bottom:10rpx;}
+.order-submission .address .addressCon .name .phone{margin-left:50rpx;}
+.order-submission .address .addressCon .default{margin-right:12rpx;}
+.order-submission .address .addressCon .setaddress{color:#333;font-size:28rpx;}
+.order-submission .address .iconfont{font-size:35rpx;color:#707070;}
+.order-submission .wrapper{background-color:#fff;margin-top:13rpx;}
+.order-submission .wrapper .item{padding:27rpx 30rpx;font-size:30rpx;color:#282828;border-bottom:1px solid #f0f0f0;}
+.order-submission .wrapper .item .discount{font-size:30rpx;color:#999;}
+.order-submission .wrapper .item .discount .iconfont{color:#515151;font-size:30rpx;margin-left:15rpx;}
+.order-submission .wrapper .item .discount .num{font-size:32rpx;margin-right:20rpx;}
+.order-submission .wrapper .item textarea{background-color:#f9f9f9;width:690rpx;height:140rpx;border-radius:3rpx;margin-top:30rpx;padding:25rpx 28rpx;box-sizing:border-box;}
+.order-submission .wrapper .item .placeholder{color:#ccc;}
+.order-submission .wrapper .item .list{margin-top:35rpx;}
+.order-submission .wrapper .item .list .payItem{border:1px solid #eee;border-radius:6rpx;height:86rpx;width:100%;box-sizing:border-box;margin-top:20rpx;font-size:28rpx;color:#282828;}
+.order-submission .wrapper .item .list .payItem.on{border-color:#fc5445;color:#e93323;}
+.order-submission .wrapper .item .list .payItem .name{width:50%;text-align:center;border-right:1px solid #eee;}
+.order-submission .wrapper .item .list .payItem .name .iconfont{width:44rpx;height:44rpx;border-radius:50%;text-align:center;line-height:44rpx;background-color:#fe960f;color:#fff;font-size:30rpx;margin-right:15rpx;}
+.order-submission .wrapper .item .list .payItem .name .iconfont.icon-weixin2{background-color:#41b035;}
+.order-submission .wrapper .item .list .payItem .tip{width:49%;text-align:center;font-size:26rpx;color:#aaa;}
+.order-submission .moneyList{margin-top:12rpx;background-color:#fff;padding:30rpx;}
+.order-submission .moneyList .item{font-size:28rpx;color:#282828;}
+.order-submission .moneyList .item~.item{margin-top:20rpx;}
+.order-submission .moneyList .item .money{color:#868686;}
+.order-submission .footer{width:100%;height:100rpx;background-color:#fff;padding:0 30rpx;font-size:28rpx;color:#333;box-sizing:border-box;position:fixed;bottom:0;left:0;}
+.order-submission .footer .settlement{font-size:30rpx;color:#fff;width:240rpx;height:70rpx;background-color:#e93323;border-radius:50rpx;text-align:center;line-height:70rpx;}
+.footer .transparent{opacity: 0}

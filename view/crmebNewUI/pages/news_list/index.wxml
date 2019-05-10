@@ -1,0 +1,58 @@
+<navbar parameter='{{parameter}}'></navbar>
+<view class='newsList'>
+   <view class='swiper' wx:if="{{imgUrls.length > 0}}">
+      <swiper  indicator-dots="true"
+            autoplay="{{autoplay}}" circular="{{circular}}" interval="{{interval}}" duration="{{duration}}" indicator-color="rgba(102,102,102,0.3)" indicator-active-color="#666">
+            <block wx:for="{{imgUrls}}" wx:key>
+              <swiper-item>
+              <navigator url="/pages/news_details/index?id={{item.id}}">
+                <image src="{{item.image_input[0]}}" class="slide-image"/>
+              </navigator>
+              </swiper-item>
+            </block>
+        </swiper>
+   </view>
+   <view class='nav' wx:if="{{navList.length > 0}}">
+      <scroll-view class="scroll-view_x" scroll-x scroll-with-animation scroll-left="{{scrollLeft}}" style="width:auto;overflow:hidden;">
+         <block wx:for="{{navList}}" wx:key>
+            <view class='item {{active==item.id?"on":""}}' data-id="{{item.id}}" bindtap='tabSelect'>
+               <view>{{item.title}}</view>
+               <view class='line bg-color' wx:if='{{active==item.id}}'></view>
+            </view>
+         </block>  
+      </scroll-view>  
+   </view>
+   <view class='list'>
+    <block wx:for="{{articleList}}" wx:key>
+      <navigator url='/pages/news_details/index?id={{item.id}}' hover-class='none' class='item acea-row row-between-wrapper' wx:if="{{item.image_input.length == 1}}">
+         <view class='text acea-row row-column-between'>
+            <view class='name line2'>{{item.title}}</view>
+            <view>{{item.add_time}}</view>
+         </view>
+         <view class='pictrue'><image src='{{item.image_input[0]}}'></image></view>
+      </navigator>
+      <navigator url='/pages/news_details/index?id={{item.id}}' hover-class='none'  class='item' wx:elif="{{item.image_input.length == 2}}">
+         <view class='title line1'>{{item.title}}</view>
+         <view class='picList acea-row row-between-wrapper'>
+           <block wx:for="{{item.image_input}}" wx:key wx:for-item="itemImg">
+            <view class='pictrue'><image src='{{itemImg}}'></image></view>
+           </block> 
+         </view>
+         <view class='time'>{{item.add_time}}</view>
+      </navigator>
+      <navigator url='/pages/news_details/index?id={{item.id}}' hover-class='none'  class='item' wx:elif="{{item.image_input.length > 2}}">
+         <view class='title line1'>{{item.title}}</view>
+         <view class='picList on acea-row row-between-wrapper'>
+           <block wx:for="{{item.image_input}}" wx:key wx:for-item="itemImg">
+            <view class='pictrue'><image src='{{itemImg}}'></image></view>
+           </block> 
+         </view>
+         <view class='time'>{{item.add_time}}</view>
+      </navigator>
+    </block>  
+   </view>
+</view>
+<view class='noCommodity' wx:if="{{articleList.length == 0 || navList.length == 0 || imgUrls.length == 0}}">
+   <view class='pictrue'><image src='/images/noNews.png'></image></view>
+</view>
+<home></home>

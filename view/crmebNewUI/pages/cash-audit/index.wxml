@@ -1,0 +1,7 @@
+<navbar parameter='{{parameter}}'></navbar>
+<view class='cash-audit'>
+   <view class='pictrue'><image src='/images/examine.png'></image></view>
+   <view class='tip'>提现申请已提交，等待人工审核</view>
+   <view class='time'>2018-08-29 10:55:26</view>
+   <view class='bnt bg-color'>好的</view>
+</view>

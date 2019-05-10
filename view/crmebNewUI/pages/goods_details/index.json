@@ -1,0 +1,12 @@
+{
+  "usingComponents": {
+    "navbar": "/components/navbar/index",
+    "shareRedPackets": "/components/share-red-packets/index",
+    "productConSwiper": "/components/productConSwiper/index",
+    "userEvaluation": "/components/userEvaluation/index",
+    "product-window":"/components/product-window/index",
+    "coupon-list-window": "/components/coupon-list-window/index",
+    "authorize": "/components/authorize/authorize",
+    "home": "/components/home/index"
+  }
+}

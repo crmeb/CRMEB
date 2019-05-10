@@ -1,0 +1,60 @@
+<navbar parameter='{{parameter}}'></navbar>
+<form  bindsubmit="subRefund" report-submit='true'>
+  <view class='apply-return'>
+    <view class='goodsStyle acea-row row-between' wx:for="{{orderInfo.cartInfo}}" wx:key>
+        <view class='pictrue'><image src='{{item.productInfo.image}}'></image></view>
+        <view class='text acea-row row-between'>
+          <view class='name line2'>{{item.productInfo.store_name}}</view>
+          <view class='money' wx:if="{{item.productInfo.attrInfo}}">
+              <view>￥{{item.productInfo.attrInfo.price}}</view>
+              <view class='num'>x{{item.cart_num}}</view>
+          </view>
+          <view class='money' wx:else>
+              <view>￥{{item.productInfo.price}}</view>
+              <view class='num'>x{{item.cart_num}}</view>
+          </view>
+        </view>
+    </view>
+    <view class='list'>
+        <view class='item acea-row row-between-wrapper'>
+          <view>退货件数</view>
+          <view class='num'>{{orderInfo.total_num}}</view>
+        </view>
+        <view class='item acea-row row-between-wrapper'>
+          <view>退款金额</view>
+          <view class='num'>￥{{orderInfo.pay_price}}</view>
+        </view>
+        <view class='item acea-row row-between-wrapper'>
+          <view>退款原因</view>
+          <picker class='num' bindchange="bindPickerChange" value="{{index}}" range="{{RefundArray}}">
+              <view class="picker acea-row row-between-wrapper">
+                <view class='reason'>{{RefundArray[index]}}</view>
+                <text class='iconfont icon-jiantou'></text>
+              </view>
+          </picker>
+        </view>
+        <view class='item textarea acea-row row-between'>
+          <view>备注说明</view>
+          <textarea placeholder='填写备注信息，100字以内' class='num' name="refund_reason_wap_explain" placeholder-class='填写备注信息，100字以内'></textarea>
+        </view>
+        <view class='item acea-row row-between'>
+          <view class='title acea-row row-between-wrapper'>
+              <view>上传凭证</view>
+              <view class='tip'>( 最多可上传3张 )</view>
+          </view>
+          <view class='upload acea-row row-middle'>
+              <view class='pictrue' wx:for="{{refund_reason_wap_img}}">
+                <image src='{{item}}'></image>
+                <view class='iconfont icon-guanbi1 font-color' bindtap='DelPic' data-index='{{index}}'></view>
+              </view>
+              <view class='pictrue acea-row row-center-wrapper row-column' bindtap='uploadpic' wx:if="{{refund_reason_wap_img.length < 3}}">
+                <text class='iconfont icon-icon25201'></text>
+                <view>上传凭证</view>
+              </view>
+          </view>
+        </view>
+    </view>
+    <button class='returnBnt bg-color' form-type="submit">申请退款</button>
+  </view>
+</form>
+<authorize bind:onLoadFun="onLoadFun"></authorize>

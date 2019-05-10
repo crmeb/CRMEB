@@ -1,0 +1,21 @@
+<navbar parameter='{{parameter}}'></navbar>
+<view class='collectionGoods' wx:if="{{collectProductList.length}}">
+   <navigator url='/pages/goods_details/index?id={{item.pid}}' hover-class='none' class='item acea-row row-between-wrapper' wx:for="{{collectProductList}}">
+      <view class='pictrue'><image src='{{item.image}}'></image></view>
+      <view class='text acea-row row-column-between'>
+         <view class='line1'>{{item.store_name}}</view>
+         <view class='acea-row row-between-wrapper'>
+           <view class='money font-color'>￥{{item.price}}</view>
+           <view class='delete' data-id='{{item.pid}}' data-index='{{index}}' bindtap='delCollection'>删除</view>
+         </view>
+      </view>
+   </navigator>
+   <view class='loadingicon acea-row row-center-wrapper'>
+        <text class='loading iconfont icon-jiazai' hidden='{{loading==false}}'></text>{{loadTitle}}
+     </view>
+</view>
+<view class='noCommodity' wx:elif="{{!collectProductList.length && page > 1}}">
+   <view class='pictrue'><image src='/images/noCollection.png'></image></view>
+   <recommend host_product="{{host_product}}"></recommend>
+</view>
+<authorize bind:onLoadFun='onLoadFun'></authorize>

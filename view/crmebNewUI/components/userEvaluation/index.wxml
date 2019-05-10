@@ -1,0 +1,24 @@
+<view class='evaluateWtapper'>
+   <view class='evaluateItem' wx:for="{{reply}}" wx:key>
+      <view class='pic-text acea-row row-middle'>
+         <view class='pictrue'><image src='{{item.avatar}}'></image></view>
+         <view class='acea-row row-middle'>
+            <view class='name line1'>{{item.nickname}}</view>
+            <view class='start star{{item.star}}'></view>
+         </view>
+      </view>
+      <view class='time'>{{item.add_time}} {{item.suk}}</view>
+      <view class='evaluate-infor'>{{item.comment}}</view>
+      <view class='imgList acea-row'>
+          <view class='pictrue' wx:for="{{item.pics}}" wx:for-item="items" wx:for-index='pic_index' wx:key>
+            <image  wx:if="{{items}}" src='{{items}}' data-index="{{index}}" data-pic_index='{{pic_index}}' bindtap='getpreviewImage'></image>
+          </view>
+      </view>
+      <view class='reply' wx:if='{{item.merchant_reply_content}}'><text class='font-color'>店小二</text>:{{item.merchant_reply_content}}</view>
+   </view> 
+</view>
+         
+           
+           
+           
+    

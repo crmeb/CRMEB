@@ -1,0 +1,7 @@
+@import '/app.wxss';
+.home{position: fixed ;top:780rpx;color: white;text-align: center;z-index:99;right:10rpx;}
+.home .homeCon{width:86rpx;border-radius:50rpx;padding:34rpx 0;box-sizing:border-box;transition:all 0.3s ease-in-out 0s;opacity:0;transform: scale(0);height:0rpx;color:#e93323;}
+.home .homeCon.on{opacity:1;transform: scale(1);height:300rpx;color:#fff;}
+.home .homeCon .iconfont{font-size:48rpx;}
+.home .pictrue{width:86rpx;height:86rpx;border-radius:50%;margin-top:20rpx;}
+.home .pictrue image{width:100%;height:100%;border-radius:50%;}

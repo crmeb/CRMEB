@@ -1,0 +1,68 @@
+<navbar parameter='{{parameter}}'></navbar>
+<view class="promoter-list">
+    <view class='promoterHeader bg-color'>
+        <view class='headerCon acea-row row-between-wrapper'>
+            <view>
+                <view class='name'>推广人数</view>
+                <view><text class='num'>{{teamCount}}</text>人</view>
+            </view>
+            <view class='iconfont icon-tuandui'></view>
+        </view>
+    </view>
+    <view class='nav acea-row row-around'>
+        <view class="{{grade == 0 ? 'item on' : 'item'}}" bindtap='setType' data-grade='0'>一级({{total}})</view>
+        <view class="{{grade == 1 ? 'item on' : 'item'}}" bindtap='setType' data-grade='1'>二级({{totalLevel}})</view>
+    </view>
+    <view class='search acea-row row-between-wrapper'>
+        <view class='input'><input placeholder='点击搜索会员名称' placeholder-class='placeholder' value='{{keyword}}' bindblur='setKeyword'></input><text class='iconfont icon-guanbi'></text></view>
+        <view class='iconfont icon-sousuo2' bindtap='setRecordList'></view>
+    </view>
+    <view class='list'>
+        <view class="sortNav acea-row row-middle">
+            <view class="sortItem" data-sort="childCount ASC" bindtap='setSort' wx:if="{{sort == 'childCount DESC'}}">团队排序
+              <image src='/images/sort1.png'></image>
+            </view>
+            <view class="sortItem" data-sort="" bindtap='setSort' wx:elif="{{sort == 'childCount ASC'}}">团队排序
+              <image src='/images/sort3.png'></image>
+            </view>
+            <view class="sortItem" data-sort="childCount DESC" bindtap='setSort' wx:else>团队排序
+              <image src='/images/sort2.png'></image>
+            </view>
+            <view class="sortItem" data-sort="numberCount ASC" bindtap='setSort' wx:if="{{sort == 'numberCount DESC'}}">金额排序
+              <image src='/images/sort1.png'></image>
+            </view>
+            <view class="sortItem" data-sort="" bindtap='setSort' wx:elif="{{sort == 'numberCount ASC'}}">金额排序
+              <image src='/images/sort3.png'></image>
+            </view>
+            <view class="sortItem" data-sort="numberCount DESC" bindtap='setSort' wx:else>金额排序
+              <image src='/images/sort2.png'></image>
+            </view>
+            <view class="sortItem" data-sort="orderCount ASC" bindtap='setSort' wx:if="{{sort == 'orderCount DESC'}}">订单排序
+              <image src='/images/sort1.png'></image>
+            </view>
+            <view class="sortItem" data-sort="" bindtap='setSort' wx:elif="{{sort == 'orderCount ASC'}}">订单排序
+              <image src='/images/sort3.png'></image>
+            </view>
+            <view class="sortItem" data-sort="orderCount DESC" bindtap='setSort' wx:else>订单排序
+              <image src='/images/sort2.png'></image>
+            </view>
+        </view>
+        <block wx:for="{{recordList}}" wx:key>
+          <view class='item acea-row row-between-wrapper'>
+              <view class="picTxt acea-row row-between-wrapper">
+                  <view class='pictrue'><image src='{{item.avatar}}'></image></view>
+                  <view class='text'>
+                      <view class='name line1'>{{item.nickname}}</view>
+                      <view>加入时间: {{item.time}}</view>
+                  </view>
+              </view>
+              <view class="right">
+                  <view><text class='font-color'>{{item.childCount ? item.childCount : 0}}</text> 人</view>
+                  <view>{{item.orderCount ? item.orderCount : 0}} 单</view>
+                  <view>{{item.numberCount ? item.numberCount : 0}} 元</view>
+              </view>
+          </view>
+        </block>
+    </view>
+</view>
+

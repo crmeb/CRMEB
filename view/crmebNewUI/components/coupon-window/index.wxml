@@ -1,0 +1,16 @@
+<view class='coupon-window {{window==true?"on":""}}'>
+   <view class='couponWinList'>
+      <view class='item acea-row row-between-wrapper' wx:for="{{couponList}}" wx:key>
+         <view class='money font-color'>￥<text class='num'>{{item.coupon_price}}</text></view>
+         <view class='text'>
+            <view class='name'>购物买{{item.use_min_price}}减{{item.coupon_price}}</view>
+            <view>{{item.add_time}}-{{item.end_time}}</view>
+         </view>
+      </view>
+   </view>
+   <view class='lid'>
+      <navigator hover-class='none' url='/pages/user_get_coupon/index' class='bnt font-color'>立即领取</navigator>
+      <view class='iconfont icon-guanbi3' bindtap='close'></view>
+   </view>
+</view>
+<view class='mask' catchtouchmove="true" hidden='{{window==false}}'></view>

@@ -1,0 +1,10 @@
+<navbar parameter='{{parameter}}'></navbar>
+<view class='quality-recommend'>
+   <swipers imgUrls="{{imgUrls}}"></swipers>
+   <view class='title acea-row row-center-wrapper'>
+      <view class='line'></view>
+      <view class='name'><text class='iconfont icon-cuxiaoguanli'></text>促销单品</view>
+      <view class='line'></view>
+   </view>
+   <promotionGood benefit="{{bastList}}"></promotionGood>
+</view>

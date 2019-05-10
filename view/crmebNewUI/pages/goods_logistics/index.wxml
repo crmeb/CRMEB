@@ -1,0 +1,34 @@
+<navbar parameter='{{parameter}}'></navbar>
+<view class='logistics'>
+    <view class='header acea-row row-between row-top'>
+       <view class='pictrue'><image src='{{product.productInfo.image}}'></image></view>
+       <view class='text acea-row row-between'>
+          <view class='name line2'>{{product.productInfo.store_name}}</view>
+          <view class='money'>
+             <view>￥{{product.truePrice}}</view>
+             <view>x{{product.cart_num}}</view>
+          </view>
+        </view>
+    </view>
+    <view class='logisticsCon'>
+       <view class='company acea-row row-between-wrapper'>
+          <view class='picTxt acea-row row-between-wrapper'>
+             <view class='iconfont icon-wuliu'></view>
+             <view class='text'>
+                <view><text class='name line1'>物流公司：</text> {{orderInfo.delivery_name}}</view>
+                <view class='express line1'><text class='name'>快递单号：</text> {{orderInfo.delivery_id}}</view>
+             </view>
+          </view>
+          <view class='copy' bindtap='copyOrderId'>复制单号</view>
+       </view>
+       <view class='item' wx:for="{{expressList}}" wx:key>
+          <view class='circular on'></view>
+          <view class='text on'>
+              <view>{{item.status}}</view>
+              <view class='data'>{{item.time}}</view>
+          </view>     
+       </view>
+    </view>
+    <recommend host_product="{{host_product}}"></recommend>
+</view>
+<authorize bind:onLoadFun="onLoadFun"></authorize>

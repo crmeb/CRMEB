@@ -1,0 +1,7 @@
+.return-list .goodWrapper{background-color:#fff;margin-top:13rpx;position:relative;}
+.return-list .goodWrapper .orderNum{padding:0 30rpx;border-bottom:1px solid #eee;height:87rpx;line-height:87rpx;font-size:30rpx;color:#282828;}
+.return-list .goodWrapper .item{border-bottom:0;}
+.return-list .goodWrapper .totalSum{padding:0 30rpx 32rpx 30rpx;text-align:right;font-size:26rpx;color:#282828;}
+.return-list .goodWrapper .totalSum .price{font-size:28rpx;font-weight:bold;}
+.return-list .goodWrapper .iconfont{position:absolute;font-size:109rpx;top:7rpx;right:30rpx;color:#ccc;}
+.return-list .goodWrapper .iconfont.powder{color:#f8c1bd;}

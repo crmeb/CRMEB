@@ -1,0 +1,138 @@
+<navbar parameter='{{parameter}}' id="navbar"></navbar>
+<view class='order-details'>
+<!-- 给header上与data上加on为退款订单-->
+   <view class='header bg-color acea-row row-middle {{isGoodsReturn ? "on":""}}'>
+      <view class='pictrue' wx:if="{{isGoodsReturn==false}}"><image src='{{orderInfo.status_pic}}'></image></view>
+      <view class='data {{isGoodsReturn ? "on":""}}'>
+          <view class='state'>{{orderInfo._status._msg}}</view>
+          <view>{{orderInfo.add_time_y}}<text class='time'>{{orderInfo.add_time_h}}</text></view>
+      </view>
+   </view>
+   <view wx:if="{{isGoodsReturn==false}}">
+    <view class='nav'>
+        <view class='navCon acea-row row-between-wrapper'>
+          <view>待付款</view>
+          <view>待发货</view>
+          <view>待收货</view>
+          <view>待评价</view>
+          <view>已完成</view>
+        </view>
+        <view class='progress acea-row row-between-wrapper'>
+          <view class='iconfont {{status.type == 0 ? "icon-webicon318":"icon-yuandianxiao"}} {{status.type >= 0 ? "font-color":""}}'></view>
+          <view class='line {{status.type > 0 ? "bg-color":""}}'></view>
+          <view class='iconfont {{status.type == 1 ? "icon-webicon318":"icon-yuandianxiao"}} {{status.type >= 1 ? "font-color":""}}'></view>
+          <view class='line {{status.type > 1 ? "bg-color":""}}'></view>
+          <view class='iconfont {{status.type == 2 ? "icon-webicon318":"icon-yuandianxiao"}} {{status.type >= 2 ? "font-color":""}}'></view>
+          <view class='line {{status.type > 2 ? "bg-color":""}}'></view>
+          <view class='iconfont {{status.type == 3 ? "icon-webicon318":"icon-yuandianxiao"}} {{status.type >= 3 ? "font-color":""}}'></view>
+          <view class='line {{status.type > 3 ? "bg-color":""}}'></view>
+          <view class='iconfont {{status.type == 4 ? "icon-webicon318":"icon-yuandianxiao"}} {{status.type >= 4 ? "font-color":""}}'></view>
+        </view>
+    </view>
+    <view class='address'>
+        <view class='name'>{{orderInfo.real_name}}<text class='phone'>{{orderInfo.user_phone}}</text></view>
+        <view>{{orderInfo.user_address}}</view>
+    </view>
+    <view class='line'><image src='/images/line.jpg'></image></view>
+   </view>
+   <orderGoods evaluate='{{evaluate}}' orderId="{{order_id}}" cartInfo="{{cartInfo}}"></orderGoods>
+   <view class='wrapper'>
+      <view class='item acea-row row-between'>
+        <view>订单编号：</view>
+        <view class='conter acea-row row-middle row-right'>{{orderInfo.order_id}}<text class='copy' bindtap='copy'>复制</text></view>
+      </view>
+      <view class='item acea-row row-between'>
+         <view>下单时间：</view>
+         <view class='conter'>{{orderInfo.add_time_y +' '+orderInfo.add_time_h}}</view>
+      </view>
+      <view class='item acea-row row-between'>
+         <view>支付状态：</view>
+         <view class='conter' wx:if="{{orderInfo.paid}}">已支付</view>
+         <view class='conter' wx:else>未支付</view>
+      </view>
+      <view class='item acea-row row-between'>
+         <view>支付方式：</view>
+         <view class='conter'>{{orderInfo._status._payType}}</view>
+      </view>
+      <view class='item acea-row row-between' wx:if="{{orderInfo.mark}}"> 
+         <view>买家留言：</view>
+         <view class='conter'>{{orderInfo.mark}}</view>
+      </view>
+   </view>
+   <!-- 退款订单详情 -->
+    <view class='wrapper' wx:if="{{isGoodsReturn}}">
+      <view class='item acea-row row-between'>
+         <view>收货人：</view>
+         <view class='conter'>{{orderInfo.real_name}}</view>
+      </view>
+      <view class='item acea-row row-between'>
+         <view>联系电话：</view>
+         <view class='conter'>{{orderInfo.user_phone}}</view>
+      </view>
+      <view class='item acea-row row-between'>
+         <view>收货地址：</view>
+         <view class='conter'>{{orderInfo.user_address}}</view>
+      </view>
+   </view>
+   <view wx:if="{{orderInfo.status!=0}}">
+      <view class='wrapper' wx:if='{{orderInfo.delivery_type=="express" }}'>
+        <view class='item acea-row row-between'>
+          <view>配送方式：</view>
+          <view class='conter'>发货</view>
+        </view>
+        <view class='item acea-row row-between'>
+          <view>快递公司：</view>
+          <view class='conter'>{{orderInfo.delivery_name || ''}}</view>
+        </view>
+        <view class='item acea-row row-between'>
+          <view>快递号：</view>
+          <view class='conter'>{{orderInfo.delivery_id || ''}}</view>
+        </view>
+    </view>
+    <view class='wrapper' wx:else>
+        <view class='item acea-row row-between'>
+          <view>收货人：</view>
+          <view class='conter'>送货</view>
+        </view>
+        <view class='item acea-row row-between'>
+          <view>联系电话：</view>
+          <view class='conter'>{{orderInfo.delivery_name || ''}}</view>
+        </view>
+        <view class='item acea-row row-between'>
+          <view>配送电话：</view>
+            <view class='conter acea-row row-middle row-right'>{{orderInfo.delivery_id || ''}}<text class='copy' bindtap='goTel'>拨打</text></view>
+        </view>
+    </view>
+   </view>
+   <view class='wrapper'>
+      <view class='item acea-row row-between'>
+        <view>支付金额：</view>
+        <view class='conter'>￥{{orderInfo.total_price}}</view>
+      </view>
+      <view class='item acea-row row-between' wx:if='{{orderInfo.coupon_id}}'>
+         <view>优惠券抵扣：</view>
+         <view class='conter'>-￥{{orderInfo.coupon_price}}</view>
+      </view>
+       <view class='item acea-row row-between' wx:if='{{orderInfo.use_integral > 0}}'>
+         <view>积分抵扣：</view>
+         <view class='conter'>-￥{{orderInfo.deduction_price}}</view>
+      </view>
+      <view class='item acea-row row-between' wx:if="{{orderInfo.pay_postage > 0}}">
+         <view>运费：</view>
+         <view class='conter'>￥{{orderInfo.pay_postage}}</view>
+      </view>
+      <view class='actualPay acea-row row-right'>实付款：<text class='money font-color'>￥{{orderInfo.pay_price}}</text></view>
+   </view>
+   <view style='height:120rpx;'></view>
+   <view class='footer acea-row row-right row-middle' wx:if="{{isGoodsReturn==false}}">
+      <view class='bnt bg-color' wx:if="{{status.type==0}}" data-order_id='{{orderInfo.order_id}}' bindtap='checkPay'>立即付款</view>
+      <navigator class='bnt cancel' wx:elif="{{status.type==1}}" hover-class='none' url='/pages/goods_return/index?orderId={{orderInfo.order_id}}'>申请退款</navigator>
+      <view class='bnt bg-color' wx:if="{{status.class_status==1}}" bindtap='goJoinPink'>查看拼团</view>
+      <navigator class='bnt cancel' wx:if="{{status.class_status==3 && status.type==2}}" hover-class='none' url='/pages/goods_logistics/index?orderId={{orderInfo.order_id}}'>查看物流</navigator>
+      <view class='bnt bg-color' wx:if="{{status.class_status==3}}" bindtap='confirmOrder'>确认收货</view>
+      <view class='bnt cancel' wx:if="{{status.type==4}}" bindtap='delOrder'>删除订单</view>
+      <view class='bnt bg-color' wx:if="{{status.class_status==5}}" bindtap='goOrderConfirm'>再次购买</view>
+   </view>
+</view>
+<home></home>
+<authorize bind:onLoadFun='onLoadFun'></authorize>
