@@ -310,4 +310,182 @@ class UtilService
         return true;/* 身份证格式正确*/
     }
 
+    /**
+     * TODO 砍价 拼团 分享海报生成
+     * @param array $data
+     * @param string $fileName
+     */
+    public static function setShareMarketingPoster($data = array(), $fileName = ''){
+        $config = array(
+            'text'=>array(
+                array(
+                    'text'=>$data['price'],//TODO 价格
+                    'left'=>116,
+                    'top'=>200,
+                    'fontPath'=>ROOT_PATH.'public/static/font/SourceHanSansCN-Medium.otf',     //字体文件
+                    'fontSize'=>50,             //字号
+                    'fontColor'=>'255,0,0',       //字体颜色
+                    'angle'=>0,
+                ),
+                array(
+                    'text'=>$data['label'],//TODO 标签
+                    'left'=>394,
+                    'top'=>190,
+                    'fontPath'=>ROOT_PATH.'public/static/font/SourceHanSansCN-Normal.otf',     //字体文件
+                    'fontSize'=>24,             //字号
+                    'fontColor'=>'255,255,255',       //字体颜色
+                    'angle'=>0,
+                ),
+                array(
+                    'text'=>$data['msg'],//TODO 简述
+                    'left'=>80,
+                    'top'=>270,
+                    'fontPath'=>ROOT_PATH.'public/static/font/SourceHanSansCN-Normal.otf',     //字体文件
+                    'fontSize'=>22,             //字号
+                    'fontColor'=>'40,40,40',       //字体颜色
+                    'angle'=>0,
+                )
+            ),
+            'image'=>array(
+                array(
+                    'url'=>ROOT_PATH.$data['image'],     //图片
+                    'stream'=>0,
+                    'left'=>120,
+                    'top'=>340,
+                    'right'=>0,
+                    'bottom'=>0,
+                    'width'=>450,
+                    'height'=>450,
+                    'opacity'=>100
+                ),
+                array(
+                    'url'=>ROOT_PATH.$data['url'],     //二维码资源
+                    'stream'=>0,
+                    'left'=>260,
+                    'top'=>890,
+                    'right'=>0,
+                    'bottom'=>0,
+                    'width'=>160,
+                    'height'=>160,
+                    'opacity'=>100
+                )
+            ),
+            'background'=>ROOT_PATH.'/public/static/poster/poster.jpg'
+        );
+        if(!file_exists($config['background'])) exception('缺少系统预设背景图片');
+        if(strlen($data['title']) < 36){
+            $text = array(
+                'text'=>$data['title'],//TODO 标题
+                'left'=>76,
+                'top'=>100,
+                'fontPath'=>ROOT_PATH.'public/static/font/SourceHanSansCN-Bold.otf',     //字体文件
+                'fontSize'=>32,         //字号
+                'fontColor'=>'0,0,0',       //字体颜色
+                'angle'=>0,
+            );
+            array_push($config['text'],$text);
+        }else{
+            $titleOne = array(
+                'text'=>mb_substr($data['title'], 0, 12),//TODO 标题
+                'left'=>76,
+                'top'=>70,
+                'fontPath'=>ROOT_PATH.'public/static/font/SourceHanSansCN-Bold.otf',     //字体文件
+                'fontSize'=>32,         //字号
+                'fontColor'=>'0,0,0',       //字体颜色
+                'angle'=>0,
+            );
+            $titleTwo = array(
+                'text'=> mb_substr($data['title'], 12, 12),//TODO 标题
+                'left'=>76,
+                'top'=>120,
+                'fontPath'=>ROOT_PATH.'public/static/font/SourceHanSansCN-Bold.otf',     //字体文件
+                'fontSize'=>32,         //字号
+                'fontColor'=>'0,0,0',       //字体颜色
+                'angle'=>0,
+            );
+            array_push($config['text'],$titleOne);
+            array_push($config['text'],$titleTwo);
+        }
+        self::setSharePoster($config,$fileName);
+    }
+
+    /**
+     * TODO 生成分享二维码图片
+     * @param array $config
+     * @param string $fileName
+     * @return bool|string
+     */
+    public static function setSharePoster($config = array(),$fileName = ''){
+        $imageDefault = array(
+            'left'=>0,
+            'top'=>0,
+            'right'=>0,
+            'bottom'=>0,
+            'width'=>100,
+            'height'=>100,
+            'opacity'=>100
+        );
+        $textDefault = array(
+            'text'=>'',
+            'left'=>0,
+            'top'=>0,
+            'fontSize'=>32,       //字号
+            'fontColor'=>'255,255,255', //字体颜色
+            'angle'=>0,
+        );
+        $background = $config['background'];//海报最底层得背景
+        $backgroundInfo = getimagesize($background);
+        $background = imagecreatefromstring(file_get_contents($background));
+        $backgroundWidth = $backgroundInfo[0];  //背景宽度
+        $backgroundHeight = $backgroundInfo[1];  //背景高度
+        $imageRes = imageCreatetruecolor($backgroundWidth,$backgroundHeight);
+        $color = imagecolorallocate($imageRes, 0, 0, 0);
+        imagefill($imageRes, 0, 0, $color);
+        imagecopyresampled($imageRes,$background,0,0,0,0,imagesx($background),imagesy($background),imagesx($background),imagesy($background));
+        if(!empty($config['image'])){
+            foreach ($config['image'] as $key => $val) {
+                $val = array_merge($imageDefault,$val);
+                $info = getimagesize($val['url']);
+                $function = 'imagecreatefrom'.image_type_to_extension($info[2], false);
+                if($val['stream']){
+                    $info = getimagesizefromstring($val['url']);
+                    $function = 'imagecreatefromstring';
+                }
+                $res = $function($val['url']);
+                $resWidth = $info[0];
+                $resHeight = $info[1];
+                $canvas=imagecreatetruecolor($val['width'], $val['height']);
+                imagefill($canvas, 0, 0, $color);
+                imagecopyresampled($canvas, $res, 0, 0, 0, 0, $val['width'], $val['height'],$resWidth,$resHeight);
+                $val['left'] = $val['left']<0?$backgroundWidth- abs($val['left']) - $val['width']:$val['left'];
+                $val['top'] = $val['top']<0?$backgroundHeight- abs($val['top']) - $val['height']:$val['top'];
+                imagecopymerge($imageRes,$canvas, $val['left'],$val['top'],$val['right'],$val['bottom'],$val['width'],$val['height'],$val['opacity']);//左，上，右，下，宽度，高度，透明度
+            }
+        }
+        if(isset($config['text']) && !empty($config['text'])){
+            foreach ($config['text'] as $key => $val) {
+                $val = array_merge($textDefault,$val);
+                list($R,$G,$B) = explode(',', $val['fontColor']);
+                $fontColor = imagecolorallocate($imageRes, $R, $G, $B);
+                $val['left'] = $val['left']<0?$backgroundWidth- abs($val['left']):$val['left'];
+                $val['top'] = $val['top']<0?$backgroundHeight- abs($val['top']):$val['top'];
+                imagettftext($imageRes,$val['fontSize'],$val['angle'],$val['left'],$val['top'],$fontColor,realpath($val['fontPath']),$val['text']);
+            }
+        }
+        $res = imagejpeg ($imageRes,$fileName,90);
+        imagedestroy($imageRes);
+        if(!$res) return false;
+        return $fileName;
+    }
+
+    /*
+     * 获取当前控制器模型方法组合成的字符串
+     * @paran object $request Request 实例化后的对象
+     * @retun string
+     * */
+    public static function getCurrentController(Request $request)
+    {
+        return strtolower($request->module().'/'.$request->controller().'/'.$request->action());
+    }
+
 }
