@@ -9,7 +9,7 @@
 <script type="text/javascript" src="{__WAP_PATH}crmeb/js/lottie.min.js"></script>
 {/block}
 {block name="title"}
-<?= \service\SystemConfigService::get('site_name') ?>
+<?= \app\core\util\SystemConfigService::get('site_name') ?>
 {/block}
 {block name="content"}
 <div class="page-index" id="app-index">
@@ -454,10 +454,10 @@
                     var that = this;
                     this.elInit();
                     this.getIssueCouponList();
-                    this.getproductList('is_best');//精品
-                    this.getproductList('is_hot');//热卖
-                    this.getproductList('is_benefit');//促销
-                    this.getproductList('is_new');//首发新品
+//                    this.getproductList('is_best');//精品
+//                    this.getproductList('is_hot');//热卖
+//                    this.getproductList('is_benefit');//促销
+//                    this.getproductList('is_new');//首发新品
                     this.getIssueCouponList();
                     this.getCateData();
                     this.getCombinationList();//猜猜喜欢

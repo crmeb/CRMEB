@@ -9,8 +9,8 @@ namespace app\wap\model\user;
 
 
 use basic\ModelBasic;
-use service\SystemConfigService;
-use service\WechatTemplateService;
+use app\core\util\SystemConfigService;
+use app\core\util\WechatTemplateService;
 use think\Url;
 use traits\ModelTrait;
 

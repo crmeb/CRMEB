@@ -2,7 +2,7 @@
 namespace app\wap\controller;
 
 use app\admin\model\wechat\WechatReply;
-use service\WechatService;
+use app\core\util\WechatService;
 
 
 /**
@@ -32,7 +32,7 @@ class Wechat
 
     public function text()
     {
-        dump(WechatService::userGroupService());
+        //dump(WechatService::userGroupService());
     }
 
 

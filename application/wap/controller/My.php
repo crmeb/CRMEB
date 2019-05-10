@@ -24,11 +24,11 @@ use app\wap\model\user\User;
 use app\wap\model\user\UserBill;
 use app\wap\model\user\UserExtract;
 use app\wap\model\user\UserNotice;
-use service\GroupDataService;
+use app\core\util\GroupDataService;
 use app\wap\model\user\UserAddress;
 use app\wap\model\user\UserSign;
 use service\CacheService;
-use service\SystemConfigService;
+use app\core\util\SystemConfigService;
 use think\Request;
 use think\Url;
 

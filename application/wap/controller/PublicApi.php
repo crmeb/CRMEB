@@ -15,6 +15,7 @@ use app\wap\model\store\StoreCategory;
 use app\wap\model\store\StoreCouponIssue;
 use app\wap\model\store\StoreProduct;
 use app\wap\model\wap\ArticleCategory;
+use service\FileService;
 use service\JsonService;
 use service\UtilService;
 use think\Cache;
@@ -103,8 +104,9 @@ class PublicApi
     {
         if(!$mediaIds) return JsonService::fail('参数错误');
         $mediaIds = explode(',',$mediaIds);
-        $temporary = \service\WechatService::materialTemporaryService();
+        $temporary = \app\core\util\WechatService::materialTemporaryService();
         $pathList = [];
+        $dir='public'.DS.'uploads'.DS.'wechat'.DS.'media';
         foreach ($mediaIds as $mediaId){
             if(!$mediaId) continue;
             try{
@@ -113,7 +115,10 @@ class PublicApi
                 continue;
             }
             $name = substr(md5($mediaId),12,20).'.jpg';
-            $path = '.'.DS.'public'.DS.'uploads'.DS.'wechat'.DS.'media'.DS.$name;
+            $path = '.'.DS.$dir.DS.$name;
+            $file=new FileService();
+            $res=$file->create_dir($dir);
+            if(!$res) return JsonService::fail('生成文件保存目录失败！请检查权限！');
             $res = file_put_contents($path,$content);
             if($res) $pathList[] = UtilService::pathToUrl($path);
         }

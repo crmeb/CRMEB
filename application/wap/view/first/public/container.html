@@ -7,10 +7,10 @@
     {block name="head_top"}{/block}
     <script type="text/javascript" src="{__PLUG_PATH}wxApi.js"></script>
     <script>
-        $jssdk = function(){return <?=\service\WechatService::jsSdk()?>;}
-        window.wechat_share_title="<?=\service\SystemConfigService::get('wechat_share_title')?>";
-        window.wechat_share_synopsis="<?=\service\SystemConfigService::get('wechat_share_synopsis')?>";
-        window.wechat_share_img="<?=\service\SystemConfigService::get('wechat_share_img')?>";
+        $jssdk = function(){return <?=\app\core\util\WechatService::jsSdk()?>;}
+        window.wechat_share_title="<?=\app\core\util\SystemConfigService::get('wechat_share_title')?>";
+        window.wechat_share_synopsis="<?=\app\core\util\SystemConfigService::get('wechat_share_synopsis')?>";
+        window.wechat_share_img="<?=\app\core\util\SystemConfigService::get('wechat_share_img')?>";
         mapleWx($jssdk(), function () {
             this.onMenuShareAll({
                 title: wechat_share_title || $('title').text(),

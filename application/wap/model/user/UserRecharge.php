@@ -9,7 +9,7 @@ namespace app\wap\model\user;
 
 use app\wap\model\user\WechatUser;
 use basic\ModelBasic;
-use service\WechatService;
+use app\core\util\WechatService;
 use traits\ModelTrait;
 
 class UserRecharge extends ModelBasic

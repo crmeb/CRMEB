@@ -16,7 +16,7 @@ use think\Controller;
 use behavior\wechat\UserBehavior;
 use service\HookService;
 use service\UtilService;
-use service\WechatService;
+use app\core\util\WechatService;
 use think\Cookie;
 use think\Request;
 use think\Session;

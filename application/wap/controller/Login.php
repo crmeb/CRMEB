@@ -10,9 +10,7 @@ namespace app\wap\controller;
 
 use app\wap\model\user\User;
 use app\wap\model\user\WechatUser;
-use basic\WapBasic;
 use service\UtilService;
-use service\WechatService;
 use think\Cookie;
 use think\Request;
 use think\Session;
@@ -23,7 +21,7 @@ class Login extends WapBasic
     public function index($ref = '')
     {
         Cookie::set('is_bg',1);
-        $ref && $ref=htmlspecialchars(base64_decode($ref));
+        $ref && $ref=htmlspecialchars_decode(base64_decode($ref));
         if(UtilService::isWechatBrowser()){
             $this->_logout();
             $openid = $this->oauth();

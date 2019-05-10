@@ -4,7 +4,6 @@ namespace app\wap\controller;
 
 use app\admin\model\article\Article as ArticleModel;
 use app\wap\model\wap\ArticleCategory;
-use basic\WapBasic;
 use think\Db;
 
 /**
@@ -37,8 +36,7 @@ class Article extends WapBasic {
 
     public function visit($id = '')
     {
-        $content = ArticleModel::where('status',1)->where('hide',0)->where('id',$id)->order('id desc')->find();
-
+        $content = ArticleModel::where('status',1)->where('hide',0)->where('id',$id)->find();
         if(!$content || !$content["status"]) return $this->failed('此文章已经不存在!');
         $content["content"] = Db::name('articleContent')->where('nid',$content["id"])->value('content');
         //增加浏览次数
