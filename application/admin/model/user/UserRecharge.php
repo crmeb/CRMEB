@@ -1,12 +1,18 @@
 <?php
+/**
+ *
+ * @author: xaboy<365615158@qq.com>
+ * @day: 2017/11/28
+ */
+
 namespace app\admin\model\user;
+
 
 use traits\ModelTrait;
 use basic\ModelBasic;
-use app\admin\model\user\User;
 
 /**
- * 提现记录
+ * 用户充值记录
  * Class UserRecharge
  * @package app\admin\model\user
  */
@@ -19,8 +25,9 @@ use app\admin\model\user\User;
          $model = new self;
          $model = $model->alias('A');
          if($where['order_id'] != '') {
-             $model = $model->where('A.order_id|B.nickname','like',"%$where[order_id]%");
+             $model = $model->whereOr('A.order_id','like',"%$where[order_id]%");
              $model = $model->whereOr('A.id',(int)$where['order_id']);
+             $model = $model->whereOr('B.nickname','like',"%$where[order_id]%");
          }
          $model = $model->where('A.recharge_type','weixin');
          $model = $model->where('A.paid',1);

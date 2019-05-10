@@ -2,7 +2,7 @@
 namespace app\admin\controller\wechat;
 
 use app\admin\controller\AuthController;
-use service\WechatService;
+use app\core\util\WechatService;
 use think\Cache;
 use think\Db;
 use think\Request;

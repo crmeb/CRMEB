@@ -28,6 +28,14 @@ class StoreProductAttrValue extends ModelBasic
         return self::uniqueId($data['product_id'].$data['suk'].uniqid(true));
     }
 
+    /*
+     * 减少销量增加库存
+     * */
+    public static function incProductAttrStock($productId,$unique,$num)
+    {
+        return false !== self::where('product_id',$productId)->where('unique',$unique)->inc('stock',$num)->dec('sales',$num)->update();
+    }
+
     public static function decProductAttrStock($productId,$unique,$num)
     {
         return false !== self::where('product_id',$productId)->where('unique',$unique)

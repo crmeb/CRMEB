@@ -132,7 +132,7 @@
                         <button type="button" class="layui-btn layui-btn-xs" onclick="dropdown(this)">操作 <span class="caret"></span></button>
                         <ul class="layui-nav-child layui-anim layui-anim-upbit">
                             <li>
-                                <a href="javascript:void(0);" onclick="$eb.createModalFrame('{{d.nickname}}-订单详情','{:Url('order_info')}?oid={{d.id}}')">
+                                <a href="javascript:void(0);" lay-event='order_info'>
                                     <i class="fa fa-file-text"></i> 订单详情
                                 </a>
                             </li>
@@ -158,7 +158,7 @@
                         <button type="button" class="layui-btn layui-btn-xs" onclick="dropdown(this)">操作 <span class="caret"></span></button>
                         <ul class="layui-nav-child layui-anim layui-anim-upbit">
                             <li>
-                                <a href="javascript:void(0);" onclick="$eb.createModalFrame('{{d.nickname}}-订单详情','{:Url('order_info')}?oid={{d.id}}')">
+                                <a href="javascript:void(0);" lay-event='order_info'>
                                     <i class="fa fa-file-text"></i> 订单详情
                                 </a>
                             </li>
@@ -172,7 +172,7 @@
                                     <i class="fa fa-paste"></i> 订单备注
                                 </a>
                             </li>
-                            {{#  if(Math.floor(d.pay_price) > Math.floor(d.refund_price)){ }}
+                            {{#  if(parseFloat(d.pay_price) > parseFloat(d.refund_price)){ }}
                             <li>
                                 <a href="javascript:void(0);" onclick="$eb.createModalFrame('退款','{:Url('refund_y')}?id={{d.id}}',{w:400,h:300})">
                                     <i class="fa fa-history"></i> 立即退款
@@ -195,7 +195,7 @@
                         <button type="button" class="layui-btn layui-btn-xs" onclick="dropdown(this)">操作 <span class="caret"></span></button>
                         <ul class="layui-nav-child layui-anim layui-anim-upbit">
                             <li>
-                                <a href="javascript:void(0);" onclick="$eb.createModalFrame('{{d.nickname}}-订单详情','{:Url('order_info')}?oid={{d.id}}')">
+                                <a href="javascript:void(0);" lay-event='order_info'>
                                     <i class="fa fa-file-text"></i> 订单详情
                                 </a>
                             </li>
@@ -216,7 +216,7 @@
                                 </a>
                             </li>
                             {{#  };}}
-                            {{# if(Math.floor(d.pay_price) > Math.floor(d.refund_price)){ }}
+                            {{# if(parseFloat(d.pay_price) > parseFloat(d.refund_price)){ }}
                             <li>
                                 <a href="javascript:void(0);" onclick="$eb.createModalFrame('退款','{:Url('refund_y')}?id={{d.id}}',{w:400,h:300})">
                                     <i class="fa fa-history"></i>立即退款
@@ -240,7 +240,7 @@
                         <button type="button" class="layui-btn layui-btn-xs" onclick="dropdown(this)">操作 <span class="caret"></span></button>
                         <ul class="layui-nav-child layui-anim layui-anim-upbit">
                             <li>
-                                <a href="javascript:void(0);" onclick="$eb.createModalFrame('{{d.nickname}}-订单详情','{:Url('order_info')}?oid={{d.id}}')">
+                                <a href="javascript:void(0);" lay-event='order_info'>
                                     <i class="fa fa-file-text"></i> 订单详情
                                 </a>
                             </li>
@@ -254,7 +254,7 @@
                                     <i class="fa fa-cart-arrow-down"></i> 已收货
                                 </a>
                             </li>
-                            {{#  if(Math.floor(d.pay_price) > Math.floor(d.refund_price)){ }}
+                            {{#  if(parseFloat(d.pay_price) > parseFloat(d.refund_price)){ }}
                             <li>
                                 <a href="javascript:void(0);" onclick="$eb.createModalFrame('退款','{:Url('refund_y')}?id={{d.id}}')">
                                     <i class="fa fa-history"></i> 立即退款
@@ -277,7 +277,7 @@
                         <button type="button" class="layui-btn layui-btn-xs" onclick="dropdown(this)">操作 <span class="caret"></span></button>
                         <ul class="layui-nav-child layui-anim layui-anim-upbit">
                             <li>
-                                <a href="javascript:void(0);" onclick="$eb.createModalFrame('{{d.nickname}}-订单详情','{:Url('order_info')}?oid={{d.id}}')">
+                                <a href="javascript:void(0);" lay-event='order_info'>
                                     <i class="fa fa-file-text"></i> 订单详情
                                 </a>
                             </li>
@@ -286,7 +286,7 @@
                                     <i class="fa fa-paste"></i> 订单备注
                                 </a>
                             </li>
-                            {{#  if(Math.floor(d.pay_price) > Math.floor(d.refund_price)){ }}
+                            {{#  if(parseFloat(d.pay_price) > parseFloat(d.refund_price)){ }}
                             <li>
                                 <a href="javascript:void(0);" onclick="$eb.createModalFrame('退款','{:Url('refund_y')}?id={{d.id}}')">
                                     <i class="fa fa-history"></i> 立即退款
@@ -310,7 +310,7 @@
                         <button type="button" class="layui-btn layui-btn-xs" onclick="dropdown(this)">操作 <span class="caret"></span></button>
                         <ul class="layui-nav-child layui-anim layui-anim-upbit">
                             <li>
-                                <a href="javascript:void(0);" onclick="$eb.createModalFrame('{{d.nickname}}-订单详情','{:Url('order_info')}?oid={{d.id}}')">
+                                <a href="javascript:void(0);" lay-event='order_info'>
                                     <i class="fa fa-file-text"></i> 订单详情
                                 </a>
                             </li>
@@ -319,7 +319,7 @@
                                     <i class="fa fa-paste"></i> 订单备注
                                 </a>
                             </li>
-                            {{#  if(Math.floor(d.pay_price) > Math.floor(d.refund_price)){ }}
+                            {{#  if(parseFloat(d.pay_price) > parseFloat(d.refund_price)){ }}
                             <li>
                                 <a href="javascript:void(0);" onclick="$eb.createModalFrame('退款','{:Url('refund_y')}?id={{d.id}}')">
                                     <i class="fa fa-history"></i> 立即退款
@@ -401,6 +401,9 @@
                     });
                 },{'title':'您确定要修改收货状态吗？','text':'修改后将无法恢复,请谨慎操作！','confirm':'是的，我要修改'})
                 break;
+            case 'order_info':
+                $eb.createModalFrame(data.nickname+'订单详情',layList.U({a:'order_info',q:{oid:data.id}}));
+                break;
         }
     })
     //下拉框
@@ -444,9 +447,7 @@
                 orderType: [
                     {name: '全部', value: ''},
                     {name: '普通订单', value: 1,count:orderCount.general},
-                    {name: '拼团订单', value: 2,count:orderCount.pink},
-                    {name: '秒杀订单', value: 3,count:orderCount.seckill},
-                    {name: '砍价订单', value: 4,count:orderCount.bargain},
+                    {name: '秒杀订单', value: 3,count:orderCount.seckill}
                 ],
                 orderStatus: [
                     {name: '全部', value: ''},
@@ -499,7 +500,7 @@
                 search:function () {
                     this.where.excel=0;
                     this.getBadge();
-                    layList.reload(this.where);
+                    layList.reload(this.where,true);
                 },
                 refresh:function () {
                     layList.reload();

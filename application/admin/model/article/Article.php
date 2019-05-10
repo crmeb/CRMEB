@@ -36,14 +36,13 @@ class Article extends ModelBasic {
 //        if($where['status'] !== '') $model = $model->where('status',$where['status']);
 //        if($where['access'] !== '') $model = $model->where('access',$where['access']);
         if($where['title'] !== '') $model = $model->where('title','LIKE',"%$where[title]%");
-        if($where['cid'] !== '') {
-//            $model = $model->where("CONCAT(',',cid,',')  LIKE '%,$where[cid],%'");
+        if($where['cid'] !== '')
             $model = $model->where('cid','in',$where['cid']);
-        }
-        if($where['cid'] == ''){
-            if(!$where['merchant']) $model = $model->where('mer_id',0);
-            if($where['merchant']) $model = $model->where('mer_id','GT',0);
-        }
+        else
+            if($where['merchant'])
+                $model = $model->where('mer_id','GT',0);
+            else
+                $model = $model->where('mer_id',0);
         $model = $model->where('status',1)->where('hide',0);
         return self::page($model,function($item){
             if(!$item['mer_id']) $item['admin_name'] = '总后台管理员---》'.SystemAdmin::where('id',$item['admin_id'])->value('real_name');

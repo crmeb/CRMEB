@@ -44,6 +44,11 @@ class SystemclearData  extends AuthController
         self::clearData('store_product_reply',1);
         self::clearData('routine_qrcode',1);
         self::clearData('routine_form_id',1);
+        self::clearData('user_sign',1);
+        self::clearData('user_task_finish',1);
+        self::clearData('user_level',1);
+        self::clearData('token',1);
+        self::clearData('user_group',1);
         $this->delDirAndFile('./public/uploads/store/comment');
         self::clearData('store_product_relation',1);
         return Json::successful('清除数据成功!');
@@ -103,8 +108,7 @@ class SystemclearData  extends AuthController
     public function uploadData(){
         self::clearData('system_attachment',1);
         self::clearData('system_attachment_category',1);
-        $this->delDirAndFile('./public/uploads/attach/');
-        $this->delDirAndFile('./public/uploads/editor/');
+        $this->delDirAndFile('./public/uploads/');
         return Json::successful('清除上传文件成功!');
     }
     //清除微信用户

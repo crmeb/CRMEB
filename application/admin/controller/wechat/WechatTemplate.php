@@ -6,7 +6,7 @@ use app\admin\controller\AuthController;
 use service\FormBuilder as Form;
 use service\UtilService as Util;
 use service\JsonService as Json;
-use service\WechatTemplateService;
+use app\core\util\WechatTemplateService;
 use think\Cache;
 use think\Request;
 use think\Url;

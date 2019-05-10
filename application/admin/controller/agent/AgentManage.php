@@ -7,7 +7,7 @@ use app\admin\model\order\StoreOrder;
 use app\admin\model\user\User;
 use app\admin\model\wechat\WechatUser as UserModel;
 use app\admin\library\FormBuilder;
-use app\wap\model\user\UserBill;
+use app\core\model\user\UserBill;
 use service\UtilService as Util;
 
 /**

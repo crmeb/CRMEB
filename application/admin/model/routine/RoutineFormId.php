@@ -7,7 +7,7 @@ use traits\ModelTrait;
 /**
  * 表单ID表
  * Class RoutineFormId
- * @package app\routine\model\routine
+ * @package app\admin\model\routine
  */
 class RoutineFormId extends ModelBasic {
 

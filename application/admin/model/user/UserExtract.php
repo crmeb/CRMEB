@@ -14,7 +14,7 @@ use app\admin\model\wechat\WechatUser;
 use think\Url;
 use traits\ModelTrait;
 use basic\ModelBasic;
-use service\WechatTemplateService;
+use app\core\util\WechatTemplateService;
 /**
  * 用户提现管理 model
  * Class User

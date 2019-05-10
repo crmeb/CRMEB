@@ -20,7 +20,7 @@ use EasyWeChat\Core\Exception;
 use service\CacheService;
 use service\HookService;
 use service\JsonService;
-use service\SystemConfigService;
+use app\core\util\SystemConfigService;
 use service\UtilService as Util;
 use service\JsonService as Json;
 use think\Db;
@@ -39,7 +39,6 @@ class StoreOrder extends AuthController
      */
     public function index()
     {
-        $config = SystemConfigService::more(['pay_routine_appid','pay_routine_appsecret','pay_routine_mchid','pay_routine_key','pay_routine_client_cert','pay_routine_client_key']);
         $this->assign([
             'year'=>getMonth('y'),
             'real_name'=>$this->request->get('real_name',''),
@@ -376,6 +375,7 @@ class StoreOrder extends AuthController
             if($data['type'] == 1)  StorePink::setRefundPink($id);
             HookService::afterListen('store_product_order_refund_y',$data,$id,false,OrderBehavior::class);
             StoreOrderStatus::setStatus($id,'refund_price','退款给用户'.$refund_price.'元');
+            ModelBasic::commitTrans();
             return Json::successful('修改成功!');
         }else{
             StoreOrderStatus::setStatus($id,'refund_price','退款给用户'.$refund_price.'元失败');

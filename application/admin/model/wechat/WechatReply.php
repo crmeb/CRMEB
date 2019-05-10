@@ -12,7 +12,7 @@ use traits\ModelTrait;
 use basic\ModelBasic;
 use service\HookService;
 use service\UtilService;
-use service\WechatService;
+use app\core\util\WechatService;
 use think\Url;
 
 /**
@@ -30,7 +30,7 @@ class WechatReply extends ModelBasic
      * @param $key
      */
     public static function getDataByKey($key){
-        $resdata = [];
+        $resdata = ['data'=>''];
         $resdata = self::where('key',$key)->find();
         $resdata['data'] = json_decode($resdata['data'],true);
         return $resdata;

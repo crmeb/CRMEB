@@ -93,7 +93,7 @@
                 return;
             }
         }
-        layList.reload(where);
+        layList.reload(where,true);
     });
     layList.search('export',function(where){
         location.href=layList.U({a:'save_bell_export',q:{type:where.type,start_time:where.start_time,end_time:where.end_time,nickname:where.nickname}});

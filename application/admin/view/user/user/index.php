@@ -53,10 +53,10 @@
                 </div>
             </div>
             <div class="ibox-content" style="display: block;">
-                <div class="alert alert-success alert-dismissable">
-                    <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>
-                    目前拥有{$count_user}个会员
-                </div>
+<!--                <div class="alert alert-success alert-dismissable">-->
+<!--                    <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>-->
+<!--                    目前拥有{$count_user}个会员-->
+<!--                </div>-->
                 <form class="layui-form">
                     <div class="layui-form-item">
                         <div class="layui-inline">
@@ -191,11 +191,12 @@
                         <button class="layui-btn layui-btn-sm layui-btn-normal" type="button" data-type="set_info"><i class="fa fa-check-circle-o"></i>发送站内消息</button>
                         <button class="layui-btn layui-btn-sm layui-btn-normal" type="button" data-type="refresh"><i class="layui-icon layui-icon-refresh" ></i>刷新</button>
                     </div>
-                    <table class="layui-hide" id="userList" lay-filter="userList">
-
-                    </table>
-                    <script type="text/html" id="user_type">
-                        <button type="button" class="layui-btn layui-btn-normal layui-btn-radius layui-btn-xs">{{d.user_type}}</button>
+                    <table class="layui-hide" id="userList" lay-filter="userList"></table>
+                    <script type="text/html" id="nickname">
+                        {{d.nickname}}
+                        {{# if(d.vip_name){ }}
+                        <p style="color:#dab176">{{d.vip_name}}</p>
+                        {{# } }}
                     </script>
                     <script type="text/html" id="checkboxstatus">
                         <input type='checkbox' name='status' lay-skin='switch' value="{{d.uid}}" lay-filter='status' lay-text='正常|禁止'  {{ d.status == 1 ? 'checked' : '' }}>
@@ -255,7 +256,7 @@
                 {type:'checkbox'},
                 {field: 'uid', title: '编号', width:'6%',event:'uid'},
                 {field: 'avatar', title: '头像', event:'open_image', width: '6%', templet: '<p><img class="avatar" style="cursor: pointer" class="open_image" data-image="{{d.avatar}}" src="{{d.avatar}}" alt="{{d.nickname}}"></p>'},
-                {field: 'nickname', title: '姓名'},
+                {field: 'nickname', title: '姓名',templet:'#nickname'},
                 {field: 'now_money', title: '余额',width:'6%',sort:true,event:'now_money'},
                 {field: 'pay_count', title: '购买次数',align:'center',width:'6%'},
                 {field: 'extract_count_price', title: '累计提现',align:'center',width:'6%'},
@@ -265,7 +266,7 @@
                 {field: 'add_time', title: '首次访问日期',align:'center',width:'12%'},
                 {field: 'last_time', title: '最近访问日期',align:'center',width:'12%'},
                 {field: 'status', title: '状态',templet:"#checkboxstatus",width:'6%'},
-                {field: 'user_type', title: '用户类型',templet:'#user_type',width:'6%'},
+                {field: 'user_type', title: '用户类型',width:'6%'},
                 {fixed: 'right', title: '操作', width: '10%', align: 'center', toolbar: '#barDemo'}
             ];
     });
@@ -319,7 +320,7 @@
     layList.search('search',function(where){
         if(where['user_time_type'] != '' && where['user_time'] == '') return layList.msg('请选择选择时间');
         if(where['user_time_type'] == '' && where['user_time'] != '') return layList.msg('请选择访问情况');
-        layList.reload(where);
+        layList.reload(where,true);
     });
 
     var action={

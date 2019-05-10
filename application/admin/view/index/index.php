@@ -14,6 +14,9 @@
     <link href="{__FRAME_PATH}css/font-awesome.min.css" rel="stylesheet">
     <link href="{__FRAME_PATH}css/animate.min.css" rel="stylesheet">
     <link href="{__FRAME_PATH}css/style.min.css" rel="stylesheet">
+    <style>
+        .swal2-container{z-index: 100000000000!important;}
+    </style>
 </head>
 <body class="fixed-sidebar full-height-layout gray-bg" style="overflow:hidden">
 <div id="wrapper">
@@ -279,7 +282,6 @@
     $(function() {
         function getnotice() {
             $.getJSON("{:Url('Jnotice')}",function(res){
-                console.log(res);
                 var info = eval("("+res+")");
                 var data = info.data;
                 $('#msgcount').html(data.msgcount);
@@ -290,7 +292,7 @@
             });
         }
         getnotice();
-        setInterval(getnotice, 3000);
+        setInterval(getnotice, 600000);
     });
 
 </script>

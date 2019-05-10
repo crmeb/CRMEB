@@ -99,7 +99,7 @@
                         {/if}
                         <li class="layui-col-xs4">
                             <div class="backlog-body">
-                                <h3>佣金总输入</h3>
+                                <h3>佣金总收入</h3>
                                 <p><cite>{$userinfo.number}</cite></p>
                             </div>
                         </li>
@@ -166,7 +166,7 @@
                 return;
             }
         }
-        layList.reload(where);
+        layList.reload(where,true);
     });
 </script>
 {/block}

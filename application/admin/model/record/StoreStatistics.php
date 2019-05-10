@@ -10,7 +10,7 @@ namespace app\admin\model\record;
 use traits\ModelTrait;
 use basic\ModelBasic;
 use service\ExportService;
-use app\wap\model\user\UserBill;
+use app\core\model\user\UserBill;
 use app\admin\model\user\User;
 use service\PHPExcelService;
 class StoreStatistics extends ModelBasic

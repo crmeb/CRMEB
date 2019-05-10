@@ -14,13 +14,12 @@ use app\admin\model\ump\StorePink;
 use app\admin\model\order\StoreOrderCartInfo;
 use app\admin\model\store\StoreProduct;
 use app\admin\model\routine\RoutineFormId;
-use app\routine\model\routine\RoutineTemplate;
+use app\core\model\routine\RoutineTemplate;
 use service\ProgramTemplateService;
 use service\PHPExcelService;
 use traits\ModelTrait;
 use basic\ModelBasic;
-use service\WechatTemplateService;
-use service\RoutineTemplateService;
+use app\core\util\WechatTemplateService;
 use think\Url;
 use think\Db;
 use app\admin\model\user\User;
@@ -371,16 +370,14 @@ HTML;
      */
     public static function refundRoutineTemplate($oid){
         $order = self::where('id',$oid)->find();
-        $formId = RoutineFormId::getFormIdOne($order['uid']);
-        $data['keyword1']['value'] =  $order['order_id'];
-        $data['keyword2']['value'] =  date('Y-m-d H:i:s',time());
-        $data['keyword3']['value'] =  $order['pay_price'];
-        if($order['pay_type'] == 'yue') $data['keyword4']['value'] =  '余额支付';
-        else if($order['pay_type'] == 'weixin') $data['keyword4']['value'] =  '微信支付';
-        else if($order['pay_type'] == 'offline') $data['keyword4']['value'] =  '线下支付';
-        $data['keyword5']['value'] = '已成功退款';
-        RoutineFormId::delFormIdOne($formId);
-        return RoutineTemplateService::sendTemplate(WechatUser::uidToRoutineOpenid($order['uid']),RoutineTemplateService::setTemplateId(RoutineTemplateService::ORDER_REFUND_SUCCESS),'',$data,$formId);
+        $data['keyword1'] =  $order['order_id'];
+        $data['keyword2'] =  date('Y-m-d H:i:s',time());
+        $data['keyword3'] =  $order['pay_price'];
+        if($order['pay_type'] == 'yue') $data['keyword4'] =  '余额支付';
+        else if($order['pay_type'] == 'weixin') $data['keyword4'] =  '微信支付';
+        else if($order['pay_type'] == 'offline') $data['keyword4'] =  '线下支付';
+        $data['keyword5'] = '已成功退款';
+        return RoutineTemplate::sendOut('ORDER_REFUND_SUCCESS',$order['uid'],$data);
     }
 
     /**
@@ -520,23 +517,32 @@ HTML;
         $price['back_integral'] = 0;//退积分总数
         $price['deduction_price'] = 0;//抵扣金额
         $price['total_num'] = 0; //商品总数
-        $model = self::getOrderWhere($where,$model);
-        $list = $model->where('is_del',0)->select()->toArray();
+        $sumNumber =self::getOrderWhere($where,$model)->where('is_del',0)->field([
+            'sum(total_num) as sum_total_num',
+            'sum(pay_price) as sum_pay_price',
+            'sum(refund_price) as sum_refund_price',
+            'sum(use_integral) as sum_use_integral',
+            'sum(back_integral) as sum_back_integral',
+            'sum(deduction_price) as sum_deduction_price'
+        ])->find();
+        if($sumNumber) {
+            $price['total_num'] = $sumNumber['sum_total_num'];
+            $price['pay_price'] = $sumNumber['sum_pay_price'];
+            $price['refund_price'] = $sumNumber['sum_refund_price'];
+            $price['use_integral'] = $sumNumber['sum_use_integral'];
+            $price['back_integral'] = $sumNumber['sum_back_integral'];
+            $price['deduction_price'] = $sumNumber['sum_deduction_price'];
+        }
+        $list=self::getOrderWhere($where,$model)->where('is_del',0)->group('pay_type')->field(['sum(pay_price) as sum_pay_price','pay_type'])->select();
         foreach ($list as $v){
-            $price['total_num'] = bcadd($price['total_num'],$v['total_num'],0);
-            $price['pay_price'] = bcadd($price['pay_price'],$v['pay_price'],2);
-            $price['refund_price'] = bcadd($price['refund_price'],$v['refund_price'],2);
-            $price['use_integral'] = bcadd($price['use_integral'],$v['use_integral'],2);
-            $price['back_integral'] = bcadd($price['back_integral'],$v['back_integral'],2);
-            $price['deduction_price'] = bcadd($price['deduction_price'],$v['deduction_price'],2);
             if ($v['pay_type'] == 'weixin'){
-                $price['pay_price_wx'] = bcadd($price['pay_price_wx'],$v['pay_price'],2);
+                $price['pay_price_wx'] = $v['sum_pay_price'];
             }elseif($v['pay_type'] == 'yue'){
-                $price['pay_price_yue'] = bcadd($price['pay_price_yue'],$v['pay_price'],2);
+                $price['pay_price_yue'] = $v['sum_pay_price'];
             }elseif($v['pay_type'] == 'offline'){
-                $price['pay_price_offline'] = bcadd($price['pay_price_offline'],$v['pay_price'],2);
+                $price['pay_price_offline'] = $v['sum_pay_price'];
             }else{
-                $price['pay_price_other'] = bcadd($price['pay_price_other'],$v['pay_price'],2);
+                $price['pay_price_other'] = $v['sum_pay_price'];
             }
         }
         return $price;
@@ -798,26 +804,6 @@ HTML;
     public static function getOrderBadge($where){
         return [
             [
-                'name'=>'拼团订单数量',
-                'field'=>'个',
-                'count'=>self::setEchatWhere($where,2)->count(),
-                'content'=>'拼团总订单数量',
-                'background_color'=>'layui-bg-cyan',
-                'sum'=>self::setEchatWhere($where,2,true)->count(),
-                'class'=>'fa fa-line-chart',
-                'col'=>2
-            ],
-            [
-                'name'=>'砍价订单数量',
-                'field'=>'个',
-                'count'=>self::setEchatWhere($where,4)->count(),
-                'content'=>'砍价总订单数量',
-                'background_color'=>'layui-bg-cyan',
-                'sum'=>self::setEchatWhere($where,4,true)->count(),
-                'class'=>'fa fa-line-chart',
-                'col'=>2
-            ],
-            [
                 'name'=>'秒杀订单数量',
                 'field'=>'个',
                 'count'=>self::setEchatWhere($where,3)->count(),
@@ -926,8 +912,8 @@ HTML;
      */
     public static function orderPostageAfter($oid,$postageData = [])
     {
+
         $order = self::where('id',$oid)->find();
-        $openid = WechatUser::uidToOpenid($order['uid']);
         $url = Url::build('wap/My/order',['uni'=>$order['order_id']],true,true);
         $group = [
             'first'=>'亲,您的订单已发货,请注意查收',
@@ -939,6 +925,7 @@ HTML;
                 //小程序送货模版消息
                 RoutineTemplate::sendOrderPostage($order);
             }else{//公众号
+                $openid = WechatUser::where('uid',$order['uid'])->value('openid');
                 $group = array_merge($group,[
                     'keyword1'=>$goodsName,
                     'keyword2'=>$order['pay_type'] == 'offline' ? '线下支付' : date('Y/m/d H:i',$order['pay_time']),
@@ -951,8 +938,9 @@ HTML;
         }else if($postageData['delivery_type'] == 'express') {//发货
             if ($order['is_channel']) {
                 //小程序发货模版消息
-                RoutineTemplate::sendOrderPostage($order);
+                RoutineTemplate::sendOrderPostage($order,1);
             } else {//公众号
+                $openid = WechatUser::where('uid',$order['uid'])->value('openid');
                 $group = array_merge($group, [
                     'keyword1' => $order['order_id'],
                     'keyword2' => $postageData['delivery_name'],
@@ -961,6 +949,7 @@ HTML;
                 WechatTemplateService::sendTemplate($openid, WechatTemplateService::ORDER_POSTAGE_SUCCESS, $group, $url);
             }
         }
+
     }
     /**
      * 小程序 订单发货提醒
@@ -974,38 +963,76 @@ HTML;
         $routine_openid = WechatUser::uidToRoutineOpenid($order['uid']);
         if(!$routine_openid) return true;
         if($postageData['delivery_type'] == 'send'){//送货
-            $data['keyword1']['value'] =  $order['order_id'];
-            $data['keyword2']['value'] =  $order['delivery_name'];
-            $data['keyword3']['value'] =  $order['delivery_id'];
-            $data['keyword4']['value'] =  date('Y-m-d H:i:s',time());
-            $data['keyword5']['value'] =  '您的商品已经发货请注意查收';
-            $formId = RoutineFormId::getFormIdOne($order['uid']);
-            if($formId){
-                RoutineFormId::delFormIdOne($formId);
-                RoutineTemplateService::sendTemplate($routine_openid,
-                    RoutineTemplateService::setTemplateId(RoutineTemplateService::ORDER_DELIVER_SUCCESS),
-                    '',
-                    $data,
-                    $formId);
-            }
+            RoutineTemplate::sendOrderPostage($order);
         }else if($postageData['delivery_type'] == 'express'){//发货
-            $data['keyword1']['value'] =  $order['order_id'];
-            $data['keyword2']['value'] =  $order['delivery_name'];
-            $data['keyword3']['value'] =  $order['delivery_id'];
-            $data['keyword4']['value'] =  date('Y-m-d H:i:s',time());
-            $data['keyword5']['value'] =  '您的商品已经发货请注意查收';
-            $formId = RoutineFormId::getFormIdOne($order['uid']);
-            if($formId){
-                RoutineFormId::delFormIdOne($formId);
-                RoutineTemplateService::sendTemplate($routine_openid,
-                    RoutineTemplateService::setTemplateId(RoutineTemplateService::ORDER_POSTAGE_SUCCESS),
-                    '',
-                    $data,
-                    $formId);
-            }
+            RoutineTemplate::sendOrderPostage($order,1);
         }
     }
 
+    /** 收货后发送模版消息
+     * @param $order
+     */
+    public static function orderTakeAfter($order)
+    {
+        if($order['is_channel']){//小程序
+            RoutineTemplate::sendOut('OREDER_TAKEVER',$order['uid'],[
+                'keyword1'=>$order['order_id'],
+                'keyword2'=>self::getDb('store_cart')->alias('a')->join('__STORE_PRODUCT__ P','a.product_id=p.id')->where('a.id','in',$order['cart_id'])->value('p.title'),
+                'keyword3'=>$order['pay_price'],
+                'keyword4'=>date('Y-m-d H:i:s',time()),
+            ]);
+        }else{
+             $openid = WechatUser::where('uid',$order['uid'])->value('openid');
+            $title='';
+            $cartInfo = self::getDb('StoreOrderCartInfo')->where('oid', $order['id'])->column('product_id') ?: [];
+            foreach ($cartInfo as $k => $productId) {
+                $store_name=self::getDb('store_product')->where('id',$productId)->value('store_name');
+                $title.=$store_name.',';
+            }
+            WechatTemplateService::sendTemplate($openid,WechatTemplateService::ORDER_TAKE_SUCCESS,[
+                'first'=>'亲，您的订单已收货',
+                'keyword1'=>$order['order_id'],
+                'keyword2'=>'已收货',
+                'keyword3'=>date('Y-m-d H:i:s',time()),
+                'keyword4'=>$title,
+                'remark'=>'感谢您的光临！'
+            ]);
+        }
+    }
+
+    /*
+     * 不退款发送模板消息
+     * @param int $id 订单id
+     * @param array $data 退款详情
+     * */
+    public static function refundNoPrieTemplate($id,$data)
+    {
+        $order=self::get($id);
+        if($order) return false;
+        //小程序模板消息
+        $cartInfo = self::getDb('StoreOrderCartInfo')->where('oid', $order['id'])->column('product_id') ?: [];
+        $title='';
+        foreach ($cartInfo as $k => $productId) {
+            $store_name=self::getDb('store_product')->where('id',$productId)->value('store_name');
+            $title.=$store_name.',';
+        }
+        if($order->is_channel){
+            RoutineTemplate::sendOut('ORDER_REFUND_FILE',$order->uid,[
+                'keyword1'=>$order->order_id,
+                'keyword2'=>$title,
+                'keyword3'=>$order->pay_price,
+                'keyword4'=>$data,
+            ]);
+        }else{
+            WechatTemplateService::sendTemplate(WechatUser::where(['uid'=>$order->uid])->value('openid'),WechatTemplateService::ORDER_REFUND_STATUS,[
+                'first'=>'很抱歉您的订单退款失败，失败原因：'.$data,
+                'keyword1'=>$order->order_id,
+                'keyword2'=>$order->pay_price,
+                'keyword3'=>date('Y-m-d H:i:s',time()),
+                'remark'=>'给您带来的不便，请谅解！'
+            ]);
+        }
+    }
 
     /**
      * 获取订单总数
@@ -1050,27 +1077,6 @@ HTML;
             return $res;
         }
         return true;
-    }
-
-    /** 收货后发送模版消息
-     * @param $order
-     */
-    public static function orderTakeAfter($order)
-    {
-        if($order['is_channel']){//小程序
-
-        }else{
-
-        }
-//        $openid = WechatUser::getOpenId($order['uid']);
-//        RoutineTemplateService::sendTemplate($openid,RoutineTemplateService::ORDER_TAKE_SUCCESS,[
-//            'first'=>'亲，您的订单已成功签收，快去评价一下吧',
-//            'keyword1'=>$order['order_id'],
-//            'keyword2'=>'已收货',
-//            'keyword3'=>date('Y/m/d H:i',time()),
-//            'keyword4'=>implode(',',StoreOrderCartInfo::getProductNameList($order['id'])),
-//            'remark'=>'点击查看订单详情'
-//        ],Url::build('My/order',['uni'=>$order['order_id']],true,true));
     }
 
     public static function integralBack($id){

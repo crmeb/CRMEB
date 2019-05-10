@@ -340,8 +340,8 @@
     });
     $('.search-item-value').each(function(){
         var that = $(this),name = that.attr('name'), value = that.val(),dom = $('.search-item[data-name="'+name+'"] .btn[data-value="'+value+'"]');
-        dom.eq(0).removeClass('btn-outline btn-link').addClass('btn-primary btn-sm')
-            .siblings().addClass('btn-outline btn-link').removeClass('btn-primary btn-sm')
+        dom.eq(0).removeClass('btn-outline btn-link').addClass('btn-primary')
+            .siblings().addClass('btn-outline btn-link').removeClass('btn-primary')
     });
     $(".btn").mouseover(function (event){
             $(this).closest('table').find("tr:eq(1)").find("td:eq(3)").find("button:eq(0)").removeClass('btn-info');

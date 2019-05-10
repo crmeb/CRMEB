@@ -2,23 +2,18 @@
 {block name="content"}
 <style>
     .code{
-        color: #97824B;
-        font-size: 3em;
-        border: 2px solid #ccc;
-        padding: 10px;
-        width: 50%;
+        color: #298dff;
+        font-size: 1.4em;
+        border: 1px solid #298dff;
+        padding: 20px 10px;
+        width: 30%;
         margin: 0 auto;
-        font-weight: 700;
-        font-family: 'Raleway', sans-serif;
         visibility: visible;
         animation-duration: 1000ms;
         animation-delay: 500ms;
         text-align: center;
-        -webkit-box-shadow:0 0 10px #000;
-        -moz-box-shadow:0 0 10px #000;
-        box-shadow:0 0 10px #000;
         cursor: pointer;
-        border-radius: 2%;
+        border-radius: .3em;
     }
     .colore{
         background-color: #CCCCCC;
@@ -154,14 +149,11 @@
                 auto_upgrad:function () {
                     var that=this;
                     if(this.count<=0) return;
-                     that.content='正在升级中请勿关闭浏览器或者页面';
                     axios.post("{:Url('auto_upgrad')}",{id:this.version_code}).then(function (rem) {
-                        if(rem.data.code==200){
+                        if(rem.data.code=200){
                             that.version_code=rem.data.data.code;
                             that.version=rem.data.data.version;
                             that.count=0;
-                        }else{
-                            that.content=rem.data.msg;
                         }
                     })
                 },

@@ -6,13 +6,14 @@
  */
 namespace app\admin\model\user;
 use app\admin\model\order\StoreOrder;
+use app\admin\model\system\SystemUserLevel;
 use traits\ModelTrait;
 use app\admin\model\user\UserBill;
 use basic\ModelBasic;
 use app\admin\model\wechat\WechatUser;
 use app\admin\model\store\StoreCouponUser;
 use app\admin\model\user\UserExtract;
-use service\SystemConfigService;
+use app\core\util\SystemConfigService;
 use think\Db;
 /**
  * 用户管理 model
@@ -115,6 +116,12 @@ class User extends ModelBasic
                 }else if($item['sex'] == 2){
                     $item['sex']='女';
                 }else $item['sex']='保密';
+                $item['vip_name']=false;
+                $levelinfo=UserLevel::where(['uid'=>$item['uid'],'is_del'=>0])->order('grade desc')->field(['level_id','is_forever','valid_time'])->find();
+                if($levelinfo){
+                    if($levelinfo['is_forever']) $item['vip_name']=SystemUserLevel::where('id',$levelinfo['level_id'])->value('name');
+                    else if(time() > $levelinfo['valid_time']) $item['vip_name']=SystemUserLevel::where('id',$levelinfo['level_id'])->value('name');
+                }
             });//->toArray();
         $count=self::setWherePage(self::setWhere($where),$where,['w.sex','w.province','w.city','u.status','u.is_promoter'],['u.nickname','u.uid'])->alias('u')->join('WechatUser w','u.uid=w.uid')->count();
         return ['count'=>$count,'data'=>$list];

@@ -5,5 +5,5 @@
 {include file="public/style"}
 <script>
     $eb = parent._mpApi;
-    if(!$eb) top.location.reload();
+//    if(!$eb) top.location.reload();
 </script>

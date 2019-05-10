@@ -35,6 +35,7 @@ class Reply extends AuthController
                 $title = '编辑关键字回复';
                 break;
         }
+
         $replay = WechatReply::getDataByKey($key);
         $this->assign('replay_arr',json_encode($replay));
         $this->assign('key',$key);

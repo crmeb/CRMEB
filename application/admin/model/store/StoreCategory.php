@@ -49,6 +49,8 @@ class StoreCategory extends ModelBasic
         if($isAjax===true){
             if(isset($where['order']) && $where['order']!=''){
                 $model=$model->order(self::setOrder($where['order']));
+            }else{
+                $model=$model->order('sort desc,id desc');
             }
             return $model;
         }
@@ -78,7 +80,7 @@ class StoreCategory extends ModelBasic
     public static function getTierList($model = null)
     {
         if($model === null) $model = new self();
-        return UtilService::sortListTier($model->select()->toArray());
+        return UtilService::sortListTier($model->order('sort desc,id desc')->select()->toArray());
     }
 
     public static function delCategory($id){

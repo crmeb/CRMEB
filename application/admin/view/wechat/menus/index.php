@@ -38,14 +38,14 @@
                             <div class="menu-content control-body">
                                 <form action="">
                                     <div class="form-group clearfix">
-                                        <label for="" class="col-sm-3">菜单名称</label>
+                                        <label for="" class="col-sm-2">菜单名称</label>
                                         <div class="col-sm-9 group-item">
                                             <input type="text" placeholder="菜单名称" class="form-control" v-model="checkedMenu.name">
                                             <span>字数不超过13个汉字或40个字母</span>
                                         </div>
                                     </div>
                                     <div class="form-group clearfix">
-                                        <label class="col-sm-3 control-label tips" for="">规则状态</label>
+                                        <label class="col-sm-2 control-label tips" for="">规则状态</label>
                                         <div class="group-item col-sm-9">
                                             <select class="form-control m-b" name="" id="" v-model="checkedMenu.type">
                                                 <?php /*  <option value="text">文字消息</option>  */ ?>
@@ -72,6 +72,12 @@
                                         <div class="url item" :class="{show:checkedMenu.type=='view'}">
                                             <p>跳转地址</p>
                                             <input type="text" v-model="checkedMenu.url" placeholder="请输入跳转地址" class="form-control">
+                                            <p class="text-left"></p>
+                                            <div class="well well-lg">
+                                                    <span class="help-block m-b-none">首页：{$Request.domain}{:url('wap/index/index')}</span>
+                                                    <span class="help-block m-b-none">个人中心：{$Request.domain}{:url('wap/my/index')}</span>
+                                            </div>
+
                                         </div>
                                         <!-- 事件功能 -->
                                         <?php /*  <div class="feat-select item" :class="{show:type=='feat'}">

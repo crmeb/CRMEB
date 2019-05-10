@@ -157,7 +157,7 @@ class SystemConfig extends ModelBasic {
      * */
     public static function getAll($id){
         $where['config_tab_id'] = $id;
-        $where['status'] = 1;
+//        $where['status'] = 1;
         return self::where($where)->order('sort desc,id asc')->select();
     }
 

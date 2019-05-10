@@ -75,14 +75,12 @@ class SystemGroupData extends ModelBasic
         $data = [];
         $result = $model->select();
         if(!$result) return $data;
-        $result = $result->toArray();
         foreach ($result as $key => $value) {
             $data[$key]["id"] = $value["id"];
             $fields = json_decode($value["value"],true);
             foreach ($fields as $index => $field) {
-                if($field['type'] === 'radio') {
-                    $data[$key][$index] = self::getGroupRadioValue($value['gid'],$field["value"]);
-                }else $data[$key][$index] = $field["value"];
+//                $data[$key][$index] = $field['type'] == 'upload' ? (isset($field["value"][0]) ? $field["value"][0]: ''):$field["value"];
+                $data[$key][$index] = $field["value"];
             }
         }
         return $data;
@@ -113,32 +111,8 @@ class SystemGroupData extends ModelBasic
         $data["id"] = $value["id"];
         $fields = json_decode($value["value"],true);
         foreach ($fields as $index => $field) {
-            if($field['type'] === 'radio') {
-                $data[$index] = self::getGroupRadioValue($value['gid'],$field["value"]);
-            }else $data[$index] = $field["value"];
+            $data[$index] = $field["value"];
         }
         return $data;
-    }
-
-    /**
-     * TODO radio 根据值获取参数
-     * @param $id
-     * @param $value
-     * @return mixed
-     */
-    public static function getGroupRadioValue($id,$value){
-        $groupData = SystemGroup::getField($id);
-        foreach ($groupData['fields'] as $key=>&$item){
-           if($item['type'] == 'radio'){
-               $params = explode("\n",$item["param"]);
-               if(is_array($params) && !empty($params)){
-                   foreach ($params as $index => &$v) {
-                       $vl = explode('=>',$v);
-                       if(isset($vl[0]) && isset($vl[1]) && count($vl) && $vl[1] === $value) return $vl[0];
-                   }
-               }
-           }
-        }
-        return $value;
     }
 }

@@ -1,5 +1,53 @@
 {extend name="public/container"}
 {block name="head_top"}
+<style>
+    .layui-input-block button{
+        border: 1px solid rgba(0,0,0,0.1);
+    }
+    .layui-card-body{
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+    .layui-card-body p.layuiadmin-big-font {
+        font-size: 36px;
+        color: #666;
+        line-height: 36px;
+        padding: 5px 0 10px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        word-break: break-all;
+        white-space: nowrap;
+    }
+    .layuiadmin-badge, .layuiadmin-btn-group, .layuiadmin-span-color {
+        position: absolute;
+        right: 15px;
+    }
+    .layuiadmin-badge {
+        top: 50%;
+        margin-top: -9px;
+        color: #01AAED;
+    }
+    .layuiadmin-span-color i {
+        padding-left: 5px;
+    }
+    .block-rigit{
+        text-align: right;
+    }
+    .block-rigit button{
+        width: 100px;
+        letter-spacing: .5em;
+        line-height: 28px;
+    }
+    .layuiadmin-card-list{
+        padding: 1.6px;
+    }
+    .layuiadmin-card-list p.layuiadmin-normal-font {
+        padding-bottom: 10px;
+        font-size: 20px;
+        color: #666;
+        line-height: 24px;
+    }
+</style>
 <script src="{__PLUG_PATH}echarts.common.min.js"></script>
 {/block}
 {block name="content"}
@@ -176,7 +224,7 @@
                 info:function(){
                     var that=this;
                     var index=layList.layer.load(2,{shade: [0.3,'#fff']});
-                    layList.baseGet(layList.Url({c:'auth_api',a:'get_echarts_product',q:{type:this.status,data:this.data}}),function (res){
+                    layList.baseGet(layList.Url({c:'record.record',a:'get_mark_echarts_product',q:{type:this.status,data:this.data}}),function (res){
                         layList.layer.close(index);
                         that.badge=res.data.badge;
                         that.count=res.data.count;
@@ -191,26 +239,26 @@
                 },
                 getSalesList:function(){
                     var that=this;
-                    layList.baseGet(layList.Url({c:'auth_api',a:'get_echarts_maxlist',q:{data:this.data}}),function (rem) {
+                    layList.baseGet(layList.Url({c:'record.record',a:'get_mark_echarts_maxlist',q:{data:this.data}}),function (rem) {
                         that.SalesList=rem.data;
                     });
                 },
                 getProfityList:function(){
                     var that=this;
-                    layList.baseGet(layList.Url({c:'auth_api',a:'get_echarts_profity',q:{data:this.data}}),function (rem) {
+                    layList.baseGet(layList.Url({c:'record.record',a:'get_mark_echarts_profity',q:{data:this.data}}),function (rem) {
                         that.ProfityList=rem.data;
                     });
                 },
                 getTuiPriesList:function(){
                     var that=this;
-                    layList.baseGet(layList.Url({c:'auth_api',a:'get_bargain_refund_list'}),function (rem) {
+                    layList.baseGet(layList.Url({c:'record.record',a:'get_mark_bargain_refund_list'}),function (rem) {
                         that.TuiPriesList=rem.data;
                     });
                 },/*待补货*/
                 getLackList:function(){
                     var that=layList;
                     var data={
-                        url:that.U({c:'auth_api',a:'getLackList'}),
+                        url:that.U({c:'record.record',a:'get_mark_lack_list'}),
                         limit:10
                     };
                     layList.tables('PhList',data,[
@@ -219,21 +267,6 @@
                         {field: 'stock', title: '库存',edit:'stock'},
                         {field: 'right', title: '操作',align:'center',toolbar:'#bar'},
                     ]);
-                    that.table.on('edit(PhList)',function (obj) {
-                        var value = obj.value //得到修改后的值
-                            ,data = obj.data //得到所在行所有键值
-                            ,field = obj.field; //得到字段
-                        switch (field){
-                            case 'stock':
-                                that.basePost(that.U({c:'auth_api',a:'editField',p:{id:obj.data.id}}),{stock:obj.value},function (rem) {
-                                    that.msg(rem.msg);
-                                });
-                                break;
-                            default:
-                                console.log('未检测到指定字段'+name);
-                                break;
-                        }
-                    });
                     that.table.on('tool(PhList)', function (obj) {
                         var data = obj.data, layEvent = obj.event;
                             switch (layEvent) {
@@ -248,7 +281,7 @@
                 },/*获取砍价产品的评论*/
                 getnegativeList:function(){
                     var that=this;
-                    layList.baseGet(layList.Url({c:'auth_api',a:'getnegativelist'}),function(rem) {
+                    layList.baseGet(layList.Url({c:'record.record',a:'get_mark_negative_list'}),function(rem) {
                         that.negativeList=rem.data.data;
                     });
                 },

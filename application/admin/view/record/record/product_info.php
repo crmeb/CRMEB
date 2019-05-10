@@ -1,5 +1,20 @@
 {extend name="public/container"}
 {block name="head_top"}
+<style>
+    .layui-input-block button{
+        border: 1px solid rgba(0,0,0,0.1);
+        margin-bottom: 10px;
+    }
+    .layuiadmin-badge, .layuiadmin-btn-group, .layuiadmin-span-color {
+        position: absolute;
+        right: 15px;
+    }
+    .layuiadmin-badge {
+        top: 50%;
+        margin-top: -9px;
+        color: #01AAED;
+    }
+</style>
 <script src="{__PLUG_PATH}echarts.common.min.js"></script>
 {/block}
 {block name="content"}

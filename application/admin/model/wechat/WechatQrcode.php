@@ -10,7 +10,7 @@ namespace app\admin\model\wechat;
 
 use traits\ModelTrait;
 use basic\ModelBasic;
-use service\WechatService;
+use app\core\util\WechatService;
 
 /**
  * 获取二维码

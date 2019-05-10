@@ -12,14 +12,14 @@ use app\admin\model\order\StoreOrder;
 use app\admin\model\user\User;
 use app\admin\model\user\UserExtract;
 use service\ExportService;
-use service\QrcodeService;
+use app\core\util\QrcodeService;
 use think\Cache;
 use think\Config;
 use traits\ModelTrait;
 use basic\ModelBasic;
-use service\WechatService;
+use app\core\util\WechatService;
 use service\PHPExcelService;
-use service\SystemConfigService;
+use app\core\util\SystemConfigService;
 
 /**
  * 微信用户 model

@@ -21,9 +21,6 @@ class SystemAttachment extends AuthController
     public function upload()
     {
         $res = Upload::image('upfile','editor/'.date('Ymd'));
-        if($res->status==false && $res->error){
-            exit(json_encode(['state'=>$res->error]));
-        }
         //产品图片上传记录
         $fileInfo = $res->fileInfo->getinfo();
         $thumbPath = Upload::thumb($res->dir);

@@ -11,7 +11,7 @@ use traits\ModelTrait;
 use basic\ModelBasic;
 
 /**
- * Class SystemAdmin
+ * Class Express
  * @package app\admin\model\system
  */
 class Express extends ModelBasic

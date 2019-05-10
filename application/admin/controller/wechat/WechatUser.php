@@ -6,10 +6,10 @@ use app\admin\controller\AuthController;
 use service\FormBuilder as Form;
 use app\admin\model\user\User;
 use app\admin\model\wechat\WechatUser as UserModel;
-use app\wap\model\user\UserBill;
+use app\core\model\user\UserBill;
 use service\JsonService;
 use service\UtilService as Util;
-use service\WechatService;
+use app\core\util\WechatService;
 use think\Collection;
 use think\Request;
 use think\Url;
@@ -50,11 +50,18 @@ class WechatUser extends AuthController
         }
         $tagidList = array_unique($tagidList);
         $where['tagid_list'] = implode(',',$tagidList);
+        try{
+            $groupList=UserModel::getUserGroup();
+            $tagList=UserModel::getUserTag();
+        }catch (\Exception $e){
+            $groupList=[];
+            $tagList=[];
+        }
         $this->assign([
-                'where'=>$where,
-                'groupList'=>UserModel::getUserGroup(),
-                'tagList'=>UserModel::getUserTag()
-            ]);
+            'where'=>$where,
+            'groupList'=>$groupList,
+            'tagList'=>$tagList
+        ]);
         $limitTimeList = [
             'today'=>implode(' - ',[date('Y/m/d'),date('Y/m/d',strtotime('+1 day'))]),
             'week'=>implode(' - ',[
@@ -150,11 +157,14 @@ class WechatUser extends AuthController
      */
     public function tag($refresh = 0)
     {
+        $list=[];
         if($refresh == 1) {
             UserModel::clearUserTag();
             $this->redirect(Url::build('tag'));
         }
-        $list = UserModel::getUserTag();
+        try{
+            $list = UserModel::getUserTag();
+        }catch (\Exception $e){}
         $this->assign(compact('list'));
         return $this->fetch();
     }
@@ -243,11 +253,14 @@ class WechatUser extends AuthController
 
     public function group($refresh = 0)
     {
+        $list=[];
         if($refresh == 1) {
             UserModel::clearUserGroup();
             $this->redirect(Url::build('group'));
         }
-        $list = UserModel::getUserGroup();
+        try{
+            $list = UserModel::getUserGroup();
+        }catch (\Exception $e){}
         $this->assign(compact('list'));
         return $this->fetch();
     }

@@ -8,8 +8,7 @@
     {block name="head"}{/block}
 </head>
 <body class="gray-bg">
-<!--演示地址https://daneden.github.io/animate.css/?-->
-<div class="wrapper wrapper-content animated ">
+<div class="wrapper wrapper-content">
 {block name="content"}{/block}
 {block name="foot"}{/block}
 {block name="script"}{/block}

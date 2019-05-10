@@ -9,6 +9,7 @@ use app\admin\model\store\StoreProductAttrResult;
 use app\admin\model\store\StoreProductRelation;
 use app\admin\model\system\SystemConfig;
 use service\JsonService;
+use think\Db;
 use traits\CurdControllerTrait;
 use service\UtilService as Util;
 use service\JsonService as Json;
@@ -218,6 +219,7 @@ class StoreProduct extends AuthController
             ['is_postage',0],
         ],$request);
         if(count($data['cate_id']) < 1) return Json::fail('请选择产品分类');
+        $cate_id=$data['cate_id'];
         $data['cate_id'] = implode(',',$data['cate_id']);
         if(!$data['store_name']) return Json::fail('请输入产品名称');
         if(count($data['image'])<1) return Json::fail('请上传产品图片');
@@ -229,7 +231,10 @@ class StoreProduct extends AuthController
         $data['slider_image'] = json_encode($data['slider_image']);
         $data['add_time'] = time();
         $data['description'] = '';
-        ProductModel::set($data);
+        $res=ProductModel::set($data);
+        foreach ($cate_id as $cid){
+            Db::name('store_product_cate')->insert(['product_id'=>$res['id'],'cate_id'=>$cid,'add_time'=>time()]);
+        }
         return Json::successful('添加产品成功!');
     }
 
@@ -271,7 +276,7 @@ class StoreProduct extends AuthController
             Form::input('keyword','产品关键字',$product->getData('keyword'))->placeholder('多个用英文状态下的逗号隔开'),
             Form::input('unit_name','产品单位',$product->getData('unit_name')),
             Form::frameImageOne('image','产品主图片(305*305px)',Url::build('admin/widget.images/index',array('fodder'=>'image')),$product->getData('image'))->icon('image')->width('100%')->height('500px'),
-            Form::frameImages('slider_image','产品轮播图(640*640px)',Url::build('admin/widget.images/index',array('fodder'=>'slider_image')),json_decode($product->getData('slider_image'),1))->maxLength(5)->icon('images')->width('100%')->height('500px'),
+            Form::frameImages('slider_image','产品轮播图(640*640px)',Url::build('admin/widget.images/index',array('fodder'=>'slider_image')),json_decode($product->getData('slider_image'),1) ? : [])->maxLength(5)->icon('images')->width('100%')->height('500px'),
             Form::number('price','产品售价',$product->getData('price'))->min(0)->precision(2)->col(8),
             Form::number('ot_price','产品市场价',$product->getData('ot_price'))->min(0)->col(8),
             Form::number('give_integral','赠送积分',$product->getData('give_integral'))->min(0)->precision(0)->col(8),
@@ -329,6 +334,7 @@ class StoreProduct extends AuthController
             ['is_postage',0],
         ],$request);
         if(count($data['cate_id']) < 1) return Json::fail('请选择产品分类');
+        $cate_id=$data['cate_id'];
         $data['cate_id'] = implode(',',$data['cate_id']);
         if(!$data['store_name']) return Json::fail('请输入产品名称');
         if(count($data['image'])<1) return Json::fail('请上传产品图片');
@@ -340,6 +346,10 @@ class StoreProduct extends AuthController
         $data['image'] = $data['image'][0];
         $data['slider_image'] = json_encode($data['slider_image']);
         ProductModel::edit($data,$id);
+        Db::name('store_product_cate')->where('product_id',$id)->delete();
+        foreach ($cate_id as $cid){
+            Db::name('store_product_cate')->insert(['product_id'=>$id,'cate_id'=>$cid,'add_time'=>time()]);
+        }
         return Json::successful('修改成功!');
     }
 

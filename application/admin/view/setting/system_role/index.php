@@ -12,6 +12,23 @@
             <div class="ibox-content">
                 <div class="row">
                     <div class="m-b m-l">
+                        <?php /*  <form action="" class="form-inline">
+                              <i class="fa fa-search" style="margin-right: 10px;"></i>
+                              <select name="is_show" aria-controls="editable" class="form-control input-sm">
+                                  <option value="">是否显示</option>
+                                  <option value="1" {eq name="params.is_show" value="1"}selected="selected"{/eq}>显示</option>
+                                  <option value="0" {eq name="params.is_show" value="0"}selected="selected"{/eq}>不显示</option>
+                              </select>
+                              <select name="access" aria-controls="editable" class="form-control input-sm">
+                                  <option value="">子管理员是否可用</option>
+                                  <option value="1" {eq name="params.access" value="1"}selected="selected"{/eq}>可用</option>
+                                  <option value="0" {eq name="params.access" value="0"}selected="selected"{/eq}>不可用</option>
+                              </select>
+                          <div class="input-group">
+                              <input type="text" name="keyword" value="{$params.keyword}" placeholder="请输入关键词" class="input-sm form-control"> <span class="input-group-btn">
+                                      <button type="submit" class="btn btn-sm btn-primary"> 搜索</button> </span>
+                          </div>
+                          </form>  */ ?>
                         <form action="" class="form-inline">
 
                             <select name="status" aria-controls="editable" class="form-control input-sm">

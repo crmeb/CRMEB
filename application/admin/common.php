@@ -102,3 +102,18 @@ function clearfile($path,$ext = '*.log')
     }
     return true;
 }
+/**获取当前类方法
+ * @param $class
+ * @return array
+ */
+function get_this_class_methods($class,$array4 = []) {
+    $array1 = get_class_methods($class);
+    if ($parent_class = get_parent_class($class)) {
+        $array2 = get_class_methods($parent_class);
+        $array3 = array_diff($array1, $array2);//去除父级的
+    } else {
+        $array3 = $array1;
+    }
+    $array5 = array_diff($array3, $array4);//去除无用的
+    return $array5;
+}
