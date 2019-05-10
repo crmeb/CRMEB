@@ -163,6 +163,8 @@ setTimeout(function(){
                         var api = globalMethods(this,swal);
                         api.closeModalFrame = function(name){
                             layer.close(layer.getFrameIndex(name) || name);
+                            //关闭页面刷新
+                            // window.frames[$(".page-tabs-content .active").index()].location.reload();
                         };
                         api.h = this.$createElement;
                         api.axios = axios;
@@ -187,7 +189,7 @@ setTimeout(function(){
                             content: src,//内容
                             move:'.layui-layer-title',// 默认".layui-layer-title",// 触发拖动的元素
                             moveEnd:function(){//拖动之后回调
-                                console.log(this);
+                                // console.log(this);
 
                             }
                         });

@@ -203,7 +203,7 @@
         _params = Object.keys(p).map(function(key){
             return key+'/'+p[key];
         }).join('/');
-        return "/index.php/"+m+"/"+c+"/"+a+(_params == '' ? '' : '/'+_params)+(q == '' ? '' : '?'+q);
+        return "/"+m+"/"+c+"/"+a+(_params == '' ? '' : '/'+_params)+(q == '' ? '' : '?'+q);
     };
 
     $h.isLogin = function(){

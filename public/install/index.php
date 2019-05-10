@@ -369,19 +369,6 @@ function testwrite($d) {
 
 }
 
-function sql_execute($sql, $tablepre) {
-    $sqls = sql_split($sql, $tablepre);
-    if (is_array($sqls)) {
-        foreach ($sqls as $sql) {
-            if (trim($sql) != '') {
-                mysqli_query($sql);
-            }
-        }
-    } else {
-        mysqli_query($sqls);
-    }
-    return true;
-}
 
 function sql_split($sql, $tablepre) {
 
