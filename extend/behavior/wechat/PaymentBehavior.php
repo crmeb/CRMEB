@@ -9,12 +9,12 @@ namespace behavior\wechat;
 
 
 use app\admin\model\wechat\WechatMessage;
-use app\routine\model\store\StoreOrder as StoreOrderRoutineModel;
+use app\ebapi\model\store\StoreOrder as StoreOrderRoutineModel;
 use app\wap\model\store\StoreOrder as StoreOrderWapModel;
 use app\wap\model\user\UserRecharge;
 use service\HookService;
-use service\WechatService;
-use service\MiniProgramService;
+use app\core\util\WechatService;
+use app\core\util\MiniProgramService;
 
 class PaymentBehavior
 {
@@ -70,6 +70,7 @@ class PaymentBehavior
 
     /**
      * 商品订单支付成功后  小程序
+     *
      * @param $orderId
      * @param $notify
      * @return bool
@@ -129,9 +130,7 @@ class PaymentBehavior
      */
     public static function routinePayOrderRefund($orderNo, array $opt)
     {
-        $refundDesc = isset($opt['desc']) ? $opt['desc'] : '';
-        $res = MiniProgramService::payOrderRefund($orderNo,$opt);//2.5.36
-//        $res = RoutineRefund::doRefund($opt['pay_price'],$opt['refund_price'],$orderNo,'',$orderNo,$refundDesc);
+         return MiniProgramService::payOrderRefund($orderNo,$opt);//2.5.36
     }
 
     /**

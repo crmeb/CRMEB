@@ -8,14 +8,14 @@
 namespace behavior\routine;
 
 
-use app\routine\model\store\StoreOrder;
-use app\routine\model\routine\RoutineTemplate;
-use app\routine\model\user\User;
-use app\routine\model\user\WechatUser;
-use app\routine\model\user\UserAddress;
+use app\ebapi\model\store\StoreOrder;
+use app\core\model\routine\RoutineTemplate;
+use app\core\model\user\User;
+use app\ebapi\model\user\WechatUser;
+use app\ebapi\model\user\UserAddress;
 use app\admin\model\order\StoreOrder as StoreOrderAdminModel;
-use service\SystemConfigService;
-use service\WechatTemplateService;
+use app\core\util\SystemConfigService;
+use app\core\util\WechatTemplateService;
 
 class StoreProductBehavior
 {

@@ -7,16 +7,9 @@
 
 namespace behavior\admin;
 
-use app\admin\model\routine\RoutineFormId;
-use basic\ModelBasic;
 use app\admin\model\user\User;
 use app\admin\model\order\StoreOrder as AdminStoreOrder;
-use app\admin\model\user\UserAddress;
-use app\admin\model\user\UserBill;
-use app\admin\model\wechat\WechatUser;
-use service\SystemConfigService;
-use service\WechatTemplateService;
-use service\RoutineTemplateService;
+use app\core\util\WechatTemplateService;
 
 class OrderBehavior
 {
@@ -44,7 +37,6 @@ class OrderBehavior
      */
     public static function storeProductOrderDeliveryGoodsAfter($data,$oid){
         AdminStoreOrder::orderPostageAfter($oid,$data);
-//        AdminStoreOrder::sendOrderGoods($oid,$data);
     }
 
     /**
@@ -84,7 +76,7 @@ class OrderBehavior
      * $oid  string store_order表中的id
      */
     public static function storeProductOrderRefundNAfter($data,$oid){
-
+        AdminStoreOrder::refundNoPrieTemplate($oid,$data);
     }
     /**
      * 线下付款

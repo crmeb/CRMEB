@@ -37,6 +37,9 @@ class UserBehavior
             WechatUser::edit($wechatInfo,$wechatInfo['openid'],'openid');
             User::updateWechatUser($wechatInfo,WechatUser::openidToUid($wechatInfo['openid']));
         }else{
+            if(isset($wechatInfo['subscribe_scene'])) unset($wechatInfo['subscribe_scene']);
+            if(isset($wechatInfo['qr_scene'])) unset($wechatInfo['qr_scene']);
+            if(isset($wechatInfo['qr_scene_str'])) unset($wechatInfo['qr_scene_str']);
             $wechatInfo = WechatUser::set($wechatInfo);
             User::setWechatUser($wechatInfo);
         }

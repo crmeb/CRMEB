@@ -12,7 +12,7 @@ use app\admin\model\wechat\WechatMessage;
 use app\admin\model\wechat\WechatReply;
 use app\wap\model\user\WechatUser;
 use service\HookService;
-use service\QrcodeService;
+use app\core\util\QrcodeService;
 
 /**
  * 用户消息行为

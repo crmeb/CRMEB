@@ -17,8 +17,8 @@ use app\wap\model\user\UserBill;
 use app\wap\model\user\WechatUser;
 use basic\ModelBasic;
 use app\admin\model\order\StoreOrder as StoreOrderAdminModel;
-use service\SystemConfigService;
-use service\WechatTemplateService;
+use app\core\util\SystemConfigService;
+use app\core\util\WechatTemplateService;
 
 class StoreProductBehavior
 {

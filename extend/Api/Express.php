@@ -9,7 +9,7 @@ namespace Api;
 
 
 use service\HttpService;
-use service\SystemConfigService;
+use app\core\util\SystemConfigService;
 
 class Express
 {
