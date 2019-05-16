@@ -1,0 +1,10 @@
+{
+  "usingComponents": {
+    "navbar": "/components/navbar/index",
+    "orderGoods": "/components/orderGoods/index",
+    "coupon-list-window": "/components/coupon-list-window/index",
+    "address-window": "/components/address-window/index",
+    "authorize": "/components/authorize/authorize",
+    "home": "/components/home/index"
+  }
+}

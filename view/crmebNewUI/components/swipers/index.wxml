@@ -1,0 +1,12 @@
+    <view class='swiper'>
+        <swiper autoplay="{{autoplay}}" circular="{{circular}}" interval="{{interval}}" duration="{{duration}}" bindchange="swiperChange">
+            <block wx:for="{{imgUrls}}" wx:key>
+              <swiper-item>
+                <navigator url="{{item.link}}" style='width:100%;height:100%;' hover-class='none'><image src="{{item.img}}" class="slide-image"/></navigator>
+              </swiper-item>
+            </block>
+        </swiper>
+        <view class="dots acea-row">
+          <view class="dot {{index == currentSwiper ? 'active' : ''}}" wx:for="{{imgUrls}}" wx:key></view>
+        </view>
+    </view>

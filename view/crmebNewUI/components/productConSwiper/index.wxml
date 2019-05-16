@@ -1,0 +1,11 @@
+    <view class='product-bg'>
+        <swiper  indicator-dots="{{indicatorDots}}"
+            autoplay="{{autoplay}}" circular="{{circular}}" interval="{{interval}}" duration="{{duration}}" bindchange="change">
+            <block wx:for="{{imgUrls}}" wx:key> 
+                   <swiper-item>
+                <image src="{{item}}" class="slide-image"/>
+              </swiper-item>
+            </block>
+        </swiper>
+        <view class='pages'>{{currents}}/{{imgUrls.length || 1}}</view>
+    </view>

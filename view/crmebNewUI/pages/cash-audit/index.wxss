@@ -1,0 +1,6 @@
+.cash-audit{width:710rpx;background-color:#fff;border-radius:6rpx;margin:25rpx auto 0 auto;padding:53rpx 0 58rpx 0;}
+.cash-audit .pictrue{width:214rpx;height:179rpx;margin:0 auto;}
+.cash-audit .pictrue image{width:100%;height:100%;}
+.cash-audit .tip{font-size:32rpx;color:#282828;margin-top:40rpx;text-align:center;padding:0 40rpx;}
+.cash-audit .time{font-size:26rpx;color:#999;text-align:center;margin-top:15rpx;}
+.cash-audit .bnt{font-size:32rpx;color:#fff;width:500rpx;height:86rpx;border-radius:43rpx;text-align:center;line-height:86rpx;margin:50rpx auto 0 auto;}

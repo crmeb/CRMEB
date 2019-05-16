@@ -1,0 +1,28 @@
+.my-order .header{height:260rpx;padding:0 30rpx;}
+.my-order .header .picTxt{height:190rpx;}
+.my-order .header .picTxt .text{color:rgba(255, 255, 255, 0.8);font-size:26rpx;font-family: 'Guildford Pro';}
+.my-order .header .picTxt .text .name{font-size:34rpx;font-weight:bold;color:#fff;margin-bottom:20rpx;}
+.my-order .header .picTxt .pictrue{width:122rpx;height:109rpx;}
+.my-order .header .picTxt .pictrue image{width:100%;height:100%;}
+.my-order .nav{background-color:#fff;width:690rpx;height:140rpx;border-radius:6rpx;margin:-73rpx auto 0 auto;}
+.my-order .nav .item{text-align:center;font-size:26rpx;color:#282828;padding:29rpx 0;}
+.my-order .nav .item.on{font-weight:bold;border-bottom:5rpx solid #e93323;}
+.my-order .nav .item .num{margin-top:18rpx;}
+.my-order .list{width:690rpx;margin:14rpx auto 0 auto;}
+.my-order .list .item{background-color:#fff;border-radius:6rpx;margin-bottom:14rpx;}
+.my-order .list .item .title{height:84rpx;padding:0 30rpx;border-bottom:1rpx solid #eee;font-size:28rpx;color:#282828;}
+.my-order .list .item .item-info{padding:0 30rpx;margin-top:22rpx;}
+.my-order .list .item .item-info .pictrue{width:120rpx;height:120rpx;}
+.my-order .list .item .item-info .pictrue image{width:100%;height:100%;border-radius:6rpx;}
+.my-order .list .item .item-info .text{width:486rpx;font-size:28rpx;color:#999;margin-top:6rpx;}
+.my-order .list .item .item-info .text .name{width:306rpx;color:#282828;}
+.my-order .list .item .item-info .text .money{text-align:right;}
+.my-order .list .item .totalPrice{font-size:26rpx;color:#282828;text-align:right;margin:27rpx 0 0 30rpx;padding:0 30rpx 30rpx 0;border-bottom:1rpx solid #eee;}
+.my-order .list .item .totalPrice .money{font-size:28rpx;font-weight:bold;}
+.my-order .list .item .bottom{height:107rpx;padding:0 30rpx;}
+.my-order .list .item .bottom .bnt{width:176rpx;height:60rpx;text-align:center;line-height:60rpx;color:#fff;border-radius:50rpx;font-size:27rpx;}
+.my-order .list .item .bottom .bnt.cancelBnt{border:1rpx solid #ddd;color:#aaa;}
+.my-order .list .item .bottom .bnt~.bnt{margin-left:17rpx;}
+ .noCart{margin-top:171rpx;padding-top: 0.1rpx;}
+ .noCart .pictrue{width:414rpx;height:336rpx;margin:78rpx auto 56rpx auto;}
+ .noCart .pictrue image{width:100%;height:100%;}

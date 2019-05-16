@@ -1,0 +1,22 @@
+<navbar parameter='{{parameter}}'></navbar>
+<view class='searchGood'>
+   <view class='search acea-row row-between-wrapper'>
+      <view class='input acea-row row-between-wrapper'>
+        <text class='iconfont icon-sousuo2'></text>
+        <input type='text' value='{{searchValue}}' focus="{{focus}}" placeholder='点击搜索商品' placeholder-class='placeholder' bindblur='setValue'></input>
+      </view>
+      <view class='bnt' bindtap='searchBut'>搜索</view>
+   </view>
+   <view class='title'>热门搜索</view>
+   <view class='list acea-row'>
+     <block wx:for="{{hotSearchList}}" wx:key>
+      <view class='item' bindtap='setHotSearchValue' data-item="{{item.title}}">{{item.title}}</view>
+     </block> 
+   </view>
+   <view class='line'></view>
+   <goodList bastList="{{bastList}}" wx:if="{{bastList.length > 0}}"></goodList>
+</view>
+<view class='noCommodity'>
+   <view class='pictrue' wx:if="{{bastList.length == 0}}"><image src='/images/noSearch.png'></image></view>
+   <recommend host_product='{{host_product}}'></recommend>
+</view>

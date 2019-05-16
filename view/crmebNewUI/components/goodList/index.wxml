@@ -1,0 +1,21 @@
+       <view class='goodList'>
+          <block wx:for="{{bastList}}" wx:key>
+            <navigator url='/pages/goods_details/index?id={{item.id}}' class='item acea-row row-between-wrapper'>
+              <view class='pictrue'>
+                <image src='{{item.image}}'></image>
+                <image wx:if="{{index == 0 && status == 1}}" src='/images/one.png' class='numPic'></image>
+                <image wx:if="{{index == 1 && status == 1}}" src='/images/two.png' class='numPic'></image>
+                <image wx:if="{{index == 2 && status == 1}}" src='/images/three.png' class='numPic'></image>
+              </view>
+              <view class='underline'>
+                  <view class='text'>
+                      <view class='line1'>{{item.store_name}}</view>
+                      <view class='money font-color'>￥<text class='num'>{{item.price}}</text></view>
+                      <view class='vip-money acea-row row-middle'>￥{{item.vip_price || 0}}<image wx:if='{{item.vip_price && item.vip_price > 0}}' src='/images/vip.png'></image><text class='num'>已售{{item.sales}}{{item.unit_name}}</text></view>
+                    
+                  </view>
+              </view>
+              <view class='iconfont icon-gouwuche cart-color acea-row row-center-wrapper'></view>
+            </navigator>
+          </block>   
+       </view>

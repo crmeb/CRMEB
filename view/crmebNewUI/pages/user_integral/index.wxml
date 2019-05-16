@@ -1,0 +1,55 @@
+<navbar parameter='{{parameter}}'></navbar>
+<view class='integral-details'>
+  <view class='header'>
+    <view class='currentScore'>当前积分</view>
+    <view style='font-family: "Guildford Pro";'>{{userInfo.integral}}</view>
+    <view class='line'></view>
+    <view class='nav acea-row'>
+       <view class='item'>
+         <view class='num'>{{userInfo.sum_integral}}</view>
+         <view>累计积分</view>
+       </view>
+       <view class='item'>
+         <view class='num'>{{userInfo.deduction_integral}}</view>
+         <view>累计消费</view>
+       </view>
+       <view class='item'>
+         <view class='num'>{{userInfo.today_integral}}</view>
+         <view>今日获得</view>
+       </view>
+    </view>
+  </view>
+  <view class='wrapper'>
+     <view class='nav acea-row'>
+        <view class='item acea-row row-center-wrapper {{current==index?"on":""}}' 
+        wx:for='{{navList}}' bindtap='nav' data-idx='{{index}}' wx:key><text class='iconfont {{item.icon}}'></text>{{item.name}}</view>
+     </view>
+     <view class='list' hidden='{{current!=0}}'>
+        <view class='tip acea-row row-middle'><text class='iconfont icon-shuoming'></text>提示：积分数值的高低会直接影响您的会员等级</view>
+        <view class='item acea-row row-between-wrapper' wx:for="{{integralList}}" wx:key>
+           <view>
+              <view class='state'>{{item.mark}}</view>
+              <view>{{item.add_time}}</view>
+           </view>
+           <view class='num font-color' wx:if="{{item.pm}}">+{{item.number}}</view>
+           <view class='num' wx:else>-{{item.number}}</view>
+        </view>
+        <view class='loadingicon acea-row row-center-wrapper'>
+        <text class='loading iconfont icon-jiazai' hidden='{{loading==false}}'></text>{{loadTitle}}
+     </view>
+     </view>
+     <view class='list2' hidden='{{current!=1}}'>
+        <navigator class='item acea-row row-between-wrapper' open-type='switchTab' hover-class='none' url='/pages/index/index'>
+           <view class='pictrue'><image src='/images/score.png'></image></view>
+           <view class='name'>购买商品可获得积分奖励</view>
+           <view class='earn'>赚积分</view>
+        </navigator>
+        <navigator class='item acea-row row-between-wrapper' hover-class='none' url='/pages/user_sgin/index'>
+           <view class='pictrue'><image src='/images/score.png'></image></view>
+           <view class='name'>每日签到可获得积分奖励</view>
+           <view class='earn'>赚积分</view>
+        </navigator>
+     </view>
+  </view>
+</view>
+<authorize bind:onLoadFun="onLoadFun"></authorize>

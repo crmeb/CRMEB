@@ -1,0 +1,34 @@
+<navbar parameter='{{parameter}}'></navbar>
+
+<form bindsubmit="formSubmit">
+<view class='addAddress'>
+   <view class='list'>
+      <view class='item acea-row row-between-wrapper'>
+          <view class='name'>姓名</view>
+          <input type='text' placeholder='请输入姓名' name='real_name' value="{{userAddress.real_name}}" placeholder-class='placeholder'></input>
+      </view>
+      <view class='item acea-row row-between-wrapper'>
+          <view class='name'>联系电话</view>
+          <input type='text' placeholder='请输入联系电话' name="phone" value='{{userAddress.phone}}' placeholder-class='placeholder'></input>
+      </view>
+      <view class='item acea-row row-between-wrapper'>
+          <view class='name'>所在地区</view>
+          <picker mode="region" bindchange="bindRegionChange" value="{{region}}" custom-item="{{customItem}}">
+            <view class='acea-row row-between-wrapper'>
+              <view class="picker">{{region[0]}}，{{region[1]}}，{{region[2]}}</view>
+              <view class='iconfont icon-dizhi font-color'></view>
+            </view>
+          </picker>
+      </view>
+        <view class='item acea-row row-between-wrapper'>
+          <view class='name'>详细地址</view>
+          <input type='text' placeholder='请填写具体地址' name='detail' placeholder-class='placeholder' value='{{userAddress.detail}}'></input>
+      </view>
+   </view>
+   <view class='default acea-row row-middle'>
+      <checkbox-group bindchange='ChangeIsDefault'><checkbox checked="{{userAddress.is_default ? true : false }}"/>设置为默认地址</checkbox-group>
+   </view>
+   <button class='keepBnt bg-color' formType="submit">立即保存</button>
+</view>
+</form>
+<authorize bind:onLoadFun='onLoadFun'></authorize>

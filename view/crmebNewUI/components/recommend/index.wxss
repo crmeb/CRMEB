@@ -1,0 +1,13 @@
+@import '/app.wxss';
+.recommend{background-color:#fff;}
+.recommend .title{height:135rpx;font-size:28rpx;color:#282828;}
+.recommend .title .name{margin:0 28rpx;}
+.recommend .title .iconfont{font-size:170rpx;color:#454545;}
+.recommend .title .iconfont.lefticon{transform:rotate(180deg);}
+.recommend .recommendList{padding:0 30rpx;}
+.recommend .recommendList .item{width:335rpx;margin-bottom:30rpx;}
+.recommend .recommendList .item .pictrue{width:100%;height:335rpx;}
+.recommend .recommendList .item .pictrue image{width:100%;height:100%;border-radius:6rpx;}
+.recommend .recommendList .item .name{font-size:28rpx;color:#282828;margin-top:20rpx;}
+.recommend .recommendList .item .money{font-size:20rpx;margin-top:8rpx;}
+.recommend .recommendList .item .money .num{font-size:28rpx;}

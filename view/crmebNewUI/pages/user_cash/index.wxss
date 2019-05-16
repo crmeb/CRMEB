@@ -1,0 +1,19 @@
+page{background-color:#fff!important;}
+.cash-withdrawal .nav{height:130rpx;box-shadow:0 10rpx 10rpx #f8f8f8;}
+.cash-withdrawal .nav .item{font-size:26rpx;flex:1;text-align:center;}
+.cash-withdrawal .nav .item~.item{border-left:1px solid #f0f0f0;}
+.cash-withdrawal .nav .item .iconfont{width:40rpx;height:40rpx;border-radius:50%;border:2rpx solid #e93323;text-align:center;line-height:37rpx;margin:0 auto 6rpx auto;font-size:22rpx;box-sizing:border-box;}
+.cash-withdrawal .nav .item .iconfont.on{background-color:#e93323;color:#fff;border-color:#e93323;}
+.cash-withdrawal .nav .item .line{width:2rpx;height:20rpx;margin:0 auto;transition:height 0.3s;}
+.cash-withdrawal .nav .item .line.on{height:39rpx;}
+.cash-withdrawal .wrapper .list{padding:0 30rpx;}
+.cash-withdrawal .wrapper .list .item{border-bottom:1rpx solid #eee;height:107rpx;font-size:30rpx;color:#333;}
+.cash-withdrawal .wrapper .list .item .name{width:130rpx;}
+.cash-withdrawal .wrapper .list .item .input{width:505rpx;}
+.cash-withdrawal .wrapper .list .item .input .placeholder{color:#bbb;}
+.cash-withdrawal .wrapper .list .tip{font-size:26rpx;color:#999;margin-top:25rpx;}
+.cash-withdrawal .wrapper .list .bnt{font-size:32rpx;color:#fff;width:690rpx;height:90rpx;text-align:center;border-radius:50rpx;line-height:90rpx;margin:64rpx auto;}
+.cash-withdrawal .wrapper .list .tip2{font-size:26rpx;color:#999;text-align:center;margin:44rpx 0 20rpx 0;}
+.cash-withdrawal .wrapper .list .value{height:135rpx;line-height:135rpx;border-bottom:1rpx solid #eee;width:690rpx;margin:0 auto;}
+.cash-withdrawal .wrapper .list .value input{font-size:80rpx;color:#282828;height:135rpx;text-align:center;}
+.cash-withdrawal .wrapper .list .value .placeholder2{color:#bbb;}

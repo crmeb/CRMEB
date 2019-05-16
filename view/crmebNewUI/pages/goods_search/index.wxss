@@ -1,0 +1,12 @@
+page{background-color:#fff!important;}
+.searchGood .search{padding-left:30rpx;}
+.searchGood .search{margin-top:20rpx;}
+.searchGood .search .input{width:598rpx;background-color:#f7f7f7;border-radius:33rpx;padding:0 35rpx;box-sizing:border-box;height:66rpx;}
+.searchGood .search .input input{width:472rpx;font-size:28rpx;}
+.searchGood .search .input .placeholder{color:#bbb;}
+.searchGood .search .input .iconfont{color:#000;font-size:35rpx;}
+.searchGood .search .bnt{width:120rpx;text-align:center;height:66rpx;line-height:66rpx;font-size:30rpx;color:#282828;}
+.searchGood .title{font-size:28rpx;color:#999;margin:50rpx 30rpx 25rpx 30rpx;}
+.searchGood .list{padding-left:10rpx;}
+.searchGood .list .item{font-size:26rpx;color:#454545;padding:0 21rpx;height:60rpx;border-radius:3rpx;line-height:60rpx;border:1rpx solid #aaa;margin:0 0 20rpx 20rpx;}
+.searchGood .line{border-bottom:1rpx solid #eee;margin:20rpx 30rpx 0 30rpx;}

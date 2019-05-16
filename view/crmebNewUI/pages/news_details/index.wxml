@@ -1,0 +1,14 @@
+<navbar parameter='{{parameter}}'></navbar>
+<view class='newsDetail'>
+   <view class='title'>{{articleInfo.title}}</view>
+   <view class='list acea-row row-middle'>
+      <view class='label cart-color'>{{articleInfo.cart_name}}</view>
+      <view class='item'><text class='iconfont icon-shenhezhong'></text>{{articleInfo.add_time}}</view>
+      <view class='item'><text class='iconfont icon-liulan'></text>{{articleInfo.visit}}</view>
+   </view>
+   <view class='conter'>
+     <template is="wxParse" data="{{wxParseData:content.nodes}}"/>
+   </view>
+</view>
+<import src="/wxParse/wxParse.wxml"/>
+<home></home>

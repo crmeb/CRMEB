@@ -1,0 +1,7 @@
+{
+  "usingComponents": {
+    "navbar": "/components/navbar/index",
+    "swipers": "/components/swipers/index",
+    "goodList": "/components/goodList/index"
+  }
+}

@@ -1,0 +1,10 @@
+<!--pages/authorize/authorize.wxml-->
+<view class='Popup' hidden='{{iShidden}}'>
+   <image src='{{url}}{{logo_url}}'></image>
+   <view class='title'>授权提醒</view>
+   <view class='tip'>请授权头像等信息，以便为您提供更好的服务</view>
+   <view class='bottom flex'>
+      <button class='item grant on'  type="primary" open-type="getUserInfo" lang="zh_CN" bindgetuserinfo="setUserInfo">去授权</button>
+   </view>
+</view>
+<view class='mask' hidden='{{iShidden}}' catchtouchmove="true" bindtap='close'></view>

@@ -1,0 +1,61 @@
+<navbar parameter='{{parameter}}'></navbar>
+<view class='cash-withdrawal'>
+   <view class='nav acea-row'>
+        <view wx:for='{{navList}}' wx:key class='item font-color' data-current="{{index}}"  bindtap="swichNav">
+            <view class='line bg-color {{currentTab==index ? "on":""}}'></view>
+            <view class='iconfont {{item.icon}} {{currentTab==index ? "on":""}}'></view>
+            <view>{{item.name}}</view>
+        </view>
+    </view>
+     <view class='wrapper'>
+        <view hidden='{{currentTab != 0}}' class='list'>
+          <form bindsubmit="subCash" report-submit='true'>
+             <view class='item acea-row row-between-wrapper'>
+                 <view class='name'>持卡人</view>
+                 <view class='input'><input placeholder='请输入持卡人姓名' placeholder-class='placeholder' name="name"></input></view>
+             </view>
+              <view class='item acea-row row-between-wrapper'>
+                 <view class='name'>卡号</view>
+                 <view class='input'><input type='number' placeholder='请填写卡号' placeholder-class='placeholder' name="cardnum"></input></view>
+             </view>
+              <view class='item acea-row row-between-wrapper'>
+                 <view class='name'>银行</view>
+                 <view class='input'>
+                     <picker bindchange="bindPickerChange" value="{{index}}" range="{{array}}">
+                        <text class='Bank'>{{array[index]}}</text>
+                        <text class='iconfont icon-qiepian38'></text>
+                     </picker>
+                 </view>
+             </view>
+             <view class='item acea-row row-between-wrapper'>
+                 <view class='name'>提现</view>
+                 <view class='input'><input placeholder='最低提现金额{{minPrice}}' placeholder-class='placeholder' name="money" type='digit'></input></view>
+             </view>
+             <view class='tip'>当前可提现金额: {{userInfo.brokerage}}</view>
+             <button formType="submit" class='bnt bg-color'>提现</button>
+          </form>  
+        </view>
+        <view hidden='{{currentTab != 1}}' class='list'>
+          <form bindsubmit="subCash" report-submit='true'>
+             <view class='tip2'>当前可提现金额: {{userInfo.brokerage}}</view>
+             <view class='value'><input placeholder='0' type='digit' placeholder-class='placeholder2' name="money"></input></view>
+             <button formType="submit" class='bnt bg-color'>提现</button>
+          </form>   
+        </view>
+        <view hidden='{{currentTab != 2}}' class='list'>
+          <form bindsubmit="subCash" report-submit='true'>
+              <view class='item acea-row row-between-wrapper'>
+                 <view class='name'>账号</view>
+                 <view class='input'><input placeholder='请填写您的支付宝账号' placeholder-class='placeholder' name="name"></input></view>
+             </view>
+              <view class='item acea-row row-between-wrapper'>
+                 <view class='name'>提现</view>
+                 <view class='input'><input placeholder='最低提现金额{{minPrice}}' placeholder-class='placeholder' name="money" type='digit'></input></view>
+             </view>
+             <view class='tip'>当前可提现金额: {{userInfo.brokerage}}</view>
+             <button formType="submit" class='bnt bg-color'>提现</button>
+          </form>   
+        </view>
+    </view>
+</view>
+<authorize bind:onLoadFun='onLoadFun'></authorize>

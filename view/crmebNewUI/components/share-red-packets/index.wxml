@@ -1,0 +1,13 @@
+<view class='sharing-packets {{sharePacket.isState==true?"on":""}}'>
+   <view class='iconfont icon-guanbi' bindtap='closeShare'></view>
+   <view class='line'></view>
+   <view class='sharing-con' bindtap='goShare'>
+      <image src='/images/red-packets.png'></image>
+      <view class='text font-color'>
+        <view>会员分享返</view>
+        <view class='money'><text class='label'>￥</text>{{sharePacket.priceName}}</view>
+        <view class='tip'>下单即返佣金</view>
+        <view class='shareBut'>立即分享</view>
+      </view>
+   </view>  
+</view>

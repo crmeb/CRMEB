@@ -1,0 +1,10 @@
+<navbar parameter='{{parameter}}'></navbar>
+<view class='quality-recommend'>
+   <swipers></swipers>
+   <view class='title acea-row row-center-wrapper'>
+      <view class='line'></view>
+      <view class='name'><text class='iconfont icon-jingpintuijian'></text>精品推荐</view>
+      <view class='line'></view>
+   </view>
+   <goodList></goodList>
+</view>

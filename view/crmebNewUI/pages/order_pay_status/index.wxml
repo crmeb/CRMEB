@@ -1,0 +1,37 @@
+<navbar parameter='{{parameter}}'></navbar>
+<view class='payment-status'>
+   <!--失败时： 用icon-iconfontguanbi fail替换icon-duihao2 bg-color-->
+   <view class='iconfont icon-duihao2 bg-color' wx:if="{{order_pay_info.paid}}"></view>
+   <view class='iconfont icon-iconfontguanbi bg-color' wx:else></view>
+   <!-- 失败时：订单支付失败 -->
+   <view class='status'>{{order_pay_info.paid ? '订单支付成功':'订单支付失败'}}</view>
+   <view class='wrapper'>
+      <view class='item acea-row row-between-wrapper'>
+         <view>订单编号</view>
+         <view class='itemCom'>{{orderId}}</view>
+      </view>
+      <view class='item acea-row row-between-wrapper'>
+         <view>下单时间</view>
+         <view class='itemCom'>{{order_pay_info._pay_time}}</view>
+      </view>
+      <view class='item acea-row row-between-wrapper'>
+         <view>支付方式</view>
+         <view class='itemCom'>{{order_pay_info._status._payType}}</view>
+      </view>
+      <view class='item acea-row row-between-wrapper'>
+         <view>支付金额</view>
+         <view class='itemCom'>{{order_pay_info.pay_price}}</view>
+      </view>
+      <!--失败时加上这个  -->
+      <view class='item acea-row row-between-wrapper' wx:if="{{order_pay_info.paid==0}}">
+         <view>失败原因</view>
+         <view class='itemCom'>{{status==2 ? '取消支付':msg}}</view>
+      </view>
+   </view>
+   <!--失败时： 重新购买 -->
+   <navigator class='returnBnt bg-color' hover-class='none' url='/pages/order_details/index?order_id={{orderId}}' wx:if="{{status==0}}">查看订单</navigator>
+   <navigator class='returnBnt bg-color' wx:if="{{order_pay_info.paid==0 && status==1}}" url='/pages/order_details/index?order_id={{orderId}}'>重新购买</navigator>
+   <navigator class='returnBnt bg-color' wx:if="{{order_pay_info.paid==0 && status==2}}" url='/pages/order_details/index?order_id={{orderId}}'>重新支付</navigator>
+   <navigator hover-class='none' url='/pages/index/index' open-type='switchTab' class='returnBnt cart-color'>返回首页</navigator>
+</view>
+<authorize bind:onLoadFun='onLoadFun'></authorize>

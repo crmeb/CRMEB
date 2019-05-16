@@ -1,0 +1,6 @@
+page{background-color:#a3a3a3!important;}
+.distribution-posters swiper{width:100%;height:1000rpx;position:relative;margin-top:40rpx;}
+.distribution-posters .slide-image{width:100%;height:100%;margin:0 auto;border-radius:15rpx;}
+.distribution-posters .slide-image.active{transform: none;transition: all 0.2s ease-in 0s;}
+.distribution-posters .slide-image.quiet{ transform: scale(0.8333333);transition: all 0.2s ease-in 0s;}
+.distribution-posters .keep{font-size:30rpx;color:#fff;width:600rpx;height:80rpx;border-radius:50rpx;text-align:center;line-height:80rpx;margin:38rpx auto;}

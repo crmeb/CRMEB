@@ -1,0 +1,11 @@
+.addAddress .list{background-color:#fff;}
+.addAddress .list .item{padding:0 30rpx;height:90rpx;border-top:1rpx solid #eee;}
+.addAddress .list .item .name{width:195rpx;font-size:30rpx;color:#333;}
+.addAddress .list .item input{width:475rpx;font-size:30rpx;}
+.addAddress .list .item .placeholder{color:#ccc;}
+.addAddress .list .item picker{width:475rpx;}
+.addAddress .list .item picker .picker{width:410rpx;font-size:30rpx;}
+.addAddress .list .item picker .iconfont{font-size:43rpx;}
+.addAddress .default{padding:0 30rpx;height:90rpx;background-color:#fff;margin-top:23rpx;}
+.addAddress .default checkbox{margin-right:15rpx;}
+.addAddress .keepBnt{width:690rpx;height:86rpx;border-radius:50rpx;text-align:center;line-height:86rpx;margin:50rpx auto;font-size:32rpx;color:#fff;}

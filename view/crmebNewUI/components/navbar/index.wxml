@@ -1,0 +1,13 @@
+<view class='navbar {{parameter.class}}' style='height:{{navH}}rpx'>
+   <view class='navbarH' style='height:{{navH}}rpx;'>
+      <view class='navbarCon acea-row row-center-wrapper' wx:if='{{parameter.navbar==0}}'>
+         <view class='search acea-row row-middle' bindtap='setGoodsSearch'><text class='iconfont icon-xiazai5'></text>搜索商品</view>
+         <view class='logo'><image src='{{logoUrl}}'></image></view>
+      </view>
+      <view class='navbarCon acea-row row-center-wrapper' wx:if='{{parameter.navbar==1}}'>
+         <view class='name {{parameter.color==true?"on":""}} line1'>{{parameter.title}}</view>
+         <view class='iconfont icon-xiangzuo {{parameter.color==true?"on":""}}' wx:if='{{parameter.return==1}}' bindtap='return'></view>
+      </view>
+   </view>
+</view>
+<view style='height:{{navH}}rpx'></view>

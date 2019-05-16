@@ -1,0 +1,33 @@
+<navbar parameter='{{parameter}}'></navbar>
+<view class='commission-details'>
+    <view class='promoterHeader bg-color'>
+        <view class='headerCon acea-row row-between-wrapper'>
+            <view>
+                <view class='name'>{{name}}</view>
+                <view class='money'>￥<text class='num'>{{recordCount}}</text></view>
+            </view>
+            <view class='iconfont icon-jinbi1'></view>
+        </view>
+    </view>
+    <view class='sign-record'>
+     <block wx:for="{{recordList}}" wx:key>
+      <view class='list'>
+          <view class='item'>
+            <view class='data'>{{item.money}}</view>
+            <view class='listn'>
+              <block wx:for="{{item.list}}" wx:for-item='child' wx:key>
+                <view class='itemn acea-row row-between-wrapper'>
+                  <view>
+                      <view class='name line1'>{{child.title}}</view>
+                      <view>{{child.add_time}}</view>
+                  </view>
+                  <view class='num font-color' wx:if="{{child.pm == 1}}">+{{child.number}}</view>
+                  <view class='num'  wx:else>-{{child.number}}</view>
+                </view>
+              </block> 
+            </view>
+          </view>
+      </view>
+     </block> 
+    </view>
+</view>

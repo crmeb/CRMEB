@@ -1,0 +1,178 @@
+<navbar parameter='{{parameter}}' logoUrl="{{logoUrl}}"></navbar>
+<view class='index'>
+    <view class='index-bg'>
+        <swiper indicator-dots="true"
+            autoplay="{{autoplay}}" circular="{{circular}}" interval="{{interval}}" duration="{{duration}}" indicator-color="rgba(255,255,255,0.6)" indicator-active-color="#fff">
+            <block wx:for="{{imgUrls}}" wx:key>
+              <swiper-item>
+                <navigator url='{{item.url}}' class='slide-navigator acea-row row-between-wrapper' hover-class='none'>
+                  <image src="{{item.pic}}" class="slide-image"/>
+                </navigator>                
+              </swiper-item>
+            </block>
+        </swiper>
+    </view>
+    <view class='nav acea-row'>
+      <block wx:for="{{menus}}" wx:key>
+        <navigator class='item' wx:if="{{item.show == '1'}}" url='{{item.url}}'  open-type='switchTab' hover-class='none'>
+          <view class='pictrue'><image src='{{item.pic}}'></image></view>
+          <view>{{item.name}}</view>
+        </navigator>
+        <navigator class='item' wx:else url='{{item.url}}' hover-class='none'>
+          <view class='pictrue'><image src='{{item.pic}}'></image></view>
+          <view>{{item.name}}</view>
+        </navigator>
+      </block> 
+    </view>
+    <view class='news acea-row row-between-wrapper'>
+       <view class='pictrue'><image src='/images/news.png'></image></view>
+       <view class='swiperTxt'>
+            <swiper indicator-dots="{{indicatorDots}}" autoplay="{{autoplay}}" interval="2500" duration="{{duration}}" vertical="true" circular="true">
+                <block wx:for="{{itemNew}}" wx:key>
+                    <swiper-item catchtouchmove='catchTouchMove'>
+                        <navigator wx:if="{{item.show == '1'}}" url='{{item.url}}'  open-type='switchTab' class='acea-row row-between-wrapper' hover-class='none'>
+                            <view class='text acea-row row-between-wrapper'>
+                                <view class='label border2' wx:if="{{item.id%2 == 0}}">最新</view>
+                                <view class='newsTitle line1'>{{item.info}}</view>
+                            </view>
+                            <view class='iconfont icon-xiangyou'></view>
+                        </navigator>
+                        <navigator wx:else open-type='navigate' url='{{item.url}}'  class='acea-row row-between-wrapper' hover-class='none'>
+                            <view class='text acea-row row-between-wrapper'>
+                                <view class='label border2' wx:if="{{item.id%2 == 0}}">最新</view>
+                                <view class='newsTitle line1'>{{item.info}}</view>
+                            </view>
+                            <view class='iconfont icon-xiangyou'></view>
+                        </navigator>
+                    </swiper-item>
+                  </block>
+              </swiper> 
+       </view>
+    </view>
+    <view class='specialArea acea-row row-between-wrapper'>
+      <block wx:for="{{activityList}}" wx:key>
+       <navigator class='assemble' url='{{item.link}}' wx:if="{{index < 1}}">
+          <image src='{{item.pic}}'></image>
+          <view class='text'>
+             <view class='name'>{{item.title}}</view>
+             <view class='infor'>{{item.info}}</view>
+          </view>
+       </navigator>
+      </block> 
+       <view class='list acea-row row-column-between'>
+          <block wx:for="{{activityList}}" wx:key>
+            <navigator class='item' url='{{item.link}}' wx:if="{{index > 0}}">
+              <image src='{{item.pic}}'></image>
+              <view class='text'>
+                  <view class='name'>{{item.title}}</view>
+                  <view class='infor'>{{item.info}}</view>
+              </view>
+            </navigator>
+          </block>  
+       </view>
+    </view>
+    <view class='wrapper'>
+       <view class='title acea-row row-between-wrapper'>
+          <view class='text'>
+             <view class='name line1'>快速选择</view>
+             <view class='line1'>{{fastInfo}}</view>
+          </view>
+          <navigator class='more' url='/pages/goods_cate/goods_cate' open-type='switchTab'>更多<text class='iconfont icon-jiantou'></text></navigator>
+       </view>
+       <view class='scroll-product'>
+          <scroll-view class="scroll-view_x" scroll-x style="width:auto;overflow:hidden;">
+              <block wx:for="{{fastList}}" wx:key>
+                 <navigator hover-class="none" class='item' url='/pages/goods_list/goods_list?sid={{item.id}}&title={{item.cate_name}}'>
+                    <view class='img-box'>
+                      <image src='{{item.pic}}'></image>
+                    </view>
+                    <view class='pro-info line1'>{{item.cate_name}}</view>
+                  </navigator>
+              </block>  
+           </scroll-view>
+        </view>
+    </view>
+     <view class='wrapper'>
+       <view class='title acea-row row-between-wrapper'>
+          <view class='text'>
+             <view class='name line1'>精品推荐</view>
+             <view class='line1'>{{bastInfo}}</view>
+          </view>
+          <navigator class='more' hover-class="none" url='/pages/first-new-product/index?type=1'>更多<text class='iconfont icon-jiantou'></text></navigator>
+       </view>
+       <view class='boutique'>
+            <swiper  autoplay="true"  indicator-dots="true"
+                 circular="{{circular}}" interval="{{interval}}" duration="{{duration}}" indicator-color="rgba(252,65,65,0.3)" indicator-active-color="#fc4141">
+                <block wx:for="{{bastBanner}}" wx:key>
+                  <swiper-item>
+                <navigator url='{{item.link}}' style='width:100%;height:100%;' hover-class='none'>
+                    <image src="{{item.img}}" class="slide-image" data-idx='{{index}}'/>
+                    </navigator>
+                  </swiper-item>
+                </block>
+            </swiper>
+       </view>
+       <goodList bastList="{{bastList}}"></goodList>
+    </view>
+    <view class='hotList'>
+       <view class='hot-bg'>
+          <view class='title acea-row row-between-wrapper'>
+            <view class='text line1'><text class='label'>热门榜单</text>根据销量、搜索、好评等综合得出</view>
+            <navigator class='more' hover-class="none" url='/pages/first-new-product/index?type=2'>更多<text class="iconfont icon-jiantou"></text></navigator>
+          </view>
+       </view>
+       <view class='list acea-row row-between-wrapper'>
+          <block wx:for="{{likeInfo}}" wx:key>
+            <navigator class='item' url='/pages/goods_details/index?id={{item.id}}'>
+              <view class='pictrue'>
+                <image src='{{item.image}}'></image>
+                <image wx:if="{{index == 0}}" src='/images/one.png' class='numPic'></image>
+                <image wx:elif="{{index == 1}}" src='/images/two.png' class='numPic'></image>
+                <image wx:elif="{{index == 2}}" src='/images/three.png' class='numPic'></image>
+              </view>
+              <view class='name line1'>{{item.store_name}}</view>
+              <view class='money font-color'>￥<text class='num'>{{item.price}}</text></view>
+            </navigator>
+          </block>  
+       </view>
+    </view>
+    <view class='adver' wx:if="{{lovelyBanner.length > 0}}">
+      <block wx:for="{{lovelyBanner}}" wx:key>
+        <image src='{{item.img}}'></image>
+      </block>  
+    </view>
+     <view class='wrapper'>
+       <view class='title acea-row row-between-wrapper'>
+          <view class='text'>
+             <view class='name line1'>首发新品<text class='new font-color'>NEW~</text></view>
+             <view class='line1'>{{firstInfo}}</view>
+          </view>
+          <navigator class='more' hover-class="none" url='/pages/first-new-product/index?type=3'>更多<text class='iconfont icon-jiantou'></text></navigator>
+       </view>
+       <view class='newProducts'>
+          <scroll-view class="scroll-view_x" scroll-x style="width:auto;overflow:hidden;">
+              <block wx:for="{{firstList}}" wx:key>
+                 <navigator hover-class="none" url='/pages/goods_details/index?id={{item.id}}' class='item'>
+                    <view class='img-box'>
+                      <image src='{{item.image}}'></image>
+                    </view>
+                    <view class='pro-info line1'>{{item.store_name}}</view>
+                    <view class='money font-color'>￥{{item.price}}</view>
+                  </navigator>
+              </block>  
+           </scroll-view>
+        </view>
+    </view>
+    <view class='wrapper'>
+       <view class='title acea-row row-between-wrapper'>
+          <view class='text'>
+             <view class='name line1'>促销单品</view>
+             <view class='line1'>{{salesInfo}}</view>
+          </view>
+          <navigator class='more' hover-class="none" url='/pages/promotional-items/index'>更多<text class='iconfont icon-jiantou'></text></navigator>
+       </view>
+       <promotionGood benefit="{{benefit}}"></promotionGood>
+    </view>
+</view>
+<coupon-window window='{{window}}' couponList="{{couponList}}" bind:onColse="onColse"></coupon-window>
+<home></home>

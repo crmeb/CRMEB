@@ -1,0 +1,55 @@
+<navbar parameter='{{parameter}}'></navbar>
+<authorize bind:onLoadFun="onLoadFun"></authorize>
+<view class='flash-sale'>
+   <view class='header'><image src='{{topImage.img}}'></image></view>
+   <view class='timeLsit'>
+      <scroll-view class="scroll-view_x" scroll-x scroll-with-animation scroll-left="{{scrollLeft}}" style="width:auto;overflow:hidden;height:106rpx;">
+         <block wx:for="{{timeList}}" wx:key>
+            <view bindtap='settimeList' class='item {{active == index?"on":""}}' data-index="{{index}}" data-stop="{{item.stop}}">
+               <view class='time'>{{item.time}}</view>
+               <view>{{item.state}}</view>
+            </view>
+         </block>  
+      </scroll-view>  
+   </view>
+   <view class='countDown font-color acea-row row-center-wrapper'>
+      <view wx:if="{{status == 1}}">
+       <text class='text'>距结束仅剩</text>
+       <text class='num'>{{countDownHour}}</text>：
+       <text class='num'>{{countDownMinute}}</text>：
+       <text class='num'>{{countDownSecond}}</text>
+      </view>
+      <view wx:elif="{{status == 2}}"><text class='text'>即将开始</text></view>
+      <view wx:if="{{status == 0}}"><text class='text'>已结束</text></view>       
+   </view>
+   <view class='list'>
+     <block wx:for="{{seckillList}}" wx:key>
+      <view class='item acea-row row-between-wrapper'>
+         <view class='pictrue' wx:if="{{status == 1}}" data-id="{{item.id}}" bindtap='goDetails'><image src='{{item.image}}'></image></view>
+         <view class='pictrue' wx:else><image src='{{item.image}}'></image></view>
+         <view class='text acea-row row-column-around'>
+            <view class='line1' wx:if="{{status == 1}}" data-id="{{item.id}}" bindtap='goDetails'>{{item.title}}</view>
+            <view class='line1' wx:else>{{item.title}}</view>
+            <view class='money' wx:if="{{status == 1}}" data-id="{{item.id}}" bindtap='goDetails'>限时价<text class='num font-color'>￥{{item.price}}</text></view>
+            <view class='money' wx:else>限时价<text class='num font-color'>￥{{item.price}}</text></view>
+            <view class="progress cart-color" wx:if="{{status == 1}}" data-id="{{item.id}}" catchtap='goDetails'>
+              <view class='bg-red' style="width:{{item.percent}}%;"></view>
+              <view class='piece font-color'>仅剩{{item.stock}}件</view>
+            </view>
+            <view class="progress cart-color" wx:elif="{{status == 2}}">
+              <view class='bg-red' style="width:0%;"></view>
+              <view class='piece font-color'>未开始</view>
+            </view>
+            <view class="progress cart-color" wx:else>
+              <view class='bg-red' style="width:100%;"></view>
+              <view class='piece font-color'>已抢完</view>
+            </view>
+         </view>
+         <view class='grab bg-color' wx:if="{{status == 1}}" data-id="{{item.id}}" bindtap='goDetails'>马上抢</view>
+         <view class='grab bg-color' wx:elif="{{status == 2}}">未开始</view>
+         <view class='grab bg-color' wx:else>已结束</view>
+      </view>
+     </block>
+   </view>
+</view>
+<home></home>

@@ -1,0 +1,14 @@
+<view class='recommend'>
+   <view class='title acea-row row-center-wrapper'>
+      <text class='iconfont icon-zhuangshixian'></text>
+      <text class='name'>为你推荐</text>
+      <text class='iconfont icon-zhuangshixian lefticon'></text>
+   </view>
+   <view class='recommendList acea-row row-between-wrapper'>
+      <navigator class='item' wx:for="{{host_product}}" wx:key url='/pages/goods_details/index?id={{item.id}}' hover-class='none'>
+         <view class='pictrue'><image src='{{item.image}}'></image></view>
+         <view class='name line1'>{{item.store_name}}</view>
+         <view class='money font-color'>￥<text class='num'>{{item.price}}</text></view>
+      </navigator>
+   </view>
+</view>

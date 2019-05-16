@@ -1,0 +1,4 @@
+.product-bg{width:100%;height:750rpx;position:relative;}
+.product-bg swiper{width:100%;height:100%;position:relative;}
+.product-bg .slide-image{width:100%;height:100%;}
+.product-bg .pages{position:absolute;background-color:#fff;height:34rpx;padding:0 10rpx;border-radius:3rpx;right:30rpx;bottom:30rpx;line-height:34rpx;font-size:24rpx;color:#050505;}

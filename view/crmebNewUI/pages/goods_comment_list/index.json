@@ -1,0 +1,7 @@
+{
+  "usingComponents": {
+    "navbar": "/components/navbar/index",
+    "userEvaluation": "/components/userEvaluation/index",
+    "authorize":"/components/authorize/authorize"
+  }
+}

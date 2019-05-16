@@ -1,0 +1,7 @@
+{
+  "usingComponents": {
+    "navbar": "/components/navbar/index",
+    "goodList": "/components/goodList/index",
+    "recommend": "/components/recommend/index"
+  }
+}

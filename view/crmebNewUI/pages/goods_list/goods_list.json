@@ -1,0 +1,7 @@
+{
+  "navigationBarTextStyle": "white",
+  "usingComponents": {
+    "navbar": "/components/navbar/index",
+    "recommend": "/components/recommend/index"
+  }
+}

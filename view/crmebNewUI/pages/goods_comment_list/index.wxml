@@ -1,0 +1,24 @@
+<navbar parameter='{{parameter}}'></navbar>
+<view class='evaluate-list'>
+   <view class='generalComment acea-row row-between-wrapper'>
+      <view class='acea-row row-middle font-color'>
+        <view class='evaluate'>评分</view>
+        <view class='start star{{replyData.reply_star}}'></view>
+      </view>
+      <view><text class='font-color'>{{replyData.reply_chance}}%</text>好评率</view>
+   </view>
+   <view class='nav acea-row row-middle'>
+      <view class='item {{type==0 ? "bg-color":""}}' bindtap='changeType' data-type='0'>全部({{replyData.sum_count}})</view>
+      <view class='item {{type==1 ? "bg-color":""}}' bindtap='changeType' data-type='1'>好评({{replyData.good_count}})</view>
+      <view class='item {{type==2 ? "bg-color":""}}' bindtap='changeType' data-type='2'>中评({{replyData.in_count}})</view>
+      <view class='item {{type==3 ? "bg-color":""}}' bindtap='changeType' data-type='3'>差评({{replyData.poor_count}})</view>
+   </view>
+   <userEvaluation reply="{{reply}}"></userEvaluation>
+   <view class='loadingicon acea-row row-center-wrapper'>
+      <text class='loading iconfont icon-jiazai' hidden='{{loading==false}}'></text>{{loadTitle}}
+    </view>
+</view>
+<view class='noCommodity' wx:if="{{!replyData.sum_count && page > 1}}">
+   <view class='pictrue'><image src='/images/noEvaluate.png'></image></view>
+</view>
+<authorize bind:onLoadFun="onLoadFun"></authorize>

@@ -1,0 +1,22 @@
+<view class="orderGoods">
+  <view class='total'>共{{cartInfo.length}}件商品</view>
+  <view class='goodWrapper'>
+     <view class='item acea-row row-between-wrapper' wx:for="{{cartInfo}}" wx:key>
+        <view class='pictrue'>
+          <image src='{{item.productInfo.attrInfo.image}}' wx:if="{{item.productInfo.attrInfo}}"></image>
+          <image src='{{item.productInfo.image}}' wx:else></image>
+        </view>
+        <view class='text'>
+           <view class='acea-row row-between-wrapper'>
+             <view class='name line1'>{{item.productInfo.store_name}}</view>
+             <view class='num'>x {{item.cart_num}}</view>
+           </view>
+           <view class='attr line1' wx:if="{{item.productInfo.attrInfo}}">{{item.productInfo.attrInfo.suk}}</view>
+           <view class='money font-color' wx:if="{{item.productInfo.attrInfo}}">￥{{item.productInfo.attrInfo.price}}</view>
+           <view class='money font-color' wx:else>￥{{item.productInfo.price}}</view>
+           <navigator class='evaluate' wx:if='{{item.is_reply==0 && evaluate==3}}' hover-class="none" url='/pages/goods_comment_con/index?unique={{item.unique}}&uni={{orderId}}'>评价</navigator>
+           <view class='evaluate' wx:elif='{{item.is_reply==1 && evaluate==3}}'>已评价</view>
+        </view>
+     </view>
+  </view>
+</view>

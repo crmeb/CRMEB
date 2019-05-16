@@ -1,0 +1,5 @@
+.evaluate-list .generalComment{height:94rpx;padding:0 30rpx;margin-top:1rpx;background-color:#fff;font-size:28rpx;color:#808080;}
+.evaluate-list .generalComment .evaluate{margin-right:7rpx;}
+.evaluate-list .nav{font-size:24rpx;color:#282828;padding:0 30rpx 32rpx 30rpx;background-color:#fff;border-bottom:1rpx solid #f5f5f5;}
+.evaluate-list .nav .item{font-size:24rpx;color:#282828;border-radius:6rpx;height:54rpx;padding:0 20rpx;background-color:#f4f4f4;line-height:54rpx;margin-right:17rpx;}
+.evaluate-list .nav .item.bg-color{color:#fff;}

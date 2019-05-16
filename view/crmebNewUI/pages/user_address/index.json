@@ -1,0 +1,6 @@
+{
+  "usingComponents": {
+    "navbar": "/components/navbar/index",
+    "authorize": "/components/authorize/authorize"
+  }
+}

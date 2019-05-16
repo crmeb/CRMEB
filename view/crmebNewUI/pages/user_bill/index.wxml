@@ -1,0 +1,29 @@
+<navbar parameter='{{parameter}}'></navbar>
+<view class='bill-details'>
+   <view class='nav acea-row'>
+      <view class='item {{type==0 ? "on":""}}' data-type='0' bindtap='changeType'>全部</view>
+      <view class='item {{type==1 ? "on":""}}' data-type='1' bindtap='changeType'>消费</view>
+      <view class='item {{type==2 ? "on":""}}' data-type='2' bindtap='changeType'>充值</view>
+   </view>
+   <view class='sign-record'>
+      <view class='list' wx:for="{{userBillList}}" wx:key>
+          <view class='item'>
+            <view class='data'>{{item.money}}</view>
+            <view class='listn'>
+                <view class='itemn acea-row row-between-wrapper' wx:for="{{item.list}}" wx:for-item="vo" wx:key>
+                  <view>
+                      <view class='name line1'>{{vo.title}}</view>
+                      <view>{{vo.add_time}}</view>
+                  </view>
+                  <view class='num' wx:if="{{vo.pm}}">+{{vo.number}}</view>
+                  <view class='num font-color' wx:else>-{{vo.number}}</view>
+                </view>
+            </view>
+          </view>
+      </view>
+      <view class='loadingicon acea-row row-center-wrapper'>
+        <text class='loading iconfont icon-jiazai' hidden='{{loading==false}}'></text>{{loadTitle}}
+     </view>
+    </view>
+</view>
+<authorize bind:onLoadFun='onLoadFun'></authorize>

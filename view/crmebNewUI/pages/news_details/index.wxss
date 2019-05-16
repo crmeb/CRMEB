@@ -1,0 +1,9 @@
+page{background-color:#fff!important;}
+.newsDetail .title{padding:0 30rpx;font-size:34rpx;color:#282828;font-weight:bold;margin:45rpx 0 23rpx 0;line-height:1.5;}
+.newsDetail .list{margin:0 30rpx;border-bottom:1rpx solid #eee;padding-bottom:25rpx;}
+.newsDetail .list .label{font-size:24rpx;height:38rpx;border-radius:3rpx;text-align:center;line-height:38rpx;padding: 0 10rpx;}
+.newsDetail .list .item{margin-left:27rpx;font-size:24rpx;color:#999;}
+.newsDetail .list .item .iconfont{font-size:28rpx;margin-right:10rpx;}
+.newsDetail .list .item .iconfont.icon-shenhezhong{font-size:26rpx;}
+.newsDetail .conter{padding:0 15rpx;font-size:30rpx;color:#333;line-height:1.7;padding-top:35rpx;}
+@import "/wxParse/wxParse.wxss"; 

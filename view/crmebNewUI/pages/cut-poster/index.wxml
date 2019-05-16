@@ -1,0 +1,20 @@
+<navbar parameter='{{parameter}}'></navbar>
+<view class='poster-poster'>
+   <view class='tip'><text class='iconfont icon-shuoming'></text>提示：点击图片即可保存至手机相册  </view>
+   <view class='white'>
+     <view class='whiteCon'>
+       <view class='name'>商品名称商品名称商品名称商品名称</view>
+       <view class='money font-color acea-row row-middle'>
+          <view class='iconfont icon-icon-test bg-color'></view>
+          <view>33.00</view>
+          <view class='team'>三人团</view>
+       </view>
+       <view class='money-y'>原价：￥1110.00<text class='text'>还差 <text class='font-color'>1人</text> 拼团成功</text></view>
+       <view class='border'>
+          <view class='pictrue'><image src='/images/banner.jpg'></image></view>
+          <view class='wemtip'>——   长按识别或扫描二维码进入   ——</view>
+          <view class='ewm'><image src='/images/ewm.jpg'></image></view>
+       </view>
+     </view>
+   </view>
+</view>

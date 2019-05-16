@@ -1,0 +1,33 @@
+<navbar parameter='{{parameter}}'></navbar>
+<view class='address-management {{addressList.length < 1 && page > 1 ? "fff":""}}'>
+   <view class='line'><image src='/images/line.jpg' wx:if="{{addressList.length}}"></image></view>
+   <radio-group class="radio-group" bindchange="radioChange" wx:if="{{addressList.length}}">
+      <view class='item' wx:for="{{addressList}}" data-index="{{index}}" wx:key>
+          <view class='address'  data-id="{{item.id}}" bindtap='goOrder'>
+            <view class='consignee'>收货人：{{item.real_name}}<text class='phone'>{{item.phone}}</text></view>
+            <view>收货地址：{{item.province}}{{item.city}}{{item.district}}{{item.detail}}</view>
+          </view>
+          <view class='operation acea-row row-between-wrapper'>
+             <radio class="radio" value="{{index}}" checked="{{item.is_default ? true : false}}">
+                <text>设为默认</text>
+             </radio>
+             <view class='acea-row row-middle'>
+               <view data-id="{{item.id}}" bindtap='editAddress'><text class='iconfont icon-bianji'></text>编辑</view>
+               <view data-index="{{index}}" bindtap='delAddress'><text class='iconfont icon-shanchu'></text>删除</view>
+             </view>
+          </view>
+      </view>
+   </radio-group>
+   <view class='loadingicon acea-row row-center-wrapper' wx:if="{{addressList.length}}">
+        <text class='loading iconfont icon-jiazai' hidden='{{loading==false}}'></text>{{loadTitle}}
+     </view>
+   <view class='noCommodity' wx:if="{{addressList.length < 1 && page > 1}}">
+      <view class='pictrue'><image src='/images/noAddress.png'></image></view>
+   </view>
+   <view style='height:120rpx;'></view>
+   <view class='footer acea-row row-between-wrapper'>
+      <view class='addressBnt bg-color'  bindtap='addAddress'><text class='iconfont icon-tianjiadizhi'></text>添加新地址</view>
+      <view class='addressBnt wxbnt' bindtap='getWxAddress'><text class='iconfont icon-weixin2'></text>导入微信地址</view>
+   </view>
+</view>
+<authorize bind:onLoadFun="onLoadFun"></authorize>

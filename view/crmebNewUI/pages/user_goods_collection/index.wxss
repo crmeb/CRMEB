@@ -1,0 +1,8 @@
+.collectionGoods{background-color:#fff;border-top:1rpx solid #eee;}
+.collectionGoods .item{margin-left:30rpx;padding-right:30rpx;border-bottom:1rpx solid #eee;height:180rpx;}
+.collectionGoods .item .pictrue{width:130rpx;height:130rpx;}
+.collectionGoods .item .pictrue image{width:100%;height:100%;border-radius:6rpx;}
+.collectionGoods .item .text{width:535rpx;height:130rpx;font-size:28rpx;color:#282828;}
+.collectionGoods .item .text .money{font-size:26rpx;}
+.collectionGoods .item .text .delete{font-size:26rpx;color:#282828;width:144rpx;height:46rpx;border:1px solid #bbb;border-radius:4rpx;text-align:center;line-height:46rpx;}
+.noCommodity{background-color:#fff;}

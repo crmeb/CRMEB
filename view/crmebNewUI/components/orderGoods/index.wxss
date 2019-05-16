@@ -1,0 +1,6 @@
+@import '/app.wxss';
+.orderGoods{background-color:#fff;margin-top:12rpx;}
+.orderGoods .total{width:100%;height:86rpx;padding:0 30rpx;border-bottom:2rpx solid #f0f0f0;font-size:30rpx;color:#282828;line-height:86rpx;}
+
+
+

@@ -1,0 +1,15 @@
+.address-management.fff{background-color: #fff;height: 1300rpx}
+.address-management .line{width:100%;height:3rpx;}
+.address-management .line image{width:100%;height:100%;display:block;}
+.address-management .item{background-color:#fff;padding:0 30rpx;margin-bottom:12rpx;}
+.address-management .item .address{padding:30rpx 0;border-bottom:1rpx solid #eee;font-size:28rpx;color:#282828;}
+.address-management .item .address .consignee{font-size:28rpx;font-weight:bold;margin-bottom:8rpx;}
+.address-management .item .address .consignee .phone{margin-left:25rpx;}
+.address-management .item .operation{height:83rpx;font-size:28rpx;color:#282828;}
+.address-management .item .operation .radio text{margin-left:13rpx;}
+.address-management .item .operation .iconfont{color:#2c2c2c;font-size:35rpx;vertical-align:-2rpx;margin-right:10rpx;}
+.address-management .item .operation .iconfont.icon-shanchu{margin-left:40rpx;font-size:38rpx;}
+.address-management .footer{position:fixed;width:100%;background-color:#fff;bottom:0;height:106rpx;padding:0 30rpx;box-sizing:border-box;}
+.address-management .footer .addressBnt{width:330rpx;height:76rpx;border-radius:50rpx;text-align:center;line-height:76rpx;font-size:30rpx;color:#fff;}
+.address-management .footer .addressBnt .iconfont{font-size:35rpx;margin-right:8rpx;vertical-align:-1rpx;}
+.address-management .footer .addressBnt.wxbnt{background-color:#fe960f;}

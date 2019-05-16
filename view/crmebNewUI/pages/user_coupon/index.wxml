@@ -1,0 +1,18 @@
+<navbar parameter='{{parameter}}'></navbar>
+<view class='coupon-list' wx:if="{{couponsList.length}}">
+  <view class='item acea-row row-center-wrapper' wx:for="{{couponsList}}" wx:key>
+     <view class='money {{item._type == 0 ? "moneyGray" : ""}}'>￥<text class='num'>{{item.coupon_price}}</text></view>
+     <view class='text'>
+        <view class='condition line1'>{{item.coupon_title}}</view>
+        <view class='data acea-row row-between-wrapper'>
+           <view>{{item._add_time}}-{{item._end_time}}</view>
+           <view class='bnt gray' wx:if="{{item._type==0}}">{{item._msg}}</view>
+           <view class='bnt bg-color' wx:else>{{item._msg}}</view>
+        </view>
+     </view>
+  </view>
+</view>
+<view class='noCommodity' wx:if="{{!couponsList.length && loading==true}}">
+   <view class='pictrue'><image src='/images/noCoupon.png'></image></view>
+</view>
+<authorize bind:onLoadFun="onLoadFun"></authorize>

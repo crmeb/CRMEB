@@ -1,0 +1,21 @@
+<navbar parameter='{{parameter}}'></navbar>
+<view class='sign-record'>
+   <view class='list' wx:for="{{signList}}" wx:key>
+      <view class='item'>
+         <view class='data'>{{item.month}}</view>
+         <view class='listn'>
+            <view class='itemn acea-row row-between-wrapper' wx:for="{{item.list}}" wx:key>
+               <view>
+                  <view class='name line1'>{{item.title}}</view>
+                  <view>{{item.add_time}}</view>
+               </view>
+               <view class='num font-color'>+{{item.number}}</view>
+            </view>
+         </view>
+      </view>
+   </view>
+    <view class='loadingicon acea-row row-center-wrapper'>
+        <text class='loading iconfont icon-jiazai' hidden='{{loading==false}}'></text>{{loadtitle}}
+     </view>
+</view>
+<authorize bind:onLoadFun="onLoadFun"></authorize>
