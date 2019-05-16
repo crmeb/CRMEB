@@ -46,7 +46,7 @@
                                 {$vo.coupon_time}天
                             </td>
                             <td class="text-center">
-                                <button class="btn btn-primary btn-xs grant" data-url="{:Url('store.storeCouponUser/grant',array('id'=>$vo['id'],'uid'=>$uid))}" type="button"><i class="fa  fa-arrow-circle-o-right"></i> 发放
+                                <button class="btn btn-primary btn-xs grant" data-url="{:Url('ump.storeCouponUser/grant',array('id'=>$vo['id'],'uid'=>$uid))}" type="button"><i class="fa  fa-arrow-circle-o-right"></i> 发放
                                 </button>
                             </td>
                         </tr>

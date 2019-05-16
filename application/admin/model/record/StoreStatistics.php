@@ -10,7 +10,7 @@ namespace app\admin\model\record;
 use traits\ModelTrait;
 use basic\ModelBasic;
 use service\ExportService;
-use app\wap\model\user\UserBill;
+use app\core\model\user\UserBill;
 use app\admin\model\user\User;
 use service\PHPExcelService;
 class StoreStatistics extends ModelBasic
@@ -97,22 +97,28 @@ class StoreStatistics extends ModelBasic
      */
     public static function getTime($where,$model=null,$prefix='add_time'){
         if ($model == null) $model = new self;
+        if(!$where['date']) return $model;
         if ($where['data'] == '') {
-            switch ($where['date']){
-                case 'today':case 'week':case 'month':case 'year':
-                    $model=$model->whereTime($prefix,$where['date']);
-                    break;
-                case 'quarter':
-                    list($startTime,$endTime)=User::getMonth('n');
-                    $model = $model->where($prefix, '>', strtotime($startTime));
-                    $model = $model->where($prefix, '<', strtotime($endTime));
-                    break;
-            }
-        }else{
-            list($startTime, $endTime) = explode(' - ', $where['data']);
-            $model = $model->where($prefix, '>', strtotime($startTime));
-            $model = $model->where($prefix, '<', strtotime($endTime));
+            $limitTimeList = [
+                'today'=>implode(' - ',[date('Y/m/d'),date('Y/m/d',strtotime('+1 day'))]),
+                'week'=>implode(' - ',[
+                    date('Y/m/d', (time() - ((date('w') == 0 ? 7 : date('w')) - 1) * 24 * 3600)),
+                    date('Y-m-d', (time() + (7 - (date('w') == 0 ? 7 : date('w'))) * 24 * 3600))
+                ]),
+                'month'=>implode(' - ',[date('Y/m').'/01',date('Y/m').'/'.date('t')]),
+                'quarter'=>implode(' - ',[
+                    date('Y').'/'.(ceil((date('n'))/3)*3-3+1).'/01',
+                    date('Y').'/'.(ceil((date('n'))/3)*3).'/'.date('t',mktime(0,0,0,(ceil((date('n'))/3)*3),1,date('Y')))
+                ]),
+                'year'=>implode(' - ',[
+                    date('Y').'/01/01',date('Y/m/d',strtotime(date('Y').'/01/01 + 1year -1 day'))
+                ])
+            ];
+            $where['data'] = $limitTimeList[$where['date']];
         }
+        list($startTime, $endTime) = explode(' - ', $where['data']);
+        $model = $model->where($prefix, '>', strtotime($startTime));
+        $model = $model->where($prefix, '<', strtotime($endTime));
         return $model;
     }
     /**
@@ -120,7 +126,7 @@ class StoreStatistics extends ModelBasic
      */
     public static function getConsumption($where)
     {
-        $consumption=self::getTime($where,new UserBill,'b.add_time')->alias('a')->join('user b','a.uid = b.uid')
+        $consumption=self::getTime($where,new UserBill,'b.add_time')->alias('a')->join('__USER__ b','a.uid = b.uid')
             ->field('sum(a.number) number')
         ->where('a.type','pay_product')->find()->toArray();
         return $consumption;
@@ -172,7 +178,7 @@ class StoreStatistics extends ModelBasic
     public static function trans()
     {
         $trans = self::alias('a')
-            ->join('user b', 'a.uid=b.uid')
+            ->join('__USER__ b', 'a.uid=b.uid','left')
             ->join('__STORE_ORDER_CART_INFO__ c', 'a.id=c.oid')
             ->join('__STORE_PRODUCT__ d', 'c.product_id=d.id')
             ->field('b.nickname,a.pay_price,d.store_name')

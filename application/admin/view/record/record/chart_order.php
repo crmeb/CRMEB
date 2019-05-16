@@ -1,5 +1,53 @@
 {extend name="public/container"}
 {block name="head_top"}
+<style>
+    .layui-input-block button{
+        border: 1px solid rgba(0,0,0,0.1);
+    }
+    .layui-card-body{
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+    .layui-card-body p.layuiadmin-big-font {
+        font-size: 36px;
+        color: #666;
+        line-height: 36px;
+        padding: 5px 0 10px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        word-break: break-all;
+        white-space: nowrap;
+    }
+    .layuiadmin-badge, .layuiadmin-btn-group, .layuiadmin-span-color {
+        position: absolute;
+        right: 15px;
+    }
+    .layuiadmin-badge {
+        top: 50%;
+        margin-top: -9px;
+        color: #01AAED;
+    }
+    .layuiadmin-span-color i {
+        padding-left: 5px;
+    }
+    .block-rigit{
+        text-align: right;
+    }
+    .block-rigit button{
+        width: 100px;
+        letter-spacing: .5em;
+        line-height: 28px;
+    }
+    .layuiadmin-card-list{
+        padding: 1.6px;
+    }
+    .layuiadmin-card-list p.layuiadmin-normal-font {
+        padding-bottom: 10px;
+        font-size: 20px;
+        color: #666;
+        line-height: 24px;
+    }
+</style>
 <script src="{__PLUG_PATH}echarts.common.min.js"></script>
 {/block}
 {block name="content"}
@@ -116,8 +164,6 @@
                 typeList:[
                     {name:'全部',value:''},
                     {name:'普通',value:1},
-                    {name:'拼团',value:2},
-                    {name:'砍价',value:3},
                     {name:'秒杀',value:4},
                 ],
                 status:'',
@@ -162,6 +208,7 @@
                 setoption:function(seriesdata,xdata,legend,title,type,Zoom){
                     var _type=type || 'line';
                     var _title=title || '订单数据统计图';
+
                     switch (_type){
                         case 'line':
                             this.option={
@@ -204,6 +251,9 @@
                             };
                             break;
                     }
+                    this.option.grid = {
+                        x: 50,x2: 40,y: 60,y2: 50
+                    };
                     if(Zoom!='' && Zoom!=undefined){
                         this.option.dataZoom=[{startValue:Zoom},{type:'inside'}];
                     }

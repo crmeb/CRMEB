@@ -14,7 +14,7 @@ use app\admin\model\wechat\WechatUser;
 use think\Url;
 use traits\ModelTrait;
 use basic\ModelBasic;
-use service\WechatTemplateService;
+use app\core\util\WechatTemplateService;
 /**
  * 用户提现管理 model
  * Class User
@@ -49,16 +49,18 @@ class UserExtract extends ModelBasic
         $uid=$data['uid'];
         $status = -1;
         $User= User::find(['uid'=>$uid])->toArray();
-        UserBill::income('提现失败',$uid,'now_money','extract',$extract_number,$id,$User['now_money'],$mark);
-
+        UserBill::income('提现失败',$uid,'now_money','extract',$extract_number,$id,bcadd($User['now_money'],$extract_number,2),$mark);
         User::bcInc($uid,'now_money',$extract_number,'uid');
-        WechatTemplateService::sendTemplate(WechatUser::uidToOpenid($uid),WechatTemplateService::USER_BALANCE_CHANGE,[
-            'first'=> $mark,
-            'keyword1'=>'佣金提现',
-            'keyword2'=>date('Y-m-d H:i:s',time()),
-            'keyword3'=>$extract_number,
-            'remark'=>'错误原因:'.$fail_msg
-        ],Url::build('wap/my/user_pro',[],true,true));
+        if($User['user_type'] == 'wechat'){
+            WechatTemplateService::sendTemplate(WechatUser::uidToOpenid($uid),WechatTemplateService::USER_BALANCE_CHANGE,[
+                'first'=> $mark,
+                'keyword1'=>'佣金提现',
+                'keyword2'=>date('Y-m-d H:i:s',time()),
+                'keyword3'=>$extract_number,
+                'remark'=>'错误原因:'.$fail_msg
+            ],Url::build('wap/my/user_pro',[],true,true));
+        }
+
         return self::edit(compact('fail_time','fail_msg','status'),$id);
     }
 
@@ -69,13 +71,16 @@ class UserExtract extends ModelBasic
         $extract_number=$data['extract_price'];
         $mark='成功提现佣金'.$extract_number.'元';
         $uid=$data['uid'];
-        WechatTemplateService::sendTemplate(WechatUser::uidToOpenid($uid),WechatTemplateService::USER_BALANCE_CHANGE,[
-            'first'=> $mark,
-            'keyword1'=>'佣金提现',
-            'keyword2'=>date('Y-m-d H:i:s',time()),
-            'keyword3'=>$extract_number,
-            'remark'=>'点击查看我的佣金明细'
-        ],Url::build('wap/my/user_pro',[],true,true));
+        $User= User::find(['uid'=>$uid])->toArray();
+        if($User['user_type'] == 'wechat') {
+            WechatTemplateService::sendTemplate(WechatUser::uidToOpenid($uid), WechatTemplateService::USER_BALANCE_CHANGE, [
+                'first' => $mark,
+                'keyword1' => '佣金提现',
+                'keyword2' => date('Y-m-d H:i:s', time()),
+                'keyword3' => $extract_number,
+                'remark' => '点击查看我的佣金明细'
+            ], Url::build('wap/my/user_pro', [], true, true));
+        }
         return self::edit(compact('status'),$id);
     }
     //测试数据

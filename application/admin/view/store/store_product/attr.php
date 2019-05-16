@@ -197,7 +197,7 @@
             },
             methods: {
                 getAttrPic(index){
-                    this.createFrame('选择图片','{:Url('widget.images/index')}?fodder='+index);
+                    this.createFrame('选择图片','/admin/widget.images/index/fodder/'+index+'.html');
                 },
                 createFrame:function(title,src,opt){
                     opt === undefined && (opt = {});

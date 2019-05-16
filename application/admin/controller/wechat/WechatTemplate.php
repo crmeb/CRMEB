@@ -6,7 +6,7 @@ use app\admin\controller\AuthController;
 use service\FormBuilder as Form;
 use service\UtilService as Util;
 use service\JsonService as Json;
-use service\WechatTemplateService;
+use app\core\util\WechatTemplateService;
 use think\Cache;
 use think\Request;
 use think\Url;
@@ -32,10 +32,15 @@ class WechatTemplate extends AuthController
         $this->assign('where',$where);
         $this->assign(WechatTemplateModel::SystemPage($where));
         $industry = Cache::tag($this->cacheTag)->remember('_wechat_industry',function(){
-            $cache = WechatTemplateService::getIndustry();
-            if(!$cache) return [];
-            Cache::tag($this->cacheTag,['_wechat_industry']);
-            return $cache->toArray();
+            try{
+                $cache = WechatTemplateService::getIndustry();
+                if(!$cache) return [];
+                Cache::tag($this->cacheTag,['_wechat_industry']);
+                return $cache->toArray();
+            }catch (\Exception $e){
+                return $e->getMessage();
+            }
+
         },0)?:[];
         !is_array($industry) && $industry = [];
         $this->assign('industry',$industry);

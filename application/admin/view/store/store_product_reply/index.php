@@ -1,201 +1,304 @@
 {extend name="public/container"}
 {block name="head_top"}
+<style>
+    .message-content .media-body {margin-bottom: 60px;}
+    .layadmin-homepage-list-imgtxt .media-body {width: auto;display: block;overflow: hidden;}
+    .layadmin-message-fluid .layui-col-md12 {background: #fff;height: auto;padding-bottom: 50px;}
+    .message-content {padding: 0 40px;}
+    .message-content .media-left {float: left;margin-right: 10px;}
+    .message-content .media-body{margin-top:10px;}
+    .message-content .media-body .pad-btm {padding-bottom: 0;}
+    .message-content .media-left img {border-radius: 50%;}
+    .layadmin-homepage-list-imgtxt .media-body .pad-btm p:first-child {padding-bottom: 5px;}
+    .layadmin-homepage-list-imgtxt .media-body .pad-btm .fontColor a {font-weight: 600;color: #337ab7;}
+    .layadmin-homepage-list-imgtxt .media-body .min-font {margin-bottom: 10px;}
+    .layui-breadcrumb {visibility: hidden;font-size: 0;}
+    .layadmin-homepage-list-imgtxt .media-body .min-font .layui-breadcrumb a {font-size: 11px;}
+    .layui-breadcrumb a {color: #999!important;}
+    .media-body .message-text {padding-top: 10px;padding-bottom: 10px;border-bottom: 1px solid #e0e0e0;}
+    .media-body .message-text .image-box{margin-top: 10px;}
+    .media-body .message-text .image-box img{max-width: 300px;max-height: 200px;margin-right: 10px;margin-bottom: 10px}
+    .message-content-btn {text-align: center;padding: 10px 0;}
+    .media-body .message-but{margin-top: 10px;}
+    .message-content .message-content-btn .layui-btn {height: auto;line-height: 26px;padding: 5px 30px;font-size: 16px;}
+    .message-content .homepage-bottom .layadmin-privateletterlist-item .meida-left img{width: 151px;height: 81px;}
+    .message-content .homepage-bottom .layadmin-privateletterlist-item{border: 1px solid #e0e0e0;margin-bottom: 10px;cursor:pointer;}
+    .message-content .homepage-bottom .layadmin-privateletterlist-item .meida-right{padding: 10px;}
+    .message-content .homepage-bottom .layadmin-privateletterlist-item.on{border: 1px solid #0092DC!important;}
+    .message-content .homepage-bottom .layadmin-privateletterlist-item .meida-right .meida-store_name{font-size: 20px;}
+    .message-content .homepage-bottom .layadmin-privateletterlist-item .centent{text-align: center;}
+    .clearfix:after {  content: "."; display: block; height: 0; clear: both; visibility: hidden;  }
+    .message-content .homepage-bottom .producr-load{text-align: center;margin-bottom: 10px}
+    .message-content .homepage-bottom .producr-load .layui-btn{margin-bottom: 10px}
+</style>
 <script src="{__PLUG_PATH}sweetalert2/sweetalert2.all.min.js"></script>
 {/block}
 {block name="content"}
-<div class="row">
-    <div class="col-sm-12">
-        <div class="ibox">
-            <div class="ibox-content">
-                <div class="row">
-                    <div class="m-b m-l">
-                        <form action="" class="form-inline">
-                            <select name="is_reply" aria-controls="editable" class="form-control input-sm">
-                                <option value="">评论状态</option>
-                                <option value="0" {eq name="where.is_reply" value="0"}selected="selected"{/eq}>未回复</option>
-<!--                                <option value="1" {eq name="where.is_reply" value="1"}selected="selected"{/eq}>客户已评价且管理员未回复</option>-->
-                                <option value="2" {eq name="where.is_reply" value="2"}selected="selected"{/eq}>已回复</option>
-                            </select>
-                            <div class="input-group">
-                                <input type="text" name="comment" value="{$where.comment}" placeholder="请输入评论内容" class="input-sm form-control" size="38"> <span class="input-group-btn">
-                                    <button type="submit" class="btn btn-sm btn-primary"> 搜索</button> </span>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-                <div class="ibox">
-                    {volist name="list" id="vo"}
-                    <div class="col-sm-12">
-                        <div class="social-feed-box">
-                            <div class="pull-right social-action dropdown">
-                                <button data-toggle="dropdown" class="dropdown-toggle btn-white" aria-expanded="false">
-                                    <i class="fa fa-angle-down"></i>
-                                </button>
-                                <ul class="dropdown-menu m-t-xs">
-                                    {if condition="$vo['is_reply'] eq 2"}
-                                    <li><a href="#" class="reply_update"  data-url="{:Url('set_reply')}"  data-content="{$vo['merchant_reply_content']}" data-id="{$vo['id']}">编辑</a></li>
-                                    {else/}
-                                    <li><a href="#" class="reply"  data-url="{:Url('set_reply')}" data-id="{$vo['id']}">回复</a></li>
-                                    {/if}
-                                    <li><a href="#" class="delete" data-url="{:Url('delete',array('id'=>$vo['id']))}">删除</a></li>
-                                </ul>
-                            </div>
-                            <div class="social-avatar">
-                                <a href="" class="pull-left">
-                                    <img alt="image" src="{$vo.headimgurl}">
-                                </a>
-                                <div class="media-body">
-                                    <a href="#">
-                                        {$vo.nickname}
-                                    </a>
-                                    <small class="text-muted">{$vo.add_time|date='Y-m-d H:i:s',###} 来自产品: {$vo.store_name}</small>
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15"  id="app">
+        <div class="layui-col-md12">
+            <div class="layui-card">
+                <div class="layui-card-header">搜索条件</div>
+                <div class="layui-card-body">
+                    <form class="layui-form layui-form-pane" action="">
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label">内容</label>
+                                <div class="layui-input-block">
+                                    <input type="text" name="title" class="layui-input">
                                 </div>
                             </div>
-                            <div class="social-body">
-                                <p>{$vo.comment}
-                                    <?php $image = json_decode($vo['pics'],true);?>
-                                    {if condition="$image"}
-                                    {volist name="image" id="v"}
-                                    <img src="{$v}" alt="{$vo.store_name}" class="open_image" data-image="{$v}" style="width: 50px;height: 50px;cursor: pointer;">
-                                    {/volist}
-                                    {else/}
-                                    [无图]
-                                    {/if}
-                                </p>
+                            <div class="layui-inline">
+                                <label class="layui-form-label">筛选类型</label>
+                                <div class="layui-input-block">
+                                    <select name="is_reply">
+                                        <option value="">全部</option>
+                                        <option value="2">已回复</option>
+                                        <option value="0">未回复</option>
+                                    </select>
+                                </div>
                             </div>
-                            {if condition="$vo['merchant_reply_content']"}
-                            <div class="social-footer">
-                                <div class="social-comment">
-                                    <div class="media-body">回复时间：<small class="text-muted">{$vo.merchant_reply_time|date='Y-m-d H:i:s',###}</small></div>
-                                    <div class="media-body">
-                                        <p>{$vo['merchant_reply_content']}</p>
+                            <div class="layui-inline">
+                                <div class="layui-input-inline">
+                                    <button class="layui-btn layui-btn-sm layui-btn-normal" lay-submit="search" lay-filter="search">
+                                        <i class="layui-icon layui-icon-search"></i>搜索</button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="message-box" id="app" v-cloak="">
+            <div class="layui-col-md3" style="padding: 0 10px 0 0">
+                <div class="layui-card">
+                    <div class="layui-card-header">评论产品</div>
+                    <div class="layui-card-body layadmin-homepage-list-imgtxt message-content" ref="producr">
+                        <div class="grid-demo">
+                            <div class="layui-card homepage-bottom">
+                                <div class="layui-card-body clearfix">
+                                    <div class="layadmin-privateletterlist-item" :class="where.producr_id==0 ? 'on':'' " @click="where.producr_id=0">
+                                        <div class="meida-right centent">
+                                            <mdall class="meida-store_name">全部评论商品</mdall>
+                                        </div>
+                                    </div>
+                                    <div class="layadmin-privateletterlist-item layui-col-md6 layui-col-xs6 layui-col-lg6" :class="where.producr_id==item.id ? 'on':'' " v-for="item in productImaesList" @click="where.producr_id=item.id">
+                                        <div class="meida-left">
+                                            <img :src="item.image" @click="lockImage(item.image)">
+                                        </div>
+                                        <div class="meida-right">
+                                            <p>￥{{item.price}}</p>
+                                            <mdall v-text="item.store_name"></mdall>
+                                        </div>
                                     </div>
                                 </div>
+                                <div class="layui-row producr-load clearfix">
+                                    <a href="javascript:;" class="layui-btn" v-text="product.loadTitle" @click="loadList(0)">更多</a>
+                                </div>
                             </div>
-                            {/if}
                         </div>
                     </div>
-                    {/volist}
                 </div>
-               <!-- <div class="table-responsive">
-                    <table class="table table-striped  table-bordered">
-                        <thead>
-                        <tr>
-                            <th class="text-center">编号</th>
-                            <th class="text-center">产品名称</th>
-                            <th class="text-center">评论人</th>
-                            <th class="text-center">评论内容</th>
-                            <th class="text-center">评论图片</th>
-                            <th class="text-center">评论时间</th>
-                            <th class="text-center">回复内容</th>
-                            <th class="text-center">操作</th>
-                        </tr>
-                        </thead>
-                        <tbody class="">
-                        {volist name="list" id="vo"}
-                        <tr>
-                            <td class="text-center">
-                                {$vo.id}
-                            </td>
-                            <td class="text-center">
-                                {$vo.store_name}
-                            </td>
-                            <td class="text-center">
-                                {$vo.nickname}
-                            </td>
-                            <td class="text-center">
-                                {$vo.comment}
-                            </td>
-                            <td class="text-center">
-                                <?php /*$image = json_decode($vo['pics'],true);*/?>
-                                {if condition="$image"}
-                                {volist name="image" id="v"}
-                                <img src="{$v}" alt="{$vo.store_name}" class="open_image" data-image="{$v}" style="width: 50px;height: 50px;cursor: pointer;">
-                                {/volist}
-                                {else/}
-                                无图
-                                {/if}
-                            </td>
-                            <td class="text-center">
-                                {$vo.add_time|date='Y-m-d H:i:s',###}
-                            </td>
-                            <td class="text-center">
-                                {if condition="$vo['merchant_reply_content']"}
-                                {$vo['merchant_reply_content']}
-                                <br/>
-                                {$vo.merchant_reply_time|date='Y-m-d H:i:s',###}
-                                {elseif condition="$vo['comment']"/}
-                                <button class="reply btn btn-primary btn-xs" data-url="{:Url('set_reply')}" data-id="{$vo['id']}" type="button"><i class="fa fa-eyedropper"></i> 回复
-                                </button>
-                                {else/}
-                                未评论
-                                {/if}
-                            </td>
-                            <td class="text-center">
-                                {if condition="$vo['is_reply'] eq 2"}
-                                <button class="reply_update btn btn-info btn-xs" data-url="{:Url('edit_reply')}" data-content="{$vo['merchant_reply_content']}" data-id="{$vo['id']}" type="button"><i class="fa fa-paste"></i> 修改
-                                </button>
-                                {/if}
-                                <button class="btn btn-warning btn-xs" data-url="{:Url('delete',array('id'=>$vo['id']))}" type="button"><i class="fa fa-warning"></i> 删除
-                                </button>
-                            </td>
-                        </tr>
-                        {/volist}
-                        </tbody>
-                    </table>
-                </div>-->
-                {include file="public/inner_page"}
+            </div>
+            <div class="layui-col-md9">
+                <div class="layui-card">
+                    <div class="layui-card-header">评论列表</div>
+                    <div class="layui-card-body layadmin-homepage-list-imgtxt message-content">
+                        <div class="media-body" v-for="(item,index) in messageList">
+                            <a href="javascript:;" class="media-left" style="float: left;">
+                                <img :src="item.avatar" height="46px" width="46px">
+                            </a>
+                            <div class="pad-btm">
+                                <p class="fontColor"><a href="javascript:;" v-text="item.nickname"></a></p>
+                                <p class="min-font">
+                                  <span class="layui-breadcrumb" style="visibility: visible;">
+                                    <a href="javascript:;" v-text="item.time"></a>
+                                  </span>
+                                </p>
+                            </div>
+                            <div class="message-text">
+                                <p v-text="item.comment"></p>
+                                <div class="image-box" v-if="item.pics.length">
+                                    <img :src="pic" alt="" v-for="pic in item.pics" @click="lockImage(pic)">
+                                </div>
+                            </div>
+                            <div class="message-but">
+                                <div class="layui-btn-group">
+                                    <button class="layui-btn layui-btn-normal layui-btn-sm" @click="edit(item,index)">{{item.merchant_reply_time ? "编辑":"回复"}}</button>
+                                    <button class="layui-btn layui-btn-danger layui-btn-sm" @click="delReply(item,index)">删除</button>
+                                </div>
+                            </div>
+                            <fieldset class="layui-elem-field" style="margin-top: 10px" v-if="item.merchant_reply_time">
+                                <legend style="font-size: 15px">回复</legend>
+                                <div class="layui-field-box" v-text="item.merchant_reply_content"></div>
+                            </fieldset>
+                        </div>
+                        <div class="layui-row message-content-btn">
+                            <div id="message"></div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </div>
+<script src="{__ADMIN_PATH}js/layuiList.js"></script>
 {/block}
 {block name="script"}
-<script>
-    $('.delete').on('click',function(){
-        window.t = $(this);
-        var _this = $(this),url =_this.data('url');
-        $eb.$swal('delete',function(){
-            $eb.axios.get(url).then(function(res){
-                console.log(res);
-                if(res.status == 200 && res.data.code == 200) {
-                    $eb.$swal('success',res.data.msg);
-                    _this.parents('tr').remove();
-                }else
-                    return Promise.reject(res.data.msg || '删除失败')
-            }).catch(function(err){
-                $eb.$swal('error',err);
-            });
-        })
-    });
-    $(".open_image").on('click',function (e) {
-        var image = $(this).data('image');
-        $eb.openImage(image);
-    })
-    $('.reply').on('click',function(){
-        window.t = $(this);
-        var _this = $(this),url =_this.data('url'),rid =_this.data('id');
-        $eb.$alert('textarea',{'title':'请输入回复内容','value':''},function(result){
-            $eb.axios.post(url,{content:result,id:rid}).then(function(res){
-                if(res.status == 200 && res.data.code == 200) {
-                    $eb.swal(res.data.msg);
-                }else
-                    $eb.swal(res.data.msg);
-            });
-        })
-    });
-    $('.reply_update').on('click',function (e) {
-        window.t = $(this);
-        var _this = $(this),url =_this.data('url'),rid =_this.data('id'),content =_this.data('content');
-        $eb.$alert('textarea',{'title':'请输入回复内容','value':content},function(result){
-            $eb.axios.post(url,{content:result,id:rid}).then(function(res){
-                if(res.status == 200 && res.data.code == 200) {
-                    $eb.swal(res.data.msg);
-                }else{
-                    $eb.swal(res.data.msg);
+<script type="text/javascript">
+    require(['vue'],function(Vue) {
+        new Vue({
+            el: "#app",
+            data: {
+                productImaesList:[],
+                where:{
+                    page:1,
+                    title:'',
+                    is_reply:'',
+                    limit:10,
+                    producr_id:0,
+                    message_page:1,
+                },
+                product:{
+                    loading:false,
+                    loadend:false,
+                    loadTitle:'加载更多',
+                },
+                messageList:[],
+                message:{
+                    loading:false,
+                    loadend:false,
+                    loadTitle:'加载更多',
+                },
+                count:0,
+            },
+            watch:{
+                'where.producr_id':function (n) {
+                    this.message.loadend=false;
+                    this.where.message_page=1;
+                    this.$set(this,'messageList',[]);
+                    this.getMessageList();
+                },
+                'where.message_page':function () {
+                    this.getMessageList(true);
                 }
-            });
+            },
+            methods:{
+                delReply:function(item,index){
+                    var url = layList.U({a:'delete',p:{id:item.id}}),that=this;
+                    $eb.$swal('delete',function(){
+                        $eb.axios.get(url).then(function(res){
+                            if(res.status == 200 && res.data.code == 200) {
+                                $eb.$swal('success',res.data.msg);
+                                that.messageList.splice(index,1);
+                                that.$set(that,'messageList',that.messageList);
+                            }else
+                                return Promise.reject(res.data.msg || '删除失败')
+                        }).catch(function(err){
+                            $eb.$swal('error',err);
+                        });
+                    })
+                },
+                edit:function(item,index){
+                    var url=layList.U({a:'set_reply'}),rid=item.id;
+                    $eb.$alert('textarea',{'title':'请输入回复内容','value':item.merchant_reply_content},function(result){
+                        $eb.axios.post(url,{content:result,id:rid}).then(function(res){
+                            if(res.status == 200 && res.data.code == 200) {
+                                item.merchant_reply_time=1;
+                                item.merchant_reply_content=result;
+                                $eb.swal(res.data.msg);
+                            }else
+                                $eb.swal(res.data.msg);
+                        });
+                    })
+                },
+                loadList:function(){
+                    this.getProductImaesList();
+                },
+                lockImage:function(href){
+                    return layList.layer.open({
+                        type: 1,
+                        title: false,
+                        closeBtn: 0,
+                        shadeClose: true,
+                        content: '<img src="'+href+'" style="display: block;width: 100%;" />'
+                    });
+                },
+                getProductImaesList:function () {
+                    var that=this;
+                    if(that.product.loading) return;
+                    if(that.product.loadend) return;
+                    that.product.loadTitle='加载中';
+                    layList.baseGet(layList.U({a:'get_product_imaes_list',q:that.where}),function (res) {
+                        var list=res.data;
+                        var loadend=list.length < that.where.limit;
+                        that.where.page=that.where.page+1;
+                        that.product.loading=false;
+                        that.product.loadend=loadend;
+                        that.product.loadTitle=loadend ? '已全部加载' : '加载更多';
+                        that.productImaesList.push.apply(that.productImaesList,list);
+                        that.$set(that,'productImaesList',that.productImaesList);
+                        that.slitherMonitor();
+                    },function (res) {
+                        that.product.loading=false;
+                        that.product.loadTitle='加载更多';
+                    });
+                },
+                getMessageList:function (isFa) {
+                    var that=this;
+                    if(that.message.loading) return;
+                    if(that.message.loadend) return;
+                    that.message.loadTitle='加载中';
+                    var index=layList.layer.load(1, {shade: [0.1,'#fff'] });
+                    layList.baseGet(layList.U({a:'get_product_reply_list',q:that.where}),function (res) {
+                        var list=res.data.list;
+                        var loadend=list.length < that.where.limit;
+                        that.message.loading=false;
+                        that.message.loadend=loadend;
+                        that.count=res.data.count;
+                        that.message.loadTitle=loadend ? '已全部加载' : '加载更多';
+                        that.$set(that,'messageList',list);
+                        layList.layer.close(index);
+                        isFa || that.initPage();
+                    },function (res) {
+                        that.message.loading=false;
+                        that.message.loadTitle='加载更多';
+                        layList.layer.close(index);
+                    });
+                },
+                slitherMonitor:function () {
+                    var clientHeight=document.documentElement.clientHeight;
+                    if(this.$refs.producr.offsetHeight >= clientHeight) this.$refs.producr.style.overflowX='scroll';
+                    else this.$refs.producr.style.overflow='hidden';
+                },
+                initPage:function () {
+                    var that=this;
+                    layList.laypage.render({
+                        elem: 'message'
+                        ,count: that.count
+                        ,limit:10
+                        ,jump: function(obj){
+                            that.where.message_page=obj.curr;
+                        }
+                    });
+                }
+            },
+            mounted:function () {
+                layList.form.render();
+                this.getProductImaesList();
+                this.getMessageList();
+                //查询
+                var that=this;
+                layList.search('search',function(where){
+                    if(that.where.title==where.title && that.where.is_reply==where.is_reply) return false;
+                    that.where.title=where.title;
+                    that.where.is_reply=where.is_reply;
+                    that.where.message_page=1;
+                    that.message.loadend=false;
+                    that.getMessageList();
+                });
+            }
         })
-    });
+    })
 </script>
 {/block}

@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!--suppress JSAnnotator -->
 <html lang="zh-CN">
 <head>
     {include file="public/head"}

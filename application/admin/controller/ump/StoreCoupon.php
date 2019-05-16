@@ -42,14 +42,14 @@ class StoreCoupon extends AuthController
     public function create()
     {
         $f = array();
-        $f[] = Form::input('title','优惠券名称')->required();
+        $f[] = Form::input('title','优惠券名称');
         $f[] = Form::number('coupon_price','优惠券面值',0)->min(0);
         $f[] = Form::number('use_min_price','优惠券最低消费')->min(0);
         $f[] = Form::number('coupon_time','优惠券有效期限')->min(0);
         $f[] = Form::number('sort','排序');
         $f[] = Form::radio('status','状态',0)->options([['label'=>'开启','value'=>1],['label'=>'关闭','value'=>0]]);
 
-        $form = Form::make_post_form('添加优惠券',$f,Url::build('save'));//->setSuccessScript('<script>formCreate.formSuccess = function(form,$r){$r.closeModal();};</script>');
+        $form = Form::make_post_form('添加优惠券',$f,Url::build('save'));
         $this->assign(compact('form'));
         return $this->fetch('public/form-builder');
     }
@@ -227,8 +227,8 @@ class StoreCoupon extends AuthController
 
     public function update_issue(Request $request,$id)
     {
-        list($_id,$rangeTime,$count,$status) = UtilService::postMore([
-            'id',['range_date',['','']],['count',0],['status',0]
+        list($_id,$rangeTime,$count,$status,$is_permanent) = UtilService::postMore([
+            'id',['range_date',['','']],['count',0],['status',0],['is_permanent',0]
         ],$request,true);
         if($_id != $id) return JsonService::fail('操作失败,信息不对称');
         if(!$count) $count = 0;
@@ -241,7 +241,7 @@ class StoreCoupon extends AuthController
         if(!$endTime) $endTime = 0;
         if(!$startTime && $endTime) return JsonService::fail('请选择正确的开始时间');
         if($startTime && !$endTime) return JsonService::fail('请选择正确的结束时间');
-        if(StoreCouponIssue::setIssue($id,$count,strtotime($startTime),strtotime($endTime),$count,$status))
+        if(StoreCouponIssue::setIssue($id,$count,strtotime($startTime),strtotime($endTime),$count,$status,$is_permanent))
             return JsonService::successful('发布优惠劵成功!');
         else
             return JsonService::fail('发布优惠劵失败!');

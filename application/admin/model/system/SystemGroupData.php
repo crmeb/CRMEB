@@ -49,6 +49,11 @@ class SystemGroupData extends ModelBasic
         });
     }
 
+    /**获得组合数据信息+组合数据列表
+     * @param $config_name
+     * @param int $limit
+     * @return array|bool|false|\PDOStatement|string|\think\Model
+     */
     public static function getGroupData($config_name,$limit = 0)
     {
         $group = SystemGroup::where('config_name',$config_name)->field('name,info,config_name')->find();

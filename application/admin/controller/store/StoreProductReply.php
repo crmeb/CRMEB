@@ -3,6 +3,8 @@
 namespace app\admin\controller\store;
 
 use app\admin\controller\AuthController;
+use service\JsonService;
+use service\UtilService;
 use traits\CurdControllerTrait;
 use service\UtilService as Util;
 use service\JsonService as Json;
@@ -38,8 +40,32 @@ class StoreProductReply extends AuthController
         else
             $where['product_id'] =  0;
         $this->assign('where',$where);
+        $this->assign('is_layui',true);
         $this->assign(ProductReplyModel::systemPage($where));
         return $this->fetch();
+    }
+
+    public function get_product_imaes_list()
+    {
+        $where=UtilService::getMore([
+            ['page',1],
+            ['limit',10],
+            ['title',''],
+            ['is_reply',''],
+        ]);
+        return JsonService::successful(ProductReplyModel::getProductImaesList($where));
+    }
+
+    public function get_product_reply_list()
+    {
+        $where=UtilService::getMore([
+            ['limit',10],
+            ['title',''],
+            ['is_reply',''],
+            ['message_page',1],
+            ['producr_id',0],
+        ]);
+        return JsonService::successful(ProductReplyModel::getProductReplyList($where));
     }
 
     /**

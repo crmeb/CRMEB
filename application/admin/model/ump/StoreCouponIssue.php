@@ -33,8 +33,8 @@ class StoreCouponIssue extends ModelBasic
         return time();
     }
 
-    public static function setIssue($cid,$total_count = 0,$start_time = 0,$end_time = 0,$remain_count = 0,$status = 0)
+    public static function setIssue($cid,$total_count = 0,$start_time = 0,$end_time = 0,$remain_count = 0,$status = 0,$is_permanent=0)
     {
-        return self::set(compact('cid','start_time','end_time','total_count','remain_count','status'));
+        return self::set(compact('cid','start_time','end_time','total_count','remain_count','status','is_permanent'));
     }
 }

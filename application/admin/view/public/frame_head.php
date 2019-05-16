@@ -14,7 +14,6 @@
     <script src="{__PLUG_PATH}layui/layui.all.js"></script>
     <script>
         $eb = parent._mpApi;
-        // if(!$eb) top.location.reload();
         window.controlle="<?php echo strtolower(trim(preg_replace("/[A-Z]/", "_\\0", think\Request::instance()->controller()), "_"));?>";
         window.module="<?php echo think\Request::instance()->module();?>";
     </script>

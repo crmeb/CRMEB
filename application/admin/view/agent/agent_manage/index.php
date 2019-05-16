@@ -8,6 +8,7 @@
 <link href="{__FRAME_PATH}css/plugins/footable/footable.core.css" rel="stylesheet">
 <script src="{__PLUG_PATH}sweetalert2/sweetalert2.all.min.js"></script>
 <script src="{__FRAME_PATH}js/plugins/footable/footable.all.min.js"></script>
+<script src="{__ADMIN_PATH}js/layuiList.js"></script>
 <style>
     .on-tag{background-color: #eea91e;}
     .height-auto{height: 300px;}
@@ -386,7 +387,11 @@
                                         {if condition="$vo['user_type'] eq 'routine'"}
                                            暂无
                                         {else/}
+                                        {if isset($vo.qr_code.url)}
                                            <img src="{$vo.qr_code.url}" alt="{$vo.nickname}" title="{$vo.nickname}" style="width:50px;height: 50px;cursor: pointer;" class="head_image" data-image="{$vo.qr_code.url}">
+                                        {else}
+                                            暂无
+                                        {/if}
                                         {/if}
                                     </td>
                                     <td class="text-center">
@@ -547,7 +552,8 @@
             }
         }
         var str = chk_value.join(',');
-        var url = "http://"+window.location.host+"/admin/store.store_coupon/grant/id/"+str;
+//        var url = "http://"+window.location.host+"/admin/store.store_coupon/grant/id/"+str;
+        var url = layList.U({c:'store.store_coupon',a:'grant',p:{id:str}});
         $eb.createModalFrame(this.innerText,url,{'w':800});
     })
     $('.news').on('click',function (e) {
@@ -570,7 +576,8 @@
             }
         }
         var str = chk_value.join(',');
-        var url = "http://"+window.location.host+"/admin/wechat.wechat_news_category/send_news/id/"+str;
+//        var url = "http://"+window.location.host+"/admin/wechat.wechat_news_category/send_news/id/"+str;
+        var url = layList.U({c:'wechat.wechat_news_category',a:'send_news',p:{id:str}});
         $eb.createModalFrame(this.innerText,url,{'w':800});
     })
     $('.synchro').on('click',function(){

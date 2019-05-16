@@ -159,7 +159,7 @@ class Article extends AuthController
             if($res)
                 return Json::successful('修改图文成功!',$id);
             else
-                return Json::fail('修改图文失败!',$id);
+                return Json::fail('修改图文失败，您并没有修改什么!',$id);
         }else{
             $data['add_time'] = time();
             $data['admin_id'] = $this->adminId;

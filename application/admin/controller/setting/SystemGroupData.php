@@ -47,13 +47,13 @@ class SystemGroupData extends AuthController
         $f = array();
         foreach ($Fields["fields"] as $key => $value) {
             $info = [];
-            if(!empty($value["param"])){
+            if(isset($value["param"])){
                 $value["param"] = str_replace("\r\n","\n",$value["param"]);//防止不兼容
                 $params = explode("\n",$value["param"]);
                 if(is_array($params) && !empty($params)){
                     foreach ($params as $index => $v) {
                         $vl = explode('=>',$v);
-                        if(!empty($vl[0]) && !empty($vl[1])){
+                        if(isset($vl[0]) && isset($vl[1])){
                             $info[$index]["value"] = $vl[0];
                             $info[$index]["label"] = $vl[1];
                         }
@@ -150,13 +150,13 @@ class SystemGroupData extends AuthController
         $f = array();
         foreach ($Fields['fields'] as $key => $value) {
             $info = [];
-            if(!empty($value["param"])){
+            if(isset($value["param"])){
                 $value["param"] = str_replace("\r\n","\n",$value["param"]);//防止不兼容
                 $params = explode("\n",$value["param"]);
                 if(is_array($params) && !empty($params)){
                     foreach ($params as $index => $v) {
                         $vl = explode('=>',$v);
-                        if(!empty($vl[0]) && !empty($vl[1])){
+                        if(isset($vl[0]) && isset($vl[1])){
                             $info[$index]["value"] = $vl[0];
                             $info[$index]["label"] = $vl[1];
                         }
@@ -221,7 +221,7 @@ class SystemGroupData extends AuthController
         foreach ($params as $key => $param) {
             foreach ($Fields['fields'] as $index => $field) {
                 if($key == $field["title"]){
-                    if($param == "" || count($param) == 0)
+                    if(!$param)
                         return Json::fail($field["name"]."不能为空！");
                     else{
                         $value[$key]["type"] = $field["type"];

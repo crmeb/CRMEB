@@ -10,7 +10,7 @@ namespace app\admin\model\finance;
 use traits\ModelTrait;
 use basic\ModelBasic;
 use service\ExportService;
-use app\wap\model\user\UserBill;
+use app\core\model\user\UserBill;
 use app\admin\model\user\User;
 use service\PHPExcelService;
 /*数据统计处理*/

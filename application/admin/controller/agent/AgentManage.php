@@ -7,7 +7,7 @@ use app\admin\model\order\StoreOrder;
 use app\admin\model\user\User;
 use app\admin\model\wechat\WechatUser as UserModel;
 use app\admin\library\FormBuilder;
-use app\wap\model\user\UserBill;
+use app\core\model\user\UserBill;
 use service\UtilService as Util;
 
 /**
@@ -75,7 +75,7 @@ class AgentManage extends AuthController
             ->order('u.add_time DESC')
             ->select()
             ->toArray();
-        foreach ($list as $key=>$value) $list[$key]['orderCount'] = StoreOrder::getOrderCount($value['uid']);
+        foreach ($list as $key=>$value) $list[$key]['orderCount'] = StoreOrder::getOrderCount($value['uid'])?:0;
         $this->assign('list',$list);
         return $this->fetch();
     }

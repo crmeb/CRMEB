@@ -77,9 +77,7 @@
     reiframesize();//设置编辑框的尺寸
     $("#savefile").click(function(){
         $.post("{:Url('savefile')}",{comment:editor.getValue(),filepath:'{$filepath}'},function (res) {
-            if(res.code == 200) {
-                $eb.message('success',res.msg);
-            }
+             $eb.message('success',res.msg);
         },'json');
     });
     $("#undo").click(function(){

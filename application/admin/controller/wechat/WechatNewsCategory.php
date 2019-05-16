@@ -14,7 +14,7 @@ use service\UtilService;
 use think\Db;
 use think\Request;
 use think\Url;
-use service\WechatService;
+use app\core\util\WechatService;
 use \app\admin\model\wechat\WechatNewsCategory as WechatNewsCategoryModel;
 use app\admin\model\article\Article as ArticleModel;
 /**
@@ -235,8 +235,8 @@ class WechatNewsCategory extends AuthController
             if($v['author'] == '') return JsonService::fail('作者不能为空');
             if($v['content'] == '') return JsonService::fail('正文不能为空');
             if($v['synopsis'] == '') return JsonService::fail('摘要不能为空');
-            $v['add_time'] = time();
             $v['status'] = 1;
+            $v['add_time'] = time();
             if($v['id']){
                 $idC = $v['id'];
                 unset($v['id']);

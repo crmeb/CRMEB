@@ -57,13 +57,13 @@ class Index extends AuthController
             ->count();
         //库存预警
         $replenishment_num = SystemConfig::getValue('store_stock') > 0 ? SystemConfig::getValue('store_stock') : 20;//库存预警界限
-        $topData['stockProduct'] = StoreProduct::where('stock','<=',$replenishment_num)->where('is_del',0)->count();
+        $topData['stockProduct'] = StoreProduct::where('stock','<=',$replenishment_num)->where('is_show',1)->where('is_del',0)->count();
         //待处理提现
         $topData['treatedExtract'] = UserExtractModel::where('status',0)->count();
 
 
-        //订单数->日
-        $now_day_order_p = StoreOrderModel::where('paid',1)->where('pay_time','gt',$now_day)->count();
+        //订单数->昨日
+        $now_day_order_p = StoreOrderModel::where('paid',1)->whereTime('pay_time','yesterday')->count();
         $pre_day_order_p = StoreOrderModel::where('paid',1)->where('pay_time','gt',$pre_day)->where('pay_time','lt',$now_day)->count();
         $first_line['d_num'] = [
             'data' => $now_day_order_p ? $now_day_order_p : 0,
@@ -72,8 +72,8 @@ class Index extends AuthController
         ];
 
         //交易额->昨天
-        $now_month_order_p = StoreOrderModel::where('paid',1)->where('pay_time','gt',$pre_day)->value('sum(pay_price)');
-        $pre_month_order_p = StoreOrderModel::where('paid',1)->where('pay_time','gt',$beforyester_day)->where('pay_time','lt',$pre_day)->value('sum(pay_price)');
+        $now_month_order_p = StoreOrderModel::where('paid',1)->whereTime('pay_time','yesterday')->sum('pay_price');
+        $pre_month_order_p = StoreOrderModel::where('paid',1)->where('pay_time','gt',$beforyester_day)->where('pay_time','lt',$pre_day)->sum('pay_price');
         $first_line['d_price'] = [
             'data' => $now_month_order_p > 0 ? $now_month_order_p : 0,
             'percent' => abs($now_month_order_p - $pre_month_order_p),
@@ -81,7 +81,7 @@ class Index extends AuthController
         ];
 
         //交易额->月
-        $now_month_order_p = StoreOrderModel::where('paid',1)->where('pay_time','gt',$now_month)->value('sum(pay_price)');
+        $now_month_order_p = StoreOrderModel::where('paid',1)->whereTime('pay_time','month')->sum('pay_price');
         $pre_month_order_p = StoreOrderModel::where('paid',1)->where('pay_time','gt',$pre_month)->where('pay_time','lt',$now_month)->value('sum(pay_price)');
         $first_line['m_price'] = [
             'data' => $now_month_order_p > 0 ? $now_month_order_p : 0,
@@ -156,8 +156,8 @@ class Index extends AuthController
                     $datalist[date('m-d',strtotime($i.' day'))] = date('m-d',strtotime($i.' day'));
                 }
                 $order_list = StoreOrderModel::where('add_time','between time',[$datebefor,$dateafter])
-                    ->field("FROM_UNIXTIME(add_time,'%m-%e') as day,count(*) as count,sum(pay_price) as price")
-                    ->group("FROM_UNIXTIME(add_time, '%Y%m%e')")
+                    ->field("FROM_UNIXTIME(add_time,'%m-%d') as day,count(*) as count,sum(pay_price) as price")
+                    ->group("FROM_UNIXTIME(add_time, '%Y%m%d')")
                     ->order('add_time asc')
                     ->select()->toArray();
                 if(empty($order_list)) return Json::fail('无数据');
@@ -567,7 +567,7 @@ class Index extends AuthController
         $data = [];
         $data['ordernum'] = StoreOrderModel::statusByWhere(1)->count();//待发货
         $replenishment_num = SystemConfig::getValue('store_stock') > 0 ? SystemConfig::getValue('store_stock') : 2;//库存预警界限
-        $data['inventory'] = ProductModel::where('stock','<=',$replenishment_num)->where('is_del',0)->count();//库存
+        $data['inventory'] = ProductModel::where('stock','<=',$replenishment_num)->where('is_show',1)->where('is_del',0)->count();//库存
         $data['commentnum'] = StoreProductReplyModel::where('is_reply',0)->count();//评论
         $data['reflectnum'] = UserExtractModel::where('status',0)->count();;//提现
         $data['msgcount'] = intval($data['ordernum'])+intval($data['inventory'])+intval($data['commentnum'])+intval($data['reflectnum']);

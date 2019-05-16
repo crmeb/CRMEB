@@ -1,5 +1,53 @@
 {extend name="public/container"}
 {block name="head_top"}
+<style>
+    .layui-input-block button{
+        border: 1px solid rgba(0,0,0,0.1);
+    }
+    .layui-card-body{
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+    .layui-card-body p.layuiadmin-big-font {
+        font-size: 36px;
+        color: #666;
+        line-height: 36px;
+        padding: 5px 0 10px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        word-break: break-all;
+        white-space: nowrap;
+    }
+    .layuiadmin-badge, .layuiadmin-btn-group, .layuiadmin-span-color {
+        position: absolute;
+        right: 15px;
+    }
+    .layuiadmin-badge {
+        top: 50%;
+        margin-top: -9px;
+        color: #01AAED;
+    }
+    .layuiadmin-span-color i {
+        padding-left: 5px;
+    }
+    .block-rigit{
+        text-align: right;
+    }
+    .block-rigit button{
+        width: 100px;
+        letter-spacing: .5em;
+        line-height: 28px;
+    }
+    .layuiadmin-card-list{
+        padding: 1.6px;
+    }
+    .layuiadmin-card-list p.layuiadmin-normal-font {
+        padding-bottom: 10px;
+        font-size: 20px;
+        color: #666;
+        line-height: 24px;
+    }
+</style>
 <script src="{__PLUG_PATH}echarts.common.min.js"></script>
 {/block}
 {block name="content"}
@@ -71,6 +119,26 @@
                 </div>
             </div>
         </div>
+        <div class="layui-col-md6">
+            <div class="layui-card">
+                <div class="layui-card-header">分销商数量饼状图</div>
+                <div class="layui-card-body layui-row">
+                    <div class="layui-col-md12">
+                        <div class="layui-btn-container" ref="echarts_fenxiao" style="height:400px"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="layui-col-md6">
+            <div class="layui-card">
+                <div class="layui-card-header">多次购物会员数量饼状图</div>
+                <div class="layui-card-body layui-row">
+                    <div class="layui-col-md12">
+                        <div class="layui-btn-container" ref="echarts_shop" style="height:400px"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 <script src="{__ADMIN_PATH}js/layuiList.js"></script>
@@ -118,6 +186,10 @@
                         var option=that.setoption(rem.data.seriesdata,rem.data.xdata,rem.data.Zoom);
                         console.log(option);
                         that.myChart.list.setOption(option);
+                        var fenxiao=that.setoption(rem.data.fenbu_data,rem.data.fenbu_xdata,'','分销商分布','pic');
+                        that.myChart.fenxiao.setOption(fenxiao);
+                        var shop=that.setoption(rem.data.shop_data,rem.data.shop_xdata,'','购物会员分布','pic');
+                        that.myChart.shop.setOption(shop);
                     });
                 },
                 setoption:function(seriesdata,xdata,Zoom,title,type){
@@ -187,6 +259,8 @@
             },
             mounted:function () {
                 this.setChart(this.$refs.echarts_list,'list');
+                this.setChart(this.$refs.echarts_fenxiao,'fenxiao');
+                this.setChart(this.$refs.echarts_shop,'shop');
                 this.getBadgeList();
                 this.getUserChart();
                 var that=this;

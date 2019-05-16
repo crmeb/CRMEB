@@ -2,7 +2,7 @@
 namespace app\admin\controller\finance;
 use app\admin\controller\AuthController;
 use app\admin\model\user\UserRecharge as UserRechargeModel;
-use app\wap\model\user\UserBill;
+use app\core\model\user\UserBill;
 use service\UtilService as Util;
 use service\JsonService as Json;
 use think\Url;
@@ -10,7 +10,7 @@ use service\FormBuilder as Form;
 use think\Request;
 use service\HookService;
 use behavior\wechat\PaymentBehavior;
-use service\WechatTemplateService;
+use app\core\util\WechatTemplateService;
 use app\wap\model\user\WechatUser as WechatUserWap;
 /**
  * 微信充值记录
@@ -69,6 +69,8 @@ class UserRecharge extends AuthController
         if($bj < 0) return Json::fail('退款金额大于支付金额，请修改退款金额');
         $refund_data['pay_price'] = $UserRecharge['price'];
         $refund_data['refund_price'] = $refund_price;
+//        $refund_data['refund_account']='REFUND_SOURCE_RECHARGE_FUNDS';
+
         try{
             HookService::listen('user_recharge_refund',$UserRecharge['order_id'],$refund_data,true,PaymentBehavior::class);
         }catch(\Exception $e){
