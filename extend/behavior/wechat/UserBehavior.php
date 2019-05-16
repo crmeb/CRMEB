@@ -20,6 +20,9 @@ class UserBehavior
      */
     public static function wechatOauthAfter($openid,$wechatInfo)
     {
+//        echo "调试中";
+//        var_dump($wechatInfo);
+        $wechatInfo['nickname'] = filterEmoji($wechatInfo['nickname']);
         Cookie::set('is_login',1);
         if(isset($wechatInfo['unionid']) && $wechatInfo['unionid'] != '' && WechatUser::be(['unionid'=>$wechatInfo['unionid']])){
             WechatUser::edit($wechatInfo,$wechatInfo['unionid'],'unionid');
@@ -34,6 +37,9 @@ class UserBehavior
             WechatUser::edit($wechatInfo,$wechatInfo['openid'],'openid');
             User::updateWechatUser($wechatInfo,WechatUser::openidToUid($wechatInfo['openid']));
         }else{
+            if(isset($wechatInfo['subscribe_scene'])) unset($wechatInfo['subscribe_scene']);
+            if(isset($wechatInfo['qr_scene'])) unset($wechatInfo['qr_scene']);
+            if(isset($wechatInfo['qr_scene_str'])) unset($wechatInfo['qr_scene_str']);
             $wechatInfo = WechatUser::set($wechatInfo);
             User::setWechatUser($wechatInfo);
         }

@@ -5,39 +5,20 @@
  * @day: 2017/12/18
  */
 
-namespace behavior\routine;
+namespace behavior\order;
 
 
 use app\ebapi\model\store\StoreOrder;
-use app\core\model\routine\RoutineTemplate;
-use app\core\model\user\User;
+use app\ebapi\model\routine\RoutineTemplate;
+use app\ebapi\model\user\User;
 use app\ebapi\model\user\WechatUser;
 use app\ebapi\model\user\UserAddress;
 use app\admin\model\order\StoreOrder as StoreOrderAdminModel;
 use app\core\util\SystemConfigService;
 use app\core\util\WechatTemplateService;
 
-class StoreProductBehavior
+class OrderBehavior
 {
-    /**
-     * 取消点赞产品后
-     * @param $productId
-     * @param $uid
-     */
-    public static function storeProductUnLikeAfter($productId, $uid)
-    {
-
-    }
-
-    /**
-     * 点赞产品后
-     * @param $product
-     * @param $uid
-     */
-    public static function storeProductLikeAfter($product, $uid)
-    {
-
-    }
     /**
      * 用户确认收货
      * @param $order

@@ -49,13 +49,34 @@ class JsonService
         return self::result(200,$msg,compact('status','result'));
     }
 
-    public static function fail($msg,$data=[])
+    public static function fail($msg,$data=[],$code=400)
     {
         if(true == is_array($msg)){
             $data = $msg;
             $msg = self::$FAIL_DEFAULT_MSG;
         }
-        return self::result(400,$msg,$data);
+        return self::result($code,$msg,$data);
+    }
+
+    public static function success($msg,$data=[])
+    {
+        if(true == is_array($msg)){
+            $data = $msg;
+            $msg = self::$SUCCESSFUL_DEFAULT_MSG;
+        }
+        return self::result(200,$msg,$data);
+    }
+
+    /*
+     * 设置返回数据
+     * @param int $code 响应code
+     * @param string $msg 提示语
+     * @param array $data 返回数据
+     * @return array
+     * */
+    public static function returnData($code,$msg='',$data=[])
+    {
+        return compact('code','msg','data');
     }
 
 }

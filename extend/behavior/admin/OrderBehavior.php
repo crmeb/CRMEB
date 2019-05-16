@@ -5,61 +5,16 @@
  * @day: 2017/12/18
  */
 
-namespace behavior\routine;
+namespace behavior\admin;
 
-
-use app\ebapi\model\store\StoreOrder;
-use app\core\model\routine\RoutineTemplate;
-use app\core\model\user\User;
-use app\ebapi\model\user\WechatUser;
-use app\ebapi\model\user\UserAddress;
-use app\admin\model\order\StoreOrder as StoreOrderAdminModel;
-use app\core\util\SystemConfigService;
+use app\admin\model\user\User;
+use app\admin\model\order\StoreOrder as AdminStoreOrder;
 use app\core\util\WechatTemplateService;
 
-class StoreProductBehavior
+class OrderBehavior
 {
-    /**
-     * 取消点赞产品后
-     * @param $productId
-     * @param $uid
-     */
-    public static function storeProductUnLikeAfter($productId, $uid)
-    {
 
-    }
 
-    /**
-     * 点赞产品后
-     * @param $product
-     * @param $uid
-     */
-    public static function storeProductLikeAfter($product, $uid)
-    {
-
-    }
-    /**
-     * 用户确认收货
-     * @param $order
-     * @param $uid
-     */
-    public static function storeProductOrderUserTakeDelivery($order, $uid)
-    {
-        $res1 = StoreOrder::gainUserIntegral($order);
-        $res2 = User::backOrderBrokerage($order);
-        StoreOrder::orderTakeAfter($order);
-        $giveCouponMinPrice = SystemConfigService::get('store_give_con_min_price');
-        if($order['total_price'] >= $giveCouponMinPrice) WechatUser::userTakeOrderGiveCoupon($uid);
-        if(!($res1 && $res2)) exception('收货失败!');
-    }
-    /**
-     * 订单创建成功后
-     * @param $oid
-     */
-    public static function storeProductOrderCreate($order,$group)
-    {
-        UserAddress::be(['is_default'=>1,'uid'=>$order['uid']]) || UserAddress::setDefaultAddress($group['addressId'],$order['uid']);
-    }
 
     /**
      * 修改发货状态  为送货
@@ -68,9 +23,10 @@ class StoreProductBehavior
      * @param $oid
      * $oid  string store_order表中的id
      */
-//    public static function storeProductOrderDeliveryAfter($data,$oid){
-//        StoreOrder::orderPostageAfter($data,$oid);
-//    }
+    public static function storeProductOrderDeliveryAfter($data,$oid){
+        AdminStoreOrder::orderPostageAfter($oid,$data);
+//        AdminStoreOrder::sendOrderGoods($oid,$data);
+    }
 
     /**
      * 修改发货状态  为发货
@@ -79,34 +35,26 @@ class StoreProductBehavior
      * @param $oid
      * $oid  string store_order表中的id
      */
-//    public static function storeProductOrderDeliveryGoodsAfter($data,$oid){
-//        StoreOrder::orderPostageAfter($data,$oid);
-//        RoutineTemplate::sendOrderGoods($oid,$data);
-//    }
+    public static function storeProductOrderDeliveryGoodsAfter($data,$oid){
+        AdminStoreOrder::orderPostageAfter($oid,$data);
+    }
 
     /**
-     * 修改状态 为已收货
+     * 后台修改状态 为已收货
      * @param $data
      *  $data array status  状态为  已收货
      * @param $oid
      * $oid  string store_order表中的id
      */
-    public static function storeProductOrderTakeDeliveryAfter($order,$oid)
+    public static function storeProductOrderTakeDelivery($order)
     {
-        $res1 = StoreOrder::gainUserIntegral($order);
+
+        $res1 = AdminStoreOrder::gainUserIntegral($order);
         $res2 = User::backOrderBrokerage($order);
-        StoreOrder::orderTakeAfter($order);
+        AdminStoreOrder::orderTakeAfter($order);
         if(!($res1 && $res2)) exception('收货失败!');
     }
 
-    /**
-     * 线下付款
-     * @param $id
-     * $id 订单id
-     */
-    public static function storeProductOrderOffline($id){
-
-    }
 
     /**
      * 修改状态为  已退款
@@ -116,7 +64,8 @@ class StoreProductBehavior
      * $oid  string store_order表中的id
      */
     public static function storeProductOrderRefundYAfter($data,$oid){
-        StoreOrderAdminModel::refundTemplate($data,$oid);
+        if($data['is_channel']) AdminStoreOrder::refundRoutineTemplate($oid); //TODO 小程序余额退款模板消息
+        else AdminStoreOrder::refundTemplate($data,$oid);//TODO 公众号余额退款模板消息
     }
 
     /**
@@ -127,9 +76,16 @@ class StoreProductBehavior
      * $oid  string store_order表中的id
      */
     public static function storeProductOrderRefundNAfter($data,$oid){
+        AdminStoreOrder::refundNoPrieTemplate($oid,$data);
+    }
+    /**
+     * 线下付款
+     * @param $id
+     * $id 订单id
+     */
+    public static function storeProductOrderOffline($id){
 
     }
-
 
     /**
      * 修改订单状态
@@ -159,7 +115,7 @@ class StoreProductBehavior
      */
     public static function storeProductOrderApplyRefundAfter($oid, $uid)
     {
-        $order = StoreOrder::where('id',$oid)->find();
+        $order = AdminStoreOrder::where('id',$oid)->find();
         WechatTemplateService::sendAdminNoticeTemplate([
             'first'=>"亲,您有一个订单申请退款 \n订单号:{$order['order_id']}",
             'keyword1'=>'申请退款',
@@ -177,17 +133,9 @@ class StoreProductBehavior
      */
     public static function storeProductOrderReply($replyInfo, $cartInfo)
     {
-        StoreOrder::checkOrderOver($cartInfo['oid']);
+        //StoreOrder::checkOrderOver($cartInfo['oid']);
     }
 
-    /**
-     * 订单全部产品评价完
-     * @param $oid
-     */
-    public static function storeProductOrderOver($oid)
-    {
-
-    }
 
     /**
      * 退积分
@@ -201,12 +149,18 @@ class StoreProductBehavior
     }
 
     /**
-     * 加入购物车成功之后
-     * @param array $cartInfo 购物车信息
-     * @param array $userInfo 用户信息
+     * TODO  后台余额退款
+     * @param $product
+     * @param $refund_data
      */
-    public static function storeProductSetCartAfterAfter($cartInfo, $userInfo)
+    public static function storeOrderYueRefund($product,$refund_data)
     {
+        $res = AdminStoreOrder::integralBack($product['id']);
+        if(!$res) exception('退积分失败!');
 
     }
+
+
+
+
 }
