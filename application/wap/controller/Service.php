@@ -8,7 +8,6 @@
 namespace app\wap\controller;
 
 use app\wap\model\store\StoreService;
-use service\SystemConfigService;
 use app\wap\model\user\User;
 use app\admin\model\system\Merchant;
 use think\Request;

@@ -11,7 +11,7 @@
                 <img src="{$wechatUser.headimgurl}" style="width: 1rem;height: 1rem;position: absolute;left: 50%;top: 50%;margin-left: -.5rem;margin-top: -.5rem;" />
             </div>
             <div class="text-content">
-                搜索微信公众号 <span><?=\service\SystemConfigService::get('site_name')?></span><br />
+                搜索微信公众号 <span><?=\app\core\util\SystemConfigService::get('site_name')?></span><br />
                 或长按上方二维码立即关注
             </div>
             <div class="link"><a href="{:Url('Index/index')}">进入商城</a></div>
@@ -22,9 +22,9 @@
 <script>
     mapleWx($jssdk(),function(){
        this.onMenuShareAll({
-           title:'<?=\service\SystemConfigService::get('wechat_share_title')?>',
-           imgUrl:location.origin+'<?=\service\SystemConfigService::get('wechat_share_img')?>',
-           desc:'<?=\service\SystemConfigService::get('wechat_share_synopsis')?>',
+           title:'<?=\app\core\util\SystemConfigService::get('wechat_share_title')?>',
+           imgUrl:location.origin+'<?=\app\core\util\SystemConfigService::get('wechat_share_img')?>',
+           desc:'<?=\app\core\util\SystemConfigService::get('wechat_share_synopsis')?>',
            link:"{:Url('Index/index',['spuid'=>$wechatUser['uid']],true,true)}"
        });
     });

@@ -17,10 +17,9 @@ use app\wap\model\user\User;
 use app\wap\model\user\UserNotice;
 use app\wap\model\user\WechatUser;
 use basic\WapBasic;
-use service\GroupDataService;
-use service\QrcodeService;
-use service\SystemConfigService;
-use service\WechatService;
+use app\core\util\GroupDataService;
+use app\core\util\QrcodeService;
+use app\core\util\SystemConfigService;
 use think\Db;
 use think\Url;
 

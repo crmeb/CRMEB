@@ -15,6 +15,7 @@ use app\wap\model\store\StoreCategory;
 use app\wap\model\store\StoreCouponIssue;
 use app\wap\model\store\StoreProduct;
 use app\wap\model\wap\ArticleCategory;
+use service\FileService;
 use service\JsonService;
 use service\UtilService;
 use think\Cache;
@@ -68,6 +69,30 @@ class PublicApi
         return JsonService::successful($result);
     }
 
+    /** 首页获取推荐产品
+     * @param int $first
+     * @param int $limit
+     */
+    public function get_product_list($first = 0,$limit = 8)
+    {
+        $StoreProductmodel = StoreProduct::validWhere();
+        if(input('type')=='is_best')
+            $StoreProductmodel = $StoreProductmodel->where('is_best',1);
+        if(input('type')=='is_hot')
+            $StoreProductmodel = $StoreProductmodel->where('is_hot',1);
+        if(input('type')=='is_benefit')
+            $StoreProductmodel = $StoreProductmodel->where('is_benefit',1);
+        if(input('type')=='is_new')
+            $StoreProductmodel = $StoreProductmodel->where('is_new',1);
+        if(input('type')=='is_postage')
+            $StoreProductmodel = $StoreProductmodel->where('is_postage',1);
+
+        $list = $StoreProductmodel->where('mer_id',0)->order('is_best DESC,sort DESC,add_time DESC')
+            ->limit($first,$limit)->field('id,image,store_name,sales,price,unit_name')->select()->toArray();
+
+        return JsonService::successful($list);
+    }
+
     public function get_best_product_list($first = 0,$limit = 8)
     {
         $list = StoreProduct::validWhere()->where('mer_id',0)->order('is_best DESC,sort DESC,add_time DESC')
@@ -79,8 +104,9 @@ class PublicApi
     {
         if(!$mediaIds) return JsonService::fail('参数错误');
         $mediaIds = explode(',',$mediaIds);
-        $temporary = \service\WechatService::materialTemporaryService();
+        $temporary = \app\core\util\WechatService::materialTemporaryService();
         $pathList = [];
+        $dir='public'.DS.'uploads'.DS.'wechat'.DS.'media';
         foreach ($mediaIds as $mediaId){
             if(!$mediaId) continue;
             try{
@@ -89,7 +115,10 @@ class PublicApi
                 continue;
             }
             $name = substr(md5($mediaId),12,20).'.jpg';
-            $path = '.'.DS.'public'.DS.'uploads'.DS.'wechat'.DS.'media'.DS.$name;
+            $path = '.'.DS.$dir.DS.$name;
+            $file=new FileService();
+            $res=$file->create_dir($dir);
+            if(!$res) return JsonService::fail('生成文件保存目录失败！请检查权限！');
             $res = file_put_contents($path,$content);
             if($res) $pathList[] = UtilService::pathToUrl($path);
         }

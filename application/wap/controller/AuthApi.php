@@ -35,13 +35,12 @@ use app\wap\model\user\UserNotice;
 use app\wap\model\user\UserSign;
 use app\wap\model\user\WechatUser;
 use behavior\wap\StoreProductBehavior;
-use service\WechatTemplateService;
+use app\core\util\WechatTemplateService;
 use service\CacheService;
 use service\HookService;
 use service\JsonService;
-use service\SystemConfigService;
+use app\core\util\SystemConfigService;
 use service\UtilService;
-use service\WechatService;
 use think\Cache;
 use think\Request;
 use think\Url;
@@ -312,7 +311,7 @@ class AuthApi extends AuthController
             $order = StoreOrder::searchUserOrder($this->userInfo['uid'],$search)?:[];
             $list = $order == false ? [] : [$order];
         }else{
-            if($type == 'first') $type = '';
+            if(!is_numeric($type)) $type = '';
             $list = StoreOrder::getUserOrderList($this->userInfo['uid'],$type,$first,$limit);
         }
         foreach ($list as $k=>$order){
@@ -484,10 +483,17 @@ class AuthApi extends AuthController
 
     public function get_product_list($keyword = '', $cId = 0,$sId = 0,$priceOrder = '', $salesOrder = '', $news = 0, $first = 0, $limit = 8)
     {
-        if(!empty($keyword)) $keyword = base64_decode(htmlspecialchars($keyword));
+        if(!empty($keyword)){
+            $encodedData = str_replace(' ','+',$keyword);
+            $keyword = base64_decode(htmlspecialchars($encodedData));
+        }
         $model = StoreProduct::validWhere();
         if($cId && $sId){
-            $model->where('cate_id',$sId);
+            $product_ids=\think\Db::name('store_product_cate')->where('cate_id',$sId)->column('product_id');
+            if(count($product_ids))
+                $model=$model->where('id',"in",$product_ids);
+            else
+                $model=$model->where('cate_id',-1);
         }elseif($cId){
             $sids = StoreCategory::pidBySidList($cId)?:[];
             $sids[] = $cId;

@@ -9,7 +9,7 @@ namespace app\wap\model\user;
 
 
 use basic\ModelBasic;
-use service\SystemConfigService;
+use app\core\util\SystemConfigService;
 use think\Request;
 use think\response\Redirect;
 use think\Session;
@@ -108,10 +108,13 @@ class User extends ModelBasic
         $cost = isset($orderInfo['cost']) ? $orderInfo['cost'] : 0;//成本价
         if($cost > $orderInfo['pay_price']) return true;//成本价大于支付价格时直接返回
         $brokeragePrice = bcmul(bcsub($orderInfo['pay_price'],$cost,2),$brokerageRatio,2);
+        //返佣之后余额
+        $orderInfo['pay_price'] = bcsub($orderInfo['pay_price'],$orderInfo['pay_postage'],2);
+        $balance = bcsub($userInfo['now_money'],$brokeragePrice,2);
         if($brokeragePrice <= 0) return true;
         $mark = $userInfo['nickname'].'成功消费'.floatval($orderInfo['pay_price']).'元,奖励推广佣金'.floatval($brokeragePrice);
         self::beginTrans();
-        $res1 = UserBill::income('获得推广佣金',$userInfo['spread_uid'],'now_money','brokerage',$brokeragePrice,$orderInfo['id'],0,$mark);
+        $res1 = UserBill::income('获得推广佣金',$userInfo['spread_uid'],'now_money','brokerage',$brokeragePrice,$orderInfo['id'],$balance,$mark);
         $res2 = self::bcInc($userInfo['spread_uid'],'now_money',$brokeragePrice,'uid');
         $res = $res1 && $res2;
         self::checkTrans($res);
@@ -137,10 +140,12 @@ class User extends ModelBasic
         $cost = isset($orderInfo['cost']) ? $orderInfo['cost'] : 0;//成本价
         if($cost > $orderInfo['pay_price']) return true;//成本价大于支付价格时直接返回
         $brokeragePrice = bcmul(bcsub($orderInfo['pay_price'],$cost,2),$brokerageRatio,2);
+        //返佣之后余额
+        $balance = bcsub($userInfo['now_money'],$brokeragePrice,2);
         if($brokeragePrice <= 0) return true;
         $mark = '二级推广人'.$userInfo['nickname'].'成功消费'.floatval($orderInfo['pay_price']).'元,奖励推广佣金'.floatval($brokeragePrice);
         self::beginTrans();
-        $res1 = UserBill::income('获得推广佣金',$userInfoTwo['spread_uid'],'now_money','brokerage',$brokeragePrice,$orderInfo['id'],0,$mark);
+        $res1 = UserBill::income('获得推广佣金',$userInfoTwo['spread_uid'],'now_money','brokerage',$brokeragePrice,$orderInfo['id'],$balance,$mark);
         $res2 = self::bcInc($userInfoTwo['spread_uid'],'now_money',$brokeragePrice,'uid');
         $res = $res1 && $res2;
         self::checkTrans($res);

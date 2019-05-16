@@ -9,7 +9,7 @@
 <script type="text/javascript" src="{__WAP_PATH}crmeb/js/lottie.min.js"></script>
 {/block}
 {block name="title"}
-<?= \service\SystemConfigService::get('site_name') ?>
+<?= \app\core\util\SystemConfigService::get('site_name') ?>
 {/block}
 {block name="content"}
 <div class="page-index" id="app-index">
@@ -84,6 +84,58 @@
                 <!--</div>-->
                 <a class="more-wrapper" href="{:Url('store/issue_coupon')}" v-show="couponList.length >= 2">查看更多 ></a>
             </div>
+            <!-- 商品精品推荐模板 -->
+            <div class="template-prolist" v-show="is_bestList.length > 0" >
+                <div class="title-like flex" v-cloak=""><span class="title-line left"></span> <span class="icon"></span>
+                    <span>精品推荐</span> <span class="title-line right"></span></div>
+                <ul class="flex">
+                    <li v-for="item in is_bestList" v-cloak=""><a :href="'/wap/store/detail/id/'+item.id">
+                        <div class="picture"><img :src="item.image"></div>
+                        <div class="product-info"><p class="title" v-text="item.store_name"></p>
+                            <p class="count-wrapper flex"><span class="price" v-html="getPriceStr(item.price)"></span> <span
+                                    class="count">已售{{item.sales}}{{item.unit_name || '件'}}</span></p></div>
+                    </a></li>
+                </ul>
+            </div>
+            <!-- 商品新品推荐模板 -->
+            <div class="template-prolist" v-show="is_newList.length > 0">
+                <div class="title-like flex"  v-cloak=""><span class="title-line left"></span> <span class="icon"></span>
+                    <span>首发新品</span> <span class="title-line right"></span></div>
+                <ul class="flex">
+                    <li v-for="item in is_newList" v-cloak=""><a :href="'/wap/store/detail/id/'+item.id">
+                        <div class="picture"><img :src="item.image"></div>
+                        <div class="product-info"><p class="title" v-text="item.store_name"></p>
+                            <p class="count-wrapper flex"><span class="price" v-html="getPriceStr(item.price)"></span> <span
+                                    class="count">已售{{item.sales}}{{item.unit_name || '件'}}</span></p></div>
+                    </a></li>
+                </ul>
+            </div>
+            <!-- 商品热卖推荐模板 -->
+            <div class="template-prolist"  v-show="is_hotList.length > 0">
+                <div class="title-like flex" v-cloak=""><span class="title-line left"></span> <span class="icon"></span>
+                    <span>热卖单品</span> <span class="title-line right"></span></div>
+                <ul class="flex">
+                    <li v-for="item in is_hotList" v-cloak=""><a :href="'/wap/store/detail/id/'+item.id">
+                        <div class="picture"><img :src="item.image"></div>
+                        <div class="product-info"><p class="title" v-text="item.store_name"></p>
+                            <p class="count-wrapper flex"><span class="price" v-html="getPriceStr(item.price)"></span> <span
+                                    class="count">已售{{item.sales}}{{item.unit_name || '件'}}</span></p></div>
+                    </a></li>
+                </ul>
+            </div>
+            <!-- 商品促销推荐模板 -->
+            <div class="template-prolist"  v-show="is_benefitList.length > 0">
+                <div class="title-like flex" v-cloak=""><span class="title-line left"></span> <span class="icon"></span>
+                    <span>特价专区</span> <span class="title-line right"></span></div>
+                <ul class="flex">
+                    <li v-for="item in is_benefitList" v-cloak=""><a :href="'/wap/store/detail/id/'+item.id">
+                        <div class="picture"><img :src="item.image"></div>
+                        <div class="product-info"><p class="title" v-text="item.store_name"></p>
+                            <p class="count-wrapper flex"><span class="price" v-html="getPriceStr(item.price)"></span> <span
+                                    class="count">已售{{item.sales}}{{item.unit_name || '件'}}</span></p></div>
+                    </a></li>
+                </ul>
+            </div>
           <!-- 秒杀列表 -->
             {notempty name="storeSeckill"}
             <div class="hotspike-list">
@@ -157,7 +209,8 @@
                                         class="count">已售{{pro.sales}}{{pro.unit_name || '件'}}</span></p></div>
                         </a></li>
                 </ul>
-            </div>        <!-- 商品分类模板 -->
+            </div>
+            <!-- 商品分类模板 -->
             <div class="template-prolist">
                 <div class="title-like flex" v-show="page.list.length > 0" v-cloak=""><span class="title-line left"></span> <span class="icon"></span>
                     <span>新品推荐</span> <span class="title-line right"></span></div>
@@ -247,6 +300,10 @@
                 data: {
                     couponList: [],
                     cateGroupList: [],
+                    is_bestList: [],//精品推荐
+                    is_newList:[],//首发新品
+                    is_hotList: [],//热卖单品
+                    is_benefitList:[],//促销
                     page: {first: 0, limit: 20, list: [], loaded: false},
                     loading: false,
                     scroll: null,
@@ -377,13 +434,33 @@
                             that.loading = false
                         });
                     },
+                    getproductList: function (type) {
+                        var that = this;
+                        storeApi.getPublicProductList({first:0, limit: 4,type:type}, function (res) {
+                            if(type=='is_best')
+                                that.is_bestList = res.data.data;
+                            if(type=='is_hot')
+                                that.is_hotList = res.data.data;
+                            if(type=='is_new')
+                                that.is_newList = res.data.data;
+                            if(type=='is_benefit')
+                                that.is_benefitList = res.data.data;
+                        }, function () {
+
+                        });
+                    },
                 },
                 mounted: function () {
                     var that = this;
                     this.elInit();
                     this.getIssueCouponList();
+//                    this.getproductList('is_best');//精品
+//                    this.getproductList('is_hot');//热卖
+//                    this.getproductList('is_benefit');//促销
+//                    this.getproductList('is_new');//首发新品
+                    this.getIssueCouponList();
                     this.getCateData();
-                    this.getCombinationList();
+                    this.getCombinationList();//猜猜喜欢
                     setTimeout(function() {
                         that.getList();
                     },0);

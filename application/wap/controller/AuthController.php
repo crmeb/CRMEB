@@ -11,7 +11,6 @@ namespace app\wap\controller;
 use app\wap\model\store\StoreOrder;
 use app\wap\model\user\User;
 use app\wap\model\user\WechatUser;
-use basic\WapBasic;
 use service\UtilService;
 use think\Cookie;
 use think\Session;

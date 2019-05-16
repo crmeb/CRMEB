@@ -1,10 +1,10 @@
 <script type="text/javascript" src="{__PLUG_PATH}requirejs/require.js"></script>
 <script>
     requirejs.config({
-        urlArgs: "v=201712230955",
+        urlArgs: "v=15615616515616556",
         map: {
             '*': {
-                'css': "{__PLUG_PATH}requirejs/require-css.js"
+                'css': '{__PUBLIC_PATH}static/plug/requirejs/require-css.js'
             }
         },
         shim: {
@@ -24,7 +24,7 @@
                 deps: ['css!yduicss']
             }
         },
-        baseUrl: '//' + location.hostname + "{__PUBLIC_PATH}",
+        baseUrl: '//' + location.hostname + '{__PUBLIC_PATH}',
         paths: {
             'static': 'static',
             'vue': 'static/plug/vue/dist/vue.min',
@@ -38,7 +38,7 @@
             'moment': 'static/plug/moment',
             'sweetalert': 'static/plug/sweetalert2/sweetalert2.all.min',
             'helper':'static/plug/helper',
-            'store':'wap/first/crmeb/module/store',
+            'store':'{__WAP_PATH}crmeb/module/store',
             'better-scroll':"static/plug/better-scroll",
             'ydui':"static/plug/ydui/ydui",
             'yduicss':"static/plug/ydui/ydui-px",
