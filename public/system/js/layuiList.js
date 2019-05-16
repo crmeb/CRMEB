@@ -96,7 +96,7 @@
     };
     //初始化 layui table
     layList.tableList = function (odj, url, data, limit, size,boxids,is_tables) {
-        var limit = limit || 20, size = size || 'lg', $data = [], that = this,boxids=boxids || this.boxids;
+        var limit = limit || 20, size = size || 'sm', $data = [], that = this,boxids=boxids || this.boxids;
         switch (typeof data) {
             case 'object':
                 $data = data;
@@ -108,14 +108,12 @@
         if(is_tables!=true) this.odj=odj;
         if(that.elemOdj[odj]==undefined) that.elemOdj[odj]=odj;
         var elemOdj=that.elemOdj[this.odj];
-        console.log(that.elemOdj);
         that.tableIns = that.table.render({
             id:boxids,
             elem: '#' +elemOdj,
             url: url,
             page: true,
             limit: limit,
-            size: size,
             cols: [$data]
         });
         return that.tableIns;
@@ -144,7 +142,6 @@
         if(typeof tableIns=='Object'){
             tableIns.reload(whereOdJ);
         }else{
-            console.log(whereOdJ);
             this.tableIns.reload(whereOdJ);
         }
     }
@@ -163,13 +160,11 @@
         }
     }
     //监听列表
-    layList.tool = function (EventFn, fieldStr,odjs) {
+    layList.tool = function (EventFn, fieldStr,odj) {
         var that = this;
         // var elemOdj=elemOdj || that.elemOdj
-        var elemOdj=that.elemOdj[odjs || this.odj];
-        console.log(elemOdj);
+        var elemOdj=that.elemOdj[odj || this.odj];
         this.table.on('tool(' + elemOdj + ')', function (obj) {
-            console.log(obj)
             var data = obj.data, layEvent = obj.event;
             if (typeof EventFn == 'function') {
                 EventFn(layEvent, data,obj);
@@ -278,13 +273,17 @@
             var value = obj.value //得到修改后的值
                 ,data = obj.data //得到所在行所有键值
                 ,field = obj.field; //得到字段
-            switch (field){
-                case name:
-                    successFn && successFn(obj);
-                    break;
-                default:
-                    console.log('未检测到指定字段'+name);
-                    break;
+            if (typeof name == "function") {
+                name && name(obj);
+            }else{
+                switch (field){
+                    case name:
+                        successFn && successFn(obj);
+                        break;
+                    default:
+                        console.log('未检测到指定字段'+name);
+                        break;
+                }
             }
         });
     }

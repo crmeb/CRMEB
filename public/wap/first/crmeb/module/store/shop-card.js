@@ -83,6 +83,7 @@
             descCartNum:function(){
                 this.cartNum-=1;
             },
+            //点击选择属性
             changeChecked:function(value,attr,index){
                 attr.checked = value;
                 this.$set(this.attrList,index,attr);
@@ -127,7 +128,7 @@
 
     shopCard.install = function(Vue){
         Vue.prototype.$shopCard = function(opt){
-            var $vm = new shopCard().$mount(),$el = $vm.$el;
+            var $vm = new shopCard().$mount(),$el = $vm.$el;console.log(opt);
             document.body.appendChild($el);
             $vm._setData(opt);
             $vm.remove = function(){
