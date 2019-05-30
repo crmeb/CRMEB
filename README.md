@@ -18,6 +18,7 @@
 </p>
 
 ### 如果对您有帮助，您可以点右上角 "Star" 支持一下 谢谢！
+### github地址：https://github.com/xazbkj/CRMEB
 ### 纯小程序版：https://gitee.com/ZhongBangKeJi/CRMEB_WeChatMiniProgram
 ### 帮助文档：https://www.kancloud.cn/crmeb/crmeb/662420
 ### 本项目还在不断开发完善中,如有建议或问题请官方论坛反馈，论坛地址:http://bbs.crmeb.net
