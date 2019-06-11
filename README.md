@@ -7,14 +7,16 @@
         <img src="https://img.shields.io/badge/Licence-MIT-green.svg?style=flat" />
     </a>
     <a href="http://www.crmeb.com">
-        <img src="https://img.shields.io/badge/Edition-2.5-blue.svg" />
+        <img src="https://img.shields.io/badge/Edition-2.6-blue.svg" />
     </a>
      <a href="https://gitee.com/ZhongBangKeJi/CRMEB/repository/archive/master.zip">
-        <img src="https://img.shields.io/badge/download-59m-red.svg" />
+        <img src="https://img.shields.io/badge/download-81m-red.svg" />
     </a>
 </p>
 
-## 本项目还在不断开发完善中,如有建议或问题请[在这里提出](https://gitee.com/ZhongBangKeJi/CRMEB/issues)
+## 本项目还在不断开发完善中,如有建议或问题请[在这里提出](https://github.com/xazbkj/CRMEB/issues)
+
+## 帮助文档：http://help.crmeb.net
 
 ###如果对您有帮助，您可以点右上角 "Star" 支持一下 谢谢！
 
@@ -43,7 +45,8 @@
     5.iview ui组件是HTML编写更加便捷；
     6.后台多任务桌面化操作界面；
     7.TP5.0+form-builder+layui.table自己封装快速二次开发；
-    8.一键安装
+    8.高级权限控制，可以控制到后台每一个函数；
+    9.一键安装
 ~~~
 ## 功能
 
@@ -65,7 +68,7 @@
         
    8.内容:管理文章分类 (添加分类、删除分类、修改分类) 、 管理文章
    
-   9.维护:查看系统日志、文件变动效验、刷新网站缓存、在线更新系统、清除数据等功能
+   9.维护:查看系统日志、文件变动效验、刷新网站缓存、在线更新系统、清除数据、文件管理、系统配置等功能
 
    10.强大的权限管理系统
 
@@ -96,7 +99,7 @@ CRMEB微信小程序v2.0版：除了以上功能还带砍价、拼团功能
 
 ### 详情[<a href='https://s.click.taobao.com/W7hVkLw' target="_blank"> 进入淘宝 </a>]
 
-官网线下定制服务版：http://www.crmeb.com
+官网：http://www.crmeb.com
 
 ## 用法
 
@@ -104,9 +107,10 @@ CRMEB微信小程序v2.0版：除了以上功能还带砍价、拼团功能
 
 ```
 Git clone https://gitee.com/ZhongBangKeJi/CRMEB.git
+或者
+Git clone https://github.com/xazbkj/CRMEB.git
 ```
-    文档地址:https://gitee.com/ZhongBangKeJi/CRMEB/wikis
-
+   
 
 ## 目录结构
 
@@ -151,10 +155,10 @@ Mysql：https://www.mysql.com/
 微信公众号、微信小程序 https://mp.weixin.qq.com
 
 版权信息
-CRMEB v2.3.* 遵循MIT开源协议发布，并提供免费使用。
+CRMEB v2.6.* 遵循MIT开源协议发布，并提供免费使用。
 
 本项目包含的第三方源码和二进制文件之版权信息另行标注。
 
-版权所有Copyright © 2017-2018 by CRMEB (http://www.crmeb.com)
+版权所有Copyright © 2017-2019 by CRMEB (http://www.crmeb.com)
 
 All rights reserved。
