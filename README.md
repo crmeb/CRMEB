@@ -135,10 +135,11 @@ Git clone https://gitee.com/ZhongBangKeJi/CRMEB.git
 ```
     文档地址:https://gitee.com/ZhongBangKeJi/CRMEB/wikis
 
+小程序前端目录：view/crmebNewUI
 
 ## 目录结构
 
-目录结构[查看](https://gitee.com/ZhongBangKeJi/CRMEB/wikis/pages/preview?title=%E7%A8%8B%E5%BA%8F%E7%9B%AE%E5%BD%95&parent=)：
+目录结构[查看](http://help.crmeb.net/1039499)：
 
 
 ##问题反馈
