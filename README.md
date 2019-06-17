@@ -146,7 +146,7 @@ Git clone https://gitee.com/ZhongBangKeJi/CRMEB.git
 
 在使用中有任何问题，请使用以下联系方式联系我们
 
-QQ群: 69741389 <a target="_blank" href="//shang.qq.com/wpa/qunwpa?idkey=9dbc5554f8423ea4185c87ee664fe9399d5021d6165fc6ed19e5648b4df8ffea"><img border="0" src="//pub.idqqimg.com/wpa/images/group.png" alt="CRMEB微信开发三群" title="CRMEB微信开发三群"></a><a target="_blank" href="//shang.qq.com/wpa/qunwpa?idkey=27f001a8f3a2855fc8d54338c98bef9d9843e491b0df56dd0825d5a39bab231e"><img border="0" src="//pub.idqqimg.com/wpa/images/group.png" alt="CRMEB微信开发群" title="CRMEB微信开发群"></a>
+QQ群: 69741389(已满)<a target="_blank" href="//shang.qq.com/wpa/qunwpa?idkey=9dbc5554f8423ea4185c87ee664fe9399d5021d6165fc6ed19e5648b4df8ffea"><img border="0" src="//pub.idqqimg.com/wpa/images/group.png" alt="CRMEB微信开发三群" title="CRMEB微信开发三群"></a>
 
 官方论坛：http://bbs.crmeb.net
 
