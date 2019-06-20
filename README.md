@@ -18,11 +18,21 @@
 </p>
 
 ### 如果对您有帮助，您可以点右上角 "Star" 支持一下 谢谢！
-### github地址：https://github.com/xazbkj/CRMEB
-### 纯小程序版：https://gitee.com/ZhongBangKeJi/CRMEB_WeChatMiniProgram
-### 帮助文档：https://www.kancloud.cn/crmeb/crmeb/662420
-### 本项目还在不断开发完善中,如有建议或问题请官方论坛反馈，论坛地址:http://bbs.crmeb.net
+### github地址：
+https://github.com/xazbkj/CRMEB
+### 纯小程序版：
+https://gitee.com/ZhongBangKeJi/CRMEB_WeChatMiniProgram
+### 帮助文档：
+https://www.kancloud.cn/crmeb/crmeb/662420
+### 论坛地址:
+http://bbs.crmeb.net
+
+QQ群: 710729856 <a target="_blank" href="//shang.qq.com/wpa/qunwpa?idkey=1794ec6e9fd6ac21bd6519d459d4495e824553693ab0a98a9899e61d68a494d0"><img border="0" src="//pub.idqqimg.com/wpa/images/group.png" alt="CRMEB微信开发四群" title="CRMEB微信开发四群"></a>
+
 ## CRMEB推荐服务器配置
+
+<table><tr><td> 
+
 入门级配置
 ```
 CPU：1核
@@ -33,6 +43,8 @@ CPU：1核
 价格：366元/年 933.3 元/三年
 ```
 <a href="https://promotion.aliyun.com/ntms/yunparter/invite.html?userCode=dligum2z">查看服务器详情</a>
+  </td>
+<td>
 
 标准级配置
 ```
@@ -44,6 +56,11 @@ CPU：2核
 价格：936元/年 2386.8 元/三年
 ```
 <a href="https://promotion.aliyun.com/ntms/yunparter/invite.html?userCode=dligum2z">查看服务器详情</a>
+
+  </td></tr></table>
+
+
+
 
 
 ## 项目介绍
@@ -141,16 +158,6 @@ Git clone https://gitee.com/ZhongBangKeJi/CRMEB.git
 
 目录结构[查看](http://help.crmeb.net/1039499)：
 
-
-##问题反馈
-
-在使用中有任何问题，请使用以下联系方式联系我们
-
-QQ群: 69741389(已满)<a target="_blank" href="//shang.qq.com/wpa/qunwpa?idkey=9dbc5554f8423ea4185c87ee664fe9399d5021d6165fc6ed19e5648b4df8ffea"><img border="0" src="//pub.idqqimg.com/wpa/images/group.png" alt="CRMEB微信开发三群" title="CRMEB微信开发三群"></a>
-
-官方论坛：http://bbs.crmeb.net
-
-Gitee: https://gitee.com/ZhongBangKeJi/CRMEB/issues
 
 ##  系统组件开源项目
 
