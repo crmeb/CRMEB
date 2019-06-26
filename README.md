@@ -29,6 +29,13 @@ http://bbs.crmeb.net
 
 QQ群: 710729856 <a target="_blank" href="//shang.qq.com/wpa/qunwpa?idkey=1794ec6e9fd6ac21bd6519d459d4495e824553693ab0a98a9899e61d68a494d0"><img border="0" src="//pub.idqqimg.com/wpa/images/group.png" alt="CRMEB微信开发四群" title="CRMEB微信开发四群"></a>
 
+##  演示地址
+   演示站后台:[<a href='http://demo25.crmeb.net' target="_blank"> crmeb_v2.6 </a>]       
+<a href='http://demo25.crmeb.net' target="_blank">http://demo25.crmeb.net</a>
+   账号：demo
+   密码：crmeb.com
+
+![输入图片说明](https://images.gitee.com/uploads/images/2019/0302/165543_801cf1e6_892944.jpeg "二维码.jpg")
 ## CRMEB推荐服务器配置
 
 <table><tr><td> 
@@ -116,13 +123,6 @@ CPU：2核
 
    11.强大的权限管理系统
 
-##  演示地址
-   演示站后台:[<a href='http://demo25.crmeb.net' target="_blank"> crmeb_v2.5 </a>]       
-<a href='http://demo25.crmeb.net' target="_blank">http://demo25.crmeb.net</a>
-   账号：demo
-   密码：crmeb.com
-
-![输入图片说明](https://images.gitee.com/uploads/images/2019/0302/165543_801cf1e6_892944.jpeg "二维码.jpg")
 
 
 ## 付费版
