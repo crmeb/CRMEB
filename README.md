@@ -10,10 +10,10 @@
         <img src="https://img.shields.io/badge/Licence-MIT-green.svg?style=flat" />
     </a>
     <a href="http://www.crmeb.com">
-        <img src="https://img.shields.io/badge/Edition-2.5-blue.svg" />
+        <img src="https://img.shields.io/badge/Edition-2.6-blue.svg" />
     </a>
      <a href="https://gitee.com/ZhongBangKeJi/CRMEB/repository/archive/master.zip">
-        <img src="https://img.shields.io/badge/download-59m-red.svg" />
+        <img src="https://img.shields.io/badge/download-80m-red.svg" />
     </a>
 </p>
 
@@ -76,26 +76,23 @@ CPU：2核
    CRMEB系统就是集客户关系管理+营销电商系统，能够真正帮助企业基于微信公众号、小程序、wap、pc、app等，实现会员管理、数据分析,精准营销的电子商务管理系统。可满足企业新零售、批发、分销、预约、O2O、多店等各种业务需求
     
    CRMEB的优势:快速积累客户、会员数据分析、智能转化客户、有效提高销售、会员维护；
-
-   CRMEB二次开发：
-
-1.本源码遵循GPL3.0开源协议，系统采用TP5.0框架；
-
-2.后台采用form-builder组件和后台多任务操作框架，方便快速开发增删改、封装layui.table 可快速开发数据列表页面、PHPExcel数据导出、数据库在线词典、日志小工具、系统参数配置、系统强大完善的权限控制、系统菜单配置、组合数据模型等这些都是为了方便二次开发而准备的；
-
-3.前台vue封装了常用小工具，以及所有数据接口；
-
-   
+ 
 ## 技术亮点
 ~~~
-    1.form-builder PHP快速生成表单；
-    2.前台Vue、RequireJS、node封装所有接口；
+    1.后台应用form-builder PHP快速生成现代化表单；
+    2.前端以Vue + RequireJS模块化开发；
     3.PHPExcel数据导出,导出表格更加美观,可视；
     4.EasyWeChat部署微信开发,微信接入更加快捷,简单；
-    5.iview ui组件是HTML编写更加便捷；
-    6.后台多任务桌面化操作界面；
-    7.TP5.0+form-builder+layui.table自己封装快速二次开发；
-    8.一键安装
+    5.后台应用ECharts实现完善的数据统计和分析；
+    6.内部预留事件钩子,方面用户二次开发；
+    7.后台多任务窗口化操作界面；
+    8.内置强大灵活的权限管理；
+    9.内置组合数据,系统配置,管理碎片化数据；
+    10.客户端完善的交互效果和动画；
+    11.对接公众号和小程序,并且数据同步；
+    12.高频数据缓存；
+    13.数据备份和恢复
+    14.一键安装；
 ~~~
 ## 功能
 
@@ -114,14 +111,17 @@ CPU：2核
 
    7.数据统计图表统计分析(财务统计、产品统计、会员统计、营销统计、分销统计、交易统计等)
    
-   8.设置:能够完成管理员对网站的商品资料（添加大类、添加小类、商品添加、属性快速生成、商品审查）、商品交易（外理订单、发
-        货查询）、会员管理（会员审查）、操作管理（管理员添加、管理员审查、管理员退出）、系统配置、后台通知等功能
+   8.设置:能够完成管理员对网站的商品资料（添加大类、添加小类、商品添加、属性快速生成、商品审查）、商品交易（外理订单、发货查询）、会员管理（会员审查）、操作管理（管理员添加、管理员审查、管理员退出）、系统配置、后台通知等功能
         
    9.内容:管理文章分类 (添加分类、删除分类、修改分类) 、 管理文章
    
    10.维护:查看系统日志、文件变动效验、刷新网站缓存、在线更新系统、清除数据、文件管理等功能
 
-   11.强大的权限管理系统
+   11.权限管理：可以创建不同身份，不同管理员，同一个管理员可以拥有多重身份，权限可以控制到每一个控制器函数，例如：张三
+    1.可以控制他可以查看产品，但不能编辑产品；
+    2.可以添加产品，但不能删除产品；
+    3.可以查看用户但不能给用户发信息、加积分、开通分销等等；
+    。。。灵活应用，权限想怎么配就怎么配
 
 
 
@@ -129,17 +129,13 @@ CPU：2核
 
 淘宝超值版:
 
-CRMEB微信公众号v2.6版：除了以上功能还带砍价、拼团功能
-
-CRMEB微信小程序v2.6版：除了以上功能还带砍价、拼团功能
-
-CRMEB微信公众号小程序打通v2.6版：除了以上功能还带砍价、拼团功能 需要申请微信开放平台
+CRMEB微信公众号小程序打通v2.6版：除了以上功能还带砍价、拼团功能，永久免费升级提供升级包
 
 还有定制开发服务，例如：预约系统、O2O、付费阅读、多店版、多商家版
 
 ### 详情[<a href='https://s.click.taobao.com/W7hVkLw' target="_blank"> 进入淘宝 </a>]
 
-[![输入图片说明](https://images.gitee.com/uploads/images/2019/0122/114739_a48f5bfd_892944.gif "taobao(1).gif")](https://s.click.taobao.com/W7hVkLw)
+[![输入图片说明](https://images.gitee.com/uploads/images/2019/0122/114739_a48f5bfd_892944.gif "tasheng jo(1).gif")](https://s.click.taobao.com/W7hVkLw)
 
 官网线下定制服务版：http://www.crmeb.com
 
@@ -150,8 +146,7 @@ CRMEB微信公众号小程序打通v2.6版：除了以上功能还带砍价、�
 ```
 Git clone https://gitee.com/ZhongBangKeJi/CRMEB.git
 ```
-    文档地址:https://gitee.com/ZhongBangKeJi/CRMEB/wikis
-
+   
 小程序前端目录：view/crmebNewUI
 
 ## 目录结构
@@ -181,23 +176,16 @@ Vue：https://cn.vuejs.org/
 
 font-awesome： https://fontawesome.com/?from=io
 
-animate：https://www.animate.co.jp/
-
 requirejs： http://requirejs.org/
 
 umeditor：http://ueditor.baidu.com/website/umeditor.html
 
-Php：http://www.php.net/
-
-Mysql：https://www.mysql.com/
-
-微信公众号、微信小程序 https://mp.weixin.qq.com
 
 版权信息
-CRMEB v2.5.* 遵循GPL3.0开源协议发布，并提供免费使用。
+CRMEB v2.6.* 遵循GPL3.0开源协议发布，并提供免费使用。
 
 本项目包含的第三方源码和二进制文件之版权信息另行标注。
 
-版权所有Copyright © 2017-2018 by CRMEB (http://www.crmeb.com)
+版权所有Copyright © 2017-2019 by CRMEB (http://www.crmeb.com)
 
 All rights reserved。
