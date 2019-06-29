@@ -16,6 +16,8 @@
 
 ## 本项目还在不断开发完善中,如有建议或问题请[在这里提出](https://github.com/xazbkj/CRMEB/issues)
 
+## 码云项目地址：https://gitee.com/ZhongBangKeJi/CRMEB
+
 ## 纯小程序版：https://github.com/crmeb/CRMEB_WeChatMiniProgram
 
 ## 帮助文档：http://help.crmeb.net
@@ -24,7 +26,7 @@
 
 QQ群: 710729856
 
-###如果对您有帮助，您可以点右上角 "Star" 支持一下 谢谢！
+### 如果对您有帮助，您可以点右上角 "Star" 支持一下 谢谢！
 
 ## 项目介绍
    基于ThinkPhp5.0+Vue+EasyWeChat 开发的一套CRMEB新零售商城系统
