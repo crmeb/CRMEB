@@ -1,4 +1,7 @@
-<h1 align="center"> CRMEB客户管理+电商管理系统</h1> 
+<p align="center">
+<img src="https://images.gitee.com/uploads/images/2018/1214/151026_2299df23_892944.gif" />
+</p>
+<h1 align="center"> CRMEB客户管理+电商营销系统</h1> 
 <p align="center">
     <a href="http://www.crmeb.com">
         <img src="https://img.shields.io/badge/OfficialWebsite-CRMEB-yellow.svg" />
@@ -99,13 +102,11 @@ CRMEB微信公众号小程序打通v2.6版：除了以上功能还带砍价、�
 
 还有定制开发服务，例如：预约系统、O2O、付费阅读、多店版、多商家版
 
-详情[ 进入淘宝 ]
-输入图片说明
+### 详情[<a href='https://s.click.taobao.com/W7hVkLw' target="_blank"> 进入淘宝 </a>]
 
-官网线下定制服务版：http://www.crmeb.com
+[![输入图片说明](https://images.gitee.com/uploads/images/2019/0122/114739_a48f5bfd_892944.gif "tasheng jo(1).gif")](https://s.click.taobao.com/W7hVkLw)
 
-用法
-下载:
+用法下载:
 ```
 Git clone https://github.com/crmeb/CRMEB.git
 ```
