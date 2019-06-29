@@ -28,8 +28,13 @@ QQ群: 710729856
 
 ### 如果对您有帮助，您可以点右上角 "Star" 支持一下 谢谢！
 
-## 演示二维码
+##  演示地址
+   演示站后台:[<a href='http://demo25.crmeb.net' target="_blank"> crmeb_v2.6 </a>]       
+<a href='http://demo25.crmeb.net' target="_blank">http://demo25.crmeb.net</a>
+   账号：demo
+   密码：crmeb.com
 
+![输入图片说明](https://images.gitee.com/uploads/images/2019/0302/165543_801cf1e6_892944.jpeg "二维码.jpg")
 
 ## 项目介绍
    基于ThinkPhp5.0+Vue+EasyWeChat 开发的一套CRMEB新零售商城系统
@@ -101,8 +106,9 @@ CRMEB微信公众号小程序打通v2.6版：除了以上功能还带砍价、�
 
 用法
 下载:
-
-Git clone https://gitee.com/ZhongBangKeJi/CRMEB.git
+```
+Git clone https://github.com/crmeb/CRMEB.git
+```
 小程序前端目录：view/crmebNewUI
 
 系统组件开源项目
