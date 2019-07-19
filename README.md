@@ -23,7 +23,7 @@ https://github.com/xazbkj/CRMEB
 ### 纯小程序版：
 https://gitee.com/ZhongBangKeJi/CRMEB_WeChatMiniProgram
 ### 帮助文档：
-https://www.kancloud.cn/crmeb/crmeb/662420
+https://help.crmeb.net/crmeb
 ### 论坛地址:
 http://bbs.crmeb.net
 
@@ -31,7 +31,7 @@ QQ群: 710729856 <a target="_blank" href="//shang.qq.com/wpa/qunwpa?idkey=1794ec
 
 ##  演示地址
    演示站后台:[<a href='http://demo25.crmeb.net' target="_blank"> crmeb_v2.6 </a>]       
-<a href='http://demo25.crmeb.net' target="_blank">http://demo25.crmeb.net</a>
+<a href='http://demo25.crmeb.net' target="_blank">http://demo26.crmeb.net</a>
    账号：demo
    密码：crmeb.com
 
