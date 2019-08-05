@@ -30,6 +30,7 @@
 QQ群: 710729856
 
 ## 获得荣誉
+![输入图片说明](https://images.gitee.com/uploads/images/2019/0805/111208_eb4fe823_892944.jpeg "WechatIMG2434.jpeg")
 
 ### 如果对您有帮助，您可以点右上角 "Star" 支持一下 谢谢！
 
