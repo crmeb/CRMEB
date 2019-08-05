@@ -29,6 +29,9 @@ http://bbs.crmeb.net
 
 QQ群: 710729856 <a target="_blank" href="//shang.qq.com/wpa/qunwpa?idkey=1794ec6e9fd6ac21bd6519d459d4495e824553693ab0a98a9899e61d68a494d0"><img border="0" src="//pub.idqqimg.com/wpa/images/group.png" alt="CRMEB微信开发四群" title="CRMEB微信开发四群"></a>
 
+## 获得荣誉
+![输入图片说明](https://images.gitee.com/uploads/images/2019/0805/111208_eb4fe823_892944.jpeg "WechatIMG2434.jpeg")
+
 ##  演示地址
    演示站后台:[<a href='http://demo25.crmeb.net' target="_blank"> crmeb_v2.6 </a>]       
 <a href='http://demo25.crmeb.net' target="_blank">http://demo26.crmeb.net</a>
