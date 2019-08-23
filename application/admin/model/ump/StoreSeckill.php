@@ -117,12 +117,12 @@ class StoreSeckill extends ModelBasic
         }
         return [
             [
-                'name'=>'商品数量',
+                'name'=>'商品种类',
                 'field'=>'件',
-                'count'=>self::setWhereType(new self(),$type)->where('add_time','<',mktime(0,0,0,date('m'),date('d'),date('Y')))->sum('stock'),
-                'content'=>'商品数量总数',
+                'count'=>self::setWhereType(new self(),$type)->where('add_time','<',mktime(0,0,0,date('m'),date('d'),date('Y')))->count(),
+                'content'=>'商品种类总数',
                 'background_color'=>'layui-bg-blue',
-                'sum'=>self::sum('stock'),
+                'sum'=>self::count(),
                 'class'=>'fa fa fa-ioxhost',
             ],
             [
@@ -135,12 +135,12 @@ class StoreSeckill extends ModelBasic
                 'class'=>'fa fa-line-chart',
             ],
             [
-                'name'=>'活动商品',
+                'name'=>'秒杀成功商品件数',
                 'field'=>'件',
                 'count'=>self::getModelTime($where,$StoreOrderModel)->where('seckill_id','NEQ',0)->sum('total_num'),
-                'content'=>'活动商品总数',
+                'content'=>'秒杀成功商品总件数',
                 'background_color'=>'layui-bg-green',
-                'sum'=>$StoreOrderModel->sum('total_num'),
+                'sum'=>$StoreOrderModel->where('seckill_id','NEQ',0)->sum('total_num'),
                 'class'=>'fa fa-bar-chart',
             ],
             [
@@ -327,5 +327,15 @@ class StoreSeckill extends ModelBasic
      */
     public static function getSeckillCount(){
         return self::where('is_del',0)->count();
+    }
+
+    /**
+     * TODO 获取某个字段值
+     * @param $id
+     * @param string $field
+     * @return mixed
+     */
+    public static function getSeckillField($id,$field = 'title'){
+        return self::where('id',$id)->value($field);
     }
 }

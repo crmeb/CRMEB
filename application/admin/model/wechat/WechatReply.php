@@ -113,7 +113,9 @@ class WechatReply extends ModelBasic
             $res = [];
             //TODO 图片转media
             $res['src'] = $data['src'];
-            $material = (WechatService::materialService()->uploadImage(UtilService::urlToPath($data['src'])));
+            if(strstr($data['src'],'http') === false) $data['src'] = UtilService::urlToPath($data['src']);
+            $data['src'] = strstr($data['src'],'public');
+            $material = (WechatService::materialService()->uploadImage($data['src']));
             $res['media_id'] = $material->media_id;
             HookService::afterListen('wechat_material',
                 ['media_id' => $material->media_id, 'path' => $res['src'], 'url' => $material->url], 'image');

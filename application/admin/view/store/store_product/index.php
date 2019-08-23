@@ -72,6 +72,7 @@
                         {switch name='type'}
                             {case value="1"}
                                 <button class="layui-btn layui-btn-sm" onclick="$eb.createModalFrame(this.innerText,'{:Url('create')}',{h:700,w:1100})">添加产品</button>
+                                <button class="layui-btn layui-btn-sm" onclick="$eb.createModalFrame(this.innerText,'{:Url('store.copy_taobao/index')}',{h:700,w:1100});">复制淘宝、天猫、1688、京东</button>
                             {/case}
                             {case value="2"}
                                 <button class="layui-btn layui-btn-sm" data-type="show">批量上架</button>
@@ -107,10 +108,10 @@
                     </script>
                     <!--操作-->
                     <script type="text/html" id="act">
-                        <button type="button" class="layui-btn layui-btn-xs btn-success" onclick="$eb.createModalFrame('{{d.store_name}}-属性','{:Url('attr')}?id={{d.id}}',{h:600,w:800})">
+                        <button type="button" class="layui-btn layui-btn-xs btn-success" lay-event='attr' >
                             属性
                         </button>
-                        <button type="button" class="layui-btn layui-btn-xs layui-btn-normal" onclick="$eb.createModalFrame('{{d.store_name}}-编辑','{:Url('edit')}?id={{d.id}}',{h:700,w:1100})">
+                        <button type="button" class="layui-btn layui-btn-xs layui-btn-normal" lay-event='edit'>
                             编辑
                         </button>
                         <button type="button" class="layui-btn layui-btn-xs" onclick="dropdown(this)">操作 <span class="caret"></span></button>
@@ -214,12 +215,8 @@
     })
     //excel下载
     layList.search('export',function(where){
-        location.href=layList.U({c:'store.store_product',a:'product_ist',q:{
-                cate_id:where.cate_id,
-                store_name:where.store_name,
-                type:where.type,
-                excel:1
-            }});
+        where.excel = 1;
+        location.href=layList.U({c:'store.store_product',a:'product_ist',q:where});
     })
     //下拉框
     $(document).click(function (e) {
@@ -303,6 +300,12 @@
                 break;
             case 'open_image':
                 $eb.openImage(data.image);
+                break;
+            case 'edit':
+                $eb.createModalFrame(data.store_name+'-编辑',layList.U({a:'edit',q:{id:data.id}}),{h:720,w:1100});
+                break;
+            case 'attr':
+                $eb.createModalFrame(data.store_name+'-属性',layList.U({a:'attr',q:{id:data.id}}),{h:600,w:800})
                 break;
         }
     })

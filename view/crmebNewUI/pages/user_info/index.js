@@ -14,12 +14,14 @@ Page({
       'class': '0'
     },
     userInfo:{},
+    is_local: 1
   },
   /**
    * 授权回调
   */
   onLoadFun:function(){
     this.getUserInfo();
+    this.imageStorage();
   },
 
   /**
@@ -28,7 +30,15 @@ Page({
   onLoad: function (options) {
 
   },
-
+   /**
+   * 获取图片储存位置
+   */
+  imageStorage: function () {
+    var that = this;
+    app.baseGet(app.U({ c: "user_api", a: 'picture_storage_location' }), function (res) {
+      that.setData({ is_local: res.data });
+    });
+  },
   getPhoneNumber:function(e){
     var detail = e.detail, cache_key = wx.getStorageSync('cache_key'),that=this;
     if (detail.errMsg =='getPhoneNumber:ok'){
@@ -69,7 +79,11 @@ Page({
   uploadpic: function () {
     var that = this;
     util.uploadImageOne(app.U({ c: 'public_api', a: 'upload' }), function (res) {
-      that.setData({ 'userInfo.avatar': app.globalData.url +res.data.url });
+      if (that.data.is_local == 1) {
+        that.setData({ 'userInfo.avatar': app.globalData.url + res.data.url });
+      } else {
+        that.setData({ 'userInfo.avatar': res.data.url });
+      }
     });
   },
 

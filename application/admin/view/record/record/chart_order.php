@@ -84,8 +84,6 @@
                                     <div class="layui-input-block">
                                         <button @click="search" type="button" class="layui-btn layui-btn-sm layui-btn-normal">
                                             <i class="layui-icon layui-icon-search"></i>搜索</button>
-                                        <button class="layui-btn layui-btn-warm layui-btn-sm export" type="button">
-                                            <i class="fa fa-floppy-o" style="margin-right: 3px;"></i>导出</button>
                                         <button @click="refresh" type="reset" class="layui-btn layui-btn-primary layui-btn-sm">
                                             <i class="layui-icon layui-icon-refresh" ></i>刷新</button>
                                     </div>
@@ -164,6 +162,8 @@
                 typeList:[
                     {name:'全部',value:''},
                     {name:'普通',value:1},
+                    {name:'拼团',value:2},
+                    {name:'砍价',value:3},
                     {name:'秒杀',value:4},
                 ],
                 status:'',

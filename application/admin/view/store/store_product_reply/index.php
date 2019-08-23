@@ -72,7 +72,15 @@
         <div class="message-box" id="app" v-cloak="">
             <div class="layui-col-md3" style="padding: 0 10px 0 0">
                 <div class="layui-card">
-                    <div class="layui-card-header">评论产品</div>
+                    <div class="layui-card-header" style="padding-top: 10px;">
+                        <div style="height: 30px;line-height: 30px;float:left;" >评论产品</div>
+                        <div style="height: 30px;line-height: 30px;float: right;">
+                            <input style="display: inline;width: auto;" type="text" class="layui-input layui-input-search" v-model="where.product_name" placeholder="搜索产品">
+                            <button class="layui-btn layui-btn-primary layui-btn-sm" type="button" style="height: 32px;line-height: 32px;" @click="seachs"><i class="layui-icon layui-icon-search"></i>搜索</button>
+                            <button class="layui-btn layui-btn-primary layui-btn-sm" type="button" style="height: 32px;line-height: 32px;margin-left: 0;" @click="Reset"><i class="layui-icon layui-icon-refresh-3"></i>重置</button>
+                        </div>
+                        <div class="clearfix"></div>
+                    </div>
                     <div class="layui-card-body layadmin-homepage-list-imgtxt message-content" ref="producr">
                         <div class="grid-demo">
                             <div class="layui-card homepage-bottom">
@@ -106,7 +114,7 @@
                     <div class="layui-card-body layadmin-homepage-list-imgtxt message-content">
                         <div class="media-body" v-for="(item,index) in messageList">
                             <a href="javascript:;" class="media-left" style="float: left;">
-                                <img :src="item.avatar" height="46px" width="46px">
+                                <img :src="item.avatar" height="46px" width="46px" @click="see(item.nickname,item.uid)">
                             </a>
                             <div class="pad-btm">
                                 <p class="fontColor"><a href="javascript:;" v-text="item.nickname"></a></p>
@@ -124,8 +132,8 @@
                             </div>
                             <div class="message-but">
                                 <div class="layui-btn-group">
-                                    <button class="layui-btn layui-btn-normal layui-btn-sm" @click="edit(item,index)">{{item.merchant_reply_time ? "编辑":"回复"}}</button>
-                                    <button class="layui-btn layui-btn-danger layui-btn-sm" @click="delReply(item,index)">删除</button>
+                                    <button class="layui-btn layui-btn-normal layui-btn-sm" type="button" @click="edit(item,index)">{{item.merchant_reply_time ? "编辑":"回复"}}</button>
+                                    <button class="layui-btn layui-btn-danger layui-btn-sm" type="button" @click="delReply(item,index)">删除</button>
                                 </div>
                             </div>
                             <fieldset class="layui-elem-field" style="margin-top: 10px" v-if="item.merchant_reply_time">
@@ -146,6 +154,7 @@
 {/block}
 {block name="script"}
 <script type="text/javascript">
+    var product_id=<?=$product_id?>;
     require(['vue'],function(Vue) {
         new Vue({
             el: "#app",
@@ -156,7 +165,8 @@
                     title:'',
                     is_reply:'',
                     limit:10,
-                    producr_id:0,
+                    product_name:'',
+                    producr_id:product_id,
                     message_page:1,
                 },
                 product:{
@@ -164,6 +174,7 @@
                     loadend:false,
                     loadTitle:'加载更多',
                 },
+                product_name:'',
                 messageList:[],
                 message:{
                     loading:false,
@@ -180,10 +191,32 @@
                     this.getMessageList();
                 },
                 'where.message_page':function () {
+                    this.message.loadend=false;
                     this.getMessageList(true);
                 }
             },
             methods:{
+                see:function(nickname,uid){
+                    $eb.createModalFrame(nickname+'-会员详情',layList.Url({c:'user.user',a:'see',p:{uid:uid}}));
+                },
+                Reset:function(){
+                    if(!this.where.product_name) return;
+                    this.where.page=1;
+                    this.product.loadend=false;
+                    this.product_name='';
+                    this.where.product_name='';
+                    this.$set(this,'productImaesList',[]);
+                    this.getProductImaesList();
+                },
+                seachs:function(){
+                    this.where.page=1;
+                    this.product.loadend=false;
+                    if(!this.where.product_name && !this.product_name) return layList.msg('请输入产品名称再进行查找！');
+                    if(this.where.product_name==this.product_name) return;
+                    this.product_name=this.where.product_name;
+                    this.$set(this,'productImaesList',[]);
+                    this.getProductImaesList();
+                },
                 delReply:function(item,index){
                     var url = layList.U({a:'delete',p:{id:item.id}}),that=this;
                     $eb.$swal('delete',function(){

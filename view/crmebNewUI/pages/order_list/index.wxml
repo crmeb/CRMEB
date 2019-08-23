@@ -47,7 +47,8 @@
             <view class='text acea-row row-between'>
                 <view class='name line2'>{{item.productInfo.store_name}}</view>
                 <view class='money'>
-                  <view>￥{{item.productInfo.price}}</view>
+                  <view wx:if="{{item.productInfo.attrInfo}}">￥{{item.productInfo.attrInfo.price}}</view>
+                  <view wx:else>￥{{item.productInfo.price}}</view>
                   <view>x{{item.cart_num}}</view>
                 </view>
             </view>
@@ -58,7 +59,7 @@
            <view class='bnt cancelBnt' wx:if="{{item._status._type==0}}" data-index="{{index}}" data-order_id="{{item.order_id}}" bindtap='cancelOrder'>取消订单</view>
            <view class='bnt bg-color' wx:if="{{item._status._type == 0}}" data-order_id="{{item.order_id}}" bindtap='goOrderDetails'>立即付款</view>
            <view class='bnt bg-color' wx:elif="{{item._status._type == 1}}" data-order_id="{{item.order_id}}" bindtap='goOrderDetails'>查看详情</view>
-            <view class='bnt bg-color' wx:elif="{{item._status._type == 2 && item.delivery_type == 'express'}}" data-order_id="{{item.order_id}}" bindtap='goOrderDetails'>查看详情</view>
+            <view class='bnt bg-color' wx:elif="{{item._status._type == 2 && item.delivery_type}}" data-order_id="{{item.order_id}}" bindtap='goOrderDetails'>查看详情</view>
             <view class='bnt bg-color' wx:elif="{{item._status._type == 3}}" data-order_id="{{item.order_id}}" bindtap='goOrderDetails'>去评价</view>
              <view class='bnt bg-color' wx:elif="{{item.seckill_id < 1 && item.bargain_id < 1 && item.combination_id < 1 && item._status._type == 4}}" data-order_id="{{item.order_id}}" bindtap='goOrderDetails'>再次购买</view>
              <view class='bnt bg-color' wx:else data-order_id="{{item.order_id}}" data-index="{{index}}" bindtap='delOrder'>删除订单</view>

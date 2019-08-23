@@ -22,6 +22,14 @@ class UserBill extends ModelBasic
     {
         return time();
     }
+
+    /*
+     * 获取总佣金
+     * */
+    public static function getBrokerage($uid,$category = 'now_money',$type='brokerage',$where)
+    {
+        return self::getModelTime($where,self::where('uid','in',$uid)->where(['category'=>$category,'type'=>$type,'pm'=>1,'status'=>1]))->sum('number');
+    }
     //修改积分减少积分记录
     public static function expend($title,$uid,$category,$type,$number,$link_id = 0,$balance = 0,$mark = '',$status = 1)
     {
@@ -241,7 +249,7 @@ class UserBill extends ModelBasic
     public static function getScoreBadgeList($where){
         return [
             [
-                'name'=>'总积分',
+                'name'=>'历史总积分',
                 'field'=>'个',
                 'count'=>self::getModelTime($where,new self())->where('category','integral')->where('type','in',['gain','system_sub','deduction','sign'])->sum('number'),
                 'background_color'=>'layui-bg-blue',

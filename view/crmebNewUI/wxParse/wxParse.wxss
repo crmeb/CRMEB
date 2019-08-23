@@ -27,7 +27,7 @@
     padding: 0 15rpx;
 }
 /*//标题 */
-.wxParse-div{margin: 0;padding: 0;}
+.wxParse-div{margin: 0;padding: 0;width:100%!important;}
 .wxParse-h1{ font-size:2em; margin: .67em 0 }
 .wxParse-h2{ font-size:1.5em; margin: .75em 0 }
 .wxParse-h3{ font-size:1.17em; margin: .83em 0 }

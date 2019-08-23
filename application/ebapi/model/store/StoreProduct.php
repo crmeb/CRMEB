@@ -20,7 +20,16 @@ class StoreProduct extends ModelBasic
 
     protected function getSliderImageAttr($value)
     {
-        return json_decode($value,true)?:[];
+         $sliderImage=json_decode($value,true)?:[];
+         foreach ($sliderImage as &$item){
+             $item=str_replace('\\','/',$item);
+         }
+         return $sliderImage;
+    }
+
+    protected function getImageAttr($value)
+    {
+        return str_replace('\\','/',$value);
     }
 
     public static function getValidProduct($productId,$field = 'add_time,browse,cate_id,code_path,cost,description,ficti,give_integral,id,image,is_bargain,is_benefit,is_best,is_del,is_hot,is_new,is_postage,is_seckill,is_show,keyword,mer_id,mer_use,ot_price,postage,price,sales,slider_image,sort,stock,store_info,store_name,unit_name,vip_price,IFNULL(sales,0) + IFNULL(ficti,0) as fsales')
@@ -79,11 +88,30 @@ class StoreProduct extends ModelBasic
      * @param string $value
      * @return array
      * */
-    public static function getSearchStorePage($keyword,$uid)
+    public static function getSearchStorePage($keyword,$page,$limit,$uid,$cutApart=[' ',',','-'])
     {
         $model = self::validWhere();
-        if(strlen(trim($keyword))) $model = $model->where('store_name|keyword','LIKE',"%$keyword%");
-        $list = $model->field('id,store_name,cate_id,image,IFNULL(sales,0) + IFNULL(ficti,0) as sales,price,stock')->select();
+        $keyword = trim($keyword);
+        if(strlen($keyword)) {
+            $cut = false;
+            foreach ($cutApart as $val){
+                if(strstr($keyword,$val) !== false){
+                    $cut = $val;
+                    break;
+                }
+            }
+            if($cut !== false){
+                $keywordArray = explode($cut,$keyword);
+                $sql = [];
+                foreach ($keywordArray as $item){
+                    $sql[] = '(`store_name` LIKE "%'.$item.'%"  OR `keyword` LIKE "%'.$item.'%")';
+                }
+                $model = $model->where(implode(' OR ',$sql));
+            }else{
+                $model = $model->where('store_name|keyword','LIKE',"%$keyword%");
+            }
+        }
+        $list = $model->field('id,store_name,cate_id,image,ficti as sales,price,stock')->page($page,$limit)->select();
         return self::setLevelPrice($list,$uid);
     }
     /**
@@ -97,7 +125,10 @@ class StoreProduct extends ModelBasic
         $model = self::where('is_new',1)->where('is_del',0)->where('mer_id',0)
             ->where('stock','>',0)->where('is_show',1)->field($field)
             ->order('sort DESC, id DESC');
-        if($limit) $model->limit($limit);
+        if($limit)
+            $model->limit($limit);
+        else
+            return [];
         $list=$model->select();
         $list=count($list) ? $list->toArray() : [];
         return self::setLevelPrice($list,$uid);
@@ -141,10 +172,14 @@ class StoreProduct extends ModelBasic
      */
     public static function getBestProduct($field = '*',$limit = 0,$uid=0)
     {
+
         $model = self::where('is_best',1)->where('is_del',0)->where('mer_id',0)
             ->where('stock','>',0)->where('is_show',1)->field($field)
             ->order('sort DESC, id DESC');
-        if($limit) $model->limit($limit);
+        if($limit)
+            $model->limit($limit);
+        else
+            return [];
         return self::setLevelPrice($model->select(),$uid);
     }
 
@@ -157,6 +192,10 @@ class StoreProduct extends ModelBasic
     public static function setLevelPrice($list,$uid,$isSingle=false)
     {
         if(is_object($list)) $list=count($list) ? $list->toArray() : [];
+        if(!SystemConfigService::get('vip_open')){
+            if(is_array($list)) return $list;
+            return $isSingle ? $list : 0;
+        }
         $levelId=UserLevel::getUserLevel($uid);
         if($levelId){
             $discount=UserLevel::getUserLevelInfo($levelId,'discount');
@@ -246,11 +285,18 @@ class StoreProduct extends ModelBasic
      * */
     public static function incProductStock($num,$productId,$unique = '')
     {
+        $product=self::where('id',$productId)->field(['sales','stock'])->find();
+        if(!$product) return true;
+        if($product->sales > 0) $product->sales=bcsub($product->sales,$num,0);
+        if($product->sales < 0) $product->sales=0;
         if($unique){
             $res = false !== StoreProductAttrValuemodel::incProductAttrStock($productId,$unique,$num);
-            $res = $res && self::where('id',$productId)->setDec('sales',$num);
+            //没有修改销量则直接返回
+            if($product->sales==0) return true;
+            $res = $res && $product->save();
         }else{
-            $res = false !== self::where('id',$productId)->inc('stock',$num)->dec('sales',$num)->update();
+            $product->stock=bcadd($product->stock,$num,0);
+            $res = false !== $product->save();
         }
         return $res;
     }
@@ -268,7 +314,7 @@ class StoreProduct extends ModelBasic
                 if($value['cost'] > $value['price'])
                     $maxPrice=0;
                 else
-                    $maxPrice=bcmul($store_brokerage_ratio,bcsub($value['price'],$value['cost']),0);
+                    $maxPrice=bcmul($store_brokerage_ratio,bcsub($value['price'],$value['cost'],0),0);
                 unset($value);
             }else $maxPrice=0;
 
@@ -277,16 +323,20 @@ class StoreProduct extends ModelBasic
                 if($value['cost'] > $value['price'])
                     $minPrice=0;
                 else
-                    $minPrice=bcmul($store_brokerage_ratio,bcsub($value['price'],$value['cost']),0);
+                    $minPrice=bcmul($store_brokerage_ratio,bcsub($value['price'],$value['cost'],0),0);
                 unset($value);
             }else $minPrice=0;
             if($minPrice==0 && $maxPrice==0)
                 return 0;
+            else if($minPrice == 0 && $maxPrice)
+                return $maxPrice;
+            else if($maxPrice == 0 && $minPrice)
+                return $minPrice;
             else
                 return $minPrice.'~'.$maxPrice;
         }else{
             if($storeInfo['cost'] < $storeInfo['price'])
-                return bcmul($store_brokerage_ratio,bcsub($storeInfo['price'],$storeInfo['cost']),0);
+                return bcmul($store_brokerage_ratio,bcsub($storeInfo['price'],$storeInfo['cost'],2),2);
             else
                 return 0;
         }

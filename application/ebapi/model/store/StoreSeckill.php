@@ -141,7 +141,11 @@ class StoreSeckill extends ModelBasic
      * @return bool
      */
     public static function incSeckillStock($num = 0,$seckillId = 0){
-        $res = false !== self::where('id',$seckillId)->inc('stock',$num)->dec('sales',$num)->update();
-        return $res;
+        $seckill=self::where('id',$seckillId)->field(['stock','sales'])->find();
+        if(!$seckill) return true;
+        if($seckill->sales > 0) $seckill->sales=bcsub($seckill->sales,$num,0);
+        if($seckill->sales < 0) $seckill->sales=0;
+        $seckill->stock=bcadd($seckill->stock,$num,0);
+        return $seckill->save();
     }
 }

@@ -35,7 +35,11 @@ class ProgramTemplateService implements ProviderInterface
     //开团成功
     const OPEN_PINK_SUCCESS='AT0541';
     //确认收货通知
-    const OREDER_TAKEVER='AT0241';
+    const OREDER_TAKEVER = 'AT0241';
+    //提现成功通知
+    const USER_EXTRACT_TRUE = 'AT1330';
+    //提现失败通知
+    const USER_EXTRACT_FALSE = 'AT1242';
 
     public static function getConstants($code='')
     {

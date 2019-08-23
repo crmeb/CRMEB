@@ -50,7 +50,7 @@ class OrderBehavior
     {
 
         $res1 = AdminStoreOrder::gainUserIntegral($order);
-        $res2 = User::backOrderBrokerage($order);
+        $res2 = \app\ebapi\model\user\User::backOrderBrokerage($order);
         AdminStoreOrder::orderTakeAfter($order);
         if(!($res1 && $res2)) exception('收货失败!');
     }
@@ -64,9 +64,13 @@ class OrderBehavior
      * $oid  string store_order表中的id
      */
     public static function storeProductOrderRefundYAfter($data,$oid){
-        if($data['is_channel']) AdminStoreOrder::refundRoutineTemplate($oid); //TODO 小程序余额退款模板消息
-        else AdminStoreOrder::refundTemplate($data,$oid);//TODO 公众号余额退款模板消息
+        $order=AdminStoreOrder::where(['id'=>$oid])->find();
+        if($order['is_channel'])
+            AdminStoreOrder::refundRoutineTemplate($oid); //TODO 小程序余额退款模板消息
+        else
+            AdminStoreOrder::refundTemplate($data,$oid);//TODO 公众号余额退款模板消息
     }
+
 
     /**
      * 修改状态为  不退款

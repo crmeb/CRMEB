@@ -66,7 +66,7 @@ class My extends AuthController
         $signList = UserSign::userSignBillWhere($this->userInfo['uid'])
             ->field('number,add_time')->order('id DESC')
             ->limit(30)->select()->toArray();
-        $goodsList = StoreProduct::getNewProduct('image,price,sales,store_name,id','0,20')->toArray();
+        $goodsList = StoreProduct::getNewProduct('image,price,IFNULL(sales,0) + IFNULL(ficti,0) AS sales,store_name,id','0,20')->toArray();
         $this->assign(compact('signed','signCount','signList','goodsList'));
         return $this->fetch();
     }

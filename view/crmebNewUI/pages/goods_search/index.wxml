@@ -15,8 +15,11 @@
    </view>
    <view class='line'></view>
    <goodList bastList="{{bastList}}" wx:if="{{bastList.length > 0}}"></goodList>
+   <view class='loadingicon acea-row row-center-wrapper' wx:if='{{bastList.length > 0}}'>
+      <text class='loading iconfont icon-jiazai' hidden='{{loading==false}}'></text>{{loadTitle}}
+  </view>
 </view>
 <view class='noCommodity'>
    <view class='pictrue' wx:if="{{bastList.length == 0}}"><image src='/images/noSearch.png'></image></view>
-   <recommend host_product='{{host_product}}'></recommend>
+   <recommend host_product='{{host_product}}' wx:if="{{bastList.length == 0 && page > 1}}"></recommend>
 </view>

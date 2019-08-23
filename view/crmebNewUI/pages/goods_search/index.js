@@ -19,6 +19,9 @@ Page({
     hotSearchList:[],
     first: 0,
     limit: 8,
+    page:1,
+    loading:false,
+    loadend:false,
   },
 
   /**
@@ -35,8 +38,29 @@ Page({
   },
   getProductList:function(){
     var that = this;
-    app.baseGet(app.U({ c: 'store_api', a: "goods_search", q: { keyword: that.data.searchValue } }), function (res) {
-      that.setData({ bastList: res.data });
+    if(this.data.loading) return;
+    if(this.data.loadend) return;
+    this.setData({loading:true,loadTitle:'正在搜索'});
+    app.baseGet(app.U({ c: 'store_api', a: "goods_search", q: 
+      { 
+        keyword: that.data.searchValue,
+        page:this.data.page,
+        limit:this.data.limit 
+      } 
+    }), function (res) {
+      wx.hideLoading();
+      var list = res.data, loadend = list.length < that.data.limit;
+      that.data.bastList = app.SplitArray(list, that.data.bastList);
+      that.setData({ 
+        bastList: that.data.bastList,
+        loading:false,
+        loadend: loadend,
+        page:that.data.page+1,
+        loadTitle: loadend ? '已全部加载': '加载更多',
+      });
+    },function(){
+      wx.hideLoading();
+      that.setData({ loading: false, loadTitle:"加载更多"});
     });
   },
   getHostProduct: function () {
@@ -61,6 +85,8 @@ Page({
   searchBut:function(){
     var that = this;
     if (that.data.searchValue.length > 0){
+      that.setData({ page: 1, loadend: false, bastList:[]});
+      wx.showLoading({ title:'正在搜索中'});
       that.getProductList();
     }else{
       wx.showToast({
@@ -104,7 +130,7 @@ Page({
    * 页面上拉触底事件的处理函数
    */
   onReachBottom: function () {
-
+    this.getProductList();
   },
 
   /**

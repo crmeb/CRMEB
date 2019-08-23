@@ -93,6 +93,10 @@ class Store extends AuthController
                 $sort[] = $v['is_get'] = StoreCouponIssueUser::be(['uid'=>$this->userInfo['uid'],'issue_coupon_id'=>$v['id']]) ? 1:0;
                 array_push($lists,$v);
             }
+            else if((int)$v['is_permanent']==1){
+                $sort[] = $v['is_get'] = StoreCouponIssueUser::be(['uid'=>$this->userInfo['uid'],'issue_coupon_id'=>$v['id']]) ? 1:0;
+                array_push($lists,$v);
+            }
         }
         array_multisort($sort,SORT_ASC,SORT_NUMERIC,$lists);
         $this->assign(compact('lists'));
@@ -218,7 +222,7 @@ class Store extends AuthController
             'user'=>$user,
             'site_name'=>$site_name,
             'site_logo'=>$site_logo,
-            'wechat_qrcode'=>$wechat_qrcode,
+            'wechat_qrcode'=>str_replace('\\','/',$wechat_qrcode),
             'pindAll'=>$pindAll,
             'storeInfo'=>$combinationOne,
             'reply'=>StoreProductReply::getRecProductReply($combinationOne['product_id']),
@@ -288,11 +292,11 @@ class Store extends AuthController
     public function seckill_detail($id = ''){
 
         if(!$id || !($storeInfo = StoreSeckill::getValidProduct($id))) return $this->failed('商品不存在或已下架!');
-        $storeInfo['userLike'] = StoreProductRelation::isProductRelation($storeInfo['product_id'],$this->userInfo['uid'],'like','product_seckill');
+        $storeInfo['userLike'] = StoreProductRelation::isProductRelation($storeInfo['id'],$this->userInfo['uid'],'like','product_seckill');
 
-        $storeInfo['like_num'] = StoreProductRelation::productRelationNum($storeInfo['product_id'],'like','product_seckill');
+        $storeInfo['like_num'] = StoreProductRelation::productRelationNum($storeInfo['id'],'like','product_seckill');
 
-        $storeInfo['userCollect'] = StoreProductRelation::isProductRelation($storeInfo['product_id'],$this->userInfo['uid'],'collect','product_seckill');
+        $storeInfo['userCollect'] = StoreProductRelation::isProductRelation($storeInfo['id'],$this->userInfo['uid'],'collect','product_seckill');
         list($productAttr,$productValue) = StoreProductAttr::getProductAttrDetail($storeInfo['product_id']);
         $wechatInfo = WechatUser::get($this->userInfo['uid']);
         setView($this->userInfo['uid'],$id,$storeInfo['product_id'],'viwe','seckill');

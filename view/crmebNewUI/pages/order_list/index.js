@@ -133,6 +133,7 @@ Page({
   onShow: function () {
     if (app.globalData.isLog && this.data.isClose){
       this.getOrderData();
+      this.setData({ loadend: false, page: 1, orderList:[]});
       this.getOrderList();
     }
   },

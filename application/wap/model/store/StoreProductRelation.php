@@ -60,4 +60,50 @@ class StoreProductRelation extends ModelBasic
         return self::be(compact('product_id','uid','type','category'));
     }
 
+    /**
+     * TODO 获取普通产品收藏
+     * @param $uid
+     * @param int $first
+     * @param int $limit
+     * @return array
+     */
+    public static function getProductRelation($uid, $first = 0,$limit = 8)
+    {
+        $model = new self;
+        $model = $model->alias('A');
+        $model = $model->join('StoreProduct B','A.product_id = B.id');
+        $model = $model->where('A.uid',$uid);
+        $model = $model->field('B.id pid,B.store_name,B.price,B.ot_price,B.ficti sales,B.image,B.is_del,B.is_show,A.category,A.add_time');
+        $model = $model->where('A.type','collect');
+        $model = $model->where('A.category','product');
+        $model = $model->order('A.add_time DESC');
+        $model = $model->limit($first,$limit);
+        $list = $model->select();
+        if($list) return $list->toArray();
+        else return [];
+    }
+
+    /**
+     * TODO 获取秒杀产品收藏
+     * @param $uid
+     * @param int $first
+     * @param int $limit
+     * @return array
+     */
+    public static function getSeckillRelation($uid, $first = 0,$limit = 8)
+    {
+        $model = new self;
+        $model = $model->alias('A');
+        $model = $model->join('StoreSeckill B','A.product_id = B.id');
+        $model = $model->where('A.uid',$uid);
+        $model = $model->field('B.id pid,B.title store_name,B.price,B.ot_price,B.sales,B.image,B.is_del,B.is_show,A.category,A.add_time');
+        $model = $model->where('A.type','collect');
+        $model = $model->where('A.category','product_seckill');
+        $model = $model->order('A.add_time DESC');
+        $model = $model->limit($first,$limit);
+        $list = $model->select();
+        if($list) return $list->toArray();
+        else return [];
+    }
+
 }

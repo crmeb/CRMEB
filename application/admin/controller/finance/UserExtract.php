@@ -113,12 +113,14 @@ class UserExtract extends AuthController
         UserExtractModel::beginTrans();
         $extract=UserExtractModel::get($id);
         if(!$extract)  return JsonService::fail('操作记录不存!');
-        if($extract->status==1)  return JsonService::fail('您已提现,请勿重复提现!');
-        if($extract->status==-1)  return JsonService::fail('您的提现申请已被拒绝!');
+        if($extract->status == 1)  return JsonService::fail('您已提现,请勿重复提现!');
+        if($extract->status == -1)  return JsonService::fail('您的提现申请已被拒绝!');
         $res = UserExtractModel::changeSuccess($id);
         if($res){
+            UserExtractModel::commitTrans();
             return JsonService::successful('操作成功!');
         }else{
+            UserExtractModel::rollbackTrans();
             return JsonService::fail('操作失败!');
         }
     }

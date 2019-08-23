@@ -12,6 +12,8 @@ trait LogicTrait
 
     protected $items = [];
 
+    protected static $instance = null;
+
     /*
      * 魔术方法 对不可访问或不存在的属性调用
      *

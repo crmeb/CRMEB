@@ -19,7 +19,8 @@ Page({
     ],
     pics:[],
     orderId:'',
-    unique:''
+    unique:'',
+    is_local:1
   },
 
   /**
@@ -27,6 +28,7 @@ Page({
   */
   onLoadFun:function(){
     this.getOrderProduct();
+    this.imageStorage();
   },
   /**
    * 生命周期函数--监听页面加载
@@ -34,6 +36,12 @@ Page({
   onLoad: function (options) {
     if (!options.unique || !options.uni) return app.Tips({title:'缺少参数'},{tab:3,url:1});
     this.setData({ unique: options.unique, orderId: options.uni});
+  },
+  imageStorage: function () {
+    var that = this;
+    app.baseGet(app.U({ c: "user_api", a: 'picture_storage_location'}), function (res) {
+      that.setData({ is_local: res.data });
+    });
   },
   /**
    * 获取某个产品详情
@@ -73,7 +81,7 @@ Page({
   uploadpic: function () {
     var that = this;
     util.uploadImageOne(app.U({ c: 'public_api', a: 'upload' }), function (res) {
-      that.data.pics.push(app.globalData.url + res.data.url);
+      that.data.pics.push(res.data.url);
       that.setData({ pics: that.data.pics });
     });
   },
@@ -108,7 +116,7 @@ Page({
    * 生命周期函数--监听页面显示
    */
   onShow: function () {
-
+    
   },
 
   /**

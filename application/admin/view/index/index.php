@@ -264,6 +264,7 @@
             </div>
         </div>
     </div>
+
     <!--右侧边栏结束-->
 </div>
 <!--vue调用不能删除-->
@@ -277,24 +278,9 @@
 <script src="{__FRAME_PATH}js/contabs.min.js"></script>
 <script src="{__FRAME_PATH}js/plugins/pace/pace.min.js"></script>
 {include file="public/style"}
-<script src="{__ADMIN_PATH}js/index.js"></script>
 <script>
-    $(function() {
-        function getnotice() {
-            $.getJSON("{:Url('Jnotice')}",function(res){
-                var info = eval("("+res+")");
-                var data = info.data;
-                $('#msgcount').html(data.msgcount);
-                $('#ordernum').html(data.ordernum + '个');
-                $('#inventory').html(data.inventory + '个');
-                $('#commentnum').html(data.commentnum + '个');
-                $('#reflectnum').html(data.reflectnum + '个');
-            });
-        }
-        getnotice();
-        setInterval(getnotice, 600000);
-    });
-
+    window.newOrderAudioLink='{$new_order_audio_link}';
 </script>
+<script src="{__ADMIN_PATH}js/index.js"></script>
 </body>
 </html>

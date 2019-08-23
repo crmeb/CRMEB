@@ -26,8 +26,8 @@ class User extends ModelBasic
 
     public static function updateWechatUser($wechatUser,$uid)
     {
-        $userinfo=self::where('uid',$uid)->find();
-        if($userinfo->spread_uid){
+        $userInfo = self::where('uid',$uid)->find();
+        if($userInfo->spread_uid){
             return self::edit([
                 'nickname'=>$wechatUser['nickname']?:'',
                 'avatar'=>$wechatUser['headimgurl']?:'',
@@ -36,16 +36,31 @@ class User extends ModelBasic
             $data=[
                 'nickname' => $wechatUser['nickname'] ?: '',
                 'avatar' => $wechatUser['headimgurl'] ?: '',
-                'is_promoter' =>$userinfo->is_promoter,
+                'is_promoter' =>$userInfo->is_promoter,
                 'spread_uid' => 0,
                 'spread_time' =>0,
                 'last_time' => time(),
                 'last_ip' => Request::instance()->ip(),
             ];
-            if(isset($wechatUser['code']) && !$userinfo->is_promoter && $wechatUser['code']){
-                $data['is_promoter']=1;
-                $data['spread_uid']=$wechatUser['code'];
-                $data['spread_time']=time();
+            //TODO 获取后台分销类型
+            $storeBrokerageStatus = SystemConfigService::get('store_brokerage_statu');
+            $storeBrokerageStatus = $storeBrokerageStatus ? $storeBrokerageStatus : 1;
+            if(isset($wechatUser['code']) && $wechatUser['code']){
+                if($storeBrokerageStatus == 1){
+                    $spreadCount = self::where('uid',$wechatUser['code'])->count();
+                    if($spreadCount){
+                        $spreadInfo = self::where('uid',$wechatUser['code'])->find();
+                        if($spreadInfo->is_promoter){
+                            //TODO 只有扫码才可以获得推广权限
+//                            if(isset($wechatUser['isPromoter'])) $data['is_promoter'] = $wechatUser['isPromoter'] ? 1 : 0;
+                        }
+                    }
+                }
+                $spreadInfo = self::where('uid',$wechatUser['code'])->find();
+                if($spreadInfo->spread_uid != $uid && $wechatUser['code'] != $uid){
+                    $data['spread_uid'] = $wechatUser['code'];
+                    $data['spread_time'] = time();
+                }
             }
             return self::edit($data, $uid, 'uid');
         }
@@ -71,7 +86,7 @@ class User extends ModelBasic
             'nickname'=>$routineUser['nickname']?:'',
             'avatar'=>$routineUser['headimgurl']?:'',
             'spread_uid'=>$spread_uid,
-            'is_promoter'=>$spread_uid || $storeBrokerageStatu != 1 ? 1: 0,
+//            'is_promoter'=>$spread_uid || $storeBrokerageStatu != 1 ? 1: 0,
             'spread_time'=>$spread_uid ? time() : 0,
             'uid'=>$routineUser['uid'],
             'add_time'=>$routineUser['add_time'],
@@ -131,63 +146,120 @@ class User extends ModelBasic
 
 
     /**
-     * 小程序用户一级分销
+     * TODO 一级返佣
      * @param $orderInfo
      * @return bool
+     * @throws \think\Exception
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\exception\DbException
      */
     public static function backOrderBrokerage($orderInfo)
     {
-        $userInfo = User::getUserInfo($orderInfo['uid']);
-        if(!$userInfo || !$userInfo['spread_uid']) return true;
-        $storeBrokerageStatu = SystemConfigService::get('store_brokerage_statu') ? : 1;//获取后台分销类型
-        if($storeBrokerageStatu == 1){
-            if(!User::be(['uid'=>$userInfo['spread_uid'],'is_promoter'=>1])) return true;
-        }
-        $brokerageRatio = (SystemConfigService::get('store_brokerage_ratio') ?: 0)/100;
-        if($brokerageRatio <= 0) return true;
-        $cost = isset($orderInfo['cost']) ? $orderInfo['cost'] : 0;//成本价
-        if($cost > $orderInfo['pay_price']) return true;//成本价大于支付价格时直接返回
-        //支付金额减去邮费
+        //TODO 如果时营销产品不返佣金
+        if(isset($orderInfo['combination_id']) && $orderInfo['combination_id']) return true;
+        if(isset($orderInfo['seckill_id']) && $orderInfo['seckill_id']) return true;
+        if(isset($orderInfo['bargain_id']) && $orderInfo['bargain_id']) return true;
+        //TODO 支付金额减掉邮费
         $orderInfo['pay_price'] = bcsub($orderInfo['pay_price'],$orderInfo['pay_postage'],2);
-        $brokeragePrice = bcmul(bcsub($orderInfo['pay_price'],$cost,2),$brokerageRatio,2);
+        //TODO 获取购买商品的用户
+        $userInfo = User::getUserInfo($orderInfo['uid']);
+        //TODO 当前用户不存在 或者 没有上级 直接返回
+        if(!$userInfo || !$userInfo['spread_uid']) return true;
+        //TODO 获取后台分销类型  1 指定分销 2 人人分销
+        $storeBrokerageStatus = SystemConfigService::get('store_brokerage_statu');
+        $storeBrokerageStatus = $storeBrokerageStatus ? $storeBrokerageStatus : 1;
+        //TODO 指定分销 判断 上级是否时推广员  如果不是推广员直接跳转二级返佣
+        if($storeBrokerageStatus == 1){
+            if(!User::be(['uid'=>$userInfo['spread_uid'],'is_promoter'=>1])) return self::backOrderBrokerageTwo($orderInfo);
+        }
+        //TODO 获取后台一级返佣比例
+        $storeBrokerageRatio = SystemConfigService::get('store_brokerage_ratio');
+        //TODO 一级返佣比例 小于等于零时直接返回 不返佣
+        if($storeBrokerageRatio <= 0) return true;
+        //TODO 计算获取一级返佣比例
+        $brokerageRatio = bcdiv($storeBrokerageRatio,100,2);
+        //TODO 成本价
+        $cost = isset($orderInfo['cost']) ? $orderInfo['cost'] : 0;
+        //TODO 成本价大于等于支付价格时直接返回
+        if($cost >= $orderInfo['pay_price']) return true;
+        //TODO 获取订单毛利
+        $payPrice = bcsub($orderInfo['pay_price'],$cost,2);
+        //TODO 返佣金额 = 毛利 / 一级返佣比例
+        $brokeragePrice = bcmul($payPrice,$brokerageRatio,2);
+        //TODO 返佣金额小于等于0 直接返回不返佣金
         if($brokeragePrice <= 0) return true;
+        //TODO 获取上级推广员信息
+        $spreadUserInfo = User::getUserInfo($userInfo['spread_uid']);
+        //TODO 上级推广员返佣之后的金额
+        $balance = bcadd($spreadUserInfo['now_money'],$brokeragePrice,2);
         $mark = $userInfo['nickname'].'成功消费'.floatval($orderInfo['pay_price']).'元,奖励推广佣金'.floatval($brokeragePrice);
         self::beginTrans();
-        $res1 = UserBill::income('获得推广佣金',$userInfo['spread_uid'],'now_money','brokerage',$brokeragePrice,$orderInfo['id'],0,$mark);
+        //TODO 添加推广记录
+        $res1 = UserBill::income('获得推广佣金',$userInfo['spread_uid'],'now_money','brokerage',$brokeragePrice,$orderInfo['id'],$balance,$mark);
+        //TODO 添加用户余额
         $res2 = self::bcInc($userInfo['spread_uid'],'now_money',$brokeragePrice,'uid');
         $res = $res1 && $res2;
         self::checkTrans($res);
-        if($res) self::backOrderBrokerageTwo($orderInfo);
+        //TODO 一级返佣成功 跳转二级返佣
+        if($res) return self::backOrderBrokerageTwo($orderInfo);
         return $res;
     }
 
     /**
-     * 小程序 二级推广
+     * TODO 二级推广
      * @param $orderInfo
      * @return bool
+     * @throws \think\Exception
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\exception\DbException
      */
     public static function backOrderBrokerageTwo($orderInfo){
+        //TODO 获取购买商品的用户
         $userInfo = User::getUserInfo($orderInfo['uid']);
+        //TODO 获取上推广人
         $userInfoTwo = User::getUserInfo($userInfo['spread_uid']);
+        //TODO 上推广人不存在 或者 上推广人没有上级 直接返回
         if(!$userInfoTwo || !$userInfoTwo['spread_uid']) return true;
-        $storeBrokerageStatu = SystemConfigService::get('store_brokerage_statu') ? : 1;//获取后台分销类型
-        if($storeBrokerageStatu == 1){
+        //TODO 获取后台分销类型  1 指定分销 2 人人分销
+        $storeBrokerageStatus = SystemConfigService::get('store_brokerage_statu');
+        $storeBrokerageStatus = $storeBrokerageStatus ? $storeBrokerageStatus : 1;
+        //TODO 指定分销 判断 上上级是否时推广员  如果不是推广员直接返回
+        if($storeBrokerageStatus == 1){
             if(!User::be(['uid'=>$userInfoTwo['spread_uid'],'is_promoter'=>1]))  return true;
         }
-        $brokerageRatio = (SystemConfigService::get('store_brokerage_two') ?: 0)/100;
-        if($brokerageRatio <= 0) return true;
-        $cost = isset($orderInfo['cost']) ? $orderInfo['cost'] : 0;//成本价
-        if($cost > $orderInfo['pay_price']) return true;//成本价大于支付价格时直接返回
-        $brokeragePrice = bcmul(bcsub($orderInfo['pay_price'],$cost,2),$brokerageRatio,2);
+        //TODO 获取二级返佣比例
+        $storeBrokerageTwo = SystemConfigService::get('store_brokerage_two');
+        //TODO 二级返佣比例小于等于0 直接返回
+        if($storeBrokerageTwo <= 0) return true;
+        //TODO 计算获取二级返佣比例
+        $brokerageRatio = bcdiv($storeBrokerageTwo,100,2);
+        //TODO 获取成本价
+        $cost = isset($orderInfo['cost']) ? $orderInfo['cost'] : 0;
+        //TODO 成本价大于等于支付价格时直接返回
+        if($cost >= $orderInfo['pay_price']) return true;
+        //TODO 获取订单毛利
+        $payPrice = bcsub($orderInfo['pay_price'],$cost,2);
+        //TODO 返佣金额 = 毛利 / 二级返佣比例
+        $brokeragePrice = bcmul($payPrice,$brokerageRatio,2);
+        //TODO 返佣金额小于等于0 直接返回不返佣金
         if($brokeragePrice <= 0) return true;
+        //TODO 获取上上级推广员信息
+        $spreadUserInfoTwo = User::getUserInfo($userInfoTwo['spread_uid']);
+        //TODO 获取上上级推广员返佣之后余额
+        $balance = bcadd($spreadUserInfoTwo['now_money'],$brokeragePrice,2);
         $mark = '二级推广人'.$userInfo['nickname'].'成功消费'.floatval($orderInfo['pay_price']).'元,奖励推广佣金'.floatval($brokeragePrice);
         self::beginTrans();
-        $res1 = UserBill::income('获得推广佣金',$userInfoTwo['spread_uid'],'now_money','brokerage',$brokeragePrice,$orderInfo['id'],0,$mark);
+        //TODO 添加返佣记录
+        $res1 = UserBill::income('获得推广佣金',$userInfoTwo['spread_uid'],'now_money','brokerage',$brokeragePrice,$orderInfo['id'],$balance,$mark);
+        //TODO 添加用户余额
         $res2 = self::bcInc($userInfoTwo['spread_uid'],'now_money',$brokeragePrice,'uid');
         $res = $res1 && $res2;
         self::checkTrans($res);
         return $res;
     }
+
     /*
      *  获取推荐人
      * @param int $two_uid

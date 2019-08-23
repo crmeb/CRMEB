@@ -29,7 +29,7 @@ use basic\ModelBasic;
              $model = $model->whereOr('A.id',(int)$where['order_id']);
              $model = $model->whereOr('B.nickname','like',"%$where[order_id]%");
          }
-         $model = $model->where('A.recharge_type','weixin');
+         //$model = $model->where('A.recharge_type','weixin');
          $model = $model->where('A.paid',1);
          $model = $model->field('A.*,B.nickname');
          $model = $model->join('__USER__ B','A.uid = B.uid','RIGHT');

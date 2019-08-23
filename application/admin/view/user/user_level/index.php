@@ -70,7 +70,7 @@
                                 </a>
                             </li>
                             <li>
-                                <a lay-event='delect' href="javascript:void(0)" >
+                                <a lay-event='delete' href="javascript:void(0)" >
                                     <i class="fa fa-paste"></i> 删除等级
                                 </a>
                             </li>

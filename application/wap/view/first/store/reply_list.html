@@ -28,7 +28,7 @@
                     <div class="picture-list flex">
                         <img v-for="pic in item.pics" :src="pic" @click="showPic(pic,item.pics)"/>
                     </div>
-                    <div class="reply" v-show="item.merchant_reply_content.length > 0" v-text="'店铺回复：'+item.merchant_reply_content">
+                    <div class="reply" v-show="item.merchant_reply_content != '' && item.merchant_reply_content != null" v-text="'店铺回复：'+item.merchant_reply_content">
                     </div>
                 </li>
             </ul>

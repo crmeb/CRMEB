@@ -1,6 +1,6 @@
 <!--pages/authorize/authorize.wxml-->
 <view class='Popup' hidden='{{iShidden}}'>
-   <image src='{{url}}{{logo_url}}'></image>
+   <image src='{{logo_url}}'></image>
    <view class='title'>授权提醒</view>
    <view class='tip'>请授权头像等信息，以便为您提供更好的服务</view>
    <view class='bottom flex'>

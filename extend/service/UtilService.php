@@ -313,16 +313,18 @@ class UtilService
     /**
      * TODO 砍价 拼团 分享海报生成
      * @param array $data
-     * @param string $fileName
+     * @param $path
+     * @return array|bool|string
+     * @throws \Exception
      */
-    public static function setShareMarketingPoster($data = array(), $fileName = ''){
+    public static function setShareMarketingPoster($data = array(), $path){
         $config = array(
             'text'=>array(
                 array(
                     'text'=>$data['price'],//TODO 价格
                     'left'=>116,
                     'top'=>200,
-                    'fontPath'=>ROOT_PATH.'public/static/font/SourceHanSansCN-Medium.otf',     //字体文件
+                    'fontPath'=>ROOT_PATH.'public/static/font/Alibaba-PuHuiTi-Regular.otf',     //字体文件
                     'fontSize'=>50,             //字号
                     'fontColor'=>'255,0,0',       //字体颜色
                     'angle'=>0,
@@ -331,7 +333,7 @@ class UtilService
                     'text'=>$data['label'],//TODO 标签
                     'left'=>394,
                     'top'=>190,
-                    'fontPath'=>ROOT_PATH.'public/static/font/SourceHanSansCN-Normal.otf',     //字体文件
+                    'fontPath'=>ROOT_PATH.'public/static/font/Alibaba-PuHuiTi-Regular.otf',     //字体文件
                     'fontSize'=>24,             //字号
                     'fontColor'=>'255,255,255',       //字体颜色
                     'angle'=>0,
@@ -340,7 +342,7 @@ class UtilService
                     'text'=>$data['msg'],//TODO 简述
                     'left'=>80,
                     'top'=>270,
-                    'fontPath'=>ROOT_PATH.'public/static/font/SourceHanSansCN-Normal.otf',     //字体文件
+                    'fontPath'=>ROOT_PATH.'public/static/font/Alibaba-PuHuiTi-Regular.otf',     //字体文件
                     'fontSize'=>22,             //字号
                     'fontColor'=>'40,40,40',       //字体颜色
                     'angle'=>0,
@@ -348,7 +350,7 @@ class UtilService
             ),
             'image'=>array(
                 array(
-                    'url'=>ROOT_PATH.$data['image'],     //图片
+                    'url'=>$data['image'],     //图片
                     'stream'=>0,
                     'left'=>120,
                     'top'=>340,
@@ -359,7 +361,7 @@ class UtilService
                     'opacity'=>100
                 ),
                 array(
-                    'url'=>ROOT_PATH.$data['url'],     //二维码资源
+                    'url'=>$data['url'],     //二维码资源
                     'stream'=>0,
                     'left'=>260,
                     'top'=>890,
@@ -378,7 +380,7 @@ class UtilService
                 'text'=>$data['title'],//TODO 标题
                 'left'=>76,
                 'top'=>100,
-                'fontPath'=>ROOT_PATH.'public/static/font/SourceHanSansCN-Bold.otf',     //字体文件
+                'fontPath'=>ROOT_PATH.'public/static/font/Alibaba-PuHuiTi-Regular.otf',     //字体文件
                 'fontSize'=>32,         //字号
                 'fontColor'=>'0,0,0',       //字体颜色
                 'angle'=>0,
@@ -389,7 +391,7 @@ class UtilService
                 'text'=>mb_substr($data['title'], 0, 12),//TODO 标题
                 'left'=>76,
                 'top'=>70,
-                'fontPath'=>ROOT_PATH.'public/static/font/SourceHanSansCN-Bold.otf',     //字体文件
+                'fontPath'=>ROOT_PATH.'public/static/font/Alibaba-PuHuiTi-Regular.otf',     //字体文件
                 'fontSize'=>32,         //字号
                 'fontColor'=>'0,0,0',       //字体颜色
                 'angle'=>0,
@@ -398,7 +400,7 @@ class UtilService
                 'text'=> mb_substr($data['title'], 12, 12),//TODO 标题
                 'left'=>76,
                 'top'=>120,
-                'fontPath'=>ROOT_PATH.'public/static/font/SourceHanSansCN-Bold.otf',     //字体文件
+                'fontPath'=>ROOT_PATH.'public/static/font/Alibaba-PuHuiTi-Regular.otf',     //字体文件
                 'fontSize'=>32,         //字号
                 'fontColor'=>'0,0,0',       //字体颜色
                 'angle'=>0,
@@ -406,16 +408,17 @@ class UtilService
             array_push($config['text'],$titleOne);
             array_push($config['text'],$titleTwo);
         }
-        self::setSharePoster($config,$fileName);
+        return self::setSharePoster($config, $path);
     }
 
     /**
      * TODO 生成分享二维码图片
      * @param array $config
-     * @param string $fileName
-     * @return bool|string
+     * @param $path
+     * @return array|bool|string
+     * @throws \Exception
      */
-    public static function setSharePoster($config = array(),$fileName = ''){
+    public static function setSharePoster($config = array(), $path){
         $imageDefault = array(
             'left'=>0,
             'top'=>0,
@@ -469,13 +472,20 @@ class UtilService
                 $fontColor = imagecolorallocate($imageRes, $R, $G, $B);
                 $val['left'] = $val['left']<0?$backgroundWidth- abs($val['left']):$val['left'];
                 $val['top'] = $val['top']<0?$backgroundHeight- abs($val['top']):$val['top'];
-                imagettftext($imageRes,$val['fontSize'],$val['angle'],$val['left'],$val['top'],$fontColor,realpath($val['fontPath']),$val['text']);
+                try{
+                    imagettftext($imageRes,$val['fontSize'],$val['angle'],$val['left'],$val['top'],$fontColor,$val['fontPath'],$val['text']);
+                }catch (\Exception $e){
+                    return JsonService::fail('error',$e->getMessage());
+                }
             }
         }
-        $res = imagejpeg ($imageRes,$fileName,90);
+        ob_start();
+        imagejpeg ($imageRes);
         imagedestroy($imageRes);
-        if(!$res) return false;
-        return $fileName;
+        $res = ob_get_contents();
+        ob_end_clean();
+        $key = substr(md5(rand(0, 9999)) , 0, 5). date('YmdHis') . rand(0, 999999) . '.jpg';
+        return UploadService::imageStream($key,$res,$path);
     }
 
     /*
@@ -487,5 +497,61 @@ class UtilService
     {
         return strtolower($request->module().'/'.$request->controller().'/'.$request->action());
     }
+
+    /**
+     * TODO 获取小程序二维码是否生成
+     * @param $url
+     * @return array
+     */
+    public static function remoteImage($url)
+    {
+        $curl = curl_init();
+        curl_setopt($curl, CURLOPT_URL, $url);
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+        $result = curl_exec($curl);
+        $result = json_decode($result,true);
+        if(is_array($result)) return ['status'=>false,'msg'=>$result['errcode'].'---'.$result['errmsg']];
+        return ['status'=>true];
+    }
+
+    /**
+     * TODO 修改 https 和 http
+     * @param $url $url 域名
+     * @param int $type  0 返回https 1 返回 http
+     * @return string
+     */
+    public static function setHttpType($url, $type = 0)
+    {
+        $domainTop = substr($url,0,5);
+        if($type){
+            if($domainTop == 'https') $url = 'http'.substr($url,5,strlen($url));
+        } else{
+            if($domainTop != 'https') $url = 'https:'.substr($url,5,strlen($url));
+        }
+        return $url;
+    }
+
+
+    /*
+     * CURL 检测远程文件是否在
+     *
+     * */
+    public static function CurlFileExist($url)
+    {
+        $ch = curl_init();
+        try{
+            curl_setopt ($ch, CURLOPT_URL, $url);
+            curl_setopt($ch, CURLOPT_HEADER, 1);
+            curl_setopt ($ch, CURLOPT_RETURNTRANSFER, 1);
+            curl_setopt ($ch, CURLOPT_CONNECTTIMEOUT, 10);
+            $contents = curl_exec($ch);
+            if (preg_match("/404/", $contents)) return false;
+            if (preg_match("/403/", $contents)) return false;
+            return true;
+        }catch (\Exception $e){
+            return false;
+        }
+    }
+
 
 }

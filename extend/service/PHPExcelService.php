@@ -124,7 +124,7 @@ class PHPExcelService
      */
     public function ExcelSave(){
         $objWriter=\PHPExcel_IOFactory::createWriter(self::$PHPExcel,'Excel2007');
-        $filename=self::$title.'--'.time().'.xlsx';
+        $filename=self::$title.'.xlsx';
         ob_end_clean();
         header('Content-Type: application/vnd.ms-excel');
         header('Content-Type: application/octet-stream');

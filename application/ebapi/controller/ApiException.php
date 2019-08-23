@@ -33,6 +33,6 @@ class ApiException extends Handle
         if($e instanceof ErrorException) return JsonService::fail($e->getMessage(),[],$e->getCode());
         //默认错误提示
         $baseExcep=new BaseException();
-        return JsonService::fail($baseExcep->msg,[],$baseExcep->code);
+        return JsonService::fail($baseExcep->msg,[$e->getMessage(),$e->getFile()],$baseExcep->code);
     }
 }

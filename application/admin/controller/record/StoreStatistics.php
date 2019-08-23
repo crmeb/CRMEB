@@ -75,7 +75,7 @@ class StoreStatistics extends AuthController
         ];
 
         $this->assign(StatisticsModel::systemTable($where));
-        $this->assign(compact('where','trans','orderCount','orderPrice','orderDays','header','Statistic','ordinary','pink','recharge','data','seckill'));
+        $this->assign(compact('where','trans','orderCount','orderDays','header','Statistic','ordinary','pink','recharge','data','seckill'));
         $this->assign('price',StatisticsModel::getOrderPrice($where));
 
         return $this->fetch();

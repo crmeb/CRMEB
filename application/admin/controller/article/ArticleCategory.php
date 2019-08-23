@@ -3,6 +3,7 @@
 namespace app\admin\controller\article;
 
 use app\admin\controller\AuthController;
+use app\admin\model\system\SystemAttachment;
 use service\FormBuilder as Form;
 use service\UtilService as Util;
 use service\JsonService as Json;
@@ -59,7 +60,7 @@ class ArticleCategory extends AuthController
 //            }
 //            return $options;
 //        })->multiple(1)->filterable(1);
-        $f[] = Form::frameImageOne('image','分类图片',Url::build('admin/widget.images/index',array('fodder'=>'image')))->icon('image');
+        $f[] = Form::formFrameImageOne('image','分类图片');
         $f[] = Form::number('sort','排序',0);
         $f[] = Form::radio('status','状态',1)->options([['value'=>1,'label'=>'显示'],['value'=>0,'label'=>'隐藏']]);
         $form = Form::make_post_form('添加分类',$f,Url::build('save'));
@@ -73,11 +74,9 @@ class ArticleCategory extends AuthController
      * */
     public function upload(){
         $res = Upload::image('file','article');
-        $thumbPath = Upload::thumb($res->dir);
-        if($res->status == 200)
-            return Json::successful('图片上传成功!',['name'=>$res->fileInfo->getSaveName(),'url'=>Upload::pathToUrl($thumbPath)]);
-        else
-            return Json::fail($res->error);
+        if(!is_array($res)) return Json::fail($res);
+        SystemAttachment::attachmentAdd($res['name'],$res['size'],$res['type'],$res['dir'],$res['thumb_path'],5,$res['image_type'],$res['time']);
+        return Json::successful('图片上传成功!',['name'=>$res['name'],'url'=>Upload::pathToUrl($res['thumb_path'])]);
     }
 
     /**
@@ -136,7 +135,7 @@ class ArticleCategory extends AuthController
 //            }
 //            return $options;
 //        })->multiple(1)->filterable(1);
-        $f[] = Form::frameImageOne('image','分类图片',Url::build('admin/widget.images/index',array('fodder'=>'image')),$article['image'])->icon('image');
+        $f[] = Form::formFrameImageOne('image','分类图片',$article['image']);
         $f[] = Form::number('sort','排序',0);
         $f[] = Form::radio('status','状态',$article['status'])->options([['value'=>1,'label'=>'显示'],['value'=>0,'label'=>'隐藏']]);
         $form = Form::make_post_form('编辑分类',$f,Url::build('update',array('id'=>$id)));

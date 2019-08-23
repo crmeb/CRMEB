@@ -37,8 +37,15 @@
         </view>
         <view hidden='{{currentTab != 1}}' class='list'>
           <form bindsubmit="subCash" report-submit='true'>
-             <view class='tip2'>当前可提现金额: {{userInfo.brokerage}}</view>
-             <view class='value'><input placeholder='0' type='digit' placeholder-class='placeholder2' name="money"></input></view>
+             <view class='item acea-row row-between-wrapper'>
+                 <view class='name'>账号</view>
+                 <view class='input'><input placeholder='请填写您的微信账号' placeholder-class='placeholder' name="name"></input></view>
+             </view>
+              <view class='item acea-row row-between-wrapper'>
+                 <view class='name'>提现</view>
+                 <view class='input'><input placeholder='最低提现金额{{minPrice}}' placeholder-class='placeholder' name="money" type='digit'></input></view>
+             </view>
+             <view class='tip'>当前可提现金额: {{userInfo.brokerage}}</view>
              <button formType="submit" class='bnt bg-color'>提现</button>
           </form>   
         </view>

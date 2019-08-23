@@ -24,7 +24,7 @@ Page({
     this.get_host_product();
   },
   copyOrderId:function(){
-    wx.setClipboardData({ data: this.data.orderInfo.order_id });
+    wx.setClipboardData({ data: this.data.orderInfo.delivery_id });
   },
   getExpress:function(){
     var that=this;

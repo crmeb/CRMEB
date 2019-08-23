@@ -73,32 +73,38 @@ class WechatUser extends ModelBasic
         $routineInfo['user_type'] = 'routine';//用户类型
         $page = '';//跳转小程序的页面
         $spid = 0;//绑定关系uid
+        $isCOde=false;
         //获取是否有扫码进小程序
         if($routine['code']){
             $info = RoutineQrcode::getRoutineQrcodeFindType($routine['code']);
             if($info){
                 $spid = $info['third_id'];
                 $page = $info['page'];
+                $isCOde=true;
             }else{
                 $spid = $routine['spid'];
             }
         }else if($routine['spid']) $spid = $routine['spid'];
         //  判断unionid  存在根据unionid判断
-        $routineInfo['code']=$spid;
         if($routineInfo['unionid'] != '' && self::be(['unionid'=>$routineInfo['unionid']])){
             self::edit($routineInfo,$routineInfo['unionid'],'unionid');
             $uid = self::where('unionid',$routineInfo['unionid'])->value('uid');
+            $routineInfo['code']=$spid;
+            $routineInfo['isPromoter']=$isCOde;
             User::updateWechatUser($routineInfo,$uid);
         }else if(self::be(['routine_openid'=>$routineInfo['routine_openid']])){ //根据小程序openid判断
             self::edit($routineInfo,$routineInfo['routine_openid'],'routine_openid');
             $uid = self::where('routine_openid',$routineInfo['routine_openid'])->value('uid');
+            $routineInfo['code']=$spid;
+            $routineInfo['isPromoter']=$isCOde;
             User::updateWechatUser($routineInfo,$uid);
         }else{
             $routineInfo['add_time'] = time();//用户添加时间
             $routineInfo = self::set($routineInfo);
-            if(User::isUserSpread($spid)) {
-                $res = User::setRoutineUser($routineInfo,$spid); //用户上级
-            }else $res = User::setRoutineUser($routineInfo);
+//            if(User::isUserSpread($spid)) {
+//                $res = User::setRoutineUser($routineInfo,$spid); //用户上级
+//            }else
+            $res = User::setRoutineUser($routineInfo,$spid);
             $uid = $res->uid;
         }
         $data['page'] = $page;

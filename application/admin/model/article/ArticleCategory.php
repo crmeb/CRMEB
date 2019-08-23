@@ -62,7 +62,7 @@ class ArticleCategory extends ModelBasic
     public static function getTierList($model = null)
     {
         if($model === null) $model = new self();
-        return Util::sortListTier($model->select()->toArray());
+        return Util::sortListTier($model->where('is_del',0)->where('status',1)->select()->toArray());
     }
 
     /**
@@ -80,6 +80,34 @@ class ArticleCategory extends ModelBasic
             }
         }
         return $new_res;
+    }
+
+    /**
+     * TODO 获取文章分类
+     * @return array
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\exception\DbException
+     */
+    public static function getArticleCategoryList(){
+       $list = self::where('is_del',0)->where('status',1)->select();
+       if($list) return $list->toArray();
+       return [];
+    }
+
+    /**
+     * TODO 获取文章分类信息
+     * @param $id
+     * @param string $field
+     * @return mixed
+     */
+    public static function getArticleCategoryInfo($id, $field = 'id,title')
+    {
+        $model = new self;
+        if($id) $model = $model->where('id',$id);
+        $model = $model->where('is_del',0);
+        $model = $model->where('status',1);
+        return $model->column($field);
     }
 
 }

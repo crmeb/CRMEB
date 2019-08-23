@@ -201,10 +201,11 @@
                 },
                 createFrame:function(title,src,opt){
                     opt === undefined && (opt = {});
+                    var h = parent.document.body.clientHeight - 60;
                     return layer.open({
                         type: 2,
                         title:title,
-                        area: [(opt.w || 700)+'px', (opt.h || 650)+'px'],
+                        area: [(opt.w || 700)+'px', opt.h ? opt.h+'px': h+'px'],
                         fixed: false, //不固定
                         maxmin: true,
                         moveOut:false,//true  可以拖出窗外  false 只能在窗内拖

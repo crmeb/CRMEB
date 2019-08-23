@@ -38,9 +38,9 @@
         </tr>
         <tr>
           <td>PHP版本</td>
-          <td>>5.5.x</td>
+          <td>><?php echo PHP_EDITION; ?></td>
           <td><span class="correct_span">&radic;</span> <?php echo $phpv; ?></td>
-          <td>5.5.9以上</td>
+          <td><?php echo PHP_EDITION; ?>以上</td>
         </tr>
         <tr>
           <td>附件上传</td>
@@ -133,12 +133,19 @@
           <td>建议开启</td>
           <td><?php echo $file_put_contents; ?></td>
           <td>--</td>
-        </tr> <tr>
+        </tr>
+        <tr>
           <td>BC</td>
           <td>必须扩展</td>
           <td><?php echo $BC; ?></td>
           <td>--</td>
         </tr>
+          <tr>
+              <td>Openssl</td>
+              <td>必须扩展</td>
+              <td><?php echo $openssl; ?></td>
+              <td>--</td>
+          </tr>
       </table>
     </div>
     <div class="bottom tac"> 

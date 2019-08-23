@@ -356,7 +356,7 @@ class StorePink extends ModelBasic
                 'keyword1'=>StoreCombination::where('id',$pink['cid'])->value('title'),
                 'keyword2'=>User::where('uid',self::where('id',$pink['k_id'])->value('uid'))->value('nickname'),
                 'keyword3'=>date('Y-m-d H:i:s',$pink['add_time']),
-                'keyword3'=>$pink['total_price'],
+                'keyword4'=>$pink['total_price'],
             ],'','/pages/order_details/index?order_id='.$pink['order_id']);
             //处理拼团完成
             list($pinkAll,$pinkT,$count,$idAll,$uidAll)=self::getPinkMemberAndPinkK($pink);
@@ -394,7 +394,7 @@ class StorePink extends ModelBasic
                 'keyword2'=>date('Y-m-d H:i:s',$pink['stop_time']),
                 'keyword3'=>StoreCombination::where('id',$pink['cid'])->value('title'),
                 'keyword4'=>$pink['order_id'],
-                'keyword4'=>$pink['total_price'],
+                'keyword5'=>$pink['total_price'],
             ],'','/pages/order_details/index?order_id='.$pink['order_id']);
             if($res) return true;
             else return false;

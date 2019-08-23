@@ -79,6 +79,9 @@
             <div class="layui-card">
                 <div class="layui-card-header">订单列表</div>
                 <div class="layui-card-body">
+                    <div class="layui-btn-container" id="container-action">
+                        <button class="layui-btn layui-btn-sm" data-type="del_order">批量删除订单</button>
+                    </div>
                     <table class="layui-hide" id="List" lay-filter="List"></table>
                     <!--订单-->
                     <script type="text/html" id="order_id">
@@ -153,18 +156,13 @@
                             </li>
                         </ul>
                         {{#  }else if(d._status==2){ }}
-                        <button class="btn btn-primary btn-xs" type="button" onclick="$eb.createModalFrame('去发货','{:Url('deliver_goods')}?id={{d.id}}',{w:400,h:300})">
-                            <i class="fa fa-cart-plus"></i> 去发货</button>
+                        <button class="btn btn-primary btn-xs" type="button" onclick="$eb.createModalFrame('发送货','{:Url('order_goods')}?id={{d.id}}',{w:400,h:250})">
+                            <i class="fa fa-cart-plus"></i> 发送货</button>
                         <button type="button" class="layui-btn layui-btn-xs" onclick="dropdown(this)">操作 <span class="caret"></span></button>
                         <ul class="layui-nav-child layui-anim layui-anim-upbit">
                             <li>
                                 <a href="javascript:void(0);" lay-event='order_info'>
                                     <i class="fa fa-file-text"></i> 订单详情
-                                </a>
-                            </li>
-                            <li>
-                                <a  href="javascript:void(0);" onclick="$eb.createModalFrame('去送货','{:Url('delivery')}?id={{d.id}}',{w:400,h:300})">
-                                    <i class="fa fa-motorcycle"></i> 去送货
                                 </a>
                             </li>
                             <li>
@@ -197,11 +195,6 @@
                             <li>
                                 <a href="javascript:void(0);" lay-event='order_info'>
                                     <i class="fa fa-file-text"></i> 订单详情
-                                </a>
-                            </li>
-                            <li>
-                                <a  href="javascript:void(0);" onclick="$eb.createModalFrame('去送货','{:Url('delivery')}?id={{d.id}}',{w:400,h:300})">
-                                    <i class="fa fa-motorcycle"></i> 去送货
                                 </a>
                             </li>
                             {{#  if(d.use_integral > 0 && d.use_integral >= d.back_integral){ }}
@@ -256,13 +249,13 @@
                             </li>
                             {{#  if(parseFloat(d.pay_price) > parseFloat(d.refund_price)){ }}
                             <li>
-                                <a href="javascript:void(0);" onclick="$eb.createModalFrame('退款','{:Url('refund_y')}?id={{d.id}}')">
+                                <a href="javascript:void(0);" onclick="$eb.createModalFrame('退款','{:Url('refund_y')}?id={{d.id}}',{w:400,h:300})">
                                     <i class="fa fa-history"></i> 立即退款
                                 </a>
                             </li>
                             {{# }else if(d.use_integral > 0 && d.use_integral >= d.back_integral){ }}
                             <li>
-                                <a href="javascript:void(0);" onclick="$eb.createModalFrame('退积分','{:Url('integral_back')}?id={{d.id}}')">
+                                <a href="javascript:void(0);" onclick="$eb.createModalFrame('退积分','{:Url('integral_back')}?id={{d.id}}',{w:400,h:300})">
                                     <i class="fa fa-history"></i> 退积分
                                 </a>
                             </li>
@@ -288,14 +281,14 @@
                             </li>
                             {{#  if(parseFloat(d.pay_price) > parseFloat(d.refund_price)){ }}
                             <li>
-                                <a href="javascript:void(0);" onclick="$eb.createModalFrame('退款','{:Url('refund_y')}?id={{d.id}}')">
+                                <a href="javascript:void(0);" onclick="$eb.createModalFrame('退款','{:Url('refund_y')}?id={{d.id}}',{w:400,h:300})">
                                     <i class="fa fa-history"></i> 立即退款
                                 </a>
                             </li>
                             {{# };}}
                             {{# if(d.use_integral > 0 && d.use_integral >= d.back_integral){ }}
                             <li>
-                                <a href="javascript:void(0);" onclick="$eb.createModalFrame('退积分','{:Url('integral_back')}?id={{d.id}}')">
+                                <a href="javascript:void(0);" onclick="$eb.createModalFrame('退积分','{:Url('integral_back')}?id={{d.id}}',{w:400,h:300})">
                                     <i class="fa fa-history"></i> 退积分
                                 </a>
                             </li>
@@ -321,7 +314,7 @@
                             </li>
                             {{#  if(parseFloat(d.pay_price) > parseFloat(d.refund_price)){ }}
                             <li>
-                                <a href="javascript:void(0);" onclick="$eb.createModalFrame('退款','{:Url('refund_y')}?id={{d.id}}')">
+                                <a href="javascript:void(0);" onclick="$eb.createModalFrame('退款','{:Url('refund_y')}?id={{d.id}}',{w:400,h:300})">
                                     <i class="fa fa-history"></i> 立即退款
                                 </a>
                             </li>
@@ -353,6 +346,7 @@
 <script>
     layList.tableList('List',"{:Url('order_list',['real_name'=>$real_name])}",function (){
         return [
+            {type:'checkbox'},
             {field: 'order_id', title: '订单号', sort: true,event:'order_id',width:'14%',templet:'#order_id'},
             {field: 'nickname', title: '用户信息',templet:'#userinfo',width:'10%'},
             {field: 'info', title: '商品信息',templet:"#info"},
@@ -437,8 +431,32 @@
             }).toggle();
         }
     }
+    var action={
+        del_order:function () {
+            var ids=layList.getCheckData().getIds('id');
+            if(!ids.length) return layList.msg('请选择需要删除的订单');
+            layList.layer.confirm('您确定要删除选中订单吗？', {
+                btn: ['是的，我要删除','我在想想'] //按钮
+            }, function(){
+                layList.basePost(layList.U({a:'del_order'}),{ids:ids},function (res) {
+                    layList.msg(res.msg);
+                    layList.reload();
+                },function (res) {
+                    layList.msg(res.msg);
+                });
+            });
+
+        }
+    }
+    //多选事件绑定
+    $('#container-action').find('button').each(function () {
+        var type=$(this).data('type');
+        $(this).on('click',function(){
+            action[type] && action[type]();
+        })
+    });
     var real_name='<?=$real_name?>';
-    var orderCount=<?=json_encode($orderCount)?>;
+    var orderCount=<?=json_encode($orderCount)?>,status=<?=$status ? $status : "''"?>;
     require(['vue'],function(Vue) {
         new Vue({
             el: "#app",
@@ -447,7 +465,9 @@
                 orderType: [
                     {name: '全部', value: ''},
                     {name: '普通订单', value: 1,count:orderCount.general},
-                    {name: '秒杀订单', value: 3,count:orderCount.seckill}
+                    {name: '拼团订单', value: 2,count:orderCount.pink},
+                    {name: '秒杀订单', value: 3,count:orderCount.seckill},
+                    {name: '砍价订单', value: 4,count:orderCount.bargain},
                 ],
                 orderStatus: [
                     {name: '全部', value: ''},
@@ -458,19 +478,20 @@
                     {name: '交易完成', value: 4,count:orderCount.jy},
                     {name: '退款中', value: -1,count:orderCount.tk,class:true},
                     {name: '已退款', value: -2,count:orderCount.yt},
+                    {name: '已删除', value: -4,count:orderCount.del},
                 ],
                 dataList: [
                     {name: '全部', value: ''},
-                    {name: '昨天', value: 'yesterday'},
                     {name: '今天', value: 'today'},
-                    {name: '本周', value: 'week'},
+                    {name: '昨天', value: 'yesterday'},
+                    {name: '最近7天', value: 'lately7'},
+                    {name: '最近30天', value: 'lately30'},
                     {name: '本月', value: 'month'},
-                    {name: '本季度', value: 'quarter'},
                     {name: '本年', value: 'year'},
                 ],
                 where:{
                     data:'',
-                    status:'',
+                    status:status,
                     type:'',
                     real_name:real_name || '',
                     excel:0,
@@ -478,7 +499,18 @@
                 showtime: false,
             },
             watch: {
-
+                'where.status':function () {
+                    this.getBadge();
+                    layList.reload(this.where,true);
+                },
+                'where.data':function () {
+                    this.getBadge();
+                    layList.reload(this.where,true);
+                },
+                'where.type':function () {
+                    this.getBadge();
+                    layList.reload(this.where,true);
+                }
             },
             methods: {
                 setData:function(item){

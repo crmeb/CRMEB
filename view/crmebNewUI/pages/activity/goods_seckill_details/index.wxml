@@ -53,4 +53,5 @@
   bind:ChangeCartNum="ChangeCartNum"
 ></product-window>
 <import src="/wxParse/wxParse.wxml"/>
+<authorize bind:onLoadFun="onLoadFun"></authorize>
 <home></home>

@@ -157,7 +157,12 @@ setTimeout(function(){
             axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
             new Vue({
                 el:'#vm',
-                data:{},
+                data:{
+                    chnNumChar:["零","一","二","三","四","五","六","七","八","九"],
+                    chnUnitSection : ["","万","亿","万亿","亿亿"],
+                    chnUnitChar : ["","十","百","千"],
+                    noticeTime:7
+                },
                 methods:{
                     globalApi:function(){
                         var api = globalMethods(this,swal);
@@ -175,10 +180,23 @@ setTimeout(function(){
                     },
                     createModalFrame:function(title,src,opt){
                         opt === undefined && (opt = {});
+                        var h = 0;
+                        if(window.innerHeight < 800 && window.innerHeight >= 700){
+                            h=window.innerHeight-50;
+                        }else if(window.innerHeight < 900 && window.innerHeight >= 800){
+                            h=window.innerHeight-100;
+                        }else if(window.innerHeight < 1000 && window.innerHeight >= 900){
+                            h=window.innerHeight-150;
+                        }else if(window.innerHeight >= 1000){
+                            h=window.innerHeight-200;
+                        }else{
+                            h=window.innerHeight;
+                        }
+                        var area=[(opt.w || window.innerWidth/2)+'px', (!opt.h || opt.h > h ? h : opt.h )+'px'];
                         return layer.open({
                             type: 2,
                             title:title,
-                            area: [(opt.w || 750)+'px', (opt.h || 680)+'px'],
+                            area: area,
                             fixed: false, //不固定
                             maxmin: true,
                             moveOut:false,//true  可以拖出窗外  false 只能在窗内拖
@@ -193,13 +211,95 @@ setTimeout(function(){
 
                             }
                         });
+                    },
+                    SectionToChinese:function (section) {
+                        var strIns = '', chnStr = '';
+                        var unitPos = 0;
+                        var zero = true;
+                        while(section > 0){
+                            var v = section % 10;
+                            if(v === 0){
+                                if(!zero){
+                                    zero = true;
+                                    chnStr = this.chnNumChar[v] + chnStr;
+                                }
+                            }else{
+                                zero = false;
+                                strIns = this.chnNumChar[v];
+                                strIns += this.chnUnitChar[unitPos];
+                                chnStr = strIns + chnStr;
+                            }
+                            unitPos++;
+                            section = Math.floor(section / 10);
+                        }
+                        return chnStr;
+                    },
+                    NumberToChinese:function (num) {
+                        var unitPos = 0;
+                        var strIns = '', chnStr = '';
+                        var needZero = false;
+                        if(num === 0) return this.chnNumChar[0];
+                        while(num > 0){
+                            var section = num % 10000;
+                            if(needZero){
+                                chnStr = this.chnNumChar[0] + chnStr;
+                            }
+                            strIns = this.SectionToChinese(section);
+                            strIns += (section !== 0) ? this.chnUnitSection[unitPos] : this.chnUnitSection[0];
+                            chnStr = strIns + chnStr;
+                            needZero = (section < 1000) && (section > 0);
+                            num = Math.floor(num / 10000);
+                            unitPos++;
+                        }
+                        return chnStr;
+                    },
+                    titleRoll:function (newTitle) {
+                        var time=this.noticeTime,oldTitle='CRMEB管理系统';
+                        var timeInterval=setInterval(function () {
+                            console.log(time);
+                            if(time <= 0){
+                                clearInterval(timeInterval);
+                                document.title=oldTitle;
+                                return;
+                            }
+                            document.title=newTitle.substring(1,newTitle.length)+newTitle.substring(0,1);
+                            newTitle=document.title.substring(0,newTitle.length);
+                            time--;
+                        },1000)
                     }
                 },
                 mounted:function(){
-                    window._mpApi = this.globalApi();
+                    window._mpApi = this.globalApi(),that=this;
                     $('.admin_close').on('click',function (e) {
                         $('.admin_open').removeClass('open');
-                    })
+                    });
+                    function getnotice() {
+                        $.getJSON("/admin/index/Jnotice",function(res){
+                            var info = eval("("+res+")");
+                            var data = info.data;
+                            $('#msgcount').html(data.msgcount);
+                            $('#ordernum').html(data.ordernum + '个');
+                            $('#inventory').html(data.inventory + '个');
+                            $('#commentnum').html(data.commentnum + '个');
+                            $('#reflectnum').html(data.reflectnum + '个');
+                            if(data.newOrderId.length){
+                                if(window.newOrderAudioLink) (new Audio(window.newOrderAudioLink)).play();
+                                var title='您有'+that.NumberToChinese(data.newOrderId.length)+'个新订单请及时处理!';
+                                _mpApi.notice('info',{
+                                    title:title,
+                                    desc:'<a href="javascript:;" class="opFrames" data-name="订单管理" data-href="/admin/order.store_order/index/status/1.html">立即去处理</a>',
+                                    duration:that.noticeTime,
+                                });
+                                that.titleRoll(title);
+                                $(document).on('click','.opFrames',function () {
+                                    window.addframes($(this).data('href'),'',$(this).data('name'));
+                                });
+                            }
+                        });
+
+                    }
+                    getnotice();
+                    setInterval(getnotice,6000);
                 }
             })
 

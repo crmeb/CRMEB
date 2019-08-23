@@ -1,13 +1,13 @@
 var app = getApp();
-var Util= require('../../utils/util.js')
+var Util = require('../../utils/util.js')
 Page({
   /**
    * 页面的初始数据
    */
   data: {
     imgUrls: [],
-    itemNew:[],
-    activityList:[],
+    itemNew: [],
+    activityList: [],
     menus: [],
     bastBanner: [],
     bastInfo: '',
@@ -19,15 +19,15 @@ Page({
     salesInfo: '',
     likeInfo: [],
     lovelyBanner: [],
-    benefit:[],
+    benefit: [],
     indicatorDots: false,
     circular: true,
     autoplay: true,
     interval: 3000,
     duration: 500,
-    parameter:{
-      'navbar':'0',
-      'return':'0'
+    parameter: {
+      'navbar': '0',
+      'return': '0'
     },
     window: false,
   },
@@ -37,21 +37,12 @@ Page({
   onLoad: function (options) {
     if (options.spid) app.globalData.spid = options.spid;
     if (options.scene) app.globalData.code = decodeURIComponent(options.scene);
-    var that=this;
-    wx.getSetting({
-      success(res) {
-        if (!res.authSetting['scope.userInfo']) {
-          that.setData({ window: true });
-        }
-      }
-    });
-
   },
   catchTouchMove: function (res) {
     return false
   },
-  onColse:function(){
-    this.setData({ window: false});
+  onColse: function () {
+    this.setData({ window: false });
   },
   /**
    * 生命周期函数--监听页面初次渲染完成
@@ -64,22 +55,22 @@ Page({
    */
   onShow: function () {
     this.getIndexConfig();
-    if(app.globalData.isLog && app.globalData.token) this.get_issue_coupon_list();
+    if (app.globalData.isLog && app.globalData.token) this.get_issue_coupon_list();
   },
-  get_issue_coupon_list:function(){
+  get_issue_coupon_list: function () {
     var that = this;
-    app.baseGet(app.U({ c: 'coupons_api', a:'get_issue_coupon_list',q:{limit:3}}),function(res){
-      that.setData({couponList:res.data});
+    app.baseGet(app.U({ c: 'coupons_api', a: 'get_issue_coupon_list', q: { limit: 3 } }), function (res) {
+      that.setData({ couponList: res.data });
       if (!res.data.length) that.setData({ window: false });
     });
   },
-  getIndexConfig:function(){
+  getIndexConfig: function () {
     var that = this;
     var url = app.U({ c: 'public_api', a: 'index' }, app.globalData.url);
-    app.baseGet(url,function(res){
-      that.setData({ 
-        imgUrls: res.data.banner, 
-        menus: res.data.menus, 
+    app.baseGet(url, function (res) {
+      that.setData({
+        imgUrls: res.data.banner,
+        menus: res.data.menus,
         itemNew: res.data.roll,
         activityList: res.data.activity,
         bastBanner: res.data.info.bastBanner,
@@ -91,10 +82,19 @@ Page({
         firstList: res.data.info.firstList,
         salesInfo: res.data.info.salesInfo,
         likeInfo: res.data.likeInfo,
-        lovelyBanner:res.data.info,
+        lovelyBanner: res.data.info,
         benefit: res.data.benefit,
         logoUrl: res.data.logoUrl,
         couponList: res.data.couponList,
+      });
+      wx.getSetting({
+        success(res) {
+          if (!res.authSetting['scope.userInfo']) {
+            that.setData({ window: that.data.couponList.length ? true : false });
+          } else {
+            that.setData({ window: false });
+          }
+        }
       });
     });
   },
@@ -102,7 +102,7 @@ Page({
    * 生命周期函数--监听页面隐藏
    */
   onHide: function () {
-    this.setData({ window:false});
+    this.setData({ window: false });
   },
   /**
    * 生命周期函数--监听页面卸载

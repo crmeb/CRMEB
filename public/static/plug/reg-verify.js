@@ -16,7 +16,7 @@
             return reg.test(test);
         },
         isPostCode:function(test){
-            var reg = /^[1-9]\d{5}$/;
+            var reg = /^[0-9]\d{5}$/;
             return reg.test(test);
         },
         isEmpty:function(test){

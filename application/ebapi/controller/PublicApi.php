@@ -17,6 +17,10 @@ use service\UploadService;
 use service\UtilService;
 use service\CacheService;
 use think\Cache;
+use Api\Storage\COS\COS;
+use Api\Storage\OSS\OSS;
+use Api\Storage\Qiniu\Qiniu;
+use app\admin\model\system\SystemAttachment;
 
 /**
  * 小程序公共接口
@@ -55,6 +59,7 @@ class PublicApi extends AuthController
     public function get_logo_url()
     {
         $routine_logo=SystemConfigService::get('routine_logo');
+        if(strstr($routine_logo,'http')===false) $routine_logo=SystemConfigService::get('site_url').$routine_logo;
         return JsonService::successful(['logo_url'=>str_replace('\\','/',$routine_logo)]);
     }
     /**
@@ -94,7 +99,7 @@ class PublicApi extends AuthController
         $info['salesInfo'] = SystemConfigService::get('sales_info');//TODO 促销单品简介
         $logoUrl = SystemConfigService::get('routine_index_logo');//TODO 促销单品简介
         if(strstr($logoUrl,'http')===false) $logoUrl=SystemConfigService::get('site_url').$logoUrl;
-        $logoUrl=str_replace('\\','/',$logoUrl);
+        $logoUrl = str_replace('\\','/',$logoUrl);
         $fastNumber = (int)SystemConfigService::get('fast_number');//TODO 快速选择分类个数
         $bastNumber = (int)SystemConfigService::get('bast_number');//TODO 精品推荐个数
         $firstNumber = (int)SystemConfigService::get('first_number');//TODO 首发新品个数
@@ -179,16 +184,20 @@ class PublicApi extends AuthController
             ['pic',''],
         ]);
         if($post['pic']=='') return $this->fail('缺少删除资源');
-        $type=['php','js','css','html','ttf','otf'];
-        $post['pic']=substr($post['pic'],1);
-        $ext=substr($post['pic'],-3);
-        if(in_array($ext,$type)) return $this->fail('非法操作');
-        if(strstr($post['pic'],'uploads')===false) return $this->fail('非法操作');
         try{
-            if(file_exists($post['pic'])) unlink($post['pic']);
-            if(strstr($post['pic'],'s_')!==false){
-                $pic=str_replace(['s_'],'',$post['pic']);
-                if(file_exists($pic)) unlink($pic);
+            $attinfo = SystemAttachment::get($post['pic']);
+            if($attinfo){
+                if($attinfo['image_type'] == 1){
+                    @unlink(ROOT_PATH.ltrim($attinfo['att_dir'],'.'));
+                    @unlink(ROOT_PATH.ltrim($attinfo['satt_dir'],'.'));
+                }else if($attinfo['image_type'] == 2){
+                    Qiniu::delete($attinfo['name']);
+                }else if($attinfo['image_type'] == 3){
+                    OSS::delete($attinfo['name']);
+                }else if($attinfo['image_type'] == 4){
+                    COS::delete($attinfo['name']);
+                }
+                SystemAttachment::where(['att_id'=>$post['pic']])->delete();
             }
             return $this->successful('删除成功');
         }catch (\Exception $e){
@@ -208,16 +217,14 @@ class PublicApi extends AuthController
         ],$this->request);
         if(Cache::has('start_uploads_'.$this->uid) && Cache::get('start_uploads_'.$this->uid) >= 100) return $this->fail('非法操作');
         $res = UploadService::image($data['filename'],$dir ? $dir: 'store/comment');
-        if($res->status == 200){
-           if(Cache::has('start_uploads_'.$this->uid))
-               $start_uploads=(int)Cache::get('start_uploads_'.$this->uid);
-           else
-               $start_uploads=0;
-            $start_uploads++;
-            Cache::set('start_uploads_'.$this->uid,$start_uploads,86400);
-            return $this->successful('图片上传成功!', ['name' => $res->fileInfo->getSaveName(), 'url' => UploadService::pathToUrl($res->dir)]);
-        }else
-            return $this->fail($res->error);
+        if(!is_array($res)) return $this->fail(isset($res['error']) ? $res['error'] : '上传失败',$res);
+        if(Cache::has('start_uploads_'.$this->uid))
+            $start_uploads=(int)Cache::get('start_uploads_'.$this->uid);
+        else
+            $start_uploads=0;
+        $start_uploads++;
+        Cache::set('start_uploads_'.$this->uid,$start_uploads,86400);
+        return $this->successful('图片上传成功!', ['name' => $res['name'], 'url' => UploadService::pathToUrl($res['dir'])]);
     }
 
     /**
@@ -236,7 +243,7 @@ class PublicApi extends AuthController
     public function get_user_extract_bank(){
         $extractBank = SystemConfigService::get('user_extract_bank')?:[];//提现银行
         $extractBank = str_replace("\r\n","\n",$extractBank);//防止不兼容
-        $data['extractBank'] = explode("\n",$extractBank);
+        $data['extractBank'] = explode("\n",is_array($extractBank)  ? ( isset($extractBank[0]) ? $extractBank[0]: $extractBank): $extractBank);
         $data['minPrice'] = SystemConfigService::get('user_extract_min_price');//提现最低金额
         return $this->successful($data);
     }

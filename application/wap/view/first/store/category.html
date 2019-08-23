@@ -30,7 +30,7 @@
                 {notempty name="vo.child"}
                 <ul class="child-list clearfix">
                     {volist name="vo.child" id="st"}
-                    <li><a href="{:url('store/index',['cid'=>$st['id']])}">{$st.cate_name}</a></li>
+                    <li><a href="{:url('store/index',['sid'=>$st['id']])}">{$st.cate_name}</a></li>
                     {/volist}
                 </ul>
                 {/notempty}

@@ -73,7 +73,7 @@ Page({
   uploadpic:function(){
     var that=this;
     util.uploadImageOne(app.U({ c: 'public_api', a:'upload'}),function(res){
-      that.data.refund_reason_wap_img.push(app.globalData.url+res.data.url);
+      that.data.refund_reason_wap_img.push(res.data.url);
       that.setData({ refund_reason_wap_img: that.data.refund_reason_wap_img});
     });
   },
@@ -93,7 +93,7 @@ Page({
       refund_reason_wap_img: that.data.refund_reason_wap_img.join(','),
       uni: that.data.orderId
     },function(res){
-      return app.Tips({ title: '申请成功', icon: 'success' },{tab:4,url:'/pages/user_return_list/index?isT=1'});
+      return app.Tips({ title: '申请成功', icon: 'success' },{tab:5,url:'/pages/user_return_list/index?isT=1'});
     },function(res){
       return app.Tips({title:res.msg});
     });

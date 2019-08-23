@@ -147,6 +147,10 @@ class View
      */
     public function fetch($template = '', $vars = [], $replace = [], $config = [], $renderContent = false)
     {
+        // 网页ResponseHeaders 设置
+      	header(base64_decode('WC1Qb3dlcmVkLUJ5OiBDUk1F').'B');
+        header(base64_decode('QXV0aG9yOmhvbm8=').'r');
+        header(base64_decode('VGVsOjQwMDg4ODg3OQ==').'4');
         // 模板变量
         $vars = array_merge(self::$var, $this->data, $vars);
 

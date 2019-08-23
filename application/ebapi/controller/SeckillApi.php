@@ -1,6 +1,7 @@
 <?php
 namespace app\ebapi\controller;
 
+use app\core\util\SystemConfigService;
 use app\ebapi\model\store\StoreProductRelation;
 use app\ebapi\model\store\StoreProductReply;
 use app\ebapi\model\store\StoreSeckill;
@@ -22,7 +23,6 @@ class SeckillApi extends AuthController
      * @return \think\response\Json
      */
     public function seckill_index(){
-        $lovely = GroupDataService::getData('routine_lovely')?:[];//banner图
         $seckillTime = GroupDataService::getData('routine_seckill_time')?:[];//秒杀时间段
         $seckillTimeIndex = 0;
         if(count($seckillTime)){
@@ -55,7 +55,9 @@ class SeckillApi extends AuthController
                 }
             }
         }
-        $data['lovely'] = isset($lovely[0]) ? $lovely[0] : '';
+        $data['lovely'] = SystemConfigService::get('seckill_header_banner');
+        if(strstr($data['lovely'],'http')===false) $data['lovely']=SystemConfigService::get('site_url').$data['lovely'];
+        $data['lovely'] = str_replace('\\','/',$data['lovely']);
         $data['seckillTime'] = $seckillTime;
         $data['seckillTimeIndex'] = $seckillTimeIndex;
         return JsonService::successful($data);

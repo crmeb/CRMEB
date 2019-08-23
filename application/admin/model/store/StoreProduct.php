@@ -7,6 +7,9 @@
 
 namespace app\admin\model\store;
 
+use app\admin\model\ump\StoreBargain;
+use app\admin\model\ump\StoreCombination;
+use app\admin\model\ump\StoreSeckill;
 use service\PHPExcelService;
 use think\Db;
 use traits\ModelTrait;
@@ -149,6 +152,7 @@ class StoreProduct extends ModelBasic
             $item['sales_attr'] = self::getSales($item['id']);//属性销量
             $item['visitor'] = Db::name('store_visit')->where('product_id',$item['id'])->where('product_type','product')->count();
         }
+        unset($item);
         if($where['excel']==1){
             $export = [];
             foreach ($data as $index=>$item){
@@ -210,28 +214,58 @@ class StoreProduct extends ModelBasic
     }
     //获取 badge 内容
     public static function getbadge($where,$type){
-        $StoreOrderModel=new StoreOrder;
         $replenishment_num = SystemConfig::getValue('replenishment_num');
         $replenishment_num = $replenishment_num > 0 ? $replenishment_num : 20;
-        $stock1=self::getModelTime($where,new self())->where('stock','<',$replenishment_num)->column('stock');
-        $sum_stock=self::where('stock','<',$replenishment_num)->column('stock');
-        $stk=[];
+        $sum = [];
+        $lack = 0;
+
+        //获取普通产品缺货
+        $stock1 = self::getModelTime($where,new self())->where('stock','<',$replenishment_num)->column('stock');
+        $sum_stock = self::where('stock','<',$replenishment_num)->column('stock');
+        $stk = [];
         foreach ($stock1 as $item){
-            $stk[]=$replenishment_num-$item;
+            $stk[] = $replenishment_num-$item;
         }
-        $lack=array_sum($stk);
-        $sum=[];
+        $lack = bcadd($lack,array_sum($stk),0);
         foreach ($sum_stock as $val){
-            $sum[]=$replenishment_num-$val;
+            $sum[] = $replenishment_num-$val;
         }
+        unset($stk,$sum_stock,$stock1);
+
+        //获取砍价缺货产品
+        $stock1 = self::getModelTime($where,new StoreBargain())->where('stock','<',$replenishment_num)->column('stock');
+        $sum_stock = StoreBargain::where('stock','<',$replenishment_num)->column('stock');
+        $stk = [];
+        foreach ($stock1 as $item){
+            $stk[] = $replenishment_num-$item;
+        }
+        $lack = bcadd($lack,array_sum($stk),0);
+        foreach ($sum_stock as $val){
+            $sum[] = $replenishment_num-$val;
+        }
+        unset($stk,$sum_stock,$stock1);
+
+        //获取拼团缺货产品
+        $stock1 = self::getModelTime($where,new StoreCombination())->where('stock','<',$replenishment_num)->column('stock');
+        $sum_stock = StoreCombination::where('stock','<',$replenishment_num)->column('stock');
+        $stk = [];
+        foreach ($stock1 as $item){
+            $stk[] = $replenishment_num - $item;
+        }
+        $lack = bcadd($lack,array_sum($stk),0);
+        foreach ($sum_stock as $val){
+            $sum[] = $replenishment_num - $val;
+        }
+        unset($stk,$sum_stock,$stock1);
+
         return [
             [
-                'name'=>'商品数量',
+                'name'=>'商品种类',
                 'field'=>'件',
-                'count'=>self::setWhereType(new self(),$type)->where('add_time','<',mktime(0,0,0,date('m'),date('d'),date('Y')))->sum('stock'),
+                'count'=>self::setWhereType(new self(),$type)->where('add_time','<',mktime(0,0,0,date('m'),date('d'),date('Y')))->count(),
                 'content'=>'商品数量总数',
                 'background_color'=>'layui-bg-blue',
-                'sum'=>self::sum('stock'),
+                'sum'=>self::count(),
                 'class'=>'fa fa fa-ioxhost',
             ],
             [
@@ -246,10 +280,10 @@ class StoreProduct extends ModelBasic
             [
                 'name'=>'活动商品',
                 'field'=>'件',
-                'count'=>self::getModelTime($where,$StoreOrderModel)->sum('total_num'),
+                'count'=>self::getActivityProductSum($where),
                 'content'=>'活动商品总数',
                 'background_color'=>'layui-bg-green',
-                'sum'=>$StoreOrderModel->sum('total_num'),
+                'sum'=>self::getActivityProductSum(),
                 'class'=>'fa fa-bar-chart',
             ],
             [
@@ -263,6 +297,25 @@ class StoreProduct extends ModelBasic
             ],
         ];
     }
+
+    /*
+     * 获取活动产品总和
+     * @param array $where 查询条件
+     * */
+    public static function getActivityProductSum($where=false)
+    {
+        if($where){
+            $bargain=self::getModelTime($where,new StoreBargain())->sum('stock');
+            $pink=self::getModelTime($where,new StoreCombination())->sum('stock');
+            $seckill=self::getModelTime($where,new StoreSeckill())->sum('stock');
+        }else{
+            $bargain=StoreBargain::sum('stock');
+            $pink=StoreCombination::sum('stock');
+            $seckill=StoreSeckill::sum('stock');
+        }
+        return bcadd(bcadd($bargain,$pink,0),$seckill,0);
+    }
+
     public static function setWhereType($model,$type){
         switch ($type){
             case 1:
@@ -589,5 +642,15 @@ class StoreProduct extends ModelBasic
             ->field(['FROM_UNIXTIME(a.add_time,"%Y-%m-%d") as _add_time','c.nickname','b.price','a.id','a.cart_num as num'])
             ->page((int)$where['page'],(int)$where['limit'])
             ->select();
+    }
+
+    /**
+     * TODO 获取某个字段值
+     * @param $id
+     * @param string $field
+     * @return mixed
+     */
+    public static function getProductField($id,$field = 'store_name'){
+        return self::where('id',$id)->value($field);
     }
 }

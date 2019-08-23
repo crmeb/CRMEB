@@ -10,7 +10,9 @@
                 <a :href="productUrl(item)">
                     <div class="picture"><img :src="item.image" /></div>
                     <div class="info-content flex">
-                        <p class="pro-tit" v-text="item.store_name"></p>
+                        <p class="pro-tit" v-text="item.store_name + '[秒杀产品]'" v-if="item.category == 'product_seckill'"></p>
+                        <p class="pro-tit" v-text="item.store_name + '[普通产品]'" v-else-if="item.category == 'product'"></p>
+                        <p class="pro-tit" v-text="item.store_name" v-else></p>
                         <p class="price">
                             <span v-text="'￥'+item.price"></span>
                             <span class="old-price">￥{{item.ot_price}}</span>
@@ -51,7 +53,13 @@
                     });
                 },
                 productUrl:function(product){
-                    return product.is_fail == true ? 'javascript:void(0);' : $h.U({c:'store',a:'detail',p:{id:product.pid}});
+                    if(product.category == 'product_seckill'){
+                        return product.is_fail == true ? 'javascript:void(0);' : $h.U({c:'store',a:'seckill_detail',p:{id:product.pid}});
+                    }else if(product.category == 'product'){
+                        return product.is_fail == true ? 'javascript:void(0);' : $h.U({c:'store',a:'detail',p:{id:product.pid}});
+                    }else{
+                        return 'javascript:void(0);';
+                    }
                 },
                 getList:function(){
                     if(this.loading) return ;

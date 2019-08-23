@@ -59,6 +59,7 @@ class UserNotice extends AuthController
      * @return \think\Response
      */
     public function save(Request $request){
+        return Json::fail('站内消息暂不可用');
         $params = $request->post();
         if(!$params["user"])return Json::fail('请输入发送人！');
         if(!$params["title"])return Json::fail('请输入通知标题！');

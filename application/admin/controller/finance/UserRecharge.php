@@ -1,7 +1,9 @@
 <?php
 namespace app\admin\controller\finance;
 use app\admin\controller\AuthController;
+use app\admin\model\user\User;
 use app\admin\model\user\UserRecharge as UserRechargeModel;
+use app\core\model\routine\RoutineTemplate;
 use app\core\model\user\UserBill;
 use service\UtilService as Util;
 use service\JsonService as Json;
@@ -72,19 +74,34 @@ class UserRecharge extends AuthController
 //        $refund_data['refund_account']='REFUND_SOURCE_RECHARGE_FUNDS';
 
         try{
+
             HookService::listen('user_recharge_refund',$UserRecharge['order_id'],$refund_data,true,PaymentBehavior::class);
         }catch(\Exception $e){
             return Json::fail($e->getMessage());
         }
         UserRechargeModel::edit($data,$id);
-        WechatTemplateService::sendTemplate(WechatUserWap::uidToOpenid($UserRecharge['uid']),WechatTemplateService::ORDER_REFUND_STATUS, [
-            'first'=>'亲，您充值的金额已退款,本次退款'.
-                $data['refund_price'].'金额',
-            'keyword1'=>$UserRecharge['order_id'],
-            'keyword2'=>$UserRecharge['price'],
-            'keyword3'=>date('Y-m-d H:i:s',$UserRecharge['add_time']),
-            'remark'=>'点击查看订单详情'
-        ],Url::build('wap/My/balance','',true,true));
+        User::bcDec($UserRecharge['uid'],'now_money',$refund_price,'uid');
+        switch (strtolower($UserRecharge['recharge_type'])){
+            case 'weixin':
+                WechatTemplateService::sendTemplate(WechatUserWap::where('uid',$UserRecharge['uid'])->value('openid'),WechatTemplateService::ORDER_REFUND_STATUS, [
+                    'first'=>'亲，您充值的金额已退款,本次退款'.
+                        $data['refund_price'].'金额',
+                    'keyword1'=>$UserRecharge['order_id'],
+                    'keyword2'=>$UserRecharge['price'],
+                    'keyword3'=>date('Y-m-d H:i:s',$UserRecharge['add_time']),
+                    'remark'=>'点击查看订单详情'
+                ],Url::build('wap/My/balance','',true,true));
+                break;
+            case 'routine':
+                RoutineTemplate::sendOut('ORDER_REFUND_SUCCESS',$UserRecharge['uid'],[
+                    'keyword1'=>$UserRecharge['order_id'],
+                    'keyword2'=>date('Y-m-d H:i:s',time()),
+                    'keyword3'=>$UserRecharge['price'],
+                    'keyword4'=>'余额充值退款',
+                    'keyword5'=>'亲，您充值的金额已退款,本次退款'. $data['refund_price'].'金额',
+                ]);
+                break;
+        }
         UserBill::expend('系统退款',$UserRecharge['uid'],'now_money','user_recharge_refund',$refund_price,$id,$UserRecharge['price'],'退款给用户'.$refund_price.'元');
         return Json::successful('退款成功!');
     }

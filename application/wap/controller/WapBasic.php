@@ -33,7 +33,7 @@ class WapBasic extends Controller
             && ($userInfo = User::getUserInfo(WechatUser::openidToUid($this->oauth())))
             && !$userInfo['spread_uid']
             && $userInfo['uid'] != $spreadUid
-        ) User::edit(['spread_uid'=>$spreadUid],$userInfo['uid'],'uid');
+        ) User::edit(['spread_uid'=>$spreadUid,'spread_time'=>time()],$userInfo['uid'],'uid');
         HookService::listen('wap_init',null,null,false,WapBehavior::class);
     }
 

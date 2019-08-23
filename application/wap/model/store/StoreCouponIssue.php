@@ -51,7 +51,8 @@ class StoreCouponIssue extends ModelBasic
         $res1 = false != StoreCouponUser::addUserCoupon($uid,$issueCouponInfo['cid']);
         $res2 = false != StoreCouponIssueUser::addUserIssue($uid,$id);
         $res3 = false;
-        if($issueCouponInfo['total_count'] > 0){
+        if($issueCouponInfo['is_permanent'] == 1) $res3 = true;
+        else if($issueCouponInfo['total_count'] > 0){
             $issueCouponInfo['remain_count'] -= 1;
             $res3 = false !== $issueCouponInfo->save();
         }

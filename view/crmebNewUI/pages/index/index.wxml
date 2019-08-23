@@ -71,7 +71,7 @@
           </block>  
        </view>
     </view>
-    <view class='wrapper'>
+    <view class='wrapper' wx:if="{{fastList.length}}">
        <view class='title acea-row row-between-wrapper'>
           <view class='text'>
              <view class='name line1'>快速选择</view>
@@ -92,7 +92,7 @@
            </scroll-view>
         </view>
     </view>
-     <view class='wrapper'>
+     <view class='wrapper' wx:if="{{bastList.length}}">
        <view class='title acea-row row-between-wrapper'>
           <view class='text'>
              <view class='name line1'>精品推荐</view>
@@ -114,14 +114,14 @@
        </view>
        <goodList bastList="{{bastList}}"></goodList>
     </view>
-    <view class='hotList'>
+    <view class='hotList' wx:if="{{likeInfo.length}}">
        <view class='hot-bg'>
           <view class='title acea-row row-between-wrapper'>
             <view class='text line1'><text class='label'>热门榜单</text>根据销量、搜索、好评等综合得出</view>
             <navigator class='more' hover-class="none" url='/pages/first-new-product/index?type=2'>更多<text class="iconfont icon-jiantou"></text></navigator>
           </view>
        </view>
-       <view class='list acea-row row-between-wrapper'>
+       <view class='list acea-row row-middle'>
           <block wx:for="{{likeInfo}}" wx:key>
             <navigator class='item' url='/pages/goods_details/index?id={{item.id}}'>
               <view class='pictrue'>
@@ -141,7 +141,7 @@
         <image src='{{item.img}}'></image>
       </block>  
     </view>
-     <view class='wrapper'>
+     <view class='wrapper' wx:if="{{firstList.length}}">
        <view class='title acea-row row-between-wrapper'>
           <view class='text'>
              <view class='name line1'>首发新品<text class='new font-color'>NEW~</text></view>
@@ -163,7 +163,7 @@
            </scroll-view>
         </view>
     </view>
-    <view class='wrapper'>
+    <view class='wrapper' wx:if="{{benefit.length}}">
        <view class='title acea-row row-between-wrapper'>
           <view class='text'>
              <view class='name line1'>促销单品</view>

@@ -69,6 +69,8 @@ Page({
       value.bankname = that.data.array[that.data.index];
     } else if (that.data.currentTab == 1) {//微信
       value.extract_type = 'weixin';
+      if (value.name.length == 0) return app.Tips({ title: '请填写微信号' });
+      value.weixin = value.name;
     } else if (that.data.currentTab == 2) {//支付宝
       value.extract_type = 'alipay';
       if (value.name.length == 0) return app.Tips({title:'请填写账号'});

@@ -69,19 +69,19 @@ class SystemGroupData extends AuthController
                     $f[] = Form::input($value["title"],$value["name"])->type('textarea')->placeholder($value['param']);
                     break;
                 case 'radio':
-                    $f[] = Form::radio($value["title"],$value["name"],$info[0]["value"])->options($info);
+                    $f[] = Form::radio($value["title"],$value["name"],isset($info[0]["value"]) ? $info[0]["value"] : '')->options($info);
                     break;
                 case 'checkbox':
-                    $f[] = Form::checkbox($value["title"],$value["name"],$info[0])->options($info);
+                    $f[] = Form::checkbox($value["title"],$value["name"],isset($info[0]) ? $info[0] : '')->options($info);
                     break;
                 case 'select':
-                    $f[] = Form::select($value["title"],$value["name"],$info[0])->options($info)->multiple(false);
+                    $f[] = Form::select($value["title"],$value["name"],isset($info[0]) ? $info[0] : '')->options($info)->multiple(false);
                     break;
                 case 'upload':
-                    $f[] = Form::frameImageOne($value["title"],$value["name"],Url::build('admin/widget.images/index',array('fodder'=>$value["title"],'big'=>1)))->icon('image');
+                    $f[] = Form::formFrameImageOne($value["title"],$value["name"]);
                     break;
                 case 'uploads':
-                    $f[] = Form::frameImages($value["title"],$value["name"],Url::build('admin/widget.images/index',array('fodder'=>$value["title"],'big'=>1)))->maxLength(5)->icon('images')->width('100%')->height('550px')->spin(0);
+                    $f[] = Form::formFrameImages($value["title"],$value["name"]);
                     break;
                 default:
                     $f[] = Form::input($value["title"],$value["name"]);
@@ -184,11 +184,11 @@ class SystemGroupData extends AuthController
                      }else{
                          $image = '';
                      }
-                     $f[] = Form::frameImageOne($value['title'],$value['name'],Url::build('admin/widget.images/index',array('fodder'=>$value['title'],'big'=>1)),$image)->icon('image');
+                     $f[] = Form::formFrameImageOne($value['title'],$value['name'],$image);
                     break;
                  case 'uploads':
                      $images = !empty($fvalue) ? $fvalue:[];
-                     $f[] = Form::frameImages($value['title'],$value['name'],Url::build('admin/widget.images/index', array('fodder' => $value['title'],'big'=>1)),$images)->maxLength(5)->icon('images')->width('100%')->height('550px')->spin(0);
+                     $f[] = Form::formFrameImages($value['title'],$value['name'],$images);
                     break;
                  case 'select':
                      $f[] = Form::select($value['title'],$value['name'],$fvalue)->setOptions($info);
@@ -221,7 +221,7 @@ class SystemGroupData extends AuthController
         foreach ($params as $key => $param) {
             foreach ($Fields['fields'] as $index => $field) {
                 if($key == $field["title"]){
-                    if(!$param)
+                    if(trim($param) == '')
                         return Json::fail($field["name"]."不能为空！");
                     else{
                         $value[$key]["type"] = $field["type"];
@@ -252,14 +252,8 @@ class SystemGroupData extends AuthController
     public function upload()
     {
         $res = Upload::image('file','common');
-        $thumbPath = Upload::thumb($res->dir);
-        //产品图片上传记录
-        $fileInfo = $res->fileInfo->getinfo();
-        SystemAttachment::attachmentAdd($res->fileInfo->getSaveName(),$fileInfo['size'],$fileInfo['type'],$res->dir,$thumbPath,6);
-
-        if($res->status == 200)
-            return Json::successful('图片上传成功!',['name'=>$res->fileInfo->getSaveName(),'url'=>Upload::pathToUrl($thumbPath)]);
-        else
-            return Json::fail($res->error);
+        if(!is_array($res)) return Json::fail($res);
+        SystemAttachment::attachmentAdd($res['name'],$res['size'],$res['type'],$res['dir'],$res['thumb_path'],6,$res['image_type'],$res['time']);
+        return Json::successful('图片上传成功!',['name'=>$res['name'],'url'=>Upload::pathToUrl($res['thumb_path'])]);
     }
 }

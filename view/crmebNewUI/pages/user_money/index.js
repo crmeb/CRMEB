@@ -16,6 +16,7 @@ Page({
     userInfo:{},
     host_product:[],
     isClose:false,
+    recharge_switch:0,
   },
 
   /**
@@ -25,12 +26,22 @@ Page({
     this.getUserInfo();
     this.get_host_product();
     this.get_activity();
+    this.getSystemConfig();
   },
   /**
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
 
+  },
+  /**
+   * 获取系统配置信息
+  */
+  getSystemConfig:function(){
+    var that = this;
+    app.baseGet(app.U({ c: 'public_api', a: 'get_system_config_value', q: { name:'recharge_switch'} }), function (res) {
+      that.setData({ recharge_switch: parseInt(res.data.recharge_switch) });
+    });
   },
   /**
    * 获取用户详情

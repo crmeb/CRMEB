@@ -104,6 +104,7 @@ Page({
   */
   goSign:function(e){
     var that = this, formId = e.detail.formId, sum_sgin_day = that.data.userInfo.sum_sgin_day;
+    app.baseGet(app.U({ c: 'public_api', a: 'get_form_id', q: { formId: formId } }), null, null, true);
     if (that.data.userInfo.is_day_sgin) return app.Tips({title:'您今日已签到!'});
     app.baseGet(app.U({ c: 'user_api', a:'user_sign'}),function(res){
       that.setData({

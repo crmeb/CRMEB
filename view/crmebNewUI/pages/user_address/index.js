@@ -72,6 +72,7 @@ Page({
       district: that.data.region[2],
     };
     value.is_default = that.data.userAddress.is_default ? 1 : 0;
+    app.baseGet(app.U({ c: 'public_api', a: 'get_form_id', q: { formId: formId } }), null, null, true);
     app.basePost(app.U({ c: 'user_api', a: 'edit_user_address' }), value,function(res){
       if (that.data.id) app.Tips({ title: '修改成功', icon: 'success'});
       else app.Tips({ title: '添加成功', icon: 'success'});

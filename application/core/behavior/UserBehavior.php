@@ -7,6 +7,7 @@
 
 namespace app\core\behavior;
 
+use app\admin\model\system\SystemAttachment;
 use app\core\model\user\UserLevel;
 use service\HookService;
 use app\core\model\user\User;
@@ -73,6 +74,14 @@ class UserBehavior
     public static function userLevelAfter($user,$number)
     {
         return UserLevel::setLevelComplete($user['uid'],$number);
+    }
+
+    /*
+     * 清理昨天用户产生的附件信息
+     * */
+    public static function emptyYesterDayAttachment()
+    {
+        return SystemAttachment::emptyYesterDayAttachment();
     }
 
 }

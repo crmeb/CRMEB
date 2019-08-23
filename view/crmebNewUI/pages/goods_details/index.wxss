@@ -5,8 +5,8 @@
 .product-con .footer .item .iconfont.icon-gouwuche1{font-size:40rpx;position:relative;}
 .product-con .footer .item .iconfont.icon-gouwuche1 .num{color:#fff;position:absolute;font-size:18rpx;
 padding:2rpx 8rpx 3rpx;border-radius:200rpx;top:-10rpx;right:-10rpx;}
-.product-con .footer .bnt{width:444rpx;height:76rpx;color:#fff;font-size:28rpx;}
-.product-con .footer .bnt>view{width:222rpx;text-align:center;line-height:76rpx;}
+.product-con .footer .bnt{width:444rpx;height:76rpx;}
+.product-con .footer .bnt .bnts{width:222rpx;text-align:center;line-height:76rpx;color:#fff;font-size:28rpx;}
 .product-con .footer .bnt .joinCart{border-radius:50rpx 0 0 50rpx;background-image: linear-gradient(to right,#fea10f 0%,#fa8013 100%);}
 .product-con .footer .bnt .buy{border-radius:0 50rpx 50rpx 0;background-image: linear-gradient(to right,#fa6514 0%,#e93323 100%);}
 @import "/wxParse/wxParse.wxss"; 

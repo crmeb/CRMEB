@@ -41,8 +41,8 @@ class UserLevel extends AuthController
         $field[]= Form::number('valid_date','有效时间(天)',isset($vipinfo) ? $vipinfo->valid_date : 0)->min(0)->col(8);
         $field[]= Form::number('grade','等级',isset($vipinfo) ? $vipinfo->grade : 0)->min(0)->col(8);
         $field[]= Form::number('discount','享受折扣',isset($vipinfo) ? $vipinfo->discount : 0)->min(0)->col(8);
-        $field[]= Form::frameImageOne('icon','图标',Url::build('admin/widget.images/index',array('fodder'=>'icon')),isset($vipinfo) ? $vipinfo->icon : '')->icon('image')->width('100%')->height('500px');
-        $field[]= Form::frameImageOne('image','会员背景',Url::build('admin/widget.images/index',array('fodder'=>'image')),isset($vipinfo) ? $vipinfo->image : '')->icon('image')->width('100%')->height('500px');
+        $field[]= Form::formFrameImageOne('icon','图标',isset($vipinfo) ? $vipinfo->icon : '');
+        $field[]= Form::formFrameImageOne('image','会员背景',isset($vipinfo) ? $vipinfo->image : '');
         $field[]= Form::radio('is_show','是否显示',isset($vipinfo) ? $vipinfo->is_show : 0)->options([['label'=>'显示','value'=>1],['label'=>'隐藏','value'=>0]])->col(8);
         $field[]= Form::textarea('explain','等级说明',isset($vipinfo) ? $vipinfo->explain : '');
         $form = Form::make_post_form('添加等级设置',$field,Url::build('save',['id'=>$id]),2);
@@ -74,9 +74,11 @@ class UserLevel extends AuthController
         if(!$data['grade']) return JsonService::fail('请输入等级');
         if(!$data['explain']) return JsonService::fail('请输入等级说明');
         if($data['is_forever']==0 && !$data['valid_date']) return JsonService::fail('请输入有效时间(天)');
+        if($data['is_pay']) return JsonService::fail('会员等级购买功能正在开发中，暂时关闭可购买功能！');
         if($data['is_pay'] && !$data['money']) return JsonService::fail('请输入购买金额');
         if(!$data['icon']) return JsonService::fail('请上传等级图标');
         if(!$data['image']) return JsonService::fail('请上传等级背景图标');
+        if(!$id && SystemUserLevel::be(['is_del'=>0,'grade'=>$data['grade']])) return JsonService::fail('已检测到您设置过的会员等级，此等级不可重复');
         SystemUserLevel::beginTrans();
         try{
             //修改
@@ -86,7 +88,7 @@ class UserLevel extends AuthController
                     return JsonService::successful('修改成功');
                 }else{
                     SystemUserLevel::rollbackTrans();
-                    return JsonService::fail('添加失败');
+                    return JsonService::fail('修改失败');
                 }
             }else{
                 //新增
