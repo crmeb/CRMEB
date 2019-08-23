@@ -1,6 +1,6 @@
 # Windows thumbnail cache files
-/runtime
 /.idea
-/application/database.php/
-/public/uploads/
-
+/runtime
+/public/uploads
+/application/database.php
+/view/crmebNewUI/project.config.json

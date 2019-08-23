@@ -5,53 +5,48 @@ namespace Doctrine\Tests\Common\Cache;
 use Doctrine\Common\Cache\MemcachedCache;
 use Memcached;
 
-/**
- * @requires extension memcached
- */
 class MemcachedCacheTest extends CacheTest
 {
     private $memcached;
 
-    protected function setUp()
+    public function setUp()
     {
+        if ( ! extension_loaded('memcached')) {
+            $this->markTestSkipped('The ' . __CLASS__ .' requires the use of memcached');
+        }
+
         $this->memcached = new Memcached();
         $this->memcached->setOption(Memcached::OPT_COMPRESSION, false);
         $this->memcached->addServer('127.0.0.1', 11211);
 
         if (@fsockopen('127.0.0.1', 11211) === false) {
             unset($this->memcached);
-            $this->markTestSkipped('Cannot connect to Memcached.');
+            $this->markTestSkipped('The ' . __CLASS__ .' cannot connect to memcache');
         }
     }
 
-    protected function tearDown()
+    public function tearDown()
     {
         if ($this->memcached instanceof Memcached) {
             $this->memcached->flush();
         }
     }
 
-    /**
-     * {@inheritdoc}
-     *
-     * Memcached does not support " ", null byte and very long keys so we remove them from the tests.
-     */
-    public function provideCacheIds()
+    public function testNoExpire()
     {
-        $ids = parent::provideCacheIds();
-        unset($ids[21], $ids[22], $ids[24]);
-
-        return $ids;
+        $cache = $this->_getCacheDriver();
+        $cache->save('noexpire', 'value', 0);
+        sleep(1);
+        $this->assertTrue($cache->contains('noexpire'), 'Memcache provider should support no-expire');
     }
 
-    public function testGetMemcachedReturnsInstanceOfMemcached()
+    public function testLongLifetime()
     {
-        $this->assertInstanceOf('Memcached', $this->_getCacheDriver()->getMemcached());
+        $cache = $this->_getCacheDriver();
+        $cache->save('key', 'value', 30 * 24 * 3600 + 1);
+        $this->assertTrue($cache->contains('key'), 'Memcache provider should support TTL > 30 days');
     }
 
-    /**
-     * {@inheritDoc}
-     */
     protected function _getCacheDriver()
     {
         $driver = new MemcachedCache();

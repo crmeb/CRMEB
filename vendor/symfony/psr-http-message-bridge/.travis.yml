@@ -1,46 +1,69 @@
 language: php
-
 sudo: false
-
 cache:
     directories:
         - $HOME/.composer/cache/files
-
-matrix:
-    include:
-        - php: 5.3
-        - php: 5.4
-        - php: 5.5
-        - php: 5.6
-        - php: 5.3
-          env: deps=low
-        - php: 5.6
-          env: deps=high
-        - php: 7.0
-        - php: hhvm
-    allow_failures:
-        - php: hhvm
-    fast_finish: true
+        - $HOME/symfony-bridge/.phpunit
 
 env:
     global:
-        - deps=no
-        - SYMFONY_DEPRECATIONS_HELPER=weak
+        - PHPUNIT_FLAGS="-v"
+        - SYMFONY_PHPUNIT_DIR="$HOME/symfony-bridge/.phpunit"
+        - DEPENDENCIES="zendframework/zend-diactoros:^1.4.1 http-interop/http-factory-diactoros:^1.0"
+
+matrix:
+    fast_finish: true
+    include:
+          # Minimum supported dependencies with the latest and oldest PHP version
+        - php: 7.2
+          env: COMPOSER_FLAGS="--prefer-stable --prefer-lowest" SYMFONY_DEPRECATIONS_HELPER="weak_vendors"
+        - php: 5.3
+          dist: 'precise'
+          env: COMPOSER_FLAGS="--prefer-stable --prefer-lowest" SYMFONY_DEPRECATIONS_HELPER="weak_vendors" DEPENDENCIES=""
+
+          # Test the latest stable release
+        - php: 5.3
+          dist: 'precise'
+          env: DEPENDENCIES=""
+        - php: 5.4
+          env: DEPENDENCIES="zendframework/zend-diactoros:^1.4.1"
+        - php: 5.5
+          env: DEPENDENCIES="zendframework/zend-diactoros:^1.4.1"
+        - php: 5.6
+          env: DEPENDENCIES="zendframework/zend-diactoros:^1.4.1"
+        - php: 7.0
+        - php: 7.1
+        - php: 7.2
+          env: COVERAGE=true PHPUNIT_FLAGS="-v --coverage-text"
+
+          # Test LTS versions. This makes sure we do not use Symfony packages with version greater
+          # than 2 or 3 respectively.
+        - php: 7.2
+          env: DEPENDENCIES="$DEPENDENCIES symfony/lts:^2 symfony/force-lowest:~2.8.0"
+        - php: 7.2
+          env: DEPENDENCIES="$DEPENDENCIES symfony/lts:^3 symfony/force-lowest:~3.4.0"
+
+          # Latest commit to master
+        - php: 7.2
+          env: STABILITY="dev"
+
+    allow_failures:
+          # Dev-master is allowed to fail.
+        - env: STABILITY="dev"
 
 before_install:
-    - if [[ "$TRAVIS_PHP_VERSION" != "nightly" ]] && [[ "$TRAVIS_PHP_VERSION" != "hhvm" ]]; then phpenv config-rm xdebug.ini; fi;
-    - composer self-update
-    - if [[ "$TRAVIS_PHP_VERSION" != "nightly" ]] && [[ "$TRAVIS_PHP_VERSION" != "hhvm" ]] && [ $(php -r "echo PHP_MINOR_VERSION;") -le 4 ]; then echo "extension = apc.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini; fi;
-    - if [[ "$TRAVIS_PHP_VERSION" != "nightly" ]] && [[ "$TRAVIS_PHP_VERSION" != "hhvm" ]]; then php -i; fi;
-    # Set the COMPOSER_ROOT_VERSION to the right version according to the branch being built
-    - if [ "$TRAVIS_BRANCH" = "master" ]; then export COMPOSER_ROOT_VERSION=dev-master; else export COMPOSER_ROOT_VERSION="$TRAVIS_BRANCH".x-dev; fi;
+    - if [[ $COVERAGE != true ]]; then phpenv config-rm xdebug.ini || true; fi
+    - if ! [ -z "$STABILITY" ]; then composer config minimum-stability ${STABILITY}; fi;
+    - if ! [ -v "$DEPENDENCIES" ]; then composer require --no-update ${DEPENDENCIES}; fi;
 
 install:
-    - if [ "$TRAVIS_PHP_VERSION" != "5.3" ]; then composer require --no-update zendframework/zend-diactoros; fi;
-    - if [ "$deps" = "no" ]; then export SYMFONY_DEPRECATIONS_HELPER=strict; fi;
-    - if [ "$deps" = "no" ]; then composer --prefer-source install; fi;
-    - if [ "$deps" = "high" ]; then composer --prefer-source update; fi;
-    - if [ "$deps" = "low" ]; then composer --prefer-source --prefer-lowest --prefer-stable update; fi;
+    # To be removed when this issue will be resolved: https://github.com/composer/composer/issues/5355
+    - if [[ "$COMPOSER_FLAGS" == *"--prefer-lowest"* ]]; then composer update --prefer-dist --no-interaction --prefer-stable --quiet; fi
+    - composer update ${COMPOSER_FLAGS} --prefer-dist --no-interaction
+    - ./vendor/bin/simple-phpunit install
 
 script:
-    - phpunit
+    - composer validate --strict --no-check-lock
+    # simple-phpunit is the PHPUnit wrapper provided by the PHPUnit Bridge component and
+    # it helps with testing legacy code and deprecations (composer require symfony/phpunit-bridge)
+    - ./vendor/bin/simple-phpunit $PHPUNIT_FLAGS

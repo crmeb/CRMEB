@@ -23,22 +23,96 @@ class FileCacheTest extends \Doctrine\Tests\DoctrineTestCase
         );
     }
 
-    public function testFilenameShouldCreateThePathWithOneSubDirectory()
+    public function getProviderFileName()
+    {
+         return array(
+            //The characters :\/<>"*?| are not valid in Windows filenames.
+            array('key:1', 'key-1'),
+            array('key\2', 'key-2'),
+            array('key/3', 'key-3'),
+            array('key<4', 'key-4'),
+            array('key>5', 'key-5'),
+            array('key"6', 'key-6'),
+            array('key*7', 'key-7'),
+            array('key?8', 'key-8'),
+            array('key|9', 'key-9'),
+            array('key[10]', 'key[10]'),
+            array('keyä11', 'key--11'),
+            array('../key12', '---key12'),
+            array('key-13', 'key__13'),
+        );
+    }
+
+    /**
+     * @dataProvider getProviderFileName
+     */
+    public function testInvalidFilename($key, $expected)
+    {
+        $cache  = $this->driver;
+        $method = new \ReflectionMethod($cache, 'getFilename');
+
+        $method->setAccessible(true);
+
+        $value  = $method->invoke($cache, $key);
+        $actual = pathinfo($value, PATHINFO_FILENAME);
+
+        $this->assertEquals($expected, $actual);
+    }
+
+    public function testFilenameCollision()
+    {
+        $data = array(
+            'key:0' => 'key-0',
+            'key\0' => 'key-0',
+            'key/0' => 'key-0',
+            'key<0' => 'key-0',
+            'key>0' => 'key-0',
+            'key"0' => 'key-0',
+            'key*0' => 'key-0',
+            'key?0' => 'key-0',
+            'key|0' => 'key-0',
+            'key-0' => 'key__0',
+            'keyä0' => 'key--0',
+        );
+
+        $paths  = array();
+        $cache  = $this->driver;
+        $method = new \ReflectionMethod($cache, 'getFilename');
+
+        $method->setAccessible(true);
+
+        foreach ($data as $key => $expected) {
+            $path   = $method->invoke($cache, $key);
+            $actual = pathinfo($path, PATHINFO_FILENAME);
+
+            $this->assertNotContains($path, $paths);
+            $this->assertEquals($expected, $actual);
+
+            $paths[] = $path;
+        }
+    }
+
+    public function testFilenameShouldCreateThePathWithFourSubDirectories()
     {
         $cache          = $this->driver;
         $method         = new \ReflectionMethod($cache, 'getFilename');
         $key            = 'item-key';
         $expectedDir    = array(
-            '84',
+            '84', 'e0', 'e2', 'e8', '93', 'fe', 'bb', '73', '7a', '0f', 'ee',
+            '0c', '89', 'd5', '3f', '4b', 'b7', 'fc', 'b4', '4c', '57', 'cd',
+            'f3', 'd3', '2c', 'e7', '36', '3f', '5d', '59', '77', '60'
         );
         $expectedDir    = implode(DIRECTORY_SEPARATOR, $expectedDir);
 
         $method->setAccessible(true);
 
         $path       = $method->invoke($cache, $key);
+        $filename   = pathinfo($path, PATHINFO_FILENAME);
         $dirname    = pathinfo($path, PATHINFO_DIRNAME);
 
+        $this->assertEquals('item__key', $filename);
         $this->assertEquals(DIRECTORY_SEPARATOR . $expectedDir, $dirname);
+        $this->assertEquals(DIRECTORY_SEPARATOR . $expectedDir . DIRECTORY_SEPARATOR . 'item__key', $path);
     }
 
     public function testFileExtensionCorrectlyEscaped()
@@ -83,186 +157,5 @@ class FileCacheTest extends \Doctrine\Tests\DoctrineTestCase
         $stats = $doGetStats->invoke($driver);
 
         $this->assertGreaterThan(0, $stats[Cache::STATS_MEMORY_USAGE]);
-    }
-
-    public function testNonIntUmaskThrowsInvalidArgumentException()
-    {
-        $this->setExpectedException('InvalidArgumentException');
-
-        $this->getMock(
-            'Doctrine\Common\Cache\FileCache',
-            array('doFetch', 'doContains', 'doSave'),
-            array('', '', 'invalid')
-        );
-    }
-
-    public function testGetDirectoryReturnsRealpathDirectoryString()
-    {
-        $directory = __DIR__ . '/../';
-        $driver = $this->getMock(
-            'Doctrine\Common\Cache\FileCache',
-            array('doFetch', 'doContains', 'doSave'),
-            array($directory)
-        );
-
-        $doGetDirectory = new \ReflectionMethod($driver, 'getDirectory');
-
-        $actualDirectory = $doGetDirectory->invoke($driver);
-        $expectedDirectory = realpath($directory);
-
-        $this->assertEquals($expectedDirectory, $actualDirectory);
-    }
-
-    public function testGetExtensionReturnsExtensionString()
-    {
-        $directory = __DIR__ . '/../';
-        $extension = DIRECTORY_SEPARATOR . basename(__FILE__);
-        $driver = $this->getMock(
-            'Doctrine\Common\Cache\FileCache',
-            array('doFetch', 'doContains', 'doSave'),
-            array($directory, $extension)
-        );
-
-        $doGetExtension = new \ReflectionMethod($driver, 'getExtension');
-
-        $actualExtension = $doGetExtension->invoke($driver);
-
-        $this->assertEquals($extension, $actualExtension);
-    }
-
-    const WIN_MAX_PATH_LEN = 258;
-
-    public static function getBasePathForWindowsPathLengthTests($pathLength)
-    {
-        // Not using __DIR__ because it can get screwed up when xdebug debugger is attached.
-        $basePath = realpath(sys_get_temp_dir()) . '/' . uniqid('doctrine-cache', true);
-
-        /** @noinspection MkdirRaceConditionInspection */
-        @mkdir($basePath);
-
-        $basePath = realpath($basePath);
-
-        // Test whether the desired path length is odd or even.
-        $desiredPathLengthIsOdd = ($pathLength % 2) == 1;
-
-        // If the cache key is not too long, the filecache codepath will add
-        // a slash and bin2hex($key). The length of the added portion will be an odd number.
-        // len(desired) = len(base path) + len(slash . bin2hex($key))
-        //          odd = even           + odd
-        //         even = odd            + odd
-        $basePathLengthShouldBeOdd = !$desiredPathLengthIsOdd;
-
-        $basePathLengthIsOdd = (strlen($basePath) % 2) == 1;
-
-        // If the base path needs to be odd or even where it is not, we add an odd number of
-        // characters as a pad. In this case, we're adding '\aa' (or '/aa' depending on platform)
-        // This is all to make it so that the key we're testing would result in
-        // a path that is exactly the length we want to test IF the path length limit
-        // were not in place in FileCache.
-        if ($basePathLengthIsOdd != $basePathLengthShouldBeOdd) {
-            $basePath .= DIRECTORY_SEPARATOR . "aa";
-        }
-
-        return $basePath;
-    }
-
-    /**
-     * @param int    $length
-     * @param string $basePath
-     *
-     * @return array
-     */
-    public static function getKeyAndPathFittingLength($length, $basePath)
-    {
-        $baseDirLength = strlen($basePath);
-        $extensionLength = strlen('.doctrine.cache');
-        $directoryLength = strlen(DIRECTORY_SEPARATOR . 'aa' . DIRECTORY_SEPARATOR);
-        $keyLength = $length - ($baseDirLength + $extensionLength + $directoryLength); // - 1 because of slash
-
-        $key = str_repeat('a', floor($keyLength / 2));
-
-        $keyHash = hash('sha256', $key);
-
-        $keyPath = $basePath
-            . DIRECTORY_SEPARATOR
-            . substr($keyHash, 0, 2)
-            . DIRECTORY_SEPARATOR
-            . bin2hex($key)
-            . '.doctrine.cache';
-
-        $hashedKeyPath = $basePath
-            . DIRECTORY_SEPARATOR
-            . substr($keyHash, 0, 2)
-            . DIRECTORY_SEPARATOR
-            . '_' . $keyHash
-            . '.doctrine.cache';
-
-        return array($key, $keyPath, $hashedKeyPath);
-    }
-
-    public function getPathLengthsToTest()
-    {
-        // Windows officially supports 260 bytes including null terminator
-        // 259 characters is too large due to PHP bug (https://bugs.php.net/bug.php?id=70943)
-        // 260 characters is too large - null terminator is included in allowable length
-        return array(
-            array(257, false),
-            array(258, false),
-            array(259, true),
-            array(260, true)
-        );
-    }
-
-    /**
-     * @runInSeparateProcess
-     * @dataProvider getPathLengthsToTest
-     *
-     * @covers \Doctrine\Common\Cache\FileCache::getFilename
-     *
-     * @param int  $length
-     * @param bool $pathShouldBeHashed
-     */
-    public function testWindowsPathLengthLimitationsAreCorrectlyRespected($length, $pathShouldBeHashed)
-    {
-        if (! defined('PHP_WINDOWS_VERSION_BUILD')) {
-            define('PHP_WINDOWS_VERSION_BUILD', 'Yes, this is the "usual suspect", with the usual limitations');
-        }
-
-        $basePath = self::getBasePathForWindowsPathLengthTests($length);
-
-        $fileCache = $this->getMockForAbstractClass(
-            'Doctrine\Common\Cache\FileCache',
-            array($basePath, '.doctrine.cache')
-        );
-
-        list($key, $keyPath, $hashedKeyPath) = self::getKeyAndPathFittingLength($length, $basePath);
-
-        $getFileName = new \ReflectionMethod($fileCache, 'getFilename');
-
-        $getFileName->setAccessible(true);
-
-        $this->assertEquals(
-            $length,
-            strlen($keyPath),
-            sprintf('Path expected to be %d characters long is %d characters long', $length, strlen($keyPath))
-        );
-
-        if ($pathShouldBeHashed) {
-            $keyPath = $hashedKeyPath;
-        }
-
-        if ($pathShouldBeHashed) {
-            $this->assertSame(
-                $hashedKeyPath,
-                $getFileName->invoke($fileCache, $key),
-                'Keys should be hashed correctly if they are over the limit.'
-            );
-        } else {
-            $this->assertSame(
-                $keyPath,
-                $getFileName->invoke($fileCache, $key),
-                'Keys below limit of the allowed length are used directly, unhashed'
-            );
-        }
     }
 }

@@ -59,7 +59,7 @@ interface Cache
      *
      * @param string $id The cache id of the entry to check for.
      *
-     * @return bool TRUE if a cache entry exists for the given cache id, FALSE otherwise.
+     * @return boolean TRUE if a cache entry exists for the given cache id, FALSE otherwise.
      */
     public function contains($id);
 
@@ -74,7 +74,7 @@ interface Cache
      *                         If zero (the default), the entry never expires (although it may be deleted from the cache
      *                         to make place for other entries).
      *
-     * @return bool TRUE if the entry was successfully stored in the cache, FALSE otherwise.
+     * @return boolean TRUE if the entry was successfully stored in the cache, FALSE otherwise.
      */
     public function save($id, $data, $lifeTime = 0);
 
@@ -83,8 +83,8 @@ interface Cache
      *
      * @param string $id The cache id.
      *
-     * @return bool TRUE if the cache entry was successfully deleted, FALSE otherwise.
-     *              Deleting a non-existing entry is considered successful.
+     * @return boolean TRUE if the cache entry was successfully deleted, FALSE otherwise.
+     *                 Deleting a non-existing entry is considered successful.
      */
     public function delete($id);
 

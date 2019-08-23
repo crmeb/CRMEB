@@ -55,7 +55,7 @@ class Guard
     const DEVICE_TEXT_MSG = 512;
     const FILE_MSG = 1024;
     const EVENT_MSG = 1048576;
-    const ALL_MSG = 1049598;
+    const ALL_MSG = 1050622;
 
     /**
      * @var Request
@@ -150,7 +150,6 @@ class Guard
         $this->validate($this->token);
 
         if ($str = $this->request->get('echostr')) {
-            ob_clean();//iis 环境接口token失败
             Log::debug("Output 'echostr' is '$str'.");
 
             return new Response($str);
@@ -363,6 +362,13 @@ class Guard
         $message = $this->getMessage();
         $response = $this->handleMessage($message);
 
+        $messageType = isset($message['msg_type']) ? $message['msg_type'] : $message['MsgType'];
+
+        if ('device_text' === $messageType) {
+            $message['FromUserName'] = '';
+            $message['ToUserName'] = '';
+        }
+
         return [
             'to' => $message['FromUserName'],
             'from' => $message['ToUserName'],
@@ -391,7 +397,9 @@ class Guard
 
         $message = new Collection($message);
 
-        $type = $this->messageTypeMapping[$message->get('MsgType')];
+        $messageType = $message->get('msg_type', $message->get('MsgType'));
+
+        $type = $this->messageTypeMapping[$messageType];
 
         $response = null;
 

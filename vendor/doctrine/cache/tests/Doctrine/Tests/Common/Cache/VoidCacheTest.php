@@ -48,11 +48,4 @@ class VoidCacheTest extends \PHPUnit_Framework_TestCase
 
         $this->assertNull($cache->getStats());
     }
-
-    public function testShouldAlwaysReturnTrueOnFlush()
-    {
-        $cache = new VoidCache();
-
-        $this->assertTrue($cache->flushAll());
-    }
 }

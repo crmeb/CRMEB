@@ -5,51 +5,46 @@ namespace Doctrine\Tests\Common\Cache;
 use Doctrine\Common\Cache\MemcacheCache;
 use Memcache;
 
-/**
- * @requires extension memcache
- */
 class MemcacheCacheTest extends CacheTest
 {
     private $memcache;
 
-    protected function setUp()
+    public function setUp()
     {
+        if ( ! extension_loaded('memcache')) {
+            $this->markTestSkipped('The ' . __CLASS__ .' requires the use of memcache');
+        }
+
         $this->memcache = new Memcache();
 
         if (@$this->memcache->connect('localhost', 11211) === false) {
             unset($this->memcache);
-            $this->markTestSkipped('Cannot connect to Memcache.');
+            $this->markTestSkipped('The ' . __CLASS__ .' cannot connect to memcache');
         }
     }
 
-    protected function tearDown()
+    public function tearDown()
     {
         if ($this->memcache instanceof Memcache) {
             $this->memcache->flush();
         }
     }
 
-    /**
-     * {@inheritdoc}
-     *
-     * Memcache does not support " " and null byte as key so we remove them from the tests.
-     */
-    public function provideCacheIds()
+    public function testNoExpire()
     {
-        $ids = parent::provideCacheIds();
-        unset($ids[21], $ids[22]);
-
-        return $ids;
+        $cache = $this->_getCacheDriver();
+        $cache->save('noexpire', 'value', 0);
+        sleep(1);
+        $this->assertTrue($cache->contains('noexpire'), 'Memcache provider should support no-expire');
     }
 
-    public function testGetMemcacheReturnsInstanceOfMemcache()
+    public function testLongLifetime()
     {
-        $this->assertInstanceOf('Memcache', $this->_getCacheDriver()->getMemcache());
+        $cache = $this->_getCacheDriver();
+        $cache->save('key', 'value', 30 * 24 * 3600 + 1);
+        $this->assertTrue($cache->contains('key'), 'Memcache provider should support TTL > 30 days');
     }
 
-    /**
-     * {@inheritDoc}
-     */
     protected function _getCacheDriver()
     {
         $driver = new MemcacheCache();

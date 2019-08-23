@@ -10,17 +10,88 @@ use Doctrine\Common\Cache\PhpFileCache;
  */
 class PhpFileCacheTest extends BaseFileCacheTest
 {
-    public function provideDataToCache()
+    /**
+     * {@inheritDoc}
+     *
+     * @dataProvider provideDataToCache
+     */
+    public function testSetContainsFetchDelete($value)
     {
-        $data = parent::provideDataToCache();
-
-        unset($data['object'], $data['object_recursive']); // PhpFileCache only allows objects that implement __set_state() and fully support var_export()
-
-        if (PHP_VERSION_ID < 70002) {
-            unset($data['float_zero']); // var_export exports float(0) as int(0): https://bugs.php.net/bug.php?id=66179
+        if (is_object($value) && ! method_exists($value, '__set_state')) {
+            $this->markTestSkipped('PhpFileCache only allows objects that implement __set_state() and fully support var_export()');
         }
 
-        return $data;
+        if (0.0 === $value) {
+            $cache = $this->_getCacheDriver();
+
+            $this->assertTrue($cache->save('key', $value));
+            $this->assertTrue($cache->contains('key'));
+            $this->assertSame(0, $cache->fetch('key'), 'var_export exports float(0) as int(0) so we assert against 0 as integer');
+
+            $this->assertTrue($cache->delete('key'));
+            $this->assertFalse($cache->contains('key'));
+            $this->assertFalse($cache->fetch('key'));
+        } else {
+            parent::testSetContainsFetchDelete($value);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @dataProvider provideDataToCache
+     */
+    public function testUpdateExistingEntry($value)
+    {
+        if (is_object($value) && ! method_exists($value, '__set_state')) {
+            $this->markTestSkipped('PhpFileCache only allows objects that implement __set_state() and fully support var_export()');
+        }
+
+        if (0.0 === $value) {
+            $cache = $this->_getCacheDriver();
+
+            $this->assertTrue($cache->save('key', 'old-value'));
+            $this->assertTrue($cache->contains('key'));
+
+            $this->assertTrue($cache->save('key', $value));
+            $this->assertTrue($cache->contains('key'));
+            $this->assertSame(0, $cache->fetch('key'), 'var_export exports float(0) as int(0) so we assert against 0 as integer');
+        } else {
+            parent::testUpdateExistingEntry($value);
+        }
+    }
+
+    public function testLifetime()
+    {
+        $cache = $this->_getCacheDriver();
+
+        // Test save
+        $cache->save('test_key', 'testing this out', 10);
+
+        // Test contains to test that save() worked
+        $this->assertTrue($cache->contains('test_key'));
+
+        // Test fetch
+        $this->assertEquals('testing this out', $cache->fetch('test_key'));
+
+        // access private methods
+        $getFilename        = new \ReflectionMethod($cache, 'getFilename');
+        $getNamespacedId    = new \ReflectionMethod($cache, 'getNamespacedId');
+
+        $getFilename->setAccessible(true);
+        $getNamespacedId->setAccessible(true);
+
+        $id     = $getNamespacedId->invoke($cache, 'test_key');
+        $path   = $getFilename->invoke($cache, $id);
+        $value  = include $path;
+
+        // update lifetime
+        $value['lifetime'] = $value['lifetime'] - 20;
+        file_put_contents($path, '<?php return unserialize(' . var_export(serialize($value), true) . ');');
+
+        // test expired data
+        $this->assertFalse($cache->contains('test_key'));
+        $this->assertFalse($cache->fetch('test_key'));
     }
 
     public function testImplementsSetState()
@@ -63,6 +134,16 @@ class PhpFileCacheTest extends BaseFileCacheTest
         $this->assertNull($stats[Cache::STATS_UPTIME]);
         $this->assertEquals(0, $stats[Cache::STATS_MEMORY_USAGE]);
         $this->assertGreaterThan(0, $stats[Cache::STATS_MEMORY_AVAILABLE]);
+    }
+
+    public function testCachedObject()
+    {
+        $this->markTestSkipped("PhpFileCache cannot handle objects that don't implement __set_state.");
+    }
+
+    public function testFetchMultipleObjects()
+    {
+        $this->markTestSkipped("PhpFileCache cannot handle objects that don't implement __set_state.");
     }
 
     protected function _getCacheDriver()
