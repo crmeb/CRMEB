@@ -67,6 +67,18 @@ class SystemConfig extends ModelBasic {
         if(empty($menu) || !($config_one = self::get(['menu_name'=>$menu]))) return false;
         return json_decode($config_one['value'],true);
     }
+    /**
+     * 获取单个参数配置
+     * @param $menu
+     * @return bool|mixed
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\exception\DbException
+     */
+    public static function getConfigValue($menu){
+        if(empty($menu) || !($config_one = self::where('menu_name', $menu)->find())) return false;
+        return json_decode($config_one['value'],true);
+    }
 
     /**
      * 获得多个参数
@@ -157,7 +169,7 @@ class SystemConfig extends ModelBasic {
      * */
     public static function getAll($id){
         $where['config_tab_id'] = $id;
-//        $where['status'] = 1;
+        $where['status'] = 1;
         return self::where($where)->order('sort desc,id asc')->select();
     }
 

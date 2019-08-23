@@ -31,6 +31,9 @@ Page({
     attrValue: '',
   },
 
+  onLoadFun:function(){
+    this.getSeckillDetail();
+  },
   /**
    * 生命周期函数--监听页面加载
    */
@@ -152,7 +155,8 @@ Page({
         bargainId: 0,
         combinationId: 0,
         cartNum: that.data.cart_num,
-        uniqueId: productSelect !== undefined ? productSelect.unique : ''
+        uniqueId: productSelect !== undefined ? productSelect.unique : '',
+        is_new:1
       }
     }), function (res) {
       that.setData({ isOpen: false });
@@ -163,7 +167,7 @@ Page({
    * 生命周期函数--监听页面显示
    */
   onShow: function () {
-    this.getSeckillDetail();
+    if(this.data.isClone && app.globalData.isLog) this.getSeckillDetail();
   },
   getSeckillDetail: function () {
     var that = this;
@@ -177,7 +181,7 @@ Page({
       });
       that.setProductSelect();
       app.globalData.openPages = '/pages/activity/goods_seckill_details/index?id=' + that.data.id + '&time=' + that.data.time + '&scene=' + that.data.storeInfo.uid;
-      wxParse.wxParse('description', 'html', that.data.storeInfo.description, that, 0);
+      wxParse.wxParse('description', 'html', that.data.storeInfo.description || '', that, 0);
       wxh.time(that.data.time, that);
     }, function (res) {
       wx.showToast({
@@ -212,7 +216,7 @@ Page({
    * 生命周期函数--监听页面隐藏
    */
   onHide: function () {
-
+    this.setData({isClone:true});
   },
 
   /**

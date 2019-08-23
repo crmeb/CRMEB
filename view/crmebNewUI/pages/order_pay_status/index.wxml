@@ -29,9 +29,17 @@
       </view>
    </view>
    <!--失败时： 重新购买 -->
-   <navigator class='returnBnt bg-color' hover-class='none' url='/pages/order_details/index?order_id={{orderId}}' wx:if="{{status==0}}">查看订单</navigator>
-   <navigator class='returnBnt bg-color' wx:if="{{order_pay_info.paid==0 && status==1}}" url='/pages/order_details/index?order_id={{orderId}}'>重新购买</navigator>
-   <navigator class='returnBnt bg-color' wx:if="{{order_pay_info.paid==0 && status==2}}" url='/pages/order_details/index?order_id={{orderId}}'>重新支付</navigator>
-   <navigator hover-class='none' url='/pages/index/index' open-type='switchTab' class='returnBnt cart-color'>返回首页</navigator>
+   <form bindsubmit="goOrderDetails" report-submit='true' wx:if="{{status==0}}">
+      <button formType="submit" class='returnBnt bg-color' hover-class='none'>查看订单</button>
+   </form>
+   <form bindsubmit="goOrderDetails" report-submit='true' wx:if="{{order_pay_info.paid==0 && status==1}}">
+      <button class='returnBnt bg-color' formType="submit" hover-class='none'>重新购买</button>
+    </form>
+    <form bindsubmit="goOrderDetails" report-submit='true' wx:if="{{order_pay_info.paid==0 && status==2}}">
+      <button class='returnBnt bg-color' formType="submit" hover-class='none'>重新支付</button>
+   </form>
+   <form bindsubmit="goIndex" report-submit='true'>
+    <button  class='returnBnt cart-color' formType="submit" hover-class='none'>返回首页</button>
+   </form>
 </view>
 <authorize bind:onLoadFun='onLoadFun'></authorize>

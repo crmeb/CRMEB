@@ -38,7 +38,7 @@ class AuthController extends WapBasic
         }catch (\Exception $e){
             Cookie::set('is_login',0);
             $url=$this->request->url(true);
-            return $this->redirect(Url::build('Login/index',['ref'=>base64_encode(htmlspecialchars($url))]));
+            return $this->redirect(Url::build('Login/index').'?ref='.base64_encode(htmlspecialchars($url)));
         }
         $this->userInfo = User::getUserInfo($uid);
         if(!$this->userInfo || !isset($this->userInfo['uid'])) return $this->failed('读取用户信息失败!');

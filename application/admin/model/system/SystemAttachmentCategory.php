@@ -31,18 +31,25 @@ class SystemAttachmentCategory extends ModelBasic
         $data['pid'] = $pid;
         return self::create($data);
     }
-    /**
-     * 获取分类图
-     * */
-    public static function getAll(){
+    public static function getAll($name){
         $model = new self;
-        return self::tidyMenuTier($model->select(),0);
+        if($name) $model = $model->where('name','LIKE',"%$name%");
+        $navList = $model->select();
+        $navList = count($navList) ? $navList->toArray() : [];
+        $navPidList = [];
+        if($name) {
+            foreach ($navList as $value) {
+                if ($value['pid']) $navPidList [] = self::where('id', $value['pid'])->find();
+            }
+        }
+        return self::tidyMenuTier(array_merge($navList,$navPidList),0);
     }
+
     public static function tidyMenuTier($menusList,$pid = 0,$navList = [])
     {
 
         foreach ($menusList as $k=>$menu){
-            $menu = $menu->getData();
+            $menu = is_object($menu) ? $menu->getData() : $menu;
             if($menu['pid'] == $pid){
                 unset($menusList[$k]);
                 $menu['child'] = self::tidyMenuTier($menusList,$menu['id']);

@@ -72,6 +72,7 @@
                         {switch name='type'}
                             {case value="1"}
                                 <button class="layui-btn layui-btn-sm" onclick="$eb.createModalFrame(this.innerText,'{:Url('create')}',{h:700,w:1100})">添加产品</button>
+                                <button class="layui-btn layui-btn-sm" onclick="$eb.createModalFrame(this.innerText,'{:Url('store.copy_taobao/index')}',{h:700,w:1100});">复制淘宝、天猫、1688、京东</button>
                             {/case}
                             {case value="2"}
                                 <button class="layui-btn layui-btn-sm" data-type="show">批量上架</button>
@@ -107,10 +108,10 @@
                     </script>
                     <!--操作-->
                     <script type="text/html" id="act">
-                        <button type="button" class="layui-btn layui-btn-xs btn-success" onclick="$eb.createModalFrame('{{d.store_name}}-属性','{:Url('attr')}?id={{d.id}}',{h:700,w:800})">
+                        <button type="button" class="layui-btn layui-btn-xs btn-success" lay-event='attr' >
                             属性
                         </button>
-                        <button type="button" class="layui-btn layui-btn-xs layui-btn-normal" onclick="$eb.createModalFrame('{{d.store_name}}-编辑','{:Url('edit')}?id={{d.id}}',{h:700,w:1100})">
+                        <button type="button" class="layui-btn layui-btn-xs layui-btn-normal" lay-event='edit'>
                             编辑
                         </button>
                         <button type="button" class="layui-btn layui-btn-xs" onclick="dropdown(this)">操作 <span class="caret"></span></button>
@@ -131,11 +132,19 @@
                                 <a href="javascript:void(0);" onclick="$eb.createModalFrame(this.innerText,'{:Url('ump.store_combination/combination')}?id={{d.id}}')">
                                     <i class="fa fa-hand-lizard-o"></i> 开启拼团</a>
                             </li>
+                            {{# if(d.is_del){ }}
                             <li>
                                 <a href="javascript:void(0);" lay-event='delstor'>
-                                    <i class="fa fa-trash"></i> 删除
+                                    <i class="fa fa-trash"></i> 恢复产品
                                 </a>
                             </li>
+                            {{# }else{ }}
+                            <li>
+                                <a href="javascript:void(0);" lay-event='delstor'>
+                                    <i class="fa fa-trash"></i> 移到回收站
+                                </a>
+                            </li>
+                            {{# } }}
                             <li>
                                 <a href="{:Url('store.storeProductReply/index')}?product_id={{d.id}}">
                                     <i class="fa fa-warning"></i> 评论查看
@@ -206,12 +215,8 @@
     })
     //excel下载
     layList.search('export',function(where){
-        location.href=layList.U({c:'store.store_product',a:'product_ist',q:{
-                cate_id:where.cate_id,
-                store_name:where.store_name,
-                type:where.type,
-                excel:1
-            }});
+        where.excel = 1;
+        location.href=layList.U({c:'store.store_product',a:'product_ist',q:where});
     })
     //下拉框
     $(document).click(function (e) {
@@ -279,6 +284,8 @@
         switch (event) {
             case 'delstor':
                 var url=layList.U({c:'store.store_product',a:'delete',q:{id:data.id}});
+                if(data.is_del) var code = {title:"操作提示",text:"确定恢复产品操作吗？",type:'info',confirm:'是的，恢复该产品'};
+                else var code = {title:"操作提示",text:"确定将该产品移入回收站吗？",type:'info',confirm:'是的，移入回收站'};
                 $eb.$swal('delete',function(){
                     $eb.axios.get(url).then(function(res){
                         if(res.status == 200 && res.data.code == 200) {
@@ -289,10 +296,16 @@
                     }).catch(function(err){
                         $eb.$swal('error',err);
                     });
-                })
+                },code)
                 break;
             case 'open_image':
                 $eb.openImage(data.image);
+                break;
+            case 'edit':
+                $eb.createModalFrame(data.store_name+'-编辑',layList.U({a:'edit',q:{id:data.id}}),{h:720,w:1100});
+                break;
+            case 'attr':
+                $eb.createModalFrame(data.store_name+'-属性',layList.U({a:'attr',q:{id:data.id}}),{h:600,w:800})
                 break;
         }
     })

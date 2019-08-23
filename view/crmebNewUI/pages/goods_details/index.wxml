@@ -57,8 +57,12 @@
           <view>购物车</view>
         </navigator>
         <view class='bnt acea-row'>
-           <view class='joinCart' bindtap='joinCart'>加入购物车</view>
-           <view class='buy' bindtap='goBuy'>立即购买</view>
+          <form bindsubmit="joinCart" report-submit='true'>
+             <button class='joinCart bnts' formType="submit">加入购物车</button>
+          </form>
+          <form bindsubmit="goBuy" report-submit='true'>
+             <button class='buy bnts' formType="submit">立即购买</button>
+          </form>
         </view>
       </view>  
       <shareRedPackets sharePacket="{{sharePacket}}" bind:listenerActionSheet="listenerActionSheet"></shareRedPackets>

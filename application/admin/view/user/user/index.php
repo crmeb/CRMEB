@@ -165,6 +165,23 @@
                                 <input type="text" class="layui-input time-w" name="user_time" lay-verify="user_time"  id="user_time" placeholder=" - ">
                             </div>
                         </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">会员等级：</label>
+                            <div class="layui-input-inline">
+                                <select name="level_id" lay-verify="level_id">
+                                    <option value="">全部</option>
+                                    {volist name='level_list' id='val'}
+                                    <option value="{$val.id}">{$val.name}</option>
+                                    {/volist}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">生日：</label>
+                            <div class="layui-input-inline">
+                                <input type="text" class="layui-input time-w" name="birthday" lay-verify="birthday"  id="birthday" placeholder=" - ">
+                            </div>
+                        </div>
                     </div>
                     <div class="layui-form-item">
                         <label class="layui-form-label">
@@ -188,7 +205,7 @@
                         <button class="layui-btn layui-btn-sm layui-btn-normal" type="button" data-type="set_grant"><i class="fa fa-check-circle-o"></i>发送优惠券</button>
                         <button class="layui-btn layui-btn-sm layui-btn-normal" type="button" data-type="set_custom"><i class="fa fa-check-circle-o"></i>发送客服图文消息</button>
 <!--                        <button class="layui-btn layui-btn-sm layui-btn-normal" type="button" data-type="set_template"><i class="fa fa-check-circle-o"></i>发送模板消息</button>-->
-                        <button class="layui-btn layui-btn-sm layui-btn-normal" type="button" data-type="set_info"><i class="fa fa-check-circle-o"></i>发送站内消息</button>
+<!--                        <button class="layui-btn layui-btn-sm layui-btn-normal" type="button" data-type="set_info"><i class="fa fa-check-circle-o"></i>发送站内消息</button>-->
                         <button class="layui-btn layui-btn-sm layui-btn-normal" type="button" data-type="refresh"><i class="layui-icon layui-icon-refresh" ></i>刷新</button>
                     </div>
                     <table class="layui-hide" id="userList" lay-filter="userList"></table>
@@ -198,12 +215,36 @@
                         <p style="color:#dab176">{{d.vip_name}}</p>
                         {{# } }}
                     </script>
+                    <script type="text/html" id="data_time">
+                        <p>首次：{{d.add_time}}</p>
+                        <p>最近：{{d.last_time}}</p>
+                    </script>
                     <script type="text/html" id="checkboxstatus">
                         <input type='checkbox' name='status' lay-skin='switch' value="{{d.uid}}" lay-filter='status' lay-text='正常|禁止'  {{ d.status == 1 ? 'checked' : '' }}>
                     </script>
                     <script type="text/html" id="barDemo">
                         <button type="button" class="layui-btn layui-btn-xs" lay-event="edit"><i class="layui-icon layui-icon-edit"></i>编辑</button>
-                        <button type="button" class="layui-btn layui-btn-xs" lay-event="see"><i class="layui-icon layui-icon-edit"></i>详情</button>
+                        <button type="button" class="layui-btn layui-btn-xs" onclick="dropdown(this)">操作 <span class="caret"></span></button>
+                        <ul class="layui-nav-child layui-anim layui-anim-upbit">
+                            <li>
+                                <a href="javascript:void(0);" lay-event="money">
+                                    <i class="layui-icon layui-icon-edit"></i> 余额积分</a>
+                            </li>
+                            <li>
+                                <a href="javascript:void(0);" lay-event="see">
+                                    <i class="layui-icon layui-icon-edit"></i> 会员详情</a>
+                            </li>
+                            <li>
+                                <a href="javascript:void(0);" lay-event="give_level">
+                                    <i class="fa fa-gift" aria-hidden="true"></i> 赠送会员</a>
+                            </li>
+                            {{# if(d.vip_name){ }}
+                            <li>
+                                <a href="javascript:void(0);" lay-event="del_level">
+                                    <i class="fa fa-eraser" aria-hidden="true"></i> 清除等级</a>
+                            </li>
+                            {{# } }}
+                        </ul>
                     </script>
                 </div>
             </div>
@@ -255,7 +296,7 @@
         return [
                 {type:'checkbox'},
                 {field: 'uid', title: '编号', width:'6%',event:'uid'},
-                {field: 'avatar', title: '头像', event:'open_image', width: '6%', templet: '<p><img class="avatar" style="cursor: pointer" class="open_image" data-image="{{d.avatar}}" src="{{d.avatar}}" alt="{{d.nickname}}"></p>'},
+                {field: 'avatar', title: '头像', event:'open_image', width: '6%', templet: '<p lay-event="open_image"><img class="avatar" style="cursor: pointer" class="open_image" data-image="{{d.avatar}}" src="{{d.avatar}}" alt="{{d.nickname}}"></p>'},
                 {field: 'nickname', title: '姓名',templet:'#nickname'},
                 {field: 'now_money', title: '余额',width:'6%',sort:true,event:'now_money'},
                 {field: 'pay_count', title: '购买次数',align:'center',width:'6%'},
@@ -263,17 +304,17 @@
                 {field: 'integral', title: '积分',width:'6%',sort:true,event:'integral'},
                 {field: 'spread_uid_nickname', title: '推荐人',width:'6%'},
                 {field: 'sex', title: '性别',width:'4%'},
-                {field: 'add_time', title: '首次访问日期',align:'center',width:'12%'},
-                {field: 'last_time', title: '最近访问日期',align:'center',width:'12%'},
+                {field: 'data_time', title: '访问日期',align:'center',width:'12%',templet:'#data_time'},
                 {field: 'status', title: '状态',templet:"#checkboxstatus",width:'6%'},
                 {field: 'user_type', title: '用户类型',width:'6%'},
                 {fixed: 'right', title: '操作', width: '10%', align: 'center', toolbar: '#barDemo'}
-            ];
+        ];
     });
     layList.date('last_time');
     layList.date('add_time');
     layList.date('user_time');
     layList.date('time');
+    layList.date({elem:'#birthday',theme:'#393D49',type:'datetime'});
     //监听并执行 uid 的排序
     layList.sort(function (obj) {
         var layEvent = obj.field;
@@ -291,7 +332,7 @@
         }
     });
     //监听并执行 uid 的排序
-    layList.tool(function (event,data) {
+    layList.tool(function (event,data,obj) {
         var layEvent = event;
         switch (layEvent){
             case 'edit':
@@ -300,9 +341,36 @@
             case 'see':
                 $eb.createModalFrame(data.nickname+'-会员详情',layList.Url({a:'see',p:{uid:data.uid}}));
                 break;
+            case 'del_level':
+                $eb.$swal('delete',function(){
+                    $eb.axios.get(layList.U({a:'del_level',q:{uid:data.uid}})).then(function(res){
+                        if(res.status == 200 && res.data.code == 200) {
+                            $eb.$swal('success',res.data.msg);
+                            obj.update({vip_name:false});
+                            layList.reload();
+                        }else
+                            return Promise.reject(res.data.msg || '删除失败')
+                    }).catch(function(err){
+                        $eb.$swal('error',err);
+                    });
+                },{
+                    title:'您确定要清除【'+data.nickname+'】的会员等级吗？',
+                    text:'清除后无法恢复请谨慎操作',
+                    confirm:'是的我要清除'
+                })
+                break;
+            case 'give_level':
+                $eb.createModalFrame(data.nickname+'-赠送会员',layList.Url({a:'give_level',p:{uid:data.uid}}),{w:500,h:200});
+                break;
+            case 'money':
+                $eb.createModalFrame(data.nickname+'-积分余额修改',layList.Url({a:'edit_other',p:{uid:data.uid}}));
+                break;
+            case 'open_image':
+                $eb.openImage(data.avatar);
+                break;
         }
     });
-//    layList.sort('uid');
+    //layList.sort('uid');
     //监听并执行 now_money 的排序
     // layList.sort('now_money');
     //监听 checkbox 的状态
@@ -391,9 +459,39 @@
             action[type] && action[type]();
         })
     })
-    $(document).on('click',".open_image",function (e) {
-        var image = $(this).data('image');
-        $eb.openImage(image);
+    //下拉框
+    $(document).click(function (e) {
+        $('.layui-nav-child').hide();
     })
+    function dropdown(that){
+        var oEvent = arguments.callee.caller.arguments[0] || event;
+        oEvent.stopPropagation();
+        var offset = $(that).offset();
+        var top=offset.top-$(window).scrollTop();
+        var index = $(that).parents('tr').data('index');
+        $('.layui-nav-child').each(function (key) {
+            if (key != index) {
+                $(this).hide();
+            }
+        })
+        if($(document).height() < top+$(that).next('ul').height()){
+            $(that).next('ul').css({
+                'padding': 10,
+                'top': - ($(that).parent('td').height() / 2 + $(that).height() + $(that).next('ul').height()/2),
+                'left':offset.left-$(that).parents('td').offset().left-20,
+                'min-width': 'inherit',
+                'position': 'absolute'
+            }).toggle();
+        }else{
+            $(that).next('ul').css({
+                'padding': 10,
+                'top':$(that).parent('td').height() / 2 + $(that).height(),
+                'left':offset.left-$(that).parents('td').offset().left-20,
+                'min-width': 'inherit',
+                'position': 'absolute'
+            }).toggle();
+        }
+    }
+
 </script>
 {/block}

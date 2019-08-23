@@ -34,13 +34,13 @@ function attrFormat($arr){
                             //替代变量3
                             $rep3 = explode('_', $h);
                             //替代变量4
-                            $rep4['detail'][$rep3[0]] = $rep3[1];
+                            $rep4['detail'][$rep3[0]] = isset($rep3[1]) ? $rep3[1] : '';
                         }
                         $res[] = $rep4;
                     }
                 }
             }
-            $data = $tmp;
+            $data = isset($tmp) ? $tmp : [];
         }
     }else{
         $dataArr = [];
@@ -102,18 +102,18 @@ function clearfile($path,$ext = '*.log')
     }
     return true;
 }
+
 /**获取当前类方法
  * @param $class
  * @return array
  */
-function get_this_class_methods($class,$array4 = []) {
-    $array1 = get_class_methods($class);
+function get_this_class_methods($class,$unarray = []) {
+    $arrayall = get_class_methods($class);
     if ($parent_class = get_parent_class($class)) {
-        $array2 = get_class_methods($parent_class);
-        $array3 = array_diff($array1, $array2);//去除父级的
+        $arrayparent = get_class_methods($parent_class);
+        $arraynow = array_diff($arrayall, $arrayparent);//去除父级的
     } else {
-        $array3 = $array1;
+        $arraynow = $arrayall;
     }
-    $array5 = array_diff($array3, $array4);//去除无用的
-    return $array5;
+    return array_diff($arraynow, $unarray);//去除无用的
 }

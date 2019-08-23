@@ -37,7 +37,7 @@
                                 <div class="layui-input-inline">
                                     <button class="layui-btn layui-btn-sm layui-btn-normal" lay-submit="search" lay-filter="search">
                                         <i class="layui-icon layui-icon-search"></i>搜索</button>
-                                    <button class="layui-btn layui-btn-primary layui-btn-sm export" type="button">
+                                    <button class="layui-btn layui-btn-primary layui-btn-sm export" type="button" lay-submit="excel" lay-filter="excel">
                                         <i class="fa fa-floppy-o" style="margin-right: 3px;"></i>导出</button>
                                 </div>
                             </div>
@@ -67,15 +67,17 @@
         return [
             {field: 'nickname', title: '昵称/姓名',unresize:true},
             {field: 'sum_number', title: '总佣金金额',sort:true,unresize:true},
-            {field: 'now_money', title: '剩余佣金',unresize:true},
+            {field: 'now_money', title: '账户余额',unresize:true},
+            {field: 'money', title: '剩余佣金',unresize:true},
             {field: 'ex_price', title: '提现佣金',unresize:true},
             {field: 'extract_price', title: '提现到账佣金',unresize:true},
             {fixed: 'right', title: '操作',align:'center',unresize:true,toolbar:'#barDemo'},
         ];
     });
     layList.search('search');
-    $('.export').click(function(){
-        location.href=layList.U({a:'save_export'});
+    layList.search('excel',function (where) {
+        where.excel = 1;
+        location.href=layList.U({a:'get_commission_list',q:where});
     })
 </script>
 {/block}

@@ -59,6 +59,7 @@ class UserLevel extends ModelBasic
             $add_valid_time=$stay+$add_valid_time+time();
             $data['is_forever']=$vipinfo->is_forever;
             $data['valid_time']=$add_valid_time;
+            User::where('uid',$uid)->update(['level'=>$level_id]);
             return self::where(['uid'=>$uid,'level_id'=>$level_id])->update($data);
         }else{
             $data=[
@@ -74,9 +75,12 @@ class UserLevel extends ModelBasic
             if($data['is_forever'])
                 $data['valid_time']=0;
             else
-                $data['valid_time']=$add_valid_time;
+                $data['valid_time']=$add_valid_time+time();
             $data['mark']='尊敬的用户'.$userinfo['nickname'].'在'.date('Y-m-d H:i:s',time()).'成为了'.$vipinfo['name'];
-            return self::set($data);
+            $res=self::set($data);
+            if(!$res) return false;
+            User::where('uid',$uid)->update(['level'=>$level_id]);
+            return $res;
         }
     }
 
@@ -89,11 +93,11 @@ class UserLevel extends ModelBasic
     {
         $model = self::valiWhere();
         if ($grade) $model = $model->where('grade', '<', $grade);
-        $level = $model->where('uid', $uid)->order('grade desc')->field('level_id,is_forever,valid_time,id')->find();
+        $level = $model->where('uid', $uid)->order('grade desc')->field('level_id,is_forever,valid_time,id,status,grade')->find();
         if (!$level) return false;
         if ($level->is_forever) return $level->id;
         //会员已经过期
-        if (time() < $level->valid_time){
+        if (time() > $level->valid_time){
             if($level->status==1){
                 $level->status=0;
                 $level->save();
@@ -111,7 +115,7 @@ class UserLevel extends ModelBasic
      * @return array
      * */
     public static function getUserLevelInfo($id,$keyName=''){
-        $vipinfo=self::valiWhere('a')->where('a.id',$id)->field('l.id,a.add_time,a.discount,a.level_id,l.name,l.money,l.icon,l.is_pay')
+        $vipinfo=self::valiWhere('a')->where('a.id',$id)->field('l.id,a.add_time,l.discount,a.level_id,l.name,l.money,l.icon,l.is_pay,l.grade')
             ->join('__SYSTEM_USER_LEVEL__ l','l.id=a.level_id')->find();
         if($keyName) if(isset($vipinfo[$keyName])) return $vipinfo[$keyName]; else return '';
         return $vipinfo;
@@ -148,8 +152,8 @@ class UserLevel extends ModelBasic
         $res2=true;
         try{
             if($level===false){
-                //没有成为会员的从用户添加的时间开始算起
-                $add_time=$user['add_time'];
+                //没有成为会员的从用户添加的时间开始算起,如果被清理过会员从清理的时间开始算起
+                $add_time=$user['clean_time'] ? $user['clean_time'] :$user['add_time'];
             }else{
                 $add_time=self::getUserLevelInfo($level,'add_time');
             }

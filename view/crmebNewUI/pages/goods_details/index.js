@@ -179,7 +179,8 @@ Page({
         replyChance: res.data.replyChance,
         productAttr: res.data.productAttr,
         productValue: res.data.productValue,
-        ["sharePacket.priceName"]: res.data.priceName
+        ["sharePacket.priceName"]: res.data.priceName,
+        ['parameter.title']: storeInfo.store_name
       });
       that.downloadFilestoreImage();
       that.DefaultSelect();
@@ -219,8 +220,8 @@ Page({
         ["productSelect.store_name"]:storeInfo.store_name,
         ["productSelect.image"]: storeInfo.image,
         ["productSelect.price"]: storeInfo.price,
-        ["productSelect.stock"]: storeInfo.stock,
-        ['productSelect.unique']: storeInfo.unique || '',
+        ["productSelect.stock"]: this.data.productAttr.length ? 0 : storeInfo.stock ,
+        ['productSelect.unique']:  '',
         ['productSelect.cart_num']: 1,
         attrValue: '',
         attr: '请选择'
@@ -305,17 +306,20 @@ Page({
    * 打开属性加入购物车
    * 
   */
-  joinCart:function(){
+  joinCart:function(e){
+    var formId = e.detail.formId;
     //是否登录
     if (app.globalData.isLog === false)
       this.setData({isAuto: true,iShidden: false,});
-    else
-       this.goCat();
+    else{
+      app.baseGet(app.U({ c: 'public_api', a: 'get_form_id', q: { formId: formId } }), null, null, true);
+      this.goCat();
+    }
   },
   /*
   * 加入购物车
   */
-  goCat:function(isPay){
+  goCat: function (isPay, is_new){
     var that=this;
     var productSelect = this.data.productValue[this.data.attrValue];
     //打开属性
@@ -338,7 +342,8 @@ Page({
       q:{ 
         productId: that.data.id, 
         cartNum: that.data.cart_num,
-        uniqueId: productSelect !== undefined ? productSelect.unique : ''
+        uniqueId: productSelect !== undefined ? productSelect.unique : '',
+        is_new: is_new === undefined ? 0 : 1,
         }
       }),function(res){
         that.setData({ isOpen: false,'attribute.cartAttr':false});
@@ -382,12 +387,14 @@ Page({
   /**
    * 立即购买
   */
-  goBuy:function(){
-    var that = this;
+  goBuy:function(e){
+    var that = this,formId = e.detail.formId;
     if (app.globalData.isLog === false)
       this.setData({ isAuto: true, iShidden: false });
-    else
-      this.goCat(true);
+    else{
+      app.baseGet(app.U({ c: 'public_api', a: 'get_form_id', q: { formId: formId } }), null, null, true);
+      this.goCat(true,1);
+    }
   },
   /**
    * 分享打开和关闭
@@ -458,6 +465,12 @@ Page({
     var that = this;
     that.setData({ canvasStatus: true });
     var arr2 = [that.data.posterbackgd, that.data.storeImage, that.data.PromotionCode];
+    wx.getImageInfo({
+      src: that.data.PromotionCode,
+      fail: function (res) {
+        return app.Tips({ 'title': '小程序二维码需要发布正式版后才能获取到' });
+      },
+    });
     if (arr2[2] == ''){
       //海报二维码不存在则从新下载
       that.downloadFilePromotionCode(function (msgPromotionCode){
@@ -535,7 +548,7 @@ Page({
     return {
       title: that.data.productSelect.store_name,
       imageUrl: that.data.productSelect.image,
-      path: '/pages/goods_details/index?id=' + that.data.id + (that.data.sharePacket.isState ? '':'&spid='+that.data.uid),
+      path: '/pages/goods_details/index?id=' + that.data.id + '&spid='+that.data.uid,
     }
   }
 })

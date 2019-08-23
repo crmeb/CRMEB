@@ -29,64 +29,6 @@ class Finance extends AuthController
 {
 
     /**
-     * 显示操作记录
-     */
-    public function index(){
-
-        //创建form
-        $form = Form::create('/save.php',[
-            Form::input('goods_name','商品名称')
-            ,Form::input('goods_name1','password')->type('password')
-            ,Form::input('goods_name2','textarea')->type('textarea')
-            ,Form::input('goods_name3','email')->type('email')
-            ,Form::input('goods_name4','date')->type('date')
-            ,Form::cityArea('address','cityArea',[
-                '陕西省','西安市'
-            ])
-            ,Form::dateRange('limit_time','dateRange',
-                strtotime('- 10 day'),
-                time()
-            )
-            ,Form::dateTime('add_time','dateTime')
-            ,Form::color('color','color','#ff0000')
-            ,Form::checkbox('checkbox','checkbox',[1])->options([['value'=>1,'label'=>'白色'],['value'=>2,'label'=>'红色'],['value'=>31,'label'=>'黑色']])
-            ,Form::date('riqi','date','2018-03-1')
-            ,Form::dateTimeRange('dateTimeRange','区间时间段')
-            ,Form::year('year','year')
-            ,Form::month('month','month')
-            ,Form::frame('frame','frame','http://baidu.com')
-            ,Form::frameInputs('month','frameInputs','http://baidu.com')
-            ,Form::frameFiles('month1','frameFiles','http://baidu.com')
-            ,Form::frameImages('month2','frameImages','http://baidu.com')
-            ,Form::frameInputOne('month3','frameInputOne','http://baidu.com')
-            ,Form::frameFileOne('month4','frameFileOne','http://baidu.com')
-            ,Form::frameImageOne('month5','frameImageOne','http://baidu.com')
-            ,Form::hidden('month6','hidden')
-            ,Form::number('month7','number')
-//            ,Form::input input输入框,其他type: text类型Form::text,password类型Form::password,textarea类型Form::textarea,url类型Form::url,email类型Form::email,date类型Form::idate
-            ,Form::radio('month8','radio')->options([['value'=>1,'label'=>'白色'],['value'=>2,'label'=>'红色'],['value'=>31,'label'=>'黑色']])
-            ,Form::rate('month9','rate')
-            ,Form::select('month10','select')->options([['value'=>1,'label'=>'白色'],['value'=>2,'label'=>'红色'],['value'=>31,'label'=>'黑色']])
-            ,Form::selectMultiple('month11','selectMultiple')
-            ,Form::selectOne('month12','selectOne')
-            ,Form::slider('month13','slider',2)
-            ,Form::sliderRange('month23','sliderRange',2,13)
-            ,Form::switches('month14','区间时间段')
-            ,Form::timePicker('month15','区间时间段')
-            ,Form::time('month16','区间时间段')
-            ,Form::timeRange('month17','区间时间段')
-//            ,Form::upload('month','区间时间段')
-//            ,Form::uploadImages('month','区间时间段')
-//            ,Form::uploadFiles('month','区间时间段')
-//            ,Form::uploadImageOne('month','区间时间段')
-//            ,Form::uploadFileOne('month','区间时间段')
-
-        ]);
-        $html = $form->setMethod('get')->setTitle('编辑商品')->view();
-        echo $html;
-
-    }
-    /**
      * 显示资金记录
      */
     public function bill(){
@@ -126,41 +68,7 @@ class Finance extends AuthController
         ]);
         FinanceModel::SaveExport($where);
     }
-//    /**
-//     * 显示佣金记录
-//     */
-//    public function commission_list(){
-//
-//        //创建form
-//        $form = Form::create('/save.php',[
-//            Form::input('goods_name','商品名称')
-//            ,Form::input('goods_name1','password')->type('password')
-//            ,Form::input('goods_name3','email')->type('email')
-//            ,Form::input('goods_name4','date')->type('date')
-//            ,Form::cityArea('address','cityArea',[
-//                '陕西省','西安市'
-//            ])
-//            ,Form::dateRange('limit_time','dateRange',
-//                strtotime('- 10 day'),
-//                time()
-//            )
-//            ,Form::dateTime('add_time','dateTime')
-//            ,Form::color('color','color','#ff0000')
-//            ,Form::checkbox('checkbox','checkbox',[1])->options([['value'=>1,'label'=>'白色'],['value'=>2,'label'=>'红色'],['value'=>31,'label'=>'黑色']])
-//            ,Form::date('riqi','date','2018-03-1')
-//            ,Form::dateTimeRange('dateTimeRange','区间时间段')
-//            ,Form::year('year','year')
-//
-//            ,Form::hidden('month6','hidden')
-//            ,Form::number('month7','number')
-//
-//
-//        ]);
-//        $rule = $form->setMethod('post')->setTitle('编辑商品')->getRules();
-//        $action = Url::build('save');
-//        $this->assign(compact('form','rule','action'));
-//        return $this->fetch();
-//    }
+
     /**
      * 显示佣金记录
      */
@@ -168,6 +76,7 @@ class Finance extends AuthController
         $this->assign('is_layui',true);
         return $this->fetch();
     }
+
     /**
      * 佣金记录异步获取
      */
@@ -178,24 +87,12 @@ class Finance extends AuthController
             ['nickname',''],
             ['price_max',''],
             ['price_min',''],
-            ['order','']
+            ['order',''],
+            ['excel',''],
         ]);
         return Json::successlayui(User::getCommissionList($get));
     }
-    /**
-     * 保存excel表格
-     */
-    public function save_export(){
-        $get=Util::getMore([
-            ['page',1],
-            ['limit',20],
-            ['nickname',''],
-            ['price_max',''],
-            ['price_min',''],
-            ['order','']
-        ]);
-        User::setUserWhere($get,true);
-    }
+
     /**
      * 显示操作记录
      */

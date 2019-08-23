@@ -8,6 +8,7 @@
 namespace app\wap\controller;
 
 
+use app\admin\model\system\SystemAttachment;
 use app\wap\model\store\StoreCombination;
 use app\admin\model\system\SystemGroup;
 use app\admin\model\system\SystemGroupData;
@@ -17,6 +18,7 @@ use app\wap\model\store\StoreProduct;
 use app\wap\model\wap\ArticleCategory;
 use service\FileService;
 use service\JsonService;
+use service\UploadService;
 use service\UtilService;
 use think\Cache;
 
@@ -62,7 +64,7 @@ class PublicApi
                 ->where('A.mer_id',0)->where('B.pid',$cate['id'])
                 ->join('__STORE_CATEGORY__ B','B.id = A.cate_id')
                 ->order('A.is_benefit DESC,A.sort DESC,A.add_time DESC')
-                ->limit($limit)->field('A.id,A.image,A.store_name,A.sales,A.price,A.unit_name')->select()->toArray();
+                ->limit($limit)->field('A.id,A.image,A.store_name,IFNULL(A.sales,0) + IFNULL(A.ficti,0) as sales,A.price,A.unit_name')->select()->toArray();
             if(count($cate['product']))
                 $result[] = $cate;
         }
@@ -88,7 +90,7 @@ class PublicApi
             $StoreProductmodel = $StoreProductmodel->where('is_postage',1);
 
         $list = $StoreProductmodel->where('mer_id',0)->order('is_best DESC,sort DESC,add_time DESC')
-            ->limit($first,$limit)->field('id,image,store_name,sales,price,unit_name')->select()->toArray();
+            ->limit($first,$limit)->field('id,image,store_name,IFNULL(sales,0) + IFNULL(ficti,0) as sales,price,unit_name')->select()->toArray();
 
         return JsonService::successful($list);
     }
@@ -96,7 +98,7 @@ class PublicApi
     public function get_best_product_list($first = 0,$limit = 8)
     {
         $list = StoreProduct::validWhere()->where('mer_id',0)->order('is_best DESC,sort DESC,add_time DESC')
-            ->limit($first,$limit)->field('id,image,store_name,sales,price,unit_name')->select()->toArray();
+            ->limit($first,$limit)->field('id,image,store_name,IFNULL(sales,0) + IFNULL(ficti,0) as sales,price,unit_name')->select()->toArray();
         return JsonService::successful($list);
     }
 
@@ -106,7 +108,6 @@ class PublicApi
         $mediaIds = explode(',',$mediaIds);
         $temporary = \app\core\util\WechatService::materialTemporaryService();
         $pathList = [];
-        $dir='public'.DS.'uploads'.DS.'wechat'.DS.'media';
         foreach ($mediaIds as $mediaId){
             if(!$mediaId) continue;
             try{
@@ -115,12 +116,10 @@ class PublicApi
                 continue;
             }
             $name = substr(md5($mediaId),12,20).'.jpg';
-            $path = '.'.DS.$dir.DS.$name;
-            $file=new FileService();
-            $res=$file->create_dir($dir);
-            if(!$res) return JsonService::fail('生成文件保存目录失败！请检查权限！');
-            $res = file_put_contents($path,$content);
-            if($res) $pathList[] = UtilService::pathToUrl($path);
+            $res = UploadService::imageStream($name,$content,'wechat/media');
+            if(!is_array($res)) return JsonService::fail($res);
+            SystemAttachment::attachmentAdd($res['name'],$res['size'],$res['type'],$res['dir'],$res['thumb_path'],1,$res['image_type'],$res['time']);
+            $pathList[] = UtilService::pathToUrl($res['dir']);
         }
         return JsonService::successful($pathList);
     }

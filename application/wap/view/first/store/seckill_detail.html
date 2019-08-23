@@ -141,7 +141,7 @@
     window.$productAttr = <?php echo json_encode($productAttr)?:'[]'; ?>;
 </script>
 <script type="text/javascript">
-    window.$wechat_qrcode = "{$site.wechat_qrcode}";
+    window.$wechat_qrcode = "<?=str_replace('\\','/',$site['wechat_qrcode'])?>";
     window.$site_name = "{$site.wechat_name}";
     (function ($) {
         requirejs(['vue','axios','helper','store','{__WAP_PATH}crmeb/module/store/seckill-card.js'],function(Vue,axios,$h,storeApi,shopCard){
@@ -284,7 +284,7 @@
                         that.status.like = true;
                         if(this.product.userLike){
 
-                            storeApi.unlikeProduct(this.product.product_id,'product_seckill',function(){
+                            storeApi.unlikeProduct(this.product.id,'product_seckill',function(){
                                 setTimeout(function(){
                                     that.product.like_num -= 1;
                                     that.product.userLike = false;
@@ -307,7 +307,7 @@
                     },
                     collect:function(){
                         var that = this,
-                            product=this.product.product_id==0 ? this.product.id:this.product.product_id;
+                            product = this.product.id;
                         if(that.status.collect) return false;
                         that.status.collect = true;
                         if(this.product.userCollect){

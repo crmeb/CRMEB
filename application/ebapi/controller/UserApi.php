@@ -2,6 +2,8 @@
 namespace app\ebapi\controller;
 
 use Api\Express;
+use app\admin\model\system\SystemAttachment;
+use app\core\model\routine\RoutineQrcode;
 use app\core\model\user\UserLevel;
 use app\core\model\user\UserSign;
 use app\core\model\routine\RoutineCode;//待完善
@@ -24,6 +26,7 @@ use service\CacheService;
 use app\core\util\GroupDataService;
 use service\JsonService;
 use app\core\util\SystemConfigService;
+use service\UploadService;
 use service\UtilService;
 use think\Request;
 use think\Cache;
@@ -55,6 +58,14 @@ class UserApi extends AuthController
     public function get_sign_list($page=1,$limit=10)
     {
         return JsonService::successful(UserSign::getSignList($this->uid,$page,$limit));
+    }
+    /*
+   * 获取图片储存位置
+   *
+   * */
+    public function picture_storage_location()
+    {
+        return JsonService::successful((int)SystemConfigService::get('upload_type'));
     }
     /*
      * 获取当前登录的用户信息
@@ -113,13 +124,19 @@ class UserApi extends AuthController
         $this->userInfo['orderStatusSum'] = StoreOrder::getOrderStatusSum($this->uid);//累计消费
         $this->userInfo['extractTotalPrice'] = UserExtract::userExtractTotalPrice($this->uid);//累计提现
         if($this->userInfo['brokerage'] > $this->userInfo['extractTotalPrice']) {
-            $this->userInfo['brokerage']=bcsub($this->userInfo['brokerage'],$this->userInfo['extractTotalPrice'],2);//减去已提现金额
-            $extract_price=UserExtract::userExtractTotalPrice($this->uid,0);
-            $this->userInfo['brokerage']=$extract_price < $this->userInfo['brokerage'] ? bcsub($this->userInfo['brokerage'],$extract_price,2) : 0;//减去审核中的提现金额
+            $orderYuePrice = StoreOrder::getOrderStatusYueSum($this->uid);//余额累计消费
+            $systemAdd = UserBill::getSystemAdd($this->uid);//后台添加余额
+            $yueCount = bcadd($this->userInfo['recharge'],$systemAdd,2);// 后台添加余额 + 累计充值  = 非佣金的总金额
+            $orderYuePrice = $yueCount > $orderYuePrice ? 0 : bcsub($orderYuePrice,$yueCount,2);// 余额累计消费（使用佣金消费的金额）
+            $this->userInfo['brokerage'] = bcsub($this->userInfo['brokerage'],$this->userInfo['extractTotalPrice'],2);//减去已提现金额
+            $extract_price = UserExtract::userExtractTotalPrice($this->uid,0);
+            $this->userInfo['brokerage'] = $extract_price < $this->userInfo['brokerage'] ? bcsub($this->userInfo['brokerage'],$extract_price,2) : 0;//减去审核中的提现金额
+            $this->userInfo['brokerage'] = $this->userInfo['brokerage'] > $orderYuePrice ? bcsub($this->userInfo['brokerage'],$orderYuePrice,2) : 0;//减掉余额支付
         }else{
             $this->userInfo['brokerage']=0;
         }
-        $this->userInfo['extractPrice'] = (float)bcsub($this->userInfo['brokerage'],$this->userInfo['extractTotalPrice'],2) > 0 ? : 0;//可提现
+        $this->userInfo['extractPrice'] = (float)bcsub($this->userInfo['brokerage'],$this->userInfo['extractTotalPrice'],2) > 0 ?
+            bcsub($this->userInfo['brokerage'],$this->userInfo['extractTotalPrice'],2) : 0;//可提现
         $this->userInfo['statu'] = (int)SystemConfigService::get('store_brokerage_statu');
         $vipId=UserLevel::getUserLevel($this->uid);
         $this->userInfo['vip']=$vipId !==false ? true : false;
@@ -128,6 +145,7 @@ class UserApi extends AuthController
             $this->userInfo['vip_icon']=UserLevel::getUserLevelInfo($vipId,'icon');
             $this->userInfo['vip_name']=UserLevel::getUserLevelInfo($vipId,'name');
         }
+        if(!SystemConfigService::get('vip_open')) $this->userInfo['vip']=false;
         unset($this->userInfo['pwd']);
         return JsonService::successful($this->userInfo);
     }
@@ -288,7 +306,7 @@ class UserApi extends AuthController
         if(!$price || $price <=0) return JsonService::fail('参数错误');
         $storeMinRecharge = SystemConfigService::get('store_user_min_recharge');
         if($price < $storeMinRecharge) return JsonService::fail('充值金额不能低于'.$storeMinRecharge);
-        $rechargeOrder = UserRecharge::addRecharge($this->userInfo['uid'],$price);
+        $rechargeOrder = UserRecharge::addRecharge($this->userInfo['uid'],$price,'routine');
         if(!$rechargeOrder) return JsonService::fail('充值订单生成失败!');
         try{
             return JsonService::successful(UserRecharge::jsPay($rechargeOrder));
@@ -376,6 +394,7 @@ class UserApi extends AuthController
             ['name',''],
             ['bankname',''],
             ['cardnum',''],
+            ['weixin',''],
         ],$this->request);
         if(UserExtract::userExtract($this->userInfo,$data))
             return JsonService::successful('申请提现成功!');
@@ -737,33 +756,42 @@ class UserApi extends AuthController
      * 分销二维码海报生成
      */
     public function user_spread_banner_list(){
-        header('content-type:image/jpg');
         try{
             $routineSpreadBanner = GroupDataService::getData('routine_spread_banner');
             if(!count($routineSpreadBanner)) return JsonService::fail('暂无海报');
-            $pathCode = makePathToUrl('routine/spread/code',3);
-            if($pathCode == '') return JsonService::fail('生成上传目录失败,请检查权限!');
-            $picName = $pathCode.DS.$this->userInfo['uid'].'.jpg';
-            $picName = trim(str_replace(DS, '/',$picName,$loop));
-            $res = RoutineCode::getShareCode($this->uid, 'spread', '', $picName);
-            if($res) file_put_contents($picName,$res);
-            else return JsonService::fail('二维码生成失败');
+            $name = $this->userInfo['uid'].'_'.$this->userInfo['is_promoter'].'_user.jpg';
+            $imageInfo = SystemAttachment::getInfo($name,'name');
+            $siteUrl = SystemConfigService::get('site_url').DS;
+            //检测远程文件是否存在
+            if(isset($imageInfo['att_dir']) && strstr($imageInfo['att_dir'],'http')!==false && UtilService::CurlFileExist($imageInfo['att_dir']) === false){
+                $imageInfo=null;
+                SystemAttachment::where(['name'=>$name])->delete();
+            }
+            if(!$imageInfo){
+                $res = RoutineCode::getShareCode($this->uid, 'spread', '', '');
+                if(!$res) return JsonService::fail('二维码生成失败');
+                $imageInfo = UploadService::imageStream($name,$res['res'],'routine/spread/code');
+                if(!is_array($imageInfo)) return JsonService::fail($imageInfo);
+                SystemAttachment::attachmentAdd($imageInfo['name'],$imageInfo['size'],$imageInfo['type'],$imageInfo['dir'],$imageInfo['thumb_path'],1,$imageInfo['image_type'],$imageInfo['time'],2);
+                RoutineQrcode::setRoutineQrcodeFind($res['id'],['status'=>1,'time'=>time(),'qrcode_url'=>$imageInfo['dir']]);
+                $urlCode = $imageInfo['dir'];
+            }else $urlCode = $imageInfo['att_dir'];
+            if($imageInfo['image_type'] == 1) $urlCode = ROOT_PATH.$urlCode;
             $res = true;
-            $url = SystemConfigService::get('site_url').'/';
-            $domainTop = substr($url,0,5);
-            if($domainTop != 'https') $url = 'https:'.substr($url,5,strlen($url));
-            $pathCode = makePathToUrl('routine/spread/poster',3);
+            $domainTop = substr($siteUrl,0,5);
+            if($domainTop != 'https') $siteUrl = 'https:'.substr($siteUrl,5,strlen($siteUrl));
             $filelink=[
-                'Bold'=>'public/static/font/SourceHanSansCN-Bold.otf',
-                'Normal'=>'public/static/font/SourceHanSansCN-Normal.otf',
+                'Bold'=>'public/static/font/Alibaba-PuHuiTi-Regular.otf',
+                'Normal'=>'public/static/font/Alibaba-PuHuiTi-Regular.otf',
             ];
             if(!file_exists($filelink['Bold'])) return JsonService::fail('缺少字体文件Bold');
             if(!file_exists($filelink['Normal'])) return JsonService::fail('缺少字体文件Normal');
             foreach ($routineSpreadBanner as $key=>&$item){
+                $posterInfo = '海报生成失败:(';
                 $config = array(
                     'image'=>array(
                         array(
-                            'url'=>ROOT_PATH.$picName,     //二维码资源
+                            'url'=>strstr($urlCode,ROOT_PATH) === false && strpos($urlCode,'http') === false ? str_replace('//','/',ROOT_PATH.$urlCode) : $urlCode,     //二维码资源
                             'stream'=>0,
                             'left'=>114,
                             'top'=>790,
@@ -796,9 +824,15 @@ class UserApi extends AuthController
                     ),
                     'background'=>$item['pic']
                 );
-                $filename = ROOT_PATH.$pathCode.'/'.$item['id'].'_'.$this->uid.'.png';
-                $res = $res && UtilService::setSharePoster($config,$filename);
-                if($res) $item['poster'] = $url.$pathCode.'/'.$item['id'].'_'.$this->uid.'.png';
+                $res = $res && $posterInfo = UtilService::setSharePoster($config,'routine/spread/poster');
+                if(!is_array($posterInfo)) return JsonService::fail($posterInfo);
+                SystemAttachment::attachmentAdd($posterInfo['name'],$posterInfo['size'],$posterInfo['type'],$posterInfo['dir'],$posterInfo['thumb_path'],1,$posterInfo['image_type'],$posterInfo['time'],2);
+                if($res){
+                    if($posterInfo['image_type'] == 1) $item['poster'] = $siteUrl.$posterInfo['dir'];
+                    else $item['poster'] = $posterInfo['dir'];
+                    $item['poster'] = str_replace('\\','/',$item['poster']);
+                    if(strstr($item['poster'],'http')===false) $item['poster']=SystemConfigService::get('site_url').$item['poster'];
+                }
             }
             if($res) return JsonService::successful($routineSpreadBanner);
             else return JsonService::fail('生成图片失败');

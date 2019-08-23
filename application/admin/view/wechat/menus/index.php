@@ -139,11 +139,11 @@
                                             </div>
                                             <div class="list">
                                                 <p>备用网页url</p>
-                                                <input class="form-control" v-model="checkedMenu.pagepath" type="text" />
+                                                <input class="form-control" v-model="checkedMenu.url" type="text" />
                                             </div>
                                             <div class="list">
                                                 <p>小程序路径</p>
-                                                <input class="form-control" v-model="checkedMenu.url" type="text" />
+                                                <input class="form-control" v-model="checkedMenu.pagepath" type="text" />
                                             </div>
                                         </div>
                                         <!-- 多客服 -->

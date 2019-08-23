@@ -11,6 +11,7 @@ namespace app\admin\model\user;
 use app\admin\model\user\User;
 use app\admin\model\user\UserBill;
 use app\admin\model\wechat\WechatUser;
+use app\core\model\routine\RoutineTemplate;
 use think\Url;
 use traits\ModelTrait;
 use basic\ModelBasic;
@@ -23,6 +24,16 @@ use app\core\util\WechatTemplateService;
 class UserExtract extends ModelBasic
 {
     use ModelTrait;
+
+    /**
+     * 获得用户提现总金额
+     * @param $uid
+     * @return mixed
+     */
+    public static function userExtractTotalPrice($uid,$status=1,$where=[])
+    {
+        return self::getModelTime($where,self::where('uid','in',$uid)->where('status',$status))->sum('extract_price')?:0;
+    }
     /**
      * @param $where
      * @return array
@@ -51,37 +62,75 @@ class UserExtract extends ModelBasic
         $User= User::find(['uid'=>$uid])->toArray();
         UserBill::income('提现失败',$uid,'now_money','extract',$extract_number,$id,bcadd($User['now_money'],$extract_number,2),$mark);
         User::bcInc($uid,'now_money',$extract_number,'uid');
-        if($User['user_type'] == 'wechat'){
-            WechatTemplateService::sendTemplate(WechatUser::uidToOpenid($uid),WechatTemplateService::USER_BALANCE_CHANGE,[
+        $extract_type='未知方式';
+        switch ($data['extract_type']){
+            case 'alipay':
+                $extract_type='支付宝';
+                break;
+            case 'bank':
+                $extract_type='银行卡';
+                break;
+            case 'weixin':
+                $extract_type='微信';
+                break;
+        }
+        if(strtolower($User['user_type']) == 'wechat'){
+            WechatTemplateService::sendTemplate(WechatUser::where('uid',$uid)->value('openid'),WechatTemplateService::USER_BALANCE_CHANGE,[
                 'first'=> $mark,
                 'keyword1'=>'佣金提现',
                 'keyword2'=>date('Y-m-d H:i:s',time()),
                 'keyword3'=>$extract_number,
                 'remark'=>'错误原因:'.$fail_msg
             ],Url::build('wap/my/user_pro',[],true,true));
+        }else if(strtolower($User['user_type'])=='routine'){
+            RoutineTemplate::sendOut('USER_EXTRACT_FALSE',$uid,[
+                'keyword1'=>$fail_msg,
+                'keyword2'=>$extract_number,
+                'keyword3'=>$extract_type,
+                'keyword4'=>date('Y-m-d H:i:s',time()),
+            ]);
         }
-
         return self::edit(compact('fail_time','fail_msg','status'),$id);
     }
 
     public static function changeSuccess($id)
     {
-        $status = 1;
-        $data =self::get($id);
-        $extract_number=$data['extract_price'];
-        $mark='成功提现佣金'.$extract_number.'元';
-        $uid=$data['uid'];
-        $User= User::find(['uid'=>$uid])->toArray();
-        if($User['user_type'] == 'wechat') {
-            WechatTemplateService::sendTemplate(WechatUser::uidToOpenid($uid), WechatTemplateService::USER_BALANCE_CHANGE, [
-                'first' => $mark,
-                'keyword1' => '佣金提现',
-                'keyword2' => date('Y-m-d H:i:s', time()),
-                'keyword3' => $extract_number,
-                'remark' => '点击查看我的佣金明细'
-            ], Url::build('wap/my/user_pro', [], true, true));
+
+        $data = self::get($id);
+        $extractNumber = $data['extract_price'];
+        $mark = '成功提现佣金'.$extractNumber.'元';
+        $wechatUserInfo = WechatUser::where('uid',$data['uid'])->field(['openid','user_type','routine_openid'])->find();
+        $extract_type='未知方式';
+        switch ($data['extract_type']){
+            case 'alipay':
+                $extract_type='支付宝';
+                break;
+            case 'bank':
+                $extract_type='银行卡';
+                break;
+            case 'weixin':
+                $extract_type='微信';
+                break;
         }
-        return self::edit(compact('status'),$id);
+        if($wechatUserInfo){
+            if(strtolower($wechatUserInfo->user_type)=='routine'){
+                RoutineTemplate::sendOut('USER_EXTRACT_TRUE',$data['uid'],[
+                    'keyword1'=>$extractNumber.'元',
+                    'keyword2'=>'审核成功',
+                    'keyword3'=>date('Y-m-d H:i:s', time()),
+                    'keyword4'=>$extract_type,
+                ]);
+            }else if(strtolower($wechatUserInfo->user_type)=='wechat'){
+                WechatTemplateService::sendTemplate($wechatUserInfo->openid, WechatTemplateService::USER_BALANCE_CHANGE, [
+                    'first' => $mark,
+                    'keyword1' => '佣金提现',
+                    'keyword2' => date('Y-m-d H:i:s', time()),
+                    'keyword3' => $extractNumber,
+                    'remark' => '点击查看我的佣金明细'
+                ], Url::build('wap/my/user_pro', [], true, true));
+            }
+        }
+        return self::edit(['status'=>1],$id);
     }
     //测试数据
     public static function test(){
@@ -249,10 +298,16 @@ class UserExtract extends ModelBasic
      * @param int $uid
      * @return int|mixed
      */
-    public static function getUserCountPrice($uid = 0){
+    public static function getUserCountPrice($uid = 0,$where=[]){
         if(!$uid) return 0;
-        $price = self::where('uid',$uid)->where('status',1)->field('sum(extract_price) as price')->find()['price'];
-        return $price ? $price : 0;
+        $model = new self();
+        if(is_array($uid)){
+            $model = $model->where('uid','in',$uid);
+        }else{
+            $model = $model->where('uid',$uid);
+        }
+        if($where) $model = self::getModelTime($where,$model);
+        return $model->where('status',1)->sum('extract_price');
     }
 
     /**
@@ -260,8 +315,15 @@ class UserExtract extends ModelBasic
      * @param int $uid
      * @return int|string
      */
-    public static function getUserCountNum($uid = 0){
+    public static function getUserCountNum($uid = 0,$where=[]){
         if(!$uid) return 0;
-        return self::where('uid',$uid)->count();
+        $model = new self();
+        if(is_array($uid)){
+            $model = $model->where('uid','in',$uid);
+        }else{
+            $model = $model->where('uid',$uid);
+        }
+        if($where) $model = self::getModelTime($where,$model);
+        return $model->count();
     }
 }

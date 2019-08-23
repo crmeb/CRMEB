@@ -1,6 +1,6 @@
 <navbar parameter='{{parameter}}'></navbar>
 
-<form bindsubmit="formSubmit">
+<form bindsubmit="formSubmit" report-submit='true'>
 <view class='addAddress'>
    <view class='list'>
       <view class='item acea-row row-between-wrapper'>

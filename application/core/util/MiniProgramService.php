@@ -33,21 +33,19 @@ class MiniProgramService implements ProviderInterface
         $payment = SystemConfigService::more(['pay_routine_mchid','pay_routine_key','pay_routine_client_cert','pay_routine_client_key','pay_weixin_open']);
         $config = [];
         $config['mini_program'] = [
-            'app_id'=>isset($wechat['routine_appId']) ? $wechat['routine_appId']:'',
-            'secret'=>isset($wechat['routine_appsecret']) ? $wechat['routine_appsecret']:'',
-            'token'=>isset($wechat['wechat_token']) ? $wechat['wechat_token']:'',
-            'aes_key'=> isset($wechat['wechat_encodingaeskey']) ? $wechat['wechat_encodingaeskey']:''
+            'app_id'=>isset($wechat['routine_appId']) ? trim($wechat['routine_appId']):'',
+            'secret'=>isset($wechat['routine_appsecret']) ? trim($wechat['routine_appsecret']):'',
+            'token'=>isset($wechat['wechat_token']) ? trim($wechat['wechat_token']):'',
+            'aes_key'=> isset($wechat['wechat_encodingaeskey']) ? trim($wechat['wechat_encodingaeskey']):''
         ];
-        if(isset($payment['pay_weixin_open']) && $payment['pay_weixin_open'] == 1){
-            $config['payment'] = [
-                'app_id'=>isset($wechat['routine_appId']) ? $wechat['routine_appId']:'',
-                'merchant_id'=>$payment['pay_routine_mchid'],
-                'key'=>$payment['pay_routine_key'],
-                'cert_path'=>realpath('.'.$payment['pay_routine_client_cert']),
-                'key_path'=>realpath('.'.$payment['pay_routine_client_key']),
-                'notify_url'=>$wechat['site_url'].Url::build('/ebapi/notify/notify',['notify_type'=>'routine'])
-            ];
-        }
+        $config['payment'] = [
+            'app_id'=>isset($wechat['routine_appId']) ? trim($wechat['routine_appId']) :'',
+            'merchant_id'=>trim($payment['pay_routine_mchid']),
+            'key'=>trim($payment['pay_routine_key']),
+            'cert_path'=>realpath('.'.$payment['pay_routine_client_cert']),
+            'key_path'=>realpath('.'.$payment['pay_routine_client_key']),
+            'notify_url'=>$wechat['site_url'].Url::build('/ebapi/notify/notify',['notify_type'=>'routine'])
+        ];
         return $config;
     }
     public static function application($cache = false)

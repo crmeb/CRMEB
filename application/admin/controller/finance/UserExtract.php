@@ -37,6 +37,8 @@ class UserExtract extends AuthController
         $f[] = Form::number('extract_price','提现金额',$UserExtract['extract_price'])->precision(2);
         if($UserExtract['extract_type']=='alipay'){
             $f[] = Form::input('alipay_code','支付宝账号',$UserExtract['alipay_code']);
+        }else if($UserExtract['extract_type']=='weixin'){
+            $f[] = Form::input('wechat','微信号',$UserExtract['wechat']);
         }else{
             $f[] = Form::input('bank_code','银行卡号',$UserExtract['bank_code']);
             $f[] = Form::input('bank_address','开户行',$UserExtract['bank_address']);
@@ -61,6 +63,16 @@ class UserExtract extends AuthController
             if(!$data['real_name']) return JsonService::fail('请输入姓名');
             if($data['extract_price']<=-1) return JsonService::fail('请输入提现金额');
             if(!$data['alipay_code']) return JsonService::fail('请输入支付宝账号');
+        }else if($UserExtract['extract_type']=='weixin'){
+            $data = Util::postMore([
+                'real_name',
+                'mark',
+                'extract_price',
+                'wechat',
+            ],$request);
+//            if(!$data['real_name']) return JsonService::fail('请输入姓名');
+            if($data['extract_price']<=-1) return JsonService::fail('请输入提现金额');
+            if(!$data['wechat']) return JsonService::fail('请输入微信账号');
         }else{
             $data = Util::postMore([
                 'real_name',
@@ -101,12 +113,14 @@ class UserExtract extends AuthController
         UserExtractModel::beginTrans();
         $extract=UserExtractModel::get($id);
         if(!$extract)  return JsonService::fail('操作记录不存!');
-        if($extract->status==1)  return JsonService::fail('您已提现,请勿重复提现!');
-        if($extract->status==-1)  return JsonService::fail('您的提现申请已被拒绝!');
+        if($extract->status == 1)  return JsonService::fail('您已提现,请勿重复提现!');
+        if($extract->status == -1)  return JsonService::fail('您的提现申请已被拒绝!');
         $res = UserExtractModel::changeSuccess($id);
         if($res){
+            UserExtractModel::commitTrans();
             return JsonService::successful('操作成功!');
         }else{
+            UserExtractModel::rollbackTrans();
             return JsonService::fail('操作失败!');
         }
     }

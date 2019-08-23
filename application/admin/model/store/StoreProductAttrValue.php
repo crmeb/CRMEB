@@ -33,7 +33,12 @@ class StoreProductAttrValue extends ModelBasic
      * */
     public static function incProductAttrStock($productId,$unique,$num)
     {
-        return false !== self::where('product_id',$productId)->where('unique',$unique)->inc('stock',$num)->dec('sales',$num)->update();
+        $productAttr=self::where(['product_id'=>$productId,'unique'=>$unique])->field(['stock','sales'])->find();
+        if(!$productAttr) return true;
+        if($productAttr->sales > 0) $productAttr->sales=bcsub($productAttr->sales,$num,0);
+        if($productAttr->sales < 0) $productAttr->sales=0;
+        $productAttr->stock = bcadd($productAttr->stock, $num,0);
+        return $productAttr->save();
     }
 
     public static function decProductAttrStock($productId,$unique,$num)

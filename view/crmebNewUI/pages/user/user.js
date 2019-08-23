@@ -65,7 +65,6 @@ Page({
    * 页面跳转
   */
   goPages:function(e){
-    console.log();
     if (e.currentTarget.dataset.url == '/pages/user_spread_user/index' && this.data.userInfo.statu==1) {
       if (!this.data.userInfo.is_promoter) return app.Tips({ title: '您还没有推广权限！！' });
     }

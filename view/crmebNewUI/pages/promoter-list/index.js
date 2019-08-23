@@ -139,12 +139,5 @@ Page({
    */
   onReachBottom: function () {
     this.userSpreadNewList();
-  },
-
-  /**
-   * 用户点击右上角分享
-   */
-  onShareAppMessage: function () {
-
   }
 })

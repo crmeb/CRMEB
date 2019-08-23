@@ -8,10 +8,10 @@
                     <view>总资产(元)</view>
                     <view class='money'>{{userInfo.now_money || 0}}</view>
                   </view>
-                  <navigator hover-class='none' url='/pages/user_payment/index' class='recharge font-color'>充值</navigator>
+                  <navigator wx:if='{{recharge_switch}}' hover-class='none' url='/pages/user_payment/index' class='recharge font-color'>充值</navigator>
               </view>
               <view class='cumulative acea-row row-top'>
-                <view class='item'>
+                <view class='item' wx:if="{{recharge_switch}}">
                     <view>累计充值(元)</view>
                     <view class='money'>{{userInfo.recharge || 0}}</view>
                 </view>
@@ -31,7 +31,7 @@
             <view class='pictrue'><image src='/images/record2.png'></image></view>
             <view>消费记录</view>
          </navigator>
-         <navigator class='item' hover-class='none' url='/pages/user_bill/index?type=2'>
+         <navigator class='item' hover-class='none' url='/pages/user_bill/index?type=2' wx:if="{{recharge_switch}}">
             <view class='pictrue'><image src='/images/record3.png'></image></view>
             <view>充值记录</view>
          </navigator>

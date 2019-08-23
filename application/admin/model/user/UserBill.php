@@ -22,7 +22,21 @@ class UserBill extends ModelBasic
     {
         return time();
     }
-    
+
+    /*
+     * 获取总佣金
+     * */
+    public static function getBrokerage($uid,$category = 'now_money',$type='brokerage',$where)
+    {
+        return self::getModelTime($where,self::where('uid','in',$uid)->where(['category'=>$category,'type'=>$type,'pm'=>1,'status'=>1]))->sum('number');
+    }
+    //修改积分减少积分记录
+    public static function expend($title,$uid,$category,$type,$number,$link_id = 0,$balance = 0,$mark = '',$status = 1)
+    {
+        $pm = 0;
+        return self::set(compact('title','uid','link_id','category','type','number','balance','mark','status','pm'));
+    }
+    //修改积分增加积分记录
     public static function income($title,$uid,$category,$type,$number,$link_id = 0,$balance = 0,$mark = '',$status = 1){
         $pm = 1;
         return self::set(compact('title','uid','link_id','category','type','number','balance','mark','status','pm'));
@@ -165,9 +179,10 @@ class UserBill extends ModelBasic
     //查询积分个人明细
     public static function getOneIntegralList($where){
         return self::setWhereList(
-            $where,
-            ['deduction','system_add'],
-            ['title','number','balance','mark','FROM_UNIXTIME(add_time,"%Y-%m-%d") as add_time']
+            $where,'',
+//            ['deduction','system_add','sign'],
+            ['title','number','balance','mark','FROM_UNIXTIME(add_time,"%Y-%m-%d") as add_time'],
+            'integral'
         );
     }
     //查询个人签到明细
@@ -180,8 +195,8 @@ class UserBill extends ModelBasic
     //查询个人余额变动记录
     public static function getOneBalanceChangList($where){
          $list=self::setWhereList(
-            $where,
-            ['system_add','pay_product','extract','pay_product_refund','system_sub'],
+            $where,'',
+//            ['system_add','pay_product','extract','pay_product_refund','system_sub','brokerage','recharge','user_recharge_refund'],
             ['FROM_UNIXTIME(add_time,"%Y-%m-%d") as add_time','title','type','mark','number','balance','pm','status'],
             'now_money'
         );
@@ -202,6 +217,15 @@ class UserBill extends ModelBasic
                 case 'system_sub':
                     $item['_type']='系统减少';
                     break;
+                case 'brokerage':
+                    $item['_type']='系统返佣';
+                    break;
+                case 'recharge':
+                    $item['_type']='余额充值';
+                    break;
+                case 'user_recharge_refund':
+                    $item['_type']='系统退款';
+                    break;
             }
             $item['_pm']=$item['pm']==1 ? '获得': '支出';
          }
@@ -212,11 +236,12 @@ class UserBill extends ModelBasic
         $models=self::where('uid',$where['uid'])
             ->where('category',$category)
             ->page((int)$where['page'],(int)$where['limit'])
+            ->order('id','desc')
             ->field($field);
         if(is_array($type)){
             $models=$models->where('type','in',$type);
         }else{
-            $models=$models->where('type',$type);
+            if(!empty($type))$models=$models->where('type',$type);
         }
         return ($list=$models->select()) && count($list) ? $list->toArray():[];
     }
@@ -224,7 +249,7 @@ class UserBill extends ModelBasic
     public static function getScoreBadgeList($where){
         return [
             [
-                'name'=>'总积分',
+                'name'=>'历史总积分',
                 'field'=>'个',
                 'count'=>self::getModelTime($where,new self())->where('category','integral')->where('type','in',['gain','system_sub','deduction','sign'])->sum('number'),
                 'background_color'=>'layui-bg-blue',

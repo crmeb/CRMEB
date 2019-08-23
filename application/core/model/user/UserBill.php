@@ -78,6 +78,15 @@ class UserBill extends ModelBasic
             ->where('status',1)->sum('number');
     }
 
+    /*
+     * 获取总佣金
+     * */
+    public static function getSystemAdd($uid)
+    {
+        return self::where('uid',$uid)->where('category','now_money')->where('type','system_add')->where('pm',1)
+            ->where('status',1)->sum('number');
+    }
+
 
     /*
      * 累计充值
@@ -238,9 +247,9 @@ class UserBill extends ModelBasic
         if(!$user) return self::setErrorInfo('用户不存在！');
         $cachename='Share_'.$uid;
         if(Cache::has($cachename)) return false;
-        $res=self::income('用户分享记录',$uid,'share',1,0,0,date('Y-m-d H:i:s',time()).':用户分享');
+        $res=self::income('用户分享记录',$uid,'share','share',1,0,0,date('Y-m-d H:i:s',time()).':用户分享');
         Cache::set($cachename,1,$cd);
-        HookService::afterListen('user_leve',$user,false,UserBehavior::class);
+        HookService::afterListen('user_level',$user,null,false,UserBehavior::class);
         return true;
     }
 

@@ -11,8 +11,10 @@
     <script src="{__PLUG_PATH}form-create/form-create.min.js"></script>
     <style>
         /*弹框样式修改*/
-        .ivu-modal-body{padding: 5;}
-        .ivu-modal-confirm-footer{display: none;}
+        .ivu-modal{top: 20px;}
+        .ivu-modal .ivu-modal-body{padding: 10px;}
+        .ivu-modal .ivu-modal-body .ivu-modal-confirm-head{padding:0 0 10px 0;}
+        .ivu-modal .ivu-modal-body .ivu-modal-confirm-footer{display: none;padding-bottom: 10px;}
         .ivu-date-picker {display: inline-block;line-height: normal;width: 280px;}
     </style>
 </head>

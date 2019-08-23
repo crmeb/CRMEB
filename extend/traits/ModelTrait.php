@@ -42,8 +42,17 @@ trait ModelTrait
     {
         $model = new self;
         if(!$field) $field = $model->getPk();
-        return false !== $model->update($data,[$field=>$id]);
+//        return false !== $model->update($data,[$field=>$id]);
+//        return 0 < $model->update($data,[$field=>$id])->result;
+        $res=$model->update($data,[$field=>$id]);
+        if(isset($res->result))
+            return 0 < $res->result;
+        else if(isset($res['data']['result']))
+            return  0 < $res['data']['result'];
+        else
+            return false !== $res;
     }
+
 
     /**
      * 查询一条数据是否存在
@@ -198,7 +207,7 @@ trait ModelTrait
      * @return array
      */
     public static function getModelTime($where,$model=null,$prefix='add_time',$data='data',$field=' - '){
-        if ($model == null) $model = new self;
+        if ($model === null) $model = new self;
         if(!isset($where[$data])) return $model;
         switch ($where[$data]){
             case 'today':case 'week':case 'month':case 'year':case 'yesterday':
@@ -209,11 +218,17 @@ trait ModelTrait
                 $model = $model->where($prefix, '>', strtotime($startTime));
                 $model = $model->where($prefix, '<', strtotime($endTime));
                 break;
+            case 'lately7':
+                $model = $model->where($prefix,'between',[strtotime("-7 day"),time()]);
+                break;
+            case 'lately30':
+                $model = $model->where($prefix,'between',[strtotime("-30 day"),time()]);
+                break;
             default:
                 if(strstr($where[$data],$field)!==false){
                     list($startTime, $endTime) = explode($field, $where[$data]);
                     $model = $model->where($prefix, '>', strtotime($startTime));
-                    $model = $model->where($prefix, '<', strtotime($endTime));
+                    $model = $model->where($prefix, '<', strtotime($endTime)+86400);
                 }
                 break;
         }

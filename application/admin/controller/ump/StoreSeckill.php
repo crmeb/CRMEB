@@ -79,8 +79,8 @@ class StoreSeckill extends AuthController
         $f[] = Form::input('info','秒杀活动简介')->type('textarea');
         $f[] = Form::input('unit_name','单位')->placeholder('个、位');
         $f[] = Form::dateTimeRange('section_time','活动时间');
-        $f[] = Form::frameImageOne('image','产品主图片(305*305px)',Url::build('admin/widget.images/index',array('fodder'=>'image')))->icon('image');
-        $f[] = Form::frameImages('images','产品轮播图(640*640px)',Url::build('admin/widget.images/index',array('fodder'=>'images')))->maxLength(5)->icon('images');
+        $f[] = Form::formFrameImageOne('image','产品主图片(305*305px)');
+        $f[] = Form::formFrameImages('images','产品轮播图(640*640px)');
         $f[] = Form::number('price','秒杀价')->min(0)->col(12);
         $f[] = Form::number('ot_price','原价')->min(0)->col(12);
         $f[] = Form::number('cost','成本价')->min(0)->col(12);
@@ -141,7 +141,6 @@ class StoreSeckill extends AuthController
         if($data['ot_price'] == '' || $data['ot_price'] < 0) return Json::fail('请输入产品原售价');
         if($data['cost'] == '' || $data['cost'] < 0) return Json::fail('请输入产品成本价');
         if($data['stock'] == '' || $data['stock'] < 0) return Json::fail('请输入库存');
-        $data['add_time'] = time();
         if($data['num']<1) return Json::fail('请输入单次秒杀个数');
         if($id){
             $product = StoreSeckillModel::get($id);
@@ -149,6 +148,7 @@ class StoreSeckill extends AuthController
             StoreSeckillModel::edit($data,$id);
             return Json::successful('编辑成功!');
         }else{
+            $data['add_time'] = time();
             StoreSeckillModel::set($data);
             return Json::successful('添加成功!');
         }
@@ -168,8 +168,8 @@ class StoreSeckill extends AuthController
         $f[] = Form::input('info','秒杀活动简介',$product->getData('store_info'))->type('textarea');
         $f[] = Form::input('unit_name','单位',$product->getData('unit_name'))->placeholder('个、位');
         $f[] = Form::dateTimeRange('section_time','活动时间');
-        $f[] = Form::frameImageOne('image','产品主图片(305*305px)',Url::build('admin/widget.images/index',array('fodder'=>'image')),$product->getData('image'))->icon('image');
-        $f[] = Form::frameImages('images','产品轮播图(640*640px)',Url::build('admin/widget.images/index',array('fodder'=>'images')),json_decode($product->getData('slider_image')))->maxLength(5)->icon('images');
+        $f[] = Form::frameImageOne('image','产品主图片(305*305px)',Url::build('admin/widget.images/index',array('fodder'=>'image')),$product->getData('image'))->icon('image')->width('100%')->height('500px');
+        $f[] = Form::frameImages('images','产品轮播图(640*640px)',Url::build('admin/widget.images/index',array('fodder'=>'images')),json_decode($product->getData('slider_image')))->maxLength(5)->icon('images')->width('100%')->height('500px');
         $f[] = Form::number('price','秒杀价')->min(0)->col(12);
         $f[] = Form::number('ot_price','原价',$product->getData('price'))->min(0)->col(12);
         $f[] = Form::number('cost','成本价',$product->getData('cost'))->min(0)->col(12);
@@ -193,16 +193,12 @@ class StoreSeckill extends AuthController
      */
     public function upload()
     {
-        $res = Upload::image('file','store/seckill/'.date('Ymd'));
-        $thumbPath = Upload::thumb($res->dir);
-        //产品图片上传记录
-        $fileInfo = $res->fileInfo->getinfo();
-        SystemAttachment::attachmentAdd($res->fileInfo->getSaveName(),$fileInfo['size'],$fileInfo['type'],$res->dir,$thumbPath,4);
-
-        if($res->status == 200)
-            return Json::successful('图片上传成功!',['name'=>$res->fileInfo->getSaveName(),'url'=>Upload::pathToUrl($thumbPath)]);
-        else
-            return Json::fail($res->error);
+        $res = Upload::image('file','store/product/'.date('Ymd'));
+        if(is_array($res)){
+            SystemAttachment::attachmentAdd($res['name'],$res['size'],$res['type'],$res['dir'],$res['thumb_path'],4,$res['image_type'],$res['time']);
+            return Json::successful('图片上传成功!',['name'=>$res['name'],'url'=>Upload::pathToUrl($res['thumb_path'])]);
+        }else
+            return Json::fail($res);
     }
 
 
@@ -223,8 +219,8 @@ class StoreSeckill extends AuthController
         $f[] = Form::input('info','秒杀活动简介',$product->getData('info'))->type('textarea');
         $f[] = Form::input('unit_name','单位',$product->getData('unit_name'))->placeholder('个、位');
         $f[] = Form::dateTimeRange('section_time','活动时间',$product->getData('start_time'),$product->getData('stop_time'));
-        $f[] = Form::frameImageOne('image','产品主图片(305*305px)',Url::build('admin/widget.images/index',array('fodder'=>'image')),$product->getData('image'))->icon('image');
-        $f[] = Form::frameImages('images','产品轮播图(640*640px)',Url::build('admin/widget.images/index',array('fodder'=>'images')),json_decode($product->getData('images')))->maxLength(5)->icon('images');
+        $f[] = Form::frameImageOne('image','产品主图片(305*305px)',Url::build('admin/widget.images/index',array('fodder'=>'image')),$product->getData('image'))->icon('image')->width('100%')->height('500px');
+        $f[] = Form::frameImages('images','产品轮播图(640*640px)',Url::build('admin/widget.images/index',array('fodder'=>'images')),json_decode($product->getData('images')))->maxLength(5)->icon('images')->width('100%')->height('500px');
         $f[] = Form::number('price','秒杀价',$product->getData('price'))->min(0)->col(12);
         $f[] = Form::number('ot_price','原价',$product->getData('ot_price'))->min(0)->col(12);
         $f[] = Form::number('cost','成本价',$product->getData('cost'))->min(0)->col(12);
@@ -251,6 +247,9 @@ class StoreSeckill extends AuthController
     public function delete($id)
     {
         if(!$id) return $this->failed('数据不存在');
+        $product = StoreSeckillModel::get($id);
+        if(!$product) return Json::fail('数据不存在!');
+        if($product['is_del']) return Json::fail('已删除!');
         $data['is_del'] = 1;
         if(!StoreSeckillModel::edit($data,$id))
             return Json::fail(StoreSeckillModel::getErrorInfo('删除失败,请稍候再试!'));

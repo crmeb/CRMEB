@@ -1,6 +1,7 @@
 <?php
 namespace app\admin\controller\wechat;
 use app\admin\controller\AuthController;
+use app\admin\model\system\SystemAttachment;
 use service\FormBuilder as Form;
 use service\UtilService as Util;
 use service\JsonService as Json;
@@ -87,7 +88,7 @@ class StoreService extends AuthController
         $service = ServiceModel::get($id);
         if(!$service) return Json::fail('数据不存在!');
         $f = array();
-        $f[] = Form::frameImageOne('avatar','客服头像',Url::build('admin/widget.images/index',array('fodder'=>'avatar')),$service['avatar'])->icon('image');
+        $f[] = Form::formFrameImageOne('avatar','客服头像',$service['avatar']);
         $f[] = Form::input('nickname','客服名称',$service["nickname"]);
         $f[] = Form::switches('notify','订单通知',$service["notify"])->trueValue(1)->falseValue(0)->openStr('开启')->closeStr('关闭');
         $f[] = Form::radio('status','客服状态',$service['status'])->options([['value'=>1,'label'=>'显示'],['value'=>0,'label'=>'隐藏']]);
@@ -135,12 +136,12 @@ class StoreService extends AuthController
      */
     public function upload()
     {
-        $res = Upload::image('file','store/service');
-        $thumbPath = Upload::thumb($res->dir);
-        if($res->status == 200)
-            return Json::successful('图片上传成功!',['name'=>$res->fileInfo->getSaveName(),'url'=>Upload::pathToUrl($thumbPath)]);
-        else
-            return Json::fail($res->error);
+        $res = Upload::image('file','store/product/'.date('Ymd'));
+        if(is_array($res)){
+            SystemAttachment::attachmentAdd($res['name'],$res['size'],$res['type'],$res['dir'],$res['thumb_path'],2,$res['image_type'],$res['time']);
+            return Json::successful('图片上传成功!',['name'=>$res['name'],'url'=>Upload::pathToUrl($res['thumb_path'])]);
+        }else
+            return Json::fail($res);
     }
 
     /**

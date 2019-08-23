@@ -174,16 +174,26 @@ class StoreCart extends ModelBasic
                         $invalid[] = $cart;
                     else{
                         $cart['productInfo']['attrInfo'] = $attrInfo;
-                        $cart['truePrice'] = (float)StoreProduct::setLevelPrice($attrInfo['price'],$uid,true);
-                        $cart['vip_truePrice'] = (float)StoreProduct::setLevelPrice($attrInfo['price'],$uid);
+                        if($cart['combination_id'] || $cart['seckill_id'] || $cart['bargain_id']) {
+                            $cart['truePrice'] = $attrInfo['price'];
+                            $cart['vip_truePrice'] = 0;
+                        }else {
+                            $cart['truePrice'] = (float)StoreProduct::setLevelPrice($attrInfo['price'],$uid,true);
+                            $cart['vip_truePrice'] = (float)StoreProduct::setLevelPrice($attrInfo['price'], $uid);
+                        }
                         $cart['trueStock'] = $attrInfo['stock'];
                         $cart['costPrice'] = $attrInfo['cost'];
                         $cart['productInfo']['image'] = empty($attrInfo['image']) ? $cart['productInfo']['image'] : $attrInfo['image'];
                         $valid[] = $cart;
                     }
                 }else{
-                    $cart['truePrice'] = (float)StoreProduct::setLevelPrice($cart['productInfo']['price'],$uid,true);
-                    $cart['vip_truePrice'] = (float)StoreProduct::setLevelPrice($cart['productInfo']['price'],$uid);
+                    if($cart['combination_id'] || $cart['seckill_id'] || $cart['bargain_id']) {
+                        $cart['truePrice'] = $cart['productInfo']['price'];
+                        $cart['vip_truePrice'] = 0;
+                    }else {
+                        $cart['truePrice'] = (float)StoreProduct::setLevelPrice($cart['productInfo']['price'],$uid,true);
+                        $cart['vip_truePrice'] = (float)StoreProduct::setLevelPrice($cart['productInfo']['price'], $uid);
+                    }
                     $cart['trueStock'] = $cart['productInfo']['stock'];
                     $cart['costPrice'] = $cart['productInfo']['cost'];
                     $valid[] = $cart;

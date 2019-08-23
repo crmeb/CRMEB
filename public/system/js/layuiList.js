@@ -4,21 +4,27 @@
         laydate: null,
         layer: null,
         form: null,
+        upload:null,
         tableIns: null,
         laypage:null,
+        layedit:null,
         element:null,
+        tree:null,
         elemOdj:[],
         boxids:'ids',
         odj:'',
         initialize: function () {
             var that = this;
-            layui.use(['form','table', 'laydate', 'layer', 'laypage','element'], function () {
+            layui.use(['form','table', 'laydate', 'layer', 'laypage','element','layedit','tree','upload'], function () {
                 that.form = layui.form;
                 that.table = layui.table;
                 that.laydate = layui.laydate;
                 that.layer = layui.layer;
                 that.laypage =layui.laypage;
                 that.element = layui.element;
+                that.layedit=layui.layedit;
+                that.tree=layui.tree;
+                that.upload=layui.upload;
             })
             $('.layui-input-block').each(function () {
                 var name = $(this).data('type');
@@ -47,10 +53,11 @@
         }
     };
     //ajax POST
-    layList.basePost = function (url, data, successCallback, errorCallback) {
+    layList.basePost = function (url, data, successCallback, errorCallback,headers) {
         var that = this;
+        if(headers==undefined) headers=this.headers();
         $.ajax({
-            headers: this.headers(),
+            headers: headers,
             url: url,
             data: data,
             type: 'post',
@@ -63,15 +70,16 @@
             },
             error: function (err) {
                 errorCallback && errorCallback(err);
-                that.msg(err);
+                that.msg('服务器异常');
             }
         })
     }
     //ajax GET
-    layList.baseGet = function (url,successCallback, errorCallback) {
+    layList.baseGet = function (url,successCallback, errorCallback,headers) {
         var that = this;
+        if(headers==undefined) headers=this.headers();
         $.ajax({
-            headers: this.headers(),
+            headers: headers,
             url: url,
             type: 'get',
             dataType: 'json',
@@ -216,13 +224,11 @@
             }
         });
     }
-    layList.msg = function (msg) {
+    layList.msg = function (msg,fun) {
         var msg = msg || '未知错误';
         try {
-            return this.layer.msg(msg);
-        } catch (e) {
-            console.log(e);
-        }
+            return this.layer.msg(msg,fun);
+        } catch (e) {}
     }
     //时间选择器
     layList.date = function (IdName) {

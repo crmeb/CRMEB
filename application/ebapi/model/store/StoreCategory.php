@@ -59,6 +59,7 @@ class StoreCategory extends ModelBasic
      * @throws \think\exception\DbException
      */
     public static function byIndexList($limit = 4,$field = 'id,cate_name,pid,pic'){
+        if(!$limit) return [];
         return self::where('pid','>',0)->where('is_show',1)->field($field)->order('sort DESC')->limit($limit)->select();
     }
 

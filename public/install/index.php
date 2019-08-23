@@ -18,9 +18,9 @@ if (file_exists('./install.lock')) {
 }
 @set_time_limit(1000);
 
-if ('5.5.9' > phpversion()){
+if (PHP_EDITION > phpversion()){
 	header("Content-type:text/html;charset=utf-8");
-	exit('您的php版本过低，不能安装本软件，请升级到5.5.9或更高版本再安装，谢谢！');
+	exit('您的php版本过低，不能安装本软件，请升级到'.PHP_EDITION.'或更高版本再安装，谢谢！');
 }
 
 define("CRMEB_VERSION", '20180601');
@@ -67,8 +67,8 @@ switch ($step) {
 
     case '2':
 
-        if (phpversion() < 5.6) {
-            die('本系统需要PHP5+MYSQL >=5.5.9环境，当前PHP版本为：' . phpversion());
+        if (phpversion() <= PHP_EDITION) {
+            die('本系统需要PHP版本 >= '.PHP_EDITION.'环境，当前PHP版本为：' . phpversion());
         }
 
         $phpv = @ phpversion();

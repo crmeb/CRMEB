@@ -34,22 +34,23 @@ class StoreOrder extends ModelBasic
     use ModelTrait;
 
     public static function orderCount(){
-        $data['wz']=self::statusByWhere(0,new self())->count();
-        $data['wf']=self::statusByWhere(1,new self())->count();
-        $data['ds']=self::statusByWhere(2,new self())->count();
-        $data['dp']=self::statusByWhere(3,new self())->count();
-        $data['jy']=self::statusByWhere(4,new self())->count();
-        $data['tk']=self::statusByWhere(-1,new self())->count();
-        $data['yt']=self::statusByWhere(-2,new self())->count();
-        $data['general']=self::where(['pink_id'=>0,'combination_id'=>0,'seckill_id'=>0,'bargain_id'=>0])->count();
-        $data['pink']=self::where('pink_id|combination_id','>',0)->count();
-        $data['seckill']=self::where('seckill_id','>',0)->count();
-        $data['bargain']=self::where('bargain_id','>',0)->count();
+        $data['wz']=self::statusByWhere(0,new self())->where(['is_system_del'=>0])->count();
+        $data['wf']=self::statusByWhere(1,new self())->where(['is_system_del'=>0])->count();
+        $data['ds']=self::statusByWhere(2,new self())->where(['is_system_del'=>0])->count();
+        $data['dp']=self::statusByWhere(3,new self())->where(['is_system_del'=>0])->count();
+        $data['jy']=self::statusByWhere(4,new self())->where(['is_system_del'=>0])->count();
+        $data['tk']=self::statusByWhere(-1,new self())->where(['is_system_del'=>0])->count();
+        $data['yt']=self::statusByWhere(-2,new self())->where(['is_system_del'=>0])->count();
+        $data['del']=self::statusByWhere(-4,new self())->where(['is_system_del'=>0])->count();
+        $data['general']=self::where(['pink_id'=>0,'combination_id'=>0,'seckill_id'=>0,'bargain_id'=>0,'is_system_del'=>0])->count();
+        $data['pink']=self::where('pink_id|combination_id','>',0)->where('is_system_del',0)->count();
+        $data['seckill']=self::where('seckill_id','>',0)->where('is_system_del',0)->count();
+        $data['bargain']=self::where('bargain_id','>',0)->where('is_system_del',0)->count();
         return $data;
     }
 
     public static function OrderList($where){
-        $model = self::getOrderWhere($where,self::alias('a')->join('user r','r.uid=a.uid','LEFT'),'a.','r')->field('a.*,r.nickname');
+        $model = self::getOrderWhere($where,self::alias('a')->join('user r','r.uid=a.uid','LEFT'),'a.','r')->field('a.*,r.nickname,r.phone');
         if($where['order']!=''){
             $model = $model->order(self::setOrder($where['order']));
         }else{
@@ -68,7 +69,7 @@ class StoreOrder extends ModelBasic
             }
             $item['_info'] = $_info;
             $item['add_time'] = date('Y-m-d H:i:s',$item['add_time']);
-            if($item['pink_id'] && $item['combination_id']){
+            if($item['pink_id'] || $item['combination_id']){
                 $pinkStatus = StorePink::where('order_id_key',$item['id'])->value('status');
                 switch ($pinkStatus){
                     case 1:
@@ -135,9 +136,22 @@ class StoreOrder extends ModelBasic
             }else if($item['paid']==1 && $item['status']==3 && $item['refund_status']==0){
                 $item['status_name']='已完成';
             }else if($item['paid']==1 && $item['refund_status']==1){
+                $refundReasonTime = date('Y-m-d H:i', $item['refund_reason_time']);
+                $refundReasonWapImg = json_decode($item['refund_reason_wap_img'], true);
+                $img = '';
+                if(count($refundReasonWapImg) && is_array($refundReasonWapImg)){
+                    foreach ($refundReasonWapImg as $itemImg){
+                        if(strlen(trim($itemImg)))
+                            $img .='<img style="height:50px;" src="'.$itemImg.'" />';
+                    }
+                }
+                if(!strlen(trim($img)))  $img = '无';
                 $item['status_name']=<<<HTML
 <b style="color:#f124c7">申请退款</b><br/>
-<span>退款原因：{$item['refund_reason_wap']}</span>
+<span>退款原因：{$item['refund_reason_wap']}</span><br/>
+<span>备注说明：{$item['refund_reason_wap_explain']}</span><br/>
+<span>退款时间：{$refundReasonTime}</span><br/>
+<span>退款凭证：{$img}</span>
 HTML;
             }else if($item['paid']==1 && $item['refund_status']==2){
                 $item['status_name']='已退款';
@@ -183,17 +197,32 @@ HTML;
                     ],' ');
             }
             $item['cartInfo'] = $_info;
+            $sex=Db::name('wechat_user')->where('uid',$item['uid'])->value('sex');
+            if($sex==1) $sex_name='男';
+            else if($sex==2) $sex_name='女';
+            else $sex_name='未知';
             $export[] = [
-                $item['order_id'],$item['pay_type_name'],
-                $item['total_num'],$item['total_price'],$item['total_postage'],$item['pay_price'],$item['refund_price'],
-                $item['mark'],$item['remark'],
-                [$item['real_name'],$item['user_phone'],$item['user_address']],
+                $item['order_id'],
+                $sex_name,
+                $item['phone'],
+                $item['real_name'],
+                $item['user_phone'],
+                $item['user_address'],
                 $goodsName,
-                [$item['paid'] == 1? '已支付':'未支付','支付时间: '.($item['pay_time'] > 0 ? date('Y/md H:i',$item['pay_time']) : '暂无')]
+                $item['total_price'],
+                $item['pay_price'],
+                $item['pay_postage'],
+                $item['coupon_price'],
+                $item['pay_type_name'],
+                $item['pay_time'] > 0 ? date('Y/md H:i',$item['pay_time']) : '暂无',
+                $item['status_name'],
+                $item['add_time'],
+                $item['mark']
             ];
         }
-        PHPExcelService::setExcelHeader(['订单号','支付方式','商品总数','商品总价','邮费','支付金额','退款金额','用户备注','管理员备注','收货人信息','商品信息','支付状态'])
-            ->setExcelTile('订单导出','订单信息'.time(),' 生成时间：'.date('Y-m-d H:i:s',time()))
+        PHPExcelService::setExcelHeader(['订单号','性别','电话','收货人姓名','收货人电话','收货地址','商品信息',
+            '总价格','实际支付','邮费','优惠金额','支付状态','支付时间','订单状态','下单时间','用户备注'])
+            ->setExcelTile('订单导出'.date('YmdHis',time()),'订单信息'.time(),' 生成时间：'.date('Y-m-d H:i:s',time()))
             ->setExcelContent($export)
             ->ExcelSave();
     }
@@ -313,6 +342,8 @@ HTML;
             return $model->where($alert.'paid',1)->where($alert.'refund_status',2);
         else if($status == -3)//退款
             return $model->where($alert.'paid',1)->where($alert.'refund_status','in','1,2');
+        else if($status == -4)//已删除
+            return $model->where($alert.'is_del',1);
         else
             return $model;
     }
@@ -351,7 +382,7 @@ HTML;
     public static function refundTemplate($data,$oid)
     {
         $order = self::where('id',$oid)->find();
-        WechatTemplateService::sendTemplate(WechatUser::uidToOpenid($order['uid']),WechatTemplateService::ORDER_REFUND_STATUS, [
+        WechatTemplateService::sendTemplate(WechatUser::where('uid',$order['uid'])->value('openid'),WechatTemplateService::ORDER_REFUND_STATUS, [
             'first'=>'亲，您购买的商品已退款,本次退款'.$data['refund_price'].'金额',
             'keyword1'=>$order['order_id'],
             'keyword2'=>$order['pay_price'],
@@ -388,7 +419,12 @@ HTML;
      */
     public static function getOrderWhere($where,$model,$aler='',$join=''){
 //        $model = $model->where('combination_id',0);
-        if($where['status'] != '') $model =  self::statusByWhere($where['status'],$model,$aler);
+        $model = $model->where('is_system_del',0);
+        if($where['status'] != '') {
+            $model =  self::statusByWhere($where['status'],$model,$aler);
+        }else{
+            $model = $model->where('paid',1);
+        }
         if($where['is_del'] != '' && $where['is_del'] != -1) $model = $model->where($aler.'is_del',$where['is_del']);
         if(isset($where['combination_id'])){
             if($where['combination_id'] =='普通订单'){
@@ -423,7 +459,7 @@ HTML;
         }
 
         if($where['real_name'] != ''){
-            $model = $model->where($aler.'order_id|'.$aler.'real_name|'.$aler.'user_phone'.($join ? '|'.$join.'.nickname|'.$join.'.uid':''),'LIKE',"%$where[real_name]%");
+            $model = $model->where($aler.'order_id|'.$aler.'real_name|'.$aler.'user_phone'.($join ? '|'.$join.'.nickname|'.$join.'.uid|'.$join.'.phone':''),'LIKE',"%$where[real_name]%");
         }
         if($where['data'] !== ''){
             $model = self::getModelTime($where,$model,$aler.'add_time');
@@ -436,7 +472,7 @@ HTML;
             [
                 'name'=>'订单数量',
                 'field'=>'件',
-                'count'=>$price['total_num'],
+                'count'=>$price['count_sum'],
                 'background_color'=>'layui-bg-blue',
                 'col'=>2
             ],
@@ -472,6 +508,20 @@ HTML;
                 'name'=>'余额支付金额',
                 'field'=>'元',
                 'count'=>$price['pay_price_yue'],
+                'background_color'=>'layui-bg-blue',
+                'col'=>2
+            ],
+            [
+                'name'=>'运费金额',
+                'field'=>'元',
+                'count'=>$price['pay_postage'],
+                'background_color'=>'layui-bg-blue',
+                'col'=>2
+            ],
+            [
+                'name'=>'分佣金额',
+                'field'=>'元',
+                'count'=>$price['brokerage'],
                 'background_color'=>'layui-bg-blue',
                 'col'=>2
             ],
@@ -517,23 +567,38 @@ HTML;
         $price['back_integral'] = 0;//退积分总数
         $price['deduction_price'] = 0;//抵扣金额
         $price['total_num'] = 0; //商品总数
-        $sumNumber =self::getOrderWhere($where,$model)->where('is_del',0)->field([
+        $price['count_sum'] = 0; //商品总数
+        $price['brokerage'] =0;
+        $price['pay_postage'] =0;
+        $whereData=['is_del'=>0];
+        if($where['status']==''){
+            $whereData['paid']=1;
+            $whereData['refund_status']=0;
+        }
+        $ids= self::getOrderWhere($where,$model)->where($whereData)->column('id');
+        if(count($ids)){
+            $price['brokerage'] = UserBill::where(['category'=>'now_money','type'=>'brokerage'])->where('link_id','in',$ids)->sum('number');
+        }
+        $price['refund_price'] = self::getOrderWhere($where,$model)->where(['is_del'=>0,'paid'=>1,'refund_status'=>2])->sum('refund_price');
+        $sumNumber =self::getOrderWhere($where,$model)->where($whereData)->field([
             'sum(total_num) as sum_total_num',
+            'count(id) as count_sum',
             'sum(pay_price) as sum_pay_price',
-            'sum(refund_price) as sum_refund_price',
+            'sum(pay_postage) as sum_pay_postage',
             'sum(use_integral) as sum_use_integral',
             'sum(back_integral) as sum_back_integral',
             'sum(deduction_price) as sum_deduction_price'
         ])->find();
         if($sumNumber) {
+            $price['count_sum'] = $sumNumber['count_sum'];
             $price['total_num'] = $sumNumber['sum_total_num'];
             $price['pay_price'] = $sumNumber['sum_pay_price'];
-            $price['refund_price'] = $sumNumber['sum_refund_price'];
+            $price['pay_postage'] = $sumNumber['sum_pay_postage'];
             $price['use_integral'] = $sumNumber['sum_use_integral'];
             $price['back_integral'] = $sumNumber['sum_back_integral'];
             $price['deduction_price'] = $sumNumber['sum_deduction_price'];
         }
-        $list=self::getOrderWhere($where,$model)->where('is_del',0)->group('pay_type')->field(['sum(pay_price) as sum_pay_price','pay_type'])->select();
+        $list = self::getOrderWhere($where,$model)->where($whereData)->group('pay_type')->column('sum(pay_price) as sum_pay_price,pay_type','id');
         foreach ($list as $v){
             if ($v['pay_type'] == 'weixin'){
                 $price['pay_price_wx'] = $v['sum_pay_price'];
@@ -804,6 +869,26 @@ HTML;
     public static function getOrderBadge($where){
         return [
             [
+                'name'=>'拼团订单数量',
+                'field'=>'个',
+                'count'=>self::setEchatWhere($where,2)->count(),
+                'content'=>'拼团总订单数量',
+                'background_color'=>'layui-bg-cyan',
+                'sum'=>self::setEchatWhere($where,2,true)->count(),
+                'class'=>'fa fa-line-chart',
+                'col'=>2
+            ],
+            [
+                'name'=>'砍价订单数量',
+                'field'=>'个',
+                'count'=>self::setEchatWhere($where,4)->count(),
+                'content'=>'砍价总订单数量',
+                'background_color'=>'layui-bg-cyan',
+                'sum'=>self::setEchatWhere($where,4,true)->count(),
+                'class'=>'fa fa-line-chart',
+                'col'=>2
+            ],
+            [
                 'name'=>'秒杀订单数量',
                 'field'=>'个',
                 'count'=>self::setEchatWhere($where,3)->count(),
@@ -948,6 +1033,12 @@ HTML;
                 ]);
                 WechatTemplateService::sendTemplate($openid, WechatTemplateService::ORDER_POSTAGE_SUCCESS, $group, $url);
             }
+        }else if($postageData['delivery_type'] == 'fictitious'){
+            if ($order['is_channel']) {
+
+            }else{
+
+            }
         }
 
     }
@@ -974,21 +1065,31 @@ HTML;
      */
     public static function orderTakeAfter($order)
     {
+        $title = '';
+        $cartInfo = self::getDb('StoreOrderCartInfo')->where('oid', $order['id'])->column('cart_info');
+
+        if(count($cartInfo)){
+            foreach ($cartInfo as $key=>&$cart){
+                $cart = json_decode($cart,true);
+                $title .= $cart['productInfo']['store_name'].',';
+            }
+        }
+        if(strlen(trim($title)))
+            $title = substr($title,0,bcsub(strlen($title),1,0));
+        else{
+            $cartInfo = self::getDb('store_cart')->alias('a')->where('a.id','in',implode(',',json_decode($order['cart_id'],true)))->find();
+            $title = StoreProduct::where('id',$cartInfo['product_id'])->value('store_name');
+        }
+
         if($order['is_channel']){//小程序
             RoutineTemplate::sendOut('OREDER_TAKEVER',$order['uid'],[
                 'keyword1'=>$order['order_id'],
-                'keyword2'=>self::getDb('store_cart')->alias('a')->join('__STORE_PRODUCT__ P','a.product_id=p.id')->where('a.id','in',$order['cart_id'])->value('p.title'),
+                'keyword2'=>$title,
                 'keyword3'=>$order['pay_price'],
                 'keyword4'=>date('Y-m-d H:i:s',time()),
             ]);
         }else{
-             $openid = WechatUser::where('uid',$order['uid'])->value('openid');
-            $title='';
-            $cartInfo = self::getDb('StoreOrderCartInfo')->where('oid', $order['id'])->column('product_id') ?: [];
-            foreach ($cartInfo as $k => $productId) {
-                $store_name=self::getDb('store_product')->where('id',$productId)->value('store_name');
-                $title.=$store_name.',';
-            }
+            $openid = WechatUser::where('uid',$order['uid'])->value('openid');
             WechatTemplateService::sendTemplate($openid,WechatTemplateService::ORDER_TAKE_SUCCESS,[
                 'first'=>'亲，您的订单已收货',
                 'keyword1'=>$order['order_id'],

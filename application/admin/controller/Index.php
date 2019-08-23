@@ -11,6 +11,7 @@ use app\admin\model\user\UserExtract as UserExtractModel;//分销
 use app\admin\model\user\User as UserModel;//用户
 use app\admin\model\store\StoreProductReply as StoreProductReplyModel;//评论
 use app\admin\model\store\StoreProduct as ProductModel;//产品
+use app\core\util\SystemConfigService;
 use FormBuilder\Json;
 use think\DB;
 
@@ -28,11 +29,10 @@ class Index extends AuthController
         $adminInfo = $this->adminInfo->toArray();
         $roles  = explode(',',$adminInfo['roles']);
         $site_logo = SystemConfig::getOneConfig('menu_name','site_logo')->toArray();
-//        dump(SystemMenus::menuList());
-//        exit();
         $this->assign([
             'menuList'=>SystemMenus::menuList(),
             'site_logo'=>json_decode($site_logo['value'],true),
+            'new_order_audio_link'=>str_replace('\\','/',SystemConfigService::get('new_order_audio_link')),
             'role_name'=>SystemRole::where('id',$roles[0])->field('role_name')->find()
         ]);
         return $this->fetch();
@@ -545,32 +545,37 @@ class Index extends AuthController
         $data = [];
         $chartdata['legend'] = ['用户数'];//分类
         $chartdata['yAxis']['maxnum'] = 0;//最大值数量
-        if(empty($user_list))return Json::fail('无数据');
-        foreach ($user_list as $k=>$v){
-            $data['day'][] = $v['day'];
-            $data['count'][] = $v['count'];
-            if($chartdata['yAxis']['maxnum'] < $v['count'])
-                $chartdata['yAxis']['maxnum'] = $v['count'];
+        $chartdata['xAxis'] = [date('m-d')];//X轴值
+        $chartdata['series'] = [0];//分类1值
+        if(!empty($user_list)) {
+            foreach ($user_list as $k=>$v){
+                $data['day'][] = $v['day'];
+                $data['count'][] = $v['count'];
+                if($chartdata['yAxis']['maxnum'] < $v['count'])
+                    $chartdata['yAxis']['maxnum'] = $v['count'];
+            }
+            $chartdata['xAxis'] = $data['day'];//X轴值
+            $chartdata['series'] = $data['count'];//分类1值
         }
-        $chartdata['xAxis'] = $data['day'];//X轴值
-        $chartdata['series'] = $data['count'];//分类1值
-
         return Json::succ('ok',$chartdata);
     }
 
     /**待办事统计
      * @param Request|null $request
      */
-    public function Jnotice()
+    public function Jnotice($newTime=30)
     {
         header('Content-type:text/json');
         $data = [];
         $data['ordernum'] = StoreOrderModel::statusByWhere(1)->count();//待发货
         $replenishment_num = SystemConfig::getValue('store_stock') > 0 ? SystemConfig::getValue('store_stock') : 2;//库存预警界限
         $data['inventory'] = ProductModel::where('stock','<=',$replenishment_num)->where('is_show',1)->where('is_del',0)->count();//库存
-        $data['commentnum'] = StoreProductReplyModel::where('is_reply',0)->count();//评论
+        $data['commentnum'] = StoreProductReplyModel::where(['is_reply'=>0,'is_del'=>0])->count();//评论
         $data['reflectnum'] = UserExtractModel::where('status',0)->count();;//提现
         $data['msgcount'] = intval($data['ordernum'])+intval($data['inventory'])+intval($data['commentnum'])+intval($data['reflectnum']);
+        //新订单提醒
+        $data['newOrderId']=StoreOrderModel::statusByWhere(1)->where('is_remind',0)->column('order_id');
+        if(count($data['newOrderId'])) StoreOrderModel::where('order_id','in',$data['newOrderId'])->update(['is_remind'=>1]);
         return Json::succ('ok',$data);
     }
 }

@@ -9,6 +9,7 @@ namespace app\wap\controller;
 
 
 use Api\Express;
+use app\core\util\WechatService;
 use app\wap\model\store\StoreBargain;
 use app\wap\model\store\StoreBargainUser;
 use app\wap\model\store\StoreBargainUserHelp;
@@ -155,18 +156,29 @@ class AuthApi extends AuthController
 
     public function get_user_collect_product($first = 0,$limit = 8)
     {
-        $list = StoreProductRelation::where('A.uid',$this->userInfo['uid'])
-            ->field('B.id pid,B.store_name,B.price,B.ot_price,B.sales,B.image,B.is_del,B.is_show')->alias('A')
-            ->where('A.type','collect')->where('A.category','product')
-            ->order('A.add_time DESC')->join('__STORE_PRODUCT__ B','A.product_id = B.id')
-            ->limit($first,$limit)->select()->toArray();
-        foreach ($list as $k=>$product){
+        $productList = StoreProductRelation::getProductRelation($this->userInfo['uid'], $first, $limit);
+        $seckillList = StoreProductRelation::getSeckillRelation($this->userInfo['uid'], $first, $limit);
+        $sort = [];
+        $list = [];
+        foreach ($productList as $key=>&$product){
             if($product['pid']){
-                $list[$k]['is_fail'] = $product['is_del'] && $product['is_show'];
+                $product['is_fail'] = $product['is_del'] && $product['is_show'];
+                $sort[] = $product['add_time'];
+                array_push($list,$product);
             }else{
-                unset($list[$k]);
+                unset($productList[$key]);
             }
         }
+        foreach ($seckillList as $key=>&$seckill){
+            if($seckill['pid']){
+                $seckill['is_fail'] = $seckill['is_del'] && $seckill['is_show'];
+                $sort[] = $seckill['add_time'];
+                array_push($list,$seckill);
+            }else{
+                unset($seckillList[$key]);
+            }
+        }
+        array_multisort($sort,SORT_DESC,SORT_NUMERIC,$list);
         return JsonService::successful($list);
     }
 
@@ -488,16 +500,18 @@ class AuthApi extends AuthController
             $keyword = base64_decode(htmlspecialchars($encodedData));
         }
         $model = StoreProduct::validWhere();
-        if($cId && $sId){
-            $product_ids=\think\Db::name('store_product_cate')->where('cate_id',$sId)->column('product_id');
+        if($cId){
+            $sids = StoreCategory::pidBySidList($cId);
+            $sids[] = $cId;
+            if($sId) $sids[] = $sId;
+            $sId = implode(',',$sids);
+        }
+        if($sId){
+            $product_ids = \think\Db::name('store_product_cate')->where('cate_id','IN',$sId)->column('product_id');
             if(count($product_ids))
                 $model=$model->where('id',"in",$product_ids);
             else
                 $model=$model->where('cate_id',-1);
-        }elseif($cId){
-            $sids = StoreCategory::pidBySidList($cId)?:[];
-            $sids[] = $cId;
-            $model->where('cate_id','IN',$sids);
         }
         if(!empty($keyword)) $model->where('keyword|store_name','LIKE',"%$keyword%");
         if($news) $model->where('is_new',1);
@@ -564,15 +578,29 @@ class AuthApi extends AuthController
                 $now_user = StoreService::field("uid,nickname")->where(array("uid"=>$params["uid"]))->find();
                 if(!$now_user)$now_user = User::field("uid,nickname")->where(array("uid"=>$params["uid"]))->find();
                 if($params["to_uid"]) {
-                    $head = '您有新的消息，请注意查收！';
-                    WechatTemplateService::sendTemplate(WechatUser::uidToOpenid($params["to_uid"]),WechatTemplateService::SERVICE_NOTICE,[
-                        'first'=>$head,
-                        'keyword1'=>$now_user["nickname"],
-                        'keyword2'=>"客服提醒",
-                        'keyword3'=> preg_replace('/<img.*? \/>/','[图片]',$value["msn"]),
-                        'keyword4'=>date('Y-m-d H:i:s',time()),
-                        'remark'=>'点击立即查看消息'
-                    ],Url::build('service/service_ing',['to_uid'=>$now_user["uid"],'mer_id'=>$params["mer_id"]],true,true));
+                    $userInfo = WechatUser::where('uid',$params["to_uid"])->field('nickname,subscribe,openid,headimgurl')->find();
+                    $head = '客服提醒';
+                    $description = '您有新的消息，请注意查收！';
+                    $url = Url::build('service/service_ing',['to_uid'=>$now_user["uid"],'mer_id'=>$params["mer_id"]],true,true);
+                    $message = WechatService::newsMessage($head,$description,$url,$userInfo['headimgurl']);
+                    if($userInfo){
+                        $userInfo = $userInfo->toArray();
+                        if($userInfo['subscribe'] && $userInfo['openid']){
+                            try {
+                                WechatService::staffService()->message($message)->to($userInfo['openid'])->send();
+                            } catch (\Exception $e) {
+                                $errorLog = $userInfo['nickname'].'发送失败'.$e->getMessage();
+                            }
+                        }
+                    }
+//                    WechatTemplateService::sendTemplate(WechatUser::uidToOpenid($params["to_uid"]),WechatTemplateService::SERVICE_NOTICE,[
+//                        'first'=>$head,
+//                        'keyword1'=>$now_user["nickname"],
+//                        'keyword2'=>"客服提醒",
+//                        'keyword3'=> preg_replace('/<img.*? \/>/','[图片]',$value["msn"]),
+//                        'keyword4'=>date('Y-m-d H:i:s',time()),
+//                        'remark'=>'点击立即查看消息'
+//                    ],Url::build('service/service_ing',['to_uid'=>$now_user["uid"],'mer_id'=>$params["mer_id"]],true,true));
                 }
             }
         }
@@ -683,8 +711,12 @@ class AuthApi extends AuthController
             ->field('A.*,B.coupon_price,B.use_min_price')->order('B.sort DESC,A.id DESC')->limit($limit)->select()->toArray()?:[];
         $list_coupon=[];
         foreach ($list as $k=>&$v){
-            if(!($v['is_use']=StoreCouponIssueUser::be(['uid'=>$this->userInfo['uid'],'issue_coupon_id'=>$v['id']])) && $v['total_count'] > 0 && $v['remain_count'] >0){
-                array_push($list_coupon,$v);
+            if(!($v['is_use']=StoreCouponIssueUser::be(['uid'=>$this->userInfo['uid'],'issue_coupon_id'=>$v['id']]))){
+                if($v['is_permanent'] == 0 && $v['total_count'] > 0 && $v['remain_count'] >0){
+                    array_push($list_coupon,$v);
+                }else if($v['is_permanent'] == 1){
+                    array_push($list_coupon,$v);
+                }
             }
         }
         return JsonService::successful($list_coupon);

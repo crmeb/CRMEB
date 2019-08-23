@@ -96,7 +96,7 @@
                             value: ''
                         },
                         param: {
-                            placeholder: "参数方式例如:\n1=白色\n2=红色\n3=黑色",
+                            placeholder: "参数方式例如:\n1=>白色\n2=>红色\n3=>黑色",
                             value: ''
                         }
                     })

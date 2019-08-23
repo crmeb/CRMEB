@@ -35,6 +35,7 @@ class SystemUserLevel extends ModelBasic
         $model=$model===null ? new self() : $model;
         if($alert) $model=$model->alias($alert);
         $alert=$alert ? $alert.'.': '';
+        $model = $model->where("{$alert}is_del",0);
         if(isset($where['is_show']) && $where['is_show']!=='') $model=$model->where("{$alert}is_show",$where['is_show']);
         if(isset($where['title']) && $where['title']) $model=$model->where("{$alert}name",'LIKE',"%$where[title]%");
         return $model;

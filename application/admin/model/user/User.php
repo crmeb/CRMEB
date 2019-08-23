@@ -42,6 +42,36 @@ class User extends ModelBasic
             }
         },$where);
     }
+
+    /*
+     * 获取和提现金额
+     * @param array $uid
+     * @return float
+     * */
+    public static function getextractPrice($uid,$where=[])
+    {
+        if(is_array($uid))
+            if(!count($uid)) return 0;
+        else
+            $uid = [$uid];
+        $brokerage= UserBill::getBrokerage($uid,'now_money','brokerage',$where);//获取总佣金
+        $recharge = UserBill::getBrokerage($uid,'now_money','recharge',$where);//累计充值
+        $extractTotalPrice = UserExtract::userExtractTotalPrice($uid,1,$where);//累计提现
+        if($brokerage > $extractTotalPrice) {
+            $orderYuePrice = self::getModelTime($where,StoreOrder::where('uid','in',$uid)->where(['is_del'=>0,'paid'=>1]))->sum('pay_price');//余额累计消费
+            $systemAdd = UserBill::getBrokerage($uid,'now_money','system_add',$where);//后台添加余额
+            $yueCount = bcadd($recharge,$systemAdd,2);// 后台添加余额 + 累计充值  = 非佣金的总金额
+            $orderYuePrice = $yueCount > $orderYuePrice ? 0 : bcsub($orderYuePrice,$yueCount,2);// 余额累计消费（使用佣金消费的金额）
+            $brokerage = bcsub($brokerage,$extractTotalPrice,2);//减去已提现金额
+            $extract_price = UserExtract::userExtractTotalPrice($uid,0,$where);
+            $brokerage = $extract_price < $brokerage ? bcsub($brokerage,$extract_price,2) : 0;//减去审核中的提现金额
+            $brokerage = $brokerage > $orderYuePrice ? bcsub($brokerage,$orderYuePrice,2) : 0;//减掉余额支付
+        }else{
+            $brokerage=0;
+        }
+        $num = (float)bcsub($brokerage,$extractTotalPrice,2);
+        return $num > 0 ? $num : 0;//可提现
+    }
     /*
      * 设置搜索条件
      *
@@ -363,12 +393,16 @@ class User extends ModelBasic
     }
     //获取用户新增,头部信息
     public static function getBadgeList($where){
-        $user_count=self::setWherePage(self::getModelTime($where,new self),$where,['is_promoter','status'])->count();
-        $user_count_old=self::getOldDate($where)->count();
-        $fenxiao=self::setWherePage(self::getModelTime($where,new self),$where,['is_promoter','status'])->where('spread_uid','<>',0)->count();
-        $fenxiao_count=self::getOldDate($where)->where('spread_uid','neq',0)->count();
-        $newFemxiao_count=bcsub($fenxiao,$fenxiao_count,0);
-        $order_count=bcsub($user_count,$user_count_old,0);
+        $user_count             = self::setWherePage(self::getModelTime($where,new self),$where,['is_promoter','status'])->count();
+        $user_count_old         = self::getOldDate($where)->count();
+        $store_brokerage_statu  = SystemConfigService::get('store_brokerage_statu');
+        if($store_brokerage_statu == 1)
+            $fenxiao            = self::setWherePage(self::getModelTime($where,new self),$where,['is_promoter','status'])->where('spread_uid','<>',0)->count();
+        else
+            $fenxiao            = self::count();
+        $fenxiao_count          = self::getOldDate($where)->where('spread_uid','neq',0)->count();
+        $newFemxiao_count       = bcsub($fenxiao,$fenxiao_count,0);
+        $order_count            = bcsub($user_count,$user_count_old,0);
         return [
             [
                 'name'=>'会员人数',
@@ -394,7 +428,7 @@ class User extends ModelBasic
                 'count'=>$fenxiao,
                 'content'=>'分销总人数',
                 'background_color'=>'layui-bg-green',
-                'sum'=>self::where('spread_uid','neq',0)->count(),
+                'sum'=>$store_brokerage_statu == 1 ? self::where('spread_uid','neq',0)->count() : $fenxiao,
                 'class'=>'fa fa-bar-chart',
             ],
             [
@@ -414,28 +448,28 @@ class User extends ModelBasic
      *  $limit 显示条数,是否有滚动条
      */
     public static function getUserChartList($where,$limit=20){
-        $list=self::setWherePage(self::getModelTime($where,new self),$where,['is_promoter','status'])
+        $list = self::setWherePage(self::getModelTime($where,new self),$where,['is_promoter','status'])
             ->where('add_time','neq',0)
             ->field(['FROM_UNIXTIME(add_time,"%Y-%m-%d") as _add_time','count(uid) as num'])
             ->order('_add_time asc')
             ->group('_add_time')
             ->select();
-         count($list) && $list=$list->toArray();
-         $seriesdata=[];
-         $xdata=[];
-         $Zoom='';
+         count($list) && $list = $list->toArray();
+         $seriesdata = [];
+         $xdata = [];
+         $Zoom = '';
          foreach ($list as $item){
-             $seriesdata[]=$item['num'];
-             $xdata[]=$item['_add_time'];
+             $seriesdata[] = $item['num'];
+             $xdata[] = $item['_add_time'];
          }
-        (count($xdata) > $limit) && $Zoom=$xdata[$limit-5];
+        (count($xdata) > $limit) && $Zoom = $xdata[$limit-5];
         //多次购物会员数量饼状图
-        $count=self::setWherePage(self::getModelTime($where,new self),$where,['is_promoter'])->count();
-        $user_count=self::setWherePage(self::getModelTime($where,self::alias('a')->join('__STORE_ORDER__ r','r.uid=a.uid'),'a.add_time'),$where,['is_promoter'])
+        $count = self::setWherePage(self::getModelTime($where,new self),$where,['is_promoter'])->count();
+        $user_count = self::setWherePage(self::getModelTime($where,self::alias('a')->join('__STORE_ORDER__ r','r.uid=a.uid'),'a.add_time'),$where,['is_promoter'])
             ->where('r.paid',1)->count('a.uid');
-        $shop_xdata=['多次购买数量占比','无购买数量占比'];
-        $shop_data=[];
-        $count >0 && $shop_data=[
+        $shop_xdata = ['多次购买数量占比','无购买数量占比'];
+        $shop_data = [];
+        $count >0 && $shop_data = [
             [
                 'value'=>bcdiv($user_count,$count,2)*100,
                 'name'=>$shop_xdata[0],
@@ -522,13 +556,33 @@ class User extends ModelBasic
     }
     //获取佣金记录列表
     public static function getCommissionList($where){
-        $list=self::setCommissionWhere($where)
-            ->page((int)$where['page'],(int)$where['limit'])
-            ->select();
+        $model = self::setCommissionWhere($where);
+        if($where['excel'])
+            $list = $model->select();
+        else
+            $list = $model->page((int)$where['page'],(int)$where['limit'])->select();
         count($list) && $list=$list->toArray();
+        $export=[];
         foreach ($list as &$value){
             $value['ex_price']= Db::name('user_extract')->where(['uid'=>$value['uid']])->sum('extract_price');
             $value['extract_price']= Db::name('user_extract')->where(['uid'=>$value['uid'],'status'=>1])->sum('extract_price');
+            $cashPrice = Db::name('user_extract')->where(['uid'=>$value['uid'],'status'=>0])->sum('extract_price');
+            $value['money'] = bcsub($value['ex_price'],$value['extract_price'],2);
+            $value['money'] = bcsub($value['money'],$cashPrice,2);
+            $export[]=[
+                $value['nickname'],
+                $value['sum_number'],
+                $value['now_money'],
+                $value['money'],
+                $value['ex_price'],
+                $value['extract_price'],
+            ];
+        }
+        if($where['excel']){
+            \service\PHPExcelService::setExcelHeader(['昵称/姓名','总佣金金额','提现佣金','余额','剩余佣金','提现到账佣金'])
+                ->setExcelTile('拥金记录','拥金记录'.time(),' 生成时间：'.date('Y-m-d H:i:s',time()))
+                ->setExcelContent($export)
+                ->ExcelSave();
         }
         $count=self::setCommissionWhere($where)->count();
         return ['data'=>$list,'count'=>$count];

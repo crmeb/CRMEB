@@ -89,20 +89,26 @@
           <view class='conter'>{{orderInfo.delivery_id || ''}}</view>
         </view>
     </view>
-    <view class='wrapper' wx:else>
+    <view class='wrapper' wx:elif='{{orderInfo.delivery_type=="send"}}'>
         <view class='item acea-row row-between'>
-          <view>收货人：</view>
+          <view>配送方式：：</view>
           <view class='conter'>送货</view>
         </view>
         <view class='item acea-row row-between'>
-          <view>联系电话：</view>
+          <view>配送人姓名：</view>
           <view class='conter'>{{orderInfo.delivery_name || ''}}</view>
         </view>
         <view class='item acea-row row-between'>
-          <view>配送电话：</view>
+          <view>联系电话：</view>
             <view class='conter acea-row row-middle row-right'>{{orderInfo.delivery_id || ''}}<text class='copy' bindtap='goTel'>拨打</text></view>
-        </view>
+      </view>
     </view>
+    <view class='wrapper' wx:elif='{{orderInfo.delivery_type=="fictitious"}}'>
+        <view class='item acea-row row-between'>
+          <view>虚拟发货：</view>
+          <view class='conter'>已发货，请注意查收</view>
+        </view>
+      </view>
    </view>
    <view class='wrapper'>
       <view class='item acea-row row-between'>
@@ -128,7 +134,7 @@
       <view class='bnt bg-color' wx:if="{{status.type==0}}" data-order_id='{{orderInfo.order_id}}' bindtap='checkPay'>立即付款</view>
       <navigator class='bnt cancel' wx:elif="{{status.type==1}}" hover-class='none' url='/pages/goods_return/index?orderId={{orderInfo.order_id}}'>申请退款</navigator>
       <view class='bnt bg-color' wx:if="{{status.class_status==1}}" bindtap='goJoinPink'>查看拼团</view>
-      <navigator class='bnt cancel' wx:if="{{status.class_status==3 && status.type==2}}" hover-class='none' url='/pages/goods_logistics/index?orderId={{orderInfo.order_id}}'>查看物流</navigator>
+      <navigator class='bnt cancel' wx:if="{{orderInfo.delivery_type == 'express' && status.class_status==3 && status.type==2}}" hover-class='none' url='/pages/goods_logistics/index?orderId={{orderInfo.order_id}}'>查看物流</navigator>
       <view class='bnt bg-color' wx:if="{{status.class_status==3}}" bindtap='confirmOrder'>确认收货</view>
       <view class='bnt cancel' wx:if="{{status.type==4}}" bindtap='delOrder'>删除订单</view>
       <view class='bnt bg-color' wx:if="{{status.class_status==5}}" bindtap='goOrderConfirm'>再次购买</view>

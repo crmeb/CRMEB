@@ -42,6 +42,7 @@ class StoreOrder extends AuthController
         $this->assign([
             'year'=>getMonth('y'),
             'real_name'=>$this->request->get('real_name',''),
+            'status'=>$this->request->param('status',''),
             'orderCount'=>StoreOrderModel::orderCount(),
         ]);
         return $this->fetch();
@@ -80,6 +81,35 @@ class StoreOrder extends AuthController
         ]);
         return JsonService::successlayui(StoreOrderModel::OrderList($where));
     }
+
+    /*
+     * 发送货
+     * @param int $id
+     * @return html
+     * */
+    public function order_goods($id = 0)
+    {
+        $list =  Db::name('express')->where('is_show',1)->order('sort DESC')->column('id,name');
+        $this->assign([
+            'list'=>$list,
+            'id'=>$id
+        ]);
+        return $this->fetch();
+    }
+    /*
+     * 删除订单
+     * */
+    public function del_order($ids=[])
+    {
+        if(!count($ids)) return JsonService::fail('请选择需要删除的订单');
+        if(StoreOrderModel::where('is_del',0)->where('id','in',$ids)->count()) return JsonService::fail('您选择的的订单存在用户未删除的订单，无法删除用户未删除的订单');
+        $res=StoreOrderModel::where('id','in',$ids)->update(['is_system_del'=>1]);
+        if($res)
+            return JsonService::successful('删除成功');
+        else
+            return JsonService::fail('删除失败');
+    }
+
     public function orderchart(){
         $where = Util::getMore([
             ['status',''],
@@ -183,10 +213,12 @@ class StoreOrder extends AuthController
         StoreOrderStatus::setStatus($id,'order_edit','修改商品总价为：'.$data['total_price'].' 实际支付金额'.$data['pay_price']);
         return Json::successful('修改成功!');
     }
+
     /**
-     * 送货
+     * TODO 填写送货信息
      * @param $id
-     *  send
+     * @return mixed|void
+     * @throws \think\exception\DbException
      */
     public function delivery($id){
         if(!$id) return $this->failed('数据不存在');
@@ -196,36 +228,72 @@ class StoreOrder extends AuthController
             $f = array();
             $f[] = Form::input('delivery_name','送货人姓名')->required('送货人姓名不能为空','required:true;');
             $f[] = Form::input('delivery_id','送货人电话')->required('请输入正确电话号码','telephone');
-            $form = Form::make_post_form('修改订单',$f,Url::build('updateDelivery',array('id'=>$id)),5);
+            $form = Form::make_post_form('修改订单',$f,Url::build('updateDelivery',array('id'=>$id)),7);
             $this->assign(compact('form'));
             return $this->fetch('public/form-builder');
         }
         else $this->failedNotice('订单状态错误');
     }
 
-    /**送货
+    /**
+     * TODO 送货信息提交
      * @param Request $request
      * @param $id
      */
-    public function updateDelivery(Request $request, $id){
+    public function update_delivery(Request $request, $id){
         $data = Util::postMore([
+            ['type',1],
             'delivery_name',
             'delivery_id',
+            ['sh_delivery_name',''],
+            ['sh_delivery_id',''],
         ],$request);
-        $data['delivery_type'] = 'send';
-        if(!$data['delivery_name']) return Json::fail('请输入送货人姓名');
-        if(!(int)$data['delivery_id']) return Json::fail('请输入送货人电话号码');
-        else if(!preg_match("/^1[3456789]{1}\d{9}$/",$data['delivery_id']))  return Json::fail('请输入正确的送货人电话号码');
-        $data['status'] = 1;
-        StoreOrderModel::edit($data,$id);
-        HookService::afterListen('store_product_order_delivery',$data,$id,false,OrderBehavior::class);
-        StoreOrderStatus::setStatus($id,'delivery','已配送 发货人：'.$data['delivery_name'].' 发货人电话：'.$data['delivery_id']);
+        switch ((int)$data['type']){
+            case 1:
+                //发货
+                $data['delivery_type'] = 'express';
+                if(!$data['delivery_name']) return Json::fail('请选择快递公司');
+                if(!$data['delivery_id']) return Json::fail('请输入快递单号');
+                $data['status'] = 1;
+                StoreOrderModel::edit($data,$id);
+                HookService::afterListen('store_product_order_delivery_goods',$data,$id,false,OrderBehavior::class);
+                StoreOrderStatus::setStatus($id,'delivery_goods','已发货 快递公司：'.$data['delivery_name'].' 快递单号：'.$data['delivery_id']);
+                break;
+            case 2:
+                //送货
+                $data['delivery_type'] = 'send';
+                $data['delivery_name'] = $data['sh_delivery_name'];
+                $data['delivery_id'] = $data['sh_delivery_id'];
+                unset($data['sh_delivery_name'],$data['sh_delivery_id']);
+                if(!$data['delivery_name']) return Json::fail('请输入送货人姓名');
+                if(!(int)$data['delivery_id']) return Json::fail('请输入送货人电话号码');
+                else if(!preg_match("/^1[3456789]{1}\d{9}$/",$data['delivery_id']))  return Json::fail('请输入正确的送货人电话号码');
+                $data['status'] = 1;
+                StoreOrderModel::edit($data,$id);
+                HookService::afterListen('store_product_order_delivery',$data,$id,false,OrderBehavior::class);
+                StoreOrderStatus::setStatus($id,'delivery','已配送 发货人：'.$data['delivery_name'].' 发货人电话：'.$data['delivery_id']);
+                break;
+            case 3:
+                //虚拟发货
+                $data['delivery_type'] = 'fictitious';
+                $data['status'] = 1;
+                StoreOrderModel::edit($data,$id);
+                HookService::afterListen('store_product_order_delivery',$data,$id,false,OrderBehavior::class);
+                StoreOrderStatus::setStatus($id,'delivery_fictitious','已虚拟发货');
+                StoreOrderStatus::setStatus($id,'take_delivery','虚拟物品已收货');
+                break;
+            default:
+                return Json::fail('暂时不支持其他发货类型');
+                break;
+        }
         return Json::successful('修改成功!');
     }
+
     /**
-     * 发货
+     * TODO 填写发货信息
      * @param $id
-     *  express
+     * @return mixed|void
+     * @throws \think\exception\DbException
      */
     public function deliver_goods($id){
         if(!$id) return $this->failed('数据不存在');
@@ -242,14 +310,15 @@ class StoreOrder extends AuthController
                         return $menus;
                     })->filterable(1);
             $f[] = Form::input('delivery_id','快递单号');
-            $form = Form::make_post_form('修改订单',$f,Url::build('updateDeliveryGoods',array('id'=>$id)),5);
+            $form = Form::make_post_form('修改订单',$f,Url::build('updateDeliveryGoods',array('id'=>$id)),7);
             $this->assign(compact('form'));
             return $this->fetch('public/form-builder');
         }
         else return $this->failedNotice('订单状态错误');
     }
 
-    /**发货保存
+    /**
+     * TODO 发货信息提交
      * @param Request $request
      * @param $id
      */
@@ -306,7 +375,7 @@ class StoreOrder extends AuthController
             $f[] = Form::input('order_id','退款单号',$product->getData('order_id'))->disabled(1);
             $f[] = Form::number('refund_price','退款金额',$product->getData('pay_price'))->precision(2)->min(0.01);
             $f[] = Form::radio('type','状态',1)->options([['label'=>'直接退款','value'=>1],['label'=>'退款后,返回原状态','value'=>2]]);
-            $form = Form::make_post_form('退款处理',$f,Url::build('updateRefundY',array('id'=>$id)),5);
+            $form = Form::make_post_form('退款处理',$f,Url::build('updateRefundY',array('id'=>$id)),7);
             $this->assign(compact('form'));
             return $this->fetch('public/form-builder');
         }
@@ -373,7 +442,12 @@ class StoreOrder extends AuthController
         if($resEdit){
             $data['type'] = $type;
             if($data['type'] == 1)  StorePink::setRefundPink($id);
-            HookService::afterListen('store_product_order_refund_y',$data,$id,false,OrderBehavior::class);
+            try{
+                HookService::afterListen('store_product_order_refund_y',$data,$id,false,OrderBehavior::class);
+            }catch (\Exception $e){
+                ModelBasic::rollbackTrans();
+                return Json::fail($e->getMessage());
+            }
             StoreOrderStatus::setStatus($id,'refund_price','退款给用户'.$refund_price.'元');
             ModelBasic::commitTrans();
             return Json::successful('修改成功!');
@@ -444,7 +518,7 @@ class StoreOrder extends AuthController
             });
             $f[] = Form::input('delivery_id','快递单号',$product->getData('delivery_id'));
         }
-        $form = Form::make_post_form('配送信息',$f,Url::build('updateDistribution',array('id'=>$id)),5);
+        $form = Form::make_post_form('配送信息',$f,Url::build('updateDistribution',array('id'=>$id)),7);
         $this->assign(compact('form'));
         return $this->fetch('public/form-builder');
     }
@@ -540,7 +614,7 @@ class StoreOrder extends AuthController
             $f[] = Form::number('use_integral','使用的积分',$product->getData('use_integral'))->min(0)->disabled(1);
             $f[] = Form::number('use_integrals','已退积分',$product->getData('back_integral'))->min(0)->disabled(1);
             $f[] = Form::number('back_integral','可退积分',bcsub($product->getData('use_integral'),$product->getData('use_integral')))->min(0);
-            $form = Form::make_post_form('退积分',$f,Url::build('updateIntegralBack',array('id'=>$id)));
+            $form = Form::make_post_form('退积分',$f,Url::build('updateIntegralBack',array('id'=>$id)),7);
             $this->assign(compact('form'));
             return $this->fetch('public/form-builder');
         }else{

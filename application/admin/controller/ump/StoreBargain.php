@@ -94,14 +94,11 @@ class StoreBargain extends AuthController
     public function upload()
     {
         $res = Upload::image('file','store/bargain/'.date('Ymd'));
-        $thumbPath = Upload::thumb($res->dir);
-        //产品图片上传记录
-        $fileInfo = $res->fileInfo->getinfo();
-        SystemAttachment::attachmentAdd($res->fileInfo->getSaveName(),$fileInfo['size'],$fileInfo['type'],$res->dir,$thumbPath,3);
-        if($res->status == 200)
-            return Json::successful('图片上传成功!',['name'=>$res->fileInfo->getSaveName(),'url'=>Upload::pathToUrl($thumbPath)]);
-        else
-            return Json::fail($res->error);
+        if(is_array($res)){
+            SystemAttachment::attachmentAdd($res['name'],$res['size'],$res['type'],$res['dir'],$res['thumb_path'],3,$res['image_type'],$res['time']);
+            return Json::successful('图片上传成功!',['name'=>$res['name'],'url'=>Upload::pathToUrl($res['thumb_path'])]);
+        }else
+            return Json::fail($res);
     }
 
     /**
@@ -117,10 +114,10 @@ class StoreBargain extends AuthController
         $f[] = Form::input('store_name','砍价产品名称');
         $f[] = Form::input('unit_name','单位')->placeholder('个、位');
         $f[] = Form::dateTimeRange('section_time','活动时间');
-        $f[] = Form::frameImageOne('image','产品主图片(305*305px)',Url::build('admin/widget.images/index',array('fodder'=>'image')))->icon('image');
-        $f[] = Form::frameImages('images','产品轮播图(640*640px)',Url::build('admin/widget.images/index',array('fodder'=>'images')))->maxLength(5)->icon('images');
-        $f[] = Form::number('price','原价')->min(0)->col(12);
-        $f[] = Form::number('min_price','砍价最低金额')->min(0);
+        $f[] = Form::formFrameImageOne('image','产品主图片(305*305px)');
+        $f[] = Form::formFrameImages('images','产品轮播图(640*640px)');
+        $f[] = Form::number('price','显示原价')->min(0)->col(12);
+        $f[] = Form::number('min_price','最低购买价')->min(0);
         $f[] = Form::number('bargain_max_price','单次砍价的最大金额')->min(0)->col(12);
         $f[] = Form::number('bargain_min_price','单次砍价的最小金额')->min(0)->col(12);
         $f[] = Form::number('cost','成本价')->min(0)->col(12);
@@ -128,7 +125,7 @@ class StoreBargain extends AuthController
         $f[] = Form::number('stock','库存')->min(0)->col(12);
         $f[] = Form::number('sales','销量')->min(0)->col(12);
         $f[] = Form::number('sort','排序')->col(12);
-        $f[] = Form::number('num','单次购买的砍价产品数量')->col(12);
+        $f[] = Form::number('num','单次允许购买数量')->col(12);
         $f[] = Form::number('give_integral','赠送积分')->min(0)->col(12);
         $f[] = Form::number('postage','邮费')->min(0)->col(12);
         $f[] = Form::radio('is_postage','是否包邮',1)->options([['label'=>'是','value'=>1],['label'=>'否','value'=>0]])->col(12);
@@ -156,10 +153,10 @@ class StoreBargain extends AuthController
         $f[] = Form::input('store_name','砍价产品名称',$product->getData('store_name'));
         $f[] = Form::input('unit_name','单位',$product->getData('unit_name'))->placeholder('个、位');
         $f[] = Form::dateTimeRange('section_time','活动时间',$product->getData('start_time'),$product->getData('stop_time'));//->format("yyyy-MM-dd HH:mm:ss");
-        $f[] = Form::frameImageOne('image','产品主图片(305*305px)',Url::build('admin/widget.images/index',array('fodder'=>'image')),$product->getData('image'))->icon('image');
-        $f[] = Form::frameImages('images','产品轮播图(640*640px)',Url::build('admin/widget.images/index',array('fodder'=>'images')),json_decode($product->getData('images'),1))->maxLength(5)->icon('images');
-        $f[] = Form::number('price','砍价金额',$product->getData('price'))->min(0)->col(12);
-        $f[] = Form::number('min_price','砍价最低金额',$product->getData('min_price'))->min(0)->col(12);
+        $f[] = Form::formFrameImageOne('image','产品主图片(305*305px)',$product->getData('image'));
+        $f[] = Form::formFrameImages('images','产品轮播图(640*640px)',json_decode($product->getData('images'),1));
+        $f[] = Form::number('price','显示原价',$product->getData('price'))->min(0)->col(12);
+        $f[] = Form::number('min_price','最低购买价',$product->getData('min_price'))->min(0)->col(12);
         $f[] = Form::number('bargain_max_price','单次砍价的最大金额',$product->getData('bargain_max_price'))->min(0)->col(12);
         $f[] = Form::number('bargain_min_price','单次砍价的最小金额',$product->getData('bargain_min_price'))->min(0)->col(12);
         $f[] = Form::number('cost','成本价',$product->getData('cost'))->min(0)->col(12);
@@ -167,7 +164,7 @@ class StoreBargain extends AuthController
         $f[] = Form::number('stock','库存',$product->getData('stock'))->min(0)->col(12);
         $f[] = Form::number('sales','销量',$product->getData('sales'))->min(0)->col(12);
         $f[] = Form::number('sort','排序',$product->getData('sort'))->col(12);
-        $f[] = Form::number('num','单次购买的砍价产品数量',$product->getData('num'))->col(12);
+        $f[] = Form::number('num','单次允许购买数量',$product->getData('num'))->col(12);
         $f[] = Form::number('give_integral','赠送积分',$product->getData('give_integral'))->min(0)->col(12);
         $f[] = Form::number('postage','邮费',$product->getData('postage'))->min(0)->col(12);
         $f[] = Form::radio('is_postage','是否包邮',$product->getData('is_postage'))->options([['label'=>'是','value'=>1],['label'=>'否','value'=>0]])->col(12);
@@ -242,6 +239,7 @@ class StoreBargain extends AuthController
             else return JsonService::fail('修改失败');
         }
         else{
+            $data['add_time'] = time();
             $res = StoreBargainModel::set($data);
             if($res) return JsonService::successful('添加成功');
             else return JsonService::fail('添加成功');
@@ -261,8 +259,9 @@ class StoreBargain extends AuthController
         if(!$id) return Json::fail('数据不存在');
         $product = StoreBargainModel::get($id);
         if(!$product) return Json::fail('数据不存在!');
+        if($product['is_del']) return Json::fail('已删除!');
         $data['is_del'] = 1;
-        if(StoreBargainModel::edit($data,$id) && StoreProduct::edit(['is_bargain'=>0],$product['product_id']))
+        if(StoreBargainModel::edit($data,$id))
             return Json::successful('删除成功!');
         else
             return Json::fail(StoreBargainModel::getErrorInfo('删除失败,请稍候再试!'));
@@ -311,8 +310,8 @@ class StoreBargain extends AuthController
         $f[] = Form::input('store_name','砍价产品名称',$product->getData('store_name'));
         $f[] = Form::input('unit_name','单位',$product->getData('unit_name'))->placeholder('个、位');
         $f[] = Form::dateTimeRange('section_time','活动时间');//->format("yyyy-MM-dd HH:mm:ss");
-        $f[] = Form::frameImageOne('image','产品主图片(305*305px)',Url::build('admin/widget.images/index',array('fodder'=>'image')),$product->getData('image'))->icon('image');
-        $f[] = Form::frameImages('images','产品轮播图(640*640px)',Url::build('admin/widget.images/index',array('fodder'=>'images')),json_decode($product->getData('slider_image'),1))->maxLength(5)->icon('images');
+        $f[] = Form::formFrameImageOne('image','产品主图片(305*305px)',$product->getData('image'));
+        $f[] = Form::formFrameImages('images','产品轮播图(640*640px)',json_decode($product->getData('slider_image'),1));
         $f[] = Form::number('price','砍价金额')->min(0)->col(12);
         $f[] = Form::number('min_price','砍价最低金额',0)->min(0)->col(12);
         $f[] = Form::number('bargain_max_price','单次砍价的最大金额',10)->min(0)->col(12);

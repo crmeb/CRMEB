@@ -14,10 +14,10 @@ Page({
     },
     //支付方式
     cartArr: [
+      { "name": "微信支付", "icon": "icon-weixin2", value: 'weixin', title: '微信快捷支付' },
       { "name": "余额支付", "icon": "icon-icon-test", value: 'yue',title:'可用余额:'},
-      { "name": "微信支付", "icon": "icon-weixin2", value: 'weixin', title:'微信快捷支付'},
     ],
-    payType:'yue',//支付方式
+    payType:'weixin',//支付方式
     openType:1,//优惠券打开方式 1=使用
     active:0,//支付方式切换
     coupon: { coupon: false, list: [], statusTile:'立即使用'},//优惠券组件
@@ -106,7 +106,11 @@ Page({
       list[index].is_use = 0;
       totalPrice = this.data.totalPrice;
       //用户取消使用优惠卷但是使用了积分抵扣
-      if (totalPrice > 0 && this.data.useIntegral) totalPrice = this.changeCouponPrice(totalPrice, this.data.userInfo.integral);
+      if (totalPrice > 0 && this.data.useIntegral && !this.data.is_Integral) 
+      {
+        totalPrice = this.changeCouponPrice(totalPrice, this.data.userInfo.integral);
+        this.setData({is_Integral:true});
+      }
       this.data.status = 0;
     } else {
       //使用优惠券
@@ -206,7 +210,6 @@ Page({
     }else{
       var integral_price = this.data.integral_price;
       //不使用积分返回原始数据
-      console.log(util.$h.Add(this.data.totalPrice, integral_price));
       this.setData({ integral_price: 0, integral: this.data.userInfo.integral, totalPrice: util.$h.Add(this.data.totalPrice, integral_price.toString())});
     }
   },
@@ -254,7 +257,7 @@ Page({
         seckillId: parseInt(res.data.seckill_id),
         usableCoupon: res.data.usableCoupon
       });
-      that.data.cartArr[0].title ='可用余额:'+ res.data.userInfo.now_money;
+      that.data.cartArr[1].title ='可用余额:'+ res.data.userInfo.now_money;
       that.setData({ cartArr: that.data.cartArr, ChangePrice:that.data.totalPrice});
       that.getBargainId();
       that.getCouponList();
@@ -357,6 +360,7 @@ Page({
           break;
         case 'SUCCESS':
             wx.hideLoading();
+          if (that.data.BargainId || that.data.combinationId || that.data.pinkId || that.data.seckillId) return app.Tips({ title: res.msg, icon: 'success' }, { tab: 4, url: goPages });
             return app.Tips({ title: res.msg,icon: 'success' }, { tab: 5, url: goPages });
           break;
         case 'WECHAT_PAY':
@@ -369,6 +373,7 @@ Page({
             paySign: jsConfig.paySign,
             success: function (res) {
               wx.hideLoading();
+              if (that.data.BargainId || that.data.combinationId || that.data.pinkId || that.data.seckillId) return app.Tips({ title: '支付成功', icon: 'success' }, { tab: 4, url: goPages });
               return app.Tips({ title: '支付成功', icon:'success' }, { tab: 5, url: goPages });
             },
             fail:function(e){

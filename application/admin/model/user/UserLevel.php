@@ -1,10 +1,6 @@
 <?php
-/**
- *
- * @author: xaboy<365615158@qq.com>
- * @day: 2017/11/11
- */
 namespace app\admin\model\user;
+
 use app\admin\model\system\SystemUserLevel;
 use traits\ModelTrait;
 use basic\ModelBasic;
@@ -49,6 +45,26 @@ class UserLevel extends ModelBasic
         }
         $count=self::setWhere($where,'a')->group('a.level_id')->order('grade desc')->join('__USER__ u','a.uid=u.uid')->count();
         return compact('data','count');
+    }
+
+    /*
+     * 清除会员等级
+     * @paran int $uid
+     * @paran boolean
+     * */
+    public static function cleanUpLevel($uid)
+    {
+        self::rollbackTrans();
+        $res=false !== self::where(['uid'=>$uid])->update(['is_del'=>1]);
+        $res= $res && self::getDb('user_task_finish')->where(['uid'=>$uid])->delete();
+        if($res){
+            User::where(['uid'=>$uid])->update(['clean_time'=>time()]);
+            self::commitTrans();
+            return true;
+        }else{
+            self::rollbackTrans();
+            return self::setErrorInfo('清除失败');
+        }
     }
 
 }

@@ -1,5 +1,6 @@
 <?php
 namespace app\admin\controller\system;
+
 use app\admin\controller\AuthController;
 use service\FormBuilder as Form;
 use think\Request;
@@ -18,6 +19,7 @@ class SystemDatabackup extends AuthController
     protected $DB;
     public function _initialize()
     {
+        parent::_initialize();
         $config = array(
             'path' => '.'.PUBILC_PATH.'backup/data/',
             //数据库备份路径

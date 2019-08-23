@@ -16,4 +16,13 @@ class User extends ModelBasic
 {
     use ModelTrait;
 
+    /*
+     * 获取会员是否被清除过的时间
+     * */
+    public static function getCleanTime($uid)
+    {
+        $user=self::where('uid',$uid)->field(['add_time','clean_time'])->find();
+        if(!$user) return 0;
+        return $user['clean_time'] ? $user['clean_time'] : $user['add_time'];
+    }
 }

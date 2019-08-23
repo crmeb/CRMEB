@@ -26,8 +26,13 @@ class StoreCouponIssue extends ModelBasic
             if(!$v['is_use']){
                 $v['is_use']=$v['remain_count'] <= 0 && !$v['is_permanent'] ? 2 : $v['is_use'];
             }
-            $v['add_time']=date('Y/m/d',$v['add_time']);
-            $v['end_time']=$v['end_time'] ? date('Y/m/d',$v['end_time']) : date('Y/m/d',time()+86400);
+            if(!$v['end_time']){
+                $v['add_time']= '';
+                $v['end_time'] = '不限时';
+            }else{
+                $v['add_time']=date('Y/m/d',$v['add_time']);
+                $v['end_time']=$v['end_time'] ? date('Y/m/d',$v['end_time']) : date('Y/m/d',time()+86400);
+            }
             $v['coupon_price']=(int)$v['coupon_price'];
         }
         return $list;

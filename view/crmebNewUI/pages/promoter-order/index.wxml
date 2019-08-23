@@ -4,7 +4,7 @@
         <view class='headerCon acea-row row-between-wrapper'>
             <view>
                 <view class='name'>累积推广订单</view>
-                <view><text class='num'>{{recordCount}}</text>单</view>
+                <view><text class='num'>{{recordCount || 0}}</text>单</view>
             </view>
             <view class='iconfont icon-2'></view>
         </view>
@@ -14,7 +14,7 @@
        <view class='item'>
           <view class='title acea-row row-column row-center'>
              <view class='data'>{{item.time}}</view>
-             <view>本月累计推广订单：{{item.count}}单</view>
+             <view>本月累计推广订单：{{item.count || 0}}单</view>
           </view>
           <view class='listn'>
             <block wx:for="{{item.child}}" wx:for-item="child" wx:key> 

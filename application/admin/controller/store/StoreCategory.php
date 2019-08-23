@@ -89,7 +89,7 @@ class StoreCategory extends AuthController
                 return $menus;
             })->filterable(1),
             Form::input('cate_name','分类名称'),
-            Form::frameImageOne('pic','分类图标',Url::build('admin/widget.images/index',array('fodder'=>'pic')))->icon('image'),
+            Form::formFrameImageOne('pic','分类图标'),
             Form::number('sort','排序'),
             Form::radio('is_show','状态',1)->options([['label'=>'显示','value'=>1],['label'=>'隐藏','value'=>0]])
         ];
@@ -106,16 +106,13 @@ class StoreCategory extends AuthController
     public function upload()
     {
         $res = Upload::image('file','store/category'.date('Ymd'));
-        $thumbPath = Upload::thumb($res->dir);
-        //产品图片上传记录
-        $fileInfo = $res->fileInfo->getinfo();
-        SystemAttachment::attachmentAdd($res->fileInfo->getSaveName(),$fileInfo['size'],$fileInfo['type'],$res->dir,$thumbPath,1);
-
-        if($res->status == 200)
-            return Json::successful('图片上传成功!',['name'=>$res->fileInfo->getSaveName(),'url'=>Upload::pathToUrl($thumbPath)]);
-        else
-            return Json::fail($res->error);
+        if(is_array($res)){
+            SystemAttachment::attachmentAdd($res['name'],$res['size'],$res['type'],$res['dir'],$res['thumb_path'],1,$res['image_type'],$res['time']);
+            return Json::successful('图片上传成功!',['name'=>$res['name'],'url'=>Upload::pathToUrl($res['thumb_path'])]);
+        }else
+            return Json::fail($res);
     }
+
 
     /**
      * 保存新建的资源
@@ -163,7 +160,9 @@ class StoreCategory extends AuthController
                 return $menus;
             })->filterable(1),
             Form::input('cate_name','分类名称',$c->getData('cate_name')),
-            Form::frameImageOne('pic','分类图标',Url::build('admin/widget.images/index',array('fodder'=>'pic')),$c->getData('pic'))->icon('image'),
+//            Form::frameImageOne('pic','分类图标',Url::build('admin/widget.images/index',array('fodder'=>'pic')),$c->getData('pic'))->icon('image')->width('100%')->height('500px'),
+            Form::formFrameImageOne('pic','分类图标',$c->getData('pic')),
+
             Form::number('sort','排序',$c->getData('sort')),
             Form::radio('is_show','状态',$c->getData('is_show'))->options([['label'=>'显示','value'=>1],['label'=>'隐藏','value'=>0]])
         ];

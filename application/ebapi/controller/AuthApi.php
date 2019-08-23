@@ -139,11 +139,11 @@ class AuthApi extends AuthController
      * @param int $secKillId
      * @return \think\response\Json
      */
-    public function now_buy($productId = '', $cartNum = 1, $uniqueId = '', $combinationId = 0, $secKillId = 0, $bargainId = 0)
+    public function now_buy($productId = '', $cartNum = 1, $uniqueId = '', $combinationId = 0, $is_new = 0,$secKillId = 0, $bargainId = 0)
     {
         if (!$productId || !is_numeric($productId)) return JsonService::fail('参数错误');
         if ($bargainId && StoreBargainUserHelp::getSurplusPrice($bargainId, $this->userInfo['uid'])) return JsonService::fail('请先砍价');
-        $res = StoreCart::setCart($this->userInfo['uid'], $productId, $cartNum, $uniqueId, 'product', 1, $combinationId, $secKillId, $bargainId);
+        $res = StoreCart::setCart($this->userInfo['uid'], $productId, $cartNum, $uniqueId, 'product', $is_new, $combinationId, $secKillId, $bargainId);
         if (!$res) return JsonService::fail(StoreCart::getErrorInfo());
         else  return JsonService::successful('ok', ['cartId' => $res->id]);
     }

@@ -3,6 +3,7 @@
 namespace app\admin\controller\wechat;
 
 use app\admin\controller\AuthController;
+use app\admin\model\system\SystemAttachment;
 use app\admin\model\wechat\WechatReply;
 use service\UtilService as Util;
 use service\JsonService as Json;
@@ -86,8 +87,10 @@ class Reply extends AuthController
     {
         $name = $request->post('file');
         if(!$name) return Json::fail('请上传图片');
-        $res = Upload::image($name,'wechat/image');
-        return $res->status === true ? Json::successful('上传成功',$res->filePath) : Json::fail($res->error);
+        $res = Upload::image($name,'wechat/image',true,true,null,'uniqid',1);
+        if(!is_array($res)) return Json::fail($res);
+        SystemAttachment::attachmentAdd($res['name'],$res['size'],$res['type'],$res['dir'],$res['thumb_path'],0,$res['image_type'],$res['time']);
+        return Json::successful('上传成功',$res['dir']);
     }
 
     public function upload_file(Request $request)

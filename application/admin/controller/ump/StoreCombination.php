@@ -84,10 +84,10 @@ class StoreCombination extends AuthController
         $f[] = Form::input('info','拼团简介',$product->getData('store_info'))->type('textarea');
         $f[] = Form::input('unit_name','单位',$product->getData('unit_name'))->placeholder('个、位');
         $f[] = Form::dateTimeRange('section_time','拼团时间');
-        $f[] = Form::frameImageOne('image','产品主图片(305*305px)',Url::build('admin/widget.images/index',array('fodder'=>'image')),$product->getData('image'))->icon('image');
-        $f[] = Form::frameImages('images','产品轮播图(640*640px)',Url::build('admin/widget.images/index',array('fodder'=>'images')),json_decode($product->getData('slider_image')))->maxLength(5)->icon('images');
+        $f[] = Form::frameImageOne('image','产品主图片(305*305px)',Url::build('admin/widget.images/index',array('fodder'=>'image')),$product->getData('image'))->icon('image')->width('100%')->height('500px');
+        $f[] = Form::frameImages('images','产品轮播图(640*640px)',Url::build('admin/widget.images/index',array('fodder'=>'images')),json_decode($product->getData('slider_image')))->maxLength(5)->icon('images')->width('100%')->height('500px');
         $f[] = Form::number('price','拼团价')->min(0)->col(12);
-        $f[] = Form::number('people','拼团人数')->min(3)->col(12);
+        $f[] = Form::number('people','拼团人数')->min(2)->col(12);
         $f[] = Form::number('stock','库存',$product->getData('stock'))->min(0)->precision(0)->col(12);
         $f[] = Form::number('sales','销量',$product->getData('sales'))->min(0)->precision(0)->col(12);
         $f[] = Form::number('sort','排序')->col(12);
@@ -119,10 +119,10 @@ class StoreCombination extends AuthController
         $f[] = Form::input('info','拼团简介')->type('textarea');
         $f[] = Form::input('unit_name','单位')->placeholder('个、位');
         $f[] = Form::dateTimeRange('section_time','拼团时间');
-        $f[] = Form::frameImageOne('image','产品主图片(305*305px)',Url::build('admin/widget.images/index',array('fodder'=>'image')))->icon('image');
-        $f[] = Form::frameImages('images','产品轮播图(640*640px)',Url::build('admin/widget.images/index',array('fodder'=>'images')))->maxLength(5)->icon('images');
+        $f[] = Form::formFrameImageOne('image','产品主图片(305*305px)');
+        $f[] = Form::formFrameImages('images','产品轮播图(640*640px)');
         $f[] = Form::number('price','拼团价')->min(0)->col(12);
-        $f[] = Form::number('people','拼团人数')->min(3)->col(12);
+        $f[] = Form::number('people','拼团人数')->min(2)->col(12);
         $f[] = Form::number('stock','库存')->min(0)->precision(0)->col(12);
         $f[] = Form::number('sales','销量')->min(0)->precision(0)->col(12);
         $f[] = Form::number('sort','排序')->col(12);
@@ -169,10 +169,8 @@ class StoreCombination extends AuthController
         if(count($data['section_time'])<1) return Json::fail('请选择活动时间');
         if($data['stock'] == '' || $data['stock'] < 0) return Json::fail('请输入库存');
         $data['images'] = json_encode($data['images']);
-        $data['add_time'] = time();
         $data['start_time'] = strtotime($data['section_time'][0]);
         $data['stop_time'] = strtotime($data['section_time'][1]);
-        $data['description'] = '';
         unset($data['section_time']);
         if($id){
             $product = StoreCombinationModel::get($id);
@@ -181,6 +179,8 @@ class StoreCombination extends AuthController
             StoreCombinationModel::edit($data,$id);
             return Json::successful('编辑成功!');
         }else{
+            $data['add_time'] = time();
+            $data['description'] = '';
             StoreCombinationModel::set($data);
             return Json::successful('添加拼团成功!');
         }
@@ -201,11 +201,11 @@ class StoreCombination extends AuthController
         $f = array();
         $f[] = Form::hidden('product_id',$product->getData('product_id'));
         $f[] = Form::input('title','拼团名称',$product->getData('title'));
-        $f[] = Form::input('info','拼团简介',$product->getData('title'))->type('textarea');
-        $f[] = Form::input('unit_name','单位',$product->getData('title'))->placeholder('个、位');
+        $f[] = Form::input('info','拼团简介',$product->getData('info'))->type('textarea');
+        $f[] = Form::input('unit_name','单位',$product->getData('unit_name'))->placeholder('个、位');
         $f[] = Form::dateTimeRange('section_time','拼团时间',$product->getData('start_time'),$product->getData('stop_time'));
-        $f[] = Form::frameImageOne('image','产品主图片(305*305px)',Url::build('admin/widget.images/index',array('fodder'=>'image')),$product->getData('image'))->icon('image');
-        $f[] = Form::frameImages('images','产品轮播图(640*640px)',Url::build('admin/widget.images/index',array('fodder'=>'images')),json_decode($product->getData('images')))->maxLength(5)->icon('images');
+        $f[] = Form::frameImageOne('image','产品主图片(305*305px)',Url::build('admin/widget.images/index',array('fodder'=>'image')),$product->getData('image'))->icon('image')->width('100%')->height('500px');
+        $f[] = Form::frameImages('images','产品轮播图(640*640px)',Url::build('admin/widget.images/index',array('fodder'=>'images')),json_decode($product->getData('images')))->maxLength(5)->icon('images')->width('100%')->height('500px');
         $f[] = Form::number('price','拼团价',$product->getData('price'))->min(0)->col(12);
         $f[] = Form::number('people','拼团人数',$product->getData('people'))->min(2)->col(12);
         $f[] = Form::number('stock','库存',$product->getData('stock'))->min(0)->precision(0)->col(12);
@@ -234,6 +234,9 @@ class StoreCombination extends AuthController
     public function delete($id)
     {
         if(!$id) return $this->failed('数据不存在');
+        $product = StoreCombinationModel::get($id);
+        if(!$product) return Json::fail('数据不存在!');
+        if($product['is_del']) return Json::fail('已删除!');
         $data['is_del'] = 1;
         if(!StoreCombinationModel::edit($data,$id))
             return Json::fail(StoreCombinationModel::getErrorInfo('删除失败,请稍候再试!'));
@@ -346,14 +349,11 @@ class StoreCombination extends AuthController
     public function upload()
     {
         $res = Upload::image('file','store/product/'.date('Ymd'));
-        $thumbPath = Upload::thumb($res->dir);
-        //产品图片上传记录
-        $fileInfo = $res->fileInfo->getinfo();
-        SystemAttachment::attachmentAdd($res->fileInfo->getSaveName(),$fileInfo['size'],$fileInfo['type'],$res->dir,$thumbPath,2);
-        if($res->status == 200)
-            return Json::successful('图片上传成功!',['name'=>$res->fileInfo->getSaveName(),'url'=>Upload::pathToUrl($thumbPath)]);
-        else
-            return Json::fail($res->error);
+        if(is_array($res)){
+            SystemAttachment::attachmentAdd($res['name'],$res['size'],$res['type'],$res['dir'],$res['thumb_path'],2,$res['image_type'],$res['time']);
+            return Json::successful('图片上传成功!',['name'=>$res['name'],'url'=>Upload::pathToUrl($res['thumb_path'])]);
+        }else
+            return Json::fail($res);
     }
 
     /**拼团列表

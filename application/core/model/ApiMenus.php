@@ -7,16 +7,13 @@
 
 namespace app\core\model;
 
-use traits\ModelTrait;
-use basic\ModelBasic;
-
 /*
  * Api接口列表
  * class ApiMenus
  * */
-class ApiMenus extends ModelBasic
+class ApiMenus
 {
-    use ModelTrait;
+
 
     /*
      * 接口列表配置

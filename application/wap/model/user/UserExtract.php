@@ -72,6 +72,7 @@ class UserExtract extends ModelBasic
         $res2 = User::edit(['now_money'=>$balance],$userInfo['uid'],'uid');
         $res3 = UserBill::expend('余额提现',$userInfo['uid'],'now_money','extract',$data['extract_price'],$res1['id'],$balance,$mark);
         $res = $res2 && $res3;
+        self::checkTrans($res);
         WechatTemplateService::sendTemplate(
             WechatUser::uidToOpenid($userInfo['uid']),
             WechatTemplateService::USER_BALANCE_CHANGE,

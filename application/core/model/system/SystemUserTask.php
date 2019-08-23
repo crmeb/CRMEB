@@ -130,7 +130,7 @@ class SystemUserTask extends ModelBasic
     public static function ConsumptionAmount($task_id,$uid=0,$start_time=0,$number=0)
     {
         $isComplete=false;
-        $SumPayPrice=self::getDb('store_order')->where('paid',1)->where('refund_status',0)->where('is_del',0)->where('uid',$uid)->sum('pay_price');
+        $SumPayPrice=self::getDb('store_order')->where(['paid'=>1,'refund_status'=>0,'is_del'=>0,'uid'=>$uid])->where('add_time','>',$start_time)->sum('pay_price');
         if($SumPayPrice >= $number) $isComplete=UserTaskFinish::setFinish($uid,$task_id) ? true : false;
         return ['还需消费{$num}元',$SumPayPrice,$isComplete];
     }
@@ -146,7 +146,7 @@ class SystemUserTask extends ModelBasic
     public static function ConsumptionFrequency($task_id,$uid=0,$start_time=0,$number=0)
     {
         $isComplete=false;
-        $countPay=self::getDb('store_order')->where('paid',1)->where('refund_status',0)->where('is_del',0)->where('uid',$uid)->count();
+        $countPay=self::getDb('store_order')->where(['paid'=>1,'refund_status'=>0,'is_del'=>0,'uid'=>$uid])->where('add_time','>',$start_time)->count();
         if($countPay >= $number) $isComplete=UserTaskFinish::setFinish($uid,$task_id) ? true : false;
         return ['还需消费{$num}次',$countPay,$isComplete];
     }
@@ -194,7 +194,8 @@ class SystemUserTask extends ModelBasic
     public static function SatisfactionIntegral($task_id,$uid=0,$start_time=0,$number=0)
     {
         $isComplete=false;
-        $sumNumber=UserBill::where(['uid'=>$uid,'category'=>'integral','pm'=>1])->where('type','in',['system_add','sign'])->sum('number');
+        $sumNumber=UserBill::where(['uid'=>$uid,'category'=>'integral','pm'=>1])->where('add_time','>',$start_time)->where('type','in',['system_add','sign'])->sum('number');
+        file_put_contents('9.txt',$sumNumber.'|'.$number.'|'.$start_time);
         if($sumNumber >= $number) $isComplete=UserTaskFinish::setFinish($uid,$task_id) ? true : false;
         return ['还需要{$num}经验',$sumNumber,$isComplete];
     }
@@ -226,7 +227,7 @@ class SystemUserTask extends ModelBasic
     public static function CumulativeAttendance($task_id,$uid=0,$start_time=0,$number=0)
     {
         $isComplete=false;
-        $sumCount=UserBill::where(['uid'=>$uid,'category'=>'integral','pm'=>1])->where('type','in',['sign'])->count();
+        $sumCount=UserBill::where(['uid'=>$uid,'category'=>'integral','pm'=>1])->where('add_time','>',$start_time)->where('type','in',['sign'])->count();
         if($sumCount >= $number) $isComplete=UserTaskFinish::setFinish($uid,$task_id) ? true : false;
         return ['还需签到{$num}天',$sumCount,$isComplete];
     }
@@ -247,6 +248,7 @@ class SystemUserTask extends ModelBasic
         $task_type=$task->task_type;
         if($task_type && method_exists(self::class,$task_type)){
             try{
+                $start_time=User::getCleanTime($uid);
                 return self::$task_type($task_id,$uid,$start_time,$task->number);
             }catch (\Exception $e){
                 return self::setErrorInfo($e->getMessage());
@@ -277,23 +279,20 @@ class SystemUserTask extends ModelBasic
     public static function getTashList($level_id,$uid=0,$level=null,$expire=1400)
     {
         $level_id=is_string($level_id) ? (int)$level_id : $level_id;
-        if(Cache::has('Tash_list_common_'.$level_id))
-            $list=Cache::get('Tash_list_common_'.$level_id);
-        else{
-            $list=self::visibleWhere()->where('level_id',$level_id)->field(['name','real_name','task_type','illustrate','number','id'])->order('sort desc')->select();
-            $list=count($list) ? $list->toArray() : [];
-            Cache::set('Tash_list_common_'.$level_id,$list,$expire);
-        }
+        $list=self::visibleWhere()->where('level_id',$level_id)->field(['name','real_name','task_type','illustrate','number','id'])->order('sort desc')->select();
+        $list=count($list) ? $list->toArray() : [];
        if($uid==0) return $list;
        if($level===null) $level=SystemUserLevel::getLevelInfo($uid);
-       $add_time=self::getDb('user')->where('uid',$uid)->value('add_time');
-       if($level===false) $startTime=$add_time;
-       else $startTime=isset($level['add_time']) ? $level['add_time'] : $add_time;
+       //获取下一个vip的id
        $LeveId=SystemUserLevel::getNextLevelId($level['id']);
        $is_clear=SystemUserLevel::getClear($level['id']);
        if($is_clear==false && $LeveId==$level_id) $is_clear=true;
        $reach_count=self::getTaskComplete($level_id,$uid,true);
-       return ['reach_count'=>$reach_count,'task'=>self::tidyTask($list,$uid,$is_clear,$startTime)];
+       return [
+           'list'=>$list,
+           'reach_count'=>$reach_count,
+           'task'=>self::tidyTask($list,$uid,$is_clear,User::getCleanTime($uid)),
+       ];
     }
 
     /*
@@ -391,19 +390,19 @@ class SystemUserTask extends ModelBasic
                 $item['finish']=1;
                 $item['task_type_title']='';
             }else{
-                if($is_clear){
+//                if($is_clear){
                     list($new_number, $speed, $task_type_title, $finish) = self::set_task_type($item, $uid, $startTime);
                     $item['new_number'] = $new_number;
                     $item['speed'] = $speed;
                     $item['task_type_title'] = $task_type_title;
                     $item['finish'] = $finish;
-                }else {
-                    list($new_number, $speed, $task_type_title, $finish) = self::set_task_type($item,-1,time()+86400);
-                    $item['new_number'] = $new_number;
-                    $item['speed'] = $speed;
-                    $item['task_type_title'] = $task_type_title;
-                    $item['finish'] = $finish;
-                }
+//                }else {
+//                    list($new_number, $speed, $task_type_title, $finish) = self::set_task_type($item,-1,time()+86400);
+//                    $item['new_number'] = $new_number;
+//                    $item['speed'] = $speed;
+//                    $item['task_type_title'] = $task_type_title;
+//                    $item['finish'] = $finish;
+//                }
             }
         }
         return $task;

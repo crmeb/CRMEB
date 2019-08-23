@@ -1,6 +1,9 @@
 <?php
 
 namespace app\admin\controller\widget;
+use Api\Storage\COS\COS;
+use Api\Storage\OSS\OSS;
+use Api\Storage\Qiniu\Qiniu;
 use think\Request;
 use think\Url;
 use app\admin\model\system\SystemAttachment as SystemAttachmentModel;
@@ -12,10 +15,9 @@ use service\UtilService as Util;
 use service\FormBuilder as Form;
 
 /**
- * 文件校验控制器
- * Class SystemFile
- * @package app\admin\controller\system
- *
+ * TODO 附件控制器
+ * Class Images
+ * @package app\admin\controller\widget
  */
 class Images extends AuthController
 {
@@ -25,17 +27,29 @@ class Images extends AuthController
      */
    public function index()
    {
-       $pid = input('pid') != NULL ?input('pid'):session('pid');
-       if($pid != NULL)session('pid',$pid);
-       if(!empty(session('pid')))$pid = session('pid');
+       $pid = $this->request->param('pid');
+       if($pid === NULL)
+       {
+           $pid = session('pid') ? session('pid') : 0;
+       }
+       session('pid',$pid);
        $this->assign('pid',$pid);
-       //分类标题
-       $typearray = Category::getAll();
-       $this->assign(compact('typearray'));
-//       $typearray = self::dir;
-//       $this->assign(compact('typearray'));
-       $this->assign(SystemAttachmentModel::getAll($pid));
        return $this->fetch('widget/images');
+   }
+
+   public function get_image_list()
+   {
+       $where = Util::getMore([
+           ['page',1],
+           ['limit',18],
+           ['pid',0]
+       ]);
+       return Json::successful(SystemAttachmentModel::getImageList($where));
+   }
+
+   public function get_image_cate($name = '')
+   {
+       return Json::successful(Category::getAll($name));
    }
     /**
      * 图片管理上传图片
@@ -44,26 +58,36 @@ class Images extends AuthController
     public function upload()
     {
         $pid = input('pid')!= NULL ?input('pid'):session('pid');
-        $res = Upload::image('file','attach'.DS.date('Y').DS.date('m').DS.date('d'));
-        $thumbPath = Upload::thumb($res->dir);
-        //产品图片上传记录
-        $fileInfo = $res->fileInfo->getinfo();
-        //入口是public需要替换图片路径
-        if(strpos(PUBILC_PATH,'public') == false){
-            $res->dir = str_replace('public/','',$res->dir);
+        $upload_type = $this->request->get('upload_type',0);
+        if(!$pid)  {
+            $info =['code'=>400,'msg'=>'请选择分类，再进行上传！','src'=>''];
+        }else{
+            try{
+                $res = Upload::image('file','attach'.DS.date('Y').DS.date('m').DS.date('d'),true,true,null,'uniqid',$upload_type);
+                if(is_object($res) && $res->status === false){
+                    $info = array(
+                        'code' =>400,
+                        'msg'  =>'上传失败：'.$res->error,
+                        'src'  =>''
+                    );
+                }else if(is_string($res)){
+                    $info = array(
+                        'code' =>400,
+                        'msg'  =>'上传失败：'.$res,
+                        'src'  =>''
+                    );
+                }else if(is_array($res)){
+                    SystemAttachmentModel::attachmentAdd($res['name'],$res['size'],$res['type'],$res['dir'],$res['thumb_path'],$pid,$res['image_type'],$res['time']);
+                    $info = array(
+                        'code' =>200,
+                        'msg'  =>'上传成功',
+                        'src'  =>$res['dir']
+                    );
+                }
+            }catch (\Exception $e){
+                $info = ['code'=>400,'msg'=>$e->getMessage(),'src'=>''];
+            }
         }
-        SystemAttachmentModel::attachmentAdd($res->fileInfo->getSaveName(),$fileInfo['size'],$fileInfo['type'],$res->dir,$thumbPath,$pid);
-        $info = array(
-//            "originalName" => $fileInfo['name'],
-//            "name" => $res->fileInfo->getSaveName(),
-//            "url" => '.'.$res->dir,
-//            "size" => $fileInfo['size'],
-//            "type" => $fileInfo['type'],
-//            "state" => "SUCCESS"
-            'code' =>200,
-            'msg'  =>'上传成功',
-            'src'  =>$res->dir
-        );
         echo json_encode($info);
     }
 
@@ -87,8 +111,16 @@ class Images extends AuthController
     public function deleteimganddata($att_id){
         $attinfo = SystemAttachmentModel::get($att_id)->toArray();
         if($attinfo){
-            @unlink(ROOT_PATH.ltrim($attinfo['att_dir'],'.'));
-            @unlink(ROOT_PATH.ltrim($attinfo['satt_dir'],'.'));
+            if($attinfo['image_type'] == 1){
+                @unlink(ROOT_PATH.ltrim($attinfo['att_dir'],'.'));
+                @unlink(ROOT_PATH.ltrim($attinfo['satt_dir'],'.'));
+            }else if($attinfo['image_type'] == 2){
+                Qiniu::delete($attinfo['name']);
+            }else if($attinfo['image_type'] == 3){
+                OSS::delete($attinfo['name']);
+            }else if($attinfo['image_type'] == 4){
+                COS::delete($attinfo['name']);
+            }
             SystemAttachmentModel::where(['att_id'=>$att_id])->delete();
         }
     }
@@ -133,10 +165,9 @@ class Images extends AuthController
     /**
      * ajax 添加分类
      */
-    public function addcate($id){
-        $id = $id || 0;
+    public function addcate($id=0){
         $formbuider = [];
-        $formbuider[] = Form::select('pid','上级分类','0')->setOptions(function (){
+        $formbuider[] = Form::selectOne('pid','上级分类',$id)->setOptions(function (){
             $list = Category::getCateList(0);
             $options =  [['value'=>0,'label'=>'所有分类']];
             foreach ($list as $id=>$cateName){
@@ -145,7 +176,11 @@ class Images extends AuthController
             return $options;
         })->filterable(1);
         $formbuider[] = Form::input('name','分类名称');
-        $form = Form::make_post_form('添加分类',$formbuider,Url::build('saveCate'));
+        $jsContent = <<<SCRIPT
+parent.SuccessCateg();
+parent.layer.close(parent.layer.getFrameIndex(window.name));
+SCRIPT;
+        $form = Form::make_post_form('添加分类',$formbuider,Url::build('saveCate'),$jsContent);
         $this->assign(compact('form'));
         return $this->fetch('public/form-builder');
     }
@@ -183,7 +218,11 @@ class Images extends AuthController
             return $options;
         })->filterable(1);
         $formbuider[] = Form::input('name','分类名称',$Category->getData('name'));
-        $form = Form::make_post_form('编辑分类',$formbuider,Url::build('updateCate'));
+        $jsContent = <<<SCRIPT
+parent.SuccessCateg();
+parent.layer.close(parent.layer.getFrameIndex(window.name));
+SCRIPT;
+        $form = Form::make_post_form('编辑分类',$formbuider,Url::build('updateCate'),$jsContent);
         $this->assign(compact('form'));
         return $this->fetch('public/form-builder');
     }

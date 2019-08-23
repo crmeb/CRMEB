@@ -590,10 +590,17 @@ class StoreOrder extends ModelBasic
                 $status['_class'] = 'state-nfh';
             }
         }else if($order['status'] == 1){
-            $status['_type'] = 2;
-            $status['_title'] = '待收货';
-            $status['_msg'] = date('m月d日H时i分',StoreOrderStatus::getTime($order['id'],'delivery_goods')).'服务商已发货';
-            $status['_class'] = 'state-ysh';
+            if($order['delivery_type'] == 'send'){//TODO 送货
+                $status['_type'] = 2;
+                $status['_title'] = '待收货';
+                $status['_msg'] = date('m月d日H时i分',StoreOrderStatus::getTime($order['id'],'delivery')).'服务商已送货';
+                $status['_class'] = 'state-ysh';
+            }else{//TODO  发货
+                $status['_type'] = 2;
+                $status['_title'] = '待收货';
+                $status['_msg'] = date('m月d日H时i分',StoreOrderStatus::getTime($order['id'],'delivery_goods')).'服务商已发货';
+                $status['_class'] = 'state-ysh';
+            }
         }else if($order['status'] == 2){
             $status['_type'] = 3;
             $status['_title'] = '待评价';

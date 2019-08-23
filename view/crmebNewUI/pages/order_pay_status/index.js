@@ -23,6 +23,11 @@ Page({
     if (!options.order_id) return app.Tips({title:'缺少参数无法查看订单支付状态'},{tab:3,url:1});
     this.setData({ orderId: options.order_id, status: options.status || 0, msg: options.msg || ''});
   },
+  /**
+   * 
+   * 支付完成查询支付状态
+   * 
+  */
   getOrderPayInfo:function(){
     var that=this;
     wx.showLoading({title: '正在加载中'});
@@ -33,8 +38,27 @@ Page({
       wx.hideLoading();
     });
   },
+  /**
+   * 去首页关闭当前所有页面
+  */
+  goIndex:function(e){
+    var formId = e.detail.formId;
+    app.baseGet(app.U({ c: 'public_api', a: 'get_form_id', q: { formId: formId } }), null, null, true);
+    wx.switchTab({url:'/pages/index/index'});
+  },
 
-
+  /**
+   * 
+   * 去订单详情页面
+  */
+  goOrderDetails:function(e)
+  {
+    var formId = e.detail.formId;
+    app.baseGet(app.U({ c: 'public_api', a: 'get_form_id', q: { formId: formId } }), null, null, true);
+    wx.navigateTo({
+      url: '/pages/order_details/index?order_id=' + this.data.orderId
+    });
+  }
 
 
 })

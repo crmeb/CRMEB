@@ -147,7 +147,7 @@
                 if (value['name'] != undefined) tables.push(value['name']);
             });
             if(tables.length < 1 ){
-                return false;
+                return layer.msg('请选择表');
             }
             switch(obj.event){
                 case 'backup':
@@ -155,15 +155,21 @@
                         layer.msg(res.msg,{icon:1,time:1000,end:function(){
                             buckdata.reload();
                         }});
+                    },function (res) {
+                        layer.msg(res.msg);
                     });
                     break;
                 case 'optimize':
                     layList.basePost(layList.Url({a:'optimize'}),{tables:tables},function (res) {
                         layer.msg(res.msg);
+                    },function (res) {
+                        layer.msg(res.msg);
                     });
                     break;
                 case 'repair':
                     layList.basePost(layList.Url({a:'repair'}),{tables:tables},function (res) {
+                        layer.msg(res.msg);
+                    },function (res) {
                         layer.msg(res.msg);
                     });
                     break;

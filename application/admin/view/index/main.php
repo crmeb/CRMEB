@@ -15,7 +15,7 @@
                 </div>
                 <div class="ibox-content">
                     <h1 class="no-margins">{$topData.orderDeliveryNum}</h1>
-                    <small><a href="{:Url('order.store_order/index')}">待发货</a> </small>
+                    <small><a href="javascript:;" class="opFrames" data-name="订单管理" data-href="{:Url('order.store_order/index',['status'=>1])}">待发货</a> </small>
                 </div>
             </div>
         </div>
@@ -27,7 +27,7 @@
                 </div>
                 <div class="ibox-content">
                     <h1 class="no-margins">{$topData.orderRefundNum}</h1>
-                    <small><a href="{:Url('order.store_order/index')}">退换货</a></small>
+                    <small><a href="javascript:;" class="opFrames" data-name="订单管理" data-href="{:Url('order.store_order/index',['status'=>-1])}">退换货</a></small>
                 </div>
             </div>
         </div>
@@ -39,7 +39,7 @@
                 </div>
                 <div class="ibox-content">
                     <h1 class="no-margins">{$topData.stockProduct}</h1>
-                    <small><a href="{:Url('store.store_product/index',array('type'=>5))}">库存预警</a></small>
+                    <small><a href="javascript:;" class="opFrames" data-name="商品管理" data-href="{:Url('store.store_product/index',array('type'=>5))}">库存预警</a></small>
                 </div>
             </div>
         </div>
@@ -51,7 +51,7 @@
                 </div>
                 <div class="ibox-content">
                     <h1 class="no-margins">{$topData.treatedExtract}</h1>
-                    <small><a href="{:Url('finance.user_extract/index')}">待提现</a></small>
+                    <small><a href="javascript:;" class="opFrames" data-name="提现盛情" data-href="{:Url('finance.user_extract/index')}">待提现</a></small>
                 </div>
             </div>
         </div>
@@ -67,7 +67,7 @@
                         {$first_line.d_num.percent}%
                         {if condition='$first_line.d_num.is_plus egt 0'}<i class="fa {if condition='$first_line.d_num.is_plus eq 1'}fa-level-up{else /}fa-level-down{/if}"></i>{/if}
                     </div>
-                    <small>昨日订单数</small>
+                    <small><a href="javascript:;" class="opFrames" data-name="订单管理" data-href="{:Url('order.store_order/index')}?data=yesterday">昨日订单数</a></small>
                 </div>
             </div>
         </div>
@@ -83,7 +83,7 @@
                         {$first_line.d_price.percent}%
                         {if condition='$first_line.d_price.is_plus egt 0'}<i class="fa {if condition='$first_line.d_price.is_plus eq 1'}fa-level-up{else /}fa-level-down{/if}"></i>{/if}
                     </div>
-                    <small>昨日交易额</small>
+                    <small><a href="javascript:;" class="opFrames" data-name="订单管理" data-href="{:Url('order.store_order/index')}?data=yesterday">昨日交易额</a></small>
                 </div>
             </div>
         </div>
@@ -99,7 +99,7 @@
                         {$first_line.day.percent}%
                         {if condition='$first_line.day.is_plus egt 0'}<i class="fa {if condition='$first_line.day.is_plus eq 1'}fa-level-up{else /}fa-level-down{/if}"></i>{/if}
                     </div>
-                    <small>今日新增粉丝</small>
+                    <small><a href="javascript:;" class="opFrames" data-name="会员管理" data-href="{:Url('user.user/index')}">今日新增粉丝</a></small>
                 </div>
             </div>
         </div>
@@ -115,7 +115,7 @@
                         {$first_line.month.percent}%
                         {if condition='$first_line.month.is_plus egt 0'}<i class="fa {if condition='$first_line.month.is_plus eq 1'}fa-level-up{else /}fa-level-down{/if}"></i>{/if}
                     </div>
-                    <small>本月新增粉丝</small>
+                    <small><a href="javascript:;" class="opFrames" data-name="会员管理" data-href="{:Url('user.user/index')}">本月新增粉丝</a></small>
                 </div>
             </div>
         </div>
@@ -273,14 +273,17 @@
                                 default:
                                     break;
                             }
-                            that.cyclecount = res.data.data.cycle.count.data;
-                            that.cyclecount_percent = res.data.data.cycle.count.percent;
-                            that.cyclecount_is_plus = res.data.data.cycle.count.is_plus;
-                            that.cycleprice = res.data.data.cycle.price.data;
-                            that.cycleprice_percent = res.data.data.cycle.price.percent;
-                            that.cycleprice_is_plus = res.data.data.cycle.price.is_plus;
-                            that.pre_cyclecount = res.data.data.pre_cycle.count.data;
-                            that.pre_cycleprice = res.data.data.pre_cycle.price.data;
+                            var data=res.data.data;
+                            if(data.length) {
+                                that.cyclecount = data.cycle.count.data;
+                                that.cyclecount_percent = data.cycle.count.percent;
+                                that.cyclecount_is_plus = data.cycle.count.is_plus;
+                                that.cycleprice = data.cycle.price.data;
+                                that.cycleprice_percent = data.cycle.price.percent;
+                                that.cycleprice_is_plus = data.cycle.price.is_plus;
+                                that.pre_cyclecount = data.pre_cycle.count.data;
+                                that.pre_cycleprice = data.pre_cycle.price.data;
+                            }
                     });
                 },
                 orderchartsetoption:function(data){
@@ -436,7 +439,9 @@
                 this.setChart(self.$refs.user_echart,'user_echart');//用户图表
                 this.info();
                 this.getlist();
-
+                $('.opFrames').on('click',function () {
+                    parent.addframes($(this).data('href'),'',$(this).data('name'));
+                });
             }
         });
     });

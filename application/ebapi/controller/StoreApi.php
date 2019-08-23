@@ -2,6 +2,7 @@
 namespace app\ebapi\controller;
 
 
+use app\admin\model\system\SystemAttachment;
 use app\core\model\routine\RoutineCode;//待完善
 use app\ebapi\model\store\StoreCategory;
 use app\ebapi\model\store\StoreOrderCartInfo;
@@ -12,6 +13,7 @@ use app\ebapi\model\store\StoreProductReply;
 use app\core\util\GroupDataService;
 use service\JsonService;
 use app\core\util\SystemConfigService;
+use service\UploadService;
 use service\UtilService;
 use app\core\util\MiniProgramService;
 use think\Cache;
@@ -43,8 +45,12 @@ class StoreApi extends AuthController
      */
     public function goods_search()
     {
-        list($keyword) = UtilService::getMore([['keyword',0]],null,true);
-        return JsonService::successful(StoreProduct::getSearchStorePage($keyword,$this->uid));
+        list($keyword,$page,$limit) = UtilService::getMore([
+            ['keyword',0],
+            ['page',1],
+            ['limit',8],
+        ],null,true);
+        return JsonService::successful(StoreProduct::getSearchStorePage($keyword,(int)$page,(int)$limit,$this->uid));
     }
     /**
      * 分类页面
@@ -128,6 +134,10 @@ class StoreApi extends AuthController
      */
     public function details($id=0){
         if(!$id || !($storeInfo = StoreProduct::getValidProduct($id))) return JsonService::fail('商品不存在或已下架');
+        //替换windows服务器下正反斜杠问题导致图片无法显示
+        $storeInfo['description'] = preg_replace_callback('#<img.*?src="([^"]*)"[^>]*>#i',function ($imagsSrc){
+            return isset($imagsSrc[1]) && isset($imagsSrc[0]) ? str_replace($imagsSrc[1],str_replace('\\','/',$imagsSrc[1]),$imagsSrc[0]): '';
+        },$storeInfo['description']);
         $storeInfo['userCollect'] = StoreProductRelation::isProductRelation($id,$this->userInfo['uid'],'collect');
         list($productAttr,$productValue) = StoreProductAttr::getProductAttrDetail($id);
         setView($this->userInfo['uid'],$id,$storeInfo['cate_id'],'viwe');
@@ -348,19 +358,24 @@ class StoreApi extends AuthController
         if(!$id) return JsonService::fail('参数错误ID不存在');
         $count = StoreProduct::validWhere()->count();
         if(!$count) return JsonService::fail('参数错误');
-        $path = makePathToUrl('routine/product/',4);
-        if($path == '') return JsonService::fail('生成上传目录失败,请检查权限!');
-        $codePath = $path.$id.'_'.$this->userInfo['uid'].'_product.jpg';
-        $domain = SystemConfigService::get('site_url').'/';
-        if(!file_exists($codePath)){
-            if(!is_dir($path)) mkdir($path,0777,true);
+        $name = $id.'_'.$this->userInfo['uid'].'_'.$this->userInfo['is_promoter'].'_product.jpg';
+        $imageInfo = SystemAttachment::getInfo($name,'name');
+        $siteUrl = SystemConfigService::get('site_url').DS;
+        if(!$imageInfo){
             $data='id='.$id;
             if($this->userInfo['is_promoter'] || SystemConfigService::get('store_brokerage_statu')==2) $data.='&pid='.$this->uid;
             $res = RoutineCode::getPageCode('pages/goods_details/index',$data,280);
-            if($res) file_put_contents($codePath,$res);
-            else return JsonService::fail('二维码生成失败');
-        }
-        return JsonService::successful($domain.$codePath);
+            if(!$res) return JsonService::fail('二维码生成失败');
+            $imageInfo = UploadService::imageStream($name,$res,'routine/product');
+            if(!is_array($imageInfo)) return JsonService::fail($imageInfo);
+            if($imageInfo['image_type'] == 1) $remoteImage = UtilService::remoteImage($siteUrl.$imageInfo['dir']);
+            else $remoteImage = UtilService::remoteImage($imageInfo['dir']);
+            if(!$remoteImage['status']) return JsonService::fail('小程序二维码未能生成',$remoteImage['msg']);
+            SystemAttachment::attachmentAdd($imageInfo['name'],$imageInfo['size'],$imageInfo['type'],$imageInfo['dir'],$imageInfo['thumb_path'],1,$imageInfo['image_type'],$imageInfo['time'],2);
+            $urlCode = $imageInfo['dir'];
+        }else $urlCode = $imageInfo['att_dir'];
+        if($imageInfo['image_type'] == 1) $urlCode = $siteUrl.$urlCode;
+        return JsonService::successful($urlCode);
     }
 
     /**

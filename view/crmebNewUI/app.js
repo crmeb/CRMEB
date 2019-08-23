@@ -3,9 +3,7 @@
 //请配置请求url
 //请修改开发者工具中【详情】->【AppID】改为自己的Appid
 //请前往后台【小程序】->【小程序配置】填写自己的 appId and AppSecret
-//请不要修改globalData中的其他配置，如自行开发可不用理会这句话
-//配置完以上就可以访问小程序啦
-const URL ='http://datong.crmeb.net';
+const URL ='http://activity.crmeb.net';
 
 const util = require('utils/util.js');
 
@@ -15,13 +13,28 @@ App({
       console.error("请配置请求url\n请修改开发者工具中【详情】->【AppID】改为自己的Appid\n请前往后台【小程序】->【小程序配置】填写自己的 appId and AppSecret");
       return false;
     }
-    if (option.query.hasOwnProperty('scene') && option.scene == 1047) this.globalData.code = option.query.scene;
-    if (option.query.hasOwnProperty('scene') && option.scene == 1001) this.globalData.spid = option.query.scene;
+    var that = this;
+    if (option.query.hasOwnProperty('scene')){
+      switch (option.scene) {
+        //扫描小程序码
+        case 1047:
+          that.globalData.code = option.query.scene;
+          break;
+        //长按图片识别小程序码
+        case 1048:
+          that.globalData.code = option.query.scene;
+          break;
+        //手机相册选取小程序码
+        case 1049:
+          that.globalData.code = option.query.scene;
+          break;
+        //直接进入小程序
+        case 1001:
+          that.globalData.spid = option.query.scene;
+          break;
+      }
+    }
     this.getMyMenus();
-    // 展示本地存储能力
-    var logs = wx.getStorageSync('logs') || [],that=this;
-    logs.unshift(Date.now())
-    wx.setStorageSync('logs', logs);
     // 获取导航高度；
     wx.getSystemInfo({
       success: res => {

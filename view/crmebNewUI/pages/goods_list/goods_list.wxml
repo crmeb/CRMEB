@@ -32,7 +32,7 @@
            <view class='name line1'>{{item.store_name}}</view>
            <view class='money font-color {{is_switch==true?"":"on"}}'>￥<text class='num'>{{item.price}}</text></view>
            <view class='vip acea-row row-between-wrapper {{is_switch==true?"":"on"}}'>
-              <view class='vip-money'>￥{{item.vip_price}}<image src='/images/vip.png'></image></view>
+              <view class='vip-money' wx:if="{{item.vip_price && item.vip_price > 0}}">￥{{item.vip_price}}<image src='/images/vip.png'></image></view>
               <view>已售{{item.sales}}件</view>
            </view>
         </view>

@@ -141,6 +141,11 @@ class PaymentBehavior
 
     public static function userRechargeRefund($orderNo, array $opt)
     {
-        WechatService::payOrderRefund($orderNo,$opt);
+        $recharge_type = \app\admin\model\user\UserRecharge::where('order_id',$orderNo)->value('recharge_type');
+        if($recharge_type == 'weixin'){
+            WechatService::payOrderRefund($orderNo,$opt);
+        }else{
+            MiniProgramService::payOrderRefund($orderNo,$opt);
+        }
     }
 }

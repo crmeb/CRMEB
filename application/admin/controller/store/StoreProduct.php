@@ -145,8 +145,8 @@ class StoreProduct extends AuthController
             Form::input('store_info','产品简介')->type('textarea'),
             Form::input('keyword','产品关键字')->placeholder('多个用英文状态下的逗号隔开'),
             Form::input('unit_name','产品单位','件'),
-            Form::frameImageOne('image','产品主图片(305*305px)',Url::build('admin/widget.images/index',array('fodder'=>'image')))->icon('image')->width('100%')->height('500px'),
-            Form::frameImages('slider_image','产品轮播图(640*640px)',Url::build('admin/widget.images/index',array('fodder'=>'slider_image')))->maxLength(5)->icon('images')->width('100%')->height('500px')->spin(0),
+            Form::formFrameImageOne('image','产品主图片(305*305px)'),
+            Form::formFrameImages('slider_image','产品轮播图(640*640px)'),
             Form::number('price','产品售价')->min(0)->col(8),
             Form::number('ot_price','产品市场价')->min(0)->col(8),
             Form::number('give_integral','赠送积分')->min(0)->precision(0)->col(8),
@@ -175,16 +175,12 @@ class StoreProduct extends AuthController
     public function upload()
     {
         $res = Upload::image('file','store/product/'.date('Ymd'));
-        $thumbPath = Upload::thumb($res->dir);
-        //产品图片上传记录
-        $fileInfo = $res->fileInfo->getinfo();
-        SystemAttachment::attachmentAdd($res->fileInfo->getSaveName(),$fileInfo['size'],$fileInfo['type'],$res->dir,$thumbPath,1);
-        if($res->status == 200)
-            return Json::successful('图片上传成功!',['name'=>$res->fileInfo->getSaveName(),'url'=>Upload::pathToUrl($thumbPath)]);
+        SystemAttachment::attachmentAdd($res['name'],$res['size'],$res['type'],$res['dir'],$res['thumb_path'],1,$res['image_type'],$res['time']);
+        if(is_array($res))
+            return Json::successful('图片上传成功!',['name'=>$res['name'],'url'=>Upload::pathToUrl($res['thumb_path'])]);
         else
-            return Json::fail($res->error);
+            return Json::fail($res);
     }
-
     /**
      * 保存新建的资源
      *
@@ -275,8 +271,10 @@ class StoreProduct extends AuthController
             Form::input('store_info','产品简介',$product->getData('store_info'))->type('textarea'),
             Form::input('keyword','产品关键字',$product->getData('keyword'))->placeholder('多个用英文状态下的逗号隔开'),
             Form::input('unit_name','产品单位',$product->getData('unit_name')),
-            Form::frameImageOne('image','产品主图片(305*305px)',Url::build('admin/widget.images/index',array('fodder'=>'image')),$product->getData('image'))->icon('image')->width('100%')->height('500px'),
-            Form::frameImages('slider_image','产品轮播图(640*640px)',Url::build('admin/widget.images/index',array('fodder'=>'slider_image')),json_decode($product->getData('slider_image'),1) ? : [])->maxLength(5)->icon('images')->width('100%')->height('500px'),
+//            Form::frameImageOne('image','产品主图片(305*305px)',Url::build('admin/widget.images/index',array('fodder'=>'image')),$product->getData('image'))->icon('image')->width('80%')->height('500px'),
+            Form::formFrameImageOne('image','产品主图片(305*305px)',$product->getData('image')),
+//            Form::frameImages('slider_image','产品轮播图(640*640px)',Url::build('admin/widget.images/index',array('fodder'=>'slider_image')),json_decode($product->getData('slider_image'),1) ? : [])->maxLength(5)->icon('images')->width('945px')->height('600px'),
+            Form::formFrameImages('slider_image','产品轮播图(640*640px)',json_decode($product->getData('slider_image'),1) ? : []),
             Form::number('price','产品售价',$product->getData('price'))->min(0)->precision(2)->col(8),
             Form::number('ot_price','产品市场价',$product->getData('ot_price'))->min(0)->col(8),
             Form::number('give_integral','赠送积分',$product->getData('give_integral'))->min(0)->precision(0)->col(8),
@@ -339,7 +337,7 @@ class StoreProduct extends AuthController
         if(!$data['store_name']) return Json::fail('请输入产品名称');
         if(count($data['image'])<1) return Json::fail('请上传产品图片');
         if(count($data['slider_image'])<1) return Json::fail('请上传产品轮播图');
-        if(count($data['slider_image'])>5) return Json::fail('轮播图最多5张图');
+       // if(count($data['slider_image'])>8) return Json::fail('轮播图最多5张图');
         if($data['price'] == '' || $data['price'] < 0) return Json::fail('请输入产品售价');
         if($data['ot_price'] == '' || $data['ot_price'] < 0) return Json::fail('请输入产品市场价');
         if($data['stock'] == '' || $data['stock'] < 0) return Json::fail('请输入库存');

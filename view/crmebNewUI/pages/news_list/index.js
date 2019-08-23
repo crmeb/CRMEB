@@ -47,6 +47,7 @@ Page({
   },
   getCidArticle: function () {
     var that = this;
+    if (that.data.active == 0) return ;
     var limit = that.data.limit;
     var first = that.data.first;
     var articleList = that.data.articleList;
@@ -70,7 +71,7 @@ Page({
     })
     if (this.data.active == 0) this.getArticleHot();
     else{
-      this.setData({ articleList: [], first:0});
+      this.setData({ articleList: [], first: 0, status: false});
       this.getCidArticle();
     }
   },
@@ -116,7 +117,7 @@ Page({
    * 页面上拉触底事件的处理函数
    */
   onReachBottom: function () {
-
+    this.getCidArticle();
   },
 
   /**

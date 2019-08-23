@@ -20,10 +20,13 @@ use app\admin\model\system\SystemAttachment;
 class Article extends AuthController
 {
     /**
-     * 显示后台管理员添加的图文
+     * TODO 显示后台管理员添加的图文
      * @return mixed
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\exception\DbException
      */
-    public function index($pid = 0)
+    public function index()
     {
         $where = Util::getMore([
             ['title',''],
@@ -32,34 +35,33 @@ class Article extends AuthController
         $pid = $this->request->param('pid');
         $this->assign('where',$where);
         $where['merchant'] = 0;//区分是管理员添加的图文显示  0 还是 商户添加的图文显示  1
-        $catlist = ArticleCategoryModel::where('is_del',0)->select()->toArray();
+        $cateList = ArticleCategoryModel::getArticleCategoryList();
+        $tree = [];
         //获取分类列表
-        if($catlist){
-            $tree = Phptree::makeTreeForHtml($catlist);
-            $this->assign(compact('tree'));
+        if(count($cateList)){
+            $tree = Phptree::makeTreeForHtml($cateList);
             if($pid){
                 $pids = Util::getChildrenPid($tree,$pid);
                 $where['cid'] = ltrim($pid.$pids);
             }
-        }else{
-            $tree = [];
-            $this->assign(compact('tree'));
         }
-
-
-        $this->assign('cate',ArticleCategoryModel::getTierList());
+        $this->assign(compact('tree'));
         $this->assign(ArticleModel::getAll($where));
         return $this->fetch();
     }
 
     /**
-     * 展示页面   添加和删除
+     * TODO 文件添加和修改
      * @return mixed
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\exception\DbException
      */
     public function create(){
-        $id = input('id');
-        $cid = input('cid');
-        $news = array();
+        $id = $this->request->param('id');
+        $cid = $this->request->param('cid');
+        $news = [];
+        $all = [];
         $news['id'] = '';
         $news['image_input'] = '';
         $news['title'] = '';
@@ -69,30 +71,19 @@ class Article extends AuthController
         $news['content'] = '';
         $news['synopsis'] = '';
         $news['url'] = '';
-        $news['cid'] = array();
+        $news['cid'] = [];
+        $select =  0;
         if($id){
             $news = ArticleModel::where('n.id',$id)->alias('n')->field('n.*,c.content')->join('ArticleContent c','c.nid=n.id')->find();
             if(!$news) return $this->failedNotice('数据不存在!');
             $news['cid'] = explode(',',$news['cid']);
         }
-        $all = array();
-        $select =  0;
-        if(!$cid)
-            $cid = '';
-        else {
-            if($id){
-                $all = ArticleCategoryModel::where('id',$cid)->where('hidden','neq',0)->column('id,title');
-                $select = 1;
-            }else{
-                $all = ArticleCategoryModel::where('id',$cid)->column('id,title');
-                $select = 1;
-            }
-
+        if($cid && in_array($cid, ArticleCategoryModel::getArticleCategoryInfo(0,'id'))){
+            $all = ArticleCategoryModel::getArticleCategoryInfo($cid);
+            $select = 1;
         }
-        if(empty($all)){
-            $select =  0;
+        if(!$select){
             $list = ArticleCategoryModel::getTierList();
-            $all = [];
             foreach ($list as $menu){
                 $all[$menu['id']] = $menu['html'].$menu['title'];
             }
@@ -110,11 +101,9 @@ class Article extends AuthController
      */
     public function upload_image(){
         $res = Upload::Image($_POST['file'],'wechat/image/'.date('Ymd'));
-        //产品图片上传记录
-        $fileInfo = $res->fileInfo->getinfo();
-        SystemAttachment::attachmentAdd($res->fileInfo->getSaveName(),$fileInfo['size'],$fileInfo['type'],$res->dir,'',5);
-        if(!$res->status) return Json::fail($res->error);
-        return Json::successful('上传成功!',['url'=>$res->filePath]);
+        if(!is_array($res)) return Json::fail($res);
+        SystemAttachment::attachmentAdd($res['name'],$res['size'],$res['type'],$res['dir'],$res['thumb_path'],5,$res['image_type'],$res['time']);
+        return Json::successful('上传成功!',['url'=>$res['dir']]);
     }
 
     /**
@@ -146,15 +135,13 @@ class Article extends AuthController
         if($data['id']){
             $id = $data['id'];
             unset($data['id']);
+            $res = false;
             ArticleModel::beginTrans();
             $res1 = ArticleModel::edit($data,$id,'id');
             $res2 = ArticleModel::setContent($id,$content);
-            if($res1 && $res2)
+            if($res1 && $res2){
                 $res = true;
-            else
-                $res =false;
-//            dump($res);
-//            exit();
+            }
             ArticleModel::checkTrans($res);
             if($res)
                 return Json::successful('修改图文成功!',$id);
@@ -163,15 +150,15 @@ class Article extends AuthController
         }else{
             $data['add_time'] = time();
             $data['admin_id'] = $this->adminId;
+            $res = false;
             ArticleModel::beginTrans();
             $res1 = ArticleModel::set($data);
             $res2 = false;
             if($res1)
                 $res2 = ArticleModel::setContent($res1->id,$content);
-            if($res1 && $res2)
+            if($res1 && $res2){
                 $res = true;
-            else
-                $res =false;
+            }
             ArticleModel::checkTrans($res);
             if($res)
                 return Json::successful('添加图文成功!',$res1->id);
