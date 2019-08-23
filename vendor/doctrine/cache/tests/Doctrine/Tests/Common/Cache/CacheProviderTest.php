@@ -69,35 +69,4 @@ class CacheProviderTest extends \Doctrine\Tests\DoctrineTestCase
         $this->assertFalse($cache->deleteAll(), 'deleteAll() returns false when saving the namespace version fails');
         $cache->contains('key');
     }
-
-    public function testSaveMultipleNoFail()
-    {
-        /* @var $cache \Doctrine\Common\Cache\CacheProvider|\PHPUnit_Framework_MockObject_MockObject */
-        $cache = $this->getMockForAbstractClass(
-            'Doctrine\Common\Cache\CacheProvider',
-            array(),
-            '',
-            true,
-            true,
-            true,
-            array('doSave')
-        );
-
-        $cache
-            ->expects($this->at(1))
-            ->method('doSave')
-            ->with('[kerr][1]', 'verr', 0)
-            ->will($this->returnValue(false));
-
-        $cache
-            ->expects($this->at(2))
-            ->method('doSave')
-            ->with('[kok][1]', 'vok', 0)
-            ->will($this->returnValue(true));
-
-        $cache->saveMultiple(array(
-            'kerr'  => 'verr',
-            'kok'   => 'vok',
-        ));
-    }
 }

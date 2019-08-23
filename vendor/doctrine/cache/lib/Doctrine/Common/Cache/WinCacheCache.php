@@ -53,7 +53,7 @@ class WinCacheCache extends CacheProvider
      */
     protected function doSave($id, $data, $lifeTime = 0)
     {
-        return wincache_ucache_set($id, $data, $lifeTime);
+        return (bool) wincache_ucache_set($id, $data, (int) $lifeTime);
     }
 
     /**
@@ -70,24 +70,6 @@ class WinCacheCache extends CacheProvider
     protected function doFlush()
     {
         return wincache_ucache_clear();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function doFetchMultiple(array $keys)
-    {
-        return wincache_ucache_get($keys);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function doSaveMultiple(array $keysAndValues, $lifetime = 0)
-    {
-        $result = wincache_ucache_set($keysAndValues, null, $lifetime);
-
-        return empty($result);
     }
 
     /**

@@ -91,7 +91,26 @@ class MockFileSessionStorage extends MockArraySessionStorage
             throw new \RuntimeException('Trying to save a session that was not started yet or was already closed');
         }
 
-        file_put_contents($this->getFilePath(), serialize($this->data));
+        $data = $this->data;
+
+        foreach ($this->bags as $bag) {
+            if (empty($data[$key = $bag->getStorageKey()])) {
+                unset($data[$key]);
+            }
+        }
+        if ([$key = $this->metadataBag->getStorageKey()] === array_keys($data)) {
+            unset($data[$key]);
+        }
+
+        try {
+            if ($data) {
+                file_put_contents($this->getFilePath(), serialize($data));
+            } else {
+                $this->destroy();
+            }
+        } finally {
+            $this->data = $data;
+        }
 
         // this is needed for Silex, where the session object is re-used across requests
         // in functional tests. In Symfony, the container is rebooted, so we don't have
@@ -126,7 +145,7 @@ class MockFileSessionStorage extends MockArraySessionStorage
     private function read()
     {
         $filePath = $this->getFilePath();
-        $this->data = is_readable($filePath) && is_file($filePath) ? unserialize(file_get_contents($filePath)) : array();
+        $this->data = is_readable($filePath) && is_file($filePath) ? unserialize(file_get_contents($filePath)) : [];
 
         $this->loadSession();
     }

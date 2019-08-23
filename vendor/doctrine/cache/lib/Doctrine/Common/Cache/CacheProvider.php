@@ -29,7 +29,7 @@ namespace Doctrine\Common\Cache;
  * @author Roman Borschel <roman@code-factory.org>
  * @author Fabio B. Silva <fabio.bat.silva@gmail.com>
  */
-abstract class CacheProvider implements Cache, FlushableCache, ClearableCache, MultiGetCache, MultiPutCache
+abstract class CacheProvider implements Cache, FlushableCache, ClearableCache, MultiGetCache
 {
     const DOCTRINE_NAMESPACE_CACHEKEY = 'DoctrineNamespaceCacheKey[%s]';
 
@@ -101,19 +101,6 @@ abstract class CacheProvider implements Cache, FlushableCache, ClearableCache, M
         }
 
         return $foundItems;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function saveMultiple(array $keysAndValues, $lifetime = 0)
-    {
-        $namespacedKeysAndValues = array();
-        foreach ($keysAndValues as $key => $value) {
-            $namespacedKeysAndValues[$this->getNamespacedId($key)] = $value;
-        }
-
-        return $this->doSaveMultiple($namespacedKeysAndValues, $lifetime);
     }
 
     /**
@@ -224,8 +211,8 @@ abstract class CacheProvider implements Cache, FlushableCache, ClearableCache, M
     {
         $returnValues = array();
 
-        foreach ($keys as $key) {
-            if (false !== ($item = $this->doFetch($key)) || $this->doContains($key)) {
+        foreach ($keys as $index => $key) {
+            if (false !== ($item = $this->doFetch($key))) {
                 $returnValues[$key] = $item;
             }
         }
@@ -238,7 +225,7 @@ abstract class CacheProvider implements Cache, FlushableCache, ClearableCache, M
      *
      * @param string $id The id of the cache entry to fetch.
      *
-     * @return mixed|false The cached data or FALSE, if no cache entry exists for the given id.
+     * @return mixed|boolean The cached data or FALSE, if no cache entry exists for the given id.
      */
     abstract protected function doFetch($id);
 
@@ -247,31 +234,9 @@ abstract class CacheProvider implements Cache, FlushableCache, ClearableCache, M
      *
      * @param string $id The cache id of the entry to check for.
      *
-     * @return bool TRUE if a cache entry exists for the given cache id, FALSE otherwise.
+     * @return boolean TRUE if a cache entry exists for the given cache id, FALSE otherwise.
      */
     abstract protected function doContains($id);
-
-    /**
-     * Default implementation of doSaveMultiple. Each driver that supports multi-put should override it.
-     *
-     * @param array $keysAndValues  Array of keys and values to save in cache
-     * @param int   $lifetime       The lifetime. If != 0, sets a specific lifetime for these
-     *                              cache entries (0 => infinite lifeTime).
-     *
-     * @return bool TRUE if the operation was successful, FALSE if it wasn't.
-     */
-    protected function doSaveMultiple(array $keysAndValues, $lifetime = 0)
-    {
-        $success = true;
-
-        foreach ($keysAndValues as $key => $value) {
-            if (!$this->doSave($key, $value, $lifetime)) {
-                $success = false;
-            }
-        }
-
-        return $success;
-    }
 
     /**
      * Puts data into the cache.
@@ -281,7 +246,7 @@ abstract class CacheProvider implements Cache, FlushableCache, ClearableCache, M
      * @param int    $lifeTime The lifetime. If != 0, sets a specific lifetime for this
      *                           cache entry (0 => infinite lifeTime).
      *
-     * @return bool TRUE if the entry was successfully stored in the cache, FALSE otherwise.
+     * @return boolean TRUE if the entry was successfully stored in the cache, FALSE otherwise.
      */
     abstract protected function doSave($id, $data, $lifeTime = 0);
 
@@ -290,14 +255,14 @@ abstract class CacheProvider implements Cache, FlushableCache, ClearableCache, M
      *
      * @param string $id The cache id.
      *
-     * @return bool TRUE if the cache entry was successfully deleted, FALSE otherwise.
+     * @return boolean TRUE if the cache entry was successfully deleted, FALSE otherwise.
      */
     abstract protected function doDelete($id);
 
     /**
      * Flushes all cache entries.
      *
-     * @return bool TRUE if the cache entries were successfully flushed, FALSE otherwise.
+     * @return boolean TRUE if the cache entries were successfully flushed, FALSE otherwise.
      */
     abstract protected function doFlush();
 

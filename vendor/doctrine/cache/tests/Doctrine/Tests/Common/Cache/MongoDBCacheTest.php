@@ -7,9 +7,6 @@ use Doctrine\Common\Cache\MongoDBCache;
 use MongoClient;
 use MongoCollection;
 
-/**
- * @requires extension mongo
- */
 class MongoDBCacheTest extends CacheTest
 {
     /**
@@ -17,21 +14,32 @@ class MongoDBCacheTest extends CacheTest
      */
     private $collection;
 
-    protected function setUp()
+    public function setUp()
     {
         if ( ! version_compare(phpversion('mongo'), '1.3.0', '>=')) {
-            $this->markTestSkipped('Mongo >= 1.3.0 is required.');
+            $this->markTestSkipped('The ' . __CLASS__ .' requires the use of mongo >= 1.3.0');
         }
 
         $mongo = new MongoClient();
         $this->collection = $mongo->selectCollection('doctrine_common_cache', 'test');
     }
 
-    protected function tearDown()
+    public function tearDown()
     {
         if ($this->collection instanceof MongoCollection) {
             $this->collection->drop();
         }
+    }
+
+    public function testSaveWithNonUtf8String()
+    {
+        // Invalid 2-octet sequence
+        $data = "\xc3\x28";
+
+        $cache = $this->_getCacheDriver();
+
+        $this->assertTrue($cache->save('key', $data));
+        $this->assertEquals($data, $cache->fetch('key'));
     }
 
     public function testGetStats()
@@ -44,21 +52,6 @@ class MongoDBCacheTest extends CacheTest
         $this->assertGreaterThan(0, $stats[Cache::STATS_UPTIME]);
         $this->assertEquals(0, $stats[Cache::STATS_MEMORY_USAGE]);
         $this->assertNull($stats[Cache::STATS_MEMORY_AVAILABLE]);
-    }
-
-    /**
-     * @group 108
-     */
-    public function testMongoCursorExceptionsDoNotBubbleUp()
-    {
-        /* @var $collection \MongoCollection|\PHPUnit_Framework_MockObject_MockObject */
-        $collection = $this->getMock('MongoCollection', array(), array(), '', false);
-
-        $collection->expects(self::once())->method('update')->willThrowException(new \MongoCursorException());
-
-        $cache = new MongoDBCache($collection);
-
-        self::assertFalse($cache->save('foo', 'bar'));
     }
 
     protected function _getCacheDriver()
