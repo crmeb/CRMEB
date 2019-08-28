@@ -1,0 +1,26 @@
+{
+    "name": "overtrue/socialite",
+    "description": "A collection of OAuth 2 packages that extracts from laravel/socialite.",
+    "keywords": ["OAuth", "social", "login", "Weibo", "WeChat", "QQ"],
+    "autoload": {
+        "psr-4": {
+            "Overtrue\\Socialite\\": "src/"
+        }
+    },
+    "require": {
+        "php": ">=5.4.0",
+        "guzzlehttp/guzzle": "~5.0|~6.0",
+        "symfony/http-foundation": "~2.6|~2.7|~2.8|~3.0"
+    },
+    "require-dev": {
+        "mockery/mockery": "~0.9",
+        "phpunit/phpunit": "~4.0"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "overtrue",
+            "email": "anzhengchao@gmail.com"
+        }
+    ]
+}

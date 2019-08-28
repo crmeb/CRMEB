@@ -1,0 +1,4 @@
+/vendor/
+/thinkphp/
+/composer.lock
+/.idea/

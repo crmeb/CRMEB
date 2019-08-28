@@ -1,0 +1,30 @@
+{
+    "name": "topthink/think-captcha",
+    "description": "captcha package for thinkphp",
+    "authors": [
+        {
+            "name": "yunwuxin",
+            "email": "448901948@qq.com"
+        }
+    ],
+    "license": "Apache-2.0",
+    "require": {
+        "topthink/framework": "^6.0.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "think\\captcha\\": "src/"
+        },
+        "files": [
+            "src/helper.php"
+        ]
+    },
+    "extra": {
+        "think": {
+            "services": [
+                "think\\captcha\\CaptchaService"
+            ]
+        }
+    },
+    "minimum-stability": "dev"
+}

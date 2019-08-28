@@ -1,0 +1,705 @@
+/*
+===================
+初始化【请勿修改】
+===================
+*/
+html,body, 
+div, dl, dt, dd, ul, p, th, td,
+h1, h2, h3, h4, h5, h6, 
+pre, code, form, 
+fieldset, legend{
+	margin: 0;
+	padding: 0;
+}
+cite, 
+em, 
+strong, 
+th {
+	font-style: normal;
+}
+td, 
+th, 
+div {
+	word-break:break-all;
+	word-wrap:break-word;
+}
+form{
+	display:inline;
+}
+table {
+	border-collapse: collapse;
+	border-spacing:0;
+}
+th {
+	text-align: left;
+	font-weight:100;
+}
+ol li {
+	list-style: decimal outside;
+}
+ol{
+	padding:0 0 0 18px;
+	margin:0;
+}
+li {
+	list-style:none;
+}
+img {
+	border: 0;
+}
+html {
+	-webkit-text-size-adjust:none;
+	overflow-y:scroll;
+}
+/*
+===================
+html5标签
+===================
+*/
+article,
+aside,
+details,
+figcaption,
+figure,
+footer,
+header,
+hgroup,
+nav,
+section {
+  display: block;
+}
+
+/*
+===================
+清除浮动【请勿修改】
+>>	cc	作用于父模型
+>>	c		作用于浮动模型后，父模型区域里
+===================
+*/
+.cc{
+	zoom:1;
+}
+.cc:after{
+	content:'\20';
+	display:block;
+	height:0;
+	clear:both;
+	visibility: hidden;
+}
+.c{
+	clear:both;
+	height:0;
+	font:0/0 Arial;
+	overflow:hidden;
+	width:0;
+}
+
+/*
+===================
+基础样式
+>>	b			加粗
+>>	u			下划线
+>>	i			斜体
+>>	w			文本不换行
+>>	tal		文本靠左显示
+>>	tac		文本居中显示
+>>	tar		文本靠右显示
+>>	fl		左浮动
+>>	fr		右浮动
+>>	pr		相对定位
+>>	cp		鼠标点击手势
+>>	vt		表格内容靠上显示
+===================
+*/
+.b{
+	font-weight:700 !important;
+}
+.u{
+	text-decoration:underline !important;
+}
+.i{
+	font-style:italic !important;
+}
+.w{
+	white-space:nowrap;
+}
+.tal{
+	text-align:left !important;
+}
+.tac{
+	text-align:center !important;
+}
+.tar{
+	text-align:right !important;
+}
+.fl{
+	float:left !important;
+}
+.fr{
+	float:right !important;
+}
+.pr{
+	position:relative;
+}
+.cp{
+	cursor:pointer;
+}
+.vt{
+	vertical-align:top;
+}
+.dn{
+	display:none;
+}
+
+/*
+===================
+字体
+>>	f10		小字体
+>>	f12		正常字
+>>	f14		大字
+>>	f16		更大
+>>	f24		标题类
+>>	fn		文本去粗
+===================
+*/
+.f10{
+	font-size:10px;
+}
+.f12{
+	font-size:12px !important;
+}
+.f14{
+	font-size:14px;
+}
+.f16{
+	font-size:16px;
+}
+.f24{
+	font-size:24px;
+	font-family:Arial, "Microsoft Yahei", Simsun;
+}
+.fn{
+	font-weight:normal !important;
+}
+.s1{
+	color:#ff0000;
+}
+
+/*
+===================
+全局
+===================
+*/
+body{
+	font:12px/1.5 Arial,Microsoft Yahei,Simsun;
+	color:#333;
+	background:url(../images/install/bg.png);
+}
+a:link{
+	color:#246EA5;
+	text-decoration:none;
+}
+a:hover{
+	text-decoration:underline;
+}
+a:visited{
+	color:#762e9c;
+}
+/*
+===================
+包裹
+===================
+*/
+.wrap{
+	margin:50px auto 0;
+	box-shadow:0 0 10px #ccc;
+	width:750px;
+	background:#fff;
+}
+/*
+===================
+头部
+===================
+*/
+.header{
+	height:80px;
+	box-shadow:0 3px 3px #ddd;
+	position:relative;
+	color:#fff;
+	background:#246fa6 url(../images/install/header.png) 0 0 repeat-x;
+}
+/*
+===================
+主体
+===================
+*/
+.main{
+	padding-top:35px;
+}
+
+/*
+===================
+底部
+===================
+*/
+.footer{
+	text-align:center;
+	padding:15px 0 50px;
+	color:#999999;
+}
+.footer a{
+	color:#999;
+	text-decoration:none;
+}
+.bottom{
+	padding:0 0 25px;
+}
+
+/*
+===================
+协议
+===================
+*/
+.pact{
+	box-shadow:5px 5px 5px #f7f7f7 inset;
+	border:1px solid #bdbcbc;
+	width:670px;
+	height:350px;
+	padding:10px;
+	overflow:hidden;
+	display:block;
+	overflow-y:scroll;
+	margin:0 auto;
+	font-size:12px;
+	line-height:1.5;
+	margin-bottom:22px;
+	outline:none;
+}
+pre{
+	white-space: pre-wrap;
+	white-space: -moz-pre-wrap;
+	white-space: -pre-wrap;
+	white-space: -o-pre-wrap;
+	word-wrap: break-word;
+	word-break : normal;
+}
+/*
+===================
+版本号
+===================
+*/
+.version{
+	float:right;
+	margin:50px 25px 0 0;
+}
+
+/*
+===================
+LOGO
+===================
+*/
+.logo{
+	float:left;
+	width:230px;
+	height:80px;
+	background:url(../images/install/logo.png) no-repeat center;
+	overflow:hidden;
+	text-indent:-2000em;
+}
+
+/*
+===================
+安装类型文案
+===================
+*/
+.icon_install,
+.icon_update{
+	float:left;
+	margin-top:35px;
+	width:90px;
+	height:30px;
+	overflow:hidden;
+	text-indent:-2000em;
+}
+.icon_install{
+	background:url(../images/install/icon_install.png) no-repeat;
+}
+.icon_update{
+	background:url(../images/install/icon_update.png) no-repeat;
+}
+
+/*
+===================
+按钮
+===================
+*/
+.btn,
+.btn_old{
+	display:inline-block;
+	width:100px;
+	height:30px;
+	background:url(../images/install/btn.png) no-repeat;
+	font:bold 14px/30px Arial,"Microsoft Yahei",Simsun;
+	text-decoration:none;
+	color:#fff !important;
+	margin:0 5px;
+	border:0 none;
+	cursor:pointer;
+	vertical-align:top;
+}
+.btn:hover{
+	background-position:0 -30px;
+	text-decoration:none;
+}
+a.btn:visited{
+	color:#ffffff;
+}
+.btn_old,
+.btn_old:hover{
+	background-position:0 -60px;
+	color:#999 !important;
+	cursor:default;
+	text-decoration:none;
+}
+a.btn_old:visited{
+	color:#999 !important;
+}
+
+/*
+===================
+步骤
+===================
+*/
+.step,
+.step li em,
+.step li{
+	background:url(../images/install/step.png) repeat-x;
+}
+.step{
+	border-bottom:1px solid #dce1e5;
+	height:60px;
+	background-color:#fff;
+}
+.step li{
+	float:left;
+	height:60px;
+	line-height:60px;
+	width:33%;
+	text-align:center;
+	font-size:14px;
+	color:#6f7885;
+	font-weight:700;
+}
+.step li em{
+	width:32px;
+	height:32px;
+	text-align:center;
+	line-height:32px;
+	display:inline-block;
+	background-position:0 -70px;
+	font-size:20px;
+	color:#fff;
+	font-family:Microsoft Yahei;
+	margin-right:10px;
+	vertical-align:0;
+
+}
+.step li.current{
+	background-position:right -106px;
+	background-repeat:no-repeat;
+	color:#246ea5;
+}
+.step li.current em{
+	background-position:-35px -70px;
+}
+.step li.on{
+	background-position:0 -176px;
+}
+.step li.on em{
+	background-position:-70px -70px;
+}
+
+/*
+===================
+服务器检测/信息输入
+===================
+*/
+.server{
+	padding:20px 20px 10px 65px;
+}
+.server table{
+	margin-bottom:20px;
+}
+.server td{
+	padding:3px 5px;
+}
+.server .td1{
+	color:#417b9d;
+	font-weight:700;
+}
+.server .input{
+	border:1px solid;
+	border-color:#e3e9ef;
+	padding:3px;
+	width:200px;
+}
+.server .input:hover,
+.server .input:focus{
+	border:1px solid #0e85d5;
+	outline:none;
+}
+.gray{
+	color:#bbb;
+}
+.server tr:hover .gray{
+	color:#333;
+}
+
+/*
+===================
+正确错误
+===================
+*/
+.correct_span,
+.error_span{
+	display:block;
+	float:left;
+	width:20px;
+	height:16px;
+	text-indent:-2000em;
+	overflow:hidden;
+	background:url(../images/install/icon.png) no-repeat;
+	margin-right:5px;
+}
+.error_span{
+	background-position:0 -23px;
+}
+
+/*
+===================
+数据表写入
+===================
+*/
+.install{	
+	box-shadow:5px 5px 5px #f7f7f7 inset;
+	border:1px solid #bdbcbc;
+	width:670px;
+	height:350px;
+	padding:10px;
+	overflow:hidden;
+	display:block;
+	overflow-y:scroll;
+	margin:25px auto;
+	font-size:12px;
+	margin-bottom:22px;
+	outline:none;
+}
+.install ul{
+	line-height:1.8;
+}
+
+/*
+===================
+成功提示
+===================
+*/
+.success_tip{
+	/*border:1px solid #e0e9f0;*/
+	background:#fff url(../images/install/complete.png) 210px center no-repeat;
+	padding:50px 80px 50px 300px;
+	line-height:2;
+}
+.success_tip a,.s4{
+	color:#0166a5;
+	text-decoration:none;
+}
+.success_tip a:hover{
+	text-decoration:underline;
+}
+.error_tip{
+	background:url(../images/install/ignore.png) 130px 45px no-repeat;
+	padding:50px 80px 60px 230px;
+}
+
+/*founder login*/
+.login{
+	border:1px solid #e0e9f0;
+	background:#fff;
+	margin:30px 120px 130px;
+}
+
+/*
+===================
+操作提示
+>>	tips					普通
+>>	tips_error		错误
+>>	tips_success	正确
+>>	tips_loading	加载中
+使用方法
+	可独立样式使用，亦可与tips组装，例：
+	<div class="tips"><span class="tips_error">错误内容</span></div>
+	
+	可在外出包裹 tips_block 对错误提示进行块级效果展示
+===================
+*/
+.tips,
+.tips_block span{
+	line-height:25px;
+	padding:0 6px;
+}
+.tips{
+	border:1px solid #faebd2;
+	background:#ffffe9;
+	color:#666;
+}
+.tips_error,
+.tips_success{
+	color:#cc3333;
+	padding-left:16px;
+	background:url(../images/install/tips_system.png) -20px 2px no-repeat;
+	display:inline-block;
+	line-height:18px;
+}	
+.tips_success{
+	color:#008800;
+	background-position:0 -19px;
+}
+.tips_loading{
+	color:#cc3333;
+	color:#333333;
+	display:inline-block;
+	line-height:20px;
+}
+
+/*
+===================
+loading
+===================
+*/
+.loading{
+	border-radius: 16px;
+	width: 100px;
+	height: 30px;
+	line-height: 30px;
+	text-align: center;
+	background:#000;
+	background-color: rgba(0, 0, 0, 0.5);
+	color: white;
+	position: fixed;
+	_position:absolute;
+	left: 50%;
+	margin-left: -50px;
+	top: 50%;
+	margin-top:-15px;
+}
+.loading span{
+	background:url(../images/install/pop_loading.gif) 0 center no-repeat;
+	padding-left:24px;
+}
+
+/*
+===================
+升级类型选择
+===================
+*/
+.updata_type{
+	padding:20px 30px 40px;
+}
+.updata_type .hd{
+	font-size:16px;
+}
+/*切换选择*/
+.updata_type .tab{
+	padding-top:10px;
+}
+.updata_type .tab li{
+	float:left;
+	width:50%;
+	display:inline;
+}
+.updata_type .tab li a{
+	display:block;
+	text-decoration:none;
+	border:1px solid #ccc;
+	text-align:center;
+	height:60px;
+	line-height:60px;
+	font-weight:700;
+	background:#fff url(../images/install/tab.png);
+	color:#246EA5;
+	font-size:22px;
+	font-weight:100;
+}
+.updata_type .tab li a.fen{
+	line-height:50px;
+	border-right:0;
+}
+.updata_type .tab li a span{
+	display:block;
+	font-size:12px;
+	color:#999;
+	line-height:18px;
+	margin-top:-12px;
+	font-weight:100;
+}
+.updata_type .tab li.current a{
+	background:#fdfdfd;
+	color:#6F7885;
+	border-bottom:1px solid #fdfdfd;
+}
+.updata_type .tab_cont{
+	border:1px solid #ccc;
+	border-top:0 none;
+	padding:30px;
+	background:#fdfdfd;
+	box-shadow:1px 1px 1px #fff inset,-1px -1px 1px #fff inset;
+}
+.updata_type .tab_cont h3{
+	font-size:16px;
+	margin-bottom:15px;
+}
+.updata_type .tab_cont h3 span{
+	font-size:12px;
+	font-weight:100;
+	color:#666;
+}
+.updata_type .tab_cont h4{
+	font-size:14px;
+}
+.updata_type .tab_cont h4 span{
+	padding-left:10px;
+	font-size:12px;
+	font-weight:100;
+	color:#f60;
+}
+.updata_type .tab_cont ol li{
+	margin-bottom:10px;
+}
+.updata_type .tab_cont div{
+	color:#666;
+	padding-left:20px;
+}
+.updata_type .tab_cont ul li{
+	margin:0;
+	padding-left:50px;
+	list-style:none;
+	color:#666;
+}
+/*立即升级*/
+.once_updata{
+	text-align:center;
+	padding:100px 0;
+}
+.once_updata button{
+	font-size:32px;
+	font-weight:700;
+	background:#186196 url(../images/install/header.png) repeat-x;
+	color:#fff;
+	padding:30px 80px;
+	font-weight:100;
+	font-family:"Microsoft Yahei";
+	border:1px solid #186196;
+	cursor:pointer;
+	letter-spacing:2px;
+}
+
