@@ -29,19 +29,10 @@ class StoreProductReply extends AuthController
      */
     public function index()
     {
-        $where = Util::getMore([
-            ['is_reply',''],
-            ['comment',''],
-        ],$this->request);
-        $product_id = 0;
         $product_id = input('product_id');
-        if($product_id)
-           $where['product_id'] =  $product_id;
-        else
-            $where['product_id'] =  0;
-        $this->assign('where',$where);
+        if(!$product_id) $product_id =  0;
         $this->assign('is_layui',true);
-        $this->assign(ProductReplyModel::systemPage($where));
+        $this->assign('product_id',(int)$product_id);
         return $this->fetch();
     }
 
@@ -52,6 +43,8 @@ class StoreProductReply extends AuthController
             ['limit',10],
             ['title',''],
             ['is_reply',''],
+            ['product_name',''],
+            ['product_id',0],
         ]);
         return JsonService::successful(ProductReplyModel::getProductImaesList($where));
     }
