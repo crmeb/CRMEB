@@ -4,6 +4,7 @@ namespace app\admin\controller\store;
 
 use app\admin\controller\AuthController;
 use app\admin\library\FormBuilder;
+use app\admin\model\system\SystemAttachment;
 use service\UtilService as Util;
 use service\JsonService as Json;
 use service\UploadService as Upload;
@@ -64,15 +65,16 @@ class StoreInfoMana extends AuthController
     }
 
     /**
-     * s上传图片
+     * TODO 上传图片
      * */
-    public function upload(){
-        $res = Upload::image('file','article');
-        $thumbPath = Upload::thumb($res->dir);
-        if($res->status == 200)
-            return Json::successful('图片上传成功!',['name'=>$res->fileInfo->getSaveName(),'url'=>Upload::pathToUrl($thumbPath)]);
+    public function upload()
+    {
+        $res = Upload::image('file','article/'.date('Ymd'));
+        SystemAttachment::attachmentAdd($res['name'],$res['size'],$res['type'],$res['dir'],$res['thumb_path'],2,$res['image_type'],$res['time']);
+        if(is_array($res))
+            return Json::successful('图片上传成功!',['name'=>$res['name'],'url'=>Upload::pathToUrl($res['thumb_path'])]);
         else
-            return Json::fail($res->error);
+            return Json::fail($res);
     }
 
     /**

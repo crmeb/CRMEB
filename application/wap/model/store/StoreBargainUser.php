@@ -1,14 +1,14 @@
 <?php
 namespace app\wap\model\store;
 
-use app\routine\model\user\User;
+use app\core\model\user\User;
 use basic\ModelBasic;
 use traits\ModelTrait;
 
 /**
  * 参与砍价Model
  * Class StoreBargainUser
- * @package app\routine\model\store
+ * @package app\wap\model\store
  */
 class StoreBargainUser extends ModelBasic
 {

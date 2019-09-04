@@ -18,10 +18,7 @@ class RoutineCode{
         $res = RoutineQrcode::routineQrCodeForever($thirdId,$thirdType,$page,$imgUrl);
         $resCode = MiniProgramService::qrcodeService()->appCodeUnlimit($res->id,$page,280);
         if($resCode){
-            $dataQrcode['status'] = 1;
-            $dataQrcode['url_time'] = time();
-            $res = RoutineQrcode::setRoutineQrcodeFind($res->id,$dataQrcode);
-            if($res) return $resCode;
+            if($res) return ['res'=>$resCode,'id'=>$res->id];
             else return false;
         }else return false;
     }

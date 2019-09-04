@@ -573,13 +573,12 @@ class User extends ModelBasic
                 $value['nickname'],
                 $value['sum_number'],
                 $value['now_money'],
-                $value['money'],
-                $value['ex_price'],
+                $value['brokerage_price'],
                 $value['extract_price'],
             ];
         }
         if($where['excel']){
-            \service\PHPExcelService::setExcelHeader(['昵称/姓名','总佣金金额','提现佣金','余额','剩余佣金','提现到账佣金'])
+            \service\PHPExcelService::setExcelHeader(['昵称/姓名','总佣金金额','账户余额','账户佣金','提现到账佣金'])
                 ->setExcelTile('拥金记录','拥金记录'.time(),' 生成时间：'.date('Y-m-d H:i:s',time()))
                 ->setExcelContent($export)
                 ->ExcelSave();

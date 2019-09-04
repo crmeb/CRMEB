@@ -61,7 +61,7 @@ class UserExtract extends ModelBasic
         $status = -1;
         $User= User::find(['uid'=>$uid])->toArray();
         UserBill::income('提现失败',$uid,'now_money','extract',$extract_number,$id,bcadd($User['now_money'],$extract_number,2),$mark);
-        User::bcInc($uid,'now_money',$extract_number,'uid');
+        User::bcInc($uid,'brokerage_price',$extract_number,'uid');
         $extract_type='未知方式';
         switch ($data['extract_type']){
             case 'alipay':

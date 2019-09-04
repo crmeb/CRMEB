@@ -214,6 +214,17 @@
                 uploadLink: ''
             },
             methods: {
+                transfer:function (str){
+                    var s = "";
+                    if (str.length === 0) { return "";}
+                    s = str.replace(/&amp;/g, "&");
+                    s = s.replace(/&lt;/g, "<");
+                    s = s.replace(/&gt;/g, ">");
+                    s = s.replace(/&nbsp;/g, " ");
+                    s = s.replace(/&#39;/g, "\'");
+                    s = s.replace(/&quot;/g, "\"");
+                    return s;
+                },
                 submit: function(){
                     if(!this.check()) return false;
                     $eb.axios.post("{:Url('save',array('key'=>$key))}",{key:this.key,status:this.status,data:this.dataGroup[this.type],type:this.type}).then(function(res){
@@ -255,7 +266,7 @@
                     this.uploadLink = "{:Url('upload_img')}";
                     $('#file').attr('accept','image/*');
                     this.uploadColl = function(pic){
-                        vm.dataGroup.image.src = pic;
+                        vm.dataGroup.image.src = vm.transfer(pic);
                     };
                     $('#file').trigger('click');
                 },

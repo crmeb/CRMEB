@@ -217,4 +217,12 @@ class OrderBehavior
     {
 
     }
+
+    /*
+     * 订单未支付默认取消
+     * */
+    public static function orderUnpaidCancel()
+    {
+        StoreOrder::orderUnpaidCancel();
+    }
 }

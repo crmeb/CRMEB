@@ -24,6 +24,8 @@ class ApiLogs
     const ACCESS_TOKEN_PREFIX='AccessToken:';
     //api info 缓存前缀
     const AB_API_INFO='eb_ApiInfo:';
+    //未支付订单取消
+    const ORDER_UNPAID_PAGE='order_unpaid_page';
 
     // +----------------------------------------------------------------------
     // | 缓存时间配置区域

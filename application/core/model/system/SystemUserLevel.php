@@ -83,11 +83,6 @@ class SystemUserLevel extends ModelBasic
      * */
     public static function getLevelListAndGrade($leval_id,$isArray,$expire=1400)
     {
-        if($isArray && Cache::has('LevelListArrayTask')){
-            return Cache::get('LevelListArrayTask');
-        }else if(Cache::has('LevelListArray')){
-            return Cache::get('LevelListArray');
-        }
         $grade=0;
         $list=self::setWhere()->field(['name','discount','image','icon','explain','id','grade'])->order('grade asc')->select();
         $list=count($list) ? $list->toArray() : [];
@@ -99,10 +94,6 @@ class SystemUserLevel extends ModelBasic
             if($grade < $item['grade']) $item['is_clear']=true;
             else $item['is_clear']=false;
         }
-        if($isArray)
-            Cache::set('LevelListArrayTask',$list,$expire);
-        else
-            Cache::set('LevelListArray',$list,$expire);
         return $list;
     }
 

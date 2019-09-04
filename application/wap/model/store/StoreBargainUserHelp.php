@@ -1,13 +1,13 @@
 <?php
 namespace app\wap\model\store;
 
-use app\routine\model\user\User;
+use app\core\model\user\User;
 use basic\ModelBasic;
 use traits\ModelTrait;
 /**
  * 砍价帮砍Model
  * Class StoreBargainUser
- * @package app\routine\model\store
+ * @package app\wap\model\store
  */
 class StoreBargainUserHelp extends ModelBasic
 {
@@ -59,10 +59,10 @@ class StoreBargainUserHelp extends ModelBasic
         $data['uid'] = $uid;
         $data['bargain_id'] = $bargainId;
         $data['bargain_user_id'] = $bargainUserTableId;
-        $data['price'] = mt_rand($priceSection['bargain_min_price'],$priceSection['bargain_max_price']);
+        $data['price'] = (float)self::randomFloat($priceSection['bargain_min_price'],$priceSection['bargain_max_price']);
         $data['add_time'] = time();
         if($data['price'] > $surplusPrice) $data['price'] = $surplusPrice;
-        $price = bcadd($alreadyPrice,$data['price'],0);
+        $price = bcadd($alreadyPrice,$data['price'],2);
         $bargainUserData['price'] = $price;
         self::beginTrans();
         $res1 = StoreBargainUser::setBargainUserPrice($bargainUserTableId,$bargainUserData);
@@ -72,7 +72,11 @@ class StoreBargainUserHelp extends ModelBasic
         if($res) return $data;
         else return $res;
     }
-
+    //2位小数的随机数砍价用
+    public static function randomFloat($min = 0, $max = 10){
+        $num = $min + mt_rand() / mt_getrandmax() * ($max - $min);
+        return sprintf("%.2f", $num);
+    }
     /**
      * 判断用户是否还可以砍价
      * @param int $bargainId

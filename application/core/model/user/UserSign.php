@@ -113,7 +113,7 @@ class UserSign extends ModelBasic
         $res3=$user->save();
         $res = $res1 && $res2 && $res3!==false;
         ModelBasic::checkTrans($res);
-        HookService::afterListen('user_level',$user,false,UserBehavior::class);
+        HookService::afterListen('user_level',$user,null,false,UserBehavior::class);
         if($res)
             return $sign_num;
         else

@@ -123,27 +123,14 @@ class UserApi extends AuthController
         $this->userInfo['recharge'] = UserBill::getRecharge($this->uid);//累计充值
         $this->userInfo['orderStatusSum'] = StoreOrder::getOrderStatusSum($this->uid);//累计消费
         $this->userInfo['extractTotalPrice'] = UserExtract::userExtractTotalPrice($this->uid);//累计提现
-        if($this->userInfo['brokerage'] > $this->userInfo['extractTotalPrice']) {
-            $orderYuePrice = StoreOrder::getOrderStatusYueSum($this->uid);//余额累计消费
-            $systemAdd = UserBill::getSystemAdd($this->uid);//后台添加余额
-            $yueCount = bcadd($this->userInfo['recharge'],$systemAdd,2);// 后台添加余额 + 累计充值  = 非佣金的总金额
-            $orderYuePrice = $yueCount > $orderYuePrice ? 0 : bcsub($orderYuePrice,$yueCount,2);// 余额累计消费（使用佣金消费的金额）
-            $this->userInfo['brokerage'] = bcsub($this->userInfo['brokerage'],$this->userInfo['extractTotalPrice'],2);//减去已提现金额
-            $extract_price = UserExtract::userExtractTotalPrice($this->uid,0);
-            $this->userInfo['brokerage'] = $extract_price < $this->userInfo['brokerage'] ? bcsub($this->userInfo['brokerage'],$extract_price,2) : 0;//减去审核中的提现金额
-            $this->userInfo['brokerage'] = $this->userInfo['brokerage'] > $orderYuePrice ? bcsub($this->userInfo['brokerage'],$orderYuePrice,2) : 0;//减掉余额支付
-        }else{
-            $this->userInfo['brokerage']=0;
-        }
-        $this->userInfo['extractPrice'] = (float)bcsub($this->userInfo['brokerage'],$this->userInfo['extractTotalPrice'],2) > 0 ?
-            bcsub($this->userInfo['brokerage'],$this->userInfo['extractTotalPrice'],2) : 0;//可提现
+        $this->userInfo['extractPrice'] = $this->userInfo['brokerage_price'];//可提现
         $this->userInfo['statu'] = (int)SystemConfigService::get('store_brokerage_statu');
-        $vipId=UserLevel::getUserLevel($this->uid);
+        $vipId = UserLevel::getUserLevel($this->uid);
         $this->userInfo['vip']=$vipId !==false ? true : false;
         if($this->userInfo['vip']){
-            $this->userInfo['vip_id']=$vipId;
-            $this->userInfo['vip_icon']=UserLevel::getUserLevelInfo($vipId,'icon');
-            $this->userInfo['vip_name']=UserLevel::getUserLevelInfo($vipId,'name');
+            $this->userInfo['vip_id'] = $vipId;
+            $this->userInfo['vip_icon'] = UserLevel::getUserLevelInfo($vipId,'icon');
+            $this->userInfo['vip_name'] = UserLevel::getUserLevelInfo($vipId,'name');
         }
         if(!SystemConfigService::get('vip_open')) $this->userInfo['vip']=false;
         unset($this->userInfo['pwd']);
@@ -301,17 +288,32 @@ class UserApi extends AuthController
      * @param int $price
      * @return \think\response\Json
      */
-    public function user_wechat_recharge($price = 0)
+    public function user_wechat_recharge($price = 0,$type = 0)
     {
         if(!$price || $price <=0) return JsonService::fail('参数错误');
         $storeMinRecharge = SystemConfigService::get('store_user_min_recharge');
         if($price < $storeMinRecharge) return JsonService::fail('充值金额不能低于'.$storeMinRecharge);
-        $rechargeOrder = UserRecharge::addRecharge($this->userInfo['uid'],$price,'routine');
-        if(!$rechargeOrder) return JsonService::fail('充值订单生成失败!');
-        try{
-            return JsonService::successful(UserRecharge::jsPay($rechargeOrder));
-        }catch (\Exception $e){
-            return JsonService::fail($e->getMessage());
+        switch ((int)$type){
+            case 0:
+                $rechargeOrder = UserRecharge::addRecharge($this->userInfo['uid'],$price,'routine');
+                if(!$rechargeOrder) return JsonService::fail('充值订单生成失败!');
+                try{
+                    return JsonService::successful(UserRecharge::jsPay($rechargeOrder));
+                }catch (\Exception $e){
+                    return JsonService::fail($e->getMessage());
+                }
+                break;
+            case 1:
+                if(UserRecharge::importNowMoney($this->uid,$price)){
+                    return JsonService::successful('转入成功');
+                }else{
+                    return JsonService::fail(UserRecharge::getErrorInfo('转入失败'));
+                }
+                break;
+            default:
+                return JsonService::fail('缺少转入类型');
+                break;
+
         }
     }
 

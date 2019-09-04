@@ -15,7 +15,7 @@ class CacheService
     protected static $globalCacheName = '_cached_1515146130';
 
 
-    public static function set($name, $value, $expire = 3600)
+    public static function set($name, $value, $expire = 60)
     {
         return self::handler()->set($name,$value,$expire);
     }

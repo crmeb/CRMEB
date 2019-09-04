@@ -523,11 +523,8 @@ class UtilService
     public static function setHttpType($url, $type = 0)
     {
         $domainTop = substr($url,0,5);
-        if($type){
-            if($domainTop == 'https') $url = 'http'.substr($url,5,strlen($url));
-        } else{
-            if($domainTop != 'https') $url = 'https:'.substr($url,5,strlen($url));
-        }
+        if($type){ if($domainTop == 'https') $url = 'http'.substr($url,5,strlen($url)); }
+        else{ if($domainTop != 'https') $url = 'https:'.substr($url,5,strlen($url)); }
         return $url;
     }
 

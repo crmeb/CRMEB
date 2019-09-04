@@ -34,9 +34,9 @@ class WechatService
         $wechat = SystemConfigService::more(['wechat_appid','wechat_appsecret','wechat_token','wechat_encodingaeskey','wechat_encode']);
         $payment = SystemConfigService::more(['pay_weixin_mchid','pay_weixin_client_cert','pay_weixin_client_key','pay_weixin_key','pay_weixin_open']);
         $config = [
-            'app_id'=>isset($wechat['wechat_appid']) ? $wechat['wechat_appid']:'',
-            'secret'=>isset($wechat['wechat_appsecret']) ? $wechat['wechat_appsecret']:'',
-            'token'=>isset($wechat['wechat_token']) ? $wechat['wechat_token']:'',
+            'app_id'=>isset($wechat['wechat_appid']) ? trim($wechat['wechat_appid']) :'',
+            'secret'=>isset($wechat['wechat_appsecret']) ? trim($wechat['wechat_appsecret']) :'',
+            'token'=>isset($wechat['wechat_token']) ? trim($wechat['wechat_token']) :'',
             'guzzle' => [
                 'timeout' => 10.0, // 超时时间（秒）
             ],
@@ -45,8 +45,8 @@ class WechatService
             $config['aes_key'] =  $wechat['wechat_encodingaeskey'];
         if(isset($payment['pay_weixin_open']) && $payment['pay_weixin_open'] == 1){
             $config['payment'] = [
-                'merchant_id'=>$payment['pay_weixin_mchid'],
-                'key'=>$payment['pay_weixin_key'],
+                'merchant_id'=>trim($payment['pay_weixin_mchid']),
+                'key'=>trim($payment['pay_weixin_key']),
                 'cert_path'=>realpath('.'.$payment['pay_weixin_client_cert']),
                 'key_path'=>realpath('.'.$payment['pay_weixin_client_key']),
                 //'notify_url'=>SystemConfigService::get('site_url').Url::build('wap/Wechat/notify')

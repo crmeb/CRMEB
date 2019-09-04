@@ -361,7 +361,7 @@ class StorePink extends ModelBasic
             //处理拼团完成
             list($pinkAll,$pinkT,$count,$idAll,$uidAll)=self::getPinkMemberAndPinkK($pink);
             if($pinkT['status']==1){
-                if(!$count)//组团完成
+                if(!$count || $count < 0)//组团完成
                     self::PinkComplete($uidAll,$idAll,$pink['uid'],$pinkT);
                 else
                     self::PinkFail($pinkAll,$pinkT,0);

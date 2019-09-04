@@ -1,20 +1,20 @@
 <?php
-namespace Api\Storage\COS;
+namespace Api\Storage\OSS;
 
-vendor('cos-php-sdk-v5.vendor.autoload');
+vendor('aliyun-oss-php-sdk.autoload');
 
 use app\core\util\SystemConfigService;
-use Guzzle\Http\EntityBody;
-use Qcloud\Cos\Client;
+use OSS\Core\OssException;
+use OSS\OssClient;
 use think\Request;
 use think\Cache;
 
 /**
- * TODO 腾讯云COS文件上传
- * Class COS
- * @package Api\Storage\COS
+ * 阿里云OSS上传
+ * Class OSS
+ * @package Api\Storage\OSS
  */
-class COS
+class OSS
 {
     protected static $accessKey;
 
@@ -28,45 +28,34 @@ class COS
     //TODO 存储空间名称  公开空间
     protected static $storageName;
 
-    //TODO COS使用  所属地域
-    protected static $storageRegion;
-
 
     /**
      * TODO 初始化
-     * @return null|Client
-     * @throws \Exception
+     * @return null|OssClient
+     * @throws \OSS\Core\OssException
      */
     protected static function autoInfo(){
-        if(($storageRegion = Cache::get('storageRegion')) && ($storageName = Cache::get('storageName')) && ($uploadUrl = Cache::get('uploadUrl')) && ($accessKey = Cache::get('accessKey')) && ($secretKey = Cache::get('secretKey'))){
+        if(($storageName = Cache::get('storageName')) && ($uploadUrl = Cache::get('uploadUrl')) && ($accessKey = Cache::get('accessKey')) && ($secretKey = Cache::get('secretKey'))){
             self::$accessKey = $accessKey;
             self::$secretKey = $secretKey;
             self::$uploadUrl = $uploadUrl;
             self::$storageName = $storageName;
-            self::$storageRegion = $storageRegion;
         }else{
             self::$accessKey = trim(SystemConfigService::get('accessKey'));
             self::$secretKey = trim(SystemConfigService::get('secretKey'));
             self::$uploadUrl = trim(SystemConfigService::get('uploadUrl')).'/';
             self::$storageName = trim(SystemConfigService::get('storage_name'));
-            self::$storageRegion = trim(SystemConfigService::get('storage_region'));
             Cache::set('accessKey',self::$accessKey);
             Cache::set('secretKey',self::$secretKey);
             Cache::set('uploadUrl',self::$uploadUrl);
             Cache::set('storageName',self::$storageName);
-            Cache::set('storageRegion',self::$storageRegion);
         }
         if(!self::$accessKey || !self::$secretKey || !self::$uploadUrl || !self::$storageName){
             exception('请设置 secretKey 和 accessKey 和 空间域名 和 存储空间名称');
         }
         if(self::$auth == null) {
-            self::$auth = new Client([
-                'region'=>self::$storageRegion,
-                'credentials'=>[
-                    'secretId'=>self::$accessKey,
-                    'secretKey'=>self::$secretKey,
-                ]
-            ]);
+            self::$auth = new OssClient(self::$accessKey,self::$secretKey,self::$uploadUrl);
+            if(!self::$auth->doesBucketExist(self::$storageName)) self::$auth->createBucket(self::$storageName,self::$auth::OSS_ACL_TYPE_PUBLIC_READ_WRITE);
         }
         return self::$auth;
     }
@@ -82,15 +71,11 @@ class COS
         $filePath = $file->getRealPath();
         $ext = pathinfo($file->getInfo('name'), PATHINFO_EXTENSION);
         $key = substr(md5($file->getRealPath()) , 0, 5). date('YmdHis') . rand(0, 9999) . '.' . $ext;
-        try {
+        try{
             self::autoInfo();
-            return [self::$uploadUrl.$key,self::$auth->putObject([
-                'Bucket' => self::$storageName,
-                'Key' => $key,
-                'Body' => fopen($filePath, 'rb')
-            ])];
-        } catch (\Exception $e) {
-            return [false,$e->getMessage()];
+            return self::$auth->uploadFile(self::$storageName,$key,$filePath);
+        }catch (OssException $e){
+            return $e->getMessage();
         }
     }
 
@@ -101,15 +86,11 @@ class COS
      * @return string
      */
     public static function uploadImageStream($key, $content){
-        try {
+        try{
             self::autoInfo();
-            return [self::$uploadUrl.$key,self::$auth->putObject([
-                'Bucket' => self::$storageName,
-                'Key' => $key,
-                'Body' => $content
-            ])];
-        } catch (\Exception $e) {
-            return [false,$e->getMessage()];
+            return self::$auth->putObject(self::$storageName,$key,$content);
+        }catch (OssException $e){
+            return $e->getMessage();
         }
     }
 
@@ -121,23 +102,10 @@ class COS
     public static function delete($key){
         try {
             self::autoInfo();
-            return self::$auth->deleteObject([
-                'Bucket' => self::$storageName,
-                'Key' => $key
-            ]);
-        } catch (\Exception $e) {
+            return self::$auth->deleteObject(self::$storageName,$key);
+        } catch (OssException $e) {
             return $e->getMessage();
         }
-    }
-
-    /**
-     * TODO 转为文件流
-     * @param $resource
-     * @return EntityBody
-     */
-    public static function resourceStream($resource)
-    {
-        return EntityBody::factory($resource)->__toString();
     }
 
 }

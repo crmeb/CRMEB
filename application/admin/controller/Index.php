@@ -29,6 +29,8 @@ class Index extends AuthController
         $adminInfo = $this->adminInfo->toArray();
         $roles  = explode(',',$adminInfo['roles']);
         $site_logo = SystemConfig::getOneConfig('menu_name','site_logo')->toArray();
+//        dump(SystemMenus::menuList());
+//        exit();
         $this->assign([
             'menuList'=>SystemMenus::menuList(),
             'site_logo'=>json_decode($site_logo['value'],true),

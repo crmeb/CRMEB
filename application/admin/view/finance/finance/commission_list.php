@@ -65,13 +65,12 @@
     layList.form.render();
     layList.tableList('List',"{:Url('get_commission_list')}",function () {
         return [
-            {field: 'nickname', title: '昵称/姓名',unresize:true},
-            {field: 'sum_number', title: '总佣金金额',sort:true,unresize:true},
-            {field: 'now_money', title: '账户余额',unresize:true},
-            {field: 'money', title: '剩余佣金',unresize:true},
-            {field: 'ex_price', title: '提现佣金',unresize:true},
-            {field: 'extract_price', title: '提现到账佣金',unresize:true},
-            {fixed: 'right', title: '操作',align:'center',unresize:true,toolbar:'#barDemo'},
+            {field: 'nickname', title: '昵称/姓名',unresize:true,width:"16%",align:'center'},
+            {field: 'sum_number', title: '总佣金金额',sort:true,unresize:true,align:'center'},
+            {field: 'now_money', title: '账户余额',unresize:true,align:'center'},
+            {field: 'brokerage_price', title: '账户佣金',unresize:true,align:'center'},
+            {field: 'extract_price', title: '提现到账佣金',unresize:true,align:'center'},
+            {fixed: 'right', title: '操作',align:'center',unresize:true,toolbar:'#barDemo',width:"10%"},
         ];
     });
     layList.search('search');

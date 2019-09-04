@@ -239,9 +239,9 @@
                     mounted: function () {
                         var wxApi = mapleWx($jssdk(), function () {
                             this.onMenuShareAll({
-                                title: $product.store_name,
-                                desc: $product.store_name,
-                                imgUrl: location.origin + $product.image,
+                                title: $product.title,
+                                desc: $product.info,
+                                imgUrl: $product.image,
                                 link: location.href
                             });
                         });

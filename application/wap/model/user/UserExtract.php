@@ -38,14 +38,14 @@ class UserExtract extends ModelBasic
     public static function userExtract($userInfo,$data){
         if(!in_array($data['extract_type'],self::$extractType))
             return self::setErrorInfo('提现方式不存在');
-        if($userInfo['now_money'] < $data['extract_price'])
-            return self::setErrorInfo('余额不足');
+        if($userInfo['brokerage_price'] < $data['extract_price'])
+            return self::setErrorInfo('佣金不足');
         if(!$data['real_name'])
             return self::setErrorInfo('输入姓名有误');
         $extractMinPrice = floatval(SystemConfigService::get('user_extract_min_price'))?:0;
         if($data['extract_price'] < $extractMinPrice)
             return self::setErrorInfo('提现金额不能小于'.$extractMinPrice);
-        $balance = bcsub($userInfo['now_money'],$data['extract_price']);
+        $balance = bcsub($userInfo['brokerage_price'],$data['extract_price']);
         $insertData = [
             'uid'=>$userInfo['uid'],
             'real_name'=>$data['real_name'],
@@ -69,7 +69,7 @@ class UserExtract extends ModelBasic
         self::beginTrans();
         $res1 = self::set($insertData);
         if(!$res1) return self::setErrorInfo('提现失败');
-        $res2 = User::edit(['now_money'=>$balance],$userInfo['uid'],'uid');
+        $res2 = User::edit(['brokerage_price'=>$balance],$userInfo['uid'],'uid');
         $res3 = UserBill::expend('余额提现',$userInfo['uid'],'now_money','extract',$data['extract_price'],$res1['id'],$balance,$mark);
         $res = $res2 && $res3;
         self::checkTrans($res);

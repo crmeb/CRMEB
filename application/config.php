@@ -144,13 +144,6 @@ return [
 
     // 视图输出字符串内容替换
     'view_replace_str'       => [
-        '{__PUBLIC_PATH}' =>  PUBILC_PATH,                 //public 目录
-        '{__STATIC_PATH}' =>  PUBILC_PATH.'static/',       //全局静态目录
-        '{__PLUG_PATH}'   =>  PUBILC_PATH.'static/plug/',  //全局静态插件
-        '{__ADMIN_PATH}'  =>  PUBILC_PATH.'system/',       //后台目录
-        '{__FRAME_PATH}'  =>  PUBILC_PATH.'system/frame/', //后台框架
-        '{__MODULE_PATH}' =>  PUBILC_PATH.'system/module/',//后台模块
-        '{__WAP_PATH}'    =>  PUBILC_PATH.'wap/first/'     //wap静态文件目录 模版1
     ],
     // 默认跳转页面对应的模板文件
     'dispatch_success_tmpl'  => THINK_PATH . 'tpl' . DS . 'dispatch_jump.tpl',
@@ -166,7 +159,7 @@ return [
     // 错误显示信息,非调试模式有效
     'error_message'          => '页面错误！请稍后再试～',
     // 显示错误信息
-    'show_error_msg'         => true,
+    'show_error_msg'         => false,
     // 异常处理handle类 留空使用 \think\exception\Handle
     'exception_handle'       => '',
 
@@ -203,7 +196,7 @@ return [
         // 缓存前缀
         'prefix' => '',
         // 缓存有效期 0表示永久缓存
-        'expire' => 0,
+        'expire' => 60,
     ],
 
     // +----------------------------------------------------------------------

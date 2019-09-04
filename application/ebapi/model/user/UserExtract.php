@@ -50,26 +50,10 @@ class UserExtract extends ModelBasic
         if(!in_array($data['extract_type'],self::$extractType))
             return self::setErrorInfo('提现方式不存在');
         $userInfo = User::get($userInfo['uid']);
-        $brokerage = UserBill::getBrokerage($userInfo['uid']);//获取总佣金
-        $recharge = UserBill::getRecharge($userInfo['uid']);//累计充值
-        $extractTotalPrice = UserExtract::userExtractTotalPrice($userInfo['uid']);//累计提现
-        if($brokerage > $extractTotalPrice) {
-            $orderYuePrice = StoreOrder::getOrderStatusYueSum($userInfo['uid']);//余额累计消费
-            $systemAdd = UserBill::getSystemAdd($userInfo['uid']);//后台添加余额
-            $yueCount = bcadd($recharge,$systemAdd,2);// 后台添加余额 + 累计充值  = 非佣金的总金额
-            $orderYuePrice = $yueCount > $orderYuePrice ? 0 : bcsub($orderYuePrice,$yueCount,2);// 余额累计消费（使用佣金消费的金额）
-            $brokerage = bcsub($brokerage,$extractTotalPrice,2);//减去已提现金额
-            $extract_price = self::userExtractTotalPrice($userInfo['uid'],0);
-            $brokerage = $extract_price < $brokerage ? bcsub($brokerage,$extract_price,2) : 0;//减去审核中的提现金额
-            $brokerage = $brokerage > $orderYuePrice ? bcsub($brokerage,$orderYuePrice,2) : 0;//减掉余额支付
-        }else{
-            $brokerage=0;
-        }
-        $extractPrice = (float)bcsub($brokerage,$extractTotalPrice,2) > 0 ?
-            bcsub($brokerage,$extractTotalPrice,2) : 0;//可提现
+        $extractPrice = $userInfo['brokerage_price'];
         if($extractPrice < 0) return self::setErrorInfo('提现佣金不足'.$data['money']);
         if($data['money'] > $extractPrice) return self::setErrorInfo('提现佣金不足'.$data['money']);
-        $balance = bcsub($userInfo['now_money'],$data['money'],2);
+        $balance = bcsub($userInfo['brokerage_price'],$data['money'],2);
         if($balance < 0) $balance=0;
         $insertData = [
             'uid'=>$userInfo['uid'],
@@ -100,7 +84,7 @@ class UserExtract extends ModelBasic
         try{
             $res1 = self::set($insertData);
             if(!$res1) return self::setErrorInfo('提现失败');
-            $res2 = User::edit(['now_money'=>$balance],$userInfo['uid'],'uid');
+            $res2 = User::edit(['brokerage_price'=>$balance],$userInfo['uid'],'uid');
             $res3 = UserBill::expend('余额提现',$userInfo['uid'],'now_money','extract',$data['money'],$res1['id'],$balance,$mark);
             $res = $res2 && $res3;
             if($res){

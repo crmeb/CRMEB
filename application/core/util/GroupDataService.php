@@ -14,6 +14,9 @@ use think\Cache;
 class GroupDataService
 {
     protected static $isCaChe=true;
+
+    protected static $expire=60;
+
     /**获取单个组数据
      * @param $config_name
      * @param int $limit
@@ -26,7 +29,7 @@ class GroupDataService
             return Cache::get($cacheName);
         }else {
             $data=SystemGroupData::getGroupData($config_name, $limit);
-            if(self::$isCaChe) Cache::set($cacheName,$data);
+            if(self::$isCaChe) Cache::set($cacheName,$data,self::$expire);
             return $data;
         }
     }
@@ -43,7 +46,7 @@ class GroupDataService
             return Cache::get($cacheName);
         }else{
             $data=SystemGroupData::getAllValue($config_name,$limit);
-            if(self::$isCaChe) Cache::set($cacheName,$data);
+            if(self::$isCaChe) Cache::set($cacheName,$data,self::$expire);
             return $data;
         }
     }
@@ -60,7 +63,7 @@ class GroupDataService
             return Cache::get($cacheName);
         }else {
             $data=SystemGroupData::getDateValue($id);
-            if(self::$isCaChe) Cache::set($cacheName,$data);
+            if(self::$isCaChe) Cache::set($cacheName,$data,self::$expire);
             return $data;
         }
     }

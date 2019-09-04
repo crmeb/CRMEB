@@ -371,7 +371,8 @@ class StoreProduct extends ModelBasic
     //获取利润
     public static function ProfityTop10($where){
         $classs=['layui-bg-red','layui-bg-orange','layui-bg-green','layui-bg-blue','layui-bg-cyan'];
-        $model=StoreOrder::alias('a')->join('StoreOrderCartInfo c','a.id=c.oid')->join('__STORE_PRODUCT__ b','b.id=c.product_id');
+        $model=StoreOrder::alias('a')->join('StoreOrderCartInfo c','a.id=c.oid')->join('__STORE_PRODUCT__ b','b.id=c.product_id')
+            ->where('b.is_show',1)->where('b.is_del',0);
         $list=self::getModelTime($where,$model,'a.add_time')->group('c.product_id')->order('profity desc')->limit(10)
             ->field(['count(c.product_id) as p_count','b.store_name','sum(b.price) as sum_price','(b.price-b.cost) as profity'])
             ->select();

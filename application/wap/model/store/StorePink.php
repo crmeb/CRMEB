@@ -11,7 +11,7 @@ use app\wap\model\store\StoreCombination;
 use app\wap\model\user\User;
 use app\wap\model\user\WechatUser;
 use basic\ModelBasic;
-use service\WechatTemplateService;
+use app\core\util\WechatTemplateService;
 use think\Url;
 use traits\ModelTrait;
 
@@ -190,6 +190,7 @@ class StorePink extends ModelBasic
         if(!$pink) $pink = self::where('k_id',$id)->where('uid',$uid)->find();
         return StoreOrder::where('id',$pink['order_id_key'])->value('order_id');
     }
+
 
     public static function systemPage($where){
         $model = new self;

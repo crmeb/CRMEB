@@ -192,15 +192,16 @@ class User extends ModelBasic
         //TODO 获取上级推广员信息
         $spreadUserInfo = User::getUserInfo($userInfo['spread_uid']);
         //TODO 上级推广员返佣之后的金额
-        $balance = bcadd($spreadUserInfo['now_money'],$brokeragePrice,2);
+        $balance = bcadd($spreadUserInfo['brokerage_price'],$brokeragePrice,2);
         $mark = $userInfo['nickname'].'成功消费'.floatval($orderInfo['pay_price']).'元,奖励推广佣金'.floatval($brokeragePrice);
         self::beginTrans();
         //TODO 添加推广记录
         $res1 = UserBill::income('获得推广佣金',$userInfo['spread_uid'],'now_money','brokerage',$brokeragePrice,$orderInfo['id'],$balance,$mark);
         //TODO 添加用户余额
-        $res2 = self::bcInc($userInfo['spread_uid'],'now_money',$brokeragePrice,'uid');
+        $res2 = self::bcInc($userInfo['spread_uid'],'brokerage_price',$brokeragePrice,'uid');
+        $res2 = true;
         $res = $res1 && $res2;
-        self::checkTrans($res);
+        self::checkTrans($res1);
         //TODO 一级返佣成功 跳转二级返佣
         if($res) return self::backOrderBrokerageTwo($orderInfo);
         return $res;
@@ -248,13 +249,13 @@ class User extends ModelBasic
         //TODO 获取上上级推广员信息
         $spreadUserInfoTwo = User::getUserInfo($userInfoTwo['spread_uid']);
         //TODO 获取上上级推广员返佣之后余额
-        $balance = bcadd($spreadUserInfoTwo['now_money'],$brokeragePrice,2);
+        $balance = bcadd($spreadUserInfoTwo['brokerage_price'],$brokeragePrice,2);
         $mark = '二级推广人'.$userInfo['nickname'].'成功消费'.floatval($orderInfo['pay_price']).'元,奖励推广佣金'.floatval($brokeragePrice);
         self::beginTrans();
         //TODO 添加返佣记录
         $res1 = UserBill::income('获得推广佣金',$userInfoTwo['spread_uid'],'now_money','brokerage',$brokeragePrice,$orderInfo['id'],$balance,$mark);
-        //TODO 添加用户余额
-        $res2 = self::bcInc($userInfoTwo['spread_uid'],'now_money',$brokeragePrice,'uid');
+        //TODO 添加用户佣金金额
+        $res2 = self::bcInc($userInfoTwo['spread_uid'],'brokerage_price',$brokeragePrice,'uid');
         $res = $res1 && $res2;
         self::checkTrans($res);
         return $res;

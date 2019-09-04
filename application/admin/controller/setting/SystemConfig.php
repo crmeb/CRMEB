@@ -1,5 +1,6 @@
 <?php
 namespace app\admin\controller\setting;
+use app\admin\model\system\SystemAttachment;
 use think\Url;
 use service\FormBuilder as Form;
 use think\Request;
@@ -293,11 +294,15 @@ class SystemConfig extends AuthController
    public function view_upload(){
        if($_POST['type'] == 3){
            $res = Upload::file($_POST['file'],'config/file');
+           if(!$res->status) return Json::fail($res->error);
+           return Json::successful('上传成功!',['url'=>$res->dir]);
        }else{
            $res = Upload::Image($_POST['file'],'config/image');
+           if(is_array($res)){
+               SystemAttachment::attachmentAdd($res['name'],$res['size'],$res['type'],$res['dir'],$res['thumb_path'],0,$res['image_type'],$res['time']);
+               return Json::successful('上传成功!',['url'=>$res['dir']]);
+           }else return Json::fail($res);
        }
-       if(!$res->status) return Json::fail($res->error);
-       return Json::successful('上传成功!',['url'=>$res->dir]);
    }
    /**
     * 文件上传

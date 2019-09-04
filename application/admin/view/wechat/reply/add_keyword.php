@@ -8,6 +8,7 @@
 {/block}
 {block name="content"}
 <div id="app" class="row">
+    <div ref="transfer"></div>
     <div class="col-sm-12">
         <div class="wechat-reply-wrapper">
             <div class="ibox-title"><p>{{msg}}</p></div>
@@ -176,6 +177,17 @@
                 uploadLink: ''
             },
             methods: {
+                transfer:function (str){
+                    var s = "";
+                    if (str.length === 0) { return "";}
+                    s = str.replace(/&amp;/g, "&");
+                    s = s.replace(/&lt;/g, "<");
+                    s = s.replace(/&gt;/g, ">");
+                    s = s.replace(/&nbsp;/g, " ");
+                    s = s.replace(/&#39;/g, "\'");
+                    s = s.replace(/&quot;/g, "\"");
+                    return s;
+                },
                 submit: function(){
                     if(!this.check()) return false;
                     window.vm = this;
@@ -227,7 +239,7 @@
                     this.uploadLink = "{:Url('upload_img')}";
                     $('#file').attr('accept','image/*');
                     this.uploadColl = function(pic){
-                        vm.dataGroup.image.src = pic;
+                        vm.dataGroup.image.src = vm.transfer(pic);
                     };
                     $('#file').trigger('click');
                 },
@@ -260,7 +272,7 @@
                                 vm.upload();
                             },
                             error: function (data, status, e) {
-                                $eb.message('error','上传失败!');
+                                $eb.message('success','上传失败!');
                                 vm.upload();
                             }
                         });

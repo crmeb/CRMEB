@@ -531,7 +531,7 @@ use app\core\util\SystemConfigService;
         $model=self::setSpreadWhere($where);
         $status =SystemConfigService::get('store_brokerage_statu');
         if(isset($where['excel']) && $where['excel'] == 1){
-            $list = $model->field(['a.uid','u.phone','a.nickname','a.sex','a.country','a.province','a.city','a.now_money','a.subscribe'])->select()->toArray();
+            $list = $model->field(['a.uid','u.phone','a.nickname','a.sex','a.country','a.province','a.city','a.now_money','a.subscribe','u.brokerage_price'])->select()->toArray();
             $export = [];
             foreach ($list as $index=>$item){
                 $uids = self::getModelTime($where,User::where('spread_uid',$item['uid']))->column('uid');
@@ -552,7 +552,7 @@ use app\core\util\SystemConfigService;
                 $item['order_stair']        = self::getUserSpreadOrderCount($item['uid'],0,$where);//一级推荐人订单
                 $item['order_second']       = self::getUserSpreadOrderCount($item['uid'],1,$where);//二级推荐人订单
                 //可提现佣金
-                $item['new_money']          = User::getextractPrice($item['uid'],$where);
+                $item['new_money']          = $item['brokerage_price'];
                 //总共佣金
                 $item['brokerage_money']    = self::getModelTime($where,UserBill::where(['uid'=>$item['uid'],'category'=>'now_money','type'=>'brokerage','pm'=>1,'status'=>1]))->sum('number');
                 $item['spread_name']='暂无';
@@ -620,7 +620,7 @@ use app\core\util\SystemConfigService;
             //总共佣金
             $item['brokerage_money']    = self::getModelTime($where,UserBill::where(['uid'=>$item['uid'],'category'=>'now_money','type'=>'brokerage','pm'=>1,'status'=>1]))->sum('number');
             //可提现佣金
-            $item['new_money']          = User::getextractPrice($item['uid'],$where);
+            $item['new_money']          = $item['brokerage_price'];
             $item['stair']              = self::getUserSpreadUidCount($item['uid'],0,$where);//一级推荐人
             $item['second']             = self::getUserSpreadUidCount($item['uid'],1,$where);//二级推荐人
             $item['order_stair']        = self::getUserSpreadOrderCount($item['uid'],0,$where);//一级推荐人订单

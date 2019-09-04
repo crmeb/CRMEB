@@ -91,11 +91,9 @@ class WechatNews extends AuthController
      */
     public function upload_image(){
         $res = Upload::Image($_POST['file'],'wechat/image/'.date('Ymd'));
-        //产品图片上传记录
-        $fileInfo = $res->fileInfo->getinfo();
-        SystemAttachment::attachmentAdd($res->fileInfo->getSaveName(),$fileInfo['size'],$fileInfo['type'],$res->dir,'',5);
-        if(!$res->status) return Json::fail($res->error);
-        return Json::successful('上传成功!',['url'=>$res->filePath]);
+        if(!is_array($res)) return Json::fail($res);
+        SystemAttachment::attachmentAdd($res['name'],$res['size'],$res['type'],$res['dir'],$res['thumb_path'],5,$res['image_type'],$res['time']);
+        return Json::successful('上传成功!',['url'=>$res['thumb_path']]);
     }
 
     /**
