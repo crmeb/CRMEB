@@ -1503,6 +1503,7 @@ CREATE TABLE `eb_user`  (
   `last_time` int(11) UNSIGNED NOT NULL COMMENT '最后一次登录时间',
   `last_ip` varchar(16) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '最后一次登录ip',
   `now_money` decimal(8, 2) UNSIGNED NOT NULL DEFAULT 0.00 COMMENT '用户余额',
+  `brokerage_price` DECIMAL(8,2) NOT NULL DEFAULT '0' COMMENT '佣金金额',
   `integral` decimal(8, 2) UNSIGNED NOT NULL DEFAULT 0.00 COMMENT '用户剩余积分',
   `sign_num` int(11) NOT NULL DEFAULT 0 COMMENT '连续签到天数',
   `status` tinyint(1) NOT NULL DEFAULT 1 COMMENT '1为正常，0为禁止',
@@ -1522,11 +1523,6 @@ CREATE TABLE `eb_user`  (
   INDEX `is_promoter`(`is_promoter`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 2 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '用户表' ROW_FORMAT = DYNAMIC;
 
--- ----------------------------
--- Records of eb_user
--- ----------------------------
-
-INSERT INTO `eb_user` VALUES (1, 'crmeb', 'e10adc3949ba59abbe56e057f20f883e', '等风来，随风去', 'https://wx.qlogo.cn/mmopen/vi_32/DYAIOgq83eqj70fHkbW9aJgp0KWMsp7cqOsgT16Syr8mWt9JkhngDWARibyNv5MBia3h8Y3BOkHBHdLiaX8Hq9J0w/132', NULL, 1555153423, '127.0.0.1', 1555153955, '127.0.0.1', 0.00, 0.00, 0, 1, 0, 0, 0, 'routine', 0, 0, 0, 0);
 
 -- ----------------------------
 -- Table structure for eb_user_address
@@ -1914,10 +1910,5 @@ CREATE TABLE `eb_wechat_user`  (
   INDEX `subscribe`(`subscribe`) USING BTREE,
   INDEX `unionid`(`unionid`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 2 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '微信用户表' ROW_FORMAT = DYNAMIC;
-
--- ----------------------------
--- Records of eb_wechat_user
--- ----------------------------
-INSERT INTO `eb_wechat_user` VALUES (1, '', NULL, 'o9qvr4iV5qWtMWyIDbZ7K6N7UG8o', '等风来，随风去', 'https://wx.qlogo.cn/mmopen/vi_32/DYAIOgq83eqj70fHkbW9aJgp0KWMsp7cqOsgT16Syr8mWt9JkhngDWARibyNv5MBia3h8Y3BOkHBHdLiaX8Hq9J0w/132', 1, '安康', 'zh_CN', '陕西', '中国', NULL, 0, NULL, 1, NULL, 1555153423, NULL, NULL, NULL, NULL, NULL, 'BXSON6AH+vFXz7YnykLLzw==', 'routine');
 
 SET FOREIGN_KEY_CHECKS = 1;
