@@ -1,0 +1,3 @@
+<?php
+define('INSTALL_DATE',1566873827);
+define('SERIALNUMBER','FmQliB');

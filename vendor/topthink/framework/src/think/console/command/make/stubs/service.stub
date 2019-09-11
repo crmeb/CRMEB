@@ -1,0 +1,19 @@
+<?php
+
+namespace {%namespace%};
+
+use think\Service;
+
+class {%className%}  extends Service
+{
+
+    public function register()
+    {
+    	
+    }
+
+    public function boot()
+    {
+
+    }
+}

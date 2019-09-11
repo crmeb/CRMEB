@@ -1,0 +1,25 @@
+{
+    "name": "dh2y/think-qrcode",
+    "description": "qrcode for thinkphp5",
+    "homepage": "https://github.com/cinaofdai/think-qrcode",
+    "license": "MIT",
+    "minimum-stability": "stable",
+    "version": "2.0",
+    "authors": [
+        {
+            "name": "dh2y",
+            "email": "xiaodai54_long@163.com"
+        }
+    ],
+    "support": {
+        "issues": "https://github.com/cinaofdai/think-qrcode/issues"
+    },
+    "require": {
+        "php": ">=5.4.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "dh2y\\qrcode\\": "src/"
+        }
+    }
+}
