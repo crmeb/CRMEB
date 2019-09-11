@@ -124,7 +124,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="layui-card-body clearfix image-box" style="padding: 10px;">
+                    <div class="layui-card-body clearfix image-box" style="padding: 10px;height: 360px;z-index:10;">
                         <div class="layui-col-md2 layui-col-xs2 layui-col-sm2 image" v-for="(item,index) in imageList">
                             <div class="layui-img-box"  :class="item.isSelect ? 'on': '' ">
                                 <img :src="item.att_dir" v-if="small == 1" @click="changImage(item,index)">

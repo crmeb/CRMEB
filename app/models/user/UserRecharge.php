@@ -95,6 +95,7 @@ class UserRecharge extends BaseModel
         $res3 = User::edit(['now_money'=>bcadd($user['now_money'],$order['price'],2)],$order['uid'],'uid');
         $res = $res1 && $res2 && $res3;
         self::checkTrans($res);
+        event('RechargeSuccess', [$order]);
         return $res;
     }
 
@@ -113,6 +114,9 @@ class UserRecharge extends BaseModel
             $res2 = UserBill::expend('用户佣金转入余额',$uid,'now_money','recharge',$price,0,$user['now_money'],'成功转入余额'.floatval($price).'元');
             $res = $res2 && $res1 && $res3;
             self::checkTrans($res);
+            if($res){
+                event('ImportNowMoney', [$uid, $price]);
+            }
             return $res;
         }catch (\Exception $e){
             self::rollbackTrans();

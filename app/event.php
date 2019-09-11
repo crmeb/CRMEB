@@ -47,6 +47,14 @@ return [
         'WechatOauthAfter' => [], // UserSubscribe 微信授权成功后  wap模块 WapBasic控制器
         'InitLogin' => [], // UserSubscribe 微信授权成功后  ebapi模块 Basic控制器
         'UserLevelAfter' => [], // UserSubscribe 检查是否能成为会员  models模块 user.UserSign Model  store.StoreOrder Model user.UserBill Model
+        'OrderCreated' => [], //用户订单创建成功
+        'OrderPaySuccess' => [], //用户订单支付成功
+        'OrderCreateAgain' => [], //用户再次下单
+        'UserOrderRemoved' => [], //用户删除订单
+        'UserOrderTake' => [], //用户确认收货
+        'UserCommented' => [], //用户评价商品
+        'RechargeSuccess' => [], //用户充值成功后
+        'ImportNowMoney' => [], //用户佣金转成余额成功后
     ],
 
     'subscribe' => [

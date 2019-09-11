@@ -141,7 +141,7 @@ class StoreBargainController
                 $openid = WechatUser::uidToOpenid($bargainUserUid, 'openid');
                 $routineOpenid = WechatUser::uidToOpenid($bargainUserUid, 'routine_openid');
                 if($openid){//公众号
-                    $urlWeChat = Route::buildUrl('activity/dargain_detail/'.$bargainId.'/'.$bargainUserUid,[],true,true);
+                    $urlWeChat = Route::buildUrl('activity/dargain_detail/'.$bargainId.'/'.$bargainUserUid)->suffix('')->domain(true)->build();
                     WechatTemplateService::sendTemplate($openid,WechatTemplateService::BARGAIN_SUCCESS,[
                         'first'=> '好腻害！你的朋友们已经帮你砍到底价了！',
                         'keyword1'=> $bargainInfo['title'],

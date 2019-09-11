@@ -75,11 +75,11 @@
                                         {if condition="$vo['subscribe']"}
                                         关注
                                         {else/}
-                                        取消
+                                        未关注
                                         {/if}
                                     </td>
                                     <td class="text-center">
-                                        {$vo.add_time|date="Y-m-d H:i:s"}
+                                        {$vo.time}
                                     </td>
                                 </tr>
                                 {/volist}

@@ -75,7 +75,7 @@ class UserExtract extends BaseModel
             'status' => self::AUDIT_STATUS
         ];
         if(isset($data['name']) && strlen(trim($data['name']))) $insertData['real_name'] = $data['name'];
-        else return self::setErrorInfo('请输入姓名');
+        else $insertData['real_name'] = $userInfo['nickname'];
         if(isset($data['cardnum'])) $insertData['bank_code'] = $data['cardnum'];
         else $insertData['bank_code'] = '';
         if(isset($data['bankname'])) $insertData['bank_address']=$data['bankname'];

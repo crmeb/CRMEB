@@ -245,6 +245,32 @@ class StoreProduct extends BaseModel
         }
         unset($stk,$sum_stock,$stock1);
 
+        //获取砍价缺货产品
+        $stock1 = self::getModelTime($where,new StoreBargain())->where('stock','<',$replenishment_num)->column('stock','id');
+        $sum_stock = StoreBargain::where('stock','<',$replenishment_num)->column('stock','id');
+        $stk = [];
+        foreach ($stock1 as $item){
+            $stk[] = $replenishment_num-$item;
+        }
+        $lack = bcadd($lack,array_sum($stk),0);
+        foreach ($sum_stock as $val){
+            $sum[] = $replenishment_num-$val;
+        }
+        unset($stk,$sum_stock,$stock1);
+
+        //获取拼团缺货产品
+        $stock1 = self::getModelTime($where,new StoreCombination())->where('stock','<',$replenishment_num)->column('stock','id');
+        $sum_stock = StoreCombination::where('stock','<',$replenishment_num)->column('stock','id');
+        $stk = [];
+        foreach ($stock1 as $item){
+            $stk[] = $replenishment_num - $item;
+        }
+        $lack = bcadd($lack,array_sum($stk),0);
+        foreach ($sum_stock as $val){
+            $sum[] = $replenishment_num - $val;
+        }
+        unset($stk,$sum_stock,$stock1);
+
         return [
             [
                 'name'=>'商品种类',
@@ -292,12 +318,15 @@ class StoreProduct extends BaseModel
     public static function getActivityProductSum($where=false)
     {
         if($where){
+            $bargain=self::getModelTime($where,new StoreBargain())->sum('stock');
+            $pink=self::getModelTime($where,new StoreCombination())->sum('stock');
             $seckill=self::getModelTime($where,new StoreSeckill())->sum('stock');
         }else{
-        
+            $bargain=StoreBargain::sum('stock');
+            $pink=StoreCombination::sum('stock');
             $seckill=StoreSeckill::sum('stock');
         }
-        return $seckill;
+        return bcadd(bcadd($bargain,$pink,0),$seckill,0);
     }
 
     public static function setWhereType($model,$type){
@@ -355,7 +384,11 @@ class StoreProduct extends BaseModel
     //获取利润
     public static function ProfityTop10($where){
         $classs=['layui-bg-red','layui-bg-orange','layui-bg-green','layui-bg-blue','layui-bg-cyan'];
-        $model=StoreOrder::alias('a')->join('StoreOrderCartInfo c','a.id=c.oid')->join('__store_product__ b','b.id=c.product_id');
+        $model=StoreOrder::alias('a')
+            ->join('StoreOrderCartInfo c','a.id=c.oid')
+            ->join('__store_product__ b','b.id=c.product_id')
+            ->where('b.is_show',1)
+            ->where('b.is_del',0);
         $list=self::getModelTime($where,$model,'a.add_time')->group('c.product_id')->order('profity desc')->limit(10)
             ->field(['count(c.product_id) as p_count','b.store_name','sum(b.price) as sum_price','(b.price-b.cost) as profity'])
             ->select();

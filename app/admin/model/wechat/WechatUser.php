@@ -17,6 +17,7 @@ use crmeb\basic\BaseModel;
 use crmeb\services\WechatService;
 use crmeb\services\PHPExcelService;
 use crmeb\services\SystemConfigService;
+use app\admin\model\order\StoreOrderStatus;
 
 /**
  * 微信用户 model
@@ -157,7 +158,9 @@ use crmeb\services\SystemConfigService;
                 ->setExcelContent($export)
                 ->ExcelSave();
         }
-        return self::page($model,$where);
+        return self::page($model,function($item){
+            $item['time'] = $item['add_time'] ? date('Y-m-d H:i',$item['add_time']) : '暂无';
+        },$where);
     }
 
      public static function setSpreadWhere($where=[],$alias='a',$model=null)

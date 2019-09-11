@@ -108,7 +108,7 @@ class User extends BaseModel
             //TODO 获取后台分销类型
             $storeBrokerageStatus = SystemConfigService::get('store_brokerage_statu');
             $storeBrokerageStatus = $storeBrokerageStatus ? $storeBrokerageStatus : 1;
-            if(isset($wechatUser['code']) && $wechatUser['code']){
+            if(isset($wechatUser['code']) && $wechatUser['code'] && $wechatUser['code'] != $uid){
                 if($storeBrokerageStatus == 1){
                     $spreadCount = self::where('uid',$wechatUser['code'])->count();
                     if($spreadCount){
@@ -144,6 +144,7 @@ class User extends BaseModel
         if($userInfo->spread_uid) return true;
         //没有推广编号直接返回
         if(!$spread)  return true;
+        if($spread == $uid) return true;
         //TODO 获取后台分销类型
         $storeBrokerageStatus = SystemConfigService::get('store_brokerage_statu');
         $storeBrokerageStatus = $storeBrokerageStatus ? $storeBrokerageStatus : 1;
@@ -292,10 +293,10 @@ class User extends BaseModel
         $res1 = UserBill::income('获得推广佣金',$userInfo['spread_uid'],'now_money','brokerage',$brokeragePrice,$orderInfo['id'],$balance,$mark);
         //TODO 添加用户余额
         $res2 = self::bcInc($userInfo['spread_uid'],'brokerage_price',$brokeragePrice,'uid');
-        $res = $res1 && $res2;
-        self::checkTrans($res);
         //TODO 一级返佣成功 跳转二级返佣
-        if($res) return self::backOrderBrokerageTwo($orderInfo);
+        $res = $res1 && $res2 && self::backOrderBrokerageTwo($orderInfo);
+        self::checkTrans($res);
+//        if($res) return self::backOrderBrokerageTwo($orderInfo);
         return $res;
     }
 

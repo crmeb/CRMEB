@@ -41,7 +41,7 @@ class Record extends AuthController
     public function chart_order(){
         $this->assign([
             'is_layui'=>true,
-            'year'=>getMonth('y')
+            'year'=>getMonth()
         ]);
         return $this->fetch();
     }
@@ -59,7 +59,7 @@ class Record extends AuthController
     public function chart_product(){
         $this->assign([
             'is_layui'=>true,
-            'year'=>getMonth('y')
+            'year'=>getMonth()
         ]);
         return $this->fetch();
     }
@@ -129,7 +129,7 @@ class Record extends AuthController
     public function chart_score(){
         $this->assign([
             'is_layui'=>true,
-            'year'=>getMonth('y')
+            'year'=>getMonth()
         ]);
         return $this->fetch();
     }
@@ -151,7 +151,7 @@ class Record extends AuthController
     public function chart_coupon(){
         $this->assign([
             'is_layui'=>true,
-            'year'=>getMonth('y')
+            'year'=>getMonth()
         ]);
         return $this->fetch();
     }
@@ -173,7 +173,7 @@ class Record extends AuthController
     public function chart_combination(){
         $this->assign([
             'is_layui'=>true,
-            'year'=>getMonth('y')
+            'year'=>getMonth()
         ]);
         return $this->fetch();
     }
@@ -183,7 +183,7 @@ class Record extends AuthController
     public function chart_bargain(){
         $this->assign([
             'is_layui'=>true,
-            'year'=>getMonth('y')
+            'year'=>getMonth()
         ]);
         return $this->fetch();
     }
@@ -193,7 +193,7 @@ class Record extends AuthController
     public function chart_seckill(){
         $this->assign([
             'is_layui'=>true,
-            'year'=>getMonth('y')
+            'year'=>getMonth()
         ]);
         return $this->fetch();
     }
@@ -204,7 +204,7 @@ class Record extends AuthController
     public function chart_rebate(){
         $this->assign([
             'is_layui'=>true,
-            'year'=>getMonth('y')
+            'year'=>getMonth()
         ]);
         return $this->fetch();
     }
@@ -230,7 +230,7 @@ class Record extends AuthController
     public function chart_recharge(){
         $this->assign([
             'is_layui'=>true,
-            'year'=>getMonth('y')
+            'year'=>getMonth()
         ]);
         return $this->fetch();
     }
@@ -246,7 +246,7 @@ class Record extends AuthController
     public function chart_cash(){
         $this->assign([
             'is_layui'=>true,
-            'year'=>getMonth('y')
+            'year'=>getMonth()
         ]);
         return $this->fetch();
     }
@@ -261,7 +261,7 @@ class Record extends AuthController
     public function user_chart(){
         $this->assign([
             'is_layui'=>true,
-            'year'=>getMonth('y')
+            'year'=>getMonth()
         ]);
         return $this->fetch();
     }
@@ -297,7 +297,7 @@ class Record extends AuthController
         $this->assign([
             'is_layui'=>true,
             'limit'=>$limit,
-            'year'=>getMonth('y'),
+            'year'=>getMonth(),
             'commissionList'=>$top10list['commission'],
             'extractList'=>$top10list['extract'],
         ]);
@@ -328,7 +328,7 @@ class Record extends AuthController
         $this->assign([
             'is_layui'=>true,
             'limit'=>$limit,
-            'year'=>getMonth('y'),
+            'year'=>getMonth(),
             'integralList'=>$top10list['integral'],
             'moneyList'=>$top10list['now_money'],
             'shopcountList'=>$top10list['shopcount'],
@@ -365,7 +365,7 @@ class Record extends AuthController
     public function user_attr(){
         $this->assign([
             'is_layui'=>true,
-            'year'=>getMonth('y')
+            'year'=>getMonth()
         ]);
         return $this->fetch();
     }
@@ -405,7 +405,7 @@ class Record extends AuthController
         if(!StoreProduct::be(['id'=>$id])) return $this->failed('商品不存在!');
         $this->assign([
             'is_layui'=>true,
-            'year'=>getMonth('y'),
+            'year'=>getMonth(),
             'id'=>$id,
         ]);
         return $this->fetch();
@@ -444,7 +444,7 @@ class Record extends AuthController
     public function ranking_commission(){
         $this->assign([
             'is_layui'=>true,
-            'year'=>getMonth('y')
+            'year'=>getMonth()
         ]);
         return $this->fetch();
     }
@@ -477,7 +477,7 @@ class Record extends AuthController
     public function ranking_point(){
         $this->assign([
             'is_layui'=>true,
-            'year'=>getMonth('y')
+            'year'=>getMonth()
         ]);
         return $this->fetch();
     }

@@ -198,7 +198,7 @@ class User extends AuthController
             foreach ($taskIds as $id){
                 $inserValue[]=['uid'=>$uid,'task_id'=>$id,'status'=>1,'add_time'=>time()];
             }
-            $res=$res && Db::name('user_task_finish')->insertAll($inserValue);
+            $res=$res && Db::name('user_task_finish')->insertAll($inserValue) && UserModel::where('uid',$uid)->update(['level'=>$level_id]);
             if($res){
                 UserModel::commitTrans();
                 return JsonService::successful('赠送成功');

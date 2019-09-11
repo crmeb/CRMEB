@@ -54,17 +54,31 @@ class SystemLog extends BaseModel
         $controller = $request->controller();
         $action = $request->action();
         $route = $request->route();
-        $data = [
-            'method'=>$request->app(),
-            'admin_id'=>$adminId,
-            'add_time'=>time(),
-            'admin_name'=>$adminName,
-            'path'=>SystemMenus::getAuthName($action,$controller,$module,$route),
-            'page'=>SystemMenus::getVisitName($action,$controller,$module,$route)?:'未知',
-            'ip'=>$request->ip(),
-            'type'=>$type
-        ];
-        return self::create($data);
+        self::startTrans();
+        try{
+            $data = [
+                'method'=>$request->app(),
+                'admin_id'=>$adminId,
+                'add_time'=>time(),
+                'admin_name'=>$adminName,
+                'path'=>SystemMenus::getAuthName($action,$controller,$module,$route),
+                'page'=>SystemMenus::getVisitName($action,$controller,$module,$route)?:'未知',
+                'ip'=>$request->ip(),
+                'type'=>$type
+            ];
+            $res = self::create($data);
+            if($res){
+                self::commit();
+                return true;
+            }else{
+                self::rollback();
+                return false;
+            }
+        }catch (\Exception $e){
+            self::rollback();
+            return self::setErrorInfo($e->getMessage());
+        }
+
     }
 
     /**

@@ -186,7 +186,7 @@ Route::group(function () {
     //小程序登陆
     Route::post('wechat/mp_auth', 'wechat.AuthController/mp_auth')->name('mpAuth');//小程序登陆
     Route::get('wechat/get_logo', 'wechat.AuthController/get_logo')->name('getLogo');//小程序登陆授权展示logo
-    Route::post('wechat/set_form_id', 'wechat.AuthController/set_form_id')->name('setFormId');//小程序登陆授权展示logo
+    Route::post('wechat/set_form_id', 'wechat.AuthController/set_form_id')->name('setFormId');//小程序登陆收集form id
 
     //物流公司
     Route::get('logistics', 'PublicController/logistics')->name('logistics');//物流公司列表

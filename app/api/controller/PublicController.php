@@ -36,6 +36,7 @@ class PublicController
         $menus = GroupDataService::getData('routine_home_menus') ?: [];//TODO 首页按钮
         $roll = GroupDataService::getData('routine_home_roll_news') ?: [];//TODO 首页滚动新闻
         $activity = GroupDataService::getData('routine_home_activity', 3) ?: [];//TODO 首页活动区域图片
+        $site_name = SystemConfigService::get('site_name');
         $routine_index_page = GroupDataService::getData('routine_index_page');
         $info['fastInfo'] = $routine_index_page[0]['fast_info'] ?? '';//SystemConfigService::get('fast_info');//TODO 快速选择简介
         $info['bastInfo'] = $routine_index_page[0]['bast_info'] ?? '';//SystemConfigService::get('bast_info');//TODO 精品推荐简介
@@ -49,14 +50,13 @@ class PublicController
         $firstNumber = $routine_index_page[0]['first_number'] ?? 6;//SystemConfigService::get('first_number');//TODO 首发新品个数
         $info['fastList'] = StoreCategory::byIndexList((int)$fastNumber);//TODO 快速选择分类个数
         $info['bastList'] = StoreProduct::getBestProduct('id,image,store_name,cate_id,price,ot_price,IFNULL(sales,0) + IFNULL(ficti,0) as sales,unit_name', (int)$bastNumber, $request->uid());//TODO 精品推荐个数
-        $info['firstList'] = StoreProduct::getNewProduct('id,image,store_name,cate_id,price,unit_name', (int)$firstNumber);//TODO 首发新品个数
+        $info['firstList'] = StoreProduct::getNewProduct('id,image,store_name,cate_id,price,unit_name,IFNULL(sales,0) + IFNULL(ficti,0) as sales', (int)$firstNumber,$request->uid());//TODO 首发新品个数
         $info['bastBanner'] = GroupDataService::getData('routine_home_bast_banner') ?? [];//TODO 首页精品推荐图片
         $benefit = StoreProduct::getBenefitProduct('id,image,store_name,cate_id,price,ot_price,stock,unit_name', 3);//TODO 首页促销单品
         $lovely = GroupDataService::getData('routine_home_new_banner') ?: [];//TODO 首发新品顶部图
         $likeInfo = StoreProduct::getHotProduct('id,image,store_name,cate_id,price,unit_name', 3);//TODO 热门榜单 猜你喜欢
         $couponList = StoreCouponIssue::getIssueCouponList($request->uid(), 3);
-
-        return app('json')->successful(compact('banner', 'menus', 'roll', 'info', 'activity', 'lovely', 'benefit', 'likeInfo', 'logoUrl', 'couponList'));
+        return app('json')->successful(compact('banner', 'menus', 'roll', 'info', 'activity', 'lovely', 'benefit', 'likeInfo', 'logoUrl', 'couponList','site_name'));
     }
 
     /**
@@ -132,11 +132,15 @@ class PublicController
         $res = UploadService::image($data['filename'],'store/comment');
         if(!is_array($res)) return app('json')->fail($res);
         SystemAttachment::attachmentAdd($res['name'], $res['size'], $res['type'], $res['dir'], $res['thumb_path'],1, $res['image_type'], $res['time'], 2);
-        if(Cache::has('start_uploads_'.$request->uid())) $start_uploads=(int)Cache::get('start_uploads_'.$request->uid());
-        else $start_uploads = 0;
+        if(Cache::has('start_uploads_'.$request->uid()))
+            $start_uploads=(int)Cache::get('start_uploads_'.$request->uid());
+        else
+            $start_uploads = 0;
         $start_uploads++;
         Cache::set('start_uploads_'.$request->uid(),$start_uploads,86400);
-        return app('json')->successful('图片上传成功!', ['name' => $res['name'], 'url' => $request->domain() . UploadService::pathToUrl($res['dir'])]);
+        $res['dir'] = UploadService::pathToUrl($res['dir']);
+        if(strpos($res['dir'],'http') === false) $res['dir'] = $request->domain().$res['dir'];
+        return app('json')->successful('图片上传成功!', ['name' => $res['name'], 'url' => $res['dir']]);
     }
 
     /**

@@ -601,7 +601,7 @@ class StoreOrder extends BaseModel
                     'keyword1'=>$orderId,
                     'keyword2'=>$order['pay_price'],
                     'remark'=>'点击查看订单详情'
-                ],Route::buildUrl('order/detail/'.$orderId,[],true,true));
+                ],Route::buildUrl('order/detail/'.$orderId)->suffix('')->domain(true)->build());
                 CustomerService::sendOrderPaySuccessCustomerService($order, 1);
                 WechatTemplateService::sendAdminNoticeTemplate([
                     'first'=>"亲,您有一个新订单 \n订单号:{$order['order_id']}",
@@ -618,6 +618,7 @@ class StoreOrder extends BaseModel
         }catch (\Exception $e){}
         $user = User::where('uid', $order['uid'])->find()->toArray();
         event('UserLevelAfter', [$user]);
+        event('OrderPaySuccess', [$order]);
         $res = $res1 && $resPink;
         return false !== $res;
     }
@@ -742,6 +743,7 @@ class StoreOrder extends BaseModel
             if ($order['_status']['_type'] == 0 || $order['_status']['_type'] == -2) {
                 event('StoreOrderRegressionAllAfter', [$order]);
             }
+            event('UserOrderRemoved', $uni);
             return true;
         } else
             return self::setErrorInfo('订单删除失败!');
@@ -769,6 +771,7 @@ class StoreOrder extends BaseModel
                 return self::setErrorInfo($e->getMessage());
             }
             self::commitTrans();
+            event('UserOrderTake', $uni);
             return true;
         } else {
             self::rollbackTrans();

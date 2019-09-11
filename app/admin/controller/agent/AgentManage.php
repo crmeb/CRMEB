@@ -26,7 +26,7 @@ class AgentManage extends AuthController
      */
     public function index()
     {
-        $this->assign( 'year',getMonth('y'));
+        $this->assign( 'year',getMonth());
         $this->assign('store_brokerage_statu',\crmeb\services\SystemConfigService::get('store_brokerage_statu'));
         return $this->fetch();
     }
@@ -64,7 +64,7 @@ class AgentManage extends AuthController
     public function stair($uid = ''){
         if($uid == '') return $this->failed('参数错误');
         $this->assign('uid',$uid ? : 0);
-        $this->assign( 'year',getMonth('y'));
+        $this->assign( 'year',getMonth());
         return $this->fetch();
     }
     /*
@@ -75,7 +75,7 @@ class AgentManage extends AuthController
     {
         if($uid == '') return $this->failed('参数错误');
         $this->assign('uid',$uid ? : 0);
-        $this->assign( 'year',getMonth('y'));
+        $this->assign( 'year',getMonth());
         return $this->fetch();
     }
 

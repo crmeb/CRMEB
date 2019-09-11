@@ -258,7 +258,7 @@ class User extends BaseModel
                     //自定义时间
                     if(strstr($where['date'],'-')!==FALSE){
                         list($startTime,$endTime)=explode('-',$where['date']);
-                        $model = $model->where('add_time','>',strtotime($startTime))->where('add_time','<',strtotime($endTime));
+                        $model = $model->where('add_time','>',strtotime($startTime))->where('add_time','<',bcadd(strtotime($endTime),86400,0));
                     }else{
                         $model=$model->whereTime('add_time','month');
                     }
@@ -337,12 +337,12 @@ class User extends BaseModel
             case 'quarter':
                 list($startTime,$endTime)=User::getMonth('n');
                 $model = $model->where('A.add_time','>',strtotime($startTime));
-                $model = $model->where('A.add_time','<',strtotime($endTime));
+                $model = $model->where('A.add_time','<',bcadd(strtotime($endTime),86400,0));
                 break;
             default:
                 list($startTime,$endTime)=explode('-',$date);
                 $model = $model->where('A.add_time','>',strtotime($startTime));
-                $model = $model->where('A.add_time','<',strtotime($endTime));
+                $model = $model->where('A.add_time','<',bcadd(strtotime($endTime),86400,0));
                 break;
         }
         if($status===true){

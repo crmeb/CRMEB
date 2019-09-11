@@ -124,6 +124,14 @@
                                 <a href="javascript:void(0);" onclick="$eb.createModalFrame(this.innerText,'{:Url('ump.store_seckill/seckill')}?id={{d.id}}')"">
                                 <i class="fa fa-gavel"></i> 开启秒杀</a>
                             </li>
+                            <li>
+                                <a href="javascript:void(0);" onclick="$eb.createModalFrame(this.innerText,'{:Url('ump.store_bargain/bargain')}?id={{d.id}}')">
+                                    <i class="fa fa-sort-amount-asc"></i> 开启砍价</a>
+                            </li>
+                            <li>
+                                <a href="javascript:void(0);" onclick="$eb.createModalFrame(this.innerText,'{:Url('ump.store_combination/combination')}?id={{d.id}}')">
+                                    <i class="fa fa-hand-lizard-o"></i> 开启拼团</a>
+                            </li>
                             {{# if(d.is_del){ }}
                             <li>
                                 <a href="javascript:void(0);" lay-event='delstor'>
@@ -264,13 +272,13 @@
         if(odj.elem.checked==true){
             layList.baseGet(layList.Url({c:'store.store_product',a:'set_show',p:{is_show:1,id:value}}),function (res) {
                 layList.msg(res.msg, function () {
-                    location.reload();
+                    layList.reload();
                 });
             });
         }else{
             layList.baseGet(layList.Url({c:'store.store_product',a:'set_show',p:{is_show:0,id:value}}),function (res) {
                 layList.msg(res.msg, function () {
-                    location.reload();
+                    layList.reload();
                 });
             });
         }

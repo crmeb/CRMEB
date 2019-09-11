@@ -17,6 +17,11 @@ use think\exception\ValidateException;
 use think\facade\Queue;
 use think\facade\Session;
 
+/**微信小程序授权类
+ * Class AuthController
+ * @package app\api\controller
+ */
+
 class AuthController
 {
     public function login(Request $request)
@@ -80,7 +85,7 @@ class AuthController
         $res = SMSService::send($phone,SMSService::VERIFICATION_CODE,$data);
         if($res['status'] == 400) return app('json')->fail('短信平台验证码发送失败'.$res['msg']);
         CacheService::set('code_'.$phone, $code, $time);
-        return app('json')->success($res['msg']);
+        return app('json')->success($res['msg'] ?? '发送失败');
     }
 
     /**

@@ -150,11 +150,13 @@ class StoreOrder extends BaseModel
             }else if($item['paid']==1 && $item['refund_status']==1){
                 $refundReasonTime = date('Y-m-d H:i', $item['refund_reason_time']);
                 $refundReasonWapImg = json_decode($item['refund_reason_wap_img'], true);
-                $refundReasonWapImg = $refundReasonWapImg && is_array($refundReasonWapImg) ? $refundReasonWapImg : [];
+                $refundReasonWapImg = $refundReasonWapImg ? $refundReasonWapImg : [];
                 $img = '';
-                foreach ($refundReasonWapImg as $itemImg){
-                    if(strlen(trim($itemImg)))
-                        $img .='<img style="height:50px;" src="'.$itemImg.'" />';
+                if(count($refundReasonWapImg)){
+                    foreach ($refundReasonWapImg as $itemImg){
+                        if(strlen(trim($itemImg)))
+                            $img .='<img style="height:50px;" src="'.$itemImg.'" />';
+                    }
                 }
                 if(!strlen(trim($img)))  $img = '无';
                 $item['status_name']=<<<HTML
@@ -438,8 +440,6 @@ HTML;
         $model = $model->where('is_system_del',0);
         if(isset($where['status']) && $where['status'] != '') {
             $model =  self::statusByWhere($where['status'],$model,$aler);
-        }else{
-            $model = $model->where('paid',1);
         }
         if(isset($where['is_del']) && $where['is_del'] != '' && $where['is_del'] != -1) $model = $model->where($aler.'is_del',$where['is_del']);
         if(isset($where['combination_id'])){

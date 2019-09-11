@@ -67,7 +67,7 @@
                         {$first_line.d_num.percent}%
                         {if condition='$first_line.d_num.is_plus egt 0'}<i class="fa {if condition='$first_line.d_num.is_plus eq 1'}fa-level-up{else /}fa-level-down{/if}"></i>{/if}
                     </div>
-                    <small><a href="javascript:;" class="opFrames" data-name="订单管理" data-href="{:Url('order.store_order/index')}?data=yesterday">昨日订单数</a></small>
+                    <small><a href="javascript:;" class="opFrames" data-name="订单管理" data-href="{:Url('order.store_order/index')}?data=yesterday">昨日支付订单数</a></small>
                 </div>
             </div>
         </div>
@@ -274,7 +274,7 @@
                                     break;
                             }
                             var data=res.data.data;
-                            if(data.length) {
+                            if(data) {
                                 that.cyclecount = data.cycle.count.data;
                                 that.cyclecount_percent = data.cycle.count.percent;
                                 that.cyclecount_is_plus = data.cycle.count.is_plus;
@@ -287,7 +287,7 @@
                     });
                 },
                 orderchartsetoption:function(data){
-
+                    data = data == undefined ? {} : data;
                         this.option = {
                             tooltip: {
                                 trigger: 'axis',
@@ -307,7 +307,7 @@
                                 }
                             },
                             legend: {
-                                data:data.legend
+                                data: data.legend || []
                             },
                             grid: {
                                 x: 70,

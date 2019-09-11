@@ -77,7 +77,7 @@ class HttpService
         return (intval($status["http_code"]) === 200) ? $content : false;
     }
 
-    public static function postRequest($url, $data = array(), $header = false, $timeout = 10)
+    public static function postRequest($url, array $data = array(), $header = false, $timeout = 10)
     {
         return self::request($url, 'post', $data, $header, $timeout);
     }
