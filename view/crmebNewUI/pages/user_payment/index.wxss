@@ -1,8 +1,0 @@
-.payment{width:703rpx;height:470rpx;background-color:#fff;border-radius:10rpx;margin:20rpx auto 0 auto;}
-.payment .title{font-size:28rpx;color:#c6c6c6;text-align:center;padding-top:60rpx;}
-.payment .input{width:552rpx;border-bottom:1rpx solid #dddddd;margin:48rpx auto 0 auto;font-size:56rpx;color:#333333;flex-wrap:nowrap;}
-.payment .input text{padding-left:106rpx;}
-.payment .input input{padding-right:106rpx;height:94rpx;text-align:center;} 
-.payment .placeholder{font-size:84.5rpx;color:#d0d0d0;}
-.payment .tip{font-size:26rpx;color:#888888;text-align:center;padding:0 30rpx;margin-top:25rpx;}
-.payment .but{color:#fff;font-size:30rpx;width:550rpx;height:86rpx;border-radius:50rpx;margin:46rpx auto 0 auto;line-height:86rpx;}
