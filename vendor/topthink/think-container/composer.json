@@ -1,0 +1,25 @@
+{
+    "name": "topthink/think-container",
+    "description": "PHP Container & Facade Manager",
+    "license": "Apache-2.0",
+    "authors": [
+        {
+            "name": "liu21st",
+            "email": "liu21st@gmail.com"
+        }
+    ],
+    "require": {
+    	"php": ">=7.1.0",
+        "psr/container": "~1.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^7.0"
+    },    
+    "autoload": {
+        "psr-4": {
+            "think\\": "src"
+        },
+        "files": [
+        ]
+    }
+}

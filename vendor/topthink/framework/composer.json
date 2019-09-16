@@ -1,0 +1,52 @@
+{
+    "name": "topthink/framework",
+    "description": "The ThinkPHP Framework.",
+    "keywords": [
+        "framework",
+        "thinkphp",
+        "ORM"
+    ],
+    "homepage": "http://thinkphp.cn/",
+    "license": "Apache-2.0",
+    "authors": [
+        {
+            "name": "liu21st",
+            "email": "liu21st@gmail.com"
+        },
+        {
+            "name": "yunwuxin",
+            "email": "448901948@qq.com"
+        }
+    ],
+    "require": {
+        "php": ">=7.1.0",
+        "league/flysystem": "^1.0",
+        "league/flysystem-cached-adapter": "^1.0",
+        "opis/closure": "^3.1",
+        "topthink/think-container": "^2.0",
+        "topthink/think-cache": "^2.0",
+        "topthink/think-log": "^2.0",
+        "topthink/think-orm": "^2.0"
+    },
+    "require-dev": {
+        "mikey179/vfsstream": "^1.6",
+        "mockery/mockery": "^1.2",
+        "phpunit/phpunit": "^7.0"
+    },
+    "autoload": {
+        "files": [],
+        "psr-4": {
+            "think\\": "src/think/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "think\\tests\\": "src/tests/"
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "config": {
+        "sort-packages": true
+    }
+}

@@ -1,0 +1,10 @@
+<?php
+
+namespace {%namespace%};
+
+class {%className%}
+{
+    public function handle($request, \Closure $next)
+    {
+    }
+}

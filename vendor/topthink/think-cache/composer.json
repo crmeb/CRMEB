@@ -1,0 +1,24 @@
+{
+    "name": "topthink/think-cache",
+    "description": "Cache Manager",
+    "license": "Apache-2.0",
+    "authors": [
+        {
+            "name": "liu21st",
+            "email": "liu21st@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=7.1.0",
+        "psr/cache": "~1.0",
+        "topthink/think-container": "~2.0",
+        "psr/simple-cache": "^1.0",
+        "opis/closure": "^3.1" 
+    },
+    "autoload": {
+        "psr-4": {
+            "think\\": "src"
+        },
+        "files": []
+    }
+}

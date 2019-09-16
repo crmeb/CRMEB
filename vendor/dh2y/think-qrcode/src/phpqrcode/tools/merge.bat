@@ -1,0 +1,2 @@
+php ./merge.php
+pause

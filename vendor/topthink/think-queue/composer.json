@@ -1,0 +1,47 @@
+{
+    "name": "topthink/think-queue",
+    "description": "The ThinkPHP5 Queue Package",
+    "authors": [
+        {
+            "name": "yunwuxin",
+            "email": "448901948@qq.com"
+        }
+    ],
+    "license": "Apache-2.0",
+    "autoload": {
+        "psr-4": {
+            "think\\": "src"
+        },
+        "files": [
+            "src/common.php"
+        ]
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "think\\test\\queue\\": "tests"
+        }
+    },
+    "minimum-stability": "dev",
+    "require": {
+        "topthink/think-helper": "^3.0.4",
+        "topthink/framework": "^6.0.0",
+        "topthink/think-factory": "^1.0.0",
+        "symfony/process": "^4.2",
+        "nesbot/carbon": "^2.16"
+    },
+    "extra": {
+        "think": {
+            "services": [
+                "think\\queue\\Service"
+            ],
+            "config": {
+                "queue": "src/config.php"
+            }
+        }
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^6.2",
+        "mockery/mockery": "^1.2",
+        "topthink/think-migration": "^3.0.0"
+    }
+}

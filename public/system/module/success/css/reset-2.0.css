@@ -1,0 +1,30 @@
+body, h1, h2, h3, h4, h5, h6, hr, p, blockquote, dl, dt, dd, ul, ol, li, pre, form, fieldset, legend, button, input, textarea, th, td { margin:0; padding:0; } 
+body, button, input, select, textarea { font-size: 12px; font-family: "微软雅黑","arial","宋体";  line-height: 1; color: #333;} 
+h1, h2, h3, h4, h5, h6{ font-size:100%; } 
+address, cite, dfn, em, var { font-style:normal; } 
+code, kbd, pre, samp { font-family:couriernew, courier, monospace; } 
+small{ font-size:12px; } 
+ul, ol { list-style:none; } 
+sup { vertical-align:text-top; } 
+sub{ vertical-align:text-bottom; } 
+legend { color:#000; } 
+fieldset, img { border:0; } 
+button, input, select, textarea { font-size:100%; } 
+table { border-collapse:collapse; border-spacing:0; } 
+/* HTML5 display-role reset for older browsers */
+article, aside, details, figcaption, figure,
+footer, header, menu, nav, section {display: block;}
+input,input[type="search"],button,select,option,textarea,a{outline:none;}
+a{text-decoration: none;-webkit-backface-visibility: hidden;color:#333;}
+div{-moz-box-sizing:border-box;-webkit-box-sizing:border-box;-ms-box-sizing:border-box;box-sizing:border-box;}
+.fl{float:left;}
+.fr{float:right;}
+.clear{clear:both; height: 0; line-height: 0; font-size: 0;}
+.clearfix:after{ content:"."; display:block; height:0; visibility:hidden; clear:both;}
+
+
+
+
+
+
+
