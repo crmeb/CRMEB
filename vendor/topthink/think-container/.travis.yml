@@ -1,0 +1,24 @@
+dist: xenial
+language: php
+
+matrix:
+  fast_finish: true
+  include:
+    - php: 7.1
+    - php: 7.2
+    - php: 7.3
+
+cache:
+  directories:
+    - $HOME/.composer/cache
+
+
+install:
+  - travis_retry composer update --prefer-dist --no-interaction --prefer-stable --no-suggest
+
+script:
+  - vendor/bin/phpunit --coverage-clover build/logs/coverage.xml
+
+after_script:
+  - travis_retry wget https://scrutinizer-ci.com/ocular.phar
+  - php ocular.phar code-coverage:upload --format=php-clover build/logs/coverage.xml

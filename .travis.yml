@@ -1,0 +1,42 @@
+sudo: false
+
+language: php
+
+branches:
+  only:
+    - stable
+
+cache:
+  directories:
+    - $HOME/.composer/cache
+
+before_install:
+  - composer self-update
+
+install:
+  - composer install --no-dev --no-interaction --ignore-platform-reqs
+  - zip -r --exclude='*.git*' --exclude='*.zip' --exclude='*.travis.yml' ThinkPHP_Core.zip .
+  - composer require --update-no-dev --no-interaction "topthink/think-image:^1.0"
+  - composer require --update-no-dev --no-interaction "topthink/think-migration:^1.0"
+  - composer require --update-no-dev --no-interaction "topthink/think-captcha:^1.0"
+  - composer require --update-no-dev --no-interaction "topthink/think-mongo:^1.0"
+  - composer require --update-no-dev --no-interaction "topthink/think-worker:^1.0"
+  - composer require --update-no-dev --no-interaction "topthink/think-helper:^1.0"
+  - composer require --update-no-dev --no-interaction "topthink/think-queue:^1.0"
+  - composer require --update-no-dev --no-interaction "topthink/think-angular:^1.0"
+  - composer require --dev --update-no-dev --no-interaction "topthink/think-testing:^1.0"
+  - zip -r --exclude='*.git*' --exclude='*.zip' --exclude='*.travis.yml' ThinkPHP_Full.zip .
+
+script:
+  - php think unit
+
+deploy:
+  provider: releases
+  api_key:
+    secure: TSF6bnl2JYN72UQOORAJYL+CqIryP2gHVKt6grfveQ7d9rleAEoxlq6PWxbvTI4jZ5nrPpUcBUpWIJHNgVcs+bzLFtyh5THaLqm39uCgBbrW7M8rI26L8sBh/6nsdtGgdeQrO/cLu31QoTzbwuz1WfAVoCdCkOSZeXyT/CclH99qV6RYyQYqaD2wpRjrhA5O4fSsEkiPVuk0GaOogFlrQHx+C+lHnf6pa1KxEoN1A0UxxVfGX6K4y5g4WQDO5zT4bLeubkWOXK0G51XSvACDOZVIyLdjApaOFTwamPcD3S1tfvuxRWWvsCD5ljFvb2kSmx5BIBNwN80MzuBmrGIC27XLGOxyMerwKxB6DskNUO9PflKHDPI61DRq0FTy1fv70SFMSiAtUv9aJRT41NQh9iJJ0vC8dl+xcxrWIjU1GG6+l/ZcRqVx9V1VuGQsLKndGhja7SQ+X1slHl76fRq223sMOql7MFCd0vvvxVQ2V39CcFKao/LB1aPH3VhODDEyxwx6aXoTznvC/QPepgWsHOWQzKj9ftsgDbsNiyFlXL4cu8DWUty6rQy8zT2b4O8b1xjcwSUCsy+auEjBamzQkMJFNlZAIUrukL/NbUhQU37TAbwsFyz7X0E/u/VMle/nBCNAzgkMwAUjiHM6FqrKKBRWFbPrSIixjfjkCnrMEPw=
+  file:
+    - ThinkPHP_Core.zip
+    - ThinkPHP_Full.zip
+  skip_cleanup: true
+  on:
+    tags: true

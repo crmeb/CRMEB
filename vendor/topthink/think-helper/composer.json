@@ -1,0 +1,23 @@
+{
+    "name": "topthink/think-helper",
+    "description": "The ThinkPHP5 Helper Package",
+    "license": "Apache-2.0",
+    "authors": [
+        {
+            "name": "yunwuxin",
+            "email": "448901948@qq.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "think\\helper\\": "src"
+        },
+        "files": [
+            "src/helper.php"
+        ]
+    },
+    "minimum-stability": "dev",
+    "require": {
+        "topthink/framework": "^6.0"
+    }
+}

@@ -1,0 +1,329 @@
+<?php
+// +----------------------------------------------------------------------
+// | ThinkPHP [ WE CAN DO IT JUST THINK IT ]
+// +----------------------------------------------------------------------
+// | Copyright (c) 2006-2016 http://thinkphp.cn All rights reserved.
+// +----------------------------------------------------------------------
+// | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
+// +----------------------------------------------------------------------
+// | Author: yunwuxin <448901948@qq.com>
+// +----------------------------------------------------------------------
+
+use think\Collection;
+use think\helper\Arr;
+
+if (!function_exists('classnames')) {
+    /**
+     * css样式名生成器
+     * classnames("foo", "bar"); // => "foo bar"
+     * classnames("foo", [ "bar"=> true ]); // => "foo bar"
+     * classnames([ "foo-bar"=> true ]); // => "foo-bar"
+     * classnames([ "foo-bar"=> false ]); // => "
+     * classnames([ "foo" => true ], [ "bar"=> true ]); // => "foo bar"
+     * classnames([ "foo" => true, "bar"=> true ]); // => "foo bar"
+     * classnames("foo", [ "bar"=> true, "duck"=> false ], "baz", [ "quux"=> true ]); // => "foo bar baz quux"
+     * classnames(null, false, "bar", 0, 1, [ "baz"=> null ]); // => "bar 1"
+     */
+    function classnames()
+    {
+        $args    = func_get_args();
+        $classes = array_map(function ($arg) {
+            if (is_array($arg)) {
+                return implode(" ", array_filter(array_map(function ($expression, $class) {
+                    return $expression ? $class : false;
+                }, $arg, array_keys($arg))));
+            }
+            return $arg;
+        }, $args);
+        return implode(" ", array_filter($classes));
+    }
+}
+
+if (!function_exists('throw_if')) {
+    /**
+     * 按条件抛异常
+     *
+     * @param mixed            $condition
+     * @param Throwable|string $exception
+     * @param array            ...$parameters
+     * @return mixed
+     *
+     * @throws Throwable
+     */
+    function throw_if($condition, $exception, ...$parameters)
+    {
+        if ($condition) {
+            throw (is_string($exception) ? new $exception(...$parameters) : $exception);
+        }
+
+        return $condition;
+    }
+}
+
+if (!function_exists('throw_unless')) {
+    /**
+     * 按条件抛异常
+     *
+     * @param mixed            $condition
+     * @param Throwable|string $exception
+     * @param array            ...$parameters
+     * @return mixed
+     * @throws Throwable
+     */
+    function throw_unless($condition, $exception, ...$parameters)
+    {
+        if (!$condition) {
+            throw (is_string($exception) ? new $exception(...$parameters) : $exception);
+        }
+
+        return $condition;
+    }
+}
+
+if (!function_exists('app_path')) {
+    /**
+     * 获取当前应用目录
+     *
+     * @param string $path
+     * @return string
+     */
+    function app_path($path = '')
+    {
+        return app()->getAppPath() . ($path ? $path . DIRECTORY_SEPARATOR : $path);
+    }
+}
+
+if (!function_exists('base_path')) {
+    /**
+     * 获取应用基础目录
+     *
+     * @param string $path
+     * @return string
+     */
+    function base_path($path = '')
+    {
+        return app()->getBasePath() . ($path ? $path . DIRECTORY_SEPARATOR : $path);
+    }
+}
+
+if (!function_exists('config_path')) {
+    /**
+     * 获取应用配置目录
+     *
+     * @param string $path
+     * @return string
+     */
+    function config_path($path = '')
+    {
+        return app()->getConfigPath() . ($path ? $path . DIRECTORY_SEPARATOR : $path);
+    }
+}
+
+if (!function_exists('public_path')) {
+    /**
+     * 获取web根目录
+     *
+     * @param string $path
+     * @return string
+     */
+    function public_path($path = '')
+    {
+        return app()->getRootPath() . ($path ? ltrim($path, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR : $path);
+    }
+}
+
+if (!function_exists('runtime_path')) {
+    /**
+     * 获取web根目录
+     *
+     * @param string $path
+     * @return string
+     */
+    function runtime_path($path = '')
+    {
+        return app()->getRuntimePath() . ($path ? $path . DIRECTORY_SEPARATOR : $path);
+    }
+}
+
+if (!function_exists('root_path')) {
+    /**
+     * 获取项目根目录
+     *
+     * @param string $path
+     * @return string
+     */
+    function root_path($path = '')
+    {
+        return app()->getRootPath() . ($path ? $path . DIRECTORY_SEPARATOR : $path);
+    }
+}
+
+if (!function_exists('tap')) {
+    /**
+     * 对一个值调用给定的闭包，然后返回该值
+     *
+     * @param mixed         $value
+     * @param callable|null $callback
+     * @return mixed
+     */
+    function tap($value, $callback = null)
+    {
+        if (is_null($callback)) {
+            return $value;
+        }
+
+        $callback($value);
+
+        return $value;
+    }
+}
+
+if (!function_exists('value')) {
+    /**
+     * Return the default value of the given value.
+     *
+     * @param mixed $value
+     * @return mixed
+     */
+    function value($value)
+    {
+        return $value instanceof Closure ? $value() : $value;
+    }
+}
+
+if (!function_exists('collect')) {
+    /**
+     * Create a collection from the given value.
+     *
+     * @param mixed $value
+     * @return Collection
+     */
+    function collect($value = null)
+    {
+        return new Collection($value);
+    }
+}
+
+if (!function_exists('data_fill')) {
+    /**
+     * Fill in data where it's missing.
+     *
+     * @param mixed        $target
+     * @param string|array $key
+     * @param mixed        $value
+     * @return mixed
+     */
+    function data_fill(&$target, $key, $value)
+    {
+        return data_set($target, $key, $value, false);
+    }
+}
+
+if (!function_exists('data_get')) {
+    /**
+     * Get an item from an array or object using "dot" notation.
+     *
+     * @param mixed            $target
+     * @param string|array|int $key
+     * @param mixed            $default
+     * @return mixed
+     */
+    function data_get($target, $key, $default = null)
+    {
+        if (is_null($key)) {
+            return $target;
+        }
+
+        $key = is_array($key) ? $key : explode('.', $key);
+
+        while (!is_null($segment = array_shift($key))) {
+            if ($segment === '*') {
+                if ($target instanceof Collection) {
+                    $target = $target->all();
+                } elseif (!is_array($target)) {
+                    return value($default);
+                }
+
+                $result = [];
+
+                foreach ($target as $item) {
+                    $result[] = data_get($item, $key);
+                }
+
+                return in_array('*', $key) ? Arr::collapse($result) : $result;
+            }
+
+            if (Arr::accessible($target) && Arr::exists($target, $segment)) {
+                $target = $target[$segment];
+            } elseif (is_object($target) && isset($target->{$segment})) {
+                $target = $target->{$segment};
+            } else {
+                return value($default);
+            }
+        }
+
+        return $target;
+    }
+}
+
+if (!function_exists('data_set')) {
+    /**
+     * Set an item on an array or object using dot notation.
+     *
+     * @param mixed        $target
+     * @param string|array $key
+     * @param mixed        $value
+     * @param bool         $overwrite
+     * @return mixed
+     */
+    function data_set(&$target, $key, $value, $overwrite = true)
+    {
+        $segments = is_array($key) ? $key : explode('.', $key);
+
+        if (($segment = array_shift($segments)) === '*') {
+            if (!Arr::accessible($target)) {
+                $target = [];
+            }
+
+            if ($segments) {
+                foreach ($target as &$inner) {
+                    data_set($inner, $segments, $value, $overwrite);
+                }
+            } elseif ($overwrite) {
+                foreach ($target as &$inner) {
+                    $inner = $value;
+                }
+            }
+        } elseif (Arr::accessible($target)) {
+            if ($segments) {
+                if (!Arr::exists($target, $segment)) {
+                    $target[$segment] = [];
+                }
+
+                data_set($target[$segment], $segments, $value, $overwrite);
+            } elseif ($overwrite || !Arr::exists($target, $segment)) {
+                $target[$segment] = $value;
+            }
+        } elseif (is_object($target)) {
+            if ($segments) {
+                if (!isset($target->{$segment})) {
+                    $target->{$segment} = [];
+                }
+
+                data_set($target->{$segment}, $segments, $value, $overwrite);
+            } elseif ($overwrite || !isset($target->{$segment})) {
+                $target->{$segment} = $value;
+            }
+        } else {
+            $target = [];
+
+            if ($segments) {
+                data_set($target[$segment], $segments, $value, $overwrite);
+            } elseif ($overwrite) {
+                $target[$segment] = $value;
+            }
+        }
+
+        return $target;
+    }
+}
