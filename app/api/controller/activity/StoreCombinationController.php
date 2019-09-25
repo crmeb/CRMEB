@@ -62,8 +62,8 @@ class StoreCombinationController
         if($imageInfo['image_type'] == 1)
             $url = $siteUrl.$url;
         $combinationOne['image'] = UtilService::setSiteUrl($combinationOne['image'], $siteUrl);
-        $combinationOne['image_base'] = UtilService::setImageBase64(UtilService::setSiteUrl($combinationOne['image'], $siteUrl));
-        $combinationOne['code_base'] = UtilService::setImageBase64($url);
+        $combinationOne['image_base'] = UtilService::setSiteUrl($combinationOne['image'], $siteUrl);
+        $combinationOne['code_base'] = $url;
         $combinationOne['sale_stock'] = 0;
         if($combinationOne['stock'] > 0) $combinationOne['sale_stock'] = 1;
         if(!strlen(trim($combinationOne['unit_name']))) $combinationOne['unit_name'] = '个';

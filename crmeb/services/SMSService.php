@@ -18,12 +18,12 @@ class SMSService
     public static $status;
 
     // 短信请求地址
-    private static $SMSUrl = 'http://sms.crmeb.net/api/';
+    private static $SMSUrl = 'https://sms.crmeb.net/api/';
 
     //短信支付回调地址
     private static $payNotify;
 
-    const VERIFICATION_CODE = 518047;
+    const VERIFICATION_CODE = 518076;
 
     public function __construct()
     {

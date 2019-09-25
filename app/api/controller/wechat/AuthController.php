@@ -82,13 +82,24 @@ class AuthController
     }
 
     /*
-     * 获取小程序授权logo
+     * 获取授权logo
      * */
-    public function get_logo()
+    public function get_logo(Request $request)
     {
-        $routine_logo=SystemConfigService::get('routine_logo');
-        if(strstr($routine_logo,'http')===false) $routine_logo = SystemConfigService::get('site_url').$routine_logo;
-        return app('json')->successful(['logo_url'=>str_replace('\\','/',$routine_logo)]);
+        $logoType = $request->get('type',1);
+        switch ((int)$logoType){
+            case 1:
+                $logo=SystemConfigService::get('routine_logo');
+                break;
+            case 2:
+                $logo=SystemConfigService::get('wechat_avatar');
+                break;
+            default:
+                $logo = '';
+                break;
+        }
+        if(strstr($logo,'http')===false && $logo) $logo = SystemConfigService::get('site_url').$logo;
+        return app('json')->successful(['logo_url'=>str_replace('\\','/',$logo)]);
     }
 
     /*

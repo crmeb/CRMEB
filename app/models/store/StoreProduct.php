@@ -213,7 +213,7 @@ class StoreProduct extends BaseModel
     public static function setLevelPrice($list, $uid, $isSingle = false)
     {
         if (is_object($list)) $list = count($list) ? $list->toArray() : [];
-        if (!SystemConfigService::get('vip_open') || !$uid) {
+        if (!SystemConfigService::get('vip_open')) {
             if (is_array($list)) return $list;
             return $isSingle ? $list : 0;
         }

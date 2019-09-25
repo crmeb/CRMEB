@@ -110,10 +110,9 @@ if (!function_exists('make_path')) {
                 break;
         }
         try{
-            if (is_dir(app()->getAppPath().$path) == true || mkdir(app()->getAppPath().$path, 0777, true) == true) {
+            if (is_dir(app()->getRootPath().'public'.DS.'uploads'.$path) == true || mkdir(app()->getRootPath().'public'.DS.'uploads'.$path, 0777, true) == true) {
                 return trim(str_replace(DS, '/',$path),'.');
             }else return '';
-
         }catch (\Exception $e){
             return '无法创建文件夹，请检查您的上传目录权限：' . app()->getRootPath() . 'public' . DS . 'uploads' . DS. 'attach' . DS;
         }

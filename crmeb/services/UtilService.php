@@ -572,14 +572,13 @@ class UtilService
         $uploadType = SystemConfigService::get('upload_type');
         //TODO 没有选择默认使用本地上传
         if (!$uploadType) $uploadType = 1;
-        $siteUrl = SystemConfigService::get('site_url');
+        $siteUrl = SystemConfigService::get('site_url') ?: '.';
         $info = [];
         $outfile = Config::get('qrcode.cache_dir');
 
         $code = new QRcode();
         $wapCodePath = $code->png($url, $outfile.'/'.$name)->getPath(); //获取二维码生成的地址
-        if($uploadType == 1)  $content = file_get_contents('.'.$wapCodePath);
-        else  $content = file_get_contents($wapCodePath);
+        $content = file_get_contents('.'.$wapCodePath);
         switch ($uploadType) {
             case 1 :
                 $info["code"] = 200;
@@ -624,10 +623,10 @@ class UtilService
                 $info['image_type'] = 3;
                 break;
             case 4 :
-                $serverImageInfo = COS::uploadImageStream($name, $content);
+                list($imageUrl,$serverImageInfo) = COS::uploadImageStream($name, $content);
                 if (!is_array($serverImageInfo) && !is_object($serverImageInfo)) return $serverImageInfo;
                 if (is_object($serverImageInfo)) $serverImageInfo = $serverImageInfo->toArray();
-                $serverImageInfo['ObjectURL'] = UtilService::setHttpType($serverImageInfo['ObjectURL']);
+                $serverImageInfo['ObjectURL'] = $imageUrl;
                 $info['code'] = 200;
                 $info['name'] = substr(strrchr($serverImageInfo['ObjectURL'], '/'), 1);
                 $info['dir'] = $serverImageInfo['ObjectURL'];
@@ -649,22 +648,32 @@ class UtilService
      * @param string $avatar
      * @return bool|string
      */
-    public static function setImageBase64($avatar = ''){
-        $header = array(
-            'User-Agent: Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:45.0) Gecko/20100101 Firefox/45.0',
-            'Accept-Language: zh-CN,zh;q=0.8,en-US;q=0.5,en;q=0.3',
-            'Accept-Encoding: gzip, deflate',);
-        $curl = curl_init();
-        curl_setopt($curl, CURLOPT_URL, $avatar);
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
-        curl_setopt($curl, CURLOPT_ENCODING, 'gzip');
-        curl_setopt($curl, CURLOPT_HTTPHEADER, $header);
-        $data = curl_exec($curl);
-        $code = curl_getinfo($curl, CURLINFO_HTTP_CODE);
-        curl_close($curl);
-        if ($code == 200)  return "data:image/jpeg;base64," . base64_encode($data);
-        else return false;
+    public static function setImageBase64($avatar = '',$timeout=15){
+        try{
+            $url=parse_url($avatar);
+            $url=$url['host'];
+            $header = [
+                'User-Agent: Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:45.0) Gecko/20100101 Firefox/45.0',
+                'Accept-Language: zh-CN,zh;q=0.8,en-US;q=0.5,en;q=0.3',
+                'Accept-Encoding: gzip, deflate',
+                'Host:'.$url
+            ];
+            $curl = curl_init();
+            curl_setopt($curl, CURLOPT_URL, $avatar);
+            curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
+            curl_setopt($curl, CURLOPT_ENCODING, 'gzip');
+            curl_setopt($curl, CURLOPT_TIMEOUT, $timeout);
+            curl_setopt($curl, CURLOPT_HTTPHEADER, $header);
+            $data = curl_exec($curl);
+            $code = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+            curl_close($curl);
+            if ($code == 200)  return "data:image/jpeg;base64," . base64_encode($data);
+            else return false;
+        }catch (\Exception $e){
+            return false;
+        }
+
     }
 
 

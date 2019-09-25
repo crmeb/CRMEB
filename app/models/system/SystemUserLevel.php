@@ -104,7 +104,7 @@ class SystemUserLevel extends BaseModel
             if($isArray) $item['task_list'] = SystemUserTask::getTashList($item['id']);
         }
         foreach ($list as &$item){
-            if($grade < $item['grade']) $item['is_clear']=true;
+            if($grade <= $item['grade']) $item['is_clear']=true;
             else $item['is_clear']=false;
         }
         return $list;

@@ -17,15 +17,25 @@ use think\exception\ValidateException;
 use think\facade\Queue;
 use think\facade\Session;
 
+/**微信小程序授权类
+ * Class AuthController
+ * @package app\api\controller
+ */
+
 class AuthController
 {
     public function login(Request $request)
     {
 
         $user = User::where('account', $request->param('account'))->find();
-        if (!$user || $user->pwd !== md5($request->param('password')))
+        if($user) {
+            if ($user->pwd !== md5($request->param('password')))
+                return app('json')->fail('账号或密码错误');
+            if ($user->pwd === md5(123456))
+                return app('json')->fail('请修改您的初始密码，再尝试登陆！');
+        }else{
             return app('json')->fail('账号或密码错误');
-
+        }
         if (!$user['status'])
             return app('json')->fail('已被禁止，请联系管理员');
 
@@ -80,7 +90,7 @@ class AuthController
         $res = SMSService::send($phone,SMSService::VERIFICATION_CODE,$data);
         if($res['status'] == 400) return app('json')->fail('短信平台验证码发送失败'.$res['msg']);
         CacheService::set('code_'.$phone, $code, $time);
-        return app('json')->success($res['msg']);
+        return app('json')->success($res['msg'] ?? '发送失败');
     }
 
     /**
@@ -266,6 +276,8 @@ class AuthController
         $userPhone = $userInfo->phone;
         if(!$userInfo) return app('json')->fail('用户不存在');
         if($userInfo->phone) return app('json')->fail('您的账号已经绑定过手机号码！');
+        if(User::where('phone',$phone)->where('user_type','<>','h5')->count())
+            return app('json')->success('此手机已经绑定，无法多次绑定！');
         if(User::where('account',$phone)->where('phone',$phone)->where('user_type','h5')->find()){
             if(!$step) return app('json')->success('H5已有账号是否绑定此账号上',['is_bind'=>1]);
             $userInfo->phone = $phone;

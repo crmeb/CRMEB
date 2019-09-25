@@ -64,7 +64,9 @@ class WechatMessage extends BaseModel
     }
     public static function setMessage($result,$openid,$type)
     {
-        $data = compact('result','openid','type');
+        if(is_object($result) || is_array($result)) $result = json_encode($result);
+        $add_time = time();
+        $data = compact('result','openid','type','add_time');
         return self::create($data);
     }
 

@@ -11,6 +11,7 @@ use app\admin\model\system\Express;
 use crmeb\repositories\OrderRepository;
 use crmeb\services\ExpressService;
 use crmeb\services\MiniProgramService;
+use crmeb\services\UtilService;
 use crmeb\services\WechatService;
 use crmeb\services\FormBuilder as Form;
 use crmeb\services\HookService;
@@ -40,7 +41,7 @@ class StoreOrder extends AuthController
     public function index()
     {
         $this->assign([
-            'year'=>getMonth('y'),
+            'year'=>getMonth(),
             'real_name'=>$this->request->get('real_name',''),
             'status'=>$this->request->param('status',''),
             'orderCount'=>StoreOrderModel::orderCount(),
@@ -205,8 +206,9 @@ class StoreOrder extends AuthController
     /*
      * 删除订单
      * */
-    public function del_order($ids=[])
+    public function del_order()
     {
+        $ids = UtilService::postMore(['ids'])['ids'];
         if(!count($ids)) return JsonService::fail('请选择需要删除的订单');
         if(StoreOrderModel::where('is_del',0)->where('id','in',$ids)->count()) return JsonService::fail('您选择的的订单存在用户未删除的订单，无法删除用户未删除的订单');
         $res=StoreOrderModel::where('id','in',$ids)->update(['is_system_del'=>1]);
@@ -261,7 +263,6 @@ class StoreOrder extends AuthController
                 StoreOrderModel::edit($data,$id);
                 event('StoreProductOrderDeliveryAfter',[$data,$id]);
                 StoreOrderStatus::setStatus($id,'delivery_fictitious','已虚拟发货');
-                StoreOrderStatus::setStatus($id,'take_delivery','虚拟物品已收货');
                 break;
             default:
                 return Json::fail('暂时不支持其他发货类型');
@@ -370,16 +371,20 @@ class StoreOrder extends AuthController
         if($order['paid'] == 1 && $order['status'] == 1) $data['status'] = 2;
         else if($order['pay_type'] == 'offline') $data['status'] = 2;
         else return Json::fail('请先发货或者送货!');
-        if(!StoreOrderModel::edit($data,$id))
-            return Json::fail(StoreOrderModel::getErrorInfo('收货失败,请稍候再试!'));
-        else{
-            try{
+        StoreOrderModel::beginTrans();
+        try{
+            if(!StoreOrderModel::edit($data,$id)) {
+                StoreOrderModel::rollbackTrans();
+                return Json::fail(StoreOrderModel::getErrorInfo('收货失败,请稍候再试!'));
+            }else{
                 OrderRepository::storeProductOrderTakeDeliveryAdmin($order, $id);
-            }catch (\Exception $e){
-                return Json::fail($e->getMessage());
+                StoreOrderStatus::setStatus($id,'take_delivery','已收货');
+                StoreOrderModel::commitTrans();
+                return Json::successful('收货成功!');
             }
-            StoreOrderStatus::setStatus($id,'take_delivery','已收货');
-            return Json::successful('收货成功!');
+         }catch (\Exception $e){
+            StoreOrderModel::rollbackTrans();
+            return Json::fail($e->getMessage());
         }
     }
     /**
@@ -497,7 +502,7 @@ class StoreOrder extends AuthController
         if($order['delivery_type'] != 'express' || !$order['delivery_id']) return $this->failed('该订单不存在快递单号!');
         $cacheName = $order['order_id'].$order['delivery_id'];
         $result = CacheService::get($cacheName,null);
-        if($result === null || 1==1){
+        if($result === null){
             $result = ExpressService::query($order['delivery_id']);
             if(is_array($result) &&
                 isset($result['result']) &&

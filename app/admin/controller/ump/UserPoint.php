@@ -25,7 +25,7 @@ class UserPoint extends AuthController
 //            'count'=>UserBill::where(['category'=>'integral','type'=>'sign'])->group('uid')->count(),
 //            'song_point'=>UserBill::where(['category'=>'integral','type'=>'sign'])->group('uid')->sum('number'),
             'is_layui'=>true,
-            'year'=>getMonth('y'),
+            'year'=>getMonth(),
         ]);
         return $this->fetch();
     }

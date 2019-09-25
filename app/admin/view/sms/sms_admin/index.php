@@ -57,7 +57,7 @@
         <div class="col-sm-12">
             <div class="ibox float-e-margins">
                 <div class="ibox-title">
-                    <h5>短信账号注册/修改</h5>
+                    <h5>短信账号注册</h5>
                 </div><div id="store-attr" class="mp-form" v-cloak="">
                     <i-Form :label-width="80" style="width: 100%">
                         <template >
@@ -128,7 +128,7 @@
         new Vue({
             data () {
                 return {
-                    codeUrl : "{$url}",
+                    codeUrl : "{:Url('captcha')}",
                     codeMsg : "发送验证码",
                     form:{
                         account:'',
@@ -157,17 +157,13 @@
                         $eb.message('error','请填写短信签名');
                         return false;
                     }
-                    if(that.form.sign.length > 20){
-                        $eb.message('error','短信签名最大长度为20个字符');
-                        return false;
-                    }
                     if(!that.isPhone(that.form.phone)){
                         $eb.message('error','手机号格式错误');
                         return false;
                     }
                     that.isSend = false;
-                    $eb.axios.get(that.codeUrl + '?phone=' + that.form.phone).then(function(res){
-                        if(res.status == 200){
+                    $eb.axios.post(that.codeUrl,{phone:that.form.phone}).then(function(res){
+                        if(res.data.code == 200){
                             var cd = 60;
                             var timeClone = setInterval(function () {
                                 cd--;
@@ -180,9 +176,9 @@
                                     that.codeMsg = '剩余'+cd+'s';
                                 }
                             },1000);
-                            $eb.message('success','验证码发送成功');
+                            $eb.message('success',res.data.msg || '发送成功');
                         }else{
-                            $eb.message('error',res.msg);
+                            $eb.message('error',res.data.msg || '发送失败');
                         }
                         return false;
                     }).catch(function(err){

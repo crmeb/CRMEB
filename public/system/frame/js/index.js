@@ -361,10 +361,11 @@
             clearInterval(this.timer);
         },
         onError: function (e) {
-            console.log('ws error', JSON.parse(e.data).message);
+            console.log('ws error', e.data ? JSON.parse(e.data).message : '');
         },
         getUrl: function () {
-            return 'ws://' + document.URL.split('//')[1].split('/')[0] + ':20002';
+            var ishttps = 'https:' == document.location.protocol ? true : false;
+            return ( ishttps ? 'wss': 'ws' )+'://' + document.URL.split('//')[1].split('/')[0] + ':20002';
         }
     };
 

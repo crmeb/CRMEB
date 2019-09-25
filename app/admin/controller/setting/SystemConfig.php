@@ -83,11 +83,11 @@ class SystemConfig extends AuthController
                    switch ($data['upload_type']){
                        case 1:
                            $data['value'] = json_decode($data['value'],true)?:'';
-                           $formbuider[] = Form::frameImageOne($data['menu_name'],$data['info'],Url::buildUrl('admin/widget.images/index',array('fodder'=>$data['menu_name'])),$data['value'])->icon('image')->width('100%')->height('500px')->info($data['desc'])->col(13);
+                           $formbuider[] = Form::frameImageOne($data['menu_name'],$data['info'],Url::buildUrl('admin/widget.images/index',array('fodder'=>$data['menu_name'])),$data['value'])->icon('image')->width('70%')->height('500px')->info($data['desc'])->col(13);
                            break;
                        case 2:
                            $data['value'] = json_decode($data['value'],true)?:[];
-                           $formbuider[] = Form::frameImages($data['menu_name'],$data['info'],Url::buildUrl('admin/widget.images/index',array('fodder'=>$data['menu_name'])),$data['value'])->maxLength(5)->icon('image')->width('100%')->height('500px')->info($data['desc'])->col(13);
+                           $formbuider[] = Form::frameImages($data['menu_name'],$data['info'],Url::buildUrl('admin/widget.images/index',array('fodder'=>$data['menu_name'])),$data['value'])->maxLength(5)->icon('image')->width('70%')->height('500px')->info($data['desc'])->col(13);
                            break;
                        case 3:
                            $data['value'] = json_decode($data['value'],true);

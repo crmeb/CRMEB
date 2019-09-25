@@ -216,7 +216,7 @@ class StoreSeckill extends AuthController
         $f[] = Form::input('title','产品标题',$product->getData('title'));
         $f[] = Form::input('info','秒杀活动简介',$product->getData('info'))->type('textarea');
         $f[] = Form::input('unit_name','单位',$product->getData('unit_name'))->placeholder('个、位');
-        $f[] = Form::dateTimeRange('section_time','活动时间',date('Y-m-d H:i:s', $product->getData('start_time')),date('Y-m-d H:i:s', $product->getData('stop_time')));
+        $f[] = Form::dateTimeRange('section_time','活动时间',date('Y-m-d H:i:s', (int)$product->getData('start_time')),date('Y-m-d H:i:s', (int)$product->getData('stop_time')));
         $f[] = Form::frameImageOne('image','产品主图片(305*305px)',Url::buildUrl('admin/widget.images/index',array('fodder'=>'image')),$product->getData('image'))->icon('image')->width('100%')->height('500px');
         $f[] = Form::frameImages('images','产品轮播图(640*640px)',Url::buildUrl('admin/widget.images/index',array('fodder'=>'images')),json_decode($product->getData('images')))->maxLength(5)->icon('images')->width('100%')->height('500px');
         $f[] = Form::number('price','秒杀价',$product->getData('price'))->min(0)->col(12);

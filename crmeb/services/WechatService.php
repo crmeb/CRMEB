@@ -167,7 +167,7 @@ class WechatService
                     break;
             }
             
-            return $response;
+            return $response ?? false;
         });
     }
 
@@ -436,7 +436,6 @@ class WechatService
     {
         self::paymentService()->handleNotify(function($notify, $successful){
             if($successful && isset($notify->out_trade_no)){
-                WechatMessage::setOnceMessage($notify,$notify->openid,'payment_success',$notify->out_trade_no);
                 if(isset($notify->attach) && $notify->attach){
                     if(strtolower($notify->attach) == 'product'){//TODO  商品订单支付成功后
                         try{
@@ -454,6 +453,7 @@ class WechatService
                         }
                     }
                 }
+                WechatMessage::setOnceMessage($notify,$notify->openid,'payment_success',$notify->out_trade_no);
                 return false;
             }
         });

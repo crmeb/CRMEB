@@ -4,7 +4,7 @@ namespace crmeb\services\storage;
 use crmeb\services\SystemConfigService;
 use Guzzle\Http\EntityBody;
 use Qcloud\Cos\Client;
-use think\Cache;
+use think\facade\Cache;
 
 /**
  * TODO 腾讯云COS文件上传
@@ -76,7 +76,7 @@ class COS
         $request = app('request');
         $file = $request->file($filename);
         $filePath = $file->getRealPath();
-        $ext = pathinfo($file->getInfo('name'), PATHINFO_EXTENSION);
+        $ext = $file->getOriginalExtension();
         $key = substr(md5($file->getRealPath()) , 0, 5). date('YmdHis') . rand(0, 9999) . '.' . $ext;
         try {
             self::autoInfo();
@@ -86,7 +86,7 @@ class COS
                 'Body' => fopen($filePath, 'rb')
             ])];
         } catch (\Exception $e) {
-            return $e->getMessage();
+            return [false,$e->getMessage()];
         }
     }
 
@@ -99,13 +99,13 @@ class COS
     public static function uploadImageStream($key, $content){
         try {
             self::autoInfo();
-            return self::$auth->putObject([
+            return [self::$uploadUrl.$key,self::$auth->putObject([
                 'Bucket' => self::$storageName,
                 'Key' => $key,
                 'Body' => $content
-            ]);
+            ])];
         } catch (\Exception $e) {
-            return $e->getMessage();
+            return [false,$e->getMessage()];
         }
     }
 

@@ -87,8 +87,10 @@ class SystemAdmin extends AuthController
         if($data['pwd'] != $data['conf_pwd']) return Json::fail('两次输入密码不想同');
         if(AdminModel::be($data['account'],'account')) return Json::fail('管理员账号已存在');
         $data['pwd'] = md5($data['pwd']);
+        $data['add_time'] = time();
         unset($data['conf_pwd']);
         $data['level'] = $this->adminInfo['level'] + 1;
+        $data['add_time'] =time();
         if(!AdminModel::create($data)) return Json::fail('添加管理员失败');
         return Json::successful('添加管理员成功!');
     }

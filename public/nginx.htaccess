@@ -1,0 +1,6 @@
+location / { // …..省略部分代码
+   if (!-e $request_filename) {
+   rewrite  ^(.*)$  /index.php?s=/$1  last;
+   break;
+    }
+ }

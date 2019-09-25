@@ -431,6 +431,32 @@
                 break;
         }
     })
+    var action={
+        del_order:function () {
+            var ids=layList.getCheckData().getIds('id');
+            if(ids.length){
+                var url =layList.U({c:'order.store_order',a:'del_order'});
+                $eb.$swal('delete',function(){
+                    $eb.axios.post(url,{ids:ids}).then(function(res){
+                        if(res.status == 200 && res.data.code == 200) {
+                            $eb.$swal('success',res.data.msg);
+                        }else
+                            return Promise.reject(res.data.msg || '删除失败')
+                    }).catch(function(err){
+                        $eb.$swal('error',err);
+                    });
+                },{'title':'您确定要修删除订单吗？','text':'删除后将无法恢复,请谨慎操作！','confirm':'是的，我要删除'})
+            }else{
+                layList.msg('请选择要删除的订单');
+            }
+        }
+    };
+    $('#container-action').find('button').each(function () {
+        $(this).on('click',function(){
+            var act = $(this).data('type');
+            action[act] && action[act]();
+        });
+    })
     //下拉框
     $(document).click(function (e) {
         $('.layui-nav-child').hide();

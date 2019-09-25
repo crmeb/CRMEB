@@ -50,7 +50,7 @@
                         {volist name="fileAll['file']" id="vo"}
                         <tr>
                             <td class="text-left">
-                                <span onclick="$eb.createModalFrame('{$vo.filename}','{:Url('openfile')}?file={$dir}/{$vo.filename}',{w:1260,h:600})"> <i class="fa fa-file-text-o"></i> {$vo.filename}</span>
+                                <span onclick="$eb.createModalFrame('{$vo.filename}','{:Url('openfile')}?file={$vo.pathname}',{w:1260,h:600})"> <i class="fa fa-file-text-o"></i> {$vo.filename}</span>
                             </td>
                             <td class="text-left">
                                 <span> {$vo.size}</span>
@@ -63,7 +63,7 @@
                             </td>
 
                             <td class="text-center">
-                                <button class="btn btn-info btn-xs" type="button"  onclick="$eb.createModalFrame('{$vo.filename}','{:Url('openfile')}?file={$dir}/{$vo.filename}',{w:1260,h:660})"><i class="fa fa-paste"></i> 编辑</button>
+                                <button class="btn btn-info btn-xs" type="button"  onclick="$eb.createModalFrame('{$vo.filename}','{:Url('openfile')}?file={$vo.pathname}',{w:1260,h:660})"><i class="fa fa-paste"></i> 编辑</button>
 <!--                                <button class="btn btn-info btn-xs" type="button"  onclick="$eb.createModalFrame('{$vo.filename}','{:Url('openfile')}?file={$vo.filename}&dir={$dir}',{w:1260,h:600})"><i class="fa fa-paste"></i> 重命名</button>-->
 <!--                                <button class="btn btn-info btn-xs" type="button"  onclick="$eb.createModalFrame('{$vo.filename}','{:Url('openfile')}?file={$vo.filename}&dir={$dir}',{w:1260,h:600})"><i class="fa fa-paste"></i> 删除</button>-->
 <!--                                <button class="btn btn-info btn-xs" type="button"  onclick="$eb.createModalFrame('{$vo.filename}','{:Url('openfile')}?file={$vo.filename}&dir={$dir}',{w:1260,h:600})"><i class="fa fa-paste"></i> 下载</button>-->

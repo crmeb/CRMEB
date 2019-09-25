@@ -65,7 +65,7 @@ class OSS
         $request = app('request');
         $file = $request->file($filename);
         $filePath = $file->getRealPath();
-        $ext = pathinfo($file->getInfo('name'), PATHINFO_EXTENSION);
+        $ext = $file->getOriginalExtension();
         $key = substr(md5($file->getRealPath()) , 0, 5). date('YmdHis') . rand(0, 9999) . '.' . $ext;
         try{
             self::autoInfo();

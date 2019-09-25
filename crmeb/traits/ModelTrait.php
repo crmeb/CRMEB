@@ -234,7 +234,7 @@ trait ModelTrait
                 if(strstr($where[$data],$field)!==false){
                     list($startTime, $endTime) = explode($field, $where[$data]);
                     $model = $model->where($prefix, '>', strtotime($startTime));
-                    $model = $model->where($prefix, '<', strtotime($endTime));
+                    $model = $model->where($prefix, '<', bcadd(strtotime($endTime),86400,0));
                 }
                 break;
         }

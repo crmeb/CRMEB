@@ -103,7 +103,7 @@ class StoreSeckillController
      * @param $id
      * @return mixed
      */
-    public function detail(Request $request, $id){
+    public function detail(Request $request, $id,$time = 0){
         if(!$id || !($storeInfo = StoreSeckill::getValidProduct($id))) return app('json')->fail('商品不存在或已下架!');
         $storeInfo = $storeInfo->hidden(['cost','add_time','is_del'])->toArray();
 
@@ -112,17 +112,16 @@ class StoreSeckillController
         $imageInfo = SystemAttachment::getInfo($name,'name');
         $siteUrl = SystemConfigService::get('site_url');
         if(!$imageInfo){
-            $codeUrl = UtilService::setHttpType($siteUrl.'/activity/seckill_detail/'.$id, 1);//二维码链接
+            $codeUrl = UtilService::setHttpType($siteUrl.'/activity/seckill_detail/'.$id.'/'.$time, 1);//二维码链接
             $imageInfo = UtilService::getQRCodePath($codeUrl, $name);
             if(!$imageInfo) return app('json')->fail('二维码生成失败');
             SystemAttachment::attachmentAdd($imageInfo['name'],$imageInfo['size'],$imageInfo['type'],$imageInfo['dir'],$imageInfo['thumb_path'],1,$imageInfo['image_type'],$imageInfo['time'],2);
             $url = $imageInfo['dir'];
         }else $url = $imageInfo['att_dir'];
-        if($imageInfo['image_type'] == 1)
-            $url = $siteUrl.$url;
+        if($imageInfo['image_type'] == 1) $url = $siteUrl.$url;
         $storeInfo['image'] = UtilService::setSiteUrl($storeInfo['image'], $siteUrl);
-        $storeInfo['image_base'] = UtilService::setImageBase64(UtilService::setSiteUrl($storeInfo['image'], $siteUrl));
-        $storeInfo['code_base'] = UtilService::setImageBase64($url);
+        $storeInfo['image_base'] = UtilService::setSiteUrl($storeInfo['image'], $siteUrl);
+        $storeInfo['code_base'] = $url;
         $uid = $request->uid();
         $storeInfo['userLike'] = StoreProductRelation::isProductRelation($id, $uid, 'like', 'product_seckill');
         $storeInfo['like_num'] = StoreProductRelation::productRelationNum($id,'like','product_seckill');

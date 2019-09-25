@@ -113,7 +113,7 @@ class WechatUser extends BaseModel
         }else{
             $routineInfo['add_time'] = time();//用户添加时间
             $routineInfo = self::create($routineInfo);
-            $res = User::setRoutineUser($routineInfo);
+            $res = User::setRoutineUser($routineInfo,$spid);
             $uid = $res->uid;
         }
         $data['page'] = $page;

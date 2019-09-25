@@ -81,10 +81,10 @@ class StoreProductController
                     $res = \app\models\routine\RoutineCode::getPageCode('pages/goods_details/index',$data,280);
                     if(!$res) return app('json')->fail('二维码生成失败');
                     $imageInfo = \crmeb\services\UploadService::imageStream($name,$res,'routine/product');
-                    if(!is_array($imageInfo)) return app('json')->fail($imageInfo);
+                    if(is_string($imageInfo)) return app('json')->fail($imageInfo);
                     if($imageInfo['image_type'] == 1) $remoteImage = UtilService::remoteImage($siteUrl.$imageInfo['dir']);
                     else $remoteImage = UtilService::remoteImage($imageInfo['dir']);
-                    if(!$remoteImage['status']) return app('json')->fail('小程序二维码未能生成',$remoteImage['msg']);
+                    if(!$remoteImage['status']) return app('json')->fail('小程序二维码未能生成');
                     SystemAttachment::attachmentAdd($imageInfo['name'],$imageInfo['size'],$imageInfo['type'],$imageInfo['dir'],$imageInfo['thumb_path'],1,$imageInfo['image_type'],$imageInfo['time'],2);
                     $url = $imageInfo['dir'];
                 }else $url = $imageInfo['att_dir'];
@@ -108,11 +108,10 @@ class StoreProductController
             SystemAttachment::attachmentAdd($imageInfo['name'],$imageInfo['size'],$imageInfo['type'],$imageInfo['dir'],$imageInfo['thumb_path'],1,$imageInfo['image_type'],$imageInfo['time'],2);
             $url = $imageInfo['dir'];
         }else $url = $imageInfo['att_dir'];
-        if($imageInfo['image_type'] == 1)
-            $url = $siteUrl.$url;
+        if($imageInfo['image_type'] == 1) $url = $siteUrl.$url;
         $storeInfo['image'] = UtilService::setSiteUrl($storeInfo['image'], $siteUrl);
-        $storeInfo['image_base'] = UtilService::setImageBase64(UtilService::setSiteUrl($storeInfo['image'], $siteUrl));
-        $storeInfo['code_base'] = UtilService::setImageBase64($url);
+        $storeInfo['image_base'] = UtilService::setSiteUrl($storeInfo['image'], $siteUrl);
+        $storeInfo['code_base'] = $url;
         $uid = $request->uid();
         $data['uid'] = $uid;
         //替换windows服务器下正反斜杠问题导致图片无法显示

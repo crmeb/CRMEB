@@ -153,6 +153,7 @@ Route::group(function () {
     //产品分类类
     Route::get('category', 'store.CategoryController/category')->name('category');
     //产品类
+    Route::post('image_base64', 'PublicController/get_image_base64')->name('getImageBase64');// 获取图片base64
     Route::get('product/detail/:id', 'store.StoreProductController/detail')->name('detail');//产品详情
     Route::get('groom/list/:type', 'store.StoreProductController/groom_list')->name('groomList');//获取首页推荐不同类型产品的轮播图和产品
     Route::get('products', 'store.StoreProductController/lst')->name('products');//产品列表
@@ -169,7 +170,7 @@ Route::group(function () {
     //活动---秒杀
     Route::get('seckill/index', 'activity.StoreSeckillController/index')->name('seckillIndex');//秒杀产品时间区间
     Route::get('seckill/list/:time', 'activity.StoreSeckillController/lst')->name('seckillList');//秒杀产品列表
-    Route::get('seckill/detail/:id', 'activity.StoreSeckillController/detail')->name('seckillDetail');//秒杀产品详情
+    Route::get('seckill/detail/:id/[:time]', 'activity.StoreSeckillController/detail')->name('seckillDetail');//秒杀产品详情
     //活动---砍价
     Route::get('bargain/config', 'activity.StoreBargainController/config')->name('bargainConfig');//砍价产品列表配置
     Route::get('bargain/list', 'activity.StoreBargainController/lst')->name('bargainList');//砍价产品列表
@@ -186,7 +187,7 @@ Route::group(function () {
     //小程序登陆
     Route::post('wechat/mp_auth', 'wechat.AuthController/mp_auth')->name('mpAuth');//小程序登陆
     Route::get('wechat/get_logo', 'wechat.AuthController/get_logo')->name('getLogo');//小程序登陆授权展示logo
-    Route::post('wechat/set_form_id', 'wechat.AuthController/set_form_id')->name('setFormId');//小程序登陆授权展示logo
+    Route::post('wechat/set_form_id', 'wechat.AuthController/set_form_id')->name('setFormId');//小程序登陆收集form id
 
     //物流公司
     Route::get('logistics', 'PublicController/logistics')->name('logistics');//物流公司列表

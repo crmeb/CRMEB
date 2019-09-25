@@ -178,7 +178,7 @@ class WechatReply extends BaseModel
             return self::setErrorInfo('请选择图文消息');
         $siteUrl = SystemConfig::getConfigValue('site_url');
         foreach ($data as $k=>$v){
-            if(empty($v['url'])) $data[$k]['url'] = $siteUrl.Url::buildUrl('wap/article/visit',['id'=>$v['id']]);
+            if(empty($v['url'])) $data[$k]['url'] = $siteUrl.'/news_detail/'.$v['id'];
             if($v['image']) $data[$k]['image'] = $v['image'];
         }
         return $data;

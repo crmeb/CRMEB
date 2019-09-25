@@ -26,7 +26,7 @@ class UserRecharge extends AuthController
      * 显示操作记录
      */
     public function index(){
-        $this->assign( 'year',getMonth('y'));
+        $this->assign( 'year',getMonth());
         return $this->fetch();
     }
 

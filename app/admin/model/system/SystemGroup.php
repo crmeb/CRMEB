@@ -37,7 +37,7 @@ class SystemGroup extends BaseModel
      * @return array
      */
     public static function getField($id){
-        $fields = json_decode(self::where('id',$id)->value("fields"),true);
+        $fields = json_decode(self::where('id',$id)->value("fields"),true)?:[];
         return compact('fields');
     }
 }

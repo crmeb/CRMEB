@@ -235,7 +235,7 @@ class UploadService
                 $info['type'] = $headerArray['Content-Type'];
                 $info["image_type"] = 1;
                 $info['thumb_path'] = '/' . $info['dir'];
-                $info['dir'] = '/' . $info['dir'];
+                $info['dir'] = str_replace('\\','/','/' . $info['dir']);
                 break;
             case 2 :
                 $keys = Qiniu::uploadImageStream($key, $content);
@@ -269,10 +269,10 @@ class UploadService
                 $info['image_type'] = 3;
                 break;
             case 4 :
-                $serverImageInfo = COS::uploadImageStream($key, $content);
+                list($imageUrl,$serverImageInfo) = COS::uploadImageStream($key, $content);
                 if (!is_array($serverImageInfo) && !is_object($serverImageInfo)) return $serverImageInfo;
                 if (is_object($serverImageInfo)) $serverImageInfo = $serverImageInfo->toArray();
-                $serverImageInfo['ObjectURL'] = UtilService::setHttpType($serverImageInfo['ObjectURL']);
+                $serverImageInfo['ObjectURL'] = $imageUrl;
                 $info['code'] = 200;
                 $info['name'] = substr(strrchr($serverImageInfo['ObjectURL'], '/'), 1);
                 $info['dir'] = $serverImageInfo['ObjectURL'];

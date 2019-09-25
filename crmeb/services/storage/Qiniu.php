@@ -6,7 +6,7 @@ use Qiniu\Auth;
 use Qiniu\Storage\BucketManager;
 use Qiniu\Storage\UploadManager;
 use Qiniu\Config;
-use think\Cache;
+use think\facade\Cache;
 
 
 /**
@@ -78,7 +78,7 @@ class Qiniu
         $request = app('request');
         $file = $request->file($filename);
         $filePath = $file->getRealPath();
-        $ext = pathinfo($file->getInfo('name'), PATHINFO_EXTENSION);
+        $ext = $file->getOriginalExtension();
         $key = substr(md5($file->getRealPath()) , 0, 5). date('YmdHis') . rand(0, 9999) . '.' . $ext;
         $token = self::autoInfo()->uploadToken(self::$storageName);
         try{

@@ -164,6 +164,8 @@ class StoreOrderController
         $orderId = $order['order_id'];
         $info = compact('orderId', 'key');
         if ($orderId) {
+            event('OrderCreated', [$order]);
+
             switch ($payType) {
                 case "weixin":
                     $orderInfo = StoreOrder::where('order_id', $orderId)->find();
@@ -250,6 +252,7 @@ class StoreOrderController
             if(!$v) return app('json')->fail('再来一单失败，请重新下单!');
             $cateId[] = $v['id'];
         }
+        event('OrderCreateAgain', implode(',',$cateId));
         return app('json')->successful('ok',['cateId'=>implode(',',$cateId)]);
     }
 
@@ -488,6 +491,7 @@ class StoreOrderController
             return app('json')->fail($e->getMessage());
         }
         StoreProductReply::commitTrans();
+        event('UserCommented', $res);
         return app('json')->successful();
     }
 
