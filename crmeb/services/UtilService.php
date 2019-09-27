@@ -585,7 +585,8 @@ class UtilService
                 $info["name"] = $name;
                 $info["dir"] = $wapCodePath;
                 $info["time"] = time();
-                $headerArray = get_headers(UtilService::setHttpType($siteUrl, 1) . $info['dir'],true);
+                //$headerArray = get_headers(UtilService::setHttpType($siteUrl, 1) . $info['dir'],true);
+                $headerArray = get_headers(UtilService::setHttpType(str_replace('\\', '', $siteUrl), 1) . $info['dir'], true);
                 $info['size'] = $headerArray['Content-Length'];
                 $info['type'] = $headerArray['Content-Type'];
                 $info["image_type"] = 1;
