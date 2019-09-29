@@ -18,23 +18,28 @@
 </p>
 
 ### 如果对您有帮助，您可以点右上角 "Star" 支持一下 谢谢！
-+ CRMEB后端程序下载地址
+
+## 本系统是前后端分离，下面分别是后端和前端的项目地址
+
++  **CRMEB后端程序下载地址** 
 
   + 码云:https://gitee.com/ZhongBangKeJi/CRMEB.git
   
   + github:https://github.com/crmeb/CRMEB
 
-+ 微信小程序版前端界面
++  **微信小程序版前端界面** 
   
    + github:https://github.com/crmeb/CRMEB_WechatApplet_v3.0
   
    + 码云：https://gitee.com/ZhongBangKeJi/CRMEB_WechatApplet_v3.0
   
-+ H5版前端界面
++  **H5版前端界面** 
   
    + github:https://github.com/crmeb/CRMEB-H5-v3.0
   
    + 码云：https://gitee.com/ZhongBangKeJi/CRMEB-H5-v3.0
+
+## 很多人人问为什么没有前端，上面这些就是哦！
    
 ### 帮助文档：
 https://help.crmeb.net/crmeb
@@ -88,7 +93,7 @@ CPU：2核
 
 
 ## 项目介绍
-   基于ThinkPhp5.0+Vue+EasyWeChat 开发的一套CRMEB新零售商城系统
+   基于ThinkPhp6.0+Vue+EasyWeChat 开发的一套CRMEB新零售商城系统
     
    CRMEB系统就是集客户关系管理+营销电商系统，能够真正帮助企业基于微信公众号、小程序、wap、pc、app等，实现会员管理、数据分析,精准营销的电子商务管理系统。可满足企业新零售、批发、分销、预约、O2O、多店等各种业务需求
     
@@ -109,8 +114,9 @@ CPU：2核
     11.对接公众号和小程序,并且数据同步；
     12.内置客服系统；
     13.高频数据缓存；
-    14.数据备份和恢复
-    15.一键安装；
+    14.数据备份和恢复；
+    15.前后端分离
+    16.一键安装；
 ~~~
 ## 功能
 
@@ -275,7 +281,7 @@ php think workerman start admin
 
 淘宝超值版:
 
-CRMEB微信公众号小程序打通v2.6版：除了以上功能还带砍价、拼团功能，永久免费升级提供升级包
+CRMEB微信公众号、小程序、H5打通v3.0版：除了以上功能还带砍价、拼团功能，永久免费升级提供升级包
 
 还有定制开发服务，例如：预约系统、O2O、付费阅读、多店版、多商家版
 
