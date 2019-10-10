@@ -39,14 +39,14 @@
   
    + 码云：https://gitee.com/ZhongBangKeJi/CRMEB-H5-v3.0
 
-## 很多人人问为什么没有前端，上面这些就是哦！
+## 很多人问为什么没有前端，上面这些就是哦！
    
 ### 帮助文档：
 https://help.crmeb.net/crmeb
 ### 论坛地址:
 http://bbs.crmeb.net
 
-QQ群: 710729856 <a target="_blank" href="//shang.qq.com/wpa/qunwpa?idkey=1794ec6e9fd6ac21bd6519d459d4495e824553693ab0a98a9899e61d68a494d0"><img border="0" src="//pub.idqqimg.com/wpa/images/group.png" alt="CRMEB微信开发四群" title="CRMEB微信开发四群"></a>
+### QQ交流群: 710729856 <a target="_blank" href="//shang.qq.com/wpa/qunwpa?idkey=1794ec6e9fd6ac21bd6519d459d4495e824553693ab0a98a9899e61d68a494d0"><img border="0" src="//pub.idqqimg.com/wpa/images/group.png" alt="CRMEB微信开发四群" title="CRMEB微信开发四群"></a>
 
 ## 获得荣誉
 ![输入图片说明](https://images.gitee.com/uploads/images/2019/0805/111208_eb4fe823_892944.jpeg "WechatIMG2434.jpeg")
@@ -93,7 +93,7 @@ CPU：2核
 
 
 ## 项目介绍
-   基于ThinkPhp6.0+Vue+EasyWeChat 开发的一套CRMEB新零售商城系统
+   CRMEB商城系统是基于ThinkPhp6.0+Vue+EasyWeChat 开发的一套新零售移动电商系统
     
    CRMEB系统就是集客户关系管理+营销电商系统，能够真正帮助企业基于微信公众号、小程序、wap、pc、app等，实现会员管理、数据分析,精准营销的电子商务管理系统。可满足企业新零售、批发、分销、预约、O2O、多店等各种业务需求
     
@@ -277,19 +277,19 @@ php think workerman start admin
 
 请参阅 [CRMEB](https://github.com/crmeb/CRMEB)。
 
-## 付费版
+## 商业版
 
-淘宝超值版:
+超值商业版:
 
 CRMEB微信公众号、小程序、H5打通v3.0版：除了以上功能还带砍价、拼团功能，永久免费升级提供升级包
 
 还有定制开发服务，例如：预约系统、O2O、付费阅读、多店版、多商家版
 
-### 详情[<a href='https://s.click.taobao.com/W7hVkLw' target="_blank"> 进入淘宝 </a>]
+### 商业版[<a href='https://s.click.taobao.com/W7hVkLw' target="_blank"> 去看看 </a>]
 
 [![输入图片说明](https://images.gitee.com/uploads/images/2019/0122/114739_a48f5bfd_892944.gif "tasheng jo(1).gif")](https://s.click.taobao.com/W7hVkLw)
 
-官网线下定制服务版：http://www.crmeb.com
+商业授权及定制服务版：http://www.crmeb.com
 
 
 ##  系统组件开源项目
