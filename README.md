@@ -71,7 +71,7 @@
 [![输入图片说明](https://images.gitee.com/uploads/images/2019/0122/114739_a48f5bfd_892944.gif "tasheng jo(1).gif")](https://s.click.taobao.com/W7hVkLw)
 
 ### 官方小程序购买商业版
-![官方小程序二维码.jpg](/readme/images/官方小程序二维码.jpg)
+![官方小程序二维码.jpg](/readme/images/演示二维码.jpg)
 
 商业授权及定制服务版：http://www.crmeb.com
 
