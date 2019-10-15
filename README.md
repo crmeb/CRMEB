@@ -19,45 +19,39 @@
 
 ### 如果对您有帮助，您可以点右上角 "Star" 支持一下 谢谢！
 
-## 本系统是前后端分离，下面分别是后端和前端的项目地址
-
-+  **CRMEB后端程序下载地址** 
-
-  + 码云:https://gitee.com/ZhongBangKeJi/CRMEB.git
-  
-  + github:https://github.com/crmeb/CRMEB
-
-+  **微信小程序版前端界面** 
-  
-   + github:https://github.com/crmeb/CRMEB_WechatApplet_v3.0
-  
-   + 码云：https://gitee.com/ZhongBangKeJi/CRMEB_WechatApplet_v3.0
-  
-+  **H5版前端界面** 
-  
-   + github:https://github.com/crmeb/CRMEB-H5-v3.0
-  
-   + 码云：https://gitee.com/ZhongBangKeJi/CRMEB-H5-v3.0
-
-## 很多人问为什么没有前端，上面这些就是哦！
+## 公众号、微信小程序、H5前端项目地址：
    
-### 帮助文档：
-https://help.crmeb.net/crmeb
-### 论坛地址:
-http://bbs.crmeb.net
+### 帮助文档：https://help.crmeb.net/crmeb
+### 论坛地址: http://bbs.crmeb.net
 
 ### QQ交流群: 710729856 <a target="_blank" href="//shang.qq.com/wpa/qunwpa?idkey=1794ec6e9fd6ac21bd6519d459d4495e824553693ab0a98a9899e61d68a494d0"><img border="0" src="//pub.idqqimg.com/wpa/images/group.png" alt="CRMEB微信开发四群" title="CRMEB微信开发四群"></a>
+###  演示地址
+   演示站后台:[<a href='http://demo.crmeb.net' target="_blank"> crmeb_v2.6 </a>]       
+<a href='http://demo.crmeb.net' target="_blank">http://demo.crmeb.net</a>
+   账号：demo
+   密码：crmeb.com
+   
+## 开源版使用须知
+1.允许用于个人学习、毕业设计、教学案例、公益事业;
+2.如果商用必须保留版权信息，请自觉遵守。开源版不合适商用，商用请购买商业版;
+3.禁止将本项目的代码和资源进行任何形式的出售，产生的一切任何后果责任由侵权者自负。
 
+##商业版与开源版差异
+
+
+
+
+### 商业版[<a href='https://s.click.taobao.com/W7hVkLw' target="_blank"> 去看看 </a>]
+
+[![输入图片说明](https://images.gitee.com/uploads/images/2019/0122/114739_a48f5bfd_892944.gif "tasheng jo(1).gif")](https://s.click.taobao.com/W7hVkLw)
+
+商业授权及定制服务版：http://www.crmeb.com
+
+![输入图片说明](https://images.gitee.com/uploads/images/2019/0302/165543_801cf1e6_892944.jpeg "二维码.jpg")
 ## 获得荣誉
 ![输入图片说明](https://images.gitee.com/uploads/images/2019/0805/111208_eb4fe823_892944.jpeg "WechatIMG2434.jpeg")
 
-##  演示地址
-   演示站后台:[<a href='http://demo25.crmeb.net' target="_blank"> crmeb_v2.6 </a>]       
-<a href='http://demo25.crmeb.net' target="_blank">http://demo26.crmeb.net</a>
-   账号：demo
-   密码：crmeb.com
 
-![输入图片说明](https://images.gitee.com/uploads/images/2019/0302/165543_801cf1e6_892944.jpeg "二维码.jpg")
 ## CRMEB推荐服务器配置
 
 <table><tr><td> 
@@ -89,16 +83,13 @@ CPU：2核
   </td></tr></table>
 
 
-
-
-
 ## 项目介绍
    CRMEB商城系统是基于ThinkPhp6.0+Vue+EasyWeChat 开发的一套新零售移动电商系统
     
    CRMEB系统就是集客户关系管理+营销电商系统，能够真正帮助企业基于微信公众号、小程序、wap、pc、app等，实现会员管理、数据分析,精准营销的电子商务管理系统。可满足企业新零售、批发、分销、预约、O2O、多店等各种业务需求
     
    CRMEB的优势:快速积累客户、会员数据分析、智能转化客户、有效提高销售、会员维护；
- 
+
 ## 技术亮点
 ~~~
     1.后台应用form-builder PHP快速生成现代化表单；
@@ -115,181 +106,137 @@ CPU：2核
     12.内置客服系统；
     13.高频数据缓存；
     14.数据备份和恢复；
-    15.前后端分离
-    16.一键安装；
+    15.后台文件管理，带代码高亮，无需开发工具在线编辑代码；
+    16.标准接口、前后端分离，二次开发更方便;
+    17.长连接减少CPU及内存使用及网络堵塞，减少请求响应时长；
+    18.无缝事件机制行为扩展更方便，方便二次开发；
+    19.支持队列降低流量高峰，解除耦合，高可用;
+    16.一键安装自动检查系统环境一键安装；
 ~~~
-## 功能
+## 系统功能
+- 产品管理
+    - 产品管理
+    - 一键采集
+    - 产品分类
+    - 开启拼团
+    - 开启分销
+    - 开启秒杀
+    - 产品规格
+    - 产品库存提醒
+    - 虚拟销量
+    - 产品统计分析
+    - 产品评价
+    - 产品海报
+- 订单管理
+    - 订单管理
+    - 售后管理
+    - 移动端订单管理
+    - 客服订单提醒
+    - 订单统计分析
+- 会员管理
+    - 会员管理
+    - 会员等级管理
+    - 会员等级条件配置
+    - 会员折扣
+    - 会员收藏
+    - 会员优惠券
+    - 会员聊天记录
+    - 收货地址管理
+    - 会员充值
+    - 会员余额
+    - 会员积分
+    - 购物车
+    - 会员RFM统计分析
+    - 会员签到
+    - 会员资金明细
+- 分销管理
+    - 分销管理
+    - 指定分销
+    - 人人分销
+    - 佣金设置
+    - 统计分析
+    - 申请提现
+    - 推广人排名
+    - 佣金排名
+- 商城配置
+    - 关键词
+    - 满额包邮
+    - 积分抵扣
+    - 警戒库存
+    - 到店核销
+    - 小票打印
+    - 短信提醒
+    - 物流追踪
+    - 模版消息提醒
+    - 后台订单语音提醒
+- 客服系统
+    - 客服添加
+    - 客服订单提醒、管理
+    - 客服接待
+- 上传配置
+    - 本地上传
+    - 七牛云
+    - 阿里云OSS
+    - 腾讯云COS
+- 营销活动
+    - 积分配置
+    - 优惠券配置
+    - 砍价活动
+    - 拼团活动
+    - 秒杀活动
+- 文章管理
+    - 内容管理
+    - 内容分类
+- 财务
+    - 提现申请处理
+    - 充值记录
+    - 资金记录
+    - 佣金记录
+- 数据统计分析（很详细就列几个大模块）
+    - 交易数据
+    - 营销数据
+    - 财务数据
+    - 会员数据
+    - 产品数据
+- 权限管理
+    - 权限规则管理
+    - 身份管理
+    - 管理员管理
+- 设置
+    - 菜单设置
+    - 物流配置
+    - 短信配置
+    - 应用管理
+        - 公众号
+            - 公众号菜单
+            - 公众号自动回复
+            - 公众号群发
+        - 小程序配置
+    - 物流配置
+    - 上传配置
+    - 打印机配置
+    - 支付配置
+    - 短信配置
+    - 缓存配置
+- 维护
+    - 系统日志
+    - 开发配置
+        - 配置分类灵活添加
+        - 组合数据各种数据模块
+    - 安全维护
+        - 文件校验
+        - 文件管理
+        - 数据库查看、优化、备份、恢复
+        - 系统缓存刷新
+        - 一键清除数据（用户数据、订单数据、产品数据、附件、内容）
 
-   1.商品: 能够对商品的状态分类管理 (出售中、待上架、库存中、已售馨、库存警戒、回收站)、添加产品、添加商品分类等功能
-   
-   2.会员:站内会员的管理 (发放优惠劵、发通知、发图文消息、增加余额、会员行为详情)、站内通知 、微信端用户管理 (微信用
-        户的管理、分组、行为观察、添加标签) 等功能
-        
-   3.营销:能够管理优惠的发放和制作、用户积分的统计使用情况、秒杀产品的管理等
-   
-   4.财务:能够对用户的消费、充值、返佣的记录
-   
-   5.订单:能够完成用户的订单管理(发货、订单详情、修改订单、订单备注、订单记录、订单退款) 、售后服务 (评论的回复与删除)
-   
-   6.分销:后台有分销统计管理，分销可以设置人人分销和指定人分销，也可以自己稍微开发一下修改规则，例如下单后成为分销等
-
-   7.数据统计图表统计分析(财务统计、产品统计、会员统计、营销统计、分销统计、交易统计等)
-   
-   8.设置:能够完成管理员对网站的商品资料（添加大类、添加小类、商品添加、属性快速生成、商品审查）、商品交易（外理订单、发货查询）、会员管理（会员审查）、操作管理（管理员添加、管理员审查、管理员退出）、系统配置、后台通知等功能
-        
-   9.内容:管理文章分类 (添加分类、删除分类、修改分类) 、 管理文章
-   
-   10.维护:查看系统日志、文件变动效验、刷新网站缓存、在线更新系统、清除数据、文件管理等功能
-
-   11.权限管理：可以创建不同身份，不同管理员，同一个管理员可以拥有多重身份，权限可以控制到每一个控制器函数，例如：张三
-    1.可以控制他可以查看产品，但不能编辑产品；
-    2.可以添加产品，但不能删除产品；
-    3.可以查看用户但不能给用户发信息、加积分、开通分销等等；
-    。。。灵活应用，权限想怎么配就怎么配
-
-CRMEB 3.0
-===============
-
-> 运行环境要求PHP7.1+。
-
-## 主要特性
-
-### 开源无加密
-源码开源无加密，有详细的代码注释，有完整系统手册...
-### TP6框架
-使用最新的 ThinkPHP 6.0框架开发
-### 前端采用Vue CLI框架
-前端使用Vue CLI框架nodejs打包，页面加载更流畅，用户体验更好
-### 标准接口
-标准接口、前后端分离，二次开发更方便
-### 支持队列
-降低流量高峰，解除耦合，高可用
-### 长连接
-减少CPU及内存使用及网络堵塞，减少请求响应时长
-### 无缝事件机制
-行为扩展更方便，方便二次开发
-### 后台快速生成表单
-后台应用form-builder 无需写页面快速增删改查
-### 数据表格导出
-PHPExcel数据导出,导出表格更加美观可视；
-### 数据统计分析
-后台使用ECharts图表统计，实现用户、产品、订单、资金等统计分析
-### 强大的后台权限管理
-后台多种角色、多重身份权限管理，权限可以控制到每一步操作
-### 一件安装
-自动检查系统环境一键安装
-
-## 安装
-
-## 一键安装
-上传你的代码，站点入口目录设置/public
-在浏览器中输入你的域名或IP（例如：www.yourdomain.com）,
-安装程序会自动执行安装。期间系统会提醒你输入数据库信息以完成安装，安装完成后建议删除install目录下index.php文件或将其改名。
-
-后台访问地址：
-1.域名/admin
-2.域名/index.php/admin
-3.域名/index.php?s=/admin
-公众号和H5首页访问地址：
-1.域名/
-提示：正常访问是第一中模式，第一种访问不了请检测[URL重写](http://help.crmeb.net/895486)是否配置好
-安装过程中请牢记您的账号密码！
-
-## 重新安装
-1. 清除数据库
-2. 删除/public/install/install.lock 文件
-
-## 手动安装
-1.创建数据库，倒入数据库文件
-数据库文件目录/public/install/crmeb.sql
-2.修改数据库连接文件
-配置文件路径/.env
-~~~
-APP_DEBUG = true
-
-[APP]
-DEFAULT_TIMEZONE = Asia/Shanghai
-
-[DATABASE]
-TYPE = mysql
-HOSTNAME = 127.0.0.1 #数据库连接地址
-DATABASE = test #数据库名称
-USERNAME = username #数据库登录账号
-PASSWORD = password #数据库登录密码
-HOSTPORT = 3306 #数据库端口
-CHARSET = utf8
-DEBUG = true
-
-[LANG]
-default_lang = zh-cn
-~~~
-3.修改目录权限（linux系统）777
-/public
-/runtime
-4.后台登录：
-http://域名/admin
-默认账号：admin 密码：crmeb.com
-
-## 定时任务
-在自动收货,库存预警等功能使用到
-```sh
-php think timer [ status ] [ --d ]
-```
-参数
-- status: 状态
-    - start: 启动
-    - stop: 关闭
-    - restart: 重启
-- --d : 后台执行
-## 长连接服务
-在h5聊天,后台管理员消息通知等功能使用到
-```sh
-php think workerman [ status ] [ server ] [ --d ]
-```
-windows环境下需要分三步执行
-```sh
-# 内部通讯服务
-php think workerman start channel
-# h5端聊天服务
-php think workerman start chat
-# 后台管理员通知
-php think workerman start admin
-```
-参数
-- status: 状态
-    - start: 启动
-    - stop: 关闭
-    - restart: 重启
-- server: 服务 (windows)
-    - channel: 内部通讯
-    - chat: h5
-    - admin: 后台
-
-- --d : 后台执行
 
 ## 文档
 
 [使用手册](https://help.crmeb.net)
+[安装说明](https://help.crmeb.net)
+[前端下载](https://help.crmeb.net)
 [TP6开发手册](https://www.kancloud.cn/manual/thinkphp6_0/content)
-
-
-## 参与开发
-
-请参阅 [CRMEB](https://github.com/crmeb/CRMEB)。
-
-## 商业版
-
-超值商业版:
-
-CRMEB微信公众号、小程序、H5打通v3.0版：除了以上功能还带砍价、拼团功能，永久免费升级提供升级包
-
-还有定制开发服务，例如：预约系统、O2O、付费阅读、多店版、多商家版
-
-### 商业版[<a href='https://s.click.taobao.com/W7hVkLw' target="_blank"> 去看看 </a>]
-
-[![输入图片说明](https://images.gitee.com/uploads/images/2019/0122/114739_a48f5bfd_892944.gif "tasheng jo(1).gif")](https://s.click.taobao.com/W7hVkLw)
-
-商业授权及定制服务版：http://www.crmeb.com
 
 
 ##  系统组件开源项目
@@ -299,24 +246,12 @@ CRMEB微信公众号、小程序、H5打通v3.0版：除了以上功能还带砍
 tp5 PHP表单生成器，快速生成现代化的form表单。包含复选框、单选框、输入框、下拉选择框等元素以及,省市区三级联动,时间选择,日期选择,颜色选择,文件/图片上传等功能。
 form-builder : https://github.com/xaboy/form-builder
 
+## 参与开发
+
+请参阅 [CRMEB](https://gitee.com/ZhongBangKeJi/CRMEB)。
+
 ## 特别鸣谢
-感谢以下的项目,排名不分先后
 
-ThinkPHP：http://www.thinkphp.cn
-
-Bootstrap：http://getbootstrap.com
-
-jQuery：http://jquery.com
-
-iView：https://www.iviewui.com
-
-Vue：https://cn.vuejs.org/
-
-font-awesome： https://fontawesome.com/?from=io
-
-requirejs： http://requirejs.org/
-
-umeditor：http://ueditor.baidu.com/website/umeditor.html
 
 
 ## 版权信息
