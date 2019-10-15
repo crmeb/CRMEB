@@ -37,30 +37,27 @@
 - - -
 
 ### QQ交流群
- :checkered_flag: CRMEB微信开发4群:710729856 <a target="_blank" href="//shang.qq.com/wpa/qunwpa?idkey=1794ec6e9fd6ac21bd6519d459d4495e824553693ab0a98a9899e61d68a494d0"><img border="0" src="//pub.idqqimg.com/wpa/images/group.png" alt="CRMEB微信开发四群" title="CRMEB微信开发四群"></a>
+    :tw-1f427:  CRMEB微信开发4群:710729856 <a target="_blank" href="//shang.qq.com/wpa/qunwpa?idkey=1794ec6e9fd6ac21bd6519d459d4495e824553693ab0a98a9899e61d68a494d0"><img border="0" src="//pub.idqqimg.com/wpa/images/group.png" alt="CRMEB微信开发四群" title="CRMEB微信开发四群"></a>
 |CRMEB微信开发3群:69741389<a target="_blank" href="//shang.qq.com/wpa/qunwpa?idkey=a8d2235bd79d65ea465e43ed81001d0641f875675ab80051118a43cfc468cbaa"><img border="0" src="//pub.idqqimg.com/wpa/images/group.png" alt="CRMEB微信开发3群" title="CRMEB微信开发3群"></a>
 ###  前后台演示
 ![前端演示](/readme/images/演示二维码.jpg)
 
- :tw-1f525: 演示站后台:[<a href='http://demo.crmeb.net' target="_blank"> 查看 </a>]       
-<a href='http://demo.crmeb.net' target="_blank">http://demo.crmeb.net</a>
-   账号：demo
-   密码：crmeb.com
+ :tw-1f525::tw-1f525::tw-1f525:演示站后台:[<a href='http://demo.crmeb.net' target="_blank"> 查看 </a>]       <a href='http://demo.crmeb.net' target="_blank">http://demo.crmeb.net</a>  账号：demo  密码：crmeb.com
    
-### 开源版使用须知
+###   :tw-1f50a: 开源版使用须知
 1.允许用于个人学习、毕业设计、教学案例、公益事业;
 
 2.如果商用必须保留版权信息，请自觉遵守。开源版不合适商用，商用请购买商业版;
 
 3.禁止将本项目的代码和资源进行任何形式的出售，产生的一切任何后果责任由侵权者自负。
 
-### 商业版与开源版差异
+### 商业版与 :tw-1f19a: 源版差异
 
 <table>
 <tr><td>开源版</td><td>商业版</td><td>官方小程序购买商业版</td></tr>
 <tr>
-<td>不适合商用<br>无拼团<br> 无砍价<br> 无移动端订单管理<br> 不提供更新包<br> 普通群<br> 论坛普通会员<br> 无授权证书<br> 其它产品无折扣<br> 无技术服务<br> 无节日素材</td>
-<td>适合商用<br> 带拼团<br> 带砍价<br> 带移动端订单管理<br> 提供更新包<br> VIP群<br> 论坛VIP会员<br> 有授权证书<br> 购买其它产品会员价<br> 有技术服务<br> 提供节日素材</td>
+<td> 不适合商用<br>无拼团<br> 无砍价<br> 无移动端订单管理<br> 不提供更新包<br> 普通群<br> 论坛普通会员<br> 无授权证书<br> 其它产品无折扣<br> 无技术服务<br> 无节日素材</td>
+<td> 适合商用<br> 带拼团<br> 带砍价<br> 带移动端订单管理<br> 提供更新包<br> VIP群<br> 论坛VIP会员<br> 有授权证书<br> 购买其它产品会员价<br> 有技术服务<br> 提供节日素材</td>
 <td><img src='/readme/images/官方小程序二维码.jpg'/></td>
 </tr>
 </table>
