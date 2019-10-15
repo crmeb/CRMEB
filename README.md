@@ -101,7 +101,22 @@ CPU：2核
 ```
 <a href="https://promotion.aliyun.com/ntms/yunparter/invite.html?userCode=dligum2z">查看服务器详情</a>
 
-  </td></tr></table>
+  </td>
+  <td>
+
+企业级配置
+```
+CPU：4核
+内存：8G
+实例规格：突发性能t6实例
+带宽：5M
+系统：CentOS 7.4 64位(推荐)
+价格：2786.64元/年 5389.20 元/三年
+```
+<a href="https://promotion.aliyun.com/ntms/yunparter/invite.html?userCode=dligum2z">查看服务器详情</a>
+
+  </td>
+  </tr></table>
 
 
 ## 项目介绍
