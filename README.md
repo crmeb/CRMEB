@@ -44,7 +44,55 @@
 
 ####   :fire:  演示站后台:[<a href='http://demo.crmeb.net' target="_blank"> 查看 </a>]       
 <a href='http://demo.crmeb.net' target="_blank">http://demo.crmeb.net</a>  账号：demo  密码：crmeb.com
-   
+
+### CRMEB推荐阿里云服务器配置
+
+阿里云领取2000元代金劵：[<a href="https://promotion.aliyun.com/ntms/yunparter/invite.html?userCode=dligum2z">htts://www.aliyun.com</a>]
+ 
+ <table><tr><td> 
+ 
+ 入门级配置
+ ```
+ CPU：1核
+ 内存：1G
+ 实例规格：突发性能t5实例
+ 带宽：1M
+ 系统：CentOS 7.4 64位(推荐)
+ 价格：366元/年 933.3元/三年
+ ```
+ <a href="https://promotion.aliyun.com/ntms/yunparter/invite.html?userCode=dligum2z">学生9.5/月</a>
+   </td>
+ <td>
+ 
+ 标准级配置
+ ```
+ CPU：2核
+ 内存：4G
+ 实例规格：突发性能t5实例
+ 带宽：2M
+ 系统：CentOS 7.4 64位(推荐)
+ 价格：936元/年 2386.8元/三年
+ ```
+ <a href="https://promotion.aliyun.com/ntms/yunparter/invite.html?userCode=dligum2z">新用户半价</a>
+ 
+   </td>
+   <td>
+ 
+ 企业级配置
+ ```
+ CPU：4核
+ 内存：8G
+ 实例规格：突发性能t6实例
+ 带宽：5M
+ 系统：CentOS 7.4 64位(推荐)
+ 价格：2786.64元/年 5389.20元/三年
+ ```
+ <a href="https://promotion.aliyun.com/ntms/yunparter/invite.html?userCode=dligum2z">领取￥2000红包</a>
+ 
+   </td>
+   </tr></table>
+ 
+
 ###   :tw-1f50a: 开源版使用须知
 1.允许用于个人学习、毕业设计、教学案例、公益事业;
 
@@ -63,8 +111,6 @@
 </tr>
 </table>
 
-
-
 ### 商业版[<a href='https://s.click.taobao.com/W7hVkLw' target="_blank"> 去看看 </a>]
 
 [![输入图片说明](https://images.gitee.com/uploads/images/2019/0122/114739_a48f5bfd_892944.gif "tasheng jo(1).gif")](https://s.click.taobao.com/W7hVkLw)
@@ -72,54 +118,6 @@
 
 商业授权及定制服务版：http://www.crmeb.com
 
-### 获得荣誉
-![输入图片说明](https://images.gitee.com/uploads/images/2019/0805/111208_eb4fe823_892944.jpeg "WechatIMG2434.jpeg")
-
-
-### CRMEB推荐阿里云服务器配置
-
-<table><tr><td> 
-
-入门级配置
-```
-CPU：1核
-内存：1G
-实例规格：突发性能t5实例
-带宽：1M
-系统：CentOS 7.4 64位(推荐)
-价格：366元/年 933.3元/三年
-```
-<a href="https://promotion.aliyun.com/ntms/yunparter/invite.html?userCode=dligum2z">学生9.5/月</a>
-  </td>
-<td>
-
-标准级配置
-```
-CPU：2核
-内存：4G
-实例规格：突发性能t5实例
-带宽：2M
-系统：CentOS 7.4 64位(推荐)
-价格：936元/年 2386.8元/三年
-```
-<a href="https://promotion.aliyun.com/ntms/yunparter/invite.html?userCode=dligum2z">新用户半价</a>
-
-  </td>
-  <td>
-
-企业级配置
-```
-CPU：4核
-内存：8G
-实例规格：突发性能t6实例
-带宽：5M
-系统：CentOS 7.4 64位(推荐)
-价格：2786.64元/年 5389.20元/三年
-```
-<a href="https://promotion.aliyun.com/ntms/yunparter/invite.html?userCode=dligum2z">领取￥2000红包</a>
-
-  </td>
-  </tr></table>
 
 
 
@@ -163,6 +161,9 @@ CPU：4核
 ![后台权限管理](/readme/images/后台权限管理.png "后台权限管理.png")
 ![后台数据备份](/readme/images/后台数据备份.png "后台数据备份.png")
 ![后台文件管理](/readme/images/后台文件管理.png "后台文件管理.png")
+
+### 获得荣誉
+![输入图片说明](https://images.gitee.com/uploads/images/2019/0805/111208_eb4fe823_892944.jpeg "WechatIMG2434.jpeg")
 
 ###  系统组件开源项目
 
