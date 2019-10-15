@@ -19,11 +19,12 @@
 <p align="center">    
     <b>如果对您有帮助，您可以点右上角 "Star" 支持一下 谢谢！</b>
 </p>
+
 ## 项目介绍
    CRMEB商城系统是基于ThinkPhp6.0+Vue开发的一套新零售移动电商系统，CRMEB系统就是集客户关系管理+营销电商系统，能够快速积累客户、会员数据分析、智能转化客户、
    有效提高销售、会员维护、网络营销的一款企业应用，包含商城、拼团、砍价、秒杀、优惠券、积分、分销等功能，更适合企业二次开发；
 
-## 导航栏目
+### 导航栏目
 
 [前端下载](/readme/前端下载地址.md)
  | [使用手册](https://help.crmeb.net)
@@ -33,24 +34,27 @@
  | [TP6开发手册](https://www.kancloud.cn/manual/thinkphp6_0/content)
  | [服务器](https://promotion.aliyun.com/ntms/yunparter/invite.html?userCode=dligum2z)
  | [授权价格](https://s.click.taobao.com/W7hVkLw)
+- - -
 
-
-### CRMEB交流4群: 710729856 <a target="_blank" href="//shang.qq.com/wpa/qunwpa?idkey=1794ec6e9fd6ac21bd6519d459d4495e824553693ab0a98a9899e61d68a494d0"><img border="0" src="//pub.idqqimg.com/wpa/images/group.png" alt="CRMEB微信开发四群" title="CRMEB微信开发四群"></a>
-##  演示
+### QQ交流群
+CRMEB微信开发4群:710729856 <a target="_blank" href="//shang.qq.com/wpa/qunwpa?idkey=1794ec6e9fd6ac21bd6519d459d4495e824553693ab0a98a9899e61d68a494d0"><img border="0" src="//pub.idqqimg.com/wpa/images/group.png" alt="CRMEB微信开发四群" title="CRMEB微信开发四群"></a>
+|CRMEB微信开发3群:69741389<a target="_blank" href="//shang.qq.com/wpa/qunwpa?idkey=a8d2235bd79d65ea465e43ed81001d0641f875675ab80051118a43cfc468cbaa"><img border="0" src="//pub.idqqimg.com/wpa/images/group.png" alt="CRMEB微信开发3群" title="CRMEB微信开发3群"></a>
+###  前后台演示
 ![前端演示](/readme/images/演示二维码.jpg)
+
    演示站后台:[<a href='http://demo.crmeb.net' target="_blank"> 查看 </a>]       
 <a href='http://demo.crmeb.net' target="_blank">http://demo.crmeb.net</a>
    账号：demo
    密码：crmeb.com
    
-## 开源版使用须知
+### 开源版使用须知
 1.允许用于个人学习、毕业设计、教学案例、公益事业;
 
 2.如果商用必须保留版权信息，请自觉遵守。开源版不合适商用，商用请购买商业版;
 
 3.禁止将本项目的代码和资源进行任何形式的出售，产生的一切任何后果责任由侵权者自负。
 
-## 商业版与开源版差异
+### 商业版与开源版差异
 |     开源版     |      商业版      |
 | --- | --- |
 |   不适合商用  |  适合商用   |
@@ -75,11 +79,11 @@
 
 商业授权及定制服务版：http://www.crmeb.com
 
-## 获得荣誉
+### 获得荣誉
 ![输入图片说明](https://images.gitee.com/uploads/images/2019/0805/111208_eb4fe823_892944.jpeg "WechatIMG2434.jpeg")
 
 
-## CRMEB推荐阿里云服务器配置
+### CRMEB推荐阿里云服务器配置
 
 <table><tr><td> 
 
@@ -126,7 +130,7 @@ CPU：4核
 
 
 
-## 技术亮点
+### 技术亮点
 ~~~
     1.后台应用form-builder PHP快速生成现代化表单；
     2.前端以Vue + RequireJS模块化开发；
@@ -149,7 +153,7 @@ CPU：4核
     19.支持队列降低流量高峰，解除耦合，高可用;
     16.一键安装自动检查系统环境一键安装；
 ~~~
-## 系统功能
+### 系统功能
 - 产品管理
     - 产品管理
     - 一键采集
@@ -266,30 +270,28 @@ CPU：4核
         - 系统缓存刷新
         - 一键清除数据（用户数据、订单数据、产品数据、附件、内容）
 
-## 页面展示
+### 页面展示
 ![展示图](/readme/images/展示图_01.jpg "展示图.png")
-![展示图](/readme/images/展示图_02.png "展示图.png")
-![展示图](/readme/images/展示图_03.png "展示图.png")
+![展示图](/readme/images/展示图_02.jpg "展示图.png")
+![展示图](/readme/images/展示图_03.jpg "展示图.png")
 ![后台首页](/readme/images/后台首页.png "后台首页.png")
 
-##  系统组件开源项目
+###  系统组件开源项目
 
 #### form-builder
 
 tp5 PHP表单生成器，快速生成现代化的form表单。包含复选框、单选框、输入框、下拉选择框等元素以及,省市区三级联动,时间选择,日期选择,颜色选择,文件/图片上传等功能。
 form-builder : https://github.com/xaboy/form-builder
 
-## 参与开发
+### 参与开发
 
 请提交 [CRMEB](https://gitee.com/ZhongBangKeJi/CRMEB/pulls)。
 
-## 特别鸣谢
+### 特别鸣谢
 [samoye](https://gitee.com/yizhisamoye)
  | [Stone Bai](https://gitee.com/bys1123)
 
-
-## 版权信息
-
+### 版权信息
 
 本项目包含的第三方源码和二进制文件之版权信息另行标注。
 
