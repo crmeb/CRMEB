@@ -22,9 +22,9 @@
 
 ## 导航栏目
 
-[使用手册](https://help.crmeb.net)
+[前端下载](/readme/前端下载地址.md)
+ | [使用手册](https://help.crmeb.net)
  | [安装说明](/readme/安装说明.md)
- | [前端下载](/readme/前端下载地址.md)
  | [论坛地址](http://bbs.crmeb.net)
  | [官网地址](https://www.crmeb.com)
  | [TP6开发手册](https://www.kancloud.cn/manual/thinkphp6_0/content)
