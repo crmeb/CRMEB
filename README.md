@@ -22,10 +22,10 @@
 ## 文档
 
 [使用手册](https://help.crmeb.net)
-[安装说明](/readme/安装说明.md)
-[前端下载](/readme/前端下载地址.md)
-[论坛地址](http://bbs.crmeb.net)
-[TP6开发手册](https://www.kancloud.cn/manual/thinkphp6_0/content)
+ | [安装说明](/readme/安装说明.md)
+ | [前端下载](/readme/前端下载地址.md)
+ | [论坛地址](http://bbs.crmeb.net)
+ | [TP6开发手册](https://www.kancloud.cn/manual/thinkphp6_0/content)
 
 
 ### QQ交流群: 710729856 <a target="_blank" href="//shang.qq.com/wpa/qunwpa?idkey=1794ec6e9fd6ac21bd6519d459d4495e824553693ab0a98a9899e61d68a494d0"><img border="0" src="//pub.idqqimg.com/wpa/images/group.png" alt="CRMEB微信开发四群" title="CRMEB微信开发四群"></a>
