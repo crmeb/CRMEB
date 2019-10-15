@@ -272,8 +272,8 @@ CPU：4核
 
 ### 页面展示
 ![展示图](/readme/images/展示图_01.jpg "展示图.png")
-![展示图](/readme/images/展示图_02.png "展示图.png")
-![展示图](/readme/images/展示图_03.png "展示图.png")
+![展示图](/readme/images/展示图_02.jpg "展示图.png")
+![展示图](/readme/images/展示图_03.jpg "展示图.png")
 ![后台首页](/readme/images/后台首页.png "后台首页.png")
 ![后台产品管理](/readme/images/后台产品管理.png "后台产品管理.png")
 ![后台订单管理](/readme/images/后台订单管理.png "后台订单管理.png")
