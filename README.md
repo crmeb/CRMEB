@@ -102,14 +102,8 @@
 
 ### 商业版与 :tw-1f19a: 源版差异
 
-<table>
-<tr><td>开源版</td><td>商业版</td><td>官方小程序购买商业版</td></tr>
-<tr>
-<td> 不适合商用<br>无拼团<br> 无砍价<br> 无移动端订单管理<br> 不提供更新包<br> 普通群<br> 论坛普通会员<br> 无授权证书<br> 其它产品无折扣<br> 无技术服务<br> 无节日素材</td>
-<td> 适合商用<br> 带拼团<br> 带砍价<br> 带移动端订单管理<br> 提供更新包<br> VIP群<br> 论坛VIP会员<br> 有授权证书<br> 购买其它产品会员价<br> 有技术服务<br> 提供节日素材</td>
-<td><img src='/readme/images/官方小程序二维码.jpg'/></td>
-</tr>
-</table>
+![系统功能](/readme/images/商业版对比.jpg)
+
 
 ### 商业版[<a href='https://s.click.taobao.com/W7hVkLw' target="_blank"> 去看看 </a>]
 
