@@ -15,17 +15,19 @@
      <a href="https://gitee.com/ZhongBangKeJi/CRMEB/repository/archive/master.zip">
         <img src="https://img.shields.io/badge/download-80m-red.svg" />
     </a>
+    <b>如果对您有帮助，您可以点右上角 "Star" 支持一下 谢谢！</b>
 </p>
 
-### 如果对您有帮助，您可以点右上角 "Star" 支持一下 谢谢！
-
-## 文档
+## 导航栏目
 
 [使用手册](https://help.crmeb.net)
  | [安装说明](/readme/安装说明.md)
  | [前端下载](/readme/前端下载地址.md)
  | [论坛地址](http://bbs.crmeb.net)
+ | [官网地址](https://www.crmeb.com)
  | [TP6开发手册](https://www.kancloud.cn/manual/thinkphp6_0/content)
+ | [服务器](https://promotion.aliyun.com/ntms/yunparter/invite.html?userCode=dligum2z)
+ | [授权价格](https://s.click.taobao.com/W7hVkLw)
 
 
 ### QQ交流群: 710729856 <a target="_blank" href="//shang.qq.com/wpa/qunwpa?idkey=1794ec6e9fd6ac21bd6519d459d4495e824553693ab0a98a9899e61d68a494d0"><img border="0" src="//pub.idqqimg.com/wpa/images/group.png" alt="CRMEB微信开发四群" title="CRMEB微信开发四群"></a>
