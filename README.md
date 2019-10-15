@@ -37,19 +37,19 @@
 3.禁止将本项目的代码和资源进行任何形式的出售，产生的一切任何后果责任由侵权者自负。
 
 ##商业版与开源版差异
-|  商业版   |  开源版   |
+|     开源版     |      商业版      |
 | --- | --- |
-|   适合商用  |  不适合商用   |
-|   有拼团  |  无拼团  |
-|   有砍价  |  无砍价   |
-|   有移动端订单管理  |  无移动端订单管理    |
-|   提供更新包  |  不提供更新包   |
-|   会员群  |  普通群   |
-|   论坛VIP会员  |  论坛普通会员   |
-|   授权证书  |  无授权证书   |
-|   购买其它产品会员价  |  其它产品无折扣   |
-|   技术服务  |  无技术服务   |
-|   节日素材  |  无节日素材   |
+|   不适合商用  |  适合商用   |
+|   无拼团  |  带拼团  |
+|   无砍价  |  带砍价   |
+|   无移动端订单管理  |  带移动端订单管理    |
+|   不提供更新包  |  提供更新包   |
+|   普通群  |  VIP群   |
+|   论坛普通会员  |  论坛VIP会员   |
+|   无授权证书  |  有授权证书   |
+|   其它产品无折扣  |  购买其它产品会员价   |
+|   无技术服务  |  有技术服务   |
+|   无节日素材  |  提供节日素材   |
 
 
 ### 商业版[<a href='https://s.click.taobao.com/W7hVkLw' target="_blank"> 去看看 </a>]
@@ -57,7 +57,7 @@
 [![输入图片说明](https://images.gitee.com/uploads/images/2019/0122/114739_a48f5bfd_892944.gif "tasheng jo(1).gif")](https://s.click.taobao.com/W7hVkLw)
 
 商业授权及定制服务版：http://www.crmeb.com
-
+![后台首页](/readme/images/后台首页.png)
 ![输入图片说明](https://images.gitee.com/uploads/images/2019/0302/165543_801cf1e6_892944.jpeg "二维码.jpg")
 ## 获得荣誉
 ![输入图片说明](https://images.gitee.com/uploads/images/2019/0805/111208_eb4fe823_892944.jpeg "WechatIMG2434.jpeg")
@@ -263,7 +263,8 @@ form-builder : https://github.com/xaboy/form-builder
 请参阅 [CRMEB](https://gitee.com/ZhongBangKeJi/CRMEB)。
 
 ## 特别鸣谢
-
+[samoye](https://gitee.com/yizhisamoye)
+[Stone Bai](https://gitee.com/bys1123)
 
 
 ## 版权信息
