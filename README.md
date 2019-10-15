@@ -19,6 +19,9 @@
 <p align="center">    
     <b>如果对您有帮助，您可以点右上角 "Star" 支持一下 谢谢！</b>
 </p>
+## 项目介绍
+   CRMEB商城系统是基于ThinkPhp6.0+Vue开发的一套新零售移动电商系统，CRMEB系统就是集客户关系管理+营销电商系统，能够快速积累客户、会员数据分析、智能转化客户、
+   有效提高销售、会员维护、网络营销的一款企业应用，包含商城、拼团、砍价、秒杀、优惠券、积分、分销等功能，更适合企业二次开发；
 
 ## 导航栏目
 
@@ -32,8 +35,9 @@
  | [授权价格](https://s.click.taobao.com/W7hVkLw)
 
 
-### QQ交流群: 710729856 <a target="_blank" href="//shang.qq.com/wpa/qunwpa?idkey=1794ec6e9fd6ac21bd6519d459d4495e824553693ab0a98a9899e61d68a494d0"><img border="0" src="//pub.idqqimg.com/wpa/images/group.png" alt="CRMEB微信开发四群" title="CRMEB微信开发四群"></a>
-###  演示地址
+### CRMEB交流4群: 710729856 <a target="_blank" href="//shang.qq.com/wpa/qunwpa?idkey=1794ec6e9fd6ac21bd6519d459d4495e824553693ab0a98a9899e61d68a494d0"><img border="0" src="//pub.idqqimg.com/wpa/images/group.png" alt="CRMEB微信开发四群" title="CRMEB微信开发四群"></a>
+##  演示
+![前端演示](/readme/演示二维码.jpg)
    演示站后台:[<a href='http://demo.crmeb.net' target="_blank"> 查看 </a>]       
 <a href='http://demo.crmeb.net' target="_blank">http://demo.crmeb.net</a>
    账号：demo
@@ -65,6 +69,9 @@
 ### 商业版[<a href='https://s.click.taobao.com/W7hVkLw' target="_blank"> 去看看 </a>]
 
 [![输入图片说明](https://images.gitee.com/uploads/images/2019/0122/114739_a48f5bfd_892944.gif "tasheng jo(1).gif")](https://s.click.taobao.com/W7hVkLw)
+
+### 官方小程序购买商业版
+![官方小程序二维码.jpg](/readme/images/官方小程序二维码.jpg)
 
 商业授权及定制服务版：http://www.crmeb.com
 
@@ -119,12 +126,6 @@ CPU：4核
   </tr></table>
 
 
-## 项目介绍
-   CRMEB商城系统是基于ThinkPhp6.0+Vue+EasyWeChat 开发的一套新零售移动电商系统
-    
-   CRMEB系统就是集客户关系管理+营销电商系统，能够真正帮助企业基于微信公众号、小程序、wap、pc、app等，实现会员管理、数据分析,精准营销的电子商务管理系统。可满足企业新零售、批发、分销、预约、O2O、多店等各种业务需求
-    
-   CRMEB的优势:快速积累客户、会员数据分析、智能转化客户、有效提高销售、会员维护；
 
 ## 技术亮点
 ~~~
@@ -266,7 +267,10 @@ CPU：4核
         - 系统缓存刷新
         - 一键清除数据（用户数据、订单数据、产品数据、附件、内容）
 
-## 后台页面展示
+## 页面展示
+![展示图](/readme/images/展示图_01.jpg "展示图.png")
+![展示图](/readme/images/展示图_02.png "展示图.png")
+![展示图](/readme/images/展示图_03.png "展示图.png")
 ![后台首页](/readme/images/后台首页.png "后台首页.png")
 
 ##  系统组件开源项目
