@@ -16,7 +16,7 @@
         <img src="https://img.shields.io/badge/download-80m-red.svg" />
     </a>
     </p>
-<p>    
+<p align="center">    
     <b>如果对您有帮助，您可以点右上角 "Star" 支持一下 谢谢！</b>
 </p>
 
@@ -263,7 +263,7 @@ form-builder : https://github.com/xaboy/form-builder
 
 ## 参与开发
 
-请参阅 [CRMEB](https://gitee.com/ZhongBangKeJi/CRMEB/pulls)。
+请提交 [CRMEB](https://gitee.com/ZhongBangKeJi/CRMEB/pulls)。
 
 ## 特别鸣谢
 [samoye](https://gitee.com/yizhisamoye)
