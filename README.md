@@ -55,7 +55,7 @@ CRMEB微信开发4群:710729856 <a target="_blank" href="//shang.qq.com/wpa/qunw
 3.禁止将本项目的代码和资源进行任何形式的出售，产生的一切任何后果责任由侵权者自负。
 
 ### 商业版与开源版差异
-![商业版对比](/readme/images/商业版对比.jpg)
+
 <table>
 <tr><td>开源版</td><td>商业版</td><td>官方小程序购买商业版</td></tr>
 <tr>
@@ -71,8 +71,6 @@ CRMEB微信开发4群:710729856 <a target="_blank" href="//shang.qq.com/wpa/qunw
 
 [![输入图片说明](https://images.gitee.com/uploads/images/2019/0122/114739_a48f5bfd_892944.gif "tasheng jo(1).gif")](https://s.click.taobao.com/W7hVkLw)
 
-### 官方小程序购买商业版
-![官方小程序二维码.jpg](/readme/images/官方小程序二维码.jpg)
 
 商业授权及定制服务版：http://www.crmeb.com
 
