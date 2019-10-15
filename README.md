@@ -73,7 +73,7 @@
 ![输入图片说明](https://images.gitee.com/uploads/images/2019/0805/111208_eb4fe823_892944.jpeg "WechatIMG2434.jpeg")
 
 
-## CRMEB推荐服务器配置
+## CRMEB推荐阿里云服务器配置
 
 <table><tr><td> 
 
@@ -86,7 +86,7 @@ CPU：1核
 系统：CentOS 7.4 64位(推荐)
 价格：366元/年 933.3 元/三年
 ```
-<a href="https://promotion.aliyun.com/ntms/yunparter/invite.html?userCode=dligum2z">查看服务器详情</a>
+<a href="https://promotion.aliyun.com/ntms/yunparter/invite.html?userCode=dligum2z">学生9.5/月</a>
   </td>
 <td>
 
@@ -99,7 +99,7 @@ CPU：2核
 系统：CentOS 7.4 64位(推荐)
 价格：936元/年 2386.8 元/三年
 ```
-<a href="https://promotion.aliyun.com/ntms/yunparter/invite.html?userCode=dligum2z">查看服务器详情</a>
+<a href="https://promotion.aliyun.com/ntms/yunparter/invite.html?userCode=dligum2z">新用户半价</a>
 
   </td>
   <td>
@@ -113,7 +113,7 @@ CPU：4核
 系统：CentOS 7.4 64位(推荐)
 价格：2786.64元/年 5389.20 元/三年
 ```
-<a href="https://promotion.aliyun.com/ntms/yunparter/invite.html?userCode=dligum2z">查看服务器详情</a>
+<a href="https://promotion.aliyun.com/ntms/yunparter/invite.html?userCode=dligum2z">最高￥2000红包</a>
 
   </td>
   </tr></table>
