@@ -272,9 +272,18 @@ CPU：4核
 
 ### 页面展示
 ![展示图](/readme/images/展示图_01.jpg "展示图.png")
-![展示图](/readme/images/展示图_02.jpg "展示图.png")
-![展示图](/readme/images/展示图_03.jpg "展示图.png")
+![展示图](/readme/images/展示图_02.png "展示图.png")
+![展示图](/readme/images/展示图_03.png "展示图.png")
 ![后台首页](/readme/images/后台首页.png "后台首页.png")
+![后台产品管理](/readme/images/后台产品管理.png "后台产品管理.png")
+![后台订单管理](/readme/images/后台订单管理.png "后台订单管理.png")
+![后台订单统计](/readme/images/后台订单统计.png "后台订单统计.png")
+![后台公众号菜单管理](/readme/images/后台公众号菜单管理.png "后台公众号菜单管理.png")
+![后台财务报表](/readme/images/后台财务报表.png "后台财务报表.png")
+![后台用户统计](/readme/images/后台用户统计.png "后台用户统计.png")
+![后台权限管理](/readme/images/后台权限管理.png "后台权限管理.png")
+![后台数据备份](/readme/images/后台数据备份.png "后台数据备份.png")
+![后台文件管理](/readme/images/后台文件管理.png "后台文件管理.png")
 
 ###  系统组件开源项目
 
