@@ -19,14 +19,18 @@
 
 ### 如果对您有帮助，您可以点右上角 "Star" 支持一下 谢谢！
 
-## 公众号、微信小程序、H5前端项目地址：
-   
-### 帮助文档：https://help.crmeb.net/crmeb
-### 论坛地址: http://bbs.crmeb.net
+## 文档
+
+[使用手册](https://help.crmeb.net)
+[安装说明](/readme/安装说明.md)
+[前端下载](/readme/前端下载地址.md)
+[论坛地址](http://bbs.crmeb.net)
+[TP6开发手册](https://www.kancloud.cn/manual/thinkphp6_0/content)
+
 
 ### QQ交流群: 710729856 <a target="_blank" href="//shang.qq.com/wpa/qunwpa?idkey=1794ec6e9fd6ac21bd6519d459d4495e824553693ab0a98a9899e61d68a494d0"><img border="0" src="//pub.idqqimg.com/wpa/images/group.png" alt="CRMEB微信开发四群" title="CRMEB微信开发四群"></a>
 ###  演示地址
-   演示站后台:[<a href='http://demo.crmeb.net' target="_blank"> crmeb_v2.6 </a>]       
+   演示站后台:[<a href='http://demo.crmeb.net' target="_blank"> 查看 </a>]       
 <a href='http://demo.crmeb.net' target="_blank">http://demo.crmeb.net</a>
    账号：demo
    密码：crmeb.com
@@ -245,13 +249,6 @@ CPU：2核
 
 ## 后台页面展示
 ![后台首页](/readme/images/后台首页.png "后台首页.png")
-## 文档
-
-[使用手册](https://help.crmeb.net)
-[安装说明](https://help.crmeb.net)
-[前端下载](https://help.crmeb.net)
-[TP6开发手册](https://www.kancloud.cn/manual/thinkphp6_0/content)
-
 
 ##  系统组件开源项目
 
