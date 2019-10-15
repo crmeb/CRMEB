@@ -57,7 +57,7 @@
 [![输入图片说明](https://images.gitee.com/uploads/images/2019/0122/114739_a48f5bfd_892944.gif "tasheng jo(1).gif")](https://s.click.taobao.com/W7hVkLw)
 
 商业授权及定制服务版：http://www.crmeb.com
-![后台首页](/readme/images/后台首页.png)
+
 ![输入图片说明](https://images.gitee.com/uploads/images/2019/0302/165543_801cf1e6_892944.jpeg "二维码.jpg")
 ## 获得荣誉
 ![输入图片说明](https://images.gitee.com/uploads/images/2019/0805/111208_eb4fe823_892944.jpeg "WechatIMG2434.jpeg")
@@ -242,7 +242,7 @@ CPU：2核
         - 一键清除数据（用户数据、订单数据、产品数据、附件、内容）
 
 ## 后台页面展示
-![输入图片说明](https://images.gitee.com/uploads/images/2019/1015/115159_376874f9_892944.png "后台首页.png")
+![后台首页](/readme/images/后台首页.png "后台首页.png")
 ## 文档
 
 [使用手册](https://help.crmeb.net)
