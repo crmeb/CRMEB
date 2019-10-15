@@ -42,7 +42,7 @@
 
 3.禁止将本项目的代码和资源进行任何形式的出售，产生的一切任何后果责任由侵权者自负。
 
-##商业版与开源版差异
+## 商业版与开源版差异
 |     开源版     |      商业版      |
 | --- | --- |
 |   不适合商用  |  适合商用   |
@@ -259,11 +259,11 @@ form-builder : https://github.com/xaboy/form-builder
 
 ## 参与开发
 
-请参阅 [CRMEB](https://gitee.com/ZhongBangKeJi/CRMEB)。
+请参阅 [CRMEB](https://gitee.com/ZhongBangKeJi/CRMEB/pulls)。
 
 ## 特别鸣谢
 [samoye](https://gitee.com/yizhisamoye)
-[Stone Bai](https://gitee.com/bys1123)
+ | [Stone Bai](https://gitee.com/bys1123)
 
 
 ## 版权信息
