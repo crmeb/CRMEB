@@ -37,7 +37,7 @@
 
 ### CRMEB交流4群: 710729856 <a target="_blank" href="//shang.qq.com/wpa/qunwpa?idkey=1794ec6e9fd6ac21bd6519d459d4495e824553693ab0a98a9899e61d68a494d0"><img border="0" src="//pub.idqqimg.com/wpa/images/group.png" alt="CRMEB微信开发四群" title="CRMEB微信开发四群"></a>
 ##  演示
-![前端演示](/readme/images/官方小程序二维码.jpg)
+![前端演示](/readme/images/演示二维码.jpg)
    演示站后台:[<a href='http://demo.crmeb.net' target="_blank"> 查看 </a>]       
 <a href='http://demo.crmeb.net' target="_blank">http://demo.crmeb.net</a>
    账号：demo
@@ -71,7 +71,7 @@
 [![输入图片说明](https://images.gitee.com/uploads/images/2019/0122/114739_a48f5bfd_892944.gif "tasheng jo(1).gif")](https://s.click.taobao.com/W7hVkLw)
 
 ### 官方小程序购买商业版
-![官方小程序二维码.jpg](/readme/images/演示二维码.jpg)
+![官方小程序二维码.jpg](/readme/images/官方小程序二维码.jpg)
 
 商业授权及定制服务版：http://www.crmeb.com
 
