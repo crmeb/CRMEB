@@ -84,7 +84,7 @@ CPU：1核
 实例规格：突发性能t5实例
 带宽：1M
 系统：CentOS 7.4 64位(推荐)
-价格：366元/年 933.3 元/三年
+价格：366元/年 933.3元/三年
 ```
 <a href="https://promotion.aliyun.com/ntms/yunparter/invite.html?userCode=dligum2z">学生9.5/月</a>
   </td>
@@ -97,7 +97,7 @@ CPU：2核
 实例规格：突发性能t5实例
 带宽：2M
 系统：CentOS 7.4 64位(推荐)
-价格：936元/年 2386.8 元/三年
+价格：936元/年 2386.8元/三年
 ```
 <a href="https://promotion.aliyun.com/ntms/yunparter/invite.html?userCode=dligum2z">新用户半价</a>
 
@@ -111,9 +111,9 @@ CPU：4核
 实例规格：突发性能t6实例
 带宽：5M
 系统：CentOS 7.4 64位(推荐)
-价格：2786.64元/年 5389.20 元/三年
+价格：2786.64元/年 5389.20元/三年
 ```
-<a href="https://promotion.aliyun.com/ntms/yunparter/invite.html?userCode=dligum2z">最高￥2000红包</a>
+<a href="https://promotion.aliyun.com/ntms/yunparter/invite.html?userCode=dligum2z">领取￥2000红包</a>
 
   </td>
   </tr></table>
