@@ -47,7 +47,7 @@
 
 ### CRMEB推荐阿里云服务器配置
 
-阿里云领取2000元代金劵：[<a href="https://promotion.aliyun.com/ntms/yunparter/invite.html?userCode=dligum2z">htts://www.aliyun.com</a>]
+阿里云领取2000元代金劵：[<a href="https://promotion.aliyun.com/ntms/yunparter/invite.html?userCode=dligum2z">https://www.aliyun.com</a>]
  
  <table><tr><td> 
  
