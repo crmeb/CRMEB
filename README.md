@@ -37,7 +37,7 @@
 - - -
 
 ### :tw-1f427: QQ交流群
- CRMEB微信开发4群:710729856 <a target="_blank" href="//shang.qq.com/wpa/qunwpa?idkey=1794ec6e9fd6ac21bd6519d459d4495e824553693ab0a98a9899e61d68a494d0"><img border="0" src="//pub.idqqimg.com/wpa/images/group.png" alt="CRMEB微信开发四群" title="CRMEB微信开发四群"></a>
+ CRMEB微信开发6群: 341864990 <a target="_blank" href="//shang.qq.com/wpa/qunwpa?idkey=13e9ce8da34352ee2420576aef65ae377479ac0958fab2d4a6e01e8d2479621f"><img border="0" src="//pub.idqqimg.com/wpa/images/group.png" alt="CRMEB微信开发6群" title="CRMEB微信开发6群"></a>
 |CRMEB微信开发3群:69741389<a target="_blank" href="//shang.qq.com/wpa/qunwpa?idkey=a8d2235bd79d65ea465e43ed81001d0641f875675ab80051118a43cfc468cbaa"><img border="0" src="//pub.idqqimg.com/wpa/images/group.png" alt="CRMEB微信开发3群" title="CRMEB微信开发3群"></a>
 ###  前后台演示
 ![前端演示](/readme/images/演示二维码.jpg)
