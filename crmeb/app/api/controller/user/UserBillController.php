@@ -166,7 +166,7 @@ class UserBillController
                 if(!$imageInfo){
                     $res = RoutineCode::getShareCode($user['uid'], 'spread', '', '');
                     if(!$res) return app('json')->fail('二维码生成失败');
-                    $imageInfo = UploadService::imageStream($name,$res['res'],'routine/spread/code');
+                    $imageInfo = UploadService::getInstance()->setUploadPath('routine/spread/code')->imageStream($name,$res['res']);
                     if(!is_array($imageInfo)) return app('json')->fail($imageInfo);
                     SystemAttachment::attachmentAdd($imageInfo['name'],$imageInfo['size'],$imageInfo['type'],$imageInfo['dir'],$imageInfo['thumb_path'],1,$imageInfo['image_type'],$imageInfo['time'],2);
                     RoutineQrcode::setRoutineQrcodeFind($res['id'],['status'=>1,'time'=>time(),'qrcode_url'=>$imageInfo['dir']]);

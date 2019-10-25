@@ -10,12 +10,20 @@ namespace crmeb\services;
 use crmeb\services\storage\COS;
 use crmeb\services\storage\OSS;
 use crmeb\services\storage\Qiniu;
+use think\Exception;
 use think\facade\Config;
 use dh2y\qrcode\QRcode;
 
 class UtilService
 {
 
+    /**
+     * 获取POST请求的数据
+     * @param $params
+     * @param null $request
+     * @param bool $suffix
+     * @return array
+     */
     public static function postMore($params,$request = null,$suffix = false)
     {
         if($request === null) $request = app('request');
@@ -34,6 +42,13 @@ class UtilService
         return $p;
     }
 
+    /**
+     * 获取请求的数据
+     * @param $params
+     * @param null $request
+     * @param bool $suffix
+     * @return array
+     */
     public static function getMore($params,$request=null,$suffix = false)
     {
         if($request === null) $request = app('request');
@@ -138,6 +153,11 @@ class UtilService
         return app()->getRootPath().$path;
     }
 
+    /**
+     * 时间戳人性化转化
+     * @param $time
+     * @return string
+     */
     public static function timeTran($time)
     {
         $t = time() - $time;
@@ -486,7 +506,7 @@ class UtilService
         $res = ob_get_contents();
         ob_end_clean();
         $key = substr(md5(rand(0, 9999)) , 0, 5). date('YmdHis') . rand(0, 999999) . '.jpg';
-        return UploadService::imageStream($key,$res,$path);
+        return UploadService::getInstance()->setUploadPath($path)->imageStream($key,$res);
     }
 
     /*
@@ -538,11 +558,11 @@ class UtilService
         return $siteUrl.$image;
     }
 
-
-    /*
+    /**
      * CURL 检测远程文件是否在
-     *
-     * */
+     * @param $url
+     * @return bool
+     */
     public static function CurlFileExist($url)
     {
         $ch = curl_init();
@@ -569,78 +589,83 @@ class UtilService
     public static function getQRCodePath($url, $name)
     {
         if(!strlen(trim($url)) || !strlen(trim($name))) return false;
-        $uploadType = SystemConfigService::get('upload_type');
-        //TODO 没有选择默认使用本地上传
-        if (!$uploadType) $uploadType = 1;
-        $siteUrl = SystemConfigService::get('site_url') ?: '.';
-        $info = [];
-        $outfile = Config::get('qrcode.cache_dir');
+        try{
+            $uploadType = SystemConfigService::get('upload_type');
+            //TODO 没有选择默认使用本地上传
+            if (!$uploadType) $uploadType = 1;
+            $siteUrl = SystemConfigService::get('site_url');
+            if(!$siteUrl) return '请前往后台设置->系统设置->网站域名 填写您的域名格式为：http://域名';
+            $info = [];
+            $outfile = Config::get('qrcode.cache_dir');
 
-        $code = new QRcode();
-        $wapCodePath = $code->png($url, $outfile.'/'.$name)->getPath(); //获取二维码生成的地址
-        $content = file_get_contents('.'.$wapCodePath);
-        switch ($uploadType) {
-            case 1 :
-                $info["code"] = 200;
-                $info["name"] = $name;
-                $info["dir"] = $wapCodePath;
-                $info["time"] = time();
-                $headerArray = get_headers(UtilService::setHttpType($siteUrl, 1) . $info['dir'],true);
-                $info['size'] = $headerArray['Content-Length'];
-                $info['type'] = $headerArray['Content-Type'];
-                $info["image_type"] = 1;
-                $info['thumb_path'] = $wapCodePath;
-                break;
-            case 2 :
-                $keys = Qiniu::uploadImageStream($name, $content);
-                if (is_array($keys)) {
-                    foreach ($keys as $key => &$item) {
-                        if (is_array($item)) {
-                            $info = Qiniu::imageUrl($item['key']);
-                            $info['dir'] = UtilService::setHttpType($info['dir']);
-                            $headerArray = get_headers(UtilService::setHttpType(str_replace('\\', '/', $info['dir']), 1), true);
-                            $info['size'] = $headerArray['Content-Length'];
-                            $info['type'] = $headerArray['Content-Type'];
-                            $info['image_type'] = 2;
+            $code = new QRcode();
+            $wapCodePath = $code->png($url, $outfile.'/'.$name)->getPath(); //获取二维码生成的地址
+            $content = file_get_contents('.'.$wapCodePath);
+            switch ($uploadType) {
+                case 1 :
+                    $info["code"] = 200;
+                    $info["name"] = $name;
+                    $info["dir"] = $wapCodePath;
+                    $info["time"] = time();
+                    $headerArray=UploadService::getImageHeaders($siteUrl.$info['dir'],1,false);
+                    $info['size'] = $headerArray['Content-Length'];
+                    $info['type'] = $headerArray['Content-Type'];
+                    $info["image_type"] = 1;
+                    $info['thumb_path'] = $wapCodePath;
+                    break;
+                case 2 :
+                    $keys = Qiniu::uploadImageStream($name, $content);
+                    if (is_array($keys)) {
+                        foreach ($keys as $key => &$item) {
+                            if (is_array($item)) {
+                                $info = Qiniu::imageUrl($item['key']);
+                                $info['dir'] = UtilService::setHttpType($info['dir']);
+                                $headerArray = UploadService::getImageHeaders( $info['dir']);
+                                $info['size'] = $headerArray['Content-Length'];
+                                $info['type'] = $headerArray['Content-Type'];
+                                $info['image_type'] = 2;
+                            }
                         }
-                    }
-                    if (!count($info)) return '七牛云文件上传失败';
-                } else return $keys;
-                break;
-            case 3 :
-                $content = COS::resourceStream($content);
-                $serverImageInfo = OSS::uploadImageStream($name, $content);
-                if (!is_array($serverImageInfo)) return $serverImageInfo;
-                $info['code'] = 200;
-                $info['name'] = substr(strrchr($serverImageInfo['info']['url'], '/'), 1);
-                $serverImageInfo['info']['url'] = UtilService::setHttpType($serverImageInfo['info']['url']);
-                $info['dir'] = $serverImageInfo['info']['url'];
-                $info['thumb_path'] = $serverImageInfo['info']['url'];
-                $headerArray = get_headers(UtilService::setHttpType(str_replace('\\', '/', $serverImageInfo['info']['url']), 1), true);
-                $info['size'] = $headerArray['Content-Length'];
-                $info['type'] = $headerArray['Content-Type'];
-                $info['time'] = time();
-                $info['image_type'] = 3;
-                break;
-            case 4 :
-                list($imageUrl,$serverImageInfo) = COS::uploadImageStream($name, $content);
-                if (!is_array($serverImageInfo) && !is_object($serverImageInfo)) return $serverImageInfo;
-                if (is_object($serverImageInfo)) $serverImageInfo = $serverImageInfo->toArray();
-                $serverImageInfo['ObjectURL'] = $imageUrl;
-                $info['code'] = 200;
-                $info['name'] = substr(strrchr($serverImageInfo['ObjectURL'], '/'), 1);
-                $info['dir'] = $serverImageInfo['ObjectURL'];
-                $info['thumb_path'] = $serverImageInfo['ObjectURL'];
-                $headerArray = get_headers(UtilService::setHttpType(str_replace('\\', '/', $serverImageInfo['ObjectURL']), 1), true);
-                $info['size'] = $headerArray['Content-Length'];
-                $info['type'] = $headerArray['Content-Type'];
-                $info['time'] = time();
-                $info['image_type'] = 4;
-                break;
-            default:
-                return '上传类型错误，请先选择文件上传类型';
+                        if (!count($info)) return '七牛云文件上传失败';
+                    } else return $keys;
+                    break;
+                case 3 :
+                    $content = COS::resourceStream($content);
+                    $serverImageInfo = OSS::uploadImageStream($name, $content);
+                    if (!is_array($serverImageInfo)) return $serverImageInfo;
+                    $info['code'] = 200;
+                    $info['name'] = substr(strrchr($serverImageInfo['info']['url'], '/'), 1);
+                    $serverImageInfo['info']['url'] = UtilService::setHttpType($serverImageInfo['info']['url']);
+                    $info['dir'] = $serverImageInfo['info']['url'];
+                    $info['thumb_path'] = $serverImageInfo['info']['url'];
+                    $headerArray = UploadService::getImageHeaders($serverImageInfo['info']['url'],1,true);
+                    $info['size'] = $headerArray['Content-Length'];
+                    $info['type'] = $headerArray['Content-Type'];
+                    $info['time'] = time();
+                    $info['image_type'] = 3;
+                    break;
+                case 4 :
+                    list($imageUrl,$serverImageInfo) = COS::uploadImageStream($name, $content);
+                    if (!is_array($serverImageInfo) && !is_object($serverImageInfo)) return $serverImageInfo;
+                    if (is_object($serverImageInfo)) $serverImageInfo = $serverImageInfo->toArray();
+                    $serverImageInfo['ObjectURL'] = $imageUrl;
+                    $info['code'] = 200;
+                    $info['name'] = substr(strrchr($serverImageInfo['ObjectURL'], '/'), 1);
+                    $info['dir'] = $serverImageInfo['ObjectURL'];
+                    $info['thumb_path'] = $serverImageInfo['ObjectURL'];
+                    $headerArray = UploadService::getImageHeaders( $serverImageInfo['ObjectURL'],true);
+                    $info['size'] = $headerArray['Content-Length'];
+                    $info['type'] = $headerArray['Content-Type'];
+                    $info['time'] = time();
+                    $info['image_type'] = 4;
+                    break;
+                default:
+                    return '上传类型错误，请先选择文件上传类型';
+            }
+            return $info;
+        }catch (\Exception $e){
+            return $e->getMessage();
         }
-        return $info;
     }
 
     /**
@@ -648,18 +673,26 @@ class UtilService
      * @param string $avatar
      * @return bool|string
      */
-    public static function setImageBase64($avatar = '',$timeout=15){
+    public static function setImageBase64($avatar = '',$timeout=9){
         try{
-            $header = array(
+            $url=parse_url($avatar);
+            $url=$url['host'];
+            $header = [
                 'User-Agent: Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:45.0) Gecko/20100101 Firefox/45.0',
                 'Accept-Language: zh-CN,zh;q=0.8,en-US;q=0.5,en;q=0.3',
-                'Accept-Encoding: gzip, deflate',);
+                'Accept-Encoding: gzip, deflate',
+                'Host:'.$url
+            ];
+            $dir= pathinfo($url);
+            $host = $dir['dirname'];
+            $refer= $host.'/';
             $curl = curl_init();
+            curl_setopt($curl, CURLOPT_REFERER, $refer);
             curl_setopt($curl, CURLOPT_URL, $avatar);
             curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
             curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
             curl_setopt($curl, CURLOPT_ENCODING, 'gzip');
-            curl_setopt($curl, CURLOPT_TIMEOUT, $timeout);
+            curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, $timeout);
             curl_setopt($curl, CURLOPT_HTTPHEADER, $header);
             $data = curl_exec($curl);
             $code = curl_getinfo($curl, CURLINFO_HTTP_CODE);
@@ -669,7 +702,6 @@ class UtilService
         }catch (\Exception $e){
             return false;
         }
-
     }
 
 

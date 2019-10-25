@@ -27,9 +27,11 @@ class UserLevel extends BaseModel
 
     use ModelTrait;
 
-    /*
-    * 获取用户等级人数
-    * */
+    /**
+     * 获取用户等级人数
+     * @param $uids
+     * @return int
+     */
     public static function setUserLevelCount($uids)
     {
         $model=new self();
@@ -38,12 +40,12 @@ class UserLevel extends BaseModel
         return $model->count();
     }
 
-    /*
+    /**
      * 设置查询初始化条件
      * @param string $alias 表别名
-     * @param object $model 模型实例化对象
-     * @return object
-     * */
+     * @param null $model 模型实例化对象
+     * @return UserLevel
+     */
     public static function valiWhere($alias='',$model=null)
     {
         $model=is_null($model) ? new self() : $model;
@@ -53,12 +55,16 @@ class UserLevel extends BaseModel
         }
         return $model->where("{$alias}status", 1)->where("{$alias}is_del", 0);
     }
-    /*
+
+    /**
      * 设置会员等级
-     * @param int $uid 用户uid
-     * @param int $level_id 等级id
-     * @return boolean | array
-     * */
+     * @param $uid 用户uid
+     * @param $level_id 等级id
+     * @return UserLevel|bool|\think\Model
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\exception\DbException
+     */
     public static function setUserLevel($uid,$level_id){
         $vipinfo=SystemUserLevel::get($level_id);
         if(!$vipinfo) return false;
@@ -101,11 +107,15 @@ class UserLevel extends BaseModel
         }
     }
 
-    /*
+    /**
      * 获取当前用户会员等级返回当前用户等级id
-     * @param int $uid 用户uid
-     * @return int 会员id
-     * */
+     * @param $uid 用户uid
+     * @param int $grade 会员id
+     * @return bool|mixed
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\exception\DbException
+     */
     public static function getUserLevel($uid,$grade=0)
     {
         $model = self::valiWhere();
@@ -125,12 +135,15 @@ class UserLevel extends BaseModel
             return $level->id;
     }
 
-    /*
+    /**
      * 获取会员详细信息
-     * @param int $id 会员记录id
+     * @param $id 会员记录id
      * @param string $keyName 字段名
-     * @return array
-     * */
+     * @return array|mixed|string|\think\Model|null
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\exception\DbException
+     */
     public static function getUserLevelInfo($id,$keyName=''){
         $vipinfo=self::valiWhere('a')->where('a.id',$id)->field('l.id,a.add_time,l.discount,a.level_id,l.name,l.money,l.icon,l.is_pay,l.grade')
             ->join('__system_user_level__ l','l.id=a.level_id')->find();
@@ -138,20 +151,25 @@ class UserLevel extends BaseModel
         return $vipinfo;
     }
 
-    /*
+    /**
      * 获取当前用户已成为的vip id
-     * @param int $uid 用户id
+     * @param $uid 用户id
      * @return array
-     * */
+     */
     public static function getUserLevelIds($uid)
     {
        return self::valiWhere()->group('level_id')->where('uid',$uid)->order('grade asc')->column('level_id','level_id');
     }
-
-    /*
+    
+    /**
      * 检查是否能成为会员
-     * @param int $uid 用户
-     * */
+     * @param $uid 用户uid
+     * @param bool $leveNowId
+     * @return UserLevel|bool|\think\Model
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\exception\DbException
+     */
     public static function setLevelComplete($uid,$leveNowId=false)
     {
         $user=User::where('uid',$uid)->find();

@@ -35,6 +35,11 @@ class WechatUser extends BaseModel
 
     use ModelTrait;
 
+    /**
+     * uid获取小程序Openid
+     * @param string $uid
+     * @return bool|mixed
+     */
     public static function getOpenId($uid = ''){
         if($uid == '') return false;
         return self::where('uid',$uid)->value('routine_openid');
@@ -71,43 +76,40 @@ class WechatUser extends BaseModel
      * @return mixed
      */
     public static function routineOauth($routine){
-        $routineInfo['nickname'] = filterEmoji($routine['nickName']);//姓名
-        $routineInfo['sex'] = $routine['gender'];//性别
-        $routineInfo['language'] = $routine['language'];//语言
-        $routineInfo['city'] = $routine['city'];//城市
-        $routineInfo['province'] = $routine['province'];//省份
-        $routineInfo['country'] = $routine['country'];//国家
-        $routineInfo['headimgurl'] = $routine['avatarUrl'];//头像
-//        $routineInfo[''] = $routine['code'];//临时登录凭证  是获取用户openid和session_key(会话密匙)
+        $routineInfo['nickname']    = filterEmoji($routine['nickName']);//姓名
+        $routineInfo['sex']         = $routine['gender'];//性别
+        $routineInfo['language']    = $routine['language'];//语言
+        $routineInfo['city']        = $routine['city'];//城市
+        $routineInfo['province']    = $routine['province'];//省份
+        $routineInfo['country']     = $routine['country'];//国家
+        $routineInfo['headimgurl']  = $routine['avatarUrl'];//头像
         $routineInfo['routine_openid'] = $routine['openId'];//openid
         $routineInfo['session_key'] = $routine['session_key'];//会话密匙
-        $routineInfo['unionid'] = $routine['unionId'];//用户在开放平台的唯一标识符
-        $routineInfo['user_type'] = 'routine';//用户类型
-        $page = '';//跳转小程序的页面
+        $routineInfo['unionid']     = $routine['unionId'];//用户在开放平台的唯一标识符
+        $routineInfo['user_type']   = 'routine';//用户类型
         $spid = 0;//绑定关系uid
-        $isCOde=false;
+        $isCOde = false;
         //获取是否有扫码进小程序
         if($routine['code']){
-            $info = RoutineQrcode::getRoutineQrcodeFindType($routine['code']);
-            if($info){
+            if($info = RoutineQrcode::getRoutineQrcodeFindType($routine['code'])){
                 $spid = $info['third_id'];
-                $page = $info['page'];
                 $isCOde=true;
-            }else{
+            }else
                 $spid = $routine['spid'];
-            }
-        }else if($routine['spid']) $spid = $routine['spid'];
+        }else if($routine['spid'])
+            $spid = $routine['spid'];
+
         //  判断unionid  存在根据unionid判断
         if($routineInfo['unionid'] != '' && ($uid=self::where(['unionid'=>$routineInfo['unionid']])->where('user_type','<>','h5')->value('uid'))){
             self::edit($routineInfo,$uid,'uid');
-            $routineInfo['code']=$spid;
-            $routineInfo['isPromoter']=$isCOde;
+            $routineInfo['code']        = $spid;
+            $routineInfo['isPromoter']  = $isCOde;
             if($routine['login_type']) $routineInfo['login_type'] = $routine['login_type'];
             User::updateWechatUser($routineInfo,$uid);
         }else if($uid = self::where(['routine_openid'=>$routineInfo['routine_openid']])->where('user_type','<>','h5')->value('uid')){ //根据小程序openid判断
             self::edit($routineInfo,$uid,'uid');
-            $routineInfo['code']=$spid;
-            $routineInfo['isPromoter']=$isCOde;
+            $routineInfo['code']        = $spid;
+            $routineInfo['isPromoter']  = $isCOde;
             if($routine['login_type']) $routineInfo['login_type'] = $routine['login_type'];
             User::updateWechatUser($routineInfo,$uid);
         }else{
@@ -116,9 +118,7 @@ class WechatUser extends BaseModel
             $res = User::setRoutineUser($routineInfo,$spid);
             $uid = $res->uid;
         }
-        $data['page'] = $page;
-        $data['uid'] = $uid;
-        return $data;
+        return $uid;
     }
     /**
      * 判断是否是小程序用户
@@ -183,6 +183,10 @@ class WechatUser extends BaseModel
         if($couponId) StoreCouponUser::addUserCoupon(self::openidToUid($openid),$couponId);
     }
 
+    /**
+     * 订单金额达到预设金额赠送优惠卷
+     * @param $uid
+     */
     public static function userTakeOrderGiveCoupon($uid)
     {
         $couponId = SystemConfigService::get('store_order_give_coupon');

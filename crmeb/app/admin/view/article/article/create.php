@@ -19,7 +19,7 @@
 {block name="content"}
 <div class="row">
    <div class="col-sm-12 panel panel-default" >
-       <div class="panel-body">
+       <div class="panel-body" style="padding: 30px">
            <form class="form-horizontal" id="signupForm">
                <div class="form-group">
                    <div class="col-md-12">

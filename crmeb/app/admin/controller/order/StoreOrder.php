@@ -10,6 +10,7 @@ use app\admin\controller\AuthController;
 use app\admin\model\system\Express;
 use crmeb\repositories\OrderRepository;
 use crmeb\services\ExpressService;
+use crmeb\services\JsonService;
 use crmeb\services\MiniProgramService;
 use crmeb\services\UtilService;
 use crmeb\services\WechatService;
@@ -22,7 +23,6 @@ use app\admin\model\user\User;
 use app\admin\model\user\UserBill;
 use crmeb\basic\BaseModel;
 use crmeb\services\CacheService;
-use crmeb\services\JsonService;
 use crmeb\services\UtilService as Util;
 use crmeb\services\JsonService as Json;
 use think\facade\Db;
@@ -85,6 +85,41 @@ class StoreOrder extends AuthController
         ]);
         return JsonService::successlayui(StoreOrderModel::OrderList($where));
     }
+
+    /**
+     * 核销码核销
+     * @param string $verify_code
+     * @return html
+     */
+    public function write_order($verify_code = '',$is_confirm = 0)
+    {
+        if($this->request->isAjax()){
+            if(!$verify_code) return JsonService::fail('缺少核销码！');
+            StoreOrderModel::beginTrans();
+            $orderInfo = StoreOrderModel::where('verify_code',$verify_code)->where('paid',1)->where('refund_status',0)->find();
+            if(!$orderInfo) return JsonService::fail('核销订单不存在！');
+            if($orderInfo->status > 0) return JsonService::fail('订单已核销！');
+            if($orderInfo->combination_id && $orderInfo->pink_id){
+                $res = StorePink::where('id',$orderInfo->pink_id)->where('status','<>',2)->count();
+                if($res) return JsonService::fail('拼团订单暂未成功无法核销！');
+            }
+            if($is_confirm == 0){
+                $orderInfo['nickname'] = User::where(['uid'=>$orderInfo['uid']])->value('nickname');
+                return JsonService::successful($orderInfo);
+            }
+            $orderInfo->status = 2;
+            if($orderInfo->save()) {
+                StoreOrderModel::commitTrans();
+                return JsonService::successful('核销成功！');
+            }else {
+                StoreOrderModel::rollbackTrans();
+                return JsonService::fail('核销失败');
+            }
+        }else
+            $this->assign('is_layui',1);
+            return $this->fetch();
+    }
+
     public function orderchart(){
         $where = Util::getMore([
             ['status',''],
@@ -268,6 +303,8 @@ class StoreOrder extends AuthController
                 return Json::fail('暂时不支持其他发货类型');
                 break;
         }
+        //短信发送
+        event('ShortMssageSend',[StoreOrderModel::where('id',$id)->value('order_id'),'Deliver']);
         return Json::successful('修改成功!');
     }
 
@@ -371,16 +408,22 @@ class StoreOrder extends AuthController
         if($order['paid'] == 1 && $order['status'] == 1) $data['status'] = 2;
         else if($order['pay_type'] == 'offline') $data['status'] = 2;
         else return Json::fail('请先发货或者送货!');
-        if(!StoreOrderModel::edit($data,$id))
-            return Json::fail(StoreOrderModel::getErrorInfo('收货失败,请稍候再试!'));
-        else{
-            try{
+        StoreOrderModel::beginTrans();
+        try{
+            if(!StoreOrderModel::edit($data,$id)) {
+                StoreOrderModel::rollbackTrans();
+                return Json::fail(StoreOrderModel::getErrorInfo('收货失败,请稍候再试!'));
+            }else{
                 OrderRepository::storeProductOrderTakeDeliveryAdmin($order, $id);
-            }catch (\Exception $e){
-                return Json::fail($e->getMessage());
+                StoreOrderStatus::setStatus($id,'take_delivery','已收货');
+                StoreOrderModel::commitTrans();
+                //发送短信
+                event('ShortMssageSend',[$order['order_id'],'Receiving']);
+                return Json::successful('收货成功!');
             }
-            StoreOrderStatus::setStatus($id,'take_delivery','已收货');
-            return Json::successful('收货成功!');
+         }catch (\Exception $e){
+            StoreOrderModel::rollbackTrans();
+            return Json::fail($e->getMessage());
         }
     }
     /**
@@ -461,9 +504,11 @@ class StoreOrder extends AuthController
             if(!$res) return Json::fail('余额退款失败!');
         }
         $resEdit = StoreOrderModel::edit($data,$id);
+        $res = true;
         if($resEdit){
             $data['type'] = $type;
-            if($data['type'] == 1)  StorePink::setRefundPink($id);
+            if($data['type'] == 1)  $res = StorePink::setRefundPink($id);
+            if(!$res) return Json::fail('修改失败');
             try{
                 OrderRepository::storeProductOrderRefundY($data, $id);
             }catch (\Exception $e){
@@ -475,7 +520,7 @@ class StoreOrder extends AuthController
             return Json::successful('修改成功!');
         }else{
             StoreOrderStatus::setStatus($id,'refund_price','退款给用户'.$refund_price.'元失败');
-            return Json::successful('修改失败!');
+            return Json::fail('修改失败!');
         }
     }
     public function order_info($oid = '')
@@ -689,5 +734,14 @@ class StoreOrder extends AuthController
        if(!$oid) return $this->failed('数据不存在');
        $this->assign(StoreOrderStatus::systemPage($oid));
        return $this->fetch();
+    }
+
+    /*
+     * 订单列表推荐人详细
+     */
+    public function order_spread_user($uid){
+        $spread = User::where('uid',$uid)->find();
+        $this->assign('spread',$spread);
+        return $this->fetch();
     }
 }

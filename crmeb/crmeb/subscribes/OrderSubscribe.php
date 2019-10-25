@@ -9,6 +9,10 @@ namespace crmeb\subscribes;
 
 use app\admin\model\order\StoreOrder as AdminStoreOrder;
 use app\models\store\StoreOrder;
+use app\models\store\StoreOrderCartInfo;
+use crmeb\services\SystemConfigService;
+use crmeb\services\YLYService;
+use think\facade\Log;
 
 /**
  * 订单事件
@@ -108,6 +112,36 @@ class OrderSubscribe
     {
         list($order) = $event;
         StoreOrder::RegressionStock($order) && StoreOrder::RegressionIntegral($order) && StoreOrder::RegressionCoupon($order);
+    }
+
+    /**
+     * 订单支付成功
+     * @param array $event
+     */
+    public function onOrderPaySuccess($event)
+    {
+        list($order) = $event;
+        $switch = SystemConfigService::get('pay_success_printing_switch') ? true : false ;
+        //打印小票
+        if($switch){
+            try{
+                $order['cart_id'] = is_string($order['cart_id']) ? json_decode($order['cart_id'],true) : $order['cart_id'];
+                $cartInfo = StoreOrderCartInfo::whereIn('cart_id',$order['cart_id'])->field('cart_info')->select();
+                $cartInfo = count($cartInfo) ? $cartInfo->toArray() : [];
+                $product  = [];
+                foreach ($cartInfo as $item){
+                    $value = is_string($item['cart_info']) ? json_decode($item['cart_info']) : $item['cart_info'];
+                    $value['productInfo']['store_name'] = $value['productInfo']['store_name'] ?? "";
+                    $value['productInfo']['store_name'] = StoreOrderCartInfo::getSubstrUTf8($value['productInfo']['store_name'],10,'UTF-8','');
+                    $product[] = $value;
+                }
+                $instance = YLYService::getInstance();
+                $siteName = SystemConfigService::get('site_name');
+                $instance->setContent($siteName,is_object($order) ? $order->toArray() : $order,$product)->orderPrinting();
+            }catch (\Exception $e){
+                Log::error('小票打印出现错误,错误原因：'.$e->getMessage());
+            }
+        }
     }
 
 }

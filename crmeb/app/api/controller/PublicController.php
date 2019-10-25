@@ -92,6 +92,9 @@ class PublicController
                 unset($menusInfo[$key]);
             if($value['id'] == 174 && !StoreService::orderServiceStatus($user->uid))
                 unset($menusInfo[$key]);
+            if(!StoreService::orderServiceStatus($user->uid) && $value['wap_url'] === '/order/order_cancellation'){
+                unset($menusInfo[$key]);
+            }
         }
         return app('json')->successful(['routine_my_menus'=>$menusInfo]);
     }
@@ -129,7 +132,7 @@ class PublicController
         ],$request);
         if(!$data['filename']) return app('json')->fail('参数有误');
         if(Cache::has('start_uploads_'.$request->uid()) && Cache::get('start_uploads_'.$request->uid()) >= 100) return app('json')->fail('非法操作');
-        $res = UploadService::image($data['filename'],'store/comment');
+        $res = UploadService::getInstance()->setUploadPath('store/comment')->image($data['filename']);
         if(!is_array($res)) return app('json')->fail($res);
         SystemAttachment::attachmentAdd($res['name'], $res['size'], $res['type'], $res['dir'], $res['thumb_path'],1, $res['image_type'], $res['time'], 2);
         if(Cache::has('start_uploads_'.$request->uid()))
@@ -177,13 +180,35 @@ class PublicController
         return app('json')->fail();
     }
 
-    /*
+    /**
      * 记录用户分享
-     * @return json
-     * */
+     * @param Request $request
+     * @return mixed
+     */
     public function user_share(Request $request){
-        return app('json')->successful(UserBill::setUserShare($request->uid));
+        return app('json')->successful(UserBill::setUserShare($request->uid()));
     }
+
+    /**
+     * 获取图片base64
+     * @param Request $request
+     * @return mixed
+     */
+    public function get_image_base64(Request $request){
+        list($imageUrl,$codeUrl) = UtilService::postMore([
+            ['image',''],
+            ['code',''],
+        ],$request,true);
+        try{
+            $code = $codeUrl ? UtilService::setImageBase64($codeUrl) : false;
+            $image = $imageUrl ? UtilService::setImageBase64($imageUrl) : false;
+            return app('json')->successful(compact('code','image'));
+        }catch (\Exception $e){
+            return app('json')->fail($e->getMessage());
+        }
+    }
+
+
 
 
 }

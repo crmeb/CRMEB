@@ -117,6 +117,23 @@ class SystemAttachment extends BaseModel
      */
     public static function emptyYesterdayAttachment()
     {
-        return self::whereTime('time','yesterday')->where(['module_type'=>2])->delete();
+        self::beginTrans();
+        try{
+            $list = self::whereTime('time','yesterday')->where(['module_type'=>2])->column('att_dir','att_id');
+            foreach ($list as $att_id => $att_dir){
+                if($att_dir && strstr($att_dir,'uploads') !== false){
+                    if(strstr($att_dir,'http') === false)
+                        @unlink(substr($att_dir,1));
+                    else{
+                        $filedir = substr($att_dir,strpos($att_dir, 'uploads'));
+                        @unlink($filedir);
+                    }
+                }
+                self::del($att_id);
+            }
+            self::commitTrans();
+        }catch (\Exception $e){
+            self::rollbackTrans();
+        }
     }
 }

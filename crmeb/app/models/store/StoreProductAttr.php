@@ -43,12 +43,19 @@ class StoreProductAttr extends BaseModel
      * @param $productId
      * @return array
      */
-    public static function getProductAttrDetail($productId)
+    public static function getProductAttrDetail($productId,$uid=0,$type = 0)
     {
         $attrDetail = self::where('product_id',$productId)->order('attr_values asc')->select()->toArray()?:[];
         $_values = self::storeProductAttrValueDb()->where('product_id',$productId)->select();
         $values = [];
         foreach ($_values as $value){
+            if($type){
+                if ($uid)
+                    $value['cart_num'] = StoreCart::where('product_attr_unique',$value['unique'])->where('is_pay', 0)->where('is_del', 0)->where('is_new', 0)->where('type', 'product')->where('product_id', $productId)->where('uid', $uid)->value('cart_num');
+                else
+                    $value['cart_num'] = 0;
+                if (is_null($value['cart_num'])) $value['cart_num'] = 0;
+            }
             $values[$value['suk']] = $value;
         }
         foreach ($attrDetail as $k=>$v){

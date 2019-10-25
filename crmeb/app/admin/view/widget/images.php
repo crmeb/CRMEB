@@ -203,9 +203,9 @@
                 //判断表单限制图片个数
                 if(typeof parent.$f != 'undefined'){
                     //已有图片个数
-                    var nowpics = parent.$f.getValue(parentinputname).length;
-                    //设置最大个数
-                    var maxlength = parent.$f.model()[parentinputname].props.maxLength;
+                    var nowpics = parent.$f.getValue(parentinputname).length,
+                        props = parent.$f.model()[parentinputname].props || {},
+                        maxlength = props.maxLength || 0;
                     //已选图片个数
                     var selectlength = this.selectImages.length;
                     //还可以选择多少张

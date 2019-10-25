@@ -22,12 +22,34 @@ class SMSService
 
     //短信支付回调地址
     private static $payNotify;
-
-    const VERIFICATION_CODE = 518076;
+    //验证码
+    const VERIFICATION_CODE         = 518076;
+    //支付成功
+    const PAY_SUCCESS_CODE          = 520268;
+    //发货提醒
+    const DELIVER_GOODS_CODE        = 520269;
+    //确认收货提醒
+    const TAKE_DELIVERY_CODE        = 520271;
+    //管理员下单提醒
+    const ADMIN_PLACE_ORDER_CODE    = 520272;
+    //管理员退货提醒
+    const ADMIN_RETURN_GOODS_CODE   = 520274;
+    //管理员支付成功提醒
+    const ADMIN_PAY_SUCCESS_CODE    = 520273;
+    //管理员确认收货
+    const ADMIN_TAKE_DELIVERY_CODE  = 520422;
 
     public function __construct()
     {
         self::$status = strlen(SystemConfigService::get('sms_account')) != 0 ?? false && strlen(SystemConfigService::get('sms_token')) != 0  ?? false;
+    }
+
+    public static function getConstants($code = '')
+    {
+        $oClass = new \ReflectionClass(__CLASS__);
+        $stants = $oClass->getConstants();
+        if ($code) return isset($stants[$code]) ? $stants[$code] : '';
+        else return $stants;
     }
 
     private static function auto()

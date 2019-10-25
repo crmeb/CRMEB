@@ -336,6 +336,11 @@ switch ($step) {
             $addadminsql = "INSERT INTO `{$dbPrefix}system_admin` (`id`, `account`, `pwd`, `real_name`, `roles`, `last_ip`, `last_time`, `add_time`, `login_count`, `level`, `status`, `is_del`) VALUES
 (1, '".$username."', '".$password."', 'admin', '1', '".$ip."',$time , $time, 0, 0, 1, 0)";
 			$res = mysqli_query($conn,$addadminsql);
+            $res2 = true;
+			if(isset($_SERVER['SERVER_NAME'])) {
+                $site_url = '\'"http://' . $_SERVER['SERVER_NAME'].'"\'';
+                $res2 = mysqli_query($conn, 'UPDATE `'.$dbPrefix.'system_config` SET `value`=' . $site_url . ' WHERE `menu_name`="site_url"');
+            }
 			if($res){
                 $message = '成功添加管理员<br />成功写入配置文件<br>安装完成．';
                 $arr = array('n' => 999999, 'msg' => $message);
@@ -345,6 +350,7 @@ switch ($step) {
                 $arr = array('n' => 999999, 'msg' => $message);
                 echo json_encode($arr);exit;
             }
+
         }
         include_once ("./templates/step4.php");
         exit();

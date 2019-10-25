@@ -37,10 +37,12 @@ Route::group(function () {
     Route::get('admin/order/time', 'admin.StoreOrderController/time')->name('adminOrderTime');//订单交易额时间统计
     Route::post('admin/order/offline', 'admin.StoreOrderController/offline')->name('adminOrderOffline');//订单支付
     Route::post('admin/order/refund', 'admin.StoreOrderController/refund')->name('adminOrderRefund');//订单退款
+    Route::post('order/order_verific','order.StoreOrderController/order_verific')->name('order');//订单核销
 })->middleware(\app\http\middleware\AllowOriginMiddleware::class)->middleware(\app\http\middleware\AuthTokenMiddleware::class, true)->middleware(\app\http\middleware\CustomerMiddleware::class);
 
 //会员授权接口
 Route::group(function () {
+
     Route::get('logout', 'AuthController/logout')->name('logout');// 退出登录
     Route::post('switch_h5', 'AuthController/switch_h5')->name('switch_h5');// 切换账号
     Route::post('binding', 'AuthController/binding_phone')->name('bindingPhone');// 绑定手机号
@@ -70,6 +72,9 @@ Route::group(function () {
     Route::post('collect/add', 'user.UserController/collect_add')->name('collectAdd');//添加收藏
     Route::post('collect/del', 'user.UserController/collect_del')->name('collectDel');//取消收藏
     Route::post('collect/all', 'user.UserController/collect_all')->name('collectAll');//批量添加收藏
+
+    Route::get('brokerage_rank','user.UserController/brokerage_rank')->name('brokerageRank');//佣金排行
+    Route::get('rank','user.UserController/rank')->name('rank');//推广人排行
     //用戶类 分享
     Route::post('user/share', 'PublicController/user_share')->name('user_share');//记录用户分享
     //用户类 点赞
@@ -153,7 +158,8 @@ Route::group(function () {
     //产品分类类
     Route::get('category', 'store.CategoryController/category')->name('category');
     //产品类
-    Route::get('product/detail/:id', 'store.StoreProductController/detail')->name('detail');//产品详情
+    Route::post('image_base64', 'PublicController/get_image_base64')->name('getImageBase64');// 获取图片base64
+    Route::get('product/detail/:id/[:type]', 'store.StoreProductController/detail')->name('detail');//产品详情
     Route::get('groom/list/:type', 'store.StoreProductController/groom_list')->name('groomList');//获取首页推荐不同类型产品的轮播图和产品
     Route::get('products', 'store.StoreProductController/lst')->name('products');//产品列表
     Route::get('product/hot', 'store.StoreProductController/product_hot')->name('productHot');//为你推荐
@@ -169,7 +175,7 @@ Route::group(function () {
     //活动---秒杀
     Route::get('seckill/index', 'activity.StoreSeckillController/index')->name('seckillIndex');//秒杀产品时间区间
     Route::get('seckill/list/:time', 'activity.StoreSeckillController/lst')->name('seckillList');//秒杀产品列表
-    Route::get('seckill/detail/:id', 'activity.StoreSeckillController/detail')->name('seckillDetail');//秒杀产品详情
+    Route::get('seckill/detail/:id/[:time]', 'activity.StoreSeckillController/detail')->name('seckillDetail');//秒杀产品详情
     //活动---砍价
     Route::get('bargain/config', 'activity.StoreBargainController/config')->name('bargainConfig');//砍价产品列表配置
     Route::get('bargain/list', 'activity.StoreBargainController/lst')->name('bargainList');//砍价产品列表

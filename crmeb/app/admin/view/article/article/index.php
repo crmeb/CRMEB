@@ -43,8 +43,9 @@
                         <th class="text-center" width="10%">图片</th>
                         <th class="text-left" >[分类]标题</th>
                         <th class="text-center" width="8%">浏览量</th>
+                        <th class="text-center">关联标题</th>
                         <th class="text-center" width="15%">添加时间</th>
-                        <th class="text-center" width="15%">操作</th>
+                        <th class="text-center" width="20%">操作</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -56,13 +57,17 @@
                         </td>
                         <td>[{$vo.catename}]{$vo.title}</td>
                         <td>{$vo.visit}</td>
+                        <td>{$vo.store_name}</td>
                         <td>{$vo.add_time|date="Y-m-d H:i:s"}</td>
 
                         <td class="text-center">
-                            <button class="btn btn-info btn-xs" type="button"  onclick="$eb.createModalFrame('编辑','{:Url('create',array('id'=>$vo['id'],'cid'=>$where.cid))}',{w:1100,h:760})"><i class="fa fa-paste"></i> 编辑</button>
-
-                            <button class="btn btn-warning btn-xs del_news_one" data-id="{$vo.id}" type="button" data-url="{:Url('delete',array('id'=>$vo['id']))}" ><i class="fa fa-warning"></i> 删除
-
+                            <button style="margin-top: 5px;" class="btn btn-info btn-xs" type="button"  onclick="$eb.createModalFrame('编辑','{:Url('create',array('id'=>$vo['id'],'cid'=>$where.cid))}',{w:1100,h:760})"><i class="fa fa-paste"></i> 编辑</button>
+                            {if $vo.product_id}
+                            <button style="margin-top: 5px;" class="btn btn-warning btn-xs underline" data-id="{$vo.id}" type="button" data-url="{:Url('unrelation',array('id'=>$vo['id']))}" ><i class="fa fa-warning"></i> 取消关联</button>
+                            {else}
+                            <button style="margin-top: 5px;" class="btn btn-warning btn-xs openWindow" data-id="{$vo.id}" type="button" data-url="{:Url('relation',array('id'=>$vo['id']))}" ><i class="fa fa-warning"></i> 关联</button>
+                            {/if}
+                            <button  style="margin-top: 5px;" class="btn btn-warning btn-xs del_news_one" data-id="{$vo.id}" type="button" data-url="{:Url('delete',array('id'=>$vo['id']))}" ><i class="fa fa-warning"></i> 删除</button>
                         </td>
                     </tr>
                     {/volist}
@@ -97,5 +102,24 @@
             });
         })
     });
+
+    $('.openWindow').on('click',function () {
+        return $eb.createModalFrame('选择产品',$(this).data('url'));
+    });
+
+    $('.underline').on('click',function () {
+        var url=$(this).data('url');
+        $eb.$swal('delete',function(){
+            $eb.axios.get(url).then(function(res){
+                if(res.status == 200 && res.data.code == 200) {
+                    $eb.$swal('success',res.data.msg);
+                    window.location.reload();
+                }else
+                    return Promise.reject(res.data.msg || '取消失败')
+            }).catch(function(err){
+                $eb.$swal('error',err);
+            });
+        },{title:'确认取消关联产品？',text:'取消后可再关联页选择产品重新关联',confirm:'确定'})
+    })
 </script>
 {/block}

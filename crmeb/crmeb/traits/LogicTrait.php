@@ -12,24 +12,7 @@ trait LogicTrait
 
     protected $items = [];
 
-    /*
-     * 魔术方法 对不可访问或不存在的属性调用
-     *
-     * */
-    public function __isset($name)
-    {
-
-    }
-
-    /*
-     * 魔术方法 对不可访问或不存在的属性进行unset时被调用
-     * */
-    public function __unset($name)
-    {
-
-    }
-
-    /*
+    /**
      * 静态方法调用
      * @param  string $method 调用方法
      * @param  mixed  $args   参数
@@ -39,7 +22,7 @@ trait LogicTrait
 
     }
 
-    /*
+    /**
      * 执行本类的方法
      * @param string $carryoutname 方法名
      * @return boolean
@@ -55,10 +38,10 @@ trait LogicTrait
         }
     }
 
-    /*
+    /**
      * 配置参数
-     *
-     * */
+     * @param array $config
+     */
     protected function setConfig(array $config=[])
     {
         foreach ($config as $key => $value) {
@@ -66,12 +49,13 @@ trait LogicTrait
         }
     }
 
-    /*
+    /**
      * 设置参数
-     * @param array $array
-     * @param string $key
-     * @param string $value
-     * */
+     * @param $array
+     * @param $key
+     * @param $value
+     * @return mixed
+     */
     protected function set(&$array, $key, $value)
     {
         if (is_null($key)) return $array = $value;
@@ -87,10 +71,9 @@ trait LogicTrait
         return $array;
     }
 
-    /*
+    /**
      * 实例化类
-     *
-     * */
+     */
     protected function registerProviders()
     {
         foreach ($this->providers as $key=>$provider)
@@ -99,10 +82,10 @@ trait LogicTrait
         }
     }
 
-    /*
+    /**
      * 获取类内配置信息
      * @param object $pimple
-     * @return this
+     * @return $this
      * */
     protected function register($pimple,$key)
     {
@@ -116,10 +99,10 @@ trait LogicTrait
         return $this;
     }
 
-    /*
+    /**
      * 实例化本类
      * @param array $config
-     * @return this
+     * @return $this
      * */
     public static function instance($config=[])
     {

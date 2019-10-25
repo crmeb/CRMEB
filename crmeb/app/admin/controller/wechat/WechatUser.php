@@ -249,11 +249,11 @@ class WechatUser extends AuthController
     public function group($refresh = 0)
     {
         $list=[];
-        if($refresh == 1) {
-            UserModel::clearUserGroup();
-            $this->redirect(Url::buildUrl('group'));
-        }
         try{
+            if($refresh == 1) {
+                UserModel::clearUserGroup();
+                $this->redirect(Url::buildUrl('group'));
+            }
             $list = UserModel::getUserGroup();
         }catch (\Exception $e){}
         $this->assign(compact('list'));

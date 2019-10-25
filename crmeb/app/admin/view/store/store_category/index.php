@@ -62,7 +62,11 @@
                     </div>
                     <table class="layui-hide" id="List" lay-filter="List"></table>
                     <script type="text/html" id="pic">
+                        {{# if(d.pic){ }}
                         <img style="cursor: pointer" lay-event='open_image' src="{{d.pic}}">
+                        {{# }else{ }}
+                        暂无图片
+                        {{# } }}
                     </script>
                     <script type="text/html" id="is_show">
                         <input type='checkbox' name='id' lay-skin='switch' value="{{d.id}}" lay-filter='is_show' lay-text='显|隐'  {{ d.is_show == 1 ? 'checked' : '' }}>
@@ -101,7 +105,7 @@
             {field: 'pid', title: '查看子分类',templet:'#pid',align:'center',width:'8%'},
             {field: 'pic', title: '分类图标',templet:'#pic',align:'center'},
             {field: 'sort', title: '排序',sort: true,event:'sort',edit:'sort',width:'8%',align:'center'},
-            {field: 'is_show', title: '状态',templet:'#is_show',width:'6%',align:'center'},
+            {field: 'is_show', title: '状态',templet:'#is_show',width:'10%',align:'center'},
             {field: 'right', title: '操作',align:'center',toolbar:'#act',width:'10%',align:'center'},
         ];
     });

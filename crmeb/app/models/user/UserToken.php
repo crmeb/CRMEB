@@ -25,6 +25,12 @@ class UserToken extends Model
             $token['login_ip'] = app()->request->ip();
     }
 
+    /**
+     * 创建token并且保存
+     * @param User $user
+     * @param $type
+     * @return UserToken
+     */
     public static function createToken(User $user, $type): self
     {
         $tokenInfo = $user->getToken($type);

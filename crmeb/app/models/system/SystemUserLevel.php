@@ -61,12 +61,16 @@ class SystemUserLevel extends BaseModel
         return $model->value('discount');
     }
 
-    /*
+
+    /**
      * 获取用户等级和当前等级
-     * @param int $uid 用户uid
-     * @param Boolean $isArray 是否查找任务列表
-     * @return array
-     * */
+     * @param $uid 用户uid
+     * @param bool $isArray 是否查找任务列表
+     * @return array|bool|mixed|string|\think\Model|null
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\exception\DbException
+     */
     public static function getLevelInfo($uid,$isArray=false){
         $level = ['id'=>0];
         $task = [];
@@ -78,52 +82,69 @@ class SystemUserLevel extends BaseModel
         else return $level['id'] && $id !== false ? $level : false;
     }
 
-    /*
+    /**
      * 获取会员等级级别
-     * @param int $leval_id 等级id
-     * @return Array
-     * */
+     * @param $leval_id 等级id
+     * @return mixed
+     */
     public static function getLevelGrade($leval_id)
     {
         return self::setWhere()->where('id',$leval_id)->value('grade');
     }
-    /*
+
+    /**
      * 获取会员等级列表
-     * @param int $levael_id 用户等级
-     * @param Boolean $isArray 是否查找任务列表
-     * @return Array
-     * */
-    public static function getLevelListAndGrade($leval_id,$isArray,$expire=1400)
+     * @param $leval_id 用户等级
+     * @param $isArray 是否查找任务列表
+     * @param int $expire
+     * @return array|\think\Collection
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\exception\DbException
+     */
+    public static function getLevelListAndGrade($leval_id,$isArray)
     {
         $grade = 0;
-        if(!$leval_id) $leval_id = self::setWhere()->where('grade', self::setWhere()->min('grade'))->order('add_time DESC')->value('id');
+        if(!$leval_id && !$isArray) $leval_id = self::setWhere()->where('grade', self::setWhere()->min('grade'))->order('add_time DESC')->value('id');
         $list = self::setWhere()->field('name,discount,image,icon,explain,id,grade')->order('grade asc')->select();
         $list = count($list) ? $list->toArray() : [];
         foreach ($list as $item){
-            if($item['id'] == $leval_id) $grade = $item['grade'];
-            if($isArray) $item['task_list'] = SystemUserTask::getTashList($item['id']);
+            if($item['id'] == $leval_id)
+                $grade = $item['grade'];
+
+            if($isArray)
+                $item['task_list'] = SystemUserTask::getTashList($item['id']);
         }
-        foreach ($list as &$item){
-            if($grade <= $item['grade']) $item['is_clear']=true;
-            else $item['is_clear']=false;
+        foreach ($list as &$item) {
+            if($grade < $item['grade'])
+                $item['is_clear'] = true;
+            else
+                $item['is_clear'] = false;
         }
         return $list;
     }
 
+    /**
+     *
+     * @param $leval_id
+     * @param null $list
+     * @return bool
+     */
     public static function getClear($leval_id,$list=null)
     {
-        $list=$list===null ?  self::getLevelListAndGrade($leval_id,false) : $list;
+        $list= $list === null ?  self::getLevelListAndGrade($leval_id,false) : $list;
         foreach ($list as $item){
-            if($item['id']==$leval_id) return $item['is_clear'];
+            if($item['id'] == $leval_id) return $item['is_clear'];
         }
         return false;
     }
 
-    /*
+
+    /**
      * 获取当前vipid 的下一个会员id
-     * @param int $leval_id 当前用户的会员id
-     * @return int
-     * */
+     * @param $leval_id 当前用户的会员id
+     * @return int|mixed
+     */
     public static function getNextLevelId($leval_id)
     {
         $list=self::getLevelListAndGrade($leval_id,false);
@@ -138,11 +159,11 @@ class SystemUserLevel extends BaseModel
         return isset($leveal[0]) ? $leveal[0] : 0;
     }
 
-    /*
+    /**
      * 获取会员等级列表
-     * @parma int $uid 用户uid
-     * @return Array
-     * */
+     * @param $uid
+     * @return array
+     */
     public static function getLevelList($uid){
         list($list,$task) = self::getLevelInfo($uid,true);
         return ['list'=>$list,'task'=>$task];

@@ -250,7 +250,7 @@ class SystemGroupData extends AuthController
 
     public function upload()
     {
-        $res = Upload::image('file','common');
+        $res = Upload::getInstance()->setUploadPath('common')->image('file');
         if(!is_array($res)) return Json::fail($res);
         SystemAttachment::attachmentAdd($res['name'],$res['size'],$res['type'],$res['dir'],$res['thumb_path'],6,$res['image_type'],$res['time']);
         return Json::successful('图片上传成功!',['name'=>$res['name'],'url'=>Upload::pathToUrl($res['thumb_path'])]);

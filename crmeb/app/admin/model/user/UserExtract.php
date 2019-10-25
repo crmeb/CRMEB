@@ -110,7 +110,7 @@ class UserExtract extends BaseModel
                 'keyword2'=>date('Y-m-d H:i:s',time()),
                 'keyword3'=>$extract_number,
                 'remark'=>'错误原因:'.$fail_msg
-            ],Url::buildUrl('wap/my/user_pro',[],true,true));
+            ],Url::buildUrl('/user/cashrecord')->suffix('')->domain(true)->build());
         }else if(strtolower($User['user_type'])=='routine'){
             RoutineTemplate::sendOut('USER_EXTRACT_FALSE',$uid,[
                 'keyword1'=>$fail_msg,
@@ -156,7 +156,7 @@ class UserExtract extends BaseModel
                     'keyword2' => date('Y-m-d H:i:s', time()),
                     'keyword3' => $extractNumber,
                     'remark' => '点击查看我的佣金明细'
-                ], Url::buildUrl('wap/my/user_pro', [], true, true));
+                ], Url::buildUrl('/user/cashrecord')->suffix('')->domain(true)->build());
             }
         }
         return self::edit(['status'=>1],$id);

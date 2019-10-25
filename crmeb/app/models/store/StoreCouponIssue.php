@@ -50,16 +50,20 @@ class StoreCouponIssue extends BaseModel
             }]);
 
         $list = $list->select();
-        foreach ($list as &$v) {
+        foreach ($list as $k=>$v) {
             $v['is_use'] = $uid ? isset($v->used) : false;
-//            if (!$v['is_use']) {
-//                $v['is_use'] = $v['remain_count'] <= 0 && !$v['is_permanent'] ? false : $v['is_use'];
+//            if(!$v['is_use']){
+//                $v['is_use']=$v['remain_count'] <= 0 && !$v['is_permanent'] ? 2 : $v['is_use'];
 //            }
-            if ($v['end_time']) {
-                $v['start_time'] = date('Y/m/d', $v['start_time']);
-                $v['end_time'] = $v['end_time'] ? date('Y/m/d', $v['end_time']) : date('Y/m/d', time() + 86400);
+            if(!$v['end_time']){
+                $v['add_time']= '';
+                $v['end_time'] = '不限时';
+            }else{
+                $v['add_time']=date('Y/m/d',$v['add_time']);
+                $v['end_time']=$v['end_time'] ? date('Y/m/d',$v['end_time']) : date('Y/m/d',time()+86400);
             }
-            $v['coupon_price'] = (float)$v['coupon_price'];
+            $v['coupon_price']=(int)$v['coupon_price'];
+            $list[$k] = $v;
         }
 
         return $list->hidden(['is_del', 'status', 'used', 'add_time'])->toArray();

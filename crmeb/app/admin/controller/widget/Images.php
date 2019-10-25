@@ -71,7 +71,8 @@ class Images extends AuthController
         $upload_type = $this->request->get('upload_type',0);
         try{
             $path = make_path('attach');
-            $res = Upload::image('file',$path,true,true,null,'uniqid',$upload_type);
+            $res = Upload::getInstance()->setUploadPath($path)->setAutoValidate(true)
+                ->setUploadType($upload_type)->image('file');
             if(is_object($res) && $res->status === false){
                 $info = array(
                     'code' =>400,

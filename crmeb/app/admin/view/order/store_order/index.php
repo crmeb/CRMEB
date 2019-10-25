@@ -91,6 +91,7 @@
                 <div class="layui-card-body">
                     <div class="layui-btn-container" id="container-action">
                         <button class="layui-btn layui-btn-sm" data-type="del_order">批量删除订单</button>
+                        <button class="layui-btn layui-btn-sm layui-btn-warm" data-type="write_order">订单核销</button>
                     </div>
                     <table class="layui-hide" id="List" lay-filter="List"></table>
                     <!--订单-->
@@ -102,6 +103,12 @@
                     <!--用户信息-->
                     <script type="text/html" id="userinfo">
                         {{d.nickname==null ? '暂无信息':d.nickname}}/{{d.uid}}
+                    </script>
+                    <!--分销员信息-->
+                    <script type="text/html" id="spread_uid">
+                        {{# if(d.spread_uid != 0){ }}
+                        <button class="btn btn-default btn-xs btn-outline" type="button" onclick="$eb.createModalFrame('推荐人信息','{:Url('order_spread_user')}?uid={{d.spread_uid}}',{w:600,h:400})">{{d.spread_nickname}}</button>
+                        {{# }else{ }}无{{# } }}
                     </script>
                     <!--支付状态-->
                     <script type="text/html" id="paid">
@@ -169,8 +176,10 @@
                             </li>
                         </ul>
                         {{#  }else if(d._status==2){ }}
+                        {{# if(d.shipping_type==1){ }}
                         <button class="btn btn-primary btn-xs" type="button" onclick="$eb.createModalFrame('发送货','{:Url('order_goods')}?id={{d.id}}',{w:400,h:250})">
                             <i class="fa fa-cart-plus"></i> 发送货</button>
+                        {{# } }}
                         <button type="button" class="layui-btn layui-btn-xs" onclick="dropdown(this)">操作 <span class="caret"></span></button>
                         <ul class="layui-nav-child layui-anim layui-anim-upbit">
                             <li>
@@ -367,6 +376,7 @@
             {type:'checkbox'},
             {field: 'order_id', title: '订单号', sort: true,event:'order_id',width:'14%',templet:'#order_id'},
             {field: 'nickname', title: '用户信息',templet:'#userinfo',width:'10%',align:'center'},
+            {field: 'spread_uid', title: '推荐人信息',templet:'#spread_uid',width:'10%',align:'center'},
             {field: 'info', title: '商品信息',templet:"#info",height: 'full-20'},
             {field: 'pay_price', title: '实际支付',width:'8%',align:'center'},
             {field: 'paid', title: '支付状态',templet:'#paid',width:'8%',align:'center'},
@@ -449,7 +459,10 @@
             }else{
                 layList.msg('请选择要删除的订单');
             }
-        }
+        },
+        write_order:function () {
+            return $eb.createModalFrame('订单核销',layList.U({a:'write_order'}),{w:500,h:400});
+        },
     };
     $('#container-action').find('button').each(function () {
         $(this).on('click',function(){
@@ -513,6 +526,7 @@
                     {name: '未支付', value: 0,count:orderCount.wz},
                     {name: '未发货', value: 1,count:orderCount.wf,class:true},
                     {name: '待收货', value: 2,count:orderCount.ds},
+                    {name: '待核销', value: 5,count:orderCount.write_off},
                     {name: '待评价', value: 3,count:orderCount.dp},
                     {name: '交易完成', value: 4,count:orderCount.jy},
                     {name: '退款中', value: -1,count:orderCount.tk,class:true},
@@ -590,6 +604,7 @@
             mounted:function () {
                 var that=this;
                 that.getBadge();
+                window.formReload = this.search;
                 layList.laydate.render({
                     elem:this.$refs.date_time,
                     trigger:'click',

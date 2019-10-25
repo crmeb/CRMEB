@@ -503,7 +503,7 @@ class User extends BaseModel
                 ]
             ]
         ];
-       return compact('shop_data','shop_xdata','fenbu_data','fenbu_xdata','seriesdata','xdata','Zoom');
+       return compact('shop_data','shop_xdata','seriesdata','Zoom');
     }
     //获取$date的前一天或者其他的时间段
     public static function getOldDate($where,$moedls=null){
@@ -687,7 +687,7 @@ class User extends BaseModel
             ],
             [
                 'title'=>'本月消费金额',
-                'value'=>StoreOrder::where('uid',$uid)->whereTime('add_time','month')->sum('total_price'),
+                'value'=>StoreOrder::where('uid',$uid)->where('paid',1)->whereTime('add_time','month')->sum('total_price'),
                 'key'=>'元',
                 'class'=>'',
             ]

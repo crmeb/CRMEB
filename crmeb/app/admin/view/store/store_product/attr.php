@@ -116,8 +116,12 @@
                             <span :class="attr.check ? 'check':''">库存:</span>&nbsp;&nbsp;<i-Input placeholder="库存" v-model="attr.sales" style="width: 60%"
                                                                                                   :number="true"></i-Input>
                         </i-Col>
-                        <i-Col span="4">
+                        <i-Col span="6">
                             <span :class="attr.check ? 'check':''">成本价:</span>&nbsp;&nbsp;<i-Input placeholder="成本价" v-model="attr.cost" style="width: 60%"
+                                                                                                   :number="true"></i-Input>
+                        </i-Col>
+                        <i-Col span="6">
+                            <span :class="attr.check ? 'check':''">产品编号:</span>&nbsp;&nbsp;<i-Input placeholder="产品编号" v-model="attr.bar_code" style="width: 60%"
                                                                                                    :number="true"></i-Input>
                         </i-Col>
                         <i-Col span="2" offset="1" style="margin-right: 2px">

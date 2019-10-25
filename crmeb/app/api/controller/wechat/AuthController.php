@@ -14,13 +14,23 @@ use app\models\user\User;
 use app\models\routine\RoutineFormId;
 use think\facade\Cache;
 
+/**
+ * 小程序相关
+ * Class AuthController
+ * @package app\api\controller\wechat
+ */
 class AuthController
 {
-    /*
+
+    /**
      * 小程序授权登录
-     * @param json
-     *
-     * */
+     * @param Request $request
+     * @return mixed
+     * @throws \Psr\SimpleCache\InvalidArgumentException
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\exception\DbException
+     */
     public function mp_auth(Request $request)
     {
         $cache_key = '';
@@ -61,10 +71,8 @@ class AuthController
         $userInfo['code'] = $data['spread_code'];
         $userInfo['session_key'] = $session_key;
         $userInfo['login_type'] = $login_type;
-        $dataOauthInfo = WechatUser::routineOauth($userInfo);
-        $userInfo['uid'] = $dataOauthInfo['uid'];
-        $userInfo['page'] = $dataOauthInfo['page'];
-        $userInfo = User::where('uid',$dataOauthInfo['uid'])->find();
+        $uid = WechatUser::routineOauth($userInfo);
+        $userInfo = User::where('uid',$uid)->find();
         if($userInfo->login_type == 'h5' && ($h5UserInfo = User::where(['account'=>$userInfo->phone,'phone'=>$userInfo->phone,'user_type'=>'h5'])->find()))
             $token = UserToken::createToken($userInfo, 'routine');
         else
@@ -81,31 +89,45 @@ class AuthController
             return app('json')->fail('获取用户访问token失败!');
     }
 
-    /*
-     * 获取小程序授权logo
-     * */
-    public function get_logo()
+    /**
+     * 获取授权logo
+     * @param Request $request
+     * @return mixed
+     */
+    public function get_logo(Request $request)
     {
-        $routine_logo=SystemConfigService::get('routine_logo');
-        if(strstr($routine_logo,'http')===false) $routine_logo = SystemConfigService::get('site_url').$routine_logo;
-        return app('json')->successful(['logo_url'=>str_replace('\\','/',$routine_logo)]);
+        $logoType = $request->get('type',1);
+        switch ((int)$logoType){
+            case 1:
+                $logo=SystemConfigService::get('routine_logo');
+                break;
+            case 2:
+                $logo=SystemConfigService::get('wechat_avatar');
+                break;
+            default:
+                $logo = '';
+                break;
+        }
+        if(strstr($logo,'http')===false && $logo) $logo = SystemConfigService::get('site_url').$logo;
+        return app('json')->successful(['logo_url'=>str_replace('\\','/',$logo)]);
     }
 
-    /*
+    /**
      * 保存form id
-     *
-     * */
+     * @param Request $request
+     * @return mixed
+     */
     public function set_form_id(Request $request)
     {
         $formId = $request->post('formId','');
         if(!$formId) return app('json')->fail('缺少form id');
-        RoutineFormId::SetFormId($formId,$request->uid);
-        return app('json')->successful('保存form id 成功！',['uid'=>$request->uid]);
+        RoutineFormId::SetFormId($formId,$request->uid());
+        return app('json')->successful('保存form id 成功！',['uid'=>$request->uid()]);
     }
 
-    /*
+    /**
      * 小程序支付回调
-     * */
+     */
     public function notify()
     {
         MiniProgramService::handleNotify();

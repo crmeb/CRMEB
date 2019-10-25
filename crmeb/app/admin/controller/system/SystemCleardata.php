@@ -41,12 +41,13 @@ class SystemclearData  extends AuthController
         self::clearData('store_bargain_user',1);
         self::clearData('store_bargain_user_help',1);
         self::clearData('store_product_reply',1);
+        self::clearData('store_product_cate',1);
         self::clearData('routine_qrcode',1);
         self::clearData('routine_form_id',1);
         self::clearData('user_sign',1);
         self::clearData('user_task_finish',1);
         self::clearData('user_level',1);
-        self::clearData('token',1);
+        self::clearData('user_token',1);
         self::clearData('user_group',1);
         $this->delDirAndFile('./public/uploads/store/comment');
         self::clearData('store_product_relation',1);
@@ -62,6 +63,7 @@ class SystemclearData  extends AuthController
         self::clearData('store_combination_attr_result',1);
         self::clearData('store_combination_attr_value',1);
         self::clearData('store_product_attr',1);
+        self::clearData('store_product_cate',1);
         self::clearData('store_product_attr_result',1);
         self::clearData('store_product_attr_value',1);
         self::clearData('store_seckill',1);

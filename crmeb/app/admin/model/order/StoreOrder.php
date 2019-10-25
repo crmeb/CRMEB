@@ -46,13 +46,14 @@ class StoreOrder extends BaseModel
 
     public static function orderCount(){
         $data['wz']=self::statusByWhere(0,new self())->where(['is_system_del'=>0])->count();
-        $data['wf']=self::statusByWhere(1,new self())->where(['is_system_del'=>0])->count();
-        $data['ds']=self::statusByWhere(2,new self())->where(['is_system_del'=>0])->count();
+        $data['wf']=self::statusByWhere(1,new self())->where(['is_system_del'=>0,'shipping_type'=>1])->count();
+        $data['ds']=self::statusByWhere(2,new self())->where(['is_system_del'=>0,'shipping_type'=>1])->count();
         $data['dp']=self::statusByWhere(3,new self())->where(['is_system_del'=>0])->count();
         $data['jy']=self::statusByWhere(4,new self())->where(['is_system_del'=>0])->count();
         $data['tk']=self::statusByWhere(-1,new self())->where(['is_system_del'=>0])->count();
         $data['yt']=self::statusByWhere(-2,new self())->where(['is_system_del'=>0])->count();
         $data['del']=self::statusByWhere(-4,new self())->where(['is_system_del'=>0])->count();
+        $data['write_off'] =self::statusByWhere(5,new self())->where(['is_system_del'=>0])->count();
         $data['general']=self::where(['pink_id'=>0,'combination_id'=>0,'seckill_id'=>0,'bargain_id'=>0,'is_system_del'=>0])->count();
         $data['pink']=self::where('pink_id|combination_id','>',0)->where('is_system_del',0)->count();
         $data['seckill']=self::where('seckill_id','>',0)->where('is_system_del',0)->count();
@@ -61,7 +62,7 @@ class StoreOrder extends BaseModel
     }
 
     public static function OrderList($where){
-        $model = self::getOrderWhere($where,self::alias('a')->join('user r','r.uid=a.uid','LEFT'),'a.','r')->field('a.*,r.nickname,r.phone');
+        $model = self::getOrderWhere($where,self::alias('a')->join('user r','r.uid=a.uid','LEFT'),'a.','r')->field('a.*,r.nickname,r.phone,r.spread_uid');
         if($where['order']!=''){
             $model = $model->order(self::setOrder($where['order']));
         }else{
@@ -72,14 +73,18 @@ class StoreOrder extends BaseModel
         }else{
             $data=($data=$model->page((int)$where['page'],(int)$where['limit'])->select()) && count($data) ? $data->toArray() : [];
         }
-//        $data=($data=$model->page((int)$where['page'],(int)$where['limit'])->select()) && count($data) ? $data->toArray() : [];
+
         foreach ($data as &$item){
             $_info = Db::name('store_order_cart_info')->where('oid',$item['id'])->field('cart_info')->select();
             $_info = count($_info) ? $_info->toArray() : [];
             foreach ($_info as $k=>$v){
-                $_info[$k]['cart_info'] = json_decode($v['cart_info'],true);
+                $cart_info = json_decode($v['cart_info'],true);
+                if(!isset($cart_info['productInfo'])) $cart_info['productInfo']=[];
+                $_info[$k]['cart_info'] = $cart_info;
+                unset($cart_info);
             }
             $item['_info'] = $_info;
+            $item['spread_nickname'] = Db::name('user')->where('uid',$item['spread_uid'])->value('nickname');
             $item['add_time'] = date('Y-m-d H:i:s',$item['add_time']);
             if($item['pink_id'] || $item['combination_id']){
                 $pinkStatus = StorePink::where('order_id_key',$item['id'])->value('status');
@@ -108,8 +113,13 @@ class StoreOrder extends BaseModel
                 $item['pink_name'] = '[砍价订单]';
                 $item['color'] = '#12c5e9';
             }else{
-                $item['pink_name'] = '[普通订单]';
-                $item['color'] = '#895612';
+                if($item['shipping_type']==1){
+                    $item['pink_name'] = '[普通订单]';
+                    $item['color'] = '#895612';
+                }else if($item['shipping_type']==2){
+                    $item['pink_name'] = '[核销订单]';
+                    $item['color'] = '#8956E8';
+                }
             }
             if($item['paid']==1){
                 switch ($item['pay_type']){
@@ -139,10 +149,14 @@ class StoreOrder extends BaseModel
             }
             if($item['paid']==0 && $item['status']==0){
                 $item['status_name']='未支付';
-            }else if($item['paid']==1 && $item['status']==0 && $item['refund_status']==0){
+            }else if($item['paid']==1 && $item['status']==0 && $item['shipping_type']==1 && $item['refund_status']==0){
                 $item['status_name']='未发货';
-            }else if($item['paid']==1 && $item['status']==1 && $item['refund_status']==0){
+            }else if($item['paid']==1 && $item['status']==0 && $item['shipping_type']==2 && $item['refund_status']==0){
+                $item['status_name']='未核销';
+            }else if($item['paid']==1 && $item['status']==1 && $item['shipping_type']==1 && $item['refund_status']==0){
                 $item['status_name']='待收货';
+            }else if($item['paid']==1 && $item['status']==1 && $item['shipping_type']==2 && $item['refund_status']==0){
+                $item['status_name']='未核销';
             }else if($item['paid']==1 && $item['status']==2 && $item['refund_status']==0){
                 $item['status_name']='待评价';
             }else if($item['paid']==1 && $item['status']==3 && $item['refund_status']==0){
@@ -342,21 +356,23 @@ HTML;
         else if($status == 8)
             return $model;
         else if($status == 0)//未支付
-            return $model->where($alert.'paid',0)->where($alert.'status',0)->where($alert.'refund_status',0);
+            return $model->where($alert.'paid',0)->where($alert.'status',0)->where($alert.'refund_status',0)->where($alert.'is_del',0);
         else if($status == 1)//已支付 未发货
-            return $model->where($alert.'paid',1)->where($alert.'status',0)->where($alert.'refund_status',0);
+            return $model->where($alert.'paid',1)->where($alert.'status',0)->where($alert.'shipping_type',1)->where($alert.'refund_status',0)->where($alert.'is_del',0);
         else if($status == 2)//已支付  待收货
-            return $model->where($alert.'paid',1)->where($alert.'status',1)->where($alert.'refund_status',0);
+            return $model->where($alert.'paid',1)->where($alert.'status',1)->where($alert.'shipping_type',1)->where($alert.'refund_status',0)->where($alert.'is_del',0);
+        else if($status == 5)//已支付  待核销
+            return $model->where($alert.'paid',1)->where($alert.'status',0)->where($alert.'shipping_type',2)->where($alert.'refund_status',0)->where($alert.'is_del',0);
         else if($status == 3)// 已支付  已收货  待评价
-            return $model->where($alert.'paid',1)->where($alert.'status',2)->where($alert.'refund_status',0);
+            return $model->where($alert.'paid',1)->where($alert.'status',2)->where($alert.'refund_status',0)->where($alert.'is_del',0);
         else if($status == 4)// 交易完成
-            return $model->where($alert.'paid',1)->where($alert.'status',3)->where($alert.'refund_status',0);
+            return $model->where($alert.'paid',1)->where($alert.'status',3)->where($alert.'refund_status',0)->where($alert.'is_del',0);
         else if($status == -1)//退款中
-            return $model->where($alert.'paid',1)->where($alert.'refund_status',1);
+            return $model->where($alert.'paid',1)->where($alert.'refund_status',1)->where($alert.'is_del',0);
         else if($status == -2)//已退款
-            return $model->where($alert.'paid',1)->where($alert.'refund_status',2);
+            return $model->where($alert.'paid',1)->where($alert.'refund_status',2)->where($alert.'is_del',0);
         else if($status == -3)//退款
-            return $model->where($alert.'paid',1)->where($alert.'refund_status','in','1,2');
+            return $model->where($alert.'paid',1)->where($alert.'refund_status','in','1,2')->where($alert.'is_del',0);
         else if($status == -4)//已删除
             return $model->where($alert.'is_del',1);
         else
@@ -406,7 +422,7 @@ HTML;
             'keyword2'=>$order['pay_price'],
             'keyword3'=>date('Y-m-d H:i:s',$order['add_time']),
             'remark'=>'点击查看订单详情'
-        ],Url::buildUrl('wap/My/order',['uni'=>$order['order_id']],true,true));
+        ],Url::buildUrl('/order/detail/'.$order['order_id'])->suffix('')->domain(true)->build());
     }
 
     /**
@@ -1048,7 +1064,7 @@ HTML;
     {
 
         $order = self::where('id',$oid)->find();
-        $url = Url::buildUrl('wap/My/order',['uni'=>$order['order_id']],true,true);
+        $url = Url::buildUrl('/order/detail/'.$order['order_id'])->suffix('')->domain(true)->build();
         $group = [
             'first'=>'亲,您的订单已发货,请注意查收',
             'remark'=>'点击查看订单详情'

@@ -141,11 +141,11 @@ class StoreBargainController
                 $openid = WechatUser::uidToOpenid($bargainUserUid, 'openid');
                 $routineOpenid = WechatUser::uidToOpenid($bargainUserUid, 'routine_openid');
                 if($openid){//公众号
-                    $urlWeChat = Route::buildUrl('activity/dargain_detail/'.$bargainId.'/'.$bargainUserUid)->suffix('')->domain(true)->build();
+                    $urlWeChat = Route::buildUrl('/activity/dargain_detail/'.$bargainId.'/'.$bargainUserUid)->suffix('')->domain(true)->build();
                     WechatTemplateService::sendTemplate($openid,WechatTemplateService::BARGAIN_SUCCESS,[
                         'first'=> '好腻害！你的朋友们已经帮你砍到底价了！',
                         'keyword1'=> $bargainInfo['title'],
-                        'keyword2'=> $bargainInfo['bargain_price_min'],
+                        'keyword2'=> $bargainInfo['min_price'],
                         'remark'=> '点击查看订单详情'
                     ],$urlWeChat);
                 }else if($routineOpenid){ //小程序
@@ -314,7 +314,7 @@ class StoreBargainController
                     if($user['is_promoter'] || SystemConfigService::get('store_brokerage_statu') == 2) $valueData.='&pid='.$user['uid'];
                     $res = RoutineCode::getPageCode('pages/activity/goods_bargain_details/index',$valueData,280);
                     if(!$res) return app('json')->fail('二维码生成失败');
-                    $imageInfo = UploadService::imageStream($name,$res,'routine/activity/bargain/code');
+                    $imageInfo = UploadService::getInstance()->setUploadPath('routine/activity/bargain/code')->imageStream($name,$res);
                     if(!is_array($imageInfo)) return app('json')->fail($imageInfo);
                     if($imageInfo['image_type'] == 1) $remoteImage = UtilService::remoteImage($siteUrl.$imageInfo['dir']);
                     else $remoteImage = UtilService::remoteImage($imageInfo['dir']);

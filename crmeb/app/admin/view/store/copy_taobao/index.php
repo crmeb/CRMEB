@@ -27,6 +27,7 @@
             <div class="layui-card">
                 <div class="layui-card-body">
                     <blockquote class="layui-elem-quote layui-quote-nm">
+                        <p style="color: red">注意：当前采集方式为免费采集，受到淘宝店铺影响需要登陆才可以访问产品详情，可能会导致采集程序不稳定，都属于正常现象，尽情谅解，后期会开发出付费接口采集保证稳定采集！</p>
                         链接格式说明： 输入以http或https开头的淘宝、天猫、1688、京东的商品详情页网址，网址正确且商品信息存在时才能入库成功。生成的产品默认是没有上架的，请手动上架产品！轮播图选中的颜色是绿色边框的请注意
                     </blockquote>
                     <div class="layui-form-item">

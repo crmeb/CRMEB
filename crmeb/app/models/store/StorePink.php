@@ -14,6 +14,7 @@ use app\models\user\WechatUser;
 use crmeb\basic\BaseModel;
 use crmeb\services\WechatTemplateService;
 use crmeb\traits\ModelTrait;
+use think\facade\Log;
 use think\facade\Route;
 
 /**
@@ -195,7 +196,7 @@ class StorePink extends BaseModel
                  $keyword1WeChat = self::where('id|k_id',$pid)->where('uid',$item)->value('order_id');
                  $keyword2WeChat = self::alias('p')->where('p.id|p.k_id',$pid)->where('p.uid',$item)->join('__store_combination__ c','c.id=p.cid')->value('c.title');
                  $remarkWeChat = '点击查看订单详情';
-                 $urlWeChat = Route::buildUrl('order/detail/'.$keyword1WeChat,[],true,true);
+                 $urlWeChat = Route::buildUrl('order/detail/'.$keyword1WeChat)->suffix('')->domain(true)->build();
                  WechatTemplateService::sendTemplate($openid,WechatTemplateService::ORDER_USER_GROUPS_SUCCESS,[
                      'first'=> $firstWeChat,
                      'keyword1'=> $keyword1WeChat,
@@ -228,7 +229,7 @@ class StorePink extends BaseModel
         $routineOpenid = WechatUser::uidToOpenid($uid, 'routine_openid');
         if($isRemove){
             if($openid){//公众号发送模板消息
-                $urlWeChat = Route::buildUrl('order/detail/'.$pink->order_id,[],true,true);
+                $urlWeChat = Route::buildUrl('order/detail/'.$pink->order_id)->suffix('')->domain(true)->build();
                 WechatTemplateService::sendTemplate($openid,WechatTemplateService::ORDER_USER_GROUPS_LOSE,[
                     'first'=>'亲，您的拼团取消',
                     'keyword1'=> $store->title,
@@ -245,7 +246,7 @@ class StorePink extends BaseModel
             }
         }else{
             if($openid){//公众号发送模板消息
-                $urlWeChat = Route::buildUrl('order/detail/'.$pink->order_id,[],true,true);
+                $urlWeChat = Route::buildUrl('order/detail/'.$pink->order_id)->suffix('')->domain(true)->build();
                 WechatTemplateService::sendTemplate($openid,WechatTemplateService::ORDER_USER_GROUPS_LOSE,[
                     'first'=>'亲，您的拼团失败',
                     'keyword1'=> $store->title,
@@ -384,93 +385,95 @@ class StorePink extends BaseModel
         $order = StoreOrder::tidyOrder($order,true)->toArray();
         $openid = WechatUser::uidToOpenid($order['uid'], 'openid');
         $routineOpenid = WechatUser::uidToOpenid($order['uid'], 'routine_openid');
-        $productTitle = StoreCombination::where('id',$order['combination_id'])->value('title');
-        if($order['pink_id']){//拼团存在
-            $res = false;
-            $pink['uid'] = $order['uid'];//用户id
-            if(self::isPinkBe($pink,$order['pink_id'])) return false;
-            $pink['order_id'] = $order['order_id'];//订单id  生成
-            $pink['order_id_key'] = $order['id'];//订单id  数据库id
-            $pink['total_num'] = $order['total_num'];//购买个数
-            $pink['total_price'] = $order['pay_price'];//总金额
-            $pink['k_id'] = $order['pink_id'];//拼团id
-            foreach ($order['cartInfo'] as $v){
-                $pink['cid'] = $v['combination_id'];//拼团产品id
-                $pink['pid'] = $v['product_id'];//产品id
-                $pink['people'] = StoreCombination::where('id',$v['combination_id'])->value('people');//几人拼团
-                $pink['price'] = $v['productInfo']['price'];//单价
-                $pink['stop_time'] = 0;//结束时间
-                $pink['add_time'] = time();//开团时间
-                $res = self::create($pink)->toArray();
+        $product = StoreCombination::where('id',$order['combination_id'])->field('effective_time,title')->find();
+        if($product){
+            if($order['pink_id']){//拼团存在
+                $res = false;
+                $pink['uid'] = $order['uid'];//用户id
+                if(self::isPinkBe($pink,$order['pink_id'])) return false;
+                $pink['order_id'] = $order['order_id'];//订单id  生成
+                $pink['order_id_key'] = $order['id'];//订单id  数据库id
+                $pink['total_num'] = $order['total_num'];//购买个数
+                $pink['total_price'] = $order['pay_price'];//总金额
+                $pink['k_id'] = $order['pink_id'];//拼团id
+                foreach ($order['cartInfo'] as $v){
+                    $pink['cid'] = $v['combination_id'];//拼团产品id
+                    $pink['pid'] = $v['product_id'];//产品id
+                    $pink['people'] = StoreCombination::where('id',$v['combination_id'])->value('people');//几人拼团
+                    $pink['price'] = $v['productInfo']['price'];//单价
+                    $pink['stop_time'] = 0;//结束时间
+                    $pink['add_time'] = time();//开团时间
+                    $res = self::create($pink)->toArray();
+                }
+                if($openid){ //公众号模板消息
+                    $urlWeChat = Route::buildUrl('order/detail/'.$order['order_id'])->suffix('')->domain(true)->build();
+                    WechatTemplateService::sendTemplate($openid,WechatTemplateService::ORDER_USER_GROUPS_SUCCESS,[
+                        'first'=> '亲，您已成功参与拼团',
+                        'keyword1'=> $order['order_id'],
+                        'keyword2'=> $product->title,
+                        'remark'=> '点击查看订单详情'
+                    ],$urlWeChat);
+                }else if($routineOpenid){
+                    RoutineTemplate::sendOut('PINK_TRUE',$order['uid'],[
+                        'keyword1'=>$product->title,
+                        'keyword2'=>User::where('uid',self::where('id',$pink['k_id'])->value('uid'))->value('nickname'),
+                        'keyword3'=>date('Y-m-d H:i:s',$pink['add_time']),
+                        'keyword3'=>$pink['total_price'],
+                    ],'','/pages/order_details/index?order_id='.$pink['order_id']);
+                }
+                //处理拼团完成
+                list($pinkAll,$pinkT,$count,$idAll,$uidAll)=self::getPinkMemberAndPinkK($pink);
+                if($pinkT['status']==1){
+                    if(!$count)//组团完成
+                        self::PinkComplete($uidAll,$idAll,$pink['uid'],$pinkT);
+                    else
+                        self::PinkFail($pinkAll,$pinkT,0);
+                }
+                if($res) return true;
+                else return false;
+            }else{
+                $res = false;
+                $pink['uid'] = $order['uid'];//用户id
+                $pink['order_id'] = $order['order_id'];//订单id  生成
+                $pink['order_id_key'] = $order['id'];//订单id  数据库id
+                $pink['total_num'] = $order['total_num'];//购买个数
+                $pink['total_price'] = $order['pay_price'];//总金额
+                $pink['k_id'] = 0;//拼团id
+                foreach ($order['cartInfo'] as $v){
+                    $pink['cid'] = $v['combination_id'];//拼团产品id
+                    $pink['pid'] = $v['product_id'];//产品id
+                    $pink['people'] = StoreCombination::where('id',$v['combination_id'])->value('people');//几人拼团
+                    $pink['price'] = $v['productInfo']['price'];//单价
+                    $pink['stop_time'] = bcadd(time(),bcmul($product->effective_time,3600,0),0);//结束时间
+                    $pink['add_time'] = time();//开团时间
+                    $res1 = self::create($pink)->toArray();
+                    $res2 = StoreOrder::where('id',$order['id'])->update(['pink_id'=>$res1['id']]);
+                    $res = $res1 && $res2;
+                }
+                // 开团成功发送模板消息
+                if($openid && !$order['is_channel']){ //公众号模板消息
+                    $urlWeChat = Route::buildUrl('/order/detail/'.$pink['order_id'])->suffix('')->domain(true)->build();
+                    WechatTemplateService::sendTemplate($openid,WechatTemplateService::OPEN_PINK_SUCCESS,[
+                        'first'=> '您好，您已成功开团！赶紧与小伙伴们分享吧！！！',
+                        'keyword1'=> $product->title,
+                        'keyword2'=> $pink['total_price'],
+                        'keyword3'=> $pink['people'],
+                        'remark'=> '点击查看订单详情'
+                    ],$urlWeChat);
+                }else if($routineOpenid && $order['is_channel']){
+                    RoutineTemplate::sendOut('OPEN_PINK_SUCCESS',$order['uid'],[
+                        'keyword1'=>date('Y-m-d H:i:s',$pink['add_time']),
+                        'keyword2'=>date('Y-m-d H:i:s',$pink['stop_time']),
+                        'keyword3'=>$product->title,
+                        'keyword4'=>$pink['order_id'],
+                        'keyword4'=>$pink['total_price'],
+                    ],'','/pages/order_details/index?order_id='.$pink['order_id']);
+                }
+                if($res) return true;
+                else return false;
             }
-            if($openid){ //公众号模板消息
-                $urlWeChat = Route::buildUrl('order/detail/'.$order['order_id'],[],true,true);
-                WechatTemplateService::sendTemplate($openid,WechatTemplateService::ORDER_USER_GROUPS_SUCCESS,[
-                    'first'=> '亲，您已成功参与拼团',
-                    'keyword1'=> $order['order_id'],
-                    'keyword2'=> $productTitle,
-                    'remark'=> '点击查看订单详情'
-                ],$urlWeChat);
-            }else if($routineOpenid){
-                RoutineTemplate::sendOut('PINK_TRUE',$order['uid'],[
-                    'keyword1'=>$productTitle,
-                    'keyword2'=>User::where('uid',self::where('id',$pink['k_id'])->value('uid'))->value('nickname'),
-                    'keyword3'=>date('Y-m-d H:i:s',$pink['add_time']),
-                    'keyword3'=>$pink['total_price'],
-                ],'','/pages/order_details/index?order_id='.$pink['order_id']);
-            }
-            //处理拼团完成
-            list($pinkAll,$pinkT,$count,$idAll,$uidAll)=self::getPinkMemberAndPinkK($pink);
-            if($pinkT['status']==1){
-                if(!$count)//组团完成
-                    self::PinkComplete($uidAll,$idAll,$pink['uid'],$pinkT);
-                else
-                    self::PinkFail($pinkAll,$pinkT,0);
-            }
-            if($res) return true;
-            else return false;
         }else{
-            $res = false;
-            $pink['uid'] = $order['uid'];//用户id
-            $pink['order_id'] = $order['order_id'];//订单id  生成
-            $pink['order_id_key'] = $order['id'];//订单id  数据库id
-            $pink['total_num'] = $order['total_num'];//购买个数
-            $pink['total_price'] = $order['pay_price'];//总金额
-            $pink['k_id'] = 0;//拼团id
-            foreach ($order['cartInfo'] as $v){
-                $pink['cid'] = $v['combination_id'];//拼团产品id
-                $pink['pid'] = $v['product_id'];//产品id
-                $pink['people'] = StoreCombination::where('id',$v['combination_id'])->value('people');//几人拼团
-                $pink['price'] = $v['productInfo']['price'];//单价
-//                $stopTime = StoreCombination::where('id',$v['combination_id'])->value('stop_time');//获取拼团产品结束的时间
-//                if($stopTime < time()+86400)  $pink['stop_time'] = $stopTime;//结束时间
-                $pink['stop_time'] = time()+86400;//结束时间
-                $pink['add_time'] = time();//开团时间
-                $res1 = self::create($pink)->toArray();
-                $res2 = StoreOrder::where('id',$order['id'])->update(['pink_id'=>$res1['id']]);
-                $res = $res1 && $res2;
-            }
-            // 开团成功发送模板消息
-            if($openid){ //公众号模板消息
-                $urlWeChat = Route::buildUrl('order/detail/'.$pink['order_id'],[],true,true);
-                WechatTemplateService::sendTemplate($openid,WechatTemplateService::OPEN_PINK_SUCCESS,[
-                    'first'=> '您好，您已成功开团！赶紧与小伙伴们分享吧！！！',
-                    'keyword1'=> $productTitle,
-                    'keyword2'=> $pink['total_price'],
-                    'keyword3'=> $pink['people'],
-                    'remark'=> '点击查看订单详情'
-                ],$urlWeChat);
-            }else if($routineOpenid){
-                RoutineTemplate::sendOut('OPEN_PINK_SUCCESS',$order['uid'],[
-                    'keyword1'=>date('Y-m-d H:i:s',$pink['add_time']),
-                    'keyword2'=>date('Y-m-d H:i:s',$pink['stop_time']),
-                    'keyword3'=>$productTitle,
-                    'keyword4'=>$pink['order_id'],
-                    'keyword4'=>$pink['total_price'],
-                ],'','/pages/order_details/index?order_id='.$pink['order_id']);
-            }
-            if($res) return true;
-            else return false;
+            Log::error('拼团支付成功读取产品数据失败订单号：'.$order['order_id']);
         }
     }
     /*
@@ -578,7 +581,7 @@ class StorePink extends BaseModel
             $pinkT = $pink;
         }
         $pinkT = $pinkT->hidden(['order_id','total_price','cid','pid','add_time','k_id','is_tpl','is_refund'])->toArray();
-        $pinkAll = $pinkAll->hidden(['order_id','total_price','cid','pid','add_time','k_id','is_tpl','is_refund'])->toArray();
+        $pinkAll = $pinkAll->hidden(['total_price','cid','pid','add_time','k_id','is_tpl','is_refund'])->toArray();
         $count = (int)bcadd(count($pinkAll), 1, 0);
         $count = (int)bcsub($pinkT['people'], $count, 0);
         $idAll = [];
@@ -613,7 +616,7 @@ class StorePink extends BaseModel
         try{
             list($pinkAll,$pinkT,$count,$idAll,$uidAll)=self::getPinkMemberAndPinkK($pinkT);
             if(count($pinkAll)){
-                if(self::getPinkPeople($pink_id,$pinkT->people)){
+                if(self::getPinkPeople($pink_id,$pinkT['people'])){
                     //拼团未完成，拼团有成员取消开团取 紧跟团长后拼团的人
                     if(isset($pinkAll[0])) $nextPinkT=$pinkAll[0];
                 }else{
@@ -627,8 +630,7 @@ class StorePink extends BaseModel
                 $formId = RoutineFormId::getFormIdOne($uid);
                 if($formId) RoutineFormId::delFormIdOne($formId);
                 self::orderPinkAfterNo($pinkT['uid'],$pinkT['id'],$formId,'拼团取消开团',true);
-            }
-            else
+            }else
                 return self::setErrorInfo(['status'=>200,'msg'=>StoreOrder::getErrorInfo()],true);
             //当前团有人的时候
             if(is_array($nextPinkT)){
@@ -639,7 +641,7 @@ class StorePink extends BaseModel
             self::commitTrans();
             return true;
         }catch (\Exception $e){
-            return self::setErrorInfo($e->getLine().':'.$e->getMessage(),true);
+            return self::setErrorInfo($e->getLine().':'.$e->getMessage().':'.$e->getFile(),true);
         }
     }
 
@@ -719,7 +721,7 @@ class StorePink extends BaseModel
             $pink = self::where('id|k_id',$pink)->where('uid',$item)->find();
             if($openid){
                 //公众号模板消息
-                $urlWeChat = Route::buildUrl('order/detail/'.$pink->order_id,[],true,true);
+                $urlWeChat = Route::buildUrl('order/detail/'.$pink->order_id)->suffix('')->domain(true)->build();
                 WechatTemplateService::sendTemplate($openid,WechatTemplateService::ORDER_USER_GROUPS_LOSE,[
                     'first'=>'亲，您的拼团失败',
                     'keyword1'=> $store->title,
@@ -792,7 +794,7 @@ class StorePink extends BaseModel
                 $keyword1WeChat = self::where('id|k_id',$pink)->where('uid',$item)->value('order_id');
                 $keyword2WeChat = self::alias('p')->where('p.id|p.k_id',$pink)->where('p.uid',$item)->join('__store_combination__ c','c.id=p.cid')->value('c.title');
                 $remarkWeChat = '点击查看订单详情';
-                $urlWeChat = Route::buildUrl('order/detail/'.$keyword1WeChat,[],true,true);
+                $urlWeChat = Route::buildUrl('order/detail/'.$keyword1WeChat)->suffix('')->domain(true)->build();
                 WechatTemplateService::sendTemplate($openid,WechatTemplateService::ORDER_USER_GROUPS_SUCCESS,[
                     'first'=> $firstWeChat,
                     'keyword1'=> $keyword1WeChat,

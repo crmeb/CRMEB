@@ -12,6 +12,7 @@
 
 namespace app\admin\model\article;
 
+use app\admin\model\store\StoreProduct;
 use app\admin\model\system\SystemAdmin;
 use crmeb\traits\ModelTrait;
 use crmeb\basic\BaseModel;
@@ -30,6 +31,10 @@ class Article extends BaseModel {
 
     protected $name = 'article';
 
+    public function profile()
+    {
+        return $this->hasOne(StoreProduct::class,'id','product_id')->field('store_name');
+    }
     /**
      * 获取配置分类
      * @param array $where
@@ -53,6 +58,7 @@ class Article extends BaseModel {
             else $item['admin_name'] = Merchant::where('id',$item['mer_id'])->value('mer_name').'---》'.MerchantAdmin::where('id',$item['admin_id'])->value('real_name');
             $item['content'] = Db::name('ArticleContent')->where('nid',$item['id'])->value('content');
             $item['catename'] = Db::name('ArticleCategory')->where('id',$item['cid'])->value('title');
+            $item['store_name'] = $item->profile->store_name ?? '';
         },$where);
     }
 

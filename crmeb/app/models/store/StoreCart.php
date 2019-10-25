@@ -290,4 +290,12 @@ class StoreCart extends BaseModel
         return self::whereIn('id',$ids)->column('product_id','id');
     }
 
+    /**
+    *  获取购物车内最新一张产品图
+     */
+    public static function getProductImage(array $cart_id){
+        return self::whereIn('a.id',$cart_id)->alias('a')->order('a.id desc')
+            ->join('store_product p','p.id = a.product_id')->value('p.image');
+    }
+
 }

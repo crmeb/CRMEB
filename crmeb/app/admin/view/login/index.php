@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="renderer" content="webkit">
+    <meta name="robots" content="noindex,nofollow" />
     <title>登录管理系统 -  Powered by CRMEB!</title>
     <meta name="generator" content="CRMEB! v2.5" />
     <meta name="author" content="CRMEB! Team and CRMEB UI Team" />

@@ -27,8 +27,8 @@ class StoreCombinationController
     public function lst(Request $request)
     {
         list($page, $limit) = UtilService::getMore([
-            ['page',0],
-            ['limit',0],
+            ['page',1],
+            ['limit',10],
         ],$request, true);
         $combinationList = StoreCombination::getAll($page, $limit);
         if(!count($combinationList)) return app('json')->fail('暂无拼团');
@@ -55,15 +55,17 @@ class StoreCombinationController
         if(!$imageInfo){
             $codeUrl = UtilService::setHttpType($siteUrl.'/activity/group_detail/'.$id, 1);//二维码链接
             $imageInfo = UtilService::getQRCodePath($codeUrl, $name);
-            if(!$imageInfo) return app('json')->fail('二维码生成失败');
-            SystemAttachment::attachmentAdd($imageInfo['name'],$imageInfo['size'],$imageInfo['type'],$imageInfo['dir'],$imageInfo['thumb_path'],1,$imageInfo['image_type'],$imageInfo['time'],2);
-            $url = $imageInfo['dir'];
+            if(is_array($imageInfo)){
+                SystemAttachment::attachmentAdd($imageInfo['name'],$imageInfo['size'],$imageInfo['type'],$imageInfo['dir'],$imageInfo['thumb_path'],1,$imageInfo['image_type'],$imageInfo['time'],2);
+                $url = $imageInfo['dir'];
+            }else
+                $url = '';
         }else $url = $imageInfo['att_dir'];
         if($imageInfo['image_type'] == 1)
             $url = $siteUrl.$url;
         $combinationOne['image'] = UtilService::setSiteUrl($combinationOne['image'], $siteUrl);
-        $combinationOne['image_base'] = UtilService::setImageBase64(UtilService::setSiteUrl($combinationOne['image'], $siteUrl));
-        $combinationOne['code_base'] = UtilService::setImageBase64($url);
+        $combinationOne['image_base'] = UtilService::setSiteUrl($combinationOne['image'], $siteUrl);
+        $combinationOne['code_base'] = $url;
         $combinationOne['sale_stock'] = 0;
         if($combinationOne['stock'] > 0) $combinationOne['sale_stock'] = 1;
         if(!strlen(trim($combinationOne['unit_name']))) $combinationOne['unit_name'] = '个';
@@ -104,7 +106,7 @@ class StoreCombinationController
         if(isset($pink['is_refund']) && $pink['is_refund']) {
             if($pink['is_refund'] != $pink['id']){
                 $id = $pink['is_refund'];
-                return $this->pink($id);
+                return $this->pink($request,$id);
             }else{
                 return app('json')->fail('订单已退款');
             }
@@ -200,7 +202,7 @@ class StoreCombinationController
                     if($user['is_promoter'] || SystemConfigService::get('store_brokerage_statu')==2) $valueData.='&pid='.$user['uid'];
                     $res = RoutineCode::getPageCode('pages/activity/goods_combination_status/index',$valueData,280);
                     if(!$res) return app('json')->fail('二维码生成失败');
-                    $imageInfo = UploadService::imageStream($name,$res,'routine/activity/pink/code');
+                    $imageInfo = UploadService::getInstance()->setUploadPath('routine/activity/pink/code')->imageStream($name,$res);
                     if(!is_array($imageInfo)) return app('json')->fail($imageInfo);
                     if($imageInfo['image_type'] == 1) $remoteImage = UtilService::remoteImage($siteUrl.$imageInfo['dir']);
                     else $remoteImage = UtilService::remoteImage($imageInfo['dir']);

@@ -68,9 +68,10 @@
     new Vue({
         el : '#app'
     });
+    var $f;
     formCreate.formSuccess = function(form,$r){
         <?=$form->getSuccessScript()?>
-        $f.btn.loading(false)();
+        $f.btn.loading(false);
     };
 
     (function () {
@@ -91,7 +92,7 @@
                 if(_b) return ;
                 _b = true;
                 if (!el) el = document.getElementById('configboay');
-                var $f = formCreate.create(getRule(), {
+                $f = formCreate.create(getRule(), {
                     el: el,
                     form:<?=json_encode($form->getConfig('form'))?>,
                     row:<?=json_encode($form->getConfig('row'))?>,

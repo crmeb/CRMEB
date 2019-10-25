@@ -296,7 +296,7 @@
                                                 <span class="caret"></span>
                                             </button>
                                             <ul class="dropdown-menu">
-                                                {eq name="vo.subscribe" value="1"}
+                                                {if $vo.openid && $vo.subscribe == 1}
                                                 <li>
                                                     <a class="save_mark" href="javascript:void(0);"  onclick="$eb.createModalFrame('修改分组','{:Url('edit_user_group',['openid'=>$vo['openid']])}',{w:350,h:500})" >
                                                         修改分组
@@ -318,7 +318,7 @@
                                                         无法操作
                                                     </a>
                                                 </li>
-                                                {/eq}
+                                                {/if}
                                             </ul>
                                         </div>
                                     </td>

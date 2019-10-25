@@ -81,7 +81,7 @@ class StoreCategory extends BaseModel
 
     public function children()
     {
-        return $this->hasMany(self::class, 'pid','id');
+        return $this->hasMany(self::class, 'pid','id')->where('is_show',1);
     }
 
 }

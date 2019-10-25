@@ -12,6 +12,7 @@ use app\admin\model\user\UserExtract as UserExtractModel;//分销
 use app\admin\model\user\User as UserModel;//用户
 use app\admin\model\store\StoreProductReply as StoreProductReplyModel;//评论
 use app\admin\model\store\StoreProduct as ProductModel;//产品
+use app\models\store\StoreOrder;
 use crmeb\services\SystemConfigService;
 use FormBuilder\Json;
 
@@ -29,8 +30,6 @@ class Index extends AuthController
         $adminInfo = $this->adminInfo->toArray();
         $roles  = explode(',',$adminInfo['roles']);
         $site_logo = SystemConfig::getOneConfig('menu_name','site_logo')->toArray();
-//        dump(SystemMenus::menuList());
-//        exit();
         $this->assign([
             'menuList'=>SystemMenus::menuList(),
             'site_logo'=>json_decode($site_logo['value'],true),

@@ -4,6 +4,7 @@
 namespace app\models\user;
 
 use app\models\store\StoreOrder;
+use crmeb\services\CacheService;
 use crmeb\services\SystemConfigService;
 use think\facade\Session;
 use crmeb\traits\ModelTrait;
@@ -84,6 +85,15 @@ class User extends BaseModel
         return $user['clean_time'] ? $user['clean_time'] : $user['add_time'];
     }
 
+    /**
+     * 更新用户信息
+     * @param $wechatUser 用户信息
+     * @param $uid 用户uid
+     * @return bool|void
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\exception\DbException
+     */
     public static function updateWechatUser($wechatUser,$uid)
     {
         $userInfo = self::where('uid',$uid)->find();
@@ -108,7 +118,7 @@ class User extends BaseModel
             //TODO 获取后台分销类型
             $storeBrokerageStatus = SystemConfigService::get('store_brokerage_statu');
             $storeBrokerageStatus = $storeBrokerageStatus ? $storeBrokerageStatus : 1;
-            if(isset($wechatUser['code']) && $wechatUser['code'] && $wechatUser['code'] != $uid){
+            if(isset($wechatUser['code']) && $wechatUser['code'] && $wechatUser['code'] != $uid && $uid != self::where('uid',$wechatUser['code'])->value('spread_uid')){
                 if($storeBrokerageStatus == 1){
                     $spreadCount = self::where('uid',$wechatUser['code'])->count();
                     if($spreadCount){
@@ -145,6 +155,7 @@ class User extends BaseModel
         //没有推广编号直接返回
         if(!$spread)  return true;
         if($spread == $uid) return true;
+        if($uid == self::where('uid',$spread)->value('spread_uid')) return true;
         //TODO 获取后台分销类型
         $storeBrokerageStatus = SystemConfigService::get('store_brokerage_statu');
         $storeBrokerageStatus = $storeBrokerageStatus ? $storeBrokerageStatus : 1;
@@ -173,7 +184,7 @@ class User extends BaseModel
         self::beginTrans();
         $res1 = true;
         if($spread_uid) $res1 = self::where('uid',$spread_uid)->inc('spread_count',1)->update();
-        $storeBrokerageStatu = SystemConfigService::get('store_brokerage_statu') ? : 1;//获取后台分销类型
+//        $storeBrokerageStatu = SystemConfigService::get('store_brokerage_statu') ? : 1;//获取后台分销类型
         $res2 = self::create([
             'account'=>'rt'.$routineUser['uid'].time(),
             'pwd'=>md5(123456),
@@ -354,13 +365,13 @@ class User extends BaseModel
         return $res;
     }
 
-    /*
-     *  获取推荐人
-     * @param int $two_uid
-     * @param int $first
-     * @param int $limit
-     * @return array
-     * */
+    /**
+     * 获取推荐人 暂无使用
+     * @param $uid
+     * @param $page
+     * @param $limit
+     * @return mixed
+     */
     public static function getSpreadList($uid,$page,$limit)
     {
         $list=self::where('spread_uid',$uid)->field('uid,nickname,avatar,add_time')->page($page,$limit)->order('add_time DESC')->select();
@@ -374,19 +385,23 @@ class User extends BaseModel
         return $data;
     }
 
-    /*
+    /**
      * 获取某个用户的下级uid
-     * @param int $uid 用户uid
+     * @param $uid
      * @return array
-     * */
+     */
     public static function getOneSpreadUid($uid)
     {
         return self::where('spread_uid',$uid)->column('uid');
     }
 
-    /*
+    /**
      * 修改个人信息
-     * */
+     * @param $avatar 头像
+     * @param $nickname 昵称
+     * @param $uid 用户uid
+     * @return bool
+     */
     public static function editUser($avatar,$nickname,$uid)
     {
         return self::edit(['avatar'=>$avatar,'nickname'=>$nickname],$uid,'uid');
@@ -401,6 +416,10 @@ class User extends BaseModel
         return self::where('spread_uid',$uid)->count();
     }
 
+    /**
+     * 修改当前用户的推广人数
+     * @param $uid
+     */
     public static function setUserSpreadCount($uid){
         self::where('uid',$uid)->update(['spread_count'=>self::getSpreadCount($uid)]);
     }
@@ -453,7 +472,7 @@ class User extends BaseModel
         if($orderBy==='') $orderBy='u.add_time desc';
         $model = $model->alias(' u');
         $model = $model->join('StoreOrder o','u.uid=o.uid','LEFT');
-        $model = $model->where('u.uid','IN',$uid);
+        $model = $model->where('u.uid','IN',$uid)->where('o.is_del',0)->where('o.is_system_del',0);
         $model = $model->field("u.uid,u.nickname,u.avatar,from_unixtime(u.add_time,'%Y/%m/%d') as time,u.spread_count as childCount,COUNT(o.id) as orderCount,SUM(o.pay_price) as numberCount");
         if(strlen(trim($keyword))) $model = $model->where('u.nickname|u.phone','like',"%$keyword%");
         $model = $model->group('u.uid');
@@ -464,6 +483,15 @@ class User extends BaseModel
         else return [];
     }
 
+    /**
+     * 设置用户的上级关系
+     * @param $uid 用户uid
+     * @param $spreadUid 上级用户uid
+     * @return User|bool
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\exception\DbException
+     */
     public static function setSpreadUid($uid,$spreadUid)
     {
         // 自己不能绑定自己为上级
@@ -560,5 +588,87 @@ class User extends BaseModel
     public static function checkPhone($phone)
     {
         return self::be(['account'=>$phone]);
+    }
+
+
+    /**
+     * 获取推广人
+     * @param $data 查询条件
+     * @return array
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\exception\DbException
+     */
+    public static function getRankList($data)
+    {
+        switch ($data['type']){
+            case 'week':
+                $startTime = strtotime('this week');
+                $endTime = time();
+                break;
+            case 'month':
+                $startTime = strtotime('last month');
+                $endTime = time();
+                break;
+        }
+        $t4Sql = self::alias('t0')
+            ->field('t0.uid,t0.spread_uid,count(t1.spread_uid) AS count,t0.add_time,t0.nickname,t0.avatar')
+            ->join('user t1','t0.uid = t1.spread_uid','LEFT')
+            ->group('t0.uid')
+            ->fetchSql(true)
+            ->select();
+        $t5Sql = self::alias('t2')
+            ->field('t2.uid,t2.spread_uid,count(t3.spread_uid) AS count,t2.add_time,t2.nickname,t2.avatar')
+            ->join('user t3','t2.uid = t3.spread_uid','LEFT')
+            ->group('t2.uid')
+            ->fetchSql(true)
+            ->select();
+        $list = self::table("($t4Sql)")
+            ->alias('t4')
+            ->join('('.$t5Sql.') t5','t4.uid = t5.spread_uid')
+            ->field('t4.uid, t4.count,t4.nickname,t4.avatar')
+            ->where('t4.count','>',0)
+            ->where('t4.add_time','BETWEEN',[$startTime,$endTime])
+            ->group('t4.uid')
+            ->page($data['page'],$data['limit'])
+            ->order('t4.count,t4.add_time desc')
+            ->select();
+        return count($list) ? $list->toArray() : [];
+    }
+
+    /**
+     * 获取佣金排行
+     * @param $data
+     * @return array
+     */
+    public static  function brokerageRank($data){
+        $model = self::where('status',1);
+        switch ($data['type']){
+            case 'week':
+                $model = $model->whereIn('uid',function ($query){
+                    $query->name('user_bill')->where('category','now_money')->where('type','brokerage')
+                        ->whereWeek('add_time')->field('uid');
+                });
+                break;
+            case 'month':
+                $model = $model->whereIn('uid',function ($query){
+                    $query->name('user_bill')->where('category','now_money')->where('type','brokerage')
+                        ->whereMonth('add_time')->field('uid');
+                });
+                break;
+        }
+        $users= $model->field('uid,nickname,avatar,brokerage_price')->order('brokerage_price desc')
+            ->page((int)$data['page'],(int)$data['limit'])->select();
+        return  count($users) ? $users->toArray() : [];
+    }
+
+    /**
+     * 获取当前用户的佣金排行位置
+     * @param $uid
+     * @return int
+     */
+    public static function currentUserRank($brokerage_price)
+    {
+        return  self::where('brokerage_price','>',$brokerage_price)->count('uid');
     }
 }

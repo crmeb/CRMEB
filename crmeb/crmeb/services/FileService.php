@@ -732,7 +732,7 @@ class FileService
     {
         $dir = array();
         $dir['filename']   = basename($file);//返回路径中的文件名部分。
-        $dir['pathname']   = realpath($file);//返回绝对路径名。
+        $dir['pathname']   = strstr(php_uname('s'),'Windows') ? str_replace('\\','\\\\',realpath($file)) : realpath($file);//返回绝对路径名。
         $dir['owner']      = fileowner($file);//文件的 user ID （所有者）。
         $dir['perms']      = fileperms($file);//返回文件的 inode 编号。
         $dir['inode']      = fileinode($file);//返回文件的 inode 编号。

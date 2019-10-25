@@ -91,7 +91,8 @@ class StoreProductAttr extends BaseModel
                 'cost'=>$value['cost'],
                 'stock'=>$value['sales'],
                 'unique'=> StoreProductAttrValue::uniqueId($productId.$suk.uniqid(true)),
-                'image'=>$value['pic']
+                'image'=>$value['pic'],
+                'bar_code'=>$value['bar_code'] ?? '',
             ];
         }
         if(!count($attrGroup) || !count($valueGroup)) return self::setErrorInfo('请设置至少一个属性!');

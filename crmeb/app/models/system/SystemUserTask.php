@@ -30,7 +30,7 @@ class SystemUserTask extends BaseModel
 
     use ModelTrait;
 
-    /*
+    /**
      * 任务类型
      * type 记录在数据库中用来区分任务
      * name 任务名 (任务名中的{$num}会自动替换成设置的数字 + 单位)
@@ -107,7 +107,7 @@ class SystemUserTask extends BaseModel
         return self::$TaskType;
     }
 
-    /*
+    /**
      * 获取某个任务
      * @param string $type 任务类型
      * @return array
@@ -119,7 +119,7 @@ class SystemUserTask extends BaseModel
         }
     }
 
-    /*
+    /**
      * 设置任务名
      * @param string $type 任务类型
      * @param int $num 预设值
@@ -131,7 +131,7 @@ class SystemUserTask extends BaseModel
         return str_replace('{$num}',$num.$systemType['unit'],$systemType['name']);
     }
 
-    /*
+    /**
      * 累计消费金额
      * @param int $task_id 任务id
      * @param int $uid 用户id
@@ -147,7 +147,7 @@ class SystemUserTask extends BaseModel
         return ['还需消费{$num}元',$SumPayPrice,$isComplete];
     }
 
-    /*
+    /**
      * 累计消费次数
      * @param int $task_id 任务id
      * @param int $uid 用户id
@@ -163,7 +163,7 @@ class SystemUserTask extends BaseModel
         return ['还需消费{$num}次',$countPay,$isComplete];
     }
 
-    /*
+    /**
      * 邀请好友成为会员
      * @param int $task_id 任务id
      * @param int $uid 用户id
@@ -180,7 +180,7 @@ class SystemUserTask extends BaseModel
         return ['还需邀请{$num}人成为会员',$levelCount,$isComplete];
     }
 
-    /*
+    /**
      * 邀请好友成为下线
      * @param int $task_id 任务id
      * @param int $uid 用户id
@@ -195,7 +195,7 @@ class SystemUserTask extends BaseModel
         return ['还需邀请{$num}人成为下线',$spreadCount,$isComplete];
     }
 
-    /*
+    /**
      * 满足积分
      * @param int $task_id 任务id
      * @param int $uid 用户id
@@ -206,12 +206,12 @@ class SystemUserTask extends BaseModel
     public static function SatisfactionIntegral($task_id,$uid=0,$start_time=0,$number=0)
     {
         $isComplete=false;
-        $sumNumber=UserBill::where('uid', $uid)->where('category', 'integral')->where('pm', 1)->where('add_time','>',$start_time)->where('type','in',['system_add','sign'])->sum('number');
+        $sumNumber=UserBill::where('uid', $uid)->where('category', 'integral')->where('pm', 1)->where('add_time','>',$start_time)->where('type','in',['system_add','sign','gain'])->sum('number');
         if($sumNumber >= $number) $isComplete=UserTaskFinish::setFinish($uid,$task_id) ? true : false;
         return ['还需要{$num}经验',$sumNumber,$isComplete];
     }
 
-    /*
+    /**
      * 分享给朋友次数完成情况
      * @param int $task_id 任务id
      * @param int $uid 用户id
@@ -227,7 +227,7 @@ class SystemUserTask extends BaseModel
         return ['还需分享{$num}次',$sumCount,$isComplete];
     }
 
-    /*
+    /**
      * 累计签到
      * @param int $task_id 任务id
      * @param int $uid 用户id
@@ -243,7 +243,7 @@ class SystemUserTask extends BaseModel
         return ['还需签到{$num}天',$sumCount,$isComplete];
     }
 
-    /*
+    /**
      * 设置任务完成情况
      * @param int $task_id 任务id
      * @param int $uid 用户uid
@@ -268,7 +268,7 @@ class SystemUserTask extends BaseModel
         return self::setErrorInfo('没有此任务');
     }
 
-    /*
+    /**
      * 设置任务显示条件
      * @param string $alert 表别名
      * @param object $model 模型实例
@@ -281,7 +281,7 @@ class SystemUserTask extends BaseModel
         $alert=$alert ? $alert.'.': '';
         return $model->where("{$alert}is_show",1);
     }
-    /*
+    /**
      * 获取等级会员任务列表
      * @param int $level_id 会员等级id
      * @param int $uid 用户id
@@ -306,7 +306,7 @@ class SystemUserTask extends BaseModel
        ];
     }
 
-    /*
+    /**
      * 获取未完成任务的详细值
      * @param array $item 任务
      * @param int $uid 用户id
@@ -345,7 +345,7 @@ class SystemUserTask extends BaseModel
     }
 
 
-    /*
+    /**
      * 设置任务完成状态,已被使用
      * @param int $level_id 会员id
      * @param int $uid 用户id
@@ -357,7 +357,7 @@ class SystemUserTask extends BaseModel
         if(!count($taskIds)) return true;
         return UserTaskFinish::where('uid',$uid)->where('task_id','in',$taskIds)->update(['status'=>1]);
     }
-    /*
+    /**
      * 检查当前等级是否完成全部任务
      * @param int $level_id 会员id
      * @param int $uid 用户uid
@@ -385,7 +385,7 @@ class SystemUserTask extends BaseModel
         if(SystemUserLevel::be(['id'=>$level_id,'is_pay'=>0])) return false;
         return true;
     }
-    /*
+    /**
      * 设置任务内容完成情况
      * @param array $task 任务列表
      * @param int $uid 用户id

@@ -51,7 +51,6 @@ class SystemFile extends AuthController
                 }
             }
         }
-        //var_dump($fileAll['dir']);
         //兼容windows
         $uname = php_uname('s');
         if (strstr($uname, 'Windows') !== false) $dir = ltrim($dir, '\\');

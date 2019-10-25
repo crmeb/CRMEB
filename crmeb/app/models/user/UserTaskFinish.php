@@ -31,12 +31,13 @@ class UserTaskFinish extends BaseModel
     protected $name = 'user_task_finish';
 
     use ModelTrait;
-    /*
+
+    /**
      * 设置任务完成情况
-     * @param int $uid 用户uid
-     * @param int $task_id 任务id
-     * @return Boolean
-     * */
+     * @param $uid 用户uid
+     * @param $task_id 任务id
+     * @return UserTaskFinish|bool|\think\Model
+     */
     public static function setFinish($uid,$task_id)
     {
         $add_time=time();

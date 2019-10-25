@@ -66,11 +66,12 @@ class StoreBargain extends BaseModel
      * @return array
      */
     public static function getList($page = 0,$limit = 20,$field = 'id,product_id,title,price,min_price,image'){
-        $model = self::validWhere();
-        if($page) $list = $model->field($field)->page($page,$limit)->select()->each(function ($item){ $item['people'] = count(StoreBargainUser::getUserIdList($item['id']));});
-        else  $list = $model->field($field)->select()->each(function ($item){ $item['people'] = count(StoreBargainUser::getUserIdList($item['id']));});
-        if($list) return $list->toArray();
-        else return [];
+        $model = self::validWhere()->field($field);
+        if($page) $model = $model->page($page,$limit);
+        $list = $model->select()->each(function ($item){
+            $item['people'] = count(StoreBargainUser::getUserIdList($item['id']));
+        });
+        return $list ? $list->toArray() : [];
     }
 
     /**

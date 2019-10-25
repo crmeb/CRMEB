@@ -29,9 +29,11 @@
                         <div class="col-xs-6" style="color: #8BC34A;">订单状态:
                             {if condition="$orderInfo['paid'] eq 0 && $orderInfo['status'] eq 0"}
                             未支付
-                            {elseif condition="$orderInfo['paid'] eq 1 && $orderInfo['status'] eq 0 && $orderInfo['refund_status'] eq 0"/}
+                            {elseif condition="$orderInfo['paid'] eq 1 && $orderInfo['shipping_type'] eq 1 && $orderInfo['status'] eq 0 && $orderInfo['refund_status'] eq 0"/}
                             未发货
-                            {elseif condition="$orderInfo['paid'] eq 1 && $orderInfo['status'] eq 1 && $orderInfo['refund_status'] eq 0"/}
+                            {elseif condition="$orderInfo['paid'] eq 1 && $orderInfo['shipping_type'] eq 2 && $orderInfo['status'] eq 0 && $orderInfo['refund_status'] eq 0"/}
+                            待核销
+                            {elseif condition="$orderInfo['paid'] eq 1 && $orderInfo['shipping_type'] eq 1 && $orderInfo['status'] eq 1 && $orderInfo['refund_status'] eq 0"/}
                             待收货
                             {elseif condition="$orderInfo['paid'] eq 1 && $orderInfo['status'] eq 2 && $orderInfo['refund_status'] eq 0"/}
                             待评价

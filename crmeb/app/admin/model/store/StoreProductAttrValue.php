@@ -57,7 +57,9 @@ class StoreProductAttrValue extends BaseModel
             $stock = self::where('product_id',$productId)->where('unique',$unique)->value('stock');
             $replenishment_num = SystemConfigService::get('store_stock') ?? 0;//库存预警界限
             if($replenishment_num >= $stock){
-                ChannelService::instance()->send('STORE_STOCK', ['id'=>$productId]);
+                try{
+                    ChannelService::instance()->send('STORE_STOCK', ['id'=>$productId]);
+                }catch (\Exception $e){}
             }
         }
         return $res;
@@ -89,7 +91,7 @@ class StoreProductAttrValue extends BaseModel
             $detail = $item['detail'];
             sort($item['detail'],SORT_STRING);
             $suk =  implode(',', $item['detail']);
-            $sukValue = self::where('product_id', $productId)->where('suk', $suk)->column('cost,price,stock as sales,image as pic','suk');
+            $sukValue = self::where('product_id', $productId)->where('suk', $suk)->column('bar_code,cost,price,stock as sales,image as pic','suk');
             if(!count($sukValue)){
                 unset($value[$key]);
             }else{
@@ -98,6 +100,7 @@ class StoreProductAttrValue extends BaseModel
                 $valueNew[$count]['price'] = $sukValue[$suk]['price'];
                 $valueNew[$count]['sales'] = $sukValue[$suk]['sales'];
                 $valueNew[$count]['pic'] = $sukValue[$suk]['pic'];
+                $valueNew[$count]['bar_code'] = $sukValue[$suk]['bar_code'];
                 $valueNew[$count]['check'] = false;
                 $count++;
             }

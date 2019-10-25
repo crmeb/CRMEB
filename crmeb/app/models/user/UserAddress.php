@@ -40,6 +40,12 @@ class UserAddress extends BaseModel
         return time();
     }
 
+    /**
+     * 设置默认收货地址
+     * @param $id 地址id
+     * @param $uid 用户uid
+     * @return bool
+     */
     public static function setDefaultAddress($id,$uid)
     {
         self::beginTrans();
@@ -50,6 +56,12 @@ class UserAddress extends BaseModel
         return $res;
     }
 
+    /**
+     * 设置用户地址查询初始条件
+     * @param null $model
+     * @param string $prefix
+     * @return \think\Model
+     */
     public static function userValidAddressWhere($model=null,$prefix = '')
     {
         if($prefix) $prefix .='.';
@@ -57,12 +69,32 @@ class UserAddress extends BaseModel
         return $model->where("{$prefix}is_del",0);
     }
 
+    /**
+     * 获取用户收货地址并分页
+     * @param $uid 用户uid
+     * @param int $page 页码
+     * @param int $limit 展示条数
+     * @param string $field 展示字段
+     * @return array
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\exception\DbException
+     */
     public static function getUserValidAddressList($uid,$page=1,$limit=8,$field = '*')
     {
         if($page) return self::userValidAddressWhere()->where('uid',$uid)->order('add_time DESC')->field($field)->page((int)$page,(int)$limit)->select()->toArray()?:[];
         else return self::userValidAddressWhere()->where('uid',$uid)->order('add_time DESC')->field($field)->select()->toArray()?:[];
     }
 
+    /**
+     * 获取用户默认收货地址
+     * @param $uid 用户uid
+     * @param string $field 展示字段
+     * @return array|\think\Model|null
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\exception\DbException
+     */
     public static function getUserDefaultAddress($uid,$field = '*')
     {
         return self::userValidAddressWhere()->where('uid',$uid)->where('is_default',1)->field($field)->find();

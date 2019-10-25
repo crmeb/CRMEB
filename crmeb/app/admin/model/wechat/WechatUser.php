@@ -738,7 +738,8 @@ use app\admin\model\order\StoreOrderStatus;
 
      public static function clearUserGroup()
      {
-         Cache::rm('_wechat_group');
+
+         Cache::deleteItem('_wechat_group');
      }
 
      /**

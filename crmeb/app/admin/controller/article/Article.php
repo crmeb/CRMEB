@@ -99,7 +99,7 @@ class Article extends AuthController
      * @return \think\response\Json
      */
     public function upload_image(){
-        $res = Upload::Image($_POST['file'],'wechat/image/'.date('Ymd'));
+        $res = Upload::getInstance()->setUploadPath('wechat/image/'.date('Ymd'))->image($_POST['file']);
         if(!is_array($res)) return Json::fail($res);
         SystemAttachment::attachmentAdd($res['name'],$res['size'],$res['type'],$res['dir'],$res['thumb_path'],5,$res['image_type'],$res['time']);
         return Json::successful('上传成功!',['url'=>$res['dir']]);
@@ -186,5 +186,43 @@ class Article extends AuthController
         $where['merchant'] = 1;//区分是管理员添加的图文显示  0 还是 商户添加的图文显示  1
         $this->assign(ArticleModel::getAll($where));
         return $this->fetch();
+    }
+
+    /**
+     * 关联文章 id
+     * @param int $id
+     */
+    public function relation($id = 0)
+    {
+        $this->assign('id',$id);
+        return $this->fetch();
+    }
+
+    /**
+     * 保存选择的产品
+     * @param int $id
+     */
+    public function edit_article($id = 0)
+    {
+        if(!$id) return Json::fail('缺少参数');
+        list($product_id) = Util::postMore([
+            ['product_id',0]
+        ],$this->request,true);
+        if(ArticleModel::edit(['product_id'=>$product_id],['id'=>$id]))
+            return Json::successful('保存成功');
+        else
+            return Json::fail('保存失败');
+    }
+    /**
+     * 取消绑定的产品id
+     * @param int $id
+     */
+    public function unrelation($id = 0)
+    {
+        if(!$id) return Json::fail('缺少参数');
+        if(ArticleModel::edit(['product_id'=>0],$id))
+            return Json::successful('取消关联成功！');
+        else
+            return Json::fail('取消失败');
     }
 }

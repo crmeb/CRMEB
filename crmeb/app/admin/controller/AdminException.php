@@ -27,17 +27,10 @@ class AdminException extends Handle
         if ($e instanceof ValidateException) {
             return app('json')->make(422, $e->getError());
         }
-        // 请求异常
-        if (env("APP_DEBUG") == true) {              //如是开启调试，就走原来的方法
-            return parent::render($request, $e);
-        } else {
-            if ($e instanceof \Exception && request()->isAjax()) {
-                return app('json')->fail(['code' => $e->getCode(), 'message' => $e->getMessage(), 'file' => $e->getFile()]);
-            } else {
-                $title = '系统错误';
-                $msg = addslashes($e->getMessage());
-                return \response(view('public/500', compact('title', 'msg'))->getContent());
-            }
+        if ($e instanceof \Exception && request()->isAjax()) {
+            return app('json')->fail(['code' => $e->getCode(), 'message' => $e->getMessage(), 'file' => $e->getFile()]);
         }
+
+        return parent::render($request, $e);
     }
 }

@@ -27,7 +27,6 @@ class COS
     //TODO COS使用  所属地域
     protected static $storageRegion;
 
-
     /**
      * TODO 初始化
      * @return null|Client

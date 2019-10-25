@@ -156,6 +156,7 @@ class CopyTaobao extends AuthController
         $images = $this->getTaobaoImg($html);
         $images = array_merge($images);
         $this->productInfo['slider_image'] = isset($images['gaoqing']) ? $images['gaoqing'] : (array)$images;
+        $this->productInfo['slider_image'] = array_slice($this->productInfo['slider_image'],0,5);
         //获取产品详情请求链接
         $link = $this->getTaobaoDesc($html);
         //获取请求内容
@@ -184,6 +185,7 @@ class CopyTaobao extends AuthController
         $images = $this->getTianMaoImg($html);
         $images = array_merge($images);
         $this->productInfo['slider_image'] = $images;
+        $this->productInfo['slider_image'] = array_slice($this->productInfo['slider_image'],0,5);
         $this->productInfo['image'] = is_array($this->productInfo['slider_image']) && isset($this->productInfo['slider_image'][0]) ? $this->productInfo['slider_image'][0] : '';
         //获取产品详情请求链接
         $link = $this->getTianMaoDesc($html);
@@ -214,6 +216,7 @@ class CopyTaobao extends AuthController
             $this->productInfo['slider_image'] = $images['gaoqing'];
         } else
             $this->productInfo['slider_image'] = $images;
+        $this->productInfo['slider_image'] = array_slice($this->productInfo['slider_image'],0,5);
         $this->productInfo['image'] = is_array($this->productInfo['slider_image']) && isset($this->productInfo['slider_image'][0]) ? $this->productInfo['slider_image'][0] : '';
         //获取产品详情请求链接
         $link = $this->get1688Desc($html);
@@ -391,7 +394,7 @@ class CopyTaobao extends AuthController
             return JsonService::fail('插入数据库错误', ['line' => $e->getLine(), 'messag' => $e->getMessage()]);
         } catch (\Exception $e) {
             ProductModel::rollbackTrans();
-            return JsonService::fail('系统错误', ['line' => $e->getLine(), 'messag' => $e->getMessage()]);
+            return JsonService::fail('系统错误', ['line' => $e->getLine(), 'messag' => $e->getMessage(),'file'=>$e->getFile()]);
         }
     }
 
@@ -766,7 +769,7 @@ class CopyTaobao extends AuthController
         $size = strlen(trim($content));
         if (!$content || $size <= 2) return '图片流获取失败';
         $date_dir = date('Y') . DS . date('m') . DS . date('d');
-        $imageInfo = UploadService::imageStream($name, $content, 'attach/' . $date_dir);
+        $imageInfo = UploadService::getInstance()->setUploadPath('attach/' . $date_dir)->imageStream($name, $content);
         if (!is_array($imageInfo)) return $imageInfo;
         $date['path'] = $imageInfo['dir'];
         $date['name'] = $imageInfo['name'];

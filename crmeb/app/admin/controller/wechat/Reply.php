@@ -82,7 +82,8 @@ class Reply extends AuthController
     {
         $name = $this->request->post('file');
         if(!$name) return Json::fail('请上传图片');
-        $res = Upload::image($name,'wechat/image',true,true,null,'uniqid',1);
+        $res = Upload::getInstance()->setUploadType(1)->setUploadPath('wechat/image')
+            ->setAutoValidate(true)->image($name);
         if(!is_array($res)) return Json::fail($res);
         SystemAttachment::attachmentAdd($res['name'],$res['size'],$res['type'],$res['dir'],$res['thumb_path'],0,$res['image_type'],$res['time']);
         return Json::successful('上传成功',$res['dir']);
@@ -92,8 +93,7 @@ class Reply extends AuthController
     {
         $name = $this->request->post('file');
         if(!$name) return Json::fail('请上传声音');
-        $autoValidate['size'] = 2097152;
-        $res = Upload::file($name,'wechat/voice',true,$autoValidate);
+        $res = Upload::getInstance()->setUploadPath('wechat/voice')->setAutoValidate(true)->file($name);
         return $res->status === true ? Json::successful('上传成功',$res->filePath) : Json::fail($res->error);
     }
 

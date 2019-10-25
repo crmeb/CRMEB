@@ -31,6 +31,7 @@ use crmeb\services\SystemConfigService;
 use crmeb\services\UploadService;
 use crmeb\services\UtilService;
 use think\facade\Cache;
+use think\facade\Db;
 
 /**
  * 用户类
@@ -40,6 +41,11 @@ use think\facade\Cache;
 class UserController
 {
 
+    /**
+     * 获取用户信息
+     * @param Request $request
+     * @return mixed
+     */
     public function userInfo(Request $request)
     {
         return app('json')->success($request->user()->toArray());
@@ -386,7 +392,7 @@ class UserController
      */
     public function sign_integral(Request $request)
     {
-        $signed = UserSign::getToDayIsSign($request->uid());
+        $signed = UserSign::getIsSign($request->uid());
         if($signed) return app('json')->fail('已签到');
         if(false !== ($integral = UserSign::sign($request->uid())))
             return app('json')->successful('签到获得'.floatval($integral).'积分',['integral'=>$integral]);
@@ -409,8 +415,8 @@ class UserController
         //是否统计签到
         if($sign || $all){
             $user['sum_sgin_day'] = UserSign::getSignSumDay($user['uid']);
-            $user['is_day_sgin'] = UserSign::getToDayIsSign($user['uid']);
-            $user['is_YesterDay_sgin'] = UserSign::getYesterDayIsSign($user['uid']);
+            $user['is_day_sgin'] = UserSign::getIsSign($user['uid']);
+            $user['is_YesterDay_sgin'] = UserSign::getIsSign($user['uid'],'yesterday');
             if(!$user['is_day_sgin'] && !$user['is_YesterDay_sgin']){ $user['sign_num'] = 0;}
         }
         //是否统计积分使用情况
@@ -468,6 +474,42 @@ class UserController
         ],$request,true);
         if(User::editUser($avatar,$nickname,$request->uid())) return app('json')->successful('修改成功');
         return app('json')->fail('修改失败');
+    }
+
+    /**
+     * 推广人排行
+     * @param Request $request
+     * @return mixed
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\exception\DbException
+     */
+    public function rank(Request $request){
+        $data = UtilService::getMore([
+            ['page',''],
+            ['limit',''],
+            ['type','']
+        ],$request);
+        $users = User::getRankList($data);
+        return app('json')->success($users);
+    }
+
+    /**
+     * 佣金排行
+     * @param Request $request
+     * @return mixed
+     */
+    public function brokerage_rank(Request $request){
+        $data = UtilService::getMore([
+            ['page',''],
+            ['limit'],
+            ['type']
+        ],$request);
+        return app('json')->success([
+            'rank'    => User::brokerageRank($data),
+            'position'=> User::currentUserRank($request->user()['brokerage_price'])
+        ]);
+
     }
 
 }

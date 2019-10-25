@@ -1,6 +1,7 @@
 <?php
 namespace app\models\article;
 
+use app\models\store\StoreProduct;
 use crmeb\services\SystemConfigService;
 use think\facade\Db;
 use crmeb\traits\ModelTrait;
@@ -27,6 +28,11 @@ class Article extends BaseModel
 
     use ModelTrait;
 
+    public function profile()
+    {
+        return $this->hasOne(StoreProduct::class,'id','product_id')->field('store_name,image,price,id');
+    }
+
     protected function getImageInputAttr($value)
     {
         return explode(',',$value)?:[];
@@ -45,6 +51,7 @@ class Article extends BaseModel
         if(!$id) return [];
         $list = self::where('status',1)->where('hide',0)->where('id',$id)->order('id desc')->find();
         if($list){
+            $list->store_info = $list->profile ? StoreProduct::setLevelPrice($list->profile->toArray(),0,true) : null;
             $list = $list->hidden(['hide','status','admin_id','mer_id'])->toArray();
             $list["content"] = Db::name('articleContent')->where('nid',$id)->value('content');
             return $list;

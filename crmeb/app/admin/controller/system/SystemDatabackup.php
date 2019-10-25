@@ -5,6 +5,7 @@ namespace app\admin\controller\system;
 use app\admin\controller\AuthController;
 use crmeb\services\JsonService as Json;
 use \crmeb\services\MysqlBackupService as Backup;
+use think\facade\Env;
 use think\facade\Session;
 use think\facade\Db;
 
@@ -55,7 +56,7 @@ class SystemDatabackup extends AuthController
      */
     public function seetable()
     {
-        $database = config("database.database");
+        $database = Env::get("database.database");
         $tablename = request()->param('tablename');
         $res = Db::query("select * from information_schema.columns where table_name = '" . $tablename . "' and table_schema = '" . $database . "'");
         $html = '';
@@ -98,8 +99,12 @@ class SystemDatabackup extends AuthController
     {
         $tables = request()->post('tables/a');
         $db = $this->DB;
-        $res = $db->optimize($tables);
-        return Json::successful($res ? '优化成功' : '优化失败');
+        try{
+            $db->optimize($tables);
+            return Json::successful( '优化成功' );
+        }catch (\Exception $e){
+            return Json::fail($e->getMessage());
+        }
     }
 
     /**
@@ -109,8 +114,12 @@ class SystemDatabackup extends AuthController
     {
         $tables = request()->post('tables/a');
         $db = $this->DB;
-        $res = $db->repair($tables);
-        return Json::successful($res ? '修复成功' : '修复失败');
+        try{
+            $db->repair($tables);
+            return Json::successful( '修复成功' );
+        }catch (\Exception $e){
+            return Json::fail($e->getMessage());
+        }
     }
 
     /**

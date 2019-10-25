@@ -24,13 +24,26 @@ use think\facade\Session;
 
 class AuthController
 {
+    /**
+     * H5账号登陆
+     * @param Request $request
+     * @return mixed
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\exception\DbException
+     */
     public function login(Request $request)
     {
 
         $user = User::where('account', $request->param('account'))->find();
-        if (!$user || $user->pwd !== md5($request->param('password')))
+        if($user) {
+            if ($user->pwd !== md5($request->param('password')))
+                return app('json')->fail('账号或密码错误');
+            if ($user->pwd === md5(123456))
+                return app('json')->fail('请修改您的初始密码，再尝试登陆！');
+        }else{
             return app('json')->fail('账号或密码错误');
-
+        }
         if (!$user['status'])
             return app('json')->fail('已被禁止，请联系管理员');
 
@@ -109,6 +122,7 @@ class AuthController
             return app('json')->fail('验证码错误');
         if(strlen(trim($password)) < 6 || strlen(trim($password)) > 16)
             return app('json')->fail('密码必须是在6到16位之间');
+        if($password == '123456') return app('json')->fail('密码太过简单，请输入较为复杂的密码');
         $registerStatus = User::register($account, $password, $spread);
         if($registerStatus) return app('json')->success('注册成功');
         return app('json')->fail(User::getErrorInfo('注册失败'));
@@ -135,6 +149,7 @@ class AuthController
             return app('json')->fail('验证码错误');
         if(strlen(trim($password)) < 6 || strlen(trim($password)) > 16)
             return app('json')->fail('密码必须是在6到16位之间');
+        if($password == '123456') return app('json')->fail('密码太过简单，请输入较为复杂的密码');
         $resetStatus = User::reset($account, $password);
         if($resetStatus) return app('json')->success('修改成功');
         return app('json')->fail(User::getErrorInfo('修改失败'));
@@ -186,10 +201,14 @@ class AuthController
             return app('json')->fail('登录失败');
     }
 
-    /*
+    /**
      * H5切换登陆
-     *
-     * */
+     * @param Request $request
+     * @return mixed
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\exception\DbException
+     */
     public function switch_h5(Request $request){
         $from = $request->post('from','wechat');
         $user = $request->user();
@@ -240,11 +259,14 @@ class AuthController
             return app('json')->fail('登录失败');
     }
 
-
-    /*
+    /**
      * 绑定手机号
-     *
-     * */
+     * @param Request $request
+     * @return mixed
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\exception\DbException
+     */
     public function binding_phone(Request $request){
         list($phone,$captcha,$step) = UtilService::postMore([
             ['phone',''],
@@ -271,6 +293,8 @@ class AuthController
         $userPhone = $userInfo->phone;
         if(!$userInfo) return app('json')->fail('用户不存在');
         if($userInfo->phone) return app('json')->fail('您的账号已经绑定过手机号码！');
+        if(User::where('phone',$phone)->where('user_type','<>','h5')->count())
+            return app('json')->success('此手机已经绑定，无法多次绑定！');
         if(User::where('account',$phone)->where('phone',$phone)->where('user_type','h5')->find()){
             if(!$step) return app('json')->success('H5已有账号是否绑定此账号上',['is_bind'=>1]);
             $userInfo->phone = $phone;

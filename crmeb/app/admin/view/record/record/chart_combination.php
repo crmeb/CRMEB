@@ -296,7 +296,6 @@
                 this.info();
                 this.getSalesList();
                 this.getProfityList();
-                this.getLackList();
                 this.getTuiPriesList();
                 layList.laydate.render({
                     elem:this.$refs.date_time,

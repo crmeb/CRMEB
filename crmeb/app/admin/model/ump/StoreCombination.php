@@ -181,7 +181,7 @@ class StoreCombination extends BaseModel
         $model = $model->where('c.is_del',0);
         $model = $model->where('c.id',$id);
         $model = $model->where('c.start_time','<',time());
-        $model = $model->where('c.stop_time','>',time()-86400);
+        $model = $model->where('c.stop_time','>',time() - 'c.effective_time');
         $list = $model->find();
         if($list) return $list->toArray();
         else return [];

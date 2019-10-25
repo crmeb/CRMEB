@@ -262,7 +262,7 @@ class UserLevel extends AuthController
             ['illustrate',''],
         ]);
         if(!$data['task_type']) return JsonService::fail('请选择任务类型');
-        if($data['number'] < 0) return JsonService::fail('请输入限定数量');
+        if($data['number'] < 1) return JsonService::fail('请输入限定数量,数量不能小于1');
         $tash=SystemUserTask::getTaskType($data['task_type']);
         if($tash['max_number']!=0 && $data['number'] > $tash['max_number']) return JsonService::fail('您设置的限定数量超出最大限制,最大限制为:'.$tash['max_number']);
         $data['name']=SystemUserTask::setTaskName($data['task_type'],$data['number']);
