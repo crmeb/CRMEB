@@ -3,8 +3,8 @@
 <head>
     {include file="public/head"}
 
-    <link href="/system/frame/css/bootstrap.min.css?v=3.4.0" rel="stylesheet">
-    <link href="/system/frame/css/style.min.css?v=3.0.0" rel="stylesheet">
+    <link href="{__FRAME_PATH}css/bootstrap.min.css?v=3.4.0" rel="stylesheet">
+    <link href="{__FRAME_PATH}css/style.min.css?v=3.0.0" rel="stylesheet">
     <title>{$title|default=''}</title>
     <style></style>
 </head>

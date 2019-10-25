@@ -259,7 +259,7 @@
                     'title':'',
                     'author':$author,
                     'content':'',
-                    'image_input':'/public/system/module/wechat/news/images/image.png',
+                    'image_input':'{__MODULE_PATH}wechat/news/images/image.png',
                     'synopsis':''
                 }
                 this.newList.push(arr);

@@ -1,6 +1,6 @@
 {extend name="public/container"}
 {block name="head_top"}
-<link href="/public/system/module/wechat/news/css/index.css" type="text/css" rel="stylesheet">
+<link href="{__MODULE_PATH}wechat/news/css/index.css" type="text/css" rel="stylesheet">
 {/block}
 {block name="content"}
 <style>

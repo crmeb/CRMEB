@@ -175,7 +175,7 @@
                              <!--单图-->{else/}
                                             <div style="display: inline-flex;">
                                                 <input type="file" class="{$vo.menu_name}_1" name="{$vo.menu_name}" style="display: none;" data-name="{$vo.menu_name}" id="{$vo.menu_name}" data-type = "{$vo.upload_type}" />
-                                                <div class="flag" style="width: 100px;height: 80px;background-image:url('/public/system/module/wechat/news/images/image.png');cursor: pointer"  data-name="{$vo.menu_name}" >
+                                                <div class="flag" style="width: 100px;height: 80px;background-image:url('{__MODULE_PATH}wechat/news/images/image.png');cursor: pointer"  data-name="{$vo.menu_name}" >
                                                 </div>
                                                 {if condition="$num_img LT 1"}
                                                         <div class="file-box">
