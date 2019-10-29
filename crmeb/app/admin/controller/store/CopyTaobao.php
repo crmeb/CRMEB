@@ -30,6 +30,18 @@ class CopyTaobao extends AuthController
 
     use CurdControllerTrait;
 
+    //cookie 采集前请配置自己的 cookie,获取方式浏览器登录平台，F12或查看元素 network->headers 查看Request Headers 复制cookie 到下面变量中
+    protected $webcookie = [
+        //淘宝
+        'taobao' =>'cookie: miid=8289590761042824660; thw=cn; cna=bpdDExs9KGgCAXuLszWnEXxS; hng=CN%7Czh-CN%7CCNY%7C156; tracknick=taobaorongyao; _cc_=WqG3DMC9EA%3D%3D; tg=0; enc=WQPStocTopRI3wEBOPpj8VUDkqSw4Ph81ASG9053SgG8xBMzaOuq6yMe8KD4xPBlNfQST7%2Ffsk9M9GDtGmn6iQ%3D%3D; t=4bab065740d964a05ad111f5057078d4; cookie2=1965ea371faf24b163093f31af4120c2; _tb_token_=5d3380e119d6e; v=0; mt=ci%3D-1_1; _m_h5_tk=61bf01c61d46a64c98209a7e50e9e1df_1572349453522; _m_h5_tk_enc=9d9adfcbd7af7e2274c9b331dc9bae9b; l=dBgc_jG4vxuski7DBOCgCuI8aj7TIIRAguPRwN0viOCKUxT9CgCDAJt5v8PWVNKO7t1nNetzvui3udLHRntW6KTK6MK9zd9snxf..; isg=BJWVXJ3FZGyiWUENfGCuywlwpJePOkncAk8hmRc6WoxbbrVg3-Jadf0uODL97mFc',
+        //阿里巴巴 1688
+        'alibaba' =>'',
+        //天猫 可以和淘宝一样
+        'tmall' =>'cookie: miid=8289590761042824660; thw=cn; cna=bpdDExs9KGgCAXuLszWnEXxS; hng=CN%7Czh-CN%7CCNY%7C156; tracknick=taobaorongyao; _cc_=WqG3DMC9EA%3D%3D; tg=0; enc=WQPStocTopRI3wEBOPpj8VUDkqSw4Ph81ASG9053SgG8xBMzaOuq6yMe8KD4xPBlNfQST7%2Ffsk9M9GDtGmn6iQ%3D%3D; t=4bab065740d964a05ad111f5057078d4; cookie2=1965ea371faf24b163093f31af4120c2; _tb_token_=5d3380e119d6e; v=0; mt=ci%3D-1_1; _m_h5_tk=61bf01c61d46a64c98209a7e50e9e1df_1572349453522; _m_h5_tk_enc=9d9adfcbd7af7e2274c9b331dc9bae9b; l=dBgc_jG4vxuski7DBOCgCuI8aj7TIIRAguPRwN0viOCKUxT9CgCDAJt5v8PWVNKO7t1nNetzvui3udLHRntW6KTK6MK9zd9snxf..; isg=BJWVXJ3FZGyiWUENfGCuywlwpJePOkncAk8hmRc6WoxbbrVg3-Jadf0uODL97mFc',
+        //京东 可不用配置
+        'jd' =>''
+    ];
+
     protected $bindModel = ProductModel::class;
     //错误信息
     protected $errorInfo = true;
@@ -63,6 +75,8 @@ class CopyTaobao extends AuthController
     //远程下载附件图片分类名称
     protected $AttachmentCategoryName = '远程下载';
 
+    //请求平台名称 taobao alibaba tmall jd
+    protected $webnname = 'taobao';
     /**
      * 显示资源
      * @return html
@@ -113,6 +127,7 @@ class CopyTaobao extends AuthController
         $url = $this->checkurl($link);
         if ($url === false) return JsonService::fail($this->errorInfo);
         $this->errorInfo = true;
+        $url .= '&ra='.rand(2222222,9999999);
         $html = $this->curl_Get($url, 60);
         if (!$html) return JsonService::fail('商品HTML信息获取失败');
         $html = $this->Utf8String($html);
@@ -152,6 +167,7 @@ class CopyTaobao extends AuthController
      * */
     public function setProductInfoTaobao($html)
     {
+        $this->webnname = 'taobao';
         //获取轮播图
         $images = $this->getTaobaoImg($html);
         $images = array_merge($images);
@@ -160,7 +176,7 @@ class CopyTaobao extends AuthController
         //获取产品详情请求链接
         $link = $this->getTaobaoDesc($html);
         //获取请求内容
-        $desc_json = HttpService::getRequest($link);
+        $desc_json = $this->curl_Get($link,60);
         //转换字符集
         $desc_json = $this->Utf8String($desc_json);
         //截取掉多余字符
@@ -181,6 +197,7 @@ class CopyTaobao extends AuthController
      * */
     public function setProductInfoTmall($html)
     {
+        $this->webnname = 'tmall';
         //获取轮播图
         $images = $this->getTianMaoImg($html);
         $images = array_merge($images);
@@ -190,7 +207,8 @@ class CopyTaobao extends AuthController
         //获取产品详情请求链接
         $link = $this->getTianMaoDesc($html);
         //获取请求内容
-        $desc_json = HttpService::getRequest($link);
+        $desc_json = $this->curl_Get($link,60);
+//        $desc_json = HttpService::getRequest($link);
         //转换字符集
         $desc_json = $this->Utf8String($desc_json);
         //截取掉多余字符
@@ -209,6 +227,7 @@ class CopyTaobao extends AuthController
      * */
     public function setProductInfo1688($html)
     {
+        $this->webnname = 'alibaba';
         //获取轮播图
         $images = $this->get1688Img($html);
         if (isset($images['gaoqing'])) {
@@ -221,7 +240,8 @@ class CopyTaobao extends AuthController
         //获取产品详情请求链接
         $link = $this->get1688Desc($html);
         //获取请求内容
-        $desc_json = HttpService::getRequest($link);
+        $desc_json = $this->curl_Get($link,60);
+//        $desc_json = HttpService::getRequest($link);
         //转换字符集
         $desc_json = $this->Utf8String($desc_json);
         $this->productInfo['test'] = $desc_json;
@@ -243,6 +263,7 @@ class CopyTaobao extends AuthController
      * */
     public function setProductInfoJd($html)
     {
+        $this->webnname = 'jd';
         //获取产品详情请求链接
         $desc_url = $this->getJdDesc($html);
         //获取请求内容
@@ -680,18 +701,10 @@ class CopyTaobao extends AuthController
     //获取淘宝商品描述
     public function getTaobaoDesc($html = '')
     {
-        preg_match('/descUrl([^<>]*)counterApi/', $html, $descarr);
-        if (!isset($descarr[1])) return '';
-        $arr = explode(':', $descarr[1]);
-        $url = [];
-        foreach ($arr as $k => $v) {
-            if (strpos($v, '//')) {
-                $str = str_replace(['\'', ',', ' ', '?', ':'], '', $v);
-                $url[] = trim($str);
-            }
-        }
+        preg_match("/dscnew.taobao.com.+?'/i", $html, $descarr);
+        $url = substr($descarr[0],0,-1);
         if ($url) {
-            return strpos($url[0], 'http') ? $url[0] : 'http:' . $url[0];
+            return 'https://'.$url;
         } else {
             return '';
         }
@@ -705,13 +718,19 @@ class CopyTaobao extends AuthController
     {
         if (!$url) return '';
         $ch = curl_init();
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false); // 跳过证书检查  
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false); // 跳过证书检查
         if (stripos($url, "https://") !== FALSE) {
             curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);  // 从证书中检查SSL加密算法是否存在
         }
+        $headers = ['user-agent:Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.100 Safari/537.36'];
+        if($this->webnname){
+            $headers[] = $this->webcookie["$this->webnname"];
+        }
+
         curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array('user-agent:' . $_SERVER['HTTP_USER_AGENT']));
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt ($ch, CURLOPT_REFERER, "www.crmeb.com");
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
         curl_setopt($ch, CURLOPT_TIMEOUT, $time_out);
         $response = curl_exec($ch);
