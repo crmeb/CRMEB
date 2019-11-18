@@ -44,15 +44,15 @@ class Template
      * @var array 'defaultData'=>[[],'array'] 生成的方法为 setDefaultData(array $value)
      */
     protected $propsRule = [
-        'defaultData'           => '',
-        'templateCode'          => [null,'string'],
+        'defaultData'           => [null, 'string'],
+        'templateCode'          => [null, 'string'],
         'templateData'          => [[],'array'],
-        'templateUrl'           => [null,'callable','postpositionUrl'],
-        'templateFormId'        => [null,'string'],
-        'sendType'              => [null,'string'],
-        'templateOpenId'        => [null,'string'],
-        'templateOpenId'        => [null,'string'],
-        'templateDefaultColor'  => [null,'string'],
+        'templateUrl'           => [null, 'callable', 'postpositionUrl'],
+        'templateFormId'        => [null, 'string'],
+        'sendType'              => [null, 'string'],
+        'templateOpenId'        => [null, 'string'],
+        'templateOpenId'        => [null, 'string'],
+        'templateDefaultColor'  => [null, 'string'],
     ];
 
     /**
