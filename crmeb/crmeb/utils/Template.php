@@ -53,6 +53,7 @@ class Template
         'templateOpenId'        => [null, 'string'],
         'templateOpenId'        => [null, 'string'],
         'templateDefaultColor'  => [null, 'string'],
+        'templateDefaultColor'  => [null, 'string'],
     ];
 
     /**
