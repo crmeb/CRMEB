@@ -12,7 +12,8 @@ declare (strict_types = 1);
 
 namespace think;
 
-use Opis\Closure\SerializableClosure;
+use think\event\AppInit;
+use think\helper\Str;
 use think\initializer\BootService;
 use think\initializer\Error;
 use think\initializer\RegisterService;
@@ -38,7 +39,7 @@ use think\initializer\RegisterService;
  */
 class App extends Container
 {
-    const VERSION = '6.0.0RC3';
+    const VERSION = '6.0.0';
 
     /**
      * 应用调试模式
@@ -87,6 +88,12 @@ class App extends Container
      * @var string
      */
     protected $runtimePath = '';
+
+    /**
+     * 路由定义目录
+     * @var string
+     */
+    protected $routePath = '';
 
     /**
      * 配置后缀
@@ -312,9 +319,9 @@ class App extends Container
 
     /**
      * 设置应用目录
-     * @param $path
+     * @param string $path 应用目录
      */
-    public function setAppPath($path)
+    public function setAppPath(string $path)
     {
         $this->appPath = $path;
     }
@@ -331,9 +338,9 @@ class App extends Container
 
     /**
      * 设置runtime目录
-     * @param $path
+     * @param string $path 定义目录
      */
-    public function setRuntimePath($path)
+    public function setRuntimePath(string $path): void
     {
         $this->runtimePath = $path;
     }
@@ -421,7 +428,7 @@ class App extends Container
         $this->loadLangPack($langSet);
 
         // 监听AppInit
-        $this->event->trigger('AppInit');
+        $this->event->trigger(AppInit::class);
 
         date_default_timezone_set($this->config->get('app.default_timezone', 'Asia/Shanghai'));
 
@@ -573,7 +580,7 @@ class App extends Container
     {
         $name  = str_replace(['/', '.'], '\\', $name);
         $array = explode('\\', $name);
-        $class = self::parseName(array_pop($array), 1);
+        $class = Str::studly(array_pop($array));
         $path  = $array ? implode('\\', $array) . '\\' : '';
 
         return $this->namespace . '\\' . $layer . '\\' . $path . $class;
@@ -600,31 +607,4 @@ class App extends Container
         return $path . DIRECTORY_SEPARATOR;
     }
 
-    /**
-     * @param $data
-     * @codeCoverageIgnore
-     * @return string
-     */
-    public static function serialize($data): string
-    {
-        SerializableClosure::enterContext();
-        SerializableClosure::wrapClosures($data);
-        $data = \serialize($data);
-        SerializableClosure::exitContext();
-        return $data;
-    }
-
-    /**
-     * @param string $data
-     * @codeCoverageIgnore
-     * @return mixed|string
-     */
-    public static function unserialize(string $data)
-    {
-        SerializableClosure::enterContext();
-        $data = \unserialize($data);
-        SerializableClosure::unwrapClosures($data);
-        SerializableClosure::exitContext();
-        return $data;
-    }
 }

@@ -29,43 +29,58 @@ class Db extends DbManager
     public static function __make(Event $event, Config $config, Log $log, Cache $cache)
     {
         $db = new static();
-        $db->init($config->get('database'));
+        $db->setConfig($config);
         $db->setEvent($event);
         $db->setLog($log);
         $db->setCache($cache);
+        $db->triggerSql();
 
         return $db;
+    }
+
+    /**
+     * 注入模型对象
+     * @access public
+     * @return void
+     */
+    protected function modelMaker()
+    {
+    }
+
+    /**
+     * 设置配置对象
+     * @access public
+     * @param Config $config 配置对象
+     * @return void
+     */
+    public function setConfig($config): void
+    {
+        $this->config = $config;
+    }
+
+    /**
+     * 获取配置参数
+     * @access public
+     * @param string $name    配置参数
+     * @param mixed  $default 默认值
+     * @return mixed
+     */
+    public function getConfig(string $name = '', $default = null)
+    {
+        if ('' !== $name) {
+            return $this->config->get('database.' . $name, $default);
+        }
+
+        return $this->config->get('database', []);
     }
 
     /**
      * 设置Event对象
      * @param Event $event
      */
-    public function setEvent(Event $event)
+    public function setEvent(Event $event): void
     {
         $this->event = $event;
-    }
-
-    /**
-     * 设置日志对象
-     * @param Log $log
-     * @return void
-     */
-    public function setLog(Log $log)
-    {
-        $this->log = $log;
-    }
-
-    /**
-     * 记录SQL日志
-     * @access protected
-     * @param string $log  SQL日志信息
-     * @param string $type 日志类型
-     * @return void
-     */
-    public function log($log, $type = 'sql')
-    {
-        $this->log->record($log, $type);
     }
 
     /**

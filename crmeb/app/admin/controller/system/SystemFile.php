@@ -106,12 +106,11 @@ class SystemFile extends AuthController
 
     public function index()
     {
-        $app = $this->getDir('./application');
-        $extend = $this->getDir('./extend');
-        $public = $this->getDir('./public');
+        $rootPath = app()->getRootPath();
+        $app = $this->getDir($rootPath.'app');
+        $extend = $this->getDir($rootPath.'crmeb');
         $arr = array();
         $arr = array_merge($app, $extend);
-        $arr = array_merge($arr, $public);
         $fileAll = array();//本地文件
         $cha = array();//不同的文件
         foreach ($arr as $k => $v) {
@@ -122,7 +121,7 @@ class SystemFile extends AuthController
             $cthash = md5($ct);
             $update_time = stat($v);
             $fileAll[$k]['cthash'] = $cthash;
-            $fileAll[$k]['filename'] = $v;
+            $fileAll[$k]['filename'] = str_replace($rootPath,'',$v);
             $fileAll[$k]['atime'] = $update_time['atime'];
             $fileAll[$k]['mtime'] = $update_time['mtime'];
             $fileAll[$k]['ctime'] = $update_time['ctime'];
@@ -149,7 +148,7 @@ class SystemFile extends AuthController
                 foreach ($fileAll as $ko => $vo) {
                     if ($v['filename'] == $vo['filename']) {
                         if ($v['cthash'] != $vo['cthash']) {
-                            $cha[$k]['filename'] = $v['filename'];
+                            $cha[$k]['filename'] = str_replace($rootPath,'',$v['filename']);
                             $cha[$k]['cthash'] = $v['cthash'];
                             $cha[$k]['atime'] = $v['atime'];
                             $cha[$k]['mtime'] = $v['mtime'];
@@ -163,7 +162,7 @@ class SystemFile extends AuthController
 
             }
             foreach ($file as $k => $v) {
-                $cha[$k]['filename'] = $v['filename'];
+                $cha[$k]['filename'] = str_replace($rootPath,'',$v['filename']);
                 $cha[$k]['cthash'] = $v['cthash'];
                 $cha[$k]['atime'] = $v['atime'];
                 $cha[$k]['mtime'] = $v['mtime'];
@@ -171,7 +170,7 @@ class SystemFile extends AuthController
                 $cha[$k]['type'] = '已删除';
             }
             foreach ($fileAll as $k => $v) {
-                $cha[$k]['filename'] = $v['filename'];
+                $cha[$k]['filename'] = str_replace($rootPath,'',$v['filename']);
                 $cha[$k]['cthash'] = $v['cthash'];
                 $cha[$k]['atime'] = $v['atime'];
                 $cha[$k]['mtime'] = $v['mtime'];

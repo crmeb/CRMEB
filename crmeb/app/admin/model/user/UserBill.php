@@ -130,7 +130,7 @@ class UserBill extends BaseModel
             ->where('a.type', 'brokerage')
             ->where('a.pm', 1)
             ->order('a.number desc')
-            ->join('__store_order__ o','o.id=a.link_id')
+            ->join('store_order o','o.id=a.link_id')
             ->field('o.order_id,FROM_UNIXTIME(a.add_time,"%Y-%c-%d") as add_time,a.uid,o.uid as down_uid,r.nickname,r.avatar,r.spread_uid,r.level,a.number')
             ->page((int)$where['page'],(int)$where['limit'])
             ->select();
@@ -139,7 +139,7 @@ class UserBill extends BaseModel
     }
     //获取返佣用户总人数
     public static function getFanCount(){
-        return self::alias('a')->join('user r','a.uid=r.uid')->join('__store_order__ o','o.id=a.link_id')->where('a.category','now_money')->where('a.type', 'brokerage')->where('a.pm', 1)->count();
+        return self::alias('a')->join('user r','a.uid=r.uid')->join('store_order o','o.id=a.link_id')->where('a.category','now_money')->where('a.type', 'brokerage')->where('a.pm', 1)->count();
     }
     //获取用户充值数据
     public static function getEchartsRecharge($where,$limit=15){

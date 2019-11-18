@@ -13,8 +13,8 @@ declare (strict_types = 1);
 namespace think\model\concern;
 
 use InvalidArgumentException;
-use think\Container;
 use think\db\Raw;
+use think\helper\Str;
 use think\model\Relation;
 
 /**
@@ -179,13 +179,13 @@ trait Attribute
 
     /**
      * 获取实际的字段名
-     * @access public
+     * @access protected
      * @param  string $name 字段名
      * @return string
      */
     protected function getRealFieldName(string $name): string
     {
-        return $this->strict ? $name : Container::parseName($name);
+        return $this->strict ? $name : Str::snake($name);
     }
 
     /**
@@ -278,8 +278,8 @@ trait Attribute
 
         if (array_key_exists($fieldName, $this->data)) {
             return $this->data[$fieldName];
-        } elseif (array_key_exists($name, $this->relation)) {
-            return $this->relation[$name];
+        } elseif (array_key_exists($fieldName, $this->relation)) {
+            return $this->relation[$fieldName];
         }
 
         throw new InvalidArgumentException('property not exists:' . static::class . '->' . $name);
@@ -359,10 +359,11 @@ trait Attribute
             $value = $this->autoWriteTimestamp();
         } else {
             // 检测修改器
-            $method = 'set' . Container::parseName($name, 1) . 'Attr';
+            $method = 'set' . Str::studly($name) . 'Attr';
 
             if (method_exists($this, $method)) {
                 $array = $this->data;
+
                 $value = $this->$method($value, array_merge($this->data, $data));
 
                 $this->set[$name] = true;
@@ -482,7 +483,7 @@ trait Attribute
     {
         // 检测属性获取器
         $fieldName = $this->getRealFieldName($name);
-        $method    = 'get' . Container::parseName($name, 1) . 'Attr';
+        $method    = 'get' . Str::studly($name) . 'Attr';
 
         if (isset($this->withAttr[$fieldName])) {
             if ($relation) {

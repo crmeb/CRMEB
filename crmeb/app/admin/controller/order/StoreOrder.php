@@ -109,6 +109,10 @@ class StoreOrder extends AuthController
             }
             $orderInfo->status = 2;
             if($orderInfo->save()) {
+                OrderRepository::storeProductOrderTakeDeliveryAdmin($orderInfo);
+                StoreOrderStatus::setStatus($orderInfo->id,'take_delivery','已核销');
+                //发送短信
+                event('ShortMssageSend',[$orderInfo['order_id'],'Receiving']);
                 StoreOrderModel::commitTrans();
                 return JsonService::successful('核销成功！');
             }else {
@@ -475,7 +479,7 @@ class StoreOrder extends AuthController
         $refund_data['pay_price'] = $product['pay_price'];
         $refund_data['refund_price'] = $refund_price;
         if($product['pay_type'] == 'weixin'){
-            if($product['is_channel']){//小程序
+            if($product['is_channel'] == 1){//小程序
                 try{
                     MiniProgramService::payOrderRefund($product['order_id'],$refund_data);//2.5.36
                 }catch(\Exception $e){
@@ -717,6 +721,9 @@ class StoreOrder extends AuthController
         $res = $res1 && $res2;
         BaseModel::checkTrans($res);
         if(!$res) return Json::fail('退积分失败!');
+        if($product['pay_price'] == 0 && $bj == 0){
+            $data['refund_status'] = 2;
+        }
         StoreOrderModel::edit($data,$id);
         StoreOrderStatus::setStatus($id,'integral_back','商品退积分：'.$data['back_integral']);
         return Json::successful('退积分成功!');

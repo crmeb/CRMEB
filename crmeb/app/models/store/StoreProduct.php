@@ -226,7 +226,7 @@ class StoreProduct extends BaseModel
     public static function setLevelPrice($list, $uid, $isSingle = false)
     {
         if (is_object($list)) $list = count($list) ? $list->toArray() : [];
-        if (!SystemConfigService::get('vip_open')) {
+        if (!sysConfig('vip_open')) {
             if (is_array($list)) return $list;
             return $isSingle ? $list : 0;
         }
@@ -299,6 +299,13 @@ class StoreProduct extends BaseModel
             : StoreProductAttr::uniqueByStock($uniqueId);
     }
 
+    /**
+     * 加销量减销量
+     * @param $num
+     * @param $productId
+     * @param string $unique
+     * @return bool
+     */
     public static function decProductStock($num, $productId, $unique = '')
     {
         if ($unique) {
@@ -309,7 +316,7 @@ class StoreProduct extends BaseModel
         }
         if($res){
             $stock = self::where('id', $productId)->value('stock');
-            $replenishment_num = SystemConfigService::get('store_stock') ?? 0;//库存预警界限
+            $replenishment_num = sysConfig('store_stock') ?? 0;//库存预警界限
             if($replenishment_num >= $stock){
                 try{
                     ChannelService::instance()->send('STORE_STOCK', ['id'=>$productId]);
@@ -319,13 +326,13 @@ class StoreProduct extends BaseModel
         return $res;
     }
 
-    /*
+    /**
      * 减少销量,增加库存
      * @param int $num 增加库存数量
      * @param int $productId 产品id
      * @param string $unique 属性唯一值
      * @return boolean
-     * */
+     */
     public static function incProductStock($num, $productId, $unique = '')
     {
         $product = self::where('id', $productId)->field(['sales', 'stock'])->find();
@@ -344,9 +351,15 @@ class StoreProduct extends BaseModel
         return $res;
     }
 
+    /**
+     * 获取产品分销佣金最低和最高
+     * @param $storeInfo
+     * @param $productValue
+     * @return int|string
+     */
     public static function getPacketPrice($storeInfo, $productValue)
     {
-        $store_brokerage_ratio = SystemConfigService::get('store_brokerage_ratio');
+        $store_brokerage_ratio = sysConfig('store_brokerage_ratio');
         $store_brokerage_ratio = bcdiv($store_brokerage_ratio, 100, 2);
         if (count($productValue)) {
             $Maxkey = self::getArrayMax($productValue, 'price');
@@ -385,9 +398,12 @@ class StoreProduct extends BaseModel
         }
     }
 
-    /*
+    /**
      * 获取二维数组中最大的值
-     * */
+     * @param $arr
+     * @param $field
+     * @return int|string
+     */
     public static function getArrayMax($arr, $field)
     {
         $temp = [];
@@ -401,9 +417,12 @@ class StoreProduct extends BaseModel
         return 0;
     }
 
-    /*
+    /**
      * 获取二维数组中最小的值
-     * */
+     * @param $arr
+     * @param $field
+     * @return int|string
+     */
     public static function getArrayMin($arr, $field)
     {
         $temp = [];
@@ -426,6 +445,7 @@ class StoreProduct extends BaseModel
     {
         return self::whereIn('id', $productIds)->column('store_name,image', 'id');
     }
+
     /**
      * TODO 获取某个字段值
      * @param $id

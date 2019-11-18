@@ -28,7 +28,7 @@ class StoreCouponIssue extends BaseModel
     protected $insert = ['add_time'];
 
     public static function stsypage($where){
-        $model = self::alias('A')->field('A.*,B.title')->join('__store_coupon__ B','A.cid = B.id')->where('A.is_del',0)->order('A.add_time DESC');
+        $model = self::alias('A')->field('A.*,B.title')->join('store_coupon B','A.cid = B.id')->where('A.is_del',0)->order('A.add_time DESC');
         if(isset($where['status']) && $where['status']!=''){
             $model=$model->where('A.status',$where['status']);
         }

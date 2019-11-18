@@ -516,7 +516,7 @@ class UtilService
      * */
     public static function getCurrentController()
     {
-        return strtolower(request()->app().'/'.request()->controller().'/'.request()->action());
+        return strtolower(app('http')->getName().'/'.request()->controller().'/'.request()->action());
     }
 
     /**
@@ -551,7 +551,7 @@ class UtilService
 
     public static function setSiteUrl($image, $siteUrl = '')
     {
-        if(!strlen(trim($siteUrl)))  $siteUrl = SystemConfigService::get('site_url');
+        if(!strlen(trim($siteUrl)))  $siteUrl = sysConfig('site_url');
         $domainTop = substr($image,0,4);
         if($domainTop == 'http') return $image;
         $image = str_replace('\\', '/', $image);
@@ -590,10 +590,10 @@ class UtilService
     {
         if(!strlen(trim($url)) || !strlen(trim($name))) return false;
         try{
-            $uploadType = SystemConfigService::get('upload_type');
+            $uploadType = sysConfig('upload_type');
             //TODO 没有选择默认使用本地上传
             if (!$uploadType) $uploadType = 1;
-            $siteUrl = SystemConfigService::get('site_url');
+            $siteUrl = sysConfig('site_url');
             if(!$siteUrl) return '请前往后台设置->系统设置->网站域名 填写您的域名格式为：http://域名';
             $info = [];
             $outfile = Config::get('qrcode.cache_dir');

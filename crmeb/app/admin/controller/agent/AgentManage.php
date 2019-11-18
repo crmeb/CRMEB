@@ -27,7 +27,7 @@ class AgentManage extends AuthController
     public function index()
     {
         $this->assign( 'year',getMonth());
-        $this->assign('store_brokerage_statu',\crmeb\services\SystemConfigService::get('store_brokerage_statu'));
+        $this->assign('store_brokerage_statu',sysConfig('store_brokerage_statu'));
         return $this->fetch();
     }
     public function get_spread_list()
@@ -276,10 +276,7 @@ class AgentManage extends AuthController
     public function empty_spread($uid=0)
     {
         if(!$uid) return JsonService::fail('缺少参数');
-        $res=true;
-        $spread_uid = User::where('spread_uid',$uid)->column('uid','uid');
-        if(count($spread_uid)) $res = $res && false !== User::where('spread_uid','in',$spread_uid)->update(['spread_uid'=>0]);
-        $res = $res && false !== User::where('spread_uid',$uid)->update(['spread_uid'=>0]);
+        $res =  User::where('uid',$uid)->update(['spread_uid'=>0]);
         if($res)
             return JsonService::successful('清除成功');
         else

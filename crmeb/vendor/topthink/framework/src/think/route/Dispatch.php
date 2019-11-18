@@ -90,18 +90,10 @@ abstract class Dispatch
                 $allow[] = strtoupper($item->getMethod());
             }
 
-            return Response::create('', '', 204)->header(['Allow' => implode(', ', $allow)]);
-        }
-
-        $option = $this->rule->getOption();
-
-        // 数据自动验证
-        if (isset($option['validate'])) {
-            $this->autoValidate($option['validate']);
+            return Response::create('', 'html', 204)->header(['Allow' => implode(', ', $allow)]);
         }
 
         $data = $this->exec();
-
         return $this->autoResponse($data);
     }
 
@@ -118,7 +110,7 @@ abstract class Dispatch
 
             $content  = false === $data ? '' : $data;
             $status   = '' === $content && $this->request->isJson() ? 204 : 200;
-            $response = Response::create($content, '', $status);
+            $response = Response::create($content, 'html', $status);
         }
 
         return $response;
@@ -135,7 +127,7 @@ abstract class Dispatch
 
         // 添加中间件
         if (!empty($option['middleware'])) {
-            $this->app->middleware->import($option['middleware']);
+            $this->app->middleware->import($option['middleware'], 'route');
         }
 
         if (!empty($option['append'])) {
@@ -145,6 +137,11 @@ abstract class Dispatch
         // 绑定模型数据
         if (!empty($option['model'])) {
             $this->createBindModel($option['model'], $this->param);
+        }
+
+        // 数据自动验证
+        if (isset($option['validate'])) {
+            $this->autoValidate($option['validate']);
         }
 
         // 记录当前请求的路由规则

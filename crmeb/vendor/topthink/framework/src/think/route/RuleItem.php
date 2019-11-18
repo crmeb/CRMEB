@@ -292,7 +292,7 @@ class RuleItem extends Rule
             $regex = $this->buildRuleRegex($rule, $matches[0], $pattern, $option, $completeMatch);
 
             try {
-                if (!preg_match('/^' . $regex . ($completeMatch ? '$' : '') . '/u', $url, $match)) {
+                if (!preg_match('/^' . $regex . '/u', $url, $match)) {
                     return false;
                 }
             } catch (\Exception $e) {

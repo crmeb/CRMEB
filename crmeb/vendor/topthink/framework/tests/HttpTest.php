@@ -7,9 +7,9 @@ use Mockery\MockInterface;
 use org\bovigo\vfs\vfsStream;
 use PHPUnit\Framework\TestCase;
 use think\App;
-use think\Config;
 use think\Console;
 use think\Event;
+use think\event\HttpEnd;
 use think\Exception;
 use think\exception\Handle;
 use think\Http;
@@ -17,7 +17,6 @@ use think\Log;
 use think\Request;
 use think\Response;
 use think\Route;
-use think\Session;
 
 class HttpTest extends TestCase
 {
@@ -78,8 +77,6 @@ class HttpTest extends TestCase
             ],
         ]);
 
-        $this->http->multi(false);
-
         $this->app->shouldReceive('getBasePath')->andReturn($root->getChild('app')->url() . DIRECTORY_SEPARATOR);
         $this->app->shouldReceive('getRootPath')->andReturn($root->url() . DIRECTORY_SEPARATOR);
 
@@ -89,93 +86,6 @@ class HttpTest extends TestCase
         $this->prepareApp($request, $response);
 
         $this->assertEquals($response, $this->http->run($request));
-
-        $this->assertFalse($this->http->isMulti());
-    }
-
-    /**
-     * @param $request
-     * @param $auto
-     * @param $name
-     * @dataProvider multiAppRunProvider
-     */
-    public function testMultiAppRun($request, $auto, $name, $path = null)
-    {
-        $root = vfsStream::setup('rootDir', null, [
-            'app'    => [
-                'middleware.php' => '<?php return [];',
-                'app1'           => [
-                    'common.php'     => '',
-                    'event.php'      => '<?php return ["bind"=>[],"listen"=>[],"subscribe"=>[]];',
-                    'provider.php'   => '<?php return [];',
-                    'middleware.php' => '<?php return [];',
-                    'config'         => [
-                        'app.php' => '<?php return [];',
-                    ],
-                ],
-            ],
-            'config' => [
-                'app.php' => '<?php return [];',
-                'app1'    => [
-                    'app.php' => '<?php return [];',
-                ],
-            ],
-            'route'  => [
-                'route.php' => '<?php return [];',
-            ],
-        ]);
-
-        $config = m::mock(Config::class)->makePartial();
-
-        $config->shouldReceive('get')->with('app.auto_multi_app', false)->andReturn($auto);
-
-        $config->shouldReceive('get')->with('app.domain_bind', [])->andReturn([
-            'www.domain.com' => 'app1',
-            'app2'           => 'app2',
-        ]);
-
-        $config->shouldReceive('get')->with('app.app_map', [])->andReturn([
-            'some1' => 'app3',
-        ]);
-
-        $this->app->shouldReceive('get')->with('config')->andReturn($config);
-
-        $this->app->shouldReceive('getBasePath')->andReturn($root->getChild('app')->url() . DIRECTORY_SEPARATOR);
-        $this->app->shouldReceive('getRootPath')->andReturn($root->url() . DIRECTORY_SEPARATOR);
-        $this->app->shouldReceive('getConfigPath')->andReturn($root->getChild('config')->url() . DIRECTORY_SEPARATOR);
-
-        $response = m::mock(Response::class)->makePartial();
-
-        $this->prepareApp($request, $response);
-
-        $this->assertTrue($this->http->isMulti());
-
-        if (null === $name) {
-            $this->http->shouldReceive('reportException')->once();
-
-            $this->http->shouldReceive('renderException')->once()->andReturn($response);
-        }
-
-        if (!$auto) {
-            $this->http->name($name);
-        }
-
-        if ($path) {
-            $this->http->path($path);
-        }
-
-        $this->assertEquals($response, $this->http->run($request));
-
-        if (null !== $name) {
-            $this->assertEquals($name, $this->http->getName());
-        }
-
-        if ('app1' === $name || 'app2' === $name) {
-            $this->assertTrue($this->http->isBindDomain());
-        }
-        if ($path) {
-            $this->assertEquals(rtrim($path, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR, $this->app->getAppPath());
-        }
     }
 
     public function multiAppRunProvider()
@@ -225,8 +135,6 @@ class HttpTest extends TestCase
 
         $this->app->shouldReceive('make')->with(Handle::class)->andReturn($handle);
 
-        $response->shouldReceive('setCookie')->andReturn($response);
-
         $this->assertEquals($response, $this->http->run($request));
     }
 
@@ -234,14 +142,11 @@ class HttpTest extends TestCase
     {
         $response = m::mock(Response::class);
         $event    = m::mock(Event::class);
-        $event->shouldReceive('trigger')->once()->with('HttpEnd', $response);
+        $event->shouldReceive('trigger')->once()->with(HttpEnd::class, $response);
         $this->app->shouldReceive('get')->once()->with('event')->andReturn($event);
         $log = m::mock(Log::class);
         $log->shouldReceive('save')->once();
         $this->app->shouldReceive('get')->once()->with('log')->andReturn($log);
-        $session = m::mock(Session::class);
-        $session->shouldReceive('save')->once();
-        $this->app->shouldReceive('get')->once()->with('session')->andReturn($session);
 
         $this->http->end($response);
     }

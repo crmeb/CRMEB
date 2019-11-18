@@ -12,7 +12,7 @@ declare (strict_types = 1);
 
 namespace think\model\concern;
 
-use think\db\Query;
+use think\db\BaseQuery as Query;
 
 /**
  * 数据软删除

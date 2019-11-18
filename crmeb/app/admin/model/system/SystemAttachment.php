@@ -117,10 +117,9 @@ class SystemAttachment extends BaseModel
      */
     public static function emptyYesterdayAttachment()
     {
-        self::beginTrans();
-        try{
-            $list = self::whereTime('time','yesterday')->where(['module_type'=>2])->column('att_dir','att_id');
-            foreach ($list as $att_id => $att_dir){
+        $list = self::whereTime('time','yesterday')->where(['module_type'=>2])->column('att_dir','att_id');
+        foreach ($list as $att_id => $att_dir){
+            try{
                 if($att_dir && strstr($att_dir,'uploads') !== false){
                     if(strstr($att_dir,'http') === false)
                         @unlink(substr($att_dir,1));
@@ -129,11 +128,8 @@ class SystemAttachment extends BaseModel
                         @unlink($filedir);
                     }
                 }
-                self::del($att_id);
-            }
-            self::commitTrans();
-        }catch (\Exception $e){
-            self::rollbackTrans();
+            }catch (\Throwable $e){}
+            self::del($att_id);
         }
     }
 }

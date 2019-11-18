@@ -44,7 +44,7 @@ use crmeb\services\PHPExcelService;
          $model = $model->where('A.recharge_type','weixin');
          $model = $model->where('A.paid',1);
          $model = $model->field('A.*,B.nickname');
-         $model = $model->join('__user__ B','A.uid = B.uid','RIGHT');
+         $model = $model->join('user B','A.uid = B.uid','RIGHT');
          $model = $model->order('A.id desc');
 
          return self::page($model,$where);

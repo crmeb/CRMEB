@@ -10,8 +10,9 @@ namespace crmeb\services;
 use app\models\user\WechatUser;
 use app\admin\model\wechat\WechatTemplate as WechatTemplateModel;//待完善
 use app\admin\model\wechat\StoreService as ServiceModel;
+use crmeb\interfaces\ProviderInterface;
 
-class WechatTemplateService
+class WechatTemplateService implements ProviderInterface
 {
     /**
      * 主营行业：IT科技 互联网|电子商务
@@ -57,8 +58,6 @@ class WechatTemplateService
     //砍价成功
     const BARGAIN_SUCCESS = 'OPENTM410292733';
 
-
-
     public static function getConstants($code='') {
         $oClass = new \ReflectionClass(__CLASS__);
         $stants=$oClass->getConstants();
@@ -66,6 +65,20 @@ class WechatTemplateService
         else return $stants;
     }
 
+    public function register($config)
+    {
+
+    }
+
+    /**
+     * 发送模板消息
+     * @param $openid
+     * @param $templateId
+     * @param array $data
+     * @param null $url
+     * @param string $defaultColor
+     * @return bool
+     */
     public static function sendTemplate($openid,$templateId,array $data,$url = null,$defaultColor = '')
     {
         $tempid = WechatTemplateModel::where('tempkey',$templateId)->where('status',1)->value('tempid');
@@ -73,6 +86,7 @@ class WechatTemplateService
         try{
             return WechatService::sendTemplate($openid,$tempid,$data,$url,$defaultColor);
         }catch (\Exception $e){
+            dump($e->getMessage());
             return false;
         }
     }
@@ -85,7 +99,7 @@ class WechatTemplateService
      */
     public static function sendAdminNoticeTemplate(array $data,$url = null,$defaultColor = '')
     {
-        $adminIds = explode(',',trim(SystemConfigService::get('site_store_admin_uids')));
+        $adminIds = explode(',',trim(sysConfig('site_store_admin_uids')));
         $kefuIds = ServiceModel::where('notify',1)->column('uid','uid');
         if(empty($adminIds[0])){
             $adminList = array_unique($kefuIds);

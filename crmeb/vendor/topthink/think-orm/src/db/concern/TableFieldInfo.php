@@ -34,18 +34,6 @@ trait TableFieldInfo
     }
 
     /**
-     * 设置字段类型信息
-     * @access public
-     * @param array $type 字段类型信息
-     * @return $this
-     */
-    public function setFieldType(array $type)
-    {
-        $this->options['field_type'] = $type;
-        return $this;
-    }
-
-    /**
      * 获取详细字段类型信息
      * @access public
      * @param string $tableName 数据表名称

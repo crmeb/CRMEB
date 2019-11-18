@@ -84,7 +84,7 @@ class StoreBargain extends BaseModel
      * @throws \think\db\exception\ModelNotFoundException
      * @throws \think\exception\DbException
      */
-    public static function getBargainTerm($bargainId = 0,$field = 'id,product_id,bargain_num,num,unit_name,image,title,price,min_price,image,description,start_time,stop_time,rule'){
+    public static function getBargainTerm($bargainId = 0,$field = 'id,product_id,bargain_num,num,unit_name,image,title,price,min_price,image,description,start_time,stop_time,rule,info'){
         if(!$bargainId) return [];
         $model = self::validWhere();
         $bargain = $model->field($field)->where('id',$bargainId)->find();
@@ -179,11 +179,11 @@ class StoreBargain extends BaseModel
      */
     public static function IncBargainStock($num,$bargainId)
     {
-        $bargain=self::where('id',$bargainId)->field(['stock','sales'])->find();
+        $bargain = self::where('id',$bargainId)->field(['stock','sales'])->find();
         if(!$bargain) return true;
-        if($bargain->sales > 0) $bargain->sales=bcsub($bargain->sales,$num,0);
-        if($bargain->sales < 0) $bargain->sales=0;
-        $bargain->stock=bcadd($bargain->stock,$num,0);
+        if($bargain->sales > 0) $bargain->sales = bcsub($bargain->sales,$num,0);
+        if($bargain->sales < 0) $bargain->sales = 0;
+        $bargain->stock = bcadd($bargain->stock,$num,0);
         return $bargain->save();
     }
 

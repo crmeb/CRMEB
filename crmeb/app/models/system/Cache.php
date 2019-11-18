@@ -55,7 +55,6 @@ class Cache extends BaseModel
      */
     public static function delectDeOverdueDbCache()
     {
-        return self::where('add_time','<>',0)->where('add_time','<',time())->delete();
     }
 
     /**

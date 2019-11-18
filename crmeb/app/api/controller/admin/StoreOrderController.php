@@ -352,7 +352,7 @@ class StoreOrderController
         $refundData['pay_price'] = $orderInfo['pay_price'];
         $refundData['refund_price'] = $price;
         if($orderInfo['pay_type'] == 'weixin'){
-            if($orderInfo['is_channel']){// 小程序
+            if($orderInfo['is_channel'] == 1){// 小程序
                 try{
                     MiniProgramService::payOrderRefund($orderInfo['order_id'], $refundData);
                 }catch(\Exception $e){

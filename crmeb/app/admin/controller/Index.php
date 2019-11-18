@@ -12,9 +12,9 @@ use app\admin\model\user\UserExtract as UserExtractModel;//分销
 use app\admin\model\user\User as UserModel;//用户
 use app\admin\model\store\StoreProductReply as StoreProductReplyModel;//评论
 use app\admin\model\store\StoreProduct as ProductModel;//产品
-use app\models\store\StoreOrder;
-use crmeb\services\SystemConfigService;
+use crmeb\utils\Template;
 use FormBuilder\Json;
+use think\facade\Route;
 
 /**
  * 首页控制器
@@ -33,12 +33,29 @@ class Index extends AuthController
         $this->assign([
             'menuList'=>SystemMenus::menuList(),
             'site_logo'=>json_decode($site_logo['value'],true),
-            'new_order_audio_link'=>SystemConfigService::get('new_order_audio_link'),
+            'new_order_audio_link'=>sysConfig('new_order_audio_link'),
             'role_name'=>SystemRole::where('id',$roles[0])->field('role_name')->find()
         ]);
         return $this->fetch();
     }
-    //后台首页内容
+
+    public function test()
+    {
+        $res = Template::instance()->wechat()
+            ->setTemplateCode('OPENTM207791277')
+            ->setTemplateData([
+                'first'=>'亲，您购买的商品已支付成功',
+                'keyword1'=>'wx12545454545',
+                'keyword2'=>'0.99',
+                'remark'=>'点击查看订单详情'
+            ])
+            ->setTemplateOpenId('od9iXwj58C4aLy11ABMxFkgJelt0')
+            ->setTemplateUrl(Route::buildUrl('order/detail/wx12545454545'))
+            ->send();
+        var_dump($res);
+    }
+
+  //后台首页内容
     public function main()
     {
         /*首页第一行统计*/

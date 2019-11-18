@@ -7,19 +7,31 @@
 
 namespace crmeb\traits;
 
+use crmeb\exceptions\AuthException;
+
 trait LogicTrait
 {
 
+    /**
+     * @var array
+     */
     protected $items = [];
 
     /**
-     * 静态方法调用
-     * @param  string $method 调用方法
-     * @param  mixed  $args   参数
-     * */
-    public static function __callStatic($method,$args)
-    {
+     * 实例化本身
+     * @var object
+     */
+    protected static $instance;
 
+    /**
+     * 静态方法调用
+     * @param $method 调用方法
+     * @param $params 参数
+     * @return mixed
+     */
+    public static function __callStatic($method,$params)
+    {
+        return call_user_func_array([self::$instance,$method],$params);
     }
 
     /**
@@ -76,9 +88,12 @@ trait LogicTrait
      */
     protected function registerProviders()
     {
-        foreach ($this->providers as $key=>$provider)
+        if (property_exists($this,'providers'))
         {
-            $this->register(new $provider(),$key);
+            foreach ($this->providers as $key=>$provider)
+            {
+                $this->register(new $provider(),$key);
+            }
         }
     }
 
@@ -106,9 +121,75 @@ trait LogicTrait
      * */
     public static function instance($config=[])
     {
-        $that=new self();
-        $that->setConfig($config);
-        $that->registerProviders();
-        return $that;
+        if(is_null(self::$instance)) {
+            self::$instance = new self();
+            self::$instance->setConfig($config);
+            self::$instance->registerProviders();
+            self::$instance->bool();
+        }
+        return self::$instance;
+    }
+
+    /**
+     * 转数据类型
+     * @param $var
+     * @param string $type
+     * @return array|bool|float|int|string|null
+     */
+    public function toType($var, $type = 'string')
+    {
+        if ($type === 'string') {
+            return (string)$var;
+        } else if ($type === 'array') {
+            return is_array($var) ? $var : [$var];
+        } else if ($type === 'boolean') {
+            return (bool)$var;
+        } else if ($type === 'float') {
+            return (float)$var;
+        } else if ($type === 'int') {
+            return (int)$var;
+        } else if ($type === 'null') {
+            return null;
+        }
+        return $var;
+    }
+
+    /**
+     * 设置属性
+     * @param $method
+     * @param $ages
+     * @return $this
+     */
+    public function __call($method,$ages)
+    {
+        $keys = array_keys($this->providers);
+        $propsRuleKeys = property_exists($this,'propsRule') ? array_keys($this->propsRule) : [];
+        if (strstr($method,'set') !== false) {
+            $attribute = lcfirst(str_replace('set','',$method));
+            if (property_exists($this,$attribute)
+                && in_array($attribute,$propsRuleKeys)
+                && isset($this->propsRule[$attribute]))
+            {
+                $propsRuleValeu = $this->propsRule[$attribute];
+                $type           = $propsRuleValeu[1] ?? 'string';
+                $callable       = $propsRuleValeu[2] ?? null;
+                if ($type == 'callable' && $callable) {
+                    $callable = $propsRuleValeu[2];
+                    if (method_exists($this,$callable))
+                        $ages[0] = $this->{$callable}($ages[0],$ages[1] ?? '');
+
+                } else if($type) {
+                    $ages[0] = $this->toType($ages[0],$type) ?? null;
+                }
+
+                $this->{$attribute} = $ages[0];
+                return $this;
+            }
+        } else if(in_array($method,$keys)) {
+            $this->sendType = $method;
+            return $this;
+        } else {
+            throw new AuthException('Method does not exist：'.$method);
+        }
     }
 }

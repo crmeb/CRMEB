@@ -10,6 +10,7 @@ namespace app\admin\controller\system;
 
 
 use app\admin\controller\AuthController;
+use app\admin\model\store\StoreProduct;
 use crmeb\services\JsonService as Json;
 use think\facade\Db;
 
@@ -129,6 +130,24 @@ class SystemclearData  extends AuthController
     public function systemdata(){
         self::clearData('system_notice_admin',1);
         self::clearData('system_log',1);
+        return Json::successful('清除数据成功!');
+    }
+
+    /**
+     * 清除数据
+     * @param int $type
+     * @throws \Exception
+     */
+    public function undata($type = 1)
+    {
+        switch ((int)$type){
+            case 1:
+                \app\admin\model\system\SystemAttachment::where('module_type',2)->delete();
+                break;
+            case 2:
+                StoreProduct::where('is_del',1)->delete();
+                break;
+        }
         return Json::successful('清除数据成功!');
     }
     //清除制定表数据

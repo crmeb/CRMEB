@@ -30,7 +30,7 @@ class SystemAttachment extends AuthController
             $info["size"] = $res['size'];
             $info["type"] = $res['type'];
             $info["state"] = "SUCCESS";
-            if($res['image_type'] == 1) $info['url'] =  SystemConfigService::get('site_url').str_replace('\\','/',$res['dir']);
+            if($res['image_type'] == 1) $info['url'] =  sysConfig('site_url').str_replace('\\','/',$res['dir']);
         }else
             $info = array(
                 "msg" => $res,

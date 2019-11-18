@@ -151,7 +151,7 @@ class UserBillController
         try{
             $resRoutine = true;//小程序
             $resWap = true;//公众号
-            $siteUrl = SystemConfigService::get('site_url');
+            $siteUrl = sysConfig('site_url');
             $routineSpreadBanner = GroupDataService::getData('routine_spread_banner');
             if(!count($routineSpreadBanner)) return app('json')->fail('暂无海报');
             if($type == 1){
@@ -207,7 +207,7 @@ class UserBillController
                                 'angle'=>0,
                             ),
                             array(
-                                'text'=>'邀请您加入'.SystemConfigService::get('site_name'),
+                                'text'=>'邀请您加入'.sysConfig('site_name'),
                                 'left'=>250,
                                 'top'=>880,
                                 'fontPath'=>$rootPath.'public'. DS .$filelink['Normal'],     //字体文件
@@ -280,7 +280,7 @@ class UserBillController
                                 'angle'=>0,
                             ),
                             array(
-                                'text'=>'邀请您加入'.SystemConfigService::get('site_name'),
+                                'text'=>'邀请您加入'.sysConfig('site_name'),
                                 'left'=>250,
                                 'top'=>880,
                                 'fontPath'=>$rootPath.'public'. DS .$filelink['Normal'],     //字体文件

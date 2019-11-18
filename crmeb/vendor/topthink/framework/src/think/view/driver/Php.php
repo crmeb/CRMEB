@@ -12,9 +12,10 @@ declare (strict_types = 1);
 
 namespace think\view\driver;
 
+use RuntimeException;
 use think\App;
 use think\contract\TemplateHandlerInterface;
-use think\template\exception\TemplateNotFoundException;
+use think\helper\Str;
 
 /**
  * PHP原生模板驱动
@@ -28,15 +29,15 @@ class Php implements TemplateHandlerInterface
     // 模板引擎参数
     protected $config = [
         // 默认模板渲染规则 1 解析为小写+下划线 2 全部转换小写 3 保持操作方法
-        'auto_rule'   => 1,
-        // 视图根目录
-        'view_base'   => '',
-        // 应用模板起始路径
-        'view_path'   => '',
+        'auto_rule'     => 1,
+        // 视图目录名
+        'view_dir_name' => 'view',
+        // 应用模板路径
+        'view_path'     => '',
         // 模板文件后缀
-        'view_suffix' => 'php',
+        'view_suffix'   => 'php',
         // 模板文件名分隔符
-        'view_depr'   => DIRECTORY_SEPARATOR,
+        'view_depr'     => DIRECTORY_SEPARATOR,
     ];
 
     public function __construct(App $app, array $config = [])
@@ -48,7 +49,7 @@ class Php implements TemplateHandlerInterface
     /**
      * 检测是否存在模板文件
      * @access public
-     * @param  string $template 模板文件或者模板规则
+     * @param string $template 模板文件或者模板规则
      * @return bool
      */
     public function exists(string $template): bool
@@ -64,8 +65,8 @@ class Php implements TemplateHandlerInterface
     /**
      * 渲染模板文件
      * @access public
-     * @param  string $template 模板文件
-     * @param  array  $data 模板变量
+     * @param string $template 模板文件
+     * @param array  $data     模板变量
      * @return void
      */
     public function fetch(string $template, array $data = []): void
@@ -77,7 +78,7 @@ class Php implements TemplateHandlerInterface
 
         // 模板不存在 抛出异常
         if (!is_file($template)) {
-            throw new TemplateNotFoundException('template not exists:' . $template, $template);
+            throw new RuntimeException('template not exists:' . $template);
         }
 
         $this->template = $template;
@@ -94,8 +95,8 @@ class Php implements TemplateHandlerInterface
     /**
      * 渲染模板内容
      * @access public
-     * @param  string $content 模板内容
-     * @param  array  $data 模板变量
+     * @param string $content 模板内容
+     * @param array  $data    模板变量
      * @return void
      */
     public function display(string $content, array $data = []): void
@@ -109,15 +110,11 @@ class Php implements TemplateHandlerInterface
     /**
      * 自动定位模板文件
      * @access private
-     * @param  string $template 模板文件规则
+     * @param string $template 模板文件规则
      * @return string
      */
     private function parseTemplate(string $template): string
     {
-        if (empty($this->config['view_base'])) {
-            $this->config['view_base'] = $this->app->getRootPath() . 'view' . DIRECTORY_SEPARATOR;
-        }
-
         $request = $this->app->request;
 
         // 获取视图根目录
@@ -129,16 +126,27 @@ class Php implements TemplateHandlerInterface
         if ($this->config['view_path'] && !isset($app)) {
             $path = $this->config['view_path'];
         } else {
-            $app = isset($app) ? $app : $request->app();
-            // 基础视图目录
-            $path = $this->config['view_base'] . ($app ? $app . DIRECTORY_SEPARATOR : '');
+            $appName = isset($app) ? $app : $this->app->http->getName();
+            $view    = $this->config['view_dir_name'];
+
+            if (is_dir($this->app->getAppPath() . $view)) {
+                $path = isset($app) ? $this->app->getBasePath() . ($appName ? $appName . DIRECTORY_SEPARATOR : '') . $view . DIRECTORY_SEPARATOR : $this->app->getAppPath() . $view . DIRECTORY_SEPARATOR;
+            } else {
+                $path = $this->app->getRootPath() . $view . DIRECTORY_SEPARATOR . ($appName ? $appName . DIRECTORY_SEPARATOR : '');
+            }
         }
 
         $depr = $this->config['view_depr'];
 
         if (0 !== strpos($template, '/')) {
             $template   = str_replace(['/', ':'], $depr, $template);
-            $controller = App::parseName($request->controller());
+            $controller = $request->controller();
+            if (strpos($controller, '.')) {
+                $pos        = strrpos($controller, '.');
+                $controller = substr($controller, 0, $pos) . '.' . Str::snake(substr($controller, $pos + 1));
+            } else {
+                $controller = Str::snake($controller);
+            }
 
             if ($controller) {
                 if ('' == $template) {
@@ -148,7 +156,7 @@ class Php implements TemplateHandlerInterface
                     } elseif (3 == $this->config['auto_rule']) {
                         $template = $request->action();
                     } else {
-                        $template = App::parseName($request->action());
+                        $template = Str::snake($request->action());
                     }
 
                     $template = str_replace('.', DIRECTORY_SEPARATOR, $controller) . $depr . $template;
@@ -166,7 +174,7 @@ class Php implements TemplateHandlerInterface
     /**
      * 配置模板引擎
      * @access private
-     * @param  array $config 参数
+     * @param array $config 参数
      * @return void
      */
     public function config(array $config): void
@@ -177,7 +185,7 @@ class Php implements TemplateHandlerInterface
     /**
      * 获取模板引擎配置
      * @access public
-     * @param  string $name 参数名
+     * @param string $name 参数名
      * @return mixed
      */
     public function getConfig(string $name)

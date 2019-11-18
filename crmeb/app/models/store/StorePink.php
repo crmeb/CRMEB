@@ -70,7 +70,7 @@ class StorePink extends BaseModel
         $model = $model->alias('p');
         $model = $model->field('p.*,u.nickname,u.avatar');
         $model = $model->where('id',$id);
-        $model = $model->join('__user__ u','u.uid = p.uid');
+        $model = $model->join('user u','u.uid = p.uid');
         return $model->find();
     }
 
@@ -85,7 +85,7 @@ class StorePink extends BaseModel
         $model = $model->field('p.*,u.nickname,u.avatar');
         $model = $model->where('k_id',$id);
         $model = $model->where('is_refund',0);
-        $model = $model->join('__user__ u','u.uid = p.uid');
+        $model = $model->join('user u','u.uid = p.uid');
         $model = $model->order('id asc');
         return $model->select();
     }
@@ -116,7 +116,7 @@ class StorePink extends BaseModel
         $model = $model->where('p.k_id',0);
         $model = $model->where('p.is_refund',0);
         $model = $model->order('p.add_time desc');
-        $model = $model->join('__user__ u','u.uid = p.uid');
+        $model = $model->join('user u','u.uid = p.uid');
         $list = $model->select();
         $list=count($list) ? $list->toArray() : [];
         if($isAll){
@@ -194,7 +194,7 @@ class StorePink extends BaseModel
              if($openid){ //公众号模板消息
                  $firstWeChat = '亲，您的拼团已经完成了';
                  $keyword1WeChat = self::where('id|k_id',$pid)->where('uid',$item)->value('order_id');
-                 $keyword2WeChat = self::alias('p')->where('p.id|p.k_id',$pid)->where('p.uid',$item)->join('__store_combination__ c','c.id=p.cid')->value('c.title');
+                 $keyword2WeChat = self::alias('p')->where('p.id|p.k_id',$pid)->where('p.uid',$item)->join('store_combination c','c.id=p.cid')->value('c.title');
                  $remarkWeChat = '点击查看订单详情';
                  $urlWeChat = Route::buildUrl('order/detail/'.$keyword1WeChat)->suffix('')->domain(true)->build();
                  WechatTemplateService::sendTemplate($openid,WechatTemplateService::ORDER_USER_GROUPS_SUCCESS,[
@@ -223,7 +223,7 @@ class StorePink extends BaseModel
      * @param $pid
      */
     public static function orderPinkAfterNo($uid,$pid,$formId='',$fillTilt='',$isRemove=false){
-        $store = self::alias('p')->where('p.id|p.k_id',$pid)->field('c.*')->where('p.uid',$uid)->join('__store_combination__ c','c.id=p.cid')->find();
+        $store = self::alias('p')->where('p.id|p.k_id',$pid)->field('c.*')->where('p.uid',$uid)->join('store_combination c','c.id=p.cid')->find();
         $pink = self::where('id|k_id',$pid)->where('uid',$uid)->find();
         $openid = WechatUser::uidToOpenid($uid, 'openid');
         $routineOpenid = WechatUser::uidToOpenid($uid, 'routine_openid');
@@ -451,7 +451,7 @@ class StorePink extends BaseModel
                     $res = $res1 && $res2;
                 }
                 // 开团成功发送模板消息
-                if($openid && !$order['is_channel']){ //公众号模板消息
+                if($openid && $order['is_channel'] != 1){ //公众号模板消息
                     $urlWeChat = Route::buildUrl('/order/detail/'.$pink['order_id'])->suffix('')->domain(true)->build();
                     WechatTemplateService::sendTemplate($openid,WechatTemplateService::OPEN_PINK_SUCCESS,[
                         'first'=> '您好，您已成功开团！赶紧与小伙伴们分享吧！！！',
@@ -460,7 +460,7 @@ class StorePink extends BaseModel
                         'keyword3'=> $pink['people'],
                         'remark'=> '点击查看订单详情'
                     ],$urlWeChat);
-                }else if($routineOpenid && $order['is_channel']){
+                }else if($routineOpenid && $order['is_channel'] == 1){
                     RoutineTemplate::sendOut('OPEN_PINK_SUCCESS',$order['uid'],[
                         'keyword1'=>date('Y-m-d H:i:s',$pink['add_time']),
                         'keyword2'=>date('Y-m-d H:i:s',$pink['stop_time']),
@@ -494,7 +494,7 @@ class StorePink extends BaseModel
 //        $pinkRakeBack = self::where('id',$id)->field('people,price,uid,id')->find()->toArray();
 //        $countPrice = bcmul($pinkRakeBack['people'],$pinkRakeBack['price'],2);
 //        if(bcsub((float)$countPrice,0,2) <= 0) return true;
-//        $rakeBack = (SystemConfigService::get('rake_back_colonel') ?: 0)/100;
+//        $rakeBack = (sysConfig('rake_back_colonel') ?: 0)/100;
 //        if($rakeBack <= 0) return true;
 //        $rakeBackPrice = bcmul($countPrice,$rakeBack,2);
 //        if($rakeBackPrice <= 0) return true;
@@ -717,7 +717,7 @@ class StorePink extends BaseModel
         foreach ($pinkUidList as $key=>&$item){
             $openid = WechatUser::uidToOpenid($item, 'openid');
             $routineOpenid = WechatUser::uidToOpenid($item, 'routine_openid');
-            $store = self::alias('p')->where('p.id|p.k_id',$pink)->field('c.*')->where('p.uid',$item)->join('__store_combination__ c','c.id=p.cid')->find();
+            $store = self::alias('p')->where('p.id|p.k_id',$pink)->field('c.*')->where('p.uid',$item)->join('store_combination c','c.id=p.cid')->find();
             $pink = self::where('id|k_id',$pink)->where('uid',$item)->find();
             if($openid){
                 //公众号模板消息
@@ -792,7 +792,7 @@ class StorePink extends BaseModel
                 //公众号模板消息
                 $firstWeChat = '亲，您的拼团已经完成了';
                 $keyword1WeChat = self::where('id|k_id',$pink)->where('uid',$item)->value('order_id');
-                $keyword2WeChat = self::alias('p')->where('p.id|p.k_id',$pink)->where('p.uid',$item)->join('__store_combination__ c','c.id=p.cid')->value('c.title');
+                $keyword2WeChat = self::alias('p')->where('p.id|p.k_id',$pink)->where('p.uid',$item)->join('store_combination c','c.id=p.cid')->value('c.title');
                 $remarkWeChat = '点击查看订单详情';
                 $urlWeChat = Route::buildUrl('order/detail/'.$keyword1WeChat)->suffix('')->domain(true)->build();
                 WechatTemplateService::sendTemplate($openid,WechatTemplateService::ORDER_USER_GROUPS_SUCCESS,[
@@ -839,6 +839,7 @@ class StorePink extends BaseModel
         $success = self::successPinkEdit($successPinkList);
         $error = self::failPinkEdit($failPinkList);
         $res = $success && $error;
-        return $res;
+        if(!$res)
+            throw new \Exception('拼团订单取消失败！');
     }
 }

@@ -14,7 +14,7 @@ namespace think\db;
 
 use Closure;
 use PDO;
-use think\Exception;
+use think\db\exception\DbException as Exception;
 
 /**
  * Db Builder
@@ -23,7 +23,7 @@ abstract class Builder
 {
     /**
      * Connection对象
-     * @var Connection
+     * @var ConnectionInterface
      */
     protected $connection;
 
@@ -83,9 +83,9 @@ abstract class Builder
     /**
      * 架构函数
      * @access public
-     * @param  Connection $connection 数据库连接对象实例
+     * @param  ConnectionInterface $connection 数据库连接对象实例
      */
-    public function __construct(Connection $connection)
+    public function __construct(ConnectionInterface $connection)
     {
         $this->connection = $connection;
     }
@@ -93,9 +93,9 @@ abstract class Builder
     /**
      * 获取当前的连接对象实例
      * @access public
-     * @return Connection
+     * @return ConnectionInterface
      */
-    public function getConnection(): Connection
+    public function getConnection(): ConnectionInterface
     {
         return $this->connection;
     }
@@ -103,8 +103,8 @@ abstract class Builder
     /**
      * 注册查询表达式解析
      * @access public
-     * @param  string    $name   解析方法
-     * @param  array     $parser 匹配表达式数据
+     * @param  string $name   解析方法
+     * @param  array  $parser 匹配表达式数据
      * @return $this
      */
     public function bindParser(string $name, array $parser)
@@ -116,10 +116,10 @@ abstract class Builder
     /**
      * 数据分析
      * @access protected
-     * @param  Query     $query     查询对象
-     * @param  array     $data      数据
-     * @param  array     $fields    字段信息
-     * @param  array     $bind      参数绑定
+     * @param  Query $query     查询对象
+     * @param  array $data      数据
+     * @param  array $fields    字段信息
+     * @param  array $bind      参数绑定
      * @return array
      */
     protected function parseData(Query $query, array $data = [], array $fields = [], array $bind = []): array
@@ -186,10 +186,10 @@ abstract class Builder
     /**
      * 数据绑定处理
      * @access protected
-     * @param  Query     $query     查询对象
-     * @param  string    $key       字段名
-     * @param  mixed     $data      数据
-     * @param  array     $bind      绑定数据
+     * @param  Query  $query     查询对象
+     * @param  string $key       字段名
+     * @param  mixed  $data      数据
+     * @param  array  $bind      绑定数据
      * @return string
      */
     protected function parseDataBind(Query $query, string $key, $data, array $bind = []): string
@@ -289,8 +289,8 @@ abstract class Builder
     /**
      * where分析
      * @access protected
-     * @param  Query     $query   查询对象
-     * @param  mixed     $where   查询条件
+     * @param  Query $query   查询对象
+     * @param  mixed $where   查询条件
      * @return string
      */
     protected function parseWhere(Query $query, array $where): string
@@ -368,7 +368,7 @@ abstract class Builder
 
             if ($value instanceof Closure) {
                 // 使用闭包查询
-                $where[] = $this->parseClousreWhere($query, $value, $logic);
+                $where[] = $this->parseClosureWhere($query, $value, $logic);
             } elseif (is_array($field)) {
                 $where[] = $this->parseMultiWhereField($query, $value, $field, $logic, $binds);
             } elseif ($field instanceof Raw) {
@@ -437,14 +437,15 @@ abstract class Builder
      * @param  string  $logic Logic
      * @return string
      */
-    protected function parseClousreWhere(Query $query, Closure $value, string $logic): string
+    protected function parseClosureWhere(Query $query, Closure $value, string $logic): string
     {
-        $newQuery = $query->newQuery()->setConnection($this->connection);
+        $newQuery = $query->newQuery();
         $value($newQuery);
-        $whereClause = $this->buildWhere($query, $newQuery->getOptions('where') ?: []);
+        $whereClosure = $this->buildWhere($newQuery, $newQuery->getOptions('where') ?: []);
 
-        if (!empty($whereClause)) {
-            $where = ' ' . $logic . ' ( ' . $whereClause . ' )';
+        if (!empty($whereClosure)) {
+            $query->bind($newQuery->getBind(false));
+            $where = ' ' . $logic . ' ( ' . $whereClosure . ' )';
         }
 
         return $where ?? '';

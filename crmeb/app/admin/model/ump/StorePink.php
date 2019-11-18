@@ -37,8 +37,8 @@ class StorePink extends BaseModel
         if($where['status']) $model = $model->where('p.status',$where['status']);
         $model = $model->where('p.k_id',0);
         $model = $model->order('p.id desc');
-        $model = $model->join('__store_combination__ c','c.id=p.cid');
-        $model = $model->join('__user__ u','u.uid = p.uid');
+        $model = $model->join('store_combination c','c.id=p.cid');
+        $model = $model->join('user u','u.uid = p.uid');
         return self::page($model,function($item)use($where){
             $item['count_people'] = bcadd(self::where('k_id',$item['id'])->count(),1,0);
         },$where);
@@ -72,7 +72,7 @@ class StorePink extends BaseModel
         $model = $model->alias('p');
         $model = $model->field('p.*,u.nickname,u.avatar');
         $model = $model->where('id',$id);
-        $model = $model->join('__user__ u','u.uid = p.uid');
+        $model = $model->join('user u','u.uid = p.uid');
         $list = $model->find();
         if($list) return $list->toArray();
         else return [];
@@ -88,7 +88,7 @@ class StorePink extends BaseModel
         $model = $model->field('p.*,u.nickname,u.avatar');
         $model = $model->where('k_id',$id);
         $model = $model->where('is_refund',0);
-        $model = $model->join('__user__ u','u.uid = p.uid');
+        $model = $model->join('user u','u.uid = p.uid');
         $model = $model->order('id asc');
         $list = $model->select();
         if($list) return $list->toArray();

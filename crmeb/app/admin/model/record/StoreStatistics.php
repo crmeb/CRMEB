@@ -130,7 +130,7 @@ class StoreStatistics extends BaseModel
      */
     public static function getConsumption($where)
     {
-        $consumption=self::getTime($where,new UserBill,'b.add_time')->alias('a')->join('__user__ b','a.uid = b.uid')
+        $consumption=self::getTime($where,new UserBill,'b.add_time')->alias('a')->join('user b','a.uid = b.uid')
             ->field('sum(a.number) number')
         ->where('a.type','pay_product')->find()->toArray();
         return $consumption;
@@ -182,9 +182,9 @@ class StoreStatistics extends BaseModel
     public static function trans()
     {
         $trans = self::alias('a')
-            ->join('__user__ b', 'a.uid=b.uid','left')
-            ->join('__store_order_cart_info__ c', 'a.id=c.oid')
-            ->join('__store_product__ d', 'c.product_id=d.id')
+            ->join('user b', 'a.uid=b.uid','left')
+            ->join('store_order_cart_info c', 'a.id=c.oid')
+            ->join('store_product d', 'c.product_id=d.id')
             ->field('b.nickname,a.pay_price,d.store_name')
             ->order('a.add_time DESC')
             ->limit('6')

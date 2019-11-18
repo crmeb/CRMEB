@@ -205,7 +205,7 @@ class UploadService
     {
         $info = [];
         try{
-            $uploadType = $this->uploadType ? : SystemConfigService::get('upload_type');
+            $uploadType = $this->uploadType ? : sysConfig('upload_type');
             //TODO 没有选择默认使用本地上传
             if (!$uploadType) $uploadType = 1;
             switch ($uploadType) {
@@ -312,7 +312,7 @@ class UploadService
      */
     public function uploadLocalStream($key, $content,$root='')
     {
-        $siteUrl = SystemConfigService::get('site_url') . '/';
+        $siteUrl = sysConfig('site_url') . '/';
         $path = self::uploadDir($this->uploadPath, $root);
         $path = str_replace('\\', DS, $path);
         $path = str_replace('/', DS, $path);
@@ -336,7 +336,7 @@ class UploadService
      */
     public function imageStream($key, $content,$root='')
     {
-        $uploadType = SystemConfigService::get('upload_type');
+        $uploadType = sysConfig('upload_type');
         //TODO 没有选择默认使用本地上传
         if (!$uploadType) $uploadType = 1;
         $info = [];

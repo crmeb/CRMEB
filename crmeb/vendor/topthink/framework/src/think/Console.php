@@ -14,7 +14,6 @@ use Closure;
 use InvalidArgumentException;
 use LogicException;
 use think\console\Command;
-use think\console\command\Build;
 use think\console\command\Clear;
 use think\console\command\Help;
 use think\console\command\Help as HelpCommand;
@@ -63,7 +62,6 @@ class Console
     protected $defaultCommands = [
         'help'             => Help::class,
         'list'             => Lists::class,
-        'build'            => Build::class,
         'clear'            => Clear::class,
         'make:command'     => MakeCommand::class,
         'make:controller'  => Controller::class,
@@ -74,8 +72,8 @@ class Console
         'make:listener'    => Listener::class,
         'make:service'     => Service::class,
         'make:subscribe'   => Subscribe::class,
-        'optimize:schema'  => Schema::class,
         'optimize:route'   => Route::class,
+        'optimize:schema'  => Schema::class,
         'run'              => RunServer::class,
         'version'          => Version::class,
         'route:list'       => RouteList::class,
@@ -95,12 +93,6 @@ class Console
 
         if (!$this->app->initialized()) {
             $this->app->initialize();
-        }
-
-        $user = $this->app->config->get('console.user');
-
-        if ($user) {
-            $this->setUser($user);
         }
 
         $this->definition = $this->getDefaultInputDefinition();
@@ -129,28 +121,28 @@ class Console
     }
 
     /**
+     * 设置执行用户
+     * @param $user
+     */
+    public static function setUser(string $user): void
+    {
+        if (extension_loaded('posix')) {
+            $user = posix_getpwnam($user);
+
+            if (!empty($user)) {
+                posix_setgid($user['gid']);
+                posix_setuid($user['uid']);
+            }
+        }
+    }
+
+    /**
      * 启动
      */
     protected function start(): void
     {
         foreach (static::$startCallbacks as $callback) {
             $callback($this);
-        }
-    }
-
-    /**
-     * 设置执行用户
-     * @param $user
-     */
-    protected function setUser(string $user): void
-    {
-        if (extension_loaded('posix')) {
-            $user = posix_getpwnam($user);
-
-            if (!empty($user)) {
-                posix_setuid($user['uid']);
-                posix_setgid($user['gid']);
-            }
         }
     }
 
@@ -263,8 +255,6 @@ class Console
         }
 
         $command = $this->find($name);
-
-        $this->app->log->info('run: php think ' . $input);
 
         return $this->doRunCommand($command, $input, $output);
     }

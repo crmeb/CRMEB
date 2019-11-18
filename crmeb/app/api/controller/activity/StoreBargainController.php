@@ -299,7 +299,7 @@ class StoreBargainController
         $price = StoreBargainUserHelp::getSurplusPrice($bargainId, $user['uid']);//TODO 获取砍价剩余金额
         $alreadyPrice = StoreBargainUser::getBargainUserPrice(StoreBargainUser::getBargainUserTableId($bargainId, $user['uid']));
         try{
-            $siteUrl = SystemConfigService::get('site_url');
+            $siteUrl = sysConfig('site_url');
             $data['title'] = $storeBargainInfo['title'];
             $data['image'] = $storeBargainInfo['image'];
             $data['price'] = bcsub($storeBargainInfo['price'],$alreadyPrice,2);
@@ -311,7 +311,7 @@ class StoreBargainController
                 $imageInfo = SystemAttachment::getInfo($name,'name');
                 if(!$imageInfo){
                     $valueData = 'id='.$bargainId.'&bargain='.$user['uid'];
-                    if($user['is_promoter'] || SystemConfigService::get('store_brokerage_statu') == 2) $valueData.='&pid='.$user['uid'];
+                    if($user['is_promoter'] || sysConfig('store_brokerage_statu') == 2) $valueData.='&pid='.$user['uid'];
                     $res = RoutineCode::getPageCode('pages/activity/goods_bargain_details/index',$valueData,280);
                     if(!$res) return app('json')->fail('二维码生成失败');
                     $imageInfo = UploadService::getInstance()->setUploadPath('routine/activity/bargain/code')->imageStream($name,$res);

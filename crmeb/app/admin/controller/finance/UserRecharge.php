@@ -124,7 +124,7 @@ SCRIPT;
                     'keyword2'=>$UserRecharge['price'],
                     'keyword3'=>date('Y-m-d H:i:s',$UserRecharge['add_time']),
                     'remark'=>'点击查看订单详情'
-                ],Url::buildUrl('wap/My/balance','',true,true));
+                ],Url::buildUrl('/user/bill/2')->suffix(false)->build());
                 break;
             case 'routine':
                 RoutineTemplate::sendOut('ORDER_REFUND_SUCCESS',$UserRecharge['uid'],[

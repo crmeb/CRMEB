@@ -224,7 +224,7 @@
                                     <i class="fa fa-motorcycle"></i> 去送货
                                 </a>
                             </li>
-                            {{#  if(d.use_integral > 0 && d.use_integral >= d.back_integral){ }}
+                            {{#  if(parseFloat(d.use_integral) > 0 && parseFloat(d.use_integral) > parseFloat(d.back_integral)){ }}
                             <li>
                                 <a lay-event='marke' href="javascript:void(0);">
                                     <i class="fa fa-paste"></i> 订单备注
@@ -280,7 +280,7 @@
                                     <i class="fa fa-history"></i> 立即退款
                                 </a>
                             </li>
-                            {{# }else if(d.use_integral > 0 && d.use_integral >= d.back_integral){ }}
+                            {{# }else if(parseFloat(d.use_integral) > 0 && parseFloat(d.use_integral) > parseFloat(d.back_integral)){ }}
                             <li>
                                 <a href="javascript:void(0);" onclick="$eb.createModalFrame('退积分','{:Url('integral_back')}?id={{d.id}}')">
                                     <i class="fa fa-history"></i> 退积分
@@ -313,7 +313,7 @@
                                 </a>
                             </li>
                             {{# };}}
-                            {{# if(d.use_integral > 0 && d.use_integral >= d.back_integral){ }}
+                            {{# if(parseFloat(d.use_integral) > 0 && parseFloat(d.use_integral) > parseFloat(d.back_integral)){ }}
                             <li>
                                 <a href="javascript:void(0);" onclick="$eb.createModalFrame('退积分','{:Url('integral_back')}?id={{d.id}}')">
                                     <i class="fa fa-history"></i> 退积分
@@ -346,7 +346,7 @@
                                 </a>
                             </li>
                             {{# } }}
-                            {{# if(d.use_integral > 0 && d.use_integral >= d.back_integral){ }}
+                            {{# if(parseFloat(d.use_integral) > 0 && parseFloat(d.use_integral) >= parseFloat(d.back_integral)){ }}
                             <li>
                                 <a href="javascript:void(0);" onclick="$eb.createModalFrame('退积分','{:Url('integral_back')}?id={{d.id}}')">
                                     <i class="fa fa-history"></i> 退积分

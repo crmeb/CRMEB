@@ -17,8 +17,8 @@ use MongoDB\Driver\Command;
 use MongoDB\Driver\Exception\InvalidArgumentException;
 use MongoDB\Driver\Query as MongoQuery;
 use think\db\connector\Mongo as Connection;
+use think\db\exception\DbException as Exception;
 use think\db\Mongo as Query;
-use think\Exception;
 
 class Mongo
 {
@@ -32,7 +32,7 @@ class Mongo
     /**
      * 架构函数
      * @access public
-     * @param Connection    $connection 数据库连接对象实例
+     * @param Connection $connection 数据库连接对象实例
      */
     public function __construct(Connection $connection)
     {
@@ -42,9 +42,9 @@ class Mongo
     /**
      * 获取当前的连接对象实例
      * @access public
-     * @return void
+     * @return Connection
      */
-    public function getConnection()
+    public function getConnection(): Connection
     {
         return $this->connection;
     }
@@ -500,7 +500,7 @@ class Mongo
         $options = $query->getOptions();
 
         $cmd['count'] = $options['table'];
-        $cmd['query'] = $this->parseWhere($query, $options['where']);
+        $cmd['query'] = (object) $this->parseWhere($query, $options['where']);
 
         foreach (['hint', 'limit', 'maxTimeMS', 'skip'] as $option) {
             if (isset($options[$option])) {
@@ -621,7 +621,7 @@ class Mongo
         ];
 
         if (!empty($options['where'])) {
-            $cmd['query'] = $this->parseWhere($query, $options['where']);
+            $cmd['query'] = (object) $this->parseWhere($query, $options['where']);
         }
 
         if (isset($options['maxTimeMS'])) {

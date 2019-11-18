@@ -7,9 +7,9 @@ $baseDir = dirname($vendorDir);
 
 return array(
     'think\\view\\driver\\' => array($vendorDir . '/topthink/think-view/src'),
-    'think\\helper\\' => array($vendorDir . '/topthink/think-helper/src'),
     'think\\captcha\\' => array($vendorDir . '/topthink/think-captcha/src'),
-    'think\\' => array($vendorDir . '/topthink/framework/src/think', $vendorDir . '/topthink/think-cache/src', $vendorDir . '/topthink/think-container/src', $vendorDir . '/topthink/think-factory/src', $vendorDir . '/topthink/think-image/src', $vendorDir . '/topthink/think-log/src', $vendorDir . '/topthink/think-orm/src', $vendorDir . '/topthink/think-queue/src', $vendorDir . '/topthink/think-template/src'),
+    'think\\app\\' => array($vendorDir . '/topthink/think-multi-app/src'),
+    'think\\' => array($vendorDir . '/topthink/framework/src/think', $vendorDir . '/topthink/think-cache/src', $vendorDir . '/topthink/think-container/src', $vendorDir . '/topthink/think-factory/src', $vendorDir . '/topthink/think-helper/src', $vendorDir . '/topthink/think-image/src', $vendorDir . '/topthink/think-log/src', $vendorDir . '/topthink/think-orm/src', $vendorDir . '/topthink/think-queue/src', $vendorDir . '/topthink/think-template/src'),
     'dh2y\\qrcode\\' => array($vendorDir . '/dh2y/think-qrcode/src'),
     'crmeb\\' => array($baseDir . '/crmeb'),
     'app\\' => array($baseDir . '/app'),

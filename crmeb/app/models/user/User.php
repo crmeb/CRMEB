@@ -4,7 +4,6 @@
 namespace app\models\user;
 
 use app\models\store\StoreOrder;
-use crmeb\services\CacheService;
 use crmeb\services\SystemConfigService;
 use think\facade\Session;
 use crmeb\traits\ModelTrait;
@@ -116,7 +115,7 @@ class User extends BaseModel
                 'last_ip' => request()->ip(),
             ];
             //TODO 获取后台分销类型
-            $storeBrokerageStatus = SystemConfigService::get('store_brokerage_statu');
+            $storeBrokerageStatus = sysConfig('store_brokerage_statu');
             $storeBrokerageStatus = $storeBrokerageStatus ? $storeBrokerageStatus : 1;
             if(isset($wechatUser['code']) && $wechatUser['code'] && $wechatUser['code'] != $uid && $uid != self::where('uid',$wechatUser['code'])->value('spread_uid')){
                 if($storeBrokerageStatus == 1){
@@ -157,7 +156,7 @@ class User extends BaseModel
         if($spread == $uid) return true;
         if($uid == self::where('uid',$spread)->value('spread_uid')) return true;
         //TODO 获取后台分销类型
-        $storeBrokerageStatus = SystemConfigService::get('store_brokerage_statu');
+        $storeBrokerageStatus = sysConfig('store_brokerage_statu');
         $storeBrokerageStatus = $storeBrokerageStatus ? $storeBrokerageStatus : 1;
         if($storeBrokerageStatus == 1){
             $spreadCount = self::where('uid',$spread)->count();
@@ -184,7 +183,7 @@ class User extends BaseModel
         self::beginTrans();
         $res1 = true;
         if($spread_uid) $res1 = self::where('uid',$spread_uid)->inc('spread_count',1)->update();
-//        $storeBrokerageStatu = SystemConfigService::get('store_brokerage_statu') ? : 1;//获取后台分销类型
+//        $storeBrokerageStatu = sysConfig('store_brokerage_statu') ? : 1;//获取后台分销类型
         $res2 = self::create([
             'account'=>'rt'.$routineUser['uid'].time(),
             'pwd'=>md5(123456),
@@ -242,7 +241,7 @@ class User extends BaseModel
      */
     public static function isUserSpread($uid = 0){
         if(!$uid) return false;
-        $status = (int)SystemConfigService::get('store_brokerage_statu');
+        $status = (int)sysConfig('store_brokerage_statu');
         $isPromoter = true;
         if($status == 1) $isPromoter = self::where('uid',$uid)->value('is_promoter');
         if($isPromoter) return true;
@@ -272,14 +271,14 @@ class User extends BaseModel
         //TODO 当前用户不存在 没有上级 或者 当用用户上级时自己  直接返回
         if(!$userInfo || !$userInfo['spread_uid'] || $userInfo['spread_uid'] == $orderInfo['uid']) return true;
         //TODO 获取后台分销类型  1 指定分销 2 人人分销
-        $storeBrokerageStatus = SystemConfigService::get('store_brokerage_statu');
+        $storeBrokerageStatus = sysConfig('store_brokerage_statu');
         $storeBrokerageStatus = $storeBrokerageStatus ? $storeBrokerageStatus : 1;
         //TODO 指定分销 判断 上级是否时推广员  如果不是推广员直接跳转二级返佣
         if($storeBrokerageStatus == 1){
             if(!User::be(['uid'=>$userInfo['spread_uid'],'is_promoter'=>1])) return self::backOrderBrokerageTwo($orderInfo);
         }
         //TODO 获取后台一级返佣比例
-        $storeBrokerageRatio = SystemConfigService::get('store_brokerage_ratio');
+        $storeBrokerageRatio = sysConfig('store_brokerage_ratio');
         //TODO 一级返佣比例 小于等于零时直接返回 不返佣
         if($storeBrokerageRatio <= 0) return true;
         //TODO 计算获取一级返佣比例
@@ -328,14 +327,14 @@ class User extends BaseModel
         //TODO 上推广人不存在 或者 上推广人没有上级  或者 当用用户上上级时自己  直接返回
         if(!$userInfoTwo || !$userInfoTwo['spread_uid'] || $userInfoTwo['spread_uid'] == $orderInfo['uid']) return true;
         //TODO 获取后台分销类型  1 指定分销 2 人人分销
-        $storeBrokerageStatus = SystemConfigService::get('store_brokerage_statu');
+        $storeBrokerageStatus = sysConfig('store_brokerage_statu');
         $storeBrokerageStatus = $storeBrokerageStatus ? $storeBrokerageStatus : 1;
         //TODO 指定分销 判断 上上级是否时推广员  如果不是推广员直接返回
         if($storeBrokerageStatus == 1){
             if(!User::be(['uid'=>$userInfoTwo['spread_uid'],'is_promoter'=>1]))  return true;
         }
         //TODO 获取二级返佣比例
-        $storeBrokerageTwo = SystemConfigService::get('store_brokerage_two');
+        $storeBrokerageTwo = sysConfig('store_brokerage_two');
         //TODO 二级返佣比例小于等于0 直接返回
         if($storeBrokerageTwo <= 0) return true;
         //TODO 计算获取二级返佣比例
@@ -471,9 +470,11 @@ class User extends BaseModel
         $model = new self;
         if($orderBy==='') $orderBy='u.add_time desc';
         $model = $model->alias(' u');
-        $model = $model->join('StoreOrder o','u.uid=o.uid','LEFT');
-        $model = $model->where('u.uid','IN',$uid)->where('o.is_del',0)->where('o.is_system_del',0);
-        $model = $model->field("u.uid,u.nickname,u.avatar,from_unixtime(u.add_time,'%Y/%m/%d') as time,u.spread_count as childCount,COUNT(o.id) as orderCount,SUM(o.pay_price) as numberCount");
+        $sql = StoreOrder::where('o.paid',1)->group('o.uid')->field(['SUM(o.pay_price) as numberCount','o.uid','o.order_id'])
+            ->where('o.is_del',0)->where('o.is_system_del',0)->alias('o')->fetchSql(true)->select();
+        $model = $model->join("(".$sql.") p" ,'u.uid = p.uid','LEFT');
+        $model = $model->where('u.uid','IN',$uid);
+        $model = $model->field("u.uid,u.nickname,u.avatar,from_unixtime(u.add_time,'%Y/%m/%d') as time,u.spread_count as childCount,u.pay_count as orderCount,p.numberCount");
         if(strlen(trim($keyword))) $model = $model->where('u.nickname|u.phone','like',"%$keyword%");
         $model = $model->group('u.uid');
         $model = $model->order($orderBy);
@@ -497,7 +498,7 @@ class User extends BaseModel
         // 自己不能绑定自己为上级
         if($uid == $spreadUid) return false;
         //TODO 获取后台分销类型
-        $storeBrokerageStatus = SystemConfigService::get('store_brokerage_statu');
+        $storeBrokerageStatus = sysConfig('store_brokerage_statu');
         $storeBrokerageStatus = $storeBrokerageStatus ? $storeBrokerageStatus : 1;
         if($storeBrokerageStatus == 1){
             $spreadCount = self::where('uid',$spreadUid)->count();
@@ -552,7 +553,7 @@ class User extends BaseModel
         $data['last_time'] = time();
         $data['last_ip'] = app('request')->ip();
         $data['nickname'] = substr(md5($account.time()), 0, 12);
-        $data['avatar'] = $data['headimgurl'] = SystemConfigService::get('h5_avatar');
+        $data['avatar'] = $data['headimgurl'] = sysConfig('h5_avatar');
         $data['city'] = '';
         $data['language'] = '';
         $data['province'] = '';
@@ -611,27 +612,14 @@ class User extends BaseModel
                 $endTime = time();
                 break;
         }
-        $t4Sql = self::alias('t0')
+        $list = self::alias('t0')
             ->field('t0.uid,t0.spread_uid,count(t1.spread_uid) AS count,t0.add_time,t0.nickname,t0.avatar')
             ->join('user t1','t0.uid = t1.spread_uid','LEFT')
-            ->group('t0.uid')
-            ->fetchSql(true)
-            ->select();
-        $t5Sql = self::alias('t2')
-            ->field('t2.uid,t2.spread_uid,count(t3.spread_uid) AS count,t2.add_time,t2.nickname,t2.avatar')
-            ->join('user t3','t2.uid = t3.spread_uid','LEFT')
-            ->group('t2.uid')
-            ->fetchSql(true)
-            ->select();
-        $list = self::table("($t4Sql)")
-            ->alias('t4')
-            ->join('('.$t5Sql.') t5','t4.uid = t5.spread_uid')
-            ->field('t4.uid, t4.count,t4.nickname,t4.avatar')
-            ->where('t4.count','>',0)
-            ->where('t4.add_time','BETWEEN',[$startTime,$endTime])
-            ->group('t4.uid')
+            ->where('t1.spread_uid','<>',0)
+            ->order('count desc')
+            ->where('t0.add_time','BETWEEN',[$startTime,$endTime])
             ->page($data['page'],$data['limit'])
-            ->order('t4.count,t4.add_time desc')
+            ->group('t0.uid')
             ->select();
         return count($list) ? $list->toArray() : [];
     }
@@ -667,8 +655,23 @@ class User extends BaseModel
      * @param $uid
      * @return int
      */
-    public static function currentUserRank($brokerage_price)
+    public static function currentUserRank($type,$brokerage_price)
     {
-        return  self::where('brokerage_price','>',$brokerage_price)->count('uid');
+        $model = self::where('status',1);
+        switch ($type){
+            case 'week':
+                $model = $model->whereIn('uid',function ($query){
+                    $query->name('user_bill')->where('category','now_money')->where('type','brokerage')
+                        ->whereWeek('add_time')->field('uid');
+                });
+                break;
+            case 'month':
+                $model = $model->whereIn('uid',function ($query){
+                    $query->name('user_bill')->where('category','now_money')->where('type','brokerage')
+                        ->whereMonth('add_time')->field('uid');
+                });
+                break;
+        }
+        return $model->where('brokerage_price','>',$brokerage_price)->count('uid');
     }
 }

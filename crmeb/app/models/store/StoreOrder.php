@@ -17,14 +17,13 @@ use app\models\user\UserBill;
 use app\models\user\WechatUser;
 use crmeb\basic\BaseModel;
 use crmeb\repositories\OrderRepository;
-use crmeb\services\CustomerService;
+use crmeb\repositories\UserRepository;
 use crmeb\services\MiniProgramService;
 use crmeb\services\SystemConfigService;
 use crmeb\services\WechatService;
 use crmeb\services\WechatTemplateService;
 use crmeb\services\workerman\ChannelService;
 use think\facade\Cache;
-use think\exception\PDOException;
 use crmeb\traits\ModelTrait;
 use think\facade\Log;
 use think\facade\Route;
@@ -77,8 +76,8 @@ class StoreOrder extends BaseModel
      */
     public static function getOrderPriceGroup($cartInfo)
     {
-        $storePostage = floatval(SystemConfigService::get('store_postage')) ?: 0;//邮费基础价
-        $storeFreePostage = floatval(SystemConfigService::get('store_free_postage')) ?: 0;//满额包邮
+        $storePostage = floatval(sysConfig('store_postage')) ?: 0;//邮费基础价
+        $storeFreePostage = floatval(sysConfig('store_free_postage')) ?: 0;//满额包邮
         $totalPrice = self::getOrderSumPrice($cartInfo, 'truePrice');//获取订单总金额
         $costPrice = self::getOrderSumPrice($cartInfo, 'costPrice');//获取订单成本价
         $vipPrice = self::getOrderSumPrice($cartInfo, 'vip_truePrice');//获取订单会员优惠金额
@@ -119,8 +118,8 @@ class StoreOrder extends BaseModel
      */
     public static function getCombinationOrderPriceGroup($cartInfo)
     {
-        $storePostage = floatval(SystemConfigService::get('store_postage')) ?: 0;
-        $storeFreePostage = floatval(SystemConfigService::get('store_free_postage')) ?: 0;
+        $storePostage = floatval(sysConfig('store_postage')) ?: 0;
+        $storeFreePostage = floatval(sysConfig('store_free_postage')) ?: 0;
         $totalPrice = self::getCombinationOrderTotalPrice($cartInfo);
         $costPrice = self::getCombinationOrderTotalPrice($cartInfo);
         if (!$storeFreePostage) {
@@ -189,7 +188,7 @@ class StoreOrder extends BaseModel
      */
     public static function clearCacheOrderInfo($uid, $key)
     {
-        Cache::deleteItem('user_order_' . $uid . $key);
+        Cache::delete('user_order_' . $uid . $key);
     }
 
     /**
@@ -222,7 +221,7 @@ class StoreOrder extends BaseModel
         self::beginTrans();
         try{
             $shipping_type = (int)$shipping_type;
-            $offlinePayStatus = (int)SystemConfigService::get('offline_pay_status') ?? (int)2;
+            $offlinePayStatus = (int)sysConfig('offline_pay_status') ?? (int)2;
             if($offlinePayStatus == 2) unset(self::$payType['offline']);
             if (!array_key_exists($payType, self::$payType)) return self::setErrorInfo('选择支付方式有误!',true);
             if (self::be(['unique' => $key, 'uid' => $uid])) return self::setErrorInfo('请勿重复提交订单',true);
@@ -287,7 +286,7 @@ class StoreOrder extends BaseModel
             if (!$res1) return self::setErrorInfo('使用优惠劵失败!',true);
 
             //$shipping_type = 1 快递发货 $shipping_type = 2 门店自提
-            $store_self_mention = SystemConfigService::get('store_self_mention') ?? 0;
+            $store_self_mention = sysConfig('store_self_mention') ?? 0;
             if(!$store_self_mention) $shipping_type = 1;
             if($shipping_type === 1) {
                 //是否包邮
@@ -301,15 +300,18 @@ class StoreOrder extends BaseModel
 
             //积分抵扣
             $res2 = true;
+            $SurplusIntegral = 0;
             if ($useIntegral && $userInfo['integral'] > 0) {
                 $deductionPrice = (float)bcmul($userInfo['integral'], $other['integralRatio'], 2);
                 if ($deductionPrice < $payPrice) {
                     $payPrice = bcsub($payPrice, $deductionPrice, 2);
                     $usedIntegral = $userInfo['integral'];
+                    $SurplusIntegral = 0;
                     $res2 = false !== User::edit(['integral' => 0], $userInfo['uid'], 'uid');
                 } else {
                     $deductionPrice = $payPrice;
                     $usedIntegral = (float)bcdiv($payPrice, $other['integralRatio'], 2);
+                    $SurplusIntegral = bcsub($userInfo['integral'],$usedIntegral,2);
                     $res2 = false !== User::bcDec($userInfo['uid'], 'integral', $usedIntegral, 'uid');
                     $payPrice = 0;
                 }
@@ -328,6 +330,7 @@ class StoreOrder extends BaseModel
                     'pay_postage' => $payPostage,
                     'coupon_price' => $couponPrice,
                     'deduction_price' => $deductionPrice,
+                    'SurplusIntegral'=> $SurplusIntegral,
                 ];
             }
             $orderInfo = [
@@ -380,7 +383,8 @@ class StoreOrder extends BaseModel
             //购物车状态修改
             $res6 = false !== StoreCart::where('id', 'IN', $cartIds)->update(['is_pay' => 1]);
             if (!$res4 || !$res5 || !$res6) return self::setErrorInfo('订单生成失败!',true);
-            GoodsRepository::storeProductOrderCreateEbApi($order, compact('cartInfo', 'addressId'));
+            //自动设置默认地址
+            UserRepository::storeProductOrderCreateEbApi($order, compact('cartInfo', 'addressId'));
             self::clearCacheOrderInfo($uid, $key);
             self::commitTrans();
             StoreOrderStatus::status($order['id'], 'cache_key_create_order', '订单生成');
@@ -572,7 +576,7 @@ class StoreOrder extends BaseModel
         if ($orderInfo['pay_price'] <= 0) exception('该支付无需支付!');
         $openid = WechatUser::getOpenId($orderInfo['uid']);
         $bodyContent = self::getProductTitle($orderInfo['cart_id']);
-        $site_name = SystemConfigService::get('site_name');
+        $site_name = sysConfig('site_name');
         if(!$bodyContent && !$site_name) exception('支付参数缺少：请前往后台设置->系统设置-> 填写 网站名称');
         return MiniProgramService::jsPay($openid, $orderInfo['order_id'], $orderInfo['pay_price'], 'productr',self::getSubstrUTf8($site_name.' - '.$bodyContent,30));
     }
@@ -597,7 +601,7 @@ class StoreOrder extends BaseModel
         if($orderInfo['pay_price'] <= 0) exception('该支付无需支付!');
         $openid = WechatUser::uidToOpenid($orderInfo['uid'],'openid');
         $bodyContent = self::getProductTitle($orderInfo['cart_id']);
-        $site_name = SystemConfigService::get('site_name');
+        $site_name = sysConfig('site_name');
         if(!$bodyContent && !$site_name) exception('支付参数缺少：请前往后台设置->系统设置-> 填写 网站名称');
         return WechatService::jsPay($openid,$orderInfo['order_id'],$orderInfo['pay_price'],'product',self::getSubstrUTf8($site_name.' - '.$bodyContent,30));
     }
@@ -621,7 +625,7 @@ class StoreOrder extends BaseModel
         if($orderInfo['paid']) exception('支付已支付!');
         if($orderInfo['pay_price'] <= 0) exception('该支付无需支付!');
         $bodyContent = self::getProductTitle($orderInfo['cart_id']);
-        $site_name = SystemConfigService::get('site_name');
+        $site_name = sysConfig('site_name');
         if(!$bodyContent && !$site_name) exception('支付参数缺少：请前往后台设置->系统设置-> 填写 网站名称');
         return WechatService::paymentPrepare(null,$orderInfo['order_id'],$orderInfo['pay_price'],'product',self::getSubstrUTf8($site_name.' - '.$bodyContent,30),'','MWEB');
     }
@@ -712,7 +716,7 @@ class StoreOrder extends BaseModel
             return self::setErrorInfo('申请退款失败!');
         else {
             try{
-                $adminIds = SystemConfigService::get('site_store_admin_uids');
+                $adminIds = sysConfig('site_store_admin_uids');
                 if (!empty($adminIds)) {
                     if (!($adminList = array_unique(array_filter(explode(',', trim($adminIds)))))) {
                         return self::setErrorInfo('申请退款成功,');
@@ -747,42 +751,11 @@ class StoreOrder extends BaseModel
         $order = self::where('order_id', $orderId)->find();
         $resPink = true;
         $res1 = self::where('order_id', $orderId)->update(['paid' => 1, 'pay_type' => $paytype, 'pay_time' => time()]);//订单改为支付
-        User::bcInc($order['uid'], 'pay_count', 1, 'uid');
         if ($order->combination_id && $res1 && !$order->refund_status) $resPink = StorePink::createPink($order);//创建拼团
         $oid = self::where('order_id', $orderId)->value('id');
         StoreOrderStatus::status($oid, 'pay_success', '用户付款成功');
-        $openid = WechatUser::uidToOpenid($order['uid'], 'openid');
-        $routineOpenid = WechatUser::uidToOpenid($order['uid'], 'routine_openid');
-        try{
-            if($openid){//公众号发送模板消息
-                WechatTemplateService::sendTemplate($openid,WechatTemplateService::ORDER_PAY_SUCCESS, [
-                    'first'=>'亲，您购买的商品已支付成功',
-                    'keyword1'=>$orderId,
-                    'keyword2'=>$order['pay_price'],
-                    'remark'=>'点击查看订单详情'
-                ],Route::buildUrl('order/detail/'.$orderId)->suffix('')->domain(true)->build());
-                CustomerService::sendOrderPaySuccessCustomerService($order, 1);
-                WechatTemplateService::sendAdminNoticeTemplate([
-                    'first'=>"亲,您有一个新订单 \n订单号:{$order['order_id']}",
-                    'keyword1'=>'新订单',
-                    'keyword2'=>'已支付',
-                    'keyword3'=>date('Y/m/d H:i',time()),
-                    'remark'=>'请及时处理'
-                ]);
-            }else if($routineOpenid){//小程序发送模板消息
-                RoutineTemplate::sendOrderSuccess($formId, $orderId);
-                CustomerService::sendOrderPaySuccessCustomerService($order, 0);
-            }
-            //向后台发送新订单消息
-            ChannelService::instance()->send('NEW_ORDER', ['order_id'=>$orderId]);
-        }catch (\Exception $e){}
-        $user = User::where('uid', $order['uid'])->find()->toArray();
-        //检测会员等级
-        event('UserLevelAfter', [$user]);
         //支付成功后
-        event('OrderPaySuccess', [$order]);
-        //短信通知 下发用户支付成功 下发管理员支付通知
-        event('ShortMssageSend',[$order['order_id'],['PaySuccess','AdminPaySuccess']]);
+        event('OrderPaySuccess', [$order,$formId]);
         $res = $res1 && $resPink;
         return false !== $res;
     }
@@ -866,7 +839,7 @@ class StoreOrder extends BaseModel
     public static function orderTakeAfter($order)
     {
         $title=self::getProductTitle($order['cart_id']);
-        if ($order['is_channel']) {//小程序
+        if ($order['is_channel'] == 1) {//小程序
             RoutineTemplate::sendOut('OREDER_TAKEVER', $order['uid'], [
                 'keyword1' => $order['order_id'],
                 'keyword2' => $title,
@@ -932,6 +905,7 @@ class StoreOrder extends BaseModel
                 return self::setErrorInfo($e->getMessage());
             }
             self::commitTrans();
+            event('UserLevelAfter',[User::get($uni)]);
             event('UserOrderTake', $uni);
             //短信通知
             event('ShortMssageSend',[$order['order_id'],['Receiving','AdminConfirmTakeOver']]);
@@ -1076,7 +1050,7 @@ class StoreOrder extends BaseModel
                 }
             }
         }
-        $order['offlinePayStatus'] = (int)SystemConfigService::get('offline_pay_status') ?? (int)2;
+        $order['offlinePayStatus'] = (int)sysConfig('offline_pay_status') ?? (int)2;
         return $order;
     }
 
@@ -1384,7 +1358,7 @@ class StoreOrder extends BaseModel
         //订单已完成 数量
         $data['complete_count'] = self::statusByWhere(4, $uid)->where('is_del', 0)->where('uid', $uid)->count();
         //订单退款
-        $data['refund_count'] = self::statusByWhere(-3, $uid)->where('is_del', 0)->where('uid', $uid)->count();
+        $data['refund_count'] = self::statusByWhere(-1, $uid)->where('is_del', 0)->where('uid', $uid)->count();
         return $data;
     }
 
@@ -1439,7 +1413,7 @@ class StoreOrder extends BaseModel
      * @return string|null
      * @throws \Psr\SimpleCache\InvalidArgumentException
      */
-    public static function orderUnpaidCancel($limit = 10, $prefid = 'order_unpaid_page', $expire = 3600)
+    public static function orderUnpaidCancel()
     {
         //系统预设取消订单时间段
         $keyValue = ['order_cancel_time', 'order_activity_time', 'order_bargain_time', 'order_seckill_time', 'order_pink_time'];
@@ -1451,47 +1425,37 @@ class StoreOrder extends BaseModel
         //检查是否有未支付的订单   未支付查询条件
         $unPidCount = self::where('paid', 0)->where('pay_type', '<>', 'offline')->where('is_del', 0)->where('status', 0)->where('refund_status', 0)->count();
         if (!$unPidCount) return null;
-        //总分页条数
-        $pagesSum = ceil(bcdiv($unPidCount, $limit, 2));
-        if (Cache::has($prefid)) {
-            $pages = Cache::get($prefid);
-            $pages++;
-            Cache::set($prefid, $pages, $expire);
-        } else {
-            $pages = 1;
-            Cache::set($prefid, $pages, $expire);
-        }
-        if ($pages > $pagesSum) Cache::set($prefid, 0, $expire);
-        self::beginTrans();
         try {
             $res = true;
             // 未支付查询条件
-            $orderList = self::where('paid', 0)->where('pay_type', '<>', 'offline')->where('is_del', 0)->where('status', 0)->where('refund_status', 0)->field('add_time,pink_id,order_id,seckill_id,bargain_id,combination_id,status,cart_id,use_integral,refund_status,uid,unique,back_integral,coupon_id,paid,is_del')->page($pages, $limit)->select();
+            $orderList = self::where('paid', 0)->where('pay_type', '<>', 'offline')->where('is_del', 0)->where('status', 0)->where('refund_status', 0)->field('add_time,pink_id,order_id,seckill_id,bargain_id,combination_id,status,cart_id,use_integral,refund_status,uid,unique,back_integral,coupon_id,paid,is_del')->select();
             foreach ($orderList as $order) {
                 if ($order['seckill_id']) {
                     //优先使用单独配置的过期时间
                     $order_seckill_time = $systemValue['order_seckill_time'] ? $systemValue['order_seckill_time'] : $systemValue['order_activity_time'];
                     $res = $res && self::RegressionAll($order_seckill_time, $order);
+                    unset($order_seckill_time);
                 } else if ($order['bargain_id']) {
                     $order_bargain_time = $systemValue['order_bargain_time'] ? $systemValue['order_bargain_time'] : $systemValue['order_activity_time'];
                     $res = $res && self::RegressionAll($order_bargain_time, $order);
+                    unset($order_bargain_time);
                 } else if ($order['pink_id'] || $order['combination_id']) {
                     $order_pink_time = $systemValue['order_pink_time'] ? $systemValue['order_pink_time'] : $systemValue['order_activity_time'];
                     $res = $res && self::RegressionAll($order_pink_time, $order);
+                    unset($order_pink_time);
                 } else {
                     $res = $res && self::RegressionAll($systemValue['order_cancel_time'], $order);
                 }
             }
-            if ($res) self::commitTrans();
+            if (!$res) throw new \Exception('更新错误');
+            unset($orderList,$res,$pages);
             return null;
         } catch (PDOException $e) {
-            self::rollbackTrans();
             Log::error('未支付自动取消时发生数据库查询错误，错误原因为：'.$e->getMessage());
-            return $e->getMessage();
+            throw new \Exception($e->getMessage());
         } catch (\think\Exception $e) {
-            self::rollbackTrans();
             Log::error('未支付自动取消时发生系统错误，错误原因为：'.$e->getMessage());
-            return $e->getMessage();
+            throw new \Exception($e->getMessage());
         }
 
     }
@@ -1515,6 +1479,7 @@ class StoreOrder extends BaseModel
             $res3 = self::RegressionCoupon($order);
             $res = $res1 && $res2 && $res3;
             if ($res) $res = false !== self::where('order_id', $order['order_id'])->update(['is_del' => 1, 'mark' => '订单未支付已超过系统预设时间']);
+            unset($res1,$res2,$res3);
             return $res;
         } else
             return true;
@@ -1599,43 +1564,40 @@ class StoreOrder extends BaseModel
      */
     public static function startTakeOrder()
     {
-        self::beginTrans();
-        try{
-            //7天前时间戳
-            $systemDeliveryTime = SystemConfigService::get('system_delivery_time') ?? 0;
-            //0为取消自动收货功能
-            if($systemDeliveryTime == 0) return true;
-            $sevenDay = strtotime(date('Y-m-d H:i:s',strtotime('-'. $systemDeliveryTime .' day')));
-            $model = new self;
-            $model = $model->alias('o');
-            $model = $model->join('StoreOrderStatus s','s.oid=o.id');
-            $model = $model->where('o.paid', 1);
-            $model = $model->where('s.change_type', 'delivery_goods');
-            $model = $model->where('s.change_time', '<',$sevenDay);
-            $model = $model->where('o.status', 1);
-            $model = $model->where('o.refund_status', 0);
-            $model = $model->where('o.is_del', 0);
-            $orderInfo = $model->column('id','id');
-            if(!count($orderInfo)) return true;
-            $res = true;
-            foreach ($orderInfo as $key=>&$item){
-                $order = self::get($item);
-                if($order['status'] == 2) continue;
-                if($order['paid'] == 1 && $order['status'] == 1) $data['status'] = 2;
-                else if($order['pay_type'] == 'offline') $data['status'] = 2;
-                else continue;
-                if(!self::edit($data,$item,'id'))  continue;
-                try{
-                    OrderRepository::storeProductOrderTakeDeliveryAdmin($order, $item);
-                    $res = $res && true;
-                }catch (\Exception $e){
-                    $res = $res && false;
-                }
-                $res = $res && StoreOrderStatus::status($item,'take_delivery','已收货[自动收货]');
+        //7天前时间戳
+        $systemDeliveryTime = sysConfig('system_delivery_time') ?? 0;
+        //0为取消自动收货功能
+        if($systemDeliveryTime == 0) return true;
+        $sevenDay = strtotime(date('Y-m-d H:i:s',strtotime('-'. $systemDeliveryTime .' day')));
+        $model = new self;
+        $model = $model->alias('o');
+        $model = $model->join('StoreOrderStatus s','s.oid=o.id');
+        $model = $model->where('o.paid', 1);
+        $model = $model->where('s.change_type', 'delivery_goods');
+        $model = $model->where('s.change_time', '<',$sevenDay);
+        $model = $model->where('o.status', 1);
+        $model = $model->where('o.refund_status', 0);
+        $model = $model->where('o.is_del', 0);
+        $orderInfo = $model->column('id','id');
+        if(!count($orderInfo)) return true;
+        $res = true;
+        foreach ($orderInfo as $key=>&$item){
+            $order = self::get($item);
+            if($order['status'] == 2) continue;
+            if($order['paid'] == 1 && $order['status'] == 1) $data['status'] = 2;
+            else if($order['pay_type'] == 'offline') $data['status'] = 2;
+            else continue;
+            if(!self::edit($data,$item,'id'))  continue;
+            try{
+                OrderRepository::storeProductOrderTakeDeliveryAdmin($order, $item);
+                $res = $res && true;
+            }catch (\Exception $e){
+                $res = $res && false;
             }
-            self::checkTrans($res);
-        }catch (\Exception $e){
-            self::rollbackTrans();
+            $res = $res && StoreOrderStatus::status($item,'take_delivery','已收货[自动收货]');
+        }
+        if(!$res){
+            throw new \Exception('收货失败');
         }
     }
 

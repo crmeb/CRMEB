@@ -3,8 +3,8 @@
 <head>
     {include file="public/head"}
 
-    <link href="{__FRAME_PATH}css/bootstrap.min.css?v=3.4.0" rel="stylesheet">
-    <link href="{__FRAME_PATH}css/style.min.css?v=3.0.0" rel="stylesheet">
+    <link href="/system/frame/css/bootstrap.min.css?v=3.4.0" rel="stylesheet">
+    <link href="/system/frame/css/style.min.css?v=3.0.0" rel="stylesheet">
     <title>{$title|default=''}</title>
     <style></style>
 </head>
@@ -39,8 +39,8 @@
                             <Form-Item>
                                 <Row>
                                     <i-Col span="13">
-                                        <span>门店电话：</span>
-                                        <i-Input placeholder="门店电话" v-model="form.phone" style="width: 80%" type="text"></i-Input>
+                                        <span>门店手机号：</span>
+                                        <i-Input placeholder="门店手机号" v-model="form.phone" style="width: 80%" type="text"></i-Input>
                                     </i-Col>
                                 </Row>
                             </Form-Item>
@@ -89,7 +89,7 @@
                                                 </div>
                                             </template>
                                         </div>
-                                        <div class="ivu-upload" style="display: inline-block; width: 58px;" @click="openWindows('选择图片','{:Url('widget.images/index',['fodder'=>'image'])}')" v-if="!form.image">
+                                        <div class="ivu-upload" style="display: inline-block; width: 58px;" @click="openWindows('选择图片','{:Url('widget.images/index',['fodder'=>'image'])}',{w:900,h:550})" v-if="!form.image">
                                             <div class="ivu-upload ivu-upload-drag">
                                                 <div style="width: 58px; height: 58px; line-height: 58px;">
                                                     <i class="ivu-icon ivu-icon-camera" style="font-size: 20px;"></i>
@@ -146,7 +146,7 @@
             }
         });
         new Vue({
-            data() {
+            data:function() {
                 return {
                     id:storeData.id || 0,
                     addresData:city,
@@ -191,6 +191,7 @@
                 },
                 handleChange:function(value,selectedData){
                     var that = this;
+                    that.form.address = [];
                     $.each(selectedData,function (key,item) {
                         that.form.address.push(item.label);
                     });

@@ -21,7 +21,7 @@
     .message-content-btn {text-align: center;padding: 10px 0;}
     .media-body .message-but{margin-top: 10px;}
     .message-content .message-content-btn .layui-btn {height: auto;line-height: 26px;padding: 5px 30px;font-size: 16px;}
-    .message-content .homepage-bottom .layadmin-privateletterlist-item .meida-left img{width: 151px;height: 81px;}
+    .message-content .homepage-bottom .layadmin-privateletterlist-item .meida-left img{width: 100%;}
     .message-content .homepage-bottom .layadmin-privateletterlist-item{border: 1px solid #e0e0e0;margin-bottom: 10px;cursor:pointer;}
     .message-content .homepage-bottom .layadmin-privateletterlist-item .meida-right{padding: 10px;}
     .message-content .homepage-bottom .layadmin-privateletterlist-item.on{border: 1px solid #0092DC!important;}
@@ -75,9 +75,7 @@
                     <div class="layui-card-header" style="padding-top: 10px;">
                         <div style="height: 30px;line-height: 30px;float:left;" >评论产品</div>
                         <div style="height: 30px;line-height: 30px;float: right;">
-                            <input style="display: inline;width: auto;" type="text" class="layui-input layui-input-search" v-model="where.product_name" placeholder="搜索产品">
-                            <button class="layui-btn layui-btn-primary layui-btn-sm" type="button" style="height: 32px;line-height: 32px;" @click="seachs"><i class="layui-icon layui-icon-search"></i>搜索</button>
-                            <button class="layui-btn layui-btn-primary layui-btn-sm" type="button" style="height: 32px;line-height: 32px;margin-left: 0;" @click="Reset"><i class="layui-icon layui-icon-refresh-3"></i>重置</button>
+                            <input style="display: inline;width: auto;" type="text" class="layui-input layui-input-search" v-model="where.product_name" @blur='seachs' placeholder="搜索产品">
                         </div>
                         <div class="clearfix"></div>
                     </div>
@@ -126,7 +124,7 @@
                             </div>
                             <div class="message-text">
                                 <p v-text="item.comment"></p>
-                                <div class="image-box" v-if="item.pics.length">
+                                <div class="image-box" v-if="item.pics && typeof item.pics == 'object'">
                                     <img :src="pic" alt="" v-for="pic in item.pics" @click="lockImage(pic)">
                                 </div>
                             </div>
@@ -263,8 +261,8 @@
                     if(that.product.loadend) return;
                     that.product.loadTitle='加载中';
                     layList.baseGet(layList.U({a:'get_product_imaes_list',q:that.where}),function (res) {
-                        var list=res.data;
-                        var loadend=list.length < that.where.limit;
+                        var list = res.data;
+                        var loadend = list.length < that.where.limit;
                         that.where.page=that.where.page+1;
                         that.product.loading=false;
                         that.product.loadend=loadend;

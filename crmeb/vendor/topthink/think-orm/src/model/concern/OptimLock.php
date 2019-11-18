@@ -12,7 +12,7 @@ declare (strict_types = 1);
 
 namespace think\model\concern;
 
-use think\Exception;
+use think\db\exception\DbException as Exception;
 
 /**
  * 乐观锁

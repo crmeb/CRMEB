@@ -31,7 +31,7 @@ class StoreCombinationController
             ['limit',10],
         ],$request, true);
         $combinationList = StoreCombination::getAll($page, $limit);
-        if(!count($combinationList)) return app('json')->fail('暂无拼团');
+        if(!count($combinationList)) return app('json')->successful([]);
         return app('json')->successful($combinationList->hidden(['info','product_id','images','mer_id','attr','sort','stock','sales','add_time','is_del','is_show','browse','cost','is_show','start_time','stop_time','description','postage','is_postage','is_host','mer_use','combination'])->toArray());
     }
 
@@ -51,15 +51,17 @@ class StoreCombinationController
         //公众号
         $name = $id.'_combination_detail_wap.jpg';
         $imageInfo = SystemAttachment::getInfo($name,'name');
-        $siteUrl = SystemConfigService::get('site_url');
+        $siteUrl = sysConfig('site_url');
         if(!$imageInfo){
             $codeUrl = UtilService::setHttpType($siteUrl.'/activity/group_detail/'.$id, 1);//二维码链接
             $imageInfo = UtilService::getQRCodePath($codeUrl, $name);
             if(is_array($imageInfo)){
                 SystemAttachment::attachmentAdd($imageInfo['name'],$imageInfo['size'],$imageInfo['type'],$imageInfo['dir'],$imageInfo['thumb_path'],1,$imageInfo['image_type'],$imageInfo['time'],2);
                 $url = $imageInfo['dir'];
-            }else
+            }else {
                 $url = '';
+                $imageInfo = ['image_type'=>0];
+            }
         }else $url = $imageInfo['att_dir'];
         if($imageInfo['image_type'] == 1)
             $url = $siteUrl.$url;
@@ -192,14 +194,14 @@ class StoreCombinationController
         $count = count($pinkAll)+1;
         $data['msg'] = '原价￥'.$storeCombinationInfo['product_price'].' 还差'.(int)bcsub((int)$pinkInfo['people'],$count,0).'人拼团成功';
         try{
-            $siteUrl = SystemConfigService::get('site_url');
+            $siteUrl = sysConfig('site_url');
             if($from == 'routine'){
                 //小程序
                 $name = $pinkId.'_'.$user['uid'].'_'.$user['is_promoter'].'_pink_share_routine.jpg';
                 $imageInfo = SystemAttachment::getInfo($name,'name');
                 if(!$imageInfo){
                     $valueData = 'id='.$pinkId;
-                    if($user['is_promoter'] || SystemConfigService::get('store_brokerage_statu')==2) $valueData.='&pid='.$user['uid'];
+                    if($user['is_promoter'] || sysConfig('store_brokerage_statu')==2) $valueData.='&pid='.$user['uid'];
                     $res = RoutineCode::getPageCode('pages/activity/goods_combination_status/index',$valueData,280);
                     if(!$res) return app('json')->fail('二维码生成失败');
                     $imageInfo = UploadService::getInstance()->setUploadPath('routine/activity/pink/code')->imageStream($name,$res);

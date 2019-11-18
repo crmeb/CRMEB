@@ -107,8 +107,8 @@ class UserSubscribe
      */
     public function onUserLevelAfter($event)
     {
-        list($user) = $event;
-        UserLevel::setLevelComplete($user['uid']);
+        list($userUid) = $event;
+        UserLevel::setLevelComplete($userUid);
     }
 
 }

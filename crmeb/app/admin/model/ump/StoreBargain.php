@@ -174,7 +174,7 @@ class StoreBargain extends BaseModel
      */
     public static function getMaxList($where){
         $classs=['layui-bg-red','layui-bg-orange','layui-bg-green','layui-bg-blue','layui-bg-cyan'];
-        $model=StoreOrder::alias('a')->join('__store_bargain__ b','b.id=a.bargain_id')->where('a.paid',1);
+        $model=StoreOrder::alias('a')->join('store_bargain b','b.id=a.bargain_id')->where('a.paid',1);
         $list=self::getModelTime($where,$model,'a.add_time')->group('a.bargain_id')->order('p_count desc')->limit(10)
             ->field(['count(a.bargain_id) as p_count','b.title as store_name','sum(b.price) as sum_price'])->select();
         if(count($list)) $list=$list->toArray();
@@ -204,7 +204,7 @@ class StoreBargain extends BaseModel
      */
     public static function ProfityTop10($where){
         $classs=['layui-bg-red','layui-bg-orange','layui-bg-green','layui-bg-blue','layui-bg-cyan'];
-        $model=StoreOrder::alias('a')->join('__store_bargain__ b','b.id=a.bargain_id')->where('a.paid',1);
+        $model=StoreOrder::alias('a')->join('store_bargain b','b.id=a.bargain_id')->where('a.paid',1);
         $list=self::getModelTime($where,$model,'a.add_time')->group('a.bargain_id')->order('profity desc')->limit(10)
             ->field(['count(a.bargain_id) as p_count','b.title as store_name','sum(b.price) as sum_price','(b.price-b.cost) as profity'])
             ->select();
@@ -257,7 +257,7 @@ class StoreBargain extends BaseModel
      * @return mixed
      */
     public static function getBargainRefundList($where = array()){
-        $model = StoreOrder::alias('a')->join('__store_bargain__ b','b.id=a.bargain_id');
+        $model = StoreOrder::alias('a')->join('store_bargain b','b.id=a.bargain_id');
         $list = self::getModelTime($where,$model,'a.add_time')->where('a.refund_status','<>',0)->group('a.bargain_id')->order('count desc')->page((int)$where['page'],(int)$where['limit'])
             ->field(['count(a.bargain_id) as count','b.title as store_name','sum(b.price) as sum_price'])->select();
         if(count($list)) $list=$list->toArray();

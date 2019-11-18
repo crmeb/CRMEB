@@ -157,7 +157,7 @@
 
                                 <button class="btn btn-info btn-xs" type="button"  onclick="$eb.createModalFrame('编辑','{:Url('setting.system_config/edit_config',array('id'=>$vo['id']))}')"><i class="fa fa-paste"></i> 编辑</button>
 
-                                <button class="btn btn-warning btn-xs del_config_tab" data-id="{$vo.id}" type="button" data-url="{:Url('setting.system_config/delete_cinfig',array('id'=>$vo['id']))}" ><i class="fa fa-warning"></i> 删除
+                                <button class="btn btn-warning btn-xs del_config_tab" data-id="{$vo.id}" type="button" data-url="{:Url('setting.system_config/delete_config',array('id'=>$vo['id']))}" ><i class="fa fa-warning"></i> 删除
 
                                 </button>
 

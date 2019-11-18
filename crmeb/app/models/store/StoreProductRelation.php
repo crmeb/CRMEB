@@ -140,14 +140,14 @@ class StoreProductRelation extends BaseModel
                 ->alias('A')
                 ->where('A.type','collect')/*->where('A.category','product')*/
                 ->order('A.add_time DESC')
-                ->join('__store_product__ B','A.product_id = B.id')
+                ->join('store_product B','A.product_id = B.id')
                 ->page($page, $limit)
                 ->select();
         }else{
             $list = self::where('A.uid',$uid)
                 ->field('B.id pid,A.category,B.store_name,B.price,B.ot_price,B.sales,B.image,B.is_del,B.is_show')->alias('A')
                 ->where('A.type','collect')/*->where('A.category','product')*/
-                ->order('A.add_time DESC')->join('__store_product__ B','A.product_id = B.id')
+                ->order('A.add_time DESC')->join('store_product B','A.product_id = B.id')
                 ->select();
         }
         if(!$list) return [];

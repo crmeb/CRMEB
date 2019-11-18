@@ -18,9 +18,9 @@
     "require": {
         "php": ">=7.1.0",
         "ext-json": "*",
+        "ext-curl": "*",
         "ext-bcmath": "*",
         "ext-mbstring": "*",
-        "topthink/framework": "6.0.*-dev",
         "topthink/think-view": "^1.0",
         "symfony/var-dumper":"^4.2",
         "overtrue/wechat": "^3.3",
@@ -36,7 +36,9 @@
         "workerman/channel": "^1.0",
         "topthink/think-queue": "^3.0",
         "spatie/macroable": "^1.0",
-        "dh2y/think-qrcode": "^2.0"
+        "dh2y/think-qrcode": "^2.0",
+        "topthink/think-multi-app": "^1.0",
+        "topthink/think-template": "^2.0"
     },
     "autoload": {
         "psr-4": {

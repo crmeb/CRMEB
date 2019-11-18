@@ -146,7 +146,7 @@ class UserLevel extends BaseModel
      */
     public static function getUserLevelInfo($id,$keyName=''){
         $vipinfo=self::valiWhere('a')->where('a.id',$id)->field('l.id,a.add_time,l.discount,a.level_id,l.name,l.money,l.icon,l.is_pay,l.grade')
-            ->join('__system_user_level__ l','l.id=a.level_id')->find();
+            ->join('system_user_level l','l.id=a.level_id')->find();
         if($keyName) if(isset($vipinfo[$keyName])) return $vipinfo[$keyName]; else return '';
         return $vipinfo;
     }

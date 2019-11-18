@@ -205,8 +205,8 @@ class SystemUserTask extends BaseModel
      * */
     public static function SatisfactionIntegral($task_id,$uid=0,$start_time=0,$number=0)
     {
-        $isComplete=false;
-        $sumNumber=UserBill::where('uid', $uid)->where('category', 'integral')->where('pm', 1)->where('add_time','>',$start_time)->where('type','in',['system_add','sign','gain'])->sum('number');
+        $isComplete = false;
+        $sumNumber = UserBill::where('uid', $uid)->where('category', 'integral')->where('pm', 1)->where('add_time','>',$start_time)->where('type','in',['system_add','sign','gain'])->sum('number');
         if($sumNumber >= $number) $isComplete=UserTaskFinish::setFinish($uid,$task_id) ? true : false;
         return ['还需要{$num}经验',$sumNumber,$isComplete];
     }

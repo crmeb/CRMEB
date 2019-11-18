@@ -97,18 +97,18 @@ class AuthController
     public function get_logo(Request $request)
     {
         $logoType = $request->get('type',1);
-        switch ((int)$logoType){
+        switch ((int)$logoType) {
             case 1:
-                $logo=SystemConfigService::get('routine_logo');
+                $logo = sysConfig('routine_logo');
                 break;
             case 2:
-                $logo=SystemConfigService::get('wechat_avatar');
+                $logo = sysConfig('wechat_avatar');
                 break;
             default:
                 $logo = '';
                 break;
         }
-        if(strstr($logo,'http')===false && $logo) $logo = SystemConfigService::get('site_url').$logo;
+        if (strstr($logo,'http') === false && $logo) $logo = sysConfig('site_url').$logo;
         return app('json')->successful(['logo_url'=>str_replace('\\','/',$logo)]);
     }
 

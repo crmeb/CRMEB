@@ -53,6 +53,7 @@ class SmsTemplateApply extends AuthController
     {
         $field = [
             FormBuilder::input('title','模板名称'),
+            FormBuilder::textarea('text','模板内容示例','【您的短信签名】您的验证码是：{$code}，有效期为{$time}分钟。如非本人操作，可不用理会。模板中的{$code}和{$time}需要替换成对应的变量，请开发者知晓。修改此项无效！'),
             FormBuilder::input('content','模板内容')->type('textarea'),
             FormBuilder::radio('type','模板类型',1)->options([['label'=>'验证码','value'=>1],['label'=>'通知','value'=>2],['label'=>'推广','value'=>3]])
         ];

@@ -12,8 +12,6 @@ declare (strict_types = 1);
 
 namespace think\db\exception;
 
-use think\exception\DbException;
-
 class ModelNotFoundException extends DbException
 {
     protected $model;

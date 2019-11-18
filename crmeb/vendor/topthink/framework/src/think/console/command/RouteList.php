@@ -31,7 +31,7 @@ class RouteList extends Command
     protected function configure()
     {
         $this->setName('route:list')
-            ->addArgument('app', Argument::OPTIONAL, 'app name .')
+            ->addArgument('dir', Argument::OPTIONAL, 'dir name .')
             ->addArgument('style', Argument::OPTIONAL, "the style of the table.", 'default')
             ->addOption('sort', 's', Option::VALUE_OPTIONAL, 'order by rule name.', 0)
             ->addOption('more', 'm', Option::VALUE_NONE, 'show route options.')
@@ -40,18 +40,9 @@ class RouteList extends Command
 
     protected function execute(Input $input, Output $output)
     {
-        $app = $input->getArgument('app');
+        $dir = $input->getArgument('dir') ?: '';
 
-        if (empty($app) && !is_dir($this->app->getBasePath() . 'controller')) {
-            $output->writeln('<error>Miss app name!</error>');
-            return false;
-        }
-
-        if ($app) {
-            $filename = $this->app->getRootPath() . 'runtime' . DIRECTORY_SEPARATOR . $app . DIRECTORY_SEPARATOR . 'route_list_' . $app . '.php';
-        } else {
-            $filename = $this->app->getRootPath() . 'runtime' . DIRECTORY_SEPARATOR . 'route_list.php';
-        }
+        $filename = $this->app->getRootPath() . 'runtime' . DIRECTORY_SEPARATOR . ($dir ? $dir . DIRECTORY_SEPARATOR : '') . 'route_list.php';
 
         if (is_file($filename)) {
             unlink($filename);
@@ -59,17 +50,17 @@ class RouteList extends Command
             mkdir(dirname($filename), 0755);
         }
 
-        $content = $this->getRouteList($app);
+        $content = $this->getRouteList($dir);
         file_put_contents($filename, 'Route List' . PHP_EOL . $content);
     }
 
-    protected function getRouteList(string $app = null): string
+    protected function getRouteList(string $dir = null): string
     {
         $this->app->route->setTestMode(true);
         $this->app->route->clear();
 
-        if ($app) {
-            $path = $this->app->getRootPath() . 'route' . DIRECTORY_SEPARATOR . $app . DIRECTORY_SEPARATOR;
+        if ($dir) {
+            $path = $this->app->getRootPath() . 'route' . DIRECTORY_SEPARATOR . $dir . DIRECTORY_SEPARATOR;
         } else {
             $path = $this->app->getRootPath() . 'route' . DIRECTORY_SEPARATOR;
         }

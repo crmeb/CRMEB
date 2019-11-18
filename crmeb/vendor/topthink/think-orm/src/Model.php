@@ -15,7 +15,9 @@ namespace think;
 use ArrayAccess;
 use Closure;
 use JsonSerializable;
-use think\db\Query;
+use think\contract\Arrayable;
+use think\contract\Jsonable;
+use think\db\BaseQuery as Query;
 
 /**
  * Class Model
@@ -33,7 +35,7 @@ use think\db\Query;
  * @method void onBeforeRestore(Model $model) static before_restore事件定义
  * @method void onAfterRestore(Model $model) static after_restore事件定义
  */
-abstract class Model implements JsonSerializable, ArrayAccess
+abstract class Model implements JsonSerializable, ArrayAccess, Arrayable, Jsonable
 {
     use model\concern\Attribute;
     use model\concern\RelationShip;
@@ -96,12 +98,6 @@ abstract class Model implements JsonSerializable, ArrayAccess
     protected static $initialized = [];
 
     /**
-     * 查询对象实例
-     * @var Query
-     */
-    protected $queryInstance;
-
-    /**
      * 软删除字段默认值
      * @var mixed
      */
@@ -121,15 +117,21 @@ abstract class Model implements JsonSerializable, ArrayAccess
 
     /**
      * Db对象
-     * @var Db
+     * @var DbManager
      */
-    protected $db;
+    protected static $db;
+
+    /**
+     * 容器对象的依赖注入方法
+     * @var callable
+     */
+    protected static $invoker;
 
     /**
      * 服务注入
-     * @var Closure
+     * @var Closure[]
      */
-    protected static $maker;
+    protected static $maker = [];
 
     /**
      * 设置服务注入
@@ -139,18 +141,46 @@ abstract class Model implements JsonSerializable, ArrayAccess
      */
     public static function maker(Closure $maker)
     {
-        static::$maker = $maker;
+        static::$maker[] = $maker;
     }
 
     /**
      * 设置Db对象
      * @access public
-     * @param Db $db Db对象
+     * @param DbManager $db Db对象
      * @return void
      */
-    public function setDb(Db $db)
+    public static function setDb(DbManager $db)
     {
-        $this->db = $db;
+        self::$db = $db;
+    }
+
+    /**
+     * 设置容器对象的依赖注入方法
+     * @access public
+     * @param callable $callable 依赖注入方法
+     * @return void
+     */
+    public static function setInvoker(callable $callable): void
+    {
+        self::$invoker = $callable;
+    }
+
+    /**
+     * 调用反射执行模型方法 支持参数绑定
+     * @access public
+     * @param mixed $method
+     * @param array $vars 参数
+     * @return mixed
+     */
+    public function invoke($method, array $vars = [])
+    {
+        if (self::$invoker) {
+            $call = self::$invoker;
+            return $call($method instanceof Closure ? $method : Closure::fromCallable([$this, $method]), $vars);
+        }
+
+        return call_user_func_array($method instanceof Closure ? $method : [$this, $method], $vars);
     }
 
     /**
@@ -180,19 +210,9 @@ abstract class Model implements JsonSerializable, ArrayAccess
             $this->name = basename($name);
         }
 
-        if (static::$maker) {
-            call_user_func(static::$maker, $this);
-        } else {
-            $this->db = Container::pull('think\DbManager');
-
-            if (is_null($this->autoWriteTimestamp)) {
-                // 自动写入时间戳
-                $this->autoWriteTimestamp = $this->db->getConfig('auto_timestamp');
-            }
-
-            if (is_null($this->dateFormat)) {
-                // 设置时间戳格式
-                $this->dateFormat = $this->db->getConfig('datetime_format');
+        if (!empty(static::$maker)) {
+            foreach (static::$maker as $maker) {
+                call_user_func($maker, $this);
             }
         }
 
@@ -243,34 +263,6 @@ abstract class Model implements JsonSerializable, ArrayAccess
     }
 
     /**
-     * 设置当前模型的数据库查询对象
-     * @access public
-     * @param Query $query 查询对象实例
-     * @param bool  $clear 是否需要清空查询条件
-     * @return $this
-     */
-    public function setQuery(Query $query, bool $clear = true)
-    {
-        $this->queryInstance = clone $query;
-
-        if ($clear) {
-            $this->queryInstance->removeOption();
-        }
-
-        return $this;
-    }
-
-    /**
-     * 获取当前模型的数据库查询对象
-     * @access public
-     * @return Query|null
-     */
-    public function getQuery()
-    {
-        return $this->queryInstance;
-    }
-
-    /**
      * 设置当前模型数据表的后缀
      * @access public
      * @param string $suffix 数据表后缀
@@ -301,13 +293,9 @@ abstract class Model implements JsonSerializable, ArrayAccess
     public function db($scope = []): Query
     {
         /** @var Query $query */
-        if ($this->queryInstance) {
-            $query = $this->queryInstance;
-        } else {
-            $query = $this->db->connect($this->connection)
-                ->name($this->name . $this->suffix)
-                ->pk($this->pk);
-        }
+        $query = self::$db->connect($this->connection)
+            ->name($this->name . $this->suffix)
+            ->pk($this->pk);
 
         if (!empty($this->table)) {
             $query->table($this->table . $this->suffix);
@@ -351,16 +339,19 @@ abstract class Model implements JsonSerializable, ArrayAccess
      * @return void
      */
     protected static function init()
-    {}
+    {
+    }
 
     protected function checkData(): void
-    {}
+    {
+    }
 
     protected function checkResult($result): void
-    {}
+    {
+    }
 
     /**
-     * 更新是否强制写入数据 而不做比较
+     * 更新是否强制写入数据 而不做比较（亦可用于软删除的强制删除）
      * @access public
      * @param bool $force
      * @return $this
@@ -686,10 +677,16 @@ abstract class Model implements JsonSerializable, ArrayAccess
 
         if (is_string($pk) && isset($this->data[$pk])) {
             $where = [[$pk, '=', $this->data[$pk]]];
-        } elseif (!empty($this->updateWhere)) {
-            $where = $this->updateWhere;
-        } else {
-            $where = null;
+        } elseif (is_array($pk)) {
+            foreach ($pk as $field) {
+                if (isset($this->data[$field])) {
+                    $where[] = [$field, '=', $this->data[$field]];
+                }
+            }
+        }
+
+        if (empty($where)) {
+            $where = empty($this->updateWhere) ? null : $this->updateWhere;
         }
 
         return $where;
@@ -860,17 +857,6 @@ abstract class Model implements JsonSerializable, ArrayAccess
     public function __wakeup()
     {
         $this->initialize();
-    }
-
-    public function __debugInfo()
-    {
-        $attrs = get_object_vars($this);
-
-        foreach (['db', 'queryInstance', 'event'] as $name) {
-            unset($attrs[$name]);
-        }
-
-        return $attrs;
     }
 
     /**

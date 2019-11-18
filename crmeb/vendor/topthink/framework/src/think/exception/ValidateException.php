@@ -8,6 +8,7 @@
 // +----------------------------------------------------------------------
 // | Author: yunwuxin <448901948@qq.com>
 // +----------------------------------------------------------------------
+declare (strict_types = 1);
 
 namespace think\exception;
 
@@ -21,7 +22,7 @@ class ValidateException extends \RuntimeException
     public function __construct($error)
     {
         $this->error   = $error;
-        $this->message = is_array($error) ? implode("\n\r", $error) : $error;
+        $this->message = is_array($error) ? implode(PHP_EOL, $error) : $error;
     }
 
     /**

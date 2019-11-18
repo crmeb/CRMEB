@@ -12,33 +12,6 @@
 use think\Collection;
 use think\helper\Arr;
 
-if (!function_exists('classnames')) {
-    /**
-     * css样式名生成器
-     * classnames("foo", "bar"); // => "foo bar"
-     * classnames("foo", [ "bar"=> true ]); // => "foo bar"
-     * classnames([ "foo-bar"=> true ]); // => "foo-bar"
-     * classnames([ "foo-bar"=> false ]); // => "
-     * classnames([ "foo" => true ], [ "bar"=> true ]); // => "foo bar"
-     * classnames([ "foo" => true, "bar"=> true ]); // => "foo bar"
-     * classnames("foo", [ "bar"=> true, "duck"=> false ], "baz", [ "quux"=> true ]); // => "foo bar baz quux"
-     * classnames(null, false, "bar", 0, 1, [ "baz"=> null ]); // => "bar 1"
-     */
-    function classnames()
-    {
-        $args    = func_get_args();
-        $classes = array_map(function ($arg) {
-            if (is_array($arg)) {
-                return implode(" ", array_filter(array_map(function ($expression, $class) {
-                    return $expression ? $class : false;
-                }, $arg, array_keys($arg))));
-            }
-            return $arg;
-        }, $args);
-        return implode(" ", array_filter($classes));
-    }
-}
-
 if (!function_exists('throw_if')) {
     /**
      * 按条件抛异常
@@ -77,84 +50,6 @@ if (!function_exists('throw_unless')) {
         }
 
         return $condition;
-    }
-}
-
-if (!function_exists('app_path')) {
-    /**
-     * 获取当前应用目录
-     *
-     * @param string $path
-     * @return string
-     */
-    function app_path($path = '')
-    {
-        return app()->getAppPath() . ($path ? $path . DIRECTORY_SEPARATOR : $path);
-    }
-}
-
-if (!function_exists('base_path')) {
-    /**
-     * 获取应用基础目录
-     *
-     * @param string $path
-     * @return string
-     */
-    function base_path($path = '')
-    {
-        return app()->getBasePath() . ($path ? $path . DIRECTORY_SEPARATOR : $path);
-    }
-}
-
-if (!function_exists('config_path')) {
-    /**
-     * 获取应用配置目录
-     *
-     * @param string $path
-     * @return string
-     */
-    function config_path($path = '')
-    {
-        return app()->getConfigPath() . ($path ? $path . DIRECTORY_SEPARATOR : $path);
-    }
-}
-
-if (!function_exists('public_path')) {
-    /**
-     * 获取web根目录
-     *
-     * @param string $path
-     * @return string
-     */
-    function public_path($path = '')
-    {
-        return app()->getRootPath() . ($path ? ltrim($path, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR : $path);
-    }
-}
-
-if (!function_exists('runtime_path')) {
-    /**
-     * 获取web根目录
-     *
-     * @param string $path
-     * @return string
-     */
-    function runtime_path($path = '')
-    {
-        return app()->getRuntimePath() . ($path ? $path . DIRECTORY_SEPARATOR : $path);
-    }
-}
-
-if (!function_exists('root_path')) {
-    /**
-     * 获取项目根目录
-     *
-     * @param string $path
-     * @return string
-     */
-    function root_path($path = '')
-    {
-        return app()->getRootPath() . ($path ? $path . DIRECTORY_SEPARATOR : $path);
     }
 }
 
@@ -237,7 +132,7 @@ if (!function_exists('data_get')) {
         $key = is_array($key) ? $key : explode('.', $key);
 
         while (!is_null($segment = array_shift($key))) {
-            if ($segment === '*') {
+            if ('*' === $segment) {
                 if ($target instanceof Collection) {
                     $target = $target->all();
                 } elseif (!is_array($target)) {
@@ -325,5 +220,60 @@ if (!function_exists('data_set')) {
         }
 
         return $target;
+    }
+}
+
+if (!function_exists('trait_uses_recursive')) {
+    /**
+     * 获取一个trait里所有引用到的trait
+     *
+     * @param string $trait Trait
+     * @return array
+     */
+    function trait_uses_recursive(string $trait): array
+    {
+        $traits = class_uses($trait);
+        foreach ($traits as $trait) {
+            $traits += trait_uses_recursive($trait);
+        }
+
+        return $traits;
+    }
+}
+
+if (!function_exists('class_basename')) {
+    /**
+     * 获取类名(不包含命名空间)
+     *
+     * @param mixed $class 类名
+     * @return string
+     */
+    function class_basename($class): string
+    {
+        $class = is_object($class) ? get_class($class) : $class;
+        return basename(str_replace('\\', '/', $class));
+    }
+}
+
+if (!function_exists('class_uses_recursive')) {
+    /**
+     *获取一个类里所有用到的trait，包括父类的
+     *
+     * @param mixed $class 类名
+     * @return array
+     */
+    function class_uses_recursive($class): array
+    {
+        if (is_object($class)) {
+            $class = get_class($class);
+        }
+
+        $results = [];
+        $classes = array_merge([$class => $class], class_parents($class));
+        foreach ($classes as $class) {
+            $results += trait_uses_recursive($class);
+        }
+
+        return array_unique($results);
     }
 }

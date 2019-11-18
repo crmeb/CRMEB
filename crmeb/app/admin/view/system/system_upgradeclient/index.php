@@ -30,7 +30,7 @@
                     <div class="row">
                         <div class="col-sm-12">
                             <div class="m-b-md">
-                                <h2>在线升级 <span style="font-size: 5px;color: red">当前版本为：{{version}}</span></h2>
+                                <h2>在线升级 <span style="font-size: 12px;color: red">当前版本为：{{version}}</span></h2>
                             </div>
                         </div>
                     </div>

@@ -60,9 +60,9 @@ class StoreProductController
             switch ($userType){
                 case 'wechat':
                     //公众号
-                    $name = $id.'_product_detail_'.$user['uid'].'_is_promoter_'.$user['is_promoter'].'.wap.jpg';
+                    $name = $id.'_product_detail_'.$user['uid'].'_is_promoter_'.$user['is_promoter'].'_wap.jpg';
                     $imageInfo = SystemAttachment::getInfo($name,'name');
-                    $siteUrl = SystemConfigService::get('site_url');
+                    $siteUrl = sysConfig('site_url');
                     if(!$imageInfo){
                         $codeUrl = UtilService::setHttpType($siteUrl.'/detail/'.$id.'?spread='.$user['uid'], 1);//二维码链接
                         $imageInfo = UtilService::getQRCodePath($codeUrl, $name);
@@ -77,10 +77,10 @@ class StoreProductController
                     //小程序
                     $name = $id.'_'.$user['uid'].'_'.$user['is_promoter'].'_product.jpg';
                     $imageInfo = SystemAttachment::getInfo($name,'name');
-                    $siteUrl = SystemConfigService::get('site_url').DS;
+                    $siteUrl = sysConfig('site_url').DS;
                     if(!$imageInfo){
                         $data='id='.$id;
-                        if($user['is_promoter'] || SystemConfigService::get('store_brokerage_statu')==2) $data.='&pid='.$user['uid'];
+                        if($user['is_promoter'] || sysConfig('store_brokerage_statu')==2) $data.='&pid='.$user['uid'];
                         $res = \app\models\routine\RoutineCode::getPageCode('pages/goods_details/index',$data,280);
                         if(!$res) return app('json')->fail('二维码生成失败');
                         $imageInfo = \crmeb\services\UploadService::getInstance()->setUploadPath('routine/product')->imageStream($name,$res);
@@ -110,15 +110,17 @@ class StoreProductController
         //公众号
         $name = $id.'_product_detail_wap.jpg';
         $imageInfo = SystemAttachment::getInfo($name,'name');
-        $siteUrl = SystemConfigService::get('site_url');
+        $siteUrl = sysConfig('site_url');
         if(!$imageInfo){
             $codeUrl = UtilService::setHttpType($siteUrl.'/detail/'.$id, 1);//二维码链接
             $imageInfo = UtilService::getQRCodePath($codeUrl, $name);
             if(is_array($imageInfo)){
                 SystemAttachment::attachmentAdd($imageInfo['name'],$imageInfo['size'],$imageInfo['type'],$imageInfo['dir'],$imageInfo['thumb_path'],1,$imageInfo['image_type'],$imageInfo['time'],2);
                 $url = $imageInfo['dir'];
-            }else
+            }else {
                 $url = '';
+                $imageInfo = ['image_type'=>0];
+            }
         }else $url = $imageInfo['att_dir'];
         if($imageInfo['image_type'] == 1) $url = $siteUrl.$url;
         $storeInfo['image'] = UtilService::setSiteUrl($storeInfo['image'], $siteUrl);
@@ -140,7 +142,7 @@ class StoreProductController
         $data['productValue'] = $productValue;
         $data['priceName'] = 0;
         if($uid){
-            $storeBrokerageStatus = SystemConfigService::get('store_brokerage_statu') ?? 1;
+            $storeBrokerageStatus = sysConfig('store_brokerage_statu') ?? 1;
             if($storeBrokerageStatus == 2)
                 $data['priceName'] = StoreProduct::getPacketPrice($storeInfo, $productValue);
             else{
@@ -163,8 +165,8 @@ class StoreProductController
         } else $data['replyChance'] = 0;
         $data['mer_id'] = $storeInfo['mer_id'];
         $data['system_store'] = ($res = SystemStore::getStoreDispose()) ? $res : [];
-        $data['good_list'] = StoreProduct::getGoodList(18,'image,store_name,price,id');
-        $data['mapKey'] = SystemConfigService::get('tengxun_map_key');
+        $data['good_list'] = StoreProduct::getGoodList(18,'image,store_name,price,id,ot_price');
+        $data['mapKey'] = sysConfig('tengxun_map_key');
         return app('json')->successful($data);
     }
 
@@ -184,7 +186,7 @@ class StoreProductController
             ['limit',0]
         ], $request, true);
         if(!$limit) return  app('json')->successful([]);
-        $productHot = StoreProduct::getHotProductLoading('id,image,store_name,cate_id,price,unit_name',(int)$page,(int)$limit);
+        $productHot = StoreProduct::getHotProductLoading('id,image,store_name,cate_id,price,unit_name,ot_price',(int)$page,(int)$limit);
         return app('json')->successful($productHot);
     }
 

@@ -52,10 +52,10 @@ class Timer extends Command
     protected function execute(Input $input, Output $output)
     {
         $this->init($input, $output);
-
+        Worker::$pidFile = app()->getRootPath().'timer.pid';
         $task = new Worker();
         $task->count = 1;
-
+        event('Task_6');
         $task->onWorkerStart = [$this, 'start'];
         $task->runAll();
     }
@@ -72,10 +72,10 @@ class Timer extends Command
         $this->timer = \Workerman\Lib\Timer::add($this->interval, function () use (&$task) {
             try {
                 $now = time();
-                event('task_2');
+                event('Task_2');
                 foreach ($task as $sec => $time) {
                     if ($now - $time >= $sec) {
-                        event('task_' . $sec);
+                        event('Task_' . $sec);
                         $task[$sec] = $now;
                     }
                 }
