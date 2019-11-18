@@ -65,9 +65,9 @@
                     <div class="operation-item">
 <!--                        <span class="glyphicon glyphicon-chevron-up" aria-hidden="true" @click="itemUp(index)"></span>-->
 <!--                        <span class="glyphicon glyphicon-chevron-down" aria-hidden="true" @click="itemDown(index)"></span>-->
-                        <span class="glyphicon glyphicon-trash" aria-hidden="true" @click="itemDel(index)"></span>
+                        <span class="glyphicon glyphicon-trash" aria-hidden="true" v-if="index" @click="itemDel(index)"></span>
                     </div>
-                    <div v-if="index==0">
+                    <div v-if="index == 0">
                         <div  class="news-item transition news-image" :class="action==index ? 'active' :''" style="margin-bottom: 20px" @click="isShow(index)">
                             <img :src="item.image_input" style="width: 100%;height: 100%;"/>
                         </div>
@@ -191,8 +191,10 @@
                 if(that.newList.length == 1) return $eb.message('error','不能再删除了');
                 that.newList.splice(indexItem,1);
                 if(indexItem == that.indexItem){
-                    if(that.newList.length == 1) that.setNewListIndex(0);
-                    else that.setNewListIndex(parseInt(indexItem) + parseInt(1));
+                    if(that.newList.length == 1)
+                        that.setNewListIndex(0);
+                    else
+                        that.setNewListIndex(parseInt(indexItem) + parseInt(1));
                 }else{
                     if(indexItem < that.indexItem){
                         that.indexItem = parseInt(that.indexItem) + parseInt(1);
@@ -259,7 +261,7 @@
                     'title':'',
                     'author':$author,
                     'content':'',
-                    'image_input':'/public/system/module/wechat/news/images/image.png',
+                    'image_input':'{__MODULE_PATH}/wechat/news/images/image.png',
                     'synopsis':''
                 }
                 this.newList.push(arr);

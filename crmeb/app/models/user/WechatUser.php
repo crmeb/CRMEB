@@ -179,7 +179,7 @@ class WechatUser extends BaseModel
      */
     public static function userFirstSubGiveCoupon($openid)
     {
-        $couponId = SystemConfigService::get('wechat_first_sub_give_coupon');
+        $couponId = sysConfig('wechat_first_sub_give_coupon');
         if($couponId) StoreCouponUser::addUserCoupon(self::openidToUid($openid),$couponId);
     }
 
@@ -189,7 +189,7 @@ class WechatUser extends BaseModel
      */
     public static function userTakeOrderGiveCoupon($uid)
     {
-        $couponId = SystemConfigService::get('store_order_give_coupon');
+        $couponId = sysConfig('store_order_give_coupon');
         if($couponId) StoreCouponUser::addUserCoupon($uid,$couponId);
     }
 

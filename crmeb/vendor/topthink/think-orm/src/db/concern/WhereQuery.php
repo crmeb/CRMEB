@@ -429,7 +429,7 @@ trait WhereQuery
                 // 字段相等查询
                 $where = $this->whereEq($field, $op);
             }
-        } elseif (in_array(strtoupper($op), ['EXISTS', 'NOT EXISTS', 'NOTEXISTS'], true)) {
+        } elseif (is_string($op) && in_array(strtoupper($op), ['EXISTS', 'NOT EXISTS', 'NOTEXISTS'], true)) {
             $where = [$field, $op, is_string($condition) ? new Raw($condition) : $condition];
         } else {
             $where = $field ? [$field, $op, $condition, $param[2] ?? null] : [];

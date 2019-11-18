@@ -4,6 +4,7 @@ namespace crmeb\repositories;
 
 use app\admin\model\system\SystemAttachment;
 use app\models\user\User;
+use app\models\user\UserAddress;
 use app\models\user\UserToken;
 use crmeb\exceptions\AuthException;
 use think\db\exception\ModelNotFoundException;
@@ -90,5 +91,14 @@ class UserRepository
         }
         $tokenData->type = $type;
         return compact('user', 'tokenData');
+    }
+    /**
+     * 订单创建成功后
+     * @param $order
+     * @param $group
+     */
+    public static function storeProductOrderCreateEbApi($order,$group)
+    {
+        if(!UserAddress::be(['is_default'=>1,'uid'=>$order['uid']])) UserAddress::setDefaultAddress($group['addressId'],$order['uid']);
     }
 }

@@ -30,7 +30,7 @@ class Article extends BaseModel
 
     public function profile()
     {
-        return $this->hasOne(StoreProduct::class,'id','product_id')->field('store_name,image,price,id');
+        return $this->hasOne(StoreProduct::class,'id','product_id')->field('store_name,image,price,id,ot_price');
     }
 
     protected function getImageInputAttr($value)
@@ -51,7 +51,7 @@ class Article extends BaseModel
         if(!$id) return [];
         $list = self::where('status',1)->where('hide',0)->where('id',$id)->order('id desc')->find();
         if($list){
-            $list->store_info = $list->profile ? StoreProduct::setLevelPrice($list->profile->toArray(),0,true) : null;
+            $list->store_info = $list->profile ? $list->profile->toArray() : null;
             $list = $list->hidden(['hide','status','admin_id','mer_id'])->toArray();
             $list["content"] = Db::name('articleContent')->where('nid',$id)->value('content');
             return $list;
@@ -107,7 +107,7 @@ class Article extends BaseModel
         $model = $model->where('hide', 0);
         $model = $model->where('is_banner', 1);
         $model = $model->order('sort DESC,add_time DESC');
-        $model = $model->limit(SystemConfigService::get('news_slides_limit') ?? 3);
+        $model = $model->limit(sysConfig('news_slides_limit') ?? 3);
         return $model->select();
     }
 }

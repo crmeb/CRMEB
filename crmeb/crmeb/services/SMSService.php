@@ -41,7 +41,7 @@ class SMSService
 
     public function __construct()
     {
-        self::$status = strlen(SystemConfigService::get('sms_account')) != 0 ?? false && strlen(SystemConfigService::get('sms_token')) != 0  ?? false;
+        self::$status = strlen(sysConfig('sms_account')) != 0 ?? false && strlen(sysConfig('sms_token')) != 0  ?? false;
     }
 
     public static function getConstants($code = '')
@@ -54,9 +54,9 @@ class SMSService
 
     private static function auto()
    {
-       self::$SMSAccount = SystemConfigService::get('sms_account');
-       self::$SMSToken = md5(self::$SMSAccount.md5(SystemConfigService::get('sms_token')));
-       self::$payNotify = SystemConfigService::get('site_url').'/api/sms/pay/notify';
+       self::$SMSAccount = sysConfig('sms_account');
+       self::$SMSToken = md5(self::$SMSAccount.md5(sysConfig('sms_token')));
+       self::$payNotify = sysConfig('site_url').'/api/sms/pay/notify';
    }
 
     /**

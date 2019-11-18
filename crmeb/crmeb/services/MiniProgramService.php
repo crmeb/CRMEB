@@ -289,6 +289,9 @@ class MiniProgramService implements ProviderInterface
         self::paymentService()->handleNotify(function($notify, $successful){
             if($successful && isset($notify->out_trade_no)){
                 if(isset($notify->attach) && $notify->attach){
+                    if(($count = strpos($notify->out_trade_no,'_')) !== false){
+                        $notify->out_trade_no = substr($notify->out_trade_no,$count+1);
+                    }
                     if(strtolower($notify->attach) == 'productr'){//TODO 商品订单支付成功后
                         try{
                             if(StoreOrderRoutineModel::be(['order_id'=>$notify->out_trade_no,'paid'=>1])) return true;

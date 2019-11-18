@@ -615,7 +615,7 @@ class ReflectionClosure extends ReflectionFunction
     protected function getHashedFileName()
     {
         if ($this->hashedName === null) {
-            $this->hashedName = md5($this->getFileName());
+            $this->hashedName = sha1($this->getFileName());
         }
 
         return $this->hashedName;

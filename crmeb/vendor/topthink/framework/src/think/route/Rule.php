@@ -38,6 +38,12 @@ abstract class Rule
     protected $name;
 
     /**
+     * 所在域名
+     * @var string
+     */
+    protected $domain;
+
+    /**
      * 路由对象
      * @var Route
      */
@@ -213,7 +219,7 @@ abstract class Rule
      */
     public function getDomain(): string
     {
-        return $this->parent->getDomain();
+        return $this->domain ?: $this->parent->getDomain();
     }
 
     /**
@@ -309,6 +315,7 @@ abstract class Rule
      */
     public function domain(string $domain)
     {
+        $this->domain = $domain;
         return $this->setOption('domain', $domain);
     }
 

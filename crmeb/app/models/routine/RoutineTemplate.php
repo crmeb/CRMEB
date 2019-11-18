@@ -1,7 +1,7 @@
 <?php
 namespace  app\models\routine;
 
-use crmeb\services\Template;
+use crmeb\utils\Template;
 use app\models\store\StoreOrder;
 use app\models\user\WechatUser;
 
@@ -50,7 +50,6 @@ class RoutineTemplate
             $data['keyword2'] =  $order['delivery_name'];
             $data['keyword3'] =  $order['delivery_id'];
             $data['keyword4'] =  date('Y-m-d H:i:s',time());
-            $data['keyword5'] =  '您的商品已经发货请注意查收';
             return self::sendOut('ORDER_DELIVER_SUCCESS',$order['uid'],$data);
         }
     }
@@ -148,7 +147,8 @@ class RoutineTemplate
             }else{
                 $form['form_id']=$formId;
             }
-            return Template::instance()->routine_two->sendTemplate($TempCode,$openid,$data,$form['form_id'],$link);
+            return Template::instance()->routine()->setTemplateUrl($link)->setTemplateOpenId($openid)
+                ->setTemplateData($data)->setTemplateFormId($form['form_id'])->setTemplateCode($TempCode)->send();
         }catch (\Exception $e){
             return false;
         }

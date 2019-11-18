@@ -28,14 +28,14 @@ class StoreProductRelation extends BaseModel
     public static function getCollect($pid){
       $model = new self();
       $model = $model->where('r.product_id',$pid)->where('r.type','collect');
-      $model = $model->alias('r')->join('__WECHAT_USER__ u','u.uid=r.uid');
+      $model = $model->alias('r')->join('wechat_user u','u.uid=r.uid');
       $model = $model->field('r.*,u.nickname');
       return self::page($model);
     }
     public static function getLike($pid){
       $model = new self();
       $model = $model->where('r.product_id',$pid)->where('r.type','like');
-      $model = $model->alias('r')->join('__WECHAT_USER__ u','u.uid=r.uid');
+      $model = $model->alias('r')->join('wechat_user u','u.uid=r.uid');
       $model = $model->field('r.*,u.nickname');
       return self::page($model);
     }

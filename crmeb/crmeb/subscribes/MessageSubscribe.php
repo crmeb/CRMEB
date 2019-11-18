@@ -3,11 +3,15 @@ namespace crmeb\subscribes;
 
 use app\admin\model\wechat\WechatMessage;
 use app\models\store\StoreOrder;
+use app\models\store\StoreProduct;
+use app\models\store\StoreProductReply;
 use app\models\store\StoreService;
 use app\models\user\User;
+use app\models\user\UserExtract;
 use app\models\user\WechatUser;
 use crmeb\services\SMSService;
 use crmeb\services\SystemConfigService;
+use crmeb\services\workerman\ChannelService;
 use think\facade\Log;
 
 /**
@@ -20,6 +24,25 @@ class MessageSubscribe
     public function handle()
     {
 
+    }
+
+    /** 后台订单下单，评论，支付成功，后台消息提醒
+     * @param $event
+     */
+    public function onAdminNewPush($event)
+    {
+        try{
+            $data['ordernum'] = StoreOrder::where('paid',1)->where('status',0)
+                ->where('shipping_type',1)->where('refund_status',0)
+                ->where('is_del',0)->count();
+            $store_stock = sysConfig('store_stock');
+            if($store_stock < 0) $store_stock = 2;
+            $data['inventory'] = StoreProduct::where('stock','<=',$store_stock)->where('is_show',1)->where('is_del',0)->count();//库存
+            $data['commentnum'] = StoreProductReply::where('is_reply',0)->count();
+            $data['reflectnum'] = UserExtract::where('status',0)->count();//提现
+            $data['msgcount'] = intval($data['ordernum']) + intval($data['inventory']) + intval($data['commentnum']) + intval($data['reflectnum']);
+            ChannelService::instance()->send('ADMIN_NEW_PUSH',$data);
+        }catch (\Exception $e){}
     }
 
     /**
@@ -103,7 +126,7 @@ class MessageSubscribe
     {
         $storeInfo = StoreOrder::where(['order_id'=>$order_id,'paid'=>1,'refund_status'=>0])->find();
         if(!$storeInfo) return;
-        $switch = SystemConfigService::get('lower_order_switch') ? true : false;
+        $switch = sysConfig('lower_order_switch') ? true : false;
         //模板变量
         $pay_price = $storeInfo->pay_price;
         $this->send($switch,$storeInfo->user_phone,compact('order_id','pay_price'),'PAY_SUCCESS_CODE','用户支付成功发送短信失败，订单号为：'.$order_id);
@@ -117,7 +140,7 @@ class MessageSubscribe
     {
         $storeInfo = StoreOrder::where(['order_id'=>$order_id,'paid'=>1,'refund_status'=>0,'status'=>1])->find();
         if(!$storeInfo) return;
-        $switch = SystemConfigService::get('deliver_goods_switch') ? true : false;
+        $switch = sysConfig('deliver_goods_switch') ? true : false;
         //模板变量
         $nickname = User::where('uid',$storeInfo->uid)->value('nickname');
         $store_name = StoreOrder::getProductTitle($storeInfo->cart_id);
@@ -132,7 +155,7 @@ class MessageSubscribe
     {
         $storeInfo = StoreOrder::where(['order_id'=>$order_id,'paid'=>1,'refund_status'=>0,'status'=>2])->find();
         if(!$storeInfo) return;
-        $switch = SystemConfigService::get('confirm_take_over_switch') ? true : false;
+        $switch = sysConfig('confirm_take_over_switch') ? true : false;
         //模板变量
         $store_name = StoreOrder::getProductTitle($storeInfo->cart_id);
         $this->send($switch,$storeInfo->user_phone,compact('store_name','order_id'),'TAKE_DELIVERY_CODE','用户确认收货发送短信失败，订单号为：'.$order_id);
@@ -146,7 +169,7 @@ class MessageSubscribe
     {
         $storeInfo = StoreOrder::where(['order_id'=>$order_id,'paid'=>0,'refund_status'=>0,'status'=>0])->find();
         if(!$storeInfo) return;
-        $switch = SystemConfigService::get('admin_lower_order_switch') ? true : false;
+        $switch = sysConfig('admin_lower_order_switch') ? true : false;
         $switch && $this->getAdminNoticeAuth(function ($userInfo) use($storeInfo) {
             //模板变量
             $admin_name = $userInfo->nickname;
@@ -163,7 +186,7 @@ class MessageSubscribe
     {
         $storeInfo = StoreOrder::where(['order_id'=>$order_id,'paid'=>1,'refund_status'=>0,'status'=>0])->find();
         if(!$storeInfo) return;
-        $switch = SystemConfigService::get('admin_pay_success_switch') ? true : false;
+        $switch = sysConfig('admin_pay_success_switch') ? true : false;
         $switch && $this->getAdminNoticeAuth(function ($userInfo) use($storeInfo) {
             //模板变量
             $admin_name = $userInfo->nickname;
@@ -180,7 +203,7 @@ class MessageSubscribe
     {
         $storeInfo = StoreOrder::where(['order_id'=>$order_id,'paid'=>1,'refund_status'=>0,'status'=>2])->find();
         if(!$storeInfo) return;
-        $switch = SystemConfigService::get('admin_confirm_take_over_switch') ? true : false;
+        $switch = sysConfig('admin_confirm_take_over_switch') ? true : false;
         $switch && $this->getAdminNoticeAuth(function ($userInfo) use($storeInfo) {
             //模板变量
             $admin_name = $userInfo->nickname;
@@ -197,7 +220,7 @@ class MessageSubscribe
     {
         $storeInfo = StoreOrder::where(['order_id'=>$order_id,'paid'=>1,'refund_status'=>1])->find();
         if(!$storeInfo) return;
-        $switch = SystemConfigService::get('admin_refund_switch') ? true : false;
+        $switch = sysConfig('admin_refund_switch') ? true : false;
         $switch && $this->getAdminNoticeAuth(function ($userInfo) use($storeInfo) {
             //模板变量
             $admin_name = $userInfo->nickname;

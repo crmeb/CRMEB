@@ -85,7 +85,7 @@ class ChatHandle
             if ($userInfo && $userInfo['subscribe'] && $userInfo['openid']) {
                 $head = '客服提醒';
                 $description = '您有新的消息，请注意查收！';
-                $url = SystemConfigService::get('site_url') . '/customer/chat/' . $uid;
+                $url = sysConfig('site_url') . '/customer/chat/' . $uid;
                 $message = WechatService::newsMessage($head, $description, $url, $_userInfo['avatar']);
                 $userInfo = $userInfo->toArray();
                 try {

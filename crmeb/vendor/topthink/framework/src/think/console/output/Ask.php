@@ -197,10 +197,6 @@ class Ask
             $value = rtrim(shell_exec($exe));
             $this->output->writeln('');
 
-            if (isset($tmpExe)) {
-                unlink($tmpExe);
-            }
-
             return $value;
         }
 

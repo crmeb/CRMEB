@@ -22,6 +22,7 @@
 </head>
 <body>
 <script>
+    window.$f = null
     formCreate.formSuccess = function(form,$r){
         <?=$form->getSuccessScript()?>
         //刷新父级页面
@@ -51,7 +52,7 @@
                 if(_b) return ;
                 _b = true;
                 if (!el) el = document.body;
-                var $f = formCreate.create(getRule(), {
+                $f = formCreate.create(getRule(), {
                     el: el,
                     form:<?=json_encode($form->getConfig('form'))?>,
                     row:<?=json_encode($form->getConfig('row'))?>,

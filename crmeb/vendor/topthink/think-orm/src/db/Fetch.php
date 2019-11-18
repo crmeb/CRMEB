@@ -12,8 +12,8 @@ declare (strict_types = 1);
 
 namespace think\db;
 
-use think\Container;
-use think\Exception;
+use think\db\exception\DbException as Exception;
+use think\helper\Str;
 
 /**
  * SQL获取类
@@ -61,7 +61,7 @@ class Fetch
     {
         $this->query->parseOptions();
 
-        $field = $aggregate . '(' . $this->builder->parseKey($this->query, $field) . ') AS tp_' . strtolower($aggregate);
+        $field = $aggregate . '(' . $this->builder->parseKey($this->query, $field) . ') AS think_' . strtolower($aggregate);
 
         return $this->value($field, 0, false);
     }
@@ -479,11 +479,11 @@ class Fetch
     {
         if (strtolower(substr($method, 0, 5)) == 'getby') {
             // 根据某个字段获取记录
-            $field = Container::parseName(substr($method, 5));
+            $field = Str::snake(substr($method, 5));
             return $this->where($field, '=', $args[0])->find();
         } elseif (strtolower(substr($method, 0, 10)) == 'getfieldby') {
             // 根据某个字段获取记录的某个值
-            $name = Container::parseName(substr($method, 10));
+            $name = Str::snake(substr($method, 10));
             return $this->where($name, '=', $args[0])->value($args[1]);
         }
 

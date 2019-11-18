@@ -14,8 +14,8 @@ namespace think\model\relation;
 
 use Closure;
 use think\Collection;
-use think\Container;
 use think\db\BaseQuery as Query;
+use think\helper\Str;
 use think\Model;
 use think\model\Relation;
 
@@ -55,7 +55,7 @@ class HasMany extends Relation
     public function getRelation(array $subRelation = [], Closure $closure = null): Collection
     {
         if ($closure) {
-            $closure($this);
+            $closure($this->getClosureType($closure));
         }
 
         if ($this->withLimit) {
@@ -76,9 +76,10 @@ class HasMany extends Relation
      * @param  string  $relation    当前关联名
      * @param  array   $subRelation 子关联名
      * @param  Closure $closure     闭包
+     * @param  array   $cache       关联缓存
      * @return void
      */
-    public function eagerlyResultSet(array &$resultSet, string $relation, array $subRelation, Closure $closure = null): void
+    public function eagerlyResultSet(array &$resultSet, string $relation, array $subRelation, Closure $closure = null, array $cache = []): void
     {
         $localKey = $this->localKey;
         $range    = [];
@@ -93,10 +94,7 @@ class HasMany extends Relation
         if (!empty($range)) {
             $data = $this->eagerlyOneToMany([
                 [$this->foreignKey, 'in', $range],
-            ], $relation, $subRelation, $closure);
-
-            // 关联属性名
-            $attr = Container::parseName($relation);
+            ], $subRelation, $closure, $cache);
 
             // 关联数据封装
             foreach ($resultSet as $result) {
@@ -105,7 +103,7 @@ class HasMany extends Relation
                     $data[$pk] = [];
                 }
 
-                $result->setRelation($attr, $this->resultSetBuild($data[$pk], clone $this->parent));
+                $result->setRelation($relation, $this->resultSetBuild($data[$pk], clone $this->parent));
             }
         }
     }
@@ -117,9 +115,10 @@ class HasMany extends Relation
      * @param  string  $relation    当前关联名
      * @param  array   $subRelation 子关联名
      * @param  Closure $closure     闭包
+     * @param  array   $cache       关联缓存
      * @return void
      */
-    public function eagerlyResult(Model $result, string $relation, array $subRelation = [], Closure $closure = null): void
+    public function eagerlyResult(Model $result, string $relation, array $subRelation = [], Closure $closure = null, array $cache = []): void
     {
         $localKey = $this->localKey;
 
@@ -127,14 +126,14 @@ class HasMany extends Relation
             $pk   = $result->$localKey;
             $data = $this->eagerlyOneToMany([
                 [$this->foreignKey, '=', $pk],
-            ], $relation, $subRelation, $closure);
+            ], $subRelation, $closure, $cache);
 
             // 关联数据封装
             if (!isset($data[$pk])) {
                 $data[$pk] = [];
             }
 
-            $result->setRelation(Container::parseName($relation), $this->resultSetBuild($data[$pk], clone $this->parent));
+            $result->setRelation($relation, $this->resultSetBuild($data[$pk], clone $this->parent));
         }
     }
 
@@ -157,7 +156,7 @@ class HasMany extends Relation
         }
 
         if ($closure) {
-            $closure($this, $name);
+            $closure($this->getClosureType($closure), $name);
         }
 
         return $this->query
@@ -177,7 +176,7 @@ class HasMany extends Relation
     public function getRelationCountQuery(Closure $closure = null, string $aggregate = 'count', string $field = '*', string &$name = null): string
     {
         if ($closure) {
-            $closure($this, $name);
+            $closure($this->getClosureType($closure), $name);
         }
 
         return $this->query->alias($aggregate . '_table')
@@ -190,12 +189,12 @@ class HasMany extends Relation
      * 一对多 关联模型预查询
      * @access public
      * @param  array   $where       关联预查询条件
-     * @param  string  $relation    关联名
      * @param  array   $subRelation 子关联
      * @param  Closure $closure
+     * @param  array   $cache       关联缓存
      * @return array
      */
-    protected function eagerlyOneToMany(array $where, string $relation, array $subRelation = [], Closure $closure = null): array
+    protected function eagerlyOneToMany(array $where, array $subRelation = [], Closure $closure = null, array $cache = []): array
     {
         $foreignKey = $this->foreignKey;
 
@@ -204,10 +203,14 @@ class HasMany extends Relation
         // 预载入关联查询 支持嵌套预载入
         if ($closure) {
             $this->baseQuery = true;
-            $closure($this);
+            $closure($this->getClosureType($closure));
         }
 
-        $list = $this->query->where($where)->with($subRelation)->select();
+        $list = $this->query
+            ->where($where)
+            ->cache($cache[0] ?? false, $cache[1] ?? null, $cache[2] ?? null)
+            ->with($subRelation)
+            ->select();
 
         // 组装模型数据
         $data = [];
@@ -281,23 +284,28 @@ class HasMany extends Relation
      * @param  integer $count    个数
      * @param  string  $id       关联表的统计字段
      * @param  string  $joinType JOIN类型
+     * @param  Query   $query    Query对象
      * @return Query
      */
-    public function has(string $operator = '>=', int $count = 1, string $id = '*', string $joinType = 'INNER'): Query
+    public function has(string $operator = '>=', int $count = 1, string $id = '*', string $joinType = 'INNER', Query $query = null): Query
     {
         $table = $this->query->getTable();
 
-        $model    = Container::classBaseName($this->parent);
-        $relation = Container::classBaseName($this->model);
+        $model    = class_basename($this->parent);
+        $relation = class_basename($this->model);
 
         if ('*' != $id) {
             $id = $relation . '.' . (new $this->model)->getPk();
         }
 
-        return $this->parent->db()
-            ->alias($model)
-            ->field($model . '.*')
+        $softDelete = $this->query->getOptions('soft_delete');
+        $query      = $query ?: $this->parent->db()->alias($model);
+
+        return $query->field($model . '.*')
             ->join([$table => $relation], $model . '.' . $this->localKey . '=' . $relation . '.' . $this->foreignKey, $joinType)
+            ->when($softDelete, function ($query) use ($softDelete, $relation) {
+                $query->where($relation . strstr($softDelete[0], '.'), '=' == $softDelete[1][0] ? $softDelete[1][1] : null);
+            })
             ->group($relation . '.' . $this->foreignKey)
             ->having('count(' . $id . ')' . $operator . $count);
     }
@@ -308,13 +316,14 @@ class HasMany extends Relation
      * @param  mixed  $where 查询条件（数组或者闭包）
      * @param  mixed  $fields 字段
      * @param  string $joinType JOIN类型
+     * @param  Query  $query    Query对象
      * @return Query
      */
-    public function hasWhere($where = [], $fields = null, string $joinType = ''): Query
+    public function hasWhere($where = [], $fields = null, string $joinType = '', Query $query = null): Query
     {
         $table    = $this->query->getTable();
-        $model    = Container::classBaseName($this->parent);
-        $relation = Container::classBaseName($this->model);
+        $model    = class_basename($this->parent);
+        $relation = class_basename($this->model);
 
         if (is_array($where)) {
             $this->getQueryWhere($where, $relation);
@@ -325,13 +334,16 @@ class HasMany extends Relation
             $where = $this->query;
         }
 
-        $fields = $this->getRelationQueryFields($fields, $model);
+        $fields     = $this->getRelationQueryFields($fields, $model);
+        $softDelete = $this->query->getOptions('soft_delete');
+        $query      = $query ?: $this->parent->db()->alias($model);
 
-        return $this->parent->db()
-            ->alias($model)
-            ->group($model . '.' . $this->localKey)
+        return $query->group($model . '.' . $this->localKey)
             ->field($fields)
             ->join([$table => $relation], $model . '.' . $this->localKey . '=' . $relation . '.' . $this->foreignKey)
+            ->when($softDelete, function ($query) use ($softDelete, $relation) {
+                $query->where($relation . strstr($softDelete[0], '.'), '=' == $softDelete[1][0] ? $softDelete[1][1] : null);
+            })
             ->where($where);
     }
 

@@ -40,11 +40,11 @@ class COS
             self::$storageName = $storageName;
             self::$storageRegion = $storageRegion;
         }else{
-            self::$accessKey = trim(SystemConfigService::get('accessKey'));
-            self::$secretKey = trim(SystemConfigService::get('secretKey'));
-            self::$uploadUrl = trim(SystemConfigService::get('uploadUrl')).'/';
-            self::$storageName = trim(SystemConfigService::get('storage_name'));
-            self::$storageRegion = trim(SystemConfigService::get('storage_region'));
+            self::$accessKey = trim(sysConfig('accessKey'));
+            self::$secretKey = trim(sysConfig('secretKey'));
+            self::$uploadUrl = trim(sysConfig('uploadUrl')).'/';
+            self::$storageName = trim(sysConfig('storage_name'));
+            self::$storageRegion = trim(sysConfig('storage_region'));
             Cache::set('accessKey',self::$accessKey);
             Cache::set('secretKey',self::$secretKey);
             Cache::set('uploadUrl',self::$uploadUrl);

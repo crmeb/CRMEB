@@ -283,9 +283,6 @@
     </style>
 </head>
 <body>
-    <div class="echo">
-        <?php echo $echo;?>
-    </div>
     <?php if(\think\facade\App::isDebug()) { ?>
     <div class="exception">
     <div class="message">
@@ -413,7 +410,7 @@
         <a title="官方网站" href="http://www.thinkphp.cn">ThinkPHP</a> 
         <span>V<?php echo \think\facade\App::version(); ?></span> 
         <span>{ 十年磨一剑-为API开发设计的高性能框架 }</span>
-        <span>- <a title="官方手册" href="https://www.kancloud.cn/special/thinkphp5_quickstart">官方手册系列</a></span>
+        <span>- <a title="官方手册" href="https://www.kancloud.cn/manual/thinkphp6_0/">官方手册</a></span>
     </div>
     <?php if(\think\facade\App::isDebug()) { ?>
     <script>

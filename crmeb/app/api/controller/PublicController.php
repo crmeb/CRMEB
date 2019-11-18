@@ -36,18 +36,18 @@ class PublicController
         $menus = GroupDataService::getData('routine_home_menus') ?: [];//TODO 首页按钮
         $roll = GroupDataService::getData('routine_home_roll_news') ?: [];//TODO 首页滚动新闻
         $activity = GroupDataService::getData('routine_home_activity', 3) ?: [];//TODO 首页活动区域图片
-        $site_name = SystemConfigService::get('site_name');
+        $site_name = sysConfig('site_name');
         $routine_index_page = GroupDataService::getData('routine_index_page');
-        $info['fastInfo'] = $routine_index_page[0]['fast_info'] ?? '';//SystemConfigService::get('fast_info');//TODO 快速选择简介
-        $info['bastInfo'] = $routine_index_page[0]['bast_info'] ?? '';//SystemConfigService::get('bast_info');//TODO 精品推荐简介
-        $info['firstInfo'] = $routine_index_page[0]['first_info'] ?? '';//SystemConfigService::get('first_info');//TODO 首发新品简介
-        $info['salesInfo'] = $routine_index_page[0]['sales_info'] ?? '';//SystemConfigService::get('sales_info');//TODO 促销单品简介
-        $logoUrl = SystemConfigService::get('routine_index_logo');//TODO 促销单品简介
-        if (strstr($logoUrl, 'http') === false) $logoUrl = SystemConfigService::get('site_url') . $logoUrl;
+        $info['fastInfo'] = $routine_index_page[0]['fast_info'] ?? '';//sysConfig('fast_info');//TODO 快速选择简介
+        $info['bastInfo'] = $routine_index_page[0]['bast_info'] ?? '';//sysConfig('bast_info');//TODO 精品推荐简介
+        $info['firstInfo'] = $routine_index_page[0]['first_info'] ?? '';//sysConfig('first_info');//TODO 首发新品简介
+        $info['salesInfo'] = $routine_index_page[0]['sales_info'] ?? '';//sysConfig('sales_info');//TODO 促销单品简介
+        $logoUrl = sysConfig('routine_index_logo');//TODO 促销单品简介
+        if (strstr($logoUrl, 'http') === false) $logoUrl = sysConfig('site_url') . $logoUrl;
         $logoUrl = str_replace('\\', '/', $logoUrl);
-        $fastNumber = $routine_index_page[0]['fast_number'] ?? 6;//SystemConfigService::get('fast_number');//TODO 快速选择分类个数
-        $bastNumber = $routine_index_page[0]['bast_number'] ?? 6;//SystemConfigService::get('bast_number');//TODO 精品推荐个数
-        $firstNumber = $routine_index_page[0]['first_number'] ?? 6;//SystemConfigService::get('first_number');//TODO 首发新品个数
+        $fastNumber = $routine_index_page[0]['fast_number'] ?? 6;//sysConfig('fast_number');//TODO 快速选择分类个数
+        $bastNumber = $routine_index_page[0]['bast_number'] ?? 6;//sysConfig('bast_number');//TODO 精品推荐个数
+        $firstNumber = $routine_index_page[0]['first_number'] ?? 6;//sysConfig('first_number');//TODO 首发新品个数
         $info['fastList'] = StoreCategory::byIndexList((int)$fastNumber);//TODO 快速选择分类个数
         $info['bastList'] = StoreProduct::getBestProduct('id,image,store_name,cate_id,price,ot_price,IFNULL(sales,0) + IFNULL(ficti,0) as sales,unit_name', (int)$bastNumber, $request->uid());//TODO 精品推荐个数
         $info['firstList'] = StoreProduct::getNewProduct('id,image,store_name,cate_id,price,unit_name,IFNULL(sales,0) + IFNULL(ficti,0) as sales', (int)$firstNumber,$request->uid());//TODO 首发新品个数
@@ -65,11 +65,11 @@ class PublicController
      */
     public function share()
     {
-        $data['img'] = SystemConfigService::get('wechat_share_img');
-        if (strstr($data['img'], 'http') === false) $data['img'] = SystemConfigService::get('site_url') . $data['img'];
+        $data['img'] = sysConfig('wechat_share_img');
+        if (strstr($data['img'], 'http') === false) $data['img'] = sysConfig('site_url') . $data['img'];
         $data['img'] = str_replace('\\', '/', $data['img']);
-        $data['title'] = SystemConfigService::get('wechat_share_title');
-        $data['synopsis'] = SystemConfigService::get('wechat_share_synopsis');
+        $data['title'] = sysConfig('wechat_share_title');
+        $data['synopsis'] = sysConfig('wechat_share_synopsis');
         return app('json')->successful(compact('data'));
     }
 
@@ -86,15 +86,20 @@ class PublicController
     {
         $menusInfo = GroupDataService::getData('routine_my_menus') ?? [];
         $user = $request->user();
+        $vipOpen = sysConfig('vip_open');
+        $vipOpen = is_string($vipOpen) ? (int)$vipOpen : $vipOpen;
         foreach ($menusInfo as $key=>&$value){
             $value['pic'] = UtilService::setSiteUrl($value['pic']);
-            if($value['id'] == 137 && !(intval(SystemConfigService::get('store_brokerage_statu')) == 2 || $user->is_promoter == 1))
+            if($value['id'] == 137 && !(intval(sysConfig('store_brokerage_statu')) == 2 || $user->is_promoter == 1))
                 unset($menusInfo[$key]);
             if($value['id'] == 174 && !StoreService::orderServiceStatus($user->uid))
                 unset($menusInfo[$key]);
-            if(!StoreService::orderServiceStatus($user->uid) && $value['wap_url'] === '/order/order_cancellation'){
+            if(!StoreService::orderServiceStatus($user->uid) && $value['wap_url'] === '/order/order_cancellation')
                 unset($menusInfo[$key]);
-            }
+            if($value['wap_url'] == '/user/vip' && !$vipOpen)
+                unset($menusInfo[$key]);
+            if($value['wap_url'] == '/customer/index' && !StoreService::orderServiceStatus($user->uid))
+                unset($menusInfo[$key]);
         }
         return app('json')->successful(['routine_my_menus'=>$menusInfo]);
     }

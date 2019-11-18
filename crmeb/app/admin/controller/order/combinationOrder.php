@@ -327,7 +327,7 @@ class CombinationOrder extends AuthController
         $refund_data['pay_price'] = $product['pay_price'];
         $refund_data['refund_price'] = $refund_price;
         if($product['pay_type'] == 'weixin'){
-            if($product['is_channel']){//TODO 小程序
+            if($product['is_channel'] == 1){//TODO 小程序
                 try{
                     MiniProgramService::payOrderRefund($product['order_id'],$refund_data);//2.5.36
                }catch(\Exception $e){

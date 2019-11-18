@@ -12,9 +12,9 @@
 namespace think\model\relation;
 
 use Closure;
-use think\Container;
 use think\db\BaseQuery as Query;
-use think\Exception;
+use think\db\exception\DbException as Exception;
+use think\helper\Str;
 use think\Model;
 use think\model\Relation;
 
@@ -67,7 +67,7 @@ abstract class OneToOne extends Relation
      */
     public function eagerly(Query $query, string $relation, $field = true, string $joinType = '', Closure $closure = null, bool $first = false): void
     {
-        $name = Container::parseName(Container::classBaseName($this->parent));
+        $name = Str::snake(class_basename($this->parent));
 
         if ($first) {
             $table = $query->getTable();
@@ -98,7 +98,8 @@ abstract class OneToOne extends Relation
 
         if ($closure) {
             // 执行闭包查询
-            $closure($query);
+            $closure($this->getClosureType($closure));
+
             // 使用withField指定获取关联的字段
             if ($this->withField) {
                 $field = $this->withField;
@@ -138,10 +139,11 @@ abstract class OneToOne extends Relation
      * @param  string  $relation    当前关联名
      * @param  array   $subRelation 子关联名
      * @param  Closure $closure     闭包
+     * @param  array   $cache       关联缓存
      * @param  bool    $join        是否为JOIN方式
      * @return void
      */
-    public function eagerlyResultSet(array &$resultSet, string $relation, array $subRelation = [], Closure $closure = null, bool $join = false): void
+    public function eagerlyResultSet(array &$resultSet, string $relation, array $subRelation = [], Closure $closure = null, array $cache = [], bool $join = false): void
     {
         if ($join) {
             // 模型JOIN关联组装
@@ -150,7 +152,7 @@ abstract class OneToOne extends Relation
             }
         } else {
             // IN查询
-            $this->eagerlySet($resultSet, $relation, $subRelation, $closure);
+            $this->eagerlySet($resultSet, $relation, $subRelation, $closure, $cache);
         }
     }
 
@@ -161,17 +163,18 @@ abstract class OneToOne extends Relation
      * @param  string  $relation    当前关联名
      * @param  array   $subRelation 子关联名
      * @param  Closure $closure     闭包
+     * @param  array   $cache       关联缓存
      * @param  bool    $join        是否为JOIN方式
      * @return void
      */
-    public function eagerlyResult(Model $result, string $relation, array $subRelation = [], Closure $closure = null, bool $join = false): void
+    public function eagerlyResult(Model $result, string $relation, array $subRelation = [], Closure $closure = null, array $cache = [], bool $join = false): void
     {
         if ($join) {
             // 模型JOIN关联组装
             $this->match($this->model, $relation, $result);
         } else {
             // IN查询
-            $this->eagerlyOne($result, $relation, $subRelation, $closure);
+            $this->eagerlyOne($result, $relation, $subRelation, $closure, $cache);
         }
     }
 
@@ -257,7 +260,7 @@ abstract class OneToOne extends Relation
             $relationModel = null;
         }
 
-        $result->setRelation(Container::parseName($relation), $relationModel);
+        $result->setRelation($relation, $relationModel);
     }
 
     /**
@@ -287,17 +290,17 @@ abstract class OneToOne extends Relation
      * @access public
      * @param  array   $where       关联预查询条件
      * @param  string  $key         关联键名
-     * @param  string  $relation    关联名
      * @param  array   $subRelation 子关联
      * @param  Closure $closure
+     * @param  array   $cache       关联缓存
      * @return array
      */
-    protected function eagerlyWhere(array $where, string $key, string $relation, array $subRelation = [], Closure $closure = null)
+    protected function eagerlyWhere(array $where, string $key, array $subRelation = [], Closure $closure = null, array $cache = [])
     {
         // 预载入关联查询 支持嵌套预载入
         if ($closure) {
             $this->baseQuery = true;
-            $closure($this);
+            $closure($this->getClosureType($closure));
         }
 
         if ($this->withField) {
@@ -308,7 +311,11 @@ abstract class OneToOne extends Relation
             $this->query->group($key);
         }
 
-        $list = $this->query->where($where)->with($subRelation)->select();
+        $list = $this->query
+            ->where($where)
+            ->with($subRelation)
+            ->cache($cache[0] ?? false, $cache[1] ?? null, $cache[2] ?? null)
+            ->select();
 
         // 组装模型数据
         $data = [];

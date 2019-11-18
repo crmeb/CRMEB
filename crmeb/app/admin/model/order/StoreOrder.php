@@ -86,6 +86,7 @@ class StoreOrder extends BaseModel
             $item['_info'] = $_info;
             $item['spread_nickname'] = Db::name('user')->where('uid',$item['spread_uid'])->value('nickname');
             $item['add_time'] = date('Y-m-d H:i:s',$item['add_time']);
+            $item['back_integral'] = $item['back_integral'] ? : 0;
             if($item['pink_id'] || $item['combination_id']){
                 $pinkStatus = StorePink::where('order_id_key',$item['id'])->value('status');
                 switch ($pinkStatus){
@@ -172,14 +173,25 @@ class StoreOrder extends BaseModel
                             $img .='<img style="height:50px;" src="'.$itemImg.'" />';
                     }
                 }
-                if(!strlen(trim($img)))  $img = '无';
-                $item['status_name']=<<<HTML
+                if (!strlen(trim($img)))  $img = '无';
+                if (isset($where['excel']) && $where['excel'] == 1) {
+                    $refundImageStr = implode(',',$refundReasonWapImg);
+                    $item['status_name'] = <<<TEXT
+退款原因:{$item['refund_reason_wap']} 
+备注说明：{$item['refund_reason_wap_explain']}
+退款时间：{$refundReasonTime}
+凭证连接：{$refundImageStr}
+TEXT;
+                    unset($refundImageStr);
+                }else {
+                    $item['status_name'] = <<<HTML
 <b style="color:#f124c7">申请退款</b><br/>
 <span>退款原因：{$item['refund_reason_wap']}</span><br/>
 <span>备注说明：{$item['refund_reason_wap_explain']}</span><br/>
 <span>退款时间：{$refundReasonTime}</span><br/>
 <span>退款凭证：{$img}</span>
 HTML;
+                }
             }else if($item['paid']==1 && $item['refund_status']==2){
                 $item['status_name']='已退款';
             }
@@ -241,7 +253,7 @@ HTML;
                 $item['pay_postage'],
                 $item['coupon_price'],
                 $item['pay_type_name'],
-                $item['pay_time'] > 0 ? date('Y/md H:i',$item['pay_time']) : '暂无',
+                $item['pay_time'] > 0 ? date('Y/m-d H:i',$item['pay_time']) : '暂无',
                 $item['status_name'],
                 $item['add_time'],
                 $item['mark']
@@ -1071,7 +1083,7 @@ HTML;
         ];
         if($postageData['delivery_type'] == 'send'){//送货
             $goodsName = StoreOrderCartInfo::getProductNameList($order['id']);
-            if($order['is_channel']){
+            if($order['is_channel'] == 1){
                 //小程序送货模版消息
                 RoutineTemplate::sendOrderPostage($order);
             }else{//公众号
@@ -1086,7 +1098,7 @@ HTML;
                 WechatTemplateService::sendTemplate($openid,WechatTemplateService::ORDER_DELIVER_SUCCESS,$group,$url);
             }
         }else if($postageData['delivery_type'] == 'express') {//发货
-            if ($order['is_channel']) {
+            if ($order['is_channel'] == 1) {
                 //小程序发货模版消息
                 RoutineTemplate::sendOrderPostage($order,1);
             } else {//公众号
@@ -1123,7 +1135,7 @@ HTML;
             $title = StoreProduct::where('id',$cartInfo['product_id'])->value('store_name');
         }
 
-        if($order['is_channel']){//小程序
+        if($order['is_channel'] == 1){//小程序
             RoutineTemplate::sendOut('OREDER_TAKEVER',$order['uid'],[
                 'keyword1'=>$order['order_id'],
                 'keyword2'=>$title,
@@ -1159,7 +1171,7 @@ HTML;
             $store_name = StoreProduct::where('id',$productId)->value('store_name');
             $title.=$store_name.',';
         }
-        if($order->is_channel){
+        if($order->is_channel == 1){
             RoutineTemplate::sendOut('ORDER_REFUND_FILE',$order->uid,[
                 'keyword1'=>$order->order_id,
                 'keyword2'=>$title,
@@ -1173,7 +1185,7 @@ HTML;
                 'keyword2'=>$order->pay_price,
                 'keyword3'=>date('Y-m-d H:i:s',time()),
                 'remark'=>'给您带来的不便，请谅解！'
-            ]);
+            ],Url::buildUrl('/order/detail/'.$order['order_id'])->suffix('')->domain(true)->build());
         }
     }
 

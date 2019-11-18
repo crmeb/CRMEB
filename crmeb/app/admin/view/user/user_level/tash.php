@@ -53,7 +53,7 @@
                         <img style="cursor: pointer" lay-event='open_image' src="{{d.image}}">
                     </script>
                     <script type="text/html" id="is_show">
-                        <input type='checkbox' name='id' lay-skin='switch' value="{{d.id}}" lay-filter='is_show' lay-text='显示|隐藏'  {{ d.is_show == 1 ? 'checked' : '' }}>
+                        <input type='checkbox' name='id' lay-skin='switch' value="{{d.id}}" lay-filter='is_show' lay-text='开启|关闭'  {{ d.is_show == 1 ? 'checked' : '' }}>
                     </script>
                     <script type="text/html" id="is_must">
                         <input type='checkbox' name='id' lay-skin='switch' value="{{d.id}}" lay-filter='is_must' lay-text='全部完成|达成其一'  {{ d.is_must == 1 ? 'checked' : '' }}>
@@ -84,7 +84,7 @@
             {field: 'level_name', title: '等级名称',},
             {field: 'name', title: '任务名称',},
             {field: 'sort', title: '排序',sort: true,event:'sort',edit:'sort',width:'7%'},
-            {field: 'is_show', title: '是否显示',templet:'#is_show',width:'10%'},
+            {field: 'is_show', title: '是否使用',templet:'#is_show',width:'10%'},
             {field: 'is_must', title: '务必达成',templet:'#is_must',width:'15%'},
             {field: 'illustrate', title: '任务说明'},
             {field: 'right', title: '操作',align:'center',toolbar:'#act',width:'13%'},

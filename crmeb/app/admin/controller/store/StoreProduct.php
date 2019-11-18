@@ -52,7 +52,9 @@ class StoreProduct extends AuthController
         //已经售馨产品
         $outofstock = ProductModel::getModelObject()->where(ProductModel::setData(4))->count();
         //警戒库存
-        $policeforce =ProductModel::getModelObject()->where(ProductModel::setData(5))->count();
+        $store_stock = sysConfig('store_stock');
+        if($store_stock < 0) $store_stock = 2;
+        $policeforce =ProductModel::getModelObject()->where(ProductModel::setData(5))->where('p.stock','<=',$store_stock)->count();
         //回收站
         $recycle =  ProductModel::where('is_del',1)->count();
         if($type == null) $type = 1;

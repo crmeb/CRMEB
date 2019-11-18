@@ -12,7 +12,7 @@
 namespace think\model\relation;
 
 use Closure;
-use think\Container;
+use think\helper\Str;
 use think\Model;
 
 /**
@@ -31,7 +31,7 @@ class HasOneThrough extends HasManyThrough
     public function getRelation(array $subRelation = [], Closure $closure = null)
     {
         if ($closure) {
-            $closure($this);
+            $closure($this->getClosureType($closure));
         }
 
         $this->baseQuery();
@@ -52,9 +52,10 @@ class HasOneThrough extends HasManyThrough
      * @param  string  $relation    当前关联名
      * @param  array   $subRelation 子关联名
      * @param  Closure $closure     闭包
+     * @param  array   $cache       关联缓存
      * @return void
      */
-    public function eagerlyResultSet(array &$resultSet, string $relation, array $subRelation = [], Closure $closure = null): void
+    public function eagerlyResultSet(array &$resultSet, string $relation, array $subRelation = [], Closure $closure = null, array $cache = []): void
     {
         $localKey   = $this->localKey;
         $foreignKey = $this->foreignKey;
@@ -72,10 +73,7 @@ class HasOneThrough extends HasManyThrough
 
             $data = $this->eagerlyWhere([
                 [$this->foreignKey, 'in', $range],
-            ], $foreignKey, $relation, $subRelation, $closure);
-
-            // 关联属性名
-            $attr = Container::parseName($relation);
+            ], $foreignKey, $subRelation, $closure, $cache);
 
             // 关联数据封装
             foreach ($resultSet as $result) {
@@ -89,7 +87,7 @@ class HasOneThrough extends HasManyThrough
                 }
 
                 // 设置关联属性
-                $result->setRelation($attr, $relationModel);
+                $result->setRelation($relation, $relationModel);
             }
         }
     }
@@ -101,9 +99,10 @@ class HasOneThrough extends HasManyThrough
      * @param  string  $relation    当前关联名
      * @param  array   $subRelation 子关联名
      * @param  Closure $closure     闭包
+     * @param  array   $cache       关联缓存
      * @return void
      */
-    public function eagerlyResult(Model $result, string $relation, array $subRelation = [], Closure $closure = null): void
+    public function eagerlyResult(Model $result, string $relation, array $subRelation = [], Closure $closure = null, array $cache = []): void
     {
         $localKey   = $this->localKey;
         $foreignKey = $this->foreignKey;
@@ -112,7 +111,7 @@ class HasOneThrough extends HasManyThrough
 
         $data = $this->eagerlyWhere([
             [$foreignKey, '=', $result->$localKey],
-        ], $foreignKey, $relation, $subRelation, $closure);
+        ], $foreignKey, $subRelation, $closure, $cache);
 
         // 关联模型
         if (!isset($data[$result->$localKey])) {
@@ -123,7 +122,7 @@ class HasOneThrough extends HasManyThrough
             $relationModel->exists(true);
         }
 
-        $result->setRelation(Container::parseName($relation), $relationModel);
+        $result->setRelation($relation, $relationModel);
     }
 
     /**
@@ -131,21 +130,24 @@ class HasOneThrough extends HasManyThrough
      * @access public
      * @param  array   $where       关联预查询条件
      * @param  string  $key         关联键名
-     * @param  string  $relation    关联名
      * @param  array   $subRelation 子关联
      * @param  Closure $closure
+     * @param  array   $cache       关联缓存
      * @return array
      */
-    protected function eagerlyWhere(array $where, string $key, string $relation, array $subRelation = [], Closure $closure = null): array
+    protected function eagerlyWhere(array $where, string $key, array $subRelation = [], Closure $closure = null, array $cache = []): array
     {
         // 预载入关联查询 支持嵌套预载入
         $keys = $this->through->where($where)->column($this->throughPk, $this->foreignKey);
 
         if ($closure) {
-            $closure($this);
+            $closure($this->getClosureType($closure));
         }
 
-        $list = $this->query->where($this->throughKey, 'in', $keys)->select();
+        $list = $this->query
+            ->where($this->throughKey, 'in', $keys)
+            ->cache($cache[0] ?? false, $cache[1] ?? null, $cache[2] ?? null)
+            ->select();
 
         // 组装模型数据
         $data = [];

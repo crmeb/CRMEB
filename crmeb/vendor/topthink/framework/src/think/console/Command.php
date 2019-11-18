@@ -28,7 +28,7 @@ abstract class Command
     private $console;
     private $name;
     private $processTitle;
-    private $aliases                         = [];
+    private $aliases = [];
     private $definition;
     private $help;
     private $description;
@@ -500,4 +500,5 @@ abstract class Command
         $this->output->writeln($content);
         return $content;
     }
+
 }

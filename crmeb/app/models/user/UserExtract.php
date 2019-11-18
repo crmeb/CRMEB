@@ -106,6 +106,7 @@ class UserExtract extends BaseModel
                 try{
                     ChannelService::instance()->send('WITHDRAW', ['id'=>$res1->id]);
                 }catch (\Exception $e){}
+                event('AdminNewPush');
                 //发送模板消息
                 return true;
             }else return self::setErrorInfo('提现失败!');

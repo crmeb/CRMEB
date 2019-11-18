@@ -14,6 +14,11 @@ use think\db\exception\DataNotFoundException;
 use think\db\exception\ModelNotFoundException;
 use think\exception\DbException;
 
+/**
+ * token验证中间件
+ * Class AuthTokenMiddleware
+ * @package app\http\middleware
+ */
 class AuthTokenMiddleware implements MiddlewareInterface
 {
     public function handle(Request $request, \Closure $next, bool $force = true)

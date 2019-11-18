@@ -108,7 +108,7 @@ class SystemUserLevel extends BaseModel
         if(!$leval_id && !$isArray) $leval_id = self::setWhere()->where('grade', self::setWhere()->min('grade'))->order('add_time DESC')->value('id');
         $list = self::setWhere()->field('name,discount,image,icon,explain,id,grade')->order('grade asc')->select();
         $list = count($list) ? $list->toArray() : [];
-        foreach ($list as $item){
+        foreach ($list as &$item){
             if($item['id'] == $leval_id)
                 $grade = $item['grade'];
 

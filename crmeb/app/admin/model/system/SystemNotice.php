@@ -103,7 +103,7 @@ class SystemNotice extends BaseModel
 
     public static function getAdminNoticeTotal($adminId)
     {
-        $list = self::alias('A')->join('__SYSTEM_NOTICE_ADMIN__ B','B.notice_type = A.type')
+        $list = self::alias('A')->join('system_notice_admin B','B.notice_type = A.type')
             ->where('A.status',1)->where('B.is_visit',0)->where('B.is_click',0)->where('B.admin_id',$adminId)
             ->field('count(B.id) total')->group('A.id')->select()->toArray();
         if(!$list) return 0;
@@ -114,7 +114,7 @@ class SystemNotice extends BaseModel
 
     public static function getAdminNotice($adminId)
     {
-        $list = self::alias('A')->join('__SYSTEM_NOTICE_ADMIN__ B','B.notice_type = A.type')
+        $list = self::alias('A')->join('system_notice_admin B','B.notice_type = A.type')
             ->where('A.status',1)->where('B.is_visit',0)->where('B.is_click',0)->where('B.admin_id',$adminId)
             ->field('A.id,A.type,A.title,A.icon,count(B.id) total,A.template,max(B.add_time) as last_time')
             ->group('A.id')->having('total > 0')->select()->toArray();

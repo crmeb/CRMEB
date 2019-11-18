@@ -13,10 +13,10 @@ namespace think\model\relation;
 
 use Closure;
 use think\Collection;
-use think\Container;
 use think\db\BaseQuery as Query;
+use think\db\exception\DbException as Exception;
 use think\db\Raw;
-use think\Exception;
+use think\helper\Str;
 use think\Model;
 use think\model\Pivot;
 use think\model\Relation;
@@ -69,7 +69,7 @@ class BelongsToMany extends Relation
 
         if (false !== strpos($middle, '\\')) {
             $this->pivotName = $middle;
-            $this->middle    = Container::classBaseName($middle);
+            $this->middle    = class_basename($middle);
         } else {
             $this->middle = $middle;
         }
@@ -174,7 +174,7 @@ class BelongsToMany extends Relation
     public function getRelation(array $subRelation = [], Closure $closure = null): Collection
     {
         if ($closure) {
-            $closure($this);
+            $closure($this->getClosureType($closure));
         }
 
         $result = $this->buildQuery()
@@ -263,9 +263,10 @@ class BelongsToMany extends Relation
      * @param  integer $count    个数
      * @param  string  $id       关联表的统计字段
      * @param  string  $joinType JOIN类型
+     * @param  Query   $query    Query对象
      * @return Model
      */
-    public function has(string $operator = '>=', $count = 1, $id = '*', string $joinType = 'INNER')
+    public function has(string $operator = '>=', $count = 1, $id = '*', string $joinType = 'INNER', Query $query = null)
     {
         return $this->parent;
     }
@@ -276,10 +277,11 @@ class BelongsToMany extends Relation
      * @param  mixed  $where 查询条件（数组或者闭包）
      * @param  mixed  $fields 字段
      * @param  string $joinType JOIN类型
+     * @param  Query  $query    Query对象
      * @return Query
      * @throws Exception
      */
-    public function hasWhere($where = [], $fields = null, string $joinType = '')
+    public function hasWhere($where = [], $fields = null, string $joinType = '', Query $query = null)
     {
         throw new Exception('relation not support: hasWhere');
     }
@@ -305,9 +307,10 @@ class BelongsToMany extends Relation
      * @param  string  $relation    当前关联名
      * @param  array   $subRelation 子关联名
      * @param  Closure $closure     闭包
+     * @param  array   $cache       关联缓存
      * @return void
      */
-    public function eagerlyResultSet(array &$resultSet, string $relation, array $subRelation, Closure $closure = null): void
+    public function eagerlyResultSet(array &$resultSet, string $relation, array $subRelation, Closure $closure = null, array $cache = []): void
     {
         $localKey = $this->localKey;
         $pk       = $resultSet[0]->getPk();
@@ -324,10 +327,7 @@ class BelongsToMany extends Relation
             // 查询关联数据
             $data = $this->eagerlyManyToMany([
                 ['pivot.' . $localKey, 'in', $range],
-            ], $relation, $subRelation, $closure);
-
-            // 关联属性名
-            $attr = Container::parseName($relation);
+            ], $subRelation, $closure, $cache);
 
             // 关联数据封装
             foreach ($resultSet as $result) {
@@ -335,7 +335,7 @@ class BelongsToMany extends Relation
                     $data[$result->$pk] = [];
                 }
 
-                $result->setRelation($attr, $this->resultSetBuild($data[$result->$pk], clone $this->parent));
+                $result->setRelation($relation, $this->resultSetBuild($data[$result->$pk], clone $this->parent));
             }
         }
     }
@@ -347,9 +347,10 @@ class BelongsToMany extends Relation
      * @param  string  $relation    当前关联名
      * @param  array   $subRelation 子关联名
      * @param  Closure $closure     闭包
+     * @param  array   $cache       关联缓存
      * @return void
      */
-    public function eagerlyResult(Model $result, string $relation, array $subRelation, Closure $closure = null): void
+    public function eagerlyResult(Model $result, string $relation, array $subRelation, Closure $closure = null, array $cache = []): void
     {
         $pk = $result->getPk();
 
@@ -358,14 +359,14 @@ class BelongsToMany extends Relation
             // 查询管理数据
             $data = $this->eagerlyManyToMany([
                 ['pivot.' . $this->localKey, '=', $pk],
-            ], $relation, $subRelation, $closure);
+            ], $subRelation, $closure, $cache);
 
             // 关联数据封装
             if (!isset($data[$pk])) {
                 $data[$pk] = [];
             }
 
-            $result->setRelation(Container::parseName($relation), $this->resultSetBuild($data[$pk], clone $this->parent));
+            $result->setRelation($relation, $this->resultSetBuild($data[$pk], clone $this->parent));
         }
     }
 
@@ -390,7 +391,7 @@ class BelongsToMany extends Relation
         $pk = $result->$pk;
 
         if ($closure) {
-            $closure($this, $name);
+            $closure($this->getClosureType($closure), $name);
         }
 
         return $this->belongsToManyQuery($this->foreignKey, $this->localKey, [
@@ -410,7 +411,7 @@ class BelongsToMany extends Relation
     public function getRelationCountQuery(Closure $closure = null, string $aggregate = 'count', string $field = '*', string &$name = null): string
     {
         if ($closure) {
-            $closure($this, $name);
+            $closure($this->getClosureType($closure), $name);
         }
 
         return $this->belongsToManyQuery($this->foreignKey, $this->localKey, [
@@ -424,20 +425,21 @@ class BelongsToMany extends Relation
      * 多对多 关联模型预查询
      * @access protected
      * @param  array   $where       关联预查询条件
-     * @param  string  $relation    关联名
      * @param  array   $subRelation 子关联
      * @param  Closure $closure     闭包
+     * @param  array   $cache       关联缓存
      * @return array
      */
-    protected function eagerlyManyToMany(array $where, string $relation, array $subRelation = [], Closure $closure = null): array
+    protected function eagerlyManyToMany(array $where, array $subRelation = [], Closure $closure = null, array $cache = []): array
     {
         if ($closure) {
-            $closure($this);
+            $closure($this->getClosureType($closure));
         }
 
         // 预载入关联查询 支持嵌套预载入
         $list = $this->belongsToManyQuery($this->foreignKey, $this->localKey, $where)
             ->with($subRelation)
+            ->cache($cache[0] ?? false, $cache[1] ?? null, $cache[2] ?? null)
             ->select();
 
         // 组装模型数据

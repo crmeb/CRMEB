@@ -25,13 +25,14 @@ class Collection extends BaseCollection
      * 延迟预载入关联查询
      * @access public
      * @param  array|string $relation 关联
+     * @param  mixed        $cache    关联缓存
      * @return $this
      */
-    public function load($relation)
+    public function load($relation, $cache = false)
     {
         if (!$this->isEmpty()) {
             $item = current($this->items);
-            $item->eagerlyResultSet($this->items, (array) $relation);
+            $item->eagerlyResultSet($this->items, (array) $relation, [], false, $cache);
         }
 
         return $this;

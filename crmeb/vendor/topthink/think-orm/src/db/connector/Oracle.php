@@ -10,12 +10,13 @@
 namespace think\db\connector;
 
 use PDO;
-use think\db\Connection;
+use think\db\BaseQuery;
+use think\db\PDOConnection;
 
 /**
  * Oracle数据库驱动
  */
-class Oracle extends Connection
+class Oracle extends PDOConnection
 {
     /**
      * 解析pdo连接的dsn信息
@@ -58,7 +59,8 @@ class Oracle extends Connection
 
         if ($result) {
             foreach ($result as $key => $val) {
-                $val                       = array_change_key_case($val);
+                $val = array_change_key_case($val);
+
                 $info[$val['column_name']] = [
                     'name'    => $val['column_name'],
                     'type'    => $val['data_type'],
@@ -96,26 +98,16 @@ class Oracle extends Connection
     /**
      * 获取最近插入的ID
      * @access public
-     * @param string $sequence 自增序列名
-     * @return string
+     * @param BaseQuery $query    查询对象
+     * @param string    $sequence 自增序列名
+     * @return mixed
      */
-    public function getLastInsID(string $sequence = null): string
+    public function getLastInsID(BaseQuery $query, string $sequence = null)
     {
         $pdo    = $this->linkID->query("select {$sequence}.currval as id from dual");
         $result = $pdo->fetchColumn();
 
         return $result;
-    }
-
-    /**
-     * SQL性能分析
-     * @access protected
-     * @param string $sql
-     * @return array
-     */
-    protected function getExplain(string $sql): array
-    {
-        return [];
     }
 
     protected function supportSavepoint(): bool

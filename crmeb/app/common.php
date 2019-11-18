@@ -93,9 +93,12 @@ if (!function_exists('make_path')) {
 
     /**
      * 上传路径转化,默认路径
-     * $type 类型
+     * @param $path
+     * @param int $type
+     * @param bool $force
+     * @return string
      */
-    function make_path($path,$type = 2)
+    function make_path($path, int $type = 2, bool $force = false)
     {
         $path =  DS.ltrim(rtrim($path));
         switch ($type){
@@ -114,8 +117,39 @@ if (!function_exists('make_path')) {
                 return trim(str_replace(DS, '/',$path),'.');
             }else return '';
         }catch (\Exception $e){
+            if($force)
+                throw new \Exception($e->getMessage());
             return '无法创建文件夹，请检查您的上传目录权限：' . app()->getRootPath() . 'public' . DS . 'uploads' . DS. 'attach' . DS;
         }
 
+    }
+}
+
+if(!function_exists('sysConfig'))
+{
+    /**
+     * 获取系统单个配置
+     * @param string $name
+     * @return string | null
+     */
+    function sysConfig(string $name)
+    {
+        if(empty($name))
+            return null;
+
+        return app('sysConfig')->get($name);
+    }
+}
+
+if(!function_exists('sysData'))
+{
+    /**
+     * 获取系统单个配置
+     * @param string $name
+     * @return string
+     */
+    function sysData($name)
+    {
+        return app('sysGroupData')->getData($name);
     }
 }

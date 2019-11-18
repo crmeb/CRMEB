@@ -27,7 +27,7 @@ class ProductRepositories
         $res1 = StoreOrder::gainUserIntegral($order);
         $res2 = User::backOrderBrokerage($order);
         StoreOrder::orderTakeAfter($order);
-        $giveCouponMinPrice = SystemConfigService::get('store_give_con_min_price');
+        $giveCouponMinPrice = sysConfig('store_give_con_min_price');
         if($order['total_price'] >= $giveCouponMinPrice) WechatUser::userTakeOrderGiveCoupon($uid);
         if(!($res1 && $res2)) exception('收货失败!');
     }

@@ -16,12 +16,5 @@
         "psr-4": {
             "think\\view\\driver\\": "src"
         }
-    },
-    "extra": {
-        "think": {
-            "config": {
-                "template": "src/config/template.php"
-            }        
-        }
-    }    
+    }  
 }

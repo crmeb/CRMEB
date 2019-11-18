@@ -59,8 +59,8 @@ class StoreSeckillController
                 }
             }
         }
-        $data['lovely'] = SystemConfigService::get('seckill_header_banner');
-        if(strstr($data['lovely'],'http') === false && strlen(trim($data['lovely']))) $data['lovely'] = SystemConfigService::get('site_url').$data['lovely'];
+        $data['lovely'] = sysConfig('seckill_header_banner');
+        if(strstr($data['lovely'],'http') === false && strlen(trim($data['lovely']))) $data['lovely'] = sysConfig('site_url').$data['lovely'];
         $data['lovely'] = str_replace('\\','/',$data['lovely']);
         $data['seckillTime'] = $seckillTime;
         $data['seckillTimeIndex'] = $seckillTimeIndex;
@@ -83,7 +83,7 @@ class StoreSeckillController
             ['limit',0],
         ],$request, true);
         if(!$time) return app('json')->fail('参数错误');
-        $timeInfo = GroupDataService::getDataNumber($time);
+        $timeInfo = GroupDataService::getDataNumber((int)$time);
         $activityEndHour = bcadd((int)$timeInfo['time'],(int)$timeInfo['continued'],0);
         $startTime = bcadd(strtotime(date('Y-m-d')),bcmul($timeInfo['time'],3600,0));
         $stopTime = bcadd(strtotime(date('Y-m-d')),bcmul($activityEndHour,3600,0));
@@ -110,15 +110,17 @@ class StoreSeckillController
         //公众号
         $name = $id.'_seckill_detail_wap.jpg';
         $imageInfo = SystemAttachment::getInfo($name,'name');
-        $siteUrl = SystemConfigService::get('site_url');
+        $siteUrl = sysConfig('site_url');
         if(!$imageInfo){
             $codeUrl = UtilService::setHttpType($siteUrl.'/activity/seckill_detail/'.$id.'/'.$time, 1);//二维码链接
             $imageInfo = UtilService::getQRCodePath($codeUrl, $name);
             if(is_array($imageInfo)){
                 SystemAttachment::attachmentAdd($imageInfo['name'],$imageInfo['size'],$imageInfo['type'],$imageInfo['dir'],$imageInfo['thumb_path'],1,$imageInfo['image_type'],$imageInfo['time'],2);
                 $url = $imageInfo['dir'];
-            }else
+            }else {
                 $url = '';
+                $imageInfo = ['image_type'=>0];
+            }
         }else $url = $imageInfo['att_dir'];
         if($imageInfo['image_type'] == 1) $url = $siteUrl.$url;
         $storeInfo['image'] = UtilService::setSiteUrl($storeInfo['image'], $siteUrl);

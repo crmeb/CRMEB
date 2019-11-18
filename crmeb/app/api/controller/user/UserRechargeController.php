@@ -24,7 +24,7 @@ class UserRechargeController
     {
         list($price,$type) = UtilService::postMore([['price',0],['type',0]], $request, true);
         if(!$price || $price <=0) return app('json')->fail('参数错误');
-        $storeMinRecharge = SystemConfigService::get('store_user_min_recharge');
+        $storeMinRecharge = sysConfig('store_user_min_recharge');
         if($price < $storeMinRecharge) return app('json')->fail('充值金额不能低于'.$storeMinRecharge);
         switch ((int)$type){
             case 0: //支付充值余额
@@ -58,7 +58,7 @@ class UserRechargeController
     {
         list($price, $from,$type) = UtilService::postMore([['price',0], ['from','weixin'],['type',0]], $request, true);
         if(!$price || $price <=0) return app('json')->fail('参数错误');
-        $storeMinRecharge = SystemConfigService::get('store_user_min_recharge');
+        $storeMinRecharge = sysConfig('store_user_min_recharge');
         if($price < $storeMinRecharge) return app('json')->fail('充值金额不能低于'.$storeMinRecharge);
         switch ((int)$type){
             case 0: //支付充值余额

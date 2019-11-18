@@ -54,7 +54,7 @@ class WechatNews extends AuthController
         $news['url'] = '';
         $news['cid'] = array();
         if($id){
-            $news = \app\admin\model\wechat\WechatNews::where('n.id',$id)->alias('n')->field('n.*,c.content')->join('__WECHAT_NEWS_CONTENT__ c','c.nid=n.id')->find();
+            $news = \app\admin\model\wechat\WechatNews::where('n.id',$id)->alias('n')->field('n.*,c.content')->join('wechat_news_content c','c.nid=n.id')->find();
             if(!$news) return $this->failedNotice('数据不存在!');
             $news['cid'] = explode(',',$news['cid']);
 //            dump($news);

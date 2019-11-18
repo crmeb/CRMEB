@@ -55,7 +55,7 @@ class StoreProductAttrValue extends BaseModel
             ->dec('stock',$num)->inc('sales',$num)->update();
         if($res){
             $stock = self::where('product_id',$productId)->where('unique',$unique)->value('stock');
-            $replenishment_num = SystemConfigService::get('store_stock') ?? 0;//库存预警界限
+            $replenishment_num = sysConfig('store_stock') ?? 0;//库存预警界限
             if($replenishment_num >= $stock){
                 try{
                     ChannelService::instance()->send('STORE_STOCK', ['id'=>$productId]);
@@ -100,7 +100,7 @@ class StoreProductAttrValue extends BaseModel
                 $valueNew[$count]['price'] = $sukValue[$suk]['price'];
                 $valueNew[$count]['sales'] = $sukValue[$suk]['sales'];
                 $valueNew[$count]['pic'] = $sukValue[$suk]['pic'];
-                $valueNew[$count]['bar_code'] = $sukValue[$suk]['bar_code'];
+                $valueNew[$count]['bar_code'] = $sukValue[$suk]['bar_code'] ?? '';
                 $valueNew[$count]['check'] = false;
                 $count++;
             }

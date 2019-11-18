@@ -50,7 +50,7 @@ trait ModelTrait
         if(!$field) $field = $model->getPk();
 //        return false !== $model->update($data,[$field=>$id]);
 //        return 0 < $model->update($data,[$field=>$id])->result;
-        $res=$model->update($data,[$field=>$id]);
+        $res = $model->update($data,[$field=>$id]);
         if(isset($res->result))
             return 0 < $res->result;
         else if(isset($res['data']['result']))
@@ -257,8 +257,8 @@ trait ModelTrait
      * @return string
      */
     public static function getSubstrUTf8($str,$utf8len=100,$chaet='UTF-8',$file='....'){
-        if(mb_strlen($str,$chaet)>$utf8len){
-            $str=mb_substr($str,0,$utf8len,$chaet).$file;
+        if(mb_strlen($str,$chaet) > $utf8len){
+            $str = mb_substr($str,0,$utf8len,$chaet).$file;
         }
         return $str;
     }
@@ -273,8 +273,8 @@ trait ModelTrait
             $season = ceil(date('n') /3)-$ceil;
         else
             $season = ceil(date('n') /3);
-        $firstday=date('Y-m-01',mktime(0,0,0,($season - 1) *3 +1,1,date('Y')));
-        $lastday=date('Y-m-t',mktime(0,0,0,$season * 3,1,date('Y')));
+        $firstday = date('Y-m-01',mktime(0,0,0,($season - 1) *3 +1,1,date('Y')));
+        $lastday = date('Y-m-t',mktime(0,0,0,$season * 3,1,date('Y')));
         return array($firstday,$lastday);
     }
     /**
@@ -294,7 +294,9 @@ trait ModelTrait
         $result = self::where($keyField,$key)->find();
         if(!$result) return false;
         $new = bcadd($result[$incField],$inc,$acc);
-        return false !== $model->where($keyField,$key)->update([$incField=>$new]);
+        $result->$incField = $new;
+        return false !== $result->save();
+//        return false !== $model->where($keyField,$key)->update([$incField=>$new]);
     }
 
 
@@ -317,7 +319,9 @@ trait ModelTrait
         if(!$result) return false;
         if(!$minus && $result[$decField] < $dec) return false;
         $new = bcsub($result[$decField],$dec,$acc);
-        return false !== $model->where($keyField,$key)->update([$decField=>$new]);
+        $result->$decField = $new;
+        return false !== $result->save();
+//        return false !== $model->where($keyField,$key)->update([$decField=>$new]);
     }
 
     /**

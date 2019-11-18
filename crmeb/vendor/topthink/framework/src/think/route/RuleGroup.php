@@ -59,12 +59,6 @@ class RuleGroup extends Rule
     protected $fullName;
 
     /**
-     * 所在域名
-     * @var string
-     */
-    protected $domain;
-
-    /**
      * 分组别名
      * @var string
      */
@@ -195,7 +189,7 @@ class RuleGroup extends Rule
                 return $result;
             }
         }
-
+        
         if ($this->miss && in_array($this->miss->getMethod(), ['*', $method])) {
             // 未匹配所有路由的路由规则处理
             $result = $this->parseRule($request, '', $this->miss->getRoute(), $url, $this->miss->mergeGroupOptions());
@@ -457,7 +451,7 @@ class RuleGroup extends Rule
      * @access public
      * @param  Rule   $rule   路由规则
      * @param  string $method 请求类型
-     * @return RuleItem
+     * @return $this
      */
     public function addRuleItem(Rule $rule, string $method = '*')
     {

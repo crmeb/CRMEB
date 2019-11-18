@@ -75,7 +75,7 @@ class UserExtract extends BaseModel
         if($where['nireid'] != '') $model = $model->where('a.real_name|a.id|b.nickname|a.bank_code|a.alipay_code','like',"%$where[nireid]%");
         $model = $model->alias('a');
         $model = $model->field('a.*,b.nickname');
-        $model = $model->join('__user__ b','b.uid=a.uid','LEFT');
+        $model = $model->join('user b','b.uid=a.uid','LEFT');
         $model = $model->order('a.id desc');
         return self::page($model, $where);
     }
@@ -325,7 +325,7 @@ class UserExtract extends BaseModel
      */
     public static function getUserCountPrice($uid = 0){
         if(!$uid) return 0;
-        $price = self::where('uid',$uid)->where('status',1)->field('sum(extract_price) as price')->find()['price'];
+        $price = self::where('uid',$uid)->where('status',1)->sum('extract_price');
         return $price ? $price : 0;
     }
 

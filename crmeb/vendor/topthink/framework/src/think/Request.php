@@ -148,12 +148,6 @@ class Request
     protected $realIP;
 
     /**
-     * 当前应用名
-     * @var string
-     */
-    protected $app;
-
-    /**
      * 当前控制器名
      * @var string
      */
@@ -286,18 +280,6 @@ class Request
      */
     // php://input
     protected $input;
-
-    /**
-     * 请求缓存
-     * @var array
-     */
-    protected $cache;
-
-    /**
-     * 缓存是否检查
-     * @var bool
-     */
-    protected $isCheckCache;
 
     /**
      * 请求安全Key
@@ -624,7 +606,7 @@ class Request
                 unset($this->get[$this->varPathinfo]);
             } elseif ($this->server('PATH_INFO')) {
                 $pathinfo = $this->server('PATH_INFO');
-            } elseif ('cli-server' == PHP_SAPI) {
+            } elseif (false !== strpos(PHP_SAPI, 'cli')) {
                 $pathinfo = strpos($this->server('REQUEST_URI'), '?') ? strstr($this->server('REQUEST_URI'), '?', true) : $this->server('REQUEST_URI');
             }
 
@@ -921,7 +903,7 @@ class Request
     /**
      * 获取路由参数
      * @access public
-     * @param  mixed        $name 变量名
+     * @param  string|array $name 变量名
      * @param  mixed        $default 默认值
      * @param  string|array $filter 过滤方法
      * @return mixed
@@ -938,7 +920,7 @@ class Request
     /**
      * 获取GET参数
      * @access public
-     * @param  mixed        $name 变量名
+     * @param  string|array $name 变量名
      * @param  mixed        $default 默认值
      * @param  string|array $filter 过滤方法
      * @return mixed
@@ -967,7 +949,7 @@ class Request
     /**
      * 获取POST参数
      * @access public
-     * @param  mixed        $name 变量名
+     * @param  string|array $name 变量名
      * @param  mixed        $default 默认值
      * @param  string|array $filter 过滤方法
      * @return mixed
@@ -984,7 +966,7 @@ class Request
     /**
      * 获取PUT参数
      * @access public
-     * @param  mixed        $name 变量名
+     * @param  string|array $name 变量名
      * @param  mixed        $default 默认值
      * @param  string|array $filter 过滤方法
      * @return mixed
@@ -1000,7 +982,7 @@ class Request
 
     protected function getInputData($content): array
     {
-        if ($this->isJson()) {
+        if (false !== strpos($this->contentType(), 'json')) {
             return (array) json_decode($content, true);
         } elseif (strpos($content, '=')) {
             parse_str($content, $data);
@@ -1039,7 +1021,7 @@ class Request
     /**
      * 获取request变量
      * @access public
-     * @param  mixed        $name 数据名称
+     * @param  string|array $name 数据名称
      * @param  mixed        $default 默认值
      * @param  string|array $filter 过滤方法
      * @return mixed
@@ -1081,10 +1063,9 @@ class Request
     public function session(string $name = '', $default = null)
     {
         if ('' === $name) {
-            return $this->session->get();
+            return $this->session->all();
         }
-
-        return $this->getData($this->session->get(), $name, $default);
+        return $this->session->get($name, $default);
     }
 
     /**
@@ -1108,7 +1089,6 @@ class Request
 
         if (is_array($data)) {
             array_walk_recursive($data, [$this, 'filterValue'], $filter);
-            reset($data);
         } else {
             $this->filterValue($data, $name, $filter);
         }
@@ -1138,7 +1118,7 @@ class Request
      * 获取上传的文件信息
      * @access public
      * @param  string $name 名称
-     * @return null|array|\think\file\UploadedFile
+     * @return null|array|UploadedFile
      */
     public function file(string $name = '')
     {
@@ -1295,7 +1275,6 @@ class Request
 
         if (is_array($data)) {
             array_walk_recursive($data, [$this, 'filterValue'], $filter);
-            reset($data);
         } else {
             $this->filterValue($data, $name, $filter);
         }
@@ -1404,7 +1383,7 @@ class Request
      * @param  array $filters 过滤方法+默认值
      * @return mixed
      */
-    private function filterValue(&$value, $key, $filters)
+    public function filterValue(&$value, $key, $filters)
     {
         $default = array_pop($filters);
 
@@ -1547,10 +1526,9 @@ class Request
      */
     public function isJson(): bool
     {
-        $contentType = $this->contentType();
-        $acceptType  = $this->type();
+        $acceptType = $this->type();
 
-        return false !== strpos($contentType, 'json') || false !== strpos($acceptType, 'json');
+        return false !== strpos($acceptType, 'json');
     }
 
     /**
@@ -1579,7 +1557,7 @@ class Request
      */
     public function isPjax(bool $pjax = false): bool
     {
-        $result = !is_null($this->server('HTTP_X_PJAX')) ? true : false;
+        $result = !empty($this->server('HTTP_X_PJAX')) ? true : false;
 
         if (true === $pjax) {
             return $result;
@@ -1629,7 +1607,7 @@ class Request
             // 这时我们检查 REMOTE_ADDR 是不是指定的前端代理服务器之一
             // 如果是的话说明该 IP头 是由前端代理服务器设置的
             // 否则则是伪装的
-            if ($tempIP) {
+            if (!empty($tempIP)) {
                 $realIPBin = $this->ip2bin($this->realIP);
 
                 foreach ($proxyIp as $ip) {
@@ -1782,11 +1760,11 @@ class Request
     /**
      * 当前请求URL地址中的port参数
      * @access public
-     * @return string
+     * @return int
      */
-    public function port(): string
+    public function port(): int
     {
-        return $this->server('SERVER_PORT', '');
+        return (int) $this->server('SERVER_PORT', '');
     }
 
     /**
@@ -1802,11 +1780,11 @@ class Request
     /**
      * 当前请求 REMOTE_PORT
      * @access public
-     * @return string
+     * @return int
      */
-    public function remotePort(): string
+    public function remotePort(): int
     {
-        return $this->server('REMOTE_PORT', '');
+        return (int) $this->server('REMOTE_PORT', '');
     }
 
     /**
@@ -1845,18 +1823,6 @@ class Request
     }
 
     /**
-     * 设置当前的应用名
-     * @access public
-     * @param  string $app 应用名
-     * @return $this
-     */
-    public function setApp(string $app)
-    {
-        $this->app = $app;
-        return $this;
-    }
-
-    /**
      * 设置当前的控制器名
      * @access public
      * @param  string $controller 控制器名
@@ -1878,16 +1844,6 @@ class Request
     {
         $this->action = $action;
         return $this;
-    }
-
-    /**
-     * 获取当前的应用名
-     * @access public
-     * @return string
-     */
-    public function app(): string
-    {
-        return $this->app ?: '';
     }
 
     /**
@@ -1958,8 +1914,8 @@ class Request
     /**
      * 检查请求令牌
      * @access public
-     * @param  string $name 令牌名称
-     * @param  array  $data 表单数据
+     * @param  string $token 令牌名称
+     * @param  array  $data  表单数据
      * @return bool
      */
     public function checkToken(string $token = '__token__', array $data = []): bool
@@ -2151,13 +2107,13 @@ class Request
     }
 
     /**
-     * 检测请求数据的值
+     * 检测中间传递数据的值
      * @access public
      * @param  string $name 名称
      * @return boolean
      */
     public function __isset(string $name): bool
     {
-        return isset($this->param[$name]);
+        return isset($this->middleware[$name]);
     }
 }

@@ -1,4 +1,4 @@
-# think-template
+# ThinkTemplate
 
 基于XML和标签库的编译型模板引擎
 
@@ -27,7 +27,7 @@ composer require topthink/think-template
 
 ## 用法示例
 
-在根目录下创建index.php入口文件测试：
+
 ~~~php
 <?php
 namespace think;
@@ -43,7 +43,7 @@ $config = [
 
 $template = new Template($config);
 // 模板变量赋值
-$template->assign('name','think');
+$template->assign(['name' => 'think']);
 // 读取模板文件渲染输出
 $template->fetch('index');
 // 完整模板文件渲染
@@ -52,4 +52,19 @@ $template->fetch('./template/test.php');
 $template->display($content);
 ~~~
 
-详细用法参考[这里](https://www.kancloud.cn/manual/thinkphp5_1/354069)
+支持静态调用
+
+~~~
+use think\facade\Template;
+
+Template::config([
+	'view_path'	=>	'./template/',
+	'cache_path'	=>	'./runtime/',
+	'view_suffix'   =>	'html',
+]);
+Template::assign(['name' => 'think']);
+Template::fetch('index',['name' => 'think']);
+Template::display($content,['name' => 'think']);
+~~~
+
+详细用法参考[开发手册](https://www.kancloud.cn/manual/think-template/content)

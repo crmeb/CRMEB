@@ -26,14 +26,14 @@ class SmsAdmin extends AuthController
 
     public function captcha()
     {
-        if (!request()->isPost()) return JsonService::fail('发生失败');
+        if (!request()->isPost()) return JsonService::fail('发送失败');
         $phone = request()->param('phone');
         if (!trim($phone)) return JsonService::fail('请填写手机号');
 
         $res = json_decode(HttpService::getRequest(SMSService::code(), compact('phone')), true);
         if (!isset($res['status']) && $res['status'] !== 200)
             return JsonService::fail(isset($res['data']['message']) ? $res['data']['message'] : $res['msg']);
-        return JsonService::success(isset($res['data']['message']) ? $res['data']['message'] : $res['msg']);
+        return JsonService::success(isset($res['data']['message']) ? $res['data']['message'] : '发送成功');
     }
 
     /**

@@ -253,16 +253,15 @@
                 $eb.$swal('delete',function(){
                     $eb.axios.get(url).then(function(res){
                         if(res.status == 200 && res.data.code == 200) {
-                            $eb.$swal('success',res.data.msg);
-                            obj.del();
+                            $eb.$swal('success',res.data.msg)
                         }else
                             return Promise.reject(res.data.msg || '清除失败')
                     }).catch(function(err){
                         $eb.$swal('error',err);
                     });
                 },{
-                    title:'您将解除【'+data.nickname+'】的推广权限，请谨慎操作！',
-                    text:'解除后可在会员管理里面开启',
+                    title:'您将解除【'+data.nickname+'】的上级推广人，请谨慎操作！',
+                    text:'解除后无法恢复',
                     confirm:'是的我要解除'
                 })
                 break;

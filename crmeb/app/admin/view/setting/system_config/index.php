@@ -4,9 +4,9 @@
     <meta charset="UTF-8">
     <title><?=$form->getTitle()?></title>
 
-    <link href="/system/frame/css/bootstrap.min.css?v=3.4.0" rel="stylesheet">
-    <link href="/system/css/layui-admin.css" rel="stylesheet">
-    <link href="/system/frame/css/style.min.css?v=3.0.0" rel="stylesheet">
+    <link href="{__FRAME_PATH}/css/bootstrap.min.css?v=3.4.0" rel="stylesheet">
+    <link href="{__ADMIN_PATH}/css/layui-admin.css" rel="stylesheet">
+    <link href="{__FRAME_PATH}/css/style.min.css?v=3.0.0" rel="stylesheet">
     <link href="{__FRAME_PATH}css/font-awesome.min.css?v=4.3.0" rel="stylesheet">
     <script src="{__PLUG_PATH}vue/dist/vue.min.js"></script>
     <link href="{__PLUG_PATH}iview/dist/styles/iview.css" rel="stylesheet">
@@ -65,7 +65,7 @@
 <script>
     formCreate.formSuccess = function(form,$r){
         <?=$form->getSuccessScript()?>
-        $f.btn.loading(false)();
+        $r.btn.loading(false);
     };
 
     (function () {

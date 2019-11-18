@@ -39,7 +39,7 @@ class StoreCouponIssue extends BaseModel
 
     public static function getIssueCouponList($uid, $limit, $page = 0)
     {
-        $model = self::validWhere('A')->alias('A')->join('__store_coupon__ B', 'A.cid = B.id')
+        $model = self::validWhere('A')->alias('A')->join('store_coupon B', 'A.cid = B.id')
             ->field('A.*,B.coupon_price,B.use_min_price')->order('B.sort DESC,A.id DESC');
         if ($page) $list = $model->page((int)$page, (int)$limit);
         else $list = $model->limit($limit);
@@ -49,24 +49,24 @@ class StoreCouponIssue extends BaseModel
                 $query->where('uid', $uid);
             }]);
 
-        $list = $list->select();
+        $list = $list->select()->hidden(['is_del', 'status', 'used']);
         foreach ($list as $k=>$v) {
             $v['is_use'] = $uid ? isset($v->used) : false;
-//            if(!$v['is_use']){
-//                $v['is_use']=$v['remain_count'] <= 0 && !$v['is_permanent'] ? 2 : $v['is_use'];
-//            }
             if(!$v['end_time']){
-                $v['add_time']= '';
+                $v['start_time']= '';
                 $v['end_time'] = '不限时';
             }else{
-                $v['add_time']=date('Y/m/d',$v['add_time']);
+                $v['start_time']=date('Y/m/d',$v['start_time']);
                 $v['end_time']=$v['end_time'] ? date('Y/m/d',$v['end_time']) : date('Y/m/d',time()+86400);
             }
             $v['coupon_price']=(int)$v['coupon_price'];
             $list[$k] = $v;
         }
 
-        return $list->hidden(['is_del', 'status', 'used', 'add_time'])->toArray();
+        if($list)
+            return $list->toArray();
+        else
+            return [];
     }
 
     /**

@@ -13,7 +13,7 @@ declare (strict_types = 1);
 namespace think\db\concern;
 
 use Closure;
-use think\Container;
+use think\helper\Str;
 use think\Model;
 use think\model\Collection as ModelCollection;
 
@@ -44,12 +44,11 @@ trait ModelRelationQuery
     /**
      * 获取当前的模型对象
      * @access public
-     * @param bool $clear 是否需要清空查询条件
      * @return Model|null
      */
-    public function getModel(bool $clear = true)
+    public function getModel()
     {
-        return $this->model ? $this->model->setQuery($this, $clear) : null;
+        return $this->model;
     }
 
     /**
@@ -154,7 +153,7 @@ trait ModelRelationQuery
             } elseif ($this->model) {
                 // 检测搜索器
                 $fieldName = is_numeric($key) ? $field : $key;
-                $method    = 'search' . Container::parseName($fieldName, 1) . 'Attr';
+                $method    = 'search' . Str::studly($fieldName) . 'Attr';
 
                 if (method_exists($this->model, $method)) {
                     $this->model->$method($this, $data[$field] ?? null, $data, $prefix);
@@ -184,7 +183,7 @@ trait ModelRelationQuery
     }
 
     /**
-     * 设置关联查询JOIN预查询
+     * 关联预载入 In方式
      * @access public
      * @param array|string $with 关联方法名称
      * @return $this
@@ -194,6 +193,53 @@ trait ModelRelationQuery
         if (!empty($with)) {
             $this->options['with'] = (array) $with;
         }
+
+        return $this;
+    }
+
+    /**
+     * 关联预载入 JOIN方式
+     * @access protected
+     * @param array|string $with     关联方法名
+     * @param string       $joinType JOIN方式
+     * @return $this
+     */
+    public function withJoin($with, string $joinType = '')
+    {
+        if (empty($with)) {
+            return $this;
+        }
+
+        $with  = (array) $with;
+        $first = true;
+
+        foreach ($with as $key => $relation) {
+            $closure = null;
+            $field   = true;
+
+            if ($relation instanceof Closure) {
+                // 支持闭包查询过滤关联条件
+                $closure  = $relation;
+                $relation = $key;
+            } elseif (is_array($relation)) {
+                $field    = $relation;
+                $relation = $key;
+            } elseif (is_string($relation) && strpos($relation, '.')) {
+                $relation = strstr($relation, '.', true);
+            }
+
+            $result = $this->model->eagerly($this, $relation, $field, $joinType, $closure, $first);
+
+            if (!$result) {
+                unset($with[$key]);
+            } else {
+                $first = false;
+            }
+        }
+
+        $this->via();
+
+        $this->options['with_join'] = $with;
 
         return $this;
     }
@@ -216,28 +262,43 @@ trait ModelRelationQuery
                 $this->field('*');
             }
 
-            foreach ((array) $relations as $key => $relation) {
-                $closure = $aggregateField = null;
+            $this->model->relationCount($this, (array) $relations, $aggregate, $field, true);
+        }
 
-                if ($relation instanceof Closure) {
-                    $closure  = $relation;
-                    $relation = $key;
-                } elseif (!is_int($key)) {
-                    $aggregateField = $relation;
-                    $relation       = $key;
-                }
+        return $this;
+    }
 
-                $relation = Container::parseName($relation, 1, false);
+    /**
+     * 关联缓存
+     * @access public
+     * @param string|array|bool $relation 关联方法名
+     * @param mixed             $key    缓存key
+     * @param integer|\DateTime $expire 缓存有效期
+     * @param string            $tag    缓存标签
+     * @return $this
+     */
+    public function withCache($relation = true, $key = true, $expire = null, string $tag = null)
+    {
+        if (false === $relation || false === $key || !$this->getConnection()->getCache()) {
+            return $this;
+        }
 
-                $count = $this->model
-                    ->$relation()
-                    ->getRelationCountQuery($closure, $aggregate, $field, $aggregateField);
+        if ($key instanceof \DateTimeInterface || $key instanceof \DateInterval || (is_int($key) && is_null($expire))) {
+            $expire = $key;
+            $key    = true;
+        }
 
-                if (empty($aggregateField)) {
-                    $aggregateField = Container::parseName($relation) . '_' . $aggregate;
-                }
+        if (true === $relation || is_numeric($relation)) {
+            $this->options['with_cache'] = $relation;
+            return $this;
+        }
 
-                $this->field(['(' . $count . ')' => $aggregateField]);
+        $relations = (array) $relation;
+        foreach ($relations as $name => $relation) {
+            if (!is_numeric($name)) {
+                $this->options['with_cache'][$name] = is_array($relation) ? $relation : [$key, $relation, $tag];
+            } else {
+                $this->options['with_cache'][$relation] = [$key, $expire, $tag];
             }
         }
 
@@ -309,6 +370,35 @@ trait ModelRelationQuery
     }
 
     /**
+     * 根据关联条件查询当前模型
+     * @access public
+     * @param  string  $relation 关联方法名
+     * @param  mixed   $operator 比较操作符
+     * @param  integer $count    个数
+     * @param  string  $id       关联表的统计字段
+     * @param  string  $joinType JOIN类型
+     * @return $this
+     */
+    public function has(string $relation, string $operator = '>=', int $count = 1, string $id = '*', string $joinType = '')
+    {
+        return $this->model->has($relation, $operator, $count, $id, $joinType, $this);
+    }
+
+    /**
+     * 根据关联条件查询当前模型
+     * @access public
+     * @param  string $relation 关联方法名
+     * @param  mixed  $where    查询条件（数组或者闭包）
+     * @param  mixed  $fields   字段
+     * @param  string $joinType JOIN类型
+     * @return $this
+     */
+    public function hasWhere(string $relation, $where = [], string $fields = '*', string $joinType = '')
+    {
+        return $this->model->hasWhere($relation, $where, $fields, $joinType, $this);
+    }
+
+    /**
      * 查询数据转换为模型数据集对象
      * @access protected
      * @param array $resultSet 数据集
@@ -341,12 +431,12 @@ trait ModelRelationQuery
 
         if (!empty($this->options['with'])) {
             // 预载入
-            $result->eagerlyResultSet($resultSet, $this->options['with'], $withRelationAttr);
+            $result->eagerlyResultSet($resultSet, $this->options['with'], $withRelationAttr, false, $this->options['with_cache'] ?? false);
         }
 
         if (!empty($this->options['with_join'])) {
             // 预载入
-            $result->eagerlyResultSet($resultSet, $this->options['with_join'], $withRelationAttr, true);
+            $result->eagerlyResultSet($resultSet, $this->options['with_join'], $withRelationAttr, true, $this->options['with_cache'] ?? false);
         }
 
         // 模型数据集转换
@@ -382,8 +472,7 @@ trait ModelRelationQuery
         }
 
         $result = $this->model
-            ->newInstance($result, $resultSet ? null : $this->getModelUpdateCondition($options))
-            ->setQuery($this);
+            ->newInstance($result, $resultSet ? null : $this->getModelUpdateCondition($options));
 
         // 动态获取器
         if (!empty($options['with_attr'])) {
@@ -408,18 +497,18 @@ trait ModelRelationQuery
 
         // 预载入查询
         if (!$resultSet && !empty($options['with'])) {
-            $result->eagerlyResult($result, $options['with'], $withRelationAttr);
+            $result->eagerlyResult($result, $options['with'], $withRelationAttr, false, $options['with_cache'] ?? false);
         }
 
         // JOIN预载入查询
         if (!$resultSet && !empty($options['with_join'])) {
-            $result->eagerlyResult($result, $options['with_join'], $withRelationAttr, true);
+            $result->eagerlyResult($result, $options['with_join'], $withRelationAttr, true, $options['with_cache'] ?? false);
         }
 
         // 关联统计
         if (!empty($options['with_count'])) {
             foreach ($options['with_count'] as $val) {
-                $result->relationCount($result, (array) $val[0], $val[1], $val[2]);
+                $result->relationCount($this, (array) $val[0], $val[1], $val[2], false);
             }
         }
     }

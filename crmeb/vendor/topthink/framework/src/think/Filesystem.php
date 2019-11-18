@@ -12,8 +12,10 @@ declare (strict_types = 1);
 
 namespace think;
 
+use InvalidArgumentException;
 use think\filesystem\Driver;
 use think\filesystem\driver\Local;
+use think\helper\Arr;
 
 /**
  * Class Filesystem
@@ -21,17 +23,9 @@ use think\filesystem\driver\Local;
  * @mixin Driver
  * @mixin Local
  */
-class Filesystem
+class Filesystem extends Manager
 {
-    protected $disks;
-
-    /** @var App */
-    protected $app;
-
-    public function __construct(App $app)
-    {
-        $this->app = $app;
-    }
+    protected $namespace = '\\think\\filesystem\\driver\\';
 
     /**
      * @param null|string $name
@@ -39,19 +33,57 @@ class Filesystem
      */
     public function disk(string $name = null): Driver
     {
-        $name = $name ?: $this->app->config->get('filesystem.default');
-
-        if (!isset($this->disks[$name])) {
-            $config = $this->app->config->get("filesystem.disks.{$name}");
-
-            $this->disks[$name] = App::factory($config['type'], '\\think\\filesystem\\driver\\', $config);
-        }
-
-        return $this->disks[$name];
+        return $this->driver($name);
     }
 
-    public function __call($method, $parameters)
+    protected function resolveType(string $name)
     {
-        return $this->disk()->$method(...$parameters);
+        return $this->getDiskConfig($name, 'type', 'local');
+    }
+
+    protected function resolveConfig(string $name)
+    {
+        return $this->getDiskConfig($name);
+    }
+
+    /**
+     * 获取缓存配置
+     * @access public
+     * @param null|string $name    名称
+     * @param mixed       $default 默认值
+     * @return mixed
+     */
+    public function getConfig(string $name = null, $default = null)
+    {
+        if (!is_null($name)) {
+            return $this->app->config->get('filesystem.' . $name, $default);
+        }
+
+        return $this->app->config->get('filesystem');
+    }
+
+    /**
+     * 获取磁盘配置
+     * @param string $disk
+     * @param null   $name
+     * @param null   $default
+     * @return array
+     */
+    public function getDiskConfig($disk, $name = null, $default = null)
+    {
+        if ($config = $this->getConfig("disks.{$disk}")) {
+            return Arr::get($config, $name, $default);
+        }
+
+        throw new InvalidArgumentException("Disk [$disk] not found.");
+    }
+
+    /**
+     * 默认驱动
+     * @return string|null
+     */
+    public function getDefaultDriver()
+    {
+        return $this->getConfig('default');
     }
 }

@@ -12,6 +12,11 @@ declare (strict_types = 1);
 
 namespace think\session\driver;
 
+use Closure;
+use Exception;
+use FilesystemIterator;
+use Generator;
+use SplFileInfo;
 use think\App;
 use think\contract\SessionHandlerInterface;
 
@@ -22,11 +27,11 @@ class File implements SessionHandlerInterface
 {
     protected $config = [
         'path'           => '',
-        'expire'         => 0,
+        'expire'         => 1440,
         'prefix'         => '',
         'data_compress'  => false,
-        'gc_divisor'     => 1000,
-        'gc_maxlifetime' => 1440,
+        'gc_probability' => 1,
+        'gc_divisor'     => 100,
     ];
 
     public function __construct(App $app, array $config = [])
@@ -45,45 +50,59 @@ class File implements SessionHandlerInterface
     /**
      * 打开Session
      * @access protected
-     * @return bool
      * @throws Exception
      */
-    protected function init(): bool
+    protected function init(): void
     {
         try {
             !is_dir($this->config['path']) && mkdir($this->config['path'], 0755, true);
         } catch (\Exception $e) {
             // 写入失败
-            return false;
         }
 
-        if (1 == mt_rand(1, $this->config['gc_divisor'])) {
+        // 垃圾回收
+        if (random_int(1, $this->config['gc_divisor']) <= $this->config['gc_probability']) {
             $this->gc();
         }
-
-        return true;
     }
 
     /**
      * Session 垃圾回收
      * @access public
-     * @return true
+     * @return void
      */
-    public function gc()
+    public function gc(): void
     {
-        $maxlifetime = $this->config['gc_maxlifetime'];
-        $list        = glob($this->config['path'] . '*');
+        $lifetime = $this->config['expire'];
+        $now      = time();
 
-        foreach ($list as $path) {
-            if (is_dir($path)) {
-                $files = glob($path . DIRECTORY_SEPARATOR . '*.php');
-                foreach ($files as $file) {
-                    if (time() > filemtime($file) + $maxlifetime) {
-                        unlink($file);
-                    }
+        $files = $this->findFiles($this->config['path'], function (SplFileInfo $item) use ($lifetime, $now) {
+            return $now - $lifetime > $item->getMTime();
+        });
+
+        foreach ($files as $file) {
+            $this->unlink($file->getPathname());
+        }
+    }
+
+    /**
+     * 查找文件
+     * @param string  $root
+     * @param Closure $filter
+     * @return Generator
+     */
+    protected function findFiles(string $root, Closure $filter)
+    {
+        $items = new FilesystemIterator($root);
+
+        /** @var SplFileInfo $item */
+        foreach ($items as $item) {
+            if ($item->isDir() && !$item->isLink()) {
+                yield from $this->findFiles($item->getPathname(), $filter);
+            } else {
+                if ($filter($item)) {
+                    yield $item;
                 }
-            } elseif (time() > filemtime($path) + $maxlifetime) {
-                unlink($path);
             }
         }
     }
@@ -91,8 +110,8 @@ class File implements SessionHandlerInterface
     /**
      * 取得变量的存储文件名
      * @access protected
-     * @param  string $name 缓存变量名
-     * @param  bool   $auto 是否自动创建目录
+     * @param string $name 缓存变量名
+     * @param bool   $auto 是否自动创建目录
      * @return string
      */
     protected function getFileName(string $name, bool $auto = false): string
@@ -104,7 +123,7 @@ class File implements SessionHandlerInterface
             $name = 'sess_' . $name;
         }
 
-        $filename = $this->config['path'] . $name . '.php';
+        $filename = $this->config['path'] . $name;
         $dir      = dirname($filename);
 
         if ($auto && !is_dir($dir)) {
@@ -121,75 +140,91 @@ class File implements SessionHandlerInterface
     /**
      * 读取Session
      * @access public
-     * @param  string $sessID
+     * @param string $sessID
      * @return string
      */
     public function read(string $sessID): string
     {
         $filename = $this->getFileName($sessID);
 
-        $content = is_file($filename) ? file_get_contents($filename) : false;
+        if (is_file($filename) && filemtime($filename) >= time() - $this->config['expire']) {
+            $content = $this->readFile($filename);
 
-        if (false === $content) {
-            return '';
+            if ($this->config['data_compress'] && function_exists('gzcompress')) {
+                //启用数据压缩
+                $content = gzuncompress($content);
+            }
+
+            return $content;
         }
 
-        $expire = (int) substr($content, 8, 12);
+        return '';
+    }
 
-        if (0 != $expire && time() > filemtime($filename) + $expire) {
-            //缓存过期删除缓存文件
-            $this->unlink($filename);
-            return '';
+    /**
+     * 写文件（加锁）
+     * @param $path
+     * @param $content
+     * @return bool
+     */
+    protected function writeFile($path, $content): bool
+    {
+        return (bool) file_put_contents($path, $content, LOCK_EX);
+    }
+
+    /**
+     * 读取文件内容(加锁)
+     * @param $path
+     * @return string
+     */
+    protected function readFile($path): string
+    {
+        $contents = '';
+
+        $handle = fopen($path, 'rb');
+
+        if ($handle) {
+            try {
+                if (flock($handle, LOCK_SH)) {
+                    clearstatcache(true, $path);
+
+                    $contents = fread($handle, filesize($path) ?: 1);
+
+                    flock($handle, LOCK_UN);
+                }
+            } finally {
+                fclose($handle);
+            }
         }
 
-        $content = substr($content, 32);
-
-        if ($this->config['data_compress'] && function_exists('gzcompress')) {
-            //启用数据压缩
-            $content = gzuncompress($content);
-        }
-
-        return $content;
+        return $contents;
     }
 
     /**
      * 写入Session
      * @access public
-     * @param  string $sessID
-     * @param  string $sessData
+     * @param string $sessID
+     * @param string $sessData
      * @return bool
      */
     public function write(string $sessID, string $sessData): bool
     {
-        $expire = $this->config['expire'];
-
-        $expire = $this->getExpireTime($expire);
-
         $filename = $this->getFileName($sessID, true);
-
-        $data = $sessData;
+        $data     = $sessData;
 
         if ($this->config['data_compress'] && function_exists('gzcompress')) {
             //数据压缩
             $data = gzcompress($data, 3);
         }
 
-        $data   = "<?php\n//" . sprintf('%012d', $expire) . "\n exit();?>\n" . $data;
-        $result = file_put_contents($filename, $data);
-
-        if ($result) {
-            clearstatcache();
-            return true;
-        }
-
-        return false;
+        return $this->writeFile($filename, $data);
     }
 
     /**
      * 删除Session
      * @access public
-     * @param  string $sessID
-     * @return array
+     * @param string $sessID
+     * @return bool
      */
     public function delete(string $sessID): bool
     {
@@ -201,24 +236,9 @@ class File implements SessionHandlerInterface
     }
 
     /**
-     * 获取有效期
-     * @access protected
-     * @param  integer|\DateTimeInterface $expire 有效期
-     * @return int
-     */
-    protected function getExpireTime($expire): int
-    {
-        if ($expire instanceof \DateTimeInterface) {
-            $expire = $expire->getTimestamp() - time();
-        }
-
-        return (int) $expire;
-    }
-
-    /**
      * 判断文件是否存在后，删除
      * @access private
-     * @param  string $path
+     * @param string $file
      * @return bool
      */
     private function unlink(string $file): bool

@@ -57,7 +57,7 @@ class StoreProductReply extends BaseModel
 
     public static function getProductImaesList($where)
     {
-        $list=self::valiWhere($where,'a','p')->group('p.id')->join('__wechat_user__ u','u.uid=a.uid')->join("__store_product__ p",'a.product_id=p.id')->field(['p.id','p.image','p.store_name','p.price'])->page($where['page'],$where['limit'])->select();
+        $list=self::valiWhere($where,'a','p')->group('p.id')->join('wechat_user u','u.uid=a.uid','LEFT')->join("store_product p",'a.product_id=p.id','LEFT')->field(['p.id','p.image','p.store_name','p.price'])->page($where['page'],$where['limit'])->select();
         $list=count($list) ? $list->toArray() : [];
         foreach ($list as &$item){
             $item['store_name']=self::getSubstrUTf8($item['store_name'],10,'UTF-8','');
@@ -68,17 +68,18 @@ class StoreProductReply extends BaseModel
 
     public static function getProductReplyList($where)
     {
-        $data=self::valiWhere($where,'a','p')->join("__store_product__ p",'a.product_id=p.id')
-            ->join('__wechat_user__ u','u.uid=a.uid')
+        $data=self::valiWhere($where,'a','p')->join("store_product p",'a.product_id=p.id','left')
+            ->join('user u','u.uid=a.uid','left')
             ->order('a.add_time desc,a.is_reply asc')
-            ->field('a.*,u.nickname,u.headimgurl as avatar')
+            ->field('a.*,u.nickname,u.avatar')
             ->page((int)$where['message_page'],(int)$where['limit'])
             ->select();
         $data=count($data) ? $data->toArray() : [];
         foreach ($data as &$item){
             $item['time']=\crmeb\services\UtilService::timeTran($item['add_time']);
         }
-        $count=self::valiWhere($where,'a','p')->join('__wechat_user__ u','u.uid=a.uid')->join("__store_product__ p",'a.product_id=p.id')->count();
+
+        $count=self::valiWhere($where,'a','p')->join('user u','u.uid=a.uid','left')->join("store_product p",'a.product_id=p.id','left')->count();
         return ['list'=>$data,'count'=>$count];
     }
     /**
@@ -96,8 +97,8 @@ class StoreProductReply extends BaseModel
             }
         }
         if($where['product_id'])  $model = $model->where('r.product_id',$where['product_id']);
-        $model = $model->alias('r')->join('__wechat_user__ u','u.uid=r.uid');
-        $model = $model->join('__store_product__ p','p.id=r.product_id');
+        $model = $model->alias('r')->join('wechat_user u','u.uid=r.uid');
+        $model = $model->join('store_product p','p.id=r.product_id');
         $model = $model->where('r.is_del',0);
         $model = $model->field('r.*,u.nickname,u.headimgurl,p.store_name');
         $model = $model->order('r.add_time desc,r.is_reply asc');

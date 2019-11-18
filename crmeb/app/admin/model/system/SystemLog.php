@@ -50,14 +50,14 @@ class SystemLog extends BaseModel
     public static function adminVisit($adminId,$adminName,$type)
     {
         $request = app('request');
-        $module = $request->app();
+        $module = app('http')->getName();
         $controller = $request->controller();
         $action = $request->action();
         $route = $request->route();
         self::startTrans();
         try{
             $data = [
-                'method'=>$request->app(),
+                'method'=>app('http')->getName(),
                 'admin_id'=>$adminId,
                 'add_time'=>time(),
                 'admin_name'=>$adminName,
@@ -90,7 +90,7 @@ class SystemLog extends BaseModel
     public static function setCurrentVisit($adminInfo, $page)
     {
         $request = app('request');
-        $module = $request->app();
+        $module = app('http')->getName();
         $controller = $request->controller();
         $action = $request->action();
         $route = $request->route();

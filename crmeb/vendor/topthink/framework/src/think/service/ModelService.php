@@ -22,10 +22,11 @@ class ModelService extends Service
 {
     public function boot()
     {
+        Model::setDb($this->app->db);
+        Model::setEvent($this->app->event);
+        Model::setInvoker([$this->app, 'invoke']);
         Model::maker(function (Model $model) {
-            $db     = $this->app->db;
             $config = $this->app->config;
-            $model->setDb($db);
 
             $isAutoWriteTimestamp = $model->getAutoWriteTimestamp();
 

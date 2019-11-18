@@ -135,6 +135,17 @@ class Table
     }
 
     /**
+     * 设置全局单元格对齐方式
+     * @param int $align 对齐方式 默认1 ALGIN_LEFT 0 ALIGN_RIGHT 2 ALIGN_CENTER
+     * @return $this
+     */
+    public function setCellAlign(int $align = 1)
+    {
+        $this->cellAlign = $align;
+        return $this;
+    }
+
+    /**
      * 检查列数据的显示宽度
      * @access public
      * @param  mixed $row       行数据
@@ -144,7 +155,7 @@ class Table
     {
         if (is_array($row)) {
             foreach ($row as $key => $cell) {
-                $width = strlen((string) $cell);
+                $width = mb_strwidth((string) $cell);
                 if (!isset($this->colWidth[$key]) || $width > $this->colWidth[$key]) {
                     $this->colWidth[$key] = $width;
                 }
@@ -257,9 +268,10 @@ class Table
                     $content .= $this->renderSeparator('middle');
                 } elseif (is_scalar($row)) {
                     $content .= $this->renderSeparator('cross-top');
-                    $array = str_pad($row, 3 * (count($this->colWidth) - 1) + array_reduce($this->colWidth, function ($a, $b) {
+                    $width = 3 * (count($this->colWidth) - 1) + array_reduce($this->colWidth, function ($a, $b) {
                         return $a + $b;
-                    }));
+                    });
+                    $array = str_pad($row, $width);
 
                     $content .= $style[0] . ' ' . $array . ' ' . $style[3] . PHP_EOL;
                     $content .= $this->renderSeparator('cross-bottom');
@@ -267,11 +279,16 @@ class Table
                     $array = [];
 
                     foreach ($row as $key => $val) {
-                        $array[] = ' ' . str_pad((string) $val, $this->colWidth[$key], ' ', $this->cellAlign);
+                        $width = $this->colWidth[$key];
+                        // form https://github.com/symfony/console/blob/20c9821c8d1c2189f287dcee709b2f86353ea08f/Helper/Table.php#L467
+                        // str_pad won't work properly with multi-byte strings, we need to fix the padding
+                        if (false !== $encoding = mb_detect_encoding((string) $val, null, true)) {
+                            $width += strlen((string) $val) - mb_strwidth((string) $val, $encoding);
+                        }
+                        $array[] = ' ' . str_pad((string) $val, $width, ' ', $this->cellAlign);
                     }
 
                     $content .= $style[0] . implode(' ' . $style[2], $array) . ' ' . $style[3] . PHP_EOL;
-
                 }
             }
         }

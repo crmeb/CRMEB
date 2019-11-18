@@ -337,7 +337,8 @@ class CopyTaobao extends AuthController
         if (!$AttachmentCategory) $AttachmentCategory = SystemAttachmentCategory::create(['pid' => '0', 'name' => $this->AttachmentCategoryName, 'enname' => '']);
         //生成附件目录
         try{
-            if (make_path('attach', 3) == '') return JsonService::fail('无法创建文件夹，请检查您的上传目录权限：' . app()->getRootPath() . 'public' . DS . 'uploads' . DS. 'attach' . DS);
+            if (make_path('attach', 3,true) === '')
+                return JsonService::fail('无法创建文件夹，请检查您的上传目录权限：' . app()->getRootPath() . 'public' . DS . 'uploads' . DS. 'attach' . DS);
 
         }catch (\Exception $e){
             return JsonService::fail($e->getMessage().'或无法创建文件夹，请检查您的上传目录权限：' . app()->getRootPath() . 'public' . DS . 'uploads' . DS. 'attach' . DS);

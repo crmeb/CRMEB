@@ -86,8 +86,8 @@ class UserController
         $user['orderStatusSum'] = StoreOrder::getOrderStatusSum($user['uid']);//累计消费
         $user['extractTotalPrice'] = UserExtract::userExtractTotalPrice($user['uid']);//累计提现
         $user['extractPrice'] = $user['brokerage_price'];//可提现
-        $user['statu'] = (int)SystemConfigService::get('store_brokerage_statu');
-        if(!SystemConfigService::get('vip_open'))
+        $user['statu'] = (int)sysConfig('store_brokerage_statu');
+        if(!sysConfig('vip_open'))
             $user['vip']=false;
         else{
             $vipId=UserLevel::getUserLevel($user['uid']);
@@ -99,7 +99,7 @@ class UserController
             }
         }
         $user['yesterDay'] = UserBill::yesterdayCommissionSum($user['uid']);
-        $user['recharge_switch'] = (int)SystemConfigService::get('recharge_switch');//充值开关
+        $user['recharge_switch'] = (int)sysConfig('recharge_switch');//充值开关
         $user['adminid'] = (boolean)\app\models\store\StoreService::orderServiceStatus($user['uid']);
         if($user['phone'] && $user['user_type'] != 'h5'){
             $user['switchUserInfo'][] = $request->user();
@@ -427,7 +427,7 @@ class UserController
         }
         unset($user['pwd']);
         if(!$user['is_promoter']){
-            $user['is_promoter']=(int)SystemConfigService::get('store_brokerage_statu') == 2 ? true : false;
+            $user['is_promoter']=(int)sysConfig('store_brokerage_statu') == 2 ? true : false;
         }
         return app('json')->successful($user->hidden(['account','real_name','birthday','card_id','mark','partner_id','group_id','add_time','add_ip','phone','last_time','last_ip','spread_uid','spread_time','user_type','status','level','clean_time','addres'])->toArray());
     }
@@ -507,7 +507,7 @@ class UserController
         ],$request);
         return app('json')->success([
             'rank'    => User::brokerageRank($data),
-            'position'=> User::currentUserRank($request->user()['brokerage_price'])
+            'position'=> User::currentUserRank($data['type'],$request->user()['brokerage_price'])
         ]);
 
     }
