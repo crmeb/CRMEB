@@ -167,6 +167,7 @@ class StoreProductController
         $data['system_store'] = ($res = SystemStore::getStoreDispose()) ? $res : [];
         $data['good_list'] = StoreProduct::getGoodList(18,'image,store_name,price,id,ot_price');
         $data['mapKey'] = sysConfig('tengxun_map_key');
+        $data['store_self_mention']= (int)sysConfig('store_self_mention') ?? 0;//门店自提是否开启
         return app('json')->successful($data);
     }
 
