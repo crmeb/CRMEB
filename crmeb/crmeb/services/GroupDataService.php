@@ -93,7 +93,7 @@ class GroupDataService
             if($isCaChe)
                 return $callable();
 
-            return CacheService::get($cacheName,$cacheName);
+            return CacheService::get($cacheName,$callable);
 
         }catch (\Throwable $e){
             return [];
