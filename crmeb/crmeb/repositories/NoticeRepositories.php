@@ -29,7 +29,7 @@ class NoticeRepositories
      */
     public static function noticeOrderPaySuccess($order, $formId)
     {
-        $wechatUser = WechatUser::where('uid', $order['uid'])->field('openid', 'routine_openid')->find();
+        $wechatUser = WechatUser::where('uid', $order['uid'])->field(['openid', 'routine_openid'])->find();
         if ($wechatUser) {
             $openid = $wechatUser['openid'];
             $routineOpenid = $wechatUser['routine_openid'];
