@@ -221,11 +221,11 @@ class AgentManage extends AuthController
     }
 
     /*
-     *
+     * 获取公众号二维码
      * */
     public function wechant_code($uid)
     {
-        $qr_code = \crmeb\services\QrcodeService::getTemporaryQrcode('spread',$uid);
+        $qr_code = \crmeb\services\QrcodeService::getForeverQrcode('spread',$uid);
         if(isset($qr_code['url']))
             return ['code_src'=>$qr_code['url']];
         else

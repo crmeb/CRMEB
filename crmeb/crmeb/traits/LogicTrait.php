@@ -145,13 +145,11 @@ trait LogicTrait
      */
     public function __call($method, $ages)
     {
-        $keys = property_exists($this, 'propsRule') ? array_keys($this->providers) : [];
+        $keys = property_exists($this, 'providers') ? array_keys($this->providers) : [];
         $propsRuleKeys = property_exists($this, 'propsRule') ? array_keys($this->propsRule) : [];
         if (strstr($method, 'set') !== false) {
             $attribute = lcfirst(str_replace('set', '', $method));
-            if (property_exists($this, $attribute)
-                && in_array($attribute, $propsRuleKeys)
-                && isset($this->propsRule[$attribute])) {
+            if (property_exists($this, $attribute) && in_array($attribute, $propsRuleKeys)) {
                 $propsRuleValeu = $this->propsRule[$attribute];
                 $type = $propsRuleValeu[1] ?? 'string';
                 $callable = $propsRuleValeu[2] ?? null;

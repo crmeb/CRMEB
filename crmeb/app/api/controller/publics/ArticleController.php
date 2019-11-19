@@ -22,8 +22,8 @@ class ArticleController
     public function lst(Request $request, $cid)
     {
         list($page, $limit) = UtilService::getMore([
-            ['page',0],
-            ['limit',0],
+            ['page',1],
+            ['limit',10],
         ],$request, true);
         $list = Article::cidByArticleList($cid,$page,$limit,"id,title,image_input,visit,from_unixtime(add_time,'%Y-%m-%d %H:%i') as add_time,synopsis,url") ?? [];
         if(is_object($list)) $list = $list->toArray();
