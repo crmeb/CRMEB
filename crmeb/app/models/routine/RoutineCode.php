@@ -1,5 +1,6 @@
 <?php
-namespace  app\models\routine;
+
+namespace app\models\routine;
 
 use crmeb\services\MiniProgramService;
 
@@ -8,7 +9,8 @@ use crmeb\services\MiniProgramService;
  * Class RoutineCode
  * @package app\models\routine
  */
-class RoutineCode{
+class RoutineCode
+{
 
     /**
      * TODO 获取小程序二维码
@@ -22,13 +24,14 @@ class RoutineCode{
      * @throws \think\db\exception\ModelNotFoundException
      * @throws \think\exception\DbException
      */
-    public static function getShareCode($thirdId, $thirdType, $page, $imgUrl){
-        $res = RoutineQrcode::routineQrCodeForever($thirdId,$thirdType,$page,$imgUrl);
-        $resCode = MiniProgramService::qrcodeService()->appCodeUnlimit($res->id,$page,280);
-        if($resCode){
-            if($res) return ['res'=>$resCode,'id'=>$res->id];
+    public static function getShareCode($thirdId, $thirdType, $page, $imgUrl)
+    {
+        $res = RoutineQrcode::routineQrCodeForever($thirdId, $thirdType, $page, $imgUrl);
+        $resCode = MiniProgramService::qrcodeService()->appCodeUnlimit($res->id, $page, 280);
+        if ($resCode) {
+            if ($res) return ['res' => $resCode, 'id' => $res->id];
             else return false;
-        }else return false;
+        } else return false;
     }
 
     /**
@@ -38,7 +41,8 @@ class RoutineCode{
      * @param int $width
      * @return mixed
      */
-    public static function getPageCode($page = '', $pramam = "?uid=1&product=1",$width = 280){
-        return MiniProgramService::qrcodeService()->appCodeUnlimit($pramam,$page,$width);
+    public static function getPageCode($page = '', $pramam = "?uid=1&product=1", $width = 280)
+    {
+        return MiniProgramService::qrcodeService()->appCodeUnlimit($pramam, $page, $width);
     }
 }
