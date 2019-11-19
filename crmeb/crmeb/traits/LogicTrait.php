@@ -29,19 +29,19 @@ trait LogicTrait
      * @param $params 参数
      * @return mixed
      */
-    public static function __callStatic($method,$params)
+    public static function __callStatic($method, $params)
     {
-        return call_user_func_array([self::$instance,$method],$params);
+        return call_user_func_array([self::$instance, $method], $params);
     }
 
     /**
      * 配置参数
      * @param array $config
      */
-    protected function setConfig(array $config=[])
+    protected function setConfig(array $config = [])
     {
         foreach ($config as $key => $value) {
-            $this->set($this->items,$key, $value);
+            $this->set($this->items, $key, $value);
         }
     }
 
@@ -72,11 +72,9 @@ trait LogicTrait
      */
     protected function registerProviders()
     {
-        if (property_exists($this,'providers'))
-        {
-            foreach ($this->providers as $key=>$provider)
-            {
-                $this->register(new $provider(),$key);
+        if (property_exists($this, 'providers')) {
+            foreach ($this->providers as $key => $provider) {
+                $this->register(new $provider(), $key);
             }
         }
     }
@@ -86,14 +84,14 @@ trait LogicTrait
      * @param object $pimple
      * @return $this
      * */
-    protected function register($pimple,$key)
+    protected function register($pimple, $key)
     {
-        $response=$pimple->register($this->items);
-        if(is_array($response)) {
-            list($key,$provider)=$response;
-            $this->$key= $provider;
-        }else if(is_string($key)){
-            $this->$key= $pimple;
+        $response = $pimple->register($this->items);
+        if (is_array($response)) {
+            [$key, $provider] = $response;
+            $this->$key = $provider;
+        } else if (is_string($key)) {
+            $this->$key = $pimple;
         }
         return $this;
     }
@@ -103,13 +101,14 @@ trait LogicTrait
      * @param array $config
      * @return $this
      * */
-    public static function instance($config=[])
+    public static function instance($config = [])
     {
-        if(is_null(self::$instance)) {
+        if (is_null(self::$instance)) {
             self::$instance = new self();
             self::$instance->setConfig($config);
             self::$instance->registerProviders();
-            self::$instance->bool();
+            if (method_exists(self::$instance, 'bool'))
+                self::$instance->bool();
         }
         return self::$instance;
     }
@@ -144,36 +143,35 @@ trait LogicTrait
      * @param $ages
      * @return $this
      */
-    public function __call($method,$ages)
+    public function __call($method, $ages)
     {
-        $keys = property_exists($this,'propsRule') ? array_keys($this->providers) : [];
-        $propsRuleKeys = property_exists($this,'propsRule') ? array_keys($this->propsRule) : [];
-        if (strstr($method,'set') !== false) {
-            $attribute = lcfirst(str_replace('set','',$method));
-            if (property_exists($this,$attribute)
-                && in_array($attribute,$propsRuleKeys)
-                && isset($this->propsRule[$attribute]))
-            {
+        $keys = property_exists($this, 'propsRule') ? array_keys($this->providers) : [];
+        $propsRuleKeys = property_exists($this, 'propsRule') ? array_keys($this->propsRule) : [];
+        if (strstr($method, 'set') !== false) {
+            $attribute = lcfirst(str_replace('set', '', $method));
+            if (property_exists($this, $attribute)
+                && in_array($attribute, $propsRuleKeys)
+                && isset($this->propsRule[$attribute])) {
                 $propsRuleValeu = $this->propsRule[$attribute];
-                $type           = $propsRuleValeu[1] ?? 'string';
-                $callable       = $propsRuleValeu[2] ?? null;
+                $type = $propsRuleValeu[1] ?? 'string';
+                $callable = $propsRuleValeu[2] ?? null;
                 if ($type == 'callable' && $callable) {
                     $callable = $propsRuleValeu[2];
-                    if (method_exists($this,$callable))
-                        $ages[0] = $this->{$callable}($ages[0],$ages[1] ?? '');
+                    if (method_exists($this, $callable))
+                        $ages[0] = $this->{$callable}($ages[0], $ages[1] ?? '');
 
-                } else if($type) {
-                    $ages[0] = $this->toType($ages[0],$type) ?? null;
+                } else if ($type) {
+                    $ages[0] = $this->toType($ages[0], $type) ?? null;
                 }
 
                 $this->{$attribute} = $ages[0];
                 return $this;
             }
-        } else if(in_array($method,$keys)) {
+        } else if (in_array($method, $keys)) {
             $this->sendType = $method;
             return $this;
         } else {
-            throw new AuthException('Method does not exist：'.$method);
+            throw new AuthException('Method does not exist：' . $method);
         }
     }
 }

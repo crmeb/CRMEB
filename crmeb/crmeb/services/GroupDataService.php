@@ -21,12 +21,12 @@ class GroupDataService
      * @param bool $isCaChe 是否读取缓存
      * @return array
      */
-    public static function getGroupData(string $config_name, $limit = 0,bool $isCaChe = false):array
+    public static function getGroupData(string $config_name, $limit = 0, bool $isCaChe = false): array
     {
-        try{
+        try {
             $cacheName = $limit ? "group_data_{$config_name}_{$limit}" : "data_{$config_name}";
 
-            $callable = function () use ($config_name,$limit) {
+            $callable = function () use ($config_name, $limit) {
                 $data = SystemGroupData::getGroupData($config_name, $limit);
                 if (is_object($data))
                     $data = $data->toArray();
@@ -36,9 +36,9 @@ class GroupDataService
             if ($isCaChe)
                 return $callable();
 
-            return CacheService::get($cacheName,$callable);
+            return CacheService::get($cacheName, $callable);
 
-        }catch (\Throwable $e){
+        } catch (\Throwable $e) {
             return [];
         }
     }
@@ -50,24 +50,24 @@ class GroupDataService
      * @param bool $isCaChe 是否读取缓存
      * @return array
      */
-    public static function getData(string $config_name,int $limit = 0,bool $isCaChe = false):array
+    public static function getData(string $config_name, int $limit = 0, bool $isCaChe = false): array
     {
-        try{
+        try {
             $cacheName = $limit ? "data_{$config_name}_{$limit}" : "data_{$config_name}";
 
-            $callable = function () use ($config_name,$limit) {
+            $callable = function () use ($config_name, $limit) {
                 $data = SystemGroupData::getAllValue($config_name, $limit);
-                if(is_object($data))
+                if (is_object($data))
                     $data = $data->toArray();
                 return $data;
             };
 
-            if($isCaChe)
+            if ($isCaChe)
                 return $callable();
 
-            return CacheService::get($cacheName,$callable);
+            return CacheService::get($cacheName, $callable);
 
-        }catch (\Throwable $e){
+        } catch (\Throwable $e) {
             return [];
         }
     }
@@ -78,24 +78,24 @@ class GroupDataService
      * @param bool $isCaChe 是否读取缓存
      * @return array
      */
-    public static function getDataNumber(int $id,bool $isCaChe = false):array
+    public static function getDataNumber(int $id, bool $isCaChe = false): array
     {
-        try{
+        try {
             $cacheName = "data_number_{$id}";
 
-            $callable  = function () use ($id) {
+            $callable = function () use ($id) {
                 $data = SystemGroupData::getDateValue($id);
                 if (is_object($data))
                     $data = $data->toArray();
                 return $data;
             };
 
-            if($isCaChe)
+            if ($isCaChe)
                 return $callable();
 
-            return CacheService::get($cacheName,$callable);
+            return CacheService::get($cacheName, $callable);
 
-        }catch (\Throwable $e){
+        } catch (\Throwable $e) {
             return [];
         }
     }

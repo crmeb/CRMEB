@@ -11,7 +11,6 @@ use crmeb\repositories\PaymentRepositories;
 use EasyWeChat\Foundation\Application;
 use EasyWeChat\Payment\Order;
 use think\facade\Route as Url;
-use crmeb\services\HookService;
 use crmeb\interfaces\ProviderInterface;
 use app\models\store\StoreOrder as StoreOrderRoutineModel;
 use app\models\user\UserRecharge;
@@ -324,7 +323,6 @@ class MiniProgramService implements ProviderInterface
         $staff = self::staffService();
         $staff = is_callable($message) ? $staff->message($message()) : $staff->message($message);
         $res = $staff->to($to)->send();
-        HookService::afterListen('wechat_staff_to',compact('to','message'),$res);
         return $res;
     }
 

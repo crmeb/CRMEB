@@ -27,13 +27,14 @@ class FormBuilder extends Form
      * str 自定义
      * @return $this
      */
-    public static function make_post_form($title,array $field,$url,$jscallback = 2){
+    public static function make_post_form($title, array $field, $url, $jscallback = 2)
+    {
         $form = Form::create($url);//提交地址
         $form->setMethod('POST');//提交方式
         $form->components($field);//表单字段
         $form->setTitle($title);//表单标题
         $js = '';//提交成功不执行任何动作
-        switch ($jscallback){
+        switch ($jscallback) {
             case 1:
                 $js = 'parent.$(".J_iframe:visible")[0].contentWindow.location.reload();';//提交成功父级页面刷新
                 break;

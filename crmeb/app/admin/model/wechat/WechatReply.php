@@ -9,7 +9,6 @@ namespace app\admin\model\wechat;
 use app\admin\model\system\SystemConfig;
 use crmeb\traits\ModelTrait;
 use crmeb\basic\BaseModel;
-use crmeb\services\HookService;
 use crmeb\services\UtilService;
 use crmeb\services\WechatService;
 use think\facade\Route as Url;

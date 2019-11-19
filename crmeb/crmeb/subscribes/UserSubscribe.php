@@ -41,24 +41,24 @@ class UserSubscribe
      */
     public function onWechatOauthAfter($event)
     {
-        list($openid, $wechatInfo, $spreadId,$login_type) = $event;
+        list($openid, $wechatInfo, $spreadId, $login_type) = $event;
 
         if (!User::be(['uid' => $spreadId])) $spreadId = 0;
 
         $wechatInfo['nickname'] = filterEmoji($wechatInfo['nickname']);
         Cookie::set('is_login', 1);
-        if (isset($wechatInfo['unionid']) && $wechatInfo['unionid'] != '' && ($uid = WechatUser::where('unionid', $wechatInfo['unionid'])->where('user_type','<>','h5')->value('uid'))) {
+        if (isset($wechatInfo['unionid']) && $wechatInfo['unionid'] != '' && ($uid = WechatUser::where('unionid', $wechatInfo['unionid'])->where('user_type', '<>', 'h5')->value('uid'))) {
             WechatUser::edit($wechatInfo, $uid, 'uid');
             if (!User::be(['uid' => $uid])) {
                 $wechatInfo = WechatUser::where('uid', $uid)->find();
                 User::setWechatUser($wechatInfo, $spreadId);
             } else {
-                if($login_type) $wechatInfo['login_type'] = $login_type;
+                if ($login_type) $wechatInfo['login_type'] = $login_type;
                 User::updateWechatUser($wechatInfo, $uid);
             }
-        } else if ($uid = WechatUser::where(['openid' => $wechatInfo['openid']])->where('user_type','<>','h5')->value('uid')) {
+        } else if ($uid = WechatUser::where(['openid' => $wechatInfo['openid']])->where('user_type', '<>', 'h5')->value('uid')) {
             WechatUser::edit($wechatInfo, $uid, 'uid');
-            if($login_type) $wechatInfo['login_type'] = $login_type;
+            if ($login_type) $wechatInfo['login_type'] = $login_type;
             User::updateWechatUser($wechatInfo, $uid);
         } else {
             if (isset($wechatInfo['subscribe_scene'])) unset($wechatInfo['subscribe_scene']);
@@ -80,7 +80,7 @@ class UserSubscribe
 //                User::where('uid', $wechatInfo['uid'])
 //                    ->limit(1)->update(['openid' => $wechatInfo['openid']]);
 //            else
-                User::setWechatUser($wechatInfo, $spreadId);
+            User::setWechatUser($wechatInfo, $spreadId);
         }
         $uid = WechatUser::openidToUid($openid, 'openid');
         // 设置推广关系

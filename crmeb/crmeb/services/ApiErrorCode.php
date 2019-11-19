@@ -8,7 +8,6 @@
 namespace crmeb\services;
 
 
-
 /**
  * 错误码统一存放类
  * Class ApiErrorCode
@@ -17,10 +16,10 @@ namespace crmeb\services;
 class ApiErrorCode
 {
 
-    const SUCCESS = [200,'SUCCESS'];
-    const ERROR   = [400,'操作失败'];
+    const SUCCESS = [200, 'SUCCESS'];
+    const ERROR = [400, '操作失败'];
 
-    const ERR_LOGIN = [40010,'登陆过期'];
+    const ERR_LOGIN = [40010, '登陆过期'];
 
 
 }

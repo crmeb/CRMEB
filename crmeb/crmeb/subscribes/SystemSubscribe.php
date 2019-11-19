@@ -1,8 +1,10 @@
 <?php
+
 namespace crmeb\subscribes;
 
 use app\admin\model\system\SystemAdmin;
 use app\admin\model\system\SystemLog;
+
 /**
  * 后台系统事件
  * Class SystemSubscribe
@@ -22,8 +24,8 @@ class SystemSubscribe
      */
     public function onAdminVisit($event)
     {
-        list($adminInfo,$type) = $event;
-        if(strtolower(app('request')->controller()) != 'index') SystemLog::adminVisit($adminInfo->id,$adminInfo->account,$type);
+        list($adminInfo, $type) = $event;
+        if (strtolower(app('request')->controller()) != 'index') SystemLog::adminVisit($adminInfo->id, $adminInfo->account, $type);
     }
 
     /**
@@ -33,7 +35,7 @@ class SystemSubscribe
     public function onSystemAdminLoginAfter($event)
     {
         list($adminInfo) = $event;
-        SystemAdmin::edit(['last_ip'=>app('request')->ip(),'last_time'=>time()],$adminInfo['id']);
+        SystemAdmin::edit(['last_ip' => app('request')->ip(), 'last_time' => time()], $adminInfo['id']);
     }
 
     /**
@@ -42,7 +44,7 @@ class SystemSubscribe
      */
     public function onMerchantRegisterAfter($event)
     {
-      list($merchantInfo) = $event;
+        list($merchantInfo) = $event;
     }
 
 }

@@ -25,7 +25,7 @@ class WorkermanHandle
             ]);
         }
 
-        $session = app('session',[],true);
+        $session = app('session', [], true);
         $session->setId($sessionId);
         $session->init();
 
