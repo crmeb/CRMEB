@@ -137,7 +137,7 @@ class PublicController
         ],$request);
         if(!$data['filename']) return app('json')->fail('参数有误');
         if(Cache::has('start_uploads_'.$request->uid()) && Cache::get('start_uploads_'.$request->uid()) >= 100) return app('json')->fail('非法操作');
-        $res = UploadService::getInstance()->setUploadPath('store/comment')->image($data['filename']);
+        $res = UploadService::instance()->setUploadPath('store/comment')->image($data['filename']);
         if(!is_array($res)) return app('json')->fail($res);
         SystemAttachment::attachmentAdd($res['name'], $res['size'], $res['type'], $res['dir'], $res['thumb_path'],1, $res['image_type'], $res['time'], 2);
         if(Cache::has('start_uploads_'.$request->uid()))

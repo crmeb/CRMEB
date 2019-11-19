@@ -79,7 +79,7 @@ class StoreProductController
                         if($user['is_promoter'] || sysConfig('store_brokerage_statu')==2) $data.='&pid='.$user['uid'];
                         $res = \app\models\routine\RoutineCode::getPageCode('pages/goods_details/index',$data,280);
                         if(!$res) return app('json')->fail('二维码生成失败');
-                        $imageInfo = \crmeb\services\UploadService::getInstance()->setUploadPath('routine/product')->imageStream($name,$res);
+                        $imageInfo = \crmeb\services\UploadService::instance()->setUploadPath('routine/product')->imageStream($name,$res);
                         if(is_string($imageInfo)) return app('json')->fail($imageInfo);
                         if($imageInfo['image_type'] == 1) $remoteImage = UtilService::remoteImage($siteUrl.$imageInfo['dir']);
                         else $remoteImage = UtilService::remoteImage($imageInfo['dir']);

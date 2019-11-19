@@ -211,7 +211,7 @@ class AgentManage extends AuthController
         if(!$imageInfo){
             $res = \app\models\routine\RoutineCode::getShareCode($uid, 'spread', '', '');
             if(!$res) throw new \think\Exception('二维码生成失败');
-            $imageInfo = UploadService::getInstance()->setUploadPath('routine/spread/code')->imageStream($name,$res['res']);
+            $imageInfo = UploadService::instance()->setUploadPath('routine/spread/code')->imageStream($name,$res['res']);
             if(!is_array($imageInfo)) return $imageInfo;
             SystemAttachment::attachmentAdd($imageInfo['name'],$imageInfo['size'],$imageInfo['type'],$imageInfo['dir'],$imageInfo['thumb_path'],1,$imageInfo['image_type'],$imageInfo['time']);
             RoutineQrcode::setRoutineQrcodeFind($res['id'],['status'=>1,'time'=>time(),'qrcode_url'=>$imageInfo['dir']]);
@@ -246,7 +246,7 @@ class AgentManage extends AuthController
             if(!$imageInfo){
                 $res = \app\models\routine\RoutineCode::getShareCode($uid, 'spread', '', '');
                 if(!$res) return JsonService::fail('二维码生成失败');
-                $imageInfo = UploadService::getInstance()->setUploadPath('routine/spread/code')->imageStream($name,$res['res']);
+                $imageInfo = UploadService::instance()->setUploadPath('routine/spread/code')->imageStream($name,$res['res']);
                 if(!is_array($imageInfo)) return JsonService::fail($imageInfo);
                 SystemAttachment::attachmentAdd($imageInfo['name'],$imageInfo['size'],$imageInfo['type'],$imageInfo['dir'],$imageInfo['thumb_path'],1,$imageInfo['image_type'],$imageInfo['time']);
                 RoutineQrcode::setRoutineQrcodeFind($res['id'],['status'=>1,'time'=>time(),'qrcode_url'=>$imageInfo['dir']]);

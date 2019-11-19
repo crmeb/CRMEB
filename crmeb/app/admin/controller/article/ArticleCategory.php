@@ -72,7 +72,7 @@ class ArticleCategory extends AuthController
      * s上传图片
      * */
     public function upload(){
-        $res = Upload::getInstance()->setUploadPath('article')->image('file');
+        $res = Upload::instance()->setUploadPath('article')->image('file');
         if(!is_array($res)) return Json::fail($res);
         SystemAttachment::attachmentAdd($res['name'],$res['size'],$res['type'],$res['dir'],$res['thumb_path'],5,$res['image_type'],$res['time']);
         return Json::successful('图片上传成功!',['name'=>$res['name'],'url'=>Upload::pathToUrl($res['thumb_path'])]);

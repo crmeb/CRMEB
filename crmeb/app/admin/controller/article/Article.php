@@ -99,7 +99,7 @@ class Article extends AuthController
      * @return \think\response\Json
      */
     public function upload_image(){
-        $res = Upload::getInstance()->setUploadPath('wechat/image/'.date('Ymd'))->image($_POST['file']);
+        $res = Upload::instance()->setUploadPath('wechat/image/'.date('Ymd'))->image($_POST['file']);
         if(!is_array($res)) return Json::fail($res);
         SystemAttachment::attachmentAdd($res['name'],$res['size'],$res['type'],$res['dir'],$res['thumb_path'],5,$res['image_type'],$res['time']);
         return Json::successful('上传成功!',['url'=>$res['dir']]);

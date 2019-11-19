@@ -176,7 +176,7 @@ class StoreProduct extends AuthController
      */
     public function upload()
     {
-        $res = Upload::getInstance()->setUploadPath('store/product/'.date('Ymd'))->image('file');
+        $res = Upload::instance()->setUploadPath('store/product/'.date('Ymd'))->image('file');
         SystemAttachment::attachmentAdd($res['name'],$res['size'],$res['type'],$res['dir'],$res['thumb_path'],1,$res['image_type'],$res['time']);
         if(is_array($res))
             return Json::successful('图片上传成功!',['name'=>$res['name'],'url'=>Upload::pathToUrl($res['thumb_path'])]);

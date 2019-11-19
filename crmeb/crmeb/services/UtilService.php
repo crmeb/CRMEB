@@ -511,7 +511,7 @@ class UtilService
         $res = ob_get_contents();
         ob_end_clean();
         $key = substr(md5(rand(0, 9999)), 0, 5) . date('YmdHis') . rand(0, 999999) . '.jpg';
-        return UploadService::getInstance()->setUploadPath($path)->imageStream($key, $res);
+        return UploadService::instance()->setUploadPath($path)->imageStream($key, $res);
     }
 
     /*

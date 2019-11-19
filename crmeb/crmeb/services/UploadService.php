@@ -10,13 +10,23 @@ namespace crmeb\services;
 use crmeb\services\storage\COS;
 use crmeb\services\storage\OSS;
 use crmeb\services\storage\Qiniu;
-use crmeb\services\SystemConfigService;
+use crmeb\traits\LogicTrait;
 use think\exception\ValidateException;
 use think\facade\Filesystem;
 use think\File;
 
+/**
+ * Class UploadService
+ * @package crmeb\services
+ * @method $this setReturnErr(bool $returnErr) 设置发生错误时是否返回错误信息
+ * @method $this setAutoValidate(bool $autoValidate) 设置是否校验上传文件
+ * @method $this setUploadType(int $uploadType) 设置上传类型
+ * @method $this setImageValidate(string $imageValidate) 设置上传图片大小等验证信息
+ * @method $this setUploadPath(string $uploadPath) 设置文件上传路径
+ */
 class UploadService
 {
+    use LogicTrait;
     /**
      * 文件校验
      * @var bool
@@ -62,84 +72,21 @@ class UploadService
     private static $uploadStatus;
 
     /**
-     * 本类实例化
-     * @var
-     */
-    protected static $instance;
-
-    /**
      * 上传图片的大小 2MB 单位字节
      * @var string
      */
     protected $imageValidate = 'filesize:2097152|fileExt:jpg,jpeg,png,gif,pem|fileMime:image/jpeg,image/gif,image/png,text/plain';
 
+    protected $propsRule = [
+        'returnErr' => false,
+        'autoValidate' => false,
+        'uploadPath' => null,
+        'uploadType' => null,
+    ];
+
     protected function __construct()
     {
         self::init();
-    }
-
-    /**
-     * @return UploadService
-     */
-    public static function getInstance()
-    {
-        if (is_null(self::$instance)) self::$instance = new self();
-        return self::$instance;
-    }
-
-    /**
-     * 设置上传图片大小等验证信息
-     * @param string $imageValidate
-     * @return $this
-     */
-    public function setImageValidate(string $imageValidate)
-    {
-        $this->imageValidate = $imageValidate;
-        return $this;
-    }
-
-    /**
-     * 设置是否校验上传文件
-     * @param bool $autoValidate
-     * @return $this
-     */
-    public function setAutoValidate(bool $autoValidate)
-    {
-        $this->autoValidate = $autoValidate;
-        return $this;
-    }
-
-    /**
-     * 设置上传路径
-     * @param string $uploadPath
-     * @return $this
-     */
-    public function setUploadPath(string $uploadPath)
-    {
-        $this->uploadPath = $uploadPath;
-        return $this;
-    }
-
-    /**
-     * 设置上传类型
-     * @param int $uploadType
-     * @return $this
-     */
-    public function setUploadType(int $uploadType)
-    {
-        $this->uploadType = $uploadType;
-        return $this;
-    }
-
-    /**
-     * 设置发生错误时是否返回错误信息
-     * @param bool $returnErr
-     * @return $this
-     */
-    public function serReturnErr(bool $returnErr)
-    {
-        $this->returnErr = $returnErr;
-        return $this;
     }
 
     /**
@@ -465,8 +412,8 @@ class UploadService
         return DS . $savePath;
     }
 
-    protected function __clone()
+    protected function __destruct()
     {
-        // TODO: Implement __clone() method.
+        // TODO: Implement __destruct() method.
     }
 }
