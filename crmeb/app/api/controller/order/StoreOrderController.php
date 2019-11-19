@@ -516,7 +516,7 @@ class StoreOrderController
         else if($cartInfo['cart_info']['seckill_id']) $productId = $cartInfo['cart_info']['product_id'];
         else if($cartInfo['cart_info']['bargain_id']) $productId = $cartInfo['cart_info']['product_id'];
         else $productId = $cartInfo['product_id'];
-        if($group['pics']) $group['pics'] = json_encode(explode(',',$group['pics']));
+        if($group['pics']) $group['pics'] = json_encode(is_array($group['pics']) ? $group['pics']: explode(',',$group['pics']));
         $group = array_merge($group,[
             'uid'=>$uid,
             'oid'=>$cartInfo['oid'],
