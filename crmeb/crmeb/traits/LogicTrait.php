@@ -35,22 +35,6 @@ trait LogicTrait
     }
 
     /**
-     * 执行本类的方法
-     * @param string $carryoutname 方法名
-     * @return boolean
-     * */
-    public static function CarryOut($carryoutname)
-    {
-        $methords = get_class_methods(self::class);
-        if(!in_array($carryoutname,$methords)) return false;
-        try{
-            return (new self)->$carryoutname();
-        }catch (\Exception $e){
-            return false;
-        }
-    }
-
-    /**
      * 配置参数
      * @param array $config
      */
@@ -162,7 +146,7 @@ trait LogicTrait
      */
     public function __call($method,$ages)
     {
-        $keys = array_keys($this->providers);
+        $keys = property_exists($this,'propsRule') ? array_keys($this->providers) : [];
         $propsRuleKeys = property_exists($this,'propsRule') ? array_keys($this->propsRule) : [];
         if (strstr($method,'set') !== false) {
             $attribute = lcfirst(str_replace('set','',$method));
