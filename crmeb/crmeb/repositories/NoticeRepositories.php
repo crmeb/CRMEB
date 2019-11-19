@@ -34,7 +34,7 @@ class NoticeRepositories
             $openid = $wechatUser['openid'];
             $routineOpenid = $wechatUser['routine_openid'];
             try {
-                if ($openid) {//公众号发送模板消息
+                if ($openid && in_array($order['is_channel'],[0,2])) {//公众号发送模板消息
                     WechatTemplateService::sendTemplate($openid, WechatTemplateService::ORDER_PAY_SUCCESS, [
                         'first' => '亲，您购买的商品已支付成功',
                         'keyword1' => $order['order_id'],
@@ -51,7 +51,7 @@ class NoticeRepositories
                     ]);
                     //订单支付成功后给客服发送客服消息
                     CustomerRepository::sendOrderPaySuccessCustomerService($order, 1);
-                } else if ($routineOpenid) {//小程序发送模板消息
+                } else if ($routineOpenid && in_array($order['is_channel'],[1,2])) {//小程序发送模板消息
                     RoutineTemplate::sendOrderSuccess($formId, $order['order_id']);
                     //订单支付成功后给客服发送客服消息
                     CustomerRepository::sendOrderPaySuccessCustomerService($order, 0);
