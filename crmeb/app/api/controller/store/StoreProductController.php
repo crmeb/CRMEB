@@ -46,10 +46,6 @@ class StoreProductController
      * @param Request $request
      * @param $id
      * @return mixed
-     * @throws \think\Exception
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\ModelNotFoundException
-     * @throws \think\exception\DbException
      */
     public function code(Request $request, $id)
     {
@@ -103,6 +99,17 @@ class StoreProductController
         }
     }
 
+    /**
+     * 产品详情
+     * @param Request $request
+     * @param $id
+     * @param int $type
+     * @return mixed
+     * @throws \think\Exception
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\exception\DbException
+     */
     public function detail(Request $request, $id,$type = 0)
     {
         if (!$id || !($storeInfo = StoreProduct::getValidProduct($id))) return app('json')->fail('商品不存在或已下架');
@@ -167,7 +174,7 @@ class StoreProductController
         $data['system_store'] = ($res = SystemStore::getStoreDispose()) ? $res : [];
         $data['good_list'] = StoreProduct::getGoodList(18,'image,store_name,price,id,ot_price');
         $data['mapKey'] = sysConfig('tengxun_map_key');
-        $data['store_self_mention']= (int)sysConfig('store_self_mention') ?? 0;//门店自提是否开启
+        $data['store_self_mention'] = (int)sysConfig('store_self_mention') ?? 0;//门店自提是否开启
         return app('json')->successful($data);
     }
 

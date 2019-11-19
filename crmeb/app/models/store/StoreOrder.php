@@ -335,7 +335,7 @@ class StoreOrder extends BaseModel
             }
             $orderInfo = [
                 'uid' => $uid,
-                'order_id' => $test ? 0 : self::getNewOrderId($uid),
+                'order_id' => $test ? 0 : self::getNewOrderId(),
                 'real_name' => $addressInfo['real_name'],
                 'user_phone' => $addressInfo['phone'],
                 'user_address' => $addressInfo['province'] . ' ' . $addressInfo['city'] . ' ' . $addressInfo['district'] . ' ' . $addressInfo['detail'],
@@ -490,10 +490,10 @@ class StoreOrder extends BaseModel
      * @param $uid 用户uid
      * @return string
      */
-    public static function getNewOrderId($uid)
+    public static function getNewOrderId()
     {
         list($msec, $sec) = explode(' ', microtime());
-        $msectime = (float)sprintf('%.0f', (floatval($msec) + floatval($sec)) * 1000);
+        $msectime = number_format((floatval($msec) + floatval($sec)) * 1000,0,'','');
         $orderId =  'wx' . $msectime . mt_rand(10000,99999);
         if(self::be(['order_id'=>$orderId])) $orderId =  'wx' . $msectime . mt_rand(10000,99999);
         return $orderId;

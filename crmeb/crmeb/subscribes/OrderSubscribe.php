@@ -133,8 +133,9 @@ class OrderSubscribe
         //检测会员等级
         event('UserLevelAfter', [$order['uid']]);
 
-
-        //向后台发送新订单消息
-        ChannelService::instance()->send('NEW_ORDER', ['order_id'=>$order['order_id']]);
+        try{
+            //向后台发送新订单消息
+            ChannelService::instance()->send('NEW_ORDER', ['order_id'=>$order['order_id']]);
+        }catch (\Throwable $e){}
     }
 }
