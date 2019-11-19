@@ -151,18 +151,23 @@ trait LogicTrait
             $attribute = lcfirst(str_replace('set', '', $method));
             if (property_exists($this, $attribute) && in_array($attribute, $propsRuleKeys)) {
                 $propsRuleValeu = $this->propsRule[$attribute];
-                $type = $propsRuleValeu[1] ?? 'string';
-                $callable = $propsRuleValeu[2] ?? null;
-                if ($type == 'callable' && $callable) {
-                    $callable = $propsRuleValeu[2];
-                    if (method_exists($this, $callable))
-                        $ages[0] = $this->{$callable}($ages[0], $ages[1] ?? '');
+                $valeu = null;
+                if (is_array($propsRuleValeu)) {
+                    $type = $propsRuleValeu[1] ?? 'string';
+                    $callable = $propsRuleValeu[2] ?? null;
+                    if ($type == 'callable' && $callable) {
+                        $callable = $propsRuleValeu[2];
+                        if (method_exists($this, $callable))
+                            $ages[0] = $this->{$callable}($ages[0], $ages[1] ?? '');
 
-                } else if ($type) {
-                    $ages[0] = $this->toType($ages[0], $type) ?? null;
+                    } else if ($type) {
+                        $ages[0] = $this->toType($ages[0], $type) ?? null;
+                    }
+                } else {
+                    $valeu = $propsRuleValeu;
                 }
 
-                $this->{$attribute} = $ages[0];
+                $this->{$attribute} = $ages[0] ?? $valeu;
                 return $this;
             }
         } else if (in_array($method, $keys)) {
