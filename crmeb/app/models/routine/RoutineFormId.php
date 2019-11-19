@@ -1,5 +1,6 @@
 <?php
-namespace  app\models\routine;
+
+namespace app\models\routine;
 
 use crmeb\basic\BaseModel;
 use crmeb\traits\ModelTrait;
@@ -30,8 +31,9 @@ class RoutineFormId extends BaseModel
      * @return bool
      * @throws \Exception
      */
-    public static function delStatusInvalid(){
-        return self::where('status',2)->where('stop_time','<',time())->delete();
+    public static function delStatusInvalid()
+    {
+        return self::where('status', 2)->where('stop_time', '<', time())->delete();
     }
 
     /**
@@ -43,10 +45,11 @@ class RoutineFormId extends BaseModel
      * @throws \think\db\exception\ModelNotFoundException
      * @throws \think\exception\DbException
      */
-    public static function getFormIdOne($uid = 0, $isArray = false){
-        $formId = self::where('status',1)->where('stop_time','>',time())->where('uid',$uid)->order('id asc')->find();
-        if($isArray) return $formId;
-        if($formId) return $formId['form_id'];
+    public static function getFormIdOne($uid = 0, $isArray = false)
+    {
+        $formId = self::where('status', 1)->where('stop_time', '>', time())->where('uid', $uid)->order('id asc')->find();
+        if ($isArray) return $formId;
+        if ($formId) return $formId['form_id'];
         else return false;
     }
 
@@ -55,9 +58,10 @@ class RoutineFormId extends BaseModel
      * @param string $formId
      * @return $this|bool
      */
-    public static function delFormIdOne($formId = ''){
-        if($formId == '') return true;
-        return self::where('form_id',$formId)->update(['status'=>2]);
+    public static function delFormIdOne($formId = '')
+    {
+        if ($formId == '') return true;
+        return self::where('form_id', $formId)->update(['status' => 2]);
     }
 
     /**
@@ -68,11 +72,11 @@ class RoutineFormId extends BaseModel
      */
     public static function SetFormId($formId, $uid)
     {
-        if(!strlen(trim($formId)) || $formId == 'the formId is a mock one') return false;
+        if (!strlen(trim($formId)) || $formId == 'the formId is a mock one') return false;
         $data['form_id'] = $formId;
         $data['uid'] = $uid;
         $data['status'] = 1;
-        $data['stop_time'] = bcadd(time(),bcmul(6,86400,0),0);
+        $data['stop_time'] = bcadd(time(), bcmul(6, 86400, 0), 0);
         return self::create($data);
     }
 }

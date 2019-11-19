@@ -24,10 +24,10 @@ class User extends BaseModel
 
     protected $name = 'user';
 
-    protected $insert = ['add_time','add_ip','last_time','last_ip'];
+    protected $insert = ['add_time', 'add_ip', 'last_time', 'last_ip'];
 
     protected $hidden = [
-        'add_ip','add_time','account', 'clean_time','last_ip', 'last_time', 'pwd', 'status', 'mark', 'pwd'
+        'add_ip', 'add_time', 'account', 'clean_time', 'last_ip', 'last_time', 'pwd', 'status', 'mark', 'pwd'
     ];
 
     protected function setAddTimeAttr($value)
@@ -50,22 +50,21 @@ class User extends BaseModel
         return app('request')->ip();
     }
 
-    public static function setWechatUser($wechatUser,$spread_uid = 0)
+    public static function setWechatUser($wechatUser, $spread_uid = 0)
     {
         return self::create([
-            'account'=>'wx'.$wechatUser['uid'].time(),
-            'pwd'=>md5(123456),
-            'nickname'=>$wechatUser['nickname']?:'',
-            'avatar'=>$wechatUser['headimgurl']?:'',
-            'spread_uid'=>$spread_uid,
-            'add_time'=>time(),
-            'add_ip'=>app('request')->ip(),
-            'last_time'=>time(),
-            'last_ip'=>app('request')->ip(),
-            'uid'=>$wechatUser['uid'],
-            'user_type'=>'wechat'
+            'account' => 'wx' . $wechatUser['uid'] . time(),
+            'pwd' => md5(123456),
+            'nickname' => $wechatUser['nickname'] ?: '',
+            'avatar' => $wechatUser['headimgurl'] ?: '',
+            'spread_uid' => $spread_uid,
+            'add_time' => time(),
+            'add_ip' => app('request')->ip(),
+            'last_time' => time(),
+            'last_ip' => app('request')->ip(),
+            'uid' => $wechatUser['uid'],
+            'user_type' => 'wechat'
         ]);
-
     }
 
 
@@ -79,8 +78,8 @@ class User extends BaseModel
      */
     public static function getCleanTime($uid)
     {
-        $user=self::where('uid',$uid)->field(['add_time','clean_time'])->find();
-        if(!$user) return 0;
+        $user = self::where('uid', $uid)->field(['add_time', 'clean_time'])->find();
+        if (!$user) return 0;
         return $user['clean_time'] ? $user['clean_time'] : $user['add_time'];
     }
 
@@ -93,36 +92,36 @@ class User extends BaseModel
      * @throws \think\db\exception\ModelNotFoundException
      * @throws \think\exception\DbException
      */
-    public static function updateWechatUser($wechatUser,$uid)
+    public static function updateWechatUser($wechatUser, $uid)
     {
-        $userInfo = self::where('uid',$uid)->find();
-        if(!$userInfo) return ;
-        if($userInfo->spread_uid){
+        $userInfo = self::where('uid', $uid)->find();
+        if (!$userInfo) return;
+        if ($userInfo->spread_uid) {
             return self::edit([
-                'nickname'=>$wechatUser['nickname']?:'',
-                'avatar'=>$wechatUser['headimgurl']?:'',
-                'login_type'=>isset($wechatUser['login_type']) ? $wechatUser['login_type'] : $userInfo->login_type,
-            ],$uid,'uid');
-        }else {
-            $data=[
                 'nickname' => $wechatUser['nickname'] ?: '',
                 'avatar' => $wechatUser['headimgurl'] ?: '',
-                'is_promoter' =>$userInfo->is_promoter,
-                'login_type'=>isset($wechatUser['login_type']) ? $wechatUser['login_type'] : $userInfo->login_type,
+                'login_type' => isset($wechatUser['login_type']) ? $wechatUser['login_type'] : $userInfo->login_type,
+            ], $uid, 'uid');
+        } else {
+            $data = [
+                'nickname' => $wechatUser['nickname'] ?: '',
+                'avatar' => $wechatUser['headimgurl'] ?: '',
+                'is_promoter' => $userInfo->is_promoter,
+                'login_type' => isset($wechatUser['login_type']) ? $wechatUser['login_type'] : $userInfo->login_type,
                 'spread_uid' => 0,
-                'spread_time' =>0,
+                'spread_time' => 0,
                 'last_time' => time(),
                 'last_ip' => request()->ip(),
             ];
             //TODO 获取后台分销类型
             $storeBrokerageStatus = sysConfig('store_brokerage_statu');
             $storeBrokerageStatus = $storeBrokerageStatus ? $storeBrokerageStatus : 1;
-            if(isset($wechatUser['code']) && $wechatUser['code'] && $wechatUser['code'] != $uid && $uid != self::where('uid',$wechatUser['code'])->value('spread_uid')){
-                if($storeBrokerageStatus == 1){
-                    $spreadCount = self::where('uid',$wechatUser['code'])->count();
-                    if($spreadCount){
-                        $spreadInfo = self::where('uid',$wechatUser['code'])->find();
-                        if($spreadInfo->is_promoter){
+            if (isset($wechatUser['code']) && $wechatUser['code'] && $wechatUser['code'] != $uid && $uid != self::where('uid', $wechatUser['code'])->value('spread_uid')) {
+                if ($storeBrokerageStatus == 1) {
+                    $spreadCount = self::where('uid', $wechatUser['code'])->count();
+                    if ($spreadCount) {
+                        $spreadInfo = self::where('uid', $wechatUser['code'])->find();
+                        if ($spreadInfo->is_promoter) {
                             //TODO 只有扫码才可以获得推广权限
 //                            if(isset($wechatUser['isPromoter'])) $data['is_promoter'] = $wechatUser['isPromoter'] ? 1 : 0;
                         }
@@ -148,21 +147,21 @@ class User extends BaseModel
     {
         //当前用户信息
         $userInfo = self::where('uid', $uid)->find();
-        if(!$userInfo) return true;
+        if (!$userInfo) return true;
         //当前用户有上级直接返回
-        if($userInfo->spread_uid) return true;
+        if ($userInfo->spread_uid) return true;
         //没有推广编号直接返回
-        if(!$spread)  return true;
-        if($spread == $uid) return true;
-        if($uid == self::where('uid',$spread)->value('spread_uid')) return true;
+        if (!$spread) return true;
+        if ($spread == $uid) return true;
+        if ($uid == self::where('uid', $spread)->value('spread_uid')) return true;
         //TODO 获取后台分销类型
         $storeBrokerageStatus = sysConfig('store_brokerage_statu');
         $storeBrokerageStatus = $storeBrokerageStatus ? $storeBrokerageStatus : 1;
-        if($storeBrokerageStatus == 1){
-            $spreadCount = self::where('uid',$spread)->count();
-            if($spreadCount){
-                $spreadInfo = self::where('uid',$spread)->find();
-                if($spreadInfo->is_promoter){
+        if ($storeBrokerageStatus == 1) {
+            $spreadCount = self::where('uid', $spread)->count();
+            if ($spreadCount) {
+                $spreadInfo = self::where('uid', $spread)->find();
+                if ($spreadInfo->is_promoter) {
                     //TODO 只有扫码才可以获得推广权限
 //                            if(isset($wechatUser['isPromoter'])) $data['is_promoter'] = $wechatUser['isPromoter'] ? 1 : 0;
                 }
@@ -179,25 +178,26 @@ class User extends BaseModel
      * @param int $spread_uid
      * @return object
      */
-    public static function setRoutineUser($routineUser,$spread_uid = 0){
+    public static function setRoutineUser($routineUser, $spread_uid = 0)
+    {
         self::beginTrans();
         $res1 = true;
-        if($spread_uid) $res1 = self::where('uid',$spread_uid)->inc('spread_count',1)->update();
+        if ($spread_uid) $res1 = self::where('uid', $spread_uid)->inc('spread_count', 1)->update();
 //        $storeBrokerageStatu = sysConfig('store_brokerage_statu') ? : 1;//获取后台分销类型
         $res2 = self::create([
-            'account'=>'rt'.$routineUser['uid'].time(),
-            'pwd'=>md5(123456),
-            'nickname'=>$routineUser['nickname']?:'',
-            'avatar'=>$routineUser['headimgurl']?:'',
-            'spread_uid'=>$spread_uid,
+            'account' => 'rt' . $routineUser['uid'] . time(),
+            'pwd' => md5(123456),
+            'nickname' => $routineUser['nickname'] ?: '',
+            'avatar' => $routineUser['headimgurl'] ?: '',
+            'spread_uid' => $spread_uid,
 //            'is_promoter'=>$spread_uid || $storeBrokerageStatu != 1 ? 1: 0,
-            'spread_time'=>$spread_uid ? time() : 0,
-            'uid'=>$routineUser['uid'],
-            'add_time'=>$routineUser['add_time'],
-            'add_ip'=>request()->ip(),
-            'last_time'=>time(),
-            'last_ip'=>request()->ip(),
-            'user_type'=>$routineUser['user_type']
+            'spread_time' => $spread_uid ? time() : 0,
+            'uid' => $routineUser['uid'],
+            'add_time' => $routineUser['add_time'],
+            'add_ip' => request()->ip(),
+            'last_time' => time(),
+            'last_ip' => request()->ip(),
+            'user_type' => $routineUser['user_type']
         ]);
         $res = $res1 && $res2;
         self::checkTrans($res);
@@ -212,13 +212,13 @@ class User extends BaseModel
     {
         $uid = null;
         $uid = Session::get('LoginUid');
-        if($uid) return $uid;
+        if ($uid) return $uid;
         else return 0;
     }
 
     /**
      * TODO 查询当前用户信息
-     * @param $uid  $uid 用户编号
+     * @param $uid $uid 用户编号
      * @param string $field $field 查询的字段
      * @return array
      * @throws \think\Exception
@@ -226,11 +226,11 @@ class User extends BaseModel
      * @throws \think\db\exception\ModelNotFoundException
      * @throws \think\exception\DbException
      */
-    public static function getUserInfo($uid,$field = '')
+    public static function getUserInfo($uid, $field = '')
     {
-        if(strlen(trim($field))) $userInfo = self::where('uid',$uid)->field($field)->find();
-        else  $userInfo = self::where('uid',$uid)->find();
-        if(!$userInfo) return [];
+        if (strlen(trim($field))) $userInfo = self::where('uid', $uid)->field($field)->find();
+        else  $userInfo = self::where('uid', $uid)->find();
+        if (!$userInfo) return [];
         return $userInfo->toArray();
     }
 
@@ -239,12 +239,13 @@ class User extends BaseModel
      * @param int $uid
      * @return bool
      */
-    public static function isUserSpread($uid = 0){
-        if(!$uid) return false;
+    public static function isUserSpread($uid = 0)
+    {
+        if (!$uid) return false;
         $status = (int)sysConfig('store_brokerage_statu');
         $isPromoter = true;
-        if($status == 1) $isPromoter = self::where('uid',$uid)->value('is_promoter');
-        if($isPromoter) return true;
+        if ($status == 1) $isPromoter = self::where('uid', $uid)->value('is_promoter');
+        if ($isPromoter) return true;
         else return false;
     }
 
@@ -261,48 +262,48 @@ class User extends BaseModel
     public static function backOrderBrokerage($orderInfo)
     {
         //TODO 如果时营销产品不返佣金
-        if(isset($orderInfo['combination_id']) && $orderInfo['combination_id']) return true;
-        if(isset($orderInfo['seckill_id']) && $orderInfo['seckill_id']) return true;
-        if(isset($orderInfo['bargain_id']) && $orderInfo['bargain_id']) return true;
+        if (isset($orderInfo['combination_id']) && $orderInfo['combination_id']) return true;
+        if (isset($orderInfo['seckill_id']) && $orderInfo['seckill_id']) return true;
+        if (isset($orderInfo['bargain_id']) && $orderInfo['bargain_id']) return true;
         //TODO 支付金额减掉邮费
-        $orderInfo['pay_price'] = bcsub($orderInfo['pay_price'],$orderInfo['pay_postage'],2);
+        $orderInfo['pay_price'] = bcsub($orderInfo['pay_price'], $orderInfo['pay_postage'], 2);
         //TODO 获取购买商品的用户
         $userInfo = User::getUserInfo($orderInfo['uid']);
         //TODO 当前用户不存在 没有上级 或者 当用用户上级时自己  直接返回
-        if(!$userInfo || !$userInfo['spread_uid'] || $userInfo['spread_uid'] == $orderInfo['uid']) return true;
+        if (!$userInfo || !$userInfo['spread_uid'] || $userInfo['spread_uid'] == $orderInfo['uid']) return true;
         //TODO 获取后台分销类型  1 指定分销 2 人人分销
         $storeBrokerageStatus = sysConfig('store_brokerage_statu');
         $storeBrokerageStatus = $storeBrokerageStatus ? $storeBrokerageStatus : 1;
         //TODO 指定分销 判断 上级是否时推广员  如果不是推广员直接跳转二级返佣
-        if($storeBrokerageStatus == 1){
-            if(!User::be(['uid'=>$userInfo['spread_uid'],'is_promoter'=>1])) return self::backOrderBrokerageTwo($orderInfo);
+        if ($storeBrokerageStatus == 1) {
+            if (!User::be(['uid' => $userInfo['spread_uid'], 'is_promoter' => 1])) return self::backOrderBrokerageTwo($orderInfo);
         }
         //TODO 获取后台一级返佣比例
         $storeBrokerageRatio = sysConfig('store_brokerage_ratio');
         //TODO 一级返佣比例 小于等于零时直接返回 不返佣
-        if($storeBrokerageRatio <= 0) return true;
+        if ($storeBrokerageRatio <= 0) return true;
         //TODO 计算获取一级返佣比例
-        $brokerageRatio = bcdiv($storeBrokerageRatio,100,2);
+        $brokerageRatio = bcdiv($storeBrokerageRatio, 100, 2);
         //TODO 成本价
         $cost = isset($orderInfo['cost']) ? $orderInfo['cost'] : 0;
         //TODO 成本价大于等于支付价格时直接返回
-        if($cost >= $orderInfo['pay_price']) return true;
+        if ($cost >= $orderInfo['pay_price']) return true;
         //TODO 获取订单毛利
-        $payPrice = bcsub($orderInfo['pay_price'],$cost,2);
+        $payPrice = bcsub($orderInfo['pay_price'], $cost, 2);
         //TODO 返佣金额 = 毛利 / 一级返佣比例
-        $brokeragePrice = bcmul($payPrice,$brokerageRatio,2);
+        $brokeragePrice = bcmul($payPrice, $brokerageRatio, 2);
         //TODO 返佣金额小于等于0 直接返回不返佣金
-        if($brokeragePrice <= 0) return true;
+        if ($brokeragePrice <= 0) return true;
         //TODO 获取上级推广员信息
         $spreadUserInfo = User::getUserInfo($userInfo['spread_uid']);
         //TODO 上级推广员返佣之后的金额
-        $balance = bcadd($spreadUserInfo['brokerage_price'],$brokeragePrice,2);
-        $mark = $userInfo['nickname'].'成功消费'.floatval($orderInfo['pay_price']).'元,奖励推广佣金'.floatval($brokeragePrice);
+        $balance = bcadd($spreadUserInfo['brokerage_price'], $brokeragePrice, 2);
+        $mark = $userInfo['nickname'] . '成功消费' . floatval($orderInfo['pay_price']) . '元,奖励推广佣金' . floatval($brokeragePrice);
         self::beginTrans();
         //TODO 添加推广记录
-        $res1 = UserBill::income('获得推广佣金',$userInfo['spread_uid'],'now_money','brokerage',$brokeragePrice,$orderInfo['id'],$balance,$mark);
+        $res1 = UserBill::income('获得推广佣金', $userInfo['spread_uid'], 'now_money', 'brokerage', $brokeragePrice, $orderInfo['id'], $balance, $mark);
         //TODO 添加用户余额
-        $res2 = self::bcInc($userInfo['spread_uid'],'brokerage_price',$brokeragePrice,'uid');
+        $res2 = self::bcInc($userInfo['spread_uid'], 'brokerage_price', $brokeragePrice, 'uid');
         //TODO 一级返佣成功 跳转二级返佣
         $res = $res1 && $res2 && self::backOrderBrokerageTwo($orderInfo);
         self::checkTrans($res);
@@ -319,46 +320,47 @@ class User extends BaseModel
      * @throws \think\db\exception\ModelNotFoundException
      * @throws \think\exception\DbException
      */
-    public static function backOrderBrokerageTwo($orderInfo){
+    public static function backOrderBrokerageTwo($orderInfo)
+    {
         //TODO 获取购买商品的用户
         $userInfo = User::getUserInfo($orderInfo['uid']);
         //TODO 获取上推广人
         $userInfoTwo = User::getUserInfo($userInfo['spread_uid']);
         //TODO 上推广人不存在 或者 上推广人没有上级  或者 当用用户上上级时自己  直接返回
-        if(!$userInfoTwo || !$userInfoTwo['spread_uid'] || $userInfoTwo['spread_uid'] == $orderInfo['uid']) return true;
+        if (!$userInfoTwo || !$userInfoTwo['spread_uid'] || $userInfoTwo['spread_uid'] == $orderInfo['uid']) return true;
         //TODO 获取后台分销类型  1 指定分销 2 人人分销
         $storeBrokerageStatus = sysConfig('store_brokerage_statu');
         $storeBrokerageStatus = $storeBrokerageStatus ? $storeBrokerageStatus : 1;
         //TODO 指定分销 判断 上上级是否时推广员  如果不是推广员直接返回
-        if($storeBrokerageStatus == 1){
-            if(!User::be(['uid'=>$userInfoTwo['spread_uid'],'is_promoter'=>1]))  return true;
+        if ($storeBrokerageStatus == 1) {
+            if (!User::be(['uid' => $userInfoTwo['spread_uid'], 'is_promoter' => 1])) return true;
         }
         //TODO 获取二级返佣比例
         $storeBrokerageTwo = sysConfig('store_brokerage_two');
         //TODO 二级返佣比例小于等于0 直接返回
-        if($storeBrokerageTwo <= 0) return true;
+        if ($storeBrokerageTwo <= 0) return true;
         //TODO 计算获取二级返佣比例
-        $brokerageRatio = bcdiv($storeBrokerageTwo,100,2);
+        $brokerageRatio = bcdiv($storeBrokerageTwo, 100, 2);
         //TODO 获取成本价
         $cost = isset($orderInfo['cost']) ? $orderInfo['cost'] : 0;
         //TODO 成本价大于等于支付价格时直接返回
-        if($cost >= $orderInfo['pay_price']) return true;
+        if ($cost >= $orderInfo['pay_price']) return true;
         //TODO 获取订单毛利
-        $payPrice = bcsub($orderInfo['pay_price'],$cost,2);
+        $payPrice = bcsub($orderInfo['pay_price'], $cost, 2);
         //TODO 返佣金额 = 毛利 / 二级返佣比例
-        $brokeragePrice = bcmul($payPrice,$brokerageRatio,2);
+        $brokeragePrice = bcmul($payPrice, $brokerageRatio, 2);
         //TODO 返佣金额小于等于0 直接返回不返佣金
-        if($brokeragePrice <= 0) return true;
+        if ($brokeragePrice <= 0) return true;
         //TODO 获取上上级推广员信息
         $spreadUserInfoTwo = User::getUserInfo($userInfoTwo['spread_uid']);
         //TODO 获取上上级推广员返佣之后余额
-        $balance = bcadd($spreadUserInfoTwo['brokerage_price'],$brokeragePrice,2);
-        $mark = '二级推广人'.$userInfo['nickname'].'成功消费'.floatval($orderInfo['pay_price']).'元,奖励推广佣金'.floatval($brokeragePrice);
+        $balance = bcadd($spreadUserInfoTwo['brokerage_price'], $brokeragePrice, 2);
+        $mark = '二级推广人' . $userInfo['nickname'] . '成功消费' . floatval($orderInfo['pay_price']) . '元,奖励推广佣金' . floatval($brokeragePrice);
         self::beginTrans();
         //TODO 添加返佣记录
-        $res1 = UserBill::income('获得推广佣金',$userInfoTwo['spread_uid'],'now_money','brokerage',$brokeragePrice,$orderInfo['id'],$balance,$mark);
+        $res1 = UserBill::income('获得推广佣金', $userInfoTwo['spread_uid'], 'now_money', 'brokerage', $brokeragePrice, $orderInfo['id'], $balance, $mark);
         //TODO 添加用户余额
-        $res2 = self::bcInc($userInfoTwo['spread_uid'],'brokerage_price',$brokeragePrice,'uid');
+        $res2 = self::bcInc($userInfoTwo['spread_uid'], 'brokerage_price', $brokeragePrice, 'uid');
         $res = $res1 && $res2;
         self::checkTrans($res);
         return $res;
@@ -371,14 +373,14 @@ class User extends BaseModel
      * @param $limit
      * @return mixed
      */
-    public static function getSpreadList($uid,$page,$limit)
+    public static function getSpreadList($uid, $page, $limit)
     {
-        $list=self::where('spread_uid',$uid)->field('uid,nickname,avatar,add_time')->page($page,$limit)->order('add_time DESC')->select();
-        foreach ($list as $k=>$user){
-            $list[$k]['add_time'] = date('Y/m/d',$user['add_time']);
+        $list = self::where('spread_uid', $uid)->field('uid,nickname,avatar,add_time')->page($page, $limit)->order('add_time DESC')->select();
+        foreach ($list as $k => $user) {
+            $list[$k]['add_time'] = date('Y/m/d', $user['add_time']);
             $list[$k]['price'] = StoreOrder::getUserPrice($user['uid']);
         }
-        $count = self::where('spread_uid',$uid)->field('uid,nickname,avatar,add_time')->count();
+        $count = self::where('spread_uid', $uid)->field('uid,nickname,avatar,add_time')->count();
         $data['count'] = $count;
         $data['list'] = $list;
         return $data;
@@ -391,7 +393,7 @@ class User extends BaseModel
      */
     public static function getOneSpreadUid($uid)
     {
-        return self::where('spread_uid',$uid)->column('uid');
+        return self::where('spread_uid', $uid)->column('uid');
     }
 
     /**
@@ -401,26 +403,29 @@ class User extends BaseModel
      * @param $uid 用户uid
      * @return bool
      */
-    public static function editUser($avatar,$nickname,$uid)
+    public static function editUser($avatar, $nickname, $uid)
     {
-        return self::edit(['avatar'=>$avatar,'nickname'=>$nickname],$uid,'uid');
+        return self::edit(['avatar' => $avatar, 'nickname' => $nickname], $uid, 'uid');
     }
+
     /**
      * TODO 获取推广人数 一级
      * @param int $uid
      * @return bool|int|string
      */
-    public static function getSpreadCount($uid = 0){
-        if(!$uid) return false;
-        return self::where('spread_uid',$uid)->count();
+    public static function getSpreadCount($uid = 0)
+    {
+        if (!$uid) return false;
+        return self::where('spread_uid', $uid)->count();
     }
 
     /**
      * 修改当前用户的推广人数
      * @param $uid
      */
-    public static function setUserSpreadCount($uid){
-        self::where('uid',$uid)->update(['spread_count'=>self::getSpreadCount($uid)]);
+    public static function setUserSpreadCount($uid)
+    {
+        self::where('uid', $uid)->update(['spread_count' => self::getSpreadCount($uid)]);
     }
 
     /**
@@ -428,32 +433,34 @@ class User extends BaseModel
      * @param int $uid
      * @return bool|int|string
      */
-    public static function getSpreadLevelCount($uid = 0){
-        if(!$uid) return false;
-        $uidSubordinate = self::where('spread_uid',$uid)->column('uid');
-        if(!count($uidSubordinate)) return 0;
-        return self::where('spread_uid','IN',implode(',',$uidSubordinate))->count();
+    public static function getSpreadLevelCount($uid = 0)
+    {
+        if (!$uid) return false;
+        $uidSubordinate = self::where('spread_uid', $uid)->column('uid');
+        if (!count($uidSubordinate)) return 0;
+        return self::where('spread_uid', 'IN', implode(',', $uidSubordinate))->count();
     }
 
     /**
      * 获取用户下级推广人
-     * @param int $uid  当前用户
+     * @param int $uid 当前用户
      * @param int $grade 等级  0  一级 1 二级
-     * @param string $orderBy  排序
+     * @param string $orderBy 排序
      * @param string $keyword
      * @param int $page
      * @param int $limit
      * @return array|bool
      */
-    public static function getUserSpreadGrade($uid = 0,$grade = 0,$orderBy = '',$keyword = '',$page = 0,$limit = 20){
-        if(!$uid) return [];
-        $gradeGroup = [0,1];
-        if(!in_array($grade,$gradeGroup)) return self::setErrorInfo('等级错误');
-        $userStair = self::where('spread_uid',$uid)->column('uid');
-        if(!count($userStair)) return [];
-        if($grade == 0) return self::getUserSpreadCountList(implode(',',$userStair),$orderBy,$keyword,$page,$limit);
-        $userSecondary = self::where('spread_uid','in',implode(',',$userStair))->column('uid');
-        return self::getUserSpreadCountList(implode(',',$userSecondary),$orderBy,$keyword,$page,$limit);
+    public static function getUserSpreadGrade($uid = 0, $grade = 0, $orderBy = '', $keyword = '', $page = 0, $limit = 20)
+    {
+        if (!$uid) return [];
+        $gradeGroup = [0, 1];
+        if (!in_array($grade, $gradeGroup)) return self::setErrorInfo('等级错误');
+        $userStair = self::where('spread_uid', $uid)->column('uid');
+        if (!count($userStair)) return [];
+        if ($grade == 0) return self::getUserSpreadCountList(implode(',', $userStair), $orderBy, $keyword, $page, $limit);
+        $userSecondary = self::where('spread_uid', 'in', implode(',', $userStair))->column('uid');
+        return self::getUserSpreadCountList(implode(',', $userSecondary), $orderBy, $keyword, $page, $limit);
     }
 
     /**
@@ -465,22 +472,22 @@ class User extends BaseModel
      * @param int $limit
      * @return array
      */
-    public static function getUserSpreadCountList($uid, $orderBy = '',$keyword = '',$page = 0,$limit = 20)
+    public static function getUserSpreadCountList($uid, $orderBy = '', $keyword = '', $page = 0, $limit = 20)
     {
         $model = new self;
-        if($orderBy==='') $orderBy='u.add_time desc';
+        if ($orderBy === '') $orderBy = 'u.add_time desc';
         $model = $model->alias(' u');
-        $sql = StoreOrder::where('o.paid',1)->group('o.uid')->field(['SUM(o.pay_price) as numberCount','o.uid','o.order_id'])
-            ->where('o.is_del',0)->where('o.is_system_del',0)->alias('o')->fetchSql(true)->select();
-        $model = $model->join("(".$sql.") p" ,'u.uid = p.uid','LEFT');
-        $model = $model->where('u.uid','IN',$uid);
+        $sql = StoreOrder::where('o.paid', 1)->group('o.uid')->field(['SUM(o.pay_price) as numberCount', 'o.uid', 'o.order_id'])
+            ->where('o.is_del', 0)->where('o.is_system_del', 0)->alias('o')->fetchSql(true)->select();
+        $model = $model->join("(" . $sql . ") p", 'u.uid = p.uid', 'LEFT');
+        $model = $model->where('u.uid', 'IN', $uid);
         $model = $model->field("u.uid,u.nickname,u.avatar,from_unixtime(u.add_time,'%Y/%m/%d') as time,u.spread_count as childCount,u.pay_count as orderCount,p.numberCount");
-        if(strlen(trim($keyword))) $model = $model->where('u.nickname|u.phone','like',"%$keyword%");
+        if (strlen(trim($keyword))) $model = $model->where('u.nickname|u.phone', 'like', "%$keyword%");
         $model = $model->group('u.uid');
         $model = $model->order($orderBy);
-        $model = $model->page($page,$limit);
+        $model = $model->page($page, $limit);
         $list = $model->select();
-        if($list) return $list->toArray();
+        if ($list) return $list->toArray();
         else return [];
     }
 
@@ -493,24 +500,24 @@ class User extends BaseModel
      * @throws \think\db\exception\ModelNotFoundException
      * @throws \think\exception\DbException
      */
-    public static function setSpreadUid($uid,$spreadUid)
+    public static function setSpreadUid($uid, $spreadUid)
     {
         // 自己不能绑定自己为上级
-        if($uid == $spreadUid) return false;
+        if ($uid == $spreadUid) return false;
         //TODO 获取后台分销类型
         $storeBrokerageStatus = sysConfig('store_brokerage_statu');
         $storeBrokerageStatus = $storeBrokerageStatus ? $storeBrokerageStatus : 1;
-        if($storeBrokerageStatus == 1){
-            $spreadCount = self::where('uid',$spreadUid)->count();
-            if($spreadCount){
-                $spreadInfo = self::where('uid',$spreadUid)->find();
-                if($spreadInfo->is_promoter){
+        if ($storeBrokerageStatus == 1) {
+            $spreadCount = self::where('uid', $spreadUid)->count();
+            if ($spreadCount) {
+                $spreadInfo = self::where('uid', $spreadUid)->find();
+                if ($spreadInfo->is_promoter) {
                     //TODO 只有扫码才可以获得推广权限
-                    if(isset($wechatUser['isPromoter'])) $data['is_promoter'] = 1;
+                    if (isset($wechatUser['isPromoter'])) $data['is_promoter'] = 1;
                 }
             }
         }
-        return self::where('uid',$uid)->update(['spread_uid'=>$spreadUid,'spread_time'=>time()]);
+        return self::where('uid', $uid)->update(['spread_uid' => $spreadUid, 'spread_time' => time()]);
     }
 
     /**
@@ -519,9 +526,10 @@ class User extends BaseModel
      * @param $spreadUid
      * @return bool|int
      */
-    public static function validSpread($uid, $spreadUid){
-       if(!$uid || !$spreadUid) return false;
-       return self::where('uid', $uid)->where('spread_uid', $spreadUid)->count();
+    public static function validSpread($uid, $spreadUid)
+    {
+        if (!$uid || !$spreadUid) return false;
+        return self::where('uid', $uid)->where('spread_uid', $spreadUid)->count();
     }
 
     /**
@@ -533,12 +541,12 @@ class User extends BaseModel
      */
     public static function register($account, $password, $spread)
     {
-        if(self::be(['account'=>$account])) return self::setErrorInfo('用户已存在');
+        if (self::be(['account' => $account])) return self::setErrorInfo('用户已存在');
         $phone = $account;
         $data['account'] = $account;
         $data['pwd'] = md5($password);
         $data['phone'] = $phone;
-        if($spread){
+        if ($spread) {
             $data['spread_uid'] = $spread;
             $data['spread_time'] = time();
         }
@@ -552,7 +560,7 @@ class User extends BaseModel
         $data['add_ip'] = app('request')->ip();
         $data['last_time'] = time();
         $data['last_ip'] = app('request')->ip();
-        $data['nickname'] = substr(md5($account.time()), 0, 12);
+        $data['nickname'] = substr(md5($account . time()), 0, 12);
         $data['avatar'] = $data['headimgurl'] = sysConfig('h5_avatar');
         $data['city'] = '';
         $data['language'] = '';
@@ -575,10 +583,10 @@ class User extends BaseModel
      */
     public static function reset($account, $password)
     {
-        if(!self::be(['account'=>$account])) return self::setErrorInfo('用户不存在');
+        if (!self::be(['account' => $account])) return self::setErrorInfo('用户不存在');
         $count = self::where('account', $account)->where('pwd', md5($password))->count();
-        if($count) return true;
-        return self::where('account', $account)->update(['pwd'=>md5($password)]);
+        if ($count) return true;
+        return self::where('account', $account)->update(['pwd' => md5($password)]);
     }
 
     /**
@@ -588,7 +596,7 @@ class User extends BaseModel
      */
     public static function checkPhone($phone)
     {
-        return self::be(['account'=>$phone]);
+        return self::be(['account' => $phone]);
     }
 
 
@@ -602,7 +610,7 @@ class User extends BaseModel
      */
     public static function getRankList($data)
     {
-        switch ($data['type']){
+        switch ($data['type']) {
             case 'week':
                 $startTime = strtotime('this week');
                 $endTime = time();
@@ -614,11 +622,11 @@ class User extends BaseModel
         }
         $list = self::alias('t0')
             ->field('t0.uid,t0.spread_uid,count(t1.spread_uid) AS count,t0.add_time,t0.nickname,t0.avatar')
-            ->join('user t1','t0.uid = t1.spread_uid','LEFT')
-            ->where('t1.spread_uid','<>',0)
+            ->join('user t1', 't0.uid = t1.spread_uid', 'LEFT')
+            ->where('t1.spread_uid', '<>', 0)
             ->order('count desc')
-            ->where('t0.add_time','BETWEEN',[$startTime,$endTime])
-            ->page($data['page'],$data['limit'])
+            ->where('t0.add_time', 'BETWEEN', [$startTime, $endTime])
+            ->page($data['page'], $data['limit'])
             ->group('t0.uid')
             ->select();
         return count($list) ? $list->toArray() : [];
@@ -629,25 +637,26 @@ class User extends BaseModel
      * @param $data
      * @return array
      */
-    public static  function brokerageRank($data){
-        $model = self::where('status',1);
-        switch ($data['type']){
+    public static function brokerageRank($data)
+    {
+        $model = self::where('status', 1);
+        switch ($data['type']) {
             case 'week':
-                $model = $model->whereIn('uid',function ($query){
-                    $query->name('user_bill')->where('category','now_money')->where('type','brokerage')
+                $model = $model->whereIn('uid', function ($query) {
+                    $query->name('user_bill')->where('category', 'now_money')->where('type', 'brokerage')
                         ->whereWeek('add_time')->field('uid');
                 });
                 break;
             case 'month':
-                $model = $model->whereIn('uid',function ($query){
-                    $query->name('user_bill')->where('category','now_money')->where('type','brokerage')
+                $model = $model->whereIn('uid', function ($query) {
+                    $query->name('user_bill')->where('category', 'now_money')->where('type', 'brokerage')
                         ->whereMonth('add_time')->field('uid');
                 });
                 break;
         }
-        $users= $model->field('uid,nickname,avatar,brokerage_price')->order('brokerage_price desc')
-            ->page((int)$data['page'],(int)$data['limit'])->select();
-        return  count($users) ? $users->toArray() : [];
+        $users = $model->field('uid,nickname,avatar,brokerage_price')->order('brokerage_price desc')
+            ->page((int)$data['page'], (int)$data['limit'])->select();
+        return count($users) ? $users->toArray() : [];
     }
 
     /**
@@ -655,23 +664,23 @@ class User extends BaseModel
      * @param $uid
      * @return int
      */
-    public static function currentUserRank($type,$brokerage_price)
+    public static function currentUserRank($type, $brokerage_price)
     {
-        $model = self::where('status',1);
-        switch ($type){
+        $model = self::where('status', 1);
+        switch ($type) {
             case 'week':
-                $model = $model->whereIn('uid',function ($query){
-                    $query->name('user_bill')->where('category','now_money')->where('type','brokerage')
+                $model = $model->whereIn('uid', function ($query) {
+                    $query->name('user_bill')->where('category', 'now_money')->where('type', 'brokerage')
                         ->whereWeek('add_time')->field('uid');
                 });
                 break;
             case 'month':
-                $model = $model->whereIn('uid',function ($query){
-                    $query->name('user_bill')->where('category','now_money')->where('type','brokerage')
+                $model = $model->whereIn('uid', function ($query) {
+                    $query->name('user_bill')->where('category', 'now_money')->where('type', 'brokerage')
                         ->whereMonth('add_time')->field('uid');
                 });
                 break;
         }
-        return $model->where('brokerage_price','>',$brokerage_price)->count('uid');
+        return $model->where('brokerage_price', '>', $brokerage_price)->count('uid');
     }
 }
