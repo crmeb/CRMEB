@@ -288,10 +288,10 @@ class StoreProduct extends BaseModel
                 'class'=>'fa fa fa-ioxhost',
             ],
             [
-                'name'=>'新增商品',
+                'name'=>'商品总数',
                 'field'=>'件',
-                'count'=>self::setWhereType(self::getModelTime($where,new self),$type)->where('is_new',1)->sum('stock'),
-                'content'=>'新增商品总数',
+                'count'=>self::setWhereType(self::getModelTime($where,new self),$type)->sum('stock'),
+                'content'=>'增商品总数',
                 'background_color'=>'layui-bg-cyan',
                 'sum'=>self::where('is_new',1)->sum('stock'),
                 'class'=>'fa fa-line-chart',

@@ -58,7 +58,9 @@ class StoreStatistics extends BaseModel
     public static function getOrderInfo($where)
     {
         $orderinfo = self::getTimeWhere($where)
-            ->field('sum(total_price) total_price,sum(cost) cost,sum(pay_postage) pay_postage,sum(pay_price) pay_price,sum(coupon_price) coupon_price,sum(deduction_price) deduction_price,from_unixtime(pay_time,\'%Y-%m-%d\') pay_time')->order('pay_time')->group('from_unixtime(pay_time,\'%Y-%m-%d\')')->select()->toArray();
+            ->field('sum(total_price) total_price,sum(cost) cost,sum(pay_postage) pay_postage,sum(pay_price) pay_price,sum(coupon_price) coupon_price,sum(deduction_price) deduction_price,from_unixtime(pay_time,\'%Y-%m-%d\') pay_time')
+            ->order('pay_time')->where('paid',1)->where('refund_status',0)
+            ->group('from_unixtime(pay_time,\'%Y-%m-%d\')')->select()->toArray();
         $price = 0;
         $postage = 0;
         $deduction = 0;
