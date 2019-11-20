@@ -116,9 +116,11 @@ class Template
      * @param string $suffix
      * @return string
      */
-    public function postpositionUrl(Url $url, string $suffix = '')
+    public function postpositionUrl($url, string $suffix = '')
     {
-        return $url->suffix($suffix)->domain(true)->build();
+        if($url instanceof Url)
+            $url = $url->suffix($suffix)->domain(true)->build();
+        return $url;
     }
 
     /**
