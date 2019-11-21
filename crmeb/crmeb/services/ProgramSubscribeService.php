@@ -123,6 +123,7 @@ class ProgramSubscribeService extends AbstractAPI
     }
 
     /**
+     * 获取模板分类
      * @return \EasyWeChat\Support\Collection|null
      * @throws \EasyWeChat\Core\Exceptions\HttpException
      */

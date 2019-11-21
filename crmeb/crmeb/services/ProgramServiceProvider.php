@@ -6,6 +6,11 @@ use EasyWeChat\MiniProgram\AccessToken;
 use Pimple\Container;
 use Pimple\ServiceProviderInterface;
 
+/**
+ * 注册订阅消息
+ * Class ProgramServiceProvider
+ * @package crmeb\services
+ */
 class ProgramServiceProvider implements ServiceProviderInterface
 {
     public function register(Container $pimple)
