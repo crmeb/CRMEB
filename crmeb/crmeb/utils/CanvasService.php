@@ -1,6 +1,6 @@
 <?php
 
-namespace crmeb\services;
+namespace crmeb\utils;
 
 use crmeb\traits\LogicTrait;
 use EasyWeChat\Core\Exceptions\RuntimeException;

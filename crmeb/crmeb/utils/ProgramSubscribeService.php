@@ -1,6 +1,6 @@
 <?php
 
-namespace crmeb\services;
+namespace crmeb\utils;
 
 use EasyWeChat\Core\AbstractAPI;
 use EasyWeChat\Core\AccessToken;
