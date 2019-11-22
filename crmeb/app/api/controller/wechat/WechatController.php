@@ -8,7 +8,7 @@ use app\models\user\User;
 use app\models\user\UserToken;
 use app\models\user\WechatUser;
 use app\Request;
-use crmeb\services\CanvasService;
+use crmeb\utils\CanvasService;
 use crmeb\services\WechatService;
 use think\facade\Cookie;
 

@@ -64,7 +64,7 @@ class ChatHandle
         if (!$to_uid) return $response->send('err_tip', ['msg' => '用户不存在']);
         if ($to_uid == $uid) return $response->send('err_tip', ['msg' => '不能和自己聊天']);
         if (!in_array($msn_type, [1, 2, 3, 4])) return $response->send('err_tip', ['msg' => '格式错误']);
-        $msn = htmlspecialchars($msn);
+        $msn = trim(strip_tags(str_replace(["\n", "\t", "\r", " ", "&nbsp;"], '', htmlspecialchars_decode($msn))));
         $data = compact('to_uid', 'msn_type', 'msn', 'uid');
         $data['add_time'] = time();
         $connections = $this->service->user();
