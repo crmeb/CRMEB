@@ -108,6 +108,8 @@ class WechatController
         if (($strlen = stripos($wechatQrcode, 'uploads')) !== false) {
             $wechatQrcode = substr($wechatQrcode, $strlen);
         }
+        if (!$wechatQrcode)
+            return app('json')->fail('请上传二维码');
         $canvas->setImageUrl($wechatQrcode)->setImageHeight(344)->setImageWidth(344)->setImageLeft(76)->setImageTop(76)->pushImageValue();
         $image = $canvas->setFileName($name)->setImageType($imageType)->setPath($path)->setBackgroundWidth(500)->setBackgroundHeight(720)->starDrawChart();
         return app('json')->success('ok', ['path' => $image ? $siteUrl . '/' . $image : '']);

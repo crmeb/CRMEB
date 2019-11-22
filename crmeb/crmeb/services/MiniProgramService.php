@@ -11,7 +11,6 @@ use crmeb\repositories\PaymentRepositories;
 use EasyWeChat\Foundation\Application;
 use EasyWeChat\Payment\Order;
 use think\facade\Route as Url;
-use crmeb\interfaces\ProviderInterface;
 use app\models\store\StoreOrder as StoreOrderRoutineModel;
 use app\models\user\UserRecharge;
 
@@ -50,7 +49,7 @@ class MiniProgramService
         (self::$instance === null || $cache === true) && (self::$instance = new Application(self::options()));
         return self::$instance;
     }
-
+    
     /**
      * 小程序接口
      * @return \EasyWeChat\MiniProgram\MiniProgram
