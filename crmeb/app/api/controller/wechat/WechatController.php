@@ -8,6 +8,7 @@ use app\models\user\User;
 use app\models\user\UserToken;
 use app\models\user\WechatUser;
 use app\Request;
+use crmeb\services\CanvasService;
 use crmeb\services\WechatService;
 use think\facade\Cookie;
 
@@ -56,7 +57,7 @@ class WechatController
     public function auth(Request $request)
     {
         $spreadId = intval($request->param('spread'));
-        $login_type = $request->param('login_type','');
+        $login_type = $request->param('login_type', '');
         try {
             $wechatInfo = WechatService::oauthService()->user()->getOriginal();
         } catch (\Exception $e) {
@@ -79,7 +80,7 @@ class WechatController
         $user = User::where('uid', WechatUser::openidToUid($openid, 'openid'))->find();
         if (!$user)
             return app('json')->fail('获取用户信息失败');
-        if($user->login_type == 'h5' && ($h5UserInfo = User::where(['account'=>$user->phone,'phone'=>$user->phone,'user_type'=>'h5'])->find()))
+        if ($user->login_type == 'h5' && ($h5UserInfo = User::where(['account' => $user->phone, 'phone' => $user->phone, 'user_type' => 'h5'])->find()))
             $token = UserToken::createToken($h5UserInfo, 'wechat');
         else
             $token = UserToken::createToken($user, 'wechat');
@@ -91,4 +92,25 @@ class WechatController
         } else
             return app('json')->fail('登录失败');
     }
+
+    public function follow()
+    {
+        $canvas = CanvasService::instance();
+        $path = 'uploads/follow/';
+        $imageType = 'jpg';
+        $name = 'follow';
+        $siteUrl = sysConfig('site_url');
+        if (file_exists($path . $name . '.' . $imageType)) {
+            return app('json')->success('ok', ['path' => $siteUrl . '/' . $path . $name . '.' . $imageType]);
+        }
+        $canvas->setImageUrl('static/qrcode/follow.png')->setImageHeight(720)->setImageWidth(500)->pushImageValue();
+        $wechatQrcode = sysConfig('wechat_qrcode');
+        if (($strlen = stripos($wechatQrcode, 'uploads')) !== false) {
+            $wechatQrcode = substr($wechatQrcode, $strlen);
+        }
+        $canvas->setImageUrl($wechatQrcode)->setImageHeight(344)->setImageWidth(344)->setImageLeft(76)->setImageTop(76)->pushImageValue();
+        $image = $canvas->setFileName($name)->setImageType($imageType)->setPath($path)->setBackgroundWidth(500)->setBackgroundHeight(720)->starDrawChart();
+        return app('json')->success('ok', ['path' => $image ? $siteUrl . '/' . $image : '']);
+    }
+
 }

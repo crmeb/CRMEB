@@ -154,7 +154,10 @@ class UploadService
         try {
             $uploadType = $this->uploadType ?: sysConfig('upload_type');
             //TODO 没有选择默认使用本地上传
-            if (!$uploadType) $uploadType = 1;
+            if (!$uploadType)
+                $uploadType = 1;
+            if (!is_int($uploadType))
+                $uploadType = (int)$uploadType;
             switch ($uploadType) {
                 case 1 :
                     $info = $this->uploadLocaFile($fileName);
@@ -186,8 +189,6 @@ class UploadService
                     if (is_string($info)) return $info;
                     break;
             }
-            $this->uploadPath = '';
-            $this->autoValidate = true;
         } catch (\Exception $e) {
             return $e->getMessage();
         }
@@ -244,6 +245,8 @@ class UploadService
         $filePath = Filesystem::path($fileName);
         $fileInfo = new File($filePath);
         $url = '/uploads/' . $fileName;
+        $this->uploadPath = '';
+        $this->autoValidate = false;
         return $this->setUploadInfo($url, 1, $fileInfo->getFilename(), self::thumb('.' . $url), [
             'Content-Length' => $fileInfo->getSize(),
             'Content-Type' => $fileInfo->getMime()

@@ -206,7 +206,8 @@ Route::group(function () {
     //短信购买异步通知
     Route::post('sms/pay/notify', 'PublicController/sms_pay_notify')->name('smsPayNotify'); //短信购买异步通知
 
-
+    //获取关注微信公众号海报
+    Route::get('wechat/follow','wechat.WechatController/follow')->name('Follow');
 
 })->middleware(\app\http\middleware\AllowOriginMiddleware::class)->middleware(\app\http\middleware\AuthTokenMiddleware::class, false);
 
