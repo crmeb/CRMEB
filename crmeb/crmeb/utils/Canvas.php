@@ -6,8 +6,8 @@ use crmeb\traits\LogicTrait;
 use EasyWeChat\Core\Exceptions\RuntimeException;
 
 /**
- * Class CanvasService
- * @package crmeb\services
+ * Class Canvas
+ * @package crmeb\utils
  * @method $this setFileName(string $fileName) 设置文件名
  * @method $this setPath(string $path) 设置存放路径
  * @method $this setImageType(string $imageType) 设置图片类型
@@ -30,7 +30,7 @@ use EasyWeChat\Core\Exceptions\RuntimeException;
  * @method $this setImageHeight(int $imageHeight) 设置图片高
  * @method $this setImageOpacity(int $imageOpacity) 设置图片透明度
  */
-class CanvasService
+class Canvas
 {
     use LogicTrait;
 

@@ -8,8 +8,8 @@ use EasyWeChat\Core\Exceptions\InvalidArgumentException;
 
 /**
  * 小程序订阅消息
- * Class ProgramSubscribeService
- * @package crmeb\services
+ * Class ProgramSubscribe
+ * @package crmeb\utils
  * @method $this
  * @method $this withTemplate(string $template_id) 设置模板id
  * @method $this withTemplateId(string $template_id) 设置模板id
@@ -24,7 +24,7 @@ use EasyWeChat\Core\Exceptions\InvalidArgumentException;
  * @method $this withData(array $data) 设置发送内容
  * @method $this data(array $data) 设置发送内容
  */
-class ProgramSubscribeService extends AbstractAPI
+class ProgramSubscribe extends AbstractAPI
 {
 
     /**

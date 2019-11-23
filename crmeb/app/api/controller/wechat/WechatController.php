@@ -8,7 +8,7 @@ use app\models\user\User;
 use app\models\user\UserToken;
 use app\models\user\WechatUser;
 use app\Request;
-use crmeb\utils\CanvasService;
+use crmeb\utils\Canvas;
 use crmeb\services\WechatService;
 use think\facade\Cookie;
 
@@ -95,7 +95,7 @@ class WechatController
 
     public function follow()
     {
-        $canvas = CanvasService::instance();
+        $canvas = Canvas::instance();
         $path = 'uploads/follow/';
         $imageType = 'jpg';
         $name = 'follow';

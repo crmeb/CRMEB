@@ -8,10 +8,10 @@ use Pimple\ServiceProviderInterface;
 
 /**
  * 注册订阅消息
- * Class ProgramServiceProvider
- * @package crmeb\services
+ * Class ProgramProvider
+ * @package crmeb\utils
  */
-class ProgramServiceProvider implements ServiceProviderInterface
+class ProgramProvider implements ServiceProviderInterface
 {
     public function register(Container $pimple)
     {
@@ -24,7 +24,7 @@ class ProgramServiceProvider implements ServiceProviderInterface
         };
 
         $pimple['mini_program.now_notice'] = function ($pimple) {
-            return new ProgramSubscribeService($pimple['mini_program.access_token']);
+            return new ProgramSubscribe($pimple['mini_program.access_token']);
         };
     }
 }
