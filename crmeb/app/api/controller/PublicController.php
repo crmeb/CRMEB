@@ -1,4 +1,5 @@
 <?php
+
 namespace app\api\controller;
 
 use app\admin\model\system\SystemAttachment;
@@ -8,6 +9,7 @@ use app\models\store\StoreProduct;
 use app\models\store\StoreService;
 use app\models\system\Express;
 use app\models\user\UserBill;
+use app\models\user\WechatUser;
 use app\Request;
 use crmeb\services\GroupDataService;
 use crmeb\services\SystemConfigService;
@@ -50,13 +52,14 @@ class PublicController
         $firstNumber = $routine_index_page[0]['first_number'] ?? 6;//sysConfig('first_number');//TODO 首发新品个数
         $info['fastList'] = StoreCategory::byIndexList((int)$fastNumber);//TODO 快速选择分类个数
         $info['bastList'] = StoreProduct::getBestProduct('id,image,store_name,cate_id,price,ot_price,IFNULL(sales,0) + IFNULL(ficti,0) as sales,unit_name', (int)$bastNumber, $request->uid());//TODO 精品推荐个数
-        $info['firstList'] = StoreProduct::getNewProduct('id,image,store_name,cate_id,price,unit_name,IFNULL(sales,0) + IFNULL(ficti,0) as sales', (int)$firstNumber,$request->uid());//TODO 首发新品个数
+        $info['firstList'] = StoreProduct::getNewProduct('id,image,store_name,cate_id,price,unit_name,IFNULL(sales,0) + IFNULL(ficti,0) as sales', (int)$firstNumber, $request->uid());//TODO 首发新品个数
         $info['bastBanner'] = GroupDataService::getData('routine_home_bast_banner') ?? [];//TODO 首页精品推荐图片
         $benefit = StoreProduct::getBenefitProduct('id,image,store_name,cate_id,price,ot_price,stock,unit_name', 3);//TODO 首页促销单品
         $lovely = GroupDataService::getData('routine_home_new_banner') ?: [];//TODO 首发新品顶部图
         $likeInfo = StoreProduct::getHotProduct('id,image,store_name,cate_id,price,unit_name', 3);//TODO 热门榜单 猜你喜欢
         $couponList = StoreCouponIssue::getIssueCouponList($request->uid(), 3);
-        return app('json')->successful(compact('banner', 'menus', 'roll', 'info', 'activity', 'lovely', 'benefit', 'likeInfo', 'logoUrl', 'couponList','site_name'));
+        $subscribe = WechatUser::where('uid', $request->uid() ?? 0)->value('subscribe') ? true : false;
+        return app('json')->successful(compact('banner', 'menus', 'roll', 'info', 'activity', 'lovely', 'benefit', 'likeInfo', 'logoUrl', 'couponList', 'site_name','subscribe'));
     }
 
     /**
@@ -88,20 +91,20 @@ class PublicController
         $user = $request->user();
         $vipOpen = sysConfig('vip_open');
         $vipOpen = is_string($vipOpen) ? (int)$vipOpen : $vipOpen;
-        foreach ($menusInfo as $key=>&$value){
+        foreach ($menusInfo as $key => &$value) {
             $value['pic'] = UtilService::setSiteUrl($value['pic']);
-            if($value['id'] == 137 && !(intval(sysConfig('store_brokerage_statu')) == 2 || $user->is_promoter == 1))
+            if ($value['id'] == 137 && !(intval(sysConfig('store_brokerage_statu')) == 2 || $user->is_promoter == 1))
                 unset($menusInfo[$key]);
-            if($value['id'] == 174 && !StoreService::orderServiceStatus($user->uid))
+            if ($value['id'] == 174 && !StoreService::orderServiceStatus($user->uid))
                 unset($menusInfo[$key]);
-            if(!StoreService::orderServiceStatus($user->uid) && $value['wap_url'] === '/order/order_cancellation')
+            if (!StoreService::orderServiceStatus($user->uid) && $value['wap_url'] === '/order/order_cancellation')
                 unset($menusInfo[$key]);
-            if($value['wap_url'] == '/user/vip' && !$vipOpen)
+            if ($value['wap_url'] == '/user/vip' && !$vipOpen)
                 unset($menusInfo[$key]);
-            if($value['wap_url'] == '/customer/index' && !StoreService::orderServiceStatus($user->uid))
+            if ($value['wap_url'] == '/customer/index' && !StoreService::orderServiceStatus($user->uid))
                 unset($menusInfo[$key]);
         }
-        return app('json')->successful(['routine_my_menus'=>$menusInfo]);
+        return app('json')->successful(['routine_my_menus' => $menusInfo]);
     }
 
     /**
@@ -115,8 +118,8 @@ class PublicController
     {
         $routineHotSearch = GroupDataService::getData('routine_hot_search') ?? [];
         $searchKeyword = [];
-        if(count($routineHotSearch)){
-            foreach ($routineHotSearch as $key=>&$item){
+        if (count($routineHotSearch)) {
+            foreach ($routineHotSearch as $key => &$item) {
                 array_push($searchKeyword, $item['title']);
             }
         }
@@ -133,21 +136,21 @@ class PublicController
     public function upload_image(Request $request)
     {
         $data = UtilService::postMore([
-            ['filename','file'],
-        ],$request);
-        if(!$data['filename']) return app('json')->fail('参数有误');
-        if(Cache::has('start_uploads_'.$request->uid()) && Cache::get('start_uploads_'.$request->uid()) >= 100) return app('json')->fail('非法操作');
+            ['filename', 'file'],
+        ], $request);
+        if (!$data['filename']) return app('json')->fail('参数有误');
+        if (Cache::has('start_uploads_' . $request->uid()) && Cache::get('start_uploads_' . $request->uid()) >= 100) return app('json')->fail('非法操作');
         $res = UploadService::instance()->setUploadPath('store/comment')->image($data['filename']);
-        if(!is_array($res)) return app('json')->fail($res);
-        SystemAttachment::attachmentAdd($res['name'], $res['size'], $res['type'], $res['dir'], $res['thumb_path'],1, $res['image_type'], $res['time'], 2);
-        if(Cache::has('start_uploads_'.$request->uid()))
-            $start_uploads=(int)Cache::get('start_uploads_'.$request->uid());
+        if (!is_array($res)) return app('json')->fail($res);
+        SystemAttachment::attachmentAdd($res['name'], $res['size'], $res['type'], $res['dir'], $res['thumb_path'], 1, $res['image_type'], $res['time'], 2);
+        if (Cache::has('start_uploads_' . $request->uid()))
+            $start_uploads = (int)Cache::get('start_uploads_' . $request->uid());
         else
             $start_uploads = 0;
         $start_uploads++;
-        Cache::set('start_uploads_'.$request->uid(),$start_uploads,86400);
+        Cache::set('start_uploads_' . $request->uid(), $start_uploads, 86400);
         $res['dir'] = UploadService::pathToUrl($res['dir']);
-        if(strpos($res['dir'],'http') === false) $res['dir'] = $request->domain().$res['dir'];
+        if (strpos($res['dir'], 'http') === false) $res['dir'] = $request->domain() . $res['dir'];
         return app('json')->successful('图片上传成功!', ['name' => $res['name'], 'url' => $res['dir']]);
     }
 
@@ -158,8 +161,8 @@ class PublicController
     public function logistics()
     {
         $expressList = Express::lst();
-        if(!$expressList) return  app('json')->successful([]);
-        return  app('json')->successful($expressList->hidden(['code', 'id', 'sort', 'is_show'])->toArray());
+        if (!$expressList) return app('json')->successful([]);
+        return app('json')->successful($expressList->hidden(['code', 'id', 'sort', 'is_show'])->toArray());
     }
 
     /**
@@ -178,8 +181,8 @@ class PublicController
             ['pay_time', time()],
             ['attach', 0],
         ], $request, true);
-        if($status == 200){
-            ChannelService::instance()->send('PAY_SMS_SUCCESS', ['price'=> $price, 'number'=> $num], [$attach]);
+        if ($status == 200) {
+            ChannelService::instance()->send('PAY_SMS_SUCCESS', ['price' => $price, 'number' => $num], [$attach]);
             return app('json')->successful();
         }
         return app('json')->fail();
@@ -190,7 +193,8 @@ class PublicController
      * @param Request $request
      * @return mixed
      */
-    public function user_share(Request $request){
+    public function user_share(Request $request)
+    {
         return app('json')->successful(UserBill::setUserShare($request->uid()));
     }
 
@@ -199,21 +203,20 @@ class PublicController
      * @param Request $request
      * @return mixed
      */
-    public function get_image_base64(Request $request){
-        list($imageUrl,$codeUrl) = UtilService::postMore([
-            ['image',''],
-            ['code',''],
-        ],$request,true);
-        try{
+    public function get_image_base64(Request $request)
+    {
+        list($imageUrl, $codeUrl) = UtilService::postMore([
+            ['image', ''],
+            ['code', ''],
+        ], $request, true);
+        try {
             $code = $codeUrl ? UtilService::setImageBase64($codeUrl) : false;
             $image = $imageUrl ? UtilService::setImageBase64($imageUrl) : false;
-            return app('json')->successful(compact('code','image'));
-        }catch (\Exception $e){
+            return app('json')->successful(compact('code', 'image'));
+        } catch (\Exception $e) {
             return app('json')->fail($e->getMessage());
         }
     }
-
-
 
 
 }
