@@ -87,7 +87,6 @@ class WechatTemplateService implements ProviderInterface
         try {
             return WechatService::sendTemplate($openid, $tempid, $data, $url, $defaultColor);
         } catch (\Exception $e) {
-            dump($e->getMessage());
             return false;
         }
     }
