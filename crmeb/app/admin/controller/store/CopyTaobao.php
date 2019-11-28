@@ -770,7 +770,7 @@ class CopyTaobao extends AuthController
         $size = strlen(trim($content));
         if (!$content || $size <= 2) return '图片流获取失败';
         $date_dir = date('Y') . DS . date('m') . DS . date('d');
-        $imageInfo = UploadService::getInstance()->setUploadPath('attach/' . $date_dir)->imageStream($name, $content);
+        $imageInfo = UploadService::instance()->setUploadPath('attach/' . $date_dir)->imageStream($name, $content);
         if (!is_array($imageInfo)) return $imageInfo;
         $date['path'] = $imageInfo['dir'];
         $date['name'] = $imageInfo['name'];

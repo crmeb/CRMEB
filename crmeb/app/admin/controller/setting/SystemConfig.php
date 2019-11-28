@@ -400,7 +400,7 @@ class SystemConfig extends AuthController
     * 文件上传
     * */
    public function file_upload(){
-       $res = Upload::getInstance()->setUploadPath('config/file')->file($this->request->param('file','file'));
+       $res = Upload::instance()->setUploadPath('config/file')->file($this->request->param('file','file'));
        if(!$res->status) return Json::fail($res->error);
        return Json::successful('上传成功!',['filePath'=>$res->filePath]);
    }

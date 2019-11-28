@@ -107,7 +107,7 @@ class StoreCategory extends AuthController
      */
     public function upload()
     {
-        $res = Upload::getInstance()->setUploadPath('store/category'.date('Ymd'))->image('file');
+        $res = Upload::instance()->setUploadPath('store/category'.date('Ymd'))->image('file');
         if(is_array($res)){
             SystemAttachment::attachmentAdd($res['name'],$res['size'],$res['type'],$res['dir'],$res['thumb_path'],1,$res['image_type'],$res['time']);
             return Json::successful('图片上传成功!',['name'=>$res['name'],'url'=>Upload::pathToUrl($res['thumb_path'])]);

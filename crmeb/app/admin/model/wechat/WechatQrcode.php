@@ -105,7 +105,7 @@ class WechatQrcode extends BaseModel
             self::createForeverQrcode($id, $type);
             $res = self::getForeverQrcode($type, $id);
         }
-        if(!$res['ticket']) exception('临时二维码获取错误');
+        if(!$res['ticket']) exception('永久二维码获取错误');
         return $res;
     }
 

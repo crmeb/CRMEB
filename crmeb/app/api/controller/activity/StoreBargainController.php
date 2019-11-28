@@ -314,7 +314,7 @@ class StoreBargainController
                     if($user['is_promoter'] || sysConfig('store_brokerage_statu') == 2) $valueData.='&pid='.$user['uid'];
                     $res = RoutineCode::getPageCode('pages/activity/goods_bargain_details/index',$valueData,280);
                     if(!$res) return app('json')->fail('二维码生成失败');
-                    $imageInfo = UploadService::getInstance()->setUploadPath('routine/activity/bargain/code')->imageStream($name,$res);
+                    $imageInfo = UploadService::instance()->setUploadPath('routine/activity/bargain/code')->imageStream($name,$res);
                     if(!is_array($imageInfo)) return app('json')->fail($imageInfo);
                     if($imageInfo['image_type'] == 1) $remoteImage = UtilService::remoteImage($siteUrl.$imageInfo['dir']);
                     else $remoteImage = UtilService::remoteImage($imageInfo['dir']);

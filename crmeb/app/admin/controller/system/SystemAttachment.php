@@ -21,7 +21,7 @@ class SystemAttachment extends AuthController
      */
     public function upload()
     {
-        $res = Upload::getInstance()->setUploadPath('editor/'.date('Ymd'))->image('upfile');
+        $res = Upload::instance()->setUploadPath('editor/'.date('Ymd'))->image('upfile');
         if(is_array($res)){
             SystemAttachmentModel::attachmentAdd($res['name'],$res['size'],$res['type'],$res['dir'],$res['thumb_path'],0,$res['image_type'],$res['time']);
             $info["originalName"] = $res['name'];

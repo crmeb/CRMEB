@@ -12,9 +12,7 @@ use app\admin\model\user\UserExtract as UserExtractModel;//分销
 use app\admin\model\user\User as UserModel;//用户
 use app\admin\model\store\StoreProductReply as StoreProductReplyModel;//评论
 use app\admin\model\store\StoreProduct as ProductModel;//产品
-use crmeb\utils\Template;
 use FormBuilder\Json;
-use think\facade\Route;
 
 /**
  * 首页控制器
@@ -37,22 +35,6 @@ class Index extends AuthController
             'role_name'=>SystemRole::where('id',$roles[0])->field('role_name')->find()
         ]);
         return $this->fetch();
-    }
-
-    public function test()
-    {
-        $res = Template::instance()->wechat()
-            ->setTemplateCode('OPENTM207791277')
-            ->setTemplateData([
-                'first'=>'亲，您购买的商品已支付成功',
-                'keyword1'=>'wx12545454545',
-                'keyword2'=>'0.99',
-                'remark'=>'点击查看订单详情'
-            ])
-            ->setTemplateOpenId('od9iXwj58C4aLy11ABMxFkgJelt0')
-            ->setTemplateUrl(Route::buildUrl('order/detail/wx12545454545'))
-            ->send();
-        var_dump($res);
     }
 
   //后台首页内容

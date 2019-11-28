@@ -91,7 +91,7 @@ class StoreService extends AuthController
         $f[] = Form::input('nickname','客服名称',$service["nickname"]);
         $f[] = Form::radio('customer','统计管理',$service['customer'])->options([['value'=>1,'label'=>'开启'],['value'=>0,'label'=>'关闭']]);
         $f[] = Form::radio('notify','订单通知',$service['notify'])->options([['value'=>1,'label'=>'开启'],['value'=>0,'label'=>'关闭']]);
-        $f[] = Form::radio('status','客服状态',$service['status'])->options([['value'=>1,'label'=>'显示'],['value'=>0,'label'=>'隐藏']]);
+        $f[] = Form::radio('status','客服状态',$service['status'])->options([['value'=>1,'label'=>'在线'],['value'=>0,'label'=>'离线']]);
         $form = Form::make_post_form('修改数据',$f,Url::buildUrl('update',compact('id')));
         $this->assign(compact('form'));
         return $this->fetch('public/form-builder');
@@ -136,7 +136,7 @@ class StoreService extends AuthController
      */
     public function upload()
     {
-        $res = Upload::getInstance()->setUploadPath('store/product/'.date('Ymd'))->image('file');
+        $res = Upload::instance()->setUploadPath('store/product/'.date('Ymd'))->image('file');
         if(is_array($res)){
             SystemAttachment::attachmentAdd($res['name'],$res['size'],$res['type'],$res['dir'],$res['thumb_path'],2,$res['image_type'],$res['time']);
             return Json::successful('图片上传成功!',['name'=>$res['name'],'url'=>Upload::pathToUrl($res['thumb_path'])]);
