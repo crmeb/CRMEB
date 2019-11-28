@@ -22,7 +22,7 @@ use think\app\Url;
  * @method $this setTemplateCode(string $templateCode) 设置模板id
  * @method $this setSendType($sendType) 设置发送类型句柄 1 = 小程序 ， 2 = 公众号
  * @method $this setDefaultData($defaultData) 设置默认数据
- * @method $this setTemplateUrl(Url $url,string $sux = '') 设置跳转Url
+ * @method $this setTemplateUrl(Url $url, string $sux = '') 设置跳转Url
  * @method $this routine() 设置当前发送类型句柄为 小程序
  * @method $this wechat() 设置当前发送类型句柄为 公众号
  */
@@ -34,9 +34,9 @@ class Template
      * 注册服务 会自动添加$providers对应的key名称方法方便设置$sendType
      * @var array
      */
-    protected  $providers = [
-        'routine'   =>  \crmeb\services\ProgramTemplateService::class,
-        'wechat'    =>  \crmeb\services\WechatTemplateService::class,
+    protected $providers = [
+        'routine' => \crmeb\services\ProgramTemplateService::class,
+        'wechat' => \crmeb\services\WechatTemplateService::class,
     ];
 
     /**
@@ -44,15 +44,14 @@ class Template
      * @var array 'defaultData'=>[[],'array'] 生成的方法为 setDefaultData(array $value)
      */
     protected $propsRule = [
-        'defaultData'           => '',
-        'templateCode'          => [null,'string'],
-        'templateData'          => [[],'array'],
-        'templateUrl'           => [null,'callable','postpositionUrl'],
-        'templateFormId'        => [null,'string'],
-        'sendType'              => [null,'string'],
-        'templateOpenId'        => [null,'string'],
-        'templateOpenId'        => [null,'string'],
-        'templateDefaultColor'  => [null,'string'],
+        'defaultData' => [null, 'string'],
+        'templateCode' => [null, 'string'],
+        'templateData' => [[], 'array'],
+        'templateUrl' => [null, 'callable', 'postpositionUrl'],
+        'templateFormId' => [null, 'string'],
+        'sendType' => [null, 'string'],
+        'templateOpenId' => [null, 'string'],
+        'templateOpenId' => [null, 'string'],
     ];
 
     /**
@@ -83,7 +82,7 @@ class Template
      * 模板消息formid 为小程序提供
      * @var string
      */
-    protected $templateFormId ='';
+    protected $templateFormId = '';
 
     /**
      * 发送类型 对应 $providers key
@@ -117,9 +116,11 @@ class Template
      * @param string $suffix
      * @return string
      */
-    public function postpositionUrl(Url $url,string $suffix = '')
+    public function postpositionUrl($url, string $suffix = '')
     {
-        return $url->suffix($suffix)->domain(true)->build();
+        if($url instanceof Url)
+            $url = $url->suffix($suffix)->domain(true)->build();
+        return $url;
     }
 
     /**
@@ -129,21 +130,21 @@ class Template
     {
         $keys = array_keys($this->providers);
         if (is_string($this->sendType)) {
-            if(!in_array($this->sendType,$keys))
-                throw new AuthException('设置的发送类型句柄不存在:'.$this->sendType);
+            if (!in_array($this->sendType, $keys))
+                throw new AuthException('设置的发送类型句柄不存在:' . $this->sendType);
         } elseif (is_int($this->sendType)) {
-            if($this->sendType > count($keys))
-                throw new AuthException('设置的发送类型句柄不存在：'.$this->sendType);
+            if ($this->sendType > count($keys))
+                throw new AuthException('设置的发送类型句柄不存在：' . $this->sendType);
             $this->sendType = $keys[$this->sendType - 1];
         }
 
         if (!$this->sendType)
             throw new AuthException('请设置发送类型句柄');
 
-        if(!$this->templateData)
+        if (!$this->templateData)
             throw new AuthException('请设置发送模板数据');
 
-        if(!$this->templateOpenId)
+        if (!$this->templateOpenId)
             throw new AuthException('请设置发送模板OPENID');
     }
 
@@ -154,12 +155,12 @@ class Template
      */
     public function send(bool $excep = false)
     {
-        try{
+        try {
 
             $this->validate();
 
             $resource = null;
-            switch ($this->sendType){
+            switch ($this->sendType) {
                 case 'routine':
                     $resource = self::$instance->routine->sendTemplate(
                         $this->templateCode,
@@ -187,8 +188,8 @@ class Template
             $this->clear();
 
             return $resource;
-        }catch (\Throwable $e){
-            if($excep)
+        } catch (\Throwable $e) {
+            if ($excep)
                 throw new AuthException($e->getMessage());
             return false;
         }
@@ -200,14 +201,14 @@ class Template
      */
     protected function clear()
     {
-        $this->templateOpenId       = null;
-        $this->defaultData          = null;
+        $this->templateOpenId = null;
+        $this->defaultData = null;
         $this->templateDefaultColor = null;
-        $this->templateData         = [];
-        $this->templateUrl          = null;
-        $this->sendType             = null;
-        $this->templateFormId       = null;
-        $this->templateCode         = null;
+        $this->templateData = [];
+        $this->templateUrl = null;
+        $this->sendType = null;
+        $this->templateFormId = null;
+        $this->templateCode = null;
         return $this;
     }
 
