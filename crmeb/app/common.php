@@ -100,33 +100,32 @@ if (!function_exists('make_path')) {
      */
     function make_path($path, int $type = 2, bool $force = false)
     {
-        $path =  DS.ltrim(rtrim($path));
-        switch ($type){
+        $path = DS . ltrim(rtrim($path));
+        switch ($type) {
             case 1:
-                $path .= DS.date('Y');
+                $path .= DS . date('Y');
                 break;
             case 2:
-                $path .=  DS.date('Y').DS.date('m');
+                $path .= DS . date('Y') . DS . date('m');
                 break;
             case 3:
-                $path .=  DS.date('Y').DS.date('m').DS.date('d');
+                $path .= DS . date('Y') . DS . date('m') . DS . date('d');
                 break;
         }
-        try{
-            if (is_dir(app()->getRootPath().'public'.DS.'uploads'.$path) == true || mkdir(app()->getRootPath().'public'.DS.'uploads'.$path, 0777, true) == true) {
-                return trim(str_replace(DS, '/',$path),'.');
-            }else return '';
-        }catch (\Exception $e){
-            if($force)
+        try {
+            if (is_dir(app()->getRootPath() . 'public' . DS . 'uploads' . $path) == true || mkdir(app()->getRootPath() . 'public' . DS . 'uploads' . $path, 0777, true) == true) {
+                return trim(str_replace(DS, '/', $path), '.');
+            } else return '';
+        } catch (\Exception $e) {
+            if ($force)
                 throw new \Exception($e->getMessage());
-            return '无法创建文件夹，请检查您的上传目录权限：' . app()->getRootPath() . 'public' . DS . 'uploads' . DS. 'attach' . DS;
+            return '无法创建文件夹，请检查您的上传目录权限：' . app()->getRootPath() . 'public' . DS . 'uploads' . DS . 'attach' . DS;
         }
 
     }
 }
 
-if(!function_exists('sysConfig'))
-{
+if (!function_exists('sysConfig')) {
     /**
      * 获取系统单个配置
      * @param string $name
@@ -134,15 +133,14 @@ if(!function_exists('sysConfig'))
      */
     function sysConfig(string $name)
     {
-        if(empty($name))
+        if (empty($name))
             return null;
 
         return app('sysConfig')->get($name);
     }
 }
 
-if(!function_exists('sysData'))
-{
+if (!function_exists('sysData')) {
     /**
      * 获取系统单个配置
      * @param string $name
