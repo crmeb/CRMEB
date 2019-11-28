@@ -20,13 +20,6 @@ class SystemConfigService
 
     const CACHE_SYSTEM = 'system_config';
 
-    public static $ProtectedKey = [
-        'wechat_appid', 'wechat_appsecret', 'wechat_token', 'wechat_encodingaeskey', 'wechat_encode',
-        'pay_weixin_mchid', 'pay_weixin_client_cert', 'pay_weixin_client_key', 'pay_weixin_key', 'pay_weixin_open',
-        'routine_appId', 'routine_appsecret',
-        'pay_routine_mchid', 'pay_routine_key', 'pay_routine_client_cert', 'pay_routine_client_key', 'pay_weixin_open'
-    ];
-
     /**
      * 初始化
      */

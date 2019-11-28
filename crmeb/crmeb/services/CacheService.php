@@ -29,13 +29,13 @@ class CacheService
      * @param int $expire 缓存时间，为0读取系统缓存时间
      * @return bool
      */
-    public static function set(string $name, $value, int $expire = 0):bool
+    public static function set(string $name, $value, int $expire = 0): bool
     {
         //这里不要去读取缓存配置，会导致死循环
-        $expire = $expire ? : SystemConfigService::get('cache_config',null,true);
-        if(!is_int($expire))
+        $expire = $expire ?: SystemConfigService::get('cache_config', null, true);
+        if (!is_int($expire))
             $expire = (int)$expire;
-        return self::handler()->set($name,$value,$expire);
+        return self::handler()->set($name, $value, $expire);
     }
 
     /**
@@ -44,9 +44,9 @@ class CacheService
      * @param bool $default
      * @return mixed
      */
-    public static function get(string $name,$default = false)
+    public static function get(string $name, $default = false)
     {
-        return self::handler()->remember($name,$default);
+        return self::handler()->remember($name, $default);
     }
 
     /**
@@ -56,7 +56,7 @@ class CacheService
      */
     public static function rm(string $name)
     {
-        return self::handler()->remember($name,'');
+        return self::handler()->remember($name, '');
     }
 
     /**

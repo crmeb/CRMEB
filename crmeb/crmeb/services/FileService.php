@@ -506,6 +506,8 @@ class FileService
     {
         $handle = @opendir($dir);//打开指定目录
         $directory_count = 0;
+        $total_size = 0;
+        $file_cout = 0;
         while (FALSE !== ($file_path = readdir($handle)))
         {
             if($file_path != "." && $file_path != "..")

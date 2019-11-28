@@ -593,7 +593,6 @@ class WechatService
         $staff = self::staffService();
         $staff = is_callable($message) ? $staff->message($message()) : $staff->message($message);
         $res = $staff->to($to)->send();
-        HookService::afterListen('wechat_staff_to',compact('to','message'),$res);
         return $res;
     }
 
