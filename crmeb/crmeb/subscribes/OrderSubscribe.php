@@ -41,8 +41,8 @@ class OrderSubscribe
      */
     public function onStoreProductOrderDeliveryAfter($event)
     {
-        list($data,$oid) = $event;
-        AdminStoreOrder::orderPostageAfter($oid,$data);
+        list($data, $oid) = $event;
+        AdminStoreOrder::orderPostageAfter($oid, $data);
     }
 
     /**
@@ -54,8 +54,8 @@ class OrderSubscribe
      */
     public function onStoreProductOrderDeliveryGoodsAfter($event)
     {
-        list($data,$oid) = $event;
-        AdminStoreOrder::orderPostageAfter($oid,$data);
+        list($data, $oid) = $event;
+        AdminStoreOrder::orderPostageAfter($oid, $data);
     }
 
     /**
@@ -64,8 +64,8 @@ class OrderSubscribe
      */
     public function onStoreProductOrderRefundNAfter($event)
     {
-        list($data,$id) = $event;
-        AdminStoreOrder::refundNoPrieTemplate($id,$data);
+        list($data, $id) = $event;
+        AdminStoreOrder::refundNoPrieTemplate($id, $data);
     }
 
     /**
@@ -84,7 +84,7 @@ class OrderSubscribe
      */
     public function onStoreProductOrderEditAfter($event)
     {
-        list($data,$id) = $event;
+        list($data, $id) = $event;
         //$data  total_price 商品总价   pay_price 实际支付
         //订单编号  $id
     }
@@ -95,7 +95,7 @@ class OrderSubscribe
      */
     public function onStoreProductOrderDistributionAfter($event)
     {
-        list($data,$id) = $event;
+        list($data, $id) = $event;
         //$data   送货人姓名/快递公司   送货人电话/快递单号
         //订单编号  $id
     }
@@ -113,7 +113,7 @@ class OrderSubscribe
      * 回退所有  未支付和已退款的状态下才可以退积分退库存退优惠券
      * @param $event
      */
-    public  function onStoreOrderRegressionAllAfter($event)
+    public function onStoreOrderRegressionAllAfter($event)
     {
         list($order) = $event;
         StoreOrder::RegressionStock($order) && StoreOrder::RegressionIntegral($order) && StoreOrder::RegressionCoupon($order);
@@ -125,16 +125,18 @@ class OrderSubscribe
      */
     public function onOrderPaySuccess($event)
     {
-        list($order,$formId) = $event;
+        list($order, $formId) = $event;
         //更新用户支付订单数量
         User::bcInc($order['uid'], 'pay_count', 1, 'uid');
         //发送模版消息、客服消息、短信、小票打印给客户和管理员
-        NoticeRepositories::noticeOrderPaySuccess($order,$formId);
+        NoticeRepositories::noticeOrderPaySuccess($order, $formId);
         //检测会员等级
         event('UserLevelAfter', [$order['uid']]);
 
-
-        //向后台发送新订单消息
-        ChannelService::instance()->send('NEW_ORDER', ['order_id'=>$order['order_id']]);
+        try {
+            //向后台发送新订单消息
+            ChannelService::instance()->send('NEW_ORDER', ['order_id' => $order['order_id']]);
+        } catch (\Throwable $e) {
+        }
     }
 }

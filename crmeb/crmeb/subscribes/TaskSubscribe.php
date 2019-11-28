@@ -1,4 +1,5 @@
 <?php
+
 namespace crmeb\subscribes;
 
 use app\admin\model\system\SystemAttachment;
@@ -26,6 +27,7 @@ class TaskSubscribe
     public function onTask_2()
     {
     }
+
     /**
      * 6秒钟执行的方法
      */
@@ -45,14 +47,14 @@ class TaskSubscribe
      */
     public function onTask_30()
     {
-        try{
+        try {
             Db::startTrans();
             StoreBargainUser::startBargainUserStatus();//批量修改砍价状态为 砍价失败
             StoreOrder::orderUnpaidCancel();//订单未支付默认取消
             StoreOrder::startTakeOrder();//7天自动收货
             StorePink::statusPink();//拼团到期修改状态
             Db::commit();
-        }catch (\Exception $e){
+        } catch (\Exception $e) {
             Db::rollback();
         }
     }
