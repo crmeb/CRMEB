@@ -1716,7 +1716,7 @@ INSERT INTO `eb_system_config` (`id`, `menu_name`, `type`, `input_type`, `config
 (62, 'paydir', 'textarea', 'input', 4, '', 0, '', 100, 5, '""', '配置目录', '支付目录配置系统不调用提示作用', 0, 1),
 (73, 'routine_logo', 'upload', NULL, 7, NULL, 1, NULL, 0, 0, '""', '小程序logo', '小程序logo', 0, 1),
 (74, 'routine_name', 'text', 'input', 7, '', 0, '', 100, 0, '"CRMEB"', '小程序名称', '小程序名称', 0, 1),
-(76, 'routine_style', 'text', 'color', 7, NULL, NULL, NULL, 100, 0, '"#F02D5A"', '小程序风格', '小程序颜色', 0, 1),
+(76, 'routine_style', 'text', 'color', 7, NULL, NULL, NULL, 100, 0, '"#F02D5A"', '小程序风格', '小程序颜色', 0, 2),
 (77, 'store_stock', 'text', 'input', 5, '', 0, '', 100, 0, '"2"', '警戒库存', '警戒库存提醒值', 0, 1),
 (85, 'stor_reason', 'textarea', 'input', 5, '', 0, '', 100, 8, '"\\u6536\\u8d27\\u5730\\u5740\\u586b\\u9519\\u4e86\\r\\n\\u4e0e\\u63cf\\u8ff0\\u4e0d\\u7b26\\r\\n\\u4fe1\\u606f\\u586b\\u9519\\u4e86\\uff0c\\u91cd\\u65b0\\u62cd\\r\\n\\u6536\\u5230\\u5546\\u54c1\\u635f\\u574f\\u4e86\\r\\n\\u672a\\u6309\\u9884\\u5b9a\\u65f6\\u95f4\\u53d1\\u8d27\\r\\n\\u5176\\u5b83\\u539f\\u56e0"', '退货理由', '配置退货理由，一行一个理由', 0, 1),
 (87, 'store_brokerage_two', 'text', 'input', 9, '', 0, 'required:true,min:0,max:100,number:true', 100, 0, '"60"', '二级返佣比例', '订单交易成功后给上级返佣的比例0 - 100,例:5 = 反订单金额的5%', 4, 1),
