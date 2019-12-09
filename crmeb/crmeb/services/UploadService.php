@@ -414,9 +414,4 @@ class UploadService
         if (substr($savePath, 0, 2) == './') return substr($savePath, 1, strlen($savePath));
         return DS . $savePath;
     }
-
-    protected function __destruct()
-    {
-        // TODO: Implement __destruct() method.
-    }
 }

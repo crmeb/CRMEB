@@ -208,9 +208,4 @@ CONTENT;
     {
         return $this->content;
     }
-
-    protected function __destruct()
-    {
-        // TODO: Implement __destruct() method.
-    }
 }
