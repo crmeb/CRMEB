@@ -25,10 +25,9 @@ class SystemConfigService
      */
     protected static function init()
     {
-        if(!(self::$configList = CacheService::get(self::CACHE_SYSTEM))){
-            self::$configList = self::getAll();
-            CacheService::set('system_config',self::$configList);
-        }
+        self::$configList = CacheService::get(self::CACHE_SYSTEM, function () {
+            return self::getAll();
+        });
     }
 
     /**获取系统配置

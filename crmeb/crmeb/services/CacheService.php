@@ -85,6 +85,6 @@ class CacheService
      */
     public static function clear()
     {
-        return CacheStatic::clear(self::$globalCacheName);
+        return self::handler()->clear();
     }
 }
