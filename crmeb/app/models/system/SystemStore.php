@@ -50,7 +50,7 @@ class SystemStore extends BaseModel
         if($storeInfo) {
             $storeInfo['latlng'] = self::getLatlngAttr(null, $storeInfo);
             $storeInfo['valid_time'] = $storeInfo['valid_time'] ? explode(' - ', $storeInfo['valid_time']) : [];
-            $storeInfo['_valid_time'] = str_replace('-','/',$storeInfo['valid_time'][0].' ~ '.$storeInfo['valid_time'][1]);
+            $storeInfo['_valid_time'] = str_replace('-','/',($storeInfo['valid_time'][0] ?? '').' ~ '.($storeInfo['valid_time'][1]) ?? '');
             $storeInfo['day_time'] = $storeInfo['day_time'] ? str_replace(' - ',' ~ ',$storeInfo['day_time']) : [];
             $storeInfo['_detailed_address'] = $storeInfo['address'].' '.$storeInfo['detailed_address'];
             $storeInfo['address'] = $storeInfo['address'] ? explode(',', $storeInfo['address']) : [];
