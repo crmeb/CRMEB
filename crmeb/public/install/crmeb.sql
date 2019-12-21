@@ -90,8 +90,10 @@ CREATE TABLE IF NOT EXISTS `eb_article_content` (
 CREATE TABLE IF NOT EXISTS `eb_cache` (
   `key` varchar(32) NOT NULL,
   `result` text COMMENT '缓存数据',
+  `expire_time` int(10) NOT NULL DEFAULT '0' COMMENT '失效时间0=永久',
   `add_time` int(10) DEFAULT NULL COMMENT '缓存时间',
-  PRIMARY KEY (`key`) USING BTREE
+  PRIMARY KEY (`key`) USING BTREE,
+  KEY `key` (`key`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='微信缓存表';
 
 -- --------------------------------------------------------
