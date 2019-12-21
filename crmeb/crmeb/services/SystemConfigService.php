@@ -25,9 +25,17 @@ class SystemConfigService
      */
     protected static function init()
     {
-        if(!(self::$configList = CacheService::get(self::CACHE_SYSTEM))){
-            self::$configList = self::getAll();
-            CacheService::set('system_config',self::$configList);
+        $confingFun = function () {
+            return self::getAll();
+        };
+        try {
+            self::$configList = CacheService::get(self::CACHE_SYSTEM, $confingFun);
+        } catch (\Throwable $e) {
+            try {
+                self::$configList = $confingFun();
+            } catch (\Exception $e) {
+                self::$configList = [];
+            }
         }
     }
 
@@ -49,12 +57,12 @@ class SystemConfigService
      * @param bool $isCaChe 是否获取缓存配置
      * @return bool|mixed|string
      */
-    public static function get($key,$default = '',bool $isCaChe = false)
+    public static function get($key, $default = '', bool $isCaChe = false)
     {
-        if($isCaChe){
-            try{
+        if ($isCaChe) {
+            try {
                 return SystemConfig::getConfigValue($key);
-            }catch (\Throwable $e){
+            } catch (\Throwable $e) {
                 return $default;
             }
         }

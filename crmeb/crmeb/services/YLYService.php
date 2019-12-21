@@ -86,8 +86,7 @@ class YLYService extends HttpService implements ProviderInterface
      * */
     protected function getAccessToken()
     {
-        $token = CacheModel::getDbCache('YLY_access_token');
-        if (!$token) {
+        $this->access_token = CacheModel::getDbCache('YLY_access_token', function () {
             $request = self::postRequest($this->apiUrl . 'oauth/oauth', [
                 'client_id' => $this->client_id,
                 'grant_type' => 'client_credentials',
@@ -100,11 +99,12 @@ class YLYService extends HttpService implements ProviderInterface
             $request['error'] = $request['error'] ?? 0;
             $request['error_description'] = $request['error_description'] ?? '';
             if ($request['error'] == 0 && $request['error_description'] == 'success') {
-                $token = $request['body']['access_token'] ?? '';
-                CacheModel::setDbCache('YLY_access_token', $token);
+                return $request['body']['access_token'] ?? '';
             }
-        }
-        $this->access_token = $token;
+            return '';
+        }, 20 * 86400);
+        if (!$this->access_token)
+            throw new AuthException('获取access_token获取失败');
     }
 
     /**
@@ -123,7 +123,7 @@ class YLYService extends HttpService implements ProviderInterface
      * @param string $order_id
      * @return bool|mixed
      */
-    public function orderPrinting(string $order_id = '')
+    public function orderPrinting(string $order_id = '', int $errorCount = 0)
     {
         $request = self::postRequest($this->apiUrl . 'print/index', [
             'client_id' => $this->client_id,
@@ -136,7 +136,13 @@ class YLYService extends HttpService implements ProviderInterface
             'timestamp' => time()
         ]);
         if ($request === false) return false;
-        return json_decode($request, true);
+        $request = json_decode($request, true);
+        if (isset($request['error']) && in_array($request['error'], [18, 14]) && $errorCount == 0) {
+            CacheModel::delectDbCache('YLY_access_token');
+            $this->getAccessToken();
+            return $this->orderPrinting($order_id, 1);
+        }
+        return $request;
     }
 
     /**
@@ -172,7 +178,11 @@ class YLYService extends HttpService implements ProviderInterface
         $goodsStr = '<table><tr><td>商品名称</td><td>数量</td><td>单价</td><td>金额</td></tr>';
         foreach ($product as $item) {
             $goodsStr .= '<tr>';
-            $goodsStr .= "<td>{$item['productInfo']['store_name']}</td><td>{$item['cart_num']}</td><td>{$item['productInfo']['price']}</td><td>{$item['truePrice']}</td>";
+            if (isset($item['productInfo']['attrInfo'])) {
+                $price = $item['productInfo']['attrInfo']['price'] ?? $item['productInfo']['price'] ?? 0;
+                $goodsStr .= "<td>{$item['productInfo']['store_name']}</td><td>{$item['cart_num']}</td><td>{$price}</td><td>{$item['truePrice']}</td>";
+            } else
+                $goodsStr .= "<td>{$item['productInfo']['store_name']}</td><td>{$item['cart_num']}</td><td>{$item['productInfo']['price']}</td><td>{$item['truePrice']}</td>";
             $goodsStr .= '</tr>';
         }
         $goodsStr .= '</table>';

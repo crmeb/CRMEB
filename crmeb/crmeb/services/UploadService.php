@@ -75,7 +75,17 @@ class UploadService
      * 上传图片的大小 2MB 单位字节
      * @var string
      */
-    protected $imageValidate = 'filesize:2097152|fileExt:jpg,jpeg,png,gif,pem|fileMime:image/jpeg,image/gif,image/png,text/plain';
+    protected $imageValidate = null;
+
+    /**
+     * 上传规则
+     * @var array
+     */
+    protected $imageValidateArray = [
+        'filesize' => 2097152,
+        'fileExt' => ['jpg', 'jpeg', 'png', 'gif', 'pem', 'mp3', 'wma', 'wav', 'amr', 'mp4'],
+        'fileMime' => ['image/jpeg', 'image/gif', 'image/png', 'text/plain', 'audio/mpeg'],
+    ];
 
     protected $propsRule = [
         'returnErr' => false,
@@ -86,15 +96,44 @@ class UploadService
 
     protected function __construct()
     {
-        self::init();
+        $this->init();
     }
 
     /**
      * 初始化
      */
-    private static function init()
+    protected function init()
     {
         self::$uploadStatus = new \StdClass();
+        $this->extractValidate();
+    }
+
+    /**
+     * 提取上传验证
+     */
+    protected function extractValidate()
+    {
+        $imageValidate = [];
+        foreach ($this->imageValidateArray as $key => $value) {
+            $imageValidate[] = $key . ':' . (is_array($value) ? implode(',', $value) : $value);
+        }
+        $this->imageValidate = implode('|', $imageValidate);
+        unset($imageValidate);
+    }
+
+    /**
+     * 设置上传验证
+     * @param array $imageValidateArray
+     * @return $this
+     */
+    public function setImageValidateArray(array $imageValidateArray)
+    {
+        if (isset($imageValidateArray['filesize']) && !is_int($imageValidateArray['filesize'])) {
+            $imageValidateArray['filesize'] = 2097152;
+        }
+        $this->imageValidateArray = array_merge($this->imageValidateArray, $imageValidateArray);
+        $this->extractValidate();
+        return $this;
     }
 
     /**
