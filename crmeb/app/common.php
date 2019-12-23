@@ -151,3 +151,30 @@ if (!function_exists('sysData')) {
         return app('sysGroupData')->getData($name);
     }
 }
+
+if (!function_exists('sys_config')) {
+    /**
+     * 获取系统单个配置
+     * @param string $name
+     * @return string | null
+     */
+    function sys_config(string $name)
+    {
+        if (empty($name))
+            return null;
+
+        return app('sysConfig')->get($name);
+    }
+}
+
+if (!function_exists('sys_data')) {
+    /**
+     * 获取系统单个配置
+     * @param string $name
+     * @return string
+     */
+    function sys_data($name)
+    {
+        return app('sysGroupData')->getData($name);
+    }
+}
