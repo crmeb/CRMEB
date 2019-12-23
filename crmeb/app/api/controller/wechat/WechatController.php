@@ -8,8 +8,8 @@ use app\models\user\User;
 use app\models\user\UserToken;
 use app\models\user\WechatUser;
 use app\Request;
-use crmeb\utils\Canvas;
 use crmeb\services\WechatService;
+use crmeb\utils\Canvas;
 use think\facade\Cookie;
 
 /**
@@ -25,6 +25,7 @@ class WechatController
      */
     public function serve()
     {
+        ob_clean();
         return WechatService::serve();
     }
 
@@ -33,6 +34,7 @@ class WechatController
      */
     public function notify()
     {
+        ob_clean();
         WechatService::handleNotify();
     }
 
@@ -61,7 +63,7 @@ class WechatController
         try {
             $wechatInfo = WechatService::oauthService()->user()->getOriginal();
         } catch (\Exception $e) {
-            return app('json')->fail('授权失败');
+            return app('json')->fail('授权失败', ['message' => $e->getMessage(), 'line' => $e->getLine()]);
         }
         if (!isset($wechatInfo['nickname'])) {
             $wechatInfo = WechatService::getUserInfo($wechatInfo['openid']);
@@ -99,12 +101,13 @@ class WechatController
         $path = 'uploads/follow/';
         $imageType = 'jpg';
         $name = 'follow';
-        $siteUrl = sysConfig('site_url');
-        if (file_exists($path . $name . '.' . $imageType)) {
-            return app('json')->success('ok', ['path' => $siteUrl . '/' . $path . $name . '.' . $imageType]);
+        $siteUrl = sys_config('site_url');
+        $imageUrl = $path . $name . '.' . $imageType;
+        if (file_exists($imageUrl)) {
+            return app('json')->success('ok', ['path' => $siteUrl . '/' . $imageUrl]);
         }
         $canvas->setImageUrl('static/qrcode/follow.png')->setImageHeight(720)->setImageWidth(500)->pushImageValue();
-        $wechatQrcode = sysConfig('wechat_qrcode');
+        $wechatQrcode = sys_config('wechat_qrcode');
         if (($strlen = stripos($wechatQrcode, 'uploads')) !== false) {
             $wechatQrcode = substr($wechatQrcode, $strlen);
         }
@@ -114,5 +117,4 @@ class WechatController
         $image = $canvas->setFileName($name)->setImageType($imageType)->setPath($path)->setBackgroundWidth(500)->setBackgroundHeight(720)->starDrawChart();
         return app('json')->success('ok', ['path' => $image ? $siteUrl . '/' . $image : '']);
     }
-
 }

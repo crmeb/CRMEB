@@ -15,6 +15,7 @@ use app\models\routine\RoutineTemplate;
 use app\models\store\StoreOrderCartInfo;
 use app\models\user\User;
 use crmeb\services\YLYService;
+use think\facade\Log;
 use think\facade\Route;
 
 /** 消息通知静态类
@@ -52,7 +53,7 @@ class NoticeRepositories
                     //订单支付成功后给客服发送客服消息
                     CustomerRepository::sendOrderPaySuccessCustomerService($order, 1);
                 } else if ($routineOpenid && in_array($order['is_channel'],[1,2])) {//小程序发送模板消息
-                    RoutineTemplate::sendOrderSuccess($formId, $order['order_id']);
+                    RoutineTemplate::sendOrderSuccess($order['uid'],$order['pay_price'], $order['order_id']);
                     //订单支付成功后给客服发送客服消息
                     CustomerRepository::sendOrderPaySuccessCustomerService($order, 0);
                 }
@@ -61,7 +62,7 @@ class NoticeRepositories
             }
         }
         //打印小票
-        $switch = sysConfig('pay_success_printing_switch') ? true : false;
+        $switch = sys_config('pay_success_printing_switch') ? true : false;
         if ($switch) {
             try {
                 $order['cart_id'] = is_string($order['cart_id']) ? json_decode($order['cart_id'], true) : $order['cart_id'];
@@ -74,7 +75,7 @@ class NoticeRepositories
                     $value['productInfo']['store_name'] = StoreOrderCartInfo::getSubstrUTf8($value['productInfo']['store_name'], 10, 'UTF-8', '');
                     $product[] = $value;
                 }
-                YLYService::instance()->setContent(sysConfig('site_name'), is_object($order) ? $order->toArray() : $order, $product)->orderPrinting();
+                YLYService::instance()->setContent(sys_config('site_name'), is_object($order) ? $order->toArray() : $order, $product)->orderPrinting();
             } catch (\Exception $e) {
                 Log::error('小票打印出现错误,错误原因：' . $e->getMessage());
             }

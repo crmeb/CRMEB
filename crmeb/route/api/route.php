@@ -1,7 +1,6 @@
 <?php
 
 use think\facade\Route;
-
 //账号密码登录
 Route::post('login', 'AuthController/login')->name('login')
     ->middleware(\app\http\middleware\AllowOriginMiddleware::class);
@@ -38,7 +37,7 @@ Route::group(function () {
     Route::get('admin/order/time', 'admin.StoreOrderController/time')->name('adminOrderTime');//订单交易额时间统计
     Route::post('admin/order/offline', 'admin.StoreOrderController/offline')->name('adminOrderOffline');//订单支付
     Route::post('admin/order/refund', 'admin.StoreOrderController/refund')->name('adminOrderRefund');//订单退款
-    Route::post('order/order_verific', 'order.StoreOrderController/order_verific')->name('order');//订单核销
+    Route::post('order/order_verific','order.StoreOrderController/order_verific')->name('order');//订单核销
 })->middleware(\app\http\middleware\AllowOriginMiddleware::class)->middleware(\app\http\middleware\AuthTokenMiddleware::class, true)->middleware(\app\http\middleware\CustomerMiddleware::class);
 
 //会员授权接口
@@ -50,7 +49,7 @@ Route::group(function () {
     //产品类
     Route::get('product/code/:id', 'store.StoreProductController/code')->name('productCode');//产品分享二维码 推广员
 
-    //公共类
+     //公共类
     Route::post('upload/image', 'PublicController/upload_image')->name('uploadImage');//图片上传
     //用户类 客服聊天记录
     Route::get('user/service/list', 'user.StoreService/lst')->name('userServiceList');//客服列表
@@ -74,8 +73,8 @@ Route::group(function () {
     Route::post('collect/del', 'user.UserController/collect_del')->name('collectDel');//取消收藏
     Route::post('collect/all', 'user.UserController/collect_all')->name('collectAll');//批量添加收藏
 
-    Route::get('brokerage_rank', 'user.UserController/brokerage_rank')->name('brokerageRank');//佣金排行
-    Route::get('rank', 'user.UserController/rank')->name('rank');//推广人排行
+    Route::get('brokerage_rank','user.UserController/brokerage_rank')->name('brokerageRank');//佣金排行
+    Route::get('rank','user.UserController/rank')->name('rank');//推广人排行
     //用戶类 分享
     Route::post('user/share', 'PublicController/user_share')->name('user_share');//记录用户分享
     //用户类 点赞
@@ -194,6 +193,7 @@ Route::group(function () {
     Route::post('wechat/mp_auth', 'wechat.AuthController/mp_auth')->name('mpAuth');//小程序登陆
     Route::get('wechat/get_logo', 'wechat.AuthController/get_logo')->name('getLogo');//小程序登陆授权展示logo
     Route::post('wechat/set_form_id', 'wechat.AuthController/set_form_id')->name('setFormId');//小程序登陆收集form id
+    Route::get('wechat/teml_ids', 'wechat.AuthController/teml_ids')->name('wechatTemlIds');//微信授权
 
     //物流公司
     Route::get('logistics', 'PublicController/logistics')->name('logistics');//物流公司列表
@@ -208,17 +208,18 @@ Route::group(function () {
     Route::post('sms/pay/notify', 'PublicController/sms_pay_notify')->name('smsPayNotify'); //短信购买异步通知
 
     //获取关注微信公众号海报
-    Route::get('wechat/follow', 'wechat.WechatController/follow')->name('Follow');
+    Route::get('wechat/follow','wechat.WechatController/follow')->name('Follow');
+
 
 })->middleware(\app\http\middleware\AllowOriginMiddleware::class)->middleware(\app\http\middleware\AuthTokenMiddleware::class, false);
 
 
-Route::miss(function () {
-    if (app()->request->isOptions())
+Route::miss(function() {
+    if(app()->request->isOptions())
         return \think\Response::create('ok')->code(200)->header([
-            'Access-Control-Allow-Origin' => '*',
-            'Access-Control-Allow-Headers' => 'Authori-zation,Authorization, Content-Type, If-Match, If-Modified-Since, If-None-Match, If-Unmodified-Since, X-Requested-With',
-            'Access-Control-Allow-Methods' => 'GET,POST,PATCH,PUT,DELETE,OPTIONS,DELETE',
+            'Access-Control-Allow-Origin'   => '*',
+            'Access-Control-Allow-Headers'  => 'Authori-zation,Authorization, Content-Type, If-Match, If-Modified-Since, If-None-Match, If-Unmodified-Since, X-Requested-With',
+            'Access-Control-Allow-Methods'  => 'GET,POST,PATCH,PUT,DELETE,OPTIONS,DELETE',
         ]);
     else
         return \think\Response::create()->code(404);

@@ -70,11 +70,6 @@ class AuthController
         return app('json')->success('成功');
     }
 
-    public function test()
-    {
-        echo 'test';
-    }
-
     /**
      * 验证码发送
      * @param Request $request

@@ -45,32 +45,35 @@ class StorePink extends BaseModel
      * */
     public static function getPinkOkList($uid)
     {
-        $list = self::alias('a')->where('a.status', 2)->where('a.is_refund', 0)->where('a.uid','<>',$uid)->join('User u','u.uid=a.uid','right')->column('nickname','id');
+        $list = self::alias('a')->where('a.status', 2)->where('a.is_refund', 0)->where('a.uid', '<>', $uid)->join('User u', 'u.uid=a.uid', 'right')->column('nickname', 'id');
         $msg = [];
-        foreach ($list as &$item){
-            $msg[] =  $item.='拼团成功';
+        foreach ($list as &$item) {
+            $msg[] = $item .= '拼团成功';
         }
         return $msg;
     }
+
     /*
      * 获取拼团完成的商品总件数
      * */
     public static function getPinkOkSumTotalNum($id)
     {
 
-        return self::where('status',2)->where('is_refund',0)->sum('total_num');
+        return self::where('status', 2)->where('is_refund', 0)->sum('total_num');
     }
+
     /**
      * 获取一条拼团数据
      * @param $id
      * @return mixed
      */
-    public static function getPinkUserOne($id){
+    public static function getPinkUserOne($id)
+    {
         $model = new self();
         $model = $model->alias('p');
         $model = $model->field('p.*,u.nickname,u.avatar');
-        $model = $model->where('id',$id);
-        $model = $model->join('user u','u.uid = p.uid');
+        $model = $model->where('id', $id);
+        $model = $model->join('user u', 'u.uid = p.uid');
         return $model->find();
     }
 
@@ -79,13 +82,14 @@ class StorePink extends BaseModel
      * @param $id
      * @return mixed
      */
-    public static function getPinkMember($id){
+    public static function getPinkMember($id)
+    {
         $model = new self();
         $model = $model->alias('p');
         $model = $model->field('p.*,u.nickname,u.avatar');
-        $model = $model->where('k_id',$id);
-        $model = $model->where('is_refund',0);
-        $model = $model->join('user u','u.uid = p.uid');
+        $model = $model->where('k_id', $id);
+        $model = $model->where('is_refund', 0);
+        $model = $model->join('user u', 'u.uid = p.uid');
         $model = $model->order('id asc');
         return $model->select();
     }
@@ -95,10 +99,11 @@ class StorePink extends BaseModel
      * @param $idAll
      * @return $this
      */
-    public static function setPinkStopTime($idAll){
+    public static function setPinkStopTime($idAll)
+    {
         $model = new self();
-        $model = $model->where('id','IN',$idAll);
-        return $model->update(['stop_time'=>time(),'status'=>2]);
+        $model = $model->where('id', 'IN', $idAll);
+        return $model->update(['stop_time' => time(), 'status' => 2]);
     }
 
     /**
@@ -107,29 +112,30 @@ class StorePink extends BaseModel
      * @param int $isAll 是否查找所有拼团
      * @return array
      */
-    public static function getPinkAll($cid,$isAll=false){
+    public static function getPinkAll($cid, $isAll = false)
+    {
         $model = new self();
         $model = $model->alias('p');
         $model = $model->field('p.id,p.uid,p.people,p.price,p.stop_time,u.nickname,u.avatar');
-        $model = $model->where('stop_time','>',time());
-        $model = $model->where('p.cid',$cid);
-        $model = $model->where('p.k_id',0);
-        $model = $model->where('p.is_refund',0);
+        $model = $model->where('stop_time', '>', time());
+        $model = $model->where('p.cid', $cid);
+        $model = $model->where('p.k_id', 0);
+        $model = $model->where('p.is_refund', 0);
         $model = $model->order('p.add_time desc');
-        $model = $model->join('user u','u.uid = p.uid');
+        $model = $model->join('user u', 'u.uid = p.uid');
         $list = $model->select();
-        $list=count($list) ? $list->toArray() : [];
-        if($isAll){
+        $list = count($list) ? $list->toArray() : [];
+        if ($isAll) {
             $pindAll = [];
-            foreach ($list as &$v){
-                $v['count'] = self::getPinkPeople($v['id'],$v['people']);
-                $v['h'] = date('H',$v['stop_time']);
-                $v['i'] = date('i',$v['stop_time']);
-                $v['s'] = date('s',$v['stop_time']);
+            foreach ($list as &$v) {
+                $v['count'] = self::getPinkPeople($v['id'], $v['people']);
+                $v['h'] = date('H', $v['stop_time']);
+                $v['i'] = date('i', $v['stop_time']);
+                $v['s'] = date('s', $v['stop_time']);
                 $pindAll[] = $v['id'];//开团团长ID
                 $v['stop_time'] = (int)$v['stop_time'];
             }
-            return [$list,$pindAll];
+            return [$list, $pindAll];
         }
         return $list;
     }
@@ -137,11 +143,12 @@ class StorePink extends BaseModel
     /**
      * 获取还差几人
      */
-    public static function getPinkPeople($kid,$people){
+    public static function getPinkPeople($kid, $people)
+    {
         $model = new self();
-        $model = $model->where('k_id',$kid)->where('is_refund',0);
-        $count = bcadd($model->count(),1,0);
-        return bcsub($people,$count,0);
+        $model = $model->where('k_id', $kid)->where('is_refund', 0);
+        $count = bcadd($model->count(), 1, 0);
+        return bcsub($people, $count, 0);
     }
 
     /**
@@ -150,10 +157,11 @@ class StorePink extends BaseModel
      * @param $kid
      * @return bool
      */
-    public static function getOrderIdAndPink($orderId,$kid){
+    public static function getOrderIdAndPink($orderId, $kid)
+    {
         $model = new self();
-        $pink = $model->where('k_id|id',$kid)->column('order_id');
-        if(in_array($orderId,$pink))return true;
+        $pink = $model->where('k_id|id', $kid)->column('order_id');
+        if (in_array($orderId, $pink)) return true;
         else return false;
     }
 
@@ -162,10 +170,11 @@ class StorePink extends BaseModel
      * @param $id
      * @return int|string
      */
-    public static function getIsPinkUid($id = 0,$uid = 0){
-         $pink = self::where('k_id|id',$id)->where('uid',$uid)->where('is_refund',0)->count();
-         if($pink) return true;
-         else return false;
+    public static function getIsPinkUid($id = 0, $uid = 0)
+    {
+        $pink = self::where('k_id|id', $id)->where('uid', $uid)->where('is_refund', 0)->count();
+        if ($pink) return true;
+        else return false;
     }
 
 
@@ -174,47 +183,46 @@ class StorePink extends BaseModel
      * @param $uidAll
      * @return int|string
      */
-    public static function isTpl($uidAll,$pid){
-        if(is_array($uidAll))
-            $count = self::where('uid','IN',implode(',',$uidAll))->where('is_tpl',0)->where('id|k_id',$pid)->count();
+    public static function isTpl($uidAll, $pid)
+    {
+        if (is_array($uidAll))
+            $count = self::where('uid', 'IN', implode(',', $uidAll))->where('is_tpl', 0)->where('id|k_id', $pid)->count();
         else
-            $count = self::where('uid',$uidAll)->where('is_tpl',0)->where('k_id|id',$pid)->count();
+            $count = self::where('uid', $uidAll)->where('is_tpl', 0)->where('k_id|id', $pid)->count();
         return $count;
     }
+
     /**
      * 拼团成功提示模板消息
      * @param $uidAll
      * @param $pid
      */
-    public static function orderPinkAfter($uidAll,$pid){
-         foreach ($uidAll as $key=>&$item){
-             $openid = WechatUser::uidToOpenid($item, 'openid');
-             $routineOpenid = WechatUser::uidToOpenid($item, 'routine_openid');
-             $nickname = WechatUser::uidToOpenid(self::where('id', $pid)->value('uid'), 'nickname');
-             if($openid){ //公众号模板消息
-                 $firstWeChat = '亲，您的拼团已经完成了';
-                 $keyword1WeChat = self::where('id|k_id',$pid)->where('uid',$item)->value('order_id');
-                 $keyword2WeChat = self::alias('p')->where('p.id|p.k_id',$pid)->where('p.uid',$item)->join('store_combination c','c.id=p.cid')->value('c.title');
-                 $remarkWeChat = '点击查看订单详情';
-                 $urlWeChat = Route::buildUrl('order/detail/'.$keyword1WeChat)->suffix('')->domain(true)->build();
-                 WechatTemplateService::sendTemplate($openid,WechatTemplateService::ORDER_USER_GROUPS_SUCCESS,[
-                     'first'=> $firstWeChat,
-                     'keyword1'=> $keyword1WeChat,
-                     'keyword2'=> $keyword2WeChat,
-                     'remark'=> $remarkWeChat
-                 ],$urlWeChat);
-             }else if($routineOpenid){// 小程序模板消息
-                 RoutineTemplate::sendOut('PINK_TRUE',$item,[
-                     'keyword1'=>'亲，您的拼团已经完成了',
-                     'keyword2'=>$nickname,
-                     'keyword3'=>date('Y-m-d H:i:s',time()),
-                     'keyword4'=>self::where('id',$pid)->value('price')
-                 ]);
-             }
-         }
-         self::beginTrans();
-         $res1 = self::where('uid','IN',implode(',',$uidAll))->where('id|k_id',$pid)->update(['is_tpl'=>1]);
-         self::checkTrans($res1);
+    public static function orderPinkAfter($uidAll, $pid)
+    {
+        $pinkInfo = self::where('p.id|p.k_id', $pid)->alias('p')->field(['p.people', 't.title', 'p.add_time', 'p.order_id', 'u.nickname'])->join('user u', 'u.uid = p.uid')->join('store_combination t', 'p.cid = t.id')->find();
+        if (!$pinkInfo) return false;
+        foreach ($uidAll as $key => &$item) {
+            $openid = WechatUser::uidToOpenid($item, 'openid');
+            $routineOpenid = WechatUser::uidToOpenid($item, 'routine_openid');
+            if ($openid) { //公众号模板消息
+                $firstWeChat = '亲，您的拼团已经完成了';
+                $keyword1WeChat = self::where('id|k_id', $pid)->where('uid', $item)->value('order_id');
+                $keyword2WeChat = self::alias('p')->where('p.id|p.k_id', $pid)->where('p.uid', $item)->join('store_combination c', 'c.id=p.cid')->value('c.title');
+                $remarkWeChat = '点击查看订单详情';
+                $urlWeChat = Route::buildUrl('order/detail/' . $keyword1WeChat)->suffix('')->domain(true)->build();
+                WechatTemplateService::sendTemplate($openid, WechatTemplateService::ORDER_USER_GROUPS_SUCCESS, [
+                    'first' => $firstWeChat,
+                    'keyword1' => $keyword1WeChat,
+                    'keyword2' => $keyword2WeChat,
+                    'remark' => $remarkWeChat
+                ], $urlWeChat);
+            } else if ($routineOpenid) {// 小程序模板消息
+                RoutineTemplate::sendPinkSuccess($item, $pinkInfo['title'], $pinkInfo['nickname'] ?? '', $pinkInfo['add_time'], $pinkInfo['people'], '/pages/order_details/index?order_id=' . $pinkInfo['order_id']);
+            }
+        }
+        self::beginTrans();
+        $res1 = self::where('uid', 'IN', implode(',', $uidAll))->where('id|k_id', $pid)->update(['is_tpl' => 1]);
+        self::checkTrans($res1);
     }
 
     /**
@@ -222,50 +230,47 @@ class StorePink extends BaseModel
      * @param $uid
      * @param $pid
      */
-    public static function orderPinkAfterNo($uid,$pid,$formId='',$fillTilt='',$isRemove=false){
-        $store = self::alias('p')->where('p.id|p.k_id',$pid)->field('c.*')->where('p.uid',$uid)->join('store_combination c','c.id=p.cid')->find();
-        $pink = self::where('id|k_id',$pid)->where('uid',$uid)->find();
+    public static function orderPinkAfterNo($uid, $pid, $formId = '', $fillTilt = '', $isRemove = false)
+    {
+        $store = self::alias('p')->where('p.id|p.k_id', $pid)->field('c.*')->where('p.uid', $uid)->join('store_combination c', 'c.id=p.cid')->find();
+        $pink = self::where('id|k_id', $pid)->where('uid', $uid)->find();
         $openid = WechatUser::uidToOpenid($uid, 'openid');
         $routineOpenid = WechatUser::uidToOpenid($uid, 'routine_openid');
-        if($isRemove){
-            if($openid){//公众号发送模板消息
-                $urlWeChat = Route::buildUrl('order/detail/'.$pink->order_id)->suffix('')->domain(true)->build();
-                WechatTemplateService::sendTemplate($openid,WechatTemplateService::ORDER_USER_GROUPS_LOSE,[
-                    'first'=>'亲，您的拼团取消',
-                    'keyword1'=> $store->title,
-                    'keyword2'=> $pink->price,
-                    'keyword3'=> $pink->price,
-                    'remark'=>'点击查看订单详情'
-                ],$urlWeChat);
-            }else if($routineOpenid){//小程序发送模板消息
-                RoutineTemplate::sendOut('PINK_REMOVE',$uid,[
-                    'keyword1'=>$store->title,
-                    'keyword2'=>$pink->order_id,
-                    'keyword3'=>$pink->price,
-                ],$formId,'/pages/order_details/index?order_id='.$pink->order_id);
+        if ($isRemove) {
+            if ($openid) {//公众号发送模板消息
+                $urlWeChat = Route::buildUrl('order/detail/' . $pink->order_id)->suffix('')->domain(true)->build();
+                WechatTemplateService::sendTemplate($openid, WechatTemplateService::ORDER_USER_GROUPS_LOSE, [
+                    'first' => '亲，您的拼团取消',
+                    'keyword1' => $store->title,
+                    'keyword2' => $pink->price,
+                    'keyword3' => $pink->price,
+                    'remark' => '点击查看订单详情'
+                ], $urlWeChat);
+            } else if ($routineOpenid) {//小程序发送模板消息
+                RoutineTemplate::sendPinkFail($uid, $store->title, $pink->people, '亲，您的拼团取消，点击查看订单详情', '/pages/order_details/index?order_id=' . $pink->order_id);
             }
-        }else{
-            if($openid){//公众号发送模板消息
-                $urlWeChat = Route::buildUrl('order/detail/'.$pink->order_id)->suffix('')->domain(true)->build();
-                WechatTemplateService::sendTemplate($openid,WechatTemplateService::ORDER_USER_GROUPS_LOSE,[
-                    'first'=>'亲，您的拼团失败',
-                    'keyword1'=> $store->title,
-                    'keyword2'=> $pink->price,
-                    'keyword3'=> $pink->price,
-                    'remark'=>'点击查看订单详情'
-                ],$urlWeChat);
-            }else if($routineOpenid){//小程序发送模板消息
-                RoutineTemplate::sendOut('PINK_Fill',$uid,[
-                    'keyword1'=>$store->title,
-                    'keyword2'=>$fillTilt,
-                    'keyword3'=>$pink->order_id,
-                    'keyword4'=>date('Y-m-d H:i:s',$pink->add_time),
-                    'keyword5'=>'申请退款金额：￥'.$pink->price,
-                ],$formId,'/pages/order_details/index?order_id='.$pink->order_id);
+        } else {
+            if ($openid) {//公众号发送模板消息
+                $urlWeChat = Route::buildUrl('order/detail/' . $pink->order_id)->suffix('')->domain(true)->build();
+                WechatTemplateService::sendTemplate($openid, WechatTemplateService::ORDER_USER_GROUPS_LOSE, [
+                    'first' => '亲，您的拼团失败',
+                    'keyword1' => $store->title,
+                    'keyword2' => $pink->price,
+                    'keyword3' => $pink->price,
+                    'remark' => '点击查看订单详情'
+                ], $urlWeChat);
+            } else if ($routineOpenid) {//小程序发送模板消息
+                RoutineTemplate::sendPinkFail(
+                    $uid,
+                    $store->title,
+                    $pink->people,
+                    '亲，您拼团失败，自动为您申请退款，退款金额为：' . $pink->price,
+                    '/pages/order_details/index?order_id=' . $pink->order_id
+                );
             }
         }
-        self::where('id',$pid)->update(['status'=>3,'stop_time'=>time()]);
-        self::where('k_id',$pid)->update(['status'=>3,'stop_time'=>time()]);
+        self::where('id', $pid)->update(['status' => 3, 'stop_time' => time()]);
+        self::where('k_id', $pid)->update(['status' => 3, 'stop_time' => time()]);
     }
 
     /**
@@ -273,43 +278,48 @@ class StorePink extends BaseModel
      * @param $id
      * @return array|false|\PDOStatement|string|\think\Model
      */
-    public static function getCurrentPink($id,$uid){
-        $pink = self::where('id',$id)->where('uid',$uid)->find();
-        if(!$pink) $pink = self::where('k_id',$id)->where('uid',$uid)->find();
-        return StoreOrder::where('id',$pink['order_id_key'])->value('order_id');
+    public static function getCurrentPink($id, $uid)
+    {
+        $pink = self::where('id', $id)->where('uid', $uid)->find();
+        if (!$pink) $pink = self::where('k_id', $id)->where('uid', $uid)->find();
+        return StoreOrder::where('id', $pink['order_id_key'])->value('order_id');
     }
 
-    public static function systemPage($where){
+    public static function systemPage($where)
+    {
         $model = new self;
         $model = $model->alias('p');
         $model = $model->field('p.*,c.title');
-        if($where['data'] !== ''){
-            list($startTime,$endTime) = explode(' - ',$where['data']);
-            $model = $model->where('p.add_time','>',strtotime($startTime));
-            $model = $model->where('p.add_time','<',strtotime($endTime));
+        if ($where['data'] !== '') {
+            list($startTime, $endTime) = explode(' - ', $where['data']);
+            $model = $model->where('p.add_time', '>', strtotime($startTime));
+            $model = $model->where('p.add_time', '<', strtotime($endTime));
         }
-        if($where['status']) $model = $model->where('p.status',$where['status']);
-        $model = $model->where('p.k_id',0);
+        if ($where['status']) $model = $model->where('p.status', $where['status']);
+        $model = $model->where('p.k_id', 0);
         $model = $model->order('p.id desc');
-        $model = $model->join('StoreCombination c','c.id=p.cid');
-        return self::page($model,function($item)use($where){
-            $item['count_people'] = bcadd(self::where('k_id',$item['id'])->count(),1,0);
-        },$where);
+        $model = $model->join('StoreCombination c', 'c.id=p.cid');
+        return self::page($model, function ($item) use ($where) {
+            $item['count_people'] = bcadd(self::where('k_id', $item['id'])->count(), 1, 0);
+        }, $where);
     }
 
-    public static function isPinkBe($data,$id){
+    public static function isPinkBe($data, $id)
+    {
         $data['id'] = $id;
         $count = self::where($data)->count();
-        if($count) return $count;
+        if ($count) return $count;
         $data['k_id'] = $id;
         $count = self::where($data)->count();
-        if($count) return $count;
+        if ($count) return $count;
         else return 0;
     }
-    public static function isPinkStatus($pinkId){
-        if(!$pinkId) return false;
-        $stopTime = self::where('id',$pinkId)->value('stop_time');
-        if($stopTime < time()) return true; //拼团结束
+
+    public static function isPinkStatus($pinkId)
+    {
+        if (!$pinkId) return false;
+        $stopTime = self::where('id', $pinkId)->value('stop_time');
+        if ($stopTime < time()) return true; //拼团结束
         else return false;//拼团未结束
     }
 
@@ -318,14 +328,15 @@ class StorePink extends BaseModel
      * @param $pinkId
      * @return bool
      */
-    public static function isSetPinkOver($pinkId){
-        $people = self::where('id',$pinkId)->value('people');
-        $stopTime = self::where('id',$pinkId)->value('stop_time');
-        if($stopTime < time()){
-            $countNum = self::getPinkPeople($pinkId,$people);
-            if($countNum) return false;//拼团失败
+    public static function isSetPinkOver($pinkId)
+    {
+        $people = self::where('id', $pinkId)->value('people');
+        $stopTime = self::where('id', $pinkId)->value('stop_time');
+        if ($stopTime < time()) {
+            $countNum = self::getPinkPeople($pinkId, $people);
+            if ($countNum) return false;//拼团失败
             else return true;//拼团成功
-        }else return true;
+        } else return true;
     }
 
     /**
@@ -333,35 +344,35 @@ class StorePink extends BaseModel
      * @param $id
      * @return bool
      */
-    public static function setRefundPink($oid){
+    public static function setRefundPink($oid)
+    {
         $res = true;
-        $order = StoreOrder::where('id',$oid)->find();
-        if($order['pink_id']) $id = $order['pink_id'];
+        $order = StoreOrder::where('id', $oid)->find();
+        if ($order['pink_id']) $id = $order['pink_id'];
         else return $res;
-        $count = self::where('id',$id)->where('uid',$order['uid'])->find();//正在拼团 团长
-        $countY = self::where('k_id',$id)->where('uid',$order['uid'])->find();//正在拼团 团员
-        if(!$count && !$countY) return $res;
-        if($count){//团长
+        $count = self::where('id', $id)->where('uid', $order['uid'])->find();//正在拼团 团长
+        $countY = self::where('k_id', $id)->where('uid', $order['uid'])->find();//正在拼团 团员
+        if (!$count && !$countY) return $res;
+        if ($count) {//团长
             //判断团内是否还有其他人  如果有  团长为第二个进团的人
-            $kCount = self::where('k_id',$id)->order('add_time asc')->find();
-            if($kCount){
-                $res11 = self::where('k_id',$id)->update(['k_id'=>$kCount['id']]);
-                $res12 = self::where('id',$kCount['id'])->update(['stop_time'=>$count['add_time']+86400,'k_id'=>0]);
+            $kCount = self::where('k_id', $id)->order('add_time asc')->find();
+            if ($kCount) {
+                $res11 = self::where('k_id', $id)->update(['k_id' => $kCount['id']]);
+                $res12 = self::where('id', $kCount['id'])->update(['stop_time' => $count['add_time'] + 86400, 'k_id' => 0]);
                 $res1 = $res11 && $res12;
-                $res2 = self::where('id',$id)->update(['stop_time'=>time()-1,'k_id'=>0,'is_refund'=>$kCount['id'],'status'=>3]);
-            }else{
+                $res2 = self::where('id', $id)->update(['stop_time' => time() - 1, 'k_id' => 0, 'is_refund' => $kCount['id'], 'status' => 3]);
+            } else {
                 $res1 = true;
-                $res2 = self::where('id',$id)->update(['stop_time'=>time()-1,'k_id'=>0,'is_refund'=>$id,'status'=>3]);
+                $res2 = self::where('id', $id)->update(['stop_time' => time() - 1, 'k_id' => 0, 'is_refund' => $id, 'status' => 3]);
             }
             //修改结束时间为前一秒  团长ID为0
             $res = $res1 && $res2;
-        }else if($countY){//团员
-            $res =  self::where('id',$countY['id'])->update(['stop_time'=>time()-1,'k_id'=>0,'is_refund'=>$id,'status'=>3]);
+        } else if ($countY) {//团员
+            $res = self::where('id', $countY['id'])->update(['stop_time' => time() - 1, 'k_id' => 0, 'is_refund' => $id, 'status' => 3]);
         }
         return $res;
 
     }
-
 
 
     /**
@@ -369,9 +380,10 @@ class StorePink extends BaseModel
      * @param $pinkIds
      * @return bool
      */
-    public static function setPinkStatus($pinkIds){
-        $orderPink = self::where('id','IN',$pinkIds)->where('is_refund',1)->count();
-        if(!$orderPink) return true;
+    public static function setPinkStatus($pinkIds)
+    {
+        $orderPink = self::where('id', 'IN', $pinkIds)->where('is_refund', 1)->count();
+        if (!$orderPink) return true;
         else return false;
     }
 
@@ -381,57 +393,60 @@ class StorePink extends BaseModel
      * @param $order
      * @return mixed
      */
-    public static function createPink($order){
-        $order = StoreOrder::tidyOrder($order,true)->toArray();
+    public static function createPink($order)
+    {
+        $order = StoreOrder::tidyOrder($order, true)->toArray();
         $openid = WechatUser::uidToOpenid($order['uid'], 'openid');
         $routineOpenid = WechatUser::uidToOpenid($order['uid'], 'routine_openid');
-        $product = StoreCombination::where('id',$order['combination_id'])->field('effective_time,title')->find();
-        if($product){
-            if($order['pink_id']){//拼团存在
+        $product = StoreCombination::where('id', $order['combination_id'])->field('effective_time,title')->find();
+        if ($product) {
+            if ($order['pink_id']) {//拼团存在
                 $res = false;
                 $pink['uid'] = $order['uid'];//用户id
-                if(self::isPinkBe($pink,$order['pink_id'])) return false;
+                if (self::isPinkBe($pink, $order['pink_id'])) return false;
                 $pink['order_id'] = $order['order_id'];//订单id  生成
                 $pink['order_id_key'] = $order['id'];//订单id  数据库id
                 $pink['total_num'] = $order['total_num'];//购买个数
                 $pink['total_price'] = $order['pay_price'];//总金额
                 $pink['k_id'] = $order['pink_id'];//拼团id
-                foreach ($order['cartInfo'] as $v){
+                foreach ($order['cartInfo'] as $v) {
                     $pink['cid'] = $v['combination_id'];//拼团产品id
                     $pink['pid'] = $v['product_id'];//产品id
-                    $pink['people'] = StoreCombination::where('id',$v['combination_id'])->value('people');//几人拼团
+                    $pink['people'] = StoreCombination::where('id', $v['combination_id'])->value('people');//几人拼团
                     $pink['price'] = $v['productInfo']['price'];//单价
                     $pink['stop_time'] = 0;//结束时间
                     $pink['add_time'] = time();//开团时间
                     $res = self::create($pink)->toArray();
                 }
-                if($openid){ //公众号模板消息
-                    $urlWeChat = Route::buildUrl('order/detail/'.$order['order_id'])->suffix('')->domain(true)->build();
-                    WechatTemplateService::sendTemplate($openid,WechatTemplateService::ORDER_USER_GROUPS_SUCCESS,[
-                        'first'=> '亲，您已成功参与拼团',
-                        'keyword1'=> $order['order_id'],
-                        'keyword2'=> $product->title,
-                        'remark'=> '点击查看订单详情'
-                    ],$urlWeChat);
-                }else if($routineOpenid){
-                    RoutineTemplate::sendOut('PINK_TRUE',$order['uid'],[
-                        'keyword1'=>$product->title,
-                        'keyword2'=>User::where('uid',self::where('id',$pink['k_id'])->value('uid'))->value('nickname'),
-                        'keyword3'=>date('Y-m-d H:i:s',$pink['add_time']),
-                        'keyword3'=>$pink['total_price'],
-                    ],'','/pages/order_details/index?order_id='.$pink['order_id']);
+                if ($openid) { //公众号模板消息
+                    $urlWeChat = Route::buildUrl('order/detail/' . $order['order_id'])->suffix('')->domain(true)->build();
+                    WechatTemplateService::sendTemplate($openid, WechatTemplateService::ORDER_USER_GROUPS_SUCCESS, [
+                        'first' => '亲，您已成功参与拼团',
+                        'keyword1' => $order['order_id'],
+                        'keyword2' => $product->title,
+                        'remark' => '点击查看订单详情'
+                    ], $urlWeChat);
+                } else if ($routineOpenid) {
+                    $nickname = User::where('uid', self::where('id', $pink['k_id'])->value('uid'))->value('nickname');
+                    RoutineTemplate::sendPinkSuccess(
+                        $order['uid'], $product->title,
+                        $nickname,
+                        $pink['add_time'],
+                        $pink['people'],
+                        '/pages/order_details/index?order_id=' . $pink['order_id']
+                    );
                 }
                 //处理拼团完成
-                list($pinkAll,$pinkT,$count,$idAll,$uidAll)=self::getPinkMemberAndPinkK($pink);
-                if($pinkT['status']==1){
-                    if(!$count)//组团完成
-                        self::PinkComplete($uidAll,$idAll,$pink['uid'],$pinkT);
+                list($pinkAll, $pinkT, $count, $idAll, $uidAll) = self::getPinkMemberAndPinkK($pink);
+                if ($pinkT['status'] == 1) {
+                    if (!$count)//组团完成
+                        self::PinkComplete($uidAll, $idAll, $pink['uid'], $pinkT);
                     else
-                        self::PinkFail($pinkAll,$pinkT,0);
+                        self::PinkFail($pinkAll, $pinkT, 0);
                 }
-                if($res) return true;
+                if ($res) return true;
                 else return false;
-            }else{
+            } else {
                 $res = false;
                 $pink['uid'] = $order['uid'];//用户id
                 $pink['order_id'] = $order['order_id'];//订单id  生成
@@ -439,50 +454,52 @@ class StorePink extends BaseModel
                 $pink['total_num'] = $order['total_num'];//购买个数
                 $pink['total_price'] = $order['pay_price'];//总金额
                 $pink['k_id'] = 0;//拼团id
-                foreach ($order['cartInfo'] as $v){
+                foreach ($order['cartInfo'] as $v) {
                     $pink['cid'] = $v['combination_id'];//拼团产品id
                     $pink['pid'] = $v['product_id'];//产品id
-                    $pink['people'] = StoreCombination::where('id',$v['combination_id'])->value('people');//几人拼团
+                    $pink['people'] = StoreCombination::where('id', $v['combination_id'])->value('people');//几人拼团
                     $pink['price'] = $v['productInfo']['price'];//单价
-                    $pink['stop_time'] = bcadd(time(),bcmul($product->effective_time,3600,0),0);//结束时间
+                    $pink['stop_time'] = bcadd(time(), bcmul($product->effective_time, 3600, 0), 0);//结束时间
                     $pink['add_time'] = time();//开团时间
                     $res1 = self::create($pink)->toArray();
-                    $res2 = StoreOrder::where('id',$order['id'])->update(['pink_id'=>$res1['id']]);
+                    $res2 = StoreOrder::where('id', $order['id'])->update(['pink_id' => $res1['id']]);
                     $res = $res1 && $res2;
                 }
                 // 开团成功发送模板消息
-                if($openid && $order['is_channel'] != 1){ //公众号模板消息
-                    $urlWeChat = Route::buildUrl('/order/detail/'.$pink['order_id'])->suffix('')->domain(true)->build();
-                    WechatTemplateService::sendTemplate($openid,WechatTemplateService::OPEN_PINK_SUCCESS,[
-                        'first'=> '您好，您已成功开团！赶紧与小伙伴们分享吧！！！',
-                        'keyword1'=> $product->title,
-                        'keyword2'=> $pink['total_price'],
-                        'keyword3'=> $pink['people'],
-                        'remark'=> '点击查看订单详情'
-                    ],$urlWeChat);
-                }else if($routineOpenid && $order['is_channel'] == 1){
-                    RoutineTemplate::sendOut('OPEN_PINK_SUCCESS',$order['uid'],[
-                        'keyword1'=>date('Y-m-d H:i:s',$pink['add_time']),
-                        'keyword2'=>date('Y-m-d H:i:s',$pink['stop_time']),
-                        'keyword3'=>$product->title,
-                        'keyword4'=>$pink['order_id'],
-                        'keyword4'=>$pink['total_price'],
-                    ],'','/pages/order_details/index?order_id='.$pink['order_id']);
+                if ($openid && $order['is_channel'] != 1) { //公众号模板消息
+                    $urlWeChat = Route::buildUrl('/order/detail/' . $pink['order_id'])->suffix('')->domain(true)->build();
+                    WechatTemplateService::sendTemplate($openid, WechatTemplateService::OPEN_PINK_SUCCESS, [
+                        'first' => '您好，您已成功开团！赶紧与小伙伴们分享吧！！！',
+                        'keyword1' => $product->title,
+                        'keyword2' => $pink['total_price'],
+                        'keyword3' => $pink['people'],
+                        'remark' => '点击查看订单详情'
+                    ], $urlWeChat);
+                } else if ($routineOpenid && $order['is_channel'] == 1) {
+                    $nickname = User::where('uid', $order['uid'])->value('nickname');
+                    RoutineTemplate::sendPinkSuccess(
+                        $order['uid'], $product->title,
+                        $nickname,
+                        $pink['add_time'],
+                        $pink['people'],
+                        '/pages/order_details/index?order_id=' . $pink['order_id']
+                    );
                 }
-                if($res) return true;
+                if ($res) return true;
                 else return false;
             }
-        }else{
-            Log::error('拼团支付成功读取产品数据失败订单号：'.$order['order_id']);
+        } else {
+            Log::error('拼团支付成功读取产品数据失败订单号：' . $order['order_id']);
         }
     }
+
     /*
      * 获取一条今天正在拼团的人的头像和名称
      * */
     public static function getPinkSecondOne()
     {
-        $addTime =  mt_rand(time()-30000,time());
-         return self::where('p.add_time','>',$addTime)->alias('p')->where('p.status',1)->join('User u','u.uid=p.uid')->field('u.nickname,u.avatar as src')->find();
+        $addTime = mt_rand(time() - 30000, time());
+        return self::where('p.add_time', '>', $addTime)->alias('p')->where('p.status', 1)->join('User u', 'u.uid=p.uid')->field('u.nickname,u.avatar as src')->find();
     }
     /**
      * 拼团成功后给团长返佣金
@@ -494,7 +511,7 @@ class StorePink extends BaseModel
 //        $pinkRakeBack = self::where('id',$id)->field('people,price,uid,id')->find()->toArray();
 //        $countPrice = bcmul($pinkRakeBack['people'],$pinkRakeBack['price'],2);
 //        if(bcsub((float)$countPrice,0,2) <= 0) return true;
-//        $rakeBack = (sysConfig('rake_back_colonel') ?: 0)/100;
+//        $rakeBack = (sys_config('rake_back_colonel') ?: 0)/100;
 //        if($rakeBack <= 0) return true;
 //        $rakeBackPrice = bcmul($countPrice,$rakeBack,2);
 //        if($rakeBackPrice <= 0) return true;
@@ -514,19 +531,19 @@ class StorePink extends BaseModel
     * @param array $pinkT 团长信息
     * @return int
     * */
-    public static function PinkComplete($uidAll,$idAll,$uid,$pinkT)
+    public static function PinkComplete($uidAll, $idAll, $uid, $pinkT)
     {
-        $pinkBool=6;
-        try{
-            if(self::setPinkStatus($idAll)){
+        $pinkBool = 6;
+        try {
+            if (self::setPinkStatus($idAll)) {
                 self::setPinkStopTime($idAll);
-                if(in_array($uid,$uidAll)){
-                    if(self::isTpl($uidAll,$pinkT['id'])) self::orderPinkAfter($uidAll,$pinkT['id']);
+                if (in_array($uid, $uidAll)) {
+                    if (self::isTpl($uidAll, $pinkT['id'])) self::orderPinkAfter($uidAll, $pinkT['id']);
                     $pinkBool = 1;
-                }else  $pinkBool = 3;
+                } else  $pinkBool = 3;
             }
             return $pinkBool;
-        }catch (\Exception $e){
+        } catch (\Exception $e) {
             self::setErrorInfo($e->getMessage());
             return $pinkBool;
         }
@@ -541,26 +558,27 @@ class StorePink extends BaseModel
      * @param boolen $isIds 是否返回记录所有拼团id
      * @return int| boolen
      * */
-    public static function PinkFail($pinkAll,$pinkT,$pinkBool,$isRunErr=true,$isIds=false){
+    public static function PinkFail($pinkAll, $pinkT, $pinkBool, $isRunErr = true, $isIds = false)
+    {
         self::startTrans();
-        $pinkIds=[];
-        try{
-            if($pinkT['stop_time'] < time()){//拼团时间超时  退款
+        $pinkIds = [];
+        try {
+            if ($pinkT['stop_time'] < time()) {//拼团时间超时  退款
                 $pinkBool = -1;
-                array_push($pinkAll,$pinkT);
-                foreach ($pinkAll as $v){
-                    if(StoreOrder::orderApplyRefund(StoreOrder::getPinkOrderId($v['order_id_key']),$v['uid'],'拼团时间超时') && self::isTpl($v['uid'],$pinkT['id'])){
-                        if($isIds) array_push($pinkIds,$v['id']);
-                        self::orderPinkAfterNo($pinkT['uid'],$pinkT['id']);
-                    }else{
-                        if($isRunErr) return $pinkBool;
+                array_push($pinkAll, $pinkT);
+                foreach ($pinkAll as $v) {
+                    if (StoreOrder::orderApplyRefund(StoreOrder::getPinkOrderId($v['order_id_key']), $v['uid'], '拼团时间超时') && self::isTpl($v['uid'], $pinkT['id'])) {
+                        if ($isIds) array_push($pinkIds, $v['id']);
+                        self::orderPinkAfterNo($pinkT['uid'], $pinkT['id']);
+                    } else {
+                        if ($isRunErr) return $pinkBool;
                     }
                 }
             }
             self::commit();
-            if($isIds) return $pinkIds;
+            if ($isIds) return $pinkIds;
             return $pinkBool;
-        }catch (\Exception $e){
+        } catch (\Exception $e) {
             self::rollback();
             return $pinkBool;
         }
@@ -571,77 +589,79 @@ class StorePink extends BaseModel
      * @param array $pink
      * @return array
      * */
-    public static function getPinkMemberAndPinkK($pink){
+    public static function getPinkMemberAndPinkK($pink)
+    {
         //查找拼团团员和团长
-        if($pink['k_id']){
+        if ($pink['k_id']) {
             $pinkAll = self::getPinkMember($pink['k_id']);
             $pinkT = self::getPinkUserOne($pink['k_id']);
-        }else{
+        } else {
             $pinkAll = self::getPinkMember($pink['id']);
             $pinkT = $pink;
         }
-        $pinkT = $pinkT->hidden(['order_id','total_price','cid','pid','add_time','k_id','is_tpl','is_refund'])->toArray();
-        $pinkAll = $pinkAll->hidden(['total_price','cid','pid','add_time','k_id','is_tpl','is_refund'])->toArray();
+        $pinkT = $pinkT->hidden(['order_id', 'total_price', 'cid', 'pid', 'add_time', 'k_id', 'is_tpl', 'is_refund'])->toArray();
+        $pinkAll = $pinkAll->hidden(['total_price', 'cid', 'pid', 'add_time', 'k_id', 'is_tpl', 'is_refund'])->toArray();
         $count = (int)bcadd(count($pinkAll), 1, 0);
         $count = (int)bcsub($pinkT['people'], $count, 0);
         $idAll = [];
-        $uidAll =[];
+        $uidAll = [];
         //收集拼团用户id和拼团id
-        foreach ($pinkAll as $k=>$v){
+        foreach ($pinkAll as $k => $v) {
             $idAll[$k] = $v['id'];
             $uidAll[$k] = $v['uid'];
         }
         $idAll[] = $pinkT['id'];
         $uidAll[] = $pinkT['uid'];
-        return [$pinkAll,$pinkT,$count,$idAll,$uidAll];
+        return [$pinkAll, $pinkT, $count, $idAll, $uidAll];
     }
+
     /*
      * 取消开团
      * @param int $uid 用户id
      * @param int $pink_id 团长id
      * @return boolean
      * */
-    public static function removePink($uid,$cid,$pink_id,$nextPinkT=null)
+    public static function removePink($uid, $cid, $pink_id, $nextPinkT = null)
     {
-        $pinkT=self::where('uid', $uid)
+        $pinkT = self::where('uid', $uid)
             ->where('id', $pink_id)
             ->where('cid', $cid)
             ->where('k_id', 0)
             ->where('is_refund', 0)
             ->where('status', 1)
-            ->where('stop_time','>',time())
+            ->where('stop_time', '>', time())
             ->find();
-        if(!$pinkT) return self::setErrorInfo('未查到拼团信息，无法取消');
+        if (!$pinkT) return self::setErrorInfo('未查到拼团信息，无法取消');
         self::startTrans();
-        try{
-            list($pinkAll,$pinkT,$count,$idAll,$uidAll)=self::getPinkMemberAndPinkK($pinkT);
-            if(count($pinkAll)){
-                if(self::getPinkPeople($pink_id,$pinkT['people'])){
+        try {
+            list($pinkAll, $pinkT, $count, $idAll, $uidAll) = self::getPinkMemberAndPinkK($pinkT);
+            if (count($pinkAll)) {
+                if (self::getPinkPeople($pink_id, $pinkT['people'])) {
                     //拼团未完成，拼团有成员取消开团取 紧跟团长后拼团的人
-                    if(isset($pinkAll[0])) $nextPinkT=$pinkAll[0];
-                }else{
+                    if (isset($pinkAll[0])) $nextPinkT = $pinkAll[0];
+                } else {
                     //拼团完成
-                    self::PinkComplete($uidAll,$idAll,$uid,$pinkT);
-                    return self::setErrorInfo(['status'=>200,'msg'=>'拼团已完成，无法取消']);
+                    self::PinkComplete($uidAll, $idAll, $uid, $pinkT);
+                    return self::setErrorInfo(['status' => 200, 'msg' => '拼团已完成，无法取消']);
                 }
             }
             //取消开团
-            if(StoreOrder::orderApplyRefund(StoreOrder::getPinkOrderId($pinkT['order_id_key']),$pinkT['uid'],'拼团取消开团') && self::isTpl($pinkT['uid'],$pinkT['id'])){
+            if (StoreOrder::orderApplyRefund(StoreOrder::getPinkOrderId($pinkT['order_id_key']), $pinkT['uid'], '拼团取消开团') && self::isTpl($pinkT['uid'], $pinkT['id'])) {
                 $formId = RoutineFormId::getFormIdOne($uid);
-                if($formId) RoutineFormId::delFormIdOne($formId);
-                self::orderPinkAfterNo($pinkT['uid'],$pinkT['id'],$formId,'拼团取消开团',true);
-            }else
-                return self::setErrorInfo(['status'=>200,'msg'=>StoreOrder::getErrorInfo()],true);
+                if ($formId) RoutineFormId::delFormIdOne($formId);
+                self::orderPinkAfterNo($pinkT['uid'], $pinkT['id'], $formId, '拼团取消开团', true);
+            } else
+                return self::setErrorInfo(['status' => 200, 'msg' => StoreOrder::getErrorInfo()], true);
             //当前团有人的时候
-            if(is_array($nextPinkT)){
-                self::where('id',$nextPinkT['id'])->update(['k_id'=>0,'status'=>1,'stop_time'=>$pinkT['stop_time']]);
-                self::where('k_id',$pinkT['id'])->update(['k_id'=>$nextPinkT['id']]);
-                StoreOrder::where('order_id',$nextPinkT['order_id'])->update(['pink_id'=>$nextPinkT['id']]);
+            if (is_array($nextPinkT)) {
+                self::where('id', $nextPinkT['id'])->update(['k_id' => 0, 'status' => 1, 'stop_time' => $pinkT['stop_time']]);
+                self::where('k_id', $pinkT['id'])->update(['k_id' => $nextPinkT['id']]);
+                StoreOrder::where('order_id', $nextPinkT['order_id'])->update(['pink_id' => $nextPinkT['id']]);
             }
             self::commitTrans();
             return true;
-        }catch (\Exception $e){
-            return self::setErrorInfo($e->getLine().':'.$e->getMessage().':'.$e->getFile(),true);
+        } catch (\Exception $e) {
+            return self::setErrorInfo($e->getLine() . ':' . $e->getMessage() . ':' . $e->getFile(), true);
         }
     }
 
@@ -653,10 +673,10 @@ class StorePink extends BaseModel
     {
         $model = new self;
         $model = $model->field('id,people');//开团编号
-        $model = $model->where('stop_time','<=', time());//小于当前时间
-        $model = $model->where('status',1);//进行中的拼团
-        $model = $model->where('k_id',0);//团长
-        $model = $model->where('is_refund',0);//未退款
+        $model = $model->where('stop_time', '<=', time());//小于当前时间
+        $model = $model->where('status', 1);//进行中的拼团
+        $model = $model->where('k_id', 0);//团长
+        $model = $model->where('is_refund', 0);//未退款
         return $model->select();
     }
 
@@ -668,15 +688,15 @@ class StorePink extends BaseModel
      */
     public static function successPinkEdit(array $pinkRegimental)
     {
-        if(!count($pinkRegimental)) return true;
-        foreach ($pinkRegimental as $key=>&$item){
-            $pinkList = self::where('k_id',$item)->column('id','id');
+        if (!count($pinkRegimental)) return true;
+        foreach ($pinkRegimental as $key => &$item) {
+            $pinkList = self::where('k_id', $item)->column('id', 'id');
             $pinkList[] = $item;
             $pinkList = implode(',', $pinkList);
             self::setPinkStatus($pinkList);//修改完成状态
             self::setPinkStopTime($pinkList);//修改结束时间
             $pinkUidList = self::isTplPink($pinkList);//获取未发送模板消息的用户
-            if(count($pinkUidList)) self::sendPinkTemplateMessageSuccess($pinkUidList,$item);//发送模板消息
+            if (count($pinkUidList)) self::sendPinkTemplateMessageSuccess($pinkUidList, $item);//发送模板消息
         }
         return true;
     }
@@ -691,8 +711,8 @@ class StorePink extends BaseModel
      */
     public static function failPinkEdit(array $pinkRegimental)
     {
-        if(!count($pinkRegimental)) return true;
-        foreach ($pinkRegimental as $key=>&$item) {
+        if (!count($pinkRegimental)) return true;
+        foreach ($pinkRegimental as $key => &$item) {
             $pinkList = self::where('k_id', $item)->column('id', 'id');
             $pinkList[] = $item;
             $pinkList = implode(',', $pinkList);
@@ -706,7 +726,7 @@ class StorePink extends BaseModel
 
     /**
      * 发送模板消息  失败
-     * @param array $pinkUidList  拼团用户编号
+     * @param array $pinkUidList 拼团用户编号
      * @param $pink  团长编号
      * @throws \think\db\exception\DataNotFoundException
      * @throws \think\db\exception\ModelNotFoundException
@@ -714,33 +734,33 @@ class StorePink extends BaseModel
      */
     public static function sendPinkTemplateMessageError(array $pinkUidList, $pink)
     {
-        foreach ($pinkUidList as $key=>&$item){
+        foreach ($pinkUidList as $key => &$item) {
             $openid = WechatUser::uidToOpenid($item, 'openid');
             $routineOpenid = WechatUser::uidToOpenid($item, 'routine_openid');
-            $store = self::alias('p')->where('p.id|p.k_id',$pink)->field('c.*')->where('p.uid',$item)->join('store_combination c','c.id=p.cid')->find();
-            $pink = self::where('id|k_id',$pink)->where('uid',$item)->find();
-            if($openid){
+            $store = self::alias('p')->where('p.id|p.k_id', $pink)->field('c.*')->where('p.uid', $item)->join('store_combination c', 'c.id = p.cid')->find();
+            $pink = self::where('id|k_id', $pink)->where('uid', $item)->find();
+            if ($openid) {
                 //公众号模板消息
-                $urlWeChat = Route::buildUrl('order/detail/'.$pink->order_id)->suffix('')->domain(true)->build();
-                WechatTemplateService::sendTemplate($openid,WechatTemplateService::ORDER_USER_GROUPS_LOSE,[
-                    'first'=>'亲，您的拼团失败',
-                    'keyword1'=> $store->title,
-                    'keyword2'=> $pink->price,
-                    'keyword3'=> $pink->price,
-                    'remark'=>'点击查看订单详情'
-                ],$urlWeChat);
-            }else if($routineOpenid){
+                $urlWeChat = Route::buildUrl('order/detail/' . $pink->order_id)->suffix('')->domain(true)->build();
+                WechatTemplateService::sendTemplate($openid, WechatTemplateService::ORDER_USER_GROUPS_LOSE, [
+                    'first' => '亲，您的拼团失败',
+                    'keyword1' => $store->title,
+                    'keyword2' => $pink->price,
+                    'keyword3' => $pink->price,
+                    'remark' => '点击查看订单详情'
+                ], $urlWeChat);
+            } else if ($routineOpenid) {
                 //小程序模板消息
-                RoutineTemplate::sendOut('PINK_Fill',$item,[
-                    'keyword1'=>$store->title,
-                    'keyword2'=>'拼团取消开团',
-                    'keyword3'=>$pink->order_id,
-                    'keyword4'=>date('Y-m-d H:i:s',$pink->add_time),
-                    'keyword5'=>'申请退款金额：￥'.$pink->price,
-                ],'','/pages/order_details/index?order_id='.$pink->order_id);
+                RoutineTemplate::sendPinkFail(
+                    $item,
+                    $store->title,
+                    $pink->people,
+                    '亲，您拼团失败，自动为您申请退款，退款金额为：' . $pink->price,
+                    '/pages/order_details/index?order_id=' . $pink->order_id
+                );
             }
         }
-        self::where('uid','IN',implode(',',$pinkUidList))->where('id|k_id',$pink)->update(['is_tpl'=>1]);
+        self::where('uid', 'IN', implode(',', $pinkUidList))->where('id|k_id', $pink)->update(['is_tpl' => 1]);
     }
 
     /**
@@ -750,10 +770,10 @@ class StorePink extends BaseModel
      */
     public static function refundPink($pinkList)
     {
-        $refundPinkList = self::where('id','IN',$pinkList)->column('order_id,uid', 'id');
-        if(!count($refundPinkList)) return true;
-        foreach ($refundPinkList as $key=>&$item){
-            StoreOrder::orderApplyRefund($item['order_id'],$item['uid'],'拼团时间超时');//申请退款
+        $refundPinkList = self::where('id', 'IN', $pinkList)->column('order_id,uid', 'id');
+        if (!count($refundPinkList)) return true;
+        foreach ($refundPinkList as $key => &$item) {
+            StoreOrder::orderApplyRefund($item['order_id'], $item['uid'], '拼团时间超时');//申请退款
         }
     }
 
@@ -762,8 +782,9 @@ class StorePink extends BaseModel
      * @param $pinkList
      * @return StorePink
      */
-    public static function pinkStopStatus($pinkList){
-        return self::where('id', 'IN', $pinkList)->update(['status'=>3]);
+    public static function pinkStopStatus($pinkList)
+    {
+        return self::where('id', 'IN', $pinkList)->update(['status' => 3]);
     }
 
     /**
@@ -773,46 +794,49 @@ class StorePink extends BaseModel
      */
     public static function isTplPink($pinkList)
     {
-        return self::where('id','IN',$pinkList)->where('is_tpl',0)->column('uid', 'uid');
+        return self::where('id', 'IN', $pinkList)->where('is_tpl', 0)->column('uid', 'uid');
     }
 
     /**
      * 发送模板消息  成功
-     * @param array $pinkUidList  拼团用户编号
+     * @param array $pinkUidList 拼团用户编号
      * @param $pink  团长编号
      * @throws \Exception
      */
     public static function sendPinkTemplateMessageSuccess(array $pinkUidList, $pink)
     {
-        foreach ($pinkUidList as $key=>&$item){
+        foreach ($pinkUidList as $key => &$item) {
             $openid = WechatUser::uidToOpenid($item, 'openid');
             $routineOpenid = WechatUser::uidToOpenid($item, 'routine_openid');
             $nickname = WechatUser::uidToOpenid(self::where('id', $pink)->value('uid'), 'nickname');
-            if($openid){
+            if ($openid) {
                 //公众号模板消息
                 $firstWeChat = '亲，您的拼团已经完成了';
-                $keyword1WeChat = self::where('id|k_id',$pink)->where('uid',$item)->value('order_id');
-                $keyword2WeChat = self::alias('p')->where('p.id|p.k_id',$pink)->where('p.uid',$item)->join('store_combination c','c.id=p.cid')->value('c.title');
+                $keyword1WeChat = self::where('id|k_id', $pink)->where('uid', $item)->value('order_id');
+                $keyword2WeChat = self::alias('p')->where('p.id|p.k_id', $pink)->where('p.uid', $item)->join('store_combination c', 'c.id=p.cid')->value('c.title');
                 $remarkWeChat = '点击查看订单详情';
-                $urlWeChat = Route::buildUrl('order/detail/'.$keyword1WeChat)->suffix('')->domain(true)->build();
-                WechatTemplateService::sendTemplate($openid,WechatTemplateService::ORDER_USER_GROUPS_SUCCESS,[
-                    'first'=> $firstWeChat,
-                    'keyword1'=> $keyword1WeChat,
-                    'keyword2'=> $keyword2WeChat,
-                    'remark'=> $remarkWeChat
-                ],$urlWeChat);
-            }else if($routineOpenid){
+                $urlWeChat = Route::buildUrl('order/detail/' . $keyword1WeChat)->suffix('')->domain(true)->build();
+                WechatTemplateService::sendTemplate($openid, WechatTemplateService::ORDER_USER_GROUPS_SUCCESS, [
+                    'first' => $firstWeChat,
+                    'keyword1' => $keyword1WeChat,
+                    'keyword2' => $keyword2WeChat,
+                    'remark' => $remarkWeChat
+                ], $urlWeChat);
+            } else if ($routineOpenid) {
                 //小程序模板消息
-                $keyword4Routine = self::where('id|k_id',$pink)->where('uid',$item)->value('price');
-                RoutineTemplate::sendOut('PINK_TRUE',$item,[
-                    'keyword1'=>'亲，您的拼团已经完成了',
-                    'keyword2'=>$nickname,
-                    'keyword3'=>date('Y-m-d H:i:s',time()),
-                    'keyword4'=>$keyword4Routine
-                ]);
+                $pinkInfo = self::where('k.id|k.k_id', $pink)->alias('k')->where('k.uid', $item)
+                    ->field(['k.order_id', 'k.people', 'k.add_time', 'c.title'])
+                    ->join('store_combination c', 'c.id = k.cid')->find();
+                RoutineTemplate::sendPinkSuccess(
+                    $item, $pinkInfo['title'] ?? '',
+                    $nickname,
+                    $pinkInfo['add_time'] ?? 0,
+                    $pinkInfo['people'] ?? 0,
+                    '/pages/order_details/index?order_id=' . $pinkInfo['order_id'] ?? ''
+                );
             }
         }
-        self::where('uid','IN',implode(',',$pinkUidList))->where('id|k_id',$pink)->update(['is_tpl'=>1]);
+        self::where('uid', 'IN', implode(',', $pinkUidList))->where('id|k_id', $pink)->update(['is_tpl' => 1]);
     }
 
     /**
@@ -825,11 +849,11 @@ class StorePink extends BaseModel
     public static function statusPink()
     {
         $pinkListEnd = self::pinkListEnd();
-        if(!$pinkListEnd) return true;
+        if (!$pinkListEnd) return true;
         $pinkListEnd = $pinkListEnd->toArray();
         $failPinkList = [];//拼团失败
         $successPinkList = [];//拼团失败
-        foreach ($pinkListEnd as $key=>&$value) {
+        foreach ($pinkListEnd as $key => &$value) {
             $countPeople = (int)bcadd(self::where('k_id', $value['id'])->count(), 1, 0);
             if ($countPeople == $value['people'])
                 $successPinkList[] = $value['id'];
@@ -839,7 +863,7 @@ class StorePink extends BaseModel
         $success = self::successPinkEdit($successPinkList);
         $error = self::failPinkEdit($failPinkList);
         $res = $success && $error;
-        if(!$res)
+        if (!$res)
             throw new \Exception('拼团订单取消失败！');
     }
 }

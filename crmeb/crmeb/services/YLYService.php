@@ -3,6 +3,7 @@
 namespace crmeb\services;
 
 use app\models\system\Cache as CacheModel;
+use crmeb\exceptions\AuthException;
 use crmeb\interfaces\ProviderInterface;
 use crmeb\traits\LogicTrait;
 

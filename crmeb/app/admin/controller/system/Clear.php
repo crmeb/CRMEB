@@ -3,6 +3,7 @@
 namespace app\admin\controller\system;
 
 use app\admin\controller\AuthController;
+use crmeb\services\CacheService;
 use crmeb\services\JsonService as Json;
 
 /**
@@ -48,7 +49,7 @@ class Clear extends AuthController
                 }
             }
         }
-
+        CacheService::clear();
         return app('json')->successful('数据缓存刷新成功!');
     }
 
