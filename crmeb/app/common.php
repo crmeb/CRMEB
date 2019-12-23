@@ -178,3 +178,19 @@ if (!function_exists('sys_data')) {
         return app('sysGroupData')->getData($name);
     }
 }
+
+if (!function_exists('set_file_url')) {
+    /**
+     * 设置附加路径
+     * @param $url
+     * @return bool
+     */
+    function set_file_url($image, $siteUrl = '')
+    {
+        if (!strlen(trim($siteUrl))) $siteUrl = sys_config('site_url');
+        $domainTop = substr($image, 0, 4);
+        if ($domainTop == 'http') return $image;
+        $image = str_replace('\\', '/', $image);
+        return $siteUrl . $image;
+    }
+}
