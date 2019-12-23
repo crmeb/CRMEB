@@ -149,7 +149,7 @@ class PublicController
             $start_uploads = 0;
         $start_uploads++;
         Cache::set('start_uploads_' . $request->uid(), $start_uploads, 86400);
-        $res['dir'] = path_to_url($res['dir']);
+        $res['dir'] = UtilService::pathToUrl($res['dir']);
         if (strpos($res['dir'], 'http') === false) $res['dir'] = $request->domain() . $res['dir'];
         return app('json')->successful('图片上传成功!', ['name' => $res['name'], 'url' => $res['dir']]);
     }
@@ -210,8 +210,8 @@ class PublicController
             ['code', ''],
         ], $request, true);
         try {
-            $code = $codeUrl ? image_to_base64($codeUrl) : false;
-            $image = $imageUrl ? image_to_base64($imageUrl) : false;
+            $code = $codeUrl ? UtilService::setImageBase64($codeUrl) : false;
+            $image = $imageUrl ? UtilService::setImageBase64($imageUrl) : false;
             return app('json')->successful(compact('code', 'image'));
         } catch (\Exception $e) {
             return app('json')->fail($e->getMessage());
