@@ -170,10 +170,10 @@ class User extends BaseModel
                     $item['sex'] = '女';
                 } else $item['sex'] = '保密';
                 $item['vip_name'] = false;
-                $levelinfo = UserLevel::where('uid', $item['uid'])->where('is_del', 0)->order('grade desc')->field('level_id,is_forever,valid_time')->find();
+                $levelinfo = UserLevel::where('uid', $item['uid'])->where('level_id',$item['level'])->where('is_del', 0)->order('grade desc')->field('level_id,is_forever,valid_time')->find();
                 if ($levelinfo) {
                     if ($levelinfo['is_forever']) $item['vip_name'] = SystemUserLevel::where('id', $levelinfo['level_id'])->value('name');
-                    else if (time() > $levelinfo['valid_time']) $item['vip_name'] = SystemUserLevel::where('id', $levelinfo['level_id'])->value('name');
+                    else if (time() < $levelinfo['valid_time']) $item['vip_name'] = SystemUserLevel::where('id', $levelinfo['level_id'])->value('name');
                 }
             });//->toArray();
         $count = self::setWherePage(self::setWhere($where), $where, ['w.sex', 'w.province', 'w.city', 'u.status', 'u.is_promoter'], ['u.nickname', 'u.uid'])->alias('u')->join('WechatUser w', 'u.uid=w.uid')->count();
