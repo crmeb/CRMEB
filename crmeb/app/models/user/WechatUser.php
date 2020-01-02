@@ -160,7 +160,7 @@ class WechatUser extends BaseModel
         if (isset($userInfo['unionid'])) {
             $wechatInfo = self::where('unionid', $userInfo['unionid'])->find();
             if ($wechatInfo) {
-                return self::edit($userInfo, $userInfo['unionid'], 'unionid');
+                return self::edit(is_object($userInfo) ? $userInfo->toArray() : $userInfo, $userInfo['unionid'], 'unionid');
             }
         }
         self::beginTrans();
