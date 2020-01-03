@@ -1,4 +1,5 @@
 <?php
+
 namespace crmeb\repositories;
 
 use app\models\store\StoreOrder;
@@ -30,8 +31,8 @@ class OrderRepository
         $res2 = User::backOrderBrokerage($order);
         StoreOrder::orderTakeAfter($order);
         $giveCouponMinPrice = sysConfig('store_give_con_min_price');
-        if($order['total_price'] >= $giveCouponMinPrice) WechatUser::userTakeOrderGiveCoupon($uid);
-        if(!($res1 && $res2)) exception('收货失败!');
+        if ($order['total_price'] >= $giveCouponMinPrice) WechatUser::userTakeOrderGiveCoupon($uid);
+        if (!($res1 && $res2)) exception('收货失败!');
     }
 
     /**
@@ -45,7 +46,21 @@ class OrderRepository
         $res1 = AdminStoreOrder::gainUserIntegral($order);
         $res2 = User::backOrderBrokerage($order);
         AdminStoreOrder::orderTakeAfter($order);
-        if(!($res1 && $res2)) exception('收货失败!');
+        if (!($res1 && $res2)) exception('收货失败!');
+    }
+
+    /**
+     * 修改状态 为已收货  定时任务使用
+     * @param $order
+     * @throws \Exception
+     */
+    public static function storeProductOrderTakeDeliveryTimer($order)
+    {
+
+        $res1 = AdminStoreOrder::gainUserIntegral($order, false);
+        $res2 = User::backOrderBrokerage($order, false);
+        AdminStoreOrder::orderTakeAfter($order);
+        if (!($res1 && $res2)) exception('收货失败!');
     }
 
 
@@ -58,12 +73,13 @@ class OrderRepository
      * @throws \think\db\exception\ModelNotFoundException
      * @throws \think\exception\DbException
      */
-    public static function storeProductOrderRefundY($data,$oid){
+    public static function storeProductOrderRefundY($data, $oid)
+    {
         $order = AdminStoreOrder::where('id', $oid)->find();
-        if($order['is_channel'] == 1)
+        if ($order['is_channel'] == 1)
             return AdminStoreOrder::refundRoutineTemplate($oid); //TODO 小程序余额退款模板消息
         else
-            return AdminStoreOrder::refundTemplate($data,$oid);//TODO 公众号余额退款模板消息
+            return AdminStoreOrder::refundTemplate($data, $oid);//TODO 公众号余额退款模板消息
     }
 
 
@@ -73,10 +89,10 @@ class OrderRepository
      * @param $refund_data
      * @throws \Exception
      */
-    public static function storeOrderYueRefund($product,$refund_data)
+    public static function storeOrderYueRefund($product, $refund_data)
     {
         $res = AdminStoreOrder::integralBack($product['id']);
-        if(!$res) exception('退积分失败!');
+        if (!$res) exception('退积分失败!');
     }
 
     /**
@@ -84,12 +100,7 @@ class OrderRepository
      * @param $product $product 商品信息
      * @param $back_integral $back_integral 退多少积分
      */
-    public static function storeOrderIntegralBack($product,$back_integral){
-
-    }
-
-
-    public static function computedOrder()
+    public static function storeOrderIntegralBack($product, $back_integral)
     {
 
     }

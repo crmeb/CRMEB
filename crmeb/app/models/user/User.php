@@ -114,7 +114,7 @@ class User extends BaseModel
                 'last_ip' => request()->ip(),
             ];
             //TODO 获取后台分销类型
-            $storeBrokerageStatus = sysConfig('store_brokerage_statu');
+            $storeBrokerageStatus = sys_config('store_brokerage_statu');
             $storeBrokerageStatus = $storeBrokerageStatus ? $storeBrokerageStatus : 1;
             if (isset($wechatUser['code']) && $wechatUser['code'] && $wechatUser['code'] != $uid && $uid != self::where('uid', $wechatUser['code'])->value('spread_uid')) {
                 if ($storeBrokerageStatus == 1) {
@@ -155,7 +155,7 @@ class User extends BaseModel
         if ($spread == $uid) return true;
         if ($uid == self::where('uid', $spread)->value('spread_uid')) return true;
         //TODO 获取后台分销类型
-        $storeBrokerageStatus = sysConfig('store_brokerage_statu');
+        $storeBrokerageStatus = sys_config('store_brokerage_statu');
         $storeBrokerageStatus = $storeBrokerageStatus ? $storeBrokerageStatus : 1;
         if ($storeBrokerageStatus == 1) {
             $spreadCount = self::where('uid', $spread)->count();
@@ -183,7 +183,7 @@ class User extends BaseModel
         self::beginTrans();
         $res1 = true;
         if ($spread_uid) $res1 = self::where('uid', $spread_uid)->inc('spread_count', 1)->update();
-//        $storeBrokerageStatu = sysConfig('store_brokerage_statu') ? : 1;//获取后台分销类型
+//        $storeBrokerageStatu = sys_config('store_brokerage_statu') ? : 1;//获取后台分销类型
         $res2 = self::create([
             'account' => 'rt' . $routineUser['uid'] . time(),
             'pwd' => md5(123456),
@@ -242,7 +242,7 @@ class User extends BaseModel
     public static function isUserSpread($uid = 0)
     {
         if (!$uid) return false;
-        $status = (int)sysConfig('store_brokerage_statu');
+        $status = (int)sys_config('store_brokerage_statu');
         $isPromoter = true;
         if ($status == 1) $isPromoter = self::where('uid', $uid)->value('is_promoter');
         if ($isPromoter) return true;
@@ -259,7 +259,7 @@ class User extends BaseModel
      * @throws \think\db\exception\ModelNotFoundException
      * @throws \think\exception\DbException
      */
-    public static function backOrderBrokerage($orderInfo)
+    public static function backOrderBrokerage($orderInfo,bool $open = true)
     {
         //TODO 如果时营销产品不返佣金
         if (isset($orderInfo['combination_id']) && $orderInfo['combination_id']) return true;
@@ -272,14 +272,14 @@ class User extends BaseModel
         //TODO 当前用户不存在 没有上级 或者 当用用户上级时自己  直接返回
         if (!$userInfo || !$userInfo['spread_uid'] || $userInfo['spread_uid'] == $orderInfo['uid']) return true;
         //TODO 获取后台分销类型  1 指定分销 2 人人分销
-        $storeBrokerageStatus = sysConfig('store_brokerage_statu');
+        $storeBrokerageStatus = sys_config('store_brokerage_statu');
         $storeBrokerageStatus = $storeBrokerageStatus ? $storeBrokerageStatus : 1;
         //TODO 指定分销 判断 上级是否时推广员  如果不是推广员直接跳转二级返佣
         if ($storeBrokerageStatus == 1) {
-            if (!User::be(['uid' => $userInfo['spread_uid'], 'is_promoter' => 1])) return self::backOrderBrokerageTwo($orderInfo);
+            if (!User::be(['uid' => $userInfo['spread_uid'], 'is_promoter' => 1])) return self::backOrderBrokerageTwo($orderInfo,$open);
         }
         //TODO 获取后台一级返佣比例
-        $storeBrokerageRatio = sysConfig('store_brokerage_ratio');
+        $storeBrokerageRatio = sys_config('store_brokerage_ratio');
         //TODO 一级返佣比例 小于等于零时直接返回 不返佣
         if ($storeBrokerageRatio <= 0) return true;
         //TODO 计算获取一级返佣比例
@@ -299,14 +299,14 @@ class User extends BaseModel
         //TODO 上级推广员返佣之后的金额
         $balance = bcadd($spreadUserInfo['brokerage_price'], $brokeragePrice, 2);
         $mark = $userInfo['nickname'] . '成功消费' . floatval($orderInfo['pay_price']) . '元,奖励推广佣金' . floatval($brokeragePrice);
-        self::beginTrans();
+        $open && self::beginTrans();
         //TODO 添加推广记录
         $res1 = UserBill::income('获得推广佣金', $userInfo['spread_uid'], 'now_money', 'brokerage', $brokeragePrice, $orderInfo['id'], $balance, $mark);
         //TODO 添加用户余额
         $res2 = self::bcInc($userInfo['spread_uid'], 'brokerage_price', $brokeragePrice, 'uid');
         //TODO 一级返佣成功 跳转二级返佣
-        $res = $res1 && $res2 && self::backOrderBrokerageTwo($orderInfo);
-        self::checkTrans($res);
+        $res = $res1 && $res2 && self::backOrderBrokerageTwo($orderInfo,$open);
+        $open && self::checkTrans($res);
 //        if($res) return self::backOrderBrokerageTwo($orderInfo);
         return $res;
     }
@@ -320,7 +320,7 @@ class User extends BaseModel
      * @throws \think\db\exception\ModelNotFoundException
      * @throws \think\exception\DbException
      */
-    public static function backOrderBrokerageTwo($orderInfo)
+    public static function backOrderBrokerageTwo($orderInfo,bool $open = true)
     {
         //TODO 获取购买商品的用户
         $userInfo = User::getUserInfo($orderInfo['uid']);
@@ -329,14 +329,14 @@ class User extends BaseModel
         //TODO 上推广人不存在 或者 上推广人没有上级  或者 当用用户上上级时自己  直接返回
         if (!$userInfoTwo || !$userInfoTwo['spread_uid'] || $userInfoTwo['spread_uid'] == $orderInfo['uid']) return true;
         //TODO 获取后台分销类型  1 指定分销 2 人人分销
-        $storeBrokerageStatus = sysConfig('store_brokerage_statu');
+        $storeBrokerageStatus = sys_config('store_brokerage_statu');
         $storeBrokerageStatus = $storeBrokerageStatus ? $storeBrokerageStatus : 1;
         //TODO 指定分销 判断 上上级是否时推广员  如果不是推广员直接返回
         if ($storeBrokerageStatus == 1) {
             if (!User::be(['uid' => $userInfoTwo['spread_uid'], 'is_promoter' => 1])) return true;
         }
         //TODO 获取二级返佣比例
-        $storeBrokerageTwo = sysConfig('store_brokerage_two');
+        $storeBrokerageTwo = sys_config('store_brokerage_two');
         //TODO 二级返佣比例小于等于0 直接返回
         if ($storeBrokerageTwo <= 0) return true;
         //TODO 计算获取二级返佣比例
@@ -356,13 +356,13 @@ class User extends BaseModel
         //TODO 获取上上级推广员返佣之后余额
         $balance = bcadd($spreadUserInfoTwo['brokerage_price'], $brokeragePrice, 2);
         $mark = '二级推广人' . $userInfo['nickname'] . '成功消费' . floatval($orderInfo['pay_price']) . '元,奖励推广佣金' . floatval($brokeragePrice);
-        self::beginTrans();
+        $open && self::beginTrans();
         //TODO 添加返佣记录
         $res1 = UserBill::income('获得推广佣金', $userInfoTwo['spread_uid'], 'now_money', 'brokerage', $brokeragePrice, $orderInfo['id'], $balance, $mark);
         //TODO 添加用户余额
         $res2 = self::bcInc($userInfoTwo['spread_uid'], 'brokerage_price', $brokeragePrice, 'uid');
         $res = $res1 && $res2;
-        self::checkTrans($res);
+        $open && self::checkTrans($res);
         return $res;
     }
 
@@ -505,7 +505,7 @@ class User extends BaseModel
         // 自己不能绑定自己为上级
         if ($uid == $spreadUid) return false;
         //TODO 获取后台分销类型
-        $storeBrokerageStatus = sysConfig('store_brokerage_statu');
+        $storeBrokerageStatus = sys_config('store_brokerage_statu');
         $storeBrokerageStatus = $storeBrokerageStatus ? $storeBrokerageStatus : 1;
         if ($storeBrokerageStatus == 1) {
             $spreadCount = self::where('uid', $spreadUid)->count();
@@ -561,7 +561,7 @@ class User extends BaseModel
         $data['last_time'] = time();
         $data['last_ip'] = app('request')->ip();
         $data['nickname'] = substr(md5($account . time()), 0, 12);
-        $data['avatar'] = $data['headimgurl'] = sysConfig('h5_avatar');
+        $data['avatar'] = $data['headimgurl'] = sys_config('h5_avatar');
         $data['city'] = '';
         $data['language'] = '';
         $data['province'] = '';

@@ -4,8 +4,10 @@
 namespace app\api\controller\wechat;
 
 
+use app\models\routine\RoutineTemplate;
 use app\models\user\WechatUser;
 use app\Request;
+use crmeb\services\CacheService;
 use crmeb\services\MiniProgramService;
 use crmeb\services\UtilService;
 use app\models\user\UserToken;
@@ -13,6 +15,7 @@ use crmeb\services\SystemConfigService;
 use app\models\user\User;
 use app\models\routine\RoutineFormId;
 use think\facade\Cache;
+use crmeb\services\SubscribeTemplateService;
 
 /**
  * 小程序相关
@@ -34,20 +37,20 @@ class AuthController
     public function mp_auth(Request $request)
     {
         $cache_key = '';
-        list($code,$post_cache_key,$login_type) = UtilService::postMore([
-            ['code',''],
-            ['cache_key',''],
-            ['login_type','']
-        ],$request,true);
-        $session_key = Cache::get('eb_api_code_'.$post_cache_key);
+        list($code, $post_cache_key, $login_type) = UtilService::postMore([
+            ['code', ''],
+            ['cache_key', ''],
+            ['login_type', '']
+        ], $request, true);
+        $session_key = Cache::get('eb_api_code_' . $post_cache_key);
         if (!$code && !$session_key)
             return app('json')->fail('授权失败,参数有误');
-        if($code && !$session_key){
+        if ($code && !$session_key) {
             try {
                 $userInfoCong = MiniProgramService::getUserInfo($code);
                 $session_key = $userInfoCong['session_key'];
-                $cache_key = md5(time().$code);
-                Cache::set('eb_api_code_'.$cache_key,$session_key,86400);
+                $cache_key = md5(time() . $code);
+                Cache::set('eb_api_code_' . $cache_key, $session_key, 86400);
             } catch (\Exception $e) {
                 return app('json')->fail('获取session_key失败，请检查您的配置！', ['line' => $e->getLine(), 'message' => $e->getMessage()]);
             }
@@ -72,12 +75,12 @@ class AuthController
         $userInfo['session_key'] = $session_key;
         $userInfo['login_type'] = $login_type;
         $uid = WechatUser::routineOauth($userInfo);
-        $userInfo = User::where('uid',$uid)->find();
-        if($userInfo->login_type == 'h5' && ($h5UserInfo = User::where(['account'=>$userInfo->phone,'phone'=>$userInfo->phone,'user_type'=>'h5'])->find()))
+        $userInfo = User::where('uid', $uid)->find();
+        if ($userInfo->login_type == 'h5' && ($h5UserInfo = User::where(['account' => $userInfo->phone, 'phone' => $userInfo->phone, 'user_type' => 'h5'])->find()))
             $token = UserToken::createToken($userInfo, 'routine');
         else
             $token = UserToken::createToken($userInfo, 'routine');
-        if($token) {
+        if ($token) {
             event('UserLogin', [$userInfo, $token]);
             return app('json')->successful('登陆成功！', [
                 'token' => $token->token,
@@ -85,7 +88,7 @@ class AuthController
                 'expires_time' => strtotime($token->expires_time),
                 'cache_key' => $cache_key
             ]);
-        }else
+        } else
             return app('json')->fail('获取用户访问token失败!');
     }
 
@@ -96,20 +99,20 @@ class AuthController
      */
     public function get_logo(Request $request)
     {
-        $logoType = $request->get('type',1);
+        $logoType = $request->get('type', 1);
         switch ((int)$logoType) {
             case 1:
-                $logo = sysConfig('routine_logo');
+                $logo = sys_config('routine_logo');
                 break;
             case 2:
-                $logo = sysConfig('wechat_avatar');
+                $logo = sys_config('wechat_avatar');
                 break;
             default:
                 $logo = '';
                 break;
         }
-        if (strstr($logo,'http') === false && $logo) $logo = sysConfig('site_url').$logo;
-        return app('json')->successful(['logo_url'=>str_replace('\\','/',$logo)]);
+        if (strstr($logo, 'http') === false && $logo) $logo = sys_config('site_url') . $logo;
+        return app('json')->successful(['logo_url' => str_replace('\\', '/', $logo)]);
     }
 
     /**
@@ -119,10 +122,10 @@ class AuthController
      */
     public function set_form_id(Request $request)
     {
-        $formId = $request->post('formId','');
-        if(!$formId) return app('json')->fail('缺少form id');
-        RoutineFormId::SetFormId($formId,$request->uid());
-        return app('json')->successful('保存form id 成功！',['uid'=>$request->uid()]);
+        $formId = $request->post('formId', '');
+        if (!$formId) return app('json')->fail('缺少form id');
+        RoutineFormId::SetFormId($formId, $request->uid());
+        return app('json')->successful('保存form id 成功！', ['uid' => $request->uid()]);
     }
 
     /**
@@ -131,5 +134,22 @@ class AuthController
     public function notify()
     {
         MiniProgramService::handleNotify();
+    }
+
+    /**
+     * 获取小程序订阅消息id
+     * @return mixed
+     */
+    public function teml_ids()
+    {
+        $temlIdsName = SubscribeTemplateService::getConstants();
+        $temlIdsList = CacheService::get('TEML_IDS_LIST', function () use ($temlIdsName) {
+            $temlId = [];
+            foreach ($temlIdsName as $key => $item) {
+                $temlId[strtolower($key)] = SubscribeTemplateService::setTemplateId($item);
+            }
+            return $temlId;
+        });
+        return app('json')->success($temlIdsList);
     }
 }

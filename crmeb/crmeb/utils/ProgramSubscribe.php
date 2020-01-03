@@ -11,18 +11,19 @@ use EasyWeChat\Core\Exceptions\InvalidArgumentException;
  * Class ProgramSubscribe
  * @package crmeb\utils
  * @method $this
- * @method $this withTemplate(string $template_id) 设置模板id
+ * @method $this template(string $template_id) 设置模板id
  * @method $this withTemplateId(string $template_id) 设置模板id
  * @method $this andTemplateId(string $template_id) 设置模板id
  * @method $this andTemplate(string $template_id) 设置模板id
  * @method $this andUses(string $template_id) 设置模板id
- * @method $this andTo(string $touser) 设置opendid
+ * @method $this to(string $touser) 设置opendid
  * @method $this andReceiver(string $touser) 设置opendid
  * @method $this withReceiver(string $touser) 设置opendid
  * @method $this with(array $data) 设置发送内容
  * @method $this andData(array $data) 设置发送内容
  * @method $this withData(array $data) 设置发送内容
  * @method $this data(array $data) 设置发送内容
+ * @method $this withUrl(string $page) 设置跳转路径
  */
 class ProgramSubscribe extends AbstractAPI
 {
@@ -205,13 +206,33 @@ class ProgramSubscribe extends AbstractAPI
     }
 
     /**
-     * TODO: 未实现
-     * @param $data
-     * @return mixed
+     * 设置订阅消息发送data
+     * @param array $data
+     * @return array
      */
-    protected function formatData($data)
+    protected function formatData(array $data)
     {
-        return $data;
+        $return = [];
+
+        foreach ($data as $key => $item) {
+            if (is_scalar($item)) {
+                $value = $item;
+            } elseif (is_array($item) && !empty($item)) {
+                if (isset($item['value'])) {
+                    $value = strval($item['value']);
+                } elseif (count($item) < 2) {
+                    $value = array_shift($item);
+                } else {
+                    [$value] = $item;
+                }
+            } else {
+                $value = 'error data item.';
+            }
+
+            $return[$key] = ['value' => $value];
+        }
+
+        return $return;
     }
 
 
@@ -230,8 +251,8 @@ class ProgramSubscribe extends AbstractAPI
             'uses' => 'template_id',
             'to' => 'touser',
             'receiver' => 'touser',
-            'url' => 'url',
-            'link' => 'url',
+            'url' => 'page',
+            'link' => 'page',
             'data' => 'data',
             'with' => 'data',
         ];

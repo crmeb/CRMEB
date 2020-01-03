@@ -4,7 +4,7 @@
     .clear_tit span{font-size: 12px; color: #ED4014;margin: 15px 0;}
     .clear_box{border: 1px solid #DADFE6;border-radius: 3px;display: flex;flex-direction: column;align-items: center;padding: 30px 10px;box-sizing:border-box}
     .clear_box_sp1{font-size: 16px;color: #000000;display: block;}
-    .clear_box_sp2{font-size: 14px;color: #ED4014;display: block;margin: 12px 0;}
+    .clear_box_sp2{font-size: 14px;color: #808695;display: block;margin: 12px 0;}
     .layui-btn-danger {background-color: #FF5722;}
 </style>
 <div class="layui-fluid">

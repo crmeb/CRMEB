@@ -20,22 +20,24 @@ use think\app\Url;
  * @method $this setTemplateFormId(string $templateFormId) 设置发送模板消息formid
  * @method $this setTemplateDefaultColor(string $templateDefaultColor) 设置发送模板消息默认背景颜色
  * @method $this setTemplateCode(string $templateCode) 设置模板id
- * @method $this setSendType($sendType) 设置发送类型句柄 1 = 小程序 ， 2 = 公众号
+ * @method $this setHandleType($handleType) 设置发送类型句柄 1 = 小程序 ， 2 = 公众号
  * @method $this setDefaultData($defaultData) 设置默认数据
  * @method $this setTemplateUrl(Url $url, string $sux = '') 设置跳转Url
  * @method $this routine() 设置当前发送类型句柄为 小程序
  * @method $this wechat() 设置当前发送类型句柄为 公众号
+ * @method $this subscribe() 设置当前发送类型句柄为 小程序订阅消息
  */
 class Template
 {
     use LogicTrait;
 
     /**
-     * 注册服务 会自动添加$providers对应的key名称方法方便设置$sendType
+     * 注册服务 会自动添加$providers对应的key名称方法方便设置$handleType
      * @var array
      */
     protected $providers = [
         'routine' => \crmeb\services\ProgramTemplateService::class,
+        'subscribe' => \crmeb\services\SubscribeTemplateService::class,
         'wechat' => \crmeb\services\WechatTemplateService::class,
     ];
 
@@ -49,7 +51,7 @@ class Template
         'templateData' => [[], 'array'],
         'templateUrl' => [null, 'callable', 'postpositionUrl'],
         'templateFormId' => [null, 'string'],
-        'sendType' => [null, 'string'],
+        'handleType' => [null, 'string'],
         'templateOpenId' => [null, 'string'],
         'templateOpenId' => [null, 'string'],
     ];
@@ -88,7 +90,7 @@ class Template
      * 发送类型 对应 $providers key
      * @var string | int
      */
-    protected $sendType;
+    protected $handleType;
 
     /**
      * 接收人openid 小程序 和 公众号使用
@@ -118,7 +120,7 @@ class Template
      */
     public function postpositionUrl($url, string $suffix = '')
     {
-        if($url instanceof Url)
+        if ($url instanceof Url)
             $url = $url->suffix($suffix)->domain(true)->build();
         return $url;
     }
@@ -129,16 +131,16 @@ class Template
     protected function validate()
     {
         $keys = array_keys($this->providers);
-        if (is_string($this->sendType)) {
-            if (!in_array($this->sendType, $keys))
-                throw new AuthException('设置的发送类型句柄不存在:' . $this->sendType);
-        } elseif (is_int($this->sendType)) {
-            if ($this->sendType > count($keys))
-                throw new AuthException('设置的发送类型句柄不存在：' . $this->sendType);
-            $this->sendType = $keys[$this->sendType - 1];
+        if (is_string($this->handleType)) {
+            if (!in_array($this->handleType, $keys))
+                throw new AuthException('设置的发送类型句柄不存在:' . $this->handleType);
+        } elseif (is_int($this->handleType)) {
+            if ($this->handleType > count($keys))
+                throw new AuthException('设置的发送类型句柄不存在：' . $this->handleType);
+            $this->handleType = $keys[$this->handleType - 1];
         }
 
-        if (!$this->sendType)
+        if (!$this->handleType)
             throw new AuthException('请设置发送类型句柄');
 
         if (!$this->templateData)
@@ -160,7 +162,7 @@ class Template
             $this->validate();
 
             $resource = null;
-            switch ($this->sendType) {
+            switch ($this->handleType) {
                 case 'routine':
                     $resource = self::$instance->routine->sendTemplate(
                         $this->templateCode,
@@ -178,6 +180,14 @@ class Template
                         $this->templateData,
                         $this->templateUrl,
                         $this->templateDefaultColor
+                    );
+                    break;
+                case 'subscribe':
+                    $resource = self::$instance->subscribe->sendTemplate(
+                        $this->templateCode,
+                        $this->templateOpenId,
+                        $this->templateData,
+                        $this->templateUrl
                     );
                     break;
                 default:
@@ -206,7 +216,7 @@ class Template
         $this->templateDefaultColor = null;
         $this->templateData = [];
         $this->templateUrl = null;
-        $this->sendType = null;
+        $this->handleType = null;
         $this->templateFormId = null;
         $this->templateCode = null;
         return $this;

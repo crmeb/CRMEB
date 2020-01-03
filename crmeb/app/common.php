@@ -152,30 +152,45 @@ if (!function_exists('sysData')) {
     }
 }
 
-if (!function_exists('sort_list_tier')) {
+if (!function_exists('sys_config')) {
     /**
-     * 分级排序
-     * @param $data
-     * @param int $pid
-     * @param string $field
-     * @param string $pk
-     * @param string $html
-     * @param int $level
-     * @param bool $clear
-     * @return array
+     * 获取系统单个配置
+     * @param string $name
+     * @return string | null
      */
-    function sort_list_tier($data, $pid = 0, $field = 'pid', $pk = 'id', $html = '|-----', $level = 1, $clear = true)
+    function sys_config(string $name)
     {
-        static $list = [];
-        if ($clear) $list = [];
-        foreach ($data as $k => $res) {
-            if ($res[$field] == $pid) {
-                $res['html'] = str_repeat($html, $level);
-                $list[] = $res;
-                unset($data[$k]);
-                sort_list_tier($data, $res[$pk], $field, $pk, $html, $level + 1, false);
-            }
-        }
-        return $list;
+        if (empty($name))
+            return null;
+
+        return app('sysConfig')->get($name);
+    }
+}
+
+if (!function_exists('sys_data')) {
+    /**
+     * 获取系统单个配置
+     * @param string $name
+     * @return string
+     */
+    function sys_data($name)
+    {
+        return app('sysGroupData')->getData($name);
+    }
+}
+
+if (!function_exists('set_file_url')) {
+    /**
+     * 设置附加路径
+     * @param $url
+     * @return bool
+     */
+    function set_file_url($image, $siteUrl = '')
+    {
+        if (!strlen(trim($siteUrl))) $siteUrl = sys_config('site_url');
+        $domainTop = substr($image, 0, 4);
+        if ($domainTop == 'http') return $image;
+        $image = str_replace('\\', '/', $image);
+        return $siteUrl . $image;
     }
 }

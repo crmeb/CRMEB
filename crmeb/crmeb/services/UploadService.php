@@ -13,6 +13,7 @@ use crmeb\services\storage\Qiniu;
 use crmeb\traits\LogicTrait;
 use think\exception\ValidateException;
 use think\facade\Filesystem;
+use Guzzle\Http\EntityBody;
 use think\File;
 
 /**
@@ -191,7 +192,7 @@ class UploadService
     {
         $info = [];
         try {
-            $uploadType = $this->uploadType ?: sysConfig('upload_type');
+            $uploadType = $this->uploadType ?: sys_config('upload_type');
             //TODO 没有选择默认使用本地上传
             if (!$uploadType)
                 $uploadType = 1;
@@ -257,8 +258,6 @@ class UploadService
             if (!isset($header['Content-Length'])) $header['Content-Length'] = 0;
             if (!isset($header['Content-Type'])) $header['Content-Type'] = 'image/jpeg';
         } catch (\Exception $e) {
-            $header['Content-Length'] = 0;
-            $header['Content-Type'] = 'image/jpeg';
         }
         return $header;
     }
@@ -301,7 +300,7 @@ class UploadService
      */
     public function uploadLocalStream($key, $content, $root = '')
     {
-        $siteUrl = sysConfig('site_url') . '/';
+        $siteUrl = sys_config('site_url') . '/';
         $path = self::uploadDir($this->uploadPath, $root);
         $path = str_replace('\\', DS, $path);
         $path = str_replace('/', DS, $path);
@@ -325,7 +324,7 @@ class UploadService
      */
     public function imageStream($key, $content, $root = '')
     {
-        $uploadType = sysConfig('upload_type');
+        $uploadType = sys_config('upload_type');
         //TODO 没有选择默认使用本地上传
         if (!$uploadType) $uploadType = 1;
         $info = [];
@@ -405,11 +404,10 @@ class UploadService
      */
     public function file($fileName)
     {
-        if (!isset($_FILES[$fileName])) return self::setError('上传文件不存在!');
-        $extension = strtolower(pathinfo($_FILES[$fileName]['name'], PATHINFO_EXTENSION));
-        if (strtolower($extension) == 'php' || !$extension)
-            return self::setError('上传文件非法!');
         $file = request()->file($fileName);
+        if (!$file) return self::setError('上传文件不存在!');
+        if (strtolower($file->getOriginalExtension()) === 'php' || !$file->getOriginalExtension())
+            return self::setError('上传文件非法!');
         if ($this->autoValidate) {
             try {
                 validate([$fileName => $this->imageValidate])->check([$fileName => $file]);
@@ -422,11 +420,11 @@ class UploadService
         return self::successful(str_replace('\\', '/', $fileName));
     }
 
-    public static function pathToUrl($path)
-    {
-        return trim(str_replace(DS, '/', $path), '.');
-    }
-
+    /**
+     * 打开图片
+     * @param $filePath
+     * @return \think\Image
+     */
     public function openImage($filePath)
     {
         return \think\Image::open($filePath);
@@ -443,7 +441,13 @@ class UploadService
      */
     public function thumb($filePath, $ratio = 5, $pre = 's_')
     {
-        $img = $this->openImage($filePath);
+        try {
+            $img = $this->openImage($filePath);
+        } catch (\Throwable $e) {
+            $dir = dirname($filePath);
+            $fileName = basename($filePath);
+            return $dir . DS . $fileName;
+        }
         $width = $img->width() * $ratio / 10;
         $height = $img->height() * $ratio / 10;
         $dir = dirname($filePath);
@@ -452,5 +456,15 @@ class UploadService
         $img->thumb($width, $height)->save($savePath);
         if (substr($savePath, 0, 2) == './') return substr($savePath, 1, strlen($savePath));
         return DS . $savePath;
+    }
+
+    /**
+     * TODO 转为文件流
+     * @param $resource
+     * @return EntityBody
+     */
+    public static function resourceStream($resource)
+    {
+        return EntityBody::factory($resource)->__toString();
     }
 }

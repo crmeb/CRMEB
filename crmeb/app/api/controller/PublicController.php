@@ -12,7 +12,6 @@ use app\models\user\UserBill;
 use app\models\user\WechatUser;
 use app\Request;
 use crmeb\services\GroupDataService;
-use crmeb\services\SystemConfigService;
 use crmeb\services\UploadService;
 use crmeb\services\UtilService;
 use crmeb\services\workerman\ChannelService;
@@ -38,28 +37,29 @@ class PublicController
         $menus = GroupDataService::getData('routine_home_menus') ?: [];//TODO 首页按钮
         $roll = GroupDataService::getData('routine_home_roll_news') ?: [];//TODO 首页滚动新闻
         $activity = GroupDataService::getData('routine_home_activity', 3) ?: [];//TODO 首页活动区域图片
-        $site_name = sysConfig('site_name');
+        $site_name = sys_config('site_name');
         $routine_index_page = GroupDataService::getData('routine_index_page');
-        $info['fastInfo'] = $routine_index_page[0]['fast_info'] ?? '';//sysConfig('fast_info');//TODO 快速选择简介
-        $info['bastInfo'] = $routine_index_page[0]['bast_info'] ?? '';//sysConfig('bast_info');//TODO 精品推荐简介
-        $info['firstInfo'] = $routine_index_page[0]['first_info'] ?? '';//sysConfig('first_info');//TODO 首发新品简介
-        $info['salesInfo'] = $routine_index_page[0]['sales_info'] ?? '';//sysConfig('sales_info');//TODO 促销单品简介
-        $logoUrl = sysConfig('routine_index_logo');//TODO 促销单品简介
-        if (strstr($logoUrl, 'http') === false) $logoUrl = sysConfig('site_url') . $logoUrl;
+        $info['fastInfo'] = $routine_index_page[0]['fast_info'] ?? '';//sys_config('fast_info');//TODO 快速选择简介
+        $info['bastInfo'] = $routine_index_page[0]['bast_info'] ?? '';//sys_config('bast_info');//TODO 精品推荐简介
+        $info['firstInfo'] = $routine_index_page[0]['first_info'] ?? '';//sys_config('first_info');//TODO 首发新品简介
+        $info['salesInfo'] = $routine_index_page[0]['sales_info'] ?? '';//sys_config('sales_info');//TODO 促销单品简介
+        $logoUrl = sys_config('routine_index_logo');//TODO 促销单品简介
+        if (strstr($logoUrl, 'http') === false && $logoUrl) $logoUrl = sys_config('site_url') . $logoUrl;
         $logoUrl = str_replace('\\', '/', $logoUrl);
-        $fastNumber = $routine_index_page[0]['fast_number'] ?? 6;//sysConfig('fast_number');//TODO 快速选择分类个数
-        $bastNumber = $routine_index_page[0]['bast_number'] ?? 6;//sysConfig('bast_number');//TODO 精品推荐个数
-        $firstNumber = $routine_index_page[0]['first_number'] ?? 6;//sysConfig('first_number');//TODO 首发新品个数
-        $info['fastList'] = StoreCategory::byIndexList((int)$fastNumber);//TODO 快速选择分类个数
-        $info['bastList'] = StoreProduct::getBestProduct('id,image,store_name,cate_id,price,ot_price,IFNULL(sales,0) + IFNULL(ficti,0) as sales,unit_name', (int)$bastNumber, $request->uid());//TODO 精品推荐个数
-        $info['firstList'] = StoreProduct::getNewProduct('id,image,store_name,cate_id,price,unit_name,IFNULL(sales,0) + IFNULL(ficti,0) as sales', (int)$firstNumber, $request->uid());//TODO 首发新品个数
+        $fastNumber = $routine_index_page[0]['fast_number'] ?? 0;//sys_config('fast_number');//TODO 快速选择分类个数
+        $bastNumber = $routine_index_page[0]['bast_number'] ?? 0;//sys_config('bast_number');//TODO 精品推荐个数
+        $firstNumber = $routine_index_page[0]['first_number'] ?? 0;//sys_config('first_number');//TODO 首发新品个数
+        $info['fastList'] = StoreCategory::byIndexList((int)$fastNumber, false);//TODO 快速选择分类个数
+        $info['bastList'] = StoreProduct::getBestProduct('id,image,store_name,cate_id,price,ot_price,IFNULL(sales,0) + IFNULL(ficti,0) as sales,unit_name', (int)$bastNumber, $request->uid(), false);//TODO 精品推荐个数
+        $info['firstList'] = StoreProduct::getNewProduct('id,image,store_name,cate_id,price,unit_name,IFNULL(sales,0) + IFNULL(ficti,0) as sales', (int)$firstNumber, $request->uid(), false);//TODO 首发新品个数
         $info['bastBanner'] = GroupDataService::getData('routine_home_bast_banner') ?? [];//TODO 首页精品推荐图片
         $benefit = StoreProduct::getBenefitProduct('id,image,store_name,cate_id,price,ot_price,stock,unit_name', 3);//TODO 首页促销单品
         $lovely = GroupDataService::getData('routine_home_new_banner') ?: [];//TODO 首发新品顶部图
         $likeInfo = StoreProduct::getHotProduct('id,image,store_name,cate_id,price,unit_name', 3);//TODO 热门榜单 猜你喜欢
         $couponList = StoreCouponIssue::getIssueCouponList($request->uid(), 3);
         $subscribe = WechatUser::where('uid', $request->uid() ?? 0)->value('subscribe') ? true : false;
-        return app('json')->successful(compact('banner', 'menus', 'roll', 'info', 'activity', 'lovely', 'benefit', 'likeInfo', 'logoUrl', 'couponList', 'site_name','subscribe'));
+        $newGoodsBananr = sys_config('new_goods_bananr');
+        return app('json')->successful(compact('banner', 'menus', 'roll', 'info', 'activity', 'lovely', 'benefit', 'likeInfo', 'logoUrl', 'couponList', 'site_name', 'subscribe','newGoodsBananr'));
     }
 
     /**
@@ -68,11 +68,11 @@ class PublicController
      */
     public function share()
     {
-        $data['img'] = sysConfig('wechat_share_img');
-        if (strstr($data['img'], 'http') === false) $data['img'] = sysConfig('site_url') . $data['img'];
+        $data['img'] = sys_config('wechat_share_img');
+        if (strstr($data['img'], 'http') === false) $data['img'] = sys_config('site_url') . $data['img'];
         $data['img'] = str_replace('\\', '/', $data['img']);
-        $data['title'] = sysConfig('wechat_share_title');
-        $data['synopsis'] = sysConfig('wechat_share_synopsis');
+        $data['title'] = sys_config('wechat_share_title');
+        $data['synopsis'] = sys_config('wechat_share_synopsis');
         return app('json')->successful(compact('data'));
     }
 
@@ -89,11 +89,11 @@ class PublicController
     {
         $menusInfo = GroupDataService::getData('routine_my_menus') ?? [];
         $user = $request->user();
-        $vipOpen = sysConfig('vip_open');
+        $vipOpen = sys_config('vip_open');
         $vipOpen = is_string($vipOpen) ? (int)$vipOpen : $vipOpen;
         foreach ($menusInfo as $key => &$value) {
-            $value['pic'] = UtilService::setSiteUrl($value['pic']);
-            if ($value['id'] == 137 && !(intval(sysConfig('store_brokerage_statu')) == 2 || $user->is_promoter == 1))
+            $value['pic'] = set_file_url($value['pic']);
+            if ($value['id'] == 137 && !(intval(sys_config('store_brokerage_statu')) == 2 || $user->is_promoter == 1))
                 unset($menusInfo[$key]);
             if ($value['id'] == 174 && !StoreService::orderServiceStatus($user->uid))
                 unset($menusInfo[$key]);
@@ -149,7 +149,7 @@ class PublicController
             $start_uploads = 0;
         $start_uploads++;
         Cache::set('start_uploads_' . $request->uid(), $start_uploads, 86400);
-        $res['dir'] = UploadService::pathToUrl($res['dir']);
+        $res['dir'] = UtilService::pathToUrl($res['dir']);
         if (strpos($res['dir'], 'http') === false) $res['dir'] = $request->domain() . $res['dir'];
         return app('json')->successful('图片上传成功!', ['name' => $res['name'], 'url' => $res['dir']]);
     }

@@ -269,22 +269,21 @@
                                 time--;
                             }, 1000)
                         },
-                        getNotice:function () {
+                        getNotice: function () {
                             var that = this;
                             $.ajax({
                                 url: '/admin/index/Jnotice',
                                 type: 'get',
                                 dataType: 'json',
                                 success: function (rem) {
-                                   that.setNoticeDate(rem.data);
+                                    that.setNoticeDate(rem.data);
                                 },
                                 error: function (err) {
 
                                 }
                             })
                         },
-                        setNoticeDate:function(data)
-                        {
+                        setNoticeDate: function (data) {
                             $('#msgcount').html(data.msgcount);
                             $('#ordernum').html(data.ordernum + '个');
                             $('#inventory').html(data.inventory + '个');
@@ -302,44 +301,44 @@
                         var ws = new Socket;
                         ws.setVm(this);
 
-                        this.$on('ADMIN_NEW_PUSH',function (data) {
+                        this.$on('ADMIN_NEW_PUSH', function (data) {
                             that.setNoticeDate(data);
                         })
-                        this.$on('NEW_ORDER', function(data){
+                        this.$on('NEW_ORDER', function (data) {
                             that.$Notice.info({
                                 title: '新订单',
                                 duration: 8,
                                 desc: '您有一个新的订单(' + data.order_id + '),请注意查看'
                             });
-                            if(window.newOrderAudioLink) (new Audio(window.newOrderAudioLink)).play();
+                            if (window.newOrderAudioLink) (new Audio(window.newOrderAudioLink)).play();
                         });
-                        this.$on('NEW_REFUND_ORDER', function(data){
+                        this.$on('NEW_REFUND_ORDER', function (data) {
                             that.$Notice.warning({
                                 title: '订单提醒',
                                 duration: 8,
                                 desc: '您有一个订单(' + data.order_id + ')申请退款,请注意查看'
                             });
-                            if(window.newOrderAudioLink) (new Audio(window.newOrderAudioLink)).play();
+                            if (window.newOrderAudioLink) (new Audio(window.newOrderAudioLink)).play();
                         });
-                        this.$on('WITHDRAW', function(data){
+                        this.$on('WITHDRAW', function (data) {
                             that.$Notice.warning({
                                 title: '提现提醒',
                                 duration: 8,
                                 desc: '有用户申请提现(' + data.id + '),请注意查看'
                             })
                         });
-                        this.$on('STORE_STOCK', function(data){
+                        this.$on('STORE_STOCK', function (data) {
                             that.$Notice.warning({
                                 title: '库存预警',
                                 duration: 8,
                                 desc: '(' + data.id + ')商品库存不足,请注意查看'
                             })
                         });
-                        this.$on('PAY_SMS_SUCCESS', function(data){
+                        this.$on('PAY_SMS_SUCCESS', function (data) {
                             that.$Notice.info({
                                 title: '短信充值成功',
                                 duration: 8,
-                                desc: '恭喜您充值'+ data.price +'元，获得'+ data.number +'条短信'
+                                desc: '恭喜您充值' + data.price + '元，获得' + data.number + '条短信'
                             })
                         });
                     }
@@ -359,7 +358,7 @@
     };
 
     Socket.prototype = {
-        setVm: function(vm) {
+        setVm: function (vm) {
             this.vm = vm;
         },
         onOpen: function () {
@@ -391,8 +390,9 @@
             console.log('ws error', e.data ? JSON.parse(e.data).message : '');
         },
         getUrl: function () {
-            var ishttps = 'https:' == document.location.protocol ? true : false;
-            return ( ishttps ? 'wss': 'ws' )+'://' + document.URL.split('//')[1].split('/')[0] + ':20002';
+            var ishttps = 'https:' == document.location.protocol ? true : false,
+                workermanPort = window.workermanPort ? window.workermanPort : 20002;
+            return (ishttps ? 'wss' : 'ws') + '://' + document.URL.split('//')[1].split('/')[0] + ':' + workermanPort;
         }
     };
 

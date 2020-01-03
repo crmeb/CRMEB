@@ -92,7 +92,8 @@ CREATE TABLE IF NOT EXISTS `eb_cache` (
   `result` text COMMENT '缓存数据',
   `expire_time` int(10) NOT NULL DEFAULT '0' COMMENT '失效时间0=永久',
   `add_time` int(10) DEFAULT NULL COMMENT '缓存时间',
-  PRIMARY KEY (`key`) USING BTREE
+  PRIMARY KEY (`key`) USING BTREE,
+  KEY `key` (`key`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='微信缓存表';
 
 -- --------------------------------------------------------
@@ -614,20 +615,21 @@ CREATE TABLE IF NOT EXISTS `eb_routine_template` (
 --
 
 INSERT INTO `eb_routine_template` (`id`, `tempkey`, `name`, `content`, `tempid`, `add_time`, `status`) VALUES
-(13, 'AT0007', '订单发货提醒', '订单号{{keyword1.DATA}}\n快递公司{{keyword2.DATA}}\n快递单号{{keyword3.DATA}}\n发货时间{{keyword4.DATA}}\n备注{{keyword5.DATA}}', 'fLsTVQmI2AE9q48BL58tffLRcyCnPLC9guSFrEHXbR8', '1534469928', 1),
-(14, 'AT0787', '退款成功通知', '订单号{{keyword1.DATA}}\n退款时间{{keyword2.DATA}}\n退款金额{{keyword3.DATA}}\n退款方式{{keyword4.DATA}}\n备注{{keyword5.DATA}}', 'vgTj1nk1A1bVObCX0Fw3h9WbXvay1URcHMITjGW13cc', '1534469993', 1),
-(15, 'AT0009', '订单支付成功通知', '单号{{keyword1.DATA}}\n下单时间{{keyword2.DATA}}\n订单状态{{keyword3.DATA}}\n支付金额{{keyword4.DATA}}\n支付方式{{keyword5.DATA}}', 'Rwt2QIz3zHbQGPXCH3E8nBneWzgFFBMiMI6EShTBLpI', '1534470043', 1),
-(16, 'AT1173', '砍价成功通知', '商品名称{{keyword1.DATA}}\n砍价金额{{keyword2.DATA}}\n底价{{keyword3.DATA}}\n砍掉价格{{keyword4.DATA}}\n支付金额{{keyword5.DATA}}\n备注{{keyword6.DATA}}', 'qu3nRoV9lTmmvVWOdgf-2uz8NPT3w71cOx7UDJ5Uryo', '1534470085', 1),
-(17, 'AT0036', '退款通知', '订单编号{{keyword1.DATA}}\n退款原因{{keyword2.DATA}}\n退款时间{{keyword3.DATA}}\n退款金额{{keyword4.DATA}}\n退款方式{{keyword5.DATA}}', 'gYYXx5nz8eWHPd_zp42EdR9UzhdynOo8Eq5GDb4dTrc', '1534470134', 1),
-(19, 'AT2430', '拼团取消通知', '活动名称{{keyword1.DATA}}\n订单编号{{keyword2.DATA}}\n订单金额{{keyword3.DATA}}', 'OmzyMqsWJFn3L68DmEcZqV9FdSHrr2ThHYe6Czs8iaM', '1553910500', 1),
-(20, 'AT0310', '拼团失败通知', '商品名称{{keyword1.DATA}}\n失败原因{{keyword2.DATA}}\n订单号{{keyword3.DATA}}\n开团时间{{keyword4.DATA}}\n退款金额{{keyword5.DATA}}', 'GRpTaZ1-tHoLvrfM-iEsBBbVSIXgh7bO17b7Z2AUpKM', '1553910844', 1),
-(21, 'AT0051', '拼团成功通知', '活动名称{{keyword1.DATA}}\n团长{{keyword2.DATA}}\n成团时间{{keyword3.DATA}}\n拼团价{{keyword4.DATA}}', 'dlYqzgGLrVgRq-Ealw31wCy5PV-rGof-99OppSZhWxY', '1553911022', 1),
-(22, 'AT0541', '开团成功提醒', '开团时间{{keyword1.DATA}}\n截至时间{{keyword2.DATA}}\n产品名称{{keyword3.DATA}}\n单号{{keyword4.DATA}}\n支付金额{{keyword5.DATA}}', 'E2NURfqs4MnciPB1YzvjtMDZCMfCCOHOwCdKFl7XigU', '1555133496', 1),
-(23, 'AT0241', '确认收货通知', '订单编号{{keyword1.DATA}}\n商品详情{{keyword2.DATA}}\n支付金额{{keyword3.DATA}}\n确认收货时间{{keyword4.DATA}}', '4-DQPQMVsJfHjiKhEACz0ofcs_PHupy3xHTX1N1tzTo', '1557384781', 1),
-(24, 'AT0329', '退款失败通知', '订单号{{keyword1.DATA}}\n商品名称{{keyword2.DATA}}\n退款金额{{keyword3.DATA}}\n失败原因{{keyword4.DATA}}', 'rlOEIDa0s6PMG4L_CkDLpBWCPf_mGci3z86UC5LmXCc', '1557384804', 1),
-(25, 'AT1242', '提现失败通知', '失败原因{{keyword1.DATA}}\n提现金额{{keyword2.DATA}}\n提现方式{{keyword3.DATA}}\n审核时间{{keyword4.DATA}}', 'MsVoI7IV4CTFObS9XoJYTjMWPh8zjbNRK5-Z_II0Dnk', '1558918703', 1),
-(26, 'AT1330', ' 提现成功通知', '提现金额{{keyword1.DATA}}\n提现状态{{keyword2.DATA}}\n审核时间{{keyword3.DATA}}\n提现方式{{keyword4.DATA}}', 'Twp4EWZTRUF2mps0J5Inw55_DpbNEfqqdKvfEx_ihos', '1558918767', 1),
-(27, 'AT2233', '订单送货上门通知', '订单编号{{keyword1.DATA}}\n送货人{{keyword2.DATA}}\n手机号码{{keyword3.DATA}}\n送货时间{{keyword4.DATA}}', 'E817NaLfc3oE3CL5rcbDAFlub83ezrrIkpO4WQGCJeQ', '1573522036', 1);
+(1, '1128', '订单配送通知', '商品信息{{thing8.DATA}}\n订单编号{{character_string1.DATA}}\n配送人{{name4.DATA}}\n配送员电话{{phone_number10.DATA}}', '4wN7p3nF1IPiPNIPZnoOY3nZlrVP3dzM-Km0OLcpW48', '1575364233', 1),
+(2, '1470', '提现结果通知', '提现状态{{thing1.DATA}}\n提现金额{{amount2.DATA}}\n提现账号{{thing3.DATA}}\n提现时间{{date4.DATA}}', 'xtBEkHdxyFSIQfiNe_CRga2mrmQizfArgSk7zC3hnbs', '1575364292', 1),
+(3, '1481', '收货结果通知', '订单类型{{thing1.DATA}}\n订单商品{{thing2.DATA}}\n收货时间{{date5.DATA}}', 'AVmUHvKandN9a9ms_-5QsP9_PAzDoJ_VBB0vqQI1Eo0', '1575364327', 1),
+(4, '1134', '订单取消通知', '取消原因{{thing1.DATA}}\n订单号{{number7.DATA}}\n取消时间{{date2.DATA}}\n订单类型{{thing5.DATA}}', 'xBilsNHAH527HBqrMgNoIA_biTfQ7A_bCbMxMx1uMM0', '1575364399', 1),
+(5, '1458', '发货通知', '快递单号{{character_string2.DATA}}\n快递公司{{thing1.DATA}}\n发货时间{{time3.DATA}}\n订单商品{{thing5.DATA}}', 'vBrJgvoj4CgBOUIVQcRfsUkYun4orcllCfQ11SSs4wk', '1575364437', 1),
+(6, '3098', '拼团成功通知', '活动名称{{thing1.DATA}}\n团长{{name3.DATA}}\n开团时间{{date5.DATA}}\n成团人数{{number2.DATA}}', 'V9fd7ssFZr5_twdgf--RfAExR4N08zU9Hk9auWDAI8g', '1575364508', 1),
+(7, '2727', '砍价成功通知', '商品名称{{thing1.DATA}}\n底价{{amount2.DATA}}\n备注{{thing3.DATA}}', 'ehNGy-NRBJIENTdlwT8nBddGW2B4dPo6eKv3x1H6fOg', '1575364579', 1),
+(8, '3116', ' 核销成功通知', '商品名称{{thing2.DATA}}\n订单号{{character_string3.DATA}}\n核销时间{{time4.DATA}}', '5wiR0TK43wguWdGzexocKvn9-nhELiJtoBKeqptsf84', '1575364738', 1),
+(9, '1476', ' 新订单提醒', '订单商品{{thing2.DATA}}\n订单金额{{amount3.DATA}}\n订单编号{{character_string4.DATA}}\n订单时间{{date6.DATA}}\n订单类型{{thing1.DATA}}', 'F7ju2FdKqFQ8rXXzkB34HSYKa5_kOzJrpF9EZQc1pJ8', '1575364792', 1),
+(10, '1451', ' 退款通知', '退款状态{{thing1.DATA}}\n退款商品{{thing2.DATA}}\n退款金额{{amount3.DATA}}\n退款单号{{character_string6.DATA}}', 'aqp6PzdU9vCUOUCHsuGFWvkZgp_cGQ_RKW7XCe9118I', '1575364895', 1),
+(11, '755', ' 充值成功通知', '交易单号{{character_string1.DATA}}\n充值金额{{amount3.DATA}}\n账户余额{{amount4.DATA}}\n充值时间{{date5.DATA}}', '_0KAysps9Yj0SM3nacaF_9xw77w1NQYjOpnl4TQAp7k', '1575365017', 1),
+(12, '1927', '付款成功通知', '付款单号{{character_string1.DATA}}\n付款金额{{amount2.DATA}}\n付款时间{{date3.DATA}}', 'jY2vT0Fge2srW9Izc-3wEE6WII-FQBvEi2J_duiAAck', '1575365111', 1),
+(13, '1468', '申请退款通知', '订单编号{{character_string4.DATA}}\n申请时间{{date5.DATA}}\n订单金额{{amount2.DATA}}\n退款状态{{phrase7.DATA}}\n备注{{thing8.DATA}}', 'NOfT3qoOS3hkSzwt2LJg_LnU0NBzwSHXkSwKdx6QDwc', '1575440940', 1),
+(14, '335', '积分到账提醒', '订单编号{{character_string2.DATA}}\n商品名称{{thing3.DATA}}\n支付金额{{amount4.DATA}}\n获得积分{{number5.DATA}}\n累计积分{{number6.DATA}}', 'TtdbifwMN-6D3hNld8jTc97A8Ohlqg4FtgmIgB28JPc', '1575516565', 1),
+(15, '3353', '拼团状态通知', '商品名称{{thing2.DATA}}\n拼团人数{{thing1.DATA}}\n备注{{thing3.DATA}}', 'LkYDDYO-HQKT7NydGjrN7AJ1OUCf3mgZf3otVruhxOo', '1575516605', 1);
 
 -- --------------------------------------------------------
 
@@ -1721,7 +1723,7 @@ INSERT INTO `eb_system_config` (`id`, `menu_name`, `type`, `input_type`, `config
 (77, 'store_stock', 'text', 'input', 5, '', 0, '', 100, 0, '"2"', '警戒库存', '警戒库存提醒值', 0, 1),
 (85, 'stor_reason', 'textarea', 'input', 5, '', 0, '', 100, 8, '"\\u6536\\u8d27\\u5730\\u5740\\u586b\\u9519\\u4e86\\r\\n\\u4e0e\\u63cf\\u8ff0\\u4e0d\\u7b26\\r\\n\\u4fe1\\u606f\\u586b\\u9519\\u4e86\\uff0c\\u91cd\\u65b0\\u62cd\\r\\n\\u6536\\u5230\\u5546\\u54c1\\u635f\\u574f\\u4e86\\r\\n\\u672a\\u6309\\u9884\\u5b9a\\u65f6\\u95f4\\u53d1\\u8d27\\r\\n\\u5176\\u5b83\\u539f\\u56e0"', '退货理由', '配置退货理由，一行一个理由', 0, 1),
 (87, 'store_brokerage_two', 'text', 'input', 9, '', 0, 'required:true,min:0,max:100,number:true', 100, 0, '"60"', '二级返佣比例', '订单交易成功后给上级返佣的比例0 - 100,例:5 = 反订单金额的5%', 4, 1),
-(88, 'store_brokerage_statu', 'radio', 'input', 9, '1=>指定分销\n2=>人人分销', 0, '', 0, 0, '"2"', '分销模式', '人人分销默认每个人都可以分销，制定人分销后台制定人开启分销', 10, 1),
+(88, 'store_brokerage_statu', 'radio', 'input', 9, '1=>指定分销\n2=>人人分销', 0, '', 0, 0, '"2"', '分销模式', '人人分销默认每个人都可以分销，指定人分销后台指定人开启分销', 10, 1),
 (89, 'pay_routine_appid', 'text', 'input', 14, '', 0, 'required:true', 100, 0, '""', 'Appid', '小程序Appid', 0, 1),
 (90, 'pay_routine_appsecret', 'text', 'input', 14, '', 0, 'required:true', 100, 0, '""', 'Appsecret', '小程序Appsecret', 0, 1),
 (91, 'pay_routine_mchid', 'text', 'input', 14, '', 0, 'required:true', 100, 0, '""', 'Mchid', '商户号', 0, 1),
@@ -1788,6 +1790,7 @@ CREATE TABLE IF NOT EXISTS `eb_system_config_tab` (
   `status` tinyint(1) unsigned NOT NULL DEFAULT '1' COMMENT '配置分类状态',
   `info` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '配置分类是否显示',
   `icon` varchar(30) DEFAULT NULL COMMENT '图标',
+  `pid` int(10) NULL DEFAULT '0' COMMENT '父级ID',
   `type` int(2) DEFAULT '0' COMMENT '配置类型',
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COMMENT='配置分类表' AUTO_INCREMENT=20 ;
@@ -2045,10 +2048,10 @@ INSERT INTO `eb_system_menus` (`id`, `pid`, `icon`, `menu_name`, `module`, `cont
 (50, 46, '', '删除配置分类', 'admin', 'setting.systemConfigTab', 'delete', '[]', 0, 0, 1),
 (51, 46, '', '查看子字段', 'admin', 'system.systemConfigTab', 'sonConfigTab', '[]', 0, 0, 1),
 (52, 9, '', '组合数据附加权限', 'admin', 'setting.systemGroup', '', '[]', 0, 0, 1),
-(53, 468, '', '添加数据', 'admin', 'setting.systemGroupData', 'create', '[]', 0, 0, 1),
-(54, 468, '', '编辑数据', 'admin', 'setting.systemGroupData', 'edit', '[]', 0, 0, 1),
-(55, 468, '', '删除数据', 'admin', 'setting.systemGroupData', 'delete', '[]', 0, 0, 1),
-(56, 468, '', '数据列表', 'admin', 'setting.systemGroupData', 'index', '[]', 0, 0, 1),
+(53, 468, '', '添加数据', 'admin', 'setting.system_droup_data', 'create', '[]', 0, 0, 1),
+(54, 468, '', '编辑数据', 'admin', 'setting.system_droup_data', 'edit', '[]', 0, 0, 1),
+(55, 468, '', '删除数据', 'admin', 'setting.system_droup_data', 'delete', '[]', 0, 0, 1),
+(56, 468, '', '数据列表', 'admin', 'setting.system_droup_data', 'index', '[]', 0, 0, 1),
 (57, 52, '', '添加数据组', 'admin', 'setting.systemGroup', 'create', '[]', 0, 0, 1),
 (58, 52, '', '删除数据组', 'admin', 'setting.systemGroup', 'delete', '[]', 0, 0, 1),
 (59, 4, '', '管理员列表附加权限', 'admin', 'setting.systemAdmin', '', '[]', 0, 0, 1),
@@ -2096,8 +2099,8 @@ INSERT INTO `eb_system_menus` (`id`, `pid`, `icon`, `menu_name`, `module`, `cont
 (108, 117, '', '提交添加配置列表', 'admin', 'setting.systemConfig', 'save', '[]', 0, 0, 1),
 (109, 52, '', '提交添加数据组', 'admin', 'setting.systemGroup', 'save', '[]', 0, 0, 1),
 (110, 52, '', '提交修改数据组', 'admin', 'setting.systemGroup', 'update', '[]', 0, 0, 1),
-(111, 468, '', '提交添加数据', 'admin', 'setting.systemGroupData', 'save', '[]', 0, 0, 1),
-(112, 468, '', '提交修改数据', 'admin', 'setting.systemGroupData', 'update', '[]', 0, 0, 1),
+(111, 468, '', '提交添加数据', 'admin', 'setting.system_droup_data', 'save', '[]', 0, 0, 1),
+(112, 468, '', '提交修改数据', 'admin', 'setting.system_droup_data', 'update', '[]', 0, 0, 1),
 (113, 33, '', '提交添加文章分类', 'admin', 'article.articleCategory', 'save', '[]', 0, 0, 1),
 (114, 33, '', '提交添加文章分类', 'admin', 'article.articleCategory', 'update', '[]', 0, 0, 1),
 (115, 42, '', '提交添加图文消息', 'admin', 'wechat.wechatNewsCategory', 'save', '[]', 0, 0, 1),
@@ -2340,7 +2343,7 @@ INSERT INTO `eb_system_menus` (`id`, `pid`, `icon`, `menu_name`, `module`, `cont
 (465, 462, '', '促销单品推荐banner', 'admin', 'setting.system_group_data', 'index', '{"gid":"59"}', 0, 1, 1),
 (466, 462, '', '个人中心分销海报', 'admin', 'setting.system_group_data', 'index', '{"gid":"60"}', 0, 1, 1),
 (467, 21, '', '开发配置', 'admin', 'system', '', '[]', 0, 1, 1),
-(468, 1, '', '配置组合数据附加权限', 'admin', 'setting.systemGroupData', 'index', '[]', 0, 0, 1),
+(468, 1, '', '配置组合数据附加权限', 'admin', 'setting.system_droup_data', 'index', '[]', 0, 0, 1),
 (469, 21, '', '安全维护', 'admin', 'system', '', '[]', 0, 1, 1),
 (470, 1, '', '配置组合数据展示页', 'admin', 'setting.systemGroup', 'index', '[]', 0, 0, 1),
 (471, 462, '', '小程序精品推荐', 'admin', 'setting.system_group_data', 'index', '{"gid":"52"}', 0, 1, 1),
@@ -2797,7 +2800,7 @@ CREATE TABLE IF NOT EXISTS `eb_user_task_finish` (
 CREATE TABLE `eb_user_token` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `uid` int(10) UNSIGNED NOT NULL COMMENT '用户 id',
-  `token` varchar(300) NOT NULL COMMENT 'token',
+  `token` varchar(500) NOT NULL COMMENT 'token',
   `create_time` datetime NOT NULL COMMENT '创建时间',
   `expires_time` datetime NOT NULL COMMENT '到期事件',
   `login_ip` varchar(32) DEFAULT NULL COMMENT '登录ip',

@@ -266,6 +266,7 @@
 {include file="public/style"}
 <script>
     window.newOrderAudioLink='{$new_order_audio_link}';
+    window.workermanPort = '{$workermanPort}';
 </script>
 <script src="{__FRAME_PATH}js/index.js"></script>
 </body>

@@ -39,7 +39,7 @@ class MiniProgramService
             'key' => trim($payment['pay_routine_key']),
             'cert_path' => realpath('.' . $payment['pay_routine_client_cert']),
             'key_path' => realpath('.' . $payment['pay_routine_client_key']),
-            'notify_url' => $wechat['site_url'] . Url::buildUrl('/api/routine/notify')
+            'notify_url' => $wechat['site_url'] . Url::buildUrl('/api/routine/notify')->suffix(false)->build()
         ];
         return $config;
     }
@@ -49,7 +49,7 @@ class MiniProgramService
         (self::$instance === null || $cache === true) && (self::$instance = new Application(self::options()));
         return self::$instance;
     }
-    
+
     /**
      * 小程序接口
      * @return \EasyWeChat\MiniProgram\MiniProgram
@@ -133,6 +133,15 @@ class MiniProgramService
         return self::miniprogram()->notice;
     }
 
+    /**
+     * 订阅模板消息接口
+     * @return \crmeb\utils\ProgramSubscribe
+     */
+    public static function SubscribenoticeService()
+    {
+        return self::miniprogram()->now_notice;
+    }
+
     /**发送小程序模版消息
      * @param $openid
      * @param $templateId
@@ -148,6 +157,21 @@ class MiniProgramService
         if ($link !== null) $message = ['page' => $link];
         if ($defaultColor !== null) $notice->defaultColor($defaultColor);
         return $notice->send($message);
+    }
+
+    /**
+     * 发送订阅消息
+     * @param string $touser 接收者（用户）的 openid
+     * @param string $templateId 所需下发的订阅模板id
+     * @param array $data 模板内容，格式形如 { "key1": { "value": any }, "key2": { "value": any } }
+     * @param string $link 击模板卡片后的跳转页面，仅限本小程序内的页面。支持带参数,（示例index?foo=bar）。该字段不填则模板无跳转。
+     * @return \EasyWeChat\Support\Collection|null
+     * @throws \EasyWeChat\Core\Exceptions\HttpException
+     * @throws \EasyWeChat\Core\Exceptions\InvalidArgumentException
+     */
+    public static function sendSubscribeTemlate(string $touser, string $templateId, array $data, string $link = '')
+    {
+        return self::SubscribenoticeService()->to($touser)->template($templateId)->andData($data)->withUrl($link)->send();
     }
 
 

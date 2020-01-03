@@ -44,9 +44,13 @@ class CacheService
      * @param bool $default
      * @return mixed
      */
-    public static function get(string $name, $default = false)
+    public static function get(string $name, $default = false, int $expire = null)
     {
-        return self::handler()->remember($name, $default);
+        //这里不要去读取缓存配置，会导致死循环
+        $expire = $expire ?: SystemConfigService::get('cache_config', null, true);
+        if (!is_int($expire))
+            $expire = (int)$expire;
+        return self::handler()->remember($name, $default, $expire);
     }
 
     /**

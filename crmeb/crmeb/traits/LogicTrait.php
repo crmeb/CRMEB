@@ -24,17 +24,6 @@ trait LogicTrait
     protected static $instance;
 
     /**
-     * 静态方法调用
-     * @param $method 调用方法
-     * @param $params 参数
-     * @return mixed
-     */
-    public static function __callStatic($method, $params)
-    {
-        return call_user_func_array([self::$instance, $method], $params);
-    }
-
-    /**
      * 配置参数
      * @param array $config
      */
@@ -171,8 +160,12 @@ trait LogicTrait
                 return $this;
             }
         } else if (in_array($method, $keys)) {
-            $this->sendType = $method;
-            return $this;
+            if (property_exists($this, 'handleType') && array_shift($ages) !== true) {
+                $this->handleType = $method;
+                return $this;
+            } else {
+                return $this->{$method};
+            }
         } else {
             throw new AuthException('Method does not exist：' . $method);
         }
