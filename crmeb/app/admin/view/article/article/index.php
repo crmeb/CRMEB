@@ -13,7 +13,7 @@
       		<div class="ibox-content">
             <ul  class="folder-list m-b-md">
               	{volist name="tree" id="vo"}
-                   <li class="p-xxs"><a href="{:Url('article.article/index',array('pid'=>$vo.id))}">{$vo.level|str_repeat='.....',###}{$vo.title}</a></li>
+                   <li class="p-xxs"><a href="{:Url('article.article/index',array('pid'=>$vo.id))}">{$vo.html}{$vo.title}</a></li>
                 {/volist}
             </ul>
           	</div>
