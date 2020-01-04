@@ -194,3 +194,31 @@ if (!function_exists('set_file_url')) {
         return $siteUrl . $image;
     }
 }
+
+if (!function_exists('sort_list_tier')) {
+    /**
+     * 分级排序
+     * @param $data
+     * @param int $pid
+     * @param string $field
+     * @param string $pk
+     * @param string $html
+     * @param int $level
+     * @param bool $clear
+     * @return array
+     */
+    function sort_list_tier($data, $pid = 0, $field = 'pid', $pk = 'id', $html = '|-----', $level = 1, $clear = true)
+    {
+        static $list = [];
+        if ($clear) $list = [];
+        foreach ($data as $k => $res) {
+            if ($res[$field] == $pid) {
+                $res['html'] = str_repeat($html, $level);
+                $list[] = $res;
+                unset($data[$k]);
+                sort_list_tier($data, $res[$pk], $field, $pk, $html, $level + 1, false);
+            }
+        }
+        return $list;
+    }
+}
