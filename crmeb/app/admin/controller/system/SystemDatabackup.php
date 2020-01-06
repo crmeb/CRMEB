@@ -32,6 +32,7 @@ class SystemDatabackup extends AuthController
             'level' => 5,
         );
         $this->DB = new Backup($config);
+        $this->request->filter(['htmlspecialchars', 'strip_tags', 'addslashes', 'trim']);
     }
 
     /**
