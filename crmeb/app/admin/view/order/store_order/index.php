@@ -554,18 +554,22 @@
             },
             watch: {
                 'where.status':function () {
+                    this.where.excel=0;
                     this.getBadge();
                     layList.reload(this.where,true);
                 },
                 'where.data':function () {
+                    this.where.excel=0;
                     this.getBadge();
                     layList.reload(this.where,true);
                 },
                 'where.type':function () {
+                    this.where.excel=0;
                     this.getBadge();
                     layList.reload(this.where,true);
                 },
                 'where.pay_type':function () {
+                    this.where.excel=0;
                     this.getBadge();
                     layList.reload(this.where,true);
                 }

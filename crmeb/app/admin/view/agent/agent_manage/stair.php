@@ -182,6 +182,7 @@
             },
             mounted:function () {
                 this.getBadge();
+                var that = this;
                 layList.laydate.render({
                     elem:this.$refs.date_time,
                     trigger:'click',
