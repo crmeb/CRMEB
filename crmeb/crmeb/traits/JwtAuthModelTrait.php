@@ -8,7 +8,7 @@ use Firebase\JWT\BeforeValidException;
 use Firebase\JWT\ExpiredException;
 use Firebase\JWT\JWT;
 use Firebase\JWT\SignatureInvalidException;
-use think\facade\Env;
+use think\facade\Config;
 use UnexpectedValueException;
 
 trait JwtAuthModelTrait
@@ -32,7 +32,7 @@ trait JwtAuthModelTrait
             'exp' => strtotime('+ 3hour'),
         ];
         $params['jti'] = compact('id', 'type');
-        $token = JWT::encode($params, Env::get('app.app_key', 'default'));
+        $token = JWT::encode($params, Config::get('app.app_key', 'default'));
 
         return compact('token', 'params');
     }
