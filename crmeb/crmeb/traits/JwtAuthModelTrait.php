@@ -52,7 +52,7 @@ trait JwtAuthModelTrait
     {
         JWT::$leeway = 60;
 
-        $data = JWT::decode($jwt, Env::get('app.app_key', 'default'), array('HS256'));
+        $data = JWT::decode($jwt, Config::get('app.app_key', 'default'), array('HS256'));
 
         $model = new self();
         return [$model->where($model->getPk(), $data->jti->id)->find(), $data->jti->type];

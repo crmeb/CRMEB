@@ -417,7 +417,7 @@ class UploadService
         };
         $fileName = Filesystem::putFile($this->uploadPath, $file);
         if (!$fileName) return self::setError('图片上传失败!');
-        return self::successful(str_replace('\\', '/', ($this->uploadPath ? $this->uploadPath . '/' : '') . $fileName));
+        return self::successful(str_replace('\\', '/', $fileName));
     }
 
     /**
