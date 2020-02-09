@@ -8,6 +8,7 @@
     <script src="{__PLUG_PATH}iview/dist/iview.min.js"></script>
     <script src="{__PLUG_PATH}jquery/jquery.min.js"></script>
     <script src="{__PLUG_PATH}form-create/province_city.js"></script>
+    <script src="{__PLUG_PATH}form-create/province_city_area.js"></script>
     <script src="{__PLUG_PATH}form-create/form-create.min.js"></script>
     <style>
         /*弹框样式修改*/
