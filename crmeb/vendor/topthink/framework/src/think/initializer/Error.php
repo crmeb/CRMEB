@@ -55,7 +55,7 @@ class Error
         if ($this->app->runningInConsole()) {
             $handler->renderForConsole(new ConsoleOutput, $e);
         } else {
-            $handler->render($this->app->request, $e)->setCookie($this->app->cookie)->send();
+            $handler->render($this->app->request, $e)->send();
         }
     }
 

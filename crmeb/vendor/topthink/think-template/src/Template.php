@@ -12,7 +12,8 @@ declare (strict_types = 1);
 
 namespace think;
 
-use think\template\exception\TemplateNotFoundException;
+use Exception;
+use Psr\SimpleCache\CacheInterface;
 
 /**
  * ThinkPHP分离出来的模板引擎
@@ -33,7 +34,6 @@ class Template
      */
     protected $config = [
         'view_path'          => '', // 模板路径
-        'view_base'          => '',
         'view_suffix'        => 'html', // 默认模板文件后缀
         'view_depr'          => DIRECTORY_SEPARATOR,
         'cache_path'         => '',
@@ -69,6 +69,12 @@ class Template
     private $literal = [];
 
     /**
+     * 扩展解析规则
+     * @var array
+     */
+    private $extend = [];
+
+    /**
      * 模板包含信息
      * @var array
      */
@@ -79,6 +85,12 @@ class Template
      * @var object
      */
     protected $storage;
+
+    /**
+     * 查询缓存对象
+     * @var CacheInterface
+     */
+    protected $cache;
 
     /**
      * 架构函数
@@ -107,8 +119,7 @@ class Template
     /**
      * 模板变量赋值
      * @access public
-     * @param  mixed $name
-     * @param  mixed $value
+     * @param  array $vars 模板变量
      * @return $this
      */
     public function assign(array $vars = [])
@@ -120,12 +131,23 @@ class Template
     /**
      * 模板引擎参数赋值
      * @access public
-     * @param  mixed $name
-     * @param  mixed $value
+     * @param  string $name
+     * @param  mixed  $value
      */
     public function __set($name, $value)
     {
         $this->config[$name] = $value;
+    }
+
+    /**
+     * 设置缓存对象
+     * @access public
+     * @param  CacheInterface $cache 缓存对象
+     * @return void
+     */
+    public function setCache(CacheInterface $cache): void
+    {
+        $this->cache = $cache;
     }
 
     /**
@@ -178,16 +200,36 @@ class Template
     }
 
     /**
+     * 扩展模板解析规则
+     * @access public
+     * @param  string   $rule 解析规则
+     * @param  callable $callback 解析规则
+     * @return void
+     */
+    public function extend(string $rule, callable $callback = null): void
+    {
+        $this->extend[$rule] = $callback;
+    }
+
+    /**
      * 渲染模板文件
      * @access public
-     * @param  string    $template 模板文件
-     * @param  array     $vars 模板变量
+     * @param  string $template 模板文件
+     * @param  array  $vars 模板变量
      * @return void
      */
     public function fetch(string $template, array $vars = []): void
     {
         if ($vars) {
             $this->data = array_merge($this->data, $vars);
+        }
+
+        if (!empty($this->config['cache_id']) && $this->config['display_cache'] && $this->cache) {
+            // 读取渲染缓存
+            if ($this->cache->has($this->config['cache_id'])) {
+                echo $this->cache->get($this->config['cache_id']);
+                return;
+            }
         }
 
         $template = $this->parseTemplateFile($template);
@@ -211,15 +253,36 @@ class Template
             // 获取并清空缓存
             $content = ob_get_clean();
 
+            if (!empty($this->config['cache_id']) && $this->config['display_cache'] && $this->cache) {
+                // 缓存页面输出
+                $this->cache->set($this->config['cache_id'], $content, $this->config['cache_time']);
+            }
+
             echo $content;
         }
     }
 
     /**
+     * 检查编译缓存是否存在
+     * @access public
+     * @param  string $cacheId 缓存的id
+     * @return boolean
+     */
+    public function isCache(string $cacheId): bool
+    {
+        if ($cacheId && $this->cache && $this->config['display_cache']) {
+            // 缓存页面输出
+            return $this->cache->has($cacheId);
+        }
+
+        return false;
+    }
+
+    /**
      * 渲染模板内容
      * @access public
-     * @param  string    $content 模板内容
-     * @param  array     $vars 模板变量
+     * @param  string $content 模板内容
+     * @param  array  $vars 模板变量
      * @return void
      */
     public function display(string $content, array $vars = []): void
@@ -242,8 +305,8 @@ class Template
     /**
      * 设置布局
      * @access public
-     * @param  mixed     $name 布局模板名称 false 则关闭布局
-     * @param  string    $replace 布局模板内容替换标识
+     * @param  mixed  $name 布局模板名称 false 则关闭布局
+     * @param  string $replace 布局模板内容替换标识
      * @return $this
      */
     public function layout($name, string $replace = '')
@@ -309,8 +372,8 @@ class Template
     /**
      * 编译模板文件内容
      * @access private
-     * @param  string    $content 模板内容
-     * @param  string    $cacheFile 缓存文件名
+     * @param  string $content 模板内容
+     * @param  string $cacheFile 缓存文件名
      * @return void
      */
     private function compiler(string &$content, string $cacheFile): void
@@ -434,7 +497,7 @@ class Template
      * @access private
      * @param  string $content 要解析的模板内容
      * @return void
-     * @throws \think\Exception
+     * @throws Exception
      */
     private function parsePhp(string &$content): void
     {
@@ -920,22 +983,15 @@ class Template
                         $vars  = explode('.', $match[0]);
                         $first = array_shift($vars);
 
-                        if ('$Think' == $first) {
+                        if (isset($this->extend[$first])) {
+                            $callback = $this->extend[$first];
+                            $parseStr = $callback($vars);
+                        } elseif ('$Request' == $first) {
+                            // 输出请求变量
+                            $parseStr = $this->parseRequestVar($vars);
+                        } elseif ('$Think' == $first) {
                             // 所有以Think.打头的以特殊变量对待 无需模板赋值就可以输出
                             $parseStr = $this->parseThinkVar($vars);
-                        } elseif ('$Request' == $first) {
-                            // 获取Request请求对象参数
-                            $method = array_shift($vars);
-                            if (!empty($vars)) {
-                                $params = implode('.', $vars);
-                                if ('true' != $params) {
-                                    $params = '\'' . $params . '\'';
-                                }
-                            } else {
-                                $params = '';
-                            }
-
-                            $parseStr = 'app(\'request\')->' . $method . '(' . $params . ')';
                         } else {
                             switch ($this->config['tpl_var_identify']) {
                                 case 'array': // 识别为数组
@@ -965,8 +1021,8 @@ class Template
      * 对模板中使用了函数的变量进行解析
      * 格式 {$varname|function1|function2=arg1,arg2}
      * @access public
-     * @param  string    $varStr     变量字符串
-     * @param  bool      $autoescape 自动转义
+     * @param  string $varStr     变量字符串
+     * @param  bool   $autoescape 自动转义
      * @return string
      */
     public function parseVarFunction(string &$varStr, bool $autoescape = true): string
@@ -1056,6 +1112,47 @@ class Template
     }
 
     /**
+     * 请求变量解析
+     * 格式 以 $Request. 打头的变量属于请求变量
+     * @access public
+     * @param  array $vars 变量数组
+     * @return string
+     */
+    public function parseRequestVar(array $vars): string
+    {
+        $type  = strtoupper(trim(array_shift($vars)));
+        $param = implode('.', $vars);
+
+        switch ($type) {
+            case 'SERVER':
+                $parseStr = '$_SERVER[\'' . $param . '\']';
+                break;
+            case 'GET':
+                $parseStr = '$_GET[\'' . $param . '\']';
+                break;
+            case 'POST':
+                $parseStr = '$_POST[\'' . $param . '\']';
+                break;
+            case 'COOKIE':
+                $parseStr = '$_COOKIE[\'' . $param . '\']';
+                break;
+            case 'SESSION':
+                $parseStr = '$_SESSION[\'' . $param . '\']';
+                break;
+            case 'ENV':
+                $parseStr = '$_ENV[\'' . $param . '\']';
+                break;
+            case 'REQUEST':
+                $parseStr = '$_REQUEST[\'' . $param . '\']';
+                break;
+            default:
+                $parseStr = '\'\'';
+        }
+
+        return $parseStr;
+    }
+
+    /**
      * 特殊模板变量解析
      * 格式 以 $Think. 打头的变量属于特殊模板变量
      * @access public
@@ -1067,54 +1164,21 @@ class Template
         $type  = strtoupper(trim(array_shift($vars)));
         $param = implode('.', $vars);
 
-        if ($vars) {
-            switch ($type) {
-                case 'SERVER':
-                    $parseStr = '$_SERVER[\'' . $param . '\']';
-                    break;
-                case 'GET':
-                    $parseStr = '$_GET[\'' . $param . '\']';
-                    break;
-                case 'POST':
-                    $parseStr = '$_POST[\'' . $param . '\']';
-                    break;
-                case 'COOKIE':
-                    $parseStr = '$_COOKIE[\'' . $param . '\']';
-                    break;
-                case 'SESSION':
-                    $parseStr = '$_SESSION[\'' . $param . '\']';
-                    break;
-                case 'ENV':
-                    $parseStr = '$_ENV[\'' . $param . '\']';
-                    break;
-                case 'REQUEST':
-                    $parseStr = '$_REQUEST[\'' . $param . '\']';
-                    break;
-                case 'CONST':
-                    $parseStr = strtoupper($param);
-                    break;
-                default:
-                    $parseStr = '\'\'';
-                    break;
-            }
-        } else {
-            switch ($type) {
-                case 'NOW':
-                    $parseStr = "date('Y-m-d g:i a',time())";
-                    break;
-                case 'LDELIM':
-                    $parseStr = '\'' . ltrim($this->config['tpl_begin'], '\\') . '\'';
-                    break;
-                case 'RDELIM':
-                    $parseStr = '\'' . ltrim($this->config['tpl_end'], '\\') . '\'';
-                    break;
-                default:
-                    if (defined($type)) {
-                        $parseStr = $type;
-                    } else {
-                        $parseStr = '';
-                    }
-            }
+        switch ($type) {
+            case 'CONST':
+                $parseStr = strtoupper($param);
+                break;
+            case 'NOW':
+                $parseStr = "date('Y-m-d g:i a',time())";
+                break;
+            case 'LDELIM':
+                $parseStr = '\'' . ltrim($this->config['tpl_begin'], '\\') . '\'';
+                break;
+            case 'RDELIM':
+                $parseStr = '\'' . ltrim($this->config['tpl_end'], '\\') . '\'';
+                break;
+            default:
+                $parseStr = defined($type) ? $type : '\'\'';
         }
 
         return $parseStr;
@@ -1156,14 +1220,11 @@ class Template
      * 解析模板文件名
      * @access private
      * @param  string $template 文件名
-     * @return string|false
+     * @return string
      */
     private function parseTemplateFile(string $template): string
     {
         if ('' == pathinfo($template, PATHINFO_EXTENSION)) {
-            if (strpos($template, '@')) {
-                list($app, $template) = explode('@', $template);
-            }
 
             if (0 !== strpos($template, '/')) {
                 $template = str_replace(['/', ':'], $this->config['view_depr'], $template);
@@ -1171,14 +1232,7 @@ class Template
                 $template = str_replace(['/', ':'], $this->config['view_depr'], substr($template, 1));
             }
 
-            if ($this->config['view_base']) {
-                $app  = isset($app) ? $app : '';
-                $path = $this->config['view_base'] . ($app ? $app . DIRECTORY_SEPARATOR : '');
-            } else {
-                $path = $this->config['view_path'];
-            }
-
-            $template = $path . $template . '.' . ltrim($this->config['view_suffix'], '.');
+            $template = $this->config['view_path'] . $template . '.' . ltrim($this->config['view_suffix'], '.');
         }
 
         if (is_file($template)) {
@@ -1188,7 +1242,7 @@ class Template
             return $template;
         }
 
-        throw new TemplateNotFoundException('template not exists:' . $template, $template);
+        throw new Exception('template not exists:' . $template);
     }
 
     /**

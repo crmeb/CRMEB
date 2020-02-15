@@ -58,7 +58,9 @@ class StoreStatistics extends BaseModel
     public static function getOrderInfo($where)
     {
         $orderinfo = self::getTimeWhere($where)
-            ->field('sum(total_price) total_price,sum(cost) cost,sum(pay_postage) pay_postage,sum(pay_price) pay_price,sum(coupon_price) coupon_price,sum(deduction_price) deduction_price,from_unixtime(pay_time,\'%Y-%m-%d\') pay_time')->order('pay_time')->group('from_unixtime(pay_time,\'%Y-%m-%d\')')->select()->toArray();
+            ->field('sum(total_price) total_price,sum(cost) cost,sum(pay_postage) pay_postage,sum(pay_price) pay_price,sum(coupon_price) coupon_price,sum(deduction_price) deduction_price,from_unixtime(pay_time,\'%Y-%m-%d\') pay_time')
+            ->order('pay_time')->where('paid',1)->where('refund_status',0)
+            ->group('from_unixtime(pay_time,\'%Y-%m-%d\')')->select()->toArray();
         $price = 0;
         $postage = 0;
         $deduction = 0;
@@ -130,7 +132,7 @@ class StoreStatistics extends BaseModel
      */
     public static function getConsumption($where)
     {
-        $consumption=self::getTime($where,new UserBill,'b.add_time')->alias('a')->join('__user__ b','a.uid = b.uid')
+        $consumption=self::getTime($where,new UserBill,'b.add_time')->alias('a')->join('user b','a.uid = b.uid')
             ->field('sum(a.number) number')
         ->where('a.type','pay_product')->find()->toArray();
         return $consumption;
@@ -182,9 +184,9 @@ class StoreStatistics extends BaseModel
     public static function trans()
     {
         $trans = self::alias('a')
-            ->join('__user__ b', 'a.uid=b.uid','left')
-            ->join('__store_order_cart_info__ c', 'a.id=c.oid')
-            ->join('__store_product__ d', 'c.product_id=d.id')
+            ->join('user b', 'a.uid=b.uid','left')
+            ->join('store_order_cart_info c', 'a.id=c.oid')
+            ->join('store_product d', 'c.product_id=d.id')
             ->field('b.nickname,a.pay_price,d.store_name')
             ->order('a.add_time DESC')
             ->limit('6')

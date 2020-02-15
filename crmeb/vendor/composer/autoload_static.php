@@ -7,8 +7,9 @@ namespace Composer\Autoload;
 class ComposerStaticInitf16474ac994ccc25392f403933800b79
 {
     public static $files = array (
-        '538ca81a9a966a6716601ecf48f4eaef' => __DIR__ . '/..' . '/opis/closure/functions.php',
+        '9b552a3cc426e3287cc811caefa3cf53' => __DIR__ . '/..' . '/topthink/think-helper/src/helper.php',
         '0e6d7bf4a5811bfa5cf40c5ccd6fae6a' => __DIR__ . '/..' . '/symfony/polyfill-mbstring/bootstrap.php',
+        '538ca81a9a966a6716601ecf48f4eaef' => __DIR__ . '/..' . '/opis/closure/functions.php',
         '023d27dca8066ef29e6739335ea73bad' => __DIR__ . '/..' . '/symfony/polyfill-php70/bootstrap.php',
         '7b11c4dc42b3b3023073cb14e519683c' => __DIR__ . '/..' . '/ralouphie/getallheaders/src/getallheaders.php',
         'c964ee0ededf28c96ebd9db5099ef910' => __DIR__ . '/..' . '/guzzlehttp/promises/src/functions_include.php',
@@ -16,7 +17,6 @@ class ComposerStaticInitf16474ac994ccc25392f403933800b79
         '25072dd6e2470089de65ae7bf11d3109' => __DIR__ . '/..' . '/symfony/polyfill-php72/bootstrap.php',
         '37a3dc5111fe8f707ab4c132ef1dbc62' => __DIR__ . '/..' . '/guzzlehttp/guzzle/src/functions_include.php',
         '667aeda72477189d0494fecd327c3641' => __DIR__ . '/..' . '/symfony/var-dumper/Resources/functions/dump.php',
-        '9b552a3cc426e3287cc811caefa3cf53' => __DIR__ . '/..' . '/topthink/think-helper/src/helper.php',
         '9e090711773bfc38738f5dbaee5a7f14' => __DIR__ . '/..' . '/overtrue/wechat/src/Payment/helpers.php',
         '841780ea2e1d6545ea3a253239d59c05' => __DIR__ . '/..' . '/qiniu/php-sdk/src/Qiniu/functions.php',
         '1cfd2761b63b0a29ed23657ea394cb2d' => __DIR__ . '/..' . '/topthink/think-captcha/src/helper.php',
@@ -27,8 +27,8 @@ class ComposerStaticInitf16474ac994ccc25392f403933800b79
         't' => 
         array (
             'think\\view\\driver\\' => 18,
-            'think\\helper\\' => 13,
             'think\\captcha\\' => 14,
+            'think\\app\\' => 10,
             'think\\' => 6,
         ),
         'd' => 
@@ -115,13 +115,13 @@ class ComposerStaticInitf16474ac994ccc25392f403933800b79
         array (
             0 => __DIR__ . '/..' . '/topthink/think-view/src',
         ),
-        'think\\helper\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/topthink/think-helper/src',
-        ),
         'think\\captcha\\' => 
         array (
             0 => __DIR__ . '/..' . '/topthink/think-captcha/src',
+        ),
+        'think\\app\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/topthink/think-multi-app/src',
         ),
         'think\\' => 
         array (
@@ -129,11 +129,12 @@ class ComposerStaticInitf16474ac994ccc25392f403933800b79
             1 => __DIR__ . '/..' . '/topthink/think-cache/src',
             2 => __DIR__ . '/..' . '/topthink/think-container/src',
             3 => __DIR__ . '/..' . '/topthink/think-factory/src',
-            4 => __DIR__ . '/..' . '/topthink/think-image/src',
-            5 => __DIR__ . '/..' . '/topthink/think-log/src',
-            6 => __DIR__ . '/..' . '/topthink/think-orm/src',
-            7 => __DIR__ . '/..' . '/topthink/think-queue/src',
-            8 => __DIR__ . '/..' . '/topthink/think-template/src',
+            4 => __DIR__ . '/..' . '/topthink/think-helper/src',
+            5 => __DIR__ . '/..' . '/topthink/think-image/src',
+            6 => __DIR__ . '/..' . '/topthink/think-log/src',
+            7 => __DIR__ . '/..' . '/topthink/think-orm/src',
+            8 => __DIR__ . '/..' . '/topthink/think-queue/src',
+            9 => __DIR__ . '/..' . '/topthink/think-template/src',
         ),
         'dh2y\\qrcode\\' => 
         array (

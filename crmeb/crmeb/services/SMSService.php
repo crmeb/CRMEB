@@ -1,4 +1,5 @@
 <?php
+
 namespace crmeb\services;
 
 /**
@@ -23,25 +24,25 @@ class SMSService
     //短信支付回调地址
     private static $payNotify;
     //验证码
-    const VERIFICATION_CODE         = 518076;
+    const VERIFICATION_CODE = 518076;
     //支付成功
-    const PAY_SUCCESS_CODE          = 520268;
+    const PAY_SUCCESS_CODE = 520268;
     //发货提醒
-    const DELIVER_GOODS_CODE        = 520269;
+    const DELIVER_GOODS_CODE = 520269;
     //确认收货提醒
-    const TAKE_DELIVERY_CODE        = 520271;
+    const TAKE_DELIVERY_CODE = 520271;
     //管理员下单提醒
-    const ADMIN_PLACE_ORDER_CODE    = 520272;
+    const ADMIN_PLACE_ORDER_CODE = 520272;
     //管理员退货提醒
-    const ADMIN_RETURN_GOODS_CODE   = 520274;
+    const ADMIN_RETURN_GOODS_CODE = 520274;
     //管理员支付成功提醒
-    const ADMIN_PAY_SUCCESS_CODE    = 520273;
+    const ADMIN_PAY_SUCCESS_CODE = 520273;
     //管理员确认收货
-    const ADMIN_TAKE_DELIVERY_CODE  = 520422;
+    const ADMIN_TAKE_DELIVERY_CODE = 520422;
 
     public function __construct()
     {
-        self::$status = strlen(SystemConfigService::get('sms_account')) != 0 ?? false && strlen(SystemConfigService::get('sms_token')) != 0  ?? false;
+        self::$status = strlen(sysConfig('sms_account')) != 0 ?? false && strlen(sysConfig('sms_token')) != 0 ?? false;
     }
 
     public static function getConstants($code = '')
@@ -53,20 +54,20 @@ class SMSService
     }
 
     private static function auto()
-   {
-       self::$SMSAccount = SystemConfigService::get('sms_account');
-       self::$SMSToken = md5(self::$SMSAccount.md5(SystemConfigService::get('sms_token')));
-       self::$payNotify = SystemConfigService::get('site_url').'/api/sms/pay/notify';
-   }
+    {
+        self::$SMSAccount = sysConfig('sms_account');
+        self::$SMSToken = md5(self::$SMSAccount . md5(sysConfig('sms_token')));
+        self::$payNotify = sysConfig('site_url') . '/api/sms/pay/notify';
+    }
 
     /**
      * 验证码接口
      * @return string
      */
-   public static function code()
-   {
-       return self::$SMSUrl.'sms/captcha';
-   }
+    public static function code()
+    {
+        return self::$SMSUrl . 'sms/captcha';
+    }
 
 
     /**
@@ -79,30 +80,30 @@ class SMSService
      * @param $sign
      * @return mixed
      */
-   public static function register($account, $password, $url, $phone, $code, $sign)
-   {
-       self::auto();
-       $data['account'] = $account;
-       $data['password'] = $password;
-       $data['url'] = $url;
-       $data['phone'] = $phone;
-       $data['sign'] = $sign;
-       $data['code'] = $code;
-       return json_decode(HttpService::postRequest(self::$SMSUrl.'sms/register', $data), true);
-   }
+    public static function register($account, $password, $url, $phone, $code, $sign)
+    {
+        self::auto();
+        $data['account'] = $account;
+        $data['password'] = $password;
+        $data['url'] = $url;
+        $data['phone'] = $phone;
+        $data['sign'] = $sign;
+        $data['code'] = $code;
+        return json_decode(HttpService::postRequest(self::$SMSUrl . 'sms/register', $data), true);
+    }
 
     /**
      * 公共短信模板列表
      * @param array $data
      * @return mixed
      */
-   public static function publictemp(array  $data)
-   {
-       self::auto();
-       $data['account'] = self::$SMSAccount;
-       $data['token'] = self::$SMSToken;
-       return json_decode(HttpService::postRequest(self::$SMSUrl.'sms/publictemp', $data), true);
-   }
+    public static function publictemp(array $data)
+    {
+        self::auto();
+        $data['account'] = self::$SMSAccount;
+        $data['token'] = self::$SMSToken;
+        return json_decode(HttpService::postRequest(self::$SMSUrl . 'sms/publictemp', $data), true);
+    }
 
     /**
      * 公共短信模板添加
@@ -110,15 +111,15 @@ class SMSService
      * @param $tempId
      * @return mixed
      */
-   public static function use($id, $tempId)
-   {
-       self::auto();
-       $data['account'] = self::$SMSAccount;
-       $data['token'] = self::$SMSToken;
-       $data['id'] = $id;
-       $data['tempId'] = $tempId;
-       return json_decode(HttpService::postRequest(self::$SMSUrl.'sms/use', $data), true);
-   }
+    public static function use($id, $tempId)
+    {
+        self::auto();
+        $data['account'] = self::$SMSAccount;
+        $data['token'] = self::$SMSToken;
+        $data['id'] = $id;
+        $data['tempId'] = $tempId;
+        return json_decode(HttpService::postRequest(self::$SMSUrl . 'sms/use', $data), true);
+    }
 
     /**
      * 发送短信
@@ -127,28 +128,28 @@ class SMSService
      * @param $param
      * @return bool|string
      */
-   public static function send($phone, $template, array  $param)
-   {
-       self::auto();
-       $data['uid'] = self::$SMSAccount;
-       $data['token'] = self::$SMSToken;
-       $data['mobile'] = $phone;
-       $data['template'] = $template;
-       $data['param'] = json_encode($param);
-       return json_decode(HttpService::postRequest(self::$SMSUrl.'sms/send', $data), true);
-   }
+    public static function send($phone, $template, array $param)
+    {
+        self::auto();
+        $data['uid'] = self::$SMSAccount;
+        $data['token'] = self::$SMSToken;
+        $data['mobile'] = $phone;
+        $data['template'] = $template;
+        $data['param'] = json_encode($param);
+        return json_decode(HttpService::postRequest(self::$SMSUrl . 'sms/send', $data), true);
+    }
 
     /**
      * 账号信息
      * @return mixed
      */
-   public static function count()
-   {
-       self::auto();
-       $data['account'] = self::$SMSAccount;
-       $data['token'] = self::$SMSToken;
-       return json_decode(HttpService::postRequest(self::$SMSUrl.'sms/userinfo', $data), true);
-   }
+    public static function count()
+    {
+        self::auto();
+        $data['account'] = self::$SMSAccount;
+        $data['token'] = self::$SMSToken;
+        return json_decode(HttpService::postRequest(self::$SMSUrl . 'sms/userinfo', $data), true);
+    }
 
     /**
      * 支付套餐
@@ -156,12 +157,12 @@ class SMSService
      * @param $limit
      * @return mixed
      */
-   public static function meal($page, $limit)
-   {
-       $data['page'] = $page;
-       $data['limit'] = $limit;
-       return json_decode(HttpService::getRequest(self::$SMSUrl.'sms/meal', $data), true);
-   }
+    public static function meal($page, $limit)
+    {
+        $data['page'] = $page;
+        $data['limit'] = $limit;
+        return json_decode(HttpService::getRequest(self::$SMSUrl . 'sms/meal', $data), true);
+    }
 
     /**
      * 支付码
@@ -171,18 +172,18 @@ class SMSService
      * @param $attach
      * @return mixed
      */
-   public static function pay($payType, $mealId, $price, $attach)
-   {
-       self::auto();
-       $data['uid'] = self::$SMSAccount;
-       $data['token'] = self::$SMSToken;
-       $data['payType'] = $payType;
-       $data['mealId'] = $mealId;
-       $data['notify'] = self::$payNotify;
-       $data['price'] = $price;
-       $data['attach'] = $attach;
-       return json_decode(HttpService::postRequest(self::$SMSUrl.'sms/mealpay', $data), true);
-   }
+    public static function pay($payType, $mealId, $price, $attach)
+    {
+        self::auto();
+        $data['uid'] = self::$SMSAccount;
+        $data['token'] = self::$SMSToken;
+        $data['payType'] = $payType;
+        $data['mealId'] = $mealId;
+        $data['notify'] = self::$payNotify;
+        $data['price'] = $price;
+        $data['attach'] = $attach;
+        return json_decode(HttpService::postRequest(self::$SMSUrl . 'sms/mealpay', $data), true);
+    }
 
     /**
      * 申请模板消息
@@ -191,27 +192,27 @@ class SMSService
      * @param $type
      * @return mixed
      */
-   public static function apply($title, $content, $type)
-   {
-       self::auto();
-       $data['account'] = self::$SMSAccount;
-       $data['token'] = self::$SMSToken;
-       $data['title'] = $title;
-       $data['content'] = $content;
-       $data['type'] = $type;
-       return json_decode(HttpService::postRequest(self::$SMSUrl.'sms/apply', $data), true);
-   }
+    public static function apply($title, $content, $type)
+    {
+        self::auto();
+        $data['account'] = self::$SMSAccount;
+        $data['token'] = self::$SMSToken;
+        $data['title'] = $title;
+        $data['content'] = $content;
+        $data['type'] = $type;
+        return json_decode(HttpService::postRequest(self::$SMSUrl . 'sms/apply', $data), true);
+    }
 
     /**
      * 短信模板列表
      * @param $data
      * @return mixed
      */
-   public static function template($data)
-   {
-       self::auto();
-       $data['account'] = self::$SMSAccount;
-       $data['token'] = self::$SMSToken;
-       return json_decode(HttpService::postRequest(self::$SMSUrl.'sms/template', $data), true);
-   }
+    public static function template($data)
+    {
+        self::auto();
+        $data['account'] = self::$SMSAccount;
+        $data['token'] = self::$SMSToken;
+        return json_decode(HttpService::postRequest(self::$SMSUrl . 'sms/template', $data), true);
+    }
 }

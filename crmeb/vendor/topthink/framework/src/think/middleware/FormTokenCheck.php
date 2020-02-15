@@ -31,7 +31,7 @@ class FormTokenCheck
      * @param string  $token 表单令牌Token名称
      * @return Response
      */
-    public function handle(Request $request, Closure $next, string $token = '')
+    public function handle(Request $request, Closure $next, string $token = null)
     {
         $check = $request->checkToken($token ?: '__token__');
 

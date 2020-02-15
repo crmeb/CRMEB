@@ -27,13 +27,14 @@ class FormBuilder extends Form
      * str 自定义
      * @return $this
      */
-    public static function make_post_form($title,array $field,$url,$jscallback = 2){
+    public static function make_post_form($title, array $field, $url, $jscallback = 2)
+    {
         $form = Form::create($url);//提交地址
         $form->setMethod('POST');//提交方式
         $form->components($field);//表单字段
         $form->setTitle($title);//表单标题
         $js = '';//提交成功不执行任何动作
-        switch ($jscallback){
+        switch ($jscallback) {
             case 1:
                 $js = 'parent.$(".J_iframe:visible")[0].contentWindow.location.reload();';//提交成功父级页面刷新
                 break;
@@ -41,19 +42,19 @@ class FormBuilder extends Form
                 $js = 'parent.$(".J_iframe:visible")[0].contentWindow.location.reload(); setTimeout(function(){parent.layer.close(parent.layer.getFrameIndex(window.name));},2000);';//提交成功父级页面刷新并关闭当前页面
                 break;
             case 3:
-                $js = 'parent.$(".J_iframe:visible")[0].contentWindow.location.reload();$r.btn.disabled(false);$f.btn.loading(false)();';//提交成功父级页面刷新继续添加
+                $js = 'parent.$(".J_iframe:visible")[0].contentWindow.location.reload();$r.btn.disabled(false);$r.btn.loading(false)();';//提交成功父级页面刷新继续添加
                 break;
             case 4:
-                $js = '$r.btn.disabled(false);$f.btn.loading(false)();';//提交成功不能再提交
+                $js = '$r.btn.disabled(false);$r.btn.loading(false)();';//提交成功不能再提交
                 break;
             case 5:
-                $js = '$r.btn.disabled(false);$f.btn.loading(false)();setTimeout(function(){parent.layer.close(parent.layer.getFrameIndex(window.name));},2000);';//父级不刷新 不能再提交 关闭弹窗
+                $js = '$r.btn.disabled(false);$r.btn.loading(false)();setTimeout(function(){parent.layer.close(parent.layer.getFrameIndex(window.name));},2000);';//父级不刷新 不能再提交 关闭弹窗
                 break;
             case 6:
                 $js = 'setTimeout(function(){window.location.reload(),2000});';//父级不刷新 当前窗口刷新
                 break;
             case 7:
-                $js = 'parent.$(".J_iframe:visible")[0].contentWindow.location.reload();$r.btn.disabled(false);$f.btn.loading(false)();';//父级刷新 提交成功不能再提交
+                $js = 'console.log($r.btn);parent.$(".J_iframe:visible")[0].contentWindow.location.reload();$r.btn.disabled(false);$r.btn.loading(false)();';//父级刷新 提交成功不能再提交
                 break;
             default:
                 $js = $jscallback;

@@ -258,7 +258,8 @@ switch ($step) {
                     if ($ret) {
                         $message = '<li><span class="correct_span">&radic;</span>创建数据表['.$dbPrefix.$matches[2] . ']完成!<span style="float: right;">'.date('Y-m-d H:i:s').'</span></li> ';
                     } else {
-                        $message = '<li><span class="correct_span error_span">&radic;</span>创建数据表['.$dbPrefix.$matches[2] . ']失败!<span style="float: right;">'.date('Y-m-d H:i:s').'</span></li>';
+                        $err = mysqli_error($conn);
+                        $message = '<li><span class="correct_span error_span">&radic;</span>创建数据表['.$dbPrefix.$matches[2] . ']失败!失败原因：'.$err.'<span style="float: right;">'.date('Y-m-d H:i:s').'</span></li>';
                     }
                     $i++;
                     $arr = array('n' => $i, 'msg' => $message);

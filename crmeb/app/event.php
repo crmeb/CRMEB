@@ -21,13 +21,13 @@ return [
         'HttpEnd'  => [],
         'LogLevel' => [],
         'LogWrite' => [],
-        'task_2'=>[],//2秒钟执行的方法
-        'task_6'=>[],//6秒钟执行的方法
-        'task_10'=>[],//10秒钟执行的方法
-        'task_30'=>[],//30秒钟执行的方法
-        'task_60'=>[],//60秒钟执行的方法
-        'task_180'=>[],//180秒钟执行的方法
-        'task_300'=>[],//300秒钟执行的方法
+        'Task_2'=>[],//2秒钟执行的方法
+        'Task_6'=>[],//6秒钟执行的方法
+        'Task_10'=>[],//10秒钟执行的方法
+        'Task_30'=>[],//30秒钟执行的方法
+        'Task_60'=>[],//60秒钟执行的方法
+        'Task_180'=>[],//180秒钟执行的方法
+        'Task_300'=>[],//300秒钟执行的方法
         'StoreProductOrderDeliveryAfter' => [], // OrderSubscribe 送货 发送模板消息 admin模块 order.StoreOrder控制器/order.combinationOrder控制器
         'StoreProductOrderDeliveryGoodsAfter' => [], // OrderSubscribe 发货 发送模板消息 admin模块 order.StoreOrder控制器/order.combinationOrder控制器
         'StoreProductOrderRefundNAfter' => [], // OrderSubscribe 订单状态不退款 发送模板消息 admin模块 order.StoreOrder控制器/order.combinationOrder控制器
@@ -55,7 +55,8 @@ return [
         'UserCommented' => [], //用户评价商品
         'RechargeSuccess' => [], //用户充值成功后
         'ImportNowMoney' => [], //用户佣金转成余额成功后
-        'ShortMssageSend'=>[],//MessageSubscribe 下发短信
+        'ShortMssageSend' =>[],//MessageSubscribe 下发短信
+        'AdminNewPush' => [],//MessageSubscribe 下单，评论，支付成功，后台消息提醒
     ],
 
     'subscribe' => [

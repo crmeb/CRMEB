@@ -51,7 +51,7 @@
                         <input type='checkbox' name='id' disabled lay-skin='switch' value="{{d.id}}" lay-filter='is_forever' lay-text='永久|非永久'  {{ d.is_forever == 1 ? 'checked' : '' }}>
                     </script>
                     <script type="text/html" id="is_show">
-                        <input type='checkbox' name='id' lay-skin='switch' value="{{d.id}}" lay-filter='is_show' lay-text='显示|隐藏'  {{ d.is_show == 1 ? 'checked' : '' }}>
+                        <input type='checkbox' name='id' lay-skin='switch' value="{{d.id}}" lay-filter='is_show' lay-text='开启|关闭'  {{ d.is_show == 1 ? 'checked' : '' }}>
                     </script>
                     <script type="text/html" id="is_pay">
                         <input type='checkbox' name='id' disabled lay-skin='switch' value="{{d.id}}" lay-filter='is_pay' lay-text='付费|免费'  {{ d.is_pay == 1 ? 'checked' : '' }}>
@@ -94,11 +94,10 @@
             {field: 'icon', title: '等级图标',templet:'#icon',align:"center",width:'10%'},
             {field: 'name', title: '等级名称',edit:'name',width:'6%',align:"center"},
             {field: 'grade', title: '等级',edit:'grade',width:'6%',align:"center"},
-            {field: 'discount', title: '享受折扣',edit:'discount',width:'6%',align:"center"},
+            {field: 'discount', title: '享受折扣',edit:'discount',width:'8%',align:"center"},
             {field: 'valid_date', title: '有效时间',width:'12%',align:"center"},
-            {field: 'is_forever', title: '是否永久',templet:'#is_forever',width:'6%',align:"center"},
-            {field: 'is_pay', title: '是否付费',templet:'#is_pay',width:'8%',align:"center"},
-            {field: 'is_show', title: '是否显示',templet:'#is_show',width:'6%',align:"center"},
+            {field: 'is_forever', title: '是否永久',templet:'#is_forever',width:'8%',align:"center"},
+            {field: 'is_show', title: '是否使用',templet:'#is_show',width:'8%',align:"center"},
             {field: 'explain', title: '等级说明',align:"center"},
             {field: 'right', title: '操作',align:'center',toolbar:'#act',width:'8%'},
         ];

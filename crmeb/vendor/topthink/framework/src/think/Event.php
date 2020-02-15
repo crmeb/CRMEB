@@ -12,6 +12,9 @@ declare (strict_types = 1);
 
 namespace think;
 
+use ReflectionClass;
+use ReflectionMethod;
+
 /**
  * 事件管理类
  * @package think
@@ -25,21 +28,15 @@ class Event
     protected $listener = [];
 
     /**
-     * 观察者
-     * @var array
-     */
-    protected $observer = [];
-
-    /**
      * 事件别名
      * @var array
      */
     protected $bind = [
-        'AppInit'  => event\AppInit::class,
-        'HttpRun'  => event\HttpRun::class,
-        'HttpEnd'  => event\HttpEnd::class,
-        'LogLevel' => event\LogLevel::class,
-        'LogWrite' => event\LogWrite::class,
+        'AppInit'     => event\AppInit::class,
+        'HttpRun'     => event\HttpRun::class,
+        'HttpEnd'     => event\HttpEnd::class,
+        'RouteLoaded' => event\RouteLoaded::class,
+        'LogWrite'    => event\LogWrite::class,
     ];
 
     /**
@@ -62,7 +59,7 @@ class Event
     /**
      * 设置是否开启事件响应
      * @access protected
-     * @param  bool $event 是否需要事件响应
+     * @param bool $event 是否需要事件响应
      * @return $this
      */
     public function withEvent(bool $event)
@@ -74,7 +71,7 @@ class Event
     /**
      * 批量注册事件监听
      * @access public
-     * @param  array $events 事件定义
+     * @param array $events 事件定义
      * @return $this
      */
     public function listenEvents(array $events)
@@ -97,9 +94,9 @@ class Event
     /**
      * 注册事件监听
      * @access public
-     * @param  string $event    事件名称
-     * @param  mixed  $listener 监听操作（或者类名）
-     * @param  bool   $first    是否优先执行
+     * @param string $event    事件名称
+     * @param mixed  $listener 监听操作（或者类名）
+     * @param bool   $first    是否优先执行
      * @return $this
      */
     public function listen(string $event, $listener, bool $first = false)
@@ -124,10 +121,10 @@ class Event
     /**
      * 是否存在事件监听
      * @access public
-     * @param  string $event 事件名称
+     * @param string $event 事件名称
      * @return bool
      */
-    public function hasListen(string $event): bool
+    public function hasListener(string $event): bool
     {
         if (isset($this->bind[$event])) {
             $event = $this->bind[$event];
@@ -139,8 +136,8 @@ class Event
     /**
      * 移除事件监听
      * @access public
-     * @param  string $event 事件名称
-     * @return $this
+     * @param string $event 事件名称
+     * @return void
      */
     public function remove(string $event): void
     {
@@ -154,7 +151,7 @@ class Event
     /**
      * 指定事件别名标识 便于调用
      * @access public
-     * @param  array $events 事件别名
+     * @param array $events 事件别名
      * @return $this
      */
     public function bind(array $events)
@@ -167,7 +164,7 @@ class Event
     /**
      * 注册事件订阅者
      * @access public
-     * @param  mixed $subscriber 订阅者
+     * @param mixed $subscriber 订阅者
      * @return $this
      */
     public function subscribe($subscriber)
@@ -198,10 +195,11 @@ class Event
     /**
      * 自动注册事件观察者
      * @access public
-     * @param  string|object $observer 观察者
+     * @param string|object $observer 观察者
+     * @param null|string   $prefix   事件名前缀
      * @return $this
      */
-    public function observe($observer)
+    public function observe($observer, string $prefix = '')
     {
         if (!$this->withEvent) {
             return $this;
@@ -211,14 +209,19 @@ class Event
             $observer = $this->app->make($observer);
         }
 
-        $events = array_keys($this->listener);
+        $reflect = new ReflectionClass($observer);
+        $methods = $reflect->getMethods(ReflectionMethod::IS_PUBLIC);
 
-        foreach ($events as $event) {
-            $name   = false !== strpos($event, '\\') ? substr(strrchr($event, '\\'), 1) : $event;
-            $method = 'on' . $name;
+        if (empty($prefix) && $reflect->hasProperty('eventPrefix')) {
+            $reflectProperty = $reflect->getProperty('eventPrefix');
+            $reflectProperty->setAccessible(true);
+            $prefix = $reflectProperty->getValue($observer);
+        }
 
-            if (method_exists($observer, $method)) {
-                $this->listen($event, [$observer, $method]);
+        foreach ($methods as $method) {
+            $name = $method->getName();
+            if (0 === strpos($name, 'on')) {
+                $this->listen($prefix . substr($name, 2), [$observer, $name]);
             }
         }
 
@@ -228,9 +231,9 @@ class Event
     /**
      * 触发事件
      * @access public
-     * @param  string|object $event  事件名称
-     * @param  mixed         $params 传入参数
-     * @param  bool          $once   只获取一个有效返回值
+     * @param string|object $event  事件名称
+     * @param mixed         $params 传入参数
+     * @param bool          $once   只获取一个有效返回值
      * @return mixed
      */
     public function trigger($event, $params = null, bool $once = false)
@@ -263,10 +266,21 @@ class Event
     }
 
     /**
+     * 触发事件(只获取一个有效返回值)
+     * @param      $event
+     * @param null $params
+     * @return mixed
+     */
+    public function until($event, $params = null)
+    {
+        return $this->trigger($event, $params, true);
+    }
+
+    /**
      * 执行事件调度
      * @access protected
-     * @param  mixed $event  事件方法
-     * @param  mixed $params 参数
+     * @param mixed $event  事件方法
+     * @param mixed $params 参数
      * @return mixed
      */
     protected function dispatch($event, $params = null)

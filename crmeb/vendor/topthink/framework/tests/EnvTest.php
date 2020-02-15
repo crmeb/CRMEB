@@ -70,4 +70,13 @@ class EnvTest extends TestCase
 
         unset($env['key5']);
     }
+
+    public function testHasEnv()
+    {
+        $env = new Env();
+        $env->set(['foo' => 'bar']);
+        $this->assertTrue($env->has('foo'));
+        $this->assertTrue(isset($env->foo));
+        $this->assertTrue($env->offsetExists('foo'));
+    }
 }

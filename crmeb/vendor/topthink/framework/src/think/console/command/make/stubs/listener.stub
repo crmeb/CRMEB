@@ -1,10 +1,17 @@
 <?php
+declare (strict_types = 1);
 
 namespace {%namespace%};
 
 class {%className%}
 {
+    /**
+     * 事件监听处理
+     *
+     * @return mixed
+     */
     public function handle($event)
     {
+        //
     }    
 }

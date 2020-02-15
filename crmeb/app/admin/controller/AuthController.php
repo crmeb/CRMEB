@@ -37,11 +37,11 @@ class AuthController extends SystemBasic
     protected function initialize()
     {
         parent::initialize();
-        if(!SystemAdmin::hasActiveAdmin()) return $this->redirect('Login/index');
+        if(!SystemAdmin::hasActiveAdmin()) return $this->redirect(Url::buildUrl('login/index')->suffix(false)->build());
         try{
             $adminInfo = SystemAdmin::activeAdminInfoOrFail();
         }catch (\Exception $e){
-            return $this->failed(SystemAdmin::getErrorInfo($e->getMessage()),Url::buildUrl('Login/index'));
+            return $this->failed(SystemAdmin::getErrorInfo($e->getMessage()),Url::buildUrl('login/index')->suffix(false)->build());
         }
         $this->adminInfo = $adminInfo;
         $this->adminId = $adminInfo['id'];
@@ -58,7 +58,7 @@ class AuthController extends SystemBasic
     {
         static $allAuth = null;
         if($allAuth === null) $allAuth = SystemRole::getAllAuth();
-        if($module === null) $module = $this->request->app();
+        if($module === null) $module = app('http')->getName();
         if($controller === null) $controller = $this->request->controller();
         if($action === null) $action = $this->request->action();
         if(!count($route)) $route = $this->request->route();

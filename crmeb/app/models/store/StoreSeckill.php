@@ -169,11 +169,11 @@ class StoreSeckill extends BaseModel
      * @return bool
      */
     public static function incSeckillStock($num = 0,$seckillId = 0){
-        $seckill=self::where('id',$seckillId)->field(['stock','sales'])->find();
+        $seckill = self::where('id',$seckillId)->field(['stock','sales'])->find();
         if(!$seckill) return true;
-        if($seckill->sales > 0) $seckill->sales=bcsub($seckill->sales,$num,0);
-        if($seckill->sales < 0) $seckill->sales=0;
-        $seckill->stock=bcadd($seckill->stock,$num,0);
+        if($seckill->sales > 0) $seckill->sales = bcsub($seckill->sales,$num,0);
+        if($seckill->sales < 0) $seckill->sales = 0;
+        $seckill->stock = bcadd($seckill->stock,$num,0);
         return $seckill->save();
     }
 }

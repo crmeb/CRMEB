@@ -5,7 +5,7 @@ namespace app\admin\controller\system;
 use app\admin\controller\AuthController;
 use crmeb\services\JsonService as Json;
 use \crmeb\services\MysqlBackupService as Backup;
-use think\facade\Env;
+use think\facade\Config;
 use think\facade\Session;
 use think\facade\Db;
 
@@ -32,6 +32,7 @@ class SystemDatabackup extends AuthController
             'level' => 5,
         );
         $this->DB = new Backup($config);
+        $this->request->filter(['htmlspecialchars', 'strip_tags', 'addslashes', 'trim']);
     }
 
     /**
@@ -56,7 +57,7 @@ class SystemDatabackup extends AuthController
      */
     public function seetable()
     {
-        $database = Env::get("database.database");
+        $database = Config::get("database.database");
         $tablename = request()->param('tablename');
         $res = Db::query("select * from information_schema.columns where table_name = '" . $tablename . "' and table_schema = '" . $database . "'");
         $html = '';

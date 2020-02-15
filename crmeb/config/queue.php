@@ -10,7 +10,7 @@
 // +----------------------------------------------------------------------
 
 return [
-    'default'     => 'redis',
+    'default'     => 'sync',
     'connections' => [
         'sync'     => [
             'driver' => 'sync',

@@ -36,8 +36,8 @@ class UserLevel extends AuthController
         if($id) $vipinfo=SystemUserLevel::get($id);
         $field[]= Form::input('name','等级名称',isset($vipinfo) ? $vipinfo->name : '')->col(Form::col(24));
         $field[]= Form::radio('is_forever','是否为永久',isset($vipinfo) ? $vipinfo->is_forever : 0)->options([['label'=>'永久','value'=>1],['label'=>'非永久','value'=>0]])->col(24);
-        $field[]= Form::number('money','等级价格',isset($vipinfo) ? $vipinfo->money : 0)->min(0)->col(24);
-        $field[]= Form::radio('is_pay','是否需要购买',isset($vipinfo) ? $vipinfo->is_pay : 0)->options([['label'=>'需要','value'=>1],['label'=>'免费','value'=>0]])->col(24);
+        //$field[]= Form::number('money','等级价格',isset($vipinfo) ? $vipinfo->money : 0)->min(0)->col(24);
+        //$field[]= Form::radio('is_pay','是否需要购买',isset($vipinfo) ? $vipinfo->is_pay : 0)->options([['label'=>'需要','value'=>1],['label'=>'免费','value'=>0]])->col(24);
         $field[]= Form::number('valid_date','有效时间(天)',isset($vipinfo) ? $vipinfo->valid_date : 0)->min(0)->col(8);
         $field[]= Form::number('grade','等级',isset($vipinfo) ? $vipinfo->grade : 0)->min(0)->col(8);
         $field[]= Form::number('discount','享受折扣',isset($vipinfo) ? $vipinfo->discount : 0)->min(0)->col(8);

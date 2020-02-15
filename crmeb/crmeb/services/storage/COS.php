@@ -1,4 +1,5 @@
 <?php
+
 namespace crmeb\services\storage;
 
 use crmeb\services\SystemConfigService;
@@ -32,34 +33,35 @@ class COS
      * @return null|Client
      * @throws \Exception
      */
-    protected static function autoInfo(){
-        if(($storageRegion = Cache::get('storageRegion')) && ($storageName = Cache::get('storageName')) && ($uploadUrl = Cache::get('uploadUrl')) && ($accessKey = Cache::get('accessKey')) && ($secretKey = Cache::get('secretKey'))){
+    protected static function autoInfo()
+    {
+        if (($storageRegion = Cache::get('storageRegion')) && ($storageName = Cache::get('storageName')) && ($uploadUrl = Cache::get('uploadUrl')) && ($accessKey = Cache::get('accessKey')) && ($secretKey = Cache::get('secretKey'))) {
             self::$accessKey = $accessKey;
             self::$secretKey = $secretKey;
             self::$uploadUrl = $uploadUrl;
             self::$storageName = $storageName;
             self::$storageRegion = $storageRegion;
-        }else{
-            self::$accessKey = trim(SystemConfigService::get('accessKey'));
-            self::$secretKey = trim(SystemConfigService::get('secretKey'));
-            self::$uploadUrl = trim(SystemConfigService::get('uploadUrl')).'/';
-            self::$storageName = trim(SystemConfigService::get('storage_name'));
-            self::$storageRegion = trim(SystemConfigService::get('storage_region'));
-            Cache::set('accessKey',self::$accessKey);
-            Cache::set('secretKey',self::$secretKey);
-            Cache::set('uploadUrl',self::$uploadUrl);
-            Cache::set('storageName',self::$storageName);
-            Cache::set('storageRegion',self::$storageRegion);
+        } else {
+            self::$accessKey = trim(sysConfig('accessKey'));
+            self::$secretKey = trim(sysConfig('secretKey'));
+            self::$uploadUrl = trim(sysConfig('uploadUrl')) . '/';
+            self::$storageName = trim(sysConfig('storage_name'));
+            self::$storageRegion = trim(sysConfig('storage_region'));
+            Cache::set('accessKey', self::$accessKey);
+            Cache::set('secretKey', self::$secretKey);
+            Cache::set('uploadUrl', self::$uploadUrl);
+            Cache::set('storageName', self::$storageName);
+            Cache::set('storageRegion', self::$storageRegion);
         }
-        if(!self::$accessKey || !self::$secretKey || !self::$uploadUrl || !self::$storageName){
+        if (!self::$accessKey || !self::$secretKey || !self::$uploadUrl || !self::$storageName) {
             exception('请设置 secretKey 和 accessKey 和 空间域名 和 存储空间名称');
         }
-        if(self::$auth == null) {
+        if (self::$auth == null) {
             self::$auth = new Client([
-                'region'=>self::$storageRegion,
-                'credentials'=>[
-                    'secretId'=>self::$accessKey,
-                    'secretKey'=>self::$secretKey,
+                'region' => self::$storageRegion,
+                'credentials' => [
+                    'secretId' => self::$accessKey,
+                    'secretKey' => self::$secretKey,
                 ]
             ]);
         }
@@ -71,21 +73,22 @@ class COS
      * @param string $filename
      * @return string
      */
-    public static function uploadImage($filename = 'image'){
+    public static function uploadImage($filename = 'image')
+    {
         $request = app('request');
         $file = $request->file($filename);
         $filePath = $file->getRealPath();
         $ext = $file->getOriginalExtension();
-        $key = substr(md5($file->getRealPath()) , 0, 5). date('YmdHis') . rand(0, 9999) . '.' . $ext;
+        $key = substr(md5($file->getRealPath()), 0, 5) . date('YmdHis') . rand(0, 9999) . '.' . $ext;
         try {
             self::autoInfo();
-            return [self::$uploadUrl.$key,self::$auth->putObject([
+            return [self::$uploadUrl . $key, self::$auth->putObject([
                 'Bucket' => self::$storageName,
                 'Key' => $key,
                 'Body' => fopen($filePath, 'rb')
             ])];
         } catch (\Exception $e) {
-            return [false,$e->getMessage()];
+            return [false, $e->getMessage()];
         }
     }
 
@@ -95,16 +98,17 @@ class COS
      * @param $content
      * @return string
      */
-    public static function uploadImageStream($key, $content){
+    public static function uploadImageStream($key, $content)
+    {
         try {
             self::autoInfo();
-            return [self::$uploadUrl.$key,self::$auth->putObject([
+            return [self::$uploadUrl . $key, self::$auth->putObject([
                 'Bucket' => self::$storageName,
                 'Key' => $key,
                 'Body' => $content
             ])];
         } catch (\Exception $e) {
-            return [false,$e->getMessage()];
+            return [false, $e->getMessage()];
         }
     }
 
@@ -113,7 +117,8 @@ class COS
      * @param $key
      * @return mixed
      */
-    public static function delete($key){
+    public static function delete($key)
+    {
         try {
             self::autoInfo();
             return self::$auth->deleteObject([

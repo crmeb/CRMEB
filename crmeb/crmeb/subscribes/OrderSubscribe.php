@@ -7,8 +7,13 @@
 
 namespace crmeb\subscribes;
 
+use think\Event;
 use app\admin\model\order\StoreOrder as AdminStoreOrder;
 use app\models\store\StoreOrder;
+use app\models\user\User;
+use crmeb\repositories\NoticeRepositories;
+use crmeb\services\workerman\ChannelService;
+
 use app\models\store\StoreOrderCartInfo;
 use crmeb\services\SystemConfigService;
 use crmeb\services\YLYService;
@@ -36,8 +41,8 @@ class OrderSubscribe
      */
     public function onStoreProductOrderDeliveryAfter($event)
     {
-        list($data,$oid) = $event;
-        AdminStoreOrder::orderPostageAfter($oid,$data);
+        list($data, $oid) = $event;
+        AdminStoreOrder::orderPostageAfter($oid, $data);
     }
 
     /**
@@ -49,8 +54,8 @@ class OrderSubscribe
      */
     public function onStoreProductOrderDeliveryGoodsAfter($event)
     {
-        list($data,$oid) = $event;
-        AdminStoreOrder::orderPostageAfter($oid,$data);
+        list($data, $oid) = $event;
+        AdminStoreOrder::orderPostageAfter($oid, $data);
     }
 
     /**
@@ -59,8 +64,8 @@ class OrderSubscribe
      */
     public function onStoreProductOrderRefundNAfter($event)
     {
-        list($data,$id) = $event;
-        AdminStoreOrder::refundNoPrieTemplate($id,$data);
+        list($data, $id) = $event;
+        AdminStoreOrder::refundNoPrieTemplate($id, $data);
     }
 
     /**
@@ -79,7 +84,7 @@ class OrderSubscribe
      */
     public function onStoreProductOrderEditAfter($event)
     {
-        list($data,$id) = $event;
+        list($data, $id) = $event;
         //$data  total_price 商品总价   pay_price 实际支付
         //订单编号  $id
     }
@@ -90,7 +95,7 @@ class OrderSubscribe
      */
     public function onStoreProductOrderDistributionAfter($event)
     {
-        list($data,$id) = $event;
+        list($data, $id) = $event;
         //$data   送货人姓名/快递公司   送货人电话/快递单号
         //订单编号  $id
     }
@@ -108,7 +113,7 @@ class OrderSubscribe
      * 回退所有  未支付和已退款的状态下才可以退积分退库存退优惠券
      * @param $event
      */
-    public  function onStoreOrderRegressionAllAfter($event)
+    public function onStoreOrderRegressionAllAfter($event)
     {
         list($order) = $event;
         StoreOrder::RegressionStock($order) && StoreOrder::RegressionIntegral($order) && StoreOrder::RegressionCoupon($order);
@@ -120,28 +125,18 @@ class OrderSubscribe
      */
     public function onOrderPaySuccess($event)
     {
-        list($order) = $event;
-        $switch = SystemConfigService::get('pay_success_printing_switch') ? true : false ;
-        //打印小票
-        if($switch){
-            try{
-                $order['cart_id'] = is_string($order['cart_id']) ? json_decode($order['cart_id'],true) : $order['cart_id'];
-                $cartInfo = StoreOrderCartInfo::whereIn('cart_id',$order['cart_id'])->field('cart_info')->select();
-                $cartInfo = count($cartInfo) ? $cartInfo->toArray() : [];
-                $product  = [];
-                foreach ($cartInfo as $item){
-                    $value = is_string($item['cart_info']) ? json_decode($item['cart_info']) : $item['cart_info'];
-                    $value['productInfo']['store_name'] = $value['productInfo']['store_name'] ?? "";
-                    $value['productInfo']['store_name'] = StoreOrderCartInfo::getSubstrUTf8($value['productInfo']['store_name'],10,'UTF-8','');
-                    $product[] = $value;
-                }
-                $instance = YLYService::getInstance();
-                $siteName = SystemConfigService::get('site_name');
-                $instance->setContent($siteName,is_object($order) ? $order->toArray() : $order,$product)->orderPrinting();
-            }catch (\Exception $e){
-                Log::error('小票打印出现错误,错误原因：'.$e->getMessage());
-            }
+        list($order, $formId) = $event;
+        //更新用户支付订单数量
+        User::bcInc($order['uid'], 'pay_count', 1, 'uid');
+        //发送模版消息、客服消息、短信、小票打印给客户和管理员
+        NoticeRepositories::noticeOrderPaySuccess($order, $formId);
+        //检测会员等级
+        event('UserLevelAfter', [$order['uid']]);
+
+        try {
+            //向后台发送新订单消息
+            ChannelService::instance()->send('NEW_ORDER', ['order_id' => $order['order_id']]);
+        } catch (\Throwable $e) {
         }
     }
-
 }

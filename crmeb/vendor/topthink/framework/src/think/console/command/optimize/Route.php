@@ -21,37 +21,32 @@ class Route extends Command
     protected function configure()
     {
         $this->setName('optimize:route')
-            ->addArgument('app', Argument::OPTIONAL, 'app name.')
+            ->addArgument('dir', Argument::OPTIONAL, 'dir name .')
             ->setDescription('Build app route cache.');
     }
 
     protected function execute(Input $input, Output $output)
     {
-        $app = $input->getArgument('app');
+        $dir = $input->getArgument('dir') ?: '';
 
-        if (empty($app) && !is_dir($this->app->getBasePath() . 'controller')) {
-            $output->writeln('<error>Miss app name!</error>');
-            return false;
-        }
-
-        $path = $this->app->getRootPath() . 'runtime' . DIRECTORY_SEPARATOR . ($app ? $app . DIRECTORY_SEPARATOR : '');
+        $path = $this->app->getRootPath() . 'runtime' . DIRECTORY_SEPARATOR . ($dir ? $dir . DIRECTORY_SEPARATOR : '');
 
         $filename = $path . 'route.php';
         if (is_file($filename)) {
             unlink($filename);
         }
 
-        file_put_contents($filename, $this->buildRouteCache($app));
+        file_put_contents($filename, $this->buildRouteCache($dir));
         $output->writeln('<info>Succeed!</info>');
     }
 
-    protected function buildRouteCache(string $app = null): string
+    protected function buildRouteCache(string $dir = null): string
     {
         $this->app->route->clear();
         $this->app->route->lazy(false);
 
         // 路由检测
-        $path = $this->app->getRootPath() . 'route' . DIRECTORY_SEPARATOR . ($app ? $app . DIRECTORY_SEPARATOR : '');
+        $path = $this->app->getRootPath() . 'route' . DIRECTORY_SEPARATOR . ($dir ? $dir . DIRECTORY_SEPARATOR : '');
 
         $files = is_dir($path) ? scandir($path) : [];
 
@@ -65,7 +60,7 @@ class Route extends Command
         $this->app->event->trigger(RouteLoaded::class);
 
         $content = '<?php ' . PHP_EOL . 'return ';
-        $content .= '\think\App::unserialize(\'' . \think\App::serialize($this->app->route->getName()) . '\');';
+        $content .= '\Opis\Closure\unserialize(\'' . \Opis\Closure\serialize($this->app->route->getName()) . '\');';
         return $content;
     }
 

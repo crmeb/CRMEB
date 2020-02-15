@@ -31,7 +31,7 @@ class RegisterService
 
     public function init(App $app)
     {
-        $file = $app->getRootPath() . 'runtime' . DIRECTORY_SEPARATOR . 'services.php';
+        $file = $app->getRootPath() . 'vendor/services.php';
 
         $services = $this->services;
 

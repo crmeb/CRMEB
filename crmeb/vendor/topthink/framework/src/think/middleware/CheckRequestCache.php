@@ -75,10 +75,11 @@ class CheckRequestCache
                 if (strtotime($request->server('HTTP_IF_MODIFIED_SINCE', '')) + $expire > $request->server('REQUEST_TIME')) {
                     // 读取缓存
                     return Response::create()->code(304);
-                } elseif ($this->cache->has($key)) {
-                    list($content, $header) = $this->cache->get($key);
-
-                    return Response::create($content)->header($header);
+                } elseif (($hit = $this->cache->get($key)) !== null) {
+                    list($content, $header, $when) = $hit;
+                    if ($expire === null || $when + $expire > $request->server('REQUEST_TIME')) {
+                        return Response::create($content)->header($header);
+                    }
                 }
             }
         }
@@ -91,7 +92,7 @@ class CheckRequestCache
             $header['Last-Modified'] = gmdate('D, d M Y H:i:s') . ' GMT';
             $header['Expires']       = gmdate('D, d M Y H:i:s', time() + $expire) . ' GMT';
 
-            $this->cache->tag($tag)->set($key, [$response->getContent(), $header], $expire);
+            $this->cache->tag($tag)->set($key, [$response->getContent(), $header, time()], $expire);
         }
 
         return $response;
@@ -110,6 +111,10 @@ class CheckRequestCache
         $except = $this->config['request_cache_except'];
         $tag    = $this->config['request_cache_tag'];
 
+        if ($key instanceof \Closure) {
+            $key = call_user_func($key, $request);
+        }
+
         if (false === $key) {
             // 关闭当前缓存
             return;
@@ -121,9 +126,7 @@ class CheckRequestCache
             }
         }
 
-        if ($key instanceof \Closure) {
-            $key = call_user_func($key);
-        } elseif (true === $key) {
+        if (true === $key) {
             // 自动缓存功能
             $key = '__URL__';
         } elseif (strpos($key, '|')) {
@@ -132,7 +135,7 @@ class CheckRequestCache
 
         // 特殊规则替换
         if (false !== strpos($key, '__')) {
-            $key = str_replace(['__APP__', '__CONTROLLER__', '__ACTION__', '__URL__'], [$request->app(), $request->controller(), $request->action(), md5($request->url(true))], $key);
+            $key = str_replace(['__CONTROLLER__', '__ACTION__', '__URL__'], [$request->controller(), $request->action(), md5($request->url(true))], $key);
         }
 
         if (false !== strpos($key, ':')) {

@@ -12,9 +12,9 @@
 namespace think\db\builder;
 
 use think\db\Builder;
+use think\db\exception\DbException as Exception;
 use think\db\Query;
 use think\db\Raw;
-use think\Exception;
 
 /**
  * Sqlsrv数据库驱动

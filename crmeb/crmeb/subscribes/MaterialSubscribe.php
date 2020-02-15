@@ -1,7 +1,9 @@
 <?php
+
 namespace crmeb\subscribes;
 
 use think\facade\Db;
+
 /**
  * 素材消息事件
  * Class MaterialSubscribe
@@ -21,7 +23,7 @@ class MaterialSubscribe
      */
     public function onWechatMaterialAfter($event)
     {
-        list($data,$type) = $event;
+        list($data, $type) = $event;
         $data['type'] = $type;
         $data['add_time'] = time();
         $data['temporary'] = 0;

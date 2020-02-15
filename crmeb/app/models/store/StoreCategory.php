@@ -74,14 +74,19 @@ class StoreCategory extends BaseModel
      * @throws \think\db\exception\ModelNotFoundException
      * @throws \think\exception\DbException
      */
-    public static function byIndexList($limit = 4, $field = 'id,cate_name,pid,pic')
+    public static function byIndexList($limit = 4,bool $bool = true, $field = 'id,cate_name,pid,pic')
     {
+        if(!$limit && !$bool) return [];
         return self::where('pid', '>', 0)->where('is_show', 1)->field($field)->order('sort DESC')->limit($limit)->select();
     }
 
+    /**
+     * 获取子集分类查询条件
+     * @return \think\model\relation\HasMany
+     */
     public function children()
     {
-        return $this->hasMany(self::class, 'pid','id')->where('is_show',1);
+        return $this->hasMany(self::class, 'pid','id')->where('is_show',1)->order('sort DESC,id DESC');
     }
 
 }

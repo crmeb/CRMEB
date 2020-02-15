@@ -84,16 +84,8 @@ class Sqlsrv extends PDOConnection
             }
         }
 
-        $sql = "SELECT column_name FROM information_schema.key_column_usage WHERE table_name='$tableName'";
-
-        // 调试开始
-        $this->debug(true);
-
-        $pdo = $this->linkID->query($sql);
-
-        // 调试结束
-        $this->debug(false, $sql);
-
+        $sql    = "SELECT column_name FROM information_schema.key_column_usage WHERE table_name='$tableName'";
+        $pdo    = $this->linkID->query($sql);
         $result = $pdo->fetch(PDO::FETCH_ASSOC);
 
         if ($result) {
@@ -127,14 +119,4 @@ class Sqlsrv extends PDOConnection
         return $info;
     }
 
-    /**
-     * SQL性能分析
-     * @access protected
-     * @param  string $sql
-     * @return array
-     */
-    protected function getExplain(string $sql): array
-    {
-        return [];
-    }
 }

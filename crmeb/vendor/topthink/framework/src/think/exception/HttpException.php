@@ -8,8 +8,11 @@
 // +----------------------------------------------------------------------
 // | Author: yunwuxin <448901948@qq.com>
 // +----------------------------------------------------------------------
+declare (strict_types = 1);
 
 namespace think\exception;
+
+use Exception;
 
 /**
  * HTTP异常
@@ -19,7 +22,7 @@ class HttpException extends \RuntimeException
     private $statusCode;
     private $headers;
 
-    public function __construct(int $statusCode, string $message = null, \Exception $previous = null, array $headers = [], $code = 0)
+    public function __construct(int $statusCode, string $message = '', Exception $previous = null, array $headers = [], $code = 0)
     {
         $this->statusCode = $statusCode;
         $this->headers    = $headers;

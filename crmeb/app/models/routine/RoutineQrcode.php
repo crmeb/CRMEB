@@ -1,5 +1,6 @@
 <?php
-namespace  app\models\routine;
+
+namespace app\models\routine;
 
 
 use crmeb\basic\BaseModel;
@@ -38,10 +39,11 @@ class RoutineQrcode extends BaseModel
      * @throws \think\db\exception\ModelNotFoundException
      * @throws \think\exception\DbException
      */
-    public static function routineQrCodeForever($thirdId = 0,$thirdType = 'spread',$page = '',$qrCodeLink = ''){
-       $count = self::where('third_id',$thirdId)->where('third_type',$thirdType)->count();
-       if($count) return self::where('third_id',$thirdId)->where('third_type',$thirdType)->field('id')->find();
-       return self::setRoutineQrcodeForever($thirdId,$thirdType,$page,$qrCodeLink);
+    public static function routineQrCodeForever($thirdId = 0, $thirdType = 'spread', $page = '', $qrCodeLink = '')
+    {
+        $count = self::where('third_id', $thirdId)->where('third_type', $thirdType)->count();
+        if ($count) return self::where('third_id', $thirdId)->where('third_type', $thirdType)->field('id')->find();
+        return self::setRoutineQrcodeForever($thirdId, $thirdType, $page, $qrCodeLink);
     }
 
     /**
@@ -50,15 +52,16 @@ class RoutineQrcode extends BaseModel
      * @param int $thirdId
      * @return object
      */
-    public static function setRoutineQrcodeForever($thirdId = 0,$thirdType = 'spread',$page = '',$qrCodeLink = ''){
-       $data['third_type'] = $thirdType;
-       $data['third_id'] = $thirdId;
-       $data['status'] = 0;
-       $data['add_time'] = time();
-       $data['page'] = $page;
-       $data['url_time'] = '';
-       $data['qrcode_url'] = $qrCodeLink;
-       return self::create($data);
+    public static function setRoutineQrcodeForever($thirdId = 0, $thirdType = 'spread', $page = '', $qrCodeLink = '')
+    {
+        $data['third_type'] = $thirdType;
+        $data['third_id'] = $thirdId;
+        $data['status'] = 0;
+        $data['add_time'] = time();
+        $data['page'] = $page;
+        $data['url_time'] = '';
+        $data['qrcode_url'] = $qrCodeLink;
+        return self::create($data);
     }
 
     /**
@@ -67,11 +70,12 @@ class RoutineQrcode extends BaseModel
      * @param array $data
      * @return bool
      */
-    public static function setRoutineQrcodeFind($id = 0,$data = array()){
-        if(!$id) return false;
+    public static function setRoutineQrcodeFind($id = 0, $data = array())
+    {
+        if (!$id) return false;
         $count = self::getRoutineQrcodeFind($id);
-        if(!$count) return false;
-        return self::edit($data,$id,'id');
+        if (!$count) return false;
+        return self::edit($data, $id, 'id');
     }
 
     /**
@@ -79,9 +83,10 @@ class RoutineQrcode extends BaseModel
      * @param int $id
      * @return int|string
      */
-    public static function getRoutineQrcodeFind($id = 0){
-        if(!$id) return 0;
-        return self::where('id',$id)->count();
+    public static function getRoutineQrcodeFind($id = 0)
+    {
+        if (!$id) return 0;
+        return self::where('id', $id)->count();
     }
 
     /**
@@ -93,11 +98,12 @@ class RoutineQrcode extends BaseModel
      * @throws \think\db\exception\ModelNotFoundException
      * @throws \think\exception\DbException
      */
-    public static function getRoutineQrcodeFindType($id = 0,$field = 'third_type,third_id,page'){
-        if(!$id) return false;
+    public static function getRoutineQrcodeFindType($id = 0, $field = 'third_type,third_id,page')
+    {
+        if (!$id) return false;
         $count = self::getRoutineQrcodeFind($id);
-        if(!$count) return false;
-        return self::where('id',$id)->where('status',1)->field($field)->find();
+        if (!$count) return false;
+        return self::where('id', $id)->where('status', 1)->field($field)->find();
     }
 
 

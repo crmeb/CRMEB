@@ -1,4 +1,5 @@
 <?php
+
 namespace app\models\article;
 
 use crmeb\traits\ModelTrait;
@@ -33,8 +34,9 @@ class ArticleCategory extends BaseModel
      * @throws \think\db\exception\ModelNotFoundException
      * @throws \think\exception\DbException
      */
-    public static function getArticleCategory(){
-        return self::where('hidden',0)->where('is_del',0)->where('status',1)->where('pid',0)->order('sort DESC')->field('id,title')->select();
+    public static function getArticleCategory()
+    {
+        return self::where('hidden', 0)->where('is_del', 0)->where('status', 1)->where('pid', 0)->order('sort DESC')->field('id,title')->select();
     }
 
     /**
@@ -43,9 +45,10 @@ class ArticleCategory extends BaseModel
      * @param string $field $field 字段
      * @return mixed|string
      */
-    public static function getArticleCategoryField($id,$field = 'title'){
-        if(!$id) return '';
-        return self::where('id',$id)->value($field);
+    public static function getArticleCategoryField($id, $field = 'title')
+    {
+        if (!$id) return '';
+        return self::where('id', $id)->value($field);
     }
 
     /**
@@ -61,7 +64,7 @@ class ArticleCategory extends BaseModel
     public static function cidByArticleList($cid, $first, $limit, $field = '*')
     {
         $model = new Article();
-        if ($cid) $model->where('cid',$cid);
-        return  $model->field($field)->where('status', 1)->where('hide', 0)->order('sort DESC,add_time DESC')->limit($first, $limit)->select();
+        if ($cid) $model->where('cid', $cid);
+        return $model->field($field)->where('status', 1)->where('hide', 0)->order('sort DESC,add_time DESC')->limit($first, $limit)->select();
     }
 }

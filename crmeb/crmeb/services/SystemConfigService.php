@@ -18,12 +18,26 @@ class SystemConfigService
 {
     protected static $configList = null;
 
-    public static $ProtectedKey = [
-        'wechat_appid', 'wechat_appsecret', 'wechat_token', 'wechat_encodingaeskey', 'wechat_encode',
-        'pay_weixin_mchid', 'pay_weixin_client_cert', 'pay_weixin_client_key', 'pay_weixin_key', 'pay_weixin_open',
-        'routine_appId', 'routine_appsecret',
-        'pay_routine_mchid', 'pay_routine_key', 'pay_routine_client_cert', 'pay_routine_client_key', 'pay_weixin_open'
-    ];
+    const CACHE_SYSTEM = 'system_config';
+
+    /**
+     * 初始化
+     */
+    protected static function init()
+    {
+        $confingFun = function () {
+            return self::getAll();
+        };
+        try {
+            self::$configList = CacheService::get(self::CACHE_SYSTEM, $confingFun);
+        } catch (\Throwable $e) {
+            try {
+                self::$configList = $confingFun();
+            } catch (\Exception $e) {
+                self::$configList = [];
+            }
+        }
+    }
 
     /**获取系统配置
      * @param $key
@@ -31,17 +45,30 @@ class SystemConfigService
      */
     public static function config($key)
     {
+        self::init();
         if (self::$configList === null) self::$configList = self::getAll();
         return isset(self::$configList[$key]) ? self::$configList[$key] : null;
     }
 
-    /**获取单个配置效率更高
+    /**
+     * 获取单个配置效率更高
      * @param $key
-     * @return bool|mixed
+     * @param string $default
+     * @param bool $isCaChe 是否获取缓存配置
+     * @return bool|mixed|string
      */
-    public static function get($key)
+    public static function get($key, $default = '', bool $isCaChe = false)
     {
-        return SystemConfig::getConfigValue($key);
+        if ($isCaChe) {
+            try {
+                return SystemConfig::getConfigValue($key);
+            } catch (\Throwable $e) {
+                return $default;
+            }
+        }
+
+        self::init();
+        return isset(self::$configList[$key]) ? self::$configList[$key] : $default;
     }
 
     /** 获取多个配置

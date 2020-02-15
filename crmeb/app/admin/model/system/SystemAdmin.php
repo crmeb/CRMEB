@@ -67,6 +67,7 @@ class SystemAdmin extends BaseModel
     {
         Session::set('adminId',$adminInfo['id']);
         Session::set('adminInfo',$adminInfo->toArray());
+        Session::save();
     }
 
     /**
@@ -76,7 +77,7 @@ class SystemAdmin extends BaseModel
     {
         Session::delete('adminInfo');
         Session::delete('adminId');
-        Session::clear();
+        Session::save();
     }
 
     /**

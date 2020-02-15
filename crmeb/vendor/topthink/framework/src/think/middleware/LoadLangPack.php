@@ -16,37 +16,45 @@ use Closure;
 use think\App;
 use think\Lang;
 use think\Request;
+use think\Response;
 
 /**
  * 多语言加载
  */
 class LoadLangPack
 {
+    protected $app;
+
+    protected $lang;
+
+    public function __construct(App $app, Lang $lang)
+    {
+        $this->app  = $app;
+        $this->lang = $lang;
+    }
 
     /**
      * 路由初始化（路由规则注册）
      * @access public
      * @param Request $request
      * @param Closure $next
-     * @param Lang    $lang
-     * @param App     $app
      * @return Response
      */
-    public function handle($request, Closure $next, Lang $lang, App $app)
+    public function handle($request, Closure $next)
     {
         // 自动侦测当前语言
-        $langset = $lang->detect();
+        $langset = $this->lang->detect($request);
 
-        if ($lang->defaultLangSet() != $langset) {
+        if ($this->lang->defaultLangSet() != $langset) {
             // 加载系统语言包
-            $lang->load([
-                $app->getThinkPath() . 'lang' . DIRECTORY_SEPARATOR . $langset . '.php',
+            $this->lang->load([
+                $this->app->getThinkPath() . 'lang' . DIRECTORY_SEPARATOR . $langset . '.php',
             ]);
 
-            $app->LoadLangPack($langset);
+            $this->app->LoadLangPack($langset);
         }
 
-        $lang->saveToCookie($app->cookie);
+        $this->lang->saveToCookie($this->app->cookie);
 
         return $next($request);
     }

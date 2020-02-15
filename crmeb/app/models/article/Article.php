@@ -1,4 +1,5 @@
 <?php
+
 namespace app\models\article;
 
 use app\models\store\StoreProduct;
@@ -30,12 +31,12 @@ class Article extends BaseModel
 
     public function profile()
     {
-        return $this->hasOne(StoreProduct::class,'id','product_id')->field('store_name,image,price,id');
+        return $this->hasOne(StoreProduct::class, 'id', 'product_id')->field('store_name,image,price,id,ot_price');
     }
 
     protected function getImageInputAttr($value)
     {
-        return explode(',',$value)?:[];
+        return explode(',', $value) ?: [];
     }
 
 
@@ -47,16 +48,16 @@ class Article extends BaseModel
      * @throws \think\db\exception\ModelNotFoundException
      * @throws \think\exception\DbException
      */
-    public static function getArticleOne($id = 0){
-        if(!$id) return [];
-        $list = self::where('status',1)->where('hide',0)->where('id',$id)->order('id desc')->find();
-        if($list){
-            $list->store_info = $list->profile ? StoreProduct::setLevelPrice($list->profile->toArray(),0,true) : null;
-            $list = $list->hidden(['hide','status','admin_id','mer_id'])->toArray();
-            $list["content"] = Db::name('articleContent')->where('nid',$id)->value('content');
+    public static function getArticleOne($id = 0)
+    {
+        if (!$id) return [];
+        $list = self::where('status', 1)->where('hide', 0)->where('id', $id)->order('id desc')->find();
+        if ($list) {
+            $list->store_info = $list->profile ? $list->profile->toArray() : null;
+            $list = $list->hidden(['hide', 'status', 'admin_id', 'mer_id'])->toArray();
+            $list["content"] = Db::name('articleContent')->where('nid', $id)->value('content');
             return $list;
-        }
-        else return [];
+        } else return [];
     }
 
     /**
@@ -69,14 +70,14 @@ class Article extends BaseModel
      */
     public static function cidByArticleList($cid, $page, $limit, $field = 'id,title,image_input,visit,add_time,synopsis,url')
     {
-        $model=new self();
+        $model = new self();
 //        if ($cid) $model->where("`cid` LIKE '$cid,%' OR `cid` LIKE '%,$cid,%' OR `cid` LIKE '%,$cid' OR `cid`=$cid ");
         if ((int)$cid) $model = $model->where("CONCAT(',',cid,',')  LIKE '%,$cid,%'");
         $model = $model->field($field);
         $model = $model->where('status', 1);
         $model = $model->where('hide', 0);
         $model = $model->order('sort DESC,add_time DESC');
-        if($page) $model = $model->page($page, $limit);
+        if ($page) $model = $model->page($page, $limit);
         return $model->select();
     }
 
@@ -85,7 +86,8 @@ class Article extends BaseModel
      * @param string $field
      * @return mixed]
      */
-    public static function getArticleListHot($field = 'id,title,image_input,visit,add_time,synopsis,url'){
+    public static function getArticleListHot($field = 'id,title,image_input,visit,add_time,synopsis,url')
+    {
         $model = new self();
         $model = $model->field($field);
         $model = $model->where('status', 1);
@@ -100,14 +102,15 @@ class Article extends BaseModel
      * @param string $field
      * @return mixed
      */
-    public static function getArticleListBanner($field = 'id,title,image_input,visit,add_time,synopsis,url'){
+    public static function getArticleListBanner($field = 'id,title,image_input,visit,add_time,synopsis,url')
+    {
         $model = new self();
         $model = $model->field($field);
         $model = $model->where('status', 1);
         $model = $model->where('hide', 0);
         $model = $model->where('is_banner', 1);
         $model = $model->order('sort DESC,add_time DESC');
-        $model = $model->limit(SystemConfigService::get('news_slides_limit') ?? 3);
+        $model = $model->limit(sysConfig('news_slides_limit') ?? 3);
         return $model->select();
     }
 }

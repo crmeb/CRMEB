@@ -25,10 +25,9 @@ class WorkermanHandle
             ]);
         }
 
-        $session = app('session',[],true);
-        $session->init();
+        $session = app('session', [], true);
         $session->setId($sessionId);
-        $session->start();
+        $session->init();
 
         if (!$session->has('adminId') || !$session->has('adminInfo')) {
             return $response->close([

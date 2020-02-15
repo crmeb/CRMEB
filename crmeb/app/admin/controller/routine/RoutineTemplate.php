@@ -3,6 +3,7 @@
 namespace app\admin\controller\routine;
 
 use app\admin\controller\AuthController;
+use crmeb\services\CacheService;
 use crmeb\services\FormBuilder as Form;
 use crmeb\services\UtilService as Util;
 use crmeb\services\JsonService as Json;
@@ -19,10 +20,10 @@ class RoutineTemplate extends AuthController
     public function index()
     {
         $where = Util::getMore([
-            ['name',''],
-            ['status','']
-        ],$this->request);
-        $this->assign('where',$where);
+            ['name', ''],
+            ['status', '']
+        ], $this->request);
+        $this->assign('where', $where);
         $this->assign(RoutineTemplateModel::SystemPage($where));
         return $this->fetch();
     }
@@ -34,15 +35,16 @@ class RoutineTemplate extends AuthController
     public function create()
     {
         $f = array();
-        $f[] = Form::input('tempkey','模板编号');
-        $f[] = Form::input('tempid','模板ID');
-        $f[] = Form::input('name','模板名');
-        $f[] = Form::input('content','回复内容')->type('textarea');
-        $f[] = Form::radio('status','状态',1)->options([['label'=>'开启','value'=>1],['label'=>'关闭','value'=>0]]);
-        $form = Form::make_post_form('添加模板消息',$f,Url::buildUrl('save'));
+        $f[] = Form::input('tempkey', '模板编号');
+        $f[] = Form::input('tempid', '模板ID');
+        $f[] = Form::input('name', '模板名');
+        $f[] = Form::input('content', '回复内容')->type('textarea');
+        $f[] = Form::radio('status', '状态', 1)->options([['label' => '开启', 'value' => 1], ['label' => '关闭', 'value' => 0]]);
+        $form = Form::make_post_form('添加模板消息', $f, Url::buildUrl('save'));
         $this->assign(compact('form'));
         return $this->fetch('public/form-builder');
     }
+
     public function save()
     {
         $data = Util::postMore([
@@ -50,16 +52,17 @@ class RoutineTemplate extends AuthController
             'tempid',
             'name',
             'content',
-            ['status',0]
+            ['status', 0]
         ]);
-        if($data['tempkey'] == '') return Json::fail('请输入模板编号');
-        if($data['tempkey'] != '' && RoutineTemplateModel::be($data['tempkey'],'tempkey'))
+        if ($data['tempkey'] == '') return Json::fail('请输入模板编号');
+        if ($data['tempkey'] != '' && RoutineTemplateModel::be($data['tempkey'], 'tempkey'))
             return Json::fail('请输入模板编号已存在,请重新输入');
-        if($data['tempid'] == '') return Json::fail('请输入模板ID');
-        if($data['name'] == '') return Json::fail('请输入模板名');
-        if($data['content'] == '') return Json::fail('请输入回复内容');
+        if ($data['tempid'] == '') return Json::fail('请输入模板ID');
+        if ($data['name'] == '') return Json::fail('请输入模板名');
+        if ($data['content'] == '') return Json::fail('请输入回复内容');
         $data['add_time'] = time();
         RoutineTemplateModel::create($data);
+        CacheService::clear();
         return Json::successful('添加模板消息成功!');
     }
 
@@ -70,15 +73,15 @@ class RoutineTemplate extends AuthController
      */
     public function edit($id)
     {
-        if(!$id) return $this->failed('数据不存在');
+        if (!$id) return $this->failed('数据不存在');
         $product = RoutineTemplateModel::get($id);
-        if(!$product) return Json::fail('数据不存在!');
+        if (!$product) return Json::fail('数据不存在!');
         $f = array();
-        $f[] = Form::input('tempkey','模板编号',$product->getData('tempkey'))->disabled(1);
-        $f[] = Form::input('name','模板名',$product->getData('name'))->disabled(1);
-        $f[] = Form::input('tempid','模板ID',$product->getData('tempid'));
-        $f[] = Form::radio('status','状态',$product->getData('status'))->options([['label'=>'开启','value'=>1],['label'=>'关闭','value'=>0]]);
-        $form = Form::make_post_form('编辑模板消息',$f,Url::buildUrl('update',compact('id')));
+        $f[] = Form::input('tempkey', '模板编号', $product->getData('tempkey'))->disabled(1);
+        $f[] = Form::input('name', '模板名', $product->getData('name'))->disabled(1);
+        $f[] = Form::input('tempid', '模板ID', $product->getData('tempid'));
+        $f[] = Form::radio('status', '状态', $product->getData('status'))->options([['label' => '开启', 'value' => 1], ['label' => '关闭', 'value' => 0]]);
+        $form = Form::make_post_form('编辑模板消息', $f, Url::buildUrl('update', compact('id')));
         $this->assign(compact('form'));
         return $this->fetch('public/form-builder');
     }
@@ -87,13 +90,14 @@ class RoutineTemplate extends AuthController
     {
         $data = Util::postMore([
             'tempid',
-            ['status',0]
+            ['status', 0]
         ]);
-        if($data['tempid'] == '') return Json::fail('请输入模板ID');
-        if(!$id) return $this->failed('数据不存在');
+        if ($data['tempid'] == '') return Json::fail('请输入模板ID');
+        if (!$id) return $this->failed('数据不存在');
         $product = RoutineTemplateModel::get($id);
-        if(!$product) return Json::fail('数据不存在!');
-        RoutineTemplateModel::edit($data,$id);
+        if (!$product) return Json::fail('数据不存在!');
+        RoutineTemplateModel::edit($data, $id);
+        CacheService::clear();
         return Json::successful('修改成功!');
     }
 
@@ -104,11 +108,13 @@ class RoutineTemplate extends AuthController
      */
     public function delete($id)
     {
-        if(!$id) return Json::fail('数据不存在!');
-        if(!RoutineTemplateModel::del($id))
+        if (!$id) return Json::fail('数据不存在!');
+        if (!RoutineTemplateModel::del($id))
             return Json::fail(RoutineTemplateModel::getErrorInfo('删除失败,请稍候再试!'));
-        else
+        else {
+            CacheService::clear();
             return Json::successful('删除成功!');
+        }
     }
 
 

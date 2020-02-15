@@ -12,9 +12,9 @@
 namespace think\model\relation;
 
 use Closure;
-use think\Container;
 use think\db\BaseQuery as Query;
-use think\Exception;
+use think\db\exception\DbException as Exception;
+use think\helper\Str;
 use think\Model;
 use think\model\Relation;
 
@@ -70,7 +70,7 @@ class MorphOne extends Relation
     public function getRelation(array $subRelation = [], Closure $closure = null)
     {
         if ($closure) {
-            $closure($this);
+            $closure($this->getClosureType($closure));
         }
 
         $this->baseQuery();
@@ -91,9 +91,10 @@ class MorphOne extends Relation
      * @param  integer $count    个数
      * @param  string  $id       关联表的统计字段
      * @param  string  $joinType JOIN类型
+     * @param  Query   $query    Query对象
      * @return Query
      */
-    public function has(string $operator = '>=', int $count = 1, string $id = '*', string $joinType = '')
+    public function has(string $operator = '>=', int $count = 1, string $id = '*', string $joinType = '', Query $query = null)
     {
         return $this->parent;
     }
@@ -104,9 +105,10 @@ class MorphOne extends Relation
      * @param  mixed  $where 查询条件（数组或者闭包）
      * @param  mixed  $fields 字段
      * @param  string $joinType JOIN类型
+     * @param  Query  $query    Query对象
      * @return Query
      */
-    public function hasWhere($where = [], $fields = null, string $joinType = '')
+    public function hasWhere($where = [], $fields = null, string $joinType = '', Query $query = null)
     {
         throw new Exception('relation not support: hasWhere');
     }
@@ -118,9 +120,10 @@ class MorphOne extends Relation
      * @param  string  $relation    当前关联名
      * @param  array   $subRelation 子关联名
      * @param  Closure $closure     闭包
+     * @param  array   $cache       关联缓存
      * @return void
      */
-    public function eagerlyResultSet(array &$resultSet, string $relation, array $subRelation, Closure $closure = null): void
+    public function eagerlyResultSet(array &$resultSet, string $relation, array $subRelation, Closure $closure = null, array $cache = []): void
     {
         $morphType = $this->morphType;
         $morphKey  = $this->morphKey;
@@ -139,10 +142,7 @@ class MorphOne extends Relation
             $data = $this->eagerlyMorphToOne([
                 [$morphKey, 'in', $range],
                 [$morphType, '=', $type],
-            ], $relation, $subRelation, $closure);
-
-            // 关联属性名
-            $attr = Container::parseName($relation);
+            ], $subRelation, $closure, $cache);
 
             // 关联数据封装
             foreach ($resultSet as $result) {
@@ -154,7 +154,7 @@ class MorphOne extends Relation
                     $relationModel->exists(true);
                 }
 
-                $result->setRelation($attr, $relationModel);
+                $result->setRelation($relation, $relationModel);
             }
         }
     }
@@ -166,9 +166,10 @@ class MorphOne extends Relation
      * @param  string  $relation    当前关联名
      * @param  array   $subRelation 子关联名
      * @param  Closure $closure     闭包
+     * @param  array   $cache       关联缓存
      * @return void
      */
-    public function eagerlyResult(Model $result, string $relation, array $subRelation = [], Closure $closure = null): void
+    public function eagerlyResult(Model $result, string $relation, array $subRelation = [], Closure $closure = null, array $cache = []): void
     {
         $pk = $result->getPk();
 
@@ -177,7 +178,7 @@ class MorphOne extends Relation
             $data = $this->eagerlyMorphToOne([
                 [$this->morphKey, '=', $pk],
                 [$this->morphType, '=', $this->type],
-            ], $relation, $subRelation, $closure);
+            ], $subRelation, $closure, $cache);
 
             if (isset($data[$pk])) {
                 $relationModel = $data[$pk];
@@ -187,7 +188,7 @@ class MorphOne extends Relation
                 $relationModel = null;
             }
 
-            $result->setRelation(Container::parseName($relation), $relationModel);
+            $result->setRelation($relation, $relationModel);
         }
     }
 
@@ -195,20 +196,24 @@ class MorphOne extends Relation
      * 多态一对一 关联模型预查询
      * @access protected
      * @param  array   $where       关联预查询条件
-     * @param  string  $relation    关联名
      * @param  array   $subRelation 子关联
      * @param  Closure $closure     闭包
+     * @param  array   $cache       关联缓存
      * @return array
      */
-    protected function eagerlyMorphToOne(array $where, string $relation, array $subRelation = [], $closure = null): array
+    protected function eagerlyMorphToOne(array $where, array $subRelation = [], $closure = null, array $cache = []): array
     {
         // 预载入关联查询 支持嵌套预载入
         if ($closure) {
             $this->baseQuery = true;
-            $closure($this);
+            $closure($this->getClosureType($closure));
         }
 
-        $list     = $this->query->where($where)->with($subRelation)->select();
+        $list = $this->query
+            ->where($where)
+            ->with($subRelation)
+            ->cache($cache[0] ?? false, $cache[1] ?? null, $cache[2] ?? null)
+            ->select();
         $morphKey = $this->morphKey;
 
         // 组装模型数据

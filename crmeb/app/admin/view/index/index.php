@@ -38,12 +38,12 @@
                             </span>
                         </a>
                         <ul class="dropdown-menu animated fadeInRight m-t-xs">
-                            <li><a class="J_menuItem admin_close" href="{:Url('setting.systemAdmin/adminInfo')}">个人资料</a>
+                            <li><a class="J_menuItem admin_close" href="{:Url('setting.systemAdmin/admin_info')}">个人资料</a>
                             </li>
                             <li><a class="admin_close" target="_blank" href="http://www.crmeb.com/">联系我们</a>
                             </li>
                             <li class="divider"></li>
-                            <li><a href="{:Url('Login/logout')}">安全退出</a>
+                            <li><a href="{:Url('login/logout')}">安全退出</a>
                             </li>
                         </ul>
                     </div>
@@ -159,43 +159,28 @@
     <div id="right-sidebar">
         <div class="sidebar-container">
             <ul class="nav nav-tabs navs-3">
+<!--                <li class="active">-->
+<!--                    <a data-toggle="tab" href="#tab-1">-->
+<!--                        <i class="fa fa-bell"></i>通知-->
+<!--                    </a>-->
+<!--                </li>-->
                 <li class="active">
                     <a data-toggle="tab" href="#tab-1">
-                        <i class="fa fa-bell"></i>通知
-                    </a>
-                </li>
-                <li class="">
-                    <a data-toggle="tab" href="#tab-2">
                         <i class="fa fa-gear"></i> 设置
                     </a>
                 </li>
                 
             </ul>
             <div class="tab-content">
+<!--                <div id="tab-1" class="tab-pane active">-->
+<!--                    <div class="sidebar-title">-->
+<!--                        <h3><i class="fa fa-comments-o"></i> 最新通知</h3>-->
+<!--                        <small><i class="fa fa-tim"></i> 您当前有0条未读信息</small>-->
+<!--                    </div>-->
+<!--                    <div>-->
+<!--                    </div>-->
+<!--                </div>-->
                 <div id="tab-1" class="tab-pane active">
-                    <div class="sidebar-title">
-                        <h3><i class="fa fa-comments-o"></i> 最新通知</h3>
-                        <small><i class="fa fa-tim"></i> 您当前有0条未读信息</small>
-                    </div>
-                    <div>
-                        <!--<div class="sidebar-message">
-                            <a href="#">
-                                <div class="pull-left text-center">
-                                    <img alt="image" class="img-circle message-avatar" src="http://ozwpnu2pa.bkt.clouddn.com/a1.jpg">
-                                    <div class="m-t-xs">
-                                        <i class="fa fa-star text-warning"></i> <i class="fa fa-star text-warning"></i>
-                                    </div>
-                                </div>
-                                <div class="media-body">
-
-                                    据天津日报报道：瑞海公司董事长于学伟，副董事长董社轩等10人在13日上午已被控制。 <br>
-                                    <small class="text-muted">今天 4:21 <a class="J_menuItem admin_close" href="/admin/setting.system_admin/admininfo.html" data-index="0">【查看】</a></small>
-                                </div>
-                            </a>
-                        </div>-->
-                    </div>
-                </div>
-                <div id="tab-2" class="tab-pane ">
                     <div class="sidebar-title">
                         <h3><i class="fa fa-comments-o"></i> 提示</h3>
                         <small><i class="fa fa-tim"></i> 你可以从这里选择和预览主题的布局和样式，这些设置会被保存在本地，下次打开的时候会直接应用这些设置。</small>
@@ -281,6 +266,7 @@
 {include file="public/style"}
 <script>
     window.newOrderAudioLink='{$new_order_audio_link}';
+    window.workermanPort = '{$workermanPort}';
 </script>
 <script src="{__FRAME_PATH}js/index.js"></script>
 </body>

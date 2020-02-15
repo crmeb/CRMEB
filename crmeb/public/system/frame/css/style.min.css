@@ -597,13 +597,13 @@ nav.page-tabs .page-tabs-content{float:left}
 .page-tabs a{display:block;float:left;border-right:solid 1px #eee;padding:0 15px}
 .page-tabs a i:hover{color:#c00}
 .content-tabs .roll-nav:hover,.page-tabs a:hover{color:#777;background:#f2f2f2;cursor:pointer}
-.roll-right.btn-group{right:201px;width:50px;padding:0}
+.roll-right.btn-group{right:163px;width:50px;padding:0}
 .roll-right.btn-group button{width:50px}
-.roll-right.J_tabLeft{right:290px}
-.roll-right.J_tabRight{right:250px}
-.roll-right.J_tabReply{background:#fff;height:40px;width:40px;right:160px;outline:0}
-.roll-right.J_tabRefresh{background:#fff;height:40px;width:40px;outline:0;right:120px;}
-.roll-right.J_tabFullScreen{background:#fff;height:40px;width:40px;outline:0;right:80px;}
+.roll-right.J_tabLeft{right:253px}
+.roll-right.J_tabRight{right:213px}
+.roll-right.J_tabReply{background:#fff;height:40px;width:40px;right:121px;outline:0}
+.roll-right.J_tabRefresh{background:#fff;height:40px;width:40px;outline:0;right:80px;}
+.roll-right.J_tabFullScreen{background:#fff;height:40px;width:40px;outline:0;right:41px;}
 .roll-right.J_notice{background:#fff;height:40px;width:40px;outline:0;right:40px;}
 .roll-right.J_notice .badge{padding: 3px;position: absolute;left: 18px;z-index: 100;}
 .roll-right.J_tabSetting{background:#fff;height:40px;width:40px;outline:0;right:0;}

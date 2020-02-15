@@ -15,7 +15,7 @@
     <script>
         $eb = parent._mpApi;
         window.controlle="<?php echo strtolower(trim(preg_replace("/[A-Z]/", "_\\0", app('request')->controller()), "_"));?>";
-        window.module="<?php echo app('request')->app();?>";
+        window.module="<?php echo app('http')->getName();?>";
     </script>
 
 

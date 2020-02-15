@@ -12,7 +12,7 @@ declare (strict_types = 1);
 
 namespace think\route;
 
-use think\App;
+use think\helper\Str;
 use think\Request;
 use think\Route;
 use think\route\dispatch\Callback as CallbackDispatch;
@@ -156,7 +156,7 @@ class Domain extends RuleGroup
             $this->parseUrlParams($array[2], $param);
         }
 
-        return new CallbackDispatch($request, $this, [$namespace . '\\' . App::parseName($class, 1), $method], $param);
+        return new CallbackDispatch($request, $this, [$namespace . '\\' . Str::studly($class), $method], $param);
     }
 
     /**

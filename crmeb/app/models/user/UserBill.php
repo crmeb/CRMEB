@@ -143,7 +143,7 @@ class UserBill extends BaseModel
     public static function getUserBillList($uid,$page,$limit,$type)
     {
         if(!$limit) return [];
-        $model=self::where('uid',$uid)->where('category','now_money')->order('add_time desc')
+        $model=self::where('uid',$uid)->where('category','now_money')->order('add_time desc')->where('number','<>',0)
             ->field('FROM_UNIXTIME(add_time,"%Y-%m") as time,group_concat(id SEPARATOR ",") ids')->group('time');
         switch ((int)$type){
             case 0:
@@ -153,7 +153,7 @@ class UserBill extends BaseModel
                 $model=$model->where('type','pay_product');
                 break;
             case 2:
-                $model=$model->where('type','recharge');
+                $model=$model->where('type','in','recharge,system_add');
                 break;
             case 3:
                 $model=$model->where('type','brokerage');

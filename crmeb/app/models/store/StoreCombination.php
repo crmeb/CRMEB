@@ -163,11 +163,11 @@ class StoreCombination extends BaseModel
     public static function incCombinationStock($num,$CombinationId)
     {
 
-        $combination=self::where('id',$CombinationId)->field(['stock','sales'])->find();
+        $combination = self::where('id',$CombinationId)->field(['stock','sales'])->find();
         if(!$combination) return true;
-        if($combination->sales > 0) $combination->sales=bcsub($combination->sales,$num,0);
-        if($combination->sales < 0) $combination->sales=0;
-        $combination->stock=bcadd($combination->stock,$num,0);
+        if($combination->sales > 0) $combination->sales = bcsub($combination->sales,$num,0);
+        if($combination->sales < 0) $combination->sales = 0;
+        $combination->stock = bcadd($combination->stock,$num,0);
         return $combination->save();
     }
 

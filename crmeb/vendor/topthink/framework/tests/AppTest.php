@@ -10,6 +10,7 @@ use stdClass;
 use think\App;
 use think\Env;
 use think\Event;
+use think\event\AppInit;
 use think\exception\ClassNotFoundException;
 use think\Service;
 
@@ -158,7 +159,7 @@ class AppTest extends TestCase
         $env->shouldReceive('get')->once()->with('app_debug')->andReturn($debug);
 
         $event = m::mock(Event::class);
-        $event->shouldReceive('trigger')->once()->with('AppInit');
+        $event->shouldReceive('trigger')->once()->with(AppInit::class);
         $event->shouldReceive('bind')->once()->with([]);
         $event->shouldReceive('listenEvents')->once()->with([]);
         $event->shouldReceive('subscribe')->once()->with([]);
@@ -193,20 +194,6 @@ class AppTest extends TestCase
         $this->assertIsFloat($app->getBeginTime());
 
         $this->assertTrue($app->initialized());
-    }
-
-    public function testParseName()
-    {
-        $this->assertEquals('SomeName', App::parseName('some_name', 1));
-        $this->assertEquals('someName', App::parseName('some_name', 1, false));
-        $this->assertEquals('some_name', App::parseName('SomeName'));
-        $this->assertEquals('some_name', App::parseName('someName'));
-    }
-
-    public function testClassBaseName()
-    {
-        $this->assertEquals('stdClass', App::classBaseName(stdClass::class));
-        $this->assertEquals('App', App::classBaseName($this->app));
     }
 
     public function testFactory()

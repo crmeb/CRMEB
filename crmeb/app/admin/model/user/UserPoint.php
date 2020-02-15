@@ -77,7 +77,7 @@ class UserPoint extends BaseModel
             ->ExcelSave();
     }
     public static function setWhere($where){
-        $model=UserBill::alias('a')->join('__user__ b','a.uid=b.uid','left')->where('a.category','integral');
+        $model=UserBill::alias('a')->join('user b','a.uid=b.uid','left')->where('a.category','integral');
         $time['data']='';
         if($where['start_time']!='' && $where['end_time']!=''){
             $time['data']=$where['start_time'].' - '.$where['end_time'];

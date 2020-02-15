@@ -12,14 +12,15 @@ declare (strict_types = 1);
 
 namespace think\model;
 
-use think\db\Query;
-use think\Exception;
+use Closure;
+use ReflectionFunction;
+use think\db\BaseQuery as Query;
+use think\db\exception\DbException as Exception;
 use think\Model;
 
 /**
  * 模型关联基础类
  * @package think\model
- *
  * @mixin Query
  */
 abstract class Relation
@@ -101,12 +102,11 @@ abstract class Relation
     /**
      * 获取当前的关联模型类的实例
      * @access public
-     * @param bool $clear 是否需要清空查询条件
      * @return Model
      */
-    public function getModel(bool $clear = true): Model
+    public function getModel(): Model
     {
-        return $this->query->getModel($clear);
+        return $this->query->getModel();
     }
 
     /**
@@ -217,6 +217,24 @@ abstract class Relation
     }
 
     /**
+     * 判断闭包的参数类型
+     * @access protected
+     * @return mixed
+     */
+    protected function getClosureType(Closure $closure)
+    {
+        $reflect = new ReflectionFunction($closure);
+        $params  = $reflect->getParameters();
+
+        if (!empty($params)) {
+            $type = $params[0]->getType();
+            return Relation::class == $type || is_null($type) ? $this : $this->query;
+        }
+
+        return $this;
+    }
+
+    /**
      * 执行基础查询（仅执行一次）
      * @access protected
      * @return void
@@ -230,10 +248,8 @@ abstract class Relation
             // 执行基础查询
             $this->baseQuery();
 
-            $model  = $this->query->getModel(false);
-            $result = call_user_func_array([$model, $method], $args);
+            $result = call_user_func_array([$this->query, $method], $args);
 
-            $this->query = $model->getQuery();
             return $result === $this->query ? $this : $result;
         }
 

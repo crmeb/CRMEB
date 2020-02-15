@@ -42,7 +42,7 @@ class SystemConfigTab extends AuthController
         $tab_id = input('tab_id');
         if(!$tab_id) return Json::fail('参数错误');
         $this->assign('tab_id',$tab_id);
-        $list = ConfigModel::getAll($tab_id);
+        $list = ConfigModel::getAll($tab_id,2);
         foreach ($list as $k=>$v){
             $list[$k]['value'] = json_decode($v['value'],true)?:'';
             if($v['type'] == 'radio' || $v['type'] == 'checkbox'){

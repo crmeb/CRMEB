@@ -13,9 +13,9 @@ declare (strict_types = 1);
 namespace think\db\concern;
 
 use think\Collection;
-use think\Container;
 use think\db\exception\DataNotFoundException;
 use think\db\exception\ModelNotFoundException;
+use think\helper\Str;
 
 /**
  * 查询数据处理
@@ -126,7 +126,7 @@ trait ResultOperation
     protected function getResultAttr(array &$result, array $withAttr = []): void
     {
         foreach ($withAttr as $name => $closure) {
-            $name = Container::parseName($name);
+            $name = Str::snake($name);
 
             if (strpos($name, '.')) {
                 // 支持JSON字段 获取器定义
@@ -154,7 +154,7 @@ trait ResultOperation
         if (!empty($this->options['fail'])) {
             $this->throwNotFound();
         } elseif (!empty($this->options['allow_empty'])) {
-            return !empty($this->model) ? $this->model->newInstance()->setQuery($this) : [];
+            return !empty($this->model) ? $this->model->newInstance() : [];
         }
     }
 

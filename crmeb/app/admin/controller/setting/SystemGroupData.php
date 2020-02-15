@@ -2,6 +2,7 @@
 
 namespace app\admin\controller\setting;
 
+use crmeb\services\CacheService;
 use crmeb\services\FormBuilder as Form;
 use crmeb\services\JsonService as Json;
 use crmeb\services\UploadService as Upload;
@@ -122,6 +123,7 @@ class SystemGroupData extends AuthController
 
         $data = array("gid"=>$gid,"add_time"=>time(),"value"=>json_encode($value),"sort"=>$params["sort"],"status"=>$params["status"]);
         GroupDataModel::create($data);
+        CacheService::clear();
         return Json::successful('添加数据成功!');
     }
 
@@ -231,6 +233,7 @@ class SystemGroupData extends AuthController
         }
         $data = array("value"=>json_encode($value),"sort"=>$params["sort"],"status"=>$params["status"]);
         GroupDataModel::edit($data,$id);
+        CacheService::clear();
         return Json::successful('修改成功!');
     }
 
@@ -244,13 +247,15 @@ class SystemGroupData extends AuthController
     {
         if(!GroupDataModel::del($id))
             return Json::fail(GroupDataModel::getErrorInfo('删除失败,请稍候再试!'));
-        else
+        else {
+            CacheService::clear();
             return Json::successful('删除成功!');
+        }
     }
 
     public function upload()
     {
-        $res = Upload::getInstance()->setUploadPath('common')->image('file');
+        $res = Upload::instance()->setUploadPath('common')->image('file');
         if(!is_array($res)) return Json::fail($res);
         SystemAttachment::attachmentAdd($res['name'],$res['size'],$res['type'],$res['dir'],$res['thumb_path'],6,$res['image_type'],$res['time']);
         return Json::successful('图片上传成功!',['name'=>$res['name'],'url'=>Upload::pathToUrl($res['thumb_path'])]);

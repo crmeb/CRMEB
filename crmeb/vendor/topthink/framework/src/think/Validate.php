@@ -14,6 +14,7 @@ namespace think;
 
 use Closure;
 use think\exception\ValidateException;
+use think\helper\Str;
 use think\validate\ValidateRule;
 
 /**
@@ -129,7 +130,7 @@ class Validate
         'chsAlpha'    => '/^[\x{4e00}-\x{9fa5}a-zA-Z]+$/u',
         'chsAlphaNum' => '/^[\x{4e00}-\x{9fa5}a-zA-Z0-9]+$/u',
         'chsDash'     => '/^[\x{4e00}-\x{9fa5}a-zA-Z0-9\_\-]+$/u',
-        'mobile'      => '/^1[3-9][0-9]\d{8}$/',
+        'mobile'      => '/^1[3-9]\d{9}$/',
         'idCard'      => '/(^[1-9]\d{5}(18|19|([23]\d))\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\d{3}[0-9Xx]$)|(^[1-9]\d{5}\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\d{2}$)/',
         'zip'         => '/\d{6}/',
     ];
@@ -214,7 +215,7 @@ class Validate
     protected $request;
 
     /**
-     * @var Closure
+     * @var Closure[]
      */
     protected static $maker = [];
 
@@ -517,11 +518,7 @@ class Validate
                 // 没有返回true 则表示验证失败
                 if (!empty($this->batch)) {
                     // 批量验证
-                    if (is_array($result)) {
-                        $this->error = array_merge($this->error, $result);
-                    } else {
-                        $this->error[$key] = $result;
-                    }
+                    $this->error[$key] = $result;
                 } elseif ($this->failException) {
                     throw new ValidateException($result);
                 } else {
@@ -824,7 +821,7 @@ class Validate
      */
     public function is($value, string $rule, array $data = []): bool
     {
-        switch (App::parseName($rule, 1, false)) {
+        switch (Str::camel($rule)) {
             case 'require':
                 // 必须
                 $result = !empty($value) || '0' == $value;
@@ -1555,9 +1552,9 @@ class Validate
      * @param string $title     字段描述名
      * @param string $type      验证规则名称
      * @param mixed  $rule      验证规则数据
-     * @return string
+     * @return string|array
      */
-    protected function getRuleMsg(string $attribute, string $title, string $type, $rule): string
+    protected function getRuleMsg(string $attribute, string $title, string $type, $rule)
     {
         if (isset($this->message[$attribute . '.' . $type])) {
             $msg = $this->message[$attribute . '.' . $type];
@@ -1573,14 +1570,31 @@ class Validate
             $msg = $title . $this->lang->get('not conform to the rules');
         }
 
-        if (!is_string($msg)) {
-            return $msg;
+        if (is_array($msg)) {
+            return $this->errorMsgIsArray($msg, $rule, $title);
         }
 
+        return $this->parseErrorMsg($msg, $rule, $title);
+    }
+
+    /**
+     * 获取验证规则的错误提示信息
+     * @access protected
+     * @param string $msg   错误信息
+     * @param mixed  $rule  验证规则数据
+     * @param string $title 字段描述名
+     * @return string
+     */
+    protected function parseErrorMsg(string $msg, $rule, string $title)
+    {
         if (0 === strpos($msg, '{%')) {
             $msg = $this->lang->get(substr($msg, 2, -1));
         } elseif ($this->lang->has($msg)) {
             $msg = $this->lang->get($msg);
+        }
+
+        if (is_array($msg)) {
+            return $this->errorMsgIsArray($msg, $rule, $title);
         }
 
         if (is_scalar($rule) && false !== strpos($msg, ':')) {
@@ -1601,6 +1615,24 @@ class Validate
             }
         }
 
+        return $msg;
+    }
+
+    /**
+     * 错误信息数组处理
+     * @access protected
+     * @param array $msg   错误信息
+     * @param mixed  $rule  验证规则数据
+     * @param string $title 字段描述名
+     * @return array
+     */
+    protected function errorMsgIsArray(array $msg, $rule, string $title)
+    {
+        foreach ($msg as $key => $val) {
+            if (is_string($val)) {
+                $msg[$key] = $this->parseErrorMsg($val, $rule, $title);
+            }
+        }
         return $msg;
     }
 

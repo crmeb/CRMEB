@@ -12,10 +12,8 @@ declare (strict_types = 1);
 
 namespace think\db\concern;
 
-use Closure;
-use think\Container;
 use think\db\Raw;
-use think\model\relation\OneToOne;
+use think\helper\Str;
 
 /**
  * JOIN和VIEW查询
@@ -129,58 +127,6 @@ trait JoinAndViewQuery
         }
 
         return $table;
-    }
-
-    /**
-     * 关联预载入 JOIN方式
-     * @access protected
-     * @param array|string $with     关联方法名
-     * @param string       $joinType JOIN方式
-     * @return $this
-     */
-    public function withJoin($with, string $joinType = '')
-    {
-        if (empty($with)) {
-            return $this;
-        }
-
-        $first = true;
-
-        /** @var Model $class */
-        $class = $this->model;
-        foreach ((array) $with as $key => $relation) {
-            $closure = null;
-            $field   = true;
-
-            if ($relation instanceof Closure) {
-                // 支持闭包查询过滤关联条件
-                $closure  = $relation;
-                $relation = $key;
-            } elseif (is_array($relation)) {
-                $field    = $relation;
-                $relation = $key;
-            } elseif (is_string($relation) && strpos($relation, '.')) {
-                $relation = strstr($relation, '.', true);
-            }
-
-            /** @var Relation $model */
-            $relation = Container::parseName($relation, 1, false);
-            $model    = $class->$relation();
-
-            if ($model instanceof OneToOne) {
-                $model->eagerly($this, $relation, $field, $joinType, $closure, $first);
-                $first = false;
-            } else {
-                // 不支持其它关联
-                unset($with[$key]);
-            }
-        }
-
-        $this->via();
-
-        $this->options['with_join'] = $with;
-
-        return $this;
     }
 
     /**

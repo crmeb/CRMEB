@@ -10,13 +10,24 @@ namespace crmeb\services;
 use crmeb\services\storage\COS;
 use crmeb\services\storage\OSS;
 use crmeb\services\storage\Qiniu;
-use crmeb\services\SystemConfigService;
+use crmeb\traits\LogicTrait;
 use think\exception\ValidateException;
 use think\facade\Filesystem;
+use Guzzle\Http\EntityBody;
 use think\File;
 
+/**
+ * Class UploadService
+ * @package crmeb\services
+ * @method $this setReturnErr(bool $returnErr) 设置发生错误时是否返回错误信息
+ * @method $this setAutoValidate(bool $autoValidate) 设置是否校验上传文件
+ * @method $this setUploadType(int $uploadType) 设置上传类型
+ * @method $this setImageValidate(string $imageValidate) 设置上传图片大小等验证信息
+ * @method $this setUploadPath(string $uploadPath) 设置文件上传路径
+ */
 class UploadService
 {
+    use LogicTrait;
     /**
      * 文件校验
      * @var bool
@@ -46,13 +57,13 @@ class UploadService
      * @var array
      */
     protected $uploadInfo = [
-        'name'      => '',
-        'size'      => 0,
-        'type'      => 'image/jpeg',
-        'dir'       => '',
-        'thumb_path'=> '',
-        'image_type'=> '',
-        'time'      => 0,
+        'name' => '',
+        'size' => 0,
+        'type' => 'image/jpeg',
+        'dir' => '',
+        'thumb_path' => '',
+        'image_type' => '',
+        'time' => 0,
     ];
 
     /**
@@ -62,92 +73,68 @@ class UploadService
     private static $uploadStatus;
 
     /**
-     * 本类实例化
-     * @var
-     */
-    protected static $instance;
-
-    /**
      * 上传图片的大小 2MB 单位字节
      * @var string
      */
-    protected $imageValidate = 'filesize:2097152|fileExt:jpg,jpeg,png,gif,pem|fileMime:image/jpeg,image/gif,image/png,text/plain';
+    protected $imageValidate = null;
+
+    /**
+     * 上传规则
+     * @var array
+     */
+    protected $imageValidateArray = [
+        'filesize' => 2097152,
+        'fileExt' => ['jpg', 'jpeg', 'png', 'gif', 'pem', 'mp3', 'wma', 'wav', 'amr', 'mp4'],
+        'fileMime' => ['image/jpeg', 'image/gif', 'image/png', 'text/plain', 'audio/mpeg'],
+    ];
+
+    protected $propsRule = [
+        'returnErr' => false,
+        'autoValidate' => false,
+        'uploadPath' => null,
+        'uploadType' => null,
+    ];
 
     protected function __construct()
     {
-        self::init();
-    }
-
-    /**
-     * @return UploadService
-     */
-    public static function getInstance()
-    {
-        if(is_null(self::$instance)) self::$instance = new self();
-        return self::$instance;
-    }
-
-    /**
-     * 设置上传图片大小等验证信息
-     * @param string $imageValidate
-     * @return $this
-     */
-    public function setImageValidate(string $imageValidate)
-    {
-        $this->imageValidate = $imageValidate;
-        return $this;
-    }
-
-    /**
-     * 设置是否校验上传文件
-     * @param bool $autoValidate
-     * @return $this
-     */
-    public function setAutoValidate(bool $autoValidate)
-    {
-        $this->autoValidate = $autoValidate;
-        return $this;
-    }
-
-    /**
-     * 设置上传路径
-     * @param string $uploadPath
-     * @return $this
-     */
-    public function setUploadPath(string $uploadPath)
-    {
-        $this->uploadPath = $uploadPath;
-        return $this;
-    }
-
-    /**
-     * 设置上传类型
-     * @param int $uploadType
-     * @return $this
-     */
-    public function setUploadType(int $uploadType)
-    {
-        $this->uploadType = $uploadType;
-        return $this;
-    }
-
-    /**
-     * 设置发生错误时是否返回错误信息
-     * @param bool $returnErr
-     * @return $this
-     */
-    public function serReturnErr(bool $returnErr)
-    {
-        $this->returnErr = $returnErr;
-        return $this;
+        $this->init();
     }
 
     /**
      * 初始化
      */
-    private static function init()
+    protected function init()
     {
         self::$uploadStatus = new \StdClass();
+        $this->extractValidate();
+    }
+
+    /**
+     * 提取上传验证
+     */
+    protected function extractValidate()
+    {
+        $imageValidate = [];
+        foreach ($this->imageValidateArray as $key => $value) {
+            $imageValidate[] = $key . ':' . (is_array($value) ? implode(',', $value) : $value);
+        }
+        $this->imageValidate = implode('|', $imageValidate);
+        unset($imageValidate);
+    }
+
+    /**
+     * 设置上传验证
+     * @param array $imageValidateArray
+     * @return $this
+     */
+    public function setImageValidateArray(array $imageValidateArray)
+    {
+        if (isset($imageValidateArray['filesize']) && !is_int($imageValidateArray['filesize'])) {
+            $imageValidateArray['filesize'] = 2097152;
+        }
+        $this->imageValidateArray = array_merge($this->imageValidateArray, $imageValidateArray);
+        $this->extractValidate();
+        return $this;
     }
 
     /**
@@ -192,8 +179,8 @@ class UploadService
      */
     protected static function uploadDir($path, $root = null)
     {
-        if ($root === null) $root = app()->getRootPath() . 'public' . DS ;
-        return $root . 'uploads' .DS. $path;
+        if ($root === null) $root = app()->getRootPath() . 'public' . DS;
+        return $root . 'uploads' . DS . $path;
     }
 
     /**
@@ -204,14 +191,17 @@ class UploadService
     public function image($fileName)
     {
         $info = [];
-        try{
-            $uploadType = $this->uploadType ? : SystemConfigService::get('upload_type');
+        try {
+            $uploadType = $this->uploadType ?: sys_config('upload_type');
             //TODO 没有选择默认使用本地上传
-            if (!$uploadType) $uploadType = 1;
+            if (!$uploadType)
+                $uploadType = 1;
+            if (!is_int($uploadType))
+                $uploadType = (int)$uploadType;
             switch ($uploadType) {
                 case 1 :
                     $info = $this->uploadLocaFile($fileName);
-                    if(is_string($info)) return $info;
+                    if (is_string($info)) return $info;
                     break;
                 case 2 :
                     $keys = Qiniu::uploadImage($fileName);
@@ -219,7 +209,7 @@ class UploadService
                         foreach ($keys as $key => &$item) {
                             if (is_array($item)) {
                                 $info = Qiniu::imageUrl($item['key']);
-                                $info = $this->setUploadInfo($info['dir'],2,$item['key'],UtilService::setHttpType($info['thumb_path']));
+                                $info = $this->setUploadInfo($info['dir'], 2, $item['key'], UtilService::setHttpType($info['thumb_path']));
                             }
                         }
                     } else return $keys;
@@ -227,21 +217,19 @@ class UploadService
                 case 3 :
                     $serverImageInfo = OSS::uploadImage($fileName);
                     if (!is_array($serverImageInfo)) return $serverImageInfo;
-                    $info = $this->setUploadInfo(UtilService::setHttpType($serverImageInfo['info']['url']),3,substr(strrchr($serverImageInfo['info']['url'], '/'), 1));
+                    $info = $this->setUploadInfo(UtilService::setHttpType($serverImageInfo['info']['url']), 3, substr(strrchr($serverImageInfo['info']['url'], '/'), 1));
                     break;
                 case 4 :
-                    list($imageUrl,$serverImageInfo) = COS::uploadImage($fileName);
+                    list($imageUrl, $serverImageInfo) = COS::uploadImage($fileName);
                     if (!is_array($serverImageInfo) && !is_object($serverImageInfo)) return $serverImageInfo;
-                    $info = $this->setUploadInfo($imageUrl,4,substr(strrchr($imageUrl, '/'), 1));
+                    $info = $this->setUploadInfo($imageUrl, 4, substr(strrchr($imageUrl, '/'), 1));
                     break;
                 default:
                     $info = $this->uploadLocaFile($fileName);
-                    if(is_string($info)) return $info;
+                    if (is_string($info)) return $info;
                     break;
             }
-            $this->uploadPath = '';
-            $this->autoValidate = true;
-        }catch (\Exception $e){
+        } catch (\Exception $e) {
             return $e->getMessage();
         }
         return $info;
@@ -254,8 +242,9 @@ class UploadService
      * @param bool $isData 是否真实获取图片信息
      * @return array
      */
-    public static function getImageHeaders(string $url,$type = 1,$isData = true){
-        stream_context_set_default( [
+    public static function getImageHeaders(string $url, $type = 1, $isData = true)
+    {
+        stream_context_set_default([
             'ssl' => [
                 'verify_peer' => false,
                 'verify_peer_name' => false,
@@ -263,14 +252,12 @@ class UploadService
         ]);
         $header['Content-Length'] = 0;
         $header['Content-Type'] = 'image/jpeg';
-        if(!$isData) return $header;
-        try{
+        if (!$isData) return $header;
+        try {
             $header = get_headers(str_replace('\\', '/', UtilService::setHttpType($url, $type)), true);
-            if(!isset($header['Content-Length'])) $header['Content-Length'] = 0;
-            if(!isset($header['Content-Type'])) $header['Content-Type'] = 'image/jpeg';
-        }catch (\Exception $e){
-            $header['Content-Length'] = 0;
-            $header['Content-Type'] = 'image/jpeg';
+            if (!isset($header['Content-Length'])) $header['Content-Length'] = 0;
+            if (!isset($header['Content-Type'])) $header['Content-Type'] = 'image/jpeg';
+        } catch (\Exception $e) {
         }
         return $header;
     }
@@ -284,8 +271,7 @@ class UploadService
     {
         $file = request()->file($fileName);
         if (!$file) return '上传文件不存在!';
-        if ($this->autoValidate)
-        {
+        if ($this->autoValidate) {
             try {
                 validate([$fileName => $this->imageValidate])->check([$fileName => $file]);
             } catch (ValidateException $e) {
@@ -297,9 +283,11 @@ class UploadService
         $filePath = Filesystem::path($fileName);
         $fileInfo = new File($filePath);
         $url = '/uploads/' . $fileName;
-        return $this->setUploadInfo($url,1,$fileInfo->getFilename(),self::thumb('.'.$url),[
-            'Content-Length'=>$fileInfo->getSize(),
-            'Content-Type'=>$fileInfo->getMime()
+        $this->uploadPath = '';
+        $this->autoValidate = false;
+        return $this->setUploadInfo($url, 1, $fileInfo->getFilename(), self::thumb('.' . $url), [
+            'Content-Length' => $fileInfo->getSize(),
+            'Content-Type' => $fileInfo->getMime()
         ]);
     }
 
@@ -310,9 +298,9 @@ class UploadService
      * @param string $root
      * @return array|string
      */
-    public function uploadLocalStream($key, $content,$root='')
+    public function uploadLocalStream($key, $content, $root = '')
     {
-        $siteUrl = SystemConfigService::get('site_url') . '/';
+        $siteUrl = sys_config('site_url') . '/';
         $path = self::uploadDir($this->uploadPath, $root);
         $path = str_replace('\\', DS, $path);
         $path = str_replace('/', DS, $path);
@@ -321,9 +309,9 @@ class UploadService
         $name = $path . DS . $key;
         file_put_contents($name, $content);
         $path = str_replace('\\', '/', $path);
-        $headerArray = self::getImageHeaders($siteUrl .  $path . '/' .$key);
-        $url = '/'.$path . '/' .$key;
-        return $this->setUploadInfo($url,1,$key,$url,$headerArray);
+        $headerArray = self::getImageHeaders($siteUrl . $path . '/' . $key);
+        $url = '/' . $path . '/' . $key;
+        return $this->setUploadInfo($url, 1, $key, $url, $headerArray);
     }
 
     /**
@@ -334,16 +322,16 @@ class UploadService
      * @return array|string
      * @throws \Exception
      */
-    public function imageStream($key, $content,$root='')
+    public function imageStream($key, $content, $root = '')
     {
-        $uploadType = SystemConfigService::get('upload_type');
+        $uploadType = sys_config('upload_type');
         //TODO 没有选择默认使用本地上传
         if (!$uploadType) $uploadType = 1;
         $info = [];
         switch ($uploadType) {
             case 1 :
-                $info = $this->uploadLocalStream($key, $content,$root);
-                if(is_string($info)) return $info;
+                $info = $this->uploadLocalStream($key, $content, $root);
+                if (is_string($info)) return $info;
                 break;
             case 2 :
                 $keys = Qiniu::uploadImageStream($key, $content);
@@ -352,7 +340,7 @@ class UploadService
                         if (is_array($item)) {
                             $info = Qiniu::imageUrl($item['key']);
                             $info['dir'] = UtilService::setHttpType($info['dir']);
-                            $info = $this->setUploadInfo($info['dir'],2,$item['key'],$info['thumb_path']);
+                            $info = $this->setUploadInfo($info['dir'], 2, $item['key'], $info['thumb_path']);
                         }
                     }
                     if (!count($info)) return '七牛云文件上传失败';
@@ -362,16 +350,16 @@ class UploadService
                 $content = COS::resourceStream($content);
                 $serverImageInfo = OSS::uploadImageStream($key, $content);
                 if (!is_array($serverImageInfo)) return $serverImageInfo;
-                $info = $this->setUploadInfo(UtilService::setHttpType($serverImageInfo['info']['url']),3,substr(strrchr($serverImageInfo['info']['url'], '/'), 1));
+                $info = $this->setUploadInfo(UtilService::setHttpType($serverImageInfo['info']['url']), 3, substr(strrchr($serverImageInfo['info']['url'], '/'), 1));
                 break;
             case 4 :
-                list($imageUrl,$serverImageInfo) = COS::uploadImageStream($key, $content);
+                list($imageUrl, $serverImageInfo) = COS::uploadImageStream($key, $content);
                 if (!is_array($serverImageInfo) && !is_object($serverImageInfo)) return $serverImageInfo;
-                $info = $this->setUploadInfo($imageUrl,4,substr(strrchr($imageUrl, '/'), 1));
+                $info = $this->setUploadInfo($imageUrl, 4, substr(strrchr($imageUrl, '/'), 1));
                 break;
             default:
-                $info = $this->uploadLocalStream($key, $content,$root);
-                if(is_string($info)) return $info;
+                $info = $this->uploadLocalStream($key, $content, $root);
+                if (is_string($info)) return $info;
                 break;
         }
         $this->uploadPath = '';
@@ -387,25 +375,25 @@ class UploadService
      * @param string $thumbPath
      * @return array
      */
-    protected function setUploadInfo(string $url,int $imageType,string $name = '',string $thumbPath = '',array $headerArray = [])
+    protected function setUploadInfo(string $url, int $imageType, string $name = '', string $thumbPath = '', array $headerArray = [])
     {
         $headerArray = count($headerArray) ? $headerArray : self::getImageHeaders($url);
-        if(is_array($headerArray['Content-Type']) && count($headerArray['Content-Length']) == 2){
+        if (is_array($headerArray['Content-Type']) && count($headerArray['Content-Length']) == 2) {
             $headerArray['Content-Length'] = $headerArray['Content-Length'][1];
         }
-        if(is_array($headerArray['Content-Type']) && count($headerArray['Content-Type']) == 2){
+        if (is_array($headerArray['Content-Type']) && count($headerArray['Content-Type']) == 2) {
             $headerArray['Content-Type'] = $headerArray['Content-Type'][1];
         }
         $info = [
-            'name' => str_replace('\\','/',$name ? : $url),
-            'dir'  => str_replace('\\','/',$url),
+            'name' => str_replace('\\', '/', $name ?: $url),
+            'dir' => str_replace('\\', '/', $url),
             'size' => $headerArray['Content-Length'],
             'type' => $headerArray['Content-Type'],
             'time' => time(),
-            'thumb_path' => str_replace('\\','/',$thumbPath ? : $url),
+            'thumb_path' => str_replace('\\', '/', $thumbPath ?: $url),
             'image_type' => $imageType,
         ];
-        $uploadInfo = array_merge($this->uploadInfo,$info);
+        $uploadInfo = array_merge($this->uploadInfo, $info);
         return $uploadInfo;
     }
 
@@ -416,13 +404,11 @@ class UploadService
      */
     public function file($fileName)
     {
-        if (!isset($_FILES[$fileName])) return self::setError('上传文件不存在!');
-        $extension = strtolower(pathinfo($_FILES[$fileName]['name'], PATHINFO_EXTENSION));
-        if (strtolower($extension) == 'php' || !$extension)
-            return self::setError('上传文件非法!');
         $file = request()->file($fileName);
-        if ($this->autoValidate)
-        {
+        if (!$file) return self::setError('上传文件不存在!');
+        if (strtolower($file->getOriginalExtension()) === 'php' || !$file->getOriginalExtension())
+            return self::setError('上传文件非法!');
+        if ($this->autoValidate) {
             try {
                 validate([$fileName => $this->imageValidate])->check([$fileName => $file]);
             } catch (ValidateException $e) {
@@ -431,14 +417,14 @@ class UploadService
         };
         $fileName = Filesystem::putFile($this->uploadPath, $file);
         if (!$fileName) return self::setError('图片上传失败!');
-        return self::successful(str_replace('\\','/',$fileName));
+        return self::successful(str_replace('\\', '/', $fileName));
     }
 
-    public static function pathToUrl($path)
-    {
-        return trim(str_replace(DS, '/', $path), '.');
-    }
-
+    /**
+     * 打开图片
+     * @param $filePath
+     * @return \think\Image
+     */
     public function openImage($filePath)
     {
         return \think\Image::open($filePath);
@@ -455,19 +441,30 @@ class UploadService
      */
     public function thumb($filePath, $ratio = 5, $pre = 's_')
     {
-        $img = $this->openImage($filePath);
+        try {
+            $img = $this->openImage($filePath);
+        } catch (\Throwable $e) {
+            $dir = dirname($filePath);
+            $fileName = basename($filePath);
+            return $dir . DS . $fileName;
+        }
         $width = $img->width() * $ratio / 10;
         $height = $img->height() * $ratio / 10;
         $dir = dirname($filePath);
         $fileName = basename($filePath);
         $savePath = $dir . DS . $pre . $fileName;
         $img->thumb($width, $height)->save($savePath);
-        if(substr($savePath, 0, 2) == './') return substr($savePath, 1, strlen($savePath));
+        if (substr($savePath, 0, 2) == './') return substr($savePath, 1, strlen($savePath));
         return DS . $savePath;
     }
 
-    protected function __clone()
+    /**
+     * TODO 转为文件流
+     * @param $resource
+     * @return EntityBody
+     */
+    public static function resourceStream($resource)
     {
-        // TODO: Implement __clone() method.
+        return EntityBody::factory($resource)->__toString();
     }
 }

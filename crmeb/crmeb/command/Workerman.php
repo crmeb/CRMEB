@@ -74,7 +74,7 @@ class Workerman extends Command
     protected function execute(Input $input, Output $output)
     {
         $server = $this->init($input, $output);
-
+        Worker::$pidFile = app()->getRootPath().'workerman.pid';
         if(!$server || $server == 'admin'){
             var_dump('admin');
             //创建 admin 长连接服务

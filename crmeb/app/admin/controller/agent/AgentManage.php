@@ -27,7 +27,7 @@ class AgentManage extends AuthController
     public function index()
     {
         $this->assign( 'year',getMonth());
-        $this->assign('store_brokerage_statu',\crmeb\services\SystemConfigService::get('store_brokerage_statu'));
+        $this->assign('store_brokerage_statu',sysConfig('store_brokerage_statu'));
         return $this->fetch();
     }
     public function get_spread_list()
@@ -211,7 +211,7 @@ class AgentManage extends AuthController
         if(!$imageInfo){
             $res = \app\models\routine\RoutineCode::getShareCode($uid, 'spread', '', '');
             if(!$res) throw new \think\Exception('二维码生成失败');
-            $imageInfo = UploadService::getInstance()->setUploadPath('routine/spread/code')->imageStream($name,$res['res']);
+            $imageInfo = UploadService::instance()->setUploadPath('routine/spread/code')->imageStream($name,$res['res']);
             if(!is_array($imageInfo)) return $imageInfo;
             SystemAttachment::attachmentAdd($imageInfo['name'],$imageInfo['size'],$imageInfo['type'],$imageInfo['dir'],$imageInfo['thumb_path'],1,$imageInfo['image_type'],$imageInfo['time']);
             RoutineQrcode::setRoutineQrcodeFind($res['id'],['status'=>1,'time'=>time(),'qrcode_url'=>$imageInfo['dir']]);
@@ -221,11 +221,11 @@ class AgentManage extends AuthController
     }
 
     /*
-     *
+     * 获取公众号二维码
      * */
     public function wechant_code($uid)
     {
-        $qr_code = \crmeb\services\QrcodeService::getTemporaryQrcode('spread',$uid);
+        $qr_code = \crmeb\services\QrcodeService::getForeverQrcode('spread',$uid);
         if(isset($qr_code['url']))
             return ['code_src'=>$qr_code['url']];
         else
@@ -246,7 +246,7 @@ class AgentManage extends AuthController
             if(!$imageInfo){
                 $res = \app\models\routine\RoutineCode::getShareCode($uid, 'spread', '', '');
                 if(!$res) return JsonService::fail('二维码生成失败');
-                $imageInfo = UploadService::getInstance()->setUploadPath('routine/spread/code')->imageStream($name,$res['res']);
+                $imageInfo = UploadService::instance()->setUploadPath('routine/spread/code')->imageStream($name,$res['res']);
                 if(!is_array($imageInfo)) return JsonService::fail($imageInfo);
                 SystemAttachment::attachmentAdd($imageInfo['name'],$imageInfo['size'],$imageInfo['type'],$imageInfo['dir'],$imageInfo['thumb_path'],1,$imageInfo['image_type'],$imageInfo['time']);
                 RoutineQrcode::setRoutineQrcodeFind($res['id'],['status'=>1,'time'=>time(),'qrcode_url'=>$imageInfo['dir']]);
@@ -276,10 +276,7 @@ class AgentManage extends AuthController
     public function empty_spread($uid=0)
     {
         if(!$uid) return JsonService::fail('缺少参数');
-        $res=true;
-        $spread_uid = User::where('spread_uid',$uid)->column('uid','uid');
-        if(count($spread_uid)) $res = $res && false !== User::where('spread_uid','in',$spread_uid)->update(['spread_uid'=>0]);
-        $res = $res && false !== User::where('spread_uid',$uid)->update(['spread_uid'=>0]);
+        $res =  User::where('uid',$uid)->update(['spread_uid'=>0]);
         if($res)
             return JsonService::successful('清除成功');
         else

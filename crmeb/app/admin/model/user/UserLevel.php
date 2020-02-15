@@ -46,7 +46,7 @@ class UserLevel extends BaseModel
     {
         $data=self::setWhere($where,'a')->group('a.uid')->order('grade desc')
             ->field('a.*,u.nickname,u.avatar')
-            ->join('__user__ u','a.uid=u.uid')->page((int)$where['page'],(int)$where['limit'])->select();
+            ->join('user u','a.uid=u.uid')->page((int)$where['page'],(int)$where['limit'])->select();
         $data=count($data) ? $data->toArray() : [];
         foreach ($data as &$item){
             $info=SystemUserLevel::where('id',$item['level_id'])->find();
@@ -57,7 +57,7 @@ class UserLevel extends BaseModel
             $item['is_forever']= $item['is_forever'] ? '永久会员':'限时会员';
             $item['valid_time']=$item['is_forever'] ? '永久':date('Y-m-d H:i:s',$item['valid_time']);
         }
-        $count=self::setWhere($where,'a')->group('a.level_id')->order('grade desc')->join('__user__ u','a.uid=u.uid')->count();
+        $count=self::setWhere($where,'a')->group('a.level_id')->order('grade desc')->join('user u','a.uid=u.uid')->count();
         return compact('data','count');
     }
 

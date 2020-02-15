@@ -12,17 +12,16 @@ declare (strict_types = 1);
 
 namespace think;
 
+use think\helper\Arr;
+
 /**
  * 视图类
  * @package think
  */
-class View
+class View extends Manager
 {
-    /**
-     * 模板引擎实例
-     * @var object
-     */
-    public $engine;
+
+    protected $namespace = '\\think\\view\\driver\\';
 
     /**
      * 模板变量
@@ -37,31 +36,21 @@ class View
     protected $filter;
 
     /**
-     * 初始化
+     * 获取模板引擎
      * @access public
-     * @param  array $options  模板引擎参数
+     * @param string $type 模板引擎类型
      * @return $this
      */
-    public function __construct(array $options = [])
+    public function engine(string $type = null)
     {
-        // 初始化模板引擎
-        $type = $options['type'] ?? 'php';
-        unset($options['type']);
-        $this->engine($type, $options);
-
-        return $this;
-    }
-
-    public static function __make(Config $config)
-    {
-        return new static($config->get('template'));
+        return $this->driver($type);
     }
 
     /**
      * 模板变量赋值
      * @access public
-     * @param  string|array $name  模板变量
-     * @param  mixed        $value 变量值
+     * @param string|array $name  模板变量
+     * @param mixed        $value 变量值
      * @return $this
      */
     public function assign($name, $value = null)
@@ -76,47 +65,9 @@ class View
     }
 
     /**
-     * 设置当前模板解析的引擎
-     * @access public
-     * @param  string       $type    模板引擎类型
-     * @param  array|string $options 模板引擎参数
-     * @return $this
-     */
-    public function engine(string $type, array $options = [])
-    {
-        $this->engine = App::factory($type, '\\think\\view\\driver\\', $options);
-
-        return $this;
-    }
-
-    /**
-     * 配置模板引擎
-     * @access public
-     * @param  array  $name 模板参数
-     * @return $this
-     */
-    public function config(array $config)
-    {
-        $this->engine->config($config);
-
-        return $this;
-    }
-
-    /**
-     * 检查模板是否存在
-     * @access public
-     * @param  string  $name 参数名
-     * @return bool
-     */
-    public function exists(string $name): bool
-    {
-        return $this->engine->exists($name);
-    }
-
-    /**
      * 视图过滤
      * @access public
-     * @param Callable  $filter 过滤方法或闭包
+     * @param Callable $filter 过滤方法或闭包
      * @return $this
      */
     public function filter(callable $filter = null)
@@ -128,12 +79,39 @@ class View
     /**
      * 解析和获取模板内容 用于输出
      * @access public
-     * @param  string    $template 模板文件名或者内容
-     * @param  bool      $renderContent     是否渲染内容
+     * @param string $template 模板文件名或者内容
+     * @param array  $vars     模板变量
      * @return string
      * @throws \Exception
      */
-    public function fetch(string $template = '', bool $renderContent = false): string
+    public function fetch(string $template = '', array $vars = []): string
+    {
+        return $this->getContent(function () use ($vars, $template) {
+            $this->engine()->fetch($template, array_merge($this->data, $vars));
+        });
+    }
+
+    /**
+     * 渲染内容输出
+     * @access public
+     * @param string $content 内容
+     * @param array  $vars    模板变量
+     * @return string
+     */
+    public function display(string $content, array $vars = []): string
+    {
+        return $this->getContent(function () use ($vars, $content) {
+            $this->engine()->display($content, array_merge($this->data, $vars));
+        });
+    }
+
+    /**
+     * 获取模板引擎渲染内容
+     * @param $callback
+     * @return string
+     * @throws \Exception
+     */
+    protected function getContent($callback): string
     {
         // 页面缓存
         ob_start();
@@ -141,8 +119,7 @@ class View
 
         // 渲染输出
         try {
-            $method = $renderContent ? 'display' : 'fetch';
-            $this->engine->$method($template, $this->data);
+            $callback();
         } catch (\Exception $e) {
             ob_end_clean();
             throw $e;
@@ -159,21 +136,10 @@ class View
     }
 
     /**
-     * 渲染内容输出
-     * @access public
-     * @param  string $content 内容
-     * @return string
-     */
-    public function display(string $content): string
-    {
-        return $this->fetch($content, true);
-    }
-
-    /**
      * 模板变量赋值
      * @access public
-     * @param  string    $name  变量名
-     * @param  mixed     $value 变量值
+     * @param string $name  变量名
+     * @param mixed  $value 变量值
      */
     public function __set($name, $value)
     {
@@ -183,7 +149,7 @@ class View
     /**
      * 取得模板显示变量的值
      * @access protected
-     * @param  string $name 模板变量
+     * @param string $name 模板变量
      * @return mixed
      */
     public function __get($name)
@@ -194,11 +160,28 @@ class View
     /**
      * 检测模板变量是否设置
      * @access public
-     * @param  string $name 模板变量名
+     * @param string $name 模板变量名
      * @return bool
      */
     public function __isset($name)
     {
         return isset($this->data[$name]);
     }
+
+    protected function resolveConfig(string $name)
+    {
+        $config = $this->app->config->get('view', []);
+        Arr::forget($config, 'type');
+        return $config;
+    }
+
+    /**
+     * 默认驱动
+     * @return string|null
+     */
+    public function getDefaultDriver()
+    {
+        return $this->app->config->get('view.type', 'php');
+    }
+
 }

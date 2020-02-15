@@ -301,7 +301,7 @@
                   $eb.message('error','一组图文消息最多可以添加8个');
                   return false;
                 }
-                var url = "/public/system/module/wechat/news/images/image.png";
+                var url = "{__MODULE_PATH}wechat/news/images/image.png";
                 html = '';
                 html += '<div class="news-item transition active news-image" style=" margin-bottom: 20px;background-image:url('+url+')">'
                     html += '<input type="hidden" name="new_id" value="" class="new-id">';

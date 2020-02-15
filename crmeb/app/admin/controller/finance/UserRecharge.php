@@ -124,16 +124,10 @@ SCRIPT;
                     'keyword2'=>$UserRecharge['price'],
                     'keyword3'=>date('Y-m-d H:i:s',$UserRecharge['add_time']),
                     'remark'=>'点击查看订单详情'
-                ],Url::buildUrl('wap/My/balance','',true,true));
+                ],Url::buildUrl('/user/bill/2')->suffix(false)->build());
                 break;
             case 'routine':
-                RoutineTemplate::sendOut('ORDER_REFUND_SUCCESS',$UserRecharge['uid'],[
-                    'keyword1'=>$UserRecharge['order_id'],
-                    'keyword2'=>date('Y-m-d H:i:s',time()),
-                    'keyword3'=>$UserRecharge['price'],
-                    'keyword4'=>'余额充值退款',
-                    'keyword5'=>'亲，您充值的金额已退款,本次退款'. $data['refund_price'].'金额',
-                ]);
+                RoutineTemplate::sendRechargeSuccess($UserRecharge,$data['refund_price']);
                 break;
         }
         UserBill::expend('系统退款',$UserRecharge['uid'],'now_money','user_recharge_refund',$refund_price,$id,$UserRecharge['price'],'退款给用户'.$refund_price.'元');

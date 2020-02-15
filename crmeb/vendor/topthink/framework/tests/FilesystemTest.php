@@ -38,7 +38,7 @@ class FilesystemTest extends TestCase
         Container::setInstance($this->app);
         $this->app->shouldReceive('make')->with(App::class)->andReturn($this->app);
         $this->config = m::mock(Config::class);
-        $this->config->shouldReceive('get')->with('filesystem.default')->andReturn('local');
+        $this->config->shouldReceive('get')->with('filesystem.default', null)->andReturn('local');
         $this->app->shouldReceive('get')->with('config')->andReturn($this->config);
         $this->filesystem = new Filesystem($this->app);
 
@@ -52,12 +52,12 @@ class FilesystemTest extends TestCase
 
     public function testDisk()
     {
-        $this->config->shouldReceive('get')->once()->with('filesystem.disks.local')->andReturn([
+        $this->config->shouldReceive('get')->with('filesystem.disks.local', null)->andReturn([
             'type' => 'local',
             'root' => $this->root->url(),
         ]);
 
-        $this->config->shouldReceive('get')->once()->with('filesystem.disks.foo')->andReturn([
+        $this->config->shouldReceive('get')->with('filesystem.disks.foo', null)->andReturn([
             'type' => 'local',
             'root' => $this->root->url(),
         ]);
@@ -69,7 +69,7 @@ class FilesystemTest extends TestCase
 
     public function testCache()
     {
-        $this->config->shouldReceive('get')->once()->with('filesystem.disks.local')->andReturn([
+        $this->config->shouldReceive('get')->with('filesystem.disks.local', null)->andReturn([
             'type'  => 'local',
             'root'  => $this->root->url(),
             'cache' => true,
@@ -77,7 +77,7 @@ class FilesystemTest extends TestCase
 
         $this->assertInstanceOf(Local::class, $this->filesystem->disk());
 
-        $this->config->shouldReceive('get')->once()->with('filesystem.disks.cache')->andReturn([
+        $this->config->shouldReceive('get')->with('filesystem.disks.cache', null)->andReturn([
             'type'  => NullDriver::class,
             'root'  => $this->root->url(),
             'cache' => [
@@ -91,7 +91,7 @@ class FilesystemTest extends TestCase
 
         $cache->shouldReceive('store')->once()->with('flysystem')->andReturn($cacheDriver);
 
-        $this->app->shouldReceive('get')->once()->with('cache')->andReturn($cache);
+        $this->app->shouldReceive('make')->with(Cache::class)->andReturn($cache);
 
         $cacheDriver->shouldReceive('get')->with('flysystem')->once()->andReturn(null);
 
@@ -106,7 +106,7 @@ class FilesystemTest extends TestCase
             'foo.jpg' => 'hello',
         ]);
 
-        $this->config->shouldReceive('get')->once()->with('filesystem.disks.local')->andReturn([
+        $this->config->shouldReceive('get')->with('filesystem.disks.local', null)->andReturn([
             'type'  => NullDriver::class,
             'root'  => $root->url(),
             'cache' => true,

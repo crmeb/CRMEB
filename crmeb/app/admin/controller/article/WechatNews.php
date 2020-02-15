@@ -54,7 +54,7 @@ class WechatNews extends AuthController
         $news['url'] = '';
         $news['cid'] = array();
         if($id){
-            $news = \app\admin\model\wechat\WechatNews::where('n.id',$id)->alias('n')->field('n.*,c.content')->join('__WECHAT_NEWS_CONTENT__ c','c.nid=n.id')->find();
+            $news = \app\admin\model\wechat\WechatNews::where('n.id',$id)->alias('n')->field('n.*,c.content')->join('wechat_news_content c','c.nid=n.id')->find();
             if(!$news) return $this->failedNotice('数据不存在!');
             $news['cid'] = explode(',',$news['cid']);
 //            dump($news);
@@ -89,7 +89,7 @@ class WechatNews extends AuthController
      * @return \think\response\Json
      */
     public function upload_image(){
-        $res = Upload::getInstance()->setUploadPath('wechat/image/'.date('Ymd'))->image($_POST['file']);
+        $res = Upload::instance()->setUploadPath('wechat/image/'.date('Ymd'))->image($_POST['file']);
         if(!is_array($res)) return Json::fail($res);
         SystemAttachment::attachmentAdd($res['name'],$res['size'],$res['type'],$res['dir'],$res['thumb_path'],5,$res['image_type'],$res['time']);
         return Json::successful('上传成功!',['url'=>$res['thumb_path']]);

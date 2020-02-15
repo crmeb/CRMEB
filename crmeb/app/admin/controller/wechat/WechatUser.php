@@ -159,7 +159,7 @@ class WechatUser extends AuthController
         $list=[];
         if($refresh == 1) {
             UserModel::clearUserTag();
-            $this->redirect(Url::buildUrl('tag'));
+            $this->redirect(Url::buildUrl('tag')->suffix(false)->build());
         }
         try{
             $list = UserModel::getUserTag();
@@ -252,7 +252,7 @@ class WechatUser extends AuthController
         try{
             if($refresh == 1) {
                 UserModel::clearUserGroup();
-                $this->redirect(Url::buildUrl('group'));
+                $this->redirect(Url::buildUrl('group')->suffix(false)->build());
             }
             $list = UserModel::getUserGroup();
         }catch (\Exception $e){}

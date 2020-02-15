@@ -57,7 +57,7 @@ return [
             // Query类
             'query'           => '',
             // 是否需要断线重连
-            'break_reconnect' => false,
+            'break_reconnect' => true,
         ],
 
         // 更多的数据库配置信息

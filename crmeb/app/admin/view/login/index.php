@@ -8,6 +8,7 @@
     <meta name="generator" content="CRMEB! v2.5" />
     <meta name="author" content="CRMEB! Team and CRMEB UI Team" />
     <link href="{__FRAME_PATH}css/bootstrap.min.css?v=3.4.0" rel="stylesheet">
+    <link href="{__PLUG_PATH}layui/css/layui.css" rel="stylesheet">
     <link href="{__FRAME_PATH}css/font-awesome.min.css?v=4.3.0" rel="stylesheet">
     <link href="{__FRAME_PATH}css/animate.min.css" rel="stylesheet">
     <link href="{__FRAME_PATH}css/style.min.css?v=3.0.0" rel="stylesheet">
@@ -22,7 +23,7 @@
         <h3 class="login-logo">
             <img src="{__ADMIN_PATH}images/logo.png">
         </h3>
-        <form role="form" action="{:url('verify')}" method="post">
+        <form role="form" action="{:url('verify')}" method="post" id="form" onsubmit="return false">
             <div class="form-group">
                 <div class="input-group m-b"><span class="input-group-addon"><i class="fa fa-user"></i> </span>
                     <input type="text" id="account" name="account" placeholder="用户名" placeholder="用户名" class="form-control">
@@ -42,11 +43,6 @@
                     </span>
                 </div>
             </div>
-            <div class="form-group">
-                <strong>
-                    <p class="text-danger" id="err" style="display: none;"></p>
-                </strong>
-            </div>
             <button type="submit" class="btn btn-primary block full-width m-b">登 录</button>
             <?php /*  <p class="text-muted text-center"> <a href="{:url('./forgetpwd')}"><small>忘记密码了？</small></a> | <a href="{:url('./register')}">注册一个新账号</a>
               </p>  */ ?>
@@ -63,6 +59,7 @@
 <script src="{__FRAME_PATH}js/bootstrap.min.js?v=3.4.0"></script>
 <script src="{__MODULE_PATH}login/flaotfont.js"></script>
 <script src="{__MODULE_PATH}login/ios-parallax.js"></script>
+<script src="{__PLUG_PATH}layui/layui.all.js"></script>
 <script src="{__MODULE_PATH}login/index.js"></script>
 <!--统计代码，可删除-->
 <!--点击刷新验证码-->

@@ -7,3 +7,6 @@ runtime/
 install.lock
 public/uploads
 remarks.txt
+*.jpg
+*.png
+crmeb/public/uploads/

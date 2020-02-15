@@ -1,6 +1,8 @@
 <?php
 namespace app\admin\controller\setting;
 
+use crmeb\services\CacheService;
+use crmeb\services\SystemConfigService;
 use think\facade\Route as Url;
 use crmeb\services\FormBuilder as Form;
 use crmeb\services\UtilService as Util;
@@ -223,6 +225,7 @@ class SystemConfig extends AuthController
            $data['value'] = json_encode($data['value']);
        }
        ConfigModel::create($data);
+       CacheService::delete(SystemConfigService::CACHE_SYSTEM);
        return Json::successful('添加菜单成功!');
    }
 
@@ -343,10 +346,12 @@ class SystemConfig extends AuthController
      */
     public function delete_config(){
         $id = input('id');
-        if(!ConfigModel::del($id))
+        if(!ConfigModel::del($id)) {
             return Json::fail(ConfigModel::getErrorInfo('删除失败,请稍候再试!'));
-        else
+        }else {
+            CacheService::delete(SystemConfigService::CACHE_SYSTEM);
             return Json::successful('删除成功!');
+        }
     }
 
     /**
@@ -371,6 +376,7 @@ class SystemConfig extends AuthController
             foreach ($post as $k=>$v){
                 ConfigModel::edit(['value' => json_encode($v)],$k,'menu_name');
             }
+            CacheService::delete(SystemConfigService::CACHE_SYSTEM);
             return $this->successful('修改成功');
         }
     }
@@ -394,7 +400,7 @@ class SystemConfig extends AuthController
     * 文件上传
     * */
    public function file_upload(){
-       $res = Upload::getInstance()->setUploadPath('config/file')->file($this->request->param('file','file'));
+       $res = Upload::instance()->setUploadPath('config/file')->file($this->request->param('file','file'));
        if(!$res->status) return Json::fail($res->error);
        return Json::successful('上传成功!',['filePath'=>$res->filePath]);
    }

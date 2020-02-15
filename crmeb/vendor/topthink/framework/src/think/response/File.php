@@ -8,6 +8,7 @@
 // +----------------------------------------------------------------------
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
+declare (strict_types = 1);
 
 namespace think\response;
 
@@ -23,6 +24,11 @@ class File extends Response
     protected $name;
     protected $mimeType;
     protected $isContent = false;
+
+    public function __construct($data = '', int $code = 200)
+    {
+        $this->init($data, $code);
+    }
 
     /**
      * 处理数据

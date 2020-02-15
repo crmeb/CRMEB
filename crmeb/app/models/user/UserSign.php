@@ -55,7 +55,7 @@ class UserSign extends BaseModel
         if(!$limit) return [];
         $billModel = UserBill::where('a.category','integral')->where('a.type','sign')
             ->where('a.status',1)->where('a.uid',$uid)->alias('a')
-            ->join("__user__ u",'u.uid=a.uid')
+            ->join("user u",'u.uid=a.uid')
             ->order('a.add_time desc')->field('FROM_UNIXTIME(a.add_time,"%Y-%m-%d") as add_time,a.title,a.number');
         if($page) $billModel = $billModel->page((int)$page,(int)$limit);
         return $billModel->select();
@@ -196,8 +196,8 @@ class UserSign extends BaseModel
     public static function signEbApi($userInfo)
     {
         $uid = $userInfo['uid'];
-        $min = SystemConfigService::get('sx_sign_min_int')?:0;
-        $max = SystemConfigService::get('sx_sign_max_int')?:5;
+        $min = sysConfig('sx_sign_min_int')?:0;
+        $max = sysConfig('sx_sign_max_int')?:5;
         $integral = rand($min,$max);
         BaseModel::beginTrans();
         $res1 = UserBill::income('用户签到',$uid,'integral','sign',$integral,0,$userInfo['integral'],'签到获得'.floatval($integral).'积分');

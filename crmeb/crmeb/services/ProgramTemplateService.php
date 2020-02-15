@@ -27,7 +27,7 @@ class ProgramTemplateService implements ProviderInterface
     //订单发货提醒(快递)
     const ORDER_POSTAGE_SUCCESS = 'AT0007';
     //订单发货提醒(送货)
-    const ORDER_DELIVER_SUCCESS = 'AT0177';
+    const ORDER_DELIVER_SUCCESS = 'AT2233';
     //拼团取消通知
     const PINK_REMOVE = 'AT2430';
     //拼团失败
@@ -97,7 +97,7 @@ class ProgramTemplateService implements ProviderInterface
      */
     public static function sendAdminNoticeTemplate(array $data, $url = null, $defaultColor = '')
     {
-        $adminIds = explode(',', trim(SystemConfigService::get('site_store_admin_uids')));
+        $adminIds = explode(',', trim(sysConfig('site_store_admin_uids')));
         $kefuIds = ServiceModel::where('notify', 1)->column('uid', 'uid');
         if (empty($adminIds[0])) {
             $adminList = array_unique($kefuIds);

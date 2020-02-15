@@ -40,9 +40,10 @@ class WechatUser extends BaseModel
      * @param string $uid
      * @return bool|mixed
      */
-    public static function getOpenId($uid = ''){
-        if($uid == '') return false;
-        return self::where('uid',$uid)->value('routine_openid');
+    public static function getOpenId($uid = '')
+    {
+        if ($uid == '') return false;
+        return self::where('uid', $uid)->value('routine_openid');
     }
 
     /**
@@ -55,7 +56,7 @@ class WechatUser extends BaseModel
     public static function uidToOpenid($uid, $openidType = 'routine_openid')
     {
 
-        $openid = self::where('uid',$uid)->value($openidType);
+        $openid = self::where('uid', $uid)->value($openidType);
         return $openid;
     }
 
@@ -67,7 +68,7 @@ class WechatUser extends BaseModel
      */
     public static function openidTouid($openid, $openidType = 'openid')
     {
-        return  self::where($openidType,$openid)->where('user_type','<>','h5')->value('uid');
+        return self::where($openidType, $openid)->where('user_type', '<>', 'h5')->value('uid');
     }
 
     /**
@@ -75,67 +76,71 @@ class WechatUser extends BaseModel
      * @param $routineInfo
      * @return mixed
      */
-    public static function routineOauth($routine){
-        $routineInfo['nickname']    = filterEmoji($routine['nickName']);//姓名
-        $routineInfo['sex']         = $routine['gender'];//性别
-        $routineInfo['language']    = $routine['language'];//语言
-        $routineInfo['city']        = $routine['city'];//城市
-        $routineInfo['province']    = $routine['province'];//省份
-        $routineInfo['country']     = $routine['country'];//国家
-        $routineInfo['headimgurl']  = $routine['avatarUrl'];//头像
+    public static function routineOauth($routine)
+    {
+        $routineInfo['nickname'] = filterEmoji($routine['nickName']);//姓名
+        $routineInfo['sex'] = $routine['gender'];//性别
+        $routineInfo['language'] = $routine['language'];//语言
+        $routineInfo['city'] = $routine['city'];//城市
+        $routineInfo['province'] = $routine['province'];//省份
+        $routineInfo['country'] = $routine['country'];//国家
+        $routineInfo['headimgurl'] = $routine['avatarUrl'];//头像
         $routineInfo['routine_openid'] = $routine['openId'];//openid
         $routineInfo['session_key'] = $routine['session_key'];//会话密匙
-        $routineInfo['unionid']     = $routine['unionId'];//用户在开放平台的唯一标识符
-        $routineInfo['user_type']   = 'routine';//用户类型
+        $routineInfo['unionid'] = $routine['unionId'];//用户在开放平台的唯一标识符
+        $routineInfo['user_type'] = 'routine';//用户类型
         $spid = 0;//绑定关系uid
         $isCOde = false;
         //获取是否有扫码进小程序
-        if($routine['code']){
-            if($info = RoutineQrcode::getRoutineQrcodeFindType($routine['code'])){
+        if ($routine['code']) {
+            if ($info = RoutineQrcode::getRoutineQrcodeFindType($routine['code'])) {
                 $spid = $info['third_id'];
-                $isCOde=true;
-            }else
+                $isCOde = true;
+            } else
                 $spid = $routine['spid'];
-        }else if($routine['spid'])
+        } else if ($routine['spid'])
             $spid = $routine['spid'];
 
         //  判断unionid  存在根据unionid判断
-        if($routineInfo['unionid'] != '' && ($uid=self::where(['unionid'=>$routineInfo['unionid']])->where('user_type','<>','h5')->value('uid'))){
-            self::edit($routineInfo,$uid,'uid');
-            $routineInfo['code']        = $spid;
-            $routineInfo['isPromoter']  = $isCOde;
-            if($routine['login_type']) $routineInfo['login_type'] = $routine['login_type'];
-            User::updateWechatUser($routineInfo,$uid);
-        }else if($uid = self::where(['routine_openid'=>$routineInfo['routine_openid']])->where('user_type','<>','h5')->value('uid')){ //根据小程序openid判断
-            self::edit($routineInfo,$uid,'uid');
-            $routineInfo['code']        = $spid;
-            $routineInfo['isPromoter']  = $isCOde;
-            if($routine['login_type']) $routineInfo['login_type'] = $routine['login_type'];
-            User::updateWechatUser($routineInfo,$uid);
-        }else{
+        if ($routineInfo['unionid'] != '' && ($uid = self::where(['unionid' => $routineInfo['unionid']])->where('user_type', '<>', 'h5')->value('uid'))) {
+            self::edit($routineInfo, $uid, 'uid');
+            $routineInfo['code'] = $spid;
+            $routineInfo['isPromoter'] = $isCOde;
+            if ($routine['login_type']) $routineInfo['login_type'] = $routine['login_type'];
+            User::updateWechatUser($routineInfo, $uid);
+        } else if ($uid = self::where(['routine_openid' => $routineInfo['routine_openid']])->where('user_type', '<>', 'h5')->value('uid')) { //根据小程序openid判断
+            self::edit($routineInfo, $uid, 'uid');
+            $routineInfo['code'] = $spid;
+            $routineInfo['isPromoter'] = $isCOde;
+            if ($routine['login_type']) $routineInfo['login_type'] = $routine['login_type'];
+            User::updateWechatUser($routineInfo, $uid);
+        } else {
             $routineInfo['add_time'] = time();//用户添加时间
             $routineInfo = self::create($routineInfo);
-            $res = User::setRoutineUser($routineInfo,$spid);
+            $res = User::setRoutineUser($routineInfo, $spid);
             $uid = $res->uid;
         }
         return $uid;
     }
+
     /**
      * 判断是否是小程序用户
      * @param int $uid
      * @return bool|int|string
      */
-    public static function isRoutineUser($uid = 0){
-        if(!$uid) return false;
-        return self::where('uid',$uid)->where('user_type','routine')->count();
+    public static function isRoutineUser($uid = 0)
+    {
+        if (!$uid) return false;
+        return self::where('uid', $uid)->where('user_type', 'routine')->count();
     }
 
     /**
      * @param int $uid
      * @return int
      */
-    public static function isUserStatus($uid = 0){
-        if(!$uid) return 0;
+    public static function isUserStatus($uid = 0)
+    {
+        if (!$uid) return 0;
         $user = User::getUserInfo($uid);
         return $user['status'];
     }
@@ -148,23 +153,23 @@ class WechatUser extends BaseModel
     public static function setNewUser($openid)
     {
         $userInfo = WechatService::getUserInfo($openid);
-        if(!isset($userInfo['subscribe']) || !$userInfo['subscribe'] || !isset($userInfo['openid']))
+        if (!isset($userInfo['subscribe']) || !$userInfo['subscribe'] || !isset($userInfo['openid']))
             exception('请关注公众号!');
-        $userInfo['tagid_list'] = implode(',',$userInfo['tagid_list']);
+        $userInfo['tagid_list'] = implode(',', $userInfo['tagid_list']);
         //判断 unionid 是否存在
-        if(isset($userInfo['unionid'])){
-            $wechatInfo = self::where('unionid',$userInfo['unionid'])->find();
-            if($wechatInfo){
-                return self::edit($userInfo,$userInfo['unionid'],'unionid');
+        if (isset($userInfo['unionid'])) {
+            $wechatInfo = self::where('unionid', $userInfo['unionid'])->find();
+            if ($wechatInfo) {
+                return self::edit(is_object($userInfo) ? $userInfo->toArray() : $userInfo, $userInfo['unionid'], 'unionid');
             }
         }
         self::beginTrans();
         $wechatUser = self::create(is_object($userInfo) ? $userInfo->toArray() : $userInfo);
-        if(!$wechatUser){
+        if (!$wechatUser) {
             self::rollbackTrans();
             exception('用户储存失败!');
         }
-        if(!User::setWechatUser($wechatUser)){
+        if (!User::setWechatUser($wechatUser)) {
             self::rollbackTrans();
             exception('用户信息储存失败!');
         }
@@ -179,8 +184,8 @@ class WechatUser extends BaseModel
      */
     public static function userFirstSubGiveCoupon($openid)
     {
-        $couponId = SystemConfigService::get('wechat_first_sub_give_coupon');
-        if($couponId) StoreCouponUser::addUserCoupon(self::openidToUid($openid),$couponId);
+        $couponId = sysConfig('wechat_first_sub_give_coupon');
+        if ($couponId) StoreCouponUser::addUserCoupon(self::openidToUid($openid), $couponId);
     }
 
     /**
@@ -189,8 +194,8 @@ class WechatUser extends BaseModel
      */
     public static function userTakeOrderGiveCoupon($uid)
     {
-        $couponId = SystemConfigService::get('store_order_give_coupon');
-        if($couponId) StoreCouponUser::addUserCoupon($uid,$couponId);
+        $couponId = sysConfig('store_order_give_coupon');
+        if ($couponId) StoreCouponUser::addUserCoupon($uid, $couponId);
     }
 
     /**
@@ -201,8 +206,8 @@ class WechatUser extends BaseModel
     public static function updateUser($openid)
     {
         $userInfo = WechatService::getUserInfo($openid);
-        $userInfo['tagid_list'] = implode(',',$userInfo['tagid_list']);
-        return self::edit($userInfo->toArray(),$openid,'openid');
+        $userInfo['tagid_list'] = implode(',', $userInfo['tagid_list']);
+        return self::edit($userInfo->toArray(), $openid, 'openid');
     }
 
     /**
@@ -211,7 +216,7 @@ class WechatUser extends BaseModel
      */
     public static function saveUser($openid)
     {
-        self::be($openid,'openid') == true ? self::updateUser($openid) : self::setNewUser($openid);
+        self::be($openid, 'openid') == true ? self::updateUser($openid) : self::setNewUser($openid);
     }
 
     /**
@@ -221,7 +226,7 @@ class WechatUser extends BaseModel
      */
     public static function unSubscribe($openid)
     {
-        return self::edit(['subscribe'=>0],$openid,'openid');
+        return self::edit(['subscribe' => 0], $openid, 'openid');
     }
 
     /**
@@ -231,7 +236,7 @@ class WechatUser extends BaseModel
      */
     public static function uidToUnionid($uid)
     {
-        return self::where('uid',$uid)->value('unionid');
+        return self::where('uid', $uid)->value('unionid');
     }
 
     /**
@@ -245,13 +250,13 @@ class WechatUser extends BaseModel
      */
     public static function getWechatInfo($openid, $openidType)
     {
-        if(is_numeric($openid)) $openid = self::uidToOpenid($openid);
-        $wechatInfo = self::where($openidType,$openid)->find();
-        if(!$wechatInfo) {
+        if (is_numeric($openid)) $openid = self::uidToOpenid($openid);
+        $wechatInfo = self::where($openidType, $openid)->find();
+        if (!$wechatInfo) {
             self::setNewUser($openid);
-            $wechatInfo = self::where($openidType,$openid)->find();
+            $wechatInfo = self::where($openidType, $openid)->find();
         }
-        if(!$wechatInfo) exception('获取用户信息失败!');
+        if (!$wechatInfo) exception('获取用户信息失败!');
         return $wechatInfo->toArray();
     }
 }

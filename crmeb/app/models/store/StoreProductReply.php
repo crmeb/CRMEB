@@ -40,11 +40,6 @@ class StoreProductReply extends BaseModel
         return time();
     }
 
-    protected function setPicsAttr($value)
-    {
-        return is_array($value) ? json_encode($value) : $value;
-    }
-
     protected function getPicsAttr($value)
     {
         return json_decode($value,true);
@@ -77,8 +72,8 @@ class StoreProductReply extends BaseModel
     {
         $model = self::productValidWhere($alias)->where('A.product_id',$productId)
             ->field('A.product_score,A.service_score,A.comment,A.merchant_reply_content,A.merchant_reply_time,A.pics,A.add_time,B.nickname,B.avatar,C.cart_info,A.merchant_reply_content')
-            ->join('__user__ B','A.uid = B.uid')
-            ->join('__store_order_cart_info__ C','A.unique = C.unique');
+            ->join('user B','A.uid = B.uid')
+            ->join('store_order_cart_info C','A.unique = C.unique');
         switch ($type){
             case 1:
                 $model=$model->where('A.product_score',5);//好评
@@ -97,7 +92,7 @@ class StoreProductReply extends BaseModel
     {
         $model = self::setProductReplyWhere($productId,$order);
         if($page) $model = $model->page((int)$page,(int)$limit);
-        $list = $model->select()->toArray()?:[];
+        $list = $model->order('add_time desc')->select()->toArray()?:[];
         foreach ($list as $k=>$reply){
             $list[$k] = self::tidyProductReply($reply);
         }
@@ -114,6 +109,7 @@ class StoreProductReply extends BaseModel
         $res['star'] = bcadd($res['product_score'],$res['service_score'],2);
         $res['star'] =bcdiv($res['star'],2,0);
         $res['comment'] = $res['comment'] ? :'此用户没有填写评价';
+        $res['pics'] = is_string($res['pics']) ? json_decode($res['pics'],true) : $res['pics'];
         unset($res['cart_info']);
         return $res;
     }
@@ -127,8 +123,8 @@ class StoreProductReply extends BaseModel
     {
         $res = self::productValidWhere('A')->where('A.product_id',$productId)
             ->field('A.product_score,A.service_score,A.comment,A.merchant_reply_content,A.merchant_reply_time,A.pics,A.add_time,B.nickname,B.avatar,C.cart_info')
-            ->join('__user__ B','A.uid = B.uid')
-            ->join('__store_order_cart_info__ C','A.unique = C.unique')
+            ->join('user B','A.uid = B.uid')
+            ->join('store_order_cart_info C','A.unique = C.unique')
             ->order('A.add_time DESC,A.product_score DESC, A.service_score DESC, A.add_time DESC')->find();
         if(!$res) return null;
         return self::tidyProductReply($res->toArray());

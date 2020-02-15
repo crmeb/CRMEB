@@ -33,7 +33,7 @@ class SystemStore extends AuthController
      * */
     public function select_address()
     {
-        $key = SystemConfigService::get('tengxun_map_key');
+        $key = sysConfig('tengxun_map_key');
         if(!$key) return $this->failed('请前往设置->系统设置->物流配置 配置腾讯地图KEY','#');
         $this->assign(compact('key'));
         return $this->fetch();
@@ -59,7 +59,7 @@ class SystemStore extends AuthController
         SystemStoreModel::beginTrans();
         try{
             $data['address'] = implode(',',$data['address']);
-            $data['latlng'] = explode(',',$data['latlng']);
+            $data['latlng'] = is_string($data['latlng']) ? explode(',',$data['latlng']) : $data['latlng'];
             if(!isset($data['latlng'][0]) || !isset($data['latlng'][1])) return JsonService::fail('请选择门店位置');
             $data['latitude'] = $data['latlng'][0];
             $data['longitude'] = $data['latlng'][1];
