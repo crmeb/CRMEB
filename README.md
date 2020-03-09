@@ -36,8 +36,8 @@
  | [授权价格](https://s.click.taobao.com/W7hVkLw)
 - - -
 
-### :tw-1f427: QQ交流群
-CRMEB微信开发3群:69741389<a target="_blank" href="//shang.qq.com/wpa/qunwpa?idkey=a8d2235bd79d65ea465e43ed81001d0641f875675ab80051118a43cfc468cbaa"><img border="0" src="//pub.idqqimg.com/wpa/images/group.png" alt="CRMEB微信开发3群" title="CRMEB微信开发3群"></a>
+###  QQ交流群
+CRMEB微信开发3群:69741389 加群
 ###  前后台演示
 ![前端演示](/readme/images/演示二维码.jpg)
 
