@@ -1,5 +1,3 @@
-![展示图](/readme/images/抽奖.jpg "展示图.png")
-
 <p align="center">
 <img src="https://images.gitee.com/uploads/images/2018/1214/151026_2299df23_892944.gif" />
 </p>
@@ -39,8 +37,7 @@
 - - -
 
 ### :tw-1f427: QQ交流群
- CRMEB微信开发6群: 341864990 <a target="_blank" href="//shang.qq.com/wpa/qunwpa?idkey=13e9ce8da34352ee2420576aef65ae377479ac0958fab2d4a6e01e8d2479621f"><img border="0" src="//pub.idqqimg.com/wpa/images/group.png" alt="CRMEB微信开发6群" title="CRMEB微信开发6群"></a>
-|CRMEB微信开发3群:69741389<a target="_blank" href="//shang.qq.com/wpa/qunwpa?idkey=a8d2235bd79d65ea465e43ed81001d0641f875675ab80051118a43cfc468cbaa"><img border="0" src="//pub.idqqimg.com/wpa/images/group.png" alt="CRMEB微信开发3群" title="CRMEB微信开发3群"></a>
+CRMEB微信开发3群:69741389<a target="_blank" href="//shang.qq.com/wpa/qunwpa?idkey=a8d2235bd79d65ea465e43ed81001d0641f875675ab80051118a43cfc468cbaa"><img border="0" src="//pub.idqqimg.com/wpa/images/group.png" alt="CRMEB微信开发3群" title="CRMEB微信开发3群"></a>
 ###  前后台演示
 ![前端演示](/readme/images/演示二维码.jpg)
 
