@@ -328,7 +328,7 @@ class StoreOrder extends AuthController
             $this->assign(compact('form'));
             return $this->fetch('public/form-builder');
         }
-        else $this->failedNotice('订单状态错误');
+        else return $this->failedNotice('订单状态错误');
     }
 
     /**
