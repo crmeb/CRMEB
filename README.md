@@ -37,7 +37,7 @@
 - - -
 
 ### QQ交流群
-CRMEB微信开发3群:69741389<a target="_blank" href="//shang.qq.com/wpa/qunwpa?idkey=a8d2235bd79d65ea465e43ed81001d0641f875675ab80051118a43cfc468cbaa">加群</a>
+CRMEB微信开发10群:862316758 <a target="_blank" href="//shang.qq.com/wpa/qunwpa?idkey=babe8ace21478fd489eccac3d567d9a3d3049db32f47e3915890d8d95179e642"><img border="0" src="//pub.idqqimg.com/wpa/images/group.png" alt="CRMEB微信开发10群" title="CRMEB微信开发10群"></a>
 ###  前后台演示
 ![前端演示](/readme/images/演示二维码.jpg)
 
