@@ -123,8 +123,9 @@ class Images extends AuthController
      * @param $att_id
      */
     public function deleteimganddata($att_id){
-        $attinfo = SystemAttachmentModel::get($att_id)->toArray();
+        $attinfo = SystemAttachmentModel::get($att_id);
         if($attinfo){
+            $attinfo = $attinfo->toArray();
             if($attinfo['image_type'] == 1){
                 @unlink(app()->getRootPath().ltrim($attinfo['att_dir'],'.'));
                 @unlink(app()->getRootPath().ltrim($attinfo['satt_dir'],'.'));
