@@ -742,6 +742,9 @@ class CopyTaobao extends AuthController
         if (!strlen(trim($name))) {
             //TODO 获取要下载的文件名称
             $downloadImageInfo = $this->getImageExtname($url);
+            if(!$this->checkExtname($url,$downloadImageInfo['ext_name'])){
+                return JsonService::fail('文件后缀不合法');
+            }
             $name = $downloadImageInfo['file_name'];
             if (!strlen(trim($name))) return '';
         }
@@ -795,6 +798,21 @@ class CopyTaobao extends AuthController
         $ext_name = trim($arr[count($arr) - 1]);
         $ext_name = !$ext_name ? $ex : $ext_name;
         return ['file_name' => md5($url) . '.' . $ext_name, 'ext_name' => $ext_name];
+    }
+
+    /**
+     * 验证下载图片文件后缀
+     * @param string $url
+     * @param string $ex
+     * @return bool
+     */
+    public function checkExtname($url = '',$ex = 'jpg')
+    {
+        if(in_array($ex, ['jpg', 'jpeg', 'gif', 'png', 'swf', 'bmp']) && ( function_exists('getimagesize') && !@getimagesize($url) ))
+        {
+            return true;
+        }
+        return false;
     }
 
     /*
