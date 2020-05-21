@@ -1,6 +1,4 @@
 ![输入图片说明](https://images.gitee.com/uploads/images/2020/0515/121203_1480b6e5_892944.jpeg "在这里输入图片标题")
-![输入图片说明](http://shop.crmeb.net//public/uploads/attach/2020/05/15/5ebe19825109f.jpg "在这里输入图片标题")
-
 
 <p align="center">
     <img src="https://images.gitee.com/uploads/images/2018/1214/151026_2299df23_892944.gif" />
