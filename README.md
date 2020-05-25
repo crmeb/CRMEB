@@ -1,4 +1,3 @@
-![输入图片说明](https://images.gitee.com/uploads/images/2020/0515/121203_1480b6e5_892944.jpeg "在这里输入图片标题")
 
 <p align="center">
     <img src="https://images.gitee.com/uploads/images/2018/1214/151026_2299df23_892944.gif" />
@@ -37,6 +36,12 @@
  | [服务器](https://promotion.aliyun.com/ntms/yunparter/invite.html?userCode=dligum2z)
  | [授权价格](https://s.click.taobao.com/W7hVkLw)
 - - -
+
+### 推荐项目
+知识付费：https://gitee.com/ZhongBangKeJi/crmeb_zzff_class
+公众号前端：https://gitee.com/ZhongBangKeJi/CRMEB-H5
+微信小程序前端：https://gitee.com/ZhongBangKeJi/CRMEB_WechatApplet
+
 
 ### :tw-1f427: QQ交流群
  CRMEB微信开发10群:862316758 <a target="_blank" href="//shang.qq.com/wpa/qunwpa?idkey=babe8ace21478fd489eccac3d567d9a3d3049db32f47e3915890d8d95179e642"><img border="0" src="//pub.idqqimg.com/wpa/images/group.png" alt="CRMEB微信开发10群" title="CRMEB微信开发10群"></a>
