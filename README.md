@@ -1,4 +1,3 @@
-![展示图](/readme/images/抽奖.jpg "展示图.png")
 
 <p align="center">
     <img src="https://images.gitee.com/uploads/images/2018/1214/151026_2299df23_892944.gif" />
@@ -12,7 +11,7 @@
         <img src="https://img.shields.io/badge/Licence-GPL3.0-green.svg?style=flat" />
     </a>
     <a href="http://www.crmeb.com">
-        <img src="https://img.shields.io/badge/Edition-3.0-blue.svg" />
+        <img src="https://img.shields.io/badge/Edition-3.1-blue.svg" />
     </a>
      <a href="https://gitee.com/ZhongBangKeJi/CRMEB/repository/archive/master.zip">
         <img src="https://img.shields.io/badge/download-80m-red.svg" />
@@ -37,6 +36,15 @@
  | [服务器](https://promotion.aliyun.com/ntms/yunparter/invite.html?userCode=dligum2z)
  | [授权价格](https://s.click.taobao.com/W7hVkLw)
 - - -
+
+### 推荐项目
+
+知识付费：https://gitee.com/ZhongBangKeJi/crmeb_zzff_class
+
+公众号前端：https://gitee.com/ZhongBangKeJi/CRMEB-H5
+
+微信小程序前端：https://gitee.com/ZhongBangKeJi/CRMEB_WechatApplet
+
 
 ### :tw-1f427: QQ交流群
  CRMEB微信开发10群:862316758 <a target="_blank" href="//shang.qq.com/wpa/qunwpa?idkey=babe8ace21478fd489eccac3d567d9a3d3049db32f47e3915890d8d95179e642"><img border="0" src="//pub.idqqimg.com/wpa/images/group.png" alt="CRMEB微信开发10群" title="CRMEB微信开发10群"></a>
@@ -171,15 +179,12 @@ form-builder : https://github.com/xaboy/form-builder
 
 请提交 [CRMEB](https://gitee.com/ZhongBangKeJi/CRMEB/pulls)。
 
-### 特别鸣谢
-[samoye](https://gitee.com/yizhisamoye)
- | [Stone Bai](https://gitee.com/bys1123)
 
 ### 版权信息
 
 本项目包含的第三方源码和二进制文件之版权信息另行标注。
 
-版权所有Copyright © 2017-2019 by CRMEB (http://www.crmeb.com)
+版权所有Copyright © 2017-2020 by CRMEB (http://www.crmeb.com)
 
 All rights reserved。
 
