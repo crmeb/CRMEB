@@ -105,22 +105,9 @@
 ###   :tw-1f50a: 开源版使用须知
 1.允许用于个人学习、毕业设计、教学案例、公益事业;
 
-2.如果商用必须保留版权信息，请自觉遵守。开源版不适合商用，商用请购买商业版;
+2.如果商用必须保留版权信息，请自觉遵守;
 
 3.禁止将本项目的代码和资源进行任何形式的出售，产生的一切任何后果责任由侵权者自负。
-
-### 商业版与 :tw-1f19a: 源版差异
-
-![系统功能](/readme/images/商业版对比.jpg)
-
-
-### 商业版[<a href='https://s.click.taobao.com/W7hVkLw' target="_blank"> 去看看 </a>]
-
-[![输入图片说明](https://images.gitee.com/uploads/images/2019/0122/114739_a48f5bfd_892944.gif "tasheng jo(1).gif")](https://s.click.taobao.com/W7hVkLw)
-
-
-商业授权及定制服务版：http://www.crmeb.com
-
 
 
 
@@ -167,6 +154,18 @@
 
 ### 获得荣誉
 ![输入图片说明](https://images.gitee.com/uploads/images/2019/0805/111208_eb4fe823_892944.jpeg "WechatIMG2434.jpeg")
+
+### 商业版与 :tw-1f19a: 源版差异
+
+![系统功能](/readme/images/商业版对比.jpg)
+
+
+### 商业版[<a href='https://s.click.taobao.com/W7hVkLw' target="_blank"> 去看看 </a>]
+
+[![输入图片说明](https://images.gitee.com/uploads/images/2019/0122/114739_a48f5bfd_892944.gif "tasheng jo(1).gif")](https://s.click.taobao.com/W7hVkLw)
+
+
+官方网站：http://www.crmeb.com
 
 ###  系统组件开源项目
 
