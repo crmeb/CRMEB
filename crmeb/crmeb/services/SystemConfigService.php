@@ -47,7 +47,7 @@ class SystemConfigService
     {
         self::init();
         if (self::$configList === null) self::$configList = self::getAll();
-        return isset(self::$configList[$key]) ? self::$configList[$key] : null;
+        return self::$configList[$key] ?? null;
     }
 
     /**
@@ -68,19 +68,57 @@ class SystemConfigService
         }
 
         self::init();
-        return isset(self::$configList[$key]) ? self::$configList[$key] : $default;
+        return self::$configList[$key] ?? $default;
     }
 
-    /** 获取多个配置
-     * @param $keys ',' 隔开
+    /**
+     * 获取多个配置
+     * @param array $keys 示例 [['appid','1'],'appkey']
+     * @param bool $isCaChe 是否获取缓存配置
      * @return array
      */
-    public static function more($keys)
+    public static function more(array $keys, bool $isCaChe = false)
     {
-        return SystemConfig::getMore($keys);
+        self::init();
+        $callable = function () use ($keys) {
+            try {
+                $list = SystemConfig::getMore($keys);
+                return self::getDefaultValue($keys, $list);
+            } catch (\Exception $e) {
+                return self::getDefaultValue($keys);
+            }
+        };
+        if ($isCaChe)
+            return $callable();
+        try {
+            return self::getDefaultValue($keys, self::$configList);
+        } catch (\Throwable $e) {
+            return $callable();
+        }
     }
 
-    /**获取全部配置
+    /**
+     * 获取默认配置
+     * @param array $keys
+     * @return array
+     */
+    public static function getDefaultValue(array $keys, array $configList = [])
+    {
+        $value = [];
+        foreach ($keys as $val) {
+            if (is_array($val)) {
+                $k = $val[0] ?? '';
+                $v = $val[1] ?? '';
+            } else {
+                $k = $val;
+                $v = '';
+            }
+            $value[$k] = $configList[$k] ?? $v;
+        }
+        return $value;
+    }
+
+    /**获取全部配置不缓存
      * @return array
      */
     public static function getAll()

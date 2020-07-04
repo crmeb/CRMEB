@@ -9,6 +9,9 @@
     <div class="col-sm-12">
         <div class="ibox">
             <div class="ibox-title">
+                <blockquote class="layui-elem-quote layui-quote-nm">
+                    由于微信公众号限制,只能推送一条文章,超过一条的文章会推送失败
+                </blockquote>
                 <div class="ibox-tools">
                     <button class="btn btn-white btn-sm" onclick="location.reload()"><i class="fa fa-refresh"></i> 刷新</button>
                 </div>
@@ -33,7 +36,7 @@
                     {volist name="$vo['new']" id="vvo" key="k"}
                         {if condition="$k eq 1"}
                         <div class="news_tools hide">
-                            <a href="javascript:void(0)" data-url="{:Url('push',array('id'=>$vo['id'],'wechat'=>$wechat))}" class="push">推送</a>
+                            <a href="javascript:void(0)" data-url="{:Url('push',array('id'=>$vo['id'],'new_id'=>$vo.new[0]['id'],'wechat'=>$wechat))}" class="push">推送</a>
                         </div>
                         <div class="news_articel_item" style="background-image:url({$vvo.image_input})">
                             <p>{$vvo.title}</p>

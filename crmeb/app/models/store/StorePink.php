@@ -16,6 +16,7 @@ use crmeb\services\WechatTemplateService;
 use crmeb\traits\ModelTrait;
 use think\facade\Log;
 use think\facade\Route;
+use think\facade\Cache;
 
 /**
  * TODO 拼团Model
@@ -38,11 +39,11 @@ class StorePink extends BaseModel
 
     use ModelTrait;
 
-    /*
+    /**
      * 获取拼团完成的用户
-     * @param int $uid 用户id
+     * @param $uid
      * @return array
-     * */
+     */
     public static function getPinkOkList($uid)
     {
         $list = self::alias('a')->where('a.status', 2)->where('a.is_refund', 0)->where('a.uid', '<>', $uid)->join('User u', 'u.uid=a.uid', 'right')->column('nickname', 'id');
@@ -142,6 +143,9 @@ class StorePink extends BaseModel
 
     /**
      * 获取还差几人
+     * @param $kid
+     * @param $people
+     * @return string
      */
     public static function getPinkPeople($kid, $people)
     {
@@ -400,7 +404,14 @@ class StorePink extends BaseModel
         $routineOpenid = WechatUser::uidToOpenid($order['uid'], 'routine_openid');
         $product = StoreCombination::where('id', $order['combination_id'])->field('effective_time,title')->find();
         if ($product) {
+            $stop_time = bcmul($product->effective_time, 3600, 0);
             if ($order['pink_id']) {//拼团存在
+                $pink_id = $order['pink_id'];
+                $pink_one = self::where('id', $order['pink_id'])->find();
+                if($pink_one['kid']){
+                    $pink_id = $pink_one['k_id'];
+                    $pink_one = self::where('id', $pink_id)->find();
+                }
                 $res = false;
                 $pink['uid'] = $order['uid'];//用户id
                 if (self::isPinkBe($pink, $order['pink_id'])) return false;
@@ -444,8 +455,16 @@ class StorePink extends BaseModel
                     else
                         self::PinkFail($pinkAll, $pinkT, 0);
                 }
-                if ($res) return true;
-                else return false;
+                if ($res) {
+                    $cache_pink = Cache::get(md5('store_pink_'.$pink_id));
+                    $number = 1;
+                    if($cache_pink){
+                        $number = bcadd($cache_pink['now_people'], $number, 0);
+                    }
+                    //设置团内人数
+                    Cache::set(md5('store_pink_'.$pink_id), ['people' => $pink_one['people'], 'now_people' => $number], bcsub($pink_one['stop_time'], time(), 0));
+                    return true;
+                } else return false;
             } else {
                 $res = false;
                 $pink['uid'] = $order['uid'];//用户id
@@ -459,7 +478,7 @@ class StorePink extends BaseModel
                     $pink['pid'] = $v['product_id'];//产品id
                     $pink['people'] = StoreCombination::where('id', $v['combination_id'])->value('people');//几人拼团
                     $pink['price'] = $v['productInfo']['price'];//单价
-                    $pink['stop_time'] = bcadd(time(), bcmul($product->effective_time, 3600, 0), 0);//结束时间
+                    $pink['stop_time'] = bcadd(time(), $stop_time, 0);//结束时间
                     $pink['add_time'] = time();//开团时间
                     $res1 = self::create($pink)->toArray();
                     $res2 = StoreOrder::where('id', $order['id'])->update(['pink_id' => $res1['id']]);
@@ -485,8 +504,11 @@ class StorePink extends BaseModel
                         '/pages/order_details/index?order_id=' . $pink['order_id']
                     );
                 }
-                if ($res) return true;
-                else return false;
+                if ($res){
+                    //存入缓存
+                    Cache::set(md5('store_pink_'.$res1['id']), ['people' => $pink['people'], 'now_people' => 1], $stop_time);
+                    return true;
+                } else return false;
             }
         } else {
             Log::error('拼团支付成功读取产品数据失败订单号：' . $order['order_id']);
@@ -650,6 +672,12 @@ class StorePink extends BaseModel
                 $formId = RoutineFormId::getFormIdOne($uid);
                 if ($formId) RoutineFormId::delFormIdOne($formId);
                 self::orderPinkAfterNo($pinkT['uid'], $pinkT['id'], $formId, '拼团取消开团', true);
+                $cache_pink = Cache::get(md5('store_pink_'.$pinkT['id']));
+                if($cache_pink){
+                    $number = bcsub($cache_pink['now_people'], 1, 0);
+                    $cache_pink['now_people'] = $number;
+                    Cache::set(md5('store_pink_'.$pinkT['id']), $cache_pink, bcsub($pinkT['stop_time'], time(), 0));
+                }
             } else
                 return self::setErrorInfo(['status' => 200, 'msg' => StoreOrder::getErrorInfo()], true);
             //当前团有人的时候
@@ -855,10 +883,10 @@ class StorePink extends BaseModel
         $successPinkList = [];//拼团失败
         foreach ($pinkListEnd as $key => &$value) {
             $countPeople = (int)bcadd(self::where('k_id', $value['id'])->count(), 1, 0);
-            if ($countPeople == $value['people'])
-                $successPinkList[] = $value['id'];
-            else
+            if ($countPeople < $value['people'])
                 $failPinkList[] = $value['id'];
+            else
+                $successPinkList[] = $value['id'];
         }
         $success = self::successPinkEdit($successPinkList);
         $error = self::failPinkEdit($failPinkList);

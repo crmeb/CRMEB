@@ -7,8 +7,11 @@
 
 namespace app\models\store;
 
+use app\admin\model\store\StoreProductAttrValue;
+use app\admin\model\store\StoreProductAttrValue as StoreProductAttrValueModel;
 use crmeb\basic\BaseModel;
 use crmeb\traits\ModelTrait;
+use app\models\store\StoreProduct;
 
 /**
  * TODO 砍价产品Model
@@ -31,13 +34,24 @@ class StoreBargain extends BaseModel
 
     use ModelTrait;
 
+    public function getDescriptionAttr($value)
+    {
+        return htmlspecialchars_decode($value);
+    }
+
+    public function getRuleAttr($value)
+    {
+        return htmlspecialchars_decode($value);
+    }
+
     /**
      * 正在开启的砍价活动
      * @param int $status
      * @return StoreBargain
      */
-    public static function validWhere($status = 1){
-        return  self::where('is_del',0)->where('status',$status)->where('start_time','<',time())->where('stop_time','>',time());
+    public static function validWhere($status = 1)
+    {
+        return self::where('is_del', 0)->where('status', $status)->where('start_time', '<', time())->where('stop_time', '>', time());
     }
 
     /**
@@ -45,16 +59,18 @@ class StoreBargain extends BaseModel
      * @param int $bargainId
      * @return int|string
      */
-    public static function validBargain($bargainId = 0){
+    public static function validBargain($bargainId = 0)
+    {
         $model = self::validWhere();
-        return $bargainId ? $model->where('id',$bargainId)->count() : $model->count();
+        return $bargainId ? $model->where('id', $bargainId)->count('id') : $model->count('id');
     }
 
     /**
      * TODO 获取正在开启的砍价产品编号
      * @return array
      */
-    public static function validBargainNumber(){
+    public static function validBargainNumber()
+    {
         return self::validWhere()->column('id');
     }
 
@@ -65,10 +81,11 @@ class StoreBargain extends BaseModel
      * @param string $field
      * @return array
      */
-    public static function getList($page = 0,$limit = 20,$field = 'id,product_id,title,price,min_price,image'){
+    public static function getList($page = 0, $limit = 20, $field = 'id,product_id,title,price,min_price,image')
+    {
         $model = self::validWhere()->field($field);
-        if($page) $model = $model->page($page,$limit);
-        $list = $model->select()->each(function ($item){
+        if ($page) $model = $model->page($page, $limit);
+        $list = $model->select()->each(function ($item) {
             $item['people'] = count(StoreBargainUser::getUserIdList($item['id']));
         });
         return $list ? $list->toArray() : [];
@@ -76,7 +93,7 @@ class StoreBargain extends BaseModel
 
     /**
      * TODO 获取一条正在进行中的砍价产品
-     * @param int $bargainId  $bargainId 砍价产品编号
+     * @param int $bargainId $bargainId 砍价产品编号
      * @param string $field
      * @return array
      * @throws \think\Exception
@@ -84,11 +101,12 @@ class StoreBargain extends BaseModel
      * @throws \think\db\exception\ModelNotFoundException
      * @throws \think\exception\DbException
      */
-    public static function getBargainTerm($bargainId = 0,$field = 'id,product_id,bargain_num,num,unit_name,image,title,price,min_price,image,description,start_time,stop_time,rule,info'){
-        if(!$bargainId) return [];
+    public static function getBargainTerm($bargainId = 0, $field = 'id,product_id,bargain_num,num,unit_name,image,title,price,min_price,image,start_time,stop_time,rule,info')
+    {
+        if (!$bargainId) return [];
         $model = self::validWhere();
-        $bargain = $model->field($field)->where('id',$bargainId)->find();
-        if($bargain) return $bargain->toArray();
+        $bargain = $model->field($field)->where('id', $bargainId)->find();
+        if ($bargain) return $bargain->toArray();
         else return [];
     }
 
@@ -98,11 +116,12 @@ class StoreBargain extends BaseModel
      * @param string $field
      * @return array
      */
-    public static function getBargain($bargainId = 0,$field = 'id,product_id,title,price,min_price,image'){
-        if(!$bargainId) return [];
+    public static function getBargain($bargainId = 0, $field = 'id,product_id,title,price,min_price,image')
+    {
+        if (!$bargainId) return [];
         $model = new self();
-        $bargain = $model->field($field)->where('id',$bargainId)->find();
-        if($bargain) return $bargain->toArray();
+        $bargain = $model->field($field)->where('id', $bargainId)->find();
+        if ($bargain) return $bargain->toArray();
         else return [];
     }
 
@@ -111,9 +130,10 @@ class StoreBargain extends BaseModel
      * @param int $bargainId
      * @return array
      */
-    public static function getBargainMaxMinPrice($bargainId = 0){
-        if(!$bargainId) return [];
-        return self::where('id',$bargainId)->field('bargain_min_price,bargain_max_price')->find()->toArray();
+    public static function getBargainMaxMinPrice($bargainId = 0)
+    {
+        if (!$bargainId) return [];
+        return self::where('id', $bargainId)->field('bargain_min_price,bargain_max_price')->find()->toArray();
     }
 
     /**
@@ -121,8 +141,9 @@ class StoreBargain extends BaseModel
      * @param int $bargainId
      * @return mixed
      */
-    public static function getBargainNum($bargainId = 0){
-       return self::where('id',$bargainId)->value('bargain_num');
+    public static function getBargainNum($bargainId = 0)
+    {
+        return self::where('id', $bargainId)->value('bargain_num');
     }
 
     /**
@@ -130,10 +151,11 @@ class StoreBargain extends BaseModel
      * @param int $bargainId
      * @return bool
      */
-    public static function setBargainStatus($bargainId = 0){
+    public static function setBargainStatus($bargainId = 0)
+    {
         $model = self::validWhere();
-        $count = $model->where('id',$bargainId)->count();
-        if($count) return true;
+        $count = $model->where('id', $bargainId)->count();
+        if ($count) return true;
         else return false;
     }
 
@@ -142,8 +164,9 @@ class StoreBargain extends BaseModel
      * @param int $bargainId
      * @return mixed
      */
-    public static function getBargainStock($bargainId = 0){
-        return self::where('id',$bargainId)->value('stock');
+    public static function getBargainStock($bargainId = 0)
+    {
+        return self::where('id', $bargainId)->value('stock');
     }
 
     /**
@@ -152,8 +175,9 @@ class StoreBargain extends BaseModel
      * @param string $field
      * @return mixed
      */
-    public static function getBargainField($bargainId, $field = 'title'){
-        return self::where('id',$bargainId)->value($field);
+    public static function getBargainField($bargainId, $field = 'title')
+    {
+        return self::where('id', $bargainId)->value($field);
     }
 
     /**
@@ -162,9 +186,18 @@ class StoreBargain extends BaseModel
      * @param $CombinationId
      * @return bool
      */
-    public static function decBargainStock($num,$bargainId)
+    public static function decBargainStock($num, $bargainId, $unique)
     {
-        $res = false !== self::where('id',$bargainId)->dec('stock',$num)->inc('sales',$num)->update();
+        $product_id = self::where('id',$bargainId)->value('product_id');
+        if ($unique) {
+            $res = false !== StoreProductAttrValue::decProductAttrStock($bargainId, $unique, $num, 2);
+            $res = $res && self::where('id', $bargainId)->dec('stock', $num)->dec('quota', $num)->inc('sales', $num)->update();
+            $sku = StoreProductAttrValue::where('product_id',$bargainId)->where('unique',$unique)->where('type',2)->value('suk');
+            $res = $res && StoreProductAttrValue::where('product_id',$product_id)->where('suk',$sku)->where('type',0)->dec('stock',$num)->inc('sales',$num)->update();
+        } else {
+            $res = false !== self::where('id', $bargainId)->dec('stock', $num)->inc('sales', $num)->update();
+        }
+        $res = $res && StoreProduct::where('id',$product_id)->dec('stock', $num)->inc('sales', $num)->update();
         return $res;
     }
 
@@ -177,21 +210,26 @@ class StoreBargain extends BaseModel
      * @throws \think\db\exception\ModelNotFoundException
      * @throws \think\exception\DbException
      */
-    public static function IncBargainStock($num,$bargainId)
+    public static function IncBargainStock($num, $bargainId, $unique = '')
     {
-        $bargain = self::where('id',$bargainId)->field(['stock','sales'])->find();
-        if(!$bargain) return true;
-        if($bargain->sales > 0) $bargain->sales = bcsub($bargain->sales,$num,0);
-        if($bargain->sales < 0) $bargain->sales = 0;
-        $bargain->stock = bcadd($bargain->stock,$num,0);
-        return $bargain->save();
+        $bargain = self::where('id', $bargainId)->field(['stock', 'sales'])->find();
+        if (!$bargain) return true;
+        if ($bargain->sales > 0) $bargain->sales = bcsub($bargain->sales, $num, 0);
+        if ($bargain->sales < 0) $bargain->sales = 0;
+        if ($unique) {
+            $res = false !== StoreProductAttrValueModel::incProductAttrStock($bargainId, $unique, $num, 2);
+        }
+        $bargain->stock = bcadd($bargain->stock, $num, 0);
+        $res = $res && $bargain->save();
+        return $res;
     }
 
     /**
      * TODO 获取所有砍价产品的浏览量
      * @return mixed
      */
-    public static function getBargainLook(){
+    public static function getBargainLook()
+    {
         return self::sum('look');
     }
 
@@ -199,7 +237,8 @@ class StoreBargain extends BaseModel
      * TODO 获取正在开启的砍价活动
      * @return int|string
      */
-    public static function getListCount(){
+    public static function getListCount()
+    {
         return self::validWhere()->count();
     }
 
@@ -207,7 +246,8 @@ class StoreBargain extends BaseModel
      * TODO 获取所有砍价产品的分享量
      * @return mixed
      */
-    public static function getBargainShare(){
+    public static function getBargainShare()
+    {
         return self::sum('share');
     }
 
@@ -216,18 +256,20 @@ class StoreBargain extends BaseModel
      * @param int $id
      * @return StoreBargain|bool
      */
-    public static function addBargainShare($id = 0){
-        if(!$id) return false;
-        return self::where('id',$id)->inc('share',1)->update();
+    public static function addBargainShare($id = 0)
+    {
+        if (!$id) return false;
+        return self::where('id', $id)->inc('share', 1)->update();
     }
 
     /**
      * TODO 添加砍价产品浏览次数
-     * @param int $id  $id 砍价产品编号
+     * @param int $id $id 砍价产品编号
      * @return StoreBargain|bool
      */
-    public static function addBargainLook($id = 0){
-        if(!$id) return false;
-        return self::where('id',$id)->inc('look',1)->update();
+    public static function addBargainLook($id = 0)
+    {
+        if (!$id) return false;
+        return self::where('id', $id)->inc('look', 1)->update();
     }
 }

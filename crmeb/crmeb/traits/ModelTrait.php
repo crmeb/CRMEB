@@ -124,7 +124,6 @@ trait ModelTrait
             $limit = $params;
             $params = [];
         }
-
         $listRows = [
             'list_rows' => $limit,
             'query' => $params

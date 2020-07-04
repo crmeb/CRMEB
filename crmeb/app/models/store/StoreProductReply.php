@@ -42,10 +42,10 @@ class StoreProductReply extends BaseModel
 
     protected function getPicsAttr($value)
     {
-        return json_decode($value,true);
+        return json_decode($value, true);
     }
 
-    public static function reply($group,$type = 'product')
+    public static function reply($group, $type = 'product')
     {
         $group['reply_type'] = $type;
         return self::create($group);
@@ -53,13 +53,13 @@ class StoreProductReply extends BaseModel
 
     public static function productValidWhere($alias = '')
     {
-        if($alias){
+        if ($alias) {
             $model = self::alias($alias);
             $alias .= '.';
-        }else{
+        } else {
             $model = new self;
         }
-        return $model->where("{$alias}is_del",0)->where("{$alias}reply_type",'product');
+        return $model->where("{$alias}is_del", 0)->where("{$alias}reply_type", 'product');
     }
 
     /*
@@ -68,65 +68,71 @@ class StoreProductReply extends BaseModel
      * @param string $order 排序方式
      * @return object
      * */
-    public static function setProductReplyWhere($productId,$type=0,$alias='A')
+    public static function setProductReplyWhere($productId, $type = 0, $alias = 'A')
     {
-        $model = self::productValidWhere($alias)->where('A.product_id',$productId)
-            ->field('A.product_score,A.service_score,A.comment,A.merchant_reply_content,A.merchant_reply_time,A.pics,A.add_time,B.nickname,B.avatar,C.cart_info,A.merchant_reply_content')
-            ->join('user B','A.uid = B.uid')
-            ->join('store_order_cart_info C','A.unique = C.unique');
-        switch ($type){
+        $model = self::productValidWhere($alias)->where('A.product_id', $productId)
+            ->field('A.product_score,A.service_score,A.comment,A.merchant_reply_content,A.merchant_reply_time,A.pics,A.add_time,B.nickname,B.avatar,C.cart_info,A.merchant_reply_content,A.nickname as _nickname,A.avatar as _avatar')
+            ->join('user B', 'A.uid = B.uid', 'left')
+            ->join('store_order_cart_info C', 'A.unique = C.unique', 'left');
+        switch ($type) {
             case 1:
-                $model=$model->where('A.product_score',5);//好评
+                $model = $model->where('A.product_score', 5);//好评
                 break;
             case 2:
-                $model=$model->where('A.product_score','<',5)->where('A.product_score','>',2);//中评
+                $model = $model->where('A.product_score', '<', 5)->where('A.product_score', '>', 2);//中评
                 break;
             case 3:
-                $model=$model->where('A.product_score','<',2);//差评
+                $model = $model->where('A.product_score', '<', 2);//差评
                 break;
         }
         return $model;
     }
 
-    public static function getProductReplyList($productId,$order = 0,$page = 0,$limit = 8)
+    public static function getProductReplyList($productId, $order = 0, $page = 0, $limit = 8)
     {
-        $model = self::setProductReplyWhere($productId,$order);
-        if($page) $model = $model->page((int)$page,(int)$limit);
-        $list = $model->order('add_time desc')->select()->toArray()?:[];
-        foreach ($list as $k=>$reply){
-            $list[$k] = self::tidyProductReply($reply);
+        $model = self::setProductReplyWhere($productId, $order);
+        if ($page) $model = $model->page((int)$page, (int)$limit);
+        $list = $model->order('add_time desc')->select()->toArray() ?: [];
+        foreach ($list as $k => $reply) {
+            if (!$reply['nickname']) $list[$k]['nickname'] = $reply['_nickname'];
+            if (!$reply['avatar']) $list[$k]['avatar'] = $reply['_avatar'];
+            unset($list[$k]['_nickname'], $list[$k]['_avatar']);
+            $list[$k] = self::tidyProductReply($list[$k]);
         }
         return $list;
     }
 
     public static function tidyProductReply($res)
     {
-        $res['cart_info'] = json_decode($res['cart_info'],true)?:[];
+        $res['cart_info'] = json_decode($res['cart_info'], true) ?: [];
         $res['suk'] = isset($res['cart_info']['productInfo']['attrInfo']) ? $res['cart_info']['productInfo']['attrInfo']['suk'] : '';
-        $res['nickname'] = UtilService::anonymity($res['nickname']);
-        $res['merchant_reply_time'] = date('Y-m-d H:i',$res['merchant_reply_time']);
-        $res['add_time'] = date('Y-m-d H:i',$res['add_time']);
-        $res['star'] = bcadd($res['product_score'],$res['service_score'],2);
-        $res['star'] =bcdiv($res['star'],2,0);
-        $res['comment'] = $res['comment'] ? :'此用户没有填写评价';
-        $res['pics'] = is_string($res['pics']) ? json_decode($res['pics'],true) : $res['pics'];
+        $res['nickname'] = anonymity($res['nickname']);
+        $res['merchant_reply_time'] = date('Y-m-d H:i', $res['merchant_reply_time']);
+        $res['add_time'] = date('Y-m-d H:i', $res['add_time']);
+        $res['star'] = bcadd($res['product_score'], $res['service_score'], 2);
+        $res['star'] = bcdiv($res['star'], 2, 0);
+        $res['comment'] = $res['comment'] ?: '此用户没有填写评价';
+        $res['pics'] = is_string($res['pics']) ? json_decode($res['pics'], true) : $res['pics'];
         unset($res['cart_info']);
         return $res;
     }
 
-    public static function isReply($unique,$reply_type = 'product')
+    public static function isReply($unique, $reply_type = 'product')
     {
-        return self::be(['unique'=>$unique,'reply_type'=>$reply_type]);
+        return self::be(['unique' => $unique, 'reply_type' => $reply_type]);
     }
 
     public static function getRecProductReply($productId)
     {
-        $res = self::productValidWhere('A')->where('A.product_id',$productId)
-            ->field('A.product_score,A.service_score,A.comment,A.merchant_reply_content,A.merchant_reply_time,A.pics,A.add_time,B.nickname,B.avatar,C.cart_info')
-            ->join('user B','A.uid = B.uid')
-            ->join('store_order_cart_info C','A.unique = C.unique')
+        $res = self::productValidWhere('A')->where('A.product_id', $productId)
+            ->field('A.product_score,A.service_score,A.comment,A.merchant_reply_content,A.merchant_reply_time,A.pics,A.add_time,B.nickname,B.avatar,C.cart_info,A.nickname as _nickname,A.avatar as _avatar')
+            ->join('user B', 'A.uid = B.uid', 'left')
+            ->join('store_order_cart_info C', 'A.unique = C.unique', 'left')
             ->order('A.add_time DESC,A.product_score DESC, A.service_score DESC, A.add_time DESC')->find();
-        if(!$res) return null;
+        if (!$res) return null;
+        if (!$res['nickname']) $res['nickname'] = $res['_nickname'];
+        if (!$res['avatar']) $res['avatar'] = $res['_avatar'];
+        unset($res['_nickname'], $res['_avatar']);
         return self::tidyProductReply($res->toArray());
     }
 
@@ -136,13 +142,18 @@ class StoreProductReply extends BaseModel
 //            // 记录SQL
 //            echo $sql. ' ['.$time.'s]';
 //        });
-        $data['sum_count']=self::setProductReplyWhere($productId)->count();
-        $data['good_count']=self::setProductReplyWhere($productId,1)->count();
-        $data['in_count']=self::setProductReplyWhere($productId,2)->count();
-        $data['poor_count']=self::setProductReplyWhere($productId,3)->count();
-        $data['reply_chance']=bcdiv($data['good_count'],$data['sum_count'],2);
-        $data['reply_star']=bcmul($data['reply_chance'],5,0);
-        $data['reply_chance']=bcmul($data['reply_chance'],100,2);
+        $data['sum_start'] = self::setProductReplyWhere($productId)->sum('product_score');
+        $data['sum_count'] = self::setProductReplyWhere($productId)->count();
+        $data['good_count'] = self::setProductReplyWhere($productId, 1)->count();
+        $data['in_count'] = self::setProductReplyWhere($productId, 2)->count();
+        $data['poor_count'] = self::setProductReplyWhere($productId, 3)->count();
+        if ($data['sum_count'] != 0) {
+            $data['reply_chance'] = bcdiv($data['good_count'], $data['sum_count'], 2);
+        } else {
+            $data['reply_chance'] = 0;
+        }
+        $data['reply_star'] = $data['sum_count'] > 0 ? bcdiv($data['sum_start'], $data['sum_count'], 0): 0;
+        $data['reply_chance'] = bcmul($data['reply_chance'], 100, 2);
         return $data;
     }
 

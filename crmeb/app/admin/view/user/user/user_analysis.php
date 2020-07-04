@@ -192,7 +192,7 @@
                     <td class="text-center">{$vo.now_money}</td>
                     <td class="text-center">
                         <button class="btn btn-info btn-xs" type="button"  onclick="$eb.createModalFrame('编辑','{:Url('edit',array('uid'=>$vo['uid']))}')">
-                            <i class="fa fa-paste"></i> 编辑</button>
+                            <i class="fa fa-edit"></i> 编辑</button>
                     </td>
                 </tr>
                 {/volist}

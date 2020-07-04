@@ -9,7 +9,7 @@
     <div class="col-sm-12">
         <div class="ibox">
             <div class="ibox-title">
-                <button type="button" class="btn btn-w-m btn-primary" onclick="$eb.createModalFrame(this.innerText,'{:Url('create')}')">添加优惠券</button>
+                <button type="button" class="btn btn-w-m btn-primary" onclick="$eb.createModalFrame(this.innerText,'{:Url('create')}?type=0')">添加优惠券</button>
                 <div class="ibox-tools">
 
                 </div>
@@ -24,8 +24,16 @@
                                 <option value="1" {eq name="where.status" value="1"}selected="selected"{/eq}>开启</option>
                                 <option value="0" {eq name="where.status" value="0"}selected="selected"{/eq}>关闭</option>
                             </select>
+                            <select name="type" aria-controls="editable" class="form-control input-sm">
+                                <option value="">类型</option>
+                                <option value="0" {eq name="where.type" value="0"}selected="selected"{/eq}>通用券</option>
+                                <option value="1" {eq name="where.type" value="1"}selected="selected"{/eq}>品类券</option>
+                                <option value="2" {eq name="where.type" value="2"}selected="selected"{/eq}>商品券</option>
+                            </select>
+
                             <div class="input-group">
-                                <input type="text" name="title" value="{$where.title}" placeholder="请输入优惠券名称" class="input-sm form-control"> <span class="input-group-btn">
+                                <input type="text" name="title" value="{$where.title}" placeholder="请输入优惠券名称" class="input-sm form-control">
+                                <span class="input-group-btn">
                                     <button type="submit" class="btn btn-sm btn-primary"> <i class="fa fa-search" ></i>搜索</button> </span>
                             </div>
                         </form>
@@ -39,6 +47,7 @@
 
                             <th class="text-center">编号</th>
                             <th class="text-center">优惠券名称</th>
+                            <th class="text-center">优惠券类型</th>
                             <th class="text-center">优惠券面值</th>
                             <th class="text-center">优惠券最低消费</th>
                             <th class="text-center">优惠券有效期限</th>
@@ -58,6 +67,15 @@
                                 {$vo.title}
                             </td>
                             <td class="text-center">
+                                {if $vo.type eq 0}
+                                通用券
+                                {elseif $vo.type eq 1}
+                                品类券
+                                {else/}
+                                商品券
+                                {/if}
+                            </td>
+                            <td class="text-center">
                                 {$vo.coupon_price}
                             </td>
                             <td class="text-center">
@@ -72,14 +90,13 @@
                             <td class="text-center">
                                 <i class="fa {eq name='vo.status' value='1'}fa-check text-navy{else/}fa-close text-danger{/eq}"></i>
                             </td>
-
                             <td class="text-center">
                                 {$vo.add_time|date='Y-m-d H:i:s'}
                             </td>
                             <td class="text-center">
                                 <div class="input-group-btn js-group-btn">
                                     <div class="btn-group">
-                                        <button data-toggle="dropdown" class="btn btn-warning btn-xs dropdown-toggle"
+                                        <button data-toggle="dropdown" class="btn btn-xs btn-primary"
                                                 aria-expanded="false">操作
                                             <span class="caret"></span>
                                         </button>
@@ -98,7 +115,7 @@
                                             {/if}
                                             <li>
                                                 <a href="javascript:void(0);" class="delstor" data-url="{:Url('delete',array('id'=>$vo['id']))}">
-                                                    <i class="fa fa-warning"></i> 删除
+                                                    <i class="fa fa-times"></i> 删除
                                                 </a>
                                             </li>
                                         </ul>

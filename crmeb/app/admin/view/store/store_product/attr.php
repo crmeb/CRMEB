@@ -121,7 +121,7 @@
                                                                                                    :number="true"></i-Input>
                         </i-Col>
                         <i-Col span="6">
-                            <span :class="attr.check ? 'check':''">产品编号:</span>&nbsp;&nbsp;<i-Input placeholder="产品编号" v-model="attr.bar_code" style="width: 60%"
+                            <span :class="attr.check ? 'check':''">产品条码:</span>&nbsp;&nbsp;<i-Input placeholder="产品条码" v-model="attr.bar_code" style="width: 60%"
                                                                                                    :number="true"></i-Input>
                         </i-Col>
                         <i-Col span="2" offset="1" style="margin-right: 2px">
@@ -201,7 +201,7 @@
             },
             methods: {
                 getAttrPic(index){
-                    this.createFrame('选择图片','/admin/widget.images/index/fodder/'+index+'.html');
+                    this.createFrame('选择图片','/admin/widget.images/index/fodder/'+index+'.html',{h:500});
                 },
                 createFrame:function(title,src,opt){
                     opt === undefined && (opt = {});

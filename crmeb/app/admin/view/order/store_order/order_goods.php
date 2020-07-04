@@ -81,8 +81,9 @@
         });
         layList.basePost(layList.U({a:'update_delivery',q:{id:id}}),data,function (res) {
             layList.layer.close(index);
-           layList.msg(res.msg);
+            layList.msg(res.msg);
             parent.layer.close(parent.layer.getFrameIndex(window.name));
+            parent.window.frames[parent.$(".page-tabs-content .active").index()].location.reload();
         },function (res) {
             layList.layer.close(index);
             layList.msg(res.msg);

@@ -16,7 +16,6 @@ use app\admin\controller\AuthController;
  */
 class SystemGroup extends AuthController
 {
-
     /**
      * 显示资源列表
      *
@@ -79,7 +78,7 @@ class SystemGroup extends AuthController
                 }
             }
         }
-        $data["fields"] = json_encode($data["fields"]);
+        $data["fields"] = htmlspecialchars_decode(json_encode($data["fields"]));
         //判断ID是否存在，存在就是编辑，不存在就是添加
         if(!$params['id']) {
             GroupModel::create($data);

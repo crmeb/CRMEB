@@ -27,8 +27,8 @@
           </tr>
 		  <tr>
             <td class="tar">数据库服务器：</td>
-            <td><input type="text" name="dbhost" id="dbhost" value="localhost" class="input"></td>
-            <td><div id="J_install_tip_dbhost"><span class="gray">数据库服务器地址，一般为localhost</span></div></td>
+            <td><input type="text" name="dbhost" id="dbhost" value="127.0.0.1" class="input"></td>
+            <td><div id="J_install_tip_dbhost"><span class="gray">数据库服务器地址，一般为127.0.0.1</span></div></td>
           </tr>
 		  <tr>
             <td class="tar">数据库端口：</td>

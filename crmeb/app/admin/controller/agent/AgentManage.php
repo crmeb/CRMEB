@@ -6,12 +6,15 @@ use app\admin\controller\AuthController;
 use app\admin\model\order\StoreOrder;
 use app\admin\model\system\SystemAttachment;
 use app\admin\model\user\User;
-use app\admin\model\wechat\WechatUser as UserModel;
-use app\models\routine\RoutineQrcode;
 use app\models\user\UserBill;
-use crmeb\services\JsonService;
-use crmeb\services\UploadService;
-use crmeb\services\UtilService as Util;
+use app\admin\model\wechat\WechatUser as UserModel;
+use app\models\routine\{
+    RoutineCode, RoutineQrcode
+};
+use crmeb\services\{
+    JsonService, QrcodeService, UtilService as Util
+};
+use crmeb\services\upload\Upload;
 
 /**
  * 分销商管理控制器
@@ -26,17 +29,18 @@ class AgentManage extends AuthController
      */
     public function index()
     {
-        $this->assign('year', getMonth());
-        $this->assign('store_brokerage_statu', sysConfig('store_brokerage_statu'));
+        $this->assign('year', get_month());
+        $this->assign('store_brokerage_statu', sys_config('store_brokerage_statu'));
         return $this->fetch();
     }
 
+    /**
+     * 分销员列表
+     */
     public function get_spread_list()
     {
         $where = Util::getMore([
             ['nickname', ''],
-            ['start_time', ''],
-            ['end_time', ''],
             ['sex', ''],
             ['excel', ''],
             ['subscribe', ''],
@@ -44,10 +48,14 @@ class AgentManage extends AuthController
             ['page', 1],
             ['limit', 20],
             ['user_type', ''],
+            ['data', '']
         ]);
         return JsonService::successlayui(UserModel::agentSystemPage($where));
     }
 
+    /**
+     * 分销员列表头部数据统计
+     */
     public function get_badge()
     {
         $where = Util::postMore([
@@ -66,22 +74,25 @@ class AgentManage extends AuthController
     {
         if ($uid == '') return $this->failed('参数错误');
         $this->assign('uid', $uid ?: 0);
-        $this->assign('year', getMonth());
+        $this->assign('year', get_month());
         return $this->fetch();
     }
 
     /*
-    *  统计推广订单
+    *  统计推广订单页面
     * @param int $uid
     * */
     public function stair_order($uid = 0)
     {
         if ($uid == '') return $this->failed('参数错误');
         $this->assign('uid', $uid ?: 0);
-        $this->assign('year', getMonth());
+        $this->assign('year', get_month());
         return $this->fetch();
     }
 
+    /**
+     * 统计推广订单列表
+     */
     public function get_stair_order_list()
     {
         $where = Util::getMore([
@@ -95,6 +106,9 @@ class AgentManage extends AuthController
         return JsonService::successlayui(UserModel::getStairOrderList($where));
     }
 
+    /**
+     * 统计推广订单列表头部统计数据
+     */
     public function get_stair_order_badge()
     {
         $where = Util::getMore([
@@ -213,11 +227,23 @@ class AgentManage extends AuthController
         $name = $userInfo['uid'] . '_' . $userInfo['is_promoter'] . '_user.jpg';
         $imageInfo = SystemAttachment::getInfo($name, 'name');
         if (!$imageInfo) {
-            $res = \app\models\routine\RoutineCode::getShareCode($uid, 'spread', '', '');
+            $res = RoutineCode::getShareCode($uid, 'spread', '', '');
             if (!$res) throw new \think\Exception('二维码生成失败');
-            $imageInfo = UploadService::instance()->setUploadPath('routine/spread/code')->imageStream($name, $res['res']);
-            if (!is_array($imageInfo)) return $imageInfo;
-            SystemAttachment::attachmentAdd($imageInfo['name'], $imageInfo['size'], $imageInfo['type'], $imageInfo['dir'], $imageInfo['thumb_path'], 1, $imageInfo['image_type'], $imageInfo['time']);
+            $upload_type = sys_config('upload_type', 1);
+            $upload = new Upload((int)$upload_type, [
+                'accessKey' => sys_config('accessKey'),
+                'secretKey' => sys_config('secretKey'),
+                'uploadUrl' => sys_config('uploadUrl'),
+                'storageName' => sys_config('storage_name'),
+                'storageRegion' => sys_config('storage_region'),
+            ]);
+            $info = $upload->to('routine/spread/code')->validate()->stream($res['res'], $name);
+            if ($info === false) {
+                return $upload->getError();
+            }
+            $imageInfo = $upload->getUploadInfo();
+            $imageInfo['image_type'] = $upload_type;
+            SystemAttachment::attachmentAdd($imageInfo['name'], $imageInfo['size'], $imageInfo['type'], $imageInfo['dir'], $imageInfo['thumb_path'], 1, $imageInfo['image_type'], $imageInfo['time'], 2);
             RoutineQrcode::setRoutineQrcodeFind($res['id'], ['status' => 1, 'time' => time(), 'qrcode_url' => $imageInfo['dir']]);
             $urlCode = $imageInfo['dir'];
         } else $urlCode = $imageInfo['att_dir'];
@@ -229,7 +255,7 @@ class AgentManage extends AuthController
      * */
     public function wechant_code($uid)
     {
-        $qr_code = \crmeb\services\QrcodeService::getForeverQrcode('spread', $uid);
+        $qr_code = QrcodeService::getForeverQrcode('spread', $uid);
         if (isset($qr_code['url']))
             return ['code_src' => $qr_code['url']];
         else
@@ -248,11 +274,23 @@ class AgentManage extends AuthController
             $name = $userInfo['uid'] . '_' . $userInfo['is_promoter'] . '_user.jpg';
             $imageInfo = SystemAttachment::getInfo($name, 'name');
             if (!$imageInfo) {
-                $res = \app\models\routine\RoutineCode::getShareCode($uid, 'spread', '', '');
+                $res = RoutineCode::getShareCode($uid, 'spread', '', '');
                 if (!$res) return JsonService::fail('二维码生成失败');
-                $imageInfo = UploadService::instance()->setUploadPath('routine/spread/code')->imageStream($name, $res['res']);
-                if (!is_array($imageInfo)) return JsonService::fail($imageInfo);
-                SystemAttachment::attachmentAdd($imageInfo['name'], $imageInfo['size'], $imageInfo['type'], $imageInfo['dir'], $imageInfo['thumb_path'], 1, $imageInfo['image_type'], $imageInfo['time']);
+                $upload_type = sys_config('upload_type', 1);
+                $upload = new Upload((int)$upload_type, [
+                    'accessKey' => sys_config('accessKey'),
+                    'secretKey' => sys_config('secretKey'),
+                    'uploadUrl' => sys_config('uploadUrl'),
+                    'storageName' => sys_config('storage_name'),
+                    'storageRegion' => sys_config('storage_region'),
+                ]);
+                $info = $upload->to('routine/spread/code')->validate()->stream($res['res'], $name);
+                if ($info === false) {
+                    return $upload->getError();
+                }
+                $imageInfo = $upload->getUploadInfo();
+                $imageInfo['image_type'] = $upload_type;
+                SystemAttachment::attachmentAdd($imageInfo['name'], $imageInfo['size'], $imageInfo['type'], $imageInfo['dir'], $imageInfo['thumb_path'], 1, $imageInfo['image_type'], $imageInfo['time'], 2);
                 RoutineQrcode::setRoutineQrcodeFind($res['id'], ['status' => 1, 'time' => time(), 'qrcode_url' => $imageInfo['dir']]);
                 $urlCode = $imageInfo['dir'];
             } else $urlCode = $imageInfo['att_dir'];
@@ -262,10 +300,10 @@ class AgentManage extends AuthController
         }
     }
 
-    /**
+    /*
      * 解除单个用户的推广权限
      * @param int $uid
-     */
+     * */
     public function delete_spread($uid = 0)
     {
         if (!$uid) return JsonService::fail('缺少参数');
@@ -275,9 +313,9 @@ class AgentManage extends AuthController
             return JsonService::fail('解除失败');
     }
 
-    /**
+    /*
      * 清除推广人
-     */
+     * */
     public function empty_spread($uid = 0)
     {
         if (!$uid) return JsonService::fail('缺少参数');
@@ -299,7 +337,7 @@ class AgentManage extends AuthController
             ->field('mark,pm,number,add_time')
             ->where('status', 1)->order('add_time DESC')->select()->toArray();
         foreach ($list as &$v) {
-            $v['add_time'] = date('Y-m-d H:i:s', $v['add_time']);
+            $v['add_time'] = $v['add_time'] ? date('Y-m-d H:i:s', $v['add_time']) : '';
         }
         $this->assign('list', $list);
         return $this->fetch();

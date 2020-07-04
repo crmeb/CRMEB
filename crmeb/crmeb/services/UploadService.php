@@ -378,7 +378,7 @@ class UploadService
     protected function setUploadInfo(string $url, int $imageType, string $name = '', string $thumbPath = '', array $headerArray = [])
     {
         $headerArray = count($headerArray) ? $headerArray : self::getImageHeaders($url);
-        if (is_array($headerArray['Content-Length']) && count($headerArray['Content-Length']) == 2) {
+        if (is_array($headerArray['Content-Type']) && count($headerArray['Content-Length']) == 2) {
             $headerArray['Content-Length'] = $headerArray['Content-Length'][1];
         }
         if (is_array($headerArray['Content-Type']) && count($headerArray['Content-Type']) == 2) {

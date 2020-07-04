@@ -142,9 +142,9 @@
                 </div>
             </div>
             <div class="col-sm-4">
-                <div class="ibox float-e-margins">
+                <div class="ibox float-e-margins" data-toggle="modal" data-target="#myModal">
                 <div class="ibox-title">
-                    <h5>最近交易记录</h5>
+                    <h5>最近交易记录              更多</h5>
                     <div class="ibox-tools">
                         <a class="collapse-link">
                             <i class="fa fa-chevron-up"></i>
@@ -155,13 +155,39 @@
                     </div>
                 </div>
                 <div class="ibox-content" >
-                    <div id="ec-new-count" style="height:300px;">
-                    {volist name="trans" id="vo"}
+                    <div id="ec-new-count" style="height:290px;">
+                    <!--{volist name="trans" id="vo"}
                     <div class="col-sm-3 col-xs-3"><h4 class="text-overflow">{$vo.nickname}</h4></div>
                     <div class="col-sm-6 col-xs-6"><h4 class="text-overflow">购买{$vo.store_name}</h4></div>
                     <div class="col-sm-3 col-xs-3"><h4 class="text-overflow">￥{$vo.pay_price}</h4></div>
-                    {/volist}
+                    {/volist}-->
+                        <table class="layui-table">
+                            <colgroup>
+                                <col width="150">
+                                <col width="200">
+                                <col>
+                            </colgroup>
+                            <thead>
+                            <tr>
+                                <th>用户</th>
+                                <th>商品</th>
+                                <th>价格</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <if condition="$trans">
+                                {volist name="trans" id="vo" length="4"}
+                                <tr>
+                                    <td>{$vo.nickname}</td>
+                                    <td>{$vo.store_name | mb_substr = 0,8}</td>
+                                    <td>￥{$vo.pay_price}</td>
+                                </tr>
+                                {/volist}
+                            </if>
+                            </tbody>
+                        </table>
                     </div>
+
                 </div>
                 </div>
             </div>
@@ -198,7 +224,45 @@
         </div>
     </div>
 </div>
-
+<!-- 模态框（Modal） -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="myModalLabel">最近交易记录</h4>
+            </div>
+            <div class="modal-body">
+                <table class="layui-table">
+                    <colgroup>
+                        <col width="150">
+                        <col width="200">
+                        <col>
+                    </colgroup>
+                    <thead>
+                    <tr>
+                        <th>用户</th>
+                        <th>商品</th>
+                        <th>价格</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {volist name="trans" id="vo"}
+                    <tr>
+                        <td>{$vo.nickname}</td>
+                        <td>购买{$vo.store_name}</td>
+                        <td>￥{$vo.pay_price}</td>
+                    </tr>
+                    {/volist}
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+</div>
 <script src="{__FRAME_PATH}js/content.min.js?v=1.0.0"></script>
 <script>
     (function(){

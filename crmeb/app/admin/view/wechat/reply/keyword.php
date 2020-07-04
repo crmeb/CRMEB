@@ -65,8 +65,8 @@
                             </td>
 
                             <td class="text-right">
-                                <button class="btn btn-info btn-xs" type="button"  onclick="window.location.href='{:Url('info_keyword',array('key'=>$vo['key']))}'" ><i class="fa fa-paste"></i> 编辑</button>
-                                <button class="btn btn-warning btn-xs" data-url="{:Url('delete',array('id'=>$vo['id']))}" type="button"><i class="fa fa-warning"></i> 删除
+                                <button class="btn btn-info btn-xs" type="button"  onclick="window.location.href='{:Url('info_keyword',array('key'=>$vo['key']))}'" ><i class="fa fa-edit"></i> 编辑</button>
+                                <button class="btn btn-danger btn-xs " data-url="{:Url('delete',array('id'=>$vo['id']))}" type="button"><i class="fa fa-times"></i> 删除
                                 </button>
                             </td>
                         </tr>
@@ -82,7 +82,7 @@
 {/block}
 {block name="script"}
 <script>
-    $('.btn-warning').on('click',function(){
+    $('.btn-danger').on('click',function(){
         window.t = $(this);
         var _this = $(this),url =_this.data('url');
         $eb.$swal('delete',function(){

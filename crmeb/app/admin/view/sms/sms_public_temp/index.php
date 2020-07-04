@@ -5,28 +5,6 @@
     <div class="layui-row layui-col-space15"  id="app">
         <div class="layui-col-md12">
             <div class="layui-card">
-                <div class="layui-card-header">搜索条件</div>
-                <div class="layui-card-body">
-                    <form class="layui-form layui-form-pane" action="">
-                        <div class="layui-form-item">
-                            <div class="layui-inline">
-                                <label class="layui-form-label">模板状态</label>
-                                <div class="layui-input-block">
-                                    <select name="is_have">
-                                        <option value="">状态</option>
-                                        <option value="1">有</option>
-                                        <option value="0">没有</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-        <!--产品列表-->
-        <div class="layui-col-md12">
-            <div class="layui-card">
                 <div class="layui-card-header">模板列表</div>
                 <div class="layui-card-body">
                     <table class="layui-hide" id="List" lay-filter="List"></table>

@@ -59,9 +59,9 @@
 								{$vo.info}
 							</td>
 							<td class="text-center">
-								<a class="btn btn-info btn-xs" href="{:Url('setting.systemGroupData/index',array('gid'=>$vo['id']))}"><i class="fa fa-paste"></i> 数据列表</a>
-								<button class="btn btn-info btn-xs"  onclick="$eb.createModalFrame(this.innerText,'{:Url('edit',array('id'=>$vo['id']))}')" ><i class="fa fa-paste"></i> 编辑</button>
-								<button class="btn btn-warning btn-xs" data-url="{:Url('delete',array('id'=>$vo['id']))}" type="button"><i class="fa fa-warning"></i> 删除</button>
+								<a class="btn btn-info btn-xs" href="{:Url('setting.systemGroupData/index',array('gid'=>$vo['id']))}"><i class="fa fa-edit"></i> 数据列表</a>
+								<button class="btn btn-info btn-xs"  onclick="$eb.createModalFrame(this.innerText,'{:Url('edit',array('id'=>$vo['id']))}')" ><i class="fa fa-edit"></i> 编辑</button>
+								<button class="btn btn-danger btn-xs " data-url="{:Url('delete',array('id'=>$vo['id']))}" type="button"><i class="fa fa-times"></i> 删除</button>
 							</td>
 						</tr>
 						{/volist}
@@ -76,7 +76,7 @@
 {/block}
 {block name="script"}
 <script>
-    $('.btn-warning').on('click',function(){
+    $('.btn-danger').on('click',function(){
         window.t = $(this);
         var _this = $(this),url =_this.data('url');
         $eb.$swal('delete',function(){

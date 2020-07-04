@@ -22,7 +22,10 @@ if (PHP_EDITION > phpversion()){
 	header("Content-type:text/html;charset=utf-8");
 	exit('您的php版本过低，不能安装本软件，请升级到'.PHP_EDITION.'或更高版本再安装，谢谢！');
 }
-
+if(phpversion() > '7.4'){
+    header("Content-type:text/html;charset=utf-8");
+    exit('您的php版本太高，不能安装本软件，兼容php版本7.1~7.3，谢谢！');
+}
 define("CRMEB_VERSION", '20180601');
 date_default_timezone_set('PRC');
 error_reporting(E_ALL & ~E_NOTICE);
@@ -82,7 +85,7 @@ switch ($step) {
         $allow_reference = (ini_get('allow_call_time_pass_reference') ? '<font color=green>[√]On</font>' : '<font color=red>[×]Off</font>');
         $allow_url_fopen = (ini_get('allow_url_fopen') ? '<font color=green>[√]On</font>' : '<font color=red>[×]Off</font>');
         $safe_mode = (ini_get('safe_mode') ? '<font color=red>[×]On</font>' : '<font color=green>[√]Off</font>');
-		
+
         $err = 0;
         if (empty($tmp['GD Version'])) {
             $gd = '<font color=red>[×]Off</font>';
@@ -133,7 +136,7 @@ switch ($step) {
             $err++;
         }
 
-        
+
         $folder = array(
             'public/install',
             'public/uploads',
@@ -162,26 +165,26 @@ switch ($step) {
 		$_POST['dbport'] = $_POST['dbport'] ? $_POST['dbport'] : '3306';
         if ($_GET['testdbpwd']) {
             $dbHost = $_POST['dbHost'];
-            $conn = @mysqli_connect($dbHost, $_POST['dbUser'], $_POST['dbPwd'],NULL,$_POST['dbport']);			
-            if (mysqli_connect_errno($conn)){				
-				die(json_encode(0));                
+            $conn = @mysqli_connect($dbHost, $_POST['dbUser'], $_POST['dbPwd'],NULL,$_POST['dbport']);
+            if (mysqli_connect_errno($conn)){
+				die(json_encode(0));
             } else {
-				$result = mysqli_query($conn,"SELECT @@global.sql_mode");				
+				$result = mysqli_query($conn,"SELECT @@global.sql_mode");
 				$result = $result->fetch_array();
 				$version = mysqli_get_server_info($conn);
-				if ($version >= 5.7) 
+				if ($version >= 5.7)
 				{
-					if(strstr($result[0],'STRICT_TRANS_TABLES') || strstr($result[0],'STRICT_ALL_TABLES') || strstr($result[0],'TRADITIONAL') || strstr($result[0],'ANSI'))				
+					if(strstr($result[0],'STRICT_TRANS_TABLES') || strstr($result[0],'STRICT_ALL_TABLES') || strstr($result[0],'TRADITIONAL') || strstr($result[0],'ANSI'))
 						exit(json_encode(-1));
 				}
 				$result = mysqli_query($conn,"select count(table_name) as c from information_schema.`TABLES` where table_schema='$dbName'");
 				$result = $result->fetch_array();
 				if($result['c'] > 0)
 					exit(json_encode(-2));
-				
+
                 exit(json_encode(1));
             }
-        }		 		
+        }
         include_once ("./templates/step3.php");
         exit();
 
@@ -195,7 +198,7 @@ switch ($step) {
 
             $dbHost = trim($_POST['dbhost']);
             $_POST['dbport'] = $_POST['dbport'] ? $_POST['dbport'] : '3306';
-            $dbName = strtolower(trim($_POST['dbname']));            
+            $dbName = strtolower(trim($_POST['dbname']));
             $dbUser = trim($_POST['dbuser']);
             $dbPwd = trim($_POST['dbpw']);
             $dbPrefix = empty($_POST['dbprefix']) ? 'eb_' : trim($_POST['dbprefix']);
@@ -203,7 +206,7 @@ switch ($step) {
             $username = trim($_POST['manager']);
             $password = trim($_POST['manager_pwd']);
             $email	  = trim($_POST['manager_email']);
-            
+
             if (!function_exists('mysqli_connect')) {
                 $arr['msg'] = "请安装 mysqli 扩展!";
                 echo json_encode($arr);
@@ -211,7 +214,7 @@ switch ($step) {
             }
             $conn = @mysqli_connect($dbHost, $dbUser, $dbPwd,NULL,$_POST['dbport']);
             if (mysqli_connect_errno($conn)){
-                $arr['msg'] = "连接数据库失败!".mysqli_connect_error($conn);           
+                $arr['msg'] = "连接数据库失败!".mysqli_connect_error($conn);
                 echo json_encode($arr);
                 exit;
             }
@@ -222,7 +225,7 @@ switch ($step) {
                 echo json_encode($arr);
                 exit;
             }
-            
+
             if (!mysqli_select_db($conn,$dbName)) {
                 //创建数据时同时设置编码
                 if (!mysqli_query($conn,"CREATE DATABASE IF NOT EXISTS `" . $dbName . "` DEFAULT CHARACTER SET utf8;")) {
@@ -277,10 +280,10 @@ switch ($step) {
             }
 
 
-			// 清空测试数据			
+			// 清空测试数据
 			if(!$_POST['demo'])
-			{				
-				$result = mysqli_query($conn,"show tables");      
+			{
+				$result = mysqli_query($conn,"show tables");
 				$tables=mysqli_fetch_all($result);//参数MYSQL_ASSOC、MYSQLI_NUM、MYSQLI_BOTH规定产生数组类型
 				$bl_table = array('eb_system_admin'
                 ,'eb_system_role'
@@ -291,20 +294,23 @@ switch ($step) {
                 ,'eb_express'
                 ,'eb_system_group'
                 ,'eb_system_group_data'
-                ,'eb_wechat_template'
-                ,'eb_routine_template');
+                ,'eb_template_message'
+                ,'eb_shipping_templates'
+                ,"eb_shipping_templates_region"
+                ,"eb_shipping_templates_free"
+                ,'eb_system_city');
 				foreach($bl_table as $k => $v)
 				{
 					$bl_table[$k] = str_replace('eb_',$dbPrefix,$v);
-				}			      
-			
+				}
+
 				foreach($tables as $key => $val)
-				{					
+				{
 					if(!in_array($val[0], $bl_table))
 					{
 						mysqli_query($conn,"truncate table ".$val[0]);
-					}		
-				}   	
+					}
+				}
 				delFile(APP_DIR.'/uploads'); // 清空测试图片
 			}
             //读取配置文件，并替换真实配置数据1
@@ -319,7 +325,7 @@ switch ($step) {
             // $strConfig = str_replace('#DB_DEBUG#', false, $strConfig);
             @chmod(APP_DIR . '/.env',0777); //数据库配置文件的地址
             @file_put_contents(APP_DIR . '/.env', $strConfig); //数据库配置文件的地址
-            
+
             //读取配置文件，并替换换配置
 //            $strConfig = file_get_contents(SITE_DIR . '/application/config.php');
 //            $strConfig = str_replace('CRMEB_cache_prefix', $uniqid_str, $strConfig);
@@ -410,9 +416,9 @@ function sql_split($sql, $tablepre) {
 
     if ($tablepre != "tp_")
     	$sql = str_replace("tp_", $tablepre, $sql);
-          
+
     $sql = preg_replace("/TYPE=(InnoDB|MyISAM|MEMORY)( DEFAULT CHARSET=[^; ]+)?/", "ENGINE=\\1 DEFAULT CHARSET=utf8", $sql);
-    
+
     $sql = str_replace("\r", "\n", $sql);
     $ret = array();
     $num = 0;

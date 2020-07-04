@@ -7,7 +7,7 @@
     <div class="col-sm-12">
         <div class="ibox float-e-margins">
             <div class="ibox-title">
-                <h5>砍价产品搜索</h5>
+                <h5>砍价商品搜索</h5>
                 <div class="ibox-tools">
                     <a class="collapse-link">
                         <i class="fa fa-chevron-up"></i>
@@ -17,14 +17,14 @@
             <div class="ibox-content">
                 <div class="alert alert-success alert-dismissable">
                     <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>
-                    目前拥有{$countBargain}个砍价产品
+                    目前拥有{$countBargain}个砍价商品
                 </div>
                 <form class="layui-form">
                     <div class="layui-form-item">
                         <div class="layui-inline">
                             <label class="layui-form-label">搜　　索：</label>
                             <div class="layui-input-inline">
-                                <input type="text" name="store_name" lay-verify="store_name" style="width: 100%" autocomplete="off" placeholder="请输入产品名称,编号" class="layui-input">
+                                <input type="text" name="store_name" lay-verify="store_name" style="width: 100%" autocomplete="off" placeholder="请输入商品名称,编号" class="layui-input">
                             </div>
                         </div>
                         <div class="layui-inline">
@@ -56,9 +56,9 @@
         <div class="ibox float-e-margins">
             <div class="ibox-content">
                 <div class="table-responsive" style="margin-top: 20px;">
-<!--                    <div class="layui-btn-group conrelTable">-->
-<!--                        <button class="layui-btn layui-btn-sm layui-btn-danger" type="button" onclick="$eb.createModalFrame(this.innerText,'{:Url('create')}')"><i class="fa fa-check-circle-o"></i>添加砍价</button>-->
-<!--                     </div>-->
+                    <div class="layui-btn-container">
+                        <a class="layui-btn layui-btn-sm" onclick="$eb.createModalFrame(this.innerText,'{:Url('create')}',{h:700,w:1100});">添加砍价商品</a>
+                    </div>
                     <table class="layui-hide" id="bargainList" lay-filter="bargainList"></table>
                     <script type="text/html" id="status">
                         <input type='checkbox' name='status' lay-skin='switch' value="{{d.id}}" lay-filter='status' lay-text='开启|关闭'  {{ d.status == 1 ? 'checked' : '' }}>
@@ -78,13 +78,15 @@
                         </div>
                     </script>
                     <script type="text/html" id="barDemo">
-                        <button type="button" class="layui-btn layui-btn-xs" onclick="dropdown(this)"><i class="layui-icon layui-icon-util"></i>操作</button>
+                        <button type="button" class="layui-btn layui-btn-xs" onclick="$eb.createModalFrame('{{d.title}}-设置规格','{:Url('attr_list')}?id={{d.id}}',{h:1000,w:1400});"><i class="layui-icon layui-icon-util"></i>规格</button>
+
+                        <button type="button" class="layui-btn layui-btn-xs" onclick="dropdown(this)">操作<span class="caret"></span></button>
                         <ul class="layui-nav-child layui-anim layui-anim-upbit">
                             <li>
-                                <a href="javascript:void(0);" onclick="$eb.createModalFrame('{{d.title}}-编辑','{:Url('edit')}?id={{d.id}}')"><i class="layui-icon layui-icon-edit"></i> 编辑</a>
+                                <a href="javascript:void(0);" onclick="$eb.createModalFrame('{{d.title}}-编辑','{:Url('edit')}?id={{d.id}}')"><i class="layui-icon layui-icon-edit"></i>编辑活动</a>
                             </li>
                             <li>
-                                <a href="javascript:void(0);" onclick="$eb.createModalFrame('{{d.title}}-编辑内容','{:Url('edit_content')}?id={{d.id}}')"><i class="fa fa-pencil"></i> 编辑内容</a>
+                                <a href="javascript:void(0);" onclick="$eb.createModalFrame('{{d.title}}-编辑内容','{:Url('edit_content')}?id={{d.id}}')"><i class="layui-icon layui-icon-edit"></i>编辑详情</a>
                             </li>
                             <li>
                                 <a href="javascript:void(0);"  onclick="$eb.createModalFrame('{{d.title}}-编辑规则','{:Url('edit_rule')}?id={{d.id}}')"><i class="layui-icon layui-icon-edit"></i>编辑规则</a>
@@ -121,21 +123,20 @@
         return [
             {field: 'id', title: '编号', sort: true,width:'5%',event:'id'},
             {field: 'image', title: '砍价图片',event:'open_image', width: '8%',templet: '<p><img src="{{d.image}}" alt="{{d.title}}"></p>'},
-            {field: 'title', title: '砍价名称',width:'10%'},
+            {field: 'title', title: '砍价名称'},
             {field: 'price', title: '砍价价格',width:'6%'},
             {field: 'bargain_min_price', title: '砍价区间',width:'8%',templet: '<span>{{d.bargain_min_price}}~{{d.bargain_max_price}}</span>'},
-            {field: 'min_price', title: '最低价',width:'8%'},
-            {field: 'status', title: '砍价状态',width:'8%',templet:"#status"},
-            {field: 'count_people_all', title: '参与人数',width:'6%',templet: '<span>【{{d.count_people_all}}】人</span>'},
-            {field: 'count_people_help', title: '帮忙砍价人数',width:'6%',templet: '<span>【{{d.count_people_help}}】人</span>'},
-            {field: 'count_people_success', title: '砍价成功人数',width:'6%',templet: '<span>【{{d.count_people_success}}】人</span>'},
-            {field: 'look', title: '浏览量',width:'5%'},
-            {field: 'stock', title: '库存',width:'4%'},
-            {field: '_stop_time', title: '结束时间', width: '10%',toolbar: '#stopTime'},
+            {field: 'min_price', title: '最低价',width:'6%'},
+            {field: 'count_people_all', title: '参与人数',width:'7%',templet: '<span>【{{d.count_people_all}}】人</span>'},
+            {field: 'count_people_help', title: '帮忙砍价人数',width:'7%',templet: '<span>【{{d.count_people_help}}】人</span>'},
+            {field: 'count_people_success', title: '砍价成功人数',width:'7%',templet: '<span>【{{d.count_people_success}}】人</span>'},
+            {field: 'quota_show', title: '限量',width:'4%'},
+            {field: 'quota', title: '限量剩余',width:'6%'},
+            {field: '_stop_time', title: '结束时间', width: '8%',toolbar: '#stopTime'},
+            {field: 'status', title: '状态',width:'6%',templet:"#status"},
             {field: 'right', title: '操作', width: '10%', align: 'center', toolbar: '#barDemo'}
         ]
     });
-    // layList.date('time');
     layList.laydate.render({
         elem:'#time',
         trigger:'click',
@@ -169,6 +170,22 @@
         if(odj.elem.checked==true){
             layList.baseGet(layList.Url({c:'ump.store_bargain',a:'set_bargain_status',p:{status:1,id:value}}),function (res) {
                 layList.msg(res.msg);
+            }, function () {
+                odj.elem.checked = false;
+                layui.form.render();
+                layer.open({
+                    type: 1
+                    ,offset: 'auto'
+                    ,id: 'layerDemoauto' //防止重复弹出
+                    ,content: '<div style="padding: 20px 100px;">请先配置规格</div>'
+                    ,btn: '设置规格'
+                    ,btnAlign: 'c' //按钮居中
+                    ,shade: 0 //不显示遮罩
+                    ,yes: function(){
+                        layer.closeAll();
+                        $eb.createModalFrame('设置规格','{:Url('attr_list')}?id='+value+'',{h:1000,w:1400});
+                    }
+                });
             });
         }else{
             layList.baseGet(layList.Url({c:'ump.store_bargain',a:'set_bargain_status',p:{status:0,id:value}}),function (res) {

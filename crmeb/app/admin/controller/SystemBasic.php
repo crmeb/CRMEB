@@ -24,7 +24,7 @@ class SystemBasic extends BaseController
     protected function failedNotice($msg = '操作失败', $backUrl = 0, $info = '', $duration = 3)
     {
         $type = 'error';
-        $this->assign(compact('msg','backUrl','info','duration','type'));
+        $this->assign(compact('msg', 'backUrl', 'info', 'duration', 'type'));
         return $this->fetch('public/notice');
     }
 
@@ -37,7 +37,7 @@ class SystemBasic extends BaseController
      */
     protected function failedNoticeLast($msg = '操作失败', $backUrl = 0, $info = '')
     {
-        return $this->failedNotice($msg,$backUrl,$info,0);
+        return $this->failedNotice($msg, $backUrl, $info, 0);
     }
 
     /**
@@ -48,10 +48,10 @@ class SystemBasic extends BaseController
      * @param int $duration 持续时间
      * @return mixed
      */
-    protected function successfulNotice($msg = '操作成功',$backUrl = 0,$info = '',$duration = 3)
+    protected function successfulNotice($msg = '操作成功', $backUrl = 0, $info = '', $duration = 3)
     {
         $type = 'success';
-        $this->assign(compact('msg','backUrl','info','duration','type'));
+        $this->assign(compact('msg', 'backUrl', 'info', 'duration', 'type'));
         return $this->fetch('public/notice');
     }
 
@@ -62,9 +62,9 @@ class SystemBasic extends BaseController
      * @param string $title
      * @return mixed
      */
-    protected function successfulNoticeLast($msg = '操作成功',$backUrl = 0,$info = '')
+    protected function successfulNoticeLast($msg = '操作成功', $backUrl = 0, $info = '')
     {
-        return $this->successfulNotice($msg,$backUrl,$info,0);
+        return $this->successfulNotice($msg, $backUrl, $info, 0);
     }
 
     /**
@@ -74,10 +74,10 @@ class SystemBasic extends BaseController
      */
     protected function failed($msg = '哎呀…亲…您访问的页面出现错误', $url = 0)
     {
-        if($this->request->isAjax()){
-            exit(JsonService::fail($msg,$url)->getContent());
-        }else{
-            $this->assign(compact('msg','url'));
+        if ($this->request->isAjax()) {
+            exit(JsonService::fail($msg, $url)->getContent());
+        } else {
+            $this->assign(compact('msg', 'url'));
             exit($this->fetch('public/error'));
         }
     }
@@ -89,13 +89,14 @@ class SystemBasic extends BaseController
      */
     protected function successful($msg, $url = 0)
     {
-        if($this->request->isAjax()){
-            exit(JsonService::successful($msg,$url)->getContent());
-        }else{
-            $this->assign(compact('msg','url'));
+        if ($this->request->isAjax()) {
+            exit(JsonService::successful($msg, $url)->getContent());
+        } else {
+            $this->assign(compact('msg', 'url'));
             exit($this->fetch('public/success'));
         }
     }
+
     /**异常抛出
      * @param $name
      */

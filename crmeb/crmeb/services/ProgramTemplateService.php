@@ -97,7 +97,7 @@ class ProgramTemplateService implements ProviderInterface
      */
     public static function sendAdminNoticeTemplate(array $data, $url = null, $defaultColor = '')
     {
-        $adminIds = explode(',', trim(sysConfig('site_store_admin_uids')));
+        $adminIds = explode(',', trim(sys_config('site_store_admin_uids')));
         $kefuIds = ServiceModel::where('notify', 1)->column('uid', 'uid');
         if (empty($adminIds[0])) {
             $adminList = array_unique($kefuIds);

@@ -1,4 +1,5 @@
 <?php
+
 namespace app\api\controller\store;
 
 
@@ -22,10 +23,12 @@ class StoreCouponsController
     public function lst(Request $request)
     {
         $data = UtilService::getMore([
-            ['page',0],
-            ['limit',0]
+            ['type',0],
+            ['page', 0],
+            ['limit', 0],
+            ['product_id',0]
         ], $request);
-        return app('json')->successful(StoreCouponIssue::getIssueCouponList($request->uid(),$data['limit'],$data['page']));
+        return app('json')->successful(StoreCouponIssue::getIssueCouponList($request->uid(), $data['limit'], $data['page'],$data['type'],$data['product_id']));
     }
 
     /**
@@ -36,11 +39,11 @@ class StoreCouponsController
      */
     public function receive(Request $request)
     {
-        list($couponId) = UtilService::getMore([['couponId',0]], $request, true);
-        if(!$couponId || !is_numeric($couponId)) return app('json')->fail('参数错误!');
-        if(StoreCouponIssue::issueUserCoupon($couponId,$request->uid())){
+        list($couponId) = UtilService::getMore([['couponId', 0]], $request, true);
+        if (!$couponId || !is_numeric($couponId)) return app('json')->fail('参数错误!');
+        if (StoreCouponIssue::issueUserCoupon($couponId, $request->uid())) {
             return app('json')->successful('领取成功');
-        }else{
+        } else {
             return app('json')->fail(StoreCouponIssue::getErrorInfo('领取失败!'));
         }
     }
@@ -56,23 +59,24 @@ class StoreCouponsController
      */
     public function user(Request $request, $types)
     {
-        switch ($types){
-            case 0:case '':
-            $list= StoreCouponUser::getUserAllCoupon($request->uid());
-            break;
+        switch ($types) {
+            case 0:
+            case '':
+                $list = StoreCouponUser::getUserAllCoupon($request->uid());
+                break;
             case 1:
-                $list=StoreCouponUser::getUserValidCoupon($request->uid());
+                $list = StoreCouponUser::getUserValidCoupon($request->uid());
                 break;
             case 2:
-                $list=StoreCouponUser::getUserAlreadyUsedCoupon($request->uid());
+                $list = StoreCouponUser::getUserAlreadyUsedCoupon($request->uid());
                 break;
             default:
-                $list=StoreCouponUser::getUserBeOverdueCoupon($request->uid());
+                $list = StoreCouponUser::getUserBeOverdueCoupon($request->uid());
                 break;
         }
-        foreach ($list as &$v){
-            $v['add_time'] = date('Y/m/d',$v['add_time']);
-            $v['end_time'] = date('Y/m/d',$v['end_time']);
+        foreach ($list as &$v) {
+            $v['add_time'] = date('Y/m/d', $v['add_time']);
+            $v['end_time'] = date('Y/m/d', $v['end_time']);
         }
         return app('json')->successful($list);
     }
@@ -85,24 +89,24 @@ class StoreCouponsController
     public function receive_batch(Request $request)
     {
         list($couponIds) = UtilService::postMore([
-            ['couponId',[]],
+            ['couponId', []],
         ], $request, true);
-        if(!count($couponIds)) return app('json')->fail('参数错误');
+        if (!count($couponIds)) return app('json')->fail('参数错误');
         $couponIdsError = [];
         $count = 0;
         $msg = '';
-        foreach ($couponIds as $key=>&$item){
-            if(!StoreCouponIssue::issueUserCoupon($item,$request->uid())){
+        foreach ($couponIds as $key => &$item) {
+            if (!StoreCouponIssue::issueUserCoupon($item, $request->uid())) {
                 $couponIdsError[$count]['id'] = $item;
                 $couponIdsError[$count]['msg'] = StoreCouponIssue::getErrorInfo('领取失败');
-            }else{
+            } else {
                 $couponIdsError[$count]['id'] = $item;
                 $couponIdsError[$count]['msg'] = '领取成功';
             }
             $count++;
         }
-        foreach ($couponIdsError as $key=>&$value){
-            $msg = $msg.StoreCouponIssue::getIssueCouponTitle($value['id']).','.$value['msg'];
+        foreach ($couponIdsError as $key => &$value) {
+            $msg = $msg . StoreCouponIssue::getIssueCouponTitle($value['id']) . ',' . $value['msg'];
         }
         return app('json')->fail($msg);
     }
@@ -113,8 +117,8 @@ class StoreCouponsController
      * @param $price
      * @return mixed
      */
-    public function order(Request $request, $price)
+    public function order(Request $request, $cartId, $price)
     {
-        return app('json')->successful(StoreCouponUser::beUsableCouponList($request->uid(), $price));
+        return app('json')->successful(StoreCouponUser::beUsableCouponList($request->uid(), $cartId, $price));
     }
 }

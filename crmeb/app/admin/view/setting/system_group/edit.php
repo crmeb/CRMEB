@@ -6,7 +6,7 @@
 </head>
 <body>
 <div id="form-add" class="mp-form" v-cloak="">
-    <i-Form :model="formData" :label-width="80" >
+    <i-Form :model="formData" :label-width="80">
         <i-input v-model="formData.id" type="hidden" placeholder="请输入数据组名称"></i-input>
         <Form-Item label="数据组名称">
             <i-input v-model="formData.name" placeholder="请输入数据组名称"></i-input>
@@ -28,61 +28,66 @@
                         </i-col>
                     </row>
                     <row>
-                    <i-col span="23">
-                        <Form-Item>
-                            <i-input :placeholder="item.title.placeholder" v-model="item.title.value"></i-input>
-                        </Form-Item>
-                    </i-col>
+                        <i-col span="23">
+                            <Form-Item>
+                                <i-input :placeholder="item.title.placeholder" v-model="item.title.value"></i-input>
+                            </Form-Item>
+                        </i-col>
                     </row>
                     <row>
-                    <i-col span="23">
-                        <Form-Item>
-                            <i-select :placeholder="item.type.placeholder" v-model="item.type.value">
-                                <i-option value="input">文本框</i-option>
-                                <i-option value="textarea">多行文本框</i-option>
-                                <i-option value="radio">单选框</i-option>
-                                <i-option value="checkbox">多选框</i-option>
-                                <i-option value="select">下拉选择</i-option>
-                                <i-option value="upload">单图</i-option>
-                                <i-option value="uploads">多图</i-option>
-                            </i-select>
-                        </Form-Item>
-                    </i-col>
+                        <i-col span="23">
+                            <Form-Item>
+                                <i-select :placeholder="item.type.placeholder" v-model="item.type.value">
+                                    <i-option value="input">文本框</i-option>
+                                    <i-option value="textarea">多行文本框</i-option>
+                                    <i-option value="radio">单选框</i-option>
+                                    <i-option value="checkbox">多选框</i-option>
+                                    <i-option value="select">下拉选择</i-option>
+                                    <i-option value="upload">单图</i-option>
+                                    <i-option value="uploads">多图</i-option>
+                                    <i-option value="number">数字</i-option>
+                                </i-select>
+                            </Form-Item>
+                        </i-col>
                     </row>
                 </i-col>
                 <i-col span="12">
                     <Form-Item>
-                        <i-input type="textarea" rows="4" :placeholder="item.param.placeholder" v-model="item.param.value"></i-input>
+                        <i-input type="textarea" rows="4" :placeholder="item.param.placeholder"
+                                 v-model="item.param.value"></i-input>
                     </Form-Item>
                 </i-col>
                 <i-col span="2" style="display:inline-block; text-align:right;">
                     <i-button type="primary" icon="close-round" @click="removeType(index)"></i-button>
                 </i-col>
-                </row>
+            </row>
             </row>
         </Form-Item>
-        <Form-Item><i-button type="primary" @click="addType">添加字段</i-button></Form-Item>
+        <Form-Item>
+            <i-button type="primary" @click="addType">添加字段</i-button>
+        </Form-Item>
         <Form-Item :class="'add-submit-item'">
-            <i-Button :type="'primary'" :html-type="'submit'" :size="'large'" :long="true" @click.prevent="submit">提交</i-Button>
+            <i-Button :type="'primary'" :html-type="'submit'" :size="'large'" :long="true" @click.prevent="submit">提交
+            </i-Button>
         </Form-Item>
     </i-Form>
 </div>
 <script>
     $eb = parent._mpApi;
-    mpFrame.start(function(Vue){
+    mpFrame.start(function (Vue) {
         new Vue({
-            el:"#form-add",
-            data:{
-                formData:{
+            el: "#form-add",
+            data: {
+                formData: {
                     id: '{$Groupinfo.id}',
                     name: '{$Groupinfo.name}',
                     config_name: '{$Groupinfo.config_name}',
                     typelist: <?php echo $Groupinfo['fields'];?>,
-                    info:'{$Groupinfo.info}'
+                    info: '{$Groupinfo.info}'
                 }
             },
-            methods:{
-                addType: function(){
+            methods: {
+                addType: function () {
                     this.formData.typelist.push({
                         name: {
                             placeholder: "字段名称：姓名",
@@ -102,22 +107,23 @@
                         }
                     })
                 },
-                removeType: function(index){
-                    this.formData.typelist.splice(index,1);
+                removeType: function (index) {
+                    this.formData.typelist.splice(index, 1);
                 },
-                submit: function(){
-                    $eb.axios.post("{$save}",this.formData).then((res)=>{
-                        if(res.status && res.data.code == 200)
-                    return Promise.resolve(res.data);
-                    else
-                    return Promise.reject(res.data.msg || '添加失败,请稍候再试!');
-                }).then((res)=>{
-                        $eb.message('success',res.msg || '操作成功!');
-                    $eb.closeModalFrame(window.name);
-                }).catch((err)=>{
-                        this.loading=false;
-                    $eb.message('error',err);
-                });
+                submit: function () {
+                    $eb.axios.post("{$save}", this.formData).then((res) => {
+                        if (res.status && res.data.code == 200)
+                            return Promise.resolve(res.data);
+                        else
+                            return Promise.reject(res.data.msg || '添加失败,请稍候再试!');
+                    }).then((res) => {
+                        $eb.message('success', res.msg || '操作成功!');
+                        $eb.closeModalFrame(window.name);
+                        parent.$(".J_iframe:visible")[0].contentWindow.location.reload();
+                    }).catch((err) => {
+                        this.loading = false;
+                        $eb.message('error', err);
+                    });
                 }
             }
         });

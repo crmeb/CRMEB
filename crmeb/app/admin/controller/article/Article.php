@@ -3,12 +3,13 @@
 namespace app\admin\controller\article;
 
 use app\admin\controller\AuthController;
-use crmeb\services\UtilService as Util;
-use crmeb\services\JsonService as Json;
-use crmeb\services\UploadService as Upload;
-use app\admin\model\article\ArticleCategory as ArticleCategoryModel;
-use app\admin\model\article\Article as ArticleModel;
 use app\admin\model\system\SystemAttachment;
+use crmeb\services\{
+    UtilService as Util, JsonService as Json
+};
+use app\admin\model\article\{
+    ArticleCategory as ArticleCategoryModel, Article as ArticleModel
+};
 
 /**
  * 图文管理
@@ -28,7 +29,7 @@ class Article extends AuthController
     {
         $where = Util::getMore([
             ['title', ''],
-            ['cid', $this->request->param('pid', '')]
+            ['cid', $this->request->param('pid', '')],
         ], $this->request);
         $this->assign('where', $where);
         $where['merchant'] = 0;//区分是管理员添加的图文显示  0 还是 商户添加的图文显示  1
@@ -66,6 +67,7 @@ class Article extends AuthController
             $news = ArticleModel::where('n.id', $id)->alias('n')->field('n.*,c.content')->join('ArticleContent c', 'c.nid=n.id', 'left')->find();
             if (!$news) return $this->failed('数据不存在!');
             $news['cid'] = explode(',', $news['cid']);
+            $news['content'] = htmlspecialchars_decode($news['content']);
         }
         if ($cid && in_array($cid, ArticleCategoryModel::getArticleCategoryInfo(0, 'id'))) {
             $all = ArticleCategoryModel::getArticleCategoryInfo($cid);

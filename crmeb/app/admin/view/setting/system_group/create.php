@@ -45,6 +45,7 @@
                                     <i-option value="select">下拉选择</i-option>
                                     <i-option value="upload">单图</i-option>
                                     <i-option value="uploads">多图</i-option>
+                                    <i-option value="number">数字</i-option>
                                 </i-select>
                             </Form-Item>
                         </i-col>
@@ -113,6 +114,7 @@
                     }).then((res)=>{
                         $eb.message('success',res.msg || '操作成功!');
                         $eb.closeModalFrame(window.name);
+                        parent.$(".J_iframe:visible")[0].contentWindow.location.reload();
                     }).catch((err)=>{
                         this.loading=false;
                         $eb.message('error',err);

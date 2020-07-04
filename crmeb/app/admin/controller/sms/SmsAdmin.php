@@ -4,10 +4,9 @@ namespace app\admin\controller\sms;
 
 use app\admin\controller\AuthController;
 use app\admin\model\system\SystemConfig;
-use crmeb\services\HttpService;
-use crmeb\services\JsonService;
-use crmeb\services\SMSService;
-use crmeb\services\UtilService;
+use crmeb\services\{
+    CacheService, HttpService, JsonService, sms\Sms, UtilService
+};
 
 /**
  * 短信账号
@@ -29,8 +28,8 @@ class SmsAdmin extends AuthController
         if (!request()->isPost()) return JsonService::fail('发送失败');
         $phone = request()->param('phone');
         if (!trim($phone)) return JsonService::fail('请填写手机号');
-
-        $res = json_decode(HttpService::getRequest(SMSService::code(), compact('phone')), true);
+        $sms = new Sms('yunxin');
+        $res = json_decode(HttpService::getRequest($sms->getSmsUrl(), compact('phone')), true);
         if (!isset($res['status']) && $res['status'] !== 200)
             return JsonService::fail(isset($res['data']['message']) ? $res['data']['message'] : $res['msg']);
         return JsonService::success(isset($res['data']['message']) ? $res['data']['message'] : '发送成功');
@@ -56,8 +55,10 @@ class SmsAdmin extends AuthController
         if ($signLen > 8) return JsonService::fail('短信签名最长为8位');
         if (!strlen(trim($code))) return JsonService::fail('请填写验证码');
         if (!strlen(trim($url))) return JsonService::fail('请填写域名');
-        $status = SMSService::register($account, md5(trim($password)), $url, $phone, $code, $sign);
+        $sms = new Sms('yunxin');
+        $status = $sms->register($account, md5(trim($password)), $url, $phone, $code, $sign);
         if ($status['status'] == 400) return JsonService::fail('短信平台：' . $status['msg']);
+        CacheService::clear();
         SystemConfig::setConfigSmsInfo($account, $password);
         return JsonService::success('短信平台：' . $status['msg']);
     }

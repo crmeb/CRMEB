@@ -333,7 +333,7 @@
                     var that = this;
                     requirejs(['sweetalert'], function (swel) {
                         swel({
-                            title: "您确定要清空产品属性吗",
+                            title: "您确定要清空商品属性吗",
                             text: "删除后将无法恢复，请谨慎操作！",
                             type: "warning",
                             showCancelButton: true,

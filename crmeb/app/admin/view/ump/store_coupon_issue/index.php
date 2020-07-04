@@ -12,8 +12,13 @@
                                 <option value="">状态</option>
                                 <option value="1" {eq name="where.status" value="1"}selected="selected"{/eq}>正常</option>
                                 <option value="0" {eq name="where.status" value="0"}selected="selected"{/eq}>未开启</option>
-                                <option value="2" {eq name="where.status" value="2"}selected="selected"{/eq}>已过期</option>
-                                <option value="2" {eq name="where.status" value="2"}selected="selected"{/eq}>已失效</option>
+                                <option value="-1" {eq name="where.status" value="2"}selected="selected"{/eq}>已失效</option>
+                            </select>
+                            <select name="type" aria-controls="editable" class="form-control input-sm">
+                                <option value="">类型</option>
+                                <option value="0" {eq name="where.type" value="0"}selected="selected"{/eq}>通用券</option>
+                                <option value="1" {eq name="where.type" value="1"}selected="selected"{/eq}>品类券</option>
+                                <option value="2" {eq name="where.type" value="2"}selected="selected"{/eq}>商品券</option>
                             </select>
                             <div class="input-group">
                                 <input type="text" name="coupon_title" value="{$where.coupon_title}" placeholder="请输入优惠券名称" class="input-sm form-control"> <span class="input-group-btn">
@@ -30,7 +35,10 @@
 
                             <th class="text-center">编号</th>
                             <th class="text-center">优惠券名称</th>
+                            <th class="text-center">优惠券类型</th>
                             <th class="text-center">领取日期</th>
+                            <th class="text-center">首次关注赠送</th>
+                            <th class="text-center">消费满赠</th>
                             <th class="text-center">发布数量</th>
                             <th class="text-center">状态</th>
                             <th class="text-center">操作</th>
@@ -46,11 +54,34 @@
                                 {$vo.title}
                             </td>
                             <td class="text-center">
+                                {if $vo.type eq 0}
+                                通用券
+                                {elseif $vo.type eq 1}
+                                品类券
+                                {else/}
+                                商品券
+                                {/if}
+                            </td>
+                            <td class="text-center">
                                 {empty name="$vo.start_time"}
                                 不限时
                                 {else/}
                                 {$vo.start_time|date="Y/m/d H:i"} - {$vo.end_time|date="Y/m/d H:i"}
                                 {/empty}
+                            </td>
+                            <td class="text-center">
+                                {if $vo.is_give_subscribe eq 1}
+                                    是
+                                {else/}
+                                    否
+                                {/if}
+                            </td>
+                            <td class="text-center">
+                                {if $vo.is_full_give eq 1}
+                                    是
+                                {else/}
+                                    否
+                                {/if}
                             </td>
                             <td class="text-center">
                                 {if condition="$vo['is_permanent']"}
@@ -61,6 +92,7 @@
                                     <b style="color:#ff0000;">剩余:{$vo.remain_count}</b>
                                 {/if}
                             </td>
+
                             <td class="text-center">
                                 <?php if(!$vo['status']){ ?>
                                 <span class="label label-warning">未开启</span>
@@ -73,9 +105,9 @@
                             <td class="text-center">
                                 <button class="btn btn-info btn-xs" type="button"  onclick="$eb.createModalFrame('修改状态','{:Url('issue_log',array('id'=>$vo['id']))}')"><i class="fa fa-commenting-o"></i> 领取记录</button>
                                 {neq name="vo.status" value="-1"}
-                                <button class="btn btn-primary btn-xs" type="button"  onclick="$eb.createModalFrame('修改状态','{:Url('edit',array('id'=>$vo['id']))}',{w:400,h:170})"><i class="fa fa-paste"></i> 修改状态</button>
+                                <button class="btn btn-primary btn-xs" type="button"  onclick="$eb.createModalFrame('修改状态','{:Url('edit',array('id'=>$vo['id']))}',{w:400,h:170})"><i class="fa fa-edit"></i> 修改状态</button>
                                 {/neq}
-                                <button class="btn btn-danger btn-xs" data-url="{:Url('delete',array('id'=>$vo['id']))}" type="button"><i class="fa fa-warning"></i> 删除
+                                <button class="btn btn-danger btn-xs" data-url="{:Url('delete',array('id'=>$vo['id']))}" type="button"><i class="fa fa-times"></i> 删除
                                 </button>
                             </td>
                         </tr>

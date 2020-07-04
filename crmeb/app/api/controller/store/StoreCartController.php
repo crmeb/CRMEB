@@ -45,7 +45,6 @@ class StoreCartController
         ], $request, true);
         if (!$productId || !is_numeric($productId)) return app('json')->fail('参数错误');
         if ($bargainId && StoreBargainUserHelp::getSurplusPrice($bargainId, $request->uid())) return app('json')->fail('请先砍价');
-        if($combinationId > 0) $cartNum = 1;
         $res = StoreCart::setCart($request->uid(), $productId, $cartNum, $uniqueId, 'product', $new, $combinationId, $secKillId, $bargainId);
         if (!$res) return app('json')->fail(StoreCart::getErrorInfo());
         else  return app('json')->successful('ok', ['cartId' => $res->id]);

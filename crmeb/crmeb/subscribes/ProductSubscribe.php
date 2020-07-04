@@ -28,7 +28,7 @@ class ProductSubscribe
     }
 
     /**
-     * 用户操作产品添加事件  用户点赞产品  用户收藏产品
+     * 用户操作产品点击事件  用户点赞产品  用户收藏产品
      * @param $event
      */
     public function onStoreProductUserOperationConfirmAfter($event)

@@ -35,11 +35,11 @@
                             </li>
                             {{# if(d.is_send==0){ }}
                             <li>
-                                <a href="javascript:;"  onclick="$eb.createModalFrame('编辑','{:Url('edit')}?id={{d.id}}')"><i class="fa fa-paste"></i> 编辑</a>
+                                <a href="javascript:;"  onclick="$eb.createModalFrame('编辑','{:Url('edit')}?id={{d.id}}')"><i class="fa fa-edit"></i> 编辑</a>
                             </li>
                             {{# } }}
                             <li>
-                                <a href="javascript:;" lay-event='warning'><i class="fa fa-warning"></i> 删除</a>
+                                <a href="javascript:;" lay-event='warning'><i class="fa fa-times"></i> 删除</a>
                             </li>
                         </ul>
                     </script>

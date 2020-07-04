@@ -166,7 +166,7 @@ class StoreBargainUserHelp extends BaseModel
         $coverPrice = StoreBargainUser::getBargainUserDiffPriceFloat($bargainUserTableId);//TODO 用户可以砍掉的金额 计算进度条
         $alreadyPrice = StoreBargainUser::getBargainUserPrice($bargainUserTableId);//TODO 用户已经砍掉的价格 计算进度条
         if($alreadyPrice) return (int)bcmul(bcdiv($alreadyPrice,$coverPrice,2),100,0);
-        else return 100;
+        else return 0;
     }
 
     /**

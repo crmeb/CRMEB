@@ -4,7 +4,7 @@ namespace app\models\routine;
 
 use app\admin\model\wechat\StoreService as ServiceModel;
 use crmeb\basic\BaseModel;
-use crmeb\utils\Template;
+use crmeb\services\template\Template;
 use app\models\store\StoreOrder;
 use app\models\user\WechatUser;
 
@@ -26,7 +26,7 @@ class RoutineTemplate extends BaseModel
      * 模型名称
      * @var string
      */
-    protected $name = 'routine_template';
+    protected $name = 'template_message';
 
     /**
      * 确认收货
@@ -54,7 +54,7 @@ class RoutineTemplate extends BaseModel
         if (is_string($order['cart_id']))
             $order['cart_id'] = json_decode($order['cart_id'], true);
         $storeTitle = StoreOrder::getProductTitle($order['cart_id']);
-        $storeTitle = StoreOrder::getSubstrUTf8($storeTitle, 20,'UTF-8','');
+        $storeTitle = StoreOrder::getSubstrUTf8($storeTitle, 20, 'UTF-8', '');
         if ($isGive) {//快递发货
             return self::sendOut('ORDER_DELIVER_SUCCESS', $order['uid'], [
                 'character_string2' => $order['delivery_id'],
@@ -99,7 +99,7 @@ class RoutineTemplate extends BaseModel
         if (is_string($order['cart_id']))
             $order['cart_id'] = json_decode($order['cart_id'], true);
         $storeTitle = StoreOrder::getProductTitle($order['cart_id']);
-        $storeTitle = StoreOrder::getSubstrUTf8($storeTitle, 20,'UTF-8','');
+        $storeTitle = StoreOrder::getSubstrUTf8($storeTitle, 20, 'UTF-8', '');
         return self::sendOut('ORDER_REFUND', $order['uid'], [
             'thing1' => '已成功退款',
             'thing2' => $storeTitle,
@@ -189,7 +189,7 @@ class RoutineTemplate extends BaseModel
             'amount2' => $extract_number . '元',
             'thing3' => $nickname,
             'date4' => date('Y-m-d H:i:s', time())
-        ], '/pages/user_spread_money/index');
+        ], '/pages/user_spread_money/index?type=2');
     }
 
     /**
@@ -206,7 +206,7 @@ class RoutineTemplate extends BaseModel
             'amount2' => $extract_number . '元',
             'thing3' => $nickname,
             'date4' => date('Y-m-d H:i:s', time())
-        ], '/pages/user_spread_money/index');
+        ], '/pages/user_spread_money/index?type=2');
     }
 
     /**
@@ -221,7 +221,7 @@ class RoutineTemplate extends BaseModel
     public static function sendPinkSuccess($uid, $pinkTitle, $nickname, $pinkTime, $count, string $link = '')
     {
         return self::sendOut('PINK_TRUE', $uid, [
-            'thing1' => StoreOrder::getSubstrUTf8($pinkTitle, 20,'UTF-8',''),
+            'thing1' => StoreOrder::getSubstrUTf8($pinkTitle, 20, 'UTF-8', ''),
             'name3' => $nickname,
             'date5' => date('Y-m-d H:i:s', $pinkTime),
             'number2' => $count
@@ -239,7 +239,7 @@ class RoutineTemplate extends BaseModel
     public static function sendPinkFail($uid, $pinkTitle, $count, $remarks, $link)
     {
         return self::sendOut('PINK_STATUS', $uid, [
-            'thing2' => StoreOrder::getSubstrUTf8($pinkTitle,20,'UTF-8',''),
+            'thing2' => StoreOrder::getSubstrUTf8($pinkTitle, 20, 'UTF-8', ''),
             'thing1' => $count,
             'thing3' => $remarks
         ], $link);
@@ -281,6 +281,7 @@ class RoutineTemplate extends BaseModel
     {
         $openid = WechatUser::uidToOpenid($uid);
         if (!$openid) return false;
-        return Template::instance()->subscribe()->setTemplateUrl($link)->setTemplateOpenId($openid)->setTemplateData($data)->setTemplateCode($tempCode)->send();
+        $template = new Template('subscribe');
+        return $template->to($openid)->url($link)->send($tempCode, $data);
     }
 }

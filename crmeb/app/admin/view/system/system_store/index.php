@@ -1,244 +1,163 @@
-<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-    {include file="public/head"}
+{extend name="public/container"}
+{block name="head_top"}
 
-    <link href="/system/frame/css/bootstrap.min.css?v=3.4.0" rel="stylesheet">
-    <link href="/system/frame/css/style.min.css?v=3.0.0" rel="stylesheet">
-    <title>{$title|default=''}</title>
-    <style></style>
-</head>
-<body>
-<div class="wrapper wrapper-content">
-    <div class="row">
-        <div class="col-sm-12">
-            <div class="ibox float-e-margins">
-                <div class="ibox-title">
-                    <h5>门店设置</h5>
+{/block}
+{block name="content"}
+<div class="layui-fluid" style="background: #fff;margin-top: -10px;">
+    <div class="layui-tab layui-tab-brief" lay-filter="tab">
+        <ul class="layui-tab-title">
+            <li lay-id="list" {eq name='type' value='1'}class="layui-this" {/eq}>
+                <a href="{eq name='type' value='1'}javascript:;{else}{:Url('index',['type'=>1])}{/eq}">显示中的门店({$show})</a>
+            </li>
+            <li lay-id="list" {eq name='type' value='2'}class="layui-this" {/eq}>
+                <a href="{eq name='type' value='2'}javascript:;{else}{:Url('index',['type'=>2])}{/eq}">隐藏中的门店({$hide})</a>
+            </li>
+            <li lay-id="list" {eq name='type' value='3'}class="layui-this" {/eq}>
+                <a href="{eq name='type' value='3'}javascript:;{else}{:Url('index',['type'=>3])}{/eq}">回收站的门店({$recycle})</a>
+            </li>
+        </ul>
+    </div>
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md12">
+            <div class="layui-card">
+                <div class="layui-card-body">
+                    <form class="layui-form layui-form-pane" action="">
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label">门店名称</label>
+                                <div class="layui-input-block">
+                                    <input type="text" name="name" class="layui-input" placeholder="请输入门店名称,关键字,编号">
+                                    <input type="hidden" name="type" value="{$type}">
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <div class="layui-input-inline">
+                                    <button class="layui-btn layui-btn-sm layui-btn-normal" lay-submit="search" lay-filter="search">
+                                        <i class="layui-icon layui-icon-search"></i>搜索</button>
+                                    <button class="layui-btn layui-btn-primary layui-btn-sm export"  lay-submit="export" lay-filter="export">
+                                        <i class="fa fa-floppy-o" style="margin-right: 3px;"></i>导出</button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
                 </div>
-                <div id="store-attr" class="mp-form" v-cloak="">
-                    <i-Form :label-width="80" style="width: 100%">
-                        <template>
-                            <Alert type="warning">除门店简介外其他选项都是必填项</Alert>
-                            <Form-Item>
-                                <Row>
-                                    <i-Col span="13">
-                                        <span>门店名称：</span>
-                                        <i-Input placeholder="门店名称" v-model="form.name" style="width: 80%" type="text"></i-Input>
-                                    </i-Col>
-                                </Row>
-                            </Form-Item>
-                            <Form-Item>
-                                <Row>
-                                    <i-Col span="13">
-                                        <span>门店简介：</span>
-                                        <i-Input placeholder="门店简介" v-model="form.introduction" style="width: 80%" type="text"></i-Input>
-                                    </i-Col>
-                                </Row>
-                            </Form-Item>
-                            <Form-Item>
-                                <Row>
-                                    <i-Col span="13">
-                                        <span>门店手机号：</span>
-                                        <i-Input placeholder="门店手机号" v-model="form.phone" style="width: 80%" type="text"></i-Input>
-                                    </i-Col>
-                                </Row>
-                            </Form-Item>
-                            <Form-Item>
-                                <Row>
-                                    <i-Col span="13">
-                                        <span>门店地址：</span>
-                                        <Cascader :data="addresData" :value.sync="form.address" @on-change="handleChange" style="width: 80%;display: inline-block;"></Cascader>
-                                    </i-Col>
-                                </Row>
-                            </Form-Item>
-                            <Form-Item>
-                                <Row>
-                                    <i-Col span="13">
-                                        <span>详细地址：</span>
-                                        <i-Input placeholder="详细地址" v-model="form.detailed_address" style="width: 80%" type="text"></i-Input>
-                                    </i-Col>
-                                </Row>
-                            </Form-Item>
-                            <Form-Item>
-                                <Row>
-                                    <i-Col span="13">
-                                        <span>核销时效：</span>
-                                        <Date-picker type="daterange" @on-change="changeValidTime" placeholder="选择日期" :value="form.valid_time"></Date-picker>
-                                    </i-Col>
-                                </Row>
-                            </Form-Item>
-                            <Form-Item>
-                                <Row>
-                                    <i-Col span="13">
-                                        <span>门店营业：</span>
-                                        <Time-picker type="timerange" @on-change="changeDayTime" placement="bottom-end" :value="form.day_time" placeholder="选择时间"></Time-picker>
-                                    </i-Col>
-                                </Row>
-                            </Form-Item>
-                            <Form-Item>
-                                <Row>
-                                    <i-Col span="13">
-                                        <span>门店logo：</span>
-                                        <div class="demo-upload-list" v-if="form.image">
-                                            <template>
-                                                <img :src="form.image">
-                                                <div class="demo-upload-list-cover">
-                                                    <Icon type="ios-eye-outline" @click="visible = true "></Icon>
-                                                    <Icon type="ios-trash-outline" @click="form.image=''"></Icon>
-                                                </div>
-                                            </template>
-                                        </div>
-                                        <div class="ivu-upload" style="display: inline-block; width: 58px;" @click="openWindows('选择图片','{:Url('widget.images/index',['fodder'=>'image'])}',{w:900,h:550})" v-if="!form.image">
-                                            <div class="ivu-upload ivu-upload-drag">
-                                                <div style="width: 58px; height: 58px; line-height: 58px;">
-                                                    <i class="ivu-icon ivu-icon-camera" style="font-size: 20px;"></i>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <Modal title="查看图片" :visible.sync="visible">
-                                            <img :src="form.image" v-if="visible" style="width: 100%">
-                                        </Modal>
-                                    </i-Col>
-                                </Row>
-                            </Form-Item>
-                            <Form-Item>
-                                <Row>
-                                    <i-Col span="13">
-                                        <span style="float: left">经纬度：</span>
-                                        <Tooltip content="请点击查找位置进行选择位置">
-                                            <i-Input placeholder="经纬度" v-model="form.latlng" :readonly="true" style="width: 80%" >
-                                                <span slot="append" @click="openWindows('查找位置','{:Url('select_address')}',{w:400})" style="cursor:pointer">查找位置</span>
-                                            </i-Input>
-                                        </Tooltip>
-                                    </i-Col>
-                                </Row>
-                            </Form-Item>
-                        </template>
-                        <Form-Item>
-                            <Row>
-                                <i-Col span="8" offset="6">
-                                    <i-Button type="primary" @click="submit">提交</i-Button>
-                                </i-Col>
-                            </Row>
-                        </Form-Item>
-                    </i-Form>
+            </div>
+        </div>
+        <div class="layui-col-md12">
+            <div class="layui-card">
+<!--                <div class="layui-card-header">门店列表</div>-->
+                <div class="layui-card-body">
+                    <div class="layui-btn-container">
+                        <button class="layui-btn layui-btn-sm"
+                                onclick="$eb.createModalFrame(this.innerText,'{:Url('add')}',{h:700,w:1100})">添加门店
+                        </button>
+                    </div>
+                    <table class="layui-hide" id="List" lay-filter="List"></table>
+                    <script type="text/html" id="headimgurl">
+                        <img style="cursor: pointer" lay-event='open_image' src="{{d.image}}">
+                    </script>
+                    <script type="text/html" id="address">
+                        {{d.address}} {{d.detailed_address}}
+                    </script>
+                    <script type="text/html" id="checkboxstatus">
+                        <input type='checkbox' name='id' lay-skin='switch' value="{{d.id}}" lay-filter='is_show'
+                               lay-text='显示|隐藏' {{ d.is_show== 1 ? 'checked' : '' }}>
+                    </script>
+                    <script type="text/html" id="act">
+                        <button type="button" class="layui-btn layui-btn-xs layui-btn-normal" lay-event='edit'>
+                            编辑门店
+                        </button>
+                        <button type="button" class="layui-btn layui-btn-xs layui-btn-normal" lay-event='del'>
+                            {{# if(d.is_del){ }}
+                            恢复门店
+                            {{# }else{ }}
+                            删除门店
+                            {{# } }}
+                        </button>
+                    </script>
                 </div>
             </div>
         </div>
     </div>
 </div>
-<script src="{__PLUG_PATH}city.js"></script>
+<script src="{__ADMIN_PATH}js/layuiList.js"></script>
+{/block}
+{block name="script"}
 <script>
-    var storeData={:json_encode($store)};
-    mpFrame.start(function(Vue) {
-        $.each(city,function (key,item) {
-            city[key].value = item.label;
-            if(item.children && item.children.length){
-                $.each(item.children,function (i,v) {
-                    city[key].children[i].value=v.label;
-                    if(v.children && v.children.length){
-                        $.each(v.children,function (k,val) {
-                            city[key].children[i].children[k].value=val.label;
-                        });
-                    }
+    var type=<?=$type?>;
+    layList.tableList('List', "{:Url('list',['type'=>$type])}", function () {
+        return [
+            {field: 'id', title: 'ID', sort: true, event: 'id', width: '4%'},
+            {field: 'image', title: '门店图片', templet: '#headimgurl', width: '6%'},
+            {field: 'name', title: '门店名称', width: '10%'},
+            {field: 'phone', title: '门店电话', width: '10%'},
+            {field: 'address', title: '地址', templet: '#address'},
+            {field: 'day_time', title: '营业时间', width: '15%'},
+            // {field: 'valid_time', title: '核销有效日期', width: '11%'},
+            {field: 'status', title: '是否显示', templet: "#checkboxstatus", width: '8%'},
+            {field: 'right', title: '操作', align: 'center', toolbar: '#act', width: '14%'},
+        ];
+    });
+    //查询条件
+    layList.search('search',function(where){
+        layList.reload(where);
+    });
+    //excel下载
+    layList.search('export',function(where){
+        where.excel = 1;
+        location.href=layList.U({c:'system.system_store',a:'list',q:where});
+    })
+    //门店是否显示
+    layList.switch('is_show', function (odj, value) {
+        if (odj.elem.checked == true) {
+            layList.baseGet(layList.Url({
+                c: 'system.system_store',
+                a: 'set_show',
+                p: {is_show: 1, id: value}
+            }), function (res) {
+                layList.msg(res.msg, function () {
+                    layList.reload();
                 });
-            }
-        });
-        new Vue({
-            data:function() {
-                return {
-                    id:storeData.id || 0,
-                    addresData:city,
-                    form:{
-                        name:storeData.name || '',
-                        introduction:storeData.introduction || '',
-                        phone:storeData.phone || '',
-                        address:storeData.address || [],
-                        image:storeData.image || '',
-                        detailed_address:storeData.detailed_address || '',
-                        latlng:storeData.latlng || '',
-                        valid_time:storeData.valid_time || [],
-                        day_time:storeData.day_time || [],
-                    },
-                    visible:false,
-                }
-            },
-            methods:{
-                changeDayTime:function(date){
-                    this.$set(this.form,'day_time',date);
-                },
-                changeValidTime:function(date){
-                    this.$set(this.form,'valid_time',date);
-                },
-                createFrame:function(title,src,opt){
-                    opt === undefined && (opt = {});
-                    var h = parent.document.body.clientHeight - 100;
-                    return layer.open({
-                        type: 2,
-                        title:title,
-                        area: [(opt.w || 700)+'px', (opt.h || h)+'px'],
-                        fixed: false, //不固定
-                        maxmin: true,
-                        moveOut:false,//true  可以拖出窗外  false 只能在窗内拖
-                        anim:5,//出场动画 isOutAnim bool 关闭动画
-                        offset:'auto',//['100px','100px'],//'auto',//初始位置  ['100px','100px'] t[ 上 左]
-                        shade:0,//遮罩
-                        resize:true,//是否允许拉伸
-                        content: src,//内容
-                        move:'.layui-layer-title'
-                    });
-                },
-                handleChange:function(value,selectedData){
-                    var that = this;
-                    that.form.address = [];
-                    $.each(selectedData,function (key,item) {
-                        that.form.address.push(item.label);
-                    });
-                    that.$set(that.form,'address',that.form.address);
-                },
-                openWindows:function(title,url,opt){
-                    return this.createFrame(title,url,opt);
-                },
-                changeIMG:function(name,url){
-                    this.form[name]=url;
-                },
-                isPhone:function(test){
-                    var reg = /^1[3456789]\d{9}$/;
-                    return reg.test(test);
-                },
-                submit:function () {
-                    var that = this;
-                    if(!that.form.name) return  $eb.message('error','请填写门店行名称');
-                    if(!that.form.phone) return  $eb.message('error','请输入手机号码');
-                    if(!that.isPhone(that.form.phone)) return  $eb.message('error','请输入正确的手机号码');
-                    if(!that.form.address) return  $eb.message('error','请选择门店地址');
-                    if(!that.form.detailed_address) return  $eb.message('error','请填写门店详细地址');
-                    if(!that.form.image) return  $eb.message('error','请选择门店logo');
-                    if(!that.form.valid_time) return  $eb.message('error','请选择核销时效');
-                    if(!that.form.day_time) return  $eb.message('error','请选择门店营业时间');
-                    if(!that.form.latlng) return  $eb.message('error','请选择门店经纬度！');
-                    var index = layer.load(1, {
-                        shade: [0.5,'#fff']
-                    });
-                    $eb.axios.post('{:Url("save")}'+(that.id ? '?id='+that.id : ''),that.form).then(function (res) {
-                        layer.close(index);
-                        layer.msg(res.data.msg);
-                        if(res.data.data.id) that.id=res.data.data.id;
+            });
+        } else {
+            layList.baseGet(layList.Url({
+                c: 'system.system_store',
+                a: 'set_show',
+                p: {is_show: 0, id: value}
+            }), function (res) {
+                layList.msg(res.msg, function () {
+                    layList.reload();
+                });
+            });
+        }
+    });
+    //点击事件绑定
+    layList.tool(function (event, data, obj) {
+        switch (event) {
+            case 'del':
+                var url = layList.U({c: 'system.system_store', a: 'delete', q: {id: data.id}});
+                if(data.is_del) var code = {title:"操作提示",text:"确定恢复门店吗？",type:'info',confirm:'是的，恢复该门店'};
+                else var code = {title: "操作提示", text: "确定将该门店删除吗？", type: 'info', confirm: '是的，删除该门店'};
+                $eb.$swal('delete', function () {
+                    $eb.axios.get(url).then(function (res) {
+                        if (res.status == 200 && res.data.code == 200) {
+                            $eb.$swal('success', res.data.msg);
+                            obj.del();
+                            location.reload();
+                        } else
+                            return Promise.reject(res.data.msg || '删除失败')
                     }).catch(function (err) {
-                        console.log(err);
-                        layer.close(index);
-                    })
-                },
-                selectAdderss:function (data) {
-                    //lat 纬度 lng 经度
-                    this.form.latlng=data.latlng.lat+','+data.latlng.lng;
-                }
-            },
-            mounted:function () {
-                window.changeIMG=this.changeIMG;
-                window.selectAdderss=this.selectAdderss;
-            }
-        }).$mount(document.getElementById('store-attr'))
+                        $eb.$swal('error', err);
+                    });
+                }, code)
+                break;
+            case 'open_image':
+                $eb.openImage(data.image);
+                break;
+            case 'edit':
+                $eb.createModalFrame(data.name + '-编辑', layList.U({a: 'add', q: {id: data.id}}), {h: 700, w: 1100});
+                break;
+        }
     })
 </script>
+{/block}

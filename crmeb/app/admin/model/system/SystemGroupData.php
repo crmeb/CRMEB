@@ -35,29 +35,19 @@ class SystemGroupData extends BaseModel
      * @param $params
      * @return array
      */
-    public static function getList($params){
+    public static function getList($params)
+    {
         $model = new self;
-        if($params['gid'] !== '') $model = $model->where('gid',$params['gid']);
-        if($params['status'] !== '') $model = $model->where('status',$params['status']);
+        if ($params['gid'] !== '') $model = $model->where('gid', $params['gid']);
+        if ($params['status'] !== '') $model = $model->where('status', $params['status']);
         $model = $model->order('sort desc,id ASC');
-        return self::page($model,function($item,$key){
-            $info = json_decode($item->value,true);
+        return self::page($model, function ($item, $key) {
+            $info = json_decode($item->value, true);
             foreach ($info as $index => $value) {
-                if($value["type"] == "checkbox")$info[$index]["value"] = implode(",",$value["value"]);
-//                if($value["type"] == "upload" || $value["type"] == "uploads"){
-//                    $html_img = '';
-//                    if(is_array($value["value"])){
-//                        foreach ($value["value"] as $img) {
-//                            $html_img .= '<img class="image" data-image="'.$img.'" width="45" height="45" src="'.$img.'" /><br>';
-//                        }
-//                    }else{
-//                        $html_img = '<img class="image" data-image="'.$value["value"].'" width="45" height="45" src="'.$value["value"].'" />';
-//                    }
-//                    $info[$index]["value"] = $html_img;
-//                }
+                if ($value["type"] == "checkbox") $info[$index]["value"] = implode(",", $value["value"]);
             }
             $item->value = $info;
-        });
+        }, $params);
     }
 
     /**
@@ -69,11 +59,11 @@ class SystemGroupData extends BaseModel
      * @throws \think\db\exception\ModelNotFoundException
      * @throws \think\exception\DbException
      */
-    public static function getGroupData($config_name,$limit = 0)
+    public static function getGroupData($config_name, $limit = 0)
     {
-        $group = SystemGroup::where('config_name',$config_name)->field('name,info,config_name')->find();
-        if(!$group) return false;
-        $group['data'] = self::getAllValue($config_name,$limit);
+        $group = SystemGroup::where('config_name', $config_name)->field('name,info,config_name')->find();
+        if (!$group) return false;
+        $group['data'] = self::getAllValue($config_name, $limit);
         return $group;
     }
 
@@ -86,17 +76,18 @@ class SystemGroupData extends BaseModel
      * @throws \think\db\exception\ModelNotFoundException
      * @throws \think\exception\DbException
      */
-    public static function getAllValue($config_name,$limit = 0){
-        $model = self::alias('a')->field('a.*,b.config_name')->join('system_group b','a.gid = b.id')
-            ->where("b.config_name",$config_name)->where("a.status",1)
+    public static function getAllValue($config_name, $limit = 0)
+    {
+        $model = self::alias('a')->field('a.*,b.config_name')->join('system_group b', 'a.gid = b.id')
+            ->where("b.config_name", $config_name)->where("a.status", 1)
             ->order('sort desc,id ASC');
-        if($limit > 0) $model->limit($limit);
+        if ($limit > 0) $model->limit($limit);
         $data = [];
         $result = $model->select();
-        if(!$result) return $data;
+        if (!$result) return $data;
         foreach ($result as $key => $value) {
             $data[$key]["id"] = $value["id"];
-            $fields = json_decode($value["value"],true);
+            $fields = json_decode($value["value"], true);
             foreach ($fields as $index => $field) {
 //                $data[$key][$index] = $field['type'] == 'upload' ? (isset($field["value"][0]) ? $field["value"][0]: ''):$field["value"];
                 $data[$key][$index] = $field["value"];
@@ -112,12 +103,12 @@ class SystemGroupData extends BaseModel
     public static function tidyList($result)
     {
         $data = [];
-        if(!$result) return $data;
+        if (!$result) return $data;
         foreach ($result as $key => $value) {
             $data[$key]["id"] = $value["id"];
-            $fields = json_decode($value["value"],true);
+            $fields = json_decode($value["value"], true);
             foreach ($fields as $index => $field) {
-                $data[$key][$index] = $field['type'] == 'upload' ? (isset($field["value"][0]) ? $field["value"][0]: ''):$field["value"];
+                $data[$key][$index] = $field['type'] == 'upload' ? (isset($field["value"][0]) ? $field["value"][0] : '') : $field["value"];
             }
         }
         return $data;
@@ -132,10 +123,11 @@ class SystemGroupData extends BaseModel
      * @throws \think\db\exception\ModelNotFoundException
      * @throws \think\exception\DbException
      */
-    public static function getDateValue($id){
-        $value = self::alias('a')->where(array("id"=>$id))->find();
+    public static function getDateValue($id)
+    {
+        $value = self::alias('a')->where(array("id" => $id))->find();
         $data["id"] = $value["id"];
-        $fields = json_decode($value["value"],true);
+        $fields = json_decode($value["value"], true);
         foreach ($fields as $index => $field) {
             $data[$index] = $field["value"];
         }

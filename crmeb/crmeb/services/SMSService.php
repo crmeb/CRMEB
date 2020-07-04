@@ -42,7 +42,7 @@ class SMSService
 
     public function __construct()
     {
-        self::$status = strlen(sysConfig('sms_account')) != 0 ?? false && strlen(sysConfig('sms_token')) != 0 ?? false;
+        self::$status = strlen(sys_config('sms_account')) != 0 ?? false && strlen(sys_config('sms_token')) != 0 ?? false;
     }
 
     public static function getConstants($code = '')
@@ -55,9 +55,9 @@ class SMSService
 
     private static function auto()
     {
-        self::$SMSAccount = sysConfig('sms_account');
-        self::$SMSToken = md5(self::$SMSAccount . md5(sysConfig('sms_token')));
-        self::$payNotify = sysConfig('site_url') . '/api/sms/pay/notify';
+        self::$SMSAccount = sys_config('sms_account');
+        self::$SMSToken = md5(self::$SMSAccount . md5(sys_config('sms_token')));
+        self::$payNotify = sys_config('site_url') . '/api/sms/pay/notify';
     }
 
     /**
@@ -214,5 +214,16 @@ class SMSService
         $data['account'] = self::$SMSAccount;
         $data['token'] = self::$SMSToken;
         return json_decode(HttpService::postRequest(self::$SMSUrl . 'sms/template', $data), true);
+    }
+
+    /**
+     * 获取短息记录状态
+     * @param $record_id
+     * @return mixed
+     */
+    public static function getStatus($record_id)
+    {
+        $data['record_id'] = json_encode($record_id);
+        return json_decode(HttpService::postRequest(self::$SMSUrl . 'sms/status', $data), true);
     }
 }

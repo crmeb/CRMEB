@@ -15,7 +15,6 @@ use crmeb\basic\BaseModel;
  */
 class Express extends BaseModel
 {
-
     /**
      * 数据表主键
      * @var string
@@ -33,8 +32,8 @@ class Express extends BaseModel
     public static function systemPage($params)
     {
         $model = new self;
-        if($params['keyword'] !== '') $model = $model->where('name|code','LIKE',"%$params[keyword]%");
+        if ($params['keyword'] !== '') $model = $model->where('name|code', 'LIKE', "%$params[keyword]%");
         $model = $model->order('sort DESC,id DESC');
-        return self::page($model,$params);
+        return self::page($model, $params);
     }
 }

@@ -216,6 +216,7 @@
                 }
             },
             mounted:function () {
+                that = this;
                 this.getBadge();
                 layList.laydate.render({
                     elem:this.$refs.date_time,

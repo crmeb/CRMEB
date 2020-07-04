@@ -111,10 +111,26 @@
                             </div>
                         </div>
                         <div class="layui-inline">
+                            <label class="layui-form-label">会员等级：</label>
+                            <div class="layui-input-inline">
+                                <select name="level" lay-verify="level" lay-filter='level' id="level">
+                                    <option value="" id="level-top">全部</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">会员分组：</label>
+                            <div class="layui-input-inline">
+                                <select name="group_id" lay-verify="group" lay-filter='group' id="group">
+                                    <option value="" id="group-top">全部</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-inline">
                             <label class="layui-form-label">国　　家：</label>
                             <div class="layui-input-inline">
                                 <select name="country" lay-verify="country" lay-filter='country'>
-                                    <option value=""  selected="selected">请选择国</option>
+                                    <option value=""  selected="selected">请选择国家</option>
                                     <option value="domestic">中国</option>
                                     <option value="abroad">外国</option>
                                 </select>
@@ -191,6 +207,7 @@
 <!--                        <button class="layui-btn layui-btn-sm layui-btn-normal" type="button" data-type="set_status_j"><i class="fa fa-check-circle-o"></i>解封</button>-->
                         <button class="layui-btn layui-btn-sm layui-btn-normal" type="button" data-type="set_grant"><i class="fa fa-check-circle-o"></i>发送优惠券</button>
                         <button class="layui-btn layui-btn-sm layui-btn-normal" type="button" data-type="set_custom"><i class="fa fa-check-circle-o"></i>发送客服图文消息</button>
+                        <button class="layui-btn layui-btn-sm layui-btn-normal" type="button" data-type="set_group"><i class="fa fa-check-circle-o" ></i>批量设置分组</button>
 <!--                        <button class="layui-btn layui-btn-sm layui-btn-normal" type="button" data-type="set_template"><i class="fa fa-check-circle-o"></i>发送模板消息</button>-->
 <!--                        <button class="layui-btn layui-btn-sm layui-btn-normal" type="button" data-type="set_info"><i class="fa fa-check-circle-o"></i>发送站内消息</button>-->
                         <button class="layui-btn layui-btn-sm layui-btn-normal" type="button" data-type="refresh"><i class="layui-icon layui-icon-refresh" ></i>刷新</button>
@@ -223,7 +240,11 @@
                             </li>
                             <li>
                                 <a href="javascript:void(0);" lay-event="give_level">
-                                    <i class="layui-icon layui-icon-star-fill" aria-hidden="true"></i> 赠送会员</a>
+                                    <i class="layui-icon layui-icon-star-fill" aria-hidden="true"></i> 修改会员等级</a>
+                            </li>
+                            <li>
+                                <a href="javascript:void(0);" lay-event="set_group">
+                                    <i class="layui-icon layui-icon-star-fill" aria-hidden="true"></i> 设置分组</a>
                             </li>
                             {{# if(d.vip_name){ }}
                             <li>
@@ -243,6 +264,8 @@
 {/block}
 {block name="script"}
 <script>
+    var level=<?=$level?>;
+    var group=<?=$group?>;
     $('#province-div').hide();
     $('#city-div').hide();
     layList.select('country',function (odj,value,name) {
@@ -293,11 +316,35 @@
             {field: 'spread_uid_nickname', title: '推荐人',align:'center'},
             {field: 'sex', title: '性别',width:'4%',align:'center'},
             {field: 'data_time', title: '访问日期',align:'center',width:'12%',templet:'#data_time'},
-            {field: 'status', title: '状态',templet:"#checkboxstatus",width:'6%',align:'center'},
+            // {field: 'status', title: '状态',templet:"#checkboxstatus",width:'6%',align:'center'},
             {field: 'user_type', title: '用户类型',width:'6%',align:'center'},
             {field: 'operate', title: '操作', width: '10%', align: 'center', toolbar: '#barDemo'}
         ];
     });
+    //页面刷新时加载
+    layui.use('layer',function(){
+        var layer = layui.layer;
+        layer.ready(function(){
+            var html = '';
+            $.each(level,function (index,item) {
+                html += '<option value="'+item.id+'">'+item.name+'</option>';
+            })
+            $('#level-top').val('');
+            $('#level-top').siblings().remove();
+            $('#level-top').after(html);
+            layList.form.render('select');
+            var htmls = '';
+            $.each(group,function (index,item) {
+                htmls += '<option value="'+item.id+'">'+item.group_name+'</option>';
+            })
+            $('#group-top').val('');
+            $('#group-top').siblings().remove();
+            $('#group-top').after(htmls);
+            layList.form.render('select');
+        });
+
+    });
+
     layList.date('last_time');
     layList.date('add_time');
     layList.date('user_time');
@@ -347,7 +394,10 @@
                 })
                 break;
             case 'give_level':
-                $eb.createModalFrame(data.nickname+'-赠送会员',layList.Url({a:'give_level',p:{uid:data.uid}}),{w:500,h:200});
+                $eb.createModalFrame(data.nickname+'-赠送会员',layList.Url({a:'give_level',p:{uid:data.uid}}),{w:500,h:300});
+                break;
+            case 'set_group':
+                $eb.createModalFrame(data.nickname+'-设置分组',layList.Url({a:'set_group',p:{uid:data.uid}}),{w:500,h:300});
                 break;
             case 'money':
                 $eb.createModalFrame(data.nickname+'-积分余额修改',layList.Url({a:'edit_other',p:{uid:data.uid}}));
@@ -431,9 +481,18 @@
             var ids=layList.getCheckData().getIds('uid');
             if(ids.length){
                 var str = ids.join(',');
-                $eb.createModalFrame('发送客服图文消息',layList.Url({c:'wechat.wechat_news_category',a:'send_news',p:{id:str}}),{'w':1200});
+                $eb.createModalFrame('发送客服图文消息',layList.Url({c:'wechat.wechat_news_category',a:'send_news',p:{id:str,type:1}}),{'w':1200});
             }else{
                 layList.msg('请选择要发送客服图文消息的会员');
+            }
+        },
+        set_group:function () {
+            var ids=layList.getCheckData().getIds('uid');
+            if(ids.length){
+                var str = ids.join(',');
+                $eb.createModalFrame('批量设置分组',layList.Url({a:'set_group',p:{uid:str}}),{w:500,h:300});
+            }else{
+                layList.msg('请选择要批量设置分组的会员');
             }
         },
         refresh:function () {

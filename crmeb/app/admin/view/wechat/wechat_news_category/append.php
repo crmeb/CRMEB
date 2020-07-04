@@ -9,7 +9,7 @@
 <script type="text/javascript" charset="utf-8" src="{__ADMIN_PATH}plug/umeditor/umeditor.min.js"></script>
 <script src="{__ADMIN_PATH}plug/validate/jquery.validate.js"></script>
 <script src="{__FRAME_PATH}js/plugins/chosen/chosen.jquery.js"></script>
-<script src="{__ADMIN_PATH}plug/vue/dist/vue.min.js"></script>
+<script src="{__PLUG_PATH}vue/dist/vue.min.js"></script>
 <style>
     .operation-item{float: right;font-size: 14px;cursor: pointer}
     .add-news-items{cursor:pointer;text-align: center;font-size: 40px;height: 54px;line-height: 54px;border: 1px solid #ccc;}

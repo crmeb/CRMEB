@@ -4,22 +4,19 @@
     <div class="layui-tab layui-tab-brief" lay-filter="tab">
         <ul class="layui-tab-title">
             <li lay-id="list" {eq name='type' value='1'}class="layui-this" {/eq} >
-                <a href="{eq name='type' value='1'}javascript:;{else}{:Url('index',['type'=>1])}{/eq}">出售中产品({$onsale})</a>
+                <a href="{eq name='type' value='1'}javascript:;{else}{:Url('index',['type'=>1])}{/eq}">出售中商品({$onsale})</a>
             </li>
             <li lay-id="list" {eq name='type' value='2'}class="layui-this" {/eq}>
-                <a href="{eq name='type' value='2'}javascript:;{else}{:Url('index',['type'=>2])}{/eq}">待上架产品({$forsale})</a>
-            </li>
-            <li lay-id="list" {eq name='type' value='3'}class="layui-this" {/eq}>
-                <a href="{eq name='type' value='3'}javascript:;{else}{:Url('index',['type'=>3])}{/eq}">仓库中产品({$warehouse})</a>
+                <a href="{eq name='type' value='2'}javascript:;{else}{:Url('index',['type'=>2])}{/eq}">仓库中商品({$forsale})</a>
             </li>
             <li lay-id="list" {eq name='type' value='4'}class="layui-this" {/eq}>
-                <a href="{eq name='type' value='4'}javascript:;{else}{:Url('index',['type'=>4])}{/eq}">已经售馨产品({$outofstock})</a>
+                <a href="{eq name='type' value='4'}javascript:;{else}{:Url('index',['type'=>4])}{/eq}">已经售馨商品({$outofstock})</a>
             </li>
             <li lay-id="list" {eq name='type' value='5'}class="layui-this" {/eq}>
                 <a href="{eq name='type' value='5'}javascript:;{else}{:Url('index',['type'=>5])}{/eq}">警戒库存({$policeforce})</a>
             </li>
             <li lay-id="list" {eq name='type' value='6'}class="layui-this" {/eq}>
-                <a href="{eq name='type' value='6'}javascript:;{else}{:Url('index',['type'=>6])}{/eq}">产品回收站({$recycle})</a>
+                <a href="{eq name='type' value='6'}javascript:;{else}{:Url('index',['type'=>6])}{/eq}">商品回收站({$recycle})</a>
             </li>
         </ul>
     </div>
@@ -41,9 +38,9 @@
                                 </div>
                             </div>
                             <div class="layui-inline">
-                                <label class="layui-form-label">产品名称</label>
+                                <label class="layui-form-label">商品名称</label>
                                 <div class="layui-input-block">
-                                    <input type="text" name="store_name" class="layui-input" placeholder="请输入产品名称,关键字,编号">
+                                    <input type="text" name="store_name" class="layui-input" placeholder="请输入商品名称,关键字,编号">
                                     <input type="hidden" name="type" value="{$type}">
                                 </div>
                             </div>
@@ -60,7 +57,7 @@
                 </div>
             </div>
         </div>
-        <!--产品列表-->
+        <!--商品列表-->
         <div class="layui-col-md12">
             <div class="layui-card">
                 <div class="layui-card-body">
@@ -71,7 +68,7 @@
                     <div class="layui-btn-container">
                         {switch name='type'}
                             {case value="1"}
-                                <button class="layui-btn layui-btn-sm" onclick="$eb.createModalFrame(this.innerText,'{:Url('create')}',{h:700,w:1100})">添加产品</button>
+                                <a class="layui-btn layui-btn-sm" href="{:Url('create')}">添加商品</a>
                                 <button class="layui-btn layui-btn-sm" onclick="$eb.createModalFrame(this.innerText,'{:Url('store.copy_taobao/index')}',{h:700,w:1100});">复制淘宝、天猫、1688、京东</button>
                             {/case}
                             {case value="2"}
@@ -96,46 +93,25 @@
                     <script type="text/html" id="collect">
                         <span><i class="layui-icon layui-icon-star"></i> {{d.collect}}</span>
                     </script>
-                    <!--产品名称-->
+                    <!--商品名称-->
                     <script type="text/html" id="store_name">
                         <h4>{{d.store_name}}</h4>
                         <p>价格:<font color="red">{{d.price}}</font> </p>
                         {{# if(d.cate_name!=''){ }}
                         <p>分类:{{d.cate_name}}</p>
                         {{# } }}
-                        <p>访客量:{{d.visitor}}</p>
-                        <p>浏览量:{{d.browse}}</p>
                     </script>
                     <!--操作-->
                     <script type="text/html" id="act">
-                        <button type="button" class="layui-btn layui-btn-xs btn-success" lay-event='attr' >
-                            属性
-                        </button>
                         <button type="button" class="layui-btn layui-btn-xs layui-btn-normal" lay-event='edit'>
                             编辑
                         </button>
                         <button type="button" class="layui-btn layui-btn-xs" onclick="dropdown(this)">操作 <span class="caret"></span></button>
                         <ul class="layui-nav-child layui-anim layui-anim-upbit">
-                            <li>
-                                <a href="javascript:void(0);" class="" onclick="$eb.createModalFrame(this.innerText,'{:Url('edit_content')}?id={{d.id}}')">
-                                    <i class="fa fa-pencil"></i> 产品详情</a>
-                            </li>
-                            <li>
-                                <a href="javascript:void(0);" onclick="$eb.createModalFrame(this.innerText,'{:Url('ump.store_seckill/seckill')}?id={{d.id}}')"">
-                                <i class="fa fa-gavel"></i> 开启秒杀</a>
-                            </li>
-                            <li>
-                                <a href="javascript:void(0);" onclick="$eb.createModalFrame(this.innerText,'{:Url('ump.store_bargain/bargain')}?id={{d.id}}')">
-                                    <i class="fa fa-sort-amount-asc"></i> 开启砍价</a>
-                            </li>
-                            <li>
-                                <a href="javascript:void(0);" onclick="$eb.createModalFrame(this.innerText,'{:Url('ump.store_combination/combination')}?id={{d.id}}')">
-                                    <i class="fa fa-hand-lizard-o"></i> 开启拼团</a>
-                            </li>
                             {{# if(d.is_del){ }}
                             <li>
                                 <a href="javascript:void(0);" lay-event='delstor'>
-                                    <i class="fa fa-trash"></i> 恢复产品
+                                    <i class="fa fa-trash"></i> 恢复商品
                                 </a>
                             </li>
                             {{# }else{ }}
@@ -169,14 +145,12 @@
             case 1:case 3:case 4:case 5:
                 join=[
                     {field: 'id', title: 'ID', sort: true,event:'id',width:'6%'},
-                    {field: 'image', title: '产品图片',templet:'#image',width:'10%'},
-                    {field: 'store_name', title: '产品名称',templet:'#store_name'},
+                    {field: 'image', title: '商品图片',templet:'#image',width:'10%'},
+                    {field: 'store_name', title: '商品名称',templet:'#store_name'},
                     {field: 'ficti', title: '虚拟销量',edit:'ficti',width:'8%'},
-                    {field: 'stock', title: '库存',edit:'stock',width:'8%'},
+                    {field: 'stock', title: '库存',width:'8%'},
                     {field: 'sort', title: '排序',edit:'sort',width:'6%'},
                     {field: 'sales', title: '销量',sort: true,event:'sales',width:'8%'},
-                    {field: 'collect', title: '点赞',templet:'#like',width:'6%'},
-                    {field: 'like', title: '收藏',templet:'#collect',width:'6%'},
                     {field: 'status', title: '状态',templet:"#checkboxstatus",width:'8%'},
                     {field: 'right', title: '操作',align:'center',toolbar:'#act',width:'14%'},
                 ];
@@ -185,11 +159,11 @@
                 join=[
                     {type:'checkbox'},
                     {field: 'id', title: 'ID', sort: true,event:'id',width:'6%'},
-                    {field: 'image', title: '产品图片',templet:'#image',width:'10%'},
-                    {field: 'store_name', title: '产品名称',templet:'#store_name'},
+                    {field: 'image', title: '商品图片',templet:'#image',width:'10%'},
+                    {field: 'store_name', title: '商品名称',templet:'#store_name'},
                     {field: 'price', title: '价格',edit:'price',width:'8%'},
                     {field: 'ficti', title: '虚拟销量',edit:'ficti',width:'8%'},
-                    {field: 'stock', title: '库存',edit:'stock',width:'6%'},
+                    {field: 'stock', title: '库存',width:'6%'},
                     {field: 'sort', title: '排序',edit:'sort',width:'6%'},
                     {field: 'sales', title: '销量',sort: true,event:'sales',width:'6%'},
                     {field: 'status', title: '状态',templet:"#checkboxstatus",width:'8%'},
@@ -198,12 +172,12 @@
                 break;
             case 6:
                 join=[
-                    {field: 'id', title: '产品ID', sort: true,event:'id'},
-                    {field: 'image', title: '产品图片',templet:'#image'},
-                    {field: 'store_name', title: '产品名称',templet:'#store_name'},
-                    {field: 'price', title: '产品价格',edit:'price'},
+                    {field: 'id', title: '商品ID', sort: true,event:'id'},
+                    {field: 'image', title: '商品图片',templet:'#image'},
+                    {field: 'store_name', title: '商品名称',templet:'#store_name'},
+                    {field: 'price', title: '商品价格',edit:'price'},
                     {field: 'ficti', title: '虚拟销量',edit:'ficti'},
-                    {field: 'stock', title: '库存',edit:'stock'},
+                    {field: 'stock', title: '库存'},
                     {field: 'sort', title: '排序',edit:'sort'},
                     {field: 'sales', title: '销量',sort: true,event:'sales'},
 //                    {field: 'status', title: '状态',templet:"#checkboxstatus"},
@@ -267,7 +241,7 @@
                 break;
         }
     });
-    //上下加产品
+    //上下加商品
     layList.switch('is_show',function (odj,value) {
         if(odj.elem.checked==true){
             layList.baseGet(layList.Url({c:'store.store_product',a:'set_show',p:{is_show:1,id:value}}),function (res) {
@@ -288,8 +262,8 @@
         switch (event) {
             case 'delstor':
                 var url=layList.U({c:'store.store_product',a:'delete',q:{id:data.id}});
-                if(data.is_del) var code = {title:"操作提示",text:"确定恢复产品操作吗？",type:'info',confirm:'是的，恢复该产品'};
-                else var code = {title:"操作提示",text:"确定将该产品移入回收站吗？",type:'info',confirm:'是的，移入回收站'};
+                if(data.is_del) var code = {title:"操作提示",text:"确定恢复商品操作吗？",type:'info',confirm:'是的，恢复该商品'};
+                else var code = {title:"操作提示",text:"确定将该商品移入回收站吗？",type:'info',confirm:'是的，移入回收站'};
                 $eb.$swal('delete',function(){
                     $eb.axios.get(url).then(function(res){
                         if(res.status == 200 && res.data.code == 200) {
@@ -307,7 +281,7 @@
                 $eb.openImage(data.image);
                 break;
             case 'edit':
-                $eb.createModalFrame(data.store_name+'-编辑',layList.U({a:'edit',q:{id:data.id}}),{h:700,w:1100});
+                location.href = layList.U({a:'create',q:{id:data.id}});
                 break;
             case 'attr':
                 $eb.createModalFrame(data.store_name+'-属性',layList.U({a:'attr',q:{id:data.id}}),{h:600,w:800})
@@ -319,16 +293,16 @@
         var type = obj.type;
         switch (obj.field){
             case 'id':
-                layList.reload({order: layList.order(type,'p.id')},true,null,obj);
+                layList.reload({order: layList.order(type,'id')},true,null,obj);
                 break;
             case 'sales':
-                layList.reload({order: layList.order(type,'p.sales')},true,null,obj);
+                layList.reload({order: layList.order(type,'sales')},true,null,obj);
                 break;
         }
     });
     //查询
     layList.search('search',function(where){
-        layList.reload(where);
+        layList.reload(where,true);
     });
     //自定义方法
     var action={
@@ -345,7 +319,7 @@
                     layList.reload();
                 });
             }else{
-                layList.msg('请选择要上架的产品');
+                layList.msg('请选择要上架的商品');
             }
         }
     };

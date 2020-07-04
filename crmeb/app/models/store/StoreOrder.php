@@ -7,26 +7,25 @@
 
 namespace app\models\store;
 
-use app\models\system\SystemStore;
-use app\models\routine\RoutineTemplate;
-use crmeb\repositories\GoodsRepository;
-use crmeb\repositories\PaymentRepositories;
-use app\models\user\User;
-use app\models\user\UserAddress;
-use app\models\user\UserBill;
-use app\models\user\WechatUser;
+use app\admin\model\store\StoreProductAttrValue;
+use app\admin\model\system\ShippingTemplatesFree;
+use app\admin\model\system\ShippingTemplatesRegion;
 use crmeb\basic\BaseModel;
-use crmeb\repositories\OrderRepository;
-use crmeb\repositories\UserRepository;
-use crmeb\services\MiniProgramService;
-use crmeb\services\SystemConfigService;
-use crmeb\services\WechatService;
-use crmeb\services\WechatTemplateService;
-use crmeb\services\workerman\ChannelService;
 use think\facade\Cache;
 use crmeb\traits\ModelTrait;
 use think\facade\Log;
-use think\facade\Route;
+use app\models\system\SystemStore;
+use app\models\routine\RoutineTemplate;
+use app\models\user\{
+    User, UserAddress, UserBill, WechatUser
+};
+use crmeb\services\{
+    SystemConfigService, WechatTemplateService, workerman\ChannelService
+};
+use crmeb\repositories\{
+    GoodsRepository, PaymentRepositories, OrderRepository, ShortLetterRepositories, UserRepository
+};
+use app\admin\model\system\ShippingTemplates;
 
 /**
  * TODO 订单Model
@@ -74,9 +73,8 @@ class StoreOrder extends BaseModel
      * @param $cartInfo
      * @return array
      */
-    public static function getOrderPriceGroup($cartInfo)
+    public static function getOrderPriceGroup($cartInfo, $addr)
     {
-        $storePostage = floatval(sys_config('store_postage')) ?: 0;//邮费基础价
         $storeFreePostage = floatval(sys_config('store_free_postage')) ?: 0;//满额包邮
         $totalPrice = self::getOrderSumPrice($cartInfo, 'truePrice');//获取订单总金额
         $costPrice = self::getOrderSumPrice($cartInfo, 'costPrice');//获取订单成本价
@@ -85,16 +83,74 @@ class StoreOrder extends BaseModel
         if (!$storeFreePostage) {
             $storePostage = 0;
         } else {
-            foreach ($cartInfo as $cart) {
-                if (!$cart['productInfo']['is_postage'])//若果产品不包邮
-                    $storePostage = bcadd($storePostage, $cart['productInfo']['postage'], 2);
-
+            if ($addr) {
+                //按照运费模板计算每个运费模板下商品的件数/重量/体积以及总金额 按照首重倒序排列
+                $temp_num = [];
+                foreach ($cartInfo as $cart) {
+                    $temp = ShippingTemplates::get($cart['productInfo']['temp_id']);
+                    if (!$temp) $temp = ShippingTemplates::get(1);
+                    if ($temp->getData('type') == 1) {
+                        $num = $cart['cart_num'];
+                    } elseif ($temp->getData('type') == 2) {
+                        $num = $cart['cart_num'] * $cart['productInfo']['attrInfo']['weight'];
+                    } else {
+                        $num = $cart['cart_num'] * $cart['productInfo']['attrInfo']['volume'];
+                    }
+                    $region = ShippingTemplatesRegion::where('temp_id', $cart['productInfo']['temp_id'])->where('city_id', $addr['city_id'])->find();
+                    if (!$region) $region = ShippingTemplatesRegion::where('temp_id', $cart['productInfo']['temp_id'])->where('city_id', 0)->find();
+                    if (!$region) $region = ShippingTemplatesRegion::where('temp_id', 1)->where('city_id', 0)->find();
+                    if (!$region) {
+                        return self::setErrorInfo('运费模板不存在');
+                    }
+                    if (!isset($temp_num[$cart['productInfo']['temp_id']])) {
+                        $temp_num[$cart['productInfo']['temp_id']]['number'] = $num;
+                        $temp_num[$cart['productInfo']['temp_id']]['price'] = bcmul($cart['cart_num'], $cart['truePrice'], 2);
+                        $temp_num[$cart['productInfo']['temp_id']]['first'] = $region['first'];
+                        $temp_num[$cart['productInfo']['temp_id']]['first_price'] = $region['first_price'];
+                        $temp_num[$cart['productInfo']['temp_id']]['continue'] = $region['continue'];
+                        $temp_num[$cart['productInfo']['temp_id']]['continue_price'] = $region['continue_price'];
+                        $temp_num[$cart['productInfo']['temp_id']]['temp_id'] = $cart['productInfo']['temp_id'];
+                        $temp_num[$cart['productInfo']['temp_id']]['city_id'] = $addr['city_id'];
+                    } else {
+                        $temp_num[$cart['productInfo']['temp_id']]['number'] += $num;
+                        $temp_num[$cart['productInfo']['temp_id']]['price'] += bcmul($cart['cart_num'], $cart['truePrice'], 2);
+                    }
+                }
+                array_multisort(array_column($temp_num, 'first_price'), SORT_DESC, $temp_num);
+                $type = $storePostage = 0;
+                foreach ($temp_num as $k => $v) {
+                    if (ShippingTemplatesFree::where('temp_id', $v['temp_id'])->where('city_id', $v['city_id'])->where('number', '<=', $v['number'])->where('price', '<=', $v['price'])->find()) {
+                        unset($temp_num[$k]);
+                    }
+                }
+                foreach ($temp_num as $v) {
+                    if ($type == 0) {
+                        if ($v['number'] <= $v['first']) {
+                            $storePostage = bcadd($storePostage, $v['first_price'], 2);
+                        } else {
+                            if ($v['continue'] <= 0) {
+                                $storePostage = $storePostage;
+                            } else {
+                                $storePostage = bcadd(bcadd($storePostage, $v['first_price'], 2), bcmul(ceil(bcdiv(bcsub($v['number'], $v['first']), $v['continue'] ?? 0, 2)), $v['continue_price']), 2);
+                            }
+                        }
+                        $type = 1;
+                    } else {
+                        if ($v['continue'] <= 0) {
+                            $storePostage = $storePostage;
+                        } else {
+                            $storePostage = bcadd($storePostage, bcmul(ceil(bcdiv($v['number'], $v['continue'] ?? 0, 2)), $v['continue_price']), 2);
+                        }
+                    }
+                }
+            } else {
+                $storePostage = 0;
             }
             if ($storeFreePostage <= $totalPrice) $storePostage = 0;//如果总价大于等于满额包邮 邮费等于0
         }
-//        $totalPrice = bcadd($totalPrice,$storePostage,2);
         return compact('storePostage', 'storeFreePostage', 'totalPrice', 'costPrice', 'vipPrice');
     }
+
 
     /**获取某个字段总金额
      * @param $cartInfo
@@ -216,7 +272,7 @@ class StoreOrder extends BaseModel
      * @throws \think\exception\DbException
      */
 
-    public static function cacheKeyCreateOrder($uid, $key, $addressId, $payType, $useIntegral = false, $couponId = 0, $mark = '', $combinationId = 0, $pinkId = 0, $seckill_id = 0, $bargain_id = 0, $test = false, $isChannel = 0, $shipping_type = 1, $real_name = '', $phone = '')
+    public static function cacheKeyCreateOrder($uid, $key, $addressId, $payType, $useIntegral = false, $couponId = 0, $mark = '', $combinationId = 0, $pinkId = 0, $seckill_id = 0, $bargain_id = 0, $test = false, $isChannel = 0, $shipping_type = 1, $real_name = '', $phone = '', $storeId = 0)
     {
         self::beginTrans();
         try {
@@ -233,7 +289,12 @@ class StoreOrder extends BaseModel
             $priceGroup = $cartGroup['priceGroup'];
             $other = $cartGroup['other'];
             $payPrice = (float)$priceGroup['totalPrice'];
-            $payPostage = $priceGroup['storePostage'];
+            $addr = UserAddress::where('uid', $uid)->where('id', $addressId)->find();
+            if ($payType == 'offline' && sys_config('offline_postage') == 1) {
+                $payPostage = 0;
+            } else {
+                $payPostage = self::getOrderPriceGroup($cartInfo, $addr)['storePostage'];
+            }
             if ($shipping_type === 1) {
                 if (!$test && !$addressId) return self::setErrorInfo('请选择收货地址!', true);
                 if (!$test && (!UserAddress::be(['uid' => $uid, 'id' => $addressId, 'is_del' => 0]) || !($addressInfo = UserAddress::find($addressId))))
@@ -251,7 +312,10 @@ class StoreOrder extends BaseModel
             $cartIds = [];
             $totalNum = 0;
             $gainIntegral = 0;
-            foreach ($cartInfo as $cart) {
+            foreach ($cartInfo as $cart){
+                if (!$test && !self::checkProductStock($uid, $cart['product_id'], $cart['cart_num'], $cart['product_attr_unique'], $cart['combination_id'], $cart['seckill_id'], $cart['bargain_id'])) {
+                    return false;
+                }
                 $cartIds[] = $cart['id'];
                 $totalNum += $cart['cart_num'];
                 if (!$seckill_id) $seckill_id = $cart['seckill_id'];
@@ -274,7 +338,15 @@ class StoreOrder extends BaseModel
             if ($couponId) {
                 $couponInfo = StoreCouponUser::validAddressWhere()->where('id', $couponId)->where('uid', $uid)->find();
                 if (!$couponInfo) return self::setErrorInfo('选择的优惠劵无效!', true);
-                if ($couponInfo['use_min_price'] > $payPrice)
+                $coupons = StoreCouponUser::getUsableCouponList($uid, ['valid' => $cartInfo], $payPrice);
+                $flag = false;
+                foreach ($coupons as $coupon) {
+                    if ($coupon['id'] == $couponId) {
+                        $flag = true;
+                        continue;
+                    }
+                }
+                if (!$flag)
                     return self::setErrorInfo('不满足优惠劵的使用条件!', true);
                 $payPrice = (float)bcsub($payPrice, $couponInfo['coupon_price'], 2);
                 $res1 = StoreCouponUser::useCoupon($couponId);
@@ -296,6 +368,9 @@ class StoreOrder extends BaseModel
                 //门店自提没有邮费支付
                 $priceGroup['storePostage'] = 0;
                 $payPostage = 0;
+                if (!$storeId && !$test) {
+                    return self::setErrorInfo('请选择门店', true);
+                }
             }
 
             //积分抵扣
@@ -365,7 +440,7 @@ class StoreOrder extends BaseModel
             ];
             if ($shipping_type === 2) {
                 $orderInfo['verify_code'] = self::getStoreCode();
-                $orderInfo['store_id'] = SystemStore::getStoreDispose(0, 'id');
+                $orderInfo['store_id'] = SystemStore::getStoreDispose($storeId, 'id');
                 if (!$orderInfo['store_id']) return self::setErrorInfo('暂无门店无法选择门店自提！', true);
             }
             $order = self::create($orderInfo);
@@ -373,9 +448,9 @@ class StoreOrder extends BaseModel
             $res5 = true;
             foreach ($cartInfo as $cart) {
                 //减库存加销量
-                if ($combinationId) $res5 = $res5 && StoreCombination::decCombinationStock($cart['cart_num'], $combinationId);
-                else if ($seckill_id) $res5 = $res5 && StoreSeckill::decSeckillStock($cart['cart_num'], $seckill_id);
-                else if ($bargain_id) $res5 = $res5 && StoreBargain::decBargainStock($cart['cart_num'], $bargain_id);
+                if ($combinationId) $res5 = $res5 && StoreCombination::decCombinationStock($cart['cart_num'], $combinationId, isset($cart['productInfo']['attrInfo']) ? $cart['productInfo']['attrInfo']['unique'] : '');
+                else if ($seckill_id) $res5 = $res5 && StoreSeckill::decSeckillStock($cart['cart_num'], $seckill_id, isset($cart['productInfo']['attrInfo']) ? $cart['productInfo']['attrInfo']['unique'] : '');
+                else if ($bargain_id) $res5 = $res5 && StoreBargain::decBargainStock($cart['cart_num'], $bargain_id, isset($cart['productInfo']['attrInfo']) ? $cart['productInfo']['attrInfo']['unique'] : '');
                 else $res5 = $res5 && StoreProduct::decProductStock($cart['cart_num'], $cart['productInfo']['id'], isset($cart['productInfo']['attrInfo']) ? $cart['productInfo']['attrInfo']['unique'] : '');
             }
             //保存购物车商品信息
@@ -434,9 +509,9 @@ class StoreOrder extends BaseModel
         $cartInfo = StoreOrderCartInfo::where('cart_id', 'in', $order['cart_id'])->select();
         foreach ($cartInfo as $cart) {
             //增库存减销量
-            if ($combinationId) $res5 = $res5 && StoreCombination::incCombinationStock($cart['cart_info']['cart_num'], $combinationId);
-            else if ($seckill_id) $res5 = $res5 && StoreSeckill::incSeckillStock($cart['cart_info']['cart_num'], $seckill_id);
-            else if ($bargain_id) $res5 = $res5 && StoreBargain::incBargainStock($cart['cart_info']['cart_num'], $bargain_id);
+            if ($combinationId) $res5 = $res5 && StoreCombination::incCombinationStock($cart['cart_info']['cart_num'], $combinationId, isset($cart['productInfo']['attrInfo']) ? $cart['productInfo']['attrInfo']['unique'] : '');
+            else if ($seckill_id) $res5 = $res5 && StoreSeckill::incSeckillStock($cart['cart_info']['cart_num'], $seckill_id, isset($cart['productInfo']['attrInfo']) ? $cart['productInfo']['attrInfo']['unique'] : '');
+            else if ($bargain_id) $res5 = $res5 && StoreBargain::incBargainStock($cart['cart_info']['cart_num'], $bargain_id, isset($cart['productInfo']['attrInfo']) ? $cart['productInfo']['attrInfo']['unique'] : '');
             else $res5 = $res5 && StoreProduct::incProductStock($cart['cart_info']['cart_num'], $cart['cart_info']['productInfo']['id'], isset($cart['cart_info']['productInfo']['attrInfo']) ? $cart['cart_info']['productInfo']['attrInfo']['unique'] : '');
         }
         return $res5;
@@ -557,82 +632,6 @@ class StoreOrder extends BaseModel
         return $num;
     }
 
-
-    /**
-     * TODO 小程序JS支付
-     * @param $orderId
-     * @param string $field
-     * @return array|string
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\ModelNotFoundException
-     * @throws \think\exception\DbException
-     */
-    public static function jsPay($orderId, $field = 'order_id')
-    {
-        if (is_string($orderId))
-            $orderInfo = self::where($field, $orderId)->find();
-        else
-            $orderInfo = $orderId;
-        if (!$orderInfo || !isset($orderInfo['paid'])) exception('支付订单不存在!');
-        if ($orderInfo['paid']) exception('支付已支付!');
-        if ($orderInfo['pay_price'] <= 0) exception('该支付无需支付!');
-        $openid = WechatUser::getOpenId($orderInfo['uid']);
-        $bodyContent = self::getProductTitle($orderInfo['cart_id']);
-        $site_name = sys_config('site_name');
-        if (!$bodyContent && !$site_name) exception('支付参数缺少：请前往后台设置->系统设置-> 填写 网站名称');
-        return MiniProgramService::jsPay($openid, $orderInfo['order_id'], $orderInfo['pay_price'], 'productr', self::getSubstrUTf8($site_name . ' - ' . $bodyContent, 30));
-    }
-
-    /**
-     * 微信公众号JS支付
-     * @param $orderId
-     * @param string $field
-     * @return array|string
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\ModelNotFoundException
-     * @throws \think\exception\DbException
-     */
-    public static function wxPay($orderId, $field = 'order_id')
-    {
-        if (is_string($orderId))
-            $orderInfo = self::where($field, $orderId)->find();
-        else
-            $orderInfo = $orderId;
-        if (!$orderInfo || !isset($orderInfo['paid'])) exception('支付订单不存在!');
-        if ($orderInfo['paid']) exception('支付已支付!');
-        if ($orderInfo['pay_price'] <= 0) exception('该支付无需支付!');
-        $openid = WechatUser::uidToOpenid($orderInfo['uid'], 'openid');
-        $bodyContent = self::getProductTitle($orderInfo['cart_id']);
-        $site_name = sys_config('site_name');
-        if (!$bodyContent && !$site_name) exception('支付参数缺少：请前往后台设置->系统设置-> 填写 网站名称');
-        return WechatService::jsPay($openid, $orderInfo['order_id'], $orderInfo['pay_price'], 'product', self::getSubstrUTf8($site_name . ' - ' . $bodyContent, 30));
-    }
-
-    /**
-     * 微信h5支付
-     * @param $orderId
-     * @param string $field
-     * @return array|string
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\ModelNotFoundException
-     * @throws \think\exception\DbException
-     */
-    public static function h5Pay($orderId, $field = 'order_id')
-    {
-        if (is_string($orderId))
-            $orderInfo = self::where($field, $orderId)->find();
-        else
-            $orderInfo = $orderId;
-        if (!$orderInfo || !isset($orderInfo['paid'])) exception('支付订单不存在!');
-        if ($orderInfo['paid']) exception('支付已支付!');
-        if ($orderInfo['pay_price'] <= 0) exception('该支付无需支付!');
-        $bodyContent = self::getProductTitle($orderInfo['cart_id']);
-        $site_name = sys_config('site_name');
-        if (!$bodyContent && !$site_name) exception('支付参数缺少：请前往后台设置->系统设置-> 填写 网站名称');
-        return WechatService::paymentPrepare(null, $orderInfo['order_id'], $orderInfo['pay_price'], 'product', self::getSubstrUTf8($site_name . ' - ' . $bodyContent, 30), '', 'MWEB');
-    }
-
-
     /**
      * 余额支付
      * @param $order_id
@@ -702,7 +701,7 @@ class StoreOrder extends BaseModel
      * @param string $refundReasonWap
      * @return bool
      */
-    public static function orderApplyRefund($uni, $uid, $refundReasonWap = '', $refundReasonWapExplain = '', $refundReasonWapImg = array())
+    public static function orderApplyRefund($uni, $uid, $refundReasonWap = '', $refundReasonWapExplain = '', $refundReasonWapImg = [])
     {
         $order = self::getUserOrderDetail($uid, $uni);
         if (!$order) return self::setErrorInfo('支付订单不存在!');
@@ -719,10 +718,10 @@ class StoreOrder extends BaseModel
         else {
             try {
                 if (in_array($order['is_channel'], [0, 2])) {
-                    //公众号发送模板消息
+                    //公众号发送模板消息通知客服
                     WechatTemplateService::sendAdminNoticeTemplate([
-                        'first' => "亲,您有一个新订单 \n订单号:{$order['order_id']}",
-                        'keyword1' => '新订单',
+                        'first' => "亲,有个订单申请退款 \n订单号:{$order['order_id']}",
+                        'keyword1' => '退款申请',
                         'keyword2' => '已支付',
                         'keyword3' => date('Y/m/d H:i', time()),
                         'remark' => '请及时处理'
@@ -732,9 +731,11 @@ class StoreOrder extends BaseModel
                     //小程序 发送模板消息
                     RoutineTemplate::sendOrderRefundStatus($order, $refundReasonWap);
                 }
+                //通知后台消息提醒
                 ChannelService::instance()->send('NEW_REFUND_ORDER', ['order_id' => $order['order_id']]);
             } catch (\Exception $e) {
             }
+            //发送短信
             event('ShortMssageSend', [$order['order_id'], 'AdminRefund']);
             return true;
         }
@@ -755,6 +756,10 @@ class StoreOrder extends BaseModel
         if ($order->combination_id && $res1 && !$order->refund_status) $resPink = StorePink::createPink($order);//创建拼团
         $oid = self::where('order_id', $orderId)->value('id');
         StoreOrderStatus::status($oid, 'pay_success', '用户付款成功');
+        $now_money = User::where('uid', $order['uid'])->value('now_money');
+        if ($order->combination_id == 0 && $order->seckill_id == 0 && $order->bargain_id == 0) {
+            UserBill::expend('购买商品', $order['uid'], 'now_money', 'pay_money', $order['pay_price'], $order['id'], $now_money, '支付' . floatval($order['pay_price']) . '元购买商品');
+        }
         //支付成功后
         event('OrderPaySuccess', [$order, $formId]);
         $res = $res1 && $resPink;
@@ -878,6 +883,7 @@ class StoreOrder extends BaseModel
             false !== StoreOrderStatus::status($order['id'], 'user_take_delivery', '用户已收货')) {
             try {
                 OrderRepository::storeProductOrderUserTakeDelivery($order, $uid);
+                UserBill::where('uid', $order['uid'])->where('link_id', $order['id'])->where('type', 'pay_money')->update(['take' => 1]);
             } catch (\Exception $e) {
                 self::rollbackTrans();
                 return self::setErrorInfo($e->getMessage());
@@ -923,7 +929,7 @@ class StoreOrder extends BaseModel
         if (!$order['paid'] && $order['pay_type'] == 'offline' && !$order['status'] >= 2) {
             $status['_type'] = 9;
             $status['_title'] = '线下付款';
-            $status['_msg'] = '等待商家处理,请耐心等待';
+            $status['_msg'] = '商家处理中,请耐心等待';
             $status['_class'] = 'nobuy';
         } else if (!$order['paid']) {
             $status['_type'] = 0;
@@ -996,7 +1002,7 @@ class StoreOrder extends BaseModel
             } else {//TODO  发货
                 $status['_type'] = 2;
                 $status['_title'] = '待收货';
-                if($order['delivery_type'] == 'fictitious')
+                if ($order['delivery_type'] == 'fictitious')
                     $_time = StoreOrderStatus::getTime($order['id'], 'delivery_fictitious');
                 else
                     $_time = StoreOrderStatus::getTime($order['id'], 'delivery_goods');
@@ -1024,7 +1030,7 @@ class StoreOrder extends BaseModel
         $order['status_pic'] = '';
         //获取产品状态图片
         if ($isPic) {
-            $order_details_images = \crmeb\services\GroupDataService::getData('order_details_images') ?: [];
+            $order_details_images = sys_data('order_details_images') ?: [];
             foreach ($order_details_images as $image) {
                 if (isset($image['order_status']) && $image['order_status'] == $order['_status']['_type']) {
                     $order['status_pic'] = $image['pic'];
@@ -1304,15 +1310,16 @@ class StoreOrder extends BaseModel
         $pre_day = strtotime(date('Y-m-d', strtotime('-1 day')));//昨日
         $now_month = strtotime(date('Y-m'));//本月
         //今日成交额
-        $data['todayPrice'] = (float)number_format(self::where('is_del', 0)->where('pay_time', '>=', $to_day)->where('paid', 1)->where('refund_status', 0)->value('sum(pay_price)'), 2) ?? 0;
+//        $data['todayPrice'] = (float)number_format(self::where('is_del', 0)->where('pay_time', '>=', $to_day)->where('paid', 1)->where('refund_status', 0)->value('sum(pay_price)'), 2) ?? 0;
+        $data['todayPrice'] = number_format(self::where('is_del', 0)->where('pay_time', '>=', $to_day)->where('paid', 1)->where('refund_status', 0)->value('sum(pay_price)'), 2) ?? 0;
         //今日订单数
         $data['todayCount'] = self::where('is_del', 0)->where('pay_time', '>=', $to_day)->where('paid', 1)->where('refund_status', 0)->count();
         //昨日成交额
-        $data['proPrice'] = (float)number_format(self::where('is_del', 0)->where('pay_time', '<', $to_day)->where('pay_time', '>=', $pre_day)->where('paid', 1)->where('refund_status', 0)->value('sum(pay_price)'), 2) ?? 0;
+        $data['proPrice'] = number_format(self::where('is_del', 0)->where('pay_time', '<', $to_day)->where('pay_time', '>=', $pre_day)->where('paid', 1)->where('refund_status', 0)->value('sum(pay_price)'), 2) ?? 0;
         //昨日订单数
         $data['proCount'] = self::where('is_del', 0)->where('pay_time', '<', $to_day)->where('pay_time', '>=', $pre_day)->where('paid', 1)->where('refund_status', 0)->count();
         //本月成交额
-        $data['monthPrice'] = (float)number_format(self::where('is_del', 0)->where('pay_time', '>=', $now_month)->where('paid', 1)->where('refund_status', 0)->value('sum(pay_price)'), 2) ?? 0;
+        $data['monthPrice'] = number_format(self::where('is_del', 0)->where('pay_time', '>=', $now_month)->where('paid', 1)->where('refund_status', 0)->value('sum(pay_price)'), 2) ?? 0;
         //本月订单数
         $data['monthCount'] = self::where('is_del', 0)->where('pay_time', '>=', $now_month)->where('paid', 1)->where('refund_status', 0)->count();
         return $data;
@@ -1379,7 +1386,7 @@ class StoreOrder extends BaseModel
      */
     public static function getOrderStatusSum($uid)
     {
-        return self::where('uid', $uid)->where('is_del', 0)->where('paid', 1)->sum('pay_price');
+        return self::where('uid', $uid)->where('is_del', 0)->where('paid', 1)->where('refund_status', 0)->sum('pay_price');
     }
 
     public static function getPinkOrderId($id)
@@ -1546,8 +1553,9 @@ class StoreOrder extends BaseModel
      */
     public static function startTakeOrder()
     {
+
         //7天前时间戳
-        $systemDeliveryTime = sys_config('system_delivery_time') ?? 0;
+        $systemDeliveryTime = SystemConfigService::get('system_delivery_time') ?? 0;
         //0为取消自动收货功能
         if ($systemDeliveryTime == 0) return true;
         $sevenDay = strtotime(date('Y-m-d H:i:s', strtotime('-' . $systemDeliveryTime . ' day')));
@@ -1571,16 +1579,18 @@ class StoreOrder extends BaseModel
             else continue;
             if (!self::edit($data, $item, 'id')) continue;
             try {
-                OrderRepository::storeProductOrderTakeDeliveryTimer($order);
+                OrderRepository::storeProductOrderTakeDeliveryAdmin($order, $item);
                 $res = $res && true;
             } catch (\Exception $e) {
                 $res = $res && false;
             }
             $res = $res && StoreOrderStatus::status($item, 'take_delivery', '已收货[自动收货]');
         }
+
         if (!$res) {
-            throw new \Exception('收货失败');
+            throw new \Exception('');
         }
+
     }
 
     /**
@@ -1603,16 +1613,17 @@ class StoreOrder extends BaseModel
      * @param $limit
      * @return array
      */
-    public static function getOrderDataPriceCount($page, $limit)
+    public static function getOrderDataPriceCount($page, $limit, $start, $stop)
     {
         if (!$limit) return [];
         $model = new self;
-        $model = $model->field('sum(pay_price) as price,count(id) as count,FROM_UNIXTIME(add_time, \'%m-%d\') as time');
+        if ($start != '' && $stop != '') $model = $model->where('pay_time', '>', $start)->where('pay_time', '<=', $stop);
+        $model = $model->field('sum(pay_price) as price,count(id) as count,FROM_UNIXTIME(pay_time, \'%m-%d\') as time');
         $model = $model->where('is_del', 0);
         $model = $model->where('paid', 1);
         $model = $model->where('refund_status', 0);
-        $model = $model->group("FROM_UNIXTIME(add_time, '%Y-%m-%d')");
-        $model = $model->order('add_time DESC');
+        $model = $model->group("FROM_UNIXTIME(pay_time, '%Y-%m-%d')");
+        $model = $model->order('pay_time DESC');
         if ($page) $model = $model->page($page, $limit);
         return $model->select();
     }
@@ -1624,7 +1635,7 @@ class StoreOrder extends BaseModel
      */
     public static function orderList($where)
     {
-        $model = self::getOrderWhere($where, self::alias('a')->join('user r', 'r.uid=a.uid', 'LEFT'), 'a.', 'r')->field('a.id,a.order_id,a.add_time,a.status,a.total_num,a.total_price,a.total_postage,a.pay_price,a.pay_postage,a.paid,a.refund_status,a.remark,a.pay_type');
+        $model = self::getOrderWhere($where, self::alias('a')->join('user r', 'r.uid=a.uid', 'LEFT'), 'a.', 'r')->field('a.id,a.order_id,a.add_time,a.status,a.total_num,a.total_price,a.total_postage,a.pay_price,a.pay_postage,a.paid,a.refund_status,a.remark,a.pay_type')->where('is_del', 0);
         if ($where['order'] != '') {
             $model = $model->order(self::setOrder($where['order']));
         } else {
@@ -1728,7 +1739,7 @@ class StoreOrder extends BaseModel
                 if (!$item['paid'] && $item['pay_type'] == 'offline' && !$item['status'] >= 2) {
                     $status['_type'] = 9;
                     $status['_title'] = '线下付款';
-                    $status['_msg'] = '等待商家处理,请耐心等待';
+                    $status['_msg'] = '商家处理中,请耐心等待';
                     $status['_class'] = 'nobuy';
                 } else if (!$item['paid']) {
                     $status['_type'] = 0;
@@ -2036,4 +2047,151 @@ class StoreOrder extends BaseModel
         $res = self::where('id', $id)->update(['paid' => 1, 'pay_time' => time()]);
         return $res;
     }
+
+    /**
+     * 向创建订单10分钟未付款的用户发送短信
+     */
+    public static function sendTen()
+    {
+        $switch = sys_config('unpaid_order_switch') ? true : false;
+        if($switch){
+            $list = self::where('paid', 0)
+                ->where('is_del', 0)
+                ->where('is_system_del', 0)
+                ->where('add_time', '>', time() - 900)
+                ->where('add_time', '<', time() - 600)
+                ->field('order_id,user_phone')
+                ->select();
+            if ($list) {
+                $list = $list->toArray();
+                foreach ($list as $phone) {
+                    ShortLetterRepositories::send(true, $phone['user_phone'], ['order_id' => $phone['order_id']], 'ORDER_PAY_FALSE');
+                }
+            }
+        }
+    }
+
+    public function productInfo()
+    {
+        return $this->hasMany(StoreProductReply::class, 'oid', 'id');
+    }
+
+    public static function setOrderProductReplyWhere($where)
+    {
+        $model = self::where('status', 3)->order('add_time desc')->whereIn('id', function ($query) {
+            $query->name('store_order')->alias('o')->join('store_product_reply a', 'a.oid = o.id')->group('o.id')->field('o.id')->select();
+        })->with('productInfo', function ($query) use ($where) {
+            $alias = '';
+            if (isset($where['title']) && $where['title'] != '')
+                $query->where("{$alias}comment", 'LIKE', "%$where[title]%");
+            if (isset($where['is_reply']) && $where['is_reply'] != '') {
+                if ($where['is_reply'] >= 0) {
+                    $query->where("{$alias}is_reply", $where['is_reply']);
+                } else {
+                    $query->where("{$alias}is_reply", '>', 0);
+                }
+            }
+            if (isset($where['producr_id']) && $where['producr_id'] != 0)
+                $query->where($alias . 'product_id', $where['producr_id']);
+            $query->where("{$alias}is_del", 0);
+        });
+        return $model;
+
+    }
+
+    public static function getOrderProductReplyList($where)
+    {
+        $list = self::setOrderProductReplyWhere($where)->page((int)$where['message_page'], (int)$where['limit'])->select();
+        $list = count($list) ? $list->toArray() : [];
+        foreach ($list as $key => $item) {
+            if (isset($item['productInfo']) && is_array($item['productInfo']) && count($item['productInfo'])) {
+                foreach ($item['productInfo'] as $k => $v) {
+                    if (!$v['nickname'] && $v['uid']) {
+                        $v['nickname'] = User::where('uid', $v['uid'])->value('nickname');
+                        $v['avatar'] = User::where('uid', $v['uid'])->value('avatar');
+                    }
+                    $v['image'] = '';
+                    $v['store_name'] = '';
+                    if ($v['product_id']) {
+                        $product = StoreProduct::where('id', $v['product_id'])->field(['image', 'store_name'])->find();
+                        if ($product) {
+                            $v['image'] = $product['image'];
+                            $v['store_name'] = $product['store_name'];
+                        }
+                    }
+                    $list[$key]['productInfo'][$k] = $v;
+                }
+            }
+        }
+        $count = self::setOrderProductReplyWhere($where)->count();
+        return compact('list', 'count');
+    }
+
+    /**
+     * 验证加入购物车、生成订单时商品得库存以及是否能购买情况
+     * @param $uid
+     * @param $product_id
+     * @param int $cart_num
+     * @param string $product_attr_unique
+     * @param int $combination_id
+     * @param int $seckill_id
+     * @param int $bargain_id
+     * @return bool
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     */
+    public static function checkProductStock($uid, $product_id, $cart_num = 1, $product_attr_unique = '', $combination_id = 0, $seckill_id = 0, $bargain_id = 0)
+    {
+        if ($cart_num < 1) $cart_num = 1;
+        if (!$product_attr_unique) return self::setErrorInfo('请选择商品属性');
+        if ($seckill_id) {
+            if (!StoreSeckill::isSeckillEnd($seckill_id))
+                return self::setErrorInfo('活动已结束');
+            $StoreSeckillinfo = StoreSeckill::getValidProduct($seckill_id);
+            if (!$StoreSeckillinfo)
+                return self::setErrorInfo('该产品已下架或删除');
+            $userbuycount = StoreOrder::where('uid', $uid)->where('paid', 1)->where('seckill_id', $seckill_id)->sum('total_num');
+            if ($StoreSeckillinfo['num'] <= $userbuycount || $StoreSeckillinfo['num'] < $cart_num)
+                return self::setErrorInfo('每人限购' . $StoreSeckillinfo['num'] . '件');
+            $res = StoreProductAttrValue::where('product_id', $seckill_id)->where('unique', $product_attr_unique)->where('type', 1)->field('suk,quota')->find();
+            if ($cart_num > $res['quota'])
+                return self::setErrorInfo('该产品库存不足' . $cart_num);
+            $product_stock = StoreProductAttrValue::where('product_id', $StoreSeckillinfo['product_id'])->where('suk', $res['suk'])->where('type', 0)->value('stock');
+            if ($product_stock < $cart_num)
+                return self::setErrorInfo('该产品库存不足' . $cart_num);
+        } elseif ($bargain_id) {
+            if (!StoreBargain::validBargain($bargain_id))
+                return self::setErrorInfo('该产品已下架或删除');
+            $StoreBargainInfo = StoreBargain::getBargain($bargain_id);
+            $res = StoreProductAttrValue::where('product_id', $bargain_id)->where('type', 2)->field('suk,quota')->find();
+            if ($cart_num > $res['quota'])
+                return self::setErrorInfo('该产品库存不足' . $cart_num);
+            $product_stock = StoreProductAttrValue::where('product_id', $StoreBargainInfo['product_id'])->where('suk', $res['suk'])->where('type', 0)->value('stock');
+            if ($product_stock < $cart_num)
+                return self::setErrorInfo('该产品库存不足' . $cart_num);
+        } elseif ($combination_id) {//拼团
+            $StoreCombinationInfo = StoreCombination::getCombinationOne($combination_id);
+            if (!$StoreCombinationInfo)
+                return self::setErrorInfo('该产品已下架或删除');
+            $userbuycount = StoreOrder::where('uid', $uid)->where('paid', 1)->where('combination_id', $combination_id)->count();
+            if ($StoreCombinationInfo['num'] <= $userbuycount || $StoreCombinationInfo['num'] < $cart_num)
+                return self::setErrorInfo('每人限购' . $StoreCombinationInfo['num'] . '件');
+            $res = StoreProductAttrValue::where('product_id', $combination_id)->where('unique', $product_attr_unique)->where('type', 3)->field('suk,quota')->find();
+            if ($cart_num > $res['quota'])
+                return self::setErrorInfo('该产品库存不足' . $cart_num);
+            $product_stock = StoreProductAttrValue::where('product_id', $StoreCombinationInfo['product_id'])->where('suk', $res['suk'])->where('type', 0)->value('stock');
+            if ($product_stock < $cart_num)
+                return self::setErrorInfo('该产品库存不足' . $cart_num);
+        } else {
+            if (!StoreProduct::isValidProduct($product_id))
+                return self::setErrorInfo('该产品已下架或删除');
+            if (!StoreProductAttr::issetProductUnique($product_id, $product_attr_unique))
+                return self::setErrorInfo('请选择有效的产品属性');
+            if (StoreProduct::getProductStock($product_id, $product_attr_unique) < $cart_num)
+                return self::setErrorInfo('该产品库存不足' . $cart_num);
+        }
+        return true;
+    }
+
 }

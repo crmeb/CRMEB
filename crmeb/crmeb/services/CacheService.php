@@ -25,14 +25,14 @@ class CacheService
     /**
      * 写入缓存
      * @param string $name 缓存名称
-     * @param $value 缓存值
+     * @param mixed $value 缓存值
      * @param int $expire 缓存时间，为0读取系统缓存时间
      * @return bool
      */
-    public static function set(string $name, $value, int $expire = 0): bool
+    public static function set(string $name, $value, int $expire = null): bool
     {
         //这里不要去读取缓存配置，会导致死循环
-        $expire = $expire ?: SystemConfigService::get('cache_config', null, true);
+        $expire = !is_null($expire) ? $expire : SystemConfigService::get('cache_config', null, true);
         if (!is_int($expire))
             $expire = (int)$expire;
         return self::handler()->set($name, $value, $expire);
@@ -47,20 +47,10 @@ class CacheService
     public static function get(string $name, $default = false, int $expire = null)
     {
         //这里不要去读取缓存配置，会导致死循环
-        $expire = $expire ?: SystemConfigService::get('cache_config', null, true);
+        $expire = !is_null($expire) ? $expire : SystemConfigService::get('cache_config', null, true);
         if (!is_int($expire))
             $expire = (int)$expire;
         return self::handler()->remember($name, $default, $expire);
-    }
-
-    /**
-     * 删除缓存
-     * @param string $name
-     * @return mixed
-     */
-    public static function rm(string $name)
-    {
-        return self::handler()->remember($name, '');
     }
 
     /**
@@ -76,7 +66,8 @@ class CacheService
 
     /**
      * 缓存句柄
-     * @return \think\cache\TagSet
+     *
+     * @return \think\cache\TagSet|CacheStatic
      */
     public static function handler()
     {
@@ -84,7 +75,7 @@ class CacheService
     }
 
     /**
-     * 清空缓冲池
+     * 清空缓存池
      * @return bool
      */
     public static function clear()

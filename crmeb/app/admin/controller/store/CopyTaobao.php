@@ -7,18 +7,19 @@
 
 namespace app\admin\controller\store;
 
-use crmeb\services\HttpService;
-use crmeb\services\UploadService;
-use think\exception\PDOException;
 use app\admin\controller\AuthController;
-use app\admin\model\system\SystemConfig;
+use think\exception\PDOException;
 use crmeb\traits\CurdControllerTrait;
-use crmeb\services\JsonService;
-use crmeb\services\UtilService;
-use app\admin\model\store\StoreCategory as CategoryModel;
-use app\admin\model\store\StoreProduct as ProductModel;
-use app\admin\model\system\SystemAttachment;
-use app\admin\model\system\SystemAttachmentCategory;
+use crmeb\services\{
+    HttpService, JsonService, UtilService
+};
+use app\admin\model\system\{
+    SystemAttachment, SystemAttachmentCategory
+};
+use app\admin\model\store\{
+    StoreCategory as CategoryModel, StoreDescription, StoreProduct as ProductModel, StoreProductAttr, StoreProductCate
+};
+use crmeb\services\upload\Upload;
 
 /**
  * 产品管理
@@ -51,7 +52,8 @@ class CopyTaobao extends AuthController
         'add_time' => 0,
         'stock' => 0,
         'description' => '',
-        'soure_link' => ''
+        'soure_link' => '',
+        'temp_id' => 0
     ];
     //抓取网站主域名
     protected $grabName = [
@@ -62,6 +64,21 @@ class CopyTaobao extends AuthController
     ];
     //远程下载附件图片分类名称
     protected $AttachmentCategoryName = '远程下载';
+
+    //cookie 采集前请配置自己的 cookie,获取方式浏览器登录平台，F12或查看元素 network->headers 查看Request Headers 复制cookie 到下面变量中
+    protected $webcookie = [
+        //淘宝
+        'taobao' => 'cookie: miid=8289590761042824660; thw=cn; cna=bpdDExs9KGgCAXuLszWnEXxS; hng=CN%7Czh-CN%7CCNY%7C156; tracknick=taobaorongyao; _cc_=WqG3DMC9EA%3D%3D; tg=0; enc=WQPStocTopRI3wEBOPpj8VUDkqSw4Ph81ASG9053SgG8xBMzaOuq6yMe8KD4xPBlNfQST7%2Ffsk9M9GDtGmn6iQ%3D%3D; t=4bab065740d964a05ad111f5057078d4; cookie2=1965ea371faf24b163093f31af4120c2; _tb_token_=5d3380e119d6e; v=0; mt=ci%3D-1_1; _m_h5_tk=61bf01c61d46a64c98209a7e50e9e1df_1572349453522; _m_h5_tk_enc=9d9adfcbd7af7e2274c9b331dc9bae9b; l=dBgc_jG4vxuski7DBOCgCuI8aj7TIIRAguPRwN0viOCKUxT9CgCDAJt5v8PWVNKO7t1nNetzvui3udLHRntW6KTK6MK9zd9snxf..; isg=BJWVXJ3FZGyiWUENfGCuywlwpJePOkncAk8hmRc6WoxbbrVg3-Jadf0uODL97mFc',
+        //阿里巴巴 1688
+        'alibaba' => '',
+        //天猫 可以和淘宝一样
+        'tmall' => 'cookie: miid=8289590761042824660; thw=cn; cna=bpdDExs9KGgCAXuLszWnEXxS; hng=CN%7Czh-CN%7CCNY%7C156; tracknick=taobaorongyao; _cc_=WqG3DMC9EA%3D%3D; tg=0; enc=WQPStocTopRI3wEBOPpj8VUDkqSw4Ph81ASG9053SgG8xBMzaOuq6yMe8KD4xPBlNfQST7%2Ffsk9M9GDtGmn6iQ%3D%3D; t=4bab065740d964a05ad111f5057078d4; cookie2=1965ea371faf24b163093f31af4120c2; _tb_token_=5d3380e119d6e; v=0; mt=ci%3D-1_1; _m_h5_tk=61bf01c61d46a64c98209a7e50e9e1df_1572349453522; _m_h5_tk_enc=9d9adfcbd7af7e2274c9b331dc9bae9b; l=dBgc_jG4vxuski7DBOCgCuI8aj7TIIRAguPRwN0viOCKUxT9CgCDAJt5v8PWVNKO7t1nNetzvui3udLHRntW6KTK6MK9zd9snxf..; isg=BJWVXJ3FZGyiWUENfGCuywlwpJePOkncAk8hmRc6WoxbbrVg3-Jadf0uODL97mFc',
+        //京东 可不用配置
+        'jd' => ''
+    ];
+
+    //请求平台名称 taobao alibaba tmall jd
+    protected $webnname = 'taobao';
 
     /**
      * 显示资源
@@ -97,7 +114,14 @@ class CopyTaobao extends AuthController
     public function Utf8String($str)
     {
         $encode = mb_detect_encoding($str, array("ASCII", 'UTF-8', "GB2312", "GBK", 'BIG5'));
-        if (strtoupper($encode) != 'UTF-8') $str = mb_convert_encoding($str, 'utf-8', $encode);
+        if(strtoupper($encode) == 'UTF-8'){
+
+        }else if(strtolower($encode) == 'cp936'){
+//            $str = iconv('latin1//IGNORE', 'utf-8', $str);
+            $str = mb_convert_encoding($str, 'utf-8', 'GBK');
+        }else{
+            $str = mb_convert_encoding($str, 'utf-8', $encode);
+        }
         return $str;
     }
 
@@ -146,17 +170,18 @@ class CopyTaobao extends AuthController
         }
     }
 
-    /*
+    /**
      * 淘宝设置产品
-     * @param string $html 网页内容
-     * */
+     * @param $html
+     */
     public function setProductInfoTaobao($html)
     {
+        $this->webnname = 'taobao';
         //获取轮播图
         $images = $this->getTaobaoImg($html);
-        $images = array_merge($images);
+        $images = array_merge(is_array($images) ? $images : []);
         $this->productInfo['slider_image'] = isset($images['gaoqing']) ? $images['gaoqing'] : (array)$images;
-        $this->productInfo['slider_image'] = array_slice($this->productInfo['slider_image'],0,5);
+        $this->productInfo['slider_image'] = array_slice($this->productInfo['slider_image'], 0, 5);
         //获取产品详情请求链接
         $link = $this->getTaobaoDesc($html);
         //获取请求内容
@@ -175,17 +200,18 @@ class CopyTaobao extends AuthController
         $this->productInfo['image'] = is_array($this->productInfo['slider_image']) && isset($this->productInfo['slider_image'][0]) ? $this->productInfo['slider_image'][0] : '';
     }
 
-    /*
+    /**
      * 天猫设置产品
-     * @param string $html 网页内容
-     * */
+     * @param $html
+     */
     public function setProductInfoTmall($html)
     {
+        $this->webnname = 'tmall';
         //获取轮播图
         $images = $this->getTianMaoImg($html);
-        $images = array_merge($images);
+        $images = array_merge(is_array($images) ? $images : []);
         $this->productInfo['slider_image'] = $images;
-        $this->productInfo['slider_image'] = array_slice($this->productInfo['slider_image'],0,5);
+        $this->productInfo['slider_image'] = array_slice($this->productInfo['slider_image'], 0, 5);
         $this->productInfo['image'] = is_array($this->productInfo['slider_image']) && isset($this->productInfo['slider_image'][0]) ? $this->productInfo['slider_image'][0] : '';
         //获取产品详情请求链接
         $link = $this->getTianMaoDesc($html);
@@ -203,12 +229,13 @@ class CopyTaobao extends AuthController
         $this->productInfo['description_images'] = is_array($description_images) ? $description_images : [];
     }
 
-    /*
+    /**
      * 1688设置产品
-     * @param string $html 网页内容
-     * */
+     * @param $html
+     */
     public function setProductInfo1688($html)
     {
+        $this->webnname = 'alibaba';
         //获取轮播图
         $images = $this->get1688Img($html);
         if (isset($images['gaoqing'])) {
@@ -216,7 +243,10 @@ class CopyTaobao extends AuthController
             $this->productInfo['slider_image'] = $images['gaoqing'];
         } else
             $this->productInfo['slider_image'] = $images;
-        $this->productInfo['slider_image'] = array_slice($this->productInfo['slider_image'],0,5);
+        if (!is_array($this->productInfo['slider_image'])) {
+            $this->productInfo['slider_image'] = [];
+        }
+        $this->productInfo['slider_image'] = array_slice($this->productInfo['slider_image'], 0, 5);
         $this->productInfo['image'] = is_array($this->productInfo['slider_image']) && isset($this->productInfo['slider_image'][0]) ? $this->productInfo['slider_image'][0] : '';
         //获取产品详情请求链接
         $link = $this->get1688Desc($html);
@@ -237,12 +267,13 @@ class CopyTaobao extends AuthController
         $this->productInfo['description_images'] = is_array($description_images) ? $description_images : [];
     }
 
-    /*
+    /**
      * JD设置产品
      * @param string $html 网页内容
      * */
     public function setProductInfoJd($html)
     {
+        $this->webnname = 'jd';
         //获取产品详情请求链接
         $desc_url = $this->getJdDesc($html);
         //获取请求内容
@@ -256,22 +287,23 @@ class CopyTaobao extends AuthController
         if (!$descArray) $descArray = ['content' => ''];
         //获取轮播图
         $images = $this->getJdImg($html);
-        $images = array_merge($images);
+        $images = array_merge(is_array($images) ? $images : []);
         $this->productInfo['slider_image'] = $images;
-        $this->productInfo['image'] = is_array($this->productInfo['slider_image']) ? $this->productInfo['slider_image'][0] : '';
+        $this->productInfo['image'] = is_array($this->productInfo['slider_image']) ? ($this->productInfo['slider_image'][0] ?? '') : '';
         $this->productInfo['description'] = $descArray['content'];
         //获取详情图
         $description_images = $this->decodedesc($descArray['content']);
         $this->productInfo['description_images'] = is_array($description_images) ? $description_images : [];
     }
 
-    /*
-    * 检查淘宝，天猫，1688的商品链接
-    * @return string
-    */
+    /**
+     * 检查淘宝，天猫，1688的商品链接
+     * @param $link
+     * @return bool|string
+     */
     public function checkurl($link)
     {
-        $link = strtolower($link);
+        $link = strtolower(htmlspecialchars_decode($link));
         if (!$link) return $this->setErrorInfo('请输入链接地址');
         if (substr($link, 0, 4) != 'http') return $this->setErrorInfo('链接地址必须以http开头');
         $arrLine = explode('?', $link);
@@ -323,6 +355,7 @@ class CopyTaobao extends AuthController
             ['description', ''],
             ['is_show', 0],
             ['soure_link', ''],
+            ['temp_id', 0],
         ]);
         if (!$data['cate_id']) return JsonService::fail('请选择分类！');
         if (!$data['store_name']) return JsonService::fail('请填写产品名称');
@@ -331,17 +364,18 @@ class CopyTaobao extends AuthController
         if ($data['price'] == '' || $data['price'] < 0) return JsonService::fail('请输入产品售价');
         if ($data['ot_price'] == '' || $data['ot_price'] < 0) return JsonService::fail('请输入产品市场价');
         if ($data['stock'] == '' || $data['stock'] < 0) return JsonService::fail('请输入库存');
+        if (!$data['temp_id']) return JsonService::fail('请选择运费模板');
         //查询附件分类
-        $AttachmentCategory = SystemAttachmentCategory::where('name' , $this->AttachmentCategoryName)->find();
+        $AttachmentCategory = SystemAttachmentCategory::where('name', $this->AttachmentCategoryName)->find();
         //不存在则创建
         if (!$AttachmentCategory) $AttachmentCategory = SystemAttachmentCategory::create(['pid' => '0', 'name' => $this->AttachmentCategoryName, 'enname' => '']);
         //生成附件目录
-        try{
-            if (make_path('attach', 3,true) === '')
-                return JsonService::fail('无法创建文件夹，请检查您的上传目录权限：' . app()->getRootPath() . 'public' . DS . 'uploads' . DS. 'attach' . DS);
+        try {
+            if (make_path('attach', 3, true) === '')
+                return JsonService::fail('无法创建文件夹，请检查您的上传目录权限：' . app()->getRootPath() . 'public' . DS . 'uploads' . DS . 'attach' . DS);
 
-        }catch (\Exception $e){
-            return JsonService::fail($e->getMessage().'或无法创建文件夹，请检查您的上传目录权限：' . app()->getRootPath() . 'public' . DS . 'uploads' . DS. 'attach' . DS);
+        } catch (\Exception $e) {
+            return JsonService::fail($e->getMessage() . '或无法创建文件夹，请检查您的上传目录权限：' . app()->getRootPath() . 'public' . DS . 'uploads' . DS . 'attach' . DS);
         }
         ini_set("max_execution_time", 600);
         //开始图片下载处理
@@ -366,25 +400,51 @@ class CopyTaobao extends AuthController
             $data['description'] = preg_replace('#<style>.*?</style>#is', '', $data['description']);
             $data['description'] = $this->uploadImage($data['description_images'], $data['description'], 1, $AttachmentCategory['id']);
             unset($data['description_images']);
+            $description = $data['description'];
+            unset($data['description']);
             $data['add_time'] = time();
             $cate_id = explode(',', $data['cate_id']);
             //产品存在
             if ($productInfo = ProductModel::where('soure_link', $data['soure_link'])->find()) {
-                $productInfo->description = $data['description'];
                 $productInfo->slider_image = $data['slider_image'];
                 $productInfo->image = $data['image'];
                 $productInfo->store_name = $data['store_name'];
+                StoreDescription::saveDescription($description, $productInfo->id);
                 $productInfo->save();
                 ProductModel::commitTrans();
                 return JsonService::successful('商品存在，信息已被更新成功');
             } else {
                 //不存在时新增
-                if ($res = ProductModel::create($data)) {
+                if ($productId = ProductModel::insertGetId($data)) {
+                    $cateList = [];
                     foreach ($cate_id as $cid) {
-                        \think\facade\Db::name('store_product_cate')->insert(['product_id' => $res['id'], 'cate_id' => $cid, 'add_time' => time()]);
+                        $cateList [] = ['product_id' => $productId, 'cate_id' => $cid, 'add_time' => time()];
                     }
-                    ProductModel::commitTrans();
-                    return JsonService::successful('生成产品成功');
+                    StoreProductCate::insertAll($cateList);
+                    $attr = [
+                        [
+                            'value' => '规格',
+                            'detailValue' => '',
+                            'attrHidden' => '',
+                            'detail' => ['默认']
+                        ]
+                    ];
+                    $detail[0]['value1'] = '规格';
+                    $detail[0]['detail'] = ['规格' => '默认'];
+                    $detail[0]['price'] = $data['price'];
+                    $detail[0]['stock'] = $data['stock'];
+                    $detail[0]['cost'] = $data['cost'];
+                    $detail[0]['pic'] = $data['image'];
+                    $detail[0]['ot_price'] = $data['price'];
+                    $attr_res = StoreProductAttr::createProductAttr($attr, $detail, $productId);
+                    if ($attr_res) {
+                        StoreDescription::saveDescription($description, $productId);
+                        ProductModel::commitTrans();
+                        return JsonService::successful('生成产品成功');
+                    } else {
+                        ProductModel::rollbackTrans();
+                        return JsonService::fail(StoreProductAttr::getErrorInfo('生成产品失败'));
+                    }
                 } else {
                     ProductModel::rollbackTrans();
                     return JsonService::fail('生成产品失败');
@@ -395,7 +455,7 @@ class CopyTaobao extends AuthController
             return JsonService::fail('插入数据库错误', ['line' => $e->getLine(), 'messag' => $e->getMessage()]);
         } catch (\Exception $e) {
             ProductModel::rollbackTrans();
-            return JsonService::fail('系统错误', ['line' => $e->getLine(), 'messag' => $e->getMessage(),'file'=>$e->getFile()]);
+            return JsonService::fail('系统错误', ['line' => $e->getLine(), 'messag' => $e->getMessage(), 'file' => $e->getFile()]);
         }
     }
 
@@ -407,7 +467,7 @@ class CopyTaobao extends AuthController
     public function uploadImage(array $images = [], $html = '', $uploadType = 0, $AttachmentCategoryId = 0)
     {
         $uploadImage = [];
-        $siteUrl = SystemConfig::getConfigValue('site_url');
+        $siteUrl = sys_config('site_url');
         switch ($uploadType) {
             case 0:
                 foreach ($images as $item) {
@@ -710,8 +770,13 @@ class CopyTaobao extends AuthController
         if (stripos($url, "https://") !== FALSE) {
             curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);  // 从证书中检查SSL加密算法是否存在
         }
+        $headers = ['user-agent:Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.100 Safari/537.36'];
+        if ($this->webnname) {
+            $headers[] = $this->webcookie["$this->webnname"];
+        }
+
         curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array('user-agent:' . $_SERVER['HTTP_USER_AGENT']));
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
         curl_setopt($ch, CURLOPT_TIMEOUT, $time_out);
@@ -720,7 +785,8 @@ class CopyTaobao extends AuthController
             return false;
         }
         curl_close($ch);
-        return mb_convert_encoding($response, 'utf-8', 'GB2312');
+//        return mb_convert_encoding($response, 'utf-8', 'auto');
+        return $response;
     }
 
     //检测远程文件是否存在
@@ -742,7 +808,7 @@ class CopyTaobao extends AuthController
         if (!strlen(trim($name))) {
             //TODO 获取要下载的文件名称
             $downloadImageInfo = $this->getImageExtname($url);
-            if(!$this->checkExtname($url,$downloadImageInfo['ext_name'])){
+            if (!$this->checkExtname($url, $downloadImageInfo['ext_name'])) {
                 return JsonService::fail('文件后缀不合法');
             }
             $name = $downloadImageInfo['file_name'];
@@ -773,13 +839,24 @@ class CopyTaobao extends AuthController
         $size = strlen(trim($content));
         if (!$content || $size <= 2) return '图片流获取失败';
         $date_dir = date('Y') . DS . date('m') . DS . date('d');
-        $imageInfo = UploadService::instance()->setUploadPath('attach/' . $date_dir)->imageStream($name, $content);
-        if (!is_array($imageInfo)) return $imageInfo;
-        $date['path'] = $imageInfo['dir'];
+        $upload_type = sys_config('upload_type', 1);
+        $upload = new Upload((int)$upload_type, [
+            'accessKey' => sys_config('accessKey'),
+            'secretKey' => sys_config('secretKey'),
+            'uploadUrl' => sys_config('uploadUrl'),
+            'storageName' => sys_config('storage_name'),
+            'storageRegion' => sys_config('storage_region'),
+        ]);
+        $info = $upload->to('attach/' . $date_dir)->validate()->stream($content, $name);
+        if ($info === false) {
+            return $upload->getError();
+        }
+        $imageInfo = $upload->getUploadInfo();
+        $date['path'] = str_replace('\\', '/', $imageInfo['dir']);
         $date['name'] = $imageInfo['name'];
         $date['size'] = $imageInfo['size'];
         $date['mime'] = $imageInfo['type'];
-        $date['image_type'] = $imageInfo['image_type'];
+        $date['image_type'] = $upload_type;
         $date['is_exists'] = false;
         return $date;
     }
@@ -806,10 +883,9 @@ class CopyTaobao extends AuthController
      * @param string $ex
      * @return bool
      */
-    public function checkExtname($url = '',$ex = 'jpg')
+    public function checkExtname($url = '', $ex = 'jpg')
     {
-        if(in_array($ex, ['jpg', 'jpeg', 'gif', 'png', 'swf', 'bmp']) && ( function_exists('getimagesize') && !@getimagesize($url) ))
-        {
+        if (in_array($ex, ['jpg', 'jpeg', 'gif', 'png', 'swf', 'bmp', 'pcx', 'tif', 'tga', 'exif'])) {
             return true;
         }
         return false;

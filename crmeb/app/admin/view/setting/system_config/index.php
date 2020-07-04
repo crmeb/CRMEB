@@ -39,19 +39,26 @@
                     <h5>系统配置</h5>
                 </div>
                 {else/}
-                <div class="tabs-container ibox-title">
+                <div class="tabs-container ibox-title  gray-bg">
                     <ul class="nav nav-tabs">
                         {volist name="config_tab" id="vo"}
-                        {if condition="$vo['value'] eq $tab_id"}
-                        <li class="active"><a href="{:Url('index',array('tab_id'=>$vo['value'],'type'=>$vo['type']))}"><i class="fa fa-{$vo.icon}"></i>{$vo.label}</a></li>
-                        {else/}
-                        <li><a href="{:Url('index',array('tab_id'=>$vo['value'],'type'=>$vo['type']))}"><i class="fa fa-{$vo.icon}"></i>{$vo.label}</a></li>
-                        {/if}
+
+                        <li {if condition="$vo['id'] eq $tab_id"} class="active" {/if}><a href="{:Url('index',array('tab_id'=>$vo['id'],'type'=>$vo['type'],'pid'=>0))}"><i class="fa fa-{$vo.icon}"></i>{$vo.label}</a></li>
+
                         {/volist}
                     </ul>
                     {/if}
 
                     <div class="ibox-content">
+                        {if condition="$children_config_tab neq null"}
+                        <div class="tabs-container">
+                            <ul class="nav nav-tabs">
+                                {volist name="children_config_tab" id="voo"}
+                                <li {if condition="$voo['id'] eq $children_tab_id"} class="active" {/if}><a href="{:Url('index',array('tab_id'=>$voo['pid'],'type'=>$voo['type'],'children_tab_id'=>$voo['id']))}"><i class="fa fa-{$voo.icon}"></i>{$voo.label}</a></li>
+                                {/volist}
+                            </ul>
+                        </div>
+                        {/if}
                         <div class="p-m m-t-sm" id="configboay">
 
                         </div>

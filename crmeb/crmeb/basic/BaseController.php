@@ -104,16 +104,30 @@ abstract class BaseController
         return $v->failException(true)->check($data);
     }
 
+    /**
+     * 模板赋值
+     * @param mixed ...$vars
+     */
     protected function assign(...$vars)
     {
         View::assign(...$vars);
     }
 
+    /**
+     * 解析和获取模板内容
+     * @param string $template
+     * @return string
+     * @throws \Exception
+     */
     protected function fetch(string $template = '')
     {
         return View::fetch($template);
     }
 
+    /**
+     * 重定向
+     * @param mixed ...$args
+     */
     protected function redirect(...$args){
         throw new HttpResponseException(redirect(...$args));
     }

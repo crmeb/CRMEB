@@ -8,7 +8,6 @@ namespace app\admin\model\system;
 
 use crmeb\traits\ModelTrait;
 use crmeb\basic\BaseModel;
-use think\facade\Db;
 
 /**
  * 配置分类model
@@ -40,24 +39,25 @@ class SystemConfigTab extends BaseModel
      * @throws \think\db\exception\ModelNotFoundException
      * @throws \think\exception\DbException
      */
-    public static function getRadioOrCheckboxValueInfo($menu_name,$value){
-        $parameter = array();
-        $option = array();
-        $config_one = SystemConfig::getOneConfig('menu_name',$menu_name);
-        $parameter = explode("\n",$config_one['parameter']);
-        foreach ($parameter as $k=>$v){
-            if(isset($v) && strlen($v)>0){
-                $data = explode('=>',$v);
+    public static function getRadioOrCheckboxValueInfo($menu_name, $value)
+    {
+        $parameter = [];
+        $option = [];
+        $config_one = SystemConfig::getOneConfig('menu_name', $menu_name);
+        $parameter = explode("\n", $config_one['parameter']);
+        foreach ($parameter as $k => $v) {
+            if (isset($v) && strlen($v) > 0) {
+                $data = explode('=>', $v);
                 $option[$data[0]] = $data[1];
             }
         }
         $str = '';
-        if(is_array($value)){
-            foreach ($value as $v){
-                $str .= $option[$v].',';
+        if (is_array($value)) {
+            foreach ($value as $v) {
+                $str .= $option[$v] . ',';
             }
-        }else{
-            $str .= !empty($value)?$option[$value]:$option[0];
+        } else {
+            $str .= !empty($value) ? $option[$value] : $option[0];
         }
         return $str;
     }
@@ -70,10 +70,25 @@ class SystemConfigTab extends BaseModel
      * @throws \think\db\exception\ModelNotFoundException
      * @throws \think\exception\DbException
      */
-    public static function getAll($type = 0){
+    public static function getAll($type = 0)
+    {
+        $model = new self;
         $where['status'] = 1;
-        if($type>-1)$where['type'] = $type;
-        return Db::name('SystemConfigTab')->where($where)->select();
+        $where['pid'] = 0;
+        if ($type > -1) $where['type'] = $type;
+        return $model::where($where)->order('sort desc,id asc')->select();
+    }
+
+    /**
+     * @param int $type
+     * @return \think\Collection
+     */
+    public static function getChildrenTab($pid)
+    {
+        $model = new self;
+        $where['status'] = 1;
+        $where['pid'] = $pid;
+        return $model::where($where)->order('sort desc,id asc')->select();
     }
 
     /**
@@ -81,13 +96,13 @@ class SystemConfigTab extends BaseModel
      * @param array $where
      * @return array
      */
-    public static function getSystemConfigTabPage($where = array())
-
+    public static function getSystemConfigTabPage($where = [])
     {
         $model = new self;
-        if($where['title'] != '') $model = $model->where('title','LIKE',"%$where[title]%");
-        if($where['status'] != '') $model = $model->where('status',$where['status']);
-        return self::page($model,$where);
+        if ($where['title'] != '') $model = $model->where('title', 'LIKE', "%$where[title]%");
+        if ($where['status'] != '') $model = $model->where('status', $where['status']);
+        $model = $model->where('pid', $where['pid']);
+        return self::page($model, $where);
 
     }
 }

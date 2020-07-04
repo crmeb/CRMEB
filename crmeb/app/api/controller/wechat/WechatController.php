@@ -66,7 +66,11 @@ class WechatController
             return app('json')->fail('授权失败', ['message' => $e->getMessage(), 'line' => $e->getLine()]);
         }
         if (!isset($wechatInfo['nickname'])) {
-            $wechatInfo = WechatService::getUserInfo($wechatInfo['openid']);
+            try {
+                $wechatInfo = WechatService::getUserInfo($wechatInfo['openid']);
+            } catch (\Exception $e) {
+                return app('json')->fail('获取信息失败', ['message' => $e->getMessage(), 'line' => $e->getLine()]);
+            }
             if (!$wechatInfo['subscribe'] && !isset($wechatInfo['nickname']))
                 exit(WechatService::oauthService()->scopes(['snsapi_userinfo'])
                     ->redirect($this->request->url(true))->send());
@@ -103,9 +107,9 @@ class WechatController
         $name = 'follow';
         $siteUrl = sys_config('site_url');
         $imageUrl = $path . $name . '.' . $imageType;
-        if (file_exists($imageUrl)) {
-            return app('json')->success('ok', ['path' => $siteUrl . '/' . $imageUrl]);
-        }
+//        if (file_exists($imageUrl)) {
+//            return app('json')->success('ok', ['path' => $siteUrl . '/' . $imageUrl]);
+//        }
         $canvas->setImageUrl('static/qrcode/follow.png')->setImageHeight(720)->setImageWidth(500)->pushImageValue();
         $wechatQrcode = sys_config('wechat_qrcode');
         if (($strlen = stripos($wechatQrcode, 'uploads')) !== false) {

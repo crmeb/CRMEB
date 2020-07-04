@@ -49,7 +49,7 @@
     //加载列表
     layList.tableList('List',"{:Url('store.store_product/product_ist',['type'=>1])}",function (){
         return [
-            {field: 'id', title: 'ID', sort: true,event:'id'},
+            {field: 'id', title: 'ID', sort: true,event:'id',width:'8%'},
             {field: 'image', title: '产品图片',templet:'#image'},
             {field: 'store_name', title: '产品名称',templet:'#store_name'},
             {field: 'right', title: '操作',align:'center',toolbar:'#act'},

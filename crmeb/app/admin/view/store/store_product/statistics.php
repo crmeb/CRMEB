@@ -185,7 +185,7 @@
                                 <td>{$vk.stock}</td>
                                 <td>
                                     <!--                                                        <button type="button" class="btn btn-xs btn-link" data-id="{$vk.id}" style="border: 1px solid #eee;" onclick="$eb.createModalFrame('编辑','{:Url('edit',array('id'=>$vk['id']))}')">编辑</button>-->
-                                    <button class="btn  btn-xs " type="button"  onclick="$eb.createModalFrame('编辑','{:Url('edit',array('id'=>$vk['id']))}')"><i class="fa fa-paste"></i> 编辑</button>
+                                    <button class="btn  btn-xs " type="button"  onclick="$eb.createModalFrame('编辑','{:Url('edit',array('id'=>$vk['id']))}')"><i class="fa fa-edit"></i> 编辑</button>
                                 </td>
                             </tr>
                             {/volist}
@@ -222,7 +222,7 @@
                             <tr style="height: 36px;line-height: 36px;">
                                 <td>{$st.name}</td><td>{$st.price}</td><td>{$st.sun}</td>
                                 <td>
-                                    <button class="btn btn-xs " type="button"  onclick="$eb.createModalFrame('编辑','{:Url('edit',array('id'=>$st['uid']))}')"><i class="fa fa-paste"></i> 编辑</button>
+                                    <button class="btn btn-xs " type="button"  onclick="$eb.createModalFrame('编辑','{:Url('edit',array('id'=>$st['uid']))}')"><i class="fa fa-edit"></i> 编辑</button>
                                 </td>
                             </tr>
                             {/volist}
@@ -257,7 +257,7 @@
                             <tr style="height: 36px;line-height: 36px;">
                                 <td>{$st.name}</td><td>{$st.price}</td><td>{$st.sun}</td>
                                 <td>
-                                    <button class="btn btn-xs " type="button"  onclick="$eb.createModalFrame('编辑','{:Url('edit',array('id'=>$st['sid']))}')"><i class="fa fa-paste"></i> 编辑</button>
+                                    <button class="btn btn-xs " type="button"  onclick="$eb.createModalFrame('编辑','{:Url('edit',array('id'=>$st['sid']))}')"><i class="fa fa-edit"></i> 编辑</button>
                                 </td>
                             </tr>
                             {/volist}

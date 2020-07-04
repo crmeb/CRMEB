@@ -15,7 +15,7 @@ class MessageRepositories
      */
    public static function wechatEventLocation($message)
    {
-       return 'location';
+      // return 'location';
    }
 
     /**
@@ -25,7 +25,7 @@ class MessageRepositories
      */
    public static function wechatEventView($message)
    {
-       return 'view';
+       //return 'view';
    }
 
     /**
@@ -35,7 +35,7 @@ class MessageRepositories
      */
    public static function wechatMessageImage($message)
    {
-       return 'image';
+       //return 'image';
    }
 
     /**
@@ -45,7 +45,7 @@ class MessageRepositories
      */
    public static function wechatMessageVoice($message)
    {
-       return 'voice';
+       //return 'voice';
    }
 
     /**
@@ -55,7 +55,7 @@ class MessageRepositories
      */
    public static function wechatMessageVideo($message)
    {
-       return 'video';
+       //return 'video';
    }
 
     /**
@@ -63,7 +63,7 @@ class MessageRepositories
      */
    public static function wechatMessageLocation($message)
    {
-       return 'location';
+       //eturn 'location';
    }
 
     /**
@@ -73,7 +73,7 @@ class MessageRepositories
      */
    public static function wechatMessageLink($message)
    {
-       return 'link';
+       //return 'link';
    }
 
     /**
@@ -81,6 +81,6 @@ class MessageRepositories
      */
    public static function wechatMessageOther($message)
    {
-       return 'other';
+       //return 'other';
    }
 }

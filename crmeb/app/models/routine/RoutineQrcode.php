@@ -56,7 +56,7 @@ class RoutineQrcode extends BaseModel
     {
         $data['third_type'] = $thirdType;
         $data['third_id'] = $thirdId;
-        $data['status'] = 0;
+        $data['status'] = 1;
         $data['add_time'] = time();
         $data['page'] = $page;
         $data['url_time'] = '';

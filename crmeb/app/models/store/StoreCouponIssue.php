@@ -10,6 +10,7 @@ namespace app\models\store;
 
 use crmeb\basic\BaseModel;
 use crmeb\traits\ModelTrait;
+use think\db\Where;
 
 /**
  * TODO 发布优惠券Model
@@ -37,34 +38,90 @@ class StoreCouponIssue extends BaseModel
         return $this->hasOne(StoreCouponIssueUser::class, 'issue_coupon_id', 'id')->field('issue_coupon_id');
     }
 
-    public static function getIssueCouponList($uid, $limit, $page = 0)
+    public static function getIssueCouponList($uid, $limit, $page = 0, $type = 0, $product_id = 0)
     {
-        $model = self::validWhere('A')->alias('A')->join('store_coupon B', 'A.cid = B.id')
-            ->field('A.*,B.coupon_price,B.use_min_price')->order('B.sort DESC,A.id DESC');
-        if ($page) $list = $model->page((int)$page, (int)$limit);
-        else $list = $model->limit($limit);
+        $model1 = self::validWhere('A')->alias('A')
+            ->join('store_coupon B', 'A.cid = B.id')
+            ->field('A.*,B.type,B.coupon_price,B.use_min_price,B.title')
+            ->order('B.sort DESC,A.id DESC');
+        $model2 = self::validWhere('A')->alias('A')
+            ->join('store_coupon B', 'A.cid = B.id')
+            ->field('A.*,B.type,B.coupon_price,B.use_min_price,B.title')
+            ->order('B.sort DESC,A.id DESC');
+        $model3 = self::validWhere('A')->alias('A')
+            ->join('store_coupon B', 'A.cid = B.id')
+            ->field('A.*,B.type,B.coupon_price,B.use_min_price,B.title')
+            ->order('B.sort DESC,A.id DESC');
 
-        if ($uid)
-            $model->with(['used' => function ($query) use ($uid) {
+        if ($uid) {
+            $model1->with(['used' => function ($query) use ($uid) {
                 $query->where('uid', $uid);
             }]);
 
-        $list = $list->select()->hidden(['is_del', 'status', 'used']);
-        foreach ($list as $k=>$v) {
-            $v['is_use'] = $uid ? isset($v->used) : false;
-            if(!$v['end_time']){
-                $v['start_time']= '';
-                $v['end_time'] = '不限时';
-            }else{
-                $v['start_time']=date('Y/m/d',$v['start_time']);
-                $v['end_time']=$v['end_time'] ? date('Y/m/d',$v['end_time']) : date('Y/m/d',time()+86400);
+            $model2->with(['used' => function ($query) use ($uid) {
+                $query->where('uid', $uid);
+            }]);
+
+            $model3->with(['used' => function ($query) use ($uid) {
+                $query->where('uid', $uid);
+            }]);
+        }
+
+        $lst1 = $lst2 = $lst3 = [];
+        if ($type) {
+            if ($product_id) {
+                //商品券
+                $lst1 = $model1->where('B.type', 2)
+                    ->where('is_give_subscribe', 0)
+                    ->where('is_full_give', 0)
+                    ->whereFindinSet('B.product_id', $product_id)
+                    ->select()
+                    ->hidden(['is_del', 'status'])
+                    ->toArray();
+                //品类券
+                $cate_id = StoreProduct::where('id', $product_id)->value('cate_id');
+                $category = explode(',', $cate_id);
+                foreach ($category as $value) {
+                    $temp[] = StoreCategory::where('id', $value)->value('pid');
+                }
+                $temp = array_unique($temp);
+                $cate_id = $cate_id . ',' . implode(',', $temp);
+
+                $lst2 = $model2->where('B.type', 1)
+                    ->where('is_give_subscribe', 0)
+                    ->where('is_full_give', 0)
+                    ->where('B.category_id', 'in', $cate_id)
+                    ->select()
+                    ->hidden(['is_del', 'status'])
+                    ->toArray();
             }
-            $v['coupon_price']=(int)$v['coupon_price'];
+        } else {
+            //通用券
+            $lst3 = $model3->where('B.type', 0)
+                ->where('is_give_subscribe', 0)
+                ->where('is_full_give', 0)
+                ->select()
+                ->hidden(['is_del', 'status'])
+                ->toArray();
+        }
+        $list = array_merge($lst1, $lst2, $lst3);
+        $list = array_unique_fb($list);
+        if ($page) $list = array_slice($list, ((int)$page - 1) * $limit, $limit);
+        foreach ($list as $k => $v) {
+            $v['is_use'] = $uid ? isset($v['used']) : false;
+            if (!$v['end_time']) {
+                $v['start_time'] = '';
+                $v['end_time'] = '不限时';
+            } else {
+                $v['start_time'] = date('Y/m/d', $v['start_time']);
+                $v['end_time'] = $v['end_time'] ? date('Y/m/d', $v['end_time']) : date('Y/m/d', time() + 86400);
+            }
+            $v['coupon_price'] = $v['coupon_price'];
             $list[$k] = $v;
         }
 
-        if($list)
-            return $list->toArray();
+        if ($list)
+            return $list;
         else
             return [];
     }
@@ -120,7 +177,8 @@ class StoreCouponIssue extends BaseModel
     public static function getIssueCouponTitle($id)
     {
         $cid = self::where('id', $id)->value('cid');
-        return StoreCoupon::where('id',$cid)->value('title');
+        return StoreCoupon::where('id', $cid)->value('title');
     }
+
 
 }

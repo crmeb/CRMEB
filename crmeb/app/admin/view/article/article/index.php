@@ -61,13 +61,13 @@
                         <td>{$vo.add_time|date="Y-m-d H:i:s"}</td>
 
                         <td class="text-center">
-                            <button style="margin-top: 5px;" class="btn btn-info btn-xs" type="button"  onclick="$eb.createModalFrame('编辑','{:Url('create',array('id'=>$vo['id'],'cid'=>$where.cid))}',{w:1100,h:760})"><i class="fa fa-paste"></i> 编辑</button>
+                            <button style="margin-top: 5px;" class="btn btn-info btn-xs" type="button"  onclick="$eb.createModalFrame('编辑','{:Url('create',array('id'=>$vo['id'],'cid'=>$where.cid))}',{w:1100,h:760})"><i class="fa fa-edit"></i> 编辑</button>
                             {if $vo.product_id}
-                            <button style="margin-top: 5px;" class="btn btn-warning btn-xs underline" data-id="{$vo.id}" type="button" data-url="{:Url('unrelation',array('id'=>$vo['id']))}" ><i class="fa fa-warning"></i> 取消关联</button>
+                            <button style="margin-top: 5px;" class="btn btn-warning btn-xs underline" data-id="{$vo.id}" type="button" data-url="{:Url('unrelation',array('id'=>$vo['id']))}" ><i class="fa fa-chain-broken"></i> 取消关联</button>
                             {else}
-                            <button style="margin-top: 5px;" class="btn btn-warning btn-xs openWindow" data-id="{$vo.id}" type="button" data-url="{:Url('relation',array('id'=>$vo['id']))}" ><i class="fa fa-warning"></i> 关联</button>
+                            <button style="margin-top: 5px;" class="btn btn-warning btn-xs openWindow" data-id="{$vo.id}" type="button" data-url="{:Url('relation',array('id'=>$vo['id']))}" ><i class="fa fa-chain"></i> 关联产品</button>
                             {/if}
-                            <button  style="margin-top: 5px;" class="btn btn-warning btn-xs del_news_one" data-id="{$vo.id}" type="button" data-url="{:Url('delete',array('id'=>$vo['id']))}" ><i class="fa fa-warning"></i> 删除</button>
+                            <button  style="margin-top: 5px;" class="btn btn-danger btn-xs del_news_one" data-id="{$vo.id}" type="button" data-url="{:Url('delete',array('id'=>$vo['id']))}" ><i class="fa fa-times"></i> 删除</button>
                         </td>
                     </tr>
                     {/volist}

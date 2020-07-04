@@ -16,6 +16,7 @@
     #app .spinner .rect4 {-webkit-animation-delay: -0.9s;animation-delay: -0.9s;}
     #app .spinner .rect5 {-webkit-animation-delay: -0.8s;animation-delay: -0.8s;}
     #app .save-button{position: fixed;width: 100%;bottom: 0;}
+    .red {color: red;}
     @-webkit-keyframes stretchdelay { 0%, 40%, 100% { -webkit-transform: scaleY(0.4) } 20% { -webkit-transform: scaleY(1.0) } }
     @keyframes stretchdelay { 0%, 40%, 100% {transform: scaleY(0.4);-webkit-transform: scaleY(0.4);}  20% {transform: scaleY(1.0);-webkit-transform: scaleY(1.0);} }
 </style>
@@ -45,16 +46,16 @@
                 <div class="layui-card-body">
                     <form class="layui-form" action="">
                         <div class="layui-form-item">
-                            <label class="layui-form-label">选择分类</label>
+                            <label class="layui-form-label">选择分类<i class="red">*</i></label>
                             <div class="layui-input-block">
                                 <select name="cate_id" v-model="productInfo.cate_id" lay-verify="cate_id" lay-filter="cate_id">
                                     <option value="">请选择</option>
-                                    <option :value="item.value" v-for="item in categoryList" :disabled="item.disabled" v-text="item.label"></option>
+                                    <option :value="item.value" v-for="item in categoryList" :key="item.id" :disabled="item.disabled" v-text="item.label"></option>
                                 </select>
                             </div>
                         </div>
                         <div class="layui-form-item">
-                            <label class="layui-form-label">产品名称</label>
+                            <label class="layui-form-label">产品名称<i class="red">*</i></label>
                             <div class="layui-input-block">
                                 <input type="text" name="title"  v-model="productInfo.store_name" autocomplete="off" placeholder="请输入产品名称" class="layui-input">
                             </div>
@@ -79,7 +80,7 @@
                                 </div>
                             </div>
                             <div class="layui-inline">
-                                <label class="layui-form-label">产品售价</label>
+                                <label class="layui-form-label">产品售价<i class="red">*</i></label>
                                 <div class="layui-input-inline">
                                     <input type="number" name="number"  autocomplete="off" class="layui-input" v-model="productInfo.price">
                                 </div>
@@ -87,7 +88,7 @@
                         </div>
                         <div class="layui-form-item layui-input-margin-5">
                             <div class="layui-inline">
-                                <label class="layui-form-label">产品市场价</label>
+                                <label class="layui-form-label">产品市场价<i class="red">*</i></label>
                                 <div class="layui-input-inline">
                                     <input type="number" name="number"  autocomplete="off" class="layui-input" v-model="productInfo.ot_price">
                                 </div>
@@ -99,9 +100,12 @@
                                 </div>
                             </div>
                             <div class="layui-inline">
-                                <label class="layui-form-label">邮费</label>
+                                <label class="layui-form-label">运费模板<i class="red">*</i></label>
                                 <div class="layui-input-inline">
-                                    <input type="number" name="number"  autocomplete="off" class="layui-input" v-model="productInfo.postage">
+                                    <select name="cate_id" v-model="productInfo.temp_id" lay-filter="temp_id">
+                                        <option value="">请选择</option>
+                                        <option :value="item.id" v-for="item in templatesList" :key="item.id" v-text="item.name"></option>
+                                    </select>
                                 </div>
                             </div>
                         </div>
@@ -113,20 +117,20 @@
                                 </div>
                             </div>
                             <div class="layui-inline">
-                                <label class="layui-form-label">库存</label>
+                                <label class="layui-form-label">库存<i class="red">*</i></label>
                                 <div class="layui-input-inline">
                                     <input type="number" name="number"  autocomplete="off" class="layui-input" v-model="productInfo.stock">
                                 </div>
                             </div>
                             <div class="layui-inline">
-                                <label class="layui-form-label">产品成本价</label>
+                                <label class="layui-form-label">产品成本价<i class="red">*</i></label>
                                 <div class="layui-input-inline">
                                     <input type="number" name="number"  autocomplete="off" class="layui-input" v-model="productInfo.cost">
                                 </div>
                             </div>
                         </div>
                         <div class="layui-form-item">
-                            <label class="layui-form-label">产品主图片(305*305px)</label>
+                            <label class="layui-form-label">产品主图片(305*305px)<i class="red">*</i></label>
                             <div class="layui-input-block">
                                 <div class="layui-box box-border-color" style="height: 100px;">
                                     <img :src="productInfo.image" alt="" class="layui-input-image" @click="lookImage(productInfo.image)">
@@ -134,7 +138,7 @@
                             </div>
                         </div>
                         <div class="layui-form-item">
-                            <label class="layui-form-label">产品轮播图(640*640px)</label>
+                            <label class="layui-form-label">产品轮播图(640*640px)<i class="red">*</i></label>
                             <div class="layui-input-block">
                                 <div class="layui-box" :class="item.isSelect ? 'box-border-color':'' " v-for="(item,index) in productInfo.slider_image" >
                                     <img :src="item.pic" alt="" class="layui-input-image" @click="lookImage(item.pic)">
@@ -197,6 +201,7 @@
                 },
                 slider_image:[],
                 editIndex:0,
+                templatesList:[],
             },
             methods:{
                 checkUrl:function () {
@@ -220,10 +225,10 @@
                         this.isLink=true;
                         this.$set(this,'productInfo',this.productInfo);
                         this.$nextTick(function () {
-                            layList.form.render('select');
-                            this.editIndex=layList.layedit.build('description',{
+                            this.editIndex = layList.layedit.build('description',{
                                 tool: ['strong', 'italic', 'underline', 'del','|', 'left','center','right','link','unlink','face']
                             });
+                            this.getFreightTemplateList();
                         }.bind(this));
                     }.bind(this),function (res) {
                         this.loading=false;
@@ -252,6 +257,7 @@
                         cost:that.productInfo.cost,
                         postage:that.productInfo.postage,
                         description:that.productInfo.description,
+                        temp_id:that.productInfo.temp_id,
                         description_images:that.productInfo.description_images,
                         soure_link:that.link,
                     };
@@ -262,13 +268,14 @@
                     if(!that.productInfo.ot_price) return layList.msg('请填写产品市场价');
                     if(!that.productInfo.cost) return layList.msg('请填写产品成本价');
                     if(!that.productInfo.stock) return layList.msg('请填写产品库存');
+                    if(!that.productInfo.temp_id) return layList.msg('请选择运费模板');
                     productInfo.slider_image=that.setArraySelect(productInfo.slider_image);
                     productInfo.description_images=that.setArraySelect(productInfo.description_images);
                     productInfo.description=layList.layedit.getContent(that.editIndex);
                     layList.layer.confirm('保存产品生成图片可能较慢，保存中请耐心等待，请不要关闭窗口！确认生成产品和图片吗？', {
                         btn: ['确定生成','我在想想'] //按钮
                     }, function(){
-                        var index=layList.layer.load(1, {shade: [0.5,'#000000']});
+                        var index = layList.layer.load(1, {shade: [0.5,'#000000']});
                         layList.basePost(layList.U({a:'save_product'}),productInfo,function (res) {
                             layList.layer.close(index);
                             layList.msg(res.msg,function () {
@@ -296,6 +303,18 @@
                         if(Arraylist[i].isSelect) list.push(Arraylist[i].pic);
                     }
                     return list;
+                },
+                getFreightTemplateList:function () {
+                    var that = this;
+                    layList.baseGet(layList.U({c:"setting.shipping_templates",a:'get_template_list'}),function (res) {
+                        that.$set(that,'templatesList',res.data);
+                        that.$nextTick(function () {
+                            layList.form.render('select');
+                            layList.select('temp_id',function (data) {
+                                that.productInfo.temp_id = data.value;
+                            });
+                        })
+                    });
                 }
             },
             mounted:function () {

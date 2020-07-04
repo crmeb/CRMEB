@@ -7,21 +7,17 @@
 
 namespace app\admin\model\order;
 
-
-use app\admin\model\ump\StoreCouponUser;
+use app\admin\model\system\SystemStore;
+use crmeb\basic\BaseModel;
+use crmeb\traits\ModelTrait;
+use think\facade\Route as Url;
+use app\models\store\StoreCart;
 use app\admin\model\wechat\WechatUser;
-use app\admin\model\ump\StorePink;
 use app\admin\model\store\StoreProduct;
 use app\models\routine\RoutineTemplate;
-use app\models\store\StoreCart;
-use crmeb\services\PHPExcelService;
-use crmeb\traits\ModelTrait;
-use crmeb\basic\BaseModel;
-use crmeb\services\WechatTemplateService;
-use think\facade\Route as Url;
-use think\facade\Db;
-use app\admin\model\user\User;
-use app\admin\model\user\UserBill;
+use app\admin\model\user\{User, UserBill};
+use app\admin\model\ump\{StoreCouponUser, StorePink};
+use crmeb\services\{PHPExcelService, WechatTemplateService};
 
 /**
  * 订单管理Model
@@ -30,7 +26,6 @@ use app\admin\model\user\UserBill;
  */
 class StoreOrder extends BaseModel
 {
-
     /**
      * 数据表主键
      * @var string
@@ -47,6 +42,7 @@ class StoreOrder extends BaseModel
 
     public static function orderCount()
     {
+        $data['ys'] = self::statusByWhere(9, new self())->where(['is_system_del' => 0])->count();
         $data['wz'] = self::statusByWhere(0, new self())->where(['is_system_del' => 0])->count();
         $data['wf'] = self::statusByWhere(1, new self())->where(['is_system_del' => 0, 'shipping_type' => 1])->count();
         $data['ds'] = self::statusByWhere(2, new self())->where(['is_system_del' => 0, 'shipping_type' => 1])->count();
@@ -65,7 +61,9 @@ class StoreOrder extends BaseModel
 
     public static function OrderList($where)
     {
-        $model = self::getOrderWhere($where, self::alias('a')->join('user r', 'r.uid=a.uid', 'LEFT'), 'a.', 'r')->field('a.*,r.nickname,r.phone,r.spread_uid');
+        $model = self::getOrderWhere($where, self::alias('a')
+            ->join('user r', 'r.uid=a.uid', 'LEFT'), 'a.', 'r')
+            ->field('a.*,r.nickname,r.phone,r.spread_uid');
         if ($where['order'] != '') {
             $model = $model->order(self::setOrder($where['order']));
         } else {
@@ -76,9 +74,21 @@ class StoreOrder extends BaseModel
         } else {
             $data = ($data = $model->page((int)$where['page'], (int)$where['limit'])->select()) && count($data) ? $data->toArray() : [];
         }
-
+        $spreadUser = [];$storePink = [];$systemStore = [];
+        $spreadIds = array_unique(array_column($data, 'spread_uid'));
+        if($spreadIds) {
+            $spreadUser = User::where('uid', 'IN', $spreadIds)->column('nickname','uid');
+        }
+        $orderIds = array_column($data, 'id');
+        if($orderIds) {
+            $storePink = StorePink::where('order_id_key', 'IN', $orderIds)->column('status', 'order_id_key');
+        }
+        $storeIds = array_unique(array_column($data, 'store_id'));
+        if($storeIds) {
+            $systemStore = SystemStore::where('id', 'IN', $storeIds)->column('name', 'id');
+        }
         foreach ($data as &$item) {
-            $_info = Db::name('store_order_cart_info')->where('oid', $item['id'])->field('cart_info')->select();
+            $_info = StoreOrderCartInfo::where('oid', $item['id'])->field('cart_info')->select();
             $_info = count($_info) ? $_info->toArray() : [];
             foreach ($_info as $k => $v) {
                 $cart_info = json_decode($v['cart_info'], true);
@@ -87,11 +97,12 @@ class StoreOrder extends BaseModel
                 unset($cart_info);
             }
             $item['_info'] = $_info;
-            $item['spread_nickname'] = Db::name('user')->where('uid', $item['spread_uid'])->value('nickname');
-            $item['add_time'] = date('Y-m-d H:i:s', $item['add_time']);
+            $item['spread_nickname'] = $spreadUser[$item['spread_uid']] ?? '';
+            $item['add_time'] = $item['add_time'] ? date('Y-m-d H:i:s', $item['add_time']) : '';
             $item['back_integral'] = $item['back_integral'] ?: 0;
+            $item['store_name'] = $systemStore[$item['store_id']] ?? '';
             if ($item['pink_id'] || $item['combination_id']) {
-                $pinkStatus = StorePink::where('order_id_key', $item['id'])->value('status');
+                $pinkStatus = $storePink[$item['id']] ?? '';
                 switch ($pinkStatus) {
                     case 1:
                         $item['pink_name'] = '[拼团订单]正在进行中';
@@ -198,7 +209,9 @@ HTML;
             } else if ($item['paid'] == 1 && $item['refund_status'] == 2) {
                 $item['status_name'] = '已退款';
             }
-            if ($item['paid'] == 0 && $item['status'] == 0 && $item['refund_status'] == 0) {
+            if ($item['paid'] == 1 && $item['status'] == 0 && $item['shipping_type'] == 2) {
+                $item['_status'] = 0;
+            } else if ($item['paid'] == 0 && $item['status'] == 0 && $item['refund_status'] == 0) {
                 $item['_status'] = 1;
             } else if ($item['paid'] == 1 && $item['status'] == 0 && $item['refund_status'] == 0) {
                 $item['_status'] = 2;
@@ -230,18 +243,26 @@ HTML;
     {
         $export = [];
         foreach ($list as $index => $item) {
-            $_info = Db::name('store_order_cart_info')->where('oid', $item['id'])->column('cart_info');
+            $_info = StoreOrderCartInfo::where('oid', $item['id'])->column('cart_info');
             $goodsName = [];
+            $cart_sum = 0;
             foreach ($_info as $k => $v) {
                 $v = json_decode($v, true);
+                $suk = '';
+                if (isset($v['productInfo']['attrInfo'])) {
+                    if (isset($v['productInfo']['attrInfo']['suk'])) {
+                        $suk = '(' . $v['productInfo']['attrInfo']['suk'] . ')';
+                    }
+                }
                 $goodsName[] = implode(
                     [$v['productInfo']['store_name'],
-                        isset($v['productInfo']['attrInfo']) ? '(' . $v['productInfo']['attrInfo']['suk'] . ')' : '',
+                        $suk,
                         "[{$v['cart_num']} * {$v['truePrice']}]"
                     ], ' ');
+                $cart_sum += $v['cart_num'];
             }
             $item['cartInfo'] = $_info;
-            $sex = Db::name('wechat_user')->where('uid', $item['uid'])->value('sex');
+            $sex = WechatUser::where('uid', $item['uid'])->value('sex');
             if ($sex == 1) $sex_name = '男';
             else if ($sex == 2) $sex_name = '女';
             else $sex_name = '未知';
@@ -253,6 +274,7 @@ HTML;
                 $item['user_phone'],
                 $item['user_address'],
                 $goodsName,
+                $cart_sum,
                 $item['total_price'],
                 $item['pay_price'],
                 $item['pay_postage'],
@@ -264,7 +286,7 @@ HTML;
                 $item['mark']
             ];
         }
-        PHPExcelService::setExcelHeader(['订单号', '性别', '电话', '收货人姓名', '收货人电话', '收货地址', '商品信息',
+        PHPExcelService::setExcelHeader(['订单号', '性别', '电话', '收货人姓名', '收货人电话', '收货地址', '商品信息', '商品总件数',
             '总价格', '实际支付', '邮费', '优惠金额', '支付状态', '支付时间', '订单状态', '下单时间', '用户备注'])
             ->setExcelTile('订单导出' . date('YmdHis', time()), '订单信息' . time(), ' 生成时间：' . date('Y-m-d H:i:s', time()))
             ->setExcelContent($export)
@@ -277,7 +299,9 @@ HTML;
      */
     public static function systemPage($where, $userid = false)
     {
-        $model = self::getOrderWhere($where, self::alias('a')->join('user r', 'r.uid=a.uid', 'LEFT'), 'a.', 'r')->field('a.*,r.nickname');
+        $model = self::getOrderWhere($where, self::alias('a')
+            ->join('user r', 'r.uid=a.uid', 'LEFT'), 'a.', 'r')
+            ->field('a.*,r.nickname');
         if ($where['order']) {
             $model = $model->order('a.' . $where['order']);
         } else {
@@ -298,7 +322,7 @@ HTML;
                     $payType = '其他支付';
                 }
 
-                $_info = Db::name('store_order_cart_info')->where('oid', $item['id'])->column('cart_info', 'oid');
+                $_info = StoreOrderCartInfo::where('oid', $item['id'])->column('cart_info', 'oid');
                 $goodsName = [];
                 foreach ($_info as $k => $v) {
                     $v = json_decode($v, true);
@@ -326,7 +350,7 @@ HTML;
                 ->ExcelSave();
         }
         return self::page($model, function ($item) {
-            $_info = Db::name('store_order_cart_info')->where('oid', $item['id'])->field('cart_info')->select();
+            $_info = StoreOrderCartInfo::where('oid', $item['id'])->field('cart_info')->select();
             foreach ($_info as $k => $v) {
                 $_info[$k]['cart_info'] = json_decode($v['cart_info'], true);
             }
@@ -393,6 +417,8 @@ HTML;
             return $model->where($alert . 'paid', 1)->where($alert . 'refund_status', 'in', '1,2')->where($alert . 'is_del', 0);
         else if ($status == -4)//已删除
             return $model->where($alert . 'is_del', 1);
+        else if ($status == 9)//已卖出
+            return $model->where($alert . 'paid', 1)->where($alert . 'refund_status', 0)->where($alert . 'is_del', 0);
         else
             return $model;
     }
@@ -521,34 +547,7 @@ HTML;
             $model = $model->where($aler . 'order_id|' . $aler . 'real_name|' . $aler . 'user_phone' . ($join ? '|' . $join . '.nickname|' . $join . '.uid|' . $join . '.phone' : ''), 'LIKE', "%$where[real_name]%");
         }
         if (isset($where['data']) && $where['data'] !== '') {
-            switch ($where['data']) {
-                case 'today':
-                case 'week':
-                case 'month':
-                case 'year':
-                case 'yesterday':
-                    $model = $model->whereTime($aler . 'add_time', $where['data']);
-                    break;
-                case 'quarter':
-                    list($startTime, $endTime) = self::getMonth();
-                    $model = $model->where($aler . 'add_time', '>', strtotime($startTime));
-                    $model = $model->where($aler . 'add_time', '<', strtotime($endTime));
-                    break;
-                case 'lately7':
-                    $model = $model->where($aler . 'add_time', 'between', [strtotime("-7 day"), time()]);
-                    break;
-                case 'lately30':
-                    $model = $model->where($aler . 'add_time', 'between', [strtotime("-30 day"), time()]);
-                    break;
-                default:
-                    if (strstr($where['data'], ' - ') !== false) {
-                        list($startTime, $endTime) = explode(' - ', $where['data']);
-                        $model = $model->where($aler . 'add_time', '>', strtotime($startTime));
-                        $model = $model->where($aler . 'add_time', '<', (int)bcadd(strtotime($endTime), 86400, 0));
-                    }
-                    break;
-            }
-
+            $model = self::getModelTime($where, $model, $aler . 'add_time');
         }
         return $model;
     }
@@ -646,7 +645,7 @@ HTML;
     {
         $where['is_del'] = 0;//删除订单不统计
         $model = new self;
-        $price = array();
+        $price = [];
         $price['pay_price'] = 0;//支付金额
         $price['refund_price'] = 0;//退款金额
         $price['pay_price_wx'] = 0;//微信支付金额
@@ -724,7 +723,7 @@ HTML;
                     $payType = '其他支付';
                 }
 
-                $_info = Db::name('store_order_cart_info')->where('oid', $item['id'])->column('cart_info', 'oid');
+                $_info = StoreOrderCartInfo::where('oid', $item['id'])->column('cart_info', 'oid');
                 $goodsName = [];
                 foreach ($_info as $k => $v) {
                     $v = json_decode($v, true);
@@ -751,7 +750,7 @@ HTML;
 
         return self::page($model, function ($item) {
             $item['nickname'] = WechatUser::where('uid', $item['uid'])->value('nickname');
-            $_info = Db::name('store_order_cart_info')->where('oid', $item['id'])->field('cart_info')->select();
+            $_info = StoreOrderCartInfo::where('oid', $item['id'])->field('cart_info')->select();
             foreach ($_info as $k => $v) {
                 $_info[$k]['cart_info'] = json_decode($v['cart_info'], true);
             }
@@ -774,9 +773,7 @@ HTML;
             $model = $model->where('order_id|real_name|user_phone', 'LIKE', "%$where[real_name]%");
         }
         if ($where['data'] !== '') {
-            list($startTime, $endTime) = explode(' - ', $where['data']);
-            $model = $model->where('add_time', '>', strtotime($startTime));
-            $model = $model->where('add_time', '<', strtotime($endTime));
+            $model = self::getModelTime($where, $model, 'add_time');
         }
         return $model;
     }
@@ -789,7 +786,7 @@ HTML;
     public static function getOrderPricePink($where)
     {
         $model = new self;
-        $price = array();
+        $price = [];
         $price['pay_price'] = 0;//支付金额
         $price['refund_price'] = 0;//退款金额
         $price['pay_price_wx'] = 0;//微信支付金额
@@ -871,7 +868,7 @@ HTML;
      */
     public static function setEchatWhere($where, $status = null, $time = null)
     {
-        $model = self::statusByWhere($where['status'])->where('is_system_del',0);
+        $model = self::statusByWhere($where['status'])->where('is_system_del', 0);
         if ($status !== null) $where['type'] = $status;
         if ($time === true) $where['data'] = '';
         switch ($where['type']) {
@@ -1037,20 +1034,20 @@ HTML;
             [
                 'name' => '在线支付金额',
                 'field' => '元',
-                'count' => self::setEchatWhere($where)->where(['paid'=>1,'refund_status'=>0])->where('pay_type', 'weixin')->sum('pay_price'),
+                'count' => self::setEchatWhere($where)->where(['paid' => 1, 'refund_status' => 0])->where('pay_type', 'weixin')->sum('pay_price'),
                 'content' => '在线支付总金额',
                 'background_color' => 'layui-bg-cyan',
-                'sum' => self::setEchatWhere($where, null, true)->where(['paid'=>1,'refund_status'=>0])->where('pay_type', 'weixin')->sum('pay_price'),
+                'sum' => self::setEchatWhere($where, null, true)->where(['paid' => 1, 'refund_status' => 0])->where('pay_type', 'weixin')->sum('pay_price'),
                 'class' => 'fa fa-weixin',
                 'col' => 2
             ],
             [
                 'name' => '余额支付金额',
                 'field' => '元',
-                'count' => self::setEchatWhere($where)->where('pay_type', 'yue')->where(['paid'=>1,'refund_status'=>0])->sum('pay_price'),
+                'count' => self::setEchatWhere($where)->where('pay_type', 'yue')->where(['paid' => 1, 'refund_status' => 0])->sum('pay_price'),
                 'content' => '余额支付总金额',
                 'background_color' => 'layui-bg-cyan',
-                'sum' => self::setEchatWhere($where, null, true)->where(['paid'=>1,'refund_status'=>0])->where('pay_type', 'yue')->sum('pay_price'),
+                'sum' => self::setEchatWhere($where, null, true)->where(['paid' => 1, 'refund_status' => 0])->where('pay_type', 'yue')->sum('pay_price'),
                 'class' => 'fa  fa-balance-scale',
                 'col' => 2
             ],
@@ -1067,10 +1064,10 @@ HTML;
             [
                 'name' => '交易额',
                 'field' => '元',
-                'count' => self::setEchatWhere($where)->where(['paid'=>1,'refund_status'=>0])->sum('pay_price'),
+                'count' => self::setEchatWhere($where)->where(['paid' => 1, 'refund_status' => 0])->sum('pay_price'),
                 'content' => '总交易额',
                 'background_color' => 'layui-bg-cyan',
-                'sum' => self::setEchatWhere($where, null, true)->where(['paid'=>1,'refund_status'=>0])->sum('pay_price'),
+                'sum' => self::setEchatWhere($where, null, true)->where(['paid' => 1, 'refund_status' => 0])->sum('pay_price'),
                 'class' => 'fa fa-jpy',
                 'col' => 2
             ],
@@ -1097,7 +1094,6 @@ HTML;
      */
     public static function orderPostageAfter($oid, $postageData = [])
     {
-
         $order = self::where('id', $oid)->find();
         $url = Url::buildUrl('/order/detail/' . $order['order_id'])->suffix('')->domain(true)->build();
         $group = [
@@ -1134,7 +1130,6 @@ HTML;
                 WechatTemplateService::sendTemplate($openid, WechatTemplateService::ORDER_POSTAGE_SUCCESS, $group, $url);
             }
         }
-
     }
 
     /** 收货后发送模版消息

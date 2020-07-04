@@ -43,7 +43,7 @@ class SystemAttachment extends BaseModel
      * @param int $time
      * @return SystemAttachment
      */
-    public static function attachmentAdd($name,$att_size,$att_type,$att_dir,$satt_dir='',$pid = 0,$imageType = 1 ,$time = 0 , $module_type=1)
+    public static function attachmentAdd($name, $att_size, $att_type, $att_dir, $satt_dir = '', $pid = 0, $imageType = 1, $time = 0, $module_type = 1)
     {
         $data['name'] = $name;
         $data['att_dir'] = $att_dir;
@@ -62,12 +62,13 @@ class SystemAttachment extends BaseModel
      * @param $id
      * @return array
      */
-    public static function getAll($id){
+    public static function getAll($id)
+    {
         $model = new self;
         $where['pid'] = $id;
         $where['module_type'] = 1;
         $model->where($where)->order('att_id desc');
-        return $model->page($model,$where,'',24);
+        return $model->page($model, $where, '', 24);
     }
 
     /** 获取图片列表
@@ -78,21 +79,26 @@ class SystemAttachment extends BaseModel
     {
         $model = new self;
         $model = $model->where('module_type', 1);
-        if(isset($where['pid']) && $where['pid']) $model = $model->where('pid', $where['pid']);
-        $model = $model->page((int)$where['page'],(int)$where['limit']);
+        if (isset($where['pid']) && $where['pid']) {
+            $model = $model->where('pid', $where['pid']);
+        }else{
+            $model = $model->where('pid', '<>', 20);
+        }
+        $model = $model->page((int)$where['page'], (int)$where['limit']);
         $model = $model->order('att_id desc,time desc');
         $list = $model->select();
         $list = count($list) ? $list->toArray() : [];
-        $site_url = SystemConfig::getConfigValue('site_url');
-        foreach ($list as &$item){
-            if($site_url) {
+        $site_url = sys_config('site_url');
+        foreach ($list as &$item) {
+            if ($site_url) {
                 $item['satt_dir'] = (strpos($item['satt_dir'], $site_url) !== false || strstr($item['satt_dir'], 'http') !== false) ? $item['satt_dir'] : $site_url . $item['satt_dir'];
-                $item['att_dir']  = (strpos($item['att_dir'], $site_url) !== false || strstr($item['att_dir'], 'http') !== false) ? $item['satt_dir'] : $site_url . $item['att_dir'];
+                $item['att_dir'] = (strpos($item['att_dir'], $site_url) !== false || strstr($item['att_dir'], 'http') !== false) ? $item['satt_dir'] : $site_url . $item['att_dir'];
             }
         }
-        $count = self::where(['pid'=>$where['pid'],'module_type'=>1])->count();
-        return compact('list','count');
+        $count = $where['pid'] ? self::where(['pid' => $where['pid'], 'module_type' => 1])->count() : self::where('module_type', 1)->count();
+        return compact('list', 'count');
     }
+
     /**
      * TODO 获取单条信息
      * @param $value
@@ -103,10 +109,11 @@ class SystemAttachment extends BaseModel
      * @throws \think\db\exception\ModelNotFoundException
      * @throws \think\exception\DbException
      */
-    public static function getInfo($value,$field = 'att_id'){
+    public static function getInfo($value, $field = 'att_id')
+    {
         $where[$field] = $value;
         $count = self::where($where)->count();
-        if(!$count) return false;
+        if (!$count) return false;
         return self::where($where)->find()->toArray();
     }
 
@@ -117,18 +124,19 @@ class SystemAttachment extends BaseModel
      */
     public static function emptyYesterdayAttachment()
     {
-        $list = self::whereTime('time','yesterday')->where(['module_type'=>2])->column('att_dir','att_id');
-        foreach ($list as $att_id => $att_dir){
-            try{
-                if($att_dir && strstr($att_dir,'uploads') !== false){
-                    if(strstr($att_dir,'http') === false)
-                        @unlink(substr($att_dir,1));
-                    else{
-                        $filedir = substr($att_dir,strpos($att_dir, 'uploads'));
+        $list = self::whereTime('time', 'yesterday')->where(['module_type' => 2])->column('att_dir', 'att_id');
+        foreach ($list as $att_id => $att_dir) {
+            try {
+                if ($att_dir && strstr($att_dir, 'uploads') !== false) {
+                    if (strstr($att_dir, 'http') === false)
+                        @unlink(substr($att_dir, 1));
+                    else {
+                        $filedir = substr($att_dir, strpos($att_dir, 'uploads'));
                         @unlink($filedir);
                     }
                 }
-            }catch (\Throwable $e){}
+            } catch (\Throwable $e) {
+            }
             self::del($att_id);
         }
     }

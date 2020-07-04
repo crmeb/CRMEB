@@ -118,16 +118,16 @@
                             </td>
                             <td class="text-left">
                                 {if condition="$vo['extract_type'] eq 'bank'"}
-                                姓名:{$vo.real_name}<br>
-                                 银行卡号:{$vo.bank_code}
+                                姓名：{$vo.real_name}<br>
+                                 银行卡号：{$vo.bank_code}
                                 <br/>
-                                 银行开户地址:{$vo.bank_address}
+                                 银行名称:{$vo.bank_address}
                                 {elseif condition="$vo['extract_type'] eq 'weixin'"/}
-                                昵称:{$vo.nickname}<br>
-                                微信号号:{$vo.wechat}
+                                昵称：{$vo.nickname}<br>
+                                微信号：{$vo.wechat}
                                 {else/}
-                                姓名:{$vo.real_name}<br>
-                                  支付宝号:{$vo.alipay_code}
+                                姓名：{$vo.real_name}<br>
+                                  支付宝号：{$vo.alipay_code}
                                 {/if}
                             </td>
                             <td class="text-center">
@@ -151,7 +151,7 @@
                                 {/if}
                             </td>
                             <td class="text-center">
-                                <button class="btn btn-info btn-xs" type="button"  onclick="$eb.createModalFrame('编辑','{:Url('edit',array('id'=>$vo['id']))}')"><i class="fa fa-paste"></i> 编辑</button>
+                                <button class="btn btn-info btn-xs" type="button"  onclick="$eb.createModalFrame('编辑','{:Url('edit',array('id'=>$vo['id']))}')"><i class="fa fa-edit"></i> 编辑</button>
                             </td>
                         </tr>
                         {/volist}

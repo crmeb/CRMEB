@@ -42,7 +42,6 @@ class SystemRole extends BaseModel
      */
     public static function getRole($level = 0)
     {
-
         return self::where('status',1)->where('level',$level)->column('role_name','id');
     }
 
@@ -55,7 +54,7 @@ class SystemRole extends BaseModel
         $_auth = SystemMenus::all(function($query) use($rules){
             $query->where('id','IN',$rules)
                 ->where('controller|action','<>','')
-                ->field('module,controller,action,params');
+                ->field('id,module,controller,action,params');
         });
         return self::tidyAuth($_auth?:[]);
     }
@@ -64,7 +63,7 @@ class SystemRole extends BaseModel
     {
         static $auth = null;
         $auth === null  && ($auth = self::tidyAuth(SystemMenus::all(function($query){
-            $query->where('controller|action','<>','')->field('module,controller,action,params');
+            $query->where('controller|action','<>','')->field('id,module,controller,action,params');
         })?:[]));
         return $auth;
     }
@@ -73,7 +72,7 @@ class SystemRole extends BaseModel
     {
         $auth = [];
         foreach ($_auth as $k=>$val){
-            $auth[] =  SystemMenus::getAuthName($val['action'],$val['controller'],$val['module'],$val['params']);
+            $auth[$val['id']] =  SystemMenus::getAuthName($val['action'],$val['controller'],$val['module'],$val['params']);
         }
         return $auth;
     }

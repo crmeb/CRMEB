@@ -2,8 +2,8 @@
 namespace app\admin\controller\wechat;
 
 use app\admin\controller\AuthController;
+use app\models\system\Cache;
 use crmeb\services\WechatService;
-use think\facade\Db;
 
 /**
  * 微信菜单  控制器
@@ -15,7 +15,7 @@ class Menus extends AuthController
 
     public function index()
     {
-        $menus = Db::name('cache')->where('key','wechat_menus')->value('result');
+        $menus = Cache::where('key','wechat_menus')->value('result');
         $menus = $menus ? : '[]';
         $this->assign('menus',$menus);
         return $this->fetch();
@@ -27,13 +27,13 @@ class Menus extends AuthController
         if(!count($buttons)) return $this->failed('请添加至少一个按钮');
         try{
             WechatService::menuService()->add($buttons);
-            $count = Db::name('cache')->where('key', 'wechat_menus')->count();
+            $count = Cache::where('key', 'wechat_menus')->count();
             if($count){
-                $count = Db::name('cache')->where('key', 'wechat_menus')->where('result', json_encode($buttons))->count();
+                $count = Cache::where('key', 'wechat_menus')->where('result', json_encode($buttons))->count();
                 if(!$count)
-                    Db::name('cache')->where('key', 'wechat_menus')->update(['result'=>json_encode($buttons),'add_time'=>time()]);
+                    Cache::where('key', 'wechat_menus')->update(['result'=>json_encode($buttons),'add_time'=>time()]);
             }else
-                Db::name('cache')->insert(['key'=>'wechat_menus','result'=>json_encode($buttons),'add_time'=>time()],true);
+                Cache::insert(['key'=>'wechat_menus','result'=>json_encode($buttons),'add_time'=>time()],true);
             return $this->successful('修改成功!');
         }catch (\Exception $e){
             return $this->failed($e->getMessage());

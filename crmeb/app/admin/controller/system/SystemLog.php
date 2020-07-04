@@ -13,29 +13,26 @@ use crmeb\services\UtilService as Util;
  * @package app\admin\controller\system
  */
 class SystemLog extends AuthController
-
 {
-
     /**
      * 显示操作记录
      */
-    public function index(){
+    public function index()
+    {
         LogModel::deleteLog();
         $where = Util::getMore([
-            ['pages',''],
-            ['path',''],
-            ['ip',''],
-            ['admin_id',''],
-            ['data',''],
-        ],$this->request);
+            ['pages', ''],
+            ['path', ''],
+            ['ip', ''],
+            ['admin_id', ''],
+            ['data', ''],
+        ], $this->request);
         $where['level'] = $this->adminInfo['level'];
-        $this->assign('where',$where);
-        $this->assign('admin',SystemAdmin::getOrdAdmin('id,real_name',$this->adminInfo['level']));
+        $this->assign('where', $where);
+        $this->assign('admin', SystemAdmin::getOrdAdmin('id,real_name', $this->adminInfo['level']));
         $this->assign(LogModel::systemPage($where));
         return $this->fetch();
     }
-
-
 
 
 }

@@ -68,7 +68,7 @@ class SubscribeTemplateService implements ProviderInterface
     public static function setTemplateId($tempKey = '')
     {
         if ($tempKey == '') return '';
-        return RoutineTemplate::where('tempkey', $tempKey)->where('status', 1)->value('tempid');
+        return RoutineTemplate::where('tempkey', $tempKey)->where('type', 0)->where('status', 1)->value('tempid');
     }
 
 
@@ -85,5 +85,4 @@ class SubscribeTemplateService implements ProviderInterface
         if (!$openId || !$tempCode) return false;
         return MiniProgramService::sendSubscribeTemlate($openId, trim(self::setTemplateId(self::getConstants($tempCode))), $dataKey, $link);
     }
-
 }

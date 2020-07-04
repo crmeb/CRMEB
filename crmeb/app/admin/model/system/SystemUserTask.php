@@ -40,68 +40,60 @@ class SystemUserTask extends BaseModel
      * unit 单位
      * @var array
      */
-    protected static $TaskType=[
+    protected static $TaskType = [
         [
-            'type'=>'SatisfactionIntegral',
-            'name'=>'满足积分{$num}',
-            'real_name'=>'积分数',
-            'max_number'=>0,
-            'min_number'=>0,
-            'unit'=>'分'
+            'type' => 'SatisfactionIntegral',
+            'name' => '满足积分{$num}',
+            'real_name' => '积分数',
+            'max_number' => 0,
+            'min_number' => 0,
+            'unit' => '分'
         ],
         [
-            'type'=>'ConsumptionAmount',
-            'name'=>'消费满{$num}',
-            'real_name'=>'消费金额',
-            'max_number'=>0,
-            'min_number'=>0,
-            'unit'=>'元'
+            'type' => 'ConsumptionAmount',
+            'name' => '消费满{$num}',
+            'real_name' => '消费金额',
+            'max_number' => 0,
+            'min_number' => 0,
+            'unit' => '元'
         ],
         [
-            'type'=>'ConsumptionFrequency',
-            'name'=>'消费{$num}',
-            'real_name'=>'消费次数',
-            'max_number'=>0,
-            'min_number'=>0,
-            'unit'=>'次'
+            'type' => 'ConsumptionFrequency',
+            'name' => '消费{$num}',
+            'real_name' => '消费次数',
+            'max_number' => 0,
+            'min_number' => 0,
+            'unit' => '次'
         ],
         [
-            'type'=>'CumulativeAttendance',
-            'name'=>'累计签到{$num}',
-            'real_name'=>'累计签到',
-            'max_number'=>365,
-            'min_number'=>1,
-            'unit'=>'天'
+            'type' => 'CumulativeAttendance',
+            'name' => '累计签到{$num}',
+            'real_name' => '累计签到',
+            'max_number' => 365,
+            'min_number' => 1,
+            'unit' => '天'
         ],
         [
-            'type'=>'SharingTimes',
-            'name'=>'分享给朋友{$num}',
-            'real_name'=>'分享给朋友',
-            'max_number'=>1000,
-            'min_number'=>1,
-            'unit'=>'次'
+            'type' => 'InviteGoodFriends',
+            'name' => '邀请好友{$num}成为下线',
+            'real_name' => '邀请好友成为下线',
+            'max_number' => 1000,
+            'min_number' => 1,
+            'unit' => '人'
         ],
         [
-            'type'=>'InviteGoodFriends',
-            'name'=>'邀请好友{$num}成为下线',
-            'real_name'=>'邀请好友成为下线',
-            'max_number'=>1000,
-            'min_number'=>1,
-            'unit'=>'人'
-        ],
-        [
-            'type'=>'InviteGoodFriendsLevel',
-            'name'=>'邀请好友{$num}成为会员',
-            'real_name'=>'邀请好友成为会员',
-            'max_number'=>1000,
-            'min_number'=>1,
-            'unit'=>'人'
+            'type' => 'InviteGoodFriendsLevel',
+            'name' => '邀请好友{$num}成为会员',
+            'real_name' => '邀请好友成为会员',
+            'max_number' => 1000,
+            'min_number' => 1,
+            'unit' => '人'
         ],
     ];
 
     public function profile()
     {
-        return $this->hasOne('SystemUserLevel','level_id','id')->field('name');
+        return $this->hasOne('SystemUserLevel', 'level_id', 'id')->field('name');
     }
 
     public static function getTaskTypeAll()
@@ -116,8 +108,8 @@ class SystemUserTask extends BaseModel
      */
     public static function getTaskType($type)
     {
-        foreach (self::$TaskType as $item){
-            if($item['type']==$type) return $item;
+        foreach (self::$TaskType as $item) {
+            if ($item['type'] == $type) return $item;
         }
     }
 
@@ -127,10 +119,10 @@ class SystemUserTask extends BaseModel
      * @param $num
      * @return mixed
      */
-    public static function setTaskName($type,$num)
+    public static function setTaskName($type, $num)
     {
-        $systemType=self::getTaskType($type);
-        return str_replace('{$num}',$num.$systemType['unit'],$systemType['name']);
+        $systemType = self::getTaskType($type);
+        return str_replace('{$num}', $num . $systemType['unit'], $systemType['name']);
     }
 
     /**
@@ -140,15 +132,15 @@ class SystemUserTask extends BaseModel
      * @param $limit
      * @return array
      */
-    public static function getTashList($level_id,$page,$limit)
+    public static function getTashList($level_id, $page, $limit)
     {
-        $data=self::where('level_id',$level_id)->order('sort desc,add_time desc')->page($page,$limit)->select();
-        $data=count($data) ? $data->toArray() : [];
-        foreach ($data as &$item){
-            $item['level_name']=SystemUserLevel::where('id',$item['level_id'])->value('name');
+        $data = self::where('level_id', $level_id)->order('sort desc,add_time desc')->page($page, $limit)->select();
+        $data = count($data) ? $data->toArray() : [];
+        foreach ($data as &$item) {
+            $item['level_name'] = SystemUserLevel::where('id', $item['level_id'])->value('name');
         }
-        $count=self::where('level_id',$level_id)->count();
-        return compact('data','count');
+        $count = self::where('level_id', $level_id)->count();
+        return compact('data', 'count');
     }
 
 }

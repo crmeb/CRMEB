@@ -8,11 +8,10 @@
 namespace crmeb\services;
 
 use crmeb\repositories\PaymentRepositories;
+use crmeb\utils\Hook;
 use EasyWeChat\Foundation\Application;
 use EasyWeChat\Payment\Order;
 use think\facade\Route as Url;
-use app\models\store\StoreOrder as StoreOrderRoutineModel;
-use app\models\user\UserRecharge;
 
 /**微信小程序接口
  * Class WechatMinService
@@ -134,8 +133,28 @@ class MiniProgramService
     }
 
     /**
+     * 获取直播列表
+     * @param int $page
+     * @param int $limit
+     * @return array
+     */
+    public static function getLiveInfo(int $page = 1, $limit = 10)
+    {
+        try {
+            $res = self::miniprogram()->wechat_live->getLiveInfo($page, $limit);
+            if (isset($res['errcode']) && $res['errcode'] == 0 && isset($res['room_info']) && $res['room_info']) {
+                return $res['room_info'];
+            } else {
+                return [];
+            }
+        } catch (\Throwable $e) {
+            return [];
+        }
+    }
+
+    /**
      * 订阅模板消息接口
-     * @return \crmeb\utils\ProgramSubscribe
+     * @return \crmeb\services\subscribe\ProgramSubscribe
      */
     public static function SubscribenoticeService()
     {
@@ -313,21 +332,7 @@ class MiniProgramService
                     if (($count = strpos($notify->out_trade_no, '_')) !== false) {
                         $notify->out_trade_no = substr($notify->out_trade_no, $count + 1);
                     }
-                    if (strtolower($notify->attach) == 'productr') {//TODO 商品订单支付成功后
-                        try {
-                            if (StoreOrderRoutineModel::be(['order_id' => $notify->out_trade_no, 'paid' => 1])) return true;
-                            return StoreOrderRoutineModel::paySuccess($notify->out_trade_no);
-                        } catch (\Exception $e) {
-                            return false;
-                        }
-                    } else if (strtolower($notify->attach) == 'user_recharge') {
-                        try {
-                            if (UserRecharge::be(['order_id' => $notify->out_trade_no, 'paid' => 1])) return true;
-                            return UserRecharge::rechargeSuccess($notify->out_trade_no);
-                        } catch (\Exception $e) {
-                            return false;
-                        }
-                    }
+                    return (new Hook(PaymentRepositories::class, 'wechat'))->listen($notify->attach, $notify->out_trade_no);
                 }
                 return false;
             }

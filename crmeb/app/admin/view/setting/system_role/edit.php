@@ -78,6 +78,7 @@
                     }).then((res)=>{
                         $eb.message('success',res.msg || '操作成功!');
                         $eb.closeModalFrame(window.name);
+                        parent.$(".J_iframe:visible")[0].contentWindow.location.reload();
                     }).catch((err)=>{
                         this.loading=false;
                         $eb.message('error',err);

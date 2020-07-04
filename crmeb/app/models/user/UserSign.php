@@ -1,4 +1,5 @@
 <?php
+
 namespace app\models\user;
 
 use crmeb\basic\BaseModel;
@@ -34,10 +35,10 @@ class UserSign extends BaseModel
      * @param int $balance 签到前剩余积分
      * @return bool
      */
-    public static function setSignData($uid,$title='',$number=0,$balance=0)
+    public static function setSignData($uid, $title = '', $number = 0, $balance = 0)
     {
-        $add_time=time();
-        return self::create(compact('uid','title','number','balance','add_time')) && UserBill::income($title,$uid,'integral','sign',$number,0,$balance,$title);
+        $add_time = time();
+        return self::create(compact('uid', 'title', 'number', 'balance', 'add_time')) && UserBill::income($title, $uid, 'integral', 'sign', $number, 0, $balance, $title);
     }
 
     /**
@@ -50,14 +51,14 @@ class UserSign extends BaseModel
      * @throws \think\db\exception\ModelNotFoundException
      * @throws \think\exception\DbException
      */
-    public static function getSignList($uid,$page,$limit)
+    public static function getSignList($uid, $page, $limit)
     {
-        if(!$limit) return [];
-        $billModel = UserBill::where('a.category','integral')->where('a.type','sign')
-            ->where('a.status',1)->where('a.uid',$uid)->alias('a')
-            ->join("user u",'u.uid=a.uid')
+        if (!$limit) return [];
+        $billModel = UserBill::where('a.category', 'integral')->where('a.type', 'sign')
+            ->where('a.status', 1)->where('a.uid', $uid)->alias('a')
+            ->join("user u", 'u.uid=a.uid')
             ->order('a.add_time desc')->field('FROM_UNIXTIME(a.add_time,"%Y-%m-%d") as add_time,a.title,a.number');
-        if($page) $billModel = $billModel->page((int)$page,(int)$limit);
+        if ($page) $billModel = $billModel->page((int)$page, (int)$limit);
         return $billModel->select();
     }
 
@@ -76,9 +77,9 @@ class UserSign extends BaseModel
      * @param $uid
      * @return bool
      */
-    public static function getIsSign($uid,string $type = 'today')
+    public static function getIsSign($uid, string $type = 'today')
     {
-        return self::where('uid', $uid)->whereTime('add_time',$type)->count() ? true : false;
+        return self::where('uid', $uid)->whereTime('add_time', $type)->count() ? true : false;
     }
 
     /**
@@ -89,9 +90,9 @@ class UserSign extends BaseModel
      * @throws \think\db\exception\ModelNotFoundException
      * @throws \think\exception\DbException
      */
-    public static function getSignSystemList($key='sign_day_num')
+    public static function getSignSystemList($key = 'sign_day_num')
     {
-        return \crmeb\services\GroupDataService::getData($key) ? : [];
+        return sys_data($key) ?: [];
     }
 
     /**
@@ -104,34 +105,34 @@ class UserSign extends BaseModel
      */
     public static function sign($uid)
     {
-        $sign_list=self::getSignSystemList();
-        if(!count($sign_list)) return self::setErrorInfo('请先配置签到天数');
-        $user=User::where('uid',$uid)->find();
-        $sign_num=0;
+        $sign_list = self::getSignSystemList();
+        if (!count($sign_list)) return self::setErrorInfo('请先配置签到天数');
+        $user = User::where('uid', $uid)->find();
+        $sign_num = 0;
         //检测昨天是否签到
-        if(self::getIsSign($uid,'yesterday')){
-            if($user->sign_num > (count($sign_list) -1)) $user->sign_num=0;
-        }else{
+        if (self::getIsSign($uid, 'yesterday')) {
+            if ($user->sign_num > (count($sign_list) - 1)) $user->sign_num = 0;
+        } else {
             //如果昨天没签到,回退到第一天
-            $user->sign_num=0;
+            $user->sign_num = 0;
         }
-        foreach ($sign_list as $key=>$item){
-            if($key==$user->sign_num){
-                $sign_num=$item['sign_num'];
+        foreach ($sign_list as $key => $item) {
+            if ($key == $user->sign_num) {
+                $sign_num = $item['sign_num'];
                 break;
             }
         }
-        $user->sign_num+=1;
-        if($user->sign_num == count($sign_list))
-            $res1 = self::setSignData($uid,'连续签到奖励',$sign_num,$user->integral);
+        $user->sign_num += 1;
+        if ($user->sign_num == count($sign_list))
+            $res1 = self::setSignData($uid, '连续签到奖励', $sign_num, bcadd($user->integral, $sign_num, 0));
         else
-            $res1 = self::setSignData($uid,'签到奖励',$sign_num,$user->integral);
-        $res2= User::bcInc($uid,'integral',$sign_num,'uid');
-        $res3= $user->save();
+            $res1 = self::setSignData($uid, '签到奖励', $sign_num, bcadd($user->integral, $sign_num, 0));
+        $res2 = User::bcInc($uid, 'integral', $sign_num, 'uid');
+        $res3 = $user->save();
         $res = $res1 && $res2 && $res3 !== false;
         BaseModel::checkTrans($res);
-        event('UserLevelAfter',[$user]);
-        if($res)
+        event('UserLevelAfter', [$user]);
+        if ($res)
             return $sign_num;
         else
             return false;
@@ -144,10 +145,10 @@ class UserSign extends BaseModel
      * @param int $limit 显示多少条
      * @return array
      * */
-    public static function getSignMonthList($uid,$page=1,$limit=8)
+    public static function getSignMonthList($uid, $page = 1, $limit = 8)
     {
-        if(!$limit) return [];
-        if($page){
+        if (!$limit) return [];
+        if ($page) {
             $list = UserBill::where('uid', $uid)
                 ->where('category', 'integral')
                 ->where('type', 'sign')
@@ -156,7 +157,7 @@ class UserSign extends BaseModel
                 ->order('time DESC')
                 ->page($page, $limit)
                 ->select();
-        }else{
+        } else {
             $list = UserBill::where('uid', $uid)
                 ->where('category', 'integral')
                 ->where('type', 'sign')
@@ -165,18 +166,18 @@ class UserSign extends BaseModel
                 ->order('time DESC')
                 ->select();
         }
-        $data=[];
-        foreach ($list as $key=>&$item){
+        $data = [];
+        foreach ($list as $key => &$item) {
             $value['month'] = $item['time'];
-            $value['list'] = UserBill::where('id','in',$item['ids'])->field('FROM_UNIXTIME(add_time,"%Y-%m-%d") as add_time,title,number')->order('add_time DESC')->select();
-            array_push($data,$value);
+            $value['list'] = UserBill::where('id', 'in', $item['ids'])->field('FROM_UNIXTIME(add_time,"%Y-%m-%d") as add_time,title,number')->order('add_time DESC')->select();
+            array_push($data, $value);
         }
         return $data;
     }
 
     public static function checkUserSigned($uid)
     {
-        return UserBill::be(['uid'=>$uid,'add_time'=>['>',strtotime('today')],'category'=>'integral','type'=>'sign']);
+        return UserBill::be(['uid' => $uid, 'add_time' => ['>', strtotime('today')], 'category' => 'integral', 'type' => 'sign']);
     }
 
     public static function userSignedCount($uid)
@@ -196,15 +197,15 @@ class UserSign extends BaseModel
     public static function signEbApi($userInfo)
     {
         $uid = $userInfo['uid'];
-        $min = sysConfig('sx_sign_min_int')?:0;
-        $max = sysConfig('sx_sign_max_int')?:5;
-        $integral = rand($min,$max);
+        $min = sys_config('sx_sign_min_int') ?: 0;
+        $max = sys_config('sx_sign_max_int') ?: 5;
+        $integral = rand($min, $max);
         BaseModel::beginTrans();
-        $res1 = UserBill::income('用户签到',$uid,'integral','sign',$integral,0,$userInfo['integral'],'签到获得'.floatval($integral).'积分');
-        $res2 = User::bcInc($uid,'integral',$integral,'uid');
+        $res1 = UserBill::income('用户签到', $uid, 'integral', 'sign', $integral, 0, $userInfo['integral'], '签到获得' . floatval($integral) . '积分');
+        $res2 = User::bcInc($uid, 'integral', $integral, 'uid');
         $res = $res1 && $res2;
         BaseModel::checkTrans($res);
-        if($res)
+        if ($res)
             return $integral;
         else
             return false;

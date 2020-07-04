@@ -5,7 +5,7 @@ namespace app\admin\controller\system;
 use app\admin\controller\AuthController;
 use crmeb\services\JsonService as Json;
 use \crmeb\services\MysqlBackupService as Backup;
-use think\facade\Env;
+use think\facade\Config;
 use think\facade\Session;
 use think\facade\Db;
 
@@ -56,7 +56,8 @@ class SystemDatabackup extends AuthController
      */
     public function seetable()
     {
-        $database = Env::get("database.database");
+        request()->filter(['strip_tags', 'trim', 'htmlspecialchars']);
+        $database = Config::get("database.connections." . Config::get('database.default') . '.database');
         $tablename = request()->param('tablename');
         $res = Db::query("select * from information_schema.columns where table_name = '" . $tablename . "' and table_schema = '" . $database . "'");
         $html = '';
@@ -99,10 +100,10 @@ class SystemDatabackup extends AuthController
     {
         $tables = request()->post('tables/a');
         $db = $this->DB;
-        try{
+        try {
             $db->optimize($tables);
-            return Json::successful( '优化成功' );
-        }catch (\Exception $e){
+            return Json::successful('优化成功');
+        } catch (\Exception $e) {
             return Json::fail($e->getMessage());
         }
     }
@@ -114,10 +115,10 @@ class SystemDatabackup extends AuthController
     {
         $tables = request()->post('tables/a');
         $db = $this->DB;
-        try{
+        try {
             $db->repair($tables);
-            return Json::successful( '修复成功' );
-        }catch (\Exception $e){
+            return Json::successful('修复成功');
+        } catch (\Exception $e) {
             return Json::fail($e->getMessage());
         }
     }
@@ -157,6 +158,24 @@ class SystemDatabackup extends AuthController
         }
         krsort($data);//根据时间降序
         return Json::result(0, 'sucess', $data, count($data));
+    }
+
+    /**
+     * @param string|null $msg
+     * @param string|null $url
+     * @param array|null $data
+     */
+    public function success(?string $msg = null, ?string $url = null, ?array $data = [])
+    {
+        return Json::success($msg, $data);
+    }
+
+    /**
+     * @param string|null $msg
+     */
+    public function error(?string $msg = null)
+    {
+        return Json::fail($msg);
     }
 
     /**

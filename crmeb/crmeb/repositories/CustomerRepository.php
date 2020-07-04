@@ -7,6 +7,7 @@ use app\models\store\StoreCombination;
 use app\models\store\StoreProduct;
 use app\models\store\StoreSeckill;
 use app\models\store\StoreService;
+use app\models\user\User;
 use app\models\user\WechatUser;
 use think\facade\Log;
 use crmeb\services\WechatService;
@@ -38,9 +39,9 @@ class CustomerRepository
                         if($orderStatus){
                             // 统计管理开启  推送图文消息
                             $head = '订单提醒 订单号：'.$order['order_id'];
-                            $url = sysConfig('site_url') . '/customer/orderdetail/'.$order['order_id'];
+                            $url = sys_config('site_url') . '/customer/orderdetail/'.$order['order_id'];
                             $description = '';
-                            $image = sysConfig('site_logo');
+                            $image = sys_config('site_logo');
                             if(isset($order['seckill_id']) && $order['seckill_id'] > 0){
                                 $description .= '秒杀产品：'.StoreSeckill::getProductField($order['seckill_id'], 'title');
                                 $image = StoreSeckill::getProductField($order['seckill_id'], 'image');
@@ -79,6 +80,21 @@ class CustomerRepository
                     }
                 }
 
+            }
+        }
+    }
+
+    /**
+     * 提取管理员权限
+     * @param callable $callable 回调函数
+     */
+    public static function getAdminNoticeAuth(callable $callable)
+    {
+        $serviceOrderNotice = StoreService::getStoreServiceOrderNotice();
+        if (count($serviceOrderNotice)) {
+            foreach ($serviceOrderNotice as $uid) {
+                $userInfo = User::where('uid', $uid)->find();
+                if ($userInfo && is_callable($callable)) $callable($userInfo);
             }
         }
     }

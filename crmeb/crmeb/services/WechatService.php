@@ -23,9 +23,8 @@ use EasyWeChat\Message\Video;
 use EasyWeChat\Message\Voice;
 use EasyWeChat\Payment\Order;
 use EasyWeChat\Server\Guard;
-use app\models\store\StoreOrder as StoreOrderWapModel;
-use app\models\user\UserRecharge;
 use think\Response;
+use crmeb\utils\Hook;
 
 class WechatService
 {
@@ -33,31 +32,30 @@ class WechatService
 
     public static function options()
     {
-        $wechat = SystemConfigService::more(['wechat_appid','wechat_appsecret','wechat_token','wechat_encodingaeskey','wechat_encode']);
-        $payment = SystemConfigService::more(['pay_weixin_mchid','pay_weixin_client_cert','pay_weixin_client_key','pay_weixin_key','pay_weixin_open']);
+        $wechat = SystemConfigService::more(['wechat_appid', 'wechat_appsecret', 'wechat_token', 'wechat_encodingaeskey', 'wechat_encode']);
+        $payment = SystemConfigService::more(['pay_weixin_mchid', 'pay_weixin_client_cert', 'pay_weixin_client_key', 'pay_weixin_key', 'pay_weixin_open']);
         $config = [
-            'app_id'=>isset($wechat['wechat_appid']) ? trim($wechat['wechat_appid']) :'',
-            'secret'=>isset($wechat['wechat_appsecret']) ? trim($wechat['wechat_appsecret']) :'',
-            'token'=>isset($wechat['wechat_token']) ? trim($wechat['wechat_token']) :'',
+            'app_id' => isset($wechat['wechat_appid']) ? trim($wechat['wechat_appid']) : '',
+            'secret' => isset($wechat['wechat_appsecret']) ? trim($wechat['wechat_appsecret']) : '',
+            'token' => isset($wechat['wechat_token']) ? trim($wechat['wechat_token']) : '',
             'guzzle' => [
                 'timeout' => 10.0, // 超时时间（秒）
                 'verify' => false
             ],
         ];
-        if(isset($wechat['wechat_encode']) && (int)$wechat['wechat_encode']>0 && isset($wechat['wechat_encodingaeskey']) && !empty($wechat['wechat_encodingaeskey']))
-            $config['aes_key'] =  $wechat['wechat_encodingaeskey'];
-        if(isset($payment['pay_weixin_open']) && $payment['pay_weixin_open'] == 1){
+        if (isset($wechat['wechat_encode']) && (int)$wechat['wechat_encode'] > 0 && isset($wechat['wechat_encodingaeskey']) && !empty($wechat['wechat_encodingaeskey']))
+            $config['aes_key'] = $wechat['wechat_encodingaeskey'];
+        if (isset($payment['pay_weixin_open']) && $payment['pay_weixin_open'] == 1) {
             $config['payment'] = [
-                'merchant_id'=>trim($payment['pay_weixin_mchid']),
-                'key'=>trim($payment['pay_weixin_key']),
-                'cert_path'=>realpath('.'.$payment['pay_weixin_client_cert']),
-                'key_path'=>realpath('.'.$payment['pay_weixin_client_key']),
-                'notify_url'=>sysConfig('site_url') . '/api/wechat/notify'
+                'merchant_id' => trim($payment['pay_weixin_mchid']),
+                'key' => trim($payment['pay_weixin_key']),
+                'cert_path' => realpath('.' . $payment['pay_weixin_client_cert']),
+                'key_path' => realpath('.' . $payment['pay_weixin_client_key']),
+                'notify_url' => sys_config('site_url') . '/api/wechat/notify'
             ];
         }
         return $config;
     }
-
 
 
     public static function application($cache = false)
@@ -66,7 +64,7 @@ class WechatService
         return self::$instance;
     }
 
-    public static function serve():Response
+    public static function serve(): Response
     {
         $wechat = self::application(true);
         $server = $wechat->server;
@@ -81,27 +79,27 @@ class WechatService
      */
     private static function hook($server)
     {
-        $server->setMessageHandler(function($message){
-            event('WechatMessageBefore',[$message]);
-            switch ($message->MsgType){
+        $server->setMessageHandler(function ($message) {
+            event('WechatMessageBefore', [$message]);
+            switch ($message->MsgType) {
                 case 'event':
-                    switch (strtolower($message->Event)){
+                    switch (strtolower($message->Event)) {
                         case 'subscribe':
                             $response = WechatReply::reply('subscribe');
-                            if(isset($message->EventKey)){
+                            if (isset($message->EventKey)) {
                                 if ($message->EventKey && ($qrInfo = QrcodeService::getQrcode($message->Ticket, 'ticket'))) {
                                     QrcodeService::scanQrcode($message->Ticket, 'ticket');
-                                    if(strtolower($qrInfo['third_type']) == 'spread'){
-                                        try{
+                                    if (strtolower($qrInfo['third_type']) == 'spread') {
+                                        try {
                                             $spreadUid = $qrInfo['third_id'];
                                             $uid = WechatUser::openidToUid($message->FromUserName, 'openid');
-                                            if($spreadUid == $uid) return '自己不能推荐自己';
+                                            if ($spreadUid == $uid) return '自己不能推荐自己';
                                             $userInfo = User::getUserInfo($uid);
-                                            if($userInfo['spread_uid']) return '已有推荐人!';
-                                            if(!User::setSpreadUid($userInfo['uid'],$spreadUid)){
+                                            if ($userInfo['spread_uid']) return '已有推荐人!';
+                                            if (!User::setSpreadUid($userInfo['uid'], $spreadUid)) {
                                                 $response = '绑定推荐人失败!';
                                             }
-                                        }catch (\Exception $e){
+                                        } catch (\Exception $e) {
                                             $response = $e->getMessage();
                                         }
                                     }
@@ -109,23 +107,23 @@ class WechatService
                             }
                             break;
                         case 'unsubscribe':
-                            event('WechatEventUnsubscribeBefore',[$message]);
+                            event('WechatEventUnsubscribeBefore', [$message]);
                             break;
                         case 'scan':
                             $response = WechatReply::reply('subscribe');
                             if ($message->EventKey && ($qrInfo = QrcodeService::getQrcode($message->Ticket, 'ticket'))) {
                                 QrcodeService::scanQrcode($message->Ticket, 'ticket');
-                                if(strtolower($qrInfo['third_type']) == 'spread'){
-                                    try{
+                                if (strtolower($qrInfo['third_type']) == 'spread') {
+                                    try {
                                         $spreadUid = $qrInfo['third_id'];
                                         $uid = WechatUser::openidToUid($message->FromUserName, 'openid');
-                                        if($spreadUid == $uid) return '自己不能推荐自己';
+                                        if ($spreadUid == $uid) return '自己不能推荐自己';
                                         $userInfo = User::getUserInfo($uid);
-                                        if($userInfo['spread_uid']) return '已有推荐人!';
-                                        if(User::setSpreadUid($userInfo['uid'],$spreadUid)){
+                                        if ($userInfo['spread_uid']) return '已有推荐人!';
+                                        if (User::setSpreadUid($userInfo['uid'], $spreadUid)) {
                                             $response = '绑定推荐人失败!';
                                         }
-                                    }catch (\Exception $e){
+                                    } catch (\Exception $e) {
                                         $response = $e->getMessage();
                                     }
                                 }
@@ -165,7 +163,7 @@ class WechatService
                     $response = MessageRepositories::wechatMessageOther($message);
                     break;
             }
-            
+
             return $response ?? false;
         });
     }
@@ -240,6 +238,25 @@ class WechatService
     }
 
     /**
+     * 微信永久二维码生成接口 小于10万个
+     * @return \EasyWeChat\QRCode\QRCode
+     */
+    public static function qrcodeForeverService($sceneValue)
+    {
+        return self::application()->qrcode->forever($sceneValue);
+    }
+
+    /**
+     * 微信临时二维码生成接口 30天有效期
+     * @return \EasyWeChat\QRCode\QRCode
+     */
+    public static function qrcodeTempService($sceneValue, $expireSeconds = 2592000)
+    {
+        return self::application()->qrcode->temporary($sceneValue, $expireSeconds);
+
+    }
+
+    /**
      * 短链接生成接口
      * @return \EasyWeChat\Url\Url
      */
@@ -266,11 +283,11 @@ class WechatService
         return self::application()->notice;
     }
 
-    public static function sendTemplate($openid,$templateId,array $data,$url = null,$defaultColor = null)
+    public static function sendTemplate($openid, $templateId, array $data, $url = null, $defaultColor = null)
     {
         $notice = self::noticeService()->to($openid)->template($templateId)->andData($data);
-        if($url !== null) $notice->url($url);
-        if($defaultColor !== null) $notice->defaultColor($defaultColor);
+        if ($url !== null) $notice->url($url);
+        if ($defaultColor !== null) $notice->defaultColor($defaultColor);
         return $notice->send();
     }
 
@@ -284,7 +301,7 @@ class WechatService
         return self::application()->payment;
     }
 
-    public static function downloadBill($day,$type = 'ALL')
+    public static function downloadBill($day, $type = 'ALL')
     {
 //        $payment = self::paymentService();
 //        $merchant = $payment->getMerchant();
@@ -326,12 +343,12 @@ class WechatService
      * @param array $options
      * @return Order
      */
-    protected static function paymentOrder($openid,$out_trade_no,$total_fee,$attach,$body,$detail='',$trade_type='JSAPI',$options = [])
+    protected static function paymentOrder($openid, $out_trade_no, $total_fee, $attach, $body, $detail = '', $trade_type = 'JSAPI', $options = [])
     {
-        $total_fee = bcmul($total_fee,100,0);
-        $order = array_merge(compact('out_trade_no','total_fee','attach','body','detail','trade_type'),$options);
-        if(!is_null($openid))   $order['openid'] = $openid;
-        if($order['detail'] == '') unset($order['detail']);
+        $total_fee = bcmul($total_fee, 100, 0);
+        $order = array_merge(compact('out_trade_no', 'total_fee', 'attach', 'body', 'detail', 'trade_type'), $options);
+        if (!is_null($openid)) $order['openid'] = $openid;
+        if ($order['detail'] == '') unset($order['detail']);
         return new Order($order);
     }
 
@@ -347,21 +364,22 @@ class WechatService
      * @param array $options
      * @return mixed
      */
-    public static function paymentPrepare($openid, $out_trade_no, $total_fee, $attach, $body, $detail='', $trade_type='JSAPI', $options = [])
+    public static function paymentPrepare($openid, $out_trade_no, $total_fee, $attach, $body, $detail = '', $trade_type = 'JSAPI', $options = [])
     {
-        $order = self::paymentOrder($openid,$out_trade_no,$total_fee,$attach,$body,$detail,$trade_type,$options);
+        $order = self::paymentOrder($openid, $out_trade_no, $total_fee, $attach, $body, $detail, $trade_type, $options);
         $result = self::paymentService()->prepare($order);
-        if ($result->return_code == 'SUCCESS' && $result->result_code == 'SUCCESS'){
-            try{
-                PaymentRepositories::wechatPaymentPrepare($order,$result->prepay_id);
-            }catch (\Exception $e){}
+        if ($result->return_code == 'SUCCESS' && $result->result_code == 'SUCCESS') {
+            try {
+                PaymentRepositories::wechatPaymentPrepare($order, $result->prepay_id);
+            } catch (\Exception $e) {
+            }
             return $result;
-        }else{
-            if($result->return_code == 'FAIL'){
-                exception('微信支付错误返回：'.$result->return_msg);
-            }else if(isset($result->err_code)){
-                exception('微信支付错误返回：'.$result->err_code_des);
-            }else{
+        } else {
+            if ($result->return_code == 'FAIL') {
+                exception('微信支付错误返回：' . $result->return_msg);
+            } else if (isset($result->err_code)) {
+                exception('微信支付错误返回：' . $result->err_code_des);
+            } else {
                 exception('没有获取微信支付的预支付ID，请重新发起支付!');
             }
             exit;
@@ -381,9 +399,9 @@ class WechatService
      * @param array $options
      * @return array|string
      */
-    public static function jsPay($openid, $out_trade_no, $total_fee, $attach, $body, $detail='', $trade_type='JSAPI', $options = [])
+    public static function jsPay($openid, $out_trade_no, $total_fee, $attach, $body, $detail = '', $trade_type = 'JSAPI', $options = [])
     {
-        $paymentPrepare = self::paymentPrepare($openid,$out_trade_no,$total_fee,$attach,$body,$detail,$trade_type,$options);
+        $paymentPrepare = self::paymentPrepare($openid, $out_trade_no, $total_fee, $attach, $body, $detail, $trade_type, $options);
         return self::paymentService()->configForJSSDKPayment($paymentPrepare->prepay_id);
     }
 
@@ -398,18 +416,18 @@ class WechatService
      * @param string $type
      * @param string $refundAccount
      */
-    public static function refund($orderNo, $refundNo, $totalFee, $refundFee = null, $opUserId = null, $refundReason = '' , $type = 'out_trade_no', $refundAccount = 'REFUND_SOURCE_UNSETTLED_FUNDS')
+    public static function refund($orderNo, $refundNo, $totalFee, $refundFee = null, $opUserId = null, $refundReason = '', $type = 'out_trade_no', $refundAccount = 'REFUND_SOURCE_UNSETTLED_FUNDS')
     {
         $totalFee = floatval($totalFee);
         $refundFee = floatval($refundFee);
-        return self::paymentService()->refund($orderNo,$refundNo,$totalFee,$refundFee,$opUserId,$type,$refundAccount,$refundReason);
+        return self::paymentService()->refund($orderNo, $refundNo, $totalFee, $refundFee, $opUserId, $type, $refundAccount, $refundReason);
     }
 
     public static function payOrderRefund($orderNo, array $opt)
     {
-        if(!isset($opt['pay_price'])) exception('缺少pay_price');
-        $totalFee = floatval(bcmul($opt['pay_price'],100,0));
-        $refundFee = isset($opt['refund_price']) ? floatval(bcmul($opt['refund_price'],100,0)) : null;
+        if (!isset($opt['pay_price'])) exception('缺少pay_price');
+        $totalFee = floatval(bcmul($opt['pay_price'], 100, 0));
+        $refundFee = isset($opt['refund_price']) ? floatval(bcmul($opt['refund_price'], 100, 0)) : null;
         $refundReason = isset($opt['desc']) ? $opt['desc'] : '';
         $refundNo = isset($opt['refund_id']) ? $opt['refund_id'] : $orderNo;
         $opUserId = isset($opt['op_user_id']) ? $opt['op_user_id'] : null;
@@ -418,11 +436,11 @@ class WechatService
         REFUND_SOURCE_UNSETTLED_FUNDS---未结算资金退款（默认使用未结算资金退款）
         REFUND_SOURCE_RECHARGE_FUNDS---可用余额退款*/
         $refundAccount = isset($opt['refund_account']) ? $opt['refund_account'] : 'REFUND_SOURCE_UNSETTLED_FUNDS';
-        try{
-            $res = (self::refund($orderNo,$refundNo,$totalFee,$refundFee,$opUserId,$refundReason,$type,$refundAccount));
-            if($res->return_code == 'FAIL') exception('退款失败:'.$res->return_msg);
-            if(isset($res->err_code)) exception('退款失败:'.$res->err_code_des);
-        }catch (\Exception $e){
+        try {
+            $res = (self::refund($orderNo, $refundNo, $totalFee, $refundFee, $opUserId, $refundReason, $type, $refundAccount));
+            if ($res->return_code == 'FAIL') exception('退款失败:' . $res->return_msg);
+            if (isset($res->err_code)) exception('退款失败:' . $res->err_code_des);
+        } catch (\Exception $e) {
             exception($e->getMessage());
         }
         return true;
@@ -433,29 +451,15 @@ class WechatService
      */
     public static function handleNotify()
     {
-        self::paymentService()->handleNotify(function($notify, $successful){
-            if($successful && isset($notify->out_trade_no)){
-                if(isset($notify->attach) && $notify->attach){
-                    if(($count = strpos($notify->out_trade_no,'_')) !== false){
-                        $notify->out_trade_no = substr($notify->out_trade_no,$count+1);
+        self::paymentService()->handleNotify(function ($notify, $successful) {
+            if ($successful && isset($notify->out_trade_no)) {
+                if (isset($notify->attach) && $notify->attach) {
+                    if (($count = strpos($notify->out_trade_no, '_')) !== false) {
+                        $notify->out_trade_no = substr($notify->out_trade_no, $count + 1);
                     }
-                    if(strtolower($notify->attach) == 'product'){//TODO  商品订单支付成功后
-                        try{
-                            if(StoreOrderWapModel::be(['order_id'=>$notify->out_trade_no,'paid'=>1])) return true;
-                            return StoreOrderWapModel::paySuccess($notify->out_trade_no);
-                        }catch (\Exception $e){
-                            return false;
-                        }
-                    }else if(strtolower($notify->attach) == 'user_recharge'){//TODO  用户充值成功后
-                        try{
-                            if(UserRecharge::be(['order_id'=>$notify->out_trade_no,'paid'=>1])) return true;
-                            return UserRecharge::rechargeSuccess($notify->out_trade_no);
-                        }catch (\Exception $e){
-                            return false;
-                        }
-                    }
+                    return (new Hook(PaymentRepositories::class, 'wechat'))->listen($notify->attach, $notify->out_trade_no);
                 }
-                WechatMessage::setOnceMessage($notify,$notify->openid,'payment_success',$notify->out_trade_no);
+                WechatMessage::setOnceMessage($notify, $notify->openid, 'payment_success', $notify->out_trade_no);
                 return false;
             }
         });
@@ -472,12 +476,12 @@ class WechatService
 
     public static function jsSdk($url = '')
     {
-        $apiList = ['editAddress','openAddress','updateTimelineShareData','updateAppMessageShareData','onMenuShareTimeline', 'onMenuShareAppMessage', 'onMenuShareQQ', 'onMenuShareWeibo', 'onMenuShareQZone', 'startRecord', 'stopRecord', 'onVoiceRecordEnd', 'playVoice', 'pauseVoice', 'stopVoice', 'onVoicePlayEnd', 'uploadVoice', 'downloadVoice', 'chooseImage', 'previewImage', 'uploadImage', 'downloadImage', 'translateVoice', 'getNetworkType', 'openLocation', 'getLocation', 'hideOptionMenu', 'showOptionMenu', 'hideMenuItems', 'showMenuItems', 'hideAllNonBaseMenuItem', 'showAllNonBaseMenuItem', 'closeWindow', 'scanQRCode', 'chooseWXPay', 'openProductSpecificView', 'addCard', 'chooseCard', 'openCard'];
+        $apiList = ['editAddress', 'openAddress', 'updateTimelineShareData', 'updateAppMessageShareData', 'onMenuShareTimeline', 'onMenuShareAppMessage', 'onMenuShareQQ', 'onMenuShareWeibo', 'onMenuShareQZone', 'startRecord', 'stopRecord', 'onVoiceRecordEnd', 'playVoice', 'pauseVoice', 'stopVoice', 'onVoicePlayEnd', 'uploadVoice', 'downloadVoice', 'chooseImage', 'previewImage', 'uploadImage', 'downloadImage', 'translateVoice', 'getNetworkType', 'openLocation', 'getLocation', 'hideOptionMenu', 'showOptionMenu', 'hideMenuItems', 'showMenuItems', 'hideAllNonBaseMenuItem', 'showAllNonBaseMenuItem', 'closeWindow', 'scanQRCode', 'chooseWXPay', 'openProductSpecificView', 'addCard', 'chooseCard', 'openCard'];
         $jsService = self::jsService();
-        if($url) $jsService->setUrl($url);
-        try{
+        if ($url) $jsService->setUrl($url);
+        try {
             return $jsService->config($apiList);
-        }catch (\Exception $e){
+        } catch (\Exception $e) {
             return '{}';
         }
 
@@ -514,7 +518,7 @@ class WechatService
      */
     public static function videoMessage($media_id, $title = '', $description = '...', $thumb_media_id = null)
     {
-        return new Video(compact('media_id','title','description','thumb_media_id'));
+        return new Video(compact('media_id', 'title', 'description', 'thumb_media_id'));
     }
 
     /**
@@ -536,18 +540,18 @@ class WechatService
      */
     public static function newsMessage($title, $description = '...', $url = '', $image = '')
     {
-        if(is_array($title)){
-            if(isset($title[0]) && is_array($title[0])){
+        if (is_array($title)) {
+            if (isset($title[0]) && is_array($title[0])) {
                 $newsList = [];
-                foreach ($title as $news){
+                foreach ($title as $news) {
                     $newsList[] = self::newsMessage($news);
                 }
                 return $newsList;
-            }else{
+            } else {
                 $data = $title;
             }
-        }else{
-            $data = compact('title','description','url','image');
+        } else {
+            $data = compact('title', 'description', 'url', 'image');
         }
         return new News($data);
     }
@@ -567,7 +571,7 @@ class WechatService
      */
     public static function articleMessage($title, $thumb_media_id, $source_url, $content = '', $author = '', $digest = '', $show_cover_pic = 0, $need_open_comment = 0, $only_fans_can_comment = 1)
     {
-        $data = is_array($title) ? $title : compact('title','thumb_media_id','source_url','content','author','digest','show_cover_pic','need_open_comment','only_fans_can_comment');
+        $data = is_array($title) ? $title : compact('title', 'thumb_media_id', 'source_url', 'content', 'author', 'digest', 'show_cover_pic', 'need_open_comment', 'only_fans_can_comment');
         return new Article($data);
     }
 
@@ -579,7 +583,7 @@ class WechatService
      */
     public static function materialMessage($type, $media_id)
     {
-        return new Material($type,$media_id);
+        return new Material($type, $media_id);
     }
 
     /**
@@ -607,7 +611,6 @@ class WechatService
         $userInfo = is_array($openid) ? $userService->batchGet($openid) : $userService->get($openid);
         return $userInfo;
     }
-
 
 
 }

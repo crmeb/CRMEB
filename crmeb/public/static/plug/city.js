@@ -1155,7 +1155,7 @@
             {value: 941, label: '镜湖区'},
             {value: 942, label: '马塘区'},
             {value: 943, label: '新芜区'},
-            {value: 944, label: '鸠江区'},
+            {value: 944, label: '弋江区'},
             {value: 945, label: '芜湖县'},
             {value: 946, label: '繁昌县'},
             {value: 947, label: '南陵县'}
@@ -2775,7 +2775,8 @@
             {value: 2227, label: '开阳县'},
             {value: 2228, label: '息烽县'},
             {value: 2229, label: '修文县'},
-            {value: 2230, label: '清镇'}
+            {value: 2230, label: '清镇'},
+            {value: 2231, label: '观山湖区'},
         ]},
         {value: 257, label: '六盘水', children: [
             {value: 2231, label: '钟山区'},

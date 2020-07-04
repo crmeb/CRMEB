@@ -13,9 +13,13 @@ use app\admin\model\wechat\WechatQrcode as QrcodeModel;
 
 class QrcodeService
 {
+
     /**
      * 获取临时二维码  单个
-     * */
+     * @param $type
+     * @param $id
+     * @return array
+     */
     public static function getTemporaryQrcode($type, $id)
     {
         return QrcodeModel::getTemporaryQrcode($type, $id)->toArray();
@@ -23,17 +27,32 @@ class QrcodeService
 
     /**
      * 获取永久二维码  单个
-     * */
+     * @param $type
+     * @param $id
+     * @return array
+     */
     public static function getForeverQrcode($type, $id)
     {
         return QrcodeModel::getForeverQrcode($type, $id)->toArray();
     }
 
+    /**
+     * 从数据库获取二维码
+     * @param $id
+     * @param string $type
+     * @return array|\think\Model|null
+     */
     public static function getQrcode($id, $type = 'id')
     {
         return QrcodeModel::getQrcode($id, $type);
     }
 
+    /**
+     * 增加某个二维码扫描的次数
+     * @param $id
+     * @param string $type
+     * @return mixed
+     */
     public static function scanQrcode($id, $type = 'id')
     {
         return QrcodeModel::scanQrcode($id, $type);
@@ -51,7 +70,7 @@ class QrcodeService
     {
         try {
             $imageInfo = SystemAttachment::getInfo($name, 'name');
-            $siteUrl = sysConfig('site_url');
+            $siteUrl = sys_config('site_url');
             if (!$imageInfo) {
                 $codeUrl = UtilService::setHttpType($siteUrl . $link, $type);//二维码链接
                 $imageInfo = UtilService::getQRCodePath($codeUrl, $name);
@@ -65,7 +84,7 @@ class QrcodeService
                     $imageInfo = ['image_type' => 0];
                 }
             } else $url = $imageInfo['att_dir'];
-            if ($imageInfo['image_type'] == 1) $url = $siteUrl . $url;
+            if ($imageInfo['image_type'] == 1 && $url) $url = $siteUrl . $url;
             return $url;
         } catch (\Throwable $e) {
             if ($force)

@@ -19,9 +19,9 @@
                                 </div>
                             </div>
                             <div class="layui-inline">
-                                <label class="layui-form-label">任务名称</label>
+                                <label class="layui-form-label">等级名称</label>
                                 <div class="layui-input-block">
-                                    <input type="text" name="title" class="layui-input" placeholder="请输入任务名称">
+                                    <input type="text" name="title" class="layui-input" placeholder="请输入等级名称">
                                 </div>
                             </div>
                             <div class="layui-inline">
@@ -38,14 +38,14 @@
         <!--产品列表-->
         <div class="layui-col-md12">
             <div class="layui-card">
-                <div class="layui-card-header">分类列表</div>
+                <div class="layui-card-header">等级列表</div>
                 <div class="layui-card-body">
                     <div class="layui-btn-container">
                         <button class="layui-btn layui-btn-sm" onclick="$eb.createModalFrame(this.innerText,'{:Url('create')}')">添加会员等级</button>
                     </div>
                     <table class="layui-hide" id="List" lay-filter="List"></table>
                     <script type="text/html" id="icon">
-                        <img style="cursor: pointer" lay-event='open_image' src="{{d.icon}}">
+                        <img style="cursor: pointer;max-width: 50px;" lay-event='open_image' src="{{d.icon}}">
                     </script>
                     <script type="text/html" id="is_forever">
                         <input type='checkbox' name='id' disabled lay-skin='switch' value="{{d.id}}" lay-filter='is_forever' lay-text='永久|非永久'  {{ d.is_forever == 1 ? 'checked' : '' }}>
@@ -61,17 +61,17 @@
                         <ul class="layui-nav-child layui-anim layui-anim-upbit">
                             <li>
                                 <a href="javascript:void(0)" onclick="$eb.createModalFrame(this.innerText,'{:Url(\'tash\')}?level_id={{d.id}}',{w:1000})">
-                                    <i class="fa fa-paste"></i> 等级任务
+                                    <i class="fa fa-wrench"></i> 等级任务
                                 </a>
                             </li>
                             <li>
                                 <a href="javascript:void(0)" onclick="$eb.createModalFrame(this.innerText,'{:Url(\'create\')}?id={{d.id}}')">
-                                    <i class="fa fa-paste"></i> 编辑等级
+                                    <i class="fa fa-edit"></i> 编辑等级
                                 </a>
                             </li>
                             <li>
                                 <a lay-event='delete' href="javascript:void(0)" >
-                                    <i class="fa fa-paste"></i> 删除等级
+                                    <i class="fa fa-times"></i> 删除等级
                                 </a>
                             </li>
                         </ul>

@@ -47,8 +47,8 @@
                             </td>
                             <td class="text-center">
                                 {gt name="vo.id" value="99"}
-                                <button class="btn btn-info btn-xs" type="button"  onclick="$eb.createModalFrame('编辑','{:Url('edit_tag',['id'=>$vo['id']])}',{w:350,h:180})"><i class="fa fa-paste"></i> 编辑</button>
-                                <button class="btn btn-warning btn-xs" data-url="{:Url('delete_tag',array('id'=>$vo['id']))}" type="button"><i class="fa fa-warning"></i> 删除
+                                <button class="btn btn-info btn-xs" type="button"  onclick="$eb.createModalFrame('编辑','{:Url('edit_tag',['id'=>$vo['id']])}',{w:350,h:180})"><i class="fa fa-edit"></i> 编辑</button>
+                                <button class="btn btn-danger btn-xs " data-url="{:Url('delete_tag',array('id'=>$vo['id']))}" type="button"><i class="fa fa-times"></i> 删除
                                 </button>
                                 {/gt}
                             </td>
@@ -62,7 +62,7 @@
     </div>
 </div>
 <script>
-    $('.btn-warning').on('click',function(){
+    $('.btn-danger').on('click',function(){
         window.t = $(this);
         var _this = $(this),url =_this.data('url');
         $eb.$swal('delete',function(){
