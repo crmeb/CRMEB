@@ -176,14 +176,11 @@ class YLYService extends HttpService implements ProviderInterface
     {
         $timeYmd = date('Y-m-d', time());
         $timeHis = date('H:i:s', time());
-        $goodsStr = '<table><tr><td>商品名称</td><td>数量</td><td>单价</td><td>金额</td></tr>';
+        $goodsStr = '<table><tr><td>商品名称</td><td>数量</td><td>金额</td><td>小计</td></tr>';
         foreach ($product as $item) {
             $goodsStr .= '<tr>';
-            if (isset($item['productInfo']['attrInfo'])) {
-                $price = $item['productInfo']['attrInfo']['price'] ?? $item['productInfo']['price'] ?? 0;
-                $goodsStr .= "<td>{$item['productInfo']['store_name']}</td><td>{$item['cart_num']}</td><td>{$price}</td><td>{$item['truePrice']}</td>";
-            } else
-                $goodsStr .= "<td>{$item['productInfo']['store_name']}</td><td>{$item['cart_num']}</td><td>{$item['productInfo']['price']}</td><td>{$item['truePrice']}</td>";
+            $sumPrice = bcmul($item['truePrice'], $item['cart_num'], 2);
+            $goodsStr .= "<td>{$item['productInfo']['store_name']}</td><td>{$item['cart_num']}</td><td>{$item['truePrice']}</td><td>{$sumPrice}</td>";
             $goodsStr .= '</tr>';
         }
         $goodsStr .= '</table>';
@@ -196,7 +193,9 @@ class YLYService extends HttpService implements ProviderInterface
 时    间: {$timeHis}\r
 姓    名: {$orderInfo['real_name']}\r
 赠送积分: {$orderInfo['gain_integral']}\r
-订单备注：{$orderInfo['mark']}\r
+电    话: {$orderInfo['user_phone']}\r
+地    址: {$orderInfo['user_address']}\r
+订单备注: {$orderInfo['mark']}\r
 *************商品***************\r
 {$goodsStr}
 ********************************\r

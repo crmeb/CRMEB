@@ -32,7 +32,7 @@
                                 <div class="vn-more">
                                     <a :href="dataGroup.news[0].url">阅读原文</a>
                                 </div>
-                            </div> 
+                            </div>
                             <div class="vn-content" v-else>
                                 <div class="con-item-box">
                                     <div class="vn-picture" :style="{backgroundImage: 'url('+dataGroup.news[0].image+')'}"></div>
@@ -44,7 +44,7 @@
                                 </div>
                             </div>
                         </div>
-                            
+
                         <div class="view-item text-box clearfix" :class="{show:type=='image'}">
                             <div class="avatar fl"><img src="{__ADMIN_PATH}images/head.gif" /></div>
                             <div class="box-content fl">
@@ -186,7 +186,6 @@
 {block name="script"}
 <script type="text/javascript">
     $eb = parent._mpApi, $upload = $('#file');
-
     $eb.mpFrame.start(function (Vue) {
         var $http = $eb.axios;
         const vm = new Vue({
@@ -323,7 +322,7 @@
                         delete parent._selectNews$eb;
                         $eb.closeModalFrame(i);
                     };
-                    i = $eb.createModalFrame('选择图文消息',"{:Url('admin/wechat.wechatNewsCategory/select',['callback'=>'_selectNews$eb'])}",{w:975});
+                    i = $eb.createModalFrame('选择图文消息',"{:Url('admin/wechat.wechatNewsCategory/select',['callback'=>'_selectNews$eb','type'=>$type])}",{w:975});
                 }
             },
             mounted: function () {

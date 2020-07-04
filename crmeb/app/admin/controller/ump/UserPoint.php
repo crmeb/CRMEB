@@ -1,4 +1,5 @@
 <?php
+
 namespace app\admin\controller\ump;
 
 use app\admin\controller\AuthController;
@@ -24,8 +25,8 @@ class UserPoint extends AuthController
 //            'sum_point'=>UserBill::where(['category'=>'integral','type'=>'system_add'])->sum('number'),
 //            'count'=>UserBill::where(['category'=>'integral','type'=>'sign'])->group('uid')->count(),
 //            'song_point'=>UserBill::where(['category'=>'integral','type'=>'sign'])->group('uid')->sum('number'),
-            'is_layui'=>true,
-            'year'=>getMonth(),
+            'is_layui' => true,
+            'year' => get_month(),
         ]);
         return $this->fetch();
     }
@@ -35,35 +36,41 @@ class UserPoint extends AuthController
      */
     public function create()
     {
-        $this->assign(['title'=>'添加优惠券','action'=>Url::buildUrl('save'),'rules'=>$this->rules()->getContent()]);
+        $this->assign(['title' => '添加优惠券', 'action' => Url::buildUrl('save'), 'rules' => $this->rules()->getContent()]);
         return $this->fetch('public/common_form');
     }
+
     //异步获取积分列表
-    public function getponitlist(){
+    public function getponitlist()
+    {
         $where = Util::getMore([
-            ['start_time',''],
-            ['end_time',''],
-            ['nickname',''],
-            ['page',1],
-            ['limit',10],
+            ['start_time', ''],
+            ['end_time', ''],
+            ['nickname', ''],
+            ['page', 1],
+            ['limit', 10],
         ]);
         return JsonService::successlayui(UserPointModel::getpointlist($where));
     }
+
     //导出Excel表格
-    public function export(){
+    public function export()
+    {
         $where = Util::getMore([
-            ['start_time',''],
-            ['end_time',''],
-            ['nickname',''],
+            ['start_time', ''],
+            ['end_time', ''],
+            ['nickname', ''],
         ]);
         UserPointModel::SaveExport($where);
     }
+
     //获取积分日志头部信息
-    public function getuserpointbadgelist(){
+    public function getuserpointbadgelist()
+    {
         $where = Util::getMore([
-            ['start_time',''],
-            ['end_time',''],
-            ['nickname',''],
+            ['start_time', ''],
+            ['end_time', ''],
+            ['nickname', ''],
         ]);
         return JsonService::successful(UserPointModel::getUserpointBadgelist($where));
     }

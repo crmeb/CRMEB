@@ -7,18 +7,18 @@
     <div class="layui-row layui-col-space15"  id="app">
         <div class="layui-col-md12">
             <div class="layui-card">
-                <div class="layui-card-header">拼团产品搜索</div>
+                <div class="layui-card-header">拼团商品搜索</div>
                 <div class="layui-card-body">
                     <div class="alert alert-success alert-dismissable">
                         <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>
-                        目前拥有{$countCombination}个拼团产品
+                        目前拥有{$countCombination}个拼团商品
                     </div>
                     <form class="layui-form">
                         <div class="layui-form-item">
                             <div class="layui-inline">
                                 <label class="layui-form-label">搜　　索：</label>
                                 <div class="layui-input-inline">
-                                    <input type="text" name="store_name" lay-verify="store_name" style="width: 100%" autocomplete="off" placeholder="请输入产品名称,关键字,编号" class="layui-input">
+                                    <input type="text" name="store_name" lay-verify="store_name" style="width: 100%" autocomplete="off" placeholder="请输入商品名称,关键字,编号" class="layui-input">
                                 </div>
                             </div>
                             <div class="layui-inline">
@@ -91,8 +91,11 @@
         <!-- end-->
         <div class="layui-col-md12">
             <div class="layui-card">
-                <div class="layui-card-header">拼团产品列表</div>
+                <div class="layui-card-header">拼团商品列表</div>
                 <div class="layui-card-body">
+                    <div class="layui-btn-container">
+                        <a class="layui-btn layui-btn-sm" onclick="$eb.createModalFrame(this.innerText,'{:Url('create')}',{h:700,w:1100});">添加拼团商品</a>
+                    </div>
                     <table class="layui-hide" id="combinationList" lay-filter="combinationList"></table>
                     <script type="text/html" id="status">
                         <input type='checkbox' name='status' lay-skin='switch' value="{{d.id}}" lay-filter='status' lay-text='开启|关闭'  {{ d.is_show == 1 ? 'checked' : '' }}>
@@ -109,13 +112,15 @@
                         </div>
                     </script>
                     <script type="text/html" id="barDemo">
-                        <button type="button" class="layui-btn layui-btn-xs" onclick="dropdown(this)"><i class="layui-icon layui-icon-edit"></i>操作</button>
+                        <button type="button" class="layui-btn layui-btn-xs" onclick="$eb.createModalFrame('{{d.title}}-设置规格','{:Url('attr_list')}?id={{d.id}}',{h:1000,w:1400});"><i class="layui-icon layui-icon-util"></i>规格</button>
+
+                        <button type="button" class="layui-btn layui-btn-xs" onclick="dropdown(this)">操作<span class="caret"></span></button>
                         <ul class="layui-nav-child layui-anim layui-anim-upbit">
                             <li>
-                                <a href="javascript:void(0);" onclick="$eb.createModalFrame('{{d.title}}-编辑','{:Url('edit')}?id={{d.id}}')"><i class="layui-icon layui-icon-edit"></i> 编辑</a>
+                                <a href="javascript:void(0);" onclick="$eb.createModalFrame('{{d.title}}-编辑','{:Url('edit')}?id={{d.id}}')"><i class="layui-icon layui-icon-edit"></i> 编辑活动</a>
                             </li>
                             <li>
-                                <a href="javascript:void(0);" onclick="$eb.createModalFrame('{{d.title}}-编辑内容','{:Url('edit_content')}?id={{d.id}}')"><i class="fa fa-pencil"></i> 编辑内容</a>
+                                <a href="javascript:void(0);" onclick="$eb.createModalFrame('{{d.title}}-编辑内容','{:Url('edit_content')}?id={{d.id}}')"><i class="layui-icon layui-icon-edit"></i> 编辑内容</a>
                             </li>
                             <li>
                                 <a href="javascript:void(0);" class="delstor" lay-event='delstor'><i class="layui-icon layui-icon-delete"></i> 删除</a>
@@ -134,21 +139,19 @@
     layList.form.render();
     layList.tableList('combinationList',"{:Url('get_combination_list')}",function () {
         return [
-            {field: 'id', title: '编号', sort: true,event:'id'},
+            {field: 'id', title: '编号',width:'5%', sort: true,event:'id'},
             {field: 'image', title: '拼团图片',width:'10%',templet: '<p><img src="{{d.image}}" alt="{{d.title}}" class="open_image" data-image="{{d.image}}"></p>'},
-            {field: 'title', title: '拼团名称',width:'10%'},
-            {field: 'ot_price', title: '原价'},
-            {field: 'price', title: '拼团价'},
-            {field: 'stock', title: '库存'},
-            {field: 'people', title: '拼团人数',templet: '<span>【{{d.people}}】人</span>'},
-            {field: 'count_people_browse', title: '访客人数'},
-            {field: 'browse', title: '展现量'},
-            {field: 'count_people_all', title: '参与人数',templet: '<span>【{{d.count_people_all}}】人</span>'},
-            {field: 'count_people_pink', title: '成团数量',templet: '<span>【{{d.count_people_pink}}】团</span>'},
-            {field: 'browse', title: '浏览量'},
-            {field: 'is_show', title: '产品状态',templet:"#status"},
-            {field: '_stop_time', title: '结束时间',width:'8%',toolbar: '#stopTime'},
-            {field: 'right', title: '操作', align: 'center', toolbar: '#barDemo'}
+            {field: 'title', title: '拼团名称'},
+            {field: 'ot_price', title: '原价',width:'6%'},
+            {field: 'price', title: '拼团价',width:'6%'},
+            {field: 'people', title: '拼团人数',width:'7%',templet: '<span>【{{d.people}}】人</span>'},
+            {field: 'count_people_all', title: '参与人数',width:'7%',templet: '<span>【{{d.count_people_all}}】人</span>'},
+            {field: 'count_people_pink', title: '成团数量',width:'7%',templet: '<span>【{{d.count_people_pink}}】团</span>'},
+            {field: 'quota_show', title: '限量',width:'4%'},
+            {field: 'quota', title: '限量剩余',width:'6%'},
+            {field: '_stop_time', title: '结束时间', width:'8%',toolbar: '#stopTime'},
+            {field: 'is_show', title: '状态', width:'6%',templet:"#status"},
+            {field: 'right', title: '操作', width:'10%', align: 'center', toolbar: '#barDemo'}
         ]
     });
     layList.search('search',function(where){
@@ -166,12 +169,14 @@
     function setTime() {
         setTimeout(function () {
             $.each($combinationId,function (index,item) {
-               if($('.count-time-'+item).attr('data-time')!=undefined){
-                    $('.count-time-'+item).downCount({
-                        date: $('.count-time-'+item).attr('data-time'),
-                        offset: +8
-                    });
-               }
+                if ($('.count-time-' + item).length) {
+                    if ($('.count-time-' + item).attr('data-time') != undefined) {
+                        $('.count-time-' + item).downCount({
+                            date: $('.count-time-' + item).attr('data-time'),
+                            offset: +8
+                        });
+                    }
+                }
             })
         },3000);
     }
@@ -183,6 +188,22 @@
                 p: {status: 1, id: value}
             }), function (res) {
                 layList.msg(res.msg);
+            }, function () {
+                odj.elem.checked = false;
+                layui.form.render();
+                layer.open({
+                    type: 1
+                    ,offset: 'auto'
+                    ,id: 'layerDemoauto' //防止重复弹出
+                    ,content: '<div style="padding: 20px 100px;">请先配置规格</div>'
+                    ,btn: '设置规格'
+                    ,btnAlign: 'c' //按钮居中
+                    ,shade: 0 //不显示遮罩
+                    ,yes: function(){
+                        layer.closeAll();
+                        $eb.createModalFrame('设置规格','{:Url('attr_list')}?id='+value+'',{h:1000,w:1400});
+                    }
+                });
             });
         } else {
             layList.baseGet(layList.Url({

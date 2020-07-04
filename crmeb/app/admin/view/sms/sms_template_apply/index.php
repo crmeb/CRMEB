@@ -1,11 +1,26 @@
 {extend name="public/container"}
 {block name="content"}
-
+<style>
+    .logout{
+        float: right;
+        margin-right: 100px;
+    }
+    .logout span{
+        margin-right: 20px;
+    }
+</style>
 <div class="layui-fluid">
     <div class="layui-row layui-col-space15"  id="app">
         <div class="layui-col-md12">
             <div class="layui-card">
-                <div class="layui-card-header">搜索条件</div>
+
+                <div class="layui-card-header">
+                    搜索条件
+                    <div class="layui-inline logout">
+                        <span class="">账号：{$sms_account}</span>
+                        <a type="button" class="layui-btn layui-btn-sm" href="{:Url('sms.SmsConfig/logout')}">退  出</a>
+                    </div>
+                </div>
                 <div class="layui-card-body">
                     <form class="layui-form layui-form-pane" action="">
                         <div class="layui-form-item">
@@ -43,6 +58,7 @@
                 <div class="layui-card-body">
                     <div class="layui-btn-container">
                         <button type="button" class="layui-btn layui-btn-sm" onclick="$eb.createModalFrame(this.innerText,'{:Url('create')}')">申请模板</button>
+                        <button type="button" class="layui-btn layui-btn-sm" onclick="$eb.createModalFrame(this.innerText,'{:Url('sms.smsPublicTemp/index')}',{'w':1500})">公共短信模板</button>
                     </div>
                     <table class="layui-hide" id="List" lay-filter="List"></table>
                     <script type="text/html" id="status">

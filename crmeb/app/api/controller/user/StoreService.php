@@ -27,6 +27,7 @@ class StoreService
         if(!count($serviceInfoList)) return app('json')->successful([]);
         return app('json')->successful($serviceInfoList->hidden(['notify', 'status', 'mer_id', 'add_time'])->toArray());
     }
+
     /**
      * 客服聊天记录
      * @param Request $request

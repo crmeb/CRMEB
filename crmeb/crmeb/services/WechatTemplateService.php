@@ -40,9 +40,6 @@ class WechatTemplateService implements ProviderInterface
     //帐户资金变动提醒
     const USER_BALANCE_CHANGE = 'OPENTM405847076';
 
-    //客服通知提醒
-    const SERVICE_NOTICE = 'OPENTM204431262';
-
     //服务进度提醒
     const ADMIN_NOTICE = 'OPENTM408237350';
 
@@ -82,7 +79,7 @@ class WechatTemplateService implements ProviderInterface
      */
     public static function sendTemplate($openid, $templateId, array $data, $url = null, $defaultColor = '')
     {
-        $tempid = WechatTemplateModel::where('tempkey', $templateId)->where('status', 1)->value('tempid');
+        $tempid = WechatTemplateModel::vialdWhere()->where('tempkey', $templateId)->where('status', 1)->value('tempid');
         if (!$tempid) return false;
         try {
             return WechatService::sendTemplate($openid, $tempid, $data, $url, $defaultColor);
@@ -99,7 +96,7 @@ class WechatTemplateService implements ProviderInterface
      */
     public static function sendAdminNoticeTemplate(array $data, $url = null, $defaultColor = '')
     {
-        $adminIds = explode(',', trim(sysConfig('site_store_admin_uids')));
+        $adminIds = explode(',', trim(sys_config('site_store_admin_uids')));
         $kefuIds = ServiceModel::where('notify', 1)->column('uid', 'uid');
         if (empty($adminIds[0])) {
             $adminList = array_unique($kefuIds);

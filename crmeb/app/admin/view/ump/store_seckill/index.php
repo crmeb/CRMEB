@@ -7,18 +7,18 @@
     <div class="layui-row layui-col-space15"  id="app">
         <div class="layui-col-md12">
             <div class="layui-card">
-                <div class="layui-card-header">秒杀产品搜索</div>
+                <div class="layui-card-header">秒杀商品搜索</div>
                 <div class="layui-card-body">
                     <div class="alert alert-success alert-dismissable">
                         <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>
-                        目前拥有{$countSeckill}个秒杀产品
+                        目前拥有{$countSeckill}个秒杀商品
                     </div>
                     <form class="layui-form">
                         <div class="layui-form-item">
                             <div class="layui-inline">
                                 <label class="layui-form-label">搜　　索：</label>
                                 <div class="layui-input-inline">
-                                    <input type="text" name="store_name" lay-verify="store_name" style="width: 100%" autocomplete="off" placeholder="请输入产品名称,关键字,编号" class="layui-input">
+                                    <input type="text" name="store_name" lay-verify="store_name" style="width: 100%" autocomplete="off" placeholder="请输入商品名称,关键字,编号" class="layui-input">
                                 </div>
                             </div>
                             <div class="layui-inline">
@@ -46,8 +46,11 @@
         </div>
         <div class="layui-col-md12">
             <div class="layui-card">
-                <div class="layui-card-header">秒杀产品列表</div>
+                <div class="layui-card-header">秒杀商品列表</div>
                 <div class="layui-card-body">
+                    <div class="layui-btn-container">
+                        <a class="layui-btn layui-btn-sm" onclick="$eb.createModalFrame(this.innerText,'{:Url('create')}',{h:700,w:1100});">添加秒杀商品</a>
+                    </div>
                     <table class="layui-hide" id="seckillList" lay-filter="seckillList"></table>
                     <script type="text/html" id="status">
                         <input type='checkbox' name='status' lay-skin='switch' value="{{d.id}}" lay-filter='status' lay-text='开启|关闭'  {{ d.status == 1 ? 'checked' : '' }}>
@@ -67,13 +70,15 @@
                         {{ d.status == 1 ? d.start_name : '关闭' }}
                     </script>
                     <script type="text/html" id="barDemo">
-                        <button type="button" class="layui-btn layui-btn-xs" onclick="dropdown(this)"><i class="layui-icon layui-icon-util"></i>操作</button>
+                        <button type="button" class="layui-btn layui-btn-xs" onclick="$eb.createModalFrame('{{d.title}}-设置规格','{:Url('attr_list')}?id={{d.id}}',{h:1000,w:1400});"><i class="layui-icon layui-icon-util"></i>规格</button>
+
+                        <button type="button" class="layui-btn layui-btn-xs" onclick="dropdown(this)">操作<span class="caret"></span></button>
                         <ul class="layui-nav-child layui-anim layui-anim-upbit">
                             <li>
-                                <a href="javascript:void(0);" onclick="$eb.createModalFrame('{{d.title}}-编辑','{:Url('edit')}?id={{d.id}}')"><i class="layui-icon layui-icon-edit"></i> 编辑</a>
+                                <a href="javascript:void(0);" onclick="$eb.createModalFrame('{{d.title}}-编辑','{:Url('edit')}?id={{d.id}}')"><i class="layui-icon layui-icon-edit"></i> 编辑活动</a>
                             </li>
                             <li>
-                                <a href="javascript:void(0);" onclick="$eb.createModalFrame('{{d.title}}-编辑内容','{:Url('edit_content')}?id={{d.id}}')"><i class="fa fa-pencil"></i> 编辑内容</a>
+                                <a href="javascript:void(0);" onclick="$eb.createModalFrame('{{d.title}}-编辑内容','{:Url('edit_content')}?id={{d.id}}')"><i class="layui-icon layui-icon-edit"></i>编辑内容</a>
                             </li>
                             <li>
                                 <a href="javascript:void(0);" class="delstor" lay-event='delstor'><i class="layui-icon layui-icon-delete"></i> 删除</a>
@@ -114,16 +119,17 @@
     layList.tableList('seckillList',"{:Url('get_seckill_list')}",function () {
         return [
             {field: 'id', title: 'ID', sort: true,width:'6%',event:'id'},
-            {field: 'image', title: '产品图片', width: '10%',templet: '<p><img src="{{d.image}}" alt="{{d.title}}" class="open_image" data-image="{{d.image}}"></p>'},
+            {field: 'image', title: '商品图片', width: '10%',templet: '<p><img src="{{d.image}}" alt="{{d.title}}" class="open_image" data-image="{{d.image}}"></p>'},
             {field: 'title', title: '活动标题'},
             {field: 'info', title: '活动简介',width:'20%'},
             {field: 'ot_price', title: '原价',width:'6%'},
             {field: 'price', title: '秒杀价',width:'6%'},
-            {field: 'stock', title: '库存',width:'6%'},
-            {field: 'start_name', title: '秒杀状态',width:'8%',toolbar:"#statusCn"},
-            {field: 'stop_time', title: '结束时间', width: '13%',toolbar: '#stopTime'},
+            {field: 'quota_show', title: '限量',width:'6%'},
+            {field: 'quota', title: '限量剩余',width:'6%'},
+            {field: 'start_name', title: '秒杀状态',width:'6%',toolbar:"#statusCn"},
+            {field: 'stop_time', title: '结束时间', width: '8%',toolbar: '#stopTime'},
             {field: 'status', title: '状态',width:'6%',toolbar:"#status"},
-            {field: 'right', title: '操作', width: '6%', align: 'center', toolbar: '#barDemo'}
+            {field: 'right', title: '操作',width:'10%', align: 'center', toolbar: '#barDemo'}
         ]
     });
     layList.tool(function (event,data,obj) {
@@ -189,6 +195,22 @@
                 p: {status: 1, id: value}
             }), function (res) {
                 layList.msg(res.msg);
+            }, function () {
+                odj.elem.checked = false;
+                layui.form.render();
+                layer.open({
+                    type: 1
+                    ,offset: 'auto'
+                    ,id: 'layerDemoauto' //防止重复弹出
+                    ,content: '<div style="padding: 20px 100px;">请先配置规格</div>'
+                    ,btn: '设置规格'
+                    ,btnAlign: 'c' //按钮居中
+                    ,shade: 0 //不显示遮罩
+                    ,yes: function(){
+                        layer.closeAll();
+                        $eb.createModalFrame('设置规格','{:Url('attr_list')}?id='+value+'',{h:1000,w:1400});
+                    }
+                });
             });
         } else {
             layList.baseGet(layList.Url({
@@ -223,6 +245,6 @@
     $(document).on('click',".open_image",function (e) {
         var image = $(this).data('image');
         $eb.openImage(image);
-    })
+    });
 </script>
 {/block}

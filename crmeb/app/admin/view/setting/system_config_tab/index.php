@@ -5,8 +5,8 @@
         <div class="ibox float-e-margins">
             <div class="ibox-title">
 
-                <button type="button" class="btn btn-w-m btn-primary add-filed">添加配置分类</button>
-                <button type="button" class="btn btn-w-m btn-primary add_filed_base">添加配置</button>
+                <button type="button" class="btn btn-w-m btn-primary" onclick="$eb.createModalFrame(this.innerText,'{:Url('create')}')">添加分类</button>
+                <button type="button" class="btn btn-w-m btn-primary" onclick="$eb.createModalFrame(this.innerText,'{:Url('setting.systemConfig/create',['type'=>0])}')">添加配置</button>
 
                 <div class="ibox-tools">
 
@@ -81,7 +81,7 @@
 
                             <td class="text-center">
 
-                                <a href="{:url('sonConfigTab',array('tab_id'=>$vo['id']))}" style="cursor: pointer">{$vo.title}</a>
+                                <a href="{:url('index',array('pid'=>$vo['id']))}" style="cursor: pointer">{$vo.title}</a>
 
                             </td>
 
@@ -103,10 +103,11 @@
 
                             <td class="text-center">
 
-                                <button class="btn btn-info btn-xs" type="button"  onclick="$eb.createModalFrame('编辑','{:Url('edit',array('id'=>$vo['id']))}')"><i class="fa fa-paste"></i> 编辑</button>
+                                <button class="btn btn-info btn-xs" type="button"  onclick="$eb.createModalFrame('查看字段','{:Url('sonConfigTab',array('tab_id'=>$vo['id']))}',{w:900})"><i class="fa fa-edit"></i> 配置字段</button>
+                                <button class="btn btn-info btn-xs" type="button"  onclick="$eb.createModalFrame('编辑','{:Url('edit',array('id'=>$vo['id']))}')"><i class="fa fa-edit"></i> 编辑</button>
 
                                 {if condition="$vo['id'] > 2"}
-                                <button class="btn btn-warning btn-xs del_config_tab" data-id="{$vo.id}" type="button" data-url="{:Url('delete',array('id'=>$vo['id']))}" ><i class="fa fa-warning"></i> 删除
+                                <button class="btn btn-danger btn-xs  del_config_tab" data-id="{$vo.id}" type="button" data-url="{:Url('delete',array('id'=>$vo['id']))}" ><i class="fa fa-times"></i> 删除
 
                                 </button>
                                 {/if}
@@ -136,9 +137,6 @@
 {block name="script"}
 <script>
 
-    $('.add-filed').on('click',function (e) {
-        $eb.createModalFrame(this.innerText,"{:Url('create')}");
-    })
     $('.del_config_tab').on('click',function(){
 
         var _this = $(this),url =_this.data('url');
@@ -166,26 +164,6 @@
         })
 
     });
-    $('.add_filed_base').on('click',function (e) {
-        $eb.createModalFrame('添加配置字段',"{:Url('setting.systemConfig/create',['type'=>0])}");
-//        $eb.swal({
-//            title: '请选择数据类型',
-//            input: 'radio',
-//            inputOptions: ['文本框','多行文本框','单选框','文件上传','多选框'],
-//            inputValidator: function(result) {
-//                return new Promise(function(resolve, reject) {
-//                    if (result) {
-//                        resolve();
-//                    } else {
-//                        reject('请选择数据类型');
-//                    }
-//                });
-//            }
-//        }).then(function(result) {
-//            if (result) {
-//                $eb.createModalFrame(this.innerText,"{:Url('setting.systemConfig/create')}?type="+result);
-//            }
-//        })
-    })
+
 </script>
 {/block}

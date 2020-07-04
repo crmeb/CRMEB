@@ -60,10 +60,10 @@
                     </script>
                     <script type="text/html" id="act">
                         <button class="layui-btn layui-btn-xs" onclick="$eb.createModalFrame('编辑','{:Url('create_tash')}?level_id={$level_id}&id={{d.id}}')">
-                            <i class="fa fa-paste"></i> 编辑
+                            <i class="fa fa-edit"></i> 编辑
                         </button>
                         <button class="layui-btn layui-btn-xs layui-btn-danger" lay-event='delete'>
-                            <i class="fa fa-warning"></i> 删除
+                            <i class="fa fa-times"></i> 删除
                         </button>
                     </script>
                 </div>

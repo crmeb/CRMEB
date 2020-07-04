@@ -45,7 +45,7 @@ class UserSubscribe
 
         if (!User::be(['uid' => $spreadId])) $spreadId = 0;
 
-        $wechatInfo['nickname'] = filterEmoji($wechatInfo['nickname']);
+        $wechatInfo['nickname'] = filter_emoji($wechatInfo['nickname']);
         Cookie::set('is_login', 1);
         if (isset($wechatInfo['unionid']) && $wechatInfo['unionid'] != '' && ($uid = WechatUser::where('unionid', $wechatInfo['unionid'])->where('user_type', '<>', 'h5')->value('uid'))) {
             WechatUser::edit($wechatInfo, $uid, 'uid');

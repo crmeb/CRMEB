@@ -56,6 +56,7 @@ class Article extends BaseModel
             $list->store_info = $list->profile ? $list->profile->toArray() : null;
             $list = $list->hidden(['hide', 'status', 'admin_id', 'mer_id'])->toArray();
             $list["content"] = Db::name('articleContent')->where('nid', $id)->value('content');
+            $list["content"] = htmlspecialchars_decode($list["content"]);
             return $list;
         } else return [];
     }
@@ -110,7 +111,7 @@ class Article extends BaseModel
         $model = $model->where('hide', 0);
         $model = $model->where('is_banner', 1);
         $model = $model->order('sort DESC,add_time DESC');
-        $model = $model->limit(sysConfig('news_slides_limit') ?? 3);
+        $model = $model->limit(sys_config('news_slides_limit') ?? 3);
         return $model->select();
     }
 }

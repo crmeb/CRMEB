@@ -12,9 +12,7 @@ use crmeb\traits\ModelTrait;
 use crmeb\basic\BaseModel;
 use app\admin\model\wechat\WechatUser;
 use app\admin\model\store\StoreCouponUser;
-use crmeb\services\SystemConfigService;
 use crmeb\services\PHPExcelService;
-use think\facade\Db;
 
 /**
  * 用户管理 model
@@ -128,6 +126,12 @@ class User extends BaseModel
             if ($where['country'] == 'domestic') $model = $model->where('w.country', '中国');
             else if ($where['country'] == 'abroad') $model = $model->where('w.country', '<>', '中国');
         }
+        if ($where['level'] !== '') {
+            $model = $model->where('level', $where['level'])->where('clean_time',0);
+        }
+        if ($where['group_id'] !== '') {
+            $model = $model->where('group_id', $where['group_id']);
+        }
         return $model;
     }
 
@@ -170,10 +174,10 @@ class User extends BaseModel
                     $item['sex'] = '女';
                 } else $item['sex'] = '保密';
                 $item['vip_name'] = false;
-                $levelinfo = UserLevel::where('uid', $item['uid'])->where('level_id',$item['level'])->where('is_del', 0)->order('grade desc')->field('level_id,is_forever,valid_time')->find();
+                $levelinfo = UserLevel::where('uid', $item['uid'])->where('is_del', 0)->order('grade desc')->field('level_id,is_forever,valid_time')->find();
                 if ($levelinfo) {
                     if ($levelinfo['is_forever']) $item['vip_name'] = SystemUserLevel::where('id', $levelinfo['level_id'])->value('name');
-                    else if (time() < $levelinfo['valid_time']) $item['vip_name'] = SystemUserLevel::where('id', $levelinfo['level_id'])->value('name');
+                    else if (time() > $levelinfo['valid_time']) $item['vip_name'] = SystemUserLevel::where('id', $levelinfo['level_id'])->value('name');
                 }
             });//->toArray();
         $count = self::setWherePage(self::setWhere($where), $where, ['w.sex', 'w.province', 'w.city', 'u.status', 'u.is_promoter'], ['u.nickname', 'u.uid'])->alias('u')->join('WechatUser w', 'u.uid=w.uid')->count();
@@ -618,9 +622,17 @@ class User extends BaseModel
         count($list) && $list = $list->toArray();
         $export = [];
         foreach ($list as &$value) {
-            $value['ex_price'] = Db::name('user_extract')->where('uid', $value['uid'])->sum('extract_price');
-            $value['extract_price'] = Db::name('user_extract')->where('uid', $value['uid'])->where('status', 1)->sum('extract_price');
-            $cashPrice = Db::name('user_extract')->where('uid', $value['uid'])->where('status', 0)->sum('extract_price');
+            //退款退的佣金 -
+            $refund_commission = UserBill::where(['uid' => $value['uid'], 'category' => 'now_money', 'type' => 'brokerage'])
+                ->where('pm', 0)
+                ->sum('number');
+            if ($value['sum_number'] > $refund_commission)
+                $value['sum_number'] = bcsub($value['sum_number'],$refund_commission,2);
+            else
+                $value['sum_number'] = 0;
+            $value['ex_price'] = UserExtract::where('uid', $value['uid'])->sum('extract_price');
+            $value['extract_price'] = UserExtract::where('uid', $value['uid'])->where('status', 1)->sum('extract_price');
+            $cashPrice = UserExtract::where('uid', $value['uid'])->where('status', 0)->sum('extract_price');
             $value['money'] = bcsub($value['ex_price'], $value['extract_price'], 2);
             $value['money'] = bcsub($value['money'], $cashPrice, 2);
             $export[] = [
@@ -648,6 +660,7 @@ class User extends BaseModel
             ->join('user_bill B', 'B.uid=A.uid')
             ->group('A.uid')
             ->where('B.type', 'brokerage')
+            ->where('B.pm',1)
             ->where('B.category', 'now_money')
             ->field('sum(B.number) as sum_number,A.nickname,A.uid,A.now_money,A.brokerage_price');
         if ($where['order'] == '') {
@@ -676,7 +689,15 @@ class User extends BaseModel
     public static function getUserinfo($uid)
     {
         $userinfo = self::where('uid', $uid)->field('nickname,spread_uid,now_money,add_time')->find()->toArray();
-        $userinfo['number'] = (float)UserBill::where('category', 'now_money')->where('uid', $uid)->where('type', 'brokerage')->sum('number');
+        $userinfo['number'] = (float)UserBill::where('category', 'now_money')->where('uid', $uid)->where('pm',1)->where('type', 'brokerage')->sum('number');
+        //退款退的佣金 -
+        $refund_commission = UserBill::where(['uid' => $uid, 'category' => 'now_money', 'type' => 'brokerage'])
+            ->where('pm', 0)
+            ->sum('number');
+        if ($userinfo['number'] > $refund_commission)
+            $userinfo['number'] = bcsub($userinfo['number'],$refund_commission,2);
+        else
+            $userinfo['number'] = 0;
         $userinfo['spread_name'] = $userinfo['spread_uid'] ? self::where('uid', $userinfo['spread_uid'])->value('nickname') : '';
         return $userinfo;
     }
@@ -685,9 +706,9 @@ class User extends BaseModel
     public static function getUserDetailed($uid)
     {
         $key_field = ['real_name', 'phone', 'province', 'city', 'district', 'detail', 'post_code'];
-        $Address = ($thisAddress = Db::name('user_address')->where('uid', $uid)->where('is_default', 1)->field($key_field)->find()) ?
+        $Address = ($thisAddress = UserAddress::where('uid', $uid)->where('is_default', 1)->field($key_field)->find()) ?
             $thisAddress :
-            Db::name('user_address')->where('uid', $uid)->field($key_field)->find();
+            UserAddress::where('uid', $uid)->field($key_field)->find();
         $UserInfo = self::get($uid);
         return [
             ['col' => 12, 'name' => '默认收货地址', 'value' => $thisAddress ? '收货人:' . $thisAddress['real_name'] . '邮编:' . $thisAddress['post_code'] . ' 收货人电话:' . $thisAddress['phone'] . ' 地址:' . $thisAddress['province'] . ' ' . $thisAddress['city'] . ' ' . $thisAddress['district'] . ' ' . $thisAddress['detail'] : ''],
@@ -702,7 +723,7 @@ class User extends BaseModel
             ['name' => '上级推广人', 'value' => $UserInfo['spread_uid'] ? self::where('uid', $UserInfo['spread_uid'])->value('nickname') : ''],
             ['name' => '账户余额', 'value' => $UserInfo['now_money']],
             ['name' => '佣金总收入', 'value' => UserBill::where('category', 'now_money')->where('type', 'brokerage')->where('uid', $uid)->sum('number')],
-            ['name' => '提现总金额', 'value' => Db::name('user_extract')->where('uid', $uid)->where('status', 1)->sum('extract_price')],
+            ['name' => '提现总金额', 'value' => UserExtract::where('uid', $uid)->where('status', 1)->sum('extract_price')],
         ];
     }
 
@@ -1156,7 +1177,7 @@ class User extends BaseModel
             ->order('uid desc')->page((int)$page, (int)$limit)->select();
         count($list) && $list = $list->toArray();
         foreach ($list as &$item) {
-            $item['add_time'] = date('Y-m-d H', $item['add_time']);
+            $item['add_time'] = date('Y-m-d H:i:s', $item['add_time']);
         }
         return $list;
     }

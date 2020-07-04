@@ -12,8 +12,8 @@ use app\models\user\UserExtract;
 use app\Request;
 use crmeb\services\GroupDataService;
 use crmeb\services\SystemConfigService;
-use crmeb\services\UploadService;
 use crmeb\services\UtilService;
+use crmeb\services\upload\Upload;
 
 /**
  * 账单类
@@ -130,8 +130,13 @@ class UserBillController
     public function spread_count(Request $request, $type)
     {
         $count = 0;
-        if ($type == 3) $count = UserBill::getRecordCount($request->uid(), 'now_money', 'brokerage');
-        else if ($type == 4) $count = UserExtract::userExtractTotalPrice($request->uid());//累计提现
+        if ($type == 3) {
+            $count1 = UserBill::getRecordCount($request->uid(), 'now_money', 'brokerage');
+            $count2 = UserBill::getRecordCount($request->uid(), 'now_money', 'brokerage', '', true);
+            $count = $count1 - $count2;
+        } else if ($type == 4) {
+            $count = UserExtract::userExtractTotalPrice($request->uid());//累计提现
+        }
         $count = $count ? $count : 0;
         return app('json')->successful(['count' => $count]);
     }
@@ -152,29 +157,41 @@ class UserBillController
         try {
             $resRoutine = true;//小程序
             $resWap = true;//公众号
-            $siteUrl = sysConfig('site_url');
-            $routineSpreadBanner = GroupDataService::getData('routine_spread_banner');
+            $siteUrl = sys_config('site_url');
+            $routineSpreadBanner = sys_data('routine_spread_banner');
             if (!count($routineSpreadBanner)) return app('json')->fail('暂无海报');
             if ($type == 1) {
                 //小程序
                 $name = $user['uid'] . '_' . $user['is_promoter'] . '_user_routine.jpg';
                 $imageInfo = SystemAttachment::getInfo($name, 'name');
                 //检测远程文件是否存在
-                if (isset($imageInfo['att_dir']) && strstr($imageInfo['att_dir'], 'http') !== false && UtilService::CurlFileExist($imageInfo['att_dir']) === false) {
+                if (isset($imageInfo['att_dir']) && strstr($imageInfo['att_dir'], 'http') !== false && curl_file_exist($imageInfo['att_dir']) === false) {
                     $imageInfo = null;
                     SystemAttachment::where(['name' => $name])->delete();
                 }
                 if (!$imageInfo) {
                     $res = RoutineCode::getShareCode($user['uid'], 'spread', '', '');
                     if (!$res) return app('json')->fail('二维码生成失败');
-                    $imageInfo = UploadService::instance()->setUploadPath('routine/spread/code')->imageStream($name, $res['res']);
-                    if (!is_array($imageInfo)) return app('json')->fail($imageInfo);
+                    $uploadType = (int)sys_config('upload_type', 1);
+                    $upload = new Upload($uploadType, [
+                        'accessKey' => sys_config('accessKey'),
+                        'secretKey' => sys_config('secretKey'),
+                        'uploadUrl' => sys_config('uploadUrl'),
+                        'storageName' => sys_config('storage_name'),
+                        'storageRegion' => sys_config('storage_region'),
+                    ]);
+                    $uploadRes = $upload->to('routine/spread/code')->validate()->stream($res['res'], $name);
+                    if ($uploadRes === false) {
+                        return app('json')->fail($upload->getError());
+                    }
+                    $imageInfo = $upload->getUploadInfo();
+                    $imageInfo['image_type'] = $uploadType;
                     SystemAttachment::attachmentAdd($imageInfo['name'], $imageInfo['size'], $imageInfo['type'], $imageInfo['dir'], $imageInfo['thumb_path'], 1, $imageInfo['image_type'], $imageInfo['time'], 2);
-                    RoutineQrcode::setRoutineQrcodeFind($res['id'], ['status' => 1, 'time' => time(), 'qrcode_url' => $imageInfo['dir']]);
+                    RoutineQrcode::setRoutineQrcodeFind($res['id'], ['status' => 1, 'url_time' => time(), 'qrcode_url' => $imageInfo['dir']]);
                     $urlCode = $imageInfo['dir'];
                 } else $urlCode = $imageInfo['att_dir'];
                 if ($imageInfo['image_type'] == 1) $urlCode = $siteUrl . $urlCode;
-                $siteUrlHttps = UtilService::setHttpType($siteUrl, 0);
+                $siteUrlHttps = set_http_type($siteUrl, $request->isSsl() ? 0 : 1);
                 $filelink = [
                     'Bold' => 'static' . DS . 'font' . DS . 'Alibaba-PuHuiTi-Regular.otf',
                     'Normal' => 'static' . DS . 'font' . DS . 'Alibaba-PuHuiTi-Regular.otf',
@@ -208,7 +225,7 @@ class UserBillController
                                 'angle' => 0,
                             ),
                             array(
-                                'text' => '邀请您加入' . sysConfig('site_name'),
+                                'text' => '邀请您加入' . sys_config('site_name'),
                                 'left' => 250,
                                 'top' => 880,
                                 'fontPath' => $rootPath . 'public' . DS . $filelink['Normal'],     //字体文件
@@ -226,7 +243,7 @@ class UserBillController
                         if ($posterInfo['image_type'] == 1)
                             $item['poster'] = $siteUrlHttps . $posterInfo['dir'];
                         else
-                            $item['poster'] = UtilService::setHttpType($posterInfo['dir'], 0);
+                            $item['poster'] = set_http_type($posterInfo['dir'], $request->isSsl() ? 0 : 1);
                         $item['poster'] = str_replace('\\', '/', $item['poster']);
                     }
                 }
@@ -235,19 +252,19 @@ class UserBillController
                 $name = $user['uid'] . '_' . $user['is_promoter'] . '_user_wap.jpg';
                 $imageInfo = SystemAttachment::getInfo($name, 'name');
                 //检测远程文件是否存在
-                if (isset($imageInfo['att_dir']) && strstr($imageInfo['att_dir'], 'http') !== false && UtilService::CurlFileExist($imageInfo['att_dir']) === false) {
+                if (isset($imageInfo['att_dir']) && strstr($imageInfo['att_dir'], 'http') !== false && curl_file_exist($imageInfo['att_dir']) === false) {
                     $imageInfo = null;
                     SystemAttachment::where(['name' => $name])->delete();
                 }
                 if (!$imageInfo) {
-                    $codeUrl = UtilService::setHttpType($siteUrl . '?spread=' . $user['uid'], 1);//二维码链接
+                    $codeUrl = set_http_type($siteUrl . '?spread=' . $user['uid'], $request->isSsl() ? 0 : 1);//二维码链接
                     $imageInfo = UtilService::getQRCodePath($codeUrl, $name);
-                    if (!$imageInfo) return app('json')->fail('二维码生成失败');
+                    if (is_string($imageInfo)) return app('json')->fail('二维码生成失败', ['error' => $imageInfo]);
                     SystemAttachment::attachmentAdd($imageInfo['name'], $imageInfo['size'], $imageInfo['type'], $imageInfo['dir'], $imageInfo['thumb_path'], 1, $imageInfo['image_type'], $imageInfo['time'], 2);
                     $urlCode = $imageInfo['dir'];
                 } else $urlCode = $imageInfo['att_dir'];
                 if ($imageInfo['image_type'] == 1) $urlCode = $siteUrl . $urlCode;
-                $siteUrl = UtilService::setHttpType($siteUrl, 1);
+                $siteUrl = set_http_type($siteUrl, $request->isSsl() ? 0 : 1);
                 $filelink = [
                     'Bold' => 'static' . DS . 'font' . DS . 'Alibaba-PuHuiTi-Regular.otf',
                     'Normal' => 'static' . DS . 'font' . DS . 'Alibaba-PuHuiTi-Regular.otf',
@@ -281,7 +298,7 @@ class UserBillController
                                 'angle' => 0,
                             ),
                             array(
-                                'text' => '邀请您加入' . sysConfig('site_name'),
+                                'text' => '邀请您加入' . sys_config('site_name'),
                                 'left' => 250,
                                 'top' => 880,
                                 'fontPath' => $rootPath . 'public' . DS . $filelink['Normal'],     //字体文件
@@ -297,16 +314,16 @@ class UserBillController
                     SystemAttachment::attachmentAdd($posterInfo['name'], $posterInfo['size'], $posterInfo['type'], $posterInfo['dir'], $posterInfo['thumb_path'], 1, $posterInfo['image_type'], $posterInfo['time'], 2);
                     if ($resWap) {
                         if ($posterInfo['image_type'] == 1)
-                            $item['wap_poster'] = $siteUrl . $posterInfo['dir'];
+                            $item['wap_poster'] = $siteUrl . $posterInfo['thumb_path'];
                         else
-                            $item['wap_poster'] = UtilService::setHttpType($posterInfo['dir'], 1);
+                            $item['wap_poster'] = set_http_type($posterInfo['thumb_path'], 1);
                     }
                 }
             }
             if ($resRoutine && $resWap) return app('json')->successful($routineSpreadBanner);
             else return app('json')->fail('生成图片失败');
         } catch (\Exception $e) {
-            return app('json')->fail('生成图片时，系统错误', ['line' => $e->getLine(), 'message' => $e->getMessage()]);
+            return app('json')->fail('生成图片时，系统错误', ['line' => $e->getLine(), 'message' => $e->getMessage(), 'file' => $e->getFile()]);
         }
     }
 
@@ -322,7 +339,7 @@ class UserBillController
     public function integral_list(Request $request)
     {
         list($page, $limit) = UtilService::getMore([
-            ['page', 0], ['limit', 0]
+            [['page', 'd'], 0], [['limit', 'd'], 0]
         ], $request, true);
         return app('json')->successful(UserBill::userBillList($request->uid(), $page, $limit));
 

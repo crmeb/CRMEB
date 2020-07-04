@@ -32,20 +32,20 @@ class StoreProductAttrResult extends BaseModel
         return is_array($value) ? json_encode($value) : $value;
     }
 
-    public static function setResult($result,$product_id)
+    public static function setResult($result, $product_id, $type = 0)
     {
         $result = self::setResultAttr($result);
         $change_time = self::setChangeTimeAttr(0);
-        $count = self::where('product_id',$product_id)->count();
+        $count = self::where('product_id', $product_id)->where('type', $type)->count();
         $res = true;
-        if($count) $res = self::where('product_id',$product_id)->delete();
-        if($res) return self::insert(compact('product_id','result','change_time'),true);
+        if ($count) $res = self::where('product_id', $product_id)->where('type', $type)->delete();
+        if ($res) return self::insert(compact('product_id', 'result', 'change_time', 'type'), true);
         return $res;
     }
 
-    public static function getResult($productId)
+    public static function getResult($productId, int $type = 0)
     {
-        return json_decode(self::where('product_id',$productId)->value('result'),true) ?: [];
+        return json_decode(self::where('product_id', $productId)->where('type', $type)->value('result'), true) ?: ['value' => []];
     }
 
     public static function clearResult($productId)

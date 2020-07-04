@@ -188,6 +188,8 @@
                 }, function(){
                     layList.basePost(that.U({a:'delete'}),{imageid:that.selectImagesIDS},function (res) {
                         layList.msg(res.msg);
+                        that.selectImagesIDS = [];
+                        that.selectImages = [];
                         that.getImageList();
                     },function (res) {
                         layList.msg(res.msg);
@@ -244,6 +246,22 @@
                         parent.$f.closeModal(parentinputname);
                     }else{
                         //独立图片选择页面
+                        if(parentinputname == 'image' && this.selectImages.length > 1) {
+                            return layList.msg('最多只能选择1张');
+                        }
+                        if(parent.$vm){
+                            var rule = parent.$vm.getRule(parentinputname)
+                            if(rule.maxLength !== undefined){
+                                if(this.selectImages.length > rule.maxLength){
+                                    return layList.msg('最多只能选择'+rule.maxLength+'张');
+                                }
+                                parent.changeIMG(parentinputname,this.selectImages);
+                                var index = parent.layer.getFrameIndex(window.name);
+                                parent.layer.close(index);
+                                return;
+                            }
+
+                        }
                         parent.changeIMG(parentinputname,this.selectImages[0]);
                         var index = parent.layer.getFrameIndex(window.name);
                         parent.layer.close(index);

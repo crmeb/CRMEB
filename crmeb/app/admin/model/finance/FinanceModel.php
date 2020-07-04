@@ -1,4 +1,5 @@
 <?php
+
 namespace app\admin\model\finance;
 
 use crmeb\traits\ModelTrait;
@@ -14,7 +15,6 @@ use crmeb\services\PHPExcelService;
  */
 class FinanceModel extends BaseModel
 {
-
     /**
      * 数据表主键
      * @var string
@@ -39,80 +39,94 @@ class FinanceModel extends BaseModel
         $model = new self;
         //翻页
         $limit = $where['limit'];
-        $offset= $where['offset'];
-        $limit = $offset.','.$limit;
+        $offset = $where['offset'];
+        $limit = $offset . ',' . $limit;
         //排序
         $order = '';
-        if(!empty($where['sort'])&&!empty($where['sortOrder'])){
-            $order = $where['sort'].' '.$where['sortOrder'];
+        if (!empty($where['sort']) && !empty($where['sortOrder'])) {
+            $order = $where['sort'] . ' ' . $where['sortOrder'];
         }
-        unset($where['limit']);unset($where['offset']);
-        unset($where['sort']);unset($where['sortOrder']);
-        if(!empty($where['add_time'])){
-            list($startTime,$endTime) = explode(' - ',$where['add_time']);
-            $where['add_time'] = array('between',[strtotime($startTime),strtotime($endTime)]);
-        }else{
-            $where['add_time'] = array('between',[strtotime(date('Y/m').'/01'),strtotime(date('Y/m').'/'.date('t'))]);
+        unset($where['limit']);
+        unset($where['offset']);
+        unset($where['sort']);
+        unset($where['sortOrder']);
+        if (!empty($where['add_time'])) {
+//            list($startTime, $endTime) = explode(' - ', $where['add_time']);
+//            $where['add_time'] = array('between', [strtotime($startTime), strtotime($endTime)]);
+//        } else {
+//            $where['add_time'] = array('between', [strtotime(date('Y/m') . '/01'), strtotime(date('Y/m') . '/' . date('t'))]);
+            $model = self::getModelTime($where, $model, 'add_time');
         }
-        if(empty($where['title'])){
+        if (empty($where['title'])) {
             unset($where['title']);
         }
 
         $total = $model->where($where)->count();
-        $rows = $model->where($where)->order($order)->limit($limit)->select()->each(function($e){
-            return $e['add_time'] = date('Y-m-d H:i:s',$e['add_time']);
+        $rows = $model->where($where)->order($order)->limit($limit)->select()->each(function ($e) {
+            return $e['add_time'] = date('Y-m-d H:i:s', $e['add_time']);
         })->toArray();
-        return compact('total','rows');
+        return compact('total', 'rows');
     }
-    public static function getBillList($where){
-        $data=($data=self::setWhereList($where)->page((int)$where['page'],(int)$where['limit'])->select()) && count($data) ? $data->toArray():[];
-        $count=self::setWhereList($where)->count();
-        return compact('data','count');
+
+    public static function getBillList($where)
+    {
+        $data = ($data = self::setWhereList($where)->page((int)$where['page'], (int)$where['limit'])->select()) && count($data) ? $data->toArray() : [];
+        $count = self::setWhereList($where)->count();
+        return compact('data', 'count');
     }
-    public static function SaveExport($where){
-        $data=($data=self::setWhereList($where)->select()) && count($data) ? $data->toArray():[];
+
+    public static function SaveExport($where)
+    {
+        $data = ($data = self::setWhereList($where)->select()) && count($data) ? $data->toArray() : [];
         $export = [];
-        foreach ($data as $value){
-            $export[]=[
+        foreach ($data as $value) {
+            $export[] = [
                 $value['uid'],
                 $value['nickname'],
-                $value['pm']==0 ? '-'.$value['number']:$value['number'],
+                $value['pm'] == 0 ? '-' . $value['number'] : $value['number'],
                 $value['title'],
                 $value['mark'],
                 $value['add_time'],
             ];
         }
-        PHPExcelService::setExcelHeader(['会员ID','昵称','金额/积分','类型','备注','创建时间'])
-            ->setExcelTile('资金监控', '资金监控',date('Y-m-d H:i:s',time()))
+        PHPExcelService::setExcelHeader(['会员ID', '昵称', '金额/积分', '类型', '备注', '创建时间'])
+            ->setExcelTile('资金监控', '资金监控', date('Y-m-d H:i:s', time()))
             ->setExcelContent($export)
             ->ExcelSave();
     }
-    public static function setWhereList($where){
-        $time['data']='';
-        if($where['start_time']!='' && $where['end_time']!=''){
-            $time['data']=$where['start_time'].' - '.$where['end_time'];
+
+    public static function setWhereList($where)
+    {
+        $time['data'] = '';
+        if ($where['start_time'] != '' && $where['end_time'] != '') {
+            $time['data'] = $where['start_time'] . ' - ' . $where['end_time'];
         }
-        $model=self::getModelTime($time,self::alias('A')
-            ->join('user B','B.uid=A.uid')
-            ->where('A.category','not in','integral')
-            ->order('A.add_time desc'),'A.add_time');
-        if(trim($where['type'])!=''){
-            $model=$model->where('A.type',$where['type']);
-        }else{
-            $model=$model->where('A.type','not in','gain,system_sub,deduction,sign');
+        $model = self::getModelTime($time, self::alias('A')
+            ->join('user B', 'B.uid=A.uid')
+            ->where('A.category', 'not in', 'integral')
+            ->order('A.add_time desc'), 'A.add_time');
+        if (trim($where['type']) != '') {
+            $model = $model->where('A.type', $where['type']);
+        } else {
+            $model = $model->where('A.type', 'not in', 'gain,system_sub,deduction,sign');
         }
-        if($where['nickname']!=''){
-            $model=$model->where('B.nickname|B.uid','like',"%$where[nickname]%");
+        if ($where['nickname'] != '') {
+            $model = $model->where('B.nickname|B.uid', 'like', "%$where[nickname]%");
         }
-        return $model->field(['A.*','FROM_UNIXTIME(A.add_time,"%Y-%m-%d %H:%i:%s") as add_time','B.uid','B.nickname']);
+        return $model->field(['A.*', 'FROM_UNIXTIME(A.add_time,"%Y-%m-%d %H:%i:%s") as add_time', 'B.uid', 'B.nickname']);
     }
+
     /**
      * 获取营业数据
      */
     public static function getOrderInfo($where)
     {
         $orderinfo = self::getTimeWhere($where)
-            ->field('sum(total_price) total_price,sum(cost) cost,sum(pay_postage) pay_postage,sum(pay_price) pay_price,sum(coupon_price) coupon_price,sum(deduction_price) deduction_price,from_unixtime(pay_time,\'%Y-%m-%d\') pay_time')->order('pay_time')->group('from_unixtime(pay_time,\'%Y-%m-%d\')')->select()->toArray();
+            ->field('sum(total_price) total_price,sum(cost) cost,sum(pay_postage) pay_postage,sum(pay_price) pay_price,sum(coupon_price) coupon_price,sum(deduction_price) deduction_price,from_unixtime(pay_time,\'%Y-%m-%d\') pay_time')
+            ->order('pay_time')
+            ->group('from_unixtime(pay_time,\'%Y-%m-%d\')')
+            ->select()
+            ->toArray();
         $price = 0;
         $postage = 0;
         $deduction = 0;
@@ -150,39 +164,46 @@ class FinanceModel extends BaseModel
     {
         return self::getTime($where)->where('paid', 1)->where('refund_status', 0);
     }
+
     /**
      * 获取时间区间
      */
-    public static function getTime($where,$model=null,$prefix='add_time'){
+    public static function getTime($where, $model = null, $prefix = 'add_time')
+    {
         if ($model == null) $model = new self;
         if ($where['data'] == '') {
-            switch ($where['date']){
-                case 'today':case 'week':case 'month':case 'year':
-                    $model=$model->whereTime($prefix,$where['date']);
+            switch ($where['date']) {
+                case 'today':
+                case 'week':
+                case 'month':
+                case 'year':
+                    $model = $model->whereTime($prefix, $where['date']);
                     break;
                 case 'quarter':
-                    list($startTime,$endTime)=User::getMonth('n');
+                    list($startTime, $endTime) = User::getMonth('n');
                     $model = $model->where($prefix, '>', strtotime($startTime));
                     $model = $model->where($prefix, '<', strtotime($endTime));
                     break;
             }
-        }else{
+        } else {
             list($startTime, $endTime) = explode(' - ', $where['data']);
             $model = $model->where($prefix, '>', strtotime($startTime));
             $model = $model->where($prefix, '<', strtotime($endTime));
         }
         return $model;
     }
+
     /**
      * 获取新增消费
      */
     public static function getConsumption($where)
     {
-        $consumption=self::getTime($where,new UserBill,'b.add_time')->alias('a')->join('user b','a.uid = b.uid')
+        $consumption = self::getTime($where, new UserBill, 'b.add_time')->alias('a')->join('user b', 'a.uid = b.uid')
             ->field('sum(a.number) number')
-        ->where('a.type','pay_product')->find()->toArray();
+            ->where('a.type', 'pay_product')->find()->toArray();
         return $consumption;
     }
+
     /**
      * 获取拼团商品
      */
@@ -191,19 +212,22 @@ class FinanceModel extends BaseModel
         $pink = self::getTimeWhere($where)->where('pink_id', '<>', 0)->sum('pay_price');
         return $pink;
     }
+
     /**
      * 获取秒杀商品
      */
-    public static function getSeckill($where){
-        $seckill=self::getTimeWhere($where)->where('seckill_id', '<>', 0)->sum('pay_price');
+    public static function getSeckill($where)
+    {
+        $seckill = self::getTimeWhere($where)->where('seckill_id', '<>', 0)->sum('pay_price');
         return $seckill;
     }
+
     /**
      * 获取普通商品数
      */
     public static function getOrdinary($where)
     {
-        $ordinary = self::getTimeWhere($where)->where('pink_id', 0)->where('seckill_id',0)->sum('pay_price');
+        $ordinary = self::getTimeWhere($where)->where('pink_id', 0)->where('seckill_id', 0)->sum('pay_price');
         return $ordinary;
     }
 
@@ -212,15 +236,16 @@ class FinanceModel extends BaseModel
      */
     public static function getRecharge($where)
     {
-            $Recharge = self::getTime($where,new UserBill)->where('type', 'system_add')->where('category','now_money')->sum('number');
-            return $Recharge;
+        $Recharge = self::getTime($where, new UserBill)->where('type', 'system_add')->where('category', 'now_money')->sum('number');
+        return $Recharge;
     }
+
     /**
      * 获取推广金
      */
     public static function getExtension($where)
     {
-        $extension = self::getTime($where,new UserBill)->where('type', 'brokerage')->where('category','now_money')->sum('number');
+        $extension = self::getTime($where, new UserBill)->where('type', 'brokerage')->where('category', 'now_money')->sum('number');
         return $extension;
     }
 
@@ -243,23 +268,24 @@ class FinanceModel extends BaseModel
     /**
      * 导出表格
      */
-    public static function systemTable($where){
-        $orderinfos=self::getOrderInfo($where);
-        if($where['export'] == 1){
+    public static function systemTable($where)
+    {
+        $orderinfos = self::getOrderInfo($where);
+        if ($where['export'] == 1) {
             $export = [];
-            $orderinfo=$orderinfos['orderinfo'];
-            foreach($orderinfo as $info){
-                $time=$info['pay_time'];
-                $price = $info['total_price']+$info['pay_postage'];
-                $zhichu = $info['coupon_price']+$info['deduction_price']+$info['cost'];
-                $profit = ($info['total_price']+$info['pay_postage'])-($info['coupon_price']+$info['deduction_price']+$info['cost']);
-                $deduction=$info['deduction_price'];//积分抵扣
-                $coupon=$info['coupon_price'];//优惠
-                $cost=$info['cost'];//成本
-                $export[] = [$time,$price,$zhichu,$cost,$coupon,$deduction,$profit];
+            $orderinfo = $orderinfos['orderinfo'];
+            foreach ($orderinfo as $info) {
+                $time = $info['pay_time'];
+                $price = $info['total_price'] + $info['pay_postage'];
+                $zhichu = $info['coupon_price'] + $info['deduction_price'] + $info['cost'];
+                $profit = ($info['total_price'] + $info['pay_postage']) - ($info['coupon_price'] + $info['deduction_price'] + $info['cost']);
+                $deduction = $info['deduction_price'];//积分抵扣
+                $coupon = $info['coupon_price'];//优惠
+                $cost = $info['cost'];//成本
+                $export[] = [$time, $price, $zhichu, $cost, $coupon, $deduction, $profit];
             }
 //            ExportService::exportCsv($export,'统计'.time(),['时间','营业额(元)','支出(元)','成本','优惠','积分抵扣','盈利(元)']);
-            PHPExcelService::setExcelHeader(['时间','营业额(元)','支出(元)','成本','优惠','积分抵扣','盈利(元)'])->setExcelTile('财务统计', '财务统计',date('Y-m-d H:i:s',time()))->setExcelContent($export)->ExcelSave();
+            PHPExcelService::setExcelHeader(['时间', '营业额(元)', '支出(元)', '成本', '优惠', '积分抵扣', '盈利(元)'])->setExcelTile('财务统计', '财务统计', date('Y-m-d H:i:s', time()))->setExcelContent($export)->ExcelSave();
         }
     }
 }

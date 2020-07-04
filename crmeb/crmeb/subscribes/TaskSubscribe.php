@@ -50,8 +50,26 @@ class TaskSubscribe
         try {
             Db::startTrans();
             StoreBargainUser::startBargainUserStatus();//批量修改砍价状态为 砍价失败
+            Db::commit();
+        } catch (\Exception $e) {
+            Db::rollback();
+        }
+        try {
+            Db::startTrans();
             StoreOrder::orderUnpaidCancel();//订单未支付默认取消
+            Db::commit();
+        } catch (\Exception $e) {
+            Db::rollback();
+        }
+        try {
+            Db::startTrans();
             StoreOrder::startTakeOrder();//7天自动收货
+            Db::commit();
+        } catch (\Exception $e) {
+            Db::rollback();
+        }
+        try {
+            Db::startTrans();
             StorePink::statusPink();//拼团到期修改状态
             Db::commit();
         } catch (\Exception $e) {
@@ -80,5 +98,6 @@ class TaskSubscribe
     {
         UserToken::delToken();//删除一天前的过期token
         SystemAttachment::emptyYesterdayAttachment();//清除昨日海报
+        StoreOrder::sendTen();//10分钟未付款发送通知
     }
 }

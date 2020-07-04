@@ -5,10 +5,17 @@ use think\facade\Route;
 Route::post('login', 'AuthController/login')->name('login')
     ->middleware(\app\http\middleware\AllowOriginMiddleware::class);
 
+// 获取发短信的key
+Route::get('verify_code', 'AuthController/verifyCode')->name('verifyCode')
+    ->middleware(\app\http\middleware\AllowOriginMiddleware::class);
+
 //手机号登录
 Route::post('login/mobile', 'AuthController/mobile')->name('loginMobile')
     ->middleware(\app\http\middleware\AllowOriginMiddleware::class);
 
+//图片验证码
+Route::get('sms_captcha', 'AuthController/captcha')->name('captcha')
+    ->middleware(\app\http\middleware\AllowOriginMiddleware::class);
 //验证码发送
 Route::post('register/verify', 'AuthController/verify')->name('registerVerify')
     ->middleware(\app\http\middleware\AllowOriginMiddleware::class);
@@ -37,7 +44,7 @@ Route::group(function () {
     Route::get('admin/order/time', 'admin.StoreOrderController/time')->name('adminOrderTime');//订单交易额时间统计
     Route::post('admin/order/offline', 'admin.StoreOrderController/offline')->name('adminOrderOffline');//订单支付
     Route::post('admin/order/refund', 'admin.StoreOrderController/refund')->name('adminOrderRefund');//订单退款
-    Route::post('order/order_verific','order.StoreOrderController/order_verific')->name('order');//订单核销
+    Route::post('order/order_verific','admin.StoreOrderController/order_verific')->name('order');//订单核销
 })->middleware(\app\http\middleware\AllowOriginMiddleware::class)->middleware(\app\http\middleware\AuthTokenMiddleware::class, true)->middleware(\app\http\middleware\CustomerMiddleware::class);
 
 //会员授权接口
@@ -144,11 +151,14 @@ Route::group(function () {
     //充值类
     Route::post('recharge/routine', 'user.UserRechargeController/routine')->name('rechargeRoutine');//小程序充值
     Route::post('recharge/wechat', 'user.UserRechargeController/wechat')->name('rechargeWechat');//公众号充值
+    Route::get('recharge/index','user.UserRechargeController/index')->name('rechargeQuota');//充值余额选择
     //会员等级类
     Route::get('menu/user', 'PublicController/menu_user')->name('menuUser');//个人中心菜单
     Route::get('user/level/detection', 'user.UserLevelController/detection')->name('userLevelDetection');//检测用户是否可以成为会员
     Route::get('user/level/grade', 'user.UserLevelController/grade')->name('userLevelGrade');//会员等级列表
     Route::get('user/level/task/:id', 'user.UserLevelController/task')->name('userLevelTask');//获取等级任务
+    //首页获取未支付订单
+    Route::get('order/nopay', 'order.StoreOrderController/get_noPay')->name('getNoPay');//获取未支付订单
 })->middleware(\app\http\middleware\AllowOriginMiddleware::class)->middleware(\app\http\middleware\AuthTokenMiddleware::class, true);
 //未授权接口
 Route::group(function () {
@@ -175,7 +185,7 @@ Route::group(function () {
     //活动---秒杀
     Route::get('seckill/index', 'activity.StoreSeckillController/index')->name('seckillIndex');//秒杀产品时间区间
     Route::get('seckill/list/:time', 'activity.StoreSeckillController/lst')->name('seckillList');//秒杀产品列表
-    Route::get('seckill/detail/:id/[:time]', 'activity.StoreSeckillController/detail')->name('seckillDetail');//秒杀产品详情
+    Route::get('seckill/detail/:id/[:time]/[:status]', 'activity.StoreSeckillController/detail')->name('seckillDetail');//秒杀产品详情
     //活动---砍价
     Route::get('bargain/config', 'activity.StoreBargainController/config')->name('bargainConfig');//砍价产品列表配置
     Route::get('bargain/list', 'activity.StoreBargainController/lst')->name('bargainList');//砍价产品列表
@@ -193,7 +203,8 @@ Route::group(function () {
     Route::post('wechat/mp_auth', 'wechat.AuthController/mp_auth')->name('mpAuth');//小程序登陆
     Route::get('wechat/get_logo', 'wechat.AuthController/get_logo')->name('getLogo');//小程序登陆授权展示logo
     Route::post('wechat/set_form_id', 'wechat.AuthController/set_form_id')->name('setFormId');//小程序登陆收集form id
-    Route::get('wechat/teml_ids', 'wechat.AuthController/teml_ids')->name('wechatTemlIds');//微信授权
+    Route::get('wechat/teml_ids', 'wechat.AuthController/teml_ids')->name('wechatTemlIds');//小程序订阅消息
+    Route::get('wechat/live', 'wechat.AuthController/live')->name('wechatLive');//小程序直播列表
 
     //物流公司
     Route::get('logistics', 'PublicController/logistics')->name('logistics');//物流公司列表
@@ -209,6 +220,13 @@ Route::group(function () {
 
     //获取关注微信公众号海报
     Route::get('wechat/follow','wechat.WechatController/follow')->name('Follow');
+
+    //门店列表
+    Route::get('store_list', 'PublicController/store_list')->name('storeList');
+    //获取城市列表
+    Route::get('city_list', 'PublicController/city_list')->name('cityList');
+    //拼团数据
+    Route::get('pink', 'PublicController/pink')->name('pinkData');
 
 
 })->middleware(\app\http\middleware\AllowOriginMiddleware::class)->middleware(\app\http\middleware\AuthTokenMiddleware::class, false);

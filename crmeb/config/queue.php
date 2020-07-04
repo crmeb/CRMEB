@@ -10,7 +10,7 @@
 // +----------------------------------------------------------------------
 
 return [
-    'default'     => 'sync',
+    'default'     => 'database',
     'connections' => [
         'sync'     => [
             'driver' => 'sync',

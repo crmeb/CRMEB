@@ -2,7 +2,6 @@
 
 namespace crmeb\services;
 
-use crmeb\services\JsonService as Json;
 
 class PHPExcelService
 {
@@ -54,18 +53,16 @@ class PHPExcelService
     );
 
     /**
-     *初始化PHPExcel类
-     * @param $data array()
-     * @param $fun function()
-     * return
+     * 初始化PHPExcel类
+     * @param array $data
+     * @param \Closure $fun
      */
-    private static function initialize($data, $fun)
+    private static function initialize(array $data, ?\Closure $fun = null)
     {
         self::$PHPExcel = new \PHPExcel();
         if ($fun !== null && is_callable($fun)) {
             self::$styleArray = $fun();
         }
-        if (!is_array($data)) exit(Json::fail('data 为数组'));
         self::$data = $data;
     }
 
@@ -146,17 +143,17 @@ class PHPExcelService
      * @param $fun function() 主要设置边框的粗细
      * @return $this
      */
-    public static function setExcelHeader($data, $fun = null)
+    public static function setExcelHeader(array $data, $fun = null)
     {
         self::initialize($data, $fun);
 
         if (self::$count = count(self::$data)) {
             if (self::$count > count(self::$cellKey)) {
-                return Json::fail('表头长度过长');
+                exception('表头长度过长');
             }
             self::$cells = self::$cellKey[self::$count - 1];
         } else {
-            return Json::fail('data 参数二不能为空');
+            exception('data 参数二不能为空');
         }
         return new self;
     }

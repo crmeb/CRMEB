@@ -61,6 +61,7 @@ class RoutineTemplate extends AuthController
         if ($data['name'] == '') return Json::fail('请输入模板名');
         if ($data['content'] == '') return Json::fail('请输入回复内容');
         $data['add_time'] = time();
+        $data['type'] = 0;
         RoutineTemplateModel::create($data);
         CacheService::clear();
         return Json::successful('添加模板消息成功!');

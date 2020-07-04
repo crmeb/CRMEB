@@ -47,6 +47,7 @@ class Cache extends BaseModel
             }
             return null;
         }
+
     }
 
     /**

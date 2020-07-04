@@ -4,7 +4,6 @@ namespace app\admin\controller\system;
 
 use app\admin\controller\AuthController;
 use crmeb\services\CacheService;
-use crmeb\services\JsonService as Json;
 
 /**
  * 首页控制器
@@ -24,17 +23,17 @@ class Clear extends AuthController
      */
     public function refresh_cache()
     {
-        $root = app()->getRootPath() . 'runtime' . DS;
+        $root       = app()->getRootPath() . 'runtime' . DS;
         $adminRoute = $root . 'admin';
-        $apiRoute = $root . 'api';
+        $apiRoute   = $root . 'api';
         $cacheRoute = $root . 'cache';
-        $cache = [];
+        $cache      = [];
 
-        if(is_dir($adminRoute))
+        if (is_dir($adminRoute))
             $cache[$adminRoute] = scandir($adminRoute);
-        if(is_dir($apiRoute))
+        if (is_dir($apiRoute))
             $cache[$apiRoute] = scandir($apiRoute);
-        if(is_dir($cacheRoute))
+        if (is_dir($cacheRoute))
             $cache[$cacheRoute] = scandir($cacheRoute);
 
         foreach ($cache as $p => $list) {

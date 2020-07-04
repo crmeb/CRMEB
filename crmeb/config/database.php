@@ -59,7 +59,21 @@ return [
             // 是否需要断线重连
             'break_reconnect' => true,
         ],
+        'redis' =>[
+            'type' => 'redis',
+            // 服务器地址
+            'hostname'        => Env::get('redis.hostname', '127.0.0.1'),
+            // 数据库名
+            'database'        => Env::get('redis.database', ''),
+            // 密码
+            'password'        => Env::get('redis.password', ''),
+            // 端口
+            'hostport'        => Env::get('redis.hostport', '6379'),
 
+            'timeout'         => Env::get('redis.timeout', 0),
+
+            'prefix'          => Env::get('redis.prefix', 'eb_'),
+        ]
         // 更多的数据库配置信息
     ],
 

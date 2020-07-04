@@ -49,14 +49,14 @@ class SystemAdmin extends BaseModel
      * @param $pwd
      * @return bool
      */
-    public static function login($account,$pwd)
+    public static function login($account, $pwd)
     {
         $adminInfo = self::get(compact('account'));
-        if(!$adminInfo) return self::setErrorInfo('登陆的账号不存在!');
-        if($adminInfo['pwd'] != md5($pwd)) return self::setErrorInfo('账号或密码错误，请重新输入');
-        if(!$adminInfo['status']) return self::setErrorInfo('该账号已被关闭!');
+        if (!$adminInfo) return self::setErrorInfo('登陆的账号不存在!');
+        if ($adminInfo['pwd'] != md5($pwd)) return self::setErrorInfo('账号或密码错误，请重新输入');
+        if (!$adminInfo['status']) return self::setErrorInfo('该账号已被关闭!');
         self::setLoginInfo($adminInfo);
-        event('SystemAdminLoginAfter',[$adminInfo]);
+        event('SystemAdminLoginAfter', [$adminInfo]);
         return true;
     }
 
@@ -65,8 +65,8 @@ class SystemAdmin extends BaseModel
      */
     public static function setLoginInfo($adminInfo)
     {
-        Session::set('adminId',$adminInfo['id']);
-        Session::set('adminInfo',$adminInfo->toArray());
+        Session::set('adminId', $adminInfo['id']);
+        Session::set('adminInfo', $adminInfo->toArray());
         Session::save();
     }
 
@@ -97,8 +97,8 @@ class SystemAdmin extends BaseModel
     public static function activeAdminInfoOrFail()
     {
         $adminInfo = Session::get('adminInfo');
-        if(!$adminInfo)  exception('请登陆');
-        if(!$adminInfo['status']) exception('该账号已被关闭!');
+        if (!$adminInfo) exception('请登陆');
+        if (!$adminInfo['status']) exception('该账号已被关闭!');
         return $adminInfo;
     }
 
@@ -110,7 +110,7 @@ class SystemAdmin extends BaseModel
     public static function activeAdminIdOrFail()
     {
         $adminId = Session::get('adminId');
-        if(!$adminId) exception('访问用户为登陆登陆!');
+        if (!$adminId) exception('访问用户为登陆登陆!');
         return $adminId;
     }
 
@@ -121,7 +121,7 @@ class SystemAdmin extends BaseModel
     public static function activeAdminAuthOrFail()
     {
         $adminInfo = self::activeAdminInfoOrFail();
-        if(is_object($adminInfo)) $adminInfo = $adminInfo->toArray();
+        if (is_object($adminInfo)) $adminInfo = $adminInfo->toArray();
         return $adminInfo['level'] === 0 ? SystemRole::getAllAuth() : SystemRole::rolesByAuth($adminInfo['roles']);
     }
 
@@ -134,8 +134,8 @@ class SystemAdmin extends BaseModel
     public static function getValidAdminInfoOrFail($id)
     {
         $adminInfo = self::get($id);
-        if(!$adminInfo) exception('用户不能存在!');
-        if(!$adminInfo['status']) exception('该账号已被关闭!');
+        if (!$adminInfo) exception('用户不能存在!');
+        if (!$adminInfo['status']) exception('该账号已被关闭!');
         return $adminInfo;
     }
 
@@ -147,26 +147,28 @@ class SystemAdmin extends BaseModel
      * @throws \think\db\exception\ModelNotFoundException
      * @throws \think\exception\DbException
      */
-    public static function getOrdAdmin($field = 'real_name,id',$level = 0){
-        return self::where('level','>=',$level)->field($field)->select();
+    public static function getOrdAdmin($field = 'real_name,id', $level = 0)
+    {
+        return self::where('level', '>=', $level)->field($field)->select();
     }
 
     public static function getTopAdmin($field = 'real_name,id')
     {
-        return self::where('level',0)->field($field)->select();
+        return self::where('level', 0)->field($field)->select();
     }
 
     /**
      * @param $where
      * @return array
      */
-    public static function systemPage($where){
+    public static function systemPage($where)
+    {
         $model = new self;
-        if($where['name'] != '') $model = $model->where('account|real_name','LIKE',"%$where[name]%");
-        if($where['roles'] != '') $model = $model->where("CONCAT(',',roles,',')  LIKE '%,$where[roles],%'");
-        $model = $model->where('level',$where['level'])->where('is_del',0);
-        return self::page($model,function($admin){
-            $admin->roles = SystemRole::where('id','IN',$admin->roles)->column('role_name','id');
-        },$where);
+        if ($where['name'] != '') $model = $model->where('account|real_name', 'LIKE', "%$where[name]%");
+        if ($where['roles'] != '') $model = $model->where("CONCAT(',',roles,',')  LIKE '%,$where[roles],%'");
+        $model = $model->where('level', $where['level'])->where('is_del', 0);
+        return self::page($model, function ($admin) {
+            $admin->roles = SystemRole::where('id', 'IN', $admin->roles)->column('role_name', 'id');
+        }, $where);
     }
 }

@@ -4,6 +4,8 @@
 namespace crmeb\services\workerman\chat;
 
 
+use app\models\store\StoreOrder;
+use app\models\store\StoreProduct;
 use app\models\store\StoreServiceLog;
 use app\models\user\User;
 use app\models\user\WechatUser;
@@ -63,7 +65,7 @@ class ChatHandle
         $uid = $connection->user->uid;
         if (!$to_uid) return $response->send('err_tip', ['msg' => '用户不存在']);
         if ($to_uid == $uid) return $response->send('err_tip', ['msg' => '不能和自己聊天']);
-        if (!in_array($msn_type, [1, 2, 3, 4])) return $response->send('err_tip', ['msg' => '格式错误']);
+        if (!in_array($msn_type, StoreServiceLog::MSN_TYPE)) return $response->send('err_tip', ['msg' => '格式错误']);
         $msn = trim(strip_tags(str_replace(["\n", "\t", "\r", " ", "&nbsp;"], '', htmlspecialchars_decode($msn))));
         $data = compact('to_uid', 'msn_type', 'msn', 'uid');
         $data['add_time'] = time();
@@ -76,6 +78,23 @@ class ChatHandle
         $data['nickname'] = $_userInfo['nickname'];
         $data['avatar'] = $_userInfo['avatar'];
 
+        $data['productInfo'] = [];
+        if ($msn_type == StoreServiceLog::MSN_TYPE_GOODS && $msn) {
+            $productInfo = StoreProduct::validWhere()->where('id', $msn)->find();
+            $data['productInfo'] = $productInfo ? $productInfo->toArray() : [];
+        }
+
+        $data['orderInfo'] = [];
+        if ($msn_type == StoreServiceLog::MSN_TYPE_ORDER && $msn) {
+            $order = StoreOrder::getUserOrderDetail($uid, $msn);
+            if ($order) {
+                $order = StoreOrder::tidyOrder($order->toArray(), true, true);
+                $order['add_time_y'] = date('Y-m-d', $order['add_time']);
+                $order['add_time_h'] = date('H:i:s', $order['add_time']);
+                $data['orderInfo'] = $order;
+            }
+        }
+
         $response->send('chat', $data);
 
         if ($online) {
@@ -85,7 +104,7 @@ class ChatHandle
             if ($userInfo && $userInfo['subscribe'] && $userInfo['openid']) {
                 $head = '客服提醒';
                 $description = '您有新的消息，请注意查收！';
-                $url = sysConfig('site_url') . '/customer/chat/' . $uid;
+                $url = sys_config('site_url') . '/customer/chat/' . $uid;
                 $message = WechatService::newsMessage($head, $description, $url, $_userInfo['avatar']);
                 $userInfo = $userInfo->toArray();
                 try {

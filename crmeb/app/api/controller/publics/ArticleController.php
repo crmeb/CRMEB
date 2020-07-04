@@ -40,10 +40,10 @@ class ArticleController
    public function details($id)
    {
        $content = Article::getArticleOne($id);
-       if(!$content) return $this->fail('此文章已经不存在!');
+       if(!$content) return app('json')->fail('此文章已经不存在!');
        $content["visit"] = $content["visit"] + 1;
        $content["cart_name"] = ArticleCategory::getArticleCategoryField($content['cid']);
-       $content['add_time'] = date('Y-m-d H:i:s',$content['add_time']);
+       $content['add_time'] = date('m月d日',$content['add_time']);
        Article::edit(['visit'=>$content["visit"]],$id);//增加浏览次数
        return app('json')->successful($content);
    }

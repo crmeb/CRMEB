@@ -34,8 +34,8 @@
                             <td class="text-center">{$vo.add_time|date='Y-m-d H:i:s'}</td>
                             <td class="text-center">
                                 <button class="btn btn-info btn-xs" type="button"  onclick="$eb.createModalFrame('聊天记录','{:Url('chat_user',array('id'=>$vo['id']))}')"><i class="fa fa-commenting-o"></i> 聊天记录</button>
-                                <button class="btn btn-info btn-xs" type="button"  onclick="$eb.createModalFrame('编辑','{:Url('edit',array('id'=>$vo['id']))}')"><i class="fa fa-paste"></i> 编辑</button>
-                                <button class="btn btn-warning btn-xs" data-url="{:Url('delete',array('id'=>$vo['id']))}" type="button"><i class="fa fa-warning"></i> 删除</button>
+                                <button class="btn btn-info btn-xs" type="button"  onclick="$eb.createModalFrame('编辑','{:Url('edit',array('id'=>$vo['id']))}')"><i class="fa fa-edit"></i> 编辑</button>
+                                <button class="btn btn-danger btn-xs " data-url="{:Url('delete',array('id'=>$vo['id']))}" type="button"><i class="fa fa-times"></i> 删除</button>
                             </td>
                         </tr>
                         {/volist}
@@ -49,7 +49,7 @@
     {/block}
     {block name="script"}
     <script>
-        $('.btn-warning').on('click',function(){
+        $('.btn-danger').on('click',function(){
             window.t = $(this);
             var _this = $(this),url =_this.data('url');
             $eb.$swal('delete',function(){

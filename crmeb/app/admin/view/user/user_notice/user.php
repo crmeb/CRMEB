@@ -62,7 +62,7 @@
                                 {/if}
                                 {if condition="$notice['is_send'] eq 0 AND $notice['type'] eq 2"}
                                     <td class="text-center">
-                                        <button class="btn btn-warning btn-xs" data-url="{:Url('user_delete',array('id'=>$notice['id'],'uid'=>$vo['uid']))}" type="button"><i class="fa fa-warning"></i> 删除</button>
+                                        <button class="btn btn-danger btn-xs " data-url="{:Url('user_delete',array('id'=>$notice['id'],'uid'=>$vo['uid']))}" type="button"><i class="fa fa-times"></i> 删除</button>
                                     </td>
                                 {/if}
                             </tr>
@@ -80,7 +80,7 @@
     $('.i-checks').iCheck({
         checkboxClass: 'icheckbox_square-green',
     });
-    $('.btn-warning').on('click',function(){
+    $('.btn-danger').on('click',function(){
         window.t = $(this);
         var _this = $(this),url =_this.data('url');
         $eb.$swal('delete',function(){

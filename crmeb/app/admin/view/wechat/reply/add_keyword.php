@@ -296,7 +296,7 @@
                         delete parent._selectNews$eb;
                         $eb.closeModalFrame(i);
                     };
-                    i = $eb.createModalFrame('选择图文消息',"{:Url('admin/wechat.wechatNewsCategory/select',['callback'=>'_selectNews$eb'])}",{w:975});
+                    i = $eb.createModalFrame('选择图文消息',"{:Url('admin/wechat.wechatNewsCategory/select',['callback'=>'_selectNews$eb','type'=>1])}",{w:975});
                 }
             },
             mounted: function () {

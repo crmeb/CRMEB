@@ -63,7 +63,7 @@
         </div>
         <div class="layui-col-sm12">
             <div class="layui-card">
-                <div class="layui-card-header">发放优惠券:</div>
+                <div class="layui-card-header">销量走势:</div>
                 <div class="layui-card-body layui-row">
                     <div class="layui-col-md12">
                         <div class="layui-btn-container" ref="echarts_list" id="echarts_list" style="height:400px"></div>

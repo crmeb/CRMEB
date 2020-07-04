@@ -79,9 +79,9 @@
                                 <i class="fa {eq name='vo.access' value='1'}fa-check text-navy{else/}fa-close text-danger{/eq}"></i>
                             </td>-->
                             <td class="text-center">
-                                <button class="btn btn-info btn-xs" type="button"  onclick="$eb.createModalFrame(this.innerText,'{:Url('create',array('cid'=>$vo['id']))}')"><i class="fa fa-paste"></i> 添加子菜单</button>
-                                <button class="btn btn-info btn-xs" type="button"  onclick="$eb.createModalFrame(this.innerText,'{:Url('edit',array('id'=>$vo['id']))}')"><i class="fa fa-paste"></i> 编辑</button>
-                                <button class="btn btn-warning btn-xs" data-url="{:Url('delete',array('id'=>$vo['id']))}" type="button"><i class="fa fa-warning"></i> 删除
+                                <button class="btn btn-info btn-xs" type="button"  onclick="$eb.createModalFrame(this.innerText,'{:Url('create',array('cid'=>$vo['id']))}')"><i class="fa fa-plus-square"></i> 添加子菜单</button>
+                                <button class="btn btn-info btn-xs" type="button"  onclick="$eb.createModalFrame(this.innerText,'{:Url('edit',array('id'=>$vo['id']))}')"><i class="fa fa-edit"></i> 编辑</button>
+                                <button class="btn btn-danger btn-xs" data-url="{:Url('delete',array('id'=>$vo['id']))}" type="button"><i class="fa fa-times"></i> 删除
                                 </button>
                             </td>
                         </tr>
@@ -97,7 +97,7 @@
 {/block}
 {block name="script"}
 <script>
-    $('.btn-warning').on('click',function(){
+    $('.btn-danger').on('click',function(){
         var _this = $(this),url =_this.data('url');
         $eb.$swal('delete',function(){
             $eb.axios.get(url).then(function(res){

@@ -63,7 +63,7 @@
                             </td>
 
                             <td class="text-center">
-                                <button class="btn btn-info btn-xs" type="button"  onclick="$eb.createModalFrame('{$vo.filename}','{:Url('openfile')}?file={$vo.pathname}',{w:1260,h:660})"><i class="fa fa-paste"></i> 编辑</button>
+                                <button class="btn btn-info btn-xs" type="button"  onclick="$eb.createModalFrame('{$vo.filename}','{:Url('openfile')}?file={$vo.pathname}',{w:1260,h:660})"><i class="fa fa-edit"></i> 编辑</button>
 <!--                                <button class="btn btn-info btn-xs" type="button"  onclick="$eb.createModalFrame('{$vo.filename}','{:Url('openfile')}?file={$vo.filename}&dir={$dir}',{w:1260,h:600})"><i class="fa fa-paste"></i> 重命名</button>-->
 <!--                                <button class="btn btn-info btn-xs" type="button"  onclick="$eb.createModalFrame('{$vo.filename}','{:Url('openfile')}?file={$vo.filename}&dir={$dir}',{w:1260,h:600})"><i class="fa fa-paste"></i> 删除</button>-->
 <!--                                <button class="btn btn-info btn-xs" type="button"  onclick="$eb.createModalFrame('{$vo.filename}','{:Url('openfile')}?file={$vo.filename}&dir={$dir}',{w:1260,h:600})"><i class="fa fa-paste"></i> 下载</button>-->
@@ -82,7 +82,7 @@
 {block name="script"}
 
 <script>
-    $('.btn-warning').on('click',function(){
+    $('.btn-danger').on('click',function(){
         var _this = $(this),url =_this.data('url');
         $eb.$swal('delete',function(){
             $eb.axios.get(url).then(function(res){

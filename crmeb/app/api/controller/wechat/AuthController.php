@@ -4,7 +4,6 @@
 namespace app\api\controller\wechat;
 
 
-use app\models\routine\RoutineTemplate;
 use app\models\user\WechatUser;
 use app\Request;
 use crmeb\services\CacheService;
@@ -124,7 +123,6 @@ class AuthController
     {
         $formId = $request->post('formId', '');
         if (!$formId) return app('json')->fail('缺少form id');
-        RoutineFormId::SetFormId($formId, $request->uid());
         return app('json')->successful('保存form id 成功！', ['uid' => $request->uid()]);
     }
 
@@ -151,5 +149,26 @@ class AuthController
             return $temlId;
         });
         return app('json')->success($temlIdsList);
+    }
+
+    /**
+     * 获取小程序直播列表
+     * @param Request $request
+     * @return mixed
+     */
+    public function live(Request $request)
+    {
+        [$page, $limit] = UtilService::getMore([
+            ['page', 1],
+            ['limit', 10],
+        ], $request, true);
+        $list = CacheService::get('WECHAT_LIVE_LIST_' . $page . '_' . $limit, function () use ($page, $limit) {
+            $list = MiniProgramService::getLiveInfo($page, $limit);
+            foreach ($list as &$item) {
+                $item['_start_time'] = date('m-d H:i', $item['start_time']);
+            }
+            return $list;
+        }, 600);
+        return app('json')->success($list);
     }
 }

@@ -31,31 +31,35 @@ class StoreOrderStatus extends BaseModel
      * @param $type
      * @param $message
      */
-   public static function setStatus($oid,$type,$message){
-       $data['oid'] = (int)$oid;
-       $data['change_type'] = $type;
-       $data['change_message'] = $message;
-       $data['change_time'] = time();
-       self::create($data);
-   }
+    public static function setStatus($oid, $type, $message)
+    {
+        $data['oid'] = (int)$oid;
+        $data['change_type'] = $type;
+        $data['change_message'] = $message;
+        $data['change_time'] = time();
+        self::create($data);
+    }
 
     /**
      * @param $where
      * @return array
      */
-    public static function systemPage($oid){
+    public static function systemPage($oid)
+    {
         $model = new self;
-        $model = $model->where('oid',$oid);
+        $model = $model->where('oid', $oid);
         $model = $model->order('change_time asc');
         return self::page($model);
     }
+
     /**
      * @param $where
      * @return array
      */
-    public static function systemPageMer($oid){
+    public static function systemPageMer($oid)
+    {
         $model = new self;
-        $model = $model->where('oid',$oid);
+        $model = $model->where('oid', $oid);
 //        $model = $model->where('change_type','LIKE','mer_%');
         $model = $model->order('change_time asc');
         return self::page($model);

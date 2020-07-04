@@ -3,7 +3,6 @@
 namespace crmeb\utils;
 
 use crmeb\traits\LogicTrait;
-use EasyWeChat\Core\Exceptions\RuntimeException;
 
 /**
  * Class Canvas
@@ -221,7 +220,7 @@ class Canvas
                 else
                     $fontColor = $val['fontColor'];
                 if (count($fontColor) < 3)
-                    throw new RuntimeException('fontColor 必须为三原色');
+                    throw new \RuntimeException('fontColor Separation of thousand bits');
                 [$r, $g, $b] = $fontColor;
                 $fontColor = imagecolorallocate($image, $r, $g, $b);
                 $val['fontLeft'] = $val['fontLeft'] < 0 ? $this->backgroundWidth - abs($val['fontLeft']) : $val['fontLeft'];

@@ -7,16 +7,33 @@
 
 namespace crmeb\services;
 
+/**
+ * curl 请求
+ * Class HttpService
+ * @package crmeb\services
+ */
 class HttpService
 {
-    //错误信息
+    /**
+     * 错误信息
+     * @var string
+     */
     private static $curlError;
-    //header头信息
+
+    /**
+     * header头信息
+     * @var string
+     */
     private static $headerStr;
-    //请求状态
+
+    /**
+     * 请求状态
+     * @var int
+     */
     private static $status;
 
     /**
+     * 获取请求错误信息
      * @return string
      */
     public static function getCurlError()
@@ -24,12 +41,23 @@ class HttpService
         return self::$curlError;
     }
 
-
+    /**
+     * 获取请求响应状态
+     * @return mixed
+     */
     public static function getStatus()
     {
         return self::$status;
     }
 
+    /**
+     * 模拟GET发起请求
+     * @param $url 请求地址
+     * @param array $data 请求数据
+     * @param bool $header header头
+     * @param int $timeout 响应超时时间
+     * @return bool|string
+     */
     public static function getRequest($url, $data = array(), $header = false, $timeout = 10)
     {
         if (!empty($data)) {
@@ -40,6 +68,15 @@ class HttpService
         return self::request($url, 'get', array(), $header, $timeout);
     }
 
+    /**
+     * curl 请求
+     * @param $url 请求地址
+     * @param string $method 请求方式
+     * @param array $data 请求数据
+     * @param bool $header 请求header头
+     * @param int $timeout 超时秒数
+     * @return bool|string
+     */
     public static function request($url, $method = 'get', $data = array(), $header = false, $timeout = 15)
     {
         self::$status = null;
@@ -78,17 +115,33 @@ class HttpService
         return (intval($status["http_code"]) === 200) ? $content : false;
     }
 
+    /**
+     * 模拟POST发起请求
+     * @param $url 请求链接
+     * @param array $data 请求参数
+     * @param bool $header header头
+     * @param int $timeout 超时秒数
+     * @return bool|string
+     */
     public static function postRequest($url, array $data = array(), $header = false, $timeout = 10)
     {
         return self::request($url, 'post', $data, $header, $timeout);
     }
 
-    public static function getHeaderStr()
+    /**
+     * 获取header头字符串类型
+     * @return mixed
+     */
+    public static function getHeaderStr(): string
     {
         return self::$headerStr;
     }
 
-    public static function getHeader()
+    /**
+     * 获取header头数组类型
+     * @return array
+     */
+    public static function getHeader(): array
     {
         $headArr = explode("\r\n", self::$headerStr);
         return $headArr;

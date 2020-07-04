@@ -127,9 +127,21 @@ class OrderSubscribe
     {
         list($order, $formId) = $event;
         //更新用户支付订单数量
-        User::bcInc($order['uid'], 'pay_count', 1, 'uid');
+        $userInfo = User::get($order['uid']);
+        if ($userInfo) {
+            $userInfo->pay_count = $userInfo->pay_count + 1;
+            if (!$userInfo->is_promoter) {
+                $price = StoreOrder::where(['paid' => 1, 'refund_status' => 0, 'uid' => $userInfo['uid']])->sum('pay_price');
+                $status = is_brokerage_statu($price);
+                if ($status) {
+                    $userInfo->is_promoter = 1;
+                }
+            }
+            $userInfo->save();
+        }
+
         //发送模版消息、客服消息、短信、小票打印给客户和管理员
-        NoticeRepositories::noticeOrderPaySuccess($order, $formId);
+        NoticeRepositories::noticeOrderPaySuccess($order);
         //检测会员等级
         event('UserLevelAfter', [$order['uid']]);
 

@@ -76,10 +76,10 @@
                     </script>
                     <script type="text/html" id="act">
                         <button class="layui-btn layui-btn-xs" onclick="$eb.createModalFrame('编辑','{:Url('edit')}?id={{d.id}}')">
-                            <i class="fa fa-paste"></i> 编辑
+                            <i class="fa fa-edit"></i> 编辑
                         </button>
-                        <button class="layui-btn layui-btn-xs" lay-event='delstor'>
-                            <i class="fa fa-warning"></i> 删除
+                        <button class="layui-btn btn-danger layui-btn-xs" lay-event='delstor'>
+                            <i class="fa fa-times"></i> 删除
                         </button>
                     </script>
                 </div>
@@ -123,7 +123,7 @@
     }
     //查询
     layList.search('search',function(where){
-        layList.reload(where);
+        layList.reload(where,true);
     });
     layList.switch('is_show',function (odj,value) {
         if(odj.elem.checked==true){

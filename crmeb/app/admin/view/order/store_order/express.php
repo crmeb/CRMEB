@@ -18,7 +18,7 @@
     <link rel="stylesheet" type="text/css" href="{__ADMIN_PATH}/css/style.css"/>
     <script type="text/javascript" src="{__ADMIN_PATH}js/media.js"></script>
     <script type="text/javascript" src="{__ADMIN_PATH}js/jquery-1.11.2.min.js"></script>
-    <script type="text/javascript" src="{__ADMIN_PATH}js/common.js"></script>
+<!--    <script type="text/javascript" src="{__ADMIN_PATH}js/common.js"></script>-->
 </head>
 <body>
 

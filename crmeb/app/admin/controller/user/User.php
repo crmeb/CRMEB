@@ -8,23 +8,17 @@
 namespace app\admin\controller\user;
 
 use app\admin\controller\AuthController;
-use app\admin\model\system\SystemUserLevel;
 use crmeb\repositories\UserRepository;
-use crmeb\services\FormBuilder as Form;
-use crmeb\services\JsonService;
-use think\facade\Db;
 use crmeb\traits\CurdControllerTrait;
-use crmeb\services\UtilService as Util;
-use crmeb\services\JsonService as Json;
 use think\facade\Route as Url;
-use app\admin\model\user\User as UserModel;
-use app\admin\model\user\UserBill AS UserBillAdmin;
 use crmeb\basic\BaseModel;
-use app\admin\model\user\UserLevel;
-use app\admin\model\store\StoreVisit;
-use app\admin\model\wechat\WechatMessage;
+use app\models\user\UserLevel as Level;
 use app\admin\model\order\StoreOrder;
-use app\admin\model\store\StoreCouponUser;
+use app\admin\model\wechat\WechatMessage;
+use app\admin\model\store\{StoreVisit, StoreCouponUser};
+use app\admin\model\system\{SystemUserLevel, SystemUserTask};
+use crmeb\services\{FormBuilder as Form, UtilService as Util, JsonService as Json};
+use app\admin\model\user\{User as UserModel, UserBill as UserBillAdmin, UserLevel, UserGroup, UserTaskFinish};
 
 /**
  * 用户管理控制器
@@ -42,23 +36,66 @@ class User extends AuthController
      */
     public function index()
     {
+        $level = SystemUserLevel::where('is_del', 0)->where('is_show', 1)->order('grade asc')->field(['id', 'name'])->select();
+        $group = UserGroup::select();
+        $this->assign(compact('group'));
+        $this->assign(compact('level'));
         $this->assign('count_user', UserModel::getcount());
         return $this->fetch();
     }
 
-    /*
+    /**
+     * 设置分组
+     * @param int $uid
+     */
+    public function set_group($uid = 0)
+    {
+        if (!$uid) return $this->failed('缺少参数');
+        $userGroup = UserGroup::select();
+        $field[] = Form::select('group_id', '会员分组')->setOptions(function () use ($userGroup) {
+            $menus = [];
+            foreach ($userGroup as $menu) {
+                $menus[] = ['value' => $menu['id'], 'label' => $menu['group_name']];
+            }
+            return $menus;
+        })->filterable(1);
+        $form = Form::make_post_form('设置分组', $field, Url::buildUrl('save_set_group', ['uid' => $uid]), 2);
+        $this->assign(compact('form'));
+        return $this->fetch('public/form-builder');
+    }
+
+    public function save_set_group($uid = 0)
+    {
+        if (!$uid) return Json::fail('缺少参数');
+        list($group_id) = Util::postMore([
+            ['group_id', 0],
+        ], $this->request, true);
+        $uids = explode(',',$uid);
+        $res = UserModel::whereIn('uid', $uids)->update(['group_id' => $group_id]);
+        if ($res) {
+            return Json::successful('设置成功');
+        } else {
+            return Json::successful('设置失败');
+        }
+    }
+
+    /**
      * 赠送会员等级
-     * @paran int $uid
-     * */
+     * @param int $uid
+     * @return string|void
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     */
     public function give_level($uid = 0)
     {
         if (!$uid) return $this->failed('缺少参数');
-        $level = \app\models\user\UserLevel::getUserLevel($uid);
+        $level = Level::getUserLevel($uid);
         //获取当前会员等级
         if ($level === false)
             $grade = 0;
         else
-            $grade = \app\models\user\UserLevel::getUserLevelInfo($level, 'grade');
+            $grade = Level::getUserLevelInfo($level, 'grade');
         //查询高于当前会员的所有会员等级
         $systemLevelList = SystemUserLevel::where('grade', '>', $grade)->where(['is_show' => 1, 'is_del' => 0])->field(['name', 'id'])->select();
         $field[] = Form::select('level_id', '会员等级')->setOptions(function () use ($systemLevelList) {
@@ -165,16 +202,16 @@ class User extends AuthController
      * */
     public function save_give_level($uid = 0)
     {
-        if (!$uid) return JsonService::fail('缺少参数');
+        if (!$uid) return Json::fail('缺少参数');
         list($level_id) = Util::postMore([
             ['level_id', 0],
         ], $this->request, true);
         //查询当前选择的会员等级
         $systemLevel = SystemUserLevel::where(['is_show' => 1, 'is_del' => 0, 'id' => $level_id])->find();
-        if (!$systemLevel) return JsonService::fail('您选择赠送的会员等级不存在！');
+        if (!$systemLevel) return Json::fail('您选择赠送的会员等级不存在！');
         //检查是否拥有此会员等级
         $level = UserLevel::where(['uid' => $uid, 'level_id' => $level_id, 'is_del' => 0])->field('valid_time,is_forever')->find();
-        if ($level) if (!$level['is_forever'] && time() < $level['valid_time']) return JsonService::fail('此用户已有该会员等级，无法再次赠送');
+        if ($level) if (!$level['is_forever'] && time() < $level['valid_time']) return Json::fail('此用户已有该会员等级，无法再次赠送');
         //设置会员过期时间
         $add_valid_time = (int)$systemLevel->valid_date * 86400;
         UserModel::commitTrans();
@@ -196,22 +233,22 @@ class User extends AuthController
             $levelIds = [$level_id];
             $lowGradeLevelIds = SystemUserLevel::where('grade', '<', $systemLevel->grade)->where(['is_show' => 1, 'is_del' => 0])->column('id', 'id');
             if (count($lowGradeLevelIds)) $levelIds = array_merge($levelIds, $lowGradeLevelIds);
-            $taskIds = Db::name('system_user_task')->where('level_id', 'in', $levelIds)->column('id', 'id');
+            $taskIds = SystemUserTask::where('level_id', 'in', $levelIds)->column('id', 'id');
             $inserValue = [];
             foreach ($taskIds as $id) {
                 $inserValue[] = ['uid' => $uid, 'task_id' => $id, 'status' => 1, 'add_time' => time()];
             }
-            $res = $res && Db::name('user_task_finish')->insertAll($inserValue) && UserModel::where('uid', $uid)->update(['level' => $level_id]);
+            $res = $res && UserTaskFinish::insertAll($inserValue) && UserModel::where('uid', $uid)->update(['level' => $level_id]);
             if ($res) {
                 UserModel::commitTrans();
-                return JsonService::successful('赠送成功');
+                return Json::successful('赠送成功');
             } else {
                 UserModel::rollbackTrans();
-                return JsonService::successful('赠送失败');
+                return Json::successful('赠送失败');
             }
         } catch (\Exception $e) {
             UserModel::rollbackTrans();
-            return JsonService::fail('赠送失败');
+            return Json::fail('赠送失败');
         }
     }
 
@@ -222,11 +259,11 @@ class User extends AuthController
      * */
     public function del_level($uid = 0)
     {
-        if (!$uid) return JsonService::fail('缺少参数');
+        if (!$uid) return Json::fail('缺少参数');
         if (UserLevel::cleanUpLevel($uid))
-            return JsonService::successful('清除成功');
+            return Json::successful('清除成功');
         else
-            return JsonService::fail('清除失败');
+            return Json::fail('清除失败');
     }
 
     /**
@@ -271,6 +308,8 @@ class User extends AuthController
             ['user_time_type', ''],
             ['user_time', ''],
             ['sex', ''],
+            ['level', ''],
+            ['group_id', ''],
         ]);
         return Json::successlayui(UserModel::getUserList($where));
     }
@@ -288,6 +327,7 @@ class User extends AuthController
         $f = array();
         $f[] = Form::input('uid', '用户编号', $user->getData('uid'))->disabled(1);
         $f[] = Form::input('real_name', '真实姓名', $user->getData('real_name'));
+        $f[] = Form::text('phone', '手机号', $user->getData('phone'));
         $f[] = Form::date('birthday', '生日', $user->getData('birthday') ? date('Y-m-d', $user->getData('birthday')) : 0);
         $f[] = Form::input('card_id', '身份证号', $user->getData('card_id'));
         $f[] = Form::textarea('mark', '用户备注', $user->getData('mark'));
@@ -304,6 +344,7 @@ class User extends AuthController
             ['money_status', 0],
             ['is_promoter', 1],
             ['real_name', ''],
+            ['phone', 0],
             ['card_id', ''],
             ['birthday', ''],
             ['mark', ''],
@@ -367,8 +408,9 @@ class User extends AuthController
         }
         $edit['status'] = $data['status'];
         $edit['real_name'] = $data['real_name'];
+        $edit['phone'] = $data['phone'];
         $edit['card_id'] = $data['card_id'];
-        $edit['birthday'] = $data['birthday'];
+        $edit['birthday'] = strtotime($data['birthday']);
         $edit['mark'] = $data['mark'];
         $edit['is_promoter'] = $data['is_promoter'];
         if ($edit) $res3 = UserModel::edit($edit, $uid);

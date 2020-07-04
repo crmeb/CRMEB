@@ -4,6 +4,7 @@
  * @author: xaboy<365615158@qq.com>
  * @day: 2017/11/02
  */
+
 namespace crmeb\basic;
 
 use think\facade\Db;
@@ -24,9 +25,9 @@ class BaseModel extends Model
      * @param string $errorMsg
      * @return bool
      */
-    protected static function setErrorInfo($errorMsg = self::DEFAULT_ERROR_MSG,$rollback = false)
+    protected static function setErrorInfo($errorMsg = self::DEFAULT_ERROR_MSG, $rollback = false)
     {
-        if($rollback) self::rollbackTrans();
+        if ($rollback) self::rollbackTrans();
         self::$errorMsg = $errorMsg;
         return false;
     }
@@ -71,9 +72,9 @@ class BaseModel extends Model
      */
     public static function checkTrans($res)
     {
-        if($res){
+        if ($res) {
             self::commitTrans();
-        }else{
+        } else {
             self::rollbackTrans();
         }
     }

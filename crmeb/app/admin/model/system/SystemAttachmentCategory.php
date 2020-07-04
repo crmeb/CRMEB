@@ -1,9 +1,9 @@
 <?php
+
 namespace app\admin\model\system;
 
 use crmeb\traits\ModelTrait;
 use crmeb\basic\BaseModel;
-use crmeb\services\UtilService;
 
 /**
  * 附件目录
@@ -12,7 +12,6 @@ use crmeb\services\UtilService;
  */
 class SystemAttachmentCategory extends BaseModel
 {
-
     /**
      * 数据表主键
      * @var string
@@ -37,7 +36,7 @@ class SystemAttachmentCategory extends BaseModel
      * @param int $pid
      * @return SystemAttachmentCategory|\think\Model
      */
-    public static function Add($name,$att_size,$att_type,$att_dir,$satt_dir='',$pid = 0 )
+    public static function Add($name, $att_size, $att_type, $att_dir, $satt_dir = '', $pid = 0)
     {
         $data['name'] = $name;
         $data['att_dir'] = $att_dir;
@@ -56,19 +55,21 @@ class SystemAttachmentCategory extends BaseModel
      * @throws \think\db\exception\ModelNotFoundException
      * @throws \think\exception\DbException
      */
-    public static function getAll($name){
+    public static function getAll($name)
+    {
         $model = new self;
-        if($name) $model = $model->where('name','LIKE',"%$name%");
-        return self::tidyMenuTier($model->select(),0);
+        if ($name) $model = $model->where('name', 'LIKE', "%$name%");
+        return self::tidyMenuTier($model->select(), 0);
     }
-    public static function tidyMenuTier($menusList,$pid = 0,$navList = [])
+
+    public static function tidyMenuTier($menusList, $pid = 0, $navList = [])
     {
 
-        foreach ($menusList as $k=>$menu){
+        foreach ($menusList as $k => $menu) {
             $menu = $menu->getData();
-            if($menu['pid'] == $pid){
+            if ($menu['pid'] == $pid) {
                 unset($menusList[$k]);
-                $menu['child'] = self::tidyMenuTier($menusList,$menu['id']);
+                $menu['child'] = self::tidyMenuTier($menusList, $menu['id']);
                 $navList[] = $menu;
             }
         }
@@ -83,11 +84,14 @@ class SystemAttachmentCategory extends BaseModel
      * @throws \think\db\exception\ModelNotFoundException
      * @throws \think\exception\DbException
      */
-    public static function getCateList($id = 10000){
+    public static function getCateList($id = 10000, $type = 0)
+    {
         $model = new self();
-        if($id == 0)
-            $model->where('pid',$id);
-        return UtilService::sortListTier($model->select()->toArray());
+        if ($id == 0)
+            $model->where('pid', $id);
+        if ($type == 1)
+            return sort_list_tier($model->where('pid', 0)->select()->toArray());
+        return sort_list_tier($model->select()->toArray());
     }
 
     /**
@@ -98,7 +102,8 @@ class SystemAttachmentCategory extends BaseModel
      * @throws \think\db\exception\ModelNotFoundException
      * @throws \think\exception\DbException
      */
-    public static function getinfo($att_id){
+    public static function getinfo($att_id)
+    {
         $model = new self;
         $where['att_id'] = $att_id;
         return $model->where($where)->select()->toArray()[0];

@@ -2,17 +2,19 @@
 
 namespace app\api\controller\admin;
 
-use app\models\store\StoreOrder;
-use app\models\store\StoreOrderStatus;
-use app\models\store\StorePink;
-use app\models\store\StoreService;
-use app\models\user\User;
-use app\models\user\UserBill;
 use app\Request;
+use app\models\user\{
+    User, UserBill
+};
 use crmeb\repositories\OrderRepository;
-use crmeb\services\MiniProgramService;
-use crmeb\services\UtilService;
-use crmeb\services\WechatService;
+use crmeb\repositories\ShortLetterRepositories;
+use crmeb\services\{
+    MiniProgramService, UtilService, WechatService
+};
+use app\models\store\{
+    StoreCart, StoreOrder, StoreOrderStatus, StorePink, StoreService
+};
+use app\models\system\SystemStoreStaff;
 
 /**
  * 订单类
@@ -47,9 +49,14 @@ class StoreOrderController
         $uid = $request->uid();
         if (!StoreService::orderServiceStatus($uid))
             return app('json')->fail('权限不足');
-        list($page, $limit) = UtilService::getMore([['page', 1], ['limit', 7]], $request, true);
+        list($page, $limit, $start, $stop) = UtilService::getMore([
+            ['page', 1],
+            ['limit', 7],
+            ['start', ''],
+            ['stop', '']
+        ], $request, true);
         if (!$limit) return app('json')->successful([]);
-        $data = StoreOrder::getOrderDataPriceCount($page, $limit);
+        $data = StoreOrder::getOrderDataPriceCount($page, $limit, $start, $stop);
         if ($data) return app('json')->successful($data->toArray());
         return app('json')->successful([]);
     }
@@ -90,7 +97,7 @@ class StoreOrderController
     public function detail(Request $request, $orderId)
     {
         $uid = $request->uid();
-        if (!StoreService::orderServiceStatus($uid))
+        if ((!StoreService::orderServiceStatus($uid)) && !(SystemStoreStaff::verifyStatus($uid)))
             return app('json')->fail('权限不足');
         $order = StoreOrder::getAdminOrderDetail($orderId, 'id,uid,order_id,add_time,status,total_num,total_price,total_postage,pay_price,pay_postage,paid,refund_status,remark,pink_id,combination_id,mark,seckill_id,bargain_id,delivery_type,pay_type,real_name,user_phone,user_address,coupon_price,freight_price,delivery_name,delivery_type,delivery_id');
         if (!$order) return app('json')->fail('订单不存在');
@@ -197,7 +204,7 @@ class StoreOrderController
             ['order_id', ''],
             ['price', '']
         ], $request, true);
-        $order = StoreOrder::getAdminOrderDetail($order_id, 'id,paid,pay_price,order_id,total_price,total_postage,pay_postage,gain_integral');
+        $order = StoreOrder::getAdminOrderDetail($order_id, 'id,paid,user_phone,pay_price,order_id,total_price,total_postage,pay_postage,gain_integral');
         if (!$order) return app('json')->fail('订单不存在');
         $order = $order->toArray();
         if (!$order['paid']) {
@@ -210,6 +217,11 @@ class StoreOrderController
             $order['pay_price'] = $price;
             event('StoreProductOrderEditAfter', [$order, $order['id']]);
             StoreOrderStatus::status($order['id'], 'order_edit', '修改实际支付金额' . $price);
+            //改价短信提醒
+            if ($price != $order['pay_price']) {
+                $switch = sys_config('price_revision_switch') ? true : false;
+                ShortLetterRepositories::send($switch, $order['user_phone'], ['order_id' => $order_id, 'pay_price' => $order['pay_price']], 'PRICE_REVISION_CODE');
+            }
             return app('json')->successful('修改成功');
         }
         return app('json')->fail('状态错误');
@@ -256,7 +268,9 @@ class StoreOrderController
             ['stop', time()],
             ['type', 1]
         ], $request, true);
-        if ($start == $stop) return false;
+        if ($start == $stop) {
+            return app('json')->fail('开始时间不能等于结束时间');
+        }
         if ($start > $stop) {
             $middle = $stop;
             $stop = $start;
@@ -397,10 +411,73 @@ class StoreOrderController
                 return app('json')->fail($e->getMessage());
             }
             StoreOrderStatus::status($orderInfo['id'], 'refund_price', '退款给用户' . $price . '元');
+
+            //退佣金
+            $brokerage_list = UserBill::where('category', 'now_money')
+                ->where('type', 'brokerage')
+                ->where('link_id', $orderId)
+                ->where('pm', 1)
+                ->select()->toArray();
+            if ($brokerage_list)
+                foreach ($brokerage_list as $item) {
+                    $usermoney = User::where('uid', $item['uid'])->value('brokerage_price');
+                    if ($item['number'] > $usermoney)
+                        $item['number'] = $usermoney;
+                    User::bcDec($item['uid'], 'brokerage_price', $item['number'], 'uid');
+                    UserBill::expend('退款退佣金', $item['uid'], 'now_money', 'brokerage', $item['number'], $orderId, bcsub($usermoney, $item['number'], 2), '订单退款扣除佣金' . floatval($item['number']) . '元');
+                }
             return app('json')->successful('修改成功!');
         } else {
             StoreOrderStatus::status($orderInfo['id'], 'refund_price', '退款给用户' . $price . '元失败');
             return app('json')->successful('修改失败!');
         }
     }
+
+    /**
+     * 门店核销
+     * @param Request $request
+     */
+    public function order_verific(Request $request)
+    {
+        list($verify_code, $is_confirm) = UtilService::postMore([
+            ['verify_code', ''],
+            ['is_confirm', 0]
+        ], $request, true);
+        if (!$verify_code) return app('json')->fail('缺少核销码');
+        $orderInfo = StoreOrder::where('verify_code', $verify_code)->where('paid', 1)->where('refund_status', 0)->find();
+        if (!$orderInfo) return app('json')->fail('核销的订单不存在或未支付或已退款');
+        if ($orderInfo->status > 0) return app('json')->fail('订单已经核销');
+        if ($orderInfo->combination_id && $orderInfo->pink_id) {
+            $res = StorePink::where('id', $orderInfo->pink_id)->where('status', '<>', 2)->count();
+            if ($res) return app('json')->fail('拼团订单暂未成功无法核销！');
+        }
+        if (!$is_confirm) {
+            $orderInfo['image'] = StoreCart::getProductImage($orderInfo->cart_id);
+            return app('json')->success($orderInfo->toArray());
+        }
+        StoreOrder::beginTrans();
+        try {
+            $uid = $request->uid();
+            if (SystemStoreStaff::verifyStatus($uid) && ($storeStaff = SystemStoreStaff::where('uid', $uid)->field(['store_id', 'id'])->find())) {
+                $orderInfo->store_id = $storeStaff['store_id'];
+                $orderInfo->clerk_id = $storeStaff['id'];
+            }
+            $orderInfo->status = 2;
+            if ($orderInfo->save()) {
+                OrderRepository::storeProductOrderTakeDeliveryAdmin($orderInfo);
+                StoreOrderStatus::status($orderInfo->id, 'take_delivery', '已核销');
+                event('ShortMssageSend', [$orderInfo['order_id'], 'Receiving']);
+                StoreOrder::commitTrans();
+                return app('json')->success('核销成功');
+            } else {
+                StoreOrder::rollbackTrans();
+                return app('json')->fail('核销失败');
+            }
+        } catch (\PDOException $e) {
+            StoreOrder::rollbackTrans();
+            return app('json')->fail($e->getMessage());
+        }
+    }
+
+
 }

@@ -19,7 +19,7 @@ class ExpressService
 
     public static function query($no, $type = '')
     {
-        $appCode = sysConfig('system_express_app_code');
+        $appCode = sys_config('system_express_app_code');
         if (!$appCode) return false;
         $res = HttpService::getRequest(self::$api['query'], compact('no', 'type'), ['Authorization:APPCODE ' . $appCode]);
         $result = json_decode($res, true) ?: false;

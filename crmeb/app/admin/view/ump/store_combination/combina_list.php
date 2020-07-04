@@ -45,7 +45,7 @@
                         <tr>
                             <th class="text-center">开团团长</th>
                             <th class="text-center">开团时间</th>
-                            <th class="text-center">拼团产品</th>
+                            <th class="text-center">拼团商品</th>
                             <th class="text-center">几人团</th>
                             <th class="text-center">几人参加</th>
                             <th class="text-center">结束时间</th>

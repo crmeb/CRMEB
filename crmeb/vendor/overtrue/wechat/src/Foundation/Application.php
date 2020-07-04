@@ -106,7 +106,8 @@ class Application extends Container
         ServiceProviders\OpenPlatformServiceProvider::class,
         ServiceProviders\MiniProgramServiceProvider::class,
         ServiceProviders\CommentServiceProvider::class,
-        \crmeb\utils\ProgramProvider::class,
+        \crmeb\services\subscribe\ProgramProvider::class,
+        \crmeb\services\wechatlive\ProgramProvider::class,
     ];
 
     /**

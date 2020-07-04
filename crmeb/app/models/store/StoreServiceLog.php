@@ -30,6 +30,23 @@ class StoreServiceLog extends BaseModel
      */
     protected $name = 'store_service_log';
 
+    /**
+     * 消息类型
+     * @var array  1=文字 2=表情 3=图片 4=语音 5 = 商品链接 6 = 订单类型
+     */
+    const MSN_TYPE = [1, 2, 3, 4, 5, 6];
+
+    /**
+     * 商品链接消息类型
+     */
+    const MSN_TYPE_GOODS = 5;
+
+    /**
+     * 订单信息消息类型
+     */
+    const MSN_TYPE_ORDER = 6;
+
+
     use ModelTrait;
 
     /**
@@ -42,16 +59,37 @@ class StoreServiceLog extends BaseModel
      */
     public static function lst($uid, $toUid, $page, $limit)
     {
-        if(!$limit || !$page) return [];
+        if (!$limit || !$page) return [];
         $model = new self;
         $model = $model->whereIn('uid', [$uid, $toUid]);
         $model = $model->whereIn('to_uid', [$uid, $toUid]);
         $model = $model->order('id DESC');
         $model = $model->page($page, $limit);
-        return $model->select()->each(function ($item){
-            $userInfo = User::getUserInfo($item['uid'], 'nickname,avatar');
-            $item['nickname'] = $userInfo['nickname'];
-            $item['avatar'] = $userInfo['avatar'];
+        return $model->select()->each(function ($item) {
+            $userInfo = StoreService::where('uid', $item['uid'])->field('nickname,avatar')->find();
+            if(!$userInfo) $userInfo = User::getUserInfo($item['uid'],'nickname,avatar');
+            if ($userInfo) {
+                $item['nickname'] = $userInfo['nickname'];
+                $item['avatar'] = $userInfo['avatar'];
+            }
+
+            if ($item['msn_type'] == self::MSN_TYPE_GOODS && $item['msn']) {
+                $item['productInfo'] = StoreProduct::validWhere()->where('id', $item['msn'])->find();
+            } else {
+                $item['productInfo'] = [];
+            }
+
+            $item['orderInfo'] = [];
+            if ($item['msn_type'] == self::MSN_TYPE_ORDER && $item['msn']) {
+                $order = StoreOrder::getUserOrderDetail($item['uid'], $item['msn']);
+                if ($order) {
+                    $order = StoreOrder::tidyOrder($order->toArray(), true, true);
+                    $order['add_time_y'] = date('Y-m-d', $order['add_time']);
+                    $order['add_time_h'] = date('H:i:s', $order['add_time']);
+                    $item['orderInfo'] = $order;
+                }
+            }
+            $item['msn_type'] = (int)$item['msn_type'];
         });
     }
 }

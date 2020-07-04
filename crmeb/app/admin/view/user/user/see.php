@@ -267,7 +267,7 @@
                                     </tr>
                                     </tbody>
                                 </table>
-                                <div ref="spread_page" v-show="count.spread_page > limit" style="text-align: right;"></div>
+                                <div ref="spread_page" v-show="count.spread_count > limit" style="text-align: right;"></div>
                             </div>
                             <!--end-->
                         </div>

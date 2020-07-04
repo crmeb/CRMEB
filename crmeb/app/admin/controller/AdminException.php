@@ -28,7 +28,7 @@ class AdminException extends Handle
             return app('json')->make(422, $e->getError());
         }
         if ($e instanceof \Exception && request()->isAjax()) {
-            return app('json')->fail(['code' => $e->getCode(), 'message' => $e->getMessage(), 'file' => $e->getFile()]);
+            return app('json')->fail($e->getMessage(), ['code' => $e->getCode(), 'line' => $e->getLine(), 'message' => $e->getMessage(), 'file' => $e->getFile()]);
         }
 
         return parent::render($request, $e);

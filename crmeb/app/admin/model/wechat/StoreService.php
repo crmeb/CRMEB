@@ -1,4 +1,5 @@
 <?php
+
 namespace app\admin\model\wechat;
 
 use app\admin\model\wechat\StoreServiceLog as ServiceLogModel;
@@ -30,9 +31,10 @@ class StoreService extends BaseModel
      * @param $mer_id
      * @return array
      */
-    public static function getList($mer_id){
-        return self::page(self::where('mer_id',$mer_id)->order('id desc'),function($item){
-            $item['wx_name']=WechatUser::where(['uid'=>$item['uid']])->value('nickname');
+    public static function getList($mer_id)
+    {
+        return self::page(self::where('mer_id', $mer_id)->order('id desc'), function ($item) {
+            $item['wx_name'] = WechatUser::where(['uid' => $item['uid']])->value('nickname');
         });
     }
 
@@ -45,21 +47,22 @@ class StoreService extends BaseModel
      * @throws \think\db\exception\ModelNotFoundException
      * @throws \think\exception\DbException
      */
-    public static function getChatUser($now_service,$mer_id){
+    public static function getChatUser($now_service, $mer_id)
+    {
         $chat_list = ServiceLogModel::field("uid,to_uid")->where('mer_id', $mer_id)->where('to_uid|uid', $now_service["uid"])->group("uid,to_uid")->select();
-        if(count($chat_list) > 0){
+        if (count($chat_list) > 0) {
             $chat_list = $chat_list->toArray();
             $arr_user = $arr_to_user = [];
             foreach ($chat_list as $key => $value) {
-                array_push($arr_user,$value["uid"]);
-                array_push($arr_to_user,$value["to_uid"]);
+                array_push($arr_user, $value["uid"]);
+                array_push($arr_to_user, $value["to_uid"]);
             }
-            $uids = array_merge($arr_user,$arr_to_user);
+            $uids = array_merge($arr_user, $arr_to_user);
             $uids = array_flip(array_flip($uids));
             $uids = array_flip($uids);
             unset($uids[$now_service["uid"]]);
             $uids = array_flip($uids);
-            if(!count($uids)) return null;
+            if (!count($uids)) return null;
             return WechatUser::field("uid,nickname,headimgurl")->whereIn('uid', $uids)->select()->toArray();
         }
         return null;

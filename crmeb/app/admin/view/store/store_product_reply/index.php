@@ -1,41 +1,10 @@
 {extend name="public/container"}
 {block name="head_top"}
-<style>
-    .message-content .media-body {margin-bottom: 60px;}
-    .layadmin-homepage-list-imgtxt .media-body {width: auto;display: block;overflow: hidden;}
-    .layadmin-message-fluid .layui-col-md12 {background: #fff;height: auto;padding-bottom: 50px;}
-    .message-content {padding: 0 40px;}
-    .message-content .media-left {float: left;margin-right: 10px;}
-    .message-content .media-body{margin-top:10px;}
-    .message-content .media-body .pad-btm {padding-bottom: 0;}
-    .message-content .media-left img {border-radius: 50%;}
-    .layadmin-homepage-list-imgtxt .media-body .pad-btm p:first-child {padding-bottom: 5px;}
-    .layadmin-homepage-list-imgtxt .media-body .pad-btm .fontColor a {font-weight: 600;color: #337ab7;}
-    .layadmin-homepage-list-imgtxt .media-body .min-font {margin-bottom: 10px;}
-    .layui-breadcrumb {visibility: hidden;font-size: 0;}
-    .layadmin-homepage-list-imgtxt .media-body .min-font .layui-breadcrumb a {font-size: 11px;}
-    .layui-breadcrumb a {color: #999!important;}
-    .media-body .message-text {padding-top: 10px;padding-bottom: 10px;border-bottom: 1px solid #e0e0e0;}
-    .media-body .message-text .image-box{margin-top: 10px;}
-    .media-body .message-text .image-box img{max-width: 300px;max-height: 200px;margin-right: 10px;margin-bottom: 10px}
-    .message-content-btn {text-align: center;padding: 10px 0;}
-    .media-body .message-but{margin-top: 10px;}
-    .message-content .message-content-btn .layui-btn {height: auto;line-height: 26px;padding: 5px 30px;font-size: 16px;}
-    .message-content .homepage-bottom .layadmin-privateletterlist-item .meida-left img{width: 100%;}
-    .message-content .homepage-bottom .layadmin-privateletterlist-item{border: 1px solid #e0e0e0;margin-bottom: 10px;cursor:pointer;}
-    .message-content .homepage-bottom .layadmin-privateletterlist-item .meida-right{padding: 10px;}
-    .message-content .homepage-bottom .layadmin-privateletterlist-item.on{border: 1px solid #0092DC!important;}
-    .message-content .homepage-bottom .layadmin-privateletterlist-item .meida-right .meida-store_name{font-size: 20px;}
-    .message-content .homepage-bottom .layadmin-privateletterlist-item .centent{text-align: center;}
-    .clearfix:after {  content: "."; display: block; height: 0; clear: both; visibility: hidden;  }
-    .message-content .homepage-bottom .producr-load{text-align: center;margin-bottom: 10px}
-    .message-content .homepage-bottom .producr-load .layui-btn{margin-bottom: 10px}
-</style>
 <script src="{__PLUG_PATH}sweetalert2/sweetalert2.all.min.js"></script>
 {/block}
 {block name="content"}
 <div class="layui-fluid">
-    <div class="layui-row layui-col-space15"  id="app">
+    <div class="layui-row layui-col-space15" id="app">
         <div class="layui-col-md12">
             <div class="layui-card">
                 <div class="layui-card-header">搜索条件</div>
@@ -43,9 +12,21 @@
                     <form class="layui-form layui-form-pane" action="">
                         <div class="layui-form-item">
                             <div class="layui-inline">
-                                <label class="layui-form-label">内容</label>
+                                <label class="layui-form-label">用户昵称</label>
                                 <div class="layui-input-block">
-                                    <input type="text" name="title" class="layui-input">
+                                    <input type="text" name="nickname" class="layui-input">
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label">商品名称</label>
+                                <div class="layui-input-block">
+                                    <input type="text" name="product_name" class="layui-input">
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label">订单id</label>
+                                <div class="layui-input-block">
+                                    <input type="text" name="order_id" class="layui-input">
                                 </div>
                             </div>
                             <div class="layui-inline">
@@ -59,9 +40,21 @@
                                 </div>
                             </div>
                             <div class="layui-inline">
+                                <label class="layui-form-label">评分筛选</label>
+                                <div class="layui-input-block">
+                                    <select name="score_type">
+                                        <option value="">全部</option>
+                                        <option value="1">好评</option>
+                                        <option value="2">差评</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="layui-inline">
                                 <div class="layui-input-inline">
-                                    <button class="layui-btn layui-btn-sm layui-btn-normal" lay-submit="search" lay-filter="search">
-                                        <i class="layui-icon layui-icon-search"></i>搜索</button>
+                                    <button class="layui-btn layui-btn-sm layui-btn-normal" lay-submit="search"
+                                            lay-filter="search">
+                                        <i class="layui-icon layui-icon-search"></i>搜索
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -69,79 +62,64 @@
                 </div>
             </div>
         </div>
-        <div class="message-box" id="app" v-cloak="">
-            <div class="layui-col-md3" style="padding: 0 10px 0 0">
-                <div class="layui-card">
-                    <div class="layui-card-header" style="padding-top: 10px;">
-                        <div style="height: 30px;line-height: 30px;float:left;" >评论产品</div>
-                        <div style="height: 30px;line-height: 30px;float: right;">
-                            <input style="display: inline;width: auto;" type="text" class="layui-input layui-input-search" v-model="where.product_name" @blur='seachs' placeholder="搜索产品">
-                        </div>
-                        <div class="clearfix"></div>
+        <div class="layui-col-md12">
+            <div class="layui-card">
+                <div class="layui-card-header">评价列表</div>
+                <div class="layui-card-body">
+                    <div class="layui-btn-container">
+                        <button type="button" class="layui-btn layui-btn-sm"
+                                onclick="$eb.createModalFrame(this.innerText,'{:Url('create')}')">添加虚拟评论
+                        </button>
                     </div>
-                    <div class="layui-card-body layadmin-homepage-list-imgtxt message-content" ref="producr">
-                        <div class="grid-demo">
-                            <div class="layui-card homepage-bottom">
-                                <div class="layui-card-body clearfix">
-                                    <div class="layadmin-privateletterlist-item" :class="where.producr_id==0 ? 'on':'' " @click="where.producr_id=0">
-                                        <div class="meida-right centent">
-                                            <mdall class="meida-store_name">全部评论商品</mdall>
-                                        </div>
+                    <div class="layui-form">
+                        <table class="layui-table">
+                            <thead>
+                            <tr>
+                                <th width="18%">产品信息</th>
+                                <th width="8%">订单号</th>
+                                <th width="8%">买家</th>
+                                <th width="8%">评分</th>
+                                <th width="16%">评论内容</th>
+                                <th width="17%">回复内容</th>
+                                <th width="10%">评论时间</th>
+                                <th width="14%">操作</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr v-for="(item,index) in messageList">
+                                <td>
+                                    <div class="layui-col-md3 layui-col-sm3 layui-col-xs3">
+                                        <img style="width: 100%;" :src="item.image" @click="lockImage(item.image)" alt="">
                                     </div>
-                                    <div class="layadmin-privateletterlist-item layui-col-md6 layui-col-xs6 layui-col-lg6" :class="where.producr_id==item.id ? 'on':'' " v-for="item in productImaesList" @click="where.producr_id=item.id">
-                                        <div class="meida-left">
-                                            <img :src="item.image" @click="lockImage(item.image)">
-                                        </div>
-                                        <div class="meida-right">
-                                            <p>￥{{item.price}}</p>
-                                            <mdall v-text="item.store_name"></mdall>
-                                        </div>
+                                    <div class="layui-col-md9 layui-col-sm9 layui-col-xs9">{{item.store_name}}</div>
+                                </td>
+                                <td>{{item.order_id}}</td>
+                                <td>{{item.nickname}}</td>
+                                <td>{{item.product_score}}</td>
+                                <td>
+                                    <div class="layui-col-md12 layui-col-sm12 layui-col-xs12" style="margin: 5px 0;">
+                                        {{item.comment}}
                                     </div>
-                                </div>
-                                <div class="layui-row producr-load clearfix">
-                                    <a href="javascript:;" class="layui-btn" v-text="product.loadTitle" @click="loadList(0)">更多</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="layui-col-md9">
-                <div class="layui-card">
-                    <div class="layui-card-header">评论列表</div>
-                    <div class="layui-card-body layadmin-homepage-list-imgtxt message-content">
-                        <div class="media-body" v-for="(item,index) in messageList">
-                            <a href="javascript:;" class="media-left" style="float: left;">
-                                <img :src="item.avatar" height="46px" width="46px" @click="see(item.nickname,item.uid)">
-                            </a>
-                            <div class="pad-btm">
-                                <p class="fontColor"><a href="javascript:;" v-text="item.nickname"></a></p>
-                                <p class="min-font">
-                                  <span class="layui-breadcrumb" style="visibility: visible;">
-                                    <a href="javascript:;" v-text="item.time"></a>
-                                  </span>
-                                </p>
-                            </div>
-                            <div class="message-text">
-                                <p v-text="item.comment"></p>
-                                <div class="image-box" v-if="item.pics && typeof item.pics == 'object'">
-                                    <img :src="pic" alt="" v-for="pic in item.pics" @click="lockImage(pic)">
-                                </div>
-                            </div>
-                            <div class="message-but">
-                                <div class="layui-btn-group">
-                                    <button class="layui-btn layui-btn-normal layui-btn-sm" type="button" @click="edit(item,index)">{{item.merchant_reply_time ? "编辑":"回复"}}</button>
-                                    <button class="layui-btn layui-btn-danger layui-btn-sm" type="button" @click="delReply(item,index)">删除</button>
-                                </div>
-                            </div>
-                            <fieldset class="layui-elem-field" style="margin-top: 10px" v-if="item.merchant_reply_time">
-                                <legend style="font-size: 15px">回复</legend>
-                                <div class="layui-field-box" v-text="item.merchant_reply_content"></div>
-                            </fieldset>
-                        </div>
-                        <div class="layui-row message-content-btn">
-                            <div id="message"></div>
-                        </div>
+                                    <div class="layui-col-md12 layui-col-sm12 layui-col-xs12">
+                                        <img @click="lockImage(pic)" style="width: 30%;" v-for="pic in item.pics" :src="pic"
+                                             alt="">
+                                    </div>
+                                </td>
+                                <td>{{item.merchant_reply_content}}</td>
+                                <td>{{item._add_time}}</td>
+                                <td>
+                                    <button type="button" class="layui-btn layui-btn-normal layui-btn-sm"
+                                            @click="edit(item,index)">回复
+                                    </button>
+                                    <button type="button" class="layui-btn layui-btn-normal layui-btn-sm"
+                                            @click="delReply(item,index)">删除
+                                    </button>
+                                </td>
+                            </tr>
+
+                            </tbody>
+                        </table>
+                        <div ref="pages" style="text-align: right;" v-if="count > where.limit"></div>
                     </div>
                 </div>
             </div>
@@ -152,180 +130,167 @@
 {/block}
 {block name="script"}
 <script type="text/javascript">
-    var product_id=<?=$product_id?>;
-    require(['vue'],function(Vue) {
+    var product_id = <?=$product_id?>;
+    require(['vue'], function (Vue) {
         new Vue({
             el: "#app",
             data: {
-                productImaesList:[],
-                where:{
-                    page:1,
-                    title:'',
-                    is_reply:'',
-                    limit:10,
-                    product_name:'',
-                    producr_id:product_id,
-                    message_page:1,
+                where: {
+                    page: 1,
+                    title: '',
+                    is_reply: '',
+                    limit: 10,
+                    product_name: '',
+                    producr_id: product_id,
+                    message_page: 1,
+                    order_id: '',
+                    nickname: '',
+                    score_type: '',
                 },
-                product:{
-                    loading:false,
-                    loadend:false,
-                    loadTitle:'加载更多',
+                product: {
+                    loading: false,
+                    loadend: false,
+                    loadTitle: '加载更多',
                 },
-                product_name:'',
-                messageList:[],
-                message:{
-                    loading:false,
-                    loadend:false,
-                    loadTitle:'加载更多',
+                product_name: '',
+                messageList: [],
+                message: {
+                    loading: false,
+                    loadend: false,
+                    loadTitle: '加载更多',
                 },
-                count:0,
+                count: 0,
             },
-            watch:{
-                'where.producr_id':function (n) {
-                    this.message.loadend=false;
-                    this.where.message_page=1;
-                    this.$set(this,'messageList',[]);
+            watch: {
+                'where.producr_id': function (n) {
+                    this.message.loadend = false;
+                    this.where.message_page = 1;
+                    this.$set(this, 'messageList', []);
                     this.getMessageList();
                 },
-                'where.message_page':function (n) {
-                    this.message.loadend=false;
+                'where.message_page': function (n) {
+                    this.message.loadend = false;
                     this.getMessageList(true);
                 }
             },
-            methods:{
-                see:function(nickname,uid){
-                    $eb.createModalFrame(nickname+'-会员详情',layList.Url({c:'user.user',a:'see',p:{uid:uid}}));
+            methods: {
+                see: function (nickname, uid) {
+                    $eb.createModalFrame(nickname + '-会员详情', layList.Url({c: 'user.user', a: 'see', p: {uid: uid}}));
                 },
-                Reset:function(){
-                    if(!this.where.product_name) return;
-                    this.where.page=1;
-                    this.product.loadend=false;
-                    this.product_name='';
-                    this.where.product_name='';
-                    this.$set(this,'productImaesList',[]);
+                Reset: function () {
+                    if (!this.where.product_name) return;
+                    this.where.page = 1;
+                    this.product.loadend = false;
+                    this.product_name = '';
+                    this.where.product_name = '';
+                    this.$set(this, 'productImaesList', []);
                     this.getProductImaesList();
                 },
-                seachs:function(){
-                    this.where.page=1;
-                    this.product.loadend=false;
-                    if(!this.where.product_name && !this.product_name) return layList.msg('请输入产品名称再进行查找！');
-                    if(this.where.product_name==this.product_name) return;
-                    this.product_name=this.where.product_name;
-                    this.$set(this,'productImaesList',[]);
+                seachs: function () {
+                    this.where.page = 1;
+                    this.product.loadend = false;
+                    if (!this.where.product_name && !this.product_name) return layList.msg('请输入产品名称再进行查找！');
+                    if (this.where.product_name == this.product_name) return;
+                    this.product_name = this.where.product_name;
+                    this.$set(this, 'productImaesList', []);
                     this.getProductImaesList();
                 },
-                delReply:function(item,index){
-                    var url = layList.U({a:'delete',p:{id:item.id}}),that=this;
-                    $eb.$swal('delete',function(){
-                        $eb.axios.get(url).then(function(res){
-                            if(res.status == 200 && res.data.code == 200) {
-                                $eb.$swal('success',res.data.msg);
-                                that.messageList.splice(index,1);
-                                that.$set(that,'messageList',that.messageList);
-                            }else
+                delReply: function (item, index) {
+                    var url = layList.U({a: 'delete', p: {id: item.id}}), that = this;
+                    $eb.$swal('delete', function () {
+                        $eb.axios.get(url).then(function (res) {
+                            if (res.status == 200 && res.data.code == 200) {
+                                $eb.$swal('success', res.data.msg);
+                                that.messageList.splice(index, 1);
+                                that.$set(that, 'messageList', that.messageList);
+                            } else
                                 return Promise.reject(res.data.msg || '删除失败')
-                        }).catch(function(err){
-                            $eb.$swal('error',err);
+                        }).catch(function (err) {
+                            $eb.$swal('error', err);
                         });
                     })
                 },
-                edit:function(item,index){
-                    var url=layList.U({a:'set_reply'}),rid=item.id;
-                    $eb.$alert('textarea',{'title':'请输入回复内容','value':item.merchant_reply_content},function(result){
-                        $eb.axios.post(url,{content:result,id:rid}).then(function(res){
-                            if(res.status == 200 && res.data.code == 200) {
-                                item.merchant_reply_time=1;
-                                item.merchant_reply_content=result;
+                edit: function (item, index) {
+                    var url = layList.U({a: 'set_reply'}), rid = item.id;
+                    $eb.$alert('textarea', {
+                        'title': '请输入回复内容',
+                        'value': item.merchant_reply_content
+                    }, function (result) {
+                        $eb.axios.post(url, {content: result, id: rid}).then(function (res) {
+                            if (res.status == 200 && res.data.code == 200) {
+                                item.merchant_reply_time = 1;
+                                item.merchant_reply_content = result;
                                 $eb.swal(res.data.msg);
-                            }else
+                            } else
                                 $eb.swal(res.data.msg);
                         });
                     })
                 },
-                loadList:function(){
+                loadList: function () {
                     this.getProductImaesList();
                 },
-                lockImage:function(href){
+                lockImage: function (href) {
                     return layList.layer.open({
                         type: 1,
                         title: false,
                         closeBtn: 0,
                         shadeClose: true,
-                        content: '<img src="'+href+'" style="display: block;width: 100%;" />'
+                        content: '<img src="' + href + '" style="display: block;width: 100%;" />'
                     });
                 },
-                getProductImaesList:function () {
-                    var that=this;
-                    if(that.product.loading) return;
-                    if(that.product.loadend) return;
-                    that.product.loadTitle='加载中';
-                    layList.baseGet(layList.U({a:'get_product_imaes_list',q:that.where}),function (res) {
-                        var list = res.data;
+                getMessageList: function (isFa) {
+                    var that = this;
+                    if (that.message.loading) return;
+                    if (that.message.loadend) return;
+                    var index = layList.layer.load(1, {shade: [0.1, '#fff']});
+                    layList.baseGet(layList.U({a: 'get_product_reply_list', q: that.where}), function (res) {
+                        var list = res.data.list;
                         var loadend = list.length < that.where.limit;
-                        that.where.page=that.where.page+1;
-                        that.product.loading=false;
-                        that.product.loadend=loadend;
-                        that.product.loadTitle=loadend ? '已全部加载' : '加载更多';
-                        that.productImaesList.push.apply(that.productImaesList,list);
-                        that.$set(that,'productImaesList',that.productImaesList);
-                        that.slitherMonitor();
-                    },function (res) {
-                        that.product.loading=false;
-                        that.product.loadTitle='加载更多';
-                    });
-                },
-                getMessageList:function (isFa) {
-                    var that=this;
-                    if(that.message.loading) return;
-                    if(that.message.loadend) return;
-                    that.message.loadTitle='加载中';
-                    var index=layList.layer.load(1, {shade: [0.1,'#fff'] });
-                    layList.baseGet(layList.U({a:'get_product_reply_list',q:that.where}),function (res) {
-                        var list=res.data.list;
-                        var loadend=list.length < that.where.limit;
-                        that.message.loading=false;
-                        that.message.loadend=loadend;
-                        that.count=res.data.count;
-                        that.message.loadTitle=loadend ? '已全部加载' : '加载更多';
-                        that.$set(that,'messageList',list);
+                        that.message.loading = false;
+                        that.message.loadend = loadend;
+                        that.count = res.data.count;
+                        that.$set(that, 'messageList', list);
                         layList.layer.close(index);
                         isFa || that.initPage();
-                    },function (res) {
-                        that.message.loading=false;
-                        that.message.loadTitle='加载更多';
+                    }, function (res) {
+                        that.message.loading = false;
                         layList.layer.close(index);
                     });
                 },
-                slitherMonitor:function () {
-                    var clientHeight=document.documentElement.clientHeight;
-                    if(this.$refs.producr.offsetHeight >= clientHeight) this.$refs.producr.style.overflowX='scroll';
-                    else this.$refs.producr.style.overflow='hidden';
+                slitherMonitor: function () {
+                    var clientHeight = document.documentElement.clientHeight;
+                    if (this.$refs.producr.offsetHeight >= clientHeight) this.$refs.producr.style.overflowX = 'scroll';
+                    else this.$refs.producr.style.overflow = 'hidden';
                 },
-                initPage:function () {
-                    var that=this;
-                    layList.laypage.render({
-                        elem: 'message'
-                        ,count: that.count
-                        ,limit:that.where.limit
-                        ,jump: function(obj){
-                            that.where.message_page=obj.curr;
-                        }
-                    });
+                initPage: function () {
+                    var that = this;
+                    that.$nextTick(function () {
+                        layList.laypage.render({
+                            elem: that.$refs.pages
+                            , count: that.count
+                            , limit: that.where.limit
+                            , layout: ['count', 'prev', 'page', 'next', 'limit', 'refresh', 'skip']
+                            , jump: function (obj) {
+                                that.where.message_page = obj.curr
+                            }
+                        });
+                    })
                 }
             },
-            mounted:function () {
+            mounted: function () {
                 layList.form.render();
-                this.getProductImaesList();
                 this.getMessageList();
                 //查询
-                var that=this;
-                layList.search('search',function(where){
-                    if(that.where.title==where.title && that.where.is_reply==where.is_reply) return false;
-                    that.where.title=where.title;
-                    that.where.is_reply=where.is_reply;
-                    that.where.message_page=1;
-                    that.message.loadend=false;
+                var that = this;
+                layList.search('search', function (where) {
+                    if ((where.product_name && that.where.product_name == where.product_name) || (where.is_reply && that.where.is_reply == where.is_reply)) return false;
+                    that.where.product_name = where.product_name;
+                    that.where.is_reply = where.is_reply;
+                    that.where.nickname = where.nickname;
+                    that.where.message_page = 1;
+                    that.where.order_id = where.order_id;
+                    that.where.score_type = where.score_type;
+                    that.message.loadend = false;
                     that.getMessageList();
                 });
             }

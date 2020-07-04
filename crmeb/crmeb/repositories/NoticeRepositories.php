@@ -28,14 +28,14 @@ class NoticeRepositories
      * @param $order
      * @param $formId
      */
-    public static function noticeOrderPaySuccess($order, $formId)
+    public static function noticeOrderPaySuccess($order)
     {
         $wechatUser = WechatUser::where('uid', $order['uid'])->field(['openid', 'routine_openid'])->find();
         if ($wechatUser) {
             $openid = $wechatUser['openid'];
             $routineOpenid = $wechatUser['routine_openid'];
             try {
-                if ($openid && in_array($order['is_channel'],[0,2])) {//公众号发送模板消息
+                if ($openid && in_array($order['is_channel'], [0, 2])) {//公众号发送模板消息
                     WechatTemplateService::sendTemplate($openid, WechatTemplateService::ORDER_PAY_SUCCESS, [
                         'first' => '亲，您购买的商品已支付成功',
                         'keyword1' => $order['order_id'],
@@ -52,13 +52,14 @@ class NoticeRepositories
                     ]);
                     //订单支付成功后给客服发送客服消息
                     CustomerRepository::sendOrderPaySuccessCustomerService($order, 1);
-                } else if ($routineOpenid && in_array($order['is_channel'],[1,2])) {//小程序发送模板消息
-                    RoutineTemplate::sendOrderSuccess($order['uid'],$order['pay_price'], $order['order_id']);
+                } else if ($routineOpenid && in_array($order['is_channel'], [1, 2])) {//小程序发送模板消息
+                    RoutineTemplate::sendOrderSuccess($order['uid'], $order['pay_price'], $order['order_id']);
                     //订单支付成功后给客服发送客服消息
                     CustomerRepository::sendOrderPaySuccessCustomerService($order, 0);
                 }
 
             } catch (\Exception $e) {
+                Log::error('购买后发送提醒失败，错误原因：' . $e->getMessage());
             }
         }
         //打印小票
@@ -66,11 +67,11 @@ class NoticeRepositories
         if ($switch) {
             try {
                 $order['cart_id'] = is_string($order['cart_id']) ? json_decode($order['cart_id'], true) : $order['cart_id'];
-                $cartInfo = StoreOrderCartInfo::whereIn('cart_id', $order['cart_id'])->field('cart_info')->select();
+                $cartInfo = StoreOrderCartInfo::whereIn('cart_id', $order['cart_id'])->where('oid', $order['id'])->field('cart_info')->select();
                 $cartInfo = count($cartInfo) ? $cartInfo->toArray() : [];
                 $product = [];
                 foreach ($cartInfo as $item) {
-                    $value = is_string($item['cart_info']) ? json_decode($item['cart_info']) : $item['cart_info'];
+                    $value = is_string($item['cart_info']) ? json_decode($item['cart_info'], true) : $item['cart_info'];
                     $value['productInfo']['store_name'] = $value['productInfo']['store_name'] ?? "";
                     $value['productInfo']['store_name'] = StoreOrderCartInfo::getSubstrUTf8($value['productInfo']['store_name'], 10, 'UTF-8', '');
                     $product[] = $value;

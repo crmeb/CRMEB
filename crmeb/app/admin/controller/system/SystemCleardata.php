@@ -47,7 +47,6 @@ class SystemclearData extends AuthController
         self::clearData('store_bargain_user', 1);
         self::clearData('store_bargain_user_help', 1);
         self::clearData('store_product_reply', 1);
-        self::clearData('store_product_cate', 1);
         self::clearData('routine_qrcode', 1);
         self::clearData('routine_form_id', 1);
         self::clearData('user_sign', 1);
@@ -67,17 +66,12 @@ class SystemclearData extends AuthController
         self::clearData('store_coupon_issue', 1);
         self::clearData('store_bargain', 1);
         self::clearData('store_combination', 1);
-        self::clearData('store_combination_attr', 1);
-        self::clearData('store_combination_attr_result', 1);
-        self::clearData('store_combination_attr_value', 1);
         self::clearData('store_product_attr', 1);
-        self::clearData('store_product_cate', 1);
         self::clearData('store_product_attr_result', 1);
         self::clearData('store_product_attr_value', 1);
+        self::clearData('store_product_description', 1);
+        self::clearData('store_product_reply', 1);
         self::clearData('store_seckill', 1);
-        self::clearData('store_seckill_attr', 1);
-        self::clearData('store_seckill_attr_result', 1);
-        self::clearData('store_seckill_attr_value', 1);
         self::clearData('store_product', 1);
         self::clearData('store_visit', 1);
         return Json::successful('清除数据成功!');
@@ -87,6 +81,7 @@ class SystemclearData extends AuthController
     public function categoryData()
     {
         self::clearData('store_category', 1);
+        self::clearData('store_product_cate', 1);
         return Json::successful('清除数据成功!');
     }
 
@@ -196,17 +191,18 @@ class SystemclearData extends AuthController
                 $prefix = Config::get('database.connections.' . Config::get('database.default') . '.prefix');
                 $sql = [
                     "UPDATE `{$prefix}system_attachment` SET `att_dir` = replace(att_dir ,'{$siteUrl}','{$value}'),`satt_dir` = replace(satt_dir ,'{$siteUrl}','{$value}')",
-                    "UPDATE `{$prefix}store_product` SET `image` = replace(image ,'{$siteUrl}','{$value}'),`slider_image` = replace(slider_image ,'{$siteUrl}','{$value}'),`description`= replace(description,'{$siteUrl}','{$value}')",
+                    "UPDATE `{$prefix}store_product` SET `image` = replace(image ,'{$siteUrl}','{$value}'),`slider_image` = replace(slider_image ,'{$siteUrl}','{$value}')",
                     "UPDATE `{$prefix}store_product_attr_value` SET `image` = replace(image ,'{$siteUrl}','{$value}')",
-                    "UPDATE `{$prefix}store_seckill` SET `image` = replace(image ,'{$siteUrl}','{$value}'),`images` = replace(images,'{$siteUrl}','{$value}'),`description` = replace(description,'{$siteUrl}','{$value}')",
-                    "UPDATE `{$prefix}store_combination` SET `image` = replace(image ,'{$siteUrl}','{$value}'),`images` = replace(images,'{$siteUrl}','{$value}'),`description` = replace(description,'{$siteUrl}','{$value}')",
-                    "UPDATE `{$prefix}store_bargain` SET `image` = replace(image ,'{$siteUrl}','{$value}'),`images` = replace(images,'{$siteUrl}','{$value}'),`description` = replace(description,'{$siteUrl}','{$value}')",
+                    "UPDATE `{$prefix}store_seckill` SET `image` = replace(image ,'{$siteUrl}','{$value}'),`images` = replace(images,'{$siteUrl}','{$value}')",
+                    "UPDATE `{$prefix}store_combination` SET `image` = replace(image ,'{$siteUrl}','{$value}'),`images` = replace(images,'{$siteUrl}','{$value}')",
+                    "UPDATE `{$prefix}store_bargain` SET `image` = replace(image ,'{$siteUrl}','{$value}'),`images` = replace(images,'{$siteUrl}','{$value}')",
                     "UPDATE `{$prefix}system_config` SET `value` = replace(value ,'{$siteUrlJosn}','{$valueJosn}')",
                     "UPDATE `{$prefix}article_category` SET `image` = replace(`image` ,'{$siteUrl}','{$value}')",
                     "UPDATE `{$prefix}article` SET `image_input` = replace(`image_input` ,'{$siteUrl}','{$value}')",
                     "UPDATE `{$prefix}article_content` SET `content` = replace(`content` ,'{$siteUrl}','{$value}')",
                     "UPDATE `{$prefix}store_category` SET `pic` = replace(`pic` ,'{$siteUrl}','{$value}')",
-                    "UPDATE `{$prefix}system_group_data` SET `value` = replace(value ,'{$siteUrlJosn}','{$valueJosn}')"
+                    "UPDATE `{$prefix}system_group_data` SET `value` = replace(value ,'{$siteUrlJosn}','{$valueJosn}')",
+                    "UPDATE `{$prefix}store_product_description` SET `description`= replace(description,'{$siteUrl}','{$value}')"
                 ];
                 try {
                     foreach ($sql as $item) {

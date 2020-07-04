@@ -21,10 +21,10 @@ class AllowOriginMiddleware implements MiddlewareInterface
      * @var array
      */
     protected $header = [
-        'Access-Control-Allow-Origin'   => '*',
-        'Access-Control-Allow-Headers'  => 'Authori-zation,Authorization, Content-Type, If-Match, If-Modified-Since, If-None-Match, If-Unmodified-Since, X-Requested-With',
-        'Access-Control-Allow-Methods'  => 'GET,POST,PATCH,PUT,DELETE,OPTIONS,DELETE',
-        'Access-Control-Max-Age'        =>  '1728000'
+        'Access-Control-Allow-Origin' => '*',
+        'Access-Control-Allow-Headers' => 'Authori-zation,Authorization, Content-Type, If-Match, If-Modified-Since, If-None-Match, If-Unmodified-Since, X-Requested-With',
+        'Access-Control-Allow-Methods' => 'GET,POST,PATCH,PUT,DELETE,OPTIONS,DELETE',
+        'Access-Control-Max-Age' => '1728000'
     ];
 
     /**
@@ -52,6 +52,7 @@ class AllowOriginMiddleware implements MiddlewareInterface
         } else {
             $response = $next($request)->header($header);
         }
+        $request->filter(['htmlspecialchars', 'strip_tags', 'addslashes', 'trim']);
         return $response;
     }
 }

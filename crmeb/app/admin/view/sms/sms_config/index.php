@@ -135,6 +135,7 @@
                                     $f.btn.loading(false);
                                     formCreate.formSuccess && formCreate.formSuccess(res, $f, formData);
                                     callback && callback(0, res, $f, formData);
+                                    location.href = "{:url('sms.smsTemplateApply/index')}";
                                     //TODO 表单提交成功!
                                 } else {
                                     vm.$Message.error(res.msg || '表单提交失败');

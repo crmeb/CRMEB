@@ -65,7 +65,7 @@ PHP表单生成器，快速生成现代化的form表单。包含复选框、单�
 $form = Form::create(Url::build('update',array('id'=>$id)),[
             Form::input('menu_name','按钮名称',$menu['menu_name']),
             Form::select('pid','父级id',(string)$menu->getData('pid'))->setOptions(function()use($id){
-                $list = (Util::sortListTier(MenusModel::where('id','<>',$id)->select()->toArray(),'顶级','pid','menu_name'));
+                $list = (sort_list_tier((MenusModel::where('id','<>',$id)->select()->toArray(),'顶级','pid','menu_name'));
                 $menus = [['value'=>0,'label'=>'顶级按钮']];
                 foreach ($list as $menu){
                     $menus[] = ['value'=>$menu['id'],'label'=>$menu['html'].$menu['menu_name']];

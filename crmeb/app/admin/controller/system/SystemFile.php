@@ -25,29 +25,29 @@ class SystemFile extends AuthController
         //当前目录
         $request_dir = app('request')->param('dir');
         //防止查看站点以外的目录
-        if(strpos($request_dir,$rootdir) === false){
+        if (strpos($request_dir, $rootdir) === false) {
             $request_dir = $rootdir;
         }
         //判断是否是返回上级
         if (app('request')->param('superior') && !empty($request_dir)) {
-            if(strpos(dirname($request_dir),$rootdir) !== false){
+            if (strpos(dirname($request_dir), $rootdir) !== false) {
                 $dir = dirname($request_dir);
-            }else{
+            } else {
                 $dir = $rootdir;
             }
 
         } else {
             $dir = !empty($request_dir) ? $request_dir : $rootdir;
-            $dir = rtrim($dir,DS) .DS. app('request')->param('filedir');
+            $dir = rtrim($dir, DS) . DS . app('request')->param('filedir');
         }
         $list = scandir($dir);
         foreach ($list as $key => $v) {
             if ($v != '.' && $v != '..') {
                 if (is_dir($dir . DS . $v)) {
-                    $fileAll['dir'][] = FileClass::list_info($dir .DS. $v);
+                    $fileAll['dir'][] = FileClass::list_info($dir . DS . $v);
                 }
                 if (is_file($dir . DS . $v)) {
-                    $fileAll['file'][] = FileClass::list_info($dir .DS. $v);
+                    $fileAll['file'][] = FileClass::list_info($dir . DS . $v);
                 }
             }
         }
@@ -107,12 +107,12 @@ class SystemFile extends AuthController
     public function index()
     {
         $rootPath = app()->getRootPath();
-        $app = $this->getDir($rootPath.'app');
-        $extend = $this->getDir($rootPath.'crmeb');
-        $arr = array();
+        $app = $this->getDir($rootPath . 'app');
+        $extend = $this->getDir($rootPath . 'crmeb');
+        $arr = [];
         $arr = array_merge($app, $extend);
-        $fileAll = array();//本地文件
-        $cha = array();//不同的文件
+        $fileAll = [];//本地文件
+        $cha = [];//不同的文件
         foreach ($arr as $k => $v) {
             $fp = fopen($v, 'r');
             if (filesize($v)) $ct = fread($fp, filesize($v));
@@ -121,7 +121,7 @@ class SystemFile extends AuthController
             $cthash = md5($ct);
             $update_time = stat($v);
             $fileAll[$k]['cthash'] = $cthash;
-            $fileAll[$k]['filename'] = str_replace($rootPath,'',$v);
+            $fileAll[$k]['filename'] = str_replace($rootPath, '', $v);
             $fileAll[$k]['atime'] = $update_time['atime'];
             $fileAll[$k]['mtime'] = $update_time['mtime'];
             $fileAll[$k]['ctime'] = $update_time['ctime'];
@@ -138,17 +138,17 @@ class SystemFile extends AuthController
             }
             SystemFileModel::checkTrans($res);
             if ($res) {
-                $cha = array();//不同的文件
+                $cha = [];//不同的文件
             } else {
                 $cha = $fileAll;
             }
         } else {
-            $cha = array();//差异文件
+            $cha = [];//差异文件
             foreach ($file as $k => $v) {
                 foreach ($fileAll as $ko => $vo) {
                     if ($v['filename'] == $vo['filename']) {
                         if ($v['cthash'] != $vo['cthash']) {
-                            $cha[$k]['filename'] = str_replace($rootPath,'',$v['filename']);
+                            $cha[$k]['filename'] = str_replace($rootPath, '', $v['filename']);
                             $cha[$k]['cthash'] = $v['cthash'];
                             $cha[$k]['atime'] = $v['atime'];
                             $cha[$k]['mtime'] = $v['mtime'];
@@ -162,7 +162,7 @@ class SystemFile extends AuthController
 
             }
             foreach ($file as $k => $v) {
-                $cha[$k]['filename'] = str_replace($rootPath,'',$v['filename']);
+                $cha[$k]['filename'] = str_replace($rootPath, '', $v['filename']);
                 $cha[$k]['cthash'] = $v['cthash'];
                 $cha[$k]['atime'] = $v['atime'];
                 $cha[$k]['mtime'] = $v['mtime'];
@@ -170,7 +170,7 @@ class SystemFile extends AuthController
                 $cha[$k]['type'] = '已删除';
             }
             foreach ($fileAll as $k => $v) {
-                $cha[$k]['filename'] = str_replace($rootPath,'',$v['filename']);
+                $cha[$k]['filename'] = str_replace($rootPath, '', $v['filename']);
                 $cha[$k]['cthash'] = $v['cthash'];
                 $cha[$k]['atime'] = $v['atime'];
                 $cha[$k]['mtime'] = $v['mtime'];
@@ -195,8 +195,8 @@ class SystemFile extends AuthController
     {
         $dir = './';
         $list = scandir($dir);
-        $dirlist = array();
-        $filelist = array();
+        $dirlist = [];
+        $filelist = [];
         foreach ($list as $key => $v) {
             if ($v != '.' && $v != '..') {
                 if (is_dir($dir . '/' . $v)) {
@@ -239,7 +239,7 @@ class SystemFile extends AuthController
      */
     public function getDir($dir)
     {
-        $data = array();
+        $data = [];
         $this->searchDir($dir, $data);
         return $data;
     }

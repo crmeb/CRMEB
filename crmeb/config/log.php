@@ -17,7 +17,7 @@ return [
     // 默认日志记录通道
     'default'      => Env::get('log.channel', 'file'),
     // 日志记录级别
-    'level'        => [],
+    'level'        => ['error','warning'],
     // 日志类型记录的通道 ['error'=>'email',...]
     'type_channel' => [],
     // 是否关闭日志写入
