@@ -39,6 +39,8 @@
 
 ### 推荐项目
 
+JAVA版商城：https://gitee.com/ZhongBangKeJi/crmeb_java
+
 知识付费：https://gitee.com/ZhongBangKeJi/crmeb_zzff_class
 
 公众号前端：https://gitee.com/ZhongBangKeJi/CRMEB-H5
