@@ -16,7 +16,7 @@ class ProgramWechatLive extends AbstractAPI
     /**
      * 获取直播列表信息
      */
-    const API_WECHAT_LIVE = 'http://api.weixin.qq.com/wxa/business/getliveinfo';
+    const API_WECHAT_LIVE = 'https://api.weixin.qq.com/wxa/business/getliveinfo';
 
     /**
      * ProgramWechatLive constructor.
