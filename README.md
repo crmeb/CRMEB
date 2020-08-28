@@ -48,8 +48,11 @@ JAVA版商城：https://gitee.com/ZhongBangKeJi/crmeb_java
 微信小程序前端：https://gitee.com/ZhongBangKeJi/CRMEB_WechatApplet
 
 
-### :tw-1f427: QQ交流群
- CRMEB微信开发11群:824195682 <a target="_blank" href="//shang.qq.com/wpa/qunwpa?idkey=9fa928ec8346022fa33f6cd5efd83b6ba6ccd6a9d4a144beb1ddcb3c5232b3a1"><img border="0" src="//pub.idqqimg.com/wpa/images/group.png" alt="CRMEB微信开发11群" title="CRMEB微信开发11群"></a>
+### 联系我们
+
+![有问题？联系CRMEB官方客服](https://images.gitee.com/uploads/images/2020/0828/111207_87f408c4_1491977.jpeg "微信图片_20200828111018.jpg")
+####   :satisfied: 微信扫码联系客服，发送“体验”，获取商业版源码免费体验，赶紧来体验吧！ :wink: 
+
 ###  前后台演示
 ![前端演示](/readme/images/演示二维码.jpg)
 
