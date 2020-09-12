@@ -41,8 +41,14 @@ CRMEB微信开发11群:824195682 <a target="_blank" href="//shang.qq.com/wpa/qun
 ###  前后台演示
 ![前端演示](/readme/images/演示二维码.jpg)
 
-####   :fire:  演示站后台:[<a href='http://demo.crmeb.net' target="_blank"> 查看 </a>]       
-<a href='http://demo.crmeb.net' target="_blank">http://demo.crmeb.net</a>  账号：demo  密码：crmeb.com
+####   :fire:  演示站后台:[<a href='http://demo32.crmeb.net' target="_blank"> 查看 </a>]       
+<a href='http://demo32.crmeb.net/admin' target="_blank">http://demo32.crmeb.net/admin</a>  账号：demo  密码：crmeb.com
+
+### 演示小程序：![开源演示二维码](/readme/images/开源演示二维码.jpg)
+
+####   :fire:  4.0演示站后台:[<a href='http://demo.crmeb.net' target="_blank"> 查看 </a>]       
+<a href='http://demo.crmeb.net/admin' target="_blank">http://demo.crmeb.net/admin</a>  账号：demo  密码：crmeb.com
+
 
 ### CRMEB推荐阿里云服务器配置
 
