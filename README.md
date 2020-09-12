@@ -58,6 +58,7 @@ JAVA版商城：https://gitee.com/ZhongBangKeJi/crmeb_java
 
 ####   :fire:  演示站后台:[<a href='http://demo32.crmeb.net' target="_blank"> 查看 </a>]       
 <a href='http://demo32.crmeb.net/admin' target="_blank">http://demo32.crmeb.net/admin</a>  账号：demo  密码：crmeb.com
+演示小程序：![开源演示二维码](/readme/images/开源演示二维码.jpg)
 
 ####   :fire:  4.0演示站后台:[<a href='http://demo.crmeb.net' target="_blank"> 查看 </a>]       
 <a href='http://demo.crmeb.net/admin' target="_blank">http://demo.crmeb.net/admin</a>  账号：demo  密码：crmeb.com
