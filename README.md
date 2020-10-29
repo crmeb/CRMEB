@@ -1,6 +1,6 @@
 <p align="center">
 <a href="http://www.crmeb.com" target="_blank" >
-    <img src="https://images.gitee.com/uploads/images/2020/1029/122041_2a0c5bda_1491977.png" />
+    <img src="https://images.gitee.com/uploads/images/2020/1029/180058_ae5ca62f_1491977.png" />
 </a>
 </p>
 <p align="center">
