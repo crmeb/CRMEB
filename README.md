@@ -1,5 +1,5 @@
 <p align="center">
-<a href="http://www.crmeb.com" target="_blank" >
+<a href="http://bbs.crmeb.net/forum.php?mod=viewthread&tid=4732&page=1&extra=#pid39073" target="_blank" >
     <img src="https://images.gitee.com/uploads/images/2020/1029/180058_ae5ca62f_1491977.png" />
 </a>
 </p>
