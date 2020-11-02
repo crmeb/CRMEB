@@ -44,7 +44,7 @@
 ### QQ交流群
 CRMEB微信开发11群:824195682 <a target="_blank" href="//shang.qq.com/wpa/qunwpa?idkey=9fa928ec8346022fa33f6cd5efd83b6ba6ccd6a9d4a144beb1ddcb3c5232b3a1"><img border="0" src="//pub.idqqimg.com/wpa/images/group.png" alt="CRMEB微信开发11群" title="CRMEB微信开发11群"></a>
 ###  前后台演示
-![前端演示](/readme/images/演示二维码.jpg)
+![前端演示](https://images.gitee.com/uploads/images/2020/1102/142032_fa9cca33_1491977.png "屏幕截图.png")
 
 ####   :fire:  演示站后台:[<a href='http://demo32.crmeb.net' target="_blank"> 查看 </a>]       
 <a href='http://demo32.crmeb.net/admin' target="_blank">http://demo32.crmeb.net/admin</a>  账号：demo  密码：crmeb.com
