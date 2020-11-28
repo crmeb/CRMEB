@@ -46,6 +46,10 @@ CRMEB微信开发11群:824195682 <a target="_blank" href="//shang.qq.com/wpa/qun
 ###  前后台演示
 ![前端演示](https://images.gitee.com/uploads/images/2020/1103/161837_52d08017_1491977.png "屏幕截图.png")
 
+### 联系我们
+![有问题？联系CRMEB官方客服](https://images.gitee.com/uploads/images/2020/1128/154416_441805ca_1491977.png "屏幕截图.png")
+   :satisfied: 微信扫码联系客服，发送“体验”，获取商业版源码免费体验，赶紧来体验吧！ :wink: 
+
 ####   :fire:  3.2演示站后台:[<a href='http://demo32.crmeb.net' target="_blank"> 查看 </a>]       
 <a href='http://demo32.crmeb.net/admin' target="_blank">http://demo32.crmeb.net/admin</a>  账号：demo  密码：crmeb.com
 
