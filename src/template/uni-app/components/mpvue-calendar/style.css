@@ -1,0 +1,394 @@
+.mpvue-calendar {
+  margin:auto;
+  width: 100%;
+  min-width:300rpx;
+  background: #fff;
+  user-select:none;
+  position: relative;
+}
+.calendar-tools{
+  height:40px;
+  font-size: 20px;
+  line-height: 40px;
+  color:#5e7a88;
+  box-shadow: 0rpx 4rpx 8rpx rgba(25, 47, 89, 0.1);
+  margin-bottom: 30rpx;
+  border-top: 1px solid rgba(200, 200, 200, .1);
+}
+.calendar-prev{
+  width: 14.28571429%;
+  float:left;
+  text-align: center;
+}
+.calendar-prev img, .calendar-next img{
+  width: 34rpx;
+  height: 34rpx;
+}
+.calendar-info{
+  padding-top: 3px;
+  font-size:16px;
+  line-height: 1.3;
+  text-align: center;
+  width: 220rpx;
+  margin: 0 auto;
+}
+.calendar-info>div.mc-month{
+  margin:auto;
+  height:40rpx;
+  width:100px;
+  text-align: center;
+  color:#5e7a88;
+  overflow: hidden;
+  position: relative;
+}
+.calendar-info>div.mc-month .mc-month-inner{
+  position: absolute;
+  left:0;
+  top:0;
+  height:480rpx;
+}
+.month-transition{
+  transition:top .5s cubic-bezier(0.075, 0.82, 0.165, 1);
+}
+.calendar-info .mc-month-text{
+  display:block;
+  font-size:28rpx;
+  height:40rpx;
+  width:200rpx;
+  overflow:hidden;
+  text-align:center;
+}
+.calendar-info>div.mc-month .mc-month-inner>span{
+  display: block;
+  font-size: 14px;
+  height:20px;
+  width:100px;
+  overflow: hidden;
+  text-align: center;
+}
+.calendar-info>div.mc-year{
+  font-size:10px;
+  line-height: 1;
+  color:#999;
+}
+.calendar-next{
+  width: 14.28571429%;
+  float:right;
+  text-align: center;
+}
+.mpvue-calendar table {
+  clear: both;
+  width: 100%;
+  margin-bottom:10px;
+  border-collapse: collapse;
+  color: #444444;
+}
+.mpvue-calendar td {
+  margin:2px !important;
+  padding:0px 0;
+  width: 14.28571429%;
+  height:88rpx;
+  text-align: center;
+  vertical-align: middle;
+  font-size:14px;
+  line-height: 125%;
+  cursor: pointer;
+  position: relative;
+  vertical-align: top;
+}
+.mpvue-calendar td.mc-week{
+  font-size:10px;
+  pointer-events:none !important;
+  cursor: default !important;
+}
+.mpvue-calendar td.disabled {
+  color: #ccc;
+}
+.mpvue-calendar td.disabled div{
+  color: #ccc;
+}
+.mpvue-calendar td span{
+  display:block;
+  height:76rpx;
+  width:76rpx;
+  font-size: 28rpx;
+  line-height:76rpx;
+  margin:0px auto;
+  position: relative;
+  z-index: 3;
+}
+.mpvue-calendar td:not(.disabled) span.mc-date-red{
+  color:#ea6151;
+}
+.mc-today{
+  color: #3b75fb;
+}
+.mpvue-calendar td.selected span{
+  background-color: #3b75fb;
+  color: #fff;
+  border-radius:50%;
+}
+.mpvue-calendar td .mc-text{
+  position: absolute;
+  top:28px;
+  left:0;
+  right:0;
+  text-align: center;
+  padding:2px;
+  font-size:20rpx;
+  line-height: 1.2;
+  color:#444;
+  z-index: 4;
+}
+.mpvue-calendar td .isGregorianFestival,
+.mpvue-calendar td .isTerm,
+.mpvue-calendar td .isLunarFestival{
+  color:#ea6151;
+}
+.mpvue-calendar td.selected span.mc-date-red{
+  background-color: #3b75fb;
+  color: #fff;
+}
+.selected .mc-text {
+  color: #fff !important;
+}
+.mpvue-calendar .lunarStyle span{
+  width: 80rpx;
+  height: 80rpx;
+  line-height:54rpx;
+}
+.mpvue-calendar .lunarStyle .mc-text{
+  top: 44rpx;
+}
+.mpvue-calendar thead td {
+  text-transform: uppercase;
+  height:30px;
+  vertical-align: middle;
+}
+.mc-head {
+  margin-bottom: 20rpx;
+}
+.mc-head div {
+  overflow: hidden;
+}
+.mc-head-box div {
+  flex:1;
+  text-align: center;
+}
+.mc-head-box {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-content: space-between
+}
+.mc-head-box div {
+  font-size: 28rpx;
+}
+.mc-body tr {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-content: space-between
+}
+.mc-dot {
+  width: 10rpx;
+  height: 10rpx;
+  background-color: #ea6151;
+  border-radius: 50%;
+  margin: 0 auto;
+  margin-top: 5rpx;
+  position: absolute;
+  bottom: -5rpx;
+  left: 50%;
+  margin-left: -5rpx;
+  z-index: 5;
+}
+.remark-text {
+  padding-left: 8rpx;
+  padding-right: 8rpx;
+  box-sizing: border-box;
+  height: 34rpx;
+  overflow: hidden;
+  text-overflow:ellipsis;
+  white-space: nowrap;
+}
+.slot-element{
+  line-height: normal;
+  position: absolute;
+  z-index: 5;
+}
+.mpvue-calendar-change{
+  position: absolute;
+  left:0rpx;
+  top:85rpx;
+  right:0rpx;
+  bottom:0rpx;
+  background:#fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap:wrap;
+  overflow: auto;
+  transition:all .5s cubic-bezier(0.075, 0.82, 0.165, 1);
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-10px);
+  z-index: 9;
+}
+.mpvue-calendar-change.show{
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0px);
+}
+.mpvue-calendar-change span{
+  margin:4px 2%;
+  display: inline-block;
+  line-height: 30px;
+  border-radius: 20px;
+  text-align:center;
+  color:#999;
+  width: 20%;
+  float: left;
+  text-align: center;
+  border-radius: 40px;
+  box-sizing: border-box;
+  margin-bottom: 4%;
+}
+.mpvue-calendar-change span.active{
+  background-color: #587dff;
+  box-shadow: 2px 2px 2px rgba(88, 125, 255, 0.7);
+  color:#fff;
+}
+.mpvue-calendar-change .calendar-week-switch-months{
+  height: 100%;
+  padding: 10rpx 20rpx;
+}
+.mpvue-calendar-change .calendar-week-switch-months span {
+  margin-bottom: 20rpx;
+  margin-top: 0px;
+  font-size: 26rpx;
+  line-height: 40rpx;
+}
+.calendar-years, .calendar-months{
+  height: 50%;
+  width: 100%;
+  padding: 10px;
+  box-sizing: border-box;
+  position: relative;
+}
+.calendar-years:after {
+  content: '';
+  display: block;
+  width: 86%;
+  height: 1rpx;
+  background-color: #eee;
+  position: absolute;
+  bottom: 2%;
+  left: 7%;
+}
+/*range background*/
+.mc-range-mode .selected .mc-range-bg{
+  content: '';
+  display: block;
+  width: 110rpx;
+  height: 80rpx;
+  background-color: #01a1ed;
+  position: absolute;
+  top: 0rpx;
+  left: 50%;
+}
+.mpvue-calendar .mc-range-mode .selected .calendar-date{
+  background-color: transparent;
+}
+.mpvue-calendar .mc-range-mode .mc-range-row-last span.calendar-date, .mpvue-calendar .mc-range-mode .mc-range-row-first span.calendar-date{
+  border-radius: 6rpx;
+  background-color: #01a1ed;
+}
+.mpvue-calendar .mc-range-mode .mc-range-month-first.selected .calendar-date, .mpvue-calendar .mc-range-mode .mc-range-month-last.selected .calendar-date{
+  border-radius: 6rpx;
+  background-color: #01a1ed;
+}
+.mc-range-mode .mc-range-month-last .mc-range-bg{
+  background-color: transparent;
+  border-radius: 6rpx;
+}
+.mc-range-mode .mc-range-end .mc-range-bg, .mc-range-mode .mc-range-row-last .mc-range-bg{
+  display: none;
+}
+.mpvue-calendar .mc-range-mode .mc-range-end span.calendar-date, .mpvue-calendar .mc-range-mode .mc-range-begin span.calendar-date{
+  background-color: #3b75fb;
+  color: #fff;
+  border-radius: 50%;
+}
+.mc-range-mode .mc-range-row-first.mc-range-end .mc-range-bg{
+  display: block;
+  border-radius: 6rpx;
+  width: 40rpx;
+  left: 5px;
+}
+.mpvue-calendar .mc-range-row-first.mc-range-end.month-first-date .mc-range-bg{
+  margin-left: 0px;
+}
+.mc-range-mode .mc-range-row-last.mc-range-begin .mc-range-bg{
+  display: block;
+  border-radius: 4rpx;
+  width: 40rpx;
+  right: 10px;
+}
+.mpvue-calendar .mc-range-mode .month-last-date.mc-range-begin .mc-range-bg{
+  display: block;
+  width: 40rpx;
+  border-radius: 6rpx;
+}
+.mpvue-calendar .mc-range-mode .month-first-date.mc-range-end .mc-range-bg{
+  display: block;
+  width: 40rpx;
+  border-radius: 6rpx;
+  left: 10rpx;
+}
+.mpvue-calendar .mc-range-mode .mc-range-select-one div.mc-range-bg{
+  display: none !important;
+}
+.mc-body .mc-today-element .calendar-date{
+  background-color: rgba(25, 47, 89, 0.1);
+  border-radius: 6rpx;
+}
+/*week switch*/
+.mpvue-calendar .mc-range-mode.week-switch .month-last-date.mc-range-begin .mc-range-bg{
+  width: 130%;
+  border-radius: 0px 20% 20% 0px;
+}
+.mpvue-calendar .mc-range-mode.week-switch .mc-range-month-last .mc-range-bg{
+  background-color: #01a1ed;
+  border-radius: 0px 20% 20% 0px;
+}
+/*month range*/
+.mpvue-calendar .month-range-mode{
+  border-bottom: 1px solid #f2f2f2;
+  position: relative;
+}
+.mpvue-calendar .mc-month-range-mode-head{
+  box-shadow: 0 4px 8px rgba(25,47,89,.1);
+  padding: 15rpx 0rpx;
+  position: sticky;
+  top: 0px;
+  background-color: #fff;
+  z-index: 9;
+}
+.month-range-mode .month-rang-head {
+  text-align: left;
+  margin: 20rpx 0px;
+  padding-left: 40rpx;
+  font-size: 28rpx;
+}
+.month-range-mode .mc-last-month, .month-range-mode .mc-next-month{
+  opacity: 0 !important;
+}
+.month-text-background{
+  position: absolute;
+  font-size: 140px;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  line-height: 2.4;
+}

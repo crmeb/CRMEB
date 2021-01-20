@@ -1,0 +1,131 @@
+.page-account{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    overflow: auto;
+
+    &-container{
+        flex: 1;
+        padding: 32px 0;
+        text-align: center;
+        width: 384px;
+        margin: 0 auto;
+
+        &-result{
+            width: 100%;
+        }
+
+        @media screen and (max-width: @screen-sm) {
+            //width: 95%;
+        }
+    }
+
+    &-tabs{
+        .ivu-tabs-bar{
+            border-bottom: none;
+        }
+        .ivu-tabs-nav-scroll{
+            text-align: center;
+        }
+        .ivu-tabs-nav{
+            display: inline-block;
+            float: none;
+        }
+    }
+
+    &-top{
+        padding: 32px 0;
+        &-logo{
+            img{
+                height: 75px;
+            }
+        }
+        &-desc{
+            font-size: @font-size-base;
+            color: @subsidiary-color;
+        }
+    }
+
+    &-auto-login{
+        margin-bottom: 24px;
+        text-align: left;
+        a{
+            float: right;
+        }
+    }
+
+    &-other{
+        margin: 24px 0;
+        text-align: left;
+        span{
+            font-size: @font-size-base;
+        }
+        img{
+            width: 24px;
+            margin-left: 16px;
+            cursor: pointer;
+            vertical-align: middle;
+            opacity: 0.7;
+            transition: all @transition-time @ease-in-out;
+            &:hover{
+                opacity: 1;
+            }
+        }
+    }
+
+    .ivu-poptip, .ivu-poptip-rel{
+        display: block;
+    }
+
+    &-register{
+        float: right;
+        &-tip{
+            text-align: left;
+            &-low{
+                color: @error-color;
+            }
+            &-medium{
+                color: @warning-color;
+            }
+            &-strong{
+                color: @success-color;
+            }
+            &-title{
+                font-size: @font-size-base;
+            }
+            &-desc{
+                white-space: initial;
+                font-size: @font-size-base;
+                margin-top: 6px;
+            }
+        }
+    }
+
+    &-to-login{
+        text-align: center;
+        margin-top: 16px;
+    }
+
+    &-header{
+        text-align: right;
+        position: fixed;
+        top: 16px;
+        right: 24px;
+    }
+}
+@media (min-width: @screen-md-min) {
+    .page-account {
+        background-image: url('../../assets/images/bg.jpg');
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: cover;
+    }
+    .page-account.kf {
+        background-image: url('../../assets/images/kfbg.jpg');
+    }
+    .page-account-container {
+        padding: 32px 0 24px 0;
+    }
+}

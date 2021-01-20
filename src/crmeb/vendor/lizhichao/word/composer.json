@@ -1,0 +1,21 @@
+{
+    "name": "lizhichao/word",
+    "description": "This is a participle library",
+    "type": "library",
+    "license": "Apache-2.0",
+    "authors": [
+        {
+            "name": "tanszhe",
+            "email": "1018595261@qq.com"
+        }
+    ],
+    "require": {
+        "php" : ">=5.6.0"
+    },
+    "minimum-stability" : "stable",
+    "autoload" : {
+        "psr-4" : {
+            "Lizhichao\\Word\\" : "Lib"
+        }
+    }
+}

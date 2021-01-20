@@ -1,0 +1,190 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+  <title>Partials &mdash; Swagger-PHP documentation</title>
+
+  <link rel="stylesheet" href="static/pyramid.css" type="text/css" />
+  <link rel="stylesheet" href="static/pygments.css" type="text/css" />
+
+  <script type="text/javascript">
+    var DOCUMENTATION_OPTIONS = {
+      URL_ROOT: './',
+      VERSION: '',
+      COLLAPSE_INDEX: false,
+      FILE_SUFFIX: '.html',
+      HAS_SOURCE: true
+    };
+  </script>
+  <script type="text/javascript" src="static/jquery.js"></script>
+  <script type="text/javascript" src="static/underscore.js"></script>
+  <script type="text/javascript" src="static/doctools.js"></script>
+  <link rel="top" title="Swagger-PHP  documentation" href="welcome.html" />
+  <link rel="prev" title="Annotations" href="annotations.html" />
+  <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Neuton&amp;subset=latin" type="text/css" media="screen"
+    charset="utf-8" />
+  <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Nobile:regular,italic,bold,bolditalic&amp;subset=latin"
+    type="text/css" media="screen" charset="utf-8" />
+  <!--[if lte IE 6]>
+<link rel="stylesheet" href="static/ie6.css" type="text/css" media="screen" charset="utf-8" />
+<![endif]-->
+
+</head>
+
+<body>
+
+  <div class="related">
+    <h3>Navigation</h3>
+    <ul>
+      <li class="right" style="margin-right: 10px">
+        <a href="annotations.html" title="Annotations" accesskey="P">previous</a>
+      </li>
+      <li>
+        <a href="welcome.html">Swagger-PHP documentation</a> &raquo;</li>
+    </ul>
+  </div>
+
+  <div class="document">
+    <div class="documentwrapper">
+      <div class="bodywrapper">
+        <div class="body">
+
+          <div class="section" id="partials">
+            <h1>Partials
+              <a class="headerlink" href="#partials" title="Permalink to this headline">¶</a>
+            </h1>
+            <div class="admonition note">
+              <p class="first admonition-title">Note</p>
+              <p class="last">This is the documentation for (older / unsupported) swagger-php v1.x
+                <br>Go to the
+                <a href="../">swagger-php v3.x documentation</a>
+              </p>
+            </div>
+            <p>To avoid duplication swagger-php introduces partials.</p>
+            <div class="section" id="defining-a-partial">
+              <h2>Defining a partial
+                <a class="headerlink" href="#defining-a-partial" title="Permalink to this headline">¶</a>
+              </h2>
+              <p>Any swagger annotation can become a partial by addding the property &#8220;partial&#8221;.</p>
+              <div class="highlight-php">
+                <div class="highlight">
+                  <pre><span class="sd">/**</span>
+<span class="sd"> * @SWG\Parameter(partial=&quot;path_id&quot;, name=&quot;id&quot;, paramType=&quot;path&quot;, type=&quot;integer&quot;)</span>
+<span class="sd"> * @SWG\ResponseMessage(partial=&quot;error404&quot;, code=404, message=&quot;Entity not found&quot;)</span>
+<span class="sd"> */</span>
+</pre>
+                </div>
+              </div>
+            </div>
+            <div class="section" id="using-a-partial">
+              <h2>Using a partial
+                <a class="headerlink" href="#using-a-partial" title="Permalink to this headline">¶</a>
+              </h2>
+              <div class="highlight-php">
+                <div class="highlight">
+                  <pre><span class="sd">/**</span>
+<span class="sd"> * @SWG\Operation(</span>
+<span class="sd"> *   method=&quot;GET&quot;,</span>
+<span class="sd"> *   nickname=&quot;partialDemo&quot;</span>
+<span class="sd"> *   @SWG\Partial(&quot;path_id&quot;),</span>
+<span class="sd"> *   @SWG\Partial(&quot;error404&quot;),</span>
+<span class="sd"> * )</span>
+<span class="sd"> */</span>
+</pre>
+                </div>
+              </div>
+              <p>Output:</p>
+              <div class="highlight-json">
+                <div class="highlight">
+                  <pre>operations: [
+  {
+    method: &quot;GET&quot;,
+    nickname: &quot;partialDemo&quot;,
+    parameters: [
+      {
+        paramType: &quot;path&quot;,
+        name: &quot;id&quot;,
+        type: &quot;integer&quot;
+      }
+    ],
+    responseMessages: [
+      {
+        code: 404,
+        message: &quot;Entity not found&quot;
+
+      }
+    ]
+  }
+]
+</pre>
+                </div>
+              </div>
+            </div>
+          </div>
+
+
+        </div>
+      </div>
+    </div>
+    <div class="sphinxsidebar">
+      <div class="sphinxsidebarwrapper">
+        <h3>
+          <a href="welcome.html">Table Of Contents</a>
+        </h3>
+        <ul>
+          <li>
+            <a class="reference internal" href="#">Partials</a>
+            <ul>
+              <li>
+                <a class="reference internal" href="#defining-a-partial">Defining a partial</a>
+              </li>
+              <li>
+                <a class="reference internal" href="#using-a-partial">Using a partial</a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+
+        <h4>Previous topic</h4>
+        <p class="topless">
+          <a href="annotations.html" title="previous chapter">Annotations</a>
+        </p>
+        <div id="searchbox" style="display: none">
+          <h3>Quick search</h3>
+          <form class="search" action="search.html" method="get">
+            <input type="text" name="q" />
+            <input type="submit" value="Go" />
+            <input type="hidden" name="check_keywords" value="yes" />
+            <input type="hidden" name="area" value="default" />
+          </form>
+          <p class="searchtip" style="font-size: 90%">
+            Enter search terms or a module, class or function name.
+          </p>
+        </div>
+        <script type="text/javascript">$('#searchbox').show(0);</script>
+      </div>
+    </div>
+    <div class="clearer"></div>
+  </div>
+  <div class="related">
+    <h3>Navigation</h3>
+    <ul>
+      <li class="right" style="margin-right: 10px">
+        <a href="annotations.html" title="Annotations">previous</a>
+      </li>
+      <li>
+        <a href="welcome.html">Swagger-PHP documentation</a> &raquo;</li>
+    </ul>
+  </div>
+  <div class="footer">
+    &copy; Copyright 2014, Robert Allen &amp; Bob Fanger. Created using
+    <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+  </div>
+</body>
+
+</html>

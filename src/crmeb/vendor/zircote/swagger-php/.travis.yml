@@ -1,0 +1,24 @@
+sudo: false
+language: php
+
+cache:
+  directories:
+    - $HOME/.composer/cache
+
+php:
+  - 7.2
+  - 7.3
+  - 7.4
+
+matrix:
+  include:
+    - php: 7.4
+      env: CS=yes
+
+before_script:
+  - composer self-update
+  - composer install --prefer-dist --no-interaction
+
+script:
+  - ./bin/phpunit
+  - if [ '$CS' = 'yes' ]; then composer run-script fix-cs; fi

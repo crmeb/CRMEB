@@ -1,0 +1,1 @@
+2020-09-15 16:52:12: imagepng(public/uploads/qrcode/81922263.png): failed to open stream: No such file or directory

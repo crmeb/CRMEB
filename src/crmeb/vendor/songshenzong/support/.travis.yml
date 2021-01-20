@@ -1,0 +1,22 @@
+language: php
+install: true
+php:
+  - 7.2
+before_script:
+  - composer install --no-interaction --prefer-source --dev
+  - curl -sSfL -o ~/.phpenv/versions/hhvm/bin/phpunit https://phar.phpunit.de/phpunit-5.7.phar
+script: phpunit
+before_deploy:
+  - git config --local user.email "i@songshenzong.com"
+  - git config --local user.name "Songshenzong"
+  - export GIT_TAG=$TRAVIS_BRANCH-0.1.$TRAVIS_BUILD_NUMBER
+  - git tag $GIT_TAG -a -m "Generated tag from TravisCI for build $TRAVIS_BUILD_NUMBER"
+deploy:
+  provider: releases
+  api_key:
+    secure: tMfMInav0NrKJUZw861pXhAfhioLm/f6dSP9fyNePOnUbbKAqubac6Lh6IbVLlM//tY+hF5p0Ln4q1XYn7JAd9PzO3tWkZC83HDIP9cbZnMKqXU5EaX2fuRwbxt82ISYXbKtwfRBtR2ZkTUSk1rh1TtjkXSJ5Wpv+An2GefF5jwPKeME6fqLsIlCBlReFFD+o36wJaS8vMIIsOsaVxmhZsjBpSBAX6YyV+bOGwgK6YTfPXjh3nz7JrJ1mx+XxFU60cMlpYHgw46FF9ZgJB03T+UtQswUTGDtHdSmVP4nentzuw90prO2w51fOK4cLj7c2Bx/9Wda4Cte8XO1g7sBoSuVaHDtn3qini8pSA1jvjx6GXojqk3NnV3PLA+BOJm7yrNWssrAQxPBm6PJsF7YSrX418MTzoMhvz8TBmc6R9S5r7kyeaB4pY0ZP6O/04C59U/79sVbQO184FkiIX5Ezf7wRsaKCuxa/FavyAdfXG4WmDQLJmvLUa1bzvRd+O94/I9eoh+1/YhN7sPlXctHjdWKIdy5StkB43gP7r+DorBWF3rHrtmGTjAk17SJxyTsiqDmLgNTTeu5+f9j/40Jz65fiN1QFLTQBVXKEWcaGX1kB85GRpa4mQebI7TzqGpGHPkP+3Fc7Fjw8Jc6a06LTDPJVSMSSChi8j/IKYyMb0k=
+  file:
+    - "README.md"
+  on:
+    repo: songshenzong/support
+    tags: true

@@ -1,0 +1,56 @@
+{
+	"name":"alipaysdk/easysdk",
+	"description":"支付宝官方 Alipay Easy SDK",
+	"type":"library",
+	"version":"2.0.0",
+	"authors":[
+		{
+			"name":"junying.wjy",
+			"email":"junying.wjy@antfin.com"
+		}
+	],
+	"autoload":{
+		"psr-4":{
+			"Alipay\\EasySDK\\":"php/src/"
+		}
+	},
+	"autoload-dev": {
+		"psr-4": {
+			"Alipay\\EasySDK\\Test\\": "php/test/"
+		}
+	},
+	"license":"Apache-2.0",
+	"minimum-stability":"dev",
+	"require":{
+		"php": ">=7.0",
+		"ext-curl":"*",
+		"ext-ctype":"*",
+		"ext-dom":"*",
+		"ext-fileinfo": "*",
+		"ext-json":"*",
+		"ext-libxml":"*",
+		"ext-simplexml":"*",
+		"ext-mbstring":"*",
+		"ext-openssl":"*",
+		"pimple/pimple": "^3.0",
+		"xin/container":"^2.0.1",
+		"guzzlehttp/guzzle":">=6.3",
+		"psr/log": "^1.1",
+		"ext-xmlwriter": "*",
+		"songshenzong/support": "^2.0",
+		"danielstjules/stringy": "^3.1",
+		"mtdowling/jmespath.php": "^2.4",
+		"adbario/php-dot-notation": "^2.2",
+		"alibabacloud/tea": "^3.1",
+		"alibabacloud/tea-fileform": "^0.3.2"
+    },
+	"require-dev": {
+		"phpunit/phpunit": "^7.5"
+	},
+	"repositories":{
+		"packagist":{
+			"type":"composer",
+			"url":"https://mirrors.aliyun.com/composer/"
+		}
+	}
+}

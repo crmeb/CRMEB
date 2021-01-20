@@ -1,0 +1,74 @@
+{
+    "name": "topthink/think",
+    "description": "the new thinkphp framework",
+    "type": "project",
+    "keywords": [
+        "framework",
+        "thinkphp",
+        "ORM"
+    ],
+    "homepage": "http://thinkphp.cn/",
+    "license": "Apache-2.0",
+    "authors": [
+        {
+            "name": "liu21st",
+            "email": "liu21st@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=7.1.0",
+        "ext-json": "*",
+        "ext-curl": "*",
+        "ext-bcmath": "*",
+        "ext-mbstring": "*",
+        "topthink/think-view": "^1.0",
+        "symfony/var-dumper":"^4.2",
+        "overtrue/wechat": "^3.3",
+        "topthink/think-captcha": "^3.0",
+        "topthink/think-image": "^1.0",
+        "xaboy/form-builder": "2.0.17",
+        "firebase/php-jwt": "^5.0",
+        "aliyuncs/oss-sdk-php": "^2.3",
+        "qcloud/cos-sdk-v5": "^1.3",
+        "qiniu/php-sdk": "^7.2",
+        "workerman/workerman": "^3.5",
+        "workerman/channel": "^1.0",
+        "topthink/think-queue": "^3.0",
+        "spatie/macroable": "^1.0",
+        "dh2y/think-qrcode": "^2.0",
+        "topthink/think-multi-app": "^1.0",
+        "topthink/think-template": "^2.0",
+        "phpoffice/phpspreadsheet": "^1.12",
+        "godruoyi/php-snowflake": "^1.0",
+        "qcloud_sts/qcloud-sts-sdk": "^3.0",
+        "guzzlehttp/psr7": "^1.7",
+        "guzzlehttp/guzzle": "6.5.5",
+        "alipaysdk/easysdk": "2.0",
+        "lizhichao/word": "^2.1",
+        "zircote/swagger-php": "^3.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "app\\": "app",
+            "crmeb\\": "crmeb"
+        },
+        "psr-0": {
+            "": "extend/"
+        }
+    },
+    "config": {
+        "preferred-install": "dist"
+    },
+    "scripts": {
+        "post-autoload-dump": [
+            "@php think service:discover",
+            "@php think vendor:publish"
+        ]
+    },
+    "repositories": {
+        "packagist": {
+            "type": "composer",
+            "url": "https://mirrors.aliyun.com/composer/"
+        }
+    }
+}

@@ -1,0 +1,60 @@
+{
+    "name": "songshenzong/support",
+    "description": "The Songshenzong Support package.",
+    "keywords": [
+        "support",
+        "laravel",
+        "web",
+        "Tools"
+    ],
+    "license": "MIT",
+    "homepage": "http://songshenzong.com",
+    "support": {
+        "issues": "https://github.com/songshenzong/support/issues",
+        "source": "https://github.com/songshenzong/support"
+    },
+    "authors": [
+        {
+            "name": "Songshenzong",
+            "email": "i@songshenzong.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.5",
+        "ext-xml": "*",
+        "ext-json": "*",
+        "ext-simplexml": "*",
+        "danielstjules/stringy": "^3.1"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^4.8.35|^5.4.3",
+        "laravel/framework": "^5.8"
+    },
+    "autoload": {
+        "psr-4": {
+            "Songshenzong\\Support\\": "src/"
+        },
+        "files": [
+            "src/StringsHelpers.php",
+            "src/BashEchoHelpers.php"
+        ]
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Songshenzong\\Support\\Test\\": "tests/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Songshenzong\\Support\\StringsServiceProvider"
+            ],
+            "aliases": {
+                "Strings": "Songshenzong\\Support\\StringsFacade"
+            }
+        }
+    },
+    "scripts": {
+        "fixer": "php-cs-fixer fix ./"
+    }
+}

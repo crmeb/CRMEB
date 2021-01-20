@@ -1,0 +1,74 @@
+#app, body, html{
+    height: 100%;
+}
+//body{
+//    background-color: @background-color-base;
+//    font-size: 14px;
+//}
+
+// 隐藏滚动条样式
+.chart-scroll .ivu-scroll-container,.i-scrollbar-hide{
+    &::-webkit-scrollbar{
+        width: 0;
+    }
+    &::-webkit-scrollbar-track{
+        background-color: transparent;
+    }
+    &::-webkit-scrollbar-thumb{
+        background: #e8eaec;
+    }
+}
+
+// 极简滚动条样式
+.right-scroll .ivu-scroll-container,.i-scrollbar{
+    &::-webkit-scrollbar{
+        width: 6px;
+    }
+    &::-webkit-scrollbar-track{
+        background-color: transparent;
+    }
+    &::-webkit-scrollbar-thumb{
+        background: #808695;
+        border-radius: 4px;
+    }
+}
+
+// 隐藏滚动条样式
+.i-scrollbar-hide{
+    &::-webkit-scrollbar{
+        width: 0;
+    }
+    &::-webkit-scrollbar-track{
+        background-color: transparent;
+    }
+    &::-webkit-scrollbar-thumb{
+        background: #e8eaec;
+    }
+}
+
+// 极简滚动条样式
+.i-scrollbar{
+    &::-webkit-scrollbar{
+        width: 6px;
+    }
+    &::-webkit-scrollbar-track{
+        background-color: transparent;
+    }
+    &::-webkit-scrollbar-thumb{
+        background: #808695;
+        border-radius: 4px;
+    }
+}
+
+// 去除 Table 的左右边框，更精简
+.i-table-no-border{
+    .ivu-table th{
+        background-color: #fff;
+    }
+    .ivu-table-wrapper, .ivu-table tr:last-child td{
+        border: none;
+    }
+    .ivu-table:before, .ivu-table:after{
+        display: none;
+    }
+}

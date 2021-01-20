@@ -1,0 +1,179 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+  <title>Using Swagger-PHP &mdash; Swagger-PHP documentation</title>
+
+  <link rel="stylesheet" href="static/pyramid.css" type="text/css" />
+  <link rel="stylesheet" href="static/pygments.css" type="text/css" />
+
+  <script type="text/javascript">
+    var DOCUMENTATION_OPTIONS = {
+      URL_ROOT: './',
+      VERSION: '',
+      COLLAPSE_INDEX: false,
+      FILE_SUFFIX: '.html',
+      HAS_SOURCE: true
+    };
+  </script>
+  <script type="text/javascript" src="static/jquery.js"></script>
+  <script type="text/javascript" src="static/underscore.js"></script>
+  <script type="text/javascript" src="static/doctools.js"></script>
+  <link rel="top" title="Swagger-PHP  documentation" href="welcome.html" />
+  <link rel="next" title="Annotations" href="annotations.html" />
+  <link rel="prev" title="Installation" href="installation.html" />
+  <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Neuton&amp;subset=latin" type="text/css" media="screen"
+    charset="utf-8" />
+  <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Nobile:regular,italic,bold,bolditalic&amp;subset=latin"
+    type="text/css" media="screen" charset="utf-8" />
+  <!--[if lte IE 6]>
+<link rel="stylesheet" href="static/ie6.css" type="text/css" media="screen" charset="utf-8" />
+<![endif]-->
+
+</head>
+
+<body>
+
+  <div class="related">
+    <h3>Navigation</h3>
+    <ul>
+      <li class="right" style="margin-right: 10px">
+        <a href="annotations.html" title="Annotations" accesskey="N">next</a>
+      </li>
+      <li class="right">
+        <a href="installation.html" title="Installation" accesskey="P">previous</a> |</li>
+      <li>
+        <a href="welcome.html">Swagger-PHP documentation</a> &raquo;</li>
+    </ul>
+  </div>
+
+  <div class="document">
+    <div class="documentwrapper">
+      <div class="bodywrapper">
+        <div class="body">
+
+          <div class="section" id="using-swagger-php">
+            <h1>Using Swagger-PHP
+              <a class="headerlink" href="#using-swagger-php" title="Permalink to this headline">¶</a>
+            </h1>
+            <div class="admonition note">
+              <p class="first admonition-title">Note</p>
+              <p class="last">This is the documentation for (older / unsupported) swagger-php v1.x
+                <br>Go to the
+                <a href="../">swagger-php v3.x documentation</a>
+              </p>
+            </div>
+            <p>Generating the
+              <em>Swagger Documentation</em> can be performed in multiple ways.</p>
+            <p>Depending on your workflow the method you choose may vary. Generally you&#8217;ll want to generate the documentation
+              on-the-fly in development and generate static json files in production.</p>
+            <div class="section" id="via-command-line">
+              <h2>Via Command Line
+                <a class="headerlink" href="#via-command-line" title="Permalink to this headline">¶</a>
+              </h2>
+              <p>The CLI will create json files for each resource discovered in your project. To make them accessable to
+                <cite>swagger-ui</cite> they must be placed onto an webserver.</p>
+              <div class="highlight-bash">
+                <div class="highlight">
+                  <pre>php swagger.phar /projects/my_project  -o /var/html/swagger-docs
+</pre>
+                </div>
+              </div>
+              <p>Check the help for additional options.</p>
+              <div class="highlight-bash">
+                <div class="highlight">
+                  <pre>php swagger.phar --help
+</pre>
+                </div>
+              </div>
+            </div>
+            <div class="section" id="via-php">
+              <h2>Via PHP
+                <a class="headerlink" href="#via-php" title="Permalink to this headline">¶</a>
+              </h2>
+              <p>The following example will generate and output the documentation of the &#8220;/pet&#8221; resource.</p>
+              <div class="highlight-php">
+                <div class="highlight">
+                  <pre><span class="o">&lt;?</span><span class="nx">php</span>
+<span class="k">use</span> <span class="nx">Swagger\Swagger</span><span class="p">;</span>
+<span class="nv">$swagger</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Swagger</span><span class="p">(</span><span class="s1">&#39;/projects/my_project&#39;</span><span class="p">);</span>
+<span class="nb">header</span><span class="p">(</span><span class="s1">&#39;Content-Type: application/json&#39;</span><span class="p">);</span>
+<span class="k">echo</span> <span class="nv">$swagger</span><span class="o">-&gt;</span><span class="na">getResource</span><span class="p">(</span><span class="s1">&#39;/pet&#39;</span><span class="p">,</span> <span class="k">array</span><span class="p">(</span><span class="s1">&#39;output&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;json&#39;</span><span class="p">));</span>
+</pre>
+                </div>
+              </div>
+            </div>
+          </div>
+
+
+        </div>
+      </div>
+    </div>
+    <div class="sphinxsidebar">
+      <div class="sphinxsidebarwrapper">
+        <h3>
+          <a href="welcome.html">Table Of Contents</a>
+        </h3>
+        <ul>
+          <li>
+            <a class="reference internal" href="#">Using Swagger-PHP</a>
+            <ul>
+              <li>
+                <a class="reference internal" href="#via-command-line">Via Command Line</a>
+              </li>
+              <li>
+                <a class="reference internal" href="#via-php">Via PHP</a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+
+        <h4>Previous topic</h4>
+        <p class="topless">
+          <a href="installation.html" title="previous chapter">Installation</a>
+        </p>
+        <h4>Next topic</h4>
+        <p class="topless">
+          <a href="annotations.html" title="next chapter">Annotations</a>
+        </p>
+        <div id="searchbox" style="display: none">
+          <h3>Quick search</h3>
+          <form class="search" action="search.html" method="get">
+            <input type="text" name="q" />
+            <input type="submit" value="Go" />
+            <input type="hidden" name="check_keywords" value="yes" />
+            <input type="hidden" name="area" value="default" />
+          </form>
+          <p class="searchtip" style="font-size: 90%">
+            Enter search terms or a module, class or function name.
+          </p>
+        </div>
+        <script type="text/javascript">$('#searchbox').show(0);</script>
+      </div>
+    </div>
+    <div class="clearer"></div>
+  </div>
+  <div class="related">
+    <h3>Navigation</h3>
+    <ul>
+      <li class="right" style="margin-right: 10px">
+        <a href="annotations.html" title="Annotations">next</a>
+      </li>
+      <li class="right">
+        <a href="installation.html" title="Installation">previous</a> |</li>
+      <li>
+        <a href="welcome.html">Swagger-PHP documentation</a> &raquo;</li>
+    </ul>
+  </div>
+  <div class="footer">
+    &copy; Copyright 2014, Robert Allen &amp; Bob Fanger. Created using
+    <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+  </div>
+</body>
+
+</html>

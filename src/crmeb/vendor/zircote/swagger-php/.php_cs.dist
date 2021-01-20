@@ -1,0 +1,69 @@
+<?php
+
+$finder = PhpCsFixer\Finder::create()
+    ->path('src')->name('*.php')
+    ->path('tests')->name('*.php')
+    ->notPath('tests/Fixtures')
+    ->in(__DIR__)
+;
+
+return PhpCsFixer\Config::create()
+    ->setRules([
+        '@PSR2' => true,
+        'array_syntax' => ['syntax' => 'short'],
+        'no_unused_imports' => true,
+        'blank_line_before_statement' => ['statements' => ['return']],
+        'cast_spaces' => ['space' => 'single'],
+        'concat_space' => true,
+        'declare_strict_types' => true,
+        'function_typehint_space' => true,
+        'lowercase_cast' => true,
+        'magic_constant_casing' => true,
+        'method_separation' => true,
+        'single_blank_line_before_namespace' => true,
+        'no_singleline_whitespace_before_semicolons' => true,
+        'no_spaces_around_offset' => true,
+        'no_unused_imports' => true,
+        'no_whitespace_before_comma_in_array' => true,
+        'no_whitespace_in_blank_line' => true,
+        'object_operator_without_whitespace' => true,
+        'single_quote' => true,
+        'method_separation' => true,
+        'no_blank_lines_after_phpdoc' => true,
+        'no_extra_consecutive_blank_lines' => true,
+        'return_type_declaration' => ['space_before' => 'none'],
+        'no_trailing_comma_in_list_call' => true,
+        'no_trailing_comma_in_singleline_array' => true,
+        'no_unneeded_control_parentheses' => true,
+        'no_unneeded_curly_braces' => true,
+        'ordered_imports' => true,
+        'short_scalar_cast' => true,
+        'space_after_semicolon' => true,
+        'ternary_operator_spaces' => true,
+        'trailing_comma_in_multiline_array' => true,
+        'trim_array_spaces' => true,
+
+        'no_empty_phpdoc' => true,
+        'no_superfluous_phpdoc_tags' => true,
+        'phpdoc_align' => true,
+        'phpdoc_inline_tag' => true,
+        'phpdoc_annotation_without_dot' => true,
+        'phpdoc_indent' => true,
+        'phpdoc_var_without_name' => true,
+        'phpdoc_types' => true,
+        'phpdoc_types_order' => true,
+        'phpdoc_trim' => true,
+        'phpdoc_to_comment' => true,
+        'phpdoc_summary' => true,
+        'phpdoc_single_line_var_spacing' => true,
+        'phpdoc_separation' => true,
+        'phpdoc_scalar' => true,
+        'phpdoc_no_useless_inheritdoc' => true,
+        'phpdoc_no_empty_return' => true,
+        'phpdoc_no_alias_tag' => true,
+        'phpdoc_order' => true,
+        'phpdoc_var_annotation_correct_order' => true,
+        'phpdoc_var_without_name' => true,
+    ])
+    ->setFinder($finder)
+;

@@ -1,0 +1,16 @@
+.DS_Store
+node_modules
+logs
+.libraries.json
+libraries
+
+.idea
+*.iml
+target
+dependency-reduced-pom.xml
+
+bin
+obj
+.vs
+
+publish/alipay-easysdk

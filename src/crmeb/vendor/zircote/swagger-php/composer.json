@@ -1,0 +1,72 @@
+{
+  "name": "zircote/swagger-php",
+  "type": "library",
+  "license": "Apache-2.0",
+  "bin": [
+    "bin/openapi"
+  ],
+  "description": "swagger-php - Generate interactive documentation for your RESTful API using phpdoc annotations",
+  "keywords": [
+    "json",
+    "rest",
+    "api",
+    "service discovery"
+  ],
+  "homepage": "https://github.com/zircote/swagger-php/",
+  "authors": [
+    {
+      "name": "Robert Allen",
+      "email": "zircote@gmail.com"
+    },
+    {
+      "name": "Bob Fanger",
+      "email": "bfanger@gmail.com",
+      "homepage": "https://bfanger.nl"
+    },
+    {
+      "name": "Martin Rademacher",
+      "email": "mano@radebatz.net",
+      "homepage": "https://radebatz.net"
+    }
+  ],
+  "config": {
+    "bin-dir": "bin",
+    "sort-packages": true
+  },
+  "minimum-stability": "stable",
+  "require": {
+    "php": ">=7.2",
+    "ext-json": "*",
+    "doctrine/annotations": "*",
+    "symfony/finder": ">=2.2",
+    "symfony/yaml": ">=3.3"
+  },
+  "autoload": {
+    "psr-4": {
+      "OpenApi\\": "src"
+    },
+    "files": [
+      "src/functions.php"
+    ]
+  },
+  "require-dev": {
+    "friendsofphp/php-cs-fixer": "^2.16",
+    "phpunit/phpunit": ">=8"
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "OpenApi\\Tests\\": "tests/",
+      "AnotherNamespace\\": "tests/Fixtures/AnotherNamespace"
+    }
+  },
+  "scripts": {
+    "cs": "php-cs-fixer fix --allow-risky=yes",
+    "lint": "@cs --dry-run",
+    "test": [
+      "phpunit",
+      "@lint"
+    ],
+    "docs": "vuepress dev docs/",
+    "deploy_docs": "vuepress build docs/ && cp -r .git docs/.vuepress/dist/.git && cd docs/.vuepress/dist/ && git symbolic-ref HEAD refs/heads/gh-pages && git add --all"
+  }
+}

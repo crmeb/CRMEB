@@ -1,0 +1,31 @@
+openapi: 3.0.0
+info:
+  title: 'Testing annotations from bugreports'
+  version: 1.0.0
+servers:
+  -
+    url: '{schema}://host.dev'
+    description: 'OpenApi parameters'
+    variables:
+      schema:
+        enum:
+          - https
+          - http
+        default: https
+paths:
+  /api/endpoint:
+    get:
+      parameters:
+        -
+          name: filter
+          in: query
+          content:
+            application/json:
+              schema:
+                properties:
+                  type: { type: string }
+                  color: { type: string }
+                type: object
+      responses:
+        '200':
+          description: Success

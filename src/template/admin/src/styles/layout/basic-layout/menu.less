@@ -1,0 +1,215 @@
+.i-layout-menu{
+    &-side{
+        position: static; // 菜单开启后，Dropdown 会被 overflow-y:hidden 隐藏掉，加此不受影响
+        &:after{
+            display: none !important;
+        }
+        &-title{
+            display: inline-block;
+            &-icon{
+                display: inline-block;
+                width: 24px;
+                height: 24px;
+                line-height: 21px;
+                vertical-align: middle;
+                text-align: center;
+                margin-right: 8px;
+                &-null{
+                    width: 12px;
+                    display: inline-block;
+                }
+                &-single{
+                    margin-right: 0;
+                }
+                i{
+                    margin-right: 0 !important;
+                }
+                img{
+                    width: 100%;
+                    height: 100%;
+                }
+            }
+
+            &-text{
+                &-selected{
+                    color: @primary-color;
+                }
+            }
+        }
+
+        .ivu-menu-submenu-title, .ivu-menu-item{
+            height: 52px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .ivu-menu-submenu-title-icon{
+            width: 14px;
+            height: 14px;
+            position: absolute;
+            top: 50%;
+            right: 8px;
+            float: none;
+        }
+
+        .ivu-dropdown-menu{
+            min-width: 160px;
+        }
+        .ivu-dropdown-item{
+            font-size: @font-size-base !important;
+            padding-right: 32px;
+
+            &-divided:before{
+                margin: 0 -32px 0 -16px;
+            }
+        }
+        .ivu-select-dropdown{
+            margin: 5px 0 5px 3px;
+        }
+        .ivu-tooltip, .ivu-tooltip-rel{
+            display: block;
+            text-align: center;
+        }
+
+        &.ivu-menu-dark .ivu-menu-item-active{
+            color: #fff !important;
+        }
+
+        &-arrow{
+            position: absolute;
+            top: 50%;
+            right: 16px;
+            transform: translate(0, -50%);
+        }
+
+        &-collapse{
+            &-top{
+                display: block;
+                &-item{
+                    text-align: center;
+                }
+            }
+            &-item{
+                &-selected, &-selected:hover{
+                    background-color: ~`colorPalette("@{primary-color}", 1)`;
+                    color: @primary-color;
+                }
+            }
+            &-title{
+                text-align: center;
+                padding: 6px 0;
+                border-bottom: 1px solid @border-color-split;
+            }
+            &-dark{
+                .ivu-select-dropdown{
+                    background-color: @menu-dark-title;
+                }
+                .ivu-dropdown-item{
+                    color: @menu-dark-subsidiary-color;
+                    transition: all @transition-time @ease-in-out;
+
+                    &-divided{
+                        border-color: @menu-dark-active-bg;
+                        &:before{
+                            background-color: @menu-dark-title;
+                        }
+                    }
+                }
+                .ivu-dropdown-item:hover{
+                    background: transparent;
+                    color: #fff;
+                }
+                .i-layout-menu-side-collapse-item{
+                    &-selected, &-selected:hover{
+                        background-color: @primary-color;
+                        color: #fff;
+                    }
+                }
+            }
+            &-dark &-title{
+                border-bottom: 1px solid @menu-dark-active-bg;
+                color: @menu-dark-subsidiary-color;
+            }
+        }
+    }
+
+    &-head{
+        display: inline-block;
+        overflow: hidden;
+        flex: 1;
+
+        .ivu-menu-horizontal.ivu-menu-light:after{
+            display: none;
+        }
+        .ivu-menu-horizontal{
+            display: inline-block;
+            vertical-align: middle;
+            height: auto; // 这里不能设置为 @menuHeaderHeight - 2px，因为在平板模式下，header 宽度不够，拿不到真实高度
+            line-height: @menuHeaderHeight - 6px;
+        }
+
+        &-logo{
+            display: inline-block;
+            height: @menuHeaderHeight;
+            text-align: center;
+            vertical-align: middle;
+            img{
+                height: 80%;
+                vertical-align: middle;
+            }
+        }
+
+        &-title{
+            display: inline-block;
+            &-icon{
+                display: inline-block;
+                width: 24px;
+                height: 24px;
+                line-height: 21px;
+                vertical-align: middle;
+                text-align: center;
+                &-single{
+                    margin-right: 0;
+                }
+                i{
+                    margin-right: 0 !important;
+                    font-size: 16px;
+                }
+                img{
+                    width: 100%;
+                    height: 100%;
+                }
+            }
+            &-text{
+                vertical-align: middle;
+                margin-left: 6px;
+            }
+        }
+
+        .ivu-dropdown-rel{
+            padding: @headerTriggerMinPadding;
+        }
+        .ivu-dropdown-item{
+            text-align: left;
+        }
+
+        &-mobile{
+            vertical-align: baseline;
+            overflow: visible;
+            .ivu-dropdown-item{
+                font-size: 14px !important;
+                text-align: left;
+                i,span{
+                    vertical-align: middle;
+                }
+                i{
+                    margin-right: 6px;
+                }
+            }
+            &-drop{
+                .dropdownMobile();
+            }
+        }
+    }
+}

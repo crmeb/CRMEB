@@ -1,197 +1,204 @@
 <p align="center">
-<a href="http://bbs.crmeb.net/forum.php?mod=viewthread&tid=4864&page=1&extra=#pid42012" target="_blank" >
-    <img src="https://images.gitee.com/uploads/images/2020/1103/161801_46bb022b_1491977.png" />
-</a>
+    <img src="https://images.gitee.com/uploads/images/2018/1214/151026_2299df23_892944.gif" />
 </p>
-<p align="center">
-<img src="https://images.gitee.com/uploads/images/2018/1214/151026_2299df23_892944.gif" />
-</p>
-<h1 align="center"> CRMEB客户管理+电商营销系统</h1> 
+<h2 align="center"> CRMEB客户管理+电商营销系统v4开源版</h2> 
 <p align="center">
     <a href="http://www.crmeb.com">
         <img src="https://img.shields.io/badge/OfficialWebsite-CRMEB-yellow.svg" />
     </a>
 <a href="http://www.crmeb.com">
-        <img src="https://img.shields.io/badge/Licence-GPL3.0-green.svg?style=flat" />
+        <img src="https://img.shields.io/badge/Licence-LGPL3.0-green.svg?style=flat" />
     </a>
     <a href="http://www.crmeb.com">
-        <img src="https://img.shields.io/badge/Edition-3.0-blue.svg" />
+        <img src="https://img.shields.io/badge/Edition-4.0-blue.svg" />
     </a>
      <a href="https://gitee.com/ZhongBangKeJi/CRMEB/repository/archive/master.zip">
-        <img src="https://img.shields.io/badge/download-80m-red.svg" />
+        <img src="https://img.shields.io/badge/download-180m-red.svg" />
     </a>
     </p>
 <p align="center">    
     <b>如果对您有帮助，您可以点右上角 "Star" 支持一下 谢谢！</b>
 </p>
 
-## 项目介绍
-   CRMEB商城系统是基于ThinkPhp6.0+Vue开发的一套新零售移动电商系统，CRMEB系统就是集客户关系管理+营销电商系统，能够快速积累客户、会员数据分析、智能转化客户、
-   有效提高销售、会员维护、网络营销的一款企业应用，包含商城、拼团、砍价、秒杀、优惠券、积分、分销等功能，更适合企业二次开发；
+## 导航栏目
+================================================================
 
-### 导航栏目
-
-[前端下载](/readme/前端下载地址.md)
- | [使用手册](https://help.crmeb.net)
- | [安装说明](/readme/安装说明.md)
+   [使用手册](https://help.crmeb.net)
  | [论坛地址](http://bbs.crmeb.net)
  | [官网地址](https://www.crmeb.com)
  | [TP6开发手册](https://www.kancloud.cn/manual/thinkphp6_0/content)
- | [服务器](https://promotion.aliyun.com/ntms/yunparter/invite.html?userCode=dligum2z)
- | [授权价格](https://s.click.taobao.com/W7hVkLw)
-- - -
+ | [推荐服务器配置](https://promotion.aliyun.com/ntms/yunparter/invite.html?userCode=dligum2z)
+ | [二开文档](https://gitee.com/ZhongBangKeJi/CRMEB-Min/wikis)
 
-### QQ交流群
-CRMEB微信开发11群:824195682 <a target="_blank" href="//shang.qq.com/wpa/qunwpa?idkey=9fa928ec8346022fa33f6cd5efd83b6ba6ccd6a9d4a144beb1ddcb3c5232b3a1"><img border="0" src="//pub.idqqimg.com/wpa/images/group.png" alt="CRMEB微信开发11群" title="CRMEB微信开发11群"></a>
-###  前后台演示
+================================================================
+
+## 项目介绍
+
+CRMEB Min是CRMEB品牌全新推出的一款轻量级、高性能、前后端分离的开源电商系统，完善的后台权限管理、会员管理、订单管理、产品管理、CMS管理、多端管理、页面DIY、数据统计、系统配置、组合数据管理、日志管理、数据库管理，一键开通短信、产品采集、物流查询等接口，系统采用TP6+Mysql+Uniapp+iView+Redis+workerman+form-builder等最流行热门的技术，支持队列、PHP快速生成表单、长链接、定时任务、事件订阅、图表统计、表格导出、自动接口文档，完善的使用文档、接口文档和二开文档，十几个开发交流群，CRMEB Min是您学习交流和二开项目开发的不二选择。
+   
+   CRMEB赋能开发者，助力企业发展！
+
+## 页面展示图
+![输入图片说明](https://images.gitee.com/uploads/images/2020/1230/162518_97b85596_892944.jpeg "页面展示_01.jpg")
+![输入图片说明](https://images.gitee.com/uploads/images/2020/1230/162554_62736ab6_892944.jpeg "页面展示_02.jpg")
+![输入图片说明](https://images.gitee.com/uploads/images/2020/1230/162613_8aebb26f_892944.jpeg "页面展示_03.jpg")
+![输入图片说明](https://images.gitee.com/uploads/images/2020/1230/162640_6b82fcf4_892944.jpeg "开源版_01.jpg")
+![输入图片说明](https://images.gitee.com/uploads/images/2020/1230/162703_5aa76d04_892944.jpeg "开源版_02.jpg")
+![输入图片说明](https://images.gitee.com/uploads/images/2020/1230/162716_a285935c_892944.png "houtaishouye.png")
+![输入图片说明](https://images.gitee.com/uploads/images/2020/1230/162840_4f4ed1f8_892944.png "houtaiyemiansheji.png")
+
+## QQ群   CRMEB微信开发11群 (824195682) 
+
+
+##  系统演示
+
 ![前端演示](https://images.gitee.com/uploads/images/2020/1103/161837_52d08017_1491977.png "屏幕截图.png")
 
-### 联系我们
+min演示站： http://demomin.crmeb.net/admin  账号：demo  密码：crmeb.com
+
+## 主要特性
+
+### 开源无加密
+源码开源无加密，有详细的代码注释，有完整系统手册
+### 系统框架
+使用最新的 ThinkPHP6.0 + Mysql + iview + uni-app + Redis + workerman
+### 标准接口
+标准接口、前后端分离，二次开发更方便
+### 支持队列
+降低流量高峰，解除耦合，高可用
+### 长连接
+减少CPU及内存使用及网络堵塞，减少请求响应时长
+### 无缝事件机制
+行为扩展更方便，方便二次开发
+### 后台快速生成表单
+后台应用form-builder 无需写页面快速增删改查
+### 数据表格导出
+PHPExcel数据导出,导出表格更加美观可视；
+### 强大的后台权限管理
+后台多种角色、多重身份权限管理，权限可以控制到每一步操作，每个按钮都可以控制权限
+
+## 安装
+一、一键安装
+
+上传你的代码，站点入口目录设置/public
+在浏览器中输入你的域名或IP（例如：www.crmeb.com）,
+安装程序会自动执行安装。
+期间系统会提醒你输入数据库信息以完成安装，安装完成后建议删除install目录下index.php文件或将其改名。
+
+后台访问地址：
+1.域名/admin
+2.域名/index.php/admin
+3.域名/index.php?s=/admin
+公众号和H5首页访问地址：
+1.域名/
+提示：正常访问是第一中模式，第一种访问不了请检测[URL重写](http://help.crmeb.net/895486)是否配置好
+安装过程中请牢记您的账号密码！
+
+重新安装
+
+1. 清除数据库
+
+2. 删除/public/install/install.lock 文件
+
+二、 手动安装
+
+1.创建数据库，倒入数据库文件
+
+数据库文件目录/public/install/crmeb.sql
+
+2.修改数据库连接文件
+
+配置文件路径/.env
+~~~
+APP_DEBUG = true
+
+[APP]
+DEFAULT_TIMEZONE = Asia/Shanghai
+
+[DATABASE]
+TYPE = mysql
+HOSTNAME = 127.0.0.1 #数据库连接地址
+DATABASE = test #数据库名称
+USERNAME = username #数据库登录账号
+PASSWORD = password #数据库登录密码
+HOSTPORT = 3306 #数据库端口
+CHARSET = utf8
+DEBUG = true
+
+[LANG]
+default_lang = zh-cn
+
+[REDIS]
+REDIS_HOSTNAME = 127.0.0.1 # redis链接地址
+PORT = 6379 #端口号
+REDIS_PASSWORD = 123456 #密码
+SELECT = 0 #数据库
+~~~
+3.修改目录权限（linux系统）777
+/public
+/runtime
+4.后台登录：
+http://域名/admin
+默认账号：admin 密码：crmeb.com
+
+三、URLOS一键安装
+
+[URLOS一键安装文档](https://gitee.com/ZhongBangKeJi/CRMEB-Min/wikis/URLOS%E4%B8%80%E9%94%AE%E5%AE%89%E8%A3%85?sort_id=3418661)
+
+## 定时任务
+在自动收货,库存预警等功能使用到
+```sh
+php think timer [ status ] [ --d ]
+```
+参数
+- status: 状态
+    - start: 启动
+    - stop: 关闭
+    - restart: 重启
+- --d : 后台执行
+## 长连接服务
+在h5聊天,后台管理员消息通知等功能使用到
+```sh
+php think workerman [ status ] [ server ] [ --d ]
+```
+windows环境下需要分三步执行
+```sh
+
+# 后台管理员通知
+php think workerman start admin
+```
+参数
+- status: 状态
+    - start: 启动
+    - stop: 关闭
+    - restart: 重启
+- server: 服务 (windows)
+    - admin: 后台消息提醒
+
+- --d : 后台执行
+
+## 使用文档
+
+[使用手册](https://help.crmeb.net/crmeb-v4/1863402)
+
+## 开发文档
+
+请参阅 [CRMEB v4开发文档](https://gitee.com/ZhongBangKeJi/CRMEB-Min/wikis/SUMMARY?sort_id=3303636) ｜ [TP6开发手册](https://www.kancloud.cn/manual/thinkphp6_0/content)
+
+## 联系我们
 ![有问题？联系CRMEB官方客服](https://images.gitee.com/uploads/images/2020/1128/154416_441805ca_1491977.png "屏幕截图.png")
-   
-
-####   :fire:  3.2演示站后台:[<a href='http://demo32.crmeb.net' target="_blank"> 查看 </a>]       
-<a href='http://demo32.crmeb.net/admin' target="_blank">http://demo32.crmeb.net/admin</a>  账号：demo  密码：crmeb.com
-
-####   :fire:  4.0演示站后台:[<a href='http://demo.crmeb.net' target="_blank"> 查看 </a>]       
-<a href='http://demo.crmeb.net/admin' target="_blank">http://demo.crmeb.net/admin</a>  账号：demo  密码：crmeb.com
 
 
-### CRMEB推荐阿里云服务器配置
-
-阿里云领取2000元代金劵：[<a href="https://promotion.aliyun.com/ntms/yunparter/invite.html?userCode=dligum2z">https://www.aliyun.com</a>]
- 
- <table><tr><td> 
- 
- 入门级配置
- ```
- CPU：1核
- 内存：1G
- 实例规格：突发性能t5实例
- 带宽：1M
- 系统：CentOS 7.4 64位(推荐)
- 价格：366元/年 933.3元/三年
- ```
- <a href="https://promotion.aliyun.com/ntms/yunparter/invite.html?userCode=dligum2z">学生9.5/月</a>
-   </td>
- <td>
- 
- 标准级配置
- ```
- CPU：2核
- 内存：4G
- 实例规格：突发性能t5实例
- 带宽：2M
- 系统：CentOS 7.4 64位(推荐)
- 价格：936元/年 2386.8元/三年
- ```
- <a href="https://promotion.aliyun.com/ntms/yunparter/invite.html?userCode=dligum2z">新用户半价</a>
- 
-   </td>
-   <td>
- 
- 企业级配置
- ```
- CPU：4核
- 内存：8G
- 实例规格：突发性能t6实例
- 带宽：5M
- 系统：CentOS 7.4 64位(推荐)
- 价格：2786.64元/年 5389.20元/三年
- ```
- <a href="https://promotion.aliyun.com/ntms/yunparter/invite.html?userCode=dligum2z">领取￥2000红包</a>
- 
-   </td>
-   </tr></table>
- 
-
-###   :tw-1f50a: 开源版使用须知
-1.允许用于个人学习、毕业设计、教学案例、公益事业;
-
-2.如果商用必须保留版权信息，请自觉遵守。开源版不合适商用，商用请购买商业版;
-
-3.禁止将本项目的代码和资源进行任何形式的出售，产生的一切任何后果责任由侵权者自负。
-
-### 商业版与 :tw-1f19a: 源版差异
-
-![系统功能](/readme/images/商业版对比.jpg)
-
-
-### 商业版[<a href='https://s.click.taobao.com/W7hVkLw' target="_blank"> 去看看 </a>]
-
-[![输入图片说明](https://images.gitee.com/uploads/images/2019/0122/114739_a48f5bfd_892944.gif "tasheng jo(1).gif")](https://s.click.taobao.com/W7hVkLw)
-
-
-商业授权及定制服务版：http://www.crmeb.com
-
-
-
-
-### 技术亮点
-~~~
-    1.后台应用form-builder PHP快速生成现代化表单；
-    2.前端以Vue + RequireJS模块化开发；
-    3.PHPExcel数据导出,导出表格更加美观,可视；
-    4.EasyWeChat部署微信开发,微信接入更加快捷,简单；
-    5.后台应用ECharts实现完善的数据统计和分析；
-    6.内部预留事件钩子,方面用户二次开发；
-    7.后台多任务窗口化操作界面；
-    8.内置强大灵活的权限管理；
-    9.内置组合数据,系统配置,管理碎片化数据；
-    10.客户端完善的交互效果和动画；
-    11.对接公众号和小程序,并且数据同步；
-    12.内置客服系统；
-    13.高频数据缓存；
-    14.数据备份和恢复；
-    15.后台文件管理，带代码高亮，无需开发工具在线编辑代码；
-    16.标准接口、前后端分离，二次开发更方便;
-    17.长连接减少CPU及内存使用及网络堵塞，减少请求响应时长；
-    18.无缝事件机制行为扩展更方便，方便二次开发；
-    19.支持队列降低流量高峰，解除耦合，高可用;
-    16.一键安装自动检查系统环境一键安装；
-~~~
-### 系统功能
-![系统功能](/readme/images/系统功能.jpg)
-
-### 页面展示
-![展示图](/readme/images/展示图_01.jpg "展示图.png")
-![展示图](/readme/images/展示图_02.jpg "展示图.png")
-![展示图](/readme/images/展示图_03.jpg "展示图.png")
-![后台首页](/readme/images/后台首页.png "后台首页.png")
-![后台产品管理](/readme/images/后台产品管理.png "后台产品管理.png")
-![后台订单管理](/readme/images/后台订单管理.png "后台订单管理.png")
-![后台订单统计](/readme/images/后台订单统计.png "后台订单统计.png")
-![后台公众号菜单管理](/readme/images/后台公众号菜单管理.png "后台公众号菜单管理.png")
-![后台财务报表](/readme/images/后台财务报表.png "后台财务报表.png")
-![后台用户统计](/readme/images/后台用户统计.png "后台用户统计.png")
-![后台权限管理](/readme/images/后台权限管理.png "后台权限管理.png")
-![后台数据备份](/readme/images/后台数据备份.png "后台数据备份.png")
-![后台文件管理](/readme/images/后台文件管理.png "后台文件管理.png")
-
-### 获得荣誉
-![输入图片说明](https://images.gitee.com/uploads/images/2019/0805/111208_eb4fe823_892944.jpeg "WechatIMG2434.jpeg")
-
-###  系统组件开源项目
-
-#### form-builder
-
-tp5 PHP表单生成器，快速生成现代化的form表单。包含复选框、单选框、输入框、下拉选择框等元素以及,省市区三级联动,时间选择,日期选择,颜色选择,文件/图片上传等功能。
-form-builder : https://github.com/xaboy/form-builder
-
-### 参与开发
-
-请提交 [CRMEB](https://gitee.com/ZhongBangKeJi/CRMEB/pulls)。
-
-### 特别鸣谢
-[samoye](https://gitee.com/yizhisamoye)
- | [Stone Bai](https://gitee.com/bys1123)
-
-### 版权信息
+## 版权信息
 
 本项目包含的第三方源码和二进制文件之版权信息另行标注。
 
-版权所有Copyright © 2017-2019 by CRMEB (http://www.crmeb.com)
+版权所有Copyright © 2017-2021 by CRMEB (http://www.crmeb.com)
 
 All rights reserved。
 
 CRMEB® 商标和著作权所有者为西安众邦网络科技有限公司。
+
+## 评论
+
+欢迎大家参与评论，有问题或者bug请 issues，参与开发请 Pull Requests,谢谢大家的支持！

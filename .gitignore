@@ -1,12 +1,8 @@
+# Windows thumbnail cache files
 /.idea
-/.vscode
-*.log
-/.env
-**/*.pid
 runtime/
-install.lock
-public/uploads
-remarks.txt
-*.jpg
-*.png
-crmeb/public/uploads/
+public/install/install.lock
+.constant
+.env
+public/.htaccess
+public/uploads/

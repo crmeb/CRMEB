@@ -1,0 +1,45 @@
+openapi: 3.0.0
+info:
+  title: 'Example of using interfaces in swagger-php'
+  version: 1.0.0
+paths:
+  '/products/{id}':
+    get:
+      tags:
+        - Products
+      operationId: 'UsingInterfaces\ProductController::getProduct'
+      parameters:
+        -
+          name: id
+          in: path
+          description: 'ID of product to return'
+          required: true
+          schema:
+            type: string
+      responses:
+        default:
+          description: 'successful operation'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+components:
+  schemas:
+    Product:
+      title: 'Product model'
+      allOf:
+        -
+          $ref: '#/components/schemas/ProductInterface'
+        -
+          properties:
+            id:
+              description: 'The unique identifier of a product in our catalog.'
+              type: integer
+              format: int64
+              example: 1
+    ProductInterface:
+      properties:
+        name:
+          description: 'The product name.'
+          example: toaster
+      type: object

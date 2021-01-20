@@ -1,0 +1,122 @@
+openapi: 3.0.0
+info:
+  title: 'Example of using traits in swagger-php'
+  version: 1.0.0
+paths:
+  '/entities/{id}':
+    delete:
+      tags:
+        - Entities
+      operationId: 'UsingTraits\DeleteEntity::deleteEntity'
+      parameters:
+        -
+          name: id
+          in: path
+          description: 'ID of entity to delete'
+          required: true
+          schema:
+            type: string
+      responses:
+        default:
+          description: 'successful operation'
+  '/products/{product_id}':
+    get:
+      tags:
+        - Products
+      operationId: 'UsingTraits\ProductController::getProduct'
+      parameters:
+        -
+          name: product_id
+          in: path
+          description: 'ID of product to return'
+          required: true
+          schema:
+            type: string
+      responses:
+        default:
+          description: 'successful operation'
+components:
+  schemas:
+    BellsAndWhistles:
+      title: 'Bells and Whistles trait'
+      allOf:
+        -
+          $ref: '#/components/schemas/Bells'
+        -
+          $ref: '#/components/schemas/Whistles'
+        -
+          properties:
+            plating:
+              description: 'The plating.'
+              example: gold
+    Blink:
+      title: 'Blink trait'
+      properties:
+        frequency:
+          description: 'The frequency.'
+          example: 1
+      type: object
+    Colour:
+      title: 'Colour trait'
+      properties:
+        colour:
+          description: 'The colour.'
+          example: red
+      type: object
+    Bells:
+      title: 'Bells trait'
+      properties:
+        bell:
+          description: 'The bell.'
+          example: chime
+      type: object
+    Whistles:
+      title: 'Whistles trait'
+      properties:
+        whistle:
+          description: 'The bell.'
+          example: 'bone whistle'
+      type: object
+    DeleteEntity:
+      title: 'Delete entity trait'
+    Product:
+      title: 'Product model'
+      allOf:
+        -
+          $ref: '#/components/schemas/Colour'
+        -
+          $ref: '#/components/schemas/BellsAndWhistles'
+        -
+          properties:
+            id:
+              description: 'The unique identifier of a product in our catalog.'
+              type: integer
+              format: int64
+              example: 1
+            bell:
+              description: 'The product bell.'
+              example: gong
+    SimpleProduct:
+      title: 'SimpleProduct model'
+      allOf:
+        -
+          $ref: '#/components/schemas/Bells'
+        -
+          properties:
+            id:
+              description: 'The unique identifier of a simple product in our catalog.'
+              type: integer
+              format: int64
+              example: 1
+    TrickyProduct:
+      allOf:
+        -
+          $ref: '#/components/schemas/Blink'
+        -
+          $ref: '#/components/schemas/SimpleProduct'
+        -
+          title: 'TrickyProduct model'
+          properties:
+            trick:
+              description: 'The trick.'
+              example: 'recite poem'
