@@ -39,13 +39,14 @@ CRMEB Min是CRMEB品牌全新推出的一款轻量级、高性能、前后端分
    CRMEB赋能开发者，助力企业发展！
 
 ## 页面展示图
-![输入图片说明](https://images.gitee.com/uploads/images/2020/1230/162518_97b85596_892944.jpeg "页面展示_01.jpg")
-![输入图片说明](https://images.gitee.com/uploads/images/2020/1230/162554_62736ab6_892944.jpeg "页面展示_02.jpg")
-![输入图片说明](https://images.gitee.com/uploads/images/2020/1230/162613_8aebb26f_892944.jpeg "页面展示_03.jpg")
-![输入图片说明](https://images.gitee.com/uploads/images/2020/1230/162640_6b82fcf4_892944.jpeg "开源版_01.jpg")
-![输入图片说明](https://images.gitee.com/uploads/images/2020/1230/162703_5aa76d04_892944.jpeg "开源版_02.jpg")
-![输入图片说明](https://images.gitee.com/uploads/images/2020/1230/162716_a285935c_892944.png "houtaishouye.png")
-![输入图片说明](https://images.gitee.com/uploads/images/2020/1230/162840_4f4ed1f8_892944.png "houtaiyemiansheji.png")
+
+![演示1](https://images.gitee.com/uploads/images/2020/1230/162518_97b85596_892944.jpeg "11")
+![演示2](https://images.gitee.com/uploads/images/2020/1230/162554_62736ab6_892944.jpeg "页面展示_02.jpg")
+![演示3](https://images.gitee.com/uploads/images/2020/1230/162613_8aebb26f_892944.jpeg "页面展示_03.jpg")
+![演示4](https://images.gitee.com/uploads/images/2020/1230/162640_6b82fcf4_892944.jpeg "开源版_01.jpg")
+![演示5](https://images.gitee.com/uploads/images/2020/1230/162703_5aa76d04_892944.jpeg "开源版_02.jpg")
+![演示6](https://images.gitee.com/uploads/images/2020/1230/162716_a285935c_892944.png "houtaishouye.png")
+![演示7](https://images.gitee.com/uploads/images/2020/1230/162840_4f4ed1f8_892944.png "houtaiyemiansheji.png")
 
 ## QQ群   CRMEB微信开发11群 (824195682) 
 
