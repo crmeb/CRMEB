@@ -39,7 +39,7 @@ CRMEB Min是CRMEB品牌全新推出的一款轻量级、高性能、前后端分
    CRMEB赋能开发者，助力企业发展！
 
 ## 页面展示图
-![样式1](https://images.gitee.com/uploads/images/2020/1230/162518_97b85596_892944.jpeg)
+![样式1](https://images.gitee.com/uploads/images/2020/1230/162518_97b85596_892944.jpeg "11")
 ![输入图片说明](https://images.gitee.com/uploads/images/2020/1230/162554_62736ab6_892944.jpeg "页面展示_02.jpg")
 ![输入图片说明](https://images.gitee.com/uploads/images/2020/1230/162613_8aebb26f_892944.jpeg "页面展示_03.jpg")
 ![输入图片说明](https://images.gitee.com/uploads/images/2020/1230/162640_6b82fcf4_892944.jpeg "开源版_01.jpg")
