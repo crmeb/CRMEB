@@ -1,5 +1,21 @@
 
 --
+-- 表的结构 `eb_auxiliary`
+--
+
+CREATE TABLE IF NOT EXISTS `eb_auxiliary` (
+  `id` int(10) NOT NULL AUTO_INCREMENT,
+  `binding_id` int(10) NOT NULL DEFAULT '0' COMMENT '绑定id',
+  `relation_id` int(10) NOT NULL DEFAULT '0' COMMENT '关联id',
+  `type` tinyint(1) NOT NULL DEFAULT '0' COMMENT '类型0=客服转接辅助，1=商品和分类辅助，2=优惠券和商品辅助',
+  `other` varchar(2048) NOT NULL DEFAULT '' COMMENT '其他数据为json',
+  `status` int(1) unsigned NOT NULL DEFAULT '0' COMMENT '数据状态 0：未执行，1：成功， 2：失败， 3:删除',
+  `update_time` int(10) NOT NULL DEFAULT '0' COMMENT '更新时间',
+  `add_time` int(10) NOT NULL DEFAULT '0' COMMENT '添加时间',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COMMENT='辅助表';
+
+--
 -- 表的结构 `eb_store_service`
 --
 
