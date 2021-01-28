@@ -13,6 +13,7 @@ namespace app\services\pay;
 
 
 use app\services\BaseServices;
+use app\services\order\StoreOrderInvoiceServices;
 use app\services\order\StoreOrderServices;
 use app\services\order\StoreOrderStatusServices;
 use crmeb\jobs\ProductLogJob;
@@ -54,6 +55,9 @@ class OrderOfflineServices extends BaseServices
             'change_message' => '线下付款',
             'change_time' => time()
         ]);
+        //修改开票数据支付状态
+        $orderInvoiceServices = app()->make(StoreOrderInvoiceServices::class);
+        $orderInvoiceServices->update(['order_id' => $orderInfo['id']], ['is_pay' => 1]);
         //支付记录
         Queue::instance()->job(ProductLogJob::class)->data('pay', ['uid' => $orderInfo['uid'], 'order_id' => $orderInfo['id']])->push();
         return $res && $orderInfo->save();
