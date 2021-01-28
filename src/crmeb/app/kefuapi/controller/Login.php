@@ -54,7 +54,7 @@ class Login extends AuthController
             ['password', ''],
         ], true);
 
-        $this->validate(['account' => $account, 'password' => $password], LoginValidate::class);
+        validate(LoginValidate::class)->check(['account' => $account, 'password' => $password]);
 
         $token = $this->services->authLogin($account, $password);
 
