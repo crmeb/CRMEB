@@ -58,7 +58,7 @@ export default {
 		});
 
 		// #ifdef H5
-		if (option.query.hasOwnProperty('type')) {
+        if (option.query.hasOwnProperty('type') && option.query.type=="crmebDiy") {
 			this.globalData.isIframe = true;
 		} else {
 			this.globalData.isIframe = false;

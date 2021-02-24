@@ -48,7 +48,7 @@
             this.setConfig = names +'/setConfig';
             this.updataConfig = names +'/updataConfig';
             this.pageId = parseInt(pageId);
-            this.iframeUrl = `${location.origin}?type=iframe`;
+            this.iframeUrl = `${location.origin}?type=crmebDiy`;
                 diyGetInfo(parseInt(pageId)).then(datas=>{
                     let data = datas.data.info.value;
                     this.upData(data);
