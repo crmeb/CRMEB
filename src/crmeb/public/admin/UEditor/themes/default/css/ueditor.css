@@ -487,7 +487,7 @@ div.edui-box {
 .edui-default .edui-toolbar .edui-splitbutton .edui-icon {
     height: 20px !important;
     width: 20px !important;
-    background-image: url(http://cdn.oss.9gt.net/prov1.1/1/icons.png);
+    background-image: url(../images/icons.gif);
     background-image: url(../images/icons.gif) \9;
 }
 
