@@ -1,5 +1,5 @@
 <template>
-    <div class="article-manager" id="shopp-manager">
+    <div class="article-manager video-icon" id="shopp-manager">
       <div class="i-layout-page-header">
         <div class="i-layout-page-header">
           <router-link :to="{path:'/admin/product/product_list'}"><Button icon="ios-arrow-back" size="small"  class="mr20">返回</Button></router-link>
@@ -1366,5 +1366,10 @@
                 display: inline-block !important;
                 margin-left: 120px !important;
                 width auto !important
-
+    .video-icon{
+        background-image: url(https://cdn.oss.9gt.net/CRMEB_Min4.3/1/icons.png);
+        background-color: #fff;
+        background-position: -9999px;
+        background-repeat: no-repeat;
+    }
 </style>
