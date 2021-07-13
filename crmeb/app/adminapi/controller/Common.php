@@ -1,0 +1,440 @@
+<?php
+// +----------------------------------------------------------------------
+// | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
+// +----------------------------------------------------------------------
+// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// +----------------------------------------------------------------------
+// | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
+// +----------------------------------------------------------------------
+// | Author: CRMEB Team <admin@crmeb.com>
+// +----------------------------------------------------------------------
+namespace app\adminapi\controller;
+
+use app\services\system\config\SystemConfigServices;
+use app\services\system\SystemAuthServices;
+use app\services\order\StoreOrderServices;
+use app\services\product\product\StoreProductServices;
+use app\services\product\product\StoreProductReplyServices;
+use app\services\user\UserExtractServices;
+use app\services\product\sku\StoreProductAttrValueServices;
+use app\services\system\SystemMenusServices;
+use app\services\user\UserServices;
+use crmeb\services\HttpService;
+
+/**
+ * 公共接口基类 主要存放公共接口
+ * Class Common
+ * @package app\adminapi\controller
+ */
+class Common extends AuthController
+{
+    /**
+     * 获取logo
+     * @return mixed
+     */
+    public function getLogo()
+    {
+        return app('json')->success([
+            'logo' => sys_config('site_logo'),
+            'logo_square' => sys_config('site_logo_square')
+        ]);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function check_auth()
+    {
+        try {
+            [$res, $installtime, $encryptStr] = $this->authorizationDecryptCrmeb();
+            if ($installtime) {
+                if (!isset($res['id']) || !$res['id']) {
+                    return app('json')->fail('您暂未取得授权,请及时前往CRMEB官方进行授权', ['auth' => false]);
+                } else if (isset($res['id']) && $res['id'] == -1) {
+                    $time = $installtime + (30 * 3600 * 24);
+                    if ($time < time()) {
+                        return app('json')->success('您的授权已过期请及时前往CRMEB官方进行授权', ['auth' => false]);
+                    } else {
+                        $nowTime = ($time - time()) / (3600 * 24);
+                        return app('json')->success('您得授权证书还有' . (int)$nowTime . '天过期,请及时前往CRMEB官方进行授权认证!', ['auth' => true]);
+                    }
+                } else {
+                    return app('json')->success('succes', ['auth' => true]);
+                }
+            } else {
+                return app('json')->fail('授权文件读取错误');
+            }
+        } catch (\RuntimeException $e) {
+            return app('json')->fail($e->getMessage());
+        }
+    }
+
+    /**
+     * @return mixed
+     */
+    public function auth()
+    {
+        [$res, $installtime, $encryptStr] = $this->authorizationDecryptCrmeb();
+        $version = get_crmeb_version();
+        $res = HttpService::request('http://authorize.crmeb.net/api/auth_cert_query', 'post', [
+            'domain_name' => $this->request->host(),
+            'label' => 23,
+            'version' => $version
+        ]);
+        $res = $res ? json_decode($res, true) : [];
+        $status = $res['data']['status'] ?? -9;
+        $time = $installtime + (30 * 3600 * 24);
+        if ($time < time()) {
+            $day = 0;
+        } else {
+            $day = (int)bcdiv((string)($time - time()), (string)(3600 * 24), 0);
+        }
+        $defaultRecordCode = '00000000';
+        switch ((int)$status) {
+            case 1:
+                //审核成功
+                $authCode = $res['data']['auth_code'] ?? $defaultRecordCode;
+                $autoContent = $res['data']['auto_content'] ?? '';
+                try {
+                    /** @var SystemConfigServices $services */
+                    $services = app()->make(SystemConfigServices::class);
+                    if ($services->count(['menu_name' => 'cert_crmeb'])) {
+                        $services->update(['menu_name' => 'cert_crmeb'], ['value' => json_encode($autoContent . ',' . $authCode)]);
+                    } else {
+                        $services->save([
+                            'menu_name' => 'cert_crmeb',
+                            'type' => 'text',
+                            'input_type' => 'input',
+                            'config_tab_id' => 1,
+                            'value' => json_encode($autoContent . ',' . $authCode),
+                            'status' => 2,
+                            'info' => '授权密钥'
+                        ]);
+                    }
+                } catch (\Throwable $e) {
+                    return app('json')->fail('授权成功，写入数据库失败，请检查数据库链接配置');
+                }
+                return app('json')->success(['status' => 1, 'authCode' => $authCode, 'day' => 0]);
+                break;
+            case 2:
+                //审核失败
+                return app('json')->success(['status' => 2, 'day' => $day]);
+                break;
+            case -1:
+                //没有提交
+                return app('json')->success(['status' => -1, 'day' => $day]);
+                break;
+            case 0:
+                //待审核
+                return app('json')->success(['status' => 0, 'day' => $day]);
+                break;
+            default:
+                return app('json')->success(['status' => -9, 'day' => $day]);
+                break;
+        }
+    }
+
+    /**
+     * 申请授权
+     * @return mixed
+     */
+    public function auth_apply(SystemAuthServices $services)
+    {
+        $version = get_crmeb_version();
+        $data = $this->request->postMore([
+            ['company_name', ''],
+            ['domain_name', ''],
+            ['order_id', ''],
+            ['phone', ''],
+            ['label', 1],
+            ['captcha', ''],
+        ]);
+        if (!$data['company_name']) {
+            return app('json')->fail('请填写公司名称');
+        }
+        if (!$data['domain_name']) {
+            return app('json')->fail('请填写授权域名');
+        }
+
+        if (!$data['phone']) {
+            return app('json')->fail('请填写手机号码');
+        }
+        if (!$data['order_id']) {
+            return app('json')->fail('请填写订单id');
+        }
+        if (!$data['captcha']) {
+            return app('json')->fail('请填写验证码');
+        }
+        $datas = explode('.', $data['domain_name']);
+        $n = count($datas);
+        $preg = '/[\w].+\.(com|net|org|gov|edu)\.cn$/';
+        if(($n > 2) && preg_match($preg,$data['domain_name'])){
+            //双后缀取后3位
+            $domain_name = $datas[$n-3].'.'.$datas[$n-2].'.'.$datas[$n-1];
+        }else{
+            //非双后缀取后两位
+            $domain_name = $datas[$n-2].'.'.$datas[$n-1];
+        }
+        $data['domain_name'] = $domain_name;
+        $services->authApply($data);
+        return app('json')->success("申请授权成功!");
+
+    }
+
+    /**
+     * 首页头部统计数据
+     * @return mixed
+     */
+    public function homeStatics()
+    {
+        /** @var StoreOrderServices $orderServices */
+        $orderServices = app()->make(StoreOrderServices::class);
+        $info = $orderServices->homeStatics();
+        return app('json')->success(compact('info'));
+    }
+
+    //增长率
+    public function growth($nowValue, $lastValue)
+    {
+        if ($lastValue == 0 && $nowValue == 0) return 0;
+        if ($lastValue == 0) return round($nowValue, 2);
+        if ($nowValue == 0) return -round($lastValue, 2);
+        return bcmul(bcdiv((bcsub($nowValue, $lastValue, 2)), $lastValue, 2), 100, 2);
+    }
+
+    /**
+     * 订单图表
+     */
+    public function orderChart()
+    {
+        $cycle = $this->request->param('cycle') ?: 'thirtyday';//默认30天
+        /** @var StoreOrderServices $orderServices */
+        $orderServices = app()->make(StoreOrderServices::class);
+        $chartdata = $orderServices->orderCharts($cycle);
+        return app('json')->success($chartdata);
+    }
+
+    /**
+     * 用户图表
+     */
+    public function userChart()
+    {
+        /** @var UserServices $uServices */
+        $uServices = app()->make(UserServices::class);
+        $chartdata = $uServices->userChart();
+        return app('json')->success($chartdata);
+    }
+
+    /**
+     * 交易额排行
+     * @return mixed
+     */
+    public function purchaseRanking()
+    {
+        /** @var StoreProductAttrValueServices $valueServices */
+        $valueServices = app()->make(StoreProductAttrValueServices::class);
+        $list = $valueServices->purchaseRanking();
+        return app('json')->success(compact('list'));
+    }
+
+    /**
+     * 待办事统计
+     * @return mixed
+     */
+    public function jnotice()
+    {
+        /** @var StoreOrderServices $orderServices */
+        $orderServices = app()->make(StoreOrderServices::class);
+        $data['ordernum'] = $orderServices->storeOrderCount();
+        $store_stock = sys_config('store_stock');
+        if ($store_stock < 0) $store_stock = 2;
+        /** @var StoreProductServices $storeServices */
+        $storeServices = app()->make(StoreProductServices::class);
+        $data['inventory'] = $storeServices->count(['type' => 5, 'store_stock' => $store_stock]);//警戒库存
+        /** @var StoreProductReplyServices $replyServices */
+        $replyServices = app()->make(StoreProductReplyServices::class);
+        $data['commentnum'] = $replyServices->replyCount();
+        /** @var UserExtractServices $extractServices */
+        $extractServices = app()->make(UserExtractServices::class);
+        $data['reflectnum'] = $extractServices->userExtractCount();//提现
+        $data['msgcount'] = intval($data['ordernum']) + intval($data['inventory']) + intval($data['commentnum']) + intval($data['reflectnum']);
+        $data['newOrderId'] = $orderServices->newOrderId(1);
+        if (count($data['newOrderId'])) $orderServices->newOrderUpdate($data['newOrderId']);
+        $value = [];
+        if ($data['ordernum'] != 0) {
+            $value[] = [
+                'title' => "您有$data[ordernum]个待发货的订单",
+                'type' => 'bulb',
+                'url' => '/admin/order/list?status=1'
+            ];
+        }
+        if ($data['inventory'] != 0) {
+            $value[] = [
+                'title' => "您有$data[inventory]个商品库存预警",
+                'type' => 'information',
+                'url' => '/admin/product/product_list?type=5',
+            ];
+        }
+        if ($data['commentnum'] != 0) {
+            $value[] = [
+                'title' => "您有$data[commentnum]条评论待回复",
+                'type' => 'bulb',
+                'url' => '/admin/product/product_reply?is_reply=0'
+            ];
+        }
+        if ($data['reflectnum'] != 0) {
+            $value[] = [
+                'title' => "您有$data[reflectnum]个提现申请待审核",
+                'type' => 'bulb',
+                'url' => '/admin/finance/user_extract/index?status=0',
+            ];
+        }
+        return app('json')->success($this->noticeData($value));
+    }
+
+    /**
+     * 消息返回格式
+     * @param array $data
+     * @return array
+     */
+    public function noticeData(array $data): array
+    {
+        // 消息图标
+        $iconColor = [
+            // 邮件 消息
+            'mail' => [
+                'icon' => 'md-mail',
+                'color' => '#3391e5'
+            ],
+            // 普通 消息
+            'bulb' => [
+                'icon' => 'md-bulb',
+                'color' => '#87d068'
+            ],
+            // 警告 消息
+            'information' => [
+                'icon' => 'md-information',
+                'color' => '#fe5c57'
+            ],
+            // 关注 消息
+            'star' => [
+                'icon' => 'md-star',
+                'color' => '#ff9900'
+            ],
+            // 申请 消息
+            'people' => [
+                'icon' => 'md-people',
+                'color' => '#f06292'
+            ],
+        ];
+        // 消息类型
+        $type = array_keys($iconColor);
+        // 默认数据格式
+        $default = [
+            'icon' => 'md-bulb',
+            'iconColor' => '#87d068',
+            'title' => '',
+            'url' => '',
+            'type' => 'bulb',
+            'read' => 0,
+            'time' => 0
+        ];
+        $value = [];
+        foreach ($data as $item) {
+            $val = array_merge($default, $item);
+            if (isset($item['type']) && in_array($item['type'], $type)) {
+                $val['type'] = $item['type'];
+                $val['iconColor'] = $iconColor[$item['type']]['color'] ?? '';
+                $val['icon'] = $iconColor[$item['type']]['icon'] ?? '';
+            }
+            $value[] = $val;
+        }
+        return $value;
+    }
+
+    /**
+     * 格式化菜单
+     * @return mixed
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     */
+    public function menusList()
+    {
+        /** @var SystemMenusServices $menusServices */
+        $menusServices = app()->make(SystemMenusServices::class);
+        $list = $menusServices->getSearchList();
+        $counts = $menusServices->getColumn([
+            ['is_show', '=', 1],
+            ['auth_type', '=', 1],
+            ['is_del', '=', 0],
+            ['is_show_path', '=', 0],
+        ], 'pid');
+        $data = [];
+        foreach ($list as $key => $item) {
+            $pid = $item->getData('pid');
+            $data[$key] = json_decode($item, true);
+            $data[$key]['pid'] = $pid;
+            if (in_array($item->id, $counts)) {
+                $data[$key]['type'] = 1;
+            } else {
+                $data[$key]['type'] = 0;
+            }
+        }
+        return app('json')->success(sort_list_tier($data));
+    }
+
+    /**
+     * @param bool $bool
+     * @param callable|null $callable
+     * @return array|bool
+     */
+    protected function authorizationDecryptCrmeb()
+    {
+        $path = app()->getRootPath() . 'public' . DS . 'install' . DS . 'install.lock';
+        if (!is_file($path)) {
+            $path = app()->getRootPath() . ".constant";
+        }
+        if (!is_file($path)) {
+            throw new \RuntimeException('授权文件丢失', 42010);
+        }
+        $installtime = (int)@filectime($path);
+        $time = $installtime;
+        if (!$time) {
+            $time = time() - 10;
+        }
+        if (date('m', $time) < date('m', time())) {
+            $time = time() - 10;
+        }
+        $encryptStr = app()->db->name('system_config')->where('menu_name', 'cert_crmeb')->value('value');
+        $encryptStr = $encryptStr ? json_decode($encryptStr, true) : null;
+        $res = ['id' => '-1', 'key' => 'crmeb'];
+        $host = request()->host(true);
+        $data = explode('.', $host);
+        $n = count($data);
+        $preg = '/[\w].+\.(com|net|org|gov|edu)\.cn$/';
+        if(($n > 2) && preg_match($preg,$host)){
+            //双后缀取后3位
+            $url = $data[$n-3].'.'.$data[$n-2].'.'.$data[$n-1];
+        }else{
+            //非双后缀取后两位
+            $url = $data[$n-2].'.'.$data[$n-1];
+        }
+        if (in_array(date('d'), [5, 10, 15, 20, 25, 30]) && rand(1000, 100000) < 4000 && $encryptStr && $time < time()) {
+            $res = HttpService::request('http://store.crmeb.net/api/web/auth/get_id', 'POST', [
+                'domain_name' => $url,
+                'label' => 1,
+            ]);
+            if (!isset($res['id']) || !$res['id']) {
+                $res = json_decode($res, true);
+                if (!$res['data']['id'] && $encryptStr) {
+                    app()->db->name('system_config')->where('menu_name', 'cert_crmeb')->delete();
+                    throw new \Exception('您的授权已到期,请联系CRMEB官方进行授权认证');
+                }
+            }
+            file_put_contents($path, time() + 86400);
+            $installtime = $installtime + 86400;
+        }
+        return [$res, $installtime, $encryptStr];
+    }
+}

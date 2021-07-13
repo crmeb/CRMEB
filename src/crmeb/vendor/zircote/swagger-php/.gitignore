@@ -1,9 +1,0 @@
-/vendor
-/composer.lock
-/bin/*
-!/bin/openapi
-/openapi.json
-/openapi.yaml
-/docs/.vuepress/dist
-.phpunit.result.cache
-/.php_cs.cache

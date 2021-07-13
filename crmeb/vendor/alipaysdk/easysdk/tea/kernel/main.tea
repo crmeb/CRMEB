@@ -1,0 +1,50 @@
+model Context {
+  config: map[string]any,
+  certEnvironment: any
+}
+
+init(context: Context);
+
+function getTimestamp(): string;
+
+function getConfig(key: string): string;
+
+function getSdkVersion(): string;
+
+function toUrlEncodedRequestBody(bizParams: map[string]any): bytes;
+
+async function readAsJson(response: $Response, method: string): map[string]any;
+
+function toRespModel(respMap: map[string]any): map[string]any;
+
+function getRandomBoundary(): string;
+
+function toMultipartRequestBody(textParams: map[string]string, fileParams: map[string]string, boundary: string): readable;
+
+function generatePage(method: string, systemParams: map[string]string, bizParams: map[string]any, textParams: map[string]string, sign: string): string;
+
+function getMerchantCertSN(): string;
+
+function getAlipayCertSN(respMap:map[string]any): string;
+
+function getAlipayRootCertSN(): string;
+
+function isCertMode(): boolean;
+
+function extractAlipayPublicKey(alipayCertSN:string): string;
+
+function verify(respMap: map[string]any, alipayPublicKey: string): boolean;
+
+function sign(systemParams: map[string]string, bizParams: map[string]any, textParams: map[string]string, merchantPrivateKey: string): string;
+
+function aesEncrypt(plainText: string, encryptKey: string): string;
+
+function aesDecrypt(cipherText: string, encryptKey: string): string;
+
+function generateOrderString(systemParams: map[string]string, bizParams: map[string]any, textParams: map[string]string, sign: string): string;
+
+function concatStr(a: string, b: string): string;
+
+function verifyParams(parameters: map[string]string, publicKey: string): boolean;
+
+function sortMap(randomMap: map[string]string): map[string]string;

@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>netstandard2.0;net461</TargetFrameworks>
+    <PackOnBuild>true</PackOnBuild>
+    <PackageId>AlipayEasySDK.Kernel</PackageId>
+    <Authors>antopen</Authors>
+    <Owners>antopen</Owners>
+    <Description>Alipay Easy SDK for .NET allows you to enjoy a minimalist programming experience and quickly access the various high-frequency capabilities of the Alipay Open Platform.</Description>
+    <NeutralLanguage>zh</NeutralLanguage>
+    <PackageLicenseUrl>https://github.com/alipay/alipay-easysdk/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/alipay/alipay-easysdk</PackageProjectUrl>
+    <Summary>Alipay Easy SDK for .NET allows you to enjoy a minimalist programming experience and quickly access the various high-frequency capabilities of the Alipay Open Platform.</Summary>
+    <Title>Kernel for Alipay Easy SDK</Title>
+    <PackageVersion>1.0.0</PackageVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    <PackageReference Include="Portable.BouncyCastle" Version="1.8.6.7" />
+    <PackageReference Include="Tea" Version="0.3.3" />
+  </ItemGroup>
+</Project>

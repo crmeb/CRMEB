@@ -1,0 +1,44 @@
+import EasySDKKernel;
+
+type @kernel = EasySDKKernel
+
+init(kernel: EasySDKKernel) {
+  @kernel = kernel;
+}
+
+model AlipayTradePagePayResponse {
+  body: string(name='body', description='订单信息，Form表单形式')
+}
+
+function pay(subject: string, outTradeNo: string, totalAmount: string, returnUrl: string): AlipayTradePagePayResponse {
+  var systemParams: map[string]string = {
+    method = 'alipay.trade.page.pay',
+    app_id = @kernel.getConfig("appId"),
+    timestamp = @kernel.getTimestamp(),
+    format = 'json',
+    version = '1.0',
+    alipay_sdk = @kernel.getSdkVersion(),
+    charset = 'UTF-8',
+    sign_type = @kernel.getConfig("signType"),
+    app_cert_sn = @kernel.getMerchantCertSN(),
+    alipay_root_cert_sn = @kernel.getAlipayRootCertSN()
+  };
+
+  var bizParams: map[string]any = {
+    subject = subject,
+    out_trade_no = outTradeNo,
+    total_amount = totalAmount,
+    product_code = 'FAST_INSTANT_TRADE_PAY'
+  };
+
+  var textParams: map[string]string = {
+    return_url = returnUrl
+  };
+
+  var sign = @kernel.sign(systemParams, bizParams, textParams, @kernel.getConfig('merchantPrivateKey'));
+
+  var response: map[string]string = {
+    body = @kernel.generatePage('POST', systemParams, bizParams, textParams, sign)
+  };
+  return response;
+}

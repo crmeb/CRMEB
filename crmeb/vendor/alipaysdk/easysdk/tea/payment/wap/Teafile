@@ -1,0 +1,26 @@
+{
+  "scope": "alipay",
+  "name": "easysdk-payment-wap",
+  "version": "0.0.1",
+  "main": "./main.tea",
+  "java": {
+    "package": "com.alipay.easysdk.payment.wap",
+    "baseClient": "com.alipay.easysdk.kernel.BaseClient"
+  },
+  "csharp": {
+    "namespace": "Alipay.EasySDK.Payment.Wap",
+    "baseClient": "Alipay.EasySDK.Kernel:BaseClient"
+  },
+  "typescript": {
+    "baseClient": "@alipay/easysdk-baseclient"
+  },
+  "php": {
+    "package": "Alipay.EasySDK.Payment.Wap"
+  },
+  "go": {
+    "namespace": "payment/wap"
+  },
+  "libraries": {
+    "EasySDKKernel": "alipay:easysdk-kernel:*"
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "scope": "alipay",
+  "name": "easysdk-base-qrcode",
+  "version": "0.0.1",
+  "main": "./main.tea",
+  "java": {
+    "package": "com.alipay.easysdk.base.qrcode",
+    "baseClient": "com.alipay.easysdk.kernel.BaseClient"
+  },
+  "csharp": {
+    "namespace": "Alipay.EasySDK.Base.Qrcode",
+    "baseClient": "Alipay.EasySDK.Kernel:BaseClient"
+  },
+  "typescript": {
+    "baseClient": "@alipay/easysdk-baseclient"
+  },
+  "php": {
+    "package": "Alipay.EasySDK.Base.Qrcode"
+  },
+  "go": {
+    "namespace": "base/qrcode"
+  },
+  "libraries": {
+    "EasySDKKernel": "alipay:easysdk-kernel:*"
+  }
+}

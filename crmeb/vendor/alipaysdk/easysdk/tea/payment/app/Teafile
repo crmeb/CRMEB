@@ -1,0 +1,26 @@
+{
+  "scope": "alipay",
+  "name": "easysdk-payment-app",
+  "version": "0.0.1",
+  "main": "./main.tea",
+  "java": {
+    "package": "com.alipay.easysdk.payment.app",
+    "baseClient": "com.alipay.easysdk.kernel.BaseClient"
+  },
+  "csharp": {
+    "namespace": "Alipay.EasySDK.Payment.App",
+    "baseClient": "Alipay.EasySDK.Kernel:BaseClient"
+  },
+  "typescript": {
+    "baseClient": "@alipay/easysdk-baseclient"
+  },
+  "php": {
+    "package": "Alipay.EasySDK.Payment.App"
+  },
+  "go": {
+    "namespace": "payment/app"
+  },
+  "libraries": {
+    "EasySDKKernel": "alipay:easysdk-kernel:*"
+  }
+}

@@ -1,0 +1,72 @@
+// +----------------------------------------------------------------------
+// | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
+// +----------------------------------------------------------------------
+// | Copyright (c) 2016~2021 https://www.crmeb.com All rights reserved.
+// +----------------------------------------------------------------------
+// | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
+// +----------------------------------------------------------------------
+// | Author: CRMEB Team <admin@crmeb.com>
+// +----------------------------------------------------------------------
+
+export default [
+  "em-smile",
+  "em-laughing",
+  "em-blush",
+  "em-smiley",
+  "em-relaxed",
+  "em-smirk",
+  "em-heart_eyes",
+  "em-kissing_heart",
+  "em-kissing_closed_eyes",
+  "em-flushed",
+  "em-relieved",
+  "em-satisfied",
+  "em-grin",
+  "em-wink",
+  "em-stuck_out_tongue_winking_eye",
+  "em-stuck_out_tongue_closed_eyes",
+  "em-grinning",
+  "em-kissing",
+  "em-kissing_smiling_eyes",
+  "em-stuck_out_tongue",
+  "em-sleeping",
+  "em-worried",
+  "em-frowning",
+  "em-anguished",
+  "em-open_mouth",
+  "em-grimacing",
+  "em-confused",
+  "em-hushed",
+  "em-expressionless",
+  "em-unamused",
+  "em-sweat_smile",
+  "em-sweat",
+  "em-disappointed_relieved",
+  "em-weary",
+  "em-pensive",
+  "em-disappointed",
+  "em-confounded",
+  "em-fearful",
+  "em-cold_sweat",
+  "em-persevere",
+  "em-cry",
+  "em-sob",
+  "em-joy",
+  "em-astonished",
+  "em-scream",
+  "em-tired_face",
+  "em-angry",
+  "em-rage",
+  "em-triumph",
+  "em-sleepy",
+  "em-yum",
+  "em-mask",
+  "em-sunglasses",
+  "em-dizzy_face",
+  "em-imp",
+  "em-smiling_imp",
+  "em-neutral_face",
+  "em-no_mouth",
+  "em-innocent",
+  "em-alien"
+];

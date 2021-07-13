@@ -1,0 +1,15 @@
+import EasySDKKernel;
+
+type @kernel = EasySDKKernel
+
+init(kernel: EasySDKKernel) {
+  @kernel = kernel;
+}
+
+function decrypt(cipherText: string): string {
+  return @kernel.aesDecrypt(cipherText, @kernel.getConfig('encryptKey'));
+}
+
+function encrypt(plainText: string): string {
+  return @kernel.aesEncrypt(plainText, @kernel.getConfig('encryptKey'));
+}

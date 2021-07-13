@@ -1,0 +1,146 @@
+import EasySDKKernel;
+
+type @kernel = EasySDKKernel
+
+init(kernel: EasySDKKernel) {
+  @kernel = kernel;
+}
+
+model AlipaySystemOauthTokenResponse {
+  httpBody: string(name='http_body', description='响应原始字符串'),
+  code: string(name='code'),
+  msg: string(name='msg'),
+  subCode: string(name='sub_code'),
+  subMsg: string(name='sub_msg'),
+
+  userId: string(name='user_id'),
+  accessToken: string(name='access_token'),
+  expiresIn: long(name='expires_in'),
+  refreshToken: string(name='refresh_token'),
+  reExpiresIn: long(name='re_expires_in')
+}
+
+api getToken(code: string): AlipaySystemOauthTokenResponse {
+  var systemParams: map[string]string = {
+    method = 'alipay.system.oauth.token',
+    app_id = @kernel.getConfig("appId"),
+    timestamp = @kernel.getTimestamp(),
+    format = 'json',
+    version = '1.0',
+    alipay_sdk = @kernel.getSdkVersion(),
+    charset = 'UTF-8',
+    sign_type = @kernel.getConfig("signType"),
+    app_cert_sn = @kernel.getMerchantCertSN(),
+    alipay_root_cert_sn = @kernel.getAlipayRootCertSN()
+  };
+
+  var bizParams: map[string]any = {
+  };
+
+  var textParams: map[string]string = {
+    grant_type = 'authorization_code',
+    code = code
+  };
+
+  __request.protocol = @kernel.getConfig("protocol");
+  __request.method = 'POST';
+  __request.pathname = '/gateway.do';
+
+  __request.headers = {
+    host = @kernel.getConfig("gatewayHost"),
+    content-type = 'application/x-www-form-urlencoded;charset=utf-8'
+  };
+
+  __request.query = @kernel.sortMap({
+    sign = @kernel.sign(systemParams, bizParams, textParams, @kernel.getConfig("merchantPrivateKey")),
+    ... systemParams,
+    ... textParams
+  });
+
+  __request.body = @kernel.toUrlEncodedRequestBody(bizParams);
+} returns {
+  var respMap: object = @kernel.readAsJson(__response, "alipay.system.oauth.token");
+
+  if (@kernel.isCertMode()) {
+    if (@kernel.verify(respMap, @kernel.extractAlipayPublicKey(@kernel.getAlipayCertSN(respMap)))) {
+      return @kernel.toRespModel(respMap);
+    }
+  } else {
+    if (@kernel.verify(respMap, @kernel.getConfig("alipayPublicKey"))) {
+      return @kernel.toRespModel(respMap);
+    }
+  }
+  
+  throw {
+    message = '验签失败，请检查支付宝公钥设置是否正确。'
+  }
+} runtime {
+  connectTimeout = 15000,
+  readTimeout = 15000,
+  retry = {
+    maxAttempts = 0
+  }
+}
+
+api refreshToken(refreshToken: string): AlipaySystemOauthTokenResponse {
+  var systemParams: map[string]string = {
+    method = 'alipay.system.oauth.token',
+    app_id = @kernel.getConfig("appId"),
+    timestamp = @kernel.getTimestamp(),
+    format = 'json',
+    version = '1.0',
+    alipay_sdk = @kernel.getSdkVersion(),
+    charset = 'UTF-8',
+    sign_type = @kernel.getConfig("signType"),
+    app_cert_sn = @kernel.getMerchantCertSN(),
+    alipay_root_cert_sn = @kernel.getAlipayRootCertSN()
+  };
+
+  var bizParams: map[string]any = {
+  };
+
+  var textParams: map[string]string = {
+    grant_type = 'refresh_token',
+    refresh_token = refreshToken
+  };
+
+  __request.protocol = @kernel.getConfig("protocol");
+  __request.method = 'POST';
+  __request.pathname = '/gateway.do';
+
+  __request.headers = {
+    host = @kernel.getConfig("gatewayHost"),
+    content-type = 'application/x-www-form-urlencoded;charset=utf-8'
+  };
+
+  __request.query = @kernel.sortMap({
+    sign = @kernel.sign(systemParams, bizParams, textParams, @kernel.getConfig("merchantPrivateKey")),
+    ... systemParams,
+    ... textParams
+  });
+
+  __request.body = @kernel.toUrlEncodedRequestBody(bizParams);
+} returns {
+  var respMap: object = @kernel.readAsJson(__response, "alipay.system.oauth.token");
+
+  if (@kernel.isCertMode()) {
+    if (@kernel.verify(respMap, @kernel.extractAlipayPublicKey(@kernel.getAlipayCertSN(respMap)))) {
+      return @kernel.toRespModel(respMap);
+    }
+  } else {
+    if (@kernel.verify(respMap, @kernel.getConfig("alipayPublicKey"))) {
+      return @kernel.toRespModel(respMap);
+    }
+  }
+  
+  throw {
+    message = '验签失败，请检查支付宝公钥设置是否正确。'
+  }
+  
+} runtime {
+  connectTimeout = 15000,
+  readTimeout = 15000,
+  retry = {
+    maxAttempts = 0
+  }
+}

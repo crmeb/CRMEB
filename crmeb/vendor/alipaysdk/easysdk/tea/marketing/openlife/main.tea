@@ -1,0 +1,628 @@
+import EasySDKKernel;
+
+type @kernel = EasySDKKernel
+
+init(kernel: EasySDKKernel) {
+  @kernel = kernel;
+}
+
+model AlipayOpenPublicMessageContentCreateResponse {
+  httpBody: string(name='http_body', description='响应原始字符串'),
+  code: string(name='code'),
+  msg: string(name='msg'),
+  subCode: string(name='sub_code'),
+  subMsg: string(name='sub_msg'),
+
+  contentId: string(name='content_id'),
+  contentUrl: string(name='content_url')
+}
+
+model AlipayOpenPublicMessageContentModifyResponse {
+  httpBody: string(name='http_body', description='响应原始字符串'),
+  code: string(name='code'),
+  msg: string(name='msg'),
+  subCode: string(name='sub_code'),
+  subMsg: string(name='sub_msg'),
+
+  contentId: string(name='content_id'),
+  contentUrl: string(name='content_url')
+}
+
+model AlipayOpenPublicMessageTotalSendResponse {
+  httpBody: string(name='http_body', description='响应原始字符串'),
+  code: string(name='code'),
+  msg: string(name='msg'),
+  subCode: string(name='sub_code'),
+  subMsg: string(name='sub_msg'),
+
+  messageId: string(name='message_id')
+}
+
+model Text {
+  title: string(name='title'),
+  content: string(name='content')
+}
+
+model Article {
+  title?: string(name='title'),
+  desc: string(name='desc'),
+  imageUrl?: string(name='image_url'),
+  url: string(name='url'),
+  actionName?: string(name='action_name')
+}
+
+model Keyword {
+  color: string(name='color'),
+  value: string(name='value')
+}
+
+model Context {
+  headColor: string(name='head_color'),
+  url: string(name='url'),
+  actionName: string(name='action_name'),
+  keyword1?: Keyword(name='keyword1'),
+  keyword2?: Keyword(name='keyword2'),
+  first?: Keyword(name='first'),
+  remark?: Keyword(name='remark')
+}
+
+model Template {
+  templateId: string(name='template_id'),
+  context: Context(name='context')
+}
+
+model AlipayOpenPublicMessageSingleSendResponse {
+  httpBody: string(name='http_body', description='响应原始字符串'),
+  code: string(name='code'),
+  msg: string(name='msg'),
+  subCode: string(name='sub_code'),
+  subMsg: string(name='sub_msg')
+}
+
+model AlipayOpenPublicLifeMsgRecallResponse {
+  httpBody: string(name='http_body', description='响应原始字符串'),
+  code: string(name='code'),
+  msg: string(name='msg'),
+  subCode: string(name='sub_code'),
+  subMsg: string(name='sub_msg')
+}
+
+model AlipayOpenPublicTemplateMessageIndustryModifyResponse {
+  httpBody: string(name='http_body', description='响应原始字符串'),
+  code: string(name='code'),
+  msg: string(name='msg'),
+  subCode: string(name='sub_code'),
+  subMsg: string(name='sub_msg')
+}
+
+model AlipayOpenPublicSettingCategoryQueryResponse {
+  httpBody: string(name='http_body', description='响应原始字符串'),
+  code: string(name='code'),
+  msg: string(name='msg'),
+  subCode: string(name='sub_code'),
+  subMsg: string(name='sub_msg'),
+
+  primaryCategory: string(name='primary_category'),
+  secondaryCategory: string(name='secondary_category')
+}
+
+api createImageTextContent(title: string, cover: string, content: string, contentComment: string, ctype: string, benefit: string, extTags: string, loginIds: string): AlipayOpenPublicMessageContentCreateResponse {
+  var systemParams: map[string]string = {
+    method = 'alipay.open.public.message.content.create',
+    app_id = @kernel.getConfig("appId"),
+    timestamp = @kernel.getTimestamp(),
+    format = 'json',
+    version = '1.0',
+    alipay_sdk = @kernel.getSdkVersion(),
+    charset = 'UTF-8',
+    sign_type = @kernel.getConfig("signType"),
+    app_cert_sn = @kernel.getMerchantCertSN(),
+    alipay_root_cert_sn = @kernel.getAlipayRootCertSN()
+  };
+
+  var bizParams: map[string]any = {
+    title = title,
+    cover = cover,
+    content = content,
+    could_comment = contentComment,
+    ctype = ctype,
+    benefit = benefit,
+    ext_tags = extTags,
+    login_ids = loginIds
+  };
+
+  var textParams: map[string]string = {
+  };
+
+  __request.protocol = @kernel.getConfig("protocol");
+  __request.method = 'POST';
+  __request.pathname = '/gateway.do';
+
+  __request.headers = {
+    host = @kernel.getConfig("gatewayHost"),
+    content-type = 'application/x-www-form-urlencoded;charset=utf-8'
+  };
+
+  __request.query = @kernel.sortMap({
+    sign = @kernel.sign(systemParams, bizParams, textParams, @kernel.getConfig("merchantPrivateKey")),
+    ... systemParams,
+    ... textParams
+  });
+
+  __request.body = @kernel.toUrlEncodedRequestBody(bizParams);
+} returns {
+  var respMap: map[string]any = @kernel.readAsJson(__response, "alipay.open.public.message.content.create");
+
+  if (@kernel.isCertMode()) {
+    if (@kernel.verify(respMap, @kernel.extractAlipayPublicKey(@kernel.getAlipayCertSN(respMap)))) {
+      return @kernel.toRespModel(respMap);
+    }
+  } else {
+    if (@kernel.verify(respMap, @kernel.getConfig("alipayPublicKey"))) {
+      return @kernel.toRespModel(respMap);
+    }
+  }
+  
+  throw {
+    message = '验签失败，请检查支付宝公钥设置是否正确。'
+  }
+  
+} runtime {
+  connectTimeout = 15000,
+  readTimeout = 15000,
+  retry = {
+    maxAttempts = 0
+  }
+}
+
+api modifyImageTextContent(contentId: string, title: string, cover: string, content: string, couldComment: string, ctype: string, benefit: string, extTags: string, loginIds: string): AlipayOpenPublicMessageContentModifyResponse {
+  var systemParams: map[string]string = {
+    method = 'alipay.open.public.message.content.modify',
+    app_id = @kernel.getConfig("appId"),
+    timestamp = @kernel.getTimestamp(),
+    format = 'json',
+    version = '1.0',
+    alipay_sdk = @kernel.getSdkVersion(),
+    charset = 'UTF-8',
+    sign_type = @kernel.getConfig("signType"),
+    app_cert_sn = @kernel.getMerchantCertSN(),
+    alipay_root_cert_sn = @kernel.getAlipayRootCertSN()
+  };
+
+  var bizParams: map[string]any = {
+    content_id = contentId,
+    title = title,
+    cover = cover,
+    content = content,
+    could_comment = couldComment,
+    ctype = ctype,
+    benefit = benefit,
+    ext_tags = extTags,
+    login_ids = loginIds
+  };
+
+  var textParams: map[string]string = {
+  };
+
+  __request.protocol = @kernel.getConfig("protocol");
+  __request.method = 'POST';
+  __request.pathname = '/gateway.do';
+
+  __request.headers = {
+    host = @kernel.getConfig("gatewayHost"),
+    content-type = 'application/x-www-form-urlencoded;charset=utf-8'
+  };
+
+  __request.query = @kernel.sortMap({
+    sign = @kernel.sign(systemParams, bizParams, textParams, @kernel.getConfig("merchantPrivateKey")),
+    ... systemParams,
+    ... textParams
+  });
+
+  __request.body = @kernel.toUrlEncodedRequestBody(bizParams);
+} returns {
+  var respMap: map[string]any = @kernel.readAsJson(__response, "alipay.open.public.message.content.modify");
+
+  if (@kernel.isCertMode()) {
+    if (@kernel.verify(respMap, @kernel.extractAlipayPublicKey(@kernel.getAlipayCertSN(respMap)))) {
+      return @kernel.toRespModel(respMap);
+    }
+  } else {
+    if (@kernel.verify(respMap, @kernel.getConfig("alipayPublicKey"))) {
+      return @kernel.toRespModel(respMap);
+    }
+  }
+  
+  throw {
+    message = '验签失败，请检查支付宝公钥设置是否正确。'
+  }
+  
+} runtime {
+  connectTimeout = 15000,
+  readTimeout = 15000,
+  retry = {
+    maxAttempts = 0
+  }
+}
+
+api sendText(text: string): AlipayOpenPublicMessageTotalSendResponse {
+    var systemParams: map[string]string = {
+    method = 'alipay.open.public.message.total.send',
+    app_id = @kernel.getConfig("appId"),
+    timestamp = @kernel.getTimestamp(),
+    format = 'json',
+    version = '1.0',
+    alipay_sdk = @kernel.getSdkVersion(),
+    charset = 'UTF-8',
+    sign_type = @kernel.getConfig("signType"),
+    app_cert_sn = @kernel.getMerchantCertSN(),
+    alipay_root_cert_sn = @kernel.getAlipayRootCertSN()
+  };
+
+  var textObj: Text = new Text {
+    title = '',
+    content = text
+  };
+
+  var bizParams: map[string]any = {
+    msg_type = 'text',
+    text = textObj
+  };
+
+  var textParams: map[string]string = {
+  };
+
+  __request.protocol = @kernel.getConfig("protocol");
+  __request.method = 'POST';
+  __request.pathname = '/gateway.do';
+
+  __request.headers = {
+    host = @kernel.getConfig("gatewayHost"),
+    content-type = 'application/x-www-form-urlencoded;charset=utf-8'
+  };
+
+  __request.query = @kernel.sortMap({
+    sign = @kernel.sign(systemParams, bizParams, textParams, @kernel.getConfig("merchantPrivateKey")),
+    ... systemParams,
+    ... textParams
+  });
+
+  __request.body = @kernel.toUrlEncodedRequestBody(bizParams);
+} returns {
+  var respMap: map[string]any = @kernel.readAsJson(__response, "alipay.open.public.message.total.send");
+
+  if (@kernel.isCertMode()) {
+    if (@kernel.verify(respMap, @kernel.extractAlipayPublicKey(@kernel.getAlipayCertSN(respMap)))) {
+      return @kernel.toRespModel(respMap);
+    }
+  } else {
+    if (@kernel.verify(respMap, @kernel.getConfig("alipayPublicKey"))) {
+      return @kernel.toRespModel(respMap);
+    }
+  }
+  
+  throw {
+    message = '验签失败，请检查支付宝公钥设置是否正确。'
+  }
+  
+} runtime {
+  connectTimeout = 15000,
+  readTimeout = 15000,
+  retry = {
+    maxAttempts = 0
+  }
+}
+
+api sendImageText(articles: [ Article ]): AlipayOpenPublicMessageTotalSendResponse {
+  var systemParams: map[string]string = {
+    method = 'alipay.open.public.message.total.send',
+    app_id = @kernel.getConfig("appId"),
+    timestamp = @kernel.getTimestamp(),
+    format = 'json',
+    version = '1.0',
+    alipay_sdk = @kernel.getSdkVersion(),
+    charset = 'UTF-8',
+    sign_type = @kernel.getConfig("signType"),
+    app_cert_sn = @kernel.getMerchantCertSN(),
+    alipay_root_cert_sn = @kernel.getAlipayRootCertSN()
+  };
+
+  var bizParams: map[string]any = {
+    msg_type = 'image-text',
+    articles = articles
+  };
+
+  var textParams: map[string]string = {
+  };
+
+  __request.protocol = @kernel.getConfig("protocol");
+  __request.method = 'POST';
+  __request.pathname = '/gateway.do';
+
+  __request.headers = {
+    host = @kernel.getConfig("gatewayHost"),
+    content-type = 'application/x-www-form-urlencoded;charset=utf-8'
+  };
+
+  __request.query = @kernel.sortMap({
+    sign = @kernel.sign(systemParams, bizParams, textParams, @kernel.getConfig("merchantPrivateKey")),
+    ... systemParams,
+    ... textParams
+  });
+
+  __request.body = @kernel.toUrlEncodedRequestBody(bizParams);
+} returns {
+  var respMap: map[string]any = @kernel.readAsJson(__response, "alipay.open.public.message.total.send");
+
+  if (@kernel.isCertMode()) {
+    if (@kernel.verify(respMap, @kernel.extractAlipayPublicKey(@kernel.getAlipayCertSN(respMap)))) {
+      return @kernel.toRespModel(respMap);
+    }
+  } else {
+    if (@kernel.verify(respMap, @kernel.getConfig("alipayPublicKey"))) {
+      return @kernel.toRespModel(respMap);
+    }
+  }
+  
+  throw {
+    message = '验签失败，请检查支付宝公钥设置是否正确。'
+  }
+  
+} runtime {
+  connectTimeout = 15000,
+  readTimeout = 15000,
+  retry = {
+    maxAttempts = 0
+  }
+}
+
+api sendSingleMessage(toUserId: string, template: Template): AlipayOpenPublicMessageSingleSendResponse {
+  var systemParams: map[string]string = {
+    method = 'alipay.open.public.message.single.send',
+    app_id = @kernel.getConfig("appId"),
+    timestamp = @kernel.getTimestamp(),
+    format = 'json',
+    version = '1.0',
+    alipay_sdk = @kernel.getSdkVersion(),
+    charset = 'UTF-8',
+    sign_type = @kernel.getConfig("signType"),
+    app_cert_sn = @kernel.getMerchantCertSN(),
+    alipay_root_cert_sn = @kernel.getAlipayRootCertSN()
+  };
+
+  var bizParams: map[string]any = {
+    to_user_id = toUserId,
+    template = template
+  };
+
+  var textParams: map[string]string = {
+  };
+
+  __request.protocol = @kernel.getConfig("protocol");
+  __request.method = 'POST';
+  __request.pathname = '/gateway.do';
+
+  __request.headers = {
+    host = @kernel.getConfig("gatewayHost"),
+    content-type = 'application/x-www-form-urlencoded;charset=utf-8'
+  };
+
+  __request.query = @kernel.sortMap({
+    sign = @kernel.sign(systemParams, bizParams, textParams, @kernel.getConfig("merchantPrivateKey")),
+    ... systemParams,
+    ... textParams
+  });
+
+  __request.body = @kernel.toUrlEncodedRequestBody(bizParams);
+} returns {
+  var respMap: map[string]any = @kernel.readAsJson(__response, "alipay.open.public.message.single.send");
+
+  if (@kernel.isCertMode()) {
+    if (@kernel.verify(respMap, @kernel.extractAlipayPublicKey(@kernel.getAlipayCertSN(respMap)))) {
+      return @kernel.toRespModel(respMap);
+    }
+  } else {
+    if (@kernel.verify(respMap, @kernel.getConfig("alipayPublicKey"))) {
+      return @kernel.toRespModel(respMap);
+    }
+  }
+  
+  throw {
+    message = '验签失败，请检查支付宝公钥设置是否正确。'
+  }
+  
+} runtime {
+  connectTimeout = 15000,
+  readTimeout = 15000,
+  retry = {
+    maxAttempts = 0
+  }
+}
+
+api recallMessage(messageId: string): AlipayOpenPublicLifeMsgRecallResponse {
+  var systemParams: map[string]string = {
+  method = 'alipay.open.public.life.msg.recall',
+  app_id = @kernel.getConfig("appId"),
+  timestamp = @kernel.getTimestamp(),
+  format = 'json',
+  version = '1.0',
+  alipay_sdk = @kernel.getSdkVersion(),
+  charset = 'UTF-8',
+  sign_type = @kernel.getConfig("signType"),
+  app_cert_sn = @kernel.getMerchantCertSN(),
+  alipay_root_cert_sn = @kernel.getAlipayRootCertSN()
+  };
+
+  var bizParams: map[string]any = {
+    message_id = messageId
+  };
+
+  var textParams: map[string]string = {
+  };
+
+  __request.protocol = @kernel.getConfig("protocol");
+  __request.method = 'POST';
+  __request.pathname = '/gateway.do';
+
+  __request.headers = {
+    host = @kernel.getConfig("gatewayHost"),
+    content-type = 'application/x-www-form-urlencoded;charset=utf-8'
+  };
+
+  __request.query = @kernel.sortMap({
+    sign = @kernel.sign(systemParams, bizParams, textParams, @kernel.getConfig("merchantPrivateKey")),
+    ... systemParams,
+    ... textParams
+  });
+
+  __request.body = @kernel.toUrlEncodedRequestBody(bizParams);
+} returns {
+  var respMap: map[string]any = @kernel.readAsJson(__response, "alipay.open.public.life.msg.recall");
+
+  if (@kernel.isCertMode()) {
+    if (@kernel.verify(respMap, @kernel.extractAlipayPublicKey(@kernel.getAlipayCertSN(respMap)))) {
+      return @kernel.toRespModel(respMap);
+    }
+  } else {
+    if (@kernel.verify(respMap, @kernel.getConfig("alipayPublicKey"))) {
+      return @kernel.toRespModel(respMap);
+    }
+  }
+  
+  throw {
+    message = '验签失败，请检查支付宝公钥设置是否正确。'
+  }
+  
+} runtime {
+  connectTimeout = 15000,
+  readTimeout = 15000,
+  retry = {
+    maxAttempts = 0
+  }
+}
+
+api setIndustry(primaryIndustryCode: string, primaryIndustryName: string, secondaryIndustryCode: string, secondaryIndustryName: string): AlipayOpenPublicTemplateMessageIndustryModifyResponse {
+  var systemParams: map[string]string = {
+    method = 'alipay.open.public.template.message.industry.modify',
+    app_id = @kernel.getConfig("appId"),
+    timestamp = @kernel.getTimestamp(),
+    format = 'json',
+    version = '1.0',
+    alipay_sdk = @kernel.getSdkVersion(),
+    charset = 'UTF-8',
+    sign_type = @kernel.getConfig("signType"),
+    app_cert_sn = @kernel.getMerchantCertSN(),
+    alipay_root_cert_sn = @kernel.getAlipayRootCertSN()
+  };
+
+  var bizParams: map[string]any = {
+    primary_industry_code = primaryIndustryCode,
+    primary_industry_name = primaryIndustryName,
+    secondary_industry_code = secondaryIndustryCode,
+    secondary_industry_name = secondaryIndustryName
+  };
+
+  var textParams: map[string]string = {
+  };
+
+  __request.protocol = @kernel.getConfig("protocol");
+  __request.method = 'POST';
+  __request.pathname = '/gateway.do';
+
+  __request.headers = {
+    host = @kernel.getConfig("gatewayHost"),
+    content-type = 'application/x-www-form-urlencoded;charset=utf-8'
+  };
+
+  __request.query = @kernel.sortMap({
+    sign = @kernel.sign(systemParams, bizParams, textParams, @kernel.getConfig("merchantPrivateKey")),
+    ... systemParams,
+    ... textParams
+  });
+
+  __request.body = @kernel.toUrlEncodedRequestBody(bizParams);
+} returns {
+  var respMap: map[string]any = @kernel.readAsJson(__response, "alipay.open.public.template.message.industry.modify");
+
+  if (@kernel.isCertMode()) {
+    if (@kernel.verify(respMap, @kernel.extractAlipayPublicKey(@kernel.getAlipayCertSN(respMap)))) {
+      return @kernel.toRespModel(respMap);
+    }
+  } else {
+    if (@kernel.verify(respMap, @kernel.getConfig("alipayPublicKey"))) {
+      return @kernel.toRespModel(respMap);
+    }
+  }
+  
+  throw {
+    message = '验签失败，请检查支付宝公钥设置是否正确。'
+  }
+  
+} runtime {
+  connectTimeout = 15000,
+  readTimeout = 15000,
+  retry = {
+    maxAttempts = 0
+  }
+}
+
+api getIndustry(): AlipayOpenPublicSettingCategoryQueryResponse {
+  var systemParams: map[string]string = {
+    method = 'alipay.open.public.setting.category.query',
+    app_id = @kernel.getConfig("appId"),
+    timestamp = @kernel.getTimestamp(),
+    format = 'json',
+    version = '1.0',
+    alipay_sdk = @kernel.getSdkVersion(),
+    charset = 'UTF-8',
+    sign_type = @kernel.getConfig("signType"),
+    app_cert_sn = @kernel.getMerchantCertSN(),
+    alipay_root_cert_sn = @kernel.getAlipayRootCertSN()
+  };
+
+  var bizParams: map[string]any = {
+  };
+
+  var textParams: map[string]string = {
+  };
+
+  __request.protocol = @kernel.getConfig("protocol");
+  __request.method = 'POST';
+  __request.pathname = '/gateway.do';
+
+  __request.headers = {
+    host = @kernel.getConfig("gatewayHost"),
+    content-type = 'application/x-www-form-urlencoded;charset=utf-8'
+  };
+
+  __request.query = @kernel.sortMap({
+    sign = @kernel.sign(systemParams, bizParams, textParams, @kernel.getConfig("merchantPrivateKey")),
+    ... systemParams,
+    ... textParams
+  });
+
+  __request.body = @kernel.toUrlEncodedRequestBody(bizParams);
+} returns {
+  var respMap: map[string]any = @kernel.readAsJson(__response, "alipay.open.public.setting.category.query");
+
+  if (@kernel.isCertMode()) {
+    if (@kernel.verify(respMap, @kernel.extractAlipayPublicKey(@kernel.getAlipayCertSN(respMap)))) {
+      return @kernel.toRespModel(respMap);
+    }
+  } else {
+    if (@kernel.verify(respMap, @kernel.getConfig("alipayPublicKey"))) {
+      return @kernel.toRespModel(respMap);
+    }
+  }
+  
+  throw {
+    message = '验签失败，请检查支付宝公钥设置是否正确。'
+  }
+  
+} runtime {
+  connectTimeout = 15000,
+  readTimeout = 15000,
+  retry = {
+    maxAttempts = 0
+  }
+}

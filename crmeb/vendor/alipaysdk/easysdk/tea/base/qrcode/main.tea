@@ -1,0 +1,81 @@
+import EasySDKKernel;
+
+type @kernel = EasySDKKernel
+
+init(kernel: EasySDKKernel) {
+  @kernel = kernel;
+}
+
+model AlipayOpenAppQrcodeCreateResponse {
+  httpBody: string(name='http_body', description='响应原始字符串'),
+  code: string(name='code'),
+  msg: string(name='msg'),
+  subCode: string(name='sub_code'),
+  subMsg: string(name='sub_msg'),
+
+  qrCodeUrl: string(name='qr_code_url')
+}
+
+api create(urlParam: string, queryParam: string, describe: string): AlipayOpenAppQrcodeCreateResponse {
+  var systemParams: map[string]string = {
+    method = 'alipay.open.app.qrcode.create',
+    app_id = @kernel.getConfig("appId"),
+    timestamp = @kernel.getTimestamp(),
+    format = 'json',
+    version = '1.0',
+    alipay_sdk = @kernel.getSdkVersion(),
+    charset = 'UTF-8',
+    sign_type = @kernel.getConfig("signType"),
+    app_cert_sn = @kernel.getMerchantCertSN(),
+    alipay_root_cert_sn = @kernel.getAlipayRootCertSN()
+  };
+
+  var bizParams: map[string]any = {
+    url_param = urlParam,
+    query_param = queryParam,
+    describe = describe
+  };
+
+  var textParams: map[string]string = {
+  };
+
+  __request.protocol = @kernel.getConfig("protocol");
+  __request.method = 'POST';
+  __request.pathname = '/gateway.do';
+
+  __request.headers = {
+    host = @kernel.getConfig("gatewayHost"),
+    content-type = 'application/x-www-form-urlencoded;charset=utf-8'
+  };
+
+  __request.query = @kernel.sortMap({
+    sign = @kernel.sign(systemParams, bizParams, textParams, @kernel.getConfig("merchantPrivateKey")),
+    ... systemParams,
+    ... textParams
+  });
+
+  __request.body = @kernel.toUrlEncodedRequestBody(bizParams);
+} returns {
+  var respMap: object = @kernel.readAsJson(__response, "alipay.open.app.qrcode.create");
+
+  if (@kernel.isCertMode()) {
+    if (@kernel.verify(respMap, @kernel.extractAlipayPublicKey(@kernel.getAlipayCertSN(respMap)))) {
+      return @kernel.toRespModel(respMap);
+    }
+  } else {
+    if (@kernel.verify(respMap, @kernel.getConfig("alipayPublicKey"))) {
+      return @kernel.toRespModel(respMap);
+    }
+  }
+  
+  throw {
+    message = '验签失败，请检查支付宝公钥设置是否正确。'
+  }
+  
+} runtime {
+  connectTimeout = 15000,
+  readTimeout = 15000,
+  retry = {
+    maxAttempts = 0
+  }
+}
