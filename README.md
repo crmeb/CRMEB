@@ -165,7 +165,7 @@ CRMEB v3.2.9 版本的请访问：https://gitee.com/ZhongBangKeJi/CRMEB/tree/v3.
 
 #### 技术交流社区：https://q.crmeb.net
 
-#### CRMEB微信开发10群：862316758（3000人群可加）
+#### CRMEB微信开发12群：1025263163（2000人群可加）
 
 ## 页面展示
 
