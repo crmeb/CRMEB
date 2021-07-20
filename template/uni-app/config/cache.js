@@ -8,27 +8,26 @@
 // | Author: CRMEB Team <admin@crmeb.com>
 // +----------------------------------------------------------------------
 
-
 module.exports = {
 	//token
 	LOGIN_STATUS: 'LOGIN_STATUS_TOKEN',
-	// uid
+	//uid
 	UID:'UID',
-	//�û�
+	//用户信息
 	USER_INFO: 'USER_INFO',
-	//token�����¼�
+	//token过期时间
 	EXPIRES_TIME: 'EXPIRES_TIME',
-	//�Ƿ���Ȩ
+	//微信登录
 	WX_AUTH: 'WX_AUTH',
-	//���ں���Ȩcode
+	//公众号登录code
 	STATE_KEY: 'wx_authorize_state',
-	//�û�����
+	//登录类型
 	LOGINTYPE: 'loginType',
-	//���ں���ת����
+	//登录跳转地址
 	BACK_URL: 'login_back_url',
-	// С����code
+	//小程序登录状态code
 	STATE_R_KEY: 'roution_authorize_state',
-	//��ȨlogoС����
+	//logo 地址
 	LOGO_URL: 'LOGO_URL',
 	//模板缓存
 	SUBSCRIBE_MESSAGE: 'SUBSCRIBE_MESSAGE',
