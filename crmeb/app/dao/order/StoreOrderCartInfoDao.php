@@ -55,4 +55,14 @@ class StoreOrderCartInfoDao extends BaseDao
     {
         return $this->search($where)->column($field, $key);
     }
+
+    public function getSplitCartNum($cart_ids)
+    {
+        $res = $this->getModel()->whereIn('old_cart_id', $cart_ids)->field('sum(cart_num) as num,old_cart_id')->group('old_cart_id')->select()->toArray();
+        $data = [];
+        foreach ($res as $value) {
+            $data[$value['old_cart_id']] = $value['num'];
+        }
+        return $data;
+    }
 }

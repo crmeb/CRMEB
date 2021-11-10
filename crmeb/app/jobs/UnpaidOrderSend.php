@@ -20,11 +20,12 @@ use crmeb\traits\QueueTrait;
 /**
  * 未支付10分钟后发送短信
  * Class UnpaidOrderSend
- * @package app\jobs
+ * @package crmeb\jobs
  */
 class UnpaidOrderSend extends BaseJobs
 {
     use QueueTrait;
+
     public function doJob($id)
     {
         /** @var StoreOrderServices $services */
@@ -39,9 +40,8 @@ class UnpaidOrderSend extends BaseJobs
         if ($orderInfo->is_del) {
             return true;
         }
-        /** @var SmsSendServices $smsServices */
-        $smsServices = app()->make(SmsSendServices::class);
-        $smsServices->send(true, $orderInfo['user_phone'], ['order_id' => $orderInfo['order_id']], 'ORDER_PAY_FALSE');
+        //收货给用户发送消息
+        event('notice.notice', [['order' => $orderInfo], 'order_pay_false']);
         return true;
     }
 

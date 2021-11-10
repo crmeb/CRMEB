@@ -8,7 +8,7 @@
 				<view class="acea-row row-middle">
 					<view class="acea-row row-middle" style="margin-right: 15rpx;">
 						<view class="name line1">{{ item.nickname }}</view>
-						<view class="vipImg" v-if="item.is_money_level>0"><image src="../../static/images/svip.gif"></image></view>
+						<view class="vipImg" v-if="item.is_money_level>0"><image src="../../static/images/vip.png"></image></view>
 					</view>
 					<view class="start" :class="'star' + item.star"></view>
 				</view>
@@ -21,7 +21,7 @@
 				</view>
 			</view>
 			<view class="reply" v-if="item.merchant_reply_content">
-				<text class="font-color">店小二</text>：{{
+				<text class="font-num">店小二</text>：{{
           item.merchant_reply_content
         }}
 			</view>
@@ -56,6 +56,7 @@
 		image{
 			width: 100%;
 			height: 100%;
+			margin-left: 10rpx;
 		}
 	}
 	.evaluateWtapper .evaluateItem {
@@ -75,9 +76,10 @@
 	}
 
 	.evaluateWtapper .evaluateItem .pic-text .pictrue {
-		width: 56rpx;
-		height: 56rpx;
+		width: 60rpx;
+		height: 60rpx;
 		margin-right: 20rpx;
+		border-radius: 50%;
 	}
 
 	.evaluateWtapper .evaluateItem .pic-text .pictrue image {
@@ -88,6 +90,7 @@
 
 	.evaluateWtapper .evaluateItem .pic-text .name {
 		max-width: 450rpx;
+		font-size: 30rpx;
 	}
 
 	.evaluateWtapper .evaluateItem .time {

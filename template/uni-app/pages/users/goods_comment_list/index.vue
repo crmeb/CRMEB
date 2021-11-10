@@ -1,18 +1,22 @@
 <template>
-	<view>
+	<view :style="colorStyle">
 		<view class='evaluate-list'>
 			<view class='generalComment acea-row row-between-wrapper'>
-				<view class='acea-row row-middle font-color'>
+				<view class='acea-row row-middle'>
 					<view class='evaluate'>评分</view>
 					<view class='start' :class="'star'+replyData.reply_star"></view>
 				</view>
-				<view><text class='font-color'>{{replyData.reply_chance}}%</text>好评率</view>
+				<view><text class='font-num'>{{replyData.reply_chance}}%</text>好评率</view>
 			</view>
 			<view class='nav acea-row row-middle'>
-				<view class='item' :class='type==0 ? "bg-color":""' @click='changeType(0)'>全部({{replyData.sum_count}})</view>
-				<view class='item' :class='type==1 ? "bg-color":""' @click='changeType(1)'>好评({{replyData.good_count}})</view>
-				<view class='item' :class='type==2 ? "bg-color":""' @click='changeType(2)'>中评({{replyData.in_count}})</view>
-				<view class='item' :class='type==3 ? "bg-color":""' @click='changeType(3)'>差评({{replyData.poor_count}})</view>
+				<view class='item' :class='type==0 ? "bg-color":""' @click='changeType(0)'>全部({{replyData.sum_count}})
+				</view>
+				<view class='item' :class='type==1 ? "bg-color":""' @click='changeType(1)'>好评({{replyData.good_count}})
+				</view>
+				<view class='item' :class='type==2 ? "bg-color":""' @click='changeType(2)'>中评({{replyData.in_count}})
+				</view>
+				<view class='item' :class='type==3 ? "bg-color":""' @click='changeType(3)'>差评({{replyData.poor_count}})
+				</view>
 			</view>
 			<userEvaluation :reply="reply"></userEvaluation>
 			<view class='loadingicon acea-row row-center-wrapper' v-if="reply.length>0">
@@ -33,10 +37,19 @@
 		getReplyConfig
 	} from '@/api/store.js';
 	import userEvaluation from '@/components/userEvaluation';
+	import colors from '@/mixins/color.js';
+	import {
+		toLogin
+	} from '@/libs/login.js';
+	import {
+		mapGetters
+	} from "vuex";
 	export default {
 		components: {
 			userEvaluation
 		},
+		mixins: [colors],
+		computed: mapGetters(['isLogin']),
 		data() {
 			return {
 				replyData: {},
@@ -63,9 +76,13 @@
 			});
 			that.product_id = options.product_id;
 		},
-		onShow: function() {
-			this.getProductReplyCount();
-			this.getProductReplyList();
+		onShow() {
+			if (this.isLogin) {
+				this.getProductReplyCount();
+				this.getProductReplyList();
+			} else {
+				toLogin()
+			}
 		},
 		methods: {
 			/**
@@ -75,7 +92,7 @@
 			getProductReplyCount: function() {
 				let that = this;
 				getReplyConfig(that.product_id).then(res => {
-					that.$set(that,'replyData',res.data);
+					that.$set(that, 'replyData', res.data);
 				});
 			},
 			/**
@@ -95,14 +112,14 @@
 					let list = res.data,
 						loadend = list.length < that.limit;
 					that.reply = that.$util.SplitArray(list, that.reply);
-					that.$set(that,'reply',that.reply);
+					that.$set(that, 'reply', that.reply);
 					that.loading = false;
 					that.loadend = loadend;
-					that.loadTitle = loadend ? "😕人家是有底线的~~" : "加载更多";
+					that.loadTitle = loadend ? "人家是有底线的~" : "加载更多";
 					that.page = that.page + 1;
 				}).catch(err => {
 					that.loading = false,
-					that.loadTitle = '加载更多'
+						that.loadTitle = '加载更多'
 				});
 			},
 			/*
@@ -114,7 +131,7 @@
 				this.type = type;
 				this.page = 1;
 				this.loadend = false;
-				this.$set(this,'reply',[]);
+				this.$set(this, 'reply', []);
 				this.getProductReplyList();
 			}
 		},
@@ -128,10 +145,43 @@
 </script>
 
 <style lang="scss">
-	page{background-color:#fff;}
-	.evaluate-list .generalComment{height:94rpx;padding:0 30rpx;margin-top:1rpx;background-color:#fff;font-size:28rpx;color:#808080;}
-	.evaluate-list .generalComment .evaluate{margin-right:7rpx;}
-	.evaluate-list .nav{font-size:24rpx;color:#282828;padding:0 30rpx 32rpx 30rpx;background-color:#fff;border-bottom:1rpx solid #f5f5f5;}
-	.evaluate-list .nav .item{font-size:24rpx;color:#282828;border-radius:6rpx;height:54rpx;padding:0 20rpx;background-color:#f4f4f4;line-height:54rpx;margin-right:17rpx;}
-	.evaluate-list .nav .item.bg-color{color:#fff;}
+	page {
+		background-color: #fff;
+	}
+
+	.evaluate-list .generalComment {
+		height: 94rpx;
+		padding: 0 30rpx;
+		margin-top: 1rpx;
+		background-color: #fff;
+		font-size: 28rpx;
+		color: #808080;
+	}
+
+	.evaluate-list .generalComment .evaluate {
+		margin-right: 7rpx;
+	}
+
+	.evaluate-list .nav {
+		font-size: 24rpx;
+		color: #282828;
+		padding: 0 30rpx 32rpx 30rpx;
+		background-color: #fff;
+		border-bottom: 1rpx solid #f5f5f5;
+	}
+
+	.evaluate-list .nav .item {
+		font-size: 24rpx;
+		color: #282828;
+		border-radius: 6rpx;
+		height: 54rpx;
+		padding: 0 20rpx;
+		background-color: #f4f4f4;
+		line-height: 54rpx;
+		margin-right: 17rpx;
+	}
+
+	.evaluate-list .nav .item.bg-color {
+		color: #fff;
+	}
 </style>

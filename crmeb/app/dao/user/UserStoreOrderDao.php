@@ -8,7 +8,7 @@
 // +----------------------------------------------------------------------
 // | Author: CRMEB Team <admin@crmeb.com>
 // +----------------------------------------------------------------------
-declare (strict_types=1);
+declare (strict_types = 1);
 
 namespace app\dao\user;
 
@@ -79,8 +79,8 @@ class UserStoreOrderDao extends BaseDao
      */
     public function getUserSpreadCountList(array $where, string $field, string $order_by, int $page, int $limit)
     {
-        $table = app()->make($this->joinModel())->getModel()->where('o.paid', 1)->group('o.uid')->field(['SUM(o.pay_price) as numberCount', 'o.uid', 'o.order_id'])
-            ->where('o.is_del', 0)->where('o.is_system_del', 0)->alias('o')->fetchSql(true)->select();
+        $table = app()->make($this->joinModel())->getModel()->where('o.paid', 1)->whereIn('o.pid', [-1, 0])->group('o.uid')->field(['SUM(o.pay_price) as numberCount', 'count(o.id) as orderCount', 'o.uid', 'o.order_id'])
+            ->where('o.refund_status', 0)->alias('o')->fetchSql(true)->select();
 
         return $this->getModel('(' . $table . ')')->where($where)->field($field)->order($order_by)->page($page, $limit)->select()->toArray();
     }

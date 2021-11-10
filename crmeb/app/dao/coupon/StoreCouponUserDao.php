@@ -8,7 +8,7 @@
 // +----------------------------------------------------------------------
 // | Author: CRMEB Team <admin@crmeb.com>
 // +----------------------------------------------------------------------
-declare (strict_types=1);
+declare (strict_types = 1);
 
 namespace app\dao\coupon;
 
@@ -162,7 +162,8 @@ class StoreCouponUserDao extends BaseDao
         })->select()->toArray();
     }
 
-    /**根据月份查询用户获得的优惠券
+    /**
+     * 根据月份查询用户获得的优惠券
      * @param array $where
      * @return array
      * @throws \think\db\exception\DataNotFoundException
@@ -177,20 +178,20 @@ class StoreCouponUserDao extends BaseDao
             ->field('count(id) as num,FROM_UNIXTIME(add_time, \'%Y-%m\') as time')
             ->group("FROM_UNIXTIME(add_time, '%Y-%m')")
             ->select()->toArray();
-        //echo $this->getModel()->getLastSql();die;
-
     }
 
-    /**根据时间查询
+    /**
+     * 根据时间查询
      * @param array $where
-     * @return array|\think\Model|null
+     * @param string $field
+     * @return array
      * @throws \think\db\exception\DataNotFoundException
      * @throws \think\db\exception\DbException
      * @throws \think\db\exception\ModelNotFoundException
      */
-    public function getUserCounponByMonth(array $where)
+    public function getUserCounponByMonth(array $where, string $field = '*')
     {
-        return $this->search($where)->whereMonth('add_time')->find();
+        return $this->search($where)->field($field)->whereMonth('add_time')->select()->toArray();
     }
 
     /**
@@ -204,5 +205,15 @@ class StoreCouponUserDao extends BaseDao
     public function getVipCouponList($uid)
     {
         return $this->getModel()->where('uid', $uid)->whereMonth('add_time')->select()->toArray();
+    }
+
+    /**
+     * 删除用户获得的优惠券
+     * @param $where
+     * @return bool
+     */
+    public function delUserCoupon($where)
+    {
+        return $this->getModel()->where($where)->delete();
     }
 }

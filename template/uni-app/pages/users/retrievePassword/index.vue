@@ -81,7 +81,6 @@
 			again() {
 				this.codeUrl =
 					VUE_APP_API_URL + "/captcha?" + this.keyCode + Date.parse(new Date());
-				console.log(this.codeUrl);
 			},
 			getCode() {
 				getCodeApi()
@@ -146,11 +145,6 @@
 						that.sendCode();
 					})
 					.catch(res => {
-						console.log(res, 'res')
-						// if (res.data.status === 402) {
-						// 	that.codeUrl = `${VUE_APP_API_URL}/sms_captcha?key=${that.keyCode}`;
-						// 	that.isShowCode = true;
-						// }
 						that.$util.Tips({
 							title: res
 						});

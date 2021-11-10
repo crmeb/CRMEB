@@ -16,11 +16,11 @@
                             </div>
                             <div class="right-menu ivu-poptip-inner" v-show="item.status" v-if="index!=0">
                                 <div class="ivu-poptip-body" @click="labelEdit(item)">
-                                    <div class="ivu-poptip-body-content"><div class="ivu-poptip-body-content-inner">编辑小组</div>
+                                    <div class="ivu-poptip-body-content"><div class="ivu-poptip-body-content-inner">编辑</div>
                                     </div>
                                 </div>
                                 <div class="ivu-poptip-body" @click="deleteSort(item,'删除分类',index)">
-                                    <div class="ivu-poptip-body-content"><div class="ivu-poptip-body-content-inner">删除小组</div>
+                                    <div class="ivu-poptip-body-content"><div class="ivu-poptip-body-content-inner">删除</div>
                                     </div>
                                 </div>
                             </div>
@@ -81,18 +81,24 @@
                     {
                         title: 'ID',
                         key: 'id',
-                        minWidth: 120
+                        align: "center",
+                        width: 120
+                    },
+                    {
+                        title: '分类名称',
+                        key: 'cate_name',
+                        align: "center",
                     },
                     {
                         title: '标签名称',
                         key: 'label_name',
-                        minWidth: 600
+                        align: "center"
                     },
                     {
                         title: '操作',
                         slot: 'action',
                         fixed: 'right',
-                        minWidth: 120
+                        width: 120
                     }
                 ],
                 labelFrom: {
@@ -221,6 +227,7 @@
                 });
             },
             bindMenuItem(name,index){
+                this.labelFrom.page = 1;
                 this.current = index;
                 this.labelSort.forEach(el=>{
                     el.status = false

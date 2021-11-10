@@ -48,6 +48,9 @@ class StoreServiceSpeechcraftServices extends BaseServices
     {
         [$page, $limit] = $this->getPageValue();
         $list = $this->dao->getSpeechcraftList($where, $page, $limit);
+        foreach ($list as &$item) {
+            if (!$item['cate_name']) $item['cate_name'] = '系统默认';
+        }
         $count = $this->dao->count($where);
         return compact('list', 'count');
     }
@@ -88,11 +91,12 @@ class StoreServiceSpeechcraftServices extends BaseServices
         $services = app()->make(StoreServiceSpeechcraftCateServices::class);
         $cateList = $services->getCateList(['owner_id' => 0, 'type' => 1]);
         $data = [];
+        $data[] = ['value' => 0, 'label' => '默认分类'];
         foreach ($cateList['data'] as $item) {
             $data[] = ['value' => $item['id'], 'label' => $item['name']];
         }
         $form[] = FormBuilder::select('cate_id', '话术分类', $infoData['cate_id'] ?? '')->setOptions($data);
-        $form[] = FormBuilder::textarea('title', '话术标题', $infoData['title'] ?? '');
+        $form[] = FormBuilder::textarea('title', '话术标题', $infoData['title'] ?? '')->required();
         $form[] = FormBuilder::textarea('message', '话术内容', $infoData['message'] ?? '')->required();
         $form[] = FormBuilder::number('sort', '排序', (int)($infoData['sort'] ?? 0));
         return $form;

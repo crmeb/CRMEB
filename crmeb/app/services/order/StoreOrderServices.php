@@ -39,7 +39,7 @@ use think\facade\Log;
  * Class StoreOrderServices
  * @package app\services\order
  * @method getOrderIdsCount(array $ids) 获取订单id下没有删除的订单数量
- * @method StoreOrderDao getUserOrderDetail(string $key, int $uid) 获取订单详情
+ * @method StoreOrderDao getUserOrderDetail(string $key, int $uid, array $with) 获取订单详情
  * @method chartTimePrice($start, $stop) 获取当前时间到指定时间的支付金额 管理员
  * @method chartTimeNumber($start, $stop) 获取当前时间到指定时间的支付订单数 管理员
  * @method together(array $where, string $field, string $together = 'sum') 聚合查询
@@ -58,7 +58,7 @@ class StoreOrderServices extends BaseServices
      * 发货类型
      * @var string[]
      */
-    public $deliveryType = ['send' => '商家配送', 'express' => '快递配送', 'fictitious' => '虚拟发货'];
+    public $deliveryType = ['send' => '商家配送', 'express' => '快递配送', 'fictitious' => '虚拟发货', 'delivery_part_split' => '拆分部分发货', 'delivery_split' => '拆分发货完成'];
 
     /**
      * StoreOrderProductServices constructor.
@@ -103,10 +103,11 @@ class StoreOrderServices extends BaseServices
         $data = $this->dao->getOrderList($where, $field, $page, $limit, $with);
         foreach ($data as &$item) {
             $item = $this->tidyOrder($item, true);
-            if ($item['_status']['_type'] == 3) {
-                foreach ($item['cartInfo'] ?: [] as $key => $product) {
+            foreach ($item['cartInfo'] ?: [] as $key => $product) {
+                if ($item['_status']['_type'] == 3) {
                     $item['cartInfo'][$key]['add_time'] = isset($product['add_time']) ? date('Y-m-d H:i', (int)$product['add_time']) : '时间错误';
                 }
+                $item['cartInfo'][$key]['productInfo']['price'] = $product['truePrice'] ?? 0;
             }
         }
         return $data;
@@ -117,21 +118,30 @@ class StoreOrderServices extends BaseServices
      * @param int $uid
      * @return mixed
      */
-    public function getOrderData(int $uid = 0)
+    public function getOrderData(int $uid = 0, $del = true, $isPid = false)
     {
-        $where = ['uid' => $uid, 'paid' => 1, 'refund_status' => 0, 'is_del' => 0, 'is_system_del' => 0];
+        $where = ['uid' => $uid, 'paid' => 1, 'refund_status' => [0, 3], 'pid' => 0];
+        if (!$del) $where = $where + ['is_del' => 0, 'is_system_del' => 0];
         $data['order_count'] = (string)$this->dao->count($where);
-        $data['sum_price'] = (string)$this->dao->sum($where, 'pay_price');
+        $data['sum_price'] = (string)$this->dao->sum([
+            ['uid', '=', $uid],
+            ['paid', '=', 1],
+            ['refund_status', '=', 0],
+            ['pid', '>=', 0]
+        ], 'pay_price', false);
         $countWhere = ['is_del' => 0, 'is_system_del' => 0];
         if ($uid) {
             $countWhere['uid'] = $uid;
         }
         $data['unpaid_count'] = (string)$this->dao->count(['status' => 0] + $countWhere);
-        $data['unshipped_count'] = (string)$this->dao->count(['status' => 1] + $countWhere);
-        $data['received_count'] = (string)$this->dao->count(['status' => 2] + $countWhere);
-        $data['evaluated_count'] = (string)$this->dao->count(['status' => 3] + $countWhere);
-        $data['complete_count'] = (string)$this->dao->count(['status' => 4] + $countWhere);
-        $data['refund_count'] = (string)$this->dao->count(['status' => -3] + $countWhere);
+        $data['unshipped_count'] = (string)$this->dao->count(['status' => 1] + $countWhere + ['pid' => 0]);
+        $data['received_count'] = (string)$this->dao->count(['status' => 2] + $countWhere + ['pid' => 0]);
+        $data['evaluated_count'] = (string)$this->dao->count(['status' => 3] + $countWhere + ['pid' => 0]);
+        $data['complete_count'] = (string)$this->dao->count(['status' => 4] + $countWhere + ['pid' => 0]);
+        if (!$isPid) $countWhere = $countWhere + ['pid' => 0];
+        $data['refunding_count'] = (string)$this->dao->count(['status' => -1] + $countWhere);
+        $data['refunded_count'] = (string)$this->dao->count(['status' => -2] + $countWhere);
+        $data['refund_count'] = (string)bcadd($data['refunding_count'], $data['refunded_count'], 0);
         $data['yue_pay_status'] = (int)sys_config('balance_func_status') && (int)sys_config('yue_pay_status') == 1 ? (int)1 : (int)2;//余额支付 1 开启 2 关闭
         $data['pay_weixin_open'] = (int)sys_config('pay_weixin_open') ?? 0;//微信支付 1 开启 0 关闭
         $data['ali_pay_status'] = sys_config('ali_pay_status') ? true : false;//支付包支付 1 开启 0 关闭
@@ -159,6 +169,13 @@ class StoreOrderServices extends BaseServices
                 $cart['unique'] = $k;
                 //新增是否评价字段
                 $cart['is_reply'] = $replyServices->count(['unique' => $k]);
+                if (isset($cart['productInfo']['attrInfo'])) {
+                    $cart['productInfo']['attrInfo'] = get_thumb_water($cart['productInfo']['attrInfo']);
+                }
+                $cart['productInfo'] = get_thumb_water($cart['productInfo']);
+                //一种商品买多件  计算总优惠
+                $cart['vip_sum_truePrice'] = bcmul($cart['vip_truePrice'], $cart['cart_num'] ? $cart['cart_num'] : 1, 2);
+                $cart['is_valid'] = 1;
                 array_push($info, $cart);
                 unset($cart);
             }
@@ -198,15 +215,65 @@ class StoreOrderServices extends BaseServices
                 $status['_msg'] = '请在' . date('m-d H:i:s', (int)$time) . '前完成支付!';
             }
             $status['_class'] = 'nobuy';
+        } else if ($order['status'] == 4) {
+            if ($order['delivery_type'] == 'send') {//TODO 送货
+                $status['_type'] = 1;
+                $status['_title'] = '待收货';
+                $status['_msg'] = date('m月d日H时i分', $statusServices->value(['oid' => $order['id'], 'change_type' => 'delivery'], 'change_time')) . '服务商已送货';
+                $status['_class'] = 'state-ysh';
+            } elseif ($order['delivery_type'] == 'express') {//TODO  发货
+                $status['_type'] = 1;
+                $status['_title'] = '待收货';
+                $status['_msg'] = date('m月d日H时i分', $statusServices->value(['oid' => $order['id'], 'change_type' => 'delivery_goods'], 'change_time')) . '服务商已发货';
+                $status['_class'] = 'state-ysh';
+            } elseif ($order['delivery_type'] == 'split') {//拆分发货
+                $status['_type'] = 1;
+                $status['_title'] = '待收货';
+                $status['_msg'] = date('m月d日H时i分', $statusServices->value(['oid' => $order['id'], 'change_type' => 'delivery_part_split'], 'change_time')) . '服务商已拆分多个包裹发货';
+                $status['_class'] = 'state-ysh';
+            } else {
+                $status['_type'] = 1;
+                $status['_title'] = '待收货';
+                $status['_msg'] = date('m月d日H时i分', $statusServices->value(['oid' => $order['id'], 'change_type' => 'delivery_fictitious'], 'change_time')) . '服务商已虚拟发货';
+                $status['_class'] = 'state-ysh';
+            }
         } else if ($order['refund_status'] == 1) {
-            $status['_type'] = -1;
-            $status['_title'] = '申请退款中';
-            $status['_msg'] = '商家审核中,请耐心等待';
-            $status['_class'] = 'state-sqtk';
-        } else if ($order['refund_status'] == 2) {
+            if (in_array($order['refund_type'], [0, 1, 2])) {
+                $status['_type'] = -1;
+                $status['_title'] = '申请退款中';
+                $status['_msg'] = '商家审核中,请耐心等待';
+                $status['_class'] = 'state-sqtk';
+            } elseif ($order['refund_type'] == 4) {
+                $status['_type'] = -1;
+                $status['_title'] = '申请退款中';
+                $status['_msg'] = '商家同意退款,请填写退货订单号';
+                $status['_class'] = 'state-sqtk';
+                $status['refund_name'] = sys_config('refund_name', '');
+                $status['refund_phone'] = sys_config('refund_phone', '');
+                $status['refund_address'] = sys_config('refund_address', '');
+            } elseif ($order['refund_type'] == 5) {
+                $status['_type'] = -1;
+                $status['_title'] = '申请退款中';
+                $status['_msg'] = '等待商家收货';
+                $status['_class'] = 'state-sqtk';
+                $status['refund_name'] = sys_config('refund_name', '');
+                $status['refund_phone'] = sys_config('refund_phone', '');
+                $status['refund_address'] = sys_config('refund_address', '');
+            }
+        } else if ($order['refund_status'] == 2 || $order['refund_type'] == 6) {
             $status['_type'] = -2;
             $status['_title'] = '已退款';
             $status['_msg'] = '已为您退款,感谢您的支持';
+            $status['_class'] = 'state-sqtk';
+        } else if ($order['refund_status'] == 3) {
+            $status['_type'] = -1;
+            $status['_title'] = '部分退款（子订单）';
+            $status['_msg'] = '拆分发货，部分退款';
+            $status['_class'] = 'state-sqtk';
+        } else if ($order['refund_status'] == 4) {
+            $status['_type'] = -1;
+            $status['_title'] = '子订单已全部申请退款中';
+            $status['_msg'] = '拆分发货，全部退款';
             $status['_class'] = 'state-sqtk';
         } else if (!$order['status']) {
             if ($order['pink_id']) {
@@ -227,7 +294,11 @@ class StoreOrderServices extends BaseServices
                 if ($order['shipping_type'] === 1) {
                     $status['_type'] = 1;
                     $status['_title'] = '未发货';
-                    $status['_msg'] = '商家未发货,请耐心等待';
+                    if ($order['advance_id']) {
+                        $status['_msg'] = '预售结束后' . $order['cartInfo'][0]['productInfo']['deliver_time'] . '天内发货,请耐心等待';
+                    } else {
+                        $status['_msg'] = '商家未发货,请耐心等待';
+                    }
                     $status['_class'] = 'state-nfh';
                 } else {
                     $status['_type'] = 1;
@@ -246,6 +317,11 @@ class StoreOrderServices extends BaseServices
                 $status['_type'] = 2;
                 $status['_title'] = '待收货';
                 $status['_msg'] = date('m月d日H时i分', $statusServices->value(['oid' => $order['id'], 'change_type' => 'delivery_goods'], 'change_time')) . '服务商已发货';
+                $status['_class'] = 'state-ysh';
+            } elseif ($order['delivery_type'] == 'split') {//拆分发货
+                $status['_type'] = 2;
+                $status['_title'] = '待收货';
+                $status['_msg'] = date('m月d日H时i分', $statusServices->value(['oid' => $order['id'], 'change_type' => 'delivery_split'], 'change_time')) . '服务商已拆分多个包裹发货';
                 $status['_class'] = 'state-ysh';
             } else {
                 $status['_type'] = 2;
@@ -316,6 +392,7 @@ class StoreOrderServices extends BaseServices
         foreach ($data as &$item) {
             $item['_info'] = $services->getOrderCartInfo((int)$item['id']);
             $item['add_time'] = date('Y-m-d H:i:s', $item['add_time']);
+            $item['_refund_time'] = isset($item['refund_reason_time']) && $item['refund_reason_time'] ? date('Y-m-d H:i:s', $item['refund_reason_time']) : '';
             $item['_pay_time'] = isset($item['pay_time']) && $item['pay_time'] ? date('Y-m-d H:i:s', $item['pay_time']) : '';
             if (($item['pink_id'] || $item['combination_id']) && isset($item['pinkStatus'])) {
                 switch ($item['pinkStatus']) {
@@ -341,6 +418,9 @@ class StoreOrderServices extends BaseServices
                 $item['color'] = '#32c5e9';
             } elseif ($item['bargain_id']) {
                 $item['pink_name'] = '[砍价订单]';
+                $item['color'] = '#12c5e9';
+            } elseif ($item['advance_id']) {
+                $item['pink_name'] = '[预售订单]';
                 $item['color'] = '#12c5e9';
             } else {
                 if ($item['shipping_type'] == 1) {
@@ -371,12 +451,18 @@ class StoreOrderServices extends BaseServices
                 }
             } else {
                 switch ($item['pay_type']) {
-                    default:
-                        $item['pay_type_name'] = '未支付';
+                    case PayServices::WEIXIN_PAY:
+                        $item['pay_type_name'] = '微信未支付';
+                        break;
+                    case PayServices::ALIAPY_PAY:
+                        $item['pay_type_name'] = '支付宝未支付';
                         break;
                     case 'offline':
                         $item['pay_type_name'] = '线下支付';
                         $item['pay_type_info'] = 1;
+                        break;
+                    default:
+                        $item['pay_type_name'] = '未支付';
                         break;
                 }
             }
@@ -385,6 +471,8 @@ class StoreOrderServices extends BaseServices
                 $status_name['status_name'] = '未支付';
             } else if ($item['paid'] == 1 && $item['status'] == 0 && $item['shipping_type'] == 1 && $item['refund_status'] == 0) {
                 $status_name['status_name'] = '未发货';
+            } else if ($item['paid'] == 1 && $item['status'] == 4 && $item['shipping_type'] == 1 && $item['refund_status'] == 0) {
+                $status_name['status_name'] = '部分发货';
             } else if ($item['paid'] == 1 && $item['status'] == 0 && $item['shipping_type'] == 2 && $item['refund_status'] == 0) {
                 $status_name['status_name'] = '未核销';
             } else if ($item['paid'] == 1 && $item['status'] == 1 && $item['shipping_type'] == 1 && $item['refund_status'] == 0) {
@@ -416,12 +504,22 @@ HTML;
                 $status_name['pics'] = $img;
             } else if ($item['paid'] == 1 && $item['refund_status'] == 2) {
                 $status_name['status_name'] = '已退款';
+            } else if ($item['paid'] == 1 && $item['refund_status'] == 3) {
+                $status_name['status_name'] = <<<HTML
+<b style="color:#f124c7">部分退款</b><br/>
+HTML;
+            } else if ($item['paid'] == 1 && $item['refund_status'] == 4) {
+                $status_name['status_name'] = <<<HTML
+<b style="color:#f124c7">退款中</b><br/>
+HTML;
             }
             $item['status_name'] = $status_name;
             if ($item['paid'] == 0 && $item['status'] == 0 && $item['refund_status'] == 0) {
                 $item['_status'] = 1;//未支付
             } else if ($item['paid'] == 1 && $item['status'] == 0 && $item['refund_status'] == 0) {
                 $item['_status'] = 2;//已支付 未发货
+            } else if ($item['paid'] == 1 && $item['status'] == 4 && $item['refund_status'] == 0) {
+                $item['_status'] = 8;//已支付 部分发货
             } else if ($item['paid'] == 1 && $item['refund_status'] == 1) {
                 $item['_status'] = 3;//已支付 申请退款中
             } else if ($item['paid'] == 1 && $item['status'] == 1 && $item['refund_status'] == 0) {
@@ -432,6 +530,12 @@ HTML;
                 $item['_status'] = 6;//已支付 已完成
             } else if ($item['paid'] == 1 && $item['refund_status'] == 2) {
                 $item['_status'] = 7;//已支付 已退款
+            } else if ($item['paid'] == 1 && $item['refund_status'] == 3 && $item['status'] == 4) {
+                $item['_status'] = 9;//拆单发货 部分申请退款
+            } else if ($item['paid'] == 1 && $item['refund_status'] == 4) {
+                $item['_status'] = 10;//拆单发货 已全部申请退款
+            } else if ($item['paid'] == 1 && $item['refund_status'] == 3 && $item['status'] == 0) {
+                $item['_status'] = 11;//拆单退款 未发货
             }
             if ($item['clerk_id'] == 0 && !isset($item['clerk_name'])) {
                 $item['clerk_name'] = '总平台';
@@ -454,6 +558,7 @@ HTML;
      */
     public function getOrderPrice($where)
     {
+        if (isset($where['refund_type']) && $where['refund_type']) unset($where['refund_type']);
         $where['is_del'] = 0;//删除订单不统计
         $price['today_pay_price'] = 0;//今日支付金额
         $price['pay_price'] = 0;//支付金额
@@ -471,9 +576,8 @@ HTML;
         $price['brokerage'] = 0;
         $price['pay_postage'] = 0;
         $whereData = ['is_del' => 0];
-        if ($where['status'] == '') {
+        if ($where['status'] == '' && $where['pay_type'] != 3) {
             $whereData['paid'] = 1;
-            $whereData['refund_status'] = 0;
         }
         $ids = $this->dao->column($where + $whereData, 'id');
         if (count($ids)) {
@@ -482,9 +586,6 @@ HTML;
             $price['brokerage'] = $services->getBrokerageNumSum($ids);
         }
         $price['refund_price'] = $this->dao->together($where + ['is_del' => 0, 'paid' => 1, 'refund_status' => 2], 'refund_price');
-//        if ($where['type'] == '') {
-//            $whereData = [];
-//        }
         $sumNumber = $this->dao->search($where + $whereData)->field([
             'sum(total_num) as sum_total_num',
             'count(id) as count_sum',
@@ -522,7 +623,7 @@ HTML;
         ])->find();
         if ($sumNumber) {
             $price['today_count_sum'] = $sumNumber['today_count_sum'];
-            $price['today_pay_price'] = $sumNumber['today_pay_price'];
+            $price['today_pay_price'] = $where['status'] !== 0 ? $sumNumber['today_pay_price'] : 0;
         }
         return $price;
     }
@@ -575,15 +676,17 @@ HTML;
     public function orderCount(array $where)
     {
         //全部订单
-        $data['all'] = (string)$this->dao->count(['time' => $where['time'], 'is_system_del' => 0]);
+        $data['all'] = (string)$this->dao->count(['time' => $where['time'], 'is_system_del' => 0, 'pid' => 0]);
         //普通订单
-        $data['general'] = (string)$this->dao->count(['type' => 1, 'is_system_del' => 0]);
+        $data['general'] = (string)$this->dao->count(['type' => 1, 'is_system_del' => 0, 'pid' => 0]);
         //拼团订单
-        $data['pink'] = (string)$this->dao->count(['type' => 2, 'is_system_del' => 0]);
+        $data['pink'] = (string)$this->dao->count(['type' => 2, 'is_system_del' => 0, 'pid' => 0]);
         //秒杀订单
-        $data['seckill'] = (string)$this->dao->count(['type' => 3, 'is_system_del' => 0]);
+        $data['seckill'] = (string)$this->dao->count(['type' => 3, 'is_system_del' => 0, 'pid' => 0]);
         //砍价订单
-        $data['bargain'] = (string)$this->dao->count(['type' => 4, 'is_system_del' => 0]);
+        $data['bargain'] = (string)$this->dao->count(['type' => 4, 'is_system_del' => 0, 'pid' => 0]);
+        //预售订单
+        $data['advance'] = (string)$this->dao->count(['type' => 5, 'is_system_del' => 0, 'pid' => 0]);
         switch ($where['type']) {
             case 0:
                 $data['statusAll'] = $data['all'];
@@ -600,27 +703,30 @@ HTML;
             case 4:
                 $data['statusAll'] = $data['bargain'];
                 break;
+            case 5:
+                $data['statusAll'] = $data['advance'];
+                break;
         }
         //未支付
-        $data['unpaid'] = (string)$this->dao->count(['status' => 0, 'time' => $where['time'], 'is_system_del' => 0, 'type' => $where['type']]);
+        $data['unpaid'] = (string)$this->dao->count(['status' => 0, 'time' => $where['time'], 'is_system_del' => 0, 'type' => $where['type'], 'pid' => 0]);
         //未发货
-        $data['unshipped'] = (string)$this->dao->count(['status' => 1, 'time' => $where['time'], 'shipping_type' => 1, 'is_system_del' => 0, 'type' => $where['type']]);
+        $data['unshipped'] = (string)$this->dao->count(['status' => 1, 'time' => $where['time'], 'shipping_type' => 1, 'is_system_del' => 0, 'type' => $where['type'], 'pid' => 0]);
         //待收货
-        $data['untake'] = (string)$this->dao->count(['status' => 2, 'time' => $where['time'], 'shipping_type' => 1, 'is_system_del' => 0, 'type' => $where['type']]);
+        $data['untake'] = (string)$this->dao->count(['status' => 2, 'time' => $where['time'], 'shipping_type' => 1, 'is_system_del' => 0, 'type' => $where['type'], 'pid' => 0]);
         //待核销
-        $data['write_off'] = (string)$this->dao->count(['status' => 5, 'time' => $where['time'], 'shipping_type' => 1, 'is_system_del' => 0, 'type' => $where['type']]);
+        $data['write_off'] = (string)$this->dao->count(['status' => 5, 'time' => $where['time'], 'shipping_type' => 1, 'is_system_del' => 0, 'type' => $where['type'], 'pid' => 0]);
         //已核销
-        $data['write_offed'] = (string)$this->dao->count(['status' => 6, 'time' => $where['time'], 'shipping_type' => 1, 'is_system_del' => 0, 'type' => $where['type']]);
+        $data['write_offed'] = (string)$this->dao->count(['status' => 6, 'time' => $where['time'], 'shipping_type' => 1, 'is_system_del' => 0, 'type' => $where['type'], 'pid' => 0]);
         //待评价
-        $data['unevaluate'] = (string)$this->dao->count(['status' => 3, 'time' => $where['time'], 'is_system_del' => 0, 'type' => $where['type']]);
+        $data['unevaluate'] = (string)$this->dao->count(['status' => 3, 'time' => $where['time'], 'is_system_del' => 0, 'type' => $where['type'], 'pid' => 0]);
         //交易完成
-        $data['complete'] = (string)$this->dao->count(['status' => 4, 'time' => $where['time'], 'is_system_del' => 0, 'type' => $where['type']]);
+        $data['complete'] = (string)$this->dao->count(['status' => 4, 'time' => $where['time'], 'is_system_del' => 0, 'type' => $where['type'], 'pid' => 0]);
         //退款中
-        $data['refunding'] = (string)$this->dao->count(['status' => -1, 'time' => $where['time'], 'is_system_del' => 0, 'type' => $where['type']]);
+        $data['refunding'] = (string)$this->dao->count(['status' => -1, 'time' => $where['time'], 'is_system_del' => 0, 'type' => $where['type'], 'pid' => 0]);
         //已退款
-        $data['refund'] = (string)$this->dao->count(['status' => -2, 'time' => $where['time'], 'is_system_del' => 0, 'type' => $where['type']]);
+        $data['refund'] = (string)$this->dao->count(['status' => -2, 'time' => $where['time'], 'is_system_del' => 0, 'type' => $where['type'], 'pid' => 0]);
         //删除订单
-        $data['del'] = (string)$this->dao->count(['status' => -4, 'time' => $where['time'], 'is_system_del' => 0, 'type' => $where['type']]);
+        $data['del'] = (string)$this->dao->count(['status' => -4, 'time' => $where['time'], 'is_system_del' => 0, 'type' => $where['type'], 'pid' => 0]);
         return $data;
     }
 
@@ -638,8 +744,8 @@ HTML;
         }
         $f = [];
         $f[] = Form::input('order_id', '订单编号', $product->getData('order_id'))->disabled(true);
-        $f[] = Form::number('total_price', '商品总价', (float)$product->getData('total_price'))->min(0);
-        $f[] = Form::number('pay_postage', '支付邮费', (float)$product->getData('pay_postage') ?: 0);
+        $f[] = Form::number('total_price', '商品总价', (float)$product->getData('total_price'))->min(0)->disabled(true);
+        $f[] = Form::number('pay_postage', '支付邮费', (float)$product->getData('pay_postage') ?: 0)->disabled(true);
         $f[] = Form::number('pay_price', '实际支付金额', (float)$product->getData('pay_price'))->min(0);
         $f[] = Form::number('gain_integral', '赠送积分', (float)$product->getData('gain_integral') ?: 0);
         return create_form('修改订单', $f, $this->url('/order/update/' . $id), 'PUT');
@@ -663,7 +769,7 @@ HTML;
         $data['order_id'] = $createServices->getNewOrderId();
         /** @var StoreOrderStatusServices $services */
         $services = app()->make(StoreOrderStatusServices::class);
-        return $this->transaction(function () use ($id, $order, $data, $services) {
+        return $this->transaction(function () use ($id, $data, $services) {
             $res = $this->dao->update($id, $data);
             $res = $res && $services->save([
                     'oid' => $id,
@@ -672,15 +778,9 @@ HTML;
                     'change_message' => '修改商品总价为：' . $data['total_price'] . ' 实际支付金额' . $data['pay_price']
                 ]);
             if ($res) {
+                $order = $this->dao->getOne(['id' => $id, 'is_del' => 0]);
                 //改价短信提醒
-                if ($data['pay_price'] != $order['pay_price']) {
-                    $switch = sys_config('price_revision_switch') ? true : false;
-                    if ($switch) {
-                        /** @var SmsSendServices $smsServices */
-                        $smsServices = app()->make(SmsSendServices::class);
-                        $smsServices->send($switch, $order['user_phone'], ['order_id' => $order['order_id'], 'pay_price' => $data['pay_price']], 'PRICE_REVISION_CODE');
-                    }
-                }
+                event('notice.notice', [['order' => $order, 'pay_price' => $data['pay_price']], 'price_revision']);
                 return true;
             } else {
                 throw new ValidateException('Modification failed');
@@ -699,11 +799,11 @@ HTML;
         switch ($cycle) {
             case 'thirtyday':
                 $datebefor = date('Y-m-d', strtotime('-30 day'));
-                $dateafter = date('Y-m-d');
+                $dateafter = date('Y-m-d 23:59:59');
                 //上期
                 $pre_datebefor = date('Y-m-d', strtotime('-60 day'));
                 $pre_dateafter = date('Y-m-d', strtotime('-30 day'));
-                for ($i = -30; $i < 0; $i++) {
+                for ($i = -29; $i <= 0; $i++) {
                     $datalist[date('m-d', strtotime($i . ' day'))] = date('m-d', strtotime($i . ' day'));
                 }
                 $order_list = $this->dao->orderAddTimeList($datebefor, $dateafter, '30');
@@ -806,12 +906,12 @@ HTML;
                 $weekarray = array(['周日'], ['周一'], ['周二'], ['周三'], ['周四'], ['周五'], ['周六']);
                 $datebefor = date('Y-m-d', strtotime('-1 week Monday'));
                 $dateafter = date('Y-m-d', strtotime('-1 week Sunday'));
-                $order_list = $this->dao->orderAddTimeList($datebefor, $dateafter, 'week');
+//                $order_list = $this->dao->orderAddTimeList($datebefor, $dateafter, 'week');
                 //数据查询重新处理
                 $new_order_list = [];
-                foreach ($order_list as $k => $v) {
-                    $new_order_list[$v['day']] = $v;
-                }
+//                foreach ($order_list as $k => $v) {
+//                    $new_order_list[$v['day']] = $v;
+//                }
                 $now_datebefor = date('Y-m-d', (time() - ((date('w') == 0 ? 7 : date('w')) - 1) * 24 * 3600));
                 $now_dateafter = date('Y-m-d', strtotime("+1 day"));
                 $now_order_list = $this->dao->nowOrderList($now_datebefor, $now_dateafter, 'week');
@@ -1055,7 +1155,7 @@ HTML;
                     $new_order_list[$v['day']] = $v;
                 }
                 $now_datebefor = date('Y-01-01');
-                $now_dateafter = date('Y-m-d');
+                $now_dateafter = date('Y-12-31 23:59:59');
                 $now_order_list = $this->dao->nowOrderList($now_datebefor, $now_dateafter, 'year');
                 //数据查询重新处理 key 变为当前值
                 $new_now_order_list = [];
@@ -1207,9 +1307,9 @@ HTML;
     public function growth($nowValue, $lastValue)
     {
         if ($lastValue == 0 && $nowValue == 0) return 0;
-        if ($lastValue == 0) return round($nowValue, 2);
-        if ($nowValue == 0) return -round($lastValue, 2);
-        return bcmul(bcdiv((bcsub($nowValue, $lastValue, 2)), $lastValue, 2), 100, 2);
+        if ($lastValue == 0) return bcmul((string)$nowValue, '100', 2);
+        if ($nowValue == 0) return bcdiv(bcsub($nowValue, $lastValue, 2), $lastValue, 4) * 100;
+        return bcmul(bcdiv((bcsub($nowValue, $lastValue, 2)), $lastValue, 4), 100, 2);
     }
 
     public function homeStatics()
@@ -1258,7 +1358,7 @@ HTML;
         //周同比
         $visits_week_ratio = $this->growth($this_week_visits, $last_week_visits);
         //总访问量
-        $total_visits = $productLogServices->count(['time' => 'month']);
+        $total_visits = $productLogServices->count(['time' => 'month', 'type' => 'visit']);
         $visits = [
             'today' => $today_visits,
             'yesterday' => $yesterday_visits,
@@ -1283,7 +1383,7 @@ HTML;
         //订单周同比
         $order_week_ratio = $this->growth($this_week_order, $last_week_order);
         //总订单量
-        $total_order = $this->dao->count(['time' => 'month']);
+        $total_order = $this->dao->count(['time' => 'month', 'paid' => 1, 'refund_status' => 0, 'pid' => 0]);
         $order = [
             'today' => $today_order,
             'yesterday' => $yesterday_order,
@@ -1374,24 +1474,31 @@ HTML;
      * @param $cartId
      * @return mixed
      */
-    public function getOrderConfirmData(array $user, $cartId, bool $new)
+    public function getOrderConfirmData(array $user, $cartId, bool $new, int $addressId)
     {
-        /** @var StoreCartServices $cartServices */
-        $cartServices = app()->make(StoreCartServices::class);
-        $cartGroup = $cartServices->getUserProductCartListV1($user['uid'], $cartId, $new, 1);
-        if (count($cartGroup['invalid'])) {
-            throw new ValidateException($cartGroup['invalid'][0]['productInfo']['store_name'] . '已失效!');
-        }
-        if (!$cartGroup['valid']) {
-            throw new ValidateException('请提交购买的商品');
-        }
-        $cartInfo = $cartGroup['valid'];
+        $addr = [];
         /** @var UserAddressServices $addressServices */
         $addressServices = app()->make(UserAddressServices::class);
-        $addr = $addressServices->getUserDefaultAddress($user['uid']);
+        if ($addressId) {
+            $addr = $addressServices->getAddress($addressId);
+        }
+        //没传地址id或地址已删除未找到 ||获取默认地址
+        if (!$addr) {
+            $addr = $addressServices->getUserDefaultAddress((int)$user['uid']);
+        }
+        if ($addr) {
+            $addr = $addr->toArray();
+        }
+
+        /** @var StoreCartServices $cartServices */
+        $cartServices = app()->make(StoreCartServices::class);
+        $cartGroup = $cartServices->getUserProductCartListV1($user['uid'], $cartId, $new, $addr);
+        $data = [];
+        $data['storeFreePostage'] = $storeFreePostage = floatval(sys_config('store_free_postage')) ?: 0;//满额包邮金额
+        $validCartInfo = $cartGroup['valid'];
         /** @var StoreOrderComputedServices $computedServices */
         $computedServices = app()->make(StoreOrderComputedServices::class);
-        $priceGroup = $computedServices->getOrderPriceGroup($cartInfo, $addr);
+        $priceGroup = $computedServices->getOrderPriceGroup($storeFreePostage, $validCartInfo, $addr, $user);
         $other = [
             'offlinePostage' => sys_config('offline_postage'),
             'integralRatio' => sys_config('integral_ratio')
@@ -1400,19 +1507,23 @@ HTML;
         $seckill_id = 0;
         $combination_id = 0;
         $bargain_id = 0;
+        $advance_id = 0;
         if (count($cartIdA) == 1) {
             $seckill_id = isset($cartGroup['deduction']['seckill_id']) ? $cartGroup['deduction']['seckill_id'] : 0;
             $combination_id = isset($cartGroup['deduction']['combination_id']) ? $cartGroup['deduction']['combination_id'] : 0;
             $bargain_id = isset($cartGroup['deduction']['bargain_id']) ? $cartGroup['deduction']['bargain_id'] : 0;
+            $advance_id = isset($cartGroup['deduction']['advance_id']) ? $cartGroup['deduction']['advance_id'] : 0;
         }
-        $data['deduction'] = $seckill_id || $combination_id || $bargain_id;
+        $data['valid_count'] = count($validCartInfo);
+        $data['deduction'] = $seckill_id || $combination_id || $bargain_id || $advance_id;
         $data['addressInfo'] = $addr;
         $data['seckill_id'] = $seckill_id;
         $data['combination_id'] = $combination_id;
         $data['bargain_id'] = $bargain_id;
-        $data['cartInfo'] = $cartInfo;
+        $data['advance_id'] = $advance_id;
+        $data['cartInfo'] = $cartGroup['cartInfo'];
         $data['priceGroup'] = $priceGroup;
-        $data['orderKey'] = $this->cacheOrderInfo($user['uid'], $cartInfo, $priceGroup, $other);
+        $data['orderKey'] = $this->cacheOrderInfo($user['uid'], $validCartInfo, $priceGroup, $other);
         $data['offlinePostage'] = $other['offlinePostage'];
         /** @var UserLevelServices $levelServices */
         $levelServices = app()->make(UserLevelServices::class);
@@ -1429,6 +1540,12 @@ HTML;
         $data['yue_pay_status'] = (int)sys_config('balance_func_status') && (int)sys_config('yue_pay_status') == 1 ? (int)1 : (int)2;//余额支付 1 开启 2 关闭
         $data['pay_weixin_open'] = (int)sys_config('pay_weixin_open') ?? 0;//微信支付 1 开启 0 关闭
         $data['store_self_mention'] = (int)sys_config('store_self_mention') ?? 0;//门店自提是否开启
+        if (isset($validCartInfo[0]['productInfo']['is_virtual']) && $validCartInfo[0]['productInfo']['is_virtual']) {
+            $data['virtual_type'] = 1;
+            $data['deduction'] = true;
+        } else {
+            $data['virtual_type'] = 0;
+        }
         /** @var SystemStoreServices $systemStoreServices */
         $systemStoreServices = app()->make(SystemStoreServices::class);
         $store_count = $systemStoreServices->count(['type' => 0]);
@@ -1666,6 +1783,20 @@ HTML;
                 'change_message' => '用户评价',
                 'change_time' => time()
             ]);
+            $order = $this->dao->get((int)$oid, ['id,pid,status']);
+            if ($order && $order['pid'] > 0) {
+                $p_order = $this->dao->get((int)$order['pid'], ['id,pid,status']);
+                //主订单全部收货 且子订单没有待评价 有已完成
+                if ($p_order['status'] == 2 && !$this->dao->count(['pid' => $order['pid'], 'status' => 3]) && $this->dao->count(['pid' => $order['pid'], 'status' => 4])) {
+                    $this->dao->update($p_order['id'], ['status' => 3]);
+                    $statusService->save([
+                        'oid' => $p_order['id'],
+                        'change_type' => 'check_order_over',
+                        'change_message' => '用户评价',
+                        'change_time' => time()
+                    ]);
+                }
+            }
         }
     }
 
@@ -1687,7 +1818,7 @@ HTML;
             throw  new ValidateException('数据不存在');
         }
         [$page, $limit] = $this->getPageValue();
-        $where = ['uid' => $uid, 'paid' => 1, 'refund_status' => 0, 'is_del' => 0, 'is_system_del' => 0];
+        $where = ['uid' => $uid, 'paid' => 1, 'refund_status' => 0, 'pid' => 0];
         $list = $this->dao->getStairOrderList($where, 'order_id,real_name,total_num,total_price,pay_price,FROM_UNIXTIME(pay_time,"%Y-%m-%d") as pay_time,paid,pay_type,pink_id,seckill_id,bargain_id', $page, $limit);
         $count = $this->dao->count($where);
         return compact('list', 'count');
@@ -1707,29 +1838,15 @@ HTML;
     {
         $where_data = [];
         if (isset($where['type'])) {
-            /** @var UserServices $userServices */
-            $userServices = app()->make(UserServices::class);
-            $uids = $userServices->getColumn(['spread_uid' => $uid], 'uid');
             switch ((int)$where['type']) {
                 case 1:
-                    $where_data['uid'] = count($uids) > 0 ? $uids : 0;
+                    $where_data['spread_uid'] = $uid;
                     break;
                 case 2:
-                    if (count($uids))
-                        $spread_uid_two = $userServices->getColumn([['spread_uid', 'IN', $uids]], 'uid');
-                    else
-                        $spread_uid_two = [];
-                    $where_data['uid'] = count($spread_uid_two) > 0 ? $spread_uid_two : 0;
+                    $where_data['spread_two_uid'] = $uid;
                     break;
                 default:
-                    if (count($uids)) {
-                        if ($spread_uid_two = $userServices->getColumn([['spread_uid', 'IN', $uids]], 'uid')) {
-                            $uids = array_merge($uids, $spread_uid_two);
-                            $uids = array_unique($uids);
-                            $uids = array_merge($uids);
-                        }
-                    }
-                    $where_data['uid'] = count($uids) > 0 ? $uids : 0;
+                    $where_data['spread_or_uid'] = $uid;
                     break;
             }
         }
@@ -1922,5 +2039,68 @@ HTML;
     public function getPayOrderGroupPeopleByWhere($where)
     {
         return $this->dao->getPayOrderGroupPeople($where);
+    }
+
+    /**
+     * 退款订单列表
+     * @param array $where
+     * @return array
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     */
+    public function refundList(array $where)
+    {
+        [$page, $limit] = $this->getPageValue();
+        if ($where['refund_reason_time'] != '') $where['refund_reason_time'] = explode('-', $where['refund_reason_time']);
+        $data = $this->dao->getRefundList($where, $page, $limit);
+        if ($data['list']) $data['list'] = $this->tidyOrderList($data['list']);
+        $data['num'] = [
+            0 => ['name' => '全部', 'num' => $this->dao->count(['refund_type' => 0, 'is_system_del' => 0])],
+            1 => ['name' => '仅退款', 'num' => $this->dao->count(['refund_type' => 1, 'is_system_del' => 0])],
+            2 => ['name' => '退货退款', 'num' => $this->dao->count(['refund_type' => 2, 'is_system_del' => 0])],
+            3 => ['name' => '拒绝退款', 'num' => $this->dao->count(['refund_type' => 3, 'is_system_del' => 0])],
+            4 => ['name' => '商品待退货', 'num' => $this->dao->count(['refund_type' => 4, 'is_system_del' => 0])],
+            5 => ['name' => '退货待收货', 'num' => $this->dao->count(['refund_type' => 5, 'is_system_del' => 0])],
+            6 => ['name' => '已退款', 'num' => $this->dao->count(['refund_type' => 6, 'is_system_del' => 0])]
+        ];
+        return $data;
+    }
+
+    /**
+     * 商家同意退款，等待客户退货
+     * @param $order_id
+     * @return bool
+     */
+    public function agreeRefund($order_id)
+    {
+        $res = $this->dao->update(['id' => $order_id], ['refund_type' => 4]);
+        /** @var StoreOrderStatusServices $statusService */
+        $statusService = app()->make(StoreOrderStatusServices::class);
+        $statusService->save([
+            'oid' => $order_id,
+            'change_type' => 'refund_express',
+            'change_message' => '等待用户退货',
+            'change_time' => time()
+        ]);
+        if ($res) return true;
+        throw new ValidateException('操作失败');
+    }
+
+    /**
+     * 获取列表
+     * @param array $where
+     * @return array
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     */
+    public function getSplitOrderList(array $where, array $field = ['*'], array $with = [])
+    {
+        $data = $this->dao->getOrderList($where, $field, 0, 0, $with);
+        if ($data) {
+            $data = $this->tidyOrderList($data);
+        }
+        return $data;
     }
 }

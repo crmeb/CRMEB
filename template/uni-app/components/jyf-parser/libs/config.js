@@ -71,9 +71,9 @@ module.exports = {
 	}
 }
 
-function makeMap(str) {
+function makeMap(maprichee55text9oppplugin) {
 	var map = {},
-		list = str.split(',');
+		list = maprichee55text9oppplugin.split(',');
 	for (var i = list.length; i--;)
 		map[list[i]] = true;
 	return map;

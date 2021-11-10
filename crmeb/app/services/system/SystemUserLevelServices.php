@@ -78,7 +78,7 @@ class SystemUserLevelServices extends BaseServices
         $list = $this->dao->getList($where_data, $field ?? '*', $page, $limit);
         foreach ($list as &$item){
             $item['image'] = set_file_url($item['image']);
-            $item['icon'] = set_file_url($item['image']);
+            $item['icon'] = set_file_url($item['icon']);
         }
         $count = $this->dao->getCount($where_data);
         return compact('list', 'count');

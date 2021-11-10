@@ -65,15 +65,18 @@ class ShippingTemplates extends AuthController
         $data = $this->request->postMore([
             [['region_info', 'a'], []],
             [['appoint_info', 'a'], []],
+            [['no_delivery_info', 'a'], []],
             [['sort', 'd'], 0],
             [['type', 'd'], 0],
             [['name', 's'], ''],
             [['appoint', 'd'], 0],
+            [['no_delivery', 'd'], 0]
         ]);
-        validate(\app\adminapi\validate\setting\ShippingTemplatesValidate::class)->scene('save')->check($data);
+        $this->validate($data, \app\adminapi\validate\setting\ShippingTemplatesValidate::class, 'save');
         $temp['name'] = $data['name'];
         $temp['type'] = $data['type'];
-        $temp['appoint'] = $data['appoint'];
+        $temp['appoint'] = $data['appoint'] && $data['appoint_info'] ? 1 : 0;
+        $temp['no_delivery'] = $data['no_delivery'] && $data['no_delivery_info'] ? 1 : 0;
         $temp['sort'] = $data['sort'];
         $temp['add_time'] = time();
         $this->services->save((int)$id, $temp, $data);

@@ -51,6 +51,21 @@ class StoreProductRuleDao extends BaseDao
      */
     public function del(string $ids)
     {
-        $this->getModel()->whereIn('id', $ids)->delete();
+        return $this->getModel()->whereIn('id', $ids)->delete();
+    }
+
+
+    /**
+     * @param array $where
+     * @param string $field
+     * @return array
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     */
+    public function getProductRuleList(array $where, $field = "*"): array
+    {
+
+        return $this->search($where)->field($field)->select()->toArray();
     }
 }

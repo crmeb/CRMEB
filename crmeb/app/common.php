@@ -14,7 +14,23 @@
 use think\exception\ValidateException;
 use crmeb\services\FormBuilder as Form;
 use crmeb\services\UploadService;
+use think\facade\Config;
 
+if (!function_exists('getWorkerManUrl')) {
+
+    /**
+     * 获取客服数据
+     * @return mixed
+     */
+    function getWorkerManUrl()
+    {
+        $ws = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? 'wss://' : 'ws://';
+        $host = $_SERVER['HTTP_HOST'];
+        $data['admin'] = $ws . $host . '/notice';
+        $data['chat'] = $ws . $host . '/msg';
+        return $data;
+    }
+}
 
 if (!function_exists('exception')) {
     /**
@@ -45,12 +61,12 @@ if (!function_exists('sys_config')) {
         if (empty($name))
             return $default;
         $sysConfig = app('sysConfig')->get($name);
-        if(is_array($sysConfig)){
-            foreach ($sysConfig as &$item){
-                if (strpos($item,'/uploads/system/') !== false) $item = set_file_url($item);
+        if (is_array($sysConfig)) {
+            foreach ($sysConfig as &$item) {
+                if (strpos($item, '/uploads/system/') !== false) $item = set_file_url($item);
             }
-        }else{
-            if (strpos($sysConfig,'/uploads/system/') !== false) $sysConfig = set_file_url($sysConfig);
+        } else {
+            if (strpos($sysConfig, '/uploads/system/') !== false) $sysConfig = set_file_url($sysConfig);
         }
         $config = is_array($sysConfig) ? $sysConfig : trim($sysConfig);
         if ($config === '' || $config === false) {
@@ -203,13 +219,13 @@ if (!function_exists('set_file_url')) {
     {
         if (!strlen(trim($siteUrl))) $siteUrl = sys_config('site_url');
         if (!$image) return $image;
-        if (is_array($image)){
-            foreach ($image as &$item){
+        if (is_array($image)) {
+            foreach ($image as &$item) {
                 $domainTop = substr($item, 0, 4);
                 if ($domainTop != 'http')
                     $item = $siteUrl . str_replace('\\', '/', $item);
             }
-        }else{
+        } else {
             $domainTop = substr($image, 0, 4);
             if ($domainTop != 'http')
                 $image = $siteUrl . str_replace('\\', '/', $image);
@@ -611,23 +627,6 @@ if (!function_exists('get_crmeb_version')) {
     }
 }
 
-if (!function_exists('get_crmeb_version_code')) {
-    /**
-     * 获取CRMEB系统版本号
-     * @param string $default
-     * @return string
-     */
-    function get_crmeb_version_code($default = '410')
-    {
-        try {
-            $version = parse_ini_file(app()->getRootPath() . '.version');
-            return $version['version_code'] ?? $default;
-        } catch (\Throwable $e) {
-            return $default;
-        }
-    }
-}
-
 if (!function_exists('get_file_link')) {
     /**
      * 获取文件带域名的完整路径
@@ -796,6 +795,93 @@ if (!function_exists('get_tree_value')) {
             }
         }
         return $childrenValue;
+    }
+}
+
+if (!function_exists('get_image_thumb')) {
+    /**
+     * 获取缩略图
+     * @param $filePath
+     * @param string $type all|big|mid|small
+     * @param bool $is_remote_down
+     * @return mixed|string|string[]
+     */
+    function get_image_thumb($filePath, string $type = 'all', bool $is_remote_down = false)
+    {
+        if (!$filePath || !is_string($filePath) || strpos($filePath, '?') !== false) return $filePath;
+        try {
+            $upload = UploadService::getOssInit($filePath, $is_remote_down);
+            $data = $upload->thumb('', $type);
+            $image = $type == 'all' ? $data : $data[$type] ?? $filePath;
+        } catch (\Throwable $e) {
+            $image = $filePath;
+//            throw new ValidateException($e->getMessage());
+            \think\facade\Log::error('获取缩略图失败，原因：' . $e->getMessage() . '----' . $e->getFile() . '----' . $e->getLine() . '----' . $filePath);
+        }
+        $data = parse_url($image);
+        if (!isset($data['host']) && (substr($image, 0, 2) == './' || substr($image, 0, 1) == '/')) {//不是完整地址
+            $image = sys_config('site_url') . $image;
+        }
+        //请求是https 图片是http 需要改变图片地址
+        if (strpos(request()->domain(), 'https:') !== false && strpos($image, 'https:') === false) {
+            $image = str_replace('http:', 'https:', $image);
+        }
+        return $image;
+    }
+}
+
+if (!function_exists('get_thumb_water')) {
+    /**
+     * 处理数组获取缩略图、水印
+     * @param $list
+     * @param string $type
+     * @param array|string[] $field 1、['image','images'] type 取值参数:type 2、['small'=>'image','mid'=>'images'] type 取field数组的key
+     * @param bool $is_remote_down
+     * @return array|mixed|string|string[]
+     */
+    function get_thumb_water($list, string $type = 'small', array $field = ['image'], bool $is_remote_down = false)
+    {
+        if (!$list || !$field) return $list;
+        $baseType = $type;
+        $data = $list;
+        if (is_string($list)) {
+            $field = [$type => 'image'];
+            $data = ['image' => $list];
+        }
+        if (is_array($data)) {
+            foreach ($field as $type => $key) {
+                if (is_integer($type)) {//索引数组，默认type
+                    $type = $baseType;
+                }
+                //一维数组
+                if (isset($data[$key])) {
+                    if (is_array($data[$key])) {
+                        $path_data = [];
+                        foreach ($data[$key] as $k => $path) {
+                            $path_data[] = get_image_thumb($path, $type, $is_remote_down);
+                        }
+                        $data[$key] = $path_data;
+                    } else {
+                        $data[$key] = get_image_thumb($data[$key], $type, $is_remote_down);
+                    }
+                } else {
+                    foreach ($data as &$item) {
+                        if (!isset($item[$key]))
+                            continue;
+                        if (is_array($item[$key])) {
+                            $path_data = [];
+                            foreach ($item[$key] as $k => $path) {
+                                $path_data[] = get_image_thumb($path, $type, $is_remote_down);
+                            }
+                            $item[$key] = $path_data;
+                        } else {
+                            $item[$key] = get_image_thumb($item[$key], $type, $is_remote_down);
+                        }
+                    }
+                }
+            }
+        }
+        return is_string($list) ? ($data['image'] ?? '') : $data;
     }
 }
 

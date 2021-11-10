@@ -46,6 +46,7 @@ class StoreProductReplyServices extends BaseServices
         $storeProductReplyStoreProductServices = app()->make(StoreProductReplyStoreProductServices::class);
         $data = $storeProductReplyStoreProductServices->getProductReplyList($where);
         foreach ($data['list'] as &$item) {
+            $item['add_time'] = date('Y-m-d H:i:s',$item['add_time']);
             $item['time'] = time_tran(strtotime($item['add_time']));
             $item['create_time'] = $item['add_time'];
             $item['score'] = ($item['product_score'] + $item['service_score']) / 2;
@@ -62,16 +63,16 @@ class StoreProductReplyServices extends BaseServices
     public function createForm(int $product_id)
     {
         if ($product_id == 0) {
-            $field[] = Form::frameImage('image', '商品', Url::buildUrl('admin/store.StoreProduct/index', array('fodder' => 'image')))->icon('ios-add')->width('950px')->height('550px')->Props(['srcKey' => 'image']);
+            $field[] = Form::frameImage('image', '商品', Url::buildUrl('admin/store.StoreProduct/index', array('fodder' => 'image')))->icon('ios-add')->width('950px')->height('505px')->modal(['footer-hide' => true])->Props(['srcKey' => 'image']);
         } else {
             $field[] = Form::hidden('product_id', $product_id);
         }
-        $field[] = Form::frameImage('avatar', '用户头像', Url::buildUrl('admin/widget.images/index', array('fodder' => 'avatar')))->icon('ios-add')->width('950px')->height('420px');
+        $field[] = Form::frameImage('avatar', '用户头像', Url::buildUrl('admin/widget.images/index', array('fodder' => 'avatar')))->icon('ios-add')->width('950px')->height('505px')->modal(['footer-hide' => true]);
         $field[] = Form::input('nickname', '用户名称')->col(24);
         $field[] = Form::input('comment', '评价文字')->type('textarea');
         $field[] = Form::rate('product_score', '商品分数', 0)->allowHalf(false);
         $field[] = Form::rate('service_score', '服务分数', 0)->allowHalf(false);
-        $field[] = Form::frameImages('pics', '评价图片', Url::buildUrl('admin/widget.images/index', array('fodder' => 'pics', 'type' => 'many')))->maxLength(10)->icon('ios-add')->width('950px')->height('420px')->props(['closeBtn' => false, 'okBtn' => false]);
+        $field[] = Form::frameImages('pics', '评价图片', Url::buildUrl('admin/widget.images/index', array('fodder' => 'pics', 'type' => 'many', 'maxLength' => 8)))->maxLength(8)->icon('ios-add')->width('950px')->height('505px')->modal(['footer-hide' => true])->props(['closeBtn' => false, 'okBtn' => false]);
         $field[] = Form::dateTime('add_time', '评论时间', '')->placeholder('请选择评论时间(不选择默认当前添加时间)');
         return create_form('添加虚拟评论', $field, Url::buildUrl('/product/reply/save_fictitious_reply'), 'POST');
     }
@@ -189,10 +190,10 @@ class StoreProductReplyServices extends BaseServices
         $data['poor_count'] = $this->dao->replyCount($id, 3);
         if ($data['sum_count'] != 0) {
             $data['reply_chance'] = bcdiv($data['good_count'], $data['sum_count'], 2);
-            $data['reply_star'] = round(bcdiv($this->dao->sum(['product_id' => $id, 'is_del' => 0], 'product_score'), $data['sum_count'], 1));
+            $data['reply_star'] = bcdiv($this->dao->sum(['product_id' => $id, 'is_del' => 0], 'product_score'), $data['sum_count'], 0);
         } else {
             $data['reply_chance'] = 100;
-            $data['reply_star'] = 3;
+            $data['reply_star'] = 5;
         }
 //        $data['reply_star'] = bcmul($data['reply_chance'], 5, 0);
         $data['reply_chance'] = $data['sum_count'] == 0 ? 100 : bcmul($data['reply_chance'], 100, 0);
@@ -216,7 +217,7 @@ class StoreProductReplyServices extends BaseServices
             $item['suk'] = isset($item['cart_info']['productInfo']['attrInfo']) ? $item['cart_info']['productInfo']['attrInfo']['suk'] : '';
             $item['nickname'] = anonymity($item['nickname']);
             $item['merchant_reply_time'] = date('Y-m-d H:i', $item['merchant_reply_time']);
-            $item['add_time'] = date('Y-m-d H:i', $item['add_time']);
+            $item['add_time'] = time_tran($item['add_time']);
             $item['star'] = bcadd($item['product_score'], $item['service_score'], 2);
             $item['star'] = bcdiv($item['star'], 2, 0);
             $item['comment'] = $item['comment'] ?: '此用户没有填写评价';

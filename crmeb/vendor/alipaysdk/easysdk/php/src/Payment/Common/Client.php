@@ -203,7 +203,7 @@ class Client {
      * @return AlipayTradeRefundResponse
      * @throws \Exception
      */
-    public function refund($outTradeNo, $refundAmount){
+    public function refund($outTradeNo, $refundAmount, $outRequestNo){
         $_runtime = [
             "connectTimeout" => 15000,
             "readTimeout" => 15000,
@@ -239,8 +239,9 @@ class Client {
                     ];
                 $bizParams = [
                     "out_trade_no" => $outTradeNo,
-                    "refund_amount" => $refundAmount
-                    ];
+                    "refund_amount" => $refundAmount,
+                    "out_request_no" => $outRequestNo
+                ];
                 $textParams = [];
                 $_request->protocol = $this->_kernel->getConfig("protocol");
                 $_request->method = "POST";

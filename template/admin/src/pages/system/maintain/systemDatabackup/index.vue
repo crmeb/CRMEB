@@ -259,7 +259,6 @@
                        window.open(Setting.apiBaseURL + '/download?key=' + res.data.key)
                     }
                 }).catch(res => {
-                    console.log(res)
                     this.$Message.error(res);
                 })
             },

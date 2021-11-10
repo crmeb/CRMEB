@@ -8,7 +8,6 @@
 // | Author: CRMEB Team <admin@crmeb.com>
 // +----------------------------------------------------------------------
 
-
 import app from "./app";
 import hotWords from "./hotWords";
 import indexData from './indexData.js'

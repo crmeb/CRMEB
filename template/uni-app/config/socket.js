@@ -8,7 +8,6 @@
 // | Author: CRMEB Team <admin@crmeb.com>
 // +----------------------------------------------------------------------
 
-
 module.exports = {
   // Socket链接 暂不做配置
   WSS_SERVER_URL:'',

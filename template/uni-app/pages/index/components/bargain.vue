@@ -177,7 +177,7 @@
 	.combination{
 		width: 100%;
 		// height: 288rpx;
-		background-color: #fff;
+		background-color: $uni-bg-color;
 		border-radius: 14rpx;
 		.conter {
 			width: 690rpx;

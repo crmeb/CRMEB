@@ -98,5 +98,5 @@
 </script>
 
 <style scoped>
-    .input{width:75%;}
+    .input{width:400px;}
 </style>

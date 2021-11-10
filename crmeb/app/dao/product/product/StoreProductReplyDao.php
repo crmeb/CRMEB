@@ -55,7 +55,7 @@ class StoreProductReplyDao extends BaseDao
     public function getProductReply(int $productId)
     {
         return $this->search(['product_id' => $productId, 'is_del' => 0])
-            ->with(['cartInfo','userInfo'])
+            ->with(['cartInfo', 'userInfo'])
             ->order('add_time DESC,product_score DESC,service_score DESC,add_time DESC')
             ->find();
     }
@@ -70,11 +70,19 @@ class StoreProductReplyDao extends BaseDao
     {
         return $this->search(['product_id' => $id, 'is_del' => 0])
             ->when($type == 1, function ($query) {
-                $query->where('product_score', 5);
+                $query->where('product_score', 5)->where('service_score', 5);
             })->when($type == 2, function ($query) {
-                $query->where('product_score', '<', 5)->where('product_score', '>', 2);
+                $query->where(function ($query0) {
+                    $query0->where(function ($query1) {
+                        $query1->where('product_score', '<>', 5)->whereOr('service_score', '<>', 5);
+                    })->where(function ($query2) {
+                        $query2->where('service_score', '>', 2)->where('product_score', '>', 2);
+                    });
+                });
             })->when($type == 3, function ($query) {
-                $query->where('product_score', '<=', 2);
+                $query->where(function ($query0) {
+                    $query0->where('product_score', '<=', 2)->whereOr('service_score', '<=', 2);
+                });
             });
     }
 
@@ -102,6 +110,6 @@ class StoreProductReplyDao extends BaseDao
     {
         return $this->replyWhere($id, $type)->when($page && $limit, function ($query) use ($page, $limit) {
             $query->page($page, $limit);
-        })->with(['cartInfo','userInfo'])->order('add_time desc')->select()->toArray();
+        })->with(['cartInfo', 'userInfo'])->order('add_time desc')->select()->toArray();
     }
 }

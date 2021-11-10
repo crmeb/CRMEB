@@ -1,5 +1,5 @@
 <template>
-	<view>
+	<view :style="colorStyle">
 		<view class='bill-details'>
 			<view class='nav acea-row'>
 				<view class='item' :class='type==0 ? "on":""' @click='changeType(0)'>全部</view>
@@ -33,7 +33,9 @@
 		<!-- #ifdef MP -->
 		<!-- <authorize @onLoadFun="onLoadFun" :isAuto="isAuto" :isShowAuth="isShowAuth" @authColse="authColse"></authorize> -->
 		<!-- #endif -->
+		<!-- #ifndef MP -->
 		<home></home>
+		<!-- #endif -->
 	</view>
 </template>
 
@@ -52,6 +54,7 @@
 	// #endif
 	import emptyPage from '@/components/emptyPage.vue';
 	import home from '@/components/home';
+	import colors from "@/mixins/color";
 	export default {
 		components: {
 			// #ifdef MP
@@ -60,6 +63,7 @@
 			emptyPage,
 			home
 		},
+		mixins: [colors],
 		data() {
 			return {
 				loadTitle: '加载更多',
@@ -161,7 +165,7 @@
 	}
 
 	.bill-details .nav .item.on {
-		color: #e93323;
-		border-bottom: 3rpx solid #e93323;
+		color: var(--view-theme);
+		border-bottom: 3rpx solid var(--view-theme);
 	}
 </style>

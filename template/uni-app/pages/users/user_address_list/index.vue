@@ -1,5 +1,5 @@
 <template>
-	<view>
+	<view :style="colorStyle">
 		<view class='address-management' :class='addressList.length < 1 && page > 1 ? "fff":""'>
 			<view class='line'>
 				<image src='../../../static/images/line.jpg' v-if="addressList.length"></image>
@@ -36,25 +36,33 @@
 					<image src='../../../static/images/noAddress.png'></image>
 				</view>
 			</view>
-			<view style='height:120rpx;height: calc(120rpx+ constant(safe-area-inset-bottom));height: calc(120rpx + env(safe-area-inset-bottom));'></view>
+			<view style='height:120rpx;'></view>
 			<view class='footer acea-row row-between-wrapper'>
 				<!-- #ifdef APP-PLUS -->
-				<view class='addressBnt bg-color on' @click='addAddress'><text class='iconfont icon-tianjiadizhi'></text>添加新地址</view>
+				<view class='addressBnt on' @click='addAddress'><text
+						class='iconfont icon-tianjiadizhi'></text>添加新地址</view>
 				<!-- #endif -->
 				<!-- #ifdef MP-->
-				<view class='addressBnt bg-color' @click='addAddress'><text class='iconfont icon-tianjiadizhi'></text>添加新地址</view>
-				<view class='addressBnt wxbnt' @click='getWxAddress'><text class='iconfont icon-weixin2'></text>导入微信地址</view>
+				<view class='addressBnt wxbnt' @click='addAddress'><text
+						class='iconfont icon-tianjiadizhi'></text>添加新地址</view>
+				<view class='addressBnt' @click='getWxAddress'><text class='iconfont icon-weixin2'></text>导入微信地址
+				</view>
 				<!-- #endif -->
 				<!-- #ifdef H5-->
-				<view class='addressBnt bg-color' :class="this.$wechat.isWeixin()?'':'on'" @click='addAddress'><text class='iconfont icon-tianjiadizhi'></text>添加新地址</view>
-				<view class='addressBnt wxbnt' @click='getAddress' v-if="this.$wechat.isWeixin()"><text class='iconfont icon-weixin2'></text>导入微信地址</view>
+				<view class='addressBnt' :class="this.$wechat.isWeixin()?'wxbnt':'on'" @click='addAddress'><text
+						class='iconfont icon-tianjiadizhi'></text>添加新地址</view>
+				<view class=""></view>		
+				<view class='addressBnt' @click='getAddress' v-if="this.$wechat.isWeixin()"><text
+						class='iconfont icon-weixin2'></text>导入微信地址</view>
 				<!-- #endif -->
 			</view>
 		</view>
 		<!-- #ifdef MP -->
 		<!-- <authorize @onLoadFun="onLoadFun" :isAuto="isAuto" :isShowAuth="isShowAuth" @authColse="authColse"></authorize> -->
 		<!-- #endif -->
+		<!-- #ifndef MP -->
 		<home></home>
+		<!-- #endif -->
 	</view>
 </template>
 
@@ -76,6 +84,7 @@
 	import authorize from '@/components/Authorize';
 	// #endif
 	import home from '@/components/home';
+	import colors from '@/mixins/color.js';
 	export default {
 		components: {
 			// #ifdef MP
@@ -83,6 +92,7 @@
 			// #endif
 			home
 		},
+		mixins:[colors],
 		data() {
 			return {
 				addressList: [],
@@ -95,14 +105,16 @@
 				page: 1,
 				limit: 20,
 				isAuto: false, //没有授权的不会自动授权
-				isShowAuth: false ,//是否隐藏授权
-				news:''
+				isShowAuth: false, //是否隐藏授权
+				news: '',
+				noCoupon: 0
 			};
 		},
 		computed: mapGetters(['isLogin']),
 		onLoad(options) {
 			if (this.isLogin) {
 				this.cartId = options.cartId || '';
+				this.noCoupon = options.noCoupon || 0;
 				this.pinkId = options.pinkId || 0;
 				this.couponId = options.couponId || 0;
 				this.news = options.news || 0;
@@ -133,7 +145,6 @@
 					success: function(res) {
 						uni.chooseAddress({
 							success: function(res) {
-								console.log(res,'res')
 								let addressP = {};
 								addressP.province = res.provinceName;
 								addressP.city = res.cityName;
@@ -161,9 +172,10 @@
 								});
 							},
 							fail: function(res) {
-								if (res.errMsg == 'chooseAddress:cancel') return that.$util.Tips({
-									title: '取消选择'
-								});
+								if (res.errMsg == 'chooseAddress:cancel') return that.$util
+									.Tips({
+										title: '取消选择'
+									});
 							},
 						})
 					},
@@ -174,9 +186,7 @@
 							success(res) {
 								if (res.confirm) {
 									uni.openSetting({
-										success: function(res) {
-											console.log(res.authSetting)
-										}
+										success: function(res) {}
 									});
 								} else if (res.cancel) {
 									return that.$util.Tips({
@@ -295,8 +305,9 @@
 				this.pinkId = '';
 				this.couponId = '';
 				uni.navigateTo({
-					url: '/pages/users/user_address/index?id=' + id + '&cartId=' + cartId + '&pinkId=' + pinkId + '&couponId=' +
-						couponId+'&new='+this.news
+					url: '/pages/users/user_address/index?id=' + id + '&cartId=' + cartId + '&pinkId=' +
+						pinkId + '&couponId=' +
+						couponId + '&new=' + this.news
 				})
 			},
 			/**
@@ -333,7 +344,8 @@
 				this.pinkId = '';
 				this.couponId = '';
 				uni.navigateTo({
-					url: '/pages/users/user_address/index?cartId=' + cartId + '&pinkId=' + pinkId + '&couponId=' + couponId+'&new='+this.news
+					url: '/pages/users/user_address/index?cartId=' + cartId + '&pinkId=' + pinkId +
+						'&couponId=' + couponId + '&new=' + this.news
 				})
 			},
 			goOrder: function(id) {
@@ -348,8 +360,10 @@
 					this.pinkId = '';
 					this.couponId = '';
 					uni.redirectTo({
-						url: '/pages/users/order_confirm/index?is_address=1&new='+ this.news +'&cartId=' + cartId + '&addressId=' + id + '&pinkId=' +
-							pinkId + '&couponId=' + couponId
+						url: '/pages/users/order_confirm/index?is_address=1&new=' + this.news + '&cartId=' +
+							cartId + '&addressId=' + id + '&pinkId=' +
+							pinkId + '&couponId=' + couponId +
+							'&noCoupon=' + this.noCoupon
 					})
 				}
 			}
@@ -430,8 +444,6 @@
 		height: 106rpx;
 		padding: 0 30rpx;
 		box-sizing: border-box;
-		height: calc(106rpx+ constant(safe-area-inset-bottom)); ///兼容 IOS<11.2/
-		height: calc(106rpx + env(safe-area-inset-bottom)); ///兼容 IOS>11.2/
 	}
 
 	.address-management .footer .addressBnt {
@@ -442,6 +454,7 @@
 		line-height: 76rpx;
 		font-size: 30rpx;
 		color: #fff;
+		background-color: var(--view-theme);
 	}
 
 	.address-management .footer .addressBnt.on {
@@ -456,6 +469,6 @@
 	}
 
 	.address-management .footer .addressBnt.wxbnt {
-		background-color: #fe960f;
+		background-color: #FE960F;
 	}
 </style>

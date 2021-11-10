@@ -15,33 +15,33 @@ use think\facade\Route;
  */
 Route::group('notify', function () {
     //保存配置 登录
-    Route::post('sms/config', 'v1.notification.sms.SmsConfig/save_basics');
+    Route::post('sms/config', 'v1.notification.sms.SmsConfig/save_basics')->option(['real_name' => '保存短信配置']);
     //短信发送记录
-    Route::get('sms/record', 'v1.notification.sms.SmsConfig/record');
+    Route::get('sms/record', 'v1.notification.sms.SmsConfig/record')->option(['real_name' => '短信发送记录']);
     //短信账号数据
-    Route::get('sms/data', 'v1.notification.sms.SmsConfig/data');
+    Route::get('sms/data', 'v1.notification.sms.SmsConfig/data')->option(['real_name' => '短信账号数据']);
     //查看是否登录
-    Route::get('sms/is_login', 'v1.notification.sms.SmsConfig/is_login');
+    Route::get('sms/is_login', 'v1.notification.sms.SmsConfig/is_login')->option(['real_name' => '查看短信账号是否登录']);
     //查看是否登录
-    Route::get('sms/logout', 'v1.notification.sms.SmsConfig/logout');
+    Route::get('sms/logout', 'v1.notification.sms.SmsConfig/logout')->option(['real_name' => '短信账号退出登录']);
     //发送短信验证码
-    Route::post('sms/captcha', 'v1.notification.sms.SmsAdmin/captcha');
+    Route::post('sms/captcha', 'v1.notification.sms.SmsAdmin/captcha')->option(['real_name' => '发送短信验证码']);
     //修改/注册短信平台账号
-    Route::post('sms/register', 'v1.notification.sms.SmsAdmin/save');
+    Route::post('sms/register', 'v1.notification.sms.SmsAdmin/save')->option(['real_name' => '修改或注册短信平台账号']);
     //短信模板列表
-    Route::get('sms/temp', 'v1.notification.sms.SmsTemplateApply/index');
+    Route::get('sms/temp', 'v1.notification.sms.SmsTemplateApply/index')->option(['real_name' => '短信模板列表']);
     //短信模板申请表单
-    Route::get('sms/temp/create', 'v1.notification.sms.SmsTemplateApply/create');
+    Route::get('sms/temp/create', 'v1.notification.sms.SmsTemplateApply/create')->option(['real_name' => '短信模板申请表单']);
     //短信模板申请
-    Route::post('sms/temp', 'v1.notification.sms.SmsTemplateApply/save');
+    Route::post('sms/temp', 'v1.notification.sms.SmsTemplateApply/save')->option(['real_name' => '短信模板申请']);
     //公共短信模板列表
-    Route::get('sms/public_temp', 'v1.notification.sms.SmsPublicTemp/index');
+    Route::get('sms/public_temp', 'v1.notification.sms.SmsPublicTemp/index')->option(['real_name' => '公共短信模板列表']);
     //剩余条数
-    Route::get('sms/number', 'v1.notification.sms.SmsPay/number');
+    Route::get('sms/number', 'v1.notification.sms.SmsPay/number')->option(['real_name' => '短信剩余条数']);
     //获取支付套餐
-    Route::get('sms/price', 'v1.notification.sms.SmsPay/price');
+    Route::get('sms/price', 'v1.notification.sms.SmsPay/price')->option(['real_name' => '获取短信购买套餐']);
     //获取支付码
-    Route::post('sms/pay_code', 'v1.notification.sms.SmsPay/pay');
+    Route::post('sms/pay_code', 'v1.notification.sms.SmsPay/pay')->option(['real_name' => '获取短信购买支付码']);
 
 })->middleware([
     \app\http\middleware\AllowOriginMiddleware::class,

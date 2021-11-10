@@ -102,7 +102,11 @@ class StoreCouponUser extends BaseModel
      */
     public function searchCidAttr($query, $value, $data)
     {
-        $query->where('cid', $value);
+        if (is_array($value)) {
+            $query->where('cid', 'IN', $value);
+        } else {
+            $query->where('cid', $value);
+        }
     }
 
     /**

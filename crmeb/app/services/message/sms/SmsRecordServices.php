@@ -15,7 +15,6 @@ namespace app\services\message\sms;
 use app\dao\sms\SmsRecordDao;
 use app\services\BaseServices;
 use app\services\serve\ServeServices;
-use crmeb\services\sms\Sms;
 
 /**
  * 短信发送记录

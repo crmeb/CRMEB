@@ -1,5 +1,8 @@
 <template>
-	<view id="pageIndex">
+	<view id="pageIndex" :style="colorStyle">
+		<!-- <skeleton v-if="!isIframe" :show="showSkeleton" :isNodes="isNodes" ref="skeleton" loading="chiaroscuro"
+			selector="skeleton" bgcolor="#FFF"></skeleton> -->
+		<skeletons :show="showSkeleton" loading="chiaroscuro" bgcolor="#FFF"></skeletons>
 		<!-- #ifdef H5 -->
 		<view class="followMe" v-if="$wechat.isWeixin()">
 			<view class="follow acea-row row-between-wrapper" v-if="followHid && followUrl && !subscribe">
@@ -10,7 +13,7 @@
 				</view>
 			</view>
 			<view class="followCode" v-if="followCode">
-				<view class="pictrue"><img :src="followUrl"/></view>
+				<view class="pictrue"><img :src="followUrl" /></view>
 				<view class="mask" @click="closeFollowCode"></view>
 			</view>
 		</view>
@@ -23,416 +26,701 @@
 			</view>
 		</view>
 		<!-- #endif -->
-		<headerSerch :dataConfig="headerSerch.default" @click.native="bindEdit('headerSerch','default')"></headerSerch>
-		<swiperBg :dataConfig="swiperBg.default" @click.native="bindEdit('swiperBg','default')"></swiperBg>
-		<menus :dataConfig="menus.default" @click.native="bindEdit('menus','default')"></menus>
-		<news :dataConfig="news.default" @click.native="bindEdit('news','default')"></news>
-		<activity :dataConfig="activity.default" @click.native="bindEdit('activity','default')"></activity>
-		<!-- <coupon :dataConfig="coupon.default" @click.native="bindEdit('coupon','default')"></coupon>
-		<seckill :dataConfig="seckill.default" @click.native="bindEdit('seckill','default')"></seckill>
-		<adsRecommend :dataConfig="adsRecommend.default" @click.native="bindEdit('adsRecommend','default')"></adsRecommend>
-		<combination :dataConfig="combination.default" @click.native="bindEdit('combination','default')"></combination>
-		<bargain :dataConfig="bargain.default" @click.native="bindEdit('bargain','default')"></bargain>
-		<goodList :dataConfig="goodList.default" @click.native="bindEdit('goodList','default')"></goodList>
-		<picTxt :dataConfig="picTxt.default" @click.native="bindEdit('picTxt','default')"></picTxt>	 -->
-		<alive :dataConfig="alive.default" @click.native="bindEdit('alive','default')"></alive>
-		<scrollBox :dataConfig="scrollBox.default" @click.native="bindEdit('scrollBox','default')"></scrollBox>
-		<promotion :dataConfig="goodList.dd" @click.native="bindEdit('goodList','dd')"></promotion>
-		<popular :dataConfig="goodList.bb" @click.native="bindEdit('goodList','bb')"></popular>
-		<swiperBg :dataConfig="swiperBg.aa" @click.native="bindEdit('swiperBg','aa')" class='swiperCon'></swiperBg>
-	  <newGoods :dataConfig="goodList.cc" @click.native="bindEdit('goodList','cc')"></newGoods>
-		<titles :dataConfig="titles.default" @click.native="bindEdit('titles','default')"></titles>
-		<mBanner :dataConfig="swiperBg.cc" @click.native="bindEdit('swiperBg','cc')"></mBanner>
-		<recommend :dataConfig="goodList.aa" @click.native="bindEdit('goodList','aa')"></recommend>
-		<!-- <customerService :dataConfig="customerService.default" @click.native="bindEdit('customerService','default')"></customerService> -->
-		<tabBar :dataConfig="tabBar.default" :pagePath="'/pages/index/index'" @click.native="bindEdit('tabBar','default')"></tabBar>
+		<!-- 顶部搜索 -->
+		<view class="skeleton" id="pageIndexs" :style="{visibility: showSkeleton ? 'hidden' : 'visible'}">
+			<headerSerch class="mp-header skeleton" :dataConfig="headerSerch.default"
+				@click.native="bindEdit('headerSerch','default')"></headerSerch>
+			<!-- 轮播 -->
+			<swiperBg :dataConfig="swiperBg.default" @click.native="bindEdit('swiperBg','default')"></swiperBg>
+			<!-- 金刚区 -->
+			<menus :dataConfig="menus.default" @click.native="bindEdit('menus','default')">
+			</menus>
+			<!-- 新闻简报 -->
+			<news :dataConfig="news.default" @click.native="bindEdit('news','default')"></news>
+			<!-- 活动魔方 -->
+			<activity :dataConfig="activity.default" @click.native="bindEdit('activity','default')"></activity>
+			<!-- 		<seckill :dataConfig="seckill.default" @click.native="bindEdit('seckill','default')"></seckill>
+			<adsRecommend :dataConfig="adsRecommend.default" @click.native="bindEdit('adsRecommend','default')"></adsRecommend>
+			<combination :dataConfig="combination.default" @click.native="bindEdit('combination','default')"></combination>
+			<bargain :dataConfig="bargain.default" @click.native="bindEdit('bargain','default')"></bargain>
+			<goodList :dataConfig="goodList.default" @click.native="bindEdit('goodList','default')"></goodList>
+			<picTxt :dataConfig="picTxt.default" @click.native="bindEdit('picTxt','default')"></picTxt>	 -->
+			<alive :dataConfig="alive.default" @click.native="bindEdit('alive','default')">
+			</alive>
+			<!-- 优惠券 -->
+			<coupon :dataConfig="coupon.default" @click.native="bindEdit('coupon','default')">
+			</coupon>
+			<!-- 快速选择 -->
+			<scrollBox :dataConfig="scrollBox.default" @click.native="bindEdit('scrollBox','default')"></scrollBox>
+			<!-- 促销精品 -->
+			<recommend :dataConfig="goodList.aa" @click.native="bindEdit('goodList','aa')">
+			</recommend>
+			<!-- 排行榜 -->
+			<popular :dataConfig="goodList.bb" @click.native="bindEdit('goodList','bb')">
+			</popular>
+			<!-- 商品轮播 -->
+			<mBanner :dataConfig="swiperBg.aa" @click.native="bindEdit('swiperBg','aa')">
+			</mBanner>
+			<!-- 首发新品 -->
+			<newGoods :dataConfig="goodList.cc" @click.native="bindEdit('goodList','cc')">
+			</newGoods>
+			<!-- 精品推荐 -->
+			<!-- <mBanner :dataConfig="swiperBg.cc" @click.native="bindEdit('swiperBg','cc')"></mBanner> -->
+
+			<!-- <titles :dataConfig="titles.default" :sty="'off'" @click.native="bindEdit('titles','default')"></titles> -->
+			<!-- 商品轮播 -->
+
+
+			<!-- 		<customerService :dataConfig="customerService.default" @click.native="bindEdit('customerService','default')"></customerService> -->
+			<!-- 促销单品 -->
+			<promotion :dataConfig="goodList.dd" @click.native="bindEdit('goodList','dd')">
+			</promotion>
+			<!-- 商品分类 -->
+			<tabNav class="sticky-box" :style="'top:'+ isTop+'px;'" :dataConfig="tabNav.default"
+				@click.native="bindEdit('tabNav','default')" @bindSortId="bindSortId" @bindHeight="bindHeighta">
+			</tabNav>
+			<!-- 商品列表 -->
+			<goodsWaterfall :class="{'nothing':loading}" v-if="!isIframe && tabNav.default && tabNav.default.isShow.val"
+				:dataLists="goodLists" @click.native="bindEdit('List')"></goodsWaterfall>
+			<Loading class="loading-sty" :loaded="loaded" :loading="loading"></Loading>
+			<view class=""
+				v-if="!isIframe && tabNav.default && tabNav.default.isShow.val && goodLists.length == 0 && !loading">
+				<view class="empty-box">
+					<image src="/static/images/noShopper.png"></image>
+				</view>
+			</view>
+		</view>
+
+		<tabBar :dataConfig="tabBar.default" :pagePath="'/pages/index/index'"
+			@click.native="bindEdit('tabBar','default')"></tabBar>
 		<view v-if="site_config && !isIframe" class="site-config" @click="goICP">{{ site_config }}</view>
-		<view class="uni-p-b-98" v-if="!isIframe"></view>
-		<couponWindow
-			style="position:relative;z-index:10000;"
-			:window="isCouponShow"
-			@onColse="couponClose"
-			:couponImage="couponObj.image"
-			:couponList="couponObj.list"
-		></couponWindow>
-		
+		<view class="uni-p-b-98"></view>
+		<couponWindow style="position:relative;z-index:10000;" :window="isCouponShow" @onColse="couponClose"
+			:couponImage="couponObj.image" :couponList="couponObj.list"></couponWindow>
+		<!-- #ifdef APP-PLUS -->
+		<!-- <app-update v-if="!privacyStatus" ref="appUpdate" :force="true" :tabbar="false"></app-update> -->
+		<!-- #endif -->
+		<!-- #ifdef APP-PLUS -->
+		<view class="privacy-wrapper" v-if="privacyStatus">
+			<view class="privacy-box">
+				<view class="title">服务协议与隐私政策</view>
+				<view class="content">
+					请务必审慎阅读、充分理解“服务协议与 隐私政策”各条款，包括但不限于：为了 向你提供即时通讯、内容分享等服务，我 们需要收集你的设备信息、操作日志等个 人信息。你可以在“设置”中查看、变更、
+					删除个人信息并管理你的授权。<br>
+					你可以阅读<navigator url="/pages/users/privacy/index">《服务协议与隐私政策》</navigator>了解
+					详细信息。如你同意，请点击“我同意”开始接受我们的服务。
+				</view>
+				<view class="btn-box">
+					<view class="btn-item" @click="confirmApp">我同意</view>
+					<view class="btn" @click="closeModel">残忍拒绝</view>
+				</view>
+			</view>
+		</view>
+		<!-- #endif -->
 	</view>
 </template>
-
 <script>
-import couponWindow from '@/components/couponWindow/index';
-import headerSerch from './components/headerSerch';
-import swiperBg from './components/swiperBg';
-import menus from './components/menus';
-import news from './components/news';
-import activity from './components/activity';
-import scrollBox from './components/scrollBox';
-import recommend from './components/recommend';
-import popular from './components/popular';
-import mBanner from './components/mBanner';
-import newGoods from './components/newGoods';
-import promotion from './components/promotion';
-import alive from './components/alive';
-import adsRecommend from './components/adsRecommend';
-import coupon from './components/coupon';
-import seckill from './components/seckill';
-import combination from './components/combination';
-import bargain from './components/bargain';
-import goodList from './components/goodList';
-import picTxt from './components/picTxt';
-import titles from './components/titles';
-import customerService from './components/customerService';
-import tabBar from './components/tabBar';
-import { getShare, follow } from '@/api/public.js';
-// #ifdef MP
-import { SUBSCRIBE_MESSAGE, TIPS_KEY } from '@/config/cache';
-// #endif
-import { getTemlIds,siteConfig } from '@/api/api.js';
-import { mapGetters } from 'vuex';
-import { getDiy, getIndexData, getCouponV2, getCouponNewUser } from '@/api/api.js';
-// import { getGroomList } from '@/api/store.js';
-import { toLogin } from '@/libs/login.js';
-let app = getApp();
-let statusBarHeight = uni.getSystemInfoSync().statusBarHeight;
-export default {
-	computed: mapGetters(['isLogin', 'uid']),
-	components: {
-		couponWindow,
-		headerSerch,
-		swiperBg,
-		menus,
-		news,
-		activity,
-		scrollBox,
-		recommend,
-		popular,
-		mBanner,
-		newGoods,
-		promotion,
-		alive,
-		adsRecommend,
-		coupon,
-		seckill,
-		combination,
-		bargain,
-		goodList,
-		picTxt,
-		titles,
-		customerService,
-		tabBar
-	},
-	data() {
-		return {
-			followHid: true,
-			followUrl:'',
-			followCode:false,
-			navH:statusBarHeight,
-			subscribe: false,
-			iShidden:false,
-			goodType: 3,
-			loading: false,
-			loadend: false,
-			loadTitle: '下拉加载更多', //提示语
-			page: 1,
-			limit: this.$config.LIMIT,
-			numConfig: 0,
-			couponObj: {},
-			isCouponShow: false,
-			shareInfo: {},
-			site_config:'',
-			isIframe: app.globalData.isIframe,
-			headerSerch:{},//头部搜索
-			swiperBg:{},//轮播
-			menus:{},//导航
-			news:{},//消息公告
-			activity:{},//活动魔方
-			alive:{},//直播
-			scrollBox:{},//快速选择分类
-			titles:{},//标题
-			goodList:{},//商品列表(商品列表、首发新品、热门榜单、促销单品、精品推荐)
-			tabBar:{},//导航
-			customerService:{},//客服
-			picTxt:{},//图文详情
-			bargain:{},//砍价
-			combination:{},//拼团
-			adsRecommend:{},//广告位
-			seckill:{},//秒杀
-			coupon:{},//优惠券
-			isBorader: ''
-		};
-	},
-	onLoad(options) {
-		let that = this;
-		// #ifdef H5
-		if(app.globalData.isIframe){
-			setTimeout(()=>{
-				let active;
-				document.getElementById('pageIndex').children.forEach(dom=>{
-					dom.addEventListener('click', (e)=>{
-						e.stopPropagation();
-						e.preventDefault();
-						if(dom === active) return;
-						dom.classList.add('borderShow');
-						active && active.classList.remove('borderShow');
-						active = dom;
-					})
-				})
-			});
-		}
-		if (app.globalData.isIframe) {
-			uni.hideTabBar();
-		}
-		this.getFollow();
-		if (that.$wechat.isWeixin()) {
-			that.$wechat.location().then(res=>{
-				uni.setStorageSync('user_latitude', res.latitude);
-				uni.setStorageSync('user_longitude', res.longitude);
-			})
-		}else{
-		// #endif	
-			uni.getLocation({
-				type: 'wgs84',
-				success: function(res) {
-					try {
-						uni.setStorageSync('user_latitude', res.latitude);
-						uni.setStorageSync('user_longitude', res.longitude);
-					} catch {}
-				}
-			});
-			
-		// #ifdef H5	
-		}
-		// #endif
-		this.diyData();
-		this.getIndexData();
-		this.setOpenShare();
-		// #ifdef MP
-		if (this.$Cache.get(TIPS_KEY)) this.iShidden = true;
-		this.getTemlIds();
-		// #endif
-	},
-	// #ifdef MP
-	//发送给朋友
-	onShareAppMessage: function() {
-		// 此处的distSource为分享者的部分信息，需要传递给其他人
-		let that = this;
-		return {
-			title: this.shareInfo.title,
-			path: '/pages/index/index',
-			imageUrl: this.shareInfo.img
-		};
-	},
-	//分享到朋友圈
-	onShareTimeline: function() {
-		return {
-			title: this.shareInfo.title,
-			imageUrl: this.shareInfo.img
-		};
-	},
+	import couponWindow from '@/components/couponWindow/index';
+	import headerSerch from './components/headerSerch';
+	import swiperBg from './components/swiperBg';
+	import menus from './components/menus';
+	import news from './components/news';
+	import activity from './components/activity';
+	import scrollBox from './components/scrollBox';
+	import recommend from './components/recommend';
+	import popular from './components/popular';
+	import mBanner from './components/mBanner';
+	import newGoods from './components/newGoods';
+	import promotion from './components/promotion';
+	import alive from './components/alive';
+	import adsRecommend from './components/adsRecommend';
+	import coupon from './components/coupon';
+	import seckill from './components/seckill';
+	import combination from './components/combination';
+	import bargain from './components/bargain';
+	import goodList from './components/goodList';
+	import picTxt from './components/picTxt';
+	import titles from './components/titles';
+	import customerService from './components/customerService';
+	import tabBar from './components/tabBar';
+	import tabNav from './components/tabNav';
+	import appUpdate from "./update/app-update.vue"
+	import Loading from '@/components/Loading/index.vue';
+	import {
+		getShare,
+		follow
+	} from '@/api/public.js';
+	// #ifdef MP || APP-PLUS
+	import {
+		SUBSCRIBE_MESSAGE,
+		TIPS_KEY
+	} from '@/config/cache';
 	// #endif
-	onShow() {
-		siteConfig().then(res => {
-			this.site_config = res.data.record_No
-		}).catch(err => {
-			console.error(err.msg);
-		});
-		if (!app.globalData.isIframe) {
-			uni.showTabBar();
-			if (this.isLogin) {
-				this.getCoupon();
-			}
-		}
-	},
-	methods: {
-		bindEdit(name,dataName) {
+	import {
+		getTemlIds,
+		siteConfig
+	} from '@/api/api.js';
+	import {
+		mapGetters
+	} from 'vuex';
+	import {
+		getDiy,
+		getIndexData,
+		getCouponV2,
+		getCouponNewUser
+	} from '@/api/api.js';
+	import {
+		getGroomList,
+		getCategoryList,
+		getProductslist,
+		getProductHot
+	} from '@/api/store.js';
+	import {
+		goShopDetail,
+		goPage
+	} from '@/libs/order.js'
+	import {
+		toLogin
+	} from '@/libs/login.js';
+	import colors from "@/mixins/color";
+	import goodsWaterfall from "@/components/goodsWaterfall/goodsWaterfall.vue"
+	import skeletons from './components/skeleton.vue'
+	let app = getApp();
+	let statusBarHeight = uni.getSystemInfoSync().statusBarHeight;
+	export default {
+		computed: mapGetters(['isLogin', 'uid']),
+		components: {
+			couponWindow,
+			headerSerch,
+			swiperBg,
+			menus,
+			news,
+			activity,
+			scrollBox,
+			recommend,
+			popular,
+			mBanner,
+			newGoods,
+			promotion,
+			alive,
+			adsRecommend,
+			coupon,
+			seckill,
+			combination,
+			bargain,
+			goodList,
+			picTxt,
+			titles,
+			customerService,
+			tabBar,
+			tabNav,
+			Loading,
+			goodsWaterfall,
+			skeletons,
+			appUpdate, //APP更新
+		},
+		mixins: [colors],
+		data() {
+			return {
+				showSkeleton: true, //骨架屏显示隐藏
+				isNodes: 0, //控制什么时候开始抓取元素节点,只要数值改变就重新抓取
+				isSortType: 0,
+				sortList: {},
+				sortAll: [],
+				goodPage: 1,
+				goodLists: [],
+				curSort: 0,
+				sortMpTop: 0,
+				loaded: false,
+				hostProduct: [],
+				hotScroll: false,
+				hotPage: 1,
+				hotLimit: 10,
+				followHid: true,
+				followUrl: '',
+				followCode: false,
+				navH: statusBarHeight,
+				subscribe: false,
+				iShidden: false,
+				goodType: 3,
+				loading: false,
+				loadend: false,
+				loadTitle: '下拉加载更多', //提示语
+				page: 1,
+				limit: this.$config.LIMIT,
+				numConfig: 0,
+				couponObj: {},
+				isCouponShow: false,
+				shareInfo: {},
+				site_config: '',
+				isIframe: app.globalData.isIframe,
+				headerSerch: {}, //头部搜索
+				swiperBg: {}, //轮播
+				menus: {}, //导航
+				news: {}, //消息公告
+				activity: {}, //活动魔方
+				alive: {}, 
+				scrollBox: {}, //快速选择分类
+				titles: {}, //标题
+				goodList: {}, //商品列表(商品列表、首发新品、热门榜单、促销单品、精品推荐)
+				tabBar: {}, //导航
+				customerService: {}, //客服
+				picTxt: {}, //图文详情
+				bargain: {}, //砍价
+				combination: {}, //拼团
+				adsRecommend: {}, //广告位
+				seckill: {}, //秒杀
+				coupon: {}, //优惠券
+				tabNav: {}, //分类tab
+				isBorader: '',
+				domOffsetTop: 50,
+				isTop: 0,
+				privacyStatus: false, // 隐私政策是否同意过
+				isFixed: false,
+			};
+		},
+		onLoad(options) {
+			uni.hideTabBar();
+			// #ifdef APP-PLUS
+			this.$nextTick(() => {
+				// this.$refs.appUpdate.update(); //调用子组件 检查更新
+			})
+			try {
+				let val = uni.getStorageSync('privacyStatus') || false
+				if (!val) {
+					this.privacyStatus = true
+				}
+			} catch (e) {}
+			// #endif
+			let that = this;
+			// // #ifdef MP
+			// if (options.scene) app.globalData.code = decodeURIComponent(options.scene)
+			// if (options.spid) app.globalData.spid = options.spid;
+			// // #endif
+			// #ifdef H5
 			if (app.globalData.isIframe) {
-				window.parent.postMessage(
-					{
-						name: name,
-						dataName: dataName,
-						params: {}
-					},
-					'*'
-				);
-				return;
+				this.showSkeleton = false
+				setTimeout(() => {
+					let active;
+					document.getElementById('pageIndexs').children.forEach(dom => {
+						dom.addEventListener('click', (e) => {
+							e.stopPropagation();
+							e.preventDefault();
+							if (dom === active) return;
+							dom.classList.add('borderShow');
+							active && active.classList.remove('borderShow');
+							active = dom;
+						})
+					})
+				}, 1000);
 			}
-		},
-		getFollow() {
-		   follow().then(res => {
-				this.followUrl = res.data.path;
-		   }).catch((err) => {
-				return this.$util.Tips({
-				    title: err.msg
-				});
-		   });
-		},
-		followTap() {
-			this.followCode = true;
-			this.followHid = false;
-		},
-		closeFollow() {
-			this.followHid = false;
-		},
-		closeFollowCode() {
-			this.followCode = false;
-			this.followHid = true;
-		},
-		closeTip: function() {
-			this.$Cache.set(TIPS_KEY, true);
-			this.iShidden = true;
-		},
-		// 优惠券弹窗
-		getCoupon() {
-			const tagDate = uni.getStorageSync('tagDate') || '',
-				nowDate = new Date().toLocaleDateString();
-			if (tagDate === nowDate) {
-				this.getNewCoupon();
+			if (app.globalData.isIframe) {
+				uni.hideTabBar();
+			}
+			this.getFollow();
+			if (that.$wechat.isWeixin()) {
+				that.$wechat.location().then(res => {
+					uni.setStorageSync('user_latitude', res.latitude);
+					uni.setStorageSync('user_longitude', res.longitude);
+				})
 			} else {
-				getCouponV2().then(res => {
-					const { data } = res;
-					if (data.list.length) {
-						this.isCouponShow = true;
-						this.couponObj = data;
-						uni.setStorageSync('tagDate', new Date().toLocaleDateString());
-					} else {
-						this.getNewCoupon();
+				// #endif	
+				uni.getLocation({
+					type: 'wgs84',
+					success: function(res) {
+						try {
+							uni.setStorageSync('user_latitude', res.latitude);
+							uni.setStorageSync('user_longitude', res.longitude);
+						} catch {}
 					}
 				});
+
+				// #ifdef H5	
 			}
+			// #endif
+			this.diyData();
+			this.getIndexData();
+			this.setOpenShare();
+			// #ifdef MP
+			if (this.$Cache.get(TIPS_KEY)) this.iShidden = true;
+			this.getTemlIds();
+			// #endif
+			siteConfig().then(res => {
+				this.site_config = res.data.record_No
+			}).catch(err => {
+				return this.$util.Tips({
+					title: err.msg
+				});
+			});
+			// #ifdef APP-PLUS
+			this.isTop = uni.getSystemInfoSync().statusBarHeight + 100
+			// #endif
+			// #ifdef MP
+			let info = uni.createSelectorQuery().select(".mp-header");
+			info.boundingClientRect((data) => {
+				this.isTop = data.top
+			}).exec()
+			// #endif
+			// #ifdef H5
+			this.isTop = 0
+			// #endif
 		},
-		// 新用户优惠券
-		getNewCoupon() {
-			const oldUser = uni.getStorageSync('oldUser') || 0;
-			if (!oldUser) {
-				getCouponNewUser().then(res => {
-					const { data } = res;
-					if (data.show) {
+		onPullDownRefresh() {
+			this.diyData();
+			this.getIndexData();
+		},
+		// #ifdef MP
+		//发送给朋友
+		onShareAppMessage: function() {
+			// 此处的distSource为分享者的部分信息，需要传递给其他人
+			let that = this;
+			return {
+				title: this.shareInfo.title,
+				path: '/pages/index/index',
+				imageUrl: this.shareInfo.img
+			};
+		},
+		//分享到朋友圈
+		onShareTimeline: function() {
+			return {
+				title: this.shareInfo.title,
+				imageUrl: this.shareInfo.img
+			};
+		},
+		// #endif
+		onShow() {
+			if (!app.globalData.isIframe) {
+				// uni.showTabBar();
+				if (this.isLogin) {
+					this.getCoupon();
+				}
+			}
+
+
+		},
+		methods: {
+			// #ifdef APP-PLUS
+			// 同意隐私协议
+			confirmApp() {
+				uni.setStorageSync('privacyStatus', true)
+				this.privacyStatus = false
+			},
+			// 关闭Model
+			closeModel() {
+				//退出app
+				uni.getSystemInfo({
+					success: function(res) { // 判断为安卓的手机 
+						if (res.platform == 'android') { // 安卓退出app      
+							plus.runtime.quit();
+						} else { // 判断为ios的手机，退出App      
+							plus.ios.import("UIApplication").sharedApplication().performSelector("exit");
+
+						}
+					}
+				})
+			},
+			// #endif
+			bindEdit(name, dataName) {
+				if (app.globalData.isIframe) {
+					window.parent.postMessage({
+							name: name,
+							dataName: dataName,
+							params: {}
+						},
+						'*'
+					);
+					return;
+				}
+			},
+			getFollow() {
+				follow().then(res => {
+					this.followUrl = res.data.path;
+				}).catch((err) => {
+					return this.$util.Tips({
+						title: err.msg
+					});
+				});
+			},
+			followTap() {
+				this.followCode = true;
+				this.followHid = false;
+			},
+			closeFollow() {
+				this.followHid = false;
+			},
+			closeFollowCode() {
+				this.followCode = false;
+				this.followHid = true;
+			},
+			closeTip: function() {
+				this.$Cache.set(TIPS_KEY, true);
+				this.iShidden = true;
+			},
+			bindHeighta(data) {
+				// #ifdef APP-PLUS
+				this.sortMpTop = data.top + data.height;
+				// #endif
+				// #ifdef H5
+				this.domOffsetTop = data.top;
+				// #endif
+				// #ifndef H5
+				this.domOffsetTop = data.top - 110;
+				// #endif
+			},
+			// 优惠券弹窗
+			getCoupon() {
+				const tagDate = uni.getStorageSync('tagDate') || '',
+					nowDate = new Date().toLocaleDateString();
+				if (tagDate === nowDate) {
+					this.getNewCoupon();
+				} else {
+					getCouponV2().then(res => {
+						const {
+							data
+						} = res;
 						if (data.list.length) {
 							this.isCouponShow = true;
 							this.couponObj = data;
+							uni.setStorageSync('tagDate', new Date().toLocaleDateString());
+						} else {
+							this.getNewCoupon();
+						}
+					});
+				}
+			},
+			// 新用户优惠券
+			getNewCoupon() {
+				const oldUser = uni.getStorageSync('oldUser') || 0;
+				if (!oldUser) {
+					getCouponNewUser().then(res => {
+						const {
+							data
+						} = res;
+						if (data.show) {
+							if (data.list.length) {
+								this.isCouponShow = true;
+								this.couponObj = data;
+								uni.setStorageSync('oldUser', 1);
+							}
+						} else {
 							uni.setStorageSync('oldUser', 1);
 						}
-					} else {
-						uni.setStorageSync('oldUser', 1);
-					}
-				});
-			}
-		},
-		// 优惠券弹窗关闭
-		couponClose() {
-			this.isCouponShow = false;
-			if (!uni.getStorageSync('oldUser')) {
-				this.getNewCoupon();
-			}
-		},
-		// 授权关闭
-		// authColse: function(e) {
-		// 	this.isShowAuth = e;
-		// },
-		// #ifdef MP
-		getTemlIds() {
-			let messageTmplIds = wx.getStorageSync(SUBSCRIBE_MESSAGE);
-			if (!messageTmplIds) {
-				getTemlIds().then(res => {
-					if (res.data) wx.setStorageSync(SUBSCRIBE_MESSAGE, JSON.stringify(res.data));
-				});
-			}
-		},
-		// #endif
-		goICP() {
-			// #ifdef H5
-			window.open('http://beian.miit.gov.cn/');
-			// #endif
+					});
+				}
+			},
+			// 优惠券弹窗关闭
+			couponClose() {
+				this.isCouponShow = false;
+				if (!uni.getStorageSync('oldUser')) {
+					this.getNewCoupon();
+				}
+			},
+			// 授权关闭
+			// authColse: function(e) {
+			// 	this.isShowAuth = e;
+			// },
 			// #ifdef MP
-			uni.navigateTo({
-				url: `/pages/annex/web_view/index?url=https://beian.miit.gov.cn/`
-			});
+			getTemlIds() {
+				let messageTmplIds = wx.getStorageSync(SUBSCRIBE_MESSAGE);
+				if (!messageTmplIds) {
+					getTemlIds().then(res => {
+						if (res.data) wx.setStorageSync(SUBSCRIBE_MESSAGE, JSON.stringify(res.data));
+					});
+				}
+			},
 			// #endif
-		},
-		onLoadFun() {},
-		diyData() {
-			let that = this;
-			getDiy().then(res => {
-				let data = res.data;
-				that.headerSerch = data.headerSerch;
-				that.swiperBg = data.swiperBg;
-				that.menus = data.menus;
-				that.news = data.news;
-				that.activity = data.activity;
-				that.alive = data.alive;
-				that.scrollBox = data.scrollBox;
-				that.titles = data.titles;
-				that.goodList = data.goodList;
-				that.tabBar = data.tabBar;
-				that.customerService = data.customerService;
-				that.picTxt = data.picTxt;
-				that.bargain = data.bargain;
-				that.combination = data.combination;
-				that.adsRecommend = data.adsRecommend;
-				that.seckill = data.seckill;
-				that.coupon = data.coupon;
-			});
-		},
-		getIndexData() {
-			getIndexData().then(res => {
-				this.subscribe = res.data.subscribe;
+			goICP() {
 				// #ifdef H5
-				localStorage.setItem("itemName", res.data.site_name);
+				window.open('http://beian.miit.gov.cn/');
 				// #endif
-				uni.setNavigationBarTitle({
-					title: res.data.site_name
+				// #ifdef MP
+				uni.navigateTo({
+					url: `/pages/annex/web_view/index?url=https://beian.miit.gov.cn/`
 				});
-			});
-		},
-		// 微信分享；
-		setOpenShare: function() {
-			let that = this;
-			getShare().then(res => {
-				let data = res.data.data;
-				this.shareInfo = data;
-				// #ifdef H5
-				let url = location.href;
-				if (this.$store.state.app.uid) {
-					url = url.indexOf('?') === -1 ? url + '?spread=' + this.$store.state.app.uid : url + '&spread=' + this.$store.state.app.uid;
-				}
-				if (that.$wechat.isWeixin()) {
-					let configAppMessage = {
-						desc: data.synopsis,
-						title: data.title,
-						link: url,
-						imgUrl: data.img
-					};
-					that.$wechat.wechatEvevt(['updateAppMessageShareData', 'updateTimelineShareData'], configAppMessage);
-				}
 				// #endif
-			});
-		}
-	},
-	onReachBottom: function() {
-		// this.getGroomList();
-	}
-};
+			},
+			onLoadFun() {},
+			diyData() {
+				let that = this;
+				getDiy().then(res => {
+					let data = res.data;
+					that.headerSerch = data.headerSerch;
+					that.swiperBg = data.swiperBg;
+					that.menus = data.menus;
+					that.news = data.news;
+					that.activity = data.activity;
+					that.alive = data.alive;
+					that.scrollBox = data.scrollBox;
+					that.titles = data.titles;
+					that.goodList = data.goodList;
+					that.tabNav = data.tabNav;
+					that.tabBar = data.tabBar;
+					that.customerService = data.customerService;
+					that.picTxt = data.picTxt;
+					that.bargain = data.bargain;
+					that.combination = data.combination;
+					that.adsRecommend = data.adsRecommend;
+					that.seckill = data.seckill;
+					that.coupon = data.coupon;
+					this.$Cache.set('TAB_BAR', data.tabBar.default.tabBarList)
+					setTimeout(() => {
+						this.showSkeleton = false
+					}, 1500)
+					uni.stopPullDownRefresh({
+						success: (e) => {}
+					});
+				});
+			},
+			getIndexData() {
+				getIndexData().then(res => {
+					this.subscribe = res.data.subscribe;
+					// #ifdef H5
+					localStorage.setItem("itemName", res.data.site_name);
+					// #endif
+					uni.setNavigationBarTitle({
+						title: res.data.site_name
+					});
+				});
+			},
+			/**
+			 * 获取我的推荐
+			 */
+			get_host_product: function() {
+				let that = this;
+				if (that.hotScroll) return;
+				getProductHot(that.hotPage, that.hotLimit).then(res => {
+					that.hotPage++;
+					that.hotScroll = res.data.length < that.hotLimit;
+					that.hostProduct = that.hostProduct.concat(res.data);
+					// that.$set(that, 'hostProduct', res.data)
+				});
+			},
+			// 获取分类id
+			bindSortId(data) {
+				this.isSortType = data == -99 ? 0 : 1;
+				this.goodLists = []
+				this.getProductList(data);
+			},
+			getProductList(data) {
+				let tempObj = '';
+				this.curSort = 0;
+				this.loaded = false;
+				this.goodPage = 1
+				this.getGoodsList(data)
+			},
+			getGoodsList(data) {
+				if (this.loading || this.loaded) return;
+				this.loading = true;
+				getProductslist({
+					keyword: '',
+					priceOrder: '',
+					salesOrder: '',
+					news: 0,
+					page: this.goodPage,
+					limit: 10,
+					cid: data
+				}).then(res => {
+					this.goodLists = this.goodLists.concat(res.data);
+					this.loading = false;
+					this.loaded = res.data.length < 10;
+					this.goodPage++;
+				});
+			},
+			goGoodsDetail(item) {
+				goPage().then(res => {
+					goShopDetail(item, this.uid).then(res => {
+						uni.navigateTo({
+							url: `/pages/goods_details/index?id=${item.id}`
+						})
+					})
+				})
+			},
+			// 微信分享；
+			setOpenShare: function() {
+				let that = this;
+				getShare().then(res => {
+					let data = res.data;
+					this.shareInfo = data;
+					// #ifdef H5
+					let url = location.href;
+					if (this.$store.state.app.uid) {
+						url = url.indexOf('?') === -1 ? url + '?spread=' + this.$store.state.app.uid : url +
+							'&spread=' + this.$store.state.app.uid;
+					}
+					if (that.$wechat.isWeixin()) {
+						let configAppMessage = {
+							desc: data.synopsis,
+							title: data.title,
+							link: url,
+							imgUrl: data.img
+						};
+						that.$wechat.wechatEvevt(['updateAppMessageShareData', 'updateTimelineShareData'],
+							configAppMessage);
+					}
+					// #endif
+				});
+			}
+		},
+		onReachBottom: function() {
+			// if (this.isSortType == 0) {
+			// 	// this.getGroomList();
+			// } else {
+			// 	this.getGoodsList();
+			// }
+		},
+		onPageScroll(e) {
+			if (this.headerSerch.default.isShow.val) {
+				// if (this.domOffsetTop == 50) return
+				if (e.scrollTop > this.isTop) {
+					this.isFixed = true;
+				}
+				if (e.scrollTop < this.isTop) {
+					this.$nextTick(() => {
+						this.isFixed = false;
+					});
+				}
+			} else {
+				this.isFixed = false
+			}
+		},
+	};
 </script>
 
-<style lang="scss">
-page {
-	background: #fff;
-}
-.swiperCon{
-		margin: 20rpx 0!important;
+<style lang="scss" scoped>
+	page {
+		// background: linear-gradient(180deg, #fff, #fff 20%, #f5f5f5);
+		// overflow-x: hidden;
+		// overflow-y: scroll;
+		// height: max-content;
+	}
+
+	.bac-col {
+		width: 100%;
+		height: 300rpx;
+		position: absolute;
+		background-image: linear-gradient(135deg, #F97794 10%, #623AA2 100%);
+		top: 0;
+		background: linear-gradient(90deg, #F62C2C 0%, #F96E29 100%);
+	}
+
+	.swiperCon {
+		margin: 20rpx 0 !important;
+
 		/* #ifdef MP */
-		/deep/.swiperBg{
-			margin: 20rpx 0!important;
+		/deep/.swiperBg {
+			margin: 20rpx 0 !important;
 		}
+
 		/* #endif */
-		/deep/.swiper{
+		/deep/.swiper {
 			swiper,
 			.swiper-item,
 			image {
-				height: 190rpx!important;
+				height: 190rpx !important;
 			}
 		}
 	}
+
 	.site-config {
 		margin: 40rpx 0;
 		font-size: 24rpx;
@@ -446,11 +734,12 @@ page {
 			width: 100%;
 		}
 	}
-/* #ifdef MP */
+
+	/* #ifdef MP */
 	.indexTip {
 		position: fixed;
 		right: 42rpx;
-		z-index: 1000;
+		z-index: 10000;
 
 		.tip {
 			width: 400rpx;
@@ -491,55 +780,214 @@ page {
 	}
 
 	/* #endif */
-/* #ifdef H5 */
-        .follow {
-			position: fixed;
-			top: 0;
-			left: 0;
-			width: 100%;
-			background-color: rgba(0, 0, 0, 0.36);
-			height: 80rpx;
-			font-size: 28rpx;
-			color: #fff;
-			padding: 0 30rpx;
-			z-index: 100000;
-			
-			.iconfont {
-				font-size: 30rpx;
-				margin-left: 29rpx;
-			}
 
-			.bnt {
-				width: 160rpx;
-				height: 50rpx;
-				background-color: #E93323;
-				border-radius: 25rpx;
-				font-size: 24rpx;
-				text-align: center;
-				line-height: 50rpx;
-			}
+	/* #ifdef H5 */
+	.follow {
+		position: fixed;
+		top: 0;
+		left: 0;
+		width: 100%;
+		background-color: rgba(0, 0, 0, 0.36);
+		height: 80rpx;
+		font-size: 28rpx;
+		color: #fff;
+		padding: 0 30rpx;
+		z-index: 100000;
+
+		.iconfont {
+			font-size: 30rpx;
+			margin-left: 29rpx;
 		}
 
-		.followCode {
-			.mask{
-				z-index: 10000;
-			}
-			.pictrue {
-				width: 500rpx;
-				height: 720rpx;
-				border-radius: 12px;
-				left: 50%;
-				top: 50%;
-				margin-left: -250rpx;
-				margin-top: -360rpx;
-				position: fixed;
-				z-index: 10001;
+		.bnt {
+			width: 160rpx;
+			height: 50rpx;
+			background-color: #E93323;
+			border-radius: 25rpx;
+			font-size: 24rpx;
+			text-align: center;
+			line-height: 50rpx;
+		}
+	}
 
-				img {
-					width: 100%;
-					height: 100%;
+	.followCode {
+		.mask {
+			z-index: 10000;
+		}
+
+		.pictrue {
+			width: 500rpx;
+			height: 720rpx;
+			border-radius: 12px;
+			left: 50%;
+			top: 50%;
+			margin-left: -250rpx;
+			margin-top: -360rpx;
+			position: fixed;
+			z-index: 10001;
+
+			img {
+				width: 100%;
+				height: 100%;
+			}
+		}
+	}
+
+	/* #endif */
+	.privacy-wrapper {
+		z-index: 999;
+		position: fixed;
+		left: 0;
+		top: 0;
+		width: 100%;
+		height: 100%;
+		background: #7F7F7F;
+
+
+		.privacy-box {
+			position: absolute;
+			left: 50%;
+			top: 50%;
+			transform: translate(-50%, -50%);
+			width: 560rpx;
+			padding: 50rpx 45rpx 0;
+			background: #fff;
+			border-radius: 20rpx;
+
+			.title {
+				text-align: center;
+				font-size: 32rpx;
+				text-align: center;
+				color: #333;
+				font-weight: 700;
+			}
+
+			.content {
+				margin-top: 20rpx;
+				line-height: 1.5;
+				font-size: 26rpx;
+				color: #666;
+
+				navigator {
+					display: inline-block;
+					color: #E93323;
+				}
+			}
+
+			.btn-box {
+				margin-top: 40rpx;
+				text-align: center;
+				font-size: 30rpx;
+
+				.btn-item {
+					height: 82rpx;
+					line-height: 82rpx;
+					background: linear-gradient(90deg, #F67A38 0%, #F11B09 100%);
+					color: #fff;
+					border-radius: 41rpx;
+				}
+
+				.btn {
+					padding: 30rpx 0;
 				}
 			}
 		}
-/* #endif */
+	}
+
+	.sort-product {
+		margin: 20rpx;
+	}
+
+
+
+	.empty-box {
+		text-align: center;
+		padding: 150rpx 0;
+
+		image {
+			width: 410rpx;
+			height: 336rpx;
+		}
+	}
+
+	.nothing {
+		min-height: 800rpx;
+	}
+
+	.product-list {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: space-between;
+		margin-top: 0rpx;
+		padding: 0 20rpx;
+
+		.product-item {
+			position: relative;
+			width: 324rpx;
+			background: #fff;
+			border-radius: 10rpx;
+			margin-bottom: 20rpx;
+
+			image {
+				width: 100%;
+				height: 344rpx;
+				border-radius: 10rpx 10rpx 0 0;
+			}
+
+			.info {
+				padding: 14rpx 16rpx;
+
+				.title {
+					font-size: 28rpx;
+				}
+
+				.price-box {
+					font-size: 34rpx;
+					font-weight: 700;
+					margin-top: 8px;
+					color: #fc4141;
+
+					text {
+						font-size: 26rpx;
+					}
+				}
+			}
+		}
+	}
+
+	.sticky-box {
+		// /* #ifndef APP-PLUS-NVUE */
+		// display: flex;
+		// position: -webkit-sticky;
+		// /* #endif */
+		// position: sticky;
+		// /* #ifdef H5*/
+		// top: var(--window-top);
+		// /* #endif */
+
+		// z-index: 99;
+		// flex-direction: row;
+		// margin: 0px;
+		// background: #f5f5f5;
+		// padding: 30rpx 0;
+		// /* #ifdef MP || APP-PLUS*/
+		// //top: 110rpx;
+		// /* #endif
+
+		/* #ifndef H5 */
+		display: flex;
+		position: -webkit-sticky;
+		overflow-x: scroll;
+		/* #endif */
+		position: sticky;
+		z-index: 998;
+		flex-direction: row;
+		margin: 0px;
+		background: #f5f5f5;
+		padding: 15rpx 0 10rpx 0;
+		/* #ifdef MP || APP-PLUS*/
+		//top: 110rpx;
+		/* #endif */
+		// overflow-x: scroll;
+	}
 </style>

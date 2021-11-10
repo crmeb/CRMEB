@@ -11,14 +11,10 @@
 namespace app\adminapi\controller\v1\order;
 
 use app\adminapi\controller\AuthController;
-use app\services\kefu\LoginServices;
-use app\services\message\service\StoreServiceLogServices;
-use app\services\message\service\StoreServiceServices;
 use app\services\order\DeliveryServiceServices;
 use app\services\user\UserServices;
 use app\services\user\UserWechatuserServices;
 use crmeb\exceptions\AdminException;
-use crmeb\services\CacheService;
 use think\facade\App;
 
 /**
@@ -29,9 +25,9 @@ use think\facade\App;
 class DeliveryService extends AuthController
 {
     /**
-     * StoreService constructor.
+     * DeliveryService constructor.
      * @param App $app
-     * @param StoreServiceServices $services
+     * @param DeliveryServiceServices $services
      */
     public function __construct(App $app, DeliveryServiceServices $services)
     {

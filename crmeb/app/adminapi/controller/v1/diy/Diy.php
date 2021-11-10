@@ -45,7 +45,7 @@ class Diy extends AuthController
     {
         $where = $this->request->getMore([
             ['status', ''],
-            ['type', ''],
+            ['type', 0],
             ['name', ''],
             ['version', ''],
         ]);
@@ -63,18 +63,18 @@ class Diy extends AuthController
         $data = $this->request->postMore([
             ['value', ''],
         ]);
-        $value_config = ['seckill','bargain','combination','goodList'];
+        $value_config = ['seckill', 'bargain', 'combination', 'goodList'];
         $value = is_string($data['value']) ? json_decode($data['value'], true) : $data['value'];
-        foreach ($value as $key=>&$val){
-            if(in_array($key,$value_config) && is_array($val)){
-                foreach ($val as $k=>&$v){
-                    if(isset($v['selectConfig']['list']) && $v['selectConfig']['list']){
+        foreach ($value as $key => &$val) {
+            if (in_array($key, $value_config) && is_array($val)) {
+                foreach ($val as $k => &$v) {
+                    if (isset($v['selectConfig']['list']) && $v['selectConfig']['list']) {
                         $v['selectConfig']['list'] = [];
                     }
-                    if(isset($v['goodsList']['list']) && $v['goodsList']['list'] && $v['tabConfig']['tabVal'] == 1){
+                    if (isset($v['goodsList']['list']) && $v['goodsList']['list'] && $v['tabConfig']['tabVal'] == 1) {
                         $limitMax = config('database.page.limitMax', 50);
-                        if(count($v['goodsList']['list']) > $limitMax){
-                            return $this->fail('您设置得商品个数超出系统限制,最大限制' . $limitMax . '个商品');
+                        if (count($v['goodsList']['list']) > $limitMax) {
+                            return app('json')->fail('您设置得商品个数超出系统限制,最大限制' . $limitMax . '个商品');
                         }
                         $v['ids'] = array_column($v['goodsList']['list'], 'id');
                         $v['goodsList']['list'] = [];
@@ -123,7 +123,7 @@ class Diy extends AuthController
      * @param int $id
      * @return mixed
      */
-    public function getInfo(int $id, StoreProductServices $services,StoreSeckillServices $seckillServices, StoreCombinationServices $combinationServices,StoreBargainServices $bargainServices)
+    public function getInfo(int $id, StoreProductServices $services, StoreSeckillServices $seckillServices, StoreCombinationServices $combinationServices, StoreBargainServices $bargainServices)
     {
         if (!$id) throw new AdminException('参数错误');
         $info = $this->services->get($id);
@@ -132,35 +132,35 @@ class Diy extends AuthController
         } else {
             throw new AdminException('模板不存在');
         }
-        if(!$info['value']) return app('json')->success(compact('info'));
+        if (!$info['value']) return app('json')->success(compact('info'));
         $info['value'] = json_decode($info['value'], true);
-        $value_config = ['seckill','bargain','combination','goodList'];
-        foreach ($info['value']as $key=>&$val){
-            if(in_array($key,$value_config) && is_array($val)){
-                if($key == 'goodList'){
-                    foreach ($val as $k=>&$v){
-                        if(isset($v['ids']) && $v['ids'] && $v['tabConfig']['tabVal'] == 1){
+        $value_config = ['seckill', 'bargain', 'combination', 'goodList'];
+        foreach ($info['value'] as $key => &$val) {
+            if (in_array($key, $value_config) && is_array($val)) {
+                if ($key == 'goodList') {
+                    foreach ($val as $k => &$v) {
+                        if (isset($v['ids']) && $v['ids'] && $v['tabConfig']['tabVal'] == 1) {
                             $v['goodsList']['list'] = $services->getSearchList(['ids' => $v['ids']]);
                         }
                     }
                 }
-                if($key == "seckill"){
-                    foreach ($val as $k=>&$v){
-                        if(isset($v['ids']) && $v['ids'] && $v['tabConfig']['tabVal'] == 1){
+                if ($key == "seckill") {
+                    foreach ($val as $k => &$v) {
+                        if (isset($v['ids']) && $v['ids'] && $v['tabConfig']['tabVal'] == 1) {
                             $v['goodsList']['list'] = $seckillServices->getDiySeckillList(['ids' => $v['ids']])['list'];
                         }
                     }
                 }
-                if($key == "bargain"){
-                    foreach ($val as $k=>&$v){
-                        if(isset($v['ids']) && $v['ids'] && $v['tabConfig']['tabVal'] == 1){
+                if ($key == "bargain") {
+                    foreach ($val as $k => &$v) {
+                        if (isset($v['ids']) && $v['ids'] && $v['tabConfig']['tabVal'] == 1) {
                             $v['goodsList']['list'] = $bargainServices->getHomeList(['ids' => $v['ids']])['list'];
                         }
                     }
                 }
-                if($key == "combination"){
-                    foreach ($val as $k=>&$v){
-                        if(isset($v['ids']) && $v['ids'] && $v['tabConfig']['tabVal'] == 1){
+                if ($key == "combination") {
+                    foreach ($val as $k => &$v) {
+                        if (isset($v['ids']) && $v['ids'] && $v['tabConfig']['tabVal'] == 1) {
                             $v['goodsList']['list'] = $combinationServices->getHomeList(['ids' => $v['ids']])['list'];
                         }
                     }
@@ -288,7 +288,8 @@ class Diy extends AuthController
      * 添加页面
      * @return mixed
      */
-    public function create(){
+    public function create()
+    {
         return app('json')->success($this->services->createForm());
     }
 
@@ -296,7 +297,8 @@ class Diy extends AuthController
      * 保存页面
      * @return mixed
      */
-    public function save(){
+    public function save()
+    {
         $data = $this->request->postMore([
             ['name', ''],
             ['template_name', ''],
@@ -305,7 +307,7 @@ class Diy extends AuthController
         if (!$data['template_name']) throw new AdminException('请输入页面类型');
         $data['version'] = '1.0';
         $data['add_time'] = time();
-        $data['type'] = 1;
+        $data['type'] = 2;
         $this->services->save($data);
         return app('json')->success('保存成功！');
     }
@@ -315,7 +317,8 @@ class Diy extends AuthController
      * @param $id
      * @return mixed
      */
-    public function setRecovery($id){
+    public function setRecovery($id)
+    {
         if (!$id) throw new AdminException('参数错误');
         $info = $this->services->get($id);
         if ($info) {
@@ -332,7 +335,8 @@ class Diy extends AuthController
      * 获取商品列表
      * @return mixed
      */
-    public function getProductList(){
+    public function getProductList()
+    {
         $where = $this->request->getMore([
             ['cate_id', ''],
             ['store_name', ''],
@@ -352,5 +356,63 @@ class Diy extends AuthController
         unset($where['cate_id']);
         $list = $this->services->ProductList($where);
         return app('json')->success($list);
+    }
+
+    /**
+     * 分类、个人中心、一键换色
+     * @param $type
+     * @return mixed
+     */
+    public function getColorChange($type)
+    {
+        $status = (int)$this->services->getColorChange((string)$type);
+        return app('json')->success(compact('status'));
+    }
+
+    /**
+     * 保存分类、个人中心、一键换色
+     * @param $status
+     * @param $type
+     * @return mixed
+     */
+    public function colorChange($status, $type)
+    {
+        if (!$status) throw new AdminException('参数错误');
+        $info = $this->services->get(['template_name' => $type, 'type' => 1]);
+        if ($info) {
+            $info->value = $status;
+            $info->update_time = time();
+            $info->save();
+            return app('json')->success('设置成功');
+        } else {
+            throw new AdminException('模板不存在');
+        }
+    }
+
+    /**
+     * 获取个人中心数据
+     * @return mixed
+     */
+    public function getMember()
+    {
+        $data = $this->services->getMemberData();
+        return app('json')->success($data);
+    }
+
+    /**
+     * 保存个人中心数据
+     * @return mixed
+     */
+    public function memberSaveData()
+    {
+        $data = $this->request->postMore([
+            ['status', 0],
+            ['order_status', 0],
+            ['my_banner_status', 0],
+            ['routine_my_banner', []],
+            ['routine_my_menus', []]
+        ]);
+        $this->services->memberSaveData($data);
+        return app('json')->success('保存成功');
     }
 }

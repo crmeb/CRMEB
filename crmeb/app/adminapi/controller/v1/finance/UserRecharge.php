@@ -15,6 +15,10 @@ use app\adminapi\controller\AuthController;
 use app\services\user\UserRechargeServices;
 use think\facade\App;
 
+/**
+ * Class UserRecharge
+ * @package app\adminapi\controller\v1\finance
+ */
 class UserRecharge extends AuthController
 {
     /**

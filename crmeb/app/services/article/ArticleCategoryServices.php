@@ -65,7 +65,7 @@ class ArticleCategoryServices extends BaseServices
         $f[] = Form::hidden('id', $info['id'] ?? 0);
         $f[] = Form::input('title', '分类名称', $info['title'] ?? '')->maxlength(20)->required();
         $f[] = Form::input('intr', '分类简介', $info['intr'] ?? '')->type('textarea')->required();
-        $f[] = Form::frameImage('image', '分类图片', Url::buildUrl('admin/widget.images/index', array('fodder' => 'image')), $info['image'] ?? '')->icon('ios-add')->width('60%')->height('435px');
+        $f[] = Form::frameImage('image', '分类图片', Url::buildUrl('admin/widget.images/index', array('fodder' => 'image')), $info['image'] ?? '')->icon('ios-add')->width('950px')->height('505px')->modal(['footer-hide' => true]);
         $f[] = Form::number('sort', '排序', (int)($info['sort'] ?? 0));
         $f[] = Form::radio('status', '状态', $info['status'] ?? 1)->options([['value' => 1, 'label' => '显示'], ['value' => 0, 'label' => '隐藏']]);
         return create_form('添加分类', $f, Url::buildUrl($url), $method);
@@ -77,7 +77,7 @@ class ArticleCategoryServices extends BaseServices
      */
     public function save(array $data)
     {
-        $this->dao->save($data);
+        return $this->dao->save($data);
     }
 
     /**
@@ -86,7 +86,7 @@ class ArticleCategoryServices extends BaseServices
      */
     public function update(array $data)
     {
-        $this->dao->update($data['id'], $data);
+        return $this->dao->update($data['id'], $data);
     }
 
     /**
@@ -101,7 +101,7 @@ class ArticleCategoryServices extends BaseServices
         if ($count > 0) {
             throw new AdminException('该分类下有文章，无法删除！');
         } else {
-            $this->dao->delete($id);
+            return $this->dao->delete($id);
         }
     }
 
@@ -112,6 +112,6 @@ class ArticleCategoryServices extends BaseServices
      */
     public function setStatus(int $id, int $status)
     {
-        $this->dao->update($id, ['status' => $status]);
+        return $this->dao->update($id, ['status' => $status]);
     }
 }

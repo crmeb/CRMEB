@@ -18,10 +18,10 @@ use crmeb\basic\BaseJobs;
 use crmeb\traits\QueueTrait;
 use think\facade\Log;
 
-
 class UserJob extends BaseJobs
 {
     use QueueTrait;
+
     /**
      * 执行同步数据后
      * @param $openids
@@ -35,7 +35,7 @@ class UserJob extends BaseJobs
         $noBeOpenids = [];
         try {
             /** @var WechatUserServices $wechatUser */
-            $wechatUser = app()->make(WechatUserServices::class);
+            $wechatUser  = app()->make(WechatUserServices::class);
             $noBeOpenids = $wechatUser->syncWechatUser($openids);
         } catch (\Throwable $e) {
             Log::error('更新wechatUser用户信息失败,失败原因:' . $e->getMessage());

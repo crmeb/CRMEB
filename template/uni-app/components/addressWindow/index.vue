@@ -3,14 +3,14 @@
 		<view class="address-window" :class="address.address==true?'on':''">
 			<view class='title'>选择地址<text class='iconfont icon-guanbi' @tap='close'></text></view>
 			<view class='list'>
-				<view class='item acea-row row-between-wrapper' :class='active==index?"font-color":""' v-for="(item,index) in addressList"
+				<view class='item acea-row row-between-wrapper' :class='active==index?"font-num":""' v-for="(item,index) in addressList"
 				 @tap='tapAddress(index,item.id)' :key='index'>
-					<text class='iconfont icon-ditu' :class='active==index?"font-color":""'></text>
+					<text class='iconfont icon-ditu' :class='active==index?"font-num":""'></text>
 					<view class='address'>
-						<view class='name' :class='active==index?"font-color":""'>{{item.real_name}}<text class='phone'>{{item.phone}}</text></view>
+						<view class='name' :class='active==index?"font-num":""'>{{item.real_name}}<text class='phone'>{{item.phone}}</text></view>
 						<view class='line1'>{{item.province}}{{item.city}}{{item.district}}{{item.detail}}</view>
 					</view>
-					<text class='iconfont icon-complete' :class='active==index?"font-color":""'></text>
+					<text class='iconfont icon-complete' :class='active==index?"font-num":""'></text>
 				</view>
 			</view>
 			<!-- 无地址 -->

@@ -9,8 +9,29 @@
 		getShopConfig,
 		silenceAuth
 	} from '@/api/public';
-	import Auth from './libs/wechat.js';
-	import Routine from '@/libs/routine.js';
+	import Auth from '@/libs/wechat.js';
+	import Routine from './libs/routine.js';
+	import {
+		getCartCounts,
+	} from '@/api/order.js';
+	import {
+		colorChange
+	} from '@/api/api.js';
+	import {
+		mapGetters
+	} from "vuex"
+	import colors from '@/mixins/color.js';
+	let green =
+		'--view-theme: rgba(66,202,77,1);--view-theme-16: #42CA4D;--view-priceColor:#FF7600;--view-minorColor:rgba(108, 198, 94, 0.5);--view-minorColorT:rgba(66, 202, 77, 0.1);--view-bntColor:#FE960F;--view-op-ten: rgba(66,202,77, 0.1);--view-main-start:#70E038; --view-main-over:#42CA4D;--view-op-point-four: rgba(66,202,77, 0.04);'
+	let red =
+		'--view-theme: rgba(233,51,35,1);--view-theme-16: #e93323;--view-priceColor:#e93323;--view-minorColor:rgba(233, 51, 35, 0.5);--view-minorColorT:rgba(233, 51, 35, 0.1);--view-bntColor:#FE960F;--view-op-ten: rgba(233,51,35, 0.1);--view-main-start:#FF6151; --view-main-over:#e93323;--view-op-point-four: rgba(233,51,35, 0.04);'
+	let blue =
+		'--view-theme: rgba(29,176,252,1);--view-theme-16:#1db0fc;--view-priceColor:#FD502F;--view-minorColor:rgba(58, 139, 236, 0.5);--view-minorColorT:rgba(9, 139, 243, 0.1);--view-bntColor:#22CAFD;--view-op-ten: rgba(29,176,252, 0.1);--view-main-start:#40D1F4; --view-main-over:#1DB0FC;--view-op-point-four: rgba(29,176,252, 0.04);'
+	let pink =
+		'--view-theme: rgba(255,68,143,1);--view-theme-16:#ff448f;--view-priceColor:#FF448F;--view-minorColor:rgba(255, 68, 143, 0.5);--view-minorColorT:rgba(255, 68, 143, 0.1);--view-bntColor:#282828;--view-op-ten: rgba(255,68,143, 0.1);--view-main-start:#FF67AD; --view-main-over:#FF448F;--view-op-point-four: rgba(255,68,143, 0.04);'
+	let orange =
+		'--view-theme: rgba(254,92,45,1); --view-theme-16:#FE5C2D;--view-priceColor:#FE5C2D;--view-minorColor:rgba(254, 92, 45, 0.5);--view-minorColorT:rgba(254, 92, 45, 0.1);--view-bntColor:#FDB000;--view-op-ten: rgba(254,92,45, 0.1);--view-main-start:#FF9445; --view-main-over:#FE5C2D;--view-op-point-four: rgba(254,92,45, 0.04);'
+
 	export default {
 		globalData: {
 			spid: 0,
@@ -20,10 +41,87 @@
 			MyMenus: [],
 			globalData: false,
 			isIframe: false,
-			tabbarShow: true
+			tabbarShow: true,
+			windowHeight: 0
+		},
+		mixins: [colors],
+		computed: mapGetters(['isLogin', 'cartNum']),
+		watch: {
+			isLogin: {
+				deep: true, //深度监听设置为 true
+				handler: function(newV, oldV) {
+					if (newV) {
+						// this.getCartNum()
+					} else {
+						this.$store.commit('indexData/setCartNum', '')
+					}
+				}
+			},
+			cartNum(newCart, b) {
+				this.$store.commit('indexData/setCartNum', newCart + '')
+				if (newCart > 0) {
+					uni.setTabBarBadge({
+						index: Number(uni.getStorageSync('FOOTER_ADDCART')) || 2,
+						text: newCart + ''
+					})
+				} else {
+					uni.hideTabBarRedDot({
+						index: Number(uni.getStorageSync('FOOTER_ADDCART')) || 2
+					})
+				}
+			}
 		},
 		onLaunch: function(option) {
 			let that = this;
+			colorChange('color_change').then(res => {
+				switch (res.data.status) {
+					case 1:
+						uni.setStorageSync('viewColor', blue)
+						uni.$emit('ok', blue)
+						break;
+					case 2:
+						uni.setStorageSync('viewColor', green)
+						uni.$emit('ok', green)
+						break;
+					case 3:
+						uni.setStorageSync('viewColor', red)
+						uni.$emit('ok', red)
+						break;
+					case 4:
+						uni.setStorageSync('viewColor', pink)
+						uni.$emit('ok', pink)
+						break;
+					case 5:
+						uni.setStorageSync('viewColor', orange)
+						uni.$emit('ok', orange)
+						break;
+					default:
+						uni.setStorageSync('viewColor', red)
+						uni.$emit('ok', red)
+						break
+				}
+			});
+			if (option.query.spread) {
+				that.$Cache.set('spread', option.query.spread);
+				that.globalData.spid = option.query.spread;
+				that.globalData.pid = option.query.spread;
+			}
+			// #ifdef APP-PLUS || H5
+			uni.getSystemInfo({
+				success: function(res) {
+					// 首页没有title获取的整个页面的高度，里面的页面有原生标题要减掉就是视口的高度
+					// 状态栏是动态的可以拿到 标题栏是固定写死的是44px
+					let height = res.windowHeight - res.statusBarHeight - 44
+					// #ifdef H5 || APP-PLUS
+					that.globalData.windowHeight = res.windowHeight + 'px'
+					// #endif
+					// // #ifdef APP-PLUS
+					// that.globalData.windowHeight = height + 'px'
+					// // #endif
+
+				}
+			});
+			// #endif	
 			// #ifdef MP
 			if (HTTP_REQUEST_URL == '') {
 				console.error(
@@ -32,6 +130,7 @@
 				return false;
 			}
 			if (option.query.hasOwnProperty('scene')) {
+
 				switch (option.scene) {
 					//扫描小程序码
 					case 1047:
@@ -52,14 +151,14 @@
 						break;
 				}
 			}
-			const updateManager = uni.getUpdateManager();
+			const updateManager = wx.getUpdateManager();
 
 			updateManager.onCheckForUpdate(function(res) {
 				// 请求完新版本信息的回调
 			});
 
 			updateManager.onUpdateReady(function() {
-				uni.showModal({
+				wx.showModal({
 					title: '更新提示',
 					content: '新版本已经准备好，是否重启应用？',
 					success: function(res) {
@@ -70,21 +169,26 @@
 					}
 				});
 			});
+
 			updateManager.onUpdateFailed(function() {
 				return that.Tips({
 					title: '新版本下载失败'
 				});
 			});
 			// #endif
-			getShopConfig().then(res => {
-				this.$store.commit('SETPHONESTATUS', res.data.status);
-			});
+			// getShopConfig().then(res => {
+			// 	this.$store.commit('SETPHONESTATUS', res.data.status);
+			// });
 			// 获取导航高度；
 			uni.getSystemInfo({
 				success: function(res) {
 					that.globalData.navHeight = res.statusBarHeight * (750 / res.windowWidth) + 91;
 				}
 			});
+			// #ifdef MP
+			let menuButtonInfo = uni.getMenuButtonBoundingClientRect();
+			that.globalData.navH = menuButtonInfo.top * 2 + menuButtonInfo.height / 2;
+			// #endif
 
 			// #ifdef H5
 			uni.getSystemInfo({
@@ -94,28 +198,31 @@
 						window.location.pathname = '/static/html/pc.html';
 					}
 				}
-			})
-			if (option.query.hasOwnProperty('type') && option.query.type == "iframeMakkMinkkJuan") {
+			});
+			if (option.query.hasOwnProperty('type') && option.query.type == "iframeWindow") {
 				this.globalData.isIframe = true;
 			} else {
 				this.globalData.isIframe = false;
 			}
-			// try {
-			// 	// 静默授权code
-			// 	var snsapiCode = uni.getStorageSync('snsapiCode');
-			// } catch (e) {}
-			if(window.location.pathname !== '/'){
+
+			if (window.location.pathname !== '/') {
 				let snsapiBase = 'snsapi_base';
 				let urlData = location.pathname + location.search;
-				// if (snsapiCode) {
-				// 	return
-				// } else {
+				if (!that.$store.getters.isLogin && uni.getStorageSync('authIng')) {
+					uni.setStorageSync('authIng', false)
+				}
 				if (!that.$store.getters.isLogin && Auth.isWeixin()) {
-					const {
-						code,
+					let code,
 						state,
-						scope
-					} = option.query;
+						scope = ''
+
+					if (option.query.code instanceof Array) {
+						code = option.query.code[option.query.code.length - 1]
+					} else {
+						code = option.query.code
+					}
+
+
 					if (code && code != uni.getStorageSync('snsapiCode') && location.pathname.indexOf(
 							'/pages/users/wechat_login/index') === -1) {
 						// 存储静默授权code
@@ -137,12 +244,16 @@
 										token: res.data.token,
 										time: time
 									});
+
 									this.$store.commit('SETUID', res.data.userInfo.uid);
 									this.$store.commit('UPDATE_USERINFO', res.data.userInfo);
-									// location.href = decodeURIComponent(decodeURIComponent(option.query.back_url));
+									if (option.query.back_url) {
+										location.replace(decodeURIComponent(decodeURIComponent(option.query
+											.back_url)));
+									}
 								}
 							})
-							.catch(res => {
+							.catch(error => {
 								let url = ''
 								if (option.query.back_url instanceof Array) {
 									url = option.query.back_url[option.query.back_url.length - 1]
@@ -164,18 +275,13 @@
 					}
 				} else {
 					if (option.query.back_url) {
-						// alert(uni.getStorageSync('snsapiCode'))
-						// alert(uni.getStorageSync('snRouter'))
-						location.href = uni.getStorageSync('snRouter')
+						location.replace(uni.getStorageSync('snRouter'));
 					}
 				}
 			}
-			// }
-
 			// #endif
 			// #ifdef MP
 			// 小程序静默授权
-			console.log(this.$store.getters.isLogin, 'this.$store');
 			if (!this.$store.getters.isLogin) {
 				Routine.getCode()
 					.then(code => {
@@ -185,6 +291,12 @@
 						uni.hideLoading();
 					});
 			}
+			// #endif
+			// #ifdef H5
+			// 添加crmeb chat 统计
+			var __s = document.createElement('script');
+			__s.src = `${HTTP_REQUEST_URL}/api/get_script`;
+			document.head.appendChild(__s);
 			// #endif
 		},
 		mounted() {},
@@ -210,39 +322,33 @@
 							that.$store.commit('UPDATE_USERINFO', res.data.userInfo);
 						}
 					})
-					.catch(res => {
-						console.log(res);
-					});
-			}
+					.catch(res => {});
+			},
 		},
 		onHide: function() {
-			//console.log('App Hide')
+
 		}
 	};
 </script>
 
 <style>
-	@import url("@/plugin/emoji-awesome/css/google.min.css");
+	@import url('@/plugin/emoji-awesome/css/google.min.css');
 	@import url('@/plugin/animate/animate.min.css');
 	@import 'static/css/base.css';
 	@import 'static/iconfont/iconfont.css';
 	@import 'static/css/guildford.css';
 	@import 'static/css/style.scss';
 
-
-	/* #ifdef H5 */
-	body::-webkit-scrollbar,
-	html::-webkit-scrollbar {
-		display: none;
-	}
-
-	/* #endif */
 	view {
 		box-sizing: border-box;
 	}
 
+	page {
+		font-family: PingFang SC;
+	}
+
 	.bg-color-red {
-		background-color: #e93323 !important;
+		background-color: var(--view-theme) !important;
 	}
 
 	.syspadding {
@@ -262,5 +368,11 @@
 		width: 0;
 		height: 0;
 		color: transparent;
+	}
+
+	.uni-system-open-location .map-content.fix-position {
+		height: 100vh;
+		top: 0;
+		bottom: 0;
 	}
 </style>

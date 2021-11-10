@@ -1,11 +1,13 @@
 <template>
 	<!-- #ifdef H5 -->
 	<view v-if="isShow" class="header">
-		<view class="serch-wrapper acea-row row-middle">
+		<view class="serch-wrapper row-middle">
 			<view class="logo">
-				<image :src="logoConfig" mode="heightFix"></image>
+				<image class="skeleton-rect" :src="logoConfig" mode="heightFix"></image>
+				<text class="swiger">好物尽享 任你选择</text>
 			</view>
-			<view class="input acea-row row-middle fillet" hover-class="none" @click="goPage"><text class="iconfont icon-sousuo"></text>
+			<view class="input acea-row row-middle fillet skeleton-rect" hover-class="none" @click="goPage"><text
+					class="iconfont icon-sousuo"></text>
 				搜索商品</view>
 		</view>
 	</view>
@@ -13,22 +15,26 @@
 		<view class="serch-wrapper acea-row row-middle">
 			<view class="logo">
 				<image :src="logoConfig" mode="heightFix"></image>
+				<text class="swiger">好物尽享 任你选择</text>
 			</view>
-			<view class="input acea-row row-middle fillet" hover-class="none" @click="goPage"><text class="iconfont icon-sousuo"></text>
+			<view class="input acea-row row-middle fillet" hover-class="none" @click="goPage"><text
+					class="iconfont icon-sousuo"></text>
 				搜索商品</view>
 		</view>
 	</view>
 	<!-- #endif -->
-	<!-- #ifdef MP -->
+	<!-- #ifdef MP  || APP-PLUS -->
 	<view v-if="isShow">
-		<view class="mp-header">
+		<view class="mp-header skeleton-rect" :style="{height:headH}">
 			<view class="sys-head" :style="{height:sysHeight}"></view>
-			<view class="serch-box" style="height: 43px;">
-				<view class="serch-wrapper acea-row row-middle">
+			<view class="serch-box" style="height: 48px;">
+				<view class="serch-wrapper row-middle">
 					<view class="logo">
-						<image :src="logoConfig" mode="heightFix"></image>
+						<image class="skeleton-rect" :src="logoConfig" mode="heightFix"></image>
+						<text class="swiger">好物尽享 任你选择</text>
 					</view>
-					<navigator url="/pages/goods_search/index" class="input acea-row row-middle fillet" hover-class="none"><text class="iconfont icon-sousuo"></text>
+					<navigator url="/pages/goods_search/index" class="input acea-row row-middle fillet"
+						hover-class="none"><text class="iconfont icon-sousuo"></text>
 						搜索商品</navigator>
 				</view>
 			</view>
@@ -40,6 +46,7 @@
 <script>
 	let app = getApp();
 	let statusBarHeight = uni.getSystemInfoSync().statusBarHeight + 'px';
+	let headHeight = uni.getSystemInfoSync().statusBarHeight + 100 + 'px';
 	import {
 		goPage
 	} from '@/libs/order.js'
@@ -56,6 +63,7 @@
 				logoConfig: '',
 				hotWords: [],
 				sysHeight: statusBarHeight,
+				headH: headHeight,
 				name: this.$options.name,
 				isShow: true,
 				isIframe: app.globalData.isIframe
@@ -65,11 +73,11 @@
 			dataConfig: {
 				immediate: true,
 				handler(nVal, oVal) {
-					if(nVal){
-						this.logoConfig = nVal?nVal.imgUrl.url:'';
+					if (nVal) {
+						this.logoConfig = nVal ? nVal.imgUrl.url : '';
 						this.hotWords = nVal.hotList.list
 						this.isShow = nVal.isShow.val
-						uni.setStorageSync('hotList',this.hotWords);
+						uni.setStorageSync('hotList', this.hotWords);
 					}
 				}
 			}
@@ -102,30 +110,43 @@
 	/* #ifdef H5 */
 	.header {
 		width: 100%;
-		height: 100rpx;
+		height: 280rpx;
 		background: #fff;
+		background: linear-gradient(90deg, var(--view-main-start) 0%, var(--view-main-over) 100%);
+		border-bottom-left-radius: 60rpx;
+		border-bottom-right-radius: 60rpx;
 
 		.serch-wrapper {
-			padding: 20rpx 50rpx 0 53rpx;
+			padding: 20rpx 30rpx 0 30rpx;
 
 			.logo {
-				height: 42rpx;
 				margin-right: 30rpx;
+				display: flex;
+				align-items: flex-end;
 
 				image {
-					width: 100%;
-					height: 100%;
+					width: 144rpx;
+					height: 50rpx;
+				}
+
+				.swiger {
+					color: #fff;
+					font-size: 24rpx;
+					margin-left: 20rpx;
 				}
 			}
 
 			.input {
-				height: 58rpx;
+				display: flex;
+				height: 60rpx;
 				padding: 0 0 0 30rpx;
 				background: rgba(247, 247, 247, 1);
 				border: 1px solid rgba(241, 241, 241, 1);
 				color: #999;
 				font-size: 28rpx;
 				flex: 1;
+				z-index: 99;
+				margin: 14rpx 0;
 
 				.iconfont {
 					margin-right: 20rpx;
@@ -139,7 +160,7 @@
 
 				// 设置圆角
 				&.fillet {
-					border-radius: 29rpx;
+					border-radius: 40rpx;
 				}
 
 				// 文本框文字居中
@@ -151,36 +172,52 @@
 	}
 
 	/* #endif */
-	/* #ifdef MP */
+	/* #ifdef MP || APP-PLUS */
 	.mp-header {
-		z-index: 999;
 		position: fixed;
 		left: 0;
 		top: 0;
 		width: 100%;
-		background: #fff;
+		background: linear-gradient(90deg, var(--view-main-start) 0%, var(--view-main-over) 100%);
+		z-index: 999;
+
+		// height: 250rpx;
+		.serch-box {
+			padding-bottom: 10rpx;
+		}
 
 		.serch-wrapper {
 			height: 100%;
-			padding: 0 220rpx 0 53rpx;
+			padding: 20rpx 30rpx 20rpx 30rpx;
 
 			.logo {
-				height: 42rpx;
 				margin-right: 30rpx;
+				display: flex;
+				align-items: flex-end;
 
 				image {
-					width: 100%;
-					height: 100%;
+					width: 144rpx;
+					height: 50rpx;
+				}
+
+				.swiger {
+					color: #fff;
+					font-size: 24rpx;
+					margin-left: 20rpx;
+					margin-bottom: 2rpx;
 				}
 			}
 
 			.input {
-				height: 50rpx;
+				height: 60rpx;
 				padding: 0 0 0 30rpx;
 				background: rgba(247, 247, 247, 1);
 				border: 1px solid rgba(241, 241, 241, 1);
 				color: #999;
 				font-size: 28rpx;
+				// margin: 14rpx 0;
+				margin-top: 34rpx;
+				margin-bottom: 20rpx;
 				flex: 1;
 
 				.iconfont {
@@ -195,7 +232,7 @@
 
 				// 设置圆角
 				&.fillet {
-					border-radius: 29rpx;
+					border-radius: 40rpx;
 				}
 
 				// 文本框文字居中

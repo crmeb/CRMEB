@@ -37,7 +37,7 @@
                                 format="yyyy/MM/dd"
                                 type="daterange"
                                 placement="bottom-end"
-                                placeholder="自定义时间"
+                                placeholder="请选择时间"
                                 style="width: 200px;"
                             ></DatePicker>
                         </FormItem>

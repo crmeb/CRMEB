@@ -72,16 +72,13 @@ class SystemVerifyOrder extends AuthController
     {
         /** @var UserServices $userServices */
         $userServices = app()->make(UserServices::class);
-        $userInfo = $userServices->getUserInfo((int)$uid);
         $spread = [];
-        if ($userInfo['spread_uid']) {
-            $spread = $userServices->getUserInfo((int)$userInfo['spread_uid']);
-            if ($spread) {
-                $spread = $spread->toArray();
-                $spread['brokerage_pric'] = $spread['brokerage_price'];
-                $spread['birthday'] = $spread['birthday'] ? date('Y-m-d', $spread['birthday']) : '';
-                $spread['last_time'] = $spread['last_time'] ? date('Y-m-d H:i:s', $spread['last_time']) : '';
-            }
+        $spread = $userServices->getUserInfo((int)$uid);
+        if ($spread) {
+            $spread = $spread->toArray();
+            $spread['brokerage_pric'] = $spread['brokerage_price'];
+            $spread['birthday'] = $spread['birthday'] ? date('Y-m-d', $spread['birthday']) : '';
+            $spread['last_time'] = $spread['last_time'] ? date('Y-m-d H:i:s', $spread['last_time']) : '';
         }
         return app('json')->success(['spread' => $spread]);
     }

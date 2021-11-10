@@ -32,7 +32,6 @@ class AdminAuthTokenMiddleware implements MiddlewareInterface
         /** @var AdminAuthServices $service */
         $service = app()->make(AdminAuthServices::class);
         $adminInfo = $service->parseToken($token);
-
         Request::macro('isAdminLogin', function () use (&$adminInfo) {
             return !is_null($adminInfo);
         });

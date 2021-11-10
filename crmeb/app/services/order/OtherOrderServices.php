@@ -15,14 +15,12 @@ namespace app\services\order;
 use app\dao\order\OtherOrderDao;
 use app\services\BaseServices;
 use app\services\pay\PayServices;
-use app\services\statistic\TradeStatisticServices;
 use app\services\user\MemberShipServices;
 use app\services\user\UserBillServices;
 use app\services\user\UserServices;
 use app\services\user\MemberCardServices;
-use crmeb\services\GroupDataService;
-use app\jobs\OtherOrderJob;
 use think\App;
+use app\jobs\OtherOrderJob;
 use think\exception\ValidateException;
 
 /**
@@ -35,7 +33,8 @@ use think\exception\ValidateException;
 class OtherOrderServices extends BaseServices
 {
 
-    /**初始化，获得dao层句柄
+    /**
+     * 初始化，获得dao层句柄
      * OtherOrderServices constructor.
      * @param OtherOrderDao $dao
      */
@@ -44,7 +43,8 @@ class OtherOrderServices extends BaseServices
         $this->dao = $dao;
     }
 
-    /** 生成会员购买订单数据
+    /**
+     * 生成会员购买订单数据
      * @param array $data
      * @return mixed
      */
@@ -74,8 +74,120 @@ class OtherOrderServices extends BaseServices
         return $this->dao->save($add);
     }
 
+    /**
+     * 能否领取免费
+     * @param int $uid
+     * @return array
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     */
+    public function isCanGetFree(int $uid)
+    {
+        /** @var UserServices $userService */
+        $userService = app()->make(UserServices::class);
+        /** @var MemberShipServices $memberShipService */
+        $memberShipService = app()->make(MemberShipServices::class);
+        /** @var StoreOrderEconomizeServices $economizeService */
+        $economizeService = app()->make(StoreOrderEconomizeServices::class);
+        $freeDay = $memberShipService->getVipDay(['type' => "free"]);
+        $freeConfig = array();
+        $freeConfig['price'] = 0;
+        $freeConfig['pre_price'] = 0;
+        $freeConfig['title'] = "免费会员";
+        $freeConfig['type'] = "free";
+        $freeConfig['vip_day'] = $freeDay ? $freeDay : 0;
+        $userInfo = $userService->get($uid);
+        if ($freeConfig) {
+            $freeConfig['is_record'] = 0;
+            $record = $this->dao->getOneByWhere(['uid' => $uid, 'is_free' => 1]);
+            if ($record) {
+                $freeConfig['is_record'] = 1;
 
-    /** 查询会员卡订单数据
+            }
+        }
+        $registerTime = $this->TimeConvert(['start_time' => date('Y-m-d H:i:s', $userInfo['add_time']), 'end_time' => date('Y-m-d H:i:s', time())]);
+        $userInfo['register_days'] = $registerTime['days'];
+        $userInfo['economize_money'] = $economizeService->sumEconomizeMoney($uid);
+        $userInfo['shop_name'] = sys_config('site_name');
+        $freeConfig['user_info'] = $userInfo;
+        return $freeConfig;
+    }
+
+    /**搜索时间转换
+     * @param $timeKey
+     * @param bool $isNum
+     * @throws \Exception
+     */
+    public function TimeConvert($timeKey, $isNum = false)
+    {
+        switch ($timeKey) {
+            case "today" :
+                $data['start_time'] = date('Y-m-d 00:00:00', time());
+                $data['end_time'] = date('Y-m-d 23:59:59', time());
+                $data['days'] = 1;
+                break;
+            case "yestoday" :
+                $data['start_time'] = date('Y-m-d 00:00:00', strtotime('-1 day'));
+                $data['end_time'] = date('Y-m-d 23:59:59', strtotime('-1 day'));
+                $data['days'] = 1;
+                break;
+            case "last_month" :
+                $data['start_time'] = date('Y-m-01 00:00:00', strtotime('-1 month'));
+                $data['end_time'] = date('Y-m-t 23:59:59', strtotime('-1 month'));
+                $data['days'] = 30;
+                break;
+            case "month" :
+                $data['start_time'] = $month_start_time = date('Y-m-01 00:00:00', strtotime(date("Y-m-d")));
+                $data['end_time'] = date('Y-m-d 23:59:59', strtotime("$month_start_time +1 month -1 day"));
+                $data['days'] = 30;
+                break;
+            case "year" :
+                $data['start_time'] = date('Y-01-01 00:00:00', time());
+                $data['end_time'] = date('Y-12-t 23:59:59', time());
+                $data['days'] = 365;
+                break;
+            case "last_year" :
+                $data['start_time'] = date('Y-01-01 00:00:00', strtotime('-1 year'));
+                $data['end_time'] = date('Y-12-t 23:59:59', strtotime('-1 year'));
+                $data['days'] = 365;
+                break;
+            case 30 :
+            case 15 :
+            case 7 :
+                if (!$isNum) {
+                    $data['start_time'] = date("Y-m-d 00:00:00", strtotime("-$timeKey day"));
+                    $data['end_time'] = date('Y-m-d 23:59:59', time());
+                    $data['days'] = $timeKey;
+                } else {
+                    $day = $timeKey * 2;
+                    $data['start_time'] = date("Y-m-d 00:00:00", strtotime("-$day  day"));
+                    $data['end_time'] = date("Y-m-d 23:59:59", strtotime("-$timeKey day"));
+                    $data['days'] = $timeKey;
+                }
+                break;
+            default:
+                $datetime_start = new \DateTime($timeKey['start_time']);
+                $datetime_end = new \DateTime($timeKey['end_time']);
+                $days = $datetime_start->diff($datetime_end)->days;
+                $days = $days > 0 ? $days : 1;
+                if (!$isNum) {
+                    $data['start_time'] = $timeKey['start_time'];
+                    $data['end_time'] = $timeKey['end_time'];
+                    $data['days'] = $days;
+                } else {
+                    $data['start_time'] = date("Y-m-d 00:00:00", strtotime("-$days day"));
+                    $data['end_time'] = $timeKey['start_time'];
+                    $data['days'] = $days;
+                }
+
+        }
+        return $data;
+    }
+
+
+    /**
+     * 查询会员卡订单数据
      * @param array $where
      * @param string $field
      * @return array|\think\Model|null
@@ -98,7 +210,7 @@ class OtherOrderServices extends BaseServices
      * @return mixed
      * @throws \Exception
      */
-    public function createOrder(int $uid, string $channelType, $memberType = false, string $payPrice, string $payType, $type, $money)
+    public function createOrder(int $uid, string $channelType, $memberType = false, string $payPrice, string $payType, $type, $money, $mcId)
     {
         /** @var StoreOrderCreateServices $storeOrderCreateService */
         $storeOrderCreateService = app()->make(StoreOrderCreateServices::class);
@@ -110,15 +222,28 @@ class OtherOrderServices extends BaseServices
             'channel_type' => $channelType,
             'member_code' => "",
         ];
-        $orderInfo['type'] = $type;
-        $orderInfo['member_code'] = "";
-        $changeType = "create_offline_scan_order";
-        $orderInfo['money'] = $money ? $money : $payPrice;
+        if ($type != 3) { //区别 0：免费领取会员 1：购买会员  2：卡密领取会员  3：线下付款
+            if (!$memberType) throw new ValidateException('memberType miss');
+            list($memberPrice, $isFree, $isPermanent, $overdueTime, $type, $newMemberRight) = $this->checkPayMemberType($memberType, $payPrice, $type, $uid, $mcId);
+            $orderInfo['member_price'] = $memberPrice;
+            $orderInfo['money'] = $memberPrice;
+            $orderInfo['vip_day'] = $newMemberRight[$mcId]['vip_day'];
+            $orderInfo['member_type'] = $memberType;
+            $orderInfo['overdue_time'] = $overdueTime;
+            $orderInfo['is_permanent'] = $isPermanent;
+            $orderInfo['is_free'] = $isFree;
+            $orderInfo['type'] = $type;
+            $changeType = "create_member_order";
+        } else {
+            $orderInfo['type'] = $type;
+            $orderInfo['member_code'] = "";
+            $changeType = "create_offline_scan_order";
+            $orderInfo['money'] = $money ? $money : $payPrice;
+        }
         $memberOrder = $this->addOtherOrderData($orderInfo);
         if (!$memberOrder) {
             throw new ValidateException('订单生成失败!');
         }
-        // CacheService::redisHandler()->delete('user_order_' . $uid . $key);
         /** @var OtherOrderStatusServices $statusService */
         $statusService = app()->make(OtherOrderStatusServices::class);
         $statusService->save([
@@ -128,11 +253,11 @@ class OtherOrderServices extends BaseServices
             'change_time' => time(),
             'shop_type' => $type,
         ]);
-        //$this->pushJob($order['id'], $combinationId, $seckillId, $bargainId);
         return $memberOrder;
     }
 
-    /** 免费卡领取支付
+    /**
+     * 免费卡领取支付
      * @param $orderInfo
      * @return bool
      */
@@ -149,7 +274,8 @@ class OtherOrderServices extends BaseServices
 
     }
 
-    /**  会员卡支付成功
+    /**
+     * 会员卡支付成功
      * @param array $orderInfo
      * @param string $paytype
      * @return bool
@@ -167,6 +293,7 @@ class OtherOrderServices extends BaseServices
             case 1:
             case 2 :
                 $type = "pay_member";
+                $res1 = $userServices->setMemberOverdueTime($orderInfo['vip_day'], $orderInfo['uid'], 1, $orderInfo['member_type']);
                 break;
             case 3:
                 $type = "offline_scan";
@@ -192,11 +319,18 @@ class OtherOrderServices extends BaseServices
         $res4 = $userBillServices->income($type, $orderInfo['uid'], $orderInfo['pay_price'], $now_money, $orderInfo['id']);
         //支付成功后发送消息
         OtherOrderJob::dispatch([$orderInfo]);
+        $orderInfo['is_channel'] = 2;
+        $orderInfo['total_num'] = 1;
+        //用户推送消息事件
+        event('notice.notice', [$orderInfo, 'order_pay_success']);
+        //支付成功给客服发送消息
+        event('notice.notice', [$orderInfo, 'admin_pay_success_code']);
         $res = $res1 && $res2 && $res3 && $res4;
         return false !== $res;
     }
 
-    /** 修改
+    /**
+     * 修改
      * @param array $where
      * @param array $data
      * @return mixed
@@ -206,8 +340,75 @@ class OtherOrderServices extends BaseServices
         return $this->dao->update($where, $data);
     }
 
+    /**
+     * 购买会员卡数据校验
+     * @param $memberType
+     * @param $pay_price
+     * @param $type
+     * @return array
+     */
+    public function checkPayMemberType(string $memberType, string $payPrice, string $type, $uid, $mcId)
+    {
+        /** @var MemberCardServices $memberCardService */
+        $memberCardService = app()->make(MemberCardServices::class);
+        /** @var UserServices $userService */
+        $userService = app()->make(UserServices::class);
+        $userInfo = $userService->get($uid);
+        if ($userInfo['is_money_level'] > 0 && $userInfo['is_ever_level'] > 0) throw new ValidateException('您已是永久会员无需再购买!');
+        $newMemberRight = $memberCardService->getMemberTypeValue();
+        if (!array_key_exists($mcId, $newMemberRight)) throw new ValidateException('该会员卡暂时无法购买!');
+        $price = $newMemberRight[$mcId]['pre_price'];
+        if ($payPrice != $price || ($memberType != 'free' && $payPrice <= 0)) throw new ValidateException('请核实价格!');
+        if ($memberType == 'free' && $newMemberRight[$mcId]['vip_day'] <= 0) throw new ValidateException('网络错误!');
+        switch ($memberType) {
+            case "free"://免费会员
+                $isCanGetFree = $this->isCanGetFree($uid);
+                if ($isCanGetFree['is_record'] == 1) throw new ValidateException('您已经领取过免费会员!');
+                $memberPrice = 0.00; //会员卡价格
+                $isFree = 1;//代表免费
+                $isPermanent = 0;//代表非永久
+                $overdueTime = bcadd(bcmul(abs($newMemberRight[$mcId]['vip_day']), "86400", 0), time(), 0);
+                break;
+            case "month":
+            case "year":
+            case "quarter":
+            case "owner":
+                $memberPrice = $price;
+                $isFree = 0;
+                $isPermanent = 0;
+                $overdueTime = bcadd(bcmul(abs($newMemberRight[$mcId]['vip_day']), '86400', 0), time(), 0);
+                break;
+            case "ever":
+                $memberPrice = $price;
+                $isFree = 0;
+                $isPermanent = 1;
+                $overdueTime = -1;
+                break;
+            default:
+                throw new ValidateException('此类型会员卡暂未开售！');
+                break;
+        }
+        //return compact('member_price', 'is_free', 'is_permanent', 'overdue_time', 'type');
+        return [$memberPrice, $isFree, $isPermanent, $overdueTime, $type, $newMemberRight];
+    }
 
-    /**线下收银列表
+    /**
+     * 根据查询用户购买会员金额
+     * @param array $where
+     * @return mixed
+     */
+    public function getMemberMoneyByWhere(array $where, string $sumField, string $selectType, string $group = "")
+    {
+        switch ($selectType) {
+            case "sum" :
+                return $this->dao->getWhereSumField($where, $sumField);
+            case "group" :
+                return $this->dao->getGroupField($where, $sumField, $group);
+        }
+    }
+
+    /**
+     * 线下收银列表
      * @param array $where
      * @return array
      * @throws \think\db\exception\DataNotFoundException
@@ -234,15 +435,15 @@ class OtherOrderServices extends BaseServices
             if ($userInfo) $where['uid'] = array_column($userInfo, 'uid');
         }
         $list = $this->dao->getScanOrderList($where, $page, $limit);
-        /** @var UserServices $userService */
-        $userService = app()->make(UserServices::class);
         if ($list) {
+            /** @var UserServices $userService */
+            $userService = app()->make(UserServices::class);
+            $userInfo = $userService->getColumn([['uid', 'in', array_unique(array_column($list, 'uid'))]], 'uid,phone,nickname', 'uid');
             foreach ($list as &$v) {
                 $v['add_time'] = date('Y-m-d H:i:s', $v['add_time']);
                 $v['pay_time'] = date('Y-m-d H:i:s', $v['pay_time']);
-                $userInfo = $userService->getUserInfo($v['uid']);
-                $v['phone'] = $userInfo['phone'];
-                $v['nickname'] = $userInfo['nickname'];
+                $v['phone'] = $userInfo[$v['uid']]['phone'] ?? '';
+                $v['nickname'] = $userInfo[$v['uid']]['nickname'] ?? '';
                 switch ($v['pay_type']) {
                     case "yue" :
                         $v['pay_type'] = "余额";
@@ -255,6 +456,67 @@ class OtherOrderServices extends BaseServices
                         break;
                 }
                 $v['true_price'] = bcsub($v['money'], $v['pay_price'], 2);
+            }
+        }
+        $count = $this->dao->count($where);
+        return compact('list', 'count');
+    }
+
+    /**
+     * 获取会员记录
+     * @param array $where
+     * @return array
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     */
+    public function getMemberRecord(array $where)
+    {
+        $where['type'] = [0, 1, 2];
+        $where['paid'] = 1;
+        if ($where['add_time']) {
+            $searchTime = explode('-', $where['add_time']);
+            $startTime = strtotime($searchTime[0]);
+            $endTime = strtotime($searchTime[1]);
+            if ($startTime == $endTime) {
+                $endTime += 86400;
+            }
+            $where['add_time'] = [$startTime, $endTime];
+        }
+        [$page, $limit] = $this->getPageValue();
+        $list = $this->dao->getMemberRecord($where, $page, $limit);
+        if ($list) {
+            /** @var MemberShipServices $memberShipService */
+            $memberShipService = app()->make(MemberShipServices::class);
+            $shipInfo = $memberShipService->getApiList([]);
+            $shipInfo = array_column($shipInfo, 'title', 'type');
+            $shipInfo['owner'] = '自定义';
+            foreach ($list as &$v) {
+                $v['member_type'] = $v['member_type'] ? $shipInfo[$v['member_type']] : '其他';
+                $v['pay_time'] = date('Y-m-d H:i:s', $v['pay_time']);
+                $v['add_time'] = date('Y-m-d H:i:s', $v['add_time']);
+                $v['overdue_time'] = date('Y-m-d H:i:s', $v['overdue_time']);
+                switch ($v['pay_type']) {
+                    case "yue" :
+                        $v['pay_type'] = "余额";
+                        break;
+                    case "weixin" :
+                        $v['pay_type'] = "微信";
+                        break;
+                    case "alipay" :
+                        $v['pay_type'] = "支付宝";
+                        break;
+                    case "admin" :
+                        $v['pay_type'] = "后台赠送";
+                        break;
+                }
+                if ($v['type'] == 0) $v['pay_type'] = "免费领取";
+                if ($v['type'] == 2) {
+                    $v['pay_type'] = "卡密领取";
+                    $v['member_type'] = "卡密激活";
+                }
+                if ($v['type'] == 1 && $v['is_free'] == 1) $v['pay_type'] = "免费领取";
+                $v['user']['overdue_time'] = date('Y-m-d', $v['user']['overdue_time']) == "1970-01-01" ? "" : date('Y-m-d H:i:s', $v['user']['overdue_time']);
             }
         }
         $count = $this->dao->count($where);

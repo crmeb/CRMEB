@@ -19,11 +19,35 @@ use think\facade\Log;
 /**
  * 小程序模板消息消息队列
  * Class RoutineTemplateJob
- * @package app\jobs
+ * @package crmeb\jobs
  */
 class RoutineTemplateJob extends BaseJobs
 {
     use QueueTrait;
+
+    /**
+     * 发送模板消息
+     * @param string $TempCode 模板消息常量名称
+     * @param int $openid 用户openid
+     * @param array $data 模板内容
+     * @param string $link 跳转链接
+     * @return bool
+     */
+    public function sendTemplate(string $tempCode, $openid, array $data, string $link = '')
+    {
+        try {
+            if (!$openid) return true;
+            $template = new Template('subscribe');
+            $res      = $template->to($openid)->url($link)->send($tempCode, $data);
+            if (!$res) {
+                Log::error('订阅消息发送失败，原因：' . $template->getError() . '----参数：' . json_encode(compact('tempCode', 'openid', 'data', 'link')));
+            }
+            return true;
+        } catch (\Exception $e) {
+            Log::error('订阅消息发送失败，原因：' . $e->getMessage() . '----参数：' . json_encode(compact('tempCode', 'openid', 'data', 'link')));
+            return true;
+        }
+    }
     /**
      * 确认收货
      * @param $openid
@@ -33,10 +57,10 @@ class RoutineTemplateJob extends BaseJobs
      */
     public function sendOrderTakeOver($openid, $order, $title)
     {
-        return $this->sendTemplate('OREDER_TAKEVER', $openid, [
+        return $this->sendTemplate('ORDER_TAKE', $openid, [
             'thing1' => $order['order_id'],
             'thing2' => $title,
-            'date5' => date('Y-m-d H:i:s', time()),
+            'date5'  => date('Y-m-d H:i:s', time()),
         ], '/pages/users/order_details/index?order_id=' . $order['order_id']);
     }
 
@@ -52,16 +76,16 @@ class RoutineTemplateJob extends BaseJobs
         if ($isGive) {//快递发货
             return $this->sendTemplate('ORDER_DELIVER_SUCCESS', $openid, [
                 'character_string2' => $order['delivery_id'],
-                'thing1' => $order['delivery_name'],
-                'time3' => date('Y-m-d H:i:s', time()),
-                'thing5' => $storeTitle,
+                'thing1'            => $order['delivery_name'],
+                'time3'             => date('Y-m-d H:i:s', time()),
+                'thing5'            => $storeTitle,
             ], '/pages/users/order_details/index?order_id=' . $order['order_id']);
         } else {//同城配送
             return $this->sendTemplate('ORDER_POSTAGE_SUCCESS', $openid, [
-                'thing8' => $storeTitle,
+                'thing8'            => $storeTitle,
                 'character_string1' => $order['order_id'],
-                'name4' => $order['delivery_name'],
-                'phone_number10' => $order['delivery_id']
+                'name4'             => $order['delivery_name'],
+                'phone_number10'    => $order['delivery_id']
             ], '/pages/users/order_details/index?order_id=' . $order['order_id']);
         }
     }
@@ -76,9 +100,9 @@ class RoutineTemplateJob extends BaseJobs
     {
         return $this->sendTemplate('RECHARGE_SUCCESS', $openid, [
             'character_string1' => $UserRecharge['order_id'],
-            'amount3' => $UserRecharge['price'],
-            'amount4' => $now_money,
-            'date5' => date('Y-m-d H:i:s', time()),
+            'amount3'           => $UserRecharge['price'],
+            'amount4'           => $now_money,
+            'date5'             => date('Y-m-d H:i:s', time()),
         ], '/pages/user_bill/index?type=2');
     }
 
@@ -91,9 +115,9 @@ class RoutineTemplateJob extends BaseJobs
     public function sendOrderRefundSuccess($openid, $order, $storeTitle)
     {
         return $this->sendTemplate('ORDER_REFUND', $openid, [
-            'thing1' => '已成功退款',
-            'thing2' => $storeTitle,
-            'amount3' => $order['pay_price'],
+            'thing1'            => '已成功退款',
+            'thing2'            => $storeTitle,
+            'amount3'           => $order['pay_price'],
             'character_string6' => $order['order_id']
         ], '/pages/users/order_details/index?order_id=' . $order['order_id'] . '&isReturen=1');
     }
@@ -107,9 +131,9 @@ class RoutineTemplateJob extends BaseJobs
     public function sendOrderRefundFail($openid, $order, $storeTitle)
     {
         return $this->sendTemplate('ORDER_REFUND', $openid, [
-            'thing1' => '退款失败',
-            'thing2' => $storeTitle,
-            'amount3' => $order['pay_price'],
+            'thing1'            => '退款失败',
+            'thing2'            => $storeTitle,
+            'amount3'           => $order['pay_price'],
             'character_string6' => $order['order_id']
         ], '/pages/users/order_details/index?order_id=' . $order['order_id'] . '&isReturen=1');
     }
@@ -123,10 +147,10 @@ class RoutineTemplateJob extends BaseJobs
     public function sendOrderRefundStatus($openid, $order)
     {
         $data['character_string4'] = $order['order_id'];
-        $data['date5'] = date('Y-m-d H:i:s', time());
-        $data['amount2'] = $order['pay_price'];
-        $data['phrase7'] = '申请退款中';
-        $data['thing8'] = '请及时处理';
+        $data['date5']             = date('Y-m-d H:i:s', time());
+        $data['amount2']           = $order['pay_price'];
+        $data['phrase7']           = '申请退款中';
+        $data['thing8']            = '请及时处理';
         return $this->sendTemplate('ORDER_REFUND_STATUS', $openid, $data);
     }
 
@@ -139,9 +163,9 @@ class RoutineTemplateJob extends BaseJobs
      */
     public function sendBargainSuccess($openid, $bargain = [], $bargainUser = [], $bargainUserId = 0)
     {
-        $data['thing1'] = $bargain['title'];
+        $data['thing1']  = $bargain['title'];
         $data['amount2'] = $bargain['min_price'];
-        $data['thing3'] = '恭喜您，已经砍到最低价了';
+        $data['thing3']  = '恭喜您，已经砍到最低价了';
         return $this->sendTemplate('BARGAIN_SUCCESS', $openid, $data, '/pages/activity/user_goods_bargain_list/index?id=' . $bargain['id'] . '&bargain=' . $bargainUserId);
     }
 
@@ -157,8 +181,8 @@ class RoutineTemplateJob extends BaseJobs
     {
         if ($orderId == '') return true;
         $data['character_string1'] = $orderId;
-        $data['amount2'] = $pay_price . '元';
-        $data['date3'] = date('Y-m-d H:i:s', time());
+        $data['amount2']           = $pay_price . '元';
+        $data['date3']             = date('Y-m-d H:i:s', time());
         return $this->sendTemplate('ORDER_PAY_SUCCESS', $openid, $data, '/pages/users/order_details/index?order_id=' . $orderId);
     }
 
@@ -173,8 +197,8 @@ class RoutineTemplateJob extends BaseJobs
     {
         if ($orderId == '') return true;
         $data['character_string1'] = $orderId;
-        $data['amount2'] = $pay_price . '元';
-        $data['date3'] = date('Y-m-d H:i:s', time());
+        $data['amount2']           = $pay_price . '元';
+        $data['date3']             = date('Y-m-d H:i:s', time());
         return $this->sendTemplate('ORDER_PAY_SUCCESS', $openid, $data, '/pages/annex/vip_paid/index');
     }
 
@@ -189,10 +213,10 @@ class RoutineTemplateJob extends BaseJobs
     public function sendExtractFail($openid, $msg, $extract_number, $nickname)
     {
         return $this->sendTemplate('USER_EXTRACT', $openid, [
-            'thing1' => '提现失败：' . $msg,
+            'thing1'  => '提现失败：' . $msg,
             'amount2' => $extract_number . '元',
-            'thing3' => $nickname,
-            'date4' => date('Y-m-d H:i:s', time())
+            'thing3'  => $nickname,
+            'date4'   => date('Y-m-d H:i:s', time())
         ], '/pages/users/user_spread_money/index?type=2');
     }
 
@@ -206,10 +230,10 @@ class RoutineTemplateJob extends BaseJobs
     public function sendExtractSuccess($openid, $extract_number, $nickname)
     {
         return $this->sendTemplate('USER_EXTRACT', $openid, [
-            'thing1' => '提现成功',
+            'thing1'  => '提现成功',
             'amount2' => $extract_number . '元',
-            'thing3' => $nickname,
-            'date4' => date('Y-m-d H:i:s', time())
+            'thing3'  => $nickname,
+            'date4'   => date('Y-m-d H:i:s', time())
         ], '/pages/users/user_spread_money/index?type=2');
     }
 
@@ -225,9 +249,9 @@ class RoutineTemplateJob extends BaseJobs
     public function sendPinkSuccess($openid, $pinkTitle, $nickname, $pinkTime, $count, string $link = '')
     {
         return $this->sendTemplate('PINK_TRUE', $openid, [
-            'thing1' => $pinkTitle,
-            'name3' => $nickname,
-            'date5' => date('Y-m-d H:i:s', $pinkTime),
+            'thing1'  => $pinkTitle,
+            'name3'   => $nickname,
+            'date5'   => date('Y-m-d H:i:s', $pinkTime),
             'number2' => $count
         ], $link);
     }
@@ -265,36 +289,14 @@ class RoutineTemplateJob extends BaseJobs
             $order['cart_id'] = json_decode($order['cart_id'], true);
         return $this->sendTemplate('INTEGRAL_ACCOUT', $openid, [
             'character_string2' => $order['order_id'],
-            'thing3' => $storeTitle,
-            'amount4' => $order['pay_price'],
-            'number5' => $gainIntegral,
-            'number6' => $integral
+            'thing3'            => $storeTitle,
+            'amount4'           => $order['pay_price'],
+            'number5'           => $gainIntegral,
+            'number6'           => $integral
         ], '/pages/users/user_integral/index');
     }
 
-    /**
-     * 发送模板消息
-     * @param string $TempCode 模板消息常量名称
-     * @param int $openid 用户openid
-     * @param array $data 模板内容
-     * @param string $link 跳转链接
-     * @return bool
-     */
-    public function sendTemplate(string $tempCode, $openid, array $data, string $link = '')
-    {
-        try {
-            if (!$openid) return true;
-            $template = new Template('subscribe');
-            $res = $template->to($openid)->url($link)->send($tempCode, $data);
-            if (!$res) {
-                Log::error('订阅消息发送失败，原因：' . $template->getError() . '----参数：' . json_encode(compact('tempCode', 'openid', 'data', 'link')));
-            }
-            return true;
-        } catch (\Exception $e) {
-            Log::error('订阅消息发送失败，原因：' . $e->getMessage() . '----参数：' . json_encode(compact('tempCode', 'openid', 'data', 'link')));
-            return true;
-        }
-    }
+
 
     /**
      * 获得推广佣金发送提醒
@@ -306,9 +308,9 @@ class RoutineTemplateJob extends BaseJobs
     public function sendOrderBrokerageSuccess(string $openid, string $brokeragePrice, string $goods_name)
     {
         return $this->sendTemplate('ORDER_BROKERAGE', $openid, [
-            'thing2' => $goods_name,
+            'thing2'  => $goods_name,
             'amount4' => $brokeragePrice . '元',
-            'time1' => date('Y-m-d H:i:s', time())
+            'time1'   => date('Y-m-d H:i:s', time())
         ], '/pages/users/user_spread_user/index');
     }
 

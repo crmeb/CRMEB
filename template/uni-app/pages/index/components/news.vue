@@ -1,16 +1,17 @@
 <template>
-	<view>
+	<view class="new" :style="colorStyle">
 		<view class="news default" v-if="isIframe && !itemNew.length">暂无新闻，请上传新闻</view>
-		<view class='news acea-row row-between-wrapper' v-if="isShow && itemNew.length">
+		<view class='news acea-row row-between-wrapper skeleton-rect' v-if="isShow && itemNew.length">
 			<view class='pictrue'>
 				<image :src='img'></image>
 			</view>
 			<view class='swiperTxt'>
-				<swiper :indicator-dots="indicatorDots" :autoplay="autoplay" interval="2500" :duration="duration" vertical="true"
-				 circular="true">
+				<swiper :indicator-dots="indicatorDots" :autoplay="autoplay" interval="2500" :duration="duration"
+					vertical="true" circular="true" disable-touch="true">
 					<block v-for="(item,index) in itemNew" :key='index'>
 						<swiper-item catchtouchmove='catchTouchMove'>
-							<view class='acea-row row-between-wrapper' hover-class='none' @click="gopage(item.chiild[1].val)">
+							<view class='acea-row row-between-wrapper' hover-class='none'
+								@click="gopage(item.chiild[1].val)">
 								<view class='text acea-row row-between-wrapper'>
 									<view class='newsTitle line1'>{{item.chiild[0].val}}</view>
 								</view>
@@ -26,11 +27,12 @@
 				<image :src='img'></image>
 			</view>
 			<view class='swiperTxt'>
-				<swiper :indicator-dots="indicatorDots" :autoplay="autoplay" interval="2500" :duration="duration" vertical="true"
-				 circular="true">
+				<swiper :indicator-dots="indicatorDots" :autoplay="autoplay" interval="2500" :duration="duration"
+					vertical="true" circular="true">
 					<block v-for="(item,index) in itemNew" :key='index'>
 						<swiper-item catchtouchmove='catchTouchMove'>
-							<view class='acea-row row-between-wrapper' hover-class='none' @click="gopage(item.chiild[1].val)">
+							<view class='acea-row row-between-wrapper' hover-class='none'
+								@click="gopage(item.chiild[1].val)">
 								<view class='text acea-row row-between-wrapper'>
 									<view class='newsTitle line1'>{{item.chiild[0].val}}</view>
 								</view>
@@ -46,6 +48,7 @@
 
 <script>
 	let app = getApp()
+	import colors from '@/mixins/color.js';
 	import {
 		goPage
 	} from '@/libs/order.js'
@@ -57,11 +60,12 @@
 				default: () => {}
 			},
 		},
+		mixins:[colors],
 		watch: {
 			dataConfig: {
 				immediate: true,
 				handler(nVal, oVal) {
-					if(nVal){
+					if (nVal) {
 						this.img = nVal.imgUrl.url;
 						this.itemNew = nVal.newList.list;
 						this.isShow = nVal.isShow.val;
@@ -93,7 +97,9 @@
 						location.href = url
 						// #endif
 					} else {
-						if (['/pages/goods_cate/goods_cate', '/pages/order_addcart/order_addcart', '/pages/user/index'].indexOf(url) ==
+						if (['/pages/goods_cate/goods_cate', '/pages/order_addcart/order_addcart',
+								'/pages/user/index'
+							].indexOf(url) ==
 							-1) {
 							uni.navigateTo({
 								url: url
@@ -111,11 +117,20 @@
 </script>
 
 <style lang="scss">
+	.new{
+		background-color: #fff;
+		padding: 20rpx 0;
+	}
 	.news {
-		height: 77rpx;
+		height: 60rpx;
 		border-top: 1rpx solid #f4f4f4;
-		padding: 0 30rpx;
-		box-shadow: 0 10rpx 30rpx #f5f5f5;
+		border-bottom: 1rpx solid #f4f4f4;
+		padding: 0 26rpx;
+		// box-shadow: 0 10rpx 30rpx #f5f5f5;
+		background-color: var(--view-op-point-four);
+		margin: 0 $uni-index-margin-col;
+		border-radius: 60rpx;
+		// box-shadow: $uni-index-box-shadow;
 
 		&.default {
 			text-align: center;
@@ -124,8 +139,9 @@
 	}
 
 	.news .pictrue {
-		width: 124rpx;
-		height: 28rpx;
+		width: 116rpx;
+		height: 32rpx;
+		line-height: 32rpx;
 		border-right: 1rpx solid #ddd;
 		padding-right: 23rpx;
 		box-sizing: content-box;
@@ -137,14 +153,15 @@
 	}
 
 	.news .swiperTxt {
-		width: 523rpx;
+		width: 470rpx;
 		height: 100%;
-		line-height: 77rpx;
+		line-height: 60rpx;
 		overflow: hidden;
 	}
 
 	.news .swiperTxt .text {
-		width: 480rpx;
+		line-height: 28rpx;
+		margin-bottom: 4rpx;
 	}
 
 	.news .swiperTxt .text .label {
@@ -159,8 +176,9 @@
 	}
 
 	.news .swiperTxt .text .newsTitle {
-		width: 397rpx;
+		width: 400rpx;
 		font-size: 24rpx;
+		line-height: 28rpx;
 		color: #666;
 	}
 

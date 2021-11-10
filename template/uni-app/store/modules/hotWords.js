@@ -8,7 +8,6 @@
 // | Author: CRMEB Team <admin@crmeb.com>
 // +----------------------------------------------------------------------
 
-
 export default {
 	namespaced: true,
 	state: {
@@ -17,8 +16,8 @@ export default {
 	},
 	getters: {},
 	mutations: {
-		setHotWord(state, hotWordList) {
-			state.hotWord = hotWordList;
+		setHotWord(state, fastsearchforhotwords) {
+			state.hotWord = fastsearchforhotwords;
 		}
 	}
 }

@@ -34,6 +34,7 @@ class CopyTaobao extends AuthController
     }
 
     /**
+     * 获取复制商品配置信息
      * @return mixed
      */
     public function getConfig()

@@ -1,62 +1,87 @@
 <template>
-	<div class="login-wrapper">
-		<div class="shading">
+	<view class="login-wrapper" :style="colorStyle">
+		<view class="shading">
 			<image :src="logoUrl" v-if="logoUrl" />
 			<image src="/static/images/logo2.png" v-else />
-		</div>
-		<div class="whiteBg" v-if="formItem === 1">
-			<div class="list" v-if="current !== 1">
+		</view>
+		<view class="whiteBg" v-if="formItem === 1">
+			<view class="list" v-if="current !== 1">
 				<form @submit.prevent="submit">
-					<div class="item">
-						<div class="acea-row row-middle">
+					<view class="item">
+						<view class="acea-row row-middle">
 							<image src="/static/images/phone_1.png" style="width: 24rpx; height: 34rpx;"></image>
 							<input type="text" placeholder="输入手机号码" v-model="account" maxlength="11" required />
-						</div>
-					</div>
-					<div class="item">
-						<div class="acea-row row-middle">
+						</view>
+					</view>
+					<view class="item">
+						<view class="acea-row row-middle">
 							<image src="/static/images/code_1.png" style="width: 28rpx; height: 32rpx;"></image>
 							<input type="password" placeholder="填写登录密码" v-model="password" required />
-						</div>
-					</div>
+						</view>
+					</view>
 				</form>
 				<!-- <navigator class="forgetPwd" hover-class="none" url="/pages/users/retrievePassword/index">
 					<span class="iconfont icon-wenti"></span>忘记密码
 				</navigator> -->
-			</div>
-			<div class="list" v-if="current !== 0">
-				<div class="item">
-					<div class="acea-row row-middle">
+			</view>
+			<view class="list" v-if="current !== 0 || appLoginStatus || appleLoginStatus">
+				<view class="item">
+					<view class="acea-row row-middle">
 						<image src="/static/images/phone_1.png" style="width: 24rpx; height: 34rpx;"></image>
 						<input type="text" placeholder="输入手机号码" v-model="account" maxlength="11" />
-					</div>
-				</div>
-				<div class="item">
-					<div class="acea-row row-middle">
+					</view>
+				</view>
+				<view class="item">
+					<view class="acea-row row-middle">
 						<image src="/static/images/code_2.png" style="width: 28rpx; height: 32rpx;"></image>
-						<input type="text" placeholder="填写验证码" class="codeIput" v-model="captcha" />
+						<input type="text" placeholder="填写验证码" maxlength="6" class="codeIput" v-model="captcha" />
 						<button class="code" :disabled="disabled" :class="disabled === true ? 'on' : ''" @click="code">
 							{{ text }}
 						</button>
-					</div>
-				</div>
-				<div class="item" v-if="isShowCode">
-					<div class="acea-row row-middle">
+					</view>
+				</view>
+				<view class="item" v-if="isShowCode">
+					<view class="acea-row row-middle">
 						<image src="/static/images/code_2.png" style="width: 28rpx; height: 32rpx;"></image>
 						<input type="text" placeholder="填写验证码" class="codeIput" v-model="codeVal" />
-						<div class="code" @click="again"><img :src="codeUrl" /></div>
-					</div>
-				</div>
-			</div>
-			<div class="logon" @click="loginMobile" v-if="current !== 0">登录</div>
-			<div class="logon" @click="submit" v-if="current === 0">登录</div>
-			<div class="tips">
-				<div v-if="current==0" @click="current = 1">快速登录</div>
-				<div v-if="current==1" @click="current = 0">账号登录</div>
-			</div>
-		</div>
-		<div class="bottom"></div>
-	</div>
+						<view class="code" @click="again"><img :src="codeUrl" /></view>
+					</view>
+				</view>
+			</view>
+			<view class="logon" @click="loginMobile" v-if="current !== 0">登录</view>
+			<view class="logon" @click="submit" v-if="current === 0">登录</view>
+			<!-- #ifndef APP-PLUS -->
+			<view class="tips">
+				<view v-if="current==0" @click="current = 1">快速登录</view>
+				<view v-if="current==1" @click="current = 0">账号登录</view>
+			</view>
+			<!-- #endif -->
+			<!-- #ifdef APP-PLUS -->
+			<view class="appLogin" v-if="!appLoginStatus && !appleLoginStatus">
+				<view class="hds">
+					<span class="line"></span>
+					<p>其他方式登录</p>
+					<span class="line"></span>
+				</view>
+				<view class="btn-wrapper">
+					<view class="btn wx" @click="wxLogin">
+						<span class="iconfont icon-s-weixindenglu1"></span>
+					</view>
+					<view class="btn mima" v-if="current == 1" @click="current =0">
+						<span class="iconfont icon-s-mimadenglu1"></span>
+					</view>
+					<view class="btn yanzheng" v-if="current == 0" @click="current =1">
+						<span class="iconfont icon-s-yanzhengmadenglu1"></span>
+					</view>
+					<view class="apple-btn" @click="appleLogin" v-if="appleShow">
+						<view class="iconfont icon-s-pingguo"></view>通过Apple登录
+					</view>
+				</view>
+			</view>
+			<!-- #endif -->
+		</view>
+		<view class="bottom"></view>
+	</view>
 </template>
 <script>
 	import dayjs from "@/plugin/dayjs/dayjs.min.js";
@@ -67,7 +92,8 @@
 		registerVerify,
 		register,
 		getCodeApi,
-		getUserInfo
+		getUserInfo,
+		appleLogin
 	} from "@/api/user";
 	import attrs, {
 		required,
@@ -84,16 +110,20 @@
 	import {
 		VUE_APP_API_URL
 	} from "@/utils";
-
+	// #ifdef APP-PLUS
+	import {
+		wechatAppAuth
+	} from '@/api/api.js'
+	// #endif
 	const BACK_URL = "login_back_url";
-
+	import colors from '@/mixins/color.js';
 	export default {
 		name: "Login",
-		mixins: [sendVerifyCode],
+		mixins: [sendVerifyCode, colors],
 		data: function() {
 			return {
 				navList: ["快速登录", "账号登录"],
-				current: 0,
+				current: 1,
 				account: "",
 				password: "",
 				captcha: "",
@@ -103,7 +133,13 @@
 				keyCode: "",
 				codeUrl: "",
 				codeVal: "",
-				isShowCode: false
+				isShowCode: false,
+				appLoginStatus: false, // 微信登录强制绑定手机号码状态
+				appUserInfo: null, // 微信登录保存的用户信息
+				appleLoginStatus: false, // 苹果登录强制绑定手机号码状态
+				appleUserInfo: null,
+				appleShow: false, // 苹果登录版本必须要求ios13以上的
+				keyLock: true
 			};
 		},
 		watch: {
@@ -115,11 +151,199 @@
 				}
 			}
 		},
+		onLoad() {
+			let self = this
+			uni.getSystemInfo({
+				success: (res) => {
+					if (res.platform.toLowerCase() == 'ios' && this.getSystem(res.system)) {
+						self.appleShow = true
+					}
+				}
+			});
+		},
 		mounted: function() {
 			// this.getCode();
 			this.getLogoImage();
 		},
 		methods: {
+			// IOS 版本号判断
+			getSystem(system) {
+				let str
+				system.toLowerCase().indexOf('ios') === -1 ? str = system : str = system.split(' ')[1]
+				if (str.indexOf('.'))
+					return str.split('.')[0] >= 13
+				return str >= 13
+			},
+			// 苹果登录
+			appleLogin() {
+				let self = this
+				this.account = ''
+				this.captcha = ''
+				uni.showLoading({
+					title: '登录中'
+				})
+				uni.login({
+					provider: 'apple',
+					timeout: 10000,
+					success(loginRes) {
+						uni.getUserInfo({
+							provider: 'apple',
+							success: function(infoRes) {
+								self.appleUserInfo = infoRes.userInfo
+								self.appleLoginApi()
+							},
+							fail() {
+								uni.showToast({
+									title: '获取用户信息失败',
+									icon: 'none',
+									duration: 2000
+								})
+							},
+							complete() {
+								uni.hideLoading()
+							}
+						});
+					},
+					fail(error) {
+					}
+				})
+			},
+			// 苹果登录Api
+			appleLoginApi() {
+				let self = this
+				appleLogin({
+					openId: self.appleUserInfo.openId,
+					email: self.appleUserInfo.email || '',
+					phone: this.account,
+					captcha: this.captcha
+				}).then(({
+					data
+				}) => {
+					if (data.isbind) {
+						uni.showModal({
+							title: '提示',
+							content: '请绑定手机号后，继续操作',
+							showCancel: false,
+							success: function(res) {
+								if (res.confirm) {
+									self.current = 1
+									self.appleLoginStatus = true
+								}
+							}
+						});
+					} else {
+						self.$store.commit("LOGIN", {
+							'token': data.token,
+							'time': data.expires_time - self.$Cache.time()
+						});
+						let backUrl = self.$Cache.get(BACK_URL) || "/pages/index/index";
+						self.$Cache.clear(BACK_URL);
+						self.$store.commit("SETUID", data.userInfo.uid);
+						uni.reLaunch({
+							url: backUrl
+						});
+					}
+				}).catch(error => {
+					uni.showModal({
+						title: '提示',
+						content: `错误信息${error}`,
+						success: function(res) {
+							if (res.confirm) {
+								console.log('用户点击确定');
+							} else if (res.cancel) {
+								console.log('用户点击取消');
+							}
+						}
+					});
+				})
+			},
+			// App微信登录
+			wxLogin() {
+				let self = this
+				this.account = ''
+				this.captcha = ''
+				uni.showLoading({
+					title: '登录中'
+				})
+				uni.login({
+					provider: 'weixin',
+					success: function(loginRes) {
+						// 获取用户信息
+						uni.getUserInfo({
+							provider: 'weixin',
+							success: function(infoRes) {
+								self.appUserInfo = infoRes.userInfo
+								self.wxLoginApi()
+							},
+							fail() {
+								uni.showToast({
+									title: '获取用户信息失败',
+									icon: 'none',
+									duration: 2000
+								})
+							},
+							complete() {
+								uni.hideLoading()
+							}
+						});
+					},
+					fail() {
+						uni.showToast({
+							title: '登录失败',
+							icon: 'none',
+							duration: 2000
+						})
+					}
+				});
+			},
+
+			wxLoginApi() {
+				let self = this
+				wechatAppAuth({
+					userInfo: self.appUserInfo,
+					phone: this.account,
+					code: this.captcha
+				}).then(({
+					data
+				}) => {
+					if (data.isbind) {
+						uni.showModal({
+							title: '提示',
+							content: '请绑定手机号后，继续操作',
+							showCancel: false,
+							success: function(res) {
+								if (res.confirm) {
+									self.current = 1
+									self.appLoginStatus = true
+								}
+							}
+						});
+					} else {
+						self.$store.commit("LOGIN", {
+							'token': data.token,
+							'time': data.expires_time - self.$Cache.time()
+						});
+						let backUrl = self.$Cache.get(BACK_URL) || "/pages/index/index";
+						self.$Cache.clear(BACK_URL);
+						self.$store.commit("SETUID", data.userInfo.uid);
+						uni.reLaunch({
+							url: backUrl
+						});
+					}
+				}).catch(error => {
+					uni.showModal({
+						title: '提示',
+						content: `错误信息${error}`,
+						success: function(res) {
+							if (res.confirm) {
+								console.log('用户点击确定');
+							} else if (res.cancel) {
+								console.log('用户点击取消');
+							}
+						}
+					});
+				})
+			},
 			again() {
 				this.codeUrl =
 					VUE_APP_API_URL +
@@ -161,63 +385,50 @@
 				if (!/^[\w\d]+$/i.test(that.captcha)) return that.$util.Tips({
 					title: '请输入正确的验证码'
 				});
-				loginMobile({
-						phone: that.account,
-						captcha: that.captcha,
-						spread: that.$Cache.get("spread")
-					})
-					.then(res => {
-						let data = res.data;
-						that.$store.commit("LOGIN", {
-							'token': data.token,
-							'time': data.expires_time - this.$Cache.time()
+				if (that.appLoginStatus) {
+					that.wxLoginApi()
+				} else if (that.appleLoginStatus) {
+					that.appleLoginApi()
+				} else {
+					if (this.keyLock) {
+						this.keyLock = !this.keyLock
+					} else {
+						return that.$util.Tips({
+							title: '请勿重复点击'
 						});
-						const backUrl = that.$Cache.get(BACK_URL) || "/pages/index/index";
-						that.$Cache.clear(BACK_URL);
-						getUserInfo().then(res => {
-							that.$store.commit("SETUID", res.data.uid);
-							if(backUrl.indexOf('/pages/users/login/index') !== -1){
-								backUrl = '/pages/index/index';
-							}
-							uni.reLaunch({
-								url: backUrl
-							});
-							// if (backUrl === '/pages/index/index' || backUrl === '/pages/order_addcart/order_addcart' || backUrl ===
-							// 	'/pages/user/index') {
-
-							// 	uni.switchTab({
-							// 		url: backUrl
-							// 	});
-
-							// } else {
-							// 	uni.navigateBack()
-							// }
-							// switch (backUrl) {
-							// 	case '/pages/index/index':
-							// 	case '/pages/order_addcart/order_addcart':
-							// 	case '/pages/user/index':
-							// 		uni.switchTab({
-							// 			url: backUrl
-							// 		});
-							// 		break;
-							// 	case '/pages/offline_cashier/payment/index':
-							// 		uni.navigateTo({
-							// 			url: backUrl
-							// 		});
-							// 		break;
-							// 	default:
-							// 		uni.switchTab({
-							// 			url: '/pages/index/index'
-							// 		});
-							// 		break;
-							// }
+					}
+					loginMobile({
+							phone: that.account,
+							captcha: that.captcha,
+							spread: that.$Cache.get("spread")
 						})
-					})
-					.catch(res => {
-						that.$util.Tips({
-							title: res
+						.then(res => {
+							let data = res.data;
+							that.$store.commit("LOGIN", {
+								'token': data.token,
+								'time': data.expires_time - this.$Cache.time()
+							});
+							let backUrl = that.$Cache.get(BACK_URL) || "/pages/index/index";
+							that.$Cache.clear(BACK_URL);
+							getUserInfo().then(res => {
+								this.keyLock = true
+								that.$store.commit("SETUID", res.data.uid);
+								if (backUrl.indexOf('/pages/users/login/index') !== -1) {
+									backUrl = '/pages/index/index';
+								}
+								uni.reLaunch({
+									url: backUrl
+								});
+							})
+						})
+						.catch(res => {
+							this.keyLock = true
+							that.$util.Tips({
+								title: res
+							});
 						});
-					});
+				}
+
 			},
 			async register() {
 				let that = this;
@@ -280,11 +491,6 @@
 						that.sendCode();
 					})
 					.catch(res => {
-						console.log(res, 'res')
-						// if (res.data.status === 402) {
-						// 	that.codeUrl = `${VUE_APP_API_URL}/sms_captcha?key=${that.keyCode}`;
-						// 	that.isShowCode = true;
-						// }
 						that.$util.Tips({
 							title: res
 						});
@@ -304,6 +510,13 @@
 				if (!that.password) return that.$util.Tips({
 					title: '请填写密码'
 				});
+				if (this.keyLock) {
+					this.keyLock = !this.keyLock
+				} else {
+					return that.$util.Tips({
+						title: '请勿重复点击'
+					});
+				}
 				loginH5({
 						account: that.account,
 						password: that.password,
@@ -312,21 +525,24 @@
 					.then(({
 						data
 					}) => {
-						console.log(this.$Cache.time());
 						that.$store.commit("LOGIN", {
 							'token': data.token,
 							'time': data.expires_time - this.$Cache.time()
 						});
-						const backUrl = that.$Cache.get(BACK_URL) || "/pages/index/index";
+						let backUrl = that.$Cache.get(BACK_URL) || "/pages/index/index";
 						that.$Cache.clear(BACK_URL);
 						getUserInfo().then(res => {
+							this.keyLock = true
 							that.$store.commit("SETUID", res.data.uid);
 							uni.reLaunch({
 								url: backUrl
 							});
+						}).catch(error => {
+							this.keyLock = true
 						})
 					})
 					.catch(e => {
+						this.keyLock = true
 						that.$util.Tips({
 							title: e
 						});
@@ -335,7 +551,87 @@
 		}
 	};
 </script>
+<style>
+	page {
+		background: #fff;
+	}
+</style>
 <style lang="scss">
+	.appLogin {
+		margin-top: 60rpx;
+
+		.hds {
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			font-size: 24rpx;
+			color: #B4B4B4;
+
+			.line {
+				width: 68rpx;
+				height: 1rpx;
+				background: #CCCCCC;
+			}
+
+			p {
+				margin: 0 20rpx;
+			}
+		}
+
+		.btn-wrapper {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			margin-top: 30rpx;
+
+			.btn {
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				width: 68rpx;
+				height: 68rpx;
+				border-radius: 50%;
+			}
+
+			.apple-btn {
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				width: 246rpx;
+				height: 66rpx;
+				margin-left: 30rpx;
+				background: #EAEAEA;
+				border-radius: 34rpx;
+				font-size: 24rpx;
+
+				.icon-s-pingguo {
+					color: #333;
+					margin-right: 10rpx;
+					font-size: 34rpx;
+				}
+			}
+
+			.iconfont {
+				font-size: 40rpx;
+				color: #fff;
+			}
+
+			.wx {
+				margin-right: 30rpx;
+				background-color: #61C64F;
+			}
+
+			.mima {
+				background-color: #28B3E9;
+			}
+
+			.yanzheng {
+				background-color: #F89C23;
+			}
+
+		}
+	}
+
 	.code img {
 		width: 100%;
 		height: 100%;
@@ -356,12 +652,19 @@
 			align-items: center;
 			justify-content: center;
 			width: 100%;
-			height: 200rpx;
+
+			/* #ifdef APP-VUE */
+			margin-top: 50rpx;
+			/* #endif */
+			/* #ifndef APP-VUE */
+
 			margin-top: 200rpx;
+			/* #endif */
+
 
 			image {
-				width: 180rpx;
-				height: 180rpx;
+				width: 240rpx;
+				height: 240rpx;
 			}
 		}
 
@@ -390,7 +693,7 @@
 							position: absolute;
 							right: 30rpx;
 							top: 50%;
-							color: #E93323;
+							color: var(--view-theme);
 							font-size: 26rpx;
 							transform: translateY(-50%);
 						}
@@ -405,7 +708,7 @@
 				width: 100%;
 				height: 86rpx;
 				margin-top: 80rpx;
-				background-color: $theme-color;
+				background-color: var(--view-theme);
 				border-radius: 120rpx;
 				color: #FFFFFF;
 				font-size: 30rpx;

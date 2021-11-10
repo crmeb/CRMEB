@@ -29,9 +29,9 @@
                         <Button v-auth="['setting-system_menus-add']" type="primary" @click="menusAdd('添加直播间')"
                                 icon="md-add">添加商品
                         </Button>
-<!--                        <Button v-auth="['setting-system_menus-add']" icon="md-list" type="success"-->
-<!--                                @click="syncGoods" style="margin-left: 20px;">同步商品-->
-<!--                        </Button>-->
+                        <Button v-auth="['setting-system_menus-add']" icon="md-list" type="success"
+                                @click="syncGoods" style="margin-left: 20px;">同步商品
+                        </Button>
                     </Col>
                 </Row>
             </Form>

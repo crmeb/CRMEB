@@ -149,7 +149,6 @@
 				canvases[this.canvasId].scrollEnd(e);
 			},
 			error(e) {
-				console.log(e)
 			}
 		},
 	};

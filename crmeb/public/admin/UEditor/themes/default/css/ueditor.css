@@ -133,7 +133,6 @@ div.edui-box {
 }
 /*UI工具栏、编辑区域、底部*/
 .edui-default .edui-editor {
-    z-index: 1 !important;
     border: 1px solid #d4d4d4;
     background-color: white;
     position: relative;
@@ -487,7 +486,7 @@ div.edui-box {
 .edui-default .edui-toolbar .edui-splitbutton .edui-icon {
     height: 20px !important;
     width: 20px !important;
-    background-image: url(http://cdn.oss.9gt.net/prov1.1/1/icons.png);
+    background-image: url(../images/icons.png);
     background-image: url(../images/icons.gif) \9;
 }
 

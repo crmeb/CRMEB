@@ -63,7 +63,8 @@ class Sms extends AuthController
             ['code', ''],
         ], true);
 
-        validate(ServeValidata::class)->scene('phone')->check(['phone' => $phone]);
+        $this->validate(['phone' => $phone], ServeValidata::class, 'phone');
+
         if (!$sign) {
             return app('json')->fail('请设置短信签名');
         }

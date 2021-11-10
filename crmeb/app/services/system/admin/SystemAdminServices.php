@@ -174,6 +174,11 @@ class SystemAdminServices extends BaseServices
         /** @var SystemRoleServices $service */
         $service = app()->make(SystemRoleServices::class);
         $options = $service->getRoleFormSelect($level);
+        if (isset($formData['roles'])) {
+            foreach ($formData['roles'] as &$item) {
+                $item = intval($item);
+            }
+        }
         $f[] = $this->builder->select('roles', '管理员身份', $formData['roles'] ?? [])->setOptions(FormBuilder::setOptions($options))->multiple(true)->required('请选择管理员身份');
         $f[] = $this->builder->radio('status', '状态', $formData['status'] ?? 1)->options([['label' => '开启', 'value' => 1], ['label' => '关闭', 'value' => 0]]);
         return $f;

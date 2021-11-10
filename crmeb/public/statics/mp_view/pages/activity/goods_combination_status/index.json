@@ -1,0 +1,9 @@
+{
+  "navigationBarTitleText": "拼团",
+  "usingComponents": {
+    "count-down": "/components/countDown/index",
+    "product-window": "/components/productWindow/index",
+    "home": "/components/home/index",
+    "authorize": "/components/Authorize"
+  }
+}

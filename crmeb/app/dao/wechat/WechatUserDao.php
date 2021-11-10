@@ -99,13 +99,13 @@ class WechatUserDao extends BaseDao
         return $this->getModel()->when($userType != '', function ($query) use ($userType) {
             $query->where('user_type', $userType);
         })->where(function ($query) use ($time) {
-                if ($time[0] == $time[1]) {
-                    $query->whereDay('add_time', $time[0]);
-                } else {
-                    $time[1] = date('Y/m/d', strtotime($time[1]) + 86400);
-                    $query->whereTime('add_time', 'between', $time);
-                }
-            })->field('count(uid) as newNum,province')
+            if ($time[0] == $time[1]) {
+                $query->whereDay('add_time', $time[0]);
+            } else {
+                $time[1] = date('Y/m/d', strtotime($time[1]) + 86400);
+                $query->whereTime('add_time', 'between', $time);
+            }
+        })->field('count(uid) as newNum,province')
             ->group('province')->select()->toArray();
     }
 
@@ -120,13 +120,13 @@ class WechatUserDao extends BaseDao
         return $this->getModel()->when($userType != '', function ($query) use ($userType) {
             $query->where('user_type', $userType);
         })->where(function ($query) use ($time) {
-                if ($time[0] == $time[1]) {
-                    $query->whereDay('add_time', $time[0]);
-                } else {
-                    $time[1] = date('Y/m/d', strtotime($time[1]) + 86400);
-                    $query->whereTime('add_time', 'between', $time);
-                }
-            })->field('count(uid) as value,sex as name')
+            if ($time[0] == $time[1]) {
+                $query->whereDay('add_time', $time[0]);
+            } else {
+                $time[1] = date('Y/m/d', strtotime($time[1]) + 86400);
+                $query->whereTime('add_time', 'between', $time);
+            }
+        })->field('count(uid) as value,sex as name')
             ->group('sex')->select()->toArray();
     }
 
@@ -135,10 +135,8 @@ class WechatUserDao extends BaseDao
      * @param int $uid
      * @return mixed
      */
-    public function getWechatOpenid(int $uid)
+    public function getWechatOpenid(int $uid, string $userType = 'wechat')
     {
-        return $this->getModel()->where('uid', $uid)->where(function ($qurey) {
-            $qurey->where('user_type', 'wechat');//->whereOr('user_type', 'routine');
-        })->value('openid');
+        return $this->getModel()->where('uid', $uid)->where('user_type', $userType)->value('openid');
     }
 }

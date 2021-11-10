@@ -1,5 +1,5 @@
 <template>
-	<view>
+	<view :style="colorStyle">
 		<block v-if="bargain.length>0">
 			<div class="bargain-record" ref="container">
 				<div class="item" v-for="(item, index) in bargain" :key="index">
@@ -9,11 +9,12 @@
 						</div>
 						<div class="text acea-row row-column-around">
 							<div class="line1" style="width: 100%;">{{ item.title }}</div>
-							<count-down :justify-left="'justify-content:left'" :is-day="true" :tip-text="'倒计时 '" :day-text="' 天 '" :hour-text="' 时 '" :minute-text="' 分 '"
-							 :second-text="' 秒'" :datatime="item.datatime" v-if="item.status === 1"></count-down>
-							<div class="successTxt font-color-red" v-else-if="item.status === 3">砍价成功</div>
+							<count-down :justify-left="'justify-content:left'" :is-day="true" :tip-text="'倒计时 '"
+								:day-text="' 天 '" :hour-text="' 时 '" :minute-text="' 分 '" :second-text="' 秒'"
+								:datatime="item.datatime" v-if="item.status === 1"></count-down>
+							<div class="successTxt font-num" v-else-if="item.status === 3">砍价成功</div>
 							<div class="endTxt" v-else>活动已结束</div>
-							<div class="money font-color-red">
+							<div class="money font-num">
 								已砍至<span class="symbol">￥</span><span class="num">{{ item.residue_price }}</span>
 							</div>
 						</div>
@@ -23,7 +24,8 @@
 						<div class="success" v-else-if="item.status === 3">砍价成功</div>
 						<div class="end" v-else>活动已结束</div>
 						<div class="acea-row row-middle row-right">
-							<div class="bnt cancel" v-if="item.status === 1" @click="getBargainUserCancel(item.bargain_id)">
+							<div class="bnt cancel" v-if="item.status === 1"
+								@click="getBargainUserCancel(item.bargain_id)">
 								取消活动
 							</div>
 							<div class="bnt bg-color-red" v-if="item.status === 1" @click="goDetail(item.bargain_id)">
@@ -39,7 +41,9 @@
 		<block v-if="bargain.length == 0">
 			<emptyPage title="暂无砍价记录～"></emptyPage>
 		</block>
+		<!-- #ifndef MP -->
 		<home></home>
+		<!-- #endif -->
 	</view>
 </template>
 <script>
@@ -54,6 +58,7 @@
 	} from '@/api/user.js';
 	import Loading from "@/components/Loading";
 	import home from '@/components/home';
+	import colors from "@/mixins/color";
 	export default {
 		name: "BargainRecord",
 		components: {
@@ -63,6 +68,7 @@
 			home
 		},
 		props: {},
+		mixins: [colors],
 		data: function() {
 			return {
 				bargain: [],
@@ -76,15 +82,9 @@
 		onLoad: function() {
 			this.getBargainUserList();
 			this.getUserInfo();
-			// this.$scroll(this.$refs.container, () => {
-			//   !this.loadingList && this.getBargainUserList();
-			// });
 		},
 		methods: {
 			goDetail: function(id) {
-				// this.$router.push({
-				// 	path: "/activity/dargain_detail/" + id +'&bargain='+ userInfo.uid
-				// });
 				uni.navigateTo({
 					url: `/pages/activity/goods_bargain_details/index?id=${id}&bargain=${this.userInfo.uid}`
 				})
@@ -156,12 +156,14 @@
 	/*砍价记录*/
 	.bargain-record .item .picTxt .text .time .styleAll {
 		color: #fc4141;
-		font-size:24rpx;
+		font-size: 24rpx;
 	}
+
 	.bargain-record .item .picTxt .text .time .red {
 		color: #999;
-		font-size:24rpx;
+		font-size: 24rpx;
 	}
+
 	.bargain-record .item {
 		background-color: #fff;
 		margin-bottom: 12upx;
@@ -196,15 +198,16 @@
 		color: #868686;
 		justify-content: left !important;
 	}
-	
-	.bargain-record .item .picTxt .text .successTxt{
-		font-size:24rpx;
+
+	.bargain-record .item .picTxt .text .successTxt {
+		font-size: 24rpx;
 	}
-	
-	.bargain-record .item .picTxt .text .endTxt{
-		font-size:24rpx;
+
+	.bargain-record .item .picTxt .text .endTxt {
+		font-size: 24rpx;
 		color: #999;
 	}
+
 	.bargain-record .item .picTxt .text .money {
 		font-size: 24upx;
 	}

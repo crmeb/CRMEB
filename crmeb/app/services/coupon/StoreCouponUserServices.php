@@ -23,6 +23,7 @@ use crmeb\utils\Arr;
  * Class StoreCouponUserServices
  * @package app\services\coupon
  * @method useCoupon(int $id) 使用优惠券修改优惠券状态
+ * @method delUserCoupon(array $where)
  */
 class StoreCouponUserServices extends BaseServices
 {
@@ -79,7 +80,7 @@ class StoreCouponUserServices extends BaseServices
             $item['_add_time'] = date('Y-m-d H:i:s', $item['add_time']);
             $item['_end_time'] = date('Y-m-d H:i:s', $item['end_time']);
             if (!$item['coupon_time']) {
-                $item['coupon_time'] = bcadd((string)($item['end_use_time'] - $item['start_use_time']), '86400', 0);
+                $item['coupon_time'] = bcdiv((string)($item['end_use_time'] - $item['start_use_time']), '86400', 0);
             }
         }
         $count = $this->dao->count(['uid' => $id]);
@@ -251,6 +252,26 @@ class StoreCouponUserServices extends BaseServices
         return $this->dao->save($data);
     }
 
+    /**会员领取优惠券
+     * @param $uid
+     * @param $issueCouponInfo
+     * @param string $type
+     * @return mixed
+     */
+    public function addMemberUserCoupon($uid, $issueCouponInfo, $type = 'get')
+    {
+        $data = [];
+        $data['cid'] = $issueCouponInfo['id'];
+        $data['uid'] = $uid;
+        $data['coupon_title'] = $issueCouponInfo['title'];
+        $data['coupon_price'] = $issueCouponInfo['coupon_price'];
+        $data['use_min_price'] = $issueCouponInfo['use_min_price'];
+        $data['add_time'] = time();
+        $data['start_time'] = strtotime(date('Y-m-d 00:00:00', time()));
+        $data['end_time'] = strtotime(date('Y-m-d 23:59:59', strtotime('+30 day')));
+        $data['type'] = $type;
+        return $this->dao->save($data);
+    }
 
     /**
      * 获取用户已领取的优惠卷
@@ -281,6 +302,18 @@ class StoreCouponUserServices extends BaseServices
         }
         [$page, $limit] = $this->getPageValue();
         $list = $this->dao->getCouponListByOrder($where, 'status ASC,add_time DESC', $page, $limit);
+        /** @var StoreCategoryServices $categoryServices */
+        $categoryServices = app()->make(StoreCategoryServices::class);
+        $category = $categoryServices->getColumn([], 'pid,cate_name', 'id');
+        foreach ($list as &$item) {
+            if ($item['category_id']) {
+                $item['category_type'] = $category[$item['category_id']]['pid'] == 0 ? 1 : 2;
+                $item['category_name'] = $category[$item['category_id']]['cate_name'];
+            } else {
+                $item['category_type'] = '';
+                $item['category_name'] = '';
+            }
+        }
         return $list ? $this->tidyCouponList($list) : [];
     }
 
@@ -293,29 +326,39 @@ class StoreCouponUserServices extends BaseServices
     {
         $time = time();
         foreach ($couponList as &$coupon) {
-            $coupon['use_min_price'] = number_format((float)$coupon['use_min_price'], 2);
-            $coupon['coupon_price'] = number_format((float)$coupon['coupon_price'], 2);
             if ($coupon['status'] == '已使用') {
                 $coupon['_type'] = 0;
                 $coupon['_msg'] = '已使用';
+                $coupon['pc_type'] = 0;
+                $coupon['pc_msg'] = '已使用';
             } else if ($coupon['status'] == '已过期') {
                 $coupon['is_fail'] = 1;
                 $coupon['_type'] = 0;
                 $coupon['_msg'] = '已过期';
+                $coupon['pc_type'] = 0;
+                $coupon['pc_msg'] = '已过期';
             } else if ($coupon['end_time'] < $time) {
                 $coupon['is_fail'] = 1;
                 $coupon['_type'] = 0;
                 $coupon['_msg'] = '已过期';
+                $coupon['pc_type'] = 0;
+                $coupon['pc_msg'] = '已过期';
             } else if ($coupon['start_time'] > $time) {
                 $coupon['_type'] = 0;
                 $coupon['_msg'] = '未开始';
+                $coupon['pc_type'] = 1;
+                $coupon['pc_msg'] = '未开始';
             } else {
                 if ($coupon['start_time'] + 3600 * 24 > $time) {
                     $coupon['_type'] = 2;
-                    $coupon['_msg'] = '可使用';
+                    $coupon['_msg'] = '立即使用';
+                    $coupon['pc_type'] = 1;
+                    $coupon['pc_msg'] = '可使用';
                 } else {
                     $coupon['_type'] = 1;
-                    $coupon['_msg'] = '可使用';
+                    $coupon['_msg'] = '立即使用';
+                    $coupon['pc_type'] = 1;
+                    $coupon['pc_msg'] = '可使用';
                 }
             }
             $coupon['add_time'] = $coupon['_add_time'] = $coupon['start_time'] ? date('Y/m/d', $coupon['start_time']) : date('Y/m/d', $coupon['add_time']);
@@ -338,9 +381,7 @@ class StoreCouponUserServices extends BaseServices
         if (!$uid) return [];
         /** @var StoreCouponIssueServices $couponIssueService */
         $couponIssueService = app()->make(StoreCouponIssueServices::class);
-        //$couponWhere['status'] = 1;
         $couponWhere['receive_type'] = 4;
-        //$couponWhere['is_del'] = 0;
         $couponInfo = $couponIssueService->getMemberCouponIssueList($couponWhere);
         $couponList = [];
         if ($couponInfo) {
@@ -378,7 +419,6 @@ class StoreCouponUserServices extends BaseServices
         if ($coupon_user['use_time'] == 0) {
             return $this->dao->update($coupon_user['id'], ['is_fail' => 1, 'status' => 2]);
         }
-
     }
 
     /**根据id查询会员优惠劵
@@ -394,17 +434,18 @@ class StoreCouponUserServices extends BaseServices
         return $this->dao->getOne(['id' => $id]);
     }
 
-    /**根据时间查询用户优惠券
+    /**
+     * 根据时间查询用户优惠券
      * @param array $where
      * @return array|bool|\think\Model|null
      * @throws \think\db\exception\DataNotFoundException
      * @throws \think\db\exception\DbException
      * @throws \think\db\exception\ModelNotFoundException
      */
-    public function getUserCounponByMonth(array $where)
+    public function getUserCounponByMonth(array $where, string $field = '*')
     {
-        if (!$where) return false;
-        return $this->dao->getUserCounponByMonth($where);
+        if (!$where) return [];
+        return $this->dao->getUserCounponByMonth($where, $field);
     }
 
     /**

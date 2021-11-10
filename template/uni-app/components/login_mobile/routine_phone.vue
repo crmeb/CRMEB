@@ -79,7 +79,6 @@
 						this.getUserInfo();
 					})
 					.catch(res => {
-						console.log(res);
 						uni.hideLoading();
 					});
 			},
@@ -148,7 +147,7 @@
 			height: 86rpx;
 			line-height: 86rpx;
 			margin-top: 60rpx;
-			background: #E93323;
+			background: var(--view-theme);
 			border-radius: 43rpx;
 			color: #fff;
 			font-size: 28rpx;

@@ -40,7 +40,6 @@ class SystemLog extends AuthController
      */
     public function index()
     {
-
         $where = $this->request->getMore([
             ['pages', ''],
             ['path', ''],

@@ -8,7 +8,7 @@
 // +----------------------------------------------------------------------
 // | Author: CRMEB Team <admin@crmeb.com>
 // +----------------------------------------------------------------------
-declare (strict_types=1);
+declare (strict_types = 1);
 
 namespace app\services\coupon;
 
@@ -60,6 +60,9 @@ class StoreCouponIssueServices extends BaseServices
         [$page, $limit] = $this->getPageValue();
         $where['is_del'] = 0;
         $list = $this->dao->getList($where, $page, $limit);
+        foreach ($list as &$item) {
+            $item['use_time'] = date('Y-m-d', $item['start_use_time']) . ' ~ ' . date('Y-m-d', $item['end_use_time']);
+        }
         $count = $this->dao->count($where);
         return compact('list', 'count');
     }
@@ -89,6 +92,10 @@ class StoreCouponIssueServices extends BaseServices
         $data['end_time'] = strtotime((string)$data['end_time']);
         $data['title'] = $data['coupon_title'];
         $data['remain_count'] = $data['total_count'];
+        if ($data['receive_type'] == 2 || $data['receive_type'] == 3) {
+            $data['is_permanent'] = 1;
+            $data['total_count'] = 0;
+        }
         $data['add_time'] = time();
         $res = $this->dao->save($data);
         if ($data['product_id'] !== '' && $res) {
@@ -146,112 +153,61 @@ class StoreCouponIssueServices extends BaseServices
     /**
      * 关注送优惠券
      * @param int $uid
+     * @return bool
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
      */
     public function userFirstSubGiveCoupon(int $uid)
     {
         $couponList = $this->dao->getGiveCoupon(['receive_type' => 2]);
-        if ($couponList) {
-            $couponData = [];
-            $issueUserData = [];
-            $time = time();
-            $ids = array_column($couponList, 'id');
-            /** @var StoreCouponIssueUserServices $issueUser */
-            $issueUser = app()->make(StoreCouponIssueUserServices::class);
-            $userCouponIds = $issueUser->getColumn([['uid', '=', $uid], ['issue_coupon_id', 'in', $ids]], 'issue_coupon_id') ?? [];
-            foreach ($couponList as $item) {
-                if (!$userCouponIds || !in_array($item['id'], $userCouponIds)) {
-                    $data['cid'] = $item['id'];
-                    $data['uid'] = $uid;
-                    $data['coupon_title'] = $item['title'];
-                    $data['coupon_price'] = $item['coupon_price'];
-                    $data['use_min_price'] = $item['use_min_price'];
-                    $data['add_time'] = $time;
-                    $data['end_time'] = $data['add_time'] + $item['coupon_time'] * 86400;
-                    $data['type'] = 'get';
-                    $issue['uid'] = $uid;
-                    $issue['issue_coupon_id'] = $item['id'];
-                    $issue['add_time'] = $time;
-                    $issueUserData[] = $issue;
-                    $couponData[] = $data;
-                    unset($data);
-                    unset($issue);
-                }
-            }
-            if ($couponData) {
-                /** @var StoreCouponUserServices $storeCouponUser */
-                $storeCouponUser = app()->make(StoreCouponUserServices::class);
-                if (!$storeCouponUser->saveAll($couponData)) {
-                    throw new AdminException('发劵失败');
-                }
-            }
-            if ($issueUserData) {
-                if (!$issueUser->saveAll($issueUserData)) {
-                    throw new AdminException('发劵失败');
-                }
-            }
-        }
+        $this->giveUserCoupon($uid, $couponList ?: []);
         return true;
     }
 
     /**
      * 订单金额达到预设金额赠送优惠卷
      * @param $uid
+     * @param $total_price
+     * @return bool
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
      */
     public function userTakeOrderGiveCoupon($uid, $total_price)
     {
         $couponList = $this->dao->getGiveCoupon([['is_full_give', '=', 1], ['full_reduction', '<=', $total_price]]);
-        if ($couponList) {
-            $couponData = $issueUserData = [];
-            $time = time();
-            $ids = array_column($couponList, 'id');
-            /** @var StoreCouponIssueUserServices $issueUser */
-            $issueUser = app()->make(StoreCouponIssueUserServices::class);
-            $userCouponIds = $issueUser->getColumn([['uid', '=', $uid], ['issue_coupon_id', 'in', $ids]], 'issue_coupon_id') ?? [];
-            foreach ($couponList as $item) {
-                if ($total_price >= $item['full_reduction'] && (!$userCouponIds || !in_array($item['id'], $userCouponIds))) {
-                    $data['cid'] = $item['id'];
-                    $data['uid'] = $uid;
-                    $data['coupon_title'] = $item['title'];
-                    $data['coupon_price'] = $item['coupon_price'];
-                    $data['use_min_price'] = $item['use_min_price'];
-                    $data['add_time'] = $time;
-                    $data['end_time'] = $data['add_time'] + $item['coupon_time'] * 86400;
-                    $data['type'] = 'get';
-                    $issue['uid'] = $uid;
-                    $issue['issue_coupon_id'] = $item['id'];
-                    $issue['add_time'] = $time;
-                    $issueUserData[] = $issue;
-                    $couponData[] = $data;
-                    unset($data);
-                    unset($issue);
-                }
-            }
-            if ($couponData) {
-                /** @var StoreCouponUserServices $storeCouponUser */
-                $storeCouponUser = app()->make(StoreCouponUserServices::class);
-                if (!$storeCouponUser->saveAll($couponData)) {
-                    throw new AdminException('发劵失败');
-                }
-            }
-            if ($issueUserData) {
-                if (!$issueUser->saveAll($issueUserData)) {
-                    throw new AdminException('发劵失败');
-                }
-            }
-        }
+        $this->giveUserCoupon((int)$uid, $couponList ?: []);
         return true;
     }
 
     /**
      * 下单之后赠送
      * @param $uid
+     * @param $coupon_issue_ids 订单商品关联优惠券ids
+     * @return array
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
      */
     public function orderPayGiveCoupon($uid, $coupon_issue_ids)
     {
         if (!$coupon_issue_ids) return [];
         $couponList = $this->dao->getGiveCoupon([['id', 'IN', $coupon_issue_ids]]);
+        [$couponData, $issueUserData] = $this->giveUserCoupon($uid, $couponList ?: []);
+        return $couponData;
+    }
+
+    /**
+     * 发送优惠券
+     * @param int $uid 发放人id
+     * @param array $couponList 发送优惠券数据
+     * @return array[]
+     */
+    public function giveUserCoupon(int $uid, array $couponList)
+    {
         $couponData = $issueUserData = [];
-        if ($couponList) {
+        if ($uid && $couponList) {
             $time = time();
             $ids = array_column($couponList, 'id');
             /** @var StoreCouponIssueUserServices $issueUser */
@@ -264,8 +220,13 @@ class StoreCouponIssueServices extends BaseServices
                     $data['coupon_title'] = $item['title'];
                     $data['coupon_price'] = $item['coupon_price'];
                     $data['use_min_price'] = $item['use_min_price'];
-                    $data['add_time'] = $time;
-                    $data['end_time'] = $data['add_time'] + $item['coupon_time'] * 86400;
+                    if ($item['coupon_time']) {
+                        $data['add_time'] = $time;
+                        $data['end_time'] = $data['add_time'] + $item['coupon_time'] * 86400;
+                    } else {
+                        $data['add_time'] = $item['start_use_time'];
+                        $data['end_time'] = $item['end_use_time'];
+                    }
                     $data['type'] = 'get';
                     $issue['uid'] = $uid;
                     $issue['issue_coupon_id'] = $item['id'];
@@ -289,7 +250,7 @@ class StoreCouponIssueServices extends BaseServices
                 }
             }
         }
-        return $couponData;
+        return [$couponData, $issueUserData];
     }
 
     /**
@@ -308,7 +269,7 @@ class StoreCouponIssueServices extends BaseServices
             $typeId = 0;
             $cateId = 0;
             if ($where['type'] == -1) { // PC端获取优惠券
-                $list = $this->dao->getPcIssueCouponList($uid);
+                $list = $this->dao->getPcIssueCouponList($uid, [], 0, (int)$where['num']);
             } else {
                 $list = $this->dao->getIssueCouponList($uid, (int)$where['type'], $typeId, $page, $limit);
                 if (!$list) $list = $this->dao->getIssueCouponList($uid, 1, $typeId, $page, $limit);
@@ -341,12 +302,13 @@ class StoreCouponIssueServices extends BaseServices
             $v['coupon_price'] = floatval($v['coupon_price']);
             $v['use_min_price'] = floatval($v['use_min_price']);
             $v['is_use'] = $uid ? isset($v['used']) : false;
-            if (!$v['end_time']) {
-                $v['start_time'] = '';
-                $v['end_time'] = '不限时';
-            } else {
+            if ($v['end_use_time']) {
+                $v['start_use_time'] = date('Y/m/d', $v['start_use_time']);
+                $v['end_use_time'] = $v['end_use_time'] ? date('Y/m/d', $v['end_use_time']) : date('Y/m/d', time() + 86400);
+            }
+            if ($v['start_time']) {
                 $v['start_time'] = date('Y/m/d', $v['start_time']);
-                $v['end_time'] = $v['end_time'] ? date('Y/m/d', $v['end_time']) : date('Y/m/d', time() + 86400);
+                $v['end_time'] = date('Y/m/d', $v['end_time']);
             }
         }
         $data['list'] = $list;
@@ -359,7 +321,12 @@ class StoreCouponIssueServices extends BaseServices
         $issueCouponInfo = $this->dao->getInfo((int)$id);
         $uid = $user->uid;
         if (!$issueCouponInfo) throw new ValidateException('领取的优惠劵已领完或已过期!');
-
+        /** @var MemberRightServices $memberRightService */
+        $memberRightService = app()->make(MemberRightServices::class);
+        if ($issueCouponInfo->receive_type == 4 && (!$user->is_money_level || !$memberRightService->getMemberRightStatus("coupon"))) {
+            if (!$user->is_money_level) throw new ValidateException('您不是付费会员!');
+            if (!$memberRightService->getMemberRightStatus("coupon")) throw new ValidateException('暂时无法领取!');
+        }
         /** @var StoreCouponIssueUserServices $issueUserService */
         $issueUserService = app()->make(StoreCouponIssueUserServices::class);
         /** @var StoreCouponUserServices $couponUserService */
@@ -376,6 +343,37 @@ class StoreCouponIssueServices extends BaseServices
         });
     }
 
+    /**
+     * 会员发放优惠期券
+     * @param $id
+     * @param $uid
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     */
+    public function memberIssueUserCoupon($id, $uid)
+    {
+        $issueCouponInfo = $this->dao->getInfo((int)$id);
+        if ($issueCouponInfo) {
+            /** @var StoreCouponIssueUserServices $issueUserService */
+            $issueUserService = app()->make(StoreCouponIssueUserServices::class);
+            /** @var StoreCouponUserServices $couponUserService */
+            $couponUserService = app()->make(StoreCouponUserServices::class);
+            if ($issueCouponInfo->remain_count >= 0 || $issueCouponInfo->is_permanent) {
+                $this->transaction(function () use ($issueUserService, $uid, $id, $couponUserService, $issueCouponInfo) {
+                    //$issueUserService->save(['uid' => $uid, 'issue_coupon_id' => $id, 'add_time' => time()]);
+                    $couponUserService->addMemberUserCoupon($uid, $issueCouponInfo, "send");
+                    // 如果会员劵需要限制数量时打开
+                    if ($issueCouponInfo['total_count'] > 0) {
+                        $issueCouponInfo['remain_count'] -= 1;
+                        $issueCouponInfo->save();
+                    }
+                });
+            }
+
+        }
+
+    }
 
     /**
      * 用户优惠劵列表
@@ -462,7 +460,7 @@ class StoreCouponIssueServices extends BaseServices
     {
         /** @var StoreCartServices $services */
         $services = app()->make(StoreCartServices::class);
-        $cartGroup = $services->getUserProductCartListV1($uid, $cartId, $new, 1);
+        $cartGroup = $services->getUserProductCartListV1($uid, $cartId, $new);
         /** @var StoreCouponUserServices $coupServices */
         $coupServices = app()->make(StoreCouponUserServices::class);
         return $coupServices->getUsableCouponList($uid, $cartGroup);
@@ -494,6 +492,70 @@ class StoreCouponIssueServices extends BaseServices
         return abs($date_1['y'] - $date_2['y']) * 12 + $date_2['m'] - $date_1['m'];
     }
 
+    /**
+     * 给会员发放优惠券
+     * @param $uid
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     */
+    public function sendMemberCoupon($uid, $couponId = 0)
+    {
+        if (!$uid) return false;
+        /** @var MemberCardServices $memberCardService */
+        $memberCardService = app()->make(MemberCardServices::class);
+        //看付费会员是否开启
+        $isOpenMember = $memberCardService->isOpenMemberCard();
+        if (!$isOpenMember) return false;
+        /** @var UserServices $userService */
+        $userService = app()->make(UserServices::class);
+        $userInfo = $userService->getUserInfo((int)$uid);
+        //看是否会员过期
+        $checkMember = $userService->offMemberLevel($uid, $userInfo);
+        if (!$checkMember) return false;
+        /** @var MemberRightServices $memberRightService */
+        $memberRightService = app()->make(MemberRightServices::class);
+        //看是否开启会员送券
+        $isSendCoupon = $memberRightService->getMemberRightStatus("coupon");
+        if (!$isSendCoupon) return false;
+        if ($userInfo && (($userInfo['is_money_level'] > 0) || $userInfo['is_ever_level'] == 1)) {
+            if ($couponId) {//手动点击领取
+                $couponWhere['id'] = $couponId;
+            } else {//主动批量发放
+                $couponWhere['status'] = 1;
+                $couponWhere['receive_type'] = 4;
+                $couponWhere['is_del'] = 0;
+            }
+            $couponInfo = $this->getMemberCouponIssueList($couponWhere);
+            if ($couponInfo) {
+                /** @var StoreCouponUserServices $couponUserService */
+                $couponUserService = app()->make(StoreCouponUserServices::class);
+                $couponIds = array_column($couponInfo, 'id');
+                $couponUserMonth = $couponUserService->memberCouponUserGroupBymonth(['uid' => $uid, 'couponIds' => $couponIds]);
+                $getTime = array();
+                if ($couponUserMonth) {
+                    $getTime = array_column($couponUserMonth, 'num', 'time');
+                }
+                // 判断这个月是否领取过,而且领全了
+                //if (in_array(date('Y-m', time()), $getTime)) return false;
+                $timeKey = date('Y-m', time());
+                if (array_key_exists($timeKey, $getTime) && $getTime[$timeKey] == count($couponIds)) return false;
+                $monthNum = $this->getMonthNum(date('Y-m-d H:i:s', time()), date('Y-m-d H:i:s', $userInfo['overdue_time']));
+                //判断是否领完所有月份
+                if (count($getTime) >= $monthNum && (array_key_exists($timeKey, $getTime) && $getTime[$timeKey] == count($couponIds)) && $userInfo['is_ever_level'] != 1 && $monthNum > 0) return false;
+                //看之前是否手动领取过某一张，领取过就不再领取。
+                $couponUser = $couponUserService->getUserCounponByMonth(['uid' => $uid, 'cid' => $couponIds], 'id,cid');
+                if ($couponUser) $couponUser = array_combine(array_column($couponUser, 'cid'), $couponUser);
+                foreach ($couponInfo as $cv) {
+                    if (!isset($couponUser[$cv['id']])) {
+                        $this->memberIssueUserCoupon($cv['id'], $uid);
+                    }
+                }
+
+            }
+        }
+        return true;
+    }
 
     /**
      * 获取今日新增优惠券

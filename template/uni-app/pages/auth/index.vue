@@ -1,7 +1,7 @@
 <!-- #ifdef H5 -->
 <template>
 	<view v-if="bindPhone">
-		<form @submit="editPwd">
+		<form @submit="editPwd" report-submit='true'>
 			<view class="ChangePassword">
 				<view class="list">
 					<view class="item">
@@ -20,7 +20,7 @@
 	</view>
 	<view class="lottie-bg" v-else>
 		<view id="lottie">
-			<image src="/static/img/live-logo.gif" rel="preload" />
+			<!-- <image src="/static/img/live-logo.gif" rel="preload" /> -->
 		</view>
 	</view>
 </template>

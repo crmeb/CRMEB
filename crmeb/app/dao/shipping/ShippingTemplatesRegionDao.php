@@ -60,13 +60,12 @@ class ShippingTemplatesRegionDao extends BaseDao
      * 根据运费模板id和城市id获得包邮数据列表
      * @param array $tempIds
      * @param array $cityId
+     * @param string $field
+     * @param string $key
      * @return array
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\DbException
-     * @throws \think\db\exception\ModelNotFoundException
      */
-    public function getTempRegionList(array $tempIds, array $cityId)
+    public function getTempRegionList(array $tempIds, array $cityId, string $field = '*', string $key = '*')
     {
-        return $this->getModel()->whereIn('temp_id', $tempIds)->whereIn('city_id', $cityId)->order('city_id asc')->select()->toArray();
+        return $this->getModel()->whereIn('temp_id', $tempIds)->whereIn('city_id', $cityId)->order('city_id asc')->column($field, $key);
     }
 }

@@ -9,7 +9,7 @@
                             <Radio :label=item.val v-for="(item,i) in fromList.fromTxt" :key="i">{{item.text}}</Radio>
                         </RadioGroup>
                         <DatePicker :editable="false" @on-change="onchangeTime" :value="timeVal" format="yyyy/MM/dd" type="daterange"
-                                    placement="bottom-end" placeholder="自定义时间" style="width: 200px;"></DatePicker>
+                                    placement="bottom-end" placeholder="请选择时间" style="width: 200px;"></DatePicker>
                     </FormItem>
                 </Col>
                 <Col span="12" class="ivu-text-left">

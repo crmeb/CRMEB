@@ -86,3 +86,13 @@ export function isShowApi (data) {
         data: datas
     })
 };
+
+/**
+ * @description 权限列表
+ */
+ export function getRuleList () {
+    return request({
+        url: `/setting/ruleList`,
+        method: 'get'
+    });
+};

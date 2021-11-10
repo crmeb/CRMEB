@@ -88,7 +88,6 @@
 					  });
 		          })
 		          .catch(res => {
-					  console.log(res);
 					  that.$util.Tips({
 					  	title: res.msg
 					  });

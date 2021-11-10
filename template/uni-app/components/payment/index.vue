@@ -1,10 +1,11 @@
 <template>
-	<view>
+	<view :style="colorStyle">
 		<view class="payment" :class="pay_close ? 'on' : ''">
 			<view class="title acea-row row-center-wrapper">
 				选择付款方式<text class="iconfont icon-guanbi" @click='close'></text>
 			</view>
-			<view class="item acea-row row-between-wrapper" v-for="(item,index) in payMode" :key="index" v-if='item.payStatus' @click="payType(item.number || 0 , item.value,index)">
+			<view class="item acea-row row-between-wrapper" v-for="(item,index) in payMode" :key="index"
+				v-if='item.payStatus' @click="payType(item.number || 0 , item.value,index)">
 				<view class="left acea-row row-between-wrapper">
 					<view class="iconfont" :class="item.icon"></view>
 					<view class="text">
@@ -15,7 +16,7 @@
 						<view class="info" v-else>{{item.title}}</view>
 					</view>
 				</view>
-				<view class="iconfont" :class="active==index?'icon-xuanzhong11 font-color':'icon-weixuan'"></view>
+				<view class="iconfont" :class="active==index?'icon-xuanzhong11 font-num':'icon-weixuan'"></view>
 			</view>
 			<view class="payMoney">支付<span class="font-color">¥<span class="money">{{totalPrice}}</span></span></view>
 			<view class="button bg-color acea-row row-center-wrapper" @click='goPay(number, paytype)'>去付款</view>
@@ -29,6 +30,7 @@
 	import {
 		orderPay
 	} from '@/api/order.js';
+	import colors from '@/mixins/color.js';
 	export default {
 		props: {
 			payMode: {
@@ -54,40 +56,41 @@
 				default: false
 			}
 		},
+		mixins:[colors],
 		data() {
 			return {
 				formContent: '',
-				active:0,
-				paytype:'',
-				number:''
+				active: 0,
+				paytype: '',
+				number: 0
 			};
 		},
-		watch:{
-		  payMode:{
-		    deep:true, 
-			immediate: true,
-		    handler:function(newV,oldV){
-				let newPayList = [];
-				newV.forEach((item,index)=>{
-					if(item.payStatus){
-						item.index = index;
-						newPayList.push(item)
-					}
-				});
-				this.active = newPayList[0].index;
-				this.paytype = newPayList[0].value;
-				this.number = newPayList[0].number || 0;
-		    }
-		  }
+		watch: {
+			payMode: {
+				handler(newV, oldValue) {
+					let newPayList = [];
+					newV.forEach((item, index) => {
+						if (item.payStatus) {
+							item.index = index;
+							newPayList.push(item)
+						}
+					});
+					this.active = newPayList[0].index;
+					this.paytype = newPayList[0].value;
+					this.number = newPayList[0].number || 0;
+				},
+				immediate: true,
+				deep: true
+			}
 		},
-		mounted: function() {},
 		methods: {
-			payType(number, paytype, index){
+			payType(number, paytype, index) {
 				this.active = index;
 				this.paytype = paytype;
 				this.number = number;
+				this.$emit('changePayType', paytype)
 			},
-			close: function() { 
+			close: function() {
 				this.$emit('onChangeFun', {
 					action: 'payClose'
 				});
@@ -109,27 +112,36 @@
 				uni.showLoading({
 					title: '支付中'
 				});
+
 				orderPay({
 					uni: that.order_id,
 					paytype: paytype,
 					// #ifdef MP 
 					'from': 'routine',
 					// #endif
-					// #ifdef H5 || APP-PLUS
+					// #ifdef H5
 					'from': this.$wechat.isWeixin() ? 'weixin' : 'weixinh5',
 					// #endif
 					// #ifdef H5
-					quitUrl: location.port ? location.protocol + '//' + location.hostname + ':' + location.port + '/pages/users/order_details/index?order_id=' + this.order_id : location.protocol + '//' + location.hostname + 
-					'/pages/users/order_details/index?order_id=' + this.order_id
+					quitUrl: location.port ? location.protocol + '//' + location.hostname + ':' + location
+						.port +
+						'/pages/users/order_details/index?order_id=' + this.order_id : location.protocol +
+						'//' + location.hostname +
+						'/pages/users/order_details/index?order_id=' + this.order_id
+					// #endif
+					// #ifdef APP-PLUS
+					quitUrl: '/pages/users/order_details/index?order_id=' + this.order_id
 					// #endif
 				}).then(res => {
+					let jsConfig = res.data.result.jsConfig;
 					switch (paytype) {
 						case 'weixin':
 							if (res.data.result === undefined) return that.$util.Tips({
 								title: '缺少支付参数'
 							});
-							// #ifdef MP || APP-PLUS
-							let jsConfig = res.data.result.jsConfig;
+
+							// #ifdef MP
+
 							uni.requestPayment({
 								timeStamp: jsConfig.timestamp,
 								nonceStr: jsConfig.nonceStr,
@@ -159,13 +171,14 @@
 								},
 								complete: function(e) {
 									uni.hideLoading();
-									if (e.errMsg == 'requestPayment:cancel') return that.$util.Tips({
-										title: '取消支付'
-									}, () => {
-										that.$emit('onChangeFun', {
-											action: 'pay_fail'
+									if (e.errMsg == 'requestPayment:cancel') return that.$util
+										.Tips({
+											title: '取消支付'
+										}, () => {
+											that.$emit('onChangeFun', {
+												action: 'pay_fail'
+											});
 										});
-									});
 								},
 							});
 							// #endif
@@ -201,6 +214,40 @@
 									});
 							}
 							// #endif
+							// #ifdef APP-PLUS
+							uni.requestPayment({
+								provider: 'wxpay',
+								orderInfo: jsConfig,
+								success: (e) => {
+									let url = '/pages/order_pay_status/index?order_id=' + orderId +
+										'&msg=支付成功';
+									uni.showToast({
+										title: "支付成功"
+									})
+									setTimeout(res => {
+										that.$emit('onChangeFun', {
+											action: 'pay_complete'
+										});
+									}, 2000)
+								},
+								fail: (e) => {
+									uni.showModal({
+										content: "支付失败",
+										showCancel: false,
+										success: function(res) {
+											if (res.confirm) {
+												that.$emit('onChangeFun', {
+													action: 'pay_fail'
+												});
+											} else if (res.cancel) {}
+										}
+									})
+								},
+								complete: () => {
+									uni.hideLoading();
+								},
+							});
+							// #endif
 							break;
 						case 'yue':
 							uni.hideLoading();
@@ -231,9 +278,6 @@
 								uni.redirectTo({
 									url: `/pages/users/alipay_invoke/index?id=${res.data.result.order_id}&pay_key=${res.data.result.pay_key}`
 								});
-								// uni.navigateTo({
-								// 	url: `/pages/users/alipay_invoke/index?id=${res.data.result.order_id}&link=${res.data.result.resjsConfig.qrCode}`
-								// });
 							} else {
 								uni.hideLoading();
 								that.formContent = res.data.result.jsConfig;
@@ -245,6 +289,39 @@
 							// #ifdef MP
 							uni.navigateTo({
 								url: `/pages/users/alipay_invoke/index?id=${res.data.result.order_id}&link=${res.data.result.jsConfig.qrCode}`
+							});
+							// #endif
+							// #ifdef APP-PLUS
+							uni.requestPayment({
+								provider: 'alipay',
+								orderInfo: jsConfig,
+								success: (e) => {
+									uni.showToast({
+										title: "支付成功"
+									})
+									setTimeout(res => {
+										that.$emit('onChangeFun', {
+											action: 'pay_complete'
+										});
+									}, 2000)
+
+								},
+								fail: (e) => {
+									uni.showModal({
+										content: "支付失败",
+										showCancel: false,
+										success: function(res) {
+											if (res.confirm) {
+												that.$emit('onChangeFun', {
+													action: 'pay_fail'
+												});
+											} else if (res.cancel) {}
+										}
+									})
+								},
+								complete: () => {
+									uni.hideLoading();
+								},
 							});
 							// #endif
 							break;
@@ -265,6 +342,9 @@
 </script>
 
 <style scoped lang="scss">
+	.bgcolor{
+		background-color: var(--view-theme)
+	}
 	.payment {
 		position: fixed;
 		bottom: 0;
@@ -273,22 +353,26 @@
 		border-radius: 16rpx 16rpx 0 0;
 		background-color: #fff;
 		padding-bottom: 60rpx;
-		z-index: 99;
+		z-index: 999;
 		transition: all 0.3s cubic-bezier(0.25, 0.5, 0.5, 0.9);
 		transform: translate3d(0, 100%, 0);
-		.payMoney{
+
+		.payMoney {
 			font-size: 28rpx;
 			color: #333333;
 			text-align: center;
 			margin-top: 50rpx;
-			.font-color{
+
+			.font-color {
 				margin-left: 10rpx;
-				.money{
+
+				.money {
 					font-size: 40rpx;
 				}
 			}
 		}
-		.button{
+
+		.button {
 			width: 690rpx;
 			height: 90rpx;
 			border-radius: 45rpx;

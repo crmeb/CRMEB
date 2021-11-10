@@ -125,12 +125,30 @@ class StoreCartDao extends BaseDao
      */
     public function getUserCartNum($uid, $type, $numType)
     {
-        $model = $this->getModel()->where(['uid' => $uid, 'type' => $type, 'is_pay' => 0, 'is_new' => 0, 'is_del' => 0, 'status' => 1]);
+        $model = $this->getModel()->where(['uid' => $uid, 'type' => $type, 'is_pay' => 0, 'is_new' => 0, 'is_del' => 0]);
         if ($numType) {
             return $model->count();
         } else {
             return $model->sum('cart_num');
         }
+    }
+
+    /**
+     * 用户购物车统计数据
+     * @param $uid
+     * @param $type
+     * @param string $field
+     * @param array $with
+     * @return array
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     */
+    public function getUserCartList($uid, string $field = '*', array $with = [])
+    {
+        return $this->getModel()->where(['uid' => $uid, 'is_pay' => 0, 'is_new' => 0, 'is_del' => 0])->when(count($with), function ($query) use ($with) {
+            $query->with($with);
+        })->order('add_time DESC')->field($field)->select()->toArray();
     }
 
     /**

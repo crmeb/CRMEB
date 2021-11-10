@@ -145,7 +145,7 @@ class QrcodeServices extends BaseServices
         try {
             if (!$isSaveAttach) {
                 $imageInfo = "";
-            }else{
+            } else {
                 $imageInfo = $systemAttachmentService->getOne(['name' => $name]);
             }
             $siteUrl = sys_config('site_url');

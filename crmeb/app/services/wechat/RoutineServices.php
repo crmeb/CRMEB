@@ -17,6 +17,7 @@ use app\dao\wechat\WechatUserDao;
 use app\services\other\QrcodeServices;
 use app\services\user\LoginServices;
 use app\services\user\UserServices;
+use app\services\user\UserVisitServices;
 use crmeb\services\CacheService;
 use crmeb\services\CacheService as Cache;
 use crmeb\services\MiniProgramService;
@@ -62,10 +63,10 @@ class RoutineServices extends BaseServices
                 $userInfoCong = MiniProgramService::getUserInfo($code);
                 $session_key = $userInfoCong['session_key'];
                 $cache_key = md5(time() . $code);
+                Cache::set('eb_api_code_' . $cache_key, $session_key, 86400);
                 if (!isset($userInfoCong['openid'])) {
                     throw new ValidateException('openid获取失败');
                 }
-                Cache::set('eb_api_code_' . $cache_key, $session_key, 86400);
             } catch (\Exception $e) {
                 throw new ValidateException('获取session_key失败，请检查您的配置！:' . $e->getMessage() . 'line' . $e->getLine());
             }
@@ -97,6 +98,9 @@ class RoutineServices extends BaseServices
         }
         $token = $this->createToken((int)$user['uid'], 'routine');
         if ($token) {
+            /** @var UserVisitServices $visitServices */
+            $visitServices = app()->make(UserVisitServices::class);
+            $visitServices->loginSaveVisit($user);
             return [
                 'userInfo' => $user
             ];
@@ -123,11 +127,11 @@ class RoutineServices extends BaseServices
         try {
             $userInfoCong = MiniProgramService::getUserInfo($code);
             $session_key = $userInfoCong['session_key'];
-            if (!isset($userInfoCong['openid'])) {
-                throw new ValidateException('openid获取失败');
-            }
         } catch (\Exception $e) {
             throw new ValidateException('获取session_key失败，请检查您的配置！:' . $e->getMessage() . 'line' . $e->getLine());
+        }
+        if (!isset($userInfoCong['openid'])) {
+            throw new ValidateException('openid获取失败');
         }
         try {
             //解密获取用户信息
@@ -136,6 +140,9 @@ class RoutineServices extends BaseServices
             if ($e->getCode() == '-41003') {
                 throw new ValidateException('获取会话密匙失败');
             }
+        }
+        if (!isset($userInfoCong['openid'])) {
+            throw new ValidateException('openid获取失败');
         }
         $userInfo['unionId'] = isset($userInfoCong['unionid']) ? $userInfoCong['unionid'] : '';
         $userInfo['openId'] = $openid = $userInfoCong['openid'];
@@ -161,6 +168,9 @@ class RoutineServices extends BaseServices
         }
         $token = $this->createToken((int)$user['uid'], 'routine');
         if ($token) {
+            /** @var UserVisitServices $visitServices */
+            $visitServices = app()->make(UserVisitServices::class);
+            $visitServices->loginSaveVisit($user);
             $token['userInfo'] = $user;
             return $token;
         } else
@@ -286,6 +296,9 @@ class RoutineServices extends BaseServices
             //更新用户信息
             $wechatUserServices->wechatUpdata([$user['uid'], ['code' => $spid]]);
             $token = $this->createToken((int)$user['uid'], 'routine');
+            /** @var UserVisitServices $visitServices */
+            $visitServices = app()->make(UserVisitServices::class);
+            $visitServices->loginSaveVisit($user);
             if ($token) {
                 return $token;
             } else
@@ -331,6 +344,9 @@ class RoutineServices extends BaseServices
             //更新用户信息
             $wechatUserServices->wechatUpdata([$user['uid'], ['code' => $spid]]);
             $token = $this->createToken((int)$user['uid'], 'routine');
+            /** @var UserVisitServices $visitServices */
+            $visitServices = app()->make(UserVisitServices::class);
+            $visitServices->loginSaveVisit($user);
             if ($token) {
                 $token['userInfo'] = $user;
                 return $token;
@@ -371,6 +387,9 @@ class RoutineServices extends BaseServices
         //写入用户信息
         $user = $wechatUserServices->wechatOauthAfter($createData);
         $token = $this->createToken((int)$user['uid'], 'routine');
+        /** @var UserVisitServices $visitServices */
+        $visitServices = app()->make(UserVisitServices::class);
+        $visitServices->loginSaveVisit($user);
         if ($token) {
             return $token;
         } else
@@ -428,6 +447,9 @@ class RoutineServices extends BaseServices
         $user = $wechatUserServices->wechatOauthAfter([$openid, $wechatInfo, $spreadId, $login_type, $userType]);
         $token = $this->createToken((int)$user['uid'], 'routine');
         if ($token) {
+            /** @var UserVisitServices $visitServices */
+            $visitServices = app()->make(UserVisitServices::class);
+            $visitServices->loginSaveVisit($user);
             return [
                 'token' => $token['token'],
                 'userInfo' => $user,

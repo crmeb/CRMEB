@@ -1,3 +1,13 @@
+// +---------------------------------------------------------------------
+// | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
+// +---------------------------------------------------------------------
+// | Copyright (c) 2016~2021 https://www.crmeb.com All rights reserved.
+// +---------------------------------------------------------------------
+// | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
+// +---------------------------------------------------------------------
+// | Author: CRMEB Team <admin@crmeb.com>
+// +---------------------------------------------------------------------
+
 import BasicLayout from '@/components/main'
 
 const meta = {
@@ -79,6 +89,15 @@ export default {
       component: () => import('@/pages/setting/setSystem/index')
     },
     {
+      path: 'membership_level/index',
+      name: `${pre}membershipLevel`,
+      meta: {
+        ...meta,
+        title: '分销等级'
+      },
+      component: () => import('@/pages/setting/membershipLevel/index')
+    },
+    {
       path: 'system_config_message/:type?/:tab_id?',
       name: `${pre}message`,
       meta: {
@@ -86,6 +105,24 @@ export default {
         title: '短信开关'
       },
       component: () => import('@/pages/setting/setSystem/index')
+    },
+    {
+      path: 'notification/index',
+      name: `${pre}notification`,
+      meta: {
+        auth: ['setting-notification'],
+        title: '消息管理'
+      },
+      component: () => import('@/pages/setting/notification/index')
+    },
+    {
+      path: 'notification/notificationEdit',
+      name: `${pre}notificationEdit`,
+      meta: {
+        auth: ['setting-notification'],
+        title: '消息编辑'
+      },
+      component: () => import('@/pages/setting/notification/notificationEdit')
     },
     {
       path: 'system_config_logistics/:type?/:tab_id?',
@@ -340,14 +377,23 @@ export default {
       component: () => import('@/pages/setting/verifyOrder/index')
     },
     {
+      path: 'theme_style',
+      name: `${pre}themeStyle`,
+      meta: {
+          auth: ['admin-setting-theme_style'],
+          title: '主题风格'
+      },
+      component: () => import('@/pages/setting/themeStyle/index')
+  },
+  {
       path: 'pages/devise',
       name: `${pre}devise`,
       meta: {
-        auth: ['admin-setting-pages-devise'],
-        title: '页面设计列表'
+          auth: ['admin-setting-pages-devise'],
+          title: '店铺装修'
       },
       component: () => import('@/pages/setting/devise/list')
-    },
+  },
     {
       path: 'pages/diy',
       name: `${pre}diy`,
@@ -355,7 +401,7 @@ export default {
         auth: ['admin-setting-pages-diy'],
         title: '页面设计'
       },
-      component: () => import('@/pages/setting/devise/index')
+      component: () => import('@/pages/setting/devisePage/index')
     },
     {
       path: 'pages/links',
@@ -370,11 +416,11 @@ export default {
       path: 'system_group_data',
       name: `${pre}systemGroupData`,
       meta: {
-              auth: ['admin-setting-pages-links'],
-              title: '数据配置'
-          },
-          component: () => import('@/pages/system/group/list')
+        auth: ['admin-setting-pages-links'],
+        title: '数据配置'
       },
+      component: () => import('@/pages/system/group/list')
+    },
     {
       path: 'system_group_data/kf_adv',
       name: `${pre}kfAdv`,
@@ -428,6 +474,24 @@ export default {
         title: '配送员列表'
       },
       component: () => import('@/pages/setting/deliveryService/index')
-    }
+    },
+    {
+      path: 'pc_group_data',
+      name: `${pre}systemGroupData`,
+      meta: {
+          auth: ['setting-system-pc_data'],
+          title: 'PC商城'
+      },
+      component: () => import('@/pages/system/group/pc')
+  },
+  {
+    path: 'system_visualization_data',
+    name: `${pre}systemGroupData`,
+    meta: {
+        auth: ['admin-setting-system_visualization_data'],
+        title: '数据配置'
+    },
+    component: () => import('@/pages/system/group/visualization')
+},
   ]
 }

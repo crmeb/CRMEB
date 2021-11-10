@@ -14,7 +14,8 @@ import Vue from 'vue'
 import App from './App'
 import router from './router'
 import store from './store'
-import iView from 'iview'
+
+import ViewUI from 'view-design'
 // import ViewUI from 'view-design'
 Vue.prototype.bus = new Vue();
 import Router from 'vue-router'
@@ -28,6 +29,8 @@ import installPlugin from '@/plugin'
 import './index.less'
 import '@/assets/icons/iconfont.css'
 import '@/assets/iconfont/iconfont.css'
+import './assets/iconfont/iconfont.css'
+
 import './assets/iconfontYI/iconfontYI.css'
 import './plugin/emoji-awesome/css/google.min.css';
 
@@ -70,8 +73,8 @@ moment.locale('zh-cn')
 import * as filters from './filters' // global filters modalTemplates
 
 const routerPush = Router.prototype.push
-Router.prototype.push = function push(location) {
-  return routerPush.call(this, location).catch(error => error)
+Router.prototype.push = function push (location) {
+    return routerPush.call(this, location).catch(error => error)
 }
 // 实际打包时应该不引入mock
 /* eslint-disable */
@@ -85,11 +88,11 @@ Vue.prototype.$wechat = Auth;
 Vue.prototype.$dialog = dialog;
 Vue.prototype.$timeOptions = timeOptions;
 Vue.prototype.$scroll = scroll;
-Vue.prototype.$validator = function (rule) {
-  return new schema(rule);
+Vue.prototype.$validator = function(rule) {
+    return new schema(rule);
 };
-Vue.prototype.$tools = tools;
-Vue.use(iView, {
+Vue.prototype.$tools =tools;
+Vue.use(ViewUI, {
   i18n: (key, value) => i18n.t(key, value)
 });
 // Vue.use(ViewUI);
@@ -136,10 +139,12 @@ import vuescroll from 'vuescroll';
 
 Vue.use(vuescroll);
 
+
 // register global utility filters
 Object.keys(filters).forEach(key => {
   Vue.filter(key, filters[key])
 })
+
 var _hmt = _hmt || [];
 (function () {
   var hm = document.createElement("script");
@@ -156,6 +161,12 @@ router.beforeEach((to, from, next) => {
   }
   next();
 })
+
+// 添加crmeb chat 统计
+var __s = document.createElement('script');
+__s.src=`${location.origin}/api/get_script`;
+document.head.appendChild(__s);
+
 /* eslint-disable no-new */
 new Vue({
   el: '#app',
@@ -165,10 +176,10 @@ new Vue({
   render: h => h(App),
   watch: {
     // 监听路由 控制侧边栏显示 标记当前顶栏菜单（如需要）
-    '$route'(to, from) {
-      if (to.meta.kefu) {
+    '$route' (to, from) {
+      if(to.meta.kefu){
         document.getElementsByTagName('body')[0].className = 'kf_mobile'
-      } else {
+      }else{
         document.getElementsByTagName('body')[0].className = ''
       }
     }

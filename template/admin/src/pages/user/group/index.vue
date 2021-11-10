@@ -113,7 +113,6 @@
             },
             // 修改
             edit (id) {
-                console.log(id)
                 this.$modalForm(groupAddApi(id)).then(() => this.getList())
             },
             // 删除
@@ -128,7 +127,6 @@
                 this.$modalSure(delfromData).then((res) => {
                     this.$Message.success(res.msg)
                     this.groupLists.splice(num, 1)
-
                     this.getList()
                 }).catch(res => {
                     this.$Message.error(res.msg)

@@ -41,7 +41,7 @@ class Login extends AuthController
      */
     public function captcha(string $phone)
     {
-        validate(ServeValidata::class)->scene('phone')->check(['phone' => $phone]);
+        $this->validate(['phone' => $phone], ServeValidata::class, 'phone');
         return app('json')->success('发送成功', $this->services->user()->code($phone));
     }
 
@@ -57,7 +57,7 @@ class Login extends AuthController
             ['phone', ''],
             ['verify_code', ''],
         ], true);
-        validate(ServeValidata::class)->scene('phone')->check(['phone' => $phone]);
+        $this->validate(['phone' => $phone], ServeValidata::class, 'phone');
         return app('json')->success('success', $this->services->user()->checkCode($phone, $verify_code));
     }
 
@@ -77,7 +77,7 @@ class Login extends AuthController
         ]);
 
         $data['account'] = $data['phone'];
-        validate(ServeValidata::class)->check($data);
+        $this->validate($data, ServeValidata::class);
         $data['password'] = md5($data['password']);
         $res = $this->services->user()->register($data);
         if ($res) {
@@ -100,7 +100,8 @@ class Login extends AuthController
             ['password', '']
         ], true);
 
-        validate(ServeValidata::class)->scene('login')->check(['account' => $account, 'password' => $password]);
+        $this->validate(['account' => $account, 'password' => $password], ServeValidata::class, 'login');
+
         $password = md5($account . md5($password));
 
         $res = $this->services->user()->login($account, $password);

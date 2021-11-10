@@ -16,6 +16,7 @@ use app\services\order\StoreCartServices;
 use app\services\other\CacheServices;
 use app\services\product\product\StoreCategoryServices;
 use app\services\product\product\StoreProductServices;
+use crmeb\services\FileService;
 use crmeb\services\UploadService;
 use think\facade\App;
 
@@ -93,9 +94,21 @@ class StoreProduct extends AuthController
             ['coupon_ids', []],
             ['label_id', []],
             ['command_word', ''],
-            ['tao_words', '']
+            ['tao_words', ''],
+            ['type', 0]
         ]);
         $services->setDbCache($this->adminId . '_product_data', $data, 68400);
+        return app('json')->success();
+    }
+
+    /**
+     * 删除数据缓存
+     * @param CacheServices $services
+     * @return mixed
+     */
+    public function deleteCacheData(CacheServices $services)
+    {
+        $services->delectDbCache($this->adminId . '_product_data');
         return app('json')->success();
     }
 
@@ -209,6 +222,8 @@ class StoreProduct extends AuthController
             ['mer_use', 0],
             ['is_postage', 0],
             ['is_good', 0],
+            ['is_virtual', 0],// 是否是虚拟商品
+            ['virtual_type', 0],// 虚拟商品类型
             ['description', ''],
             ['spec_type', 0],
             ['video_link', ''],
@@ -218,7 +233,9 @@ class StoreProduct extends AuthController
             ['coupon_ids', []],
             ['label_id', []],
             ['command_word', ''],
-            ['tao_words', '']
+            ['tao_words', ''],
+            ['type', 0],
+            ['recommend_list', []]
         ]);
         $this->service->save((int)$id, $data);
         return app('json')->success('添加商品成功!');
@@ -251,7 +268,9 @@ class StoreProduct extends AuthController
     {
         $data = $this->request->postMore([
             ['attrs', []],
-            ['items', []]
+            ['items', []],
+            ['is_virtual', 0],
+            ['virtual_type', 0]
         ]);
         if ($id > 0 && $type == 1) $this->service->checkActivity($id);
         $info = $this->service->getAttr($data, $id, $type);
@@ -270,7 +289,8 @@ class StoreProduct extends AuthController
             ['store_name', ''],
             ['type', 1],
             ['is_live', 0],
-            ['is_new', '']
+            ['is_new', ''],
+            ['is_virtual', -1]
         ]);
         $where['is_show'] = 1;
         $where['is_del'] = 0;
@@ -311,6 +331,11 @@ class StoreProduct extends AuthController
         return app('json')->success($this->service->getTemp());
     }
 
+    /**
+     * 获取视频上传token
+     * @return mixed
+     * @throws \Exception
+     */
     public function getTempKeys()
     {
         $upload = UploadService::init();
@@ -329,5 +354,18 @@ class StoreProduct extends AuthController
     {
         $this->service->checkActivity($id);
         return app('json')->success('删除成功');
+    }
+
+    public function import_card()
+    {
+        $data = $this->request->getMore([
+            ['file', ""]
+        ]);
+        if (!$data['file']) return app('json')->fail('请上传文件');
+        $file = public_path() . substr($data['file'], 1);
+        /** @var FileService $readExcelService */
+        $readExcelService = app()->make(FileService::class);
+        $cardData = $readExcelService->readExcel($file);
+        return app('json')->success($cardData);
     }
 }

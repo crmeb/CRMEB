@@ -1,3 +1,13 @@
+// +---------------------------------------------------------------------
+// | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
+// +---------------------------------------------------------------------
+// | Copyright (c) 2016~2021 https://www.crmeb.com All rights reserved.
+// +---------------------------------------------------------------------
+// | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
+// +---------------------------------------------------------------------
+// | Author: CRMEB Team <admin@crmeb.com>
+// +---------------------------------------------------------------------
+
 import BasicLayout from "@/components/main";
 
 const meta = {
@@ -31,7 +41,7 @@ export default {
             meta: {
                 auth: ["user-user-level"],
                 footer: true,
-                title: "会员等级"
+                title: "用户等级"
             },
             component: () => import("@/pages/user/level/index")
         },

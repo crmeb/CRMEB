@@ -93,10 +93,10 @@ class UserLabelServices extends BaseServices
         if (!$label) {
             $title = '添加标签';
             $field[] = Form::select('label_cate', '标签分类')->setOptions($options);
-            $field[] = Form::input('label_name', '标签名称', '');
+            $field[] = Form::input('label_name', '标签名称', '')->required();
         } else {
             $title = '修改标签';
-            $field[] = Form::select('label_cate', '分类', $label->getData('label_cate'))->setOptions($options);
+            $field[] = Form::select('label_cate', '分类', (int)$label->getData('label_cate'))->setOptions($options);
             $field[] = Form::hidden('id', $label->getData('id'));
             $field[] = Form::input('label_name', '标签名称', $label->getData('label_name'))->required('请填写标签名称');
         }

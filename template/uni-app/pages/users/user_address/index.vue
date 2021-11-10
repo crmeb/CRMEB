@@ -1,36 +1,40 @@
 <template>
-	<view>
+	<view :style="colorStyle">
 		<form @submit="formSubmit">
 			<view class='addAddress'>
 				<view class='list'>
 					<view class='item acea-row row-between-wrapper'>
 						<view class='name'>姓名</view>
-						<input type='text' placeholder='请输入姓名' name='real_name' :value="userAddress.real_name" placeholder-class='placeholder'></input>
+						<input type='text' placeholder='请输入姓名' name='real_name' :value="userAddress.real_name"
+							placeholder-class='placeholder'></input>
 					</view>
 					<view class='item acea-row row-between-wrapper'>
 						<view class='name'>联系电话</view>
-						<input type='text' placeholder='请输入联系电话' name="phone" :value='userAddress.phone' placeholder-class='placeholder'></input>
+						<input type='number' placeholder='请输入联系电话' name="phone" :value='userAddress.phone'
+							placeholder-class='placeholder' pattern="\d*"></input>
 					</view>
 					<view class='item acea-row row-between-wrapper'>
 						<view class='name'>所在地区</view>
 						<view class="address">
-							<picker mode="multiSelector" @change="bindRegionChange" @columnchange="bindMultiPickerColumnChange" :value="valueRegion"
-							 :range="multiArray">
+							<picker mode="multiSelector" @change="bindRegionChange"
+								@columnchange="bindMultiPickerColumnChange" :value="valueRegion" :range="multiArray">
 								<view class='acea-row'>
 									<view class="picker">{{region[0]}}，{{region[1]}}，{{region[2]}}</view>
-									<view class='iconfont icon-dizhi font-color'></view>
+									<view class='iconfont icon-dizhi fontcolor'></view>
 								</view>
 							</picker>
 						</view>
 					</view>
 					<view class='item acea-row row-between-wrapper'>
 						<view class='name'>详细地址</view>
-						<input type='text' placeholder='请填写具体地址' name='detail' placeholder-class='placeholder' :value='userAddress.detail'></input>
+						<input type='text' placeholder='请填写具体地址' name='detail' placeholder-class='placeholder'
+							:value='userAddress.detail'></input>
 					</view>
 				</view>
-				<view class='default acea-row row-middle'>
-					<checkbox-group @change='ChangeIsDefault'>
-						<checkbox :checked="userAddress.is_default ? true : false" />设置为默认地址</checkbox-group>
+				<view class='default acea-row row-middle' @click='ChangeIsDefault'>
+					<checkbox-group >
+						<checkbox :checked="userAddress.is_default ? true : false" />设置为默认地址
+					</checkbox-group>
 				</view>
 
 				<button class='keepBnt bg-color' form-type="submit">立即保存</button>
@@ -45,7 +49,9 @@
 		<!-- #ifdef MP -->
 		<!-- <authorize @onLoadFun="onLoadFun" :isAuto="isAuto" :isShowAuth="isShowAuth" @authColse="authColse"></authorize> -->
 		<!-- #endif -->
+		<!-- #ifndef MP -->
 		<home></home>
+		<!-- #endif -->
 	</view>
 </template>
 
@@ -63,18 +69,20 @@
 	import {
 		mapGetters
 	} from "vuex";
-	import wPicker from "@/components/wPicker/w-picker.vue";
+
 	// #ifdef MP
 	import authorize from '@/components/Authorize';
 	// #endif
 	import home from '@/components/home';
+	import colors from '@/mixins/color.js';
 	export default {
 		components: {
 			// #ifdef MP
 			authorize,
 			// #endif
-			home
+			home,
 		},
+		mixins:[colors],
 		data() {
 			return {
 				regionDval: ['浙江省', '杭州市', '滨江区'],
@@ -94,19 +102,20 @@
 				multiIndex: [0, 0, 0],
 				cityId: 0,
 				defaultRegion: ['广东省', '广州市', '番禺区'],
-				defaultRegionCode: '440113',
-				news:'',
+				defaultRegionCode: '110101',
+				news: '',
+				noCoupon: 0
 			};
 		},
 		computed: mapGetters(['isLogin']),
-		watch:{
-			isLogin:{
-				handler:function(newV,oldV){
-					if(newV){
+		watch: {
+			isLogin: {
+				handler: function(newV, oldV) {
+					if (newV) {
 						this.getUserAddress();
 					}
 				},
-				deep:true
+				deep: true
 			}
 		},
 		onLoad(options) {
@@ -115,6 +124,7 @@
 				this.pinkId = options.pinkId || 0;
 				this.couponId = options.couponId || 0;
 				this.id = options.id || 0;
+				this.noCoupon = options.noCoupon || 0;
 				this.news = options.new || '';
 				uni.setNavigationBarTitle({
 					title: options.id ? '修改地址' : '添加地址'
@@ -126,6 +136,12 @@
 			}
 		},
 		methods: {
+			// #ifdef APP-PLUS
+			// 获取选择的地区
+			handleGetRegion(region) {
+				this.region = region
+			},
+			// #endif
 			// 回去地址数据
 			getCityList: function() {
 				let that = this;
@@ -205,12 +221,12 @@
 
 						break;
 				}
-				// #ifdef MP
+				// #ifdef MP || APP-PLUS
 				this.$set(this.multiArray, 0, multiArray[0]);
 				this.$set(this.multiArray, 1, multiArray[1]);
 				this.$set(this.multiArray, 2, multiArray[2]);
 				// #endif
-				// #ifdef H5
+				// #ifdef H5 
 				this.multiArray = multiArray;
 				// #endif
 
@@ -278,9 +294,21 @@
 											that.pinkId = '';
 											that.couponId = '';
 											uni.navigateTo({
-												url: '/pages/users/order_confirm/index?cartId=' + cartId + '&addressId=' + (that.id ? that.id :
-													res.data
-													.id) + '&pinkId=' + pinkId + '&couponId=' + couponId + '&new='+that.news
+												url: '/pages/users/order_confirm/index?cartId=' +
+													cartId +
+													'&addressId=' + (
+														that.id ? that
+														.id :
+														res.data
+														.id) +
+													'&pinkId=' +
+													pinkId +
+													'&couponId=' +
+													couponId +
+													'&new=' + that
+													.news +
+													'&noCoupon=' + that
+													.noCoupon
 											});
 										} else {
 											uni.navigateBack({
@@ -299,9 +327,10 @@
 								});
 							},
 							fail: function(res) {
-								if (res.errMsg == 'chooseAddress:cancel') return that.$util.Tips({
-									title: '取消选择'
-								});
+								if (res.errMsg == 'chooseAddress:cancel') return that.$util
+									.Tips({
+										title: '取消选择'
+									});
 							},
 						})
 					},
@@ -352,13 +381,17 @@
 									that.pinkId = '';
 									that.couponId = '';
 									uni.navigateTo({
-										url: '/pages/users/order_confirm/index?cartId=' + cartId + '&addressId=' + (that.id ? that.id :
-											res.data
-											.id) + '&pinkId=' + pinkId + '&couponId=' + couponId + '&new=' + that.news
+										url: '/pages/users/order_confirm/index?cartId=' +
+											cartId + '&addressId=' + (that.id ? that.id :
+												res.data
+												.id) + '&pinkId=' + pinkId + '&couponId=' +
+											couponId + '&new=' + that.news +
+											'&noCoupon=' + that
+											.noCoupon
 									});
 								} else {
 									uni.navigateTo({
-										url:'/pages/users/user_address_list/index'
+										url: '/pages/users/user_address_list/index'
 									})
 									// history.back();
 								}
@@ -375,9 +408,7 @@
 								title: err || "添加失败"
 							});
 						});
-				}).catch(err => {
-					console.log(err);
-				});
+				}).catch(err => {});
 			},
 			/**
 			 * 提交用户添加地址
@@ -395,7 +426,7 @@
 				if (!/^1(3|4|5|7|8|9|6)\d{9}$/i.test(value.phone)) return that.$util.Tips({
 					title: '请输入正确的手机号码'
 				});
-				if (that.region[0] === '省'&&that.region[1] === '市'&&that.region[2] === '区') return that.$util.Tips({
+				if (that.region[0] == '省') return that.$util.Tips({
 					title: '请选择所在地区'
 				});
 				if (!value.detail) return that.$util.Tips({
@@ -435,7 +466,12 @@
 							that.pinkId = '';
 							that.couponId = '';
 							uni.navigateTo({
-								url: '/pages/users/order_confirm/index?new='+ that.news +'&cartId=' + cartId + '&addressId=' + (that.id ? that.id : res.data.id) +'&pinkId=' + pinkId + '&couponId=' + couponId
+								url: '/pages/users/order_confirm/index?new=' + that.news +
+									'&cartId=' + cartId + '&addressId=' + (that.id ? that.id :
+										res.data.id) + '&pinkId=' + pinkId + '&couponId=' +
+									couponId +
+									'&noCoupon=' + that
+									.noCoupon
 							});
 						} else {
 							// #ifdef H5
@@ -462,6 +498,9 @@
 </script>
 
 <style scoped lang="scss">
+	.fontcolor{
+		color: var(--view-theme);
+	}
 	.addAddress .list {
 		background-color: #fff;
 	}
@@ -535,7 +574,7 @@
 		line-height: 86rpx;
 		margin: 0 auto;
 		font-size: 32rpx;
-		color: #fe960f;
-		border: 1px solid #fe960f;
+		color: var(--view-theme);
+		border: 1px solid var(--view-theme);
 	}
 </style>

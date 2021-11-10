@@ -19,7 +19,8 @@ use app\services\user\UserServices;
 use think\facade\App;
 
 /**
- * Class UserLevel
+ * 发票管理
+ * Class StoreOrderInvoice
  * @package app\adminapi\controller\v1\order
  */
 class StoreOrderInvoice extends AuthController
@@ -50,6 +51,10 @@ class StoreOrderInvoice extends AuthController
         return app('json')->success($data);
     }
 
+    /**
+     * 查询发票列表
+     * @return mixed
+     */
     public function list()
     {
         $where = $this->request->getMore([
@@ -107,7 +112,12 @@ class StoreOrderInvoice extends AuthController
         $userInfo['spread_name'] = '';
         if ($userInfo['spread_uid'])
             $userInfo['spread_name'] = $services->value(['uid' => $userInfo['spread_uid']], 'nickname');
-        $orderInfo = $orderServices->tidyOrder($orderInfo->toArray(), true);
+        $orderInfo = $orderServices->tidyOrder($orderInfo->toArray(), true, true);
+        //核算优惠金额
+        $vipTruePrice = array_column($orderInfo['cartInfo'], 'vip_sum_truePrice');
+        $vipTruePrice = array_sum($vipTruePrice);
+        $orderInfo['vip_true_price'] = $vipTruePrice ? $vipTruePrice : 0;
+
         $orderInfo['add_time'] = $orderInfo['_add_time'] ?? '';
         $productId = array_column($orderInfo['cartInfo'], 'product_id');
         $cateData = $productServices->productIdByProductCateName($productId);

@@ -10,12 +10,10 @@
 // +----------------------------------------------------------------------
 namespace app\adminapi\controller\v1\user;
 
-use app\adminapi\validate\user\UserValidata;
 use app\services\user\UserServices;
 use app\adminapi\controller\AuthController;
 use think\exception\ValidateException;
 use think\facade\App;
-use think\Request;
 
 
 class User extends AuthController
@@ -137,20 +135,20 @@ class User extends AuthController
         $data['avatar'] = sys_config('h5_avatar');
         $data['adminId'] = $this->adminId;
         $data['user_type'] = 'h5';
-        $lables = $data['label_id'];
+        $label = $data['label_id'];
         unset($data['label_id']);
-        foreach ($lables as $k => $v) {
+        foreach ($label as $k => $v) {
             if (!$v) {
-                unset($lables[$k]);
+                unset($label[$k]);
             }
         }
         $data['birthday'] = empty($data['birthday']) ? 0 : strtotime($data['birthday']);
         $data['add_time'] = time();
-        $this->services->transaction(function () use ($data, $lables) {
+        $this->services->transaction(function () use ($data, $label) {
             $res = true;
             $userInfo = $this->services->save($data);
-            if ($lables) {
-                $res = $this->services->saveSetLabel([$userInfo->uid], $lables);
+            if ($label) {
+                $res = $this->services->saveSetLabel([$userInfo->uid], $label);
             }
             if ($data['level']) {
                 $res = $this->services->saveGiveLevel((int)$userInfo->uid, (int)$data['level']);
@@ -379,7 +377,7 @@ class User extends AuthController
             ['level', 0],
             ['phone', 0],
             ['addres', ''],
-            ['label_id', ''],
+            ['label_id', []],
             ['group_id', 0],
             ['pwd', ''],
             ['true_pwd'],

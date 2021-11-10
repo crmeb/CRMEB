@@ -10,29 +10,32 @@
 // +----------------------------------------------------------------------
 namespace app\services\order;
 
-use app\services\pay\PayServices;
-use crmeb\services\AliPayService;
-use crmeb\utils\Str;
-use app\jobs\SmsAdminJob;
-use app\services\BaseServices;
 use app\dao\order\StoreOrderDao;
-use crmeb\services\WechatService;
-use app\jobs\RoutineTemplateJob;
-use app\services\user\UserServices;
-use crmeb\services\MiniProgramService;
-use think\exception\ValidateException;
-use app\services\user\UserBillServices;
-use crmeb\services\FormBuilder as Form;
-use app\services\wechat\WechatUserServices;
-use crmeb\services\workerman\ChannelService;
+use app\jobs\notice\SmsJob;
+use app\services\activity\StoreAdvanceServices;
+use app\services\activity\StoreBargainServices;
+use app\services\activity\StoreCombinationServices;
 use app\services\activity\StorePinkServices;
 use app\services\activity\StoreSeckillServices;
-use app\services\activity\StoreBargainServices;
+use app\services\BaseServices;
+use app\services\coupon\StoreCouponIssueUserServices;
 use app\services\coupon\StoreCouponUserServices;
-use app\jobs\WechatTemplateJob as TemplateJob;
-use app\services\activity\StoreCombinationServices;
+use app\services\message\notice\RoutineTemplateListService;
+use app\services\message\notice\WechatTemplateListService;
 use app\services\message\service\StoreServiceServices;
+use app\services\pay\PayServices;
 use app\services\product\product\StoreProductServices;
+use app\services\user\UserBillServices;
+use app\services\user\UserServices;
+use app\services\wechat\WechatUserServices;
+use crmeb\services\AliPayService;
+use crmeb\services\CacheService;
+use crmeb\services\FormBuilder as Form;
+use crmeb\services\MiniProgramService;
+use crmeb\services\WechatService;
+use crmeb\services\workerman\ChannelService;
+use crmeb\utils\Str;
+use think\exception\ValidateException;
 
 
 /**
@@ -73,8 +76,7 @@ class StoreOrderRefundServices extends BaseServices
             }
         }
         $f[] = Form::input('order_id', '退款单号', $order->getData('order_id'))->disabled(true);
-        $f[] = Form::number('refund_price', '退款金额', (float)bcsub((string)$order->getData('pay_price'), (string)$order->getData('refund_price'), 2))->precision(2)->required('请输入退款金额');
-//        $f[] = Form::radio('type', '状态', 1)->options([['label' => '直接退款', 'value' => 1], ['label' => '退款（无需退货，并且返回原状态）', 'value' => 2]]);
+        $f[] = Form::number('refund_price', '退款金额', (float)bcsub((string)$order->getData('pay_price'), (string)$order->getData('refund_price'), 2))->min(0)->required('请输入退款金额');
         return create_form('退款处理', $f, $this->url('/order/refund/' . $id), 'PUT');
     }
 
@@ -94,6 +96,17 @@ class StoreOrderRefundServices extends BaseServices
                 throw new ValidateException('回退积分和优惠卷失败');
             }
 
+            //虚拟商品优惠券退款处理
+            if ($order['virtual_type'] == 2) {
+                /** @var StoreCouponUserServices $couponUser */
+                $couponUser = app()->make(StoreCouponUserServices::class);
+                $res = $couponUser->delUserCoupon(['cid' => $order['virtual_info'], 'uid' => $order['uid'], 'status' => 0]);
+                if (!$res) throw new ValidateException('购买的优惠券已使用或者已过期');
+                /** @var StoreCouponIssueUserServices $couponIssueUser */
+                $couponIssueUser = app()->make(StoreCouponIssueUserServices::class);
+                $couponIssueUser->delIssueUserCoupon(['issue_coupon_id' => $order['virtual_info'], 'uid' => $order['uid']]);
+            }
+
             //退拼团
             if ($type == 1) {
                 /** @var StorePinkServices $pinkServices */
@@ -108,9 +121,8 @@ class StoreOrderRefundServices extends BaseServices
             if (!$userBillServices->orderRefundBrokerageBack($order['id'], $order['order_id'])) {
                 throw new ValidateException('回退佣金失败');
             }
-
             //回退库存
-            if ($type == 1) {
+            if ($order['status'] == 0) {
                 /** @var StoreOrderStatusServices $services */
                 $services = app()->make(StoreOrderStatusServices::class);
                 if (!$services->count(['oid' => $order['id'], 'change_type' => 'refund_price'])) {
@@ -120,14 +132,24 @@ class StoreOrderRefundServices extends BaseServices
 
             //退金额
             if ($refundData['refund_price'] > 0) {
-                switch ($order['pay_type']) {
+                if (!isset($refundData['refund_id']) || !$refundData['refund_id']) {
+                    mt_srand();
+                    $refundData['refund_id'] = $order['order_id'] . rand(100, 999);
+                }
+                if ($order['pid'] > 0) {//子订单
+                    $refundOrder = $this->dao->get((int)$order['pid']);
+                    $refundData['pay_price'] = $refundOrder['pay_price'];
+                } else {
+                    $refundOrder = $order;
+                }
+                switch ($refundOrder['pay_type']) {
                     case PayServices::WEIXIN_PAY:
-                        $no = $order['order_id'];
-                        if ($order['trade_no']) {
-                            $no = $order['trade_no'];
+                        $no = $refundOrder['order_id'];
+                        if ($refundOrder['trade_no']) {
+                            $no = $refundOrder['trade_no'];
                             $refundData['type'] = 'trade_no';
                         }
-                        if ($order['is_channel'] == 1) {
+                        if ($refundOrder['is_channel'] == 1) {
                             //小程序退款
                             MiniProgramService::payOrderRefund($no, $refundData);//小程序
                         } else {
@@ -137,13 +159,15 @@ class StoreOrderRefundServices extends BaseServices
                         break;
                     case PayServices::YUE_PAY:
                         //余额退款
-                        if (!$this->yueRefund($order, $refundData)) {
+                        if (!$this->yueRefund($refundOrder, $refundData)) {
                             throw new ValidateException('余额退款失败');
                         }
                         break;
                     case PayServices::ALIAPY_PAY:
+                        mt_srand();
+                        $refund_id = $refundData['refund_id'] ?? $refundOrder['order_id'] . rand(100, 999);
                         //支付宝退款
-                        AliPayService::instance()->refund(strpos($order['trade_no'], '_') !== false ? $order['trade_no'] : $order['order_id'], $refundData['pay_price']);
+                        AliPayService::instance()->refund(strpos($refundOrder['trade_no'], '_') !== false ? $refundOrder['trade_no'] : $refundOrder['order_id'], floatval($refundData['refund_price']), $refund_id);
                         break;
                 }
             }
@@ -167,14 +191,8 @@ class StoreOrderRefundServices extends BaseServices
     {
         /** @var UserServices $userServices */
         $userServices = app()->make(UserServices::class);
-
-//        /** @var UserBillServices $userBillServices */
-//        $userBillServices = app()->make(UserBillServices::class);
-//
-//        $usermoney = $userServices->value(['uid' => $order['uid']], 'now_money');
         $res = $userServices->bcInc($order['uid'], 'now_money', $refundData['refund_price'], 'uid');
         return $res ? true : false;
-//        return $res && $userBillServices->income('pay_product_refund', $order['uid'], $refundData['refund_price'], bcadd((string)$usermoney, (string)$refundData['refund_price'], 2), $order['id']);
     }
 
     /**
@@ -184,41 +202,24 @@ class StoreOrderRefundServices extends BaseServices
      */
     public function integralAndCouponBack($order)
     {
-        if (!$order['use_integral'] && !$order['back_integral']) {
-            return true;
-        }
-        if ($order['back_integral'] && !(int)$order['use_integral']) {
-            return true;
-        }
-        if ($order['back_integral'] >= $order['use_integral']) {
-            return true;
-        }
-        $data['back_integral'] = bcsub($order['use_integral'], $order['back_integral'], 0);
-        if (!$data['back_integral']) {
-            return true;
-        }
-
-        //回退积分
-        $order = $this->regressionIntegral($order);
         $res = true;
         //回退优惠卷
-        if ($order['coupon_id']) {
+        if ($order['coupon_id'] && $order['coupon_price']) {
             /** @var StoreCouponUserServices $coumonUserServices */
             $coumonUserServices = app()->make(StoreCouponUserServices::class);
             $res = $res && $coumonUserServices->recoverCoupon((int)$order['coupon_id']);
         }
+
+        //回退积分
+        $order = $this->regressionIntegral($order);
         /** @var StoreOrderStatusServices $statusService */
         $statusService = app()->make(StoreOrderStatusServices::class);
         $statusService->save([
             'oid' => $order['id'],
             'change_type' => 'integral_back',
-            'change_message' => '商品退积分：' . $data['back_integral'],
+            'change_message' => '商品退积分',
             'change_time' => time()
         ]);
-        $order['use_integral'] = 0;
-        $order['deduction_price'] = 0;
-        $order['coupon_id'] = 0;
-        $order['coupon_price'] = 0;
         return $res && $order->save();
     }
 
@@ -251,7 +252,8 @@ class StoreOrderRefundServices extends BaseServices
         $give_integral = $userBillServices->sum([
             'category' => 'integral',
             'type' => 'sign',
-            'link_id' => $order['id']
+            'link_id' => $order['id'],
+            'uid' => $order['uid']
         ], 'number');
         if ($give_integral) {
             //判断订单是否已经回退积分
@@ -286,9 +288,10 @@ class StoreOrderRefundServices extends BaseServices
     public function regressionStock($order)
     {
         if ($order['status'] == -2 || $order['is_del']) return true;
-        $combinationId = $order['combination_id'];
+        $combination_id = $order['combination_id'];
         $seckill_id = $order['seckill_id'];
         $bargain_id = $order['bargain_id'];
+        $advance_id = $order['advance_id'];
         $res5 = true;
         /** @var StoreOrderCartInfoServices $cartServices */
         $cartServices = app()->make(StoreOrderCartInfoServices::class);
@@ -300,40 +303,35 @@ class StoreOrderRefundServices extends BaseServices
         $pinkServices = app()->make(StoreCombinationServices::class);
         /** @var StoreBargainServices $bargainServices */
         $bargainServices = app()->make(StoreBargainServices::class);
+        /** @var StoreAdvanceServices $advanceServices */
+        $advanceServices = app()->make(StoreAdvanceServices::class);
         $cartInfo = $cartServices->getCartInfoList(['cart_id' => $order['cart_id']], ['cart_info']);
         foreach ($cartInfo as $cart) {
             $cart['cart_info'] = is_array($cart['cart_info']) ? $cart['cart_info'] : json_decode($cart['cart_info'], true);
             //增库存减销量
             $unique = isset($cart['cart_info']['productInfo']['attrInfo']) ? $cart['cart_info']['productInfo']['attrInfo']['unique'] : '';
-            if ($combinationId) $res5 = $res5 && $pinkServices->incCombinationStock((int)$cart['cart_info']['cart_num'], (int)$combinationId, $unique);
-            else if ($seckill_id) $res5 = $res5 && $seckillServices->incSeckillStock((int)$cart['cart_info']['cart_num'], (int)$seckill_id, $unique);
-            else if ($bargain_id) $res5 = $res5 && $bargainServices->incBargainStock((int)$cart['cart_info']['cart_num'], (int)$bargain_id, $unique);
-            else $res5 = $res5 && $services->incProductStock((int)$cart['cart_info']['cart_num'], (int)$cart['cart_info']['productInfo']['id'], $unique);
+            $cart_num = (int)$cart['cart_info']['cart_num'];
+            $type = 0;
+            if ($combination_id) {
+                $type = 3;
+                $res5 = $res5 && $pinkServices->incCombinationStock($cart_num, (int)$combination_id, $unique);
+            } else if ($seckill_id) {
+                $type = 1;
+                $res5 = $res5 && $seckillServices->incSeckillStock($cart_num, (int)$seckill_id, $unique);
+            } else if ($bargain_id) {
+                $type = 2;
+                $res5 = $res5 && $bargainServices->incBargainStock($cart_num, (int)$bargain_id, $unique);
+            } else if ($advance_id) {
+                $type = 6;
+                $res5 = $res5 && $advanceServices->incAdvanceStock($cart_num, (int)$advance_id, $unique);
+            } else {
+                $res5 = $res5 && $services->incProductStock($cart_num, (int)$cart['cart_info']['productInfo']['id'], $unique);
+            }
+            if ($type) CacheService::setStock($unique, $cart_num, $type, false);
         }
         return $res5;
     }
 
-    /**
-     * 发送退款模板消息
-     * @param $data
-     * @param $order
-     */
-    public function productOrderRefundYSendTemplate($data, $order)
-    {
-        /** @var WechatUserServices $wechatServices */
-        $wechatServices = app()->make(WechatUserServices::class);
-        if ($order['is_channel'] == 1) {
-            /** @var StoreOrderCartInfoServices $orderInfoServices */
-            $orderInfoServices = app()->make(StoreOrderCartInfoServices::class);
-            $storeName = $orderInfoServices->getCarIdByProductTitle($order['cart_id']);
-            $storeTitle = Str::substrUTf8($storeName, 20, 'UTF-8', '');
-            $openid = $wechatServices->uidToOpenid($order['uid'], 'routine');
-            RoutineTemplateJob::dispatchDo('sendOrderRefundSuccess', [$openid, $order, $storeTitle]);
-        } else {
-            $openid = $wechatServices->uidToOpenid($order['uid'], 'wechat');
-            TemplateJob::dispatchDo('sendOrderRefundSuccess', [$openid, $data, $order]);
-        }
-    }
 
     /**
      * 同意退款成功发送模板消息和记录订单状态
@@ -344,7 +342,6 @@ class StoreOrderRefundServices extends BaseServices
      */
     public function storeProductOrderRefundY($data, $order, $refund_price)
     {
-        $this->productOrderRefundYSendTemplate($data, $order);
         /** @var StoreOrderStatusServices $statusService */
         $statusService = app()->make(StoreOrderStatusServices::class);
         $statusService->save([
@@ -353,6 +350,7 @@ class StoreOrderRefundServices extends BaseServices
             'change_message' => '退款给用户：' . $refund_price . '元',
             'change_time' => time()
         ]);
+        event('notice.notice', [['data' => $data, 'order' => $order], 'order_refund']);
     }
 
     /**
@@ -389,27 +387,6 @@ class StoreOrderRefundServices extends BaseServices
         ]);
     }
 
-    /**
-     * 不退款发送模板消息
-     * @param $order
-     * @param $data
-     */
-    public function OrderRefundNoSendTemplate($order)
-    {
-        /** @var WechatUserServices $wechatServices */
-        $wechatServices = app()->make(WechatUserServices::class);
-        if ($order->is_channel == 1) {
-            /** @var StoreOrderCartInfoServices $orderInfoServices */
-            $orderInfoServices = app()->make(StoreOrderCartInfoServices::class);
-            $storeName = $orderInfoServices->getCarIdByProductTitle($order['cart_id']);
-            $storeTitle = Str::substrUTf8($storeName, 20, 'UTF-8', '');
-            $openid = $wechatServices->uidToOpenid($order['uid'], 'routine');
-            RoutineTemplateJob::dispatchDo('sendOrderRefundFail', [$openid, $order, $storeTitle]);
-        } else {
-            $openid = $wechatServices->uidToOpenid($order['uid'], 'wechat');
-            TemplateJob::dispatchDo('sendOrderRefundNoStatus', [$openid, $order]);
-        }
-    }
 
     /**
      * 不退款表单
@@ -490,7 +467,7 @@ class StoreOrderRefundServices extends BaseServices
      * @param array $refundReasonWapImg
      * @return bool|void
      */
-    public function orderApplyRefund($order, string $refundReasonWap = '', string $refundReasonWapExplain = '', array $refundReasonWapImg = [])
+    public function orderApplyRefund($order, string $refundReasonWap = '', string $refundReasonWapExplain = '', array $refundReasonWapImg = [], int $refundType = 0, $cart_id = 0, $refund_num = 0)
     {
         if (!$order) {
             throw new ValidateException('支付订单不存在!');
@@ -501,71 +478,116 @@ class StoreOrderRefundServices extends BaseServices
         if ($order['refund_status'] == 1) {
             throw new ValidateException('正在申请退款中!');
         }
-//        if ($order['status'] == 1) {
-//            throw new ValidateException('订单当前无法退款!');
-//        }
-        $data = [
-            'refund_status' => 1,
-            'refund_reason_time' => time(),
-            'refund_reason_wap' => $refundReasonWap,
-            'refund_reason_wap_explain' => $refundReasonWapExplain,
-            'refund_reason_wap_img' => json_encode($refundReasonWapImg),
-        ];
+        if ($order['total_num'] < $refund_num) {
+            throw new ValidateException('退款件数大于订单件数!');
+        }
+        $this->transaction(function () use ($order, $refundReasonWap, $refundReasonWapExplain, $refundReasonWapImg, $refundType, $refund_num, $cart_id) {
+            $status = 0;
+            $order_id = (int)$order['id'];
+            if ($cart_id) {
+                /** @var StoreOrderCartInfoServices $storeOrderCartInfoServices */
+                $storeOrderCartInfoServices = app()->make(StoreOrderCartInfoServices::class);
+                $cart_ids = [];
+                $cart_ids[0] = ['cart_id' => $cart_id, 'cart_num' => $refund_num];
+                /** @var StoreOrderSplitServices $storeOrderSplitServices */
+                $storeOrderSplitServices = app()->make(StoreOrderSplitServices::class);
+                //拆单
+                $status = $order['status'];
+                $order = $storeOrderSplitServices->split($order_id, $cart_ids, $order);
+            } elseif (in_array($order['pid'], [0, -1]) && $this->dao->count(['pid' => $order_id])) {
+                /** @var StoreOrderCartInfoServices $storeOrderCartInfoServices */
+                $storeOrderCartInfoServices = app()->make(StoreOrderCartInfoServices::class);
+                $cart_info = $storeOrderCartInfoServices->getSplitCartList($order_id, 'cart_info');
+                if (!$cart_info) {
+                    throw new ValidateException('该订单已全部拆分发货，请去自订单申请');
+                }
+                $cart_ids = [];
+                foreach ($cart_info as $key => $cart) {
+                    $cart_ids[$key] = ['cart_id' => $cart['id'], 'cart_num' => $refund_num];
+                }
+                /** @var StoreOrderSplitServices $storeOrderSplitServices */
+                $storeOrderSplitServices = app()->make(StoreOrderSplitServices::class);
+                //拆单
+                $status = $order['status'];
+                $order = $storeOrderSplitServices->split($order_id, $cart_ids, $order);
+            }
 
-//        $order->refund_status = 1;
-//        $order->refund_reason_time = time();
-//        $order->refund_reason_wap = $refundReasonWap;
-//        $order->refund_reason_wap_explain = $refundReasonWapExplain;
-//        $order->refund_reason_wap_img = json_encode($refundReasonWapImg);
-        $this->transaction(function () use ($order, $refundReasonWap, $data) {
+            $data = [
+                'refund_status' => 1,
+                'refund_reason_time' => time(),
+                'refund_reason_wap' => $refundReasonWap,
+                'refund_reason_wap_explain' => $refundReasonWapExplain,
+                'refund_reason_wap_img' => json_encode($refundReasonWapImg),
+                'refund_type' => $refundType
+            ];
+            if ($status) $data['status'] = $status;
+
             /** @var StoreOrderStatusServices $statusService */
             $statusService = app()->make(StoreOrderStatusServices::class);
-            /** @var StoreOrderServices $orderService */
-            $orderService = app()->make(StoreOrderServices::class);
             $res1 = false !== $statusService->save([
                     'oid' => $order['id'],
                     'change_type' => 'apply_refund',
                     'change_message' => '用户申请退款，原因：' . $refundReasonWap,
                     'change_time' => time()
                 ]);
-//            $res2 = false !== $order->save();
-            $res2 = false !== $orderService->update(['id' => $order['id']], $data);
+            $res2 = false !== $this->dao->update(['id' => $order['id']], $data);
             $res = $res1 && $res2;
             if (!$res)
                 throw new ValidateException('申请退款失败!');
+            //子订单申请退款
+            if ($order['pid'] > 0) {
+                $p_order = $this->dao->get((int)$order['pid']);
+                $split_order = $this->dao->count(['pid' => $order['pid'], 'refund_status' => 0]);
+                if ($split_order || (!$split_order && $p_order['status'] == 4) || $cart_id) {
+                    $this->dao->update(['id' => $order['pid']], ['refund_status' => 3, 'refund_reason_time' => time()]);
+                } else {
+                    $this->dao->update(['id' => $order['pid']], ['refund_status' => 4, 'refund_reason_time' => time()]);
+                }
+            } else {
+                /** @var StoreOrderCartInfoServices $orderCartInfoService */
+                $orderCartInfoService = app()->make(StoreOrderCartInfoServices::class);
+//                if (!$orderCartInfoService->getSplitCartList()) {
+//
+//                }
+            }
         });
 
         try {
             ChannelService::instance()->send('NEW_REFUND_ORDER', ['order_id' => $order['order_id']]);
         } catch (\Exception $e) {
         }
-        $this->sendAdminRefund($order);
+        //提醒推送
+        event('notice.notice', [['order' => $order], 'send_order_apply_refund']);
+
         return true;
 
     }
 
-    /**
-     * 用户发起退款管理员短信提醒
-     * 用户退款中模板消息
-     * @param string $order_id
-     */
-    public function sendAdminRefund($order)
-    {
-        $switch = sys_config('admin_refund_switch') ? true : false;
-        /** @var StoreServiceServices $services */
-        $services = app()->make(StoreServiceServices::class);
-        $adminList = $services->getStoreServiceOrderNotice();
-        SmsAdminJob::dispatchDo('sendAdminRefund', [$switch, $adminList, $order]);
-        /** @var WechatUserServices $wechatServices */
-        $wechatServices = app()->make(WechatUserServices::class);
-        if ($order['is_channel'] == 1) {
-            //小程序
-            $openid = $wechatServices->uidToOpenid($order['uid'], 'routine');
-            return RoutineTemplateJob::dispatchDo('sendOrderRefundStatus', [$openid, $order]);
-        } else {
-            $openid = $wechatServices->uidToOpenid($order['uid'], 'wechat');
-            return TemplateJob::dispatchDo('sendOrderApplyRefund', [$openid, $order]);
-        }
-    }
 
+    /**
+     * 写入退款快递单号
+     * @param $order
+     * @param $express
+     * @return bool
+     */
+    public function editRefundExpress($id, $express_id)
+    {
+        $this->transaction(function () use ($id, $express_id) {
+            /** @var StoreOrderStatusServices $statusService */
+            $statusService = app()->make(StoreOrderStatusServices::class);
+            /** @var StoreOrderServices $orderService */
+            $orderService = app()->make(StoreOrderServices::class);
+            $res1 = false !== $statusService->save([
+                    'oid' => $id,
+                    'change_type' => 'refund_express',
+                    'change_message' => '用户已退货，订单号：' . $express_id,
+                    'change_time' => time()
+                ]);
+            $res2 = false !== $orderService->update(['id' => $id], ['refund_type' => 5, 'refund_express' => $express_id]);
+            $res = $res1 && $res2;
+            if (!$res)
+                throw new ValidateException('提交退货快递单号失败!');
+        });
+        return true;
+    }
 }

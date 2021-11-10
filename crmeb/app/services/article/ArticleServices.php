@@ -140,7 +140,7 @@ class ArticleServices extends BaseServices
     public function getInfo(int $id)
     {
         $info = $this->dao->read($id);
-        $info->visit = $info['visit'] + 1;
+        $info->visit = intval($info['visit']) + 1;
         if (!$info->save())
             throw new AdminException('请稍后查看');
         if ($info) {

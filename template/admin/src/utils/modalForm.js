@@ -14,7 +14,7 @@ import Vue from 'vue';
 import { Message, Spin, Notice } from 'iview'
 let modalInstance
 
-function getModalInstance (render = undefined) {
+function getModalInstance(render = undefined) {
     modalInstance = modalInstance || Modal.newInstance({
         closable: true,
         maskClosable: true,
@@ -25,7 +25,7 @@ function getModalInstance (render = undefined) {
     return modalInstance
 }
 
-function alert (options) {
+function alert(options) {
     const render = ('render' in options) ? options.render : undefined
     let instance = getModalInstance(render)
 
@@ -37,7 +37,7 @@ function alert (options) {
 }
 
 export default function (formRequestPromise, { width = '700' } = { width: '700' }) {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
         const msg = Message.loading({
             content: 'Loading...',
             duration: 0
@@ -64,7 +64,7 @@ export default function (formRequestPromise, { width = '700' } = { width: '700' 
             data.config.global = {
                 upload: {
                     props: {
-                        onSuccess (res, file) {
+                        onSuccess(res, file) {
                             if (res.status === 200) {
                                 file.url = res.data.src
                             } else {
@@ -73,10 +73,10 @@ export default function (formRequestPromise, { width = '700' } = { width: '700' 
                         }
                     }
                 },
-              frame:{
-                    props:{
-                        closeBtn:false,
-                        okBtn:false
+                frame: {
+                    props: {
+                        closeBtn: false,
+                        okBtn: false
                     }
                 }
             }
@@ -89,7 +89,6 @@ export default function (formRequestPromise, { width = '700' } = { width: '700' 
                     resolve(res)
                 }).catch(err => {
                     Message.error(err.msg || '提交失败')
-                    reject(err)
                 }).finally(() => {
                     $f.btn.loading(false)
                     $f.btn.disabled(false);

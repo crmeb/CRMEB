@@ -1,3 +1,13 @@
+// +----------------------------------------------------------------------
+// | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
+// +----------------------------------------------------------------------
+// | Copyright (c) 2016~2021 https://www.crmeb.com All rights reserved.
+// +----------------------------------------------------------------------
+// | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
+// +----------------------------------------------------------------------
+// | Author: CRMEB Team <admin@crmeb.com>
+// +----------------------------------------------------------------------
+
 import {
 	SUBSCRIBE_MESSAGE
 } from '../config/cache.js';
@@ -16,9 +26,9 @@ export function auth() {
 export function openPaySubscribe() {
 	let tmplIds = auth();
 	return subscribe([
-		tmplIds.oreder_takever,
 		tmplIds.order_pay_success,
-		tmplIds.order_new,
+		tmplIds.order_deliver_success,
+		tmplIds.order_postage_success,
 	]);
 }
 
@@ -29,9 +39,9 @@ export function openPaySubscribe() {
 export function openOrderSubscribe() {
 	let tmplIds = auth();
 	return subscribe([
-		tmplIds.order_deliver_success,
-		tmplIds.order_postage_success,
-		tmplIds.order_clone
+		tmplIds.order_take,
+		tmplIds.integral_accout,
+		tmplIds.order_brokerage
 	]);
 }
 
@@ -52,7 +62,8 @@ export function openExtrctSubscribe() {
 export function openPinkSubscribe() {
 	let tmplIds = auth();
 	return subscribe([
-		tmplIds.pink_true
+		tmplIds.pink_true,
+		tmplIds.pink_status
 	]);
 }
 
@@ -71,7 +82,9 @@ export function openBargainSubscribe() {
  */
 export function openOrderRefundSubscribe() {
 	let tmplIds = auth();
-	return subscribe([tmplIds.order_refund]);
+	return subscribe([
+		tmplIds.order_refund
+	]);
 }
 
 /**
@@ -79,26 +92,20 @@ export function openOrderRefundSubscribe() {
  */
 export function openRechargeSubscribe() {
 	let tmplIds = auth();
-	return subscribe([tmplIds.recharge_success]);
-}
-
-/**
- * 提现
- */
-export function openEextractSubscribe() {
-	let tmplIds = auth();
-	return subscribe([tmplIds.user_extract]);
+	return subscribe([
+		tmplIds.recharge_success
+	]);
 }
 
 /**
  * 调起订阅界面
  * array tmplIds 模板id
  */
-export function subscribe(tmplIds) {
-	 let wecaht = wx;
+export function subscribe(subscrip443tionmessagee502call) {
+	 let weChat = wx;
 	return new Promise((reslove, reject) => {
-		wecaht.requestSubscribeMessage({
-			tmplIds: tmplIds,
+		weChat.requestSubscribeMessage({
+			tmplIds: subscrip443tionmessagee502call,
 			success(res) {
 				return reslove(res);
 			},

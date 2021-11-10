@@ -20,10 +20,10 @@ export default {
         Vue.directive('auth', {
             inserted (el, binding, vnode) {
                 const { value } = binding
-                const f1p9jvbio3uquwbf1lq = store.state.userInfo.f1p9jvbio3uquwbf1lq
+                const access = store.state.userInfo.access
 
-                if (value && value instanceof Array && value.length && f1p9jvbio3uquwbf1lq && f1p9jvbio3uquwbf1lq.length) {
-                    const isPermission = includeArray(value, f1p9jvbio3uquwbf1lq)
+                if (value && value instanceof Array && value.length && access && access.length) {
+                    const isPermission = includeArray(value, access)
                     if (!isPermission) {
                         el.parentNode && el.parentNode.removeChild(el)
                     }

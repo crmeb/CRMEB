@@ -1,5 +1,5 @@
 <template>
-	<view>
+	<view :style="colorStyle">
 		<view class="system-height" :style="{ height: statusBarHeight }"></view>
 		<!-- #ifdef MP -->
 		<view class="title-bar" style="height: 43px;">
@@ -61,7 +61,9 @@
 	} from '@/api/user.js';
 	import Routine from '@/libs/routine';
 	import wechat from '@/libs/wechat';
+	import colors from '@/mixins/color.js';
 	export default {
+		mixins:[colors],
 		data() {
 			return {
 				isUp: false,
@@ -93,7 +95,6 @@
 			// #ifdef MP
 			Routine.getCode()
 				.then(code => {
-					console.log(code)
 					this.code = code
 				})
 			// #endif
@@ -153,7 +154,7 @@
 				uni.navigateBack();
 			},
 			home() {
-				uni.navigateTo({
+				uni.switchTab({
 					url: '/pages/index/index'
 				})
 			},
@@ -259,7 +260,7 @@
 					.then(res => {
 						let userInfo = res.userInfo;
 						userInfo.code = this.code;
-						userInfo.spread_spid = app.globalData.spid; //获取推广人ID
+						userInfo.spread_spid = app.globalData.spid || this.$Cache.get('spread'); //获取推广人ID
 						userInfo.spread_code = app.globalData.code; //获取推广人分享二维码ID
 						Routine.authUserInfo(userInfo)
 							.then(res => {

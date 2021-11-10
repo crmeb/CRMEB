@@ -8,7 +8,7 @@
 // +----------------------------------------------------------------------
 // | Author: CRMEB Team <admin@crmeb.com>
 // +----------------------------------------------------------------------
-declare (strict_types=1);
+declare (strict_types = 1);
 
 namespace app\services\diy;
 
@@ -18,6 +18,8 @@ use app\services\activity\StoreSeckillServices;
 use app\services\BaseServices;
 use app\dao\diy\DiyDao;
 use app\services\product\product\StoreProductServices;
+use app\services\system\config\SystemGroupDataServices;
+use app\services\system\config\SystemGroupServices;
 use crmeb\exceptions\AdminException;
 use crmeb\services\FormBuilder as Form;
 use think\facade\Route as Url;
@@ -51,6 +53,7 @@ class DiyServices extends BaseServices
     public function getDiyList(array $where)
     {
         [$page, $limit] = $this->getPageValue();
+        $where['type'] = -1;
         $list = $this->dao->getDiyList($where, $page, $limit);
         $count = $this->dao->count($where);
         return compact('list', 'count');
@@ -94,7 +97,7 @@ class DiyServices extends BaseServices
     public function setStatus(int $id)
     {
         $this->dao->update([['id', '<>', $id]], ['status' => 0]);
-        $this->dao->update($id, ['status' => 1, 'type' => 0,'update_time' => time()]);
+        $this->dao->update($id, ['status' => 1, 'type' => 0, 'update_time' => time()]);
     }
 
     /**
@@ -115,11 +118,11 @@ class DiyServices extends BaseServices
 
         if ($info) {
             $info = $info->toArray();
-            if($info['value']){
+            if ($info['value']) {
                 $data = json_decode($info['value'], true);
-                foreach ($data as $key=>&$item) {
+                foreach ($data as $key => &$item) {
                     if ($key == 'customerService') {
-                        foreach ($item as $k=>&$v){
+                        foreach ($item as $k => &$v) {
                             $v['routine_contact_type'] = sys_config('routine_contact_type', 0);
                         }
                     }
@@ -151,14 +154,15 @@ class DiyServices extends BaseServices
      * @throws \think\db\exception\DbException
      * @throws \think\db\exception\ModelNotFoundException
      */
-    public function ProductList(array $where){
+    public function ProductList(array $where)
+    {
         /** @var StoreProductServices $StoreProductServices */
         $StoreProductServices = app()->make(StoreProductServices::class);
         /** @var StoreBargainServices $StoreBargainServices */
         $StoreBargainServices = app()->make(StoreBargainServices::class);
-        /** @var  $StoreCombinationServices StoreCombinationServices*/
+        /** @var  $StoreCombinationServices StoreCombinationServices */
         $StoreCombinationServices = app()->make(StoreCombinationServices::class);
-        /** @var  $StoreSeckillServices  StoreSeckillServices*/
+        /** @var  $StoreSeckillServices  StoreSeckillServices */
         $StoreSeckillServices = app()->make(StoreSeckillServices::class);
         $type = $where['type'];
         unset($where['type']);
@@ -203,21 +207,22 @@ class DiyServices extends BaseServices
      * 前台获取首页数据接口
      * @param array $where
      */
-    public function homeProductList(array $where,int $uid){
+    public function homeProductList(array $where, int $uid)
+    {
         /** @var StoreProductServices $StoreProductServices */
         $StoreProductServices = app()->make(StoreProductServices::class);
         /** @var StoreBargainServices $StoreBargainServices */
         $StoreBargainServices = app()->make(StoreBargainServices::class);
-        /** @var  $StoreCombinationServices StoreCombinationServices*/
+        /** @var  $StoreCombinationServices StoreCombinationServices */
         $StoreCombinationServices = app()->make(StoreCombinationServices::class);
-        /** @var  $StoreSeckillServices  StoreSeckillServices*/
+        /** @var  $StoreSeckillServices  StoreSeckillServices */
         $StoreSeckillServices = app()->make(StoreSeckillServices::class);
         $type = $where['type'];
         $data = [];
         switch ($type) {
             case 0:
                 $where['type'] = $where['isType'] ?? 0;
-                $data['list'] = $StoreProductServices->getGoodsList($where,$uid);
+                $data['list'] = $StoreProductServices->getGoodsList($where, $uid);
                 break;
             //秒杀
             case 2:
@@ -225,27 +230,27 @@ class DiyServices extends BaseServices
                 break;
             //拼团
             case 3:
-                $data= $StoreCombinationServices->getHomeList($where);
+                $data = $StoreCombinationServices->getHomeList($where);
                 break;
             case 4:
                 $where['is_hot'] = 1;
                 $where['type'] = $where['isType'] ?? 0;
-                $data['list'] = $StoreProductServices->getGoodsList($where,$uid);
+                $data['list'] = $StoreProductServices->getGoodsList($where, $uid);
                 break;
             case 5:
                 $where['is_new'] = 1;
                 $where['type'] = $where['isType'] ?? 0;
-                $data['list'] = $StoreProductServices->getGoodsList($where,$uid);
+                $data['list'] = $StoreProductServices->getGoodsList($where, $uid);
                 break;
             case 6:
                 $where['is_benefit'] = 1;
                 $where['type'] = $where['isType'] ?? 0;
-                $data['list'] = $StoreProductServices->getGoodsList($where,$uid);
+                $data['list'] = $StoreProductServices->getGoodsList($where, $uid);
                 break;
             case 7:
                 $where['is_best'] = 1;
                 $where['type'] = $where['isType'] ?? 0;
-                $data['list'] = $StoreProductServices->getGoodsList($where,$uid);
+                $data['list'] = $StoreProductServices->getGoodsList($where, $uid);
                 break;
             //砍价
             case 8:
@@ -253,5 +258,91 @@ class DiyServices extends BaseServices
                 break;
         }
         return $data;
+    }
+
+    /**
+     * 分类、个人中心、一键换色
+     * @param string $name
+     * @return mixed
+     */
+    public function getColorChange(string $name)
+    {
+        return $this->dao->value(['template_name' => $name, 'type' => 1], 'value');
+    }
+
+    public function getMemberData()
+    {
+        $info = $this->dao->get(['template_name' => 'member', 'type' => 1]);
+        $status = (int)$info['value'];
+        $order_status = $info['order_status'] ? (int)$info['order_status'] : 1;
+        $color_change = (int)$this->getColorChange('color_change');
+        /** @var SystemGroupDataServices $systemGroupDataServices */
+        $systemGroupDataServices = app()->make(SystemGroupDataServices::class);
+        /** @var SystemGroupServices $systemGroupServices */
+        $systemGroupServices = app()->make(SystemGroupServices::class);
+        $menus_gid = $systemGroupServices->value(['config_name' => 'routine_my_menus'], 'id');
+        $banner_gid = $systemGroupServices->value(['config_name' => 'routine_my_banner'], 'id');
+        $routine_my_menus = $systemGroupDataServices->getGroupDataList(['gid' => $menus_gid]);
+        $routine_my_menus = $routine_my_menus['list'] ?? [];
+        $routine_my_banner = $systemGroupDataServices->getGroupDataList(['gid' => $banner_gid]);
+        $routine_my_banner = $routine_my_banner['list'] ?? [];
+        $my_banner_status = $routine_my_banner[0]['status'] ?? 1;
+        return compact('status', 'order_status', 'routine_my_menus', 'routine_my_banner', 'color_change', 'my_banner_status');
+    }
+
+    /**
+     * 保存个人中心数据配置
+     * @param array $data
+     * @return bool
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     */
+    public function memberSaveData(array $data)
+    {
+        /** @var SystemGroupDataServices $systemGroupDataServices */
+        $systemGroupDataServices = app()->make(SystemGroupDataServices::class);
+        if (!$data['status']) throw new AdminException('参数错误');
+        $info = $this->dao->get(['template_name' => 'member', 'type' => 1]);
+        if ($info) {
+            $info->my_banner_status = $data['my_banner_status'];
+            $info->value = $data['status'];
+            $info->order_status = $data['order_status'];
+            $info->update_time = time();
+            $res = $info->save();
+        } else {
+            throw new AdminException('个人中心模板不存在');
+        }
+        if ($data['routine_my_banner']) $res1 = $systemGroupDataServices->saveAllData($data['routine_my_banner'], 'routine_my_banner');
+        if ($data['routine_my_menus']) $res1 = $systemGroupDataServices->saveAllData($data['routine_my_menus'], 'routine_my_menus');
+        return true;
+    }
+
+    /**
+     * 获取底部导航
+     * @param string $template_name
+     * @return array|mixed
+     */
+    public function getNavigation(string $template_name)
+    {
+        if ($template_name) {
+            $value = $this->dao->value(['template_name' => $template_name], 'value');
+        } else {
+            $value = $this->dao->value(['status' => 1, 'type' => 1], 'value');
+            if (!$value) {
+                $value = $this->dao->value(['template_name' => 'default'], 'value');
+            }
+        }
+        $navigation = [];
+        if ($value) {
+            $value = json_decode($value, true);
+            foreach ($value as $item) {
+                if (isset($item['name']) && strtolower($item['name']) === 'pagefoot') {
+                    $navigation = $item;
+                    break;
+                }
+            }
+        }
+        return $navigation;
     }
 }

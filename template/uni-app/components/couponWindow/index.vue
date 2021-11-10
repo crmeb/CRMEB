@@ -1,6 +1,7 @@
 <template>
-	<view>
-		<view class='coupon-window' :class='window==true?"on":""' :style="'background-image: url('+couponImage+')'">
+	<view :style="colorStyle">
+		<view class='coupon-window' :class='window==true?"on":""'>
+			<image class="co-bag" src="../../static/images/co-bag.png" mode=""></image>
 			<view class='couponWinList'>
 				<view class='item acea-row row-between-wrapper' v-for="(item,index) in couponList" :key="index">
 					<view class='money font-color'>￥<text class='num'>{{item.coupon_price}}</text></view>
@@ -12,7 +13,7 @@
 				</view>
 			</view>
 			<view class='lid'>
-				<navigator hover-class='none' url='/pages/users/user_get_coupon/index' class='bnt font-color'>立即领取</navigator>
+				<navigator hover-class='none' url='/pages/users/user_get_coupon/index' class='bnt'>立即领取</navigator>
 				<view class='iconfont icon-guanbi3' @click="close"></view>
 			</view>
 		</view>
@@ -21,6 +22,7 @@
 </template>
 
 <script>
+	import colors from "@/mixins/color";
 	export default {
 
 		props: {
@@ -39,6 +41,7 @@
 				default: '',
 			},
 		},
+		mixins: [colors],
 		data() {
 			return {
 
@@ -52,19 +55,45 @@
 	}
 </script>
 
+
 <style scoped lang="scss">
+	.mask {
+		z-index: 9999;
+	}
+
 	.coupon-window {
-		background-repeat: no-repeat;
-		background-size: 100% 100%;
-		width: 630rpx;
-		height: 649rpx;
+		width: 572rpx;
+		height: 760rpx;
 		position: fixed;
 		top: 20%;
-		z-index: 99;
+		z-index: 10000;
 		left: 50%;
-		margin-left: -305rpx;
+		margin-left: -286rpx;
 		transform: translate3d(0, -200%, 0);
 		transition: all .3s cubic-bezier(.25, .5, .5, .9);
+		border-radius: 30rpx 30rpx 0 0;
+		overflow-x: hidden;
+	}
+
+	.co-bag {
+		width: 100%;
+		height: 250rpx;
+		z-index: 33333;
+		top: -40rpx;
+		position: absolute;
+	}
+
+	.coupon-window:after {
+		width: 900rpx;
+		height: 650rpx;
+		position: absolute;
+		top: 0%;
+		left: 50%;
+		z-index: 11111;
+		margin-left: -450rpx;
+		content: '';
+		border-radius: 50% 50% 0 0;
+		background: var(--view-theme);
 	}
 
 	.coupon-window.on {
@@ -73,8 +102,8 @@
 
 	.coupon-window .couponWinList {
 		width: 480rpx;
-		margin: 157rpx 0 0 60rpx;
-		height: 415rpx;
+		margin: 157rpx 0 0 50rpx;
+		height: 340rpx;
 		overflow: auto;
 	}
 
@@ -84,6 +113,21 @@
 		background-color: #fff;
 		position: relative;
 		margin-bottom: 17rpx;
+		position: relative;
+		z-index: 99999;
+	}
+
+	.coupon-window .couponWinList .item .left {
+		border-right: 1px dashed #ccc;
+	}
+
+	.coupon-window .couponWinList .label {
+		width: 28rpx;
+		height: 64rpx;
+		display: block;
+		position: absolute;
+		top: 0;
+		right: 12rpx;
 	}
 
 	.coupon-window .couponWinList .item::after {
@@ -92,7 +136,7 @@
 		width: 18rpx;
 		height: 18rpx;
 		border-radius: 50%;
-		background-color: #f2443a;
+		background-color: var(--view-theme);
 		left: 25.5%;
 		bottom: 0;
 		margin-bottom: -9rpx;
@@ -104,7 +148,7 @@
 		width: 18rpx;
 		height: 18rpx;
 		border-radius: 50%;
-		background-color: #f2443a;
+		background-color: var(--view-theme);
 		left: 25.5%;
 		top: 0;
 		margin-top: -9rpx;
@@ -112,12 +156,15 @@
 
 	.coupon-window .couponWinList .item .money {
 		width: 130rpx;
-		border-right: 1px dashed #ddd;
-		height: 100%;
 		text-align: center;
-		line-height: 120rpx;
 		font-size: 26rpx;
 		font-weight: bold;
+	}
+
+	.coupon-window .couponWinList .item .min_money {
+		color: #ccc;
+		font-size: 18rpx;
+		text-align: center;
 	}
 
 	.coupon-window .couponWinList .item .money .num {
@@ -127,42 +174,63 @@
 	.coupon-window .couponWinList .item .text {
 		width: 349rpx;
 		font-size: 22rpx;
-		color: #999;
+		color: #ccc;
 		padding: 0 29rpx;
 		box-sizing: border-box;
 	}
 
+	.coupon-window .couponWinList .item .text .image {
+		width: 32rpx;
+		height: 32rpx;
+		display: inline-block;
+		vertical-align: bottom;
+		margin-right: 10rpx;
+	}
+
 	.coupon-window .couponWinList .item .text .name {
 		font-size: 26rpx;
-		color: #282828;
+		color: var(--view-priceColor);
 		font-weight: bold;
 		margin-bottom: 9rpx;
+		width: 250rpx;
 	}
-
 	.coupon-window .lid {
-		background-image: url('data:image/png;base64,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');
-		background-repeat: no-repeat;
-		background-size: 100% 100%;
-		width: 573rpx;
+		background: rgba(255,255,255,0.2);
+		width: 582rpx;
 		height: 224rpx;
 		position: fixed;
+		z-index: 22222;
 		left: 50%;
-		top: 20%;
+		top: 0%;
 		margin: 424rpx 0 0 -296rpx;
 	}
-
+	
+	.coupon-window .lid:after {
+		width: 920rpx;
+		height: 280rpx;
+		position: absolute;
+		top: -100%;
+		left: 50%;
+		z-index: 22222;
+		margin-left: -460rpx;
+		content: '';
+		border-radius: 0 0 50% 50%;
+		background: var(--view-theme);
+	}
+	
 	.coupon-window .lid .bnt {
 		font-size: 29rpx;
 		width: 440rpx;
 		height: 80rpx;
 		border-radius: 40rpx;
-		background-color: #f9f1d3;
+		background: linear-gradient(90deg, #FFCA52 0%, #FE960F 100%);
 		text-align: center;
 		line-height: 80rpx;
 		font-weight: bold;
 		margin: 98rpx auto 0 auto;
+		color: #fff;
 	}
-
+	
 	.coupon-window .lid .iconfont {
 		color: #fff;
 		font-size: 60rpx;

@@ -21,8 +21,16 @@ use think\facade\App;
  */
 class Article extends AuthController
 {
+    /**
+     * @var ArticleServices
+     */
     protected $service;
 
+    /**
+     * Article constructor.
+     * @param App $app
+     * @param ArticleServices $service
+     */
     public function __construct(App $app, ArticleServices $service)
     {
         parent::__construct($app);

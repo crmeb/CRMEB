@@ -11,10 +11,12 @@
 			<view class='coupon-list' v-if="coupon.list.length">
 				<view class='item acea-row row-center-wrapper' v-for="(item,index) in coupon.list" @click="getCouponUser(index,item.id)"
 				 :key='index' :class="{svip: item.receive_type === 4}">
-					<view class='money acea-row row-column row-center-wrapper' :class='item.is_use && coupon.count?"moneyGray":""'>
-						<view>￥<text class='num'>{{item.coupon_price}}</text></view>
-						<view class="pic-num" v-if="item.use_min_price > 0">满{{item.use_min_price}}元可用</view>
-						<view class="pic-num" v-else>无门槛券</view>
+				  <view class="moneyCon acea-row row-center-wrapper">
+						<view class='money acea-row row-column row-center-wrapper' :class='item.is_use && coupon.count?"moneyGray":""'>
+							<view>￥<text class='num'>{{item.coupon_price}}</text></view>
+							<view class="pic-num" v-if="item.use_min_price > 0">满{{item.use_min_price}}元可用</view>
+							<view class="pic-num" v-else>无门槛券</view>
+						</view>
 					</view>
 					<view class='text'>
 						<view class='condition line2' :class="coupon.count?'':'order'">
@@ -32,7 +34,7 @@
 								<view class='bnt bg-color' v-else>{{coupon.statusTile || '立即领取'}}</view>
 							</view>
 							<view v-else class="orderCou">
-								<view class="iconfont icon-xuanzhong11" :class="item.receive_type === 4?'svip':'font-color-red'" v-if="item.is_use"></view>
+								<view class="iconfont icon-xuanzhong11" :class="item.receive_type === 4?'svip':'font-num'" v-if="item.is_use"></view>
 								<view class="iconfont icon-weixuan" v-else></view>
 							</view>
 						</view>
@@ -206,12 +208,12 @@
 		padding: 0 10rpx;
 		line-height: 30rpx;
 		text-align: center;
-		background: rgba(255, 244, 243, 1);
-		border: 1px solid rgba(233, 51, 35, 1);
+		background: var(--view-minorColorT);
+		border: 1px solid var(--view-theme);
 		opacity: 1;
 		border-radius: 20rpx;
 		font-size: 18rpx;
-		color: #E93323;
+		color: var(--view-theme);
 		margin-right: 12rpx;
 		box-sizing: border-box;
 	}
@@ -242,7 +244,7 @@
 	}
 
 	.nav .acea-row.on {
-		border-bottom-color: #E93323;
+		border-bottom-color: var(--view-theme);
 		color: #282828;
 	}
 

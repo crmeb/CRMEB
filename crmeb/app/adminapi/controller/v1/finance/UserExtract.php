@@ -16,6 +16,10 @@ use app\services\user\UserExtractServices;
 use think\facade\App;
 use think\Request;
 
+/**
+ * Class UserExtract
+ * @package app\adminapi\controller\v1\finance
+ */
 class UserExtract extends AuthController
 {
     /**

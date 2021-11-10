@@ -44,6 +44,20 @@ class UserSignController
     public function sign_config(Request $request, UserServices $userServices)
     {
         $signConfig = sys_data('sign_day_num') ?? [];
+        $uid = (int)$request->uid();
+        $user = $userServices->getUserInfo($uid);
+        //是否是付费会员
+        if ($user['is_money_level'] > 0) {
+            //看是否开启签到积分翻倍奖励
+            /** @var MemberCardServices $memberCardService */
+            $memberCardService = app()->make(MemberCardServices::class);
+            $sign_rule_number = $memberCardService->isOpenMemberCard('sign');
+            if ($sign_rule_number) {
+                foreach ($signConfig as &$value) {
+                    $value['sign_num'] = (int)$sign_rule_number * $value['sign_num'];
+                }
+            }
+        }
         return app('json')->successful($signConfig);
     }
 

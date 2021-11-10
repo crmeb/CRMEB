@@ -14,13 +14,12 @@ namespace app\jobs;
 use app\services\message\sms\SmsRecordServices;
 use app\services\system\attachment\SystemAttachmentServices;
 use crmeb\basic\BaseJobs;
-use crmeb\services\sms\Sms;
-use crmeb\services\UploadService;
 use crmeb\traits\QueueTrait;
 
 class TaskJob extends BaseJobs
 {
     use QueueTrait;
+
     /**
      * 修改短信发送记录短信状态
      */

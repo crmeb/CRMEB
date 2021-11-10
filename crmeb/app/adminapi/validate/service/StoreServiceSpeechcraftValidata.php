@@ -36,6 +36,6 @@ class StoreServiceSpeechcraftValidata extends Validate
     protected $message = [
         'message.require' => '请填写话术内容',
         'sort.require' => '请填写排序数字',
-        'sort.number' => '排序序号为数字',
+        'sort.number' => '排序序号为整数',
     ];
 }

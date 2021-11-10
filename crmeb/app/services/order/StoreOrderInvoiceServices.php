@@ -14,7 +14,6 @@ namespace app\services\order;
 
 
 use app\services\BaseServices;
-use FormBuilder\components\Validate;
 use think\exception\ValidateException;
 use app\dao\order\StoreOrderInvoiceDao;
 use app\services\user\UserInvoiceServices;
@@ -68,6 +67,7 @@ class StoreOrderInvoiceServices extends BaseServices
             $item['real_name'] = $item['order']['real_name'] ?? '';
             $item['user_phone'] = $item['order']['user_phone'] ?? '';
             $item['status'] = $item['order']['status'] ?? '';
+            $item['refund_status'] = $item['order']['refund_status'] ?? 0;
             $item['add_time'] = date('Y-m-d H:i:s', $item['order']['add_time'] ?? $item['invoice_add_time'] ?? time());
             $item['invoice_add_time'] = date('Y-m-d H:i:s', $item['invoice_add_time']);
         }
@@ -138,6 +138,7 @@ class StoreOrderInvoiceServices extends BaseServices
         $data['order_id'] = $order['id'];
         $data['invoice_id'] = $invoice_id;
         $data['add_time'] = time();
+        $data['is_pay'] = $order['paid'] == 1 ? 1 : 0;
         $data = array_merge($data, $invoice);
         if (!$re = $this->dao->save($data)) {
             throw new ValidateException('申请失败，请稍后重试');

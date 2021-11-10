@@ -89,7 +89,7 @@ class UserLabelCateServices extends BaseServices
      */
     public function labelCateForm(array $cataData = [])
     {
-        $f[] = FormBuilder::input('name', '分类名称', $cataData['name'] ?? '');
+        $f[] = FormBuilder::input('name', '分类名称', $cataData['name'] ?? '')->required();
         $f[] = FormBuilder::number('sort', '排序', (int)($cataData['sort'] ?? 0));
         return $f;
     }

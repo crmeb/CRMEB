@@ -5,21 +5,29 @@
 				<view @click="goDetail(item)" class='item acea-row row-between-wrapper' hover-class="none">
 					<view class='pictrue'>
 						<image :src='item.image'></image>
-						<span class="pictrue_log pictrue_log_class" v-if="item.activity && item.activity.type === '1'">秒杀</span>
-						<span class="pictrue_log pictrue_log_class" v-if="item.activity && item.activity.type === '2'">砍价</span>
-						<span class="pictrue_log pictrue_log_class" v-if="item.activity && item.activity.type === '3'">拼团</span>
+						<span class="pictrue_log pictrue_log_class"
+							v-if="item.activity && item.activity.type === '1'">秒杀</span>
+						<span class="pictrue_log pictrue_log_class"
+							v-if="item.activity && item.activity.type === '2'">砍价</span>
+						<span class="pictrue_log pictrue_log_class"
+							v-if="item.activity && item.activity.type === '3'">拼团</span>
 					</view>
 					<view class='underline'>
 						<view class='text'>
 							<view class='line1'>{{item.store_name}}</view>
 							<view class='money font-color'>￥<text class='num'>{{item.price}}</text></view>
-							<view class="vip-money acea-row row-middle" v-if="item.base && item.vip_price && item.vip_price > 0">￥{{item.vip_price || 0}}
-							   <image src='../../../static/images/jvip.png' class="jvip"></image><text class='num'>已售{{item.sales}}{{item.unit_name}}</text>
+							<view class="vip-money acea-row row-middle"
+								v-if="item.base && item.vip_price && item.vip_price > 0">￥{{item.vip_price || 0}}
+								<image src='../../../static/images/vip.png' class="jvip"></image><text
+									class='num'>已售{{item.sales}}{{item.unit_name}}</text>
 							</view>
-							<view class='vip-money acea-row row-middle' v-if="item.is_vip && item.vip_price && item.vip_price > 0">￥{{item.vip_price || 0}}
-							   <image src='../../../static/images/vip.png'></image><text class='num'>已售{{item.sales}}{{item.unit_name}}</text>
+							<view class='vip-money acea-row row-middle'
+								v-if="item.is_vip && item.vip_price && item.vip_price > 0">￥{{item.vip_price || 0}}
+								<image src='../../../static/images/vip.png'></image><text
+									class='num'>已售{{item.sales}}{{item.unit_name}}</text>
 							</view>
-							<view class='vip-money acea-row row-middle' v-else><text class='num'>已售{{item.sales}}{{item.unit_name}}</text></view>
+							<view class='vip-money acea-row row-middle' v-else><text
+									class='num'>已售{{item.sales}}{{item.unit_name}}</text></view>
 						</view>
 					</view>
 				</view>
@@ -30,21 +38,29 @@
 				<view @click="goDetail(item)" class='item acea-row row-between-wrapper' hover-class="none">
 					<view class='pictrue'>
 						<image :src='item.image'></image>
-						<span class="pictrue_log pictrue_log_class" v-if="item.activity && item.activity.type === '1'">秒杀</span>
-						<span class="pictrue_log pictrue_log_class" v-if="item.activity && item.activity.type === '2'">砍价</span>
-						<span class="pictrue_log pictrue_log_class" v-if="item.activity && item.activity.type === '3'">拼团</span>
+						<span class="pictrue_log pictrue_log_class"
+							v-if="item.activity && item.activity.type === '1'">秒杀</span>
+						<span class="pictrue_log pictrue_log_class"
+							v-if="item.activity && item.activity.type === '2'">砍价</span>
+						<span class="pictrue_log pictrue_log_class"
+							v-if="item.activity && item.activity.type === '3'">拼团</span>
 					</view>
 					<view class='underline'>
 						<view class='text'>
 							<view class='line1'>{{item.store_name}}</view>
 							<view class='money font-color'>￥<text class='num'>{{item.price}}</text></view>
-							<view class="vip-money acea-row row-middle" v-if="item.base && item.vip_price && item.vip_price > 0">￥{{item.vip_price || 0}}
-							   <image src='../../../static/images/jvip.png' class="jvip"></image><text class='num'>已售{{item.sales}}{{item.unit_name}}</text>
+							<view class="vip-money acea-row row-middle"
+								v-if="item.base && item.vip_price && item.vip_price > 0">￥{{item.vip_price || 0}}
+								<image src='../../../static/images/vip.png' class="jvip"></image><text
+									class='num'>已售{{item.sales}}{{item.unit_name}}</text>
 							</view>
-							<view class='vip-money acea-row row-middle' v-if="item.is_vip && item.vip_price && item.vip_price > 0">￥{{item.vip_price || 0}}
-							   <image src='../../../static/images/vip.png'></image><text class='num'>已售{{item.sales}}{{item.unit_name}}</text>
+							<view class='vip-money acea-row row-middle'
+								v-if="item.is_vip && item.vip_price && item.vip_price > 0">￥{{item.vip_price || 0}}
+								<image src='../../../static/images/vip.png'></image><text
+									class='num'>已售{{item.sales}}{{item.unit_name}}</text>
 							</view>
-							<view class='vip-money acea-row row-middle' v-else><text class='num'>已售{{item.sales}}{{item.unit_name}}</text></view>
+							<view class='vip-money acea-row row-middle' v-else><text
+									class='num'>已售{{item.sales}}{{item.unit_name}}</text></view>
 						</view>
 					</view>
 				</view>
@@ -56,9 +72,16 @@
 
 <script>
 	let app = getApp()
-	import {mapGetters} from "vuex";
-	import { goShopDetail,goPage } from '@/libs/order.js';
-	import { getHomeProducts } from '@/api/store.js';
+	import {
+		mapGetters
+	} from "vuex";
+	import {
+		goShopDetail,
+		goPage
+	} from '@/libs/order.js';
+	import {
+		getHomeProducts
+	} from '@/api/store.js';
 	export default {
 		name: 'goodList',
 		computed: mapGetters(['uid']),
@@ -72,14 +95,14 @@
 			dataConfig: {
 				immediate: true,
 				handler(nVal, oVal) {
-					if(nVal){
+					if (nVal) {
 						this.isShow = nVal.isShow.val;
 						this.selectType = nVal.tabConfig.tabVal;
 						this.$set(this, 'selectId', nVal.selectConfig.activeValue);
 						this.$set(this, 'type', nVal.selectSortConfig.activeValue);
 						this.salesOrder = nVal.goodsSort.type == 1 ? 'desc' : '';
 						this.newsOrder = nVal.goodsSort.type == 2 ? 'news' : '';
-						this.ids = nVal.ids?nVal.ids.join(','):'';
+						this.ids = nVal.ids ? nVal.ids.join(',') : '';
 						this.numConfig = nVal.numConfig.val;
 						this.productslist();
 					}
@@ -92,15 +115,15 @@
 				name: this.$options.name,
 				isIframe: false,
 				isShow: true,
-				selectType:0,
+				selectType: 0,
 				selectId: '',
-				salesOrder:'',
-				newsOrder:'',
-				ids:'',
+				salesOrder: '',
+				newsOrder: '',
+				ids: '',
 				page: 1,
 				limit: this.$config.LIMIT,
 				type: '',
-				numConfig:0
+				numConfig: 0
 			};
 		},
 		created() {
@@ -123,7 +146,7 @@
 				} else {
 					data = {
 						page: that.page,
-						limit: that.numConfig<=that.limit?that.numConfig:that.limit,
+						limit: that.numConfig <= that.limit ? that.numConfig : that.limit,
 						type: that.type,
 						newsOrder: that.newsOrder,
 						salesOrder: that.salesOrder,
@@ -134,18 +157,20 @@
 				getHomeProducts(data).then(res => {
 					that.bastList = res.data.list;
 				}).catch(err => {
-					that.$util.Tips({ title: err });
+					that.$util.Tips({
+						title: err
+					});
 				});
 			},
-			goDetail(item){
-				goPage().then(res=>{
-					goShopDetail(item,this.uid).then(res=>{
+			goDetail(item) {
+				goPage().then(res => {
+					goShopDetail(item, this.uid).then(res => {
 						uni.navigateTo({
-							url:`/pages/goods_details/index?id=${item.id}`
+							url: `/pages/goods_details/index?id=${item.id}`
 						})
 					})
 				})
-				
+
 			}
 		}
 	}
@@ -160,13 +185,16 @@
 		background-color: #ccc;
 		text-align: center;
 		line-height: 300rpx;
-		.iconfont{
+
+		.iconfont {
 			font-size: 50rpx;
 		}
 	}
+
 	.goodList .item {
 		position: relative;
 		padding-left: 30rpx;
+		box-shadow: 2px 1px 6px 1px rgba(0, 0, 0, 0.03);
 	}
 
 	.goodList .item .pictrue {
@@ -185,8 +213,8 @@
 		position: absolute;
 		left: 7rpx;
 		top: 7rpx;
-		width: 50rpx;
-		height: 50rpx;
+		width: 40rpx;
+		height: 40rpx;
 		border-radius: 50%;
 	}
 
@@ -221,8 +249,8 @@
 		font-weight: bold;
 		margin-top: 15rpx;
 	}
-	
-	.goodList .item .text .vip-money .jvip{
+
+	.goodList .item .text .vip-money .jvip {
 		width: 46rpx;
 		height: 22rpx;
 	}
@@ -239,7 +267,7 @@
 		color: #aaa;
 		font-weight: normal;
 		margin-top: -2rpx;
-		
+
 		~.num {
 			margin-left: 22rpx;
 		}

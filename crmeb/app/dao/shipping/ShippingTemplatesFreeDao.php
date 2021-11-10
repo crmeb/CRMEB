@@ -72,4 +72,26 @@ class ShippingTemplatesFreeDao extends BaseDao
             ->where('price', '<=', $price)->count();
     }
 
+    /**
+     * 是否包邮模版数据列表
+     * @param $tempId
+     * @param $cityid
+     * @param int $price
+     * @param string $field
+     * @param string $key
+     * @return array
+     */
+    public function isFreeList($tempId, $cityid, $price = 0, string $field = '*', string $key = '')
+    {
+        return $this->getModel()->where('city_id', $cityid)
+            ->when($tempId, function ($query) use ($tempId) {
+                if (is_array($tempId)) {
+                    $query->whereIn('temp_id', $tempId);
+                } else {
+                    $query->where('temp_id', $tempId);
+                }
+            })->when($price, function ($query) use ($price) {
+                $query->where('price', '<=', $price);
+            })->column($field, $key);
+    }
 }

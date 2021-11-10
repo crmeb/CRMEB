@@ -11,7 +11,7 @@
                 </Col>
                 <Col v-if="item.custom">
                     <FormItem class="tab_data">
-                        <DatePicker :editable="false" format="yyyy/MM/dd" type="daterange" placement="bottom-end" placeholder="自定义时间" style="width: 200px;"></DatePicker>
+                        <DatePicker :editable="false" format="yyyy/MM/dd" type="daterange" placement="bottom-end" placeholder="请选择时间" style="width: 200px;"></DatePicker>
                     </FormItem>
                 </Col>
             </Row>

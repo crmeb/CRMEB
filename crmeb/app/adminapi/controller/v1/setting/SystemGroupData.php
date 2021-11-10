@@ -42,8 +42,14 @@ class SystemGroupData extends AuthController
      */
     public function header(SystemGroupServices $services)
     {
-        $gid = $this->request->param('gid/d');
-        if (!$gid) return app('json')->fail('参数错误');
+        [$gid, $config_name] = $this->request->getMore([
+            ['gid', 0],
+            ['config_name', '']
+        ], true);
+        if (!$gid && !$config_name) return $this->fail('参数错误');
+        if (!$gid) {
+            $gid = $services->value(['config_name' => $config_name], 'id');
+        }
         return app('json')->success($services->getGroupDataTabHeader($gid));
     }
 
@@ -52,12 +58,18 @@ class SystemGroupData extends AuthController
      *
      * @return \think\Response
      */
-    public function index()
+    public function index(SystemGroupServices $group)
     {
         $where = $this->request->getMore([
             ['gid', 0],
             ['status', ''],
+            ['config_name', '']
         ]);
+        if (!$where['gid'] && !$where['config_name']) return app('json')->fail('参数错误');
+        if (!$where['gid']) {
+            $where['gid'] = $group->value(['config_name' => $where['config_name']], 'id');
+        }
+        unset($where['config_name']);
         return app('json')->success($this->services->getGroupDataList($where));
     }
 
@@ -145,7 +157,7 @@ class SystemGroupData extends AuthController
     public function edit($id)
     {
         $gid = $this->request->param('gid/d');
-        if(!$gid){
+        if (!$gid) {
             return app('json')->fail('缺少参数');
         }
         return app('json')->success($this->services->updateForm((int)$gid, (int)$id));
@@ -303,6 +315,42 @@ class SystemGroupData extends AuthController
         /** @var CacheServices $cache */
         $cache = app()->make(CacheServices::class);
         $cache->setDbCache('kf_adv', $content);
+        return app('json')->success('设置成功');
+    }
+
+    public function saveAll()
+    {
+        $params = request()->post();
+        if (!isset($params['config_name']) || !isset($params['data'])) {
+            return app('json')->fail('缺少参数');
+        }
+        $this->services->saveAllData($params['data'], $params['config_name']);
+        return app('json')->success('添加数据成功!');
+    }
+
+
+    /**
+     * 获取用户协议内容
+     * @return mixed
+     */
+    public function getUserAgreement()
+    {
+        /** @var CacheServices $cache */
+        $cache = app()->make(CacheServices::class);
+        $content = $cache->getDbCache('user_agreement', '');
+        return app('json')->success(compact('content'));
+    }
+
+    /**
+     * 设置用户协议内容
+     * @return mixed
+     */
+    public function setUserAgreement()
+    {
+        $content = $this->request->post('content');
+        /** @var CacheServices $cache */
+        $cache = app()->make(CacheServices::class);
+        $cache->setDbCache('user_agreement', $content);
         return app('json')->success('设置成功');
     }
 }

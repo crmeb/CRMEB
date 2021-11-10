@@ -1,5 +1,5 @@
 <template>
-	<view>
+	<view :style="colorStyle">
 		<view v-if="count > 1" class="acea-row row-around nav">
 			<template v-for="item in navList">
 				<view v-if="item.count" :key="item.type" :class="['acea-row', 'row-middle', type === item.type ? 'on' : '']" @click="setType(item.type)">{{ item.name }}</view>
@@ -8,10 +8,12 @@
 		<view v-if="count > 1" style="height: 106rpx;"></view>
 		<view class='coupon-list' v-if="couponsList.length">
 			<view class='item acea-row row-center-wrapper' v-for="(item,index) in couponsList" :key="index" :class="{svip: item.receive_type === 4}">
-				<view class='money' :class='item.is_use ? "moneyGray" : "" '>
-					<view>￥<text class='num'>{{item.coupon_price}}</text></view>
-					<view class="pic-num" v-if="item.use_min_price > 0">满{{item.use_min_price}}元可用</view>
-					<view class="pic-num" v-else>无门槛券</view>
+				<view class="moneyCon acea-row row-center-wrapper">
+					<view class='money' :class='item.is_use ? "moneyGray" : "" '>
+						<view>￥<text class='num'>{{item.coupon_price}}</text></view>
+						<view class="pic-num" v-if="item.use_min_price > 0">满{{item.use_min_price}}元可用</view>
+						<view class="pic-num" v-else>无门槛券</view>
+					</view>
 				</view>
 				<view class="text">
 					<view class="condition">
@@ -25,7 +27,7 @@
 					</view>
 					<view class="data acea-row row-between-wrapper">
 						<view v-if="item.coupon_time">领取后{{item.coupon_time}}天内可用</view>
-						<view v-else>{{ item.start_time ? item.start_time + '-' : '' }}{{ item.end_time }}</view>
+						<view v-else>{{ item.start_use_time ? item.start_use_time + '-' : '' }}{{ item.end_use_time }}</view>
 						<view class="bnt gray" v-if="item.is_use == true">已领取</view>
 						<view class="bnt gray" v-else-if="item.is_use == 2">已领完</view>
 						<view class="bnt bg-color" v-else @click="getCoupon(item.id, index)">立即领取</view>
@@ -38,11 +40,14 @@
 		</view>
 		<view class='noCommodity' v-else-if="!couponsList.length && page === 2">
 			<view class='pictrue'>
-				<image src='../../../static/images/noCoupon.png'></image>
+				<image src='/static/images/noCoupon.png'></image>
 			</view>
 		</view>
 		<!-- #ifdef MP -->
 		<authorize @onLoadFun="onLoadFun" @authColse="authColse"></authorize>
+		<!-- #endif -->
+		<!-- #ifndef MP -->
+		<home></home>
 		<!-- #endif -->
 	</view>
 </template>
@@ -61,12 +66,16 @@
 	// #ifdef MP
 	import authorize from '@/components/Authorize';
 	// #endif
+	import home from '@/components/home';
+	import colors from '@/mixins/color.js';
 	export default {
 		components: {
 			// #ifdef MP
-			authorize
+			authorize,
 			// #endif
+			home
 		},
+		mixins:[colors],
 		data() {
 			return {
 				couponsList: [],
@@ -110,16 +119,7 @@
 		},
 		onLoad() {
 			if (this.isLogin) {
-				this.getUseCoupons();
-			} else {
-				toLogin();
-			}
-		},
-		deep: true,
-
-		onLoad() {
-			if (this.isLogin) {
-				// #ifdef H5
+				// #ifdef H5 || APP-PLUS
 				this.getUseCoupons();
 				// #endif
 			} else {
@@ -222,7 +222,7 @@
 	}
 
 	.nav .acea-row.on {
-		border-bottom-color: #E93323;
+		border-bottom-color: var(--view-theme);
 		color: #282828;
 	}
 	
@@ -239,6 +239,8 @@
 	.coupon-list .item .text .condition .name {
 		font-size: 26rpx;
 		font-weight: 500;
+		display: flex;
+		align-items: center;
 	}
 	
 	.coupon-list .item .text .condition .pic {
@@ -257,11 +259,11 @@
 		text-align: center;
 		box-sizing: border-box;
 		background: rgba(255, 247, 247, 1);
-		border: 1px solid rgba(232, 51, 35, 1);
+		border: 1px solid var(--view-theme);
 		opacity: 1;
 		border-radius: 20rpx;
 		font-size: 18rpx !important;
-		color: #e83323;
+		color: var(--view-theme);
 		margin-right: 12rpx;
 		text-align: center;
 		display: inline-block;

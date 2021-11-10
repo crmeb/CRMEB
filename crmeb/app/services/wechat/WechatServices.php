@@ -14,6 +14,8 @@ namespace app\services\wechat;
 
 use app\services\BaseServices;
 use app\dao\wechat\WechatUserDao;
+use app\services\user\UserServices;
+use app\services\user\UserVisitServices;
 use crmeb\services\CacheService;
 use crmeb\services\CacheService as Cache;
 use crmeb\services\WechatService as WechatAuthService;
@@ -109,6 +111,9 @@ class WechatServices extends BaseServices
         }
         $token = $this->createToken((int)$user['uid'], 'wechat');
         if ($token) {
+            /** @var UserVisitServices $visitServices */
+            $visitServices = app()->make(UserVisitServices::class);
+            $visitServices->loginSaveVisit($user);
             return ['userInfo' => $user];
         } else
             throw new ValidateException('登录失败');
@@ -162,12 +167,20 @@ class WechatServices extends BaseServices
         }
         $token = $this->createToken((int)$user['uid'], 'wechat');
         if ($token) {
+            /** @var UserVisitServices $visitServices */
+            $visitServices = app()->make(UserVisitServices::class);
+            $visitServices->loginSaveVisit($user);
             $token['userInfo'] = $user;
             return $token;
         } else
             throw new ValidateException('登录失败');
     }
 
+    /**
+     * 获取关注二维码
+     * @return string[]
+     * @throws \Exception
+     */
     public function follow()
     {
         $canvas = Canvas::instance();
@@ -216,6 +229,9 @@ class WechatServices extends BaseServices
             $user = $wechatUserServices->wechatOauthAfter($createData);
             $token = $this->createToken((int)$user['uid'], 'wechat');
             if ($token) {
+                /** @var UserVisitServices $visitServices */
+                $visitServices = app()->make(UserVisitServices::class);
+                $visitServices->loginSaveVisit($user);
                 return $token;
             } else
                 throw new ValidateException('登录失败');
@@ -224,6 +240,9 @@ class WechatServices extends BaseServices
             $wechatUserServices->wechatUpdata([$user['uid'], ['code' => $spread]]);
             $token = $this->createToken((int)$user['uid'], 'wechat');
             if ($token) {
+                /** @var UserVisitServices $visitServices */
+                $visitServices = app()->make(UserVisitServices::class);
+                $visitServices->loginSaveVisit($user);
                 return $token;
             } else
                 throw new ValidateException('登录失败');
@@ -255,6 +274,9 @@ class WechatServices extends BaseServices
             $wechatUserServices->wechatUpdata([$user['uid'], ['code' => $spread]]);
             $token = $this->createToken((int)$user['uid'], 'wechat');
             if ($token) {
+                /** @var UserVisitServices $visitServices */
+                $visitServices = app()->make(UserVisitServices::class);
+                $visitServices->loginSaveVisit($user);
                 $token['userInfo'] = $user;
                 return $token;
             } else
@@ -286,6 +308,9 @@ class WechatServices extends BaseServices
         $user = $wechatUser->wechatOauthAfter([$openid, $wechatInfo, $spreadId, $login_type, $userType]);
         $token = $this->createToken((int)$user['uid'], 'wechat');
         if ($token) {
+            /** @var UserVisitServices $visitServices */
+            $visitServices = app()->make(UserVisitServices::class);
+            $visitServices->loginSaveVisit($user);
             return [
                 'token' => $token['token'],
                 'userInfo' => $user,
@@ -308,5 +333,68 @@ class WechatServices extends BaseServices
             $subscribe = true;
         }
         return $subscribe;
+    }
+
+    /**
+     * @param array $userInfo
+     * @param string $phone
+     * @return array
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     */
+    public function appAuth(array $userData, string $phone, string $userType = 'app')
+    {
+        $openid = $userData['openId'] ?? "";
+        $userInfo = [
+            'phone' => $phone,
+            'unionid' => $userData['unionId'] ?? '',
+            'headimgurl' => $userData['avatarUrl'] ?? '',
+            'nickname' => $userData['nickName'] ?? '',
+            'province' => $userData['province'] ?? '',
+            'country' => $userData['country'] ?? '',
+            'city' => $userData['city'] ?? '',
+            'openid' => $openid,
+        ];
+        $login_type = $userType;
+        $spreadId = $userInfo['spreadId'] ?? "";
+        if (!$phone) {
+            //获取是否强制绑定手机号
+            $storeUserMobile = sys_config('store_user_mobile');
+            if ($userInfo['unionid'] && $storeUserMobile) {
+                /** @var UserServices $userServices */
+                $userServices = app()->make(UserServices::class);
+                $uid = $this->dao->value(['unionid' => $userInfo['unionid']], 'uid');
+                $res = $userServices->value(['uid' => $uid], 'phone');
+                if (!$uid && !$res) {
+                    return false;
+                }
+            }
+            if ($openid && $storeUserMobile) {
+                /** @var UserServices $userServices */
+                $userServices = app()->make(UserServices::class);
+                $uid = $this->dao->value(['openid' => $openid], 'uid');
+                $res = $userServices->value(['uid' => $uid], 'phone');
+                if (!$uid && !$res) {
+                    return false;
+                }
+            }
+        }
+        /** @var WechatUserServices $wechatUser */
+        $wechatUser = app()->make(WechatUserServices::class);
+        //更新用户信息
+        $user = $wechatUser->wechatOauthAfter([$openid, $userInfo, $spreadId, $login_type, $userType]);
+        $token = $this->createToken((int)$user['uid'], 'wechat');
+        if ($token) {
+            /** @var UserVisitServices $visitServices */
+            $visitServices = app()->make(UserVisitServices::class);
+            $visitServices->loginSaveVisit($user);
+            return [
+                'token' => $token['token'],
+                'userInfo' => $user,
+                'expires_time' => $token['params']['exp'],
+                'isbind' => false
+            ];
+        } else
+            throw new ValidateException('登录失败');
     }
 }

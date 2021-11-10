@@ -1,38 +1,38 @@
 <template>
 	<view>
 		<view v-if="isShow" class="specialArea acea-row row-between-wrapper">
-			<view class="assemble" hover-class="none" @click="gopage(activityOne.info[2].value)">
+			<view class="assemble skeleton-rect" hover-class="none" @click="gopage(activityOne.info[2].value)">
 				<image :src="activityOne.img" alt="img" />
-				<view class="text" v-if="activityOne.info">
+				<!-- <view class="text" v-if="activityOne.info">
 					<view class="name">{{ activityOne.info[0].value }}</view>
 					<view class="infor">{{ activityOne.info[1].value }}</view>
-				</view>
+				</view> -->
 			</view>
 			<view class="list acea-row row-column-between">
-				<view class="item" v-for="(item, index) in activity" :key="index" @click="gopage(item.info[2].value)">
+				<view class="item skeleton-rect" v-for="(item, index) in activity" :key="index" @click="gopage(item.info[2].value)">
 					<image :src="item.img" alt="img" />
-					<view class="text">
+					<!-- 	<view class="text">
 						<view class="name">{{ item.info[0].value }}</view>
 						<view class="infor">{{ item.info[1].value}}</view>
-					</view>
+					</view> -->
 				</view>
 			</view>
 		</view>
 		<view v-if="!isShow && isIframe" class="specialArea acea-row row-between-wrapper">
 			<view class="assemble" hover-class="none" @click="gopage(activityOne.info[2].value)">
 				<image :src="activityOne.img" alt="img" />
-				<view class="text" v-if="activityOne.info">
+				<!-- <view class="text" v-if="activityOne.info">
 					<view class="name">{{ activityOne.info[0].value }}</view>
 					<view class="infor">{{ activityOne.info[1].value }}</view>
-				</view>
+				</view> -->
 			</view>
 			<view class="list acea-row row-column-between">
 				<view class="item" v-for="(item, index) in activity" :key="index" @click="gopage(item.info[2].value)">
 					<image :src="item.img" alt="img" />
-					<view class="text">
+					<!-- <view class="text">
 						<view class="name">{{ item.info[0].value }}</view>
 						<view class="infor">{{ item.info[1].value}}</view>
-					</view>
+					</view> -->
 				</view>
 			</view>
 		</view>
@@ -56,7 +56,7 @@
 			dataConfig: {
 				immediate: true,
 				handler(nVal, oVal) {
-					if(nVal){
+					if (nVal) {
 						let data = JSON.parse(JSON.stringify(nVal.imgList.list))
 						this.activityOne = nVal.imgList.list[0]
 						data.splice(0, 1)
@@ -75,8 +75,7 @@
 				isIframe: app.globalData.isIframe
 			}
 		},
-		created() {
-		},
+		created() {},
 		methods: {
 			gopage(url) {
 				goPage().then(res => {
@@ -85,7 +84,9 @@
 						location.href = url
 						// #endif
 					} else {
-						if (['/pages/goods_cate/goods_cate', '/pages/order_addcart/order_addcart', '/pages/user/index'].indexOf(url) ==
+						if (['/pages/goods_cate/goods_cate', '/pages/order_addcart/order_addcart',
+								'/pages/user/index'
+							].indexOf(url) ==
 							-1) {
 							uni.navigateTo({
 								url: url
@@ -104,12 +105,16 @@
 
 <style lang="scss">
 	.specialArea {
-		padding: 30rpx;
+		background: linear-gradient(180deg, #fff 0%, #f5f5f5 100%);
+		// background-color: $uni-bg-color;
+		padding: 0 $uni-index-margin-col 0 $uni-index-margin-col;
+		border-radius: $uni-border-radius-index;
+		// box-shadow: $uni-index-box-shadow;
 	}
 
 	.specialArea .assemble {
-		width: 260rpx;
-		height: 260rpx;
+		width: 336rpx;
+		height: 300rpx;
 		position: relative;
 	}
 
@@ -137,13 +142,13 @@
 	}
 
 	.specialArea .list {
-		height: 260rpx;
-		width: 416rpx;
+		width: 344rpx;
+		height: 300rpx;
 	}
 
 	.specialArea .item {
 		width: 100%;
-		height: 124rpx;
+		height: 146rpx;
 		position: relative;
 	}
 
@@ -156,17 +161,6 @@
 		position: absolute;
 		top: 23rpx;
 		left: 28rpx;
-	}
-
-	.specialArea .list {
-		height: 260rpx;
-		width: 416rpx;
-	}
-
-	.specialArea .item {
-		width: 100%;
-		height: 124rpx;
-		position: relative;
 	}
 
 	.specialArea .item image {

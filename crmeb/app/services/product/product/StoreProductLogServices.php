@@ -17,18 +17,29 @@ use app\services\order\StoreOrderCartInfoServices;
 use app\services\BaseServices;
 use think\exception\ValidateException;
 
+/**
+ * 商品访问记录日志
+ * Class StoreProductLogServices
+ * @package app\services\product\product
+ */
 class StoreProductLogServices extends BaseServices
 {
+    /**
+     * StoreProductLogServices constructor.
+     * @param StoreProductLogDao $dao
+     */
     public function __construct(StoreProductLogDao $dao)
     {
         $this->dao = $dao;
     }
 
     /**
-     * @param $type
-     * @param $data
+     * 创建各种访问日志
+     * @param string $type
+     * @param array $data
+     * @return bool
      */
-    public function createLog($type, $data)
+    public function createLog(string $type, array $data)
     {
         if (!in_array($type, ['order', 'pay']) && (!isset($data['product_id']) || !$data['product_id'])) {
             throw new ValidateException('缺少商品ID');
@@ -99,7 +110,12 @@ class StoreProductLogServices extends BaseServices
         return true;
     }
 
-    public function getRanking($where)
+    /**
+     * 查找购买商品排行
+     * @param $where
+     * @return mixed
+     */
+    public function getRanking(array $where)
     {
         $list = $this->dao->getRanking($where);
         foreach ($list as &$item) {

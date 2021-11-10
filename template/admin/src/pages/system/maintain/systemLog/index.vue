@@ -18,7 +18,7 @@
                                     </Radio>
                                 </RadioGroup>
                                 <DatePicker :editable="false" @on-change="onchangeTime" :value="timeVal" format="yyyy/MM/dd"
-                                            type="daterange" placement="bottom-end" placeholder="自定义时间"
+                                            type="daterange" placement="bottom-end" placeholder="请选择时间"
                                             style="width: 200px;"></DatePicker>
                             </FormItem>
                         </Col>

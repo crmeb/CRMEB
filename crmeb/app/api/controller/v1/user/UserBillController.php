@@ -318,6 +318,78 @@ class UserBillController
         }
     }
 
+    /**
+     * 获取小程序二维码
+     * @param Request $request
+     * @return mixed
+     * @throws \think\Exception
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     */
+    public function getRoutineCode(Request $request)
+    {
+        $user = $request->user();
+        /** @var SystemAttachmentServices $systemAttachment */
+        $systemAttachment = app()->make(SystemAttachmentServices::class);
+        //小程序
+        $name = $user['uid'] . '_' . $user['is_promoter'] . '_user_routine.jpg';
+        $imageInfo = $systemAttachment->getInfo(['name' => $name]);
+        //检测远程文件是否存在
+        if (isset($imageInfo['att_dir']) && strstr($imageInfo['att_dir'], 'http') !== false && curl_file_exist($imageInfo['att_dir']) === false) {
+            $imageInfo = null;
+            $systemAttachment->delete(['name' => $name]);
+        }
+        $siteUrl = sys_config('site_url');
+        if (!$imageInfo) {
+            /** @var QrcodeServices $qrCode */
+            $qrCode = app()->make(QrcodeServices::class);
+            $resForever = $qrCode->qrCodeForever($user['uid'], 'spread', '', '');
+            $resCode = MiniProgramService::qrcodeService()->appCodeUnlimit($resForever->id, '', 280);
+            if ($resCode) {
+                $res = ['res' => $resCode, 'id' => $resForever->id];
+            } else {
+                $res = false;
+            }
+            if (!$res) return app('json')->fail('二维码生成失败');
+            $uploadType = (int)sys_config('upload_type', 1);
+            $upload = UploadService::init();
+            $uploadRes = $upload->to('routine/spread/code')->validate()->stream($res['res'], $name);
+            if ($uploadRes === false) {
+                return app('json')->fail($upload->getError());
+            }
+            $imageInfo = $upload->getUploadInfo();
+            $imageInfo['image_type'] = $uploadType;
+            $systemAttachment->attachmentAdd($imageInfo['name'], $imageInfo['size'], $imageInfo['type'], $imageInfo['dir'], $imageInfo['thumb_path'], 1, $imageInfo['image_type'], $imageInfo['time'], 2);
+            $qrCode->setQrcodeFind($res['id'], ['status' => 1, 'url_time' => time(), 'qrcode_url' => $imageInfo['dir']]);
+            $urlCode = $imageInfo['dir'];
+        } else $urlCode = $imageInfo['att_dir'];
+        if ($imageInfo['image_type'] == 1) $urlCode = $siteUrl . $urlCode;
+        return app('json')->success(['url' => $urlCode]);
+    }
+
+    /**
+     * 获取海报详细信息
+     * @return mixed
+     */
+    public function getSpreadInfo(Request $request)
+    {
+        /** @var SystemConfigServices $systemConfigServices */
+        $systemConfigServices = app()->make(SystemConfigServices::class);
+        $spreadBanner = $systemConfigServices->getSpreadBanner() ?? [];
+        $bannerCount = count($spreadBanner);
+        $routineSpreadBanner = [];
+        if ($bannerCount) {
+            foreach ($spreadBanner as $item) {
+                $routineSpreadBanner[] = ['pic' => $item];
+            }
+        }
+        return app('json')->success([
+            'spread' => $routineSpreadBanner,
+            'nickname' => $request->user('nickname'),
+            'site_name' => sys_config('site_name')
+        ]);
+    }
 
     /**
      * 积分记录

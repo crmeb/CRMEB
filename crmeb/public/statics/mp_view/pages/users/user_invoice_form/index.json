@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "添加新发票",
+  "usingComponents": {
+    "home": "/components/home/index"
+  }
+}

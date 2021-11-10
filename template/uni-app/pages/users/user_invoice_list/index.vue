@@ -1,5 +1,5 @@
 <template>
-	<view>
+	<view :style="colorStyle">
 		<view class="acea-row nav">
 			<view class="acea-row row-center-wrapper" :class="{ on: nav === 1 }" @click="navTab(1)">发票记录</view>
 			<view class="acea-row row-center-wrapper" :class="{ on: nav === 2 }" @click="navTab(2)">抬头管理</view>
@@ -57,7 +57,9 @@
 			<navigator class="add-link" :url="`/pages/users/user_invoice_form/index?specialInvoice=${specialInvoice}`"><text
 				 class="iconfont icon-fapiao"></text>添加新发票</navigator>
 		</view>
+		<!-- #ifndef MP -->
 		<home></home>
+		<!-- #endif -->
 	</view>
 </template>
 
@@ -74,11 +76,12 @@
 	import {
 		orderInvoiceList
 	} from '@/api/order.js';
-
+	import colors from '@/mixins/color.js';
 	export default {
 		components: {
 			home
 		},
+		mixins:[colors],
 		data() {
 			return {
 				orderList: [],
@@ -234,8 +237,8 @@
 	}
 
 	.nav .on {
-		border-bottom-color: #E93323;
-		color: #E93323;
+		border-bottom-color: var(--view-theme);
+		color: var(--view-theme);
 	}
 
 	.list {
@@ -267,12 +270,12 @@
 	.list .label {
 		width: 56rpx;
 		height: 28rpx;
-		border: 1rpx solid #E93323;
+		border: 1rpx solid var(--view-theme);
 		margin-left: 18rpx;
 		font-size: 20rpx;
 		line-height: 26rpx;
 		text-align: center;
-		color: #E93323;
+		color: var(--view-theme);
 	}
 
 	.list .type {
@@ -331,7 +334,7 @@
 		left: 30rpx;
 		height: 86rpx;
 		border-radius: 43rpx;
-		background-color: #E93323;
+		background-color: var(--view-theme);
 		font-size: 30rpx;
 		line-height: 86rpx;
 		text-align: center;

@@ -4,7 +4,7 @@
 			<view class="image-wrap"><image class="image" src="@/static/images/offline-result.png"></image></view>
 			<view class="text">支付成功</view>
 		</view>
-		<navigator class="link" url="/pages/index/index" open-type="navigate">进入商城</navigator>
+		<navigator class="link"  url="/pages/index/index" open-type="switchTab">进入商城</navigator>
 	</view>
 </template>
 
@@ -53,12 +53,12 @@ page {
 .link {
 	width: 560rpx;
 	height: 86rpx;
-	border: 1rpx solid #e93424;
+	border: 1rpx solid #F19D2F;
 	border-radius: 43rpx;
 	margin: 90rpx auto 0;
 	font-size: 30rpx;
 	line-height: 86rpx;
 	text-align: center;
-	color: #ea3424;
+	color: #F19D2F;
 }
 </style>

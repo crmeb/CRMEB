@@ -2,10 +2,12 @@
 	<view>
 		<view class='member-center'>
 			<view class='header'>
-				<swiper class="swiper" :current="swiperIndex" previous-margin="55rpx" next-margin="55rpx" @change="swiperChange">
+				<swiper class="swiper" :current="swiperIndex" previous-margin="55rpx" next-margin="55rpx"
+					@change="swiperChange">
 					<block v-for="(item, index) in VipList" :key="index">
 						<swiper-item>
-							<view class="swiper-item" :class="{on: swiperIndex == index}" :style="{'background-image': 'url('+item.image+')'}">
+							<view class="swiper-item" :class="{on: swiperIndex == index}"
+								:style="{'background-image': 'url('+item.image+')'}">
 								<view class="acea-row row-middle user-wrap">
 									<image class="image" :src="userInfo.avatar"></image>
 									<view class="text">
@@ -13,31 +15,43 @@
 										<view>商城购物可享<text class="num">{{item.discount}}</text>折</view>
 									</view>
 									<view v-if="item.grade === levelInfo.grade" class="state">当前等级</view>
-									<view v-if="!levelInfo.grade || item.grade > levelInfo.grade" class="state">未达成</view>
+									<view v-if="!levelInfo.grade || item.grade > levelInfo.grade" class="state">未达成
+									</view>
 								</view>
 								<template v-if="item.grade === levelInfo.grade">
 									<view class="grow-wrap">
 										<view>今日成长值<text class="num">{{levelInfo.today_exp}}</text>点</view>
 										<view class="process">
-											<view :style="{width: `${Math.floor(levelInfo.exp / item.next_exp_num * 100)}%`}" class="fill"></view>
+											<view
+												:style="{width: `${Math.floor((levelInfo.exp / item.next_exp_num) > 1 ? 100 : levelInfo.exp / item.next_exp_num * 100)}%`}"
+												class="fill"></view>
 										</view>
-										<view class="ratio"><text class="num">{{levelInfo.exp}}</text>/<text class="num">{{item.next_exp_num}}</text></view>
+										<view class="ratio"><text class="num">{{levelInfo.exp}}</text>/<text
+												class="num">{{item.next_exp_num}}</text></view>
 									</view>
-									<navigator class="acea-row row-between-wrapper record-wrap" url="/pages/users/user_vip_areer/index"
-									 hover-class="none">
+									<navigator class="acea-row row-between-wrapper record-wrap"
+										url="/pages/users/user_vip_areer/index" hover-class="none">
 										<view>我的成长值记录</view>
 										<view class="iconfont icon-jiantou"></view>
 									</navigator>
 								</template>
 								<template v-if="!levelInfo.grade || item.grade > levelInfo.grade">
 									<view class="grow-wrap">
-										<view class='lock'><text class='iconfont icon-quanxianguanlisuozi'></text>暂未解锁该等级</view>
+										<view class='lock'><text
+												class='iconfont icon-quanxianguanlisuozi'></text>暂未解锁该等级</view>
 										<view class="process">
-											<view :style="{width: `${Math.floor(levelInfo.exp / item.exp_num * 100)}%`}" class="fill"></view>
+											<view :style="{width: `${Math.floor(levelInfo.exp / item.exp_num * 100)}%`}"
+												class="fill"></view>
 										</view>
 										<view class="ratio">
-											<text class="num">当前<text>{{levelInfo.exp}}</text>点，需达到<text>{{item.exp_num}}</text>点解锁</text>
+											<text
+												class="num">当前<text>{{levelInfo.exp}}</text>点，需达到<text>{{item.exp_num}}</text>点解锁</text>
 										</view>
+										<navigator class="acea-row row-between-wrapper record-wrap" style="padding-left: 0;"
+											url="/pages/users/user_vip_areer/index" hover-class="none">
+											<view>我的成长值记录</view>
+											<view class="iconfont icon-jiantou"></view>
+										</navigator>
 									</view>
 								</template>
 								<view class="level">{{item.name}}</view>
@@ -50,7 +64,7 @@
 				<view class="right-section">
 					<view class="section-hd acea-row row-between-wrapper">
 						<view>我的成长特权</view>
-						<navigator class="svip" url="/pages/annex/vip_paid/index" v-if="!base">升级SVIP</navigator>
+						<navigator v-if="is_open_member" class="svip" url="/pages/annex/vip_paid/index">升级SVIP</navigator>
 					</view>
 					<view class="section-bd acea-row">
 						<view class="item">
@@ -80,28 +94,31 @@
 							<view class="title">签到<text class="mark">可获得{{taskInfo.sign}}点经验</text></view>
 							<view class="info">每日签到可获得经验值，已签到{{taskInfo.sign_count}}天</view>
 						</view>
-						<navigator class="link" url="/pages/users/user_sgin/index" hover-class="none">去获取</navigator>
+						<navigator class="link" url="/pages/users/user_sgin/index" hover-class="none">去签到</navigator>
 					</view>
 					<view class="item acea-row row-middle">
 						<view class="text">
 							<view class="title">购买商品<text class="mark">+{{taskInfo.order}}点经验/元</text></view>
 							<view class="info">购买商品可获得对应的经验值</view>
 						</view>
-						<navigator class="link" url="/pages/goods_cate/goods_cate" hover-class="none">去获取</navigator>
+						<navigator class="link" open-type="switchTab" url="/pages/goods_cate/goods_cate"
+							hover-class="none">去购买</navigator>
 					</view>
 					<view class="item acea-row row-middle">
 						<view class="text">
 							<view class="title">邀请好友<text class="mark">+{{taskInfo.invite}}点经验/人</text></view>
 							<view class="info">邀请好友注册商城可获得经验值</view>
 						</view>
-						<navigator class="link" url="/pages/users/user_spread_code/index" hover-class="none">去获取</navigator>
+						<navigator class="link" url="/pages/users/user_spread_code/index" hover-class="none">去邀请
+						</navigator>
 					</view>
 				</view>
 			</view>
 			<recommend v-if="hostProduct.length" :hostProduct="hostProduct"></recommend>
 			<view class='growthValue' :class='growthValue==false?"on":""'>
 				<view class='pictrue'>
-					<image src='../static/value.jpg'></image><text class='iconfont icon-guanbi3' @click='growthValue'></text>
+					<image src='../static/value.jpg'></image><text class='iconfont icon-guanbi3'
+						@click='growthValue'></text>
 				</view>
 				<view class='conter'>{{illustrate}}</view>
 			</view>
@@ -177,7 +194,7 @@
 				],
 				userInfo: {},
 				taskInfo: {},
-				base:true
+				is_open_member:0
 			};
 		},
 		computed: mapGetters(['isLogin']),
@@ -221,7 +238,7 @@
 		methods: {
 			getUserInfo: function() {
 				getUserInfo().then(res => {
-					this.base = res.data.base;
+					this.is_open_member = res.data.is_open_member
 					this.task_list = [{
 							real_name: '积分数',
 							number: res.data.integral
@@ -330,7 +347,6 @@
 			getVipList: function() {
 				let that = this;
 				userLevelGrade().then(res => {
-					console.log(res.data.list)
 					that.$set(that, 'VipList', res.data.list);
 					that.task = res.data.task.task;
 					that.reach_count = res.data.task.reach_count;
@@ -467,11 +483,11 @@
 					margin-right: 0;
 					margin-left: 0;
 					font-size: 24rpx;
-					
+
 					text {
 						margin-right: 8rpx;
 						margin-left: 8rpx;
-						
+
 						&:first-child {
 							font-size: 32rpx;
 						}

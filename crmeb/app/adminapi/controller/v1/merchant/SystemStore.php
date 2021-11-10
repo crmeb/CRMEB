@@ -80,7 +80,7 @@ class SystemStore extends AuthController
     public function select_address()
     {
         $key = sys_config('tengxun_map_key');
-        if (!$key) return app('json')->fail('请前往设置->系统设置->物流配置 配置腾讯地图KEY');
+        if (!$key) return app('json')->fail('请前往设置->系统设置->第三方接口设置 配置腾讯地图KEY');
         return app('json')->success(compact('key'));
     }
 
@@ -111,13 +111,15 @@ class SystemStore extends AuthController
             ['name', ''],
             ['introduction', ''],
             ['image', ''],
+            ['oblong_image', ''],
             ['phone', ''],
             ['address', ''],
             ['detailed_address', ''],
             ['latlng', ''],
             ['day_time', []],
         ]);
-        validate(\app\adminapi\validate\merchant\SystemStoreValidate::class)->scene('save')->check($data);
+        $this->validate($data, \app\adminapi\validate\merchant\SystemStoreValidate::class, 'save');
+
         $data['address'] = implode(',', $data['address']);
         $data['latlng'] = explode(',', $data['latlng']);
         if (!isset($data['latlng'][0]) || !isset($data['latlng'][1])) {

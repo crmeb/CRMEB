@@ -102,7 +102,7 @@ class SystemConfigTabServices extends BaseServices
         $form[] = Form::select('pid', '父级分类', isset($formData['pid']) ? (string)$formData['pid'] : '')->setOptions($this->getSelectForm())->filterable(true);
         $form[] = Form::input('title', '分类名称', $formData['title'] ?? '');
         $form[] = Form::input('eng_title', '分类字段英文', $formData['eng_title'] ?? '');
-        $form[] = Form::frameInput('icon', '图标', $this->url('admin/widget.widgets/icon', ['fodder' => 'icon'], true), $formData['icon'] ?? '')->icon('ios-ionic')->height('435px');
+        $form[] = Form::frameInput('icon', '图标', $this->url('admin/widget.widgets/icon', ['fodder' => 'icon'], true), $formData['icon'] ?? '')->icon('ios-ionic')->height('505px')->modal(['footer-hide' => true]);
         $form[] = Form::radio('type', '类型', $formData['type'] ?? 0)->options([
             ['value' => 0, 'label' => '系统'],
             ['value' => 3, 'label' => '其它']

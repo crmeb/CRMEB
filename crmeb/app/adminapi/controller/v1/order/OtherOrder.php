@@ -10,13 +10,17 @@
 // +----------------------------------------------------------------------
 
 namespace app\adminapi\controller\v1\order;
+
 use app\adminapi\controller\AuthController;
 use app\services\order\OtherOrderServices;
 use app\services\other\QrcodeServices;
 use crmeb\utils\Canvas;
 use think\facade\App;
-use think\facade\Log;
 
+/**
+ * Class OtherOrder
+ * @package app\adminapi\controller\v1\order
+ */
 class OtherOrder extends AuthController
 {
     /**
@@ -80,7 +84,7 @@ class OtherOrder extends AuthController
                     $canvas->setImageUrl($v)->setImageHeight(344)->setImageWidth(344)->setImageLeft(76)->setImageTop(120)->pushImageValue();
                     $image = $canvas->setFileName($name)->setImageType($imageType)->setPath($path)->setBackgroundWidth(500)->setBackgroundHeight(720)->starDrawChart();
                     $data[$k] = $image ? $siteUrl . '/' . $image : '';
-                }else{
+                } else {
                     $data[$k] = "";
                 }
 

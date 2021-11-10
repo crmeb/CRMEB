@@ -97,7 +97,7 @@ class SystemRoleServices extends BaseServices
         $auth = $this->getRolesByAuth($request->adminInfo()['roles'], 2);
         $rule = trim(strtolower($request->rule()->getRule()));
         $method = trim(strtolower($request->method()));
-        if ($rule == 'setting/admin/logout') {
+        if (in_array($rule, ['setting/admin/logout', 'menuslist'])) {
             return true;
         }
         //验证访问接口是否存在

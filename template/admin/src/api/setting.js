@@ -242,6 +242,26 @@ export function exportAllApi () {
 }
 
 /**
+ * 是否开通电子面单
+ */
+// export function serveDumpOpen () {
+//     return request({
+//         url: `serve/dump_open`,
+//         method: 'get'
+//     });
+// }
+
+/**
+ * 物流开通
+ */
+export function serveOpen () {
+    return request({
+        url: `serve/open`,
+        method: 'get'
+    });
+}
+
+/**
  * @description 设置 短信 物流公司面板
  */
 export function exportTempApi (params) {
@@ -814,3 +834,5 @@ export function cityCleanCacheApi () {
         method: 'get'
     })
 }
+
+

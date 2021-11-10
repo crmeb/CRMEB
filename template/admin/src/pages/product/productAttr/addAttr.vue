@@ -3,7 +3,7 @@
              scrollable
             v-model="modal"
             @on-cancel="onCancel"
-            title="添加商品规格"
+            title="商品规格"
             width="950">
         <Form  ref="formDynamic" :model="formDynamic" :rules="rules" class="attrFrom" :label-width="110" label-position="right" @submit.native.prevent>
             <Row :gutter="24">
@@ -18,8 +18,8 @@
                     <FormItem>
                         <div class="acea-row row-middle"><span class="mr5">{{item.value}}</span><Icon type="ios-close-circle" @click="handleRemove(index)"/></div>
                         <div class="rulesBox">
-                            <Tag type="dot" class="mb5" closable color="primary" v-for="(j, indexn) in item.detail" :key="indexn" :name="j"  @on-close="handleRemove2(item.detail,indexn)">{{j}}</Tag>
-                            <Input search enter-button="添加" placeholder="请输入属性名称" v-model="item.detail.attrsVal" @on-search="createAttr(item.detail.attrsVal,index)" style="width: 150px"/>
+                            <Tag type="dot" class="" closable color="primary" v-for="(j, indexn) in item.detail" :key="indexn" :name="j"  @on-close="handleRemove2(item.detail,indexn)">{{j}}</Tag>
+                            <Input search enter-button="添加" placeholder="请输入属性名称" v-model="item.detail.attrsVal" @on-search="createAttr(item.detail.attrsVal,index)" style="width: 200px"/>
                         </div>
                     </FormItem>
                 </Col>
@@ -92,6 +92,7 @@
         },
         methods: {
             onCancel () {
+                this.ids = 0;
                 this.clear()
             },
             // 添加按钮
@@ -103,8 +104,8 @@
                 this.spinShow = true
                 this.ids = row.id
                 ruleInfoApi(row.id).then(res => {
-                    this.formDynamic = res.data.info
-                    this.spinShow = false
+                    this.formDynamic = res.data.info;
+                    this.spinShow = false;
                 }).catch(res => {
                     this.spinShow = false
                     this.$Message.error(res.msg)
@@ -129,6 +130,7 @@
                                     this.$emit('getList')
                                     this.clear()
                                 }, 600)
+
                             }).catch(res => {
                                 this.modal_loading = false
                                 this.$Message.error(res.msg)
@@ -145,6 +147,8 @@
                 this.isBtn = false
                 this.attrsName = ''
                 this.attrsVal = ''
+                this.ids = 0;
+
             },
             // 取消
             offAttrName () {
@@ -202,6 +206,7 @@
 <style scoped lang="stylus">
     .rulesBox
         display flex
+        align-items center
         flex-wrap: wrap;
     .attrFrom
         >>> .ivu-form-item

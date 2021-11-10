@@ -199,7 +199,7 @@ class KefuServices extends BaseServices
         /** @var StoreServiceLogServices $logServices */
         $logServices = app()->make(StoreServiceLogServices::class);
         $num = $logServices->getMessageNum(['uid' => $userInfo['uid'], 'to_uid' => $toUid, 'type' => 0, 'is_tourist' => 0]);
-        $record = $recordServices->saveRecord($userInfo['uid'], $toUid, $messageData['msn'] ?? '', 1, 1, $num, 0, $userInfo['nickname'] ?? "", $userInfo['avatar'] ?? '');
+        $record = $recordServices->saveRecord($userInfo['uid'], $toUid, $reply, 1, 1, $num, 0, $userInfo['nickname'] ?? "", $userInfo['avatar'] ?? '');
 
         $data = [
             'add_time' => time(),

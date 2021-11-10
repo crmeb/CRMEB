@@ -61,7 +61,7 @@
 			height: 300rpx;
 			border-radius: 14rpx;
 			margin: 26rpx auto 0 auto;
-			background-color: #ccc;
+			background-color: $uni-bg-color;
 			text-align: center;
 			line-height: 300rpx;
 			.iconfont{

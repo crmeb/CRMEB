@@ -95,7 +95,7 @@
 				<view class='conter'>￥{{orderInfo.pay_postage}}</view>
 			</view>
 			<view class="actualPay acea-row row-right">
-				实付款：<span class="money font-color-red">￥{{ orderInfo.pay_price }}</span>
+				实付款：<span class="money">￥{{ orderInfo.pay_price }}</span>
 			</view>
 		</view>
 		<view class="wrapper" v-if="
@@ -462,6 +462,7 @@
 	.order-details .wrapper .actualPay .money {
 		font-weight: bold;
 		font-size: 30upx;
+		color: #e93323;
 	}
 
 	.order-details .footer {

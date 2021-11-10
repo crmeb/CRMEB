@@ -7,84 +7,123 @@
 // +----------------------------------------------------------------------
 // | Author: CRMEB Team <admin@crmeb.com>
 // +----------------------------------------------------------------------
-import { spread } from "@/api/user";
-import Cache from "@/utils/cache";
 
+import {
+	spread
+} from "@/api/user";
+import Cache from "@/utils/cache";
+import {
+	getCustomerType
+} from '@/api/api.js'
+import {
+	getWorkermanUrl
+} from '@/api/kefu.js'
 /**
  * 绑定用户授权
  * @param {Object} puid
  */
-export function silenceBindingSpread()
-{
-	
-	
+export function silenceBindingSpread() {
+
+
 	//#ifdef H5
-	let puid = Cache.get('spread'),code = 0;
+	let puid = Cache.get('spread'),
+		code = 0;
 	//#endif
-	
-	//#ifdef MP
-	let puid = getApp().globalData.spid,code = getApp().globalData.code;
+
+	//#ifdef MP || APP-PLUS
+	let puid = getApp().globalData.spid,
+		code = getApp().globalData.code;
 	//#endif
-	
+
 	puid = parseInt(puid);
-	if(Number.isNaN(puid)){
+	if (Number.isNaN(puid)) {
 		puid = 0;
 	}
-	if(puid){
-		spread({puid,code}).then(res=>{
-			console.log(res);
+	if (puid) {
+		spread({
+			puid,
+			code
+		}).then(res => {
 			//#ifdef H5
-			 Cache.clear('spread');
+			Cache.clear('spread');
 			//#endif
-			
-			//#ifdef MP
-			 getApp().globalData.spid = 0;
-			 getApp().globalData.code = 0;
+
+			//#ifdef MP || APP-PLUS
+			getApp().globalData.spid = 0;
+			getApp().globalData.code = 0;
 			//#endif
-			
-		}).catch(res=>{
-			console.log(res);
-		});
+
+		}).catch(res => {});
 	}
 }
 
 export function isWeixin() {
-  return navigator.userAgent.toLowerCase().indexOf("micromessenger") !== -1;
+	return navigator.userAgent.toLowerCase().indexOf("micromessenger") !== -1;
 }
+
+export function getCustomer(url) {
+	getCustomerType().then(res => {
+		let type = res.data.customer_type
+		if (type == '0') {
+			uni.navigateTo({
+				url: url || '/pages/customer_list/chat'
+			})
+		} else if (type == '1') {
+			uni.makePhoneCall({
+				phoneNumber: res.data.customer_phone //客服电话
+			});
+		} else {
+			// #ifdef APP-PLUS
+			plus.runtime.openURL(res.data.customer_url)
+			// #endif
+			// #ifdef H5
+			// window.open(res.data.customer_url, '_blank')
+			uni.navigateTo({
+				url: `/pages/annex/web_view/index?url=${res.data.customer_url}`
+			});
+			// #endif
+		}
+	})
+}
+
 
 export function parseQuery() {
-  const res = {};
+	const res = {};
 
-  const query = (location.href.split("?")[1] || "")
-    .trim()
-    .replace(/^(\?|#|&)/, "");
+	const query = (location.href.split("?")[1] || "")
+		.trim()
+		.replace(/^(\?|#|&)/, "");
 
-  if (!query) {
-    return res;
-  }
+	if (!query) {
+		return res;
+	}
 
-  query.split("&").forEach(param => {
-    const parts = param.replace(/\+/g, " ").split("=");
-    const key = decodeURIComponent(parts.shift());
-    const val = parts.length > 0 ? decodeURIComponent(parts.join("=")) : null;
+	query.split("&").forEach(param => {
+		const parts = param.replace(/\+/g, " ").split("=");
+		const key = decodeURIComponent(parts.shift());
+		const val = parts.length > 0 ? decodeURIComponent(parts.join("=")) : null;
 
-    if (res[key] === undefined) {
-      res[key] = val;
-    } else if (Array.isArray(res[key])) {
-      res[key].push(val);
-    } else {
-      res[key] = [res[key], val];
-    }
-  });
+		if (res[key] === undefined) {
+			res[key] = val;
+		} else if (Array.isArray(res[key])) {
+			res[key].push(val);
+		} else {
+			res[key] = [res[key], val];
+		}
+	});
 
-  return res;
+	return res;
 }
 
-// #ifdef H5
-	const VUE_APP_WS_URL = process.env.VUE_APP_WS_URL || `ws://${location.hostname}:20003`;
-	export {VUE_APP_WS_URL}
-// #endif
+let VUE_APP_WS_URL = Cache.get('WORKERMAN_URL') || ''
 
+getWorkermanUrl().then(res => {
+	Cache.set('WORKERMAN_URL', res.data.chat)
+	VUE_APP_WS_URL = res.data.chat;
+})
 
+export {
+	VUE_APP_WS_URL
+}
 
 export default parseQuery;

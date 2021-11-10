@@ -170,14 +170,12 @@
                 this.loading = true
                 this.formValidate.gid = this.$route.params.id?this.$route.params.id:this.formValidate.gid
                 this.formValidate.status = this.formValidate.status || ''
-                console.log(this.getUrl())
                 groupDataListApi(this.formValidate,this.getUrl('')).then(async res => {
                     let data = res.data
                     this.tabList = data.list
                     this.total = data.count
                     this.loading = false
                 }).catch(res => {
-                    console.log(res)
                     this.loading = false
                     this.$Message.error(res.msg)
                 })

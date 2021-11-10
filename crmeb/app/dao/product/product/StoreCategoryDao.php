@@ -50,9 +50,9 @@ class StoreCategoryDao extends BaseDao
      * @throws \think\db\exception\DbException
      * @throws \think\db\exception\ModelNotFoundException
      */
-    public function getTierList(array $where = [])
+    public function getTierList(array $where = [], array $field = ['*'])
     {
-        return $this->search($where)->order('sort desc,id desc')->select()->toArray();
+        return $this->search($where)->field($field)->order('sort desc,id desc')->select()->toArray();
     }
 
     /**
@@ -62,7 +62,7 @@ class StoreCategoryDao extends BaseDao
      */
     public function getMenus(array $where)
     {
-        return $this->search($where)->column('cate_name,id');
+        return $this->search($where)->order('sort desc,id desc')->column('cate_name,id');
     }
 
     /**

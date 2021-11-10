@@ -35,4 +35,13 @@ class PublicController
         }
         return Response::create()->code(500);
     }
+
+    /**
+     * 获取workerman请求域名
+     * @return mixed
+     */
+    public function getWorkerManUrl()
+    {
+        return app('json')->success(getWorkerManUrl());
+    }
 }

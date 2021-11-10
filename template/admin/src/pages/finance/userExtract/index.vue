@@ -13,7 +13,7 @@
                             <RadioGroup v-model="formValidate.data" type="button"  @on-change="selectChange(formValidate.data)" class="mr">
                                 <Radio :label=item.val v-for="(item,i) in fromList.fromTxt" :key="i">{{item.text}}</Radio>
                             </RadioGroup>
-                            <DatePicker :editable="false" @on-change="onchangeTime" :value="timeVal"  format="yyyy/MM/dd" type="daterange" placement="bottom-end" placeholder="自定义时间" style="width: 200px;"></DatePicker>
+                            <DatePicker :editable="false" @on-change="onchangeTime" :value="timeVal"  format="yyyy/MM/dd" type="daterange" placement="bottom-end" placeholder="请选择时间" style="width: 200px;"></DatePicker>
                         </FormItem>
                     </Col>
                     <Col span="24">
@@ -89,7 +89,7 @@
                     <div class="status" v-if="row.status === 0">
                         <div class="statusVal">申请中</div>
                         <div>
-                            <Button type="error" icon="md-close" size="small" class="item" @click="invalid(row)">无效</Button>
+                            <Button type="error" icon="md-close" size="small" class="item" @click="invalid(row)">驳回</Button>
                             <Button type="info" icon="md-checkmark" size="small" class="item" @click="adopt(row, '审核通过', index)">通过</Button>
                         </div>
                     </div>

@@ -7,8 +7,7 @@
             </div>
             <div class="txt" v-if="item.parameter">
                 <p><span>参数：</span></p>
-                <span>{{item.parameter}}</span>
-                <!--<span v-for="(val, key, index) in item.parameter">{{key+"="+val}}<i style="font-style: normal">&</i></span>-->
+                <span v-for="(val, key, index) in item.parameter">{{key+"="+val}}<i style="font-style: normal">&</i></span>
             </div>
             <div class="tips">例如：{{item.example}}
                 <!--<Button size="small" style="margin-left: 10px" v-clipboard:copy="item.example"-->
@@ -134,7 +133,7 @@
                     cursor pointer
                     margin-left 5px
                     &:hover
-                         border-color #2d8cf0
-                         color #2d8cf0
+                        border-color #2d8cf0
+                        color #2d8cf0
 
 </style>

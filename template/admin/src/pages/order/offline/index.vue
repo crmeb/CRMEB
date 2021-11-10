@@ -33,14 +33,14 @@
                     <Col span="24" class="ivu-text-left">
                         <FormItem label="创建时间：">
                             <DatePicker :editable="false" @on-change="onchangeTime" :value="timeVal" format="yyyy/MM/dd"
-                                        type="datetimerange" placement="bottom-start" placeholder="自定义时间"
+                                        type="datetimerange" placement="bottom-start" placeholder="请选择时间"
                                         style="width: 300px;" class="mr20" :options="options"></DatePicker>
                         </FormItem>
                     </Col>
                 </Row>
                 <Row type="flex">
                     <Col v-bind="grid">
-                        <Button type="primary" @click="qrcodeShow">查看二维码</Button>
+                        <Button type="primary" @click="qrcodeShow">查看收款二维码</Button>
                     </Col>
                 </Row>
             </Form>

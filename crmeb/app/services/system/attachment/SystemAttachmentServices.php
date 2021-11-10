@@ -8,7 +8,7 @@
 // +----------------------------------------------------------------------
 // | Author: CRMEB Team <admin@crmeb.com>
 // +----------------------------------------------------------------------
-declare (strict_types=1);
+declare (strict_types = 1);
 
 namespace app\services\system\attachment;
 
@@ -112,20 +112,26 @@ class SystemAttachmentServices extends BaseServices
      * @param int $type
      * @return mixed
      */
-    public function upload(int $pid, string $file, int $upload_type, int $type)
+    public function upload(int $pid, string $file, int $upload_type, int $type, $menuName)
     {
+        $realName = false;
         if ($upload_type == 0) {
             $upload_type = sys_config('upload_type', 1);
+        }
+        if ($menuName == 'weixin_ckeck_file' || $menuName == 'ico_path') {
+            $upload_type = 1;
+            $realName = true;
         }
         try {
             $path = make_path('attach', 2, true);
             $upload = UploadService::init($upload_type);
-            $res = $upload->to($path)->validate()->move($file);
+            $res = $upload->to($path)->validate()->move($file, $realName);
             if ($res === false) {
                 throw new UploadException($upload->getError());
             } else {
                 $fileInfo = $upload->getUploadInfo();
-                if ($fileInfo && $type == 0) {
+                $fileType = pathinfo($fileInfo['name'], PATHINFO_EXTENSION);
+                if ($fileInfo && $type == 0 && !in_array($fileType, ['xlsx', 'xls', 'mp4'])) {
                     $data['name'] = $fileInfo['name'];
                     $data['real_name'] = $fileInfo['real_name'];
                     $data['att_dir'] = $fileInfo['dir'];

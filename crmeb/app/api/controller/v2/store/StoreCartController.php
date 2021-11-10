@@ -15,7 +15,8 @@ namespace app\api\controller\v2\store;
 use app\services\order\StoreCartServices;
 use app\Request;
 use app\services\product\product\StoreProductServices;
-use app\services\user\UserLevelServices;
+use app\services\user\MemberCardServices;
+use app\services\user\UserServices;
 
 class StoreCartController
 {
@@ -50,29 +51,9 @@ class StoreCartController
      */
     public function getCartList(Request $request)
     {
-        $uid = $request->uid();
+        $uid = (int)$request->uid();
         $data = $this->services->getCartList(['uid' => $uid, 'is_del' => 0, 'is_new' => 0, 'is_pay' => 0, 'combination_id' => 0, 'seckill_id' => 0, 'bargain_id' => 0], 0, 0, ['productInfo', 'attrInfo']);
-        /** @var StoreProductServices $productServices */
-        $productServices = app()->make(StoreProductServices::class);
-        foreach ($data as &$item) {
-            $item['attrStatus'] = $item['attrInfo']['stock'] ? true : false;
-            $item['productInfo']['attrInfo'] = $item['attrInfo'] ?? [];
-            $item['productInfo']['attrInfo']['image'] = $item['attrInfo']['image'] ?? $item['productInfo']['image'] ?? '';
-            $item['productInfo']['attrInfo']['suk'] = $item['attrInfo']['suk'] ?? '已失效';
-            $productInfo = $item['productInfo'];
-            if (isset($productInfo['attrInfo']['product_id']) && $item['product_attr_unique']) {
-                $item['costPrice'] = $productInfo['attrInfo']['cost'] ?? 0;
-                $item['trueStock'] = $productInfo['attrInfo']['stock'] ?? 0;
-                $item['truePrice'] = $productServices->setLevelPrice($productInfo['attrInfo']['price'] ?? 0, $uid, true);
-                $item['vip_truePrice'] = (float)$productServices->setLevelPrice($productInfo['attrInfo']['price'] ?? 0, $uid);
-            } else {
-                $item['costPrice'] = $item['productInfo']['cost'] ?? 0;
-                $item['trueStock'] = $item['productInfo']['stock'] ?? 0;
-                $item['truePrice'] = $productServices->setLevelPrice($item['productInfo']['price'] ?? 0, $uid, true);
-                $item['vip_truePrice'] = (float)$productServices->setLevelPrice($item['productInfo']['price'] ?? 0, $uid);
-            }
-            unset($item['attrInfo']);
-        }
+        [$data, $valid, $invalid] = $this->services->handleCartList($uid, $data);
         return app('json')->successful($data);
     }
 

@@ -1,5 +1,5 @@
 <template>
-	<view>
+	<view :style="colorStyle">
 		<form @submit="editPwd">
 			<view class="ChangePassword">
 				<view class="list">
@@ -8,7 +8,7 @@
 					</view>
 					<view class="item acea-row row-between-wrapper">
 						<input type='number' placeholder='填写验证码' placeholder-class='placeholder' class="codeIput" v-model="captcha"></input>
-						<button class="code font-color" :class="disabled === true ? 'on' : ''" :disabled='disabled' @click="code">
+						<button class="code font-num" :class="disabled === true ? 'on' : ''" :disabled='disabled' @click="code">
 							{{ text }}
 						</button>
 					</view>
@@ -39,8 +39,9 @@
 	// #ifdef MP
 	import authorize from '@/components/Authorize';
 	// #endif
+	import colors from '@/mixins/color.js';
 	export default {
-		mixins: [sendVerifyCode],
+		mixins: [sendVerifyCode,colors],
 		components: {
 			// #ifdef MP
 			authorize

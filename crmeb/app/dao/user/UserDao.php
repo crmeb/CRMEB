@@ -8,7 +8,7 @@
 // +----------------------------------------------------------------------
 // | Author: CRMEB Team <admin@crmeb.com>
 // +----------------------------------------------------------------------
-declare (strict_types=1);
+declare (strict_types = 1);
 
 namespace app\dao\user;
 
@@ -39,9 +39,11 @@ class UserDao extends BaseDao
      * @throws \think\db\exception\DbException
      * @throws \think\db\exception\ModelNotFoundException
      */
-    public function getList(array $where, string $field = '*', int $page, int $limit): array
+    public function getList(array $where, string $field = '*', int $page = 0, int $limit = 0): array
     {
-        return $this->search($where)->field($field)->with(['label'])->page($page, $limit)->select()->toArray();
+        return $this->search($where)->field($field)->with(['label'])->when($page && $limit, function ($query) use ($page, $limit) {
+            $query->page($page, $limit);
+        })->select()->toArray();
     }
 
     /**
@@ -107,13 +109,15 @@ class UserDao extends BaseDao
             'extract' => function ($query) {
                 $query->field('sum(extract_price) as extract_count_price,count(id) as extract_count_num,uid')->where('status', '1')->group('uid');
             }, 'order' => function ($query) {
-                $query->field('sum(pay_price) as order_price,count(id) as order_count,uid')->where('paid', 1)->where('refund_status', 0)->group('uid');
+                $query->field('sum(pay_price) as order_price,count(id) as order_count,uid')->where('paid', 1)->where('refund_status', 0)->whereIn('pid', [-1, 0])->group('uid');
             }, 'bill' => function ($query) {
                 $query->field('sum(number) as brokerage_money,uid')->where('category', 'now_money')->where('type', 'brokerage')->where('status', 1)->where('pm', 1)->group('uid');
             }, 'spreadCount' => function ($query) {
                 $query->field('count(*) as spread_count,spread_uid')->group('spread_uid');
             }, 'spreadUser' => function ($query) {
                 $query->field('uid,phone,nickname');
+            }, 'agentLevel' => function ($query) {
+                $query->field('id,name');
             }
         ])->when($page && $limit, function ($query) use ($page, $limit) {
             $query->page($page, $limit);
@@ -135,7 +139,7 @@ class UserDao extends BaseDao
     {
         return $this->search($where)->field($field)->with([
             'order' => function ($query) {
-                $query->field('sum(pay_price) as order_price,count(id) as order_count,uid')->where('paid', 1)->where('refund_status', 0)->group('uid');
+                $query->field('sum(pay_price) as order_price,count(id) as order_count,uid')->where('paid', 1)->where('pid', '<=', 0)->where('refund_status', 0)->group('uid');
             }, 'spreadCount' => function ($query) {
                 $query->field('count(*) as spread_count,spread_uid')->group('spread_uid');
             }, 'spreadUser' => function ($query) {
@@ -238,11 +242,11 @@ class UserDao extends BaseDao
      */
     public function userList($starday, $yesterday)
     {
-        return $this->getModel()->where('add_time', 'between time', [$starday, $yesterday])
+        return $this->getModel()
+            ->whereBetweenTime('add_time', $starday, $yesterday)
             ->field("FROM_UNIXTIME(add_time,'%m-%e') as day,count(*) as count")
             ->group("FROM_UNIXTIME(add_time, '%Y%m%e')")
-            ->order('add_time asc')
-            ->select()->toArray();
+            ->order('add_time asc')->select()->toArray();
     }
 
     /**
@@ -254,7 +258,7 @@ class UserDao extends BaseDao
     {
         switch ($status) {
             case 1:
-                return $this->getModel()->where('pay_count', '>', 0)->where('pay_count', '<', 4)->count();
+                return $this->getModel()->where('pay_count', '>', 1)->where('pay_count', '<=', 4)->count();
             case 2:
                 return $this->getModel()->where('pay_count', '>', 4)->count();
         }

@@ -10,6 +10,9 @@
 // +----------------------------------------------------------------------
 namespace crmeb\services;
 
+use app\services\shipping\ExpressServices;
+use think\exception\ValidateException;
+
 /**
  * 文件操作类
  * Class FileService
@@ -55,50 +58,50 @@ class FileService
 
     /**
      *  删除目录下所有满足条件文件
-     *  @param $path 文件目录
-     *  @param $start 开始时间
-     *  @param $end 结束时间
+     * @param $path 文件目录
+     * @param $start 开始时间
+     * @param $end 结束时间
      *  return bool
      */
-    public static function del_where_dir($path,$start = '',$end = '')
+    public static function del_where_dir($path, $start = '', $end = '')
     {
-        if(!file_exists($path)){
+        if (!file_exists($path)) {
             return false;
         }
         $dh = @opendir($path);
-        if($dh){
-            while(($d = readdir($dh)) !== false){
-                if($d == '.' || $d == '..'){//如果为.或..
+        if ($dh) {
+            while (($d = readdir($dh)) !== false) {
+                if ($d == '.' || $d == '..') {//如果为.或..
                     continue;
                 }
-                $tmp = $path.'/'.$d;
-                if(!is_dir($tmp) ){//如果为文件
+                $tmp = $path . '/' . $d;
+                if (!is_dir($tmp)) {//如果为文件
                     $file_time = filemtime($tmp);
-                    if($file_time){
-                        if($start != '' && $end != ''){
-                            if($file_time >= $start && $file_time <= $end){
+                    if ($file_time) {
+                        if ($start != '' && $end != '') {
+                            if ($file_time >= $start && $file_time <= $end) {
                                 @unlink($tmp);
                             }
-                        }elseif($start != '' && $end == ''){
-                            if($file_time >= $start ){
+                        } elseif ($start != '' && $end == '') {
+                            if ($file_time >= $start) {
                                 @unlink($tmp);
                             }
-                        }elseif($start == '' && $end != ''){
-                            if($file_time <= $end){
+                        } elseif ($start == '' && $end != '') {
+                            if ($file_time <= $end) {
                                 @unlink($tmp);
                             }
-                        }else{
+                        } else {
                             @unlink($tmp);
                         }
                     }
-                }else{//如果为目录
-                    self::delDir($tmp,$start,$end);
+                } else {//如果为目录
+                    self::delDir($tmp, $start, $end);
                 }
             }
             //判断文件夹下是否 还有文件
             $count = count(scandir($path));
             closedir($dh);
-            if($count  <= 2) @rmdir($path);
+            if ($count <= 2) @rmdir($path);
         }
         return true;
     }
@@ -153,7 +156,7 @@ class FileService
             $file2 = $toDir . '/' . $fileName;
             if ($fileName != '.' && $fileName != '..') {
                 if (is_dir($file1)) {
-                    self::copy_dir($file1, $file2);
+                    $this->copyDir($file1, $file2);
                 } else {
                     copy($file1, $file2);
                 }
@@ -929,6 +932,93 @@ class FileService
         $file = str_replace('\\', '/', $file);
         if (!file_exists($file)) return false;
         return is_writable($file);
+    }
+
+    /**读取excel文件内容
+     * @param $filePath
+     * @param string $suffix
+     * @return bool
+     * @throws \PhpOffice\PhpSpreadsheet\Reader\Exception
+     */
+    public function readExcel($filePath, $row_num = 1, $suffix = 'Xlsx')
+    {
+        if (!$filePath) return false;
+        $pathInfo = pathinfo($filePath, PATHINFO_EXTENSION);
+        if (!$pathInfo || $pathInfo != "xlsx") throw new ValidateException('必须上传xlsx格式文件');
+        //加载读取模型
+        $readModel = \PhpOffice\PhpSpreadsheet\IOFactory::createReader($suffix);
+        // 创建读操作
+        // 打开文件 载入excel表格
+        try {
+            $spreadsheet = $readModel->load($filePath);
+            $sheet = $spreadsheet->getActiveSheet();
+            $sheet->getHighestColumn();
+            $highestRow = $sheet->getHighestRow();
+            $lines = $highestRow - 1;
+            if ($lines <= 0) {
+                throw new ValidateException('数据不能为空');
+            }
+            // 用于存储表格数据
+            $data = [];
+            for ($i = $row_num; $i <= $highestRow; $i++) {
+                $t1 = $this->objToStr($sheet->getCellByColumnAndRow(1, $i)->getValue()) ?? '';
+                $t2 = $this->objToStr($sheet->getCellByColumnAndRow(2, $i)->getValue());
+                if ($t2) {
+                    $data[] = [
+                        'key' => $t1,
+                        'value' => $t2
+                    ];
+                }
+            }
+            return $data;
+        } catch (\Exception $e) {
+            throw new ValidateException($e->getMessage());
+        }
+    }
+
+    /**对象转字符
+     * @param $value
+     * @return mixed
+     */
+    public function objToStr($value)
+    {
+        return is_object($value) ? $value->__toString() : $value;
+    }
+
+    /**
+     * 压缩文件夹及文件
+     * @param string $source 需要压缩的文件夹/文件路径
+     * @param string $destination 压缩后的保存地址
+     * @param string $folder 文件夹前缀，保存时需要去掉的父级文件夹
+     * @return boolean
+     */
+    function addZip($source, $destination, $folder = '')
+    {
+        if (!extension_loaded('zip') || !file_exists($source)) {
+            return false;
+        }
+
+        $zip = new \ZipArchive;
+        if (!$zip->open($destination, $zip::CREATE)) {
+            return false;
+        }
+        $source = str_replace('\\', '/', $source);
+        $folder = str_replace('\\', '/', $folder);
+        if (is_dir($source) === true) {
+            $files = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($source), \RecursiveIteratorIterator::SELF_FIRST);
+            foreach ($files as $file) {
+                $file = str_replace('\\', '/', $file);
+                if (in_array(substr($file, strrpos($file, '/') + 1), array('.', '..'))) continue;
+                if (is_dir($file) === true) {
+                    $zip->addEmptyDir(str_replace($folder . '/', '', $file . '/'));
+                } else if (is_file($file) === true) {
+                    $zip->addFromString(str_replace($folder . '/', '', $file), file_get_contents($file));
+                }
+            }
+        } else if (is_file($source) === true) {
+            $zip->addFromString(basename($source), file_get_contents($source));
+        }
+        return $zip->close();
     }
 
 }

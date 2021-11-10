@@ -54,7 +54,7 @@ class StoreProduct extends BaseModel
      */
     public function couponId()
     {
-        return $this->hasMany(StoreCouponProduct::class, 'product_id', 'id');
+        return $this->hasMany(StoreProductCoupon::class, 'product_id', 'id');
     }
 
     /**
@@ -149,7 +149,7 @@ class StoreProduct extends BaseModel
         if ($value != '') {
             $field = 'keyword|store_name|store_info|id';
             if (is_string($value)) {
-                $query->whereLike($field, htmlspecialchars("%".trim($value)."%"));
+                $query->whereLike($field, htmlspecialchars("%" . trim($value) . "%"));
             } elseif (is_array($value) && count($value) > 0) {
                 $query->where(function ($q) use ($value, $field) {
                     $data = [];
@@ -243,6 +243,18 @@ class StoreProduct extends BaseModel
     }
 
     /**
+     * 是否虚拟商品搜索器
+     * @param $query
+     * @param $value
+     */
+    public function searchIsVirtualAttr($query, $value)
+    {
+        if ($value != -1) {
+            $query->where('is_virtual', $value);
+        }
+    }
+
+    /**
      * 分类搜索器
      * @param Model $query
      * @param int $value
@@ -288,7 +300,11 @@ class StoreProduct extends BaseModel
             case 5:
                 if (isset($data['store_stock']) && $data['store_stock']) {
                     $store_stock = $data['store_stock'];
-                    $query->where(['is_show' => 1, 'is_del' => 0])->where('stock', '<=', $store_stock)->where('stock', '>', 0);
+                    $query->whereIn('id', function ($query) use ($store_stock) {
+                        $query->name('store_product_attr_value')->where('stock', '<', $store_stock)->where('stock', '>', 0)->where('type', 0)->field('product_id')->select();
+                    });
+//                    $query->where(['is_show' => 1, 'is_del' => 0])->where('stock', '<=', $store_stock)->where('stock', '>', 0);
+
                 } else {
                     $query->where(['is_show' => 1, 'is_del' => 0])->where('stock', '>', 0);
                 }

@@ -215,7 +215,6 @@ export default {
             }
           ],
           filterMethod (value, row) {
-            console.log(value + 'kk' + row.id)
             return row.is_show === value
           },
           filterMultiple: false
@@ -294,7 +293,6 @@ export default {
       }, 1000)
     },
     change (status) {
-      console.log(status)
     },
     // 数据导出；
     exportData: function () {

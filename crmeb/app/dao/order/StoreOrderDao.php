@@ -58,18 +58,21 @@ class StoreOrderDao extends BaseDao
                     $query->where('paid', 0)->where('status', 0)->where('refund_status', 0)->where('is_del', 0);
                     break;
                 case 1://已支付 未发货
-                    $query->where('paid', 1)->where('status', 0)->where('refund_status', 0)->when(isset($where['shipping_type']), function ($query) {
+                    $query->where('paid', 1)->whereIn('status', [0, 4])->whereIn('refund_status', [0, 3])->when(isset($where['shipping_type']), function ($query) {
                         $query->where('shipping_type', 1);
                     })->where('is_del', 0);
                     break;
+                case 7://已支付 部分发货
+                    $query->where('paid', 1)->where('status', 4)->whereIn('refund_status', [0, 3])->where('is_del', 0);
+                    break;
                 case 2://已支付  待收货
-                    $query->where('paid', 1)->where('status', 1)->where('refund_status', 0)->where('is_del', 0);
+                    $query->where('paid', 1)->where('status', 1)->whereIn('refund_status', [0, 3])->where('is_del', 0);
                     break;
                 case 3:// 已支付  已收货  待评价
-                    $query->where('paid', 1)->where('status', 2)->where('refund_status', 0)->where('is_del', 0);
+                    $query->where('paid', 1)->where('status', 2)->whereIn('refund_status', [0, 3])->where('is_del', 0);
                     break;
                 case 4:// 交易完成
-                    $query->where('paid', 1)->where('status', 3)->where('refund_status', 0)->where('is_del', 0);
+                    $query->where('paid', 1)->where('status', 3)->whereIn('refund_status', [0, 3])->where('is_del', 0);
                     break;
                 case 5://已支付  待核销
                     $query->where('paid', 1)->where('status', 0)->where('refund_status', 0)->where('shipping_type', 2)->where('is_del', 0);
@@ -78,13 +81,13 @@ class StoreOrderDao extends BaseDao
                     $query->where('paid', 1)->where('status', 2)->where('refund_status', 0)->where('shipping_type', 2)->where('is_del', 0);
                     break;
                 case -1://退款中
-                    $query->where('paid', 1)->where('refund_status', 1)->where('is_del', 0);
+                    $query->where('paid', 1)->whereIn('refund_status', [1, 4])->where('is_del', 0);
                     break;
                 case -2://已退款
                     $query->where('paid', 1)->where('refund_status', 2)->where('is_del', 0);
                     break;
                 case -3://退款
-                    $query->where('paid', 1)->where('refund_status', 'in', '1,2')->where('is_del', 0);
+                    $query->where('paid', 1)->whereIn('refund_status', [1, 2, 4])->where('is_del', 0);
                     break;
                 case -4://已删除
                     $query->where('is_del', 1);
@@ -103,6 +106,9 @@ class StoreOrderDao extends BaseDao
                     break;
                 case 4:
                     $query->where('bargain_id', ">", 0);
+                    break;
+                case 5:
+                    $query->where('advance_id', ">", 0);
                     break;
             }
         })->when(isset($where['pay_type']), function ($query) use ($where) {
@@ -146,7 +152,33 @@ class StoreOrderDao extends BaseDao
             $query->where('unique', $where['unique']);
         })->when(isset($where['is_remind']), function ($query) use ($where) {
             $query->where('is_remind', $where['is_remind']);
+        })->when(isset($where['refundTypes']) && $where['refundTypes'] != '', function ($query) use ($where) {
+            switch ((int)$where['refundTypes']) {
+                case 1:
+                    $query->where('refund_type', 'in', '1,2');
+                    break;
+                case 2:
+                    $query->where('refund_type', 4);
+                    break;
+                case 3:
+                    $query->where('refund_type', 5);
+                    break;
+                case 4:
+                    $query->where('refund_type', 6);
+                    break;
+            }
         });
+    }
+
+    /**
+     * 获取某一个月订单数量
+     * @param array $where
+     * @param string $month
+     * @return int
+     */
+    public function getMonthCount(array $where, string $month)
+    {
+        return $this->search($where)->whereMonth('add_time', $month)->count();
     }
 
     /**
@@ -161,9 +193,30 @@ class StoreOrderDao extends BaseDao
      * @throws \think\db\exception\DbException
      * @throws \think\db\exception\ModelNotFoundException
      */
-    public function getOrderList(array $where, array $field, int $page, int $limit, array $with = [])
+    public function getList(array $where, array $field, int $page = 0, int $limit = 0, array $with = [])
     {
-        return $this->search($where)->field($field)->with(array_merge(['user', 'spread'], $with))->page($page, $limit)->order('add_time DESC,id DESC')->select()->toArray();
+        return $this->search($where)->field($field)->with($with)->when($page && $limit, function ($query) use ($page, $limit) {
+            $query->page($page, $limit);
+        })->order('pay_time DESC,id DESC')->select()->toArray();
+    }
+
+    /**
+     * 订单搜索列表
+     * @param array $where
+     * @param array $field
+     * @param int $page
+     * @param int $limit
+     * @param array $with
+     * @return array
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     */
+    public function getOrderList(array $where, array $field, int $page = 0, int $limit = 0, array $with = [])
+    {
+        return $this->search($where)->field($field)->with(array_merge(['user', 'spread'], $with))->when($page && $limit, function ($query) use ($page, $limit) {
+            $query->page($page, $limit);
+        })->order('pay_time DESC,id DESC')->select()->toArray();
     }
 
     /**
@@ -224,7 +277,7 @@ class StoreOrderDao extends BaseDao
      */
     public function orderAddTimeList($datebefor, $dateafter, $timeType = "week")
     {
-        return $this->getModel()->where('add_time', 'between time', [$datebefor, $dateafter])
+        return $this->getModel()->where('add_time', 'between time', [$datebefor, $dateafter])->where('paid', 1)->where('refund_status', 0)->whereIn('pid', [-1, 0])
             ->when($timeType, function ($query) use ($timeType) {
                 switch ($timeType) {
                     case "week" :
@@ -271,7 +324,7 @@ class StoreOrderDao extends BaseDao
      */
     public function nowOrderList($now_datebefor, $now_dateafter, $timeType = "week")
     {
-        return $this->getModel()->where('add_time', 'between time', [$now_datebefor, $now_dateafter])
+        return $this->getModel()->where('add_time', 'between time', [$now_datebefor, $now_dateafter])->where('paid', 1)->where('refund_status', 0)->whereIn('pid', [-1, 0])
             ->when($timeType, function ($query) use ($timeType) {
                 switch ($timeType) {
                     case "week" :
@@ -307,7 +360,7 @@ class StoreOrderDao extends BaseDao
      */
     public function todaySales($time)
     {
-        return $this->search(['paid' => 1, 'is_del' => 0, 'refund_status' => 0, 'time' => $time ?: 'today', 'timekey' => 'pay_time'])->sum('pay_price');
+        return $this->search(['paid' => 1, 'refund_status' => 0, 'time' => $time ?: 'today', 'timekey' => 'pay_time', 'pid' => 0])->sum('pay_price');
     }
 
     /**
@@ -317,7 +370,7 @@ class StoreOrderDao extends BaseDao
      */
     public function thisWeekSales($time)
     {
-        return $this->search(['paid' => 1, 'is_del' => 0, 'refund_status' => 0, 'time' => $time ?: 'week', 'timeKey' => 'pay_time'])->sum('pay_price');
+        return $this->search(['paid' => 1, 'refund_status' => 0, 'time' => $time ?: 'week', 'timeKey' => 'pay_time', 'pid' => 0])->sum('pay_price');
     }
 
     /**
@@ -326,7 +379,7 @@ class StoreOrderDao extends BaseDao
      */
     public function totalSales($time)
     {
-        return $this->search(['paid' => 1, 'is_del' => 0, 'refund_status' => 0, 'time' => $time ?: 'today', 'timekey' => 'pay_time'])->sum('pay_price');
+        return $this->search(['paid' => 1, 'refund_status' => 0, 'time' => $time ?: 'today', 'timekey' => 'pay_time', 'pid' => 0])->sum('pay_price');
     }
 
     public function newOrderUpdates($newOrderId)
@@ -343,9 +396,9 @@ class StoreOrderDao extends BaseDao
     {
         switch ($week) {
             case 1:
-                return $this->search(['time' => $time ?: 'today', 'timeKey' => 'add_time'])->count();
+                return $this->search(['time' => $time ?: 'today', 'timeKey' => 'add_time', 'paid' => 1, 'refund_status' => 0, 'pid' => 0])->count();
             case 2:
-                return $this->search(['time' => $time ?: 'week', 'timeKey' => 'add_time'])->count();
+                return $this->search(['time' => $time ?: 'week', 'timeKey' => 'add_time', 'paid' => 1, 'refund_status' => 0, 'pid' => 0])->count();
         }
     }
 
@@ -358,9 +411,9 @@ class StoreOrderDao extends BaseDao
      * @throws \think\db\exception\DbException
      * @throws \think\db\exception\ModelNotFoundException
      */
-    public function getUserOrderDetail(string $key, int $uid)
+    public function getUserOrderDetail(string $key, int $uid, $with = [])
     {
-        return $this->getOne(['order_id|unique' => $key, 'uid' => $uid, 'is_del' => 0]);
+        return $this->getOne(['order_id|unique' => $key, 'uid' => $uid, 'is_del' => 0], '*', $with);
     }
 
     /**
@@ -386,9 +439,12 @@ class StoreOrderDao extends BaseDao
      * @param int $limit
      * @return array
      */
-    public function getOrderDataPriceCount(array $field, int $page, int $limit)
+    public function getOrderDataPriceCount(array $field, int $page, int $limit, $time)
     {
-        return $this->search(['is_del' => 0, 'paid' => 1, 'refund_status' => 0])
+        return $this->search(['paid' => 1, 'refund_status' => 0, 'pid' => 0])
+            ->when($time['start'] != 0 && $time['stop'] != 0, function ($query) use ($time) {
+                $query->where('add_time', '>=', $time['start'])->where('add_time', '<', $time['stop']);
+            })
             ->field($field)->group("FROM_UNIXTIME(add_time, '%Y-%m-%d')")
             ->order('add_time DESC')->page($page, $limit)->select()->toArray();
     }
@@ -486,7 +542,7 @@ class StoreOrderDao extends BaseDao
             if ($time[0] == $time[1]) {
                 $query->whereDay('pay_time', $time[0]);
             } else {
-                $time[1] = date('Y/m/d', strtotime($time[1]) + 86400);
+//                $time[1] = date('Y/m/d', strtotime($time[1]) + 86400);
                 $query->whereTime('pay_time', 'between', $time);
             }
         })->field("FROM_UNIXTIME(pay_time,'$timeType') as days,$str as num")
@@ -507,7 +563,7 @@ class StoreOrderDao extends BaseDao
             if ($time[0] == $time[1]) {
                 $query->whereDay('pay_time', $time[0]);
             } else {
-                $time[1] = date('Y/m/d', strtotime($time[1]) + 86400);
+//                $time[1] = date('Y/m/d', strtotime($time[1]) + 86400);
                 $query->whereTime('pay_time', 'between', $time);
             }
         })->field('sum(pay_price) as payPrice,province')
@@ -534,10 +590,9 @@ class StoreOrderDao extends BaseDao
             if ($time[0] == $time[1]) {
                 $query->whereDay($field, $time[0]);
             } else {
-                $time[1] = date('Y/m/d', strtotime($time[1]) + 86400);
                 $query->whereTime($field, 'between', $time);
             }
-        })->field("FROM_UNIXTIME($field,'$timeType') as days,$str as num")->group('days')->select()->toArray();
+        })->whereIn('pid', [-1, 0])->field("FROM_UNIXTIME($field,'$timeType') as days,$str as num")->group('days')->select()->toArray();
     }
 
 
@@ -594,7 +649,6 @@ class StoreOrderDao extends BaseDao
                 $query->group("FROM_UNIXTIME($group, '$timeUinx')");
             })
             ->order('pay_time ASC')->select()->toArray();
-        // echo $this->getModel()->getLastSql();
     }
 
     /**时间分组订单数统计
@@ -622,7 +676,6 @@ class StoreOrderDao extends BaseDao
                 $query->group("FROM_UNIXTIME(pay_time, '$timeUinx')");
             })
             ->order('pay_time ASC')->select()->toArray();
-        // echo $this->getModel()->getLastSql();die;
     }
 
     /**时间段支付订单人数
@@ -638,7 +691,6 @@ class StoreOrderDao extends BaseDao
             ->field('uid')
             ->distinct(true)
             ->select()->toArray();
-        //echo $this->getModel()->getLastSql();die;
     }
 
     /**时间段分组统计支付订单人数
@@ -665,6 +717,102 @@ class StoreOrderDao extends BaseDao
                 $query->group("FROM_UNIXTIME(pay_time, '$timeUinx')");
             })
             ->order('pay_time ASC')->select()->toArray();
-        //echo $this->getModel()->getLastSql();die;
+    }
+
+
+    /**获取批量打印电子面单数据
+     * @param array $where
+     * @param string $filed
+     * @return array
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     */
+    public function getOrderDumpData(array $where, $filed = "*")
+    {
+        $where['status'] = 1;
+        $where['refund_status'] = 0;
+        $where['paid'] = 1;
+        $where['is_del'] = 0;
+        $where['shipping_type'] = 1;
+        $where['is_system_del'] = 0;
+        return $this->search($where)->field($filed)->select()->toArray();
+    }
+
+    /**
+     * @param array $where
+     * @param string $field
+     * @return array
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     */
+    public function getOrderListByWhere(array $where, $field = "*")
+    {
+        return $this->search($where)->field()->select($field)->toArray();
+    }
+
+    /**批量修改订单
+     * @param array $ids
+     * @param array $data
+     * @param string|null $key
+     * @return \crmeb\basic\BaseModel
+     */
+    public function batchUpdateOrder(array $ids, array $data, ?string $key = null)
+    {
+        return $this->getModel()::whereIn(is_null($key) ? $this->getPk() : $key, $ids)->update($data);
+    }
+
+    /**根据orderid校验符合状态的发货数据
+     * @param $order_ids
+     * @return array|\crmeb\basic\BaseModel
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     */
+    public function getCanDevlieryOrder($key, $value)
+    {
+        $model = $this->getModel();
+        if (is_array($value)) {
+            $model = $model->whereIn($key, $value);
+        } else {
+            $model = $model->where($key, $value);
+        }
+        $model = $model->where(['status' => 0, 'is_del' => 0, 'paid' => 1, 'shipping_type' => 1, 'is_system_del' => 0, 'refund_status' => 0])->field('id, order_id')->select()->toArray();
+        return $model;
+    }
+
+    /**
+     * 查询退款订单
+     * @param $where
+     * @param $page
+     * @param $limit
+     * @return array
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     */
+    public function getRefundList($where, $page = 0, $limit = 0)
+    {
+        $model = $this->getModel()
+            ->where('paid', 1)->where('is_system_del', 0)
+            ->when($where['refund_type'] == 0, function ($query) use ($where) {
+                $query->where('refund_type', '>', 0);
+            })
+            ->when($where['order_id'] != '', function ($query) use ($where) {
+                $query->where('order_id', $where['order_id']);
+            })
+            ->when($where['refund_type'], function ($query) use ($where) {
+                $query->where('refund_type', $where['refund_type']);
+            })
+            ->when(is_array($where['refund_reason_time']), function ($query) use ($where) {
+                $query->whereBetween('refund_reason_time', [strtotime($where['refund_reason_time'][0]), strtotime($where['refund_reason_time'][1]) + 86400]);
+            })
+            ->with(array_merge(['user', 'spread']));
+        $count = $model->count();
+        $list = $model->when($page != 0 && $limit != 0, function ($query) use ($page, $limit) {
+            $query->page($page, $limit);
+        })->order('refund_reason_time desc')->select()->toArray();
+        return compact('list', 'count');
     }
 }

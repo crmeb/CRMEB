@@ -1,0 +1,10 @@
+(global["webpackJsonp"]=global["webpackJsonp"]||[]).push([["pages/index/components/picTxt"],{"15d7":function(n,t,e){"use strict";e.r(t);var o=e("9e93"),r=e.n(o);for(var i in o)"default"!==i&&function(n){e.d(t,n,(function(){return o[n]}))}(i);t["default"]=r.a},"817c":function(n,t,e){"use strict";e.d(t,"b",(function(){return r})),e.d(t,"c",(function(){return i})),e.d(t,"a",(function(){return o}));var o={jyfParser:function(){return Promise.all([e.e("common/vendor"),e.e("components/jyf-parser/jyf-parser")]).then(e.bind(null,"9902"))}},r=function(){var n=this,t=n.$createElement;n._self._c},i=[]},"9e93":function(n,t,e){"use strict";Object.defineProperty(t,"__esModule",{value:!0}),t.default=void 0;e("4729");var o=getApp(),r=function(){Promise.all([e.e("common/vendor"),e.e("components/jyf-parser/jyf-parser")]).then(function(){return resolve(e("9902"))}.bind(null,e)).catch(e.oe)},i={name:"picTxt",props:{dataConfig:{type:Object,default:function(){}}},components:{"jyf-parser":r},watch:{dataConfig:{immediate:!0,handler:function(n,t){n&&(this.description=n.richText.val,this.isShow=n.isShow.val)}}},data:function(){return{description:"",name:this.$options.name,isIframe:o.globalData.isIframe,isShow:!0,tagStyle:{img:"width:100%;display:block",video:"width: 100% !important;"}}},created:function(){},mounted:function(){},methods:{}};t.default=i},b9d5:function(n,t,e){"use strict";var o=e("c153"),r=e.n(o);r.a},c153:function(n,t,e){},e6d3:function(n,t,e){"use strict";e.r(t);var o=e("817c"),r=e("15d7");for(var i in r)"default"!==i&&function(n){e.d(t,n,(function(){return r[n]}))}(i);e("b9d5");var a,c=e("f0c5"),u=Object(c["a"])(r["default"],o["b"],o["c"],!1,null,"f184e378",null,!1,o["a"],a);t["default"]=u.exports}}]);
+;(global["webpackJsonp"] = global["webpackJsonp"] || []).push([
+    'pages/index/components/picTxt-create-component',
+    {
+        'pages/index/components/picTxt-create-component':(function(module, exports, __webpack_require__){
+            __webpack_require__('543d')['createComponent'](__webpack_require__("e6d3"))
+        })
+    },
+    [['pages/index/components/picTxt-create-component']]
+]);

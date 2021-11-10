@@ -44,7 +44,7 @@ class SystemAttachmentCategory extends BaseModel
      */
     public function searchNameAttr($query, $value)
     {
-        if ($value) $query->where('name', 'like', '%' . $value . '%');
+        if ($value != '') $query->where('name', 'like', '%' . $value . '%');
     }
 
     /**
@@ -54,7 +54,7 @@ class SystemAttachmentCategory extends BaseModel
      */
     public function searchPidAttr($query, $value)
     {
-        $query->where('pid', $value);
+        if ($value !== '') $query->where('pid', $value);
     }
 
 }

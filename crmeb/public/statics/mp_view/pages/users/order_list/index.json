@@ -1,0 +1,9 @@
+{
+  "navigationBarTitleText": "我的订单",
+  "usingComponents": {
+    "payment": "/components/payment/index",
+    "home": "/components/home/index",
+    "empty-page": "/components/emptyPage",
+    "authorize": "/components/Authorize"
+  }
+}

@@ -11,8 +11,8 @@
               <p class="dashboard-workplace-header-tip-desc">
                 <a href="#" @click="onChangePassswordIndex">修改密码</a>
                 <Divider type="vertical" />
-                <a href="#" @click="onChangePhone">修改手机号</a>
-                <Divider type="vertical" />
+                <!-- <a href="#" @click="onChangePhone">修改手机号</a>
+                <Divider type="vertical" /> -->
                 <a href="#" @click="signOut">退出登录</a>
               </p>
             </div>
@@ -51,6 +51,17 @@
                   <div v-else>
                     <p>{{query.num || 0}}</p>
                     <Button size="small" type="primary" class="mt3" @click="mealPay('expr_query')">套餐购买</Button>
+                  </div>
+                </div>
+                <div class="header-extra" style="border: none;">
+                  <p class="mb5"><span>面单打印次数</span> </p>
+                  <div v-if="dump.open ===0">
+                    <p>暂未开通</p>
+                    <Button size="small" type="primary" class="mt3" @click="onOpen('dump')">开通服务</Button>
+                  </div>
+                  <div v-else>
+                    <p>{{dump.num || 0}}</p>
+                    <Button size="small" type="primary" class="mt3" @click="mealPay('expr_dump')">套餐购买</Button>
                   </div>
                 </div>
               </div>

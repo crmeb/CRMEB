@@ -41,7 +41,7 @@ class SystemGroupDataDao extends BaseDao
      */
     public function getGroupDataList(array $where, int $page, int $limit)
     {
-        return $this->search($where)->page($page, $limit)->order('sort desc,id ASC')->select()->toArray();
+        return $this->search($where)->page($page, $limit)->order('sort desc,id DESC')->select()->toArray();
     }
 
     /**
@@ -57,7 +57,7 @@ class SystemGroupDataDao extends BaseDao
     {
         return $this->search(['gid' => $gid, 'status' => 1])->when($limit, function ($query) use ($limit) {
             $query->limit($limit);
-        })->field('value,id')->order('sort DESC')->select()->toArray();
+        })->field('value,id')->order('sort DESC,id DESC')->select()->toArray();
     }
 
     /**
@@ -72,5 +72,26 @@ class SystemGroupDataDao extends BaseDao
     public function idByGroupList(array $ids, string $field)
     {
         return $this->getModel()->whereIn('id', $ids)->field($field)->select()->toArray();
+    }
+
+    /**
+     * 根据gid删除组合数据
+     * @param int $gid
+     * @return bool
+     */
+    public function delGroupDate(int $gid)
+    {
+        return $this->getModel()->where('gid', $gid)->delete();
+    }
+
+    /**
+     * 批量保存
+     * @param array $data
+     * @return mixed|\think\Collection
+     * @throws \Exception
+     */
+    public function saveAll(array $data)
+    {
+        return $this->getModel()->saveAll($data);
     }
 }

@@ -57,12 +57,12 @@ class AgentManageServices extends BaseServices
             $item['broken_commission'] = array_bc_sum($frozenPrices->getUserFrozenPrice($item['uid']));
             if ($item['broken_commission'] < 0)
                 $item['broken_commission'] = 0;
-            $item['brokerage_money'] = $item['bill'][0]['brokerage_money'] ?? 0;
+            $item['new_money'] = $item['bill'][0]['brokerage_money'] ?? 0;
             if ($item['brokerage_price'] > $item['broken_commission'])
-                $item['brokerage_money'] = bcsub($item['brokerage_price'], $item['broken_commission'], 2);
+                $item['new_money'] = bcsub($item['brokerage_price'], $item['broken_commission'], 2);
             else
-                $item['brokerage_money'] = 0;
-            $item['new_money'] = $item['brokerage_price'];
+                $item['new_money'] = 0;
+            $item['brokerage_money'] = $item['brokerage_price'];
             unset($item['extract'], $item['order'], $item['bill'], $item['spreadUser'], $item['spreadCount']);
         }
         return $data;
@@ -81,7 +81,6 @@ class AgentManageServices extends BaseServices
         /** @var UserServices $userServices */
         $userServices = app()->make(UserServices::class);
         $uids = $userServices->getAgentUserIds($where);
-
         //分销员人数
         $data['uids'] = $uids;
         $data['sum_count'] = count($uids);
@@ -91,7 +90,9 @@ class AgentManageServices extends BaseServices
             //发展会员人数
             $data['spread_sum'] = $userServices->getCount([['spread_uid', 'in', $uids]]);
             //获取某个用户可提现金额
-            $data['extract_price'] = $userServices->getSumBrokerage(['uid' => $uids]);
+            /** @var UserBrokerageFrozenServices $frozenPrices */
+            $frozenPrices = app()->make(UserBrokerageFrozenServices::class);
+            $data['extract_price'] = bcsub((string)$userServices->getSumBrokerage(['uid' => $uids]), $frozenPrices->getSumFrozenBrokerage($uids), 2);
         }
         //分销员人数
         $data['order_count'] = 0;
@@ -102,9 +103,9 @@ class AgentManageServices extends BaseServices
             /** @var StoreOrderServices $storeOrder */
             $storeOrder = app()->make(StoreOrderServices::class);
             //订单总数
-            $data['order_count'] = $storeOrder->getCount([['uid', 'in', $uids], ['paid', '=', 1], ['refund_status', '=', 0]]);
+            $data['order_count'] = $storeOrder->getCount([['uid', 'in', $uids], ['paid', '=', 1], ['refund_status', '=', 0], ['pid', '<=', 0]]);
             //订单金额
-            $data['pay_price'] = $storeOrder->sum([['uid', 'in', $uids], ['paid', '=', 1], ['refund_status', '=', 0]], 'pay_price');
+            $data['pay_price'] = $storeOrder->sum([['uid', 'in', $uids], ['paid', '=', 1], ['refund_status', '=', 0], ['pid', '<=', 0]], 'pay_price');
             //提现次数
             $data['extract_count'] = app()->make(UserExtractServices::class)->getCount([['uid', 'in', $uids], ['status', '=', 1]]);
         }
@@ -116,7 +117,7 @@ class AgentManageServices extends BaseServices
                 'col' => 6,
             ],
             [
-                'name' => '发展会员人数(人)',
+                'name' => '推广用户数量(人)',
                 'count' => $data['spread_sum'],
                 'className' => 'md-contact',
                 'col' => 6,
@@ -162,7 +163,7 @@ class AgentManageServices extends BaseServices
             $item['spread_count'] = $item['spreadCount'][0]['spread_count'] ?? 0;
             $item['order_count'] = $item['order'][0]['order_count'] ?? 0;
             $item['promoter_name'] = $item['is_promoter'] ? '是' : '否';
-            $item['add_time'] = $item['add_time'] ? date("Y-m-d H:i:s", $item['add_time']) : '';
+            $item['add_time'] = $item['spread_time'] ? date("Y-m-d H:i:s", $item['spread_time']) : '';
         }
         return $data;
     }
@@ -218,36 +219,32 @@ class AgentManageServices extends BaseServices
         /** @var StoreOrderServices $storeOrder */
         $storeOrder = app()->make(StoreOrderServices::class);
         $data = $storeOrder->getUserStairOrderList($uid, $where);
-        $spreadInfo = $userInfo->nickname . "|" . ($userInfo->phone ? $userInfo->phone . "|" : '') . $userInfo->uid;
-        $uids = array_column($data['list'], 'uid');
-        $userList = [];
-        if ($uids) {
-            $userList = $userServices->getColumn([['uid', 'IN', $uids]], 'nickname,phone,avatar,real_name', 'uid');
-        }
-        $orderIds = array_column($data['list'], 'id');
-        $userBillList = [];
-        $orderChangTimes = [];
-        if ($orderIds) {
-            /** @var UserBillServices $userBill */
-            $userBill = app()->make(UserBillServices::class);
-            $userBillList = $userBill->getColumn([['category', '=', 'now_money'], ['type', '=', 'brokerage'], ['link_id', 'IN', $orderIds], ['uid', '=', $uid]], 'number', 'link_id');
-            /** @var StoreOrderStatusServices $storeOrderStatus */
-            $storeOrderStatus = app()->make(StoreOrderStatusServices::class);
-            $orderChangTimes = $storeOrderStatus->getColumn([['oid', 'IN', $orderIds], ['change_type', '=', 'user_take_delivery']], 'change_time', 'oid');
-        }
-        foreach ($data['list'] as &$item) {
-            $user = $userList[$item['uid']] ?? [];
-            $item['user_info'] = '';
-            $item['avatar'] = '';
-            if (count($user)) {
-                $item['user_info'] = $user['nickname'] . '|' . ($user['phone'] ? $user['phone'] . '|' : '') . $user['real_name'];
-                $item['avatar'] = $user['avatar'];
+        if ($data['list']) {
+            $uids = array_unique(array_column($data['list'], 'uid'));
+            $userList = [];
+            if ($uids) {
+                $userList = $userServices->getColumn([['uid', 'IN', $uids]], 'nickname,phone,avatar,real_name', 'uid');
             }
-            $item['spread_info'] = $spreadInfo;
-            $item['brokerage_price'] = $userBillList[$item['id']] ?? 0;
-            $item['_pay_time'] = $item['pay_time'] ? date('Y-m-d H:i:s', $item['pay_time']) : '';
-            $item['_add_time'] = $item['add_time'] ? date('Y-m-d H:i:s', $item['add_time']) : '';
-            $item['take_time'] = ($change_time = $orderChangTimes[$item['id']] ?? '') ? date('Y-m-d H:i:s', $change_time) : '暂无';
+            $orderIds = array_column($data['list'], 'id');
+            $orderChangTimes = [];
+            if ($orderIds) {
+                /** @var StoreOrderStatusServices $storeOrderStatus */
+                $storeOrderStatus = app()->make(StoreOrderStatusServices::class);
+                $orderChangTimes = $storeOrderStatus->getColumn([['oid', 'IN', $orderIds], ['change_type', '=', 'user_take_delivery']], 'change_time', 'oid');
+            }
+            foreach ($data['list'] as &$item) {
+                $user = $userList[$item['uid']] ?? [];
+                $item['user_info'] = '';
+                $item['avatar'] = '';
+                if (count($user)) {
+                    $item['user_info'] = $user['nickname'] . '|' . ($user['phone'] ? $user['phone'] . '|' : '') . $user['real_name'];
+                    $item['avatar'] = $user['avatar'];
+                }
+                $item['brokerage_price'] = $item['spread_uid'] == $uid ? $item['one_brokerage'] : $item['two_brokerage'];
+                $item['_pay_time'] = $item['pay_time'] ? date('Y-m-d H:i:s', $item['pay_time']) : '';
+                $item['_add_time'] = $item['add_time'] ? date('Y-m-d H:i:s', $item['add_time']) : '';
+                $item['take_time'] = ($change_time = $orderChangTimes[$item['id']] ?? '') ? date('Y-m-d H:i:s', $change_time) : '暂无';
+            }
         }
         return $data;
     }
@@ -387,9 +384,72 @@ class AgentManageServices extends BaseServices
         if (!$userServices->getUserInfo($uid)) {
             throw new AdminException('数据不存在');
         }
-        if ($userServices->update($uid, ['spread_uid' => 0]) !== false)
+        if ($userServices->update($uid, ['spread_uid' => 0, 'spread_time' => 0]) !== false)
             return true;
         else
             throw new AdminException('解除失败');
+    }
+
+    /**
+     * 取消推广资格
+     * @param int $uid
+     * @return mixed
+     */
+    public function delSystemSpread(int $uid)
+    {
+        /** @var UserServices $userServices */
+        $userServices = app()->make(UserServices::class);
+        if (!$userServices->getUserInfo($uid)) {
+            throw new AdminException('数据不存在');
+        }
+        if ($userServices->update($uid, ['spread_open' => 0]) !== false)
+            return true;
+        else
+            throw new AdminException('取消失败');
+    }
+
+    /**
+     * 取消绑定上级
+     * @return bool
+     */
+    public function removeSpread()
+    {
+        //商城分销功能是否开启 0关闭1开启
+        if (!sys_config('brokerage_func_status')) return true;
+
+        //绑定类型
+        $store_brokergae_binding_status = sys_config('store_brokerage_binding_status', 1);
+        if ($store_brokergae_binding_status == 1 || $store_brokergae_binding_status == 3) {
+            return true;
+        } else {
+            //分销绑定类型为时间段且没过期
+            $store_brokerage_binding_time = (int)sys_config('store_brokerage_binding_time', 30) * 24 * 3600;
+            $spread_time = bcsub((string)time(), (string)$store_brokerage_binding_time, 0);
+            /** @var UserServices $userServices */
+            $userServices = app()->make(UserServices::class);
+            $list = $userServices->getList(['not_spread_uid' => 0, 'status' => 1, 'spread_time' => ['<', $spread_time]], 'uid,spread_uid,spread_time');
+            foreach ($list as $userInfo) {
+                $userServices->update($userInfo['uid'], ['spread_uid' => 0, 'spread_time' => 0], 'uid');
+            }
+        }
+        return true;
+    }
+
+    /**
+     * 配置绑定类型切换重置绑定时间
+     * @return bool
+     */
+    public function resetSpreadTime()
+    {
+        //商城分销功能是否开启 0关闭1开启
+        if (!sys_config('brokerage_func_status')) return true;
+        /** @var UserServices $userServices */
+        $userServices = app()->make(UserServices::class);
+        $list = $userServices->getList(['not_spread_uid' => 0, 'status' => 1], 'uid');
+        if ($list) {
+            $uids = array_column($list, 'uid');
+            $userServices->update([['uid', 'IN', $uids]], ['spread_time' => time()]);
+        }
+        return true;
     }
 }

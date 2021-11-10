@@ -8,7 +8,7 @@
 // +----------------------------------------------------------------------
 // | Author: CRMEB Team <admin@crmeb.com>
 // +----------------------------------------------------------------------
-declare (strict_types=1);
+declare (strict_types = 1);
 
 namespace app\services\live;
 
@@ -26,8 +26,6 @@ use think\facade\Log;
  */
 class LiveRoomServices extends BaseServices
 {
-    const HASH_AUTH = 'r80uNT8p3TWW';
-
     /**
      * LiveRoomServices constructor.
      * @param LiveRoomDao $dao
@@ -151,8 +149,8 @@ class LiveRoomServices extends BaseServices
             'closeComment' => $room['close_comment'] == 1 ? 0 : 1,
             'closeReplay' => $room['replay_status'] == 1 ? 0 : 1,
             'type' => $room['type'],
-            'coverImg' => MiniProgramService::materialTemporaryService()->uploadImage($coverImg)->media_id,
-            'shareImg' => MiniProgramService::materialTemporaryService()->uploadImage($shareImg)->media_id,
+            'coverImg' => MiniProgramService::materialTemporaryService()->uploadImage(root_path() . 'public' . $coverImg)->media_id,
+            'shareImg' => MiniProgramService::materialTemporaryService()->uploadImage(root_path() . 'public' . $shareImg)->media_id,
             'closekf' => 1
         ];
         $data['feedsImg'] = $data['coverImg'];

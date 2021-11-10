@@ -41,11 +41,11 @@ class DeliveryServiceDao extends BaseDao
      */
     public function getServiceList(array $where, int $page, int $limit)
     {
-        return $this->search($where)->with('user')->when($page && $limit, function ($query) use ($page, $limit) {
+        return $this->search($where)->when($page && $limit, function ($query) use ($page, $limit) {
             $query->page($page, $limit);
         })->when(isset($where['noId']), function ($query) use ($where) {
             $query->where('id', '<>', $where['noId']);
-        })->order('id DESC')->field('id,uid,avatar,nickname as wx_name,status,add_time,phone')->select()->toArray();
+        })->order('id DESC')->select()->toArray();
     }
 
     /**获取所有配送员列表
@@ -56,7 +56,10 @@ class DeliveryServiceDao extends BaseDao
      */
     public function getList(int $page, int $limit)
     {
-        $list = $this->getModel()->where(['status' => 1])->with('user')->order('id DESC')->limit($page, $limit)->field('id,uid,avatar,nickname as wx_name,status,add_time,phone')->select()->toArray();
+        $list = $this->getModel()->where(['status' => 1])->order('id DESC')->limit($page, $limit)->select()->toArray();
+        foreach ($list as &$item) {
+            $item['wx_name'] = $item['nickname'];
+        }
         $count = $this->getModel()->where(['status' => 1])->count();
         return [$list, $count];
     }

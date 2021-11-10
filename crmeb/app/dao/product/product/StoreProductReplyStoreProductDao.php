@@ -8,7 +8,7 @@
 // +----------------------------------------------------------------------
 // | Author: CRMEB Team <admin@crmeb.com>
 // +----------------------------------------------------------------------
-declare (strict_types=1);
+declare (strict_types = 1);
 
 namespace app\dao\product\product;
 
@@ -101,11 +101,16 @@ class StoreProductReplyStoreProductDao extends BaseDao
      */
     public function searchWhere(array $where = [])
     {
-        $model = $this->getModel()->where('r.is_del', 0)->withSearch(['time'], ['time' => $where['data'], 'timeKey' => 'r.add_time'])->order('r.add_time desc,r.is_reply asc')->field('r.*,p.store_name,p.image,r.nickname as account,FROM_UNIXTIME(r.add_time,"%Y-%m-%d %H:%i:%s") as add_time');
+        $model = $this->getModel()->where('r.is_del', 0)->withSearch(['time'], ['time' => $where['data'], 'timeKey' => 'r.add_time'])->field('r.*,p.store_name,p.image,r.nickname as account,SUM(r.product_score+r.service_score) as score')->group('id');
         if ($where['is_reply'] != '') $model = $model->where('r.is_reply', $where['is_reply']);
         if ($where['product_id']) $model = $model->where('r.product_id', $where['product_id']);
         if ($where['store_name']) $model = $model->where('p.store_name|r.product_id', 'Like', '%' . $where['store_name'] . '%');
         if ($where['account']) $model = $model->where('r.nickname', 'LIKE', '%' . $where['account'] . '%');
+        if ($where['key'] != '') {
+            $model = $model->order($where['key'], $where['order']);
+        } else {
+            $model = $model->order('r.add_time desc,r.is_reply asc');
+        }
         return $model;
     }
 

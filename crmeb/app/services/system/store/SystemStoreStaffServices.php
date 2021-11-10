@@ -21,10 +21,7 @@ use crmeb\services\FormBuilder;
  * 门店店员
  * Class SystemStoreStaffServices
  * @package app\services\system\store
- * @method count(array $where = []) 获取指定条件下的count
- * @method update($id, array $data, ?string $key = null) 修改数据
- * @method save(array $data) 保存数据
- * @method delete(int $id, ?string $key = null) 删除数据
+ * @mixin SystemStoreStaffDao
  */
 class SystemStoreStaffServices extends BaseServices
 {
@@ -47,7 +44,10 @@ class SystemStoreStaffServices extends BaseServices
     /**
      * 判断是否是有权限核销的店员
      * @param $uid
-     * @return int
+     * @return bool
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
      */
     public function verifyStatus($uid)
     {
@@ -100,9 +100,9 @@ class SystemStoreStaffServices extends BaseServices
     public function createStoreStaffForm(array $formData = [])
     {
         if ($formData) {
-            $field[] = $this->builder->frameImage('image', '更换头像', $this->url('admin/widget.images/index', array('fodder' => 'image'),true), $formData['avatar'] ?? '')->icon('ios-add')->width('60%')->height('435px');
+            $field[] = $this->builder->frameImage('image', '更换头像', $this->url('admin/widget.images/index', array('fodder' => 'image'),true), $formData['avatar'] ?? '')->icon('ios-add')->width('950px')->height('505px')->modal(['footer-hide' => true]);
         } else {
-            $field[] = $this->builder->frameImage('image', '商城用户', $this->url('admin/system.User/list', ['fodder' => 'image'], true))->icon('ios-add')->width('50%')->height('500px')->Props(['srcKey' => 'image']);
+            $field[] = $this->builder->frameImage('image', '商城用户', $this->url('admin/system.User/list', ['fodder' => 'image'], true))->icon('ios-add')->width('950px')->height('505px')->modal(['footer-hide' => true])->Props(['srcKey' => 'image']);
         }
         $field[] = $this->builder->hidden('uid', $formData['uid'] ?? 0);
         $field[] = $this->builder->hidden('avatar', $formData['avatar'] ?? '');

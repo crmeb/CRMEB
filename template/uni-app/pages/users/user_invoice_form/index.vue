@@ -1,5 +1,5 @@
 <template>
-	<view>
+	<view :style="colorStyle">
 		<form @submit="formSubmit">
 			<view class="panel">
 				<view class="acea-row row-middle">
@@ -15,7 +15,8 @@
 				</view>
 				<view class="acea-row row-middle">
 					<view>发票类型</view>
-					<input name="type" :value="type === '2' && header_type === '2' ? '增值税电子专用发票' : '增值税电子普通发票'" disabled @click="callType" />
+					<input name="type" :value="type === '2' && header_type === '2' ? '增值税电子专用发票' : '增值税电子普通发票'" disabled
+						@click="callType" />
 					<text class="iconfont icon-xiangyou"></text>
 				</view>
 				<view class="acea-row row-middle">
@@ -69,7 +70,8 @@
 			<scroll-view scroll-y="true">
 				<radio-group name="invoice-type" @change="changeType">
 					<template v-for="item in invoiceTypeList">
-						<label v-if="item.value === '1' || item.value === '2' && specialInvoice" :key="item.type" class="acea-row row-middle">
+						<label v-if="item.value === '1' || item.value === '2' && specialInvoice" :key="item.type"
+							class="acea-row row-middle">
 							<view class="text">
 								<view>{{ item.name }}</view>
 								<view class="info">{{ item.info }}</view>
@@ -80,7 +82,9 @@
 				</radio-group>
 			</scroll-view>
 		</view>
+		<!-- #ifndef MP -->
 		<home></home>
+		<!-- #endif -->
 	</view>
 </template>
 
@@ -90,10 +94,12 @@
 		invoiceSave,
 		invoiceDetail
 	} from '@/api/user.js';
+	import colors from '@/mixins/color.js';
 	export default {
 		components: {
 			home
 		},
+		mixins: [colors],
 		data() {
 			return {
 				invoiceTypeList: [{
@@ -123,7 +129,8 @@
 				typeName: '',
 				urlQuery: '',
 				from: '',
-				specialInvoice: true
+				specialInvoice: true,
+				order_id: ''
 			};
 		},
 		computed: {
@@ -167,6 +174,8 @@
 						break;
 				}
 			}
+			if (options.order_id)
+				this.order_id = options.order_id
 			const invoiceItem = this.invoiceTypeList.find(item => item.value === this.type);
 			this.typeName = invoiceItem.name;
 		},
@@ -369,11 +378,22 @@
 								case 'order_confirm':
 									if (that.id) {
 										uni.navigateTo({
-											url: `/pages/users/order_confirm/index${that.urlQuery}&invoice_id=${that.id}`
+											url: `/pages/users/order_confirm/index${that.urlQuery}&invoice_id=${that.id}&invoice_type=${formData.type}`
 										})
 									} else {
 										uni.navigateTo({
-											url: `/pages/users/order_confirm/index${that.urlQuery}&invoice_id=${res.data.id}`
+											url: `/pages/users/order_confirm/index${that.urlQuery}&invoice_id=${res.data.id}&invoice_type=${formData.type}`
+										})
+									}
+									break;
+								case 'order_details':
+									if (that.id) {
+										uni.navigateTo({
+											url: `/pages/users/order_details/index?order_id=${that.order_id}&invoice_id=${that.id}`
+										})
+									} else {
+										uni.navigateTo({
+											url: `/pages/users/order_details/index?order_id=${that.order_id}&invoice_id=${res.data.id}`
 										})
 									}
 									break;
@@ -519,6 +539,7 @@
 		height: 466rpx;
 		padding-right: 30rpx;
 		padding-left: 30rpx;
+		box-sizing: border-box;
 	}
 
 	.popup label {
@@ -593,17 +614,17 @@
 	}
 
 	.button-section {
-		position: fixed;
+		/* position: fixed;
 		bottom: 0;
 		left: 0;
-		width: 100%;
-		padding: 0 30rpx 58rpx;
+		width: 100%; */
+		padding: 58rpx 30rpx;
 	}
 
 	.button-section .button {
 		height: 86rpx;
 		border-radius: 43rpx;
-		background-color: #E93323;
+		background-color: var(--view-theme);
 		font-size: 30rpx;
 		line-height: 86rpx;
 		color: #FFFFFF;
@@ -611,12 +632,12 @@
 
 	.button-section .navigator {
 		height: 86rpx;
-		border: 1rpx solid #E93323;
+		border: 1rpx solid var(--view-theme);
 		border-radius: 43rpx;
 		margin-top: 26rpx;
 		font-size: 30rpx;
 		line-height: 86rpx;
 		text-align: center;
-		color: #E93323;
+		color: var(--view-theme);
 	}
 </style>

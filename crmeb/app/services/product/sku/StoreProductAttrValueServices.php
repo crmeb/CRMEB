@@ -125,12 +125,14 @@ class StoreProductAttrValueServices extends BaseServices
         return $this->dao->count(['product_id' => $product_id, 'unique' => $unique, 'type' => $type]);
     }
 
-    /**获取唯一值下的库存
+    /**
+     * 获取唯一值下的库存
      * @param string $unique
+     * @return int
      */
     public function uniqueByStock(string $unique)
     {
-        if (!$unique) return false;
+        if (!$unique) return 0;
         return $this->dao->uniqueByStock($unique);
     }
 

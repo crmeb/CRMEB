@@ -24,7 +24,7 @@
                 </Row>
                 <Row type="flex">
                     <Col v-bind="grid">
-                        <Button v-auth="['admin-user-level_add']" type="primary"  icon="md-add" @click="add">添加会员等级</Button>
+                        <Button v-auth="['admin-user-level_add']" type="primary"  icon="md-add" @click="add">添加用户等级</Button>
                     </Col>
                 </Row>
             </Form>
@@ -32,9 +32,14 @@
                    :loading="loading" highlight-row
                    no-userFrom-text="暂无数据"
                    no-filtered-userFrom-text="暂无筛选结果">
+                <template slot-scope="{ row, index }" slot="level_icons">
+                  <div class="tabBox_img" v-viewer>
+                    <img v-lazy="row.icon">
+                  </div>
+                </template>
                 <template slot-scope="{ row, index }" slot="icons">
                     <div class="tabBox_img" v-viewer>
-                        <img v-lazy="row.icon">
+                        <img v-lazy="row.image">
                     </div>
                 </template>
                 <template slot-scope="{ row, index }" slot="is_forevers">
@@ -106,7 +111,12 @@
                         width: 80
                     },
                     {
-                        title: '等级图标',
+                      title: '等级图标',
+                      slot: 'level_icons',
+                      minWidth: 100
+                    },
+                    {
+                        title: '等级背景图',
                         slot: 'icons',
                         minWidth: 100
                     },

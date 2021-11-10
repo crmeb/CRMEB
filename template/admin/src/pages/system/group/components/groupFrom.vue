@@ -155,7 +155,6 @@
                         value: ''
                     }
                 })
-                console.log(this.formValidate)
             },
             // 删除字段
             delGroup (index) {

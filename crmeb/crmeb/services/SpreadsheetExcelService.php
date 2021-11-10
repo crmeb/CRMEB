@@ -34,7 +34,7 @@ class SpreadsheetExcelService
     //行高
     protected static $height = 50;
     //保存文件目录
-    protected static $path = 'phpExcel/';
+    protected static $path = './phpExcel/';
     //设置style
     private static $styleArray = [
 //         'borders' => [

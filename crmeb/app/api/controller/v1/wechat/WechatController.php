@@ -14,6 +14,7 @@ namespace app\api\controller\v1\wechat;
 
 use app\Request;
 use app\services\wechat\WechatServices as WechatAuthServices;
+use crmeb\services\CacheService;
 
 /**
  * 微信公众号
@@ -81,6 +82,42 @@ class WechatController
             return app('json')->success('登录成功', ['userInfo' => $token['userInfo']]);
         } else
             return app('json')->fail('登录失败');
+    }
+
+    /**
+     * App微信登陆
+     * @param Request $request
+     * @return mixed
+     */
+    public function appAuth(Request $request)
+    {
+        [$userInfo, $phone, $captcha] = $request->postMore([
+            ['userInfo', []],
+            ['phone', ''],
+            ['code', '']
+        ], true);
+        if ($phone) {
+            if (!$captcha) {
+                return app('json')->fail('请输入验证码');
+            }
+            //验证验证码
+            $verifyCode = CacheService::get('code_' . $phone);
+            if (!$verifyCode)
+                return app('json')->fail('请先获取验证码');
+            $verifyCode = substr($verifyCode, 0, 6);
+            if ($verifyCode != $captcha) {
+                CacheService::delete('code_' . $phone);
+                return app('json')->fail('验证码错误');
+            }
+        }
+        $token = $this->services->appAuth($userInfo, $phone);
+        if ($token) {
+            return app('json')->success('登录成功', $token);
+        } else if ($token === false) {
+            return app('json')->success('登录成功', ['isbind' => true]);
+        } else {
+            return app('json')->fail('登陆失败');
+        }
     }
 
     public function follow()

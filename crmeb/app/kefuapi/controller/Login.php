@@ -54,7 +54,6 @@ class Login extends BaseController
             ['account', ''],
             ['password', ''],
         ], true);
-
         validate(LoginValidate::class)->check(['account' => $account, 'password' => $password]);
         $token = $this->services->authLogin($account, $password);
 

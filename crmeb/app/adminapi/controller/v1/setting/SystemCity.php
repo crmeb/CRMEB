@@ -79,7 +79,7 @@ class SystemCity extends AuthController
             [['level', 'd'], 0],
             [['parent_id', 'd'], 0],
         ]);
-        validate(\app\adminapi\validate\setting\SystemCityValidate::class)->scene('save')->check($data);
+        $this->validate($data, \app\adminapi\validate\setting\SystemCityValidate::class, 'save');
         if ($data['parent_id'] == 0) {
             $data['merger_name'] = $data['name'];
         } else {
@@ -133,7 +133,8 @@ class SystemCity extends AuthController
      */
     public function clean_cache()
     {
-        $res = CacheService::delete('CITY_LIST');
+        $res = CacheService::delete('tree_city_list');
+        $res = $res && CacheService::delete('CITY_LIST');
         if ($res) {
             return app('json')->success('清除成功!');
         } else {

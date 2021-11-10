@@ -1,19 +1,25 @@
 <template>
-	<view style="touch-action: none;">
-		<view class="home" style="position:fixed;" :style="{ top: top + 'px'}" id="right-nav" @touchmove.stop.prevent="setTouchMove">
-			<view class="homeCon bg-color" :class="homeActive === true ? 'on' : ''" v-if="homeActive">
-				<navigator hover-class='none' url='/pages/index/index' class='iconfont icon-shouye-xianxing'></navigator>
-				<navigator hover-class='none' url='/pages/order_addcart/order_addcart' class='iconfont icon-caigou-xianxing'></navigator>
-				<navigator hover-class='none' url='/pages/user/index' class='iconfont icon-yonghu1'></navigator>
-			</view>
-			<view @click="open" class="pictrueBox">
-				<view class="pictrue">
-					<image :src="
-              homeActive === true
-                ? '/static/images/close.gif'
-                : '/static/images/open.gif'
-            "
-					 class="image" />
+	<view :style="colorStyle">
+		<view style="touch-action: none;">
+			<view class="home" style="position:fixed;" :style="{ top: top + 'px'}" id="right-nav"
+				@touchmove.stop.prevent="setTouchMove">
+				<view class="homeCon bg-color" :class="homeActive === true ? 'on' : ''" v-if="homeActive">
+					<navigator hover-class='none' open-type="switchTab" url='/pages/index/index'
+						class='iconfont icon-shouye-xianxing'>
+					</navigator>
+					<navigator hover-class='none' open-type="switchTab" url='/pages/order_addcart/order_addcart'
+						class='iconfont icon-caigou-xianxing'></navigator>
+					<navigator hover-class='none' open-type="switchTab" url='/pages/user/index'
+						class='iconfont icon-yonghu1'></navigator>
+				</view>
+				<view @click="open" class="pictrueBox">
+					<view class="pictrue">
+						<image :src="
+		          homeActive === true
+		            ? '/static/images/close.gif'
+		            : '/static/images/open.gif'
+		        " class="image" />
+					</view>
 				</view>
 			</view>
 		</view>
@@ -23,20 +29,25 @@
 	import {
 		mapGetters
 	} from "vuex";
+	import colors from '@/mixins/color.js';
 	export default {
 		name: "Home",
 		props: {},
+		mixins:[colors],
 		data: function() {
 			return {
-				top: "500"
+				top: "545"
 			};
 		},
 		computed: mapGetters(["homeActive"]),
 		methods: {
 			setTouchMove(e) {
 				var that = this;
-				if (e.touches[0].clientY < 500 && e.touches[0].clientY > 66) {
+				if (e.touches[0].clientY < 545 && e.touches[0].clientY > 66) {
 					that.top = e.touches[0].clientY
+					// that.setData({
+					// 	top: e.touches[0].clientY
+					// })
 				}
 			},
 			open: function() {
@@ -45,7 +56,9 @@
 					this.$store.commit("OPEN_HOME");
 			}
 		},
-		created() {
+		created() {},
+		beforeDestroy() {
+			this.$store.commit("CLOSE_HOME")
 		}
 	};
 </script>
@@ -61,7 +74,7 @@
 		position: fixed;
 		color: white;
 		text-align: center;
-		z-index: 9999;
+		z-index: 999;
 		right: 15rpx;
 		display: flex;
 	}
@@ -70,7 +83,7 @@
 		border-radius: 50rpx;
 		opacity: 0;
 		height: 0;
-		color: #e93323;
+		color: var(--view-theme);
 		width: 0;
 	}
 
@@ -83,7 +96,7 @@
 		display: flex;
 		justify-content: center;
 		align-items: center;
-		background: #e93323 !important;
+		background: var(--view-theme) !important;
 	}
 
 	.home .homeCon .iconfont {
@@ -98,7 +111,7 @@
 		height: 86rpx;
 		border-radius: 50%;
 		margin: 0 auto;
-		background-color: #e93323;
+		background-color: var(--view-theme);
 	}
 
 	.home .pictrue .image {

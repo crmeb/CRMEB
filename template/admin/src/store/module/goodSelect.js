@@ -6,7 +6,7 @@
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
 // | Author: CRMEB Team <admin@crmeb.com>
-// +----------------------------------------------------------------------
+// +---------------------------------------------------------------------
 
 /**
  * diy配置
@@ -20,7 +20,7 @@ export default {
         periphery:1,
         activeName: {},
         defaultConfig: {
-            a_headerSerch: {
+            headerSerch: {
                 imgUrl:{
                     title: '最多可添加1张图片，图片建议宽度128 * 45px',
                     url: '',
@@ -36,7 +36,7 @@ export default {
                     ]
                 },
             },
-            b_swiperBg: {
+            swiperBg: {
                 isShow:{
                     val: true
                 },
@@ -81,7 +81,7 @@ export default {
                     ]
                 }
             },
-            c_menus: {
+            menus: {
                 isShow:{
                     val: true
                 },
@@ -228,7 +228,7 @@ export default {
                     ]
                 },
             },
-            d_goodList: {
+            goodList: {
                 isShow:{
                     val: true
                 },
@@ -287,7 +287,7 @@ export default {
                     list: []
                 }
             },
-            z_tabBar:{
+            tabBar:{
                 isShow:{
                     val: true
                 },
@@ -324,7 +324,7 @@ export default {
             }
         },
         component: {
-            a_headerSerch: {
+            headerSerch: {
                 list: [
                     {
                         components: toolCom.c_upload_img,
@@ -336,7 +336,7 @@ export default {
                     },
                 ]
             },
-            b_swiperBg: {
+            swiperBg: {
                 list: [
                     {
                         components: toolCom.c_is_show,
@@ -348,7 +348,7 @@ export default {
                     },
                 ]
             },
-            c_menus: {
+            menus: {
                 list: [
                     {
                         components: toolCom.c_is_show,
@@ -360,7 +360,7 @@ export default {
                     }
                 ]
             },
-            d_goodList: {
+            goodList: {
                 list:[
                     {
                         components: toolCom.c_is_show,
@@ -384,7 +384,7 @@ export default {
                     }
                 ]
             },
-            z_tabBar: {
+            tabBar: {
                 list:[
                     {
                         components: toolCom.c_tab_bar,
@@ -446,7 +446,7 @@ export default {
                 ];
 
             }
-            state.component.d_goodList.list = list;
+            state.component.goodList.list = list;
         },
         /**
          * @description 更新默认数据
@@ -454,9 +454,15 @@ export default {
          * @param {Object} data
          */
         updataConfig(state,data){
-            state.defaultConfig = data
-            let sf9l1kli2p9mbvqr1f = Object.assign({}, state.defaultConfig);
-            state.defaultConfig = sf9l1kli2p9mbvqr1f
+            let value = state.defaultConfig;
+            for(let i in data){
+                for(let j in value){
+                    if(i===j){
+                        value[j] = data[i]
+                    }
+                }
+            }
+            state.defaultConfig = value
         }
     },
     actions: {}

@@ -23,8 +23,10 @@ class SystemStoreValidate extends Validate
     protected $rule = [
         'name' => 'require',
         'introduction' => 'require',
-        'phone' => ['require','mobile'],
+        'phone' => ['require', 'mobile'],
         'address' => 'require',
+        'image' => 'require',
+        'oblong_image' => 'require',
         'detailed_address' => 'require',
         'latlng' => 'require',
         'day_time' => 'require',
@@ -39,6 +41,8 @@ class SystemStoreValidate extends Validate
         'name.require' => '请填写门店名称',
         'introduction.require' => '请填写门店简介',
         'phone.require' => '请填写门店电话',
+        'image.require' => '请选择提货点logo',
+        'oblong_image.require' => '请选择提货点大图',
         'phone.mobile' => '手机号格式不正确',
         'address.require' => '请选择地址',
         'detailed_address.require' => '请填写详细地址',
@@ -47,6 +51,6 @@ class SystemStoreValidate extends Validate
     ];
 
     protected $scene = [
-        'save' => ['name', 'phone', 'address', 'detailed_address', 'latlng', 'day_time'],
+        'save' => ['name', 'phone', 'address', 'detailed_address', 'latlng', 'day_time', 'image', 'oblong_image'],
     ];
 }

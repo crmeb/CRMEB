@@ -1,5 +1,5 @@
 <template>
-	<div>
+	<div :style="colorStyle">
 		<div class="storeBox" ref="container">
 			<div class="storeBox-box" v-for="(item, index) in storeList" :key="index" @click.stop="checked(item)">
 				<div class="store-img"><img :src="item.image" lazy-load="true" /></div>
@@ -12,10 +12,12 @@
 				<div class="row-right">
 					<div>
 						<!-- #ifdef H5 -->
-						<a class="store-phone acea-row row-center-wrapper" :href="'tel:' + item.phone"><span class="iconfont icon-dadianhua01"></span></a>
+						<a class="store-phone acea-row row-center-wrapper" :href="'tel:' + item.phone"><span
+								class="iconfont icon-dadianhua01"></span></a>
 						<!-- #endif -->
-						<!-- #ifdef MP -->
-						<view class="store-phone acea-row row-center-wrapper" @click="call(item.phone)"><text class="iconfont icon-dadianhua01"></text></view>
+						<!-- #ifdef MP || APP-PLUS -->
+						<view class="store-phone acea-row row-center-wrapper" @click.stop="call(item.phone)"><text
+								class="iconfont icon-dadianhua01"></text></view>
 						<!-- #endif -->
 					</div>
 					<div class="store-distance" @click.stop="showMaoLocation(item)">
@@ -64,7 +66,7 @@
 		wxShowLocation
 	} from "@/libs/wechat";
 	// #endif
-
+  import colors from "@/mixins/color";
 	import {
 		mapGetters
 	} from "vuex";
@@ -76,6 +78,7 @@
 		components: {
 			Loading
 		},
+		mixins: [colors],
 		data() {
 			return {
 				page: 1,
@@ -92,8 +95,7 @@
 			try {
 				this.user_latitude = uni.getStorageSync('user_latitude');
 				this.user_longitude = uni.getStorageSync('user_longitude');
-			} catch (e) {
-			}
+			} catch (e) {}
 		},
 		mounted() {
 			if (this.user_latitude && this.user_longitude) {
@@ -112,27 +114,31 @@
 				let self = this
 				// #ifdef H5
 				if (self.$wechat.isWeixin()) {
-					self.$wechat.location().then(res=>{
+					self.$wechat.location().then(res => {
+						this.user_latitude = res.latitude;
+						this.user_longitude = res.longitude;
 						uni.setStorageSync('user_latitude', res.latitude);
 						uni.setStorageSync('user_longitude', res.longitude);
 						self.getList();
 					})
-				}else{
-				// #endif	
+				} else {
+					// #endif	
 					uni.getLocation({
 						type: 'wgs84',
-						success: function(res) {
+						success: (res) => {
 							try {
+								this.user_latitude = res.latitude;
+								this.user_longitude = res.longitude;
 								uni.setStorageSync('user_latitude', res.latitude);
 								uni.setStorageSync('user_longitude', res.longitude);
 							} catch {}
 							self.getList();
 						},
-						complete:function() {
+						complete: function() {
 							self.getList();
 						}
 					});
-				// #ifdef H5	
+					// #ifdef H5	
 				}
 				// #endif
 			},
@@ -143,20 +149,20 @@
 					self.$wechat.seeLocation({
 						latitude: Number(e.latitude),
 						longitude: Number(e.longitude)
-					}).then(res=>{
-						console.log('success');
+					}).then(res => {
 					})
-				}else{
-				// #endif	
+				} else {
+					// #endif	
 					uni.openLocation({
 						latitude: Number(e.latitude),
 						longitude: Number(e.longitude),
+						name: e.name,
+						address: `${e.address}-${e.detailed_address}`,
 						success: function() {
-							console.log('success');
 							Number
 						}
 					});
-				// #ifdef H5	
+					// #ifdef H5	
 				}
 				// #endif
 			},
@@ -187,7 +193,7 @@
 					})
 					.catch(err => {
 						this.$util.Tips({
-							title:err
+							title: err
 						})
 					});
 			}
@@ -262,17 +268,18 @@
 		height: 50rpx;
 		color: #fff;
 		border-radius: 50%;
-		background-color: #e83323;
+		background-color: var(--view-theme);
 		margin-bottom: 22rpx;
 		text-decoration: none;
-		.icon-dadianhua01{
+
+		.icon-dadianhua01 {
 			font-size: 22rpx;
 		}
 	}
 
 	.store-distance {
 		font-size: 22rpx;
-		color: #e83323;
+		color: var(--view-theme);
 	}
 
 	.iconfont {

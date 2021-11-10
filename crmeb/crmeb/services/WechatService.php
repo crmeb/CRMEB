@@ -16,6 +16,7 @@ use app\services\wechat\WechatMessageServices;
 use app\services\wechat\WechatReplyServices;
 use crmeb\exceptions\AdminException;
 use app\services\pay\PayNotifyServices;
+use crmeb\utils\ApiErrorCode;
 use EasyWeChat\Foundation\Application;
 use EasyWeChat\Message\Article;
 use EasyWeChat\Message\Image;
@@ -40,11 +41,18 @@ class WechatService
 
     public static function options()
     {
-        $wechat = SystemConfigService::more(['wechat_appid', 'wechat_appsecret', 'wechat_token', 'wechat_encodingaeskey', 'wechat_encode']);
+        $wechat = SystemConfigService::more(['wechat_appid', 'wechat_app_appid', 'wechat_app_appsecret', 'wechat_appsecret', 'wechat_token', 'wechat_encodingaeskey', 'wechat_encode']);
         $payment = SystemConfigService::more(['pay_weixin_mchid', 'pay_weixin_client_cert', 'pay_weixin_client_key', 'pay_weixin_key', 'pay_weixin_open']);
+        if (request()->isApp()) {
+            $appId = isset($wechat['wechat_app_appid']) ? trim($wechat['wechat_app_appid']) : '';
+            $appsecret = isset($wechat['wechat_app_appsecret']) ? trim($wechat['wechat_app_appsecret']) : '';
+        } else {
+            $appId = isset($wechat['wechat_appid']) ? trim($wechat['wechat_appid']) : '';
+            $appsecret = isset($wechat['wechat_appsecret']) ? trim($wechat['wechat_appsecret']) : '';
+        }
         $config = [
-            'app_id' => isset($wechat['wechat_appid']) ? trim($wechat['wechat_appid']) : '',
-            'secret' => isset($wechat['wechat_appsecret']) ? trim($wechat['wechat_appsecret']) : '',
+            'app_id' => $appId,
+            'secret' => $appsecret,
             'token' => isset($wechat['wechat_token']) ? trim($wechat['wechat_token']) : '',
             'guzzle' => [
                 'timeout' => 10.0, // 超时时间（秒）
@@ -55,10 +63,11 @@ class WechatService
             $config['aes_key'] = $wechat['wechat_encodingaeskey'];
         if (isset($payment['pay_weixin_open']) && $payment['pay_weixin_open'] == 1) {
             $config['payment'] = [
+                'app_id' => $appId,
                 'merchant_id' => trim($payment['pay_weixin_mchid']),
                 'key' => trim($payment['pay_weixin_key']),
-                'cert_path' => realpath('.' . $payment['pay_weixin_client_cert']),
-                'key_path' => realpath('.' . $payment['pay_weixin_client_key']),
+                'cert_path' => public_path() . $payment['pay_weixin_client_cert'],
+                'key_path' => public_path() . $payment['pay_weixin_client_key'],
                 'notify_url' => trim(SystemConfigService::get('site_url')) . '/api/wechat/notify'
             ];
         }
@@ -400,6 +409,24 @@ class WechatService
     }
 
     /**
+     * 获得APP付参数
+     * @param $openid
+     * @param $out_trade_no
+     * @param $total_fee
+     * @param $attach
+     * @param $body
+     * @param string $detail
+     * @param string $trade_type
+     * @param array $options
+     * @return array|string
+     */
+    public static function appPay($openid, $out_trade_no, $total_fee, $attach, $body, $detail = '', $trade_type = Order::APP, $options = [])
+    {
+        $paymentPrepare = self::paymentPrepare($openid, $out_trade_no, $total_fee, $attach, $body, $detail, $trade_type, $options);
+        return self::paymentService()->configForAppPayment($paymentPrepare->prepay_id);
+    }
+
+    /**
      * 获得native支付参数
      * @param $openid
      * @param $out_trade_no
@@ -652,7 +679,7 @@ class WechatService
                 $userInfo = $userService->get($openid);
             }
         } catch (\Throwable $e) {
-            throw new ValidateException($e->getMessage());
+            throw new ValidateException(self::getMessage($e->getMessage()));
         }
         return $userInfo;
     }
@@ -673,8 +700,71 @@ class WechatService
             $list['next_openid'] = $res['next_openid'] ?? null;
             return $list;
         } catch (\Exception $e) {
-            throw new ValidateException($e->getMessage());
+            throw new ValidateException(self::getMessage($e->getMessage()));
         }
         return $list;
+    }
+
+    /**
+     * 处理返回错误信息友好提示
+     * @param string $message
+     * @return array|mixed|string
+     */
+    public static function getMessage(string $message)
+    {
+        if (strstr($message, 'Request AccessToken fail') !== false) {
+            $message = str_replace('Request AccessToken fail. response:', '', $message);
+            $message = json_decode($message, true) ?: [];
+            $errcode = $message['errcode'] ?? false;
+            if ($errcode) {
+                $message = ApiErrorCode::ERROR_WECHAT_MESSAGE[$errcode];
+            }
+        }
+        return $message;
+    }
+    /**
+     * 设置模版消息行业
+     */
+    public static function setIndustry($industryOne,$industryTwo)
+    {
+        return self::application()->notice->setIndustry($industryOne,$industryTwo);
+    }
+
+    /**
+     * 获得添加模版ID
+     * @param $template_id_short
+     */
+    public static function addTemplateId($template_id_short)
+    {
+        try {
+            return self::application()->notice->addTemplate($template_id_short);
+        } catch (\Exception $e) {
+            throw new ValidateException(self::getMessage($e->getMessage()));
+        }
+    }
+
+    /**
+     * 获取模板列表
+     * @return \EasyWeChat\Support\Collection
+     */
+    public static function getPrivateTemplates()
+    {
+        try {
+            return self::application()->notice->getPrivateTemplates();
+        } catch (\Exception $e) {
+            throw new ValidateException(self::getMessage($e->getMessage()));
+        }
+    }
+    /*
+     * 根据模版ID删除模版
+     */
+    public static function deleleTemplate($template_id)
+    {
+        try {
+            return self::application()->notice->deletePrivateTemplate($template_id);
+        } catch (\Exception $e) {
+            throw new ValidateException(self::getMessage($e->getMessage()));
+        }
+
     }
 }

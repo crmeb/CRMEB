@@ -15,10 +15,12 @@ use app\services\activity\StorePinkServices;
 use app\services\diy\DiyServices;
 use app\services\message\service\StoreServiceServices;
 use app\services\order\DeliveryServiceServices;
+use app\services\other\CacheServices;
 use app\services\product\product\StoreCategoryServices;
 use app\services\product\product\StoreProductServices;
 use app\services\shipping\ExpressServices;
 use app\services\shipping\SystemCityServices;
+use app\services\system\AppVersionServices;
 use app\services\system\attachment\SystemAttachmentServices;
 use app\services\system\config\SystemConfigServices;
 use app\services\system\store\SystemStoreServices;
@@ -32,6 +34,7 @@ use crmeb\services\CacheService;
 use crmeb\services\UploadService;
 use crmeb\services\workerman\ChannelService;
 use think\facade\Cache;
+use think\facade\Config;
 
 /**
  * 公共类
@@ -64,21 +67,18 @@ class PublicController
         }
         $logoUrl = str_replace('\\', '/', $logoUrl);
         $fastNumber = (int)sys_config('fast_number', 0);//TODO 快速选择分类个数
-        $bastNumber = (int)sys_config('bast_number', 0);//TODO 精品推荐个数
-        $firstNumber = (int)sys_config('first_number', 0);//TODO 首发新品个数
-        $promotionNumber = (int)sys_config('promotion_number', 0);//TODO 首发新品个数
 
         /** @var StoreCategoryServices $categoryService */
         $categoryService = app()->make(StoreCategoryServices::class);
         $info['fastList'] = $fastNumber ? $categoryService->byIndexList($fastNumber, 'id,cate_name,pid,pic') : [];//TODO 快速选择分类个数
         /** @var StoreProductServices $storeProductServices */
         $storeProductServices = app()->make(StoreProductServices::class);
-        $info['bastList'] = $bastNumber ? $storeProductServices->getRecommendProduct($request->uid(), 'is_best', $bastNumber) : [];//TODO 精品推荐个数
-        $info['firstList'] = $firstNumber ? $storeProductServices->getRecommendProduct($request->uid(), 'is_new', $firstNumber) : [];//TODO 首发新品个数
+        //获取推荐商品
+        [$baseList, $firstList, $benefit, $likeInfo, $vipList] = $storeProductServices->getRecommendProductArr((int)$request->uid(), ['is_best', 'is_new', 'is_benefit', 'is_hot']);
+        $info['bastList'] = $baseList;//TODO 精品推荐个数
+        $info['firstList'] = $firstList;//TODO 首发新品个数
         $info['bastBanner'] = sys_data('routine_home_bast_banner') ?? [];//TODO 首页精品推荐图片
-        $benefit = $promotionNumber ? $storeProductServices->getRecommendProduct($request->uid(), 'is_benefit', $promotionNumber) : [];//TODO 首页促销单品
         $lovely = sys_data('routine_home_new_banner') ?: [];//TODO 首发新品顶部图
-        $likeInfo = $storeProductServices->getRecommendProduct($request->uid(), 'is_hot', 3);//TODO 热门榜单 猜你喜欢
         if ($request->uid()) {
             /** @var WechatUserServices $wechatUserService */
             $wechatUserService = app()->make(WechatUserServices::class);
@@ -104,7 +104,7 @@ class PublicController
         $data['img'] = str_replace('\\', '/', $data['img']);
         $data['title'] = sys_config('wechat_share_title');
         $data['synopsis'] = sys_config('wechat_share_synopsis');
-        return app('json')->successful(compact('data'));
+        return app('json')->successful($data);
     }
 
     /**
@@ -136,6 +136,8 @@ class PublicController
         $vipOpen = sys_config('member_func_status');
         $brokerageFuncStatus = sys_config('brokerage_func_status');
         $balanceFuncStatus = sys_config('balance_func_status');
+        $vipCard = sys_config('member_card_status', 0);
+        $svipOpen = sys_config('member_card_status') ? true : false;
         $userService = $invoiceStatus = $deliveryUser = $isUserPromoter = $userVerifyStatus = $userOrder = true;
 
         if ($uid && $userInfo) {
@@ -156,7 +158,6 @@ class PublicController
             $isUserPromoter = $user->checkUserPromoter($uid, $userInfo);
             $userVerifyStatus = $systemStoreStaff->verifyStatus($uid);
         }
-
         $auth = [];
         $auth['/pages/users/user_vip/index'] = !$vipOpen;
         $auth['/pages/users/user_spread_user/index'] = !$brokerageFuncStatus || !$isUserPromoter || $uid == 0;
@@ -164,6 +165,7 @@ class PublicController
         $auth['/pages/admin/order/index'] = !$userOrder || $uid == 0;
         $auth['/pages/admin/order_cancellation/index'] = (!$userVerifyStatus && !$deliveryUser) || $uid == 0;
         $auth['/pages/users/user_invoice_list/index'] = !$invoiceStatus;
+        $auth['/pages/annex/vip_paid/index'] = !$vipCard || !$svipOpen;
         $auth['/kefu/mobile_list'] = !$userService || $uid == 0;
         foreach ($menusInfo as $key => &$value) {
 //            $value['pic'] = set_file_url($value['pic']);
@@ -183,7 +185,11 @@ class PublicController
         $bannerInfo = $systemConfigServices->getSpreadBanner() ?? [];
         $my_banner = sys_data('routine_my_banner');
         $routine_contact_type = sys_config('routine_contact_type', 0);
-        return app('json')->successful(['routine_my_menus' => array_merge($menusInfo), 'routine_my_banner' => $my_banner, 'routine_spread_banner' => $bannerInfo, 'routine_contact_type' => $routine_contact_type]);
+        /** @var DiyServices $diyServices */
+        $diyServices = app()->make(DiyServices::class);
+        $diy_data = $diyServices->get(['template_name' => 'member', 'type' => 1], ['value', 'order_status', 'my_banner_status']);
+        $diy_data = $diy_data ? $diy_data->toArray() : [];
+        return app('json')->successful(['routine_my_menus' => array_merge($menusInfo), 'routine_my_banner' => $my_banner, 'routine_spread_banner' => $bannerInfo, 'routine_contact_type' => $routine_contact_type, 'diy_data' => $diy_data]);
     }
 
     /**
@@ -353,8 +359,8 @@ class PublicController
      */
     public function pink(StorePinkServices $pink, UserServices $user)
     {
-        $data['pink_count'] = $pink->getCount(['status' => 2, 'is_refund' => 0]);
-        $uids = array_flip($pink->getColumn(['status' => 2, 'is_refund' => 0], 'uid'));
+        $data['pink_count'] = $pink->getCount(['is_refund' => 0]);
+        $uids = array_flip($pink->getColumn(['is_refund' => 0], 'uid'));
         if (count($uids)) {
             $uids = array_rand($uids, count($uids) < 3 ? count($uids) : 3);
         }
@@ -432,6 +438,7 @@ class PublicController
         $where = [];
         $where['is_show'] = 1;
         $where['is_del'] = 0;
+        $where['productId'] = '';
         if ($data['selectType'] == 1) {
             if (!$data['ids']) {
                 return app('json')->success([]);
@@ -460,16 +467,59 @@ class PublicController
         return app('json')->success($services->homeProductList($where, $request->uid()));
     }
 
+    public function getNewAppVersion($platform)
+    {
+        /** @var AppVersionServices $appService */
+        $appService = app()->make(AppVersionServices::class);
+        return app('json')->success($appService->getNewInfo($platform));
+    }
+
+    public function getCustomerType()
+    {
+        $data = [];
+        $data['customer_type'] = sys_config('customer_type', 0);
+        $data['customer_phone'] = sys_config('customer_phone', 0);
+        $data['customer_url'] = sys_config('customer_url', 0);
+        return app('json')->success($data);
+    }
+
+
     /**
-     * 获取系统信息
+     * 统计代码
+     * @return array|string
+     */
+    public function getScript()
+    {
+        return sys_config('statistic_script', '');
+    }
+
+    /**
+     * 获取workerman请求域名
      * @return mixed
      */
-    public function getVersion()
+    public function getWorkerManUrl()
     {
-        $data['site_url'] = sys_config('site_url');
-        $data['version'] = get_crmeb_version();
-        $data['code'] = get_crmeb_version_code();
-        $data['server'] = php_uname('s');
-        return app('json')->success($data);
+        return app('json')->success(getWorkerManUrl());
+    }
+
+    /**
+     * 首页开屏广告
+     * @return mixed
+     */
+    public function getOpenAdv()
+    {
+        return app('json')->success(sys_config('open_adv',''));
+    }
+
+    /**
+     * 获取用户协议内容
+     * @return mixed
+     */
+    public function getUserAgreement()
+    {
+        /** @var CacheServices $cache */
+        $cache = app()->make(CacheServices::class);
+        $content = $cache->getDbCache('user_agreement', '');
+        return app('json')->success(compact('content'));
     }
 }

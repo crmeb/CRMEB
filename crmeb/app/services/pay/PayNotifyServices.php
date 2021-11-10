@@ -101,7 +101,8 @@ class PayNotifyServices
         }
     }
 
-    /**购买会员卡支付宝异步回调
+    /**
+     * 购买会员卡支付宝异步回调
      * @param string|null $order_id
      * @param string|null $trade_no
      * @return bool

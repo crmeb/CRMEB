@@ -18,15 +18,17 @@ use app\http\middleware\AllowOriginMiddleware;
  */
 Route::group(function () {
     //用户名密码登录
-    Route::post('login', 'Login/login')->name('AdminLogin');
+    Route::post('login', 'Login/login')->name('AdminLogin')->option(['real_name' => '下载表备份记录']);
     //后台登录页面数据
-    Route::get('login/info', 'Login/info');
+    Route::get('login/info', 'Login/info')->option(['real_name' => '登录信息']);
     //下载文件
-    Route::get('download', 'PublicController/download');
+    Route::get('download', 'PublicController/download')->option(['real_name' => '下载文件']);
     //验证码
-    Route::get('captcha_pro', 'Login/captcha');
-    //测试路由
-    Route::get('index', 'Test/index');
+    Route::get('captcha_pro', 'Login/captcha')->name('')->option(['real_name' => '获取验证码']);
+    //获取客服数据
+    Route::get('get_workerman_url', 'PublicController/getWorkerManUrl')->option(['real_name' => '获取客服数据']);
+
+    Route::get('index', 'Test/index')->option(['real_name' => '测试地址']);
 
 })->middleware(AllowOriginMiddleware::class);
 

@@ -91,7 +91,7 @@
 	}
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 	.navTabBox {
 		width: 100%;
 		color: rgba(255, 255, 255, 1);

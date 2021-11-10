@@ -15,6 +15,10 @@ use app\services\user\UserBillServices;
 use think\facade\App;
 use app\adminapi\controller\AuthController;
 
+/**
+ * Class Finance
+ * @package app\adminapi\controller\v1\finance
+ */
 class Finance extends AuthController
 {
     /**
@@ -90,7 +94,7 @@ class Finance extends AuthController
             ['nickname', '']
         ]);
         $where['category'] = 'now_money';
-        $where['type'] = 'brokerage';
+        $where['type'] = ['brokerage','brokerage_user'];
         return app('json')->success($this->services->getBillOneList((int)$id, $where));
     }
 

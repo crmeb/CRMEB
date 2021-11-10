@@ -86,18 +86,13 @@
                         width: 80
                     },
                     {
-                        title: '微信名称',
-                        key: 'nickname',
-                        minWidth: 120
-                    },
-                    {
                         title: '头像',
                         slot: 'avatar',
                         minWidth: 60
                     },
                     {
                         title: '名称',
-                        key: 'wx_name',
+                        key: 'nickname',
                         minWidth: 120
                     },
                     {

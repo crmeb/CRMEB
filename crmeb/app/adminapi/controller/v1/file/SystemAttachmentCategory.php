@@ -38,8 +38,10 @@ class SystemAttachmentCategory extends AuthController
     public function index()
     {
         $where = $this->request->getMore([
-            ['name', '']
+            ['name', ''],
+            ['pid', 0]
         ]);
+        if ($where['name'] != '') $where['pid'] = '';
         return app('json')->success($this->service->getAll($where));
     }
 

@@ -15,15 +15,49 @@ namespace app\jobs;
 use crmeb\basic\BaseJobs;
 use crmeb\services\template\Template;
 use crmeb\traits\QueueTrait;
+use think\facade\Log;
 use think\facade\Route;
+
 
 /**
  * Class WechatTemplateJob
- * @package app\jobs
+ * @package crmeb\jobs
  */
 class WechatTemplateJob extends BaseJobs
 {
     use QueueTrait;
+
+
+    /**
+     * 发送模板消息
+     * @param string $tempCode 模板消息常量名称
+     * @param $uid 用户uid
+     * @param array $data 模板内容
+     * @param string $link 跳转链接
+     * @param string|null $color 文字颜色
+     * @return bool|mixed
+     */
+    public function sendTemplate(string $tempCode, $openid, array $data, string $link = null, string $color = null)
+    {
+        try {
+            if (!$openid) return true;
+            $template = new Template('wechat');
+            $template->to($openid);
+            $template->color($color);
+            if ($link) {
+                $url =
+                    sys_config('site_url') . Route::buildUrl($link)
+                        ->suffix('')
+                        ->domain(false)->build();
+                $template->url($url);
+            }
+            return $template->send($tempCode, $data);
+        } catch (\Exception $e) {
+            Log::error($e->getMessage());
+            return true;
+        }
+    }
+
     /**
      * 支付成功发送模板消息
      * @param $order
@@ -36,7 +70,7 @@ class WechatTemplateJob extends BaseJobs
             'keyword1' => $order['order_id'],
             'keyword2' => $order['pay_price'],
             'remark' => '点击查看订单详情'
-        ], sys_config('site_url') . Route::buildUrl('/pages/users/order_details/index?order_id=' . $order['order_id'])->suffix('')->domain(false)->build());
+        ], '/pages/users/order_details/index?order_id=' . $order['order_id']);
     }
 
     /**
@@ -52,7 +86,7 @@ class WechatTemplateJob extends BaseJobs
             'keyword1' => $order['order_id'],
             'keyword2' => $order['pay_price'],
             'remark' => '点击查看订单详情'
-        ], sys_config('site_url') . Route::buildUrl('/pages/annex/vip_paid/index')->suffix('')->domain(false)->build());
+        ], '/pages/annex/vip_paid/index');
     }
 
     /**
@@ -71,7 +105,7 @@ class WechatTemplateJob extends BaseJobs
             'keyword5' => $data['delivery_id'],
             'first' => '亲,您的订单已发货,请注意查收',
             'remark' => '点击查看订单详情'
-        ], sys_config('site_url') . Route::buildUrl('/pages/users/order_details/index?order_id=' . $order['order_id'])->suffix(false)->domain(false)->build());
+        ], '/pages/users/order_details/index?order_id=' . $order['order_id']);
     }
 
     /**
@@ -88,7 +122,7 @@ class WechatTemplateJob extends BaseJobs
             'keyword3' => $data['delivery_id'],
             'first' => '亲,您的订单已发货,请注意查收',
             'remark' => '点击查看订单详情'
-        ], sys_config('site_url') . Route::buildUrl('/pages/users/order_details/index?order_id=' . $order['order_id'])->suffix(false)->domain(false)->build());
+        ], '/pages/users/order_details/index?order_id=' . $order['order_id']);
     }
 
     /**
@@ -97,9 +131,16 @@ class WechatTemplateJob extends BaseJobs
      * @param string|null $link
      * @return bool
      */
-    public function sendServiceNotice($openid, $data, ?string $link = null)
+    public function sendServiceNotice($openid, $data)
     {
-        return $this->sendTemplate('ADMIN_NOTICE', $openid, $data, $link);
+        return $this->sendTemplate('ADMIN_NOTICE', $openid,
+            [
+                'keyword1' => '新订单',
+                'keyword2' => $data['delivery_name'],
+                'keyword3' => $data['delivery_id'],
+                'first' => '亲,您有新的订单待处理',
+                'remark' => '点击查看订单详情'
+            ], '/pages/users/order_details/index?order_id=' . $data['order_id']);
     }
 
     /**
@@ -139,12 +180,12 @@ class WechatTemplateJob extends BaseJobs
     public function sendOrderApplyRefund($openid, $order)
     {
         return $this->sendTemplate('ORDER_REFUND_STATUS', $openid, [
-            'first' => '退款申请中',
+            'first' => '你有一笔退款订单需要处理',
             'keyword1' => $order['order_id'],
-            'keyword2' => $order['pay_price'],
+            'keyword2' => $order['status'],
             'keyword3' => date('Y-m-d H:i:s', $order['add_time']),
-            'remark' => '点击查看订单详情'
-        ], sys_config('site_url') . Route::buildUrl('/pages/users/order_details/index?order_id=' . $order['order_id'])->suffix('')->domain(false)->build());
+            'remark' => '点击查看退款详情'
+        ], '/pages/admin/orderDetail/index?id=' . $order['order_id']);
     }
 
     /**
@@ -161,7 +202,7 @@ class WechatTemplateJob extends BaseJobs
             'keyword2' => $order['pay_price'],
             'keyword3' => date('Y-m-d H:i:s', $order['add_time']),
             'remark' => '点击查看订单详情'
-        ], sys_config('site_url') . Route::buildUrl('/pages/users/order_details/index?order_id=' . $order['order_id'])->suffix('')->domain(false)->build());
+        ], '/pages/users/order_details/index?order_id=' . $order['order_id']);
     }
 
     /**
@@ -178,7 +219,7 @@ class WechatTemplateJob extends BaseJobs
             'keyword2' => $order['pay_price'],
             'keyword3' => date('Y-m-d H:i:s', $order['add_time']),
             'remark' => '点击查看订单详情'
-        ], sys_config('site_url') . Route::buildUrl('/pages/users/order_details/index?order_id=' . $order['order_id'])->suffix('')->domain(false)->build());
+        ], '/pages/users/order_details/index?order_id=' . $order['order_id']);
     }
 
     /**
@@ -196,42 +237,7 @@ class WechatTemplateJob extends BaseJobs
             'keyword2' => $userRecharge['price'],
             'keyword3' => date('Y-m-d H:i:s', $userRecharge['add_time']),
             'remark' => '点击查看订单详情'
-        ], sys_config('site_url') . Route::buildUrl('/pages/users/user_bill/index')->domain(false)->suffix(false)->build());
-    }
-
-    /**
-     * 佣金提现失败发送模板消息
-     * @param $uid
-     * @param $extract_number
-     * @param $fail_msg
-     * @return bool|mixed
-     */
-    public function sendUserBalanceChangeFial($openid, $extract_number, $fail_msg)
-    {
-        return $this->sendTemplate('USER_BALANCE_CHANGE', $openid, [
-            'first' => '提现失败,退回佣金' . $extract_number . '元',
-            'keyword1' => '佣金提现',
-            'keyword2' => date('Y-m-d H:i:s', time()),
-            'keyword3' => $extract_number,
-            'remark' => '错误原因:' . $fail_msg
-        ], sys_config('site_url') . Route::buildUrl('/pages/users/user_spread_money/index?type=1')->suffix(false)->domain(false)->build());
-    }
-
-    /**
-     * 佣金提现成功发送模板消息
-     * @param $uid
-     * @param $extractNumber
-     * @return bool|mixed
-     */
-    public function sendUserBalanceChangeSuccess($openid, $extractNumber)
-    {
-        return $this->sendTemplate('USER_BALANCE_CHANGE', $openid, [
-            'first' => '成功提现佣金' . $extractNumber . '元',
-            'keyword1' => '佣金提现',
-            'keyword2' => date('Y-m-d H:i:s', time()),
-            'keyword3' => $extractNumber,
-            'remark' => '点击查看我的佣金明细'
-        ], sys_config('site_url') . Route::buildUrl('/pages/users/user_spread_money/index?type=1')->suffix(false)->domain(false)->build());
+        ], '/pages/users/user_bill/index');
     }
 
     /**
@@ -248,7 +254,7 @@ class WechatTemplateJob extends BaseJobs
             'keyword1' => $order_id,
             'keyword2' => $title,
             'remark' => '点击查看订单详情'
-        ], sys_config('site_url') . Route::buildUrl('/pages/activity/goods_combination_status/index?id=' . $pinkId)->suffix(false)->domain(false)->build());
+        ], '/pages/activity/goods_combination_status/index?id=' . $pinkId);
     }
 
     /**
@@ -265,7 +271,7 @@ class WechatTemplateJob extends BaseJobs
             'keyword1' => $order_id,
             'keyword2' => $title,
             'remark' => '点击查看订单详情'
-        ], sys_config('site_url') . Route::buildUrl('/pages/activity/goods_combination_status/index?id=' . $pink_id)->suffix(false)->domain(false)->build());
+        ], '/pages/activity/goods_combination_status/index?id=' . $pink_id);
     }
 
     /**
@@ -284,7 +290,7 @@ class WechatTemplateJob extends BaseJobs
             'keyword2' => $pink->price,
             'keyword3' => $pink->price,
             'remark' => '点击查看订单详情'
-        ], sys_config('site_url') . Route::buildUrl('/pages/activity/goods_combination_status/index?id=' . $pink->id)->suffix(false)->domain(false)->build());
+        ], '/pages/activity/goods_combination_status/index?id=' . $pink->id);
     }
 
     /**
@@ -302,7 +308,7 @@ class WechatTemplateJob extends BaseJobs
             'keyword2' => $pink->price,
             'keyword3' => $pink->price,
             'remark' => '点击查看订单详情'
-        ], sys_config('site_url') . Route::buildUrl('/pages/activity/goods_combination_status/index?id=' . $pink->id)->suffix(false)->domain(false)->build());
+        ], '/pages/activity/goods_combination_status/index?id=' . $pink->id);
     }
 
     /**
@@ -320,7 +326,7 @@ class WechatTemplateJob extends BaseJobs
             'keyword2' => $pink['total_price'],
             'keyword3' => $pink['people'],
             'remark' => '点击查看订单详情'
-        ], sys_config('site_url') . Route::buildUrl('/pages/activity/goods_combination_status/index?id=' . $pink['id'])->suffix(false)->domain(false)->build());
+        ], '/pages/activity/goods_combination_status/index?id=' . $pink['id']);
     }
 
     /**
@@ -336,30 +342,9 @@ class WechatTemplateJob extends BaseJobs
             'keyword1' => $bargain['title'],
             'keyword2' => $bargain['min_price'],
             'remark' => '点击查看订单详情'
-        ], sys_config('site_url') . Route::buildUrl('/pages/activity/goods_bargain_details/index?id=' . $bargain['id'] . '&bargain=' . $bargainUserId)->suffix(false)->domain(false)->build());
+        ], '/pages/activity/goods_bargain_details/index?id=' . $bargain['id'] . '&bargain=' . $bargainUserId);
     }
 
-    /**
-     * 发送模板消息
-     * @param string $tempCode 模板消息常量名称
-     * @param $uid 用户uid
-     * @param array $data 模板内容
-     * @param string $link 跳转链接
-     * @param string|null $color 文字颜色
-     * @return bool|mixed
-     */
-    public function sendTemplate(string $tempCode, $openid, array $data, string $link = null, string $color = null)
-    {
-        try {
-            if (!$openid) return true;
-            $template = new Template('wechat');
-            $template->to($openid)->color($color);
-            if ($link) $template->url($link);
-            return $template->send($tempCode, $data);
-        } catch (\Exception $e) {
-            return true;
-        }
-    }
 
     /**
      * 佣金到账发送模板消息
@@ -370,12 +355,11 @@ class WechatTemplateJob extends BaseJobs
     {
         return $this->sendTemplate('ORDER_BROKERAGE', $openid, [
             'first' => '亲，您有一笔佣金入账!',
-            'keyword1' => $goodsName,
-            'keyword2' => $goodsPrice . "元",
-            'keyword3' => $brokeragePrice . "元",
-            'keyword4' => date('Y-m-d H:i:s', $orderTime),
+            'keyword1' => $brokeragePrice,//分销佣金
+            'keyword2' => $goodsPrice . "元",//交易金额
+            'keyword3' => date('Y-m-d H:i:s', $orderTime),//结算时间
             'remark' => '点击查看订单详情'
-        ], sys_config('site_url') . Route::buildUrl('/pages/users/user_spread_user/index')->suffix('')->domain(false)->build());
+        ], '/pages/users/user_spread_user/index');
     }
 
     /** 绑定推广关系发送消息提醒
@@ -386,10 +370,10 @@ class WechatTemplateJob extends BaseJobs
     public function sendBindSpreadUidSuccess(string $openid, string $userName)
     {
         return $this->sendTemplate('BIND_SPREAD_UID', $openid, [
-            'first' => '恭喜，又一员猛将将永久绑定到您的团队',
-            'keyword1' => $userName . "加入您的团队",
+            'first' => '恭喜，加入您的团队',
+            'keyword1' => $userName,
             'keyword2' => date('Y-m-d H:i:s', time()),
             'remark' => '授人以鱼不如授人以渔，一起分享赚钱吧，点击查看详情！'
-        ], sys_config('site_url') . Route::buildUrl('/pages/users/user_spread_user/index')->suffix('')->domain(false)->build());
+        ], '/pages/users/user_spread_user/index');
     }
 }

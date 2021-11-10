@@ -165,6 +165,16 @@
                         width: 80
                     },
                     {
+                      title: '分类',
+                      key: 'cate_name',
+                      minWidth: 120
+                    },
+                    {
+                        title: '标题',
+                        key: 'title',
+                        minWidth: 120
+                    },
+                    {
                         title: '详情',
                         key: 'message',
                         minWidth: 320
@@ -292,12 +302,8 @@
             },
             // 显示标签小菜单
             showMenu(item){
-                console.log('454545');
                 this.labelSort.forEach(el=>{
-                    console.log('rrrr',el.id);
-                    console.log('rrrr2',el.id);
                     if(el.id == item.id){
-                        console.log('ssss',item.status);
                         el.status = item.status?false:true
                     }else{
                         el.status = false
@@ -305,6 +311,7 @@
                 })
             },
             bindMenuItem(name,index){
+                this.tableFrom.page = 1
                 this.current = index;
                 this.labelSort.forEach(el=>{
                     el.status = false
@@ -473,11 +480,9 @@
             },
             // 列表
             getList () {
-                console.log('eeeeeeeeeee2');
                 this.loading = true;
                 wechatSpeechcraft(this.tableFrom).then(async res => {
                     let data = res.data
-                    console.log('eeeeeeeeeee3',data.list);
                     this.tableList = data.list;
                     this.total = res.data.count;
                     this.loading = false;

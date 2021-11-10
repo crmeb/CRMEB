@@ -1,10 +1,13 @@
 <template>
-	<view>
+	<view :style="colorStyle">
 		<view class='order-submission'>
-			<view class="allAddress" :style="store_self_mention ? '':'padding-top:10rpx'">
+			<view class="allAddress" :style="store_self_mention ? '':'padding-top:10rpx'" v-if="!virtual_type">
+
 				<view class="nav acea-row">
-					<view class="item font-color" :class="shippingType == 0 ? 'on' : 'on2'" @tap="addressType(0)" v-if='store_self_mention'></view>
-					<view class="item font-color" :class="shippingType == 1 ? 'on' : 'on2'" @tap="addressType(1)" v-if='store_self_mention'></view>
+					<view class="item font-num" :class="shippingType == 0 ? 'on' : 'on2'" @tap="addressType(0)"
+						v-if='store_self_mention'></view>
+					<view class="item font-num" :class="shippingType == 1 ? 'on' : 'on2'" @tap="addressType(1)"
+						v-if='store_self_mention'></view>
 				</view>
 				<view class='address acea-row row-between-wrapper' @tap='onAddress' v-if='shippingType == 0'>
 					<view class='addressCon' v-if="addressInfo.real_name">
@@ -12,7 +15,9 @@
 							<text class='phone'>{{addressInfo.phone}}</text>
 						</view>
 						<view class="line1">
-							<text class='default font-color' v-if="addressInfo.is_default">[默认]</text>{{addressInfo.province}}{{addressInfo.city}}{{addressInfo.district}}{{addressInfo.detail}}</view>
+							<text class='default font-num'
+								v-if="addressInfo.is_default">[默认]</text>{{addressInfo.province}}{{addressInfo.city}}{{addressInfo.district}}{{addressInfo.detail}}
+						</view>
 						<!-- <view class='setaddress'>设置收货地址</view> -->
 					</view>
 					<view class='addressCon' v-else>
@@ -38,15 +43,17 @@
 					<image src='/static/images/line.jpg'></image>
 				</view>
 			</view>
-			<orderGoods :cartInfo="cartInfo"></orderGoods>
+			<orderGoods :cartInfo="cartInfo" :is_confirm='true'></orderGoods>
 			<view class='wrapper'>
-				<view class='item acea-row row-between-wrapper' @tap='couponTap' v-if="!pinkId && !BargainId && !combinationId && !seckillId">
+				<view class='item acea-row row-between-wrapper' @tap='couponTap'
+					v-if="!pinkId && !BargainId && !combinationId && !seckillId&& !noCoupon && !discountId && !advanceId">
 					<view>优惠券</view>
 					<view class='discount'>{{couponTitle}}
 						<text class='iconfont icon-jiantou'></text>
 					</view>
 				</view>
-				<view class='item acea-row row-between-wrapper' v-if="!pinkId && !BargainId && !combinationId && !seckillId">
+				<view class='item acea-row row-between-wrapper'
+					v-if="!pinkId && !BargainId && !combinationId && !seckillId && !advanceId">
 					<view>积分抵扣</view>
 					<view class='discount acea-row row-middle'>
 						<view> {{useIntegral ? "剩余积分":"当前积分"}}
@@ -77,13 +84,15 @@
 					<view class="item acea-row row-between-wrapper">
 						<view>联系人</view>
 						<view class="discount">
-							<input style="text-align: right;" v-model="contacts" type="text" placeholder="请填写您的联系姓名" placeholder-class="placeholder"></input>
+							<input style="text-align: right;" v-model="contacts" type="text" placeholder="请填写您的联系姓名"
+								placeholder-class="placeholder"></input>
 						</view>
 					</view>
 					<view class="item acea-row row-between-wrapper">
 						<view>联系电话</view>
 						<view class="discount">
-							<input style="text-align: right;" v-model="contactsTel" type="text" placeholder="请填写您的联系电话" placeholder-class="placeholder"></input>
+							<input style="text-align: right;" v-model="contactsTel" type="text" placeholder="请填写您的联系电话"
+								placeholder-class="placeholder"></input>
 						</view>
 					</view>
 				</view>
@@ -93,11 +102,17 @@
 		    </view> -->
 				<view class='item' v-if="textareaStatus">
 					<view>备注信息</view>
-					<textarea v-if="coupon.coupon===false" placeholder-class='placeholder' @input='bindHideKeyboard' :value="mark" name="mark"
-					 placeholder='请添加备注（150字以内）'></textarea>
+					<!-- <view class="placeholder-textarea"> -->
+					<textarea placeholder-class='placeholder' placeholder="请添加备注（150字以内）" v-if="!coupon.coupon"
+						@input='bindHideKeyboard' :value="mark" :maxlength="150" name="mark">
+						</textarea>
+					<!-- 	<view class="placeholder" @click="clickTextArea" v-show="!mark">
+							请添加备注（150字以内）
+						</view> -->
+					<!-- </view> -->
 				</view>
 			</view>
-		<!-- 	<view class='wrapper'>
+			<!-- <view class='wrapper'>
 				<view class='item'>
 					<view>支付方式</view>
 					<view class='list'>
@@ -106,7 +121,7 @@
 							<view class='name acea-row'>
 								<view class='iconfont animated' :class='(item.icon) + " " + (animated==true&&active==index ?"bounceIn":"")'></view>{{item.name}}
 							</view>
-							<view class='tip'>{{item.title}}</view>
+							<view class='tip'>{{item.title}} <span v-if="item.value == 'yue'">{{item.number}}</span> </view>
 						</view>
 					</view>
 				</view>
@@ -114,20 +129,24 @@
 			<view class='moneyList'>
 				<view class='item acea-row row-between-wrapper'>
 					<view>商品总价：</view>
-					<view class='money'>￥{{(parseFloat(priceGroup.totalPrice)+parseFloat(priceGroup.vipPrice)).toFixed(2)}}</view>
+					<view class='money'>
+						￥{{(parseFloat(priceGroup.totalPrice)+parseFloat(priceGroup.vipPrice)).toFixed(2)}}</view>
 				</view>
 				<view class='item acea-row row-between-wrapper' v-if="priceGroup.storePostage > 0">
 					<view>配送运费：</view>
-					<view class='money'>￥{{(parseFloat(priceGroup.storePostage)+parseFloat(priceGroup.storePostageDiscount)).toFixed(2)}}</view>
+					<view class='money'>
+						￥{{(parseFloat(priceGroup.storePostage)+parseFloat(priceGroup.storePostageDiscount)).toFixed(2)}}
+					</view>
 				</view>
-				<view class='item acea-row row-between-wrapper' v-if="priceGroup.vipPrice > 0 && userInfo.vip && !pinkId && !BargainId && !combinationId && !seckillId">
+			<!-- 	<view class='item acea-row row-between-wrapper'
+					v-if="priceGroup.vipPrice > 0 && userInfo.vip && !pinkId && !BargainId && !combinationId && !seckillId && !discountId">
 					<view>会员商品优惠：</view>
 					<view class='money'>-￥{{parseFloat(priceGroup.vipPrice).toFixed(2)}}</view>
-				</view>
-				<view class='item acea-row row-between-wrapper' v-if="priceGroup.storePostageDiscount > 0">
+				</view> -->
+		<!-- 		<view class='item acea-row row-between-wrapper' v-if="priceGroup.storePostageDiscount > 0">
 					<view>会员运费优惠：</view>
 					<view class='money'>-￥{{parseFloat(priceGroup.storePostageDiscount).toFixed(2)}}</view>
-				</view>
+				</view> -->
 				<view class='item acea-row row-between-wrapper' v-if="coupon_price > 0">
 					<view>优惠券抵扣：</view>
 					<view class='money'>-￥{{parseFloat(coupon_price).toFixed(2)}}</view>
@@ -150,22 +169,25 @@
 				<view>合计:
 					<text class='font-color'>￥{{totalPrice || 0}}</text>
 				</view>
-				<!-- @tap="SubOrder" -->
-				<view class='settlement' style='z-index:100' @click="goPay">立即结算</view>
+				<view class='settlement' style='z-index:100' @tap.stop="goPay"
+					v-if="(valid_count>0&&!discount_id) || (valid_count==cartInfo.length&&discount_id)">立即结算</view>
+				<view class='settlement bg-color-hui' style='z-index:100' v-else>立即结算</view>
 			</view>
 		</view>
 		<view class="alipaysubmit" v-html="formContent"></view>
 		<couponListWindow :coupon='coupon' @ChangCouponsClone="ChangCouponsClone" :openType='openType' :cartId='cartId'
-		 @ChangCoupons="ChangCoupons"></couponListWindow>
+			@ChangCoupons="ChangCoupons"></couponListWindow>
 		<addressWindow ref="addressWindow" @changeTextareaStatus="changeTextareaStatus" :news='news' :address='address'
-		 :pagesUrl="pagesUrl" @OnChangeAddress="OnChangeAddress" @changeClose="changeClose"></addressWindow>
+			:pagesUrl="pagesUrl" @OnChangeAddress="OnChangeAddress" @changeClose="changeClose"></addressWindow>
 		<!-- #ifdef MP -->
 		<!-- <authorize @onLoadFun="onLoadFun" :isAuto="isAuto" :isShowAuth="isShowAuth" @authColse="authColse"></authorize> -->
 		<!-- #endif -->
 		<home v-show="!invShow"></home>
 		<invoice-picker :inv-show="invShow" :inv-list="invList" :inv-checked="invChecked" :is-special="special_invoice"
-		 :url-query="urlQuery" @inv-close="invClose" @inv-change="invChange" @inv-cancel="invCancel"></invoice-picker>
-		<payment :payMode="cartArr" :pay_close="pay_close" :isCall="true" :totalPrice="totalPrice.toString()" @onChangeFun="onChangeFun"></payment> 
+			:url-query="urlQuery" @inv-close="invClose" @inv-change="invChange" @inv-cancel="invCancel">
+		</invoice-picker>
+		<payment :payMode="cartArr" :pay_close="pay_close" :isCall="true" :totalPrice="totalPrice.toString()"
+			@changePayType="changePayType" @onChangeFun="onChangeFun"></payment>
 	</view>
 </template>
 <script>
@@ -196,7 +218,6 @@
 	import orderGoods from '@/components/orderGoods';
 	import home from '@/components/home';
 	import invoicePicker from '@/components/invoicePicker';
-	import payment from '@/components/payment';
 	import {
 		toLogin
 	} from '@/libs/login.js';
@@ -206,34 +227,37 @@
 	// #ifdef MP
 	import authorize from '@/components/Authorize';
 	// #endif
+	import payment from '@/components/payment';
+	import colors from "@/mixins/color";
 	export default {
 		components: {
+			payment,
 			invoicePicker,
 			couponListWindow,
 			addressWindow,
 			orderGoods,
 			home,
-			payment,
 			// #ifdef MP
 			authorize
 			// #endif
 		},
+		mixins: [colors],
 		data() {
 			return {
 				textareaStatus: true,
 				//支付方式
 				cartArr: [{
 						"name": "微信支付",
-						"icon": "icon-weixinzhifu",
+						"icon": "icon-weixin2",
 						value: 'weixin',
-						title: '微信快捷支付',
+						title: '使用微信快捷支付',
 						payStatus: 1,
 					},
 					{
 						"name": "支付宝支付",
 						"icon": "icon-zhifubao",
 						value: 'alipay',
-						title: '支付宝支付',
+						title: '使用线上支付宝支付',
 						payStatus: 1,
 					},
 					{
@@ -241,18 +265,17 @@
 						"icon": "icon-yuezhifu",
 						value: 'yue',
 						title: '可用余额:',
-						number: 0,
 						payStatus: 1,
 					},
 					{
 						"name": "线下支付",
 						"icon": "icon-yuezhifu1",
 						value: 'offline',
-						title: '线下支付',
+						title: '选择线下付款方式',
 						payStatus: 2,
 					}
 				],
-				pay_close: false,
+				virtual_type: 0,
 				formContent: '',
 				payType: 'weixin', //支付方式
 				openType: 1, //优惠券打开方式 1=使用
@@ -273,6 +296,7 @@
 				BargainId: 0,
 				combinationId: 0,
 				seckillId: 0,
+				discountId: 0,
 				userInfo: {}, //用户信息
 				mark: '', //备注信息
 				couponTitle: '请选择', //优惠券
@@ -288,6 +312,7 @@
 				shippingType: 0,
 				system_store: {},
 				storePostage: 0,
+				advanceId: 0,
 				contacts: '',
 				contactsTel: '',
 				mydata: {},
@@ -314,11 +339,15 @@
 				invShow: false,
 				invList: [],
 				invChecked: '',
-				urlQuery: ''
+				urlQuery: '',
+				pay_close: false,
+				noCoupon: 0,
+				valid_count: 0,
+				discount_id: 0
 			};
 		},
 		computed: mapGetters(['isLogin']),
-		onLoad: function(options) {
+		onLoad(options) {
 			// #ifdef H5
 			this.from = this.$wechat.isWeixin() ? 'weixin' : 'weixinh5'
 			// #endif
@@ -332,6 +361,7 @@
 				url: 1
 			});
 			this.couponId = options.couponId || 0;
+			this.noCoupon = options.noCoupon || 0;
 			this.pinkId = options.pinkId ? parseInt(options.pinkId) : 0;
 			this.addressId = options.addressId || 0;
 			this.cartId = options.cartId;
@@ -349,13 +379,12 @@
 					this.invTitle = '增值税电子专用发票';
 					break;
 			}
-			if (this.isLogin&&this.toPay == false) {
-				console.log('lklk');
+			// #ifndef APP-PLUS
+			this.textareaStatus = true;
+			// #endif
+			if (this.isLogin && this.toPay == false) {
 				this.getaddressInfo();
 				this.getConfirm();
-				this.getInvoiceList();
-
-				//调用子页面方法授权后执行获取地址列表
 				this.$nextTick(function() {
 					this.$refs.addressWindow.getAddressList();
 				})
@@ -368,15 +397,6 @@
 		 */
 		onShow: function() {
 			let _this = this
-			this.textareaStatus = true;
-			if (this.isLogin && this.toPay == false) {
-				this.getaddressInfo();
-				this.getConfirm();
-				this.$nextTick(function() {
-					this.$refs.addressWindow.getAddressList();
-				})
-			}
-
 			uni.$on("handClick", res => {
 				if (res) {
 					_this.system_store = res.address
@@ -406,6 +426,7 @@
 			// 关闭发票
 			invClose() {
 				this.invShow = false;
+				this.getInvoiceList()
 			},
 			getInvoiceList() {
 				uni.showLoading({
@@ -418,7 +439,7 @@
 						return item;
 					});
 					const result = this.invList.find(item => item.id == this.invChecked);
-					if(result){
+					if (result) {
 						let name = '';
 						name += result.header_type === 1 ? '个人' : '企业';
 						name += result.type === 1 ? '普通' : '专用';
@@ -436,6 +457,7 @@
 			 * 开发票
 			 */
 			goInvoice: function() {
+				this.getInvoiceList()
 				this.invShow = true;
 				this.urlQuery =
 					`new=${this.news}&cartId=${this.cartId}&pinkId=${this.pinkId}&couponId=${this.couponId}&addressId=${this.addressId}&specialInvoice=${this.special_invoice}&couponTitle=${this.couponTitle}`;
@@ -449,6 +471,26 @@
 				this.getConfirm();
 				//调用子页面方法授权后执行获取地址列表
 				// this.$scope.selectComponent('#address-window').getAddressList();
+			},
+			/**
+			 * 事件回调
+			 *
+			 */
+			onChangeFun: function(e) {
+				let opt = e;
+				let action = opt.action || null;
+				let value = opt.value != undefined ? opt.value : null;
+				action && this[action] && this[action](value);
+			},
+			payClose: function() {
+				this.pay_close = false;
+			},
+			goPay() {
+				this.pay_close = true;
+			},
+			payCheck(type) {
+				this.payType = type;
+				this.SubOrder();
 			},
 			/**
 			 * 获取门店列表数据
@@ -483,6 +525,10 @@
 						url: '/pages/users/goods_details_store/index'
 					})
 				}
+			},
+			changePayType(type) {
+				this.payType = type
+				this.computedPrice()
 			},
 			computedPrice: function() {
 				let shippingType = this.shippingType;
@@ -576,6 +622,7 @@
 				this.textareaStatus = true;
 				this.addressId = e;
 				this.address.address = false;
+				this.getConfirm()
 				this.getaddressInfo();
 				this.computedPrice();
 			},
@@ -589,32 +636,31 @@
 			getConfirm: function() {
 				let that = this;
 				// return;
-				orderConfirm(that.cartId, that.news).then(res => {
+				uni.showLoading({
+					title: '订单加载中',
+					mask: true
+				});
+				orderConfirm(that.cartId, that.news, that.addressId).then(res => {
 					that.$set(that, 'userInfo', res.data.userInfo);
 					that.$set(that, 'integral', res.data.userInfo.integral);
 					that.$set(that, 'contacts', res.data.userInfo.real_name);
-					that.$set(that, 'contactsTel', res.data.userInfo.record_phone || '');
+					that.$set(that, 'contactsTel', res.data.userInfo.record_phone === '0' ? '' : res.data
+						.userInfo.record_phone);
 					that.$set(that, 'cartInfo', res.data.cartInfo);
 					that.$set(that, 'integralRatio', res.data.integralRatio);
 					that.$set(that, 'offlinePostage', res.data.offlinePostage);
 					that.$set(that, 'orderKey', res.data.orderKey);
-
+					that.$set(that, 'valid_count', res.data.valid_count);
+					that.$set(that, 'discount_id', res.data.discount_id)
 					that.$set(that, 'priceGroup', res.data.priceGroup);
-					that.$set(that, 'totalPrice', that.$util.$h.Add(parseFloat(res.data.priceGroup.totalPrice), parseFloat(res.data
-						.priceGroup.storePostage)));
+					that.$set(that, 'totalPrice', that.$util.$h.Add(parseFloat(res.data.priceGroup.totalPrice),
+						parseFloat(res.data
+							.priceGroup.storePostage)));
 					that.$set(that, 'seckillId', parseInt(res.data.seckill_id));
 					that.$set(that, 'invoice_func', res.data.invoice_func);
 					that.$set(that, 'special_invoice', res.data.special_invoice);
-					// if (res.data.usableCoupon == null) {
-					// 	console.log(res.data.usableCoupon)
-					// 	that.usableCoupon.title = "暂无优惠券"
-
-					// } else {
-					// 	that.usableCoupon = res.data.usableCoupon
-
-					// }
-					// that.$set(that, 'usableCoupon', res.data.usableCoupon);
 					that.$set(that, 'store_self_mention', res.data.store_self_mention);
+					that.$set(that, 'virtual_type', res.data.virtual_type || 0);
 					//微信支付是否开启
 					that.cartArr[0].payStatus = res.data.pay_weixin_open || 0
 					//支付宝是否开启
@@ -623,9 +669,10 @@
 					that.cartArr[1].payStatus = 0;
 					//#endif
 					//余额支付是否开启
+					// that.cartArr[2].title = '可用余额:' + res.data.userInfo.now_money;
 					that.cartArr[2].number = res.data.userInfo.now_money;
-					that.cartArr[2].payStatus = res.data.yue_pay_status==1?1:0;
-					if (res.data.offline_pay_status == 2) {
+					that.cartArr[2].payStatus = res.data.yue_pay_status == 1 ? res.data.yue_pay_status : 0
+					if (res.data.offline_pay_status == 2 || res.data.deduction) {
 						that.cartArr[3].payStatus = 0
 					} else {
 						that.cartArr[3].payStatus = 1
@@ -638,7 +685,9 @@
 					if (this.addressId) {
 						this.computedPrice();
 					}
+					uni.hideLoading()
 				}).catch(err => {
+					uni.hideLoading()
 					return this.$util.Tips({
 						title: err
 					});
@@ -652,13 +701,19 @@
 				let cartINfo = that.cartInfo;
 				let BargainId = 0;
 				let combinationId = 0;
+				let discountId = 0;
+				let advanceId = 0;
 				cartINfo.forEach(function(value, index, cartINfo) {
 					BargainId = cartINfo[index].bargain_id,
-						combinationId = cartINfo[index].combination_id
+						combinationId = cartINfo[index].combination_id,
+						discountId = cartINfo[index].discount_id,
+						advanceId = cartINfo[index].advance_id
 				})
 				that.$set(that, 'BargainId', parseInt(BargainId));
 				that.$set(that, 'combinationId', parseInt(combinationId));
-				if (that.cartArr.length == 3 && (BargainId || combinationId || that.seckillId)) {
+				that.$set(that, 'discountId', parseInt(discountId));
+				that.$set(that, 'advanceId', parseInt(advanceId));
+				if (that.cartArr.length == 3 && (BargainId || combinationId || that.seckillId || discountId)) {
 					that.cartArr[2].payStatus = 0;
 					that.$set(that, 'cartArr', that.cartArr);
 				}
@@ -712,16 +767,14 @@
 			},
 			couponTap: function() {
 				this.coupon.coupon = true;
-				this.coupon.list.forEach((item,index)=>{
-					if(item.id==this.couponId){
-						console.log('kkkkee');
+				this.coupon.list.forEach((item, index) => {
+					if (item.id == this.couponId) {
 						item.is_use = 1
-					}else{
+					} else {
 						item.is_use = 0
 					}
 				})
 				this.$set(this.coupon, 'list', this.coupon.list);
-				console.log('ggg',this.coupon.list);
 			},
 			car: function() {
 				let that = this;
@@ -731,24 +784,20 @@
 				let that = this;
 				that.textareaStatus = false;
 				that.address.address = true;
-				that.pagesUrl = '/pages/users/user_address_list/index?news=' + this.news + '&cartId=' + this.cartId + '&pinkId=' +
+				that.pagesUrl = '/pages/users/user_address_list/index?news=' + this.news + '&cartId=' + this.cartId +
+					'&pinkId=' +
 					this.pinkId +
 					'&couponId=' +
 					this.couponId;
 			},
-			// realName: function(e) {
-			// 	this.contacts = e.detail.value;
-			// },
-			// phone: function(e) {
-			// 	this.contactsTel = e.detail.value;
-			// },
 			payment: function(data) {
 				let that = this;
 				orderCreate(that.orderKey, data).then(res => {
 					let status = res.data.status,
 						orderId = res.data.result.orderId,
 						jsConfig = res.data.result.jsConfig,
-						goPages = '/pages/order_pay_status/index?order_id=' + orderId + '&msg=' + res.msg;
+						goPages = '/pages/order_pay_status/index?order_id=' + orderId + '&msg=' + res.msg +
+						'&type=3' + '&totalPrice=' + this.totalPrice
 					switch (status) {
 						case 'ORDER_EXIST':
 						case 'EXTEND_ORDER':
@@ -759,21 +808,18 @@
 							}, {
 								tab: 5,
 								url: goPages
-							},()=>{
-								that.pay_close = false;
 							});
 							break;
 						case 'SUCCESS':
 							uni.hideLoading();
-							if (that.BargainId || that.combinationId || that.pinkId || that.seckillId)
+							if (that.BargainId || that.combinationId || that.pinkId || that.seckillId || that
+								.discountId)
 								return that.$util.Tips({
 									title: res.msg,
 									icon: 'success'
 								}, {
 									tab: 4,
 									url: goPages
-								},()=>{
-									that.pay_close = false;
 								});
 							return that.$util.Tips({
 								title: res.msg,
@@ -781,12 +827,10 @@
 							}, {
 								tab: 5,
 								url: goPages
-							},()=>{
-								that.pay_close = false;
 							});
 							break;
 						case 'WECHAT_PAY':
-						    that.toPay = true;
+							that.toPay = true;
 							// #ifdef MP
 							/* that.toPay = true; */
 							uni.requestPayment({
@@ -797,15 +841,14 @@
 								paySign: jsConfig.paySign,
 								success: function(res) {
 									uni.hideLoading();
-									if (that.BargainId || that.combinationId || that.pinkId || that.seckillId)
+									if (that.BargainId || that.combinationId || that.pinkId || that
+										.seckillId || that.discountId)
 										return that.$util.Tips({
 											title: '支付成功',
 											icon: 'success'
 										}, {
 											tab: 4,
 											url: goPages
-										},()=>{
-											that.pay_close = false;
 										});
 									return that.$util.Tips({
 										title: '支付成功',
@@ -813,8 +856,6 @@
 									}, {
 										tab: 5,
 										url: goPages
-									},()=>{
-										that.pay_close = false;
 									});
 								},
 								fail: function(e) {
@@ -824,21 +865,18 @@
 									}, {
 										tab: 5,
 										url: goPages + '&status=2'
-									},()=>{
-										that.pay_close = false;
 									});
 								},
 								complete: function(e) {
 									uni.hideLoading();
 									//关闭当前页面跳转至订单状态
-									if (res.errMsg == 'requestPayment:cancel') return that.$util.Tips({
-										title: '取消支付'
-									}, {
-										tab: 5,
-										url: goPages + '&status=2'
-									},()=>{
-										that.pay_close = false;
-									});
+									if (res.errMsg == 'requestPayment:cancel') return that.$util
+										.Tips({
+											title: '取消支付'
+										}, {
+											tab: 5,
+											url: goPages + '&status=2'
+										});
 								},
 							})
 							// #endif
@@ -850,19 +888,58 @@
 								}, {
 									tab: 5,
 									url: goPages
-								},()=>{
-									that.pay_close = false;
 								});
 							}).catch(res => {
+								if (!this.$wechat.isWeixin()) {
+									uni.redirectTo({
+										url: goPages +
+											'&msg=支付失败&status=2'
+									})
+								}
 								if (res.errMsg == 'chooseWXPay:cancel') return that.$util.Tips({
 									title: '取消支付'
 								}, {
 									tab: 5,
 									url: goPages + '&status=2'
-								},()=>{
-									that.pay_close = false;
 								});
 							})
+							// #endif
+							// #ifdef APP-PLUS
+							uni.requestPayment({
+								provider: 'wxpay',
+								orderInfo: jsConfig,
+								success: (e) => {
+									let url = goPages;
+									uni.showToast({
+										title: "支付成功"
+									})
+									setTimeout(res => {
+										uni.redirectTo({
+											url: url
+										})
+									}, 2000)
+								},
+								fail: (e) => {
+									let url = '/pages/order_pay_status/index?order_id=' + orderId +
+										'&msg=支付失败';
+									uni.showModal({
+										content: "支付失败",
+										showCancel: false,
+										success: function(res) {
+											if (res.confirm) {
+												uni.redirectTo({
+													url: url
+												})
+											} else if (res.cancel) {
+												console.log('用户点击取消');
+											}
+										}
+									})
+								},
+								complete: () => {
+									uni.hideLoading();
+								},
+							});
 							// #endif
 							break;
 						case 'PAY_DEFICIENCY':
@@ -873,27 +950,22 @@
 							}, {
 								tab: 5,
 								url: goPages + '&status=1'
-							},()=>{
-								that.pay_close = false;
 							});
 							break;
-						case "WECHAT_H5_PAY": //gongzhonghao
+						case "WECHAT_H5_PAY":
 							uni.hideLoading();
 							that.$util.Tips({
-								title: '订单创建成功'
+								title: '订单创建成功!'
 							}, {
-								tab: 5,
+								tab: 4,
 								url: goPages + '&status=0'
-							},()=>{
-								that.pay_close = false;
 							});
 							setTimeout(() => {
 								location.href = res.data.result.jsConfig.mweb_url;
-							}, 100);
+							}, 2000);
 							break;
 
 						case 'ALIPAY_PAY':
-						     that.pay_close = false;
 							//#ifdef H5
 							if (this.from === 'weixin') {
 								uni.redirectTo({
@@ -912,50 +984,65 @@
 								url: `/pages/users/alipay_invoke/index?id=${orderId}&link=${jsConfig.qrCode}`
 							});
 							// #endif
+							// #ifdef APP-PLUS
+							uni.requestPayment({
+								provider: 'alipay',
+								orderInfo: jsConfig,
+								success: (e) => {
+									uni.showToast({
+										title: "支付成功"
+									})
+									let url = '/pages/order_pay_status/index?order_id=' + orderId +
+										'&msg=支付成功';
+									setTimeout(res => {
+										uni.redirectTo({
+											url: url
+										})
+									}, 2000)
+
+								},
+								fail: (e) => {
+									let url = '/pages/order_pay_status/index?order_id=' + orderId +
+										'&msg=支付失败';
+									uni.showModal({
+										content: "支付失败",
+										showCancel: false,
+										success: function(res) {
+											if (res.confirm) {
+												uni.redirectTo({
+													url: url
+												})
+											} else if (res.cancel) {
+												console.log('用户点击取消');
+											}
+										}
+									})
+								},
+								complete: () => {
+									uni.hideLoading();
+								},
+							});
+							// #endif
 							break;
 					}
 				}).catch(err => {
 					uni.hideLoading();
 					return that.$util.Tips({
 						title: err
-					},()=>{
-						that.pay_close = false;
 					});
 				});
 			},
-			/**
-			 * 事件回调
-			 *
-			 */
-			onChangeFun: function(e) {
-				let opt = e;
-				let action = opt.action || null;
-				let value = opt.value != undefined ? opt.value : null;
-				action && this[action] && this[action](value);
-			},
-			/**
-			 * 关闭支付组件
-			 * 
-			 */
-			payClose: function() {
-				this.pay_close = false;
-			},
-			goPay(){
-				this.pay_close = true;
-			},
-			payCheck(type){
-				console.log('马敏娟gggttt',type);
-				this.payType = type;
-				this.SubOrder();
+			clickTextArea() {
+				this.$refs.textarea.focus()
 			},
 			SubOrder: function(e) {
 				let that = this,
 					data = {};
-					
+
 				if (!that.payType) return that.$util.Tips({
 					title: '请选择支付方式'
 				});
-				if (!that.addressId && !that.shippingType) return that.$util.Tips({
+				if (!that.addressId && !that.shippingType && !that.virtual_type) return that.$util.Tips({
 					title: '请选择收货地址'
 				});
 				if (that.shippingType == 1) {
@@ -969,7 +1056,7 @@
 							title: '请填写正确的手机号'
 						});
 					}
-					if (!/^[\u4e00-\u9fa5\w]{2,16}$/.test(that.contacts)) {
+					if (!that.contacts) {
 						return that.$util.Tips({
 							title: '请填写您的真实姓名'
 						});
@@ -988,23 +1075,29 @@
 					useIntegral: that.useIntegral,
 					bargainId: that.BargainId,
 					combinationId: that.combinationId,
+					discountId: that.discountId,
 					pinkId: that.pinkId,
+					advanceId: that.advanceId,
 					seckill_id: that.seckillId,
 					mark: that.mark,
-					store_id: that.system_store?that.system_store.id:0,
+					store_id: that.system_store ? that.system_store.id : 0,
 					'from': that.from,
 					shipping_type: that.$util.$h.Add(that.shippingType, 1),
 					'new': that.news,
 					'invoice_id': that.invChecked,
 					// #ifdef H5
-					quitUrl: location.port ? location.protocol + '//' + location.hostname + ':' + location.port +
-						'/pages/users/order_details/index?order_id=' + this.order_id : location.protocol + '//' + location.hostname +
-						'/pages/users/order_details/index?order_id=' + this.order_id
+					quitUrl: location.protocol + '//' + location.hostname +
+						'/pages/order_pay_status/index?' +
+						'&type=3' + '&totalPrice=' + this.totalPrice
+					// #endif
+					// #ifdef APP-PLUS
+					quitUrl: '/pages/users/order_details/index?order_id=' + this.order_id
 					// #endif
 				};
-				if (data.payType == 'yue' && parseFloat(that.userInfo.now_money) < parseFloat(that.totalPrice)) return that.$util.Tips({
-					title: '余额不足！'
-				});
+				if (data.payType == 'yue' && parseFloat(that.userInfo.now_money) < parseFloat(that.totalPrice))
+					return that.$util.Tips({
+						title: '余额不足！'
+					});
 				uni.showLoading({
 					title: '订单支付中'
 				});
@@ -1022,9 +1115,10 @@
 </script>
 
 <style lang="scss" scoped>
-	/deep/uni-checkbox[disabled] .uni-checkbox-input{
+	/deep/uni-checkbox[disabled] .uni-checkbox-input {
 		background-color: #eee;
 	}
+
 	.alipaysubmit {
 		display: none;
 	}
@@ -1079,10 +1173,7 @@
 
 	.order-submission .allAddress {
 		width: 100%;
-		background: linear-gradient(to bottom, #e93323 0%, #f5f5f5 100%);
-		// background-image: linear-gradient(to bottom, #e93323 0%, #f5f5f5 100%);
-		// background-image: -webkit-linear-gradient(to bottom, #e93323 0%, #f5f5f5 100%);
-		// background-image: -moz-linear-gradient(to bottom, #e93323 0%, #f5f5f5 100%);
+		background: linear-gradient(to bottom, var(--view-theme) 0%, #f5f5f5 100%);
 		padding-top: 100rpx;
 	}
 
@@ -1137,7 +1228,7 @@
 		width: 400rpx;
 		border-width: 0 0 60rpx 60rpx;
 		border-style: none solid solid;
-		border-color: transparent transparent #f7c1bd;
+		border-color: transparent transparent rgba(255, 255, 255, 0.6);
 		border-radius: 40rpx 6rpx 0 0;
 		text-align: center;
 		line-height: 60rpx;
@@ -1162,6 +1253,17 @@
 
 	.order-submission .wrapper .item .discount .placeholder {
 		color: #ccc;
+	}
+
+	.placeholder-textarea {
+		position: relative;
+
+		.placeholder {
+			position: absolute;
+			color: #ccc;
+			top: 26rpx;
+			left: 30rpx;
+		}
 	}
 
 	.order-submission .wrapper {
@@ -1318,7 +1420,7 @@
 		color: #fff;
 		width: 240rpx;
 		height: 70rpx;
-		background-color: #e93323;
+		background-color: var(--view-theme);
 		border-radius: 50rpx;
 		text-align: center;
 		line-height: 70rpx;

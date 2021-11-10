@@ -42,7 +42,7 @@ class Product extends AuthController
      */
     public function getCartProductList($uid, string $store_name = '')
     {
-        return app('json')->success($this->services->getProductCartList((int)$uid, $store_name));
+        return app('json')->success(get_thumb_water($this->services->getProductCartList((int)$uid, $store_name)));
     }
 
     /**
@@ -53,7 +53,7 @@ class Product extends AuthController
      */
     public function getVisitProductList($uid, string $store_name = '')
     {
-        return app('json')->success($this->services->getVisitProductList((int)$uid, $store_name));
+        return app('json')->success(get_thumb_water($this->services->getVisitProductList((int)$uid, $store_name)));
     }
 
     /**
@@ -67,7 +67,7 @@ class Product extends AuthController
      */
     public function getProductHotSale($uid, string $store_name = '')
     {
-        return app('json')->success($this->services->getProductHotSale((int)$uid, $store_name));
+        return app('json')->success(get_thumb_water($this->services->getProductHotSale((int)$uid, $store_name)));
     }
 
     /**
@@ -80,6 +80,6 @@ class Product extends AuthController
      */
     public function getProductInfo($id)
     {
-        return app('json')->success($this->services->getProductInfo((int)$id));
+        return app('json')->success(get_thumb_water($this->services->getProductInfo((int)$id), 'big', ['image', 'slider_image']));
     }
 }

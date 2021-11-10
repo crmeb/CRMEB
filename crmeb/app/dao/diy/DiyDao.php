@@ -8,7 +8,7 @@
 // +----------------------------------------------------------------------
 // | Author: CRMEB Team <admin@crmeb.com>
 // +----------------------------------------------------------------------
-declare (strict_types=1);
+declare (strict_types = 1);
 
 namespace app\dao\diy;
 
@@ -42,9 +42,9 @@ class DiyDao extends BaseDao
      * @throws \think\db\exception\DbException
      * @throws \think\db\exception\ModelNotFoundException
      */
-    public function getDiyList(array $where, int $page, int $limit)
+    public function getDiyList(array $where, int $page, int $limit, array $field = ['*'])
     {
-        return $this->search($where)->where('is_del', 0)->page($page, $limit)->order('id desc')->select()->toArray();
+        return $this->search($where)->field($field)->where('is_del', 0)->page($page, $limit)->order('id desc')->select()->toArray();
     }
 
 }

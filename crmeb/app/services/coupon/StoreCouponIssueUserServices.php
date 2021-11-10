@@ -8,7 +8,7 @@
 // +----------------------------------------------------------------------
 // | Author: CRMEB Team <admin@crmeb.com>
 // +----------------------------------------------------------------------
-declare (strict_types=1);
+declare (strict_types = 1);
 
 namespace app\services\coupon;
 
@@ -16,10 +16,10 @@ use app\services\BaseServices;
 use app\dao\coupon\StoreCouponIssueUserDao;
 
 /**
- *
  * Class StoreCouponIssueUserServices
  * @package app\services\coupon
  * @method  getColumn(array $where, string $field, ?string $key = '')
+ * @method  delIssueUserCoupon(array $where)
  */
 class StoreCouponIssueUserServices extends BaseServices
 {

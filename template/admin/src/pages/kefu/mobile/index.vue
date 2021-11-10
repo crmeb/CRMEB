@@ -102,7 +102,7 @@
                 <div class="title">转接客服<span class="iconfont iconcha" @click="closeTransfer"></span></div>
                 <div class="list-wrapper">
                     <RadioGroup v-model="activeKF">
-                        <Radio class="list-item" v-for="(item,index) in transferList" :label="item.uid">
+                        <Radio class="list-item" v-for="(item,index) in transferList" :label="item.uid" :key="index">
                             <div class="avatar-box">
                                 <img v-lazy="item.avatar" alt="">
                             </div>
@@ -268,6 +268,7 @@
                     }
                     if(data.msn_type == 5) return
                     this.chatList.push(data)
+
                     this.$refs["scrollBox"].refresh();
                     this.$nextTick(() => {
                         this.scrollBom()
@@ -486,7 +487,6 @@
             },
             // 常用于选择
             selectWords(item) {
-                console.log(item.message)
                 this.isWords = false
                 this.sendMsg(item.message, 1)
             },
@@ -509,7 +509,6 @@
                 let info = uni.createSelectorQuery().select(".chat");
                 setTimeout(res => {
                     info.boundingClientRect(function (data) { //data - 各种参数
-                        console.log(data.height, 'data.height') // 获取元素高度
                         scrollTop = data.height
                         if (self.active) {
                             self.scrollTop = parseInt(scrollTop) + 500

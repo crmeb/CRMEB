@@ -175,6 +175,7 @@ class ExportExcel extends AuthController
     public function storeBargain(StoreBargainServices $services)
     {
         $where = $this->request->getMore([
+            ['start_status', ''],
             ['status', ''],
             ['store_name', ''],
         ]);
@@ -190,6 +191,7 @@ class ExportExcel extends AuthController
     public function storeCombination(StoreCombinationServices $services)
     {
         $where = $this->request->getMore([
+            ['start_status', ''],
             ['is_show', ''],
             ['store_name', ''],
         ]);
@@ -197,10 +199,22 @@ class ExportExcel extends AuthController
         /** @var StorePinkServices $storePinkServices */
         $storePinkServices = app()->make(StorePinkServices::class);
         $countAll = $storePinkServices->getPinkCount([]);
-        $countTeam = $storePinkServices->getPinkCount(['k_id' => 0]);
+        $countTeam = $storePinkServices->getPinkCount(['k_id' => 0, 'status' => 2]);
+        $countPeople = $storePinkServices->getPinkCount(['k_id' => 0]);
         foreach ($data as &$item) {
+            $item['count_people'] = $countPeople[$item['id']] ?? 0;//拼团数量
             $item['count_people_all'] = $countAll[$item['id']] ?? 0;//参与人数
             $item['count_people_pink'] = $countTeam[$item['id']] ?? 0;//成团数量
+            $item['stop_status'] = $item['stop_time'] < time() ? 1 : 0;
+            if ($item['is_show']) {
+                if ($item['start_time'] > time())
+                    $item['start_name'] = '未开始';
+                else if ($item['stop_time'] < time())
+                    $item['start_name'] = '已结束';
+                else if ($item['stop_time'] > time() && $item['start_time'] < time()) {
+                    $item['start_name'] = '进行中';
+                }
+            } else $item['start_name'] = '已结束';
         }
         return app('json')->success($this->service->storeCombination($data));
     }
@@ -213,6 +227,7 @@ class ExportExcel extends AuthController
     public function storeSeckill(StoreSeckillServices $services)
     {
         $where = $this->request->getMore([
+            ['start_status', ''],
             ['status', ''],
             ['store_name', '']
         ]);

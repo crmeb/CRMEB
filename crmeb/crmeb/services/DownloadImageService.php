@@ -23,8 +23,10 @@ class DownloadImageService
     protected $thumbWidth = 300;
     //缩略图高度
     protected $thumHeight = 300;
+    //存储位置
+    protected $path = 'attach';
 
-    protected $rules = ['thumb', 'thumbWidth', 'thumHeight'];
+    protected $rules = ['thumb', 'thumbWidth', 'thumHeight', 'path'];
 
     /**
      * 获取即将要下载的图片扩展名
@@ -48,12 +50,13 @@ class DownloadImageService
     }
 
     /**
-     * @param $url
+     * 下载图片
+     * @param string $url
      * @param string $name
      * @param int $upload_type
      * @return mixed
      */
-    public function downloadImage($url, $name = '', $upload_type = 1)
+    public function downloadImage(string $url, $name = '')
     {
         if (!$name) {
             //TODO 获取要下载的文件名称
@@ -65,30 +68,38 @@ class DownloadImageService
             $url = 'http:' . $url;
         }
         $url = str_replace('https://', 'http://', $url);
-        ob_start();
-        readfile($url);
-        $content = ob_get_contents();
-        ob_end_clean();
-
-        $size = strlen(trim($content));
-        if (!$content || $size <= 2) throw new ValidateException('图片流获取失败');
-        $date_dir = date('Y') . DIRECTORY_SEPARATOR . date('m') . DIRECTORY_SEPARATOR . date('d');
-        $upload = UploadService::init($upload_type);
-        if ($upload->to('attach/' . $date_dir)->stream($content, $name) === false) {
-            throw new ValidateException('图片下载失败');
+        if ($this->path == 'attach') {
+            $date_dir = date('Y') . DIRECTORY_SEPARATOR . date('m') . DIRECTORY_SEPARATOR . date('d');
+            $to_path = $this->path . '/' . $date_dir;
+        } else {
+            $to_path = $this->path;
         }
-        $imageInfo = $upload->getUploadInfo();
-        $path = '.' . $imageInfo['dir'];
-        if ($this->thumb) {
-            Image::open($path)->thumb($this->thumbWidth, $this->thumHeight)->save($path);
-            $this->thumb = false;
+        $upload = UploadService::init(1);
+        if (!file_exists($upload->uploadDir($to_path) . '/' . $name)) {
+            ob_start();
+            readfile($url);
+            $content = ob_get_contents();
+            ob_end_clean();
+            $size = strlen(trim($content));
+            if (!$content || $size <= 2) throw new ValidateException('图片流获取失败');
+            if ($upload->to($to_path)->down($content, $name) === false) {
+                throw new ValidateException('图片下载失败');
+            }
+            $imageInfo = $upload->getDownloadInfo();
+            $path = $imageInfo['dir'];
+            if ($this->thumb) {
+                Image::open(root_path() . 'public' . $path)->thumb($this->thumbWidth, $this->thumHeight)->save(root_path() . 'public' . $path);
+                $this->thumb = false;
+            }
+        } else {
+            $path = '/uploads/' . $to_path . '/' . $name;
+            $imageInfo['name'] = $name;
         }
-
         $date['path'] = $path;
         $date['name'] = $imageInfo['name'];
-        $date['size'] = $imageInfo['size'];
-        $date['mime'] = $imageInfo['type'];
-        $date['image_type'] = $upload_type;
+        $date['size'] = $imageInfo['size'] ?? '';
+        $date['mime'] = $imageInfo['type'] ?? '';
+        $date['image_type'] = 1;
         $date['is_exists'] = false;
         return $date;
     }
@@ -101,8 +112,8 @@ class DownloadImageService
     public function __call($name, $arguments)
     {
         if (in_array($name, $this->rules)) {
-            if ($name === 'data') {
-                $this->{$name} = $arguments;
+            if ($name === 'path') {
+                $this->{$name} = $arguments[0] ?? 'attach';
             } else {
                 $this->{$name} = $arguments[0] ?? null;
             }

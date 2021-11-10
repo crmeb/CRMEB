@@ -8,7 +8,7 @@
 // +----------------------------------------------------------------------
 // | Author: CRMEB Team <admin@crmeb.com>
 // +----------------------------------------------------------------------
-declare (strict_types=1);
+declare (strict_types = 1);
 
 namespace app\services\user;
 
@@ -164,6 +164,21 @@ class UserAddressServices extends BaseServices
      */
     public function editAddress(int $uid, array $addressInfo)
     {
+        if ($addressInfo['id'] == 0) {
+            if (isset($addressInfo['address']['city_id'])) {
+                $where['city_id'] = $addressInfo['address']['city_id'];
+            } else {
+                $where = [];
+            }
+            $res = $this->dao->getCount([
+                    ['uid', '=', $uid],
+                    ['real_name', '=', $addressInfo['real_name']],
+                    ['phone', '=', $addressInfo['phone']],
+                    ['detail', '=', $addressInfo['detail']]
+                ] + $where);
+            if ($res) throw new ValidateException('地址已存在，请勿重复添加');
+        }
+
         if ($addressInfo['type'] == 1 && !$addressInfo['id']) {
             $city = $addressInfo['address']['city'];
             /** @var SystemCityServices $systemCity */
@@ -176,10 +191,10 @@ class UserAddressServices extends BaseServices
                 if (!$cityInfo) {
                     throw new ValidateException('收货地址格式错误!修改后请重新导入!');
                 }
+                $addressInfo['address']['city_id'] = $cityInfo['city_id'];
             }
-            $addressInfo['address']['city_id'] = $cityInfo['city_id'];
         }
-        if(!isset($addressInfo['address']['city_id']) || $addressInfo['address']['city_id'] == 0) throw new ValidateException('添加收货地址失败!');
+        if (!isset($addressInfo['address']['city_id']) || $addressInfo['address']['city_id'] == 0) throw new ValidateException('添加收货地址失败!');
         $addressInfo['province'] = $addressInfo['address']['province'];
         $addressInfo['city'] = $addressInfo['address']['city'];
         $addressInfo['city_id'] = $addressInfo['address']['city_id'] ?? 0;
@@ -205,6 +220,11 @@ class UserAddressServices extends BaseServices
             return ['type' => 'edit', 'msg' => '编辑地址成功', 'data' => []];
         } else {
             $addressInfo['add_time'] = time();
+
+            //首次添加地址，自动设置为默认地址
+            $addrCount = $this->getAddresCount(['uid' => $uid]);
+            if (!$addrCount) $addressInfo['is_default'] = 1;
+
             if (!$address = $this->dao->save($addressInfo)) {
                 throw new ValidateException('添加收货地址失败');
             }

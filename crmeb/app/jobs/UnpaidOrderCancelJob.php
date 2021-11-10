@@ -23,15 +23,17 @@ use think\facade\Log;
 /**
  * 未支付订单到期取消
  * Class UnpaidOrderCancelJob
- * @package app\jobs
+ * @package crmeb\jobs
  */
 class UnpaidOrderCancelJob extends BaseJobs
 {
+
     use QueueTrait;
+
     public function doJob($orderId)
     {
         /** @var StoreOrderServices $services */
-        $services = app()->make(StoreOrderServices::class);
+        $services  = app()->make(StoreOrderServices::class);
         $orderInfo = $services->get($orderId);
         if (!$orderInfo) {
             return true;
@@ -47,7 +49,7 @@ class UnpaidOrderCancelJob extends BaseJobs
         }
         /** @var StoreOrderCartInfoServices $cartServices */
         $cartServices = app()->make(StoreOrderCartInfoServices::class);
-        $cartInfo = $cartServices->getOrderCartInfo($orderId);
+        $cartInfo     = $cartServices->getOrderCartInfo($orderId);
         /** @var StoreOrderRefundServices $refundServices */
         $refundServices = app()->make(StoreOrderRefundServices::class);
 
@@ -61,7 +63,7 @@ class UnpaidOrderCancelJob extends BaseJobs
             });
             if ($res) {
                 $orderInfo->is_del = 1;
-                $orderInfo->mark = '订单未支付已超过系统预设时间';
+                $orderInfo->mark   = '订单未支付已超过系统预设时间';
                 $orderInfo->save();
                 try {
                     /** @var StoreSeckillServices $seckiiServices */

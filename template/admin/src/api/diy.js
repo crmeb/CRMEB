@@ -155,3 +155,85 @@ export function getProductList(params) {
     });
 }
 
+/**
+ * @description 换色 -- 一键换色、分类提交；
+ */
+ export function colorChange (status,name) {
+    return request({
+        url: `diy/color_change/${status}/${name}`,
+        method: 'put'
+    });
+}
+
+/**
+ * @description 换色 -- 一键换色、分类信息；
+ */
+ export function getColorChange (name) {
+    return request({
+        url: `diy/get_color_change/${name}`,
+        method: 'get'
+    });
+}
+
+/**
+ * @description 个人中心-获取信息；
+ */
+ export function getMember () {
+    return request({
+        url: `diy/get_member`,
+        method: 'get'
+    });
+}
+
+/**
+ * @description 小程序 -- 二维码；
+ */
+ export function getRoutineCode (id) {
+    return request({
+        url: `diy/get_routine_code/${id}`,
+        method: 'get'
+    });
+}
+
+/**
+ * @description 个人中心-提交信息；
+ */
+ export function memberSave (data) {
+    return request({
+        url: `diy/member_save`,
+        method: 'post',
+        data: data
+    });
+}
+
+/**
+ * @description 页面链接-获取分类；
+ */
+ export function pageCategory () {
+    return request({
+        url: `diy/get_page_category`,
+        method: 'get'
+    });
+}
+
+
+/**
+ * @description 页面链接-获取链接；
+ */
+ export function pageLink (id) {
+    return request({
+        url: `diy/get_page_link/${id}`,
+        method: 'get'
+    });
+}
+
+/**
+ * @description 页面链接-自定义链接提交；
+ */
+export function saveLink (data,id) {
+    return request({
+        url: `diy/save_link/${id}`,
+        method: 'post',
+        data: data
+    });
+}

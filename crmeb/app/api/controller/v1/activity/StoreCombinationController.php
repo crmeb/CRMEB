@@ -36,7 +36,7 @@ class StoreCombinationController
     public function lst()
     {
         $list = $this->services->getCombinationList();
-        return app('json')->successful($list);
+        return app('json')->successful(get_thumb_water($list));
     }
 
 
@@ -103,6 +103,18 @@ class StoreCombinationController
     }
 
     /**
+     * 获取拼团海报详情
+     * @param Request $request
+     * @param StorePinkServices $services
+     * @param $id
+     * @return mixed
+     */
+    public function posterInfo(Request $request, StorePinkServices $services, $id)
+    {
+        return app('json')->success($services->posterInfo((int)$id, $request->user()));
+    }
+
+    /**
      * 获取秒杀小程序二维码
      * @param Request $request
      * @param $id
@@ -118,5 +130,14 @@ class StoreCombinationController
         } else {
             return app('json')->success(['code' => '']);
         }
+    }
+
+    /**
+     * 获取拼团列表轮播图
+     */
+    public function banner_list()
+    {
+        $banner = sys_data('combination_banner') ?? [];
+        return app('json')->success($banner);
     }
 }

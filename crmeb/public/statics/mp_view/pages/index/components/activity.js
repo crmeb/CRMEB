@@ -1,0 +1,10 @@
+(global["webpackJsonp"]=global["webpackJsonp"]||[]).push([["pages/index/components/activity"],{"3d18":function(t,a,n){"use strict";(function(t){Object.defineProperty(a,"__esModule",{value:!0}),a.default=void 0;var e=n("4729"),i=getApp(),c={name:"activity",props:{dataConfig:{type:Object,default:function(){}}},watch:{dataConfig:{immediate:!0,handler:function(t,a){if(t){var n=JSON.parse(JSON.stringify(t.imgList.list));this.activityOne=t.imgList.list[0],n.splice(0,1),this.activity=n,this.isShow=t.isShow.val}}}},data:function(){return{activity:[],activityOne:{},name:this.$options.name,isShow:!0,isIframe:i.globalData.isIframe}},created:function(){},methods:{gopage:function(a){(0,e.goPage)().then((function(n){-1!=a.indexOf("http")||(["/pages/goods_cate/goods_cate","/pages/order_addcart/order_addcart","/pages/user/index"].indexOf(a),t.navigateTo({url:a}))}))}}};a.default=c}).call(this,n("543d")["default"])},"6ab8":function(t,a,n){"use strict";var e=n("992e"),i=n.n(e);i.a},"992e":function(t,a,n){},"9be2":function(t,a,n){"use strict";n.r(a);var e=n("faaa"),i=n("f48c");for(var c in i)"default"!==c&&function(t){n.d(a,t,(function(){return i[t]}))}(c);n("6ab8");var o,r=n("f0c5"),u=Object(r["a"])(i["default"],e["b"],e["c"],!1,null,null,null,!1,e["a"],o);a["default"]=u.exports},f48c:function(t,a,n){"use strict";n.r(a);var e=n("3d18"),i=n.n(e);for(var c in e)"default"!==c&&function(t){n.d(a,t,(function(){return e[t]}))}(c);a["default"]=i.a},faaa:function(t,a,n){"use strict";var e;n.d(a,"b",(function(){return i})),n.d(a,"c",(function(){return c})),n.d(a,"a",(function(){return e}));var i=function(){var t=this,a=t.$createElement;t._self._c},c=[]}}]);
+;(global["webpackJsonp"] = global["webpackJsonp"] || []).push([
+    'pages/index/components/activity-create-component',
+    {
+        'pages/index/components/activity-create-component':(function(module, exports, __webpack_require__){
+            __webpack_require__('543d')['createComponent'](__webpack_require__("9be2"))
+        })
+    },
+    [['pages/index/components/activity-create-component']]
+]);

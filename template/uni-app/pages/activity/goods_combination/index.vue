@@ -1,8 +1,8 @@
 <template>
-	<view class="group-list">
+	<view class="group-list" :style="colorStyle">
 		<view class="swiper" v-if="bannerList.length">
-			<swiper indicator-dots="true" :autoplay="true" :circular="circular"
-			 :interval="interval" :duration="duration" indicator-color="rgba(0,0,0,0.3)">
+			<swiper indicator-dots="true" :autoplay="true" :circular="circular" :interval="interval"
+				:duration="duration" indicator-color="rgba(0,0,0,0.3)">
 				<block v-for="(item,index) in bannerList" :key="index">
 					<swiper-item>
 						<view @click="goDetail(item)" class='slide-navigator acea-row row-between-wrapper'>
@@ -13,19 +13,29 @@
 			</swiper>
 		</view>
 		<view class="groupMember acea-row row-center-wrapper">
-			<view class="line"><image src="../static/groupLine.png"></image></view>
+			<view class="line">
+				<image src="../static/groupLine.png"></image>
+			</view>
 			<view class="member acea-row row-center-wrapper">
-				<view class="pictrue" v-for="(item,index) in pinkPeople" :key="index" v-if="index<6"><image :src="item"></image></view>
+				<view class="pictrue" v-for="(item,index) in pinkPeople" :key="index" v-if="index<6">
+					<image :src="item"></image>
+				</view>
+				<text style="margin-left: 10rpx;">{{pinkCount}}人参与</text>
 				<view class="pictrue" v-if="pinkPeople.length>5">
 					<image :src="pinkPeople[pinkPeople.length-1]"></image>
 					<view class="iconfont icon-gengduo1"></view>
 				</view>
 			</view>
-			<view class="line right"><image src="../static/groupLine.png"></image></view>
+			<view class="line right">
+				<image src="../static/groupLine.png"></image>
+			</view>
 		</view>
 		<view class="list">
-			<view class="item acea-row row-between-wrapper" v-for="(item,index) in combinationList" :key='index' @tap="openSubcribe(item)">
-				<view class="pictrue"><image :src="item.image"></image></view>
+			<view class="item acea-row row-between-wrapper" v-for="(item,index) in combinationList" :key='index'
+				@tap="openSubcribe(item)">
+				<view class="pictrue">
+					<image :src="item.image"></image>
+				</view>
 				<view class="text">
 					<view class="name line2">{{item.title}}</view>
 					<view class="bottom acea-row row-between row-bottom">
@@ -34,7 +44,9 @@
 							<view class="money">￥<text class="num">{{item.price}}</text></view>
 						</view>
 						<view class="bnt acea-row row-center-wrapper" v-if="item.stock>0&&item.quota>0">
-							<view class="light"><image src="../static/lightning.png"></image></view>
+							<view class="light">
+								<image src="../static/lightning.png"></image>
+							</view>
 							<view class="num">{{item.people}}人团</view>
 							<view class="go">去拼团</view>
 						</view>
@@ -43,27 +55,34 @@
 				</view>
 			</view>
 		</view>
+		<!-- #ifndef MP -->
 		<home></home>
+		<!-- #endif -->
 	</view>
 </template>
 
 <script>
 	import {
-		getCombinationList,getCombinationBannerList,getPink
+		getCombinationList,
+		getCombinationBannerList,
+		getPink
 	} from '@/api/activity.js';
 	import {
 		openPinkSubscribe
 	} from '../../../utils/SubscribeMessage.js';
 	import home from '@/components/home/index.vue'
+	import colors from "@/mixins/color";
 	let app = getApp();
 	export default {
 		components: {
 			home
 		},
+		mixins: [colors],
 		data() {
 			return {
-				pinkPeople:[],
-				bannerList:[],
+				pinkPeople: [],
+				pinkCount: 0,
+				bannerList: [],
 				circular: true,
 				autoplay: true,
 				interval: 3000,
@@ -77,27 +96,44 @@
 		},
 		onLoad() {
 			uni.setNavigationBarTitle({
-				title:"拼团列表"
+				title: "拼团列表"
 			})
 			this.getCombinationList();
 			this.getBannerList();
 			this.getPink();
 		},
 		methods: {
-			getPink:function(){
-				getPink().then(res=>{
+			getPink: function() {
+				getPink().then(res => {
 					this.pinkPeople = res.data.avatars;
+					this.pinkCount = res.data.pink_count;
 				})
 			},
-			getBannerList: function(){
-				getCombinationBannerList().then(res=>{
+			getBannerList: function() {
+				getCombinationBannerList().then(res => {
 					this.bannerList = res.data;
 				})
 			},
 			goDetail(item) {
-				uni.navigateTo({
-					url: item.link
-				})
+				let url = item.link;
+				if (url.indexOf("http") != -1) {
+					// #ifdef H5
+					location.href = url
+					// #endif
+				} else {
+					if (['/pages/goods_cate/goods_cate', '/pages/order_addcart/order_addcart', '/pages/user/index',
+							'/pages/index/index'
+						]
+						.indexOf(url) == -1) {
+						uni.navigateTo({
+							url: url
+						})
+					} else {
+						uni.switchTab({
+							url: url
+						})
+					}
+				}
 			},
 			openSubcribe: function(item) {
 				let page = item;
@@ -150,72 +186,90 @@
 
 <style lang="scss">
 	page {
-		background-color: #E93323 !important;
+		// background-color: var(--view-theme) !important;
 	}
-	.group-list{
-		.swiper{
+
+	.group-list {
+		min-height: 100vh;
+		background-color: var(--view-theme) !important;
+		padding: 30rpx 0;
+
+		.swiper {
 			width: 100%;
 			position: relative;
 			box-sizing: border-box;
 			padding: 0 30rpx;
-			margin-top: 30rpx;
-			swiper{
+
+			swiper {
 				width: 100%;
 				height: 300rpx;
-				.slide-image{
+
+				.slide-image {
 					width: 100%;
 					height: 300rpx;
 					border-radius: 20rpx;
 				}
+
 				/deep/.uni-swiper-dot {
 					width: 8rpx !important;
 					height: 8rpx !important;
 					border-radius: 50%;
 				}
-				/deep/.uni-swiper-dot-active{
+
+				/deep/.uni-swiper-dot-active {
 					width: 18rpx !important;
 					border-radius: 4rpx;
-					background-color: #E93323!important;
+					background-color: var(--view-theme) !important;
 				}
 			}
 		}
-		.groupMember{
+
+		.groupMember {
 			height: 100rpx;
-			.line{
+
+			.line {
 				width: 102rpx;
 				height: 4rpx;
-				&.right{
-					transform:rotate(180deg);
+
+				&.right {
+					transform: rotate(180deg);
 				}
-				image{
+
+				image {
 					width: 100%;
 					height: 100%;
 					display: block;
 				}
 			}
-			.member{
+
+			.member {
 				margin: 0 30rpx;
-				.pictrue{
+				color: #fff;
+
+				.pictrue {
 					width: 46rpx;
 					height: 46rpx;
 					position: relative;
-					image{
-						border:2rpx solid #fff;
+
+					image {
+						border: 2rpx solid #fff;
 						width: 100%;
 						height: 100%;
 						border-radius: 50%;
 					}
-					&~.pictrue{
+
+					&~.pictrue {
 						margin-left: -8rpx;
 					}
-					.iconfont{
+
+					.iconfont {
 						position: absolute;
 						width: 43rpx;
 						height: 43rpx;
 						background: rgba(51, 51, 51, 0.6);
 						border-radius: 50%;
 						top: 2rpx;
-						left:2rpx;
+						left: 2rpx;
 						color: #fff;
 						font-size: 10rpx;
 						text-align: center;
@@ -224,84 +278,100 @@
 				}
 			}
 		}
-		.list{
-			.item{
+
+		.list {
+			.item {
 				width: 690rpx;
 				height: 230rpx;
 				background-color: #fff;
 				border-radius: 14rpx;
 				padding: 0 22rpx;
 				margin: 0 auto 18rpx auto;
-				.pictrue{
+
+				.pictrue {
 					width: 186rpx;
 					height: 186rpx;
-					image{
+
+					image {
 						width: 100%;
 						height: 100%;
 						border-radius: 10rpx;
 					}
 				}
-				.text{
+
+				.text {
 					width: 440rpx;
-					.name{
-						color: #333333;
+
+					.name {
+						color: #333;
 						font-size: 30rpx;
 						height: 82rpx;
 					}
-					.bottom{
+
+					.bottom {
 						margin-top: 10rpx;
-						.y_money{
+
+						.y_money {
 							font-size: 24rpx;
-							color: #999999;
-							.price{
+							color: #999;
+
+							.price {
 								text-decoration: line-through;
 							}
-							.money{
-								color: #E93323;
+
+							.money {
+								color: var(--view-priceColor);
 								font-weight: 600;
-								.num{
+
+								.num {
 									font-size: 34rpx;
 								}
 							}
 						}
-						.bnt{
+
+						.bnt {
 							height: 58rpx;
 							font-size: 24rpx;
 							text-align: center;
 							position: relative;
-							background-color: #E93323;
+							background-color: var(--view-theme);
 							border-radius: 28rpx;
-							.light{
+
+							.light {
 								position: absolute;
 								width: 28rpx;
 								height: 58rpx;
-								top:0;
-								left:50%;
+								top: 0;
+								left: 50%;
 								margin-left: -8rpx;
-								image{
+
+								image {
 									width: 100%;
 									height: 100%;
 								}
 							}
-							.num{
+
+							.num {
 								width: 120rpx;
-								background-color: #ffefdb;
-								color: #E93323;
+								background-color: rgba(255, 255, 255, 0.85);
+								color: var(--view-theme);
 								height: 100%;
 								line-height: 58rpx;
 								border-radius: 28rpx 0 14rpx 28rpx;
 							}
-							.go{
+
+							.go {
 								width: 112rpx;
-								background-color: #E93323;
+								background-color: var(--view-theme);
 								height: 100%;
 								line-height: 58rpx;
 								border-radius: 0 28rpx 28rpx 0;
 								color: #fff;
 							}
-							&.gray{
+
+							&.gray {
 								width: 148rpx;
-								background-color: #CCCCCC;
+								background-color: #cccccc;
 								color: #fff;
 							}
 						}

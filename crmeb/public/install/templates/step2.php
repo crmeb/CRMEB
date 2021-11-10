@@ -50,9 +50,9 @@
                 </tr>
                 <tr>
                     <td>session</td>
-                    <td>开启</td>
+                    <td>启用</td>
                     <td><?php echo $session; ?></td>
-                    <td>开启</td>
+                    <td>启用</td>
                 </tr>
                 <tr>
                     <td>safe_mode</td>
@@ -64,7 +64,7 @@
                     <td>GD库</td>
                     <td>必须开启</td>
                     <td><?php echo $gd; ?></td>
-                    <td>1.0</td>
+                    <td>1.0以上</td>
                 </tr>
                 <tr>
                     <td>redis</td>
@@ -163,26 +163,44 @@
                     $err++;
                 }
                 ?>
-                    <tr>
-                        <td>/</td>
-                        <td>读写</td>
-                        <td><?php echo $w; ?></td>
-                        <td><?php echo $r; ?></td>
-                    </tr>
+                <tr>
+                    <td>/</td>
+                    <td>读写</td>
+                    <td><?php echo $w; ?></td>
+                    <td><?php echo $r; ?></td>
+                </tr>
 
             </table>
             <table width="100%">
                 <tr>
-                    <td class="td1" width="70%">函数检测必须开启</td>
-                    <td class="td1" width="30%">当前状态</td>
+                  <td class="td1" width="25%">函数检测必须开启</td>
+                  <td class="td1" width="25%">当前状态</td>
+                  <td class="td1" width="25%">函数检测必须开启</td>
+                  <td class="td1" width="25%">当前状态</td>
                 </tr>
-                <tr>
+              <tr>
                     <td>file_put_contents</td>
                     <td><?php echo $file_put_contents; ?></td>
+                <td>imagettftext</td>
+                <td><?php echo $imagettftext; ?></td>
                 </tr>
                 <tr>
-                    <td>imagettftext</td>
-                    <td><?php echo $imagettftext; ?></td>
+                    <td>proc_open</td>
+                    <td><?php echo $proc_open; ?></td>
+                    <td>pcntl_signal</td>
+                    <td><?php echo $pcntl_signal; ?></td>
+                </tr>
+                <tr>
+                    <td>pcntl_signal_dispatch</td>
+                    <td><?php echo $pcntl_signal_dispatch; ?></td>
+                    <td>pcntl_fork</td>
+                    <td><?php echo $pcntl_fork; ?></td>
+                </tr>
+                <tr>
+                    <td>pcntl_wait</td>
+                    <td><?php echo $pcntl_wait; ?></td>
+                    <td>pcntl_alarm</td>
+                    <td><?php echo $pcntl_alarm; ?></td>
                 </tr>
             </table>
         </div>

@@ -42,13 +42,16 @@ class JwtAuth
     {
         $host = app()->request->host();
         $time = time();
-
+        $exp_time = strtotime('+ 30day');
+//        if (app()->request->isApp()) {
+//            $exp_time = strtotime('+ 30day');
+//        }
         $params += [
             'iss' => $host,
             'aud' => $host,
             'iat' => $time,
             'nbf' => $time,
-            'exp' => strtotime('+ 3hour'),
+            'exp' => $exp_time,
         ];
         $params['jti'] = compact('id', 'type');
         $token = JWT::encode($params, Env::get('app.app_key', 'default'));

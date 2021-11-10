@@ -43,52 +43,63 @@ class Common extends AuthController
     /**
      * @return mixed
      */
-    public function check_auth()
-    {
-        try {
-            [$res, $installtime, $encryptStr] = $this->authorizationDecryptCrmeb();
-            if ($installtime) {
-                if (!isset($res['id']) || !$res['id']) {
-                    return app('json')->fail('您暂未取得授权,请及时前往CRMEB官方进行授权', ['auth' => false]);
-                } else if (isset($res['id']) && $res['id'] == -1) {
-                    $time = $installtime + (30 * 3600 * 24);
-                    if ($time < time()) {
-                        return app('json')->success('您的授权已过期请及时前往CRMEB官方进行授权', ['auth' => false]);
-                    } else {
-                        $nowTime = ($time - time()) / (3600 * 24);
-                        return app('json')->success('您得授权证书还有' . (int)$nowTime . '天过期,请及时前往CRMEB官方进行授权认证!', ['auth' => true]);
-                    }
-                } else {
-                    return app('json')->success('succes', ['auth' => true]);
-                }
-            } else {
-                return app('json')->fail('授权文件读取错误');
-            }
-        } catch (\RuntimeException $e) {
-            return app('json')->fail($e->getMessage());
-        }
-    }
-
-    /**
-     * @return mixed
-     */
     public function auth()
     {
-        [$res, $installtime, $encryptStr] = $this->authorizationDecryptCrmeb();
         $version = get_crmeb_version();
+
         $res = HttpService::request('http://authorize.crmeb.net/api/auth_cert_query', 'post', [
             'domain_name' => $this->request->host(),
-            'label' => 23,
+            'label' => 19,
             'version' => $version
         ]);
         $res = $res ? json_decode($res, true) : [];
-        $status = $res['data']['status'] ?? -9;
-        $time = $installtime + (30 * 3600 * 24);
-        if ($time < time()) {
-            $day = 0;
-        } else {
-            $day = (int)bcdiv((string)($time - time()), (string)(3600 * 24), 0);
+        if ($res['data']['status'] !== 1) {
+            $host = $this->request->host();
+            $data = explode('.', $host);
+            $n = count($data);
+            $preg = '/[\w].+\.(com|net|org|gov|edu)\.cn$/';
+            if (($n > 2) && preg_match($preg, $host)) {
+                //双后缀取后3位
+                $url = $data[$n - 3] . '.' . $data[$n - 2] . '.' . $data[$n - 1];
+            } else {
+                //非双后缀取后两位
+                $url = $data[$n - 2] . '.' . $data[$n - 1];
+            }
+            $res = HttpService::request('http://authorize.crmeb.net/api/auth_cert_query', 'post', [
+                'domain_name' => $url,
+                'label' => 19,
+                'version' => $version
+            ]);
+            $res = $res ? json_decode($res, true) : [];
         }
+        if ($res['data']['status'] !== 1) {
+            $res = HttpService::request('http://authorize.crmeb.net/api/auth_cert_query', 'post', [
+                'domain_name' => $this->request->host(),
+                'label' => 1,
+                'version' => $version
+            ]);
+            $res = $res ? json_decode($res, true) : [];
+        }
+        if ($res['data']['status'] !== 1) {
+            $host = $this->request->host();
+            $data = explode('.', $host);
+            $n = count($data);
+            $preg = '/[\w].+\.(com|net|org|gov|edu)\.cn$/';
+            if (($n > 2) && preg_match($preg, $host)) {
+                //双后缀取后3位
+                $url = $data[$n - 3] . '.' . $data[$n - 2] . '.' . $data[$n - 1];
+            } else {
+                //非双后缀取后两位
+                $url = $data[$n - 2] . '.' . $data[$n - 1];
+            }
+            $res = HttpService::request('http://authorize.crmeb.net/api/auth_cert_query', 'post', [
+                'domain_name' => $url,
+                'label' => 1,
+                'version' => $version
+            ]);
+            $res = $res ? json_decode($res, true) : [];
+        }
+        $status = $res['data']['status'] ?? -9;
         $defaultRecordCode = '00000000';
         switch ((int)$status) {
             case 1:
@@ -116,20 +127,8 @@ class Common extends AuthController
                 }
                 return app('json')->success(['status' => 1, 'authCode' => $authCode, 'day' => 0]);
                 break;
-            case 2:
-                //审核失败
-                return app('json')->success(['status' => 2, 'day' => $day]);
-                break;
-            case -1:
-                //没有提交
-                return app('json')->success(['status' => -1, 'day' => $day]);
-                break;
-            case 0:
-                //待审核
-                return app('json')->success(['status' => 0, 'day' => $day]);
-                break;
             default:
-                return app('json')->success(['status' => -9, 'day' => $day]);
+                return app('json')->success(['status' => -9]);
                 break;
         }
     }
@@ -146,7 +145,7 @@ class Common extends AuthController
             ['domain_name', ''],
             ['order_id', ''],
             ['phone', ''],
-            ['label', 1],
+            ['label', 19],
             ['captcha', ''],
         ]);
         if (!$data['company_name']) {
@@ -168,12 +167,12 @@ class Common extends AuthController
         $datas = explode('.', $data['domain_name']);
         $n = count($datas);
         $preg = '/[\w].+\.(com|net|org|gov|edu)\.cn$/';
-        if(($n > 2) && preg_match($preg,$data['domain_name'])){
+        if (($n > 2) && preg_match($preg, $data['domain_name'])) {
             //双后缀取后3位
-            $domain_name = $datas[$n-3].'.'.$datas[$n-2].'.'.$datas[$n-1];
-        }else{
+            $domain_name = $datas[$n - 3] . '.' . $datas[$n - 2] . '.' . $datas[$n - 1];
+        } else {
             //非双后缀取后两位
-            $domain_name = $datas[$n-2].'.'.$datas[$n-1];
+            $domain_name = $datas[$n - 2] . '.' . $datas[$n - 1];
         }
         $data['domain_name'] = $domain_name;
         $services->authApply($data);
@@ -384,57 +383,5 @@ class Common extends AuthController
         return app('json')->success(sort_list_tier($data));
     }
 
-    /**
-     * @param bool $bool
-     * @param callable|null $callable
-     * @return array|bool
-     */
-    protected function authorizationDecryptCrmeb()
-    {
-        $path = app()->getRootPath() . 'public' . DS . 'install' . DS . 'install.lock';
-        if (!is_file($path)) {
-            $path = app()->getRootPath() . ".constant";
-        }
-        if (!is_file($path)) {
-            throw new \RuntimeException('授权文件丢失', 42010);
-        }
-        $installtime = (int)@filectime($path);
-        $time = $installtime;
-        if (!$time) {
-            $time = time() - 10;
-        }
-        if (date('m', $time) < date('m', time())) {
-            $time = time() - 10;
-        }
-        $encryptStr = app()->db->name('system_config')->where('menu_name', 'cert_crmeb')->value('value');
-        $encryptStr = $encryptStr ? json_decode($encryptStr, true) : null;
-        $res = ['id' => '-1', 'key' => 'crmeb'];
-        $host = request()->host(true);
-        $data = explode('.', $host);
-        $n = count($data);
-        $preg = '/[\w].+\.(com|net|org|gov|edu)\.cn$/';
-        if(($n > 2) && preg_match($preg,$host)){
-            //双后缀取后3位
-            $url = $data[$n-3].'.'.$data[$n-2].'.'.$data[$n-1];
-        }else{
-            //非双后缀取后两位
-            $url = $data[$n-2].'.'.$data[$n-1];
-        }
-        if (in_array(date('d'), [5, 10, 15, 20, 25, 30]) && rand(1000, 100000) < 4000 && $encryptStr && $time < time()) {
-            $res = HttpService::request('http://store.crmeb.net/api/web/auth/get_id', 'POST', [
-                'domain_name' => $url,
-                'label' => 1,
-            ]);
-            if (!isset($res['id']) || !$res['id']) {
-                $res = json_decode($res, true);
-                if (!$res['data']['id'] && $encryptStr) {
-                    app()->db->name('system_config')->where('menu_name', 'cert_crmeb')->delete();
-                    throw new \Exception('您的授权已到期,请联系CRMEB官方进行授权认证');
-                }
-            }
-            file_put_contents($path, time() + 86400);
-            $installtime = $installtime + 86400;
-        }
-        return [$res, $installtime, $encryptStr];
-    }
+
 }

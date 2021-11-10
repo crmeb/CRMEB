@@ -1,3 +1,13 @@
+// +---------------------------------------------------------------------
+// | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
+// +---------------------------------------------------------------------
+// | Copyright (c) 2016~2021 https://www.crmeb.com All rights reserved.
+// +---------------------------------------------------------------------
+// | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
+// +---------------------------------------------------------------------
+// | Author: CRMEB Team <admin@crmeb.com>
+// +---------------------------------------------------------------------
+
 import BasicLayout from '@/components/main'
 const pre = 'marketing_'
 
@@ -59,7 +69,7 @@ export default {
             path: 'store_coupon_issue/create/:id?',
             name: `${pre}storeCouponCreate`,
             meta: {
-                auth: ['admin-marketing-store_coupon_issue-create'],
+                auth: ['marketing-store_coupon_issue-create'],
                 title: '添加优惠券'
             },
             component: () => import('@/pages/marketing/storeCouponIssue/create')
@@ -102,7 +112,7 @@ export default {
         },
         {
             path: 'store_bargain/create/:id?/:copy?',
-            name: `${pre}storeBargainCreate`,
+            name: `${pre}bargainList`,
             meta: {
                 auth: ['marketing-store_bargain-create'],
                 title: '添加砍价'
@@ -144,6 +154,42 @@ export default {
                 title: '积分配置'
             },
             component: () => import('@/pages/setting/setSystem/index')
+        },
+        {
+            path: 'store_integral/index',
+            name: `${pre}storeIntegral`,
+            meta: {
+                auth: ['marketing-store_integral'],
+                title: '积分商品'
+            },
+            component: () => import('@/pages/marketing/storeIntegral/index')
+        },
+        {
+            path: 'store_integral/create/:id?/:copy?',
+            name: `${pre}storeIntegralCreate`,
+            meta: {
+                auth: ['marketing-store_integral-create'],
+                title: '添加积分商品'
+            },
+            component: () => import('@/pages/marketing/storeIntegral/create')
+        },
+        {
+            path: 'store_integral/add_store_integral',
+            name: `${pre}addStoreIntegral`,
+            meta: {
+                auth: ['marketing-store_integral-create'],
+                title: '批量添加积分商品'
+            },
+            component: () => import('@/pages/marketing/storeIntegral/addStoreIntegral')
+        },
+        {
+            path: 'store_integral/order_list',
+            name: `${pre}storeIntegralOrder`,
+            meta: {
+                auth: ['marketing-store_integral-order'],
+                title: '兑换订单'
+            },
+            component: () => import('@/pages/marketing/storeIntegralOrder/index')
         },
         {
             path: 'user_point/index',
@@ -198,6 +244,60 @@ export default {
                 title: '主播管理'
             },
             component: () => import('@/pages/marketing/live/anchor')
-        }
+        },
+        {
+            path: 'presell/index',
+            name: `${pre}storePresell`,
+            meta: {
+                auth: ['marketing-presell'],
+                title: '预售商品'
+            },
+            component: () => import('@/pages/marketing/storePresell/index')
+        },
+        {
+            path: 'presell/presell_list',
+            name: `${pre}presellList`,
+            meta: {
+                auth: ['marketing-presell-presell_list'],
+                title: '预售列表'
+            },
+            component: () => import('@/pages/marketing/storePresell/presellList')
+        },
+        {
+            path: 'presell/create/:id?/:copy?',
+            name: `${pre}storePresellCreate`,
+            meta: {
+                auth: ['marketing-presell-create'],
+                title: '添加预售'
+            },
+            component: () => import('@/pages/marketing/storePresell/create')
+        },
+        {
+            path: 'lottery/index',
+            name: `${pre}lottery`,
+            meta: {
+                auth: true,
+                title: '抽奖列表'
+            },
+            component: () => import('@/pages/marketing/lottery/index')
+        },
+        {
+            path: 'lottery/create',
+            name: `${pre}create`,
+            meta: {
+                auth: true,
+                title: '创建抽奖'
+            },
+            component: () => import('@/pages/marketing/lottery/create')
+        },
+        {
+            path: 'lottery/recording_list/:id',
+            name: `${pre}recording_list`,
+            meta: {
+                auth: true,
+                title: '抽奖记录'
+            },
+            component: () => import('@/pages/marketing/lottery/recordingList')
+        },
     ]
 }

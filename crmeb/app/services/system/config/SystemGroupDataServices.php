@@ -56,9 +56,9 @@ class SystemGroupDataServices extends BaseServices
             if (isset($item['status'])) $data[$key]["status"] = $item["status"];
             $fields = json_decode($item["value"], true) ?: [];
             foreach ($fields as $index => $field) {
-                if($field['type'] == 'upload'){
-                    $data[$key][$index]  = set_file_url($field['value']);
-                }else{
+                if ($field['type'] == 'upload') {
+                    $data[$key][$index] = set_file_url($field['value']);
+                } else {
                     $data[$key][$index] = $field["value"];
                 }
             }
@@ -204,7 +204,7 @@ class SystemGroupDataServices extends BaseServices
                     } else {
                         $image = '';
                     }
-                    $f[] = Form::frameImage($value["title"], $value["name"], $this->url('admin/widget.images/index', ['fodder' => $value["title"], 'big' => 1], true), $image)->icon('ios-image')->width('60%')->height('435px');
+                    $f[] = Form::frameImage($value["title"], $value["name"], $this->url('admin/widget.images/index', ['fodder' => $value["title"], 'big' => 1], true), $image)->icon('ios-image')->width('950px')->height('505px')->modal(['footer-hide' => true]);
                     break;
                 case 'uploads':
                     if ($fvalue) {
@@ -213,7 +213,7 @@ class SystemGroupDataServices extends BaseServices
                     } else {
                         $images = [];
                     }
-                    $f[] = Form::frameImages($value["title"], $value["name"], $this->url('admin/widget.images/index', ['fodder' => $value["title"], 'big' => 1, 'type' => 'many', 'maxLength' => 5], true), $images)->maxLength(5)->icon('ios-images')->width('60%')->height('435px')->spin(0);
+                    $f[] = Form::frameImages($value["title"], $value["name"], $this->url('admin/widget.images/index', ['fodder' => $value["title"], 'big' => 1, 'type' => 'many', 'maxLength' => 5], true), $images)->maxLength(5)->icon('ios-images')->width('950px')->height('505px')->modal(['footer-hide' => true])->spin(0);
                     break;
                 default:
                     $f[] = Form::input($value["title"], $value["name"], $fvalue);
@@ -287,5 +287,63 @@ class SystemGroupDataServices extends BaseServices
                 $systemGroup = array_combine(array_column($systemGroupData, 'id'), $systemGroupData);
         }
         return $systemGroup;
+    }
+
+    /**
+     * 根据gid删除数据
+     * @param int $gid
+     * @return mixed
+     */
+    public function delGroupDate(int $gid)
+    {
+        return $this->dao->delGroupDate($gid);
+    }
+
+    /**
+     * 批量保存
+     * @param array $params
+     * @param string $config_name
+     * @return bool
+     * @throws \Exception
+     */
+    public function saveAllData(array $params, string $config_name)
+    {
+        /** @var SystemGroupServices $systemGroupServices */
+        $systemGroupServices = app()->make(SystemGroupServices::class);
+        $gid = $systemGroupServices->value(['config_name' => $config_name], 'id');
+        if (!$gid) throw new AdminException('该数据不存在!');
+        $group = $systemGroupServices->getOne(['id' => $gid], 'id,config_name,fields');
+        $fields = json_decode($group['fields'], true) ?? [];
+        $this->transaction(function () use ($gid, $params, $fields) {
+            $this->delGroupDate($gid);
+            $data = [];
+            $sort = count($params);
+            foreach ($params as $k => $v) {
+                $value = [];
+                foreach ($v as $key => $param) {
+                    foreach ($fields as $index => $field) {
+                        if ($key == $field["title"]) {
+                            if ($param == "") {
+                                throw new AdminException($field["name"] . "不能为空！");
+                            } else {
+                                $value[$key]["type"] = $field["type"];
+                                $value[$key]["value"] = $param;
+                            }
+                        }
+                    }
+                }
+                $data[$k] = [
+                    "gid" => $gid,
+                    "add_time" => time(),
+                    "value" => json_encode($value),
+                    "sort" => $sort,
+                    "status" => $v["status"] ?? 1
+                ];
+                $sort--;
+            }
+            $this->dao->saveAll($data);
+        });
+        \crmeb\services\CacheService::clear();
+        return true;
     }
 }

@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="expand">
         <Row class="expand-row">
             <Col span="8">
                 <span class="expand-key">商品总价：</span>
@@ -23,6 +23,10 @@
                 <span class="expand-key">商家备注：</span>
                 <span class="expand-value" v-text="row.remark?row.remark:'无'"></span>
             </Col>
+            <Col span="8">
+                <span class="expand-key">核销码：</span>
+                <span class="expand-value" v-text="row.verify_code?row.verify_code:'无'"></span>
+            </Col>
         </Row>
     </div>
 </template>
@@ -37,6 +41,9 @@
 </script>
 
 <style scoped>
+    .expand{
+        padding-left: 50px;
+    }
     .expand-row{
         margin-bottom: 16px;
     }

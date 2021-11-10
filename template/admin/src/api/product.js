@@ -43,6 +43,26 @@ export function getGoods (params) {
 }
 
 /**
+ * @description 商品管理-- 临时保存
+ */
+ export function productCache() {
+    return request({
+        url: 'product/cache',
+        method: 'get'
+    });
+}
+
+/**
+ * @description 商品管理-- 取消临时保存
+ */
+export function cacheDelete() {
+    return request({
+        url: 'product/cache',
+        method: 'delete'
+    });
+}
+
+/**
  * @description 商品管理-- 上下架
  */
 export function PostgoodsIsShow (id, isShow) {
@@ -340,3 +360,24 @@ export function labelListApi () {
         method: 'get'
     })
 }
+/**
+ * @description 商品添加编辑-- 用户标签
+ */
+export function uploadType () {
+    return request({
+        url: 'file/upload_type',
+        method: 'get'
+    })
+}
+/**
+ * @description 商品添加编辑-- 用户标签
+ */
+export function importCard (data) {
+    return request({
+        url: 'product/product/import_card',
+        method: 'get',
+        params: data
+    })
+}
+
+

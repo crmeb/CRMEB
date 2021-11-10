@@ -12,7 +12,6 @@ namespace app\api\controller\v1\store;
 
 use app\Request;
 use app\services\coupon\StoreCouponIssueServices;
-use app\services\coupon\StoreCouponService;
 
 /**
  * 优惠券类
@@ -37,7 +36,8 @@ class StoreCouponsController
     {
         $where = $request->getMore([
             ['type', 0],
-            ['product_id', 0]
+            ['product_id', 0],
+            ['num',0]
         ]);
         if ($request->getFromType() == 'pc') $where['type'] = -1;
         return app('json')->successful($this->services->getIssueCouponList($request->uid(), $where)['list']);

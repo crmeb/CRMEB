@@ -34,7 +34,7 @@ class StoreServiceSpeechcraftCateServices extends CategoryServices
     public function serviceSpeechcraftCateForm(array $data = [])
     {
         $f[] = FormBuilder::input('name', '分类名称', $data['name'] ?? '')->required();
-        $f[] = FormBuilder::number('sort', '排序', (int)($data['sort'] ?? 0));
+        $f[] = FormBuilder::number('sort', '排序', (int)($data['sort'] ?? 0))->min(0);
         return $f;
     }
 

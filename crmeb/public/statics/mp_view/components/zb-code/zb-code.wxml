@@ -1,0 +1,1 @@
+<view class="zb-code"><canvas class="zb-code-canvas" style="{{'width:'+(cpSize+'px')+';'+('height:'+(cpSize+'px')+';')}}" canvas-id="{{cid}}"></canvas><image hidden="{{!(show)}}" style="{{'width:'+(cpSize+'px')+';'+('height:'+(cpSize+'px')+';')}}" src="{{result}}"></image></view>

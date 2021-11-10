@@ -1,11 +1,13 @@
 <template>
-	<view>
-		<view class='payment-status'>
+	<view :style="colorStyle">
+		<view class='payment-status' v-if="(!orderLottery || !order_pay_info.paid) && loading && lotteryLoading">
 			<!--失败时： 用icon-iconfontguanbi fail替换icon-duihao2 bg-color-->
-			<view class='iconfont icons icon-duihao2 bg-color' v-if="order_pay_info.paid || order_pay_info.pay_type == 'offline'"></view>
+			<view class='iconfont icons icon-duihao2 bg-color'
+				v-if="order_pay_info.paid || order_pay_info.pay_type == 'offline'"></view>
 			<view class='iconfont icons icon-iconfontguanbi' v-else></view>
 			<!-- 失败时：订单支付失败 -->
-			<view class='status' v-if="order_pay_info.pay_type != 'offline'">{{order_pay_info.paid ? '订单支付成功':'订单支付失败'}}</view>
+			<view class='status' v-if="order_pay_info.pay_type != 'offline'">{{order_pay_info.paid ? '订单支付成功':'订单支付失败'}}
+			</view>
 			<view class='status' v-else>订单创建成功</view>
 			<view class='wrapper'>
 				<view class='item acea-row row-between-wrapper'>
@@ -18,14 +20,15 @@
 				</view>
 				<view class='item acea-row row-between-wrapper'>
 					<view>支付方式</view>
-					<view class='itemCom'>{{order_pay_info._status._payType}}</view>
+					<view class='itemCom'>{{order_pay_info._status._payType || '暂未支付'}}</view>
 				</view>
 				<view class='item acea-row row-between-wrapper'>
 					<view>支付金额</view>
 					<view class='itemCom'>{{order_pay_info.pay_price}}</view>
 				</view>
 				<!--失败时加上这个  -->
-				<view class='item acea-row row-between-wrapper' v-if="order_pay_info.paid==0 && order_pay_info.pay_type != 'offline'">
+				<view class='item acea-row row-between-wrapper'
+					v-if="order_pay_info.paid==0 && order_pay_info.pay_type != 'offline'">
 					<view>失败原因</view>
 					<view class='itemCom'>{{status==2 ? '取消支付':msg}}</view>
 				</view>
@@ -40,9 +43,14 @@
 			<view @tap="goOrderDetails" v-if="order_pay_info.paid==0 && status==2">
 				<button class='returnBnt bg-color' hover-class='none'>重新支付</button>
 			</view>
-			<button @click="goPink(order_pay_info.pink_id)" class='returnBnt cart-color' formType="submit" hover-class='none'
-			 v-if="order_pay_info.pink_id && order_pay_info.paid!=0 && status!=2 && status!=1">邀请好友参团</button>
-			<button @click="goIndex" class='returnBnt cart-color' formType="submit" hover-class='none' v-else>返回首页</button>
+			<button @click="goPink(order_pay_info.pink_id)" class='returnBnt cart-color' formType="submit"
+				hover-class='none'
+				v-if="order_pay_info.pink_id && order_pay_info.paid!=0 && status!=2 && status!=1">邀请好友参团</button>
+			<button @click="goIndex" class='returnBnt cart-color' formType="submit" hover-class='none'
+				v-else>返回首页</button>
+			<!-- #ifdef H5 -->
+			<button v-if="!$wechat.isWeixin() && !order_pay_info.paid" @click.stop="getOrderPayInfo" class='returnBnt cart-color' formType="submit" hover-class='none'>刷新支付状态</button>
+			<!-- #endif -->
 			<view class="coupons" v-if='couponList.length'>
 				<view class="title acea-row row-center-wrapper">
 					<view class="line"></view>
@@ -50,29 +58,36 @@
 					<view class="line"></view>
 				</view>
 				<view class="list">
-					<view class="item acea-row row-between-wrapper" v-for="(item,index) in couponList" :key='index' v-if="index<2 || !couponsHidden">
-						<view class="price acea-row row-center-wrapper">
-							<view>
-								￥<text>{{item.coupon_price}}</text>
+					<view class="item acea-row row-between-wrapper" v-for="(item,index) in couponList" :key='index'
+						v-if="index<2 || !couponsHidden">
+						<view class="moneyCon acea-row row-between-wrapper">
+							<view class="price acea-row row-center-wrapper">
+								<view>
+									￥<text>{{item.coupon_price}}</text>
+								</view>
 							</view>
 						</view>
 						<view class="text">
 							<view class="name line1">{{item.coupon_title}}</view>
 							<view class="priceMin">满{{item.use_min_price}}元可用</view>
-							<view class="time">有效期:{{ item.add_time ? item.add_time + "-" : ""}}{{ item.end_time }}</view>
+							<view class="time">有效期:{{ item.add_time ? item.add_time + "-" : ""}}{{ item.end_time }}
+							</view>
 						</view>
 					</view>
-					<view class="open acea-row row-center-wrapper" @click="openTap" v-if="couponList.length>2">{{couponsHidden?'展开更多':'关闭展开'}}<text class="iconfont" :class='couponsHidden==true?"icon-xiangxia":"icon-xiangshang"'></text></view>
+					<view class="open acea-row row-center-wrapper" @click="openTap" v-if="couponList.length>2">
+						{{couponsHidden?'展开更多':'关闭展开'}}<text class="iconfont"
+							:class='couponsHidden==true?"icon-xiangxia":"icon-xiangshang"'></text>
+					</view>
 				</view>
 			</view>
 		</view>
-		<!-- #ifdef MP -->
-		<!-- <authorize @onLoadFun="onLoadFun" :isAuto="isAuto" :isShowAuth="isShowAuth" @authColse="authColse"></authorize> -->
-		<!-- #endif -->
+		<lotteryModel v-show="orderLottery && order_pay_info.paid && loading && lotteryLoading" :options="options"
+			@orderDetails="goOrderDetails" @lotteryShow="getOrderLottery"></lotteryModel>
 	</view>
 </template>
 
 <script>
+	import lotteryModel from './payLottery.vue'
 	import {
 		getOrderDetail,
 		orderCoupon
@@ -89,14 +104,20 @@
 	// #ifdef MP
 	import authorize from '@/components/Authorize';
 	// #endif
+	import colors from "@/mixins/color";
 	export default {
 		components: {
+			lotteryModel,
 			// #ifdef MP
 			authorize
 			// #endif
 		},
+		mixins: [colors],
 		data() {
 			return {
+				loading: false,
+				lotteryLoading: false,
+				orderLottery: false,
 				orderId: '',
 				order_pay_info: {
 					paid: 1,
@@ -107,21 +128,23 @@
 				status: 0,
 				msg: '',
 				couponsHidden: true,
-				couponList: []
+				couponList: [],
+				options: {}
 			};
 		},
 		computed: mapGetters(['isLogin']),
-		watch:{
-			isLogin:{
-				handler:function(newV,oldV){
-					if(newV){
+		watch: {
+			isLogin: {
+				handler: function(newV, oldV) {
+					if (newV) {
 						this.getOrderPayInfo();
 					}
 				},
-				deep:true
+				deep: true
 			}
 		},
 		onLoad: function(options) {
+			this.options = options
 			if (!options.order_id) return this.$util.Tips({
 				title: '缺少参数无法查看订单支付状态'
 			}, {
@@ -131,6 +154,20 @@
 			this.orderId = options.order_id;
 			this.status = options.status || 0;
 			this.msg = options.msg || '';
+	
+			// // #ifdef H5
+			// document.addEventListener('visibilitychange', (e) => {
+			// 	let state = document.visibilityState
+			// 	if (state == 'hidden') {
+			// 		console.log('用户离开了');
+			// 	}
+			// 	if (state == 'visible') {
+			// 		this.getOrderPayInfo();
+			// 	}
+			// });
+			// // #endif
+		},
+		onShow() {
 			if (this.isLogin) {
 				this.getOrderPayInfo();
 			} else {
@@ -138,8 +175,12 @@
 			}
 		},
 		methods: {
+			getOrderLottery(status) {
+				this.orderLottery = status
+				this.lotteryLoading = true
+			},
 			openTap() {
-				this.$set(this,'couponsHidden',!this.couponsHidden);
+				this.$set(this, 'couponsHidden', !this.couponsHidden);
 			},
 			onLoadFun: function() {
 				this.getOrderPayInfo();
@@ -158,19 +199,18 @@
 					uni.hideLoading();
 					that.$set(that, 'order_pay_info', res.data);
 					uni.setNavigationBarTitle({
-						title: res.data.paid ? '支付成功' : '支付失败'
+						title: res.data.paid ? '支付成功' : '未支付'
 					});
-					that.getOrderCoupon();
+					this.loading = true
+					this.getOrderCoupon()
 				}).catch(err => {
+					this.loading = true
 					uni.hideLoading();
 				});
 			},
 			getOrderCoupon() {
 				let that = this;
-				console.log('88888888888');
-				console.log(that.orderId);
 				orderCoupon(that.orderId).then(res => {
-					console.log(res.data);
 					that.couponList = res.data;
 				})
 			},
@@ -178,7 +218,7 @@
 			 * 去首页关闭当前所有页面
 			 */
 			goIndex: function(e) {
-				uni.navigateTo({
+				uni.switchTab({
 					url: '/pages/index/index'
 				});
 			},
@@ -305,13 +345,13 @@
 		color: #fff;
 		text-align: center;
 		line-height: 140rpx;
-		text-shadow: 0px 4px 0px #9a0c05;
+		text-shadow: 0px 4px 0px rgba(255,255,255,0.5);
 		border: 6rpx solid #f5f5f5;
 		margin: -76rpx auto 0 auto;
 		background-color: #999;
 	}
-	
-	.payment-status .icons.icon-iconfontguanbi{
+
+	.payment-status .icons.icon-iconfontguanbi {
 		text-shadow: 0px 4px 0px #6c6d6d;
 	}
 

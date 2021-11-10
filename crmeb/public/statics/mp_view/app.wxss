@@ -1,0 +1,3 @@
+@import './common/main.wxss';
+
+[data-custom-hidden="true"],[bind-data-custom-hidden="true"]{display: none !important;}

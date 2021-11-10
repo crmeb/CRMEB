@@ -68,6 +68,9 @@
 				});
 			}
 		},
+		onReachBottom: function() {
+			this.getlevelList();
+		}
 	}
 </script>
 

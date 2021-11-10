@@ -1,23 +1,30 @@
 <template>
-	<view>
+	<view :style="colorStyle">
 		<view class="navbar acea-row row-around">
 			<view class="item acea-row row-center-wrapper" :class="{ on: navOn === 1 }" @click="onNav(1)">未使用</view>
 			<view class="item acea-row row-center-wrapper" :class="{ on: navOn === 2 }" @click="onNav(2)">已使用/过期</view>
 		</view>
 		<view class='coupon-list' v-if="couponsList.length">
-			<view class='item acea-row row-center-wrapper' v-for='(item,index) in couponsList' :key="index" :class="{svip: item.receive_type === 4}">
-				<view class='money' :class='item._type == 0 ? "moneyGray" : ""'>
-					<view>￥<text class='num'>{{item.coupon_price}}</text></view>
-					<view class="pic-num" v-if="item.use_min_price > 0">满{{item.use_min_price}}元可用</view>
-					<view class="pic-num" v-else>无门槛券</view>
+			<view class='item acea-row row-center-wrapper' v-for='(item,index) in couponsList' :key="index"
+				:class="{svip: item.receive_type === 4}" @click="useCoupon(item)">
+				<view class="moneyCon acea-row row-center-wrapper">
+					<view class='money' :class='item._type == 0 ? "moneyGray" : ""'>
+						<view>￥<text class='num'>{{item.coupon_price}}</text></view>
+						<view class="pic-num" v-if="item.use_min_price > 0">满{{item.use_min_price}}元可用</view>
+						<view class="pic-num" v-else>无门槛券</view>
+					</view>
 				</view>
 				<view class='text'>
 					<view class='condition'>
 						<view class="name line2">
-							<view class="line-title" :class="item._type === 0 ? 'bg-color-huic' : 'bg-color-check'" v-if="item.applicable_type === 0">通用劵</view>
-							<view class="line-title" :class="item._type === 0 ? 'bg-color-huic' : 'bg-color-check'" v-else-if="item.applicable_type === 1">品类券</view>
-							<view class="line-title" :class="item._type === 0 ? 'bg-color-huic' : 'bg-color-check'" v-else>商品券</view>
-							<image src="../../../static/images/fvip.png" class="pic" v-if="item.receive_type===4"></image>
+							<view class="line-title" :class="item._type === 0 ? 'bg-color-huic' : 'bg-color-check'"
+								v-if="item.applicable_type === 0">通用劵</view>
+							<view class="line-title" :class="item._type === 0 ? 'bg-color-huic' : 'bg-color-check'"
+								v-else-if="item.applicable_type === 1">品类券</view>
+							<view class="line-title" :class="item._type === 0 ? 'bg-color-huic' : 'bg-color-check'"
+								v-else>商品券</view>
+							<image src="../../../static/images/fvip.png" class="pic" v-if="item.receive_type===4">
+							</image>
 							<text>{{item.coupon_title}}</text>
 						</view>
 					</view>
@@ -37,7 +44,9 @@
 		<!-- #ifdef MP -->
 		<!-- <authorize @onLoadFun="onLoadFun" :isAuto="isAuto" :isShowAuth="isShowAuth" @authColse="authColse"></authorize> -->
 		<!-- #endif -->
+		<!-- #ifndef MP -->
 		<home></home>
+		<!-- #endif -->
 	</view>
 </template>
 
@@ -55,6 +64,7 @@
 	import authorize from '@/components/Authorize';
 	// #endif
 	import home from '@/components/home';
+	import colors from '@/mixins/color.js';
 	export default {
 		components: {
 			// #ifdef MP
@@ -62,6 +72,7 @@
 			// #endif
 			home
 		},
+		mixins:[colors],
 		data() {
 			return {
 				couponsList: [],
@@ -102,6 +113,31 @@
 				this.page = 1;
 				this.finished = false;
 				this.getUseCoupons();
+			},
+			useCoupon(item){
+				let url = '';
+				if (item.category_id == 0 && item.product_id == '') {
+					url = '/pages/goods_list/index?title=默认'
+				}
+				if (item.category_id != 0) {
+					if (item.category_type == 1) {
+						url = '/pages/goods_list/index?cid='+item.category_id+'&title='+item.category_name
+					}else{
+						url = '/pages/goods_list/index?sid='+item.category_id+'&title='+item.category_name
+					}
+				}
+				if (item.product_id != '') {
+					let arr = item.product_id.split(',');
+					let num = arr.length;
+					if (num == 1) {
+						url = '/pages/goods_details/index?id='+item.product_id
+					} else {
+						url = '/pages/goods_list/index?productId='+item.product_id+'&title=默认'
+					}
+				}
+				uni.navigateTo({
+					url: url
+				});
 			},
 			/**
 			 * 授权回调
@@ -166,6 +202,8 @@
 	.coupon-list .item .text .condition .name {
 		font-size: 26rpx;
 		font-weight: 500;
+		display: flex;
+		align-items: center;
 	}
 
 	.coupon-list .item .text .condition .pic {
@@ -184,11 +222,11 @@
 		text-align: center;
 		box-sizing: border-box;
 		background: rgba(255, 247, 247, 1);
-		border: 1px solid rgba(232, 51, 35, 1);
+		border: 1px solid var(--view-theme);
 		opacity: 1;
 		border-radius: 20rpx;
 		font-size: 18rpx !important;
-		color: #e83323;
+		color: var(--view-theme);
 		margin-right: 12rpx;
 		text-align: center;
 		display: inline-block;
@@ -196,9 +234,9 @@
 	}
 
 	.condition .line-title.bg-color-huic {
-		border-color: #BBB!important;
-		color: #bbb!important;
-		background-color: #F5F5F5!important;
+		border-color: #BBB !important;
+		color: #bbb !important;
+		background-color: #F5F5F5 !important;
 	}
 </style>
 
@@ -208,7 +246,7 @@
 		top: 0;
 		left: 0;
 		width: 100%;
-		height: 106rpx;
+		height: 90rpx;
 		background-color: #FFFFFF;
 		z-index: 9;
 
@@ -219,7 +257,7 @@
 			color: #999999;
 
 			&.on {
-				border-bottom-color: #E93323;
+				border-bottom-color: var(--view-theme);
 				color: #282828;
 			}
 		}

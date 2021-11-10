@@ -21,9 +21,11 @@ Route::miss(function () {
             }
         case 'kefu':
             return view(app()->getRootPath() . 'public' . DS . 'admin' . DS . 'index.html');
+        case 'pages':
+            return view(app()->getRootPath() . 'public' .DS . 'index.html');
         default:
             if (!request()->isMobile() && is_dir(app()->getRootPath() . 'public' . DS . 'home') && !request()->get('type')) {
-                return redirect(app()->route->buildUrl('/home/'));;
+                return view(app()->getRootPath() . 'public' . DS . 'home' . DS . 'index.html');
             } else {
                 return view(app()->getRootPath() . 'public' . DS . 'index.html');
             }

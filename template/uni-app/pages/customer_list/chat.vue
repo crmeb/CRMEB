@@ -1,5 +1,5 @@
 <template>
-	<view class="chat-box">
+	<view class="chat-box" :style="colorStyle">
 		<!-- #ifdef MP -->
 		<view class="head-box">
 			<view class="system-head" :style="{ height: sysHead }"></view>
@@ -13,14 +13,15 @@
 			<!-- 商品信息 -->
 			<view class="broadcast-details_box" v-if="productId && productInfo.id">
 				<view class="broadcast_details_img">
-					<image :src="productInfo.image" />
+					<image class="goods-img" :src="productInfo.image" />
 				</view>
 				<view class="broadcast_details_picBox">
 					<view class="broadcast_details_tit" v-text="productInfo.store_name"></view>
 					<view class="acea-row row-between">
 						<view class="broadcast_details_pic">
 							￥{{ productInfo.price }}
-							<text class="broadcast_details_pic_num">￥{{ productInfo.ot_price }}</text>
+							<text class="broadcast_details_pic_num"
+								v-if="productInfo.ot_price">￥{{ productInfo.ot_price }}</text>
 						</view>
 						<view class="broadcast_details_btn" @click="sendProduct">发送客服</view>
 					</view>
@@ -34,15 +35,17 @@
 				</view>
 				<view class="broadcast-details_box">
 					<view class="broadcast_details_img">
-						<image :src="orderInfo.cartInfo[0].productInfo.image" />
-						<view class="broadcast_details_model">{{ orderInfo.cartInfo ? orderInfo.cartInfo.length : 0 }}件商品</view>
+						<image class="goods-img" :src="orderInfo.cartInfo[0].productInfo.image" />
+						<view class="broadcast_details_model">
+							{{ orderInfo.cartInfo ? orderInfo.cartInfo.length : 0 }}件商品
+						</view>
 					</view>
 					<view class="broadcast_details_picBox">
 						<view class="broadcast_details_tit">{{ orderInfo.cartInfo[0].productInfo.store_name }}</view>
 						<view class="acea-row row-between">
 							<view class="broadcast_details_pic">
 								￥{{ orderInfo.cartInfo[0].productInfo.price }}
-								<text class="broadcast_details_pic_num">￥{{ orderInfo.cartInfo[0].productInfo.ot_price }}</text>
+								<text class="broadcast_details_pic_num">￥{{ orderInfo.cartInfo[0].costPrice }}</text>
 							</view>
 							<view class="broadcast_details_btn" @click="sendOrder">发送客服</view>
 						</view>
@@ -81,7 +84,8 @@
 								<view class="info">
 									<image :src="item.orderInfo.cartInfo[0].productInfo.image"></image>
 									<view class="product-info">
-										<view class="name line2">{{ item.orderInfo.cartInfo[0].productInfo.store_name }}</view>
+										<view class="name line2">{{ item.orderInfo.cartInfo[0].productInfo.store_name }}
+										</view>
 										<view class="price">¥{{ item.orderInfo.cartInfo[0].productInfo.price }}</view>
 									</view>
 								</view>
@@ -94,20 +98,23 @@
 		<view class="footer-box">
 			<view class="words" @click="uploadImg"><text class="iconfont icon-tupian"></text></view>
 			<view class="input-box">
-				<input type="text" placeholder="请输入内容" v-model="con" confirm-type="go" @confirm="sendText" />
+				<input type="text" placeholder="请输入内容" v-model="con" confirm-type="send" @confirm="sendText" />
 				<text class="iconfont icon-fasong" @click="sendText" :class="{ isSend: isSend }"></text>
 			</view>
 			<view class="emoji" @click="isSwiper = !isSwiper"><span class="iconfont icon-biaoqing"></span></view>
 		</view>
 		<!-- 表情 -->
 		<view class="banner slider-banner" v-if="isSwiper">
-			<swiper class="swiper-wrapper" :autoplay="autoplay" :circular="circular" :interval="interval" :duration="duration"
-			 v-if="emojiGroup.length > 0">
+			<swiper class="swiper-wrapper" :autoplay="autoplay" :circular="circular" :interval="interval"
+				:duration="duration" v-if="emojiGroup.length > 0">
 				<block v-for="(emojiList, index) in emojiGroup" :key="index">
-					<swiper-item><i class="em" :class="emoji" v-for="emoji in emojiList" :key="emoji" @click="addEmoji(emoji)"></i></swiper-item>
+					<swiper-item><i class="em" :class="emoji" v-for="emoji in emojiList" :key="emoji"
+							@click="addEmoji(emoji)"></i></swiper-item>
 				</block>
 			</swiper>
 		</view>
+		<canvas canvas-id="canvas" v-if="canvasStatus"
+			:style="{width: canvasWidth + 'px', height: canvasHeight + 'px',position: 'absolute',left:'-100000px',top:'-100000px'}"></canvas>
 	</view>
 </template>
 
@@ -122,8 +129,6 @@
 	import {
 		getOrderDetail
 	} from '@/api/order';
-	import { toLogin } from '@/libs/login.js';
-	import { mapGetters } from 'vuex';
 	let statusBarHeight = uni.getSystemInfoSync().statusBarHeight + 'px';
 	import Socket from '@/libs/new_chat';
 	const chunk = function(arr, num) {
@@ -139,6 +144,7 @@
 	};
 	import emojiList from '@/utils/emoji';
 	import Loading from '@/components/Loading';
+	import colors from "@/mixins/color";
 	export default {
 		name: 'adminChat_index',
 		data() {
@@ -173,14 +179,18 @@
 				orderInfo: {},
 				uidTo: 0,
 				titleName: '',
-				chatStatus:false
+				chatStatus: false,
+				userType: 0,
+				canvasWidth: "",
+				canvasHeight: "",
+				canvasStatus: false
 			};
 		},
+		mixins: [colors],
 		components: {
 			Loading
 		},
 		computed: {
-			...mapGetters(['isLogin']),
 			isSend() {
 				if (this.con.length == 0) {
 					return false;
@@ -208,29 +218,38 @@
 				title: '客服连接中...'
 			});
 			this.myUid = this.$store.state.app.uid;
-			this.toUid = options.uid;
+			this.toUid = options.to_uid
 			this.productId = parseInt(options.productId) || 0;
 			this.orderId = options.orderId || 0;
+			this.userType = options.type
 			this.getproductInfo();
 			this.getOrderInfo();
 			if (!app.globalData.isWsOpen) {
-				this.$socket.onStart();
+				let form_type
+				//#ifdef MP || APP-PLUS
+				form_type = 2
+				//#endif
+				//#ifdef H5
+				form_type = this.$wechat.isWeixin() ? 1 : 3
+				//#endif
+				this.$socket.onStart(this.$store.state.app.token, form_type);
 			}
 		},
 		onUnload() {
 			this.$socket.onClose();
+			uni.$off()
 		},
 		onReady() {
 			// #ifdef H5
-				let dom = document.querySelector(".chat-box");
-				dom.style.height = window.innerHeight+'px'
+			let dom = document.querySelector(".chat-box");
+			dom.style.height = window.innerHeight + 'px'
 			// #endif
 			// 初始化
 			if (app.globalData.isWsOpen) {
 				this.$socket.send({
 					data: {
 						token: this.$store.state.app.token,
-						//#ifdef MP
+						//#ifdef MP || APP-PLUS
 						form_type: 2,
 						//#endif
 						//#ifdef H5
@@ -239,17 +258,13 @@
 					},
 					type: 'login'
 				});
-				if(this.isLogin){
-					this.getChatList();
-				}else{
-					toLogin();
-				}
+				this.getChatList();
 			}
 			uni.$once('socketOpen', () => {
 				// 登录
 				this.$socket.send({
 					data: this.$store.state.app.token,
-					//#ifdef MP
+					//#ifdef MP || APP-PLUS
 					form_type: 2,
 					//#endif
 					//#ifdef H5
@@ -257,11 +272,7 @@
 					//#endif
 					type: 'login'
 				});
-				if(this.isLogin){
-					this.getChatList();
-				}else{
-					toLogin();
-				}
+				this.getChatList();
 			});
 			// 监听客服转接
 			uni.$on('to_transfer', data => {
@@ -272,8 +283,8 @@
 					},
 					type: 'to_chat'
 				});
-				this.chatList.forEach(el=>{
-					if(el.uid != this.myUid){
+				this.chatList.forEach(el => {
+					if (el.uid != this.myUid) {
 						el.avatar = data.avatar
 					}
 				})
@@ -287,7 +298,7 @@
 				if (data.msn_type == 1) {
 					data.msn = this.replace_em(data.msn);
 				}
-				// data._add_time = data._add_time.substring(0, data._add_time.length - 3);
+				data._add_time = data._add_time.substring(0, data._add_time.length - 3);
 				this.chatList.push(data);
 				this.$nextTick(() => {
 					this.height();
@@ -296,6 +307,11 @@
 			uni.$on('socket_error', () => {
 				this.$util.Tips({
 					title: '连接失败'
+				});
+			});
+			uni.$on('err_tip', (e) => {
+				this.$util.Tips({
+					title: e.msg
 				});
 			});
 			uni.$on('online', data => {
@@ -308,9 +324,7 @@
 								uni.redirectTo({
 									url: '/pages/columnGoods/HotNewGoods/feedback'
 								});
-							} else if (res.cancel) {
-								console.log('用户点击取消');
-							}
+							} else if (res.cancel) {}
 						}
 					});
 				}
@@ -345,9 +359,16 @@
 			},
 			// 订单详情
 			goOrder(item) {
-				uni.navigateTo({
-					url: `/pages/users/order_details/index?order_id=${item.msn}`
-				});
+				if (this.userType) {
+					uni.navigateTo({
+						url: `/pages/admin/orderDetail/index?id=${item.msn}`
+					});
+				} else {
+					uni.navigateTo({
+						url: `/pages/users/order_details/index?order_id=${item.msn}`
+					});
+				}
+
 			},
 			// 订单消息
 			getOrderInfo() {
@@ -355,13 +376,14 @@
 				getOrderDetail(this.orderId).then(res => {
 					this.orderInfo = res.data;
 					if (this.orderInfo.add_time_h) {
-						this.orderInfo.add_time_h = this.orderInfo.add_time_h.substring(0, this.orderInfo.add_time_h.lastIndexOf(':'));
+						this.orderInfo.add_time_h = this.orderInfo.add_time_h.substring(0, this.orderInfo
+							.add_time_h.lastIndexOf(':'));
 					}
 					if (this.orderInfo.cartInfo.length) {
 						this.cartInfo = this.orderInfo.cartInfo[0];
 					}
 				});
-				
+
 			},
 			// 表情点击
 			addEmoji(item) {
@@ -425,7 +447,7 @@
 							title: error
 						});
 						this.loading = false;
-						this.isScroll = false;
+						this.isScroll = false
 						uni.redirectTo({
 							url: '/pages/columnGoods/HotNewGoods/feedback'
 						});
@@ -461,7 +483,7 @@
 						type,
 						to_uid: this.toUid
 					},
-					//#ifdef MP
+					//#ifdef MP || APP-PLUS
 					form_type: 2,
 					//#endif
 					//#ifdef H5
@@ -472,10 +494,16 @@
 			},
 			uploadImg() {
 				let self = this;
-				self.$util.uploadImageOne('upload/image', function(res) {
+				self.canvasStatus = true
+				self.$util.uploadImageChange('upload/image', function(res) {
 					if (res.status == 200) {
 						self.sendMsg(res.data.url, 3);
 					}
+				}, (res) => {
+					this.canvasStatus = false
+				}, (res) => {
+					this.canvasWidth = res.w
+					this.canvasHeight = res.h
 				});
 			},
 			// 发送商品
@@ -498,7 +526,6 @@
 				setTimeout(res => {
 					info.boundingClientRect(function(data) {
 						//data - 各种参数
-						console.log(data.height, 'data.height'); // 获取元素高度
 						scrollTop = data.height;
 						if (self.active) {
 							self.scrollTop = parseInt(scrollTop) + 500;
@@ -506,7 +533,7 @@
 							self.scrollTop = parseInt(scrollTop) + 100;
 						}
 					}).exec();
-				}, 1000);
+				}, 200);
 			},
 			// 滚动到顶部
 			scrollToTop() {
@@ -524,7 +551,7 @@
 	};
 </script>
 <style>
-	/* #ifdef MP */
+	/* #ifdef MP || APP-PLUS || H5 */
 	page,
 	uni-page-body,
 	html,
@@ -611,7 +638,6 @@
 					height: 100%;
 					font-size: 28rpx;
 					font-weight: normal;
-					margin-right: 20rpx;
 				}
 
 				.icon-fasong {
@@ -757,7 +783,7 @@
 
 					.price {
 						font-size: 36rpx;
-						color: #f74c31;
+						color: var(--view-priceColor);
 
 						text {
 							font-size: 28rpx;
@@ -802,7 +828,7 @@
 
 						.price {
 							font-size: 30rpx;
-							color: #f74c31;
+							color: var(--view-priceColor);
 						}
 					}
 				}
@@ -854,7 +880,7 @@
 		position: relative;
 	}
 
-	.broadcast_details_img image {
+	.broadcast_details_img .goods-img {
 		width: 100%;
 		height: 100%;
 	}
@@ -879,7 +905,7 @@
 
 	.broadcast_details_pic {
 		font-size: 36rpx;
-		color: #e93323;
+		color: var(--view-priceColor);
 		text-align: left;
 	}
 
@@ -893,7 +919,7 @@
 	.broadcast_details_btn {
 		width: 130rpx;
 		height: 50rpx;
-		background: #e83323;
+		background: var(--view-theme);
 		opacity: 1;
 		border-radius: 125rpx;
 		color: #fff;

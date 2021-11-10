@@ -14,7 +14,6 @@ namespace app\services\other;
 
 use app\dao\other\CategoryDao;
 use app\services\BaseServices;
-use crmeb\services\CacheService;
 use crmeb\traits\ServicesTrait;
 
 /**
@@ -49,6 +48,7 @@ class CategoryServices extends BaseServices
     {
         [$page, $limit] = $this->getPageValue();
         $data = $this->dao->getCateList($where, $page, $limit, $field);
+        array_unshift($data, ['id' => 0, 'name' => '系统话术', 'sort' => 0]);
         $count = $this->dao->count($where);
         return compact('data', 'count');
     }

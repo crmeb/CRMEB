@@ -16,6 +16,8 @@ use app\dao\product\sku\StoreProductAttrDao;
 use app\services\BaseServices;
 use app\services\order\StoreCartServices;
 use app\services\product\product\StoreProductServices;
+use crmeb\exceptions\AdminException;
+use think\Exception;
 
 /**
  * Class StoreProductAttrService
@@ -39,18 +41,62 @@ class StoreProductAttrServices extends BaseServices
      * @param int $type
      * @return bool
      */
-    public function saveProductAttr(array $data, int $id, int $type = 0, $is_vip = 0)
+    public function saveProductAttr(array $data, int $id, int $type = 0, $is_vip = 0, $is_virtual = 0)
     {
         /** @var StoreProductAttrResultServices $storeProductAttrResultServices */
         $storeProductAttrResultServices = app()->make(StoreProductAttrResultServices::class);
         /** @var StoreProductAttrValueServices $storeProductAttrValueServices */
         $storeProductAttrValueServices = app()->make(StoreProductAttrValueServices::class);
+        /** @var StoreProductServices $storeProductService */
+        $storeProductService = app()->make(StoreProductServices::class);
         $this->dao->del($id, $type);
         $storeProductAttrResultServices->del($id, $type);
         $storeProductAttrValueServices->del($id, $type);
         $this->dao->saveAll($data['attrGroup']);
         $storeProductAttrResultServices->setResult($data['result'], $id, $type);
-        return $storeProductAttrValueServices->saveAll($data['valueGroup']);
+        $productVipPrice = 0;
+        if (isset($data['valueGroup']) && $data['valueGroup']) {
+            $detailTemp = array_column($data['valueGroup'], 'vip_price');
+            if ($detailTemp) {
+                if ($is_vip && in_array(0, $detailTemp)) throw new AdminException('会员价格不能为0');
+                $detailTemp = array_diff($detailTemp, [0]);
+                if ($detailTemp) {
+                    $productVipPrice = min($detailTemp);
+                }
+            }
+            $storeProductService->update($id, ['vip_price' => $productVipPrice]);
+        }
+        if ($is_virtual == 0 || $is_virtual == 2) {
+            if ($is_virtual == 2 && in_array(0, array_column($data['valueGroup'], 'coupon_id'))) {
+                throw new AdminException('虚拟优惠券商品请选择优惠券');
+            }
+            return $storeProductAttrValueServices->saveAll($data['valueGroup']);
+        } else {
+            /** @var StoreProductVirtualServices $productVirtual */
+            $productVirtual = app()->make(StoreProductVirtualServices::class);
+            foreach ($data['valueGroup'] as &$item) {
+                $res = $storeProductAttrValueServices->save($item);
+                if ($item['is_virtual'] && count($item['virtual_list']) && !$item['coupon_id']) {
+                    $productVirtual->delete(['product_id' => $id, 'attr_unique' => $item['unique'], 'uid' => 0]);
+                    $data = [];
+                    foreach ($item['virtual_list'] as &$items) {
+                        $data = [
+                            'product_id' => $id,
+                            'attr_unique' => $res->unique,
+                            'card_no' => $items['key'],
+                            'card_pwd' => $items['value'],
+                            'card_unique' => md5($res->unique . ',' . $items['key'] . ',' . $items['value'])
+                        ];
+                        if (!$productVirtual->count(['card_no' => $items['key'], 'card_pwd' => $items['value']])) {
+                            $productVirtual->save($data);
+                        } else {
+                            throw new AdminException('卡号：' . $items['key'] . '密码：' . $items['value'] . '，已经添加过，请重新添加卡密');
+                        }
+                    }
+                }
+            }
+            return true;
+        }
     }
 
     /**
@@ -81,9 +127,13 @@ class StoreProductAttrServices extends BaseServices
         $storeProductService = app()->make(StoreProductServices::class);
         $_values = $storeProductAttrValueService->getProductAttrValue(['product_id' => $id, 'type' => $typeId]);
         if ($productId == 0) $productId = $id;
+        $is_vip = $storeProductService->get($productId, ['is_vip']);
+        $vip_price = true;
+        if (!$storeProductService->vipIsOpen(!!$is_vip['is_vip'])) $vip_price = false;
         $stock = $storeProductAttrValueService->getColumn(['product_id' => $productId, 'type' => 0], 'stock', 'suk');
         $values = [];
         $cartNumList = [];
+        $activityAttr = [];
         if ($uid) {
             /** @var StoreCartServices $storeCartService */
             $storeCartService = app()->make(StoreCartServices::class);
@@ -97,12 +147,24 @@ class StoreProductAttrServices extends BaseServices
                     $value['cart_num'] = 0;
                 if (is_null($value['cart_num'])) $value['cart_num'] = 0;
             }
-            $value['vip_price'] = $storeProductService->setLevelPrice($value['price'] ?? 0, $uid, true);
+            if (!$vip_price) $value['vip_price'] = 0;
             $value['product_stock'] = $stock[$value['suk']] ?? 0;
             $values[$value['suk']] = $value;
+            if ($typeId) {
+                $attrs = explode(',', $value['suk']);
+                $count = count($attrs);
+                for ($i = 0; $i < $count; $i++) {
+                    $activityAttr[$i][] = $attrs[$i];
+                }
+            }
         }
         foreach ($attrDetail as $k => $v) {
             $attr = $v['attr_values'];
+            //活动商品只展示参与活动sku
+            if ($typeId && $activityAttr && $a = array_merge(array_intersect($v['attr_values'], $activityAttr[$k]))) {
+                $attrDetail[$k]['attr_values'] = $a;
+                $attr = $a;
+            }
             foreach ($attr as $kk => $vv) {
                 $attrDetail[$k]['attr_value'][$kk]['attr'] = $vv;
                 $attrDetail[$k]['attr_value'][$kk]['check'] = false;

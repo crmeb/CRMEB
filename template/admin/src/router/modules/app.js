@@ -1,3 +1,13 @@
+// +---------------------------------------------------------------------
+// | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
+// +---------------------------------------------------------------------
+// | Copyright (c) 2016~2021 https://www.crmeb.com All rights reserved.
+// +---------------------------------------------------------------------
+// | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
+// +---------------------------------------------------------------------
+// | Author: CRMEB Team <admin@crmeb.com>
+// +---------------------------------------------------------------------
+
 import BasicLayout from '@/components/main'
 
 const pre = 'app_'
@@ -23,15 +33,15 @@ export default {
       },
       component: () => import('@/pages/app/wechat/menus/index')
     },
-    {
-      path: 'wechat/setting/template/index',
-      name: `${pre}wechatTemplate`,
-      meta: {
-        auth: ['application-wechat-template'],
-        title: '微信模板消息'
-      },
-      component: () => import('@/pages/app/routine/routineTemplate/index')
-    },
+    // {
+    //   path: 'wechat/setting/template/index',
+    //   name: `${pre}wechatTemplate`,
+    //   meta: {
+    //     auth: ['application-wechat-template'],
+    //     title: '微信模板消息'
+    //   },
+    //   component: () => import('@/pages/app/routine/routineTemplate/index')
+    // },
     {
       path: 'wechat/wechat_user/user/index',
       name: `${pre}wechatUser`,
@@ -123,13 +133,22 @@ export default {
       component: () => import('@/pages/app/wechat/reply/follow')
     },
     {
-      path: 'routine/routine_template/index',
+      path: 'routine/download',
       name: `${pre}routineTemplate`,
       meta: {
-        auth: ['routine-routine_template'],
-        title: '小程序订阅消息'
+        auth: ['routine-download'],
+        title: '小程序下载'
       },
-      component: () => import('@/pages/app/routine/routineTemplate/index')
-    }
+      component: () => import('@/pages/app/routine/download/index')
+    },
+    {
+      path: 'version_list',
+      name: `${pre}routineTemplate`,
+      meta: {
+        auth: ['app_version_list'],
+        title: 'APP版本管理'
+      },
+      component: () => import('@/pages/app/version/index')
+    },
   ]
 }

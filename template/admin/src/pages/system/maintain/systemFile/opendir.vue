@@ -118,7 +118,6 @@
                 } else {
                     this.edit(currentRow)
                 }
-                console.log(currentRow)
             },
             // 列表
             getList () {

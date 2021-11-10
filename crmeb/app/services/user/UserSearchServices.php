@@ -14,7 +14,6 @@ namespace app\services\user;
 
 use app\services\BaseServices;
 use app\dao\user\UserSearchDao;
-use think\exception\ValidateException;
 
 /**
  *

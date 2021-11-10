@@ -120,6 +120,7 @@ class AdminAuthServices extends BaseServices
     }
 
     /**
+     * 保存提交数据
      * @param $adminId
      * @param $postData
      */

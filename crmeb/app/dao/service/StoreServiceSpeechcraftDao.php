@@ -43,7 +43,7 @@ class StoreServiceSpeechcraftDao extends BaseDao
      */
     public function getSpeechcraftList(array $where, int $page, int $limit)
     {
-        return $this->search($where)->when($page && $limit, function ($query) use ($page, $limit) {
+        return $this->search($where)->with(['cateName'])->when($page && $limit, function ($query) use ($page, $limit) {
             $query->page($page, $limit);
         })->order('sort DESC')->select()->toArray();
     }

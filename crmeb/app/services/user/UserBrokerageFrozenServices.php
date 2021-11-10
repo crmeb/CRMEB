@@ -21,6 +21,8 @@ use app\services\BaseServices;
  * @package app\services\user
  * @method getUserFrozenPrice(int $uid, bool $isFrozen) 获取某个账户下冻结过期的佣金
  * @method updateFrozen(string $orderId) 修改佣金冻结状态
+ * @method getFrozenBrokerage() 获取用户的冻结佣金数组
+ * @method getSumFrozenBrokerage() 获取冻结佣金金额
  */
 class UserBrokerageFrozenServices extends BaseServices
 {

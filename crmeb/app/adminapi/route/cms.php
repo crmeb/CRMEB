@@ -15,19 +15,17 @@ use think\facade\Route;
  */
 Route::group('cms', function () {
     //文章资源路由
-    Route::resource('cms', 'v1.cms.Article')->name('ArticleResource');
-    //分类列表
-    Route::get('cms/merchant_index/:id', 'v1.cms.Article/merchantIndex')->name('MerchantIndex');
+    Route::resource('cms', 'v1.cms.Article')->name('ArticleResource')->option(['real_name' => '文章']);
     //关联商品
-    Route::put('cms/relation/:id', 'v1.cms.Article/relation')->name('Relation');
+    Route::put('cms/relation/:id', 'v1.cms.Article/relation')->name('Relation')->option(['real_name' => '文章关联商品']);
     //取消关联
-    Route::put('cms/unrelation/:id', 'v1.cms.Article/unrelation')->name('UnRelation');
+    Route::put('cms/unrelation/:id', 'v1.cms.Article/unrelation')->name('UnRelation')->option(['real_name' => '取消文章关联商品']);
     //文章分类资源路由
-    Route::resource('category', 'v1.cms.ArticleCategory')->name('ArticleCategoryResource');
+    Route::resource('category', 'v1.cms.ArticleCategory')->name('ArticleCategoryResource')->option(['real_name' => '文章分类']);
     //修改状态
-    Route::put('category/set_status/:id/:status', 'v1.cms.ArticleCategory/set_status')->name('CategoryStatus');
+    Route::put('category/set_status/:id/:status', 'v1.cms.ArticleCategory/set_status')->name('CategoryStatus')->option(['real_name' => '修改文章分类状态']);
     //分类列表
-    Route::get('category_list', 'v1.cms.ArticleCategory/categoryList')->name('categoryList');
+    Route::get('category_list', 'v1.cms.ArticleCategory/categoryList')->name('categoryList')->option(['real_name' => '分类列表']);
 
 })->middleware([
     \app\http\middleware\AllowOriginMiddleware::class,

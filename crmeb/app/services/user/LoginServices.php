@@ -12,14 +12,11 @@ declare (strict_types=1);
 
 namespace app\services\user;
 
-use app\services\BaseServices;
 use app\dao\user\UserDao;
-use app\services\coupon\StoreCouponIssueServices;
+use app\services\BaseServices;
 use app\services\message\sms\SmsRecordServices;
 use app\services\message\sms\SmsSendServices;
 use app\services\wechat\WechatUserServices;
-use app\jobs\RoutineTemplateJob;
-use app\jobs\WechatTemplateJob as TemplateJob;
 use crmeb\services\CacheService;
 use think\exception\ValidateException;
 use think\facade\Config;
@@ -89,22 +86,30 @@ class LoginServices extends BaseServices
         $data['phone'] = !isset($user['phone']) || !$user['phone'] ? $userInfo->phone : $user['phone'];
         $data['last_time'] = time();
         $data['last_ip'] = app()->request->ip();
-        if ($userInfo->spread_uid) {
+        //永久绑定
+        $store_brokergae_binding_status = sys_config('store_brokerage_binding_status', 1);
+        if ($userInfo->spread_uid && $store_brokergae_binding_status == 1) {
             $data['login_type'] = $user['login_type'] ?? $userInfo->login_type;
         } else {
             //绑定分销关系 = 所有用户
             if (sys_config('brokerage_bindind', 1) == 1) {
-                $spreadUid = isset($user['code']) && $user['code'] && $user['code'] != $userInfo->uid ? $user['code'] : 0;
-                if ($spreadUid && $userInfo->uid == $this->dao->value(['uid' => $spreadUid], 'spread_uid')) {
-                    $spreadUid = 0;
-                }
-                if ($spreadUid) {
-                    $spreadUid = (int)$spreadUid;
-                    $data['spread_uid'] = $spreadUid;
-                    $data['spread_time'] = $userInfo->last_time;
-                    $this->dao->incField($spreadUid, 'spread_count', 1);
-                    //绑定用户后置事件
-                    event('user.register', [$spreadUid, $userInfo['user_type'], $userInfo['nickname'], $userInfo['uid'], 0]);
+                //分销绑定类型为时间段且过期 ｜｜临时
+                $store_brokerage_binding_time = sys_config('store_brokerage_binding_time', 30);
+                if (!$userInfo['spread_uid'] || $store_brokergae_binding_status == 3 || ($store_brokergae_binding_status == 2 && ($userInfo['spread_time'] + $store_brokerage_binding_time * 24 * 3600) < time())) {
+                    $spreadUid = isset($user['code']) && $user['code'] && $user['code'] != $userInfo->uid ? $user['code'] : 0;
+                    if ($spreadUid && $userInfo->uid == $this->dao->value(['uid' => $spreadUid], 'spread_uid')) {
+                        $spreadUid = 0;
+                    }
+                    if ($spreadUid) {
+                        $spreadUid = (int)$spreadUid;
+                        $data['spread_uid'] = $spreadUid;
+                        $data['spread_time'] = $userInfo->last_time;
+                        $this->dao->incField($spreadUid, 'spread_count', 1);
+                        //绑定用户后置事件
+                        event('user.register', [$spreadUid, $userInfo['user_type'], $userInfo['nickname'], $userInfo['uid'], 0]);
+                        //推送消息
+                        event('notice.notice', [['spreadUid' => $spreadUid, 'user_type' => $userInfo['user_type'], 'nickname' => $userInfo['nickname']], 'bind_spread_uid']);
+                    }
                 }
             }
         }
@@ -132,8 +137,6 @@ class LoginServices extends BaseServices
         if ($smsRecord->count(['add_ip' => $ip, 'time' => 'today']) >= $maxIpCount) {
             throw new ValidateException('此IP今日发送次数已经达到上限');
         }
-//        if (CacheService::get('code_' . $phone))
-//            throw new ValidateException($time . '分钟内有效');
         $code = rand(100000, 999999);
         $data['code'] = $code;
         $data['time'] = $time;
@@ -162,10 +165,6 @@ class LoginServices extends BaseServices
         if ($spread) {
             $data['spread_uid'] = $spread;
             $data['spread_time'] = time();
-            /** @var UserBillServices $userBill */
-            $userBill = app()->make(UserBillServices::class);
-            //邀请新用户增加经验
-            $userBill->inviteUserIncExp((int)$spread);
         }
         $data['real_name'] = '';
         $data['birthday'] = 0;
@@ -187,8 +186,10 @@ class LoginServices extends BaseServices
         if (!$re = $this->dao->save($data)) {
             throw new ValidateException('注册失败');
         } else {
-            //新人券发放
-            event('user.giveNewUserCoupon', [$re->uid]);
+            //用户生成后置事件
+            event('user.register', [$spread, $user_type, $data['nickname'], $re->uid, 1]);
+            //推送消息
+            event('notice.notice', [['spreadUid' => $spread, 'user_type' => $user_type, 'nickname' => $data['nickname']], 'bind_spread_uid']);
             return $re;
         }
     }

@@ -28,6 +28,18 @@ export default {
                         title: '最多可添加1张图片，图片建议宽度128 * 45px',
                         url: 'http://kaifa.crmeb.net/uploads/attach/2019/10/20191023/db7b7bef9dffdedd27e9a3aa34218cea.png'
                     },
+                    titleInfo:{
+                        title:'',
+                        type: 8,
+                        list:[
+                            {
+                                title:'商城简介',
+                                val:'好物尽享 任你选择',
+                                max: 20,
+                                pla: '选填，不超过10个字'
+                            }
+                        ]
+                    },
                     hotList: {
                         title:'热词最多20个字，鼠标拖拽左侧圆点可调整热词顺序',
                         max:99,
@@ -46,6 +58,18 @@ export default {
                     imgUrl:{
                         title: '最多可添加1张图片，图片建议宽度128 * 45px',
                         url: 'http://kaifa.crmeb.net/uploads/attach/2019/10/20191023/db7b7bef9dffdedd27e9a3aa34218cea.png'
+                    },
+                    titleInfo:{
+                        title:'',
+                        type: 8,
+                        list:[
+                            {
+                                title:'商城简介',
+                                val:'好物尽享 任你选择',
+                                max: 20,
+                                pla: '选填，不超过10个字'
+                            }
+                        ]
                     },
                     hotList: {
                         title:'热词最多20个字，鼠标拖拽左侧圆点可调整热词顺序',
@@ -446,6 +470,19 @@ export default {
                         ]
                     },
                 },
+            },
+
+            tabNav:{
+                defaultVal:{
+                    isShow:{
+                        val: true
+                    },
+                },
+                default:{
+                    isShow:{
+                        val: true
+                    },
+                }
             },
             news: {
                 defaultVal:{
@@ -684,6 +721,18 @@ export default {
                                 val:'直播间',
                                 max: 20,
                                 pla: '选填，不超过六个字'
+                            },
+                            {
+                                title:'介绍',
+                                val:'精彩直播',
+                                max: 8,
+                                pla: '选填，不超过8个字'
+                            },
+                            {
+                                title:'链接',
+                                val:'/pages/live_list/index',
+                                max: 999,
+                                pla: '选填'
                             }
                         ]
                     },
@@ -704,6 +753,18 @@ export default {
                                 val:'直播间',
                                 max: 20,
                                 pla: '选填，不超过六个字'
+                            },
+                            {
+                                title:'介绍',
+                                val:'精彩直播',
+                                max: 8,
+                                pla: '选填，不超过8个字'
+                            },
+                            {
+                                title:'链接',
+                                val:'/pages/live_list/index',
+                                max: 999,
+                                pla: '选填'
                             }
                         ]
                     },
@@ -718,85 +779,131 @@ export default {
                     isShow:{
                         val: true
                     },
-                    tabConfig: {
-                        tabVal: 0,
-                        type: 1,
-                        tabList: [
+                    titleInfo:{
+                        title:'',
+                        list:[
                             {
-                                name: '自动选择',
-                                icon: 'iconzidongxuanze'
+                                title:'标题',
+                                val:'快速选择',
+                                max: 4,
+                                pla: '选填，不超过4个字'
                             },
                             {
-                                name: '手动选择',
-                                icon: 'iconshoudongxuanze'
+                                title:'介绍',
+                                val:'诚意推荐品质商品',
+                                max: 8,
+                                pla: '选填，不超过8个字'
+                            },
+                            {
+                                title:'链接',
+                                val:'/pages/goods_cate/goods_cate',
+                                max: 999,
+                                pla: '选填'
                             }
                         ]
                     },
-                    selectConfig: {
-                        title: '商品分类',
-                        type: 1,//type=1时只是传二级分类
-                        activeValue: '',
-                        list: [
-                            {
-                                activeValue: '',
-                                title: ''
-                            },
-                            {
-                                activeValue: '',
-                                title: ''
-                            }
-                        ]
-                    },
-                    numConfig: {
-                        title:'显示数量',
-                        val: 6
-                    },
-                    goodsList: {
-                        max: 20,
-                        list: []
-                    }
+                    // tabConfig: {
+                    //     tabVal: 0,
+                    //     type: 1,
+                    //     tabList: [
+                    //         {
+                    //             name: '自动选择',
+                    //             icon: 'iconzidongxuanze'
+                    //         },
+                    //         {
+                    //             name: '手动选择',
+                    //             icon: 'iconshoudongxuanze'
+                    //         }
+                    //     ]
+                    // },
+                    // selectConfig: {
+                    //     title: '商品分类',
+                    //     type: 1,//type=1时只是传二级分类
+                    //     activeValue: '',
+                    //     list: [
+                    //         {
+                    //             activeValue: '',
+                    //             title: ''
+                    //         },
+                    //         {
+                    //             activeValue: '',
+                    //             title: ''
+                    //         }
+                    //     ]
+                    // },
+                    // numConfig: {
+                    //     title:'显示数量',
+                    //     val: 6
+                    // },
+                    // goodsList: {
+                    //     max: 20,
+                    //     list: []
+                    // }
                 },
                 default:{
                     isShow:{
                         val: true
                     },
-                    tabConfig: {
-                        tabVal: 0,
-                        type: 1,
-                        tabList: [
+                    titleInfo:{
+                        title:'',
+                        list:[
                             {
-                                name: '自动选择',
-                                icon: 'iconzidongxuanze'
+                                title:'标题',
+                                val:'快速选择',
+                                max: 4,
+                                pla: '选填，不超过4个字'
                             },
                             {
-                                name: '手动选择',
-                                icon: 'iconshoudongxuanze'
+                                title:'介绍',
+                                val:'诚意推荐品质商品',
+                                max: 8,
+                                pla: '选填，不超过8个字'
+                            },
+                            {
+                                title:'链接',
+                                val:'/pages/goods_cate/goods_cate',
+                                max: 999,
+                                pla: '选填'
                             }
                         ]
                     },
-                    selectConfig: {
-                        title: '商品分类',
-                        type: 1,//type=1时只是传二级分类
-                        activeValue: '',
-                        list: [
-                            {
-                                activeValue: '',
-                                title: ''
-                            },
-                            {
-                                activeValue: '',
-                                title: ''
-                            }
-                        ]
-                    },
-                    numConfig: {
-                        title:'显示数量',
-                        val: 6
-                    },
-                    goodsList: {
-                        max: 20,
-                        list: []
-                    }
+                    // tabConfig: {
+                    //     tabVal: 0,
+                    //     type: 1,
+                    //     tabList: [
+                    //         {
+                    //             name: '自动选择',
+                    //             icon: 'iconzidongxuanze'
+                    //         },
+                    //         {
+                    //             name: '手动选择',
+                    //             icon: 'iconshoudongxuanze'
+                    //         }
+                    //     ]
+                    // },
+                    // selectConfig: {
+                    //     title: '商品分类',
+                    //     type: 1,//type=1时只是传二级分类
+                    //     activeValue: '',
+                    //     list: [
+                    //         {
+                    //             activeValue: '',
+                    //             title: ''
+                    //         },
+                    //         {
+                    //             activeValue: '',
+                    //             title: ''
+                    //         }
+                    //     ]
+                    // },
+                    // numConfig: {
+                    //     title:'显示数量',
+                    //     val: 6
+                    // },
+                    // goodsList: {
+                    //     max: 20,
+                    //     list: []
+                    // }
                 },
             },
             adsRecommend: {
@@ -1300,6 +1407,29 @@ export default {
                     isShow:{
                         val: true
                     },
+                    titleInfo:{
+                        title:'',
+                        list:[
+                            {
+                                title:'标题',
+                                val:'快速选择',
+                                max: 4,
+                                pla: '选填，不超过4个字'
+                            },
+                            {
+                                title:'介绍',
+                                val:'诚意推荐品质商品',
+                                max: 8,
+                                pla: '选填，不超过8个字'
+                            },
+                            {
+                                title:'链接',
+                                val:'/pages/columnGoods/HotNewGoods/index',
+                                max: 999,
+                                pla: '选填'
+                            }
+                        ]
+                    },
                     tabConfig: {
                         tabVal: 0,
                         type: 1,
@@ -1384,6 +1514,29 @@ export default {
                 default:{
                     isShow:{
                         val: true
+                    },
+                    titleInfo:{
+                        title:'',
+                        list:[
+                            {
+                                title:'标题',
+                                val:'快速选择',
+                                max: 4,
+                                pla: '选填，不超过4个字'
+                            },
+                            {
+                                title:'介绍',
+                                val:'诚意推荐品质商品',
+                                max: 8,
+                                pla: '选填，不超过8个字'
+                            },
+                            {
+                                title:'链接',
+                                val:'/pages/columnGoods/HotNewGoods/index?type=1',
+                                max: 999,
+                                pla: '选填'
+                            }
+                        ]
                     },
                     tabConfig: {
                         tabVal: 0,
@@ -1500,6 +1653,12 @@ export default {
                                 pla: '选填，不超过四个字'
                             },
                             {
+                                title:'标题',
+                                val:'精品推荐',
+                                max: 20,
+                                pla: '选填，不超过四个字'
+                            },
+                            {
                                 title:'链接',
                                 val:'/pages/columnGoods/HotNewGoods/index?type=1',
                                 max: 999,
@@ -1515,6 +1674,12 @@ export default {
                     titleInfo:{
                         title:'',
                         list:[
+                            {
+                                title:'标题',
+                                val:'精品推荐',
+                                max: 20,
+                                pla: '选填，不超过四个字'
+                            },
                             {
                                 title:'标题',
                                 val:'精品推荐',
@@ -1632,6 +1797,10 @@ export default {
                         configNme: 'isShow'
                     },
                     {
+                        components: toolCom.c_input_list,
+                        configNme: 'titleInfo'
+                    },
+                    {
                         components: toolCom.c_upload_img,
                         configNme: 'imgUrl'
                     },
@@ -1681,6 +1850,14 @@ export default {
                     },
                 ]
             },
+            tabNav: {
+                list: [
+                    {
+                        components: toolCom.c_is_show,
+                        configNme: 'isShow'
+                    }
+                ]
+            },
             activity: {
                 list: [
                     {
@@ -1716,17 +1893,21 @@ export default {
                         configNme: 'isShow'
                     },
                     {
-                        components: toolCom.c_tab,
-                        configNme: 'tabConfig'
+                        components: toolCom.c_input_list,
+                        configNme: 'titleInfo'
                     },
-                    {
-                        components: toolCom.c_select,
-                        configNme: 'selectConfig'
-                    },
-                    {
-                        components: toolCom.c_input_number,
-                        configNme: 'numConfig'
-                    }
+                    // {
+                    //     components: toolCom.c_tab,
+                    //     configNme: 'tabConfig'
+                    // },
+                    // {
+                    //     components: toolCom.c_select,
+                    //     configNme: 'selectConfig'
+                    // },
+                    // {
+                    //     components: toolCom.c_input_number,
+                    //     configNme: 'numConfig'
+                    // }
                 ]
             },
             adsRecommend: {
@@ -1844,6 +2025,10 @@ export default {
                         configNme: 'isShow'
                     },
                     {
+                        components: toolCom.c_input_list,
+                        configNme: 'titleInfo'
+                    },
+                    {
                         components: toolCom.c_tab,
                         configNme: 'tabConfig'
                     },
@@ -1938,6 +2123,10 @@ export default {
                         configNme: 'isShow'
                     },
                     {
+                        components: toolCom.c_input_list,
+                        configNme: 'titleInfo'
+                    },
+                    {
                         components: toolCom.c_tab,
                         configNme: 'tabConfig'
                     },
@@ -1951,6 +2140,10 @@ export default {
                     {
                         components: toolCom.c_is_show,
                         configNme: 'isShow'
+                    },
+                    {
+                        components: toolCom.c_input_list,
+                        configNme: 'titleInfo'
                     },
                     {
                         components: toolCom.c_tab,
@@ -1982,7 +2175,7 @@ export default {
                     list.push(sort)
                 }
                 if(data.name === 'goodList'){
-                    list.splice(2, 0, type);
+                    list.splice(3, 0, type);
                     list.push(sort)
                 }
             }

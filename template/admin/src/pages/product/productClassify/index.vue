@@ -10,14 +10,14 @@
                 <Row type="flex" :gutter="24">
                     <Col v-bind="grid">
                         <FormItem label="商品分类：" prop="pid" label-for="pid">
-                            <Select v-model="artFrom.pid" @on-change="userSearchs" clearable>
+                            <Select v-model="artFrom.pid" placeholder="请选择商品分类" @on-change="userSearchs" clearable>
                                 <Option v-for="item in treeSelect" :value="item.id" :key="item.id">{{ item.html + item.cate_name }}</Option>
                             </Select>
                         </FormItem>
                     </Col>
                     <Col v-bind="grid">
-                        <FormItem label="状态："  label-for="is_show">
-                            <Select v-model="artFrom.is_show" placeholder="请选择" clearable  @on-change="userSearchs">
+                        <FormItem label="分类状态："  label-for="is_show">
+                            <Select v-model="artFrom.is_show" placeholder="请选择分类状态" clearable  @on-change="userSearchs">
                                 <Option value="1">显示</Option>
                                 <Option value="0">隐藏</Option>
                             </Select>
@@ -25,7 +25,7 @@
                     </Col>
                     <Col v-bind="grid">
                         <FormItem label="分类名称："  label-for="status2">
-                            <Input search enter-button placeholder="请输入" v-model="artFrom.cate_name" @on-search="userSearchs"/>
+                            <Input search enter-button placeholder="请输入分类名称" v-model="artFrom.cate_name" @on-search="userSearchs"/>
                         </FormItem>
                     </Col>
                 </Row>

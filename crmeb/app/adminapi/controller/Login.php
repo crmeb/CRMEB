@@ -20,7 +20,7 @@ use app\services\system\admin\SystemAdminServices;
  * Class Login
  * @package app\adminapi\controller
  */
-class Login extends BaseController
+class Login extends AuthController
 {
 
     /**
@@ -65,7 +65,8 @@ class Login extends BaseController
             return app('json')->fail('验证码错误，请重新输入');
         }
 
-        validate(\app\adminapi\validate\setting\SystemAdminValidata::class)->scene('get')->check(['account' => $account, 'pwd' => $password]);
+        $this->validate(['account' => $account, 'pwd' => $password], \app\adminapi\validate\setting\SystemAdminValidata::class, 'get');
+
         return app('json')->success($this->services->login($account, $password, 'admin'));
     }
 

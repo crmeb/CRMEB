@@ -55,8 +55,6 @@ class MiniProgramService
         '9410001' => '获取房间失败',
         '9410002' => '获取商品失败',
         '9410003' => '获取回放失败',
-        '300001' => '禁止创建/更新商品（如：商品创建功能被封禁）',
-        '300002' => '名称长度不符合规则',
         '300003' => '价格输入不合规',
         '300004' => '商品名称存在违规违法内容',
         '300005' => '商品图片存在违规违法内容',
@@ -88,21 +86,28 @@ class MiniProgramService
 
     public static function options()
     {
-        $wechat = SystemConfigService::more(['site_url', 'routine_appId', 'routine_appsecret']);
-        $payment = SystemConfigService::more(['pay_routine_mchid', 'pay_routine_key', 'pay_routine_client_cert', 'pay_routine_client_key', 'pay_weixin_open']);
+        $wechat = SystemConfigService::more(['wechat_app_appsecret', 'wechat_app_appid', 'site_url', 'routine_appId', 'routine_appsecret']);
+        $payment = SystemConfigService::more(['pay_weixin_mchid', 'pay_weixin_key', 'pay_weixin_client_cert', 'pay_weixin_client_key', 'pay_weixin_open']);
         $config = [];
+        if (request()->isApp()) {
+            $appId = isset($wechat['wechat_app_appid']) ? trim($wechat['wechat_app_appid']) : '';
+            $appsecret = isset($wechat['wechat_app_appsecret']) ? trim($wechat['wechat_app_appsecret']) : '';
+        } else {
+            $appId = isset($wechat['routine_appId']) ? trim($wechat['routine_appId']) : '';
+            $appsecret = isset($wechat['routine_appsecret']) ? trim($wechat['routine_appsecret']) : '';
+        }
         $config['mini_program'] = [
-            'app_id' => isset($wechat['routine_appId']) ? trim($wechat['routine_appId']) : '',
-            'secret' => isset($wechat['routine_appsecret']) ? trim($wechat['routine_appsecret']) : '',
+            'app_id' => $appId,
+            'secret' => $appsecret,
             'token' => isset($wechat['wechat_token']) ? trim($wechat['wechat_token']) : '',
             'aes_key' => isset($wechat['wechat_encodingaeskey']) ? trim($wechat['wechat_encodingaeskey']) : ''
         ];
         $config['payment'] = [
-            'app_id' => isset($wechat['routine_appId']) ? trim($wechat['routine_appId']) : '',
-            'merchant_id' => trim($payment['pay_routine_mchid']),
-            'key' => trim($payment['pay_routine_key']),
-            'cert_path' => realpath('.' . $payment['pay_routine_client_cert']),
-            'key_path' => realpath('.' . $payment['pay_routine_client_key']),
+            'app_id' => $appId,
+            'merchant_id' => trim($payment['pay_weixin_mchid']),
+            'key' => trim($payment['pay_weixin_key']),
+            'cert_path' => public_path() . $payment['pay_weixin_client_cert'],
+            'key_path' => public_path() . $payment['pay_weixin_client_key'],
             'notify_url' => trim($wechat['site_url']) . Url::buildUrl('/api/routine/notify')
         ];
         return $config;
@@ -246,7 +251,7 @@ class MiniProgramService
                 throw new ValidateException($res['errmsg']);
             }
         } catch (\Throwable $e) {
-            throw new ValidateException($e->getMessage());
+            throw new ValidateException($e);
         }
     }
 
@@ -265,7 +270,7 @@ class MiniProgramService
                 throw new ValidateException($res['errmsg']);
             }
         } catch (\Throwable $e) {
-            throw new ValidateException($e->getMessage());
+            throw new ValidateException($e);
         }
     }
 
@@ -354,6 +359,23 @@ class MiniProgramService
     }
 
     /**
+     * 获得App支付参数
+     * @param $openid
+     * @param $out_trade_no
+     * @param $total_fee
+     * @param $attach
+     * @param $body
+     * @param string $detail
+     * @param string $trade_type
+     * @param array $options
+     * @return array|string
+     */
+    public static function appPay($openid, $out_trade_no, $total_fee, $attach, $body, $detail = '', $trade_type = Order::APP, $options = [])
+    {
+        return self::paymentService()->configForAppPayment(self::paymentPrepare($openid, $out_trade_no, $total_fee, $attach, $body, $detail, $trade_type, $options));
+    }
+
+    /**
      * 使用商户订单号退款
      * @param $orderNo
      * @param $refundNo
@@ -383,7 +405,7 @@ class MiniProgramService
     public static function payOrderRefund($orderNo, array $opt)
     {
         if (!isset($opt['pay_price'])) throw new AdminException('缺少pay_price');
-        if (sys_config('pay_routine_client_key') == '' || sys_config('pay_routine_client_cert') == '') throw new AdminException('请配置支付证书');
+        if (sys_config('pay_weixin_client_key') == '' || sys_config('pay_weixin_client_cert') == '') throw new AdminException('请配置支付证书');
         $totalFee = floatval(bcmul($opt['pay_price'], 100, 0));
         $refundFee = isset($opt['refund_price']) ? floatval(bcmul($opt['refund_price'], 100, 0)) : null;
         $refundReason = isset($opt['desc']) ? $opt['desc'] : '';

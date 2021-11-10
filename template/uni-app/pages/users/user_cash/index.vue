@@ -1,8 +1,8 @@
 <template>
-	<view>
+	<view :style="colorStyle">
 		<view class='cash-withdrawal'>
 			<view class='nav acea-row'>
-				<view v-for="(item,index) in navList" :key="index" class='item font-color' @click="swichNav(index)">
+				<view v-for="(item,index) in navList" :key="index" class='item fontcolor' @click="swichNav(index)">
 					<view class='line bg-color' :class='currentTab==index ? "on":""'></view>
 					<view class='iconfont' :class='item.icon+" "+(currentTab==index ? "on":"")'></view>
 					<view>{{item.name}}</view>
@@ -13,11 +13,13 @@
 					<form @submit="subCash">
 						<view class='item acea-row row-between-wrapper'>
 							<view class='name'>持卡人</view>
-							<view class='input'><input placeholder='请输入持卡人姓名' placeholder-class='placeholder' name="name"></input></view>
+							<view class='input'><input placeholder='请输入持卡人姓名' placeholder-class='placeholder'
+									name="name"></input></view>
 						</view>
 						<view class='item acea-row row-between-wrapper'>
 							<view class='name'>卡号</view>
-							<view class='input'><input type='number' placeholder='请填写卡号' placeholder-class='placeholder' name="cardnum"></input></view>
+							<view class='input'><input type='number' placeholder='请填写卡号' placeholder-class='placeholder'
+									name="cardnum"></input></view>
 						</view>
 						<view class='item acea-row row-between-wrapper'>
 							<view class='name'>银行</view>
@@ -30,10 +32,12 @@
 						</view>
 						<view class='item acea-row row-between-wrapper'>
 							<view class='name'>提现</view>
-							<view class='input'><input :placeholder='"最低提现金额"+minPrice' placeholder-class='placeholder' name="money" type='digit'></input></view>
+							<view class='input'><input :placeholder='"最低提现金额"+minPrice' placeholder-class='placeholder'
+									name="money" type='digit'></input></view>
 						</view>
 						<view class='tip'>
-							当前可提现金额: <text class="price">￥{{userInfo.commissionCount}},</text>冻结佣金：￥{{userInfo.broken_commission}}
+							当前可提现金额: <text
+								class="price">￥{{userInfo.commissionCount}},</text>冻结佣金：￥{{userInfo.broken_commission}}
 						</view>
 						<view class='tip'>
 							说明: 每笔佣金的冻结期为{{userInfo.broken_day}}天，到期后可提现
@@ -45,27 +49,31 @@
 					<form @submit="subCash">
 						<view class='item acea-row row-between-wrapper'>
 							<view class='name'>账号</view>
-							<view class='input'><input placeholder='请填写您的微信账号' placeholder-class='placeholder' name="name"></input></view>
+							<view class='input'><input placeholder='请填写您的微信账号' placeholder-class='placeholder'
+									name="name"></input></view>
 						</view>
 						<view class='item acea-row row-between-wrapper'>
 							<view class='name'>提现</view>
-							<view class='input'><input :placeholder='"最低提现金额"+minPrice' placeholder-class='placeholder' name="money" type='digit'></input></view>
+							<view class='input'><input :placeholder='"最低提现金额"+minPrice' placeholder-class='placeholder'
+									name="money" type='digit'></input></view>
 						</view>
 						<view class='item acea-row row-top row-between'>
 							<view class='name'>收款码</view>
 							<view class="input acea-row">
 								<view class="picEwm" v-if="qrcodeUrlW">
 									<image :src="qrcodeUrlW"></image>
-									<text class='iconfont icon-guanbi1 font-color' @click='DelPicW'></text>
+									<text class='iconfont icon-guanbi1 fontcolor' @click='DelPicW'></text>
 								</view>
-								<view class='pictrue acea-row row-center-wrapper row-column' @click='uploadpic("W")' v-else>
-								  <text class='iconfont icon-icon25201'></text>
-								  <view>上传图片</view>
+								<view class='pictrue acea-row row-center-wrapper row-column' @click='uploadpic("W")'
+									v-else>
+									<text class='iconfont icon-icon25201'></text>
+									<view>上传图片</view>
 								</view>
 							</view>
 						</view>
 						<view class='tip'>
-							当前可提现金额: <text class="price">￥{{userInfo.commissionCount}},</text>冻结佣金：￥{{userInfo.broken_commission}}
+							当前可提现金额: <text
+								class="price">￥{{userInfo.commissionCount}},</text>冻结佣金：￥{{userInfo.broken_commission}}
 						</view>
 						<view class='tip'>
 							说明: 每笔佣金的冻结期为{{userInfo.broken_day}}天，到期后可提现
@@ -77,27 +85,31 @@
 					<form @submit="subCash">
 						<view class='item acea-row row-between-wrapper'>
 							<view class='name'>账号</view>
-							<view class='input'><input placeholder='请填写您的支付宝账号' placeholder-class='placeholder' name="name"></input></view>
+							<view class='input'><input placeholder='请填写您的支付宝账号' placeholder-class='placeholder'
+									name="name"></input></view>
 						</view>
 						<view class='item acea-row row-between-wrapper'>
 							<view class='name'>提现</view>
-							<view class='input'><input :placeholder='"最低提现金额"+minPrice' placeholder-class='placeholder' name="money" type='digit'></input></view>
+							<view class='input'><input :placeholder='"最低提现金额"+minPrice' placeholder-class='placeholder'
+									name="money" type='digit'></input></view>
 						</view>
 						<view class='item acea-row row-top row-between'>
 							<view class='name'>收款码</view>
 							<view class="input acea-row">
 								<view class="picEwm" v-if="qrcodeUrlZ">
 									<image :src="qrcodeUrlZ"></image>
-									<text class='iconfont icon-guanbi1 font-color' @click='DelPicZ'></text>
+									<text class='iconfont icon-guanbi1 fontcolor' @click='DelPicZ'></text>
 								</view>
-								<view class='pictrue acea-row row-center-wrapper row-column' @click='uploadpic("Z")' v-else>
-								  <text class='iconfont icon-icon25201'></text>
-								  <view>上传图片</view>
+								<view class='pictrue acea-row row-center-wrapper row-column' @click='uploadpic("Z")'
+									v-else>
+									<text class='iconfont icon-icon25201'></text>
+									<view>上传图片</view>
 								</view>
 							</view>
 						</view>
 						<view class='tip'>
-							当前可提现金额: <text class="price">￥{{userInfo.commissionCount}},</text>冻结佣金：￥{{userInfo.broken_commission}}
+							当前可提现金额: <text
+								class="price">￥{{userInfo.commissionCount}},</text>冻结佣金：￥{{userInfo.broken_commission}}
 						</view>
 						<view class='tip'>
 							说明: 每笔佣金的冻结期为{{userInfo.broken_day}}天，到期后可提现
@@ -128,12 +140,14 @@
 	// #ifdef MP
 	import authorize from '@/components/Authorize';
 	// #endif
+	import colors from '@/mixins/color.js';
 	export default {
 		components: {
 			// #ifdef MP
 			authorize
 			// #endif
 		},
+		mixins:[colors],
 		data() {
 			return {
 				navList: [{
@@ -157,20 +171,21 @@
 				isClone: false,
 				isAuto: false, //没有授权的不会自动授权
 				isShowAuth: false, //是否隐藏授权
-				qrcodeUrlW:"",
-				qrcodeUrlZ:""
+				qrcodeUrlW: "",
+				qrcodeUrlZ: "",
+				prevent: false //避免重复提交成功多次
 			};
 		},
 		computed: mapGetters(['isLogin']),
-		watch:{
-			isLogin:{
-				handler:function(newV,oldV){
-					if(newV){
+		watch: {
+			isLogin: {
+				handler: function(newV, oldV) {
+					if (newV) {
 						this.getUserInfo();
 						this.getUserExtractBank();
 					}
 				},
-				deep:true
+				deep: true
 			}
 		},
 		onLoad() {
@@ -191,26 +206,26 @@
 			/**
 			 * 上传文件
 			 * 
-			*/
-			uploadpic: function (type) {
-			  let that = this;
-			  that.$util.uploadImageOne('upload/image', function (res) {
-				  if(type==='W'){
-					  that.qrcodeUrlW = res.data.url;
-				  }else{
-					  that.qrcodeUrlZ = res.data.url;
-				  }
-			  });
+			 */
+			uploadpic: function(type) {
+				let that = this;
+				that.$util.uploadImageOne('upload/image', function(res) {
+					if (type === 'W') {
+						that.qrcodeUrlW = res.data.url;
+					} else {
+						that.qrcodeUrlZ = res.data.url;
+					}
+				});
 			},
 			/**
 			 * 删除图片
 			 * 
-			*/
-			DelPicW: function () {
-			  this.qrcodeUrlW = "";
+			 */
+			DelPicW: function() {
+				this.qrcodeUrlW = "";
 			},
-			DelPicZ: function () {
-			  this.qrcodeUrlZ = "";
+			DelPicZ: function() {
+				this.qrcodeUrlZ = "";
 			},
 			onLoadFun: function() {
 				this.getUserInfo();
@@ -247,11 +262,13 @@
 			subCash: function(e) {
 				let that = this,
 					value = e.detail.value;
+				// if (this.prevent) return
+				// this.prevent = true
 				if (that.currentTab == 0) { //银行卡
-					if (value.name.length == 0) return this.$util.Tips({
+					if (!value.name.trim()) return this.$util.Tips({
 						title: '请填写持卡人姓名'
 					});
-					if (value.cardnum.length == 0) return this.$util.Tips({
+					if (!value.cardnum.trim()) return this.$util.Tips({
 						title: '请填写卡号'
 					});
 					if (that.index == 0) return this.$util.Tips({
@@ -261,7 +278,7 @@
 					value.bankname = that.array[that.index];
 				} else if (that.currentTab == 1) { //微信
 					value.extract_type = 'weixin';
-					if (value.name.length == 0) return this.$util.Tips({
+					if (!value.name.trim()) return this.$util.Tips({
 						title: '请填写微信号'
 					});
 					value.weixin = value.name;
@@ -274,10 +291,10 @@
 					value.alipay_code = value.name;
 					value.qrcode_url = that.qrcodeUrlZ;
 				}
-				if (value.money.length == 0) return this.$util.Tips({
+				if (!value.money.trim()) return this.$util.Tips({
 					title: '请填写提现金额'
 				});
-				if (value.money < that.minPrice) return this.$util.Tips({
+				if (Number(value.money) < Number(that.minPrice)) return this.$util.Tips({
 					title: '提现金额不能低于' + that.minPrice
 				});
 				extractCash(value).then(res => {
@@ -285,8 +302,14 @@
 					return this.$util.Tips({
 						title: res.msg,
 						icon: 'success'
-					},{url:'/pages/users/user_spread_user/index',tab:2});
+					}, {
+						url: '/pages/users/user_spread_user/index',
+						tab: 2
+					});
 				}).catch(err => {
+					setTimeout(e => {
+						this.prevent = false
+					}, 1000)
 					return this.$util.Tips({
 						title: err
 					});
@@ -300,7 +323,9 @@
 	page {
 		background-color: #fff !important;
 	}
-
+	.fontcolor{
+		color: var(--view-theme) !important;
+	}
 	.cash-withdrawal .nav {
 		height: 130rpx;
 		box-shadow: 0 10rpx 10rpx #f8f8f8;
@@ -320,7 +345,7 @@
 		width: 40rpx;
 		height: 40rpx;
 		border-radius: 50%;
-		border: 2rpx solid #e93323;
+		border: 2rpx solid var(--view-theme);
 		text-align: center;
 		line-height: 37rpx;
 		margin: 0 auto 6rpx auto;
@@ -329,9 +354,9 @@
 	}
 
 	.cash-withdrawal .nav .item .iconfont.on {
-		background-color: #e93323;
+		background-color: var(--view-theme);
 		color: #fff;
-		border-color: #e93323;
+		border-color: var(--view-theme);
 	}
 
 	.cash-withdrawal .nav .item .line {
@@ -368,35 +393,36 @@
 	.cash-withdrawal .wrapper .list .item .input .placeholder {
 		color: #bbb;
 	}
-	
-	.cash-withdrawal .wrapper .list .item .picEwm,.cash-withdrawal .wrapper .list .item .pictrue{
-		width:140rpx;
-		height:140rpx;
-		border-radius:3rpx;
+
+	.cash-withdrawal .wrapper .list .item .picEwm,
+	.cash-withdrawal .wrapper .list .item .pictrue {
+		width: 140rpx;
+		height: 140rpx;
+		border-radius: 3rpx;
 		position: relative;
 		margin-right: 23rpx;
 	}
-	
-	.cash-withdrawal .wrapper .list .item .picEwm image{
-		width:100%;
-		height:100%;
-		border-radius:3rpx;
+
+	.cash-withdrawal .wrapper .list .item .picEwm image {
+		width: 100%;
+		height: 100%;
+		border-radius: 3rpx;
 	}
-	
-	.cash-withdrawal .wrapper .list .item .picEwm .icon-guanbi1{
-		position:absolute;
+
+	.cash-withdrawal .wrapper .list .item .picEwm .icon-guanbi1 {
+		position: absolute;
 		right: -14rpx;
 		top: -16rpx;
-		font-size:40rpx;
+		font-size: 40rpx;
 	}
-	
-	.cash-withdrawal .wrapper .list .item .pictrue{
-		border:1px solid rgba(221,221,221,1);
-		font-size:22rpx;
+
+	.cash-withdrawal .wrapper .list .item .pictrue {
+		border: 1px solid rgba(221, 221, 221, 1);
+		font-size: 22rpx;
 		color: #BBBBBB;
 	}
-	
-	.cash-withdrawal .wrapper .list .item .pictrue .icon-icon25201{
+
+	.cash-withdrawal .wrapper .list .item .pictrue .icon-icon25201 {
 		font-size: 47rpx;
 		color: #DDDDDD;
 		margin-bottom: 3px;
@@ -446,6 +472,6 @@
 	}
 
 	.price {
-		color: $theme-color;
+		color: var(--view-priceColor);
 	}
 </style>

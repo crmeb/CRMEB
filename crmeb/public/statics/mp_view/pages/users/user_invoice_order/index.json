@@ -1,0 +1,9 @@
+{
+  "navigationBarTitleText": "订单详情",
+  "usingComponents": {
+    "payment": "/components/payment/index",
+    "home": "/components/home/index",
+    "order-goods": "/components/orderGoods/index",
+    "authorize": "/components/Authorize"
+  }
+}

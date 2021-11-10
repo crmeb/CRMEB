@@ -53,16 +53,6 @@ class SystemMenus extends BaseModel
     }
 
     /**
-     * 控制器修改器
-     * @param $value
-     * @return string
-     */
-    protected function setControllerAttr($value)
-    {
-        return lcfirst($value);
-    }
-
-    /**
      * 参数获取器
      * @param $_value
      * @return mixed

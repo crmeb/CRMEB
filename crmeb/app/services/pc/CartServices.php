@@ -8,7 +8,7 @@
 // +----------------------------------------------------------------------
 // | Author: CRMEB Team <admin@crmeb.com>
 // +----------------------------------------------------------------------
-declare (strict_types=1);
+declare (strict_types = 1);
 
 namespace app\services\pc;
 
@@ -16,7 +16,10 @@ namespace app\services\pc;
 use app\services\BaseServices;
 use app\services\order\StoreCartServices;
 use app\services\product\product\StoreProductServices;
+use app\services\system\SystemUserLevelServices;
+use app\services\user\MemberCardServices;
 use app\services\user\UserLevelServices;
+use app\services\user\UserServices;
 
 class CartServices extends BaseServices
 {
@@ -31,27 +34,44 @@ class CartServices extends BaseServices
         $storeCartServices = app()->make(StoreCartServices::class);
         /** @var StoreProductServices $productServices */
         $productServices = app()->make(StoreProductServices::class);
-        /** @var UserLevelServices $userLevelServices */
-        $userLevelServices = app()->make(UserLevelServices::class);
-
         $list = $storeCartServices->getCartList(['uid' => $uid], 0, 0, ['productInfo', 'attrInfo']);
-        $discount = $userLevelServices->getDiscount($uid, 'discount');
+        /** @var MemberCardServices $memberCardService */
+        $memberCardService = app()->make(MemberCardServices::class);
+        $vipStatus = $memberCardService->isOpenMemberCard('vip_price', false);
+        /** @var UserServices $user */
+        $user = app()->make(UserServices::class);
+        $userInfo = $user->getUserInfo($uid);
+        //用户等级是否开启
+        $discount = 100;
+        if (sys_config('member_func_status', 1)) {
+            /** @var SystemUserLevelServices $systemLevel */
+            $systemLevel = app()->make(SystemUserLevelServices::class);
+            $discount = $systemLevel->value(['id' => $userInfo['level'], 'is_del' => 0, 'is_show' => 1], 'discount') ?: 100;
+        }
         $valid = $invalid = [];
         foreach ($list as &$item) {
             $is_valid = $item['attrInfo']['suk'] ?? 0;
             $item['productInfo']['attrInfo'] = $item['attrInfo'] ?? [];
             $item['productInfo']['attrInfo']['image'] = $item['attrInfo']['image'] ?? $item['productInfo']['image'];
+            if (isset($item['productInfo']['attrInfo'])) {
+                $item['productInfo']['attrInfo'] = get_thumb_water($item['productInfo']['attrInfo']);
+            }
+            $item['productInfo'] = get_thumb_water($item['productInfo']);
             $productInfo = $item['productInfo'];
             if (isset($productInfo['attrInfo']['product_id']) && $item['product_attr_unique']) {
                 $item['costPrice'] = $productInfo['attrInfo']['cost'] ?? 0;
                 $item['trueStock'] = $productInfo['attrInfo']['stock'] ?? 0;
-                $item['truePrice'] = $productServices->setLevelPrice($productInfo['attrInfo']['price'] ?? 0, $uid, true, $discount, $item['attrInfo']['vip_price'] ?? 0, $productInfo['is_vip'] ?? 0, true);
-                $item['vip_truePrice'] = (float)$productServices->setLevelPrice($productInfo['attrInfo']['price'], $uid, false, $discount, $item['attrInfo']['vip_price'] ?? 0, $productInfo['is_vip'] ?? 0, true);
+                [$truePrice, $vip_truePrice, $type] = $productServices->setLevelPrice($productInfo['attrInfo']['price'] ?? 0, $uid, $userInfo, $vipStatus, $discount, $productInfo['attrInfo']['vip_price'] ?? 0, $productInfo['is_vip'] ?? 0, true);
+                $item['truePrice'] = $truePrice;
+                $item['vip_truePrice'] = $vip_truePrice;
+                $item['price_type'] = $type;
             } else {
                 $item['costPrice'] = $item['productInfo']['cost'] ?? 0;
                 $item['trueStock'] = $item['productInfo']['stock'] ?? 0;
-                $item['truePrice'] = $productServices->setLevelPrice($item['productInfo']['price'] ?? 0, $uid, true, $discount, $item['attrInfo']['vip_price'] ?? 0, $item['productInfo']['is_vip'] ?? 0);
-                $item['vip_truePrice'] = (float)$productServices->setLevelPrice($item['productInfo']['price'], $uid, false, $discount, $item['attrInfo']['vip_price'] ?? 0, $item['productInfo']['is_vip'] ?? 0);
+                [$truePrice, $vip_truePrice, $type] = $productServices->setLevelPrice($item['productInfo']['price'] ?? 0, $uid, $userInfo, $vipStatus, $discount, $item['productInfo']['vip_price'] ?? 0, $item['productInfo']['is_vip'] ?? 0);
+                $item['truePrice'] = $truePrice;
+                $item['vip_truePrice'] = $vip_truePrice;
+                $item['price_type'] = $type;
             }
             unset($item['attrInfo']);
             if ($item['status'] == 1 && $is_valid && $item['trueStock'] > 0) {

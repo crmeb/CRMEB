@@ -9,6 +9,7 @@
 // +----------------------------------------------------------------------
 
 
+
 /// null = 未请求，1 = 已允许，0 = 拒绝|受限, 2 = 系统未开启
 
 var isIOS
@@ -112,7 +113,6 @@ function record() {
     var avaudiosession = plus.ios.import("AVAudioSession");
     var avaudio = avaudiosession.sharedInstance();
     var status = avaudio.recordPermission();
-    console.log("permissionStatus:" + status);
     if (status === 1970168948) {
         result = null;
     } else if (status === 1735552628) {

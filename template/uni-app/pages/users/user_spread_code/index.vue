@@ -1,23 +1,28 @@
 <template>
-	<view>
+	<view :style="colorStyle">
 		<view class='distribution-posters'>
-			<swiper :indicator-dots="indicatorDots" :autoplay="autoplay" :circular="circular" :interval="interval" :duration="duration"
-			 @change="bindchange" previous-margin="40px" next-margin="40px">
-				<block v-for="(item,index) in spreadList" :key="index">
-					<swiper-item>
-						<!-- #ifdef MP -->
-						<image :src="item.poster" class="slide-image" :class="swiperIndex == index ? 'active' : 'quiet'" mode='aspectFill' />
-						<!-- #endif -->
-						<!-- #ifdef H5 -->
-						<image :src="item.wap_poster" class="slide-image" :class="swiperIndex == index ? 'active' : 'quiet'" mode='aspectFill' />
-						<!-- #endif -->
+			<swiper :indicator-dots="indicatorDots" :autoplay="autoplay" :circular="circular" :interval="interval"
+				:duration="duration" @change="bindchange" previous-margin="40px" next-margin="40px">
+				<block v-for="(item,index) in spreadData" :key="index" class="img-list">
+					<swiper-item class="aaa">
+						<div class="box" ref="bill" :class="swiperIndex == index ? 'active' : 'quiet'">
+							<view class="user-msg">
+								<view class="user-code">
+									<image class="canvas" :style="{height:hg+'px'}" :src="posterImage[index]"
+										v-if="posterImage[index]"></image>
+									<canvas class="canvas" :style="{height:hg+'px'}" :canvas-id="'myCanvas'+ index"
+										v-else></canvas>
+								</view>
+							</view>
+						</div>
+						<!-- <image :src="item.wap_poster" class="slide-image" :class="swiperIndex == index ? 'active' : 'quiet'" mode='aspectFill' /> -->
 					</swiper-item>
 				</block>
 			</swiper>
-			<!-- #ifdef MP -->
-			<view class='keep bg-color' @click='savePosterPath'>保存海报</view>
+			<!-- #ifndef H5  -->
+			<view class='keep bg-color' @click='savePosterPathMp(posterImage[swiperIndex])'>保存海报</view>
 			<!-- #endif -->
-			<!-- #ifndef MP -->
+			<!-- #ifndef MP || APP-PLUS -->
 			<div class="preserve acea-row row-center-wrapper">
 				<div class="line"></div>
 				<div class="tip">长按保存图片</div>
@@ -28,15 +33,26 @@
 		<!-- #ifdef MP -->
 		<!-- <authorize @onLoadFun="onLoadFun" :isAuto="isAuto" :isShowAuth="isShowAuth" @authColse="authColse"></authorize> -->
 		<!-- #endif -->
+		<!-- #ifndef MP -->
 		<home></home>
+		<!-- #endif -->
+		<view class="qrimg">
+			<zb-code ref="qrcode" :show="codeShow" :cid="cid" :val="val" :size="size" :unit="unit"
+				:background="background" :foreground="foreground" :pdground="pdground" :icon="icon" :iconSize="iconsize"
+				:onval="onval" :loadMake="loadMake" @result="qrR" />
+		</view>
 	</view>
 </template>
 
 <script>
+	import zbCode from '@/components/zb-code/zb-code.vue'
 	import {
 		getUserInfo,
 		spreadBanner,
-		userShare
+		userShare,
+		routineCode,
+		spreadMsg,
+		imgToBase
 	} from '@/api/user.js';
 	import {
 		toLogin
@@ -48,17 +64,25 @@
 	import authorize from '@/components/Authorize';
 	// #endif
 	import home from '@/components/home';
+	import {
+		TOKENNAME,
+		HTTP_REQUEST_URL
+	} from '@/config/app.js';
+	import colors from '@/mixins/color.js';
 	export default {
 		components: {
 			// #ifdef MP
 			authorize,
 			// #endif
-			home
+			home,
+			zbCode
 		},
+		mixins:[colors],
 		data() {
 			return {
 				imgUrls: [],
 				indicatorDots: false,
+				posterImageStatus: true,
 				circular: false,
 				autoplay: false,
 				interval: 3000,
@@ -68,48 +92,91 @@
 				userInfo: {},
 				poster: '',
 				isAuto: false, //没有授权的不会自动授权
-				isShowAuth: false //是否隐藏授权
+				isShowAuth: false, //是否隐藏授权
+				spreadData: [{}], //新海报数据
+				nickName: "",
+				siteName: "",
+				mpUrl: "",
+				canvasImageUrl: '',
+				posterImage: [],
+				//二维码参数
+				codeShow: false,
+				cid: '1',
+				ifShow: true,
+				val: "", // 要生成的二维码值
+				size: 200, // 二维码大小
+				unit: 'upx', // 单位
+				background: '#FFF', // 背景色
+				foreground: '#000', // 前景色
+				pdground: '#000', // 角标色
+				icon: '', // 二维码图标
+				iconsize: 40, // 二维码图标大小
+				lv: 3, // 二维码容错级别 ， 一般不用设置，默认就行
+				onval: true, // val值变化时自动重新生成二维码
+				loadMake: true, // 组件加载完成后自动生成二维码
+				src: '', // 二维码生成后的图片地址或base64
+				codeSrc: "",
+				wd: 0,
+				hg: 0,
+				qrcode: ""
 			};
 		},
 		computed: mapGetters({
-			'isLogin':'isLogin',
-			'userData':'userInfo'
+			'isLogin': 'isLogin',
+			'userData': 'userInfo',
+			'uid': 'uid'
 		}),
-		watch:{
-			isLogin:{
-				handler:function(newV,oldV){
-					if(newV){
+		watch: {
+			isLogin: {
+				handler: function(newV, oldV) {
+					if (newV) {
 						this.userSpreadBannerList();
 					}
 				},
-				deep:true
+				deep: true
 			},
-			userData:{
-				handler:function(newV,oldV){
-					if(newV){
+			userData: {
+				handler: function(newV, oldV) {
+					if (newV) {
 						this.$set(this, 'userInfo', newV);
 					}
 				},
-				deep:true
+				deep: true
 			}
 		},
-		onLoad() {
+		async onReady() {
 			if (this.isLogin) {
-				this.userSpreadBannerList();
+				this.val = `${HTTP_REQUEST_URL}?spread=${this.uid}`
+				await this.spreadMsg()
+				getUserInfo().then(res=>{
+					this.userInfo = res.data
+				})
 			} else {
 				toLogin();
+		
 			}
+
+		},
+		onShow() {
+			this.$nextTick(() => {
+				let selector = uni.createSelectorQuery().select('.aaa');
+				selector.fields({
+					size: true
+				}, data => {
+					this.wd = data.width
+					this.hg = data.height
+				}).exec();
+			})
 		},
 		/**
 		 * 用户点击右上角分享
 		 */
 		// #ifdef MP
-		onShareAppMessage: function() {
-			userShare();
+		onShareAppMessage() {
 			return {
 				title: this.userInfo.nickname + '-分销海报',
 				imageUrl: this.spreadList[0],
-				path: '/pages/index/index?spid=' + this.userInfo.uid,
+				path: '/pages/index/index?spread=' + this.userInfo.uid,
 			};
 		},
 		// #endif
@@ -118,6 +185,81 @@
 				this.$set(this, 'userInfo', e);
 				this.userSpreadBannerList();
 			},
+			qrR(res) {
+				this.codeSrc = res
+			},
+			//获取图片
+			async spreadMsg() {
+				let res = await spreadMsg()
+				this.spreadData = res.data.spread
+				this.nickName = res.data.nickname
+				this.siteName = res.data.site_name
+				// #ifdef MP
+				this.qrcode = await this.imgToBase(res.data.qrcode)
+				// #endif
+				let codeUrl = "?spread=" + this.userInfo.uid
+				// #ifdef MP || APP-PLUS
+				await this.routineCode()
+				let mpUrl = await this.downloadFilestoreImage(this.mpUrl)
+				// #endif
+				uni.showLoading({
+					title: '海报生成中',
+					mask: true
+				});
+				// #ifdef H5
+				if (this.$wechat.isWeixin() && res.data.qrcode) {
+					this.qrcode = await this.imgToBase(res.data.qrcode)
+				}
+				// #endif
+				for (let i = 0; i < res.data.spread.length; i++) {
+					let that = this
+					let arr2, img
+					// #ifdef MP	
+					arr2 = [mpUrl, await this.downloadFilestoreImage(res.data.spread[i].pic)]
+					// #endif
+					// #ifdef H5
+					img = await this.imgToBase(res.data.spread[i].pic)
+					arr2 = [this.qrcode || this.codeSrc, img]
+					// #endif
+					// #ifdef APP-PLUS
+					img = await this.downloadFilestoreImage(res.data.spread[i].pic)
+					arr2 = [this.codeSrc, img]
+					// #endif
+					that.$util.userPosterCanvas(arr2, res.data.nickname, res.data.site_name, i, this.wd, this.hg, (
+						tempFilePath) => {
+						that.$set(that.posterImage, i, tempFilePath);
+						// #ifdef MP
+						if(!that.posterImage.length){
+							return that.$util.Tips({
+								title: '小程序二维码需要发布正式版后才能获取到'
+							});
+						}
+						// #endif
+					});
+				}
+				uni.hideLoading();
+			},
+			downloadImg() {
+				uni.saveImageToPhotosAlbum({
+					filePath: this.posterImage[this.swiperIndex],
+					success: function() {
+					}
+				});
+			},
+			async routineCode() {
+				let res = await routineCode()
+				this.mpUrl = res.data.url
+			},
+			async imgToBase(url) {
+				let res = await imgToBase({
+					image: url
+				})
+				return res.data.image
+			},
+			// 二维码生成
+			codeImg() {
+				// http://当前域名+"?spread="+用户uid
+			},
 			// 授权关闭
 			authColse: function(e) {
 				this.isShowAuth = e
@@ -125,87 +267,87 @@
 			bindchange(e) {
 				let spreadList = this.spreadList;
 				this.swiperIndex = e.detail.current;
-				this.$set(this, 'poster', spreadList[e.detail.current].poster);
+				// this.$set(this, 'poster', spreadList[e.detail.current].poster);
 			},
-			savePosterPath: function() {
+			// #ifdef MP
+			savePosterPathMp(url) {
 				let that = this;
-				uni.downloadFile({
-					url: that.poster,
-					success(resFile) {
-						if (resFile.statusCode === 200) {
-							uni.getSetting({
-								success(res) {
-									if (!res.authSetting['scope.writePhotosAlbum']) {
-										uni.authorize({
-											scope: 'scope.writePhotosAlbum',
-											success() {
-												uni.saveImageToPhotosAlbum({
-													filePath: resFile.tempFilePath,
-													success: function(res) {
-														return that.$util.Tips({
-															title: '保存成功'
-														});
-													},
-													fail: function(res) {
-														return that.$util.Tips({
-															title: res.errMsg
-														});
-													},
-													complete: function(res) {},
-												})
-											},
-											fail() {
-												uni.showModal({
-													title: '您已拒绝获取相册权限',
-													content: '是否进入权限管理，调整授权？',
-													success(res) {
-														if (res.confirm) {
-															uni.openSetting({
-																success: function(res) {
-																	console.log(res.authSetting)
-																}
-															});
-														} else if (res.cancel) {
-															return that.$util.Tips({
-																title: '已取消！'
-															});
-														}
-													}
-												})
-											}
-										})
-									} else {
-										uni.saveImageToPhotosAlbum({
-											filePath: resFile.tempFilePath,
-											success: function(res) {
-												return that.$util.Tips({
-													title: '保存成功'
-												});
-											},
-											fail: function(res) {
-												return that.$util.Tips({
-													title: res.errMsg
-												});
-											},
-											complete: function(res) {},
-										})
-									}
-								},
-								fail(res) {
-
+				uni.getSetting({
+					success(res) {
+						if (!res.authSetting['scope.writePhotosAlbum']) {
+							uni.authorize({
+								scope: 'scope.writePhotosAlbum',
+								success() {
+									uni.saveImageToPhotosAlbum({
+										filePath: url,
+										success: function(res) {
+											that.$util.Tips({
+												title: '保存成功',
+												icon: 'success'
+											});
+										},
+										fail: function(res) {
+											that.$util.Tips({
+												title: '保存失败'
+											});
+										}
+									});
 								}
-							})
+							});
 						} else {
-							return that.$util.Tips({
-								title: resFile.errMsg
+							uni.saveImageToPhotosAlbum({
+								filePath: url,
+								success: function(res) {
+									that.$util.Tips({
+										title: '保存成功',
+										icon: 'success'
+									});
+								},
+								fail: function(res) {
+									that.$util.Tips({
+										title: '保存失败'
+									});
+								}
 							});
 						}
+					}
+				});
+			},
+			// #endif
+			// #ifdef APP-PLUS
+			savePosterPathMp(url) {
+				let that = this;
+				uni.saveImageToPhotosAlbum({
+					filePath: url,
+					success: function(res) {
+						that.$util.Tips({
+							title: '保存成功',
+							icon: 'success'
+						});
 					},
-					fail(res) {
-						return that.$util.Tips({
-							title: res.errMsg
+					fail: function(res) {
+						that.$util.Tips({
+							title: '保存失败'
 						});
 					}
+				});
+			},
+			// #endif
+			//图片转符合安全域名路径
+			downloadFilestoreImage(url) {
+				return new Promise((resolve, reject) => {
+					let that = this;
+					uni.downloadFile({
+						url: url,
+						success: function(res) {
+							resolve(res.tempFilePath);
+						},
+						fail: function() {
+							return that.$util.Tips({
+								title: ''
+							});
+						}
+					});
 				})
 			},
 			setShareInfoStatus: function() {
@@ -218,7 +360,8 @@
 								link: '/pages/index/index?spread=' + res.data.uid,
 								imgUrl: this.spreadList[0]
 							};
-							this.$wechat.wechatEvevt(["updateAppMessageShareData", "updateTimelineShareData"], configAppMessage)
+							this.$wechat.wechatEvevt(["updateAppMessageShareData", "updateTimelineShareData"],
+								configAppMessage)
 						});
 					} else {
 						toLogin();
@@ -252,6 +395,45 @@
 		background-color: #a3a3a3 !important;
 	}
 
+	.canvas {
+		width: 100%;
+		// height: 550px;
+	}
+
+	.box {
+		width: 100%;
+		height: 100%;
+		position: relative;
+		border-radius: 18rpx;
+		overflow: hidden;
+
+		.user-msg {
+			position: absolute;
+			width: 100%;
+			height: 100%;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+
+			.user-code {
+				width: 100%;
+				// height: 100%;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				justify-content: space-between;
+
+				image {
+					width: 100%;
+				}
+			}
+		}
+	}
+
+	.img-list {
+		margin-right: 40px;
+	}
+
 	.distribution-posters swiper {
 		width: 100%;
 		height: 1000rpx;
@@ -266,12 +448,12 @@
 		border-radius: 15rpx;
 	}
 
-	.distribution-posters .slide-image.active {
+	.distribution-posters /deep/.active {
 		transform: none;
 		transition: all 0.2s ease-in 0s;
 	}
 
-	.distribution-posters .slide-image.quiet {
+	.distribution-posters /deep/ .quiet {
 		transform: scale(0.8333333);
 		transition: all 0.2s ease-in 0s;
 	}

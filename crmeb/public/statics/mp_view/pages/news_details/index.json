@@ -1,0 +1,8 @@
+{
+  "navigationBarTitleText": "资讯详情",
+  "usingComponents": {
+    "jyf-parser": "/components/mp-html/mp-html",
+    "share-info": "/components/shareInfo/index",
+    "home": "/components/home/index"
+  }
+}

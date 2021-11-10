@@ -13,6 +13,7 @@ namespace app\api\controller\v1;
 
 
 use app\Request;
+use app\services\wechat\WechatServices;
 use think\facade\Cache;
 use app\jobs\TaskJob;
 use think\facade\Config;
@@ -187,7 +188,7 @@ class LoginController
             return app('json')->fail('验证码错误');
         if (strlen(trim($password)) < 6 || strlen(trim($password)) > 16)
             return app('json')->fail('密码必须是在6到16位之间');
-        if ($password == '123456') return app('json')->fail('密码太过简单，请输入较为复杂的密码');
+        if (md5($password) == md5('123456')) return app('json')->fail('密码太过简单，请输入较为复杂的密码');
 
         $registerStatus = $this->services->register($account, $password, $spread, 'h5');
         if ($registerStatus) {
@@ -409,5 +410,53 @@ class LoginController
         }
         CacheService::set($code, '0', 600);
         return app('json')->success();
+    }
+
+    /**
+     * apple快捷登陆
+     * @param Request $request
+     * @param WechatServices $services
+     * @return mixed
+     * @throws \Psr\SimpleCache\InvalidArgumentException
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     */
+    public function appleLogin(Request $request, WechatServices $services)
+    {
+        [$openId, $phone, $email, $captcha] = $request->postMore([
+            ['openId', ''],
+            ['phone', ''],
+            ['email', ''],
+            ['captcha', '']
+        ], true);
+        if ($phone) {
+            if (!$captcha) {
+                return app('json')->fail('请输入验证码');
+            }
+            //验证验证码
+            $verifyCode = CacheService::get('code_' . $phone);
+            if (!$verifyCode)
+                return app('json')->fail('请先获取验证码');
+            $verifyCode = substr($verifyCode, 0, 6);
+            if ($verifyCode != $captcha) {
+                CacheService::delete('code_' . $phone);
+                return app('json')->fail('验证码错误');
+            }
+        }
+        $userInfo = [
+            'openId' => $openId,
+            'unionid' => '',
+            'avatarUrl' => sys_config('h5_avatar'),
+            'nickName' => $email,
+        ];
+        $token = $services->appAuth($userInfo, $phone, 'apple');
+        if ($token) {
+            return app('json')->success('登录成功', $token);
+        } else if ($token === false) {
+            return app('json')->success('登录成功', ['isbind' => true]);
+        } else {
+            return app('json')->fail('登陆失败');
+        }
+
     }
 }

@@ -1,3 +1,13 @@
+// +----------------------------------------------------------------------
+// | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
+// +----------------------------------------------------------------------
+// | Copyright (c) 2016~2021 https://www.crmeb.com All rights reserved.
+// +----------------------------------------------------------------------
+// | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
+// +----------------------------------------------------------------------
+// | Author: CRMEB Team <admin@crmeb.com>
+// +----------------------------------------------------------------------
+
 import {
  	TOKENNAME,
  	HTTP_REQUEST_URL
@@ -258,7 +268,6 @@ import {
  			sizeType: sizeType, // 可以指定是原图还是压缩图，默认二者都有  
  			sourceType: sourceType, // 可以指定来源是相册还是相机，默认二者都有  
  			success: function(res) {
-				console.log()
  				//启动上传等待中...  
  				uni.showLoading({
  					title: '图片上传中',
@@ -301,14 +310,6 @@ import {
 						});
 					}
 				})
- 				// pathToBase64(res.tempFilePaths[0])
- 				// 	.then(imgBase64 => {
- 				// 		console.log(imgBase64);
- 						
- 				// 	})
- 				// 	.catch(error => {
- 				// 		console.error(error)
- 				// 	})
  			}
  		})
  	},

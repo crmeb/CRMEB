@@ -11,10 +11,12 @@
 
 namespace app\services\kefu;
 
+
 use crmeb\exceptions\AuthException;
 use crmeb\utils\ApiErrorCode;
 use crmeb\utils\JwtAuth;
 use Firebase\JWT\ExpiredException;
+use FormBuilder\Factory\Base;
 use think\facade\Cache;
 use app\services\BaseServices;
 use crmeb\services\CacheService;
@@ -81,15 +83,6 @@ class LoginServices extends BaseServices
      * @throws \think\db\exception\DbException
      * @throws \think\db\exception\ModelNotFoundException
      */
-//    public function parseToken(string $token)
-//    {
-//        /** @var BaseAuth $services */
-//        $services = app()->make(BaseAuth::class);
-//        $adminInfo = $services->parseToken($token, function ($id) {
-//            return $this->dao->get($id);
-//        });
-//        return $adminInfo->hidden(['password', 'ip', 'status']);
-//    }
     public function parseToken(string $token)
     {
         $noCli = !request()->isCli();
@@ -98,15 +91,15 @@ class LoginServices extends BaseServices
         //检测token是否过期
         $md5Token = md5($token);
         if (!$token || !$cacheService->hasToken($md5Token) || !($cacheToken = $cacheService->getTokenBucket($md5Token))) {
-            throw new AuthException(ApiErrorCode::ERR_LOGIN);
+            throw new AuthException(ApiErrorCode::ERR_LOGIN,410003);
         }
         if ($token === 'undefined') {
-            throw new AuthException(ApiErrorCode::ERR_LOGIN);
+            throw new AuthException(ApiErrorCode::ERR_LOGIN,410003);
         }
         //是否超出有效次数
         if (isset($cacheToken['invalidNum']) && $cacheToken['invalidNum'] >= 3) {
             $cacheService->clearToken($md5Token);
-            throw new AuthException(ApiErrorCode::ERR_LOGIN_INVALID);
+            throw new AuthException(ApiErrorCode::ERR_LOGIN_INVALID,410003);
         }
 
         /** @var JwtAuth $jwtAuth */
@@ -123,14 +116,14 @@ class LoginServices extends BaseServices
             $cacheService->setTokenBucket($md5Token, $cacheToken, $cacheToken['exp']);
         } catch (\Throwable $e) {
             $noCli && $cacheService->clearToken($md5Token);
-            throw new AuthException(ApiErrorCode::ERR_LOGIN_INVALID);
+            throw new AuthException(ApiErrorCode::ERR_LOGIN_INVALID,410003);
         }
 
         //获取管理员信息
         $adminInfo = $this->dao->get($id);
         if (!$adminInfo || !$adminInfo->id) {
             $noCli && $cacheService->clearToken($md5Token);
-            throw new AuthException(ApiErrorCode::ERR_LOGIN_STATUS);
+            throw new AuthException(ApiErrorCode::ERR_LOGIN_STATUS,410003);
         }
 
         $adminInfo->type = $type;

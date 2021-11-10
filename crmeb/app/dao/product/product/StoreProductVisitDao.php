@@ -81,7 +81,7 @@ class StoreProductVisitDao extends BaseDao
             $query->page($page, $limit);
         })->when(isset($where['store_name']), function ($query) use ($where) {
             $query->whereLike($this->alias . '.store_name', '%' . $where['store_name'] . '%');
-        })->field([
+        })->where(['is_del' => 0, 'is_show' => 1])->field([
             $this->alias . '.store_name',
             $this->alias . '.image',
             $this->alias . '.price',

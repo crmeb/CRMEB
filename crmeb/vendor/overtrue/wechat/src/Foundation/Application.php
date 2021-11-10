@@ -108,6 +108,7 @@ class Application extends Container
         ServiceProviders\CommentServiceProvider::class,
         \crmeb\services\easywechat\subscribe\ProgramProvider::class,
         \crmeb\services\easywechat\wechatlive\ProgramProvider::class,
+        \crmeb\services\easywechat\Open3rd\ProgramProvider::class,
     ];
 
     /**

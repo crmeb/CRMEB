@@ -12,14 +12,11 @@ declare (strict_types=1);
 
 namespace app\services\user;
 
-use app\services\BaseServices;
 use app\dao\user\UserRechargeDao;
+use app\services\BaseServices;
 use app\services\pay\RechargeServices;
 use app\services\system\config\SystemGroupDataServices;
-use app\services\wechat\WechatUserServices;
 use crmeb\exceptions\AdminException;
-use app\jobs\RoutineTemplateJob;
-use app\jobs\WechatTemplateJob as TemplateJob;
 use crmeb\services\{
     FormBuilder as Form, MiniProgramService, WechatService
 };
@@ -199,7 +196,7 @@ class UserRechargeServices extends BaseServices
      * @param $refund_price
      * @return mixed
      */
-    public function refund_update(int $id, $refund_price)
+    public function refund_update(int $id, string $refund_price)
     {
         $UserRecharge = $this->getRecharge($id);
         if (!$UserRecharge) {
@@ -243,18 +240,9 @@ class UserRechargeServices extends BaseServices
         $userServices = app()->make(UserServices::class);
         $userInfo = $userServices->getUserInfo($UserRecharge['uid']);
         $userServices->cutNowMoney($UserRecharge['uid'], $userInfo['now_money'], $number);
-        /** @var WechatUserServices $wechatServices */
-        $wechatServices = app()->make(WechatUserServices::class);
-        switch (strtolower($UserRecharge['recharge_type'])) {
-            case 'weixin':
-                $openid = $wechatServices->uidToOpenid($UserRecharge['uid'], 'wechat');
-                TemplateJob::dispatchDo('sendRechargeRefundStatus', [$openid, $data, $UserRecharge]);
-                break;
-            case 'routine':
-//                $openid = $wechatServices->uidToOpenid($UserRecharge['uid'], 'routine');
-//                Queue::instance()->do('sendOrderRefundSuccess')->job(RoutineTemplateJob::class)->data($openid, $UserRecharge, $refund_price)->push();
-                break;
-        }
+        //提醒推送
+        event('notice.notice', [['user_type' => strtolower($UserRecharge['recharge_type']), 'data' => $data, 'UserRecharge' => $UserRecharge, 'now_money' => $refund_price], 'recharge_order_refund_status']);
+
         $billData = ['title' => '系统退款', 'number' => $number, 'link_id' => $id, 'balance' => $userInfo['now_money'], 'mark' => '退款给用户' . $UserRecharge['price'] . '元'];
         /** @var UserBillServices $userBillService */
         $userBillService = app()->make(UserBillServices::class);
@@ -442,16 +430,9 @@ class UserRechargeServices extends BaseServices
         if (!$userServices->update((int)$order['uid'], ['now_money' => $now_money], 'uid')) {
             throw new ValidateException('修改用户信息失败');
         }
-        $wechatServices = app()->make(WechatUserServices::class);
-        switch (strtolower($order['recharge_type'])) {
-            case 'weixin':
 
-                break;
-            case 'routine':
-                $openid = $wechatServices->uidToOpenid($order['uid'], 'routine');
-                RoutineTemplateJob::dispatchDo('sendRechargeSuccess', [$openid, $order, $now_money]);
-                break;
-        }
+        //提醒推送
+        event('notice.notice', [['order' => $order, 'now_money' => $now_money], 'recharge_success']);
         return true;
     }
 

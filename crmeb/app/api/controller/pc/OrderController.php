@@ -58,6 +58,7 @@ class OrderController
         $where['uid'] = $request->uid();
         $where['is_del'] = 0;
         $where['is_system_del'] = 0;
+        if (!in_array($where['status'], [-1, -2, -3])) $where['pid'] = 0;
         return app('json')->successful($this->services->getOrderList($where));
     }
 }

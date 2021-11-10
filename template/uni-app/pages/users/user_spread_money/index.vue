@@ -1,5 +1,5 @@
 <template>
-	<view>
+	<view :style="colorStyle">
 		<view class='commission-details'>
 			<view class='promoterHeader bg-color'>
 				<view class='headerCon acea-row row-between-wrapper'>
@@ -22,6 +22,9 @@
 										<view>
 											<view class='name line1'>{{child.title}}</view>
 											<view>{{child.add_time}}</view>
+											<view class="fail-msg" v-if="child.fail_msg">
+												原因：{{child.fail_msg}}
+											</view>
 										</view>
 										<view class='num font-color' v-if="child.pm == 1">+{{child.number}}</view>
 										<view class='num' v-else>-{{child.number}}</view>
@@ -39,7 +42,9 @@
 		<!-- #ifdef MP -->
 		<!-- <authorize @onLoadFun="onLoadFun" :isAuto="isAuto" :isShowAuth="isShowAuth" @authColse="authColse"></authorize> -->
 		<!-- #endif -->
+		<!-- #ifndef MP -->
 		<home></home>
+		<!-- #endif -->
 	</view>
 </template>
 
@@ -60,6 +65,7 @@
 	// #endif
 	import emptyPage from '@/components/emptyPage.vue'
 	import home from '@/components/home';
+	import colors from '@/mixins/color.js';
 	export default {
 		components: {
 			// #ifdef MP
@@ -68,6 +74,7 @@
 			emptyPage,
 			home
 		},
+		mixins:[colors],
 		data() {
 			return {
 				name: '',

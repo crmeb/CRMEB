@@ -122,7 +122,7 @@
 		justify-content: center;
 	} 
 	.red{
-		color: #fc4141;
+		color: var(--view-theme);
 		margin: 0 4rpx;
 	}
 </style>

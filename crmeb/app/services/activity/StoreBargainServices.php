@@ -13,13 +13,13 @@ declare (strict_types=1);
 namespace app\services\activity;
 
 use app\dao\activity\StoreBargainDao;
+use app\jobs\ProductLogJob;
 use app\Request;
 use app\services\BaseServices;
 use app\services\order\StoreOrderServices;
 use app\services\product\product\StoreCategoryServices;
 use app\services\product\product\StoreDescriptionServices;
 use app\services\product\product\StoreProductServices;
-use app\services\product\product\StoreVisitServices;
 use app\services\product\sku\StoreProductAttrResultServices;
 use app\services\product\sku\StoreProductAttrServices;
 use app\services\product\sku\StoreProductAttrValueServices;
@@ -27,9 +27,7 @@ use app\services\system\attachment\SystemAttachmentServices;
 use app\services\user\UserServices;
 use app\services\wechat\WechatServices;
 use crmeb\exceptions\AdminException;
-use app\jobs\ProductLogJob;
-use app\jobs\RoutineTemplateJob;
-use app\jobs\WechatTemplateJob;
+use crmeb\services\CacheService;
 use crmeb\services\MiniProgramService;
 use crmeb\services\UploadService;
 use crmeb\services\UtilService;
@@ -155,7 +153,7 @@ class StoreBargainServices extends BaseServices
                 $res = $this->dao->update($id, $data);
                 $storeDescriptionServices->saveDescription((int)$id, $description, 2);
                 $skuList = $storeProductServices->validateProductAttr($items, $detail, (int)$id, 2);
-                $storeProductAttrServices->saveProductAttr($skuList, (int)$id, 2);
+                $valueGroup = $storeProductAttrServices->saveProductAttr($skuList, (int)$id, 2);
                 if (!$res) throw new AdminException('修改失败');
             } else {
                 if (!$storeProductServices->getOne(['is_show' => 1, 'is_del' => 0, 'id' => $data['product_id']])) {
@@ -165,8 +163,15 @@ class StoreBargainServices extends BaseServices
                 $res = $this->dao->save($data);
                 $storeDescriptionServices->saveDescription((int)$res->id, $description, 2);
                 $skuList = $storeProductServices->validateProductAttr($items, $detail, (int)$res->id, 2);
-                $storeProductAttrServices->saveProductAttr($skuList, (int)$res->id, 2);
+                $valueGroup = $storeProductAttrServices->saveProductAttr($skuList, (int)$res->id, 2);
                 if (!$res) throw new AdminException('添加失败');
+            }
+            $res = true;
+            foreach ($valueGroup->toArray() as $item) {
+                $res = $res && CacheService::setStock($item['unique'], (int)$item['quota_show'], 2);
+            }
+            if (!$res) {
+                throw new AdminException('占用库存失败');
             }
         });
     }
@@ -371,17 +376,18 @@ class StoreBargainServices extends BaseServices
      * @throws \think\db\exception\DbException
      * @throws \think\db\exception\ModelNotFoundException
      */
-    public function getDiyBargainList($where){
+    public function getDiyBargainList($where)
+    {
         $where['status'] = 1;
         unset($where['is_show']);
         [$page, $limit] = $this->getPageValue();
-        $list = $this->dao->DiyBargainList($where,$page, $limit);
+        $list = $this->dao->DiyBargainList($where, $page, $limit);
         $count = $this->dao->getCount($where);
         $cateIds = implode(',', array_column($list, 'cate_id'));
         /** @var StoreCategoryServices $storeCategoryServices */
         $storeCategoryServices = app()->make(StoreCategoryServices::class);
         $cateList = $storeCategoryServices->getCateArray($cateIds);
-        foreach ($list as &$item){
+        foreach ($list as &$item) {
             $cateName = array_filter($cateList, function ($val) use ($item) {
                 if (in_array($val['id'], explode(',', $item['cate_id']))) {
                     return $val;
@@ -400,12 +406,13 @@ class StoreBargainServices extends BaseServices
      * @param $where
      * @return array
      */
-    public function getHomeList($where){
+    public function getHomeList($where)
+    {
         [$page, $limit] = $this->getPageValue();
         $where['is_del'] = 0;
         $where['is_show'] = 1;
         $data = [];
-        $list= $this->dao->getHomeList($where,$page, $limit);
+        $list = $this->dao->getHomeList($where, $page, $limit);
         foreach ($list as &$item) {
             $item['price'] = floatval($item['price']);
         }
@@ -440,7 +447,9 @@ class StoreBargainServices extends BaseServices
             $bargain['attr'] = $v;
         }
 
-        $data['bargain'] = $bargain;
+        $data['bargain'] = get_thumb_water($bargain);
+        $bargainNew = get_thumb_water($bargain, 'small');
+        $data['bargain']['small_image'] = $bargainNew['image'];
 
         /** @var StoreOrderServices $orderService */
         $orderService = app()->make(StoreOrderServices::class);
@@ -452,7 +461,6 @@ class StoreBargainServices extends BaseServices
 
         //用户访问事件
         event('user.userVisit', [$user['uid'], $id, 'bargain', $bargain['product_id'], 'view']);
-
         //浏览记录
         ProductLogJob::dispatch(['visit', ['uid' => $user['uid'], 'product_id' => $bargain['product_id']]]);
         return $data;
@@ -608,14 +616,9 @@ class StoreBargainServices extends BaseServices
             if (!$bargainUserService->getSurplusPrice($bargainUserTableId, 1)) {
                 $bargainInfo = $this->dao->get($bargainId);//TODO 获取砍价商品信息
                 $bargainUserInfo = $bargainUserService->get($bargainUserTableId);// TODO 获取用户参与砍价信息
-                /** @var WechatServices $wechatService */
-                $wechatService = app()->make(WechatServices::class);
-                $userOpenid = $wechatService->getOne(['uid' => $bargainUserUid], 'openid,user_type');
-                if ($userOpenid['user_type'] == 'wechat') {
-                    WechatTemplateJob::dispatch('sendBargainSuccess', [$userOpenid['openid'], $bargainInfo, $bargainUserInfo, $bargainUserUid]);
-                } elseif ($userOpenid['user_type'] == 'routine') {
-                    RoutineTemplateJob::dispatch('sendBargainSuccess', [$userOpenid['openid'], $bargainInfo, $bargainUserInfo, $bargainUserUid]);
-                }
+                //用户发送消息
+                event('notice.notice', [['uid' => $bargainUserUid, 'bargainInfo' => $bargainInfo, 'bargainUserInfo' => $bargainUserInfo,], 'bargain_success']);
+
             }
             return 'SUCCESS';
         } else throw new ValidateException('砍价失败');
@@ -640,7 +643,7 @@ class StoreBargainServices extends BaseServices
             $res = $res && $this->dao->decStockIncSales(['id' => $bargainId, 'type' => 2], $num);
             //减掉普通商品sku的库存加销量
             $suk = $skuValueServices->value(['unique' => $unique, 'product_id' => $bargainId], 'suk');
-            $productUnique = $skuValueServices->value(['suk' => $suk, 'product_id' => $product_id], 'unique');
+            $productUnique = $skuValueServices->value(['suk' => $suk, 'product_id' => $product_id, 'type' => 0], 'unique');
             if ($productUnique) {
                 $res = $res && $skuValueServices->decProductAttrStock($product_id, $productUnique, $num);
             }
@@ -909,5 +912,41 @@ class StoreBargainServices extends BaseServices
             }
         }
         return $data;
+    }
+
+    /**
+     * 验证砍价下单库存限量
+     * @param int $uid
+     * @param int $bargainId
+     * @param int $cartNum
+     * @param string $unique
+     * @return array
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     */
+    public function checkBargainStock(int $uid, int $bargainId, int $cartNum = 1, string $unique = '')
+    {
+        if (!$this->validBargain($bargainId)) {
+            throw new ValidateException('该商品已下架或删除');
+        }
+        /** @var StoreProductAttrValueServices $attrValueServices */
+        $attrValueServices = app()->make(StoreProductAttrValueServices::class);
+        $attrInfo = $attrValueServices->getOne(['product_id' => $bargainId, 'type' => 2]);
+        if (!$attrInfo || $attrInfo['product_id'] != $bargainId) {
+            throw new ValidateException('请选择有效的商品属性');
+        }
+        $productInfo = $this->dao->get($bargainId, ['*', 'title as store_name']);
+        /** @var StoreBargainUserServices $bargainUserService */
+        $bargainUserService = app()->make(StoreBargainUserServices::class);
+        $bargainUserInfo = $bargainUserService->getOne(['uid' => $uid, 'bargain_id' => $bargainId, 'status' => 1, 'is_del' => 0]);
+        if ($bargainUserInfo['bargain_price_min'] < bcsub((string)$bargainUserInfo['bargain_price'], (string)$bargainUserInfo['price'], 2)) {
+            throw new ValidateException('砍价未成功');
+        }
+        $unique = $attrInfo['unique'];
+        if ($cartNum > $attrInfo['quota']) {
+            throw new ValidateException('该商品库存不足' . $cartNum);
+        }
+        return [$attrInfo, $unique, $productInfo, $bargainUserInfo];
     }
 }

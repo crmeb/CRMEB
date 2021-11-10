@@ -1,0 +1,7 @@
+{
+  "navigationBarTitleText": "兑换物流详情",
+  "usingComponents": {
+    "recommend": "/components/recommend/index",
+    "authorize": "/components/Authorize"
+  }
+}

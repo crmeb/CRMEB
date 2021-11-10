@@ -70,14 +70,23 @@ class PayServices
         try {
             switch ($payType) {
                 case 'routine':
-                    return MiniProgramService::jsPay($openid, $orderId, $price, $successAction, $body);
+                    if (request()->isApp()) {
+                        return MiniProgramService::appPay($openid, $orderId, $price, $successAction, $body);
+                    } else {
+                        return MiniProgramService::jsPay($openid, $orderId, $price, $successAction, $body);
+                    }
                 case 'weixinh5':
                     return WechatService::paymentPrepare(null, $orderId, $price, $successAction, $body, '', 'MWEB');
                 case 'weixin':
-                    return WechatService::jsPay($openid, $orderId, $price, $successAction, $body);
+                    if (request()->isApp()) {
+                        return WechatService::appPay($openid, $orderId, $price, $successAction, $body);
+                    } else {
+                        return WechatService::jsPay($openid, $orderId, $price, $successAction, $body);
+                    }
                 case 'alipay':
-                    return AliPayService::instance()->create($body, $orderId, $price, $successAction, $openid, sys_config('site_url'), $isCode);
+                    return AliPayService::instance()->create($body, $orderId, $price, $successAction, $openid, $openid, $isCode);
                 case 'pc':
+                case 'store':
                     return WechatService::nativePay($openid, $orderId, $price, $successAction, $body);
                 default:
                     throw new ValidateException('支付方式不存在');

@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "预售列表",
+  "usingComponents": {
+    "home": "/components/home/index"
+  }
+}

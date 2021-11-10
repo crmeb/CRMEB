@@ -64,11 +64,12 @@ class SystemAttachment extends AuthController
      */
     public function upload($upload_type = 0, $type = 0)
     {
-        [$pid, $file] = $this->request->postMore([
+        [$pid, $file, $menuName] = $this->request->postMore([
             ['pid', 0],
             ['file', 'file'],
+            ['menu_name', '']
         ], true);
-        $res = $this->service->upload((int)$pid, $file, $upload_type, $type);
+        $res = $this->service->upload((int)$pid, $file, $upload_type, $type, $menuName);
         return app('json')->success('上传成功', ['src' => $res]);
     }
 
@@ -101,4 +102,13 @@ class SystemAttachment extends AuthController
         return app('json')->success('修改成功');
     }
 
+    /**
+     * 获取上传类型
+     * @return mixed
+     */
+    public function uploadType()
+    {
+        $data['upload_type'] = sys_config('upload_type', 1);
+        return app('json')->success($data);
+    }
 }

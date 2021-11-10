@@ -90,7 +90,7 @@ export default {
     },
 
     /**
-         * @description  是否批量删除订单
+         * @description  是否可以批量删除订单
          */
     getIsDel (state, isDels) {
       state.isDels = isDels

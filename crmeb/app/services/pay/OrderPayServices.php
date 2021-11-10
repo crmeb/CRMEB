@@ -48,7 +48,8 @@ class OrderPayServices
         if ($orderInfo['pay_price'] <= 0) {
             throw new ValidateException('该支付无需支付!');
         }
-        if ($payType !== 'weixinh5' && $payType !== 'pc') {
+        $openid = '';
+        if (!in_array($payType, ['weixinh5', 'pc']) && !request()->isApp()) {
             if ($payType === 'weixin') {
                 $userType = 'wechat';
             } else {
@@ -60,8 +61,6 @@ class OrderPayServices
             if (!$openid) {
                 throw new ValidateException('获取用户openid失败,无法支付');
             }
-        } else {
-            $openid = '';
         }
         $site_name = sys_config('site_name');
         if (isset($orderInfo['member_type'])) {
@@ -70,7 +69,7 @@ class OrderPayServices
         } else {
             /** @var StoreOrderCartInfoServices $orderInfoServices */
             $orderInfoServices = app()->make(StoreOrderCartInfoServices::class);
-            $body = $orderInfoServices->getCarIdByProductTitle($orderInfo['cart_id']);
+            $body = $orderInfoServices->getCarIdByProductTitle((int)$orderInfo['id'], $orderInfo['cart_id']);
             $body = Str::substrUTf8($site_name . '--' . $body, 30);
             $successAction = "product";
         }
@@ -102,7 +101,7 @@ class OrderPayServices
         } else {
             /** @var StoreOrderCartInfoServices $orderInfoServices */
             $orderInfoServices = app()->make(StoreOrderCartInfoServices::class);
-            $body = $orderInfoServices->getCarIdByProductTitle($orderInfo['cart_id']);
+            $body = $orderInfoServices->getCarIdByProductTitle($orderInfo['id'], $orderInfo['cart_id']);
             $body = Str::substrUTf8($site_name . '--' . $body, 30);
             $successAction = "product";
         }

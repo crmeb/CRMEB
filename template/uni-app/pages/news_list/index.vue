@@ -1,5 +1,5 @@
 <template>
-	<view>
+	<view :style="colorStyle">
 		<view class='newsList'>
 			<view class='swiper' v-if="imgUrls.length > 0">
 				<swiper indicator-dots="true" :autoplay="autoplay" :circular="circular" :interval="interval" :duration="duration"
@@ -65,7 +65,9 @@
 				<image src='../../static/images/noNews.png'></image>
 			</view>
 		</view>
+		<!-- #ifndef MP -->
 		<home></home>
+		<!-- #endif -->
 	</view>
 </template>
 
@@ -77,10 +79,12 @@
 		getArticleBannerList
 	} from '@/api/api.js';
 	import home from '@/components/home';
+	import colors from "@/mixins/color";
 	export default {
 		components: {
 			home
 		},
+		mixins: [colors],
 		data() {
 			return {
 				imgUrls: [],
@@ -101,10 +105,14 @@
 		/**
 		 * 生命周期函数--监听页面显示
 		 */
-		onLoad: function() {
+		onShow: function() {
 			this.getArticleHot();
 			this.getArticleBanner();
 			this.getArticleCate();
+			this.status = false;
+			this.page = 1;
+			this.articleList = [];
+			this.getCidArticle();
 		},
 		  /**
 		   * 页面上拉触底事件的处理函数

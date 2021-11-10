@@ -15,7 +15,6 @@ use app\services\other\QrcodeServices;
 use app\services\product\product\StoreCategoryServices;
 use app\services\product\product\StoreProductReplyServices;
 use app\services\product\product\StoreProductServices;
-use app\services\system\attachment\SystemAttachmentServices;
 
 /**
  * 商品类
@@ -51,7 +50,8 @@ class StoreProductController
             [['news', 'd'], 0, '', 'is_new'],
             [['type', 0], 0],
             ['ids', ''],
-            ['selectId', '']
+            ['selectId', ''],
+            ['productId', '']
         ]);
         if ($where['selectId'] && (!$where['sid'] || !$where['cid'])) {
             if ($services->value(['id' => $where['selectId']], 'pid')) {
@@ -66,7 +66,14 @@ class StoreProductController
         if (!$where['ids']) {
             unset($where['ids']);
         }
-        return app('json')->successful($this->services->getGoodsList($where, (int)$request->uid()));
+        $type = 'mid';
+        $field = ['image', 'recommend_image'];
+        if ($where['store_name']) {
+            $type = 'small';
+            $field = ['image'];
+        }
+        $list = $this->services->getGoodsList($where, (int)$request->uid());
+        return app('json')->successful(get_thumb_water($list, $type, $field));
     }
 
     /**
@@ -78,8 +85,6 @@ class StoreProductController
     public function code(Request $request, $id)
     {
         $id = (int)$id;
-        /** @var SystemAttachmentServices $attach */
-        $attach = app()->make(SystemAttachmentServices::class);
         if (!$id || !$this->services->isValidProduct($id)) {
             return app('json')->fail('商品不存在或已下架');
         }
@@ -136,7 +141,7 @@ class StoreProductController
     public function product_hot()
     {
         $list = $this->services->getProducts(['is_hot' => 1, 'is_show' => 1, 'is_del' => 0]);
-        return app('json')->success($list);
+        return app('json')->success(get_thumb_water($list, 'mid'));
     }
 
     /**
@@ -165,11 +170,7 @@ class StoreProductController
             $info['banner'] = sys_data('routine_home_benefit_banner') ?: [];//TODO 促销单品推荐图片
             $info['list'] = $this->services->getRecommendProduct($request->uid(), 'is_benefit');//TODO 促销单品
         } else if ($type == 5) {//TODO 会员商品
-            $whereVip = [
-                ['vip_price', '>', 0],
-                ['is_vip', '=', 1],
-            ];
-            $info['list'] = $this->services->getRecommendProduct($request->uid(), $whereVip);//TODO 会员商品
+            $info['list'] = $this->services->getRecommendProduct($request->uid(), 'is_vip');//TODO 会员商品
         }
         return app('json')->successful($info);
     }
@@ -202,7 +203,8 @@ class StoreProductController
         /** @var StoreProductReplyServices $replyService */
         $replyService = app()->make(StoreProductReplyServices::class);
         $list = $replyService->getProductReplyList($id, $type);
-        return app('json')->successful($list);
+        return app('json')->successful(get_thumb_water($list, 'small', ['pics']));
     }
+
 
 }

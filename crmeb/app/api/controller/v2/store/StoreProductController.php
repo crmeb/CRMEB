@@ -39,6 +39,8 @@ class StoreProductController
         /** @var StoreProductAttrServices $storeProductAttrServices */
         $storeProductAttrServices = app()->make(StoreProductAttrServices::class);
         list($data['productAttr'], $data['productValue']) = $storeProductAttrServices->getProductAttrDetail($id, $request->uid(), $type);
+        $storeInfo = $this->services->getOne(['id' => $id]);
+        $data['storeInfo'] = $storeInfo ? $storeInfo->toArray() : [];
         return app('json')->successful($data);
     }
 }

@@ -16,7 +16,6 @@ use app\services\BaseServices;
 use app\dao\user\UserAuthDao;
 use crmeb\exceptions\AuthException;
 use crmeb\services\CacheService;
-use crmeb\utils\ApiErrorCode;
 use crmeb\utils\JwtAuth;
 
 /**

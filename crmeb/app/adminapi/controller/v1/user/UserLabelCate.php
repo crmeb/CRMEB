@@ -15,6 +15,7 @@ namespace app\adminapi\controller\v1\user;
 use app\adminapi\controller\AuthController;
 use app\services\user\UserLabelCateServices;
 use app\adminapi\validate\user\UserLabeCateValidata;
+use app\services\user\UserLabelServices;
 use think\facade\App;
 use app\Request;
 
@@ -72,7 +73,8 @@ class UserLabelCate extends AuthController
             ['sort', 0]
         ]);
 
-        validate(UserLabeCateValidata::class)->check($data);
+        $this->validate($data, UserLabeCateValidata::class);
+
         if ($this->services->count(['name' => $data['name']])) {
             return app('json')->fail('分类已经存在，请勿重复添加');
         }
@@ -127,7 +129,9 @@ class UserLabelCate extends AuthController
             ['name', ''],
             ['sort', 0],
         ]);
-        validate(UserLabeCateValidata::class)->check($data);
+
+        $this->validate($data, UserLabeCateValidata::class);
+
         if ($this->services->update($id, $data)) {
             $this->services->deleteCateCache();
             return app('json')->success('修改成功');
@@ -147,6 +151,10 @@ class UserLabelCate extends AuthController
         if (!$id || !($info = $this->services->get($id))) {
             return app('json')->fail('删除的数据不存在');
         }
+        /** @var $labelService $labelservice */
+        $labelService = app()->make(UserLabelServices::class);
+        $count = $labelService->getCount(['label_cate' => $id]);
+        if($count) return app('json')->fail('该分类下有标签，请先删除标签');
         if ($info->delete()) {
             $this->services->deleteCateCache();
             return app('json')->success('删除成功');

@@ -11,8 +11,11 @@
 namespace app\adminapi\controller\v1\application\wechat;
 
 use app\adminapi\controller\AuthController;
+use crmeb\exceptions\AdminException;
 use app\services\other\TemplateMessageServices;
-use crmeb\services\{FormBuilder as Form, template\Template};
+use crmeb\services\{
+    FormBuilder as Form, template\Template, WechatService
+};
 use think\facade\App;
 use think\facade\Route as Url;
 use think\Request;
@@ -50,12 +53,14 @@ class WechatTemplate extends AuthController
             ['name', ''],
             ['status', '']
         ]);
-        $where['type']=1;
+        $where['type'] = 1;
         $data = $this->services->getTemplateList($where);
         $industry = Cache::tag($this->cacheTag)->remember('_wechat_industry', function () {
             try {
                 $cache = (new Template('wechat'))->getIndustry();
-                if (!$cache) return [];
+                if (!$cache){
+                    $cache = (new Template('wechat'))->getIndustry();
+                }
                 Cache::tag($this->cacheTag, ['_wechat_industry']);
                 return $cache->toArray();
             } catch (\Exception $e) {
@@ -106,7 +111,7 @@ class WechatTemplate extends AuthController
             ['type', 1]
         ]);
         if ($data['tempkey'] == '') return app('json')->fail('请输入模板编号');
-        if ($data['tempkey'] != '' && $this->services->getOne(['tempkey'=>$data['tempkey']]))
+        if ($data['tempkey'] != '' && $this->services->getOne(['tempkey' => $data['tempkey']]))
             return app('json')->fail('请输入模板编号已存在,请重新输入');
         if ($data['tempid'] == '') return app('json')->fail('请输入模板ID');
         if ($data['name'] == '') return app('json')->fail('请输入模板名');
@@ -144,6 +149,7 @@ class WechatTemplate extends AuthController
         $f[] = Form::input('tempid', '模板ID', $product->getData('tempid'));
         $f[] = Form::radio('status', '状态', $product->getData('status'))->options([['label' => '开启', 'value' => 1], ['label' => '关闭', 'value' => 0]]);
         return app('json')->success(create_form('编辑模板消息', $f, Url::buildUrl('/app/wechat/template/' . $id), 'PUT'));
+
     }
 
     /**
@@ -164,7 +170,7 @@ class WechatTemplate extends AuthController
         if (!$id) return app('json')->fail('数据不存在');
         $product = $this->services->get($id);
         if (!$product) return app('json')->fail('数据不存在!');
-        $this->services->update($id,$data, 'id');
+        $this->services->update($id, $data, 'id');
         return app('json')->success('修改成功!');
     }
 
@@ -192,7 +198,65 @@ class WechatTemplate extends AuthController
     public function set_status($id, $status)
     {
         if ($status == '' || $id == 0) return app('json')->fail('参数错误');
-        $this->services->update($id,['status' => $status],'id');
+        $this->services->update($id, ['status' => $status], 'id');
         return app('json')->success($status == 0 ? '关闭成功' : '开启成功');
+    }
+
+    /**
+     * 同步微信模版消息
+     * @return mixed
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     */
+    public function syncSubscribe()
+    {
+        if (!sys_config('wechat_appid') || !sys_config('wechat_appsecret')) {
+            throw new AdminException('请先配置微信公众号appid、appSecret等参数');
+        }
+        $tempall = $this->services->getTemplateList(['status' => 1, 'type' => 1]);
+        /*
+         * 删除所有模版ID
+         */
+        //获取微信平台已经添加的模版
+        $list = WechatService::getPrivateTemplates();//获取所有模版
+        foreach ($list->template_list as $v)
+        {
+            //删除已有模版
+            WechatService::deleleTemplate($v['template_id']);
+        }
+
+        foreach ($tempall['list'] as $temp)
+        {
+            //添加模版消息
+            $res = WechatService::addTemplateId($temp['tempkey']);
+//            if($temp['tempid'])
+//            {
+//                //删除已有模版
+//                WechatService::deleleTemplate($temp['tempid']);
+//            }
+            if(!$res->errcode && $res->template_id){
+                $this->services->update($temp['id'],['tempid'=>$res->template_id]);
+            }
+        }
+        return app('json')->success('模版消息一键设置成功');
+
+        /**
+         * 批量修改模版格式
+         */
+        //获取所有模版
+//        $list = WechatService::getPrivateTemplates();//获取所有模版
+//
+//        foreach ($tempall['list'] as $v)
+//        {
+//            foreach ($list->template_list as $item)
+//            {
+//                echo $item['template_id'];
+//                if ($item['template_id'] == $v['tempid']) {
+//                    $this->services->update($v['id'], ['content'=>'']);
+//                }
+//            }
+//
+//        }
     }
 }

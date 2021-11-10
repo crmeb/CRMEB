@@ -189,6 +189,52 @@ export function bargainSetStatusApi (data) {
         method: 'PUT'
     })
 }
+/**
+ * @description 预售商品 -- 修改状态
+ * @param {Object} param data {Object} 传值参数
+ */
+export function advanceSetStatusApi (data) {
+    return request({
+        url: `marketing/advance/set_status/${data.id}/${data.status}`,
+        method: 'PUT'
+    })
+}
+
+/**
+ * @description 预售商品 -- 列表
+ * @param {Object} param params {Object} 传值参数
+ */
+ export function presellListApi (params) {
+    return request({
+        url: `marketing/advance/index`,
+        method: 'get',
+        params
+    })
+}
+
+/**
+ * @description 预售商品 -- 保存编辑
+ * @param {Object} param data {Object} 传值参数
+ */
+ export function presellCreatApi (data) {
+    return request({
+        url: `marketing/advance/save/${data.id}`,
+        method: 'POST',
+        data
+    })
+}
+
+/**
+ * @description 预售商品 -- 详情
+ * @param {Number} param id {Number} 拼团商品id
+ */
+ export function presellInfoApi (id) {
+    return request({
+        url: `marketing/advance/info/${id}`,
+        method: 'get'
+    })
+}
+
 
 /**
  * @description 拼团商品 -- 列表
@@ -344,7 +390,7 @@ export function seckillTimeListApi () {
 }
 
 /**
- * @description 积分日志 -- 头部
+ * @description 商品列表 -- 头部
  */
 export function productAttrsApi (id, type) {
     return request({
@@ -428,4 +474,189 @@ export function storeSeckillApi (data) {
         method: 'get',
         params: data
     })
+}
+
+/**
+ * @description 积分商品 -- 列表
+ */
+ export function integralProductListApi (params) {
+    return request({
+        url: `marketing/integral_product`,
+        method: 'GET',
+        params
+    });
+}
+
+/**
+ * @description 积分商品 -- 保存编辑
+ */
+ export function integralAddApi (data) {
+    return request({
+        url: `marketing/integral/${data.id}`,
+        method: 'post',
+        data
+    });
+}
+
+
+/**
+ * @description 积分商品 -- (多个) 保存
+ */
+ export function integralAddBatch (data) {
+    return request({
+        url: `marketing/integral/batch`,
+        method: 'post',
+        data
+    });
+}
+
+/**
+ * @description 积分商品 -- 详情
+ */
+export function integralInfoApi (id) {
+    return request({
+        url: `marketing/integral/${id}`,
+        method: 'GET'
+    });
+}
+/**
+ * @description 积分商品 -- 修改状态
+ */
+export function integralIsShowApi (data) {
+    return request({
+        url: `marketing/integral/set_show/${data.id}/${data.is_show}`,
+        method: 'put'
+    });
+}
+/**
+ * @description 积分订单管理--列表
+ * @param {Object} param data {Object} 传值参数
+ */
+export function integralOrderList (data) {
+    return request({
+        url: 'marketing/integral/order/list',
+        method: 'get',
+        params: data
+    });
+};
+
+/**
+ * @description 积分订单数据--列表
+ * @param {Object} param data {Object} 传值参数
+ */
+export function integralGetOrdes (data) {
+    return request({
+        url: 'marketing/integral/order/chart',
+        method: 'get',
+        params: data
+    });
+};
+/**
+ * @description 订单物流信息
+ * @param {Number} param id {Number} 订单id
+ */
+ export function getExpress (id) {
+    return request({
+        url: `marketing/integral/order/express/${id}`,
+        method: 'get'
+    });
+};
+/**
+ * @description 获取快递公司
+ */
+ export function getExpressData (status) {
+    return request({
+        url: `marketing/integral/order/express_list?status=` + status,
+        method: 'get'
+    })
+};
+
+/**
+ * @description 订单表单详情数据
+ * @param {Number} param id {Number} 订单id
+ */
+ export function getIntegralOrderDataInfo (id) {
+    return request({
+        url: `marketing/integral/order/info/${id}`,
+        method: 'get'
+    });
+};
+
+/**
+ * @description 配送信息表单
+ * @param {Number} param id {Number} 订单id
+ */
+ export function getIntegralOrderDistribution (id) {
+    return request({
+        url: `marketing/integral/order/distribution/${id}`,
+        method: 'get'
+    });
+};
+
+/**
+ * @description 获取订单记录
+ * @param {Number} param data.id {Number} 订单id
+ * @param {String} param data.datas {String} 分页参数
+ */
+ export function getIntegralOrderRecord (data) {
+    return request({
+        url: `marketing/integral/order/status/${data.id}`,
+        method: 'get',
+        params: data.datas
+    });
+};
+
+/**
+ * @description 发送货提交表单
+ * @param {Number} param data.id {Number} 订单id
+ * @param {Object} param data.datas {Object} 表单信息
+ */
+ export function integralOrderPutDelivery (data) {
+    return request({
+        url: `marketing/integral/order/delivery/${data.id}`,
+        method: 'put',
+        data: data.datas
+    });
+};
+
+/**
+ * @description 修改备注信息
+ * @param {Number} param data.id {Number} 订单id
+ * @param {String} param data.remark {String} 备注信息
+ */
+ export function integralOrderPutRemarkData (data) {
+    return request({
+        url: `marketing/integral/order/remark/${data.id}`,
+        method: 'put',
+        data: data.remark
+    });
+};
+
+/**
+ * 订单时获取所有配送员列表
+ */
+ export function orderDeliveryList () {
+    return request({
+        url: 'marketing/integral/order/delivery/list',
+        method: 'get'
+    });
+}
+
+/**
+ * 电子面单模板
+ * @param {com} data 快递公司编号
+ */
+export function orderExpressTemp (data) {
+    return request({
+        url: 'marketing/integral/order/express/temp',
+        method: 'get',
+        params: data
+    });
+}
+
+export function orderSheetInfo () {
+    return request({
+        url: 'marketing/integral/order/sheet_info',
+        method: 'get'
+    });
 }

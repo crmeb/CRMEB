@@ -105,7 +105,7 @@ class StoreSeckillController
     {
         if (!$time) return app('json')->fail('参数错误');
         $seckillInfo = $this->services->getListByTime($time);
-        return app('json')->successful($seckillInfo);
+        return app('json')->successful(get_thumb_water($seckillInfo));
     }
 
     /**

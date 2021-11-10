@@ -12,17 +12,16 @@ declare (strict_types=1);
 
 namespace app\services\activity;
 
-use app\services\BaseServices;
 use app\dao\activity\StorePinkDao;
+use app\jobs\PinkJob;
+use app\services\BaseServices;
+use app\services\message\notice\RoutineTemplateListService;
+use app\services\message\notice\WechatTemplateListService;
 use app\services\order\StoreOrderRefundServices;
 use app\services\order\StoreOrderServices;
-use app\services\user\UserServices;
 use app\services\system\attachment\SystemAttachmentServices;
-use app\services\wechat\WechatServices;
-use app\services\wechat\WechatUserServices;
-use app\jobs\PinkJob;
-use app\jobs\RoutineTemplateJob;
-use app\jobs\WechatTemplateJob;
+use app\services\user\UserServices;
+use crmeb\services\CacheService;
 use crmeb\services\MiniProgramService;
 use crmeb\services\UploadService;
 use crmeb\services\UtilService;
@@ -45,8 +44,6 @@ use think\exception\ValidateException;
  */
 class StorePinkServices extends BaseServices
 {
-
-    const HASH_AUTH = 'Vv3KONSpjPEF0';
 
     /**
      * StorePinkServices constructor.
@@ -243,11 +240,11 @@ class StorePinkServices extends BaseServices
                 $oids = array_column($pinkAll, 'order_id_key');
                 $orders = $orderService->getColumn([['id', 'in', $oids]], '*', 'id');
                 foreach ($pinkAll as $v) {
-                    $res1 = $orderServiceRefund->orderApplyRefund($orders[$v['order_id_key']], '拼团时间超时');
+                    $res1 = $orderServiceRefund->orderApplyRefund($orders[$v['order_id_key']], '拼团时间超时', '', [], 1);
                     $res2 = $this->dao->getCount([['uid', '=', $v['uid']], ['is_tpl', '=', 0], ['k_id|id', '=', $pinkT['id']]]);
                     if ($res1 && $res2) {
                         if ($isIds) array_push($pinkIds, $v['id']);
-                        $this->orderPinkAfterNo($pinkT['uid'], $pinkT['id'], false, $orders[$v['order_id_key']]['is_channel']);
+                        $this->orderPinkAfterNo($v['uid'], $pinkT['id'], false, $orders[$v['order_id_key']]['is_channel']);
                     } else {
                         if ($isRunErr) return $pinkBool;
                     }
@@ -273,23 +270,10 @@ class StorePinkServices extends BaseServices
     public function orderPinkAfterNo($uid, $pid, $isRemove = false, $channel)
     {
         $pink = $this->dao->getOne([['id|k_id', '=', $pid], ['uid', '=', $uid]], '*', ['getProduct']);
-        /** @var WechatServices $wechatService */
-        $wechatService = app()->make(WechatServices::class);
-        $userOpenid = $wechatService->getOne(['uid' => $uid], 'openid,user_type');
-        if ($channel == 1) {
-            $userOpenid = $wechatService->value(['uid' => $uid, 'user_type' => 'routine'], 'openid');
-            if ($isRemove) {
-                RoutineTemplateJob::dispatchDo('sendPinkFail', [$userOpenid, $pink->title, $pink->people, '亲，您的拼团取消，点击查看订单详情', '/pages/order_details/index?order_id=' . $pink->order_id]);
-            } else {
-                RoutineTemplateJob::dispatchDo('sendPinkFail', [$userOpenid, $pink->title, $pink->people, '亲，您拼团失败，自动为您申请退款，退款金额为：' . $pink->price, '/pages/order_details/index?order_id=' . $pink->order_id]);
-            }
-        } elseif ($channel == 0) {
-            $userOpenid = $wechatService->value(['uid' => $uid, 'user_type' => 'wecaht'], 'openid');
-            if ($isRemove) {
-                WechatTemplateJob::dispatchDo('sendOrderPinkClone', [$userOpenid, $pink, $pink->title]);
-            } else {
-                WechatTemplateJob::dispatchDo('sendOrderPinkFial', [$userOpenid, $pink, $pink->title]);
-            }
+        if ($isRemove) {
+            event('notice.notice', [['uid' => $uid, 'pink' => $pink, 'user_type' => $channel], 'send_order_pink_clone']);
+        } else {
+            event('notice.notice', [['uid' => $uid, 'pink' => $pink, 'user_type' => $channel], 'send_order_pink_fial']);
         }
         $this->dao->update([['id|k_id', '=', $pid]], ['status' => 3, 'stop_time' => time()]);
     }
@@ -368,21 +352,22 @@ class StorePinkServices extends BaseServices
         $storeCombinationServices = app()->make(StoreCombinationServices::class);
         $title = $storeCombinationServices->value(['id' => $this->dao->value(['id' => $pid], 'cid')], 'title');
         $pinkList = $this->dao->getColumn([['id|k_id', '=', $pid], ['uid', '<>', 0]], '*', 'uid');
+        $pinkT_name = $this->dao->value(['id' => $pid], 'nickname');
         $order_ids = array_column($pinkList, 'order_id');
         /** @var StoreOrderServices $orderService */
         $orderService = app()->make(StoreOrderServices::class);
         $order_channels = $orderService->getColumn([['order_id', 'in', $order_ids]], 'is_channel', 'order_id');
         if (!$pinkList) return false;
         foreach ($pinkList as $item) {
-            /** @var WechatServices $wechatService */
-            $wechatService = app()->make(WechatServices::class);
-            if ($order_channels[$item['order_id']] == 1) {
-                $userOpenid = $wechatService->value(['uid' => $item['uid'], 'user_type' => 'routine'], 'openid');
-                RoutineTemplateJob::dispatchDo('sendPinkSuccess', [$userOpenid, $title, $item['nickname'], $item['add_time'], $item['people'], '/pages/users/order_details/index?order_id=' . $item['order_id']]);
-            } elseif ($order_channels[$item['order_id']] == 0) {
-                $userOpenid = $wechatService->value(['uid' => $item['uid'], 'user_type' => 'wechat'], 'openid');
-                WechatTemplateJob::dispatchDo('sendOrderPinkSuccess', [$userOpenid, $item['order_id'], $item['id'], $title]);
-            }
+            $item['nickname'] = $pinkT_name;
+            //用户发送消息
+            event('notice.notice', [
+                [
+                    'list' => $item,
+                    'title' => $title,
+                    'user_type' => $order_channels[$item['order_id']],
+                    'url' => '/pages/users/order_details/index?order_id=' . $item['order_id']
+                ], 'order_user_groups_success']);
         }
         $this->dao->update([['uid', 'in', $uidAll], ['id|k_id', '=', $pid]], ['is_tpl' => 1]);
     }
@@ -396,13 +381,6 @@ class StorePinkServices extends BaseServices
     {
         /** @var StoreCombinationServices $services */
         $services = app()->make(StoreCombinationServices::class);
-        /** @var WechatUserServices $wechatUserServices */
-        $wechatUserServices = app()->make(WechatUserServices::class);
-        if ($orderInfo['is_channel'] == 1) {
-            $openid = $wechatUserServices->uidToOpenid($orderInfo['uid'], 'routine');
-        } else {
-            $openid = $wechatUserServices->uidToOpenid($orderInfo['uid'], 'wechat');
-        }
         $product = $services->getOne(['id' => $orderInfo['combination_id']], 'effective_time,title,people');
         if (!$product) {
             return false;
@@ -431,8 +409,9 @@ class StorePinkServices extends BaseServices
                 $pink['add_time'] = time();//开团时间
                 $res = $this->save($pink);
             }
+            // 拼团团成功发送模板消息
+            event('notice.notice', [['orderInfo' => $orderInfo, 'title' => $product['title'], 'pink' => $pink], 'can_pink_success']);
 
-            $openid && $this->joinPinkSuccessSend($orderInfo, $openid, $product['title'], $pink);
             //处理拼团完成
             list($pinkAll, $pinkT, $count, $idAll, $uidAll) = $this->getPinkMemberAndPinkK($pink);
             if ($pinkT['status'] == 1) {
@@ -469,9 +448,14 @@ class StorePinkServices extends BaseServices
                 $res = $res1 && $res2;
                 $pink['id'] = $res1['id'];
             }
+
+            $number = (int)bcsub((string)$pink['people'], '1', 0);
+            if ($number) CacheService::setStock(md5($pink['id']), $number, 3);
+
             PinkJob::dispatchSece((int)(($product->effective_time * 3600) + 60), [$pink['id']]);
             // 开团成功发送模板消息
-            $openid && $this->pinkSuccessSend($orderInfo, $openid, $product['title'], $pink);
+            event('notice.notice', [['orderInfo' => $orderInfo, 'title' => $product['title'], 'pink' => $pink], 'open_pink_success']);
+
             if ($res) return true;
             else return false;
         }
@@ -492,46 +476,6 @@ class StorePinkServices extends BaseServices
         $count = $this->dao->getCount($data);
         if ($count) return $count;
         else return 0;
-    }
-
-    /**
-     * 参加拼团成功发送模板消息
-     * @param array $order
-     * @param string $openid
-     * @param string $title
-     * @param $pink
-     * @return mixed
-     */
-    public function joinPinkSuccessSend(array $order, string $openid, string $title, $pink)
-    {
-        if ($order['is_channel'] == 1) {
-            /** @var UserServices $services */
-            $services = app()->make(UserServices::class);
-            $nickname = $services->value(['uid' => $order['uid']], 'nickname');
-            return RoutineTemplateJob::dispatchDo('sendPinkSuccess', [$openid, $title, $nickname, $pink['add_time'], $pink['people'], '/pages/users/order_details/index?order_id=' . $pink['order_id']]);
-        } else {
-            return WechatTemplateJob::dispatchDo('sendOrderPinkUseSuccess', [$openid, $order['order_id'], $title, $order['pink_id']]);
-        }
-    }
-
-    /**
-     * 开团发送模板消息
-     * @param array $order
-     * @param string $openid
-     * @param string $title
-     * @param $pink
-     * @return mixed
-     */
-    public function pinkSuccessSend(array $order, string $openid, string $title, $pink)
-    {
-        if ($order['is_channel'] == 1) {
-            /** @var UserServices $services */
-            $services = app()->make(UserServices::class);
-            $nickname = $services->value(['uid' => $order['uid']], 'nickname');
-            return RoutineTemplateJob::dispatchDo('sendPinkSuccess', [$openid, $title, $nickname, $pink['add_time'], $pink['people'], '/pages/users/order_details/index?order_id=' . $pink['order_id']]);
-        } else {
-            return WechatTemplateJob::dispatchDo('sendOrderPinkOpenSuccess', [$openid, $pink, $title]);
-        }
     }
 
     /**
@@ -575,7 +519,7 @@ class StorePinkServices extends BaseServices
         $orderServiceRefund = app()->make(StoreOrderRefundServices::class);
         //取消开团
         $order = $orderService->get($pinkT['order_id_key']);
-        $res1 = $orderServiceRefund->orderApplyRefund($order, '拼团时间超时');
+        $res1 = $orderServiceRefund->orderApplyRefund($order, '拼团时间超时', '', [], 1);
         $res2 = $this->dao->getCount([['uid', '=', $pinkT['uid']], ['k_id|id', '=', $pinkT['id']]]);
         if ($res1 && $res2) {
             $this->orderPinkAfterNo($pinkT['uid'], $pinkT['id'], true, $order->is_channel);
@@ -781,12 +725,11 @@ class StorePinkServices extends BaseServices
             if ($refundPinkList) {
                 /** @var StoreOrderRefundServices $orderService */
                 $orderService = app()->make(StoreOrderRefundServices::class);
-                foreach ($refundPinkList as $key => &$item) {
-                    $orderService->orderApplyRefund($item['order_id'], '拼团时间超时');//申请退款
+                foreach ($refundPinkList as &$items) {
+                    $orderService->orderApplyRefund($items['order_id'], '拼团时间超时', '', [], 1);//申请退款
                 }
             }
             $this->dao->update([['id', 'in', $pinkList]], ['status' => 3]);
-//            $pinkUidList = $this->dao->getColumn([['id', 'in', $pinkList], ['is_tpl', '=', 0]], 'uid', 'uid');
         }
         return true;
     }
@@ -815,7 +758,7 @@ class StorePinkServices extends BaseServices
             for ($i = 0; $i < $num; $i++) {
                 $data[$i]['uid'] = 0;
                 $data[$i]['nickname'] = substr(md5(time() . rand(1000, 9999)), 0, 12);
-                $data[$i]['avatar'] = 'http://kaifa.crmeb.net/uploads/attach/2019/08/20190807/723adbdd4e49a0f9394dfc700ab5dba3.png';
+                $data[$i]['avatar'] = sys_config('h5_avatar');
                 $data[$i]['order_id'] = 0;
                 $data[$i]['order_id_key'] = 0;
                 $data[$i]['total_num'] = 0;
@@ -844,5 +787,82 @@ class StorePinkServices extends BaseServices
         } else {
             return false;
         }
+    }
+
+    /**
+     * 获取拼团海报详情信息
+     * @param int $id
+     * @param $user
+     * @return mixed
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     */
+    public function posterInfo(int $id, $user)
+    {
+        $pinkInfo = $this->dao->get($id);
+        /** @var StoreCombinationServices $combinationService */
+        $combinationService = app()->make(StoreCombinationServices::class);
+        $storeCombinationInfo = $combinationService->getOne(['id' => $pinkInfo['cid']], '*', ['getPrice']);
+        $data['title'] = $storeCombinationInfo['title'];
+        $data['url'] = '';
+        $data['image'] = $storeCombinationInfo['image'];
+        $data['price'] = $pinkInfo['price'];
+        $data['label'] = $pinkInfo['people'] . '人团';
+        if ($pinkInfo['k_id']) $pinkAll = $this->getPinkMember($pinkInfo['k_id']);
+        else $pinkAll = $this->getPinkMember($pinkInfo['id']);
+        $count = count($pinkAll);
+        $data['msg'] = '原价￥' . $storeCombinationInfo['product_price'] . ' 还差' . ($pinkInfo['people'] - $count) . '人拼团成功';
+
+        /** @var SystemAttachmentServices $systemAttachmentServices */
+        $systemAttachmentServices = app()->make(SystemAttachmentServices::class);
+
+        try {
+            $siteUrl = sys_config('site_url');
+            if (request()->isRoutine()) {
+                //小程序
+                $name = $id . '_' . $user['uid'] . '_' . $user['is_promoter'] . '_pink_share_routine.jpg';
+                $imageInfo = $systemAttachmentServices->getInfo(['name' => $name]);
+                if (!$imageInfo) {
+                    $valueData = 'id=' . $id;
+                    /** @var UserServices $userServices */
+                    $userServices = app()->make(UserServices::class);
+                    if ($userServices->checkUserPromoter((int)$user['uid'], $user)) {
+                        $valueData .= '&pid=' . $user['uid'];
+                    }
+                    $res = MiniProgramService::qrcodeService()->appCodeUnlimit($valueData, 'pages/activity/goods_combination_status/index', 280);
+                    if (!$res) throw new ValidateException('二维码生成失败');
+                    $uploadType = (int)sys_config('upload_type', 1);
+                    $upload = UploadService::init();
+                    $res = $upload->to('routine/activity/pink/code')->validate()->stream($res, $name);
+                    if ($res === false) {
+                        throw new ValidateException($upload->getError());
+                    }
+                    $imageInfo = $upload->getUploadInfo();
+                    $imageInfo['image_type'] = $uploadType;
+                    if ($imageInfo['image_type'] == 1) $remoteImage = UtilService::remoteImage($siteUrl . $imageInfo['dir']);
+                    else $remoteImage = UtilService::remoteImage($imageInfo['dir']);
+                    if (!$remoteImage['status']) throw new ValidateException($remoteImage['msg']);
+                    $systemAttachmentServices->save([
+                        'name' => $imageInfo['name'],
+                        'att_dir' => $imageInfo['dir'],
+                        'satt_dir' => $imageInfo['thumb_path'],
+                        'att_size' => $imageInfo['size'],
+                        'att_type' => $imageInfo['type'],
+                        'image_type' => $imageInfo['image_type'],
+                        'module_type' => 2,
+                        'time' => time(),
+                        'pid' => 1,
+                        'type' => 1
+                    ]);
+                    $url = $imageInfo['dir'];
+                } else $url = $imageInfo['att_dir'];
+                $data['url'] = $url;
+                if ($imageInfo['image_type'] == 1)
+                    $data['url'] = $siteUrl . $url;
+            }
+        } catch (\Throwable $e) {
+        }
+        return $data;
     }
 }

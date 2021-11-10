@@ -76,7 +76,7 @@ class StoreServiceSpeechcraft extends AuthController
             ['sort', 0],
         ]);
 
-        Validate(StoreServiceSpeechcraftValidata::class)->check($data);
+        $this->validate($data, StoreServiceSpeechcraftValidata::class);
         $data['add_time'] = time();
         $data['kefu_id'] = 0;
         if ($this->services->count(['message' => $data['message']])) {
@@ -131,7 +131,7 @@ class StoreServiceSpeechcraft extends AuthController
             [['cate_id', 'd'], 0],
         ]);
 
-        Validate(StoreServiceSpeechcraftValidata::class)->check($data);
+        $this->validate($data, StoreServiceSpeechcraftValidata::class);
         $message = $this->services->get(['message' => $data['message']]);
         if ($message && $message['id'] != $id) {
             return app('json')->fail('话术不能重复添加');

@@ -1,5 +1,5 @@
 <template>
-	<view>
+	<view :style="colorStyle">
 		<view class='my-account'>
 			<view class='wrapper'>
 				<view class='header'>
@@ -10,10 +10,12 @@
 								<view class='money'>{{userInfo.now_money || 0}}</view>
 							</view>
 							<!-- #ifdef APP-PLUS || H5 -->
-							<navigator url="/pages/users/user_payment/index" hover-class="none" class='recharge font-color'>充值</navigator>
+							<navigator url="/pages/users/user_payment/index" hover-class="none"
+								class='recharge'>充值</navigator>
 							<!-- #endif -->
 							<!-- #ifdef MP -->
-							<view v-if="recharge_switch" @click="openSubscribe('/pages/users/user_payment/index')" class='recharge font-color'>充值</view>
+							<view v-if="recharge_switch" @click="openSubscribe('/pages/users/user_payment/index')"
+								class='recharge'>充值</view>
 							<!-- #endif -->
 						</view>
 						<view class='cumulative acea-row row-top'>
@@ -38,32 +40,25 @@
 				</view>
 				<view class='nav acea-row row-middle'>
 					<navigator class='item' hover-class='none' url='/pages/users/user_bill/index'>
-						<view class='pictrue'>
-							<image src='../../../static/images/record1.png'></image>
-						</view>
+						<view class='iconfont icon-s-zhangdanjilu'></view>
 						<view>账单记录</view>
 					</navigator>
 					<navigator class='item' hover-class='none' url='/pages/users/user_bill/index?type=1'>
-						<view class='pictrue'>
-							<image src='../../../static/images/record2.png'></image>
-						</view>
+						<view class='iconfont icon-s-xiaofeijilu'></view>
 						<view>消费记录</view>
 					</navigator>
 					<navigator class='item' hover-class='none' url='/pages/users/user_bill/index?type=2' v-if="recharge_switch">
-						<view class='pictrue'>
-							<image src='../../../static/images/record3.png'></image>
-						</view>
+						<view class='iconfont icon-s-chongzhijilu'></view>
 						<view>充值记录</view>
 					</navigator>
 					<navigator class='item' hover-class='none' url='/pages/users/user_integral/index'>
-						<view class='pictrue'>
-							<image src='../../../static/images/record4.png'></image>
-						</view>
+						<view class='iconfont icon-jifenzhongxin'></view>
 						<view>积分中心</view>
 					</navigator>
 				</view>
 				<view class='advert acea-row row-between-wrapper'>
-					<navigator class='item acea-row row-between-wrapper' hover-class='none' url='/pages/users/user_sgin/index'>
+					<navigator class='item acea-row row-between-wrapper' hover-class='none'
+						url='/pages/users/user_sgin/index'>
 						<view class='text'>
 							<view class='name'>签到领积分</view>
 							<view>赚积分抵现金</view>
@@ -72,7 +67,8 @@
 							<image src='../../../static/images/gift.png'></image>
 						</view>
 					</navigator>
-					<navigator class='item on acea-row row-between-wrapper' hover-class='none' url='/pages/users/user_get_coupon/index'>
+					<navigator class='item on acea-row row-between-wrapper' hover-class='none'
+						url='/pages/users/user_get_coupon/index'>
 						<view class='text'>
 							<view class='name'>领取优惠券</view>
 							<view>满减享优惠</view>
@@ -91,7 +87,8 @@
 								<view class='infor line1'>最新的优惠商品上架拼团</view>
 							</view>
 						</view>
-						<navigator hover-class='none' url='/pages/activity/goods_combination/index' class='bnt' v-if="activity.is_pink">立即参与</navigator>
+						<navigator hover-class='none' url='/pages/activity/goods_combination/index' class='bnt'
+							v-if="activity.is_pink">立即参与</navigator>
 						<view class='bnt end' v-else>已结束</view>
 					</view>
 					<view class='item acea-row row-between-wrapper'>
@@ -102,7 +99,8 @@
 								<view class='infor line1'>最新商品秒杀进行中</view>
 							</view>
 						</view>
-						<navigator hover-class='none' url='/pages/activity/goods_seckill/index' class='bnt' v-if="activity.is_seckill">立即参与</navigator>
+						<navigator hover-class='none' url='/pages/activity/goods_seckill/index' class='bnt'
+							v-if="activity.is_seckill">立即参与</navigator>
 						<view class='bnt end' v-else>已结束</view>
 					</view>
 					<view class='item acea-row row-between-wrapper'>
@@ -113,7 +111,8 @@
 								<view class='infor line1'>呼朋唤友来砍价</view>
 							</view>
 						</view>
-						<navigator hover-class='none' url='/pages/activity/goods_bargain/index' class='bnt' v-if="activity.is_bargin">立即参与</navigator>
+						<navigator hover-class='none' url='/pages/activity/goods_bargain/index' class='bnt'
+							v-if="activity.is_bargin">立即参与</navigator>
 						<view class='bnt end' v-else>已结束</view>
 					</view>
 				</view>
@@ -123,7 +122,9 @@
 		<!-- #ifdef MP -->
 		<!-- <authorize @onLoadFun="onLoadFun" :isAuto="isAuto" :isShowAuth="isShowAuth" @authColse="authColse"></authorize> -->
 		<!-- #endif -->
+		<!-- #ifndef MP -->
 		<home></home>
+		<!-- #endif -->
 	</view>
 </template>
 
@@ -149,6 +150,7 @@
 	import authorize from '@/components/Authorize';
 	// #endif
 	import home from '@/components/home';
+	import colors from "@/mixins/color";
 	export default {
 		components: {
 			recommend,
@@ -157,6 +159,7 @@
 			// #endif
 			home
 		},
+		mixins: [colors],
 		data() {
 			return {
 				userInfo: {},
@@ -165,23 +168,23 @@
 				recharge_switch: 0,
 				activity: {},
 				isAuto: false, //没有授权的不会自动授权
-				isShowAuth: false ,//是否隐藏授权
-				hotScroll:false,
-				hotPage:1,
-				hotLimit:10
+				isShowAuth: false, //是否隐藏授权
+				hotScroll: false,
+				hotPage: 1,
+				hotLimit: 10
 			};
 		},
 		computed: mapGetters(['isLogin']),
-		watch:{
-			isLogin:{
-				handler:function(newV,oldV){
-					if(newV){
+		watch: {
+			isLogin: {
+				handler: function(newV, oldV) {
+					if (newV) {
 						this.getUserInfo();
 						this.get_host_product();
 						this.get_activity();
 					}
 				},
-				deep:true
+				deep: true
 			}
 		},
 		onLoad() {
@@ -205,14 +208,10 @@
 			},
 			// #ifdef MP
 			openSubscribe: function(page) {
-				console.log(123);
-				console.log(page);
 				uni.showLoading({
 					title: '正在加载',
 				})
-				console.log(456);
 				openRechargeSubscribe().then(res => {
-					console.log(789);
 					uni.hideLoading();
 					uni.navigateTo({
 						url: page,
@@ -246,13 +245,13 @@
 			 */
 			get_host_product: function() {
 				let that = this;
-				if(that.hotScroll) return
+				if (that.hotScroll) return
 				getProductHot(
 					that.hotPage,
 					that.hotLimit,
 				).then(res => {
 					that.hotPage++
-					that.hotScroll = res.data.length<that.hotLimit
+					that.hotScroll = res.data.length < that.hotLimit
 					that.hostProduct = that.hostProduct.concat(res.data)
 				});
 			}
@@ -273,7 +272,9 @@
 	.my-account .wrapper .header {
 		width: 690rpx;
 		height: 330rpx;
-		background-image: linear-gradient(to right, #f33b2b 0%, #f36053 100%);
+		// background-image: linear-gradient(to right, #f33b2b 0%, #f36053 100%);
+		// background-image: var(--view-theme);
+		background: var(--view-theme);
 		border-radius: 16rpx;
 		margin: 0 auto;
 		box-sizing: border-box;
@@ -309,6 +310,7 @@
 		background-color: #fff9f8;
 		text-align: center;
 		line-height: 54rpx;
+		color: var(--view-theme);
 	}
 
 	.my-account .wrapper .header .headerCon .cumulative {
@@ -326,29 +328,24 @@
 		color: #fff;
 		margin-top: 6rpx;
 	}
-
+	
 	.my-account .wrapper .nav {
 		height: 155rpx;
 		border-bottom: 1rpx solid #f5f5f5;
 	}
-
+	
 	.my-account .wrapper .nav .item {
 		flex: 1;
 		text-align: center;
 		font-size: 26rpx;
 		color: #999;
 	}
-
-	.my-account .wrapper .nav .item .pictrue {
-		width: 44rpx;
-		height: 44rpx;
+	
+	.my-account .wrapper .nav .item .iconfont {
+		font-size: 44rpx;
 		margin: 0 auto;
-		margin-bottom: 20rpx;
-	}
-
-	.my-account .wrapper .nav .item .pictrue image {
-		width: 100%;
-		height: 100%;
+		margin-bottom: 14rpx;
+		color: var(--view-theme);
 	}
 
 	.my-account .wrapper .advert {

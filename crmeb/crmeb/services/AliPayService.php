@@ -116,7 +116,7 @@ class AliPayService
     }
 
     /**
-     * 手机网站支付.创建订单
+     * 创建订单
      * @param string $title 商品名称
      * @param string $orderId 订单号
      * @param string $totalAmount 支付金额
@@ -129,8 +129,13 @@ class AliPayService
     {
         try {
             if ($isCode) {
+                //二维码支付
                 $result = Factory::payment()->faceToFace()->optional('passback_params', $passbackParams)->precreate($title, $orderId, $totalAmount);
+            } else if (request()->isApp()) {
+                //app支付
+                $result = Factory::payment()->app()->optional('passback_params', $passbackParams)->pay($title, $orderId, $totalAmount);
             } else {
+                //h5支付
                 $result = Factory::payment()->wap()->optional('passback_params', $passbackParams)->pay($title, $orderId, $totalAmount, $quitUrl, $siteUrl);
             }
             if ($this->response->success($result)) {
@@ -146,13 +151,14 @@ class AliPayService
     /**
      * 订单退款
      * @param string $outTradeNo 订单号
-     * @param string $totalAmount 金额
+     * @param string $totalAmount 退款金额
+     * @param string $refund_id 退款单号
      * @return \Alipay\EasySDK\Payment\Common\Models\AlipayTradeRefundResponse
      */
-    public function refund(string $outTradeNo, string $totalAmount)
+    public function refund(string $outTradeNo, string $totalAmount, string $refund_id)
     {
         try {
-            $result = Factory::payment()->common()->refund($outTradeNo, $totalAmount);
+            $result = Factory::payment()->common()->refund($outTradeNo, $totalAmount, $refund_id);
             if ($this->response->success($result)) {
                 return $result;
             } else {
@@ -211,10 +217,35 @@ class AliPayService
     public function notify(callable $notifyFn)
     {
         app()->request->filter(['trim']);
-        $paramInfo = app()->request->param();
-        if (isset($paramInfo['type'])) {
-            unset($paramInfo['type']);
-        }
+        $paramInfo = app()->request->postMore([
+            ['gmt_create', ''],
+            ['charset', ''],
+            ['seller_email', ''],
+            ['subject', ''],
+            ['sign', ''],
+            ['buyer_id', ''],
+            ['invoice_amount', ''],
+            ['notify_id', ''],
+            ['fund_bill_list', ''],
+            ['notify_type', ''],
+            ['trade_status', ''],
+            ['receipt_amount', ''],
+            ['buyer_pay_amount', ''],
+            ['app_id', ''],
+            ['seller_id', ''],
+            ['sign_type', ''],
+            ['gmt_payment', ''],
+            ['notify_time', ''],
+            ['passback_params', ''],
+            ['version', ''],
+            ['out_trade_no', ''],
+            ['total_amount', ''],
+            ['trade_no', ''],
+            ['auth_app_id', ''],
+            ['buyer_logon_id', ''],
+            ['point_amount', ''],
+        ]);
+
         //商户订单号
         $postOrder['out_trade_no'] = $paramInfo['out_trade_no'] ?? '';
         //支付宝交易号
@@ -223,7 +254,7 @@ class AliPayService
         $postOrder['trade_status'] = $paramInfo['trade_status'] ?? '';
         //备注
         $postOrder['attach'] = isset($paramInfo['passback_params']) ? urldecode($paramInfo['passback_params']) : '';
-        if ($this->verifyNotify($paramInfo)) {
+        if (in_array($paramInfo['trade_status'], ['TRADE_SUCCESS', 'TRADE_FINISHED']) && $this->verifyNotify($paramInfo)) {
             try {
                 if ($notifyFn((object)$postOrder)) {
                     return 'success';

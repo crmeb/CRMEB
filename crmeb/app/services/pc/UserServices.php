@@ -43,7 +43,7 @@ class UserServices extends BaseServices
                 $where['type'] = ['recharge', 'system_add'];
                 break;
             case 3:
-                $where['type'] = ['brokerage'];
+                $where['type'] = ['brokerage', 'brokerage_user'];
                 break;
             case 4:
                 $where['type'] = ['extract'];
@@ -79,7 +79,7 @@ class UserServices extends BaseServices
                 $list[$k]['price'] = $product['product']['price'] ?? 0;
                 $list[$k]['ot_price'] = $product['product']['ot_price'] ?? 0;
                 $list[$k]['sales'] = $product['product']['sales'] ?? 0;
-                $list[$k]['image'] = $product['product']['image'] ?? 0;
+                $list[$k]['image'] = get_thumb_water($product['product']['image'] ?? 0);
                 $list[$k]['is_del'] = $product['product']['is_del'] ?? 0;
                 $list[$k]['is_show'] = $product['product']['is_show'] ?? 0;
                 $list[$k]['is_fail'] = $product['product']['is_del'] && $product['product']['is_show'];

@@ -19,7 +19,7 @@ export default {
     state: {
         activeName: {},
         defaultConfig: {
-            a_headerSerch: {
+            headerSerch: {
                 imgUrl:{
                     title: '最多可添加1张图片，图片建议宽度128 * 45px',
                     url: '',
@@ -35,7 +35,7 @@ export default {
                     ]
                 },
             },
-            b_swiperBg: {
+            swiperBg: {
                 isShow:{
                     val: true
                 },
@@ -80,7 +80,7 @@ export default {
                     ]
                 }
             },
-            c_news: {
+            news: {
                 isShow:{
                     val: true
                 },
@@ -111,7 +111,7 @@ export default {
                     ]
                 },
             },
-            d_menus: {
+            menus: {
                 isShow:{
                     val: true
                 },
@@ -258,12 +258,12 @@ export default {
                     ]
                 },
             },
-            e_coupon: {
+            coupon: {
                 isShow:{
                     val: true
                 }
             },
-            f_seckill: {
+            seckill: {
                 isShow:{
                     val: true
                 },
@@ -271,17 +271,17 @@ export default {
                     val: 6
                 }
             },
-            g_combination: {
+            combination: {
                 isShow:{
                     val: true
                 }
             },
-            h_bargain: {
+            bargain: {
                 isShow:{
                     val: true
                 }
             },
-            i_recommend: {
+            recommend: {
                 isShow:{
                     val: true
                 },
@@ -309,7 +309,7 @@ export default {
                     ]
                 },
             },
-            j_topList: {
+            topList: {
                 isShow:{
                     val: true
                 },
@@ -319,7 +319,7 @@ export default {
                     title:'商品数量'
                 }
             },
-            k_newProduct: {
+            newProduct: {
                 isShow:{
                     val: true
                 },
@@ -329,7 +329,7 @@ export default {
                     list: []
                 }
             },
-            l_productSort: {
+            productSort: {
                 isShow:{
                     val: true
                 },
@@ -339,7 +339,7 @@ export default {
                     title:'商品数量'
                 }
             },
-            z_tabBar:{
+            tabBar:{
                 tabBarList:{
                     title: '图片建议宽度81*81px',
                     list:[
@@ -353,6 +353,11 @@ export default {
                             imgList:[require('@/assets/images/foo2-01.png'),require('@/assets/images/foo2-02.png')],
                             link: '/pages/goods_cate/goods_cate'
                         },
+                        // {
+                        //     name:'周边',
+                        //     imgList:[require('@/assets/images/foo3-01.png'),require('@/assets/images/foo3-02.png')],
+                        //     pagePath: ''
+                        // },
                         {
                             name:'购物车',
                             imgList:[require('@/assets/images/foo4-01.png'),require('@/assets/images/foo4-02.png')],
@@ -368,7 +373,7 @@ export default {
             }
         },
         component: {
-            a_headerSerch: {
+            headerSerch: {
                 list: [
                     {
                         components: toolCom.c_upload_img,
@@ -380,7 +385,7 @@ export default {
                     },
                 ]
             },
-            b_swiperBg: {
+            swiperBg: {
                 list: [
                     {
                         components: toolCom.c_is_show,
@@ -392,7 +397,7 @@ export default {
                     },
                 ]
             },
-            c_news: {
+            news: {
                 list: [
                     {
                         components: toolCom.c_upload_img,
@@ -404,7 +409,7 @@ export default {
                     },
                 ]
             },
-            d_menus: {
+            menus: {
                 list: [
                     {
                         components: toolCom.c_is_show,
@@ -416,7 +421,7 @@ export default {
                     }
                 ]
             },
-            e_coupon: {
+            coupon: {
                 list:[
                     {
                         components: toolCom.c_is_show,
@@ -424,7 +429,7 @@ export default {
                     }
                 ]
             },
-            f_seckill: {
+            seckill: {
                 list:[
                     {
                         components: toolCom.c_is_show,
@@ -436,7 +441,7 @@ export default {
                     }
                 ]
             },
-            g_combination:{
+            combination:{
                 list:[
                     {
                         components: toolCom.c_is_show,
@@ -444,7 +449,7 @@ export default {
                     }
                 ]
             },
-            h_bargain:{
+            bargain:{
                 list:[
                     {
                         components: toolCom.c_is_show,
@@ -452,7 +457,7 @@ export default {
                     }
                 ]
             },
-            i_recommend: {
+            recommend: {
                 list: [
                     {
                         components: toolCom.c_is_show,
@@ -464,7 +469,7 @@ export default {
                     }
                 ]
             },
-            j_topList: {
+            topList: {
                 list:[
                     {
                         components: toolCom.c_is_show,
@@ -476,7 +481,7 @@ export default {
                     }
                 ]
             },
-            k_newProduct: {
+            newProduct: {
                 list: [
                     {
                         components: toolCom.c_is_show,
@@ -488,7 +493,7 @@ export default {
                     }
                 ]
             },
-            l_productSort: {
+            productSort: {
                 list:[
                     {
                         components: toolCom.c_is_show,
@@ -500,7 +505,7 @@ export default {
                     }
                 ]
             },
-            z_tabBar: {
+            tabBar: {
                 list:[
                     {
                         components: toolCom.c_tab_bar,
@@ -525,8 +530,14 @@ export default {
          * @param {Object} data
          */
         updataConfig(state,data){
-            state.defaultConfig = data
-            let value = Object.assign({}, state.defaultConfig);
+            let value = state.defaultConfig;
+            for(let i in data){
+                for(let j in value){
+                    if(i===j){
+                        value[j] = data[i]
+                    }
+                }
+            }
             state.defaultConfig = value
         }
     },

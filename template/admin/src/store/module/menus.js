@@ -14,11 +14,11 @@
 import { menusApi } from '@/api/account'
 function getMenusName () {
     let storage = window.localStorage
-    let af1g6po2m8qkr6nlba7f1l = JSON.parse(storage.getItem('menuList'))
-    if (typeof af1g6po2m8qkr6nlba7f1l !== 'object' || af1g6po2m8qkr6nlba7f1l === null) {
-        af1g6po2m8qkr6nlba7f1l = []
+    let menuList = JSON.parse(storage.getItem('menuList'))
+    if (typeof menuList !== 'object' || menuList === null) {
+        menuList = []
     }
-    return af1g6po2m8qkr6nlba7f1l
+    return menuList
 }
 export default {
     namespaced: true,
@@ -27,8 +27,8 @@ export default {
         openMenus: []
     },
     mutations: {
-        getmenusNav (state, af1g6po2m8qkr6nlba7f1l) {
-            state.menusName = af1g6po2m8qkr6nlba7f1l
+        getmenusNav (state, menuList) {
+            state.menusName = menuList
         },
         // getopenMenus (state, openList) {
         //   state.openMenus = openList

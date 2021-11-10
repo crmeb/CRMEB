@@ -43,12 +43,12 @@ class UserStoreOrderServices extends BaseServices
             $where[] = ['u.nickname|u.phone', 'LIKE', "%$keyword%"];
         }
         [$page, $limit] = $this->getPageValue();
-        $field = "u.uid,u.nickname,u.avatar,from_unixtime(u.add_time,'%Y/%m/%d') as time,u.spread_time,u.spread_count as childCount,u.pay_count as orderCount,p.numberCount";
+        $field = "u.uid,u.nickname,u.avatar,from_unixtime(u.add_time,'%Y/%m/%d') as time,u.spread_time,u.spread_count as childCount,p.orderCount,p.numberCount";
         $list = $this->dao->getUserSpreadCountList($where, $field, $orderBy, $page, $limit);
         /** @var UserServices $userServices */
         $userServices = app()->make(UserServices::class);
         foreach ($list as &$item) {
-            $item['childCount'] = count($userServices->getUserSpredadUids($item['uid'], 2)) ?? 0;
+            $item['childCount'] = count($userServices->getUserSpredadUids($item['uid'], 1)) ?? 0;
         }
         return $list;
     }

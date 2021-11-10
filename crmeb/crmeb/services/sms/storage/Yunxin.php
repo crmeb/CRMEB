@@ -15,6 +15,7 @@ use crmeb\basic\BaseSmss;
 use crmeb\services\HttpService;
 use think\exception\ValidateException;
 use think\facade\Config;
+use think\facade\Log;
 
 
 /**
@@ -225,7 +226,8 @@ class Yunxin extends BaseSmss
             throw new ValidateException('手机号不能为空');
         }
         $param = [
-            'phone' => $phone
+            'phone' => $phone,
+            'host' =>  request()->host()
         ];
         $param['temp_id'] = $this->getTemplateCode($templateId);
         if (is_null($param['temp_id'])) {

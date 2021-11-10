@@ -87,6 +87,7 @@ class WechatUser extends AuthController
         $tagList = explode(',', $tagList) ?: [];
         $f = [Form::select('tag_id', '用户标签', $tagList)->setOptions($list->toArray())->multiple(1)];
         return app('json')->success(create_form('编辑用户标签', $f, Url::buildUrl('/app/wechat/user_tag/' . $openid), 'PUT'));
+
     }
 
     /**
@@ -130,7 +131,7 @@ class WechatUser extends AuthController
             return ['value' => $item['id'], 'label' => $item['name']];
         });
         $groupId = UserModel::where('openid', $openid)->value('groupid');
-        $f = [Form::select('group_id', '用户分组', $groupId)->setOptions($list->toArray())];
+        $f = [Form::select('group_id', '用户分组', (string)$groupId)->setOptions($list->toArray())];
         return app('json')->success(create_form('编辑用户标签', $f, Url::buildUrl('/app/wechat/user_group/' . $openid), 'PUT'));
     }
 
@@ -181,6 +182,7 @@ class WechatUser extends AuthController
     {
         $f = [Form::input('name', '标签名称')];
         return app('json')->success(create_form('添加标签', $f, Url::buildUrl('/app/wechat/tag'), 'POST'));
+
     }
 
     /**
@@ -208,6 +210,7 @@ class WechatUser extends AuthController
     {
         $f = [Form::input('name', '标签名称')];
         return app('json')->success(create_form('编辑标签', $f, Url::buildUrl('/app/wechat/tag/' . $id), 'PUT'));
+
     }
 
     /**
@@ -257,6 +260,7 @@ class WechatUser extends AuthController
             }
             $list = UserModel::getUserGroup();
         } catch (\Exception $e) {
+            return app('json')->fail($e->getMessage());
         }
         return app('json')->success(compact('list'));
     }
@@ -269,6 +273,7 @@ class WechatUser extends AuthController
     {
         $f = [Form::input('name', '分组名称')];
         return app('json')->success(create_form('添加分组', $f, Url::buildUrl('/app/wechat/group'), 'POST'));
+
     }
 
     /**
@@ -296,6 +301,7 @@ class WechatUser extends AuthController
     {
         $f = [Form::input('name', '分组名称')];
         return app('json')->success(create_form('编辑分组', $f, Url::buildUrl('/app/wechat/group/' . $id), 'PUT'));
+
     }
 
     /**

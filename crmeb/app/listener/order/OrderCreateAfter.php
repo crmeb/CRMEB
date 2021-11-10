@@ -4,14 +4,17 @@
 namespace app\listener\order;
 
 
+use app\jobs\OrderCreateAfterJob;
 use app\jobs\ProductLogJob;
 use app\jobs\UnpaidOrderCancelJob;
+use app\jobs\UnpaidOrderSend;
 use app\services\order\StoreOrderCreateServices;
 use app\services\order\StoreOrderStatusServices;
 use crmeb\interfaces\ListenerInterface;
 use crmeb\services\CacheService;
 use crmeb\services\SystemConfigService;
 use crmeb\utils\Arr;
+use think\facade\Log;
 
 /**
  * 订单创建后置事件
@@ -44,7 +47,8 @@ class OrderCreateAfter implements ListenerInterface
 
         //订单自动取消
         $this->pushJob($order['id'], $combinationId, $seckillId, $bargainId);
-
+        //计算订单实际金额
+        OrderCreateAfterJob::dispatch([$order, $group, $combinationId || $seckillId || $bargainId]);
         //下单记录
         ProductLogJob::dispatch(['order', ['uid' => $uid, 'order_id' => $order['id']]]);
     }
@@ -74,9 +78,8 @@ class OrderCreateAfter implements ListenerInterface
         } else {
             $secs = $systemValue['order_cancel_time'];
         }
-        $switch = sys_config('unpaid_order_switch') ? true : false;
         //未支付10分钟后发送短信
-        $switch && UnpaidOrderCancelJob::dispatchSece(600, [$orderId]);
+        UnpaidOrderSend::dispatchSece(600, [$orderId]);
         //未支付根据系统设置事件取消订单
         UnpaidOrderCancelJob::dispatchSece((int)($secs * 3600), [$orderId]);
     }

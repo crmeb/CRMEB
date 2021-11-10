@@ -37,10 +37,14 @@ class ExportServices extends BaseServices
             ->setExcelTile($title, $name, $info)
             ->setExcelContent($export)
             ->excelSave($filename, $suffix, $is_save);
-        $path = $this->siteUrl() . '/' . $path;
+        $path = $this->siteUrl() . $path;
         return [$path];
     }
 
+    /**
+     * 获取系统接口域名
+     * @return string
+     */
     public function siteUrl()
     {
         $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || $_SERVER['SERVER_PORT'] == 443) ? "https://" : "http://";
@@ -269,21 +273,17 @@ class ExportServices extends BaseServices
                     $item['title'],
                     $item['info'],
                     '￥' . $item['price'],
-                    '￥' . $item['bargain_max_price'],
-                    '￥' . $item['bargain_min_price'],
                     $item['bargain_num'],
                     $item['status'] ? '开启' : '关闭',
                     empty($item['start_time']) ? '' : date('Y-m-d H:i:s', (int)$item['start_time']),
                     empty($item['stop_time']) ? '' : date('Y-m-d H:i:s', (int)$item['stop_time']),
                     $item['sales'],
-                    $item['stock'],
-                    $item['give_integral'],
+                    $item['quota'],
                     empty($item['add_time']) ? '' : $item['add_time'],
                 ];
             }
         }
-        $header = ['砍价活动名称', '砍价活动简介', '砍价金额', '用户每次砍价的最大金额', '用户每次砍价的最小金额',
-            '用户每次砍价的次数', '砍价状态', '砍价开启时间', '砍价结束时间', '销量', '库存', '返多少积分', '添加时间'];
+        $header = ['砍价活动名称', '砍价活动简介', '砍价金额', '用户每次砍价的次数', '砍价状态', '砍价开启时间', '砍价结束时间', '销量', '限量', '添加时间'];
         $title = ['砍价商品导出', '商品信息' . time(), ' 生成时间：' . date('Y-m-d H:i:s', time())];
         $filename = '砍价商品导出_' . date('YmdHis', time());
         $suffix = 'xlsx';
@@ -305,8 +305,8 @@ class ExportServices extends BaseServices
                     $item['title'],
                     $item['ot_price'],
                     $item['price'],
-                    $item['stock'],
-                    $item['people'],
+                    $item['quota'],
+                    $item['count_people'],
                     $item['count_people_all'],
                     $item['count_people_pink'],
                     $item['sales'] ?? 0,
@@ -315,7 +315,7 @@ class ExportServices extends BaseServices
                 ];
             }
         }
-        $header = ['编号', '拼团名称', '原价', '拼团价', '库存', '拼团人数', '参与人数', '成团数量', '销量', '商品状态', '结束时间'];
+        $header = ['编号', '拼团名称', '原价', '拼团价', '限量', '拼团人数', '参与人数', '成团数量', '销量', '商品状态', '结束时间'];
         $title = ['拼团商品导出', '商品信息' . time(), ' 生成时间：' . date('Y-m-d H:i:s', time())];
         $filename = '拼团商品导出_' . date('YmdHis', time());
         $suffix = 'xlsx';
@@ -348,7 +348,7 @@ class ExportServices extends BaseServices
                     $item['info'],
                     $item['ot_price'],
                     $item['price'],
-                    $item['stock'],
+                    $item['quota'],
                     $item['sales'],
                     $item['start_name'],
                     $item['stop_time'] ? date('Y-m-d H:i:s', $item['stop_time']) : '/',
@@ -356,7 +356,7 @@ class ExportServices extends BaseServices
                 ];
             }
         }
-        $header = ['编号', '活动标题', '活动简介', '原价', '秒杀价', '库存', '销量', '秒杀状态', '结束时间', '状态'];
+        $header = ['编号', '活动标题', '活动简介', '原价', '秒杀价', '限量', '销量', '秒杀状态', '结束时间', '状态'];
         $title = ['秒杀商品导出', ' ', ' 生成时间：' . date('Y-m-d H:i:s', time())];
         $filename = '秒杀商品导出_' . date('YmdHis', time());
         $suffix = 'xlsx';
@@ -474,11 +474,11 @@ HTML;
                         }
                     }
                     if (isset($v['productInfo']['store_name'])) {
-                        $goodsName[] = implode(
+                        $goodsName[] = implode(' ',
                             [$v['productInfo']['store_name'],
                                 $suk,
                                 "[{$v['cart_num']} * {$v['truePrice']}]"
-                            ], ' ');
+                            ]);
                     }
                 }
                 if ($item['sex'] == 1) $sex_name = '男';
@@ -556,7 +556,7 @@ HTML;
         }
         $header = ['会员卡号', '密码', '领取人', '领取人手机号', '领取时间', '是否使用'];
         $title = ['会员卡导出', '会员卡导出' . time(), ' 生成时间：' . date('Y-m-d H:i:s', time())];
-        $filename = $data['title'] ? ("卡密会员_" . trim($data['title'])) : "";
+        $filename = $data['title'] ? ("卡密会员_" . trim(str_replace(["\r\n", "\r", "\\", "\n", "/", "<", ">", "=", " "], '', $data['title']))) : "";
         $suffix = 'xlsx';
         $is_save = true;
         return $this->export($header, $title, $export, $filename, $suffix, $is_save);

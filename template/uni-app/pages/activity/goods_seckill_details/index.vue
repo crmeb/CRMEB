@@ -1,45 +1,44 @@
 <template>
-	<view>
+	<view :style="colorStyle">
 		<!-- 头部 -->
 		<view class='navbar' :style="{height:navH+'rpx',opacity:opacity}">
 			<view class='navbarH' :style='"height:"+navH+"rpx;"'>
 				<view class='navbarCon acea-row row-center-wrapper'>
 					<view class="header acea-row row-center-wrapper">
-						<view class="item" :class="navActive === index ? 'on' : ''" v-for="(item,index) in navList" :key='index' @tap="tap(item,index)">
+						<view class="item" :class="navActive === index ? 'on' : ''" v-for="(item,index) in navList"
+							:key='index' @tap="tap(item,index)">
 							{{ item }}
 						</view>
 					</view>
 				</view>
 			</view>
 		</view>
-		<!-- <view class='iconfont icon-xiangzuo' :style="'top:'+navH/2+'rpx'" @tap='returns'></view> -->
-		<view id="home" class="home-nav acea-row row-center-wrapper iconfont icon-xiangzuo" :class="opacity>0.5?'on':''" :style="{ top: homeTop + 'rpx' }" v-if="returnShow" @tap="returns">
-			<!-- <view class="line" v-if="returnShow"></view>
-			<navigator url="/pages/index/index" class="iconfont icon-shouye4" hover-class="none"></navigator> -->
-		</view>
+		<!-- #ifndef APP-PLUS -->
+		<menuIcon :showMenuIcon="showMenuIcon" @open="open"></menuIcon>
+		<!-- #endif -->
 		<view class='product-con'>
-			<scroll-view :scroll-top="scrollTop" scroll-y='true' scroll-with-animation="true" :style="'height:'+height+'px;'"
-			 @scroll="scroll">
+			<scroll-view :scroll-top="scrollTop" scroll-y='true' scroll-with-animation="true"
+				:style="'height:'+height+'px;'" @scroll="scroll">
 				<view id="past0">
 					<productConSwiper :imgUrls='imgUrls'></productConSwiper>
-					<view class='nav acea-row row-between-wrapper'>
-						<view class='money'>￥<text class='num'>{{storeInfo.price}}</text>
-						<text v-if="attribute.productAttr.length && (attribute.productAttr.length?attribute.productAttr[0].attr_values.length:0) > 1">起</text>
-						<text class='y-money'>￥{{storeInfo.ot_price}}</text></view>
-						<view class='acea-row row-middle'>
-							<view class='timeItem' v-if="status == 1">
-								<view>距秒杀结束仅剩</view>
-								<!-- <view class='timeCon'>
-									<text class='num'>{{countDownHour}}</text>：
-									<text class='num'>{{countDownMinute}}</text>：
-									<text class='num'>{{countDownSecond}}</text>
-								</view> -->
-								<countDown :is-day="false" :tip-text="' '" :day-text="' '" :hour-text="' : '" :minute-text="' : '" :second-text="' '"
-								 :datatime="datatime" style="margin-top: 4rpx;"></countDown>
+					<view class="bg-color">
+						<view class='nav acea-row row-between-wrapper'>
+							<view class='money'>￥<text class='num'>{{storeInfo.price}}</text>
+								<text
+									v-if="attribute.productAttr.length && (attribute.productAttr.length?attribute.productAttr[0].attr_values.length:0) > 1">起</text>
+								<text class='y-money'>￥{{storeInfo.ot_price}}</text>
 							</view>
-							<!-- <view class="timeState" wx:if="{{status == 0}}">已结束</view>
-		        <view class="timeState" wx:if="{{status == 2}}">即将开始</view> -->
-							<!-- <view class='iconfont icon-jiantou'></view> -->
+							<view class='acea-row row-middle'>
+								<view class='timeItem' v-if="status == 1">
+									<view>距秒杀结束仅剩</view>
+									<countDown :is-day="false" :tip-text="' '" :day-text="' '" :hour-text="' : '"
+										:minute-text="' : '" :second-text="' '" :datatime="datatime"
+										style="margin-top: 4rpx;"></countDown>
+								</view>
+								<!-- <view class="timeState" wx:if="{{status == 0}}">已结束</view>
+						  <view class="timeState" wx:if="{{status == 2}}">即将开始</view> -->
+								<!-- <view class='iconfont icon-jiantou'></view> -->
+							</view>
 						</view>
 					</view>
 					<view class='wrapper'>
@@ -50,19 +49,47 @@
 						</view>
 						<view class='label acea-row row-middle'>
 							<!-- <view class='stock'>库存：{{storeInfo.stock}}{{storeInfo.unit_name}}</view> -->
-							<view class='stock'>累计销售：{{storeInfo.total?storeInfo.total:0}}{{storeInfo.unit_name || ''}}</view>
-							<view>限量: {{ storeInfo.quota_show ? storeInfo.quota_show : 0 }}{{storeInfo.unit_name || ''}}</view>
+							<view class='stock'>累计销售：{{storeInfo.total?storeInfo.total:0}}{{storeInfo.unit_name || ''}}
+							</view>
+							<view>限量: {{ storeInfo.quota_show ? storeInfo.quota_show : 0 }}{{storeInfo.unit_name || ''}}
+							</view>
 						</view>
 					</view>
-					<view class='attribute acea-row row-between-wrapper' @tap='selecAttr' v-if='attribute.productAttr.length'>
-						<view>{{attr}}：<text class='atterTxt'>{{attrValue}}</text></view>
-						<view class='iconfont icon-jiantou'></view>
+					<view class='attribute acea-row row-between-wrapper' @tap='selecAttr'
+						v-if='attribute.productAttr.length'>
+					<!-- 	<view>{{attr}}：<text class='atterTxt'>{{attrValue}}</text></view>
+						<view class='iconfont icon-jiantou'></view> -->
+						<view class="flex">
+						  <view style="display: flex; align-items: center; width: 90%">
+						    <view class="attr-txt"> {{ attr }}： </view>
+						    <view class="atterTxt line1" style="width: 82%">{{
+						      attrValue
+						    }}</view>
+						  </view>
+						  <view class="iconfont icon-jiantou"></view>
+						</view>
+						<view
+						  class="acea-row row-between-wrapper"
+						  style="margin-top: 7px; padding-left: 70px"
+						  v-if="skuArr.length > 1"
+						>
+						  <view class="flexs">
+						    <image
+						      :src="item.image"
+						      v-for="(item, index) in skuArr.slice(0, 4)"
+						      :key="index"
+						      class="attrImg"
+						    ></image>
+						  </view>
+						  <view class="switchTxt">共{{ skuArr.length }}种规格可选</view>
+						</view>
 					</view>
 				</view>
-				<view class='userEvaluation' id="past1">
+				<view class='userEvaluation' id="past1" v-if="replyCount">
 					<view class='title acea-row row-between-wrapper'>
 						<view>用户评价({{replyCount}})</view>
-						<navigator class='praise' hover-class='none' :url="'/pages/users/goods_comment_list/index?product_id='+storeInfo.product_id">
+						<navigator class='praise' hover-class='none'
+							:url="'/pages/users/goods_comment_list/index?product_id='+storeInfo.product_id">
 							<text class='font-color'>{{replyChance}}%</text>好评率
 							<text class='iconfont icon-jiantou'></text>
 						</navigator>
@@ -72,12 +99,16 @@
 				<view class='product-intro' id="past2">
 					<view class='title'>产品介绍</view>
 					<view class='conter'>
-						<!-- <template is="wxParse" data="{{wxParseData:description.nodes}}" /> -->
-						<jyf-parser :html="storeInfo.description" ref="article" :tag-style="tagStyle"></jyf-parser>
+						<!-- <view class="" v-html="storeInfo.description">
+						</view> -->
+						<parser
+						  :html="storeInfo.description"
+						  ref="article"
+						  :tag-style="tagStyle"
+						></parser>
 					</view>
 				</view>
 			</scroll-view>
-			<view class="uni-p-b-98"></view>
 			<view class='footer acea-row row-between-wrapper'>
 				<!-- #ifdef MP -->
 				<!-- <button open-type="contact" hover-class='none' class='item'>
@@ -86,12 +117,12 @@
 				</button> -->
 				<!-- #endif -->
 				<!-- #ifndef MP -->
-			<!-- 	<navigator hover-class="none" class="item" url="/pages/customer_list/chat">
+				<!-- 	<navigator hover-class="none" class="item" url="/pages/customer_list/chat">
 					<view class="iconfont icon-kefu"></view>
 					<view class="p_center">客服</view>
 				</navigator> -->
 				<!-- #endif -->
-				<navigator hover-class="none" class="item" url="/pages/index/index">
+				<navigator hover-class="none" open-type="switchTab" class="item" url="/pages/index/index">
 					<view class="iconfont icon-shouye6"></view>
 					<view class="p_center">首页</view>
 				</navigator>
@@ -100,30 +131,39 @@
 					<view class='iconfont icon-shoucang' v-else></view>
 					<view class="p_center">收藏</view>
 				</view>
-				    <view class="bnt acea-row" v-if="status == 1 && attribute.productSelect.quota > 0 && attribute.productSelect.product_stock>0">
-				    	<view class="joinCart bnts" @tap="openAlone">单独购买</view>
-				    	<view class="buy bnts" @tap="goCat">立即购买</view>
-				    </view>
-				    <view class="bnt acea-row" v-if="(status == 1 && attribute.productSelect.quota <= 0) || (status == 3 && attribute.productSelect.quota <= 0) || (status == 1 && attribute.productSelect.product_stock <= 0) || (status == 3 && attribute.productSelect.product_stock <= 0)">
-				    	<view class="joinCart bnts" @tap="openAlone">单独购买</view>
-				    	<view class="buy bnts bg-color-hui">已售罄</view>
-				    </view>
-					<view class="bnt acea-row" v-if="!dataShow && status == 1">
-					    <view class="joinCart bnts" @tap="openAlone">单独购买</view>
-					 	<view class="buy bnts bg-color-hui">立即购买</view>
-					</view>
-					<view class="bnt acea-row" v-if="status == 2">
-						<view class="joinCart bnts" @tap="openAlone">单独购买</view>
-						<view class="buy bnts bg-color-hui">未开始</view>
-					</view>
-					<view class="bnt acea-row" v-if="status == 0">
-						<view class="joinCart bnts" @tap="openAlone">单独购买</view>
-						<view class="buy bnts bg-color-hui">已结束</view>
-					</view>
+				<view class="bnt acea-row"
+					v-if="status == 1 && attribute.productSelect.quota > 0 && attribute.productSelect.product_stock>0">
+					<view class="joinCart bnts" @tap="openAlone">单独购买</view>
+					<view class="buy bnts" @tap="goCat">立即购买</view>
+				</view>
+				<view class="bnt acea-row"
+					v-if="(status == 1 && attribute.productSelect.quota <= 0) || (status == 3 && attribute.productSelect.quota <= 0) || (status == 1 && attribute.productSelect.product_stock <= 0) || (status == 3 && attribute.productSelect.product_stock <= 0)">
+					<view class="joinCart bnts" @tap="openAlone">单独购买</view>
+					<view class="buy bnts bg-color-hui">已售罄</view>
+				</view>
+				<view class="bnt acea-row" v-if="!dataShow && status == 1">
+					<view class="joinCart bnts" @tap="openAlone">单独购买</view>
+					<view class="buy bnts bg-color-hui">立即购买</view>
+				</view>
+				<view class="bnt acea-row" v-if="status == 2">
+					<view class="joinCart bnts" @tap="openAlone">单独购买</view>
+					<view class="buy bnts bg-color-hui">未开始</view>
+				</view>
+				<view class="bnt acea-row" v-if="status == 0">
+					<view class="joinCart bnts" @tap="openAlone">单独购买</view>
+					<view class="buy bnts bg-color-hui">已结束</view>
+				</view>
 			</view>
 		</view>
-		<product-window :attr='attribute' :limitNum='1' @myevent="onMyEvent" @ChangeAttr="ChangeAttr" @ChangeCartNum="ChangeCartNum"
-		 @attrVal="attrVal" @iptCartNum="iptCartNum"></product-window>
+		<cus-previewImg
+		  ref="cusPreviewImg"
+		  :list="skuArr"
+		  @changeSwitch="changeSwitch"
+		  @shareFriend="listenerActionSheet"
+		/>
+		<product-window :attr='attribute' :limitNum='1' @myevent="onMyEvent" @ChangeAttr="ChangeAttr" :type="'seckill'"
+			@ChangeCartNum="ChangeCartNum" @attrVal="attrVal" @iptCartNum="iptCartNum" @getImg="showImg"></product-window>
+	
 		<!-- #ifdef MP -->
 		<!-- <authorize @onLoadFun="onLoadFun" :isAuto="isAuto" :isShowAuth="isShowAuth"></authorize> -->
 		<!-- #endif -->
@@ -131,7 +171,7 @@
 		<view class="generate-posters acea-row row-middle" :class="posters ? 'on' : ''">
 			<!-- #ifndef MP -->
 			<button class="item" hover-class='none' v-if="weixinStatus === true" @click="H5ShareBox = true">
-			<!-- <button class="item" hover-class='none' v-if="weixinStatus === true" @click="setShareInfoStatus"> -->
+				<!-- <button class="item" hover-class='none' v-if="weixinStatus === true" @click="setShareInfoStatus"> -->
 				<view class="iconfont icon-weixin3"></view>
 				<view class="">发送给朋友</view>
 			</button>
@@ -141,6 +181,16 @@
 				<view class="iconfont icon-weixin3"></view>
 				<view class="">发送给朋友</view>
 			</button>
+			<!-- #endif -->
+			<!-- #ifdef APP-PLUS -->
+			<view class="item" @click="appShare('WXSceneSession')">
+				<view class="iconfont icon-weixin3"></view>
+				<view class="">微信好友</view>
+			</view>
+			<view class="item" @click="appShare('WXSenceTimeline')">
+				<view class="iconfont icon-pengyouquan"></view>
+				<view class="">微信朋友圈</view>
+			</view>
 			<!-- #endif -->
 			<button class="item" hover-class='none' @tap="goPoster">
 				<view class="iconfont icon-haibao"></view>
@@ -162,9 +212,11 @@
 		</view>
 		<view class='mask1' v-if="posterImageStatus"></view>
 		<canvas class="canvas" canvas-id='myCanvas' v-if="canvasStatus"></canvas>
-		<kefuIcon :ids='storeInfo.product_id'></kefuIcon>
+		<kefuIcon :ids='storeInfo.product_id' :routineContact='routineContact'></kefuIcon>
 		<!-- 发送给朋友图片 -->
-		<view class="share-box" v-if="H5ShareBox"><image src="/static/images/share-info.png" @click="H5ShareBox = false"></image></view>
+		<view class="share-box" v-if="H5ShareBox">
+			<image src="/static/images/share-info.png" @click="H5ShareBox = false"></image>
+		</view>
 	</view>
 </template>
 
@@ -189,7 +241,7 @@
 	// #ifdef MP
 	import authorize from '@/components/Authorize';
 	// #endif
-	import parser from "@/components/jyf-parser/jyf-parser";
+	// import parser from "@/components/mp-html/mp-html";
 	import countDown from '@/components/countDown';
 	import {
 		imageBase64
@@ -200,12 +252,39 @@
 	import {
 		silenceBindingSpread
 	} from "@/utils";
-	import { getUserInfo } from '@/api/user.js';
+	import {
+		getUserInfo
+	} from '@/api/user.js';
+	// #ifdef APP-PLUS
+	import {
+		TOKENNAME,
+		HTTP_REQUEST_URL
+	} from '@/config/app.js';
+	// #endif
+	import colors from '@/mixins/color.js';
+	import menuIcon from '@/components/menuIcon.vue'
+	import parser from "@/components/jyf-parser/jyf-parser";
+	import cusPreviewImg from "@/components/cus-previewImg/cus-previewImg.vue";
 	export default {
 		computed: mapGetters(['isLogin']),
+		mixins:[colors],
+		components: {
+			productConSwiper,
+			'productWindow': productWindow,
+			userEvaluation,
+			kefuIcon,
+			menuIcon,
+			countDown,
+			cusPreviewImg,
+			parser,
+			// #ifdef MP
+			authorize
+			// #endif
+		},
 		data() {
 			return {
-				dataShow:0,
+				showMenuIcon: false,
+				dataShow: 0,
 				id: 0,
 				time: 0,
 				countDownHour: "00",
@@ -252,7 +331,7 @@
 					table: 'width:100%',
 					video: 'width:100%'
 				},
-				datatime: '',
+				datatime: 0,
 				navActive: 0,
 				meunHeight: 0,
 				backH: '',
@@ -269,28 +348,21 @@
 				homeTop: 20,
 				returnShow: true,
 				H5ShareBox: false, //公众号分享图片
+				routineContact: 0,
+				skuArr: [],
+				selectSku: {},
 			}
 		},
-		components: {
-			productConSwiper,
-			'productWindow': productWindow,
-			userEvaluation,
-			kefuIcon,
-			"jyf-parser": parser,
-			countDown,
-			// #ifdef MP
-			authorize
-			// #endif
-		},
+
 		computed: mapGetters(['isLogin']),
-		watch:{
-			isLogin:{
-				handler:function(newV,oldV){
-					if(newV){
+		watch: {
+			isLogin: {
+				handler: function(newV, oldV) {
+					if (newV) {
 						this.getSeckillDetail();
 					}
 				},
-				deep:true
+				deep: true
 			}
 		},
 		onLoad(options) {
@@ -308,7 +380,12 @@
 				},
 			});
 			this.isLogin && silenceBindingSpread();
+			// #ifndef APP-PLUS
 			this.navH = app.globalData.navHeight
+			// #endif
+			// #ifdef APP-PLUS
+			this.navH = 90
+			// #endif
 			// #ifdef MP
 			let menuButtonInfo = uni.getMenuButtonBoundingClientRect()
 			this.meunHeight = menuButtonInfo.height
@@ -317,7 +394,6 @@
 			//扫码携带参数处理
 			if (options.scene) {
 				let value = this.$util.getUrlParams(decodeURIComponent(options.scene));
-				console.log(value, 'options')
 				if (value.id) {
 					this.id = value.id;
 				} else {
@@ -330,14 +406,15 @@
 				}
 				//记录推广人uid
 				if (value.pid) app.globalData.spid = value.pid;
-				if (value.time) this.datatime = value.time
+				// if (value.time) this.datatime = value.time
 			}
 			// #endif
 
 			if (options.id) {
 				this.id = options.id
-				this.datatime = Number(options.time)
-				this.status = options.status
+				//记录推广人uid
+				if (options.pid) app.globalData.spid = options.pid;
+				// if (options.time) this.datatime = Number(options.time);
 			}
 			if (this.isLogin) {
 				this.getSeckillDetail();
@@ -358,6 +435,38 @@
 			})
 		},
 		methods: {
+			// app分享
+			// #ifdef APP-PLUS
+			appShare(scene) {
+				let that = this
+				let routes = getCurrentPages(); // 获取当前打开过的页面路由数组
+				let curRoute = routes[routes.length - 1].$page.fullPath // 获取当前页面路由，也就是最后一个打开的页面路由
+				uni.share({
+					provider: "weixin",
+					scene: scene,
+					type: 0,
+					href: `${HTTP_REQUEST_URL}${curRoute}`,
+					title: that.storeInfo.title,
+					summary: that.storeInfo.info,
+					imageUrl: that.storeInfo.small_image,
+					success: function(res) {
+						uni.showToast({
+							title: '分享成功',
+							icon: 'success'
+						})
+						that.posters = false;
+					},
+					fail: function(err) {
+						uni.showToast({
+							title: '分享失败',
+							icon: 'none',
+							duration: 2000
+						})
+						that.posters = false;
+					}
+				});
+			},
+			// #endif
 			/**
 			 * 购物车手动填写
 			 * 
@@ -379,24 +488,62 @@
 			},
 			getSeckillDetail: function() {
 				let that = this;
-				getSeckillDetail(that.id,{time:that.datatime,status:that.status}).then(res => {
+				getSeckillDetail(that.id, {}).then(res => {
 					this.dataShow = 1;
+					this.status = res.data.storeInfo.status
 					let title = res.data.storeInfo.title;
 					this.storeInfo = res.data.storeInfo;
+					this.datatime = Number(res.data.storeInfo.last_time);
 					this.imgUrls = res.data.storeInfo.images;
-					this.attribute.productAttr = res.data.productAttr;
+					this.storeInfo.description = this.storeInfo.description.replace(/<img/gi,
+						'<img style="max-width:100%;height:auto;float:left;display:block" ');
+					// this.attribute.productAttr = res.data.productAttr;
+					that.$set(that.attribute, "productAttr", res.data.productAttr);
 					this.productValue = res.data.productValue;
 					this.attribute.productSelect.num = res.data.storeInfo.num;
+					this.attribute.productSelect.once_num = res.data.storeInfo.once_num;
 					this.replyCount = res.data.replyCount;
 					this.reply = res.data.reply ? [res.data.reply] : [];
-					this.replyChance = res.data.replyChance
+					this.replyChance = res.data.replyChance;
+					that.routineContact = Number(res.data.routine_contact_type);
+					uni.setNavigationBarTitle({
+						title: title.substring(0, 7) + '...'
+					});
+					for (let key in res.data.productValue) {
+					  let obj = res.data.productValue[key];
+					  that.skuArr.push(obj);
+					}
+					this.$set(this, "selectSku", that.skuArr[0]);
+					var navList = ['商品', '详情'];
+					if(res.data.replyCount){
+						navList.splice(1, 0, '评价');
+					}
+					that.$set(that, 'navList', navList);
 					// #ifdef H5
 					this.PromotionCode = res.data.storeInfo.code_base
 					that.storeImage = that.storeInfo.image
 					that.getImageBase64();
 					that.setShare();
 					// #endif
-					// #ifndef H5
+					// #ifdef APP-PLUS
+					uni.downloadFile({
+						url: that.setDomain(res.data.storeInfo.code_base),
+						success: function(res) {
+							that.PromotionCode = res.tempFilePath;
+						},
+						fail: function() {
+							return that.$util.Tips({
+								title: '二维码获取失败'
+							});
+						},
+					});
+
+
+					// that.PromotionCode = res.data.storeInfo.code_base
+
+					that.downloadFilestoreImage();
+					// #endif
+					// #ifndef H5 || APP-PLUS
 					that.downloadFilestoreImage();
 					that.downloadFilePromotionCode();
 					// #endif
@@ -404,7 +551,8 @@
 					setTimeout(function() {
 						that.infoScroll();
 					}, 500);
-					app.globalData.openPages = '/pages/activity/goods_seckill_details/index?id=' + that.id + '&time=' + that.datatime +
+					app.globalData.openPages = '/pages/activity/goods_seckill_details/index?id=' + that.id +
+						'&time=' + that.time +
 						'&status=' + that.status + '&pid=' + that.storeInfo.uid;
 					// wxParse.wxParse('description', 'html', that.data.storeInfo.description || '', that, 0);
 					// wxh.time(that.data.time, that);
@@ -428,11 +576,7 @@
 						title: this.storeInfo.title,
 						link: location.href,
 						imgUrl: this.storeInfo.image
-					}).then(res => {
-						console.log(res);
-					}).catch(err => {
-						console.log(err);
-					});
+					}).then(res => {}).catch(err => {});
 			},
 			/**
 			 * 默认选中属性
@@ -538,12 +682,14 @@
 				let productStock = productSelect.product_stock || 0;
 				let num = this.attribute.productSelect;
 				let nums = this.storeInfo.num || 0;
+				let onceNum = this.storeInfo.once_num || 0;
 				//设置默认数据
 				if (productSelect.cart_num == undefined) productSelect.cart_num = 1;
 				if (changeValue) {
 					num.cart_num++;
 					let arrMin = [];
 					arrMin.push(nums);
+					arrMin.push(onceNum);
 					arrMin.push(quota);
 					arrMin.push(productStock);
 					let minN = Math.min.apply(null, arrMin);
@@ -576,7 +722,8 @@
 				}
 			},
 			attrVal(val) {
-				this.attribute.productAttr[val.indexw].index = this.attribute.productAttr[val.indexw].attr_values[val.indexn];
+				this.attribute.productAttr[val.indexw].index = this.attribute.productAttr[val.indexw].attr_values[val
+					.indexn];
 			},
 			/**
 			 * 属性变动赋值
@@ -585,6 +732,7 @@
 			ChangeAttr: function(res) {
 				this.$set(this, 'cart_num', 1);
 				let productSelect = this.productValue[res];
+				this.$set(this, "selectSku", productSelect);
 				if (productSelect) {
 					this.$set(this.attribute.productSelect, "image", productSelect.image);
 					this.$set(this.attribute.productSelect, "price", productSelect.price);
@@ -616,6 +764,7 @@
 				opacity = opacity > 1 ? 1 : opacity;
 				that.opacity = opacity
 				that.scrollY = scrollY
+				that.$set(that, 'showMenuIcon', false);
 				if (that.lock) {
 					that.lock = false
 					return;
@@ -627,13 +776,16 @@
 					}
 				}
 			},
+			open(data) {
+				this.showMenuIcon = data
+			},
 			tap: function(item, index) {
 				var id = item.id;
 				var index = index;
 				var that = this;
-				// if (!this.data.good_list.length && id == "past2") {
-				//   id = "past3"
-				// }
+				if (!this.replyCount && id == "past1") {
+				  id = "past2"
+				}
 				this.toView = id;
 				this.navActive = index;
 				this.lock = true;
@@ -647,9 +799,9 @@
 					//获取元素所在位置
 					var query = wx.createSelectorQuery().in(this);
 					var idView = "#past" + i;
-					// if (!that.data.good_list.length && i == 2) {
-					//   var idView = "#past" + 3;
-					// }
+					if(!this.replyCount && i == 1){
+						idView = "#past" + 2;
+					}
 					query.select(idView).boundingClientRect();
 					query.exec(function(res) {
 						var top = res[0].top;
@@ -698,9 +850,10 @@
 				//只有关闭属性弹窗时进行加入购物车
 				if (this.attribute.cartAttr === true && this.isOpen == false) return this.isOpen = true
 				//如果有属性,没有选择,提示用户选择
-				if (this.attribute.productAttr.length && productSelect === undefined && this.isOpen == true) return app.$util.Tips({
-					title: '请选择属性'
-				});
+				if (this.attribute.productAttr.length && productSelect === undefined && this.isOpen == true) return app
+					.$util.Tips({
+						title: '请选择属性'
+					});
 				postCartAdd({
 					productId: that.storeInfo.product_id,
 					secKillId: that.id,
@@ -837,22 +990,27 @@
 									return that.$util.Tips({
 										title: '海报二维码生成失败！'
 									});
-								that.$util.PosterCanvas(arr2, that.storeInfo.title, that.storeInfo.price,that.storeInfo.ot_price, function(tempFilePath) {
+								that.$util.PosterCanvas(arr2, that.storeInfo.title, that.storeInfo
+									.price, that.storeInfo.ot_price,
+									function(tempFilePath) {
+										that.$set(that, 'posterImage', tempFilePath);
+										that.$set(that, 'posterImageStatus', true);
+										that.$set(that, 'canvasStatus', false);
+										that.$set(that, 'actionSheetHidden', !that
+											.actionSheetHidden);
+									});
+							});
+
+						} else {
+							//生成推广海报
+							that.$util.PosterCanvas(arr2, that.storeInfo.title, that.storeInfo.price, that
+								.storeInfo.ot_price,
+								function(tempFilePath) {
 									that.$set(that, 'posterImage', tempFilePath);
 									that.$set(that, 'posterImageStatus', true);
 									that.$set(that, 'canvasStatus', false);
 									that.$set(that, 'actionSheetHidden', !that.actionSheetHidden);
 								});
-							});
-			
-						} else {
-							//生成推广海报
-							that.$util.PosterCanvas(arr2, that.storeInfo.title, that.storeInfo.price,that.storeInfo.ot_price, function(tempFilePath) {
-								that.$set(that, 'posterImage', tempFilePath);
-								that.$set(that, 'posterImageStatus', true);
-								that.$set(that, 'canvasStatus', false);
-								that.$set(that, 'actionSheetHidden', !that.actionSheetHidden);
-							});
 						}
 					},
 				});
@@ -908,6 +1066,26 @@
 				})
 			},
 			// #endif
+			//#ifdef APP-PLUS
+			savePosterPath() {
+				let that = this
+				uni.saveImageToPhotosAlbum({
+					filePath: that.posterImage,
+					success: function(res) {
+						that.posterImageClose();
+						that.$util.Tips({
+							title: '保存成功',
+							icon: 'success'
+						});
+					},
+					fail: function(res) {
+						that.$util.Tips({
+							title: '保存失败'
+						});
+					}
+				});
+			},
+			// #endif
 			setShareInfoStatus: function() {
 				let data = this.storeInfo;
 				let href = location.href;
@@ -925,10 +1103,46 @@
 							link: href,
 							imgUrl: data.image
 						};
-						this.$wechat.wechatEvevt(["updateAppMessageShareData", "updateTimelineShareData"], configAppMessage)
+						this.$wechat.wechatEvevt(["updateAppMessageShareData", "updateTimelineShareData"],
+							configAppMessage)
 					});
 				}
-			}
+			},
+			//点击sku图片打开轮播图
+			showImg(index) {
+			  this.$refs.cusPreviewImg.open(this.selectSku.suk);
+			},
+			//滑动轮播图选择商品
+			changeSwitch(e) {
+				console.log(this.skuArr[e])
+			  let productSelect = this.skuArr[e];
+			  this.$set(this, "selectSku", productSelect);
+			  var skuList = productSelect.suk.split(",");
+				console.log(this.attribute.productAttr)
+			  this.$set(this.attribute.productAttr[0], "index", skuList[0]);
+			  if (skuList.length == 2) {
+			    this.$set(this.attribute.productAttr[0], "index", skuList[0]);
+			    this.$set(this.attribute.productAttr[1], "index", skuList[1]);
+			  } else if (skuList.length == 3) {
+			    this.$set(this.attribute.productAttr[0], "index", skuList[0]);
+			    this.$set(this.attribute.productAttr[1], "index", skuList[1]);
+			    this.$set(this.attribute.productAttr[2], "index", skuList[2]);
+			  } else if (skuList.length == 4) {
+			    this.$set(this.attribute.productAttr[0], "index", skuList[0]);
+			    this.$set(this.attribute.productAttr[1], "index", skuList[1]);
+			    this.$set(this.attribute.productAttr[2], "index", skuList[2]);
+			    this.$set(this.attribute.productAttr[3], "index", skuList[3]);
+			  }
+			  if (productSelect) {
+			    this.$set(this.attribute.productSelect, "image", productSelect.image);
+			    this.$set(this.attribute.productSelect, "price", productSelect.price);
+			    this.$set(this.attribute.productSelect, "stock", productSelect.stock);
+			    this.$set(this.attribute.productSelect, "unique", productSelect.id);
+			    this.$set(this.attribute.productSelect, "vipPrice", productSelect.vipPrice);
+			    this.$set(this, "attrTxt", "已选择");
+			    this.$set(this, "attrValue", productSelect.suk);
+			  }
+			},
 		},
 		//#ifdef MP
 		onShareAppMessage() {
@@ -961,7 +1175,7 @@
 	}
 
 	.generate-posters .item {
-		flex: 50%;
+		flex: 1;
 		text-align: center;
 		font-size: 30rpx;
 	}
@@ -1002,7 +1216,8 @@
 		height: 5rpx;
 		background-repeat: no-repeat;
 		content: "";
-		background-image: linear-gradient(to right, #ff3366 0%, #ff6533 100%);
+		// background-image: linear-gradient(to right, #ff3366 0%, #ff6533 100%);
+		background-color: var(--view-theme);
 		bottom: -10rpx;
 		left: 50%;
 		margin-left: -28rpx;
@@ -1040,13 +1255,21 @@
 	}
 
 	.product-con .nav {
-		background-image: url('data:image/jpeg;base64,/9j/4QAYRXhpZgAASUkqAAgAAAAAAAAAAAAAAP/sABFEdWNreQABAAQAAAA8AAD/4QN/aHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wLwA8P3hwYWNrZXQgYmVnaW49Iu+7vyIgaWQ9Ilc1TTBNcENlaGlIenJlU3pOVGN6a2M5ZCI/PiA8eDp4bXBtZXRhIHhtbG5zOng9ImFkb2JlOm5zOm1ldGEvIiB4OnhtcHRrPSJBZG9iZSBYTVAgQ29yZSA1LjYtYzE0MiA3OS4xNjA5MjQsIDIwMTcvMDcvMTMtMDE6MDY6MzkgICAgICAgICI+IDxyZGY6UkRGIHhtbG5zOnJkZj0iaHR0cDovL3d3dy53My5vcmcvMTk5OS8wMi8yMi1yZGYtc3ludGF4LW5zIyI+IDxyZGY6RGVzY3JpcHRpb24gcmRmOmFib3V0PSIiIHhtbG5zOnhtcE1NPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvbW0vIiB4bWxuczpzdFJlZj0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL3NUeXBlL1Jlc291cmNlUmVmIyIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bXBNTTpPcmlnaW5hbERvY3VtZW50SUQ9InhtcC5kaWQ6NDNlZTU0ZDMtNjEwZS03ZjQ4LWEwODgtNTZlMTZiNzI3NTQwIiB4bXBNTTpEb2N1bWVudElEPSJ4bXAuZGlkOjI1NEI2MDUyM0ZDMjExRTk5OTg1REI1OUM1NjNEMUZCIiB4bXBNTTpJbnN0YW5jZUlEPSJ4bXAuaWlkOjI1NEI2MDUxM0ZDMjExRTk5OTg1REI1OUM1NjNEMUZCIiB4bXA6Q3JlYXRvclRvb2w9IkFkb2JlIFBob3Rvc2hvcCBDQyAyMDE4IChXaW5kb3dzKSI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ4bXAuaWlkOjUyMDIzNWNmLTIwNGYtOTQ0My05YTBiLWNmMmZlMTJmMDk3NCIgc3RSZWY6ZG9jdW1lbnRJRD0ieG1wLmRpZDo0M2VlNTRkMy02MTBlLTdmNDgtYTA4OC01NmUxNmI3Mjc1NDAiLz4gPC9yZGY6RGVzY3JpcHRpb24+IDwvcmRmOlJERj4gPC94OnhtcG1ldGE+IDw/eHBhY2tldCBlbmQ9InIiPz7/7gAOQWRvYmUAZMAAAAAB/9sAhAAGBAQEBQQGBQUGCQYFBgkLCAYGCAsMCgoLCgoMEAwMDAwMDBAMDg8QDw4MExMUFBMTHBsbGxwfHx8fHx8fHx8fAQcHBw0MDRgQEBgaFREVGh8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx//wAARCABkAu4DAREAAhEBAxEB/8QAfQABAQEBAQEBAAAAAAAAAAAAAAECAwQFBgEBAQEBAQEBAQAAAAAAAAAAAAECAwQFBgcQAQEAAgEDAwMDBQEBAAAAAAABAgMRITESQTIEUWFxobHBgSJCUgVyExEBAQEBAAICAgMAAwAAAAAAAAECEUEDITFhsVFxEvCBkf/aAAwDAQACEQMRAD8A/PPyb+0gAAAArNvKqAgAAoogAgC448/gtOtsoCAJasjUjLSgPpfC0Y44zZl1zvafRw3fDze3Xzx65WHFZRGgef5fzJpnjj1239Gs5636/X3+ny7bbbbzb3rq9SAAAAAAAAAAAAAAAAAAAAAA+x/y/wDl9t++ffDC/vXHe/EeT3+/xH13F5AAHl+f8/X8XX/tty9mH837N5z109Xqur+H53bt2bdl2bL5ZZd69EnH0c5knIwqgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAApyHE5qqcdERRAAAAVm1VAAAQAAUUQFk5/CI2iAgCWrI1Iiqij0atXjxbOc72n0ZtY1p9DXj44TH6d3GvLq9rcqI1KiOHyvlzTPHHrsv6NZz1vGO/0+bbbbbebe9dXpQAAAAAAAAAAAAAAAAAAAAAH1/wDmf82dN++ffXrv71x3vxHl93u8R9iVxeMAB5fn/P1/F1/7bcvZh/N+zec9dPV6rq/h+d27dm3Zdmy+WWXevRJx9HOZJyMKoAAAAAAAAAAAAADnnuxl4nWtTLUy1MrMfLPp9k5/Bz+E17Ms+enE+q2cLONyy9urKAgAAAAAAAAAAAAAAKlqqgNSIgAIAACoAqoAAACAACrJyJa0iAgCWrI1IiqA76tXjxb7r2iWsWvXq1+PW+79nK1w1rrtKywojj8j5U1Txx67L+jUz1vGO/0+fbbbbebe9dHoQAAAAAAAAAAAAAAAAAAAAAH0/wDn/Bk43bp98ML+9ct68R5/b7fEfVxycnk46SozW5UR5fn/AD9fxdf+23L2Yfzfs3nPXT1eq6v4fndu3Zt2XZsvlll3r0ScfRzmScjCqAAAAAAAAAAAAAA5bs7P7Z3vdrMbzDDCYTzz7+kW3vxC3qSZbcub0xi/S/Rs2f4YfjoknmknmtYSa8ecr39Et6l+XRlkEAAAAAAAAAAAAAS1VQVqREATnqoqIACoAoACoAAACAsnINIgIAWrI1IyqgO2vX49b7vSJaxa9WvDx633fs52uOtddWWVlEc/kfJmueOPXO/osnWsY68Ftt5vW3vXR3QAAAAAAAAAAAAAAAAAAAAAHt+H8aczZsn/AJx/msa04+zfiPo45OTz2OuOSMWOuOSM2OXzPna/i6+b/dsy9mH837LnPWvX6rq/h+f27dm3Zdmy+WWXevRJx9DOZJyMKoAAAAAAAAAAAAAADHjMcrsz/o13w13wxJlty5vTGNfTX0bNn+GH46JJ5pJ5q44Y68fLLv6Qt6lvWJMtuXN7L9L9PROOOjmwCAAAAAAAAAAAAF7CsqrUiIAlvKqgNIyCgIAoAACoAABJyDSICAFqrEVQHXXhx1vu9IlrNr0a8PHre7na5WukqMtSojnv+RNc4x99/RZGs568Vtt5vW3vXR2QAAAAAAAAAAAAAAAAAAAAAHfRrnPll/SM2sar2Y5sONjrjkjNjtjkyxYz8j5mHx9fN/uzvsw/m/ZZnq49f+q+Nt27Nuy7Nl8ssu9dpOPZnMk5GFUAAAAAAAAAAAAAAAByywyz2dfbG5eRuXkTZs/ww/HQk81ZPNXHHHXj5Zd/SFvUt6xJlty5vZfpfprZsmM8MP61JO/NSTvzXXCcYyfRis1RAAAAAAAAAAAAEvdViyIAJbyqknILwiAAAAIAoAACoCycgqICAFFRVAdcMOOt7+kS1m12wx463uza52ukqMqiMbd/hOJ7/wBlkaznryW23m923VAAAAAAAAAAAAAAAAAAAAAAaxk55qFdsckYsdcckYsdscmWLF2/Jx04c98r7cSZ6Zx183Zsz2Z3PO85XvXSR6ZOMqAAAAAAAAAAAAAAAAAJsmVxsxvFWLHPHHHXj5Ze70jVvWresSZbcub2X6X6a2bJhPDD+tSTvzSTvzU067b5Xt6LrRqu7m5gAAAAAAAAAAAAHHUUBLeVUk5BUQ56gAAAAAgCgABwgoAgAKiqA6YYcdb3Rm11xnHX1ZtYtbRleQZ27fCcT3fsSLM9ea2283u26IAAAAAAAAAAAAAAAAAAAAAACyg3jkiOmOSM2N5bphOe99InGZnrzZZZZZXLK82tOsnGVAAAAAAAAAAAAAAAAAAAEywxy7xZeLLw8ZMfGdDp1nHVhOvHN+5dVbqtoyAAAAAAAAAAAAAACpbyqknIKiJaCKrSIAAAAAgChwgoAgAKigK3jjx1vdGbXTGcflGa2jKyoM7NvjOJ7v2WRZOuFvPWtNoAAAAAAAAAAAAAAAAAAAAAAAACyg158RE4zbbeaqoAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACXuLCTlVVES0EVV46AqMgoAAAACcAoAgAKKANYzj8olbiI1KjKgzns8ek7nCRyabQAAAAAAAAAAAAHq16cZjOZLss5vPtwn1rjrV/6/bndf+Jlq13GWSzHth/tnfr+Cavf+fBLXnyxuOVxvSzpXWXrpKigAAAAAAAAACggAAAAAAAAAAAAAAAAPTr14eE6eVy73636T6SetcdavWLb1jdhjJMpx1+na/ifSNYvhc1xdGgAAAAAAAAAAAAAAAAAAACzkUBLQRVWREUAQAFAAAAABAAUABZAaiMtACGWfHbucJHNWkAAAAAAAAAAAAAB68bjdctl8OemH+WeX3+zhfv8AP6cr9tyZ3O9Z/wDXj+7L0wn0jPxz8ftP1+3j2ePnfH289LXoz9fLtPplQAAAAAAAAAAAAAAAAAAAAAAAAAAAB2w3YzHjL6cfmek+0c7j+Gbk3bccp449efdl2547ST0kMZ4Zy4ujQAAAAAAAAAAAAAAAAAAAACWioqrIiKCc9QUQAAFAAABAAAAUgNQRUQAuXH5DjKqgAAAAAAAAAAAAAANYbM8LzjeL9UuZfss6t25+Hhzxj6yev5T/ADO9T/MYaUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAs5FST6goJaogrSMgAAAoAIAAAAAsAQUC0RFVAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAALyKyqrx0RFEAAAAAAAAAAAAVAAUQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAUEf/9k=');
+		background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAu4AAABkCAMAAADud0VvAAAAeFBMVEUAAAD////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////GqOSsAAAAKHRSTlMAAQIDBAUGBwgJCgsMDQ4PEBESExQVFhcYGRobHB0eHyAhIiMkJSYnEt6j2gAACYZJREFUeNrtnel2qzoMhSUPzOnpef+HvD1NmonB90eShoTRBoMBaXWltV06wNfdLSEAYaMhdjtEAAQAfHtTAAraX04/KVB0BCLCbffeXyofdk/0Xev3AzGxzSPh7yJAUAiqvLfUfUrBDfqGF/XzkxPM3aEUw3YcsXOi51ov1hFgk7hHO6+O8vK+aYY9OxwVodwvCobGMKPhX0Uz67BF3DFJRBPl3fJ+OZyIYg3egY8r4ybkM/z9pK3hzpOYNVLeJe/FaX8lhPUiZ8ySjPeT+BLrm8PdSwJspbxN3vPDniy7gcArPpWMd7C+MdzD2ANspbxF3tPvA1l2s4w1uwv8aDLeU9dZdW4zuGMU8xvYrZTfZ9+JP30fidshAo+WqjPYyDrWqdNGcOdR9Py/1ibv99nHvrq9P3xfiNlhAs/Z2DKObbretLgJ3GXs9zYxv/L+IL74/keWfXjGWiPwdqx7M+vbwN2PRW/KX+UdFaRfe7LsoxiaQjDr1h2Rtf9ZrB13DEOuYWLe5P309UOgjhVZ7Sn88cjHSh1ma7jzMEA9E1OSd7X/jyz7qAKfCrRl3bGam9blqmvGXQYeNvPcIe/511dGhI6csaa85ODHs+7IWE9rv17cvVDcd5KBvF//+ybLbiNjLQQb2bo/WUe1VdzRD9gvv1omBgDg9B9ZdnsCL0a07v11fcW4M99HNDQxCg5fZNmtCrzEcaw7cqbbWbBC3IUvjU0MFP+oym5b4K9CDLfuPVivMTerw136HE1NDKT/qMo+QWS5N6wPHm8pL2ofrHXhjtJnpiYG4UiNMVMJ/EWa98Ejr2v+2h7ueHcxRoV2dfhHl59OF+mbwPclnzHeXLvvVvv14M49jgBmJgby/XdBDE4ZxVkKXeuOnA+8YHUtuAvJQafl8WU2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');
 		background-repeat: no-repeat;
 		background-size: 100% 100%;
 		width: 100%;
 		height: 100rpx;
 		padding: 0 30rpx;
 		box-sizing: border-box;
+	}
+	
+	.product-con .nav /deep/.time .styleAll {
+		padding: 0 6rpx;
+		font-size: 22rpx;
+		color: var(--view-theme);
+		background-color: #fff;
+		border-radius: 2rpx
 	}
 
 	.product-con .nav .money {
@@ -1116,6 +1339,8 @@
 		margin: 18rpx 0 0 0;
 		font-size: 24rpx;
 		color: #82848f;
+		display: flex;
+		justify-content: space-between;
 	}
 
 	.product-con .wrapper .label .stock {
@@ -1181,12 +1406,23 @@
 
 	.product-con .footer .bnt .joinCart {
 		border-radius: 50rpx 0 0 50rpx;
-		background-image: linear-gradient(to right, #fea10f 0%, #fa8013 100%);
+		// background-image: linear-gradient(to right, #fea10f 0%, #fa8013 100%);
+		background-color: var(--view-bntColor);
 	}
 
 	.product-con .footer .bnt .buy {
 		border-radius: 0 50rpx 50rpx 0;
-		background-image: linear-gradient(to right, #fa6514 0%, #e93323 100%);
+		background-color: var(--view-theme);
+		// background-image: linear-gradient(to right, #fa6514 0%, #e93323 100%);
+	}
+
+	.product-con .conter {
+		display: block;
+		padding-bottom: 100rpx;
+	}
+
+	.product-con .conter img {
+		display: block;
 	}
 
 	.setCollectBox {
@@ -1211,7 +1447,7 @@
 		transform: translateX(-50%);
 		z-index: 300;
 		top: 50%;
-		margin-top: -357rpx;
+		margin-top: -377rpx;
 	}
 
 	.poster-pop image {
@@ -1247,26 +1483,26 @@
 	}
 
 	/deep/.mask {
-		z-index: 99!important;
+		z-index: 99 !important;
 	}
-	
-	.mask1{
-		    position: fixed;
-		    top: 0;
-		    left: 0;
-		    right: 0;
-		    bottom: 0;
-		    background-color: #000;
-		    opacity: .5;
-			z-index: 288;
+
+	.mask1 {
+		position: fixed;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		background-color: #000;
+		opacity: .5;
+		z-index: 288;
 	}
-	
+
 	.home-nav {
 		/* #ifdef H5 */
 		top: 20rpx !important;
 		/* #endif */
 	}
-	
+
 	.home-nav {
 		color: #fff;
 		position: fixed;
@@ -1277,23 +1513,24 @@
 		left: 33rpx;
 		background: rgba(190, 190, 190, 0.5);
 		border-radius: 50%;
-		&.on{
+
+		&.on {
 			background: unset;
 			color: #333;
 		}
 	}
-	
+
 	.home-nav .line {
 		width: 1rpx;
 		height: 24rpx;
 		background: rgba(255, 255, 255, 0.25);
 	}
-	
+
 	.home-nav .icon-xiangzuo {
 		width: auto;
 		font-size: 28rpx;
 	}
-	
+
 	.share-box {
 		z-index: 1000;
 		position: fixed;
@@ -1302,9 +1539,48 @@
 		width: 100%;
 		height: 100%;
 	}
-	
+
 	.share-box image {
 		width: 100%;
 		height: 100%;
+	}
+	.attrImg {
+	  width: 66rpx;
+	  height: 66rpx;
+	  border-radius: 6rpx;
+	  display: block;
+	  margin-right: 14rpx;
+	}
+	
+	.switchTxt {
+	  height: 60rpx;
+	  flex: 1;
+	  line-height: 60rpx;
+	  box-sizing: border-box;
+	  background: #eeeeee;
+	  padding-right: 0 24rpx 0;
+	  border-radius: 8rpx;
+	  text-align: center;
+	}
+	
+	.attribute {
+	  padding: 10rpx 30rpx;
+	  .line1 {
+	    width: 600rpx;
+	  }
+	}
+	.flex {
+	  display: flex;
+	  justify-content: space-between;
+	  width: 100%;
+	}
+	.flexs {
+	  display: flex;
+	}
+	
+	.attr-txt {
+	  display: flex;
+	  flex-wrap: nowrap;
+	  width: 130rpx;
 	}
 </style>

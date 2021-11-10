@@ -210,6 +210,6 @@ class SystemGroup extends AuthController
      */
     public function getGroup()
     {
-        return app('json')->success($this->services->getGroupList(['cate_id' => 1], ['id', 'name'])['list']);
+        return app('json')->success($this->services->getGroupList(['cate_id' => 1], ['id', 'name', 'config_name'])['list']);
     }
 }

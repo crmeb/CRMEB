@@ -33,7 +33,7 @@ use think\exception\ValidateException;
  * @method getOne(array $where, ?string $field = '*', array $with = []) 获得一条数据
  * @method value(array $value, string $key) 获取一条数据
  * @method getWechatTrendData($time, $where, $timeType, $key)
- * @method getWechatOpenid(int $uid) 获取微信公众号openid
+ * @method getWechatOpenid(int $uid, string $userType = 'wechat') 获取微信公众号openid
  */
 class WechatUserServices extends BaseServices
 {
@@ -165,8 +165,6 @@ class WechatUserServices extends BaseServices
         if (!$this->dao->save($userInfo)) {
             throw new AdminException('用户储存失败!');
         }
-        //用户生成后置事件
-        event('user.register', [0, 0, 0, $uid, 1]);
         return $userInfoData;
     }
 
@@ -290,13 +288,13 @@ class WechatUserServices extends BaseServices
         //user表存在和wechat_user表同时存在
         if ($userInfo) {
             //更新用户表和wechat_user表
+            //判断该类性用户在wechatUser中是否存在
+            $wechatUser = $this->dao->getOne(['uid' => $uid, 'user_type' => $userType]);
             /** @var LoginServices $loginService */
             $loginService = app()->make(LoginServices::class);
-            $this->transaction(function () use ($loginService, $wechatInfo, $userInfo, $uid, $userType, $spreadId) {
+            $this->transaction(function () use ($loginService, $wechatInfo, $userInfo, $uid, $userType, $spreadId, $wechatUser) {
                 $wechatInfo['code'] = $spreadId;
                 $loginService->updateUserInfo($wechatInfo, $userInfo);
-                //判断该类性用户在wechatUser中是否存在
-                $wechatUser = $this->dao->getOne(['uid' => $uid, 'user_type' => $userType]);
                 if ($wechatUser) {
                     if (!$this->dao->update($wechatUser['id'], $wechatInfo, 'id')) {
                         throw new ValidateException('更新数据失败');

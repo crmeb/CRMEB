@@ -74,7 +74,8 @@ class SystemAdmin extends AuthController
             ['status', 0],
         ]);
 
-        validate(\app\adminapi\validate\setting\SystemAdminValidata::class)->check($data);
+        $this->validate($data, \app\adminapi\validate\setting\SystemAdminValidata::class);
+
         $data['level'] = $this->adminInfo['level'] + 1;
         $this->services->create($data);
         return app('json')->success('添加成功');
@@ -111,7 +112,8 @@ class SystemAdmin extends AuthController
             ['status', 0],
         ]);
 
-        validate(\app\adminapi\validate\setting\SystemAdminValidata::class)->scene('update')->check($data);
+        $this->validate($data, \app\adminapi\validate\setting\SystemAdminValidata::class, 'update');
+
         if ($this->services->save((int)$id, $data)) {
             return app('json')->success('修改成功');
         } else {

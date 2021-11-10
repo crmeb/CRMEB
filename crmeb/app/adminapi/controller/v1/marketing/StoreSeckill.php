@@ -38,6 +38,7 @@ class StoreSeckill extends AuthController
     public function index()
     {
         $where = $this->request->getMore([
+            ['start_status', ''],
             [['status', 's'], ''],
             [['store_name', 's'], '']
         ]);
@@ -82,7 +83,7 @@ class StoreSeckill extends AuthController
             ['items', []],
             ['copy', 0]
         ]);
-        validate(\app\adminapi\validate\marketing\StoreSeckillValidate::class)->scene('save')->check($data);
+        $this->validate($data, \app\adminapi\validate\marketing\StoreSeckillValidate::class, 'save');
         if ($data['section_time']) {
             [$start_time, $end_time] = $data['section_time'];
             if (strtotime($end_time) + 86400 < time()) {
@@ -98,7 +99,7 @@ class StoreSeckill extends AuthController
         }
         //限制编辑
         if ($data['copy'] == 0 && $seckill) {
-            if ($seckill['stop_time'] < time()) {
+            if ($seckill['stop_time'] + 86400 < time()) {
                 return app('json')->fail('活动已结束,请重新添加或复制');
             }
         }

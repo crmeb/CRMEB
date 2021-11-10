@@ -96,7 +96,8 @@ class Serve extends AuthController
                 if (!$openInfo['copy']['open']) return app('json')->fail('请先开通商品采集服务');
                 break;
         }
-        validate(MealValidata::class)->check($data);
+        $this->validate($data, MealValidata::class);
+
         $res = $this->services->user()->payMeal($data);
         if ($res) {
             return app('json')->success($res);
@@ -111,8 +112,23 @@ class Serve extends AuthController
      */
     public function openExpress()
     {
+        $data = $this->request->postMore([
+            ['com', ''],
+            ['temp_id', ''],
+            ['to_name', ''],
+            ['to_tel', ''],
+            ['to_address', ''],
+            ['siid', ''],
+        ]);
+
+        $this->validate($data, ExpressValidata::class);
+
+        /** @var SystemConfigServices $systemConfigService */
+        $systemConfigService = app()->make(SystemConfigServices::class);
+        $systemConfigService->saveExpressInfo($data);
         $this->services->express()->open();
         return app('json')->success('开通成功');
+
     }
 
     /**
@@ -168,7 +184,8 @@ class Serve extends AuthController
             ['verify_code', ''],
         ]);
 
-        validate(ServeValidata::class)->check($data);
+        $this->validate($data, ServeValidata::class);
+
         $data['password'] = md5($data['password']);
         $this->services->user()->modify($data);
         CacheService::redisHandler()->delete('sms_account');
@@ -187,7 +204,8 @@ class Serve extends AuthController
             ['verify_code', ''],
         ]);
 
-        validate(ServeValidata::class)->scene('phone')->check($data);
+        $this->validate($data, ServeValidata::class, 'phone');
+
         $this->services->user()->modifyPhone($data);
         CacheService::redisHandler()->delete('sms_account');
         return app('json')->success('修改成功');

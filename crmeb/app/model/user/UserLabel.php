@@ -11,6 +11,7 @@
 
 namespace app\model\user;
 
+use app\model\other\Category;
 use crmeb\basic\BaseModel;
 use crmeb\traits\ModelTrait;
 
@@ -41,8 +42,17 @@ class UserLabel extends BaseModel
      */
     public function searchLabelCateAttr($query, $value)
     {
-        if($value !== ''){
+        if ($value !== '') {
             $query->where('label_cate', $value);
         }
+    }
+
+    /**
+     * 关联标签分类
+     * @return \think\model\relation\HasOne
+     */
+    public function cateName()
+    {
+        return $this->hasOne(Category::class, 'id', 'label_cate')->where('type', 0)->field(['id', 'name'])->bind(['cate_name' => 'name']);
     }
 }

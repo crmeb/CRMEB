@@ -15,7 +15,6 @@ use app\services\BaseServices;
 use app\dao\order\StoreOrderDao;
 use app\services\pay\PayServices;
 use app\services\product\product\StoreCategoryServices;
-use app\services\product\product\StoreProductServices;
 use app\services\user\MemberCardServices;
 use app\services\user\UserServices;
 use think\exception\ValidateException;
@@ -77,7 +76,7 @@ class StoreOrderComputedServices extends BaseServices
      * @param int $shipping_type
      * @return array
      */
-    public function computedOrder(int $uid, string $key, array $cartGroup, int $addressId, string $payType, bool $useIntegral = false, int $couponId = 0, bool $isCreate = false, int $shippingType = 1)
+    public function computedOrder(int $uid, array $userInfo = [], array $cartGroup, int $addressId, string $payType, bool $useIntegral = false, int $couponId = 0, bool $isCreate = false, int $shippingType = 1)
     {
         $offlinePayStatus = (int)sys_config('offline_pay_status') ?? (int)2;
         $systemPayType = PayServices::PAY_TYPE;
@@ -87,26 +86,29 @@ class StoreOrderComputedServices extends BaseServices
                 throw new ValidateException('选择支付方式有误');
             }
         }
-        if ($this->dao->count(['unique' => $key, 'uid' => $uid])) {
-            throw new ValidateException('请勿重复提交订单');
-        }
-        /** @var UserServices $userServices */
-        $userServices = app()->make(UserServices::class);
-        $userInfo = $userServices->get($uid);
         if (!$userInfo) {
-            throw new ValidateException('用户不存在!');
+            /** @var UserServices $userServices */
+            $userServices = app()->make(UserServices::class);
+            $userInfo = $userServices->getUserInfo($uid);
+            if (!$userInfo) {
+                throw new ValidateException('用户不存在!');
+            }
         }
         $cartInfo = $cartGroup['cartInfo'];
         $priceGroup = $cartGroup['priceGroup'];
         $other = $cartGroup['other'];
         $payPrice = (float)$priceGroup['totalPrice'];
-        /** @var UserAddressServices $addressServices */
-        $addressServices = app()->make(UserAddressServices::class);
-        $addr = $addressServices->getAddress($addressId);
-        if ($addr) {
-            $addr = $addr->toArray();
-        } else {
-            $addr = [];
+        $addr = $cartGroup['addr'] ?? [];
+        $postage = $priceGroup;
+        if (!$addr || $addr['id'] != $addressId) {
+            /** @var UserAddressServices $addressServices */
+            $addressServices = app()->make(UserAddressServices::class);
+            $addr = $addressServices->getAddress($addressId) ?? [];
+            if ($addr) {
+                $addr = $addr->toArray();
+            }
+            //改变地址重新计算邮费
+            $postage = [];
         }
         $combinationId = $this->paramData['combinationId'] ?? 0;
         $seckillId = $this->paramData['seckill_id'] ?? 0;
@@ -120,17 +122,19 @@ class StoreOrderComputedServices extends BaseServices
         }
 
         //计算邮费
-        [$payPrice, $payPostage, $storePostageDiscount] = $this->computedPayPostage($shippingType, $payType, $cartInfo, $addr, $payPrice, $other);
+        [$payPrice, $payPostage, $storePostageDiscount, $storeFreePostage, $isStoreFreePostage] = $this->computedPayPostage($shippingType, $payType, $cartInfo, $addr, $payPrice, $postage, $other, $userInfo);
 
         $result = [
             'total_price' => $priceGroup['totalPrice'],
-            'pay_price' => $payPrice,
+            'pay_price' => $payPrice > 0 ? $payPrice : 0,
             'pay_postage' => $payPostage,
             'coupon_price' => $couponPrice ?? 0,
             'deduction_price' => $deductionPrice ?? 0,
             'usedIntegral' => $usedIntegral ?? 0,
             'SurplusIntegral' => $SurplusIntegral ?? 0,
             'storePostageDiscount' => $storePostageDiscount ?? 0,
+            'isStoreFreePostage' => $isStoreFreePostage ?? false,
+            'storeFreePostage' => $storeFreePostage ?? 0
         ];
         $this->paramData = [];
         return $result;
@@ -238,13 +242,14 @@ class StoreOrderComputedServices extends BaseServices
                 $usedIntegral = (int)ceil(bcdiv((string)$payPrice, (string)$other['integralRatio'], 2));
                 $payPrice = 0;
             }
-            $SurplusIntegral = (int)bcsub((string)$userInfo['integral'], (string)$usedIntegral, 0);
+            $deductionPrice = $deductionPrice > 0 ? $deductionPrice : 0;
+            $usedIntegral = $usedIntegral > 0 ? $usedIntegral : 0;
+            $SurplusIntegral = (int)bcsub((string)$userInfo['integral'], $usedIntegral, 0);
         } else {
             $deductionPrice = 0;
             $usedIntegral = 0;
         }
         if ($payPrice <= 0) $payPrice = 0;
-
         return [$payPrice, $deductionPrice, $usedIntegral, $SurplusIntegral];
     }
 
@@ -258,52 +263,63 @@ class StoreOrderComputedServices extends BaseServices
      * @param array $other
      * @return array
      */
-    public function computedPayPostage(int $shipping_type, string $payType, array $cartInfo, array $addr, string $payPrice, array $other)
+    public function computedPayPostage(int $shipping_type, string $payType, array $cartInfo, array $addr, string $payPrice, array $postage = [], array $other, $userInfo = [])
     {
         $storePostageDiscount = 0;
-        if (!isset($addr['id'])) {
+        $storeFreePostage = $postage['storeFreePostage'] ?? 0;
+        $isStoreFreePostage = false;
+        if (!$storeFreePostage) {
+            $storeFreePostage = floatval(sys_config('store_free_postage')) ?: 0;//满额包邮金额
+        }
+        if (!$addr && !isset($addr['id']) || !$cartInfo) {
             $payPostage = 0;
         } else {
             //$shipping_type = 1 快递发货 $shipping_type = 2 门店自提
-            if ($payType == 'offline' && sys_config('offline_postage') == 1) {
+            if ($shipping_type == 2) {
+                $store_self_mention = sys_config('store_self_mention') ?? 0;
+                if (!$store_self_mention) $shipping_type = 1;
+            }
+            //门店自提 || （线下支付 && 线下支付包邮） 没有邮费支付
+            if ($shipping_type === 2 || ($payType == 'offline' && ((isset($other['offlinePostage']) && $other['offlinePostage']) || sys_config('offline_postage')) == 1)) {
                 $payPostage = 0;
             } else {
-                $postage = $this->getOrderPriceGroup($cartInfo, $addr);
+                if (!$postage || !isset($postage['storePostage']) || !isset($postage['storePostageDiscount'])) {
+                    $postage = $this->getOrderPriceGroup($storeFreePostage, $cartInfo, $addr, $userInfo);
+                }
                 $payPostage = $postage['storePostage'];
                 $storePostageDiscount = $postage['storePostageDiscount'];
-            }
-            $store_self_mention = sys_config('store_self_mention') ?? 0;
-            if (!$store_self_mention) $shipping_type = 1;
-            if ($shipping_type === 1) {
-                //是否包邮
-                if ((isset($other['offlinePostage']) && $other['offlinePostage'] && $payType == 'offline')) $payPostage = 0;
+                $isStoreFreePostage = $postage['isStoreFreePostage'] ?? false;
+
                 $payPrice = (float)bcadd((string)$payPrice, (string)$payPostage, 2);
-            } else if ($shipping_type === 2) {
-                //门店自提没有邮费支付
-                $priceGroup['storePostage'] = 0;
-                $payPostage = 0;
-                $storePostageDiscount = 0;
             }
         }
-        return [$payPrice, $payPostage, $storePostageDiscount];
+        return [$payPrice, $payPostage, $storePostageDiscount, $storeFreePostage, $isStoreFreePostage];
     }
 
     /**
      * 运费计算,总金额计算
      * @param $cartInfo
+     * @param $addr
+     * @param array $userInfo
      * @return array
      */
-    public function getOrderPriceGroup($cartInfo, $addr)
+    public function getOrderPriceGroup($storeFreePostage, $cartInfo, $addr, $userInfo = [])
     {
-        $storeFreePostage = floatval(sys_config('store_free_postage')) ?: 0;//满额包邮
-        $totalPrice = $this->getOrderSumPrice($cartInfo, 'truePrice');//获取订单总金额
+        $sumPrice = $totalPrice = $costPrice = $vipPrice = 0;
+        $storePostage = 0;
+        $storePostageDiscount = 0;
+        $isStoreFreePostage = false;//是否满额包邮
+        $sumPrice = $this->getOrderSumPrice($cartInfo, 'sum_price');//获取订单原总金额
+        $totalPrice = $this->getOrderSumPrice($cartInfo, 'truePrice');//获取订单svip、用户等级优惠之后总金额
         $costPrice = $this->getOrderSumPrice($cartInfo, 'costPrice');//获取订单成本价
         $vipPrice = $this->getOrderSumPrice($cartInfo, 'vip_truePrice');//获取订单会员优惠金额
-        //如果满额包邮等于0
-        if (!$storeFreePostage) {
+        if (isset($cartInfo[0]['productInfo']['is_virtual']) && $cartInfo[0]['productInfo']['is_virtual'] == 1) {
             $storePostage = 0;
-        } else {
-            if ($addr) {
+        } elseif ($storeFreePostage && $cartInfo && $addr) {
+            if ($sumPrice >= $storeFreePostage) {//如果总价大于等于满额包邮 邮费等于0
+                $isStoreFreePostage = true;
+                $storePostage = 0;
+            } else {
                 //按照运费模板计算每个运费模板下商品的件数/重量/体积以及总金额 按照首重倒序排列
                 $cityId = $addr['city_id'] ?? 0;
                 $tempIds[] = 1;
@@ -316,10 +332,7 @@ class StoreOrderComputedServices extends BaseServices
                 $temp = $shippServices->getShippingColumn(['id' => $tempIds], 'type,appoint', 'id');
                 /** @var ShippingTemplatesRegionServices $regionServices */
                 $regionServices = app()->make(ShippingTemplatesRegionServices::class);
-                $regionList = $regionServices->getTempRegionList($tempIds, [$cityId, 0]);
-                foreach ($regionList as $key_r => $item_r) {
-                    $regions[$item_r['temp_id']] = $item_r;
-                }
+                $regions = $regionServices->getTempRegionList($tempIds, [$cityId, 0], 'temp_id,first,first_price,continue,continue_price', 'temp_id');
                 $temp_num = [];
                 foreach ($cartInfo as $cart) {
                     $tempId = $cart['productInfo']['temp_id'] ?? 1;
@@ -332,33 +345,40 @@ class StoreOrderComputedServices extends BaseServices
                         $num = $cart['cart_num'] * $cart['productInfo']['attrInfo']['volume'];
                     }
                     $region = isset($regions[$tempId]) ? $regions[$tempId] : $regions[1];
-                    if (!isset($temp_num[$cart['productInfo']['temp_id']])) {
-                        $temp_num[$cart['productInfo']['temp_id']]['number'] = $num;
-                        $temp_num[$cart['productInfo']['temp_id']]['price'] = bcmul($cart['cart_num'], $cart['truePrice'], 2);
-                        $temp_num[$cart['productInfo']['temp_id']]['first'] = $region['first'];
-                        $temp_num[$cart['productInfo']['temp_id']]['first_price'] = $region['first_price'];
-                        $temp_num[$cart['productInfo']['temp_id']]['continue'] = $region['continue'];
-                        $temp_num[$cart['productInfo']['temp_id']]['continue_price'] = $region['continue_price'];
-                        $temp_num[$cart['productInfo']['temp_id']]['temp_id'] = $cart['productInfo']['temp_id'];
-                        $temp_num[$cart['productInfo']['temp_id']]['city_id'] = $addr['city_id'];
+                    if (!isset($temp_num[$tempId])) {
+                        $temp_num[$tempId] = [
+                            'number' => $num,
+                            'type' => $type,
+                            'price' => bcmul($cart['cart_num'], $cart['truePrice'], 2),
+                            'first' => $region['first'],
+                            'first_price' => $region['first_price'],
+                            'continue' => $region['continue'],
+                            'continue_price' => $region['continue_price'],
+                            'temp_id' => $tempId
+                        ];
                     } else {
-                        $temp_num[$cart['productInfo']['temp_id']]['number'] += $num;
-                        $temp_num[$cart['productInfo']['temp_id']]['price'] += bcmul($cart['cart_num'], $cart['truePrice'], 2);
+                        $temp_num[$tempId]['number'] += $num;
+                        $temp_num[$tempId]['price'] += bcmul($cart['cart_num'], $cart['truePrice'], 2);
                     }
                 }
                 /** @var ShippingTemplatesFreeServices $freeServices */
                 $freeServices = app()->make(ShippingTemplatesFreeServices::class);
-                foreach ($temp_num as $k => $v) {
-                    if (isset($temp[$v['temp_id']]['appoint']) && $temp[$v['temp_id']]['appoint']) {
-                        if ($freeServices->isFree($v['temp_id'], $v['city_id'], $v['number'], $v['price'])) {
-                            unset($temp_num[$k]);
+                $freeList = $freeServices->isFreeList($tempIds, $addr['city_id'], 0, 'temp_id,number,price', 'temp_id');
+                if ($freeList) {
+                    foreach ($temp_num as $k => $v) {
+                        if (isset($temp[$v['temp_id']]['appoint']) && $temp[$v['temp_id']]['appoint'] && isset($freeList[$v['temp_id']])) {
+                            $free = $freeList[$v['temp_id']];
+                            $condition = $v['type'] == 1 ? $free['number'] <= $v['number'] : $free['number'] >= $v['number'];
+                            if ($free['price'] <= $v['price'] && $condition) {
+                                unset($temp_num[$k]);
+                            }
                         }
                     }
                 }
                 //首件运费最大值
                 $maxFirstPrice = $temp_num ? max(array_column($temp_num, 'first_price')) : 0;
                 //初始运费为0
-                $storePostage = 0;
+                $storePostage_arr = [];
                 //循环运费数组
                 foreach ($temp_num as $fk => $fv) {
                     //找到首件运费等于最大值
@@ -386,29 +406,59 @@ class StoreOrderComputedServices extends BaseServices
                                 $Postage = bcadd($Postage, bcmul(ceil(bcdiv($cv['number'], $cv['continue'] ?? 0, 2)), $cv['continue_price'], 2), 2);
                             }
                         }
-                        //获取运费计算中的最大值
-                        if ($Postage > $storePostage) $storePostage = $Postage;
+                        $storePostage_arr[] = $Postage;
                     }
                 }
-            } else {
-                $storePostage = 0;
+                if (count($storePostage_arr)) {
+                    //获取运费计算中的最大值
+                    $storePostage = max($storePostage_arr);
+                }
             }
-            if (bcadd((string)$totalPrice, (string)$vipPrice, 2) >= $storeFreePostage) $storePostage = 0;//如果总价大于等于满额包邮 邮费等于0
         }
-        $storePostageDiscount = 0;
-        return compact('storePostage', 'storeFreePostage', 'totalPrice', 'costPrice', 'vipPrice', 'storePostageDiscount');
+        //会员邮费享受折扣
+        if ($storePostage) {
+            if (!$userInfo) {
+                /** @var UserServices $userService */
+                $userService = app()->make(UserServices::class);
+                $userInfo = $userService->getUserInfo($addr['uid']);
+            }
+            if ($userInfo && isset($userInfo['is_money_level']) && $userInfo['is_money_level'] > 0) {
+                //看是否开启会员折扣奖励
+                /** @var MemberCardServices $memberCardService */
+                $memberCardService = app()->make(MemberCardServices::class);
+                $express_rule_number = $memberCardService->isOpenMemberCard('express');
+                if ($express_rule_number) {
+                    if ($express_rule_number <= 0) {
+                        $storePostageDiscount = $storePostage;
+                        $storePostage = 0;
+                    } else if ($express_rule_number < 100) {
+                        $storePostageDiscount = $storePostage;
+                        $storePostage = bcmul($storePostage, bcdiv($express_rule_number, 100, 4), 2);
+                        $storePostageDiscount = bcsub($storePostageDiscount, $storePostage, 2);
+                    }
+                }
+            }
+        }
+        return compact('storePostage', 'storeFreePostage', 'isStoreFreePostage', 'sumPrice', 'totalPrice', 'costPrice', 'vipPrice', 'storePostageDiscount');
     }
 
-    /**获取某个字段总金额
+    /**
+     * 获取某个字段总金额
      * @param $cartInfo
-     * @param $key 键名
+     * @param string $key
+     * @param bool $is_unit
      * @return int|string
      */
-    public function getOrderSumPrice($cartInfo, $key = 'truePrice')
+    public function getOrderSumPrice($cartInfo, $key = 'truePrice', $is_unit = true)
     {
         $SumPrice = 0;
         foreach ($cartInfo as $cart) {
-            $SumPrice = bcadd($SumPrice, bcmul($cart['cart_num'], $cart[$key], 2), 2);
+            if (isset($cart['cart_info'])) $cart = $cart['cart_info'];
+            if ($is_unit) {
+                $SumPrice = bcadd($SumPrice, bcmul($cart['cart_num'], $cart[$key], 2), 2);
+            } else {
+                $SumPrice = bcadd($SumPrice, $cart[$key], 2);
+            }
         }
         return $SumPrice;
     }

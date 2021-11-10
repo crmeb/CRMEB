@@ -16,30 +16,29 @@ use think\facade\Route;
 Route::group(function () {
 
     //下载备份记录表
-    Route::get('backup/download', 'v1.system.SystemDatabackup/downloadFile');
+    Route::get('backup/download', 'v1.system.SystemDatabackup/downloadFile')->option(['real_name' => '下载表备份记录']);
     //首页统计数据
-    Route::get('home/header', 'Common/homeStatics');
+    Route::get('home/header', 'Common/homeStatics')->option(['real_name' => '首页统计数据']);
     //首页订单图表
-    Route::get('home/order', 'Common/orderChart');
+    Route::get('home/order', 'Common/orderChart')->option(['real_name' => '首页订单图表']);
     //首页用户图表
-    Route::get('home/user', 'Common/userChart');
+    Route::get('home/user', 'Common/userChart')->option(['real_name' => '首页用户图表']);
     //
-    Route::get('home/rank', 'Common/purchaseRanking');
+    Route::get('home/rank', 'Common/purchaseRanking')->option(['real_name' => '首页交易额排行']);
     // 消息提醒
-    Route::get('jnotice', 'Common/jnotice');
+    Route::get('jnotice', 'Common/jnotice')->option(['real_name' => '消息提醒']);
     //验证授权
-    Route::get('check_auth', 'Common/check_auth');
+    Route::get('check_auth', 'Common/auth')->option(['real_name' => '验证授权']);
     //申请授权
-    Route::post('auth_apply', 'Common/auth_apply');
+    Route::post('auth_apply', 'Common/auth_apply')->option(['real_name' => '申请授权']);
     //授权
-    Route::get('auth', 'Common/auth');
+    Route::get('auth', 'Common/auth')->option(['real_name' => '授权信息']);
     //获取左侧菜单
-    Route::get('menus', 'v1.setting.SystemMenus/menus');
+    Route::get('menus', 'v1.setting.SystemMenus/menus')->option(['real_name' => '左侧菜单']);
     //获取搜索菜单列表
-    Route::get('menusList', 'Common/menusList');
+    Route::get('menusList', 'Common/menusList')->option(['real_name' => '搜索菜单列表']);
     //获取logo
-    Route::get('logo', 'Common/getLogo');
-
+    Route::get('logo', 'Common/getLogo')->option(['real_name' => '获取logo']);
 })->middleware([
     \app\http\middleware\AllowOriginMiddleware::class,
     \app\adminapi\middleware\AdminAuthTokenMiddleware::class,

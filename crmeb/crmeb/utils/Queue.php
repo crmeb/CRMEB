@@ -62,7 +62,7 @@ class Queue
     protected $data;
 
     /**
-     * 任务名
+     * 队列名
      * @var null
      */
     protected $queueName = null;
@@ -129,11 +129,12 @@ class Queue
         if (!$this->job) {
             return $this->setError('需要执行的队列类必须存在');
         }
-        $res = QueueThink::{$this->action()}(...$this->getValues($data));
-        if(!$res){
-            $res = QueueThink::{$this->action()}(...$this->getValues($data));
-            if(!$res){
-                Log::error('加入队列失败，参数：'.json_encode($this->getValues($data)));
+        $jodValue = $this->getValues($data);
+        $res = QueueThink::{$this->action()}(...$jodValue);
+        if (!$res) {
+            $res = QueueThink::{$this->action()}(...$jodValue);
+            if (!$res) {
+                Log::error('加入队列失败，参数：' . json_encode($this->getValues($data)));
             }
         }
         $this->clean();

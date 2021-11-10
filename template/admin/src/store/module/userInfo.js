@@ -27,61 +27,62 @@ export default {
     uploadListDataactivity: {},
     uploadListDatarecommend: {},
     uploadListDataadsRecommend: {},
-    txtListData: {}
+    txtListData:{}
   },
   mutations: {
     //当删除数据并提交时存储默认数据(可视化)
-    uploadListswiperBg(state, data) {
+    uploadListswiperBg(state,data){
       state.uploadListDataswiperBg = data;
     },
-    uploadListmenus(state, data) {
+    uploadListmenus(state,data){
       state.uploadListDatamenus = data;
     },
-    uploadListrecommend(state, data) {
+    uploadListrecommend(state,data){
       state.uploadListDatarecommend = data;
     },
-    uploadListactivity(state, data) {
+    uploadListactivity(state,data){
       state.uploadListDataactivity = data;
     },
-    uploadListadsRecommend(state, data) {
+    uploadListadsRecommend(state,data){
       state.uploadListDataadsRecommend = data;
     },
-    txtList(state, data) {
+    txtList(state,data){
       state.txtListData = data;
     },
-    setPageName(state, id) {
+    //
+    setPageName(state,id){
       state.pageName = id
     },
-    userInfo(state, userInfo) {
+    userInfo (state, userInfo) {
       state.userInfo = userInfo
     },
-    uniqueAuth(state, uniqueAuth) {
+    uniqueAuth (state, uniqueAuth) {
       state.uniqueAuth = uniqueAuth
     },
-    name(state, name) {
+    name (state, name) {
       state.name = name
     },
-    avatar(state, avatar) {
+    avatar (state, avatar) {
       state.avatar = avatar
     },
-    access(state, access) {
+    access (state, access) {
       state.access = access
     },
-    logo(state, logo) {
+    logo (state, logo) {
       state.logo = logo
     },
-    logoSmall(state, logoSmall) {
+    logoSmall (state, logoSmall) {
       state.logoSmall = logoSmall
     },
-    version(state, version) {
+    version (state, version) {
       state.version = version
     },
-    newOrderAudioLink(state, newOrderAudioLink) {
+    newOrderAudioLink (state, newOrderAudioLink) {
       state.newOrderAudioLink = newOrderAudioLink
     }
   },
   actions: {
-    getMenusNavList({ commit }) {
+    getMenusNavList ({ commit }) {
       return new Promise((resolve, reject) => {
         menusApi().then(async res => {
           resolve(res)

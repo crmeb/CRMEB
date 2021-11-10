@@ -107,7 +107,9 @@ class ChatService
     {
         $connection->lastMessageTime = time();
         $res = json_decode($res, true);
-        if (!$res || !isset($res['type']) || !$res['type'] || $res['type'] == 'ping') return;
+        if (!$res || !isset($res['type']) || !$res['type'] || $res['type'] == 'ping') {
+            return $this->response->connection($connection)->success('ping', ['now' => time()]);
+        }
         if (!method_exists($this->handle, $res['type'])) return;
         try {
             $this->handle->{$res['type']}($connection, $res + ['data' => []], $this->response->connection($connection));

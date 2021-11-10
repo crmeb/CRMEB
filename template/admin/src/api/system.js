@@ -411,3 +411,78 @@ export function groupAllApi () {
         method: 'get'
     })
 }
+/**
+ * APP版本列表
+ */
+ export function versionList (params) {
+    return request({
+        url: `system/version_list`,
+        method: 'get',
+        params
+    })
+}
+/**
+ * APP版本列表
+ */
+ export function versionCrate () {
+    return request({
+        url: `system/version_crate`,
+        method: 'get'
+    })
+}
+
+/**
+ * @description 数据配置保存
+ */
+ export function groupSaveApi(data) {
+    return request({
+        url: `setting/group_data/save_all`,
+        method: 'POST',
+        data
+    });
+}
+
+/**
+ * @description 获取pc商城端logo
+ */
+export function pcLogoApi(id) {
+    return request({
+        url: `setting/config/get_system/${id}`,
+        method: 'get'
+    });
+}
+
+
+/**
+ * @description pc商城端logo
+ */
+export function pcLogoSave(data) {
+    return request({
+        url: `setting/config/save_basics`,
+        method: 'POST',
+        data
+    });
+}
+/**
+ * @description 获取隐私协议
+ * @param data
+ */
+ export function getAgreement() {
+    return request({
+        url: 'setting/get_user_agreement',
+        method: 'get',
+    })
+}
+
+
+/**
+ * @description 设置隐私协议
+ * @param data
+ */
+export function setAgreement(data) {
+    return request({
+        url: 'setting/set_user_agreement',
+        method: 'post',
+        data
+    })
+}

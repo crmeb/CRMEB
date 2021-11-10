@@ -7,6 +7,7 @@
 // +----------------------------------------------------------------------
 // | Author: CRMEB Team <admin@crmeb.com>
 // +----------------------------------------------------------------------
+
 import {
 	EXPIRE
 } from '../config/app';
@@ -120,7 +121,6 @@ class Cache {
 			this.setExpireCaheTag(key, expire);
 			return this.cacheSetHandler(key, data);
 		} catch (e) {
-			console.log(e);
 			return false;
 		}
 	}
@@ -129,9 +129,9 @@ class Cache {
 	 * 检测缓存是否存在
 	 * @param {Object} key
 	 */
-	has(key) {
+	has(checkwhethethecacheexists) {
 		this.clearOverdue();
-		return this.getExpireCahe(key);
+		return this.getExpireCahe(checkwhethethecacheexists);
 	}
 
 	/**

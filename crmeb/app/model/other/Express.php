@@ -49,6 +49,16 @@ class Express extends BaseModel
     }
 
     /**
+     * 物流公司信息是否完善
+     * @param Model $query
+     * @param $value
+     */
+    public function searchStatusAttr($query, $value)
+    {
+        $query->where('status', $value);
+    }
+
+    /**
      * keyword 搜索器
      * @param Model $query
      * @param $value

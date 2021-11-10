@@ -8,9 +8,11 @@
 // | Author: CRMEB Team <admin@crmeb.com>
 // +----------------------------------------------------------------------
 
-
 import store from "../store";
 import Cache from '../utils/cache';
+import {
+	Debounce
+} from '@/utils/validate.js'
 // #ifdef H5 || APP-PLUS
 import {
 	isWeixin
@@ -24,25 +26,48 @@ import {
 	EXPIRES_TIME,
 	STATE_R_KEY
 } from './../config/cache';
+import Routine from '@/libs/routine';
 
 function prePage() {
 	let pages = getCurrentPages();
 	let prePage = pages[pages.length - 1];
+	// #ifndef APP-PLUS
 	return prePage.route;
-}
-
-export function toLogin(push, p1dat13li15asf11aga23ifo) {
-	store.commit("LOGOUT");
-	let p1dat13li15asf11aga23ifo2a = prePage();
-
-	// #ifdef H5
-	p1dat13li15asf11aga23ifo2a = location.pathname + location.search;
+	// #endif
+	// #ifdef APP-PLUS
+	return prePage.$page.fullPath;
 	// #endif
 
-	if (!p1dat13li15asf11aga23ifo)
-		p1dat13li15asf11aga23ifo = '/page/users/login/index'
-	Cache.set('login_back_url', p1dat13li15asf11aga23ifo2a);
-	// #ifdef H5 
+}
+
+
+
+
+export const toLogin = Debounce(_toLogin, 800)
+
+function _toLogin(push, pathLogin) {
+	// #ifdef H5
+	if (isWeixin()) {
+		if (!uni.getStorageSync('authIng')) {
+			store.commit("LOGOUT");
+		}
+	} else {
+		store.commit("LOGOUT");
+	}
+	// #endif
+	// #ifndef H5
+	store.commit("LOGOUT");
+	// #endif
+	let path = prePage();
+
+	// #ifdef H5
+	path = location.pathname + location.search;
+	// #endif
+
+	if (!pathLogin)
+		pathLogin = '/page/users/login/index'
+	Cache.set('login_back_url', path);
+	// #ifdef H5
 	if (isWeixin()) {
 		let urlData = location.pathname + location.search
 		if (urlData.indexOf('?') !== -1) {
@@ -66,11 +91,26 @@ export function toLogin(push, p1dat13li15asf11aga23ifo) {
 	// #endif
 
 	// #ifdef MP 
-	uni.navigateTo({
-		url: '/pages/users/wechat_login/index'
-	})
-
+	// uni.navigateTo({
+	// 	url: '/pages/users/wechat_login/index'
+	// })
+	Routine.getCode()
+		.then(code => {
+			Routine.silenceAuth(code).then(res => {
+				console.log(res)
+			})
+		})
+		.catch(err => {
+			uni.hideLoading();
+		});
 	// #endif
+
+	// #ifdef APP-PLUS
+	uni.navigateTo({
+		url: '/pages/users/login/index'
+	})
+	// #endif
+
 }
 
 
@@ -79,6 +119,7 @@ export function checkLogin() {
 	let expiresTime = Cache.get(EXPIRES_TIME);
 	let newTime = Math.round(new Date() / 1000);
 	if (expiresTime < newTime || !token) {
+		uni.setStorageSync('authIng', false)
 		Cache.clear(LOGIN_STATUS);
 		Cache.clear(EXPIRES_TIME);
 		Cache.clear(USER_INFO);

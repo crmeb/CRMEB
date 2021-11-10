@@ -1,0 +1,7 @@
+{
+  "navigationBarTitleText": "地址管理",
+  "usingComponents": {
+    "authorize": "/components/Authorize",
+    "home": "/components/home/index"
+  }
+}

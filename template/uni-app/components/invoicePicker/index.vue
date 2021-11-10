@@ -6,7 +6,8 @@
 			<scroll-view class="popup-bd" scroll-y="true">
 				<radio-group v-if="invList.length" name="inv" @change="invChange">
 					<template v-for="(item, index) in invList">
-						<label v-if="item.type === 1 || item.type === 2 && isSpecial" :key="item.id" class="acea-row row-middle item">
+						<label v-if="item.type === 1 || item.type === 2 && isSpecial" :key="item.id"
+							class="acea-row row-middle item">
 							<radio class="radio" :value="item.id" :checked="item.id === invChecked" />
 							<view class="text">
 								<view class="acea-row row-middle">
@@ -16,16 +17,23 @@
 											<view v-if="item.is_default" class="default">默认</view>
 										</view>
 									</view>
-									<view class="type" :class="{special: item.type === 2}">{{item.header_type === 1 ? '个人' : '企业'}}{{item.type === 1 ? '普通' : '专用'}}发票</view>
+									<view class="type" :class="{special: item.type === 2}">
+										{{item.header_type === 1 ? '个人' : '企业'}}{{item.type === 1 ? '普通' : '专用'}}发票
+									</view>
 								</view>
 								<view class="acea-row row-bottom">
 									<view class="info-wrap">
 										<view class="email">联系邮箱 {{item.email}}</view>
-										<view v-if="item.header_type === 1" class="tel">联系电话 {{item.drawer_phone}}</view>
+										<view v-if="item.header_type === 1" class="tel">联系电话 {{item.drawer_phone}}
+										</view>
 										<view v-else class="number">企业税号 {{item.duty_number}}</view>
 									</view>
-									<navigator class="navigator" :url="`/pages/users/user_invoice_form/index?from=order_confirm&id=${item.id}&${urlQuery}`"
-									 hover-class="none"><text class="iconfont icon-bianji"></text>编辑</navigator>
+									<navigator v-if="!isOrder" class="navigator"
+										:url="`/pages/users/user_invoice_form/index?from=order_confirm&id=${item.id}&${urlQuery}`"
+										hover-class="none"><text class="iconfont icon-bianji"></text>编辑</navigator>
+									<navigator v-else class="navigator"
+										:url="`/pages/users/user_invoice_form/index?from=order_details&id=${item.id}&order_id=${orderId}`"
+										hover-class="none"><text class="iconfont icon-bianji"></text>编辑</navigator>
 								</view>
 							</view>
 						</label>
@@ -37,9 +45,14 @@
 				</view>
 			</scroll-view>
 			<view class="popup-ft">
-				<navigator class="navigator" :url="`/pages/users/user_invoice_form/index?from=order_confirm&${urlQuery}`"
-				 hover-class="none"><text class="iconfont icon-fapiao"></text>添加新的抬头</navigator>
+				<navigator v-if="!isOrder" class="navigator"
+					:url="`/pages/users/user_invoice_form/index?from=order_confirm&${urlQuery}`" hover-class="none">
+					<text class="iconfont icon-fapiao"></text>添加新的抬头</navigator>		
+				<navigator v-else class="navigator"
+					:url="`/pages/users/user_invoice_form/index?order_id=${orderId}&from=order_details`" hover-class="none">
+					<text class="iconfont icon-fapiao"></text>添加新的抬头</navigator>
 				<button class="button" plain @click="invCancel">不开发票</button>
+				<button v-if="isOrder" class="button" plain @click="invSub">确认提交</button>
 			</view>
 		</view>
 	</view>
@@ -47,6 +60,11 @@
 
 <script>
 	export default {
+		data(){
+			return{
+				invId:0
+			}
+		},
 		props: {
 			invShow: {
 				type: Boolean,
@@ -69,6 +87,14 @@
 			urlQuery: {
 				type: String,
 				default: ''
+			},
+			isOrder: {
+				type: Number,
+				default: 0
+			},
+			orderId:{
+				type:String,
+				default:''
 			}
 		},
 		methods: {
@@ -76,7 +102,14 @@
 				this.$emit('inv-close');
 			},
 			invChange(e) {
-				this.$emit('inv-change', e.detail.value);
+				if (this.isOrder) {
+					this.invId = e.detail.value
+				} else {
+					this.$emit('inv-change', e.detail.value);
+				}
+			},
+			invSub(){
+				this.$emit('inv-change', this.invId || this.invChecked);
 			},
 			invCancel() {
 				this.$emit('inv-cancel');
@@ -170,12 +203,12 @@
 		.default {
 			width: 56rpx;
 			height: 28rpx;
-			border: 1rpx solid #E93323;
+			border: 1rpx solid var(--view-theme);
 			margin-left: 20rpx;
 			font-size: 20rpx;
 			line-height: 28rpx;
 			text-align: center;
-			color: #E93323;
+			color: var(--view-theme);
 		}
 
 		.email {
@@ -235,7 +268,7 @@
 		.navigator {
 			height: 86rpx;
 			border-radius: 43rpx;
-			background-color: #E93323;
+			background-color: var(--view-theme);
 			font-size: 30rpx;
 			line-height: 86rpx;
 			text-align: center;
@@ -249,12 +282,12 @@
 
 		.button {
 			height: 86rpx;
-			border: 1rpx solid #E93323;
+			border: 1rpx solid var(--view-theme);
 			border-radius: 43rpx;
 			margin-top: 26rpx;
 			font-size: 30rpx;
 			line-height: 84rpx;
-			color: #E93323;
+			color: var(--view-theme);
 		}
 	}
 

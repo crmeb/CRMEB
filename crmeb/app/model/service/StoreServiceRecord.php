@@ -49,6 +49,18 @@ class StoreServiceRecord extends BaseModel
     }
 
     /**
+     * 客服用户
+     * @return \think\model\relation\HasOne
+     */
+    public function service()
+    {
+        return $this->hasOne(StoreService::class, 'uid', 'to_uid')->field(['nickname', 'uid', 'avatar'])->bind([
+            'kefu_nickname' => 'nickname',
+            'kefu_avatar' => 'avatar',
+        ]);
+    }
+
+    /**
      * 发送者id搜索器
      * @param Model $query
      * @param $value

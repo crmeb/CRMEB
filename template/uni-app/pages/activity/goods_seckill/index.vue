@@ -1,5 +1,5 @@
 <template>
-	<div>
+	<div :style="colorStyle">
 		<view class='flash-sale'>
 			<view class="saleBox"></view>
 			<view class='header' v-if="timeList.length>0">
@@ -10,9 +10,11 @@
 					<image src="/static/images/priceTag.png"></image>
 				</view>
 				<view class='timeLsit'>
-					<scroll-view class="scroll-view_x" scroll-x scroll-with-animation :scroll-left="scrollLeft" style="width:auto;overflow:hidden;height:106rpx;" :scroll-into-view="intoindex">
+					<scroll-view class="scroll-view_x" scroll-x scroll-with-animation :scroll-left="scrollLeft"
+						style="width:auto;overflow:hidden;height:106rpx;" :scroll-into-view="intoindex">
 						<block v-for="(item,index) in timeList" :key='index'>
-							<view @tap='settimeList(item,index)' class='item' :class="active == index?'on':''" :id='"sort"+index'>
+							<view @tap='settimeList(item,index)' class='item' :class="active == index?'on':''"
+								:id='"sort"+index'>
 								<view class='time'>{{item.time}}</view>
 								<view class="state">{{item.state}}</view>
 							</view>
@@ -32,7 +34,8 @@
 								<text class='num font-color'>{{item.price}}</text>
 								<text class="y_money">￥{{item.ot_price}}</text>
 							</view>
-							<view class="limit">限量 <text class="limitPrice">{{item.quota_show}}{{item.unit_name || ''}}</text></view>
+							<view class="limit">限量 <text
+									class="limitPrice">{{item.quota_show}}{{item.unit_name || ''}}</text></view>
 							<view class="progress">
 								<view class='bg-reds' :style="'width:'+item.percent+'%;'"></view>
 								<view class='piece'>已抢{{item.percent}}%</view>
@@ -50,7 +53,9 @@
 				<image src='/static/images/noShopper.png'></image>
 			</view>
 		</view>
+		<!-- #ifndef MP -->
 		<home></home>
+		<!-- #endif -->
 	</div>
 </template>
 
@@ -60,10 +65,12 @@
 		getSeckillList
 	} from '../../../api/activity.js';
 	import home from '@/components/home/index.vue'
+	import colors from '@/mixins/color.js'
 	export default {
 		components: {
 			home
 		},
+		mixins: [colors],
 		data() {
 			return {
 				topImage: '',
@@ -81,7 +88,7 @@
 				loading: false,
 				loadend: false,
 				pageloading: false,
-				intoindex:''
+				intoindex: ''
 			}
 		},
 		onLoad() {
@@ -94,8 +101,8 @@
 					that.topImage = res.data.lovely;
 					that.timeList = res.data.seckillTime;
 					that.active = res.data.seckillTimeIndex;
-					that.$nextTick(()=>{
-						that.intoindex = 'sort'+res.data.seckillTimeIndex
+					that.$nextTick(() => {
+						that.intoindex = 'sort' + res.data.seckillTimeIndex
 					})
 					if (that.timeList.length) {
 						// wxh.time(that.data.timeList[that.data.active].stop, that);
@@ -149,9 +156,10 @@
 				// wxh.time(e.currentTarget.dataset.stop, that);
 				that.getSeckillList();
 			},
-			goDetails(item){
+			goDetails(item) {
 				uni.navigateTo({
-					url: '/pages/activity/goods_seckill_details/index?id=' + item.id + '&time=' + this.timeList[this.active].stop + '&status=' + this.status
+					url: '/pages/activity/goods_seckill_details/index?id=' + item.id + '&time=' + this.timeList[
+						this.active].stop + '&status=' + this.status
 				})
 			}
 		},
@@ -220,14 +228,14 @@
 	}
 
 	.flash-sale .timeLsit .item.on .time {
-		color: #E93323;
+		color: var(--view-theme);
 	}
 
 	.flash-sale .timeLsit .item.on .state {
 		width: 90rpx;
 		height: 30rpx;
 		border-radius: 15rpx;
-		background: linear-gradient(90deg, rgba(252, 25, 75, 1) 0%, rgba(252, 60, 32, 1) 100%);
+		background: var(--view-theme);
 		color: #fff;
 	}
 
@@ -356,7 +364,7 @@
 	.flash-sale .saleBox {
 		width: 100%;
 		height: 230rpx;
-		background: rgba(233, 51, 35, 1);
+		background: var(--view-theme);
 		border-radius: 0 0 50rpx 50rpx;
 	}
 </style>

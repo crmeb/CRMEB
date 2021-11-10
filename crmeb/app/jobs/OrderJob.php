@@ -20,7 +20,6 @@ use app\services\message\sms\SmsSendServices;
 use app\services\order\StoreOrderCartInfoServices;
 use app\services\order\StoreOrderEconomizeServices;
 use app\services\order\StoreOrderServices;
-use app\services\product\product\StoreProductCouponServices;
 use app\services\product\product\StoreProductServices;
 use app\services\user\MemberCardServices;
 use app\services\user\UserLabelRelationServices;
@@ -37,11 +36,12 @@ use think\facade\Log;
 /**
  * 订单消息队列
  * Class OrderJob
- * @package app\jobs
+ * @package crmeb\jobs
  */
 class OrderJob extends BaseJobs
 {
     use QueueTrait;
+
     /**
      * 执行订单支付成功发送消息
      * @param $order
@@ -49,6 +49,12 @@ class OrderJob extends BaseJobs
      */
     public function doJob($order)
     {
+        //计算商品节省金额
+        try {
+            $this->setEconomizeMoney($order);
+        } catch (\Throwable $e) {
+            Log::error('计算节省金额,失败原因:' . $e->getMessage());
+        };
         //更新用户支付订单数量
         try {
             $this->setUserPayCountAndPromoter($order);
@@ -61,29 +67,29 @@ class OrderJob extends BaseJobs
         } catch (\Throwable $e) {
             Log::error('用户标签添加失败,失败原因:' . $e->getMessage());
         }
-        //发送模版消息、客服消息、短信、小票打印给客户和管理员
         try {
-            $this->sendServicesAndTemplate($order);
-        } catch (\Throwable $e) {
-            Log::error('发送客服消息,短信消息失败,失败原因:' . $e->getMessage());
-        }
-        //打印小票
-        $switch = sys_config('pay_success_printing_switch') ? true : false;
-        if ($switch) {
-            try {
-                /** @var StoreOrderServices $orderServices */
-                $orderServices = app()->make(StoreOrderServices::class);
-                $orderServices->orderPrint($order, $order['cart_id']);
-            } catch (\Throwable $e) {
-                Log::error('打印小票发生错误,错误原因:' . $e->getMessage());
+            if (in_array($order['is_channel'], [0, 2])) {//公众号发送模板消息
+                $this->sendOrderPaySuccessCustomerService($order, 1);
+            } else if (in_array($order['is_channel'], [1, 2])) {//小程序发送模板消息
+                $this->sendOrderPaySuccessCustomerService($order, 0);
             }
+        } catch (\Exception $e) {
+            throw new ValidateException('发送客服消息,短信消息失败,失败原因:' . $e->getMessage());
         }
-        //支付成功发送短信
-        try {
-            $this->mssageSendPaySuccess($order);
-        } catch (\Throwable $e) {
-            Log::error('支付成功发送短信失败,失败原因:' . $e->getMessage());
-        }
+
+
+        //打印小票
+//        $switch = sys_config('pay_success_printing_switch') ? true : false;
+//        if ($switch) {
+//            try {
+//                /** @var StoreOrderServices $orderServices */
+//                $orderServices = app()->make(StoreOrderServices::class);
+//                $orderServices->orderPrint($order, $order['cart_id']);
+//            } catch (\Throwable $e) {
+//                Log::error('打印小票发生错误,错误原因:' . $e->getMessage());
+//            }
+//        }
+
         //检测会员等级
         try {
             /** @var UserLevelServices $levelServices */
@@ -158,40 +164,7 @@ class OrderJob extends BaseJobs
         return $re;
     }
 
-    /**
-     * 发送模板消息和客服消息
-     * @param $order
-     * @return bool
-     */
-    public function sendServicesAndTemplate($order)
-    {
-        try {
-            /** @var WechatUserServices $wechatUserServices */
-            $wechatUserServices = app()->make(WechatUserServices::class);
-            if (in_array($order['is_channel'], [0, 2])) {//公众号发送模板消息
-                $openid = $wechatUserServices->uidToOpenid($order['uid'], 'wechat');
-                if ($openid) {
-                    $wechatTemplate = new WechatTemplateJob();
-                    $wechatTemplate->sendOrderPaySuccess($openid, $order);
-                    //订单支付成功后给客服发送模版消息
-                    $wechatTemplate->sendServiceNotice($openid, $order);
-                }
-                //订单支付成功后给客服发送客服消息
-                $this->sendOrderPaySuccessCustomerService($order, 1);
-            } else if (in_array($order['is_channel'], [1, 2])) {//小程序发送模板消息
-                $openid = $wechatUserServices->uidToOpenid($order['uid'], 'routine');
-                if ($openid) {
-                    $tempJob = new RoutineTemplateJob();
-                    $tempJob->sendOrderSuccess($openid, $order['pay_price'], $order['order_id']);
-                }
-                //订单支付成功后给客服发送客服消息
-                $this->sendOrderPaySuccessCustomerService($order, 0);
-            }
-        } catch (\Exception $e) {
-            throw new ValidateException($e->getMessage());
-        }
-        return true;
-    }
+
 
     /**
      * 订单支付成功后给客服发送客服消息
@@ -223,7 +196,7 @@ class OrderJob extends BaseJobs
             foreach ($serviceOrderNotice as $key => $item) {
                 $admin_name = $item['nickname'];
                 $order_id = $order['order_id'];
-                $smsServices->send($switch, $item['phone'], compact('admin_name', 'order_id'), 'ADMIN_PAY_SUCCESS_CODE');
+//                $smsServices->send($switch, $item['phone'], compact('admin_name', 'order_id'), 'ADMIN_PAY_SUCCESS_CODE');
                 $userInfo = $wechatUserServices->getOne(['uid' => $item['uid'], 'user_type' => 'wechat']);
                 if ($userInfo) {
                     $userInfo = $userInfo->toArray();
@@ -292,4 +265,63 @@ class OrderJob extends BaseJobs
         $smsServices->send($switch, $order['user_phone'], compact('order_id', 'pay_price'), 'PAY_SUCCESS_CODE');
     }
 
+    /**计算节约金额
+     * @param $order
+     */
+    public function setEconomizeMoney($order)
+    {
+        /** @var UserServices $userService */
+        $userService = app()->make(UserServices::class);
+        /** @var StoreOrderCartInfoServices $cartInfoService */
+        $cartInfoService = app()->make(StoreOrderCartInfoServices::class);
+        /** @var StoreCouponUserServices $couponService */
+        $couponService = app()->make(StoreCouponUserServices::class);
+        /** @var StoreOrderEconomizeServices $economizeService */
+        $economizeService = app()->make(StoreOrderEconomizeServices::class);
+        /** @var MemberCardServices $memberCardService */
+        $memberCardService = app()->make(MemberCardServices::class);
+        $getOne = $economizeService->getOne(['order_id' => $order['order_id']]);
+        if ($getOne) return false;
+        //看是否是会员
+        $userInfo = $userService->getUserInfo($order['uid']);
+        if ($userInfo && $userInfo['is_money_level'] > 0) {
+            $save = [];
+            $save['order_type'] = 1;
+            $save['add_time'] = time();
+            $save['pay_price'] = $order['pay_price'];
+            $save['order_id'] = $order['order_id'];
+            $save['uid'] = $order['uid'];
+            //计算商品节约金额
+            $isOpenVipPrice = $memberCardService->isOpenMemberCard('vip_price');
+            if ($isOpenVipPrice) {
+                $cartInfo = $cartInfoService->getOrderCartInfo($order['id']);
+                $memberPrice = 0.00;
+                if ($cartInfo) {
+                    foreach ($cartInfo as $k => $item) {
+                        foreach ($item as $value) {
+                            if ($value['price_type'] == 'member') $memberPrice += bcmul($value['vip_truePrice'], $value['cart_num'] ?: 1, 2);
+                        }
+                    }
+                }
+                $save['member_price'] = $memberPrice;
+            }
+            //计算邮费节约金额
+            $isOpenExpress = $memberCardService->isOpenMemberCard('express');
+            if ($isOpenExpress) {
+                $expressTotalMoney = bcdiv($order['total_postage'], bcdiv($isOpenExpress, 100, 2), 2);
+                $save['postage_price'] = bcsub($expressTotalMoney, $order['total_postage'], 2);
+            }
+
+            //计算会员券节省金额
+            if ($order['coupon_id']) {
+                $couponMoney = $couponService->get($order['coupon_id'], ['*'], ['issue']);
+                if ($couponMoney && $couponMoney['receive_type']) {
+                    $save['coupon_price'] = $couponMoney['coupon_price'];
+                }
+            }
+            return $economizeService->addEconomize($save);
+        }
+        return false;
+
+    }
 }

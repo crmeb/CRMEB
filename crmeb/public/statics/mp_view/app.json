@@ -1,0 +1,189 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/order_addcart/order_addcart",
+    "pages/user/index",
+    "pages/goods_cate/goods_cate",
+    "pages/retrieve_password/index",
+    "pages/customer_list/index",
+    "pages/customer_list/chat",
+    "pages/goods_list/index",
+    "pages/news_list/index",
+    "pages/news_details/index",
+    "pages/goods_search/index",
+    "pages/order_pay_status/index",
+    "pages/order_pay_status/payLottery",
+    "pages/live_list/index"
+  ],
+  "subPackages": [
+    {
+      "root": "pages/users",
+      "pages": [
+        "user_vip_areer/index",
+        "privacy/index",
+        "message_center/index",
+        "message_center/messageDetail",
+        "user_invoice_order/index",
+        "scan_login/index",
+        "order_details/index",
+        "user_invoice_list/index",
+        "user_invoice_form/index",
+        "admin_order_detail/index",
+        "wechat_login/index",
+        "retrievePassword/index",
+        "user_info/index",
+        "user_get_coupon/index",
+        "user_goods_collection/index",
+        "user_sgin/index",
+        "user_sgin_list/index",
+        "user_money/index",
+        "user_bill/index",
+        "user_integral/index",
+        "user_coupon/index",
+        "user_spread_user/index",
+        "user_spread_code/index",
+        "user_spread_money/index",
+        "user_cash/index",
+        "user_vip/index",
+        "user_distribution_level/index",
+        "user_address_list/index",
+        "user_address/index",
+        "user_phone/index",
+        "user_payment/index",
+        "user_pwd_edit/index",
+        "order_confirm/index",
+        "goods_details_store/index",
+        "promoter-list/index",
+        "promoter-order/index",
+        "promoter_rank/index",
+        "commission_rank/index",
+        "order_list/index",
+        "goods_logistics/index",
+        "user_return_list/index",
+        "goods_return/index",
+        "login/index",
+        "goods_comment_list/index",
+        "goods_comment_con/index",
+        "goods_comment_con/lottery_comment"
+      ],
+      "name": "users",
+      "plugins": {
+        "live-player-plugin": {
+          "version": "1.3.0",
+          "provider": "wx2b03c6e691cd7370"
+        }
+      }
+    },
+    {
+      "root": "pages/admin",
+      "pages": [
+        "order_cancellation/index"
+      ],
+      "name": "adminOrder"
+    },
+    {
+      "root": "pages/goods_details",
+      "pages": [
+        "index"
+      ],
+      "name": "goods_details"
+    },
+    {
+      "root": "pages/activity",
+      "pages": [
+        "goods_bargain/index",
+        "goods_bargain_details/index",
+        "goods_combination/index",
+        "goods_combination_details/index",
+        "goods_combination_status/index",
+        "goods_seckill/index",
+        "goods_seckill_details/index",
+        "poster-poster/index",
+        "bargain/index",
+        "presell/index",
+        "presell_details/index",
+        "lottery/grids/index",
+        "lottery/grids/record"
+      ],
+      "name": "activity"
+    },
+    {
+      "root": "pages/columnGoods",
+      "pages": [
+        "HotNewGoods/index",
+        "HotNewGoods/feedback"
+      ],
+      "name": "columnGoods"
+    },
+    {
+      "root": "pages/annex",
+      "pages": [
+        "web_view/index",
+        "offline_pay/index",
+        "offline_result/index"
+      ]
+    },
+    {
+      "root": "pages/points_mall",
+      "pages": [
+        "index",
+        "integral_goods_list",
+        "integral_goods_details",
+        "exchange_record",
+        "integral_order",
+        "user_address",
+        "integral_order_status",
+        "integral_order_details",
+        "logistics_details"
+      ]
+    }
+  ],
+  "window": {
+    "navigationBarTextStyle": "black",
+    "navigationBarTitleText": "加载中",
+    "navigationBarBackgroundColor": "#fff",
+    "backgroundColor": "#F8F8F8",
+    "titleNView": false
+  },
+  "tabBar": {
+    "color": "#282828",
+    "selectedColor": "#ff3366",
+    "borderStyle": "white",
+    "backgroundColor": "#ffffff",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "iconPath": "static/images/1-001.png",
+        "selectedIconPath": "static/images/1-002.png",
+        "text": "首页"
+      },
+      {
+        "pagePath": "pages/goods_cate/goods_cate",
+        "iconPath": "static/images/2-001.png",
+        "selectedIconPath": "static/images/2-002.png",
+        "text": "分类"
+      },
+      {
+        "pagePath": "pages/order_addcart/order_addcart",
+        "iconPath": "static/images/3-001.png",
+        "selectedIconPath": "static/images/3-002.png",
+        "text": "购物车"
+      },
+      {
+        "pagePath": "pages/user/index",
+        "iconPath": "static/images/4-001.png",
+        "selectedIconPath": "static/images/4-002.png",
+        "text": "我的"
+      }
+    ]
+  },
+  "permission": {
+    "scope.userLocation": {
+      "desc": "你的位置信息将用于和门店的距离长度"
+    }
+  },
+  "usingComponents": {
+    "skeleton": "/components/skeleton/index",
+    "page-loading": "/components/pageLoading"
+  }
+}

@@ -285,9 +285,21 @@
             tidyRes (menus) {
                 let data = []
                 menus.map((menu) => {
+                  if (menu.title === '主页') {
+                    menu.checked = true;
+                    menu.disableCheckbox = true;
+                    if (menu.children.length) {
+                      menu.children.map(v => {
+                        v.checked = true;
+                        v.disableCheckbox = true;
+                      });
+                    }
+                    data.push(menu)
+                  } else {
                     data.push(this.initMenu(menu))
+                  }
                 })
-                this.$set(this, 'menusList', data)
+              this.$set(this, 'menusList', data)
             },
             initMenu (menu) {
                 let data = {}, checkMenus = ',' + this.formInline.checked_menus + ','

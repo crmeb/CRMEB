@@ -1,7 +1,7 @@
 <template>
 	<view>
 		<form @submit="formSubmit">
-			<view class='personal-data'>
+			<view class='personal-data' :style="colorStyle">
 				<!-- <view class="wrapper">
 					<view class="title">管理我的账号</view>
 					<view class="wrapList">
@@ -40,11 +40,13 @@
 					</view>
 					<view class='item acea-row row-between-wrapper'>
 						<view>昵称</view>
-						<view class='input'><input type='text' name='nickname' :value='userInfo.nickname'></input></view>
+						<view class='input'><input type='text' name='nickname' :value='userInfo.nickname'></input>
+						</view>
 					</view>
 					<view class='item acea-row row-between-wrapper'>
 						<view>手机号码</view>
-						<navigator url="/pages/users/user_phone/index" hover-class="none" class="input" v-if="!userInfo.phone">
+						<navigator url="/pages/users/user_phone/index" hover-class="none" class="input"
+							v-if="!userInfo.phone">
 							点击绑定手机号<text class="iconfont icon-xiangyou"></text>
 						</navigator>
 						<view class='input acea-row row-between-wrapper' v-else>
@@ -75,23 +77,45 @@
 						</navigator>
 					</view>
 					<!-- #endif -->
-					
 					<view class="item acea-row row-between-wrapper" v-if="userInfo.phone">
 						<view>更换手机号码</view>
 						<navigator url="/pages/users/user_phone/index?type=1" hover-class="none" class="input">
 							点击更换手机号码<text class="iconfont icon-xiangyou"></text>
 						</navigator>
 					</view>
+					<!-- #ifdef APP-PLUS -->
+					<view class="item acea-row row-between-wrapper" v-if="userInfo.phone">
+						<view>密码</view>
+						<navigator url="/pages/users/user_pwd_edit/index" hover-class="none" class="input">
+							点击修改密码<text class="iconfont icon-xiangyou"></text>
+						</navigator>
+					</view>
+					<view class="item acea-row row-between-wrapper" @click="initData">
+						<view>缓存大小</view>
+						<view class="input">
+							{{fileSizeString}}<text class="iconfont icon-xiangyou"></text>
+						</view>
+					</view>
+					<!-- #endif -->
+
+
 				</view>
+
 				<button class='modifyBnt bg-color' formType="submit">保存修改</button>
 				<!-- #ifdef H5 -->
-				<view class="logOut cart-color acea-row row-center-wrapper" @click="outLogin" v-if="!this.$wechat.isWeixin()">退出登录</view>
+				<view class="logOut cartcolor acea-row row-center-wrapper" @click="outLogin"
+					v-if="!this.$wechat.isWeixin()">退出登录</view>
+				<!-- #endif -->
+				<!-- #ifdef APP-PLUS -->
+				<view class="logOut cartcolor acea-row row-center-wrapper" @click="outLogin">退出登录</view>
 				<!-- #endif -->
 			</view>
 		</form>
 		<!-- #ifdef MP -->
 		<!-- <authorize @onLoadFun="onLoadFun" :isAuto="isAuto" :isShowAuth="isShowAuth" @authColse="authColse"></authorize> -->
 		<!-- #endif -->
+		<canvas canvas-id="canvas" v-if="canvasStatus"
+			:style="{width: canvasWidth + 'px', height: canvasHeight + 'px',position: 'absolute',left:'-100000px',top:'-100000px'}"></canvas>
 	</view>
 </template>
 
@@ -114,12 +138,14 @@
 	// #ifdef MP
 	import authorize from '@/components/Authorize';
 	// #endif
+	import colors from '@/mixins/color.js';
 	export default {
 		components: {
 			// #ifdef MP
 			authorize
 			// #endif
 		},
+		mixins: [colors],
 		data() {
 			return {
 				userInfo: {},
@@ -127,28 +153,105 @@
 				userIndex: 0,
 				switchUserInfo: [],
 				isAuto: false, //没有授权的不会自动授权
-				isShowAuth: false //是否隐藏授权
+				isShowAuth: false, //是否隐藏授权
+				canvasWidth: "",
+				canvasHeight: "",
+				canvasStatus: false,
+				fileSizeString: ''
 			};
 		},
 		computed: mapGetters(['isLogin']),
-		watch:{
-			isLogin:{
-				handler:function(newV,oldV){
-					if(newV){
+		watch: {
+			isLogin: {
+				handler: function(newV, oldV) {
+					if (newV) {
 						this.getUserInfo();
 					}
 				},
-				deep:true
+				deep: true
 			}
 		},
 		onLoad() {
 			if (this.isLogin) {
 				this.getUserInfo();
+				this.formatSize()
 			} else {
 				toLogin();
 			}
 		},
 		methods: {
+			formatSize() {
+				let that = this;
+				plus.cache.calculate(function(size) {
+					let sizeCache = parseInt(size);
+					if (sizeCache == 0) {
+						that.fileSizeString = "0B";
+					} else if (sizeCache < 1024) {
+						that.fileSizeString = sizeCache + "B";
+					} else if (sizeCache < 1048576) {
+						that.fileSizeString = (sizeCache / 1024).toFixed(2) + "KB";
+					} else if (sizeCache < 1073741824) {
+						that.fileSizeString = (sizeCache / 1048576).toFixed(2) + "MB";
+					} else {
+						that.fileSizeString = (sizeCache / 1073741824).toFixed(2) + "GB";
+					}
+				});
+			},
+			
+			initData() {
+				uni.showModal({
+					title: '清楚缓存',
+					content: '确定清楚本地缓存数据吗?',
+					success: (res)=>  {
+						if (res.confirm) {
+							this.clearCache()
+							this.formatSize()
+						} else if (res.cancel) {
+							return that.$util.Tips({
+								title: '已取消'
+							});
+						}
+					}
+				});
+			},
+			clearCache() {
+				let that = this;
+				let os = plus.os.name;
+				if (os == 'Android') {
+					let main = plus.android.runtimeMainActivity();
+					let sdRoot = main.getCacheDir();
+					let files = plus.android.invoke(sdRoot, "listFiles");
+					let len = files.length;
+					for (let i = 0; i < len; i++) {
+						let filePath = '' + files[i]; // 没有找到合适的方法获取路径，这样写可以转成文件路径  
+						plus.io.resolveLocalFileSystemURL(filePath, function(entry) {
+							if (entry.isDirectory) {
+								entry.removeRecursively(function(entry) { //递归删除其下的所有文件及子目录  
+									uni.showToast({
+										title: '缓存清理完成',
+										duration: 2000
+									});
+									that.formatSize(); // 重新计算缓存  
+								}, function(e) {
+									console.log(e.message)
+								});
+							} else {
+								entry.remove();
+							}
+						}, function(e) {
+							console.log('文件路径读取失败')
+						});
+					}
+				} else { // ios暂时未找到清理缓存的方法，以下是官方提供的方法，但是无效，会报错  
+					plus.cache.clear(function() {
+						uni.showToast({
+							title: '缓存清理完成',
+							duration: 2000
+						});
+						that.formatSize();
+					});
+				}
+			},
 			/**
 			 * 授权回调
 			 */
@@ -164,9 +267,7 @@
 			 */
 			Setting: function() {
 				uni.openSetting({
-					success: function(res) {
-						console.log(res.authSetting)
-					}
+					success: function(res) {}
 				});
 			},
 			switchAccounts: function(index) {
@@ -211,25 +312,23 @@
 				let that = this;
 				if (that.loginType == 'h5') {
 					uni.showModal({
-					    title: '提示',
-					    content: '确认退出登录?',
-					    success: function (res) {
-					        if (res.confirm) {
-					            getLogout()
-					              .then(res => {
-					                that.$store.commit("LOGOUT");
-									uni.reLaunch({
-										url: '/pages/index/index'
+						title: '提示',
+						content: '确认退出登录?',
+						success: function(res) {
+							if (res.confirm) {
+								getLogout()
+									.then(res => {
+										that.$store.commit("LOGOUT");
+										uni.reLaunch({
+											url: '/pages/index/index'
+										})
 									})
-					              })
-					              .catch(err => {
-					                console.log(err);
-					              });
-					        } else if (res.cancel) {
-					            console.log('用户点击取消');
-					        }
-					    }
-					});	
+									.catch(err => {});
+							} else if (res.cancel) {
+								console.log('用户点击取消');
+							}
+						}
+					});
 				}
 			},
 			/**
@@ -261,14 +360,20 @@
 			 */
 			uploadpic: function() {
 				let that = this;
-				that.$util.uploadImageOne('upload/image', function(res){
-					console.log('mmj');
+				this.canvasStatus = true
+				that.$util.uploadImageChange('upload/image', (res) => {
 					let userInfo = that.switchUserInfo[that.userIndex];
 					if (userInfo !== undefined) {
 						that.userInfo.avatar = res.data.url;
 					}
 					that.switchUserInfo[that.userIndex] = userInfo;
-					that.$set(that,'switchUserInfo',that.switchUserInfo);
+					that.$set(that, 'switchUserInfo', that.switchUserInfo);
+					this.canvasStatus = false
+				}, (res) => {
+					this.canvasStatus = false
+				}, (res) => {
+					this.canvasWidth = res.w
+					this.canvasHeight = res.h
 				});
 			},
 
@@ -279,7 +384,7 @@
 				let that = this,
 					value = e.detail.value,
 					userInfo = that.switchUserInfo[that.userIndex];
-				if (!value.nickname) return that.$util.Tips({
+				if (!value.nickname.trim()) return that.$util.Tips({
 					title: '用户姓名不能为空'
 				});
 				value.avatar = this.userInfo.avatar;
@@ -292,7 +397,7 @@
 						url: 1
 					});
 				}).catch(msg => {
-					return that.$util.Tips({	
+					return that.$util.Tips({
 						title: msg || '保存失败，您并没有修改'
 					}, {
 						tab: 3,
@@ -305,6 +410,11 @@
 </script>
 
 <style scoped lang="scss">
+	.cartcolor {
+		color: var(--view-theme);
+		border: 1px solid var(--view-theme);
+	}
+
 	.personal-data .wrapper {
 		margin: 10rpx 0;
 		background-color: #fff;
@@ -326,7 +436,7 @@
 		padding: 0 30rpx;
 		position: relative;
 		border: 2rpx solid #f8f8f8;
-		box-sizing:border-box;
+		box-sizing: border-box;
 	}
 
 	.personal-data .wrapper .wrapList .item.on {
@@ -465,10 +575,12 @@
 		border-radius: 45rpx;
 		margin: 30rpx auto 0 auto;
 	}
-	.avatar-box{
+
+	.avatar-box {
 		width: 96rpx;
 		height: 96rpx;
-		image{
+
+		image {
 			width: 100%;
 			height: 100%;
 			border-radius: 50%;

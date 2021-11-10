@@ -13,9 +13,7 @@ namespace app\api\controller\v2\wechat;
 
 use app\Request;
 use app\services\wechat\RoutineServices;
-use app\jobs\TaskJob;
 use crmeb\services\CacheService;
-
 
 
 /**
@@ -74,7 +72,6 @@ class AuthController
     public function silenceAuth($code, $spread_code = '', $spread_spid = '')
     {
         $token = $this->services->silenceAuth($code, $spread_code, $spread_spid);
-        TaskJob::dispatchDo('emptyYesterdayAttachment');
         if ($token && isset($token['key'])) {
             return app('json')->success('授权成功，请绑定手机号', $token);
         } else if ($token) {
@@ -92,7 +89,6 @@ class AuthController
     public function silenceAuthNoLogin($code, $spread_code = '', $spread_spid = '')
     {
         $token = $this->services->silenceAuthNoLogin($code, $spread_code, $spread_spid);
-        TaskJob::dispatchDo('emptyYesterdayAttachment');
         if ($token && isset($token['auth_login'])) {
             return app('json')->success('授权成功');
         } else if ($token) {
@@ -120,7 +116,6 @@ class AuthController
         }
         CacheService::delete('code_' . $phone);
         $token = $this->services->silenceAuthBindingPhone($code, $spread_code, $spread_spid, $phone);
-        TaskJob::dispatchDo('emptyYesterdayAttachment');
         if ($token) {
             return app('json')->success('登录成功', ['token' => $token['token'], 'expires_time' => $token['params']['exp']]);
         } else

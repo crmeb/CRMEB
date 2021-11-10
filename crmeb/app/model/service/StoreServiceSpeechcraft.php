@@ -12,6 +12,7 @@ declare (strict_types=1);
 
 namespace app\model\service;
 
+use app\model\other\Category;
 use crmeb\basic\BaseModel;
 use crmeb\traits\ModelTrait;
 use think\Model;
@@ -48,13 +49,22 @@ class StoreServiceSpeechcraft extends BaseModel
     }
 
     /**
+     * 关联标签分类
+     * @return \think\model\relation\HasOne
+     */
+    public function cateName()
+    {
+        return $this->hasOne(Category::class, 'id', 'cate_id')->where('type', 1)->field(['id', 'name'])->bind(['cate_name' => 'name']);
+    }
+
+    /**
      * 话术搜索
      * @param Model $query
      * @param $value
      */
     public function searchTitleAttr($query, $value)
     {
-        $query->whereLike('title', '%' . $value . '%');
+        if ($value !== '') $query->whereLike('title', '%' . $value . '%');
     }
 
     /**
@@ -87,8 +97,7 @@ class StoreServiceSpeechcraft extends BaseModel
      */
     public function searchMessageAttr($query, $value)
     {
-        if ($value) {
-            $query->where('message', $value);
-        }
+        if ($value !== '') $query->where('message', $value);
+
     }
 }

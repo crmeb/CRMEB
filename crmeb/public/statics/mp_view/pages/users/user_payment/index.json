@@ -1,0 +1,7 @@
+{
+  "navigationBarTitleText": "余额充值",
+  "usingComponents": {
+    "authorize": "/components/Authorize",
+    "home": "/components/home/index"
+  }
+}

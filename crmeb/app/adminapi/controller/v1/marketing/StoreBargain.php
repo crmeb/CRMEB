@@ -24,6 +24,11 @@ use think\facade\App;
  */
 class StoreBargain extends AuthController
 {
+    /**
+     * StoreBargain constructor.
+     * @param App $app
+     * @param StoreBargainServices $services
+     */
     public function __construct(App $app, StoreBargainServices $services)
     {
         parent::__construct($app);
@@ -38,6 +43,7 @@ class StoreBargain extends AuthController
     public function index()
     {
         $where = $this->request->getMore([
+            ['start_status', ''],
             ['status', ''],
             ['store_name', ''],
         ]);
@@ -78,7 +84,7 @@ class StoreBargain extends AuthController
             ['bargain_num', 1],
             ['people_num', 1],
         ]);
-        Validate(\app\adminapi\validate\marketing\StoreBargainValidate::class)->scene('save')->check($data);
+        $this->validate($data, \app\adminapi\validate\marketing\StoreBargainValidate::class, 'save');
         if ($data['section_time']) {
             [$start_time, $end_time] = $data['section_time'];
             if (strtotime($end_time) < time()) {
@@ -129,7 +135,7 @@ class StoreBargain extends AuthController
         $this->services->update($id, ['is_del' => 1]);
         /** @var StoreBargainUserServices $bargainUserService */
         $bargainUserService = app()->make(StoreBargainUserServices::class);
-        $bargainUserService->UserBargainStatusFail($id);
+        $bargainUserService->userBargainStatusFail($id, true);
         return app('json')->success('删除成功!');
     }
 
@@ -143,7 +149,7 @@ class StoreBargain extends AuthController
     {
         /** @var StoreBargainUserServices $bargainUserService */
         $bargainUserService = app()->make(StoreBargainUserServices::class);
-        $bargainUserService->UserBargainStatusFail($id);
+        $bargainUserService->userBargainStatusFail($id, false);
         $this->services->update($id, ['status' => $status]);
         return app('json')->success($status == 0 ? '关闭成功' : '开启成功');
     }

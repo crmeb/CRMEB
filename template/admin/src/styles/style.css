@@ -1,6 +1,6 @@
 @charset "UTF-8";
 .ivu-select .ivu-select-dropdown,.ivu-date-picker .ivu-select-dropdown{
-    top: 33px!important;
+    /* top: 33px!important; */
 }
 .plusColor{
     color: #e83323;
@@ -18,7 +18,7 @@
 }
 .c_row-item{
     display: flex;
-    justify-content: space-between;
+    /* justify-content: space-between; */
     align-items: center;
 }
 .acea-row {
@@ -234,7 +234,9 @@ html, body {
 .product_tabs .ivu-page-header-content {
     margin-bottom: 0 !important
 }
-
+.ivu-radio{
+    padding: 8px 0;
+}
 .ivu-radio-wrapper {
     font-size: 12px !important;
 }
@@ -242,7 +244,10 @@ html, body {
 .ivu-input {
     font-size: 12px !important;
 }
-
+.ivu-notice-desc {
+    word-break: normal;
+    text-align: left !important;
+}
 .modalBody .ivu-modal-body {
     padding: 27px !important;
 }

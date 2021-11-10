@@ -10,7 +10,7 @@
 				windowW: 0,
 				webviewStyles: {
 					progress: {
-						color: '#FF3333'
+						color: 'transparent'
 					}
 				},
 				url: ''

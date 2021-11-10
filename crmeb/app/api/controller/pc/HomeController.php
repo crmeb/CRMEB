@@ -11,14 +11,25 @@
 namespace app\api\controller\pc;
 
 
-use app\services\other\QrcodeServices;
 use app\services\pc\HomeServices;
+use app\services\other\QrcodeServices;
 
-
+/**
+ * Class HomeController
+ * @package app\api\controller\pc
+ */
 class HomeController
 {
+    /**
+     *
+     * @var HomeServices
+     */
     protected $services;
 
+    /**
+     * HomeController constructor.
+     * @param HomeServices $services
+     */
     public function __construct(HomeServices $services)
     {
         $this->services = $services;

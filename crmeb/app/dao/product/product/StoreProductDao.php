@@ -123,31 +123,31 @@ class StoreProductDao extends BaseDao
                     $query->name('store_category')->where('pid', $where['cid'])->field('id')->select();
                 })->field('product_id')->select();
             });
-        })->when(isset($where['ids']), function ($query) use ($where) {
-            $query->whereIn('id', $where['ids'])->orderField('id', $where['ids'], 'asc');
+        })->when(isset($where['ids']) && $where['ids'], function ($query) use ($where) {
+            if ((isset($where['priceOrder']) && $where['priceOrder'] != '') || (isset($where['salesOrder']) && $where['salesOrder'] != '')) {
+                $query->whereIn('id', $where['ids']);
+            } else {
+                $query->whereIn('id', $where['ids'])->orderField('id', $where['ids'], 'asc');
+            }
         })->when(isset($where['is_live']) && $where['is_live'] == 1, function ($query) use ($where) {
             $query->whereNotIn('id', function ($query) {
                 $query->name('live_goods')->where('is_del', 0)->where('audit_status', '<>', 3)->field('product_id')->select();
             });
         })->when(isset($where['priceOrder']) && $where['priceOrder'] != '', function ($query) use ($where) {
-            if (!isset($where['ids'])) {
-                if ($where['priceOrder'] === 'desc') {
-                    $query->order("price desc");
-                } else {
-                    $query->order("price asc");
-                }
+            if ($where['priceOrder'] === 'desc') {
+                $query->order("price desc");
+            } else {
+                $query->order("price asc");
             }
         })->when(isset($where['newsOrder']) && $where['newsOrder'] != '', function ($query) use ($where) {
             if ($where['newsOrder'] === 'news') {
                 $query->order("id desc");
             }
         })->when(isset($where['salesOrder']) && $where['salesOrder'] != '', function ($query) use ($where) {
-            if (!isset($where['ids'])) {
-                if ($where['salesOrder'] === 'desc') {
-                    $query->order("sales desc");
-                } else {
-                    $query->order("sales asc");
-                }
+            if ($where['salesOrder'] === 'desc') {
+                $query->order("sales desc");
+            } else {
+                $query->order("sales asc");
             }
         })->when(!isset($where['ids']), function ($query) use ($where) {
             if (isset($where['timeOrder']) && $where['timeOrder'] == 1) {
@@ -200,17 +200,18 @@ class StoreProductDao extends BaseDao
      * @throws \think\db\exception\DbException
      * @throws \think\db\exception\ModelNotFoundException
      */
-    public function getRecommendProduct($field, int $num = 0, int $page = 0, int $limit = 0)
+    public function getRecommendProduct(string $field, int $num = 0, int $page = 0, int $limit = 0)
     {
         $where['is_show'] = 1;
         $where['is_del'] = 0;
-        if (!is_array($field)) {
-            $where[$field] = 1;
-        }
         return $this->search($where)->with(['couponId', 'star'])
-            ->field(['id', 'image', 'store_name', 'store_info', 'cate_id', 'price', 'ot_price', 'IFNULL(sales,0) + IFNULL(ficti,0) as sales', 'unit_name', 'sort', 'activity', 'stock', 'vip_price'])
-            ->when(is_array($field), function ($query) use ($field) {
-                $query->where($field);
+            ->field(['id', 'image', 'store_name', 'store_info', 'cate_id', 'price', 'ot_price', 'IFNULL(sales,0) + IFNULL(ficti,0) as sales', 'unit_name', 'sort', 'activity', 'stock', 'vip_price', 'is_vip'])
+            ->when(in_array($field, ['is_best', 'is_new', 'is_benefit', 'is_hot', 'is_vip']), function ($query) use ($field) {
+                if ($field != 'is_vip') {
+                    $query->where($field, 1);
+                } else {
+                    $query->where('is_vip', 1)->where('vip_price', '>', 0);
+                }
             })
             ->when($num, function ($query) use ($num) {
                 $query->limit($num);
@@ -253,9 +254,18 @@ class StoreProductDao extends BaseDao
      * @throws \think\db\exception\DbException
      * @throws \think\db\exception\ModelNotFoundException
      */
-    public function getUserProductHotSale(array $where, int $limit = 20)
+    public function getUserProductHotSale(array $where, int $limit = 20,int $page)
     {
-        return $this->search($where)->field(['IFNULL(sales,0) + IFNULL(ficti,0) as sales', 'store_name', 'image', 'id', 'price', 'ot_price', 'stock'])->limit($limit)->order('sales desc')->select()->toArray();
+        $where['is_show'] = 1;
+        $where['is_del'] = 0;
+        $where['is_hot'] = 1;
+        return $this->search($where)->field(['IFNULL(sales,0) + IFNULL(ficti,0) as sales', 'store_name', 'image', 'id', 'price', 'ot_price', 'stock'])
+            ->when($page, function ($query) use ($page, $limit) {
+                $query->page($page, $limit);
+            })
+            ->when($limit, function ($query) use ($limit) {
+                $query->limit($limit);
+            })->order('sales desc')->select()->toArray();
     }
 
     /**
@@ -270,4 +280,18 @@ class StoreProductDao extends BaseDao
     {
         return $this->search(['id' => $productIds])->with('cateName')->field('id')->select()->toArray();
     }
+
+    /**
+     * @param array $where
+     * @param $field
+     * @return array
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     */
+    public function getProductListByWhere(array $where, $field)
+    {
+        return $this->search($where)->field($field)->select()->toArray();
+    }
+
 }

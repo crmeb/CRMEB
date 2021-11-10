@@ -36,7 +36,7 @@ Modal.newInstance = properties => {
             closable: true,
             closing: false // 关闭有动画，期间使用此属性避免重复点击
         }),
-        render (h) {
+        render(h) {
             let footerVNodes = []
             if (this.showCancel) {
                 footerVNodes.push(h(Button, {
@@ -107,7 +107,7 @@ Modal.newInstance = properties => {
                 props: Object.assign({}, _props, {
                     width: this.width,
                     scrollable: this.scrollable,
-                    closable: this.closable
+                    closable: this.closable,
                 }),
                 domProps: {
                     value: this.visible
@@ -135,26 +135,26 @@ Modal.newInstance = properties => {
             ])
         },
         computed: {
-            iconTypeCls () {
+            iconTypeCls() {
                 return [
                     `${prefixCls}-head-icon`,
                     `${prefixCls}-head-icon-${this.iconType}`
                 ]
             },
-            iconNameCls () {
+            iconNameCls() {
                 return [
                     'ivu-icon',
                     `ivu-icon-${this.iconName}`
                 ]
             },
-            localeOkText () {
+            localeOkText() {
                 if (this.okText) {
                     return this.okText
                 } else {
                     return this.t('i.modal.okText')
                 }
             },
-            localeCancelText () {
+            localeCancelText() {
                 if (this.cancelText) {
                     return this.cancelText
                 } else {
@@ -163,14 +163,14 @@ Modal.newInstance = properties => {
             }
         },
         methods: {
-            cancel () {
+            cancel() {
                 if (this.closing) return
                 this.$children[0].visible = false
                 this.buttonLoading = false
                 this.onCancel()
                 this.remove()
             },
-            ok () {
+            ok() {
                 if (this.closing) return
                 if (this.loading) {
                     this.buttonLoading = true
@@ -180,25 +180,25 @@ Modal.newInstance = properties => {
                 }
                 this.onOk()
             },
-            remove () {
+            remove() {
                 this.closing = true
                 setTimeout(() => {
                     this.closing = false
                     this.destroy()
                 }, 300)
             },
-            destroy () {
+            destroy() {
                 this.$destroy()
                 if (this.$el) {
                     document.body.removeChild(this.$el)
                 }
                 this.onRemove()
             },
-            onOk () {
+            onOk() {
             },
-            onCancel () {
+            onCancel() {
             },
-            onRemove () {
+            onRemove() {
             }
         }
     })
@@ -208,26 +208,26 @@ Modal.newInstance = properties => {
     const modal = Instance.$children[0]
 
     return {
-        show (props) {
+        show(props) {
             modal.$parent.showCancel = props.showCancel
             modal.$parent.iconType = props.icon
 
             switch (props.icon) {
-            case 'info':
-                modal.$parent.iconName = 'ios-information-circle'
-                break
-            case 'success':
-                modal.$parent.iconName = 'ios-checkmark-circle'
-                break
-            case 'warning':
-                modal.$parent.iconName = 'ios-alert'
-                break
-            case 'error':
-                modal.$parent.iconName = 'ios-close-circle'
-                break
-            case 'confirm':
-                modal.$parent.iconName = 'ios-help-circle'
-                break
+                case 'info':
+                    modal.$parent.iconName = 'ios-information-circle'
+                    break
+                case 'success':
+                    modal.$parent.iconName = 'ios-checkmark-circle'
+                    break
+                case 'warning':
+                    modal.$parent.iconName = 'ios-alert'
+                    break
+                case 'error':
+                    modal.$parent.iconName = 'ios-close-circle'
+                    break
+                case 'confirm':
+                    modal.$parent.iconName = 'ios-help-circle'
+                    break
             }
 
             if ('width' in props) {
@@ -276,7 +276,7 @@ Modal.newInstance = properties => {
 
             modal.visible = true
         },
-        remove () {
+        remove() {
             modal.visible = false
             modal.$parent.buttonLoading = false
             modal.$parent.remove()

@@ -13,10 +13,13 @@ namespace app\services\system\config;
 
 
 use app\dao\system\config\SystemConfigDao;
+use app\services\agent\AgentManageServices;
 use app\services\BaseServices;
 use crmeb\exceptions\AdminException;
+use crmeb\services\FileService;
 use crmeb\services\FormBuilder;
 use think\exception\ValidateException;
+use think\facade\Log;
 
 /**
  * 系统配置
@@ -77,17 +80,23 @@ class SystemConfigServices extends BaseServices
     protected $relatedRule = [
         'brokerage_func_status' => [
             'son_type' => [
-                'brokerage_bindind' => '',
-                'store_brokerage_ratio' => '',
-                'store_brokerage_two' => '',
-                'user_extract_min_price' => '',
-                'user_extract_bank' => '',
-                'extract_time' => '',
-                'spread_banner' => '',
                 'store_brokerage_statu' => [
                     'son_type' => ['store_brokerage_price' => ''],
                     'show_value' => 3
                 ],
+                'brokerage_bindind' => '',
+                'store_brokerage_binding_status' => [
+                    'son_type' => ['store_brokerage_binding_time' => ''],
+                    'show_value' => 2
+                ],
+                'spread_banner' => '',
+            ],
+            'show_value' => 1
+        ],
+        'brokerage_user_status' => [
+            'son_type' => [
+                'uni_brokerage_price' => '',
+                'day_brokerage_price_upper' => '',
             ],
             'show_value' => 1
         ],
@@ -115,7 +124,6 @@ class SystemConfigServices extends BaseServices
         ],
         'member_func_status' => [
             'son_type' => [
-                'member_price_status' => '',
                 'order_give_exp' => '',
                 'sign_give_exp' => '',
                 'invite_user_exp' => ''
@@ -152,13 +160,45 @@ class SystemConfigServices extends BaseServices
         ],
         'pay_weixin_open' => [
             'son_type' => [
-                'paydir' => '',
-                'pay_weixin_key' => '',
-                'pay_weixin_client_key' => '',
-                'pay_weixin_client_cert' => '',
                 'pay_weixin_mchid' => '',
-                'pay_weixin_appsecret' => '',
-                'pay_weixin_appid' => '',
+                'pay_weixin_key' => '',
+                'pay_weixin_client_cert' => '',
+                'pay_weixin_client_key' => '',
+                'paydir' => '',
+            ],
+            'show_value' => 1
+        ],
+        'config_export_open' => [
+            'son_type' => [
+                'config_export_to_name' => '',
+                'config_export_to_tel' => '',
+                'config_export_to_address' => '',
+                'config_export_siid' => '',
+            ],
+            'show_value' => 1
+        ],
+        'image_watermark_status' => [
+            'son_type' => [
+                'watermark_type' => [
+                    'son_type' => [
+                        'watermark_image' => '',
+                        'watermark_opacity' => '',
+                        'watermark_rotate' => '',
+                    ],
+                    'show_value' => 1
+                ],
+                'watermark_position' => '',
+                'watermark_x' => '',
+                'watermark_y' => '',
+                'watermark_type@' => [
+                    'son_type' => [
+                        'watermark_text' => '',
+                        'watermark_text_size' => '',
+                        'watermark_text_color' => '',
+                        'watermark_text_angle' => ''
+                    ],
+                    'show_value' => 2
+                ],
             ],
             'show_value' => 1
         ],
@@ -200,7 +240,7 @@ class SystemConfigServices extends BaseServices
     public function getConfigValue(string $configName, $default = null)
     {
         $value = $this->dao->getConfigValue($configName);
-        return is_null($value) ? $default  : json_decode($value,true);
+        return is_null($value) ? $default : json_decode($value, true);
     }
 
     /**
@@ -236,7 +276,7 @@ class SystemConfigServices extends BaseServices
             if ($item['type'] == 'upload' && !empty($item['value'])) {
                 if ($item['upload_type'] == 1 || $item['upload_type'] == 3) {
                     $item['value'] = [set_file_url($item['value'])];
-                }elseif ($item['upload_type'] == 2){
+                } elseif ($item['upload_type'] == 2) {
                     $item['value'] = set_file_url($item['value']);
                 }
                 foreach ($item['value'] as $key => $value) {
@@ -355,7 +395,7 @@ class SystemConfigServices extends BaseServices
      * @return array
      * @throws \FormBuilder\Exception\FormBuilderException
      */
-    public function createRadioForm(array $data, $control = false)
+    public function createRadioForm(array $data, $control = false, $control_two = [])
     {
         $formbuider = [];
         $data['value'] = json_decode($data['value'], true) ?: '0';
@@ -371,6 +411,9 @@ class SystemConfigServices extends BaseServices
             $formbuider[] = $radio = $this->builder->radio($data['menu_name'], $data['info'], (int)$data['value'])->options($options)->info($data['desc'])->col(13);
             if ($control) {
                 $radio->appendControl(isset($data['show_value']) ? $data['show_value'] : 1, is_array($control) ? $control : [$control]);
+            }
+            if ($control_two && isset($data['show_value2'])) {
+                $radio->appendControl(isset($data['show_value2']) ? $data['show_value2'] : 2, is_array($control_two) ? $control_two : [$control_two]);
             }
             return $formbuider;
         }
@@ -388,23 +431,23 @@ class SystemConfigServices extends BaseServices
         switch ($type) {
             case 1:
                 $data['value'] = json_decode($data['value'], true) ?: '';
-                if($data['value'] != '') $data['value'] = set_file_url($data['value']);
+                if ($data['value'] != '') $data['value'] = set_file_url($data['value']);
                 $formbuider[] = $this->builder->frameImage($data['menu_name'], $data['info'], $this->url('admin/widget.images/index', ['fodder' => $data['menu_name']], true), $data['value'])
-                    ->icon('ios-image')->width('950px')->height('420px')->info($data['desc'])->col(13);
+                    ->icon('ios-image')->width('950px')->height('505px')->modal(['footer-hide' => true])->info($data['desc'])->col(13);
                 break;
             case 2:
                 $data['value'] = json_decode($data['value'], true) ?: [];
-                if($data['value'])
+                if ($data['value'])
                     $data['value'] = set_file_url($data['value']);
                 $formbuider[] = $this->builder->frameImages($data['menu_name'], $data['info'], $this->url('admin/widget.images/index', ['fodder' => $data['menu_name'], 'type' => 'many', 'maxLength' => 5], true), $data['value'])
-                    ->maxLength(5)->icon('ios-images')->width('950px')->height('420px')
+                    ->maxLength(5)->icon('ios-images')->width('950px')->height('505px')->modal(['footer-hide' => true])
                     ->info($data['desc'])->col(13);
                 break;
             case 3:
                 $data['value'] = json_decode($data['value'], true) ?: '';
-                if($data['value'] != '') $data['value'] = set_file_url($data['value']);
+                if ($data['value'] != '') $data['value'] = set_file_url($data['value']);
                 $formbuider[] = $this->builder->uploadFile($data['menu_name'], $data['info'], $this->url('/adminapi/file/upload/1', ['type' => 1], false, true), $data['value'])
-                    ->name('file')->info($data['desc'])->col(13)->headers([
+                    ->name('file')->info($data['desc'])->col(13)->data(['menu_name' => $data['menu_name']])->headers([
                         'Authori-zation' => app()->request->header('Authori-zation'),
                     ]);
                 break;
@@ -460,6 +503,18 @@ class SystemConfigServices extends BaseServices
         return $formbuider;
     }
 
+    /**
+     * 创建颜色选择器
+     * @param array $data
+     * @return mixed
+     */
+    public function createColorForm(array $data)
+    {
+        $data['value'] = json_decode($data['value'], true) ?: '';
+        $formbuider[] = $this->builder->color($data['menu_name'], $data['info'], $data['value'])->info($data['desc'])->col(13);
+        return $formbuider;
+    }
+
     public function bindBuilderData($data, $relatedRule)
     {
         if (!$data) return false;
@@ -494,7 +549,7 @@ class SystemConfigServices extends BaseServices
      * @throws \think\db\exception\ModelNotFoundException
      */
 
-    public function formTypeShine($data, $control = false)
+    public function formTypeShine($data, $control = false, $controle_two = [])
     {
 
         switch ($data['type']) {
@@ -502,7 +557,7 @@ class SystemConfigServices extends BaseServices
                 return $this->createTextForm($data['input_type'], $data);
                 break;
             case 'radio'://单选框
-                return $this->createRadioForm($data, $control);
+                return $this->createRadioForm($data, $control, $controle_two);
                 break;
             case 'textarea'://多行文本框
                 return $this->createTextareaForm($data);
@@ -515,6 +570,9 @@ class SystemConfigServices extends BaseServices
                 break;
             case 'select'://多选框
                 return $this->createSelectForm($data);
+                break;
+            case 'color':
+                return $this->createColorForm($data);
                 break;
         }
     }
@@ -580,10 +638,21 @@ class SystemConfigServices extends BaseServices
                                         unset($list[$ssk]);
                                     }
                                 }
-                                $builder[] = $this->formTypeShine($son_data, $son_build)[0];
+                                $son_build_two = [];
+                                if (isset($role['son_type'][$sk . '@'])) {
+                                    $son_type_two = $role['son_type'][$sk . '@'];
+                                    $son_data['show_value2'] = $son_type_two['show_value'];
+                                    if (isset($son_type_two['son_type'])) {
+                                        foreach ($son_type_two['son_type'] as $ssk => $ssv) {
+                                            if (isset($list[$ssk]['menu_name']) && $list[$ssk]['menu_name'] == 'watermark_text_color') $list[$ssk]['type'] = 'color';
+                                            $son_build_two[] = $this->formTypeShine($list[$ssk])[0];
+                                            unset($list[$ssk]);
+                                        }
+                                    }
+                                }
+                                $builder[] = $this->formTypeShine($son_data, $son_build, $son_build_two)[0];
                                 unset($list[$sk]);
                             }
-
                         }
                         $data['show_value'] = $role['show_value'];
                     }
@@ -644,7 +713,8 @@ class SystemConfigServices extends BaseServices
         return $formbuider;
     }
 
-    /**有组件绑定规则
+    /**
+     * 有组件绑定规则
      * @param array $list
      * @param array $relatedRule
      * @return array|bool
@@ -777,7 +847,7 @@ class SystemConfigServices extends BaseServices
         $formbuider = [];
         $formbuider[] = $this->builder->input('menu_name', '字段变量', $menu['menu_name'])->disabled(1);
         $formbuider[] = $this->builder->hidden('type', $menu['type']);
-        $formbuider[] = $this->builder->select('config_tab_id', '分类', (string)$menu['config_tab_id'])->setOptions($service->getSelectForm());
+        $formbuider[] = $this->builder->select('config_tab_id', '分类', (int)$menu['config_tab_id'])->setOptions($service->getSelectForm());
         $formbuider[] = $this->builder->input('info', '配置名称', $menu['info'])->autofocus(1);
         $formbuider[] = $this->builder->input('desc', '配置简介', $menu['desc']);
         switch ($menu['type']) {
@@ -1025,6 +1095,8 @@ class SystemConfigServices extends BaseServices
         foreach ($data as $key => $value) {
             $this->dao->update(['menu_name' => 'config_export_' . $key], ['value' => json_encode($value)]);
         }
+        \crmeb\services\CacheService::clear();
+        return true;
     }
 
     /**
@@ -1087,4 +1159,59 @@ WSS;
         }
     }
 
+    /**
+     * 检测缩略图水印配置是否更改
+     * @param array $post
+     * @return bool
+     */
+    public function checkThumbParam(array $post)
+    {
+        unset($post['upload_type'], $post['image_watermark_status']);
+        /** @var SystemConfigTabServices $systemConfigTabServices */
+        $systemConfigTabServices = app()->make(SystemConfigTabServices::class);
+        //上传配置->基础配置
+        $tab_id = $systemConfigTabServices->getColumn(['eng_title' => 'base_config'], 'id');
+        if ($tab_id) {
+            $all = $this->dao->getColumn(['config_tab_id' => $tab_id], 'value', 'menu_name');
+            if (array_intersect(array_keys($all), array_keys($post))) {
+                foreach ($post as $key => $item) {
+                    //配置更改删除原来生成的缩略图
+                    if (isset($all[$key]) && $item != json_decode($all[$key], true)) {
+                        try {
+                            FileService::delDir(public_path('uploads/thumb_water'));
+                            break;
+                        } catch (\Throwable $e) {
+
+                        }
+                    }
+                }
+            }
+        }
+        return true;
+    }
+
+    /**
+     * 变更分销绑定关系模式
+     * @param array $post
+     * @return bool
+     */
+    public function checkBrokerageBinding(array $post)
+    {
+        try {
+            $config_data = $post['store_brokerage_binding_status'];
+            $config_one = $this->dao->getOne(['menu_name' => 'store_brokerage_binding_status']);
+            $config_old = json_decode($config_one['value'], true);
+            if ($config_old != 2 && $config_data == 2) {
+                //自动解绑上级绑定
+
+                /** @var AgentManageServices $agentManage */
+                $agentManage = app()->make(AgentManageServices::class);
+                $agentManage->resetSpreadTime();
+            }
+        } catch (\Throwable $e) {
+            Log::error('变更分销绑定模式重置绑定时间失败,失败原因:' . $e->getMessage());
+            return false;
+        }
+        return true;
+    }
 }

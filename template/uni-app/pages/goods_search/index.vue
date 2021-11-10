@@ -1,10 +1,10 @@
 <template>
-	<view>
+	<view :style="colorStyle">
 		<view class='searchGood'>
 			<view class='search acea-row row-between-wrapper'>
 				<view class='input acea-row row-between-wrapper'>
 					<text class='iconfont icon-sousuo'></text>
-					<input type='text' v-model='searchValue' @confirm="inputConfirm" confirm-type="search" focus placeholder='点击搜索商品'
+					<input type='text' v-model='searchValue' @confirm="inputConfirm" focus placeholder='点击搜索商品'
 					 placeholder-class='placeholder' @input="setValue"></input>
 				</view>
 				<view class='bnt' @tap='searchBut'>搜索</view>
@@ -16,14 +16,14 @@
 				</view>
 				<view class='list acea-row'>
 					<block v-for="(item,index) in history" :key="index">
-						<view class='item history-item' @tap='setHotSearchValue(item.keyword)' v-if="item.keyword">{{item.keyword}}</view>
+						<view class='item history-item line1' @tap='setHotSearchValue(item.keyword)' v-if="item.keyword">{{item.keyword}}</view>
 					</block>
 				</view>
 			</template>
 			<view class='title'>热门搜索</view>
 			<view class='list acea-row'>
 				<block v-for="(item,index) in hotSearchList" :key="index">
-					<view class='item' @tap='setHotSearchValue(item.val)' v-if="item.val">{{item.val}}</view>
+					<view class='item line1' @tap='setHotSearchValue(item.val)' v-if="item.val">{{item.val}}</view>
 				</block>
 			</view>
 			<view class='line' v-if='bastList.length'></view>
@@ -53,11 +53,13 @@
 	} from '@/api/api.js';
 	import goodList from '@/components/goodList';
 	import recommend from '@/components/recommend';
+	import colors from "@/mixins/color";
 	export default {
 		components: {
 			goodList,
 			recommend
 		},
+		mixins: [colors],
 		data() {
 			return {
 				hostProduct: [],
@@ -141,7 +143,7 @@
 					that.$set(that, 'bastList', that.bastList);
 					that.loading = false;
 					that.loadend = loadend;
-					that.loadTitle = loadend ? "😕人家是有底线的~~" : "加载更多";
+					that.loadTitle = loadend ? "人家是有底线的~" : "加载更多";
 					that.page = that.page + 1;
 				}).catch(err => {
 					that.loading = false,
@@ -170,15 +172,15 @@
 			searchBut: function() {
 				let that = this;
 				that.focus = false;
-				that.page = 1;
-				that.loadend = false;
-				that.$set(that, 'bastList', []);
-				uni.showLoading({
-					title: '正在搜索中'
-				});
-				that.getProductList();
-				uni.hideLoading();
 				// if (that.searchValue.length > 0) {
+					that.page = 1;
+					that.loadend = false;
+					that.$set(that, 'bastList', []);
+					uni.showLoading({
+						title: '正在搜索中'
+					});
+					that.getProductList();
+					uni.hideLoading();
 				// } else {
 				// 	return this.$util.Tips({
 				// 		title: '请输入要搜索的商品',

@@ -4,11 +4,11 @@
 namespace app\listener\user;
 
 
-use app\jobs\RoutineTemplateJob;
-use app\jobs\WechatTemplateJob as TemplateJob;
+use app\jobs\AgentJob;
 use app\services\coupon\StoreCouponIssueServices;
 use app\services\user\UserBillServices;
-use app\services\wechat\WechatUserServices;
+use app\services\user\UserServices;
+use app\services\user\UserSpreadServices;
 use crmeb\interfaces\ListenerInterface;
 
 /**
@@ -35,18 +35,18 @@ class Register implements ListenerInterface
                 /** @var UserBillServices $userBill */
                 $userBill = app()->make(UserBillServices::class);
                 $userBill->inviteUserIncExp((int)$spreadUid);
-            }
+                //增加推广佣金
+                /** @var UserServices $userServices */
+                $userServices = app()->make(UserServices::class);
+                $userServices->addBrokeragePrice($uid, $spreadUid);
 
-            //绑定成功发送消息
-            /** @var  WechatUserServices $wechatServices */
-            $wechatServices = app()->make(WechatUserServices::class);
-            if (strtolower($userType) == 'routine') {
-                $openid = $wechatServices->uidToOpenid($spreadUid, 'routine');
-                RoutineTemplateJob::dispatchDo('sendBindSpreadUidSuccess', [$openid, $name ?? '']);
-            } else {
-                $openid = $wechatServices->uidToOpenid($spreadUid, 'wechat');
-                TemplateJob::dispatchDo('sendBindSpreadUidSuccess', [$openid, $name ?? '']);
+                //推广新人 处理自己、上级分销等级升级
+                AgentJob::dispatch([$uid]);
             }
+            //记录推广绑定关系
+            /** @var UserSpreadServices $userSpreadServices */
+            $userSpreadServices = app()->make(UserSpreadServices::class);
+            $userSpreadServices->setSpread($uid, $spreadUid);
         }
 
         if ($isNew) {

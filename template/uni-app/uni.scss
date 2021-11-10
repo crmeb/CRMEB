@@ -20,17 +20,23 @@ $uni-color-success: #4cd964;
 $uni-color-warning: #f0ad4e;
 $uni-color-error: #dd524d;
 
+/* crmeb颜色变量 */
+$theme-color:#E93323; // 主题色-主色
+$theme-color-opacity:rgba(233,51,35,.6); // 主题色-透明色
+$bg-star: #f62c2c;  // 主题渐变色-开始
+$bg-end:#f96e29; // 主题渐变色-结束
+$kf-theme : #3875EA; // 客服主题色
+$kf-star:#3875EA; // 客服渐变色
+$kf-end:#1890FC; // 客服渐变色
+$bg-star1: #F73730;  // 主题渐变色1-开始
+$bg-end1:#F86429;   // 主题渐变色1-结束
 
-$theme-color:#E93323;
-$theme-color-opacity:rgba(233,51,35,.6);
-$bg-star: #f62c2c;
-$bg-end:#f96e29;
-$kf-theme : #3875EA;
-$kf-star:#3875EA;
-$kf-end:#1890FC;
+
 
 /* 背景颜色 */
 $uni-bg-color:#ffffff;
+$uni-page-bg-color:#f5f5f5;
+// $uni-page-bg-color:#fff;
 $uni-bg-color-grey:#f8f8f8;
 $uni-bg-color-hover:#f1f1f1;//点击状态颜色
 $uni-bg-color-mask:rgba(0, 0, 0, 0.4);//遮罩颜色
@@ -55,20 +61,20 @@ $uni-border-radius-sm: 4upx;
 $uni-border-radius-base: 6upx;
 $uni-border-radius-lg: 12upx;
 $uni-border-radius-circle: 50%;
-
+$uni-border-radius-index: 12rpx; // 首页模块radius
 /* 水平间距 */
 $uni-spacing-row-sm: 10px;
 $uni-spacing-row-base: 20upx;
 $uni-spacing-row-lg: 30upx;
-
+$uni-index-margin-col: 30rpx; // 模块水平magin
 /* 垂直间距 */
 $uni-spacing-col-sm: 8upx;
 $uni-spacing-col-base: 16upx;
 $uni-spacing-col-lg: 24upx;
-
+$uni-index-margin-row: 20rpx; // 模块垂直magin
 /* 透明度 */
 $uni-opacity-disabled: 0.3; // 组件禁用态的透明度
-
+$uni-index-box-shadow: 0rpx 3rpx 10rpx 2rpx rgba(0, 0, 0, 0.03);
 /* 文章场景相关 */
 $uni-color-title: #2C405A; // 文章标题颜色
 $uni-font-size-title:40upx;
@@ -76,3 +82,7 @@ $uni-color-subtitle: #555555; // 二级标题颜色
 $uni-font-size-subtitle:36upx;
 $uni-color-paragraph: #3F536E; // 文章段落颜色
 $uni-font-size-paragraph:30upx;
+$uni-color-tip: #ccc; // 底部提示文字颜色
+
+// 首页字号
+$uni-index-title-font-size: 36rpx;

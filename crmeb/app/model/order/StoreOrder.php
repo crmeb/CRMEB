@@ -29,6 +29,17 @@ class StoreOrder extends BaseModel
     use ModelTrait;
 
     /**
+     * 支付类型
+     * @var string[]
+     */
+    protected $pay_type = [
+        1 => 'weixin',
+        2 => 'yue',
+        3 => 'offline',
+        4 => 'alipay'
+    ];
+
+    /**
      * 数据表主键
      * @var string
      */
@@ -58,6 +69,15 @@ class StoreOrder extends BaseModel
     }
 
     /**
+     * 一对多关联查询子订单
+     * @return \think\model\relation\HasMany
+     */
+    public function split()
+    {
+        return $this->hasMany(StoreOrder::class, 'pid', 'id');
+    }
+
+    /**
      * 一对一关联用户表
      * @return \think\model\relation\HasOne
      */
@@ -65,8 +85,7 @@ class StoreOrder extends BaseModel
     {
         return $this->hasOne(User::class, 'uid', 'uid')->field(['uid', 'nickname', 'phone', 'spread_uid'])->bind([
             'nickname' => 'nickname',
-            'phone' => 'phone',
-            'spread_uid' => 'spread_uid',
+            'phone' => 'phone'
         ]);
     }
 
@@ -122,7 +141,7 @@ class StoreOrder extends BaseModel
      */
     public function staffUser()
     {
-        return $this->hasOne(User::class, 'uid', 'staff_uid')->field(['uid', 'staff_name'])->bind([
+        return $this->hasOne(User::class, 'uid', 'staff_uid')->field(['uid', 'nickname'])->bind([
             'clerk_name' => 'nickname'
         ]);
     }
@@ -154,7 +173,7 @@ class StoreOrder extends BaseModel
      */
     protected function getCartIdAttr($value, $data)
     {
-        return json_decode($value, true);
+        return $value ? json_decode($value, true) : [];
     }
 
     /**
@@ -167,7 +186,66 @@ class StoreOrder extends BaseModel
         $query->where('order_id', $value);
     }
 
-    /**不等于余额支付
+    /**
+     * 父类ID搜索器
+     * @param Model $query
+     * @param $value
+     */
+    public function searchPidAttr($query, $value)
+    {
+        if ($value === 0) {
+            $query->whereIn('pid', [0, -1]);
+        } else {
+            $query->where('pid', $value);
+        }
+    }
+
+    /**
+     * 没拆分订单 与子订单(0:为拆分订单-1：已拆分主订单 >0 :拆分后子订单)
+     * @param Model $query
+     * @param $value
+     */
+    public function searchNotPidAttr($query, $value)
+    {
+        $query->where('pid', '<>', -1);
+    }
+
+    /**
+     * @param Model $query
+     * @param $value
+     */
+    public function searchIdAttr($query, $value)
+    {
+        if (is_array($value)) {
+            $query->whereIn('id', $value);
+        } else {
+            $query->where('id', $value);
+        }
+    }
+
+    /**
+     * 支付方式搜索器
+     * @param $query
+     * @param $value
+     */
+    public function searchPayTypeAttr($query, $value)
+    {
+        if (is_array($value)) {
+            $query->whereIn('pay_type', $value);
+        } else {
+            if ($value !== '') {
+                $pay_type = $this->pay_type;
+                if (in_array($value, array_keys($pay_type)) && $type = $pay_type[$value] ?? '') {
+                    $query->where('pay_type', $type);
+                } else {
+                    $query->where('pay_type', $value);
+                }
+            }
+        }
+    }
+
+    /**
+     * 不等于余额支付
      * @param $query
      * @param $value
      */
@@ -217,7 +295,13 @@ class StoreOrder extends BaseModel
      */
     public function searchRefundStatusAttr($query, $value, $data)
     {
-        $query->where('refund_status', $value);
+        if ($value !== '') {
+            if (is_array($value)) {
+                $query->whereIn('refund_status', $value);
+            } else {
+                $query->where('refund_status', $value);
+            }
+        }
     }
 
     /**
@@ -323,6 +407,38 @@ class StoreOrder extends BaseModel
     }
 
     /**
+     * 是否删除搜索器
+     * @param Model $query
+     * @param $value
+     */
+    public function searchIsSystemDelAttr($query, $value)
+    {
+        if ($value != '') $query->where('is_system_del', $value);
+    }
+
+    /**
+     * 退款状态搜索器
+     * @param $query
+     * @param $value
+     */
+    public function searchRefundTypeAttr($query, $value)
+    {
+        if (is_array($value)) {
+            $query->whereIn('refund_type', $value);
+        } else {
+            if ($value == -1) {
+                $query->where('refund_type', 'in', '0,3');
+            } else {
+                if ($value == 0 || $value == '') {
+                    $query->where('refund_type', '<>', 0);
+                } else {
+                    $query->where('refund_type', $value);
+                }
+            }
+        }
+    }
+
+    /**
      * 用户来源
      * @param Model $query
      * @param $value
@@ -342,5 +458,35 @@ class StoreOrder extends BaseModel
         if ($value) {
             $query->where('id', 'in', $value);
         }
+    }
+
+    /**
+     * 上级｜上上级推广人
+     * @param $query
+     * @param $value
+     */
+    public function searchSpreadOrUidAttr($query, $value)
+    {
+        if ($value) $query->where('spread_uid|spread_two_uid', $value);
+    }
+
+    /**
+     * 上级推广人
+     * @param $query
+     * @param $value
+     */
+    public function searchSpreadUidAttr($query, $value)
+    {
+        if ($value) $query->where('spread_uid', $value);
+    }
+
+    /**
+     * 上上级推广人
+     * @param $query
+     * @param $value
+     */
+    public function searchSpreadTwoUidAttr($query, $value)
+    {
+        if ($value) $query->where('spread_two_uid', $value);
     }
 }

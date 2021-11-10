@@ -10,11 +10,11 @@
                 <Row :gutter="24" type="flex">
                     <Col span="24" class="ivu-text-left">
                         <FormItem label="核销日期：">
-                            <RadioGroup v-model="formValidate.data" type="button" class="mr">
+                            <RadioGroup v-model="formValidate.data" type="button" class="mr" @on-change="selectChange(formValidate.data)">
                                 <Radio :label=item.val v-for="(item,i) in fromList.fromTxt" :key="i">{{item.text}}</Radio>
                             </RadioGroup>
                             <DatePicker :editable="false" @on-change="onchangeTime" :value="timeVal" format="yyyy/MM/dd" type="daterange"
-                                        placement="bottom-end" placeholder="自定义时间" style="width: 200px;" ></DatePicker>
+                                        placement="bottom-end" placeholder="请选择时间" style="width: 200px;" ></DatePicker>
                         </FormItem>
                     </Col>
                     <Col span="12" class="ivu-text-left">
@@ -60,7 +60,7 @@
                     {{row.nickname}}/{{row.uid}}
                 </template>
                 <template slot-scope="{ row, index }" slot="spread_nickname">
-                    <a href="javascript:void(0);" @click="referenceInfo(row.uid)">{{row.spread_nickname}}</a>
+                    <a href="javascript:void(0);" @click="referenceInfo(row.spread_uid)">{{row.spread_nickname}}</a>
                 </template>
                 <template slot-scope="{ row, index }" slot="info">
                     <div class="tabBox" v-for="(val, i ) in row._info" :key="i">
@@ -203,6 +203,14 @@
             onchangeTime (e) {
                 this.timeVal = e
                 this.formValidate.data = this.timeVal.join('-')
+                this.getList()
+            },
+                // 选择时间
+            selectChange(tab) {
+            this.formValidate.page = 1;
+            this.formValidate.data = tab;
+            this.timeVal = [];
+            this.getList();
             },
             storeList () {
                 let that = this

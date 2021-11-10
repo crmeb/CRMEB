@@ -39,7 +39,7 @@
         </div>
         <div class="user-list">
             <div class="acea-row item bgt">
-                <span class="sp1">会员等级</span>
+                <span class="sp1">用户等级</span>
                 <span class="sp2" v-text="activeUserInfo.level_name?activeUserInfo.level_name:'无'"></span>
             </div>
             <div class="acea-row item bgt">

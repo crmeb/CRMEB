@@ -8,7 +8,6 @@
 // | Author: CRMEB Team <admin@crmeb.com>
 // +----------------------------------------------------------------------
 
-
 import {
 	getUserInfo
 } from "../../api/user.js";
@@ -27,7 +26,8 @@ const state = {
 	userInfo: {},
 	uid: Cache.get(UID) || 0,
 	homeActive: false,
-	phoneStatus:true
+	phoneStatus:true,
+	pageFooter:uni.getStorageSync('pageFoot') || {}
 };
 
 const mutations = {
@@ -65,6 +65,9 @@ const mutations = {
 	CLOSE_HOME(state) {
 		state.homeActive = false;
 	},
+	FOOT_UPLOAD(state,data){
+		state.pageFooter = data
+	}
 };
 
 const actions = {

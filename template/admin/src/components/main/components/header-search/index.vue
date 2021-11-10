@@ -3,7 +3,7 @@
          <Select
            v-model="currentVal"
            class="select"
-           placeholder="搜索..."
+           placeholder="菜单搜索"
            filterable
            remote
            :remote-method="remoteMethod"

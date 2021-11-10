@@ -1,0 +1,9 @@
+{
+  "navigationBarTitleText": "积分详情",
+  "navigationBarTextStyle": "black",
+  "navigationBarBackgroundColor": "#FFFFFF",
+  "usingComponents": {
+    "authorize": "/components/Authorize",
+    "empty-page": "/components/emptyPage"
+  }
+}

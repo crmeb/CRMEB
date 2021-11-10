@@ -32,6 +32,8 @@ class Diy extends BaseModel
      */
     protected $name = 'diy';
 
+    protected $updateTime = false;
+
     /**
      * 添加时间获取器
      * @param $value
@@ -49,7 +51,7 @@ class Diy extends BaseModel
      */
     public function getUpdateTimeAttr($value)
     {
-        return date('Y-m-d H:i:s', $value);
+        return $value ? date('Y-m-d H:i:s', $value) : '暂无';
     }
 
     /**
@@ -59,7 +61,13 @@ class Diy extends BaseModel
      */
     public function searchTypeAttr($query, $value)
     {
-        if ($value != '') $query->where('type', $value);
+        if ($value !== '') {
+            if ($value == -1) {
+                $query->whereIn('type', [0, 2]);
+            } else {
+                $query->where('type', $value);
+            }
+        }
     }
 
     /**

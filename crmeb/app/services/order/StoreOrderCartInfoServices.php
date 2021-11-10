@@ -15,19 +15,21 @@ use crmeb\utils\Str;
 use app\services\BaseServices;
 use crmeb\services\CacheService;
 use app\dao\order\StoreOrderCartInfoDao;
+use think\exception\ValidateException;
 
 /**
  * Class StoreOrderCartInfoServices
  * @package app\services\order
  * @method array getCartColunm(array $where, string $field, ?string $key) 获取购物车信息以数组返回
  * @method array getCartInfoList(array $where, array $field) 获取购物车详情列表
+ * @method getSplitCartNum(array $cart_id)
  * @method getOne(array $where, ?string $field = '*', array $with = []) 根据条件获取一条数据
  */
 class StoreOrderCartInfoServices extends BaseServices
 {
     /**
-     * StorePinkServices constructor.
-     * @param StorePinkDao $dao
+     * StoreOrderCartInfoServices constructor.
+     * @param StoreOrderCartInfoDao $dao
      */
     public function __construct(StoreOrderCartInfoDao $dao)
     {
@@ -48,47 +50,49 @@ class StoreOrderCartInfoServices extends BaseServices
         foreach ($cart_info as $k => $v) {
             $_info = is_string($v) ? json_decode($v, true) : $v;
             if (!isset($_info['productInfo'])) $_info['productInfo'] = [];
+            //缩略图处理
+            if (isset($_info['productInfo']['attrInfo'])) {
+                $_info['productInfo']['attrInfo'] = get_thumb_water($_info['productInfo']['attrInfo']);
+            }
+            $_info['productInfo'] = get_thumb_water($_info['productInfo']);
             $info[$k]['cart_info'] = $_info;
             unset($_info);
         }
         CacheService::set(md5('store_order_cart_info_' . $oid), $info);
         return $info;
-//        return CacheService::get(md5('store_order_cart_info_' . $oid), function () use ($oid) {
-//            $cart_info = $this->dao->getColumn(['oid' => $oid], 'cart_info', 'cart_id');
-//            $info = [];
-//            foreach ($cart_info as $k => $v) {
-//                $_info = is_string($v) ? json_decode($v, true) : $v;
-//                if (!isset($_info['productInfo'])) $_info['productInfo'] = [];
-//                $info[$k]['cart_info'] = $_info;
-//                unset($_info);
-//            }
-//            return $info;
-//        }) ?: [];
     }
 
     /**
      * 查找购物车里的所有商品标题
+     * @param int $oid
      * @param $cartId
-     * @return bool|string
+     * @param false $goodsNum
+     * @return bool|mixed|string
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
      */
-    public function getCarIdByProductTitle($cartId, $goodsNum = false)
+    public function getCarIdByProductTitle(int $oid, $cartId, $goodsNum = false)
     {
-        $title = '';
-        $orderCart = $this->dao->getCartInfoList(['cart_id' => $cartId], ['cart_info']);
-        foreach ($orderCart as $item) {
-            if (isset($item['cart_info']['productInfo']['store_name'])) {
-                if ($goodsNum && isset($item['cart_info']['cart_num'])) {
-                    $title .= $item['cart_info']['productInfo']['store_name'] . ' * '.$item['cart_info']['cart_num'].' | ';
-                }else{
-                    $title .= $item['cart_info']['productInfo']['store_name'] . '|';
+        $key = md5('store_order_cart_product_title_' . $oid . '_' . is_array($cartId) ? implode('_', $cartId) : $cartId);
+        $title = CacheService::get($key);
+        if (!$title) {
+            $orderCart = $this->dao->getCartInfoList(['oid' => $oid, 'cart_id' => $cartId], ['cart_info']);
+            foreach ($orderCart as $item) {
+                if (isset($item['cart_info']['productInfo']['store_name'])) {
+                    if ($goodsNum && isset($item['cart_info']['cart_num'])) {
+                        $title .= $item['cart_info']['productInfo']['store_name'] . ' * ' . $item['cart_info']['cart_num'] . ' | ';
+                    } else {
+                        $title .= $item['cart_info']['productInfo']['store_name'] . '|';
+                    }
                 }
-
             }
+            if ($title) {
+                $title = substr($title, 0, strlen($title) - 1);
+            }
+            CacheService::set($key, $title);
         }
-        if ($title) {
-            $title = substr($title, 0, strlen($title) - 1);
-        }
-        return $title;
+        return $title ? $title : '';
     }
 
     /**
@@ -184,10 +188,29 @@ class StoreOrderCartInfoServices extends BaseServices
                 'cart_id' => $cart['id'],
                 'product_id' => $cart['productInfo']['id'],
                 'cart_info' => json_encode($cart),
+                'cart_num' => $cart['cart_num'],
+                'surplus_num' => $cart['cart_num'],
                 'unique' => md5($cart['id'] . '' . $oid)
             ];
         }
         return $this->dao->saveAll($group);
+    }
+
+    /**
+     * 订单创建成功之后计算订单（实际优惠、积分、佣金、上级、上上级）
+     * @param $oid
+     * @param array $cartInfo
+     * @return bool
+     */
+    public function updateCartInfo($oid, array $cartInfo)
+    {
+        foreach ($cartInfo as $cart) {
+            $group = [
+                'cart_info' => json_encode($cart)
+            ];
+            $this->dao->update(['oid' => $oid, 'cart_id' => $cart['id']], $group);
+        }
+        return true;
     }
 
     /**
@@ -198,5 +221,61 @@ class StoreOrderCartInfoServices extends BaseServices
     public function getCartIdsProduct($cartId)
     {
         return $this->dao->getColumn([['cart_id', 'in', $cartId]], 'product_id', 'oid');
+    }
+
+    /**
+     * 获取某个订单还可以拆分商品 split_status 0：未拆分1：部分拆分2：拆分完成
+     * @param int $oid
+     * @param string $field
+     * @param string $key
+     * @return array
+     */
+    public function getSplitCartList(int $oid, string $field = '*', string $key = 'cart_id')
+    {
+        $cartInfo = $this->dao->getColumn([['oid', '=', $oid], ['split_status', 'IN', [0, 1]]], $field, $key);
+        foreach ($cartInfo as &$item) {
+            if ($field == 'cart_info') {
+                $item = is_string($item) ? json_decode($item, true) : $item;
+            } else {
+                if (isset($item['cart_info'])) $item['cart_info'] = is_string($item['cart_info']) ? json_decode($item['cart_info'], true) : $item['cart_info'];
+                if (isset($item['cart_num']) && !$item['cart_num']) {//兼容之前老数据
+                    $item['cart_num'] = $item['cart_info']['cart_num'] ?? 0;
+                }
+            }
+        }
+        return $cartInfo;
+    }
+
+    /**
+     * 检测这些商品是否还可以拆分
+     * @param int $oid
+     * @param array $cart_data
+     * @return bool
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     */
+    public function checkCartIdsIsSplit(int $oid, array $cart_data)
+    {
+        if (!$cart_data) return false;
+        $ids = array_unique(array_column($cart_data, 'cart_id'));
+        if ($this->dao->getCartInfoList(['oid' => $oid, 'cart_id' => $ids, 'split_status' => 2], ['cart_id'])) {
+            throw new ValidateException('您选择的商品已经拆分完成，请刷新或稍后重新选择');
+        }
+        $cartInfo = $this->getSplitCartList($oid, 'surplus_num,cart_info,cart_num', 'cart_id');
+        if (!$cartInfo) {
+            throw new ValidateException('该订单已发货完成');
+        }
+        foreach ($cart_data as $cart) {
+            $surplus_num = $cartInfo[$cart['cart_id']]['surplus_num'] ?? 0;
+            if (!$surplus_num) {//兼容之前老数据
+                $_info = $cartInfo[$cart['cart_id']]['cart_info'];
+                $surplus_num = $_info['cart_num'] ?? 0;
+            }
+            if ($cart['cart_num'] > $surplus_num) {
+                throw new ValidateException('您选择商品拆分数量大于购买数量');
+            }
+        }
+        return true;
     }
 }

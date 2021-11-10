@@ -24,8 +24,10 @@ class ShippingTemplatesValidate extends Validate
         'name' => 'require',
         'region_info' => 'array',
         'appoint_info' => 'array',
+        'no_delivery_info' => 'array',
         'type' => 'number',
         'appoint' => 'number',
+        'no_delivery' => 'number',
         'sort' => 'number'
     ];
 
@@ -39,12 +41,14 @@ class ShippingTemplatesValidate extends Validate
         'name.require' => '请填写运费模板名称',
         'region_info.array' => '运费信息必须为数组',
         'appoint_info.array' => '包邮信息必须为数组',
+        'no_delivery_info.array' => '不送达信息必须为数组',
         'type.number' => 'type数据格式错误，应为1或2或3',
         'appoint.number' => 'appoint数据格式错误，应为0或1',
+        'no_delivery.number' => 'no_delivery数据格式错误，应为0或1',
         'sort.number' => 'sort数据格式错误，应为整数',
     ];
 
     protected $scene = [
-        'save' => ['name', 'type', 'appoint', 'sort', 'region_info', 'appoint_info'],
+        'save' => ['name', 'type', 'appoint', 'sort', 'region_info', 'appoint_info', 'no_delivery_info', 'no_delivery'],
     ];
 }

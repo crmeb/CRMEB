@@ -85,14 +85,14 @@ switch ($step) {
         $max_execution_time = ini_get('max_execution_time');
         $allow_reference = (ini_get('allow_call_time_pass_reference') ? '<font color=green>[√]On</font>' : '<font color=red>[×]Off</font>');
         $allow_url_fopen = (ini_get('allow_url_fopen') ? '<font color=green>[√]On</font>' : '<font color=red>[×]Off</font>');
-        $safe_mode = (ini_get('safe_mode') ? '<font color=red>[×]On</font>' : '<font color=green>[√]Off</font>');
+        $safe_mode = (ini_get('safe_mode') ? '<span class="correct_span error_span">&radic;</span> 关闭' : '<span class="correct_span">&radic;</span> 启用');
 
         $err = 0;
         if (empty($tmp['GD Version'])) {
-            $gd = '<font color=red>[×]Off</font>';
+            $gd = '<span class="correct_span error_span">&radic;</span> 未安装';
             $err++;
         } else {
-            $gd = '<font color=green>[√]On</font> ' . $tmp['GD Version'];
+            $gd = '<span class="correct_span">&radic;</span> ' . $tmp['GD Version'];
         }
 
 
@@ -115,33 +115,33 @@ switch ($step) {
             $uploadSize = '<span class="correct_span error_span">&radic;</span>禁止上传';
         }
         if (function_exists('session_start')) {
-            $session = '<span class="correct_span">&radic;</span> 支持';
+            $session = '<span class="correct_span">&radic;</span> 启用';
         } else {
-            $session = '<span class="correct_span error_span">&radic;</span> 不支持';
+            $session = '<span class="correct_span error_span">&radic;</span> 关闭';
             $err++;
         }
         if (function_exists('curl_init')) {
-            $curl = '<font color=green>[√]支持</font> ';
+            $curl = '<span class="correct_span">&radic;</span> 启用';
         } else {
-            $curl = '<font color=red>[×]不支持</font>';
+            $curl = '<span class="correct_span error_span">&radic;</span> 关闭';
             $err++;
         }
 
         if (function_exists('bcadd')) {
-            $bcmath = '<font color=green>[√]支持</font> ';
+            $bcmath = '<span class="correct_span">&radic;</span> 启用';
         } else {
-            $bcmath = '<font color=red>[×]不支持</font>';
+            $bcmath = '<span class="correct_span error_span">&radic;</span> 关闭';
             $err++;
         }
         if (function_exists('openssl_encrypt')) {
-            $openssl = '<font color=green>[√]支持</font> ';
+            $openssl = '<span class="correct_span">&radic;</span> 启用';
         } else {
-            $openssl = '<font color=red>[×]不支持</font>';
+            $openssl = '<span class="correct_span error_span">&radic;</span> 关闭';
             $err++;
         }
 
         if (function_exists('finfo_open')) {
-            $finfo_open = '<font color=green>[√]支持</font> ';
+            $finfo_open = '<span class="correct_span">&radic;</span> 启用';
         } else {
             $finfo_open = '<a href="http://help.crmeb.net/crmebpro/1707557" target="_blank"><span class="correct_span error_span">&radic;</span>点击查看帮助</a>';
             $err++;
@@ -157,19 +157,57 @@ switch ($step) {
             '.env'
         );
         //必须开启函数
+        $disabled = explode(',', ini_get('disable_functions'));
+
+
         if (function_exists('file_put_contents')) {
-            $file_put_contents = '<font color=green>[√]开启</font> ';
+            $file_put_contents = '<span class="correct_span">&radic;</span> 启用';
         } else {
-            $file_put_contents = '<font color=red>[×]关闭</font>';
+            $file_put_contents = '<span class="correct_span error_span">&radic;</span> 禁用';
             $err++;
         }
         if (function_exists('imagettftext')) {
-            $imagettftext = '<font color=green>[√]开启</font> ';
+            $imagettftext = '<span class="correct_span">&radic;</span> 启用';
         } else {
-            $imagettftext = '<font color=red>[×]关闭</font>';
+            $imagettftext = '<span class="correct_span error_span">&radic;</span> 禁用';
             $err++;
         }
-
+        if (!in_array('proc_open', $disabled)) {
+            $proc_open = '<span class="correct_span">&radic;</span> 启用';
+        } else {
+            $proc_open = '<span class="correct_span error_span">&radic;</span> 禁用';
+            $err++;
+        }
+        if (!in_array('pcntl_signal', $disabled)) {
+            $pcntl_signal = '<span class="correct_span">&radic;</span> 启用';
+        } else {
+            $pcntl_signal = '<span class="correct_span error_span">&radic;</span> 禁用';
+            $err++;
+        }
+        if (!in_array('pcntl_signal_dispatch', $disabled)) {
+            $pcntl_signal_dispatch = '<span class="correct_span">&radic;</span> 启用';
+        } else {
+            $pcntl_signal_dispatch = '<span class="correct_span error_span">&radic;</span> 禁用';
+            $err++;
+        }
+        if (!in_array('pcntl_fork', $disabled)) {
+            $pcntl_fork = '<span class="correct_span">&radic;</span> 启用';
+        } else {
+            $pcntl_fork = '<span class="correct_span error_span">&radic;</span> 禁用';
+            $err++;
+        }
+        if (!in_array('pcntl_wait', $disabled)) {
+            $pcntl_wait = '<span class="correct_span">&radic;</span> 启用';
+        } else {
+            $pcntl_wait = '<span class="correct_span error_span">&radic;</span> 禁用';
+            $err++;
+        }
+        if (!in_array('pcntl_alarm', $disabled)) {
+            $pcntl_alarm = '<span class="correct_span">&radic;</span> 启用';
+        } else {
+            $pcntl_alarm = '<span class="correct_span error_span">&radic;</span> 禁用';
+            $err++;
+        }
         include_once("./templates/step2.php");
         exit();
 
@@ -185,10 +223,10 @@ switch ($step) {
                 $result = mysqli_query($conn, "SELECT @@global.sql_mode");
                 $result = $result->fetch_array();
                 $version = mysqli_get_server_info($conn);
-                if ($version >= 5.7) {
-                    if (strstr($result[0], 'STRICT_TRANS_TABLES') || strstr($result[0], 'STRICT_ALL_TABLES') || strstr($result[0], 'TRADITIONAL') || strstr($result[0], 'ANSI'))
-                        exit(json_encode(-1));
-                }
+//                if ($version >= 5.7) {
+//                    if (strstr($result[0], 'STRICT_TRANS_TABLES') || strstr($result[0], 'STRICT_ALL_TABLES') || strstr($result[0], 'TRADITIONAL') || strstr($result[0], 'ANSI'))
+//                        exit(json_encode(-1));
+//                }
                 $result = mysqli_query($conn, "select count(table_name) as c from information_schema.`TABLES` where table_schema='$dbName'");
                 $result = $result->fetch_array();
                 if ($result['c'] > 0)
@@ -203,6 +241,9 @@ switch ($step) {
 
             try {
                 $redis = new \Redis();
+                if (!$redis) {
+                    exit(json_encode(-1));
+                }
                 $redis->connect($rbhost, $rbport);
                 if ($rbpw) {
                     $redis->auth($rbpw);
@@ -323,19 +364,26 @@ switch ($step) {
                 $tables = mysqli_fetch_all($result);//参数MYSQL_ASSOC、MYSQLI_NUM、MYSQLI_BOTH规定产生数组类型
                 $bl_table = array('eb_system_admin'
                 , 'eb_system_role'
+                , 'eb_agent_level'
+                , 'eb_page_link'
+                , 'eb_page_categroy'
                 , 'eb_system_config'
                 , 'eb_system_config_tab'
                 , 'eb_system_menus'
-                , 'eb_system_file'
+                , 'eb_system_notification'
                 , 'eb_express'
                 , 'eb_system_group'
                 , 'eb_system_group_data'
                 , 'eb_template_message'
                 , 'eb_shipping_templates'
                 , "eb_shipping_templates_region"
-                , "eb_shipping_templates_free"
                 , 'eb_system_city'
                 , 'eb_diy'
+                , 'eb_member_ship'
+                , 'eb_member_right'
+                , 'eb_agreement'
+                , 'eb_store_service_speechcraft'
+                , 'eb_system_user_level'
                 , 'eb_cache');
                 foreach ($bl_table as $k => $v) {
                     $bl_table[$k] = str_replace('eb_', $dbPrefix, $v);

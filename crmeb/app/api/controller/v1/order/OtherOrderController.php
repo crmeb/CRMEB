@@ -13,19 +13,13 @@ namespace app\api\controller\v1\order;
 
 
 use app\services\order\OtherOrderServices;
-use app\services\order\StoreOrderServices;
-use app\services\order\StoreOrderSuccessServices;
 use app\services\pay\OrderPayServices;
 use app\services\pay\PayServices;
 use app\services\pay\YuePayServices;
 use app\services\user\MemberCardServices;
 use app\services\user\UserServices;
-use app\jobs\OrderJob;
-use app\jobs\OtherOrderJob;
 use crmeb\services\CacheService;
-use crmeb\services\ExpressService;
 use crmeb\services\SystemConfigService;
-use crmeb\services\UtilService;
 use app\Request;
 
 /**
@@ -57,8 +51,25 @@ class OtherOrderController
     public function computed_offline_pay_price(Request $request)
     {
         list($pay_price) = $request->getMore([['pay_price', 0]], true);
+        $old_price = $pay_price;
         if (!$pay_price || !is_numeric($pay_price)) return app('json')->fail('请输入付款金额');
-        return app('json')->successful(['pay_price' => $pay_price]);
+        $uid = $request->uid();
+        /** @var UserServices $userService */
+        $userService = app()->make(UserServices::class);
+        $user_info = $userService->get($uid);
+        //会员线下享受折扣
+        if ($user_info->is_money_level > 0) {
+            //看是否开启线下享受折扣
+            /** @var MemberCardServices $memberCardService */
+            $memberCardService = app()->make(MemberCardServices::class);
+            $offline_rule_number = $memberCardService->isOpenMemberCard('offline');
+            if ($offline_rule_number) {
+                $pay_price = bcmul($pay_price, bcdiv($offline_rule_number, '100', 2), 2);
+            }
+        }
+        $show = true;
+        if ($old_price == $pay_price) $show = false;
+        return app('json')->successful(['pay_price' => $pay_price, 'show' => $show]);
 
     }
 
@@ -76,9 +87,7 @@ class OtherOrderController
         $OtherOrderServices = app()->make(OtherOrderServices::class);
         /** @var UserServices $userServices */
         $userServices = app()->make(UserServices::class);
-        /** @var StoreOrderServices $storeOrderService */
-        //$storeOrderService = app()->make(StoreOrderServices::class);
-        [$payType, $type, $from, $memberType, $price, $money, $quitUrl] = $request->postMore([
+        [$payType, $type, $from, $memberType, $price, $money, $quitUrl, $mcId] = $request->postMore([
             ['pay_type', 'yue'],
             ['type', 0],
             ['from', 'weixin'],
@@ -86,10 +95,18 @@ class OtherOrderController
             ['price', 0.00],
             ['money', 0.00],
             ['quitUrl', ''],
+            ['mc_id', 0]
         ], true);
+        if ($money <= 0.00) return app('json')->fail('支付金额不能为 0 !');
         $payType = strtolower($payType);
+        if (in_array($type, [1, 2])) {
+            /** @var MemberCardServices $memberCardService */
+            $memberCardService = app()->make(MemberCardServices::class);
+            $isOpenMember = $memberCardService->isOpenMemberCard();
+            if (!$isOpenMember) return app('json')->fail('付费会员功能暂未开启!');
+        }
         $channelType = $userServices->getUserInfo($uid)['user_type'];
-        $order = $OtherOrderServices->createOrder($uid, $channelType, $memberType, $price, $payType, $type, $money);
+        $order = $OtherOrderServices->createOrder($uid, $channelType, $memberType, $price, $payType, $type, $money, $mcId);
         if ($order === false) return app('json')->fail('支付数据生成失败');
         $order_id = $order['order_id'];
         $orderInfo = $OtherOrderServices->getOne(['order_id' => $order_id]);
@@ -174,7 +191,7 @@ class OtherOrderController
         $payType = $systemConfigService->more(['ali_pay_status', 'pay_weixin_open']);
         $payType['site_name'] = sys_config('site_name');
         $payType['now_money'] = $request->user('now_money');
-        $payType['offline_pay_status'] = sys_config('offline_pay_status') == 2 ? false : true;
+        $payType['offline_pay_status'] = true;
         $payType['yue_pay_status'] = (int)sys_config('balance_func_status') && (int)sys_config('yue_pay_status') == 1 ? 1 : 0;//余额支付 1 开启 2 关闭
         return app('json')->successful($payType);
     }

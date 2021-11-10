@@ -19,8 +19,9 @@
                     </Col>
                 </Row>
             </Form>
-            <Table class="mt25" ref="selection" :columns="columns4" :data="tableList"  :loading="loading"
-                   highlight-row @on-selection-change="onSelectTab"
+            <Table class="mt25" ref="table" :columns="columns4" :data="tableList"  :loading="loading"
+                   highlight-row @on-select="handleSelectRow" @on-select-cancel="handleCancelRow"
+                   @on-select-all="handleSelectAll" @on-select-all-cancel="handleSelectAll"
                    no-data-text="暂无数据"
                    no-filtered-data-text="暂无筛选结果">
                 <template slot-scope="{ row }" slot="attr_value">
@@ -90,8 +91,8 @@
                 ],
                 tableList: [],
                 total: 0,
-                ids: '',
-                selectionList: []
+                selectedIds: new Set(),//选中合并项的id
+                ids: ''
             }
         },
         computed: {
@@ -103,20 +104,55 @@
             this.getDataList()
         },
         methods: {
-            // 全选
-            onSelectTab (selection) {
-                this.selectionList = selection
-                let data = []
-                this.selectionList.map((item) => {
-                    data.push(item.id)
-                })
-                this.ids = data.join(',')
+            //全选和取消全选时触发
+            handleSelectAll (selection) {
+                if (selection.length === 0) {
+                    //获取table的数据；
+                    let data = this.$refs.table.data;
+                    data.forEach((item) => {
+                        if (this.selectedIds.has(item.id)) {
+                            this.selectedIds.delete(item.id)
+                        }
+                    })
+                } else {
+                    selection.forEach(item => {
+                        this.selectedIds.add(item.id)
+                    })
+                }
+                this.$nextTick(() => {//确保dom加载完毕
+                    this.setChecked();
+                });
+            },
+            //  选中某一行
+            handleSelectRow (selection,row) {
+                this.selectedIds.add(row.id);
+                this.$nextTick(() => {//确保dom加载完毕
+                    this.setChecked();
+                });
+            },
+            //  取消某一行
+            handleCancelRow (selection,row) {
+                this.selectedIds.delete(row.id);
+                this.$nextTick(() => {//确保dom加载完毕
+                    this.setChecked();
+                });
+            },
+            setChecked () {
+                //将new Set()转化为数组
+                this.ids = [...this.selectedIds].join(',');
+                // 找到绑定的table的ref对应的dom，找到table的objData对象，objData保存的是当前页的数据
+                let objData = this.$refs.table.objData
+                for (let index in objData) {
+                    if (this.selectedIds.has(objData[index].id)) {
+                        objData[index]._isChecked = true;
+                    }
+                }
             },
             // 删除
             del (row, tit) {
                 let data = {}
                 if (tit === '批量删除规格') {
-                    if (this.selectionList.length === 0) return this.$Message.warning('请选择要删除的规格！')
+                    if (this.selectedIds.size === 0) return this.$Message.warning('请选择要删除的规格！')
                     data = {
                         ids: this.ids
                     }
@@ -153,6 +189,9 @@
                 ruleListApi(this.artFrom).then(res => {
                     let data = res.data
                     this.tableList = data.list
+                    this.$nextTick(() => {//确保dom加载完毕
+                        this.setChecked();
+                    });
                     this.total = res.data.count
                     this.loading = false
                 }).catch(res => {

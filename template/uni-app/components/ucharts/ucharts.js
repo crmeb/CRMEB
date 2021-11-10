@@ -5424,7 +5424,6 @@ Charts.prototype.showToolTip = function(e) {
     touches = e.mp.changedTouches[0];
   }
   if (!touches) {
-    console.log("touchError");
   }
   var _touches$ = getTouches(touches, this.opts, e);
   var currentOffset = this.scrollOption.currentOffset;

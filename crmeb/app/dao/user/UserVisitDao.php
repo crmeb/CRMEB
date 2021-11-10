@@ -65,13 +65,13 @@ class UserVisitDao extends BaseDao
         return $this->getModel()->when($userType != '', function ($query) use ($userType) {
             $query->where('channel_type', $userType);
         })->where(function ($query) use ($time) {
-                if ($time[0] == $time[1]) {
-                    $query->whereDay('add_time', $time[0]);
-                } else {
-                    $time[1] = date('Y/m/d', strtotime($time[1]) + 86400);
-                    $query->whereTime('add_time', 'between', $time);
-                }
-            })->field('COUNT(distinct(uid)) as visitNum,province')
+            if ($time[0] == $time[1]) {
+                $query->whereDay('add_time', $time[0]);
+            } else {
+                $time[1] = date('Y/m/d', strtotime($time[1]) + 86400);
+                $query->whereTime('add_time', 'between', $time);
+            }
+        })->field('COUNT(distinct(uid)) as visitNum,province')
             ->group('province')->select()->toArray();
     }
 

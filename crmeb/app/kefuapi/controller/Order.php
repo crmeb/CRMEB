@@ -63,6 +63,7 @@ class Order extends AuthController
         $where['uid'] = $uid;
         $where['is_del'] = 0;
         $where['is_system_del'] = 0;
+        if ($where['status'] == -1) $where['refund_type'] = [1, 3, 6];
         if (!$services->count(['to_uid' => $uid])) {
             return app('json')->fail('用户uid不再当前聊天用户范围内');
         }
@@ -207,12 +208,19 @@ class Order extends AuthController
         if (!strlen(trim($orderId))) return app('json')->fail('参数错误');
         $orderInfo = $this->services->getOne(['order_id' => $orderId]);
         if (!$orderInfo) return app('json')->fail('数据不存在!');
-        if ($type == 1)
+        //仅退款类型
+        if ($orderInfo['refund_type'] != 1) {
+            return app('json')->fail('请去后台售后订单列表处理');
+        }
+        if ($type == 1) {
             $data['refund_status'] = 2;
-        else if ($type == 2)
+            $data['refund_type'] = 6;
+        } else if ($type == 2) {
             $data['refund_status'] = 0;
-        else
+            $data['refund_type'] = 3;
+        } else {
             return app('json')->fail('退款修改状态错误');
+        }
         if ($orderInfo['pay_price'] == 0 || $type == 2) {
             $orderInfo->refund_status = $data['refund_status'];
             $orderInfo->save();
@@ -229,7 +237,9 @@ class Order extends AuthController
         }
         $refundData['pay_price'] = $orderInfo['pay_price'];
         $refundData['refund_price'] = $price;
-
+        if ($orderInfo['refund_price'] > 0) {
+            $refundData['refund_id'] = $orderInfo['order_id'] . rand(100, 999);
+        }
         //退款处理
         $services->payOrderRefund($type, $orderInfo, $refundData);
         //修改订单退款状态

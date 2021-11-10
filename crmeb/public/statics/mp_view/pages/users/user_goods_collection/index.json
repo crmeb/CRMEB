@@ -1,0 +1,8 @@
+{
+  "navigationBarTitleText": "收藏商品",
+  "usingComponents": {
+    "recommend": "/components/recommend/index",
+    "authorize": "/components/Authorize",
+    "home": "/components/home/index"
+  }
+}

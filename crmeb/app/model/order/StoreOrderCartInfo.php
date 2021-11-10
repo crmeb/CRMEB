@@ -65,4 +65,36 @@ class StoreOrderCartInfo extends BaseModel
             $query->where('cart_id', $value);
         }
     }
+
+    /**
+     * 原购物车ID搜索器
+     * @param Model $query
+     * @param $value
+     * @param $data
+     */
+    public function searchOldCartIdAttr($query, $value, $data)
+    {
+        if (is_array($value)) {
+            $query->whereIn('old_cart_id', $value);
+        } else {
+            $query->where('old_cart_id', $value);
+        }
+    }
+
+    /**
+     *  拆分状态搜索器
+     * @param Model $query
+     * @param $value
+     * @param $data
+     */
+    public function searchSplitStatusAttr($query, $value)
+    {
+        if (is_array($value)) {
+            $query->whereIn('split_status', $value);
+        } else {
+            if (in_array($value, [0, 1, 2])) {
+                $query->where('split_status', $value);
+            }
+        }
+    }
 }

@@ -13,6 +13,8 @@ namespace app\services\order;
 
 
 use app\dao\order\StoreOrderDao;
+use app\jobs\OrderJob;
+use app\services\activity\lottery\LuckLotteryServices;
 use app\services\activity\StorePinkServices;
 use app\services\activity\StoreSeckillServices;
 use app\services\BaseServices;
@@ -22,6 +24,7 @@ use app\services\user\UserBillServices;
 use app\services\user\UserServices;
 use app\jobs\ProductLogJob;
 use think\exception\ValidateException;
+use think\facade\Log;
 
 /**
  * Class StoreOrderSuccessServices
@@ -86,8 +89,18 @@ class StoreOrderSuccessServices extends BaseServices
             $orderServices = app()->make(StoreOrderServices::class);
             $resPink = $pinkServices->createPink($orderServices->tidyOrder($orderInfo, true));//创建拼团
         }
+        //缓存抽奖次数 除过线下支付
+        if (isset($orderInfo['pay_type']) && $orderInfo['pay_type'] != 'offline') {
+            /** @var LuckLotteryServices $luckLotteryServices */
+            $luckLotteryServices = app()->make(LuckLotteryServices::class);
+            $luckLotteryServices->setCacheLotteryNum((int)$orderInfo['uid'], 'order');
+        }
         //订单支付成功后置事件
         event('order.orderPaySuccess', [$orderInfo]);
+        //用户推送消息事件
+        event('notice.notice', [$orderInfo, 'order_pay_success']);
+        //支付成功给客服发送消息
+        event('notice.notice', [$orderInfo, 'admin_pay_success_code']);
         $res = $res1 && $resPink;
         return false !== $res;
     }

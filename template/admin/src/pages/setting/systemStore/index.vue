@@ -288,7 +288,6 @@
             },
             // 选择地址
             handleChange (value, selectedData) {
-                console.log(value)
                 this.formItem.address = selectedData.map(o => o.label)
                 //  this.formItem.address2 = selectedData.map(o => o.value);
             },

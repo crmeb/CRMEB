@@ -1,6 +1,6 @@
 <template>
 	<view>
-		<form @submit="submitSub">
+		<form @submit="submitSub" :style="colorStyle">
 			<view class="payment-top acea-row row-column row-center-wrapper">
 				<span class="name">我的余额</span>
 				<view class="pic">
@@ -11,7 +11,7 @@
 				<view class="nav acea-row row-around row-middle">
 					<view class="item" :class="active==index?'on':''" v-for="(item,index) in navRecharge" :key="index" @click="navRecharges(index)">{{item}}</view>
 				</view>
-				<view class='tip picList' v-if='!active'>
+				<view class='tip picList' v-if='!active' >
 					<view class="pic-box pic-box-color acea-row row-center-wrapper row-column" :class="activePic == index ? 'pic-box-color-active' : ''"
 					 v-for="(item, index) in picList" :key="index" @click="picCharge(index, item)" v-if="item.price">
 						<view class="pic-number-pic">
@@ -50,7 +50,9 @@
 		<!-- #ifdef MP -->
 		<!-- <authorize @onLoadFun="onLoadFun" :isAuto="isAuto" :isShowAuth="isShowAuth" @authColse="authColse"></authorize> -->
 		<!-- #endif -->
+		<!-- #ifndef MP -->
 		<home></home>
+		<!-- #endif -->
 	</view>
 </template>
 
@@ -71,6 +73,7 @@
 	import authorize from '@/components/Authorize';
 	// #endif
 	import home from '@/components/home';
+	import colors from "@/mixins/color";
 	export default {
 		components: {
 			// #ifdef MP
@@ -78,6 +81,7 @@
 			// #endif
 			home
 		},
+		mixins:[colors],
 		data() {
 			let that = this;
 			return {
@@ -256,11 +260,17 @@
 						uni.hideLoading();
 						let jsConfig = res.data;
 						uni.requestPayment({
+							// #ifdef MP
 							timeStamp: jsConfig.timestamp,
 							nonceStr: jsConfig.nonceStr,
 							package: jsConfig.package,
 							signType: jsConfig.signType,
 							paySign: jsConfig.paySign,
+							// #endif
+							// #ifdef APP-PLUS
+							provider: 'wxpay',
+							orderInfo: jsConfig,
+							// #endif
 							success: function(res) {
 								that.$set(that, 'userinfo.now_money', that.$util.$h.Add(value, that.userinfo.now_money));
 								return that.$util.Tips({
@@ -342,7 +352,9 @@
 		height: 100%;
 		background-color: #fff;
 	}
-
+	.bgcolor{
+		background-color: var(--view-theme)
+	}
 	.payment {
 		position: relative;
 		top: -60rpx;
@@ -367,7 +379,7 @@
 
 	.payment .nav .item.on {
 		font-weight: bold;
-		border-bottom: 4rpx solid #e83323;
+		border-bottom: 4rpx solid var(--view-theme);
 	}
 
 	.payment .input {
@@ -421,7 +433,7 @@
 	.payment-top {
 		width: 100%;
 		height: 350rpx;
-		background-color: #e83323;
+		background-color: var(--view-theme);
 
 		.name {
 			font-size: 26rpx;
@@ -475,7 +487,7 @@
 		}
 
 		.pic-box-color-active {
-			background-color: #ec3323 !important;
+			background-color: var(--view-theme) !important;
 			color: #fff !important;
 		}
 	}

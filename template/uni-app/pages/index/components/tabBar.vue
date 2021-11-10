@@ -1,5 +1,5 @@
 <template>
-	<view>
+	<view :style="colorStyle">
 		<view class="uni-tabbar acea-row row-around row-middle" v-if="isShow && tabbar.length && !isIframe">
 			<view class="uni-tabbar_item" v-for="(item,index) in tabbar" :key="index" @tap="changeTab(item)">
 				<view class="uni-tabbar_icon">
@@ -22,7 +22,8 @@
 				</view>
 			</view>
 		</view>
-		<view v-if="isIframe && !tabbar.length" class="empty-img uni-tabbar acea-row row-around row-middle">暂无数据，请设置</view>
+		<view v-if="isIframe && !tabbar.length" class="empty-img uni-tabbar acea-row row-around row-middle">暂无数据，请设置
+		</view>
 	</view>
 </template>
 
@@ -34,6 +35,7 @@
 	import {
 		goPage
 	} from '@/libs/order.js'
+	import colors from '@/mixins/color.js';
 	export default {
 		name: 'tabBar',
 		props: {
@@ -47,42 +49,45 @@
 			dataConfig: {
 				immediate: true,
 				handler(nVal, oVal) {
-					if(nVal){
+					if (nVal) {
 						this.isShow = nVal.isShow.val;
 					}
 				}
 			}
 		},
+		mixins:[colors],
 		data() {
 			return {
 				name: this.$options.name,
 				page: '/pages/index/index',
-				tabbar: [],
-				isShow: true,//true前台显示
-				isIframe: app.globalData.isIframe//true后台显示
+				tabbar: this.$Cache.get('TAB_BAR') ? JSON.parse(this.$Cache.get('TAB_BAR')) : [],
+				isShow: true, //true前台显示
+				isIframe: app.globalData.isIframe //true后台显示
 			};
 		},
-		created() {
-		},
 		mounted() {
-			getDiy().then(res => {
-				const {
-					list
-				} = res.data.tabBar.default.tabBarList;
-				this.tabbar = list;
-			}).catch(err=>{
-				uni.showToast({
-					title: err,
-					icon: 'none'
-				});
-			});
+			if (!this.tabbar.length) this.getDiyData()
 		},
 		methods: {
+			getDiyData() {
+				getDiy().then(res => {
+					const {
+						list
+					} = res.data.tabBar.default.tabBarList;
+					this.$Cache.set('TAB_BAR', list)
+					this.tabbar = list;
+				}).catch(err => {
+					uni.showToast({
+						title: err,
+						icon: 'none'
+					});
+				});
+			},
 			changeTab(item) {
 				goPage().then(res => {
 					this.page = item.link;
 					// 这里使用reLaunch关闭所有的页面，打开新的栏目页面
-					uni.reLaunch({
+					uni.switchTab({
 						url: this.page
 					});
 				})
@@ -92,24 +97,26 @@
 </script>
 
 <style lang="scss" scoped>
-	.borderShow{
+	.borderShow {
 		position: fixed;
 	}
-	.borderShow .uni-tabbar::after{
-			content: ' ';
-			position: absolute;
-			left: 0;
-			top: 0;
-			width: 100%;
-			height: 100%;
-			border:1px dashed #007AFF;
-			box-sizing: border-box;
+
+	.borderShow .uni-tabbar::after {
+		content: ' ';
+		position: absolute;
+		left: 0;
+		top: 0;
+		width: 100%;
+		height: 100%;
+		border: 1px dashed #007AFF;
+		box-sizing: border-box;
 	}
+
 	.uni-tabbar {
 		position: fixed;
 		bottom: 0;
-		left:0;
-		z-index: 9999;
+		left: 0;
+		z-index: 999;
 		width: 100%;
 		height: 98rpx;
 		height: calc(98rpx+ constant(safe-area-inset-bottom)); ///兼容 IOS<11.2/
@@ -120,8 +127,10 @@
 		border-top: solid 1rpx #F3F3F3;
 		background-color: #fff;
 		box-shadow: 0px 0px 17rpx 1rpx rgba(206, 206, 206, 0.32);
-
+		display: flex;
+		flex-wrap: nowrap;
 		.uni-tabbar_item {
+			width: 100%;
 			font-size: 20rpx;
 			text-align: center;
 		}
@@ -140,10 +149,10 @@
 
 		.uni-tabbar_label {
 			font-size: 24rpx;
-			color: #282828;
+			color: rgb(40, 40, 40);
 
 			&.active {
-				color: #e93323;
+				color: var(--view-theme);
 			}
 		}
 	}

@@ -71,8 +71,11 @@ class ShippingTemplatesServices extends BaseServices
         $freeServices = app()->make(ShippingTemplatesFreeServices::class);
         /** @var ShippingTemplatesRegionServices $regionServices */
         $regionServices = app()->make(ShippingTemplatesRegionServices::class);
+        /** @var ShippingTemplatesNoDeliveryServices $noDeliveryServices */
+        $noDeliveryServices = app()->make(ShippingTemplatesNoDeliveryServices::class);
         $data['appointList'] = $freeServices->getFreeList($id);
         $data['templateList'] = $regionServices->getRegionList($id);
+        $data['noDeliveryList'] = $noDeliveryServices->getNoDeliveryList($id);
         if (!isset($data['templateList'][0]['region'])) {
             $data['templateList'][0]['region'] = ['city_id' => 0, 'name' => '默认全国'];
         }
@@ -80,6 +83,7 @@ class ShippingTemplatesServices extends BaseServices
             'name' => $templates->name,
             'type' => $templates->getData('type'),
             'appoint_check' => intval($templates->getData('appoint')),
+            'no_delivery_check' => intval($templates->getData('no_delivery')),
             'sort' => intval($templates->getData('sort')),
         ];
         return $data;
@@ -100,12 +104,12 @@ class ShippingTemplatesServices extends BaseServices
             $id = $this->dao->insertGetId($temp);
             $res = true;
         }
-        /** @var ShippingTemplatesFreeServices $freeServices */
-        $freeServices = app()->make(ShippingTemplatesFreeServices::class);
+
         /** @var ShippingTemplatesRegionServices $regionServices */
         $regionServices = app()->make(ShippingTemplatesRegionServices::class);
 
-        return $this->transaction(function () use ($freeServices, $regionServices, $data, $id, $res) {
+
+        return $this->transaction(function () use ($regionServices, $data, $id, $res) {
             //设置区域配送
             $res = $res && $regionServices->saveRegion($data['region_info'], (int)$data['type'], (int)$id);
             if (!$res) {
@@ -113,8 +117,18 @@ class ShippingTemplatesServices extends BaseServices
             }
             //设置指定包邮
             if ($data['appoint']) {
+                /** @var ShippingTemplatesFreeServices $freeServices */
+                $freeServices = app()->make(ShippingTemplatesFreeServices::class);
                 $res = $res && $freeServices->saveFree($data['appoint_info'], (int)$data['type'], (int)$id);
             }
+
+            //设置不送达
+            if ($data['no_delivery']) {
+                /** @var ShippingTemplatesNoDeliveryServices $noDeliveryServices */
+                $noDeliveryServices = app()->make(ShippingTemplatesNoDeliveryServices::class);
+                $res = $res && $noDeliveryServices->saveNoDelivery($data['no_delivery_info'], (int)$id);
+            }
+
             if ($res) {
                 return true;
             } else {
@@ -134,7 +148,10 @@ class ShippingTemplatesServices extends BaseServices
         $freeServices = app()->make(ShippingTemplatesFreeServices::class);
         /** @var ShippingTemplatesRegionServices $regionServices */
         $regionServices = app()->make(ShippingTemplatesRegionServices::class);
+        /** @var ShippingTemplatesNoDeliveryServices $noDeliveryServices */
+        $noDeliveryServices = app()->make(ShippingTemplatesNoDeliveryServices::class);
         $freeServices->delete($id, 'temp_id');
         $regionServices->delete($id, 'temp_id');
+        $noDeliveryServices->delete($id, 'temp_id');
     }
 }

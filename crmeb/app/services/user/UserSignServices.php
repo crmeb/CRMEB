@@ -78,22 +78,24 @@ class UserSignServices extends BaseServices
         $data['mark'] = $title;
         $userBill->incomeIntegral($uid, 'sign', $data);
 
-        $data['number'] = $exp_num;
-        $data['category'] = 'exp';
-        $data['type'] = 'sign';
-        $data['title'] = $data['mark'] = '签到奖励';
-        $data['balance'] = $exp_banlance;
-        $data['pm'] = 1;
-        $data['status'] = 1;
-        if (!$userBill->save($data)) {
-            throw new ValidateException('赠送经验失败');
-        }
-        //检测会员等级
-        try {
-            //用户升级事件
-            event('user.userLevel', [$uid]);
-        } catch (\Throwable $e) {
-            Log::error('会员等级升级失败,失败原因:' . $e->getMessage());
+        if ($exp_num) {
+            $data['number'] = $exp_num;
+            $data['category'] = 'exp';
+            $data['type'] = 'sign';
+            $data['title'] = $data['mark'] = '签到奖励';
+            $data['balance'] = $exp_banlance;
+            $data['pm'] = 1;
+            $data['status'] = 1;
+            if (!$userBill->save($data)) {
+                throw new ValidateException('赠送经验失败');
+            }
+            //检测会员等级
+            try {
+                //用户升级事件
+                event('user.userLevel', [$uid]);
+            } catch (\Throwable $e) {
+                Log::error('会员等级升级失败,失败原因:' . $e->getMessage());
+            }
         }
         return true;
     }
@@ -155,19 +157,33 @@ class UserSignServices extends BaseServices
                 break;
             }
         }
+        //会员签到积分会员奖励
+        if ($user->is_money_level > 0) {
+            //看是否开启签到积分翻倍奖励
+            /** @var MemberCardServices $memberCardService */
+            $memberCardService = app()->make(MemberCardServices::class);
+            $sign_rule_number = $memberCardService->isOpenMemberCard('sign');
+            if ($sign_rule_number) {
+                $sign_num = (int)$sign_rule_number * $sign_num;
+            }
 
+        }
         $user->sign_num += 1;
         if ($user->sign_num == count($sign_list)) {
             $title = '连续签到奖励';
         } else {
             $title = '签到奖励';
         }
-        $exp_num = sys_config('sign_give_exp');
+        //用户等级是否开启
+        $exp_num = 0;
+        if (sys_config('member_func_status', 1)) {
+            $exp_num = sys_config('sign_give_exp');
+        }
         //增加签到数据
         $this->transaction(function () use ($uid, $title, $sign_num, $user, $exp_num) {
             $this->setSignData($uid, $title, $sign_num, $user['integral'], (int)$user['exp'], $exp_num);
             $user->integral = (int)$user->integral + (int)$sign_num;
-            $user->exp = (int)$user->exp + (int)$exp_num;
+            if ($exp_num) $user->exp = (int)$user->exp + (int)$exp_num;
             if (!$user->save()) {
                 throw new ValidateException('修改用户信息失败');
             }
@@ -204,9 +220,9 @@ class UserSignServices extends BaseServices
         if ($integral || $all) {
             /** @var UserBillServices $userBill */
             $userBill = app()->make(UserBillServices::class);
-            $user['sum_integral'] = intval($userBill->getRecordCount($user['uid'], 'integral', 'sign,system_add,gain'));
-            $user['deduction_integral'] = intval($userBill->getRecordCount($user['uid'], 'integral', 'deduction', '', true) ?? 0);
-            $user['today_integral'] = intval($userBill->getRecordCount($user['uid'], 'integral', 'sign,system_add,gain', 'today'));
+            $user['sum_integral'] = intval($userBill->getRecordCount($user['uid'], 'integral', 'sign,system_add,gain,lottery_add'));
+            $user['deduction_integral'] = intval($userBill->getRecordCount($user['uid'], 'integral', 'deduction,lottery_use', '', true) ?? 0);
+            $user['today_integral'] = intval($userBill->getRecordCount($user['uid'], 'integral', 'sign,system_add,gain,lottery_add', 'today'));
         }
         unset($user['pwd']);
         if (!$user['is_promoter']) {

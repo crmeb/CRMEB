@@ -36,7 +36,7 @@ class SystemAdminValidata extends Validate
      */
     protected $message = [
         'account.require' => '请填写管理员账号',
-        'account.alphaDash' => '管理员账号为应为和字母',
+        'account.alphaDash' => '管理员账号为英文字母',
         'conf_pwd.require' => '请输入确认密码',
         'pwd.require' => '请输入密码',
         'real_name.require' => '请输管理员姓名',

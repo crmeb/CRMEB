@@ -60,7 +60,7 @@ class UserUserBillDao extends BaseDao
      * @param Model $model
      * @return array
      */
-    public function getList(array $where, string $field = '', string $order = '', int $page, int $limit)
+    public function getList(array $where, string $field = '', string $order = '', int $page = 0, int $limit = 0)
     {
         return $this->getModel()->where($where)->field($field)->group('u.uid')->order($order)->order('id desc')
             ->when($page && $limit, function ($query) use ($page, $limit) {

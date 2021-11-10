@@ -17,6 +17,7 @@ use app\dao\wechat\WechatReplyDao;
 use app\services\kefu\KefuServices;
 use crmeb\exceptions\AdminException;
 use crmeb\services\WechatService;
+use think\exception\ValidateException;
 
 /**
  *
@@ -229,7 +230,11 @@ class WechatReplyServices extends BaseServices
             $res = [];
             //TODO 图片转media
             $res['src'] = $data['src'];
-            $material = WechatService::materialService()->uploadImage(url_to_path($data['src']));
+            try {
+                $material = WechatService::materialService()->uploadImage(url_to_path($data['src']));
+            } catch (\Throwable $e) {
+                throw new ValidateException(WechatService::getMessage($e->getMessage()));
+            }
             $res['media_id'] = $material->media_id;
             $dataEvent = ['type' => 'image', 'media_id' => $material->media_id, 'path' => $res['src'], 'url' => $material->url];
             /** @var WechatMediaServices $mateServices */
@@ -258,7 +263,11 @@ class WechatReplyServices extends BaseServices
             $res = [];
             //TODO 声音转media
             $res['src'] = $data['src'];
-            $material = WechatService::materialService()->uploadVoice(url_to_path($data['src']));
+            try {
+                $material = WechatService::materialService()->uploadVoice(url_to_path($data['src']));
+            } catch (\Throwable $e) {
+                throw new ValidateException(WechatService::getMessage($e->getMessage()));
+            }
             $res['media_id'] = $material->media_id;
             $dataEvent = ['media_id' => $material->media_id, 'path' => $res['src'], 'type' => 'voice'];
             /** @var WechatMediaServices $mateServices */

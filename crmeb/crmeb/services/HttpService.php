@@ -119,12 +119,12 @@ class HttpService
     /**
      * 模拟POST发起请求
      * @param $url
-     * @param array $data
+     * @param $data
      * @param bool $header
      * @param int $timeout
      * @return bool|string
      */
-    public static function postRequest($url, array $data = array(), $header = false, $timeout = 10)
+    public static function postRequest($url, $data = array(), $header = false, $timeout = 10)
     {
         return self::request($url, 'post', $data, $header, $timeout);
     }

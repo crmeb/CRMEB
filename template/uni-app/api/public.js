@@ -87,7 +87,7 @@ export function follow() {
  * */
 export function imageBase64(image, code) {
   return request.post(
-    "/image_base64",
+    "image_base64",
     { image: image, code: code },
     { noAuth: true }
   );
@@ -113,7 +113,6 @@ export function getShopConfig() {
  * @param {Object} data
  */
 export function getUserPhone(data){
-	console.log(data);
 	return request.post('v2/auth_bindind_phone',data,{noAuth : true});
 }
 
@@ -140,4 +139,29 @@ export function wechatAuthV2(code, spread) {
 			noAuth: true
 		}
 	);
+}
+
+/**
+ * 获取组件底部菜单
+ * @param data object 获取组件底部菜单
+ */
+export function getNavigation(data) {
+	return request.get("navigation", data, {
+		noAuth: true
+	});
+}
+export function getSubscribe(){
+	return request.get("subscribe", {}, {
+		noAuth: true
+	});
+}
+
+/**
+ * 获取版本信息
+ * @param 系统类型
+ */
+export function getUpdateInfo(type) {
+	return request.get("get_new_app/" + type, {
+		noAuth: true
+	});
 }

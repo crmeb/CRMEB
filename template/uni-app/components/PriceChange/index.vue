@@ -97,7 +97,7 @@
 .priceChange.on{opacity:1;transform: scale(1);}
 .priceChange .priceTitle{background:url("~@/static/images/pricetitle.jpg") no-repeat;background-size:100% 100%;width:100%;height:160upx;border-radius:10upx 10upx 0 0;text-align:center;font-size:40upx;color:#fff;line-height:160upx;position:relative;}
 .priceChange .priceTitle .iconfont{position:absolute;font-size:40upx;right:26upx;top:23upx;width:40upx;height:40upx;line-height:40upx;}
-.priceChange .listChange{padding:0 40upx;}
+.priceChange .listChange{ width: 100%; padding:0 20rpx;}
 .priceChange .listChange textarea{box-sizing: border-box;}
 .priceChange .listChange .item{height:103upx;border-bottom:1px solid #e3e3e3;font-size:32upx;color:#333;}
 .priceChange .listChange .item .money{color:#666;width:300upx;text-align:right;}
@@ -113,7 +113,7 @@
   margin-top: 50upx;
   border-radius: 10upx;
   color: #333;
-  padding: 20upx;
+	
 }
 </style>
 <script>

@@ -112,7 +112,6 @@
             },
             // inputChange
             inputChange(e){
-                console.log(e.target.value)
                 this.bus.$emit('change',e.target.value)
             }
         }

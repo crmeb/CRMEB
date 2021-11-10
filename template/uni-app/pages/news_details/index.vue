@@ -1,5 +1,5 @@
 <template>
-	<view>
+	<view :style="colorStyle">
 		<view class='newsDetail'>
 			<view class='title'>{{articleInfo.title}}</view>
 			<view class='list acea-row row-middle'>
@@ -8,7 +8,7 @@
 				<view class='item'><text class='iconfont icon-liulan'></text>{{articleInfo.visit}}</view>
 			</view>
 			<view class='conters'>
-				<jyf-parser :html="content" ref="article" :tag-style="tagStyle"></jyf-parser>
+				<jyf-parser :content="content" ref="article" :tag-style="tagStyle"></jyf-parser>
 			</view>
 			<navigator class="picTxt acea-row row-between-wrapper" v-if="store_info.id" :url="'/pages/goods_details/index?id='+store_info.id" hover-class="none">
 				<view class="pictrue">
@@ -31,7 +31,9 @@
 			<!-- #endif -->
 		</view>
 		<shareInfo @setShareInfoStatus="setShareInfoStatus" :shareInfoStatus="shareInfoStatus"></shareInfo>
+		<!-- #ifndef MP -->
 		<home></home>
+		<!-- #endif -->
 	</view>
 </template>
 
@@ -41,13 +43,15 @@
 	} from '@/api/api.js';
 	import shareInfo from '@/components/shareInfo';
 	import home from '@/components/home';
-	import parser from "@/components/jyf-parser/jyf-parser";
+	import parser from "@/components/mp-html/mp-html";
+	import colors from "@/mixins/color";
 	export default {
 		components: {
 			shareInfo,
 			home,
 			"jyf-parser": parser
 		},
+		mixins: [colors],
 		data() {
 			return {
 				id: 0,

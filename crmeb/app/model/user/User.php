@@ -11,6 +11,7 @@
 
 namespace app\model\user;
 
+use app\model\agent\AgentLevel;
 use app\model\order\StoreOrder;
 use app\model\system\SystemUserLevel;
 use crmeb\basic\BaseModel;
@@ -150,6 +151,15 @@ class User extends BaseModel
     }
 
     /**
+     * 关联分销等级
+     * @return \think\model\relation\HasOne
+     */
+    public function agentLevel()
+    {
+        return $this->hasOne(AgentLevel::class, 'id', 'agent_level')->where('is_del', 0)->where('status', 1);
+    }
+
+    /**
      * 关联佣金数据
      * @return \think\model\relation\HasMany
      */
@@ -272,6 +282,32 @@ class User extends BaseModel
     }
 
     /**
+     * 推广人uid不等于搜索器
+     * @param Model $query
+     * @param $value
+     */
+    public function searchNotSpreadUidAttr($query, $value)
+    {
+        $query->where('spread_uid', '<>', $value);
+    }
+
+    /**
+     * 推广人时间搜索器
+     * @param Model $query
+     * @param $value
+     */
+    public function searchSpreadTimeAttr($query, $value)
+    {
+        if ($value) {
+            if (is_array($value)) {
+                if (count($value) == 2) $query->whereTime('spread_time', $value[0], $value[1]);
+            } else {
+                $query->whereTime('spread_time', $value);
+            }
+        }
+    }
+
+    /**
      * 用户类型搜索器
      * @param Model $query
      * @param $value
@@ -291,8 +327,18 @@ class User extends BaseModel
         $query->where('pay_count', $value);
     }
 
+    /**
+     * 用户推广资格
+     * @param Model $query
+     * @param $value
+     */
+    public function searchSpreadOpenAttr($query, $value)
+    {
+        if ($value != '') $query->where('spread_open', $value);
+    }
+
     public function searchNicknameAttr($query, $value)
     {
-        $query->where('nickname', "like", "%".$value."%");
+        $query->where('nickname', "like", "%" . $value . "%");
     }
 }

@@ -71,4 +71,24 @@ class UserBrokerageFrozenDao extends BaseDao
         return $this->search(['order_id' => $orderId, 'isFrozen' => true])->update(['status' => 0]);
     }
 
+    /**
+     * 获取用户的冻结佣金数组
+     * @return mixed
+     */
+    public function getFrozenBrokerage()
+    {
+        return $this->getModel()->where('frozen_time', '>', time())
+            ->where('status', 1)
+            ->group('uid')
+            ->column('SUM(price) as sum_price', 'uid');
+    }
+
+    /**
+     * @param $uids
+     * @return float
+     */
+    public function getSumFrozenBrokerage($uids)
+    {
+        return $this->getModel()->whereIn('uid', $uids)->where('frozen_time', '>', time())->sum('price');
+    }
 }

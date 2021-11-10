@@ -66,6 +66,19 @@ class StoreCategory extends AuthController
     }
 
     /**
+     * 获取分类cascader格式数据
+     * @param $type
+     * @return mixed
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     */
+    public function cascader_list($type = 1)
+    {
+        return app('json')->success($this->service->cascaderList(1, $type));
+    }
+
+    /**
      * 修改状态
      * @param string $is_show
      * @param string $id

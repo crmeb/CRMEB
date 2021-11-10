@@ -55,7 +55,7 @@
                             <!--<Radio :label=item.val v-for="(item,i) in fromList.fromTxt" :key="i">{{item.text}}</Radio>-->
                         <!--</RadioGroup>-->
                         <!--<DatePicker @on-change="onchangeTime" :value="timeVal" format="yyyy/MM/dd" type="daterange"-->
-                                    <!--placement="bottom-end" placeholder="自定义时间" style="width: 200px;"></DatePicker>-->
+                                    <!--placement="bottom-end" placeholder="请选择时间" style="width: 200px;"></DatePicker>-->
                     <!--</FormItem>-->
                 <!--</Col>-->
                 <!--<Col span="12" class="ivu-text-left">-->
@@ -370,7 +370,6 @@
                         setCookies('kefu_uuid',res.data.kefuInfo.uid,expires);
                         setCookies('kefu_expires_time',res.data.exp_time,expires);
                         setCookies('kefuInfo',res.data.kefuInfo,expires);
-                        console.log(this.$store.state.media.isMobile,'this.$store.state')
                         if(this.$store.state.media.isMobile){
                             url = window.location.protocol+"//"+window.location.host + '/kefu/mobile_list';
                         }else{
@@ -511,7 +510,7 @@
             // 客服列表
             getListService () {
                 this.loading2 = true
-                kefucreateApi(this.formValidate).then(async res => {
+                (this.formValidate).then(async res => {
                     let data = res.data
                     this.tableList2 = data.list
                     this.total2 = data.count
@@ -520,7 +519,7 @@
                     })
                     this.loading2 = false
                 }).catch(res => {
-                    this.loading2 = false
+                    tkefucreateApihis.loading2 = false
                     this.$Message.error(res.msg)
                 })
             },

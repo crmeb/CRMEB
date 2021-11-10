@@ -15,115 +15,83 @@ use think\facade\Route;
  */
 Route::group('app', function () {
     //小程序模板资源路由
-    Route::resource('routine', 'v1.application.routine.RoutineTemplate')->name('RoutineResource');
+    Route::resource('routine', 'v1.application.routine.RoutineTemplate')->name('RoutineResource')->option(['real_name' => '小程序订阅消息']);
     //客服反馈接口
-    Route::resource('feedback', 'v1.application.wechat.StoreServiceFeedback')->only(['index', 'delete', 'update', 'edit']);
+    Route::resource('feedback', 'v1.application.wechat.StoreServiceFeedback')->only(['index', 'delete', 'update', 'edit'])->option(['real_name' => '用户反馈']);
     //一键同步订阅消息
-    Route::get('routine/syncSubscribe', 'v1.application.routine.RoutineTemplate/syncSubscribe')->name('syncSubscribe');
+    Route::get('routine/syncSubscribe', 'v1.application.routine.RoutineTemplate/syncSubscribe')->name('syncSubscribe')->option(['real_name' => '一键同步订阅消息']);
+    //一键同步微信模版消息消息
+    Route::get('wechat/syncSubscribe', 'v1.application.wechat.WechatTemplate/syncSubscribe')->name('syncSubscribe')->option(['real_name' => '一键同步模版消息']);
     //修改状态
-    Route::put('routine/set_status/:id/:status', 'v1.application.routine.RoutineTemplate/set_status')->name('RoutineSetStatus');
+    Route::put('routine/set_status/:id/:status', 'v1.application.routine.RoutineTemplate/set_status')->name('RoutineSetStatus')->option(['real_name' => '修改订阅消息状态']);
     //菜单值
-    Route::get('wechat/menu', 'v1.application.wechat.menus/index');
+    Route::get('wechat/menu', 'v1.application.wechat.menus/index')->option(['real_name' => '微信公众号菜单列表']);
     //保存菜单
-    Route::post('wechat/menu', 'v1.application.wechat.menus/save');
+    Route::post('wechat/menu', 'v1.application.wechat.menus/save')->option(['real_name' => '保存微信公众号菜单']);
     //微信模板消息资源路由
-    Route::resource('wechat/template', 'v1.application.wechat.WechatTemplate')->name('WechatTemplateResource');
+    Route::resource('wechat/template', 'v1.application.wechat.WechatTemplate')->name('WechatTemplateResource')->option(['real_name' => '公众号模版消息']);
     //话术接口
-    Route::resource('wechat/speechcraft', 'v1.application.wechat.StoreServiceSpeechcraft');
+    Route::resource('wechat/speechcraft', 'v1.application.wechat.StoreServiceSpeechcraft')->option(['real_name' => '客服话术']);
     //话术分类接口
-    Route::resource('wechat/speechcraftcate', 'v1.application.wechat.StoreServiceSpeechcraftCate');
+    Route::resource('wechat/speechcraftcate', 'v1.application.wechat.StoreServiceSpeechcraftCate')->option(['real_name' => '客服话术分类']);
 
     //微信模板消息修改状态
-    Route::put('wechat/template/set_status/:id/:status', 'v1.application.wechat.WechatTemplate/set_status')->name('WechatTemplateSetStatus');
+    Route::put('wechat/template/set_status/:id/:status', 'v1.application.wechat.WechatTemplate/set_status')->name('WechatTemplateSetStatus')->option(['real_name' => '修改关键字回复状态']);
     //关注回复
-    Route::get('wechat/reply', 'v1.application.wechat.Reply/reply');
+    Route::get('wechat/reply', 'v1.application.wechat.Reply/reply')->option(['real_name' => '关注回复']);
     //获取关注回复二维码
-    Route::get('wechat/code_reply/:id', 'v1.application.wechat.Reply/code_reply');
+    Route::get('wechat/code_reply/:id', 'v1.application.wechat.Reply/code_reply')->option(['real_name' => '获取关注回复二维码']);
     //关键字回复列表
-    Route::get('wechat/keyword', 'v1.application.wechat.Reply/index');
+    Route::get('wechat/keyword', 'v1.application.wechat.Reply/index')->option(['real_name' => '关键字回复列表']);
     //关键字详情
-    Route::get('wechat/keyword/:id', 'v1.application.wechat.Reply/read');
+    Route::get('wechat/keyword/:id', 'v1.application.wechat.Reply/read')->option(['real_name' => '关键字回复详情']);
     //保存关键字修改
-    Route::post('wechat/keyword/:id', 'v1.application.wechat.Reply/save');
+    Route::post('wechat/keyword/:id', 'v1.application.wechat.Reply/save')->option(['real_name' => '保存关键字回复']);
     //删除关键字
-    Route::delete('wechat/keyword/:id', 'v1.application.wechat.Reply/delete');
+    Route::delete('wechat/keyword/:id', 'v1.application.wechat.Reply/delete')->option(['real_name' => '删除关键字回复']);
     //修改关键字状态
-    Route::put('wechat/keyword/set_status/:id/:status', 'v1.application.wechat.Reply/set_status');
+    Route::put('wechat/keyword/set_status/:id/:status', 'v1.application.wechat.Reply/set_status')->option(['real_name' => '修改关键字回复状态']);
     //图文列表
-    Route::get('wechat/news', 'v1.application.wechat.WechatNewsCategory/index');
+    Route::get('wechat/news', 'v1.application.wechat.WechatNewsCategory/index')->option(['real_name' => '图文列表']);
     //详情
-    Route::get('wechat/news/:id', 'v1.application.wechat.WechatNewsCategory/read');
+    Route::get('wechat/news/:id', 'v1.application.wechat.WechatNewsCategory/read')->option(['real_name' => '图文详情']);
     //保存图文
-    Route::post('wechat/news', 'v1.application.wechat.WechatNewsCategory/save');
+    Route::post('wechat/news', 'v1.application.wechat.WechatNewsCategory/save')->option(['real_name' => '保存图文']);
     //删除图文
-    Route::delete('wechat/news/:id', 'v1.application.wechat.WechatNewsCategory/delete');
+    Route::delete('wechat/news/:id', 'v1.application.wechat.WechatNewsCategory/delete')->option(['real_name' => '删除图文']);
     //发送图文消息
-    Route::post('wechat/push', 'v1.application.wechat.WechatNewsCategory/push');
-    /*微信用户管理*/
-    //用户列表
-    Route::get('wechat/user', 'v1.application.wechat.WechatUser/index');
-    //获取用户分组和标签
-    Route::get('wechat/user/tag_group', 'v1.application.wechat.WechatUser/get_tag_group');
-    //修改用户标签表单
-    Route::get('wechat/user_tag/:openid/edit', 'v1.application.wechat.WechatUser/edit_user_tag');
-    //修改用户标签
-    Route::put('wechat/user_tag/:openid', 'v1.application.wechat.WechatUser/update_user_tag');
-    //修改用户分组表单
-    Route::get('wechat/user_group/:openid/edit', 'v1.application.wechat.WechatUser/edit_user_group');
-    //修改用户分组
-    Route::put('wechat/user_group/:openid', 'v1.application.wechat.WechatUser/update_user_group');
-    //同步标签
-    Route::put('wechat/syn_tag/:openid', 'v1.application.wechat.WechatUser/syn_tag');
-    //标签列表
-    Route::get('wechat/tag', 'v1.application.wechat.WechatUser/tag');
-    //新增标签表单
-    Route::get('wechat/tag/create', 'v1.application.wechat.WechatUser/create_tag');
-    //新增标签
-    Route::post('wechat/tag', 'v1.application.wechat.WechatUser/save_tag');
-    //编辑标签表单
-    Route::get('wechat/tag/:id/edit', 'v1.application.wechat.WechatUser/edit_tag');
-    //编辑标签
-    Route::put('wechat/tag/:id', 'v1.application.wechat.WechatUser/update_tag');
-    //删除标签
-    Route::delete('wechat/tag/:id', 'v1.application.wechat.WechatUser/delete_tag');
-    //分组列表
-    Route::get('wechat/group', 'v1.application.wechat.WechatUser/group');
-    //新增分组表单
-    Route::get('wechat/group/create', 'v1.application.wechat.WechatUser/create_group');
-    //新增分组
-    Route::post('wechat/group', 'v1.application.wechat.WechatUser/save_group');
-    //编辑分组表单
-    Route::get('wechat/group/:id/edit', 'v1.application.wechat.WechatUser/edit_group');
-    //编辑分组
-    Route::put('wechat/group/:id', 'v1.application.wechat.WechatUser/update_group');
-    //删除分组
-    Route::delete('wechat/group/:id', 'v1.application.wechat.WechatUser/delete_group');
+    Route::post('wechat/push', 'v1.application.wechat.WechatNewsCategory/push')->option(['real_name' => '发送图文消息']);
     //用户行为列表
-    Route::get('wechat/action', 'v1.application.wechat.WechatMessage/index');
+    Route::get('wechat/action', 'v1.application.wechat.WechatMessage/index')->option(['real_name' => '用户行为列表']);
     //用户行为列表操作名称列表
-    Route::get('wechat/action/operate', 'v1.application.wechat.WechatMessage/operate');
+    Route::get('wechat/action/operate', 'v1.application.wechat.WechatMessage/operate')->option(['real_name' => '用户行为列表操作名称列表']);
     //客服列表
-    Route::get('wechat/kefu', 'v1.application.wechat.StoreService/index');
+    Route::get('wechat/kefu', 'v1.application.wechat.StoreService/index')->option(['real_name' => '客服列表']);
     //客服登录
-    Route::get('wechat/kefu/login/:id', 'v1.application.wechat.StoreService/keufLogin');
+    Route::get('wechat/kefu/login/:id', 'v1.application.wechat.StoreService/keufLogin')->option(['real_name' => '客服登录']);
     //新增客服选择用户列表
-    Route::get('wechat/kefu/create', 'v1.application.wechat.StoreService/create');
+    Route::get('wechat/kefu/create', 'v1.application.wechat.StoreService/create')->option(['real_name' => '新增客服选择用户列表']);
     //新增客服表单
-    Route::get('wechat/kefu/add', 'v1.application.wechat.StoreService/add');
+    Route::get('wechat/kefu/add', 'v1.application.wechat.StoreService/add')->option(['real_name' => '添加客服表单']);
     //保存新建的数据
-    Route::post('wechat/kefu', 'v1.application.wechat.StoreService/save');
+    Route::post('wechat/kefu', 'v1.application.wechat.StoreService/save')->option(['real_name' => '添加客服']);
     //编辑客服表单
-    Route::get('wechat/kefu/:id/edit', 'v1.application.wechat.StoreService/edit');
+    Route::get('wechat/kefu/:id/edit', 'v1.application.wechat.StoreService/edit')->option(['real_name' => '修改客服表单']);
     //保存编辑的数据
-    Route::put('wechat/kefu/:id', 'v1.application.wechat.StoreService/update');
+    Route::put('wechat/kefu/:id', 'v1.application.wechat.StoreService/update')->option(['real_name' => '修改客服']);
     //删除
-    Route::delete('wechat/kefu/:id', 'v1.application.wechat.StoreService/delete');
+    Route::delete('wechat/kefu/:id', 'v1.application.wechat.StoreService/delete')->option(['real_name' => '删除客服']);
     //修改状态
-    Route::put('wechat/kefu/set_status/:id/:status', 'v1.application.wechat.StoreService/set_status');
+    Route::put('wechat/kefu/set_status/:id/:status', 'v1.application.wechat.StoreService/set_status')->option(['real_name' => '修改客服状态']);
     //聊天记录
-    Route::get('wechat/kefu/record/:id', 'v1.application.wechat.StoreService/chat_user');
+    Route::get('wechat/kefu/record/:id', 'v1.application.wechat.StoreService/chat_user')->option(['real_name' => '聊天记录']);
     //查看对话
-    Route::get('wechat/kefu/chat_list', 'v1.application.wechat.StoreService/chat_list');
+    Route::get('wechat/kefu/chat_list', 'v1.application.wechat.StoreService/chat_list')->option(['real_name' => '查看对话']);
+
+    //下载小程序模版页面数据
+    Route::get('routine/info', 'v1.application.routine.RoutineTemplate/getDownloadInfo')->option(['real_name' => '下载小程序页面数据']);
+    //下载小程序模版
+    Route::post('routine/download', 'v1.application.routine.RoutineTemplate/downloadTemp')->option(['real_name' => '下载小程序模版']);
 
 })->middleware([
     \app\http\middleware\AllowOriginMiddleware::class,

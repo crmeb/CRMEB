@@ -57,9 +57,9 @@ class UserBill extends BaseModel
     public function getAddTimeAttr($value)
     {
         if (!empty($value)) {
-            if (is_string($value)){
+            if (is_string($value)) {
                 return $value;
-            }elseif (is_int($value)){
+            } elseif (is_int($value)) {
                 return date('Y-m-d H:i:s', (int)$value);
             }
         }
@@ -190,6 +190,18 @@ class UserBill extends BaseModel
     public function searchTakeAttr($query, $value)
     {
         $query->where('take', $value);
+    }
+
+    /**
+     *
+     * @param $query
+     * @param $value
+     */
+    public function searchIntegralTypeAttr($query, $value)
+    {
+        if ($value == 'get') {
+            $query->where('type', '<>', 'pay_product_integral_back');
+        }
     }
 
     /**

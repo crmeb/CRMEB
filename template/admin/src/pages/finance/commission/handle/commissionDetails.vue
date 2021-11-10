@@ -3,7 +3,7 @@
         <Modal v-model="modals" scrollable footer-hide closable title="用户详情" :mask-closable="false"
                width="700">
             <Spin size="large" fix v-if="spinShow"></Spin>
-            <div class="acea-row">
+            <div class="">
                 <div class="dashboard-workplace-header-tip">
                     <div class="dashboard-workplace-header-tip-desc">
                         <span class="dashboard-workplace-header-tip-desc-sp">姓名：{{detailsData.nickname}}</span>
@@ -15,7 +15,7 @@
                 </div>
             </div>
             <Divider dashed/>
-            <Form ref="formValidate" :label-width="labelWidth" :label-position="labelPosition" class="tabform" @submit.native.prevent>
+            <Form ref="formValidate" :label-width="75" :label-position="labelPosition" class="tabform" @submit.native.prevent>
                 <Row :gutter="24" type="flex">
 <!--                    <Col span="8">-->
 <!--                        <FormItem label="订单号/昵称：">-->
@@ -25,8 +25,7 @@
 <!--                    </Col>-->
                     <Col span="12">
                         <FormItem label="时间范围：" class="tab_data">
-                            <DatePicker :editable="false" style="width: 100%" @on-change="onchangeTime" format="yyyy-MM-dd"
-                                        type="daterange" placement="bottom-end" placeholder="自定义时间"></DatePicker>
+                            <DatePicker :editable="false" style="width: 100%" @on-change="onchangeTime" format="yyyy-MM-dd" type="daterange" placement="bottom-end" placeholder="请选择时间范围"></DatePicker>
                         </FormItem>
                     </Col>
                     <Col span="4">
@@ -34,7 +33,6 @@
                     </Col>
                 </Row>
             </Form>
-            <Divider dashed/>
             <Table :columns="columns" :data="tabList"
                    ref="table"
                    :loading="loading"
@@ -179,7 +177,7 @@
             }
 
             &-tip {
-                width: 82%;
+                width: 100%;
                 display: inline-block;
                 vertical-align: middle;
 
@@ -195,6 +193,7 @@
                         color: #17233D;
                         font-size: 12px;
                         display: inline-block;
+                        padding-bottom: 10px;
                     }
                 }
             }

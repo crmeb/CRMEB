@@ -36,7 +36,7 @@ class CopyTaobaoServices extends BaseServices
     /**
      * @var string
      */
-    protected $AttachmentCategoryName = '远程下载';
+    public $AttachmentCategoryName = '远程下载';
 
     /**
      * @var string[]
@@ -136,12 +136,124 @@ class CopyTaobaoServices extends BaseServices
                 break;
         }
         if (isset($result['status']) && $result['status']) {
-            return ['info' => $result['data']];
+
+            /** @var StoreProductServices $ProductServices */
+            $ProductServices = app()->make(StoreProductServices::class);
+            /** @var StoreCategoryServices $storeCatecoryService */
+            $storeCatecoryService = app()->make(StoreCategoryServices::class);
+            $data = [];
+            $productInfo = $result['data'];
+            //查询附件分类
+            /** @var SystemAttachmentCategoryServices $systemAttachmentCategoryService */
+            $systemAttachmentCategoryService = app()->make(SystemAttachmentCategoryServices::class);
+            $AttachmentCategory = $systemAttachmentCategoryService->getOne(['name' => $this->AttachmentCategoryName]);
+            //不存在则创建
+            if (!$AttachmentCategory) $AttachmentCategory = $systemAttachmentCategoryService->save(['pid' => '0', 'name' => $this->AttachmentCategoryName, 'enname' => '']);
+            //生成附件目录
+            try {
+                if (make_path('attach', 3, true) === '')
+                    throw new AdminException('无法创建文件夹，请检查您的上传目录权限：' . app()->getRootPath() . 'public' . DS . 'uploads' . DS . 'attach' . DS);
+
+            } catch (\Exception $e) {
+                throw new AdminException($e->getMessage() . '或无法创建文件夹，请检查您的上传目录权限：' . app()->getRootPath() . 'public' . DS . 'uploads' . DS . 'attach' . DS);
+            }
+            //开始图片下载处理
+            //放入主图
+            $images = [
+                ['w' => 305, 'h' => 305, 'line' => $productInfo['image'], 'valuename' => 'image']
+            ];
+            //放入轮播图
+            foreach ($productInfo['slider_image'] as $item) {
+                $value = ['w' => 640, 'h' => 640, 'line' => $item, 'valuename' => 'slider_image', 'isTwoArray' => true];
+                array_push($images, $value);
+            }
+            //执行下载
+            $res = $this->uploadImage($images, false, 0, $AttachmentCategory['id']);
+            if (!is_array($res)) throw new AdminException($this->errorInfo ? $this->errorInfo : '保存图片失败');
+            if (isset($res['image'])) $productInfo['image'] = $res['image'];
+            if (isset($res['slider_image'])) $productInfo['slider_image'] = $res['slider_image'];
+            $productInfo['image'] = str_replace('\\', '/', $productInfo['image']);
+            if (count($productInfo['slider_image'])) {
+                $productInfo['slider_image'] = array_map(function ($item) {
+                    $item = str_replace('\\', '/', $item);
+                    return $item;
+                }, $productInfo['slider_image']);
+            }
+            $data['tempList'] = $ProductServices->getTemp();
+            $menus = [];
+            foreach ($storeCatecoryService->getTierList(1) as $menu) {
+                $menus[] = ['value' => $menu['id'], 'label' => $menu['html'] . $menu['cate_name'], 'disabled' => $menu['pid'] == 0 ? 0 : 1];//,'disabled'=>$menu['pid']== 0];
+            }
+            $data['cateList'] = $menus;
+            $productInfo['attrs'] = $result['data']['info']['value'];
+            $productInfo['activity'] = ['默认', '秒杀', '砍价', '拼团'];
+            $productInfo['bar_code'] = '';
+            $productInfo['browse'] = 0;
+            $productInfo['cate_id'] = [];
+            $productInfo['code_path'] = '';
+            $productInfo['command_word'] = '';
+            $productInfo['coupons'] = [];
+            $productInfo['is_bargain'] = '';
+            $productInfo['is_benefit'] = 0;
+            $productInfo['is_best'] = 0;
+            $productInfo['is_del'] = 0;
+            $productInfo['is_good'] = 0;
+            $productInfo['is_hot'] = 0;
+            $productInfo['is_new'] = 0;
+            $productInfo['is_postage'] = 0;
+            $productInfo['is_seckill'] = 0;
+            $productInfo['is_show'] = 0;
+            $productInfo['is_show'] = 0;
+            $productInfo['is_sub'] = [];
+            $productInfo['is_vip'] = 0;
+            $productInfo['is_vip'] = 0;
+            $productInfo['label_id'] = [];
+            $productInfo['mer_id'] = 0;
+            $productInfo['mer_use'] = 0;
+            $productInfo['recommend_image'] = '';
+            $productInfo['sales'] = '';
+            $productInfo['sort'] = 0;
+            $productInfo['spec_type'] = 1;
+            $productInfo['is_virtual'] = 0;
+            $productInfo['virtual_type'] = 0;
+            $productInfo['spu'] = '';
+            $productInfo['id'] = 0;
+            $data['productInfo'] = $productInfo;
+            return $data;
         } else {
             throw new AdminException($result['msg']);
         }
     }
 
+    /**
+     * @param int $id
+     */
+    public function uploadDescriptionImage(int $id){
+        //查询附件分类
+        /** @var SystemAttachmentCategoryServices $systemAttachmentCategoryService */
+        $systemAttachmentCategoryService = app()->make(SystemAttachmentCategoryServices::class);
+        /** @var StoreDescriptionServices $storeDescriptionServices */
+        $storeDescriptionServices = app()->make(StoreDescriptionServices::class);
+        $AttachmentCategory = $systemAttachmentCategoryService->getOne(['name' => $this->AttachmentCategoryName]);
+        //不存在则创建
+        if (!$AttachmentCategory) $AttachmentCategory = $systemAttachmentCategoryService->save(['pid' => '0', 'name' => $this->AttachmentCategoryName, 'enname' => '']);
+        //生成附件目录
+        try {
+            if (make_path('attach', 3, true) === '')
+                throw new AdminException('无法创建文件夹，请检查您的上传目录权限：' . app()->getRootPath() . 'public' . DS . 'uploads' . DS . 'attach' . DS);
+
+        } catch (\Exception $e) {
+            throw new AdminException($e->getMessage() . '或无法创建文件夹，请检查您的上传目录权限：' . app()->getRootPath() . 'public' . DS . 'uploads' . DS . 'attach' . DS);
+        }
+        $description = $storeDescriptionServices->getDescription(['product_id '=>$id,'type'=>0]);
+        if (!$description) throw new AdminException('商品参数错误！');
+        //替换并下载详情里面的图片默认下载全部图片
+        $description = preg_replace('#<style>.*?</style>#is', '', $description);
+        $description = $this->uploadImage([], $description, 1, $AttachmentCategory['id']);
+        $storeDescriptionServices->saveDescription((int)$id, $description);
+        return true;
+
+    }
     /**
      * 保存数据
      * @param array $data

@@ -8,10 +8,9 @@
 // | Author: CRMEB Team <admin@crmeb.com>
 // +----------------------------------------------------------------------
 
-
 let app = getApp()
 
-export function goShopDetail(item,uid) {
+export function goShopDetail(item, uid) {
 	return new Promise(resolve => {
 		if (item.activity && item.activity.type === "1") {
 			uni.navigateTo({
@@ -41,6 +40,3 @@ export function goPage() {
 		}
 	});
 }
-
-
-

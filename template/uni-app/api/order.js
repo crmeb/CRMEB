@@ -125,8 +125,15 @@ export function orderDel(uni) {
  * 订单详情
  * @param string uni 
  */
-export function getOrderDetail(uni) {
-	return request.get('order/detail/' + uni);
+export function getOrderDetail(uni,cart_id) {
+	return request.get('order/detail/' + uni +`${cart_id ? `/${cart_id}`:''}` );
+}
+/**
+ * 退款订单详情
+ * @param string uni 
+ */
+export function getRefundOrderDetail(uni,cart_id) {
+	return request.get('order/refund_detail/' + uni +`${cart_id ? `/${cart_id}`:''}` );
 }
 
 /**
@@ -179,10 +186,11 @@ export function orderRefundVerify(data) {
  * 订单确认获取订单详细信息
  * @param string cartId
  */
-export function orderConfirm(cartId, news) {
+export function orderConfirm(cartId, news, addressId) {
 	return request.post('order/confirm', {
-		cartId: cartId,
-		'new': news
+		cartId,
+		'new': news,
+		addressId
 	});
 }
 
@@ -276,4 +284,20 @@ export function aliPay(key, quitUrl) {
 	}, {
 		noAuth: true
 	});
+}
+
+
+/**
+ * 退货物流单号提交
+ * @param {Object} data
+ */
+export function refundExpress(data) {
+	return request.post("order/refund/express", data);
+}
+
+/**
+ * 分类购物车列表
+ */ 
+export function vcartList() {
+	return request.get("v2/cart_list");
 }

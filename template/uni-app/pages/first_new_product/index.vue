@@ -12,7 +12,9 @@
 				<text class='loading iconfont icon-jiazai' :hidden='loading==false'></text>{{loadTitle}}
 			</view>
 		</view>
+		<!-- #ifndef MP -->
 		<home></home>
+		<!-- #endif -->
 	</view>
 </template>
 
@@ -81,7 +83,6 @@
 				this.name = '首发新品';
 				this.icon = 'icon-xinpin';
 			}
-			this.getIndexGroomList();
 		},
 		onReachBottom: function() {
 			this.getUseCoupons();

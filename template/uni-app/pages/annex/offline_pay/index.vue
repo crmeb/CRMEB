@@ -7,7 +7,7 @@
 					￥
 					<input v-model.number="money" class="input" name="money" type="digit" placeholder="0.00" />
 				</view>
-				<view v-if="payPrice" class="discount">会员优惠金额：￥{{ payPrice }}</view>
+				<view v-if="payPrice" class="discount">会员优惠价：￥{{ payPrice }}</view>
 			</view>
 		</view>
 		<view class="radio-section">
@@ -75,9 +75,7 @@
 		computed: mapGetters(['isLogin']),
 		onLoad(options) {
 			if (!this.isLogin) {
-				// #ifdef H5 || APP-PLUS
 				toLogin()
-				// #endif
 			}
 			// #ifdef H5
 			if (options.code) {
@@ -100,7 +98,6 @@
 		},
 		methods: {
 			getPayType() {
-				console.log(123)
 				orderOfflinePayType()
 					.then(res => {
 						const {
@@ -122,9 +119,9 @@
 								content: '线下支付已关闭，请点击确认按钮返回主页',
 								showCancel: false,
 								success() {
-									uni.navigateTo({
+									uni.switchTab({
 										url: '/pages/index/index'
-									});
+									})
 								}
 							});
 						}
@@ -179,6 +176,7 @@
 					price: this.payPrice || this.money,
 					money: this.money
 				};
+				
 				// #ifdef H5
 				if (this.isWeixin) {
 					data.from = 'weixin';
@@ -345,6 +343,10 @@
 </style>
 
 <style lang="scss" scoped>
+	/deep/uni-radio .uni-radio-input.uni-radio-input-checked {
+	    border: 1px solid #FDC383 !important;
+	    background-color: #FDC383 !important;
+	}
 	.input-section {
 		.section-hd {
 			padding: 30rpx;
@@ -437,12 +439,11 @@
 		height: 86rpx;
 		border-radius: 43rpx;
 		margin: 114rpx 30rpx 30rpx;
-		background-color: #e93323;
+		background: linear-gradient(90deg, #FEE2B7 0%, #FDC383 100%);
 		font-size: 30rpx;
 		line-height: 86rpx;
-		color: #ffffff;
+		color: #5D3324;
 	}
-
 	.alipay {
 		display: none;
 	}

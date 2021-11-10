@@ -560,3 +560,26 @@ export function productApi (id) {
         kefu:true
     });
 }
+
+/**
+ * 客服链接获取
+ * @constructor
+ */
+ export function getWorkermanUrl () {
+  return request({
+      url: `get_workerman_url`,
+      method: 'get',
+  });
+}
+
+/**
+ * 复制粘贴上传图片
+ */
+ export function uploadImg(data) {
+  return request({
+    url: `upload`,
+    method: 'post',
+    data,
+    kefu: true
+  });
+}

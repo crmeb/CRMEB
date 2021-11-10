@@ -35,7 +35,7 @@
                 </FormItem>
                 <FormItem label="电子面单：" class="form-item" label-position="right" :label-width="100" v-if="orderTempList.length>0">
                     <Select v-model="formValidate.electronic" placeholder="请选择电子面单" style="width: 80%">
-                        <Option :value="item.temp_id" v-for="(item,index) in orderTempList">{{item.title}}</Option>
+                        <Option :value="item.temp_id" v-for="(item,index) in orderTempList" :key="index">{{item.title}}</Option>
                     </Select>
                     <Button style="flex: 1;margin-left:21px;" @click="lookImg">预览</Button>
                     <viewer :images="orderTempList"
@@ -269,7 +269,6 @@
             },
             // 物流选中
             bindChange(val){
-                console.log(val)
                 this.formValidate.logisticsName = val.label
                 if(this.formValidate.shipStatus == 2){
                     orderTemp({

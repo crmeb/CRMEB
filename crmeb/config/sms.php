@@ -48,6 +48,34 @@ return [
                 'ORDER_PAY_FALSE' => 528116,
             ],
         ],
+        //创蓝
+        'chuanglan' => [
+            //短信模板id
+            'template_id' => [
+                //验证码自定义时效
+                'VERIFICATION_CODE_TIME' => 435250,
+                //验证码
+                'VERIFICATION_CODE' => 441495,
+                //支付成功
+                'PAY_SUCCESS_CODE' => 440396,
+                //发货提醒
+                'DELIVER_GOODS_CODE' => 441596,
+                //确认收货提醒
+                'TAKE_DELIVERY_CODE' => 440402,
+                //管理员下单提醒
+                'ADMIN_PLACE_ORDER_CODE' => 440405,
+                //管理员退货提醒
+                'ADMIN_RETURN_GOODS_CODE' => 440415,
+                //管理员支付成功提醒
+                'ADMIN_PAY_SUCCESS_CODE' => 440406,
+                //管理员确认收货
+                'ADMIN_TAKE_DELIVERY_CODE' => 440408,
+                //改价提醒
+                'PRICE_REVISION_CODE' => 440410,
+                //订单未支付
+                'ORDER_PAY_FALSE' => 440409,
+            ],
+        ],
         //阿里云
         'aliyun' => [
             'template_id' => [

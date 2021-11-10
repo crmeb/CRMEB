@@ -124,7 +124,7 @@ class ProductController
     {
         /** @var StoreProductServices $product */
         $product = app()->make(StoreProductServices::class);
-        $list = $product->getProducts(['is_good' => 1, 'is_del' => 0, 'is_show' => 1]);
+        $list = get_thumb_water($product->getProducts(['is_good' => 1, 'is_del' => 0, 'is_show' => 1]), 'mid');
         return app('json')->successful(compact('list'));
     }
 }

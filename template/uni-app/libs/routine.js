@@ -52,7 +52,6 @@ class Routine {
 					spread_code: app.globalData.code
 				})
 				.then(res => {
-					console.log(res)
 					if (res.data && res.data.token !== undefined) {
 						uni.hideLoading();
 						let time = res.data.expires_time - Math.round(new Date() / 1000);

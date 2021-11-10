@@ -48,13 +48,24 @@ class StoreServiceRecordServices extends BaseServices
     public function getServiceList(int $userId, string $nickname, int $isTourist = 0)
     {
         [$page, $limit] = $this->getPageValue();
-        $list = $this->dao->getServiceList(['user_id' => $userId, 'title' => $nickname, 'is_tourist' => $isTourist], $page, $limit, ['user']);
+        $list = $this->dao->getServiceList(['user_id' => $userId, 'title' => $nickname, 'is_tourist' => $isTourist], $page, $limit, ['user', 'service']);
         foreach ($list as &$item) {
             if ($item['message_type'] == 1) {
                 $item['message'] = Str::substrUTf8($item['message'], '10', 'UTF-8', '');
             }
-            if (isset($item['wx_nickname']) && $item['wx_nickname']) $item['nickname'] = $item['wx_nickname'];
-            if (isset($item['wx_avatar']) && $item['wx_avatar']) $item['avatar'] = $item['wx_avatar'];
+            if (isset($item['kefu_nickname']) && $item['kefu_nickname']) {
+                $item['nickname'] = $item['kefu_nickname'];
+            }
+            if (isset($item['wx_nickname']) && $item['wx_nickname'] && !$item['nickname']) {
+                $item['nickname'] = $item['wx_nickname'];
+            }
+            if (isset($item['kefu_avatar']) && $item['kefu_avatar']) {
+                $item['avatar'] = $item['kefu_avatar'];
+            }
+            if (isset($item['wx_avatar']) && $item['wx_avatar'] && !$item['avatar']) {
+                $item['avatar'] = $item['wx_avatar'];
+            }
+            $item['_update_time'] = date('Y-m-d H:i', $item['update_time']);
         }
         return $list;
     }

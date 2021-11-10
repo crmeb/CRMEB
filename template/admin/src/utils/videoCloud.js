@@ -24,7 +24,6 @@ export default {
         }
     },
     cosUpload (file, config, uploading) {
-        console.log(config);
         let cos = new Cos({
             getAuthorization (options, callback) {
                 callback({
@@ -36,7 +35,6 @@ export default {
             }
         });
         let fileObject = file.target.files[0];
-        console.log(fileObject);
         let Key = fileObject.name;
         let pos = Key.lastIndexOf('.');
         let suffix = '';
@@ -51,7 +49,6 @@ export default {
                 Key: filename, /* 必须 */
                 Body: fileObject, // 上传文件对象
                 onProgress: function (progressData) {
-                    console.log(progressData)
                     uploading(progressData);
                 }
             }, function (err, data) {
@@ -94,10 +91,8 @@ export default {
         };
         return new Promise((resolve, reject) => {
             xhr.onload = function () {
-                console.log('上传中');
                 if (/^2\d\d$/.test('' + xhr.status)) {
                     var ETag = xhr.getResponseHeader('etag');
-                    console.log(null, { url: url, ETag: ETag });
                     videoIng(false, 0);
                     resolve({ url: url, ETag: ETag });
                 } else {
@@ -109,7 +104,6 @@ export default {
             };
             xhr.send(fileObject);
             xhr.onreadystatechange = function () {
-                console.log(xhr.statusText, xhr.responseText, 'xhr')
             }
         });
     },
@@ -170,7 +164,6 @@ export default {
         return new Promise((resolve, reject) => {
             observable.subscribe({
                 next: (result) => {
-                    console.log(result);
                     let progress = Math.round(result.total.loaded / result.total.size);
                     videoIng(true, progress);
                     // 主要用来展示进度

@@ -10,14 +10,19 @@
 
 import $store from "@/store";
 import {
-	HTTP_REQUEST_URL,
-	VUE_APP_WS_URL
+	HTTP_REQUEST_URL
 } from "@/config/app.js";
-let wsUrl = `${VUE_APP_WS_URL}`
+import {
+	VUE_APP_WS_URL
+} from "@/utils/index.js";
+import {
+	getServerType
+} from '@/api/api.js';
 const Socket = function() {
-	
+
 	// this.ws.close(this.close.bind(this));
 };
+
 
 // #ifdef H5
 function wss(wsSocketUrl) {
@@ -38,7 +43,7 @@ Socket.prototype = {
 	//   this.ws.close();
 	// },
 	onSocketOpen: function(my) {
-		uni.$emit('socketOpen',my)
+		uni.$emit('socketOpen', my)
 	},
 	init: function() {
 		var that = this;
@@ -49,9 +54,9 @@ Socket.prototype = {
 		}, 10000);
 	},
 	send: function(data) {
-		let gl13r25s4sn3or36o6sg5h = JSON.stringify(data)
+		let datas = JSON.stringify(data)
 		return uni.sendSocketMessage({
-			data: gl13r25s4sn3or36o6sg5h
+			data: datas
 		});
 	},
 	onMessage: function(res) {
@@ -68,27 +73,25 @@ Socket.prototype = {
 		uni.$emit("socket_close");
 	},
 	onError: function(e) {
-		console.log(e);
 		uni.$emit("socket_error", e);
 	},
 	close: function() {
 		uni.closeSocket();
 	},
-	onStart:function(){
+	onStart: function(token, form_type) {
+		let wssUrl = `${VUE_APP_WS_URL}`
 		this.ws = uni.connectSocket({
 			// #ifdef H5
-			url:wss(wsUrl),
+			url: wss(wssUrl + '?type=user&token=' + token + '&form_type=' + form_type),
 			// #endif
-			// #ifdef MP
-			url:wsUrl,
+			// #ifdef MP || APP-PLUS
+			url: wssUrl + '?type=user&token=' + token + '&form_type=' + form_type,
 			// #endif
 			header: {
 				'content-type': 'application/json'
 			},
 			method: 'GET',
-			success: (res) => {
-				console.log(res, 'success');
-			}
+			success: (res) => {}
 		});
 		this.ws.onOpen(this.onSocketOpen.bind(this))
 		this.ws.onError(this.onError.bind(this));

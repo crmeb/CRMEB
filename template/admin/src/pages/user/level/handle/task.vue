@@ -11,8 +11,8 @@
                     </FormItem>
                 </Col>
                 <Col v-bind="grid">
-                    <FormItem label="任务名称：" prop="status2" label-for="status2">
-                        <Input search enter-button  v-model="levelFrom.name" placeholder="请输入任务名称" @on-search="userSearchs" style="width: 100%"/>
+                    <FormItem label="等级名称：" prop="status2" label-for="status2">
+                        <Input search enter-button  v-model="levelFrom.name" placeholder="请输入等级名称" @on-search="userSearchs" style="width: 100%"/>
                     </FormItem>
                 </Col>
             </Row>

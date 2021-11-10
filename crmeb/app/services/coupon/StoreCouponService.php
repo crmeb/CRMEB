@@ -71,7 +71,7 @@ class StoreCouponService extends BaseServices
                 $f[] = Form::select('category_id', '选择品类')->setOptions(Form::setOptions($options))->filterable(1)->col(12);
                 break;
             case 2://商品券
-                $f[] = Form::frameImages('image', '商品', Url::buildUrl('admin/store.StoreProduct/index', array('fodder' => 'image', 'type' => 'many')))->icon('ios-add')->width('60%')->height('550px')->props(['srcKey' => 'image']);
+                $f[] = Form::frameImages('image', '商品', Url::buildUrl('admin/store.StoreProduct/index', array('fodder' => 'image', 'type' => 'many')))->icon('ios-add')->width('950px')->height('505px')->modal(['footer-hide' => true])->props(['srcKey' => 'image']);
                 $f[] = Form::hidden('product_id', '');
                 break;
         }
@@ -209,7 +209,7 @@ class StoreCouponService extends BaseServices
     {
         /** @var StoreCartServices $services */
         $services = app()->make(StoreCartServices::class);
-        $cartGroup = $services->getUserProductCartListV1($uid, $cartId, $new, 1);
+        $cartGroup = $services->getUserProductCartListV1($uid, $cartId, $new);
         /** @var StoreCouponUserServices $coupServices */
         $coupServices = app()->make(StoreCouponUserServices::class);
         return $coupServices->getUsableCouponList($uid, $cartGroup);

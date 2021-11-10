@@ -55,6 +55,21 @@ abstract class BaseDao
     }
 
     /**
+     * 获取某些条件数据
+     * @param array $where
+     * @param string $field
+     * @param int $page
+     * @param int $limit
+     */
+    public function selectList(array $where, $field = '*', $page = 0, $limit = 0)
+    {
+        return $this->getModel()->where($where)->field($field)
+            ->when($page && $limit, function ($query) use ($page, $limit) {
+                $query->page($page, $limit);
+            })->select();
+    }
+
+    /**
      * 获取某些条件总数
      * @param array $where
      */
@@ -392,18 +407,11 @@ abstract class BaseDao
 
         $product = $this->getModel()->where($where)->field($field)->find();
         if ($product) {
-            $stockNum = $quotaNum = $num;
-            if ($num > $product['stock']) {
-                throw new ValidateException('商品库存不足');
-            }
-            if ($isQuota && $num > $product['quota']) {
-                throw new ValidateException('商品库存不足');
-            }
-            return $this->getModel()->where($where)->when($isQuota, function ($query) use ($quotaNum) {
-                $query->dec('quota', $quotaNum);
-            })->dec($stock, $stockNum)->inc($sales, $num)->update();
+            return $this->getModel()->where($where)->when($isQuota, function ($query) use ($num) {
+                $query->dec('quota', $num);
+            })->dec($stock, $num)->inc($sales, $num)->update();
         }
-        return true;
+        return false;
     }
 
     /**

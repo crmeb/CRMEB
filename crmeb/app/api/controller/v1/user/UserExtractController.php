@@ -68,7 +68,7 @@ class UserExtractController
             if (!preg_match('/^([1-9]{1})(\d{15}|\d{16}|\d{18})$/', $extractInfo['cardnum']))
                 return app('json')->fail('银行卡号输入有误');
         if ($extractInfo['extract_type'] == 'alipay') {
-            if (!$extractInfo['alipay_code']) return app('json')->fail('请输入支付宝账号');
+            if (trim($extractInfo['name']) == '') return app('json')->fail('请输入支付宝账号');
         } else if ($extractInfo['extract_type'] == 'bank') {
             if (!$extractInfo['cardnum']) return app('json')->fail('请输入银行卡账号');
             if (!$extractInfo['bankname']) return app('json')->fail('请输入开户行信息');

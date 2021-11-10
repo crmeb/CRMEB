@@ -52,7 +52,6 @@ export default {
 	computed: mapGetters(['isLogin', 'userInfo']),
 	watch: {
 		isLogin(n) {
-			console.log(n);
 			n === true && this.$emit('onLoadFun', this.userInfo);
 		}
 	},
@@ -62,7 +61,6 @@ export default {
 		if (!this.isLogin && !Cache.has(STATE_R_KEY)) {
 			wx.login({
 				success(res) {
-					console.log(res);
 					Cache.set(STATE_R_KEY, res.code, 10800);
 					let spread = app.globalData.spid ? app.globalData.spid : '';
 					silenceAuth({ code: res.code, spread: spread, spid: app.globalData.code })
@@ -80,7 +78,6 @@ export default {
 							}
 						})
 						.catch(res => {
-							console.log(res);
 						});
 				}
 			});
@@ -144,12 +141,11 @@ export default {
 					uni.hideLoading();
 				})
 				.catch(res => {
-					console.log(res);
 					uni.hideLoading();
 				});
 		},
 		setUserInfo(e) {
-			uni.showLoading({ title: '正在登陆中' });
+			uni.showLoading({ title: '正在登录中' });
 			Routine.getCode()
 				.then(code => {
 					this.getUserPhoneNumber(e.detail.encryptedData, e.detail.iv, code);
@@ -236,7 +232,7 @@ export default {
 	font-size: 28rpx;
 	color: #fff;
 	font-weight: bold;
-	background-color: #e93323;
+	background-color: var(--view-theme);
 	border-radius: 0;
 	padding: 0;
 }

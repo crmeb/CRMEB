@@ -1,0 +1,13 @@
+{
+  "navigationStyle": "custom",
+  "usingComponents": {
+    "cus-preview-img": "/components/cus-previewImg/cus-previewImg",
+    "product-con-swiper": "/components/productConSwiper/index",
+    "kefu-icon": "/components/kefuIcon/index",
+    "authorize": "/components/Authorize",
+    "product-window": "/components/productWindow/index",
+    "user-evaluation": "/components/userEvaluation/index",
+    "count-down": "/components/countDown/index",
+    "parser": "/components/jyf-parser/jyf-parser"
+  }
+}

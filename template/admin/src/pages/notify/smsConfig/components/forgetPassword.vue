@@ -181,9 +181,7 @@
             },
             //登录
             handleSubmit (name) {
-                console.log('kkkkkkkkkkk1');
                 this.$refs[name].validate((valid) => {
-                    console.log('kkkkkkkkkkk2');
                     if (valid) {
                         configApi({
                             account: this.formInline.account,

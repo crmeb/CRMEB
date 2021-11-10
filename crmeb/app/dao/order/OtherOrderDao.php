@@ -142,6 +142,23 @@ class OtherOrderDao extends BaseDao
             ->page($page, $limit)->select()->toArray();
     }
 
+    /**获取会员记录
+     * @param array $where
+     * @param int $page
+     * @param int $limit
+     * @param string $order
+     * @return array
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     */
+    public function getMemberRecord(array $where = [], int $page = 0, int $limit = 0, string $order = '')
+    {
+        return $this->search($where)
+            ->with(['user'])
+            ->order(($order ? $order . ' ,' : '') . 'id desc')
+            ->page($page, $limit)->select()->toArray();
+    }
 
     public function search(array $where = [])
     {

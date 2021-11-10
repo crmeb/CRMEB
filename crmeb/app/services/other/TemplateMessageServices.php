@@ -65,4 +65,5 @@ class TemplateMessageServices extends BaseServices
     {
         return $this->dao->value(['type' => $type, 'tempkey' => $templateId, 'status' => 1], 'tempid');
     }
+
 }

@@ -8,7 +8,7 @@
 // +----------------------------------------------------------------------
 // | Author: CRMEB Team <admin@crmeb.com>
 // +----------------------------------------------------------------------
-declare (strict_types=1);
+declare (strict_types = 1);
 
 namespace app\dao\coupon;
 
@@ -45,5 +45,15 @@ class StoreCouponIssueUserDao extends BaseDao
     public function getList(array $where, int $page, int $limit)
     {
         return $this->search($where)->with('userInfo')->page($page, $limit)->select()->toArray();
+    }
+
+    /**
+     * 删除用户领取的优惠券
+     * @param $where
+     * @return bool
+     */
+    public function delIssueUserCoupon($where)
+    {
+        return $this->getModel()->where($where)->delete();
     }
 }

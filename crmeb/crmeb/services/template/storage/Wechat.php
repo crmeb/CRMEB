@@ -46,10 +46,12 @@ class Wechat extends BaseMessage
      */
     public function send(string $templateId, array $data = [])
     {
+        //从配置文件中获取模版编号
         $templateId = $this->getTemplateCode($templateId);
         if (!$templateId) {
             return $this->setError('Template number does not exist');
         }
+        //根据模版编号获取模版ID
         $tempid = $this->getTempId($templateId);
         if (!$tempid) {
             return $this->setError('Template ID does not exist');
@@ -103,5 +105,13 @@ class Wechat extends BaseMessage
     public function getIndustry()
     {
         return WechatService::noticeService()->getIndustry();
+    }
+    /**
+     * 设置模版消息行业
+     * @return \EasyWeChat\Support\Collection
+     */
+    public function setIndustry($one,$two)
+    {
+        return WechatService::noticeService()->setIndustry($one,$two);
     }
 }

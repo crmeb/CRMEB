@@ -44,7 +44,7 @@ class UserLabelDao extends BaseDao
      */
     public function getList(int $page = 0, int $limit = 0, array $where = []): array
     {
-        return $this->getModel()->when(isset($where['label_cate']) && $where['label_cate'], function ($query) use ($where) {
+        return $this->getModel()->with(['cateName'])->when(isset($where['label_cate']) && $where['label_cate'], function ($query) use ($where) {
             $query->where('label_cate', $where['label_cate']);
         })->page($page, $limit)->select()->toArray();
     }

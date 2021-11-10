@@ -28,7 +28,7 @@ export default {
           href: 'https://help.crmeb.net'
         }
       ],
-      copyright: 'Copyright © 2021 西安众邦网络科技有限公司'
+      copyright: 'Copyright © 2021 | 西安众邦网络科技有限公司'
     }
   },
   mounted () {
@@ -46,7 +46,7 @@ export default {
     .ivu-global-footer {
       /* margin: 48px 0 24px 0; */
       /* padding: 0 16px; */
-      margin: 15px 0px;
+      margin: 5px 0px;
       text-align: center;
       box-sizing: border-box;
     }
@@ -54,7 +54,7 @@ export default {
        flex: 0 0 auto;
      }
     .ivu-global-footer-links {
-      margin-bottom: 8px;
+      margin-bottom: 5px;
     }
     .ivu-global-footer-links a:not(:last-child) {
       margin-right: 40px;

@@ -52,7 +52,7 @@ class StoreBargainController
     public function lst(Request $request)
     {
         $bargainList = $this->services->getBargainList();
-        return app('json')->successful($bargainList);
+        return app('json')->successful(get_thumb_water($bargainList));
     }
 
     /**
@@ -139,7 +139,7 @@ class StoreBargainController
 
         /** @var StoreBargainUserHelpServices $bargainUserHelp */
         $bargainUserHelp = app()->make(StoreBargainUserHelpServices::class);
-        $price = $bargainUserHelp->getPrice($request, $bargainId, $bargainUserUid);
+        $price = $bargainUserHelp->getPrice($request->uid(), (int)$bargainId, (int)$bargainUserUid);
         return app('json')->successful($price);
     }
 
@@ -229,7 +229,7 @@ class StoreBargainController
         $bargainUser = app()->make(StoreBargainUserServices::class);
         $bargainUser->editBargainUserStatus($uid);// TODO 判断过期砍价活动
         $list = $bargainUser->getBargainUserAll($uid);
-        if (count($list)) return app('json')->successful($list);
+        if (count($list)) return app('json')->successful(get_thumb_water($list));
         else return app('json')->successful([]);
     }
 
@@ -269,5 +269,18 @@ class StoreBargainController
         } else {
             return app('json')->fail('生成海报失败');
         }
+    }
+
+    /**
+     * 获取分享海报信息
+     * @param Request $request
+     * @return mixed
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     */
+    public function posterInfo(Request $request, $bargainId)
+    {
+        return app('json')->success($this->services->posterInfo((int)$bargainId, $request->user()));
     }
 }

@@ -1,54 +1,113 @@
 <template>
-	<view class="productList">
-		<view class='list acea-row row-between-wrapper' v-if="isShow && bastList.length">
-			<view class='item' v-for="(item,index) in bastList" :key="index" @click="goDetail(item)">
-				<view class='pictrue'>
-					<image :src='item.image'></image>
-					<span class="pictrue_log_class pictrue_log_big" v-if="item.activity && item.activity.type === '1'">秒杀</span>
-					<span class="pictrue_log_class pictrue_log_big" v-if="item.activity && item.activity.type === '2'">砍价</span>
-					<span class="pictrue_log_class pictrue_log_big" v-if="item.activity && item.activity.type === '3'">拼团</span>
+	<view>
+		<view class="productList" :style="colorStyle">
+			<view class='index-wrapper acea-row row-between-wrapper' v-if="isShow && bastList.length">
+				<view class='title acea-row row-between-wrapper'>
+					<view class='text'>
+						<view class='name line1'>
+							{{titleInfo[0].val}}
+						</view>
+						<view class='line1 txt-btn'>{{titleInfo[1].val}}</view>
+					</view>
+					<view class='more' @click="gopage(titleInfo[2].val)">
+						更多
+						<text class='iconfont icon-jiantou'></text>
+					</view>
 				</view>
-				<view class='text'>
-					<view class='name line1'>{{item.store_name}}</view>
-					<view class='money font-color'>￥<text class='num'>{{item.price}}</text></view>
-					<view class='vip acea-row row-between-wrapper'>
-						<view class='vip-money' v-if="item.vip_price && item.vip_price > 0 && item.base">￥{{item.vip_price}}
-							<image src='../../../static/images/jvip.png' class="jvip"></image>
+				<view class="item-box">
+					<view class='item' v-for="(item,index) in bastList" :key="index" @click="goDetail(item)">
+						<view class='pictrue'>
+							<image :src='item.image'></image>
+							<!-- 			<span class="pictrue_log_class pictrue_log_big" v-if="item.activity && item.activity.type === '1'">秒杀</span>
+						<span class="pictrue_log_class pictrue_log_big" v-if="item.activity && item.activity.type === '2'">砍价</span>
+						<span class="pictrue_log_class pictrue_log_big" v-if="item.activity && item.activity.type === '3'">拼团</span> -->
 						</view>
-						<view class='vip-money' v-if="item.vip_price && item.vip_price > 0 && item.is_vip">￥{{item.vip_price}}
-							<image src='../../../static/images/vip.png'></image>
+						<view class='text'>
+							<view class='name line2'>{{item.store_name}}</view>
+							<view class="type">
+								<view class="type-sty" v-if="item.activity && item.activity.type == '1'">秒杀</view>
+								<view class="type-sty" v-if="item.activity && item.activity.type == '2'">砍价</view>
+								<view class="type-sty" v-if="item.activity && item.activity.type == '3'">砍价</view>
+							</view>
+							<view class='vip acea-row'>
+								<view class='money font-color'>￥<text class='num'>{{item.price}}</text></view>
+								<view class='vip-money' v-if="item.vip_price && item.vip_price > 0 && item.base">
+									￥{{item.vip_price}}
+									<image src='../../../static/images/vip.png' class="jvip"></image>
+								</view>
+								<view class='vip-money' v-if="item.vip_price && item.vip_price > 0 && item.is_vip">
+									￥{{item.vip_price}}
+									<image src='../../../static/images/vip.png'></image>
+								</view>
+								<!-- <view>已售{{item.sales}}{{item.unit_name}}</view> -->
+							</view>
 						</view>
-						<view>已售{{item.sales}}{{item.unit_name}}</view>
+					</view>
+				</view>
+
+			</view>
+			<view class='index-wrapper list acea-row row-between-wrapper' v-if="!isShow && isIframe && bastList.length">
+				<view class='title acea-row row-between-wrapper'>
+					<view class='text'>
+						<view class='name line1'>
+							{{titleInfo[0].val}}
+						</view>
+						<view class='line1 txt-btn'>{{titleInfo[1].val}}</view>
+					</view>
+					<view class='more' @click="gopage(titleInfo[2].val)">
+						更多
+						<text class='iconfont icon-jiantou'></text>
+					</view>
+				</view>
+				<view class="item-box">
+
+					<view class='item' v-for="(item,index) in bastList" :key="index" @click="goDetail(item)">
+						<view class='pictrue'>
+							<image :src='item.image'></image>
+							<!-- 			<span class="pictrue_log_class pictrue_log_big" v-if="item.activity && item.activity.type === '1'">秒杀</span>
+					<span class="pictrue_log_class pictrue_log_big" v-if="item.activity && item.activity.type === '2'">砍价</span>
+					<span class="pictrue_log_class pictrue_log_big" v-if="item.activity && item.activity.type === '3'">拼团</span> -->
+						</view>
+						<view class='text'>
+							<view class='name line2'>{{item.store_name}}</view>
+							<view class="type">
+								<view class="type-sty" v-if="item.activity && item.activity.type == '1'">秒杀</view>
+								<view class="type-sty" v-if="item.activity && item.activity.type == '2'">砍价</view>
+								<view class="type-sty" v-if="item.activity && item.activity.type == '3'">砍价</view>
+								<view class="type-sty" v-if="item.checkCoupon">券</view>
+							</view>
+							<view class='money font-color'>￥<text class='num'>{{item.price}}</text></view>
+							<view class='vip acea-row row-between-wrapper'>
+								<view class='vip-money' v-if="item.vip_price && item.vip_price > 0 && item.base">
+									￥{{item.vip_price}}
+									<image src='../../../static/images/vip.png' class="jvip"></image>
+								</view>
+								<view class='vip-money' v-if="item.vip_price && item.vip_price > 0 && item.is_vip">
+									￥{{item.vip_price}}
+									<image src='../../../static/images/vip.png'></image>
+								</view>
+								<!-- <view>已售{{item.sales}}{{item.unit_name}}</view> -->
+							</view>
+						</view>
 					</view>
 				</view>
 			</view>
-		</view>
-		<view class='list acea-row row-between-wrapper' v-if="!isShow && isIframe && bastList.length">
-			<view class='item' v-for="(item,index) in bastList" :key="index" @click="goDetail(item)">
-				<view class='pictrue'>
-					<image :src='item.image'></image>
-					<span class="pictrue_log_class pictrue_log_big" v-if="item.activity && item.activity.type === '1'">秒杀</span>
-					<span class="pictrue_log_class pictrue_log_big" v-if="item.activity && item.activity.type === '2'">砍价</span>
-					<span class="pictrue_log_class pictrue_log_big" v-if="item.activity && item.activity.type === '3'">拼团</span>
-				</view>
-				<view class='text'>
-					<view class='name line1'>{{item.store_name}}</view>
-					<view class='money font-color'>￥<text class='num'>{{item.price}}</text></view>
-					<view class='vip acea-row row-between-wrapper'>
-						<view class='vip-money' v-if="item.vip_price && item.vip_price > 0 && item.base">￥{{item.vip_price}}
-							<image src='../../../static/images/jvip.png' class="jvip"></image>
+			<block v-if="isIframe && !bastList.length">
+				<view class='index-wrapper' v-if="isIframe && !fastList.length">
+					<view class='title acea-row row-between-wrapper'>
+						<view class='text'>
+							<view class='name line1'>{{titleInfo[0].val}}</view>
+							<view class='line1 txt-btn'>{{titleInfo[1].val}}</view>
 						</view>
-						<view class='vip-money' v-if="item.vip_price && item.vip_price > 0 && item.is_vip">￥{{item.vip_price}}
-							<image src='../../../static/images/vip.png'></image>
-						</view>
-						<view>已售{{item.sales}}{{item.unit_name}}</view>
+						<navigator class='more' open-type="switchTab" :url="titleInfo[2].val">更多<text
+								class='iconfont icon-jiantou'></text></navigator>
+					</view>
+					<view class='scroll-product'>
+						<view class="empty-img">精品推荐，暂无数据</view>
 					</view>
 				</view>
-			</view>
+			</block>
 		</view>
-		<block v-if="isIframe && !bastList.length">
-			<view class="empty-img">精品推荐，暂无数据</view>
-		</block>
 	</view>
 </template>
 
@@ -57,9 +116,15 @@
 	import {
 		mapState
 	} from 'vuex'
-	import { goShopDetail,goPage } from '@/libs/order.js'
-	import { getHomeProducts } from '@/api/store.js';
+	import {
+		goShopDetail,
+		goPage
+	} from '@/libs/order.js'
+	import {
+		getHomeProducts
+	} from '@/api/store.js';
 	import goodLists from '@/components/goodList/index.vue'
+	import colors from "@/mixins/color";
 	export default {
 		name: 'goodList',
 		props: {
@@ -68,27 +133,28 @@
 				default: () => {}
 			}
 		},
+		mixins: [colors],
 		components: {
 			goodLists
 		},
 		created() {
-			
+
 		},
-		mounted() {
-		},
+		mounted() {},
 		watch: {
 			dataConfig: {
 				immediate: true,
 				handler(nVal, oVal) {
-					if(nVal){
+					if (nVal) {
 						this.isShow = nVal.isShow.val;
 						this.selectType = nVal.tabConfig.tabVal;
-						this.$set(this, 'selectId', nVal.selectConfig.activeValue);
+						this.$set(this, 'selectId', nVal.selectConfig.activeValue || '');
 						this.$set(this, 'type', nVal.selectSortConfig.activeValue);
 						this.salesOrder = nVal.goodsSort.type == 1 ? 'desc' : '';
 						this.newsOrder = nVal.goodsSort.type == 2 ? 'news' : '';
-						this.ids = nVal.ids?nVal.ids.join(','):'';
+						this.ids = nVal.ids ? nVal.ids.join(',') : '';
 						this.numConfig = nVal.numConfig.val;
+						this.titleInfo = nVal.titleInfo.list;
 						this.productslist();
 					}
 				}
@@ -103,15 +169,16 @@
 				name: this.$options.name,
 				isShow: true,
 				isIframe: app.globalData.isIframe,
-				selectType:0,
+				selectType: 0,
 				selectId: '',
-				salesOrder:'',
-				newsOrder:'',
-				ids:'',
+				salesOrder: '',
+				newsOrder: '',
+				ids: '',
 				page: 1,
 				limit: this.$config.LIMIT,
 				type: '',
-				numConfig:0
+				numConfig: 0,
+				titleInfo: []
 			}
 		},
 		methods: {
@@ -130,7 +197,7 @@
 				} else {
 					data = {
 						page: that.page,
-						limit: that.numConfig<=that.limit?that.numConfig:that.limit,
+						limit: that.numConfig <= that.limit ? that.numConfig : that.limit,
 						type: that.type,
 						newsOrder: that.newsOrder,
 						salesOrder: that.salesOrder,
@@ -141,14 +208,21 @@
 				getHomeProducts(data).then(res => {
 					that.bastList = res.data.list;
 				}).catch(err => {
-					that.$util.Tips({ title: err });
+					that.$util.Tips({
+						title: err
+					});
 				});
 			},
-			goDetail(item){
-				goPage().then(res=>{
-					goShopDetail(item,this.uid).then(res=>{
+			gopage(url) {
+				uni.navigateTo({
+					url: url
+				})
+			},
+			goDetail(item) {
+				goPage().then(res => {
+					goShopDetail(item, this.uid).then(res => {
 						uni.navigateTo({
-							url:`/pages/goods_details/index?id=${item.id}`
+							url: `/pages/goods_details/index?id=${item.id}`
 						})
 					})
 				})
@@ -158,73 +232,137 @@
 </script>
 
 <style lang="scss">
-	.productList .list {
-		padding: 0 30rpx;
-	}
-	
-	.productList .list .item {
-		width: 335rpx;
-		margin-top: 20rpx;
+	.productList {
 		background-color: #fff;
-		border-radius: 20rpx;
-		border:1rpx solid #eee;
+		margin: 20rpx 30rpx;
+		border-radius: $uni-border-radius-index;
 	}
-	
-	.productList .list .item .pictrue {
-		position: relative;
+
+	.title {
+		display: flex;
+		margin: 0;
 		width: 100%;
-		height: 335rpx;
+		margin: 0 11px;
+
+		.text {
+			display: flex;
+
+			.name {
+				font-size: $uni-index-title-font-size;
+				font-weight: bold;
+			}
+
+			.txt-btn {
+				display: flex;
+				align-items: flex-end;
+				margin-bottom: 8rpx;
+				margin-left: 12rpx;
+			}
+
+		}
 	}
-	
-	.productList .list .item .pictrue image {
+
+	.productList .item {
+		width: 100%;
+		padding: 25rpx 0;
+		background-color: #fff;
+		border-radius: 10rpx;
+		display: flex;
+		// border:1rpx solid #eee;
+	}
+
+	.productList .item .pictrue {
+		position: relative;
+		width: 200rpx;
+		height: 200rpx;
+	}
+
+	.productList .item .pictrue image {
 		width: 100%;
 		height: 100%;
-		border-radius: 20rpx 20rpx 0 0;
+		border-radius: 10rpx;
 	}
-	
-	.productList .list .item .text {
-		padding: 20rpx 17rpx 26rpx 17rpx;
+
+	.productList .item:nth-child(even) {
+		border-top: 1rpx solid #EEEEEE;
+		border-bottom: 1rpx solid #EEEEEE;
+	}
+
+	.productList .item .text {
+		width: 460rpx;
+		padding: 0rpx 17rpx 0rpx 17rpx;
 		font-size: 30rpx;
 		color: #222;
+		display: flex;
+		flex-direction: column;
+		justify-content: space-between;
+
+		.name {
+			font-size: 28rpx;
+		}
+
+		.type {
+			display: flex;
+
+			.type-sty {
+				padding: 0 5rpx;
+				border: 1px solid var(--view-theme);
+				color: var(--view-theme);
+				font-size: 24rpx;
+				border-radius: 4rpx;
+			}
+		}
 	}
-	
-	.productList .list .item .text .money {
+
+	.productList .item .text .money {
 		font-size: 26rpx;
 		font-weight: bold;
-		margin-top: 8rpx;
 	}
-	
-	.productList .list .item .text .money .num {
+
+	.productList .item .text .money .num {
 		font-size: 34rpx;
+		color: var(--view-priceColor);
 	}
-	
-	.productList .list .item .text .vip {
+
+	.productList .item .text .vip {
 		font-size: 22rpx;
-		color: #aaa;
+		color: var(--view-priceColor);
 		margin-top: 7rpx;
+		display: flex;
+		align-items: center;
 	}
-	
-	.productList .list .item .text .vip .vip-money {
+
+	.productList .item .text .vip .vip-money {
 		font-size: 24rpx;
 		color: #282828;
 		font-weight: bold;
 	}
-	
-	.productList .list .item .text .vip .vip-money image {
+
+	.productList .item .text .vip .vip-money image {
 		width: 46rpx;
 		height: 21rpx;
 		margin-left: 4rpx;
 	}
+
 	.empty-img {
 		width: 690rpx;
 		height: 300rpx;
-		border-radius: 14rpx;
+		border-radius: 10rpx;
 		margin: 26rpx auto 0 auto;
 		background-color: #ccc;
 		text-align: center;
 		line-height: 300rpx;
-		.iconfont{
+
+		.iconfont {
 			font-size: 50rpx;
 		}
+	}
+
+	.font-color {
+		color: var(--view-priceColor);
+	}
+
+	.item-box {
+		margin: 0 auto;
 	}
 </style>

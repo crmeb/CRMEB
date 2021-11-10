@@ -142,9 +142,9 @@ export function getRefundFrom (id) {
 /**
  * @description 获取快递公司
  */
-export function getExpressData () {
+export function getExpressData (status) {
     return request({
-        url: `/order/express_list`,
+        url: `/order/express_list?status=`+status,
         method: 'get'
     })
 };
@@ -245,6 +245,41 @@ export function orderExpressTemp (data) {
 }
 
 /**
+ * @description 子订单列表---拆单
+ * @param {Object} param data {Object} 传值参数
+ */
+ export function splitOrderList(id) {
+    return request({
+        url: `order/split_order/${id}`,
+        method: 'get'
+    })
+};
+
+/**
+ * @description 获取订单可拆分商品列表
+ * @param {Object} param data {Object} 传值参数
+ */
+ export function splitCartInfo(id) {
+    return request({
+        url: `order/split_cart_info/${id}`,
+        method: 'get'
+    })
+};
+
+/**
+ * @description 拆单发送货
+ * @param {Number} param data.id {Number} 订单id
+ * @param {Object} param data.datas {Object} 表单信息
+ */
+ export function splitDelivery(data) {
+    return request({
+        url: `/order/split_delivery/${data.id}`,
+        method: 'put',
+        data: data.datas
+    });
+};
+
+/**
  * @description 获取退积分表单
  * @param {Number} param id {Number} 订单id
  */
@@ -343,3 +378,127 @@ export function orderOfflineScan (id) {
         params: id
     })
 }
+
+/**
+ * @description 售后订单
+ * @param {Object} param data {Object} 传值参数
+ */
+ export function orderRefundList(data) {
+    return request({
+        url: 'refund/list',
+        method: 'get',
+        params: data
+    })
+};
+
+/**
+ * @description 批量发货记录
+ * @param {Object} param data {Object} 传值参数
+ */
+ export function queueIndex(data) {
+    return request({
+        url: 'queue/index',
+        method: 'get',
+        params: data
+    })
+};
+
+/**
+ * @description 批量发货-手动
+ * @param {Object} param data {Object} 传值参数
+ */
+ export function handBatchDelivery(data) {
+    return request({
+        url: 'order/hand/batch_delivery',
+        method: 'get',
+        params: data
+    })
+};
+/**
+ * @description 下载
+ * @param {Object} param data {Object} 传值参数
+ */
+ export function batchOrderDelivery(id, type, catchType) {
+    return request({
+        url: `export/batchOrderDelivery/${id}/${type}/${catchType}`,
+        method: 'get'
+    })
+};
+/**
+ * @description 积分商城订单 -- 导出
+ */
+ export function storeIntegralOrder(data) {
+    return request({
+        url: `export/storeIntegralOrder`,
+        method: 'get',
+        params: data
+    });
+}
+
+/**
+ * @description 任务列表-查看
+ * @param {Object} param data {Object} 传值参数
+ */
+ export function deliveryLog(id, type, data) {
+    return request({
+        url: `queue/delivery/log/${id}/${type}`,
+        method: 'get',
+        params: data
+    })
+};
+
+/**
+ * @description 下载物流公司对照表
+ * @param {Object} param data {Object} 传值参数
+ */
+ export function exportExpressList(id) {
+    return request({
+        url: 'export/expressList',
+        method: 'get'
+    })
+};
+
+
+
+/**
+ * @description 批量发货-自动
+ * @param {Object} param data {Object} 传值参数
+ */
+ export function otherBatchDelivery(data) {
+    return request({
+        url: 'order/other/batch_delivery',
+        method: 'post',
+        data
+    })
+};
+/**
+ * @description 重新执行
+ * @param {Object} param data {Object} 传值参数
+ */
+ export function queueAgain(id, type) {
+    return request({
+        url: `queue/again/do_queue/${id}/${type}`,
+        method: 'get'
+    })
+};
+/**
+ * @description 清除异常任务
+ * @param {Object} param data {Object} 传值参数
+ */
+ export function queueDel(id, type) {
+    return request({
+        url: `queue/del/wrong_queue/${id}/${type}`,
+        method: 'get'
+    })
+};
+
+/**
+ * @description 停止任务
+ * @param {Object} param data {Object} 传值参数
+ */
+ export function stopWrongQueue(id) {
+    return request({
+        url: `queue/stop/wrong_queue/${id}`,
+        method: 'get'
+    })
+};

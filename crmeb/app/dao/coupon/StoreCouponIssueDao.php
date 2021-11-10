@@ -50,9 +50,7 @@ class StoreCouponIssueDao extends BaseDao
                 })->where('status', 1);
             }
         })->when(isset($where['receive_type']) && $where['receive_type'], function ($query) use ($where) {
-            if (in_array((int)$where['receive_type'], [1, 2, 3])) {
-                $query->where('receive_type', $where['receive_type']);
-            }
+            $query->where('receive_type', $where['receive_type']);
         });
     }
 
@@ -89,7 +87,9 @@ class StoreCouponIssueDao extends BaseDao
         return $this->getModel()->where('status', 1)
             ->where('is_del', 0)
             ->where('remain_count > 0 OR is_permanent = 1')
-            ->where('receive_type', 1)->where(function ($query) {
+            ->where(function ($query) {
+                $query->where('receive_type', 1)->whereOr('receive_type', 4);
+            })->where(function ($query) {
                 $query->where(function ($query) {
                     $query->where('start_time', '<', time())->where('end_time', '>', time());
                 })->whereOr(function ($query) {
@@ -121,12 +121,14 @@ class StoreCouponIssueDao extends BaseDao
      * @throws \think\db\exception\DbException
      * @throws \think\db\exception\ModelNotFoundException
      */
-    public function getPcIssueCouponList(int $uid, $cate_ids = [], $product_id = 0)
+    public function getPcIssueCouponList(int $uid, $cate_ids = [], $product_id = 0,int $limit = 0)
     {
         return $this->getModel()->where('status', 1)
             ->where('is_del', 0)
             ->where('remain_count > 0 OR is_permanent = 1')
-            ->where('receive_type', 1)->where(function ($query) {
+            ->where(function ($query) {
+                $query->where('receive_type', 1)->whereOr('receive_type', 4);
+            })->where(function ($query) {
                 $query->where(function ($query) {
                     $query->where('start_time', '<', time())->where('end_time', '>', time());
                 })->whereOr(function ($query) {
@@ -138,6 +140,8 @@ class StoreCouponIssueDao extends BaseDao
                 if ($product_id != 0 && $cate_ids != []) {
                     $query->whereFindinSet('product_id', $product_id)->whereOr('category_id', 'in', $cate_ids)->whereOr('type', 0);
                 }
+            })->when($limit > 0, function($query) use ($limit){
+                $query->limit($limit);
             })->order('sort desc,id desc')->select()->toArray();
     }
 
@@ -153,7 +157,9 @@ class StoreCouponIssueDao extends BaseDao
             $query->where('status', 1)
                 ->where('is_del', 0)
                 ->where('remain_count > 0 OR is_permanent = 1')
-                ->where('receive_type', 1)->where(function ($query) {
+                ->where(function ($query) {
+                    $query->where('receive_type', 4)->whereOr('receive_type', 1);
+                })->where(function ($query) {
                     $query->where(function ($query) {
                         $query->where('start_time', '<', time())->where('end_time', '>', time());
                     })->whereOr(function ($query) {

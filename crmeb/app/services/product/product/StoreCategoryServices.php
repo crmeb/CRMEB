@@ -82,6 +82,23 @@ class StoreCategoryServices extends BaseServices
     }
 
     /**
+     * 获取分类cascader
+     * @param string $show
+     * @param int $type
+     * @return array
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     */
+    public function cascaderList($show = '', $type = 0)
+    {
+        $where = [];
+        if ($show !== '') $where['is_show'] = $show;
+        if (!$type) $where['pid'] = 0;
+        return get_tree_children($this->dao->getTierList($where, ['id as value', 'cate_name as label', 'pid']), 'children', 'value');
+    }
+
+    /**
      * 设置分类状态
      * @param $id
      * @param $is_show
@@ -128,13 +145,13 @@ class StoreCategoryServices extends BaseServices
     public function form($info = [])
     {
         if (isset($info['pid'])) {
-            $f[] = Form::select('pid', '父级', $info['pid'] ?? '')->setOptions($this->menus())->filterable(1)->disabled(true);
+            $f[] = Form::select('pid', '上级分类', (int)($info['pid'] ?? ''))->setOptions($this->menus())->filterable(1)->disabled(true);
         } else {
-            $f[] = Form::select('pid', '父级', $info['pid'] ?? '')->setOptions($this->menus())->filterable(1);
+            $f[] = Form::select('pid', '上级分类', (int)($info['pid'] ?? ''))->setOptions($this->menus())->filterable(1);
         }
         $f[] = Form::input('cate_name', '分类名称', $info['cate_name'] ?? '')->maxlength(30)->required();
-        $f[] = Form::frameImage('pic', '分类图标(180*180)', Url::buildUrl('admin/widget.images/index', array('fodder' => 'pic')), $info['pic'] ?? '')->icon('ios-add')->width('60%')->height('435px');
-        $f[] = Form::frameImage('big_pic', 'PC分类大图(468*340)', Url::buildUrl('admin/widget.images/index', array('fodder' => 'big_pic')), $info['big_pic'] ?? '')->icon('ios-add')->width('60%')->height('435px');
+        $f[] = Form::frameImage('pic', '分类图标(180*180)', Url::buildUrl('admin/widget.images/index', array('fodder' => 'pic')), $info['pic'] ?? '')->icon('ios-add')->width('950px')->height('505px')->modal(['footer-hide' => true]);
+        $f[] = Form::frameImage('big_pic', '分类大图(468*340)', Url::buildUrl('admin/widget.images/index', array('fodder' => 'big_pic')), $info['big_pic'] ?? '')->icon('ios-add')->width('950px')->height('505px')->modal(['footer-hide' => true]);
         $f[] = Form::number('sort', '排序', (int)($info['sort'] ?? 0))->min(0);
         $f[] = Form::radio('is_show', '状态', $info['is_show'] ?? 1)->options([['label' => '显示', 'value' => 1], ['label' => '隐藏', 'value' => 0]]);
         return $f;

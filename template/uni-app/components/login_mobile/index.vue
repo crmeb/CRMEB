@@ -6,7 +6,7 @@
 				<input type="text" v-model="account" placeholder="输入手机号" maxlength="11" />
 			</view>
 			<view class="input-item">
-				<input type="text" v-model="codeNum" placeholder="输入验证码" />
+				<input type="text" v-model="codeNum" placeholder="输入验证码" maxlength="6" />
 				<button class="code" :disabled="disabled" @click="code">{{text}}</button>
 			</view>
 			<view class="sub_btn" @click="loginBtn">立即登录</view>
@@ -26,31 +26,33 @@
 		phoneSilenceAuth,
 		phoneWxSilenceAuth
 	} from "@/api/user";
-	import { bindingPhone } from '@/api/api.js'
-	export default{
-		name:'login_mobile',
-		props:{
-			isUp:{
-				type:Boolean,
-				default:false,
+	import {
+		bindingPhone
+	} from '@/api/api.js'
+	export default {
+		name: 'login_mobile',
+		props: {
+			isUp: {
+				type: Boolean,
+				default: false,
 			},
-			authKey:{
-				type:String,
-				default:'',
+			authKey: {
+				type: String,
+				default: '',
 			}
 		},
-		data(){
+		data() {
 			return {
-				keyCode:'',
-				account:'',
-				codeNum:''
+				keyCode: '',
+				account: '',
+				codeNum: ''
 			}
 		},
 		mixins: [sendVerifyCode],
 		mounted() {
 			this.getCode();
 		},
-		methods:{
+		methods: {
 			// 获取验证码
 			async code() {
 				let that = this;
@@ -63,12 +65,14 @@
 				await registerVerify({
 					phone: that.account,
 					key: that.keyCode,
-				}).then(res=>{
-					that.$util.Tips({title:res.msg});
+				}).then(res => {
+					that.$util.Tips({
+						title: res.msg
+					});
 					that.sendCode();
-				}).catch(err=>{
+				}).catch(err => {
 					return that.$util.Tips({
-						title:err
+						title: err
 					})
 				})
 			},
@@ -83,11 +87,11 @@
 					});
 				});
 			},
-			close(){
-				this.$emit('close',false)
+			close() {
+				this.$emit('close', false)
 			},
 			// 登录
-			loginBtn(){
+			loginBtn() {
 				let that = this
 				// #ifdef MP
 				if (!that.account) return that.$util.Tips({
@@ -102,7 +106,9 @@
 				if (!/^[\w\d]+$/i.test(that.codeNum)) return that.$util.Tips({
 					title: '请输入正确的验证码'
 				});
-				uni.showLoading({ title: '正在登录中' });
+				uni.showLoading({
+					title: '正在登录中'
+				});
 				Routine.getCode()
 					.then(code => {
 						this.phoneSilenceAuth(code);
@@ -124,33 +130,35 @@
 				if (!/^[\w\d]+$/i.test(that.codeNum)) return that.$util.Tips({
 					title: '请输入正确的验证码'
 				});
-				uni.showLoading({ title: '正在登录中' });
-				if(this.authKey){
+				uni.showLoading({
+					title: '正在登录中'
+				});
+				if (this.authKey) {
 					phoneWxSilenceAuth({
 						spid: app.globalData.spid,
 						spread: app.globalData.code,
-						phone:this.account,
-						captcha:this.codeNum,
-						key:this.authKey
-					}).then(res=>{
+						phone: this.account,
+						captcha: this.codeNum,
+						key: this.authKey
+					}).then(res => {
 						let time = res.data.expires_time - this.$Cache.time();
 						this.$store.commit('LOGIN', {
 							token: res.data.token,
 							time: time
 						});
 						this.getUserInfo();
-					}).catch(error=>{
+					}).catch(error => {
 						uni.hideLoading()
 						this.$util.Tips({
-							title:error
+							title: error
 						})
 					})
-				}else{
+				} else {
 					bindingPhone({
-						phone:this.account,
-						captcha:this.codeNum,
+						phone: this.account,
+						captcha: this.codeNum,
 						key: this.$Cache.get('snsapiKey')
-					}).then(res=>{
+					}).then(res => {
 						let time = res.data.expires_time - this.$Cache.time();
 						this.$store.commit('LOGIN', {
 							token: res.data.token,
@@ -158,35 +166,35 @@
 						});
 						this.$Cache.clear('snsapiKey');
 						this.getUserInfo();
-					}).catch(error=>{
+					}).catch(error => {
 						uni.hideLoading()
 						this.$util.Tips({
-							title:error
+							title: error
 						})
 					})
 				}
-				
+
 				// #endif
 			},
 			// #ifdef MP
-			phoneSilenceAuth(code){
+			phoneSilenceAuth(code) {
 				let self = this
 				phoneSilenceAuth({
-					code:code,
+					code: code,
 					spread_spid: app.globalData.spid,
 					spread_code: app.globalData.code,
-					phone:this.account,
-					captcha:this.codeNum
-				}).then(res=>{
+					phone: this.account,
+					captcha: this.codeNum
+				}).then(res => {
 					let time = res.data.expires_time - this.$Cache.time();
 					this.$store.commit('LOGIN', {
 						token: res.data.token,
 						time: time
 					});
 					this.getUserInfo();
-				}).catch(error=>{
+				}).catch(error => {
 					self.$util.Tips({
-						title:error
+						title: error
 					})
 				})
 			},
@@ -203,32 +211,32 @@
 					that.$store.commit("UPDATE_USERINFO", res.data);
 					// #ifdef MP
 					that.$util.Tips({
-						title:'登录成功',
-						icon:'success'
-					},{
-						tab:3
+						title: '登录成功',
+						icon: 'success'
+					}, {
+						tab: 3
 					})
 					that.close()
 					// #endif
 					// #ifdef H5
-					that.$emit('wechatPhone',true)
+					that.$emit('wechatPhone', true)
 					// #endif
 				});
 			},
 		}
 	}
-	
 </script>
 
 <style lang="stylus">
-	.mobile-bg{
+	.mobile-bg {
 		position: fixed;
 		left: 0;
 		top: 0;
 		width: 100%;
 		height: 100%;
-		background: rgba(0,0,0,0.5);
+		background: rgba(0, 0, 0, 0.5);
 	}
+
 	.mobile-mask {
 		z-index: 20;
 		position: fixed;
@@ -237,13 +245,15 @@
 		width: 100%;
 		padding: 67rpx 30rpx;
 		background: #fff;
-		.input-item{
+
+		.input-item {
 			display: flex;
 			justify-content: space-between;
 			width: 100%;
 			height: 86rpx;
 			margin-bottom: 38rpx;
-			input{
+
+			input {
 				flex: 1;
 				display: block;
 				height: 100%;
@@ -251,36 +261,40 @@
 				border-radius: 43rpx;
 				border: 1px solid #DCDCDC;
 			}
-			.code{
+
+			.code {
 				display: flex;
 				align-items: center;
 				justify-content: center;
 				width: 220rpx;
 				height: 86rpx;
 				margin-left: 30rpx;
-				background: rgba(233, 51, 35, 0.05);
+				background: var(--view-minorColorT);
 				font-size: 28rpx;
-				color: #E93323;
+				color: var(--view-theme);
 				border-radius: 43rpx;
-				&[disabled]{
+
+				&[disabled] {
 					background: rgba(0, 0, 0, 0.05);
 					color: #999;
 				}
 			}
 		}
-		.sub_btn{
+
+		.sub_btn {
 			width: 690rpx;
 			height: 86rpx;
 			line-height: 86rpx;
 			margin-top: 60rpx;
-			background: #E93323;
+			background: var(--view-theme);
 			border-radius: 43rpx;
 			color: #fff;
 			font-size: 28rpx;
 			text-align: center;
 		}
 	}
-	.animated{
-		animation-duration:.4s
+
+	.animated {
+		animation-duration: .4s
 	}
 </style>

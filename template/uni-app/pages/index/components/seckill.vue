@@ -181,7 +181,8 @@
 		height: 410rpx;
 		margin: 0 auto;
 		padding-top: 35rpx;
-		border-top:1rpx solid #eee;
+		background-color: $uni-bg-color;
+		// border-top:1rpx solid #eee;
 
 		.title {
 			.name{

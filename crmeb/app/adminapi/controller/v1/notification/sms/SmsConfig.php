@@ -11,7 +11,6 @@
 namespace app\adminapi\controller\v1\notification\sms;
 
 use app\services\message\sms\SmsAdminServices;
-use app\services\message\sms\SmsRecordServices;
 use app\services\serve\ServeServices;
 use crmeb\services\CacheService;
 use app\adminapi\controller\AuthController;
@@ -48,7 +47,7 @@ class SmsConfig extends AuthController
             ['sms_token', '']
         ], true);
 
-        validate(\app\adminapi\validate\notification\SmsConfigValidate::class)->check(['sms_account' => $account, 'sms_token' => $token]);
+        $this->validate(['sms_account' => $account, 'sms_token' => $token], \app\adminapi\validate\notification\SmsConfigValidate::class);
 
         if ($this->services->login($account, $token)) {
             return app('json')->success('登录成功');

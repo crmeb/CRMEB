@@ -291,20 +291,14 @@
             },
             // 获取话术分类
             getServiceCate(){
-                let data = {
-                    id: '',
-                    name: '全部'
-                }
                 serviceCate({
                     type:this.wordsTabCur
                 }).then(res=>{
                     let tempArr =  JSON.parse(JSON.stringify(res.data.data))
-                    res.data.data.unshift(data)
                     this.wordsData.cateId = res.data.data.length? res.data.data[0].id : ''
                     this.msgData.msgCateId = this.wordsData.cateId
                     this.wordsData.cate = res.data.data
                     this.selectData = tempArr
-                    console.log(this.selectData,'222')
                     this.getWordsList()
                 })
             },

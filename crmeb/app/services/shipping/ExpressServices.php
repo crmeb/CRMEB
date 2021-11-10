@@ -17,10 +17,8 @@ use app\services\BaseServices;
 use app\services\serve\ServeServices;
 use crmeb\exceptions\AdminException;
 use crmeb\services\CacheService;
-use crmeb\services\express\storage\Express;
 use crmeb\services\ExpressService;
 use crmeb\services\FormBuilder as Form;
-use crmeb\services\sms\Sms;
 
 /**
  * 物流数据
@@ -61,6 +59,10 @@ class ExpressServices extends BaseServices
         return compact('list', 'count');
     }
 
+    public function apiExpressList()
+    {
+        return $this->dao->getExpressList([], '*', 0, 0);
+    }
     /**
      * 物流表单
      * @param array $formData
@@ -132,7 +134,7 @@ class ExpressServices extends BaseServices
      */
     public function express(array $where = [], string $k = 'id')
     {
-        $list = $this->expressList();
+        $list = $this->expressList($where);
         $data = [];
         if ($list) {
             foreach ($list as $k => $v) {
@@ -160,10 +162,10 @@ class ExpressServices extends BaseServices
         return $data;
     }
 
-    public function expressList()
+    public function expressList($where = [])
     {
-        return $this->dao->getExpressList(['is_show' => 1], 'id,name,code,partner_id,partner_key,net,account,key,net_name', 0, 0);
-//        return $this->getPlatExpress();
+        if(empty($where)) $where =  ['is_show' => 1];
+        return $this->dao->getExpressList($where, 'id,name,code,partner_id,partner_key,net,account,key,net_name', 0, 0);
     }
 
     /**
@@ -178,6 +180,7 @@ class ExpressServices extends BaseServices
         $resultData = CacheService::get($cacheName, null);
         if ($resultData === null || !is_array($resultData)) {
             $data = [];
+            $cacheTime = 0;
             switch ((int)sys_config('logistics_type')) {
                 case 1:
                     /** @var ServeServices $services */
@@ -248,8 +251,8 @@ class ExpressServices extends BaseServices
         CacheService::set('sync_express', 1, 3600);
         return true;
     }
-    /**
-     * 查询单个快递公司
+
+    /** 查询单个快递公司
      * @param array $where
      * @return array|\think\Model|null
      * @throws \think\db\exception\DataNotFoundException
@@ -260,4 +263,6 @@ class ExpressServices extends BaseServices
     {
         return $this->dao->getOne($where);
     }
+
+
 }

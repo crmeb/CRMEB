@@ -14,6 +14,7 @@ namespace app\adminapi\controller\v1\setting;
 use app\adminapi\controller\AuthController;
 use app\services\system\SystemMenusServices;
 use think\facade\App;
+use think\facade\Route;
 
 /**
  * 菜单权限
@@ -212,5 +213,28 @@ class SystemMenus extends AuthController
     {
         [$menus, $unique] = $this->services->getMenusList($this->adminInfo['roles'], (int)$this->adminInfo['level']);
         return app('json')->success(['menus' => $menus, 'unique' => $unique]);
+    }
+
+    /**
+     * 获取接口列表
+     * @return array
+     */
+    public function ruleList()
+    {
+        //获取所有的路由
+        $ruleList = Route::getRuleList();
+        $menuApiList = $this->services->getColumn(['auth_type' => 2, 'is_del' => 0], "concat(`api_url`,'_',lower(`methods`)) as rule");
+        if ($menuApiList) $menuApiList = array_column($menuApiList, 'rule');
+        $list = [];
+        foreach ($ruleList as $item) {
+            $item['rule'] = str_replace('adminapi/', '', $item['rule']);
+            if (!in_array($item['rule'] . '_' . $item['method'], $menuApiList)) {
+                $item['real_name'] = $item['option']['real_name'] ?? '';
+                unset($item['option']);
+                $item['method'] = strtoupper($item['method']);
+                $list[] = $item;
+            }
+        }
+        return app('json')->success($list);
     }
 }

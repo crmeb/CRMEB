@@ -77,7 +77,7 @@ class StoreServiceSpeechcraftCate extends AuthController
             return app('json')->fail('请输入分类名称');
         }
 
-        if ($this->services->count(['name' => $data['name']])) {
+        if ($this->services->count(['name' => $data['name'], 'type' => 1, 'owner_id' => 0])) {
             return app('json')->fail('分类已存在');
         }
 
@@ -135,6 +135,7 @@ class StoreServiceSpeechcraftCate extends AuthController
      */
     public function delete($id)
     {
+        if ($id == 0) return app('json')->fail('系统分类不能删除');
         $cateInfo = $this->services->get($id);
         if (!$cateInfo) {
             return app('json')->fail('删除的分类不存在');

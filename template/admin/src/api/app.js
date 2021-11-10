@@ -33,6 +33,16 @@ export function routineSyncTemplate () {
 }
 
 /**
+ * @description  同步微信模版消息
+ */
+ export function wechatSyncTemplate () {
+    return request({
+        url: `app/wechat/syncSubscribe`,
+        method: 'GET'
+    })
+}
+
+/**
  * @description 小程序模板消息 -- 新增表单
  * @param {Object} param data {Object} 传值参数
  */
@@ -141,6 +151,26 @@ export function replyApi (data) {
         url: data.url,
         method: 'post',
         data: data.key
+    })
+}
+/**
+ * @description  小程序包下载
+ * @param {Object} param data {Object} 传值参数
+ */
+export function routineDownload (data) {
+    return request({
+        url: 'app/routine/download',
+        method: 'post',
+        data
+    })
+}
+/**
+ * @description  小程序下载页面数据
+ */
+export function routineInfo () {
+    return request({
+        url: 'app/routine/info',
+        method: 'get'
     })
 }
 

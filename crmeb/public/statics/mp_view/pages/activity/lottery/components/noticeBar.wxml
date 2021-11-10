@@ -1,0 +1,1 @@
+<view class="marquee-wrap _div data-v-66e4c842"><view class="{{['marquee-list','_ul','data-v-66e4c842',(animateUp)?'animate-up':'']}}"><block wx:for="{{listData}}" wx:for-item="item" wx:for-index="index" wx:key="index"><view class="_li data-v-66e4c842">{{"恭喜"+(item.prize.nickname||'**')+"获得"+item.prize.name+''}}</view></block></view></view>

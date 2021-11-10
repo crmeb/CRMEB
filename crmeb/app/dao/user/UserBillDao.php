@@ -8,7 +8,7 @@
 // +----------------------------------------------------------------------
 // | Author: CRMEB Team <admin@crmeb.com>
 // +----------------------------------------------------------------------
-declare (strict_types=1);
+declare (strict_types = 1);
 
 namespace app\dao\user;
 
@@ -41,11 +41,13 @@ class UserBilldao extends BaseDao
      * @param array $typeWhere
      * @return array
      */
-    public function getList(array $where, string $field = '*', int $page, int $limit, array $typeWhere = [])
+    public function getList(array $where, string $field = '*', int $page = 0, int $limit = 0, array $typeWhere = [])
     {
         return $this->search($where)->when(count($typeWhere) > 0, function ($query) use ($typeWhere) {
             $query->where($typeWhere);
-        })->field($field)->page($page, $limit)->order('id desc')->select()->toArray();
+        })->field($field)->when($page && $limit, function ($query) use ($page, $limit) {
+            $query->page($page, $limit);
+        })->order('id desc')->select()->toArray();
     }
 
     /**
@@ -269,7 +271,18 @@ class UserBilldao extends BaseDao
                 $query->group("FROM_UNIXTIME($group, '$timeUinx')");
             })
             ->order('add_time ASC')->select()->toArray();
-            //echo $this->getModel()->getLastSql();die;
+    }
 
+    /**
+     * 获取退款佣金
+     * @return mixed
+     */
+    public function getRefundBrokerage()
+    {
+        return $this->getModel()->whereIn('type', ['brokerage', 'brokerage_user'])
+            ->where('category', 'now_money')
+            ->where('pm', 0)
+            ->group('uid')
+            ->column('sum(number) as sum_number', 'uid');
     }
 }

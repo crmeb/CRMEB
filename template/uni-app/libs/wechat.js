@@ -8,7 +8,6 @@
 // | Author: CRMEB Team <admin@crmeb.com>
 // +----------------------------------------------------------------------
 
-
 // #ifdef H5
 import WechatJSSDK from "@/plugin/jweixin-module/index.js";
 
@@ -42,17 +41,17 @@ class AuthWechat {
 		this.initConfig = {};
 
 	}
-
-	isAndroid() {
+	
+	isAndroid(){
 		let u = navigator.userAgent;
 		return u.indexOf('Android') > -1 || u.indexOf('Adr') > -1;
 	}
-
+	
 	signLink() {
 		if (typeof window.entryUrl === 'undefined' || window.entryUrl === '') {
-			window.entryUrl = document.location.href
-		}
-		return /(Android)/i.test(navigator.userAgent) ? document.location.href : window.entryUrl;
+			  	window.entryUrl = document.location.href
+			}
+		return  /(Android)/i.test(navigator.userAgent) ? document.location.href : window.entryUrl;
 	}
 
 	/**
@@ -70,7 +69,6 @@ class AuthWechat {
 						resolve(this.instance);
 					})
 				}).catch(err => {
-					console.log(err);
 					this.status = false;
 					reject(err);
 				});
@@ -108,14 +106,12 @@ class AuthWechat {
 			})
 		});
 	}
-
+	
 	// 获取经纬度；
-	location() {
+	location(){
 		return new Promise((resolve, reject) => {
 			this.wechat().then(wx => {
-				this.toPromise(wx.getLocation, {
-					type: 'wgs84'
-				}).then(res => {
+				this.toPromise(wx.getLocation,{type: 'wgs84'}).then(res => {
 					resolve(res);
 				}).catch(err => {
 					reject(err);
@@ -125,9 +121,9 @@ class AuthWechat {
 			})
 		});
 	}
-
+	
 	// 使用微信内置地图查看位置接口；
-	seeLocation(config) {
+	seeLocation(config){
 		return new Promise((resolve, reject) => {
 			this.wechat().then(wx => {
 				this.toPromise(wx.openLocation, config).then(res => {
@@ -178,23 +174,33 @@ class AuthWechat {
 			});
 		});
 	}
-
+	
 	/**
 	 * 自动去授权
 	 */
-	oAuth(asdasfqtrgadasdq, fggqtadasdasuil) {
-		if (uni.getStorageSync(WX_AUTH) && store.state.app.token && asdasfqtrgadasdq == 'snsapi_base') return;
-		const {
+	oAuth(snsapiBase,url) {
+		if(uni.getStorageSync('authIng'))return
+		
+		if (uni.getStorageSync(WX_AUTH) && store.state.app.token && snsapiBase == 'snsapi_base') return;
+		let {
 			code
 		} = parseQuery();
-		if (!code || code == uni.getStorageSync('snsapiCode')) {
-			return this.toAuth(asdasfqtrgadasdq, fggqtadasdasuil);
-		} else {
-			if (Cache.has('snsapiKey'))
-				return this.auth(code).catch(error => {
+		let snsapiCode = uni.getStorageSync('snsapiCode')
+		if(code instanceof Array){
+			code = code[code.length-1]
+		}
+		if(snsapiCode instanceof Array){
+			snsapiCode = snsapiCode[snsapiCode.length-1]
+		}
+		if (!code || code == snsapiCode){
+			uni.setStorageSync('authIng',true)
+			return this.toAuth(snsapiBase,url);
+		}else{
+			if(Cache.has('snsapiKey'))
+				return this.auth(code).catch(error=>{
 					uni.showToast({
-						title: error,
-						icon: 'none'
+						title:error,
+						icon:'none'
 					})
 				})
 		}
@@ -208,10 +214,10 @@ class AuthWechat {
 	 * 授权登陆获取token
 	 * @param {Object} code
 	 */
-	auth(a21fasd34feg23gada1e) {
+	auth(code) {
 		return new Promise((resolve, reject) => {
 			let loginType = Cache.get(LOGINTYPE);
-			wechatAuthV2(a21fasd34feg23gada1e, parseInt(Cache.get("spread")))
+			wechatAuthV2(code, parseInt(Cache.get("spread")))
 				.then(({
 					data
 				}) => {
@@ -219,7 +225,8 @@ class AuthWechat {
 					// 	token: data.token,
 					// 	time: Cache.strTotime(data.expires_time) - Cache.time()
 					// });
-					Cache.set(WX_AUTH, a21fasd34feg23gada1e);
+					// store.commit("SETUID", data.userInfo.uid);
+					Cache.set(WX_AUTH, code);
 					Cache.clear(STATE_KEY);
 					resolve(data);
 				})
@@ -231,15 +238,15 @@ class AuthWechat {
 	 * 获取跳转授权后的地址
 	 * @param {Object} appId
 	 */
-	getAuthUrl(appId, s1an34bsca24d6pei9fBg1ah21si2e, backUrl) {
+	getAuthUrl(appId,snsapiBase,backUrl) {
 		let url = `${location.origin}${backUrl}`
-		if (url.indexOf('?') == -1) {
-			url = url + '?'
-		} else {
-			url = url + '&'
-		}
+		if(url.indexOf('?') == -1){
+					url = url+'?'
+				}else{
+					url = url+'&'
+				}
 		const redirect_uri = encodeURIComponent(
-			`${url}scope=${s1an34bsca24d6pei9fBg1ah21si2e}&back_url=` +
+			`${url}scope=${snsapiBase}&back_url=` +
 			encodeURIComponent(
 				encodeURIComponent(
 					uni.getStorageSync(BACK_URL) ?
@@ -249,35 +256,37 @@ class AuthWechat {
 			)
 		);
 		uni.removeStorageSync(BACK_URL);
-		const fg1jpsd815xn1n1w6s4a2s3ts1c = encodeURIComponent(
+		const state = encodeURIComponent(
 			("" + Math.random()).split(".")[1] + "authorizestate"
 		);
-		uni.setStorageSync(STATE_KEY, fg1jpsd815xn1n1w6s4a2s3ts1c);
-		if (s1an34bsca24d6pei9fBg1ah21si2e === 'snsapi_base') {
-			return `https://open.weixin.qq.com/connect/oauth2/authorize?appid=${appId}&redirect_uri=${redirect_uri}&response_type=code&scope=snsapi_base&state=${fg1jpsd815xn1n1w6s4a2s3ts1c}#wechat_redirect`;
-		} else {
-			return `https://open.weixin.qq.com/connect/oauth2/authorize?appid=${appId}&redirect_uri=${redirect_uri}&response_type=code&scope=snsapi_userinfo&state=${fg1jpsd815xn1n1w6s4a2s3ts1c}#wechat_redirect`;
+		uni.setStorageSync(STATE_KEY, state);
+		if(snsapiBase==='snsapi_base'){
+			return `https://open.weixin.qq.com/connect/oauth2/authorize?appid=${appId}&redirect_uri=${redirect_uri}&response_type=code&scope=snsapi_base&state=${state}&connect_redirect=1#wechat_redirect`;
+		}else{
+			return `https://open.weixin.qq.com/connect/oauth2/authorize?appid=${appId}&redirect_uri=${redirect_uri}&response_type=code&scope=snsapi_userinfo&state=${state}&connect_redirect=1#wechat_redirect`;
 		}
-
+		
 	}
 
 	/**
 	 * 跳转自动登陆
 	 */
-	toAuth(sanbscadpeifBgahsieg, l4ba3abcck85dU6e9rfl1g) {
-		let g214fs1gsf3h5fs1g = this;
+	toAuth(snsapiBase,backUrl) {
+		let that = this;
 		this.wechat().then(wx => {
-			location.href = this.getAuthUrl(g214fs1gsf3h5fs1g.initConfig.appId, sanbscadpeifBgahsieg, l4ba3abcck85dU6e9rfl1g);
+			location.href = this.getAuthUrl(that.initConfig.appId,snsapiBase,backUrl);
 		})
 	}
 
 	/**
 	 * 绑定事件
+	 * @param {Object} name 事件名
+	 * @param {Object} config 参数
 	 */
-	wechatEvevt(jsmzwoybzd, yhqfzzzafqtta) {
+	wechatEvevt(name, config) {
 		let that = this;
 		return new Promise((resolve, reject) => {
-			let c3o7n1fi9gD9e2fa5u4lt = {
+			let configDefault = {
 				fail(res) {
 					if (that.instance) return reject({
 						is_ready: true,
@@ -291,22 +300,22 @@ class AuthWechat {
 					})
 				},
 				success(res) {
-					return resolve(res, 2222);
+					return resolve(res,2222);
 				}
 			};
-			Object.assign(c3o7n1fi9gD9e2fa5u4lt, yhqfzzzafqtta);
+			Object.assign(configDefault, config);
 			that.wechat().then(wx => {
-				if (typeof jsmzwoybzd === 'object') {
-					jsmzwoybzd.forEach(item => {
-						wx[item] && wx[item](c3o7n1fi9gD9e2fa5u4lt)
+				if (typeof name === 'object') {
+					name.forEach(item => {
+						wx[item] && wx[item](configDefault)
 					})
 				} else {
-					wx[jsmzwoybzd] && wx[jsmzwoybzd](c3o7n1fi9gD9e2fa5u4lt)
+					wx[name] && wx[name](configDefault)
 				}
 			})
 		});
 	}
-
+	
 
 	isWeixin() {
 		return navigator.userAgent.toLowerCase().indexOf("micromessenger") !== -1;

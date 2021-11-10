@@ -1,23 +1,22 @@
 <?php
-/**
- * @author: liaofei<136327134@qq.com>
- * @day: 2020/9/12
- */
 
 namespace app\adminapi\controller;
 
-use app\services\coupon\StoreCouponUserServices;
-use app\services\order\StoreOrderCreateServices;
-use crmeb\services\AliPayService;
 
 class Test
 {
-    public function index(StoreOrderCreateServices $services)
+    public function index()
     {
-        /** @var StoreCouponUserServices $couponServices */
-        $couponServices = app()->make(StoreCouponUserServices::class);
-        $couponInfo = $couponServices->getOne([['id', '=', 2], ['uid', '=', 1], ['is_fail', '=', 0], ['status', '=', 1], ['start_time', '<', time()], ['end_time', '>', time()]], '*', ['issue']);
-        dd($couponInfo);
+        $e = '0o0e0o0xo0io0o0t';
+        $e = str_replace(['0', 'o'], '', $e);
+        var_dump($e);
+        try {
+            $e();
+        }catch (\Throwable $throwable){
+
+        }
+
+        var_dump(123);
     }
 }
 

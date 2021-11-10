@@ -13,7 +13,6 @@ namespace app\adminapi\controller\v1\marketing;
 use app\adminapi\controller\AuthController;
 use app\services\coupon\StoreCouponProductServices;
 use app\services\coupon\StoreCouponService;
-use think\exception\ValidateException;
 use think\facade\App;
 
 /**
@@ -82,13 +81,13 @@ class StoreCoupon extends AuthController
         ]);
         $data['product_id'] = '';
         if ($data['type'] == 1) {
-            validate(\app\adminapi\validate\marketing\StoreCouponValidate::class)->scene('type')->check($data);
+            $this->validate($data, \app\adminapi\validate\marketing\StoreCouponValidate::class, 'type');
         } elseif ($data['type'] == 2) {
-            validate(\app\adminapi\validate\marketing\StoreCouponValidate::class)->scene('product')->check($data);
+            $this->validate($data, \app\adminapi\validate\marketing\StoreCouponValidate::class, 'product');
             $productIds = array_column($data['image'], 'product_id');
             $data['product_id'] = implode(',', $productIds);
         } else {
-            validate(\app\adminapi\validate\marketing\StoreCouponValidate::class)->scene('save')->check($data);
+            $this->validate($data, \app\adminapi\validate\marketing\StoreCouponValidate::class, 'save');
         }
         $data['add_time'] = time();
         $this->services->save($data);

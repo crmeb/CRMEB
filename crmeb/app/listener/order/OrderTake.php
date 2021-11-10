@@ -3,16 +3,11 @@
 
 namespace app\listener\order;
 
-
-use app\jobs\RoutineTemplateJob;
-use app\jobs\SmsAdminJob;
-use app\jobs\WechatTemplateJob as TemplateJob;
-use app\services\message\service\StoreServiceServices;
-use app\services\message\sms\SmsSendServices;
 use app\services\order\StoreOrderStatusServices;
+use app\services\order\StoreOrderTakeServices;
 use app\services\user\UserBillServices;
-use app\services\wechat\WechatUserServices;
 use crmeb\interfaces\ListenerInterface;
+use think\facade\Log;
 
 class OrderTake implements ListenerInterface
 {
@@ -34,35 +29,23 @@ class OrderTake implements ListenerInterface
                 'change_message' => '已收货',
                 'change_time' => time()
             ]);
-
-            //发送模板消息
-            /** @var WechatUserServices $wechatServices */
-            $wechatServices = app()->make(WechatUserServices::class);
-            if ($order['is_channel'] == 1) {
-                //小程序
-                $openid = $wechatServices->uidToOpenid($userInfo['uid'], 'routine');
-                RoutineTemplateJob::dispatchDo('sendOrderTakeOver', [$openid, $order, $storeTitle]);
-            } else {
-                $openid = $wechatServices->uidToOpenid($userInfo['uid'], 'wechat');
-                TemplateJob::dispatchDo('sendOrderTakeSuccess', [$openid, $order, $storeTitle]);
+            /** @var StoreOrderTakeServices $storeOrderTake */
+            $storeOrderTake = app()->make(StoreOrderTakeServices::class);
+            if ($order['pid'] > 0) {
+                $p_order = $storeOrderTake->get((int)$order['pid'], ['id,pid,status']);
+                //主订单全部发货 且子订单没有待收货 有待评价
+                if ($p_order['status'] == 1 && !$storeOrderTake->count(['pid' => $order['pid'], 'status' => 2]) && $storeOrderTake->count(['pid' => $order['pid'], 'status' => 3])) {
+                    $storeOrderTake->update($p_order['id'], ['status' => 2]);
+                    $statusService->save([
+                        'oid' => $p_order['id'],
+                        'change_type' => 'take_delivery',
+                        'change_message' => '已收货',
+                        'change_time' => time()
+                    ]);
+                }
             }
-
-            //发送短信给用户
-            /** @var SmsSendServices $smsServices */
-            $smsServices = app()->make(SmsSendServices::class);
-            $switch = sys_config('confirm_take_over_switch') ? true : false;
-            $store_name = $storeTitle;
-            $order_id = $order['order_id'];
-            $smsServices->send($switch, $order['user_phone'], compact('store_name', 'order_id'), 'TAKE_DELIVERY_CODE');
-
-            //给管理员发送短信
-            $switch = sys_config('admin_confirm_take_over_switch') ? true : false;
-            /** @var StoreServiceServices $services */
-            $services = app()->make(StoreServiceServices::class);
-            $adminList = $services->getStoreServiceOrderNotice();
-            SmsAdminJob::dispatchDo('sendAdminConfirmTakeOver', [$switch, $adminList, $order]);
-
         } catch (\Throwable $e) {
+            Log::error($e->getMessage());
         }
     }
 }

@@ -1,5 +1,5 @@
 <template>
-	<view class='recommend'>
+	<view class='recommend' :style="colorStyle">
 		<view class='title acea-row row-center-wrapper'>
 			<text class='iconfont icon-zhuangshixian'></text>
 			<text class='name'>热门推荐</text>
@@ -23,6 +23,7 @@
 <script>
 	import {mapGetters} from "vuex";
 	import { goShopDetail } from '@/libs/order.js'
+	import colors from "@/mixins/color";
 	export default {
 	computed: mapGetters(['uid']),
 		props: {
@@ -33,12 +34,12 @@
 				}
 			}
 		},
+		mixins: [colors],
 		data() {
 			return {
 
 			};
 		},
-
 		methods: {
 			goDetail(item){
 				goShopDetail(item,this.uid).then(res=>{
@@ -82,6 +83,8 @@
 	.recommend .recommendList .item {
 		width: 335rpx;
 		margin-bottom: 30rpx;
+		border-radius: 20rpx 20rpx 0 0;
+		box-shadow: 0rpx 3rpx 10rpx 2rpx rgba(0, 0, 0, 0.03);;
 	}
 
 	.recommend .recommendList .item .pictrue {
@@ -100,11 +103,13 @@
 		font-size: 28rpx;
 		color: #282828;
 		margin-top: 20rpx;
+		padding: 0 10rpx;
 	}
 
 	.recommend .recommendList .item .money {
 		font-size: 20rpx;
 		margin-top: 8rpx;
+		padding: 0 10rpx 10rpx 10rpx;
 	}
 
 	.recommend .recommendList .item .money .num {

@@ -1,0 +1,1 @@
+.cartf{width:96rpx;height:96rpx;background:#fff;box-shadow:0 3rpx 16rpx rgba(0,0,0,.08);border-radius:50%;font-size:47rpx;color:#666;position:fixed;right:15rpx;z-index:9}

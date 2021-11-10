@@ -18,8 +18,11 @@ Route::any('wechat/notify', 'v1.wechat.WechatController/notify');//公众号支�
 Route::any('routine/notify', 'v1.wechat.AuthController/notify');//小程序支付回调
 
 Route::any('pay/notify/:type', 'v1.PayController/notify');//支付回调
+Route::get('get_script', 'v1.PublicController/getScript');//获取统计代码
 
 Route::group(function () {
+    //apple快捷登陆
+    Route::post('apple_login', 'v1.LoginController/appleLogin')->name('appleLogin');//微信APP授权
     //账号密码登录
     Route::post('login', 'v1.LoginController/login')->name('login');
     // 获取发短信的key
@@ -38,37 +41,16 @@ Route::group(function () {
     Route::post('binding', 'v1.LoginController/binding_phone')->name('bindingPhone');
     // 支付宝复制链接支付
     Route::get('ali_pay', 'v1.order.StoreOrderController/aliPay')->name('aliPay');
-    //获取网站信息
-    Route::get('getVersion','v1.PublicController/getVersion')->name('getVersion');
 
 })->middleware(\app\http\middleware\AllowOriginMiddleware::class)->middleware(\app\api\middleware\StationOpenMiddleware::class);
-
-
-//管理员订单操作类
-Route::group(function () {
-    Route::get('admin/order/statistics', 'v1.admin.StoreOrderController/statistics')->name('adminOrderStatistics');//订单数据统计
-    Route::get('admin/order/data', 'v1.admin.StoreOrderController/data')->name('adminOrderData');//订单每月统计数据
-    Route::get('admin/order/list', 'v1.admin.StoreOrderController/lst')->name('adminOrderList');//订单列表
-    Route::get('admin/order/detail/:orderId', 'v1.admin.StoreOrderController/detail')->name('adminOrderDetail');//订单详情
-    Route::get('admin/order/delivery/gain/:orderId', 'v1.admin.StoreOrderController/delivery_gain')->name('adminOrderDeliveryGain');//订单发货获取订单信息
-    Route::post('admin/order/delivery/keep/:id', 'v1.admin.StoreOrderController/delivery_keep')->name('adminOrderDeliveryKeep');//订单发货
-    Route::post('admin/order/price', 'v1.admin.StoreOrderController/price')->name('adminOrderPrice');//订单改价
-    Route::post('admin/order/remark', 'v1.admin.StoreOrderController/remark')->name('adminOrderRemark');//订单备注
-    Route::get('admin/order/time', 'v1.admin.StoreOrderController/time')->name('adminOrderTime');//订单交易额时间统计
-    Route::post('admin/order/offline', 'v1.admin.StoreOrderController/offline')->name('adminOrderOffline');//订单支付
-    Route::post('admin/order/refund', 'v1.admin.StoreOrderController/refund')->name('adminOrderRefund');//订单退款
-    Route::post('order/order_verific', 'v1.admin.StoreOrderController/order_verific')->name('order');//订单核销
-    Route::get('admin/order/delivery', 'v1.admin.StoreOrderController/getDeliveryAll')->name('getDeliveryAll');//获取配送员
-    Route::get('admin/order/delivery_info', 'v1.admin.StoreOrderController/getDeliveryInfo')->name('getDeliveryInfo');//获取电子面单默认信息
-    Route::get('admin/order/export_temp', 'v1.admin.StoreOrderController/getExportTemp')->name('getExportTemp');//获取电子面单模板获取
-    Route::get('admin/order/export_all', 'v1.admin.StoreOrderController/getExportAll')->name('getExportAll');//获取物流公司
-})->middleware(\app\http\middleware\AllowOriginMiddleware::class)->middleware(\app\api\middleware\StationOpenMiddleware::class)->middleware(\app\api\middleware\AuthTokenMiddleware::class, true)->middleware(\app\api\middleware\CustomerMiddleware::class);
 
 //会员授权接口
 Route::group(function () {
 
     //用户修改手机号
     Route::post('user/updatePhone', 'v1.LoginController/update_binding_phone')->name('updateBindingPhone');
+    //设置登录code
+    Route::post('user/code', 'v1.user.StoreService/setLoginCode')->name('setLoginCode');
     //查看code是否可用
     Route::get('user/code', 'v1.LoginController/setLoginKey')->name('getLoginKey');
     //用户绑定手机号
@@ -77,13 +59,17 @@ Route::group(function () {
     Route::post('switch_h5', 'v1.LoginController/switch_h5')->name('switch_h5');// 切换账号
     //商品类
     Route::get('product/code/:id', 'v1.store.StoreProductController/code')->name('productCode');//商品分享二维码 推广员
-
+    //核销
+    Route::post('order/order_verific', 'v1.order.StoreOrderController/order_verific')->name('order');//订单核销
     //公共类
     Route::post('upload/image', 'v1.PublicController/upload_image')->name('uploadImage');//图片上传
     //用户类 客服聊天记录
     Route::get('user/service/list', 'v1.user.StoreService/lst')->name('userServiceList');//客服列表
     Route::get('user/service/record', 'v1.user.StoreService/record')->name('userServiceRecord');//客服聊天记录
+    Route::post('user/service/feedback', 'v1.user.StoreService/saveFeedback')->name('saveFeedback');//保存客服反馈信息
+    Route::get('user/service/feedback', 'v1.user.StoreService/getFeedbackInfo')->name('getFeedbackInfo');//获得客服反馈头部信息
     Route::get('user/service/get_adv', 'v1.user.StoreService/getKfAdv')->name('userServiceGetKfAdv');//获取客服页面广告
+
     //用户类  用户coupons/order
     Route::get('user', 'v1.user.UserController/user')->name('user');//个人中心
     Route::post('user/spread', 'v1.user.UserController/spread')->name('userSpread');//静默绑定授权
@@ -135,11 +121,13 @@ Route::group(function () {
     Route::post('order/create/:key', 'v1.order.StoreOrderController/create')->name('orderCreate'); //订单创建
     Route::get('order/data', 'v1.order.StoreOrderController/data')->name('orderData'); //订单统计数据
     Route::get('order/list', 'v1.order.StoreOrderController/lst')->name('orderList'); //订单列表
-    Route::get('order/detail/:uni', 'v1.order.StoreOrderController/detail')->name('orderDetail'); //订单详情
+    Route::get('order/detail/:uni/[:cartId]', 'v1.order.StoreOrderController/detail')->name('orderDetail'); //订单详情
+    Route::get('order/refund_detail/:uni/[:cartId]', 'v1.order.StoreOrderController/refund_detail')->name('refundDetail'); //退款订单详情
     Route::get('order/refund/reason', 'v1.order.StoreOrderController/refund_reason')->name('orderRefundReason'); //订单退款理由
     Route::post('order/refund/verify', 'v1.order.StoreOrderController/refund_verify')->name('orderRefundVerify'); //订单退款审核
+    Route::post('order/refund/express', 'v1.order.StoreOrderController/refund_express')->name('orderRefundExpress'); //退货退款填写订单号
     Route::post('order/take', 'v1.order.StoreOrderController/take')->name('orderTake'); //订单收货
-    Route::get('order/express/:uni', 'v1.order.StoreOrderController/express')->name('orderExpress'); //订单查看物流
+    Route::get('order/express/:uni/[:type]', 'v1.order.StoreOrderController/express')->name('orderExpress'); //订单查看物流
     Route::post('order/del', 'v1.order.StoreOrderController/del')->name('orderDel'); //订单删除
     Route::post('order/again', 'v1.order.StoreOrderController/again')->name('orderAgain'); //订单 再次下单
     Route::post('order/pay', 'v1.order.StoreOrderController/pay')->name('orderPay'); //订单支付
@@ -157,10 +145,12 @@ Route::group(function () {
     Route::post('bargain/poster', 'v1.activity.StoreBargainController/poster')->name('bargainPoster');//砍价海报
     Route::get('bargain/user/list', 'v1.activity.StoreBargainController/user_list')->name('bargainUserList');//砍价列表(已参与)
     Route::post('bargain/user/cancel', 'v1.activity.StoreBargainController/user_cancel')->name('bargainUserCancel');//砍价取消
+    Route::get('bargain/poster_info/:bargainId', 'v1.activity.StoreBargainController/posterInfo')->name('posterInfo');//砍价海报详细信息
     //活动---拼团
     Route::get('combination/pink/:id', 'v1.activity.StoreCombinationController/pink')->name('combinationPink');//拼团开团
     Route::post('combination/remove', 'v1.activity.StoreCombinationController/remove')->name('combinationRemove');//拼团 取消开团
     Route::post('combination/poster', 'v1.activity.StoreCombinationController/poster')->name('combinationPoster');//拼团海报
+    Route::get('combination/poster_info/:id', 'v1.activity.StoreCombinationController/posterInfo')->name('pinkPosterInfo');//拼团海报详细获取
     //账单类
     Route::get('commission', 'v1.user.UserBillController/commission')->name('commission');//推广数据 昨天的佣金 累计提现金额 当前佣金
     Route::post('spread/people', 'v1.user.UserController/spread_people')->name('spreadPeople');//推荐用户
@@ -169,6 +159,8 @@ Route::group(function () {
     Route::get('spread/count/:type', 'v1.user.UserBillController/spread_count')->name('spreadCount');//推广 佣金 3/提现 4 总和
     Route::get('spread/banner', 'v1.user.UserBillController/spread_banner')->name('spreadBanner');//推广分销二维码海报生成
     Route::get('integral/list', 'v1.user.UserBillController/integral_list')->name('integralList');//积分记录
+    Route::get('user/routine_code', 'v1.user.UserBillController/getRoutineCode')->name('getRoutineCode');//小程序二维码
+    Route::get('user/spread_info', 'v1.user.UserBillController/getSpreadInfo')->name('getSpreadInfo');//获取分销背景等信息
     //提现类
     Route::get('extract/bank', 'v1.user.UserExtractController/bank')->name('extractBank');//提现银行/提现最低金额
     Route::post('extract/cash', 'v1.user.UserExtractController/cash')->name('extractCash');//提现申请
@@ -183,6 +175,7 @@ Route::group(function () {
     Route::get('user/level/task/:id', 'v1.user.UserLevelController/task')->name('userLevelTask');//获取等级任务
     Route::get('user/level/info', 'v1.user.UserLevelController/userLevelInfo')->name('levelInfo');//获取等级任务
     Route::get('user/level/expList', 'v1.user.UserLevelController/expList')->name('expList');//获取等级任务
+    Route::get('user/record', 'v1.user.StoreService/recordList')->name('recordList');//获取用户和客服的消息列表
 
     //首页获取未支付订单
     Route::get('order/nopay', 'v1.order.StoreOrderController/get_noPay')->name('getNoPay');//获取未支付订单
@@ -200,7 +193,19 @@ Route::group(function () {
     Route::post('order/offline/check/price', 'v1.order.OtherOrderController/computed_offline_pay_price')->name('orderOfflineCheckPrice'); //检测线下付款金额
     Route::post('order/offline/create', 'v1.order.OtherOrderController/create')->name('orderOfflineCreate'); //检测线下付款金额
     Route::get('order/offline/pay/type', 'v1.order.OtherOrderController/pay_type')->name('orderOfflineCreate'); //线下付款支付方式
+    //消息站内信
+    Route::get('user/message_system/list', 'v1.user.MessageSystemController/message_list')->name('MessageSystemList'); //站内信列表
+    Route::get('user/message_system/detail/:id', 'v1.user.MessageSystemController/detail')->name('MessageSystemDetail'); //详情
+    Route::get('user/message_system/edit_message', 'v1.user.MessageSystemController/edit_message')->name('EditMessage');//站内信设为未读/删除ß
 
+    //积分商城订单
+    Route::post('store_integral/order/confirm', 'v1.order.StoreIntegralOrderController/confirm')->name('storeIntegralOrderConfirm'); //订单确认
+    Route::post('store_integral/order/create', 'v1.order.StoreIntegralOrderController/create')->name('storeIntegralOrderCreate'); //订单创建
+    Route::get('store_integral/order/detail/:uni', 'v1.order.StoreIntegralOrderController/detail')->name('storeIntegralOrderDetail'); //订单详情
+    Route::get('store_integral/order/list', 'v1.order.StoreIntegralOrderController/lst')->name('storeIntegralOrderList'); //订单列表
+    Route::post('store_integral/order/take', 'v1.order.StoreIntegralOrderController/take')->name('storeIntegralOrderTake'); //订单收货
+    Route::get('store_integral/order/express/:uni', 'v1.order.StoreIntegralOrderController/express')->name('storeIntegralOrderExpress'); //订单查看物流
+    Route::post('store_integral/order/del', 'v1.order.StoreIntegralOrderController/del')->name('storeIntegralOrderDel'); //订单删除
 
 })->middleware(\app\http\middleware\AllowOriginMiddleware::class)->middleware(\app\api\middleware\StationOpenMiddleware::class)->middleware(\app\api\middleware\AuthTokenMiddleware::class, true);
 //未授权接口
@@ -208,6 +213,11 @@ Route::group(function () {
     Route::get('menu/user', 'v1.PublicController/menu_user')->name('menuUser');//个人中心菜单
     //公共类
     Route::get('index', 'v1.PublicController/index')->name('index');//首页
+    Route::get('site_config', 'v1.PublicController/getSiteConfig')->name('getSiteConfig');//获取网站配置
+    //DIY接口
+    Route::get('diy/get_diy/[:id]', 'v1.PublicController/getDiy');
+    Route::get('home/products', 'v1.PublicController/home_products_list')->name('homeProductsList');//获取首页推荐不同类型商品的轮播图和商品
+
     Route::get('search/keyword', 'v1.PublicController/search')->name('searchKeyword');//热门搜索关键字获取
     //商品分类类
     Route::get('category', 'v1.store.CategoryController/category')->name('category');
@@ -219,6 +229,7 @@ Route::group(function () {
     Route::get('product/hot', 'v1.store.StoreProductController/product_hot')->name('productHot');//为你推荐
     Route::get('reply/list/:id', 'v1.store.StoreProductController/reply_list')->name('replyList');//商品评价列表
     Route::get('reply/config/:id', 'v1.store.StoreProductController/reply_config')->name('replyConfig');//商品评价数量和好评度
+
     //文章分类类
     Route::get('article/category/list', 'v1.publics.ArticleCategoryController/lst')->name('articleCategoryList');//文章分类列表
     //文章类
@@ -236,13 +247,19 @@ Route::group(function () {
     Route::get('bargain/list', 'v1.activity.StoreBargainController/lst')->name('bargainList');//砍价商品列表
     //活动---拼团
     Route::get('combination/list', 'v1.activity.StoreCombinationController/lst')->name('combinationList');//拼团商品列表
+    Route::get('combination/banner_list', 'v1.activity.StoreCombinationController/banner_list')->name('banner_list');//拼团商品列表
     Route::get('combination/detail/:id', 'v1.activity.StoreCombinationController/detail')->name('combinationDetail');//拼团商品详情
+    //活动-预售
+    Route::get('advance/list', 'v1.activity.StoreAdvanceController/index')->name('advanceList');//预售商品列表
+    Route::get('advance/detail/:id', 'v1.activity.StoreAdvanceController/detail')->name('advanceDetail');//预售商品详情
+
     //用户类
     Route::get('user/activity', 'v1.user.UserController/activity')->name('userActivity');//活动状态
 
     //微信
     Route::get('wechat/config', 'v1.wechat.WechatController/config')->name('wechatConfig');//微信 sdk 配置
     Route::get('wechat/auth', 'v1.wechat.WechatController/auth')->name('wechatAuth');//微信授权
+    Route::post('wechat/app_auth', 'v1.wechat.WechatController/appAuth')->name('appAuth');//微信APP授权
 
     //小程序登陆
     Route::post('wechat/mp_auth', 'v1.wechat.AuthController/mp_auth')->name('mpAuth');//小程序登陆
@@ -265,13 +282,16 @@ Route::group(function () {
 
     //获取关注微信公众号海报
     Route::get('wechat/follow', 'v1.wechat.WechatController/follow')->name('Follow');
-
+    //用户是否关注
+    Route::get('subscribe', 'v1.user.UserController/subscribe')->name('Subscribe');
     //门店列表
     Route::get('store_list', 'v1.PublicController/store_list')->name('storeList');
     //获取城市列表
     Route::get('city_list', 'v1.PublicController/city_list')->name('cityList');
     //拼团数据
     Route::get('pink', 'v1.PublicController/pink')->name('pinkData');
+    //获取底部导航
+    Route::get('navigation/[:template_name]', 'v1.PublicController/getNavigation')->name('getNavigation');
     //用户访问
     Route::post('user/set_visit', 'v1.user.UserController/set_visit')->name('setVisit');// 添加用户访问记录
     //复制口令接口
@@ -279,8 +299,24 @@ Route::group(function () {
     //获取网站配置
     Route::get('site_config', 'v1.PublicController/getSiteConfig')->name('getSiteConfig');//获取网站配置
 
-    Route::get('home/products', 'v1.PublicController/home_products_list')->name('homeProductsList');//获取首页推荐不同类型商品的轮播图和商品
+    //活动---积分商城
+    Route::get('store_integral/index', 'v1.activity.StoreIntegralController/index')->name('storeIntegralIndex');//积分商城首页数据
+    Route::get('store_integral/list', 'v1.activity.StoreIntegralController/lst')->name('storeIntegralList');//积分商品列表
+    Route::get('store_integral/detail/:id', 'v1.activity.StoreIntegralController/detail')->name('storeIntegralDetail');//积分商品详情
 
+    //获取app最新版本
+    Route::get('get_new_app/:platform', 'v1.PublicController/getNewAppVersion')->name('getNewAppVersion');//获取app最新版本
+    //获取客服类型
+    Route::get('get_customer_type', 'v1.PublicController/getCustomerType')->name('getCustomerType');//获取客服类型
+
+    //获取底部导航
+    Route::get('navigation/[:template_name]', 'v1.PublicController/getNavigation')->name('getNavigation');
+    //长链接设置
+    Route::get('get_workerman_url', 'v1.PublicController/getWorkerManUrl')->name('getWorkerManUrl');
+    //首页开屏广告
+    Route::get('get_open_adv','v1.PublicController/getOpenAdv')->name('getOpenAdv');
+    //获取用户协议
+    Route::get('user_agreement', 'v1.PublicController/getUserAgreement')->name('getUserAgreement');
 })->middleware(\app\http\middleware\AllowOriginMiddleware::class)->middleware(\app\api\middleware\StationOpenMiddleware::class)->middleware(\app\api\middleware\AuthTokenMiddleware::class, false);
 
 Route::miss(function () {

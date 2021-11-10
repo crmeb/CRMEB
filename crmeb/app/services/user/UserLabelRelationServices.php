@@ -8,7 +8,7 @@
 // +----------------------------------------------------------------------
 // | Author: CRMEB Team <admin@crmeb.com>
 // +----------------------------------------------------------------------
-declare (strict_types=1);
+declare (strict_types = 1);
 
 namespace app\services\user;
 
@@ -52,16 +52,9 @@ class UserLabelRelationServices extends BaseServices
      */
     public function setUserLable($uids, array $labels)
     {
-        if (!count($labels)) {
-            return true;
-        }
-        if (!is_array($uids)) {
-            $uids = [$uids];
-        }
-        $re = $this->dao->delete([
-            ['uid', 'in', $uids],
-            ['label_id', 'in', $labels],
-        ]);
+        if (!is_array($uids)) $uids = [$uids];
+        $re = $this->dao->delete([['uid', 'in', $uids]]);
+        if (!count($labels)) return true;
         if ($re === false) {
             throw new AdminException('清空用户标签失败');
         }

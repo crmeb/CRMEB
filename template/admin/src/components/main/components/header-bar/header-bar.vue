@@ -70,7 +70,7 @@
                         }
                     })
                 }
-                console.log(selectMenu)
+                // console.log(selectMenu)
                 return selectMenu
             }
         },

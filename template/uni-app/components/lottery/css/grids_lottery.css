@@ -1,0 +1,260 @@
+@charset "UTF-8";
+
+/* 颜色变量 */
+/* 行为相关颜色 */
+/* 文字基本颜色 */
+/* 背景颜色 */
+/* 边框颜色 */
+/* 尺寸变量 */
+/* 文字尺寸 */
+/* 图片尺寸 */
+/* Border Radius */
+/* 水平间距 */
+/* 垂直间距 */
+/* 透明度 */
+/* 文章场景相关 */
+li {
+	list-style: none;
+}
+
+ul,
+li {
+	margin: 0;
+	padding: 0;
+}
+
+.lottery_container {
+	width: 100%;
+	height: 100%;
+}
+
+.grid_wrap {
+	width: 100%;
+	height: 100%;
+	position: relative;
+}
+
+.grid_wrap .lottery_wrap_border {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+}
+
+.grid_wrap .lottery_wrap_border ul {
+	position: absolute;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.grid_wrap .lottery_wrap_border ul li {
+	border-radius: 50%;
+	width: 17upx;
+	height: 17upx;
+	background-color: #bce0e9;
+}
+
+.grid_wrap .lottery_wrap_border ul li:nth-child(even) {
+	width: 24upx;
+	height: 24upx;
+	background-color: #f5fbc8;
+}
+
+.grid_wrap .lottery_wrap_border ul:nth-child(odd) {
+	width: 100%;
+	height: 35upx;
+	left: 0;
+	right: 0;
+	flex-direction: row;
+}
+
+.grid_wrap .lottery_wrap_border ul:nth-child(odd) li {
+	margin: 0 10upx;
+}
+
+.grid_wrap .lottery_wrap_border ul:nth-child(even) {
+	width: 35upx;
+	height: 100%;
+	top: 0;
+	bottom: 0;
+	flex-direction: column;
+}
+
+.grid_wrap .lottery_wrap_border ul:nth-child(even) li {
+	margin: 10upx 0;
+}
+
+.grid_wrap .lottery_wrap_border ul:nth-child(3) {
+	bottom: 0;
+}
+
+.grid_wrap .lottery_wrap_border ul:nth-child(4) {
+	right: 0;
+}
+
+.grid_wrap .lottery_wrap_border ul:nth-child(1) li:nth-child(odd),
+.grid_wrap .lottery_wrap_border ul:nth-child(4) li:nth-child(odd) {
+	animation: blink_large 1s linear infinite;
+}
+
+.grid_wrap .lottery_wrap_border ul:nth-child(1) li:nth-child(even),
+.grid_wrap .lottery_wrap_border ul:nth-child(4) li:nth-child(even) {
+	animation: blink_small 1s linear infinite;
+}
+
+.grid_wrap .lottery_wrap_border ul:nth-child(3) li:nth-child(even),
+.grid_wrap .lottery_wrap_border ul:nth-child(2) li:nth-child(even) {
+	width: 17upx;
+	height: 17upx;
+	background-color: #bce0e9;
+	animation: blink_large 1s linear infinite;
+}
+
+.grid_wrap .lottery_wrap_border ul:nth-child(3) li:nth-child(odd),
+.grid_wrap .lottery_wrap_border ul:nth-child(2) li:nth-child(odd) {
+	width: 24upx;
+	height: 24upx;
+	background-color: #f5fbc8;
+	animation: blink_small 1s linear infinite;
+}
+
+.grid_wrap .lottery_wrap {
+	width: 100%;
+	height: 100%;
+	font-size: 14upx;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	z-index: 1;
+}
+
+.grid_wrap .lottery_wrap .lottery_grid {
+	width: 100%;
+	height: 100%;
+	position: relative;
+}
+
+.grid_wrap .lottery_wrap .lottery_grid li {
+	width: 30%;
+	height: 30%;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	float: left;
+	position: absolute;
+	border-radius: 12upx;
+	color: #E74435;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	font-size: 20upx;
+	margin: 4px;
+	padding: 4px;
+
+}
+
+.grid_wrap .lottery_wrap .lottery_grid li .in_line {
+	border: 1px dashed #FF7F5F;
+	border-radius: 12rpx;
+	width: 100%;
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	overflow: hidden;
+	padding: 0 4rpx;
+}
+
+.grid_wrap .lottery_wrap .lottery_grid li .grid_img {
+	width: 50%;
+	height: 50%;
+}
+
+.grid_wrap .lottery_wrap .lottery_grid .active {
+	background: #ffd18d !important;
+	box-shadow: 0upx 8upx 0upx 0upx #ffd18d;
+	color: #0e62ff;
+}
+
+.grid_wrap .lottery_wrap .lottery_grid li:nth-of-type(1) {
+	left: 1%;
+	top: 1%;
+	background: linear-gradient(0deg, #FFF2F2, #FFFFFF);
+}
+
+.grid_wrap .lottery_wrap .lottery_grid li:nth-of-type(2) {
+	left: 34%;
+	top: 1%;
+	background: linear-gradient(0deg, #FFF2F2, #FFFFFF);
+}
+
+.grid_wrap .lottery_wrap .lottery_grid li:nth-of-type(3) {
+	left: 67%;
+	top: 1%;
+	background: linear-gradient(0deg, #FFF2F2, #FFFFFF);
+}
+
+.grid_wrap .lottery_wrap .lottery_grid li:nth-of-type(4) {
+	left: 67%;
+	top: 34%;
+	background: linear-gradient(0deg, #FFF2F2, #FFFFFF);
+}
+
+.grid_wrap .lottery_wrap .lottery_grid li:nth-of-type(5) {
+	left: 67%;
+	top: 67%;
+	background: linear-gradient(0deg, #FFF2F2, #FFFFFF);
+}
+
+.grid_wrap .lottery_wrap .lottery_grid li:nth-of-type(6) {
+	left: 34%;
+	top: 67%;
+	background: linear-gradient(0deg, #FFF2F2, #FFFFFF);
+}
+
+.grid_wrap .lottery_wrap .lottery_grid li:nth-of-type(7) {
+	left: 1%;
+	top: 67%;
+	background: linear-gradient(0deg, #FFF2F2, #FFFFFF);
+}
+
+.grid_wrap .lottery_wrap .lottery_grid li:nth-of-type(8) {
+	left: 1%;
+	top: 34%;
+	background: linear-gradient(0deg, #FFF2F2, #FFFFFF);
+
+}
+
+.grid_wrap .lottery_wrap .lottery_grid li:nth-of-type(9) {
+	left: 34%;
+	top: 34%;
+	cursor: pointer;
+	color: #ffffff;
+	font-size: 40upx;
+	font-weight: bolder;
+}
+
+@keyframes blink_large {
+	to {
+		width: 24upx;
+		height: 24upx;
+		background-color: #f5fbc8;
+	}
+}
+
+@keyframes blink_small {
+	to {
+		width: 17upx;
+		height: 17upx;
+		background-color: #bce0e9;
+	}
+}
+
+/*# sourceMappingURL=SJ-LotteryDraw.css.map */

@@ -24,6 +24,7 @@ import moren from './module/moren'
 import shopping from './module/shopping'
 import fresh from './module/fresh'
 import kefu from './module/kefu'
+import integralOrder from './module/integralOrder'
 
 Vue.use(Vuex)
 // 持久化储存
@@ -52,7 +53,8 @@ export default new Vuex.Store({
                 userLevel:state.userLevel,
                 order:state.order,
                 media:state.media,
-                kefu:state.kefu
+                kefu:state.kefu,
+                integralOrder:state.integralOrder
             }),
             storage: window.localStorage
         }).plugin
@@ -69,6 +71,7 @@ export default new Vuex.Store({
         moren,
         shopping,
         fresh,
-        kefu
+        kefu,
+        integralOrder
     }
 })

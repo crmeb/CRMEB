@@ -1,0 +1,15 @@
+{
+  "navigationStyle": "custom",
+  "navigationBarTextStyle": "white",
+  "usingComponents": {
+    "cus-preview-img": "/components/cus-previewImg/cus-previewImg",
+    "product-con-swiper": "/components/productConSwiper/index",
+    "product-window": "/components/productWindow/index",
+    "user-evaluation": "/components/userEvaluation/index",
+    "kefu-icon": "/components/kefuIcon/index",
+    "menu-icon": "/components/menuIcon",
+    "count-down": "/components/countDown/index",
+    "parser": "/components/jyf-parser/jyf-parser",
+    "authorize": "/components/Authorize"
+  }
+}

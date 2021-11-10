@@ -11,6 +11,7 @@
                 <TabPane label="短信" name="sms"></TabPane>
                 <TabPane label="商品采集" name="copy"></TabPane>
                 <TabPane label="物流查询" name="expr_query"></TabPane>
+                <TabPane label="电子面单打印" name="expr_dump"></TabPane>
             </Tabs>
             <Row :gutter="16" class="mt50">
                 <Col span="24" class="ivu-text-left mb20">

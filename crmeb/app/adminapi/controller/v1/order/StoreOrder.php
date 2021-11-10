@@ -14,7 +14,7 @@ namespace app\adminapi\controller\v1\order;
 use app\adminapi\controller\AuthController;
 use app\adminapi\validate\order\StoreOrderValidate;
 use app\services\serve\ServeServices;
-use app\services\order\{
+use app\services\order\{StoreOrderCartInfoServices,
     StoreOrderDeliveryServices,
     StoreOrderRefundServices,
     StoreOrderStatusServices,
@@ -79,7 +79,12 @@ class StoreOrder extends AuthController
         ]);
         $where['shipping_type'] = 1;
         $where['is_system_del'] = 0;
-        return app('json')->success($this->services->getOrderList($where, ['*'], ['pink', 'invoice']));
+        if (!$where['real_name'] && !in_array($where['status'], [-1, -2, -3])) {
+            $where['pid'] = 0;
+        }
+        return app('json')->success($this->services->getOrderList($where, ['*'], ['split' => function ($query) {
+            $query->field('id,pid');
+        }, 'pink', 'invoice']));
     }
 
     /**
@@ -160,7 +165,8 @@ class StoreOrder extends AuthController
             ['gain_integral', 0],
         ]);
 
-        validate(StoreOrderValidate::class)->check($data);
+        $this->validate($data, StoreOrderValidate::class);
+
         if ($data['total_price'] < 0) return app('json')->fail('Please enter the total price');
         if ($data['pay_price'] < 0) return app('json')->fail('Please enter the actual payment amount');
 
@@ -174,7 +180,12 @@ class StoreOrder extends AuthController
      */
     public function express(ExpressServices $services)
     {
-        return app('json')->success($services->express(['is_show' => 1]));
+        [$status] = $this->request->getMore([
+            ['status', ''],
+        ], true);
+        if ($status != '') $data['status'] = $status;
+        $data['is_show'] = 1;
+        return app('json')->success($services->express($data));
     }
 
     /**
@@ -240,6 +251,74 @@ class StoreOrder extends AuthController
         ]);
         $services->delivery((int)$id, $data);
         return app('json')->success('SUCCESS');
+    }
+
+    /**
+     * 订单拆单发送货
+     * @param $id 订单id
+     * @return mixed
+     */
+    public function split_delivery($id, StoreOrderDeliveryServices $services)
+    {
+        $data = $this->request->postMore([
+            ['type', 1],
+            ['delivery_name', ''],//快递公司名称
+            ['delivery_id', ''],//快递单号
+            ['delivery_code', ''],//快递公司编码
+
+            ['express_record_type', 2],//发货记录类型
+            ['express_temp_id', ""],//电子面单模板
+            ['to_name', ''],//寄件人姓名
+            ['to_tel', ''],//寄件人电话
+            ['to_addr', ''],//寄件人地址
+
+            ['sh_delivery_name', ''],//送货人姓名
+            ['sh_delivery_id', ''],//送货人电话
+            ['sh_delivery_uid', ''],//送货人ID
+
+            ['fictitious_content', ''],//虚拟发货内容
+
+            ['cart_ids', []]
+        ]);
+        if (!$id) {
+            return app('json')->fail('缺少发货ID');
+        }
+        if (!$data['cart_ids']) {
+            return app('json')->fail('请选择发货商品');
+        }
+        foreach ($data['cart_ids'] as $cart) {
+            if (!isset($cart['cart_id']) || !$cart['cart_id'] || !isset($cart['cart_num']) || !$cart['cart_num']) {
+                return app('json')->fail('请重新选择发货商品，或发货件数');
+            }
+        }
+        $services->splitDelivery((int)$id, $data);
+        return app('json')->success('SUCCESS');
+    }
+
+    /**
+     * 获取订单可拆分发货商品列表
+     * @param $id
+     * @param StoreOrderCartInfoServices $services
+     * @return mixed
+     */
+    public function split_cart_info($id, StoreOrderCartInfoServices $services)
+    {
+        if (!$id) {
+            return app('json')->fail('缺少发货ID');
+        }
+        return app('json')->success($services->getSplitCartList((int)$id));
+    }
+
+    /**
+     * 获取订单拆分子订单列表
+     * @return mixed
+     */
+    public function split_order($id)
+    {
+        if (!$id) {
+            return app('json')->fail('缺少订单ID');
+        }
+        return app('json')->success($this->services->getSplitOrderList(['pid' => $id, 'is_system_del' => 0], ['*'], ['split', 'pink', 'invoice']));
     }
 
 
@@ -346,6 +425,7 @@ class StoreOrder extends AuthController
         } else if ($data['type'] == 2) {
             $data['refund_status'] = 0;
         }
+        $data['refund_type'] = 6;
         $type = $data['type'];
         unset($data['type']);
         $refund_data['pay_price'] = $order['pay_price'];
@@ -392,7 +472,12 @@ class StoreOrder extends AuthController
             $userInfo['spread_uid'] = '';
         }
 
-        $orderInfo = $this->services->tidyOrder($orderInfo->toArray());
+        $orderInfo = $this->services->tidyOrder($orderInfo->toArray(), true, true);
+        //核算优惠金额
+        $vipTruePrice = array_column($orderInfo['cartInfo'], 'vip_sum_truePrice');
+        $vipTruePrice = round(array_sum($vipTruePrice), 2);
+        $orderInfo['vip_true_price'] = $vipTruePrice ? $vipTruePrice : 0;
+        $orderInfo['total_price'] = bcadd($orderInfo['total_price'], $orderInfo['vip_true_price'], 2);
         if ($orderInfo['store_id'] && $orderInfo['shipping_type'] == 2) {
             /** @var  $storeServices */
             $storeServices = app()->make(SystemStoreServices::class);
@@ -479,9 +564,21 @@ class StoreOrder extends AuthController
         }
         $orderInfo->refund_reason = $refund_reason;
         $orderInfo->refund_status = 0;
+        $orderInfo->refund_type = 3;
         $orderInfo->save();
+        if ($orderInfo->pid > 0) {
+            $res1 = $this->services->getCount([
+                ['pid', '=', $orderInfo->pid],
+                ['refund_type', '>', 0],
+                ['refund_type', '<>', 3],
+            ]);
+            if ($res1 == 0) {
+                $this->services->update($orderInfo->pid, ['refund_status' => 0]);
+            }
+        }
         $services->storeProductOrderRefundNo((int)$id, $refund_reason);
-        $services->OrderRefundNoSendTemplate($orderInfo);
+        //提醒推送
+        event('notice.notice', [['orderInfo' => $orderInfo], 'send_order_refund_no_status']);
         return app('json')->success('Modified success');
     }
 
@@ -603,5 +700,40 @@ class StoreOrder extends AuthController
         }
     }
 
+    /**
+     * 电子面单模板
+     * @param $com
+     * @return mixed
+     */
+    public function expr_temp(ServeServices $services, $com)
+    {
+        if (!$com) {
+            return app('json')->fail('快递公司编号缺失');
+        }
+        $list = $services->express()->temp($com);
+        return app('json')->success($list);
+    }
+
+    /**
+     * 获取模板
+     */
+    public function express_temp(ServeServices $services)
+    {
+        $data = $this->request->getMore([['com', '']]);
+        $tpd = $services->express()->temp($data['com']);
+        return app('json')->success($tpd['data']);
+    }
+
+    /**
+     * 订单发货后打印电子面单
+     * @param $orderId
+     * @param StoreOrderDeliveryServices $storeOrderDeliveryServices
+     * @return mixed
+     */
+    public function order_dump($order_id, StoreOrderDeliveryServices $storeOrderDeliveryServices)
+    {
+        return app('json')->success($storeOrderDeliveryServices->orderDump($order_id));
+
+    }
 
 }

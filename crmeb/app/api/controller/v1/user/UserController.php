@@ -12,7 +12,7 @@ namespace app\api\controller\v1\user;
 
 use app\Request;
 use app\services\user\UserServices;
-use crmeb\services\CacheService;
+use app\services\wechat\WechatUserServices;
 
 
 /**
@@ -69,6 +69,37 @@ class UserController
         $user = $request->user()->toArray();
         return app('json')->success($this->services->personalHome($user, $request->tokenData()));
     }
+
+    /**
+     * 添加点赞
+     *
+     * @param Request $request
+     * @return mixed
+     */
+//    public function like_add(Request $request)
+//    {
+//        list($id, $category) = UtilService::postMore([['id',0], ['category','product']], $request, true);
+//        if(!$id || !is_numeric($id))  return app('json')->fail('参数错误');
+//        $res = StoreProductRelation::productRelation($id,$request->uid(),'like',$category);
+//        if(!$res) return  app('json')->fail(StoreProductRelation::getErrorInfo());
+//        else return app('json')->successful();
+//    }
+
+    /**
+     * 取消点赞
+     *
+     * @param Request $request
+     * @return mixed
+     */
+//    public function like_del(Request $request)
+//    {
+//        list($id, $category) = UtilService::postMore([['id',0], ['category','product']], $request, true);
+//        if(!$id || !is_numeric($id)) return app('json')->fail('参数错误');
+//        $res = StoreProductRelation::unProductRelation($id, $request->uid(),'like',$category);
+//        if(!$res) return app('json')->fail(StoreProductRelation::getErrorInfo());
+//        else return app('json')->successful();
+//    }
+
 
     /**
      * 获取活动状态
@@ -179,6 +210,23 @@ class UserController
         }
         $uid = $request->uid();
         return app('json')->successful($this->services->getUserSpreadGrade($uid, $spreadInfo['grade'], $spreadInfo['sort'], $spreadInfo['keyword']));
+    }
+
+    /**
+     * 是否关注
+     * @param Request $request
+     * @return mixed
+     */
+    public function subscribe(Request $request)
+    {
+        if ($request->uid()) {
+            /** @var WechatUserServices $wechatUserService */
+            $wechatUserService = app()->make(WechatUserServices::class);
+            $subscribe = $wechatUserService->value(['uid' => $request->uid()], 'subscribe') ? true : false;
+            return app('json')->success(['subscribe' => $subscribe]);
+        } else {
+            return app('json')->success(['subscribe' => true]);
+        }
     }
 
 }

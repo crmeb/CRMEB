@@ -61,6 +61,22 @@ class Oss extends BaseUpload
     protected $storageRegion;
 
     /**
+     * 水印位置
+     * @var string[]
+     */
+    protected $position = [
+        '1' => 'nw',//：左上
+        '2' => 'north',//：中上
+        '3' => 'ne',//：右上
+        '4' => 'west',//：左中
+        '5' => 'center',//：中部
+        '6' => 'east',//：右中
+        '7' => 'sw',//：左下
+        '8' => 'south',//：中下
+        '9' => 'se',//：右下
+    ];
+
+    /**
      * 初始化
      * @param array $config
      * @return mixed|void
@@ -95,9 +111,10 @@ class Oss extends BaseUpload
     /**
      * 上传文件
      * @param string $file
+     * @param bool $realName
      * @return array|bool|mixed|\StdClass
      */
-    public function move(string $file = 'file')
+    public function move(string $file = 'file', $realName = false)
     {
         $fileHandle = app()->request->file($file);
         if (!$fileHandle) {
@@ -116,6 +133,7 @@ class Oss extends BaseUpload
             }
         }
         $key = $this->saveFileName($fileHandle->getRealPath(), $fileHandle->getOriginalExtension());
+        $key = $this->getUploadPath($key);
         try {
             $uploadInfo = $this->app()->uploadFile($this->storageName, $key, $fileHandle->getRealPath());
             if (!isset($uploadInfo['info']['url'])) {
@@ -125,6 +143,8 @@ class Oss extends BaseUpload
             $this->fileInfo->realName = $fileHandle->getOriginalName();
             $this->fileInfo->filePath = $this->uploadUrl . '/' . $key;
             $this->fileInfo->fileName = $key;
+            $this->fileInfo->filePathWater = $this->water($this->fileInfo->filePath);
+            $this->authThumb && $this->thumb($this->fileInfo->filePath);
             return $this->fileInfo;
         } catch (UploadException $e) {
             return $this->setError($e->getMessage());
@@ -143,6 +163,7 @@ class Oss extends BaseUpload
             if (!$key) {
                 $key = $this->saveFileName();
             }
+            $key = $this->getUploadPath($key);
             $fileContent = (string)EntityBody::factory($fileContent);
             $uploadInfo = $this->app()->putObject($this->storageName, $key, $fileContent);
             if (!isset($uploadInfo['info']['url'])) {
@@ -152,10 +173,76 @@ class Oss extends BaseUpload
             $this->fileInfo->realName = $key;
             $this->fileInfo->filePath = $this->uploadUrl . '/' . $key;
             $this->fileInfo->fileName = $key;
+            $this->fileInfo->filePathWater = $this->water($this->fileInfo->filePath);
+            $this->thumb($this->fileInfo->filePath);
             return $this->fileInfo;
         } catch (UploadException $e) {
             return $this->setError($e->getMessage());
         }
+    }
+
+    /**
+     * 缩略图
+     * @param string $filePath
+     * @param string $type
+     * @return mixed|string[]
+     */
+    public function thumb(string $filePath = '', string $type = 'all')
+    {
+        $filePath = $this->getFilePath($filePath);
+        $data = ['big' => $filePath, 'mid' => $filePath, 'small' => $filePath];
+        $this->fileInfo->filePathBig = $this->fileInfo->filePathMid = $this->fileInfo->filePathSmall = $this->fileInfo->filePathWater = $filePath;
+        if ($filePath) {
+            $config = $this->thumbConfig;
+            foreach ($this->thumb as $v) {
+                if ($type == 'all' || $type == $v) {
+                    $height = 'thumb_' . $v . '_height';
+                    $width = 'thumb_' . $v . '_width';
+                    $key = 'filePath' . ucfirst($v);
+                    if (isset($config[$height]) && isset($config[$width]) && $config[$height] && $config[$width]) {
+                        $this->fileInfo->$key = $filePath . '?x-oss-process=image/resize,h_' . $config[$height] . ',w_' . $config[$width];
+                        $this->fileInfo->$key = $this->water($this->fileInfo->$key);
+                        $data[$v] = $this->fileInfo->$key;
+                    } else {
+                        $this->fileInfo->$key = $this->water($this->fileInfo->$key);
+                        $data[$v] = $this->fileInfo->$key;
+                    }
+                }
+            }
+        }
+        return $data;
+    }
+
+    /**
+     * 水印
+     * @param string $filePath
+     * @return mixed|string
+     */
+    public function water(string $filePath = '')
+    {
+        $filePath = $this->getFilePath($filePath);
+        $waterConfig = $this->waterConfig;
+        $waterPath = $filePath;
+        if ($waterConfig['image_watermark_status'] && $filePath) {
+            if (strpos($filePath, '?x-oss-process') === false) {
+                $filePath .= '?x-oss-process=image';
+            }
+            switch ($waterConfig['watermark_type']) {
+                case 1://图片
+                    if (!$waterConfig['watermark_image']) {
+                        throw new ValidateException('请先配置水印图片');
+                    }
+                    $waterPath = $filePath .= '/watermark,image_' . base64_encode($waterConfig['watermark_image']) . ',t_' . $waterConfig['watermark_opacity'] . ',g_' . ($this->position[$waterConfig['watermark_position']] ?? 'nw') . ',x_' . $waterConfig['watermark_x'] . ',y_' . $waterConfig['watermark_y'];
+                    break;
+                case 2://文字
+                    if (!$waterConfig['watermark_text']) {
+                        throw new ValidateException('请先配置水印文字');
+                    }
+                    $waterPath = $filePath .= '/watermark,text_' . base64_encode($waterConfig['watermark_text']) . ',color_' . $waterConfig['watermark_text_color'] . ',size_' . $waterConfig['watermark_text_size'] . ',g_' . ($this->position[$waterConfig['watermark_position']] ?? 'nw') . ',x_' . $waterConfig['watermark_x'] . ',y_' . $waterConfig['watermark_y'];
+                    break;
+            }
+        }
+        return $waterPath;
     }
 
     /**

@@ -135,7 +135,7 @@ class StoreServiceLogServices extends BaseServices
                 ['is_del', '=', 0],
                 ['is_show', '=', 1],
             ];
-            $productList = $productServices->getProductArray($where, '*', 'id');
+            $productList = get_thumb_water($productServices->getProductArray($where, '*', 'id'));
         }
         /** @var StoreOrderServices $orderServices */
         $orderServices = app()->make(StoreOrderServices::class);

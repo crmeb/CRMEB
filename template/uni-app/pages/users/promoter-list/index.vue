@@ -1,5 +1,5 @@
 <template>
-	<view>
+	<view :style="colorStyle">
 		<view class="promoter-list">
 			<view class='promoterHeader bg-color'>
 				<view class='headerCon acea-row row-between-wrapper'>
@@ -63,7 +63,7 @@
 							</view>
 						</view>
 						<view class="right">
-							<view><text class='num font-color'>{{item.childCount ? item.childCount : 0}}</text>人</view>
+							<view><text class='num font-num'>{{item.childCount ? item.childCount : 0}}</text>人</view>
 							<view><text class="num">{{item.orderCount ? item.orderCount : 0}}</text>单</view>
 							<view><text class="num">{{item.numberCount ? item.numberCount : 0}}</text>元</view>
 						</view>
@@ -74,7 +74,9 @@
 		<!-- #ifdef MP -->
 		<!-- <authorize @onLoadFun="onLoadFun" :isAuto="isAuto" :isShowAuth="isShowAuth" @authColse="authColse"></authorize> -->
 		<!-- #endif -->
+		<!-- #ifndef MP -->
 		<home></home>
+		<!-- #endif -->
 	</view>
 </template>
 
@@ -92,6 +94,7 @@
 	import authorize from '@/components/Authorize';
 	// #endif
 	import home from '@/components/home';
+	import colors from '@/mixins/color.js';
 	export default {
 		components: {
 			// #ifdef MP
@@ -99,6 +102,7 @@
 			// #endif
 			home
 		},
+		mixins:[colors],
 		data() {
 			return {
 				total: 0,
@@ -216,8 +220,8 @@
 	}
 
 	.promoter-list .nav .item.on {
-		border-bottom: 5rpx solid #e93323;
-		color: #e93323;
+		border-bottom: 5rpx solid var(--view-theme);
+		color: var(--view-theme);
 	}
 
 	.promoter-list .search {

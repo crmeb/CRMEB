@@ -1,0 +1,10 @@
+{
+  "navigationStyle": "custom",
+  "navigationBarTextStyle": "white",
+  "usingComponents": {
+    "jyf-parser": "/components/mp-html/mp-html",
+    "count-down": "/components/countDown/index",
+    "authorize": "/components/Authorize",
+    "home": "/components/home/index"
+  }
+}

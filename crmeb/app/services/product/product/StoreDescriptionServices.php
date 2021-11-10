@@ -19,6 +19,7 @@ use crmeb\exceptions\AdminException;
 /**
  * Class StoreDescriptionService
  * @package app\services\product\product
+ * @method value($where, ?string $field = null) 获取字段
  */
 class StoreDescriptionServices extends BaseServices
 {
@@ -55,7 +56,7 @@ class StoreDescriptionServices extends BaseServices
         $description = htmlspecialchars($description);
         $info = $this->dao->count(['product_id' => $id, 'type' => $type]);
         if ($info) {
-            $res = $this->dao->update($id, ['description' => $description], 'product_id');
+            $res = $this->dao->update(['product_id' => $id, 'type' => $type], ['description' => $description]);
         } else {
             $res = $this->dao->save(['product_id' => $id, 'description' => $description, 'type' => $type]);
         }

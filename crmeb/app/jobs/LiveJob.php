@@ -11,17 +11,16 @@
 
 namespace app\jobs;
 
-use app\services\live\LiveAnchorServices;
 use app\services\live\LiveGoodsServices;
 use app\services\live\LiveRoomServices;
 use crmeb\basic\BaseJobs;
-
 use crmeb\traits\QueueTrait;
 use think\facade\Log;
 
 class LiveJob extends BaseJobs
 {
     use QueueTrait;
+
     /**
      * 执行同步数据后
      * @param $order

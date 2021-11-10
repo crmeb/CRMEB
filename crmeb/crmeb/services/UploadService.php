@@ -26,8 +26,8 @@ class UploadService
     protected static $upload = [];
 
     /**
-     * @param $type
-     * @return Upload
+     * @param null $type
+     * @return Upload|mixed
      */
     public static function init($type = null)
     {
@@ -68,7 +68,64 @@ class UploadService
                 ];
                 break;
         }
+        $thumb = SystemConfigService::more(['thumb_big_height', 'thumb_big_width', 'thumb_mid_height', 'thumb_mid_width', 'thumb_small_height', 'thumb_small_width',]);
+        $water = SystemConfigService::more([
+            'image_watermark_status',
+            'watermark_type',
+            'watermark_image',
+            'watermark_opacity',
+            'watermark_position',
+            'watermark_rotate',
+            'watermark_text',
+            'watermark_text_angle',
+            'watermark_text_color',
+            'watermark_text_size',
+            'watermark_x',
+            'watermark_y']);
+        $config = array_merge($config, ['thumb' => $thumb], ['water' => $water]);
         return self::$upload['upload_' . $type] = new Upload($type, $config);
     }
 
+    /**
+     * 生辰缩略图水印实例化
+     * @param string $filePath
+     * @param bool $is_remote_down
+     * @return Upload
+     */
+    public static function getOssInit(string $filePath, bool $is_remote_down = false)
+    {
+        //本地
+        $uploadUrl = sys_config('site_url');
+        if ($uploadUrl && strpos($filePath, $uploadUrl) !== false) {
+            $filePath = explode($uploadUrl, $filePath)[1] ?? '';
+            return self::init(1)->setFilepath($filePath);
+        }
+        //七牛云
+        $uploadUrl = sys_config('qiniu_uploadUrl');
+        if ($uploadUrl && strpos($filePath, $uploadUrl) !== false) {
+            return self::init(2)->setFilepath($filePath);
+        }
+        //阿里云
+        $uploadUrl = sys_config('uploadUrl');
+        if ($uploadUrl && strpos($filePath, $uploadUrl) !== false) {
+            return self::init(3)->setFilepath($filePath);
+        }
+        //腾讯云
+        $uploadUrl = sys_config('tengxun_uploadUrl');
+        if ($uploadUrl && strpos($filePath, $uploadUrl) !== false) {
+            return self::init(4)->setFilepath($filePath);
+        }
+        //远程图片 下载到本地处理
+        if ($is_remote_down) {
+            try {
+                /** @var DownloadImageService $down */
+                $down = app()->make(DownloadImageService::class);
+                $data = $down->path('thumb_water')->downloadImage($filePath);
+                $filePath = $data['path'] ?? '';
+            } catch (\Throwable $e) {
+                //下载失败 传入原地址
+            }
+        }
+        return self::init(1)->setFilepath($filePath);
+    }
 }

@@ -39,7 +39,9 @@ class StoreProductReply extends AuthController
             ['store_name', ''],
             ['account', ''],
             ['data', ''],
-            ['product_id', 0]
+            ['product_id', 0],
+            ['key', ''],
+            ['order', '']
         ]);
         $list = $this->services->sysPage($where);
         return app('json')->success($list);
@@ -103,7 +105,7 @@ class StoreProductReply extends AuthController
         if (!$data['product_id']) {
             $data['product_id'] = $data['image']['product_id'] ?? '';
         }
-        validate(\app\adminapi\validate\product\StoreProductReplyValidate::class)->scene('save')->check(['product_id' => $data['product_id'], 'nickname' => $data['nickname'], 'avatar' => $data['avatar'], 'comment' => $data['comment'], 'product_score' => $data['product_score'], 'service_score' => $data['service_score']]);
+        $this->validate(['product_id' => $data['product_id'], 'nickname' => $data['nickname'], 'avatar' => $data['avatar'], 'comment' => $data['comment'], 'product_score' => $data['product_score'], 'service_score' => $data['service_score']], \app\adminapi\validate\product\StoreProductReplyValidate::class, 'save');
         $this->services->saveReply($data);
         return app('json')->success('添加成功!');
     }

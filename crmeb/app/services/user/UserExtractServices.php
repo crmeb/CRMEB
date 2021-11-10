@@ -12,18 +12,15 @@ declare (strict_types=1);
 
 namespace app\services\user;
 
-use app\services\BaseServices;
 use app\dao\user\UserExtractDao;
+use app\services\BaseServices;
 use app\services\order\StoreOrderCreateServices;
 use app\services\system\admin\SystemAdminServices;
 use app\services\wechat\WechatUserServices;
 use crmeb\exceptions\AdminException;
-use app\jobs\RoutineTemplateJob;
-use app\jobs\WechatTemplateJob as TemplateJob;
+use crmeb\services\FormBuilder as Form;
 use crmeb\services\WechatService;
 use crmeb\services\workerman\ChannelService;
-use crmeb\services\FormBuilder as Form;
-
 use think\exception\ValidateException;
 use think\facade\Route as Url;
 
@@ -132,20 +129,14 @@ class UserExtractServices extends BaseServices
         $bill_data = ['title' => '提现失败', 'link_id' => $userExtract['id'], 'number' => $extract_number, 'balance' => $user['now_money'], 'mark' => $mark];
         $this->transaction(function () use ($user, $bill_data, $userBill, $uid, $id, $extract_number, $message, $userServices, $status, $fail_time) {
             $userBill->incomeNowMoney($user['uid'], 'extract', $bill_data);
-            $userServices->addBrokeragePrice($uid, $user['brokerage_price'], $extract_number);
+            if (!$userServices->update($uid, ['brokerage_price' => bcadd((string)$user['brokerage_price'], (string)$extract_number, 2)], 'uid'))
+                throw new AdminException('增加用户佣金失败');
             if (!$this->dao->update($id, ['fail_time' => $fail_time, 'fail_msg' => $message, 'status' => $status])) {
                 throw new AdminException('修改失败');
             }
         });
-        /** @var WechatUserServices $wechatServices */
-        $wechatServices = app()->make(WechatUserServices::class);
-        if (strtolower($user['user_type']) == 'wechat') {
-            $openid = $wechatServices->uidToOpenid($uid, 'wechat');
-            TemplateJob::dispatchDo('sendUserBalanceChangeFail', [$openid, $extract_number, $message]);
-        } else if (strtolower($user['user_type']) == 'routine') {
-            $openid = $wechatServices->uidToOpenid($uid, 'routine');
-            RoutineTemplateJob::dispatchDo('sendExtractFail', [$openid, $message, $extract_number, $user['nickname']]);
-        }
+
+        event('notice.notice', [['uid' => $uid, 'userType' => strtolower($user['user_type']), 'extract_number' => $extract_number, 'nickname' => $user['nickname'], 'message' => $message], 'user_balance_change']);
         return true;
     }
 
@@ -165,16 +156,8 @@ class UserExtractServices extends BaseServices
         /** @var UserServices $userServices */
         $userServices = app()->make(UserServices::class);
         $userType = $userServices->value(['uid' => $userExtract['uid']], 'user_type');
-        if ($userType) {
-            if (strtolower($userType) == 'routine') {
-                $openid = $wechatServices->uidToOpenid($userExtract['uid'], 'routine');
-                $nickname = $userServices->value(['uid' => $userExtract['uid']], 'nickname');
-                RoutineTemplateJob::dispatchDo('sendExtractSuccess', [$openid, $extractNumber, $nickname]);
-            } else {
-                $openid = $wechatServices->uidToOpenid($userExtract['uid'], 'wechat');
-                TemplateJob::dispatchDo('sendUserBalanceChangeSuccess', [$openid, $extractNumber]);
-            }
-        }
+        $nickname = $userServices->value(['uid' => $userExtract['uid']], 'nickname');
+        event('notice.notice', [['uid' => $userExtract['uid'], 'userType' => strtolower($userType), 'extractNumber' => $extractNumber, 'nickname' => $nickname], 'user_extract']);
 
         if (!$this->dao->update($id, ['status' => 1])) {
             throw new AdminException('修改失败');
@@ -204,7 +187,7 @@ class UserExtractServices extends BaseServices
         //佣金总金额
         /** @var UserBillServices $userBillServices */
         $userBillServices = app()->make(UserBillServices::class);
-        $extract_statistics['brokerage_count'] = $userBillServices->getUsersBokerageSum($where);
+        $extract_statistics['brokerage_count'] = bcsub((string)$userBillServices->getUsersBokerageSum($where + ['pm' => 1]), (string)$userBillServices->getUsersBokerageSum($where + ['pm' => 0]), 2);
         //未提现金额
         $extract_statistics['brokerage_not'] = $extract_statistics['brokerage_count'] > $extract_statistics['priced'] ? bcsub((string)$extract_statistics['brokerage_count'], (string)$extract_statistics['priced'], 2) : 0.00;
         return compact('extract_statistics', 'list');
@@ -224,7 +207,7 @@ class UserExtractServices extends BaseServices
         }
         $f = array();
         $f[] = Form::input('real_name', '姓名', $UserExtract['real_name']);
-        $f[] = Form::number('extract_price', '提现金额', (float)$UserExtract['extract_price'])->precision(2);
+        $f[] = Form::number('extract_price', '提现金额', (float)$UserExtract['extract_price'])->precision(2)->disabled(true);
         if ($UserExtract['extract_type'] == 'alipay') {
             $f[] = Form::input('alipay_code', '支付宝账号', $UserExtract['alipay_code']);
         } else if ($UserExtract['extract_type'] == 'weixin') {
@@ -400,7 +383,7 @@ class UserExtractServices extends BaseServices
             $mark = '使用微信提现' . $insertData['extract_price'] . '元';
             /** @var WechatUserServices $wechatServices */
             $wechatServices = app()->make(WechatUserServices::class);
-            $openid = $wechatServices->getWechatOpenid($uid);
+            $openid = $wechatServices->getWechatOpenid($uid, request()->isRoutine() ? 'routine' : 'wechat');
             if (sys_config('brokerage_type', 0) && $openid) {
                 $insertData['status'] = 1;
                 /** @var StoreOrderCreateServices $services */
@@ -440,7 +423,9 @@ class UserExtractServices extends BaseServices
         /** @var SystemAdminServices $systemAdmin */
         $systemAdmin = app()->make(SystemAdminServices::class);
         $systemAdmin->adminNewPush();
-        //发送模板消息
+        //消息
+        event('notice.notice', [['nickname' => $user['nickname'], 'money' => $data['money']], 'kefu_send_extract_application']);
+
         return true;
     }
 

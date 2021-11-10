@@ -11,8 +11,8 @@
 
 namespace crmeb\traits;
 
-use crmeb\utils\Queue;
 
+use crmeb\utils\Queue;
 
 /**
  * 快捷加入消息队列
@@ -22,19 +22,33 @@ use crmeb\utils\Queue;
 trait QueueTrait
 {
     /**
+     * 列名
+     * @return string
+     */
+    protected static function queueName()
+    {
+        return null;
+    }
+
+    /**
      * 加入队列
      * @param array|string|int $action
      * @param int|null $secs
      * @param array $data
      * @return mixed
      */
-    public static function dispatch($action, array $data = [])
+    public static function dispatch($action, array $data = [], string $queueName = null)
     {
         $queue = Queue::instance()->job(__CLASS__);
         if (is_array($action)) {
             $queue->data(...$action);
         } else if (is_string($action)) {
             $queue->do($action)->data(...$data);
+        }
+        if ($queueName) {
+            $queue->setQueueName($queueName);
+        } else if (self::queueName()) {
+            $queue->setQueueName(self::queueName());
         }
         return $queue->push();
     }
@@ -46,13 +60,18 @@ trait QueueTrait
      * @param array $data
      * @return mixed
      */
-    public static function dispatchSece(int $secs, $action, array $data = [])
+    public static function dispatchSece(int $secs, $action, array $data = [], string $queueName = null)
     {
         $queue = Queue::instance()->job(__CLASS__)->secs($secs);
         if (is_array($action)) {
             $queue->data(...$action);
         } else if (is_string($action)) {
             $queue->do($action)->data(...$data);
+        }
+        if ($queueName) {
+            $queue->setQueueName($queueName);
+        } else if (self::queueName()) {
+            $queue->setQueueName(self::queueName());
         }
         return $queue->push();
     }
@@ -64,7 +83,7 @@ trait QueueTrait
      * @param int|null $secs
      * @return mixed
      */
-    public static function dispatchDo(string $do, array $data = [], int $secs = null)
+    public static function dispatchDo(string $do, array $data = [], int $secs = null, string $queueName = null)
     {
         $queue = Queue::instance()->job(__CLASS__)->do($do);
         if ($secs) {
@@ -72,6 +91,11 @@ trait QueueTrait
         }
         if ($data) {
             $queue->data(...$data);
+        }
+        if ($queueName) {
+            $queue->setQueueName($queueName);
+        } else if (self::queueName()) {
+            $queue->setQueueName(self::queueName());
         }
         return $queue->push();
     }

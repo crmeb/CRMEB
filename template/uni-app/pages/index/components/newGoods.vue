@@ -1,95 +1,102 @@
 <template>
-	<view class="index-wrapper">
-		<view class='wrapper' v-if="isShow && firstList.length">
-			<view class='title acea-row row-between-wrapper'>
-				<view class='text'>
-					<view class='name line1'>
-						首发新品
-						<text class='new font-color'>NEW~</text>
-					</view>
-					<view class='line1'>多个优质商品最新上架</view>
-				</view>
-				<view class='more' @click="gopage('/pages/columnGoods/HotNewGoods/index?type=3')">
-					更多
-					<text class='iconfont icon-jiantou'></text>
-				</view>
-			</view>
-			<view class='newProducts'>
-				<scroll-view class="scroll-view_x" scroll-x style="width:auto;overflow:hidden;">
-					<block v-for="(item,index) in firstList" :key='index'>
-						<view class='item' @click="goDetail(item)">
-							<view class='img-box'>
-								<image :src='item.image'></image>
-								<text class="pictrue_log_medium pictrue_log_class" v-if="item.activity && item.activity.type ==='1'">
-									秒杀
-								</text>
-								<text class="pictrue_log_medium pictrue_log_class" v-if="item.activity && item.activity.type === '2'">
-									砍价
-								</text>
-								<text class="pictrue_log_medium pictrue_log_class" v-if="item.activity && item.activity.type === '3'">
-									拼团
-								</text>
-							</view>
-							<view class='pro-info line1'>{{item.store_name}}</view>
-							<view class='money font-color'>￥{{item.price}}</view>
+	<view class="">
+
+		<view class="index-wrapper" :style="colorStyle">
+			<view class='wrapper' v-if="isShow && firstList.length">
+				<view class='title acea-row row-between-wrapper'>
+					<view class='text'>
+						<view class='name line1'>
+							{{titleInfo[0].val}}
+							<!-- <text class='new font-color'>NEW~</text> -->
 						</view>
-					</block>
-				</scroll-view>
-			</view>
-		</view>
-		<view class='wrapper' v-if="!isShow && isIframe && firstList.length">
-			<view class='title acea-row row-between-wrapper'>
-				<view class='text'>
-					<view class='name line1'>
-						首发新品
-						<text class='new font-color'>NEW~</text>
+						<view class='line1 txt-btn'>{{titleInfo[1].val}}</view>
 					</view>
-					<view class='line1'>多个优质商品最新上架</view>
+					<view class='more' @click="gopage(titleInfo[2].val)">
+						更多
+						<text class='iconfont icon-jiantou'></text>
+					</view>
 				</view>
-				<view class='more' @click="gopage('/pages/columnGoods/HotNewGoods/index?type=3')">
-					更多
-					<text class='iconfont icon-jiantou'></text>
-				</view>
-			</view>
-			<view class='newProducts'>
-				<scroll-view class="scroll-view_x" scroll-x style="width:auto;overflow:hidden;">
-					<block v-for="(item,index) in firstList" :key='index'>
-						<view class='item' @click="goDetail(item)">
-							<view class='img-box'>
-								<image :src='item.image'></image>
-								<text class="pictrue_log_medium pictrue_log_class" v-if="item.activity && item.activity.type ==='1'">
-									秒杀
-								</text>
-								<text class="pictrue_log_medium pictrue_log_class" v-if="item.activity && item.activity.type === '2'">
-									砍价
-								</text>
-								<text class="pictrue_log_medium pictrue_log_class" v-if="item.activity && item.activity.type === '3'">
-									拼团
-								</text>
+				<view class='newProducts'>
+					<scroll-view class="scroll-view_x" scroll-x style="width:auto;overflow:hidden;">
+						<block v-for="(item,index) in firstList" :key='index'>
+							<view class='item' @click="goDetail(item)">
+								<view class='img-box'>
+									<image :src='item.image'></image>
+									<text class="pictrue_log_medium pictrue_log_class"
+										v-if="item.activity && item.activity.type ==='1'">
+										秒杀
+									</text>
+									<text class="pictrue_log_medium pictrue_log_class"
+										v-if="item.activity && item.activity.type === '2'">
+										砍价
+									</text>
+									<text class="pictrue_log_medium pictrue_log_class"
+										v-if="item.activity && item.activity.type === '3'">
+										拼团
+									</text>
+								</view>
+								<view class='pro-info line1'>{{item.store_name}}</view>
+								<view class='money font-color'>￥{{item.price}}</view>
 							</view>
-							<view class='pro-info line1'>{{item.store_name}}</view>
-							<view class='money font-color'>￥{{item.price}}</view>
+						</block>
+					</scroll-view>
+				</view>
+			</view>
+			<view class='wrapper' v-if="!isShow && isIframe && firstList.length">
+				<view class='title acea-row row-between-wrapper'>
+					<view class='text'>
+						<view class='name line1'>
+							{{titleInfo[0].val}}
 						</view>
-					</block>
-				</scroll-view>
-			</view>
-		</view>
-		<view class='wrapper' v-if="isIframe && !firstList.length">
-			<view class='title acea-row row-between-wrapper'>
-				<view class='text'>
-					<view class='name line1'>
-						首发新品
-						<text class='new font-color'>NEW~</text>
+						<view class='line1 txt-btn'>{{titleInfo[1].val}}</view>
 					</view>
-					<view class='line1'>多个优质商品最新上架</view>
+					<view class='more' @click="gopage(titleInfo[2].val)">
+						更多
+						<text class='iconfont icon-jiantou'></text>
+					</view>
 				</view>
-				<view class='more' @click="gopage('/pages/columnGoods/HotNewGoods/index?type=3')">
-					更多
-					<text class='iconfont icon-jiantou'></text>
+				<view class='newProducts'>
+					<scroll-view class="scroll-view_x" scroll-x style="width:auto;overflow:hidden;">
+						<block v-for="(item,index) in firstList" :key='index'>
+							<view class='item' @click="goDetail(item)">
+								<view class='img-box'>
+									<image :src='item.image'></image>
+									<text class="pictrue_log_medium pictrue_log_class"
+										v-if="item.activity && item.activity.type ==='1'">
+										秒杀
+									</text>
+									<text class="pictrue_log_medium pictrue_log_class"
+										v-if="item.activity && item.activity.type === '2'">
+										砍价
+									</text>
+									<text class="pictrue_log_medium pictrue_log_class"
+										v-if="item.activity && item.activity.type === '3'">
+										拼团
+									</text>
+								</view>
+								<view class='pro-info line1'>{{item.store_name}}</view>
+								<view class='money font-color'>￥{{item.price}}</view>
+							</view>
+						</block>
+					</scroll-view>
 				</view>
 			</view>
-			<view class='newProducts'>
-				<view class="empty-img">首发新品，暂无数据</view>
+			<view class='wrapper' v-if="isIframe && !firstList.length">
+				<view class='title acea-row row-between-wrapper'>
+					<view class='text'>
+						<view class='name line1'>
+							{{titleInfo[0].val}}
+						</view>
+						<view class='line1 txt-btn'>{{titleInfo[1].val}}</view>
+					</view>
+					<view class='more' @click="gopage(titleInfo[2].val)">
+						更多
+						<text class='iconfont icon-jiantou'></text>
+					</view>
+				</view>
+				<view class='newProducts'>
+					<view class="empty-img">首发新品，暂无数据</view>
+				</view>
 			</view>
 		</view>
 	</view>
@@ -105,9 +112,13 @@
 		mapState,
 		mapGetters
 	} from 'vuex';
-	import { getHomeProducts } from '@/api/store.js';
+	import {
+		getHomeProducts
+	} from '@/api/store.js';
+	import colors from "@/mixins/color";
 	export default {
 		name: 'goodList',
+		mixins: [colors],
 		props: {
 			dataConfig: {
 				type: Object,
@@ -115,7 +126,7 @@
 			}
 		},
 		computed: {
-			 ...mapGetters(['uid']),
+			...mapGetters(['uid']),
 		},
 		watch: {
 			dataConfig: {
@@ -128,15 +139,15 @@
 						this.$set(this, 'type', nVal.selectSortConfig.activeValue);
 						this.salesOrder = nVal.goodsSort.type == 1 ? 'desc' : '';
 						this.newsOrder = nVal.goodsSort.type == 2 ? 'news' : '';
-						this.ids = nVal.ids?nVal.ids.join(','):'';
+						this.ids = nVal.ids ? nVal.ids.join(',') : '';
 						this.numConfig = nVal.numConfig.val;
+						this.titleInfo = nVal.titleInfo.list;
 						this.productslist();
 					}
 				}
 			}
 		},
-		created() {
-		},
+		created() {},
 		mounted() {},
 		data() {
 			return {
@@ -145,15 +156,16 @@
 				name: this.$options.name,
 				isShow: true,
 				isIframe: app.globalData.isIframe,
-				selectType:0,
+				selectType: 0,
 				selectId: '',
-				salesOrder:'',
-				newsOrder:'',
-				ids:'',
+				salesOrder: '',
+				newsOrder: '',
+				ids: '',
 				page: 1,
 				limit: this.$config.LIMIT,
 				type: '',
-				numConfig:0
+				numConfig: 0,
+				titleInfo: []
 			}
 		},
 		methods: {
@@ -172,7 +184,7 @@
 				} else {
 					data = {
 						page: that.page,
-						limit: that.numConfig<=that.limit?that.numConfig:that.limit,
+						limit: that.numConfig <= that.limit ? that.numConfig : that.limit,
 						type: that.type,
 						newsOrder: that.newsOrder,
 						salesOrder: that.salesOrder,
@@ -183,7 +195,9 @@
 				getHomeProducts(data).then(res => {
 					that.firstList = res.data.list;
 				}).catch(err => {
-					that.$util.Tips({ title: err });
+					that.$util.Tips({
+						title: err
+					});
 				});
 			},
 			gopage(url) {
@@ -207,17 +221,42 @@
 </script>
 
 <style lang="scss">
+	.index-wrapper {
+		background-color: $uni-bg-color;
+		margin: $uni-index-margin-row $uni-index-margin-col;
+		border-radius: $uni-border-radius-index;
+	}
+
+	.title {
+		.text {
+			display: flex;
+
+			.name {
+				font-size: $uni-index-title-font-size;
+				font-weight: bold;
+			}
+
+			.txt-btn {
+				display: flex;
+				align-items: flex-end;
+				margin-bottom: 8rpx;
+				margin-left: 12rpx;
+			}
+
+		}
+	}
+
+
 	.wrapper .newProducts {
 		white-space: nowrap;
-		padding: 0 30rpx;
-		margin: 35rpx 0 42rpx 0;
+		padding: 0rpx 20rpx 0rpx 20rpx;
+		margin: 20rpx 0;
 	}
 
 	.wrapper .newProducts .item {
 		display: inline-block;
 		width: 240rpx;
 		margin-right: 20rpx;
-		border: 1rpx solid #eee;
 		border-radius: 20rpx;
 	}
 
@@ -234,7 +273,7 @@
 	.wrapper .newProducts .item .img-box image {
 		width: 100%;
 		height: 100%;
-		border-radius: 20rpx 20rpx 0 0;
+		border-radius: 12rpx 12rpx 0 0;
 	}
 
 	.wrapper .newProducts .item .pro-info {
@@ -252,15 +291,20 @@
 	}
 
 	.empty-img {
-		width: 690rpx;
+		width: 640rpx;
 		height: 300rpx;
 		border-radius: 14rpx;
 		margin: 26rpx auto 0 auto;
 		background-color: #ccc;
 		text-align: center;
 		line-height: 300rpx;
-		.iconfont{
+
+		.iconfont {
 			font-size: 50rpx;
 		}
+	}
+
+	.font-color {
+		color: var(--view-priceColor);
 	}
 </style>

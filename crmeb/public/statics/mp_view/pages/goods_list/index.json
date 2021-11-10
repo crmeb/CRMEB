@@ -1,0 +1,7 @@
+{
+  "navigationBarTitleText": "商品列表",
+  "usingComponents": {
+    "recommend": "/components/recommend/index",
+    "home": "/components/home/index"
+  }
+}

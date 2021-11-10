@@ -14,6 +14,7 @@ namespace app\services\order;
 
 use app\dao\order\DeliveryServiceDao;
 use app\services\BaseServices;
+use app\services\message\service\StoreServiceLogServices;
 use app\services\user\UserServices;
 use crmeb\exceptions\AdminException;
 use crmeb\services\FormBuilder;
@@ -79,10 +80,9 @@ class DeliveryServiceServices extends BaseServices
     public function createServiceForm(array $formData = [])
     {
         if ($formData) {
-            $field[] = $this->builder->frameImage('avatar', '配送员头像', $this->url('admin/widget.images/index', ['fodder' => 'avatar'], true), $formData['avatar'] ?? '')->icon('ios-add')->width('60%')->height('435px');
-//            $field[] = $this->builder->frameImage('avatar', '用户头像', $this->url('admin/widget.images/index', array('fodder' => 'avatar')))->icon('ios-add')->width('50%')->height('396px');
+            $field[] = $this->builder->frameImage('avatar', '配送员头像', $this->url('admin/widget.images/index', ['fodder' => 'avatar'], true), $formData['avatar'] ?? '')->icon('ios-add')->width('950px')->height('505px')->modal(['footer-hide' => true]);
         } else {
-            $field[] = $this->builder->frameImage('image', '商城用户', $this->url('admin/system.user/list', ['fodder' => 'image'], true))->icon('ios-add')->width('50%')->height('500px')->Props(['srcKey' => 'image']);
+            $field[] = $this->builder->frameImage('image', '商城用户', $this->url('admin/system.user/list', ['fodder' => 'image'], true))->icon('ios-add')->width('950px')->height('505px')->modal(['footer-hide' => true])->Props(['srcKey' => 'image']);
             $field[] = $this->builder->hidden('uid', 0);
             $field[] = $this->builder->hidden('avatar', '');
         }

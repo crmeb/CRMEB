@@ -230,7 +230,6 @@
             },
             // 增加一级
             addtext () {
-                console.log(this.list)
                 if (!this.check()) return false
                 let data = this.defaultMenusData()
                 let id = this.list.length

@@ -47,7 +47,7 @@ class ProductServices extends BaseServices
             }
         }
         $list = $product->getActivityList($list);
-        $data['list'] = $product->getProduceOtherList($list, $uid, !!$where['type']);
+        $data['list'] = get_thumb_water($product->getProduceOtherList($list, $uid, !!$where['type']), 'mid');
         return $data;
     }
 
@@ -58,42 +58,46 @@ class ProductServices extends BaseServices
      */
     public function getProductRoutineCode(int $product_id)
     {
-        $namePath = 'routine_product_' . $product_id . '.jpg';
-        $data = 'id=' . $product_id;
-        /** @var SystemAttachmentServices $systemAttachmentService */
-        $systemAttachmentService = app()->make(SystemAttachmentServices::class);
-        $imageInfo = $systemAttachmentService->getOne(['name' => $namePath]);
-        $siteUrl = sys_config('site_url');
-        if (!$imageInfo) {
-            $res = MiniProgramService::qrcodeService()->appCodeUnlimit($data, 'pages/goods_details/index', 280);
-            if (!$res) return false;
-            $uploadType = (int)sys_config('upload_type', 1);
-            $upload = UploadService::init();
-            $res = (string)EntityBody::factory($res);
-            $res = $upload->to('routine/product')->validate()->stream($res, $namePath);
-            if ($res === false) {
-                return false;
-            }
-            $imageInfo = $upload->getUploadInfo();
-            $imageInfo['image_type'] = $uploadType;
-            if ($imageInfo['image_type'] == 1) $remoteImage = UtilService::remoteImage($siteUrl . $imageInfo['dir']);
-            else $remoteImage = UtilService::remoteImage($imageInfo['dir']);
-            if (!$remoteImage['status']) return false;
-            $systemAttachmentService->save([
-                'name' => $imageInfo['name'],
-                'att_dir' => $imageInfo['dir'],
-                'satt_dir' => $imageInfo['thumb_path'],
-                'att_size' => $imageInfo['size'],
-                'att_type' => $imageInfo['type'],
-                'image_type' => $imageInfo['image_type'],
-                'module_type' => 2,
-                'time' => time(),
-                'pid' => 1,
-                'type' => 2
-            ]);
-            $url = $imageInfo['dir'];
-        } else $url = $imageInfo['att_dir'];
-        if ($imageInfo['image_type'] == 1) $url = $siteUrl . $url;
-        return $url;
+        try {
+            $namePath = 'routine_product_' . $product_id . '.jpg';
+            $data = 'id=' . $product_id;
+            /** @var SystemAttachmentServices $systemAttachmentService */
+            $systemAttachmentService = app()->make(SystemAttachmentServices::class);
+            $imageInfo = $systemAttachmentService->getOne(['name' => $namePath]);
+            $siteUrl = sys_config('site_url');
+            if (!$imageInfo) {
+                $res = MiniProgramService::qrcodeService()->appCodeUnlimit($data, 'pages/goods_details/index', 280);
+                if (!$res) return false;
+                $uploadType = (int)sys_config('upload_type', 1);
+                $upload = UploadService::init();
+                $res = (string)EntityBody::factory($res);
+                $res = $upload->to('routine/product')->validate()->stream($res, $namePath);
+                if ($res === false) {
+                    return false;
+                }
+                $imageInfo = $upload->getUploadInfo();
+                $imageInfo['image_type'] = $uploadType;
+                if ($imageInfo['image_type'] == 1) $remoteImage = UtilService::remoteImage($siteUrl . $imageInfo['dir']);
+                else $remoteImage = UtilService::remoteImage($imageInfo['dir']);
+                if (!$remoteImage['status']) return false;
+                $systemAttachmentService->save([
+                    'name' => $imageInfo['name'],
+                    'att_dir' => $imageInfo['dir'],
+                    'satt_dir' => $imageInfo['thumb_path'],
+                    'att_size' => $imageInfo['size'],
+                    'att_type' => $imageInfo['type'],
+                    'image_type' => $imageInfo['image_type'],
+                    'module_type' => 2,
+                    'time' => time(),
+                    'pid' => 1,
+                    'type' => 2
+                ]);
+                $url = $imageInfo['dir'];
+            } else $url = $imageInfo['att_dir'];
+            if ($imageInfo['image_type'] == 1) $url = $siteUrl . $url;
+            return $url;
+        } catch (\Exception $e) {
+            return '';
+        }
     }
 }

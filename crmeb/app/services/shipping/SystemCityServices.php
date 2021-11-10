@@ -51,13 +51,41 @@ class SystemCityServices extends BaseServices
      */
     public function getCityList(array $where)
     {
-        $list = $this->dao->getCityList($where);
-        $cityIds = array_column($list, 'parent_id');
-        $cityNames = $this->dao->getCityArray(['city_id' => $cityIds], 'name', 'city_id');
-        foreach ($list as &$item) {
-            $item['parent_id'] = $cityNames[$item['parent_id']] ?? '中国';
+//        $list = $this->dao->getCityList($where);
+//        $cityIds = array_column($list, 'parent_id');
+//        $cityNames = $this->dao->getCityArray(['city_id' => $cityIds], 'name', 'city_id');
+//        foreach ($list as &$item) {
+//            $item['parent_id'] = $cityNames[$item['parent_id']] ?? '中国';
+//        }
+//        return $list;
+        return CacheService::get('tree_city_list', function () {
+            return $this->getSonCityList();
+        }, 86400);
+    }
+
+    /**
+     * tree形城市列表
+     * @param int $pid
+     * @param string $parent_name
+     * @return array
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     */
+    public function getSonCityList($pid = 0, $parent_name = '中国')
+    {
+        $list = $this->dao->getCityList(['parent_id' => $pid], 'id,city_id,level,name');
+        $arr = [];
+        if ($list) {
+            foreach ($list as $item) {
+                $item['parent_id'] = $parent_name;
+                $item['label'] = $item['name'];
+                $item['value'] = $item['city_id'];
+                $item['children'] = $this->getSonCityList($item['city_id'], $item['name']);
+                $arr [] = $item;
+            }
         }
-        return $list;
+        return $arr;
     }
 
     /**

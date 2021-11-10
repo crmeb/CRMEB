@@ -1,10 +1,10 @@
 <template>
-	<view>
+	<view class="menu-main">
 		<view class='nav acea-row acea-row' v-if="isShow && menus.length">
 			<block v-for="(item,index) in menus" :key="index">
 				<view class='item' @click="menusTap(item.info[1].value)">
 					<view class='pictrue'>
-						<image :src='item.img'></image>
+						<image class="skeleton-radius" :src='item.img'></image>
 					</view>
 					<view class="menu-txt">{{item.info[0].value}}</view>
 				</view>
@@ -48,7 +48,7 @@
 			dataConfig: {
 				immediate: true,
 				handler(nVal, oVal) {
-					if(nVal){
+					if (nVal) {
 						this.menus = nVal.imgList.list;
 						this.isShow = nVal.isShow.val
 					}
@@ -75,18 +75,20 @@
 						location.href = url
 						// #endif
 					} else {
-						uni.navigateTo({
-							url: url
-						})
-						// if(['/pages/goods_cate/goods_cate','/pages/order_addcart/order_addcart','/pages/user/index'].indexOf(url) == -1){
-						// 	uni.navigateTo({
-						// 		url:url
-						// 	})
-						// }else{
-						// 	uni.switchTab({
-						// 		url:url
-						// 	})
-						// }
+						// uni.navigateTo({
+						// 	url: url
+						// })
+						if (['/pages/goods_cate/goods_cate', '/pages/order_addcart/order_addcart',
+								'/pages/user/index'
+							].indexOf(url) == -1) {
+							uni.navigateTo({
+								url: url
+							})
+						} else {
+							uni.switchTab({
+								url: url
+							})
+						}
 					}
 				})
 			}
@@ -95,19 +97,25 @@
 </script>
 
 <style lang="scss">
-	.nav {
+	.menu-main {
 		background-color: #fff;
-		padding-bottom: 30rpx;
+	}
 
+	.nav {
+		margin: 0 30rpx;
+		// margin:  $uni-index-margin-row $uni-index-margin-col;
+		border-radius: $uni-border-radius-index;
+
+		// box-shadow: $uni-index-box-shadow;
 		.item {
-			margin-top: 30rpx;
-			width: 25%;
+			margin-top: 26rpx;
+			width: 20%;
 			text-align: center;
 			font-size: 24rpx;
 
 			.pictrue {
-				width: 82rpx;
-				height: 82rpx;
+				width: 90rpx;
+				height: 90rpx;
 				margin: 0 auto;
 
 				&.default {

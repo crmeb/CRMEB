@@ -504,7 +504,6 @@
                     this.$nextTick(() => {
 
                         this.$emit('change', true)
-                        console.log(parseFloat(document.getElementById(selector).offsetTop) - 60,'getChatList')
                         let num = parseFloat(document.getElementById(selector).offsetTop) - 60
                         this.$refs["scrollBox"].scrollTo(
                             {
@@ -585,7 +584,6 @@
                 let info = uni.createSelectorQuery().select(".chat");
                 setTimeout(res => {
                     info.boundingClientRect(function (data) { //data - 各种参数
-                        console.log(data.height, 'data.height') // 获取元素高度
                         scrollTop = data.height
                         if (self.active) {
                             self.scrollTop = parseInt(scrollTop) + 500
@@ -618,7 +616,6 @@
             },
             handleDeactivate(vm, refreshDom) {
                 let num = parseFloat(document.getElementById(this.selector).offsetTop) - 60
-                console.log(num,'handleDeactivate')
                 this.$refs["scrollBox"].scrollTo(
                     {
                         y: num

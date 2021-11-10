@@ -1,5 +1,5 @@
 <template>
-	<view>
+	<view :style="colorStyle">
 		<view class='order-details'>
 			<view v-if="orderInfo && orderInfo.invoice" class='header bg-color acea-row row-middle'>
 				<view class='iconfont icon-fapiao1'></view>
@@ -161,7 +161,9 @@
 				</view>
 			</view>
 		</view>
+		<!-- #ifndef MP -->
 		<home></home>
+		<!-- #endif -->
 		<!-- #ifdef MP -->
 		<!-- <authorize @onLoadFun="onLoadFun" :isAuto="isAuto" :isShowAuth="isShowAuth" @authColse="authColse"></authorize> -->
 		<!-- #endif -->
@@ -557,6 +559,7 @@
 	// #ifdef MP
 	import authorize from '@/components/Authorize';
 	// #endif
+	import colors from "@/mixins/color";
 	export default {
 		components: {
 			payment,
@@ -566,6 +569,7 @@
 			authorize
 			// #endif
 		},
+		mixins: [colors],
 		data() {
 			return {
 				order_id: '',
@@ -585,6 +589,15 @@
 						value: 'weixin',
 						title: '微信快捷支付'
 					},
+					// #ifdef H5 || APP-PLUS
+					{
+						name: '支付宝支付',
+						icon: 'icon-zhifubao',
+						value: 'alipay',
+						title: '支付宝支付',
+						payStatus: true
+					},
+					// #endif
 					{
 						name: "余额支付",
 						icon: "icon-yuezhifu",
@@ -885,7 +898,6 @@
 						if (res.confirm) {
 							orderCancel(self.orderInfo.order_id)
 								.then((data) => {
-									console.log(data)
 									self.$util.Tips({
 										title: data.msg
 									}, {

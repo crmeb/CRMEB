@@ -1,34 +1,39 @@
 <template>
-	<view class="index-wrapper">
-		<view class='wrapper' v-if="isShow && benefit.length">
-			<view class='title acea-row row-between-wrapper'>
-				<view class='text'>
-					<view class='name line1'>促销单品</view>
-					<view class='line1'>库存商品优惠促销活动</view>
+	<view class="">
+		<view class="index-wrapper">
+			<view class='wrapper' v-if="isShow && benefit.length">
+				<view class='title acea-row row-between-wrapper'>
+					<view class='text'>
+						<view class='name line1'>{{titleInfo[0].val}}</view>
+						<view class='line1 txt-btn'>{{titleInfo[1].val}}</view>
+					</view>
+					<view class='more' @click="gopage(titleInfo[2].val)">更多<text class='iconfont icon-jiantou'></text>
+					</view>
 				</view>
-				<view class='more' @click="gopage('/pages/columnGoods/HotNewGoods/index?type=4')">更多<text class='iconfont icon-jiantou'></text></view>
+				<promotionGood :benefit="benefit"></promotionGood>
 			</view>
-			<promotionGood :benefit="benefit"></promotionGood>
-		</view>
-		<view class='wrapper' v-if="!isShow && isIframe && benefit.length">
-			<view class='title acea-row row-between-wrapper'>
-				<view class='text'>
-					<view class='name line1'>促销单品</view>
-					<view class='line1'>库存商品优惠促销活动</view>
+			<view class='wrapper' v-if="!isShow && isIframe && benefit.length">
+				<view class='title acea-row row-between-wrapper'>
+					<view class='text'>
+						<view class='name line1'>{{titleInfo[0].val}}</view>
+						<view class='line1 txt-btn'>{{titleInfo[1].val}}</view>
+					</view>
+					<view class='more' @click="gopage(titleInfo[1].val)">更多<text class='iconfont icon-jiantou'></text>
+					</view>
 				</view>
-				<view class='more' @click="gopage('/pages/columnGoods/HotNewGoods/index?type=4')">更多<text class='iconfont icon-jiantou'></text></view>
+				<promotionGood :benefit="benefit"></promotionGood>
 			</view>
-			<promotionGood :benefit="benefit"></promotionGood>
-		</view>
-		<view class='wrapper' v-if="isIframe && !benefit.length">
-			<view class='title acea-row row-between-wrapper'>
-				<view class='text'>
-					<view class='name line1'>促销单品</view>
-					<view class='line1'>库存商品优惠促销活动</view>
+			<view class='wrapper' v-if="isIframe && !benefit.length">
+				<view class='title acea-row row-between-wrapper'>
+					<view class='text'>
+						<view class='name line1'>{{titleInfo[0].val}}</view>
+						<view class='line1 txt-btn'>{{titleInfo[1].val}}</view>
+					</view>
+					<view class='more' @click="gopage(titleInfo[1].val)">更多<text class='iconfont icon-jiantou'></text>
+					</view>
 				</view>
-				<view class='more' @click="gopage('/pages/columnGoods/HotNewGoods/index?type=4')">更多<text class='iconfont icon-jiantou'></text></view>
+				<view class="empty-img">促销单品，暂无数据</view>
 			</view>
-			<view class="empty-img">促销单品，暂无数据</view>
 		</view>
 	</view>
 </template>
@@ -41,7 +46,9 @@
 	import {
 		goPage
 	} from '@/libs/order.js'
-	import { getHomeProducts } from '@/api/store.js';
+	import {
+		getHomeProducts
+	} from '@/api/store.js';
 	import promotionGood from '@/components/promotionGood/index.vue';
 	export default {
 		name: 'goodList',
@@ -58,15 +65,16 @@
 			dataConfig: {
 				immediate: true,
 				handler(nVal, oVal) {
-					if(nVal){
+					if (nVal) {
 						this.isShow = nVal.isShow.val;
 						this.selectType = nVal.tabConfig.tabVal;
 						this.$set(this, 'selectId', nVal.selectConfig.activeValue);
 						this.$set(this, 'type', nVal.selectSortConfig.activeValue);
 						this.salesOrder = nVal.goodsSort.type == 1 ? 'desc' : '';
 						this.newsOrder = nVal.goodsSort.type == 2 ? 'news' : '';
-						this.ids = nVal.ids?nVal.ids.join(','):'';
+						this.ids = nVal.ids ? nVal.ids.join(',') : '';
 						this.numConfig = nVal.numConfig.val;
+						this.titleInfo = nVal.titleInfo.list;
 						this.productslist();
 					}
 				}
@@ -83,15 +91,16 @@
 				name: this.$options.name,
 				isShow: true,
 				isIframe: app.globalData.isIframe,
-				selectType:0,
+				selectType: 0,
 				selectId: '',
-				salesOrder:'',
-				newsOrder:'',
-				ids:'',
+				salesOrder: '',
+				newsOrder: '',
+				ids: '',
 				page: 1,
 				limit: this.$config.LIMIT,
 				type: '',
-				numConfig:0
+				numConfig: 0,
+				titleInfo: []
 			}
 		},
 		methods: {
@@ -110,7 +119,7 @@
 				} else {
 					data = {
 						page: that.page,
-						limit: that.numConfig<=that.limit?that.numConfig:that.limit,
+						limit: that.numConfig <= that.limit ? that.numConfig : that.limit,
 						type: that.type,
 						newsOrder: that.newsOrder,
 						salesOrder: that.salesOrder,
@@ -121,7 +130,9 @@
 				getHomeProducts(data).then(res => {
 					that.benefit = res.data.list;
 				}).catch(err => {
-					that.$util.Tips({ title: err });
+					that.$util.Tips({
+						title: err
+					});
 				});
 			},
 			gopage(url) {
@@ -136,6 +147,30 @@
 </script>
 
 <style lang="scss">
+	.index-wrapper {
+		background-color: $uni-bg-color;
+		margin: $uni-index-margin-row $uni-index-margin-col;
+		border-radius: $uni-border-radius-index;
+		// box-shadow: $uni-index-box-shadow;
+	}
+
+	.text {
+		display: flex;
+
+		.name {
+			font-size: $uni-index-title-font-size;
+			font-weight: bold;
+		}
+
+		.txt-btn {
+			display: flex;
+			align-items: flex-end;
+			margin-bottom: 8rpx;
+			margin-left: 12rpx;
+		}
+
+	}
+
 	.empty-img {
 		width: 690rpx;
 		height: 300rpx;
@@ -144,7 +179,8 @@
 		background-color: #ccc;
 		text-align: center;
 		line-height: 300rpx;
-		.iconfont{
+
+		.iconfont {
 			font-size: 50rpx;
 		}
 	}

@@ -104,4 +104,18 @@ class StoreProductAttrValueDao extends BaseDao
     {
         return $this->getModel()->where($where)->dec('stock', $num)->dec('quota', $num)->inc('sales', $num)->update();
     }
+
+    /**
+     * 根据unique获取一条规格数据(积分商城)
+     * @param string $unique
+     * @param string $field
+     * @return array|\think\Model|null
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     */
+    public function uniqueByField(string $unique, string $field = '*')
+    {
+        return $this->search(['unique' => $unique, 'type' => 4])->field($field)->with(['storeIntegral'])->find();
+    }
 }

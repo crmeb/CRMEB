@@ -19,7 +19,7 @@ export default {
     state: {
         activeName: {},
         defaultConfig: {
-            b_swiperBg: {
+            swiperBg: {
                 isShow:{
                     val: true
                 },
@@ -64,7 +64,7 @@ export default {
                     ]
                 }
             },
-            c_monograph: {
+            monograph: {
                 isShow:{
                     val: true
                 },
@@ -109,7 +109,7 @@ export default {
                     ]
                 }
             },
-            d_picTxt: {
+            picTxt: {
                 isShow:{
                     val: true
                 },
@@ -117,7 +117,7 @@ export default {
                     val:''
                 }
             },
-            z_tabBar:{
+            tabBar:{
                 tabBarList:{
                     title: '图片建议宽度81*81px',
                     list:[
@@ -131,6 +131,11 @@ export default {
                             imgList:[require('@/assets/images/foo2-01.png'),require('@/assets/images/foo2-02.png')],
                             link: '/pages/goods_cate/goods_cate'
                         },
+                        // {
+                        //     name:'周边',
+                        //     imgList:[require('@/assets/images/foo3-01.png'),require('@/assets/images/foo3-02.png')],
+                        //     pagePath: ''
+                        // },
                         {
                             name:'购物车',
                             imgList:[require('@/assets/images/foo4-01.png'),require('@/assets/images/foo4-02.png')],
@@ -146,7 +151,7 @@ export default {
             }
         },
         component: {
-            b_swiperBg: {
+            swiperBg: {
                 list: [
                     {
                         components: toolCom.c_is_show,
@@ -158,7 +163,7 @@ export default {
                     },
                 ]
             },
-            c_monograph: {
+            monograph: {
                 list: [
                     {
                         components: toolCom.c_is_show,
@@ -170,7 +175,7 @@ export default {
                     }
                 ]
             },
-            d_picTxt: {
+            picTxt: {
                 list: [
                     {
                         components: toolCom.c_is_show,
@@ -182,7 +187,7 @@ export default {
                     }
                 ]
             },
-            z_tabBar: {
+            tabBar: {
                 list:[
                     {
                         components: toolCom.c_tab_bar,
@@ -207,8 +212,14 @@ export default {
          * @param {Object} data
          */
         updataConfig(state,data){
-            state.defaultConfig = data
-            let value = Object.assign({}, state.defaultConfig);
+            let value = state.defaultConfig;
+            for(let i in data){
+                for(let j in value){
+                    if(i===j){
+                        value[j] = data[i]
+                    }
+                }
+            }
             state.defaultConfig = value
         }
     },

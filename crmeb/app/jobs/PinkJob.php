@@ -21,6 +21,7 @@ use crmeb\traits\QueueTrait;
 class PinkJob extends BaseJobs
 {
     use QueueTrait;
+
     public function doJob($pinkId)
     {
         /** @var StorePinkServices $pinkService */
@@ -36,7 +37,7 @@ class PinkJob extends BaseJobs
 
                 /** @var StoreOrderRefundServices $orderRefundService */
                 $orderRefundService = app()->make(StoreOrderRefundServices::class);
-                $orderRefundService->orderApplyRefund($order, '拼团时间超时');
+                $orderRefundService->orderApplyRefund($order, '拼团时间超时', '', [], 1);
 
                 $pinkService->update([['id|k_id', '=', $pinkId]], ['status' => 3]);
                 $pinkService->orderPinkAfterNo($key, $pinkId, false, $order->is_channel);

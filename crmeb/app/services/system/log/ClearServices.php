@@ -14,6 +14,10 @@ namespace app\services\system\log;
 
 use app\services\BaseServices;
 
+/**
+ * Class ClearServices
+ * @package app\services\system\log
+ */
 class ClearServices extends BaseServices
 {
     /** 递归删除文件

@@ -8,7 +8,7 @@
 // +----------------------------------------------------------------------
 // | Author: CRMEB Team <admin@crmeb.com>
 // +----------------------------------------------------------------------
-declare (strict_types=1);
+declare (strict_types = 1);
 
 namespace app\services\system\attachment;
 
@@ -45,20 +45,12 @@ class SystemAttachmentCategoryServices extends BaseServices
      */
     public function getAll(array $where)
     {
-        $categoryList = $this->dao->getList($where);
-        if ($where['name'] != '') {
-            $pids = Arr::getUniqueKey($categoryList, 'pid');
-            $parentList = $this->dao->getList(['id' => $pids]);
-            $categoryList = array_merge($categoryList, $parentList);
-            foreach ($categoryList as $key => $item) {
-                $arr = $categoryList[$key];
-                unset($categoryList[$key]);
-                if (!in_array($arr, $categoryList)) {
-                    $categoryList[] = $arr;
-                }
-            }
+        $list = $this->dao->getList($where);
+        foreach ($list as &$item) {
+            $item['title'] = $item['name'];
+            $item['children'] = [];
+            if ($where['name'] == '' && $this->dao->count(['pid' => $item['id']])) $item['loading'] = false;
         }
-        $list = $this->tidyMenuTier($categoryList);
         return compact('list');
     }
 
@@ -114,7 +106,7 @@ class SystemAttachmentCategoryServices extends BaseServices
     public function form($info = [])
     {
         return [
-            Form::select('pid', '上级分类', $info['pid'] ?? '')->setOptions($this->getCateList(['pid' => 0]))->filterable(true),
+            Form::select('pid', '上级分类', (int)($info['pid'] ?? ''))->setOptions($this->getCateList(['pid' => 0]))->filterable(1),
             Form::input('name', '分类名称', $info['name'] ?? '')->maxlength(30),
         ];
     }

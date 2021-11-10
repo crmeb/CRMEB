@@ -91,7 +91,7 @@ class LiveGoodsServices extends BaseServices
                 'add_time' => $time
             ];
             try {
-                $path = $download->thumb(true)->downloadImage($data['cover_img'])['path'];
+                $path = root_path() . 'public' . $download->thumb(true)->downloadImage($data['cover_img'])['path'];
                 $coverImgUrl = $miniUpload->uploadImage($path)->media_id;
                 @unlink($path);
             } catch (\Throwable $e) {
@@ -120,7 +120,7 @@ class LiveGoodsServices extends BaseServices
         $liveGoods = $this->dao->getColumn([['goods_id', '>', 0]], '*', 'id');
         if ($liveGoods) {
             foreach ($liveGoods as $good) {
-                $path = app()->make(DownloadImageService::class)->thumb(true)->downloadImage($good['cover_img'])['path'];
+                $path = root_path() . 'public' . app()->make(DownloadImageService::class)->thumb(true)->downloadImage($good['cover_img'])['path'];
 
                 $coverImgUrl = MiniProgramService::materialTemporaryService()->uploadImage($path)->media_id;
                 @unlink($path);
@@ -142,7 +142,7 @@ class LiveGoodsServices extends BaseServices
             throw new AdminException('商品已创建');
 
         $goods = $goods->toArray();
-        $path = app()->make(DownloadImageService::class)->thumb(true)->downloadImage($goods['cover_img'])['path'];
+        $path = root_path() . 'public' . app()->make(DownloadImageService::class)->thumb(true)->downloadImage($goods['cover_img'])['path'];
 
         $url = 'pages/goods_details/index?id=' . $goods['product_id'];
         $coverImgUrl = MiniProgramService::materialTemporaryService()->uploadImage($path)->media_id;

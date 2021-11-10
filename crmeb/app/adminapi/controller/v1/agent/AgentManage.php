@@ -12,6 +12,7 @@ namespace app\adminapi\controller\v1\agent;
 
 
 use app\adminapi\controller\AuthController;
+use app\services\agent\AgentLevelServices;
 use app\services\agent\AgentManageServices;
 use app\services\user\UserServices;
 use think\facade\App;
@@ -226,5 +227,47 @@ class AgentManage extends AuthController
         $userInfo->spread_time = time();
         $userInfo->save();
         return app('json')->success('修改成功');
+    }
+
+    /**
+     * 取消推广员推广资格
+     * @param $uid
+     * @return mixed
+     */
+    public function delete_system_spread($uid)
+    {
+        if (!$uid) app('json')->fail('缺少参数');
+        return app('json')->success($this->services->delSystemSpread((int)$uid) ? '取消成功' : '取消失败');
+    }
+
+    /**
+     * 获取赠送分销等级表单
+     * @param $uid
+     * @return mixed
+     */
+    public function getLevelForm(AgentLevelServices $services, $uid)
+    {
+        if (!$uid) app('json')->fail('缺少参数');
+        return app('json')->success($services->levelForm((int)$uid));
+    }
+
+    /**
+     * 赠送分销等级
+     * @param AgentLevelServices $services
+     * @return mixed
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     */
+    public function giveAgentLevel(AgentLevelServices $services)
+    {
+        [$uid, $id] = $this->request->postMore([
+            [['uid', 'd'], 0],
+            [['id', 'd'], 0],
+        ], true);
+        if (!$uid || !$id) {
+            app('json')->fail('缺少参数');
+        }
+        return app('json')->success($services->givelevel((int)$uid, (int)$id) ? '赠送成功' : '赠送失败');
     }
 }

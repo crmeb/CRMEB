@@ -24,6 +24,11 @@ use think\facade\App;
  */
 class StoreCombination extends AuthController
 {
+    /**
+     * StoreCombination constructor.
+     * @param App $app
+     * @param StoreCombinationServices $services
+     */
     public function __construct(App $app, StoreCombinationServices $services)
     {
         parent::__construct($app);
@@ -37,6 +42,7 @@ class StoreCombination extends AuthController
     public function index()
     {
         $where = $this->request->getMore([
+            ['start_status', ''],
             ['is_show', ''],
             ['store_name', '']
         ]);
@@ -100,7 +106,7 @@ class StoreCombination extends AuthController
             ['copy', 0],
             ['virtual', 100],
         ]);
-        Validate(\app\adminapi\validate\marketing\StoreCombinationValidate::class)->scene('save')->check($data);
+        $this->validate($data, \app\adminapi\validate\marketing\StoreCombinationValidate::class, 'save');
         if ($data['section_time']) {
             [$start_time, $end_time] = $data['section_time'];
             if (strtotime($end_time) < time()) {

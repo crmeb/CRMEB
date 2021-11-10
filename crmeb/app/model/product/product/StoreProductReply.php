@@ -68,6 +68,7 @@ class StoreProductReply extends BaseModel
         return $this->hasOne(User::class, 'uid', 'uid')->field('is_money_level,uid')->bind(['is_money_level']);
     }
 
+
     /**
      * 评价图片修改器
      * @param $value

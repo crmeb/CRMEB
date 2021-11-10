@@ -13,6 +13,7 @@ namespace crmeb\services;
 
 use think\cache\driver\Redis;
 use think\facade\Cache as CacheStatic;
+use think\facade\Config;
 use think\facade\Log;
 
 /**
@@ -30,6 +31,18 @@ class CacheService
     protected static $globalCacheName = '_cached_1515146130';
 
     /**
+     * 缓存队列key
+     * @var string[]
+     */
+    protected static $redisQueueKey = [
+        0 => 'product',
+        1 => 'seckill',
+        2 => 'bargain',
+        3 => 'combination',
+        6 => 'advance'
+    ];
+
+    /**
      * 过期时间
      * @var int
      */
@@ -45,9 +58,11 @@ class CacheService
         if (self::$expire) {
             return (int)self::$expire;
         }
-        $expire = !is_null($expire) ? $expire : SystemConfigService::get('cache_config', null, true);
+        $default = Config::get('cache.default');
+        $expire = Config::get('cache.stores.' . $default . '.expire');
         if (!is_int($expire))
             $expire = (int)$expire;
+
         return self::$expire = $expire;
     }
 
@@ -106,9 +121,9 @@ class CacheService
      *
      * @return \think\cache\TagSet|CacheStatic
      */
-    public static function handler(?string $cacheName = null)
+    public static function handler()
     {
-        return CacheStatic::tag($cacheName ?: self::$globalCacheName);
+        return CacheStatic::tag(self::$globalCacheName);
     }
 
     /**
@@ -244,4 +259,70 @@ class CacheService
         return self::redisHandler()->{$name}(...$arguments);
     }
 
+    /**
+     * 设置redis入库队列
+     * @param string $unique
+     * @param int $number
+     * @param int $type
+     * @param bool $isPush true :重置 false：累加
+     * @return bool
+     */
+    public static function setStock(string $unique, int $number, int $type = 1, bool $isPush = true)
+    {
+        if (!$unique || !$number) return false;
+        $name = (self::$redisQueueKey[$type] ?? '') . '_' . $type . '_' . $unique;
+        /** @var self $cache */
+        $cache = self::redisHandler();
+        $res = true;
+        if ($isPush) {
+            $cache->del($name);
+        }
+        $data = [];
+        for ($i = 1; $i <= $number; $i++) {
+            $data[] = $i;
+        }
+        $res = $res && $cache->lPush($name, ...$data);
+        return $res;
+    }
+
+    /**
+     * 是否有库存|返回库存
+     * @param string $unique
+     * @param int $number
+     * @param int $type
+     * @return bool
+     */
+    public static function checkStock(string $unique, int $number = 0, int $type = 1)
+    {
+        $name = (self::$redisQueueKey[$type] ?? '') . '_' . $type . '_' . $unique;
+        if ($number) {
+            return self::redisHandler()->lLen($name) >= $number;
+        } else {
+            return self::redisHandler()->lLen($name);
+        }
+    }
+
+    /**
+     * 弹出redis队列中的库存条数
+     * @param string $unique
+     * @param int $number
+     * @param int $type
+     * @return bool
+     */
+    public static function popStock(string $unique, int $number, int $type = 1)
+    {
+        if (!$unique || !$number) return false;
+        $name = (self::$redisQueueKey[$type] ?? '') . '_' . $type . '_' . $unique;
+        /** @var self $cache */
+        $cache = self::redisHandler();
+        $res = true;
+        if ($number > $cache->lLen($name)) {
+            return false;
+        }
+        for ($i = 1; $i <= $number; $i++) {
+            $res = $res && $cache->lPop($name);
+        }
+
+        return $res;
+    }
 }

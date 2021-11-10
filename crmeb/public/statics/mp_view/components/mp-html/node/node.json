@@ -1,0 +1,6 @@
+{
+  "component": true,
+  "usingComponents": {
+    "node": "/components/mp-html/node/node"
+  }
+}

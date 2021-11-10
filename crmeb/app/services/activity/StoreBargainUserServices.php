@@ -8,11 +8,10 @@
 // +----------------------------------------------------------------------
 // | Author: CRMEB Team <admin@crmeb.com>
 // +----------------------------------------------------------------------
-declare (strict_types=1);
+declare (strict_types = 1);
 
 namespace app\services\activity;
 
-use app\model\activity\StoreBargainUserHelp;
 use app\Request;
 use app\services\BaseServices;
 use app\dao\activity\StoreBargainUserDao;
@@ -217,9 +216,17 @@ class StoreBargainUserServices extends BaseServices
      * 下架删除砍价时修改砍价状态 砍价失败
      * @param $bargain_id
      */
-    public function UserBargainStatusFail($bargain_id)
+    public function userBargainStatusFail($bargain_id, $is_true)
     {
-        $this->dao->update(['bargain_id' => $bargain_id, 'status' => 1], ['status' => 2]);
+        if ($is_true) {
+            $this->dao->delete(['bargain_id' => $bargain_id, 'status' => 1]);
+            /** @var StoreBargainUserHelpServices $service */
+            $service = app()->make(StoreBargainUserHelpServices::class);
+            $service->delete(['bargain_id' => $bargain_id]);
+        } else {
+            $this->dao->update(['bargain_id' => $bargain_id, 'status' => 1], ['status' => 2]);
+        }
+
     }
 
     /**

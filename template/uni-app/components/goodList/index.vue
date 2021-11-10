@@ -1,35 +1,46 @@
 <template>
 	<view class='goodList'>
-		<block v-for="(item,index) in bastList" :key="index">
-			<view @click="goDetail(item)" class='item acea-row row-between-wrapper' hover-class="none">
-				<view class='pictrue'>
-					<image :src='item.image'></image>
-					<span class="pictrue_log pictrue_log_class" v-if="item.activity && item.activity.type === '1'">秒杀</span>
-					<span class="pictrue_log pictrue_log_class" v-if="item.activity && item.activity.type === '2'">砍价</span>
-					<span class="pictrue_log pictrue_log_class" v-if="item.activity && item.activity.type === '3'">拼团</span>
-				</view>
-				<view class='underline'>
-					<view class='text'>
-						<view class='line1'>{{item.store_name}}</view>
-						<view class='money font-color'>￥<text class='num'>{{item.price}}</text></view>
-						<view class="vip-money acea-row row-middle" v-if="item.base && item.vip_price && item.vip_price > 0">￥{{item.vip_price || 0}}
-						   <image src='../../static/images/jvip.png' class="jvip"></image><text class='num'>已售{{item.sales}}{{item.unit_name}}</text>
-						</view>
-						<view class='vip-money acea-row row-middle' v-if="item.is_vip && item.vip_price && item.vip_price > 0">￥{{item.vip_price || 0}}
-						   <image src='../../static/images/vip.png'></image><text class='num'>已售{{item.sales}}{{item.unit_name}}</text>
-						</view>
-						<view class='vip-money acea-row row-middle' v-else><text class='num'>已售{{item.sales}}{{item.unit_name}}</text></view>
+		<scroll-view scroll-y="true" scroll-with-animation='true' style="height: 100%;">
+
+			<block v-for="(item,index) in bastList" :key="index">
+				<view @click="goDetail(item)" class='item acea-row row-between-wrapper' hover-class="none">
+					<view class='pictrue'>
+						<image :src='item.image'></image>
+						<span class="pictrue_log pictrue_log_class"
+							v-if="item.activity && item.activity.type === '1'">秒杀</span>
+						<span class="pictrue_log pictrue_log_class"
+							v-if="item.activity && item.activity.type === '2'">砍价</span>
+						<span class="pictrue_log pictrue_log_class"
+							v-if="item.activity && item.activity.type === '3'">拼团</span>
 					</view>
+					<view class='underline'>
+						<view class='text'>
+							<view class='line1'>{{item.store_name}}</view>
+							<view class='money font-color'>￥<text class='num'>{{item.price}}</text></view>
+							<view class='vip-money acea-row row-middle'
+								v-if="item.is_vip && item.vip_price && item.vip_price > 0">￥{{item.vip_price || 0}}
+								<image src='../../static/images/vip.png'></image><text
+									class='num'>已售{{item.sales}}{{item.unit_name}}</text>
+							</view>
+							<view class='vip-money acea-row row-middle' v-else><text
+									class='num'>已售{{item.sales}}{{item.unit_name}}</text></view>
+						</view>
+					</view>
+					<!-- <view class='iconfont icon-gouwuche cart-color acea-row row-center-wrapper'></view> -->
 				</view>
-				<!-- <view class='iconfont icon-gouwuche cart-color acea-row row-center-wrapper'></view> -->
-			</view>
-		</block>
+			</block>
+		</scroll-view>
 	</view>
 </template>
 
 <script>
-	import {mapGetters} from "vuex";
-	import { goShopDetail,goPage } from '@/libs/order.js'
+	import {
+		mapGetters
+	} from "vuex";
+	import {
+		goShopDetail,
+		goPage
+	} from '@/libs/order.js'
 	export default {
 		computed: mapGetters(['uid']),
 		props: {
@@ -50,17 +61,17 @@
 			};
 		},
 		methods: {
-			goDetail(item){
-				goPage().then(res=>{
-					goShopDetail(item,this.uid).then(res=>{
+			goDetail(item) {
+				goPage().then(res => {
+					goShopDetail(item, this.uid).then(res => {
 						uni.navigateTo({
-							url:`/pages/goods_details/index?id=${item.id}`
+							url: `/pages/goods_details/index?id=${item.id}`
 						})
 					})
 				})
-				
+
 			}
-			
+
 		}
 	}
 </script>
@@ -87,8 +98,8 @@
 		position: absolute;
 		left: 7rpx;
 		top: 7rpx;
-		width: 50rpx;
-		height: 50rpx;
+		width: 40rpx;
+		height: 40rpx;
 		border-radius: 50%;
 	}
 
@@ -123,11 +134,6 @@
 		font-weight: bold;
 		margin-top: 15rpx;
 	}
-	
-	.goodList .item .text .vip-money .jvip{
-		width: 46rpx;
-		height: 22rpx;
-	}
 
 	.goodList .item .text .vip-money image {
 		width: 66rpx;
@@ -141,7 +147,7 @@
 		color: #aaa;
 		font-weight: normal;
 		margin-top: -2rpx;
-		
+
 		~.num {
 			margin-left: 22rpx;
 		}

@@ -1,15 +1,15 @@
 <template>
-	<view>
+	<view :style="colorStyle">
 		<view class='logistics'>
-			<view class='header acea-row row-between row-top'>
+			<view class='header acea-row row-between row-top' v-for="(item,index) in product" :key="index">
 				<view class='pictrue'>
-					<image :src='product.productInfo.image'></image>
+					<image :src='item.productInfo.image'></image>
 				</view>
 				<view class='text acea-row row-between'>
-					<view class='name line2'>{{product.productInfo.store_name}}</view>
+					<view class='name line2'>{{item.productInfo.store_name}}</view>
 					<view class='money'>
-						<view>￥{{product.truePrice}}</view>
-						<view>x{{product.cart_num}}</view>
+						<view>￥{{item.truePrice}}</view>
+						<view>x{{item.cart_num}}</view>
 					</view>
 				</view>
 			</view>
@@ -63,6 +63,7 @@
 	// #ifdef MP
 	import authorize from '@/components/Authorize';
 	// #endif
+	import colors from "@/mixins/color";
 	export default {
 		components: {
 			recommend,
@@ -70,31 +71,32 @@
 			authorize
 			// #endif
 		},
+		mixins: [colors],
 		data() {
 			return {
 				orderId: '',
-				product: {
-					productInfo: {}
-				},
+				product: [],
 				orderInfo: {},
 				expressList: [],
 				hostProduct: []
 			};
 		},
 		computed: mapGetters(['isLogin']),
-		watch:{
-			isLogin:{
-				handler:function(newV,oldV){
-					if(newV){
+		watch: {
+			isLogin: {
+				handler: function(newV, oldV) {
+					if (newV) {
 						this.getExpress();
 						this.get_host_product();
 					}
 				},
-				deep:true
+				deep: true
 			}
 		},
-		onLoad: function (options) {
-		    if (!options.orderId) return this.$util.Tips({title:'缺少订单号'});
+		onLoad: function(options) {
+			if (!options.orderId) return this.$util.Tips({
+				title: '缺少订单号'
+			});
 			this.orderId = options.orderId;
 			if (this.isLogin) {
 				this.getExpress();
@@ -102,19 +104,19 @@
 			} else {
 				toLogin();
 			}
-		  },
-		  onReady: function() {
-		  	// #ifdef H5
-		  	this.$nextTick(function() {
-		  		const clipboard = new ClipboardJS(".copy-data");
-		  		clipboard.on("success", () => {
-		  			this.$util.Tips({
-		  				title: '复制成功'
-		  			});
-		  		});
-		  	});
-		  	// #endif
-		  },
+		},
+		onReady: function() {
+			// #ifdef H5
+			this.$nextTick(function() {
+				const clipboard = new ClipboardJS(".copy-data");
+				clipboard.on("success", () => {
+					this.$util.Tips({
+						title: '复制成功'
+					});
+				});
+			});
+			// #endif
+		},
 		methods: {
 			/**
 			 * 授权回调
@@ -123,32 +125,33 @@
 				this.getExpress();
 				this.get_host_product();
 			},
-			copyOrderId:function(){
-			    uni.setClipboardData({ data: this.orderInfo.delivery_id });
-			  },
-			  getExpress:function(){
-			    let that=this;
-			    express(that.orderId).then(function(res){
-			      let result = res.data.express.result || {};
-				  that.$set(that,'product',res.data.order.cartInfo[0] || {});
-				  that.$set(that,'orderInfo',res.data.order);
-				  that.$set(that,'expressList',result.list || []);
-			    }).catch((error) => {
+			copyOrderId: function() {
+				uni.setClipboardData({
+					data: this.orderInfo.delivery_id
+				});
+			},
+			getExpress: function() {
+				let that = this;
+				express(that.orderId).then(function(res) {
+					let result = res.data.express.result || {};
+					that.$set(that, 'product', res.data.order.cartInfo || []);
+					that.$set(that, 'orderInfo', res.data.order);
+					that.$set(that, 'expressList', result.list || []);
+				}).catch((error) => {
 					this.$util.Tips({
 						title: error
 					});
-                });
-			  },
-			  /**
-			* 获取我的推荐
-			*/
-			  get_host_product: function () {
-			    let that = this;
-			    let data = { offset: 1, limit: 4 }
-			    getProductHot().then(function (res) {
-					that.$set(that,'hostProduct',res.data);
-			    });
-			  },
+				});
+			},
+			/**
+			 * 获取我的推荐
+			 */
+			get_host_product: function() {
+				let that = this;
+				getProductHot().then(function(res) {
+					that.$set(that, 'hostProduct', res.data);
+				});
+			},
 		}
 	}
 </script>
@@ -253,15 +256,15 @@
 	}
 
 	.logistics .logisticsCon .item .circular.on {
-		background-color: #e93323;
+		background-color: var(--view-theme);
 	}
 
 	.logistics .logisticsCon .item .text.on-font {
-		color: #e93323;
+		color: var(--view-theme);
 	}
 
 	.logistics .logisticsCon .item .text .data.on-font {
-		color: #e93323;
+		color: var(--view-theme);
 	}
 
 	.logistics .logisticsCon .item .text {
@@ -273,7 +276,7 @@
 	}
 
 	.logistics .logisticsCon .item .text.on {
-		border-left-color: #f8c1bd;
+		border-left-color: var(--view-minorColor);
 	}
 
 	.logistics .logisticsCon .item .text .data {
