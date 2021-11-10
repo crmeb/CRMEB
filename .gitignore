@@ -3,7 +3,14 @@
 *.log
 /.env
 **/*.pid
-runtime/
+runtime/cache
+runtime/log
+runtime/session
+runtime/temp
 install.lock
 public/uploads
 remarks.txt
+crmeb/runtime/temp
+crmeb/runtime/cache
+crmeb/public/statics/download
+crmeb/.constant
