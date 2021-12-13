@@ -14,6 +14,8 @@ export function modalSure (delfromData) {
         let content = ''
         if (delfromData.info !== undefined) {
             content = `<p>${delfromData.title}</p><p>${delfromData.info}</p>`
+        } else if(delfromData.un !== undefined) {
+            content = `<p>确定要${delfromData.title}吗？</p>`
         } else {
             content = `<p>确定要${delfromData.title}吗？</p><p>${delfromData.title}后将无法恢复，请谨慎操作！</p>`
         }

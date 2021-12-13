@@ -45,7 +45,7 @@ class PublicController
             $userService->offMemberLevel($request->uid());
             /** @var WechatUserServices $wechatUserService */
             $wechatUserService = app()->make(WechatUserServices::class);
-            $subscribe = $wechatUserService->value(['uid' => $request->uid(), 'user_type' => 'wechat'], 'subscribe') ? true : false;
+            $subscribe = (bool)$wechatUserService->value(['uid' => $request->uid(), 'user_type' => 'wechat'], 'subscribe');
         } else {
             $subscribe = true;
         }
@@ -75,7 +75,7 @@ class PublicController
      */
     public function bindPhoneStatus()
     {
-        $status = sys_config('store_user_mobile') ? true : false;
+        $status = (bool)sys_config('store_user_mobile');
         return app('json')->success(compact('status'));
     }
 
@@ -87,7 +87,7 @@ class PublicController
      */
     public function subscribe(Request $request, WechatUserServices $services)
     {
-        return app('json')->success(['subscribe' => $services->value(['uid' => $request->uid(), 'user_type' => 'wechat'], 'subscribe') ? true : false]);
+        return app('json')->success(['subscribe' => (bool)$services->value(['uid' => $request->uid(), 'user_type' => 'wechat'], 'subscribe')]);
     }
 
     /**

@@ -274,7 +274,7 @@ class UserRechargeServices extends BaseServices
      */
     public function getOrderId()
     {
-        return 'wx' . date('YmdHis', time()) . substr(implode(NULL, array_map('ord', str_split(substr(uniqid(), 7, 13), 1))), 0, 8);
+        return 'wx' . date('YmdHis', time()) . substr(implode('', array_map('ord', str_split(substr(uniqid(), 7, 13), 1))), 0, 8);
     }
 
     /**

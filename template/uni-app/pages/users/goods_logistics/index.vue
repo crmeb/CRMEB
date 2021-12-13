@@ -98,6 +98,7 @@
 				title: '缺少订单号'
 			});
 			this.orderId = options.orderId;
+			this.type = options.type;
 			if (this.isLogin) {
 				this.getExpress();
 				this.get_host_product();
@@ -132,7 +133,7 @@
 			},
 			getExpress: function() {
 				let that = this;
-				express(that.orderId).then(function(res) {
+				express(that.orderId,that.type).then(function(res) {
 					let result = res.data.express.result || {};
 					that.$set(that, 'product', res.data.order.cartInfo || []);
 					that.$set(that, 'orderInfo', res.data.order);

@@ -39,7 +39,7 @@ class NoticeSmsService extends NoticeService
      */
     public function isOpen(string $mark)
     {
-        $this->isopend = $this->notceinfo['is_sms'] === 1 ? true : false;
+        $this->isopend = $this->notceinfo['is_sms'] === 1;
         return $this;
 
     }
@@ -57,7 +57,7 @@ class NoticeSmsService extends NoticeService
     public function sendSms($phone, array $data, string $template)
     {
         try {
-            $this->isopend = $this->notceinfo['is_sms'] === 1 ? true : false;
+            $this->isopend = $this->notceinfo['is_sms'] === 1;
             if ($this->isopend) {
                 SmsJob::dispatch('doJob', [$phone, $data, $template]);
             }

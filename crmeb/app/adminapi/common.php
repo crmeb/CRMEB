@@ -122,6 +122,7 @@ if (!function_exists('attr_format')) {
                 if ($i == 0) $data = $arr[$i]['detail'];
                 //替代变量1
                 $rep1 = [];
+                $rep4 = [];
                 foreach ($data as $v) {
                     foreach ($arr[$i + 1]['detail'] as $g) {
                         //替代变量2

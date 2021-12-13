@@ -353,7 +353,7 @@
 				});
 			});
 			// #ifdef APP-PLUS
-			this.isTop = uni.getSystemInfoSync().statusBarHeight + 100
+			this.isTop = uni.getSystemInfoSync().statusBarHeight + 85
 			// #endif
 			// #ifdef MP
 			let info = uni.createSelectorQuery().select(".mp-header");
@@ -930,7 +930,7 @@
 
 			image {
 				width: 100%;
-				height: 344rpx;
+				// height: 344rpx;
 				border-radius: 10rpx 10rpx 0 0;
 			}
 
@@ -984,7 +984,7 @@
 		flex-direction: row;
 		margin: 0px;
 		background: #f5f5f5;
-		padding: 15rpx 0 10rpx 0;
+		padding: 15rpx 0 0rpx 0;
 		/* #ifdef MP || APP-PLUS*/
 		//top: 110rpx;
 		/* #endif */

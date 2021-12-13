@@ -378,6 +378,7 @@ abstract class BaseDao
             $result = $this->getOne([$keyField => $key]);
         }
         if (!$result) return false;
+        $new = 0;
         if ($type === 1) {
             $new = bcadd($result[$incField], $inc, $acc);
         } else if ($type === 2) {

@@ -173,7 +173,7 @@ class LuckPrizeServices extends BaseServices
         if (!$totalChance) return $prize;
         $startChance = 0;
         mt_srand();
-        $prizeChance = rand(0, $totalChance);
+        $prizeChance = rand(0, $totalChance-1);
         $newPrize = array_combine(array_column($data, 'type'), $data);
         foreach ($data as $item) {
             $newStartChance = $item['chance'] + $startChance;

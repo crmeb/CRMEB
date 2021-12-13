@@ -1,6 +1,6 @@
 <template>
 	<view class="main">
-		<guide v-if="guidePages" :advList="advList"></guide>
+		<guide v-if="guidePages" :advData="advData"></guide>
 	</view>
 </template>
 
@@ -16,7 +16,7 @@
 		data() {
 			return {
 				guidePages: false,
-				advList: []
+				advData: []
 			}
 		},
 		onLoad() {
@@ -38,13 +38,13 @@
 						uni.switchTab({
 							url: '/pages/index/index'
 						});
-					} else {
-						this.advList = res.data
+					} else if (res.data.status && (res.data.value.length || res.data.video_link)) {
+						this.advData = res.data
 						uni.setStorageSync('guideDate', new Date().toLocaleDateString());
 						this.guidePages = true
 					}
-				}).catch(err=>{
-					
+				}).catch(err => {
+
 				})
 			}
 		}

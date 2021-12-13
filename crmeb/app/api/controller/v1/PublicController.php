@@ -82,7 +82,7 @@ class PublicController
         if ($request->uid()) {
             /** @var WechatUserServices $wechatUserService */
             $wechatUserService = app()->make(WechatUserServices::class);
-            $subscribe = $wechatUserService->value(['uid' => $request->uid()], 'subscribe') ? true : false;
+            $subscribe = (bool)$wechatUserService->value(['uid' => $request->uid()], 'subscribe');
         } else {
             $subscribe = true;
         }
@@ -137,7 +137,7 @@ class PublicController
         $brokerageFuncStatus = sys_config('brokerage_func_status');
         $balanceFuncStatus = sys_config('balance_func_status');
         $vipCard = sys_config('member_card_status', 0);
-        $svipOpen = sys_config('member_card_status') ? true : false;
+        $svipOpen = (bool)sys_config('member_card_status');
         $userService = $invoiceStatus = $deliveryUser = $isUserPromoter = $userVerifyStatus = $userOrder = true;
 
         if ($uid && $userInfo) {

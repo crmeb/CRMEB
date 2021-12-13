@@ -270,7 +270,7 @@ switch ($step) {
     case '4':
         if (intval($_GET['install'])) {
             $n = intval($_GET['n']);
-            if ($i == 999999)
+            if ($n == 999999)
                 exit;
             $arr = array();
 

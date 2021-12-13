@@ -26,6 +26,6 @@ class AppService extends Service
 
     public function boot()
     {
-
+        defined('DS') || define('DS', DIRECTORY_SEPARATOR);
     }
 }

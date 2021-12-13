@@ -139,7 +139,7 @@ class Local extends BaseUpload
         $this->fileInfo->realName = $fileHandle->getOriginalName();
         $this->fileInfo->fileName = $this->fileInfo->uploadInfo->getFilename();
         $this->fileInfo->filePath = $this->defaultPath . '/' . str_replace('\\', '/', $fileName);
-        if ($this->checkImage(public_path() . $this->fileInfo->filePath) && $this->authThumb) {
+        if ($this->checkImage(public_path() . $this->fileInfo->filePath) && $this->authThumb && pathinfo($fileName,PATHINFO_EXTENSION) != 'ico') {
             try {
                 $this->thumb($this->fileInfo->filePath);
             } catch (\Throwable $e) {

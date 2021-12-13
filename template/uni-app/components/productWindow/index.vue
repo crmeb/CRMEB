@@ -38,7 +38,7 @@
 						</view>
 					</view>
 				</view>
-				<view class="cart acea-row row-between-wrapper">
+				<view class="cart acea-row row-between-wrapper" v-if="!is_virtual">
 					<view class="title">数量</view>
 					<view class="carnum acea-row row-left">
 						<view class="item reduce acea-row row-center-wrapper"
@@ -111,6 +111,10 @@
 				value: 0
 			},
 			is_vip: {
+				type: Number,
+				value: 0
+			},
+			is_virtual: {
 				type: Number,
 				value: 0
 			},

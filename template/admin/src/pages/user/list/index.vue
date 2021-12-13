@@ -109,7 +109,7 @@
             <Col span="18">
               <!-- <Col v-bind="grid">
                 <FormItem label="付费会员：" label-for="isMember">
-                  <Select
+                  <!-- <Select
                     v-model="userFrom.isMember"
                     placeholder="请选择付费会员"
                     element-id="isMember"
@@ -118,7 +118,18 @@
                   >
                     <Option :value="1">是</Option>
                     <Option :value="0">否</Option>
-                  </Select>
+                  </Select> -->
+                   <RadioGroup v-model="userFrom.isMember" type="button">
+                    <Radio label="">
+                      <span>全部</span>
+                    </Radio>
+                    <Radio label="1">
+                      <span>是</span>
+                    </Radio>
+                    <Radio label="0">
+                      <span>否</span>
+                    </Radio>
+                  </RadioGroup>
                 </FormItem>
               </Col> -->
               <Col v-bind="grid">

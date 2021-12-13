@@ -21,10 +21,10 @@ CREATE TABLE IF NOT EXISTS `eb_agent_level` (
 
 INSERT INTO `eb_agent_level` (`id`, `name`, `image`, `one_brokerage`, `two_brokerage`, `grade`, `status`, `is_del`, `add_time`) VALUES
 (1, '一级分销', 'https://demo43.wuht.net/uploads/attach/2021/09/20210924/6630436e9acd6d004a1c7e3a3312e680.png', 1, 1, 1, 1, 0, 1630310923),
-(2, '二级分销   ', 'https://demo43.wuht.net/uploads/attach/2021/09/20210924/1ab7bf91034c38724f70f56dd94bd9d1.png', 2, 2, 2, 1, 0, 1630311000),
-(3, '三级分销   ', 'https://demo43.wuht.net/uploads/attach/2021/09/20210924/3aebfbcc36550a67e6be6cab5cd713ad.png', 3, 3, 3, 1, 0, 1630311024),
-(4, '五级分销   ', 'https://demo43.wuht.net/uploads/attach/2021/09/20210924/7a7f09b1c642638b2abbeae25ed11317.png', 4, 4, 5, 1, 0, 1630311052),
-(5, '四级分销   ', 'https://demo43.wuht.net/uploads/attach/2021/09/20210924/f8f782c840781b7c328493db033279a9.png', 5, 5, 4, 1, 0, 1630311069);
+(2, '二级分销', 'https://demo43.wuht.net/uploads/attach/2021/09/20210924/1ab7bf91034c38724f70f56dd94bd9d1.png', 2, 2, 2, 1, 0, 1630311000),
+(3, '三级分销', 'https://demo43.wuht.net/uploads/attach/2021/09/20210924/3aebfbcc36550a67e6be6cab5cd713ad.png', 3, 3, 3, 1, 0, 1630311024),
+(4, '五级分销', 'https://demo43.wuht.net/uploads/attach/2021/09/20210924/7a7f09b1c642638b2abbeae25ed11317.png', 4, 4, 5, 1, 0, 1630311052),
+(5, '四级分销', 'https://demo43.wuht.net/uploads/attach/2021/09/20210924/f8f782c840781b7c328493db033279a9.png', 5, 5, 4, 1, 0, 1630311069);
 
 -- --------------------------------------------------------
 
@@ -6982,7 +6982,7 @@ INSERT INTO `eb_system_config` (`id`, `menu_name`, `type`, `input_type`, `config
 (365, 'thumb_small_height', 'text', 'input', 31, '', 0, '', 50, 0, '\"\"', '缩略小图（单位：px）： 高', '缩略小图（单位：px）： 高', 94, 1),
 (366, 'image_watermark_status', 'radio', '', 31, '1=>开启\n0=>关闭', 0, '', 0, 0, '0', '是否开启水印', '图片水印是否开服', 80, 1),
 (367, 'watermark_type', 'radio', '', 31, '1=>图片\n2=>文字', 0, '', 0, 0, '1', '水印类型', '水印类型：图片、文字', 29, 1),
-(368, 'watermark_image', 'upload', '', 31, '', 1, '', 0, 0, '\"\\/uploads\\/system\\/f817d3954ffc65e14991ccb1ff2f9107.png\"', '水印图片', '水印图片链接', 28, 1),
+(368, 'watermark_image', 'upload', '', 31, '', 1, '', 0, 0, '\"\"', '水印图片', '水印图片链接', 28, 1),
 (369, 'watermark_position', 'radio', '', 31, '1=>左上\n2=>上中\n3=>右上\n4=>左中\n5=>中\n6=>右中\n7=>左下\n8=>下中\n9=>右下', 0, '', 0, 0, '9', '水印位置', 'watermark_position', 27, 1),
 (370, 'watermark_opacity', 'text', 'input', 31, '', 0, '', 100, 0, '\"80\"', '水印图片透明度', '水印图片透明度', 25, 1),
 (371, 'watermark_rotate', 'text', 'input', 31, '', 0, '', 100, 0, '\"2\"', '水印图片倾斜度', '水印图片倾斜度', 24, 1),
@@ -6992,8 +6992,8 @@ INSERT INTO `eb_system_config` (`id`, `menu_name`, `type`, `input_type`, `config
 (375, 'watermark_text_angle', 'text', 'input', 31, '', 0, '', 100, 0, '\"1\"', '水印字体旋转角度', '水印字体旋转角度', 24, 1),
 (376, 'watermark_x', 'text', 'input', 31, '', 0, '', 100, 0, '\"10\"', '水印横坐标偏移量（单位：px）', '水印横坐标偏移量（单位：px）', 23, 1),
 (377, 'watermark_y', 'text', 'input', 31, '', 0, '', 100, 0, '\"10\"', '水印纵坐标偏移量（单位：px）', '水印纵坐标偏移量（单位：px）', 22, 1),
-(378, 'open_adv', 'upload', 'input', 26, '', 2, '', 0, 0, '[]', '首页开屏图片', '首页开屏图片', 0, 1),
-(379, 'ico_path', 'upload', 'input', 26, '', 3, '', 0, 0, '\"\"', 'ICO图标', 'ICO图标', 1, 1);
+(379, 'ico_path', 'upload', 'input', 26, '', 3, '', 0, 0, '\"\"', 'ICO图标', 'ICO图标', 1, 1),
+(380, 'image_thumbnail_status', 'radio', 'input', 31, '1=>开启\n0=>关闭', 1, '', 0, 0, '0', '是否开启缩略图', '是否开启缩略图', 100, 1);
 
 -- --------------------------------------------------------
 

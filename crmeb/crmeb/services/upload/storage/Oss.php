@@ -199,7 +199,7 @@ class Oss extends BaseUpload
                     $height = 'thumb_' . $v . '_height';
                     $width = 'thumb_' . $v . '_width';
                     $key = 'filePath' . ucfirst($v);
-                    if (isset($config[$height]) && isset($config[$width]) && $config[$height] && $config[$width]) {
+                    if (sys_config('image_thumbnail_status', 1) && isset($config[$height]) && isset($config[$width]) && $config[$height] && $config[$width]) {
                         $this->fileInfo->$key = $filePath . '?x-oss-process=image/resize,h_' . $config[$height] . ',w_' . $config[$width];
                         $this->fileInfo->$key = $this->water($this->fileInfo->$key);
                         $data[$v] = $this->fileInfo->$key;
@@ -238,6 +238,7 @@ class Oss extends BaseUpload
                     if (!$waterConfig['watermark_text']) {
                         throw new ValidateException('请先配置水印文字');
                     }
+                    $waterConfig['watermark_text_color'] = str_replace('#', '', $waterConfig['watermark_text_color']);
                     $waterPath = $filePath .= '/watermark,text_' . base64_encode($waterConfig['watermark_text']) . ',color_' . $waterConfig['watermark_text_color'] . ',size_' . $waterConfig['watermark_text_size'] . ',g_' . ($this->position[$waterConfig['watermark_position']] ?? 'nw') . ',x_' . $waterConfig['watermark_x'] . ',y_' . $waterConfig['watermark_y'];
                     break;
             }

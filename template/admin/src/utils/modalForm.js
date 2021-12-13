@@ -17,7 +17,7 @@ let modalInstance
 function getModalInstance(render = undefined) {
     modalInstance = modalInstance || Modal.newInstance({
         closable: true,
-        maskClosable: true,
+        maskClosable: false,
         footerHide: true,
         render: render
     })

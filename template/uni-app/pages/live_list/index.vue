@@ -141,6 +141,7 @@
 					width: 320rpx;
 					height: 180rpx;
 					border-radius: 16rpx;
+					object-fit: cover;
 				}
 
 				.live-title {
@@ -308,7 +309,7 @@
 				position: relative;
 				image{
 					width: 100%;
-					height: 274rpx;
+					height: 190rpx;
 				}
 			}
 			.info{

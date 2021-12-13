@@ -4,74 +4,78 @@
 </p>
 
 <h3 align="center"> 码云开源项目php语言排名前三的开源GVP项目！</h3> 
-<p align="center">
-    <a href="http://www.crmeb.com">
-        <img src="https://img.shields.io/badge/OfficialWebsite-CRMEB-yellow.svg" />
-    </a>
-<a href="http://www.crmeb.com">
-        <img src="https://img.shields.io/badge/Licence-GPL3.0-green.svg?style=flat" />
-    </a>
-    <a href="http://www.crmeb.com">
-        <img src="https://img.shields.io/badge/Edition-4.3-blue.svg" />
-    </a>
-     <a href="https://gitee.com/ZhongBangKeJi/CRMEB/repository/archive/master.zip">
-        <img src="https://img.shields.io/badge/download-80m-red.svg" />
-    </a>
-    </p>
-<p align="center">    
-    <b>感谢码云提供的平台，喜欢的话就点右上角 "Star" 支持一下</b> 
-</p>
-  
+
  
- ## 产品介绍
- 
+
  CRMEB打通版是一款全开源支持免费商用的PHP单商户商城系统；
  
- CRMEB技术团队（官网：www.crmeb.com) 历经4年时间匠心之作！系统采用前后端分离技术，基于TP6+Uni-app框架开发；客户移动端采用uni-app开发，管理后台前端使用iviewUI开发。系统支持微信公众号端、微信小程序端、H5端、PC端多端账号同步，可快速打包生成APP；
+ CRMEB技术团队（官网：www.crmeb.com)历经4年时间匠心之作！系统采用前后端分离技术，基于TP6+Uni-app框架开发；客户移动端采用uni-app开发，管理后台前端使用iviewUI开发。系统支持微信公众号端、微信小程序端、H5端、PC端多端账号同步，可快速打包生成APP；
  
  赋能开发者，减少重复造轮子；系统支持自动检查安装环境一键安装部署，使用简单方便；围绕方便二次开发，系统内置强大灵活的权限管理，可以控制到每一个菜单；通过内置组合数据,管理碎片化数据,系统配置快速添加系统配置参数，内置钩子，方便二开；后台应用form-builder PHP快速生成现代化表单；并提供详细的使用文档、开发文档、接口文档、数据字典等相关文档；及十几个技术交流群、技术论坛答疑；帮助更多开发者快速上手，节省开发时间，提升开发效率；助力企业实现数字化经营！
  
- ## 系统功能
- #### 商城功能
- 首页可视化编辑、主题风格切换、商品管理、商品评价、规格模板、运费模板、主图视频、虚拟商品、商品口令、扫码核销、发票管理、多提货点、配送员等
- #### 营销活动
- 直播带货、拼团活动、砍价活动、秒杀活动、产品预售、九宫格抽奖、优惠券、积分商城、签到
- #### 分销功能
- 指定分销、任务分销、人人分销、分销等级、分销有效期
- #### 用户管理
- 用户等级（经验等级）、用户分组、用户标签、会员等级、会员充值
- #### 客服系统
- 客服状态、快捷回复、客服转接、客户信息（客户订单、购买记录、客户手机号、等级、推荐人、分类、标签）
- #### 第三方设置
- 云储存(七牛云、阿里云OSS、腾讯云COS)、电子面单、电子小票、一号通（短信通知、商品采集、物流查询）、第三方客服、腾讯地图
- #### 系统设置
- 系统配置、组合数据、数据备份、系统日志、文件校验、刷新缓存、清除数据、权限控制、消息管理、城市数据、物流公司
+<p align="center" >
+<a href="https://gitee.com/ZhongBangKeJi/CRMEB/blob/master/README.md"> 宽屏预览 </a>
+</p>
 
-#### 付费版介绍（为了开源项目更好的发展，特推出付费版，感谢大家的支持！）
-一、PC端模版需付费购买 仅需698元，不到技术一天的工资
-
-二、标准版仅需1280元
-
-标准版权益：
-
-功能比开源版多手机订单管理、付费会员功能、后台数据统计分析功能，购买标准版会加入我们VIP会员群，技术一对一服务，提供详细升级包及升级教程，
-<a href="https://kefu.crmeb.net/chat/index?noCanClose=1&token=4109fbb2d7bc3d5559348278816a20bc" target="_blank">[点击咨询]</a>
-
-努力成为你的最爱，还有什么不满意的请留下您宝贵的建议[点击留言](https://gitee.com/ZhongBangKeJi/CRMEB#%E7%89%88%E6%9D%83%E4%BF%A1%E6%81%AF) 
 
 - - -
 
-   :fa-th-list:  [导航](https://gitee.com/ZhongBangKeJi/CRMEB)
+   :fa-th-list:  [官网地址](https://www.crmeb.com)
+ | [服务市场](https://s.crmeb.com)
  | [系统功能](https://gitee.com/ZhongBangKeJi/CRMEB#%E7%B3%BB%E7%BB%9F%E5%8A%9F%E8%83%BD)
  | [系统演示](https://gitee.com/ZhongBangKeJi/CRMEB#%E7%B3%BB%E7%BB%9F%E6%BC%94%E7%A4%BA)
- | [程序下载](https://gitee.com/ZhongBangKeJi/CRMEB#%E7%A8%8B%E5%BA%8F%E4%B8%8B%E8%BD%BD)
- | [使用手册](https://help.crmeb.net/crmeb-v4/1863402)
+ | [使用手册](https://doc.crmeb.com/web/single/crmeb_v4/998)
  | [二开手册](https://gitee.com/ZhongBangKeJi/CRMEB/wikis/%E5%BA%8F%E8%A8%80?sort_id=4100490)
- | [论坛地址](http://q.crmeb.net)
+ | [论坛地址](https://q.crmeb.com)
  | [TP6开发手册](https://www.kancloud.cn/manual/thinkphp6_0/content)
  | [推荐服务器](https://promotion.aliyun.com/ntms/yunparter/invite.html?userCode=dligum2z)
- | [评论](https://gitee.com/ZhongBangKeJi/CRMEB#%E7%89%88%E6%9D%83%E4%BF%A1%E6%81%AF)
+ | [留言评论](https://gitee.com/ZhongBangKeJi/CRMEB#%E7%89%88%E6%9D%83%E4%BF%A1%E6%81%AF)
 - - -
+
+## 相关文档
+
+系统功能：<a href="https://doc.crmeb.com/web/single/crmeb_v4/1758"  target="_blank">功能清单</a>
+
+系统脑图：<a href="https://doc.crmeb.com/web/single/crmeb_v4/1756"  target="_blank">思维脑图</a>
+
+接口文档：<a href="https://doc.crmeb.com/web/single/crmeb_v4/1760"  target="_blank">在线接口</a>
+
+目录结构：<a href="https://doc.crmeb.com/web/single/crmeb_v4/1129"  target="_blank">目录结构</a>
+
+数据字典：<a href="https://doc.crmeb.com/web/single/crmeb_v4/1130"  target="_blank">数据字典</a>
+
+安装教程：<a href="https://doc.crmeb.com/web/single/crmeb_v4/892"  target="_blank">安装教程</a>
+
+二开教程：<a href="https://ke.qq.com/course/4125326?tuin=5e252c1"  target="_blank">CRMEB Uniapp前端二开视频教程 点击学习</a>
+
+二开文档：<a href="https://gitee.com/ZhongBangKeJi/CRMEB-Min/wikis/%E5%BA%8F%E8%A8%80?sort_id=3303670"  target="_blank">二开文档</a>
+
+技术交流社区：<a href="https://q.crmeb.com"  target="_blank">https://q.crmeb.com</a>
+
+### 不懂服务器？不懂技术？无法解决高并发？想数据私有化？还想后期定制开发？
+
+推荐云部署版一键解决以上所有问题，超低价格低至 :collision:  9.9元/年，点击了解 https://saas.crmeb.com/saas-home-software-detail-50042-s-y.html
+
+### 推荐服务器（虚拟空间不支持）
+
+服务器环境推荐要求：<a href="https://promotion.aliyun.com/ntms/yunparter/invite.html?userCode=dligum2z" target="_blank">  查看 </a>
+
+```
+Nignx/Apache/IIS
+PHP 7.1 ~ 7.3 
+MySQL 5.5-7.0
+Redis
+```
+
+
+推荐使用bt宝塔面板，简单易用，服务器推荐阿里云ecs或腾讯云cvm 云服务器。
+
+
+
+
+### CRMEB 官方指定技术大佬交流群，欢迎加入！
+![输入图片说明](readme/images/image.jpg)
+
 
 ## 技术亮点
 ~~~
@@ -94,117 +98,30 @@
     17.移动端使用uni-app进行开发，方便编译成各种格式的代码；
 ~~~
 
-
-## 推荐服务器（虚拟空间不支持）
-
-阿里云领取2000元代金劵：[<a href="https://promotion.aliyun.com/ntms/yunparter/invite.html?userCode=dligum2z">https://www.aliyun.com</a>]
- 
- <table><tr><td> 
- 
- 入门级配置
- ```
- CPU：1核
- 内存：2G
- 实例规格：ECS共享型 n4
- 带宽：1M
- 系统：CentOS 7.4 64位(推荐)
- 价格：79.6元/年 226.5元/三年
- ```
- <a href="https://www.aliyun.com/activity/new?spm=5176.23165873.J_5244793720.1.6d3a5420ptDH93&userCode=dligum2z">学生6.6/月</a>
-   </td>
- <td>
- 
- 标准级配置
- ```
- CPU：2核
- 内存：4G
- 实例规格：突发性能t5实例
- 带宽：5M
- 系统：CentOS 7.4 64位(推荐)
- 价格：936元/年 2386.8元/三年
- ```
- <a href="https://promotion.aliyun.com/ntms/yunparter/invite.html?userCode=dligum2z">新用户半价</a>
- 
-   </td>
-   <td>
- 
- 企业级配置
- ```
- CPU：4核
- 内存：8G
- 实例规格：突发性能t6实例
- 带宽：5M
- 系统：CentOS 7.4 64位(推荐)
- 价格：2786.64元/年 5389.20元/三年
- ```
- <a href="https://promotion.aliyun.com/ntms/yunparter/invite.html?userCode=dligum2z">领取￥2000红包</a>
- 
-   </td>
-   </tr></table>
- 
-服务器环境推荐要求
-* Nignx
-
-* PHP 7.1 ~ 7.3 
-
-* MySQL  5.7
-
-* Redis
-
-推荐使用bt宝塔面板，简单易用。
-服务器推荐阿里云ecs或腾讯云cvm 云服务器。
-
-
-
-## 相关文档
-
-系统功能：https://help.crmeb.net/crmeb-v4/1863404
-
-系统脑图：https://help.crmeb.net/crmeb-v4/1863405
-
-目录结构：https://help.crmeb.net/crmeb-v4/2034387
-
-数据字典：https://help.crmeb.net/crmeb-v4/1863569
-
-后端接口：http://bbs.crmeb.net/doc/datongadminapi.html
-
-前端接口：http://bbs.crmeb.net/doc/datongapi.html
-
-安装教程：https://help.crmeb.net/crmeb-v4/1876709
-
-二开教程：https://www.bilibili.com/video/BV1GX4y1T7Wd
-
-二开文档：https://gitee.com/ZhongBangKeJi/CRMEB-Min/wikis/%E5%BA%8F%E8%A8%80?sort_id=3303670
-
-
-## 技术交流
-
-#### 技术交流社区：https://q.crmeb.net
-
-#### CRMEB微信开发12群：1025263163（2000人群可加）
-
 ## 页面展示
 
+### 前端UI展示
+
 ![输入图片说明](readme/images/1主图.jpg)
-![输入图片说明](readme/images/2首页.jpg)
-![输入图片说明](readme/images/3可视化1.jpg)
-![输入图片说明](readme/images/3可视化2.jpg)
-![输入图片说明](readme/images/3可视化3.jpg)
-![输入图片说明](readme/images/4商品.jpg)
-![输入图片说明](readme/images/5订单.jpg)
-![输入图片说明](readme/images/6用户.jpg)
-![输入图片说明](readme/images/7分销.jpg)
-![输入图片说明](readme/images/8消息管理.jpg)
-![输入图片说明](readme/images/9砍价.jpg)
-![输入图片说明](readme/images/10拼团.jpg)
-![输入图片说明](readme/images/11秒杀.jpg)
-![输入图片说明](readme/images/12签到.jpg)
-![输入图片说明](readme/images/13余额.jpg)
-![输入图片说明](readme/images/14积分.jpg)
-![输入图片说明](readme/images/15优惠券.jpg)
-![输入图片说明](readme/images/16后台管理.jpg)
-![输入图片说明](readme/images/17后台管理.jpg)
-![输入图片说明](readme/images/19奖项.jpg)
+![输入图片说明](readme/images/1400宽-单商户UI详情_01.jpg)
+![输入图片说明](readme/images/1400宽-单商户UI详情_02.jpg)
+![输入图片说明](readme/images/1400宽-单商户UI详情_03.jpg)
+![输入图片说明](readme/images/1400宽-单商户UI详情_04.jpg)
+![输入图片说明](readme/images/1400宽-单商户UI详情_05.jpg)
+![输入图片说明](readme/images/1400宽-单商户UI详情_06.jpg)
+![输入图片说明](readme/images/1400宽-单商户UI详情_07.jpg)
+![输入图片说明](readme/images/1400宽-单商户UI详情_08.jpg)
+![输入图片说明](readme/images/1400宽-单商户UI详情_09.jpg)
+
+(页面仅展示部分UI)
+## <a href='http://s.crmeb.com/goods_detail/728' target='_blank'>点击获取高清版全套UI设计图</a>
+
+
+### 后端UI展示
+
+![输入图片说明](readme/images/单商户-开源版_02.jpg)
+![输入图片说明](readme/images/单商户-开源版_03.jpg)
+![输入图片说明](readme/images/单商户-开源版_04.jpg)
 
 
 ##  系统演示
@@ -217,6 +134,9 @@
 
 密码：crmeb.com
 
+##  CRMEB云部署快速体验完整功能 <a href='https://saas.crmeb.com/' target='_blank'>【点击体验】</a>
+
+
 ## 程序下载 
 
 
@@ -225,7 +145,7 @@
 
 git clone -b v3.2.9 https://gitee.com/ZhongBangKeJi/CRMEB.git
 
-新版v4.3.0 下载（当前开源版功能全，前后台分离版，适合二开）
+最新版 下载（当前开源版功能全，前后台分离版，适合二开）
 
 git clone https://gitee.com/ZhongBangKeJi/CRMEB.git
 
@@ -258,12 +178,12 @@ CRMEB Min版商城：https://gitee.com/ZhongBangKeJi/CRMEB-Min
 CRMEB Min是一款轻量级、高性能开源电商商城系统，采用TP6+Mysql+Uniapp+iView+Redis等最流行热门技术语言，支持队列、表单生成、长链接、定时任务等，完善的权限管理、会员管理、产品订单管理、CMS管理、支持多端、一键开通短信、产品采集、物流查询等接口。快速简单高效！
 
 ## 联系我们（在线专业解答、获取功能清单）
-![有问题？联系CRMEB官方客服](https://images.gitee.com/uploads/images/2020/1128/154416_441805ca_1491977.png "屏幕截图.png")
+![有问题？联系CRMEB官方客服](https://images.gitee.com/uploads/images/2021/1122/085627_94ad3196_5516386.jpeg "单商户v4客服渠道码-关注客服.jpg")
  
 
-官方网站：http://www.crmeb.com
+官方网站：https://www.crmeb.com
 
-交流社区：https://q.crmeb.net
+交流社区：https://q.crmeb.com
 
 ## 特别鸣谢
 
@@ -273,7 +193,7 @@ CRMEB Min是一款轻量级、高性能开源电商商城系统，采用TP6+Mysq
 
 感谢大神们提交代码（排名不分先后）
 
-### @yizhisamoye，@bys1123，@xaboy，@youngxj0，@jacklincheung，@392256866
+### @yizhisamoye，@bys1123，@xaboy，@youngxj0，@jacklincheung，@392256866，@sxsea
 
 欢迎反馈问题 [反馈问题](https://gitee.com/ZhongBangKeJi/CRMEB/issues)。
 
@@ -292,7 +212,7 @@ CRMEB Min是一款轻量级、高性能开源电商商城系统，采用TP6+Mysq
 
 本项目包含的第三方源码和二进制文件之版权信息另行标注。
 
-版权所有Copyright © 2017-2021 by CRMEB (http://www.crmeb.com)
+版权所有Copyright © 2017-2022 by CRMEB (https://www.crmeb.com)
 
 All rights reserved。
 

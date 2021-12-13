@@ -241,8 +241,8 @@ export default {
         });
       } else {
         selection.forEach((item) => {
-          this.selectedIds.add(item.id);
-          this.selectedNames.add({ id: item.id, title: item.title });
+          this.selectedIds.push(item.id);
+          this.selectedNames.push({ id: item.id, title: item.title });
         });
       }
       this.$nextTick(() => {
@@ -253,8 +253,8 @@ export default {
 
     //  选中某一行
     handleSelectRow(selection, row) {
-      this.selectedIds.add(row.id);
-      this.selectedNames.add({ id: row.id, title: row.title });
+      this.selectedIds.push(row.id);
+      this.selectedNames.push({ id: row.id, title: row.title });
       this.$nextTick(() => {
         //确保dom加载完毕
         this.setChecked();

@@ -55,7 +55,7 @@ export default {
     this.setConfig = "admin/" + names + "/setConfig";
     this.updataConfig = "admin/" + names + "/updataConfig";
     this.pageId = parseInt(pageId);
-    this.iframeUrl = `${location.origin}?type=iframeWindow`;
+    this.iframeUrl = `${location.origin}/pages/index/index?type=iframeWindow`;
     diyGetInfo(parseInt(pageId)).then((datas) => {
       let data = datas.data.info.value;
       this.upData(data);

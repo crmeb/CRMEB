@@ -196,7 +196,7 @@
 <style lang="scss" scoped>
 	.live {
 		background-color: $uni-bg-color;
-		margin: 0 $uni-index-margin-col $uni-index-margin-row $uni-index-margin-col;
+		margin: $uni-index-margin-row $uni-index-margin-col 0 $uni-index-margin-col;
 		border-radius: $uni-border-radius-index;
 		padding-bottom: 15rpx;
 	}
@@ -313,6 +313,7 @@
 					width: 100%;
 					height: 100%;
 					border-radius: 12rpx;
+					object-fit: cover;
 				}
 			}
 

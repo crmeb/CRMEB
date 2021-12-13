@@ -308,7 +308,7 @@ export default {
   },
   created() {
     this.getList();
-    this.imgUrl = `${location.origin}?type=iframeWindow`;
+    this.imgUrl = `${location.origin}/pages/index/index?type=iframeWindow`;
   },
   mounted: function () {},
   methods: {

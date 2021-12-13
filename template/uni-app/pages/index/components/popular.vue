@@ -239,13 +239,14 @@
 		border-radius: 20rpx;
 		background-color: #fff;
 		margin: 0rpx auto 0 auto;
-		padding: 30rpx 20rpx;
+		padding: 20rpx 20rpx;
 		box-sizing: border-box;
 		display: flex;
+		justify-content: space-between;
 	}
 
 	.hotList .list .item {
-		width: 207rpx;
+		width: 200rpx;
 		background: var(--view-op-ten);
 		border-radius: 12rpx;
 
@@ -264,12 +265,12 @@
 	}
 
 	.hotList .list .item~.item {
-		margin-left: 14rpx;
+		// margin-left: 25rpx;
 	}
 
 	.hotList .list .item .pictrue {
-		width: 190rpx;
-		height: 190rpx;
+		width: 180rpx;
+		height: 180rpx;
 		position: relative;
 		margin: 8rpx;
 		border-radius: 12rpx;

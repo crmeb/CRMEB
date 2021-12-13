@@ -16,16 +16,7 @@
             "delay" : 0
         },
         /* 模块配置 */
-        "modules" : {
-            "VideoPlayer" : {},
-            "Share" : {},
-            "Push" : {},
-            "OAuth" : {},
-            "Payment" : {},
-            "Maps" : {},
-            "LivePusher" : {},
-            "Geolocation" : {}
-        },
+        "modules" : {},
         "safearea" : {
             "bottom" : {
                 "offset" : "none"
@@ -36,24 +27,19 @@
             /* android打包配置 */
             "android" : {
                 "permissions" : [
-                    "<uses-feature android:name=\"android.hardware.camera\"/>",
-                    "<uses-feature android:name=\"android.hardware.camera.autofocus\"/>",
                     "<uses-permission android:name=\"android.permission.ACCESS_COARSE_LOCATION\"/>",
                     "<uses-permission android:name=\"android.permission.ACCESS_FINE_LOCATION\"/>",
                     "<uses-permission android:name=\"android.permission.ACCESS_NETWORK_STATE\"/>",
                     "<uses-permission android:name=\"android.permission.ACCESS_WIFI_STATE\"/>",
                     "<uses-permission android:name=\"android.permission.CALL_PHONE\"/>",
-                    "<uses-permission android:name=\"android.permission.CAMERA\"/>",
                     "<uses-permission android:name=\"android.permission.CAPTURE_AUDIO_OUTPUT\"/>",
                     "<uses-permission android:name=\"android.permission.CHANGE_NETWORK_STATE\"/>",
                     "<uses-permission android:name=\"android.permission.CHANGE_WIFI_STATE\"/>",
-                    "<uses-permission android:name=\"android.permission.FLASHLIGHT\"/>",
                     "<uses-permission android:name=\"android.permission.INTERNET\"/>",
                     "<uses-permission android:name=\"android.permission.MODIFY_AUDIO_SETTINGS\"/>",
                     "<uses-permission android:name=\"android.permission.MOUNT_UNMOUNT_FILESYSTEMS\"/>",
                     "<uses-permission android:name=\"android.permission.READ_LOGS\"/>",
                     "<uses-permission android:name=\"android.permission.READ_PHONE_STATE\"/>",
-                    "<uses-permission android:name=\"android.permission.RECORD_AUDIO\"/>",
                     "<uses-permission android:name=\"android.permission.VIBRATE\"/>",
                     "<uses-permission android:name=\"android.permission.WAKE_LOCK\"/>",
                     "<uses-permission android:name=\"android.permission.WRITE_EXTERNAL_STORAGE\"/>",
@@ -65,7 +51,7 @@
             "ios" : {
                 "capabilities" : {
                     "entitlements" : {
-                        "com.apple.developer.associated-domains" : [ "applinks:pro.115.crmeb.net" ]
+                        "com.apple.developer.associated-domains" : [ "applinks:" ]
                     }
                 },
                 "privacyDescription" : {
@@ -80,45 +66,13 @@
             },
             /* SDK配置 */
             "sdkConfigs" : {
-                "payment" : {
-                    "weixin" : {
-                        "__platform__" : [ "ios", "android" ],
-                        "appid" : "wx277a269f3d736d67",
-                        "UniversalLinks" : "https://pro.115.crmeb.net/"
-                    },
-                    "alipay" : {
-                        "__platform__" : [ "ios", "android" ]
-                    }
-                },
-                "share" : {
-                    "weixin" : {
-                        "appid" : "wx277a269f3d736d67",
-                        "UniversalLinks" : "https://pro.115.crmeb.net/"
-                    }
-                },
+                "payment" : {},
+                "share" : {},
                 "push" : {},
-                "maps" : {
-                    "amap" : {
-                        "appkey_ios" : "aeb768547b9d752891e37e1ca0a2b66d",
-                        "appkey_android" : "41ec5c3f4d110ce02a326210fe147be8"
-                    }
-                },
-                "oauth" : {
-                    "weixin" : {
-                        "appid" : "wx277a269f3d736d67",
-                        "appsecret" : "bd08741a055c2ecac5826ff1c048464b",
-                        "UniversalLinks" : "https://pro.115.crmeb.net/"
-                    },
-                    "apple" : {}
-                },
+                "maps" : {},
+                "oauth" : {},
                 "ad" : {},
-                "geolocation" : {
-                    "amap" : {
-                        "__platform__" : [ "ios", "android" ],
-                        "appkey_ios" : "aeb768547b9d752891e37e1ca0a2b66d",
-                        "appkey_android" : "41ec5c3f4d110ce02a326210fe147be8"
-                    }
-                }
+                "geolocation" : {}
             },
             "splashscreen" : {
                 "androidStyle" : "common",

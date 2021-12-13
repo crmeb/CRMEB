@@ -13,7 +13,7 @@
 		</view>
 		<view class="pagebox" v-if="list.length>0">{{ Number(currentIndex) + 1 }} / {{ list.length }}</view>
 		<!-- #ifndef MP -->
-		<text class="iconfont icon-fenxiang share_btn" @click="shareFriend()"></text>
+		<!-- <text class="iconfont icon-fenxiang share_btn" @click="shareFriend()"></text> -->
 		<!-- #endif -->
 	</view>
 </template>
@@ -110,7 +110,7 @@
 }
 .mask_sku{
 	color: #fff;
-	max-width: 80%;
+	max-width: 85%;
 	z-index: 300;
 	text-align: center;
 	display: flex;

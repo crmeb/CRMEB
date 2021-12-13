@@ -106,7 +106,7 @@ class SystemAttachmentCategoryServices extends BaseServices
     public function form($info = [])
     {
         return [
-            Form::select('pid', '上级分类', (int)($info['pid'] ?? ''))->setOptions($this->getCateList(['pid' => 0]))->filterable(1),
+            Form::select('pid', '上级分类', (int)($info['pid'] ?? ''))->setOptions($this->getCateList(['pid' => 0]))->filterable(true),
             Form::input('name', '分类名称', $info['name'] ?? '')->maxlength(30),
         ];
     }

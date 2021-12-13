@@ -576,6 +576,7 @@ html, body {
 .content img{
     display: block;
     max-width: 100%;
+    object-fit: contain;
 }
 .none-radius .ivu-modal-content{border-radius: 0;}
 .transfer-mask .ivu-modal-wrap{

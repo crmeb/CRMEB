@@ -38,7 +38,7 @@ class EnterpriseWechatService extends NoticeService
      */
     public function isOpen(string $mark)
     {
-        $this->isopend = ($this->notceinfo['is_ent_wechat'] == 1 && $this->notceinfo['url'] !== '')  ? true : false;
+        $this->isopend = $this->notceinfo['is_ent_wechat'] == 1 && $this->notceinfo['url'] !== '';
         return $this;
 
     }

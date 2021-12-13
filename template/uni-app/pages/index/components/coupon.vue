@@ -202,8 +202,8 @@
 	}
 
 	.coupon {
-		margin: 0 30rpx;
-		padding: 0rpx 0 32rpx 0;
+		margin: $uni-index-margin-row $uni-index-margin-col $uni-index-margin-row  $uni-index-margin-col;
+		padding: 0rpx 0 20rpx 0;
 		background-color: #fff;
 		border-radius: $uni-border-radius-index;
 
@@ -214,18 +214,17 @@
 			padding: 0 20rpx;
 
 			.itemCon {
-
 				background-size: 100% 100%;
 				width: 226rpx;
 				height: 108rpx;
 				display: inline-block;
-				margin-right: 14rpx;
+				margin-right: 24rpx;
 
 				.on {
 					// opacity: 0.6;
 
 					.item {
-						background-color: #C5C5C5 !important;
+						background-color: rgba(233, 51, 35, 0.1) !important;
 
 						.text {
 							// color: #CCCCCC;
@@ -239,35 +238,18 @@
 
 				}
 
-				.on {
-					background-color: #C5C5C5;
-
-					.icon-youhuiquantoumingbeijing {
-						color: #f3f3f3 !important;
-					}
-
-					.man {
-						background-color: #AEAEAE;
-					}
-					
-					.bnt {
-						color: #CCCCCC ;
-					}
-				}
-
 				.no {
 					background: linear-gradient(135deg, var(--view-main-start) 0%, var(--view-main-over) 100%);
 
 					.icon-youhuiquantoumingbeijing {
-						color: #F8E8E6;
-						;
+						color: rgba(255,255, 255, 0.8);
 					}
 
 					.man {
 						background-color: var(--view-theme);
 					}
 					.bnt {
-						color: var(--view-priceColor);
+						color: var(--view-theme);
 					}
 				}
 

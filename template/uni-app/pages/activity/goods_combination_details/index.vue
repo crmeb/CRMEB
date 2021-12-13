@@ -1581,7 +1581,7 @@
 	}
 
 	.product-con .footer .item .iconfont.icon-shoucang1 {
-		color: #f00;
+		color: var(--view-theme);
 	}
 
 	.product-con .footer .item .iconfont.icon-gouwuche1 {
@@ -1773,7 +1773,7 @@
 	  line-height: 60rpx;
 	  box-sizing: border-box;
 	  background: #eeeeee;
-	  padding-right: 0 24rpx 0;
+	  padding: 0 14rpx 0 14rpx;
 	  border-radius: 8rpx;
 	  text-align: center;
 	}

@@ -1,13 +1,13 @@
 <template>
 	<view v-if="show"
-		:style="{width: systemInfo.width * 2 + 'rpx', height: systemInfo.height * 2 + 'rpx', backgroundColor: bgcolor, position: 'absolute', left: 0, top: 0, zIndex: 9998}">
+		:style="{width: systemInfo.width * 2 + 'rpx', height: (systemInfo.height + 100) * 2 + 'rpx', backgroundColor: bgcolor, position: 'absolute', left: 0, top: 0, zIndex: 9998}">
 		<view v-for="(item,rect_idx) in skeletonRectLists" :key="rect_idx + 'rect'"
 			:class="[loading == 'chiaroscuro' ? 'chiaroscuro' : '']"
 			:style="{width: item.width * 2 + 'rpx', height: item.height * 2 + 'rpx', backgroundColor: 'rgb(194, 207, 214,.3)', position: 'absolute', left: item.left * 2 + 'rpx', top: item.top * 2 + 'rpx'}">
 		</view>
 		<view v-for="(item,circle_idx) in skeletonCircleLists" :key="circle_idx + 'circle'"
 			:class="loading == 'chiaroscuro' ? 'chiaroscuro' : ''"
-			:style="{width: item.width * 2 + 'rpx', height: item.height * 2 + 'rpx', backgroundColor: 'rgb(194, 207, 214,.3)', borderRadius: item.width * 2 + 'rpx', position: 'absolute', left: item.left * 2 + 'rpx', top: item.top * 2 + 'rpx'}">
+			:style="{width: item.width * 2 + 'rpx', height: item.height * 2 + 'rpx', backgroundColor: 'rgb(194, 207, 214,.3)', borderRadius: item.width * 2 + 'rpx', position: 'absolute', left: item.left * 2 + 'rpx', top: item.top * 2 + 'rpx',zIndex: 9998}">
 		</view>
 		<view class="spinbox" v-if="loading == 'spin'">
 			<view class="spin"></view>
@@ -259,7 +259,7 @@
 		align-items: center;
 		height: 100%;
 		width: 100%;
-		z-index: 9999
+		z-index: 10000
 	}
 
 	.spin {

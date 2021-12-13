@@ -149,8 +149,9 @@
 <style lang="scss">
 	.index-wrapper {
 		background-color: $uni-bg-color;
-		margin: $uni-index-margin-row $uni-index-margin-col;
+		margin: $uni-index-margin-row $uni-index-margin-col 5rpx $uni-index-margin-col;
 		border-radius: $uni-border-radius-index;
+		
 		// box-shadow: $uni-index-box-shadow;
 	}
 

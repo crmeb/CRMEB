@@ -273,8 +273,8 @@
 
 	.productList .item .pictrue {
 		position: relative;
-		width: 200rpx;
-		height: 200rpx;
+		width: 180rpx;
+		height: 180rpx;
 	}
 
 	.productList .item .pictrue image {

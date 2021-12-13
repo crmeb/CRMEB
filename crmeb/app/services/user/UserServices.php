@@ -1530,7 +1530,7 @@ class UserServices extends BaseServices
     {
         switch ($data['type']) {
             case 'week':
-                $startTime = strtotime('this week');
+                $startTime = strtotime('this week Monday');
                 $endTime = time();
                 break;
             case 'month':

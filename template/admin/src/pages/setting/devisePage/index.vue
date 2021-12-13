@@ -63,9 +63,9 @@ export default {
     this.pageId = parseInt(pageId);
     let moveLink = getCookies("moveLink");
     if (Number(this.$route.query.type) === 1) {
-      this.iframeUrl = `${moveLink}?type=iframeWindow`;
+      this.iframeUrl = `${moveLink}/pages/index/index?type=iframeWindow`;
     } else {
-      this.iframeUrl = `${location.origin}?type=iframeWindow`;
+      this.iframeUrl = `${location.origin}/pages/index/index?type=iframeWindow`;
     }
     diyGetInfo(parseInt(pageId)).then((datas) => {
       let data = datas.data.info.value;

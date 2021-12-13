@@ -103,7 +103,7 @@ class NoticeService extends BaseServices
             'partner' => sys_config('develop_id', ''),
             'terminal' => sys_config('terminal_number', '')
         ];
-        $switch = sys_config('pay_success_printing_switch') ? true : false;
+        $switch = (bool)sys_config('pay_success_printing_switch');
         if (!$switch) {
             throw new ValidateException('小票打印未开启!');
         }

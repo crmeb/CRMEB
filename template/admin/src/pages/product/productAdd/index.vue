@@ -441,6 +441,7 @@
                       <InputNumber
                         v-model="oneFormBatch[0].price"
                         :min="0"
+                        :max="99999999"
                         class="priceBox"
                       ></InputNumber>
                     </template>
@@ -448,6 +449,7 @@
                       <InputNumber
                         v-model="oneFormBatch[0].cost"
                         :min="0"
+                        :max="99999999"
                         class="priceBox"
                       ></InputNumber>
                     </template>
@@ -466,6 +468,7 @@
                           formValidate.virtual_type == 1
                         "
                         :min="0"
+                        :max="99999999"
                         class="priceBox"
                       ></InputNumber>
                     </template>
@@ -509,6 +512,7 @@
                         v-model="oneFormBatch[0].weight"
                         :step="0.1"
                         :min="0"
+                        :max="99999999"
                         class="priceBox"
                       ></InputNumber>
                     </template>
@@ -517,6 +521,7 @@
                         v-model="oneFormBatch[0].volume"
                         :step="0.1"
                         :min="0"
+                        :max="99999999"
                         class="priceBox"
                       ></InputNumber>
                     </template>
@@ -563,6 +568,7 @@
                       <InputNumber
                         v-model="manyFormValidate[index].price"
                         :min="0"
+                        :max="99999999"
                         class="priceBox"
                       ></InputNumber>
                     </template>
@@ -570,6 +576,7 @@
                       <InputNumber
                         v-model="manyFormValidate[index].cost"
                         :min="0"
+                        :max="99999999"
                         class="priceBox"
                       ></InputNumber>
                     </template>
@@ -577,6 +584,7 @@
                       <InputNumber
                         v-model="manyFormValidate[index].ot_price"
                         :min="0"
+                        :max="99999999"
                         class="priceBox"
                       ></InputNumber>
                     </template>
@@ -588,6 +596,7 @@
                           formValidate.virtual_type == 1
                         "
                         :min="0"
+                        :max="99999999"
                         :precision="0"
                         class="priceBox"
                       ></InputNumber>
@@ -599,6 +608,7 @@
                       <InputNumber
                         v-model="manyFormValidate[index].weight"
                         :min="0"
+                        :max="99999999"
                         class="priceBox"
                       ></InputNumber>
                     </template>
@@ -606,6 +616,7 @@
                       <InputNumber
                         v-model="manyFormValidate[index].volume"
                         :min="0"
+                        :max="99999999"
                         class="priceBox"
                       ></InputNumber>
                     </template>
@@ -688,6 +699,7 @@
                   <InputNumber
                     v-model="oneFormValidate[0].price"
                     :min="0"
+                    :max="99999999"
                     class="priceBox"
                   ></InputNumber>
                 </template>
@@ -695,6 +707,7 @@
                   <InputNumber
                     v-model="oneFormValidate[0].cost"
                     :min="0"
+                    :max="99999999"
                     class="priceBox"
                   ></InputNumber>
                 </template>
@@ -702,6 +715,7 @@
                   <InputNumber
                     v-model="oneFormValidate[0].ot_price"
                     :min="0"
+                    :max="99999999"
                     class="priceBox"
                   ></InputNumber>
                 </template>
@@ -709,6 +723,7 @@
                   <InputNumber
                     v-model="oneFormValidate[0].stock"
                     :min="0"
+                    :max="99999999"
                     :disabled="
                       formValidate.is_virtual == 1 &&
                       formValidate.virtual_type == 1
@@ -724,6 +739,7 @@
                   <InputNumber
                     v-model="oneFormValidate[0].weight"
                     :min="0"
+                    :max="99999999"
                     class="priceBox"
                   ></InputNumber>
                 </template>
@@ -759,6 +775,7 @@
                   <InputNumber
                     v-model="oneFormValidate[0].volume"
                     :min="0"
+                    :max="99999999"
                     class="priceBox"
                   ></InputNumber>
                 </template>
@@ -829,6 +846,7 @@
             <FormItem label="虚拟销量：">
               <InputNumber
                 :min="0"
+                :max="999999"
                 v-model="formValidate.ficti"
                 placeholder="请输入虚拟销量"
               />
@@ -839,6 +857,7 @@
               <InputNumber
                 v-model="formValidate.give_integral"
                 :min="0"
+                :max="999999"
                 placeholder="请输入积分"
               />
             </FormItem>
@@ -847,6 +866,7 @@
             <FormItem label="排序：">
               <InputNumber
                 :min="0"
+                :max="999999"
                 v-model="formValidate.sort"
                 placeholder="请输入排序"
               />
@@ -929,6 +949,7 @@
                   <InputNumber
                     v-model="oneFormValidate[0].brokerage"
                     :min="0"
+                    :max="999999"
                     class="priceBox"
                   ></InputNumber>
                 </template>
@@ -936,6 +957,7 @@
                   <InputNumber
                     v-model="oneFormValidate[0].brokerage_two"
                     :min="0"
+                    :max="999999"
                     class="priceBox"
                   ></InputNumber>
                 </template>
@@ -943,6 +965,7 @@
                   <InputNumber
                     v-model="oneFormValidate[0].vip_price"
                     :min="0"
+                    :max="999999"
                     class="priceBox"
                   ></InputNumber>
                 </template>
@@ -965,12 +988,14 @@
                 一级返佣：<InputNumber
                   placeholder="请输入一级返佣"
                   :min="0"
+                  :max="9999999"
                   class="columnsBox perW20"
                   v-model="manyBrokerage"
                 ></InputNumber>
                 二级返佣：<InputNumber
                   placeholder="请输入二级返佣"
                   :min="0"
+                  :max="99999999"
                   class="columnsBox perW20"
                   v-model="manyBrokerageTwo"
                 ></InputNumber>
@@ -979,6 +1004,7 @@
                 会员价：<InputNumber
                   placeholder="请输入会员价"
                   :min="0"
+                  :max="99999999"
                   class="columnsBox perW20"
                   v-model="manyVipPrice"
                 ></InputNumber>
@@ -1062,6 +1088,7 @@
                   <InputNumber
                     v-model="manyFormValidate[index].brokerage"
                     :min="0"
+                    :max="99999999"
                     class="priceBox"
                   ></InputNumber>
                 </template>
@@ -1069,6 +1096,7 @@
                   <InputNumber
                     v-model="manyFormValidate[index].brokerage_two"
                     :min="0"
+                    :max="99999999"
                     class="priceBox"
                   ></InputNumber>
                 </template>
@@ -1076,6 +1104,7 @@
                   <InputNumber
                     v-model="manyFormValidate[index].vip_price"
                     :min="0"
+                    :max="99999999"
                     class="priceBox"
                   ></InputNumber>
                 </template>

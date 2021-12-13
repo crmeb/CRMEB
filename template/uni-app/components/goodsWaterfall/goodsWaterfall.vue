@@ -105,6 +105,7 @@
 					that.lists2 = []
 				}
 				this.tmp_data.map((da, di) => {
+					console.log(that.list1Height,that.list2Height)
 					if (that.list1Height > that.list2Height) {
 						that.list2Height += da.img_height
 						that.lists2.push(da)
@@ -117,10 +118,11 @@
 			},
 			//图片加载完成补齐数据
 			imgLoad(e) {
+				console.log(e.target.id,e.detail.width,e.detail.height)
 				this.loaded.push(e.target.id)
 				//存储数据
-				this.tmp_data[e.target.id]['img_width'] = e.detail.width
-				this.tmp_data[e.target.id]['img_height'] = e.detail.height
+				// this.tmp_data[e.target.id]['img_width'] = e.detail.width
+				this.tmp_data[e.target.id]['img_height'] = (167.5 * e.detail.height) / e.detail.width
 			},
 			//图片未加载成功触发
 			imgError(e) {
@@ -216,7 +218,7 @@
 
 			image {
 				width: 100%;
-				height: 330rpx;
+				// height: 330rpx;
 				border-radius: 10rpx 10rpx 0 0;
 			}
 

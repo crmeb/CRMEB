@@ -1,4 +1,6 @@
 {
   "navigationBarTitleText": "消息详情",
-  "usingComponents": {}
+  "usingComponents": {
+    "home": "/components/home/index"
+  }
 }

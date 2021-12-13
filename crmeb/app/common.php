@@ -69,7 +69,7 @@ if (!function_exists('sys_config')) {
             if (strpos($sysConfig, '/uploads/system/') !== false) $sysConfig = set_file_url($sysConfig);
         }
         $config = is_array($sysConfig) ? $sysConfig : trim($sysConfig);
-        if ($config === '' || $config === false) {
+        if ($config === '' || $config == false) {
             return $default;
         } else {
             return $config;
@@ -483,6 +483,7 @@ if (!function_exists('image_to_base64')) {
             curl_setopt($curl, CURLOPT_ENCODING, 'gzip');
             curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, $timeout);
             curl_setopt($curl, CURLOPT_HTTPHEADER, $header);
+            curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, FALSE);
             $data = curl_exec($curl);
             $code = curl_getinfo($curl, CURLINFO_HTTP_CODE);
             curl_close($curl);
@@ -815,7 +816,6 @@ if (!function_exists('get_image_thumb')) {
             $image = $type == 'all' ? $data : $data[$type] ?? $filePath;
         } catch (\Throwable $e) {
             $image = $filePath;
-//            throw new ValidateException($e->getMessage());
             \think\facade\Log::error('获取缩略图失败，原因：' . $e->getMessage() . '----' . $e->getFile() . '----' . $e->getLine() . '----' . $filePath);
         }
         $data = parse_url($image);

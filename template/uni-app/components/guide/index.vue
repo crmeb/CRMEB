@@ -1,7 +1,8 @@
 <template>
 	<view class="content">
-		<swiper class="swiper" :autoplay="autoplay" :duration="duration">
-			<swiper-item v-for="(item,index) in advList" :key="index">
+		<swiper class="swiper" :autoplay="autoplay" :duration="duration"
+			v-if="advData.type == 'pic' && advData.value.length">
+			<swiper-item v-for="(item,index) in advData" :key="index">
 				<view class="swiper-item">
 					<view class="swiper-item-img">
 						<image :src="item" mode="aspectFit"></image>
@@ -9,7 +10,11 @@
 				</view>
 			</swiper-item>
 		</swiper>
-		<view class="jump-over" @tap="launchFlag()">跳过 {{time}}</view>
+		<view class="video-box" v-else-if="advData.type == 'video' && advData.video_link">
+			<video class="vid" :src="advData.video_link" :autoplay="true" :loop="true" :muted="true"
+				:controls="false"></video>
+		</view>
+		<view class="jump-over" @tap="launchFlag()">跳过<text v-if="closeType == 1">{{time}}</text></view>
 	</view>
 </template>
 
@@ -22,23 +27,27 @@
 				jumpover: '跳过',
 				experience: '立即体验',
 				time: 5,
-				timecount:undefined
+				timecount: undefined
 			}
 		},
 		props: {
-			advList: {
-				type: Array,
-				default: () => {
-					[]
-				}
+			advData: {
+				type: Object,
+				default: () => {}
+			},
+			// 1 倒计时 2 手动关闭(预留)
+			closeType: {
+				type: Number,
+				default: 1
 			}
 		},
 		mounted() {
+			console.log(this.advData)
 			this.timer()
 		},
 		methods: {
 			timer() {
-				var t = 5
+				var t = ßthis.advData.time || 5
 				this.timecount = setInterval(() => {
 					t--
 					this.time = t
@@ -48,31 +57,22 @@
 					}
 				}, 1000)
 			},
-			launchFlag: function() {
-				/**
-				 * 向本地存储中设置launchFlag的值，即启动标识；
-				 */
+			launchFlag() {
 				clearInterval(this.timecount)
-				// uni.setStorage({
-				// 	key: 'launchFlag',
-				// 	data: true,
-				// });
 				uni.switchTab({
 					url: '/pages/index/index'
 				});
-
 			}
 		}
 	}
 </script>
-<style>
+<style lang="scss">
 	page,
 	.content {
 		width: 100%;
 		height: 100%;
 		background-size: 100% auto;
 		padding: 0;
-		z-index: 999;
 	}
 
 	.swiper {
@@ -138,5 +138,15 @@
 		right: 50%;
 		margin-right: -105upx;
 		bottom: 80rpx;
+	}
+
+	.video-box {
+		width: 100vw;
+		height: 100vh;
+
+		.vid {
+			width: 100%;
+			height: 100%;
+		}
 	}
 </style>

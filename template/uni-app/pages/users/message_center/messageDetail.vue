@@ -10,6 +10,9 @@
 		<view class="add-time">
 			通知于{{msgData.add_time}}
 		</view>
+		<!-- #ifndef MP -->
+		<home></home>
+		<!-- #endif -->
 	</view>
 </template>
 
@@ -17,7 +20,11 @@
 	import {
 		getMsgDetails
 	} from '@/api/user.js'
+	import home from '@/components/home';
 	export default {
+		components: {
+			home
+		},
 		data() {
 			return {
 				msgData: {}

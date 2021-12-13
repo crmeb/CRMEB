@@ -1,14 +1,6 @@
 {
 	"pages": [ //pages数组中第一项表示应用启动页
 		{
-			"path": "pages/guide/index",
-			"style": {
-				"app-plus": {
-					"titleNView": false //禁用原生导航栏
-				}
-			}
-		},
-		{
 			"path": "pages/index/index",
 			"style": {
 				"navigationBarTitleText": "",

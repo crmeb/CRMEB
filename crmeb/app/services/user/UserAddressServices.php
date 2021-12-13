@@ -165,17 +165,17 @@ class UserAddressServices extends BaseServices
     public function editAddress(int $uid, array $addressInfo)
     {
         if ($addressInfo['id'] == 0) {
+            $where = [
+                ['uid', '=', $uid],
+                ['real_name', '=', $addressInfo['real_name']],
+                ['phone', '=', $addressInfo['phone']],
+                ['detail', '=', $addressInfo['detail']],
+                ['is_del', '=', 0]
+            ];
             if (isset($addressInfo['address']['city_id'])) {
-                $where['city_id'] = $addressInfo['address']['city_id'];
-            } else {
-                $where = [];
+                $where += ['city_id', '=', $addressInfo['address']['city_id']];
             }
-            $res = $this->dao->getCount([
-                    ['uid', '=', $uid],
-                    ['real_name', '=', $addressInfo['real_name']],
-                    ['phone', '=', $addressInfo['phone']],
-                    ['detail', '=', $addressInfo['detail']]
-                ] + $where);
+            $res = $this->dao->getCount($where);
             if ($res) throw new ValidateException('地址已存在，请勿重复添加');
         }
 

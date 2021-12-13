@@ -177,6 +177,17 @@ class SystemConfigServices extends BaseServices
             ],
             'show_value' => 1
         ],
+        'image_thumbnail_status' => [
+            'son_type' => [
+                'thumb_big_width' => '',
+                'thumb_big_height' => '',
+                'thumb_mid_width' => '',
+                'thumb_mid_height' => '',
+                'thumb_small_width' => '',
+                'thumb_small_height' => '',
+            ],
+            'show_value' => 1
+        ],
         'image_watermark_status' => [
             'son_type' => [
                 'watermark_type' => [

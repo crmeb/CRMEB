@@ -255,7 +255,7 @@
 
 	.wrapper .newProducts .item {
 		display: inline-block;
-		width: 240rpx;
+		width: 200rpx;
 		margin-right: 20rpx;
 		border-radius: 20rpx;
 	}
@@ -266,7 +266,7 @@
 
 	.wrapper .newProducts .item .img-box {
 		width: 100%;
-		height: 240rpx;
+		height: 200rpx;
 		position: relative;
 	}
 

@@ -60,7 +60,7 @@ trait CurdControllerTrait
         foreach ($data as $key => $value) {
             $modelData->{$key} = $value;
         }
-        return $modelData->save() ? true : $this->setErrorInfo('保存失败');
+        return $modelData->save() || $this->setErrorInfo('保存失败');
     }
 
     /**

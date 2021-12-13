@@ -62,6 +62,7 @@ class StoreOrderController
      */
     protected $getChennel = [
         'weixin' => 0,
+        'routine' => 1,
         'weixinh5' => 2,
         'pc' => 3
     ];

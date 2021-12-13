@@ -1,6 +1,7 @@
 <template>
 	<view class="goodsList">
-		<view class="item acea-row row-between-wrapper" v-for="(item,index) in tempArr" :key='index' @click="goDetail(item)">
+		<view class="item acea-row row-between-wrapper" v-for="(item,index) in tempArr" :key='index'
+			@click="goDetail(item)">
 			<view class="pictrue">
 				<span class="pictrue_log pictrue_log_class" v-if="item.activity && item.activity.type === '1'">秒杀</span>
 				<span class="pictrue_log pictrue_log_class" v-if="item.activity && item.activity.type === '2'">砍价</span>
@@ -19,19 +20,25 @@
 						<text class="y_money" v-else>¥{{item.ot_price}}</text> -->
 					</view>
 					<view v-if="item.stock>0">
-					    <view class="iconfont icon-gouwuche6 acea-row row-center-wrapper" v-if="item.activity && (item.activity.type === '1' || item.activity.type === '2' || item.activity.type === '3')"></view>
+						<view class="iconfont icon-gouwuche6 acea-row row-center-wrapper"
+							v-if="item.activity && (item.activity.type === '1' || item.activity.type === '2' || item.activity.type === '3')">
+						</view>
 						<view v-else>
 							<!-- 多规格 -->
-							<view class="bnt" @click.stop="goCartDuo(item)" v-if="item.spec_type">
+							<view class="bnt" @click.stop="goCartDuo(item,$event)" v-if="item.spec_type">
 								选规格
 								<view class="num" v-if="isLogin && item.cart_num">{{item.cart_num}}</view>
 							</view>
 							<!-- 单规格 -->
-							<view class="iconfont icon-gouwuche6 acea-row row-center-wrapper" v-if="!item.spec_type && !item.cart_num" @click.stop="goCartDan(item,index)"></view>
+							<view class="iconfont icon-gouwuche6 acea-row row-center-wrapper"
+								v-if="!item.spec_type && !item.cart_num" @click.stop="goCartDan(item,index,$event)">
+							</view>
 							<view class="cart acea-row row-middle" v-if="!item.spec_type && item.cart_num">
-								<view class="pictrue iconfont icon-jianhao acea-row row-center-wrapper" @click.stop="CartNumDes(index,item)"></view>
+								<view class="pictrue iconfont icon-jianhao acea-row row-center-wrapper"
+									@click.stop="CartNumDes(index,item)"></view>
 								<view class="num">{{item.cart_num}}</view>
-								<view class="pictrue iconfont icon-jiahao acea-row row-center-wrapper" @click.stop="CartNumAdd(index,item)"></view>
+								<view class="pictrue iconfont icon-jiahao acea-row row-center-wrapper"
+									@click.stop="CartNumAdd(index,item,$event)"></view>
 							</view>
 						</view>
 					</view>
@@ -50,110 +57,138 @@
 				type: Object,
 				default: () => {}
 			},
-			tempArr:{
+			tempArr: {
 				type: Array,
-				default:[]
+				default: []
 			},
-			isLogin:{
+			isLogin: {
 				type: Boolean,
-				default:false
-			}
+				default: false
+			},
+			endLocation: {}
 		},
 		data() {
-			return {
-			};
+			return {};
 		},
 		created() {},
-		mounted() {},
+		mounted() {
+
+		},
 		methods: {
-			goDetail(item){
-				this.$emit('detail',item);
+			goDetail(item) {
+				this.$emit('detail', item);
 			},
-			goCartDuo(item){
-				this.$emit('gocartduo',item);
+			goCartDuo(item, {
+				detail
+			}) {
+				detail.img = item.image
+				this.$emit('addCart',detail)
+				this.$emit('gocartduo', item);
 			},
-			goCartDan(item,index){
-				this.$emit('gocartdan',item,index);
+			goCartDan(item, index, {
+				detail
+			}) {
+				detail.img = item.image
+				this.$emit('addCart',detail)
+				this.$emit('gocartdan', item, index);
 			},
-			CartNumDes(index,item){
-				this.$emit('ChangeCartNumDan', false,index,item);
+			CartNumDes(index, item) {
+				this.$emit('ChangeCartNumDan', false, index, item);
 			},
-			CartNumAdd(index,item){
-				this.$emit('ChangeCartNumDan', true,index,item);
+			CartNumAdd(index, item, {
+				detail
+			}) {
+				detail.img = item.image
+				this.$emit('addCart',detail)
+				this.$emit('ChangeCartNumDan', true, index, item);
 			}
 		}
 	};
 </script>
 
 <style lang="scss">
-	.goodsList{
+	.goodsList {
 		padding: 0 30rpx;
-		.item{
+
+		.item {
 			width: 100%;
 			box-sizing: border-box;
 			margin-bottom: 63rpx;
-			.pictrue{
+
+			.pictrue {
 				width: 140rpx;
 				height: 140rpx;
 				border-radius: 10rpx;
 				position: relative;
 				border-radius: 22rpx;
-				image{
+
+				image {
 					width: 100%;
 					height: 100%;
 					border-radius: 22rpx;
 				}
 			}
-			.pictxt{
+
+			.pictxt {
 				width: 372rpx;
-				.text{
-					font-size:26rpx;
-					font-family:PingFang SC;
-					font-weight:500;
+
+				.text {
+					font-size: 26rpx;
+					font-family: PingFang SC;
+					font-weight: 500;
 					color: #333333;
 				}
-				.bottom{
+
+				.bottom {
 					margin-top: 22rpx;
-					.money{
+
+					.money {
 						font-size: 34rpx;
 						font-weight: 800;
-						width: 212rpx;
-						.sign{
+
+						.sign {
 							font-size: 24rpx;
 						}
-						.y_money{
+
+						.y_money {
 							font-size: 20rpx;
 							color: #999999;
 							margin-left: 14rpx;
 							font-weight: normal;
 							text-decoration: line-through;
 						}
-						.vip{
+
+						.vip {
 							font-size: 22rpx;
 							color: #333333;
 							font-weight: normal;
 							margin-left: 14rpx;
-							image{
+
+							image {
 								width: 38rpx;
 								height: 18rpx;
 								margin-right: 6rpx;
 							}
 						}
 					}
-					.cart{
+
+					.cart {
 						height: 46rpx;
-						.pictrue{
+
+						.pictrue {
 							color: var(--view-theme);
-							font-size:46rpx;
+							font-size: 46rpx;
 							width: 46rpx;
 							height: 46rpx;
 							text-align: center;
 							line-height: 46rpx;
-							&.icon-jiahao{
-								 color: var(--view-theme);
+
+							&.icon-jiahao {
+								color: var(--view-theme);
 							}
 						}
-						.num{
+
+						.num {
 							font-size: 30rpx;
 							color: #333333;
 							font-weight: bold;
@@ -161,7 +196,8 @@
 							text-align: center;
 						}
 					}
-					.icon-gouwuche6{
+
+					.icon-gouwuche6 {
 						width: 46rpx;
 						height: 46rpx;
 						background-color: var(--view-theme);
@@ -169,19 +205,22 @@
 						color: #fff;
 						font-size: 30rpx;
 					}
-					.bnt{
+
+					.bnt {
 						padding: 0 20rpx;
 						height: 46rpx;
 						line-height: 46rpx;
-						background:var(--view-theme);
-						border-radius:23rpx;
+						background: var(--view-theme);
+						border-radius: 23rpx;
 						font-size: 22rpx;
 						color: #fff;
 						position: relative;
-						&.end{
-							background:#cccccc;
+
+						&.end {
+							background: #cccccc;
 						}
-						.num{
+
+						.num {
 							min-width: 12rpx;
 							color: #fff;
 							border-radius: 15px;

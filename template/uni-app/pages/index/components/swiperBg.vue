@@ -1,16 +1,18 @@
 <template>
-	<view class="swiperBg" :style="{marginTop:mt +'px'}">
+	<view class="swiperBg" :style="{marginTop:mt +'rpx'}">
 		<view class="bag" v-if="isIframe || (imgUrls.length && isShow)">
 		</view>
 		<block v-if="isShow && imgUrls.length">
 			<view class="swiper square" v-if="imgUrls.length">
-				<swiper class="skeleton-rect" :style="'height:'+ (imageH) +'rpx;'" indicator-dots="true" :autoplay="true" :circular="circular"
-					:interval="interval" :duration="duration" indicator-color="rgba(255,255,255,0.6)"
-					indicator-active-color="#fff" :current="swiperCur" @change="swiperChange">
+				<swiper class="skeleton-rect" :style="'height:'+ (imageH) +'rpx;'" indicator-dots="true"
+					:autoplay="true" :circular="circular" :interval="interval" :duration="duration"
+					indicator-color="rgba(255,255,255,0.6)" indicator-active-color="#fff" :current="swiperCur"
+					@change="swiperChange">
 					<block v-for="(item,index) in imgUrls" :key="index">
 						<swiper-item class="" :class="{active:index == swiperCur}">
 							<view @click="goDetail(item)" class='slide-navigator acea-row row-between-wrapper'>
-								<image :src="item.img" class="slide-image" :style="'height:'+ (imageH) +'rpx;'">
+								<image :src="item.img" class="slide-image" mode="widthFix"
+									:style="'height:'+ (imageH) +'rpx;'">
 								</image>
 							</view>
 						</swiper-item>
@@ -27,7 +29,8 @@
 					<block v-for="(item,index) in imgUrls" :key="index">
 						<swiper-item>
 							<view @click="goDetail(item)" class='slide-navigator acea-row row-between-wrapper'>
-								<image :src="item.img" class="slide-image" :style="'height:'+ (imageH) +'rpx;'">
+								<image :src="item.img" class="slide-image" mode="widthFix"
+									:style="'height:'+ (imageH) +'rpx;'">
 								</image>
 							</view>
 						</swiper-item>
@@ -108,11 +111,11 @@
 			const system = res.platform
 			this.statusBarHeight = res.statusBarHeight
 			if (system === 'android') {
-				this.mt = parseFloat(statusBarHeight) + 100
+				this.mt = parseFloat(statusBarHeight) * 2 + 170
 			} else {
-				this.mt = parseFloat(statusBarHeight) + 99
+				this.mt = parseFloat(statusBarHeight) * 2 + 168
 			}
-			
+
 			// #endif
 			this.isIframe = app.globalData.isIframe;
 		},
@@ -176,6 +179,7 @@
 		position: relative;
 		margin-top: -20rpx;
 		padding-top: 4rpx;
+
 		.bag {
 			position: absolute;
 			top: 0;
@@ -199,7 +203,7 @@
 		.swiper {
 			z-index: 100;
 			position: relative;
-			min-height: 230rpx;
+			min-height: 200rpx;
 			padding: 0 $uni-index-margin-col;
 			/* #ifdef APP-PLUS */
 			// margin: 0rpx auto 0 auto;
@@ -211,6 +215,7 @@
 			/* 设置圆角 */
 			&.fillet {
 				border-radius: 10rpx;
+
 				image {
 					border-radius: 10rpx;
 				}

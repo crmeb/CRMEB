@@ -443,6 +443,7 @@
         id="product-window"
         :is_vip="is_vip"
         @getImg="showImg"
+				:is_virtual="storeInfo.is_virtual"
       ></productWindow>
       <cus-previewImg
         ref="cusPreviewImg"
@@ -1131,7 +1132,6 @@ export default {
             that.skuArr.push(obj);
           }
           this.$set(this, "selectSku", that.skuArr[0]);
-					console.log(this.selectSku,this.skuArr)
           that.$set(
             that,
             "diff",
@@ -1531,7 +1531,6 @@ export default {
       const isLogin = that.isLogin;
       if (isLogin) {
         getCartCounts().then((res) => {
-          console.log();
           that.CartCount = res.data.count;
           this.$store.commit(
             "indexData/setCartNum",
@@ -1892,13 +1891,10 @@ export default {
     },
     //滑动轮播图选择商品
     changeSwitch(e) {
-			console.log(this.skuArr[e])
       let productSelect = this.skuArr[e];
       this.$set(this, "selectSku", productSelect);
       var skuList = productSelect.suk.split(",");
-			console.log(			this.attr.productAttr)
       this.$set(this.attr.productAttr[0], "index", skuList[0]);
-			
       if (skuList.length == 2) {
         this.$set(this.attr.productAttr[0], "index", skuList[0]);
         this.$set(this.attr.productAttr[1], "index", skuList[1]);
@@ -2042,7 +2038,7 @@ export default {
 }
 
 .product-con .footer .item .iconfont.icon-shoucang1 {
-  color: #f00;
+  color: var(--view-theme);
 }
 
 .product-con .footer .item .iconfont.icon-gouwuche1 {
@@ -2487,7 +2483,7 @@ action-sheet-item {
   line-height: 60rpx;
   box-sizing: border-box;
   background: #eeeeee;
-  padding-right: 0 24rpx 0;
+  padding: 0 14rpx 0 14rpx;
   border-radius: 8rpx;
   text-align: center;
 }

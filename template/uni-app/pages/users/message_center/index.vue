@@ -52,6 +52,9 @@
 			</view>
 			<view>亲、暂无消息记录哟！</view>
 		</view>
+		<!-- #ifndef MP -->
+		<home></home>
+		<!-- #endif -->
 	</view>
 </template>
 
@@ -61,8 +64,12 @@
 		messageSystem
 	} from '@/api/user.js';
 	import colors from '@/mixins/color.js';
+	import home from '@/components/home';
 	export default {
 		mixins:[colors],
+		components: {
+			home
+		},
 		data() {
 			return {
 				list: [],

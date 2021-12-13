@@ -38,26 +38,28 @@ Socket.prototype = {
 		clearInterval(this.timer);
 		this.ws.close();
 	},
-	onOpen: function() {
+	onOpen() {
 		this.init();
+		console.log('创建连接了!')
+		
 		this.send({
 			type: "login",
 			data: $store.state.app.token
 		});
 		this.vm.$emit("socket_open");
 	},
-	init: function() {
+	init() {
 		var that = this;
-		this.timer = setInterval(function() {
+		this.timer = setInterval(()=> {
 			that.send({
 				type: "ping"
 			});
 		}, 10000);
 	},
-	send: function(data) {
+	send(data) {
 		return this.ws.send(JSON.stringify(data));
 	},
-	onMessage: function(res) {
+	onMessage(res) {
 		const {
 			type,
 			data = {}

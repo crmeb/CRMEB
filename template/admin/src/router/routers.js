@@ -30,7 +30,7 @@ const frameIn = [
     {
         path: '/admin/',
         meta: {
-            title: 'CRMEB'
+            title: '后台管理'
         },
         redirect: {
             name: 'home_index'

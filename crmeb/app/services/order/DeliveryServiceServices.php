@@ -148,6 +148,6 @@ class DeliveryServiceServices extends BaseServices
      */
     public function checkoutIsService(int $uid)
     {
-        return $this->dao->count(['uid' => $uid, 'status' => 1]) ? true : false;
+        return (bool)$this->dao->count(['uid' => $uid, 'status' => 1]);
     }
 }

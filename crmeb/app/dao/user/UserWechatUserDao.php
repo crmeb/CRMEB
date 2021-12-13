@@ -192,9 +192,6 @@ class UserWechatUserDao extends BaseDao
                 case "nickname":
                 case "phone":
                     $model = $model->where($userAlias . trim($fieldKey), 'like', "%" . trim($nickname) . "%");
-//                    break;
-//                case "phone":
-//                    $model = $model->where($userAlias . trim($fieldKey), 'like', "%" . trim($nickname) . "%");
                     break;
                 case "uid":
                     $model = $model->where($userAlias . trim($fieldKey), trim($nickname));

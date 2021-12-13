@@ -110,14 +110,16 @@
         <Divider
           type="vertical"
           v-if="
-            row._status === 1 ||
-            row._status === 3 ||
-            (row._status === 2 && !row.pinkStatus) ||
-            row._status === 4 ||
-            (row.shipping_type == 2 &&
-              row.status == 0 &&
-              row.paid == 1 &&
-              row.refund_status === 0)
+            row.refund_type !== 4 &&
+            row.refund_type !== 5 &&
+            (row._status === 1 ||
+              row._status === 3 ||
+              (row._status === 2 && !row.pinkStatus) ||
+              row._status === 4 ||
+              (row.shipping_type == 2 &&
+                row.status == 0 &&
+                row.paid == 1 &&
+                row.refund_status === 0))
           "
         />
         <template>

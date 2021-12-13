@@ -541,7 +541,7 @@ class FileService
             $content = file_get_contents($path);
             $content = string::chang_code($content, $input_code, $out_code);
             $fp = fopen($path, 'w');
-            return fputs($fp, $content) ? TRUE : FALSE;
+            return (bool)fputs($fp, $content);
             fclose($fp);
         }
     }

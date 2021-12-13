@@ -4,7 +4,8 @@
 		<view class="serch-wrapper row-middle">
 			<view class="logo">
 				<image class="skeleton-rect" :src="logoConfig" mode="heightFix"></image>
-				<text class="swiger">好物尽享 任你选择</text>
+				<view class="swiger">好物尽享 任你选择</view>
+				
 			</view>
 			<view class="input acea-row row-middle fillet skeleton-rect" hover-class="none" @click="goPage"><text
 					class="iconfont icon-sousuo"></text>
@@ -15,7 +16,7 @@
 		<view class="serch-wrapper acea-row row-middle">
 			<view class="logo">
 				<image :src="logoConfig" mode="heightFix"></image>
-				<text class="swiger">好物尽享 任你选择</text>
+				<view class="swiger">好物尽享 任你选择</view>
 			</view>
 			<view class="input acea-row row-middle fillet" hover-class="none" @click="goPage"><text
 					class="iconfont icon-sousuo"></text>
@@ -31,7 +32,7 @@
 				<view class="serch-wrapper row-middle">
 					<view class="logo">
 						<image class="skeleton-rect" :src="logoConfig" mode="heightFix"></image>
-						<text class="swiger">好物尽享 任你选择</text>
+						<view class="swiger">好物尽享 任你选择</view>
 					</view>
 					<navigator url="/pages/goods_search/index" class="input acea-row row-middle fillet"
 						hover-class="none"><text class="iconfont icon-sousuo"></text>
@@ -45,8 +46,8 @@
 
 <script>
 	let app = getApp();
-	let statusBarHeight = uni.getSystemInfoSync().statusBarHeight + 'px';
-	let headHeight = uni.getSystemInfoSync().statusBarHeight + 100 + 'px';
+	let statusBarHeight = uni.getSystemInfoSync().statusBarHeight * 2 + 'rpx';
+	let headHeight = uni.getSystemInfoSync().statusBarHeight * 2 + 170 + 'rpx';
 	import {
 		goPage
 	} from '@/libs/order.js'
@@ -110,7 +111,7 @@
 	/* #ifdef H5 */
 	.header {
 		width: 100%;
-		height: 280rpx;
+		height: 210rpx;
 		background: #fff;
 		background: linear-gradient(90deg, var(--view-main-start) 0%, var(--view-main-over) 100%);
 		border-bottom-left-radius: 60rpx;
@@ -133,6 +134,7 @@
 					color: #fff;
 					font-size: 24rpx;
 					margin-left: 20rpx;
+					margin-bottom: -2rpx;
 				}
 			}
 
@@ -188,7 +190,7 @@
 
 		.serch-wrapper {
 			height: 100%;
-			padding: 20rpx 30rpx 20rpx 30rpx;
+			padding: 15rpx 30rpx 20rpx 30rpx;
 
 			.logo {
 				margin-right: 30rpx;
@@ -204,7 +206,7 @@
 					color: #fff;
 					font-size: 24rpx;
 					margin-left: 20rpx;
-					margin-bottom: 2rpx;
+					margin-bottom: -2rpx;
 				}
 			}
 
@@ -216,7 +218,7 @@
 				color: #999;
 				font-size: 28rpx;
 				// margin: 14rpx 0;
-				margin-top: 34rpx;
+				margin-top: 20rpx;
 				margin-bottom: 20rpx;
 				flex: 1;
 

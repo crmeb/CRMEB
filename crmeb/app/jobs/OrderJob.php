@@ -192,7 +192,7 @@ class OrderJob extends BaseJobs
             $cartInfoServices = app()->make(StoreOrderCartInfoServices::class);
             /** @var SmsSendServices $smsServices */
             $smsServices = app()->make(SmsSendServices::class);
-            $switch = sys_config('admin_pay_success_switch') ? true : false;
+            $switch = (bool)sys_config('admin_pay_success_switch');
             foreach ($serviceOrderNotice as $key => $item) {
                 $admin_name = $item['nickname'];
                 $order_id = $order['order_id'];
@@ -256,7 +256,7 @@ class OrderJob extends BaseJobs
      */
     public function mssageSendPaySuccess($order)
     {
-        $switch = sys_config('lower_order_switch') ? true : false;
+        $switch = (bool)sys_config('lower_order_switch');
         //模板变量
         $pay_price = $order['pay_price'];
         $order_id = $order['order_id'];

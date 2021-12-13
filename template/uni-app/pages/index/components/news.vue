@@ -123,8 +123,6 @@
 	}
 	.news {
 		height: 60rpx;
-		border-top: 1rpx solid #f4f4f4;
-		border-bottom: 1rpx solid #f4f4f4;
 		padding: 0 26rpx;
 		// box-shadow: 0 10rpx 30rpx #f5f5f5;
 		background-color: var(--view-op-point-four);

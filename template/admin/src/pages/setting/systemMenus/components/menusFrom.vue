@@ -2,7 +2,7 @@
   <div>
     <Modal
       v-model="modals"
-      width="850"
+      width="700"
       scrollable
       footer-hide
       closable
@@ -40,11 +40,14 @@
         </Row>
         <Row type="flex" :gutter="24">
           <Col v-bind="grid">
-            <FormItem label="按钮名称：" prop="menu_name">
+            <FormItem
+              :label="!authType ? '接口名称：' : '按钮名称：'"
+              prop="menu_name"
+            >
               <div class="add">
                 <Input
                   v-model="formValidate.menu_name"
-                  placeholder="请输入按钮名称"
+                  :placeholder="!authType ? '请输入接口名称' : '请输入按钮名称'"
                 >
                 </Input>
                 <Button
@@ -87,23 +90,23 @@
               ></Input>
             </FormItem>
           </Col>
-          <Col v-bind="grid" v-if="authType">
+          <!-- <Col v-bind="grid" v-if="authType">
             <FormItem label="接口参数：">
               <Input
                 v-model="formValidate.params"
                 placeholder="举例:a/123/b/234"
               ></Input>
             </FormItem>
-          </Col>
+          </Col> -->
           <Col v-bind="grid" v-if="authType">
-            <FormItem label="路由名称：" prop="menu_path">
+            <FormItem label="路由地址：" prop="menu_path">
               <Input
                 v-model="formValidate.menu_path"
-                placeholder="请输入路由名称"
+                placeholder="请输入路由地址"
               ></Input>
             </FormItem>
           </Col>
-          <Col v-bind="grid">
+          <Col v-bind="grid" v-if="authType">
             <FormItem label="权限标识：" prop="unique_auth">
               <Input
                 v-model="formValidate.unique_auth"
@@ -130,6 +133,7 @@
           <!--</Select>-->
           <!--</FormItem>-->
           <!--</Col>-->
+
           <Col v-bind="grid">
             <FormItem label="排序：">
               <Input
@@ -140,7 +144,21 @@
               ></Input>
             </FormItem>
           </Col>
-          <Col v-bind="grid">
+          <Col v-bind="grid" v-if="authType">
+            <FormItem label="隐藏菜单：">
+              <RadioGroup v-model="formValidate.is_show_path">
+                <Radio
+                  :label="item.value"
+                  v-for="(item, i) in isShowPathRadio"
+                  :key="i"
+                >
+                  <Icon type="social-apple"></Icon>
+                  <span>{{ item.label }}</span>
+                </Radio>
+              </RadioGroup>
+            </FormItem>
+          </Col>
+          <Col :xs="24">
             <FormItem label="状态：">
               <RadioGroup v-model="formValidate.is_show">
                 <Radio
@@ -154,20 +172,7 @@
               </RadioGroup>
             </FormItem>
           </Col>
-          <Col v-bind="grid">
-            <FormItem label="是否为隐藏菜单：">
-              <RadioGroup v-model="formValidate.is_show_path">
-                <Radio
-                  :label="item.value"
-                  v-for="(item, i) in isShowPathRadio"
-                  :key="i"
-                >
-                  <Icon type="social-apple"></Icon>
-                  <span>{{ item.label }}</span>
-                </Radio>
-              </RadioGroup>
-            </FormItem>
-          </Col>
+
           <Col span="24">
             <Button
               type="primary"
@@ -245,7 +250,7 @@
           :key="index"
           @click="selectRule(item)"
         >
-          <div>按钮名称：{{ item.real_name }}</div>
+          <div>接口名称：{{ item.real_name }}</div>
           <div>请求方式：{{ item.method }}</div>
           <div>接口地址：{{ item.rule }}</div>
         </div>
@@ -288,7 +293,7 @@ export default {
           { required: true, message: "请输入按钮名称", trigger: "blur" },
         ],
         menu_path: [
-          { required: true, message: "请输入路由名称", trigger: "blur" },
+          { required: true, message: "请输入路由地址", trigger: "blur" },
         ],
         methods: [
           { required: true, message: "请选择接口请求方式", trigger: "blur" },
@@ -308,16 +313,16 @@ export default {
     };
   },
   watch: {
-    "formValidate.header": function(n) {
+    "formValidate.header": function (n) {
       this.formValidate.is_header = n ? 1 : 0;
     },
-    "formValidate.auth_type": function(n) {
+    "formValidate.auth_type": function (n) {
       if (n === undefined) {
         n = 1;
       }
       this.authType = n === 1;
     },
-    "formValidate.data": function(n) {},
+    "formValidate.data": function (n) {},
   },
   computed: {
     /* eslint-disable */
@@ -557,6 +562,9 @@ export default {
   transition: all 0.2s ease;
   position: relative;
   padding-top: 10px;
+}
+.icons-item .ivu-icon {
+  font-size: 16px;
 }
 .search-rule {
   display: flex;

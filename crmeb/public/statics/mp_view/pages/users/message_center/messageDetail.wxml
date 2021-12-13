@@ -1,1 +1,1 @@
-<view class="msg-det data-v-1bf44a8c"><view class="title data-v-1bf44a8c">{{''+msgData.title+''}}</view><view class="content data-v-1bf44a8c">{{''+msgData.content+''}}</view><view class="add-time data-v-1bf44a8c">{{'通知于'+msgData.add_time+''}}</view></view>
+<view class="msg-det data-v-4970c012"><view class="title data-v-4970c012">{{''+msgData.title+''}}</view><view class="content data-v-4970c012">{{''+msgData.content+''}}</view><view class="add-time data-v-4970c012">{{'通知于'+msgData.add_time+''}}</view></view>

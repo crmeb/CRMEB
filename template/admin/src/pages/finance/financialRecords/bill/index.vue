@@ -16,7 +16,7 @@
       >
         <Row :gutter="24" type="flex">
           <Col :xl="6" :lg="12" :md="13" :sm="12" :xs="24">
-            <FormItem label="昵称/ID：">
+            <FormItem label="关键字：">
               <Input
                 enter-button
                 placeholder="请输入"

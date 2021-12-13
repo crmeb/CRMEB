@@ -156,6 +156,7 @@ class Canvas
         $file = str_replace('https', 'http', $file);
         $imagesize = getimagesize($file);
         $type = image_type_to_extension($imagesize[2], true);
+        $canvas = null;
         switch ($type) {
             case '.png':
                 $canvas = imagecreatefrompng($file);

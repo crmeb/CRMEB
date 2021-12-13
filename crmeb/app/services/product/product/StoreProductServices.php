@@ -1257,6 +1257,7 @@ class StoreProductServices extends BaseServices
         $siteUrl = sys_config('site_url');
         $storeInfo['image'] = set_file_url($storeInfo['image'], $siteUrl);
         $storeInfo['image_base'] = set_file_url($storeInfo['image'], $siteUrl);
+        $storeInfo['video_link'] = empty($storeInfo['video_link']) ? '' : strpos($storeInfo['video_link'],'http') === false ? sys_config('site_url').$storeInfo['video_link'] : $storeInfo['video_link'];
         $storeInfo['fsales'] = $storeInfo['ficti'] + $storeInfo['sales'];
 
         /** @var QrcodeServices $qrcodeService */

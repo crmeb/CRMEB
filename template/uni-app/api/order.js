@@ -125,15 +125,15 @@ export function orderDel(uni) {
  * 订单详情
  * @param string uni 
  */
-export function getOrderDetail(uni,cart_id) {
-	return request.get('order/detail/' + uni +`${cart_id ? `/${cart_id}`:''}` );
+export function getOrderDetail(uni, cart_id) {
+	return request.get('order/detail/' + uni + `${cart_id ? `/${cart_id}`:''}`);
 }
 /**
  * 退款订单详情
  * @param string uni 
  */
-export function getRefundOrderDetail(uni,cart_id) {
-	return request.get('order/refund_detail/' + uni +`${cart_id ? `/${cart_id}`:''}` );
+export function getRefundOrderDetail(uni, cart_id) {
+	return request.get('order/refund_detail/' + uni + `${cart_id ? `/${cart_id}`:''}`);
 }
 
 /**
@@ -162,8 +162,8 @@ export function orderTake(uni) {
  * 订单查询物流信息
  * @returns {*}
  */
-export function express(uni) {
-	return request.get("order/express/" + uni);
+export function express(uni, type) {
+	return request.get("order/express/" + uni + `${type?'/refund':''}`);
 }
 
 /**
@@ -297,7 +297,7 @@ export function refundExpress(data) {
 
 /**
  * 分类购物车列表
- */ 
+ */
 export function vcartList() {
 	return request.get("v2/cart_list");
 }

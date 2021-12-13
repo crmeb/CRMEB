@@ -244,7 +244,6 @@ export default {
           title: "商品信息",
           slot: "image",
           width: 200,
-          align: "center",
         },
         {
           title: "规格",

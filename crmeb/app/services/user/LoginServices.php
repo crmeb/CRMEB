@@ -103,7 +103,7 @@ class LoginServices extends BaseServices
                     if ($spreadUid) {
                         $spreadUid = (int)$spreadUid;
                         $data['spread_uid'] = $spreadUid;
-                        $data['spread_time'] = $userInfo->last_time;
+                        $data['spread_time'] = time();
                         $this->dao->incField($spreadUid, 'spread_count', 1);
                         //绑定用户后置事件
                         event('user.register', [$spreadUid, $userInfo['user_type'], $userInfo['nickname'], $userInfo['uid'], 0]);

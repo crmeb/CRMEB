@@ -417,7 +417,7 @@
 			formSubmit: function(e) {
 				let that = this,
 					value = e.detail.value;
-				if (!value.real_name) return that.$util.Tips({
+				if (!value.real_name.trim()) return that.$util.Tips({
 					title: '请填写收货人姓名'
 				});
 				if (!value.phone) return that.$util.Tips({
@@ -429,7 +429,7 @@
 				if (that.region[0] == '省') return that.$util.Tips({
 					title: '请选择所在地区'
 				});
-				if (!value.detail) return that.$util.Tips({
+				if (!value.detail.trim()) return that.$util.Tips({
 					title: '请填写详细地址'
 				});
 				value.id = that.id;

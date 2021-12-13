@@ -100,7 +100,7 @@ class Common extends BaseController
             $tourist_avatar = sys_config('tourist_avatar');
             $avatar = Arr::getArrayRandKey(is_array($tourist_avatar) ? $tourist_avatar : []);
             $userInfo['tourist_avatar'] = $uid ? '' : $avatar;
-            $userInfo['is_tourist'] = $tourist_uid ? true : false;
+            $userInfo['is_tourist'] = (bool)$tourist_uid;
             return app('json')->success($userInfo->toArray());
         } else {
             return app('json')->fail('暂无客服人员');

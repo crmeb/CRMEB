@@ -48,7 +48,7 @@
                 :data="uploadData"
                 :headers="header"
                 :multiple="true"
-                :format="['jpg', 'jpeg', 'png']"
+                :format="['jpg', 'jpeg', 'png', 'gif']"
                 :on-success="handleSuccess"
                 style="margin-top: 1px; display: inline-block"
               >

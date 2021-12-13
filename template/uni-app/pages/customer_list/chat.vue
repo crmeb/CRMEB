@@ -224,16 +224,6 @@
 			this.userType = options.type
 			this.getproductInfo();
 			this.getOrderInfo();
-			if (!app.globalData.isWsOpen) {
-				let form_type
-				//#ifdef MP || APP-PLUS
-				form_type = 2
-				//#endif
-				//#ifdef H5
-				form_type = this.$wechat.isWeixin() ? 1 : 3
-				//#endif
-				this.$socket.onStart(this.$store.state.app.token, form_type);
-			}
 		},
 		onUnload() {
 			this.$socket.onClose();
@@ -246,6 +236,7 @@
 			// #endif
 			// 初始化
 			if (app.globalData.isWsOpen) {
+				console.log('2222')
 				this.$socket.send({
 					data: {
 						token: this.$store.state.app.token,
@@ -259,8 +250,18 @@
 					type: 'login'
 				});
 				this.getChatList();
+			} else {
+				let form_type
+				//#ifdef MP || APP-PLUS
+				form_type = 2
+				//#endif
+				//#ifdef H5
+				form_type = this.$wechat.isWeixin() ? 1 : 3
+				//#endif
+				this.$socket.onStart(this.$store.state.app.token, form_type);
 			}
 			uni.$once('socketOpen', () => {
+				console.log('发送登录')
 				// 登录
 				this.$socket.send({
 					data: this.$store.state.app.token,
@@ -272,12 +273,15 @@
 					//#endif
 					type: 'login'
 				});
-				this.getChatList();
+				this.$nextTick(e => {
+					this.getChatList();
+				})	
 			});
 			// 监听客服转接
 			uni.$on('to_transfer', data => {
 				this.toUid = data.toUid;
 				this.$socket.send({
+					
 					data: {
 						id: this.toUid
 					},
@@ -291,6 +295,7 @@
 			});
 			// 链接成功
 			uni.$once('success', () => {
+				console.log('连接成功')
 				this.$socket.init();
 			});
 			// 消息接收
@@ -461,7 +466,7 @@
 					.in(this)
 					.select(selector);
 				view.boundingClientRect(res => {
-					this.scrollTop = parseFloat(res.top) - 60;
+					this.scrollTop = res ? parseFloat(res.top) - 60 : 0;
 				}).exec();
 			},
 

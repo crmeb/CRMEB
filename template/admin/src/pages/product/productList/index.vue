@@ -129,6 +129,8 @@
           </i-switch>
         </template>
         <template slot-scope="{ row, index }" slot="action">
+          <a @click="look(row)">查看</a>
+          <Divider type="vertical" />
           <a @click="edit(row)">编辑</a>
           <Divider type="vertical" />
           <router-link :to="{ path: '/admin/product/product_reply/' + row.id }"
@@ -170,6 +172,11 @@
     >
       <tao-bao ref="taobaos" v-if="modals" @on-close="onClose"></tao-bao>
     </Modal>
+    <!-- 商品弹窗 -->
+    <div v-if="isProductBox">
+      <div class="bg" @click="isProductBox = false"></div>
+      <goodsDetail :goodsId="goodsId"></goodsDetail>
+    </div>
   </div>
 </template>
 
@@ -179,6 +186,8 @@ import attribute from "./attribute";
 import toExcel from "../../../utils/Excel.js";
 import { mapState } from "vuex";
 import taoBao from "./taoBao";
+import goodsDetail from "./components/goodsDetail.vue";
+
 import {
   getGoodHeade,
   getGoods,
@@ -190,7 +199,7 @@ import {
 } from "@/api/product";
 export default {
   name: "product_productList",
-  components: { expandRow, attribute, taoBao },
+  components: { expandRow, attribute, taoBao, goodsDetail },
   computed: {
     ...mapState("userLevel", ["categoryId"]),
   },
@@ -301,6 +310,8 @@ export default {
       attrTemplate: false,
       selectedIds: new Set(), //选中合并项的id
       ids: [],
+      goodsId: "",
+      isProductBox: false,
     };
   },
   watch: {
@@ -321,6 +332,11 @@ export default {
     }
   },
   methods: {
+    look(row) {
+      console.log(row);
+      this.goodsId = row.id;
+      this.isProductBox = true;
+    },
     getPath() {
       this.columns2 = [...this.columns];
       if (name !== "1" && name !== "2") {
@@ -607,6 +623,7 @@ export default {
         url: `product/product/${row.id}`,
         method: "DELETE",
         ids: "",
+        un: 1,
       };
       this.$modalSure(delfromData)
         .then((res) => {
@@ -651,6 +668,44 @@ export default {
   img {
     width: 100%;
     height: 100%;
+  }
+}
+
+.bg {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 11;
+}
+
+/deep/.happy-scroll-content {
+  width: 100%;
+
+  .demo-spin-icon-load {
+    animation: ani-demo-spin 1s linear infinite;
+  }
+
+  @keyframes ani-demo-spin {
+    from {
+      transform: rotate(0deg);
+    }
+
+    50% {
+      transform: rotate(180deg);
+    }
+
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  .demo-spin-col {
+    height: 100px;
+    position: relative;
+    border: 1px solid #eee;
   }
 }
 </style>

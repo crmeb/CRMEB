@@ -51,13 +51,14 @@
 					<view class="mask" @click="closeTap"></view>
 				</view>
 				<goodClass :tempArr="tempArr" :isLogin="isLogin" @gocartduo="goCartDuo" @gocartdan="goCartDan"
-					@ChangeCartNumDan="ChangeCartNumDan" @detail="goDetail"></goodClass>
+					@ChangeCartNumDan="ChangeCartNumDan" @detail="goDetail" :endLocation="endLocation"
+					@addCart="addCart"></goodClass>
 				<view class='loadingicon acea-row row-center-wrapper'>
 					<text class='loading iconfont icon-jiazai' :hidden='loading==false'></text>{{loadTitle}}
 				</view>
 			</view>
 		</view>
-		<view class="footer acea-row row-between-wrapper">
+		<view class="footer acea-row row-between-wrapper" id="cart">
 			<view class="cartIcon acea-row row-center-wrapper" @click="getCartList(0)" v-if="cartData.cartList.length">
 				<view class="iconfont icon-gouwuche-yangshi1"></view>
 				<view class="num">{{cartCount}}</view>
@@ -75,10 +76,12 @@
 		<productWindow :attr="attr" :isShow='1' :iSplus='1' :iScart='1' @myevent="onMyEvent" @ChangeAttr="ChangeAttr"
 			@ChangeCartNum="ChangeCartNumDuo" @attrVal="attrVal" @iptCartNum="iptCartNum" @goCat="goCatNum"
 			:is_vip="is_vip" id='product-window'></productWindow>
+		<ParabalaBall ref="Ball"></ParabalaBall>
 	</view>
 </template>
 
 <script>
+	import ParabalaBall from '@/components/parabolaBall/ParabolaBall.vue'
 	import {
 		getCategoryList,
 		getProductslist,
@@ -107,7 +110,8 @@
 		components: {
 			productWindow,
 			goodClass,
-			cartList
+			cartList,
+			ParabalaBall
 		},
 		props: {},
 		data() {
@@ -148,7 +152,8 @@
 				lengthCart: 0,
 				is_vip: 0, //是否是会员
 				cart_num: 0,
-				storeInfo: {}
+				storeInfo: {},
+				endLocation: {}
 			}
 		},
 		onShow() {
@@ -156,6 +161,24 @@
 			// 	this.getCartNum();
 			// 	this.getCartList(1);
 			// }
+		},
+		onLoad() {
+			this.$nextTick(() => {
+				uni.createSelectorQuery().select('#cart').boundingClientRect(res => {
+					const {
+						windowTop
+					} = uni.getSystemInfoSync()
+					this.endLocation = {
+						x: res.left + uni.upx2px(120) / 2,
+						// #ifdef H5
+						y: res.top + windowTop,
+						// #endif
+						// #ifndef H5
+						y: res.top,
+						// #endif
+					}
+				}).exec()
+			})
 		},
 		mounted() {
 			let that = this;
@@ -169,6 +192,19 @@
 			// this.getAllCategory();
 		},
 		methods: {
+			addCart(detail) {
+				// #ifdef H5
+				const {
+					windowTop
+				} = uni.getSystemInfoSync()
+				detail.y += windowTop
+				// #endif
+				this.$refs.Ball.showBall({
+					start: detail,
+					src: [detail.img, ''][Math.round(Math.random())],
+					end: this.endLocation
+				}).then(() => {})
+			},
 			// 生成订单；
 			subOrder: function() {
 				let that = this,
@@ -935,6 +971,7 @@
 
 						.bottom {
 							padding-right: 18rpx;
+
 							.sales {
 								.money {
 									font-size: 34rpx;
