@@ -76,7 +76,7 @@
     "@vue/cli-service": "^3.0.1",
     "@vue/eslint-config-standard": "^3.0.0-beta.10",
     "@vue/test-utils": "^1.0.0-beta.10",
-    "axios": "^0.18.1",
+    "axios": "^0.21.2",
     "babel-core": "7.0.0-bridge.0",
     "babel-jest": "^23.0.1",
     "cache-loader": "^4.1.0",
