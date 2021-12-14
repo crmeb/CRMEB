@@ -73,8 +73,13 @@ Redis
 
 
 
-### CRMEB 官方指定技术大佬交流群，欢迎加入！
+### 官方客服
 ![输入图片说明](readme/images/image.jpg)
+### CRMEB官方论坛：https://q.crmeb.com
+
+技术交流、安装搭建问题、系统建议反馈 欢迎光临CRMEB官方论坛！
+
+提交BUG、产品建议反馈 有奖悬赏  欢迎参与：https://q.crmeb.com/thread/7380
 
 
 ## 技术亮点
