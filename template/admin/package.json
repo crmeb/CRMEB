@@ -45,7 +45,7 @@
     "stylus": "^0.54.7",
     "swiper": "^5.4.5",
     "tree-table-vue": "^1.1.0",
-    "ua-parser-js": "^0.7.18",
+    "ua-parser-js": "^0.7.24",
     "v-org-tree": "^1.0.6",
     "v-viewer": "^1.5.1",
     "view-design": "^4.3.1",
