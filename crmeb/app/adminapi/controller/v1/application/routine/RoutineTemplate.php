@@ -11,7 +11,7 @@
 namespace app\adminapi\controller\v1\application\routine;
 
 use app\services\other\QrcodeServices;
-use app\services\other\TemplateMessageServices;
+use app\services\message\TemplateMessageServices;
 use app\services\system\attachment\SystemAttachmentServices;
 use crmeb\exceptions\AdminException;
 use think\exception\ValidateException;
@@ -95,7 +95,7 @@ class RoutineTemplate extends AuthController
     /**
      * 保存新建的资源
      *
-     * @param \think\Request $request
+     * @param Request $request
      * @return \think\Response
      */
     public function save(Request $request)
@@ -151,7 +151,7 @@ class RoutineTemplate extends AuthController
     /**
      * 保存更新的资源
      *
-     * @param \think\Request $request
+     * @param Request $request
      * @param int $id
      * @return \think\Response
      */
@@ -307,8 +307,8 @@ class RoutineTemplate extends AuthController
             $fileService->addZip(public_path() . 'statics/download', public_path() . 'statics/download/routine.zip', public_path() . 'statics/download');
             $data['url'] = sys_config('site_url') . '/statics/download/routine.zip';
             return app('json')->success($data);
-        } catch (\Throwable $throwable) {
-
+        } catch (\Throwable $e) {
+            throw new AdminException($e->getMessage());
         }
     }
 
@@ -389,7 +389,7 @@ class RoutineTemplate extends AuthController
                 }
                 if (!$res) throw new ValidateException('二维码生成失败');
                 $upload = UploadService::init(1);
-                if ($upload->to('routine/code')->stream((string)$res['res'], $name) === false) {
+                if ($upload->to('routine/code')->setAuthThumb(false)->stream((string)$res['res'], $name) === false) {
                     return $upload->getError();
                 }
                 $imageInfo = $upload->getUploadInfo();
@@ -400,7 +400,7 @@ class RoutineTemplate extends AuthController
             } else $data['code'] = sys_config('site_url') . $imageInfo['att_dir'];
         }
         $data['appId'] = sys_config('routine_appId');
-        $data['help'] = 'https://help.crmeb.net/crmeb-v4/1863455';
+        $data['help'] = 'https://doc.crmeb.com/web/single/crmeb_v4/978';
         return app('json')->success($data);
     }
 }

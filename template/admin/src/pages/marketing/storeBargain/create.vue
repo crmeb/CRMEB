@@ -1,14 +1,16 @@
 <template>
   <div>
-    <div class="i-layout-page-header">
-      <div class="i-layout-page-header">
+    <div class="i-layout-page-header header_top">
+      <div class="i-layout-page-header fl_header">
         <router-link :to="{ path: '/admin/marketing/store_bargain/index' }"
-          ><Button icon="ios-arrow-back" size="small" class="mr20"
+          ><Button icon="ios-arrow-back" size="small" type="text"
             >返回</Button
           ></router-link
         >
+        <Divider type="vertical" />
         <span
           class="ivu-page-header-title mr20"
+          style="padding: 0"
           v-text="$route.params.id !== '0' ? '编辑砍价商品' : '添加砍价商品'"
         ></span>
       </div>
@@ -147,17 +149,59 @@
                 </FormItem>
               </Col>
               <Col span="24">
-                <FormItem label="运费模板：" prop="temp_id">
-                  <div class="acea-row row-middle">
-                    <Select v-model="formValidate.temp_id" class="perW35">
+                <FormItem label="物流方式：" prop="logistics">
+                  <CheckboxGroup
+                    v-model="formValidate.logistics"
+                    @on-change="logisticsBtn"
+                  >
+                    <Checkbox label="1" disabled>快递</Checkbox>
+                    <Checkbox label="2">到店核销</Checkbox>
+                  </CheckboxGroup>
+                </FormItem>
+              </Col>
+              <Col span="24">
+                <FormItem
+                  label="运费设置："
+                  :prop="formValidate.freight != 1 ? 'freight' : ''"
+                >
+                  <RadioGroup v-model="formValidate.freight">
+                    <Radio :label="2">固定邮费</Radio>
+                    <Radio :label="3">运费模板</Radio>
+                  </RadioGroup>
+                </FormItem>
+              </Col>
+              <Col
+                span="24"
+                v-if="formValidate.freight != 3 && formValidate.freight != 1"
+              >
+                <FormItem label="">
+                  <div class="acea-row">
+                    <InputNumber
+                      min="0.01"
+                      v-model="formValidate.postage"
+                      placeholder="请输入金额"
+                      class="perW20 maxW"
+                    />
+                  </div>
+                </FormItem>
+              </Col>
+              <Col span="24" v-if="formValidate.freight == 3">
+                <FormItem label="" prop="temp_id">
+                  <div class="acea-row">
+                    <Select
+                      v-model="formValidate.temp_id"
+                      clearable
+                      placeholder="请选择运费模板"
+                      class="perW20 maxW"
+                    >
                       <Option
-                        v-for="item in templateList"
+                        v-for="(item, index) in templateList"
                         :value="item.id"
-                        :key="item.id"
+                        :key="index"
                         >{{ item.name }}</Option
                       >
                     </Select>
-                    <div class="ml10 col" @click="freight">添加运费模板</div>
+                    <span class="addfont" @click="freight">新增运费模板</span>
                   </div>
                 </FormItem>
               </Col>
@@ -276,16 +320,18 @@
                       <InputNumber
                         v-model="specsData[index].price"
                         :min="0"
-                        active-change
+                        :precision="2"
                         class="priceBox"
+                        :active-change="false"
                       ></InputNumber>
                     </template>
                     <template slot-scope="{ row, index }" slot="min_price">
                       <InputNumber
                         v-model="specsData[index].min_price"
                         :min="0"
-                        active-change
+                        :precision="2"
                         class="priceBox"
+                        :active-change="false"
                       ></InputNumber>
                     </template>
                     <template slot-scope="{ row, index }" slot="quota">
@@ -302,22 +348,32 @@
             </Row>
             <div v-show="current === 2">
               <FormItem label="内容：">
-                <vue-ueditor-wrap
+                <!-- <vue-ueditor-wrap
                   v-model="formValidate.description"
                   :key="1"
                   @beforeInit="addCustomDialog"
                   :config="myConfig"
                   style="width: 90%"
-                ></vue-ueditor-wrap>
+                ></vue-ueditor-wrap> -->
+                <WangEditor
+                  style="width: 90%"
+                  :content="formValidate.description"
+                  @editorContent="getEditorContent"
+                ></WangEditor>
               </FormItem>
               <FormItem label="规则：">
-                <vue-ueditor-wrap
+                <!-- <vue-ueditor-wrap
                   v-model="formValidate.rule"
                   :key="2"
                   @beforeInit="addCustomDialog"
                   :config="myConfig"
                   style="width: 90%"
-                ></vue-ueditor-wrap>
+                ></vue-ueditor-wrap> -->
+                <WangEditor
+                  style="width: 90%"
+                  :content="formValidate.rule"
+                  @editorContent="getEditorContent2"
+                ></WangEditor>
               </FormItem>
             </div>
             <FormItem>
@@ -395,10 +451,18 @@ import {
 } from "@/api/marketing";
 import { productGetTemplateApi } from "@/api/product";
 import freightTemplate from "@/components/freightTemplate/index";
-import VueUeditorWrap from "vue-ueditor-wrap";
+// import VueUeditorWrap from "vue-ueditor-wrap";
+import WangEditor from "@/components/wangEditor/index.vue";
+import WangEditor2 from "@/components/wangEditor/index.vue";
+
 export default {
   name: "storeBargainCreate",
-  components: { goodsList, uploadPictures, VueUeditorWrap, freightTemplate },
+  components: {
+    goodsList,
+    uploadPictures,
+    freightTemplate,
+    WangEditor,
+  },
   data() {
     return {
       submitOpen: false,
@@ -478,6 +542,9 @@ export default {
         temp_id: "",
         attrs: [],
         items: [],
+        logistics: ["1"], //选择物流方式
+        freight: 2, //运费设置
+        postage: 1, //设置运费金额
       },
       ruleValidate: {
         image: [{ required: true, message: "请选择主图", trigger: "change" }],
@@ -608,6 +675,12 @@ export default {
     this.productGetTemplate();
   },
   methods: {
+    getEditorContent(data) {
+      this.formValidate.description = data;
+    },
+    getEditorContent2(data) {
+      this.formValidate.rule = data;
+    },
     // 添加运费模板
     freight() {
       this.$refs.template.id = 0;
@@ -681,6 +754,7 @@ export default {
               h("InputNumber", {
                 props: {
                   min: 1,
+                  precision: 0,
                   value: params.row.quota,
                 },
                 on: {
@@ -746,6 +820,11 @@ export default {
           id: 0,
           product_id: row.id,
           temp_id: row.temp_id,
+          logistics: row.temp_id, //选择物流方式
+          freight: row.freight, //运费设置
+          postage: row.postage, //设置运费金额
+          custom_form: row.custom_form, //自定义表单数据
+          virtual_type: row.virtual_type, //虚拟商品类型
         };
         this.productAttrs(row);
       }, 500);
@@ -1065,6 +1144,15 @@ export default {
     color: #2d8cf0;
     cursor: pointer;
   }
+}
+
+.addfont {
+  font-size: 13px;
+  color: #1890FF;
+  margin-left: 14px;
+  cursor: pointer;
+  margin-left: 10px;
+  cursor: pointer;
 }
 </style>
 

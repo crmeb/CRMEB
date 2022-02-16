@@ -56,7 +56,7 @@ class SystemStoreDao extends BaseDao
      */
     public function getStoreList(array $where, array $field, int $page = 0, int $limit = 0, string $latitude = '', string $longitude = '')
     {
-        return $this->search($where)->when($longitude && $longitude, function ($query) use ($longitude, $latitude) {
+        return $this->search($where)->when($longitude && $latitude, function ($query) use ($longitude, $latitude) {
             $query->field(['*', $this->distance($latitude, $longitude)])->order('distance ASC');
         })->when($page && $limit, function ($query) use ($page, $limit) {
             $query->page($page, $limit);

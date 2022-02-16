@@ -139,9 +139,9 @@ class Local extends BaseUpload
         $this->fileInfo->realName = $fileHandle->getOriginalName();
         $this->fileInfo->fileName = $this->fileInfo->uploadInfo->getFilename();
         $this->fileInfo->filePath = $this->defaultPath . '/' . str_replace('\\', '/', $fileName);
-        if ($this->checkImage(public_path() . $this->fileInfo->filePath) && $this->authThumb && pathinfo($fileName,PATHINFO_EXTENSION) != 'ico') {
+        if ($this->checkImage(public_path() . $this->fileInfo->filePath) && $this->authThumb && pathinfo($fileName, PATHINFO_EXTENSION) != 'ico' && pathinfo($fileName, PATHINFO_EXTENSION) != 'gif') {
             try {
-                $this->thumb($this->fileInfo->filePath);
+                $this->thumb($this->fileInfo->filePath, $this->fileInfo->fileName);
             } catch (\Throwable $e) {
                 return $this->setError($e->getMessage());
             }
@@ -172,7 +172,7 @@ class Local extends BaseUpload
         $this->fileInfo->filePath = $this->defaultPath . '/' . $this->path . '/' . $key;
         if ($this->checkImage(public_path() . $this->fileInfo->filePath) && $this->authThumb) {
             try {
-                $this->thumb($this->fileInfo->filePath);
+                $this->thumb($this->fileInfo->filePath, $this->fileInfo->fileName);
             } catch (\Throwable $e) {
                 return $this->setError($e->getMessage());
             }
@@ -207,39 +207,40 @@ class Local extends BaseUpload
     /**
      * 生成缩略图
      * @param string $filePath
+     * @param string $fileName
      * @param string $type
      * @return array|mixed|string[]
      */
-    public function thumb(string $filePath = '', string $type = 'all')
+    public function thumb(string $filePath = '', string $fileName = '', string $type = 'all')
     {
-        $filePath = $this->getFilePath($filePath, true);
+        $config = $this->thumbConfig;
         $data = ['big' => $filePath, 'mid' => $filePath, 'small' => $filePath];
         $this->fileInfo->filePathBig = $this->fileInfo->filePathMid = $this->fileInfo->filePathSmall = $this->fileInfo->filePathWater = $filePath;
         //地址存在且不是远程地址
-        if ($filePath && !$this->checkFilePathIsRemote($filePath) && strpos($filePath, 'uploads/' . $this->thumbWaterPath) === false) {
-            $dir = $this->uploadDir($this->thumbWaterPath);
-            if (!$this->validDir($dir)) {
-                throw new ValidateException('缩略图生成目录生成失败，目录：' . $dir);
+        $filePath = str_replace(sys_config('site_url'), '', $filePath);
+        if ($filePath && !$this->checkFilePathIsRemote($filePath)) {
+            $findPath = str_replace($fileName, $type . '_' . $fileName, $filePath);
+            if (file_exists('.' . $findPath)) {
+                return [
+                    'big' => str_replace($fileName, 'big_' . $fileName, $filePath),
+                    'mid' => str_replace($fileName, 'mid_' . $fileName, $filePath),
+                    'small' => str_replace($fileName, 'small_' . $fileName, $filePath)
+                ];
             }
-            $filePath = $this->water($filePath);
-            $data = ['big' => $filePath, 'mid' => $filePath, 'small' => $filePath];
-            $this->fileInfo->filePathWater = $filePath;
-            $config = $this->thumbConfig;
             try {
+                $this->water($filePath);
                 foreach ($this->thumb as $v) {
                     if ($type == 'all' || $type == $v) {
                         $height = 'thumb_' . $v . '_height';
                         $width = 'thumb_' . $v . '_width';
-                        if (isset($config[$height]) && isset($config[$width]) && $config[$height] && $config[$width]) {
-                            $savePath = $this->createSaveFilePath($filePath, $this->thumbWaterPath, [$height => $config[$height], $width => $config[$width]]);
-                            //防止重复生成
-                            if (!file_exists('.' . $savePath)) {
-                                $Image = Image::open(app()->getRootPath() . 'public' . $filePath);
-                                $Image->thumb($config[$width], $config[$height])->save(root_path() . 'public' . $savePath);
-                            }
-                            $key = 'filePath' . ucfirst($v);
-                            $data[$v] = $this->fileInfo->$key = $savePath;
+                        $savePath = str_replace($fileName, $v . '_' . $fileName, $filePath);
+                        //防止重复生成
+                        if (!file_exists('.' . $savePath)) {
+                            $Image = Image::open(app()->getRootPath() . 'public' . $filePath);
+                            $Image->thumb($config[$width], $config[$height])->save(root_path() . 'public' . $savePath);
                         }
+                        $key = 'filePath' . ucfirst($v);
+                        $data[$v] = $this->fileInfo->$key = $savePath;
                     }
                 }
             } catch (\Throwable $e) {
@@ -256,23 +257,19 @@ class Local extends BaseUpload
      */
     public function water(string $filePath = '')
     {
-        $waterPath = $filePath = $this->getFilePath($filePath);
-        //地址存在且不是远程地址
-        if ($filePath && !$this->checkFilePathIsRemote($filePath)) {
-            $waterConfig = $this->waterConfig;
-            if ($waterConfig['image_watermark_status'] && $filePath) {
-                $waterPath = $this->createSaveFilePath($filePath, $this->thumbWaterPath, $waterConfig);
-                switch ($waterConfig['watermark_type']) {
-                    case 1:
-                        if ($waterConfig['watermark_image']) $waterPath = $this->image($filePath, $waterConfig, $waterPath);
-                        break;
-                    case 2:
-                        $waterPath = $this->text($filePath, $waterConfig, $waterPath);
-                        break;
-                }
+        $waterConfig = $this->waterConfig;
+        if ($waterConfig['image_watermark_status'] && $filePath) {
+
+            switch ($waterConfig['watermark_type']) {
+                case 1:
+                    if ($waterConfig['watermark_image']) $filePath = $this->image($filePath, $waterConfig);
+                    break;
+                case 2:
+                    $filePath = $this->text($filePath, $waterConfig);
+                    break;
             }
         }
-        return $waterPath;
+        return $filePath;
     }
 
     /**
@@ -282,13 +279,14 @@ class Local extends BaseUpload
      * @param string $waterPath
      * @return string
      */
-    public function image(string $filePath, array $waterConfig = [], string $waterPath = '')
+    public function image(string $filePath, array $waterConfig = [])
     {
         if (!$waterConfig) {
             $waterConfig = $this->waterConfig;
         }
         $watermark_image = $waterConfig['watermark_image'];
         //远程图片
+        $filePath = str_replace(sys_config('site_url'), '', $filePath);
         if ($watermark_image && $this->checkFilePathIsRemote($watermark_image)) {
             //看是否在本地
             $pathName = $this->getFilePath($watermark_image, true);
@@ -313,30 +311,23 @@ class Local extends BaseUpload
         if (!$watermark_image) {
             throw new ValidateException('请先配置水印图片');
         }
-        if (!$waterPath) {
-            [$path, $ext] = $this->getFileName($filePath);
-            $waterPath = $path . '_water_image.' . $ext;
-        }
-        $savePath = public_path() . $waterPath;
+        $savePath = public_path() . $filePath;
         try {
-            if (!file_exists($savePath)) {
-                $Image = Image::open(app()->getRootPath() . 'public' . $filePath);
-                $Image->water($watermark_image, $waterConfig['watermark_position'] ?: 1, $waterConfig['watermark_opacity'])->save($savePath);
-            }
+            $Image = Image::open(app()->getRootPath() . 'public' . $filePath);
+            $Image->water($watermark_image, $waterConfig['watermark_position'] ?: 1, $waterConfig['watermark_opacity'])->save($savePath);
         } catch (\Throwable $e) {
             throw new ValidateException($e->getMessage());
         }
-        return $waterPath;
+        return $savePath;
     }
 
     /**
      * 文字水印
      * @param string $filePath
      * @param array $waterConfig
-     * @param string $waterPath
      * @return string
      */
-    public function text(string $filePath, array $waterConfig = [], string $waterPath = '')
+    public function text(string $filePath, array $waterConfig = [])
     {
         if (!$waterConfig) {
             $waterConfig = $this->waterConfig;
@@ -344,27 +335,21 @@ class Local extends BaseUpload
         if (!$waterConfig['watermark_text']) {
             throw new ValidateException('请先配置水印文字');
         }
-        if (!$waterPath) {
-            [$path, $ext] = $this->getFileName($filePath);
-            $waterPath = $path . '_water_text.' . $ext;
-        }
-        $savePath = public_path() . $waterPath;
+        $savePath = public_path() . $filePath;
         try {
-            if (!file_exists($savePath)) {
-                $Image = Image::open(app()->getRootPath() . 'public' . $filePath);
-                if (strlen($waterConfig['watermark_text_color']) < 7) {
-                    $waterConfig['watermark_text_color'] = substr($waterConfig['watermark_text_color'], 1);
-                    $waterConfig['watermark_text_color'] = '#' . $waterConfig['watermark_text_color'] . $waterConfig['watermark_text_color'];
-                }
-                if (strlen($waterConfig['watermark_text_color']) > 7) {
-                    $waterConfig['watermark_text_color'] = substr($waterConfig['watermark_text_color'], 0, 7);
-                }
-                $Image->text($waterConfig['watermark_text'], $waterConfig['watermark_text_font'], $waterConfig['watermark_text_size'], $waterConfig['watermark_text_color'], $waterConfig['watermark_position'], [$waterConfig['watermark_x'], $waterConfig['watermark_y'], $waterConfig['watermark_text_angle']])->save($savePath);
+            $Image = Image::open(app()->getRootPath() . 'public' . $filePath);
+            if (strlen($waterConfig['watermark_text_color']) < 7) {
+                $waterConfig['watermark_text_color'] = substr($waterConfig['watermark_text_color'], 1);
+                $waterConfig['watermark_text_color'] = '#' . $waterConfig['watermark_text_color'] . $waterConfig['watermark_text_color'];
             }
+            if (strlen($waterConfig['watermark_text_color']) > 7) {
+                $waterConfig['watermark_text_color'] = substr($waterConfig['watermark_text_color'], 0, 7);
+            }
+            $Image->text($waterConfig['watermark_text'], $waterConfig['watermark_text_font'], $waterConfig['watermark_text_size'], $waterConfig['watermark_text_color'], $waterConfig['watermark_position'], [$waterConfig['watermark_x'], $waterConfig['watermark_y'], $waterConfig['watermark_text_angle']])->save($savePath);
         } catch (\Throwable $e) {
             throw new ValidateException($e->getMessage() . $e->getLine());
         }
-        return $waterPath;
+        return $savePath;
     }
 
     /**
@@ -376,21 +361,12 @@ class Local extends BaseUpload
     {
         if (file_exists($filePath)) {
             try {
+                $fileArr = explode('/',$filePath);
+                $fileName = end($fileArr);
                 unlink($filePath);
-                $waterConfig = $this->waterConfig;
-                //水印图片
-                $waterPath = $this->createSaveFilePath($filePath, $this->thumbWaterPath, $waterConfig, null);
-                if (file_exists($waterPath)) unlink($waterPath);
-                $config = $this->thumbConfig;
-                //缩略图
-                foreach ($this->thumb as $v) {
-                    $height = 'thumb_' . $v . '_height';
-                    $width = 'thumb_' . $v . '_width';
-                    if (isset($config[$height]) && isset($config[$width]) && $config[$height] && $config[$width]) {
-                        $thumbPath = $this->createSaveFilePath($waterPath, $this->thumbWaterPath, [$height => $config[$height], $width => $config[$width]], null);
-                        if (file_exists($thumbPath)) unlink($thumbPath);
-                    }
-                }
+                unlink(str_replace($fileName, 'big_' . $fileName, $filePath));
+                unlink(str_replace($fileName, 'mid_' . $fileName, $filePath));
+                unlink(str_replace($fileName, 'small_' . $fileName, $filePath));
                 return true;
             } catch (UploadException $e) {
                 return $this->setError($e->getMessage());
@@ -399,4 +375,38 @@ class Local extends BaseUpload
         return false;
     }
 
+    public function listbuckets(string $region, bool $line = false, bool $shared = false)
+    {
+        return [];
+    }
+
+    public function createBucket(string $name, string $region)
+    {
+        return null;
+    }
+
+    public function deleteBucket(string $name)
+    {
+        return null;
+    }
+
+    public function setBucketCors(string $name, string $region)
+    {
+        return true;
+    }
+
+    public function getRegion()
+    {
+        return [];
+    }
+
+    public function bindDomian(string $name, string $domain, string $region = null)
+    {
+        return true;
+    }
+
+    public function getDomian(string $name, string $region = null)
+    {
+        return [];
+    }
 }

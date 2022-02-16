@@ -20,6 +20,7 @@ use app\services\system\attachment\SystemAttachmentServices;
 use crmeb\exceptions\AdminException;
 use crmeb\services\CopyProductService;
 use crmeb\services\UploadService;
+use think\facade\Log;
 
 /**
  *
@@ -52,6 +53,7 @@ class CopyTaobaoServices extends BaseServices
      */
     public function copyProduct($type, $id, $shopid, $url)
     {
+        $result = [];
         switch ((int)sys_config('system_product_copy_type')) {
             case 1://平台
                 /** @var ServeServices $services */
@@ -129,7 +131,6 @@ class CopyTaobaoServices extends BaseServices
                             $id = $params[2] ?? '';
                             $shopid = $params[1] ?? '';
                             break;
-
                     }
                 }
                 $result = CopyProductService::getInfo($type, ['itemid' => $id, 'shopid' => $shopid], $apikey);
@@ -143,36 +144,6 @@ class CopyTaobaoServices extends BaseServices
             $storeCatecoryService = app()->make(StoreCategoryServices::class);
             $data = [];
             $productInfo = $result['data'];
-            //查询附件分类
-            /** @var SystemAttachmentCategoryServices $systemAttachmentCategoryService */
-            $systemAttachmentCategoryService = app()->make(SystemAttachmentCategoryServices::class);
-            $AttachmentCategory = $systemAttachmentCategoryService->getOne(['name' => $this->AttachmentCategoryName]);
-            //不存在则创建
-            if (!$AttachmentCategory) $AttachmentCategory = $systemAttachmentCategoryService->save(['pid' => '0', 'name' => $this->AttachmentCategoryName, 'enname' => '']);
-            //生成附件目录
-            try {
-                if (make_path('attach', 3, true) === '')
-                    throw new AdminException('无法创建文件夹，请检查您的上传目录权限：' . app()->getRootPath() . 'public' . DS . 'uploads' . DS . 'attach' . DS);
-
-            } catch (\Exception $e) {
-                throw new AdminException($e->getMessage() . '或无法创建文件夹，请检查您的上传目录权限：' . app()->getRootPath() . 'public' . DS . 'uploads' . DS . 'attach' . DS);
-            }
-            //开始图片下载处理
-            //放入主图
-            $images = [
-                ['w' => 305, 'h' => 305, 'line' => $productInfo['image'], 'valuename' => 'image']
-            ];
-            //放入轮播图
-            foreach ($productInfo['slider_image'] as $item) {
-                $value = ['w' => 640, 'h' => 640, 'line' => $item, 'valuename' => 'slider_image', 'isTwoArray' => true];
-                array_push($images, $value);
-            }
-            //执行下载
-            $res = $this->uploadImage($images, false, 0, $AttachmentCategory['id']);
-            if (!is_array($res)) throw new AdminException($this->errorInfo ? $this->errorInfo : '保存图片失败');
-            if (isset($res['image'])) $productInfo['image'] = $res['image'];
-            if (isset($res['slider_image'])) $productInfo['slider_image'] = $res['slider_image'];
-            $productInfo['image'] = str_replace('\\', '/', $productInfo['image']);
             if (count($productInfo['slider_image'])) {
                 $productInfo['slider_image'] = array_map(function ($item) {
                     $item = str_replace('\\', '/', $item);
@@ -218,6 +189,8 @@ class CopyTaobaoServices extends BaseServices
             $productInfo['virtual_type'] = 0;
             $productInfo['spu'] = '';
             $productInfo['id'] = 0;
+            $productInfo['temp_id'] = 1;
+            $productInfo['freight'] = 3;
             $data['productInfo'] = $productInfo;
             return $data;
         } else {
@@ -226,9 +199,14 @@ class CopyTaobaoServices extends BaseServices
     }
 
     /**
+     * 下载商品详情图片
      * @param int $id
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
      */
-    public function uploadDescriptionImage(int $id){
+    public function uploadDescriptionImage(int $id)
+    {
         //查询附件分类
         /** @var SystemAttachmentCategoryServices $systemAttachmentCategoryService */
         $systemAttachmentCategoryService = app()->make(SystemAttachmentCategoryServices::class);
@@ -241,45 +219,31 @@ class CopyTaobaoServices extends BaseServices
         try {
             if (make_path('attach', 3, true) === '')
                 throw new AdminException('无法创建文件夹，请检查您的上传目录权限：' . app()->getRootPath() . 'public' . DS . 'uploads' . DS . 'attach' . DS);
-
         } catch (\Exception $e) {
             throw new AdminException($e->getMessage() . '或无法创建文件夹，请检查您的上传目录权限：' . app()->getRootPath() . 'public' . DS . 'uploads' . DS . 'attach' . DS);
         }
-        $description = $storeDescriptionServices->getDescription(['product_id '=>$id,'type'=>0]);
+        $description = $storeDescriptionServices->getDescription(['product_id ' => $id, 'type' => 0]);
         if (!$description) throw new AdminException('商品参数错误！');
         //替换并下载详情里面的图片默认下载全部图片
         $description = preg_replace('#<style>.*?</style>#is', '', $description);
         $description = $this->uploadImage([], $description, 1, $AttachmentCategory['id']);
         $storeDescriptionServices->saveDescription((int)$id, $description);
-        return true;
-
     }
+
     /**
-     * 保存数据
-     * @param array $data
+     * 下载商品轮播图片
+     * @param int $id
      * @throws \think\db\exception\DataNotFoundException
      * @throws \think\db\exception\DbException
      * @throws \think\db\exception\ModelNotFoundException
      */
-    public function save(array $data)
+    public function uploadSliderImage(int $id)
     {
-        $detail = $data['attrs'];
-        $attrs = $data['items'];
-        $data['spec_type'] = $data['attrs'] ? 1 : 0;
-        if (count($detail)) {
-            $data['price'] = min(array_column($detail, 'price'));
-            $data['ot_price'] = min(array_column($detail, 'ot_price'));
-            $data['cost'] = min(array_column($detail, 'cost'));
-            $data['stock'] = array_sum(array_column($detail, 'stock'));
-        }
-        unset($data['attrs'], $data['items'], $data['info']);
-        if (!$data['cate_id']) throw new AdminException('请选择分类！');
-        if (!$data['store_name']) throw new AdminException('请填写商品名称');
-        if (!$data['unit_name']) throw new AdminException('请填写商品单位');
-        if (!$data['temp_id']) throw new AdminException('请选择运费模板');
         //查询附件分类
         /** @var SystemAttachmentCategoryServices $systemAttachmentCategoryService */
         $systemAttachmentCategoryService = app()->make(SystemAttachmentCategoryServices::class);
+        /** @var StoreProductServices $StoreProductServices */
+        $StoreProductServices = app()->make(StoreProductServices::class);
         $AttachmentCategory = $systemAttachmentCategoryService->getOne(['name' => $this->AttachmentCategoryName]);
         //不存在则创建
         if (!$AttachmentCategory) $AttachmentCategory = $systemAttachmentCategoryService->save(['pid' => '0', 'name' => $this->AttachmentCategoryName, 'enname' => '']);
@@ -287,99 +251,155 @@ class CopyTaobaoServices extends BaseServices
         try {
             if (make_path('attach', 3, true) === '')
                 throw new AdminException('无法创建文件夹，请检查您的上传目录权限：' . app()->getRootPath() . 'public' . DS . 'uploads' . DS . 'attach' . DS);
-
         } catch (\Exception $e) {
             throw new AdminException($e->getMessage() . '或无法创建文件夹，请检查您的上传目录权限：' . app()->getRootPath() . 'public' . DS . 'uploads' . DS . 'attach' . DS);
         }
-        ini_set("max_execution_time", '600');
-        /** @var StoreProductServices $storeProductServices */
-        $storeProductServices = app()->make(StoreProductServices::class);
-        /** @var StoreDescriptionServices $storeDescriptionServices */
-        $storeDescriptionServices = app()->make(StoreDescriptionServices::class);
-        /** @var StoreProductCateServices $storeProductCateServices */
-        $storeProductCateServices = app()->make(StoreProductCateServices::class);
-        /** @var StoreProductAttrServices $storeProductAttrServices */
-        $storeProductAttrServices = app()->make(StoreProductAttrServices::class);
-        /** @var StoreProductCouponServices $storeProductCouponServices */
-        $storeProductCouponServices = app()->make(StoreProductCouponServices::class);
-        /** @var StoreCategoryServices $storeCategoryServices */
-        $storeCategoryServices = app()->make(StoreCategoryServices::class);
-        //开始图片下载处理
-        $this->transaction(function () use ($attrs, $detail, $data, $AttachmentCategory, $storeCategoryServices, $storeProductServices, $storeDescriptionServices, $storeProductCateServices, $storeProductAttrServices, $storeProductCouponServices) {
-            //放入主图
-            $images = [
-                ['w' => 305, 'h' => 305, 'line' => $data['image'], 'valuename' => 'image']
-            ];
-            //放入轮播图
-            foreach ($data['slider_image'] as $item) {
-                $value = ['w' => 640, 'h' => 640, 'line' => $item, 'valuename' => 'slider_image', 'isTwoArray' => true];
-                array_push($images, $value);
-            }
-            //执行下载
-            $res = $this->uploadImage($images, false, 0, $AttachmentCategory['id']);
-            if (!is_array($res)) throw new AdminException($this->errorInfo ? $this->errorInfo : '保存图片失败');
-            if (isset($res['image'])) $data['image'] = $res['image'];
-            if (isset($res['slider_image'])) $data['slider_image'] = $res['slider_image'];
-            $data['image'] = str_replace('\\', '/', $data['image']);
-            if (count($data['slider_image'])) {
-                $data['slider_image'] = array_map(function ($item) {
-                    $item = str_replace('\\', '/', $item);
-                    return $item;
-                }, $data['slider_image']);
-            }
-            $data['slider_image'] = count($data['slider_image']) ? json_encode($data['slider_image']) : '';
-            //替换并下载详情里面的图片默认下载全部图片
-            $data['description'] = preg_replace('#<style>.*?</style>#is', '', $data['description']);
-            $data['description'] = $this->uploadImage($data['description_images'], $data['description'], 1, $AttachmentCategory['id']);
-            unset($data['description_images']);
-            $description = $data['description'];
-            unset($data['description']);
-            $data['add_time'] = time();
-            $cate_id = $data['cate_id'];
-            $data['cate_id'] = implode(',', $data['cate_id']);
-            $productInfo = $storeProductServices->getOne(['soure_link' => $data['soure_link']]);
-            if ($productInfo) {
-                $productInfo->slider_image = $data['slider_image'];
-                $productInfo->image = $data['image'];
-                $productInfo->store_name = $data['store_name'];
-                $res = $storeProductServices->update($productInfo->id, $data);
-                if (!$res) throw new AdminException('保存失败');
-                $storeDescriptionServices->saveDescription($productInfo->id, $description);
-            } else {
-                $data['code_path'] = '';
-                $data['spu'] = $this->createSpu();
-                if ($data['spec_type'] == 0) {
-                    $attrs = [
-                        [
-                            'value' => '规格',
-                            'detailValue' => '',
-                            'attrHidden' => '',
-                            'detail' => ['默认']
-                        ]
-                    ];
-                    $detail[0]['value1'] = '规格';
-                    $detail[0]['detail'] = ['规格' => '默认'];
-                }
-                $res = $storeProductServices->create($data);
-                $storeDescriptionServices->saveDescription((int)$res['id'], $description);
-                $cateData = [];
-                $time = time();
-                $cateGory = $storeCategoryServices->getColumn([['id', 'IN', $cate_id]], 'id,pid', 'id');
-                foreach ($cate_id as $cid) {
-                    if ($cid && isset($cateGory[$cid]['pid'])) {
-                        $cateData[] = ['product_id' => $res['id'], 'cate_id' => $cid, 'cate_pid' => $cateGory[$cid]['pid'], 'status' => $data['is_show'], 'add_time' => $time];
-                    }
-                }
-                $storeProductCateServices->change($res['id'], $cateData);
-                $skuList = $storeProductServices->validateProductAttr($attrs, $detail, (int)$res['id']);
-                $attrRes = $storeProductAttrServices->saveProductAttr($skuList, (int)$res['id'], 0);
-                if (!empty($coupon_ids)) $storeProductCouponServices->setCoupon((int)$res['id'], $coupon_ids);
-                if (!$attrRes) throw new AdminException('添加失败！');
-            }
-        });
-
+        $slider_image = $StoreProductServices->value(['id' => $id], 'slider_image');
+        $slider_image = $slider_image ? json_decode($slider_image, true) : [];
+        $images = [];
+        //放入轮播图
+        foreach ($slider_image as $item) {
+            $value = ['w' => 640, 'h' => 640, 'line' => $item, 'valuename' => 'slider_image', 'isTwoArray' => true];
+            array_push($images, $value);
+        }
+        $res = $this->uploadImage($images, false, 0, $AttachmentCategory['id']);
+        if (!is_array($res)) throw new AdminException($this->errorInfo ? $this->errorInfo : '保存图片失败');
+        if (isset($res['slider_image'])) $slider_images = $res['slider_image'];
+        if (count($slider_images)) {
+            $slider_images = array_map(function ($item) {
+                $item = str_replace('\\', '/', $item);
+                return $item;
+            }, $slider_images);
+        }
+        $image = $slider_images[0];
+        $slider_images = $slider_images ? json_encode($slider_images) : '';
+        $StoreProductServices->update($id, ['slider_image' => $slider_images, 'image' => $image]);
     }
 
+//    /**
+//     * 保存数据
+//     * @param array $data
+//     * @throws \think\db\exception\DataNotFoundException
+//     * @throws \think\db\exception\DbException
+//     * @throws \think\db\exception\ModelNotFoundException
+//     */
+//    public function save(array $data)
+//    {
+//        $detail = $data['attrs'];
+//        $attrs = $data['items'];
+//        $data['spec_type'] = $data['attrs'] ? 1 : 0;
+//        if (count($detail)) {
+//            $data['price'] = min(array_column($detail, 'price'));
+//            $data['ot_price'] = min(array_column($detail, 'ot_price'));
+//            $data['cost'] = min(array_column($detail, 'cost'));
+//            $data['stock'] = array_sum(array_column($detail, 'stock'));
+//        }
+//        unset($data['attrs'], $data['items'], $data['info']);
+//        if (!$data['cate_id']) throw new AdminException('请选择分类！');
+//        if (!$data['store_name']) throw new AdminException('请填写商品名称');
+//        if (!$data['unit_name']) throw new AdminException('请填写商品单位');
+//        if (!$data['temp_id']) throw new AdminException('请选择运费模板');
+//        //查询附件分类
+//        /** @var SystemAttachmentCategoryServices $systemAttachmentCategoryService */
+//        $systemAttachmentCategoryService = app()->make(SystemAttachmentCategoryServices::class);
+//        $AttachmentCategory = $systemAttachmentCategoryService->getOne(['name' => $this->AttachmentCategoryName]);
+//        //不存在则创建
+//        if (!$AttachmentCategory) $AttachmentCategory = $systemAttachmentCategoryService->save(['pid' => '0', 'name' => $this->AttachmentCategoryName, 'enname' => '']);
+//        //生成附件目录
+//        try {
+//            if (make_path('attach', 3, true) === '')
+//                throw new AdminException('无法创建文件夹，请检查您的上传目录权限：' . app()->getRootPath() . 'public' . DS . 'uploads' . DS . 'attach' . DS);
+//
+//        } catch (\Exception $e) {
+//            throw new AdminException($e->getMessage() . '或无法创建文件夹，请检查您的上传目录权限：' . app()->getRootPath() . 'public' . DS . 'uploads' . DS . 'attach' . DS);
+//        }
+//        ini_set("max_execution_time", '600');
+//        /** @var StoreProductServices $storeProductServices */
+//        $storeProductServices = app()->make(StoreProductServices::class);
+//        /** @var StoreDescriptionServices $storeDescriptionServices */
+//        $storeDescriptionServices = app()->make(StoreDescriptionServices::class);
+//        /** @var StoreProductCateServices $storeProductCateServices */
+//        $storeProductCateServices = app()->make(StoreProductCateServices::class);
+//        /** @var StoreProductAttrServices $storeProductAttrServices */
+//        $storeProductAttrServices = app()->make(StoreProductAttrServices::class);
+//        /** @var StoreProductCouponServices $storeProductCouponServices */
+//        $storeProductCouponServices = app()->make(StoreProductCouponServices::class);
+//        /** @var StoreCategoryServices $storeCategoryServices */
+//        $storeCategoryServices = app()->make(StoreCategoryServices::class);
+//        //开始图片下载处理
+//        $this->transaction(function () use ($attrs, $detail, $data, $AttachmentCategory, $storeCategoryServices, $storeProductServices, $storeDescriptionServices, $storeProductCateServices, $storeProductAttrServices, $storeProductCouponServices) {
+//            //放入主图
+//            $images = [
+//                ['w' => 305, 'h' => 305, 'line' => $data['image'], 'valuename' => 'image']
+//            ];
+//            //放入轮播图
+//            foreach ($data['slider_image'] as $item) {
+//                $value = ['w' => 640, 'h' => 640, 'line' => $item, 'valuename' => 'slider_image', 'isTwoArray' => true];
+//                array_push($images, $value);
+//            }
+//            //执行下载
+//            $res = $this->uploadImage($images, false, 0, $AttachmentCategory['id']);
+//            if (!is_array($res)) throw new AdminException($this->errorInfo ?: '保存图片失败');
+//            if (isset($res['image'])) $data['image'] = $res['image'];
+//            if (isset($res['slider_image'])) $data['slider_image'] = $res['slider_image'];
+//            $data['image'] = str_replace('\\', '/', $data['image']);
+//            if (count($data['slider_image'])) {
+//                $data['slider_image'] = array_map(function ($item) {
+//                    $item = str_replace('\\', '/', $item);
+//                    return $item;
+//                }, $data['slider_image']);
+//            }
+//            $data['slider_image'] = count($data['slider_image']) ? json_encode($data['slider_image']) : '';
+//            //替换并下载详情里面的图片默认下载全部图片
+//            $data['description'] = preg_replace('#<style>.*?</style>#is', '', $data['description']);
+//            $data['description'] = $this->uploadImage($data['description_images'], $data['description'], 1, $AttachmentCategory['id']);
+//            unset($data['description_images']);
+//            $description = $data['description'];
+//            unset($data['description']);
+//            $data['add_time'] = time();
+//            $cate_id = $data['cate_id'];
+//            $data['cate_id'] = implode(',', $data['cate_id']);
+//            $productInfo = $storeProductServices->getOne(['soure_link' => $data['soure_link']]);
+//            if ($productInfo) {
+//                $productInfo->slider_image = $data['slider_image'];
+//                $productInfo->image = $data['image'];
+//                $productInfo->store_name = $data['store_name'];
+//                $res = $storeProductServices->update($productInfo->id, $data);
+//                if (!$res) throw new AdminException('保存失败');
+//                $storeDescriptionServices->saveDescription($productInfo->id, $description);
+//            } else {
+//                $data['code_path'] = '';
+//                $data['spu'] = $this->createSpu();
+//                if ($data['spec_type'] == 0) {
+//                    $attrs = [
+//                        [
+//                            'value' => '规格',
+//                            'detailValue' => '',
+//                            'attrHidden' => '',
+//                            'detail' => ['默认']
+//                        ]
+//                    ];
+//                    $detail[0]['value1'] = '规格';
+//                    $detail[0]['detail'] = ['规格' => '默认'];
+//                }
+//                $res = $storeProductServices->create($data);
+//                $storeDescriptionServices->saveDescription((int)$res['id'], $description);
+//                $cateData = [];
+//                $time = time();
+//                $cateGory = $storeCategoryServices->getColumn([['id', 'IN', $cate_id]], 'id,pid', 'id');
+//                foreach ($cate_id as $cid) {
+//                    if ($cid && isset($cateGory[$cid]['pid'])) {
+//                        $cateData[] = ['product_id' => $res['id'], 'cate_id' => $cid, 'cate_pid' => $cateGory[$cid]['pid'], 'status' => $data['is_show'], 'add_time' => $time];
+//                    }
+//                }
+//                $storeProductCateServices->change($res['id'], $cateData);
+//                $skuList = $storeProductServices->validateProductAttr($attrs, $detail, (int)$res['id']);
+//                $attrRes = $storeProductAttrServices->saveProductAttr($skuList, (int)$res['id'], 0);
+//                if (!empty($coupon_ids)) $storeProductCouponServices->setCoupon((int)$res['id'], $coupon_ids);
+//                if (!$attrRes) throw new AdminException('添加失败！');
+//            }
+//        });
+//    }
 
     /**
      * 上传图片处理
@@ -492,8 +512,14 @@ class CopyTaobaoServices extends BaseServices
         if (!strlen(trim($name))) {
             //TODO 获取要下载的文件名称
             $downloadImageInfo = $this->getImageExtname($url);
+            $ext = $downloadImageInfo['ext_name'];
             $name = $downloadImageInfo['file_name'];
             if (!strlen(trim($name))) return '';
+        } else {
+            $ext = $this->getImageExtname($name)['ext_name'];
+        }
+        if (in_array($ext, ['php', 'js', 'html'])) {
+            throw new AdminException('格式错误');
         }
         //TODO 获取远程文件所采用的方法
         if ($type) {
@@ -504,26 +530,29 @@ class CopyTaobaoServices extends BaseServices
             curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false); //TODO 跳过证书检查
             if (stripos($url, "https://") !== FALSE) curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);  //TODO 从证书中检查SSL加密算法是否存在
             curl_setopt($ch, CURLOPT_HTTPHEADER, array('user-agent:' . $_SERVER['HTTP_USER_AGENT']));
-            if (ini_get('open_basedir') == '' && ini_get('safe_mode' == 'Off')) curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);//TODO 是否采集301、302之后的页面
+            if (ini_get('open_basedir') == '' && ini_get('safe_mode') == 'Off') curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);//TODO 是否采集301、302之后的页面
             $content = curl_exec($ch);
             curl_close($ch);
         } else {
             try {
                 ob_start();
+                if (substr($url, 0, 2) == '//') {
+                    $url = "https:" . $url;
+                }
                 readfile($url);
                 $content = ob_get_contents();
                 ob_end_clean();
             } catch (\Exception $e) {
-                return $e->getMessage();
+                throw new AdminException($e->getMessage());
             }
         }
         $size = strlen(trim($content));
-        if (!$content || $size <= 2) return '图片流获取失败';
+        if (!$content || $size <= 2) throw new AdminException('图片流获取失败');
         $date_dir = date('Y') . '/' . date('m') . '/' . date('d');
         $upload_type = sys_config('upload_type', 1);
-        $upload = UploadService::init();
-        if ($upload->to('attach/' . $date_dir)->stream($content, $name) === false) {
-            return $upload->getError();
+        $upload = UploadService::init($upload_type);
+        if ($upload->to('attach/' . $date_dir)->validate()->setAuthThumb(false)->stream($content, $name) === false) {
+            throw new AdminException($upload->getError());
         }
         $imageInfo = $upload->getUploadInfo();
         $date['path'] = $imageInfo['dir'];
@@ -562,6 +591,6 @@ class CopyTaobaoServices extends BaseServices
      */
     public function createSpu()
     {
-        return substr(implode('', array_map('ord', str_split(substr(uniqid(), 7, 13), 1))), 0, 8) . str_pad((string)mt_rand(1, 99999), 5, '0', STR_PAD_LEFT);
+        return substr(implode(NULL, array_map('ord', str_split(substr(uniqid(), 7, 13), 1))), 0, 8) . str_pad((string)mt_rand(1, 99999), 5, '0', STR_PAD_LEFT);
     }
 }

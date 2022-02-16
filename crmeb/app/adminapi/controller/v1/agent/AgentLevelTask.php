@@ -84,7 +84,7 @@ class AgentLevelTask extends AuthController
             ['sort', 0],
             ['status', 0]]);
         if (!$data['level_id']) return app('json')->fail('缺少等级ID');
-        if (!$data['name']) return app('json')->fail('请输入等级名称');
+        if (!$data['name']) return app('json')->fail('请输入任务名称');
         if (!$data['type']) return app('json')->fail('请选择任务类型');
         if (!$data['number']) return app('json')->fail('请输入限定数量');
         $this->services->checkTypeTask(0, $data);

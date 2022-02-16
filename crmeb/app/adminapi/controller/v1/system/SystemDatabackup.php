@@ -142,7 +142,6 @@ class SystemDatabackup extends AuthController
                     $data['gz'] = 1;
                     return app('json')->success("正在还原...#{$part}", $data);
                 }
-                return app('json')->success("正在还原...#{$part}");
             }
         } else {
             return app('json')->fail('参数错误！');

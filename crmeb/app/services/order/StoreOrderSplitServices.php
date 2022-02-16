@@ -12,7 +12,6 @@ namespace app\services\order;
 
 use app\services\BaseServices;
 use app\dao\order\StoreOrderDao;
-use app\services\user\UserServices;
 use think\exception\ValidateException;
 
 /**
@@ -36,6 +35,150 @@ class StoreOrderSplitServices extends BaseServices
     public function __construct(StoreOrderDao $dao)
     {
         $this->dao = $dao;
+    }
+
+    /**
+     * 主订单平行拆单
+     * @param $id
+     * @param $cart_ids
+     * @param $orderInfo
+     * @return false|mixed
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     */
+    public function equalSplit($id, $cart_ids, $orderInfo)
+    {
+        /** @var StoreOrderCreateServices $storeOrderCreateServices */
+        $storeOrderCreateServices = app()->make(StoreOrderCreateServices::class);
+        /** @var StoreOrderCartInfoServices $storeOrderCartInfoServices */
+        $storeOrderCartInfoServices = app()->make(StoreOrderCartInfoServices::class);
+        /** @var StoreOrderStatusServices $statusService */
+        $statusService = app()->make(StoreOrderStatusServices::class);
+
+
+        $ids = array_unique(array_column($cart_ids, 'cart_id'));
+        if (!$cart_ids || !$ids) return false;
+        if (!$orderInfo) $orderInfo = $this->dao->get($id, ['*']);
+        if (!$orderInfo) throw new ValidateException('订单未能查到,不能拆分订单!');
+        $old_order = $orderInfo;
+        $orderInfo = $orderInfoOld = is_object($orderInfo) ? $orderInfo->toArray() : $orderInfo;
+        foreach ($this->order_data as $field) {
+            unset($orderInfo[$field]);
+        }
+        unset($orderInfoOld['id']);
+        //获取拆分之后的两个cart_id
+        $cartInfo = $storeOrderCartInfoServices->getColumn(['oid' => $id], 'cart_num,surplus_num,cart_info', 'cart_id');
+        $new_cart_ids = array_combine(array_column($cart_ids, 'cart_id'), $cart_ids);
+        $other_cart_ids = [];
+        foreach ($cartInfo as $cart_id => $cart) {
+            if (!isset($new_cart_ids[$cart_id]) && $cart['surplus_num']) {//无拆分
+                $other = ['cart_id' => (string)$cart_id, 'cart_num' => $cart['surplus_num']];
+            } else if ($new_cart_ids[$cart_id]['cart_num'] < $cart['surplus_num']) {
+                $other = ['cart_id' => (string)$cart_id, 'cart_num' => bcsub((string)$cart['surplus_num'], (string)$new_cart_ids[$cart_id]['cart_num'], 0)];
+            } else {
+                continue;
+            }
+            $other_cart_ids[] = $other;
+        }
+        $cart_ids_arr = ['new' => $cart_ids, 'other' => $other_cart_ids];
+        if (empty($cart_ids_arr['other'])) return $old_order;
+        return $this->transaction(function () use ($id, $cart_ids_arr, $orderInfo, $orderInfoOld, $cartInfo, $storeOrderCreateServices, $storeOrderCartInfoServices, $statusService) {
+            $order = $otherOrder = [];
+            $statusData = $statusService->getColumn(['oid' => $id], '*');
+            //订单实际支付金额
+            $order_pay_price = bcsub((string)bcadd((string)$orderInfo['total_price'], (string)$orderInfo['pay_postage'], 2), (string)bcadd((string)$orderInfo['deduction_price'], (string)$orderInfo['coupon_price'], 2), 2);
+            //有改价
+            $change_price = $order_pay_price != $orderInfo['pay_price'];
+            foreach ($cart_ids_arr as $key => $cart_ids) {
+                if ($orderInfo['pid'] == 0 || ($orderInfo['pid'] > 0 && $key == 'new')) {
+                    $order_data = $key == 'other' ? $orderInfoOld : $orderInfo;
+                    $order_data['pid'] = $orderInfo['pid'] > 0 ? $orderInfo['pid'] : $id;
+                    mt_srand();
+                    $order_data['order_id'] = $storeOrderCreateServices->getNewOrderId();
+                    $order_data['cart_id'] = [];
+                    $order_data['unique'] = $storeOrderCreateServices->getNewOrderId('');
+                    $order_data['add_time'] = time();
+                    $new_order = $this->dao->save($order_data);
+                    if (!$new_order) {
+                        throw new ValidateException('生成新订单失败');
+                    }
+                    $new_id = (int)$new_order->id;
+                    $allData = [];
+                    foreach ($statusData as $data) {
+                        $data['oid'] = $new_id;
+                        $allData[] = $data;
+                    }
+                    if ($allData) {
+                        $statusService->saveAll($allData);
+                    }
+                } else {
+                    $new_id = $id;
+                }
+                $statusService->save([
+                    'oid' => $new_id,
+                    'change_type' => 'split_create_order',
+                    'change_message' => '拆分订单生成',
+                    'change_time' => time()
+                ]);
+
+                $cart_data_all = [];
+                foreach ($cart_ids as $cart) {
+                    if ($orderInfo['pid'] == 0 || $orderInfo['pid'] > 0 && $key == 'new') {
+                        $_info = is_string($cartInfo[$cart['cart_id']]['cart_info']) ? json_decode($cartInfo[$cart['cart_id']]['cart_info'], true) : $cartInfo[$cart['cart_id']]['cart_info'];
+                        $new_cart_data['oid'] = $new_id;
+                        $new_cart_data['cart_id'] = $storeOrderCreateServices->getNewOrderId('');
+                        $new_cart_data['product_id'] = $_info['product_id'];
+                        $new_cart_data['old_cart_id'] = $cart['cart_id'];
+                        $new_cart_data['cart_num'] = $cart['cart_num'];
+                        $new_cart_data['surplus_num'] = $cart['cart_num'];
+                        $new_cart_data['unique'] = md5($new_cart_data['cart_id'] . '_' . $new_cart_data['oid']);
+                        $_info = $this->slpitComputeOrderCart($new_cart_data['cart_num'], $_info, $key);
+                        $_info['id'] = $new_cart_data['cart_id'];
+                        $new_cart_data['cart_info'] = json_encode($_info);
+                        $cart_data_all[] = $new_cart_data;
+                    } else {
+                        $cart_info = $storeOrderCartInfoServices->get(['cart_id' => $cart['cart_id']]);
+                        $_info = is_string($cartInfo[$cart['cart_id']]['cart_info']) ? json_decode($cartInfo[$cart['cart_id']]['cart_info'], true) : $cartInfo[$cart['cart_id']]['cart_info'];
+                        $cart_info->cart_num = $cart['cart_num'];
+                        $cart_info->refund_num = 0;
+                        $cart_info->surplus_num = $cart['cart_num'];
+                        $_info = $this->slpitComputeOrderCart($cart['cart_num'], $_info, $key);
+                        $_info['id'] = $cart_info['cart_id'];
+                        $cart_info->cart_info = json_encode($_info);
+                        $cart_info->save();
+                        $cart_data_all[] = [
+                            'oid' => $new_id,
+                            'cart_id' => $cart_info->cart_id,
+                            'product_id' => $cart_info->product_id,
+                            'old_cart_id' => $cart_info->old_cart_id,
+                            'cart_num' => $cart_info->cart_num,
+                            'surplus_num' => $cart_info->surplus_num,
+                            'unique' => $cart_info->unique,
+                            'cart_info' => json_encode($_info),
+                        ];
+                    }
+                }
+                if ($orderInfo['pid'] == 0 || $orderInfo['pid'] > 0 && $key == 'new') {
+                    $storeOrderCartInfoServices->saveAll($cart_data_all);
+                }
+                $new_order = $this->dao->get($new_id);
+                $storeOrderCartInfoServices->clearOrderCartInfo($new_id);
+                $this->splitComputeOrder((int)$new_id, $cart_data_all, (float)($change_price ? $order_pay_price : 0), (float)$orderInfo['pay_price'], (float)($new_order['pay_price'] ?? 0));
+                if ($key == 'new') {
+                    $order = $new_order;
+                } else {
+                    $otherOrder = $new_order;
+                }
+            }
+            if (!$orderInfo['pid']) $this->dao->update($id, ['pid' => -1]);
+
+            //处理申请开票记录
+            /** @var StoreOrderInvoiceServices $storeOrderInvoiceServics */
+            $storeOrderInvoiceServics = app()->make(StoreOrderInvoiceServices::class);
+            $storeOrderInvoiceServics->splitOrderInvoice((int)$id);
+            return [$order, $otherOrder];
+        });
     }
 
     /**
@@ -72,7 +215,6 @@ class StoreOrderSplitServices extends BaseServices
         $order_data['cart_id'] = [];
         $order_data['unique'] = $storeOrderCreateServices->getNewOrderId('');
         $order_data['add_time'] = time();
-        $order_data['mark'] = '拆分订单';
         $new_order = $this->dao->save($order_data);
         if (!$new_order) {
             throw new ValidateException('生成新订单失败');
@@ -133,15 +275,14 @@ class StoreOrderSplitServices extends BaseServices
      * @param $orderInfo
      * @param array $cart_info_data
      */
-    public function splitComputeOrder(int $id, array $cart_info_data, $new_order)
+    public function splitComputeOrder(int $id, array $cart_info_data, float $order_pay_price = 0.00, float $pay_price = 0.00, float $pre_pay_price = 0.00)
     {
         $order_update['cart_id'] = array_column($cart_info_data, 'cart_id');
         $order_update['total_num'] = array_sum(array_column($cart_info_data, 'cart_num'));
-        $pay_price = $total_price = $coupon_price = $deduction_price = $use_integral = $pay_postage = $gainIntegral = $one_brokerage = $two_brokerage = 0;
+        $total_price = $coupon_price = $deduction_price = $use_integral = $pay_postage = $gainIntegral = $one_brokerage = $two_brokerage = $staffBrokerage = $agentBrokerage = $divisionBrokerage = 0;
         foreach ($cart_info_data as $cart) {
             $_info = json_decode($cart['cart_info'], true);
-            $pay_price = bcadd((string)$pay_price, bcmul((string)$_info['truePrice'], (string)$cart['cart_num'], 4), 2);
-            $total_price = bcadd((string)$total_price, bcmul((string)$_info['truePrice'], (string)$cart['cart_num'], 4), 2);
+            $total_price = bcadd((string)$total_price, (string)$_info['sum_true_price'], 2);
             $deduction_price = bcadd((string)$deduction_price, (string)$_info['integral_price'], 2);
             $coupon_price = bcadd((string)$coupon_price, (string)$_info['coupon_price'], 2);
             $use_integral = bcadd((string)$use_integral, (string)$_info['use_integral'], 0);
@@ -150,20 +291,33 @@ class StoreOrderSplitServices extends BaseServices
             $gainIntegral = bcadd((string)$gainIntegral, (string)$cartInfoGainIntegral, 0);
             $one_brokerage = bcadd((string)$one_brokerage, (string)$_info['one_brokerage'], 2);
             $two_brokerage = bcadd((string)$two_brokerage, (string)$_info['two_brokerage'], 2);
+            $staffBrokerage = bcadd((string)$staffBrokerage, (string)$_info['staff_brokerage'], 2);
+            $agentBrokerage = bcadd((string)$agentBrokerage, (string)$_info['agent_brokerage'], 2);
+            $divisionBrokerage = bcadd((string)$divisionBrokerage, (string)$_info['division_brokerage'], 2);
         }
 
         $order_update['coupon_id'] = array_unique(array_column($cart_info_data, 'coupon_id'));
-        $order_update['pay_price'] = bcadd((string)$pay_price, (string)$pay_postage, 2);
-        $order_update['total_price'] = $total_price;
+        $order_update['pay_price'] = bcadd((string)$total_price, (string)$pay_postage, 2);
+        //有订单原来支付金额 改价订单
+        if ($order_pay_price) {
+            if ($pre_pay_price) {//上一个已经计算 这里减法
+                $order_update['pay_price'] = bcsub((string)$pay_price, (string)$pre_pay_price, 2);
+            } else {//按比例计算实际支付金额
+                $order_update['pay_price'] = bcmul((string)bcdiv((string)$pay_price, (string)$order_pay_price, 4), (string)$order_update['pay_price'], 2);
+            }
+        }
+
+        $order_update['total_price'] = bcadd((string)$total_price, (string)bcadd((string)$deduction_price, (string)$coupon_price, 2), 2);
         $order_update['deduction_price'] = $deduction_price;
         $order_update['coupon_price'] = $coupon_price;
         $order_update['use_integral'] = $use_integral;
         $order_update['gain_integral'] = $gainIntegral;
         $order_update['pay_postage'] = $pay_postage;
-        /** @var UserServices $userServices */
-        $userServices = app()->make(UserServices::class);
-        if ($userServices->checkUserPromoter($new_order['spread_uid'])) $order_update['one_brokerage'] = $one_brokerage;
-        if ($userServices->checkUserPromoter($new_order['spread_two_uid'])) $order_update['two_brokerage'] = $two_brokerage;
+        $order_update['one_brokerage'] = $one_brokerage;
+        $order_update['two_brokerage'] = $two_brokerage;
+        $order_update['staff_brokerage'] = $staffBrokerage;
+        $order_update['agent_brokerage'] = $agentBrokerage;
+        $order_update['division_brokerage'] = $divisionBrokerage;
         if (false === $this->dao->update($id, $order_update, 'id')) {
             throw new ValidateException('保存新订单商品信息失败');
         }
@@ -176,39 +330,75 @@ class StoreOrderSplitServices extends BaseServices
      * @param array $cart_info
      * @return array
      */
-    public function slpitComputeOrderCart(int $cart_num, array $cart_info)
+    public function slpitComputeOrderCart(int $cart_num, array $cart_info, $orderType = 'new')
     {
         if (!$cart_num || !$cart_info) return [];
+        if ($cart_num >= $cart_info['cart_num']) return $cart_info;
         $new_cart_info = $cart_info;
-        /** @var StoreOrderCartInfoServices $storeOrderCartInfoServices */
-        $storeOrderCartInfoServices = app()->make(StoreOrderCartInfoServices::class);
-        $splitdCartInfo = $storeOrderCartInfoServices->getColumn(['old_cart_id' => $cart_info['id']], 'cart_info', '');
-        $deliver_num = $cart_num;
-        if ($splitdCartInfo) {
-            foreach ($splitdCartInfo as $k => &$v) {
-                $v = is_string($v) ? json_decode($v, true) : $v;
-                $deliver_num = bcadd((string)$deliver_num, (string)$v['cart_num'], 0);
-            }
-        }
         $new_cart_info['cart_num'] = $cart_num;
-        $compute_arr = ['coupon_price', 'integral_price', 'postage_price', 'use_integral', 'one_brokerage', 'two_brokerage', 'sum_true_price'];
-        $scale = 2;
+        $compute_arr = ['coupon_price', 'integral_price', 'postage_price', 'use_integral', 'one_brokerage', 'two_brokerage', 'staff_brokerage', 'agent_brokerage', 'division_brokerage', 'sum_true_price'];
         foreach ($compute_arr as $field) {
             if (!isset($cart_info[$field]) || !$cart_info[$field]) {
                 $new_cart_info[$field] = 0;
                 continue;
             }
+            $scale = 2;
             if ($field == 'use_integral') $scale = 0;
-            if ($deliver_num < $cart_info['cart_num']) {//分批发货 还有剩余
+            $new_cart_info[$field] = bcmul((string)$cart_num, bcdiv((string)$cart_info[$field], (string)$cart_info['cart_num'], 4), $scale);
+            if ($orderType == 'new') {//拆出
                 $new_cart_info[$field] = bcmul((string)$cart_num, bcdiv((string)$cart_info[$field], (string)$cart_info['cart_num'], 4), $scale);
             } else {
-                if ($splitdCartInfo) {//分批发货完成
-                    $new_cart_info[$field] = bcsub((string)$cart_info[$field], (string)array_sum(array_column($splitdCartInfo, $field)), $scale);
-                } else {//第一次直接全部数量发货
-                    $new_cart_info[$field] = $cart_info[$field];
-                }
+                $field_number = bcmul((string)bcsub((string)$cart_info['cart_num'], (string)$cart_num, 0), bcdiv((string)$cart_info[$field], (string)$cart_info['cart_num'], 4), $scale);
+                $new_cart_info[$field] = bcsub((string)$cart_info[$field], (string)$field_number, $scale);
             }
         }
         return $new_cart_info;
+    }
+
+    /**
+     * 获取整理后的订单商品信息
+     * @param int $id
+     * @param array $cart_ids
+     * @param array $orderInfo
+     * @return array|false
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     */
+    public function getSplitOrderCartInfo(int $id, array $cart_ids, $orderInfo = [])
+    {
+        $ids = array_unique(array_column($cart_ids, 'cart_id'));
+        if (!$cart_ids || !$ids) {
+            return false;
+        }
+        if (!$orderInfo) {
+            $orderInfo = $this->dao->get($id, ['*']);
+        }
+        if (!$orderInfo) {
+            throw new ValidateException('订单未能查到,不能拆分订单!');
+        }
+        /** @var StoreOrderCartInfoServices $storeOrderCartInfoServices */
+        $storeOrderCartInfoServices = app()->make(StoreOrderCartInfoServices::class);
+        $cartInfo = $storeOrderCartInfoServices->getCartColunm(['oid' => $id, 'cart_id' => $ids], '*', 'cart_id');
+        $cart_data_all = [];
+        foreach ($cart_ids as $cart) {
+            $surplus_num = $cartInfo[$cart['cart_id']]['surplus_num'] ?? 0;
+            if (!isset($cartInfo[$cart['cart_id']]) || !$surplus_num) continue;
+            $_info = is_string($cartInfo[$cart['cart_id']]['cart_info']) ? json_decode($cartInfo[$cart['cart_id']]['cart_info'], true) : $cartInfo[$cart['cart_id']]['cart_info'];
+            $cart_data = $cartInfo[$cart['cart_id']];
+            $cart_data['oid'] = $id;
+            $cart_data['product_id'] = $_info['product_id'];
+            $cart_data['old_cart_id'] = $cart['cart_id'];
+            $cart_data['cart_num'] = $cart['cart_num'];
+            $cart_data['surplus_num'] = $cart['cart_num'];
+            $cart_data['split_surplus_num'] = $cart['cart_num'];
+
+            $_info = $this->slpitComputeOrderCart($cart_data['cart_num'], $_info);
+            $_info['id'] = $cart_data['cart_id'];
+            $cart_data['cart_info'] = $_info;
+            $cart_data_all[] = $cart_data;
+            unset($cartInfo[$cart['cart_id']]);
+        }
+        return $cart_data_all;
     }
 }

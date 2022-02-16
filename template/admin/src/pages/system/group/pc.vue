@@ -162,11 +162,10 @@
 									  <div class="goodsTitle acea-row">
 									  </div>
 									  <FormItem label="" prop="content" style="margin: 0px;">
-									    <vue-ueditor-wrap
-									      v-model="formValidate.content"
-									      @beforeInit="addCustomDialog"
-									      :config="myConfig"
-									    ></vue-ueditor-wrap>
+									    <WangEditor
+                        :content="formValidate.content"
+                        @editorContent="getEditorContent"
+                      ></WangEditor>
 									  </FormItem>
 									</Form>
 								</div>
@@ -186,7 +185,7 @@
 
 <script>
 import { mapState } from "vuex";
-import VueUeditorWrap from "vue-ueditor-wrap";
+import WangEditor from "@/components/wangEditor/index.vue";
 import { diyGetInfo, diySave } from "@/api/diy";
 import editFrom from "@/components/from/from";
 import {
@@ -208,7 +207,7 @@ export default {
     draggable,
     uploadPictures,
     linkaddress,
-    VueUeditorWrap,
+    WangEditor,
   },
   data() {
     return {
@@ -296,6 +295,9 @@ export default {
     this.info();
   },
   methods: {
+    getEditorContent(data) {
+      this.formValidate.content = data;
+    },
     linkUrl(e) {
       this.tabList.list[this.activeIndexs].url = e;
       // item.url = e
@@ -332,39 +334,6 @@ export default {
           this.loading = false;
           this.$Message.error(res.msg);
         });
-    },
-    addCustomDialog(editorId) {
-      window.UE.registerUI(
-        "test-dialog",
-        function (editor, uiName) {
-          // 创建 dialog
-          let dialog = new window.UE.ui.Dialog({
-            // 指定弹出层中页面的路径，这里只能支持页面，路径参考常见问题 2
-            iframeUrl: "/admin/widget.images/index.html?fodder=dialog",
-            // 需要指定当前的编辑器实例
-            editor: editor,
-            // 指定 dialog 的名字
-            name: uiName,
-            // dialog 的标题
-            title: "上传图片",
-            // 指定 dialog 的外围样式
-            cssRules: "width:960px;height:550px;padding:20px;",
-          });
-          this.dialog = dialog;
-          var btn = new window.UE.ui.Button({
-            name: "dialog-button",
-            title: "上传图片",
-            cssRules: `background-image: url(../../../assets/images/icons.png);background-position: -726px -77px;`,
-            onclick: function () {
-              // 渲染dialog
-              dialog.render();
-              dialog.open();
-            },
-          });
-          return btn;
-        },
-        37
-      );
     },
     // 添加表单
     groupAdd() {
@@ -573,6 +542,8 @@ export default {
     margin-top: 24px;
 
     .form {
+      width: max-content;
+
       .goodsTitle {
         border-bottom: 1px solid rgba(0, 0, 0, 0.09);
         margin-bottom: 25px;

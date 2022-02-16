@@ -13,7 +13,7 @@ namespace app\services\order;
 
 
 use app\dao\order\StoreOrderDao;
-use app\services\activity\StorePinkServices;
+use app\services\activity\combination\StorePinkServices;
 use app\services\BaseServices;
 use app\services\system\store\SystemStoreStaffServices;
 use app\services\user\UserServices;
@@ -56,18 +56,23 @@ class StoreOrderWriteOffServices extends BaseServices
         if (!$orderInfo['verify_code'] || ($orderInfo->shipping_type != 2 && $orderInfo->delivery_type != 'send')) {
             throw new ValidateException('此订单不能被核销');
         }
+        /** @var StoreOrderRefundServices $storeOrderRefundServices */
+        $storeOrderRefundServices = app()->make(StoreOrderRefundServices::class);
+        if ($storeOrderRefundServices->count(['store_order_id' => $orderInfo['id'], 'refund_type' => [1, 2, 4, 5], 'is_cancel' => 0, 'is_del' => 0])) {
+            throw new ValidateException('订单有售后申请请先处理');
+        }
         if ($uid) {
             $isAuth = true;
             switch ($orderInfo['shipping_type']) {
                 case 1://配送订单
                     /** @var DeliveryServiceServices $deliverServiceServices */
                     $deliverServiceServices = app()->make(DeliveryServiceServices::class);
-                    $isAuth = $deliverServiceServices->getCount(['uid' => $uid, 'status' => 1]) > 0 ? true : false;
+                    $isAuth = $deliverServiceServices->getCount(['uid' => $uid, 'status' => 1]) > 0;
                     break;
                 case 2://自提订单
                     /** @var SystemStoreStaffServices $storeStaffServices */
                     $storeStaffServices = app()->make(SystemStoreStaffServices::class);
-                    $isAuth = $storeStaffServices->getCount(['uid' => $uid, 'verify_status' => 1, 'status' => 1]) > 0 ? true : false;
+                    $isAuth = $storeStaffServices->getCount(['uid' => $uid, 'verify_status' => 1, 'status' => 1]) > 0;
                     break;
             }
             if (!$isAuth) {

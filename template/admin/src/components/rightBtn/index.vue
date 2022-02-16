@@ -18,7 +18,7 @@
                 this.add(obj);
             },
             ...mapMutations({
-                add: 'admin/mobildConfig/UPDATEARR'
+                add: 'mobildConfig/UPDATEARR'
             })
         }
     }

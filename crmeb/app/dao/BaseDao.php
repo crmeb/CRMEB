@@ -7,7 +7,6 @@
 namespace app\dao;
 
 use crmeb\basic\BaseModel;
-use think\exception\ValidateException;
 use think\helper\Str;
 use think\Model;
 
@@ -60,6 +59,10 @@ abstract class BaseDao
      * @param string $field
      * @param int $page
      * @param int $limit
+     * @return \think\Collection
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
      */
     public function selectList(array $where, $field = '*', $page = 0, $limit = 0)
     {
@@ -72,6 +75,7 @@ abstract class BaseDao
     /**
      * 获取某些条件总数
      * @param array $where
+     * @return int
      */
     public function getCount(array $where)
     {
@@ -82,7 +86,11 @@ abstract class BaseDao
      * 获取某些条件去重总数
      * @param array $where
      * @param $field
-     * @param $search
+     * @param bool $search
+     * @return int|mixed
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
      */
     public function getDistinctCount(array $where, $field, $search = true)
     {
@@ -115,6 +123,7 @@ abstract class BaseDao
      * 获取一条数据
      * @param int|array $id
      * @param array|null $field
+     * @param array|null $with
      * @return array|Model|null
      * @throws \think\db\exception\DataNotFoundException
      * @throws \think\db\exception\DbException
@@ -204,6 +213,7 @@ abstract class BaseDao
      * 更新数据
      * @param int|string|array $id
      * @param array $data
+     * @param string|null $key
      * @return mixed
      */
     public function update($id, array $data, ?string $key = null)
@@ -298,7 +308,7 @@ abstract class BaseDao
     /**
      * 搜索
      * @param array $where
-     * @return \crmeb\basic\BaseModel|mixed
+     * @return BaseModel|mixed
      */
     protected function search(array $where = [])
     {
@@ -393,7 +403,12 @@ abstract class BaseDao
      * 减库存加销量
      * @param array $where
      * @param int $num
+     * @param string $stock
+     * @param string $sales
      * @return mixed
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
      */
     public function decStockIncSales(array $where, int $num, string $stock = 'stock', string $sales = 'sales')
     {
@@ -405,7 +420,6 @@ abstract class BaseDao
             }
         }
         $field = $isQuota ? 'stock,quota' : 'stock';
-
         $product = $this->getModel()->where($where)->field($field)->find();
         if ($product) {
             return $this->getModel()->where($where)->when($isQuota, function ($query) use ($num) {
@@ -413,12 +427,26 @@ abstract class BaseDao
             })->dec($stock, $num)->inc($sales, $num)->update();
         }
         return false;
+//        $field = $isQuota ? [$stock, $sales, 'quota'] : [$stock, $sales];
+//        $info = $this->getModel()->where($where)->field($field)->find();
+//        if ($info) {
+//            if ($isQuota) {
+//                $info->quota = (int)$info->quota - $num;
+//            }
+//            $info->stock = (int)$info->stock - $num;
+//            $info->sales = (int)$info->sales + $num;
+//            return $info->save();
+//        } else {
+//            return false;
+//        }
     }
 
     /**
      * 加库存减销量
      * @param array $where
      * @param int $num
+     * @param string $stock
+     * @param string $sales
      * @return mixed
      */
     public function incStockDecSales(array $where, int $num, string $stock = 'stock', string $sales = 'sales')
@@ -441,5 +469,21 @@ abstract class BaseDao
             })->inc($stock, $num)->dec($sales, $salesNum)->update();
         }
         return true;
+//        $field = $isQuota ? [$stock, $sales, 'quota'] : [$stock, $sales];
+//        $info = $this->getModel()->where($where)->field($field)->find();
+//        if ($info) {
+//            if ($isQuota) {
+//                $info->quota = (int)$info->quota + $num;
+//            }
+//            $info->stock = (int)$info->stock + $num;
+//            if ((int)$info->sales > $num) {
+//                $info->sales = (int)$info->sales - $num;
+//            } else {
+//                $info->sales = 0;
+//            }
+//            return $info->save();
+//        } else {
+//            return false;
+//        }
     }
 }

@@ -13,10 +13,9 @@ namespace crmeb\services;
 
 use app\services\pay\PayNotifyServices;
 use crmeb\exceptions\ApiException;
-use EasyWeChat\Foundation\Application;
+use crmeb\services\easywechat\Application;
 use think\exception\ValidateException;
 use crmeb\utils\Hook;
-use think\Response;
 
 /**微信小程序接口
  * Class WechatMinService
@@ -124,13 +123,14 @@ class Mini3rdProgramService
                 break;
             case 'event'://审核事件回调
                 if (isset($msgArray['Event']) && $msgArray['Event'] == 'weapp_audit_success') {
-
+                    //TODO
                 }
                 break;
             case 'notify_third_fasteregister'://注册审核事件推送
 
                 break;
             case 'unauthorized':
+                //TODO 待完善
                 break;
             case 'updateauthorized':
                 break;

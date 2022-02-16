@@ -14,10 +14,12 @@ namespace app\services\activity\lottery;
 
 use app\services\BaseServices;
 use app\dao\activity\lottery\LuckLotteryDao;
-use app\services\coupon\StoreCouponIssueServices;
+use app\services\activity\coupon\StoreCouponIssueServices;
 use app\services\product\product\StoreProductServices;
 use app\services\user\UserBillServices;
 use app\services\user\UserLabelRelationServices;
+use app\services\user\UserLabelServices;
+use app\services\user\UserMoneyServices;
 use app\services\user\UserServices;
 use crmeb\exceptions\AdminException;
 use crmeb\services\CacheService;
@@ -73,19 +75,24 @@ class LuckLotteryServices extends BaseServices
             $item['lottery_all'] = $data['all'] ?? 0;
             $item['lottery_people'] = $data['people'] ?? 0;
             $item['lottery_win'] = $data['win'] ?? 0;
-            if ($item['status']) {
-                if ($item['start_time'] == 0 && $item['end_time'] == 0) {
-                    $item['lottery_status'] = '进行中';
-                } else {
-                    if ($item['start_time'] > time())
-                        $item['lottery_status'] = '未开始';
-                    else if ($item['end_time'] < time())
-                        $item['lottery_status'] = '已结束';
-                    else if ($item['end_time'] > time() && $item['start_time'] < time()) {
-                        $item['lottery_status'] = '进行中';
-                    }
+
+            if ($item['start_time'] == 0 && $item['end_time'] == 0) {
+                $status_name = '进行中';
+                $item['lottery_status'] = 1;
+            } else {
+                if ($item['start_time'] > time()) {
+                    $status_name = '未开始';
+                    $item['lottery_status'] = 0;
+                } else if ($item['end_time'] < time()) {
+                    $status_name = '已结束';
+                    $item['lottery_status'] = 2;
+                } else if ($item['end_time'] > time() && $item['start_time'] < time()) {
+                    $status_name = '进行中';
+                    $item['lottery_status'] = 1;
                 }
-            } else $item['lottery_status'] = '已结束';
+            }
+            $item['status_name'] = $status_name;
+
             $item['start_time'] = $item['start_time'] ? date('Y-m-d H:i:s', $item['start_time']) : '';
             $item['end_time'] = $item['end_time'] ? date('Y-m-d H:i:s', $item['end_time']) : '';
         }
@@ -128,6 +135,47 @@ class LuckLotteryServices extends BaseServices
                 }
             }
         }
+        return $lottery;
+    }
+
+    /**
+     * 根据类型获取数据
+     * @param int $factor
+     * @return array
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     */
+    public function getlotteryFactorInfo(int $factor)
+    {
+        $lottery = $this->dao->getFactorLottery($factor, '*', ['prize']);
+        if (!$lottery) {
+            return [];
+        }
+        $lottery = $lottery->toArray();
+        if (isset($lottery['prize']) && $lottery['prize']) {
+            $products = $coupons = [];
+            $product_ids = array_unique(array_column($lottery['prize'], 'product_id'));
+            $coupon_ids = array_unique(array_column($lottery['prize'], 'coupon_id'));
+            /** @var StoreProductServices $productServices */
+            $productServices = app()->make(StoreProductServices::class);
+            $products = $productServices->getColumn([['id', 'in', $product_ids]], 'id,store_name,image', 'id');
+            /** @var StoreCouponIssueServices $couponServices */
+            $couponServices = app()->make(StoreCouponIssueServices::class);
+            $coupons = $couponServices->getColumn([['id', 'in', $coupon_ids]], 'id,coupon_title', 'id');
+            foreach ($lottery['prize'] as &$prize) {
+                $prize['coupon_title'] = $prize['goods_image'] = '';
+                if ($prize['type'] == 6) {
+                    $prize['goods_image'] = $products[$prize['product_id']]['image'] ?? '';
+                }
+                if ($prize['type'] == 5) {
+                    $prize['coupon_title'] = $coupons[$prize['coupon_id']]['coupon_title'] ?? '';
+                }
+            }
+        }
+        /** @var UserLabelServices $userLabelServices */
+        $userLabelServices = app()->make(UserLabelServices::class);
+        $lottery['user_label'] = !empty($lottery['user_label']) ? $userLabelServices->getLabelList(['ids' => $lottery['user_label']], ['id', 'label_name']) : [];
         return $lottery;
     }
 
@@ -188,14 +236,15 @@ class LuckLotteryServices extends BaseServices
         if (!$lottery) {
             throw new ValidateException('抽奖活动不存在');
         }
-        if ($lottery['status'] && (($lottery['start_time'] == 0 && $lottery['end_time'] == 0) || ($lottery['start_time'] <= time() && $lottery['end_time'] >= time()))) {
-            throw new ValidateException('活动正在进行中，暂不支持编辑');
-        }
         $newPrizes = $data['prize'];
         unset($data['prize'], $data['id']);
         $prize_num = $this->lottery_type[1];
         if (count($newPrizes) != $prize_num) {
             throw new ValidateException('请选择' . $prize_num . '个奖品');
+        }
+        if ($data['attends_user'] == 1) {
+            $data['user_label'] = $data['user_level'] = [];
+            $data['is_svip'] = -1;
         }
         /** @var LuckPrizeServices $luckPrizeServices */
         $luckPrizeServices = app()->make(LuckPrizeServices::class);
@@ -278,23 +327,20 @@ class LuckLotteryServices extends BaseServices
         //抽奖类型：1:积分2：余额3：下单支付成功4：订单评价5：拉新人
         switch ($lottery['factor']) {
             case 1:
-                return $userInfo['integral'] > 0 && $lottery['factor_num'] > 0 ? floor($userInfo['integral'] / $lottery['factor_num']) : 0;
-                break;
+                /** @var UserBillServices $userBillServices */
+                $userBillServices = app()->make(UserBillServices::class);
+                $usable_integral = bcsub((string)$userInfo['integral'], (string)$userBillServices->getBillSum(['uid' => $userInfo['uid'], 'is_frozen' => 1]), 0);
+                return $usable_integral > 0 && $lottery['factor_num'] > 0 ? floor($usable_integral / $lottery['factor_num']) : 0;
             case 2:
                 return $userInfo['now_money'] > 0 && $lottery['factor_num'] > 0 ? floor($userInfo['now_money'] / $lottery['factor_num']) : 0;
-                break;
             case 3:
                 return $this->getCacheLotteryNum($uid, 'order');
-                break;
             case 4:
                 return $this->getCacheLotteryNum($uid, 'comment');
-                break;
             case 5:
                 return $userInfo['spread_lottery'] ?? 0;
-                break;
             default:
                 throw new ValidateException('暂未有该类型活动');
-                break;
         }
     }
 
@@ -382,23 +428,17 @@ class LuckLotteryServices extends BaseServices
             //抽奖类型：1:积分2：余额3：下单支付成功4：订单评价5：拉新人
             switch ($lottery['factor']) {
                 case 1:
-                    throw new ValidateException('积分不足，没有更多抽奖次数');
-                    break;
+                    throw new ValidateException('可用积分不足，没有更多抽奖次数');
                 case 2:
                     throw new ValidateException('余额不足，没有更多抽奖次数');
-                    break;
                 case 3:
                     throw new ValidateException('购买商品之后获得更多抽奖次数');
-                    break;
                 case 4:
                     throw new ValidateException('订单完成评价之后获得更多抽奖次数');
-                    break;
                 case 5:
                     throw new ValidateException('邀请更多好友获取抽奖次数');
-                    break;
                 default:
                     throw new ValidateException('暂未有该类型活动');
-                    break;
             }
         }
         return $this->transaction(function () use ($uid, $lotteryPrize, $userInfo, $lottery) {
@@ -451,24 +491,24 @@ class LuckLotteryServices extends BaseServices
                 $userServices = app()->make(UserServices::class);
                 /** @var UserBillServices $userBillServices */
                 $userBillServices = app()->make(UserBillServices::class);
-                $userBillServices->income('lottery_use_integral', $uid, $lottery['factor_num'], $userInfo['integral'], $lottery['id']);
+                $userBillServices->income('lottery_use_integral', $uid, $lottery['factor_num'], $integral, $lottery['id']);
                 if (!$userServices->update($uid, ['integral' => $integral], 'uid')) {
                     throw new ValidateException('抽奖扣除用户积分失败');
                 }
                 break;
             case 2:
-                if ($userInfo['now_money'] > $lottery['factor_num']) {
+                if ($userInfo['now_money'] >= $lottery['factor_num']) {
                     $now_money = bcsub((string)$userInfo['now_money'], (string)$lottery['factor_num'], 2);
                 } else {
-                    $now_money = 0;
+                    throw new ValidateException('抽奖失败，余额不足！');
                 }
                 /** @var UserServices $userServices */
                 $userServices = app()->make(UserServices::class);
-                /** @var UserBillServices $userBillServices */
-                $userBillServices = app()->make(UserBillServices::class);
-                $userBillServices->income('lottery_use_money', $uid, $lottery['factor_num'], $userInfo['now_money'], $lottery['id']);
+                /** @var UserMoneyServices $userMoneyServices */
+                $userMoneyServices = app()->make(UserMoneyServices::class);
+                $userMoneyServices->income('lottery_use_money', $uid, $lottery['factor_num'], $now_money, $lottery['id']);
                 if (!$userServices->update($uid, ['now_money' => $now_money], 'uid')) {
-                    throw new ValidateException('抽奖扣除用户积分失败');
+                    throw new ValidateException('抽奖扣除用户余额失败');
                 }
                 break;
             case 3:
@@ -489,7 +529,6 @@ class LuckLotteryServices extends BaseServices
                 break;
             default:
                 throw new ValidateException('暂未有该类型活动');
-                break;
         }
         return true;
     }
@@ -545,7 +584,7 @@ class LuckLotteryServices extends BaseServices
     public function setCacheLotteryNum(int $uid, string $type = 'order')
     {
         $factor = $type == 'order' ? 3 : 4;
-        $lottery = $this->dao->getFactorLottery($factor, 'id,factor_num');
+        $lottery = $this->dao->getFactorLottery($factor, 'id,factor_num', ['prize'], true);
         if (!$lottery || !$lottery['factor_num']) {
             return true;
         }

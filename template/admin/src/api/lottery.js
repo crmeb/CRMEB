@@ -33,6 +33,17 @@ export function lotteryDetailApi(id) {
 }
 
 /**
+ * @description 九宫格抽奖 -- 新版详情
+ * @param id 抽奖活动id
+ */
+ export function lotteryNewDetailApi(type) {
+  return request({
+    url: `marketing/lottery/factor_info/${type}`,
+    method: 'get'
+  });
+}
+
+/**
 * @description 九宫格抽奖 -- 创建
 */
 export function lotteryCreateApi(data) {
@@ -80,9 +91,9 @@ export function lotteryStatusApi(data) {
 **
 * @description 九宫格抽奖 -- 中奖记录
 */
-export function lotteryRecordList(data, id) {
+export function lotteryRecordList(data) {
   return request({
-    url: `marketing/lottery/record/list/${id}`,
+    url: `marketing/lottery/record/list`,
     method: 'get',
     params: data
   });

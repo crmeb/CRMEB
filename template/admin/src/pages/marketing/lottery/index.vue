@@ -126,6 +126,7 @@
             :value="row.status"
             :true-value="1"
             :false-value="0"
+            :disabled="row.lottery_status == 2 ? true : false"
             @on-change="onchangeIsShow(row)"
             size="large"
           >
@@ -207,7 +208,7 @@ export default {
         },
         {
           title: "活动状态",
-          key: "lottery_status",
+          key: "status_name",
           minWidth: 100,
         },
         {
@@ -297,7 +298,7 @@ export default {
     //查看抽奖记录
     getRecording(row) {
       this.$router.push({
-        path: `/admin/marketing/lottery/recording_list/${row.id}`,
+        path: `/admin/marketing/lottery/recording_list`,
         query: {
           id: row.id,
         },

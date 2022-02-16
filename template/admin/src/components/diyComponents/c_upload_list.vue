@@ -175,10 +175,6 @@ export default {
       this.$refs.linkaddres.modals = true;
     },
     linkUrl(e) {
-      console.log(
-        this.datas[this.name].list[this.activeIndex].info[this.keyIndex].value
-      );
-      console.log(e);
       this.datas[this.name].list[this.activeIndex].info[this.keyIndex].value =
         e;
     },
@@ -200,7 +196,6 @@ export default {
           },
         ],
       };
-      console.log(this.moduleName);
       if (this.moduleName == "swiperBg" || this.moduleName == "menus") {
         this.configData[this.configNum][this.name].list.push(val);
         return;

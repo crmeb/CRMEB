@@ -11,7 +11,7 @@
 namespace app\api\controller\v1\store;
 
 use app\Request;
-use app\services\coupon\StoreCouponIssueServices;
+use app\services\activity\coupon\StoreCouponIssueServices;
 
 /**
  * 优惠券类

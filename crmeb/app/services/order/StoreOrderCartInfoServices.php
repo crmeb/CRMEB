@@ -37,6 +37,17 @@ class StoreOrderCartInfoServices extends BaseServices
     }
 
     /**
+     * 清空订单商品缓存
+     * @param int $oid
+     * @return bool
+     * @throws \Psr\SimpleCache\InvalidArgumentException
+     */
+    public function clearOrderCartInfo(int $oid)
+    {
+        return CacheService::delete(md5('store_order_cart_info_' . $oid));
+    }
+
+    /**
      * 获取指定订单下的商品详情
      * @param int $oid
      * @return array|mixed
@@ -55,6 +66,7 @@ class StoreOrderCartInfoServices extends BaseServices
                 $_info['productInfo']['attrInfo'] = get_thumb_water($_info['productInfo']['attrInfo']);
             }
             $_info['productInfo'] = get_thumb_water($_info['productInfo']);
+            $_info['refund_num'] = $this->dao->sum(['cart_id' => $_info['id']], 'refund_num');
             $info[$k]['cart_info'] = $_info;
             unset($_info);
         }
@@ -92,7 +104,7 @@ class StoreOrderCartInfoServices extends BaseServices
             }
             CacheService::set($key, $title);
         }
-        return $title ? $title : '';
+        return $title ?: '';
     }
 
     /**
@@ -247,6 +259,7 @@ class StoreOrderCartInfoServices extends BaseServices
     }
 
     /**
+     * TODO 弃用
      * 检测这些商品是否还可以拆分
      * @param int $oid
      * @param array $cart_data
@@ -277,5 +290,34 @@ class StoreOrderCartInfoServices extends BaseServices
             }
         }
         return true;
+    }
+
+    /**
+     * 获取可退款商品
+     * @param int $oid
+     * @param string $field
+     * @param string $key
+     * @return array
+     */
+    public function getRefundCartList(int $oid, string $field = '*', string $key = '')
+    {
+        $cartInfo = array_merge($this->dao->getColumn(['oid' => $oid], $field, 'id'));
+        foreach ($cartInfo as $key => &$item) {
+            if ($field == 'cart_info') {
+                $item = is_string($item) ? json_decode($item, true) : $item;
+            } else {
+                if (isset($item['cart_info'])) $item['cart_info'] = is_string($item['cart_info']) ? json_decode($item['cart_info'], true) : $item['cart_info'];
+                if (isset($item['cart_num']) && !$item['cart_num']) {//兼容之前老数据
+                    $item['cart_num'] = $item['cart_info']['cart_num'] ?? 0;
+                }
+            }
+            $surplus = (int)bcsub((string)$item['cart_num'], (string)$item['refund_num'], 0);
+            if ($surplus > 0) {
+                $item['surplus_num'] = $surplus;
+            } else {
+                unset($cartInfo['key']);
+            }
+        }
+        return $cartInfo;
     }
 }

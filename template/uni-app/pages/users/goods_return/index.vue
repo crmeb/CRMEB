@@ -2,38 +2,41 @@
 	<view :style="colorStyle">
 		<form @submit="subRefund">
 			<view class='apply-return'>
-				<view class='goodsStyle acea-row row-between' v-for="(item,index) in orderInfo.cartInfo" :key="index">
+				<view class='goodsStyle acea-row row-between' v-for="(item,index) in refundCartInfo" :key="index">
 					<view class='pictrue'>
-						<image :src='item.productInfo.image'></image>
+						<image :src='item.productInfo.attrInfo?item.productInfo.attrInfo.image:item.productInfo.image'>
+						</image>
 					</view>
 					<view class='text acea-row row-between'>
 						<view class='name line2'>{{item.productInfo.store_name}}</view>
-						<view class='money' v-if="item.productInfo.attrInfo">
-							<view>￥{{item.productInfo.attrInfo.price}}</view>
-							<view class='num'>x{{item.cart_num}}</view>
-						</view>
-						<view class='money' v-else>
-							<view>￥{{item.productInfo.price}}</view>
+						<view class='money'>
+							<view>￥{{item.truePrice}}</view>
 							<view class='num'>x{{item.cart_num}}</view>
 						</view>
 					</view>
 				</view>
-				<view class='list' v-if="orderInfo.total_num">
+				<view class='list'>
 					<view class='item acea-row row-between-wrapper'>
 						<view>退货件数</view>
-						<view class='num'
-							v-if="orderInfo.total_num == 1 || orderInfo.cartInfo.length > 1 || orderInfo.pid > 0">
-							{{orderInfo.total_num}}
+						<view class='num' v-if="refundCartInfo.length !== 1 || refund_total_num == 1">
+							{{refund_total_num}}
 						</view>
-						<input type="number" v-model="refund_num" @input="inputNumber" name="refund_num" v-else />
+						<picker v-else class='num' @change="returnGoodsNum" :value="refund_num_index"
+							:range="refundNumData">
+							<view class="picker acea-row row-between-wrapper">
+								<view class='reason'>{{refundNumData[refund_num_index]}}</view>
+								<text class='iconfont icon-jiantou'></text>
+							</view>
+						</picker>
+						<!-- <input type="number" v-model="refund_num" @input="inputNumber" v-else /> -->
 					</view>
-					<view class='item acea-row row-between-wrapper'>
+					<!-- 		<view class='item acea-row row-between-wrapper'>
 						<view>退款金额</view>
-						<view v-if="orderInfo.total_num == 1 || orderInfo.cartInfo.length > 1 || orderInfo.pid > 0" class='num'>￥{{orderInfo.pay_price}}</view>
-						<view v-else class='num'>￥{{(one_price * (refund_num || 1)/10000).toFixed(2)}}</view>
-					</view>
-					<view class='item acea-row row-between-wrapper'
-						v-if="orderInfo._status && orderInfo._status._type !== 1 && orderInfo.delivery_type !== 'fictitious' && orderInfo.virtual_type <= 0">
+						<view class='num' v-if="refundCartInfo.length !== 1">￥{{refund_pay_price.toFixed(2)}}</view>
+						<view class='num' v-else>￥{{refund_Money.toFixed(2)}}
+						</view>
+					</view> -->
+					<view class='item acea-row row-between-wrapper' v-if="status && status._type !== 1">
 						<view>退款类型</view>
 						<picker class='num' @change="returnGoodsChange" :value="returnGoods" :range="returnGoodsData">
 							<view class="picker acea-row row-between-wrapper">
@@ -77,16 +80,15 @@
 				<button class='returnBnt bg-color' form-type="submit">申请退款</button>
 			</view>
 		</form>
-		<!-- #ifdef MP -->
-		<authorize @onLoadFun="onLoadFun" :isAuto="isAuto" :isShowAuth="isShowAuth" @authColse="authColse"></authorize>
-		<!-- #endif -->
 	</view>
 </template>
 <script>
 	import {
 		ordeRefundReason,
 		orderRefundVerify,
-		getRefundOrderDetail
+		getOrderDetail,
+		returnGoodsSubmit,
+		postRefundGoods
 	} from '@/api/order.js';
 	import {
 		toLogin
@@ -107,18 +109,19 @@
 		mixins: [colors],
 		data() {
 			return {
+				id: 0,
+				cartIds: [],
 				refund_reason_wap_img: [],
-				orderInfo: {},
+				status: {},
 				RefundArray: [],
+				refundCartInfo: [],
 				returnGoodsData: ['仅退款', '退货并退款'],
+				refund_total_num: 0,
 				index: 0,
 				returnGoods: 0,
 				orderId: 0,
-				isAuto: false, //没有授权的不会自动授权
-				isShowAuth: false, //是否隐藏授权
-				cart_id: 0,
-				refund_num: 0,
-				one_price: 0,
+				refundNumData: [],
+				refund_num_index: 0
 			};
 		},
 		computed: mapGetters(['isLogin']),
@@ -126,46 +129,45 @@
 			isLogin: {
 				handler: function(newV, oldV) {
 					if (newV) {
-						this.getOrderInfo();
+						this.refundGoodsInfo();
 						this.getRefundReason();
 					}
 				},
 				deep: true
 			}
 		},
-		onLoad: function(options) {
-			if (!options.orderId) return this.$util.Tips({
-				title: '缺少订单id,无法退款'
-			}, {
-				tab: 3,
-				url: 1
-			});
-			if (options.cart_id) this.cart_id = options.cart_id
+		onLoad(options) {
 			this.orderId = options.orderId;
+			this.id = options.id;
+			if (options.cartIds) {
+				this.cartIds = JSON.parse(options.cartIds) || []
+			}
 			if (this.isLogin) {
-				this.getOrderInfo();
+				this.refundGoodsInfo();
 				this.getRefundReason();
 			} else {
 				toLogin();
 			}
 		},
 		methods: {
-			onLoadFun: function() {
-				this.getOrderInfo();
-				this.getRefundReason();
-			},
-			/**
-			 * 获取订单详情
-			 * 
-			 */
-			getOrderInfo: function() {
-				let that = this;
-				getRefundOrderDetail(that.orderId, that.cart_id).then(res => {
-					that.$set(that, 'orderInfo', res.data);
-					that.$set(that, 'refund_num', res.data.total_num);
-					that.one_price = (Number(res.data.cartInfo[0].truePrice) + Number(res.data.cartInfo[0]
-						.one_postage_price)) * 10000
-				});
+			refundGoodsInfo() {
+				postRefundGoods({
+					id: this.id,
+					cart_ids: this.cartIds
+				}).then(res => {
+					let data = res.data;
+					this.status = data._status;
+					this.refundCartInfo = data.cartInfo;
+					this.refundCartInfo.forEach(item => {
+						this.refund_total_num = this.$util.$h.Add(this.refund_total_num, item.cart_num)
+					})
+					this.refundNumData = Array(this.refund_total_num).fill(0).map((e, i) => i + 1)
+					this.refundCartInfo.length === 1 ? this.refund_num_index = this.refundNumData.length - 1 : ''
+				}).catch(err => {
+					return this.$util.Tips({
+						title: err
+					});
+				})
 			},
 			/**
 			 * 获取退款理由
@@ -200,27 +202,7 @@
 					that.$set(that, 'refund_reason_wap_img', that.refund_reason_wap_img);
 				});
 			},
-			checkRate(input) {
-				var re = /^[0-9]+?[0-9]*/; //判断字符串是否为数字//判断正整数/[1−9]+[0−9]∗]∗/;//判断字符串是否为数字//判断正整数/[1−9]+[0−9]∗]∗/
-				if (!re.test(nubmer)) {
-					return this.$util.Tips({
-						title: '请输入整数'
-					});
-				}
-			},
-			inputNumber(e) {
-				let v = e.detail.value
-				v.indexOf('.') > -1 ? v = v.split('.')[0] : ''
-				if (v > this.orderInfo.total_num) {
-					this.$nextTick(() => {
-						this.refund_num = this.orderInfo.total_num
-					})
-				} else {
-					this.$nextTick(() => {
-						this.refund_num = v
-					})
-				}
-			},
+
 			/**
 			 * 申请退货
 			 */
@@ -231,18 +213,20 @@
 				if (!value.refund_reason_wap_explain) return this.$util.Tips({
 					title: '请输入备注说明'
 				});
-				if (that.orderInfo.total_num > 1 && that.orderInfo.cartInfo.length == 1 && !that.refund_num)
-				return this.$util.Tips({
-						title: '请输入退货数量'
-					});
-				orderRefundVerify({
+				let cartInfo = this.refundCartInfo;
+				if (cartInfo.length === 1) {
+					this.cartIds = [{
+						cart_id: cartInfo[0].id,
+						cart_num: this.refund_num_index + 1
+					}]
+				}
+				returnGoodsSubmit(this.id, {
 					text: that.RefundArray[that.index] || '',
 					refund_reason_wap_explain: value.refund_reason_wap_explain,
 					refund_reason_wap_img: that.refund_reason_wap_img.join(','),
 					refund_type: this.returnGoods ? 2 : 1,
 					uni: that.orderId,
-					cart_id: that.cart_id,
-					refund_num: that.refund_num,
+					cart_ids: this.cartIds
 				}).then(res => {
 					return this.$util.Tips({
 						title: '申请成功',
@@ -257,11 +241,14 @@
 					});
 				})
 			},
-			bindPickerChange: function(e) {
+			bindPickerChange(e) {
 				this.$set(this, 'index', e.detail.value);
 			},
-			returnGoodsChange: function(e) {
+			returnGoodsChange(e) {
 				this.$set(this, 'returnGoods', e.detail.value);
+			},
+			returnGoodsNum(e) {
+				this.$set(this, 'refund_num_index', Number(e.detail.value));
 			}
 		}
 	}

@@ -16,7 +16,6 @@ use app\jobs\notice\EnterpriseWechatJob;
 use app\jobs\notice\PrintJob;
 use app\services\BaseServices;
 use app\services\order\StoreOrderCartInfoServices;
-use app\services\system\SystemNotificationServices;
 use crmeb\services\CacheService;
 use think\exception\ValidateException;
 

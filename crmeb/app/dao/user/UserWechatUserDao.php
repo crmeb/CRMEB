@@ -171,8 +171,11 @@ class UserWechatUserDao extends BaseDao
         }
         //用户标签
         if (isset($where['label_id']) && $where['label_id']) {
-            $model = $model->whereIn($userAlias . 'uid', function ($query) use ($where) {
-                $query->name('user_label_relation')->where('label_id', $where['label_id'])->field('uid')->select();
+            $model = $model->where(function ($query) use ($where, $userAlias) {
+                $labelIds = explode(',', $where['label_id']);
+                foreach ($labelIds as $item) {
+                    $query->whereFindInSet($userAlias . 'label_ids', $item);
+                }
             });
         }
         //是否付费会员
@@ -210,7 +213,11 @@ class UserWechatUserDao extends BaseDao
         }
         //用户类型
         if (isset($where['user_type']) && $where['user_type']) {
-            $model = $model->where($userAlias . 'user_type', $where['user_type']);
+            if ($where['user_type'] == 'app') {
+                $model = $model->whereIn($userAlias . 'user_type', ['app', 'apple']);
+            } else {
+                $model = $model->where($userAlias . 'user_type', $where['user_type']);
+            }
         }
         //用户性别
         if (isset($where['sex']) && $where['sex'] !== '' && in_array($where['sex'], [0, 1, 2])) {

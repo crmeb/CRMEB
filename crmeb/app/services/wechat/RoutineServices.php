@@ -56,6 +56,7 @@ class RoutineServices extends BaseServices
     public function mp_auth($code, $post_cache_key, $login_type, $spread_spid, $spread_code, $iv, $encryptedData)
     {
         $session_key = Cache::get('eb_api_code_' . $post_cache_key);
+        $userInfoCong = [];
         if (!$code && !$session_key)
             throw new ValidateException('授权失败,参数有误');
         if ($code && !$session_key) {
@@ -405,6 +406,7 @@ class RoutineServices extends BaseServices
     public function authBindingPhone($code, $iv, $encryptedData, $spread, $spid, $key = '')
     {
         $wechatInfo = [];
+        $userInfo = [];
         $userType = $login_type = 'routine';
         if ($key) {
             [$openid, $wechatInfo, $spreadId, $login_type, $userType] = $createData = CacheService::getTokenBucket($key);
@@ -418,17 +420,16 @@ class RoutineServices extends BaseServices
         try {
             //解密获取用户信息
             $userInfo = MiniProgramService::encryptor($session_key, $iv, $encryptedData);
+            if (!$userInfo || !isset($userInfo['purePhoneNumber'])) {
+                throw new ValidateException('获取用户信息失败');
+            }
         } catch (\Exception $e) {
             if ($e->getCode() == '-41003') {
                 throw new ValidateException('获取会话密匙失败');
             }
         }
-        if (!$userInfo || !isset($userInfo['purePhoneNumber'])) {
-            throw new ValidateException('获取用户信息失败');
-        }
-        if ($spid) {
-            $spreadId = $spid;
-        }
+
+        $spreadId = $spid ?? 0;
         /** @var QrcodeServices $qrcode */
         $qrcode = app()->make(QrcodeServices::class);
         if ($spread && ($info = $qrcode->getOne(['id' => $spread, 'status' => 1]))) {

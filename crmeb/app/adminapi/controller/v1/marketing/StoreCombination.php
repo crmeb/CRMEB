@@ -12,8 +12,8 @@
 namespace app\adminapi\controller\v1\marketing;
 
 use app\adminapi\controller\AuthController;
-use app\services\activity\StoreCombinationServices;
-use app\services\activity\StorePinkServices;
+use app\services\activity\combination\StoreCombinationServices;
+use app\services\activity\combination\StorePinkServices;
 use think\facade\App;
 
 
@@ -88,7 +88,6 @@ class StoreCombination extends AuthController
             [['title', 's'], ''],
             [['info', 's'], ''],
             [['unit_name', 's'], ''],
-            ['image', ''],
             ['images', []],
             ['section_time', []],
             [['is_host', 'd'], 0],
@@ -105,6 +104,11 @@ class StoreCombination extends AuthController
             ['sort', 0],
             ['copy', 0],
             ['virtual', 100],
+            ['logistics', []],//物流方式
+            ['freight', 1],//运费设置
+            ['postage', 0],//邮费
+            ['custom_form', ''],
+            ['virtual_type', 0],
         ]);
         $this->validate($data, \app\adminapi\validate\marketing\StoreCombinationValidate::class, 'save');
         if ($data['section_time']) {

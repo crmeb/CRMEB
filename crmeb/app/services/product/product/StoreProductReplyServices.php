@@ -46,7 +46,7 @@ class StoreProductReplyServices extends BaseServices
         $storeProductReplyStoreProductServices = app()->make(StoreProductReplyStoreProductServices::class);
         $data = $storeProductReplyStoreProductServices->getProductReplyList($where);
         foreach ($data['list'] as &$item) {
-            $item['add_time'] = date('Y-m-d H:i:s',$item['add_time']);
+            $item['add_time'] = date('Y-m-d H:i:s', $item['add_time']);
             $item['time'] = time_tran(strtotime($item['add_time']));
             $item['create_time'] = $item['add_time'];
             $item['score'] = ($item['product_score'] + $item['service_score']) / 2;
@@ -73,7 +73,7 @@ class StoreProductReplyServices extends BaseServices
         $field[] = Form::rate('product_score', '商品分数', 0)->allowHalf(false);
         $field[] = Form::rate('service_score', '服务分数', 0)->allowHalf(false);
         $field[] = Form::frameImages('pics', '评价图片', Url::buildUrl('admin/widget.images/index', array('fodder' => 'pics', 'type' => 'many', 'maxLength' => 8)))->maxLength(8)->icon('ios-add')->width('950px')->height('505px')->modal(['footer-hide' => true])->props(['closeBtn' => false, 'okBtn' => false]);
-        $field[] = Form::dateTime('add_time', '评论时间', '')->placeholder('请选择评论时间(不选择默认当前添加时间)');
+        $field[] = Form::dateTime('add_time', '评论时间', '')->placeholder('请选择评论时间(不选择默认当前添加时间)')->style(['width' => '300px']);
         return create_form('添加虚拟评论', $field, Url::buildUrl('/product/reply/save_fictitious_reply'), 'POST');
     }
 

@@ -10,7 +10,7 @@
 // +----------------------------------------------------------------------
 namespace crmeb\services\template\storage;
 
-use app\services\other\TemplateMessageServices;
+use app\services\message\TemplateMessageServices;
 use crmeb\basic\BaseMessage;
 use crmeb\services\MiniProgramService;
 use think\facade\Log;

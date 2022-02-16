@@ -2,9 +2,9 @@
 	<view :style="colorStyle">
 		<view class='cash-withdrawal'>
 			<view class='nav acea-row'>
-				<view v-for="(item,index) in navList" :key="index" class='item fontcolor' @click="swichNav(index)">
-					<view class='line bg-color' :class='currentTab==index ? "on":""'></view>
-					<view class='iconfont' :class='item.icon+" "+(currentTab==index ? "on":"")'></view>
+				<view v-for="(item,index) in navList" :key="index" class='item fontcolor' @click="swichNav(item.id)">
+					<view class='line bg-color' :class='currentTab==item.id ? "on":""'></view>
+					<view class='iconfont' :class='item.icon+" "+(currentTab==item.id ? "on":"")'></view>
 					<view>{{item.name}}</view>
 				</view>
 			</view>
@@ -147,22 +147,10 @@
 			authorize
 			// #endif
 		},
-		mixins:[colors],
+		mixins: [colors],
 		data() {
 			return {
-				navList: [{
-						'name': '银行卡',
-						'icon': 'icon-yinhangqia'
-					},
-					{
-						'name': '微信',
-						'icon': 'icon-weixin2'
-					},
-					{
-						'name': '支付宝',
-						'icon': 'icon-icon34'
-					}
-				],
+				navList: [],
 				currentTab: 0,
 				index: 0,
 				array: [], //提现银行
@@ -250,7 +238,31 @@
 			getUserInfo: function() {
 				let that = this;
 				getUserInfo().then(res => {
+					that.navList = [{
+							'name': '银行卡',
+							'icon': 'icon-yinhangqia',
+							'id': 0
+						},
+						{
+							'name': '微信',
+							'icon': 'icon-weixin2',
+							'id': 1
+						},
+						{
+							'name': '支付宝',
+							'icon': 'icon-icon34',
+							'id': 2
+						}
+					]
+					let list = [];
 					that.userInfo = res.data;
+					for (var i = 0; i < that.userInfo.extract_type.length; i++) {
+						if (this.navList[that.userInfo.extract_type[i]].id == that.userInfo.extract_type[i]) {
+							list.push(this.navList[that.userInfo.extract_type[i]])
+						}
+					}
+					this.navList = list
+					this.swichNav(this.navList[0].id)
 				});
 			},
 			swichNav: function(current) {
@@ -259,11 +271,10 @@
 			bindPickerChange: function(e) {
 				this.index = e.detail.value;
 			},
-			subCash: function(e) {
+			subCash(e) {
 				let that = this,
 					value = e.detail.value;
-				// if (this.prevent) return
-				// this.prevent = true
+				if (this.prevent) return
 				if (that.currentTab == 0) { //银行卡
 					if (!value.name.trim()) return this.$util.Tips({
 						title: '请填写持卡人姓名'
@@ -297,6 +308,7 @@
 				if (Number(value.money) < Number(that.minPrice)) return this.$util.Tips({
 					title: '提现金额不能低于' + that.minPrice
 				});
+				this.prevent = true
 				extractCash(value).then(res => {
 					that.getUserInfo();
 					return this.$util.Tips({
@@ -306,6 +318,9 @@
 						url: '/pages/users/user_spread_user/index',
 						tab: 2
 					});
+					setTimeout(e => {
+						this.prevent = false
+					}, 1000)
 				}).catch(err => {
 					setTimeout(e => {
 						this.prevent = false
@@ -323,9 +338,11 @@
 	page {
 		background-color: #fff !important;
 	}
-	.fontcolor{
+
+	.fontcolor {
 		color: var(--view-theme) !important;
 	}
+
 	.cash-withdrawal .nav {
 		height: 130rpx;
 		box-shadow: 0 10rpx 10rpx #f8f8f8;

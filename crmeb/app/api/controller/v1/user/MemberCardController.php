@@ -12,11 +12,11 @@
 namespace app\api\controller\v1\user;
 
 use app\Request;
-use app\services\coupon\StoreCouponUserServices;
+use app\services\activity\coupon\StoreCouponUserServices;
 use app\services\order\OtherOrderServices;
 use app\services\other\AgreementServices;
-use app\services\user\MemberCardServices;
-use app\services\user\MemberRecordServices;
+use app\services\user\member\MemberCardServices;
+use app\services\user\member\MemberRecordServices;
 
 /** 会员卡
  * Class MemberCardController

@@ -85,7 +85,8 @@ class StoreProductRelationServices extends BaseServices
                 unset($list[$k]);
             }
         }
-        return $list;
+        $count = $this->dao->count($where);
+        return compact('list', 'count');
     }
 
     /**
@@ -115,18 +116,23 @@ class StoreProductRelationServices extends BaseServices
 
     /**
      * 取消 点赞 收藏
-     * @param int $productId
+     * @param array $productId
      * @param int $uid
      * @param string $relationType
      * @param string $category
      * @return bool
      * @throws \Exception
      */
-    public function unProductRelation(int $productId, int $uid, string $relationType, string $category = 'product')
+    public function unProductRelation(array $productId, int $uid, string $relationType, string $category = 'product')
     {
         $relationType = strtolower($relationType);
         $category = strtolower($category);
-        $storeProductRelation = $this->dao->delete(['uid' => $uid, 'product_id' => $productId, 'type' => $relationType, 'category' => $category]);
+        $storeProductRelation = $this->dao->delete([
+            ['uid', '=', $uid],
+            ['product_id', 'in', $productId],
+            ['type', '=', $relationType],
+            ['category', '=', $category]
+        ]);
         if (!$storeProductRelation) throw new ValidateException('取消失败');
         return true;
     }

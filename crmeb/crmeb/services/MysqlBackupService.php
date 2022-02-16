@@ -204,7 +204,6 @@ class MysqlBackupService
                 $name = date('Ymd-His', $time) . '-*.sql*';
                 $path = realpath($this->config['path']) . DIRECTORY_SEPARATOR . $name;
                 return glob($path);
-                break;
             case 'timeverif':
                 $name = date('Ymd-His', $time) . '-*.sql*';
                 $path = realpath($this->config['path']) . DIRECTORY_SEPARATOR . $name;
@@ -222,16 +221,12 @@ class MysqlBackupService
                 } else {
                     throw new \Exception("File {$files['0']} may be damaged, please check again");
                 }
-                break;
             case 'pathname':
                 return "{$this->config['path']}{$this->file['name']}-{$this->file['part']}.sql";
-                break;
             case 'filename':
                 return "{$this->file['name']}-{$this->file['part']}.sql";
-                break;
             case 'filepath':
                 return $this->config['path'];
-                break;
             default:
                 $arr = array('pathname' => "{$this->config['path']}{$this->file['name']}-{$this->file['part']}.sql", 'filename' => "{$this->file['name']}-{$this->file['part']}.sql", 'filepath' => $this->config['path'], 'file' => $this->file);
                 return $arr;

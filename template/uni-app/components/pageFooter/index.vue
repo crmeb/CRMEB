@@ -91,26 +91,27 @@
 			let curRoute = routes[routes.length - 1].route //获取当前页面路由
 			this.activeRouter = '/' + curRoute
 		},
-		onShow(){
-			// getNavigation().then(res => {
-			// 	uni.setStorageSync('pageFoot', res.data)
-			// 	this.$store.commit('FOOT_UPLOAD', res.data)
-			// 	this.newData = res.data
-			// 	if (this.newData.status && this.newData.status.status) {
-			// 		uni.hideTabBar()
-			// 	} else {
-			// 		uni.showTabBar()
-			// 	}
-			// })
+		onShow() {
+			getNavigation().then(res => {
+				uni.setStorageSync('pageFoot', res.data)
+				this.$store.commit('FOOT_UPLOAD', res.data)
+				this.newData = res.data
+				if (this.newData.status && this.newData.status.status) {
+					// uni.hideTabBar()
+				} else {
+					uni.showTabBar()
+				}
+			})
 		},
 		mounted() {
 			let that = this
 			this.newData = this.$store.state.app.pageFooter
 			if (this.newData.status && this.newData.status.status) {
 				uni.hideTabBar()
-			}else{
+			} else {
 				uni.showTabBar()
 			}
+			console.log(this.newData)
 			if (this.isLogin) {
 				this.getCartNum()
 			}

@@ -35,6 +35,7 @@ class CategoryDao extends BaseDao
      * @param array $where
      * @param int $page
      * @param int $limit
+     * @param array $field
      * @return array
      * @throws \think\db\exception\DataNotFoundException
      * @throws \think\db\exception\DbException
@@ -58,6 +59,6 @@ class CategoryDao extends BaseDao
     {
         return $this->search($where)->when(count($with), function ($query) use ($with) {
             $query->with($with);
-        })->order('sort DESC')->select()->toArray();
+        })->order('sort DESC,id DESC')->select()->toArray();
     }
 }

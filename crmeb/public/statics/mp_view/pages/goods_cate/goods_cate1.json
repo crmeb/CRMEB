@@ -1,6 +1,7 @@
 {
   "component": true,
   "usingComponents": {
-    "page-footer": "/components/pageFooter/index"
+    "page-footer": "/components/pageFooter/index",
+    "tab-bar": "/pages/index/visualization/components/tabBar"
   }
 }

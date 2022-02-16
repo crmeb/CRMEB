@@ -90,6 +90,7 @@
 		onShow() {
 			this.page = 1
 			this.list = []
+			console.log(this.type)
 			this.changeTabs(this.type)
 		},
 		onReachBottom() {
@@ -100,6 +101,7 @@
 			}
 		},
 		onPullDownRefresh() {
+			console.log('refresh');
 			this.page = 1
 			this.finished = false
 			this.list = []
@@ -136,6 +138,7 @@
 						limit: this.limit
 					})
 					.then(res => {
+						console.log(res)
 						let data = res.data;
 						uni.hideLoading();
 						this.loading = false;
@@ -145,6 +148,7 @@
 						uni.stopPullDownRefresh();
 					})
 					.catch(err => {
+						console.log(err)
 						uni.showToast({
 							title: err.msg,
 							icon: 'none'

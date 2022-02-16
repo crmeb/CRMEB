@@ -11,7 +11,7 @@
 namespace app\api\controller\v1\store;
 
 use app\Request;
-use app\services\activity\StorePinkServices;
+use app\services\activity\combination\StorePinkServices;
 use app\services\order\StoreCartServices;
 
 /**

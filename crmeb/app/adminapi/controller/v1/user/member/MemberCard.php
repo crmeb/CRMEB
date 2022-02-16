@@ -12,9 +12,9 @@
 namespace app\adminapi\controller\v1\user\member;
 
 use app\adminapi\controller\AuthController;
-use app\services\user\MemberCardServices;
-use app\services\user\MemberRightServices;
-use app\services\user\MemberShipServices;
+use app\services\user\member\MemberCardServices;
+use app\services\user\member\MemberRightServices;
+use app\services\user\member\MemberShipServices;
 use think\facade\App;
 
 /**

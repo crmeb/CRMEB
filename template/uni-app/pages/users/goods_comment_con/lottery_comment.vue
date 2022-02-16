@@ -7,8 +7,8 @@
 					<text class="pay-status-text">
 						评价完成
 					</text>
-					<text>
-
+					<text class="date">
+						{{date}}
 					</text>
 				</view>
 			</view>
@@ -66,7 +66,7 @@
 	// #endif
 	import colors from '@/mixins/color.js';
 	export default {
-		mixins:[colors],
+		mixins: [colors],
 		components: {
 			// #ifdef MP
 			authorize,
@@ -117,6 +117,7 @@
 		onLoad(options) {
 			this.orderId = options.order_id;
 			this.type = options.type;
+			this.date = this.set_time(options.date);
 			if (this.isLogin) {
 				// this.getOrderPayInfo();
 				this.getLotteryData(this.type)
@@ -126,8 +127,7 @@
 			// #ifdef H5
 			document.addEventListener('visibilitychange', (e) => {
 				let state = document.visibilityState
-				if (state == 'hidden') {
-				}
+				if (state == 'hidden') {}
 				if (state == 'visible') {
 					// this.getOrderPayInfo();
 				}
@@ -135,6 +135,31 @@
 			// #endif
 		},
 		methods: {
+			set_time(str) {
+				var n = parseInt(str);
+				var D = new Date(n);
+				var year = D.getFullYear(); //四位数年份
+
+				var month = D.getMonth() + 1; //月份(0-11),0为一月份
+				month = month < 10 ? ('0' + month) : month;
+
+				var day = D.getDate(); //月的某一天(1-31)
+				day = day < 10 ? ('0' + day) : day;
+
+				var hours = D.getHours(); //小时(0-23)
+				hours = hours < 10 ? ('0' + hours) : hours;
+
+				var minutes = D.getMinutes(); //分钟(0-59)
+				minutes = minutes < 10 ? ('0' + minutes) : minutes;
+
+				// var seconds = D.getSeconds();//秒(0-59)
+				// seconds = seconds<10?('0'+seconds):seconds;
+				// var week = D.getDay();//周几(0-6),0为周日
+				// var weekArr = ['周日','周一','周二','周三','周四','周五','周六'];
+
+				var now_time = year + '-' + month + '-' + day + ' ' + hours + ':' + minutes;
+				return now_time;
+			},
 			openTap() {
 				this.$set(this, 'couponsHidden', !this.couponsHidden);
 			},
@@ -317,6 +342,11 @@
 	/deep/ .lottery_grid {
 		background-color: #E93323;
 		border-radius: 12rpx;
+	}
+
+	.date {
+		font-size: 26rpx;
+		color: #fff;
 	}
 
 	.grids {

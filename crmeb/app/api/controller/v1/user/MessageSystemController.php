@@ -11,7 +11,7 @@
 namespace app\api\controller\v1\user;
 
 use app\Request;
-use app\services\system\MessageSystemServices;
+use app\services\message\MessageSystemServices;
 
 
 /**

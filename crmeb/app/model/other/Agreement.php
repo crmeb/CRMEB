@@ -12,7 +12,6 @@ namespace app\model\other;
 
 use crmeb\traits\ModelTrait;
 use crmeb\basic\BaseModel;
-use think\Model;
 
 /**
  *  协议Model

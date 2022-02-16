@@ -58,31 +58,37 @@ class SystemCityServices extends BaseServices
 //            $item['parent_id'] = $cityNames[$item['parent_id']] ?? '中国';
 //        }
 //        return $list;
-        return CacheService::get('tree_city_list', function () {
-            return $this->getSonCityList();
-        }, 86400);
+//        return CacheService::get('tree_city_list', function () {
+        return $this->getSonCityList($where['parent_id']);
+//        }, 86400);
     }
 
     /**
      * tree形城市列表
      * @param int $pid
-     * @param string $parent_name
      * @return array
      * @throws \think\db\exception\DataNotFoundException
      * @throws \think\db\exception\DbException
      * @throws \think\db\exception\ModelNotFoundException
      */
-    public function getSonCityList($pid = 0, $parent_name = '中国')
+    public function getSonCityList($pid = 0)
     {
         $list = $this->dao->getCityList(['parent_id' => $pid], 'id,city_id,level,name');
+        $parent_name = $pid ? $this->dao->value(['city_id' => $pid], 'name') : '中国';
+        $is_add = $pid == 0 || $this->dao->value(['city_id' => $pid], 'parent_id') == 0 ? 1 : 0;
         $arr = [];
         if ($list) {
             foreach ($list as $item) {
-                $item['parent_id'] = $parent_name;
-                $item['label'] = $item['name'];
-                $item['value'] = $item['city_id'];
-                $item['children'] = $this->getSonCityList($item['city_id'], $item['name']);
-                $arr [] = $item;
+                $data = [];
+                $data['id'] = $item['id'];
+                $data['city_id'] = $item['city_id'];
+                $data['label'] = $item['name'];
+                $data['parent_name'] = $parent_name;
+                if ($is_add) {
+                    $data['children'] = [];
+                    $data['_loading'] = false;
+                }
+                $arr [] = $data;
             }
         }
         return $arr;
@@ -102,11 +108,11 @@ class SystemCityServices extends BaseServices
         if ($parentId) {
             $info = $this->dao->getOne(['city_id' => $parentId], 'level,city_id,name');
         } else {
-            $info = ["level" => 0, "city_id" => 0, "name" => '中国'];
+            $info = ['level' => 0, 'city_id' => 0, 'name' => '中国'];
         }
         $field[] = Form::hidden('level', $info['level']);
         $field[] = Form::hidden('parent_id', $info['city_id']);
-        $field[] = Form::input('parent_name', '上级名称', $info['name'])->readonly(true);
+        $field[] = Form::input('parent_name', '上级名称', $info['name'])->disabled(true)->readonly(true);
         $field[] = Form::input('name', '名称')->required('请填写城市名称');
         return create_form('添加城市', $field, $this->url('/setting/city/save'));
     }

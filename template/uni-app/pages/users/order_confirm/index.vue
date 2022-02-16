@@ -43,7 +43,7 @@
 					<image src='/static/images/line.jpg'></image>
 				</view>
 			</view>
-			<orderGoods :cartInfo="cartInfo" :is_confirm='true'></orderGoods>
+			<orderGoods :cartInfo="cartInfo" :is_confirm='true' :shipping_type="shippingType"></orderGoods>
 			<view class='wrapper'>
 				<view class='item acea-row row-between-wrapper' @tap='couponTap'
 					v-if="!pinkId && !BargainId && !combinationId && !seckillId&& !noCoupon && !discountId && !advanceId">
@@ -126,6 +126,79 @@
 					</view>
 				</view>
 			</view> -->
+
+			<!-- <textarea placeholder-class='placeholder' placeholder="请添加备注（150字以内）" v-if="!coupon.coupon"
+				@input='bindHideKeyboard' :value="mark" :maxlength="150" name="mark">
+				</textarea> -->
+
+			<view class='wrapper' v-if="confirm.length">
+				<view class='item acea-row row-between-wrapper' v-for="(item,index) in confirm" :key="index">
+					<view>
+						<span v-if="item.status" style="color: red;">*</span>
+						<span v-else style="marginLeft: 8px;"></span>
+						{{ item.title }}
+					</view>
+					<!-- text -->
+					<view v-if="item.label=='text'" class="confirm">
+						<input type="text" :placeholder="'请填写'+item.title" v-model="item.value" />
+					</view>
+					<!-- number -->
+					<view v-if="item.label=='number'" class="confirm">
+						<input type="number" :placeholder="'请填写'+item.title" v-model="item.value" />
+					</view>
+					<!-- email -->
+					<view v-if="item.label=='email'" class="confirm">
+						<input type="text" :placeholder="'请填写'+item.title" v-model="item.value" />
+					</view>
+					<!-- data -->
+					<view v-if="item.label=='data'" class="uni-list">
+						<view class="uni-list-cell">
+							<view class="uni-list-cell-db">
+								<picker mode="date" :value="item.value" @change="bindDateChange($event,index)">
+									<view v-if="item.value == ''" class="fontC">{{date+item.title}}<text
+											class='iconfont icon-jiantou'></text></view>
+									<view v-else class="uni-input">{{item.value}}</view>
+								</picker>
+							</view>
+						</view>
+					</view>
+					<!-- time -->
+					<view v-if="item.label=='time'">
+						<view>
+							<view>
+								<picker mode="time" :value="item.value" start="09:01" end="21:01"
+									@change="bindTimeChange($event,index)">
+									<view v-if="item.value == ''" class="fontC">{{time+item.title}}<text
+											class='iconfont icon-jiantou'></text></view>
+									<view>{{item.value}}</view>
+								</picker>
+							</view>
+						</view>
+					</view>
+					<!-- id -->
+					<view v-if="item.label=='id'" class="confirm">
+						<input type="idcard" :placeholder="'请填写'+item.title" v-model="item.value" />
+					</view>
+					<!-- phone -->
+					<view v-if="item.label=='phone'" class="confirm">
+						<input type="tel" :placeholder="'请填写'+item.title" v-model="item.value" />
+					</view>
+					<!-- img -->
+					<view v-if="item.label=='img'" class="confirmImg">
+						<view class='list acea-row row-middle'>
+							<view class='pictrue' v-for="(items,indexs) in item.value" :key="indexs">
+								<image :src='items' class="img"></image>
+								<text class='iconfont icon-guanbi1 font-num del' @click='DelPic(index,indexs)'></text>
+							</view>
+							<view class='pictrue acea-row row-center-wrapper row-column bor' @click='uploadpic(index)'
+								v-if="item.value.length < 8">
+								<text class='iconfont icon-icon25201'></text>
+								<view>上传图片</view>
+							</view>
+						</view>
+					</view>
+				</view>
+			</view>
 			<view class='moneyList'>
 				<view class='item acea-row row-between-wrapper'>
 					<view>商品总价：</view>
@@ -138,15 +211,15 @@
 						￥{{(parseFloat(priceGroup.storePostage)+parseFloat(priceGroup.storePostageDiscount)).toFixed(2)}}
 					</view>
 				</view>
-			<!-- 	<view class='item acea-row row-between-wrapper'
+				<view class='item acea-row row-between-wrapper'
 					v-if="priceGroup.vipPrice > 0 && userInfo.vip && !pinkId && !BargainId && !combinationId && !seckillId && !discountId">
 					<view>会员商品优惠：</view>
 					<view class='money'>-￥{{parseFloat(priceGroup.vipPrice).toFixed(2)}}</view>
-				</view> -->
-		<!-- 		<view class='item acea-row row-between-wrapper' v-if="priceGroup.storePostageDiscount > 0">
+				</view>
+				<view class='item acea-row row-between-wrapper' v-if="priceGroup.storePostageDiscount > 0">
 					<view>会员运费优惠：</view>
 					<view class='money'>-￥{{parseFloat(priceGroup.storePostageDiscount).toFixed(2)}}</view>
-				</view> -->
+				</view>
 				<view class='item acea-row row-between-wrapper' v-if="coupon_price > 0">
 					<view>优惠券抵扣：</view>
 					<view class='money'>-￥{{parseFloat(coupon_price).toFixed(2)}}</view>
@@ -188,6 +261,9 @@
 		</invoice-picker>
 		<payment :payMode="cartArr" :pay_close="pay_close" :isCall="true" :totalPrice="totalPrice.toString()"
 			@changePayType="changePayType" @onChangeFun="onChangeFun"></payment>
+		<canvas canvas-id="canvas" v-if="canvasStatus"
+			:style="{width: canvasWidth + 'px', height: canvasHeight + 'px',position: 'absolute',left:'-100000px',top:'-100000px'}"></canvas>
+
 	</view>
 </template>
 <script>
@@ -243,7 +319,20 @@
 		},
 		mixins: [colors],
 		data() {
+			const currentDate = this.getDate({
+				format: true
+			})
 			return {
+				confirm: '', //自定义留言
+				date: '请选择',
+				time: '请选择',
+
+				canvasWidth: "",
+				canvasHeight: "",
+				canvasStatus: false,
+				newImg: [],
+
+
 				textareaStatus: true,
 				//支付方式
 				cartArr: [{
@@ -273,6 +362,12 @@
 						value: 'offline',
 						title: '选择线下付款方式',
 						payStatus: 2,
+					}, {
+						"name": "好友代付",
+						"icon": "icon-haoyoudaizhifu",
+						value: 'friend',
+						title: '找微信好友支付',
+						payStatus: 1,
 					}
 				],
 				virtual_type: 0,
@@ -304,6 +399,7 @@
 				useIntegral: false, //是否使用积分
 				integral_price: 0, //积分抵扣金额
 				integral: 0,
+				usable_integral: 0,
 				ChangePrice: 0, //使用积分抵扣变动后的金额
 				formIds: [], //收集formid
 				status: 0,
@@ -347,12 +443,23 @@
 			};
 		},
 		computed: mapGetters(['isLogin']),
+		// watch: {
+		// 	startDate() {
+		// 		return this.getDate('start');
+		// 	},
+		// 	endDate() {
+		// 		return this.getDate('end');
+		// 	}
+		// },
 		onLoad(options) {
 			// #ifdef H5
 			this.from = this.$wechat.isWeixin() ? 'weixin' : 'weixinh5'
 			// #endif
 			// #ifdef MP
 			this.from = 'routine'
+			// #endif
+			// #ifdef APP-PLUS
+			this.from = 'app'
 			// #endif
 			if (!options.cartId) return this.$util.Tips({
 				title: '请选择要购买的商品'
@@ -544,17 +651,47 @@
 						this.totalPrice = result.pay_price;
 						this.integral_price = result.deduction_price;
 						this.coupon_price = result.coupon_price;
-						this.integral = this.useIntegral ? result.SurplusIntegral : this.userInfo.integral;
+						this.integral = this.useIntegral ? result.SurplusIntegral : this.usable_integral;
 						this.$set(this.priceGroup, 'storePostage', shippingType == 1 ? 0 : result.pay_postage);
 						this.$set(this.priceGroup, 'storePostageDiscount', result.storePostageDiscount);
 					}
 				})
 			},
-			addressType: function(e) {
+			addressType(e) {
 				let index = e;
+				let that = this;
+				if (this.shippingType == parseInt(index)) return
 				this.shippingType = parseInt(index);
-				this.computedPrice();
-				if (index == 1) this.getList();
+				if (index == 1) {
+					// #ifdef H5
+					if (that.$wechat.isWeixin()) {
+						that.$wechat.location().then(res => {
+							uni.setStorageSync('user_latitude', res.latitude);
+							uni.setStorageSync('user_longitude', res.longitude);
+							this.getList()
+						}).catch(err => {
+							this.getList()
+						})
+					} else {
+						// #endif	
+						uni.getLocation({
+							type: 'wgs84',
+							success: (res) => {
+								uni.setStorageSync('user_latitude', res.latitude);
+								uni.setStorageSync('user_longitude', res.longitude);
+							},
+							complete: () => {
+								this.getList()
+							}
+						});
+						// #ifdef H5	
+					}
+					// #endif
+				};
+				this.$nextTick(e => {
+					this.getConfirm();
+					this.computedPrice();
+				})
 			},
 			bindPickerChange: function(e) {
 				let value = e.detail.value;
@@ -640,9 +777,12 @@
 					title: '订单加载中',
 					mask: true
 				});
-				orderConfirm(that.cartId, that.news, that.addressId).then(res => {
+				orderConfirm(that.cartId, that.news, that.addressId, that.shippingType + 1).then(res => {
+					console.log("confirm:", res.data.custom_form)
 					that.$set(that, 'userInfo', res.data.userInfo);
-					that.$set(that, 'integral', res.data.userInfo.integral);
+					that.$set(that, 'confirm', res.data.custom_form || []);
+					that.$set(that, 'integral', res.data.usable_integral);
+					that.$set(that, 'usable_integral', res.data.usable_integral);
 					that.$set(that, 'contacts', res.data.userInfo.real_name);
 					that.$set(that, 'contactsTel', res.data.userInfo.record_phone === '0' ? '' : res.data
 						.userInfo.record_phone);
@@ -790,14 +930,19 @@
 					'&couponId=' +
 					this.couponId;
 			},
-			payment: function(data) {
+			payment(data) {
 				let that = this;
 				orderCreate(that.orderKey, data).then(res => {
+					console.log(data)
+					console.log(res)
 					let status = res.data.status,
 						orderId = res.data.result.orderId,
 						jsConfig = res.data.result.jsConfig,
 						goPages = '/pages/order_pay_status/index?order_id=' + orderId + '&msg=' + res.msg +
-						'&type=3' + '&totalPrice=' + this.totalPrice
+						'&type=3' + '&totalPrice=' + this.totalPrice,
+						friendPay = '/pages/users/payment_on_behalf/index?order_id=' + orderId + '&spread=' +
+						this
+						.$store.state.app.uid
 					switch (status) {
 						case 'ORDER_EXIST':
 						case 'EXTEND_ORDER':
@@ -812,8 +957,10 @@
 							break;
 						case 'SUCCESS':
 							uni.hideLoading();
-							if (that.BargainId || that.combinationId || that.pinkId || that.seckillId || that
-								.discountId)
+							console.log(data.payType, (that.BargainId || that.combinationId || that.pinkId || that
+								.seckillId || that.discountId))
+							if ((that.BargainId || that.combinationId || that.pinkId || that.seckillId || that
+									.discountId) && data.payType != 'friend')
 								return that.$util.Tips({
 									title: res.msg,
 									icon: 'success'
@@ -825,8 +972,8 @@
 								title: res.msg,
 								icon: 'success'
 							}, {
-								tab: 5,
-								url: goPages
+								tab: 4,
+								url: data.payType == 'friend' ? friendPay : goPages
 							});
 							break;
 						case 'WECHAT_PAY':
@@ -1035,7 +1182,8 @@
 			clickTextArea() {
 				this.$refs.textarea.focus()
 			},
-			SubOrder: function(e) {
+			SubOrder(e) {
+				console.log('ahahaahah')
 				let that = this,
 					data = {};
 
@@ -1065,7 +1213,54 @@
 						title: '暂无门店,请选择其他方式'
 					});
 				}
+				for (var i = 0; i < that.confirm.length; i++) {
+					let data = that.confirm[i]
+					if (data.status) {
+						if (data.label === 'text' || data.label === 'data' || data.label === 'time' || data.label ===
+							'id') {
+							if (!data.value.trim()) {
+								return uni.showToast({
+									title: `请先输入${data.title}`,
+									icon: 'none'
+								});
+							}
+						}
+						if (data.label === 'number') {
+							if (data.value <= 0) {
+								return uni.showToast({
+									title: `请先输入${data.title}`,
+									icon: 'none'
+								});
+							}
+						}
+						if (data.label === 'email') {
+							if (!/^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/.test(data.value)) {
+								return uni.showToast({
+									title: `请输入正确的${data.title}`,
+									icon: 'none'
+								});
+							}
+						}
+						if (data.label === 'phone') {
+							if (!/^1(3|4|5|7|8|9|6)\d{9}$/i.test(data.value)) {
+								return uni.showToast({
+									title: `请输入正确的${data.title}`,
+									icon: 'none'
+								});
+							}
+						}
+						if (data.label === 'img') {
+							if (!data.value.length) {
+								return uni.showToast({
+									title: `请先上传${data.title}`,
+									icon: 'none'
+								});
+							}
+						}
+					}
+				}
 				data = {
+					custom_form: that.confirm,
 					real_name: that.contacts,
 					phone: that.contactsTel,
 					addressId: that.addressId,
@@ -1109,7 +1304,48 @@
 				// #ifndef MP
 				that.payment(data);
 				// #endif
-			}
+			},
+			bindDateChange: function(e, index) {
+				console.log(e, index)
+				this.confirm[index].value = e.target.value
+			},
+			bindTimeChange: function(e, index) {
+				this.confirm[index].value = e.target.value
+			},
+			getDate(type) {
+				const date = new Date();
+				let year = date.getFullYear();
+				let month = date.getMonth() + 1;
+				let day = date.getDate();
+
+				if (type === 'start') {
+					year = year - 60;
+				} else if (type === 'end') {
+					year = year + 2;
+				}
+				month = month > 9 ? month : '0' + month;
+				day = day > 9 ? day : '0' + day;
+				return `${year}-${month}-${day}`;
+			},
+			uploadpic: function(index) {
+				let that = this;
+				this.canvasStatus = true
+				that.$util.uploadImageChange('upload/image', function(res) {
+					that.newImg.push(res.data.url);
+				}, (res) => {
+					this.canvasStatus = false
+				}, (res) => {
+					this.canvasWidth = res.w
+					this.canvasHeight = res.h
+				});
+				that.confirm[index].value = this.newImg
+			},
+			DelPic: function(index, indexs) {
+				let that = this,
+					pic = this.confirm[index].value;
+				that.confirm[index].value.splice(indexs, 1);
+				// that.$set(that, 'pics', that.pics);
+			},
 		}
 	}
 </script>
@@ -1175,6 +1411,7 @@
 		width: 100%;
 		background: linear-gradient(to bottom, var(--view-theme) 0%, #f5f5f5 100%);
 		padding-top: 100rpx;
+		margin-bottom: 12rpx;
 	}
 
 	.order-submission .allAddress .nav {
@@ -1413,6 +1650,7 @@
 		position: fixed;
 		bottom: 0;
 		left: 0;
+		z-index: 9;
 	}
 
 	.order-submission .footer .settlement {
@@ -1428,5 +1666,45 @@
 
 	.footer .transparent {
 		opacity: 0
+	}
+
+	.confirm {
+		text-align: right;
+		font-size: 22rpx;
+	}
+
+	.confirmImg {
+		width: 100%;
+
+		.img {
+			width: 136rpx;
+			height: 136rpx;
+		}
+
+		.pictrue {
+			width: 136rpx;
+			height: 136rpx;
+			box-sizing: border-box;
+			margin: 18rpx;
+			margin-bottom: 35rpx;
+			position: relative;
+			font-size: 22rpx;
+			color: #bbb;
+
+			.del {
+				position: absolute;
+				top: 0;
+				right: 0;
+			}
+		}
+
+		.bor {
+			border: 1rpx solid #ddd;
+		}
+
+	}
+
+	.fontC {
+		color: grey;
 	}
 </style>

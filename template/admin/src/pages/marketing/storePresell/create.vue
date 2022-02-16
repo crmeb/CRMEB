@@ -307,12 +307,11 @@
             <Row v-show="current === 2">
               <Col span="24">
                 <FormItem label="内容：">
-                  <vue-ueditor-wrap
-                    v-model="formValidate.description"
-                    @beforeInit="addCustomDialog"
-                    :config="myConfig"
+                  <WangEditor
                     style="width: 90%"
-                  ></vue-ueditor-wrap>
+                    :content="formValidate.description"
+                    @editorContent="getEditorContent"
+                  ></WangEditor>
                 </FormItem>
               </Col>
             </Row>
@@ -381,7 +380,7 @@
 import { mapState } from "vuex";
 import goodsList from "@/components/goodsList/index";
 import UeditorWrap from "@/components/ueditorFrom/index";
-import VueUeditorWrap from "vue-ueditor-wrap";
+import WangEditor from "@/components/wangEditor/index.vue";
 import uploadPictures from "@/components/uploadPictures";
 import freightTemplate from "@/components/freightTemplate/index";
 import {
@@ -397,7 +396,7 @@ export default {
     UeditorWrap,
     goodsList,
     uploadPictures,
-    VueUeditorWrap,
+    WangEditor,
     freightTemplate,
   },
   data() {
@@ -618,6 +617,9 @@ export default {
     this.productGetTemplate();
   },
   methods: {
+    getEditorContent(data) {
+      this.formValidate.description = data;
+    },
     // setVirtualPeople (){
     //     console.log(this.formValidate.virtualPeople)
     //     console.log(this.formValidate.people)
@@ -942,41 +944,6 @@ export default {
       const dst = newItems.indexOf(item);
       newItems.splice(dst, 0, ...newItems.splice(src, 1));
       this.formValidate.images = newItems;
-    },
-    // 添加自定义弹窗
-    addCustomDialog(editorId) {
-      window.UE.registerUI(
-        "test-dialog",
-        function (editor, uiName) {
-          // 创建 dialog
-          let dialog = new window.UE.ui.Dialog({
-            // 指定弹出层中页面的路径，这里只能支持页面，路径参考常见问题 2
-            iframeUrl: "/admin/widget.images/index.html?fodder=dialog",
-            // 需要指定当前的编辑器实例
-            editor: editor,
-            // 指定 dialog 的名字
-            name: uiName,
-            // dialog 的标题
-            title: "上传图片",
-            // 指定 dialog 的外围样式
-            cssRules: "width:960px;height:550px;padding:20px;",
-          });
-          this.dialog = dialog;
-          // 参考上面的自定义按钮
-          var btn = new window.UE.ui.Button({
-            name: "dialog-button",
-            title: "上传图片",
-            cssRules: `background-image: url(../../../assets/images/icons.png);background-position: -726px -77px;`,
-            onclick: function () {
-              // 渲染dialog
-              dialog.render();
-              dialog.open();
-            },
-          });
-          return btn;
-        },
-        37
-      );
     },
   },
 };

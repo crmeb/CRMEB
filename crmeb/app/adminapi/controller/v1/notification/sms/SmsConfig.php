@@ -78,7 +78,7 @@ class SmsConfig extends AuthController
             }
             return app('json')->success($data);
         } else {
-            \crmeb\services\CacheService::clear();
+            CacheService::clear();
             $account = sys_config('sms_account');
             $password = sys_config('sms_token');
             //没有退出登录 清空这两个数据 自动登录

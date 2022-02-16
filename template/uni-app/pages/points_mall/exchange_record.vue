@@ -163,7 +163,8 @@
 	}
 
 	.bargain-record .item .picTxt .text {
-		flex:1;
+		// flex:1;
+		width: 77%;
 		font-size: 30upx;
 		color: #282828;
 	}

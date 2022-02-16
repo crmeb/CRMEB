@@ -52,7 +52,7 @@ class StoreCategoryServices extends BaseServices
             $parentList = $this->dao->getTierList(['id' => $pids]);
             $list = array_merge($list, $parentList);
             foreach ($list as $key => $item) {
-                $arr = $list[$key];
+                $arr = $item;
                 unset($list[$key]);
                 if (!in_array($arr, $list)) {
                     $list[] = $arr;
@@ -95,7 +95,14 @@ class StoreCategoryServices extends BaseServices
         $where = [];
         if ($show !== '') $where['is_show'] = $show;
         if (!$type) $where['pid'] = 0;
-        return get_tree_children($this->dao->getTierList($where, ['id as value', 'cate_name as label', 'pid']), 'children', 'value');
+//        return get_tree_children($this->dao->getTierList($where, ['id as value', 'cate_name as label', 'pid']), 'children', 'value');
+        $data = get_tree_children($this->dao->getTierList($where, ['id as value', 'cate_name as label', 'pid']), 'children', 'value');
+        foreach ($data as &$item) {
+            if (!isset($item['children'])) {
+                $item['disabled'] = true;
+            }
+        }
+        return $data;
     }
 
     /**
@@ -145,26 +152,29 @@ class StoreCategoryServices extends BaseServices
     public function form($info = [])
     {
         if (isset($info['pid'])) {
-            $f[] = Form::select('pid', '上级分类', (int)($info['pid'] ?? ''))->setOptions($this->menus())->filterable(1)->disabled(true);
+            $f[] = Form::select('pid', '上级分类', (int)($info['pid'] ?? ''))->setOptions($this->menus($info['pid']))->filterable(1);
         } else {
             $f[] = Form::select('pid', '上级分类', (int)($info['pid'] ?? ''))->setOptions($this->menus())->filterable(1);
         }
         $f[] = Form::input('cate_name', '分类名称', $info['cate_name'] ?? '')->maxlength(30)->required();
         $f[] = Form::frameImage('pic', '分类图标(180*180)', Url::buildUrl('admin/widget.images/index', array('fodder' => 'pic')), $info['pic'] ?? '')->icon('ios-add')->width('950px')->height('505px')->modal(['footer-hide' => true]);
         $f[] = Form::frameImage('big_pic', '分类大图(468*340)', Url::buildUrl('admin/widget.images/index', array('fodder' => 'big_pic')), $info['big_pic'] ?? '')->icon('ios-add')->width('950px')->height('505px')->modal(['footer-hide' => true]);
-        $f[] = Form::number('sort', '排序', (int)($info['sort'] ?? 0))->min(0);
+        $f[] = Form::number('sort', '排序', (int)($info['sort'] ?? 0))->min(0)->precision(0);
         $f[] = Form::radio('is_show', '状态', $info['is_show'] ?? 1)->options([['label' => '显示', 'value' => 1], ['label' => '隐藏', 'value' => 0]]);
         return $f;
     }
 
     /**
      * 获取一级分类组合数据
+     * @param string $pid
      * @return array[]
      */
-    public function menus()
+    public function menus($pid = '')
     {
         $list = $this->dao->getMenus(['pid' => 0]);
         $menus = [['value' => 0, 'label' => '顶级菜单']];
+        if ($pid === 0) return $menus;
+        if ($pid != '') $menus = [];
         foreach ($list as $menu) {
             $menus[] = ['value' => $menu['id'], 'label' => $menu['cate_name']];
         }
@@ -197,8 +207,13 @@ class StoreCategoryServices extends BaseServices
         if ($cate && $cate['id'] != $id) {
             throw new AdminException('该分类不存在');
         }
-        $res = $this->dao->update($id, $data);
-        if (!$res) throw new AdminException('修改失败');
+        $this->transaction(function () use ($id, $data) {
+            $res = $this->dao->update($id, $data);
+            /** @var StoreProductCateServices $productCate */
+            $productCate = app()->make(StoreProductCateServices::class);
+            $res = $res && $productCate->update(['cate_id' => $id], ['cate_pid' => $data['pid']]);
+            if (!$res) throw new AdminException('修改失败');
+        });
         CacheService::delete('CATEGORY');
     }
 

@@ -13,6 +13,7 @@ module.exports = {
     'no-irregular-whitespace':'off',
     'no-unused-vars':'off',
     'indent': 'off',
+    'vue/no-unused-vars': 'off',
     'vue/script-indent': [
       'error',
       4,

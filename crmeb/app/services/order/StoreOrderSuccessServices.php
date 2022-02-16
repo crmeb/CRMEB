@@ -13,18 +13,11 @@ namespace app\services\order;
 
 
 use app\dao\order\StoreOrderDao;
-use app\jobs\OrderJob;
 use app\services\activity\lottery\LuckLotteryServices;
-use app\services\activity\StorePinkServices;
-use app\services\activity\StoreSeckillServices;
+use app\services\activity\combination\StorePinkServices;
 use app\services\BaseServices;
 use app\services\pay\PayServices;
-use app\services\product\product\StoreProductCouponServices;
-use app\services\user\UserBillServices;
-use app\services\user\UserServices;
-use app\jobs\ProductLogJob;
 use think\exception\ValidateException;
-use think\facade\Log;
 
 /**
  * Class StoreOrderSuccessServices
@@ -58,14 +51,7 @@ class StoreOrderSuccessServices extends BaseServices
         if ($orderInfo['paid']) {
             throw new ValidateException('该订单已支付!');
         }
-        /** @var UserServices $services */
-        $services = app()->make(UserServices::class);
-        $userInfo = $services->getUserInfo($uid);
-        /** @var UserBillServices $userBillServices */
-        $userBillServices = app()->make(UserBillServices::class);
-        $res = $userBillServices->income('pay_product', $userInfo['uid'], $orderInfo['pay_price'], $userInfo['now_money'], $orderInfo['id']);
-        $res = $res && $this->paySuccess($orderInfo, $payType);//余额支付成功
-        return $res;
+        return $this->paySuccess($orderInfo, $payType);//余额支付成功
     }
 
     /**

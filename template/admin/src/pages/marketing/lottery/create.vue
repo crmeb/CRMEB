@@ -1,27 +1,32 @@
 <template>
   <div>
-    <div class="i-layout-page-header">
-      <div class="i-layout-page-header">
-        <router-link :to="{ path: '/admin/marketing/lottery/index' }"
-          ><Button icon="ios-arrow-back" size="small" class="mr20"
+    <div class="i-layout-page-header header_top">
+      <div class="i-layout-page-header fl_header">
+        <!-- <router-link :to="{ path: '/admin/marketing/lottery/index' }"
+          ><Button icon="ios-arrow-back" size="small" type="text"
             >返回</Button
           ></router-link
-        >
+        > -->
+        <!-- <Divider type="vertical" /> -->
         <span
           class="ivu-page-header-title mr20"
+          style="padding: 0"
           v-text="$route.params.id ? '编辑抽奖信息' : '添加抽奖信息'"
         ></span>
       </div>
     </div>
+
     <Card :bordered="false" dis-hover class="ivu-mt">
+      <div>
+        <Tabs v-model="formValidate.factor" @on-click="onClickTab">
+          <TabPane
+            v-for="(item, index) in tabs"
+            :label="item.name"
+            :name="item.type"
+          />
+        </Tabs>
+      </div>
       <Row type="flex" class="mt30 acea-row row-middle row-center">
-        <Col span="20">
-          <Steps :current="current">
-            <Step title="抽奖活动创建"></Step>
-            <Step title="活动奖品设置"></Step>
-            <Step title="活动设置完成"></Step>
-          </Steps>
-        </Col>
         <Col span="23">
           <Form
             class="form mt30"
@@ -33,7 +38,7 @@
             :label-position="labelPosition"
             @submit.native.prevent
           >
-            <Row v-show="current === 0" type="flex">
+            <Row type="flex">
               <Col span="24">
                 <FormItem label="活动名称：" prop="name" label-for="name">
                   <Input
@@ -45,7 +50,7 @@
                 </FormItem>
               </Col>
               <Col span="24">
-                <FormItem label="活动时间：" prop="period">
+                <FormItem label="活动时间：">
                   <div class="acea-row row-middle">
                     <DatePicker
                       :editable="false"
@@ -60,16 +65,6 @@
                 </FormItem>
               </Col>
               <Col span="24">
-                <FormItem label="活动类型：" prop="factor" label-for="factor">
-                  <RadioGroup element-id="factor" v-model="formValidate.factor">
-                    <Radio :label="1" class="radio">积分抽取</Radio>
-                    <Radio :label="3">订单支付</Radio>
-                    <Radio :label="4">订单评价</Radio>
-                    <!-- <Radio :label="5">关注公众号</Radio> -->
-                  </RadioGroup>
-                </FormItem>
-              </Col>
-              <Col span="24">
                 <FormItem
                   label="参与用户："
                   prop="attends_user"
@@ -78,6 +73,7 @@
                   <RadioGroup
                     element-id="attends_user"
                     v-model="formValidate.attends_user"
+                    @on-change="changeUsers"
                   >
                     <Radio :label="1" class="radio">全部用户</Radio>
                     <Radio :label="2">部分用户</Radio>
@@ -98,7 +94,7 @@
                     >
                       <Option
                         v-for="item in userLevelListApi"
-                        :value="String(item.id)"
+                        :value="item.id"
                         :key="item.id"
                         >{{ item.name }}</Option
                       >
@@ -106,14 +102,35 @@
                   </div>
                 </FormItem>
               </Col>
-
+              <Col span="24" v-if="formValidate.attends_user == 2">
+                <FormItem
+                  label=""
+                  :prop="formValidate.attends_user == 2 ? 'is_svip' : ''"
+                >
+                  <div class="acea-row row-middle">
+                    <Select
+                      v-model="formValidate.is_svip"
+                      class="perW30"
+                      clearable
+                      placeholder="请选择是否是付费会员"
+                    >
+                      <Option
+                        v-for="item in templateList"
+                        :value="item.id"
+                        :key="item.id"
+                        >{{ item.name }}</Option
+                      >
+                    </Select>
+                  </div>
+                </FormItem>
+              </Col>
               <Col span="24" v-if="formValidate.attends_user == 2">
                 <FormItem
                   label=""
                   :prop="formValidate.attends_user == 2 ? 'user_label' : ''"
                 >
                   <div class="acea-row row-middle">
-                    <Select
+                    <!-- <Select
                       multiple
                       v-model="formValidate.user_label"
                       class="perW30"
@@ -125,7 +142,25 @@
                         :key="item.id"
                         >{{ item.label_name }}</Option
                       >
-                    </Select>
+                    </Select> -->
+                    <div
+                      class="labelInput acea-row row-between-wrapper"
+                      @click="selectLabelShow = true"
+                    >
+                      <div class="">
+                        <div v-if="selectDataLabel.length">
+                          <Tag
+                            :closable="false"
+                            v-for="(item, index) in selectDataLabel"
+                            @on-close="closeLabel(item)"
+                            :key="index"
+                            >{{ item.label_name }}</Tag
+                          >
+                        </div>
+                        <span class="span" v-else>选择用户标签</span>
+                      </div>
+                      <div class="ivu-icon ivu-icon-ios-arrow-down"></div>
+                    </div>
                   </div>
                   <div class="ml100 grey">
                     三个条件都设置后,必须这些条件都满足的用户才能参加抽奖
@@ -226,7 +261,7 @@
               </Col>
             </Row>
             <Row>
-              <Col span="24" v-show="current === 1">
+              <Col span="24">
                 <FormItem label="规格选择：" prop="prize">
                   <Table
                     :data="specsData"
@@ -322,7 +357,7 @@
                 </FormItem>
               </Col>
             </Row>
-            <div v-show="current === 2">
+            <div>
               <FormItem
                 v-if="formValidate.factor != 3 && formValidate.factor != 4"
                 :prop="
@@ -420,19 +455,17 @@
                     ? 'content'
                     : ''
                 "
-                v-if="
+                v-show="
                   formValidate.factor != 3 &&
                   formValidate.factor != 4 &&
                   formValidate.is_content == 1
                 "
               >
-                <vue-ueditor-wrap
-                  v-model="formValidate.content"
-                  :key="1"
-                  @beforeInit="addCustomDialog"
-                  :config="myConfig"
+                <WangEditor
                   style="width: 90%"
-                ></vue-ueditor-wrap>
+                  :content="formValidate.content"
+                  @editorContent="getEditorContent"
+                ></WangEditor>
               </FormItem>
               <FormItem label="活动状态：" prop="status" label-for="status">
                 <RadioGroup element-id="status" v-model="formValidate.status">
@@ -443,20 +476,12 @@
             </div>
             <FormItem>
               <Button
-                class="submission mr15"
-                @click="step"
-                v-show="current !== 0"
-                >上一步</Button
-              >
-              <Button
                 type="primary"
                 class="submission"
                 :loading="submitOpen"
                 @click="next('formValidate')"
               >
-                <div v-if="!submitOpen">
-                  {{ current === 2 ? "提交" : "下一步" }}
-                </div>
+                <div v-if="!submitOpen">提交</div>
                 <div v-else>提交中</div>
               </Button>
             </FormItem>
@@ -500,6 +525,26 @@
         :editData="editData"
       ></addGoods>
     </Modal>
+    <!-- 用户标签 -->
+    <Modal
+      v-model="selectLabelShow"
+      scrollable
+      title="请选择用户标签"
+      :closable="false"
+      width="500"
+      :footer-hide="true"
+      :mask-closable="false"
+    >
+      <userLabel
+        v-if="selectLabelShow"
+        :uid="0"
+        ref="userLabel"
+        :only_get="true"
+        :selectDataLabel="selectDataLabel"
+        @activeData="activeSelectData"
+        @close="labelClose"
+      ></userLabel>
+    </Modal>
   </div>
 </template>
 
@@ -507,8 +552,10 @@
 import { mapState } from "vuex";
 import goodsList from "@/components/goodsList/index";
 import uploadPictures from "@/components/uploadPictures";
+import userLabel from "@/components/userLabel";
 import addGoods from "./addGoods";
 import {
+  lotteryNewDetailApi,
   lotteryDetailApi,
   lotteryCreateApi,
   lotteryEditApi,
@@ -516,15 +563,38 @@ import {
 import { lotteryFrom } from "./formRule/lotteryFrom";
 import { labelListApi } from "@/api/product";
 import { levelListApi } from "@/api/user";
-import VueUeditorWrap from "vue-ueditor-wrap";
+import WangEditor from "@/components/wangEditor/index.vue";
+
 import { formatDate } from "@/utils/validate";
 import { formatRichText } from "@/utils/editorImg";
 
 export default {
   name: "lotteryCreate",
-  components: { goodsList, uploadPictures, VueUeditorWrap, addGoods },
+  components: {
+    goodsList,
+    uploadPictures,
+    addGoods,
+    WangEditor,
+    userLabel,
+  },
   data() {
     return {
+      selectDataLabel: [],
+      selectLabelShow: false,
+      tabs: [
+        {
+          name: "积分抽取",
+          type: "1",
+        },
+        {
+          name: "订单支付",
+          type: "3",
+        },
+        {
+          name: "订单评价",
+          type: "4",
+        },
+      ],
       title: "添加商品",
       loading: false,
       userLabelList: [], //用户标签列表
@@ -545,6 +615,10 @@ export default {
       modalPic: false,
       modal_loading: false,
       images: [],
+      templateList: [
+        { id: 0, name: "非付费会员" },
+        { id: 1, name: "付费会员" },
+      ],
       columns: [
         {
           title: "序号",
@@ -680,12 +754,12 @@ export default {
         name: "", //活动名称
         desc: "", //活动描述
         image: "", //活动背景图
-        factor: 1, //抽奖类型：1:积分 2:余额 3：下单支付成功 4:订单评价',5:关注
+        factor: "1", //抽奖类型：1:积分 2:余额 3：下单支付成功 4:订单评价',5:关注
         factor_num: 1, //获取一次抽奖的条件数量
         attends_user: 1, //参与用户1：所有  2：部分
-        user_level: 0, //参与用户等级
+        user_level: [], //参与用户等级
         user_label: [], //参与用户标签
-        is_svip: "0", //参与用户是否付费会员
+        is_svip: "-1", //参与用户是否付费会员
         prize_num: 0, //奖品数量
         period: [], //活动时间
         prize: [], //奖品数组
@@ -735,16 +809,41 @@ export default {
     },
   },
   mounted() {
-    if (this.$route.query.id) {
-      this.id = this.$route.query.id;
-      this.current = 0;
-      this.copy = this.$route.query.copy || 0;
-      this.getInfo();
-    }
+    this.getInfo();
     this.labelListApi();
     this.levelListApi();
   },
   methods: {
+    changeUsers(e) {
+      console.log(e);
+      if (e == 1) {
+        this.formValidate.user_level = []; //参与用户等级
+        this.formValidate.user_label = []; //参与用户标签
+        this.formValidate.is_svip = "-1"; //参与用户是否付费会员
+        this.selectDataLabel = []; //参与用户是否付费会员
+      }
+    },
+    // 标签弹窗关闭
+    labelClose() {
+      this.selectLabelShow = false;
+    },
+    activeSelectData(data) {
+      console.log(data);
+      // let labels = [];
+      // if (!data.length) return;
+      // data.map((i) => {
+      //   labels.push(i.id);
+      // });
+      this.selectLabelShow = false;
+      this.selectDataLabel = data;
+    },
+    onClickTab(e) {
+      this.formValidate.factor = e;
+      this.getInfo(e);
+    },
+    getEditorContent(data) {
+      this.formValidate.content = data;
+    },
     //用户标签列表
     labelListApi() {
       labelListApi().then((res) => {
@@ -764,72 +863,184 @@ export default {
       });
     },
     // 详情
-    getInfo() {
+    getInfo(e) {
       this.spinShow = true;
-      lotteryDetailApi(this.id).then((res) => {
-        this.spinShow = false;
-        this.formValidate = res.data;
-        this.formValidate.user_level = res.data.user_level || [];
-        this.formValidate.user_label = res.data.user_label || [];
-        this.formValidate.is_svip = res.data.is_svip;
-        this.formValidate.period = [
-          this.formatDate(res.data.start_time) || "",
-          this.formatDate(res.data.end_time) || "",
-        ];
+      lotteryNewDetailApi(this.formValidate.factor)
+        .then((res) => {
+          console.log(typeof res.data);
+          if (res.status == 200 && !Array.isArray(res.data)) {
+            this.formValidate = res.data;
+            this.formValidate.user_level = res.data.user_level || [];
+            this.selectDataLabel = res.data.user_label || [];
+            this.formValidate.is_svip = res.data.is_svip;
+            this.formValidate.factor = res.data.factor.toString();
+            this.formValidate.period = [
+              this.formatDate(res.data.start_time) || "",
+              this.formatDate(res.data.end_time) || "",
+            ];
 
-        this.specsData = res.data.prize;
-        this.getProbability();
-      });
+            this.specsData = res.data.prize;
+            this.getProbability();
+          } else {
+            this.formValidate = {
+              images: [],
+              name: "", //活动名称
+              desc: "", //活动描述
+              image: "", //活动背景图
+              factor: e.toString(), //抽奖类型：1:积分 2:余额 3：下单支付成功 4:订单评价',5:关注
+              factor_num: 1, //获取一次抽奖的条件数量
+              attends_user: 1, //参与用户1：所有  2：部分
+              user_level: [], //参与用户等级
+              user_label: [], //参与用户标签
+              is_svip: "-1", //参与用户是否付费会员
+              prize_num: 0, //奖品数量
+              period: [], //活动时间
+              prize: [], //奖品数组
+              lottery_num_term: 1, //抽奖次数限制：1：每天2：每人
+              lottery_num: 1, //抽奖次数
+              spread_num: 1, //关注推广获取抽奖次数
+              is_all_record: 0, //中奖纪录展示
+              is_personal_record: 0, //个人中奖纪录展示
+              is_content: 0, //活动规格是否展示
+              content: "", //富文本内容
+              status: 0, //状态
+            };
+            this.specsData = [
+              {
+                type: 1, //类型 1：未中奖 2：积分  3:余额  4：红包 5:优惠券 6：站内商品
+                name: "", //活动名称
+                num: 10, //奖品数量
+                image: "", //奖品图片
+                chance: 1, //中奖权重
+                total: 0, //奖品数量
+                prompt: "", //提示语
+              },
+              {
+                type: 1, //类型 1：未中奖2：积分  3:余额  4：红包 5:优惠券 6：站内商品
+                name: "", //活动名称
+                num: 0, //奖品数量
+                image: "", //奖品图片
+                chance: 0, //中奖权重
+                total: 0, //奖品数量
+                prompt: "", //提示语
+              },
+              {
+                type: 1, //类型 1：未中奖2：积分  3:余额  4：红包 5:优惠券 6：站内商品
+                name: "", //活动名称
+                num: 0, //奖品数量
+                image: "", //奖品图片
+                chance: 0, //中奖权重
+                total: 0, //奖品数量
+                prompt: "", //提示语
+              },
+              {
+                type: 1, //类型 1：未中奖2：积分  3:余额  4：红包 5:优惠券 6：站内商品
+                name: "", //活动名称
+                num: 0, //奖品数量
+                image: "", //奖品图片
+                chance: 0, //中奖权重
+                total: 0, //奖品数量
+                prompt: "", //提示语
+              },
+              {
+                type: 1, //类型 1：未中奖2：积分  3:余额  4：红包 5:优惠券 6：站内商品
+                name: "", //活动名称
+                num: 0, //奖品数量
+                image: "", //奖品图片
+                chance: 0, //中奖权重
+                total: 0, //奖品数量
+                prompt: "", //提示语
+              },
+              {
+                type: 1, //类型 1：未中奖2：积分  3:余额  4：红包 5:优惠券 6：站内商品
+                name: "", //活动名称
+                num: 0, //奖品数量
+                image: "", //奖品图片
+                chance: 0, //中奖权重
+                total: 0, //奖品数量
+                prompt: "", //提示语
+              },
+              {
+                type: 1, //类型 1：未中奖2：积分  3:余额  4：红包 5:优惠券 6：站内商品
+                name: "", //活动名称
+                num: 0, //奖品数量
+                image: "", //奖品图片
+                chance: 0, //中奖权重
+                total: 0, //奖品数量
+                prompt: "", //提示语
+              },
+              {
+                type: 1, //类型 1：未中奖2：积分  3:余额  4：红包 5:优惠券 6：站内商品
+                name: "", //活动名称
+                num: 0, //奖品数量
+                image: "", //奖品图片
+                chance: 0, //中奖权重
+                total: 0, //奖品数量
+                prompt: "", //提示语
+              },
+            ];
+          }
+        })
+        .catch((err) => {});
+      this.spinShow = false;
     },
     // 下一步
     next(name) {
+      console.log(this.selectDataLabel);
       this.formValidate.prize = this.specsData;
-      if (this.current === 2) {
-        if (this.formValidate.is_content) {
-          this.formValidate.content = formatRichText(this.formValidate.content);
-        }
-        if (this.submitOpen) return false;
-        this.$refs[name].validate((valid) => {
-          if (valid) {
-            this.submitOpen = true;
-            if (this.id && !this.copy) {
-              lotteryEditApi(this.id, this.formValidate)
-                .then(async (res) => {
-                  this.$Message.success(res.msg);
-                  setTimeout(() => {
-                    this.submitOpen = false;
-                    this.$router.push({
-                      path: "/admin/marketing/lottery/index",
-                    });
-                  }, 500);
-                })
-                .catch((res) => {
-                  this.submitOpen = false;
-                  this.$Message.error(res.msg);
-                });
-            } else {
-              lotteryCreateApi(this.formValidate)
-                .then(async (res) => {
-                  this.$Message.success(res.msg);
-                  setTimeout(() => {
-                    this.submitOpen = false;
-                    this.$router.push({
-                      path: "/admin/marketing/lottery/index",
-                    });
-                  }, 500);
-                })
-                .catch((res) => {
-                  this.submitOpen = false;
-                  this.$Message.error(res.msg);
-                });
-            }
-          } else {
-            return false;
-          }
-        });
-      } else {
-        this.current += 1;
+      if (this.formValidate.is_content) {
+        this.formValidate.content = formatRichText(this.formValidate.content);
       }
+      if (this.formValidate.attends_user == 2) {
+        if (this.selectDataLabel.length) {
+          let activeIds = [];
+          this.selectDataLabel.forEach((item) => {
+            activeIds.push(item.id);
+          });
+          this.formValidate.user_label = activeIds;
+        }
+      }
+      if (this.submitOpen) return false;
+      this.$refs[name].validate((valid) => {
+        if (valid) {
+          this.submitOpen = true;
+          if (this.formValidate.id && !this.copy) {
+            lotteryEditApi(this.formValidate.id, this.formValidate)
+              .then(async (res) => {
+                this.$Message.success(res.msg);
+                this.submitOpen = false;
+                // setTimeout(() => {
+                //   this.submitOpen = false;
+                //   this.$router.push({
+                //     path: "/admin/marketing/lottery/recording_list",
+                //   });
+                // }, 500);
+              })
+              .catch((res) => {
+                this.submitOpen = false;
+                this.$Message.error(res.msg);
+              });
+          } else {
+            lotteryCreateApi(this.formValidate)
+              .then(async (res) => {
+                this.submitOpen = false;
+                this.$Message.success(res.msg);
+                // setTimeout(() => {
+                //   this.submitOpen = false;
+                //   this.$router.push({
+                //     path: "/admin/marketing/lottery/recording_list",
+                //   });
+                // }, 500);
+              })
+              .catch((res) => {
+                this.submitOpen = false;
+                this.$Message.error(res.msg);
+              });
+          }
+        } else {
+          return false;
+        }
+      });
     },
     // 上一步
     step() {
@@ -872,40 +1083,6 @@ export default {
       } else {
         return true;
       }
-    },
-    // 添加自定义弹窗
-    addCustomDialog(editorId) {
-      window.UE.registerUI(
-        "test-dialog",
-        function (editor, uiName) {
-          // 创建 dialog
-          let dialog = new window.UE.ui.Dialog({
-            // 指定弹出层中页面的路径，这里只能支持页面，路径参考常见问题 2
-            iframeUrl: "/admin/widget.images/index.html?fodder=dialog",
-            // 需要指定当前的编辑器实例
-            editor: editor,
-            // 指定 dialog 的名字
-            name: uiName,
-            // dialog 的标题
-            title: "上传图片",
-            // 指定 dialog 的外围样式
-            cssRules: "width:960px;height:550px;padding:20px;",
-          });
-          this.dialog = dialog;
-          var btn = new window.UE.ui.Button({
-            name: "dialog-button",
-            title: "上传图片",
-            cssRules: `background-image: url(../../../assets/images/icons.png);background-position: -726px -77px;`,
-            onclick: function () {
-              // 渲染dialog
-              dialog.render();
-              dialog.open();
-            },
-          });
-          return btn;
-        },
-        37
-      );
     },
     //新增商品
     addGoods() {
@@ -1055,6 +1232,24 @@ export default {
     border-radius: 4px;
     background: rgba(0, 0, 0, 0.02);
     cursor: pointer;
+  }
+}
+
+.labelInput {
+  border: 1px solid #dcdee2;
+  padding: 0 6px;
+  width: 30%;
+  border-radius: 5px;
+  min-height: 30px;
+  cursor: pointer;
+
+  .span {
+    color: #c5c8ce;
+  }
+
+  .ivu-icon-ios-arrow-down {
+    font-size: 14px;
+    color: #808695;
   }
 }
 </style>

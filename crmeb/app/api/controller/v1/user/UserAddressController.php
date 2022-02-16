@@ -113,8 +113,8 @@ class UserAddressController
             [['type', 'd'], 0]
         ]);
         if (!isset($addressInfo['address']['province']) || !$addressInfo['address']['province'] || $addressInfo['address']['province'] == '省') return app('json')->fail('收货地址格式错误!');
-        if (!isset($addressInfo['address']['city']) || !$addressInfo['address']['city'] || $addressInfo['address']['city'] == '市') return app('json')->fail('收货地址格式错误!');
-        if (!isset($addressInfo['address']['district']) || !$addressInfo['address']['district'] || $addressInfo['address']['district'] == '区') return app('json')->fail('收货地址格式错误!');
+        if (!isset($addressInfo['address']['city']) || !$addressInfo['address']['city'] || $addressInfo['address']['city'] == '市') return app('json')->fail('收货地址格式错误或系统未完善当前地址!');
+        if (!isset($addressInfo['address']['district']) || !$addressInfo['address']['district'] || $addressInfo['address']['district'] == '区') return app('json')->fail('收货地址格式错误或系统未完善当前地址!');
         if (!isset($addressInfo['address']['city_id']) && $addressInfo['type'] == 0) return app('json')->fail('收货地址格式错误!请重新选择!');
         if (!$addressInfo['detail']) return app('json')->fail('请填写详细地址!');
         $uid = (int)$request->uid();

@@ -77,14 +77,11 @@ class StoreOrder extends AuthController
             ['order', ''],
             ['field_key', ''],
         ]);
-        $where['shipping_type'] = 1;
         $where['is_system_del'] = 0;
-        if (!$where['real_name'] && !in_array($where['status'], [-1, -2, -3])) {
-            $where['pid'] = 0;
-        }
+        $where['pid'] = 0;
         return app('json')->success($this->services->getOrderList($where, ['*'], ['split' => function ($query) {
             $query->field('id,pid');
-        }, 'pink', 'invoice']));
+        }, 'pink', 'invoice', 'division']));
     }
 
     /**
@@ -364,7 +361,7 @@ class StoreOrder extends AuthController
             'to_name' => sys_config('config_export_to_name'),
             'to_tel' => sys_config('config_export_to_tel'),
             'to_add' => sys_config('config_export_to_address'),
-            'export_open' => (int)sys_config('config_export_open') ? true : false
+            'export_open' => (bool)((int)sys_config('config_export_open'))
         ]);
     }
 
@@ -476,7 +473,7 @@ class StoreOrder extends AuthController
         //核算优惠金额
         $vipTruePrice = array_column($orderInfo['cartInfo'], 'vip_sum_truePrice');
         $vipTruePrice = round(array_sum($vipTruePrice), 2);
-        $orderInfo['vip_true_price'] = $vipTruePrice ? $vipTruePrice : 0;
+        $orderInfo['vip_true_price'] = $vipTruePrice ?: 0;
         $orderInfo['total_price'] = bcadd($orderInfo['total_price'], $orderInfo['vip_true_price'], 2);
         if ($orderInfo['store_id'] && $orderInfo['shipping_type'] == 2) {
             /** @var  $storeServices */

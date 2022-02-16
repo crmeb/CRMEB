@@ -15,8 +15,8 @@
 						<view>累计消费</view>
 					</view>
 					<view class='item'>
-						<view class='num'>{{userInfo.today_integral}}</view>
-						<view>今日获得</view>
+						<view class='num'>{{userInfo.frozen_integral}}</view>
+						<view>冻结积分</view>
 					</view>
 				</view>
 			</view>

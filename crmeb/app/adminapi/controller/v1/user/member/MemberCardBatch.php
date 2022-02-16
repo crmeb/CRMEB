@@ -15,7 +15,7 @@ namespace app\adminapi\controller\v1\user\member;
 use app\adminapi\controller\AuthController;
 use app\services\other\AgreementServices;
 use app\services\other\QrcodeServices;
-use app\services\user\MemberCardBatchServices;
+use app\services\user\member\MemberCardBatchServices;
 use think\facade\App;
 
 /**
@@ -96,7 +96,7 @@ class MemberCardBatch extends AuthController
         $wechatQrcode = $QrcodeService->getWechatQrcodePath($weixinFileName,$weixinPage, false, false);
         //生成小程序地址
         $routineQrcode = $QrcodeService->getRoutineQrcodePath(4,6,4, [], false);
-        return app('json')->success(['wechat_img' => $wechatQrcode, 'routine' => $routineQrcode ? $routineQrcode : ""]);
+        return app('json')->success(['wechat_img' => $wechatQrcode, 'routine' => $routineQrcode ?: ""]);
     }
 
     /** 添加会员协议

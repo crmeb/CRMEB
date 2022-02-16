@@ -1,14 +1,16 @@
 <template>
   <div class="article-manager">
-    <div class="i-layout-page-header">
-      <div class="i-layout-page-header">
+    <div class="i-layout-page-header header_top">
+      <div class="i-layout-page-header fl_header">
         <router-link :to="{ path: '/admin/cms/article/index' }"
-          ><Button icon="ios-arrow-back" size="small" class="mr20"
+          ><Button icon="ios-arrow-back" size="small" type="text"
             >返回</Button
           ></router-link
         >
+        <Divider type="vertical" />
         <span
           class="ivu-page-header-title mr20"
+          style="padding: 0"
           v-text="$route.params.id ? '编辑文章' : '添加文章'"
         ></span>
       </div>
@@ -54,8 +56,9 @@
                   <Option
                     v-for="item in treeData"
                     :value="item.id"
+                    :disabled="item.pid === 0"
                     :key="item.id"
-                    >{{ item.title }}</Option
+                    >{{ item.html + item.title }}</Option
                   >
                 </Select>
               </div>
@@ -81,6 +84,7 @@
                   <Icon type="ios-camera-outline" size="24" />
                 </div>
               </div>
+              <div class="tip">建议尺寸：500 x 312 px</div>
             </FormItem>
           </Col>
         </Row>
@@ -88,12 +92,11 @@
           <div class="title">文章内容</div>
         </div>
         <FormItem label="文章内容：" prop="content">
-          <vue-ueditor-wrap
-            v-model="formValidate.content"
-            @beforeInit="addCustomDialog"
-            :config="myConfig"
+          <WangEditor
             style="width: 90%"
-          ></vue-ueditor-wrap>
+            :content="formValidate.content"
+            @editorContent="getEditorContent"
+          ></WangEditor>
         </FormItem>
         <div class="goodsTitle acea-row">
           <div class="title">其他设置</div>
@@ -156,11 +159,11 @@
 <script>
 import { mapState } from "vuex";
 import uploadPictures from "@/components/uploadPictures";
-import VueUeditorWrap from "vue-ueditor-wrap";
-import { cmsAddApi, createApi, categoryListApi } from "@/api/cms";
+import WangEditor from "@/components/wangEditor/index.vue";
+import { cmsAddApi, createApi, categoryTreeListApi } from "@/api/cms";
 export default {
   name: "addArticle",
-  components: { uploadPictures, VueUeditorWrap },
+  components: { uploadPictures, WangEditor },
   data() {
     const validateUpload = (rule, value, callback) => {
       if (this.formValidate.image_input) {
@@ -276,6 +279,9 @@ export default {
     },
   },
   methods: {
+    getEditorContent(data) {
+      this.formValidate.content = data;
+    },
     // ...mapActions('admin/page', [
     //   'close'
     // ]),
@@ -293,7 +299,7 @@ export default {
     },
     // 分类
     getClass() {
-      categoryListApi(this.formValidate2)
+      categoryTreeListApi()
         .then(async (res) => {
           this.treeData = res.data;
         })
@@ -344,40 +350,6 @@ export default {
           this.loading = false;
           this.$Message.error(res.msg);
         });
-    },
-    // 添加自定义弹窗
-    addCustomDialog(editorId) {
-      window.UE.registerUI(
-        "test-dialog",
-        function (editor, uiName) {
-          // 创建 dialog
-          let dialog = new window.UE.ui.Dialog({
-            // 指定弹出层中页面的路径，这里只能支持页面，路径参考常见问题 2
-            iframeUrl: "/admin/widget.images/index.html?fodder=dialog",
-            // 需要指定当前的编辑器实例
-            editor: editor,
-            // 指定 dialog 的名字
-            name: uiName,
-            // dialog 的标题
-            title: "上传图片",
-            // 指定 dialog 的外围样式
-            cssRules: "width:960px;height:550px;padding:20px;",
-          });
-          this.dialog = dialog;
-          var btn = new window.UE.ui.Button({
-            name: "dialog-button",
-            title: "上传图片",
-            cssRules: `background-image: url(../../../assets/images/icons.png);background-position: -726px -77px;`,
-            onclick: function () {
-              // 渲染dialog
-              dialog.render();
-              dialog.open();
-            },
-          });
-          return btn;
-        },
-        37
-      );
     },
   },
   mounted() {
@@ -468,5 +440,9 @@ export default {
 
 .Modals .address .iconfont {
   font-size: 20px;
+}
+.tip{
+  margin-top: 10px;
+  color: #bbb;
 }
 </style>

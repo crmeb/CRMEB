@@ -135,7 +135,7 @@ class UserLabelCateServices extends BaseServices
         $list = $this->dao->getAll(['type' => 0], ['label']);
         /** @var UserLabelRelationServices $services */
         $services = app()->make(UserLabelRelationServices::class);
-        $labelIds = $services->getUserLabels($uid);
+        $labelIds = $services->getUserLabels($uid) ?? [];
         foreach ($list as $key => &$item) {
             if (is_array($item['label'])) {
                 if (!$item['label']) {

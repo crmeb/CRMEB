@@ -8,7 +8,7 @@
 				<view class="acea-row row-middle">
 					<view class="acea-row row-middle" style="margin-right: 15rpx;">
 						<view class="name line1">{{ item.nickname }}</view>
-						<view class="vipImg" v-if="item.is_money_level>0"><image src="../../static/images/vip.png"></image></view>
+						<view class="vipImg" v-if="item.is_money_level>0"><image src="../../static/images/svip.gif"></image></view>
 					</view>
 					<view class="start" :class="'star' + item.star"></view>
 				</view>

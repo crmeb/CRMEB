@@ -123,6 +123,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    isdiy: {
+      type: Boolean,
+      default: false,
+    },
     datas: {
       type: Object,
       default: function () {
@@ -313,10 +317,16 @@ export default {
     changeCheckbox(selection) {
       let images = [];
       selection.forEach(function (item) {
-        let imageObject = { image: item.image, product_id: item.id };
+        let imageObject = {
+          image: item.image,
+          product_id: item.id,
+          store_name: item.store_name,
+          temp_id: item.temp_id,
+        };
         images.push(imageObject);
       });
       this.images = images;
+      this.diyVal = selection;
       this.$emit("getProductDiy", selection);
     },
     // 商品分类；
@@ -344,8 +354,6 @@ export default {
         if (this.isLive) {
           this.formValidate.is_live = 1;
         }
-        console.log("1111");
-
         changeListApi(this.formValidate)
           .then(async (res) => {
             let data = res.data;
@@ -388,7 +396,11 @@ export default {
           form_create_helper.set("image", imageValue.concat(this.images));
           form_create_helper.close("image");
         } else {
-          this.$emit("getProductId", this.images);
+          if (this.isdiy) {
+            this.$emit("getProductId", this.diyVal);
+          } else {
+            this.$emit("getProductId", this.images);
+          }
         }
       } else {
         this.$Message.warning("请先选择商品");

@@ -357,7 +357,7 @@ class StoreIntegralOrder extends AuthController
             'to_name' => sys_config('config_export_to_name'),
             'to_tel' => sys_config('config_export_to_tel'),
             'to_add' => sys_config('config_export_to_address'),
-            'export_open' => (int)sys_config('config_export_open') ? true : false
+            'export_open' => (bool)((int)sys_config('config_export_open'))
         ]);
     }
 

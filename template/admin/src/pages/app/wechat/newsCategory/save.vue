@@ -1,18 +1,20 @@
 <template>
   <div class="newsBox">
-    <div class="i-layout-page-header">
-      <div class="i-layout-page-header">
+    <div class="i-layout-page-header header_top">
+      <div class="i-layout-page-header fl_header">
         <router-link :to="{ path: '/admin/app/wechat/news_category/index' }"
           ><Button
             icon="ios-arrow-back"
             size="small"
-            class="mr20"
+            type="text"
             v-show="$route.params.id"
             >返回</Button
           ></router-link
         >
+        <Divider type="vertical" />
         <span
           class="ivu-page-header-title mr20"
+          style="padding: 0"
           v-text="$route.meta.title"
         ></span>
       </div>
@@ -67,7 +69,7 @@
               ></Button>
             </div>
           </div>
-          <div class="acea-row row-center-wrapper">
+          <!-- <div class="acea-row row-center-wrapper">
             <Button
               icon="ios-download-outline"
               class="mt20"
@@ -75,7 +77,7 @@
               @click="handleAdd"
               >添加图文</Button
             >
-          </div>
+          </div> -->
         </Col>
         <Col :xl="18" :lg="18" :md="12" :sm="24" :xs="24">
           <Form
@@ -130,12 +132,11 @@
                   </div>
                 </FormItem>
                 <FormItem label="正文：" prop="content">
-                  <ueditor-wrap
-                    v-model="saveForm.content"
-                    :config="myConfig"
-                    @beforeInit="addCustomDialog"
+                  <WangEditor
                     style="width: 90%"
-                  ></ueditor-wrap>
+                    :content="saveForm.content"
+                    @editorContent="getEditorContent"
+                  ></WangEditor>
                 </FormItem>
               </Col>
               <Col span="24" class="ml40">
@@ -176,12 +177,12 @@
 
 <script>
 import { mapState } from "vuex";
-import UeditorWrap from "vue-ueditor-wrap";
+import WangEditor from "@/components/wangEditor/index.vue";
 import uploadPictures from "@/components/uploadPictures";
 import { wechatNewsAddApi, wechatNewsInfotApi } from "@/api/app";
 export default {
   name: "newsCategorySave",
-  components: { uploadPictures, UeditorWrap },
+  components: { uploadPictures, WangEditor },
   watch: {
     $route(to, from) {
       if (this.$route.params.id !== "0") {
@@ -288,35 +289,8 @@ export default {
     }
   },
   methods: {
-    // 添加自定义弹窗
-    addCustomDialog(editorId) {
-      window.UE.registerUI(
-        "test-dialog",
-        function (editor, uiName) {
-          let dialog = new window.UE.ui.Dialog({
-            iframeUrl: "/admin/widget.images/index.html?fodder=dialog",
-            editor: editor,
-            name: uiName,
-            title: "上传图片",
-            cssRules: "width:960px;height:550px;padding:20px;",
-          });
-          this.dialog = dialog;
-          // 参考上面的自定义按钮
-          var btn = new window.UE.ui.Button({
-            name: "dialog-button",
-            title: "上传图片",
-            cssRules: `background-image: url(../../../assets/images/icons.png);background-position: -726px -77px;`,
-            onclick: function () {
-              // 渲染dialog
-              dialog.render();
-              dialog.open();
-            },
-          });
-
-          return btn;
-        },
-        37
-      );
+    getEditorContent(data) {
+      this.saveForm.content = data;
     },
     // 点击图文封面
     modalPicTap() {

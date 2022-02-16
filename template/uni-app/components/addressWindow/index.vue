@@ -100,7 +100,7 @@
 		bottom: 0;
 		left: 0;
 		width: 100%;
-		z-index: 101;
+		z-index: 1000;
 		transform: translate3d(0, 100%, 0);
 		transition: all .3s cubic-bezier(.25, .5, .5, .9);
 	}

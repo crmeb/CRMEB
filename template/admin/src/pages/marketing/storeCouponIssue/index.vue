@@ -88,14 +88,14 @@
         <template slot-scope="{ row }" slot="type">
           <span v-if="row.type === 1">品类券</span>
           <span v-else-if="row.type === 2">商品券</span>
-          <!-- <span v-else-if="row.type === 3">会员券</span> -->
+          <span v-else-if="row.type === 3">会员券</span>
           <span v-else>通用券</span>
         </template>
         <template slot-scope="{ row }" slot="receive_type">
           <span v-if="row.receive_type === 1">手动领取</span>
           <span v-else-if="row.receive_type === 2">新人券</span>
           <span v-else-if="row.receive_type === 3">赠送券</span>
-          <!-- <span v-else-if="row.receive_type === 4">会员券</span> -->
+          <span v-else-if="row.receive_type === 4">会员券</span>
           <span v-else>虚拟购买</span>
         </template>
         <template slot-scope="{ row }" slot="start_time">
@@ -325,7 +325,7 @@ export default {
       rows: {},
     };
   },
-  created() {
+  activated() {
     this.getList();
   },
   computed: {

@@ -14,9 +14,11 @@ namespace app\services\activity\lottery;
 
 use app\services\BaseServices;
 use app\dao\activity\lottery\LuckLotteryRecordDao;
-use app\services\coupon\StoreCouponIssueServices;
+use app\services\activity\coupon\StoreCouponIssueServices;
 use app\services\order\StoreOrderCreateServices;
+use app\services\statistic\CapitalFlowServices;
 use app\services\user\UserBillServices;
+use app\services\user\UserMoneyServices;
 use app\services\user\UserServices;
 use app\services\wechat\WechatUserServices;
 use crmeb\services\WechatService;
@@ -48,6 +50,15 @@ class LuckLotteryRecordServices extends BaseServices
     public function getList(array $where)
     {
         [$page, $limit] = $this->getPageValue();
+        /** @var LuckLotteryServices $luckServices */
+        $luckServices = app()->make(LuckLotteryServices::class);
+        $where['lottery_id'] = $luckServices->value(['factor' => $where['factor']], 'id');
+        if (!$where['lottery_id']) {
+            $list = [];
+            $count = 0;
+            return compact('list', 'count');
+        }
+        unset($where['factor']);
         $list = $this->dao->getList($where, '*', ['lottery', 'prize', 'user'], $page, $limit);
         foreach ($list as &$item) {
             $item['add_time'] = $item['add_time'] ? date('Y-m-d H:i:s', $item['add_time']) : '';
@@ -59,12 +70,16 @@ class LuckLotteryRecordServices extends BaseServices
     /**
      * 获取中奖记录
      * @param array $where
+     * @param int $limit
      * @return array
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
      */
-    public function getWinList(array $where)
+    public function getWinList(array $where, int $limit = 20)
     {
         $where = $where + ['not_type' => 1];
-        $list = $this->dao->getList($where, 'id,uid,prize_id,lottery_id,receive_time,add_time', ['user', 'prize']);
+        $list = $this->dao->getList($where, 'id,uid,prize_id,lottery_id,receive_time,add_time', ['user', 'prize'], 0, $limit);
         foreach ($list as &$item) {
             $item['receive_time'] = $item['receive_time'] ? date('Y-m-d H:i:s', $item['receive_time']) : '';
             $item['add_time'] = $item['add_time'] ? date('Y-m-d H:i', $item['add_time']) : '';
@@ -155,14 +170,15 @@ class LuckLotteryRecordServices extends BaseServices
                 case 2:
                     /** @var UserBillServices $userBillServices */
                     $userBillServices = app()->make(UserBillServices::class);
-                    $userBillServices->income('lottery_give_integral', $uid, $prize['num'], $userInfo['integral'], $prize['id']);
+                    $userBillServices->income('lottery_give_integral', $uid, $prize['num'], $userInfo['integral'] + $prize['num'], $prize['id']);
                     $userServices->update($uid, ['integral' => bcadd((string)$userInfo['integral'], (string)$prize['num'], 0)], 'uid');
                     break;
                 case 3:
-                    /** @var UserBillServices $userBillServices */
-                    $userBillServices = app()->make(UserBillServices::class);
-                    $userBillServices->income('lottery_give_money', $uid, $prize['num'], $userInfo['now_money'], $prize['id']);
-                    $userServices->update($uid, ['now_money' => bcadd((string)$userInfo['now_money'], (string)$prize['num'], 2)], 'uid');
+                    /** @var UserMoneyServices $userMoneyServices */
+                    $userMoneyServices = app()->make(UserMoneyServices::class);
+                    $now_money = bcadd((string)$userInfo['now_money'], (string)$prize['num'], 2);
+                    $userMoneyServices->income('lottery_give_money', $uid, $prize['num'], $now_money, $prize['id']);
+                    $userServices->update($uid, ['now_money' => $now_money], 'uid');
                     break;
                 case 4:
                     /** @var WechatUserServices $wechatServices */
@@ -172,6 +188,16 @@ class LuckLotteryRecordServices extends BaseServices
                         /** @var StoreOrderCreateServices $services */
                         $services = app()->make(StoreOrderCreateServices::class);
                         $wechat_order_id = $services->getNewOrderId();
+                        /** @var CapitalFlowServices $capitalFlowServices */
+                        $capitalFlowServices = app()->make(CapitalFlowServices::class);
+                        $capitalFlowServices->setFlow([
+                            'order_id' => $wechat_order_id,
+                            'uid' => $uid,
+                            'price' => bcmul('-1', (string)$prize['num'], 2),
+                            'pay_type' => 'weixin',
+                            'nickname' => $userInfo['nickname'],
+                            'phone' => $userInfo['phone']
+                        ], 'luck');
                         WechatService::merchantPay($openid, $wechat_order_id, $prize['num'], '抽奖中奖红包');
                     }
                     break;
@@ -193,6 +219,7 @@ class LuckLotteryRecordServices extends BaseServices
                     }
                     break;
                 case 7:
+                    //TODO 未完善
                     break;
                 case 8:
                     break;
@@ -222,9 +249,7 @@ class LuckLotteryRecordServices extends BaseServices
         $deliver_info = $lotteryRecord['deliver_info'];
         $edit = [];
         //备注
-        if (!$data['deliver_name'] && !$data['deliver_number'] && $data['mark']) {
-            $deliver_info['mark'] = $data['mark'];
-        } else {
+        if($data['deliver_name'] && $data['deliver_number']) {
             if ($lotteryRecord['type'] != 6 && ($data['deliver_name'] || $data['deliver_number'])) {
                 throw new ValidateException('该奖品不需要发货');
             }
@@ -236,6 +261,7 @@ class LuckLotteryRecordServices extends BaseServices
             $edit['is_deliver'] = 1;
             $edit['deliver_time'] = time();
         }
+        $deliver_info['mark'] = $data['mark'];
         $edit['deliver_info'] = $deliver_info;
         if (!$this->dao->update($lottery_record_id, $edit, 'id')) {
             throw new ValidateException('处理失败');

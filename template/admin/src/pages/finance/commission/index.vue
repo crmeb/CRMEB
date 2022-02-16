@@ -39,9 +39,9 @@
           no-filtered-data-text="暂无筛选结果"
           @on-sort-change="sortChanged"
       >
-        <template slot-scope="{ row, index }" slot="action">
+        <!-- <template slot-scope="{ row, index }" slot="action">
           <a @click="Info(row)">详情</a>
-        </template>
+        </template> -->
       </Table>
       <div class="acea-row row-right page">
         <Page :total=total :current="formValidate.page" show-elevator show-total :page-size="formValidate.limit"
@@ -100,12 +100,12 @@
             key: 'extract_price',
             minWidth: 150
           },
-          {
-            title: '操作',
-            slot: 'action',
-            fixed: 'right',
-            minWidth: 100
-          }
+          // {
+          //   title: '操作',
+          //   slot: 'action',
+          //   fixed: 'right',
+          //   minWidth: 100
+          // }
         ]
       }
     },

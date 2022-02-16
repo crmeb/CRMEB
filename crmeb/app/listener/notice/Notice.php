@@ -19,7 +19,6 @@ use app\services\order\StoreOrderCartInfoServices;
 use app\services\user\UserServices;
 use crmeb\interfaces\ListenerInterface;
 use crmeb\utils\Str;
-use think\facade\Log;
 
 /**
  * 订单创建事件
@@ -58,7 +57,6 @@ class Notice implements ListenerInterface
             $UserServices = app()->make(UserServices::class);
 
             $userType = 'wechat';
-
             if ($mark) {
                 $WechatTemplateList->setEvent($mark);
                 $SystemMsg->setEvent($mark);
@@ -89,8 +87,8 @@ class Notice implements ListenerInterface
                         $order_id = $data['order_id'];
                         //短信
                         $NoticeSms->sendSms($data['user_phone'], compact('order_id', 'pay_price'), 'PAY_SUCCESS_CODE');
-                        $data['is_channel'] = isset($data['is_channel']) ? $data['is_channel'] : 2;
-                        $data['total_num'] = isset($data['total_num']) ? $data['total_num'] : 1;
+                        $data['is_channel'] = $data['is_channel'] ?? 2;
+                        $data['total_num'] = $data['total_num'] ?? 1;
                         if (in_array($data['is_channel'], [0, 2])) $userType = 'wechat';
                         if (in_array($data['is_channel'], [1, 2])) $userType = 'routine';
                         //站内信
@@ -217,12 +215,12 @@ class Notice implements ListenerInterface
                     //退款未通过
                     case 'send_order_refund_no_status':
                         $order = $data['orderInfo'];
+                        $order['pay_price'] = $order['refund_price'];
                         if (in_array($order->is_channel, [0, 2])) $userType = 'wechat';
                         if (in_array($order->is_channel, [1, 2])) $userType = 'routine';
-                        $storeName = $orderInfoServices->getCarIdByProductTitle($order['kefuSystemSendid'], $order['cart_id']);
-                        $storeTitle = Str::substrUTf8($storeName, 20, 'UTF-8', '');
+                        $storeTitle = Str::substrUTf8($order['cart_info'][0]['productInfo']['store_name'], 20, 'UTF-8', '');
                         //站内信
-                        $SystemMsg->sendMsg($order['uid'], ['order_id' => $order['order_id'], 'pay_price' => $order['pay_price'], 'store_name' => $storeTitle]);
+                        $SystemMsg->sendMsg($order['uid'], ['order_id' => $order['order_id'], 'pay_price' => $order['refund_price'], 'store_name' => $storeTitle]);
                         //模板消息公众号模版消息
                         if ($userType == 'wechat') {
                             $WechatTemplateList->sendOrderRefundNoStatus($order['uid'], $order);

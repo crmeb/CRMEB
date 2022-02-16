@@ -13,8 +13,6 @@ namespace app\dao\service;
 
 use app\dao\BaseDao;
 use app\model\service\StoreServiceLog;
-use think\facade\Db;
-use think\Model;
 
 /**
  * 客服聊天记录dao
@@ -30,8 +28,8 @@ class StoreServiceLogDao extends BaseDao
     public function __construct()
     {
         //清楚去年的聊天记录
-        $this->removeChat();
-        $this->removeYesterDayChat();
+//        $this->removeChat();
+//        $this->removeYesterDayChat();
     }
 
     /**

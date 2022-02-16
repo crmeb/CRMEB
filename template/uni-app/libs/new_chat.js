@@ -81,12 +81,7 @@ Socket.prototype = {
 	onStart: function(token, form_type) {
 		let wssUrl = `${VUE_APP_WS_URL}`
 		this.ws = uni.connectSocket({
-			// #ifdef H5
-			url: wss(wssUrl + '?type=user&token=' + token + '&form_type=' + form_type),
-			// #endif
-			// #ifdef MP || APP-PLUS
 			url: wssUrl + '?type=user&token=' + token + '&form_type=' + form_type,
-			// #endif
 			header: {
 				'content-type': 'application/json'
 			},

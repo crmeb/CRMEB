@@ -184,17 +184,17 @@ class SpreadsheetExcelService
             if (isset($info['name'])) {
                 $content[0] .= $info['name'];
             } else {
-                $content[0] .= isset($info[0]) ? $info[0] : '';
+                $content[0] .= $info[0] ?? '';
             }
             if (isset($info['site'])) {
                 $content[2] .= $info['site'];
             } else {
-                $content[2] .= isset($info[1]) ? $info[1] : '';
+                $content[2] .= $info[1] ?? '';
             }
             if (isset($info['phone'])) {
                 $content[3] .= $info['phone'];
             } else {
-                $content[3] .= isset($info[2]) ? $info[2] : '';
+                $content[3] .= $info[2] ?? '';
             }
             return implode(' ', $content);
         } else if (is_string($info)) {
@@ -230,6 +230,7 @@ class SpreadsheetExcelService
     public function setExcelContent($data = [])
     {
         if (!empty($data) && is_array($data)) {
+            $span = '';
             $column = self::$topNumber + 1;
             // 行写入
             foreach ($data as $key => $rows) {

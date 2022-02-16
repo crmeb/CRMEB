@@ -38,11 +38,11 @@
                 <div class="font">优惠券</div>
               </div>
             </div>
-            <!-- <div
+            <div
               class="bottom acea-row row-between-wrapper"
               v-if="userData.status == 1"
             >
-              <div>会员到期 2014-05-21</div>
+              <div>会员到期 2022-12-31</div>
               <div class="renew">
                 立即续费<span class="iconfont iconjinru"></span>
               </div>
@@ -57,18 +57,18 @@
               <div>
                 会员可享多项权益<span class="iconfont iconjinru"></span>
               </div>
-            </div> -->
+            </div>
           </div>
-          <!-- <div
+          <div
             class="member acea-row row-between-wrapper"
             v-if="userData.status == 2"
           >
             <div class="text">
               <div class="title">会员可享多项权益</div>
-              <div>会员剩余134天</div>
+              <div>会员剩余360天</div>
             </div>
             <div class="bnt">立即续费</div>
-          </div> -->
+          </div>
           <div
             class="orderCenter on dotted"
             :class="current == 4 ? 'solid' : ''"
@@ -107,7 +107,6 @@
             class="carousel dotted"
             :class="current == 1 ? 'solid' : ''"
             @click="currentShow(1)"
-            v-if="userData.my_banner_status"
           >
             <swiper
               :options="swiperOption"
@@ -173,7 +172,7 @@
         </div>
         <div class="right">
           <div class="title">页面设置</div>
-          <!-- <div class="c_row-item">
+          <div class="c_row-item">
             <Col class="label" span="4"> 页面风格： </Col>
             <Col span="20" class="slider-box">
               <RadioGroup v-model="userData.status">
@@ -191,7 +190,7 @@
                 </Radio>
               </RadioGroup>
             </Col>
-          </div> -->
+          </div>
           <div class="c_row-item" v-if="current == 4">
             <Col class="label" span="4"> 订单中心： </Col>
             <Col span="20" class="slider-box">
@@ -292,12 +291,12 @@ export default {
         my_banner_status: true,
         routine_my_banner: [],
         routine_my_menus: [],
-        status: "1",
+        status: "",
         order_status: "",
       },
       MyMenus: [{ pic: "", url: "", name: "", sort: 1, status: 1 }],
       storeMenu: [{ pic: "", url: "", name: "", sort: 1, status: 1 }],
-      current: 4,
+      current: 1,
       colorStyle: "",
       order: {},
       order01: {
@@ -534,12 +533,12 @@ export default {
 }
 
 .bottomB {
-  width: 276px;
+  width: 270px;
   height: 62px;
   background: #343A48;
   border-radius: 8px 8px 0px 0px;
   padding: 11px 15px 0 15px;
-  margin: 18px auto 0 auto;
+  margin: 10px auto 0 auto;
   color: #BBBBBB;
   font-size: 13px;
   z-index: 0;
@@ -570,7 +569,7 @@ export default {
   background-size: 100%;
   width: 270px;
   height: 48px;
-  margin: -50px auto 0 auto;
+  margin: -42px auto 0 auto;
   position: relative;
   z-index: 9;
   margin-bottom: 13px;
@@ -644,7 +643,7 @@ export default {
       background-size: 100%;
       background-repeat: no-repeat;
       width: 100%;
-      height: 140px;
+      height: 150px;
       position: relative;
       margin-bottom: 14px;
 
@@ -760,15 +759,16 @@ export default {
 
       .bottom {
         background-image: url('../../../assets/images/member.png');
-        width: 310px;
+        width: 287px;
         height: 34px;
         background-size: 100%;
         background-repeat: no-repeat;
         position: absolute;
-        bottom: 0;
-        padding: 0 28px 0 67px;
+        bottom: -6px;
+        padding: 0 17px 0 44px;
         font-size: 13px;
         color: #905100;
+        right: 8px;
 
         .renew {
           font-size: 12px;
@@ -789,7 +789,7 @@ export default {
 
       &.on {
         position: relative;
-        margin-top: -28px;
+        margin-top: -5px;
       }
 
       .title {

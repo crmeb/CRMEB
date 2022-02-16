@@ -14,7 +14,6 @@ namespace app\dao\product\product;
 
 use app\dao\BaseDao;
 use app\model\product\product\StoreProductLog;
-use think\facade\Config;
 
 class StoreProductLogDao extends BaseDao
 {
@@ -29,7 +28,6 @@ class StoreProductLogDao extends BaseDao
 
     public function getRanking($where)
     {
-//        $prefix = Config::get('database.connections.' . Config::get('database.default') . '.prefix');
         return $this->search($where)->with('storeName')
             ->field([
                 'product_id',
@@ -43,7 +41,6 @@ class StoreProductLogDao extends BaseDao
                 'ROUND((SUM(pay_price)-SUM(cost_price))/SUM(cost_price),2) as profit',
                 'SUM(collect_num) as collect',
                 'ROUND((COUNT(distinct(pay_uid))-1)/COUNT(distinct(uid)),2) as changes',
-//                '(select count(*) from (SELECT COUNT(`pay_uid`) as p,product_id FROM `' . $prefix . 'store_product_log` WHERE `product_id` = `' . $prefix . 'store_product_log`.`product_id` AND `type` = \'pay\' GROUP BY `pay_uid` HAVING p>1) u WHERE `product_id` = `' . $prefix . 'store_product_log`.`product_id`) as aaaa',
                 'COUNT(distinct(pay_uid))-1 as repeats'
             ])->group('product_id')->order("$where[sort] desc")->limit(20)->select()->toArray();
     }
@@ -51,5 +48,24 @@ class StoreProductLogDao extends BaseDao
     public function getRepeats($where, $product_id)
     {
         return count($this->search($where)->where('type', 'pay')->where('product_id', $product_id)->field('count(pay_uid) as p')->group('pay_uid')->having('p>1')->select());
+    }
+
+    /**
+     * 访问趋势
+     * @param $time
+     * @param $timeType
+     * @param $str
+     * @return mixed
+     */
+    public function getProductTrend($time, $timeType, $str)
+    {
+        return $this->getModel()->where(function ($query) use ($time) {
+            if ($time[0] == $time[1]) {
+                $query->whereDay('add_time', $time[0]);
+            } else {
+                $time[1] = date('Y/m/d', strtotime($time[1]) + 86400);
+                $query->whereTime('add_time', 'between', $time);
+            }
+        })->field("FROM_UNIXTIME(add_time,'$timeType') as days,$str as num")->group('days')->select()->toArray();
     }
 }

@@ -101,9 +101,6 @@
 		chs_phone
 	} from "@/utils/validate";
 	import {
-		validatorDefaultCatch
-	} from "@/utils/dialog";
-	import {
 		getLogo
 	} from "@/api/public";
 	// import cookie from "@/utils/store/cookie";
@@ -205,6 +202,7 @@
 						});
 					},
 					fail(error) {
+						console.log(error)
 					}
 				})
 			},

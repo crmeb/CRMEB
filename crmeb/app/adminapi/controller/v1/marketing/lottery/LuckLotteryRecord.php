@@ -36,20 +36,16 @@ class LuckLotteryRecord extends AuthController
     }
 
 
-    public function index($id)
+    public function index()
     {
         $where = $this->request->postMore([
-            ['lottery_id', 0],
             ['is_receive', ''],
             ['is_deliver', ''],
             ['type', ''],
             ['keyword', ''],
             ['data', '', '', 'time'],
+            ['factor', ''],
         ]);
-        if (!$id) {
-            return app('json')->fail('缺少活动ID');
-        }
-        $where['lottery_id'] = $id;
         return app('json')->success($this->services->getList($where));
     }
 

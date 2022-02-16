@@ -39,7 +39,7 @@ class OrderCreateAfterJob extends BaseJobs
             if ($cartInfo && $priceData) {
                 /** @var StoreOrderCartInfoServices $cartServices */
                 $cartServices = app()->make(StoreOrderCartInfoServices::class);
-                [$cartInfo, $spread_ids] = $createService->computeOrderProductTruePrice($cartInfo, $priceData, $addressId, $uid);
+                [$cartInfo, $spread_ids] = $createService->computeOrderProductTruePrice($cartInfo, $priceData, $addressId, $uid, $orderInfo);
                 $cartServices->updateCartInfo($orderId, $cartInfo);
             }
 
@@ -70,6 +70,9 @@ class OrderCreateAfterJob extends BaseJobs
                 $orderComputed = app()->make(StoreOrderComputedServices::class);
                 if ($userServices->checkUserPromoter($spread_uid)) $orderData['one_brokerage'] = $orderComputed->getOrderSumPrice($cartInfo, 'one_brokerage', false);
                 if ($userServices->checkUserPromoter($spread_two_uid)) $orderData['two_brokerage'] = $orderComputed->getOrderSumPrice($cartInfo, 'two_brokerage', false);
+                $orderData['staff_brokerage'] = $orderComputed->getOrderSumPrice($cartInfo, 'staff_brokerage', false);
+                $orderData['agent_brokerage'] = $orderComputed->getOrderSumPrice($cartInfo, 'agent_brokerage', false);
+                $orderData['division_brokerage'] = $orderComputed->getOrderSumPrice($cartInfo, 'division_brokerage', false);
             }
             $createService->update(['id' => $orderId], $orderData);
         } catch (\Throwable $e) {

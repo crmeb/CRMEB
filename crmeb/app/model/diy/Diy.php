@@ -100,4 +100,13 @@ class Diy extends BaseModel
         if ($value != '') $query->where('name', $value);
     }
 
+    /**
+     * @param $query
+     * @param $value
+     */
+    public function searchIsDelAttr($query, $value)
+    {
+        if ($value !== '') $query->where('is_del', $value);
+    }
+
 }

@@ -14,7 +14,7 @@ namespace app\services\activity\lottery;
 
 use app\services\BaseServices;
 use app\dao\activity\lottery\LuckPrizeDao;
-use app\services\coupon\StoreCouponIssueServices;
+use app\services\activity\coupon\StoreCouponIssueServices;
 use think\exception\ValidateException;
 
 /**
@@ -173,7 +173,7 @@ class LuckPrizeServices extends BaseServices
         if (!$totalChance) return $prize;
         $startChance = 0;
         mt_srand();
-        $prizeChance = rand(0, $totalChance-1);
+        $prizeChance = rand(0, $totalChance);
         $newPrize = array_combine(array_column($data, 'type'), $data);
         foreach ($data as $item) {
             $newStartChance = $item['chance'] + $startChance;

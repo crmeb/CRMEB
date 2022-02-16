@@ -90,7 +90,7 @@ class QrcodeService
                 if (!$res) return false;
                 $uploadType = (int)sys_config('upload_type', 1);
                 $upload = UploadService::init();
-                $res = $upload->to('routine/product')->validate()->stream($res, $namePath);
+                $res = $upload->to('routine/product')->validate()->setAuthThumb(false)->stream($res, $namePath);
                 if ($res === false) {
                     return false;
                 }

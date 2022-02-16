@@ -1,9 +1,10 @@
 <template>
     <div>
-        <div class="i-layout-page-header">
-            <div class="i-layout-page-header">
-                <router-link :to="{path:'/admin/setting/sms/sms_config/index'}"><Button icon="ios-arrow-back" size="small"  class="mr20">返回</Button></router-link>
-                <span class="ivu-page-header-title mr20">{{$route.meta.title}}</span>
+        <div class="i-layout-page-header header_top">
+            <div class="i-layout-page-header fl_header">
+                <router-link :to="{path:'/admin/setting/sms/sms_config/index'}"><Button icon="ios-arrow-back" size="small" type="text">返回</Button></router-link>
+                <Divider type="vertical" />
+                <span class="ivu-page-header-title mr20" style="padding: 0">{{$route.meta.title}}</span>
             </div>
         </div>
         <Card :bordered="false" dis-hover class="ivu-mt">

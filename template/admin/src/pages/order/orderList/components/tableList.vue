@@ -51,6 +51,15 @@
       </template>
       <template slot-scope="{ row, index }" slot="statusName">
         <div v-html="row.status_name.status_name" class="pt5"></div>
+        <div v-if="!row.is_all_refund && row.refund.length" class="trip">
+          部分退款中
+        </div>
+        <div
+          v-if="row.is_all_refund && row.refund.length && row.refund_type != 6"
+          class="trip"
+        >
+          退款中
+        </div>
         <div class="img">
           <div
             v-viewer
@@ -68,10 +77,7 @@
         <a
           @click="sendOrder(row)"
           v-if="
-            (row.status === 0 ||
-              row.status === 4 ||
-              row._status === 2 ||
-              row._status === 8) &&
+            (row.status === 4 || row._status === 2 || row._status === 8) &&
             row.shipping_type === 1 &&
             (row.pinkStatus === null || row.pinkStatus === 2)
           "
@@ -217,7 +223,13 @@
       :orderId="orderId"
       :status="status"
       :pay_type="pay_type"
+      :virtual_type="virtual_type"
       @submitFail="submitFail"
+      @clearId="
+        () => {
+          orderId = 0;
+        }
+      "
     ></order-send>
   </div>
 </template>
@@ -260,6 +272,7 @@ export default {
       loading: false,
       orderId: 0,
       total_num: 0,
+      virtual_type: 0,
       status: 0,
       pay_type: "",
       columns: [
@@ -365,6 +378,7 @@ export default {
     ...mapMutations("order", ["getIsDel", "getisDelIdListl"]),
     // 操作
     changeMenu(row, name) {
+      console.log(row.virtual_type);
       this.orderId = row.id;
       switch (name) {
         case "1":
@@ -394,6 +408,7 @@ export default {
           break;
         case "4":
           this.$refs.remarks.modals = true;
+          this.$refs.remarks.formValidate.remark = row.remark
           break;
         case "5":
           this.getRefundData(row.id);
@@ -680,6 +695,7 @@ export default {
       this.orderId = row.id;
       this.status = row._status;
       this.pay_type = row.pay_type;
+      this.virtual_type = row.virtual_type;
       this.$refs.send.getList();
       this.$refs.send.getDeliveryList();
       this.$nextTick((e) => {

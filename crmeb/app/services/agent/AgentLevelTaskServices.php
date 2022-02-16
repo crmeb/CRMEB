@@ -171,7 +171,7 @@ class AgentLevelTaskServices extends BaseServices
         $field[] = Form::input('name', '任务名称')->col(24);
         $field[] = Form::number('number', '限定数量', 0);
         $field[] = Form::textarea('desc', '任务描述');
-        $field[] = Form::number('sort', '排序', 0);
+        $field[] = Form::number('sort', '排序', 0)->precision(0);
         $field[] = Form::radio('status', '是否显示', 1)->options([['value' => 1, 'label' => '显示'], ['value' => 0, 'label' => '隐藏']]);
         return create_form('添加等级任务', $field, Url::buildUrl('/agent/level_task'), 'POST');
     }
@@ -201,7 +201,7 @@ class AgentLevelTaskServices extends BaseServices
         $field[] = Form::input('name', '任务名称', $levelTaskInfo['name']);
         $field[] = Form::number('number', '限定数量', $levelTaskInfo['number'])->min(0);
         $field[] = Form::textarea('desc', '任务描述', $levelTaskInfo['desc']);
-        $field[] = Form::number('sort', '排序', $levelTaskInfo['sort']);
+        $field[] = Form::number('sort', '排序', $levelTaskInfo['sort'])->precision(0);
         $field[] = Form::radio('status', '是否显示', $levelTaskInfo['status'])->options([['value' => 1, 'label' => '显示'], ['value' => 0, 'label' => '隐藏']]);
 
         return create_form('编辑等级任务', $field, Url::buildUrl('/agent/level_task/' . $id), 'PUT');
@@ -288,6 +288,7 @@ class AgentLevelTaskServices extends BaseServices
      * 检测某个任务完成情况
      * @param int $uid
      * @param int $task_id
+     * @param array $levelTaskInfo
      * @return array|false
      * @throws \think\db\exception\DataNotFoundException
      * @throws \think\db\exception\DbException

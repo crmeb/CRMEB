@@ -1,0 +1,7 @@
+{
+  "navigationBarTitleText": "代理商申请",
+  "usingComponents": {
+    "jyf-parser": "/components/jyf-parser/jyf-parser",
+    "authorize": "/components/Authorize"
+  }
+}

@@ -128,6 +128,34 @@
             >虚拟发货备注：{{ orderDatalist.orderInfo.fictitious_content }}</Col
           >
         </Row>
+        <Divider
+          style="margin: 20px 0 !important"
+          v-if="orderDatalist.orderInfo.custom_form.length"
+        />
+        <div
+          class="ivu-description-list-title"
+          v-if="orderDatalist.orderInfo.custom_form.length"
+        >
+          表单信息
+        </div>
+        <Row class="mb10" v-if="orderDatalist.orderInfo.custom_form.length">
+          <Col
+            class="mb10"
+            :span="item.label !== 'text' ? 12 : 24"
+            v-if="item.label !== 'img'"
+            v-for="(item, index) in orderDatalist.orderInfo.custom_form"
+            :key="index"
+            >{{ item.title }}：{{ item.value }}</Col
+          >
+          <Col span="24" v-else>
+            <div>{{ item.title }}：</div>
+            <div class="pic">
+              <div v-for="(img, i) in item.value" :key="i" class="img">
+                <img v-viewer :src="img" alt="" />
+              </div>
+            </div>
+          </Col>
+        </Row>
         <div v-if="orderDatalist.orderInfo.delivery_type === 'express'">
           <Divider style="margin: 20px 0 !important" />
           <div class="ivu-description-list-title">物流信息</div>
@@ -341,5 +369,21 @@ export default {
 
 .fontColor3 {
   color: #f1a417 !important;
+}
+
+.pic {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.img {
+  width: 100px;
+  height: 100px;
+  margin: 10px 10px;
+
+  img {
+    width: 100%;
+    height: 100%;
+  }
 }
 </style>

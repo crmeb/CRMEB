@@ -46,7 +46,7 @@
               <Input
                 search
                 enter-button
-                placeholder="请输入请输入姓名、电话、UID"
+                placeholder="请输入姓名、电话、UID"
                 v-model="formValidate.nickname"
                 @on-search="userSearchs"
               />
@@ -136,9 +136,7 @@
       <div class="acea-row row-around">
         <div class="acea-row row-column-around row-between-wrapper">
           <div class="QRpic" v-if="code_src"><img v-lazy="code_src" /></div>
-          <span class="QRpic_sp1 mt10" @click="getWeChat"
-            >公众号推广二维码</span
-          >
+          <span class="QRpic_sp1 mt10" @click="getWeChat">公众号推广二维码</span>
         </div>
         <div class="acea-row row-column-around row-between-wrapper">
           <div class="QRpic" v-if="code_xcx"><img v-lazy="code_xcx" /></div>
@@ -241,6 +239,7 @@ export default {
           { text: "本年", val: "year" },
         ],
       },
+      rows: {},
       formValidate: {
         nickname: "",
         data: "",

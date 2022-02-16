@@ -18,7 +18,7 @@ return [
         'LogLevel' => [],
         'LogWrite' => [],
         'UserLogin'=>[
-             \crmeb\listeners\user\UserLogin::class
+//             \crmeb\listeners\user\UserLogin::class
         ]
     ]
 ];

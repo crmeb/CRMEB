@@ -11,8 +11,8 @@
 namespace app\api\controller\v1\activity;
 
 use app\Request;
-use app\services\activity\StoreCombinationServices;
-use app\services\activity\StorePinkServices;
+use app\services\activity\combination\StoreCombinationServices;
+use app\services\activity\combination\StorePinkServices;
 use app\services\other\QrcodeServices;
 
 /**

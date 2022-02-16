@@ -1,14 +1,16 @@
 <template>
   <div>
-    <div class="i-layout-page-header">
-      <div class="i-layout-page-header">
+    <div class="i-layout-page-header header_top">
+      <div class="i-layout-page-header fl_header">
         <router-link :to="{ path: '/admin/marketing/store_coupon_issue/index' }"
-          ><Button icon="ios-arrow-back" size="small" class="mr20"
+          ><Button icon="ios-arrow-back" size="small" type="text"
             >返回</Button
           ></router-link
         >
+        <Divider type="vertical" />
         <span
           class="ivu-page-header-title mr20"
+          style="padding: 0"
           v-text="$route.params.id ? '编辑优惠券' : '添加优惠券'"
         ></span>
       </div>
@@ -26,7 +28,7 @@
             <Radio :label="1">手动领取</Radio>
             <Radio :label="2">新人券</Radio>
             <Radio :label="3">赠送券</Radio>
-            <!-- <Radio :label="4">会员券</Radio> -->
+            <Radio :label="4">会员券</Radio>
           </RadioGroup>
         </FormItem>
         <FormItem label="优惠劵类型">

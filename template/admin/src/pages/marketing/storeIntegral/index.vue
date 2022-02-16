@@ -238,7 +238,7 @@ export default {
       return this.isMobile ? "top" : "left";
     },
   },
-  created() {
+  activated() {
     this.getList();
   },
   methods: {

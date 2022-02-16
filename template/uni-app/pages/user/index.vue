@@ -73,6 +73,9 @@
 								<view class="name" v-if="userInfo.uid">
 									{{userInfo.nickname}}
 									<image class="live" :src="userInfo.vip_icon" v-if="userInfo.vip_icon"></image>
+									<view class="vip" v-if="userInfo.is_money_level> 0 && userInfo.svip_open">
+										<image src="/static/images/svip.png"></image>
+									</view>
 								</view>
 								<view class="num" v-if="userInfo.phone" @click="goEdit()">
 									<view class="num-txt">ID：{{userInfo.uid}}</view>
@@ -106,15 +109,72 @@
 								<text class="num">{{userInfo.collectCount || 0}}</text>
 								<view class="txt">收藏</view>
 							</view>
-							<view class="num-item" @click="goMenuPage('/pages/users/user_integral/index')">
-								<text class="num">{{userInfo.integral || 0}}</text>
-								<view class="txt">积分</view>
-							</view>
 							<view class="num-item" @click="goMenuPage('/pages/users/user_coupon/index')">
 								<text class="num">{{userInfo.couponCount || 0}}</text>
 								<view class="txt">优惠券</view>
 							</view>
+							<view class="num-item" @click="goMenuPage('/pages/users/user_integral/index')">
+								<text class="num">{{userInfo.integral || 0}}</text>
+								<view class="txt">积分</view>
+							</view>
 						</view>
+						<!-- <view class="sign" @click="goSignIn">签到</view> -->
+						<view class="cardVipA acea-row row-between-wrapper"
+							v-if="userInfo.svip_open && member_style==1">
+							<view class="left-box">
+								<view v-if="userInfo.vip_status == 1" class="small">永久</view>
+								<view v-else-if="userInfo.vip_status == 3" class="small">会员到期
+									{{ userInfo.overdue_time | dateFormat }}
+								</view>
+								<view v-else-if="userInfo.vip_status == -1" class="small">已过期</view>
+								<view v-else-if="userInfo.vip_status == 2" class="small">未开通会员</view>
+							</view>
+							<view class="acea-row row-middle">
+								<navigator v-if="userInfo.vip_status == 1" url="/pages/annex/vip_paid/index"
+									hover-class="none" class="btn">查看会员权益</navigator>
+								<navigator v-else url="/pages/annex/vip_paid/index" hover-class="none" class="btn">
+									{{ userInfo.overdue_time ? '立即续费' : '立即激活' }}
+								</navigator>
+								<text class="iconfont icon-xiangyou"></text>
+							</view>
+						</view>
+						<view class="cardVipB acea-row row-between" v-if="userInfo.svip_open && member_style==3">
+							<view class="left-box acea-row">
+								<view class="pictrue">
+									<image src="../../static/images/member01.png"></image>
+								</view>
+								<view v-if="userInfo.vip_status == 1" class="small">永久</view>
+								<view v-else-if="userInfo.vip_status == 3" class="small">会员到期
+									{{ userInfo.overdue_time | dateFormat }}
+								</view>
+								<view v-else-if="userInfo.vip_status == -1" class="small">已过期</view>
+								<view v-else-if="userInfo.vip_status == 2" class="small">未开通会员</view>
+							</view>
+							<view class="acea-row">
+								<navigator v-if="userInfo.vip_status == 1" url="/pages/annex/vip_paid/index"
+									hover-class="none" class="btn">会员可享多项权益</navigator>
+								<navigator v-else url="/pages/annex/vip_paid/index" hover-class="none" class="btn">
+									{{ userInfo.overdue_time ? '立即续费' : '立即激活' }}
+								</navigator>
+								<text class="iconfont icon-xiangyou btn"></text>
+							</view>
+						</view>
+					</view>
+					<view class="card-vip" v-if="userInfo.svip_open && member_style==2">
+						<view class="left-box">
+							<view class="big">会员可享多项权益</view>
+							<view v-if="userInfo.vip_status == 1" class="small">永久</view>
+							<view v-else-if="userInfo.vip_status == 3" class="small">会员到期
+								{{ userInfo.overdue_time | dateFormat }}
+							</view>
+							<view v-else-if="userInfo.vip_status == -1" class="small">已过期</view>
+							<view v-else-if="userInfo.vip_status == 2" class="small">未开通会员</view>
+						</view>
+						<navigator v-if="userInfo.vip_status == 1" url="/pages/annex/vip_paid/index" hover-class="none"
+							class="btn">查看会员权益</navigator>
+						<navigator v-else url="/pages/annex/vip_paid/index" hover-class="none" class="btn">
+							{{ userInfo.overdue_time ? '立即续费' : '立即激活' }}
+						</navigator>
 					</view>
 					<view class="order-wrapper" :class="userInfo.svip_open?'':'height'">
 						<view class="order-hd flex">
@@ -176,6 +236,7 @@
 								<text>{{item.name}}</text>
 							</view>
 						</block>
+
 						<button class="item" open-type='contact' v-if="routineContact == 1">
 							<image src="/static/images/contact.png"></image>
 							<text>联系客服</text>
@@ -206,7 +267,24 @@
 				<view class="uni-p-b-98"></view>
 			</scroll-view>
 		</view>
-		<tabBar :pagePath="'/pages/user/index'"></tabBar>
+		<tabBar v-if="!is_diy" :pagePath="'/pages/user/index'"></tabBar>
+		<view class="foot" v-else-if="is_diy && newData.status && newData.status.status">
+			<view class="page-footer" id="target" :style="{'background-color':newData.bgColor.color[0].item}">
+				<view class="foot-item" v-for="(item,index) in newData.menuList" :key="index" @click="goRouter(item)">
+					<block v-if="item.link == activeRouter">
+						<image :src="item.imgList[0]"></image>
+						<view class="txt" :style="{color:newData.activeTxtColor.color[0].item}">{{item.name}}</view>
+					</block>
+					<block v-else>
+						<image :src="item.imgList[1]"></image>
+						<view class="txt" :style="{color:newData.txtColor.color[0].item}">{{item.name}}</view>
+					</block>
+					<div class="count-num" v-if="item.link === '/pages/order_addcart/order_addcart' && cartNum > 0">
+						{{cartNum}}
+					</div>
+				</view>
+			</view>
+		</view>
 	</view>
 </template>
 <script>
@@ -236,7 +314,7 @@
 	import dayjs from '@/plugin/dayjs/dayjs.min.js';
 	import Routine from '@/libs/routine';
 	import colors from '@/mixins/color';
-	import tabBar from "@/pages/index/components/tabBar.vue";
+	import tabBar from "@/pages/index/visualization/components/tabBar.vue";
 	import {
 		getCustomer
 	} from '@/utils/index.js'
@@ -321,18 +399,27 @@
 				//#endif
 				footerSee: false,
 				member_style: 1,
-				my_banner_status: 1
+				my_banner_status: 1,
+				is_diy: uni.getStorageSync('is_diy'),
 			}
 		},
-		created() {
-			uni.hideTabBar()
+		onLoad(option) {
+			// uni.hideTabBar()
 			let that = this;
-			// if (uni.getStorageSync('FOOTER_BAR')) {
-			// 	this.footerSee = true
-			// 	uni.hideTabBar()
-			// } else {
+			if (this.is_diy) {
+				if (uni.getStorageSync('FOOTER_BAR')) {
+					uni.hideTabBar()
+				}
+				getNavigation().then(res => {
+					this.newData = res.data
+					if (this.newData.status && this.newData.status.status) {
+						uni.hideTabBar()
+					} else {
+						uni.showTabBar()
+					}
+				})
+			}
 
-			// }
 			// #ifdef MP
 			// 小程序静默授权
 			if (!this.$store.getters.isLogin) {
@@ -347,9 +434,19 @@
 					});
 			}
 			// #endif
+
 			// #ifdef H5 || APP-PLUS
 			if (that.isLogin == false) {
 				toLogin()
+			}
+			//获取用户信息回来后授权
+			let cacheCode = this.$Cache.get('snsapi_userinfo_code');
+			let res1 = cacheCode ? option.code != cacheCode : true;
+			if (this.isWeixin && option.code && res1 && option.scope === 'snsapi_userinfo') {
+				this.$Cache.set('snsapi_userinfo_code', option.code);
+				Auth.auth(option.code).then(res => {
+					this.getUserInfo();
+				}).catch(err => {})
 			}
 			// #endif
 			// #ifdef APP-PLUS
@@ -385,10 +482,13 @@
 				this.setVisit();
 			};
 		},
+		onPullDownRefresh() {
+			this.onLoadFun();
+		},
 		methods: {
 			getWechatuserinfo() {
 				//#ifdef H5
-				Auth.isWeixin() && Auth.oAuth('snsapi_userinfo', '/pages/user/index');
+				Auth.isWeixin() && Auth.toAuth('snsapi_userinfo', '/pages/user/index');
 				//#endif
 			},
 			getRoutineUserInfo(e) {
@@ -459,6 +559,7 @@
 								break
 						}
 					})
+					uni.stopPullDownRefresh();
 				});
 			},
 			//小程序授权api替换 getUserInfo
@@ -636,7 +737,7 @@
 							});
 						} else if (name && name === '联系客服') {
 							return getCustomer(url)
-							
+
 						} else if (name === '订单核销') {
 							return window.location.href = `${location.origin}${url}`
 						}
@@ -844,7 +945,7 @@
 			.user-card {
 				position: relative;
 				width: 100%;
-				height: 360rpx;
+				height: 380rpx;
 				margin: 0 auto;
 				padding: 35rpx 28rpx;
 				background-image: url("~@/static/images/user01.png");
@@ -1054,7 +1155,7 @@
 				margin: 0 30rpx;
 				border-radius: 16rpx;
 				position: relative;
-				margin-top: -80rpx;
+				margin-top: -10rpx;
 
 				.order-hd {
 					justify-content: space-between;
@@ -1217,6 +1318,7 @@
 		width: 690rpx;
 		height: 134rpx;
 		margin: -72rpx auto 0;
+		background: url('~@/static/images/user_vip.png');
 		background-size: cover;
 		padding-left: 118rpx;
 		padding-right: 34rpx;

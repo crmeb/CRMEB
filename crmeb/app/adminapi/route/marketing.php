@@ -110,11 +110,11 @@ Route::group('marketing', function () {
     Route::post('integral_config/save_basics', 'v1.setting.SystemConfig/save_basics')->option(['real_name' => '积分配置保存数据']);
 
     //预售列表
-    Route::get('advance/index','v1.marketing.StoreAdvance/index')->option(['real_name' => '预售商品列表']);
-    Route::get('advance/info/:id','v1.marketing.StoreAdvance/info')->option(['real_name' => '预售商品详情']);
-    Route::post('advance/save/:id','v1.marketing.StoreAdvance/save')->option(['real_name' => '保存预售商品']);
-    Route::delete('advance/:id','v1.marketing.StoreAdvance/del')->option(['real_name' => '删除预售商品']);
-    Route::put('advance/set_status/:id/:status','v1.marketing.StoreAdvance/setStatus')->option(['real_name' => '上下架预售商品']);
+    Route::get('advance/index', 'v1.marketing.StoreAdvance/index')->option(['real_name' => '预售商品列表']);
+    Route::get('advance/info/:id', 'v1.marketing.StoreAdvance/info')->option(['real_name' => '预售商品详情']);
+    Route::post('advance/save/:id', 'v1.marketing.StoreAdvance/save')->option(['real_name' => '保存预售商品']);
+    Route::delete('advance/:id', 'v1.marketing.StoreAdvance/del')->option(['real_name' => '删除预售商品']);
+    Route::put('advance/set_status/:id/:status', 'v1.marketing.StoreAdvance/setStatus')->option(['real_name' => '上下架预售商品']);
 
     //积分商城
     //积分商品列表
@@ -165,6 +165,8 @@ Route::group('marketing', function () {
     Route::get('lottery/list', 'v1.marketing.lottery.LuckLottery/index')->option(['real_name' => '抽奖活动列表']);
     //抽奖活动详情
     Route::get('lottery/detail/:id', 'v1.marketing.lottery.LuckLottery/detail')->option(['real_name' => '抽奖活动详情']);
+    //抽奖活动详情
+    Route::get('lottery/factor_info/:factor', 'v1.marketing.lottery.LuckLottery/factorInfo')->option(['real_name' => '抽奖活动详情']);
     //添加抽奖活动
     Route::post('lottery/add', 'v1.marketing.lottery.LuckLottery/add')->option(['real_name' => '添加抽奖活动']);
     //修改抽奖活动数据
@@ -174,9 +176,17 @@ Route::group('marketing', function () {
     //设置抽奖活动是否显示
     Route::post('lottery/set_status/:id/:status', 'v1.marketing.lottery.LuckLottery/setStatus')->option(['real_name' => '设置抽奖活动是否显示']);
     //抽奖记录列表
-    Route::get('lottery/record/list/:id', 'v1.marketing.lottery.LuckLotteryRecord/index')->option(['real_name' => '抽奖记录列表']);
+    Route::get('lottery/record/list', 'v1.marketing.lottery.LuckLotteryRecord/index')->option(['real_name' => '抽奖记录列表']);
     //抽奖中奖发货、备注处理
     Route::post('lottery/record/deliver', 'v1.marketing.lottery.LuckLotteryRecord/deliver')->option(['real_name' => '抽奖中奖发货、备注处理']);
+
+    //积分记录
+    Route::get('point_record', 'v1.marketing.integral.StorePointRecord/pointRecord')->option(['read_name' => '积分记录列表']);
+    Route::post('point_record/remark/:id', 'v1.marketing.integral.StorePointRecord/pointRecordRemark')->option(['read_name' => '积分记录列表备注']);
+    Route::get('point/get_basic', 'v1.marketing.integral.StorePointRecord/getBasic')->option(['read_name' => '积分统计基本信息']);
+    Route::get('point/get_trend', 'v1.marketing.integral.StorePointRecord/getTrend')->option(['read_name' => '积分统计趋势图']);
+    Route::get('point/get_channel', 'v1.marketing.integral.StorePointRecord/getChannel')->option(['read_name' => '积分来源统计']);
+    Route::get('point/get_type', 'v1.marketing.integral.StorePointRecord/getType')->option(['read_name' => '积分消耗统计']);
 
 })->middleware([
     \app\http\middleware\AllowOriginMiddleware::class,

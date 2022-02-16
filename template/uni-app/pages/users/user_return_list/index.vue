@@ -11,13 +11,15 @@
 				@click='goOrderDetails(item.order_id)'>
 				<view class='iconfont icon-shenqingzhong powder' v-if="item.refund_type==1 ||item.refund_type==2">
 				</view>
+				<view class='iconfont icon-yijujue' v-if="item.refund_type==3"></view>
 				<view class='iconfont icon-daituihuo1 powder' v-if="item.refund_type==4"></view>
 				<view class='iconfont icon-tuikuanzhong powder' v-if="item.refund_type==5"></view>
 				<view class='iconfont icon-yituikuan' v-if="item.refund_type==6"></view>
 				<view class='orderNum'>订单号：{{item.order_id}}</view>
-				<view class='item acea-row row-between-wrapper' v-for="(item,index) in item.cartInfo" :key="index">
+				<view class='item acea-row row-between-wrapper' v-for="(item,index) in item.cart_info" :key="index">
 					<view class='pictrue'>
-						<image :src='item.productInfo.image'></image>
+						<image :src='item.productInfo.attrInfo?item.productInfo.attrInfo.image:item.productInfo.image'>
+						</image>
 					</view>
 					<view class='text'>
 						<view class='acea-row row-between-wrapper'>
@@ -27,11 +29,12 @@
 						<view class='attr line1' v-if="item.productInfo.attrInfo">{{item.productInfo.attrInfo.suk}}
 						</view>
 						<view class='attr line1' v-else>{{item.productInfo.store_name}}</view>
-						<view class='money'>￥{{item.productInfo.price}}</view>
+						<view class='money'>
+							￥{{item.productInfo.attrInfo?item.productInfo.attrInfo.price:item.productInfo.price}}</view>
 					</view>
 				</view>
-				<view class='totalSum'>共{{item.cartInfo.length || 0}}件商品，总金额 <text
-						class='font-color price'>￥{{item.pay_price}}</text></view>
+				<view class='totalSum'>共 {{item.refund_num || 0}} 件商品，总金额 <text
+						class='font-color price'>￥{{item.refund_price}}</text></view>
 			</view>
 		</view>
 		<view class='loadingicon acea-row row-center-wrapper' v-if="orderList.length > 0">
@@ -43,7 +46,9 @@
 		<!-- #ifdef MP -->
 		<!-- <authorize @onLoadFun="onLoadFun" :isAuto="isAuto" :isShowAuth="isShowAuth" @authColse="authColse"></authorize> -->
 		<!-- #endif -->
+		<!-- #ifndef MP -->
 		<home></home>
+		<!-- #endif -->
 	</view>
 </template>
 
@@ -51,7 +56,7 @@
 	import home from '@/components/home';
 	import emptyPage from '@/components/emptyPage';
 	import {
-		getOrderList
+		getNewOrderList
 	} from '@/api/order.js';
 	import {
 		toLogin
@@ -87,17 +92,21 @@
 				tabsList: [{
 					key: 0,
 					name: '全部'
-				}, {
+				},
+				{
 					key: 1,
 					name: '申请中'
-				}, {
+				},
+				// {
+				// 	key: 2,
+				// 	name: '待退货'
+				// }, 
+				// {
+				// 	key: 3,
+				// 	name: '退款中'
+				// }, 
+				{
 					key: 2,
-					name: '待退货'
-				}, {
-					key: 3,
-					name: '退款中'
-				}, {
-					key: 4,
 					name: '已退款'
 				}]
 			};
@@ -162,26 +171,21 @@
 				if (that.loadend) return;
 				that.loading = true;
 				that.loadTitle = "";
-				uni.showLoading({
-					title: '加载中'
-				});
-				getOrderList({
-					type: that.orderStatus,
+				getNewOrderList({
+					// type: that.orderStatus,
 					page: that.page,
 					limit: that.limit,
-					refund_type: type ? type : that.type
+					refund_status: type ? type : that.type
 				}).then(res => {
-					let list = res.data || [];
+					let list = res.data.list || [];
 					let loadend = list.length < that.limit;
-					that.orderList = that.$util.SplitArray(list, that.orderList);
+					that.orderList = that.orderList.concat(list);
 					that.$set(that, 'orderList', that.orderList);
 					that.loadend = loadend;
 					that.loading = false;
-					that.loadTitle = loadend ? "我也是有底线的" : '加载更多';
+					that.loadTitle = loadend ? "没有更多内容啦~" : '加载更多';
 					that.page = that.page + 1;
-					uni.hideLoading();
 				}).catch(err => {
-					uni.hideLoading();
 					that.loading = false;
 					that.loadTitle = "加载更多";
 				});
@@ -208,6 +212,7 @@
 
 	.return-list .goodWrapper .item {
 		border-bottom: 0;
+		padding: 30rpx;
 	}
 
 	.return-list .goodWrapper .totalSum {

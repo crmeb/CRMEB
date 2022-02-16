@@ -29,10 +29,10 @@ class UserLabel extends AuthController
      * @param App $app
      * @param UserLabelServices $service
      */
-    public function __construct(App $app, UserLabelServices $service)
+    public function __construct(App $app, UserLabelServices $services)
     {
         parent::__construct($app);
-        $this->service = $service;
+        $this->services = $services;
     }
 
     /**
@@ -41,7 +41,7 @@ class UserLabel extends AuthController
      */
     public function index($label_cate = 0)
     {
-        return app('json')->success($this->service->getList(['label_cate' => $label_cate]));
+        return app('json')->success($this->services->getList(['label_cate' => $label_cate]));
     }
 
     /**
@@ -51,10 +51,11 @@ class UserLabel extends AuthController
      */
     public function add()
     {
-        [$id] = $this->request->getMore([
+        [$id, $cateId] = $this->request->getMore([
             ['id', 0],
+            ['cate_id', 0],
         ], true);
-        return app('json')->success($this->service->add((int)$id));
+        return app('json')->success($this->services->add((int)$id, (int)$cateId));
     }
 
     /**
@@ -70,7 +71,7 @@ class UserLabel extends AuthController
             ['label_name', ''],
         ]);
         if (!$data['label_name'] = trim($data['label_name'])) return app('json')->fail('会员标签不能为空！');
-        $this->service->save((int)$data['id'], $data);
+        $this->services->save((int)$data['id'], $data);
         return app('json')->success('保存成功');
     }
 
@@ -85,7 +86,7 @@ class UserLabel extends AuthController
             ['id', 0],
         ], true);
         if (!$id) return app('json')->fail('数据不存在');
-        $this->service->delLabel((int)$id);
+        $this->services->delLabel((int)$id);
         return app('json')->success('刪除成功！');
     }
 
@@ -119,5 +120,42 @@ class UserLabel extends AuthController
         } else {
             return app('json')->fail('设置失败');
         }
+    }
+
+    /**
+     * 获取带分类的用户标签列表
+     * @param \app\services\user\label\UserLabelCateServices $userLabelCateServices
+     * @return mixed
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     */
+    public function tree_list(UserLabelCateServices $userLabelCateServices)
+    {
+        $cate = $userLabelCateServices->getLabelCateAll();
+        $data = [];
+        $label = [];
+        if ($cate) {
+            foreach ($cate as $value) {
+                $data[] = [
+                    'id' => $value['id'] ?? 0,
+                    'value' => $value['id'] ?? 0,
+                    'label_cate' => 0,
+                    'label_name' => $value['name'] ?? '',
+                    'label' => $value['name'] ?? '',
+                    'store_id' => $value['store_id'] ?? 0,
+                    'type' => $value['type'] ?? 1,
+                ];
+            }
+            $label = $this->services->getList(['type' => 1]);
+            $label = $label['list'] ?? [];
+            if ($label) {
+                foreach ($label as &$item) {
+                    $item['label'] = $item['label_name'];
+                    $item['value'] = $item['id'];
+                }
+            }
+        }
+        return app('json')->success($this->services->get_tree_children($data, $label));
     }
 }

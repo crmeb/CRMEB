@@ -12,7 +12,7 @@
 namespace app\adminapi\controller\v1\marketing\live;
 
 use app\adminapi\controller\AuthController;
-use app\services\live\LiveRoomServices;
+use app\services\activity\live\LiveRoomServices;
 use think\facade\App;
 
 /**

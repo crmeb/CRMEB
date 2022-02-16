@@ -11,7 +11,7 @@
 namespace app\adminapi\controller\v1\setting;
 
 use app\adminapi\controller\AuthController;
-use app\services\system\SystemNotificationServices;
+use app\services\message\SystemNotificationServices;
 use crmeb\services\CacheService;
 use think\facade\App;
 

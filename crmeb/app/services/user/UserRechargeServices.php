@@ -15,6 +15,7 @@ namespace app\services\user;
 use app\dao\user\UserRechargeDao;
 use app\services\BaseServices;
 use app\services\pay\RechargeServices;
+use app\services\statistic\CapitalFlowServices;
 use app\services\system\config\SystemGroupDataServices;
 use crmeb\exceptions\AdminException;
 use crmeb\services\{
@@ -208,15 +209,9 @@ class UserRechargeServices extends BaseServices
         if ($UserRecharge['recharge_type'] == 'balance') {
             throw new AdminException('佣金转入余额，不能退款');
         }
-//        $data['refund_price'] = bcadd($refund_price, $UserRecharge['refund_price'], 2);
         $data['refund_price'] = $UserRecharge['price'];
-//        $bj = bccomp((string)$UserRecharge['price'], (string)$data['refund_price'], 2);
-//        if ($bj < 0) {
-//            throw new AdminException('退款金额大于支付金额，请修改退款金额');
-//        }
         $refund_data['pay_price'] = $UserRecharge['price'];
         $refund_data['refund_price'] = $UserRecharge['price'];
-//        $refund_data['refund_account']='REFUND_SOURCE_RECHARGE_FUNDS';
         if ($refund_price == 1) {
             $number = bcadd($UserRecharge['price'], $UserRecharge['give_price'], 2);
         } else {
@@ -236,17 +231,33 @@ class UserRechargeServices extends BaseServices
         if (!$this->dao->update($id, $data)) {
             throw new AdminException('修改提现数据失败');
         }
+
+        //修改用户余额
         /** @var UserServices $userServices */
         $userServices = app()->make(UserServices::class);
         $userInfo = $userServices->getUserInfo($UserRecharge['uid']);
-        $userServices->cutNowMoney($UserRecharge['uid'], $userInfo['now_money'], $number);
+        if ($userInfo['now_money'] > $number) {
+            $now_money = bcsub((string)$userInfo['now_money'], $number, 2);
+        } else {
+            $number = $userInfo['now_money'];
+            $now_money = 0;
+        }
+        $userServices->update((int)$UserRecharge['uid'], ['now_money' => $now_money], 'uid');
+
+        //写入资金流水
+        /** @var CapitalFlowServices $capitalFlowServices */
+        $capitalFlowServices = app()->make(CapitalFlowServices::class);
+        $UserRecharge['nickname'] = $userInfo['nickname'];
+        $UserRecharge['phone'] = $userInfo['phone'];
+        $capitalFlowServices->setFlow($UserRecharge, 'refund_recharge');
+
+        //保存余额记录
+        /** @var UserMoneyServices $userMoneyServices */
+        $userMoneyServices = app()->make(UserMoneyServices::class);
+        $userMoneyServices->income('user_recharge_refund', $UserRecharge['uid'], $number, $now_money, $id);
+
         //提醒推送
         event('notice.notice', [['user_type' => strtolower($UserRecharge['recharge_type']), 'data' => $data, 'UserRecharge' => $UserRecharge, 'now_money' => $refund_price], 'recharge_order_refund_status']);
-
-        $billData = ['title' => '系统退款', 'number' => $number, 'link_id' => $id, 'balance' => $userInfo['now_money'], 'mark' => '退款给用户' . $UserRecharge['price'] . '元'];
-        /** @var UserBillServices $userBillService */
-        $userBillService = app()->make(UserBillServices::class);
-        $userBillService->expendNowMoney($UserRecharge['uid'], 'user_recharge_refund', $billData);
         return true;
     }
 
@@ -274,7 +285,7 @@ class UserRechargeServices extends BaseServices
      */
     public function getOrderId()
     {
-        return 'wx' . date('YmdHis', time()) . substr(implode('', array_map('ord', str_split(substr(uniqid(), 7, 13), 1))), 0, 8);
+        return 'wx' . date('YmdHis', time()) . substr(implode(NULL, array_map('ord', str_split(substr(uniqid(), 7, 13), 1))), 0, 8);
     }
 
     /**
@@ -291,10 +302,10 @@ class UserRechargeServices extends BaseServices
         if (!$user) {
             throw new ValidateException('数据不存在');
         }
-        /** @var UserBrokerageFrozenServices $frozenPrices */
-        $frozenPrices = app()->make(UserBrokerageFrozenServices::class);
-        $broken_commission = array_bc_sum($frozenPrices->getUserFrozenPrice($uid));
-        $commissionCount = bcsub($user['brokerage_price'], $broken_commission, 2);
+        /** @var UserBrokerageServices $frozenPrices */
+        $frozenPrices = app()->make(UserBrokerageServices::class);
+        $broken_commission = $frozenPrices->getUserFrozenPrice($uid);
+        $commissionCount = bcsub((string)$user['brokerage_price'], (string)$broken_commission, 2);
         if ($price > $commissionCount) {
             throw new ValidateException('转入金额不能大于可提现佣金！');
         }
@@ -304,6 +315,7 @@ class UserRechargeServices extends BaseServices
         if (!$userServices->update($uid, $edit_data, 'uid')) {
             throw new ValidateException('修改用户信息失败');
         }
+
         //写入充值记录
         $rechargeInfo = [
             'uid' => $uid,
@@ -318,11 +330,11 @@ class UserRechargeServices extends BaseServices
         if (!$re = $this->dao->save($rechargeInfo)) {
             throw new ValidateException('写入余额充值失败');
         }
-        $bill_data = ['title' => '用户佣金转入余额', 'link_id' => $re['id'], 'number' => $price, 'balance' => $user['now_money'], 'mark' => '成功转入余额' . floatval($price) . '元'];
-        /** @var UserBillServices $userBill */
-        $userBill = app()->make(UserBillServices::class);
-        //余额充值
-        $userBill->incomeNowMoney($uid, 'recharge', $bill_data);
+
+        //余额记录
+        /** @var UserMoneyServices $userMoneyServices */
+        $userMoneyServices = app()->make(UserMoneyServices::class);
+        $userMoneyServices->income('brokerage_to_nowMoney', $uid, $price, $edit_data['now_money'], $re['id']);
 
         //写入提现记录
         $extractInfo = [
@@ -336,11 +348,12 @@ class UserRechargeServices extends BaseServices
         ];
         /** @var UserExtractServices $userExtract */
         $userExtract = app()->make(UserExtractServices::class);
-        if (!$re = $userExtract->save($extractInfo)) {
-            throw new ValidateException('写入佣金提现失败');
-        }
-        //佣金提现
-        $userBill->income('brokerage_to_nowMoney', $uid, $price, $user['brokerage_price'], $re['id']);
+        $userExtract->save($extractInfo);
+
+        //佣金提现记录
+        /** @var UserBrokerageServices $userBrokerageServices */
+        $userBrokerageServices = app()->make(UserBrokerageServices::class);
+        $userBrokerageServices->income('brokerage_to_nowMoney', $uid, $price, $edit_data['brokerage_price'], $re['id']);
         return true;
     }
 
@@ -390,14 +403,11 @@ class UserRechargeServices extends BaseServices
                     throw new ValidateException($e->getMessage());
                 }
                 return ['msg' => '', 'type' => $from, 'data' => $order_info];
-                break;
             case 1: //佣金转入余额
                 $this->importNowMoney($uid, $price);
                 return ['msg' => '转入余额成功', 'type' => $from, 'data' => []];
-                break;
             default:
                 throw new ValidateException('缺少参数');
-                break;
         }
     }
 
@@ -421,15 +431,19 @@ class UserRechargeServices extends BaseServices
         if (!$this->dao->update($order['id'], ['paid' => 1, 'pay_time' => time()], 'id')) {
             throw new ValidateException('修改订单失败');
         }
-        $mark = '成功充值余额' . floatval($order['price']) . '元' . ($order['give_price'] ? ',赠送' . $order['give_price'] . '元' : '');
-        $bill_data = ['title' => '用户余额充值', 'number' => $price, 'link_id' => $order['id'], 'balance' => $user['now_money'], 'mark' => $mark];
-        /** @var UserBillServices $userBill */
-        $userBill = app()->make(UserBillServices::class);
-        $userBill->incomeNowMoney($order['uid'], 'recharge', $bill_data);
         $now_money = bcadd((string)$user['now_money'], (string)$price, 2);
+        /** @var UserMoneyServices $userMoneyServices */
+        $userMoneyServices = app()->make(UserMoneyServices::class);
+        $userMoneyServices->income('user_recharge', $user['uid'], ['number' => $price, 'price' => $order['price'], 'give_price' => $order['give_price']], $now_money, $order['id']);
         if (!$userServices->update((int)$order['uid'], ['now_money' => $now_money], 'uid')) {
             throw new ValidateException('修改用户信息失败');
         }
+
+        /** @var CapitalFlowServices $capitalFlowServices */
+        $capitalFlowServices = app()->make(CapitalFlowServices::class);
+        $order['nickname'] = $user['nickname'];
+        $order['phone'] = $user['phone'];
+        $capitalFlowServices->setFlow($order, 'recharge');
 
         //提醒推送
         event('notice.notice', [['order' => $order, 'now_money' => $now_money], 'recharge_success']);

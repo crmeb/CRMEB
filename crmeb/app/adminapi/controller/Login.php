@@ -12,7 +12,6 @@ namespace app\adminapi\controller;
 
 use think\facade\App;
 use crmeb\utils\Captcha;
-use crmeb\basic\BaseController;
 use app\services\system\admin\SystemAdminServices;
 
 /**

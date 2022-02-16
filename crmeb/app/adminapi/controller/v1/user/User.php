@@ -66,7 +66,7 @@ class User extends AuthController
             ['sex', ''],
             [['level', 0], 0],
             [['group_id', 'd'], 0],
-            [['label_id', 'd'], 0],
+            ['label_id', ''],
             ['now_money', 'normal'],
             ['field_key', ''],
             ['isMember', '']
@@ -85,6 +85,20 @@ class User extends AuthController
     }
 
     /**
+     * 添加编辑用户信息时候的信息
+     * @param int $uid
+     * @return mixed
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     */
+    public function userSaveInfo($uid = 0)
+    {
+        $data = $this->services->getUserSaveInfo($uid);
+        return app('json')->success($data);
+    }
+
+    /**
      * 保存新建的资源
      *
      * @param \think\Request $request
@@ -93,20 +107,20 @@ class User extends AuthController
     public function save()
     {
         $data = $this->request->postMore([
-            ['is_promoter', 0],
             ['real_name', ''],
-            ['card_id', ''],
-            ['birthday', ''],
-            ['mark', ''],
-            ['status', 0],
-            ['level', 0],
             ['phone', 0],
+            ['birthday', ''],
+            ['card_id', ''],
             ['addres', ''],
-            ['label_id', []],
-            ['group_id', 0],
+            ['mark', ''],
             ['pwd', ''],
             ['true_pwd', ''],
-            ['spread_open', 1]
+            ['level', 0],
+            ['group_id', 0],
+            ['label_id', []],
+            ['spread_open', 1],
+            ['is_promoter', 0],
+            ['status', 0]
         ]);
         if ($data['phone']) {
             if (!check_phone($data['phone'])) {

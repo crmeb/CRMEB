@@ -1,8 +1,8 @@
 @font-face {
   font-family: "iconfont"; /* Project id 1945396 */
-  src: url('iconfont.woff2?t=1627630374916') format('woff2'),
-       url('iconfont.woff?t=1627630374916') format('woff'),
-       url('iconfont.ttf?t=1627630374916') format('truetype');
+  src: url('//at.alicdn.com/t/font_1945396_k2lw9lbpkf.woff2?t=1644911706152') format('woff2'),
+       url('//at.alicdn.com/t/font_1945396_k2lw9lbpkf.woff?t=1644911706152') format('woff'),
+       url('//at.alicdn.com/t/font_1945396_k2lw9lbpkf.ttf?t=1644911706152') format('truetype');
 }
 
 .iconfont {
@@ -11,6 +11,106 @@
   font-style: normal;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+.iconcaidanshouqi:before {
+  content: "\e791";
+}
+
+.iconcaidanzhankai:before {
+  content: "\e792";
+}
+
+.icondingdan:before {
+  content: "\e760";
+}
+
+.iconapp:before {
+  content: "\e75b";
+}
+
+.iconPC:before {
+  content: "\e75c";
+}
+
+.iconxiaochengxu:before {
+  content: "\e75d";
+}
+
+.icongongzhonghao:before {
+  content: "\e75e";
+}
+
+.iconh5:before {
+  content: "\e75f";
+}
+
+.iconshipin:before {
+  content: "\e758";
+}
+
+.iconqiehuanhuiyuan:before {
+  content: "\e757";
+}
+
+.iconguadan:before {
+  content: "\e756";
+}
+
+.iconhexiaodingdanjine:before {
+  content: "\e73c";
+}
+
+.iconmendiandingdanjine:before {
+  content: "\e73b";
+}
+
+.iconmendianchengjiaoyonghushu:before {
+  content: "\e73d";
+}
+
+.iconfufeihuiyuanjine:before {
+  content: "\e73e";
+}
+
+.iconshouyindingdanjine:before {
+  content: "\e73f";
+}
+
+.iconmendianxinzengyonghushu:before {
+  content: "\e740";
+}
+
+.iconhuiyuankajihuoshu:before {
+  content: "\e741";
+}
+
+.iconxinzengyonghushu1:before {
+  content: "\e742";
+}
+
+.iconfenpeidingdanjine:before {
+  content: "\e743";
+}
+
+.iconyuexiaohaojine:before {
+  content: "\e744";
+}
+
+.iconerweima-xingerenzhongxin:before {
+  content: "\e715";
+}
+
+.iconhuishan:before {
+  content: "\e70f";
+}
+
+.iconshangpinshuliang-jia:before {
+  content: "\e70e";
+}
+
+.iconshangpinshuliang-jian:before {
+  content: "\e70d";
 }
 
 .icontupianguanggao1:before {
@@ -908,4 +1008,3 @@
 .iconyouhuiquan:before {
   content: "\e639";
 }
-

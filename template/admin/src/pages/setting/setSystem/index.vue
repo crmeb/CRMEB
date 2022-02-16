@@ -45,6 +45,7 @@
 import formCreate from "@form-create/iview";
 import { headerListApi, dataFromApi } from "@/api/setting";
 import request from "@/libs/request";
+import { getLogo } from "@/api/common";
 export default {
   name: "setting_setSystem",
   components: { formCreate: formCreate.$form() },
@@ -193,10 +194,8 @@ export default {
     },
     async getAllData() {
       if (this.$route.query.from === "download") {
-        console.log("111");
         await this.getHeader(2);
       } else if (this.$route.params.type !== "3") {
-        console.log("222");
 
         await this.getHeader();
       } else {
@@ -220,11 +219,17 @@ export default {
         data: formData,
       })
         .then((res) => {
+          this.getAdminTitle();
           this.$Message.success(res.msg);
         })
         .catch((res) => {
           this.$Message.error(res.msg);
         });
+    },
+    getAdminTitle() {
+      getLogo().then((res) => {
+        localStorage.setItem("ADMIN_TITLE", res.data.site_name);
+      });
     },
   },
 };

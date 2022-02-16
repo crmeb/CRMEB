@@ -32,6 +32,7 @@ class CacheServices extends BaseServices
      * 获取数据缓存
      * @param string $key
      * @param $default 默认值不存在则写入
+     * @param int $expire
      * @return mixed|null
      */
     public function getDbCache(string $key, $default, int $expire = 0)
@@ -88,6 +89,7 @@ class CacheServices extends BaseServices
     /**
      * 删除某个缓存
      * @param string $key
+     * @return false|mixed
      */
     public function delectDbCache(string $key = '')
     {

@@ -14,6 +14,8 @@ use crmeb\basic\BaseUpload;
 use crmeb\exceptions\UploadException;
 use Guzzle\Http\EntityBody;
 use OSS\Core\OssException;
+use OSS\Model\CorsConfig;
+use OSS\Model\CorsRule;
 use OSS\OssClient;
 use think\exception\ValidateException;
 
@@ -38,7 +40,7 @@ class Oss extends BaseUpload
 
     /**
      * 句柄
-     * @var \OSS\OssClient
+     * @var OssClient
      */
     protected $handle;
 
@@ -102,9 +104,10 @@ class Oss extends BaseUpload
             throw new UploadException('Please configure accessKey and secretKey');
         }
         $this->handle = new OssClient($this->accessKey, $this->secretKey, $this->storageRegion);
-        if (!$this->handle->doesBucketExist($this->storageName)) {
-            $this->handle->createBucket($this->storageName, OssClient::OSS_ACL_TYPE_PUBLIC_READ_WRITE);
-        }
+        //不再自动创建
+//        if (!$this->handle->doesBucketExist($this->storageName)) {
+//            $this->handle->createBucket($this->storageName, OssClient::OSS_ACL_TYPE_PUBLIC_READ_WRITE);
+//        }
         return $this->handle;
     }
 
@@ -184,10 +187,11 @@ class Oss extends BaseUpload
     /**
      * 缩略图
      * @param string $filePath
+     * @param string $fileName
      * @param string $type
-     * @return mixed|string[]
+     * @return array|mixed
      */
-    public function thumb(string $filePath = '', string $type = 'all')
+    public function thumb(string $filePath = '', string $fileName = '', string $type = 'all')
     {
         $filePath = $this->getFilePath($filePath);
         $data = ['big' => $filePath, 'mid' => $filePath, 'small' => $filePath];
@@ -307,5 +311,252 @@ class Oss extends BaseUpload
         $pos = strpos($expiration, '+');
         $expiration = substr($expiration, 0, $pos);
         return $expiration . "Z";
+    }
+
+    /**
+     * 获取当前管理下的所有桶
+     * @param string|null $region
+     * @param bool $line
+     * @param bool $shared
+     * @return mixed|\OSS\Model\BucketListInfo
+     * @throws OssException
+     */
+    public function listbuckets(string $region = 'oss-cn-hangzhou.aliyuncs.com', bool $line = false, bool $shared = false)
+    {
+        $handle = new OssClient($this->accessKey, $this->secretKey, $region);
+        $response = $handle->listBuckets();
+        $data = $response->getBucketList();
+        $list = [];
+        foreach ($data as $item) {
+            $list[] = [
+                'location' => $item->getLocation(),
+                'name' => $item->getName(),
+                'createTime' => $item->getCreateDate()
+            ];
+        }
+        return $list;
+    }
+
+    /**
+     * @param string $name
+     * @param string $region
+     * @param string $acl
+     * @return mixed|void
+     */
+    public function createBucket(string $name, string $region = '', string $acl = OssClient::OSS_ACL_TYPE_PUBLIC_READ)
+    {
+        $regionData = $this->getRegion();
+        if (!in_array($region, array_column($regionData, 'value'))) {
+            return $this->setError('OSS:无效的区域');
+        }
+        try {
+            $handle = new OssClient($this->accessKey, $this->secretKey, $region);
+            if ($handle->doesBucketExist($name)) {
+                return $this->setError('OSS:空间已经存在，请更换空间名');
+            }
+            return $handle->createBucket($name, $acl);
+        } catch (\Throwable $e) {
+            if (strstr('The bucket you access does not belong to you', $e->getMessage())) {
+                return $this->setError('OSS:空间已被使用，请更换空间名');
+            }
+            return $this->setError('OSS:' . $e->getMessage());
+        }
+    }
+
+    /**
+     * @param string $name
+     * @param string $region
+     * @return bool|mixed|null
+     */
+    public function deleteBucket(string $name, string $region = '')
+    {
+        try {
+            $handle = new OssClient($this->accessKey, $this->secretKey, $region);
+            return $handle->deleteBucket($name);
+        } catch (\Throwable $e) {
+            return $this->setError($e->getMessage());
+        }
+    }
+
+    /**
+     * @param string $name
+     * @param string|null $region
+     * @return array|bool
+     */
+    public function getDomian(string $name, string $region = null)
+    {
+        try {
+            $handle = new OssClient($this->accessKey, $this->secretKey, $region);
+            $res = $handle->getBucketCname($name);
+            $data = $res->getCnames();
+            return array_column($data, 'Domain');
+        } catch (\Throwable $e) {
+        }
+        return [];
+    }
+
+    /**
+     * 绑定域名
+     * @param string $name
+     * @param string $domain
+     * @param string|null $region
+     * @return bool|mixed
+     */
+    public function bindDomian(string $name, string $domain, string $region = null)
+    {
+        $parseDomin = parse_url($domain);
+        try {
+            $handle = new OssClient($this->accessKey, $this->secretKey, $region);
+            $res = $handle->getBucketCname($name);
+            $data = $res->getCnames();
+            if (in_array($parseDomin['host'], array_column($data, 'Domain'))) {
+                return true;
+            }
+            return $handle->addBucketCname($name, $parseDomin['host']);
+        } catch (\Throwable $e) {
+            return $this->setError($e->getMessage());
+        }
+    }
+
+    /**
+     * 设置跨域
+     * @param string $name
+     * @param string $region
+     * @return bool|null
+     */
+    public function setBucketCors(string $name, string $region)
+    {
+        try {
+            $handle = new OssClient($this->accessKey, $this->secretKey, $region);
+            $corsConfig = new CorsConfig();
+            $rule = new CorsRule();
+            // 设置允许跨域请求的响应头。AllowedHeader可以设置多个，每个AllowedHeader中最多只能使用一个通配符星号（*）。
+            // 建议无特殊需求时设置AllowedHeader为星号（*）。
+            $rule->addAllowedHeader("*");
+            // 设置允许用户从应用程序中访问的响应头。ExposeHeader可以设置多个，ExposeHeader中不支持使用通配符星号（*）。
+            $rule->addExposeHeader("ETag");
+            // 设置允许的跨域请求的来源。AllowedOrigin可以设置多个，每个AllowedOrigin中最多只能使用一个通配符星号（*）。
+            // 设置AllowedOrigin为星号（*）时，表示允许所有域的来源。
+            $rule->addAllowedOrigin("*");
+            // 设置允许的跨域请求方法。
+            $rule->addAllowedMethod("POST");
+            $rule->addAllowedMethod("GET");
+            $rule->addAllowedMethod("DELETE");
+            $rule->addAllowedMethod("PUT");
+            $rule->addAllowedMethod("HEAD");
+            // 设置浏览器对特定资源的预取（OPTIONS）请求返回结果的缓存时间，单位为秒。
+            $rule->setMaxAgeSeconds(600);
+            // 每个Bucket最多支持添加10条规则。
+            $corsConfig->addRule($rule);
+            return $handle->putBucketCors($name, $corsConfig);
+        } catch (\Throwable $e) {
+            return $this->setError($e->getMessage());
+        }
+    }
+
+    /**
+     * 数据中心
+     * @return mixed|\string[][]
+     */
+    public function getRegion()
+    {
+        return [
+            [
+                'value' => 'oss-cn-hangzhou.aliyuncs.com',
+                'label' => '华东1（杭州）'
+            ],
+            [
+                'value' => 'oss-cn-shanghai.aliyuncs.com',
+                'label' => '华东2（上海）'
+            ],
+            [
+                'value' => 'oss-cn-qingdao.aliyuncs.com',
+                'label' => '华北1（青岛）'
+            ],
+            [
+                'value' => 'oss-cn-beijing.aliyuncs.com',
+                'label' => '华北2（北京）'
+            ],
+            [
+                'value' => 'oss-cn-zhangjiakou.aliyuncs.com',
+                'label' => '华北 3（张家口）'
+            ],
+            [
+                'value' => 'oss-cn-huhehaote.aliyuncs.com',
+                'label' => '华北5（呼和浩特）'
+            ],
+            [
+                'value' => 'oss-cn-wulanchabu.aliyuncs.com',
+                'label' => '华北6（乌兰察布）'
+            ],
+            [
+                'value' => 'oss-cn-shenzhen.aliyuncs.com',
+                'label' => '华南1（深圳）'
+            ],
+            [
+                'value' => 'oss-cn-heyuan.aliyuncs.com',
+                'label' => '华南2（河源）'
+            ],
+            [
+                'value' => 'oss-cn-guangzhou.aliyuncs.com',
+                'label' => '华南3（广州）'
+            ],
+            [
+                'value' => 'oss-cn-chengdu.aliyuncs.com',
+                'label' => '西南1（成都）'
+            ],
+            [
+                'value' => 'oss-cn-hongkong.aliyuncs.com',
+                'label' => '中国（香港）'
+            ],
+            [
+                'value' => 'oss-us-west-1.aliyuncs.com',
+                'label' => '美国（硅谷）*'
+            ],
+            [
+                'value' => 'oss-us-east-1.aliyuncs.com',
+                'label' => '美国（弗吉尼亚）*'
+            ],
+            [
+                'value' => 'oss-ap-southeast-1.aliyuncs.com',
+                'label' => '新加坡*'
+            ],
+            [
+                'value' => 'oss-ap-southeast-2.aliyuncs.com',
+                'label' => '澳大利亚（悉尼）*'
+            ],
+            [
+                'value' => 'oss-ap-southeast-3.aliyuncs.com',
+                'label' => '马来西亚（吉隆坡）*'
+            ],
+            [
+                'value' => 'oss-ap-southeast-5.aliyuncs.com',
+                'label' => '印度尼西亚（雅加达）*'
+            ],
+            [
+                'value' => 'oss-ap-northeast-1.aliyuncs.com',
+                'label' => '日本（东京）*'
+            ],
+            [
+                'value' => 'oss-ap-south-1.aliyuncs.com',
+                'label' => '印度（孟买）*'
+            ],
+            [
+                'value' => 'oss-eu-central-1.aliyuncs.com',
+                'label' => '德国（法兰克福）*'
+            ],
+            [
+                'value' => 'oss-eu-west-1.aliyuncs.com',
+                'label' => '英国（伦敦）'
+            ],
+            [
+                'value' => 'oss-me-east-1.aliyuncs.com',
+                'label' => '阿联酋（迪拜）*'
+            ],
+            [
+                'value' => 'oss-ap-southeast-6.aliyuncs.com',
+                'label' => '菲律宾（马尼拉）'
+            ]
+        ];
     }
 }

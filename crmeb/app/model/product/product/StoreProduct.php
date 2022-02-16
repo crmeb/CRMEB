@@ -13,7 +13,6 @@ namespace app\model\product\product;
 
 use crmeb\basic\BaseModel;
 use crmeb\traits\ModelTrait;
-use app\model\coupon\StoreCouponProduct;
 use think\Model;
 
 /**
@@ -243,14 +242,26 @@ class StoreProduct extends BaseModel
     }
 
     /**
+     * 会员专属商品搜索器
+     * @param Model $query
+     * @param int $value
+     */
+    public function searchVipUserAttr($query, $value)
+    {
+        if ($value === 0) {
+            $query->where('vip_product', 0);
+        }
+    }
+
+    /**
      * 是否虚拟商品搜索器
      * @param $query
      * @param $value
      */
     public function searchIsVirtualAttr($query, $value)
     {
-        if ($value != -1) {
-            $query->where('is_virtual', $value);
+        if ($value == 0) {
+            $query->where('virtual_type', 0)->where('vip_product', 0)->where('presale', 0);
         }
     }
 
@@ -312,6 +323,16 @@ class StoreProduct extends BaseModel
             case 6:
                 $query->where(['is_del' => 1]);
                 break;
-        };
+        }
+    }
+
+    /**
+     * 不在当前id中查询
+     * @param $query
+     * @param $value
+     */
+    public function searchNotIdsAttr($query, $value)
+    {
+        if ($value != '') $query->whereNotIn('id', $value);
     }
 }

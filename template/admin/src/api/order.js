@@ -103,6 +103,17 @@ export function getDataInfo (id) {
 };
 
 /**
+ * @description 订单表单详情数据-新
+ * @param {Number} param id {Number} 订单id
+ */
+ export function getDataInfoNew (id) {
+    return request({
+        url: `/refund/info/${id}`,
+        method: 'get'
+    })
+};
+
+/**
  * @description 修改备注信息
  * @param {Number} param data.id {Number} 订单id
  * @param {String} param data.remark {String} 备注信息
@@ -140,6 +151,17 @@ export function getRefundFrom (id) {
 };
 
 /**
+ * @description 新版-获取退款表单数据
+ * @param {Number} param id {Number} 订单id
+ */
+ export function getNewRefundFrom (id) {
+    return request({
+        url: `/refund/refund/${id}`,
+        method: 'get'
+    })
+};
+
+/**
  * @description 获取快递公司
  */
 export function getExpressData (status) {
@@ -156,6 +178,16 @@ export function getExpressData (status) {
 export function getnoRefund (id) {
     return request({
         url: `/order/no_refund/${id}`,
+        method: 'get'
+    })
+};
+/**
+ * @description 新版-获取不退款表单数据
+ * @param {Number} param id {Number} 订单id
+ */
+export function getNewnoRefundFrom (id) {
+    return request({
+        url: `/refund/no_refund/${id}`,
         method: 'get'
     })
 };
@@ -501,4 +533,17 @@ export function orderOfflineScan (id) {
         url: `queue/stop/wrong_queue/${id}`,
         method: 'get'
     })
+};
+
+/**
+ * @description 修改退款订单备注信息
+ * @param {Number} param data.id {Number} 订单id
+ * @param {String} param data.remark {String} 备注信息
+ */
+ export function putRefundRemarkData(data) {
+    return request({
+        url: `/refund/remark/${data.id}`,
+        method: 'put',
+        data: data.remark
+    });
 };

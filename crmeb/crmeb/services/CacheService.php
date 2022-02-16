@@ -11,10 +11,8 @@
 
 namespace crmeb\services;
 
-use think\cache\driver\Redis;
 use think\facade\Cache as CacheStatic;
 use think\facade\Config;
-use think\facade\Log;
 
 /**
  * crmeb 缓存类
@@ -86,6 +84,7 @@ class CacheService
      * 如果不存在则写入缓存
      * @param string $name
      * @param bool $default
+     * @param int|null $expire
      * @return mixed
      */
     public static function get(string $name, $default = false, int $expire = null)
@@ -153,8 +152,10 @@ class CacheService
      * 放入令牌桶
      * @param string $key
      * @param array $value
+     * @param null $expire
      * @param string $type
      * @return bool
+     * @throws \Psr\SimpleCache\InvalidArgumentException
      */
     public static function setTokenBucket(string $key, $value, $expire = null, string $type = 'admin')
     {
@@ -281,8 +282,7 @@ class CacheService
         for ($i = 1; $i <= $number; $i++) {
             $data[] = $i;
         }
-        $res = $res && $cache->lPush($name, ...$data);
-        return $res;
+        return $res && $cache->lPush($name, ...$data);
     }
 
     /**

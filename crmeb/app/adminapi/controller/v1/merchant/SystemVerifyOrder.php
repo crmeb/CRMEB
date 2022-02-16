@@ -48,7 +48,7 @@ class SystemVerifyOrder extends AuthController
             ['field_key', ''],
         ]);
         $data = $this->services->getOrderList($where + ['status' => 6], ['*'], ['store', 'staff']);
-        return app('json')->success(['count' => $data['count'], 'data' => $data['data'], 'badge' => $data['stat']]);
+        return app('json')->success(['count' => $data['count'], 'data' => $data['data']]);
     }
 
     /**

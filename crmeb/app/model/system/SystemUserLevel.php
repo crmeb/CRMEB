@@ -58,7 +58,7 @@ class SystemUserLevel extends BaseModel
 
     /**
      * 是否展示
-     * @param \think\Model $query
+     * @param Model $query
      * @param $value
      */
     public function searchIsShowAttr($query, $value)

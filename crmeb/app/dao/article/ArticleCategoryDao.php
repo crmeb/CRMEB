@@ -38,9 +38,11 @@ class ArticleCategoryDao extends BaseDao
      * @param int $limit
      * @return mixed
      */
-    public function getList(array $where, int $page, int $limit)
+    public function getList(array $where, int $page = 0, int $limit = 0)
     {
-        return $this->search($where)->page($page, $limit)->order('sort desc,id desc')->select()->toArray();
+        return $this->search($where)->when(!$page && !$limit, function ($query) use ($page, $limit) {
+            $query->page($page, $limit);
+        })->order('sort desc,id desc')->select()->toArray();
     }
 
     /**
@@ -52,9 +54,19 @@ class ArticleCategoryDao extends BaseDao
      */
     public function getArticleCategory()
     {
-        return $this->search(['hidden'=>0,'is_del'=>0,'status'=>1])
+        return $this->search(['hidden' => 0, 'is_del' => 0, 'status' => 1, 'pid' => 0])->with(['children'])
             ->order('sort DESC')
-            ->field('id,title')
+            ->field('id,pid,title')
             ->select()->toArray();
+    }
+
+    /**
+     * 添加修改选择上级分类列表
+     * @param array $where
+     * @return array
+     */
+    public function getMenus(array $where)
+    {
+        return $this->search($where)->order('sort desc,id desc')->column('title,pid,id');
     }
 }

@@ -1,6 +1,12 @@
 <template>
   <div class="label-wrapper">
-    <div class="label-box" v-for="(item, index) in labelList" :key="index">
+    <div v-if="!labelList[0]" class="nonefont">暂无标签</div>
+    <div
+      v-else
+      class="label-box"
+      v-for="(item, index) in labelList"
+      :key="index"
+    >
       <div class="title">{{ item.name }}</div>
       <div class="list">
         <div
@@ -14,6 +20,7 @@
         </div>
       </div>
     </div>
+
     <div class="footer">
       <Button type="primary" class="btns" @click="subBtn">确定</Button>
       <Button type="primary" class="btns" ghost @click="cancel">取消</Button>
@@ -29,6 +36,15 @@ export default {
     uid: {
       type: String | Number,
       default: "",
+    },
+    only_get: {
+      default: false,
+    },
+    selectDataLabel: {
+      type: Array,
+      default: () => {
+        [];
+      },
     },
   },
   data() {
@@ -54,6 +70,19 @@ export default {
   methods: {
     getList() {
       getUserLabel(this.uid).then((res) => {
+        if (this.selectDataLabel && this.selectDataLabel.length) {
+          this.selectDataLabel.map((el) => {
+            res.data.map((re) => {
+              re.label.map((label) => {
+                if (label.id === el.id) {
+                  label.disabled = true;
+                }
+              });
+            });
+          });
+        }
+
+        console.log(res.data);
         res.data.map((el) => {
           el.label.map((label) => {
             if (label.disabled) {
@@ -77,6 +106,17 @@ export default {
     // 确定
     subBtn() {
       let unLaberids = [];
+      if (this.only_get) {
+        this.labelList.map((item) => {
+          item.label.map((i) => {
+            if (i.disabled == true) {
+              unLaberids.push({ id: i.id, label_name: i.label_name });
+            }
+          });
+        });
+        this.$emit("activeData", unLaberids);
+        return;
+      }
       this.labelList.map((item) => {
         item.label.map((i) => {
           if (i.disabled == false) {
@@ -149,5 +189,10 @@ export default {
 
 .title {
   font-size: 13px;
+}
+
+.nonefont {
+  text-align: center;
+  padding-top: 20px;
 }
 </style>

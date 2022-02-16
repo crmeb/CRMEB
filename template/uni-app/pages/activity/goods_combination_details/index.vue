@@ -13,271 +13,286 @@
 				</view>
 			</view>
 		</view>
-		<!-- #ifndef APP-PLUS -->
-		<!-- <view class='iconfont icon-xiangzuo' :style="'top:'+navH/2+'rpx'" @tap='returns'></view> -->
-		<view id="home" class="home-nav acea-row row-center-wrapper iconfont icon-xiangzuo" :class="opacity>0.5?'on':''"
-			:style="{ top: homeTop + 'rpx' }" v-if="returnShow" @tap="returns">
-			<!-- 	<view class="line" v-if="returnShow"></view>
-			<navigator url="/pages/index/index" class="iconfont icon-shouye4" hover-class="none"></navigator> -->
-		</view>
-		<!-- #endif -->
+		<!-- #ifdef APP-PLUS -->
+		<view id="home" class="home-nav acea-row row-center-wrapper" :class="[opacity>0.5?'on':'']"
+			:style="{ top:(navH/2-92)+'rpx' ,marginTop:sysHeight}">
+			<!-- #endif -->
+			<!-- #ifndef APP-PLUS -->
+			<view id="home" class="home-nav acea-row row-center-wrapper" :class="[opacity>0.5?'on':'']"
+				:style="{ top: homeTop +'rpx'}">
+				<!-- #endif -->
+				<view class="iconfont icon-fanhui2" @tap="returns"></view>
+				<!-- #ifdef MP -->
+				<view class="line"></view>
+				<view class="iconfont icon-gengduo5" @click="moreNav"></view>
+				<!-- #endif -->
+			</view>
 
-		<!-- 详情 -->
-		<view class='product-con'>
-			<scroll-view :scroll-top="scrollTop" scroll-y='true' scroll-with-animation="true"
-				:style="'height:'+height+'px;'" @scroll="scroll">
-				<view id="past0">
-					<productConSwiper :imgUrls="imgUrls"></productConSwiper>
-					<view class='wrapper'>
-						<view class='share acea-row row-between row-bottom'>
-							<view class='money font-color'>
-								￥<text class='num'>{{storeInfo.price || 0}}</text>
-								<text
-									v-if="attribute.productAttr.length && (attribute.productAttr.length?attribute.productAttr[0].attr_values.length:0) > 1">起</text>
-								<text class='y-money'>￥{{storeInfo.product_price || 0}}</text>
-							</view>
-							<view class='iconfont icon-fenxiang' @click="listenerActionSheet"></view>
-						</view>
-						<view class='introduce'>{{storeInfo.title}}</view>
-						<view class='label acea-row row-between-wrapper'>
-							<view class='stock'>类型：{{storeInfo.people || 0}}人团</view>
-							<view>累计销量：{{storeInfo.total?storeInfo.total:0}} {{storeInfo.unit_name || ''}}</view>
-							<view>限购: {{ storeInfo.quota_show ? storeInfo.quota_show : 0 }}
-								{{storeInfo.unit_name || ''}}
-							</view>
-						</view>
-					</view>
-					<view class='attribute acea-row row-between-wrapper' @tap='selecAttr'
-						v-if='attribute.productAttr.length'>
-				<!-- 		<view>{{attr}}：<text class='atterTxt'>{{attrValue}}</text></view>
-						<view class='iconfont icon-jiantou'></view> -->
-						<view class="flex">
-						  <view style="display: flex; align-items: center; width: 90%">
-						    <view class="attr-txt"> {{ attr }}： </view>
-						    <view class="atterTxt line1" style="width: 82%">{{
-						      attrValue
-						    }}</view>
-						  </view>
-						  <view class="iconfont icon-jiantou"></view>
-						</view>
-						<view
-						  class="acea-row row-between-wrapper"
-						  style="margin-top: 7px; padding-left: 70px"
-						  v-if="skuArr.length > 1"
-						>
-						  <view class="flexs">
-						    <image
-						      :src="item.image"
-						      v-for="(item, index) in skuArr.slice(0, 4)"
-						      :key="index"
-						      class="attrImg"
-						    ></image>
-						  </view>
-						  <view class="switchTxt">共{{ skuArr.length }}种规格可选</view>
-						</view>
-					</view>
-					<view class="bg-color">
-						<view class='notice acea-row row-middle'>
-							<view class='num font-num'>
-								<text class='iconfont icon-laba'></text>
-								已拼{{pink_ok_sum}}件<text class='line'>|</text>
-							</view>
-							<view class='swiper'>
-								<swiper :indicator-dots="indicatorDots" :autoplay="autoplay" interval="2500" duration="500"
-									vertical="true" circular="true">
-									<block v-for="(item,index) in itemNew" :key='index'>
-										<swiper-item>
-											<view class='line1'>{{item}}</view>
-										</swiper-item>
-									</block>
-								</swiper>
-							</view>
-						</view>
-					</view>
-					<view class='assemble'>
-						<view class='item acea-row row-between-wrapper' v-for='(item,index) in pink' :key='index'
-							v-if="index < AllIndex">
-							<view class='pictxt acea-row row-between-wrapper'>
-								<view class='pictrue'>
-									<image :src='item.avatar'></image>
+
+			<!-- #ifdef APP-PLUS -->
+			<view id="home" class="home-nav right acea-row row-center-wrapper" :class="[opacity>0.5?'on':'']"
+				:style="{ top:(navH/2-92)+'rpx',marginTop:sysHeight}">
+				<!-- #endif -->
+				<!-- #ifdef H5 -->
+				<view id="home" class="home-nav right acea-row row-center-wrapper" :class="[opacity>0.5?'on':'']"
+					:style="{ top: homeTop +'rpx'}">
+					<!-- #endif -->
+					<!-- #ifdef APP-PLUS || H5 -->
+					<view class="iconfont icon-gengduo2" @click="moreNav"></view>
+				</view>
+				<!-- #endif -->
+
+				<homeList :navH="navH" :returnShow="returnShow" :currentPage="currentPage" :sysHeight="sysHeight">
+				</homeList>
+				<!-- 详情 -->
+				<view class='product-con'>
+					<scroll-view :scroll-top="scrollTop" scroll-y='true' scroll-with-animation="true"
+						:style="'height:'+height+'px;'" @scroll="scroll">
+						<view id="past0">
+							<productConSwiper :imgUrls="imgUrls"></productConSwiper>
+							<view class='wrapper'>
+								<view class='share acea-row row-between row-bottom'>
+									<view class='money font-color'>
+										￥<text class='num'>{{storeInfo.price || 0}}</text>
+										<text
+											v-if="attribute.productAttr.length && (attribute.productAttr.length?attribute.productAttr[0].attr_values.length:0) > 1">起</text>
+										<text class='y-money'>￥{{storeInfo.product_price || 0}}</text>
+									</view>
+									<view class='iconfont icon-fenxiang' @click="listenerActionSheet"></view>
 								</view>
-								<view class='text line1'>{{item.nickname}}</view>
-							</view>
-							<view class='right acea-row row-middle'>
-								<view>
-									<view class='lack'>还差<text class='font-num'>{{item.count}}</text>人成团</view>
-									<view class='time'>
-										<count-down :is-day="false" :tip-text="' '" :day-text="' '" :hour-text="':'"
-											:minute-text="':'" :second-text="' '" :datatime="item.stop_time">
-										</count-down>
+								<view class='introduce'>{{storeInfo.title}}</view>
+								<view class='label acea-row row-between-wrapper'>
+									<view class='stock'>类型：{{storeInfo.people || 0}}人团</view>
+									<view>累计销量：{{storeInfo.total?storeInfo.total:0}} {{storeInfo.unit_name || ''}}
+									</view>
+									<view>限购: {{ storeInfo.quota ? storeInfo.quota : 0 }}
+										{{storeInfo.unit_name || ''}}
 									</view>
 								</view>
-								<navigator hover-class='none'
-									:url="'/pages/activity/goods_combination_status/index?id='+item.id"
-									class='spellBnt'>
-									去拼单
+							</view>
+							<view class='attribute acea-row row-between-wrapper' @tap='selecAttr'
+								v-if='attribute.productAttr.length'>
+								<!-- 		<view>{{attr}}：<text class='atterTxt'>{{attrValue}}</text></view>
+						<view class='iconfont icon-jiantou'></view> -->
+								<view class="flex">
+									<view style="display: flex; align-items: center; width: 90%">
+										<view class="attr-txt"> {{ attr }}： </view>
+										<view class="atterTxt line1" style="width: 82%">{{
+						      attrValue
+						    }}</view>
+									</view>
+									<view class="iconfont icon-jiantou"></view>
+								</view>
+								<view class="acea-row row-between-wrapper" style="margin-top: 7px; padding-left: 70px"
+									v-if="skuArr.length > 1">
+									<view class="flexs">
+										<image :src="item.image" v-for="(item, index) in skuArr.slice(0, 4)"
+											:key="index" class="attrImg"></image>
+									</view>
+									<view class="switchTxt">共{{ skuArr.length }}种规格可选</view>
+								</view>
+							</view>
+							<view class="bg-color">
+								<view class='notice acea-row row-middle'>
+									<view class='num font-num'>
+										<text class='iconfont icon-laba'></text>
+										已拼{{pink_ok_sum}}件<text class='line'>|</text>
+									</view>
+									<view class='swiper'>
+										<swiper :indicator-dots="indicatorDots" :autoplay="autoplay" interval="2500"
+											duration="500" vertical="true" circular="true">
+											<block v-for="(item,index) in itemNew" :key='index'>
+												<swiper-item>
+													<view class='line1'>{{item}}</view>
+												</swiper-item>
+											</block>
+										</swiper>
+									</view>
+								</view>
+							</view>
+							<view class='assemble'>
+								<view class='item acea-row row-between-wrapper' v-for='(item,index) in pink'
+									:key='index' v-if="index < AllIndex">
+									<view class='pictxt acea-row row-between-wrapper'>
+										<view class='pictrue'>
+											<image :src='item.avatar'></image>
+										</view>
+										<view class='text line1'>{{item.nickname}}</view>
+									</view>
+									<view class='right acea-row row-middle'>
+										<view>
+											<view class='lack'>还差<text class='font-num'>{{item.count}}</text>人成团</view>
+											<view class='time'>
+												<count-down :is-day="false" :tip-text="' '" :day-text="' '"
+													:hour-text="':'" :minute-text="':'" :second-text="' '"
+													:datatime="item.stop_time">
+												</count-down>
+											</view>
+										</view>
+										<navigator hover-class='none'
+											:url="'/pages/activity/goods_combination_status/index?id='+item.id"
+											class='spellBnt'>
+											去拼单
+											<text class='iconfont icon-jiantou'></text>
+										</navigator>
+									</view>
+								</view>
+								<template v-if="pink.length">
+									<view class='more' @tap='showAll' v-if="pink.length > AllIndex">查看更多<text
+											class='iconfont icon-xiangxia'></text></view>
+									<view class='more' @tap='hideAll'
+										v-else-if="pink.length === AllIndex && pink.length !== AllIndexDefault">收起<text
+											class='iconfont icon-xiangshang'></text></view>
+								</template>
+							</view>
+							<view class='playWay'>
+								<view class='title acea-row row-between-wrapper'>
+									<view>拼团玩法</view>
+									<!-- <navigator hover-class='none' class='font-color' url='/pages/activity/goods_combination_rule/index'>查看规则<text class="iconfont icon-jiantou"></text></navigator> -->
+								</view>
+								<view class='way acea-row row-middle'>
+									<view class='item'>
+										<text class='num'>①</text>
+										<text>开团/参团</text>
+									</view>
+									<view class='iconfont icon-arrow'></view>
+									<view class='item'>
+										<text class='num'>②</text>
+										<text>邀请好友</text>
+									</view>
+									<view class='iconfont icon-arrow'></view>
+									<view class='item'>
+										<view>
+											<text class='num'>③</text>
+											<text>满员发货</text>
+										</view>
+										<!-- <view class='tip'>不满自动退款</view> -->
+									</view>
+								</view>
+							</view>
+						</view>
+						<view class='userEvaluation' id="past1" v-if="replyCount">
+							<view class='title acea-row row-between-wrapper'>
+								<view>用户评价({{replyCount}})</view>
+								<navigator class='praise' hover-class='none'
+									:url='"/pages/users/goods_comment_list/index?product_id="+storeInfo.product_id'>
+									<text class='font-num'>{{replyChance || 0}}%</text>
+									好评率
 									<text class='iconfont icon-jiantou'></text>
 								</navigator>
 							</view>
+							<userEvaluation :reply="reply"></userEvaluation>
 						</view>
-						<template v-if="pink.length">
-							<view class='more' @tap='showAll' v-if="pink.length > AllIndex">查看更多<text
-									class='iconfont icon-xiangxia'></text></view>
-							<view class='more' @tap='hideAll'
-								v-else-if="pink.length === AllIndex && pink.length !== AllIndexDefault">收起<text
-									class='iconfont icon-xiangshang'></text></view>
-						</template>
-					</view>
-					<view class='playWay'>
-						<view class='title acea-row row-between-wrapper'>
-							<view>拼团玩法</view>
-							<!-- <navigator hover-class='none' class='font-color' url='/pages/activity/goods_combination_rule/index'>查看规则<text class="iconfont icon-jiantou"></text></navigator> -->
-						</view>
-						<view class='way acea-row row-middle'>
-							<view class='item'>
-								<text class='num'>①</text>
-								<text>开团/参团</text>
-							</view>
-							<view class='iconfont icon-arrow'></view>
-							<view class='item'>
-								<text class='num'>②</text>
-								<text>邀请好友</text>
-							</view>
-							<view class='iconfont icon-arrow'></view>
-							<view class='item'>
-								<view>
-									<text class='num'>③</text>
-									<text>满员发货</text>
-								</view>
-								<!-- <view class='tip'>不满自动退款</view> -->
+						<view class='product-intro' id="past2">
+							<view class='title'>产品介绍</view>
+							<view class='conter'>
+								<!-- <view class="" v-html="storeInfo.description"></view> -->
+								<parser :html="storeInfo.description" ref="article" :tag-style="tagStyle"></parser>
 							</view>
 						</view>
-					</view>
-				</view>
-				<view class='userEvaluation' id="past1" v-if="replyCount">
-					<view class='title acea-row row-between-wrapper'>
-						<view>用户评价({{replyCount}})</view>
-						<navigator class='praise' hover-class='none'
-							:url='"/pages/users/goods_comment_list/index?product_id="+storeInfo.product_id'>
-							<text class='font-num'>{{replyChance || 0}}%</text>
-							好评率
-							<text class='iconfont icon-jiantou'></text>
-						</navigator>
-					</view>
-					<userEvaluation :reply="reply"></userEvaluation>
-				</view>
-				<view class='product-intro' id="past2">
-					<view class='title'>产品介绍</view>
-					<view class='conter'>
-						<!-- <view class="" v-html="storeInfo.description"></view> -->
-						<parser
-						  :html="storeInfo.description"
-						  ref="article"
-						  :tag-style="tagStyle"
-						></parser>
-					</view>
-				</view>
-			</scroll-view>
-			<view class='footer acea-row row-between-wrapper'>
-				<!-- #ifdef MP -->
-				<!-- <button open-type="contact" hover-class='none' class='item'>
+					</scroll-view>
+					<view class='footer acea-row row-between-wrapper'>
+						<!-- #ifdef MP -->
+						<!-- <button open-type="contact" hover-class='none' class='item'>
 					<view class='iconfont icon-kefu'></view>
 					<view class="p_center">客服</view>
 				</button> -->
-				<!-- #endif -->
-				<!-- #ifndef MP -->
-				<!-- <navigator hover-class="none" class="item" url="/pages/customer_list/chat">
+						<!-- #endif -->
+						<!-- #ifndef MP -->
+						<!-- <navigator hover-class="none" class="item" url="/pages/customer_list/chat">
 					<view class="iconfont icon-kefu"></view>
 					<view class="p_center">客服</view>
 				</navigator> -->
+						<!-- #endif -->
+						<navigator hover-class="none" class="item" open-type="switchTab" url="/pages/index/index">
+							<view class="iconfont icon-shouye6"></view>
+							<view class="p_center">首页</view>
+						</navigator>
+						<view @tap='setCollect' class='item'>
+							<view class='iconfont icon-shoucang1' v-if="storeInfo.userCollect"></view>
+							<view class='iconfont icon-shoucang' v-else></view>
+							<view class="p_center">收藏</view>
+						</view>
+						<view class="bnt acea-row">
+							<view class="joinCart bnts" @tap="goProduct">单独购买</view>
+							<view class="buy bnts" @tap="goCat"
+								v-if='attribute.productSelect.product_stock>0&&attribute.productSelect.quota>0'>
+								立即开团
+							</view>
+							<view class="buy bnts bg-color-hui" v-if="!dataShow">
+								立即开团
+							</view>
+							<view class="buy bnts bg-color-hui"
+								v-if='attribute.productSelect.quota <= 0 || attribute.productSelect.product_stock <= 0'>
+								已售罄
+							</view>
+						</view>
+					</view>
+				</view>
+
+				<!-- 分享按钮 -->
+				<view class="generate-posters acea-row row-middle" :class="posters ? 'on' : ''">
+					<!-- #ifndef MP -->
+					<button class="item" hover-class='none' v-if="weixinStatus === true" @click="H5ShareBox = true">
+						<!-- <button class="item" hover-class='none' v-if="weixinStatus === true" @click="setShareInfoStatus"> -->
+						<view class="iconfont icon-weixin3"></view>
+						<view class="">发送给朋友</view>
+					</button>
+					<!-- #endif -->
+					<!-- #ifdef MP -->
+					<button class="item" open-type="share" hover-class='none' @click="goFriend">
+						<view class="iconfont icon-weixin3"></view>
+						<view class="">发送给朋友</view>
+					</button>
+					<!-- #endif -->
+					<!-- #ifdef APP-PLUS -->
+					<view class="item" @click="appShare('WXSceneSession')">
+						<view class="iconfont icon-weixin3"></view>
+						<view class="">微信好友</view>
+					</view>
+					<view class="item" @click="appShare('WXSenceTimeline')">
+						<view class="iconfont icon-pengyouquan"></view>
+						<view class="">微信朋友圈</view>
+					</view>
+					<!-- #endif -->
+					<button class="item" hover-class='none' @tap="goPoster">
+						<view class="iconfont icon-haibao"></view>
+						<view class="">生成海报</view>
+					</button>
+				</view>
+				<view class="mask" v-if="posters" @click="listenerActionClose"></view>
+
+				<!-- 海报展示 -->
+				<view class='poster-pop' v-if="posterImageStatus">
+					<image src='/static/images/poster-close.png' class='close' @click="posterImageClose"></image>
+					<image :src='posterImage'></image>
+					<!-- #ifndef H5  -->
+					<view class='save-poster' @click="savePosterPath">保存到手机</view>
+					<!-- #endif -->
+					<!-- #ifdef H5 -->
+					<view class="keep">长按图片可以保存到手机</view>
+					<!-- #endif -->
+				</view>
+				<view class='mask1' v-if="posterImageStatus"></view>
+				<canvas class="canvas" canvas-id='myCanvas' v-if="canvasStatus"></canvas>
+				<view class="share-box" v-if="H5ShareBox">
+					<image src="/static/images/share-info.png" @click="H5ShareBox = false"></image>
+				</view>
+				<!-- #ifdef MP -->
+				<!-- <authorize @onLoadFun="onLoadFun" :isAuto="isAuto" :isShowAuth="isShowAuth" @authColse="authColse"></authorize> -->
 				<!-- #endif -->
-				<navigator hover-class="none" class="item" open-type="switchTab" url="/pages/index/index">
-					<view class="iconfont icon-shouye6"></view>
-					<view class="p_center">首页</view>
-				</navigator>
-				<view @tap='setCollect' class='item'>
-					<view class='iconfont icon-shoucang1' v-if="storeInfo.userCollect"></view>
-					<view class='iconfont icon-shoucang' v-else></view>
-					<view class="p_center">收藏</view>
-				</view>
-				<view class="bnt acea-row">
-					<view class="joinCart bnts" @tap="goProduct">单独购买</view>
-					<view class="buy bnts" @tap="goCat"
-						v-if='attribute.productSelect.product_stock>0&&attribute.productSelect.quota>0'>
-						立即开团
-					</view>
-					<view class="buy bnts bg-color-hui" v-if="!dataShow">
-						立即开团
-					</view>
-					<view class="buy bnts bg-color-hui"
-						v-if='attribute.productSelect.quota <= 0 || attribute.productSelect.product_stock <= 0'>
-						已售罄
-					</view>
-				</view>
+				<product-window :attr='attribute' :limitNum='1' @myevent="onMyEvent" @ChangeAttr="ChangeAttr"
+					@ChangeCartNum="ChangeCartNum" @iptCartNum="iptCartNum" @attrVal="attrVal" @getImg="showImg">
+				</product-window>
+				<cus-previewImg ref="cusPreviewImg" :list="skuArr" @changeSwitch="changeSwitch"
+					@shareFriend="listenerActionSheet" />
+				<kefuIcon :ids='storeInfo.product_id' :routineContact='routineContact'></kefuIcon>
+				<!-- #ifdef H5 || APP-PLUS -->
+				<zb-code ref="qrcode" :show="codeShow" :cid="cid" :val="codeVal" :size="size" :unit="unit"
+					:background="background" :foreground="foreground" :pdground="pdground" :icon="codeIcon"
+					:iconSize="iconsize" :onval="onval" :loadMake="loadMake" @result="qrR" />
+				<!-- #endif -->
 			</view>
-		</view>
-
-		<!-- 分享按钮 -->
-		<view class="generate-posters acea-row row-middle" :class="posters ? 'on' : ''">
-			<!-- #ifndef MP -->
-			<button class="item" hover-class='none' v-if="weixinStatus === true" @click="H5ShareBox = true">
-				<!-- <button class="item" hover-class='none' v-if="weixinStatus === true" @click="setShareInfoStatus"> -->
-				<view class="iconfont icon-weixin3"></view>
-				<view class="">发送给朋友</view>
-			</button>
-			<!-- #endif -->
-			<!-- #ifdef MP -->
-			<button class="item" open-type="share" hover-class='none' @click="goFriend">
-				<view class="iconfont icon-weixin3"></view>
-				<view class="">发送给朋友</view>
-			</button>
-			<!-- #endif -->
-			<!-- #ifdef APP-PLUS -->
-			<view class="item" @click="appShare('WXSceneSession')">
-				<view class="iconfont icon-weixin3"></view>
-				<view class="">微信好友</view>
-			</view>
-			<view class="item" @click="appShare('WXSenceTimeline')">
-				<view class="iconfont icon-pengyouquan"></view>
-				<view class="">微信朋友圈</view>
-			</view>
-			<!-- #endif -->
-			<button class="item" hover-class='none' @tap="goPoster">
-				<view class="iconfont icon-haibao"></view>
-				<view class="">生成海报</view>
-			</button>
-		</view>
-		<view class="mask" v-if="posters" @click="listenerActionClose"></view>
-
-		<!-- 海报展示 -->
-		<view class='poster-pop' v-if="posterImageStatus">
-			<image src='/static/images/poster-close.png' class='close' @click="posterImageClose"></image>
-			<image :src='posterImage'></image>
-			<!-- #ifndef H5  -->
-			<view class='save-poster' @click="savePosterPath">保存到手机</view>
-			<!-- #endif -->
-			<!-- #ifdef H5 -->
-			<view class="keep">长按图片可以保存到手机</view>
-			<!-- #endif -->
-		</view>
-		<view class='mask1' v-if="posterImageStatus"></view>
-		<canvas class="canvas" canvas-id='myCanvas' v-if="canvasStatus"></canvas>
-		<view class="share-box" v-if="H5ShareBox">
-			<image src="/static/images/share-info.png" @click="H5ShareBox = false"></image>
-		</view>
-		<!-- #ifdef MP -->
-		<!-- <authorize @onLoadFun="onLoadFun" :isAuto="isAuto" :isShowAuth="isShowAuth" @authColse="authColse"></authorize> -->
-		<!-- #endif -->
-		<product-window :attr='attribute' :limitNum='1' @myevent="onMyEvent" @ChangeAttr="ChangeAttr"
-			@ChangeCartNum="ChangeCartNum" @iptCartNum="iptCartNum" @attrVal="attrVal" @getImg="showImg"></product-window>
-		<cus-previewImg
-			ref="cusPreviewImg"
-			:list="skuArr"
-			@changeSwitch="changeSwitch"
-			@shareFriend="listenerActionSheet"
-		/>
-		<kefuIcon :ids='storeInfo.product_id' :routineContact='routineContact'></kefuIcon>
-	</view>
 </template>
 
 <script>
@@ -322,7 +337,13 @@
 	// #endif
 	import colors from '@/mixins/color.js';
 	import parser from "@/components/jyf-parser/jyf-parser";
-	import cusPreviewImg from "@/components/cus-previewImg/cus-previewImg.vue";
+	import cusPreviewImg from "@/components/cusPreviewImg/index.vue";
+	import menuIcon from "@/components/menuIcon.vue";
+	import {
+		sharePoster
+	} from "@/mixins/sharePoster";
+	import homeList from '@/components/homeList';
+	let sysHeight = uni.getSystemInfoSync().statusBarHeight + 'px';
 	export default {
 		components: {
 			productConSwiper,
@@ -334,13 +355,15 @@
 			userEvaluation,
 			countDown,
 			cusPreviewImg,
-			parser
+			parser,
+			menuIcon,
+			homeList
 		},
 		computed: mapGetters({
 			'isLogin': 'isLogin',
 			'userData': 'userInfo'
 		}),
-		mixins:[colors],
+		mixins: [colors, sharePoster],
 		data() {
 			return {
 				dataShow: 0,
@@ -410,6 +433,9 @@
 				routineContact: 0,
 				skuArr: [],
 				selectSku: {},
+				showMenuIcon: false,
+				currentPage: false,
+				sysHeight: sysHeight,
 			}
 		},
 		watch: {
@@ -501,8 +527,30 @@
 					})
 				}
 			};
+			// #ifdef H5
+			this.codeVal = window.location.origin + '/pages/activity/goods_combination_details/index?id=' + this.id +
+				'&spid=' + this.$store.state.app.uid
+			// #endif	
+			// #ifdef APP-PLUS
+			this.codeVal = HTTP_REQUEST_URL + '/pages/activity/goods_combination_details/index?id=' + this.id +
+				'&spid=' + this.$store.state.app.uid
+			// #endif	
 		},
 		methods: {
+			moreNav() {
+				this.currentPage = !this.currentPage
+			},
+			qrR(res) {
+				// #ifdef H5
+				if (!this.$wechat.isWeixin() || this.shareQrcode != '1') {
+					this.PromotionCode = res;
+					this.followCode = ''
+				}
+				// #endif
+				// #ifdef APP-PLUS
+				this.PromotionCode = res;
+				// #endif
+			},
 
 			// app分享
 			// #ifdef APP-PLUS
@@ -562,7 +610,14 @@
 			},
 			// 返回
 			returns() {
-				uni.navigateBack();
+				// #ifdef H5
+				return history.back();
+				// #endif
+				// #ifndef H5
+				return uni.navigateBack({
+					delta: 1,
+				})
+				// #endif
 			},
 			// 获取详情
 			combinationDetail() {
@@ -587,21 +642,21 @@
 					that.replyChance = res.data.replyChance;
 					that.attribute.productAttr = res.data.productAttr;
 					that.productValue = res.data.productValue;
-					that.PromotionCode = res.data.storeInfo.code_base;
+					// that.PromotionCode = res.data.storeInfo.code_base;
 					that.routineContact = Number(res.data.routine_contact_type);
 					for (let key in res.data.productValue) {
-					  let obj = res.data.productValue[key];
-					  that.skuArr.push(obj);
+						let obj = res.data.productValue[key];
+						that.skuArr.push(obj);
 					}
 					that.$set(that, "selectSku", that.skuArr[0]);
 					var navList = ['商品', '详情'];
-					if(res.data.replyCount){
+					if (res.data.replyCount) {
 						navList.splice(1, 0, '评价');
 					}
 					that.$set(that, 'navList', navList);
+					that.storeImage = that.storeInfo.image
 					// #ifdef H5
 					that.setShare();
-					that.storeImage = that.storeInfo.image
 					that.getImageBase64();
 					// #endif
 					// #ifdef APP-PLUS
@@ -610,7 +665,7 @@
 					// #endif
 					// #ifdef MP
 					that.downloadFilestoreImage();
-					that.downloadFilePromotionCode();
+					// that.downloadFilePromotionCode();
 					// #endif
 					// that.setProductSelect();
 					that.DefaultSelect();
@@ -625,6 +680,22 @@
 						tab: 3
 					})
 				})
+			},
+			// app获取二维码
+			downloadFileAppCode() {
+				let that = this;
+				uni.downloadFile({
+					url: that.setDomain(that.PromotionCode),
+					success: function(res) {
+						that.PromotionCode = res.tempFilePath;
+					},
+					fail: function() {
+						return that.$util.Tips({
+							title: ''
+						});
+						that.PromotionCode = '';
+					},
+				});
 			},
 			//#ifdef H5
 			setShare: function() {
@@ -772,7 +843,7 @@
 					//获取元素所在位置
 					var query = uni.createSelectorQuery().in(this);
 					var idView = "#past" + i;
-					if(!this.replyCount && i == 1){
+					if (!this.replyCount && i == 1) {
 						idView = "#past" + 2;
 					}
 					query.select(idView).boundingClientRect();
@@ -791,7 +862,7 @@
 				this.userInfo = e
 				app.globalData.openPages = '/pages/activity/goods_combination_details/index?id=' + this.id + '&spid=' +
 					e.uid;
-				this.downloadFilePromotionCode();
+				// this.downloadFilePromotionCode();
 				this.combinationDetail();
 			},
 			selecAttr: function() {
@@ -905,6 +976,7 @@
 			// 立即购买
 			goCat() {
 				var that = this;
+				this.currentPage = false
 				var productSelect = this.productValue[this.attrValue];
 				//打开属性
 				if (this.isOpen)
@@ -945,7 +1017,7 @@
 			setCollect: function() {
 				var that = this;
 				if (this.storeInfo.userCollect) {
-					collectDel(this.storeInfo.product_id).then(res => {
+					collectDel([this.storeInfo.product_id]).then(res => {
 						that.storeInfo.userCollect = !that.storeInfo.userCollect
 					})
 				} else {
@@ -954,12 +1026,15 @@
 					})
 				}
 			},
-
+			open(data) {
+				this.showMenuIcon = data;
+			},
 			/**
 			 * 分享打开
 			 * 
 			 */
 			listenerActionSheet: function() {
+				this.currentPage = false
 				if (this.isLogin == false) {
 					toLogin();
 				} else {
@@ -987,38 +1062,7 @@
 				if (url.indexOf("https://") > -1) return url;
 				else return url.replace('http://', 'https://');
 			},
-			//获取海报产品图
-			downloadFilestoreImage: function() {
-				let that = this;
-				uni.downloadFile({
-					url: that.setDomain(that.storeInfo.image),
-					success: function(res) {
-						that.storeImage = res.tempFilePath;
-					},
-					fail: function() {
-						return that.$util.Tips({
-							title: ''
-						});
-						that.storeImage = '';
-					},
-				});
-			},
-			// app获取二维码
-			downloadFileAppCode() {
-				let that = this;
-				uni.downloadFile({
-					url: that.setDomain(that.storeInfo.code_base),
-					success: function(res) {
-						that.PromotionCode = res.tempFilePath;
-					},
-					fail: function() {
-						return that.$util.Tips({
-							title: ''
-						});
-						that.PromotionCode = '';
-					},
-				});
-			},
+
 			/**
 			 * 获取产品分销二维码
 			 * @param function successFn 下载完成回调
@@ -1046,72 +1090,12 @@
 					that.$set(that, 'PromotionCode', '');
 				});
 			},
-			getImageBase64: function() {
-				let that = this;
-				imageBase64(that.storeImage, that.PromotionCode)
-					.then(res => {
-						that.storeImage = res.data.image;
-						that.PromotionCode = res.data.code;
-					})
-					.catch(() => {});
-			},
+
 			// 小程序关闭分享弹窗；
 			goFriend: function() {
 				this.posters = false;
 			},
-			/**
-			 * 生成海报
-			 */
-			goPoster: function() {
-				let that = this;
-				that.posters = false;
-				that.$set(that, 'canvasStatus', true);
-				let arr2 = [that.posterbackgd, that.storeImage, that.PromotionCode];
-				////#ifndef H5
-				if (that.isDown) return that.$util.Tips({
-					title: '正在下载海报,请稍后再试！'
-				});
-				//// #endif
-				uni.getImageInfo({
-					src: that.PromotionCode,
-					fail: function(res) {
-						return that.$util.Tips({
-							title: '小程序二维码需要发布正式版后才能获取到'
-						});
-					},
-					success() {
-						if (arr2[2] == '') {
-							//海报二维码不存在则从新下载
-							that.downloadFilePromotionCode(function(msgPromotionCode) {
-								arr2[2] = msgPromotionCode;
-								if (arr2[2] == '')
-									return that.$util.Tips({
-										title: '海报二维码生成失败！'
-									});
-								that.$util.PosterCanvas(arr2, that.storeInfo.title, that.storeInfo
-									.price, that.storeInfo.product_price,
-									function(tempFilePath) {
-										that.$set(that, 'posterImage', tempFilePath);
-										that.$set(that, 'posterImageStatus', true);
-										that.$set(that, 'canvasStatus', false);
-										that.$set(that, 'actionSheetHidden', !that
-											.actionSheetHidden);
-									});
-							});
-						} else {
-							//生成推广海报
-							that.$util.PosterCanvas(arr2, that.storeInfo.title, that.storeInfo.price, that
-								.storeInfo.product_price,
-								function(tempFilePath) {
-									that.$set(that, 'posterImage', tempFilePath);
-									that.$set(that, 'posterImageStatus', true);
-									that.$set(that, 'canvasStatus', false);
-									that.$set(that, 'actionSheetHidden', !that.actionSheetHidden);
-								});
-						}
-					},
-				});
-			},
+
 
 			/*
 			 * 保存到手机相册
@@ -1216,6 +1200,7 @@
 				opacity = opacity > 1 ? 1 : opacity;
 				that.opacity = opacity
 				that.scrollY = scrollY
+				that.$set(that, "showMenuIcon", false);
 				if (that.lock) {
 					that.lock = false
 					return;
@@ -1232,7 +1217,7 @@
 				var index = index;
 				var that = this;
 				if (!this.replyCount && id == "past1") {
-				  id = "past2"
+					id = "past2"
 				}
 				this.toView = id;
 				this.navActive = index;
@@ -1241,38 +1226,36 @@
 			},
 			//点击sku图片打开轮播图
 			showImg(index) {
-			  this.$refs.cusPreviewImg.open(this.selectSku.suk);
+				this.$refs.cusPreviewImg.open(this.selectSku.suk);
 			},
 			//滑动轮播图选择商品
 			changeSwitch(e) {
-				console.log(this.skuArr[e])
-			  let productSelect = this.skuArr[e];
-			  this.$set(this, "selectSku", productSelect);
-			  var skuList = productSelect.suk.split(",");
-				console.log(this.attribute.productAttr)
-			  this.$set(this.attribute.productAttr[0], "index", skuList[0]);
-			  if (skuList.length == 2) {
-			    this.$set(this.attribute.productAttr[0], "index", skuList[0]);
-			    this.$set(this.attribute.productAttr[1], "index", skuList[1]);
-			  } else if (skuList.length == 3) {
-			    this.$set(this.attribute.productAttr[0], "index", skuList[0]);
-			    this.$set(this.attribute.productAttr[1], "index", skuList[1]);
-			    this.$set(this.attribute.productAttr[2], "index", skuList[2]);
-			  } else if (skuList.length == 4) {
-			    this.$set(this.attribute.productAttr[0], "index", skuList[0]);
-			    this.$set(this.attribute.productAttr[1], "index", skuList[1]);
-			    this.$set(this.attribute.productAttr[2], "index", skuList[2]);
-			    this.$set(this.attribute.productAttr[3], "index", skuList[3]);
-			  }
-			  if (productSelect) {
-			    this.$set(this.attribute.productSelect, "image", productSelect.image);
-			    this.$set(this.attribute.productSelect, "price", productSelect.price);
-			    this.$set(this.attribute.productSelect, "stock", productSelect.stock);
-			    this.$set(this.attribute.productSelect, "unique", productSelect.unique);
-			    this.$set(this.attribute.productSelect, "vipPrice", productSelect.vipPrice);
-			    this.$set(this, "attrTxt", "已选择");
-			    this.$set(this, "attrValue", productSelect.suk);
-			  }
+				let productSelect = this.skuArr[e];
+				this.$set(this, "selectSku", productSelect);
+				var skuList = productSelect.suk.split(",");
+				this.$set(this.attribute.productAttr[0], "index", skuList[0]);
+				if (skuList.length == 2) {
+					this.$set(this.attribute.productAttr[0], "index", skuList[0]);
+					this.$set(this.attribute.productAttr[1], "index", skuList[1]);
+				} else if (skuList.length == 3) {
+					this.$set(this.attribute.productAttr[0], "index", skuList[0]);
+					this.$set(this.attribute.productAttr[1], "index", skuList[1]);
+					this.$set(this.attribute.productAttr[2], "index", skuList[2]);
+				} else if (skuList.length == 4) {
+					this.$set(this.attribute.productAttr[0], "index", skuList[0]);
+					this.$set(this.attribute.productAttr[1], "index", skuList[1]);
+					this.$set(this.attribute.productAttr[2], "index", skuList[2]);
+					this.$set(this.attribute.productAttr[3], "index", skuList[3]);
+				}
+				if (productSelect) {
+					this.$set(this.attribute.productSelect, "image", productSelect.image);
+					this.$set(this.attribute.productSelect, "price", productSelect.price);
+					this.$set(this.attribute.productSelect, "stock", productSelect.stock);
+					this.$set(this.attribute.productSelect, "unique", productSelect.unique);
+					this.$set(this.attribute.productSelect, "vipPrice", productSelect.vipPrice);
+					this.$set(this, "attrTxt", "已选择");
+					this.$set(this, "attrValue", productSelect.suk);
+				}
 			},
 		},
 		//#ifdef MP
@@ -1327,7 +1310,7 @@
 		color: #050505;
 		background-color: #fff;
 		/* #ifdef MP */
-		padding-right: 95rpx;
+		// padding-right: 45rpx;
 		/* #endif */
 	}
 
@@ -1402,7 +1385,7 @@
 		margin-top: 20rpx;
 		padding: 0 30rpx;
 		box-sizing: border-box;
-		background-color: rgba(255,255,255,0.88);
+		background-color: rgba(255, 255, 255, 0.88);
 	}
 
 	.product-con .notice .num {
@@ -1719,26 +1702,52 @@
 	}
 
 	.home-nav {
-		color: #fff;
+		color: #333;
 		position: fixed;
-		font-size: 33rpx;
+		/* #ifdef MP */
+		width: 126rpx;
+		left: 15rpx;
+		/* #endif */
+		/* #ifndef MP */
 		width: 56rpx;
-		height: 56rpx;
-		z-index: 99;
 		left: 33rpx;
-		background: rgba(190, 190, 190, 0.5);
-		border-radius: 50%;
+		/* #endif */
+		height: 56rpx;
+		font-size: 33rpx;
+		z-index: 99;
+		background: rgba(255, 255, 255, 0.3);
+		border: 1px solid rgba(0, 0, 0, 0.1);
+		border-radius: 40rpx;
+
+		&.right {
+			right: 33rpx;
+			left: unset
+		}
 
 		&.on {
 			background: unset;
 			color: #333;
 		}
+
+		&.homeIndex {
+			/* #ifdef MP */
+			width: 98rpx;
+			/* #endif */
+			/* #ifndef MP */
+			border-color: rgba(255, 255, 255, 0);
+			/* #endif */
+		}
+	}
+
+	.home-nav .iconfont {
+		width: 58rpx;
+		text-align: center;
 	}
 
 	.home-nav .line {
 		width: 1rpx;
-		height: 24rpx;
-		background: rgba(255, 255, 255, 0.25);
+		height: 34rpx;
+		background: #B3B3B3;
 	}
 
 	.home-nav .icon-xiangzuo {
@@ -1759,43 +1768,47 @@
 		width: 100%;
 		height: 100%;
 	}
+
 	.attrImg {
-	  width: 66rpx;
-	  height: 66rpx;
-	  border-radius: 6rpx;
-	  display: block;
-	  margin-right: 14rpx;
+		width: 66rpx;
+		height: 66rpx;
+		border-radius: 6rpx;
+		display: block;
+		margin-right: 14rpx;
 	}
-	
+
 	.switchTxt {
-	  height: 60rpx;
-	  flex: 1;
-	  line-height: 60rpx;
-	  box-sizing: border-box;
-	  background: #eeeeee;
-	  padding: 0 14rpx 0 14rpx;
-	  border-radius: 8rpx;
-	  text-align: center;
+		height: 60rpx;
+		flex: 1;
+		line-height: 60rpx;
+		box-sizing: border-box;
+		background: #eeeeee;
+		padding: 0 10rpx;
+		border-radius: 8rpx;
+		text-align: center;
 	}
-	
+
 	.attribute {
-	  padding: 10rpx 30rpx;
-	  .line1 {
-	    width: 600rpx;
-	  }
+		padding: 10rpx 30rpx;
+
+		.line1 {
+			width: 600rpx;
+		}
 	}
+
 	.flex {
-	  display: flex;
-	  justify-content: space-between;
-	  width: 100%;
+		display: flex;
+		justify-content: space-between;
+		width: 100%;
 	}
+
 	.flexs {
-	  display: flex;
+		display: flex;
 	}
-	
+
 	.attr-txt {
-	  display: flex;
-	  flex-wrap: nowrap;
-	  width: 130rpx;
+		display: flex;
+		flex-wrap: nowrap;
+		width: 130rpx;
 	}
 </style>

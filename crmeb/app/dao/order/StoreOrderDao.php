@@ -96,7 +96,7 @@ class StoreOrderDao extends BaseDao
         })->when(isset($where['type']), function ($query) use ($where) {
             switch ($where['type']) {
                 case 1:
-                    $query->where('combination_id', 0)->where('seckill_id', 0)->where('bargain_id', 0);
+                    $query->where('combination_id', 0)->where('seckill_id', 0)->where('bargain_id', 0)->where('advance_id', 0);
                     break;
                 case 2:
                     $query->where('pink_id|combination_id', ">", 0);
@@ -167,6 +167,12 @@ class StoreOrderDao extends BaseDao
                     $query->where('refund_type', 6);
                     break;
             }
+        })->when(isset($where['is_refund']) && $where['is_refund'] !== '', function ($query) use ($where) {
+            if ($where['is_refund'] == 1) {
+                $query->where('refund_status', 2);
+            } else {
+                $query->where('refund_status', 0);
+            }
         });
     }
 
@@ -207,16 +213,17 @@ class StoreOrderDao extends BaseDao
      * @param int $page
      * @param int $limit
      * @param array $with
+     * @param string $order
      * @return array
      * @throws \think\db\exception\DataNotFoundException
      * @throws \think\db\exception\DbException
      * @throws \think\db\exception\ModelNotFoundException
      */
-    public function getOrderList(array $where, array $field, int $page = 0, int $limit = 0, array $with = [])
+    public function getOrderList(array $where, array $field, int $page = 0, int $limit = 0, array $with = [], $order = 'pay_time DESC,id DESC')
     {
-        return $this->search($where)->field($field)->with(array_merge(['user', 'spread'], $with))->when($page && $limit, function ($query) use ($page, $limit) {
+        return $this->search($where)->field($field)->with(array_merge(['user', 'spread', 'refund'], $with))->when($page && $limit, function ($query) use ($page, $limit) {
             $query->page($page, $limit);
-        })->order('pay_time DESC,id DESC')->select()->toArray();
+        })->order($order)->select()->toArray();
     }
 
     /**
@@ -279,6 +286,7 @@ class StoreOrderDao extends BaseDao
     {
         return $this->getModel()->where('add_time', 'between time', [$datebefor, $dateafter])->where('paid', 1)->where('refund_status', 0)->whereIn('pid', [-1, 0])
             ->when($timeType, function ($query) use ($timeType) {
+                $timeUnix = "%w";
                 switch ($timeType) {
                     case "week" :
                         $timeUnix = "%w";
@@ -326,6 +334,7 @@ class StoreOrderDao extends BaseDao
     {
         return $this->getModel()->where('add_time', 'between time', [$now_datebefor, $now_dateafter])->where('paid', 1)->where('refund_status', 0)->whereIn('pid', [-1, 0])
             ->when($timeType, function ($query) use ($timeType) {
+                $timeUnix = "%w";
                 switch ($timeType) {
                     case "week" :
                         $timeUnix = "%w";
@@ -439,12 +448,9 @@ class StoreOrderDao extends BaseDao
      * @param int $limit
      * @return array
      */
-    public function getOrderDataPriceCount(array $field, int $page, int $limit, $time)
+    public function getOrderDataPriceCount(array $where, array $field, int $page, int $limit)
     {
-        return $this->search(['paid' => 1, 'refund_status' => 0, 'pid' => 0])
-            ->when($time['start'] != 0 && $time['stop'] != 0, function ($query) use ($time) {
-                $query->where('add_time', '>=', $time['start'])->where('add_time', '<', $time['stop']);
-            })
+        return $this->search($where)
             ->field($field)->group("FROM_UNIXTIME(add_time, '%Y-%m-%d')")
             ->order('add_time DESC')->page($page, $limit)->select()->toArray();
     }
@@ -578,13 +584,19 @@ class StoreOrderDao extends BaseDao
      * @param $str
      * @return mixed
      */
-    public function getProductTrend($time, $timeType, $field, $str)
+    public function getProductTrend($time, $timeType, $field, $str, $orderStatus = '')
     {
-        return $this->getModel()->where(function ($query) use ($field) {
+        return $this->getModel()->where(function ($query) use ($field, $orderStatus) {
             if ($field == 'pay_time') {
-                $query->where('paid', 1);
+                $query->where('paid', 1)->where('pid', '>=', 0);
             } elseif ($field == 'refund_reason_time') {
-                $query->where('paid', 1)->where('refund_status', '>', 0);
+                $query->where('paid', 1)->where('pid', '>=', 0)->where('refund_status', '>', 0);
+            } elseif ($field == 'add_time') {
+                if ($orderStatus == 'pay') {
+                    $query->where('paid', 1)->where('pid', '>=', 0)->where('refund_status', 0);
+                } elseif ($orderStatus == 'refund') {
+                    $query->where('paid', 1)->where('pid', '>=', 0)->where('refund_status', '>', 0);
+                }
             }
         })->where(function ($query) use ($time, $field) {
             if ($time[0] == $time[1]) {
@@ -592,7 +604,7 @@ class StoreOrderDao extends BaseDao
             } else {
                 $query->whereTime($field, 'between', $time);
             }
-        })->whereIn('pid', [-1, 0])->field("FROM_UNIXTIME($field,'$timeType') as days,$str as num")->group('days')->select()->toArray();
+        })->where('pid', '>=', 0)->field("FROM_UNIXTIME($field,'$timeType') as days,$str as num")->group('days')->select()->toArray();
     }
 
 
@@ -634,6 +646,7 @@ class StoreOrderDao extends BaseDao
         return $this->search($where)
             ->when(isset($where['timeKey']), function ($query) use ($where, $sumField, $group) {
                 $query->whereBetweenTime('pay_time', $where['timeKey']['start_time'], $where['timeKey']['end_time']);
+                $timeUinx = "%H";
                 if ($where['timeKey']['days'] == 1) {
                     $timeUinx = "%H";
                 } elseif ($where['timeKey']['days'] == 30) {
@@ -661,6 +674,7 @@ class StoreOrderDao extends BaseDao
         return $this->search($where)
             ->when(isset($where['timeKey']), function ($query) use ($where, $sumField) {
                 $query->whereBetweenTime('pay_time', $where['timeKey']['start_time'], $where['timeKey']['end_time']);
+                $timeUinx = "%H";
                 if ($where['timeKey']['days'] == 1) {
                     $timeUinx = "%H";
                 } elseif ($where['timeKey']['days'] == 30) {
@@ -712,6 +726,8 @@ class StoreOrderDao extends BaseDao
                     $timeUinx = "%Y-%m-%d";
                 } elseif ($where['timeKey']['days'] > 30 && $where['timeKey']['days'] < 365) {
                     $timeUinx = "%Y-%m";
+                } else {
+                    $timeUinx = "%H";
                 }
                 $query->field("count(distinct uid) as number,FROM_UNIXTIME(pay_time, '$timeUinx') as time");
                 $query->group("FROM_UNIXTIME(pay_time, '$timeUinx')");

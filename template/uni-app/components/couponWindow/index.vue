@@ -8,7 +8,9 @@
 					<view class='text'>
 						<view class='name'>购物满{{item.use_min_price}}减{{item.coupon_price}}</view>
 						<view v-if="item.coupon_time">领取后{{item.coupon_time}}天内可用</view>
-						<view v-else>{{item.start_time ? item.start_time+'-' : ''}}{{item.end_time === 0 ? '不限时': item.end_time}}</view>
+						<view v-else>
+							{{item.start_time ? item.start_time+'-' : ''}}{{item.end_time === 0 ? '不限时': item.end_time}}
+						</view>
 					</view>
 				</view>
 			</view>
@@ -48,9 +50,9 @@
 			};
 		},
 		methods: {
-			close:function(){
-			      this.$emit('onColse');
-			    }
+			close: function() {
+				this.$emit('onColse');
+			}
 		}
 	}
 </script>
@@ -104,7 +106,7 @@
 		width: 480rpx;
 		margin: 157rpx 0 0 50rpx;
 		height: 340rpx;
-		overflow: auto;
+		overflow-y: scroll;
 	}
 
 	.coupon-window .couponWinList .item {
@@ -194,8 +196,9 @@
 		margin-bottom: 9rpx;
 		width: 250rpx;
 	}
+
 	.coupon-window .lid {
-		background: rgba(255,255,255,0.2);
+		background: rgba(255, 255, 255, 0.2);
 		width: 582rpx;
 		height: 224rpx;
 		position: fixed;
@@ -204,7 +207,7 @@
 		top: 0%;
 		margin: 424rpx 0 0 -296rpx;
 	}
-	
+
 	.coupon-window .lid:after {
 		width: 920rpx;
 		height: 280rpx;
@@ -217,7 +220,7 @@
 		border-radius: 0 0 50% 50%;
 		background: var(--view-theme);
 	}
-	
+
 	.coupon-window .lid .bnt {
 		font-size: 29rpx;
 		width: 440rpx;
@@ -230,7 +233,7 @@
 		margin: 98rpx auto 0 auto;
 		color: #fff;
 	}
-	
+
 	.coupon-window .lid .iconfont {
 		color: #fff;
 		font-size: 60rpx;

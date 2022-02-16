@@ -8,7 +8,7 @@
 // +----------------------------------------------------------------------
 // | Author: CRMEB Team <admin@crmeb.com>
 // +----------------------------------------------------------------------
-declare (strict_types = 1);
+declare (strict_types=1);
 
 namespace app\services\user;
 
@@ -30,6 +30,7 @@ use think\facade\Log;
  * @method count(array $where) 求条数
  * @method getTotalSum(array $where) 计算某个条件下订单内商品总数
  * @method getBillSum(array $where) 获取某个条件总数
+ * @method getList(array $where, string $field, int $page, int $limit, $typeWhere = [], $order = 'id desc') 获取某个条件总数
  * @method getUserRefundPriceList(array $time, string $timeType, string $str, string $field = 'add_time', array $with = []) 获取退款金额按照时间分组
  */
 class UserBillServices extends BaseServices
@@ -43,7 +44,7 @@ class UserBillServices extends BaseServices
         'pay_give_integral' => [
             'title' => '购买商品赠送积分',
             'category' => 'integral',
-            'type' => 'gain',
+            'type' => 'product_gain',
             'mark' => '购买商品赠送{%num%}积分',
             'status' => 1,
             'pm' => 1
@@ -97,10 +98,10 @@ class UserBillServices extends BaseServices
             'pm' => 1
         ],
         'integral_refund' => [
-            'title' => '积分回退',
+            'title' => '扣除订单下单赠送积分',
             'category' => 'integral',
-            'type' => 'deduction',
-            'mark' => '购买商品失败,回退积分{%num%}',
+            'type' => 'order_deduction',
+            'mark' => '购买商品失败,回退赠送积分{%num%}',
             'status' => 1,
             'pm' => 0
         ],
@@ -416,6 +417,7 @@ class UserBillServices extends BaseServices
         $list = $this->dao->getList($where, $field, $page, $limit);
         foreach ($list as &$item) {
             $item['number'] = intval($item['number']);
+            $item['is_frozen'] = $item['frozen_time'] > time() ? 1 : 0;
         }
         $count = $this->dao->count($where);
         return compact('list', 'count');
@@ -615,6 +617,12 @@ class UserBillServices extends BaseServices
             $data['mark'] = str_replace(['{%num%}'], $number, $data['mark']);
         }
         $data['add_time'] = time();
+        if ($type == 'pay_give_integral' || $type == 'order_give_integral') {
+            $integral_frozen = sys_config('integral_frozen');
+            if ($integral_frozen) {
+                $data['frozen_time'] = $data['add_time'] + ($integral_frozen * 86400);
+            }
+        }
 
         return $this->dao->save($data);
     }
@@ -647,7 +655,7 @@ class UserBillServices extends BaseServices
             $data['category'] = 'exp';
             $data['type'] = 'invite_user';
             $data['title'] = $data['mark'] = '邀新奖励';
-            $data['balance'] = (int)$spread_user['exp'];
+            $data['balance'] = (int)$spread_user['exp'] + (int)$exp_num;
             $data['pm'] = 1;
             $data['status'] = 1;
             $this->dao->save($data);
@@ -708,7 +716,7 @@ class UserBillServices extends BaseServices
             if ($where['type'] == 'brokerage') $where_data['pm'] = 1;
         }
         $where_data['not_category'] = ['integral', 'exp', 'share'];
-        $where_data['not_type'] = ['gain', 'system_sub', 'deduction', 'sign', 'pay_product'];
+        $where_data['not_type'] = $where['type'] == 'pay_product' ? ['gain', 'system_sub', 'deduction', 'sign'] : ['gain', 'system_sub', 'deduction', 'sign', 'pay_product'];
         if (isset($where['nickname']) && $where['nickname'] != '') {
             $where_data['like'] = $where['nickname'];
         }
@@ -730,15 +738,13 @@ class UserBillServices extends BaseServices
     /**
      * 获取佣金列表
      * @param array $where
+     * @param int $limit
      * @return array
      */
-    public function getCommissionList(array $where, $is_page = true)
+    public function getCommissionList(array $where, int $limit = 0)
     {
         $where_data = [];
-        $where_data[] = ['b.type', 'IN', ['brokerage', 'brokerage_user']];
-        $where_data[] = ['b.category', '=', 'now_money'];
-        $where_data[] = ['b.pm', '=', 1];
-
+        $where_data['time'] = $where['time'];
         if (isset($where['nickname']) && $where['nickname']) {
             $where_data[] = ['u.account|u.nickname|u.uid|u.phone', 'LIKE', "%$where[nickname]%"];
         }
@@ -754,7 +760,7 @@ class UserBillServices extends BaseServices
         $order_string = '';
         $order_arr = ['asc', 'desc'];
         if (isset($where['sum_number']) && in_array($where['sum_number'], $order_arr)) {
-            $order_string .= ',sum_number ' . $where['sum_number'];
+            $order_string .= ',income ' . $where['sum_number'];
         }
         if (isset($where['brokerage_price']) && in_array($where['brokerage_price'], $order_arr)) {
             $order_string .= ',u.brokerage_price ' . $where['brokerage_price'];
@@ -762,24 +768,18 @@ class UserBillServices extends BaseServices
         if ($order_string) {
             $order_string = trim($order_string, ',');
         }
-        /** @var UserUserBillServices $userUserBill */
-        $userUserBill = app()->make(UserUserBillServices::class);
-        [$count, $list] = $userUserBill->getBrokerageList($where_data, 'sum(b.number) as sum_number,u.nickname,u.phone,u.uid,u.now_money,u.brokerage_price', $order_string, $is_page);
+        /** @var UserUserBrokerageServices $userUserBrokerage */
+        $userUserBrokerage = app()->make(UserUserBrokerageServices::class);
+        [$count, $list] = $userUserBrokerage->getBrokerageList($where_data, 'b.type,b.pm,sum(IF(b.pm = 1, b.number, 0)) as income,sum(IF(b.pm = 0, b.number, 0)) as pay,u.nickname,u.phone,u.uid,u.now_money,u.brokerage_price,b.add_time as time', $order_string, $limit);
         $uids = array_unique(array_column($list, 'uid'));
         /** @var UserExtractServices $userExtract */
         $userExtract = app()->make(UserExtractServices::class);
         $extractSumList = $userExtract->getUsersSumList($uids);
-
-        $refund_brokerage = $this->dao->getRefundBrokerage();
-        /** @var UserBrokerageFrozenServices $frozenServices */
-        $frozenServices = app()->make(UserBrokerageFrozenServices::class);
-        $frozen_brokerage = $frozenServices->getFrozenBrokerage();
-
         foreach ($list as &$item) {
-            if (isset($refund_brokerage[$item['uid']])) $item['sum_number'] = bcsub($item['sum_number'], $refund_brokerage[$item['uid']], 2);
-            if (isset($frozen_brokerage[$item['uid']])) $item['brokerage_price'] = bcsub($item['brokerage_price'], $frozen_brokerage[$item['uid']], 2);
-            $item['nickname'] = $item['nickname'] . " | " . ($item['phone'] ? $item['phone'] . " | " : '') . $item['uid'];
+            $item['sum_number'] = $item['income'] > $item['pay'] ? bcsub($item['income'], $item['pay'], 2) : 0;
+            $item['nickname'] = $item['nickname'] . "|" . ($item['phone'] ? $item['phone'] . "|" : '') . $item['uid'];
             $item['extract_price'] = $extractSumList[$item['uid']] ?? 0;
+            $item['time'] = $item['time'] ? date('Y-m-d H:i:s', $item['time']) : '';
         }
         return compact('count', 'list');
     }
@@ -1169,7 +1169,7 @@ class UserBillServices extends BaseServices
             $userExtract = app()->make(UserExtractServices::class);
             $count = $userExtract->getUserExtract($uid);//累计提现
         }
-        return $count ? $count : 0;
+        return $count ?: 0;
     }
 
     /**
@@ -1189,7 +1189,7 @@ class UserBillServices extends BaseServices
         $storeOrderServices = app()->make(StoreOrderServices::class);
         [$page, $limit] = $this->getPageValue();
         $time = [];
-        $where = ['paid' => 1, 'refund_status' => 0, 'type' => 1, 'spread_or_uid' => $uid, 'pid' => 0];
+        $where = ['paid' => 1, 'type' => 1, 'spread_or_uid' => $uid, 'pid' => 0];
         $list = $storeOrderServices->getlist($where, ['id,order_id,uid,add_time,spread_uid,status,spread_two_uid,one_brokerage,two_brokerage,pay_price,pid'], $page, $limit, ['split']);
         $result['count'] = $storeOrderServices->count($where + ['pid' => 0]);
         $time_data = [];

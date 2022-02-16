@@ -40,6 +40,7 @@ return [
         'order.orderPaySuccess' => [\app\listener\order\OrderPaySuccess::class], //订单支付成功后置事件
         'order.orderDelivery' => [\app\listener\order\OrderDelivery::class], //订单发货后置事件
         'order.orderTake' => [\app\listener\order\OrderTake::class], //订单收货后置事件
+        'order.orderRefund' => [\app\listener\order\OrderRefund::class], //订单退款后置事件
         'user.userLevel' => [\app\listener\user\UserLevel::class], //用户升级事件
         'user.userVisit' => [\app\listener\user\UserVisit::class], //用户访问事件
         'notice.notice' => [\app\listener\notice\Notice::class], //通知->消息事件

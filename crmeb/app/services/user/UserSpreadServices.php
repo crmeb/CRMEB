@@ -42,6 +42,7 @@ class UserSpreadServices extends BaseServices
         if (!$uid || !$spread_uid) return false;
         /** @var UserServices $userServices */
         $userServices = app()->make(UserServices::class);
+
         if (!$userServices->getUserInfo($uid, 'uid')) {
             return false;
         }
@@ -49,6 +50,7 @@ class UserSpreadServices extends BaseServices
             return false;
         }
         if ($this->dao->save(['uid' => $uid, 'spread_uid' => $spread_uid, 'spread_time' => $spread_time ?: time()])) {
+            $userServices->incField($spread_uid, 'spread_count', 1);
             return true;
         } else {
             return false;

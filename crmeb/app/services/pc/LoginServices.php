@@ -109,8 +109,8 @@ class LoginServices extends BaseServices
             throw new ValidateException('unionid不存在');
         }
         if (!isset($wechatInfo['nickname'])) {
-            $wechatInfo = WechatAuthService::getUserInfo($wechatInfo['openid']);
-            if (!$wechatInfo['subscribe'] && !isset($wechatInfo['nickname']))
+            $wechatInfo = WechatAuthService::oauth2Service()->getUserInfo($wechatInfo['openid'])->toArray();
+            if (!isset($wechatInfo['nickname']))
                 throw new ValidateException('授权失败');
             if (isset($wechatInfo['tagid_list']))
                 $wechatInfo['tagid_list'] = implode(',', $wechatInfo['tagid_list']);

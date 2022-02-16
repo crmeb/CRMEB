@@ -77,6 +77,8 @@ class AgentManage extends AuthController
         return app('json')->success($this->services->getStairList($where));
     }
 
+    //TODO 废弃
+
     /**
      * 推广人列表头部统计
      * @return mixed
@@ -110,20 +112,7 @@ class AgentManage extends AuthController
         return app('json')->success($this->services->getStairOrderList((int)$where['uid'], $where));
     }
 
-    /**
-     * 统计推广订单头部统计
-     * @return mixed
-     */
-    public function get_stair_order_badge()
-    {
-        $where = $this->request->getMore([
-            ['uid', ''],
-            ['data', ''],
-            ['order_id', ''],
-            ['type', ''],
-        ]);
-        return app('json')->success($this->services->getStairOrderBadge($where));
-    }
+
 
     /**
      * 查看公众号推广二维码
@@ -139,7 +128,7 @@ class AgentManage extends AuthController
                 if ($res)
                     return app('json')->success($res);
                 else
-                    return app('json')->fail(isset($res['msg']) ? $res['msg'] : '获取失败，请稍后再试！');
+                    return app('json')->fail($res['msg'] ?? '获取失败，请稍后再试！');
             } else
                 return app('json')->fail('暂无此方法');
         } catch (\Exception $e) {
@@ -220,9 +209,17 @@ class AgentManage extends AuthController
             return app('json')->fail('当前推广人已经是所选人');
         }
         $spreadInfo = $services->get($spreadUid);
-        if($spreadInfo->spread_uid == $uid) {
+        if ($spreadInfo->spread_uid == $uid) {
             return app('json')->fail('上级推广人不能为自己下级');
         }
+        //之前的上级减少推广人数
+        if ($userInfo->spread_uid) {
+            $oldSpread = $services->get($userInfo->spread_uid);
+            $oldSpread->spread_count = $oldSpread->spread_count - 1;
+            $oldSpread->save();
+        }
+        $spreadInfo->spread_count = $spreadInfo->spread_count + 1;
+        $spreadInfo->save();
         $userInfo->spread_uid = $spreadUid;
         $userInfo->spread_time = time();
         $userInfo->save();
@@ -242,8 +239,13 @@ class AgentManage extends AuthController
 
     /**
      * 获取赠送分销等级表单
+     * @param AgentLevelServices $services
      * @param $uid
      * @return mixed
+     * @throws \FormBuilder\Exception\FormBuilderException
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
      */
     public function getLevelForm(AgentLevelServices $services, $uid)
     {

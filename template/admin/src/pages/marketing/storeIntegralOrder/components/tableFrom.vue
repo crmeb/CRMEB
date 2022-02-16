@@ -9,7 +9,7 @@
       @submit.native.prevent
     >
       <Row :gutter="24" type="flex" justify="end">
-        <Col span="24" class="ivu-text-left">
+        <Col span="8" class="ivu-text-left">
           <FormItem label="订单状态：">
             <RadioGroup
               v-model="orderData.status"
@@ -49,7 +49,7 @@
             </RadioGroup>
           </FormItem>
         </Col>
-        <Col span="24" class="ivu-text-left">
+        <Col span="8" class="ivu-text-left">
           <FormItem label="创建时间：">
             <DatePicker
               :editable="false"
@@ -65,7 +65,7 @@
             ></DatePicker>
           </FormItem>
         </Col>
-        <Col span="24">
+        <Col span="8">
           <div class="df">
             <FormItem label="搜索：" prop="real_name" label-for="real_name">
               <Input
@@ -145,6 +145,13 @@ export default {
       }
     };
     return {
+      grid: {
+        xl: 7,
+        lg: 7,
+        md: 12,
+        sm: 24,
+        xs: 24,
+      },
       fromList: {
         title: "选择时间",
         custom: true,

@@ -100,15 +100,15 @@ class SystemConfigServices extends BaseServices
             ],
             'show_value' => 1
         ],
-        'pay_success_printing_switch' => [
-            'son_type' => [
-                'develop_id' => '',
-                'printing_api_key' => '',
-                'printing_client_id' => '',
-                'terminal_number' => '',
-            ],
-            'show_value' => 1
-        ],
+//        'pay_success_printing_switch' => [
+//            'son_type' => [
+//                'develop_id' => '',
+//                'printing_api_key' => '',
+//                'printing_client_id' => '',
+//                'terminal_number' => '',
+//            ],
+//            'show_value' => 1
+//        ],
         'wss_open' => [
             'son_type' => [
                 'wss_local_cert' => '',
@@ -138,18 +138,18 @@ class SystemConfigServices extends BaseServices
             ],
             'show_value' => 1
         ],
-        'system_product_copy_type' => [
-            'son_type' => [
-                'copy_product_apikey' => '',
-            ],
-            'show_value' => 2
-        ],
-        'logistics_type' => [
-            'son_type' => [
-                'system_express_app_code' => '',
-            ],
-            'show_value' => 2
-        ],
+//        'system_product_copy_type' => [
+//            'son_type' => [
+//                'copy_product_apikey' => '',
+//            ],
+//            'show_value' => 2
+//        ],
+//        'logistics_type' => [
+//            'son_type' => [
+//                'system_express_app_code' => '',
+//            ],
+//            'show_value' => 2
+//        ],
         'ali_pay_status' => [
             'son_type' => [
                 'ali_pay_appid' => '',
@@ -168,26 +168,15 @@ class SystemConfigServices extends BaseServices
             ],
             'show_value' => 1
         ],
-        'config_export_open' => [
-            'son_type' => [
-                'config_export_to_name' => '',
-                'config_export_to_tel' => '',
-                'config_export_to_address' => '',
-                'config_export_siid' => '',
-            ],
-            'show_value' => 1
-        ],
-        'image_thumbnail_status' => [
-            'son_type' => [
-                'thumb_big_width' => '',
-                'thumb_big_height' => '',
-                'thumb_mid_width' => '',
-                'thumb_mid_height' => '',
-                'thumb_small_width' => '',
-                'thumb_small_height' => '',
-            ],
-            'show_value' => 1
-        ],
+//        'config_export_open' => [
+//            'son_type' => [
+//                'config_export_to_name' => '',
+//                'config_export_to_tel' => '',
+//                'config_export_to_address' => '',
+//                'config_export_siid' => '',
+//            ],
+//            'show_value' => 1
+//        ],
         'image_watermark_status' => [
             'son_type' => [
                 'watermark_type' => [
@@ -212,6 +201,18 @@ class SystemConfigServices extends BaseServices
                 ],
             ],
             'show_value' => 1
+        ],
+        'customer_type' => [
+            'son_type' => [
+                'customer_phone' => '',
+            ],
+            'show_value' => 1
+        ],
+        'customer_type@' => [
+            'son_type' => [
+                'customer_url' => '',
+            ],
+            'show_value' => 2
         ],
     ];
 
@@ -279,6 +280,7 @@ class SystemConfigServices extends BaseServices
         [$page, $limit] = $this->getPageValue();
         $list = $this->dao->getConfigList($where, $page, $limit);
         $count = $this->dao->count($where);
+        $tidy_srr = [];
         foreach ($list as &$item) {
             $item['value'] = $item['value'] ? json_decode($item['value'], true) ?: '' : '';
             if ($item['type'] == 'radio' || $item['type'] == 'checkbox') {
@@ -403,10 +405,11 @@ class SystemConfigServices extends BaseServices
     /**
      * 创建当选表单
      * @param array $data
+     * @param array $control
+     * @param array $control_two
      * @return array
-     * @throws \FormBuilder\Exception\FormBuilderException
      */
-    public function createRadioForm(array $data, $control = false, $control_two = [])
+    public function createRadioForm(array $data, $control = [], $control_two = [])
     {
         $formbuider = [];
         $data['value'] = json_decode($data['value'], true) ?: '0';
@@ -421,10 +424,10 @@ class SystemConfigServices extends BaseServices
             }
             $formbuider[] = $radio = $this->builder->radio($data['menu_name'], $data['info'], (int)$data['value'])->options($options)->info($data['desc'])->col(13);
             if ($control) {
-                $radio->appendControl(isset($data['show_value']) ? $data['show_value'] : 1, is_array($control) ? $control : [$control]);
+                $radio->appendControl($data['show_value'] ?? 1, is_array($control) ? $control : [$control]);
             }
             if ($control_two && isset($data['show_value2'])) {
-                $radio->appendControl(isset($data['show_value2']) ? $data['show_value2'] : 2, is_array($control_two) ? $control_two : [$control_two]);
+                $radio->appendControl($data['show_value2'] ?? 2, is_array($control_two) ? $control_two : [$control_two]);
             }
             return $formbuider;
         }
@@ -436,7 +439,7 @@ class SystemConfigServices extends BaseServices
      * @param array $data
      * @return array
      */
-    public function createUpoadForm(int $type, array $data)
+    public function createUploadForm(int $type, array $data)
     {
         $formbuider = [];
         switch ($type) {
@@ -566,25 +569,18 @@ class SystemConfigServices extends BaseServices
         switch ($data['type']) {
             case 'text'://文本框
                 return $this->createTextForm($data['input_type'], $data);
-                break;
             case 'radio'://单选框
                 return $this->createRadioForm($data, $control, $controle_two);
-                break;
             case 'textarea'://多行文本框
                 return $this->createTextareaForm($data);
-                break;
             case 'upload'://文件上传
-                return $this->createUpoadForm((int)$data['upload_type'], $data);
-                break;
+                return $this->createUploadForm((int)$data['upload_type'], $data);
             case 'checkbox'://多选框
                 return $this->createCheckboxForm($data);
-                break;
             case 'select'://多选框
                 return $this->createSelectForm($data);
-                break;
             case 'color':
                 return $this->createColorForm($data);
-                break;
         }
     }
 
@@ -667,13 +663,23 @@ class SystemConfigServices extends BaseServices
                         }
                         $data['show_value'] = $role['show_value'];
                     }
-                    $formbuider = array_merge($formbuider, $this->createRadioForm($data, $builder));
+                    $builder_two = [];
+                    if (isset($relateRule[$key . '@'])) {
+                        $role = $relateRule[$key . '@'];
+                        $data['show_value2'] = $role['show_value'];
+                        foreach ($role['son_type'] as $sk => $sv) {
+                            $son_data = $list[$sk];
+                            $son_data['show_value'] = $role['show_value'];
+                            $builder_two[] = $this->formTypeShine($son_data)[0];
+                        }
+                    }
+                    $formbuider = array_merge($formbuider, $this->createRadioForm($data, $builder, $builder_two));
                     break;
                 case 'textarea'://多行文本框
                     $formbuider = array_merge($formbuider, $this->createTextareaForm($data));
                     break;
                 case 'upload'://文件上传
-                    $formbuider = array_merge($formbuider, $this->createUpoadForm((int)$data['upload_type'], $data));
+                    $formbuider = array_merge($formbuider, $this->createUploadForm((int)$data['upload_type'], $data));
                     break;
                 case 'checkbox'://多选框
                     $formbuider = array_merge($formbuider, $this->createCheckboxForm($data));
@@ -711,7 +717,7 @@ class SystemConfigServices extends BaseServices
                     $formbuider = array_merge($formbuider, $this->createTextareaForm($data));
                     break;
                 case 'upload'://文件上传
-                    $formbuider = array_merge($formbuider, $this->createUpoadForm((int)$data['upload_type'], $data));
+                    $formbuider = array_merge($formbuider, $this->createUploadForm((int)$data['upload_type'], $data));
                     break;
                 case 'checkbox'://多选框
                     $formbuider = array_merge($formbuider, $this->createCheckboxForm($data));
@@ -771,7 +777,7 @@ class SystemConfigServices extends BaseServices
                         $formbuider = array_merge($formbuider, $this->createTextareaForm($data));
                         break;
                     case 'upload'://文件上传
-                        $formbuider = array_merge($formbuider, $this->createUpoadForm((int)$data['upload_type'], $data));
+                        $formbuider = array_merge($formbuider, $this->createUploadForm((int)$data['upload_type'], $data));
                         break;
                     case 'checkbox'://多选框
                         $formbuider = array_merge($formbuider, $this->createCheckboxForm($data));
@@ -903,7 +909,7 @@ class SystemConfigServices extends BaseServices
                 }
                 break;
             case 'upload':
-                $formbuider = array_merge($formbuider, $this->createUpoadForm(($menu['upload_type']), $menu));
+                $formbuider = array_merge($formbuider, $this->createUploadForm(($menu['upload_type']), $menu));
                 //上传类型选择
                 if (!empty($menu['upload_type'])) {
                     $formbuider[] = $this->builder->radio('upload_type', '上传类型', $menu['upload_type'])->options([['value' => 1, 'label' => '单图'], ['value' => 2, 'label' => '多图'], ['value' => 3, 'label' => '文件']]);
@@ -1163,11 +1169,7 @@ WSS;
         } catch (\Throwable $e) {
             $content = [];
         }
-        if (isset($content[$key])) {
-            return $content[$key];
-        } else {
-            return $content;
-        }
+        return $content[$key] ?? $content;
     }
 
     /**

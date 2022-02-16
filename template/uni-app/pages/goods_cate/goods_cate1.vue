@@ -1,7 +1,7 @@
 <template>
 	<view class='productSort copy-data' :style="{height:pageHeight}">
-		<!-- #ifdef APP-PLUS -->
-		<view class="sys-head" :style="{height:sysHeight}"></view>
+		<!-- #ifdef APP-PLUS || MP -->
+		<!-- <view class="sys-head" :style="{height:sysHeight}"></view> -->
 		<!-- #endif -->
 		<view class='header acea-row row-center-wrapper'>
 			<view class='acea-row row-between-wrapper input'>
@@ -53,6 +53,24 @@
 				</scroll-view>
 			</view>
 		</view>
+		<tabBar v-if="!is_diy" :pagePath="'/pages/goods_cate/goods_cate'"></tabBar>
+		<view class="foot" v-else-if="is_diy && newData.status && newData.status.status">
+			<view class="page-footer" id="target" :style="{'background-color':newData.bgColor.color[0].item}">
+				<view class="foot-item" v-for="(item,index) in newData.menuList" :key="index" @click="goRouter(item)">
+					<block v-if="item.link == activeRouter">
+						<image :src="item.imgList[0]"></image>
+						<view class="txt" :style="{color:newData.activeTxtColor.color[0].item}">{{item.name}}</view>
+					</block>
+					<block v-else>
+						<image :src="item.imgList[1]"></image>
+						<view class="txt" :style="{color:newData.txtColor.color[0].item}">{{item.name}}</view>
+					</block>
+					<div class="count-num" v-if="item.link === '/pages/order_addcart/order_addcart' && cartNum > 0">
+						{{cartNum}}
+					</div>
+				</view>
+			</view>
+		</view>
 	</view>
 </template>
 
@@ -69,10 +87,12 @@
 	import {
 		getNavigation
 	} from '@/api/public.js'
+	import tabBar from "@/pages/index/visualization/components/tabBar.vue";
 	const app = getApp();
 	export default {
 		components: {
-			pageFooter
+			pageFooter,
+			tabBar
 		},
 		data() {
 			return {
@@ -80,6 +100,7 @@
 				productList: [],
 				navActive: 0,
 				number: "",
+				is_diy: uni.getStorageSync('is_diy'),
 				height: 0,
 				hightArr: [],
 				toView: "",
@@ -104,8 +125,8 @@
 		},
 		mounted() {
 			let that = this
-			let routes = getCurrentPages(); 
-			let curRoute = routes[routes.length - 1].route 
+			let routes = getCurrentPages();
+			let curRoute = routes[routes.length - 1].route
 			this.activeRouter = '/' + curRoute
 			this.getAllCategory();
 			// if (uni.getStorageSync('FOOTER_BAR')) {
@@ -115,7 +136,7 @@
 			// 		this.newData = res.data
 			// 	})
 			// }
-			
+
 			// #ifdef H5
 			uni.getSystemInfo({
 				success: function(res) {
@@ -125,15 +146,15 @@
 			// #endif
 		},
 		methods: {
-			getNav(){
-				 // getNavigation().then(res => {
-				 // 	this.newData = res.data
-				 // 	if (this.newData.status && this.newData.status.status) {
-				 // 		uni.hideTabBar()
-				 // 	} else {
-				 // 		uni.showTabBar()
-				 // 	}
-				 // })
+			getNav() {
+				getNavigation().then(res => {
+					this.newData = res.data
+					if (this.newData.status && this.newData.status.status) {
+						uni.hideTabBar()
+					} else {
+						uni.showTabBar()
+					}
+				})
 			},
 			goRouter(item) {
 				var pages = getCurrentPages();
@@ -188,9 +209,6 @@
 					that.$nextTick(res => {
 						that.infoScroll();
 					})
-					setTimeout(function() {
-
-					}, 3000)
 				})
 			},
 			scroll: function(e) {
@@ -230,12 +248,31 @@
 	}
 </style>
 <style scoped lang="scss">
-	/deep/uni-scroll-view{
-		padding-bottom: 0!important;
+	/deep/uni-scroll-view {
+		padding-bottom: 0 !important;
 	}
+
+	.sys-title {
+		z-index: 10;
+		position: relative;
+		height: 40px;
+		line-height: 40px;
+		font-size: 30rpx;
+		color: #333;
+		background-color: #fff;
+		// #ifdef APP-PLUS
+		text-align: center;
+		// #endif
+		// #ifdef MP
+		text-align: left;
+		padding-left: 30rpx;
+		// #endif
+	}
+
 	.sys-head {
 		background-color: #fff;
 	}
+
 	.productSort {
 		display: flex;
 		flex-direction: column;
@@ -243,8 +280,7 @@
 		height: calc(100vh - var(--window-top)) !important;
 		//#endif
 		//#ifndef MP
-		height: 100vh
-		//#endif
+		height: 100vh //#endif
 	}
 
 	.productSort .header {
@@ -303,13 +339,13 @@
 		width: 100%;
 		font-size: 26rpx;
 		color: #424242;
+		text-align: center;
 	}
 
 	.productSort .aside .item.on {
 		background-color: #fff;
 		border-left: 4rpx solid var(--view-theme);
 		width: 100%;
-		text-align: center;
 		color: var(--view-theme);
 		font-weight: bold;
 	}

@@ -14,7 +14,6 @@ use crmeb\interfaces\ListenerInterface;
 use crmeb\services\CacheService;
 use crmeb\services\SystemConfigService;
 use crmeb\utils\Arr;
-use think\facade\Log;
 
 /**
  * 订单创建后置事件
@@ -70,11 +69,11 @@ class OrderCreateAfter implements ListenerInterface
         //格式化数据
         $systemValue = Arr::setValeTime($keyValue, is_array($systemValue) ? $systemValue : []);
         if ($combinationId) {
-            $secs = $systemValue['order_pink_time'] ? $systemValue['order_pink_time'] : $systemValue['order_activity_time'];
+            $secs = $systemValue['order_pink_time'] ?: $systemValue['order_activity_time'];
         } elseif ($seckillId) {
-            $secs = $systemValue['order_seckill_time'] ? $systemValue['order_seckill_time'] : $systemValue['order_activity_time'];
+            $secs = $systemValue['order_seckill_time'] ?: $systemValue['order_activity_time'];
         } elseif ($bargainId) {
-            $secs = $systemValue['order_bargain_time'] ? $systemValue['order_bargain_time'] : $systemValue['order_activity_time'];
+            $secs = $systemValue['order_bargain_time'] ?: $systemValue['order_activity_time'];
         } else {
             $secs = $systemValue['order_cancel_time'];
         }

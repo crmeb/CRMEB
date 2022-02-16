@@ -113,9 +113,9 @@ class LuckLotteryDao extends BaseDao
      * @throws \think\db\exception\DbException
      * @throws \think\db\exception\ModelNotFoundException
      */
-    public function getFactorLottery(int $factor = 1, string $field = '*', array $with = ['prize'], bool $is_doing = true)
+    public function getFactorLottery(int $factor = 1, string $field = '*', array $with = ['prize'], bool $is_doing = false)
     {
-        $where = ['factor' => $factor, 'status' => 1, 'is_del' => 0];
+        $where = ['factor' => $factor, 'is_del' => 0];
         if ($is_doing) $where['start'] = 1;
         return $this->search($where)->field($field)->when($with, function ($query) use ($with) {
             $query->with($with);

@@ -31,7 +31,8 @@ export default {
       name: `${pre}productList`,
       meta: {
         title: '商品管理',
-        auth: ['admin-store-storeProuduct-index']
+        auth: ['admin-store-storeProuduct-index'],
+        keepAlive: true
       },
       component: () => import('@/pages/product/productList')
     },

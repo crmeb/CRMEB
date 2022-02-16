@@ -25,9 +25,9 @@ if (PHP_EDITION > phpversion()) {
     header("Content-type:text/html;charset=utf-8");
     exit('您的php版本过低，不能安装本软件，请升级到' . PHP_EDITION . '或更高版本再安装，谢谢！');
 }
-if (phpversion() > '7.4') {
+if (phpversion() > '8.0') {
     header("Content-type:text/html;charset=utf-8");
-    exit('您的php版本太高，不能安装本软件，兼容php版本7.1~7.3，谢谢！');
+    exit('您的php版本太高，不能安装本软件，兼容php版本7.1~7.4，谢谢！');
 }
 define("CRMEB_VERSION", '20180601');
 date_default_timezone_set('PRC');
@@ -52,7 +52,7 @@ $steps = array(
     '4' => '安装详细过程',
     '5' => '安装完成',
 );
-$step = isset($_GET['step']) ? $_GET['step'] : 1;
+$step = $_GET['step'] ?? 1;
 
 //地址
 $scriptName = !empty($_SERVER["REQUEST_URI"]) ? $scriptName = $_SERVER["REQUEST_URI"] : $scriptName = $_SERVER["PHP_SELF"];
@@ -213,7 +213,7 @@ switch ($step) {
 
     case '3':
         $dbName = strtolower(trim($_POST['dbName']));
-        $_POST['dbport'] = $_POST['dbport'] ? $_POST['dbport'] : '3306';
+        $_POST['dbport'] = $_POST['dbport'] ?: '3306';
         if ($_GET['testdbpwd']) {
             $dbHost = $_POST['dbHost'];
             $conn = @mysqli_connect($dbHost, $_POST['dbUser'], $_POST['dbPwd'], NULL, $_POST['dbport']);
@@ -223,10 +223,10 @@ switch ($step) {
                 $result = mysqli_query($conn, "SELECT @@global.sql_mode");
                 $result = $result->fetch_array();
                 $version = mysqli_get_server_info($conn);
-//                if ($version >= 5.7) {
-//                    if (strstr($result[0], 'STRICT_TRANS_TABLES') || strstr($result[0], 'STRICT_ALL_TABLES') || strstr($result[0], 'TRADITIONAL') || strstr($result[0], 'ANSI'))
-//                        exit(json_encode(-1));
-//                }
+                if ($version >= 5.7) {
+                    if (strstr($result[0], 'STRICT_TRANS_TABLES') || strstr($result[0], 'STRICT_ALL_TABLES') || strstr($result[0], 'TRADITIONAL') || strstr($result[0], 'ANSI'))
+                        exit(json_encode(-4));
+                }
                 $result = mysqli_query($conn, "select count(table_name) as c from information_schema.`TABLES` where table_schema='$dbName'");
                 $result = $result->fetch_array();
                 if ($result['c'] > 0)
@@ -240,7 +240,7 @@ switch ($step) {
             $rbselect = $_POST['rbselect'] ?? 0;
 
             try {
-                $redis = new \Redis();
+                $redis = new Redis();
                 if (!$redis) {
                     exit(json_encode(-1));
                 }
@@ -257,7 +257,7 @@ switch ($step) {
                 } else {
                     exit(json_encode(-3));
                 }
-            } catch (\Throwable $e) {
+            } catch (Throwable $e) {
                 exit(json_encode(-3));
             }
         }
@@ -275,7 +275,7 @@ switch ($step) {
             $arr = array();
 
             $dbHost = trim($_POST['dbhost']);
-            $_POST['dbport'] = $_POST['dbport'] ? $_POST['dbport'] : '3306';
+            $_POST['dbport'] = $_POST['dbport'] ?: '3306';
             $dbName = strtolower(trim($_POST['dbname']));
             $dbUser = trim($_POST['dbuser']);
             $dbPwd = trim($_POST['dbpw']);

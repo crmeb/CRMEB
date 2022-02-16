@@ -116,7 +116,7 @@ class StoreOrderInvoice extends AuthController
         //核算优惠金额
         $vipTruePrice = array_column($orderInfo['cartInfo'], 'vip_sum_truePrice');
         $vipTruePrice = array_sum($vipTruePrice);
-        $orderInfo['vip_true_price'] = $vipTruePrice ? $vipTruePrice : 0;
+        $orderInfo['vip_true_price'] = $vipTruePrice ?: 0;
 
         $orderInfo['add_time'] = $orderInfo['_add_time'] ?? '';
         $productId = array_column($orderInfo['cartInfo'], 'product_id');

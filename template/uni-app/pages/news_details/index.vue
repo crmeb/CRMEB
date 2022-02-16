@@ -10,7 +10,8 @@
 			<view class='conters'>
 				<jyf-parser :content="content" ref="article" :tag-style="tagStyle"></jyf-parser>
 			</view>
-			<navigator class="picTxt acea-row row-between-wrapper" v-if="store_info.id" :url="'/pages/goods_details/index?id='+store_info.id" hover-class="none">
+			<navigator class="picTxt acea-row row-between-wrapper" v-if="store_info.id"
+				:url="'/pages/goods_details/index?id='+store_info.id" hover-class="none">
 				<view class="pictrue">
 					<image :src="store_info.image"></image>
 				</view>
@@ -24,7 +25,8 @@
 				<navigator class="label"><text class="span">查看商品</text></navigator>
 			</navigator>
 			<!-- #ifdef H5 -->
-			<button class="bnt bg-color" hover-class='none' @click="listenerActionSheet" v-if="this.$wechat.isWeixin()">和好友一起分享</button>
+			<button class="bnt bg-color" hover-class='none' @click="listenerActionSheet"
+				v-if="this.$wechat.isWeixin()">和好友一起分享</button>
 			<!-- #endif -->
 			<!-- #ifdef MP -->
 			<button class="bnt bg-color" open-type="share" hover-class='none'>和好友一起分享</button>
@@ -57,64 +59,66 @@
 				id: 0,
 				articleInfo: [],
 				store_info: {},
-				content:'',
-				shareInfoStatus:false,
+				content: '',
+				shareInfoStatus: false,
 				tagStyle: {
 					img: 'width:100%;'
 				}
 			};
 		},
-		 /**
-		   * 生命周期函数--监听页面加载
-		   */
-		  onLoad: function (options) {
-		    if (options.hasOwnProperty('id')){
-			   this.id = options.id;
-		    }else{
-			  // #ifndef H5
-		      uni.navigateBack({delta: 1 });
-			  // #endif
-			  // #ifdef H5
-			  history.back();
-			  // #endif
-		    }
-		  },
-		   onShow: function () {
-		      this.getArticleOne();
-		    },
+		/**
+		 * 生命周期函数--监听页面加载
+		 */
+		onLoad: function(options) {
+			if (options.hasOwnProperty('id')) {
+				this.id = options.id;
+			} else {
+				// #ifndef H5
+				uni.navigateBack({
+					delta: 1
+				});
+				// #endif
+				// #ifdef H5
+				history.back();
+				// #endif
+			}
+		},
+		onShow: function() {
+			this.getArticleOne();
+		},
 		methods: {
-			 getArticleOne:function(){
-			    let that = this;
-			    getArticleDetails(that.id).then(res=>{
+			getArticleOne: function() {
+				let that = this;
+				getArticleDetails(that.id).then(res => {
 					uni.setNavigationBarTitle({
-					   title:res.data.title.substring(0,7) + "..."
+						title: res.data.title.substring(0, 7) + "..."
 					});
-					that.$set(that,'articleInfo',res.data);
-					that.$set(that,'store_info',res.data.store_info ? res.data.store_info : {});
+					that.$set(that, 'articleInfo', res.data);
+					that.$set(that, 'store_info', res.data.store_info ? res.data.store_info : {});
 					that.content = res.data.content;
 					// #ifdef H5
-					if(this.$wechat.isWeixin()){
+					if (this.$wechat.isWeixin()) {
 						this.setShareInfo();
 					}
 					// #endif
-			    });
-			  },
-			  listenerActionSheet(){
-				  this.shareInfoStatus = true
-			  },
-			  setShareInfoStatus(){
-				  this.shareInfoStatus = false
-			  },
-			  setShareInfo: function() {
-			  	let href = location.href;
-			  	let configAppMessage = {
-			  		desc: this.articleInfo.synopsis,
-			  		title: this.articleInfo.title,
-			  		link: href,
-			  		imgUrl: this.articleInfo.image_input.length ? this.articleInfo.image_input[0] : ""
-			  	};
-			  	this.$wechat.wechatEvevt(["updateAppMessageShareData", "updateTimelineShareData"], configAppMessage);
-			  }
+				});
+			},
+			listenerActionSheet() {
+				this.shareInfoStatus = true
+			},
+			setShareInfoStatus() {
+				this.shareInfoStatus = false
+			},
+			setShareInfo: function() {
+				let href = location.href;
+				let configAppMessage = {
+					desc: this.articleInfo.synopsis,
+					title: this.articleInfo.title,
+					link: href,
+					imgUrl: this.articleInfo.image_input.length ? this.articleInfo.image_input[0] : ""
+				};
+				this.$wechat.wechatEvevt(["updateAppMessageShareData", "updateTimelineShareData"], configAppMessage);
+			}
 		}
 	}
 </script>

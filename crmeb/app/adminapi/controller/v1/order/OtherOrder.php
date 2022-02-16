@@ -71,6 +71,7 @@ class OtherOrder extends AuthController
         //生成小程序地址
         $routineQrcode = $QrcodeService->getRoutineQrcodePath(4, 6, 3, [], false);
         $qrcod = ['wechat' => $wechatQrcode, 'routine' => $routineQrcode];
+        $data = [];
         if ($type) {
             //生成画布
             $canvas = Canvas::instance();

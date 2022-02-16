@@ -13,7 +13,7 @@ namespace app\services\message\notice;
 
 use app\services\message\NoticeService;
 use app\services\message\service\StoreServiceServices;
-use app\services\system\MessageSystemServices;
+use app\services\message\MessageSystemServices;
 use think\facade\Log;
 
 
@@ -39,7 +39,7 @@ class SystemMsgService extends NoticeService
      */
     public function isOpen(string $mark)
     {
-        $this->isopend = $this->notceinfo['is_system'] === 1 ? true : false;
+        $this->isopend = $this->notceinfo['is_system'] === 1;
         return $this;
 
     }
@@ -52,7 +52,7 @@ class SystemMsgService extends NoticeService
      */
     public function sendMsg(int $uid, $data)
     {
-        $this->isopend = $this->notceinfo['is_system'] === 1 ? true : false;
+        $this->isopend = $this->notceinfo['is_system'] === 1;
         try {
             if ($this->isopend) {
                 $title = $this->notceinfo['system_title'];

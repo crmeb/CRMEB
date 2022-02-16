@@ -26,7 +26,8 @@ export default {
             name: `${pre}article`,
             meta: {
                 auth: ['cms-article-index'],
-                title: '文章管理'
+                title: '文章管理',
+                keepAlive: true
             },
             component: () => import('@/pages/cms/article/index')
         },

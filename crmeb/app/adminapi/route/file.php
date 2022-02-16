@@ -30,7 +30,8 @@ Route::group('file', function () {
     Route::resource('category', 'v1.file.SystemAttachmentCategory')->option(['real_name' => '附件分类管理']);
     //获取上传类型
     Route::get('upload_type', 'v1.file.SystemAttachment/uploadType')->option(['real_name' => '上传类型']);
-
+    //分片上传本地视频
+    Route::post('video_upload', 'v1.file.SystemAttachment/videoUpload')->option(['real_name' => '分片上传本地视频']);
 })->middleware([
     \app\http\middleware\AllowOriginMiddleware::class,
     \app\adminapi\middleware\AdminAuthTokenMiddleware::class,

@@ -14,7 +14,7 @@ namespace app\services\product\product;
 
 use app\services\BaseServices;
 use app\dao\product\product\StoreProductCouponDao;
-use app\services\coupon\StoreCouponIssueServices;
+use app\services\activity\coupon\StoreCouponIssueServices;
 use app\services\order\StoreOrderCartInfoServices;
 use app\services\order\StoreOrderServices;
 use app\services\user\UserServices;

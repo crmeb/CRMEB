@@ -40,45 +40,63 @@
 						<view class="title acea-row row-between-wrapper">
 							<view class="acea-row row-middle">
 								<text class="sign cart-color acea-row row-center-wrapper"
-									v-if="item.bargain_id != 0">砍价</text>
+									v-if="item.type == 2">砍价</text>
 								<text class="sign cart-color acea-row row-center-wrapper"
-									v-else-if="item.combination_id != 0">拼团</text>
+									v-else-if="item.type == 3">拼团</text>
 								<text class="sign cart-color acea-row row-center-wrapper"
-									v-else-if="item.seckill_id != 0">秒杀</text> <text
-									class="sign cart-color acea-row row-center-wrapper"
-									v-else-if="item.advance_id != 0">预售</text>
+									v-else-if="item.type == 1">秒杀</text>
+								<text class="sign cart-color acea-row row-center-wrapper"
+									v-else-if="item.type == 4">预售</text>
 								<view>{{ item._add_time }}</view>
 							</view>
-							<view v-if="item._status._type == 0" class="font-color">待付款</view>
-							<view v-else-if="item._status._type == 1 && item.shipping_type == 1" class="font-color">待发货
+							<view v-if="item._status._type == 9" class="font-color">线下付款,未支付</view>
+							<view v-else-if="item._status._type == 0" class="font-color">待付款</view>
+							<view
+								v-else-if="item._status._type == 1 && (item.shipping_type == 1 || item.shipping_type == 3)"
+								class="font-color">待发货
+								<text v-if="item.refund.length">{{item.is_all_refund?'，退款中':'，部分退款中'}}</text>
 							</view>
-							<view v-else-if="item._status._type == 2 && item.shipping_type == 1" class="font-color">待收货
+							<view v-else-if="item._status._type == 2" class="font-color">待收货
+								<text v-if="item.refund.length">{{item.is_all_refund?'，退款中':'，部分退款中'}}</text>
 							</view>
-							<view v-else-if="item._status._type == 3 && item.shipping_type == 1" class="font-color">待评价
+							<view v-else-if="item._status._type == 3" class="font-color">待评价
+								<text v-if="item.refund.length">{{item.is_all_refund?'，退款中':'，部分退款中'}}</text>
 							</view>
-							<view v-else-if="item._status._type == 4 && item.shipping_type == 1" class="font-color">已完成
+							<view v-else-if="item._status._type == 4" class="font-color">已完成
+								<text v-if="item.refund.length">{{item.is_all_refund?'，退款中':'，部分退款中'}}</text>
 							</view>
-							<view v-else-if="item.shipping_type == 2 && item._status._type == 3" class="font-color">待评价
+							<!-- 	<view v-else-if="item._status._type == -1" class="font-color">申请退款中
+							</view> -->
+							<view v-else-if="item._status._type == -2" class="font-color">已退款
 							</view>
-							<view v-else-if="item.shipping_type == 2 && item._status._type == 4" class="font-color">已完成
+							<view v-else-if="item._status._type == 5 && item.status == 0" class="font-color">未核销
+								<text v-if="item.refund.length">{{item.is_all_refund?'，退款中':'，部分退款中'}}</text>
 							</view>
+							<view v-else-if="item._status._type == 5 && item.status == 5" class="font-color">部分核销
+								<text v-if="item.refund.length">{{item.is_all_refund?'，退款中':'，部分退款中'}}</text>
+							</view>
+
 						</view>
-						<view class="item-info acea-row row-between row-top" v-for="(item, index) in item.cartInfo"
+						<view class="item-info acea-row row-between row-top" v-for="(items, index) in item.cartInfo"
 							:key="index">
 							<view class="pictrue">
-								<image :src="item.productInfo.image"></image>
+								<image :src="items.productInfo.image"></image>
 							</view>
-							<view class="text acea-row row-between">
-								<view class="name line2">{{ item.productInfo.store_name }}</view>
+							<view class="text  row-between">
+								<text class="name line2">{{ items.productInfo.store_name }}</text>
 								<view class="money">
-									<view v-if="item.productInfo.attrInfo">￥{{ item.productInfo.attrInfo.price }}</view>
-									<view v-else>￥{{ item.productInfo.price }}</view>
-									<view>x{{ item.cart_num }}</view>
+									<view v-if="items.productInfo.attrInfo">￥{{ items.productInfo.attrInfo.price }}
+									</view>
+									<view v-else>￥{{ items.productInfo.price }}</view>
+									<view>x{{ items.cart_num }}</view>
+									<view v-if="items.refund_num && item._status._type != -2" class="return">
+										{{ items.refund_num }}件退款中
+									</view>
 								</view>
 							</view>
 						</view>
 						<view class="totalPrice">
-							共{{ item.cartInfo.length || 0 }}件商品，总金额
+							共{{ item.total_num || 0 }}件商品，总金额
 							<text class="money">￥{{ item.pay_price }}</text>
 						</view>
 					</view>
@@ -104,13 +122,10 @@
 				<text class="loading iconfont icon-jiazai" :hidden="loading == false"></text>
 				{{ loadTitle }}
 			</view>
-			<view v-if="orderList.length == 0 && !loading">
+			<view v-if="orderList.length == 0">
 				<emptyPage title="暂无订单~"></emptyPage>
 			</view>
 		</view>
-		<!-- #ifdef MP -->
-		<!-- <authorize @onLoadFun="onLoadFun" :isAuto="isAuto" :isShowAuth="isShowAuth" @authColse="authColse"></authorize> -->
-		<!-- #endif -->
 		<!-- #ifndef MP -->
 		<home></home>
 		<!-- #endif -->
@@ -187,6 +202,12 @@
 						title: '当前可用余额：',
 						number: 0,
 						payStatus: true
+					}, {
+						"name": "好友代付",
+						"icon": "icon-haoyoudaizhifu",
+						value: 'friend',
+						title: '找微信好友支付',
+						payStatus: 1,
 					}
 				],
 				pay_close: false,
@@ -199,8 +220,11 @@
 		computed: mapGetters(['isLogin']),
 		onShow() {
 			if (this.isLogin) {
-				// this.$set(this, 'orderList', []);
+				this.page = 1;
+				this.orderList = []
+				this.loadend = false;
 				this.onLoadFun();
+				this.getOrderList();
 			} else {
 				toLogin();
 			}
@@ -208,7 +232,6 @@
 		methods: {
 			onLoadFun() {
 				this.getOrderData();
-				this.getOrderList();
 				this.getUserInfo();
 			},
 			// 授权关闭
@@ -386,9 +409,6 @@
 				if (that.loading) return;
 				that.loading = true;
 				that.loadTitle = '加载更多';
-				uni.showLoading({
-					title: '加载中'
-				});
 				getOrderList({
 						type: that.orderStatus,
 						page: that.page,
@@ -403,12 +423,10 @@
 						that.loading = false;
 						that.loadTitle = loadend ? '我也是有底线的' : '加载更多';
 						that.page = that.page + 1;
-						uni.hideLoading();
 					})
 					.catch(err => {
 						that.loading = false;
 						that.loadTitle = '加载更多';
-						uni.hideLoading();
 					});
 			},
 
@@ -446,6 +464,7 @@
 						}
 					}
 				});
+
 			}
 		},
 		onReachBottom: function() {
@@ -564,15 +583,18 @@
 		font-size: 28rpx;
 		color: #999;
 		margin-top: 6rpx;
+		display: flex;
 	}
 
 	.my-order .list .item .item-info .text .name {
 		width: 306rpx;
 		color: #282828;
+		height: 78rpx;
 	}
 
 	.my-order .list .item .item-info .text .money {
 		text-align: right;
+		flex: 1;
 	}
 
 	.my-order .list .item .totalPrice {
@@ -630,7 +652,9 @@
 		height: 100%;
 	}
 
-	.line2 {
-		word-break: break-all;
+	.my-order .list .item .item-info .text .money .return {
+		// color: var(--view-priceColor);
+		margin-top: 10rpx;
+		font-size: 24rpx;
 	}
 </style>

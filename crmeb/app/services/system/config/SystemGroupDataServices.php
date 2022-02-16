@@ -177,7 +177,7 @@ class SystemGroupDataServices extends BaseServices
                     }
                 }
             }
-            $fvalue = isset($groupDataValue[$value['title']]['value']) ? $groupDataValue[$value['title']]['value'] : '';
+            $fvalue = $groupDataValue[$value['title']]['value'] ?? '';
             switch ($value["type"]) {
                 case 'input':
                     if ($gid == 55 && $value['title'] == 'sign_num') {
@@ -221,7 +221,7 @@ class SystemGroupDataServices extends BaseServices
 
             }
         }
-        $f[] = Form::number('sort', '排序', (int)($groupData["sort"] ?? 1));
+        $f[] = Form::number('sort', '排序', (int)($groupData["sort"] ?? 1))->precision(0);
         $f[] = Form::radio('status', '状态', (int)($groupData["status"] ?? 1))->options([['value' => 1, 'label' => '显示'], ['value' => 0, 'label' => '隐藏']]);
         return $f;
     }

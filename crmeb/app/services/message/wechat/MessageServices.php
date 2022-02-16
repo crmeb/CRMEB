@@ -16,8 +16,10 @@ use app\services\BaseServices;
 use app\services\other\QrcodeServices;
 use app\services\user\LoginServices;
 use app\services\user\UserServices;
+use app\services\wechat\WechatQrcodeServices;
 use app\services\wechat\WechatReplyServices;
 use app\services\wechat\WechatUserServices;
+use think\facade\Log;
 
 class MessageServices extends BaseServices
 {
@@ -32,31 +34,76 @@ class MessageServices extends BaseServices
         $qrcodeService = app()->make(QrcodeServices::class);
         /** @var WechatReplyServices $wechatReplyService */
         $wechatReplyService = app()->make(WechatReplyServices::class);
+        /** @var WechatUserServices $wechatUser */
+        $wechatUser = app()->make(WechatUserServices::class);
+        /** @var LoginServices $loginService */
+        $loginService = app()->make(LoginServices::class);
+        /** @var UserServices $userService */
+        $userService = app()->make(UserServices::class);
+
         $response = $wechatReplyService->reply('subscribe');
         if ($message->EventKey && ($qrInfo = $qrcodeService->getQrcode($message->Ticket, 'ticket'))) {
             $qrcodeService->scanQrcode($message->Ticket, 'ticket');
             if (strtolower($qrInfo['third_type']) == 'spread') {
                 try {
                     $spreadUid = $qrInfo['third_id'];
-                    /** @var WechatUserServices $wechatUser */
-                    $wechatUser = app()->make(WechatUserServices::class);
                     $uid = $wechatUser->getFieldValue($message->FromUserName, 'openid', 'uid', ['user_type', '<>', 'h5']);
+                    $userInfo = $userService->get($uid);
                     if ($spreadUid == $uid) {
                         $response = '自己不能推荐自己';
-                    }
-                    /** @var UserServices $userService */
-                    $userService = app()->make(UserServices::class);
-                    $userInfo = $userService->get($uid);
-                    if (!$userInfo) {
+                    } else if (!$userInfo) {
                         $response = '用户不存在';
-                    }
-                    if ($userInfo['spread_uid']) {
+                    } else if ($userInfo['spread_uid']) {
                         $response = '已有推荐人!';
-                    }
-                    /** @var LoginServices $loginService */
-                    $loginService = app()->make(LoginServices::class);
-                    if ($loginService->updateUserInfo(['code' => $spreadUid], $userInfo)) {
+                    } else if (!$loginService->updateUserInfo(['code' => $spreadUid], $userInfo)) {
                         $response = '绑定推荐人失败!';
+                    }
+                } catch (\Exception $e) {
+                    $response = $e->getMessage();
+                }
+            } elseif (strtolower($qrInfo['third_type']) == 'agent') {
+                try {
+                    $spreadUid = $qrInfo['third_id'];
+                    $spreadInfo = $userService->get($spreadUid);
+                    $uid = $wechatUser->getFieldValue($message->FromUserName, 'openid', 'uid', ['user_type', '<>', 'h5']);
+                    $userInfo = $userService->get($uid);
+                    if ($spreadUid == $uid) {
+                        $response = '自己不能推荐自己';
+                    } else if (!$userInfo) {
+                        $response = '用户不存在';
+                    } else if (!$spreadInfo) {
+                        $response = '上级用户不存在';
+                    } else if ($userInfo->is_division) {
+                        $response = '您是事业部,不能绑定成为别人的员工';
+                    } else if ($userInfo->is_agent) {
+                        $response = '您是代理商,不能绑定成为别人的员工';
+                    } else if ($loginService->updateUserInfo(['code' => $spreadUid, 'is_staff' => 1], $userInfo)) {
+                        $response = '绑定店员成功!';
+                    }
+                } catch (\Exception $e) {
+                    $response = $e->getMessage();
+                }
+            } elseif (strtolower($qrInfo['third_type']) == 'wechatqrcode') {
+                /** @var WechatQrcodeServices $wechatQrcodeService */
+                $wechatQrcodeService = app()->make(WechatQrcodeServices::class);
+                try {
+                    //wechatqrcode类型的二维码数据中,third_id为渠道码的id
+                    $qrcodeInfo = $wechatQrcodeService->qrcodeInfo($qrInfo['third_id']);
+                    $spreadUid = $qrcodeInfo['uid'];
+                    $spreadInfo = $userService->get($spreadUid);
+                    $uid = $wechatUser->getFieldValue($message->FromUserName, 'openid', 'uid', ['user_type', '<>', 'h5']);
+                    $userInfo = $userService->get($uid);
+                    if ($qrcodeInfo['status'] == 0 || $qrcodeInfo['is_del'] == 1 || ($qrcodeInfo['end_time'] < time() && $qrcodeInfo['end_time'] > 0)) {
+                        $response = '二维码已失效';
+                    } else if ($spreadUid == $uid) {
+                        $response = '自己不能推荐自己';
+                    } else if (!$userInfo) {
+                        $response = '用户不存在';
+                    } else if (!$spreadInfo) {
+                        $response = '上级用户不存在';
+                    } else if ($loginService->updateUserInfo(['code' => $spreadUid], $userInfo)) {
+                        //写入扫码记录,返回内容
+                        $response = $wechatQrcodeService->wechatQrcodeRecord($qrcodeInfo, $userInfo, $spreadInfo);
                     }
                 } catch (\Exception $e) {
                     $response = $e->getMessage();
@@ -87,6 +134,13 @@ class MessageServices extends BaseServices
     {
         /** @var WechatReplyServices $wechatReplyService */
         $wechatReplyService = app()->make(WechatReplyServices::class);
+        /** @var WechatUserServices $wechatUser */
+        $wechatUser = app()->make(WechatUserServices::class);
+        /** @var UserServices $userService */
+        $userService = app()->make(UserServices::class);
+        /** @var LoginServices $loginService */
+        $loginService = app()->make(LoginServices::class);
+
         $response = $wechatReplyService->reply('subscribe');
         if (isset($message->EventKey)) {
             /** @var QrcodeServices $qrcodeService */
@@ -96,22 +150,68 @@ class MessageServices extends BaseServices
                 if (strtolower($qrInfo['third_type']) == 'spread') {
                     try {
                         $spreadUid = $qrInfo['third_id'];
-                        /** @var WechatUserServices $wechatUser */
-                        $wechatUser = app()->make(WechatUserServices::class);
                         $uid = $wechatUser->getFieldValue($message->FromUserName, 'openid', 'uid', ['user_type', '<>', 'h5']);
                         if ($spreadUid == $uid) return '自己不能推荐自己';
-                        /** @var UserServices $userService */
-                        $userService = app()->make(UserServices::class);
                         $userInfo = $userService->get($uid);
                         if ($userInfo['spread_uid']) return '已有推荐人!';
                         $userInfo->spread_uid = $spreadUid;
                         $userInfo->spread_time = time();
                         if (!$userInfo->save()) {
-                            $response = '绑定推荐人失败!';
+                            return '绑定推荐人失败!';
                         }
                     } catch (\Exception $e) {
                         $response = $e->getMessage();
                     }
+                }
+            }
+            if (strtolower($qrInfo['third_type']) == 'agent') {
+                try {
+                    $spreadUid = $qrInfo['third_id'];
+                    $spreadInfo = $userService->get($spreadUid);
+                    $uid = $wechatUser->getFieldValue($message->FromUserName, 'openid', 'uid', ['user_type', '<>', 'h5']);
+                    $userInfo = $userService->get($uid);
+                    if ($spreadUid == $uid) {
+                        $response = '自己不能推荐自己';
+                    } else if (!$userInfo) {
+                        $response = '用户不存在';
+                    } else if (!$spreadInfo) {
+                        $response = '上级用户不存在';
+                    } else if ($userInfo->is_division) {
+                        $response = '您是事业部,不能绑定成为别人的员工';
+                    } else if ($userInfo->is_agent) {
+                        $response = '您是代理商,不能绑定成为别人的员工';
+                    } else if ($loginService->updateUserInfo(['code' => $spreadUid, 'is_staff' => 1], $userInfo)) {
+                        $response = '绑定店员成功!';
+                    }
+                } catch (\Exception $e) {
+                    $response = $e->getMessage();
+                }
+            }
+            if (strtolower($qrInfo['third_type']) == 'wechatqrcode') {
+                /** @var WechatQrcodeServices $wechatQrcodeService */
+                $wechatQrcodeService = app()->make(WechatQrcodeServices::class);
+                try {
+                    //wechatqrcode类型的二维码数据中,third_id为渠道码的id
+                    $qrcodeInfo = $wechatQrcodeService->qrcodeInfo($qrInfo['third_id']);
+                    $spreadUid = $qrcodeInfo['uid'];
+                    $spreadInfo = $userService->get($spreadUid);
+                    $uid = $wechatUser->getFieldValue($message->FromUserName, 'openid', 'uid', ['user_type', '<>', 'h5']);
+                    $userInfo = $userService->get($uid);
+
+                    if ($qrcodeInfo['status'] == 0 || $qrcodeInfo['is_del'] == 1 || ($qrcodeInfo['end_time'] < time() && $qrcodeInfo['end_time'] > 0)) {
+                        $response = '二维码已失效';
+                    } else if ($spreadUid == $uid) {
+                        $response = '自己不能推荐自己';
+                    } else if (!$userInfo) {
+                        $response = '用户不存在';
+                    } else if (!$spreadInfo) {
+                        $response = '上级用户不存在';
+                    } else if ($loginService->updateUserInfo(['code' => $spreadUid], $userInfo)) {
+                        //写入扫码记录,返回内容
+                        $response = $wechatQrcodeService->wechatQrcodeRecord($qrcodeInfo, $userInfo, $spreadInfo);
+                    }
+                } catch (\Exception $e) {
+                    $response = $e->getMessage();
                 }
             }
         }

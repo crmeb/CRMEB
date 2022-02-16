@@ -1,11 +1,12 @@
 <template>
 	<view class="main">
-		<guide v-if="guidePages" :advData="advData"></guide>
+		<guide v-if="guidePages" :advData="advData" :time="advData.time"></guide>
 	</view>
 </template>
 
 <script>
 	import guide from '@/components/guide/index.vue'
+	import Cache from '@/utils/cache';
 	import {
 		getOpenAdv
 	} from '@/api/api.js'
@@ -19,7 +20,7 @@
 				advData: []
 			}
 		},
-		onLoad() {
+		onShow() {
 			this.loadExecution()
 		},
 		methods: {
@@ -33,8 +34,7 @@
 					return
 				}
 				getOpenAdv().then(res => {
-					console.log(res)
-					if (!res.data.length) {
+					if (res.data.status == 0 || res.data.value.length == 0) {
 						uni.switchTab({
 							url: '/pages/index/index'
 						});
@@ -44,9 +44,14 @@
 						this.guidePages = true
 					}
 				}).catch(err => {
-
+					uni.switchTab({
+						url: '/pages/index/index'
+					});
 				})
 			}
+		},
+		onHide() {
+			this.guidePages = false
 		}
 	}
 </script>

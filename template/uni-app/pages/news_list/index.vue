@@ -2,8 +2,8 @@
 	<view :style="colorStyle">
 		<view class='newsList'>
 			<view class='swiper' v-if="imgUrls.length > 0">
-				<swiper indicator-dots="true" :autoplay="autoplay" :circular="circular" :interval="interval" :duration="duration"
-				 indicator-color="rgba(102,102,102,0.3)" indicator-active-color="#666">
+				<swiper indicator-dots="true" :autoplay="autoplay" :circular="circular" :interval="interval"
+					:duration="duration" indicator-color="rgba(102,102,102,0.3)" indicator-active-color="#666">
 					<block v-for="(item,index) in imgUrls" :key="index">
 						<swiper-item>
 							<navigator :url="'/pages/news_details/index?id='+item.id">
@@ -14,19 +14,31 @@
 				</swiper>
 			</view>
 			<view class='nav' v-if="navList.length > 0">
-				<scroll-view class="scroll-view_x" scroll-x scroll-with-animation :scroll-left="scrollLeft" style="width:auto;overflow:hidden;">
+				<scroll-view class="scroll-view_x" scroll-x scroll-with-animation :scroll-left="scrollLeft"
+					style="width:auto;overflow:hidden;">
 					<block v-for="(item,index) in navList" :key="index">
-						<view class='item' :class='active==item.id?"on":""' @click='tabSelect(item.id,index)' :id="`news_${item.id}`">
+						<view class='item' :class='active==item.id?"on":""' @click='tabSelect(item.id, index, item)'
+							:id="`news_${item.id}`">
 							<view>{{item.title}}</view>
 							<view class='line bg-color' v-if="active==item.id"></view>
 						</view>
 					</block>
+
+
+				</scroll-view>
+				<scroll-view class="scroll-view_x" scroll-x scroll-with-animation style="width:auto;overflow:hidden;">
+					<view class="coutry-list">
+						<view class="coutry" :class='activeCou==coutry.id?"on":""' v-for="(coutry,index) in coutList"
+							:key="index" @click="getCidArticle(coutry.id,1)">
+							{{coutry.title}}
+						</view>
+					</view>
 				</scroll-view>
 			</view>
 			<view class='list'>
 				<block v-for="(item,index) in articleList" :key="index">
-					<navigator :url='"/pages/news_details/index?id="+item.id' hover-class='none' class='item acea-row row-between-wrapper'
-					 v-if="item.image_input.length == 1">
+					<navigator :url='"/pages/news_details/index?id="+item.id' hover-class='none'
+						class='item acea-row row-between-wrapper' v-if="item.image_input.length == 1">
 						<view class='text acea-row row-column-between'>
 							<view class='name line2'>{{item.title}}</view>
 							<view>{{item.add_time}}</view>
@@ -35,7 +47,8 @@
 							<image :src='item.image_input[0]'></image>
 						</view>
 					</navigator>
-					<navigator :url='"/pages/news_details/index?id="+item.id' hover-class='none' class='item' v-else-if="item.image_input.length == 2">
+					<navigator :url='"/pages/news_details/index?id="+item.id' hover-class='none' class='item'
+						v-else-if="item.image_input.length == 2">
 						<view class='title line1'>{{item.title}}</view>
 						<view class='picList acea-row row-between-wrapper'>
 							<block v-for="(itemImg,indexImg) in item.image_input" :key="indexImg">
@@ -46,7 +59,8 @@
 						</view>
 						<view class='time'>{{item.add_time}}</view>
 					</navigator>
-					<navigator :url='"/pages/news_details/index?id="+item.id' hover-class='none' class='item' v-else-if="item.image_input.length > 2">
+					<navigator :url='"/pages/news_details/index?id="+item.id' hover-class='none' class='item'
+						v-else-if="item.image_input.length > 2">
 						<view class='title line1'>{{item.title}}</view>
 						<view class='picList on acea-row row-between-wrapper'>
 							<block v-for="(itemImg,indexImg) in item.image_input" :key="indexImg">
@@ -87,6 +101,7 @@
 		mixins: [colors],
 		data() {
 			return {
+				coutList: [],
 				imgUrls: [],
 				articleList: [],
 				indicatorDots: false,
@@ -99,7 +114,8 @@
 				page: 1,
 				limit: 8,
 				status: false,
-				scrollLeft: 0
+				scrollLeft: 0,
+				activeCou: 0
 			};
 		},
 		/**
@@ -112,14 +128,13 @@
 			this.status = false;
 			this.page = 1;
 			this.articleList = [];
-			this.getCidArticle();
 		},
-		  /**
-		   * 页面上拉触底事件的处理函数
-		   */
-		  onReachBottom: function () {
-		    this.getCidArticle();
-		  },
+		/**
+		 * 页面上拉触底事件的处理函数
+		 */
+		onReachBottom: function() {
+			this.getCidArticle(this.activeCou);
+		},
 		methods: {
 			getArticleHot: function() {
 				let that = this;
@@ -133,14 +148,20 @@
 					that.imgUrls = res.data;
 				});
 			},
-			getCidArticle: function() {
+			getCidArticle(id, type) {
 				let that = this;
-				if (that.active == 0) return;
+				if (type) {
+					that.status = false
+					this.activeCou = id
+					this.$set(this, 'articleList', []);
+					that.page = 1
+				}
+				// if (id == 0) return;
 				let limit = that.limit;
 				let page = that.page;
 				let articleList = that.articleList;
 				if (that.status) return;
-				getArticleList(that.active, {
+				getArticleList(that.activeCou, {
 					page: page,
 					limit: limit
 				}).then(res => {
@@ -153,22 +174,32 @@
 					that.page = that.page;
 				});
 			},
-			getArticleCate: function() {
+			getArticleCate() {
 				let that = this;
 				getArticleCategoryList().then(res => {
 					that.$set(that, 'navList', res.data);
 				});
 			},
-			tabSelect(active,e) {
+			tabSelect(active, e, item) {
 				this.active = active;
-				this.scrollLeft =  e * 60;
-			//	this.scrollLeft = (active - 1) * 50;
-				if (this.active == 0) this.getArticleHot();
-				else {
+				this.scrollLeft = e * 60;
+				//	this.scrollLeft = (active - 1) * 50;
+				if (this.active == 0) {
+					this.$set(this, 'coutList', []);
 					this.$set(this, 'articleList', []);
-					this.page = 1;
-					this.status = false;
-					this.getCidArticle();
+					this.getArticleHot();
+				} else {
+					this.$set(this, 'articleList', []);
+					this.$set(this, 'coutList', []);
+					if (item.children.length) {
+						this.page = 1;
+						this.status = false;
+						this.activeCou = item.children[0].id || 0
+						this.coutList = item.children || []
+						this.$set(this, 'articleList', []);
+						this.getCidArticle(this.activeCou);
+					}
+
 				}
 			}
 		}
@@ -176,9 +207,10 @@
 </script>
 
 <style lang="scss">
-	.noCommodity{
+	.noCommodity {
 		border-top-width: 0;
 	}
+
 	page {
 		background-color: #fff !important;
 	}
@@ -187,7 +219,7 @@
 		width: 100%;
 		position: relative;
 		box-sizing: border-box;
-		padding: 0 30rpx;
+		padding: 30rpx 30rpx 0 30rpx;
 	}
 
 	.newsList .swiper swiper {
@@ -201,39 +233,42 @@
 		height: 335rpx;
 		border-radius: 6rpx;
 	}
+
 	// #ifdef APP-PLUS || H5
-	.newsList /deep/uni-swiper .uni-swiper-dots-horizontal{
+	.newsList /deep/uni-swiper .uni-swiper-dots-horizontal {
 		bottom: 0;
 	}
-	
+
 	.newsList .swiper /deep/.uni-swiper-dot {
-			width: 12rpx !important;
-			height: 12rpx !important;
-			border-radius: 0;
-			transform: rotate(-45deg);
-			transform-origin: 0 100%;
+		width: 12rpx !important;
+		height: 12rpx !important;
+		border-radius: 0;
+		transform: rotate(-45deg);
+		transform-origin: 0 100%;
 	}
-	
+
 	.newsList .swiper /deep/.uni-swiper-dot~.uni-swiper-dot {
 		margin-left: 5rpx;
 	}
+
 	// #endif
 	// #ifdef MP
-	.newsList /deep/wx-swiper .wx-swiper-dots-horizontal{
+	.newsList /deep/wx-swiper .wx-swiper-dots-horizontal {
 		bottom: 0;
 	}
-	
+
 	.newsList .swiper /deep/.wx-swiper-dot {
-			width: 12rpx !important;
-			height: 12rpx !important;
-			border-radius: 0;
-			transform: rotate(-45deg);
-			transform-origin: 0 100%;
+		width: 12rpx !important;
+		height: 12rpx !important;
+		border-radius: 0;
+		transform: rotate(-45deg);
+		transform-origin: 0 100%;
 	}
-	
+
 	.newsList .swiper /deep/.wx-swiper-dot~.wx-swiper-dot {
 		margin-left: 5rpx;
 	}
+
 	// #endif
 	.newsList .nav {
 		padding: 0 30rpx;
@@ -246,11 +281,13 @@
 	.newsList .nav .item {
 		display: inline-block;
 		font-size: 32rpx;
-		color: #999;
+		color: #999999;
 	}
 
 	.newsList .nav .item.on {
-		color: #282828;
+		color: #000;
+		font-size: 36rpx;
+		font-weight: bold;
 	}
 
 	.newsList .nav .item~.item {
@@ -262,6 +299,10 @@
 		height: 4rpx;
 		border-radius: 2rpx;
 		margin: 10rpx auto 0 auto;
+	}
+
+	.newsList .list {
+		margin-top: 20rpx;
 	}
 
 	.newsList .list .item {
@@ -315,5 +356,27 @@
 		font-size: 24rpx;
 		color: #999;
 		margin-top: 22rpx;
+	}
+
+	.coutry-list {
+		display: flex;
+		align-items: center;
+		margin-top: 10rpx;
+		padding-top: 20rpx;
+		border-top: 1px solid #F2F2F2;
+
+		.coutry {
+			background-color: #F5F5F5;
+			border-radius: 26rpx;
+			padding: 4rpx 20rpx;
+			color: #666666;
+			font-size: 26rpx;
+			margin-right: 20rpx;
+		}
+
+		.coutry.on {
+			background-color: rgba(220, 217, 236, 1);
+			color: #E93323;
+		}
 	}
 </style>

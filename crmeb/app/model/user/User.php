@@ -69,6 +69,11 @@ class User extends BaseModel
         return app('request')->ip();
     }
 
+    protected function getPhoneAttr($value)
+    {
+        return $value && app('request')->hasMacro('adminInfo') && app('request')->adminInfo()['level'] != 0 ? substr_replace($value, '****', 3, 4) : $value;
+    }
+
     /**
      * 链接会员登陆设置表
      * @return \think\model\relation\HasOne
@@ -337,8 +342,93 @@ class User extends BaseModel
         if ($value != '') $query->where('spread_open', $value);
     }
 
+    /**
+     * nickname搜索器
+     * @param $query
+     * @param $value
+     */
     public function searchNicknameAttr($query, $value)
     {
         $query->where('nickname', "like", "%" . $value . "%");
     }
+
+    /**
+     * division_type搜索器
+     * @param $query
+     * @param $value
+     */
+    public function searchDivisionTypeAttr($query, $value)
+    {
+        if ($value !== '') $query->where('division_type', $value);
+    }
+
+    /**
+     * division_id搜索器
+     * @param $query
+     * @param $value
+     */
+    public function searchDivisionIdAttr($query, $value)
+    {
+        if ((int)$value !== 0) $query->where('division_id', $value);
+    }
+
+    /**
+     * agent_id搜索器
+     * @param $query
+     * @param $value
+     */
+    public function searchAgentIdAttr($query, $value)
+    {
+        if ($value !== '') $query->where('agent_id', $value);
+    }
+
+    /**
+     * staff_id搜索器
+     * @param $query
+     * @param $value
+     */
+    public function searchStaffIdAttr($query, $value)
+    {
+        if ($value !== '') $query->where('staff_id', $value);
+    }
+
+    /**
+     * is_division搜索器
+     * @param $query
+     * @param $value
+     */
+    public function searchIsDivisionAttr($query, $value)
+    {
+        if ($value !== '') $query->where('is_division', $value);
+    }
+
+    /**
+     * is_agent搜索器
+     * @param $query
+     * @param $value
+     */
+    public function searchIsAgentAttr($query, $value)
+    {
+        if ($value !== '') $query->where('is_agent', $value);
+    }
+
+    /**
+     * is_staff搜索器
+     * @param $query
+     * @param $value
+     */
+    public function searchIsStaffAttr($query, $value)
+    {
+        if ($value !== '') $query->where('is_staff', $value);
+    }
+
+    /**
+     * @param $query
+     * @param $value
+     */
+    public function searchKeywordAttr($query, $value)
+    {
+        if ($value !== '') $query->where('uid|nickname', 'like', '%' . $value . '%');
+    }
+
 }

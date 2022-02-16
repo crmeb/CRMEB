@@ -14,7 +14,7 @@ namespace app\services\pay;
 use app\services\BaseServices;
 use app\services\order\OtherOrderServices;
 use app\services\order\StoreOrderSuccessServices;
-use app\services\user\UserBillServices;
+use app\services\user\UserMoneyServices;
 use app\services\user\UserServices;
 use think\exception\ValidateException;
 
@@ -55,9 +55,13 @@ class YuePayServices extends BaseServices
             $res = false !== $services->bcDec($userInfo['uid'], 'now_money', $orderInfo['pay_price'], 'uid');
             switch ($type) {
                 case 'pay_product'://商品余额
-                    /** @var UserBillServices $userBillServices */
-                    $userBillServices = app()->make(UserBillServices::class);
-                    $res = $res && $userBillServices->income($type, $userInfo['uid'], $orderInfo['pay_price'], $userInfo['now_money'], $orderInfo['id']);
+                    //写入余额记录
+                    $now_money = bcsub((string)$userInfo['now_money'], (string)$orderInfo['pay_price'], 2);
+                    $number = $orderInfo['pay_price'];
+                    /** @var UserMoneyServices $userMoneyServices */
+                    $userMoneyServices = app()->make(UserMoneyServices::class);
+                    $res = $res && $userMoneyServices->income('pay_product', $userInfo['uid'], $number, $now_money, $orderInfo['id']);
+
                     /** @var StoreOrderSuccessServices $orderServices */
                     $orderServices = app()->make(StoreOrderSuccessServices::class);
                     $res = $res && $orderServices->paySuccess($orderInfo, PayServices::YUE_PAY);//余额支付成功

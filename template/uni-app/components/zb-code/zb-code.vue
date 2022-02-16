@@ -74,7 +74,7 @@ export default {
 		},
 		showLoading: {
 			type: Boolean,
-			default: true
+			default: false
 		},
 		loadingText: {
 			type: String,

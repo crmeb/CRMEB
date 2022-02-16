@@ -5,7 +5,7 @@ namespace app\listener\user;
 
 
 use app\jobs\AgentJob;
-use app\services\coupon\StoreCouponIssueServices;
+use app\services\activity\coupon\StoreCouponIssueServices;
 use app\services\user\UserBillServices;
 use app\services\user\UserServices;
 use app\services\user\UserSpreadServices;

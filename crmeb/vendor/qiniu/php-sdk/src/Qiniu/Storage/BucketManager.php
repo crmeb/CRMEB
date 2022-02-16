@@ -59,7 +59,7 @@ final class BucketManager
         $line = 'false',
         $shared = 'false'
     ) {
-        $path = '/v3/buckets?region=' . $region . '&line=' . $line . '&shared=' . $share;
+        $path = '/v3/buckets?region=' . $region . '&line=' . $line . '&shared=' . $shared;
         $info = $this->ucPost($path);
         return $info;
     }

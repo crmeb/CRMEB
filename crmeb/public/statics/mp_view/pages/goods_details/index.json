@@ -1,7 +1,6 @@
 {
   "navigationStyle": "custom",
   "usingComponents": {
-    "cus-preview-img": "/components/cus-previewImg/cus-previewImg",
     "product-con-swiper": "/components/productConSwiper/index",
     "coupon-list-window": "/components/couponListWindow/index",
     "product-window": "/components/productWindow/index",
@@ -10,7 +9,9 @@
     "kefu-icon": "/components/kefuIcon/index",
     "mp-html": "/components/mp-html/mp-html",
     "menu-icon": "/components/menuIcon",
+    "cus-preview-img": "/components/cusPreviewImg/index",
     "authorize": "/components/Authorize",
-    "parser": "/components/jyf-parser/jyf-parser"
+    "parser": "/components/jyf-parser/jyf-parser",
+    "home-list": "/components/homeList/index"
   }
 }

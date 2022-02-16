@@ -3,7 +3,7 @@
 		<!-- <view>
 			<scroll-view scroll-y="true" class="scroll-Y"> -->
 		<view class="header acea-row row-center-wrapper">
-			<navigator open-type="switchTab" url='/pages/index/index' class="pageIndex" hover-class="none">
+			<navigator open-type="switchTab" url='/pages/index/index' class="pageIndex" hover-class="none" @click="jumpIndex">
 				<text class="iconfont icon-shouye3"></text>
 			</navigator>
 			<navigator url="/pages/goods_search/index" class="search acea-row row-center-wrapper" hover-class="none">
@@ -172,6 +172,9 @@
 			});
 		},
 		methods: {
+			jumpIndex() {
+				this.$emit('jumpIndex')
+			},
 			// 生成订单；
 			subOrder: function() {
 				let that = this,
@@ -401,16 +404,7 @@
 						that.loadTitle = '加载更多'
 				});
 			},
-			// 点击默认单属性购物车
-			goCartDan(item, index) {
-				if (!this.isLogin) {
-					this.getIsLogin();
-				} else {
-					this.tempArr[index].cart_num = 1;
-					this.$set(this, 'tempArr', this.tempArr);
-					this.goCat(0, item.id, 1);
-				}
-			},
+
 			// 改变单属性购物车
 			ChangeCartNumDan(changeValue, index, item) {
 				let num = this.tempArr[index];
@@ -530,11 +524,14 @@
 							that.$util.Tips({
 								title: "添加购物车成功"
 							});
-							that.page = 1;
-							that.loadend = false;
+							// that.page = 1;
+							// that.loadend = false;
 							that.tempArr.forEach((item, index) => {
 								if (item.id == that.id) {
-									item.cart_num = item.cart_num + 1
+									let arrtStock = that.attr.productSelect.stock
+									let objNum = parseInt(item.cart_num) + parseInt(that.attr.productSelect
+										.cart_num);
+									item.cart_num = objNum > arrtStock ? arrtStock : objNum
 								}
 							})
 							// that.productslist();
@@ -550,10 +547,36 @@
 						});
 					});
 			},
+			// 点击默认单属性购物车
+			goCartDan(item, index) {
+				if (!this.isLogin) {
+					this.getIsLogin();
+				} else {
+					if (!item.cart_button) {
+						goShopDetail(item, this.uid).then(res => {
+							uni.navigateTo({
+								url: `/pages/goods_details/index?id=${item.id}`
+							});
+						});
+						return
+					}
+					this.tempArr[index].cart_num = 1;
+					this.$set(this, 'tempArr', this.tempArr);
+					this.goCat(0, item.id, 1);
+				}
+			},
 			goCartDuo(item) {
 				if (!this.isLogin) {
 					this.getIsLogin();
 				} else {
+					if (!item.cart_button) {
+						goShopDetail(item, this.uid).then(res => {
+							uni.navigateTo({
+								url: `/pages/goods_details/index?id=${item.id}`
+							});
+						});
+						return
+					}
 					uni.showLoading({
 						title: '加载中'
 					});
@@ -570,6 +593,7 @@
 			getAttrs(id) {
 				let that = this;
 				getAttr(id, 0).then(res => {
+					console.log(res.data)
 					uni.hideLoading();
 					that.$set(that.attr, 'productAttr', res.data.productAttr);
 					that.$set(that, 'productValue', res.data.productValue);

@@ -232,7 +232,7 @@ class ChatHandle
             $data['avatar'] = $_userInfo['avatar'];
         } else {
             $avatar = sys_config('tourist_avatar');
-            $_userInfo['avatar'] = $tourist_avatar ? $tourist_avatar : Arr::getArrayRandKey(is_array($avatar) ? $avatar : []);
+            $_userInfo['avatar'] = $tourist_avatar ?: Arr::getArrayRandKey(is_array($avatar) ? $avatar : []);
             $_userInfo['nickname'] = '游客' . $uid;
             $data['nickname'] = $_userInfo['nickname'];
             $data['avatar'] = $_userInfo['avatar'];

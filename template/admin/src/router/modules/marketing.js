@@ -25,7 +25,8 @@ export default {
             name: `${pre}combinalist`,
             meta: {
                 auth: ['marketing-store_combination'],
-                title: '拼团商品'
+                title: '拼团商品',
+                keepAlive: true
             },
             component: () => import('@/pages/marketing/storeCombination/index')
         },
@@ -34,7 +35,7 @@ export default {
             name: `${pre}combinaList`,
             meta: {
                 auth: ['marketing-store_combination-combina_list'],
-                title: '拼团列表'
+                title: '拼团列表',
             },
             component: () => import('@/pages/marketing/storeCombination/combinaList')
         },
@@ -61,7 +62,8 @@ export default {
             name: `${pre}storeCouponIssue`,
             meta: {
                 auth: ['marketing-store_coupon_issue'],
-                title: '优惠券列表'
+                title: '优惠券列表',
+                keepAlive: true
             },
             component: () => import('@/pages/marketing/storeCouponIssue/index')
         },
@@ -97,7 +99,9 @@ export default {
             name: `${pre}storeBargain`,
             meta: {
                 auth: ['marketing-store_bargain'],
-                title: '砍价商品'
+                title: '砍价商品',
+                keepAlive: true
+
             },
             component: () => import('@/pages/marketing/storeBargain/index')
         },
@@ -124,7 +128,8 @@ export default {
             name: `${pre}storeSeckill`,
             meta: {
                 auth: ['marketing-store_seckill'],
-                title: '秒杀商品'
+                title: '秒杀商品',
+                keepAlive: true
             },
             component: () => import('@/pages/marketing/storeSeckill/index')
         },
@@ -160,7 +165,8 @@ export default {
             name: `${pre}storeIntegral`,
             meta: {
                 auth: ['marketing-store_integral'],
-                title: '积分商品'
+                title: '积分商品',
+                keepAlive: true
             },
             component: () => import('@/pages/marketing/storeIntegral/index')
         },
@@ -205,7 +211,7 @@ export default {
             name: `${pre}live_room`,
             meta: {
                 auth: true,
-                title: '直播间管理'
+                title: '直播间管理',
             },
             component: () => import('@/pages/marketing/live/index')
         },
@@ -223,7 +229,8 @@ export default {
             name: `${pre}live_goods`,
             meta: {
                 auth: true,
-                title: '直播间商品管理'
+                title: '直播间商品管理',
+                keepAlive: true
             },
             component: () => import('@/pages/marketing/live/live_goods')
         },
@@ -291,13 +298,77 @@ export default {
             component: () => import('@/pages/marketing/lottery/create')
         },
         {
-            path: 'lottery/recording_list/:id',
+            path: 'lottery/recording_list',
             name: `${pre}recording_list`,
             meta: {
                 auth: true,
                 title: '抽奖记录'
             },
             component: () => import('@/pages/marketing/lottery/recordingList')
+        },
+        {
+            path: 'channel_code/channelCodeIndex',
+            name: `${pre}channel_code`,
+            meta: {
+                auth: true,
+                title: '公众号渠道码',
+                keepAlive: true
+            },
+            component: () => import('@/pages/marketing/channelCode/channelCodeIndex')
+        },
+        {
+            path: 'channel_code/create',
+            name: `${pre}create_code`,
+            meta: {
+                auth: ['marketing-channel_code-create'],
+                title: '新建渠道码'
+            },
+            component: () => import('@/pages/marketing/channelCode/createCode')
+        },
+        {
+            path: 'channel_code/code_statistic',
+            name: `${pre}code_statistic`,
+            meta: {
+                auth: ['marketing-channel_code-statistic'],
+                title: '二维码统计'
+            },
+            component: () => import('@/pages/marketing/channelCode/codeStatistic')
+        },
+        {
+            path: 'point_record',
+            name: `${pre}point_record`,
+            meta: {
+                auth: ['marketing-point_record-index'],
+                title: '积分记录'
+            },
+            component: () => import('@/pages/marketing/point_record/index')
+        },
+        {
+            path: 'point_statistic',
+            name: `${pre}point_statistic`,
+            meta: {
+                auth: ['marketing-point_statistic-index'],
+                title: '积分统计'
+            },
+            component: () => import('@/pages/marketing/point_statistic/index')
+        },
+        {
+            path: 'recharge',
+            name: `${pre}recharge`,
+            meta: {
+                auth: ['marketing-recharge-index'],
+                title: '充值配置'
+            },
+            component: () => import('@/pages/marketing/recharge/index')
+        },
+        {
+            path: 'sign',
+            name: `${pre}sign`,
+            meta: {
+                auth: ['marketing-sign-index'],
+                title: '签到配置'
+            },
+            component: () => import('@/pages/marketing/sign/index')
         },
     ]
 }

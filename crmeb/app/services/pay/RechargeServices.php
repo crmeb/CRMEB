@@ -62,7 +62,7 @@ class RechargeServices
         /** @var WechatUserServices $wechatUser */
         $wechatUser = app()->make(WechatUserServices::class);
         $openid = $wechatUser->uidToOpenid((int)$recharge['uid'], $userType);
-        if ($recharge['recharge_type'] != 'weixinh5') {
+        if ($recharge['recharge_type'] != 'weixinh5' && !request()->isApp()) {
             if (!$openid) {
                 throw new ValidateException('获取用户openid失败,无法支付');
             }

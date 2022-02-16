@@ -44,32 +44,32 @@ class SystemFile extends AuthController
     }
 
     //打开目录
-    public function opendir()
-    {
-        return app('json')->success($this->services->opendir());
-    }
+//    public function opendir()
+//    {
+//        return app('json')->success($this->services->opendir());
+//    }
 
     //读取文件
-    public function openfile()
-    {
-        $file = $this->request->param('filepath');
-        if (empty($file)) return app('json')->fail('出现错误');
-        return app('json')->success($this->services->openfile($file));
-    }
+//    public function openfile()
+//    {
+//        $file = $this->request->param('filepath');
+//        if (empty($file)) return app('json')->fail('出现错误');
+//        return app('json')->success($this->services->openfile($file));
+//    }
 
     //保存文件
-    public function savefile()
-    {
-        $comment = $this->request->param('comment');
-        $filepath = $this->request->param('filepath');
-        if(empty($comment) || empty($filepath)){
-            return app('json')->fail('出现错误');
-        }
-        $res = $this->services->savefile($filepath,$comment);
-        if ($res) {
-            return app('json')->success('保存成功!');
-        } else {
-            return app('json')->fail('保存失败');
-        }
-    }
+//    public function savefile()
+//    {
+//        $comment = $this->request->param('comment');
+//        $filepath = $this->request->param('filepath');
+//        if(empty($comment) || empty($filepath)){
+//            return app('json')->fail('出现错误');
+//        }
+//        $res = $this->services->savefile($filepath,$comment);
+//        if ($res) {
+//            return app('json')->success('保存成功!');
+//        } else {
+//            return app('json')->fail('保存失败');
+//        }
+//    }
 }

@@ -15,6 +15,7 @@ use app\dao\article\ArticleCategoryDao;
 use app\services\BaseServices;
 use crmeb\exceptions\AdminException;
 use crmeb\services\FormBuilder as Form;
+use crmeb\utils\Arr;
 use think\facade\Route as Url;
 
 /**
@@ -41,7 +42,20 @@ class ArticleCategoryServices extends BaseServices
     public function getList(array $where)
     {
         [$page, $limit] = $this->getPageValue();
-        $list = $this->dao->getList($where, $page, $limit);
+        $list = $this->dao->getList($where);
+        if (!empty($list) && $where['title'] !== '') {
+            $pids = Arr::getUniqueKey($list, 'pid');
+            $parentList = $this->dao->getList(['id' => $pids]);
+            $list = array_merge($list, $parentList);
+            foreach ($list as $key => $item) {
+                $arr = $item;
+                unset($list[$key]);
+                if (!in_array($arr, $list)) {
+                    $list[] = $arr;
+                }
+            }
+        }
+        $list = get_tree_children($list);
         $count = $this->dao->count($where);
         return compact('list', 'count');
     }
@@ -60,13 +74,17 @@ class ArticleCategoryServices extends BaseServices
             $info = $this->dao->get($id);
             $method = 'PUT';
             $url = $url . '/' . $id;
+            $pid = $info['pid'];
+        } else {
+            $pid = '';
         }
         $f = array();
         $f[] = Form::hidden('id', $info['id'] ?? 0);
+        $f[] = Form::select('pid', '上级分类', (int)($info['pid'] ?? ''))->setOptions($this->menus($pid))->filterable(1);
         $f[] = Form::input('title', '分类名称', $info['title'] ?? '')->maxlength(20)->required();
         $f[] = Form::input('intr', '分类简介', $info['intr'] ?? '')->type('textarea')->required();
         $f[] = Form::frameImage('image', '分类图片', Url::buildUrl('admin/widget.images/index', array('fodder' => 'image')), $info['image'] ?? '')->icon('ios-add')->width('950px')->height('505px')->modal(['footer-hide' => true]);
-        $f[] = Form::number('sort', '排序', (int)($info['sort'] ?? 0));
+        $f[] = Form::number('sort', '排序', (int)($info['sort'] ?? 0))->precision(0);
         $f[] = Form::radio('status', '状态', $info['status'] ?? 1)->options([['value' => 1, 'label' => '显示'], ['value' => 0, 'label' => '隐藏']]);
         return create_form('添加分类', $f, Url::buildUrl($url), $method);
     }
@@ -74,6 +92,7 @@ class ArticleCategoryServices extends BaseServices
     /**
      * 保存
      * @param array $data
+     * @return mixed
      */
     public function save(array $data)
     {
@@ -83,6 +102,7 @@ class ArticleCategoryServices extends BaseServices
     /**
      * 修改
      * @param array $data
+     * @return mixed
      */
     public function update(array $data)
     {
@@ -92,11 +112,14 @@ class ArticleCategoryServices extends BaseServices
     /**
      * 删除
      * @param int $id
+     * @return mixed
      */
     public function del(int $id)
     {
         /** @var ArticleServices $articleService */
         $articleService = app()->make(ArticleServices::class);
+        $pidCount = $this->dao->count(['pid' => $id]);
+        if($pidCount > 0) throw new AdminException('该分类有下级分类，无法删除！');
         $count = $articleService->count(['cid' => $id]);
         if ($count > 0) {
             throw new AdminException('该分类下有文章，无法删除！');
@@ -109,9 +132,37 @@ class ArticleCategoryServices extends BaseServices
      * 修改状态
      * @param int $id
      * @param int $status
+     * @return mixed
      */
     public function setStatus(int $id, int $status)
     {
         return $this->dao->update($id, ['status' => $status]);
+    }
+
+    /**
+     * 获取一级分类组合数据
+     * @param string $pid
+     * @return array[]
+     */
+    public function menus($pid = '')
+    {
+        $list = $this->dao->getMenus(['pid' => 0]);
+        $menus = [['value' => 0, 'label' => '顶级分类']];
+        if ($pid === 0) return $menus;
+        if ($pid != '') $menus = [];
+        foreach ($list as $menu) {
+            $menus[] = ['value' => $menu['id'], 'label' => $menu['title']];
+        }
+        return $menus;
+    }
+
+    /**
+     * 树形列表
+     * @return array
+     */
+    public function getTreeList()
+    {
+        $where['is_show'] = 1;
+        return sort_list_tier($this->dao->getMenus($where));
     }
 }

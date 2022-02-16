@@ -37,6 +37,15 @@ class ArticleCategory extends BaseModel
     protected $name = 'article_category';
 
     /**
+     * 获取子集分类查询条件
+     * @return \think\model\relation\HasMany
+     */
+    public function children()
+    {
+        return $this->hasMany(self::class, 'pid', 'id')->where(['hidden' => 0, 'is_del' => 0, 'status' => 1])->order('sort DESC,id DESC')->field('id,pid,title');
+    }
+
+    /**
      * 分类状态搜索器
      * @param Model $query
      * @param $value
@@ -78,5 +87,15 @@ class ArticleCategory extends BaseModel
     public function searchIsDelAttr($query, $value, $data)
     {
         $query->where('is_del', $value);
+    }
+
+    /**
+     * 上级搜索器
+     * @param $query
+     * @param $value
+     */
+    public function searchPidAttr($query, $value)
+    {
+        if ($value !== '') $query->where('pid', $value);
     }
 }

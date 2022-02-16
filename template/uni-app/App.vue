@@ -12,6 +12,9 @@
 	import Auth from '@/libs/wechat.js';
 	import Routine from './libs/routine.js';
 	import {
+		silenceBindingSpread
+	} from "@/utils";
+	import {
 		getCartCounts,
 	} from '@/api/order.js';
 	import {
@@ -71,9 +74,11 @@
 				}
 			}
 		},
-		onLaunch: function(option) {
+		async onLaunch(option) {
 			let that = this;
 			colorChange('color_change').then(res => {
+				uni.setStorageSync('is_diy', res.data.is_diy)
+				uni.$emit('is_diy', res.data.is_diy)
 				switch (res.data.status) {
 					case 1:
 						uni.setStorageSync('viewColor', blue)
@@ -105,6 +110,7 @@
 				that.$Cache.set('spread', option.query.spread);
 				that.globalData.spid = option.query.spread;
 				that.globalData.pid = option.query.spread;
+				silenceBindingSpread()
 			}
 			// #ifdef APP-PLUS || H5
 			uni.getSystemInfo({
@@ -205,12 +211,13 @@
 				this.globalData.isIframe = false;
 			}
 
-			if (window.location.pathname !== '/') {
+			//公众号静默授权
+			if (window.location.pathname !== '/' && option.query.scope === 'snsapi_base') {
 				let snsapiBase = 'snsapi_base';
 				let urlData = location.pathname + location.search;
-				if (!that.$store.getters.isLogin && uni.getStorageSync('authIng')) {
-					uni.setStorageSync('authIng', false)
-				}
+				// if (!that.$store.getters.isLogin && uni.getStorageSync('authIng')) {
+				// 	uni.setStorageSync('authIng', false)
+				// }
 				if (!that.$store.getters.isLogin && Auth.isWeixin()) {
 					let code,
 						state,
@@ -228,25 +235,29 @@
 						// 存储静默授权code
 						uni.setStorageSync('snsapiCode', code);
 						let spread = that.globalData.spid ? that.globalData.spid : '';
+						uni.setStorageSync('authIng', true)
 						silenceAuth({
 								code: code,
 								spread: that.$Cache.get('spread'),
 								spid: that.globalData.code
 							})
 							.then(res => {
+								uni.setStorageSync('authIng', false)
 								uni.setStorageSync('snRouter', decodeURIComponent(decodeURIComponent(option.query
 									.back_url)));
 								if (res.data.key !== undefined && res.data.key) {
 									this.$Cache.set('snsapiKey', res.data.key);
 								} else {
+
 									let time = res.data.expires_time - this.$Cache.time();
 									this.$store.commit('LOGIN', {
 										token: res.data.token,
 										time: time
 									});
-
+									this.$Cache.set('WX_AUTH', code);
 									this.$store.commit('SETUID', res.data.userInfo.uid);
 									this.$store.commit('UPDATE_USERINFO', res.data.userInfo);
+
 									if (option.query.back_url) {
 										location.replace(decodeURIComponent(decodeURIComponent(option.query
 											.back_url)));
@@ -254,6 +265,7 @@
 								}
 							})
 							.catch(error => {
+								uni.setStorageSync('authIng', false)
 								let url = ''
 								if (option.query.back_url instanceof Array) {
 									url = option.query.back_url[option.query.back_url.length - 1]
@@ -299,7 +311,6 @@
 			document.head.appendChild(__s);
 			// #endif
 		},
-		mounted() {},
 		methods: {
 			// 小程序静默授权
 			silenceAuth(code) {
@@ -374,5 +385,10 @@
 		height: 100vh;
 		top: 0;
 		bottom: 0;
+	}
+
+	.open-location {
+		width: 100%;
+		height: 100vh;
 	}
 </style>

@@ -46,7 +46,7 @@ class UserExtract extends AuthController
             ['nireid', '', '', 'like'],
             ['data', '', '', 'time'],
         ]);
-        if(isset($where['extract_type']) && $where['extract_type'] == 'wx'){
+        if (isset($where['extract_type']) && $where['extract_type'] == 'wx') {
             $where['extract_type'] = 'weixin';
         }
         return app('json')->success($this->services->index($where));
@@ -67,7 +67,7 @@ class UserExtract extends AuthController
     /**
      * 保存更新的资源
      *
-     * @param \think\Request $request
+     * @param Request $request
      * @param int $id
      * @return \think\Response
      */
@@ -123,6 +123,7 @@ class UserExtract extends AuthController
         $data = $this->request->postMore([
             ['message', '']
         ]);
+        if ($data['message'] == '') return app('json')->fail('拒绝理由不能为空');
         return app('json')->success($this->services->refuse((int)$id, $data['message']) ? '操作成功' : '操作失败');
     }
 

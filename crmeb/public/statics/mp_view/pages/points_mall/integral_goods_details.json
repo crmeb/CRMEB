@@ -1,13 +1,14 @@
 {
   "navigationBarTitleText": "商品详情",
   "usingComponents": {
-    "cus-preview-img": "/components/cus-previewImg/cus-previewImg",
     "product-con-swiper": "/components/productConSwiper/index",
     "product-window": "/pages/points_mall/component/productWindow",
     "user-evaluation": "/components/userEvaluation/index",
     "kefu-icon": "/components/kefuIcon/index",
     "jyf-parser": "/components/mp-html/mp-html",
     "count-down": "/components/countDown/index",
+    "cus-preview-img": "/components/cusPreviewImg/index",
+    "home-list": "/components/homeList/index",
     "authorize": "/components/Authorize"
   }
 }

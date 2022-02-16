@@ -15,6 +15,7 @@ namespace app\dao\product\product;
 use app\dao\BaseDao;
 use app\model\product\product\StoreProduct;
 use think\facade\Config;
+use think\facade\Log;
 
 /**
  * Class StoreProductDao
@@ -200,7 +201,7 @@ class StoreProductDao extends BaseDao
      * @throws \think\db\exception\DbException
      * @throws \think\db\exception\ModelNotFoundException
      */
-    public function getRecommendProduct(string $field, int $num = 0, int $page = 0, int $limit = 0)
+    public function getRecommendProduct(array $where, string $field, int $num = 0, int $page = 0, int $limit = 0)
     {
         $where['is_show'] = 1;
         $where['is_del'] = 0;
@@ -254,13 +255,13 @@ class StoreProductDao extends BaseDao
      * @throws \think\db\exception\DbException
      * @throws \think\db\exception\ModelNotFoundException
      */
-    public function getUserProductHotSale(array $where, int $limit = 20,int $page)
+    public function getUserProductHotSale(array $where, int $page = 0, int $limit = 0)
     {
         $where['is_show'] = 1;
         $where['is_del'] = 0;
         $where['is_hot'] = 1;
         return $this->search($where)->field(['IFNULL(sales,0) + IFNULL(ficti,0) as sales', 'store_name', 'image', 'id', 'price', 'ot_price', 'stock'])
-            ->when($page, function ($query) use ($page, $limit) {
+            ->when($page && $limit, function ($query) use ($page, $limit) {
                 $query->page($page, $limit);
             })
             ->when($limit, function ($query) use ($limit) {
@@ -294,4 +295,43 @@ class StoreProductDao extends BaseDao
         return $this->search($where)->field($field)->select()->toArray();
     }
 
+    /**
+     * 获取预售列表
+     * @param $where
+     * @param $page
+     * @param $limit
+     * @return array
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     */
+    public function getAdvanceList($where, $page, $limit)
+    {
+        $model = $this->getModel()->where('presale', 1)->where('is_del', 0)->where('is_show', 1)->where(function ($query) use ($where) {
+            switch ($where['time_type']) {
+                case 1:
+                    $query->where('presale_start_time', '>', time());
+                    break;
+                case 2:
+                    $query->where('presale_start_time', '<=', time())->where('presale_end_time', '>=', time());
+                    break;
+                case 3:
+                    $query->where('presale_end_time', '<', time());
+                    break;
+            }
+        });
+        $count = $model->count();
+        $list = $model->when($page && $limit, function ($query) use ($page, $limit) {
+            $query->page($page, $limit);
+        })->order('add_time desc')->select()->toArray();
+        return compact('list', 'count');
+    }
+
+    /**
+     * 预售商品自动到期下架
+     */
+    public function downAdvance()
+    {
+        $this->getModel()->where('presale', 1)->where('presale_end_time', '<', time())->update(['is_show' => 0]);
+    }
 }

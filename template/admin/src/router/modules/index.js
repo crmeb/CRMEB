@@ -55,7 +55,8 @@ export default {
       header: 'home',
       meta: {
         auth: ['admin-index-index'],
-        title: '主页'
+        title: '主页',
+        affix: true
       },
       component: () => import('@/pages/index/index')
     }

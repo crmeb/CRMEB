@@ -316,7 +316,7 @@ checkbox .uni-checkbox-input.uni-checkbox-input-checked {
 	color: #fff !important
 }
 
-checkbox .uni-checkbox-input.uni-checkbox-input-disabled{
+checkbox .uni-checkbox-input.uni-checkbox-input-disabled {
 	background-color: #e1e1e1 !important;
 	border: 1px solid #e1e1e1 !important;
 }
@@ -332,11 +332,17 @@ checkbox .uni-checkbox-input.uni-checkbox-input-checked::before {
 }
 
 .line2 {
-	word-break: break-all;
+	text-overflow: ellipsis;
 	display: -webkit-box;
 	-webkit-line-clamp: 2;
 	-webkit-box-orient: vertical;
-	overflow: hidden
+	display: -moz-box;
+	-moz-line-clamp: 2;
+	-moz-box-orient: vertical;
+	word-wrap: break-word;
+	word-break: break-all;
+	white-space: normal;
+	overflow: hidden;
 }
 
 .line3 {

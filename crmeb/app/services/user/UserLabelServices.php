@@ -49,15 +49,16 @@ class UserLabelServices extends BaseServices
 
     /**
      * 获取所有用户标签
-     * @param string $field
+     * @param array $where
+     * @param array|string[] $field
      * @return array
      * @throws \think\db\exception\DataNotFoundException
      * @throws \think\db\exception\DbException
      * @throws \think\db\exception\ModelNotFoundException
      */
-    public function getLabelList()
+    public function getLabelList(array $where = [], array $field = ['*'])
     {
-        return $this->dao->getList();
+        return $this->dao->getList(0, 0, $where, $field);
     }
 
     /**
@@ -78,9 +79,11 @@ class UserLabelServices extends BaseServices
     /**
      * 添加修改标签表单
      * @param int $id
-     * @return mixed
+     * @param int $cateId
+     * @return array
+     * @throws \FormBuilder\Exception\FormBuilderException
      */
-    public function add(int $id)
+    public function add(int $id, int $cateId)
     {
         $label = $this->getLable($id);
         $field = array();
@@ -88,11 +91,11 @@ class UserLabelServices extends BaseServices
         $service = app()->make(UserLabelCateServices::class);
         $options = [];
         foreach ($service->getLabelCateAll() as $item) {
-            $options[] = ['value' => $item['id'], 'label' => $item['name']];;
+            $options[] = ['value' => $item['id'], 'label' => $item['name']];
         }
         if (!$label) {
             $title = '添加标签';
-            $field[] = Form::select('label_cate', '标签分类')->setOptions($options);
+            $field[] = Form::select('label_cate', '标签分类', $cateId)->setOptions($options);
             $field[] = Form::input('label_name', '标签名称', '')->required();
         } else {
             $title = '修改标签';
@@ -153,5 +156,30 @@ class UserLabelServices extends BaseServices
             }
         }
         return true;
+    }
+
+    /**
+     * tree处理 分类、标签数据
+     * @param array $cate
+     * @param array $label
+     * @return array
+     */
+    public function get_tree_children(array $cate, array $label)
+    {
+        if ($cate) {
+            foreach ($cate as $key => $value) {
+                if ($label) {
+                    foreach ($label as $k => $item) {
+                        if ($value['id'] == $item['label_cate']) {
+                            $cate[$key]['children'][] = $item;
+                            unset($label[$k]);
+                        }
+                    }
+                } else {
+                    $cate[$key]['children'] = [];
+                }
+            }
+        }
+        return $cate;
     }
 }

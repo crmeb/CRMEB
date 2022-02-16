@@ -50,24 +50,28 @@ class AppVersion extends AuthController
      * 新增版本表单
      * @return mixed
      */
-    public function crate()
+    public function crate($id)
     {
-        return app('json')->success($this->services->createForm());
+        return app('json')->success($this->services->createForm($id));
     }
 
     /**
      * 保存数据
      * @return mixed
      */
-    public function save($id = 0)
+    public function save()
     {
         $data = $this->request->postMore([
+            ['id', 0],
             ['version', ''],
             ['platform', 1],
             ['info', ''],
             ['is_force', 1],
             ['url', ''],
+            ['is_new', 1],
         ]);
+        $id = $data['id'];
+        unset($data['id']);
         $this->services->versionSave($id, $data);
         return app('json')->success('添加成功');
     }

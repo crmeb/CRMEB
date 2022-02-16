@@ -1,87 +1,132 @@
 <template>
 	<view :style="colorStyle">
-		<view class='product-con'>
-			<scroll-view :scroll-top="scrollTop" scroll-y='true' scroll-with-animation="true"
-				:style="'height:'+height+'px;'" @scroll="scroll">
-				<view id="past0">
-					<productConSwiper :imgUrls='imgUrls'></productConSwiper>
-					<view class='nav acea-row row-between-wrapper'>
-						<view class="share acea-row row-between row-bottom">
-							<view class="money font-color">
-								<image src="/static/images/my-point.png" mode=""></image>
-								<text class="num" v-text="storeInfo.price || 0"></text>积分
-							</view>
-							<view></view>
-						</view>
-					</view>
-					<view class='wrapper'>
-						<view class='introduce acea-row row-between'>
-							<view class='infor'> {{storeInfo.title}}</view>
-						</view>
-						<view class='label acea-row row-middle'>
-
-							<view class='stock'>原价：{{storeInfo.product_price}}</view>
-							<view class='stock'>限量:
-								{{ storeInfo.quota_show}}
-							</view>
-							<view class='stock'>已兑换：{{storeInfo.sales}}
+		<view class="product-con">
+			<!-- 头部 -->
+			<!-- #ifdef APP-PLUS -->
+			<view class="navbar" :style="{ height: (navH)+'rpx', opacity: opacity, }">
+				<!-- #endif -->
+				<!-- #ifndef APP-PLUS -->
+				<view class='navbar' :style="{height:navH+'rpx',opacity:opacity}">
+					<!-- #endif -->
+					<view class='navbarH' :style='"height:"+navH+"rpx;"'>
+						<view class='navbarCon acea-row row-center-wrapper'>
+							<view class="header acea-row row-center-wrapper">
+								<view class="item line1">
+									{{storeInfo.title}}
+								</view>
 							</view>
 						</view>
 					</view>
-					<view class='attribute acea-row row-between-wrapper' @tap='selecAttr'
-						v-if='attribute.productAttr.length'>
-						<!-- <view class="df"><text class='atterTxt line1'>{{attr}}：{{attrValue}}</text></view>
+				</view>
+				<!-- #ifdef APP-PLUS -->
+				<view id="home" class="home-nav acea-row row-center-wrapper" :class="[opacity>0.5?'on':'']"
+					:style="{ top:(navH / 2-92)+'rpx',marginTop:sysHeight}">
+					<!-- #endif -->
+					<!-- #ifndef APP-PLUS -->
+					<view id="home" class="home-nav acea-row row-center-wrapper" :class="[opacity>0.5?'on':'']"
+						:style="{ top: homeTop +'rpx'}">
+						<!-- #endif -->
+						<view class="iconfont icon-fanhui2" @tap="returns"></view>
+						<!-- #ifdef MP -->
+						<view class="line"></view>
+						<view class="iconfont icon-gengduo5" @click="moreNav"></view>
+						<!-- #endif -->
+					</view>
+					<!-- #ifdef APP-PLUS -->
+					<view id="home" class="home-nav right acea-row row-center-wrapper" :class="[opacity>0.5?'on':'']"
+						:style="{ top:(navH/2-92)+'rpx',marginTop:sysHeight}">
+						<!-- #endif -->
+						<!-- #ifdef H5 -->
+						<view id="home" class="home-nav right acea-row row-center-wrapper"
+							:class="[opacity>0.5?'on':'']" :style="{ top: homeTop +'rpx'}">
+							<!-- #endif -->
+							<!-- #ifdef APP-PLUS || H5 -->
+							<view class="iconfont icon-gengduo2" @click="moreNav"></view>
+						</view>
+						<!-- #endif -->
+						<homeList :navH="navH" :returnShow="returnShow" :currentPage="currentPage"
+							:sysHeight="sysHeight">
+						</homeList>
+						<scroll-view :scroll-top="scrollTop" scroll-y="true" scroll-with-animation="true"
+							:style="'height:' + height + 'px;'" @scroll="scroll">
+							<view id="past0">
+								<productConSwiper :imgUrls="imgUrls"></productConSwiper>
+								<view class="nav acea-row row-between-wrapper">
+									<view class="share acea-row row-between row-bottom">
+										<view class="money font-color">
+											<image src="/static/images/my-point.png" mode=""></image>
+											<text class="num" v-text="storeInfo.price || 0"></text>积分
+										</view>
+										<view></view>
+									</view>
+								</view>
+								<view class="wrapper">
+									<view class="introduce acea-row row-between">
+										<view class="infor"> {{ storeInfo.title }}</view>
+									</view>
+									<view class="label acea-row row-middle">
+										<view class="stock">原价：{{ storeInfo.product_price }}</view>
+										<view class="stock">限量:
+											{{ storeInfo.quota_show }}
+										</view>
+										<view class="stock">已兑换：{{ storeInfo.sales }} </view>
+									</view>
+								</view>
+								<view class="attribute acea-row row-between-wrapper" @tap="selecAttr"
+									v-if="attribute.productAttr.length">
+									<!-- <view class="df"><text class='atterTxt line1'>{{attr}}：{{attrValue}}</text></view>
 						<view class='iconfont icon-jiantou'></view> -->
-						<view class="flex">
-							<view style="display: flex; align-items: center; width: 90%">
-								<view class="attr-txt"> {{ attr }}： </view>
-								<view class="atterTxt line1" style="width: 82%">{{
-						      attrValue
-						    }}</view>
+									<view class="flex">
+										<view style="display: flex; align-items: center; width: 90%">
+											<view class="attr-txt"> {{ attr }}： </view>
+											<view class="atterTxt line1" style="width: 82%">{{
+                  attrValue
+                }}</view>
+										</view>
+										<view class="iconfont icon-jiantou"></view>
+									</view>
+									<view class="acea-row row-between-wrapper"
+										style="margin-top: 7px; padding-left: 70px" v-if="skuArr.length > 1">
+										<view class="flexs">
+											<image :src="item.image" v-for="(item, index) in skuArr.slice(0, 4)"
+												:key="index" class="attrImg"></image>
+										</view>
+										<view class="switchTxt">共{{ skuArr.length }}种规格可选</view>
+									</view>
+								</view>
 							</view>
-							<view class="iconfont icon-jiantou"></view>
-						</view>
-						<view class="acea-row row-between-wrapper" style="margin-top: 7px; padding-left: 70px"
-							v-if="skuArr.length > 1">
-							<view class="flexs">
-								<image :src="item.image" v-for="(item, index) in skuArr.slice(0, 4)" :key="index"
-									class="attrImg"></image>
+							<view class="product-intro" id="past2">
+								<view class="title">产品介绍</view>
+								<view class="conter">
+									<view class="" v-html="storeInfo.description"> </view>
+								</view>
 							</view>
-							<view class="switchTxt">共{{ skuArr.length }}种规格可选</view>
+						</scroll-view>
+						<view class="footer acea-row row-between-wrapper">
+							<navigator hover-class="none" open-type="switchTab" class="item" url="/pages/index/index">
+								<view class="iconfont icon-shouye6"></view>
+								<view class="p_center">首页</view>
+							</navigator>
+							<view class="bnt acea-row" v-if="
+            attribute.productSelect.quota > 0 &&
+            attribute.productSelect.product_stock > 0
+          ">
+								<view class="buy bnts" @tap="goCat">立即兑换</view>
+							</view>
+							<view class="bnt acea-row" v-else>
+								<view class="bnts no-goods">无法兑换</view>
+							</view>
 						</view>
 					</view>
+					<product-window :attr="attribute" :limitNum="1" @myevent="onMyEvent" @ChangeAttr="ChangeAttr"
+						@ChangeCartNum="ChangeCartNum" @attrVal="attrVal" @iptCartNum="iptCartNum" @getImg="showImg">
+					</product-window>
+					<cus-previewImg ref="cusPreviewImg" :list="skuArr" @changeSwitch="changeSwitch"
+						@shareFriend="listenerActionSheet" />
+					<!-- 分享按钮 -->
+					<kefuIcon :ids="storeInfo.product_id" :routineContact="routineContact"></kefuIcon>
+					<!-- 发送给朋友图片 -->
 				</view>
-				<view class='product-intro' id="past2">
-					<view class='title'>产品介绍</view>
-					<view class='conter'>
-						<view class="" v-html="storeInfo.description">
-						</view>
-					</view>
-				</view>
-			</scroll-view>
-			<view class='footer acea-row row-between-wrapper'>
-				<navigator hover-class="none" open-type="switchTab" class="item" url="/pages/index/index">
-					<view class="iconfont icon-shouye6"></view>
-					<view class="p_center">首页</view>
-				</navigator>
-				<view class="bnt acea-row"
-					v-if="attribute.productSelect.quota > 0 && attribute.productSelect.product_stock>0">
-					<view class="buy bnts" @tap="goCat">立即兑换</view>
-				</view>
-				<view class="bnt acea-row" v-else>
-					<view class="bnts no-goods">无法兑换</view>
-				</view>
-			</view>
-		</view>
-		<product-window :attr='attribute' :limitNum='1' @myevent="onMyEvent" @ChangeAttr="ChangeAttr"
-			@ChangeCartNum="ChangeCartNum" @attrVal="attrVal" @iptCartNum="iptCartNum" @getImg="showImg">
-		</product-window>
-		<cus-previewImg ref="cusPreviewImg" :list="skuArr" @changeSwitch="changeSwitch"
-			@shareFriend="listenerActionSheet" />
-		<!-- 分享按钮 -->
-		<kefuIcon :ids='storeInfo.product_id' :routineContact='routineContact'></kefuIcon>
-		<!-- 发送给朋友图片 -->
-	</view>
 </template>
 
 <script>
@@ -120,7 +165,9 @@
 	} from '@/config/app.js';
 	// #endif
 	import colors from "@/mixins/color";
-	import cusPreviewImg from "@/components/cus-previewImg/cus-previewImg.vue";
+	import cusPreviewImg from "@/components/cusPreviewImg/index.vue";
+	import homeList from '@/components/homeList'
+	let sysHeight = uni.getSystemInfoSync().statusBarHeight + 'px';
 	export default {
 		computed: mapGetters(['isLogin']),
 		mixins: [colors],
@@ -191,6 +238,8 @@
 				routineContact: 0,
 				skuArr: [],
 				selectSku: {},
+				currentPage: false,
+				sysHeight: sysHeight,
 			}
 		},
 		components: {
@@ -201,6 +250,7 @@
 			"jyf-parser": parser,
 			countDown,
 			cusPreviewImg,
+			homeList,
 			// #ifdef MP
 			authorize
 			// #endif
@@ -234,8 +284,8 @@
 			// #ifndef APP-PLUS
 			this.navH = app.globalData.navHeight
 			// #endif
-			// #ifdef APP-PLUS
-			this.navH = 90
+			// #ifndef MP
+			this.navH = 96;
 			// #endif
 			// #ifdef MP
 			let menuButtonInfo = uni.getMenuButtonBoundingClientRect()
@@ -285,6 +335,9 @@
 			})
 		},
 		methods: {
+			moreNav() {
+				this.currentPage = !this.currentPage
+			},
 			// app分享
 			// #ifdef APP-PLUS
 			appShare(scene) {
@@ -326,8 +379,15 @@
 				this.$set(this, "cart_num", e);
 			},
 			// 后退
-			returns: function() {
-				uni.navigateBack()
+			returns() {
+				// #ifdef H5
+				return history.back();
+				// #endif
+				// #ifndef H5
+				return uni.navigateBack({
+					delta: 1,
+				})
+				// #endif
 			},
 			onLoadFun: function(data) {
 				if (this.isAuto) {
@@ -555,6 +615,7 @@
 				var opacity = scrollY / 200;
 				opacity = opacity > 1 ? 1 : opacity;
 				that.opacity = opacity
+				this.currentPage = false
 				that.scrollY = scrollY
 				if (that.lock) {
 					that.lock = false
@@ -582,6 +643,37 @@
 			//点击sku图片打开轮播图
 			showImg(index) {
 				this.$refs.cusPreviewImg.open(this.selectSku.suk);
+			},
+			/**
+			 * 分享打开
+			 *
+			 */
+			listenerActionSheet() {
+				this.currentPage = false
+				if (this.isLogin === false) {
+					toLogin();
+				} else {
+					if (this.posterImage) {
+						this.posters = true;
+						return
+					}
+					// #ifdef H5
+					if (this.$wechat.isWeixin() === true) {
+						this.weixinStatus = true;
+					}
+					// #endif
+					// #ifndef APP-PLUS
+					this.downloadFilePromotionCode();
+					// #endif
+					// #ifdef APP-PLUS
+					if (this.PromotionCode.indexOf("http") == 0) {
+						// this.downloadFilePromotionCode();
+
+					}
+					// #endif
+
+					this.posters = true;
+				}
 			},
 			//滑动轮播图选择商品
 			changeSwitch(e) {
@@ -619,6 +711,7 @@
 			 */
 			goCat: function() {
 				var that = this;
+				this.currentPage = false
 				var productSelect = this.productValue[this.attrValue];
 				//打开属性
 				if (this.isOpen)
@@ -680,6 +773,7 @@
 	}
 
 	.navbar .header {
+		width: 400rpx;
 		height: 96rpx;
 		font-size: 30rpx;
 		color: #050505;
@@ -698,18 +792,6 @@
 	.navbar .header .item {
 		position: relative;
 		margin: 0 25rpx;
-	}
-
-	.navbar .header .item.on:before {
-		position: absolute;
-		width: 60rpx;
-		height: 5rpx;
-		background-repeat: no-repeat;
-		content: "";
-		background-image: linear-gradient(to right, #ff3366 0%, #ff6533 100%);
-		bottom: -10rpx;
-		left: 50%;
-		margin-left: -28rpx;
 	}
 
 	.navbar {
@@ -741,344 +823,368 @@
 		line-height: 54rpx;
 		z-index: 1000;
 		left: 33rpx; */
-}
+	}
 
-.product-con .nav {
-  width: 100%;
-  height: 100rpx;
-  padding: 0 30rpx;
-  box-sizing: border-box;
-  background-color: #fff;
-}
+	.product-con .nav {
+		width: 100%;
+		height: 100rpx;
+		padding: 0 30rpx;
+		box-sizing: border-box;
+		background-color: #fff;
+	}
 
-.product-con .nav .money {
-  font-size: 28rpx;
-  color: #e93323;
-  font-weight: bold;
+	.product-con .nav .money {
+		font-size: 28rpx;
+		color: #e93323;
+		font-weight: bold;
 
-  image {
-    width: 34rpx;
-    height: 34rpx;
-  }
-}
+		image {
+			width: 34rpx;
+			height: 34rpx;
+		}
+	}
 
-.product-con .nav .money .num {
-  font-size: 48rpx;
-  padding-left: 16rpx;
-}
+	.product-con .nav .money .num {
+		font-size: 48rpx;
+		padding-left: 16rpx;
+	}
 
-.product-con .nav .money .y-money {
-  font-size: 26rpx;
-  margin-left: 10rpx;
-  text-decoration: line-through;
-}
+	.product-con .nav .money .y-money {
+		font-size: 26rpx;
+		margin-left: 10rpx;
+		text-decoration: line-through;
+	}
 
-.product-con .nav .timeItem {
-  font-size: 20rpx;
-  color: #fff;
-  text-align: center;
-}
+	.product-con .nav .timeItem {
+		font-size: 20rpx;
+		color: #fff;
+		text-align: center;
+	}
 
-.product-con .nav .timeItem .timeCon {
-  margin-top: 10rpx;
-}
+	.product-con .nav .timeItem .timeCon {
+		margin-top: 10rpx;
+	}
 
-.product-con .nav .timeItem .timeCon .num {
-  padding: 0 7rpx;
-  font-size: 22rpx;
-  color: #ff3d3d;
-  background-color: #fff;
-  border-radius: 2rpx;
-}
+	.product-con .nav .timeItem .timeCon .num {
+		padding: 0 7rpx;
+		font-size: 22rpx;
+		color: #ff3d3d;
+		background-color: #fff;
+		border-radius: 2rpx;
+	}
 
-.product-con .nav .timeState {
-  font-size: 28rpx;
-  color: #fff;
-}
+	.product-con .nav .timeState {
+		font-size: 28rpx;
+		color: #fff;
+	}
 
-.product-con .nav .iconfont {
-  color: #fff;
-  font-size: 30rpx;
-  margin-left: 20rpx;
-}
+	.product-con .nav .iconfont {
+		color: #fff;
+		font-size: 30rpx;
+		margin-left: 20rpx;
+	}
 
-.product-con .wrapper {
-  padding: 0 32rpx 32rpx 32rpx;
-  width: 100%;
-  box-sizing: border-box;
-}
+	.product-con .wrapper {
+		padding: 0 32rpx 32rpx 32rpx;
+		width: 100%;
+		box-sizing: border-box;
+	}
 
-.product-con .wrapper .introduce {
-  margin: 0;
-}
+	.product-con .wrapper .introduce {
+		margin: 0;
+	}
 
-.product-con .wrapper .introduce .infor {
-  // width: 570rpx;
-}
+	.product-con .wrapper .introduce .infor {
+		// width: 570rpx;
+	}
 
-.product-con .wrapper .introduce .iconfont {
-  font-size: 37rpx;
-  color: #515151;
-}
+	.product-con .wrapper .introduce .iconfont {
+		font-size: 37rpx;
+		color: #515151;
+	}
 
-.product-con .wrapper .label {
-  display: flex;
-  justify-content: space-between;
-  margin: 18rpx 0 0 0;
-  font-size: 24rpx;
-  color: #82848f;
-}
+	.product-con .wrapper .label {
+		display: flex;
+		justify-content: space-between;
+		margin: 18rpx 0 0 0;
+		font-size: 24rpx;
+		color: #82848f;
+	}
 
-.product-con .wrapper .label .stock {
-}
+	.product-con .wrapper .label .stock {}
 
-.product-con .footer {
-  padding: 0 20rpx 0 30rpx;
-  position: fixed;
-  bottom: 0;
-  width: 100%;
-  box-sizing: border-box;
-  background-color: #fff;
-  z-index: 277;
-  border-top: 1rpx solid #f0f0f0;
-  height: 100rpx;
-  display: flex;
-  align-items: center;
-  flex-wrap: nowrap;
-  height: calc(100rpx+ constant(safe-area-inset-bottom)); ///兼容 IOS<11.2/
-  height: calc(100rpx + env(safe-area-inset-bottom)); ///兼容 IOS>11.2/
-}
+	.product-con .footer {
+		padding: 0 20rpx 0 30rpx;
+		position: fixed;
+		bottom: 0;
+		width: 100%;
+		box-sizing: border-box;
+		background-color: #fff;
+		z-index: 277;
+		border-top: 1rpx solid #f0f0f0;
+		height: 100rpx;
+		display: flex;
+		align-items: center;
+		flex-wrap: nowrap;
+		height: calc(100rpx+ constant(safe-area-inset-bottom)); ///兼容 IOS<11.2/
+		height: calc(100rpx + env(safe-area-inset-bottom)); ///兼容 IOS>11.2/
+	}
 
-.product-con .footer .item {
-  width: 100rpx;
-  font-size: 18rpx;
-  color: #666;
-}
+	.product-con .footer .item {
+		width: 100rpx;
+		font-size: 18rpx;
+		color: #666;
+	}
 
-.product-con .footer .item .iconfont {
-  text-align: center;
-  font-size: 40rpx;
-}
+	.product-con .footer .item .iconfont {
+		text-align: center;
+		font-size: 40rpx;
+	}
 
-.product-con .footer .item .iconfont.icon-shoucang1 {
-  color: var(--view-theme);
-}
+	.product-con .footer .item .iconfont.icon-shoucang1 {
+		color: var(--view-theme);
+	}
 
-.product-con .footer .item .iconfont.icon-gouwuche1 {
-  font-size: 40rpx;
-  position: relative;
-}
+	.product-con .footer .item .iconfont.icon-gouwuche1 {
+		font-size: 40rpx;
+		position: relative;
+	}
 
-.product-con .footer .item .iconfont.icon-gouwuche1 .num {
-  color: #fff;
-  position: absolute;
-  font-size: 18rpx;
-  padding: 2rpx 8rpx 3rpx;
-  border-radius: 200rpx;
-  top: -10rpx;
-  right: -10rpx;
-}
+	.product-con .footer .item .iconfont.icon-gouwuche1 .num {
+		color: #fff;
+		position: absolute;
+		font-size: 18rpx;
+		padding: 2rpx 8rpx 3rpx;
+		border-radius: 200rpx;
+		top: -10rpx;
+		right: -10rpx;
+	}
 
-.product-con .footer .bnt {
-  width: 100%;
-  height: 76rpx;
-}
+	.product-con .footer .bnt {
+		width: 100%;
+		height: 76rpx;
+	}
 
-.product-con .footer .bnt .bnts {
-  width: 100%;
-  text-align: center;
-  line-height: 76rpx;
-  color: #fff;
-  font-size: 28rpx;
-}
+	.product-con .footer .bnt .bnts {
+		width: 100%;
+		text-align: center;
+		line-height: 76rpx;
+		color: #fff;
+		font-size: 28rpx;
+	}
 
-.product-con .footer .bnt .joinCart {
-  border-radius: 50rpx 0 0 50rpx;
-  background-image: linear-gradient(to right, #fea10f 0%, #fa8013 100%);
-}
+	.product-con .footer .bnt .joinCart {
+		border-radius: 50rpx 0 0 50rpx;
+		background-image: linear-gradient(to right, #fea10f 0%, #fa8013 100%);
+	}
 
-.product-con .footer .bnt .buy {
-  border-radius: 50rpx;
-  // background-image: linear-gradient(to right, #fa6514 0%, #e93323 100%);
-  background-color: var(--view-theme);
-}
+	.product-con .footer .bnt .buy {
+		border-radius: 50rpx;
+		// background-image: linear-gradient(to right, #fa6514 0%, #e93323 100%);
+		background-color: var(--view-theme);
+	}
 
-.product-con .footer .bnt .no-goods {
-  border-radius: 50rpx;
-  background-color: #cccccc;
-}
+	.product-con .footer .bnt .no-goods {
+		border-radius: 50rpx;
+		background-color: #cccccc;
+	}
 
-.product-con .conter {
-  display: block;
-  padding-bottom: 100rpx;
-}
+	.product-con .conter {
+		display: block;
+	}
 
-.product-con .conter img {
-  display: block;
-}
+	.product-con .conter img {
+		display: block;
+	}
 
-.bg-color-hui {
-  background: #bbbbbb !important;
-}
+	.bg-color-hui {
+		background: #bbbbbb !important;
+	}
 
-.canvas {
-  width: 750px;
-  height: 1190px;
-}
+	.canvas {
+		width: 750px;
+		height: 1190px;
+	}
 
-.poster-pop {
-  width: 450rpx;
-  height: 714rpx;
-  position: fixed;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 300;
-  top: 50%;
-  margin-top: -377rpx;
-}
+	.poster-pop {
+		width: 450rpx;
+		height: 714rpx;
+		position: fixed;
+		left: 50%;
+		transform: translateX(-50%);
+		z-index: 300;
+		top: 50%;
+		margin-top: -377rpx;
+	}
 
-.poster-pop image {
-  width: 100%;
-  height: 100%;
-  display: block;
-}
+	.poster-pop image {
+		width: 100%;
+		height: 100%;
+		display: block;
+	}
 
-.poster-pop .close {
-  width: 46rpx;
-  height: 75rpx;
-  position: fixed;
-  right: 0;
-  top: -73rpx;
-  display: block;
-}
+	.poster-pop .close {
+		width: 46rpx;
+		height: 75rpx;
+		position: fixed;
+		right: 0;
+		top: -73rpx;
+		display: block;
+	}
 
-.poster-pop .save-poster {
-  background-color: #df2d0a;
-  font-size: ：22rpx;
-  color: #fff;
-  text-align: center;
-  height: 76rpx;
-  line-height: 76rpx;
-  width: 100%;
-}
+	.poster-pop .save-poster {
+		background-color: #df2d0a;
+		font-size: ：22rpx;
+		color: #fff;
+		text-align: center;
+		height: 76rpx;
+		line-height: 76rpx;
+		width: 100%;
+	}
 
-.poster-pop .keep {
-  color: #fff;
-  text-align: center;
-  font-size: 25rpx;
-  margin-top: 10rpx;
-}
+	.poster-pop .keep {
+		color: #fff;
+		text-align: center;
+		font-size: 25rpx;
+		margin-top: 10rpx;
+	}
 
-/deep/.mask {
-  z-index: 99 !important;
-}
+	/deep/.mask {
+		z-index: 99 !important;
+	}
 
-.mask1 {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: #000;
-  opacity: 0.5;
-  z-index: 288;
-}
+	.mask1 {
+		position: fixed;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		background-color: #000;
+		opacity: 0.5;
+		z-index: 288;
+	}
 
-.home-nav {
-  /* #ifdef H5 */
-  top: 20rpx !important;
-  /* #endif */
-}
+	.home-nav {
+		/* #ifdef H5 */
+		top: 20rpx !important;
+		/* #endif */
+	}
 
-.home-nav {
-  color: #fff;
-  position: fixed;
-  font-size: 33rpx;
-  width: 56rpx;
-  height: 56rpx;
-  z-index: 99;
-  left: 33rpx;
-  background: rgba(190, 190, 190, 0.5);
-  border-radius: 50%;
+	.home-nav {
+		color: #333;
+		position: fixed;
+		/* #ifdef MP */
+		width: 126rpx;
+		left: 15rpx;
+		/* #endif */
+		/* #ifndef MP */
+		width: 56rpx;
+		left: 33rpx;
+		/* #endif */
+		height: 56rpx;
+		font-size: 33rpx;
+		z-index: 99;
+		background: rgba(255, 255, 255, 0.3);
+		border: 1px solid rgba(0, 0, 0, 0.1);
+		border-radius: 40rpx;
 
-  &.on {
-    background: unset;
-    color: #333;
-  }
-}
+		&.right {
+			right: 33rpx;
+			left: unset
+		}
 
-.home-nav .line {
-  width: 1rpx;
-  height: 24rpx;
-  background: rgba(255, 255, 255, 0.25);
-}
+		&.on {
+			background: unset;
+			color: #333;
+		}
 
-.home-nav .icon-xiangzuo {
-  width: auto;
-  font-size: 28rpx;
-}
+		&.homeIndex {
+			/* #ifdef MP */
+			width: 98rpx;
+			/* #endif */
+			/* #ifndef MP */
+			border-color: rgba(255, 255, 255, 0);
+			/* #endif */
+		}
+	}
 
-.share-box {
-  z-index: 1000;
-  position: fixed;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-}
+	.home-nav .iconfont {
+		width: 58rpx;
+		text-align: center;
+	}
 
-.share-box image {
-  width: 100%;
-  height: 100%;
-}
+	.home-nav .line {
+		width: 1rpx;
+		height: 34rpx;
+		background: #B3B3B3;
+	}
 
-.df {
-  display: flex;
-  align-items: center;
-  flex-wrap: nowrap;
-  width: 100%;
-}
+	.home-nav .icon-xiangzuo {
+		width: auto;
+		font-size: 28rpx;
+	}
 
-.attrImg {
-  width: 66rpx;
-  height: 66rpx;
-  border-radius: 6rpx;
-  display: block;
-  margin-right: 14rpx;
-}
+	.share-box {
+		z-index: 1000;
+		position: fixed;
+		left: 0;
+		top: 0;
+		width: 100%;
+		height: 100%;
+	}
 
-.switchTxt {
-  height: 60rpx;
-  flex: 1;
-  line-height: 60rpx;
-  box-sizing: border-box;
-  background: #eeeeee;
-  padding: 0 10rpx;
-  border-radius: 8rpx;
-  text-align: center;
-}
+	.share-box image {
+		width: 100%;
+		height: 100%;
+	}
 
-.attribute {
-  padding: 10rpx 30rpx;
+	.df {
+		display: flex;
+		align-items: center;
+		flex-wrap: nowrap;
+		width: 100%;
+	}
 
-  .line1 {
-    width: 600rpx;
-  }
-}
+	.attrImg {
+		width: 66rpx;
+		height: 66rpx;
+		border-radius: 6rpx;
+		display: block;
+		margin-right: 14rpx;
+	}
 
-.flex {
-  display: flex;
-  justify-content: space-between;
-  width: 100%;
-}
+	.switchTxt {
+		height: 60rpx;
+		flex: 1;
+		line-height: 60rpx;
+		box-sizing: border-box;
+		background: #eeeeee;
+		padding: 0 10rpx;
+		border-radius: 8rpx;
+		text-align: center;
+	}
 
-.flexs {
-  display: flex;
-}
+	.attribute {
+		padding: 10rpx 30rpx;
 
-.attr-txt {
-  display: flex;
-  flex-wrap: nowrap;
-  width: 130rpx;
-}
+		.line1 {
+			width: 600rpx;
+		}
+	}
+
+	.flex {
+		display: flex;
+		justify-content: space-between;
+		width: 100%;
+	}
+
+	.flexs {
+		display: flex;
+	}
+
+	.attr-txt {
+		display: flex;
+		flex-wrap: nowrap;
+		width: 130rpx;
+	}
 </style>

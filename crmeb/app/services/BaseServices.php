@@ -52,6 +52,7 @@ abstract class BaseServices
     /**
      * 数据库事务操作
      * @param callable $closure
+     * @param bool $isTran
      * @return mixed
      */
     public function transaction(callable $closure, bool $isTran = true)
@@ -77,6 +78,7 @@ abstract class BaseServices
      * @param string $path
      * @param array $params
      * @param bool $suffix
+     * @param bool $isDomain
      * @return \think\route\Url
      */
     public function url(string $path, array $params = [], bool $suffix = false, bool $isDomain = false)

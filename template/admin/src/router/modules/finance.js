@@ -25,6 +25,24 @@ export default {
   component: BasicLayout,
   children: [
     {
+      path: 'billing_records/index',
+      name: `${pre}billingRecords`,
+      meta: {
+        auth: ['finance-user_extract'],
+        title: '账单记录'
+      },
+      component: () => import('@/pages/finance/billingRecords/index')
+    },
+    {
+      path: 'capital_flow/index',
+      name: `${pre}capitalFlow`,
+      meta: {
+        auth: ['finance-user_extract'],
+        title: '资金流水'
+      },
+      component: () => import('@/pages/finance/capitalFlow/index')
+    },
+    {
       path: 'user_extract/index',
       name: `${pre}cashApply`,
       meta: {
@@ -59,6 +77,15 @@ export default {
         title: '佣金记录'
       },
       component: () => import('@/pages/finance/commission/index')
+    },
+    {
+      path: 'balance/balance',
+      name: `${pre}balance`,
+      meta: {
+        auth: ['finance-user-balance'],
+        title: '余额记录'
+      },
+      component: () => import('@/pages/finance/balance/index')
     }
   ]
 }

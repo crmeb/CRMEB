@@ -5,7 +5,7 @@
 				<view class='input acea-row row-between-wrapper'>
 					<text class='iconfont icon-sousuo'></text>
 					<input type='text' v-model='searchValue' @confirm="inputConfirm" focus placeholder='点击搜索商品'
-					 placeholder-class='placeholder' @input="setValue"></input>
+						placeholder-class='placeholder' @input="setValue"></input>
 				</view>
 				<view class='bnt' @tap='searchBut'>搜索</view>
 			</view>
@@ -16,7 +16,8 @@
 				</view>
 				<view class='list acea-row'>
 					<block v-for="(item,index) in history" :key="index">
-						<view class='item history-item line1' @tap='setHotSearchValue(item.keyword)' v-if="item.keyword">{{item.keyword}}</view>
+						<view class='item history-item line1' @tap='setHotSearchValue(item.keyword)'
+							v-if="item.keyword">{{item.keyword}}</view>
 					</block>
 				</view>
 			</template>
@@ -133,7 +134,7 @@
 				that.loading = true;
 				that.loadTitle = '';
 				getProductslist({
-					keyword: that.searchValue,
+					keyword: that.searchValue.trim(),
 					page: that.page,
 					limit: that.limit
 				}).then(res => {
@@ -171,16 +172,19 @@
 			},
 			searchBut: function() {
 				let that = this;
+				if (!that.searchValue.trim()) return this.$util.Tips({
+					title: '请输入要搜索的商品'
+				});
 				that.focus = false;
 				// if (that.searchValue.length > 0) {
-					that.page = 1;
-					that.loadend = false;
-					that.$set(that, 'bastList', []);
-					uni.showLoading({
-						title: '正在搜索中'
-					});
-					that.getProductList();
-					uni.hideLoading();
+				that.page = 1;
+				that.loadend = false;
+				that.$set(that, 'bastList', []);
+				uni.showLoading({
+					title: '正在搜索中'
+				});
+				that.getProductList();
+				uni.hideLoading();
 				// } else {
 				// 	return this.$util.Tips({
 				// 		title: '请输入要搜索的商品',
@@ -198,8 +202,8 @@
 	page {
 		background-color: #fff !important;
 	}
-	
-	.noCommodity{
+
+	.noCommodity {
 		border-top-width: 0;
 	}
 

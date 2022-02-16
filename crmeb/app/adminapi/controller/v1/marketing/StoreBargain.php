@@ -12,9 +12,9 @@
 namespace app\adminapi\controller\v1\marketing;
 
 use app\adminapi\controller\AuthController;
-use app\services\activity\StoreBargainServices;
-use app\services\activity\StoreBargainUserHelpServices;
-use app\services\activity\StoreBargainUserServices;
+use app\services\activity\bargain\StoreBargainServices;
+use app\services\activity\bargain\StoreBargainUserHelpServices;
+use app\services\activity\bargain\StoreBargainUserServices;
 use think\facade\App;
 
 /**
@@ -65,7 +65,6 @@ class StoreBargain extends AuthController
             ['info', ''],
             ['unit_name', ''],
             ['section_time', []],
-            ['image', ''],
             ['images', []],
             ['bargain_max_price', 0],
             ['bargain_min_price', 0],
@@ -83,6 +82,11 @@ class StoreBargain extends AuthController
             ['copy', 0],
             ['bargain_num', 1],
             ['people_num', 1],
+            ['logistics', []],//物流方式
+            ['freight', 1],//运费设置
+            ['postage', 0],//邮费
+            ['custom_form', ''],
+            ['virtual_type', 0],
         ]);
         $this->validate($data, \app\adminapi\validate\marketing\StoreBargainValidate::class, 'save');
         if ($data['section_time']) {

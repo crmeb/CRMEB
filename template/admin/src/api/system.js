@@ -424,9 +424,9 @@ export function groupAllApi () {
 /**
  * APP版本列表
  */
- export function versionCrate () {
+ export function versionCrate (id) {
     return request({
-        url: `system/version_crate`,
+        url: `system/version_crate/${id}`,
         method: 'get'
     })
 }
@@ -439,6 +439,27 @@ export function groupAllApi () {
         url: `setting/group_data/save_all`,
         method: 'POST',
         data
+    });
+}
+
+/**
+ * @description 引导页数据配置保存
+ */
+ export function openAdvSave(data) {
+    return request({
+        url: `diy/open_adv/add`,
+        method: 'POST',
+        data
+    });
+}
+
+/**
+ * @description 引导页数据配置保存
+ */
+ export function getOpenAdv() {
+    return request({
+        url: `diy/open_adv/info`,
+        method: 'get'
     });
 }
 

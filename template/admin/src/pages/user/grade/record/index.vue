@@ -142,10 +142,6 @@ export default {
           id: "ever",
           label: "永久",
         },
-        {
-          id: "owner",
-          label: "自定义",
-        },
       ],
       payList: [
         {

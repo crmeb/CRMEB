@@ -1,6 +1,8 @@
 	.index-wrapper .title{padding-top:20rpx;margin:0 20rpx;}
 	.index-wrapper .title .text{font-size:24rpx;color:#999;}
-	.index-wrapper .title .text .name{color:#282828;font-size:36rpx;font-weight:bold;margin-bottom:5rpx;position:relative;}
+	.index-wrapper .title .text .iconfont{font-size: 36rpx; color: var(--view-theme);margin-top: 4rpx;margin-right: 12rpx;  font-style: normal; font-weight: normal;}
+	.index-wrapper .title .text .name{color:#282828;font-size:34rpx;font-weight:bold;margin-bottom:5rpx;position:relative;	display: flex;
+			align-items: center;}
 	.index-wrapper .title .text .name .new{position:absolute;top:2rpx;left:130rpx;font-size:16rpx;font-weight:bold;}
 	.index-wrapper .title .more{font-size:24rpx;color:#999999!important;}
 	.index-wrapper .title .more .iconfont{margin-left:9rpx;font-size:26rpx;}

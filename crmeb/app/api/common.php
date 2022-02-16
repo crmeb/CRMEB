@@ -20,6 +20,7 @@
  */
 function set_view($uid, $product_id = 0, $cate = 0, $type = '', $content = '', $min = 20)
 {
+    //TODO 待优化
     $Db = new \app\models\store\StoreVisit;
     $view = $Db->where('uid', $uid)->where('product_id', $product_id)->field('count,add_time,id')->find();
     if ($view && $type != 'search') {

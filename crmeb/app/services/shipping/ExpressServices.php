@@ -74,7 +74,7 @@ class ExpressServices extends BaseServices
         if (isset($formData['partner_id']) && $formData['partner_id'] == 1) $field[] = Form::input('account', '月结账号', $formData['account'] ?? '');
         if (isset($formData['partner_key']) && $formData['partner_key'] == 1) $field[] = Form::input('key', '月结密码', $formData['key'] ?? '');
         if (isset($formData['net']) && $formData['net'] == 1) $field[] = Form::input('net_name', '取件网点', $formData['net_name'] ?? '');
-        $field[] = Form::number('sort', '排序', (int)($formData['sort'] ?? 0));
+        $field[] = Form::number('sort', '排序', (int)($formData['sort'] ?? 0))->precision(0);
         $field[] = Form::radio('is_show', '是否启用', $formData['is_show'] ?? 1)->options([['value' => 0, 'label' => '隐藏'], ['value' => 1, 'label' => '启用']]);
         return $field;
     }
@@ -191,7 +191,7 @@ class ExpressServices extends BaseServices
                     } else {
                         $cacheTime = 1800;
                     }
-                    foreach (isset($result['content']) ? $result['content'] : [] as $item) {
+                    foreach ($result['content'] ?? [] as $item) {
                         $data[] = ['time' => $item['time'], 'status' => $item['status']];
                     }
                     break;

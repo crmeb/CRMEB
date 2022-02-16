@@ -8,27 +8,25 @@
 // +----------------------------------------------------------------------
 // | Author: CRMEB Team <admin@crmeb.com>
 // +----------------------------------------------------------------------
-declare (strict_types = 1);
+declare (strict_types=1);
 
 namespace app\services\order;
 
-use app\services\activity\StoreAdvanceServices;
+use app\services\activity\advance\StoreAdvanceServices;
 use app\services\BaseServices;
 use app\dao\order\StoreCartDao;
-use app\services\coupon\StoreCouponIssueServices;
-use app\services\coupon\StoreCouponIssueUserServices;
+use app\services\activity\coupon\StoreCouponIssueServices;
+use app\services\activity\coupon\StoreCouponIssueUserServices;
 use app\services\shipping\ShippingTemplatesNoDeliveryServices;
 use app\services\system\SystemUserLevelServices;
-use app\services\user\MemberCardServices;
+use app\services\user\member\MemberCardServices;
 use app\services\user\UserServices;
 use app\jobs\ProductLogJob;
 use crmeb\services\CacheService;
 use think\exception\ValidateException;
-use app\services\user\UserLevelServices;
-use app\services\activity\StoreSeckillServices;
-use app\services\activity\StoreBargainServices;
-use app\services\activity\StoreBargainUserServices;
-use app\services\activity\StoreCombinationServices;
+use app\services\activity\seckill\StoreSeckillServices;
+use app\services\activity\bargain\StoreBargainServices;
+use app\services\activity\combination\StoreCombinationServices;
 use app\services\product\product\StoreProductServices;
 use app\services\product\sku\StoreProductAttrValueServices;
 
@@ -85,7 +83,7 @@ class StoreCartServices extends BaseServices
      * @throws \think\db\exception\DbException
      * @throws \think\db\exception\ModelNotFoundException
      */
-    public function getUserProductCartListV1($uid, $cartIds = '', bool $new, $addr = [])
+    public function getUserProductCartListV1($uid, $cartIds = '', bool $new, $addr = [], int $shipping_type = 1)
     {
         if ($new) {
             $cartIds = explode(',', $cartIds);
@@ -103,7 +101,7 @@ class StoreCartServices extends BaseServices
         if (!$cartInfo) {
             throw new ValidateException('获取购物车信息失败');
         }
-        [$cartInfo, $valid, $invalid] = $this->handleCartList($uid, $cartInfo, $addr);
+        [$cartInfo, $valid, $invalid] = $this->handleCartList($uid, $cartInfo, $addr, $shipping_type);
         $seckillIds = array_unique(array_column($cartInfo, 'seckill_id'));
         $bargainIds = array_unique(array_column($cartInfo, 'bargain_id'));
         $combinationId = array_unique(array_column($cartInfo, 'combination_id'));
@@ -122,7 +120,7 @@ class StoreCartServices extends BaseServices
         $snowflake = new \Godruoyi\Snowflake\Snowflake();
         //32位
         if (PHP_INT_SIZE == 4) {
-            $id = abs($snowflake->id());
+            $id = abs((int)$snowflake->id());
         } else {
             $id = $snowflake->setStartTimeStamp(strtotime('2020-06-05') * 1000)->id();
         }
@@ -134,6 +132,7 @@ class StoreCartServices extends BaseServices
      * @param int $uid
      * @param int $cartNum
      * @param string $unique
+     * @param int $type
      * @param $productId
      * @param int $seckillId
      * @param int $bargainId
@@ -209,7 +208,6 @@ class StoreCartServices extends BaseServices
                 break;
             default:
                 throw new ValidateException('请刷新后重试');
-                break;
         }
         if ($type && $type != 6) {
             //根商品规格库存
@@ -531,7 +529,7 @@ class StoreCartServices extends BaseServices
      * @param array $addr
      * @return array
      */
-    public function handleCartList(int $uid, array $cartList, $addr = [])
+    public function handleCartList(int $uid, array $cartList, array $addr = [], int $shipping_type = 1)
     {
         if (!$cartList) {
             return [$cartList, [], []];
@@ -554,25 +552,36 @@ class StoreCartServices extends BaseServices
                 $systemLevel = app()->make(SystemUserLevelServices::class);
                 $discount = $systemLevel->value(['id' => $userInfo['level'], 'is_del' => 0, 'is_show' => 1], 'discount') ?: 100;
             }
-            //不送达运费模板
-            if ($addr) {
-                $cityId = $addr['city_id'] ?? 0;
-                if ($cityId) {
-                    foreach ($cartList as $item) {
-                        $tempIds[] = $item['productInfo']['temp_id'];
-                    }
-                    /** @var ShippingTemplatesNoDeliveryServices $noDeliveryServices */
-                    $noDeliveryServices = app()->make(ShippingTemplatesNoDeliveryServices::class);
-                    $tempIds = $noDeliveryServices->isNoDelivery(array_unique($tempIds), $cityId);
+        }
+        //不送达运费模板
+        if ($shipping_type == 1 && $addr) {
+            $cityId = (int)($addr['city_id'] ?? 0);
+            if ($cityId) {
+                foreach ($cartList as $item) {
+                    $tempIds[] = $item['productInfo']['temp_id'];
                 }
+                /** @var ShippingTemplatesNoDeliveryServices $noDeliveryServices */
+                $noDeliveryServices = app()->make(ShippingTemplatesNoDeliveryServices::class);
+                $tempIds = $noDeliveryServices->isNoDelivery(array_unique($tempIds), $cityId);
             }
         }
+
         $valid = $invalid = [];
         foreach ($cartList as &$item) {
+            $item['productInfo']['express_delivery'] = false;
+            $item['productInfo']['store_mention'] = false;
+            if (isset($item['productInfo']['logistics'])) {
+                if (in_array(1, explode(',', $item['productInfo']['logistics']))) {
+                    $item['productInfo']['express_delivery'] = true;
+                }
+                if (in_array(2, explode(',', $item['productInfo']['logistics']))) {
+                    $item['productInfo']['store_mention'] = true;
+                }
+            }
             if (isset($item['attrInfo']) && $item['attrInfo'] && (!isset($item['productInfo']['attrInfo']) || !$item['productInfo']['attrInfo'])) {
                 $item['productInfo']['attrInfo'] = $item['attrInfo'] ?? [];
             }
-            $item['attrStatus'] = isset($item['productInfo']['attrInfo']['stock']) && $item['productInfo']['attrInfo']['stock'] ? true : false;
+            $item['attrStatus'] = isset($item['productInfo']['attrInfo']['stock']) && $item['productInfo']['attrInfo']['stock'];
             $item['productInfo']['attrInfo']['image'] = $item['productInfo']['attrInfo']['image'] ?? $item['productInfo']['image'] ?? '';
             $item['productInfo']['attrInfo']['suk'] = $item['productInfo']['attrInfo']['suk'] ?? '已失效';
             if (isset($item['productInfo']['attrInfo'])) {
@@ -605,13 +614,32 @@ class StoreCartServices extends BaseServices
                     $item['price_type'] = $type;
                 }
             }
-            //不送达
-            if ($tempIds && in_array($item['productInfo']['temp_id'], $tempIds)) {
+            if (isset($item['status']) && $item['status'] == 0) {
                 $item['is_valid'] = 0;
                 $invalid[] = $item;
             } else {
-                $item['is_valid'] = 1;
-                $valid[] = $item;
+                switch ($shipping_type) {
+                    case 1:
+                        //不送达
+                        if (in_array($item['productInfo']['temp_id'], $tempIds)) {
+                            $item['is_valid'] = 0;
+                            $invalid[] = $item;
+                        } else {
+                            $item['is_valid'] = 1;
+                            $valid[] = $item;
+                        }
+                        break;
+                    case 2:
+                        //不支持到店自提
+                        if (isset($item['productInfo']['logistics']) && $item['productInfo']['logistics'] && !in_array(2, explode(',', $item['productInfo']['logistics']))) {
+                            $item['is_valid'] = 0;
+                            $invalid[] = $item;
+                        } else {
+                            $item['is_valid'] = 1;
+                            $valid[] = $item;
+                        }
+                        break;
+                }
             }
             unset($item['attrInfo']);
         }

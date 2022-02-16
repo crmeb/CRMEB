@@ -174,7 +174,9 @@
 		onLoad() {
 			if (this.isLogin) {
 				this.getUserInfo();
+				// #ifdef APP-PLUS
 				this.formatSize()
+				// #endif 
 			} else {
 				toLogin();
 			}
@@ -197,12 +199,12 @@
 					}
 				});
 			},
-			
+
 			initData() {
 				uni.showModal({
 					title: '清楚缓存',
 					content: '确定清楚本地缓存数据吗?',
-					success: (res)=>  {
+					success: (res) => {
 						if (res.confirm) {
 							this.clearCache()
 							this.formatSize()
@@ -384,7 +386,7 @@
 				let that = this,
 					value = e.detail.value,
 					userInfo = that.switchUserInfo[that.userIndex];
-				if (!value.nickname.trim()) return that.$util.Tips({
+				if (!value.nickname) return that.$util.Tips({
 					title: '用户姓名不能为空'
 				});
 				value.avatar = this.userInfo.avatar;

@@ -14,12 +14,12 @@ namespace app\services\product\product;
 
 use app\dao\product\product\StoreProductDao;
 use app\Request;
-use app\services\activity\StoreAdvanceServices;
-use app\services\activity\StoreBargainServices;
-use app\services\activity\StoreCombinationServices;
-use app\services\activity\StoreSeckillServices;
+use app\services\activity\advance\StoreAdvanceServices;
+use app\services\activity\bargain\StoreBargainServices;
+use app\services\activity\combination\StoreCombinationServices;
+use app\services\activity\seckill\StoreSeckillServices;
 use app\services\BaseServices;
-use app\services\coupon\StoreCouponIssueServices;
+use app\services\activity\coupon\StoreCouponIssueServices;
 use app\services\order\StoreCartServices;
 use app\services\order\StoreOrderServices;
 use app\services\other\QrcodeServices;
@@ -31,7 +31,8 @@ use app\services\product\sku\StoreProductVirtualServices;
 use app\services\shipping\ShippingTemplatesServices;
 use app\services\system\attachment\SystemAttachmentCategoryServices;
 use app\services\system\SystemUserLevelServices;
-use app\services\user\MemberCardServices;
+use app\services\user\UserLabelServices;
+use app\services\user\member\MemberCardServices;
 use app\services\user\UserSearchServices;
 use app\services\user\UserServices;
 use crmeb\exceptions\AdminException;
@@ -55,9 +56,13 @@ use think\facade\Config;
  * @method getSearchList(array $where, int $page = 0, int $limit = 0, ?array $field = ['*']) 获取列表
  * @method get(int $id, array $field) 获取一条数据
  * @method getCid(int $page, int $limit) 获取一级分类ID
+ * @method downAdvance() 预售商品自动到期下架
  */
 class StoreProductServices extends BaseServices
 {
+    protected $productType = ['普通商品', '卡密商品', '优惠券', '虚拟商品'];
+
+
     public function __construct(StoreProductDao $dao)
     {
         $this->dao = $dao;
@@ -129,7 +134,11 @@ class StoreProductServices extends BaseServices
                 $item['cate_name'][] = $v['one'] . '/' . $v['two'];
             }
             $item['cate_name'] = is_array($item['cate_name']) ? implode(',', $item['cate_name']) : '';
-            $item['stock_attr'] = $item['stock'] > 0 ? true : false;//库存
+            $item['stock_attr'] = $item['stock'] > 0;//库存
+            $item['product_type'] = $this->productType[$item['virtual_type']];
+            if ($item['presale'] == 1) $item['product_type'] = '预售商品';
+            $item['image'] = set_file_url($item['image']);
+            $item['slider_image'] = set_file_url($item['slider_image']);
         }
         $count = $this->dao->count($where);
         return compact('list', 'count');
@@ -145,11 +154,6 @@ class StoreProductServices extends BaseServices
         if ($is_show == 0) {
             //下架检测是否有参与活动商品
             $this->checkActivity($ids);
-        }
-        if ($is_show == 1) {
-            /** @var StoreAdvanceServices $advanceService */
-            $advanceService = app()->make(StoreAdvanceServices::class);
-            if ($advanceService->getAdvanceStatus($ids)) throw new AdminException('商品参与预售活动，无法上架');
         }
         /** @var StoreCartServices $cartService */
         $cartService = app()->make(StoreCartServices::class);
@@ -197,6 +201,8 @@ class StoreProductServices extends BaseServices
         $storeProductCouponServices = app()->make(StoreProductCouponServices::class);
         /** @var StoreCouponIssueServices $storeCouponIssueServices */
         $storeCouponIssueServices = app()->make(StoreCouponIssueServices::class);
+        /** @var UserLabelServices $userLabelServices */
+        $userLabelServices = app()->make(UserLabelServices::class);
         $data['tempList'] = $this->getTemp();
         $menus = [];
         foreach ($storeCatecoryService->getTierList(1) as $menu) {
@@ -207,10 +213,17 @@ class StoreProductServices extends BaseServices
         if ($productInfo) $productInfo = $productInfo->toArray();
         else throw new ValidateException('商品不存在');
         $couponIds = array_column($productInfo['coupons'], 'issue_coupon_id');
-        $is_sub = [];
+        $is_sub = $recommend = [];
         if ($productInfo['is_sub'] == 1) array_push($is_sub, 1);
         if ($productInfo['is_vip'] == 1) array_push($is_sub, 0);
+        if ($productInfo['is_hot'] == 1) array_push($recommend, 'is_hot');
+        if ($productInfo['is_benefit'] == 1) array_push($recommend, 'is_benefit');
+        if ($productInfo['is_new'] == 1) array_push($recommend, 'is_new');
+        if ($productInfo['is_good'] == 1) array_push($recommend, 'is_good');
+        if ($productInfo['is_best'] == 1) array_push($recommend, 'is_best');
+        if (isset($productInfo['logistics']) && $productInfo['logistics'] != '') $productInfo['logistics'] = explode(',', $productInfo['logistics']);
         $productInfo['is_sub'] = $is_sub;
+        $productInfo['recommend'] = $recommend;
         $recommend_list = [];
         if ($productInfo['recommend_list'] != '') {
             $productInfo['recommend_list'] = explode(',', $productInfo['recommend_list']);
@@ -224,12 +237,24 @@ class StoreProductServices extends BaseServices
                 }
             }
         }
+        $productInfo['video_open'] = $productInfo['video_link'] != '' ? true : false;
+        if (!empty($productInfo['video_link']) && (strpos($productInfo['video_link'], 'http') !== false)) {
+            $productInfo['seletVideo'] = 1;
+        } else {
+            $productInfo['seletVideo'] = 0;
+        }
+        $productInfo['video_link'] = empty($productInfo['video_link']) ? '' : (strpos($productInfo['video_link'], 'http') === false ? sys_config('site_url') . $productInfo['video_link'] : $productInfo['video_link']);
         $productInfo['recommend_list'] = $recommend_list;
         $productInfo['coupons'] = $storeCouponIssueServices->productCouponList([['id', 'in', $couponIds]], 'title,id');
         $productInfo['cate_id'] = explode(',', $productInfo['cate_id']);
-        $productInfo['label_id'] = explode(',', $productInfo['label_id']);
+        $label_id = explode(',', $productInfo['label_id']);
+        $productInfo['label_id'] = $userLabelServices->getLabelList(['ids' => $label_id], ['id', 'label_name']);
         $productInfo['give_integral'] = floatval($productInfo['give_integral']);
+        $productInfo['presale'] = boolval($productInfo['presale'] ?? 0);
+        $productInfo['vip_product'] = boolval($productInfo['vip_product'] ?? 0);
+        $productInfo['presale_time'] = $productInfo['presale_start_time'] == 0 ? [] : [date('Y-m-d M:i:s', $productInfo['presale_start_time']), date('Y-m-d M:i:s', $productInfo['presale_end_time'])];
         $productInfo['description'] = $storeDescriptionServices->getDescription(['product_id' => $id, 'type' => 0]);
+        $productInfo['custom_form'] = json_decode($productInfo['custom_form'], true);
         /** @var StoreProductAttrServices $storeProductAttrServices */
         $storeProductAttrServices = app()->make(StoreProductAttrServices::class);
         //无属性添加默认属性
@@ -292,7 +317,8 @@ class StoreProductServices extends BaseServices
                 'brokerage' => $result['brokerage'] ? floatval($result['brokerage']) : 0,
                 'brokerage_two' => $result['brokerage_two'] ? floatval($result['brokerage_two']) : 0,
                 'coupon_id' => $result['coupon_id'],
-                'coupon_name' => $storeCouponIssueServices->value(['id' => $result['coupon_id']], 'title')
+                'coupon_name' => $storeCouponIssueServices->value(['id' => $result['coupon_id']], 'title'),
+                'disk_info' => $result['disk_info']
             ];
         }
         if ($productInfo['activity']) {
@@ -356,7 +382,7 @@ class StoreProductServices extends BaseServices
             $suk = implode(',', $detail);
             $types = 1;
             if ($id) {
-                $sukValue = $storeProductAttrValueServices->getColumn(['product_id' => $id, 'type' => 0, 'suk' => $suk], 'bar_code,cost,price,ot_price,stock,image as pic,weight,volume,brokerage,brokerage_two,vip_price,is_virtual,coupon_id,unique', 'suk');
+                $sukValue = $storeProductAttrValueServices->getColumn(['product_id' => $id, 'type' => 0, 'suk' => $suk], 'bar_code,cost,price,ot_price,stock,image as pic,weight,volume,brokerage,brokerage_two,vip_price,is_virtual,coupon_id,unique,disk_info', 'suk');
                 if (!$sukValue) {
                     if ($type == 0) $types = 0; //编辑商品时，将没有规格的数据不生成默认值
                     $sukValue[$suk]['pic'] = '';
@@ -416,7 +442,10 @@ class StoreProductServices extends BaseServices
                 $valueNew[$count]['bar_code'] = $sukValue[$suk]['bar_code'] ?? '';
                 if ($is_virtual) {
                     if ($virtual_type == 1) {
-                        if (!$type) $valueNew[$count]['virtual_list'] = $virtualService->getArr($sukValue[$suk]['unique'], $id);
+                        if (!$type) {
+                            $valueNew[$count]['virtual_list'] = $virtualService->getArr($sukValue[$suk]['unique'], $id);
+                            $valueNew[$count]['disk_info'] = $sukValue[$suk]['disk_info'] ?? '';
+                        }
                     } elseif ($virtual_type == 2) {
                         $valueNew[$count]['coupon_id'] = $sukValue[$suk]['coupon_id'] ?? '';
                         $valueNew[$count]['coupon_name'] = $storeCouponIssueServices->value(['id' => $sukValue[$suk]['coupon_id']], 'title');
@@ -465,24 +494,35 @@ class StoreProductServices extends BaseServices
      */
     public function save(int $id, array $data)
     {
+        if (count($data['cate_id']) < 1) throw new AdminException('请选择商品分类');
+        if (!$data['store_name']) throw new AdminException('请输入商品名称');
+        if (count($data['slider_image']) < 1) throw new AdminException('请上传商品轮播图');
+
         $detail = $data['attrs'];
         $attr = $data['items'];
         $cate_id = $data['cate_id'];
         $coupon_ids = $data['coupon_ids'];
         $description = $data['description'];
         $type = $data['type'];
-        if (count($data['recommend_list'])) {
-            $data['recommend_list'] = implode(',', array_column($data['recommend_list'], 'product_id'));
-        } else {
-            $data['recommend_list'] = '';
-        }
+        $data['recommend_list'] = count($data['recommend_list']) ? implode(',', array_column($data['recommend_list'], 'product_id')) : '';
         $data['is_vip'] = in_array(0, $data['is_sub']) ? 1 : 0;
         $data['is_sub'] = in_array(1, $data['is_sub']) ? 1 : 0;
-        if (count($data['cate_id']) < 1) throw new AdminException('请选择商品分类');
-        if (!$data['store_name']) throw new AdminException('请输入商品名称');
-        if (count($data['image']) < 1) throw new AdminException('请上传商品图片');
-        if (count($data['slider_image']) < 1) throw new AdminException('请上传商品轮播图');
-        if ($data['is_virtual'] == 0) $data['virtual_type'] = 0;
+        $data['vip_product'] = intval($data['vip_product']);
+        $data['presale'] = intval($data['presale']);
+        $data['presale_start_time'] = $data['presale'] ? strtotime($data['presale_time'][0]) : 0;
+        $data['presale_end_time'] = $data['presale'] ? strtotime($data['presale_time'][1]) : 0;
+        $data['is_virtual'] = in_array($data['virtual_type'], [1, 2]) > 0 ? 1 : 0;
+        $data['logistics'] = implode(',', $data['logistics']);
+        $data['custom_form'] = json_encode($data['custom_form']);
+        if ($data['freight'] == 2) {
+            $data['temp_id'] = 0;
+        } elseif ($data['freight'] == 3) {
+            $data['postage'] = 0;
+        }
+        $data['is_hot'] = $data['is_benefit'] = $data['is_new'] = $data['is_good'] = $data['is_best'] = 0;
+        foreach ($data['recommend'] as $item) {
+            $data[$item] = 1;
+        }
         foreach ($detail as &$item) {
             if ($data['is_sub'] == 0) {
                 $item['brokerage'] = 0;
@@ -513,7 +553,7 @@ class StoreProductServices extends BaseServices
         }
         $data['cate_id'] = implode(',', $data['cate_id']);
         $data['label_id'] = implode(',', $data['label_id']);
-        $data['image'] = $data['image'][0];
+        $data['image'] = $data['slider_image'][0];
         $data['slider_image'] = json_encode($data['slider_image']);
         $data['stock'] = array_sum(array_column($detail, 'stock'));
         unset($data['description'], $data['coupon_ids'], $data['items'], $data['attrs'], $data['type']);
@@ -529,7 +569,11 @@ class StoreProductServices extends BaseServices
         $storeCategoryServices = app()->make(StoreCategoryServices::class);
         $is_copy = $data['is_copy'] ?? 0;
         unset($data['is_copy']);
-        $this->transaction(function () use ($id, $is_copy, $data, $description, $cate_id, $storeDescriptionServices, $storeProductCateServices, $storeProductAttrServices, $storeProductCouponServices, $storeCategoryServices, $detail, $attr, $coupon_ids, $type) {
+        $descriptionImages = [];
+        if (isset($data['description_images'])) {
+            $descriptionImages = $data['description_images'];
+        }
+        $this->transaction(function () use ($id, $is_copy, $data, $descriptionImages, $description, $cate_id, $storeDescriptionServices, $storeProductCateServices, $storeProductAttrServices, $storeProductCouponServices, $storeCategoryServices, $detail, $attr, $coupon_ids, $type) {
             if ($data['spec_type'] == 0) {
                 $attr = [
                     [
@@ -551,8 +595,8 @@ class StoreProductServices extends BaseServices
                     $this->checkActivity($id);
                 }
                 $oldInfo = $this->get($id)->toArray();
-                if ($oldInfo['is_virtual'] && $oldInfo['virtual_type'] != $data['virtual_type']) {
-                    throw new AdminException('编辑虚拟商品不能切换虚拟类型！');
+                if ($oldInfo['virtual_type'] != $data['virtual_type']) {
+                    throw new AdminException('商品类型不能切换！');
                 }
                 unset($data['sales']);
                 $this->dao->update($id, $data);
@@ -575,9 +619,6 @@ class StoreProductServices extends BaseServices
                 }
                 if (!$attrRes) throw new AdminException('添加失败！');
             } else {
-                if ($is_copy) {
-                    $data = $this->copyDownImage($data);
-                }
                 $data['add_time'] = time();
                 $data['code_path'] = '';
                 $data['spu'] = $this->createSpu();
@@ -597,64 +638,13 @@ class StoreProductServices extends BaseServices
                 if (!empty($coupon_ids)) $storeProductCouponServices->setCoupon($res->id, $coupon_ids);
                 if (!$attrRes) throw new AdminException('添加失败！');
                 if ($type == -1) {
-                    ProductCopyJob::dispatch([(int)$res->id]);
+                    //下载商品详情图片
+                    ProductCopyJob::dispatchDo('copyDescriptionImage', [$res->id]);
+                    //下载商品轮播图片
+                    ProductCopyJob::dispatchDo('copySliderImage', [$res->id]);
                 }
             }
         });
-    }
-
-    /**
-     * 采集商品入库前下载远程图片
-     * @param array $data
-     * @return array
-     */
-    public function copyDownImage(array $data)
-    {
-        /** @var CopyTaobaoServices $copyServices */
-        $copyServices = app()->make(CopyTaobaoServices::class);
-
-        //查询附件分类
-        /** @var SystemAttachmentCategoryServices $systemAttachmentCategoryService */
-        $systemAttachmentCategoryService = app()->make(SystemAttachmentCategoryServices::class);
-        $AttachmentCategory = $systemAttachmentCategoryService->getOne(['name' => $copyServices->AttachmentCategoryName]);
-        //不存在则创建
-        if (!$AttachmentCategory) $AttachmentCategory = $systemAttachmentCategoryService->save(['pid' => '0', 'name' => $copyServices->AttachmentCategoryName, 'enname' => '']);
-        //生成附件目录
-        try {
-            if (make_path('attach', 3, true) === '')
-                throw new AdminException('无法创建文件夹，请检查您的上传目录权限：' . app()->getRootPath() . 'public' . DS . 'uploads' . DS . 'attach' . DS);
-
-        } catch (\Exception $e) {
-            throw new AdminException($e->getMessage() . '或无法创建文件夹，请检查您的上传目录权限：' . app()->getRootPath() . 'public' . DS . 'uploads' . DS . 'attach' . DS);
-        }
-
-        //放入主图
-        $images = [
-            ['w' => 305, 'h' => 305, 'line' => $data['image'], 'valuename' => 'image']
-        ];
-        //放入轮播图
-        foreach ($data['slider_image'] as $item) {
-            $value = ['w' => 640, 'h' => 640, 'line' => $item, 'valuename' => 'slider_image', 'isTwoArray' => true];
-            array_push($images, $value);
-        }
-        //执行下载
-        $res = $copyServices->uploadImage($images, false, 0, $AttachmentCategory['id']);
-        if (!is_array($res)) throw new AdminException($this->errorInfo ? $this->errorInfo : '保存图片失败');
-        if (isset($res['image'])) $data['image'] = $res['image'];
-        if (isset($res['slider_image'])) $data['slider_image'] = $res['slider_image'];
-        $data['image'] = str_replace('\\', '/', $data['image']);
-        if (count($data['slider_image'])) {
-            $data['slider_image'] = array_map(function ($item) {
-                $item = str_replace('\\', '/', $item);
-                return $item;
-            }, $data['slider_image']);
-        }
-        $data['slider_image'] = count($data['slider_image']) ? json_encode($data['slider_image']) : '';
-        //替换并下载详情里面的图片默认下载全部图片
-        $data['description'] = preg_replace('#<style>.*?</style>#is', '', $data['description']);
-        $data['description'] = $copyServices->uploadImage($data['description_images'], $data['description'], 1, $AttachmentCategory['id']);
-        unset($data['description_images']);
-        return $data;
     }
 
     /**
@@ -762,7 +752,8 @@ class StoreProductServices extends BaseServices
                 'vip_price' => $value['vip_price'] ?? 0,
                 'is_virtual' => $value['is_virtual'] ?? 0,
                 'coupon_id' => $value['coupon_id'] ?? 0,
-                'virtual_list' => $value['virtual_list'] ?? []
+                'virtual_list' => $value['virtual_list'] ?? [],
+                'disk_info' => $value['disk_info'] ?? '',
             ];
         }
 
@@ -829,6 +820,7 @@ class StoreProductServices extends BaseServices
             $item['postage'] = floatval($item['postage']);
             $item['cost'] = floatval($item['cost']);
             $item['is_product_type'] = 1;
+            $item['logistics'] = explode(',', $item['logistics']);
         }
         return $data;
     }
@@ -846,7 +838,7 @@ class StoreProductServices extends BaseServices
                 '*',
                 '(SELECT count(*) FROM `' . $prefix . 'store_product_relation` WHERE `product_id` = `' . $prefix . 'store_product`.`id` AND `type` = \'collect\') as collect',
                 '(SELECT count(*) FROM `' . $prefix . 'store_product_relation` WHERE `product_id` = `' . $prefix . 'store_product`.`id` AND `type` = \'like\') as likes',
-                '(SELECT SUM(stock) FROM `' . $prefix . 'store_product_attr_value` WHERE `product_id` = `' . $prefix . 'store_product`.`id` AND `type` = 0) as stork',
+                '(SELECT SUM(stock) FROM `' . $prefix . 'store_product_attr_value` WHERE `product_id` = `' . $prefix . 'store_product`.`id` AND `type` = 0) as stock',
 //                '(SELECT SUM(sales) FROM `' . $prefix . 'store_product_attr_value` WHERE `product_id` = `' . $prefix . 'store_product`.`id` AND `type` = 0) as sales',
                 '(SELECT count(*) FROM `' . $prefix . 'store_visit` WHERE `product_id` = `' . $prefix . 'store_product`.`id` AND `product_type` = \'product\') as visitor',
             ];
@@ -915,7 +907,7 @@ class StoreProductServices extends BaseServices
         }
         $header[] = ['title' => '图片', 'slot' => 'pic', 'align' => 'center', 'minWidth' => 120];
         if ($type == 1) {
-            $header[] = ['title' => '秒杀价', 'key' => 'price', 'type' => 1, 'align' => 'center', 'minWidth' => 80];
+            $header[] = ['title' => '秒杀价', 'slot' => 'price', 'align' => 'center', 'minWidth' => 80];
             $header[] = ['title' => '成本价', 'key' => 'cost', 'align' => 'center', 'minWidth' => 80];
             $header[] = ['title' => '原价', 'key' => 'ot_price', 'align' => 'center', 'minWidth' => 80];
         } elseif ($type == 2) {
@@ -924,11 +916,11 @@ class StoreProductServices extends BaseServices
             $header[] = ['title' => '成本价', 'key' => 'cost', 'align' => 'center', 'minWidth' => 80];
             $header[] = ['title' => '原价', 'key' => 'ot_price', 'align' => 'center', 'minWidth' => 80];
         } elseif ($type == 3) {
-            $header[] = ['title' => '拼团价', 'key' => 'price', 'type' => 1, 'align' => 'center', 'minWidth' => 80];
+            $header[] = ['title' => '拼团价', 'slot' => 'price', 'align' => 'center', 'minWidth' => 80];
             $header[] = ['title' => '成本价', 'key' => 'cost', 'align' => 'center', 'minWidth' => 80];
             $header[] = ['title' => '日常售价', 'key' => 'r_price', 'align' => 'center', 'minWidth' => 80];
         } elseif ($type == 4) {
-            $header[] = ['title' => '兑换积分', 'key' => 'price', 'type' => 1, 'align' => 'center', 'minWidth' => 80];
+            $header[] = ['title' => '兑换积分', 'slot' => 'price', 'align' => 'center', 'minWidth' => 80];
         } elseif ($type == 6) {
             $header[] = ['title' => '预售价', 'key' => 'price', 'type' => 1, 'align' => 'center', 'minWidth' => 80];
             $header[] = ['title' => '成本价', 'key' => 'cost', 'align' => 'center', 'minWidth' => 80];
@@ -1041,7 +1033,8 @@ class StoreProductServices extends BaseServices
             $where['ids'] = array_unique(array_map('intval', $where['ids']));
             unset($where['productId']);
         }
-        $list = $this->dao->getSearchList($where, $page, $limit, ['id,store_name,cate_id,image,IFNULL(sales, 0) + IFNULL(ficti, 0) as sales,price,stock,activity,ot_price,spec_type,recommend_image,unit_name,is_vip,vip_price,is_virtual']);
+        $where['vip_user'] = $uid ? app()->make(UserServices::class)->value(['uid' => $uid], 'is_money_level') : 0;
+        $list = $this->dao->getSearchList($where, $page, $limit, ['id,store_name,cate_id,image,IFNULL(sales, 0) + IFNULL(ficti, 0) as sales,price,stock,activity,ot_price,spec_type,recommend_image,unit_name,is_vip,vip_price,is_virtual,presale,custom_form,virtual_type']);
         /** @var MemberCardServices $memberCardService */
         $memberCardService = app()->make(MemberCardServices::class);
         $vipStatus = $memberCardService->isOpenMemberCard('vip_price');
@@ -1049,6 +1042,7 @@ class StoreProductServices extends BaseServices
             if (!$this->vipIsOpen(!!$item['is_vip'], $vipStatus)) {
                 $item['vip_price'] = 0;
             }
+            $item['cart_button'] = $item['is_virtual'] || $item['virtual_type'] == 3 || $item['presale'] || json_decode($item['custom_form'], true) ? 0 : 1;
         }
         $list = $this->getActivityList($list);
         $list = $this->getProduceOtherList($list, $uid, !!$where['type']);
@@ -1092,7 +1086,7 @@ class StoreProductServices extends BaseServices
             }
             foreach ($list as &$item) {
                 if ($item['spec_type']) {
-                    $item['is_att'] = isset($attList[$item['id']]) && $attList[$item['id']] ? true : false;
+                    $item['is_att'] = isset($attList[$item['id']]) && $attList[$item['id']];
                 } else {
                     $item['is_att'] = false;
                 }
@@ -1132,25 +1126,18 @@ class StoreProductServices extends BaseServices
             $storeBargainServices = app()->make(StoreBargainServices::class);
             $bargrainIdsList = $storeBargainServices->getBargainIdsArray($productIds, ['id']);
         }
+
+        /** @var StoreCouponIssueServices $couponIssueServices */
+        $couponIssueServices = app()->make(StoreCouponIssueServices::class);
+
         foreach ($list as &$item) {
             $seckillId = array_filter($seckillIdsList, function ($val) use ($item) {
                 if ($val['product_id'] === $item['id']) {
                     return $val;
                 }
             });
-            $item['activity'] = $this->activity($item['activity'],
-                $item['id'],
-                $pinkIdsList[$item['id']] ?? 0,
-                $seckillId,
-                $bargrainIdsList[$item['id']] ?? 0,
-                $status);
-
-            if (isset($item['couponId'])) {
-                $item['checkCoupon'] = count($item['couponId']) ? true : false;
-                unset($item['couponId']);
-            } else {
-                $item['checkCoupon'] = false;
-            }
+            $item['activity'] = $this->activity($item['activity'], $item['id'], $pinkIdsList[$item['id']] ?? 0, $seckillId, $bargrainIdsList[$item['id']] ?? 0, $status);
+            $item['checkCoupon'] = $couponIssueServices->checkProductCoupon($item['id']);
         }
         if ($status) {
             return $list;
@@ -1229,7 +1216,7 @@ class StoreProductServices extends BaseServices
             $page = 1;
             $limit = $num;
         }
-        $list = $this->dao->getSearchList($where, $page, $limit, ['id,store_name,cate_id,image,IFNULL(sales, 0) + IFNULL(ficti, 0) as sales,price,stock,activity,unit_name']);
+        $list = $this->dao->getSearchList($where, $page, $limit, ['id,store_name,cate_id,image,IFNULL(sales, 0) + IFNULL(ficti, 0) as sales,price,stock,activity,unit_name,presale']);
         $list = $this->getActivityList($list);
         return $list;
     }
@@ -1257,9 +1244,10 @@ class StoreProductServices extends BaseServices
         $siteUrl = sys_config('site_url');
         $storeInfo['image'] = set_file_url($storeInfo['image'], $siteUrl);
         $storeInfo['image_base'] = set_file_url($storeInfo['image'], $siteUrl);
-        $storeInfo['video_link'] = empty($storeInfo['video_link']) ? '' : strpos($storeInfo['video_link'],'http') === false ? sys_config('site_url').$storeInfo['video_link'] : $storeInfo['video_link'];
+        $storeInfo['video_link'] = empty($storeInfo['video_link']) ? '' : (strpos($storeInfo['video_link'], 'http') === false ? sys_config('site_url') . $storeInfo['video_link'] : $storeInfo['video_link']);
         $storeInfo['fsales'] = $storeInfo['ficti'] + $storeInfo['sales'];
-
+        $storeInfo['custom_form'] = json_decode($storeInfo['custom_form'], true);
+        $storeInfo['slider_image'] = set_file_url($storeInfo['slider_image'], $siteUrl);
         /** @var QrcodeServices $qrcodeService */
         $qrcodeService = app()->make(QrcodeServices::class);
         $storeInfo['code_base'] = $qrcodeService->getWechatQrcodePath($id . '_product_detail_wap.jpg', '/pages/goods_details/index?id=' . $id);
@@ -1268,6 +1256,28 @@ class StoreProductServices extends BaseServices
         $storeProductRelationServices = app()->make(StoreProductRelationServices::class);
         $storeInfo['userCollect'] = $storeProductRelationServices->isProductRelation(['uid' => $uid, 'product_id' => $id, 'type' => 'collect', 'category' => 'product']);
         $storeInfo['userLike'] = false;
+        $storeInfo['small_image'] = $storeInfo['image'];
+        $storeInfo = get_thumb_water($storeInfo, 'big', ['image', 'slider_image', 'small_image']);
+
+        //预售相关
+        if ($storeInfo['presale']) {
+            if ($storeInfo['presale_start_time'] > time()) {
+                $storeInfo['presale_pay_status'] = 1;
+            } elseif ($storeInfo['presale_start_time'] <= time() && $storeInfo['presale_end_time'] > time()) {
+                $storeInfo['presale_pay_status'] = 2;
+            } elseif ($storeInfo['presale_end_time'] < time()) {
+                $storeInfo['presale_pay_status'] = 3;
+            } else {
+                $storeInfo['presale_pay_status'] = 0;
+            }
+        } else {
+            $storeInfo['presale_pay_status'] = 0;
+        }
+        $storeInfo['presale_start_time'] = date('Y-m-d H:i', $storeInfo['presale_start_time']);
+        $storeInfo['presale_end_time'] = date('Y-m-d H:i', $storeInfo['presale_end_time']);
+
+        //有自定义表单或预售或虚拟不展示加入购物车按钮
+        $storeInfo['cart_button'] = $storeInfo['custom_form'] || $storeInfo['presale'] || $storeInfo['is_virtual'] || $storeInfo['virtual_type'] == 3 ? 0 : 1;
 
         /** @var StoreProductAttrServices $storeProductAttrServices */
         $storeProductAttrServices = app()->make(StoreProductAttrServices::class);
@@ -1306,9 +1316,7 @@ class StoreProductServices extends BaseServices
         }
         $data['productAttr'] = $productAttr;
         $data['productValue'] = $productValue;
-        $data['storeInfo'] = get_thumb_water($storeInfo, 'big', ['image', 'slider_image']);
-        $storeInfoNew = get_thumb_water($storeInfo, 'small', ['image']);
-        $data['storeInfo']['small_image'] = $storeInfoNew['image'];
+        $data['storeInfo'] = $storeInfo;
 
         /** @var MemberCardServices $memberCardService */
         $memberCardService = app()->make(MemberCardServices::class);
@@ -1344,13 +1352,14 @@ class StoreProductServices extends BaseServices
         $data['replyChance'] = $replyChance;
         $data['replyCount'] = $replyCount;
         $data['mer_id'] = 0;
+        $vip_user = $uid ? app()->make(UserServices::class)->value(['uid' => $uid], 'is_money_level') : 0;
         if ($storeInfo['recommend_list'] != '') {
             $recommend_list = explode(',', $storeInfo['recommend_list']);
             $data['good_list'] = get_thumb_water($this->getProducts(['ids' => $recommend_list], 12));
             $recommend_count = 12 - count($data['good_list']);
-            if ($recommend_count) $data['good_list'] = array_merge($data['good_list'], get_thumb_water($this->getProducts(['is_good' => 1, 'is_del' => 0, 'is_show' => 1], $recommend_count)));
+            if ($recommend_count) $data['good_list'] = array_merge($data['good_list'], get_thumb_water($this->getProducts(['is_good' => 1, 'is_del' => 0, 'is_show' => 1, 'vip_user' => $vip_user, 'not_ids' => $recommend_list], $recommend_count)));
         } else {
-            $data['good_list'] = get_thumb_water($this->getProducts(['is_good' => 1, 'is_del' => 0, 'is_show' => 1], 12));
+            $data['good_list'] = get_thumb_water($this->getProducts(['is_good' => 1, 'is_del' => 0, 'is_show' => 1, 'vip_user' => $vip_user], 12));
         }
         $data['mapKey'] = sys_config('tengxun_map_key');
         $data['store_self_mention'] = (int)sys_config('store_self_mention') ?? 0;//门店自提是否开启
@@ -1483,7 +1492,7 @@ class StoreProductServices extends BaseServices
      */
     public function setLevelPrice($price, int $uid, $userInfo, $vipStatus, $discount = 0, $vipPrice = 0.00, $is_vip = 0, $is_show = false)
     {
-        if (!(float)$price) return $price;
+        if (!(float)$price) return [0, 0, 'level'];
         if (!$vipStatus) $is_vip = 0;
         //已登录
         if ($uid) {
@@ -1603,12 +1612,7 @@ class StoreProductServices extends BaseServices
             $skuValueServices = app()->make(StoreProductAttrValueServices::class);
             $res = $res && $skuValueServices->decProductAttrStock($productId, $unique, $num, 0);
         }
-        $res = $res && $this->dao->decStockIncSales(['id' => $productId], $num);
-        if ($res) {
-            //已经在规格库存里面发过提醒，此处总库存注释
-            //$this->workSendStock($productId);
-        }
-        return $res;
+        return $res && $this->dao->decStockIncSales(['id' => $productId], $num);
     }
 
     /**
@@ -1675,6 +1679,7 @@ class StoreProductServices extends BaseServices
                 $bargrainIdsList = $storeBargainServices->getBargainIdsArray([], ['id']);
             }
             [$page, $limit] = $this->getPageValue();
+            $where['vip_user'] = $uid ? app()->make(UserServices::class)->value(['uid' => $uid], 'is_money_level') : 0;
             foreach ($fields as $field) {
                 $list = [];
                 switch ($field) {
@@ -1682,37 +1687,37 @@ class StoreProductServices extends BaseServices
                         $k = 0;
                         if ($is_num) {
                             $bastNumber = (int)sys_config('bast_number', 0);//TODO 精品推荐个数
-                            $list = $bastNumber ? $list = $this->dao->getRecommendProduct($field, $bastNumber, $page, $limit) : [];
+                            $list = $bastNumber ? $list = $this->dao->getRecommendProduct($where, $field, $bastNumber, $page, $limit) : [];
                         } else {
-                            $list = $this->dao->getRecommendProduct($field, 0, $page, $limit);
+                            $list = $this->dao->getRecommendProduct($where, $field, 0, $page, $limit);
                         }
                         break;
                     case 'is_new'://首发新品
                         $k = 1;
                         if ($is_num) {
                             $firstNumber = (int)sys_config('first_number', 0);//TODO 首发新品个数
-                            $list = $firstNumber ? $list = $this->dao->getRecommendProduct($field, $firstNumber, $page, $limit) : [];
+                            $list = $firstNumber ? $list = $this->dao->getRecommendProduct($where, $field, $firstNumber, $page, $limit) : [];
                         } else {
-                            $list = $this->dao->getRecommendProduct($field, 0, $page, $limit);
+                            $list = $this->dao->getRecommendProduct($where, $field, 0, $page, $limit);
                         }
                         break;
                     case 'is_benefit'://首页促销单品
                         $k = 2;
                         if ($is_num) {
                             $promotionNumber = (int)sys_config('promotion_number', 0);//TODO 首发新品个数
-                            $list = $promotionNumber ? $list = $this->dao->getRecommendProduct($field, $promotionNumber, $page, $limit) : [];
+                            $list = $promotionNumber ? $list = $this->dao->getRecommendProduct($where, $field, $promotionNumber, $page, $limit) : [];
                         } else {
-                            $list = $this->dao->getRecommendProduct($field, 0, $page, $limit);
+                            $list = $this->dao->getRecommendProduct($where, $field, 0, $page, $limit);
                         }
                         break;
                     case 'is_hot'://热门榜单
                         $k = 3;
                         $hotNumber = $is_num ? 3 : 0;
-                        $list = $this->dao->getRecommendProduct($field, $hotNumber, $page, $limit);
+                        $list = $this->dao->getRecommendProduct($where, $field, $hotNumber, $page, $limit);
                         break;
                     case 'is_vip'://会员
                         $k = 4;
-                        $list = $this->dao->getRecommendProduct($field, 0, $page, $limit);
+                        $list = $this->dao->getRecommendProduct($where, $field, 0, $page, $limit);
                         break;
                 }
                 if ($list) {
@@ -1744,7 +1749,8 @@ class StoreProductServices extends BaseServices
     public function getRecommendProduct(int $uid, $field, int $num = 0, string $type = 'small')
     {
         [$page, $limit] = $this->getPageValue();
-        $list = $this->dao->getRecommendProduct($field, $num, $page, $limit);
+        $where['vip_user'] = $uid ? app()->make(UserServices::class)->value(['uid' => $uid], 'is_money_level') : 0;
+        $list = $this->dao->getRecommendProduct($where, $field, $num, $page, $limit);
         if ($list) {
             $list = get_thumb_water($list, $type);
             $list = $this->getActivityList($list);
@@ -1873,5 +1879,20 @@ class StoreProductServices extends BaseServices
             }, $item['cateName']));
         }
         return $cateData;
+    }
+
+    /**
+     * 获取预售列表
+     * @param $where
+     * @return mixed
+     */
+    public function getAdvanceList($where)
+    {
+        [$page, $limit] = $this->getPageValue();
+        $data = $this->dao->getAdvanceList($where, $page, $limit);
+        foreach ($data['list'] as &$item) {
+
+        }
+        return $data;
     }
 }

@@ -45,6 +45,10 @@ Route::group('finance', function () {
     //退款
     Route::put('recharge/:id', 'v1.finance.UserRecharge/refund_update')->option(['real_name' => '充值退款']);
 
+    /** 余额记录 */
+    Route::get('balance/list', 'v1.finance.UserBalance/balanceList')->option(['real_name' => '余额记录列表']);
+    Route::post('balance/set_mark/:id', 'v1.finance.UserBalance/balanceRecordRemark')->option(['real_name' => '余额记录备注']);
+
 })->middleware([
     \app\http\middleware\AllowOriginMiddleware::class,
     \app\adminapi\middleware\AdminAuthTokenMiddleware::class,

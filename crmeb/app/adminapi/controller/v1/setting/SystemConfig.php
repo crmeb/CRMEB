@@ -351,4 +351,19 @@ class SystemConfig extends AuthController
         $value = sys_config($name);
         return app('json')->success(compact('value'));
     }
+
+    /**
+     * 获取某个分类下的所有配置
+     * @param $tabId
+     * @return mixed
+     */
+    public function get_config_list($tabId)
+    {
+        $list = $this->services->getConfigTabAllList($tabId);
+        $data = [];
+        foreach ($list as $item) {
+            $data[$item['menu_name']] = json_decode($item['value']);
+        }
+        return app('json')->success($data);
+    }
 }

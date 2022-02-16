@@ -13,7 +13,6 @@ namespace crmeb\services;
 
 
 use crmeb\exceptions\ApiException;
-use think\exception\ValidateException;
 
 /**
  * Class AccessTokenServeService

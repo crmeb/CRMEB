@@ -14,6 +14,11 @@ setMatchMedia();
 
 export default {
   name: "app",
+  provide() {
+    return {
+      reload: this.reload,
+    };
+  },
   methods: {
     ...mapMutations("media", ["setDevice"]),
     handleWindowResize() {
@@ -33,6 +38,12 @@ export default {
       } else {
         this.setDevice("Desktop");
       }
+    },
+    reload() {
+      this.isRouterAlive = false;
+      this.$nextTick(function () {
+        this.isRouterAlive = true;
+      });
     },
   },
   mounted() {
@@ -88,5 +99,10 @@ body {
 }
 .ivu-modal-wrap /deep/ .connect_customerServer_img {
   display: none;
+}
+.right-box .ivu-color-picker .ivu-select-dropdown {
+  position: absolute;
+  // width: 300px !important;
+  left: -73px !important;
 }
 </style>

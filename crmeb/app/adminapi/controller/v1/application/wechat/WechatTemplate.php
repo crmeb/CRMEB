@@ -12,7 +12,7 @@ namespace app\adminapi\controller\v1\application\wechat;
 
 use app\adminapi\controller\AuthController;
 use crmeb\exceptions\AdminException;
-use app\services\other\TemplateMessageServices;
+use app\services\message\TemplateMessageServices;
 use crmeb\services\{
     FormBuilder as Form, template\Template, WechatService
 };
@@ -97,7 +97,7 @@ class WechatTemplate extends AuthController
     /**
      * 保存新建的资源
      *
-     * @param \think\Request $request
+     * @param Request $request
      * @return \think\Response
      */
     public function save(Request $request)
@@ -155,7 +155,7 @@ class WechatTemplate extends AuthController
     /**
      * 保存更新的资源
      *
-     * @param \think\Request $request
+     * @param Request $request
      * @param int $id
      * @return \think\Response
      */

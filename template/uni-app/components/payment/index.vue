@@ -54,9 +54,13 @@
 			isCall: {
 				type: Boolean,
 				default: false
+			},
+			friendPay: {
+				type: Boolean,
+				default: false
 			}
 		},
-		mixins:[colors],
+		mixins: [colors],
 		data() {
 			return {
 				formContent: '',
@@ -112,10 +116,19 @@
 				uni.showLoading({
 					title: '支付中'
 				});
-
+				if (paytype == 'friend' && that.order_id) {
+					return uni.navigateTo({
+						url: '/pages/users/payment_on_behalf/index?order_id=' + that.order_id + '&spread=' +
+							this.$store.state.app.uid,
+						success: res => {},
+						fail: () => {},
+						complete: () => {}
+					});
+				}
 				orderPay({
 					uni: that.order_id,
 					paytype: paytype,
+					type: that.friendPay ? 1 : 0,
 					// #ifdef MP 
 					'from': 'routine',
 					// #endif
@@ -210,6 +223,10 @@
 									.catch(function() {
 										return that.$util.Tips({
 											title: '支付失败'
+										}, () => {
+											that.$emit('onChangeFun', {
+												action: 'pay_fail'
+											});
 										});
 									});
 							}
@@ -261,6 +278,17 @@
 							});
 							break;
 						case 'offline':
+							uni.hideLoading();
+							return that.$util.Tips({
+								title: res.msg,
+								icon: 'success'
+							}, () => {
+								that.$emit('onChangeFun', {
+									action: 'pay_complete'
+								});
+							});
+							break;
+						case 'friend':
 							uni.hideLoading();
 							return that.$util.Tips({
 								title: res.msg,
@@ -342,9 +370,10 @@
 </script>
 
 <style scoped lang="scss">
-	.bgcolor{
+	.bgcolor {
 		background-color: var(--view-theme)
 	}
+
 	.payment {
 		position: fixed;
 		bottom: 0;
@@ -456,5 +485,9 @@
 	.payment .item .iconfont {
 		font-size: 40rpx;
 		color: #ccc;
+	}
+
+	.icon-haoyoudaizhifu {
+		color: #F34C3E !important;
 	}
 </style>

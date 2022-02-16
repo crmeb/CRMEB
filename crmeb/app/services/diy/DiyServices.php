@@ -8,22 +8,23 @@
 // +----------------------------------------------------------------------
 // | Author: CRMEB Team <admin@crmeb.com>
 // +----------------------------------------------------------------------
-declare (strict_types = 1);
+declare (strict_types=1);
 
 namespace app\services\diy;
 
-use app\services\activity\StoreBargainServices;
-use app\services\activity\StoreCombinationServices;
-use app\services\activity\StoreSeckillServices;
+use app\services\activity\bargain\StoreBargainServices;
+use app\services\activity\combination\StoreCombinationServices;
+use app\services\activity\seckill\StoreSeckillServices;
 use app\services\BaseServices;
 use app\dao\diy\DiyDao;
+use app\services\other\QrcodeServices;
 use app\services\product\product\StoreProductServices;
 use app\services\system\config\SystemGroupDataServices;
 use app\services\system\config\SystemGroupServices;
 use crmeb\exceptions\AdminException;
 use crmeb\services\FormBuilder as Form;
+use crmeb\services\SystemConfigService;
 use think\facade\Route as Url;
-use think\Log;
 
 /**
  *
@@ -53,8 +54,11 @@ class DiyServices extends BaseServices
     public function getDiyList(array $where)
     {
         [$page, $limit] = $this->getPageValue();
-        $where['type'] = -1;
+        $where['is_del'] = 0;
         $list = $this->dao->getDiyList($where, $page, $limit);
+        foreach ($list as &$item) {
+            $item['type_name'] = $item['type'] == 0 ? '可视化' : 'DIY';
+        }
         $count = $this->dao->count($where);
         return compact('list', 'count');
     }
@@ -69,12 +73,15 @@ class DiyServices extends BaseServices
         if ($id) {
             $data['update_time'] = time();
             $res = $this->dao->update($id, $data);
+            if (!$res) throw new AdminException('修改失败');
         } else {
             $data['add_time'] = time();
             $data['update_time'] = time();
             $res = $this->dao->save($data);
+            if (!$res) throw new AdminException('保存失败');
+            $id = $res->id;
         }
-        if (!$res) throw new AdminException('保存失败');
+        return $id;
     }
 
     /**
@@ -96,40 +103,51 @@ class DiyServices extends BaseServices
      */
     public function setStatus(int $id)
     {
+        $this->dao->update(['is_diy' => 1], ['is_show' => 1, 'type' => 2]);
         $this->dao->update([['id', '<>', $id]], ['status' => 0]);
-        $this->dao->update($id, ['status' => 1, 'type' => 0, 'update_time' => time()]);
+        $this->dao->update($id, ['status' => 1, 'update_time' => time()]);
     }
 
     /**
      * 获取页面数据
-     * @return array|\think\Model|null
+     * @param int $id
+     * @return array|mixed
      * @throws \think\db\exception\DataNotFoundException
      * @throws \think\db\exception\DbException
      * @throws \think\db\exception\ModelNotFoundException
      */
-    public function getDiy($name)
+    public function getDiy($id = 0)
     {
-        $data = [];
-        if ($name == '') {
-            $info = $this->dao->getOne(['status' => 1]);
+        $field = 'name,value,is_show,is_bg_color,color_picker,bg_pic,bg_tab_val,is_bg_pic,order_status,is_diy,title';
+        if ($id) {
+            $info = $this->dao->getOne(['id' => $id], $field);
         } else {
-            $info = $this->dao->getOne(['template_name' => $name]);
+            $info = $this->dao->getOne(['status' => 1, 'is_del' => 0], $field);
         }
-
         if ($info) {
             $info = $info->toArray();
             if ($info['value']) {
-                $data = json_decode($info['value'], true);
-                foreach ($data as $key => &$item) {
-                    if ($key == 'customerService') {
-                        foreach ($item as $k => &$v) {
-                            $v['routine_contact_type'] = sys_config('routine_contact_type', 0);
+                $info['value'] = json_decode($info['value'], true);
+                if ($info['is_diy']) {
+                    foreach ($info['value'] as &$item) {
+                        if ($item['name'] == 'customerService') {
+                            $item['routine_contact_type'] = sys_config('routine_contact_type', 0);
                         }
                     }
+                    return $info;
+                } else {
+                    foreach ($info['value'] as $key => &$item) {
+                        if ($key == 'customerService') {
+                            foreach ($item as $k => &$v) {
+                                $v['routine_contact_type'] = sys_config('routine_contact_type', 0);
+                            }
+                        }
+                    }
+                    return $info['value'];
                 }
             }
         }
-        return $data;
+        return [];
     }
 
     /**
@@ -142,7 +160,6 @@ class DiyServices extends BaseServices
         $field = array();
         $title = '添加模板';
         $field[] = Form::input('name', '页面名称', '')->required();
-        $field[] = Form::input('template_name', '页面类型', '')->required();
         return create_form($title, $field, Url::buildUrl('/diy/create'), 'POST');
     }
 
@@ -257,6 +274,9 @@ class DiyServices extends BaseServices
                 $data = $StoreBargainServices->getHomeList($where);
                 break;
         }
+        foreach ($data['list'] as &$item) {
+            $item['image'] = set_file_url($item['image'], sys_config('site_url'));
+        }
         return $data;
     }
 
@@ -286,7 +306,7 @@ class DiyServices extends BaseServices
         $routine_my_menus = $routine_my_menus['list'] ?? [];
         $routine_my_banner = $systemGroupDataServices->getGroupDataList(['gid' => $banner_gid]);
         $routine_my_banner = $routine_my_banner['list'] ?? [];
-        $my_banner_status = $routine_my_banner[0]['status'] ?? 1;
+        $my_banner_status = boolval($info['my_banner_status']);
         return compact('status', 'order_status', 'routine_my_menus', 'routine_my_banner', 'color_change', 'my_banner_status');
     }
 
@@ -313,8 +333,8 @@ class DiyServices extends BaseServices
         } else {
             throw new AdminException('个人中心模板不存在');
         }
-        if ($data['routine_my_banner']) $res1 = $systemGroupDataServices->saveAllData($data['routine_my_banner'], 'routine_my_banner');
-        if ($data['routine_my_menus']) $res1 = $systemGroupDataServices->saveAllData($data['routine_my_menus'], 'routine_my_menus');
+        $systemGroupDataServices->saveAllData($data['routine_my_banner'], 'routine_my_banner');
+        $systemGroupDataServices->saveAllData($data['routine_my_menus'], 'routine_my_menus');
         return true;
     }
 
@@ -325,13 +345,9 @@ class DiyServices extends BaseServices
      */
     public function getNavigation(string $template_name)
     {
-        if ($template_name) {
-            $value = $this->dao->value(['template_name' => $template_name], 'value');
-        } else {
-            $value = $this->dao->value(['status' => 1, 'type' => 1], 'value');
-            if (!$value) {
-                $value = $this->dao->value(['template_name' => 'default'], 'value');
-            }
+        $value = $this->dao->value(['status' => 1], 'value');
+        if (!$value) {
+            $value = $this->dao->value(['template_name' => 'default'], 'value');
         }
         $navigation = [];
         if ($value) {
@@ -344,5 +360,22 @@ class DiyServices extends BaseServices
             }
         }
         return $navigation;
+    }
+
+    /**
+     * 取单个diy小程序预览二维码
+     * @param int $id
+     * @return string
+     */
+    public function getRoutineCode(int $id)
+    {
+        $diy = $this->dao->getOne(['id' => $id, 'is_del' => 0]);
+        if (!$diy) {
+            throw new AdminException('数据不存在');
+        }
+        /** @var QrcodeServices $QrcodeService */
+        $QrcodeService = app()->make(QrcodeServices::class);
+        $image = $QrcodeService->getRoutineQrcodePath($id, 0, 6, [], true);
+        return $image;
     }
 }

@@ -298,7 +298,7 @@ export function getCity() {
 }
 
 /**
- * 获取小程序列表
+ * 获取列表
  */
 export function getLiveList(page, limit) {
 	return request.get('wechat/live', {
@@ -313,7 +313,7 @@ export function getLiveList(page, limit) {
  * 获取首页DIY；
  */
 export function getDiy(id) {
-	return request.get('v2/diy/get_diy/default', {}, {
+	return request.get(`v2/diy/get_diy/default${id ? '?id='+id:''}`, {}, {
 		noAuth: true
 	});
 }

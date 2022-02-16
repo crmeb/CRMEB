@@ -354,9 +354,18 @@ export function checkActivityApi (id) {
 /**
  * @description 商品添加编辑-- 用户标签
  */
-export function labelListApi () {
+ export function labelListApi () { 
     return request({
         url: 'user/user_label',
+        method: 'get'
+    })
+}
+/**
+ * @description 组件获取用户标签
+ */
+ export function productUserLabel () { 
+    return request({
+        url: 'user/user_tree_label',
         method: 'get'
     })
 }

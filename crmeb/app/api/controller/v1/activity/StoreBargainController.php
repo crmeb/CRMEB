@@ -10,9 +10,9 @@
 // +----------------------------------------------------------------------
 namespace app\api\controller\v1\activity;
 
-use app\services\activity\StoreBargainServices;
-use app\services\activity\StoreBargainUserHelpServices;
-use app\services\activity\StoreBargainUserServices;
+use app\services\activity\bargain\StoreBargainServices;
+use app\services\activity\bargain\StoreBargainUserHelpServices;
+use app\services\activity\bargain\StoreBargainUserServices;
 use app\Request;
 use app\services\user\UserServices;
 
@@ -40,7 +40,7 @@ class StoreBargainController
     public function config()
     {
         $lovely = sys_data('routine_lovely') ?? [];//banner图
-        $info = isset($lovely[2]) ? $lovely[2] : [];
+        $info = $lovely[2] ?? [];
         return app('json')->successful($info);
     }
 

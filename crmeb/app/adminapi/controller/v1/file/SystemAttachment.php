@@ -108,7 +108,26 @@ class SystemAttachment extends AuthController
      */
     public function uploadType()
     {
-        $data['upload_type'] = sys_config('upload_type', 1);
+        $data['upload_type'] = (string)sys_config('upload_type', 1);
         return app('json')->success($data);
+    }
+
+    /**
+     * 视频分片上传
+     * @return mixed
+     */
+    public function videoUpload()
+    {
+        $data = $this->request->postMore([
+            ['chunkNumber', 0],//第几分片
+            ['currentChunkSize', 0],//分片大小
+            ['chunkSize', 0],//总大小
+            ['totalChunks', 0],//分片总数
+            ['file', 'file'],//文件
+            ['md5', ''],//MD5
+            ['filename', ''],//文件名称
+        ]);
+        $res = $this->service->videoUpload($data, $_FILES['file']);
+        return app('json')->success($res);
     }
 }

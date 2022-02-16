@@ -1,14 +1,16 @@
 <template>
   <div>
-    <div class="i-layout-page-header">
-      <div class="i-layout-page-header">
+    <div class="i-layout-page-header header_top">
+      <div class="i-layout-page-header fl_header">
         <router-link :to="{ path: '/admin/marketing/store_seckill/index' }"
-          ><Button icon="ios-arrow-back" size="small" class="mr20"
+          ><Button icon="ios-arrow-back" size="small" type="text"
             >返回</Button
           ></router-link
         >
+        <Divider type="vertical" />
         <span
           class="ivu-page-header-title mr20"
+          style="padding: 0"
           v-text="$route.params.id ? '编辑秒杀商品' : '添加秒杀商品'"
         ></span>
       </div>
@@ -48,7 +50,7 @@
               </div>
             </FormItem>
             <Col v-show="current === 1" type="flex">
-              <Col span="24">
+              <!-- <Col span="24">
                 <FormItem label="商品主图：" prop="image">
                   <div class="picBox" @click="modalPicTap('dan', 'danFrom')">
                     <div class="pictrue" v-if="formValidate.image">
@@ -63,7 +65,7 @@
                     </div>
                   </div>
                 </FormItem>
-              </Col>
+              </Col> -->
               <Col span="24">
                 <FormItem label="商品轮播图：" prop="images">
                   <div class="acea-row">
@@ -143,17 +145,56 @@
                 </FormItem>
               </Col>
               <Col span="24">
-                <FormItem label="运费模板：" prop="temp_id">
-                  <div class="acea-row row-middle">
-                    <Select v-model="formValidate.temp_id" class="perW35">
+                <FormItem label="物流方式：" prop="logistics">
+                  <CheckboxGroup v-model="formValidate.logistics">
+                    <Checkbox label="1" disabled>快递</Checkbox>
+                    <Checkbox label="2">到店核销</Checkbox>
+                  </CheckboxGroup>
+                </FormItem>
+              </Col>
+              <Col span="24">
+                <FormItem
+                  label="运费设置："
+                  :prop="formValidate.freight != 1 ? 'freight' : ''"
+                >
+                  <RadioGroup v-model="formValidate.freight">
+                    <Radio :label="2">固定邮费</Radio>
+                    <Radio :label="3">运费模板</Radio>
+                  </RadioGroup>
+                </FormItem>
+              </Col>
+              <Col
+                span="24"
+                v-if="formValidate.freight != 3 && formValidate.freight != 1"
+              >
+                <FormItem label="">
+                  <div class="acea-row">
+                    <InputNumber
+                      min="0.01"
+                      v-model="formValidate.postage"
+                      placeholder="请输入金额"
+                      class="perW20 maxW"
+                    />
+                  </div>
+                </FormItem>
+              </Col>
+              <Col span="24" v-if="formValidate.freight == 3">
+                <FormItem label="" prop="temp_id">
+                  <div class="acea-row">
+                    <Select
+                      v-model="formValidate.temp_id"
+                      clearable
+                      placeholder="请选择运费模板"
+                      class="perW20 maxW"
+                    >
                       <Option
-                        v-for="item in templateList"
+                        v-for="(item, index) in templateList"
                         :value="item.id"
-                        :key="item.id"
+                        :key="index"
                         >{{ item.name }}</Option
                       >
                     </Select>
-                    <div class="ml10 col" @click="freight">添加运费模板</div>
+                    <span class="addfont" @click="freight">新增运费模板</span>
                   </div>
                 </FormItem>
               </Col>
@@ -262,6 +303,15 @@
                     border
                     @on-selection-change="changeCheckbox"
                   >
+                    <template slot-scope="{ row, index }" slot="price">
+                      <InputNumber
+                        v-model="row.price"
+                        :min="0.01"
+                        :precision="2"
+                        class="priceBox"
+                        :active-change="false"
+                      ></InputNumber>
+                    </template>
                     <template slot-scope="{ row, index }" slot="pic">
                       <div
                         class="acea-row row-middle row-center-wrapper"
@@ -285,12 +335,11 @@
             <Row v-show="current === 2">
               <Col span="24">
                 <FormItem label="内容：">
-                  <vue-ueditor-wrap
-                    v-model="formValidate.description"
-                    @beforeInit="addCustomDialog"
-                    :config="myConfig"
+                  <WangEditor
                     style="width: 90%"
-                  ></vue-ueditor-wrap>
+                    :content="formValidate.description"
+                    @editorContent="getEditorContent"
+                  ></WangEditor>
                 </FormItem>
               </Col>
             </Row>
@@ -361,7 +410,7 @@
 import { mapState } from "vuex";
 import goodsList from "@/components/goodsList/index";
 import UeditorWrap from "@/components/ueditorFrom/index";
-import VueUeditorWrap from "vue-ueditor-wrap";
+import WangEditor from "@/components/wangEditor/index.vue";
 import uploadPictures from "@/components/uploadPictures";
 import {
   seckillInfoApi,
@@ -378,7 +427,7 @@ export default {
     UeditorWrap,
     goodsList,
     uploadPictures,
-    VueUeditorWrap,
+    WangEditor,
     freightTemplate,
   },
   data() {
@@ -433,6 +482,9 @@ export default {
         image: "",
         unit_name: "",
         price: 0,
+        logistics: ["1"], //选择物流方式
+        freight: 2, //运费设置
+        postage: 1, //设置运费金额
         ot_price: 0,
         cost: 0,
         sales: 0,
@@ -576,6 +628,9 @@ export default {
     this.seckillTimeList();
   },
   methods: {
+    getEditorContent(data) {
+      this.formValidate.description = data;
+    },
     // 添加运费模板
     freight() {
       this.$refs.template.id = 0;
@@ -620,19 +675,18 @@ export default {
           title: title,
           key: key,
           align: "center",
-          minWidth: 120,
+          minWidth: 100,
           render: (h, params) => {
             return h("div", [
               h("InputNumber", {
                 props: {
                   min: 1,
-                  value: key === "price" ? params.row.price : params.row.quota,
+                  precision: 0,
+                  value: params.row.quota,
                 },
                 on: {
                   "on-change": (e) => {
-                    key === "price"
-                      ? (params.row.price = e)
-                      : (params.row.quota = e);
+                    params.row.quota = e;
                     that.specsData[params.index] = params.row;
                     if (
                       !!that.formValidate.attrs &&
@@ -708,6 +762,11 @@ export default {
           id: 0,
           product_id: row.id,
           temp_id: row.temp_id,
+          logistics: row.temp_id, //选择物流方式
+          freight: row.freight, //运费设置
+          postage: row.postage, //设置运费金额
+          custom_form: row.custom_form, //自定义表单数据
+          virtual_type: row.virtual_type, //虚拟商品类型
         };
         this.productAttrs(row);
         this.$refs.goodslist.productRow = null;
@@ -808,7 +867,7 @@ export default {
           }
         });
       } else {
-        if (this.formValidate.image) {
+        if (this.formValidate.images) {
           this.current += 1;
         } else {
           this.$Message.warning("请选择商品");
@@ -887,42 +946,6 @@ export default {
       const dst = newItems.indexOf(item);
       newItems.splice(dst, 0, ...newItems.splice(src, 1));
       this.formValidate.images = newItems;
-    },
-    // 添加自定义弹窗
-    addCustomDialog(editorId) {
-      window.UE.registerUI(
-        "test-dialog",
-        function (editor, uiName) {
-          // 创建 dialog
-          let dialog = new window.UE.ui.Dialog({
-            // 指定弹出层中页面的路径，这里只能支持页面，路径参考常见问题 2
-            iframeUrl: "/admin/widget.images/index.html?fodder=dialog",
-            // 需要指定当前的编辑器实例
-            editor: editor,
-            // 指定 dialog 的名字
-            name: uiName,
-            // dialog 的标题
-            title: "上传图片",
-            // 指定 dialog 的外围样式
-            cssRules: "width:960px;height:550px;padding:20px;",
-          });
-          this.dialog = dialog;
-          // 参考上面的自定义按钮
-          var btn = new window.UE.ui.Button({
-            name: "dialog-button",
-            title: "上传图片",
-            cssRules: `background-image: url(../../../assets/images/icons.png);background-position: -726px -77px;`,
-            onclick: function () {
-              // 渲染dialog
-              dialog.render();
-              dialog.open();
-            },
-          });
-          return btn;
-        },
-        37 /* 指定添加到工具栏上的那个位置，默认时追加到最后 */,
-        editorId /* 指定这个UI是哪个编辑器实例上的，默认是页面上所有的编辑器都会添加这个按钮 */
-      );
     },
   },
 };

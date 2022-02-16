@@ -18,16 +18,21 @@
                         <!--<div>体验时间剩余 {{dayNum}}天</div>-->
                         <!--<div class="code red">审核未通过</div>-->
                     <!--</div>-->
-                    <div class="text">
+                    <div class="text" v-if="status === 1">
                         <div>商业授权</div>
-                        <div class="code">开源版</div>
+                        <div class="code">授权码：{{ authCode }}</div>
+                    </div>
+                    <div class="text" v-else>
+                        <div>商业授权</div>
+                        <div class="code">授权码：未授权</div>
                     </div>
                     <!--<div class="text" v-else-if="status === 0">-->
                         <!--<div>体验时间剩余 {{dayNum}}天</div>-->
                         <!--<div class="code blue">授权申请已提交，请等待审核</div>-->
                     <!--</div>-->
                 </div>
-                <Button @click="toCrmeb()">进入官网</Button>
+                <Button @click="toCrmeb()" v-if="status === 1">进入官网</Button>
+                <Button type="primary" @click="isTemplate = true" v-else>申请授权</Button>
                 <!--<Button type="primary" @click="isTemplate = true" v-else-if="status === -1 || status === -9">申请授权</Button>-->
                 <!--<Button type="primary" @click="isTemplate = true" v-else-if="status === 2">重新申请</Button>-->
                 <!--<Button class="grey" v-else-if="status === 0">审核中</Button>-->

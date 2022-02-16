@@ -30,10 +30,10 @@ abstract class BaseUpload extends BaseStorage
      * @var array
      */
     protected $thumbConfig = [
-        'thumb_big_height' => 700,
-        'thumb_big_width' => 700,
-        'thumb_mid_height' => 400,
-        'thumb_mid_width' => 400,
+        'thumb_big_height' => 800,
+        'thumb_big_width' => 800,
+        'thumb_mid_height' => 300,
+        'thumb_mid_width' => 300,
         'thumb_small_height' => 100,
         'thumb_small_width' => 100,
     ];
@@ -93,7 +93,14 @@ abstract class BaseUpload extends BaseStorage
     protected function initialize(array $config)
     {
         $this->fileInfo = $this->downFileInfo = new \StdClass();
-        $this->thumbConfig = array_merge($this->thumbConfig, $config['thumb'] ?? []);
+        $thumbConfig = $this->thumbConfig;
+        $config['thumb'] = $config['thumb'] ?? [];
+        $this->thumbConfig = $config['thumb'] ?? [];
+        foreach ($config['thumb'] as $item) {
+            if ($item == '' || $item == 0) {
+                $this->thumbConfig = $thumbConfig;
+            }
+        }
         $this->waterConfig = array_merge($this->waterConfig, $config['water'] ?? []);
     }
 
@@ -263,7 +270,7 @@ abstract class BaseUpload extends BaseStorage
      */
     protected function getFilePath(string $filePath = '', bool $is_parse_url = false)
     {
-        $path = $filePath ? $filePath : $this->filePath;
+        $path = $filePath ?: $this->filePath;
         if ($is_parse_url) {
             $data = parse_url($path);
             //远程地址处理
@@ -390,6 +397,53 @@ abstract class BaseUpload extends BaseStorage
      * @return mixed
      */
     abstract protected function app();
+
+    /**
+     * 拉取空间
+     * @param string $region
+     * @param bool $line
+     * @param bool $shared
+     * @return mixed
+     */
+    abstract public function listbuckets(string $region, bool $line = false, bool $shared = false);
+
+    /**
+     * 创建空间
+     * @param string $name
+     * @param string $region
+     * @return mixed
+     */
+    abstract public function createBucket(string $name, string $region);
+
+    /**
+     * 获得区域
+     * @return mixed
+     */
+    abstract public function getRegion();
+
+    /**
+     * 删除空间
+     * @param string $name
+     * @return mixed
+     */
+    abstract public function deleteBucket(string $name);
+
+    /**
+     * 绑定自定义域名
+     * @param string $name
+     * @param string $domain
+     * @param string|null $region
+     * @return mixed
+     */
+    abstract public function bindDomian(string $name, string $domain, string $region = null);
+
+    /**
+     * 设置跨域
+     * @param string $name
+     * @param string $region
+     * @return mixed
+     */
+    abstract public function setBucketCors(string $name, string $region);
 
     /**
      * 获取上传密钥

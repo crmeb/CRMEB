@@ -32,7 +32,7 @@ class HomeServices extends BaseServices
         [$page, $limit] = $this->getPageValue();
         $list = $category->getCid($page, $limit);
         foreach ($list as &$info) {
-            $productList = $product->getSearchList(['cid' => $info['id'], 'star' => 1, 'is_show' => 1, 'is_del' => 0], 1, 8, ['id,store_name,image,IFNULL(sales, 0) + IFNULL(ficti, 0) as sales,price,ot_price']);
+            $productList = $product->getSearchList(['cid' => $info['id'], 'star' => 1, 'is_show' => 1, 'is_del' => 0], 1, 8, ['id,store_name,image,IFNULL(sales, 0) + IFNULL(ficti, 0) as sales,price,ot_price,presale']);
             foreach ($productList as &$item) {
                 if (count($item['star'])) {
                     $item['star'] = bcdiv((string)array_sum(array_column($item['star'], 'product_score')), (string)count($item['star']), 1);

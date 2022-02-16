@@ -1,6 +1,6 @@
 <template>
 	<view class="aleart" v-if="aleartStatus">
-		<!-- <image src="../../../../static/images/poster-close.png" class="close" @click="posterImageClose"></image> -->
+		<image src="../../../../static/images/poster-close.png" class="close" @click="posterImageClose"></image>
 		<view class="title">
 			<image class="title-img" src="../../../../static/images/address-aleart-header.png" mode=""></image>
 		</view>

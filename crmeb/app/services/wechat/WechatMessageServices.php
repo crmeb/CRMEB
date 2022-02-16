@@ -16,6 +16,7 @@ use app\dao\wechat\WechatMessageDao;
 use app\services\BaseServices;
 use think\exception\ValidateException;
 use think\facade\Cache;
+use think\facade\Log;
 
 class WechatMessageServices extends BaseServices
 {

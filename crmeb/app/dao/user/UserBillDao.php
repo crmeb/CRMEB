@@ -8,7 +8,7 @@
 // +----------------------------------------------------------------------
 // | Author: CRMEB Team <admin@crmeb.com>
 // +----------------------------------------------------------------------
-declare (strict_types = 1);
+declare (strict_types=1);
 
 namespace app\dao\user;
 
@@ -20,7 +20,7 @@ use app\model\user\UserBill;
  * Class UserBilldao
  * @package app\dao\user
  */
-class UserBilldao extends BaseDao
+class UserBillDao extends BaseDao
 {
 
     /**
@@ -39,15 +39,19 @@ class UserBilldao extends BaseDao
      * @param int $page
      * @param int $limit
      * @param array $typeWhere
+     * @param string $order
      * @return array
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
      */
-    public function getList(array $where, string $field = '*', int $page = 0, int $limit = 0, array $typeWhere = [])
+    public function getList(array $where, string $field = '*', int $page = 0, int $limit = 0, array $typeWhere = [], $order = 'id desc')
     {
         return $this->search($where)->when(count($typeWhere) > 0, function ($query) use ($typeWhere) {
             $query->where($typeWhere);
         })->field($field)->when($page && $limit, function ($query) use ($page, $limit) {
             $query->page($page, $limit);
-        })->order('id desc')->select()->toArray();
+        })->order($order)->select()->toArray();
     }
 
     /**
@@ -256,6 +260,7 @@ class UserBilldao extends BaseDao
         return $this->search($where)
             ->when(isset($where['timeKey']), function ($query) use ($where, $field, $group) {
                 $query->whereBetweenTime('add_time', $where['timeKey']['start_time'], $where['timeKey']['end_time']);
+                $timeUinx = "%H";
                 if ($where['timeKey']['days'] == 1) {
                     $timeUinx = "%H";
                 } elseif ($where['timeKey']['days'] == 30) {
@@ -284,5 +289,31 @@ class UserBilldao extends BaseDao
             ->where('pm', 0)
             ->group('uid')
             ->column('sum(number) as sum_number', 'uid');
+    }
+
+    /**
+     * 积分趋势
+     * @param $time
+     * @param $timeType
+     * @param $field
+     * @param $str
+     * @return mixed
+     */
+    public function getPointTrend($time, $timeType, $field, $str, $orderStatus = '')
+    {
+        return $this->getModel()->where(function ($query) use ($field, $orderStatus) {
+            $query->where('category', 'integral');
+            if ($orderStatus == 'add') {
+                $query->where('pm', 1);
+            } elseif ($orderStatus == 'sub') {
+                $query->where('pm', 0);
+            }
+        })->where(function ($query) use ($time, $field) {
+            if ($time[0] == $time[1]) {
+                $query->whereDay($field, $time[0]);
+            } else {
+                $query->whereTime($field, 'between', $time);
+            }
+        })->field("FROM_UNIXTIME($field,'$timeType') as days,$str as num")->group('days')->select()->toArray();
     }
 }

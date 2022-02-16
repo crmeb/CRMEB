@@ -79,13 +79,13 @@ class WechatServices extends BaseServices
     public function auth($spreadId, $login_type)
     {
         try {
-            $wechatInfo = WechatAuthService::oauthService()->user()->getOriginal();
+            $wechatInfo = WechatAuthService::oauth2Service()->oauth();
         } catch (\Exception $e) {
             throw new ValidateException('授权失败' . $e->getMessage() . 'line' . $e->getLine());
         }
         if (!isset($wechatInfo['nickname'])) {
-            $wechatInfo = WechatAuthService::getUserInfo($wechatInfo['openid']);
-            if (!$wechatInfo['subscribe'] && !isset($wechatInfo['nickname']))
+            $wechatInfo = WechatAuthService::oauth2Service()->getUserInfo($wechatInfo['openid'])->toArray();
+            if (!isset($wechatInfo['nickname']))
                 throw new ValidateException('授权失败');
             if (isset($wechatInfo['tagid_list']))
                 $wechatInfo['tagid_list'] = implode(',', $wechatInfo['tagid_list']);
@@ -129,13 +129,13 @@ class WechatServices extends BaseServices
     public function newAuth($spreadId, $login_type)
     {
         try {
-            $wechatInfo = WechatAuthService::oauthService()->user()->getOriginal();
+            $wechatInfo = WechatAuthService::oauth2Service()->oauth();
         } catch (\Exception $e) {
             throw new ValidateException('授权失败' . $e->getMessage() . 'line' . $e->getLine());
         }
         if (!isset($wechatInfo['nickname'])) {
-            $wechatInfo = WechatAuthService::getUserInfo($wechatInfo['openid']);
-            if (!$wechatInfo['subscribe'] && !isset($wechatInfo['nickname']))
+            $wechatInfo = WechatAuthService::oauth2Service()->getUserInfo($wechatInfo['openid'])->toArray();
+            if (!isset($wechatInfo['nickname']))
                 throw new ValidateException('授权失败');
             if (isset($wechatInfo['tagid_list']))
                 $wechatInfo['tagid_list'] = implode(',', $wechatInfo['tagid_list']);
@@ -210,8 +210,8 @@ class WechatServices extends BaseServices
      */
     public function silenceAuth($spread)
     {
-        $wechatInfoConfig = WechatAuthService::oauthService()->user()->getOriginal();
-        $wechatInfo = WechatAuthService::getUserInfo($wechatInfoConfig['openid'])->toArray();
+        $wechatInfoConfig = WechatAuthService::oauth2Service()->oauth();
+        $wechatInfo = WechatAuthService::oauth2Service()->getUserInfo($wechatInfoConfig['openid'])->toArray();
         $openid = $wechatInfoConfig['openid'];
         /** @var WechatUserServices $wechatUserServices */
         $wechatUserServices = app()->make(WechatUserServices::class);
@@ -258,9 +258,16 @@ class WechatServices extends BaseServices
      */
     public function silenceAuthNoLogin($spread)
     {
-        $wechatInfoConfig = WechatAuthService::oauthService()->user()->getOriginal();
-        $wechatInfo = WechatAuthService::getUserInfo($wechatInfoConfig['openid'])->toArray();
+        $wechatInfoConfig = WechatAuthService::oauth2Service()->oauth();
         $openid = $wechatInfoConfig['openid'];
+        try {
+            $wechatInfo = WechatAuthService::oauth2Service()->getUserInfo($wechatInfoConfig['openid'])->toArray();
+        } catch (\Throwable $e) {
+            $createData = [$openid, [], $spread, '', 'wechat'];
+            $userInfoKey = md5($openid . '_' . time() . '_wechat');
+            Cache::setTokenBucket($userInfoKey, $createData, 7200);
+            return ['auth_login' => 1, 'key' => $userInfoKey];
+        }
         /** @var WechatUserServices $wechatUserServices */
         $wechatUserServices = app()->make(WechatUserServices::class);
         $user = $wechatUserServices->getAuthUserInfo($openid, 'wechat');
@@ -328,7 +335,7 @@ class WechatServices extends BaseServices
     public function isSubscribe(int $uid)
     {
         if ($uid) {
-            $subscribe = $this->dao->value(['uid' => $uid], 'subscribe') ? true : false;
+            $subscribe = (bool)$this->dao->value(['uid' => $uid], 'subscribe');
         } else {
             $subscribe = true;
         }

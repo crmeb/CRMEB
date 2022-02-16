@@ -146,7 +146,9 @@ export default {
     },
     userIds: {
       type: Array,
-      default: [],
+      default: () => {
+        [];
+      },
     },
   },
   components: {

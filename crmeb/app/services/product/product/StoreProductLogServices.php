@@ -21,6 +21,7 @@ use think\exception\ValidateException;
  * 商品访问记录日志
  * Class StoreProductLogServices
  * @package app\services\product\product
+ * @method getProductTrend($time, $timeType, $str) 商品趋势
  */
 class StoreProductLogServices extends BaseServices
 {
@@ -97,7 +98,6 @@ class StoreProductLogServices extends BaseServices
                 break;
             default:
                 throw new ValidateException('暂不支持该类型记录');
-                break;
         }
         if ($log_data_all) {
             $res = $this->dao->saveAll($log_data_all);

@@ -97,6 +97,7 @@
             v-model="row.status"
             :value="row.status"
             :true-value="1"
+            :disabled="row.stop_status ? true : false"
             :false-value="0"
             @on-change="onchangeIsShow(row)"
             size="large"
@@ -210,7 +211,7 @@ export default {
           minWidth: 150,
         },
         {
-          title: "砍价状态",
+          title: "上架状态",
           slot: "status",
           minWidth: 130,
         },
@@ -253,7 +254,7 @@ export default {
       return this.isMobile ? "top" : "left";
     },
   },
-  created() {
+  activated() {
     this.getList();
   },
   methods: {

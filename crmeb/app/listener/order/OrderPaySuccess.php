@@ -7,21 +7,19 @@ namespace app\listener\order;
 use app\jobs\AgentJob;
 use app\jobs\OrderJob;
 use app\jobs\ProductLogJob;
-use app\services\activity\StoreSeckillServices;
-use app\services\coupon\StoreCouponIssueServices;
+use app\services\activity\seckill\StoreSeckillServices;
+use app\services\activity\coupon\StoreCouponIssueServices;
 use app\services\order\StoreOrderCartInfoServices;
 use app\services\order\StoreOrderInvoiceServices;
 use app\services\order\StoreOrderServices;
 use app\services\order\StoreOrderStatusServices;
 use app\services\product\product\StoreProductCouponServices;
 use app\services\product\sku\StoreProductVirtualServices;
-use app\services\system\MessageSystemServices;
-use app\services\user\UserBillServices;
+use app\services\message\MessageSystemServices;
+use app\services\statistic\CapitalFlowServices;
 use app\services\user\UserServices;
 use crmeb\exceptions\AdminException;
 use crmeb\interfaces\ListenerInterface;
-use think\Exception;
-use think\facade\Log;
 
 class OrderPaySuccess implements ListenerInterface
 {
@@ -38,16 +36,6 @@ class OrderPaySuccess implements ListenerInterface
             'change_message' => '用户付款成功',
             'change_time' => time()
         ]);
-
-        //增加购买次数，写入购买记录
-        /** @var UserServices $userServices */
-        $userServices = app()->make(UserServices::class);
-//        $userServices->incPayCount($orderInfo['uid']);
-        $now_money = $userServices->value(['uid' => $orderInfo['uid']], 'now_money');
-        /** @var UserBillServices $userBillServices */
-        $userBillServices = app()->make(UserBillServices::class);
-        $userBillServices->income('pay_money', $orderInfo['uid'], $orderInfo['pay_price'], $now_money, $orderInfo['id']);
-
         //回退秒杀库存占用
         /** @var StoreOrderCartInfoServices $cartServices */
         $cartServices = app()->make(StoreOrderCartInfoServices::class);
@@ -71,20 +59,36 @@ class OrderPaySuccess implements ListenerInterface
         $orderInfo['cart_info'] = $services->getOrderCartInfo((int)$orderInfo['id']);
 
         if ($orderInfo['virtual_type'] == 1) {
-            $unique = $orderInfo['cart_info'][$orderInfo['cart_id'][0]]['cart_info']['productInfo']['attrInfo']['unique'];
-            /** @var StoreProductVirtualServices $virtualService */
-            $virtualService = app()->make(StoreProductVirtualServices::class);
-            $virtual = $virtualService->get(['attr_unique' => $unique, 'uid' => 0]);
-            $virtual->order_id = $orderInfo['order_id'];
-            $virtual->uid = $orderInfo['uid'];
-            $virtual->save();
             /** @var StoreOrderServices $orderService */
             $orderService = app()->make(StoreOrderServices::class);
-            $orderService->update(['id' => $orderInfo['id']], ['status' => 1, 'virtual_info' => $virtual->card_unique, 'remark' => '卡密已自动发放，卡号：' . $virtual->card_no . '；密码：' . $virtual->card_pwd]);
-            $this->SystemSend($orderInfo['uid'], [
-                'mark' => 'virtual_info',
-                'title' => '虚拟卡密发放',
-                'content' => '您购买的卡密商品已支付成功，支付金额' . $orderInfo['pay_price'] . '元，订单号' . $orderInfo['order_id'] . '卡号：' . $virtual->card_no . '；密码：' . $virtual->card_pwd . ',感谢您的光临！'
+            $disk_info = $orderInfo['cart_info'][$orderInfo['cart_id'][0]]['cart_info']['productInfo']['attrInfo']['disk_info'];
+            if ($disk_info != '') {
+                $orderService->update(['id' => $orderInfo['id']], ['status' => 1, 'delivery_type' => 'fictitious', 'virtual_info' => $disk_info, 'remark' => '密钥自动发放：' . $disk_info]);
+                $this->SystemSend($orderInfo['uid'], [
+                    'mark' => 'virtual_info',
+                    'title' => '虚拟密钥发放',
+                    'content' => '您购买的密钥商品已支付成功，支付金额' . $orderInfo['pay_price'] . '元，订单号：' . $orderInfo['order_id'] . '，密钥：' . $disk_info . '，感谢您的光临！'
+                ]);
+            } else {
+                $unique = $orderInfo['cart_info'][$orderInfo['cart_id'][0]]['cart_info']['productInfo']['attrInfo']['unique'];
+                /** @var StoreProductVirtualServices $virtualService */
+                $virtualService = app()->make(StoreProductVirtualServices::class);
+                $virtual = $virtualService->get(['attr_unique' => $unique, 'uid' => 0]);
+                $virtual->order_id = $orderInfo['order_id'];
+                $virtual->uid = $orderInfo['uid'];
+                $virtual->save();
+                $orderService->update(['id' => $orderInfo['id']], ['status' => 1, 'delivery_type' => 'fictitious', 'virtual_info' => $virtual->card_unique, 'remark' => '卡密已自动发放，卡号：' . $virtual->card_no . '；密码：' . $virtual->card_pwd]);
+                $this->SystemSend($orderInfo['uid'], [
+                    'mark' => 'virtual_info',
+                    'title' => '虚拟卡密发放',
+                    'content' => '您购买的卡密商品已支付成功，支付金额' . $orderInfo['pay_price'] . '元，订单号：' . $orderInfo['order_id'] . '，卡号：' . $virtual->card_no . '；密码：' . $virtual->card_pwd . '，感谢您的光临！'
+                ]);
+            }
+            $statusService->save([
+                'oid' => $orderInfo['id'],
+                'change_type' => 'delivery_fictitious',
+                'change_message' => '卡密自动发货',
+                'change_time' => time()
             ]);
         } elseif ($orderInfo['virtual_type'] == 2) {
             $coupon_id = $orderInfo['cart_info'][$orderInfo['cart_id'][0]]['cart_info']['productInfo']['attrInfo']['coupon_id'];
@@ -94,7 +98,7 @@ class OrderPaySuccess implements ListenerInterface
             if ($issueService->setCoupon($coupon, [$orderInfo['uid']])) {
                 /** @var StoreOrderServices $orderService */
                 $orderService = app()->make(StoreOrderServices::class);
-                $orderService->update(['id' => $orderInfo['id']], ['status' => 1, 'virtual_info' => $coupon_id, 'remark' => '优惠券已自动发放']);
+                $orderService->update(['id' => $orderInfo['id']], ['status' => 1, 'delivery_type' => 'fictitious', 'virtual_info' => $coupon_id, 'remark' => '优惠券已自动发放']);
                 $this->SystemSend($orderInfo['uid'], [
                     'mark' => 'virtual_info',
                     'title' => '购买优惠券发放',
@@ -103,8 +107,25 @@ class OrderPaySuccess implements ListenerInterface
             } else {
                 throw new AdminException('您已有这张优惠券，请勿重复购买');
             }
+            $statusService->save([
+                'oid' => $orderInfo['id'],
+                'change_type' => 'delivery_fictitious',
+                'change_message' => '优惠券自动发货',
+                'change_time' => time()
+            ]);
         }
 
+        // 写入资金流水
+        if ($orderInfo['pay_type'] == 'weixin' || $orderInfo['pay_type'] == 'alipay') {
+            /** @var UserServices $userServices */
+            $userServices = app()->make(UserServices::class);
+            $userInfo = $userServices->get($orderInfo['uid']);
+            /** @var CapitalFlowServices $capitalFlowServices */
+            $capitalFlowServices = app()->make(CapitalFlowServices::class);
+            $orderInfo['nickname'] = $userInfo['nickname'];
+            $orderInfo['phone'] = $userInfo['phone'];
+            $capitalFlowServices->setFlow($orderInfo, 'order');
+        }
 
         //支付成功后发送消息
         OrderJob::dispatch([$orderInfo]);

@@ -177,7 +177,7 @@
 			/**
 			 * 立即评价
 			 */
-			formSubmit: function(e) {
+			formSubmit(e) {
 				let formId = e.detail.formId,
 					value = e.detail.value,
 					that = this,
@@ -197,7 +197,7 @@
 					uni.hideLoading();
 					if (res.data.to_lottery) {
 						let jumpPath = '/pages/users/goods_comment_con/lottery_comment?type=4&order_id=' + that
-							.orderId
+							.orderId + '&date=' + Date.parse(new Date())
 						that.$util.Tips({
 							title: '感谢您的评价!',
 							icon: 'success'

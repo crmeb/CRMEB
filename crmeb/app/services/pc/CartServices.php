@@ -17,8 +17,7 @@ use app\services\BaseServices;
 use app\services\order\StoreCartServices;
 use app\services\product\product\StoreProductServices;
 use app\services\system\SystemUserLevelServices;
-use app\services\user\MemberCardServices;
-use app\services\user\UserLevelServices;
+use app\services\user\member\MemberCardServices;
 use app\services\user\UserServices;
 
 class CartServices extends BaseServices

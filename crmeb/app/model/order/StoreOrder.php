@@ -11,7 +11,7 @@
 
 namespace app\model\order;
 
-use app\model\activity\StorePink;
+use app\model\activity\combination\StorePink;
 use app\model\system\store\SystemStore;
 use app\model\system\store\SystemStoreStaff;
 use app\model\user\User;
@@ -69,6 +69,26 @@ class StoreOrder extends BaseModel
     }
 
     /**
+     * 自定义表单修改器
+     * @param $value
+     * @return array|mixed
+     */
+    public function setCustomFormAttr($value)
+    {
+        return is_array($value) ? json_encode($value) : $value;
+    }
+
+    /**
+     * 自定义表单获取器
+     * @param $value
+     * @return array|mixed
+     */
+    public function getCustomFormAttr($value)
+    {
+        return is_string($value) ? json_decode($value, true) ?? [] : [];
+    }
+
+    /**
      * 一对多关联查询子订单
      * @return \think\model\relation\HasMany
      */
@@ -89,6 +109,13 @@ class StoreOrder extends BaseModel
         ]);
     }
 
+    public function division()
+    {
+        return $this->hasOne(User::class, 'uid', 'division_id')->field(['uid', 'nickname'])->bind([
+            'division_name' => 'nickname'
+        ]);
+    }
+
     /**
      * 一对一关联上级用户信息
      * @return \think\model\relation\HasOne
@@ -106,7 +133,7 @@ class StoreOrder extends BaseModel
      */
     public function pink()
     {
-        return $this->hasOne(StorePink::class, 'order_id_key', 'id')->field(['order_id_key', 'status'])->bind([
+        return $this->hasOne(StorePink::class, 'id', 'pink_id')->field(['id', 'order_id_key', 'status'])->bind([
             'pinkStatus' => 'status'
         ]);
     }
@@ -156,6 +183,15 @@ class StoreOrder extends BaseModel
     }
 
     /**
+     * 一对多关联退款订单
+     * @return \think\model\relation\hasMany
+     */
+    public function refund()
+    {
+        return $this->hasMany(StoreOrderRefund::class, 'store_order_id', 'id')->where('refund_type', '<>', 3)->where('is_cancel', 0);
+    }
+
+    /**
      * 购物车ID修改器
      * @param $value
      * @return false|string
@@ -194,7 +230,7 @@ class StoreOrder extends BaseModel
     public function searchPidAttr($query, $value)
     {
         if ($value === 0) {
-            $query->whereIn('pid', [0, -1]);
+            $query->where('pid', '>=', 0);
         } else {
             $query->where('pid', $value);
         }
@@ -488,5 +524,46 @@ class StoreOrder extends BaseModel
     public function searchSpreadTwoUidAttr($query, $value)
     {
         if ($value) $query->where('spread_two_uid', $value);
+    }
+
+    /**
+     * 支付渠道
+     * @param $query
+     * @param $value
+     */
+    public function searchIsChannelAttr($query, $value)
+    {
+        if ($value !== '') $query->where('is_channel', $value);
+    }
+
+    /**
+     * 活动查询0普通，1秒杀，2砍价，3拼团，4预售
+     * @param $query
+     * @param $value
+     * @param $data
+     */
+    public function searchActivityTypeAttr($query, $value, $data)
+    {
+        if ($value !== '') {
+            switch ($value) {
+                case 0:
+                    $query->where('combination_id', 0)->where('seckill_id', 0)->where('bargain_id', 0)->where('advance_id', 0);
+                    break;
+                case 1:
+                    $query->where('seckill_id', '>', 0);
+                    break;
+                case 2:
+                    $query->where('bargain_id', '>', 0);
+                    break;
+                case 3:
+                    $query->where('combination_id', '>', 0);
+                    break;
+                case 4:
+                    $query->where('advance_id', '>', 0);
+                    break;
+                default:
+                    break;
+            }
+        }
     }
 }

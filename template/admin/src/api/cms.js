@@ -66,6 +66,16 @@ export function categoryListApi (params) {
         params
     })
 }
+/**
+ * @description 文章分类--新版列表
+ * @param {Object} param params {Object} 传值
+ */
+ export function categoryTreeListApi () {
+    return request({
+        url: `cms/category_tree_list`,
+        method: 'GET',
+    })
+}
 
 /**
  * @description 文章分类--编辑表单

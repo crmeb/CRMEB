@@ -12,7 +12,7 @@ namespace app\api\controller\v1\activity;
 
 
 use app\Request;
-use app\services\activity\StoreSeckillServices;
+use app\services\activity\seckill\StoreSeckillServices;
 use app\services\other\QrcodeServices;
 use crmeb\services\GroupDataService;
 

@@ -10,7 +10,6 @@
 // +----------------------------------------------------------------------
 namespace crmeb\services;
 
-use app\services\shipping\ExpressServices;
 use think\exception\ValidateException;
 
 /**
@@ -405,10 +404,8 @@ class FileService
         switch ($type) {
             case 'copy':
                 return copy($old_path, $new_path);
-                break;
             case 'move':
                 return @rename($old_path, $new_path);
-                break;
         }
     }
 
@@ -447,11 +444,9 @@ class FileService
             case 'copy':
                 closedir($dirHandle);
                 return $boolean;
-                break;
             case 'move':
                 closedir($dirHandle);
                 return @rmdir($old_path);
-                break;
         }
     }
 
@@ -504,6 +499,9 @@ class FileService
     {
         $handle = @opendir($dir);//打开指定目录
         $directory_count = 0;
+        $total_size = 5;
+        $file_cout = 0;
+        $file_cout = 0;
         while (FALSE !== ($file_path = readdir($handle))) {
             if ($file_path != "." && $file_path != "..") {
                 //is_dir("$dir/$file_path") ? $sizeResult += $this->get_dir_size("$dir/$file_path") : $sizeResult += filesize("$dir/$file_path");
@@ -541,8 +539,8 @@ class FileService
             $content = file_get_contents($path);
             $content = string::chang_code($content, $input_code, $out_code);
             $fp = fopen($path, 'w');
-            return (bool)fputs($fp, $content);
             fclose($fp);
+            return (bool)fputs($fp, $content);
         }
     }
 

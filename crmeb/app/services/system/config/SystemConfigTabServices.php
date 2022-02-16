@@ -108,7 +108,7 @@ class SystemConfigTabServices extends BaseServices
             ['value' => 3, 'label' => '其它']
         ]);
         $form[] = Form::radio('status', '状态', $formData['status'] ?? 1)->options([['value' => 1, 'label' => '显示'], ['value' => 2, 'label' => '隐藏']]);
-        $form[] = Form::number('sort', '排序', (int)($formData['sort'] ?? 0));
+        $form[] = Form::number('sort', '排序', (int)($formData['sort'] ?? 0))->precision(0);
         return $form;
     }
 

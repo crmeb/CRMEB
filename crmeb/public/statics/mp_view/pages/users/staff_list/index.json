@@ -1,0 +1,10 @@
+{
+  "navigationBarTitleText": "员工列表",
+  "navigationBarBackgroundColor": "#e93323",
+  "navigationBarTextStyle": "white",
+  "usingComponents": {
+    "zb-code": "/components/zb-code/zb-code",
+    "authorize": "/components/Authorize",
+    "home": "/components/home/index"
+  }
+}

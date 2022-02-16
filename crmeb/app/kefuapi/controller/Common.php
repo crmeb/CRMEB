@@ -96,7 +96,7 @@ class Common extends BaseController
                     $userInfo['avatar'] = $infoList[$toUid]['avatar'];
                 }
             }
-            $userInfo['tourist_uid'] = $uid ? $uid : $tourist_uid;
+            $userInfo['tourist_uid'] = $uid ?: $tourist_uid;
             $tourist_avatar = sys_config('tourist_avatar');
             $avatar = Arr::getArrayRandKey(is_array($tourist_avatar) ? $tourist_avatar : []);
             $userInfo['tourist_avatar'] = $uid ? '' : $avatar;

@@ -10,12 +10,13 @@
 // +----------------------------------------------------------------------
 namespace crmeb\subscribes;
 
-use app\services\activity\StorePinkServices;
+use app\services\activity\combination\StorePinkServices;
 use app\services\agent\AgentManageServices;
-use app\services\live\LiveGoodsServices;
-use app\services\live\LiveRoomServices;
+use app\services\activity\live\LiveGoodsServices;
+use app\services\activity\live\LiveRoomServices;
 use app\services\order\StoreOrderServices;
 use app\services\order\StoreOrderTakeServices;
+use app\services\product\product\StoreProductServices;
 use app\services\system\attachment\SystemAttachmentServices;
 use think\facade\Log;
 
@@ -118,5 +119,9 @@ class TaskSubscribe
         /** @var SystemAttachmentServices $attach */
         $attach = app()->make(SystemAttachmentServices::class);
         $attach->emptyYesterdayAttachment();
+        //查询预售到期商品自动下架
+        /** @var StoreProductServices $product */
+        $product = app()->make(StoreProductServices::class);
+        $product->downAdvance();
     }
 }

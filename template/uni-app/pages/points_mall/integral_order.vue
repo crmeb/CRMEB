@@ -326,7 +326,7 @@
 				}
 				if (parseFloat(that.resData.integral) < parseFloat(that.cartInfo.price))
 					return that.$util.Tips({
-						title: '积分不足！'
+						title: '可用积分不足！'
 					});
 				let data = {
 					addressId: that.addressId,

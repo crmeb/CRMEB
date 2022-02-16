@@ -136,7 +136,7 @@ class StoreIntegralServices extends BaseServices
                 $product['description'] = $storeDescriptionServices->getDescription(['product_id' => $productInfo['id'], 'type' => 0]);
                 $product['attrs'] = $v;
                 $product['items'] = $result['attr'];
-                $product['is_show'] = isset($data['is_show']) ? $data['is_show'] : 0;
+                $product['is_show'] = $data['is_show'] ?? 0;
                 $product['title'] = $productInfo['store_name'];
                 $product['unit_name'] = $productInfo['unit_name'];
                 $product['image'] = $productInfo['image'];
@@ -214,7 +214,7 @@ class StoreIntegralServices extends BaseServices
             $header[] = ['title' => $item['value'], 'key' => 'value' . ($key + 1), 'align' => 'center', 'minWidth' => 80];
         }
         $header[] = ['title' => '图片', 'slot' => 'pic', 'align' => 'center', 'minWidth' => 120];
-        $header[] = ['title' => '兑换积分', 'key' => 'price', 'type' => 1, 'align' => 'center', 'minWidth' => 80];
+        $header[] = ['title' => '兑换积分', 'slot' => 'price', 'align' => 'center', 'minWidth' => 80];
         $header[] = ['title' => '库存', 'key' => 'stock', 'align' => 'center', 'minWidth' => 80];
         $header[] = ['title' => '兑换次数', 'key' => 'quota', 'type' => 1, 'align' => 'center', 'minWidth' => 80];
         $header[] = ['title' => '重量(KG)', 'key' => 'weight', 'align' => 'center', 'minWidth' => 80];
@@ -259,7 +259,7 @@ class StoreIntegralServices extends BaseServices
                 $valueNew[$count]['volume'] = $sukValue[$suk]['volume'] ? floatval($sukValue[$suk]['volume']) : 0;
                 $valueNew[$count]['brokerage'] = $sukValue[$suk]['brokerage'] ? floatval($sukValue[$suk]['brokerage']) : 0;
                 $valueNew[$count]['brokerage_two'] = $sukValue[$suk]['brokerage_two'] ? floatval($sukValue[$suk]['brokerage_two']) : 0;
-                $valueNew[$count]['_checked'] = $type != 0 ? true : false;
+                $valueNew[$count]['_checked'] = $type != 0;
                 $count++;
             }
         }

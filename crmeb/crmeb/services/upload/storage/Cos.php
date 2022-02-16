@@ -23,6 +23,13 @@ use QCloud\COSSTS\Sts;
  */
 class Cos extends BaseUpload
 {
+
+    /**
+     * 应用id
+     * @var string
+     */
+    protected $appid;
+
     /**
      * accessKey
      * @var mixed
@@ -84,6 +91,7 @@ class Cos extends BaseUpload
     {
         parent::initialize($config);
         $this->accessKey = $config['accessKey'] ?? null;
+        $this->appid = $config['appid'] ?? null;
         $this->secretKey = $config['secretKey'] ?? null;
         $this->uploadUrl = $this->checkUploadUrl($config['uploadUrl'] ?? '');
         $this->storageName = $config['storageName'] ?? null;
@@ -184,10 +192,11 @@ class Cos extends BaseUpload
     /**
      * 缩略图
      * @param string $filePath
+     * @param string $fileName
      * @param string $type
-     * @return mixed|string[]
+     * @return array|mixed
      */
-    public function thumb(string $filePath = '', string $type = 'all')
+    public function thumb(string $filePath = '', string $fileName = '', string $type = 'all')
     {
         $filePath = $this->getFilePath($filePath);
         $data = ['big' => $filePath, 'mid' => $filePath, 'small' => $filePath];
@@ -354,5 +363,286 @@ class Cos extends BaseUpload
             }
         }
         return $compat;
+    }
+
+    /**
+     * 桶列表
+     * @param string|null $region
+     * @param bool $line
+     * @param bool $shared
+     * @return array|mixed
+     *  "Name" => "record-1254950941"
+     * "Location" => "ap-chengdu"
+     * "CreationDate" => "2019-05-16T08:33:29Z"
+     * "BucketType" => "cos"
+     */
+    public function listbuckets(string $region = null, bool $line = false, bool $shared = false)
+    {
+        try {
+            $res = $this->app()->listBuckets();
+            return $res->toArray()['Buckets'][0]['Bucket'] ?? [];
+        } catch (\Throwable $e) {
+            return [];
+        }
+    }
+
+    /**
+     * 创建桶
+     * @param string $name
+     * @param string $region
+     * @param string $acl public-read=公共独写
+     * @return bool|mixed
+     */
+    public function createBucket(string $name, string $region = '', string $acl = 'public-read')
+    {
+        $regionData = $this->getRegion();
+        $regionData = array_column($regionData, 'value');
+        if (!in_array($region, $regionData)) {
+            return $this->setError('COS:无效的区域!');
+        }
+        $this->storageRegion = $region;
+        $app = $this->app();
+        //检测桶
+        try {
+            $app->headBucket(['Bucket' => $name . '-' . $this->appid]);
+        } catch (\Throwable $e) {
+            //桶不存在返回404
+            if (strstr('404', $e->getMessage())) {
+                return $this->setError('COS:' . $e->getMessage());
+            }
+        }
+        //创建桶
+        try {
+            $res = $app->createBucket(['Bucket' => $name . '-' . $this->appid, 'ACL' => $acl]);
+        } catch (\Throwable $e) {
+            if (strstr('[curl] 6', $e->getMessage())) {
+                return $this->setError('COS:无效的区域!!');
+            } else if (strstr('Access Denied.', $e->getMessage())) {
+                return $this->setError('COS:无权访问');
+            }
+            return $this->setError('COS:' . $e->getMessage());
+        }
+        return $res;
+    }
+
+    /**
+     * 删除桶
+     * @param string $name
+     * @return bool|mixed
+     */
+    public function deleteBucket(string $name)
+    {
+        try {
+            $res = $this->app()->deleteBucket(['Bucket' => $name]);
+            if ($res->get('RequestId')) {
+                return true;
+            }
+        } catch (\Throwable $e) {
+            return $this->setError($e->getMessage());
+        }
+        return false;
+    }
+
+    /**
+     * @param string $name
+     * @param string|null $region
+     * @return array|object
+     */
+    public function getDomian(string $name, string $region = null)
+    {
+        $this->storageRegion = $region;
+        try {
+            $res = $this->app()->GetBucketDomain([
+                'Bucket' => $name,
+            ]);
+            $domainRules = $res->toArray()['DomainRules'];
+            return array_column($domainRules, 'Name');
+        } catch (\Throwable $e) {
+        }
+        return [];
+    }
+
+    /**
+     * 绑定域名
+     * @param string $name
+     * @param string $domain
+     * @param string|null $region
+     * @return bool|mixed
+     */
+    public function bindDomian(string $name, string $domain, string $region = null)
+    {
+        $this->storageRegion = $region;
+        $parseDomin = parse_url($domain);
+        try {
+            $res = $this->app()->putBucketDomain([
+                'Bucket' => $name,
+                'DomainRules' => [
+                    [
+                        'Name' => $parseDomin['host'],
+                        'Status' => 'ENABLED',
+                        'Type' => 'REST',
+                        'ForcedReplacement' => 'CNAME'
+                    ]
+                ]
+            ]);
+            $res = $res->toArray();
+            if ($res['RequestId'] ?? null) {
+                return true;
+            }
+        } catch (\Throwable $e) {
+            if ($message = $this->setMessage($e->getMessage())) {
+                return $this->setError($message);
+            }
+            return $this->setError($e->getMessage());
+        }
+        return false;
+    }
+
+    /**
+     * 处理
+     * @param string $message
+     * @return string
+     */
+    protected function setMessage(string $message)
+    {
+        $data = [
+            'The specified bucket does not exist.' => '指定的存储桶不存在。',
+            'Please add CNAME/TXT record to DNS then try again later. Please allow up to 10 mins before your DNS takes effect.' => '请将CNAME记录添加到DNS，然后稍后重试。在DNS生效前，请等待最多10分钟。'
+        ];
+        $msg = $data[$message] ?? '';
+        if ($msg) {
+            return $msg;
+        }
+        foreach ($data as $item) {
+            if (strstr($message, $item)) {
+                return $item;
+            }
+        }
+        return '';
+    }
+
+    /**
+     * 设置跨域
+     * @param string $name
+     * @param string $region
+     * @return bool
+     */
+    public function setBucketCors(string $name, string $region)
+    {
+        $this->storageRegion = $region;
+        try {
+            $res = $this->app()->PutBucketCors([
+                'Bucket' => $name,
+                'CORSRules' => [
+                    [
+                        'AllowedHeaders' => ['*'],
+                        'AllowedMethods' => ['PUT', 'GET', 'POST', 'DELETE', 'HEAD'],
+                        'AllowedOrigins' => ['*'],
+                        'ExposeHeaders' => ['ETag', 'Content-Length', 'x-cos-request-id'],
+                        'MaxAgeSeconds' => 12
+                    ]
+                ]
+            ]);
+            if (isset($res['RequestId'])) {
+                return true;
+            }
+        } catch (\Throwable $e) {
+            return $this->setError($e->getMessage());
+        }
+        return false;
+    }
+
+    /**
+     * 地域
+     * @return mixed|\string[][]
+     */
+    public function getRegion()
+    {
+        return [
+            [
+                'value' => 'ap-chengdu',
+                'label' => '成都'
+            ],
+            [
+                'value' => 'ap-shanghai',
+                'label' => '上海'
+            ],
+            [
+                'value' => 'ap-nanjing',
+                'label' => '南京'
+            ],
+            [
+                'value' => 'ap-beijing',
+                'label' => '北京'
+            ],
+            [
+                'value' => 'ap-chongqing',
+                'label' => '重庆'
+            ],
+            [
+                'value' => 'ap-shenzhen-fsi',
+                'label' => '深圳金融'
+            ],
+            [
+                'value' => 'ap-shanghai-fsi',
+                'label' => '上海金融'
+            ],
+            [
+                'value' => 'ap-beijing-fsi',
+                'label' => '北京金融'
+            ],
+            [
+                'value' => 'ap-hongkong',
+                'label' => '中国香港'
+            ],
+            [
+                'value' => 'ap-singapore',
+                'label' => '新加坡'
+            ],
+            [
+                'value' => 'ap-mumbai',
+                'label' => '孟买'
+            ],
+            [
+                'value' => 'ap-jakarta',
+                'label' => '雅加达'
+            ],
+            [
+                'value' => 'ap-seoul',
+                'label' => '首尔'
+            ],
+            [
+                'value' => 'ap-bangkok',
+                'label' => '曼谷'
+            ],
+            [
+                'value' => 'ap-tokyo',
+                'label' => '东京'
+            ],
+            [
+                'value' => 'na-siliconvalley',
+                'label' => '硅谷（美西）'
+            ],
+            [
+                'value' => 'na-ashburn',
+                'label' => '弗吉尼亚（美东）'
+            ],
+            [
+                'value' => 'na-toronto',
+                'label' => '多伦多'
+            ],
+            [
+                'value' => 'sa-saopaulo',
+                'label' => '圣保罗'
+            ],
+            [
+                'value' => 'eu-frankfurt',
+                'label' => '法兰克福'
+            ],
+            [
+                'value' => 'eu-moscow',
+                'label' => '莫斯科'
+            ]
+        ];
     }
 }

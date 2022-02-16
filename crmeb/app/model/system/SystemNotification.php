@@ -13,7 +13,6 @@ namespace app\model\system;
 
 use crmeb\basic\BaseModel;
 use crmeb\traits\ModelTrait;
-use think\Model;
 
 /**
  * 系统等级设置模型

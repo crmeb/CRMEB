@@ -238,8 +238,10 @@ export default {
       "orderType",
     ]),
   },
-  mounted() {},
-  created() {
+  mounted() {
+    this.getList();
+  },
+  activated() {
     this.getList();
   },
   watch: {

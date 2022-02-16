@@ -51,8 +51,12 @@ class AgentLevel
     /**
      * 获取等级任务
      * @param Request $request
+     * @param AgentLevelTaskServices $services
      * @param $id
      * @return mixed
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
      */
     public function levelTaskList(Request $request, AgentLevelTaskServices $services, $id)
     {

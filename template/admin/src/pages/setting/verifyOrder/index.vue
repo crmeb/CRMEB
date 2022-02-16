@@ -47,7 +47,6 @@
                 </Row>
             </Form>
         </Card>
-        <cards-data :cardLists="cardLists" v-if="cardLists.length>0"></cards-data>
         <Card :bordered="false" dis-hover>
             <Table :columns="columns" :data="orderList"
                    ref="table"
@@ -117,7 +116,6 @@
                 },
                 timeVal: [],
                 storeSelectList: [],
-                cardLists: [],
                 columns: [
                     {
                         title: '订单号',
@@ -190,7 +188,6 @@
                     that.loading = false
                     that.orderList = res.data.data
                     that.total = res.data.count
-                    that.cardLists = res.data.badge
                 }).catch(res => {
                     that.$Message.error(res.msg)
                 })

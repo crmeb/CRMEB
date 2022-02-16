@@ -49,7 +49,7 @@ class AllowOriginMiddleware implements MiddlewareInterface
         } else {
             $response = $next($request)->header($header);
         }
-        $request->filter(['strip_tags', 'addslashes', 'trim']);
+//        $request->filter(['strip_tags', 'addslashes', 'trim']);
         return $response;
     }
 }

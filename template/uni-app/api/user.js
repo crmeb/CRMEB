@@ -514,6 +514,21 @@ export function memberCouponsList() {
 	return request.get('user/member/coupons/list');
 }
 
+/**
+ * svip推荐商品
+ * @param {Object} id
+ */
+export function groomList(id, data) {
+	return request.get(`groom/list/${id}`, data);
+}
+
+/**
+ * 付费会员结束
+ * @param {Object} data
+ */
+export function memberOverdueTime(data) {
+	return request.get('user/member/overdue/time', data);
+}
 
 /**
  * 新版分享海报信息获取
@@ -594,4 +609,39 @@ export function agentLevelList() {
  */
 export function agentLevelTaskList(id) {
 	return request.get('v2/agent/level_task_list?id=' + id);
+}
+
+/**
+ * 获取代付详情
+ * @param int id 任务id
+ */
+export function friendDetail(id) {
+	return request.get('order/friend_detail?order_id=' + id);
+}
+
+/**
+ * 员工列表
+ * @param object data
+ * 
+*/
+export function clerkPeople(data){
+  return request.get('agent/get_staff_list',data)
+}
+
+/**
+ * 
+ * 员工比例
+ * @param object data
+*/
+export function setClerkPercent(data){
+  return request.post('agent/set_staff_percent',data);
+}
+
+/**
+ * 
+ * 删除员工
+ * @param object data
+*/
+export function delClerkPercent(id){
+  return request.get(`agent/del_staff/${id}`);
 }

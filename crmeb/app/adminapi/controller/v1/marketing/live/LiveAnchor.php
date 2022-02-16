@@ -11,7 +11,7 @@
 namespace app\adminapi\controller\v1\marketing\live;
 
 use app\adminapi\controller\AuthController;
-use app\services\live\LiveAnchorServices;
+use app\services\activity\live\LiveAnchorServices;
 use think\facade\App;
 
 /**

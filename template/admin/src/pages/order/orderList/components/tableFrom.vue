@@ -16,74 +16,18 @@
               type="button"
               @on-change="selectChange2(orderData.status)"
             >
-              <Radio label=""
-                >全部
-                {{
-                  "(" + orderChartType.statusAll
-                    ? orderChartType.statusAll
-                    : 0 + ")"
-                }}</Radio
-              >
-              <Radio label="0"
-                >未支付
-                {{
-                  "(" + orderChartType.unpaid ? orderChartType.unpaid : 0 + ")"
-                }}</Radio
-              >
-              <Radio label="1"
-                >未发货
-                {{
-                  "(" + orderChartType.unshipped
-                    ? orderChartType.unshipped
-                    : 0 + ")"
-                }}</Radio
-              >
-              <Radio label="2"
-                >待收货
-                {{
-                  "(" + orderChartType.untake ? orderChartType.untake : 0 + ")"
-                }}</Radio
-              >
-              <Radio label="3"
-                >待评价
-                {{
-                  "(" + orderChartType.unevaluate
-                    ? orderChartType.unevaluate
-                    : 0 + ")"
-                }}</Radio
-              >
-              <Radio label="4"
-                >交易完成
-                {{
-                  "(" + orderChartType.complete
-                    ? orderChartType.complete
-                    : 0 + ")"
-                }}</Radio
-              >
-              <Radio label="5"
-                >待核销
-                {{
-                  "(" + orderChartType.write_off
-                    ? orderChartType.write_off
-                    : 0 + ")"
-                }}</Radio
-              >
-              <Radio label="6"
-                >已核销
-                {{
-                  "(" + orderChartType.write_offed
-                    ? orderChartType.write_offed
-                    : 0 + ")"
-                }}</Radio
-              >
+              <Radio label="">全部</Radio>
+              <Radio label="0">未支付</Radio>
+              <Radio label="1">未发货</Radio>
+              <Radio label="2">待收货</Radio>
+              <Radio label="3">待评价</Radio>
+              <Radio label="4">交易完成</Radio>
+              <Radio label="5">待核销</Radio>
+              <Radio label="6">已核销</Radio>
               <!--                                <Radio label="-1">退款中 {{  '(' +orderChartType.refunding?orderChartType.refunding:0+ ')' }}</Radio>-->
               <!--                                <Radio label="-2">已退款 {{  '(' +orderChartType.refund?orderChartType.refund:0+ ')' }}</Radio>-->
-              <Radio label="-4"
-                >已删除
-                {{
-                  "(" + orderChartType.del ? orderChartType.del : 0 + ")"
-                }}</Radio
-              >
+              <Radio label="-2">已退款</Radio>
+              <Radio label="-4">已删除</Radio>
             </RadioGroup>
           </FormItem>
         </Col>
@@ -100,7 +44,7 @@
             </RadioGroup>
           </FormItem>
         </Col>
-        <Col span="24" class="ivu-text-left">
+        <Col span="8" class="ivu-text-left">
           <FormItem label="创建时间：">
             <DatePicker
               :editable="false"
@@ -116,8 +60,8 @@
             ></DatePicker>
           </FormItem>
         </Col>
-        <Col span="24">
-          <Col v-bind="grid" class="mr">
+        <Col span="16">
+          <Col span="12" class="mr">
             <FormItem label="搜索：" prop="real_name" label-for="real_name">
               <Input
                 v-model="orderData.real_name"
@@ -437,10 +381,12 @@ export default {
     // 导出
     exports() {
       let formValidate = this.orderData;
+      let id = this.delIdList;
       let data = {
         status: formValidate.status,
         data: formValidate.data,
         real_name: formValidate.real_name,
+        ids: id.join(),
       };
       storeOrderApi(data)
         .then((res) => {

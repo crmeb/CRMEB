@@ -177,6 +177,7 @@ class SystemGroupData extends AuthController
         $params = request()->post();
         $this->checkSeckillTime($services, $groupData["gid"], $params, $id);
         $this->checkSign($services, $groupData["gid"], $params);
+        $value = [];
         foreach ($params as $key => $param) {
             foreach ($fields as $index => $field) {
                 if ($key == $field["title"]) {

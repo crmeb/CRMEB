@@ -83,6 +83,7 @@ function _toLogin(push, pathLogin) {
 			});
 		}
 
+
 	} else {
 		uni.navigateTo({
 			url: '/pages/users/login/index'
@@ -96,6 +97,7 @@ function _toLogin(push, pathLogin) {
 	// })
 	Routine.getCode()
 		.then(code => {
+			console.log(code)
 			Routine.silenceAuth(code).then(res => {
 				console.log(res)
 			})
@@ -116,9 +118,10 @@ function _toLogin(push, pathLogin) {
 
 export function checkLogin() {
 	let token = Cache.get(LOGIN_STATUS);
+	// let token
 	let expiresTime = Cache.get(EXPIRES_TIME);
-	let newTime = Math.round(new Date() / 1000);
-	if (expiresTime < newTime || !token) {
+	// let newTime = Math.round(new Date() / 1000);
+	if (!token) {
 		uni.setStorageSync('authIng', false)
 		Cache.clear(LOGIN_STATUS);
 		Cache.clear(EXPIRES_TIME);

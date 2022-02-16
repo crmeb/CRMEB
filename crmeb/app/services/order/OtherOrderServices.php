@@ -15,10 +15,11 @@ namespace app\services\order;
 use app\dao\order\OtherOrderDao;
 use app\services\BaseServices;
 use app\services\pay\PayServices;
-use app\services\user\MemberShipServices;
+use app\services\statistic\CapitalFlowServices;
+use app\services\user\member\MemberShipServices;
 use app\services\user\UserBillServices;
 use app\services\user\UserServices;
-use app\services\user\MemberCardServices;
+use app\services\user\member\MemberCardServices;
 use think\App;
 use app\jobs\OtherOrderJob;
 use think\exception\ValidateException;
@@ -53,22 +54,22 @@ class OtherOrderServices extends BaseServices
         if (!$data) throw new ValidateException('数据不能为空');
         $add = [
             'uid' => $data['uid'],
-            'type' => isset($data['type']) ? $data['type'] : 1,
+            'type' => $data['type'] ?? 1,
             'order_id' => $data['order_id'],
             'channel_type' => $data['channel_type'],
-            'pay_type' => isset($data['pay_type']) ? $data['pay_type'] : 0,
-            'member_type' => isset($data['member_type']) ? $data['member_type'] : 0,
-            'member_price' => isset($data['member_price']) ? $data['member_price'] : 0.00,
-            'pay_price' => isset($data['pay_price']) ? $data['pay_price'] : 0.00,
-            'code' => isset($data['member_code']) ? $data['member_code'] : "",
-            'vip_day' => isset($data['vip_day']) ? $data['vip_day'] : 0,
-            'is_permanent' => isset($data['is_permanent']) ? $data['is_permanent'] : 0,
-            'is_free' => isset($data['is_free']) ? $data['is_free'] : 0,
-            'overdue_time' => isset($data['overdue_time']) ? $data['overdue_time'] : 0,
+            'pay_type' => $data['pay_type'] ?? 0,
+            'member_type' => $data['member_type'] ?? 0,
+            'member_price' => $data['member_price'] ?? 0.00,
+            'pay_price' => $data['pay_price'] ?? 0.00,
+            'code' => $data['member_code'] ?? "",
+            'vip_day' => $data['vip_day'] ?? 0,
+            'is_permanent' => $data['is_permanent'] ?? 0,
+            'is_free' => $data['is_free'] ?? 0,
+            'overdue_time' => $data['overdue_time'] ?? 0,
             'status' => 0,
-            'paid' => isset($data['paid']) ? $data['paid'] : 0,
-            'pay_time' => isset($data['pay_time']) ? $data['pay_time'] : 0,
-            'money' => isset($data['money']) ? $data['money'] : 0,
+            'paid' => $data['paid'] ?? 0,
+            'pay_time' => $data['pay_time'] ?? 0,
+            'money' => $data['money'] ?? 0,
             'add_time' => time(),
         ];
         return $this->dao->save($add);
@@ -96,7 +97,7 @@ class OtherOrderServices extends BaseServices
         $freeConfig['pre_price'] = 0;
         $freeConfig['title'] = "免费会员";
         $freeConfig['type'] = "free";
-        $freeConfig['vip_day'] = $freeDay ? $freeDay : 0;
+        $freeConfig['vip_day'] = $freeDay ?: 0;
         $userInfo = $userService->get($uid);
         if ($freeConfig) {
             $freeConfig['is_record'] = 0;
@@ -238,7 +239,7 @@ class OtherOrderServices extends BaseServices
             $orderInfo['type'] = $type;
             $orderInfo['member_code'] = "";
             $changeType = "create_offline_scan_order";
-            $orderInfo['money'] = $money ? $money : $payPrice;
+            $orderInfo['money'] = $money ?: $payPrice;
         }
         $memberOrder = $this->addOtherOrderData($orderInfo);
         if (!$memberOrder) {
@@ -288,9 +289,11 @@ class OtherOrderServices extends BaseServices
         $userServices = app()->make(UserServices::class);
         /** @var UserBillServices $userBillServices */
         $userBillServices = app()->make(UserBillServices::class);
+        $type = 'pay_member';
+        $res1 = true;
         switch ($orderInfo['type']) {
             case 0 :
-            case 1:
+            case 1 :
             case 2 :
                 $type = "pay_member";
                 $res1 = $userServices->setMemberOverdueTime($orderInfo['vip_day'], $orderInfo['uid'], 1, $orderInfo['member_type']);
@@ -321,6 +324,17 @@ class OtherOrderServices extends BaseServices
         OtherOrderJob::dispatch([$orderInfo]);
         $orderInfo['is_channel'] = 2;
         $orderInfo['total_num'] = 1;
+
+        if ($orderInfo['pay_type'] != 'yue') {
+            /** @var CapitalFlowServices $capitalFlowServices */
+            $capitalFlowServices = app()->make(CapitalFlowServices::class);
+            $userInfo = $userServices->get($orderInfo['uid']);
+            $orderInfo['nickname'] = $userInfo['nickname'];
+            $orderInfo['phone'] = $userInfo['phone'];
+            $capitalFlowServices->setFlow($orderInfo, $type);
+        }
+
+
         //用户推送消息事件
         event('notice.notice', [$orderInfo, 'order_pay_success']);
         //支付成功给客服发送消息
@@ -386,7 +400,6 @@ class OtherOrderServices extends BaseServices
                 break;
             default:
                 throw new ValidateException('此类型会员卡暂未开售！');
-                break;
         }
         //return compact('member_price', 'is_free', 'is_permanent', 'overdue_time', 'type');
         return [$memberPrice, $isFree, $isPermanent, $overdueTime, $type, $newMemberRight];

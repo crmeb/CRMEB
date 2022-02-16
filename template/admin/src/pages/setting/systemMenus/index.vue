@@ -209,7 +209,7 @@ export default {
     // 请求列表
     getList() {
       this.formValidate = Object.assign({}, this.$options.data().formValidate);
-      this.getData();
+      // this.getData();
     },
     selectRule(data) {
       this.formValidate.menu_name = data.real_name;
@@ -223,7 +223,6 @@ export default {
     // 添加子菜单
     addE(row, title) {
       this.formValidate = {};
-
       let pid = row.id.toString();
       if (pid) {
         menusDetailsApi(row.id)
@@ -235,7 +234,8 @@ export default {
             this.$refs.menusFrom.valids = false;
             this.titleFrom = title;
             this.formValidate.auth_type = 1;
-            this.formValidate.is_show = "0";
+            this.formValidate.is_show = 0;
+            this.formValidate.is_show_path = 0;
           })
           .catch((res) => {
             this.$Message.error(res.msg);
@@ -246,7 +246,8 @@ export default {
         this.$refs.menusFrom.valids = false;
         this.titleFrom = title;
         this.formValidate.auth_type = 1;
-        this.formValidate.is_show = "0";
+        this.formValidate.is_show = 0;
+        this.formValidate.is_show_path = 0;
       }
       // this.formValidate.pid = row.id.toString();
       // this.$refs.menusFrom.modals = true;
@@ -266,7 +267,7 @@ export default {
       this.$modalSure(delfromData)
         .then((res) => {
           this.$Message.success(res.msg);
-          this.getData();
+          // this.getData();
           this.$store.dispatch("admin/menus/getMenusNavList");
         })
         .catch((res) => {

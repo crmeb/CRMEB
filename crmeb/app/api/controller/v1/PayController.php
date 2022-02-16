@@ -35,13 +35,10 @@ class PayController
         switch (urldecode($type)) {
             case 'alipay':
                 return AliPayService::handleNotify();
-                break;
             case 'wechat':
                 return WechatService::handleNotify()->getContent();
-                break;
             case 'routine':
                 return MiniProgramService::handleNotify()->getContent();
-                break;
         }
     }
 }

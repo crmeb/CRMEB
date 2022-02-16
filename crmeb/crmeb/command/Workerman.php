@@ -20,7 +20,6 @@ use think\console\input\Argument;
 use think\console\input\Option;
 use think\console\Output;
 use Workerman\Worker;
-use crmeb\services\SystemConfigService;
 
 class Workerman extends Command
 {
@@ -86,7 +85,8 @@ class Workerman extends Command
         /** @var SystemConfigServices $services */
         $services = app()->make(SystemConfigServices::class);
         $sslConfig = $services->getSslFilePath();
-        $confing['wss_open'] = $sslConfig['wssOpen'] ?? 0;
+//        $confing['wss_open'] = $sslConfig['wssOpen'] ?? 0;
+        $confing['wss_open'] = 0;
         $confing['wss_local_cert'] = $sslConfig['wssLocalCert'] ?? '';
         $confing['wss_local_pk'] = $sslConfig['wssLocalpk'] ?? '';
         // 证书最好是申请的证书

@@ -16,6 +16,9 @@ use app\services\other\QrcodeServices;
 use app\services\system\attachment\SystemAttachmentServices;
 use app\services\system\config\SystemConfigServices;
 use app\services\user\UserBillServices;
+use app\services\user\UserBrokerageServices;
+use app\services\user\UserExtractServices;
+use app\services\user\UserMoneyServices;
 use crmeb\services\MiniProgramService;
 use crmeb\services\UploadService;
 use crmeb\services\UtilService;
@@ -75,7 +78,23 @@ class UserBillController
     public function spread_commission(Request $request, $type)
     {
         $uid = (int)$request->uid();
-        return app('json')->successful($this->services->getUserBillList($uid, $type));
+        $data = [];
+        switch ($type) {
+            case 0:
+            case 1:
+            case 2:
+                /** @var UserMoneyServices $moneyService */
+                $moneyService = app()->make(UserMoneyServices::class);
+                $data = $moneyService->getMoneyList($uid, $type);
+                break;
+            case 3:
+            case 4:
+                /** @var UserBrokerageServices $brokerageService */
+                $brokerageService = app()->make(UserBrokerageServices::class);
+                $data = $brokerageService->getBrokerageList($uid, $type);
+                break;
+        }
+        return app('json')->successful($data);
     }
 
     /**
@@ -171,7 +190,7 @@ class UserBillController
                     if (!$res) return app('json')->fail('二维码生成失败');
                     $uploadType = (int)sys_config('upload_type', 1);
                     $upload = UploadService::init();
-                    $uploadRes = $upload->to('routine/spread/code')->validate()->stream($res['res'], $name);
+                    $uploadRes = $upload->to('routine/spread/code')->validate()->setAuthThumb(false)->stream($res['res'], $name);
                     if ($uploadRes === false) {
                         return app('json')->fail($upload->getError());
                     }
@@ -354,7 +373,7 @@ class UserBillController
             if (!$res) return app('json')->fail('二维码生成失败');
             $uploadType = (int)sys_config('upload_type', 1);
             $upload = UploadService::init();
-            $uploadRes = $upload->to('routine/spread/code')->validate()->stream($res['res'], $name);
+            $uploadRes = $upload->to('routine/spread/code')->validate()->setAuthThumb(false)->stream($res['res'], $name);
             if ($uploadRes === false) {
                 return app('json')->fail($upload->getError());
             }

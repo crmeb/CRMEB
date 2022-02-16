@@ -66,7 +66,8 @@ class AuthController
     /**
      * 静默授权
      * @param $code
-     * @param $spread
+     * @param string $spread_code
+     * @param string $spread_spid
      * @return mixed
      */
     public function silenceAuth($code, $spread_code = '', $spread_spid = '')
@@ -83,7 +84,8 @@ class AuthController
     /**
      * 静默授权 不登录
      * @param $code
-     * @param $spread
+     * @param string $spread_code
+     * @param string $spread_spid
      * @return mixed
      */
     public function silenceAuthNoLogin($code, $spread_code = '', $spread_spid = '')
@@ -99,9 +101,13 @@ class AuthController
 
     /**
      * 静默授权
-     * @param $code
-     * @param $spread
+     * @param string $code
+     * @param string $spread_code
+     * @param string $spread_spid
+     * @param string $phone
+     * @param string $captcha
      * @return mixed
+     * @throws \Psr\SimpleCache\InvalidArgumentException
      */
     public function silenceAuthBindingPhone($code = '', $spread_code = '', $spread_spid = '', $phone = '', $captcha = '')
     {
@@ -124,9 +130,12 @@ class AuthController
 
     /**
      * 授权获取小程序用户手机号 直接绑定
-     * @param $code
-     * @param $iv
-     * @param $encryptedData
+     * @param string $code
+     * @param string $iv
+     * @param string $encryptedData
+     * @param string $spread_code
+     * @param string $spread_spid
+     * @param string $key
      * @return mixed
      */
     public function authBindingPhone($code = '', $iv = '', $encryptedData ='', $spread_code ='', $spread_spid = '', $key = '')
@@ -142,6 +151,7 @@ class AuthController
 
     /**
      *  更新用户信息
+     * @param Request $request
      * @param $userInfo
      * @return mixed
      */

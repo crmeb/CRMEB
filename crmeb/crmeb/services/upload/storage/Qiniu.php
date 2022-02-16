@@ -12,8 +12,10 @@ namespace crmeb\services\upload\storage;
 
 use crmeb\basic\BaseUpload;
 use crmeb\exceptions\UploadException;
+use crmeb\services\HttpService;
 use Qiniu\Auth;
-use function Qiniu\base64_urlSafeEncode;
+use Qiniu\Http\Client;
+use Qiniu\Http\Error;
 use Qiniu\Storage\BucketManager;
 use Qiniu\Storage\UploadManager;
 use Qiniu\Config;
@@ -185,10 +187,11 @@ class Qiniu extends BaseUpload
     /**
      * 缩略图
      * @param string $filePath
+     * @param string $fileName
      * @param string $type
-     * @return mixed|string[]
+     * @return array|mixed
      */
-    public function thumb(string $filePath = '', string $type = 'all')
+    public function thumb(string $filePath = '', string $fileName = '', string $type = 'all')
     {
         $filePath = $this->getFilePath($filePath);
         $data = ['big' => $filePath, 'mid' => $filePath, 'small' => $filePath];
@@ -283,5 +286,184 @@ class Qiniu extends BaseUpload
         $key = $this->saveFileName(NULL, 'mp4');
         $type = 'QINIU';
         return compact('token', 'domain', 'key', 'type');
+    }
+
+    /**
+     * 获取当前所有桶列表
+     * @param string|null $region
+     * @param bool $line
+     * @param bool $shared
+     * @return bool|mixed
+     */
+    public function listbuckets(string $region = null, bool $line = false, bool $shared = false)
+    {
+        $bucket = new BucketManager($this->app());
+        [$response, $error] = $bucket->listbuckets($region, $line ? 'true' : 'false', $shared ? 'true' : 'false');
+        if ($error !== null) {
+            return $this->setError($error->message());
+        }
+        return $response;
+    }
+
+    /**
+     * @param string $name
+     * @param string $region
+     * @return bool|mixed
+     */
+    public function createBucket(string $name, string $region = 'z0')
+    {
+        $regionData = $this->getRegion();
+        if (!in_array($region, array_column($regionData, 'value'))) {
+            return $this->setError('七牛云:无效的区域');
+        }
+        $url = 'https://' . Config::UC_HOST . '/mkbucketv3/' . $name . '/region/' . $region;
+        $body = null;
+        $headers = $this->app()->authorizationV2($url, 'POST', $body, 'application/json');
+        $headers["Content-Type"] = 'application/json';
+        $ret = Client::post($url, $body, $headers);
+        if (!$ret->ok()) {
+            $error = new Error($url, $ret);
+            if ('bucket exists' === $error->message()) {
+                return $this->setError('七牛云：云空间已存在');
+            }
+            return $this->setError('七牛云：' . $error->message());
+        }
+        return ($ret->body === null) ? array() : $ret->json();
+    }
+
+    /**
+     * 获取区域
+     * @return mixed|\string[][]
+     */
+    public function getRegion()
+    {
+        return [
+            [
+                'value' => 'z0',
+                'label' => '华东'
+            ],
+            [
+                'value' => 'z1',
+                'label' => '华北'
+            ],
+            [
+                'value' => 'z2',
+                'label' => '华南'
+            ],
+            [
+                'value' => 'na0',
+                'label' => '北美'
+            ],
+            [
+                'value' => 'as0',
+                'label' => '东南亚'
+            ],
+            [
+                'value' => 'cn-east-2',
+                'label' => '华东-浙江2'
+            ],
+        ];
+    }
+
+    /**
+     * 删除空间
+     * @param string $name
+     * @return bool|mixed
+     */
+    public function deleteBucket(string $name)
+    {
+        $bucket = new BucketManager($this->app());
+        [$response, $error] = $bucket->deleteBucket($name);
+        if ($error !== null) {
+            return $this->setError($error->message());
+        }
+        return $response;
+    }
+
+    /**
+     * 获取七牛域名
+     * @param string $name
+     * @return array|bool|mixed|null
+     */
+    public function getDomian(string $name)
+    {
+        $url = 'https://' . Config::UC_HOST . '/v2/domains?tbl=' . $name;
+        $body = null;
+        $headers = $this->app()->authorizationV2($url, 'POST', $body, 'application/x-www-form-urlencoded');
+        $headers["Content-Type"] = 'application/x-www-form-urlencoded';
+        $ret = Client::post($url, $body, $headers);
+        if (!$ret->ok()) {
+            $error = new Error($url, $ret);
+            return $this->setError('七牛云：' . $error->message());
+        }
+        return ($ret->body === null) ? array() : $ret->json();
+    }
+
+    public function getDomianInfo(string $host)
+    {
+        $url = 'https://' . Config::API_HOST . '/domain/' . $host;
+        $headers = $this->app()->authorization($url, null, 'application/x-www-form-urlencoded');
+        $headers["Content-Type"] = 'application/x-www-form-urlencoded';
+        $ret = Client::get($url, $headers);
+        if (!$ret->ok()) {
+            $error = new Error($url, $ret);
+            return $this->setError('七牛云：' . $error->message());
+        }
+        return ($ret->body === null) ? array() : $ret->json();
+    }
+
+    /**
+     *
+     * @param string $name
+     * @param string $domain
+     * @param string|null $region
+     * @return array|bool|mixed|null
+     */
+    public function bindDomian(string $name, string $domain, string $region = null)
+    {
+        $parseDomin = parse_url($domain);
+        $url = 'https://' . Config::API_HOST . '/domain/' . $parseDomin['host'];
+        $body = [
+            'type' => 'normal',
+            'platform' => 'web',
+            'geocover' => 'china',
+            'source' => [
+                'sourceType' => 'qiniuBucket',
+                'sourceQiniuBucket' => $name,
+                'TestURLPath' => 'qiniu_do_not_delete.gif',
+            ],
+            'protocol' => $parseDomin['scheme'],
+            'cache' => [
+                'cacheControls' => [
+                    [
+                        'time' => 1,
+                        'timeunit' => 4,
+                        'type' => 'all',
+                        'rule' => '*'
+                    ]
+                ],
+                'ignoreParam' => false
+            ]
+        ];
+        $bodyJson = json_encode($body);
+        $headers = $this->app()->authorization($url, $bodyJson, 'application/json');
+        $headers["Content-Type"] = 'application/json';
+        $ret = Client::post($url, $bodyJson, $headers);
+        if (!$ret->ok()) {
+            $error = new Error($url, $ret);
+            return $this->setError('七牛云：' . $error->message());
+        }
+        return ($ret->body === null) ? array() : $ret->json();
+    }
+
+    /**
+     * 跨域
+     * @param string $name
+     * @param string $region
+     * @return bool
+     */
+    public function setBucketCors(string $name, string $region)
+    {
+        return true;
     }
 }

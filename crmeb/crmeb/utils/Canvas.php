@@ -156,15 +156,13 @@ class Canvas
         $file = str_replace('https', 'http', $file);
         $imagesize = getimagesize($file);
         $type = image_type_to_extension($imagesize[2], true);
-        $canvas = null;
+        $canvas = NULL;
         switch ($type) {
             case '.png':
                 $canvas = imagecreatefrompng($file);
                 break;
-            case '.jpeg':
-                $canvas = imagecreatefromjpeg($file);
-                break;
             case '.jpg':
+            case '.jpeg':
                 $canvas = imagecreatefromjpeg($file);
                 break;
             case '.gif':
@@ -205,7 +203,7 @@ class Canvas
      */
     public function createTrueColor(int $w = 0, int $h = 0)
     {
-        return imagecreatetruecolor($w ? $w : $this->backgroundWidth, $h ? $h : $this->backgroundHeight);
+        return imagecreatetruecolor($w ?: $this->backgroundWidth, $h ?: $this->backgroundHeight);
     }
 
 

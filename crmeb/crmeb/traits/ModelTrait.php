@@ -26,42 +26,58 @@ trait ModelTrait
      */
     public function searchTimeAttr($query, $value, $data)
     {
-        $timeKey = $data['timeKey'] ?? 'add_time';
-        switch ($value) {
-            case 'today':
-            case 'week':
-            case 'month':
-            case 'year':
-            case 'yesterday':
-            case 'last year':
-            case 'last week':
-            case 'last month':
-                $query->whereTime($timeKey, $value);
-                break;
-            case 'quarter':
-                list($startTime, $endTime) = $this->getMonth();
-                $query->whereBetween($timeKey, [$startTime, $endTime]);
-                break;
-            case 'lately7':
-                $query->whereBetween($timeKey, [strtotime("-7 day"), time()]);
-                break;
-            case 'lately30':
-                $query->whereBetween($timeKey, [strtotime("-30 day"), time()]);
-                break;
-            default:
-                if (strstr($value, '-') !== false) {
-                    [$startTime, $endTime] = explode('-', $value);
-                    $startTime = trim($startTime);
-                    $endTime = trim($endTime);
-                    if ($startTime && $endTime) {
-                        $query->whereBetween($timeKey, [strtotime($startTime), $startTime == $endTime ? strtotime($endTime) + 86400 : strtotime($endTime)]);
-                    } else if (!$startTime && $endTime) {
-                        $query->whereTime($timeKey, '<', strtotime($endTime) + 86400);
-                    } else if ($startTime && !$endTime) {
-                        $query->whereTime($timeKey, '>=', strtotime($startTime));
+        if ($value) {
+            $timeKey = $data['timeKey'] ?? 'add_time';
+            if (is_array($value)) {
+                $startTime = $value[0] ?? 0;
+                $endTime = $value[1] ?? 0;
+                if ($startTime || $endTime) {
+                    if ($startTime == $endTime || $endTime == strtotime(date('Y-m-d', $endTime))) {
+                        $endTime = $endTime + 86400;
                     }
+                    $query->whereBetween($timeKey, [$startTime, $endTime]);
                 }
-                break;
+            } elseif (is_string($value)) {
+                switch ($value) {
+                    case 'today':
+                    case 'week':
+                    case 'month':
+                    case 'year':
+                    case 'yesterday':
+                    case 'last year':
+                    case 'last week':
+                    case 'last month':
+                        $query->whereTime($timeKey, $value);
+                        break;
+                    case 'quarter':
+                        [$startTime, $endTime] = $this->getMonth();
+                        $query->whereBetween($timeKey, [strtotime($startTime), strtotime($endTime)]);
+                        break;
+                    case 'lately7':
+                        $query->whereBetween($timeKey, [strtotime("-7 day"), time()]);
+                        break;
+                    case 'lately30':
+                        $query->whereBetween($timeKey, [strtotime("-30 day"), time()]);
+                        break;
+                    default:
+                        if (strstr($value, '-') !== false) {
+                            [$startTime, $endTime] = explode('-', $value);
+                            $startTime = trim($startTime) ? strtotime($startTime) : 0;
+                            $endTime = trim($endTime) ? strtotime($endTime) : 0;
+                            if ($startTime && $endTime) {
+                                if ($startTime == $endTime || $endTime == strtotime(date('Y-m-d', $endTime))) {
+                                    $endTime = $endTime + 86400;
+                                }
+                                $query->whereBetween($timeKey, [$startTime, $endTime]);
+                            } else if (!$startTime && $endTime) {
+                                $query->whereTime($timeKey, '<', $endTime + 86400);
+                            } else if ($startTime && !$endTime) {
+                                $query->whereTime($timeKey, '>=', $startTime);
+                            }
+                        }
+                        break;
+                }
+            }
         }
     }
 

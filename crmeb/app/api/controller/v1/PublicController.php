@@ -11,7 +11,7 @@
 namespace app\api\controller\v1;
 
 
-use app\services\activity\StorePinkServices;
+use app\services\activity\combination\StorePinkServices;
 use app\services\diy\DiyServices;
 use app\services\message\service\StoreServiceServices;
 use app\services\order\DeliveryServiceServices;
@@ -34,7 +34,6 @@ use crmeb\services\CacheService;
 use crmeb\services\UploadService;
 use crmeb\services\workerman\ChannelService;
 use think\facade\Cache;
-use think\facade\Config;
 
 /**
  * 公共类
@@ -508,7 +507,10 @@ class PublicController
      */
     public function getOpenAdv()
     {
-        return app('json')->success(sys_config('open_adv',''));
+        /** @var CacheServices $cache */
+        $cache = app()->make(CacheServices::class);
+        $data = $cache->getDbCache('open_adv', '');
+        return app('json')->success($data);
     }
 
     /**

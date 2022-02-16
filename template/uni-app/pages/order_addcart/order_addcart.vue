@@ -49,10 +49,11 @@
 									<view class='carnum acea-row row-center-wrapper' v-if="item.attrStatus">
 										<view class="reduce" :class="item.numSub ? 'on' : ''"
 											@click.stop='subCart(index)'>-</view>
-										<view class='num'>{{item.cart_num}}</view>
-										<!-- <view class="num">
-											<input type="number" v-model="item.cart_num" @click.stop @input="iptCartNum(index)" @blur="blurInput(index)"/>
-										</view> -->
+										<!-- <view class='num'>{{item.cart_num}}</view> -->
+										<view class="num">
+											<input type="number" v-model="item.cart_num" @click.stop
+												@input="iptCartNum(index)" @blur="blurInput(index)" />
+										</view>
 										<view class="plus" :class="item.numAdd ? 'on' : ''"
 											@click.stop='addCart(index)'>+</view>
 									</view>
@@ -137,7 +138,24 @@
 		<!-- <view class="uni-p-b-96"></view> -->
 		<view class="uni-p-b-98"></view>
 		<!-- <pageFooter :countNum="cartCount"></pageFooter> -->
-		<tabBar :pagePath="'/pages/order_addcart/order_addcart'"></tabBar>
+		<tabBar v-if="!is_diy" :pagePath="'/pages/order_addcart/order_addcart'"></tabBar>
+		<view  class="foot" v-else-if="is_diy && newData.status && newData.status.status">
+			<view class="page-footer" id="target" :style="{'background-color':newData.bgColor.color[0].item}">
+				<view class="foot-item" v-for="(item,index) in newData.menuList" :key="index" @click="goRouter(item)">
+					<block v-if="item.link == activeRouter">
+						<image :src="item.imgList[0]"></image>
+						<view class="txt" :style="{color:newData.activeTxtColor.color[0].item}">{{item.name}}</view>
+					</block>
+					<block v-else>
+						<image :src="item.imgList[1]"></image>
+						<view class="txt" :style="{color:newData.txtColor.color[0].item}">{{item.name}}</view>
+					</block>
+					<div class="count-num" v-if="item.link === '/pages/order_addcart/order_addcart' && cartCount > 0">
+						{{cartCount}}
+					</div>
+				</view>
+			</view>
+		</view>
 	</view>
 </template>
 
@@ -163,7 +181,7 @@
 	import {
 		toLogin
 	} from '@/libs/login.js';
-	import tabBar from "@/pages/index/components/tabBar.vue"
+	import tabBar from "@/pages/index/visualization/components/tabBar.vue"
 	import {
 		mapGetters
 	} from "vuex";
@@ -190,6 +208,7 @@
 		mixins: [colors],
 		data() {
 			return {
+				is_diy: uni.getStorageSync('is_diy'),
 				canShow: false,
 				cartCount: 0,
 				goodsHidden: true,
@@ -235,12 +254,10 @@
 			};
 		},
 		computed: mapGetters(['isLogin']),
-		onLoad: function(options) {
-			uni.hideTabBar()
-			// if (uni.getStorageSync('FOOTER_BAR')) {
-			// 	this.footerSee = true
-			// 	uni.hideTabBar()
-			// }
+		onLoad(options) {
+			// uni.hideTabBar()
+
+
 			let that = this;
 			if (that.isLogin == false) {
 				toLogin();
@@ -249,15 +266,21 @@
 			let curRoute = routes[routes.length - 1].route //获取当前页面路由
 			this.activeRouter = '/' + curRoute
 		},
-		onShow: function() {
-			// getNavigation().then(res => {
-			// 	this.newData = res.data
-			// 	if (this.newData.status && this.newData.status.status) {
-			// 		uni.hideTabBar()
-			// 	} else {
-			// 		uni.showTabBar()
-			// 	}
-			// })
+		onShow() {
+			if (this.is_diy) {
+				if (uni.getStorageSync('FOOTER_BAR')) {
+					this.footerSee = true
+					uni.hideTabBar()
+				}
+				getNavigation().then(res => {
+					this.newData = res.data
+					if (this.newData.status && this.newData.status.status) {
+						uni.hideTabBar()
+					} else {
+						uni.showTabBar()
+					}
+				})
+			}
 			this.canShow = false
 			if (this.isLogin == true) {
 				this.hotPage = 1;
@@ -544,6 +567,7 @@
 				}
 			},
 			subOrder(event) {
+				console.log(event)
 				let that = this,
 					selectValue = that.selectValue;
 				if (selectValue.length > 0) {
@@ -679,6 +703,7 @@
 			},
 			blurInput: function(index) {
 				let item = this.cartList.valid[index];
+				console.log(item)
 				if (!item.cart_num) {
 					item.cart_num = 1;
 					this.$set(this.cartList, 'valid', this.cartList.valid)
@@ -727,8 +752,14 @@
 			setCartNum(cartId, cartNum, successCallback) {
 				let that = this;
 				changeCartNum(cartId, cartNum).then(res => {
+					console.log(res)
 					successCallback && successCallback(res.data);
-				});
+				}).catch(err => {
+					console.log(err)
+					return that.$util.Tips({
+						title: err
+					});
+				})
 			},
 			getCartNum: function() {
 				let that = this;

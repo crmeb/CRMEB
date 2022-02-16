@@ -35,6 +35,10 @@ class AgentLevelDao extends BaseDao
      * 获取所有的分销员等级
      * @param array $where
      * @param string $field
+     * @param array $with
+     * @param int $page
+     * @param int $limit
+     * @param int $grade
      * @return array
      * @throws \think\db\exception\DataNotFoundException
      * @throws \think\db\exception\DbException

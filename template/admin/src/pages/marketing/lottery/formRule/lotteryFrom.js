@@ -6,7 +6,6 @@ const lotteryFrom = {
   attends_user: [
     { required: true, type: 'number', message: "请选择参与用户", trigger: "change" },
   ],
-  period: [{ required: true, validator: validate, trigger: 'change' }],
   factor_num: [
     { required: true, type: "number", message: "请输入抽奖次数", trigger: "blur" },
   ],

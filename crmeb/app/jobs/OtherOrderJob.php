@@ -13,7 +13,7 @@ namespace app\jobs;
 
 use app\services\order\OtherOrderServices;
 use app\services\order\StoreOrderEconomizeServices;
-use app\services\user\MemberCardServices;
+use app\services\user\member\MemberCardServices;
 use app\services\user\UserServices;
 use crmeb\basic\BaseJobs;
 use crmeb\traits\QueueTrait;

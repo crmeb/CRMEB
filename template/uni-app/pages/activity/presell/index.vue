@@ -21,7 +21,7 @@
 								<image :src='item.image'></image>
 							</view>
 							<view class='text acea-row row-column-around'>
-								<view class='name line2'>{{item.title}}</view>
+								<view class='name line2'>{{item.store_name}}</view>
 								<view class='booking'>
 									<text v-if="item.presell_type != 0 && active != 1" class="count"
 										style="color: #999;">已预定{{item.sales ? item.sales : 0}}{{item.unit_name}}</text>
@@ -45,11 +45,11 @@
 									</view>
 									<view v-else class="unStartBtn">
 										<text>开售时间</text>
-										<view>{{ new Date(item.start_time*1000).getMonth()+1 }}/{{ new Date(item.start_time*1000).getDate() }}
-											{{ new Date(item.start_time*1000).getHours()<10?'0'+ 
-										new Date(item.start_time*1000).getHours():new Date(item.start_time*1000).getHours() || '00'}}:
-											{{ new Date(item.start_time*1000).getMinutes()<10?"0" + new Date(item.start_time*1000).getMinutes():
-										new Date(item.start_time*1000).getMinutes() || '00'}}
+										<view>{{ new Date(item.presale_start_time*1000).getMonth()+1 }}/{{ new Date(item.presale_start_time*1000).getDate() }}
+											{{ new Date(item.presale_start_time*1000).getHours()<10?'0'+ 
+										new Date(item.presale_start_time*1000).getHours():new Date(item.presale_start_time*1000).getHours() || '00'}}:
+											{{ new Date(item.presale_start_time*1000).getMinutes()<10?"0" + new Date(item.presale_start_time*1000).getMinutes():
+										new Date(item.presale_start_time*1000).getMinutes() || '00'}}
 										</view>
 									</view>
 								</view>
@@ -176,6 +176,7 @@
 				if (that.pageloading) return;
 				this.pageloading = true
 				getPresellList(data).then(res => {
+					console.log(res);
 					var presellList = res.data.list;
 					var loadend = presellList.length < that.limit;
 					that.page++;
@@ -199,7 +200,7 @@
 			},
 			goDetails(item) {
 				uni.navigateTo({
-					url: '/pages/activity/presell_details/index?id=' + item.id
+					url: '/pages/goods_details/index?id=' + item.id
 				})
 			}
 		},

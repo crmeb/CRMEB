@@ -149,6 +149,7 @@
 							})
 						}
 					}
+					console.log(this.recordList, this.times.length)
 					for (let x = 0; x < this.times.length; x++) {
 						for (let j = 0; j < res.data.list.length; j++) {
 							if (this.times[x] === res.data.list[j].time_key) {
@@ -157,6 +158,7 @@
 							}
 						}
 					}
+					console.log(this.recordList)
 					that.count = res.data.count || 0;
 					that.status = res.data.list.length < 5;
 					that.page += 1;

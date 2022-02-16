@@ -45,6 +45,11 @@ class PayServices
     const ALIAPY_PAY = 'alipay';
 
     /**
+     * 好友代付
+     */
+    const FRIEND = 'friend';
+
+    /**
      * 支付方式
      * @var string[]
      */
@@ -52,7 +57,8 @@ class PayServices
         PayServices::WEIXIN_PAY => '微信支付',
         PayServices::YUE_PAY => '余额支付',
         PayServices::OFFLINE_PAY => '线下支付',
-        PayServices::ALIAPY_PAY => '支付宝'
+        PayServices::ALIAPY_PAY => '支付宝',
+        PayServices::FRIEND => '好友代付',
     ];
 
     /**

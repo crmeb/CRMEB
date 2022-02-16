@@ -84,4 +84,14 @@ class SystemAdminDao extends BaseDao
     {
         return $this->getModel()->where('level', '>=', $level)->field($field)->select()->toArray();
     }
+
+    /**
+     * 条件获取管理员数据
+     * @param $where
+     * @return mixed
+     */
+    public function getInfo($where)
+    {
+        return $this->getModel()->where($where)->find();
+    }
 }

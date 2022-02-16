@@ -1,0 +1,10 @@
+(global["webpackJsonp"]=global["webpackJsonp"]||[]).push([["components/guide/index"],{"0887":function(t,n,e){"use strict";var a=e("724d"),i=e.n(a);i.a},3235:function(t,n,e){"use strict";(function(t){Object.defineProperty(n,"__esModule",{value:!0}),n.default=void 0;var e={data:function(){return{autoplay:!1,duration:500,jumpover:"跳过",experience:"立即体验",timecount:void 0,times:0}},props:{advData:{type:Object,default:function(){}},closeType:{type:Number,default:1}},mounted:function(){this.timer()},methods:{timer:function(){var t=this;this.times=this.advData.time;var n=this.advData.time||5;this.timecount=setInterval((function(){n--,t.times=n,n<=0&&(clearInterval(t.timecount),t.launchFlag())}),1e3)},launchFlag:function(){clearInterval(this.timecount),t.switchTab({url:"/pages/index/index"})},jump:function(n){n&&(-1!=n.indexOf("http")?t.navigateTo({url:"/pages/annex/web_view/index?url=".concat(n)}):t.navigateTo({url:n,fail:function(){t.switchTab({url:n})}}),clearInterval(this.timecount))}}};n.default=e}).call(this,e("543d")["default"])},"724d":function(t,n,e){},7382:function(t,n,e){"use strict";e.r(n);var a=e("b50b"),i=e("9e06");for(var u in i)"default"!==u&&function(t){e.d(n,t,(function(){return i[t]}))}(u);e("0887");var c,r=e("f0c5"),o=Object(r["a"])(i["default"],a["b"],a["c"],!1,null,"7b22866f",null,!1,a["a"],c);n["default"]=o.exports},"9e06":function(t,n,e){"use strict";e.r(n);var a=e("3235"),i=e.n(a);for(var u in a)"default"!==u&&function(t){e.d(n,t,(function(){return a[t]}))}(u);n["default"]=i.a},b50b:function(t,n,e){"use strict";var a;e.d(n,"b",(function(){return i})),e.d(n,"c",(function(){return u})),e.d(n,"a",(function(){return a}));var i=function(){var t=this,n=t.$createElement;t._self._c},u=[]}}]);
+;(global["webpackJsonp"] = global["webpackJsonp"] || []).push([
+    'components/guide/index-create-component',
+    {
+        'components/guide/index-create-component':(function(module, exports, __webpack_require__){
+            __webpack_require__('543d')['createComponent'](__webpack_require__("7382"))
+        })
+    },
+    [['components/guide/index-create-component']]
+]);

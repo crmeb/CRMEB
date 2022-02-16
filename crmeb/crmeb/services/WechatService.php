@@ -17,7 +17,7 @@ use app\services\wechat\WechatReplyServices;
 use crmeb\exceptions\AdminException;
 use app\services\pay\PayNotifyServices;
 use crmeb\utils\ApiErrorCode;
-use EasyWeChat\Foundation\Application;
+use crmeb\services\easywechat\Application;
 use EasyWeChat\Message\Article;
 use EasyWeChat\Message\Image;
 use EasyWeChat\Message\Material;
@@ -27,7 +27,9 @@ use EasyWeChat\Message\Video;
 use EasyWeChat\Message\Voice;
 use EasyWeChat\Payment\Order;
 use EasyWeChat\Server\Guard;
+use Symfony\Component\HttpFoundation\Request;
 use think\exception\ValidateException;
+use think\facade\Log;
 use think\Response;
 use crmeb\utils\Hook;
 use think\facade\Cache;
@@ -240,6 +242,17 @@ class WechatService
     public static function oauthService()
     {
         return self::application()->oauth;
+    }
+
+    /**
+     * 网页授权
+     * @return easywechat\oauth2\wechat\WechatOauth2Provider
+     */
+    public static function oauth2Service()
+    {
+        $request = app()->request;
+        self::application()->oauth2->setRequest(new Request($request->get(), $request->post(), [], [], [], $request->server(), $request->getContent()));
+        return self::application()->oauth2;
     }
 
     /**
@@ -477,14 +490,14 @@ class WechatService
         if (!isset($opt['pay_price'])) throw new AdminException('缺少pay_price');
         $totalFee = floatval(bcmul($opt['pay_price'], 100, 0));
         $refundFee = isset($opt['refund_price']) ? floatval(bcmul($opt['refund_price'], 100, 0)) : null;
-        $refundReason = isset($opt['desc']) ? $opt['desc'] : '';
-        $refundNo = isset($opt['refund_id']) ? $opt['refund_id'] : $orderNo;
-        $opUserId = isset($opt['op_user_id']) ? $opt['op_user_id'] : null;
-        $type = isset($opt['type']) ? $opt['type'] : 'out_trade_no';
+        $refundReason = $opt['desc'] ?? '';
+        $refundNo = $opt['refund_id'] ?? $orderNo;
+        $opUserId = $opt['op_user_id'] ?? null;
+        $type = $opt['type'] ?? 'out_trade_no';
         /*仅针对老资金流商户使用
         REFUND_SOURCE_UNSETTLED_FUNDS---未结算资金退款（默认使用未结算资金退款）
         REFUND_SOURCE_RECHARGE_FUNDS---可用余额退款*/
-        $refundAccount = isset($opt['refund_account']) ? $opt['refund_account'] : 'REFUND_SOURCE_UNSETTLED_FUNDS';
+        $refundAccount = $opt['refund_account'] ?? 'REFUND_SOURCE_UNSETTLED_FUNDS';
         try {
             $res = (self::refund($orderNo, $refundNo, $totalFee, $refundFee, $opUserId, $refundReason, $type, $refundAccount));
             if ($res->return_code == 'FAIL') throw new AdminException('退款失败:' . $res->return_msg);
@@ -722,12 +735,13 @@ class WechatService
         }
         return $message;
     }
+
     /**
      * 设置模版消息行业
      */
-    public static function setIndustry($industryOne,$industryTwo)
+    public static function setIndustry($industryOne, $industryTwo)
     {
-        return self::application()->notice->setIndustry($industryOne,$industryTwo);
+        return self::application()->notice->setIndustry($industryOne, $industryTwo);
     }
 
     /**
@@ -755,6 +769,7 @@ class WechatService
             throw new ValidateException(self::getMessage($e->getMessage()));
         }
     }
+
     /*
      * 根据模版ID删除模版
      */

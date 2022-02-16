@@ -66,7 +66,7 @@
                         <td class="tar">数据库表前缀：</td>
                         <td><input type="text" name="dbprefix" id="dbprefix" value="eb_" class="input"></td>
                         <td>
-                            <div id="J_install_tip_dbprefix"><span class="gray">建议使用默认，同一数据库安装多个CrmEb时需修改</span></div>
+                            <div id="J_install_tip_dbprefix"><span class="gray">建议使用默认，同一数据库安装多个CRMEB时需修改</span></div>
                         </td>
                     </tr>
                     <tr>
@@ -204,7 +204,9 @@
                         $('#J_install_tip_dbpw').html('');
                         $('#J_install_tip_dbname').html('');
                         $('#J_install_rbhost').html('<span for="dbname" generated="true" class="tips_error" style="">Redis数据库没有启动或者密码错误</span>');
-                    } else {
+                    } else if (msg == -4) {
+                        $('#J_install_tip_dbpw').html('<span for="dbname" generated="true" class="tips_error" style="">请在mysql配置文件修sql-mode或sql_mode为NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION</span>');
+                    }  else {
                         $('#dbpw').val("");
                         $('#J_install_tip_dbpw').html('<span for="dbname" generated="true" class="tips_error" style="">数据库链接配置失败</span>');
                     }

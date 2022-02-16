@@ -35,17 +35,21 @@ class ArticleServices extends BaseServices
     /**
      * 获取列表
      * @param array $where
+     * @param int $page
+     * @param int $limit
      * @return array
      */
-    public function getList(array $where)
+    public function getList(array $where, int $page = 0, int $limit = 0)
     {
-        [$page, $limit] = $this->getPageValue();
+        if (!$page && !$limit) {
+            [$page, $limit] = $this->getPageValue();
+        }
         /** @var WechatNewsCategoryServices $services */
         $services = app()->make(WechatNewsCategoryServices::class);
         $where['ids'] = $services->getNewIds();
         $list = $this->dao->getList($where, $page, $limit);
         foreach ($list as &$item) {
-            $item['store_name'] = $item['storeInfo']['store_name'];
+            $item['store_name'] = $item['storeInfo']['store_name'] ?? '';
         }
         $count = $this->dao->count($where);
         return compact('list', 'count');
@@ -54,6 +58,7 @@ class ArticleServices extends BaseServices
     /**
      * 新增编辑文章
      * @param array $data
+     * @return mixed
      */
     public function save(array $data)
     {

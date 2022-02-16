@@ -8,7 +8,7 @@
 // +----------------------------------------------------------------------
 // | Author: CRMEB Team <admin@crmeb.com>
 // +----------------------------------------------------------------------
-declare (strict_types = 1);
+declare (strict_types=1);
 
 namespace app\services\user;
 
@@ -58,11 +58,14 @@ class UserLabelRelationServices extends BaseServices
         if ($re === false) {
             throw new AdminException('清空用户标签失败');
         }
+        /** @var UserServices $userServices */
+        $userServices = app()->make(UserServices::class);
         $data = [];
         foreach ($uids as $uid) {
             foreach ($labels as $label) {
                 $data[] = ['uid' => $uid, 'label_id' => $label];
             }
+            $userServices->update(['uid' => $uid], ['label_ids' => implode(',', $labels)]);
         }
         if ($data) {
             if (!$this->dao->saveAll($data))

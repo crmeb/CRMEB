@@ -1,12 +1,12 @@
 <template>
 	<view>
 		<view id="home" class="home acea-row row-center-wrapper"
-			:class="[returnShow ? 'p10':'p20', text_opacity >= 1 ? 'opacity':'']" :style="{ top: homeTop +'rpx'}">
+			:class="[returnShow ? 'p10':'p20', text_opacity >= 1 ? 'opacity':'']" :style="{ marginTop: menuButton.top +'px', width: menuButton.width + 'px'}">
 			<view v-if="returnShow" class="iconfont icon-xiangzuo" :class="text_opacity >= 1 ? 'opacity':''"
 				@tap="returns">
 			</view>
 
-			<view class="line" v-if="returnShow" :class="text_opacity >= 1 ? 'opacity':''"></view>
+			<view class="line" v-if="returnShow"></view>
 			<view class="animation-box">
 				<transition name="fade">
 					<view v-if="!Active" class="iconfont icon-gengduo4" :class="text_opacity >= 1 ? 'opacity':''"
@@ -45,6 +45,7 @@
 				returnShow: true, //判断顶部返回是否出现
 				homeTop: 20,
 				text_opacity: 0,
+				menuButton:{},
 				iconList: [{
 						name: '首页',
 						iconName: "icon-shouye8",
@@ -74,12 +75,6 @@
 						iconName: "icon-yonghu1",
 						path: '/pages/user/index',
 						jumpType: 1
-					},
-					{
-						name: '首页',
-						iconName: "icon-shouye8",
-						path: '/pages/index/index',
-						jumpType: 1
 					}
 				]
 			};
@@ -107,12 +102,13 @@
 			this.returnShow = pages.length === 1 ? false : true;
 			this.$nextTick(() => {
 				// #ifdef MP
-				const menuButton = uni.getMenuButtonBoundingClientRect();
+				this.menuButton = uni.getMenuButtonBoundingClientRect();
 				const query = uni.createSelectorQuery().in(this);
+				console.log(this.menuButton)
 				query
 					.select('#home')
 					.boundingClientRect(data => {
-						this.homeTop = menuButton.top * 2 + menuButton.height - data.height;
+						this.homeTop = this.menuButton.top * 2 + this.menuButton.height - data.height + 2;
 					})
 					.exec();
 				// #endif
@@ -128,9 +124,7 @@
 				uni.navigateBack();
 			},
 			jumpUrl(url, type) {
-				(type === 1 ? uni.switchTab : uni.navigateTo)({
-					url
-				})
+				(type === 1 ? uni.switchTab : uni.navigateTo)({url})
 			},
 		}
 	}
@@ -145,32 +139,38 @@
 
 	.home.opacity {
 		background: rgba(255, 255, 255, 1);
-		border: 1px solid #f2f2f2;
+		border: 1px solid #d7d7d7;
 	}
 
 	.home {
-		color: #fff;
+		color: #333;
 		position: fixed;
 		// width: 130rpx;
 		// padding: 0 20rpx;
-		height: 56rpx;
+		height: 62rpx;
 		z-index: 99;
 		left: 33rpx;
-		background: rgba(190, 190, 190, 0.5);
+		border: 1px solid #d7d7d7;
+		background: rgba(255, 255, 255, 0.8);
 		border-radius: 30rpx;
 		display: flex;
 		align-items: center;
-
+		justify-content: space-around;
 		.opacity {
-			color: #050505;
+			color: #000;
 		}
 
 		.icon-gengduo4,
 		.icon-guanbi5 {
 			position: absolute;
 			width: 40rpx;
+			font-weight: bold;
 		}
-
+			
+		.icon-xiangzuo{
+			font-weight: bold;
+			line-height: 28rpx;
+		}
 		.icon-gengduo4 {
 			font-size: 28rpx;
 			text-align: center;
@@ -179,7 +179,7 @@
 
 	.home .animation-box {
 		position: relative;
-		width: 39rpx;
+		width: 40rpx;
 		height: 28rpx;
 	}
 
@@ -187,17 +187,6 @@
 		font-size: 28rpx;
 		text-align: center;
 	}
-
-	// .home .icon-gengduo4,
-	// .home.close .icon-guanbi5 {
-	// 	opacity: 1;
-	// 	transform: scale(1);
-	// }
-
-	// .home.close .icon-gengduo4 {
-	// 	opacity: 0;
-	// 	transform: scale(0);
-	// }
 
 	.home .homeCon {
 		display: flex;
@@ -237,7 +226,7 @@
 			align-items: center;
 			flex-wrap: nowrap;
 			width: 100%;
-			padding: 15rpx 18rpx;
+			padding: 15rpx 20rpx;
 
 			.text {
 				display: flex;
@@ -275,9 +264,9 @@
 
 	.home .line {
 		width: 2rpx;
-		height: 24rpx;
-		margin: 0 12rpx 0 10rpx;
-		background: rgba(255, 255, 255, 0.25);
+		height: 26rpx;
+		margin: 0 18rpx 0 16rpx;
+		background: rgba(255, 255, 255, 1);
 	}
 
 	.home .line.opacity {
@@ -303,7 +292,7 @@
 	}
 
 	.p10 {
-		padding: 0 20rpx;
+		padding: 0 25rpx;
 	}
 
 	.p20 {

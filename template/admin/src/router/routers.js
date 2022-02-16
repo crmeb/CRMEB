@@ -21,7 +21,9 @@ import marketing from './modules/marketing'
 import app from './modules/app'
 import system from './modules/system'
 import BasicLayout from '@/components/main'
+import statistic from './modules/statistic'
 import frameOut from './modules/frameOut'
+import division from './modules/division'
 /**
  * 在主框架内显示
  */
@@ -30,7 +32,7 @@ const frameIn = [
     {
         path: '/admin/',
         meta: {
-            title: '后台管理'
+            title: 'CRMEB'
         },
         redirect: {
             name: 'home_index'
@@ -134,7 +136,9 @@ const frameIn = [
     finance,
     setting,
     system,
-    app
+    app,
+    statistic,
+    division
 ]
 
 /**

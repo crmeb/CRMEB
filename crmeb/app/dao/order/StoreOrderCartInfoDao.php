@@ -51,7 +51,7 @@ class StoreOrderCartInfoDao extends BaseDao
      * @param string $field
      * @param string $key
      */
-    public function getCartColunm(array $where, string $field, string $key)
+    public function getCartColunm(array $where, string $field, string $key = '')
     {
         return $this->search($where)->column($field, $key);
     }

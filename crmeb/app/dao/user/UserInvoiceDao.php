@@ -15,7 +15,6 @@ namespace app\dao\user;
 
 use app\dao\BaseDao;
 use app\model\user\UserInvoice;
-use think\exception\ValidateException;
 
 /**
  * Class UserInvoiceDao

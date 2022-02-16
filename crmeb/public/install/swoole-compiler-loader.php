@@ -80,7 +80,7 @@ $env['php']['loaded_incompatible_extensions'] = array_unique($env['php']['loaded
 // Parse System Environment Info
 $sysInfo = w_getSysInfo();
 // Check php thread safety
-$env['php']['raw_thread_safety'] = isset($sysInfo['thread_safety']) ? $sysInfo['thread_safety'] : false;
+$env['php']['raw_thread_safety'] = $sysInfo['thread_safety'] ?? false;
 if (isset($sysInfo['thread_safety'])) {
     $env['php']['thread_safety'] = $sysInfo['thread_safety'] ? '线程安全' : '非线程安全';
 } else {
@@ -234,7 +234,7 @@ if ('web' == $env['php']['run_mode']) {
 if ("cli" == $env['php']['run_mode']) {
 
 }
-
+//TODO
 /**
  * Useful functions
  */
@@ -268,15 +268,12 @@ function w_dump($var)
             $str .= $lines[$l];
         }
         echo $str;
-        return;
     } else if (is_array($var)) {
         echo "<xmp class='a-left'>";
         print_r($var);
         echo "</xmp>";
-        return;
     } else {
         var_dump($var);
-        return;
     }
 }
 
@@ -320,7 +317,7 @@ function w_getSysInfo()
         }
         if (preg_match('/swoole_loader version/i', $sysInfoItem)) {
             preg_match('/\d+.\d+.\d+/s', $sysInfoItem, $match);
-            $sysEnv['swoole_loader_version'] = isset($match[0]) ? $match[0] : false;
+            $sysEnv['swoole_loader_version'] = $match[0] ?? false;
         }
     }
     //var_dump($sysEnv);die();

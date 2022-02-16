@@ -14,6 +14,20 @@
         @submit.native.prevent
       >
         <Row type="flex" :gutter="24">
+          <Col>
+            <FormItem label="活动类型：" clearable>
+              <RadioGroup
+                v-model="tableFrom.factor"
+                type="button"
+                @on-change="selectChangeFactor()"
+                class="mr"
+              >
+                <Radio :label="1">积分抽取</Radio>
+                <Radio :label="3">订单支付</Radio>
+                <Radio :label="4">订单评价</Radio>
+              </RadioGroup>
+            </FormItem>
+          </Col>
           <Col span="24">
             <FormItem label="时间选择：">
               <RadioGroup
@@ -322,6 +336,7 @@ export default {
         date: [],
         page: 1,
         limit: 15,
+        factor: 1,
       },
       total: 0,
       timeVal: [],
@@ -423,10 +438,15 @@ export default {
       this.timeVal = [];
       this.getList();
     },
+    selectChangeFactor() {
+      this.tableFrom.page = 1;
+      this.timeVal = [];
+      this.getList();
+    },
     // 列表
     getList() {
       this.loading = true;
-      lotteryRecordList(this.tableFrom, this.lottery_id)
+      lotteryRecordList(this.tableFrom)
         .then(async (res) => {
           let data = res.data;
           this.tableList = data.list;

@@ -186,11 +186,12 @@ export function orderRefundVerify(data) {
  * 订单确认获取订单详细信息
  * @param string cartId
  */
-export function orderConfirm(cartId, news, addressId) {
+export function orderConfirm(cartId, news, addressId,shipping_type) {
 	return request.post('order/confirm', {
 		cartId,
 		'new': news,
-		addressId
+		addressId,
+		shipping_type
 	});
 }
 
@@ -300,4 +301,49 @@ export function refundExpress(data) {
  */
 export function vcartList() {
 	return request.get("v2/cart_list");
+}
+
+/**
+ * 退款商品列表
+ */
+export function refundGoodsList(orderId) {
+	return request.get(`order/refund/cart_info/${orderId}`);
+}
+
+/**
+ * 申请退款商品列表
+ */
+export function postRefundGoods(data) {
+	return request.post(`order/refund/cart_info`, data);
+}
+
+/**
+ * 退款商品提交
+ */
+export function returnGoodsSubmit(id, data) {
+	return request.post(`order/refund/apply/${id}`, data);
+}
+
+/**
+ * 新订单列表 2.1版本
+ * @param object data
+ */
+export function getNewOrderList(data) {
+	return request.get('order/refund/list', data);
+}
+
+/**
+ * 退款订单详情
+ * @param string uni 
+ */
+export function refundOrderDetail(uni) {
+	return request.get('order/refund/detail/' + uni);
+}
+
+/**
+ * 放弃申请退款
+ * @param string uni 
+ */
+export function cancelRefundOrder(uni) {
+	return request.post('order/refund/cancel/' + uni);
 }

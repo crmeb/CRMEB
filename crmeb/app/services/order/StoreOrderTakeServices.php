@@ -14,9 +14,9 @@ namespace app\services\order;
 
 use app\dao\order\StoreOrderDao;
 use app\services\BaseServices;
-use app\services\user\MemberCardServices;
+use app\services\user\member\MemberCardServices;
 use app\services\user\UserBillServices;
-use app\services\user\UserBrokerageFrozenServices;
+use app\services\user\UserBrokerageServices;
 use app\services\user\UserServices;
 use crmeb\utils\Str;
 use think\exception\ValidateException;
@@ -101,7 +101,9 @@ class StoreOrderTakeServices extends BaseServices
             $res2 = $this->backOrderBrokerage($order, $userInfo);
             //经验
             $res3 = $this->gainUserExp($order, $userInfo);
-            if (!($res1 && $res2 && $res3)) {
+            //事业部
+            $res4 = $this->divisionBrokerage($order, $userInfo);
+            if (!($res1 && $res2 && $res3 && $res4)) {
                 throw new ValidateException('收货失败!');
             }
             return true;
@@ -133,7 +135,8 @@ class StoreOrderTakeServices extends BaseServices
      */
     public function gainUserIntegral($order, $userInfo, $storeTitle)
     {
-        $res2 = true;
+        $res1 = $res2 = $res3 = false;
+        $integral = 0;
         if (!$userInfo) {
             return true;
         }
@@ -150,10 +153,13 @@ class StoreOrderTakeServices extends BaseServices
         /** @var UserBillServices $userBillServices */
         $userBillServices = app()->make(UserBillServices::class);
         if ($order['gain_integral'] > 0) {
-            $res2 = false != $userBillServices->income('pay_give_integral', $order['uid'], $order['gain_integral'], $userInfo['integral'], $order['id']);
+            $res2 = false != $userBillServices->income('pay_give_integral', $order['uid'], (int)$order['gain_integral'], $userInfo['integral'] + $order['gain_integral'], $order['id']);
+            $integral = $userInfo['integral'] + $order['gain_integral'];
+            $userInfo->integral = $integral;
+            $res1 = false != $userInfo->save();
         }
         $order_integral = 0;
-        $res3 = true;
+
         $order_give_integral = sys_config('order_give_integral');
         if ($order['pay_price'] && $order_give_integral) {
             //会员消费返积分翻倍
@@ -166,18 +172,95 @@ class StoreOrderTakeServices extends BaseServices
                     $order_integral = bcmul((string)$order['pay_price'], (string)$integral_rule_number, 2);
                 }
             }
-            $order_integral = bcmul((string)$order_give_integral, (string)($order_integral ? $order_integral : $order['pay_price']), 0);
+            $order_integral = bcmul((string)$order_give_integral, (string)($order_integral ?: $order['pay_price']), 0);
 
-            $res3 = false != $userBillServices->income('order_give_integral', $order['uid'], $order_integral, $userInfo['integral'], $order['id']);
-        }
-        $give_integral = $order_integral + $order['gain_integral'];
-        if ($give_integral > 0) {
-            $integral = $userInfo['integral'] + $give_integral;
+            $res3 = false != $userBillServices->income('order_give_integral', $order['uid'], $order_integral, $userInfo['integral'] + $order_integral, $order['id']);
+            $integral = $userInfo['integral'] + $order_integral;
             $userInfo->integral = $integral;
             $res1 = false != $userInfo->save();
-            $res = $res1 && $res2 && $res3;
+        }
+        $give_integral = $order_integral + $order['gain_integral'];
+        if ($give_integral > 0 && $res1 && $res2 && $res3) {
             event('notice.notice', [['order' => $order, 'storeTitle' => $storeTitle, 'give_integral' => $give_integral, 'integral' => $integral], 'integral_accout']);
-            return $res;
+            return true;
+        }
+        return true;
+    }
+
+    /**
+     * 事业部返佣
+     * @param $orderInfo
+     * @param $userInfo
+     * @return bool
+     */
+    public function divisionBrokerage($orderInfo, $userInfo)
+    {
+        // 当前订单｜用户不存在  直接返回
+        if (!$orderInfo || !$userInfo) {
+            return true;
+        }
+        // 营销产品不返佣金
+        if (isset($orderInfo['combination_id']) && $orderInfo['combination_id']) {
+            return true;
+        }
+        if (isset($orderInfo['seckill_id']) && $orderInfo['seckill_id']) {
+            return true;
+        }
+        if (isset($orderInfo['bargain_id']) && $orderInfo['bargain_id']) {
+            return true;
+        }
+        /** @var UserServices $userServices */
+        $userServices = app()->make(UserServices::class);
+        if ($orderInfo['staff_id'] && $orderInfo['staff_brokerage'] > 0) {
+            $spreadPrice = $userServices->value(['uid' => $orderInfo['staff_id']], 'brokerage_price');
+            $balance = bcadd($spreadPrice, $orderInfo['staff_brokerage'], 2);
+            $userServices->bcInc($orderInfo['staff_id'], 'brokerage_price', $orderInfo['staff_brokerage'], 'uid');
+            //冻结时间
+            $broken_time = intval(sys_config('extract_time'));
+            $frozen_time = time() + $broken_time * 86400;
+            // 添加佣金记录
+            /** @var UserBrokerageServices $userBrokerageServices */
+            $userBrokerageServices = app()->make(UserBrokerageServices::class);
+            $userBrokerageServices->income('get_staff_brokerage', $orderInfo['staff_id'], [
+                'nickname' => $userInfo['nickname'],
+                'pay_price' => floatval($orderInfo['pay_price']),
+                'number' => floatval($orderInfo['staff_brokerage']),
+                'frozen_time' => $frozen_time
+            ], $balance, $orderInfo['id']);
+        }
+        if ($orderInfo['agent_id'] && $orderInfo['agent_brokerage'] > 0) {
+            $spreadPrice = $userServices->value(['uid' => $orderInfo['agent_id']], 'brokerage_price');
+            $balance = bcadd($spreadPrice, $orderInfo['agent_brokerage'], 2);
+            $userServices->bcInc($orderInfo['agent_id'], 'brokerage_price', $orderInfo['agent_brokerage'], 'uid');
+            //冻结时间
+            $broken_time = intval(sys_config('extract_time'));
+            $frozen_time = time() + $broken_time * 86400;
+            // 添加佣金记录
+            /** @var UserBrokerageServices $userBrokerageServices */
+            $userBrokerageServices = app()->make(UserBrokerageServices::class);
+            $userBrokerageServices->income('get_agent_brokerage', $orderInfo['agent_id'], [
+                'nickname' => $userInfo['nickname'],
+                'pay_price' => floatval($orderInfo['pay_price']),
+                'number' => floatval($orderInfo['agent_brokerage']),
+                'frozen_time' => $frozen_time
+            ], $balance, $orderInfo['id']);
+        }
+        if ($orderInfo['division_id'] && $orderInfo['division_brokerage'] > 0) {
+            $spreadPrice = $userServices->value(['uid' => $orderInfo['division_id']], 'brokerage_price');
+            $balance = bcadd($spreadPrice, $orderInfo['division_brokerage'], 2);
+            $userServices->bcInc($orderInfo['division_id'], 'brokerage_price', $orderInfo['division_brokerage'], 'uid');
+            //冻结时间
+            $broken_time = intval(sys_config('extract_time'));
+            $frozen_time = time() + $broken_time * 86400;
+            // 添加佣金记录
+            /** @var UserBrokerageServices $userBrokerageServices */
+            $userBrokerageServices = app()->make(UserBrokerageServices::class);
+            $userBrokerageServices->income('get_division_brokerage', $orderInfo['division_id'], [
+                'nickname' => $userInfo['nickname'],
+                'pay_price' => floatval($orderInfo['pay_price']),
+                'number' => floatval($orderInfo['division_brokerage']),
+                'frozen_time' => $frozen_time
+            ], $balance, $orderInfo['id']);
         }
         return true;
     }
@@ -228,7 +311,6 @@ class StoreOrderTakeServices extends BaseServices
         if (!$userServices->checkUserPromoter($one_spread_uid)) {
             return $this->backOrderBrokerageTwo($orderInfo, $userInfo, $isSelfBrokerage);
         }
-
         $onebrokerage = $orderInfo['one_brokerage'] ?? 0;
         if ($onebrokerage) {//订单中取出
             $brokeragePrice = $onebrokerage;
@@ -238,35 +320,37 @@ class StoreOrderTakeServices extends BaseServices
             $cartServices = app()->make(StoreOrderCartInfoServices::class);
             $brokeragePrice = $cartServices->getProductBrokerage($cartId);
         }
-
         // 返佣金额小于等于0 直接返回不返佣金
         if ($brokeragePrice <= 0) {
             return true;
         }
-
-        //TODO 获取上级推广员信息
+        // 获取上级推广员信息
         $spreadPrice = $userServices->value(['uid' => $one_spread_uid], 'brokerage_price');
         // 上级推广员返佣之后的金额
         $balance = bcadd($spreadPrice, $brokeragePrice, 2);
-        // 添加推广记录
-        /** @var UserBillServices $userBillServices */
-        $userBillServices = app()->make(UserBillServices::class);
-        $res1 = $userBillServices->income('get_brokerage', $one_spread_uid, [
-            'nickname' => $userInfo['nickname'],
-            'pay_price' => floatval($orderInfo['pay_price']),
-            'number' => floatval($brokeragePrice)
-        ], $balance, $orderInfo['id']);
-        // 添加用户余额
-        $res2 = $userServices->bcInc($one_spread_uid, 'brokerage_price', $brokeragePrice, 'uid');
-        if ($res2) {
-            /** @var UserBrokerageFrozenServices $frozenService */
-            $frozenService = app()->make(UserBrokerageFrozenServices::class);
-            $res2 = $frozenService->saveBrokage($one_spread_uid, $brokeragePrice, $res1->id, $orderInfo['order_id']);
+        // 添加用户佣金
+        $res1 = $userServices->bcInc($one_spread_uid, 'brokerage_price', $brokeragePrice, 'uid');
+        if ($res1) {
+            //冻结时间
+            $broken_time = intval(sys_config('extract_time'));
+            $frozen_time = time() + $broken_time * 86400;
+            // 添加佣金记录
+            /** @var UserBrokerageServices $userBrokerageServices */
+            $userBrokerageServices = app()->make(UserBrokerageServices::class);
+            //自购返佣 ｜｜ 上级
+            $type = $one_spread_uid == $orderInfo['uid'] ? 'get_self_brokerage' : 'get_brokerage';
+            $userBrokerageServices->income($type, $one_spread_uid, [
+                'nickname' => $userInfo['nickname'],
+                'pay_price' => floatval($orderInfo['pay_price']),
+                'number' => floatval($brokeragePrice),
+                'frozen_time' => $frozen_time
+            ], $balance, $orderInfo['id']);
+
             //给上级发送获得佣金的模板消息
             $this->sendBackOrderBrokerage($orderInfo, $one_spread_uid, $brokeragePrice);
         }
         // 一级返佣成功 跳转二级返佣
-        $res = $res1 && $res2 && $this->backOrderBrokerageTwo($orderInfo, $userInfo, $isSelfBrokerage);
+        $res = $res1 && $this->backOrderBrokerageTwo($orderInfo, $userInfo, $isSelfBrokerage, $frozen_time);
         return $res;
     }
 
@@ -275,10 +359,11 @@ class StoreOrderTakeServices extends BaseServices
      * 二级推广返佣
      * @param $orderInfo
      * @param $userInfo
-     * @param int $isSelfbrokerage
+     * @param $isSelfbrokerage
+     * @param $frozenTime
      * @return bool
      */
-    public function backOrderBrokerageTwo($orderInfo, $userInfo, $isSelfbrokerage = 0)
+    public function backOrderBrokerageTwo($orderInfo, $userInfo, $isSelfbrokerage = 0, $frozenTime = 0)
     {
         //绑定失效
         if (isset($orderInfo['spread_two_uid']) && $orderInfo['spread_two_uid'] == -1) {
@@ -322,19 +407,17 @@ class StoreOrderTakeServices extends BaseServices
         $spreadPrice = $userServices->value(['uid' => $spread_two_uid], 'brokerage_price');
         // 获取上上级推广员返佣之后余额
         $balance = bcadd($spreadPrice, $brokeragePrice, 2);
-        // 添加返佣记录
-        /** @var UserBillServices $userBillServices */
-        $userBillServices = app()->make(UserBillServices::class);
-        $res1 = $userBillServices->income('get_two_brokerage', $spread_two_uid, [
+
+        // 添加佣金记录
+        /** @var UserBrokerageServices $userBrokerageServices */
+        $userBrokerageServices = app()->make(UserBrokerageServices::class);
+        $res1 = $userBrokerageServices->income('get_two_brokerage', $spread_two_uid, [
             'nickname' => $userInfo['nickname'],
             'pay_price' => floatval($orderInfo['pay_price']),
-            'number' => floatval($brokeragePrice)
+            'number' => floatval($brokeragePrice),
+            'frozen_time' => $frozenTime
         ], $balance, $orderInfo['id']);
-        if ($res1) {
-            /** @var UserBrokerageFrozenServices $frozenService */
-            $frozenService = app()->make(UserBrokerageFrozenServices::class);
-            $res1 = $frozenService->saveBrokage($spread_two_uid, $brokeragePrice, $res1->id, $orderInfo['order_id']);
-        }
+
         // 添加用户余额
         $res2 = $userServices->bcInc($spread_two_uid, 'brokerage_price', $brokeragePrice, 'uid');
         //给上级发送获得佣金的模板消息
@@ -353,6 +436,8 @@ class StoreOrderTakeServices extends BaseServices
         /** @var UserServices $userServices */
         $userServices = app()->make(UserServices::class);
         $userType = $userServices->value(['uid' => $spread_uid], 'user_type');
+        $goodsPrice = 0;
+        $goodsName = '推广用户获取佣金';
         if ($type == 'order') {
             /** @var StoreOrderCartInfoServices $storeOrderCartInfoService */
             $storeOrderCartInfoService = app()->make(StoreOrderCartInfoServices::class);
@@ -397,7 +482,7 @@ class StoreOrderTakeServices extends BaseServices
         $order_give_exp = sys_config('order_give_exp');
         if ($order['pay_price'] && $order_give_exp) {
             $order_exp = bcmul($order_give_exp, (string)$order['pay_price'], 2);
-            $res3 = false != $userBillServices->income('order_give_exp', $order['uid'], $order_exp, $userInfo['exp'], $order['id']);
+            $res3 = false != $userBillServices->income('order_give_exp', $order['uid'], $order_exp, bcadd((string)$userInfo['exp'], (string)$order_exp, 2), $order['id']);
         }
         $res = true;
         if ($order_exp > 0) {

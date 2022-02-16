@@ -260,6 +260,11 @@ export default {
           minWidth: 250,
         },
         {
+          title: "商品类型",
+          key: "product_type",
+          minWidth: 100,
+        },
+        {
           title: "商品售价",
           key: "price",
           minWidth: 90,
@@ -322,7 +327,7 @@ export default {
     },
   },
   created() {},
-  mounted() {
+  activated() {
     this.goodHeade();
     this.goodsCategory();
     if (this.$route.fullPath === "/admin/product/product_list?type=5") {
@@ -333,7 +338,6 @@ export default {
   },
   methods: {
     look(row) {
-      console.log(row);
       this.goodsId = row.id;
       this.isProductBox = true;
     },
@@ -402,6 +406,7 @@ export default {
         productUnshowApi(data)
           .then((res) => {
             this.$Message.success(res.msg);
+            this.artFrom.page = 1;
             this.goodHeade();
             this.getDataList();
           })
@@ -569,6 +574,7 @@ export default {
           this.getDataList();
         })
         .catch((res) => {
+          row.is_show = !row.is_show ? 1 : 0;
           this.$Message.error(res.msg);
         });
     },

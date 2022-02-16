@@ -18,7 +18,7 @@
 }
 .c_row-item{
     display: flex;
-    /* justify-content: space-between; */
+    justify-content: space-between;
     align-items: center;
 }
 .acea-row {
@@ -382,6 +382,14 @@ html, body {
     background: rgba(0, 0, 0, .6) !important;
     z-index: 0 !important;
 }
+.fl_header {
+    display:flex;
+    align-items: center;
+}
+.header_top{
+    padding-bottom: 16px !important;
+    padding-left: 10px !important;
+}
 
 .ivu-divider-horizontal {
     /*margin-bottom: 0 !important;*/
@@ -502,6 +510,7 @@ html, body {
   font-weight: 500;
   font-size: 20px;
   padding-bottom: 16px;
+  margin-left: 10px;
 }
 .main .content-wrapper{
   padding-top: 0;
@@ -631,3 +640,22 @@ html, body {
 }
 
 .none-radius .ivu-modal-mask,.label-box .ivu-modal-mask{background-color:transparent;}
+.empty-box{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f3f5f7;
+    border-radius: 6px;
+}
+.empty-box.on{
+    border-radius: 0px;
+}
+.empty-box .iconfont-diy{
+    color: #bbbfc8;
+    font-size: 30px;
+}
+.paddingBox{
+    padding:0 10px 10px;
+}

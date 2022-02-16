@@ -12,10 +12,10 @@
 namespace app\adminapi\controller\v1\marketing;
 
 use app\adminapi\controller\AuthController;
-use app\services\activity\StoreAdvanceServices;
-use app\services\activity\StoreBargainServices;
-use app\services\activity\StoreCombinationServices;
-use app\services\activity\StoreSeckillServices;
+use app\services\activity\advance\StoreAdvanceServices;
+use app\services\activity\bargain\StoreBargainServices;
+use app\services\activity\combination\StoreCombinationServices;
+use app\services\activity\seckill\StoreSeckillServices;
 use crmeb\exceptions\AdminException;
 use think\facade\App;
 

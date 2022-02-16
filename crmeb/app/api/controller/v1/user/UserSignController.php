@@ -11,7 +11,7 @@
 namespace app\api\controller\v1\user;
 
 use app\Request;
-use app\services\user\MemberCardServices;
+use app\services\user\member\MemberCardServices;
 use app\services\user\UserServices;
 use app\services\user\UserSignServices;
 

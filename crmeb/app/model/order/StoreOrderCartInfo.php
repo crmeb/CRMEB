@@ -25,6 +25,12 @@ class StoreOrderCartInfo extends BaseModel
     use ModelTrait;
 
     /**
+     * 数据表主键
+     * @var string
+     */
+    protected $pk = 'id';
+
+    /**
      * 模型名称
      * @var string
      */
@@ -48,7 +54,7 @@ class StoreOrderCartInfo extends BaseModel
      */
     public function searchOidAttr($query, $value, $data)
     {
-        $query->where('oid', $value);
+        if ($value !== '') $query->where('oid', $value);
     }
 
     /**

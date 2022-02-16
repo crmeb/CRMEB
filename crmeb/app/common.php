@@ -14,7 +14,6 @@
 use think\exception\ValidateException;
 use crmeb\services\FormBuilder as Form;
 use crmeb\services\UploadService;
-use think\facade\Config;
 
 if (!function_exists('getWorkerManUrl')) {
 
@@ -29,6 +28,24 @@ if (!function_exists('getWorkerManUrl')) {
         $data['admin'] = $ws . $host . '/notice';
         $data['chat'] = $ws . $host . '/msg';
         return $data;
+    }
+}
+if (!function_exists('object2array')) {
+
+    /**
+     * 对象转数组
+     * @return mixed
+     */
+    function object2array($object)
+    {
+        if (is_object($object)) {
+            foreach ($object as $key => $value) {
+                $array[$key] = $value;
+            }
+        } else {
+            $array = $object;
+        }
+        return $array;
     }
 }
 
@@ -221,13 +238,15 @@ if (!function_exists('set_file_url')) {
         if (!$image) return $image;
         if (is_array($image)) {
             foreach ($image as &$item) {
-                $domainTop = substr($item, 0, 4);
-                if ($domainTop != 'http')
+                $domainTop1 = substr($item, 0, 4);
+                $domainTop2 = substr($item, 0, 2);
+                if ($domainTop1 != 'http' && $domainTop2 != '//')
                     $item = $siteUrl . str_replace('\\', '/', $item);
             }
         } else {
-            $domainTop = substr($image, 0, 4);
-            if ($domainTop != 'http')
+            $domainTop1 = substr($image, 0, 4);
+            $domainTop2 = substr($image, 0, 2);
+            if ($domainTop1 != 'http' && $domainTop2 != '//')
                 $image = $siteUrl . str_replace('\\', '/', $image);
         }
         return $image;
@@ -812,7 +831,8 @@ if (!function_exists('get_image_thumb')) {
         if (!$filePath || !is_string($filePath) || strpos($filePath, '?') !== false) return $filePath;
         try {
             $upload = UploadService::getOssInit($filePath, $is_remote_down);
-            $data = $upload->thumb('', $type);
+            $fileArr = explode('/', $filePath);
+            $data = $upload->thumb($filePath, end($fileArr), $type);
             $image = $type == 'all' ? $data : $data[$type] ?? $filePath;
         } catch (\Throwable $e) {
             $image = $filePath;

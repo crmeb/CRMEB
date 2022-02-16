@@ -72,6 +72,11 @@
 					<text class='iconfont icon-paihang'></text>
 					<view>佣金排行</view>
 				</navigator>
+				<navigator v-if="userInfo.is_agent" url='/pages/users/staff_list/index' hover-class="none"
+					class='item acea-row row-center-wrapper row-column'>
+					<text class='iconfont icon-tuandui'></text>
+					<view>员工列表</view>
+				</navigator>
 			</view>
 		</view>
 		<!-- #ifdef MP -->
@@ -111,7 +116,7 @@
 		mixins: [colors],
 		data() {
 			return {
-				userInfo: [],
+				userInfo: {},
 				yesterdayPrice: 0.00,
 				isAuto: false, //没有授权的不会自动授权
 				isShowAuth: false //是否隐藏授权
@@ -213,7 +218,7 @@
 		background-repeat: no-repeat;
 		background-size: 100% 100%;
 		width: 100%;
-		height: 375rpx;
+		height: 400rpx;
 		background-color: var(--view-theme);
 	}
 
@@ -358,5 +363,21 @@
 		-webkit-background-clip: text;
 		-webkit-text-fill-color: transparent;
 		margin-bottom: 20rpx;
+	}
+
+	.apply {
+		top: 52rpx;
+		right: 0;
+		position: absolute;
+		width: max-content;
+		height: 56rpx;
+		padding: 0 14rpx;
+		background-color: #fff1db;
+		color: #a56a15;
+		font-size: 22rpx;
+		border-radius: 30rpx 0 0 30rpx;
+		display: flex;
+		align-items: center;
+		justify-content: center;
 	}
 </style>

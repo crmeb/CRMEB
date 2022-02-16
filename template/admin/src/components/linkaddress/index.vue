@@ -794,7 +794,7 @@ export default {
                     j.url = `/pages/goods_list/index?sid=${j.id}&title=${j.cate_name}`;
                   });
                 }
-                e.url = `/pages/goods_list/index?cid=${e.id}&title=默认`;
+                e.url = `/pages/goods_list/index?cid=${e.id}&title=${e.cate_name}`;
               });
               this.tableList = data;
             }

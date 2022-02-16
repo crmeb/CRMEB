@@ -40,7 +40,7 @@ class WechatTemplateListService extends NoticeService
      */
     public function isOpen(string $mark)
     {
-        $this->isopend = $this->notceinfo['is_wechat'] === 1 ? true : false;
+        $this->isopend = $this->notceinfo['is_wechat'] === 1;
         return $this;
 
     }
@@ -69,7 +69,7 @@ class WechatTemplateListService extends NoticeService
     public function sendTemplate(string $tempCode, int $uid, array $data, string $link = null, string $color = null)
     {
         try {
-            $this->isopend = $this->notceinfo['is_wechat'] === 1 ? true : false;
+            $this->isopend = $this->notceinfo['is_wechat'] === 1;
             if ($this->isopend) {
                 $openid = $this->getOpenidByUid($uid);
                 //放入队列执行
@@ -413,7 +413,7 @@ class WechatTemplateListService extends NoticeService
         $StoreServiceServices = app()->make(StoreServiceServices::class);
         $adminList = $StoreServiceServices->getStoreServiceOrderNotice();
         foreach ($adminList as $item) {
-            return $this->sendTemplate('ADMIN_NOTICE', $item['uid'],
+            $this->sendTemplate('ADMIN_NOTICE', $item['uid'],
                 [
                     'keyword1' => '新订单',
                     'keyword2' => $order['delivery_name'],
@@ -439,7 +439,7 @@ class WechatTemplateListService extends NoticeService
         $StoreServiceServices = app()->make(StoreServiceServices::class);
         $adminList = $StoreServiceServices->getStoreServiceOrderNotice();
         foreach ($adminList as $item) {
-            return $this->sendTemplate('ADMIN_NOTICE', $item['uid'],
+            $this->sendTemplate('ADMIN_NOTICE', $item['uid'],
                 [
                     'keyword1' => '退款申请',
                     'keyword2' => $order['delivery_name'],

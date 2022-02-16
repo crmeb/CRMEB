@@ -13,9 +13,10 @@ namespace app\adminapi\controller\v1\diy;
 
 
 use app\adminapi\controller\AuthController;
-use app\services\activity\StoreBargainServices;
-use app\services\activity\StoreCombinationServices;
-use app\services\activity\StoreSeckillServices;
+use app\services\activity\bargain\StoreBargainServices;
+use app\services\activity\combination\StoreCombinationServices;
+use app\services\activity\seckill\StoreSeckillServices;
+use app\services\article\ArticleServices;
 use app\services\diy\DiyServices;
 use app\services\other\CacheServices;
 use app\services\product\product\StoreCategoryServices;
@@ -49,6 +50,7 @@ class Diy extends AuthController
             ['name', ''],
             ['version', ''],
         ]);
+        $where['type'] = -1;
         $data = $this->services->getDiyList($where);
         return app('json')->success($data);
     }
@@ -88,6 +90,85 @@ class Diy extends AuthController
     }
 
     /**
+     * 保存Diy资源
+     * @param int $id
+     * @return mixed
+     */
+    public function saveDiyData(int $id = 0)
+    {
+        $data = $this->request->postMore([
+            ['name', ''],
+            ['title', ''],
+            ['value', ''],
+            ['type', ''],
+            ['cover_image', ''],
+            ['is_show', 0],
+            ['is_bg_color', 0],
+            ['is_bg_pic', 0],
+            ['bg_tab_val', 0],
+            ['color_picker', ''],
+            ['bg_pic', ''],
+        ]);
+        $value = is_string($data['value']) ? json_decode($data['value'], true) : $data['value'];
+        $infoDiy = $id ? $this->services->get($id, ['is_diy']) : [];
+        if ($infoDiy && $infoDiy['is_diy']) {
+            foreach ($value as $key => &$item) {
+                if ($item['name'] === 'goodList') {
+                    if (isset($item['selectConfig']['list'])) {
+                        unset($item['selectConfig']['list']);
+                    }
+                    if (isset($item['goodsList']['list']) && is_array($item['goodsList']['list'])) {
+                        $limitMax = config('database.page.limitMax', 50);
+                        if (isset($item['numConfig']['val']) && isset($item['tabConfig']['tabVal']) && $item['tabConfig']['tabVal'] == 0 && $item['numConfig']['val'] > $limitMax) {
+                            return app('json')->fail('您设置得商品个数超出系统限制,最大限制' . $limitMax . '个商品');
+                        }
+                        $item['goodsList']['ids'] = array_column($item['goodsList']['list'], 'id');
+                        unset($item['goodsList']['list']);
+                    }
+                } elseif ($item['name'] === 'articleList') {
+                    if (isset($item['selectList']['list']) && is_array($item['selectList']['list'])) {
+                        unset($item['selectList']['list']);
+                    }
+                } elseif ($item['name'] === 'promotionList') {
+                    unset($item['productList']['list']);
+                }
+            }
+            $data['value'] = json_encode($value);
+        } else {
+            if (isset($value['d_goodList']['selectConfig']['list'])) {
+                unset($value['d_goodList']['selectConfig']['list']);
+            } elseif (isset($value['d_goodList']['goodsList']['list'])) {
+                $limitMax = config('database.page.limitMax', 50);
+                if (isset($value['d_goodList']['numConfig']['val']) && isset($value['d_goodList']['tabConfig']['tabVal']) && $value['d_goodList']['tabConfig']['tabVal'] == 0 && $value['d_goodList']['numConfig']['val'] > $limitMax) {
+                    return app('json')->fail('您设置得商品个数超出系统限制,最大限制' . $limitMax . '个商品');
+                }
+                $value['d_goodList']['goodsList']['ids'] = array_column($value['d_goodList']['goodsList']['list'], 'id');
+                unset($value['d_goodList']['goodsList']['list']);
+            } elseif (isset($value['k_newProduct']['goodsList']['list'])) {
+                $list = [];
+                foreach ($value['k_newProduct']['goodsList']['list'] as $item) {
+                    $list[] = [
+                        'image' => $item['image'],
+                        'store_info' => $item['store_info'],
+                        'store_name' => $item['store_name'],
+                        'id' => $item['id'],
+                        'price' => $item['price'],
+                        'ot_price' => $item['ot_price'],
+                    ];
+                }
+                $value['k_newProduct']['goodsList']['list'] = $list;
+            } elseif (isset($value['selectList']['list']) && is_array($value['selectList']['list'])) {
+                unset($value['goodsList']['list']);
+            }
+            $data['value'] = json_encode($value);
+        }
+        $data['version'] = '1.0';
+        $data['type'] = 2;
+        $data['is_diy'] = 1;
+        return app('json')->success($id ? '修改成功' : '保存成功', ['id' => $this->services->saveData($id, $data)]);
+    }
+
+    /**
      * 删除模板
      * @param $id
      * @return mixed
@@ -105,16 +186,16 @@ class Diy extends AuthController
      */
     public function setStatus($id)
     {
-        $name = $this->services->value(['id' => $id], 'template_name');
-        if (!is_file(public_path('template') . $name . '.zip')) {
-            throw new AdminException('请上传模板压缩包');
-        }
-        FileService::delDir(runtime_path('wap'));
-        FileService::delDir(public_path('pages'));
-        FileService::delDir(public_path('static'));
-        @unlink(public_path() . 'index.html');
+//        $name = $this->services->value(['id' => $id], 'template_name');
+//        if (!is_file(public_path('template') . $name . '.zip')) {
+//            throw new AdminException('请上传模板压缩包');
+//        }
+//        FileService::delDir(runtime_path('wap'));
+//        FileService::delDir(public_path('pages'));
+//        FileService::delDir(public_path('static'));
+//        @unlink(public_path() . 'index.html');
         $this->services->setStatus($id);
-        FileService::zipOpen(public_path('template') . $name . '.zip', public_path());
+//        FileService::zipOpen(public_path('template') . $name . '.zip', public_path());
         return app('json')->success('设置成功');
     }
 
@@ -172,6 +253,99 @@ class Diy extends AuthController
     }
 
     /**
+     * 获取diy数据
+     * @param $id
+     * @param StoreProductServices $services
+     * @return mixed
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     */
+    public function getDiyInfo($id, StoreProductServices $services)
+    {
+        if (!$id) throw new AdminException('参数错误');
+        $info = $this->services->get($id);
+        if ($info) {
+            $info = $info->toArray();
+        } else {
+            throw new AdminException('模板不存在');
+        }
+        $info['value'] = json_decode($info['value'], true);
+        if ($info['value']) {
+            /** @var ArticleServices $articleServices */
+            $articleServices = app()->make(ArticleServices::class);
+            if ($info['is_diy']) {
+                foreach ($info['value'] as &$item) {
+                    if ($item['name'] === 'goodList') {
+                        if(isset($item['goodsList']['ids']) && count($item['goodsList']['ids'])){
+                            $item['goodsList']['list'] = $services->getSearchList(['ids' => $item['goodsList']['ids']]);
+                        }else{
+                            $item['goodsList']['list'] = [];
+                        }
+                    } elseif ($item['name'] === 'articleList') {//文章
+                        $data = [];
+                        if ($item['selectConfig']['activeValue'] ?? 0) {
+                            $data = $articleServices->getList(['cid' => $item['selectConfig']['activeValue'] ?? 0], 0, $item['numConfig']['val'] ?? 0);
+                        }
+                        $item['selectList']['list'] = $data['list'] ?? [];
+                    } elseif ($item['name'] === 'promotionList') {//活动模仿
+                        $data = [];
+                        if (isset($item['tabConfig']['tabCur']) && $typeArr = $item['tabConfig']['list'][$item['tabConfig']['tabCur']] ?? []) {
+                            $val = $typeArr['link']['activeVal'] ?? 0;
+                            if ($val) {
+                                $data = $this->get_groom_list($val, (int)($item['numConfig']['val'] ?? 0));
+                            }
+                        }
+                        $item['productList']['list'] = $data;
+                    }
+                }
+            } else {
+                if ($info['value']) {
+                    if (isset($info['value']['d_goodList']['goodsList'])) {
+                        $info['value']['d_goodList']['goodsList']['list'] = [];
+                    }
+                    if (isset($info['value']['d_goodList']['goodsList']['ids']) && count($info['value']['d_goodList']['goodsList']['ids'])) {
+                        $info['value']['d_goodList']['goodsList']['list'] = $services->getSearchList(['ids' => $info['value']['d_goodList']['goodsList']['ids']]);
+                    }
+                }
+            }
+        }
+        return app('json')->success(compact('info'));
+    }
+
+    /**
+     * 获取推荐商品
+     * @param $type
+     * @param int $num
+     * @return array|array[]
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     */
+    protected function get_groom_list($type, int $num = 0)
+    {
+        /** @var StoreProductServices $services */
+        $services = app()->make(StoreProductServices::class);
+        $info = [];
+        if ($type == 1) {// 精品推荐
+            $info = $services->getRecommendProduct(0, 'is_best', $num);// 精品推荐个数
+        } else if ($type == 2) {//  热门榜单
+            $info = $services->getRecommendProduct(0, 'is_hot', $num);// 热门榜单 猜你喜欢
+        } else if ($type == 3) {// 首发新品
+            $info = $services->getRecommendProduct(0, 'is_new', $num);// 首发新品
+        } else if ($type == 4) {// 促销单品
+            $info = $services->getRecommendProduct(0, 'is_benefit', $num);// 促销单品
+        } else if ($type == 5) {// 会员商品
+            $whereVip = [
+                ['vip_price', '>', 0],
+                ['is_vip', '=', 1],
+            ];
+            $info = $services->getRecommendProduct(0, $whereVip, $num);// 会员商品
+        }
+        return $info;
+    }
+
+    /**
      * 获取uni-app路径
      * @return mixed
      */
@@ -202,15 +376,16 @@ class Diy extends AuthController
     {
         /** @var StoreCategoryServices $categoryService */
         $categoryService = app()->make(StoreCategoryServices::class);
-        $list = $categoryService->getTierList(1, 1);
-        $data = [];
-        foreach ($list as $value) {
-            $data[] = [
-                'id' => $value['id'],
-                'title' => $value['html'] . $value['cate_name']
-            ];
-        }
-        return app('json')->success($data);
+        $list = $categoryService->cascaderList(1, 1);
+//        $list = $categoryService->getTierList(1, 1);
+//        $data = [];
+//        foreach ($list as $value) {
+//            $data[] = [
+//                'id' => $value['id'],
+//                'title' => $value['html'] . $value['cate_name']
+//            ];
+//        }
+        return app('json')->success($list);
     }
 
     /**
@@ -301,13 +476,12 @@ class Diy extends AuthController
     {
         $data = $this->request->postMore([
             ['name', ''],
-            ['template_name', ''],
         ]);
         if (!$data['name']) throw new AdminException('请输入页面名称');
-        if (!$data['template_name']) throw new AdminException('请输入页面类型');
         $data['version'] = '1.0';
         $data['add_time'] = time();
-        $data['type'] = 2;
+        $data['type'] = 0;
+        $data['is_diy'] = 1;
         $this->services->save($data);
         return app('json')->success('保存成功！');
     }
@@ -414,5 +588,56 @@ class Diy extends AuthController
         ]);
         $this->services->memberSaveData($data);
         return app('json')->success('保存成功');
+    }
+
+    /**
+     * 获取开屏广告
+     * @return mixed
+     */
+    public function getOpenAdv()
+    {
+        /** @var CacheServices $cacheServices */
+        $cacheServices = app()->make(CacheServices::class);
+        $data = $cacheServices->getDbCache('open_adv', '');
+        if ($data == '') {
+            $data = [
+                'status' => 0,
+                'time' => '',
+                'type' => 'pic',
+                'value' => [],
+                'video_link' => '',
+            ];
+        }
+        return app('json')->success($data);
+    }
+
+    /**
+     * 保存开屏广告
+     * @return mixed
+     */
+    public function openAdvAdd()
+    {
+        $data = $this->request->postMore([
+            ['status', 0],
+            ['time', 0],
+            ['type', ''],
+            ['value', []],
+            ['video_link', '']
+        ]);
+        /** @var CacheServices $cacheServices */
+        $cacheServices = app()->make(CacheServices::class);
+        $cacheServices->setDbCache('open_adv', $data);
+        return app('json')->success('保存成功');
+    }
+
+    /**
+     * 获取单个diy小程序预览二维码
+     * @param $id
+     * @return mixed
+     */
+    public function getRoutineCode($id)
+    {
+        $image = $this->services->getRoutineCode((int)$id);
+        return app('json')->success(compact('image'));
     }
 }

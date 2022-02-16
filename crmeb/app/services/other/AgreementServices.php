@@ -39,7 +39,7 @@ class AgreementServices extends BaseServices
         if (!isset($data['type']) || !$data['type'] || $data['type'] == 0) throw new ValidateException('协议类型缺失');
         if (!isset($data['title']) || !$data['title']) throw new ValidateException('请填写协议名称');
         if (!isset($data['content']) || !$data['content']) throw new ValidateException('请填写协议内容');
-        if (!$id){
+        if (!$id) {
             $getOne = $this->getAgreementBytype($data['type']);
             if ($getOne) throw new ValidateException('该类型协议已经存在');
         }
@@ -58,8 +58,5 @@ class AgreementServices extends BaseServices
         if (!$type) return [];
         $data = $this->dao->getOne(['type' => $type]);
         return $data ? $data->toArray() : [];
-
     }
-
-
 }

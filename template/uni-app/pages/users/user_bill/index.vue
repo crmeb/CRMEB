@@ -11,7 +11,7 @@
 					<view class='item'>
 						<view class='data'>{{item.time}}</view>
 						<view class='listn'>
-							<view class='itemn acea-row row-between-wrapper' v-for="(vo,indexn) in item.list" :key="indexn">
+							<view class='itemn acea-row row-between-wrapper' v-for="(vo,indexn) in item.child" :key="indexn">
 								<view>
 									<view class='name line1'>{{vo.title}}</view>
 									<view>{{vo.add_time}}</view>
@@ -33,9 +33,7 @@
 		<!-- #ifdef MP -->
 		<!-- <authorize @onLoadFun="onLoadFun" :isAuto="isAuto" :isShowAuth="isShowAuth" @authColse="authColse"></authorize> -->
 		<!-- #endif -->
-		<!-- #ifndef MP -->
-		<home></home>
-		<!-- #endif -->
+		<home v-if="navigation"></home>
 	</view>
 </template>
 
@@ -70,9 +68,10 @@
 				loading: false,
 				loadend: false,
 				page: 1,
-				limit: 10,
+				limit: 15,
 				type: 0,
 				userBillList: [],
+				times:[],
 				isAuto: false, //没有授权的不会自动授权
 				isShowAuth: false //是否隐藏授权
 			};
@@ -113,28 +112,68 @@
 			 */
 			getUserBillList: function() {
 				let that = this;
-				if (that.loadend) return;
+				let page = that.page;
+				let limit = that.limit;
 				if (that.loading) return;
+				if (that.loadend) return;
 				that.loading = true;
-				that.loadTitle = "";
-				let data = {
-					page: that.page,
-					limit: that.limit
-				}
-				getCommissionInfo(data, that.type).then(function(res) {
-					let list = res.data,
-						loadend = list.length < that.limit;
-					that.userBillList = that.$util.SplitArray(list, that.userBillList);
-					that.$set(that, 'userBillList', that.userBillList);
+				that.loadTitle = '';
+				getCommissionInfo({
+					page: page,
+					limit: limit
+				},that.type).then(res => {
+					for (let i = 0; i < res.data.time.length; i++) {
+						
+						if (!this.times.includes(res.data.time[i])) {
+							this.times.push(res.data.time[i])
+							this.userBillList.push({
+								time: res.data.time[i],
+								child: []
+							})
+						}
+					}
+					
+					for (let x = 0; x < this.times.length; x++) {
+						for (let j = 0; j < res.data.list.length; j++) {
+							if (this.times[x] === res.data.list[j].time_key) {
+								this.userBillList[x].child.push(res.data.list[j])
+							}
+						}
+					}
+					let loadend = res.data.list.length < that.limit;
 					that.loadend = loadend;
+					that.loadTitle = loadend ? '没有更多内容啦~' : '加载更多';
+					that.page += 1;
 					that.loading = false;
-					that.loadTitle = loadend ? "哼😕~我也是有底线的~" : "加载更多";
-					that.page = that.page + 1;
-				}, function(res) {
+				}).catch(err=>{
 					that.loading = false;
 					that.loadTitle = '加载更多';
-				});
+				})
 			},
+			// getUserBillList: function() {
+			// 	let that = this;
+			// 	if (that.loadend) return;
+			// 	if (that.loading) return;
+			// 	that.loading = true;
+			// 	that.loadTitle = "";
+			// 	let data = {
+			// 		page: that.page,
+			// 		limit: that.limit
+			// 	}
+			// 	getCommissionInfo(data, that.type).then(function(res) {
+			// 		let list = res.data,
+			// 			loadend = list.length < that.limit;
+			// 		that.userBillList = that.$util.SplitArray(list, that.userBillList);
+			// 		that.$set(that, 'userBillList', that.userBillList);
+			// 		that.loadend = loadend;
+			// 		that.loading = false;
+			// 		that.loadTitle = loadend ? "没有更多内容啦~" : "加载更多";
+			// 		that.page = that.page + 1;
+			// 	}, function(res) {
+			// 		that.loading = false;
+			// 		that.loadTitle = '加载更多';
+			// 	});
+			// },
 			/**
 			 * 切换导航
 			 */
@@ -142,6 +181,7 @@
 				this.type = type;
 				this.loadend = false;
 				this.page = 1;
+				this.times = [];
 				this.$set(this, 'userBillList', []);
 				this.getUserBillList();
 			},

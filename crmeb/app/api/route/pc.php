@@ -42,6 +42,7 @@ Route::group('pc', function () {
         Route::get('get_cart_list', 'pc.CartController/getCartList')->name('getCartList');//购物车列表
         Route::get('get_balance_record/:type', 'pc.UserController/getBalanceRecord')->name('getBalanceRecord');//余额记录
         Route::get('get_order_list', 'pc.OrderController/getOrderList')->name('getOrderList');//订单列表
+        Route::get('get_refund_order_list', 'pc.OrderController/getRefundOrderList')->name('getRefundOrderList');//退款订单列表
         Route::get('get_collect_list', 'pc.UserController/getCollectList')->name('getCollectList');//收藏列表
     })->middleware(\app\http\middleware\AllowOriginMiddleware::class)->middleware(\app\api\middleware\StationOpenMiddleware::class)->middleware(\app\api\middleware\AuthTokenMiddleware::class, true);
 

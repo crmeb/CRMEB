@@ -38,7 +38,7 @@ class ProductServices extends BaseServices
         $where['is_del'] = 0;
         $data['count'] = $product->getCount($where);
         [$page, $limit] = $this->getPageValue();
-        $list = $product->getSearchList($where + ['star' => 1], $page, $limit, ['id,store_name,cate_id,image,IFNULL(sales, 0) + IFNULL(ficti, 0) as sales,price,stock,activity,ot_price,spec_type,recommend_image,unit_name']);
+        $list = $product->getSearchList($where + ['star' => 1], $page, $limit, ['id,store_name,cate_id,image,IFNULL(sales, 0) + IFNULL(ficti, 0) as sales,price,stock,activity,ot_price,spec_type,recommend_image,unit_name,presale']);
         foreach ($list as &$item) {
             if (count($item['star'])) {
                 $item['star'] = bcdiv((string)array_sum(array_column($item['star'], 'product_score')), (string)count($item['star']), 1);
@@ -71,7 +71,7 @@ class ProductServices extends BaseServices
                 $uploadType = (int)sys_config('upload_type', 1);
                 $upload = UploadService::init();
                 $res = (string)EntityBody::factory($res);
-                $res = $upload->to('routine/product')->validate()->stream($res, $namePath);
+                $res = $upload->to('routine/product')->validate()->setAuthThumb(false)->stream($res, $namePath);
                 if ($res === false) {
                     return false;
                 }

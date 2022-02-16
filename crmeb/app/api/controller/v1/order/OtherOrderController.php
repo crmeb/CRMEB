@@ -16,7 +16,7 @@ use app\services\order\OtherOrderServices;
 use app\services\pay\OrderPayServices;
 use app\services\pay\PayServices;
 use app\services\pay\YuePayServices;
-use app\services\user\MemberCardServices;
+use app\services\user\member\MemberCardServices;
 use app\services\user\UserServices;
 use crmeb\services\CacheService;
 use crmeb\services\SystemConfigService;
@@ -137,7 +137,6 @@ class OtherOrderController
                             return app('json')->status('wechat_pay', '前往支付', $info);
                         }
                     }
-                    break;
                 case PayServices::YUE_PAY:
                     /** @var YuePayServices $yueServices */
                     $yueServices = app()->make(YuePayServices::class);
@@ -150,7 +149,6 @@ class OtherOrderController
                         else
                             return app('json')->status('pay_error', $pay);
                     }
-                    break;
                 case PayServices::ALIAPY_PAY:
                     if (!$quitUrl && $from != 'routine') {
                         return app('json')->status('pay_error', '请传入支付宝支付回调URL', $info);
@@ -172,10 +170,8 @@ class OtherOrderController
                         $info['pay_key'] = $payKey;
                         return app('json')->status(PayServices::ALIAPY_PAY . '_pay', '前往支付', $info);
                     }
-                    break;
                 case PayServices::OFFLINE_PAY:
                     return app('json')->status('success', '前往支付', $info);
-                    break;
             }
         } else return app('json')->fail('订单生成失败!');
     }

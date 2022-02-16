@@ -8,6 +8,7 @@
       v-model="collapsed"
       class="left-sider"
       :style="{ overflow: 'hidden' }"
+      v-if="!headMenuNoShow"
     >
       <side-menu
         accordion
@@ -25,7 +26,7 @@
       </side-menu>
     </Sider>
     <Layout>
-      <Header class="header-con">
+      <Header class="header-con" v-if="!headMenuNoShow">
         <header-bar
           :collapsed="collapsed"
           @on-coll-change="handleCollapsedChange"
@@ -53,7 +54,7 @@
       </Header>
       <Content class="main-content-con">
         <Layout class="main-layout-con">
-          <div class="tag-nav-wrapper">
+          <div class="tag-nav-wrapper" v-if="!headMenuNoShow">
             <tags-nav
               :value="$route"
               @input="handleClick"
@@ -62,10 +63,20 @@
             />
           </div>
           <Content class="content-wrapper">
-            <!--            <keep-alive :include="cacheList">-->
-            <!--              <router-view v-if="reload"/>-->
-            <!--            </keep-alive>-->
-            <router-view v-if="reload" style="min-height: 600px" />
+            <!-- <keep-alive :include="cacheList">
+              <router-view v-if="reload" style="min-height: 600px" />
+            </keep-alive> -->
+            <keep-alive>
+              <router-view
+                v-if="$route.meta.keepAlive && reload"
+                style="min-height: 600px"
+              ></router-view>
+            </keep-alive>
+            <router-view
+              v-if="!$route.meta.keepAlive && reload"
+              style="min-height: 600px"
+            ></router-view>
+            <!-- <router-view v-if="reload" style="min-height: 600px" /> -->
             <!--<ABackTop :height="100" :bottom="80" :right="50" container=".content-wrapper"></ABackTop>-->
           </Content>
           <i-copyright />
@@ -129,6 +140,7 @@ export default {
       reload: true,
       screenWidth: "",
       openImage: true,
+      headMenuNoShow: false,
     };
   },
   computed: {
@@ -152,7 +164,6 @@ export default {
               .map((item) => item.name)
           : []),
       ];
-
       return list;
     },
     menuList() {
@@ -234,6 +245,7 @@ export default {
       this.maxLogo = logo || this.maxLogo;
       this.minLogo = logoSmall || this.minLogo;
       getLogo().then((res) => {
+        localStorage.setItem("ADMIN_TITLE", res.data.site_name);
         this.minLogo = res.data.logo_square;
         this.maxLogo = res.data.logo;
       });
@@ -252,6 +264,7 @@ export default {
   },
   watch: {
     $route(newRoute) {
+      this.headMenuNoShow = this.$route.meta.fullScreen;
       let openNames = getMenuopen(newRoute, this.menuList);
       this.$store.commit("menus/setopenMenus", openNames);
       const { name, query, params, meta } = newRoute;
@@ -265,6 +278,8 @@ export default {
     },
   },
   mounted() {
+    this.headMenuNoShow = this.$route.meta.fullScreen;
+    this.getLogo();
     this.screenWidth = document.body.clientWidth;
     window.onresize = () => {
       return (() => {
@@ -299,7 +314,6 @@ export default {
     }
     // 获取未读消息条数
     this.getUnreadMessageCount();
-    this.getLogo();
   },
 };
 </script>

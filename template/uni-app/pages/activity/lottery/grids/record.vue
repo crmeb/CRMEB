@@ -13,10 +13,15 @@
 							{{item.prize.type | typeName}}
 						</text>
 					</view>
-					<view class="goods-msg">
+					<view class="goods-msg exchange" v-if="item.type == 6 &&  !item.receive_time"
+						@click="fromAddress(item)">
+						立即兑换
+					</view>
+					<view class="goods-msg" v-else>
 						兑换时间：
 						{{item.receive_time || '--'}}
 					</view>
+
 					<view class="goods-msg" v-if="item.deliver_info.deliver_name">
 						物流公司：
 						{{item.deliver_info.deliver_name || '--'}}
@@ -25,10 +30,12 @@
 						物流单号：
 						{{item.deliver_info.deliver_number || '--'}}
 						<!-- #ifndef H5 -->
-						<view v-if="item.deliver_info.deliver_number" class='copy' @tap='copyOrderId(item.deliver_info.deliver_number)'>复制</view>
+						<view v-if="item.deliver_info.deliver_number" class='copy'
+							@tap='copyOrderId(item.deliver_info.deliver_number)'>复制</view>
 						<!-- #endif -->
 						<!-- #ifdef H5 -->
-						<view v-if="item.deliver_info.deliver_number" class='copy copy-data' :data-clipboard-text="item.deliver_info.deliver_number">复制</view>
+						<view v-if="item.deliver_info.deliver_number" class='copy copy-data'
+							:data-clipboard-text="item.deliver_info.deliver_number">复制</view>
 						<!-- #endif -->
 						<!-- <view v-if="item.deliver_info.deliver_number" class='copy' @tap='copyOrderId(item.deliver_info.deliver_number)'>复制</view> -->
 					</view>
@@ -41,24 +48,31 @@
 		<block v-if="lotteryList.length === 0 && !loading">
 			<emptyPage title="暂无中奖记录～"></emptyPage>
 		</block>
+		<userAddress :aleartStatus="addressModel" @getAddress="getAddress" @close="()=>{addressModel = false}">
+		</userAddress>
+		<view v-if="addressModel" class="mask" @close="()=>{addressModel = false}"></view>
 	</view>
 </template>
 
 <script>
 	import ClipboardJS from "@/plugin/clipboard/clipboard.js";
 	import {
-		getLotteryList
+		getLotteryList,
+		receiveLottery
 	} from '@/api/lottery.js'
+	import userAddress from '../components/userAddress.vue'
 	import emptyPage from '@/components/emptyPage.vue'
 	import colors from '@/mixins/color.js';
 	export default {
 		components: {
-			emptyPage
+			emptyPage,
+			userAddress
 		},
-		mixins:[colors],
+		mixins: [colors],
 		data() {
 			return {
 				loading: false,
+				addressModel: false,
 				where: {
 					page: 1,
 					limit: 20,
@@ -98,6 +112,25 @@
 			// #endif
 		},
 		methods: {
+			getAddress(data) {
+				let addData = data
+				addData.id = this.addid
+				addData.address = data.address.province + data.address.city + data.address.district + data.detail
+				receiveLottery(addData).then(res => {
+					this.$util.Tips({
+						title: '领取成功'
+					});
+					this.addressModel = false
+				}).catch(err => {
+					this.$util.Tips({
+						title: err
+					});
+				})
+			},
+			fromAddress(item) {
+				this.addid = item.id
+				this.addressModel = true
+			},
 			// #ifndef H5
 			copyOrderId: function(data) {
 				let that = this;
@@ -175,7 +208,8 @@
 				.num {
 					color: var(--view-theme);
 				}
-				.copy{
+
+				.copy {
 					display: -webkit-inline-box;
 					display: -webkit-inline-flex;
 					width: 60rpx;
@@ -185,6 +219,24 @@
 				}
 
 			}
+
+			.exchange {
+				color: #fff;
+				background-color: var(--view-theme);
+				border-radius: 30rpx;
+				text-align: center;
+				padding: 4rpx 0;
+			}
+		}
+
+		.mask {
+			position: fixed;
+			top: 0;
+			left: 0;
+			right: 0;
+			bottom: 0;
+			background-color: rgba(0, 0, 0, 0.8);
+			z-index: 9;
 		}
 	}
 </style>

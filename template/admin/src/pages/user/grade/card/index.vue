@@ -90,6 +90,9 @@
         @on-submit="onSubmit"
       ></form-create>
     </Modal>
+    <Modal v-model="cardModal" title="卡列表" footer-hide width="1000">
+      <cardList v-if="cardModal" :id="id"></cardList>
+    </Modal>
     <Modal v-model="modal2" title="编辑批次名" footer-hide>
       <form-create :rule="rule2" @on-submit="onSubmit2"></form-create>
     </Modal>
@@ -121,6 +124,7 @@
 
 <script>
 import { mapState } from "vuex";
+import cardList from "./list.vue";
 import {
   userMemberBatch,
   memberBatchSave,
@@ -131,8 +135,11 @@ import {
 
 export default {
   name: "index",
+  components: { cardList },
   data() {
     return {
+      cardModal: false,
+      id: 0,
       grid: {
         xl: 7,
         lg: 7,
@@ -208,6 +215,7 @@ export default {
           value: 1,
           props: {
             min: 1,
+            precision: 0,
             max: 100000,
           },
           on: {
@@ -227,6 +235,7 @@ export default {
           value: 1,
           props: {
             min: 1,
+            precision: 0,
             max: 100000,
           },
           on: {
@@ -357,9 +366,8 @@ export default {
           this.modal2 = true;
           break;
         case "2":
-          this.$router.push({
-            path: `/admin/user/grade/list/${row.id}`,
-          });
+          this.id = row.id;
+          this.cardModal = true;
           break;
         case "3":
           this.exportExcel(row);

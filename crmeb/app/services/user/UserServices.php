@@ -14,13 +14,13 @@
 namespace app\services\user;
 
 use app\jobs\UserJob;
-use app\services\activity\StoreBargainServices;
-use app\services\activity\StoreCombinationServices;
-use app\services\activity\StoreSeckillServices;
+use app\services\activity\bargain\StoreBargainServices;
+use app\services\activity\combination\StoreCombinationServices;
+use app\services\activity\seckill\StoreSeckillServices;
 use app\services\agent\AgentLevelServices;
 use app\services\BaseServices;
 use app\dao\user\UserDao;
-use app\services\coupon\StoreCouponUserServices;
+use app\services\activity\coupon\StoreCouponUserServices;
 use app\services\diy\DiyServices;
 use app\services\message\service\StoreServiceRecordServices;
 use app\services\message\service\StoreServiceServices;
@@ -30,8 +30,9 @@ use app\services\order\StoreOrderServices;
 use app\services\order\StoreOrderTakeServices;
 use app\services\other\QrcodeServices;
 use app\services\product\product\StoreProductRelationServices;
-use app\services\system\MessageSystemServices;
+use app\services\message\MessageSystemServices;
 use app\services\system\SystemUserLevelServices;
+use app\services\user\member\MemberCardServices;
 use app\services\wechat\WechatUserServices;
 use crmeb\exceptions\AdminException;
 use crmeb\services\CacheService;
@@ -125,7 +126,10 @@ class UserServices extends BaseServices
             'add_ip' => app()->request->ip(),
             'last_time' => time(),
             'last_ip' => app()->request->ip(),
-            'user_type' => $userType
+            'user_type' => $userType,
+            'staff_id' => $user['staff_id'] ?? 0,
+            'agent_id' => $user['agent_id'] ?? 0,
+            'division_id' => $user['division_id'] ?? 0,
         ];
         if ($spreadUid) {
             $data['spread_uid'] = $spreadUid;
@@ -602,6 +606,8 @@ class UserServices extends BaseServices
                     $item['user_type'] = 'H5';
                 } else if ($item['user_type'] == 'pc') {
                     $item['user_type'] = 'PC';
+                } else if ($item['user_type'] == 'app' || $item['user_type'] == 'apple') {
+                    $item['user_type'] = 'APP';
                 } else $item['user_type'] = '其他';
                 if ($item['sex'] == 1) {
                     $item['sex'] = '男';
@@ -759,33 +765,37 @@ class UserServices extends BaseServices
         $res1 = false;
         $res2 = false;
         $edit = array();
-        /** @var UserBillServices $userBill */
-        $userBill = app()->make(UserBillServices::class);
         if ($data['money_status'] && $data['money']) {//余额增加或者减少
-            $bill_data = ['link_id' => $data['adminId'] ?? 0, 'number' => $data['money'], 'balance' => $user['now_money']];
+            /** @var UserMoneyServices $userMoneyServices */
+            $userMoneyServices = app()->make(UserMoneyServices::class);
             if ($data['money_status'] == 1) {//增加
                 $edit['now_money'] = bcadd($user['now_money'], $data['money'], 2);
-                $bill_data['title'] = '系统增加余额';
-                $bill_data['mark'] = '系统增加了' . floatval($data['money']) . '余额';
-                $res1 = $userBill->incomeNowMoney($user['uid'], 'system_add', $bill_data);
+                $res1 = $userMoneyServices->income('system_add', $user['uid'], $data['money'], $edit['now_money'], $data['adminId'] ?? 0);
             } else if ($data['money_status'] == 2) {//减少
-                $edit['now_money'] = bcsub($user['now_money'], $data['money'], 2);
-                $bill_data['title'] = '系统减少余额';
-                $bill_data['mark'] = '系统扣除了' . floatval($data['money']) . '余额';
-                $res1 = $userBill->expendNowMoney($user['uid'], 'system_sub', $bill_data);
+                if ($user['now_money'] > $data['money']) {
+                    $edit['now_money'] = bcsub($user['now_money'], $data['money'], 2);
+                } else {
+                    $edit['now_money'] = 0;
+                    $data['money'] = $user['now_money'];
+                }
+                $res1 = $userMoneyServices->income('system_sub', $user['uid'], $data['money'], $edit['now_money'], $data['adminId'] ?? 0);
             }
         } else {
             $res1 = true;
         }
         if ($data['integration_status'] && $data['integration']) {//积分增加或者减少
-            $integral_data = ['link_id' => $data['adminId'] ?? 0, 'number' => $data['integration'], 'balance' => $user['integral']];
+            /** @var UserBillServices $userBill */
+            $userBill = app()->make(UserBillServices::class);
+            $integral_data = ['link_id' => $data['adminId'] ?? 0, 'number' => $data['integration']];
             if ($data['integration_status'] == 1) {//增加
                 $edit['integral'] = bcadd($user['integral'], $data['integration'], 2);
+                $integral_data['balance'] = $edit['integral'];
                 $integral_data['title'] = '系统增加积分';
                 $integral_data['mark'] = '系统增加了' . floatval($data['integration']) . '积分';
                 $res2 = $userBill->incomeIntegral($user['uid'], 'system_add', $integral_data);
             } else if ($data['integration_status'] == 2) {//减少
                 $edit['integral'] = bcsub($user['integral'], $data['integration'], 2);
+                $integral_data['balance'] = $edit['integral'];
                 $integral_data['title'] = '系统减少积分';
                 $integral_data['mark'] = '系统扣除了' . floatval($data['integration']) . '积分';
                 $res2 = $userBill->expendIntegral($user['uid'], 'system_sub', $integral_data);
@@ -840,9 +850,9 @@ class UserServices extends BaseServices
         }
         $f = array();
         $f[] = Form::radio('money_status', '修改余额', 1)->options([['value' => 1, 'label' => '增加'], ['value' => 2, 'label' => '减少']]);
-        $f[] = Form::number('money', '余额', 0)->min(0);
+        $f[] = Form::number('money', '余额', 0)->min(0)->max(999999.99);
         $f[] = Form::radio('integration_status', '修改积分', 1)->options([['value' => 1, 'label' => '增加'], ['value' => 2, 'label' => '减少']]);
-        $f[] = Form::number('integration', '积分', 0)->min(0)->precision(0);
+        $f[] = Form::number('integration', '积分', 0)->min(0)->precision(0)->max(999999);
         return create_form('修改其他', $f, Url::buildUrl('/user/update_other/' . $id), 'PUT');
     }
 
@@ -1011,7 +1021,7 @@ class UserServices extends BaseServices
         if (!$this->getUserInfo($id)) {
             throw new AdminException('用户不存在');
         }
-        $field[] = Form::number('days', '增加时长(天)')->precision(0)->style(['width' => '200px'])->min(1)->required();
+        $field[] = Form::number('days', '增加时长(天)')->precision(0)->style(['width' => '200px'])->required();
         return create_form('赠送付费会员时长', $field, Url::buildUrl('/user/save_give_level_time/' . $id), 'PUT');
     }
 
@@ -1026,12 +1036,23 @@ class UserServices extends BaseServices
         if (!$userInfo) {
             throw new AdminException('用户不存在');
         }
-        if ($days <= 0) throw new AdminException('赠送天数不能小于1天');
+        if ($days == 0) throw new AdminException('赠送天数不能为0');
+        if ($days < -1) throw new AdminException('天数输入错误');
         if ($userInfo->is_money_level == 0) {
             $userInfo->is_money_level = 3;
-            $userInfo->overdue_time = $time = time() + ($days * 86400);
+            if ($days == -1) {
+                $userInfo->is_ever_level = 1;
+                $time = 0;
+            } else {
+                $userInfo->overdue_time = $time = time() + ($days * 86400);
+            }
         } else {
-            $userInfo->overdue_time = $time = $userInfo->overdue_time + ($days * 86400);
+            if ($days == -1) {
+                $userInfo->is_ever_level = 1;
+                $time = 0;
+            } else {
+                $userInfo->overdue_time = $time = $userInfo->overdue_time + ($days * 86400);
+            }
         }
         $userInfo->save();
         /** @var StoreOrderCreateServices $storeOrderCreateService */
@@ -1224,32 +1245,26 @@ class UserServices extends BaseServices
 //                $services = app()->make(UserFriendsServices::class);
 //                return $services->getFriendList(['uid' => $id], ['level', 'nickname']);
                 return $this->getFriendList($id);
-                break;
             case 'order':
                 /** @var StoreOrderServices $services */
                 $services = app()->make(StoreOrderServices::class);
                 return $services->getUserOrderList($id);
-                break;
             case 'integral':
                 /** @var UserBillServices $services */
                 $services = app()->make(UserBillServices::class);
-                return $services->getIntegralList($id, [], 'title,number,balance,mark,add_time');
-                break;
+                return $services->getIntegralList($id, [], 'title,number,balance,mark,add_time,frozen_time');
             case 'sign':
                 /** @var UserBillServices $services */
                 $services = app()->make(UserBillServices::class);
                 return $services->getSignList($id, [], 'title,number,mark,add_time');
-                break;
             case 'coupon':
                 /** @var StoreCouponUserServices $services */
                 $services = app()->make(StoreCouponUserServices::class);
                 return $services->getUserCouponList($id);
-                break;
             case 'balance_change':
-                /** @var UserBillServices $services */
-                $services = app()->make(UserBillServices::class);
-                return $services->getBrokerageList($id, [], 'title,type,number,balance,mark,pm,status,add_time');
-                break;
+                /** @var UserMoneyServices $services */
+                $services = app()->make(UserMoneyServices::class);
+                return $services->balanceList(['uid' => $id]);
             default:
                 throw new AdminException('type参数错误');
         }
@@ -1397,8 +1412,11 @@ class UserServices extends BaseServices
         $user['like'] = app()->make(StoreProductRelationServices::class)->getUserCollectCount($user['uid']);
         $user['orderStatusNum'] = $storeOrder->getOrderData($uid, true, true);
         $user['notice'] = 0;
-        $user['recharge'] = $userBill->getRechargeSum($uid);//累计充值
-        $user['orderStatusSum'] = $user['orderStatusNum']['sum_price'];
+        /** @var UserMoneyServices $userMoney */
+        $userMoney = app()->make(UserMoneyServices::class);
+
+        $user['recharge'] = $userMoney->sum(['uid' => $uid, 'pm' => 1], 'number');
+        $user['orderStatusSum'] = $userMoney->sum(['uid' => $uid, 'pm' => 0], 'number');
         $user['extractTotalPrice'] = $userExtract->getExtractSum(['uid' => $uid, 'status' => 1]);//累计提现
         $user['extractPrice'] = $user['brokerage_price'];//可提现
         $user['statu'] = (int)sys_config('store_brokerage_statu');
@@ -1413,19 +1431,19 @@ class UserServices extends BaseServices
                 $user['promoter_price'] = bcsub((string)$storeBrokeragePrice, (string)$price, 2);
             }
         }
-        /** @var UserBrokerageFrozenServices $frozenPrices */
-        $frozenPrices = app()->make(UserBrokerageFrozenServices::class);
-        $user['broken_commission'] = array_bc_sum($frozenPrices->getUserFrozenPrice($uid));
+        /** @var UserBrokerageServices $frozenPrices */
+        $frozenPrices = app()->make(UserBrokerageServices::class);
+        $user['broken_commission'] = $frozenPrices->getUserFrozenPrice($uid);
         if ($user['broken_commission'] < 0)
             $user['broken_commission'] = 0;
-        $user['commissionCount'] = bcsub($user['brokerage_price'], $user['broken_commission'], 2);
+        $user['commissionCount'] = bcsub((string)$user['brokerage_price'], (string)$user['broken_commission'], 2);
         if ($user['commissionCount'] < 0)
             $user['commissionCount'] = 0;
         if (!sys_config('member_func_status'))
             $user['vip'] = false;
         else {
             $userLevel = $userLevel->getUerLevelInfoByUid($user['uid']);
-            $user['vip'] = $userLevel ? true : false;
+            $user['vip'] = (bool)$userLevel;
             if ($user['vip']) {
                 $user['vip_id'] = $userLevel['id'] ?? 0;
                 $user['vip_icon'] = $userLevel['icon'] ?? '';
@@ -1470,7 +1488,7 @@ class UserServices extends BaseServices
                 $user['vip_status'] = 3;//开通了，没有到期
             }
         }
-        $user['svip_open'] = sys_config('member_card_status') ? true : false;
+        $user['svip_open'] = (bool)sys_config('member_card_status');
         /** @var StoreServiceRecordServices $servicesRecord */
         $servicesRecord = app()->make(StoreServiceRecordServices::class);
         $service_num = $servicesRecord->sum(['user_id' => $uid], 'mssage_num');
@@ -1479,6 +1497,8 @@ class UserServices extends BaseServices
         /** @var AgentLevelServices $userSpread */
         $agentLevel = app()->make(AgentLevelServices::class);
         $user['spread_level_count'] = $agentLevel->count(['status' => 1, 'is_del' => 0]);
+        $user['extract_type'] = sys_config('extract_type');
+        $user['integral'] = intval($user['integral']);
         return $user;
     }
 
@@ -1528,14 +1548,14 @@ class UserServices extends BaseServices
      */
     public function getRankList(array $data)
     {
+        $startTime = strtotime('this week Monday');
+        $endTime = time();
         switch ($data['type']) {
             case 'week':
                 $startTime = strtotime('this week Monday');
-                $endTime = time();
                 break;
             case 'month':
                 $startTime = strtotime('last month');
-                $endTime = time();
                 break;
         }
         [$page, $limit] = $this->getPageValue();
@@ -1629,9 +1649,9 @@ class UserServices extends BaseServices
         $storeCombinaion = app()->make(StoreCombinationServices::class);
         /** @var StoreSeckillServices $storeSeckill */
         $storeSeckill = app()->make(StoreSeckillServices::class);
-        $data['is_bargin'] = $storeBragain->validBargain() ? true : false;
-        $data['is_pink'] = $storeCombinaion->validCombination() ? true : false;
-        $data['is_seckill'] = $storeSeckill->getSeckillCount() ? true : false;
+        $data['is_bargin'] = (bool)$storeBragain->validBargain();
+        $data['is_pink'] = (bool)$storeCombinaion->validCombination();
+        $data['is_seckill'] = (bool)$storeSeckill->getSeckillCount();
         return $data;
     }
 
@@ -1779,34 +1799,33 @@ class UserServices extends BaseServices
         foreach ($noBeOpenids as $openid) {
             try {
                 $info = WechatService::getUserInfo($openid);
+                $info = is_object($info) ? $info->toArray() : $info;
             } catch (\Throwable $e) {
                 $info = [];
             }
             if (!$info) continue;
-            if ($info['subscribe'] == 1) {
-                $data['nickname'] = $info['nickname'] ?? '';
-                $data['headimgurl'] = $info['headimgurl'] ?? '';
-                $userInfoData = $this->setUserInfo($data);
-                if (!$userInfoData) {
-                    throw new AdminException('用户信息储存失败!');
-                }
-                $data['uid'] = $userInfoData['uid'];
-                $data['subscribe'] = $info['subscribe'];
-                $data['unionid'] = $info['unionid'] ?? '';
-                $data['openid'] = $info['openid'] ?? '';
-                $data['sex'] = $info['sex'] ?? 0;
-                $data['language'] = $info['language'] ?? '';
-                $data['city'] = $info['city'] ?? '';
-                $data['province'] = $info['province'] ?? '';
-                $data['country'] = $info['country'] ?? '';
-                $data['subscribe_time'] = $info['subscribe_time'] ?? '';
-                $data['groupid'] = $info['groupid'] ?? 0;
-                $data['remark'] = $info['remark'] ?? '';
-                $data['tagid_list'] = isset($info['tagid_list']) && $info['tagid_list'] ? implode(',', $info['tagid_list']) : '';
-                $data['add_time'] = $time;
-                $data['is_complete'] = 1;
-                $dataAll[] = $data;
+            $data['nickname'] = $info['nickname'] ?? '';
+            $data['headimgurl'] = $info['headimgurl'] ?? '';
+            $userInfoData = $this->setUserInfo($data);
+            if (!$userInfoData) {
+                throw new AdminException('用户信息储存失败!');
             }
+            $data['uid'] = $userInfoData['uid'];
+            $data['subscribe'] = $info['subscribe'] ?? 1;
+            $data['unionid'] = $info['unionid'] ?? '';
+            $data['openid'] = $info['openid'] ?? '';
+            $data['sex'] = $info['sex'] ?? 0;
+            $data['language'] = $info['language'] ?? '';
+            $data['city'] = $info['city'] ?? '';
+            $data['province'] = $info['province'] ?? '';
+            $data['country'] = $info['country'] ?? '';
+            $data['subscribe_time'] = $info['subscribe_time'] ?? '';
+            $data['groupid'] = $info['groupid'] ?? 0;
+            $data['remark'] = $info['remark'] ?? '';
+            $data['tagid_list'] = isset($info['tagid_list']) && $info['tagid_list'] ? implode(',', $info['tagid_list']) : '';
+            $data['add_time'] = $time;
+            $data['is_complete'] = 1;
+            $dataAll[] = $data;
         }
         if ($dataAll) {
             /** @var WechatUserServices $wechatUser */
@@ -1847,7 +1866,7 @@ class UserServices extends BaseServices
         }
         $setData['overdue_time'] = $overdue_time;
         $setData['is_ever_level'] = $is_ever_level;
-        $setData['is_money_level'] = $is_money_level ? $is_money_level : 0;
+        $setData['is_money_level'] = $is_money_level ?: 0;
         // if ($user_info['level'] == 0) $setData['level'] = 1;
         return $this->dao->update(['uid' => $user_id], $setData);
     }
@@ -1928,15 +1947,15 @@ class UserServices extends BaseServices
         if (!$this->checkUserPromoter($spread_uid, $spread_user)) {
             return false;
         }
-        /** @var UserBillServices $userBillServices */
-        $userBillServices = app()->make(UserBillServices::class);
+        /** @var UserBrokerageServices $userBrokerageServices */
+        $userBrokerageServices = app()->make(UserBrokerageServices::class);
         // -1不限制
         if ($day_brokerage_price_upper != -1) {
             if ($day_brokerage_price_upper <= 0) {
                 return true;
             } else {
                 //获取上级用户今日获取推广用户佣金
-                $spread_day_brokerage = $userBillServices->getUserBillBrokerageSum($spread_uid, ['brokerage_user'], 'today');
+                $spread_day_brokerage = $userBrokerageServices->getUserBrokerageSum($spread_uid, ['brokerage_user'], 'today');
                 //超过上限
                 if (($spread_day_brokerage + $brokerage_price) > $day_brokerage_price_upper) {
                     return true;
@@ -1948,10 +1967,9 @@ class UserServices extends BaseServices
         // 上级推广员返佣之后的金额
         $balance = bcadd($spreadPrice, $brokerage_price, 2);
 
-        return $this->transaction(function () use ($uid, $spread_uid, $brokerage_price, $userInfo, $balance, $userBillServices) {
+        return $this->transaction(function () use ($uid, $spread_uid, $brokerage_price, $userInfo, $balance, $userBrokerageServices) {
             // 添加返佣记录
-
-            $res1 = $userBillServices->income('get_user_brokerage', $spread_uid, [
+            $res1 = $userBrokerageServices->income('get_user_brokerage', $spread_uid, [
                 'nickname' => $userInfo['nickname'],
                 'number' => floatval($brokerage_price)
             ], $balance, $uid);
@@ -2005,5 +2023,54 @@ class UserServices extends BaseServices
             return $userInfo['spread_uid'];
         }
         return -1;
+    }
+
+    /**
+     * 获取事业部/代理/员工列表
+     * @param array $where
+     * @param string $field
+     * @return array
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     */
+    public function getDivisionList(array $where = [], string $field = '*')
+    {
+        [$page, $limit] = $this->getPageValue();
+        $list = $this->dao->getList($where, $field, $page, $limit);
+        $count = $this->dao->count($where);
+        return compact('list', 'count');
+    }
+
+    /**
+     * 添加编辑用户信息时候的信息
+     * @param $uid
+     * @return array
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     */
+    public function getUserSaveInfo($uid)
+    {
+        /** @var UserLabelServices $userLabelServices */
+        $userLabelServices = app()->make(UserLabelServices::class);
+        /** @var UserLabelRelationServices $userLabelRelationServices */
+        $userLabelRelationServices = app()->make(UserLabelRelationServices::class);
+        /** @var UserLabelCateServices $userLabelCateServices */
+        $userLabelCateServices = app()->make(UserLabelCateServices::class);
+        /** @var UserGroupServices $userGroupServices */
+        $userGroupServices = app()->make(UserGroupServices::class);
+        /** @var SystemUserLevelServices $systemUserLevelServices */
+        $systemUserLevelServices = app()->make(SystemUserLevelServices::class);
+        $userInfo = $this->dao->get($uid);
+        if ($userInfo) {
+            $label_ids = $userLabelRelationServices->getUserLabels($uid);
+            $userInfo['label_id'] = !empty($label_ids) ? $userLabelServices->getLabelList(['ids' => $label_ids], ['id', 'label_name']) : [];
+            $userInfo['birthday'] = date('Y-m-d', (int)$userInfo['birthday']);
+        }
+        $levelInfo = $systemUserLevelServices->getWhereLevelList([], 'id,name');
+        $groupInfo = $userGroupServices->getGroupList();
+        $labelInfo = $userLabelCateServices->getUserLabel($uid);
+        return compact('userInfo', 'levelInfo', 'groupInfo', 'labelInfo');
     }
 }

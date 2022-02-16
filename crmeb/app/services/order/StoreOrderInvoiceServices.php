@@ -158,4 +158,48 @@ class StoreOrderInvoiceServices extends BaseServices
         }
         return true;
     }
+
+    /**
+     * 拆分订单同步拆分申请开票记录
+     * @param int $oid
+     * @return bool
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     */
+    public function splitOrderInvoice(int $oid)
+    {
+        /** @var StoreOrderServices $storeOrderServices */
+        $storeOrderServices = app()->make(StoreOrderServices::class);
+        $orderInfo = $storeOrderServices->getOne(['id' => $oid, 'is_del' => 0]);
+        if (!$orderInfo) {
+            throw new ValidateException('订单不存在');
+        }
+        $pid = $orderInfo['pid'] > 0 ? $orderInfo['pid'] : $orderInfo['id'];
+        //查询开票记录
+        $orderInvoice = $this->dao->get(['order_id' => $oid]);
+        //查询子订单
+        $spliteOrder = $storeOrderServices->getColumn(['pid' => $pid, 'is_system_del' => 0], 'id,order_id');
+        if ($spliteOrder && $orderInvoice) {
+            $data = $orderInvoice->toArray();
+            unset($data['id']);
+            $data['add_time'] = strtotime($data['add_time']);
+            $data_all = [];
+            foreach ($spliteOrder as $order) {
+                if (!$this->dao->count(['order_id' => $order['id']])) {
+                    $data['order_id'] = $order['id'];
+                    $data_all[] = $data;
+                }
+            }
+            if ($data_all) {
+                $this->transaction(function () use ($data_all, $orderInvoice, $orderInfo) {
+                    $this->dao->saveAll($data_all);
+                    if ($orderInfo['pid'] <= 0) {
+                        $this->dao->delete(['id' => $orderInvoice['id']]);
+                    }
+                });
+            }
+        }
+        return true;
+    }
 }

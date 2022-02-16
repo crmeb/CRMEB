@@ -16,11 +16,13 @@ import wechat from "@/libs/wechat.js";
  * @returns {*}
  */
 export function getWechatConfig() {
-  return request.get(
-    "wechat/config",
-    { url: wechat.signLink() },
-    { noAuth: true }
-  );
+	return request.get(
+		"wechat/config", {
+			url: wechat.signLink()
+		}, {
+			noAuth: true
+		}
+	);
 }
 
 /**
@@ -28,20 +30,25 @@ export function getWechatConfig() {
  * @returns {*}
  */
 export function wechatAuth(code, spread, login_type) {
-  return request.get(
-    "wechat/auth",
-    { code, spread, login_type },
-    { noAuth: true }
-  );
+	return request.get(
+		"wechat/auth", {
+			code,
+			spread,
+			login_type
+		}, {
+			noAuth: true
+		}
+	);
 }
 
 /**
  * 获取登录授权login
  * 
-*/
-export function getLogo()
-{
-  return request.get('wechat/get_logo', {}, { noAuth : true});
+ */
+export function getLogo() {
+	return request.get('wechat/get_logo', {}, {
+		noAuth: true
+	});
 }
 
 /**
@@ -49,7 +56,9 @@ export function getLogo()
  * @param data object 小程序用户登陆信息
  */
 export function login(data) {
-  return request.post("wechat/mp_auth", data, { noAuth : true });
+	return request.post("wechat/mp_auth", data, {
+		noAuth: true
+	});
 }
 
 /**
@@ -58,11 +67,15 @@ export function login(data) {
  */
 export function silenceAuth(data) {
 	//#ifdef MP
-  return request.get("v2/wechat/silence_auth", data, { noAuth : true });
-  //#endif
-  //#ifdef H5
-  return request.get("v2/wechat/wx_silence_auth", data, { noAuth : true });
-  //#endif
+	return request.get("v2/wechat/silence_auth", data, {
+		noAuth: true
+	});
+	//#endif
+	//#ifdef H5
+	return request.get("v2/wechat/wx_silence_auth", data, {
+		noAuth: true
+	});
+	//#endif
 }
 
 /**
@@ -70,7 +83,9 @@ export function silenceAuth(data) {
  * @returns {*}
  */
 export function getShare() {
-  return request.get("share", {}, { noAuth: true });
+	return request.get("share", {}, {
+		noAuth: true
+	});
 }
 
 /**
@@ -78,7 +93,9 @@ export function getShare() {
  * @returns {*}
  */
 export function follow() {
-  return request.get("wechat/follow", {}, { noAuth: true });
+	return request.get("wechat/follow", {}, {
+		noAuth: true
+	});
 }
 
 /**
@@ -86,11 +103,14 @@ export function follow() {
  * @retins {*}
  * */
 export function imageBase64(image, code) {
-  return request.post(
-    "image_base64",
-    { image: image, code: code },
-    { noAuth: true }
-  );
+	return request.post(
+		"image_base64", {
+			image: image,
+			code: code
+		}, {
+			noAuth: true
+		}
+	);
 }
 
 /**
@@ -98,22 +118,28 @@ export function imageBase64(image, code) {
  * @returns {*}
  */
 export function copyWords() {
-  return request.get("copy_words", {}, { noAuth: true });
+	return request.get("copy_words", {}, {
+		noAuth: true
+	});
 }
 
 /**
  * 获取商城是否强制绑定手机号
  */
 export function getShopConfig() {
-	return request.get('v2/bind_status' ,{} ,{noAuth : true});
+	return request.get('v2/bind_status', {}, {
+		noAuth: true
+	});
 }
 
 /**
  * 小程序绑定手机号
  * @param {Object} data
  */
-export function getUserPhone(data){
-	return request.post('v2/auth_bindind_phone',data,{noAuth : true});
+export function getUserPhone(data) {
+	return request.post('v2/auth_bindind_phone', data, {
+		noAuth: true
+	});
 }
 
 /**
@@ -150,7 +176,7 @@ export function getNavigation(data) {
 		noAuth: true
 	});
 }
-export function getSubscribe(){
+export function getSubscribe() {
 	return request.get("subscribe", {}, {
 		noAuth: true
 	});
@@ -161,7 +187,7 @@ export function getSubscribe(){
  * @param 系统类型
  */
 export function getUpdateInfo(type) {
-	return request.get("get_new_app/" + type, {
+	return request.get("get_new_app/" + type, {}, {
 		noAuth: true
 	});
 }

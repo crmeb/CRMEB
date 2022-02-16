@@ -1,33 +1,35 @@
 <template>
 	<!-- #ifdef MP -->
 	<view v-if="liveList.length > 0">
-			<view class="live-wrapper-b">
-				<navigator class="live-item-b" v-for="(item,index) in liveList" :key="index" :url="'plugin-private://wx2b03c6e691cd7370/pages/live-player-plugin?room_id=' + item.room_id" hover-class="none" :style="[{'background':bg},{'box-shadow':`0px 1px 20px ${boxShadow}`}]">
-					<view class="img-box">
-						<view class="label bgblue" v-if="item.live_status == 102">
-							<view class="txt">预告</view>
-							<view class="msg">{{item.show_time}}</view>
-						</view>
-						<view class="label bggary" v-if="item.live_status==103">
-							<image src="/static/images/live-02.png" mode="" style="width: 20rpx; height: 20rpx;"></image>
-							<text>回放</text>
-						</view>
-						<view class="label bgred" v-if="item.live_status==101">
-							<image src="/static/images/live-01.png" mode="" style="width: 21rpx; height: 22rpx;"></image>
-							<text>进行中</text>
-						</view>
-						<image :src="item.share_img"></image>
+		<view class="live-wrapper-b">
+			<navigator class="live-item-b" v-for="(item,index) in liveList" :key="index"
+				:url="'plugin-private://wx2b03c6e691cd7370/pages/live-player-plugin?room_id=' + item.room_id+'&custom_params='+custom_params"
+				hover-class="none" :style="[{'background':bg},{'box-shadow':`0px 1px 20px ${boxShadow}`}]">
+				<view class="img-box">
+					<view class="label bgblue" v-if="item.live_status == 102">
+						<view class="txt">预告</view>
+						<view class="msg">{{item.show_time}}</view>
 					</view>
-					<view class="info">
-						<view class="title line1">{{item.name}}</view>
-						<view class="people">
-							<image :src="item.anchor_img" alt="">
+					<view class="label bggary" v-if="item.live_status==103">
+						<image src="/static/images/live-02.png" mode="" style="width: 20rpx; height: 20rpx;"></image>
+						<text>回放</text>
+					</view>
+					<view class="label bgred" v-if="item.live_status==101">
+						<image src="/static/images/live-01.png" mode="" style="width: 21rpx; height: 22rpx;"></image>
+						<text>进行中</text>
+					</view>
+					<image :src="item.share_img"></image>
+				</view>
+				<view class="info">
+					<view class="title line1">{{item.name}}</view>
+					<view class="people">
+						<image :src="item.anchor_img" alt="">
 							<text>{{item.anchor_name}}</text>
-						</view>
 					</view>
-				</navigator>
-			</view>
-			<view class="empty-txt" v-if="!isScroll">到底了~</view>
+				</view>
+			</navigator>
+		</view>
+		<view class="empty-txt" v-if="!isScroll">到底了~</view>
 	</view>
 	<!-- #endif -->
 </template>
@@ -46,33 +48,34 @@
 		},
 		data() {
 			return {
-				page:1,
-				limit:10,
-				listStyle:1,
-				isScroll:true,
-				liveList:[]
-			}	
+				page: 1,
+				limit: 10,
+				listStyle: 1,
+				isScroll: true,
+				liveList: [],
+				custom_params:''
+			}
 		},
 		created() {},
 		mounted() {
+			this.custom_params= encodeURIComponent(JSON.stringify({spid:this.$store.state.app.uid}))
 			this.getLiveList();
 		},
 		methods: {
 			getLiveList: function() {
 				let limit = this.$config.LIMIT;
-				if(!this.isScroll) return
+				if (!this.isScroll) return
 				getLiveList(this.page, this.limit)
 					.then(res => {
-						this.isScroll = res.data.length>=this.limit
+						this.isScroll = res.data.length >= this.limit
 						this.page++
-						this.liveList =this.liveList.concat(res.data);
+						this.liveList = this.liveList.concat(res.data);
 					})
-					.catch(res => {
-					});
+					.catch(res => {});
 			}
 		},
 		onReachBottom() {
-			
+
 			this.getLiveList()
 		}
 	};
@@ -164,67 +167,81 @@
 			}
 		}
 	}
-	.live-wrapper-a{
+
+	.live-wrapper-a {
 		padding: 0rpx 20rpx 0;
-		.live-item-a{
+
+		.live-item-a {
 			display: flex;
 			background: #fff;
 			margin-bottom: 20rpx;
 			border-radius: 16rpx;
 			overflow: hidden;
-			&:last-child{
+
+			&:last-child {
 				margin-bottom: 0;
 			}
-			.img-box{
+
+			.img-box {
 				position: relative;
 				width: 340rpx;
 				height: 270rpx;
-				image{
+
+				image {
 					width: 100%;
 					height: 100%;
 				}
 			}
-			.info{
+
+			.info {
 				flex: 1;
 				display: flex;
 				flex-direction: column;
 				justify-content: space-between;
 				padding: 15rpx 20rpx;
-				.title{
+
+				.title {
 					font-size: 30rpx;
 					color: #333;
 				}
-				.people{
+
+				.people {
 					display: flex;
 					align-items: center;
 					color: #999;
 					font-size: 24rpx;
 					margin-top: 10rpx;
-					image{
+
+					image {
 						width: 32rpx;
 						height: 32rpx;
 						border-radius: 50%;
 						margin-right: 10rpx;
 					}
 				}
-				.goods-wrapper{
+
+				.goods-wrapper {
 					display: flex;
-					.goods-item{
+
+					.goods-item {
 						position: relative;
 						width: 96rpx;
 						height: 96rpx;
 						margin-right: 20rpx;
 						overflow: hidden;
 						border-radius: 16rpx;
-						&:last-child{
+
+						&:last-child {
 							margin-right: 0;
 						}
-						image{
+
+						image {
 							width: 100%;
 							height: 100%;
 							border-radius: 16rpx;
 						}
-						.bg{
+
+						.bg {
 							position: absolute;
 							left: 0;
 							top: 0;
@@ -233,7 +250,8 @@
 							border-radius: 16rpx;
 							background: rgba(0, 0, 0, 0.3);
 						}
-						text{
+
+						text {
 							position: absolute;
 							left: 0;
 							bottom: 0;
@@ -241,9 +259,10 @@
 							height: 60rpx;
 							line-height: 70rpx;
 							color: #fff;
-							background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.75) 100%);
+							background: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.75) 100%);
 						}
-						.num{
+
+						.num {
 							display: flex;
 							align-items: center;
 							justify-content: center;
@@ -258,7 +277,8 @@
 						}
 					}
 				}
-				.empty-goods{
+
+				.empty-goods {
 					width: 96rpx;
 					height: 96rpx;
 					border-radius: 6rpx;
@@ -270,61 +290,74 @@
 				}
 			}
 		}
-		&.live-wrapper-c{
-			.live-item-a{
+
+		&.live-wrapper-c {
+			.live-item-a {
 				display: flex;
 				flex-direction: column;
-				.img-box{
+
+				.img-box {
 					width: 100%;
 					border-radius: 8px 8px 0 0;
 				}
-				.info{
+
+				.info {
 					display: flex;
 					justify-content: space-between;
 					align-items: center;
 					flex-direction: initial;
-					.left{
+
+					.left {
 						width: 69%;
 					}
-					.goods-wrapper{
+
+					.goods-wrapper {
 						flex: 1;
 					}
-				}	
+				}
 			}
 		}
 	}
-	.live-wrapper-b{
+
+	.live-wrapper-b {
 		padding: 20rpx 20rpx 0;
 		display: flex;
 		justify-content: space-between;
 		flex-wrap: wrap;
-		.live-item-b{
+
+		.live-item-b {
 			width: 345rpx;
 			background-color: #fff;
 			border-radius: 16rpx;
 			overflow: hidden;
 			margin-bottom: 20rpx;
 			overflow: hidden;
-			.img-box{
+
+			.img-box {
 				position: relative;
-				image{
+
+				image {
 					width: 100%;
 					height: 190rpx;
 				}
 			}
-			.info{
+
+			.info {
 				display: flex;
 				flex-direction: column;
 				padding: 20rpx;
-				.title{
+
+				.title {
 					font-size: 30rpx;
 					color: #333;
 				}
-				.people{
+
+				.people {
 					display: flex;
 					margin-top: 10rpx;
 					color: #999;
-					image{
+
+					image {
 						width: 36rpx;
 						height: 36rpx;
 						border-radius: 50%;
@@ -334,7 +367,8 @@
 			}
 		}
 	}
-	.label{
+
+	.label {
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -344,60 +378,71 @@
 		border-radius: 22rpx 0px 22rpx 22rpx;
 		font-size: 24rpx;
 		color: #fff;
-		image{
+
+		image {
 			margin-right: 10rpx;
 		}
-		text{
+
+		text {
 			font-size: 22rpx;
 		}
 	}
-	.bgred{
+
+	.bgred {
 		width: 132rpx;
 		height: 38rpx;
 		background: linear-gradient(270deg, #F5742F 0%, #FF1717 100%)
 	}
-	.bggary{
+
+	.bggary {
 		width: 108rpx;
 		height: 38rpx;
 		background: linear-gradient(270deg, #999999 0%, #666666 100%)
 	}
-	.bgblue{
+
+	.bgblue {
 		width: 220rpx;
 		height: 38rpx;
-		background: rgba(0,0,0,0.36);
+		// background: rgba(0,0,0,0.36);
+		background: linear-gradient(80deg, #2FA1F5 0%, #0076FF 5%, rgba(0, 0, 0, 0.36) 100%);
 		overflow: hidden;
-		.txt{
-				position: relative;
-				left: -5rpx;
-				display: flex;
-				align-items: center;
-				justify-content: center;
-				width: 38px;
-				height: 100%;
-				text-align: center;
-				background: linear-gradient(270deg, #2FA1F5 0%, #0076FF 100%);
-			}	
+
+		.txt {
+			position: relative;
+			left: -5rpx;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			width: 38px;
+			height: 100%;
+			text-align: center;
+			// background: linear-gradient(270deg, #2FA1F5 0%, #0076FF 100%);
 		}
-	.title-box{
+	}
+
+	.title-box {
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
 		padding: 20rpx;
 		font-size: 32rpx;
-		.more{
+
+		.more {
 			display: flex;
 			align-items: center;
 			justify-content: center;
-			
+
 			font-size: 26rpx;
 			color: #666;
-			.iconfont{
+
+			.iconfont {
 				font-size: 26rpx;
 				margin-top: 8rpx;
 			}
 		}
 	}
-	.empty-txt{
+
+	.empty-txt {
 		height: 60rpx;
 		line-height: 60rpx;
 		text-align: center;

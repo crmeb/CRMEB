@@ -6,7 +6,7 @@
       </div>
     </div>
     <Card :bordered="false" dis-hover class="ivu-mt">
-      <div class="acea-row row-between-wrapper">
+      <div class="acea-row row-between-wrapper mb20">
         <Row type="flex">
           <Col v-bind="grid">
             <div class="button acea-row row-middle">
@@ -18,66 +18,22 @@
           </Col>
         </Row>
       </div>
-      <vxe-table
-        class="mt25"
-        highlight-hover-row
-        :loading="loading"
-        header-row-class-name="false"
-        :tree-config="{ children: 'children' }"
+      <Table
+        row-key="id"
+        :load-data="handleLoadData"
+        :columns="columns1"
         :data="cityLists"
       >
-        <vxe-table-column
-          field="id"
-          title="ID"
-          tooltip
-          width="80"
-        ></vxe-table-column>
-        <vxe-table-column
-          field="name"
-          tree-node
-          title="地区名称"
-          min-width="100"
-        >
-        </vxe-table-column>
-        <vxe-table-column
-          field="parent_id"
-          title="上级名称"
-          min-width="250"
-        ></vxe-table-column>
-        <vxe-table-column
-          field="date"
-          title="操作"
-          width="250"
-          fixed="right"
-          align="center"
-        >
-          <template v-slot="{ row, index }">
-            <a v-if="row.level < 2" @click="add(row.city_id)">添加下级</a>
-            <Divider v-if="row.level < 2" type="vertical" />
-            <a @click="edit(row.id)">编辑</a>
-            <Divider type="vertical" />
-            <a @click="del(row, '删除城市', index)">删除</a>
-          </template>
-        </vxe-table-column>
-      </vxe-table>
-      <!-- <Table :columns="columns1" :data="cityLists" ref="table" class="mt25"
-                   :loading="loading" highlight-row
-                   no-userFrom-text="暂无数据"
-                   no-filtered-userFrom-text="暂无筛选结果">
-                <template slot-scope="{ row, index }" slot="icons">
-                    <div class="tabBox_img" v-viewer>
-                        <img v-lazy="row.icon">
-                    </div>
-                </template>
-                <template slot-scope="{ row, index }" slot="region">
-                    <div class="font-blue" @click="lower(row.city_id)">{{row.name}}</div>
-                </template>
-                <template slot-scope="{ row, index }" slot="action">
-                    <a @click="edit(row.id)">编辑</a>
-                    <Divider type="vertical" />
-                    <a @click="del(row,'删除城市',index)">删除</a>
-                </template>
-            </Table> -->
+        <template slot-scope="{ row, index }" slot="action">
+          <a v-if="row.hasOwnProperty('children')" @click="add(row.city_id)"
+            >添加</a
+          >
+          <Divider v-if="row.hasOwnProperty('children')" type="vertical" />
+          <a @click="edit(row.id)">编辑</a>
+          <Divider type="vertical" />
+          <a @click="del(row, '删除城市', index)">删除</a>
+        </template>
+      </Table>
     </Card>
   </div>
 </template>
@@ -109,13 +65,14 @@ export default {
           width: 80,
         },
         {
-          title: "上级名称",
-          key: "parent_id",
+          title: "地区名称",
+          key: "label",
           minWidth: 300,
+          tree: true,
         },
         {
-          title: "地区名称",
-          slot: "region",
+          title: "上级名称",
+          key: "parent_name",
           minWidth: 300,
         },
         {
@@ -203,11 +160,31 @@ export default {
           this.$Message.error(res.msg);
         });
     },
+    handleLoadData(item, callback) {
+      cityListApi(item.city_id).then((res) => {
+        callback(res.data);
+      });
+    },
   },
 };
 </script>
 
 <style scoped lang="stylus">
-.button
-   width 300px;
+/deep/.ivu-table-cell-tree {
+  border: 0;
+  font-size: 15px;
+  background-color: unset;
+}
+
+/deep/.ivu-table-cell-tree .ivu-icon-ios-add:before {
+  content: '\F11F';
+}
+
+/deep/.ivu-table-cell-tree .ivu-icon-ios-remove:before {
+  content: '\F116';
+}
+
+.button {
+  width: 300px;
+}
 </style>

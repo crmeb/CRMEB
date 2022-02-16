@@ -48,7 +48,7 @@
             <!--            </Modal>-->
         </div>
         <div class="foot-box">
-            Copyright © 2021 西安众邦网络科技有限公司 | {{version}} 客服系统
+            Copyright © 2022 西安众邦网络科技有限公司 | {{version}} 客服系统
         </div>
     </div>
 </template>

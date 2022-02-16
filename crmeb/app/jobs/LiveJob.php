@@ -11,8 +11,8 @@
 
 namespace app\jobs;
 
-use app\services\live\LiveGoodsServices;
-use app\services\live\LiveRoomServices;
+use app\services\activity\live\LiveGoodsServices;
+use app\services\activity\live\LiveRoomServices;
 use crmeb\basic\BaseJobs;
 use crmeb\traits\QueueTrait;
 use think\facade\Log;

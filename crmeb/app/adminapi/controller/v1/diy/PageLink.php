@@ -62,7 +62,7 @@ class PageLink extends AuthController
             case 'special':
                 /** @var DiyServices $diyServices */
                 $diyServices = app()->make(DiyServices::class);
-                $data = $diyServices->getDiyList(['type' => [1, 2]]);
+                $data = $diyServices->getDiyList(['type' => 2]);
                 break;
             case 'product_category':
                 /** @var StoreCategoryServices $storeCategoryServices */

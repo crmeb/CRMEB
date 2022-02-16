@@ -52,7 +52,7 @@ class Request extends \think\Request
                     $name = is_array($param[1]) ? $param[0] . '/a' : $param[0];
                     $keyName = $param[0];
                 }
-                $p[$suffix == true ? $i++ : (isset($param[3]) ? $param[3] : $keyName)] = $this->param($name, $param[1], $param[2]);
+                $p[$suffix == true ? $i++ : ($param[3] ?? $keyName)] = $this->param($name, $param[1], $param[2]);
             }
         }
         return $p;

@@ -4,7 +4,7 @@
     "page-footer": "/components/pageFooter/index",
     "recommend": "/components/recommend/index",
     "product-window": "/components/productWindow/index",
-    "tab-bar": "/pages/index/components/tabBar",
+    "tab-bar": "/pages/index/visualization/components/tabBar",
     "authorize": "/components/Authorize"
   }
 }

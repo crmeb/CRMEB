@@ -56,7 +56,7 @@ class Response
         $json = json_encode($data);
 
         return $close
-            ? ($this->connection->close($json) && true)
+            ? ($this->connection->close($json))
             : $this->connection->send($json);
     }
 

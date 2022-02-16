@@ -147,7 +147,7 @@
 		async onReady() {
 			if (this.isLogin) {
 				this.val = `${HTTP_REQUEST_URL}?spread=${this.uid}`
-				await this.spreadMsg()
+				await this.spreadMsgs()
 				getUserInfo().then(res=>{
 					this.userInfo = res.data
 				})
@@ -189,7 +189,7 @@
 				this.codeSrc = res
 			},
 			//获取图片
-			async spreadMsg() {
+			async spreadMsgs() {
 				let res = await spreadMsg()
 				this.spreadData = res.data.spread
 				this.nickName = res.data.nickname

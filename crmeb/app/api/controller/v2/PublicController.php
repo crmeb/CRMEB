@@ -56,16 +56,21 @@ class PublicController
 
     /**
      * 获取页面数据
+     * @param Request $request
+     * @param string $name
      * @return mixed
      * @throws \think\db\exception\DataNotFoundException
      * @throws \think\db\exception\DbException
      * @throws \think\db\exception\ModelNotFoundException
      */
-    public function getDiy($name = '')
+    public function getDiy(Request $request, $name = '')
     {
+        list($id) = $request->getMore([
+            ['id', 0]
+        ], true);
         /** @var DiyServices $diyService */
         $diyService = app()->make(DiyServices::class);
-        $data = $diyService->getDiy($name);
+        $data = $diyService->getDiy($id);
         return app('json')->successful($data);
     }
 
@@ -109,9 +114,10 @@ class PublicController
      * @throws \think\db\exception\DbException
      * @throws \think\db\exception\ModelNotFoundException
      */
-    public function colorChange(DiyServices $services,$name)
+    public function colorChange(DiyServices $services, $name)
     {
         $status = (int)$services->getColorChange((string)$name);
-        return app('json')->success(compact('status'));
+        $is_diy = $services->value(['status' => 1, 'is_del' => 0], 'is_diy');
+        return app('json')->success(compact('status', 'is_diy'));
     }
 }

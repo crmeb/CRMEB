@@ -1,11 +1,11 @@
 <template>
 	<view class="content">
-		<swiper class="swiper" :autoplay="autoplay" :duration="duration"
+		<swiper class="swiper" :autoplay="autoplay" indicator-dots="true" indicator-color="rgba(255,255,255,0.6)" :duration="duration"
 			v-if="advData.type == 'pic' && advData.value.length">
-			<swiper-item v-for="(item,index) in advData" :key="index">
+			<swiper-item v-for="(item,index) in advData.value" :key="index" @click="jump(item.link)">
 				<view class="swiper-item">
 					<view class="swiper-item-img">
-						<image :src="item" mode="aspectFit"></image>
+						<image :src="item.img" mode="scaleToFill"></image>
 					</view>
 				</view>
 			</swiper-item>
@@ -14,7 +14,7 @@
 			<video class="vid" :src="advData.video_link" :autoplay="true" :loop="true" :muted="true"
 				:controls="false"></video>
 		</view>
-		<view class="jump-over" @tap="launchFlag()">跳过<text v-if="closeType == 1">{{time}}</text></view>
+		<view class="jump-over" @click.stop="launchFlag()">跳过<text v-if="closeType == 1">{{times}}</text></view>
 	</view>
 </template>
 
@@ -26,8 +26,8 @@
 				duration: 500,
 				jumpover: '跳过',
 				experience: '立即体验',
-				time: 5,
-				timecount: undefined
+				timecount: undefined,
+				times: 0
 			}
 		},
 		props: {
@@ -39,18 +39,18 @@
 			closeType: {
 				type: Number,
 				default: 1
-			}
+			},
 		},
 		mounted() {
-			console.log(this.advData)
 			this.timer()
 		},
 		methods: {
 			timer() {
-				var t = ßthis.advData.time || 5
+				this.times = this.advData.time
+				let t = this.advData.time || 5
 				this.timecount = setInterval(() => {
 					t--
-					this.time = t
+					this.times = t
 					if (t <= 0) {
 						clearInterval(this.timecount)
 						this.launchFlag()
@@ -62,11 +62,31 @@
 				uni.switchTab({
 					url: '/pages/index/index'
 				});
-			}
+			},
+			jump(url) {
+				if (url) {
+					if (url.indexOf("http") != -1) {
+						uni.navigateTo({
+							url: `/pages/annex/web_view/index?url=${url}`
+						});
+					} else {
+						uni.navigateTo({
+							url: url,
+							fail: () => {
+								uni.switchTab({
+									url
+								})
+							}
+						})
+					}
+					clearInterval(this.timecount)
+				}
+
+			},
 		}
 	}
 </script>
-<style lang="scss">
+<style lang="scss" scoped>
 	page,
 	.content {
 		width: 100%;
@@ -103,21 +123,7 @@
 		height: 100%;
 	}
 
-	.uniapp-img {
-		height: 50%;
-		background: #FFFFFF;
-		display: flex;
-		justify-content: center;
-		align-items: center;
-		overflow: hidden;
-	}
-
-	.uniapp-img image {
-		width: 40%;
-	}
-
-	.jump-over,
-	.experience {
+	.jump-over {
 		position: absolute;
 		height: 45rpx;
 		line-height: 45rpx;
@@ -132,12 +138,6 @@
 	.jump-over {
 		right: 30rpx;
 		top: 80rpx;
-	}
-
-	.experience {
-		right: 50%;
-		margin-right: -105upx;
-		bottom: 80rpx;
 	}
 
 	.video-box {

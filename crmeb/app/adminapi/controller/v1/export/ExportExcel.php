@@ -11,16 +11,16 @@
 namespace app\adminapi\controller\v1\export;
 
 use app\adminapi\controller\AuthController;
-use app\services\activity\StoreBargainServices;
-use app\services\activity\StoreCombinationServices;
-use app\services\activity\StorePinkServices;
-use app\services\activity\StoreSeckillServices;
+use app\services\activity\bargain\StoreBargainServices;
+use app\services\activity\combination\StoreCombinationServices;
+use app\services\activity\combination\StorePinkServices;
+use app\services\activity\seckill\StoreSeckillServices;
 use app\services\agent\AgentManageServices;
-use app\services\export\ExportServices;
+use app\services\other\export\ExportServices;
 use app\services\order\StoreOrderServices;
 use app\services\product\product\StoreProductServices;
 use app\services\system\store\SystemStoreServices;
-use app\services\user\MemberCardServices;
+use app\services\user\member\MemberCardServices;
 use app\services\user\UserBillServices;
 use app\services\user\UserRechargeServices;
 use app\services\wechat\WechatUserServices;
@@ -266,6 +266,14 @@ class ExportExcel extends AuthController
             ['real_name', ''],
             ['data', '', '', 'time']
         ]);
+        $where['pid'] = 0;
+        $ids = $this->request->get('ids');
+        if ($ids) {
+            $idsArr = array_filter(explode(',', $ids));
+            if ($idsArr) {
+                $where['id'] = $idsArr;
+            }
+        }
         $data = $services->getExportList($where);
         return app('json')->success($this->service->storeOrder($data));
     }

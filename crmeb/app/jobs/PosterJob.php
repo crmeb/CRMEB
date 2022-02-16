@@ -73,7 +73,7 @@ class PosterJob extends BaseJobs
                 if (!$res) return false;
                 $uploadType = (int)sys_config('upload_type', 1);
                 $upload     = UploadService::init();
-                $uploadRes  = $upload->to('routine/spread/code')->validate()->stream($res['res'], $name_routine);
+                $uploadRes  = $upload->to('routine/spread/code')->validate()->setAuthThumb(false)->stream($res['res'], $name_routine);
                 if ($uploadRes === false) {
                     return false;
                 }

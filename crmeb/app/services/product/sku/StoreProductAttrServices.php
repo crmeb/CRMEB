@@ -17,7 +17,6 @@ use app\services\BaseServices;
 use app\services\order\StoreCartServices;
 use app\services\product\product\StoreProductServices;
 use crmeb\exceptions\AdminException;
-use think\Exception;
 
 /**
  * Class StoreProductAttrService

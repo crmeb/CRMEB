@@ -953,5 +953,6 @@ img {
   padding: 3px 5px;
   margin-left: 15px;
   border-radius: 3px;
+  cursor: pointer;
 }
 </style>

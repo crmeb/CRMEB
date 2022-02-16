@@ -76,10 +76,9 @@ class UserCollectController
     public function collect_del(Request $request)
     {
         [$id, $category] = $request->postMore([
-            ['id', 0],
+            ['id', []],
             ['category', 'product']
         ], true);
-        if (!$id || !is_numeric($id)) return app('json')->fail('参数错误');
         $uid = (int)$request->uid();
         $res = $this->services->unProductRelation($id, $uid, 'collect', $category);
         if (!$res) return app('json')->fail('取消收藏失败');

@@ -199,43 +199,44 @@ class StoreProduct extends AuthController
     public function save($id)
     {
         $data = $this->request->postMore([
-            ['cate_id', []],
-            ['store_name', ''],
-            ['store_info', ''],
-            ['keyword', ''],
-            ['unit_name', '件'],
-            ['image', []],
-            ['recommend_image', ''],
-            ['slider_image', []],
-            ['postage', 0],
+            ['virtual_type', 0],// 商品类型
+            ['cate_id', []],//分类id
+            ['store_name', ''],//商品名称
+            ['keyword', ''],//关键字
+            ['unit_name', '件'],//单位
+            ['store_info', ''],//商品简介
+            ['slider_image', []],//轮播图
+            ['video_open', 0],//是否开启视频
+            ['video_link', ''],//视频链接
+            ['spec_type', 0],//单多规格
+            ['items', []],//规格
+            ['attrs', []],//规格
+            ['description', ''],//商品详情
+            ['description_images', []],//商品详情
+            ['logistics', []],//物流方式
+            ['freight', 1],//运费设置
+            ['postage', 0],//邮费
+            ['temp_id', 0],//运费模版id
+            ['give_integral', 0],//赠送积分
+            ['presale', 0],//预售商品开关
+            ['presale_time', 0],//预售时间
+            ['presale_day', 0],//预售发货日
+            ['vip_product', 0],//是否付费会员商品
             ['is_sub', []],//佣金是单独还是默认
-            ['sort', 0],
-            ['sales', 0],
-            ['ficti', 100],
-            ['give_integral', 0],
-            ['is_show', 0],
-            ['temp_id', 0],
-            ['is_hot', 0],
-            ['is_benefit', 0],
-            ['is_best', 0],
-            ['is_new', 0],
-            ['mer_use', 0],
-            ['is_postage', 0],
-            ['is_good', 0],
-            ['is_virtual', 0],// 是否是虚拟商品
-            ['virtual_type', 0],// 虚拟商品类型
-            ['description', ''],
-            ['spec_type', 0],
-            ['video_link', ''],
-            ['items', []],
-            ['attrs', []],
-            ['activity', []],
-            ['coupon_ids', []],
-            ['label_id', []],
-            ['command_word', ''],
-            ['tao_words', ''],
+            ['recommend', []],//商品推荐
+            ['activity', []],//活动优先级
+            ['recommend_list', []],//优品推荐商品
+            ['coupon_ids', []],//优惠券
+            ['label_id', []],//用户标签
+            ['command_word', ''],//商品口令
+            ['is_show', 0],//是否上架
+            ['ficti', 0],//虚拟销量
+            ['sort', 0],//排序
+            ['recommend_image', ''],//商品推荐图
+            ['sales', 0],//销量
+            ['custom_form', []],//自定义表单
             ['type', 0],
-            ['recommend_list', []]
+            ['is_copy', 0],//是否是复制商品
         ]);
         $this->service->save((int)$id, $data);
         return app('json')->success('添加商品成功!');

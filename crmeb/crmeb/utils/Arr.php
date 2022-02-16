@@ -20,6 +20,7 @@ class Arr
     /**
      * 对数组增加默认值
      * @param array $keys
+     * @param array $configList
      * @return array
      */
     public static function getDefaultValue(array $keys, array $configList = [])
@@ -105,7 +106,7 @@ class Arr
     private static function getChild(&$arr, $id, $lev)
     {
         $child = [];
-        foreach ($arr as $k => $value) {
+        foreach ($arr as  $value) {
             if ($value['pid'] == $id) {
                 $value['level'] = $lev;
                 $child[] = $value;

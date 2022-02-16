@@ -199,6 +199,10 @@ export default {
       type: Number,
       default: 1,
     },
+    pageLimit: {
+      type: Number,
+      default: 0,
+    },
   },
   data() {
     return {
@@ -223,7 +227,7 @@ export default {
       fileData: {
         pid: 0,
         page: 1,
-        limit: 18,
+        limit: this.pageLimit || 18,
       },
       total: 0,
       pids: 0,
@@ -999,6 +1003,7 @@ export default {
 .conter .pictrueList {
   padding-left: 6px;
   width: 100%;
+  max-width: 1200px;
   overflow-x: hidden;
   overflow-y: auto;
   // height: 300px;

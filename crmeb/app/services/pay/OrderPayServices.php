@@ -13,6 +13,7 @@ namespace app\services\pay;
 
 
 use app\services\order\StoreOrderCartInfoServices;
+use app\services\order\StoreOrderServices;
 use app\services\wechat\WechatUserServices;
 use crmeb\utils\Str;
 use think\exception\ValidateException;
@@ -57,7 +58,7 @@ class OrderPayServices
             }
             /** @var WechatUserServices $services */
             $services = app()->make(WechatUserServices::class);
-            $openid = $services->uidToOpenid($orderInfo['uid'], $userType);
+            $openid = $services->uidToOpenid($orderInfo['pay_uid'] ?? $orderInfo['uid'], $userType);
             if (!$openid) {
                 throw new ValidateException('获取用户openid失败,无法支付');
             }
@@ -77,6 +78,11 @@ class OrderPayServices
         if (!$body) {
             throw new ValidateException('支付参数缺少：请前往后台设置->系统设置-> 填写 网站名称');
         }
+
+        /** @var StoreOrderServices $orderServices */
+        $orderServices = app()->make(StoreOrderServices::class);
+        $orderServices->update($orderInfo['id'], ['pay_type' => 'weixin']);
+
         return $this->payServices->pay($payType, $openid, $orderInfo['order_id'], $orderInfo['pay_price'], $successAction, $body);
     }
 
@@ -109,6 +115,11 @@ class OrderPayServices
         if (!$body) {
             throw new ValidateException('支付参数缺少：请前往后台设置->系统设置-> 填写 网站名称');
         }
+
+        /** @var StoreOrderServices $orderServices */
+        $orderServices = app()->make(StoreOrderServices::class);
+        $orderServices->update($orderInfo['id'], ['pay_type' => 'alipay']);
+
         return $this->payServices->pay('alipay', $quitUrl, $orderInfo['order_id'], $orderInfo['pay_price'], $successAction, $body, $isCode);
     }
 }

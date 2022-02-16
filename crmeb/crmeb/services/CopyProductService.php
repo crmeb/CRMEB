@@ -53,6 +53,7 @@ class CopyProductService
         'items' => [],
         'attrs' => [],
         'info' => [],
+        'sku' => []
     ];
 
     /**
@@ -156,7 +157,7 @@ class CopyProductService
                 ]
             ];
         }
-        $result['info'] = self::formatAttr($result['items']);
+        $result['info'] = self::formatAttr($result['items'], $result['sku']);
         if (!$result['image'] && $result['slider_image'])
             $result['image'] = $result['slider_image'][0] ?? '';
         if ($result['description']) {
@@ -209,6 +210,23 @@ class CopyProductService
                     $items[] = $item;
                 }
             }
+            $sku = [];
+            if (isset($info['sku']) && $info['sku']) {
+                foreach ($info['sku'] as $item) {
+                    if ($item['skuId']) {
+                        $skuName = explode(';', $item['skuName']);
+                        $skuNameData = [];
+                        foreach ($skuName as $v) {
+                            [$kp, $vv] = explode('--', $v);
+                            $skuNameData[] = $vv;
+                        }
+                        $sku[implode(',', $skuNameData)] = [
+                            'price' => $item['price']
+                        ];
+                    }
+                }
+            }
+            $result['sku'] = $sku;
             $result['items'] = $items;
         }
         return $result;
@@ -263,6 +281,23 @@ class CopyProductService
                     $items[] = $item;
                 }
             }
+            $sku = [];
+            if (isset($info['sku']) && $info['sku']) {
+                foreach ($info['sku'] as $item) {
+                    if ($item['skuId']) {
+                        $skuName = explode(';', $item['skuName']);
+                        $skuNameData = [];
+                        foreach ($skuName as $v) {
+                            [$kp, $vv] = explode('--', $v);
+                            $skuNameData[] = $vv;
+                        }
+                        $sku[implode(',', $skuNameData)] = [
+                            'price' => $item['price']
+                        ];
+                    }
+                }
+            }
+            $result['sku'] = $sku;
             $result['items'] = $items;
         }
         return $result;
@@ -310,6 +345,22 @@ class CopyProductService
                     $items[] = $item;
                 }
             }
+            $sku = [];
+            if (isset($info['sku']) && $info['sku']) {
+                foreach ($info['sku'] as $v) {
+                    $kkk = [];
+                    foreach ($v as $vv => $kk) {
+                        if (is_numeric($vv) && $kk) {
+                            $kkk[] = $kk;
+                        }
+                    }
+                    $sku[implode(',', $kkk)] = [
+                        'cost' => $v['originalPrice'],
+                        'price' => $v['price']
+                    ];
+                }
+            }
+            $result['sku'] = $sku;
             $result['items'] = $items;
         }
         return $result;
@@ -408,6 +459,7 @@ class CopyProductService
             foreach ($items as $k => $item) {
                 $items[$k]['detail'] = array_unique($item['detail']);
             }
+            $result['sku'] = [];
             $result['items'] = $items;
         }
         return $result;
@@ -472,6 +524,7 @@ class CopyProductService
             foreach ($items as $k => $item) {
                 $items[$k]['detail'] = array_unique($item['detail']);
             }
+            $result['sku'] = [];
             $result['items'] = $items;
         }
         return $result;
@@ -510,6 +563,7 @@ class CopyProductService
             foreach ($items as $k => $item) {
                 $items[$k]['detail'] = array_unique($item['detail']);
             }
+            $result['sku'] = [];
             $result['items'] = $items;
         }
         return $result;
@@ -520,18 +574,20 @@ class CopyProductService
      * @param $attr
      * @return array
      */
-    public static function formatAttr(array $attr)
+    public static function formatAttr(array $attr, array $sku = [])
     {
         $value = attr_format($attr)[1];
         $valueNew = [];
         $count = 0;
+
         foreach ($value as $key => $item) {
             $detail = $item['detail'];
 //            sort($item['detail'], SORT_STRING);
             $suk = implode(',', $item['detail']);
+
             $sukValue[$suk]['pic'] = '';
-            $sukValue[$suk]['price'] = 0;
-            $sukValue[$suk]['cost'] = 0;
+            $sukValue[$suk]['price'] = $sku[$suk]['price'] ?? 0;
+            $sukValue[$suk]['cost'] = $sku[$suk]['cost'] ?? 0;
             $sukValue[$suk]['ot_price'] = 0;
             $sukValue[$suk]['stock'] = 0;
             $sukValue[$suk]['bar_code'] = '';

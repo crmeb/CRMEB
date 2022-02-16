@@ -13,7 +13,7 @@ namespace app\adminapi\controller\v1\system;
 use app\adminapi\controller\AuthController;
 use app\services\system\config\SystemConfigServices;
 use crmeb\services\UpgradeService as uService;
-use app\models\system\SystemConfig;
+//use app\models\system\SystemConfig;
 use think\facade\Db;
 
 /**
@@ -114,7 +114,7 @@ class SystemUpgradeClient extends AuthController
         if (!isset($post['id'])) return app('json')->fail('缺少参数ID');
         $versionInfo = $fileservice->request_post(uService::$isNowVersion, ['id' => $post['id']]);
         if ($versionInfo === null) return app('json')->fail('服务器异常，请稍后再试');
-        if (isset($versionInfo['code']) && $versionInfo['code'] == 400) return app('json')->fail(isset($versionInfo['msg']) ? $versionInfo['msg'] : '您暂时没有权限升级，请联系管理员！');
+        if (isset($versionInfo['code']) && $versionInfo['code'] == 400) return app('json')->fail($versionInfo['msg'] ?? '您暂时没有权限升级，请联系管理员！');
         if (is_array($versionInfo) && isset($versionInfo['data'])) {
             $list = $versionInfo['data'];
             $id = [];

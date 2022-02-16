@@ -61,6 +61,8 @@ Route::group('setting', function () {
     Route::post('config/upload', 'v1.setting.SystemConfig/file_upload')->option(['real_name' => '基本配置上传文件']);
     //获取单个配置值
     Route::get('config/get_system/:name', 'v1.setting.SystemConfig/get_system')->option(['real_name' => '基本配置编辑表单']);
+    //获取某个分类下的所有配置信息
+    Route::get('config_list/:tabId', 'v1.setting.SystemConfig/get_config_list')->option(['real_name' => '获取某个分类下的所有配置信息']);
     //组合数据资源路由
     Route::resource('group', 'v1.setting.SystemGroup')->option(['real_name' => '组合数据']);
     //组合数据全部

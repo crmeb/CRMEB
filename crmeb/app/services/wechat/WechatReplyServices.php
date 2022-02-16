@@ -83,7 +83,7 @@ class WechatReplyServices extends BaseServices
         /** @var WechatKeyServices $services */
         $services = app()->make(WechatKeyServices::class);
         $data = $services->getOne(['keys' => $key]);
-        $resdata = $this->dao->getOne(['id' => $data['reply_id']]);
+        $resdata = $this->dao->getOne(['id' => $data['reply_id'] ?? 0]);
         $resdata['data'] = isset($resdata['data']) ? json_decode($resdata['data'], true) : [];
         $resdata['key'] = $key;
         return $resdata;

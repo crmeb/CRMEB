@@ -17,7 +17,7 @@
 						<view class='item'>
 							<view class='data'>{{item.time}}</view>
 							<view class='listn'>
-								<block v-for="(child,indexn) in item.list" :key="indexn">
+								<block v-for="(child,indexn) in item.child" :key="indexn">
 									<view class='itemn acea-row row-between-wrapper'>
 										<view>
 											<view class='name line1'>{{child.title}}</view>
@@ -29,20 +29,21 @@
 										<view class='num font-color' v-if="child.pm == 1">+{{child.number}}</view>
 										<view class='num' v-else>-{{child.number}}</view>
 									</view>
+
 								</block>
 							</view>
 						</view>
 					</view>
 				</block>
-				<view v-if="recordList.length == 0">
-					<emptyPage title='暂无提现记录~'></emptyPage>
+				<view class='loadingicon acea-row row-center-wrapper' v-if="recordList.length">
+					<text class='loading iconfont icon-jiazai' :hidden='loading==false'></text>{{loadTitle}}
+				</view>
+				<view v-if="recordList.length < 1 && page > 1">
+					<emptyPage title='暂无数据~'></emptyPage>
 				</view>
 			</view>
 		</view>
-		<!-- #ifdef MP -->
-		<!-- <authorize @onLoadFun="onLoadFun" :isAuto="isAuto" :isShowAuth="isShowAuth" @authColse="authColse"></authorize> -->
-		<!-- #endif -->
-		<!-- #ifndef MP -->
+		<!-- #ifdef H5 -->
 		<home></home>
 		<!-- #endif -->
 	</view>
@@ -51,7 +52,6 @@
 <script>
 	import {
 		getCommissionInfo,
-		spreadCount,
 		getSpreadInfo
 	} from '@/api/user.js';
 	import {
@@ -74,20 +74,21 @@
 			emptyPage,
 			home
 		},
-		mixins:[colors],
+		mixins: [colors],
 		data() {
 			return {
 				name: '',
 				type: 0,
-				page: 0,
-				limit: 8,
+				page: 1,
+				limit: 15,
+				loading: false,
+				loadend: false,
+				loadTitle: '加载更多',
 				recordList: [],
 				recordType: 0,
 				recordCount: 0,
-				status: false,
-				isAuto: false, //没有授权的不会自动授权
-				isShowAuth: false ,//是否隐藏授权
-				extractCount:0
+				extractCount: 0,
+				times: []
 			};
 		},
 		computed: mapGetters(['isLogin']),
@@ -137,37 +138,46 @@
 					},
 				});
 			}
-
 		},
 		methods: {
-			onLoadFun() {
-				this.getRecordList();
-				this.getRecordListCount();
-			},
-			// 授权关闭
-			authColse: function(e) {
-				this.isShowAuth = e
-			},
 			getRecordList: function() {
 				let that = this;
 				let page = that.page;
 				let limit = that.limit;
-				let status = that.status;
 				let recordType = that.recordType;
-				let recordList = that.recordList;
-				let recordListNew = [];
-				if (status == true) return;
+				if (that.loading) return;
+				if (that.loadend) return;
+				that.loading = true;
+				that.loadTitle = '';
 				getCommissionInfo({
 					page: page,
 					limit: limit
 				}, recordType).then(res => {
-					let len = res.data.length;
-					let recordListData = res.data;
-					recordListNew = recordList.concat(recordListData);
-					that.status = limit > len;
-					that.page = limit + page;
-					that.$set(that, 'recordList', recordListNew);
-				});
+					for (let i = 0; i < res.data.time.length; i++) {
+						if (!this.times.includes(res.data.time[i])) {
+							this.times.push(res.data.time[i])
+							this.recordList.push({
+								time: res.data.time[i],
+								child: []
+							})
+						}
+					}
+					for (let x = 0; x < this.times.length; x++) {
+						for (let j = 0; j < res.data.list.length; j++) {
+							if (this.times[x] === res.data.list[j].time_key) {
+								this.recordList[x].child.push(res.data.list[j])
+							}
+						}
+					}
+					let loadend = res.data.list.length < that.limit;
+					that.loadend = loadend;
+					that.loadTitle = loadend ? '没有更多内容啦~' : '加载更多';
+					that.page += 1;
+					that.loading = false;
+				}).catch(err => {
+					that.loading = false;
+					that.loadTitle = '加载更多';
+				})
 			},
 			getRecordListCount: function() {
 				let that = this;

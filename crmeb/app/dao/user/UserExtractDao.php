@@ -99,6 +99,7 @@ class UserExtractDao extends BaseDao
         return $this->search($where)
             ->when(isset($where['timeKey']), function ($query) use ($where, $field, $group) {
                 $query->whereBetweenTime('add_time', $where['timeKey']['start_time'], $where['timeKey']['end_time']);
+                $timeUinx = "%H";
                 if ($where['timeKey']['days'] == 1) {
                     $timeUinx = "%H";
                 } elseif ($where['timeKey']['days'] == 30) {

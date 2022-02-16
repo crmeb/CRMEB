@@ -67,6 +67,7 @@ class ArticleCategory extends AuthController
     {
         $data = $this->request->postMore([
             ['title', ''],
+            ['pid', 0],
             ['intr', ''],
             ['image', ''],
             ['sort', 0],
@@ -102,6 +103,7 @@ class ArticleCategory extends AuthController
         $data = $this->request->postMore([
             ['id', 0],
             ['title', ''],
+            ['pid', 0],
             ['intr', ''],
             ['image', ''],
             ['sort', 0],
@@ -146,5 +148,15 @@ class ArticleCategory extends AuthController
     public function categoryList()
     {
         return app('json')->success($this->service->getArticleCategory());
+    }
+
+    /**
+     * 树形列表
+     * @return mixed
+     */
+    public function getTreeList()
+    {
+        $list = $this->service->getTreeList();
+        return app('json')->success($list);
     }
 }

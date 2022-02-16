@@ -13,7 +13,7 @@ namespace app\api\controller\v1\wechat;
 
 
 use app\Request;
-use app\services\live\LiveRoomServices;
+use app\services\activity\live\LiveRoomServices;
 use app\services\wechat\RoutineServices;
 
 /**
@@ -99,6 +99,7 @@ class AuthController
     /**
      * 获取小程序直播列表
      * @param Request $request
+     * @param LiveRoomServices $liveRoom
      * @return mixed
      */
     public function live(Request $request, LiveRoomServices $liveRoom)

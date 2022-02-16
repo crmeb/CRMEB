@@ -63,7 +63,7 @@ class UserLabelCate extends AuthController
     /**
      * 保存新建的资源
      *
-     * @param \app\Request $request
+     * @param Request $request
      * @return \think\Response
      */
     public function save(Request $request)
@@ -119,7 +119,7 @@ class UserLabelCate extends AuthController
     /**
      * 保存更新的资源
      *
-     * @param \app\Request $request
+     * @param Request $request
      * @param int $id
      * @return \think\Response
      */

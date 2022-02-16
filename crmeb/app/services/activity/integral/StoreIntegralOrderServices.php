@@ -167,7 +167,10 @@ class StoreIntegralOrderServices extends BaseServices
             throw new ValidateException('地址选择有误!');
         $addressInfo = $addressInfo->toArray();
         $total_price = bcmul($productInfo['price'], $num, 2);
-        if ($total_price > $userInfo['integral']) throw new ValidateException('积分不足!');
+        /** @var UserBillServices $userBillServices */
+        $userBillServices = app()->make(UserBillServices::class);
+        $usable_integral = bcsub((string)$userInfo['integral'], (string)$userBillServices->getBillSum(['uid' => $userInfo['uid'], 'is_frozen' => 1]), 0);
+        if ($total_price > $usable_integral) throw new ValidateException('可用积分不足!');
         $orderInfo = [
             'uid' => $uid,
             'order_id' => $this->getNewOrderId(),
@@ -339,7 +342,9 @@ class StoreIntegralOrderServices extends BaseServices
         }
         $data = [];
         $attrValue = is_object($attrValue) ? $attrValue->toArray() : $attrValue;
-        $data['integral'] = $user['integral'];
+        /** @var UserBillServices $userBillServices */
+        $userBillServices = app()->make(UserBillServices::class);
+        $data['integral'] = bcsub((string)$user['integral'], (string)$userBillServices->getBillSum(['uid' => $user['uid'], 'is_frozen' => 1]), 0);
         $data['num'] = $num;
         $data['total_price'] = bcmul($num, $attrValue['price'], 2);
         $data['productInfo'] = $attrValue;
@@ -675,7 +680,6 @@ class StoreIntegralOrderServices extends BaseServices
                 break;
             default:
                 throw new ValidateException('未发货，请先发货再修改配送信息');
-                break;
         }
         /** @var StoreIntegralOrderStatusServices $statusService */
         $statusService = app()->make(StoreIntegralOrderStatusServices::class);

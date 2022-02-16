@@ -78,7 +78,7 @@
       </view>
       <view class="modify" @click="save">
         {{
-          status === 1 || orderInfo.refund_status == 0 ? "立即修改" : "确认退款"
+          status == 1 || orderInfo.refund_status == 0 ? "立即修改" : "确认退款"
         }}
       </view>
       <view

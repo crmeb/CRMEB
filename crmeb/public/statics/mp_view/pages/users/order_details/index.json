@@ -1,6 +1,7 @@
 {
   "navigationBarTitleText": "订单详情",
   "usingComponents": {
+    "zb-code": "/components/zb-code/zb-code",
     "payment": "/components/payment/index",
     "home": "/components/home/index",
     "invoice-picker": "/components/invoicePicker/index",

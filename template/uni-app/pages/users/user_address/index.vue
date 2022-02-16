@@ -32,7 +32,7 @@
 					</view>
 				</view>
 				<view class='default acea-row row-middle' @click='ChangeIsDefault'>
-					<checkbox-group >
+					<checkbox-group>
 						<checkbox :checked="userAddress.is_default ? true : false" />设置为默认地址
 					</checkbox-group>
 				</view>
@@ -82,7 +82,7 @@
 			// #endif
 			home,
 		},
-		mixins:[colors],
+		mixins: [colors],
 		data() {
 			return {
 				regionDval: ['浙江省', '杭州市', '滨江区'],
@@ -150,25 +150,36 @@
 					that.initialize();
 				})
 			},
-			initialize: function() {
+			initialize() {
 				let that = this,
 					province = [],
 					city = [],
 					area = [];
-				if (that.district.length) {
-					let cityChildren = that.district[0].c || [];
-					let areaChildren = cityChildren.length ? (cityChildren[0].c || []) : [];
-					that.district.forEach(function(item) {
-						province.push(item.n);
-					});
-					cityChildren.forEach(function(item) {
-						city.push(item.n);
-					});
-					areaChildren.forEach(function(item) {
-						area.push(item.n);
-					});
-					this.multiArray = [province, city, area]
-				}
+				let cityChildren = that.district[0].c || [];
+				let areaChildren = cityChildren.length ? (cityChildren[0].c || []) : [];
+				that.district.forEach((item, i) => {
+					province.push(item.n);
+					if (item.n === this.region[0]) {
+						this.valueRegion[0] = i
+						this.multiIndex[0] = i
+					}
+				});
+				that.district[this.valueRegion[0]].c.forEach((item, i) => {
+					if (this.region[1] == item.c) {
+						this.valueRegio[1] = i
+						this.multiIndex[1] = i
+					}
+					city.push(item.n);
+				});
+				that.district[this.valueRegion[0]].c[this.valueRegion[1]].c.forEach((item, i) => {
+					if (this.region[2] == item.c) {
+						this.valueRegio[2] = i
+						this.multiIndex[2] = i
+					}
+					area.push(item.n);
+				});
+				this.multiArray = [province, city, area]
+
 			},
 			bindRegionChange: function(e) {
 				let multiIndex = this.multiIndex,
@@ -260,6 +271,7 @@
 					let region = [res.data.province, res.data.city, res.data.district];
 					that.$set(that, 'userAddress', res.data);
 					that.$set(that, 'region', region);
+					console.log(this.region)
 					that.cityId = res.data.city_id
 				});
 			},
@@ -498,9 +510,10 @@
 </script>
 
 <style scoped lang="scss">
-	.fontcolor{
+	.fontcolor {
 		color: var(--view-theme);
 	}
+
 	.addAddress .list {
 		background-color: #fff;
 	}

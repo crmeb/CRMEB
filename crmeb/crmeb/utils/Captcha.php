@@ -163,8 +163,9 @@ class Captcha
         // 验证码字体随机颜色
         $this->color = imagecolorallocate($this->im, mt_rand(1, 150), mt_rand(1, 150), mt_rand(1, 150));
 
+        //TODO 待测试
         // 验证码使用随机字体
-        $ttfPath = dirname(dirname(app()->getThinkPath())) . DS . 'think-captcha' . DS . 'assets/' . ($this->useZh ? 'zhttfs' : 'ttfs') . '/';
+        $ttfPath = dirname(app()->getThinkPath(), 2) . DS . 'think-captcha' . DS . 'assets/' . ($this->useZh ? 'zhttfs' : 'ttfs') . '/';
         if (empty($this->fontttf)) {
             $dir = dir($ttfPath);
             $ttfs = [];
@@ -293,7 +294,7 @@ class Captcha
      */
     protected function background(): void
     {
-        $path = dirname(dirname(app()->getThinkPath())) . DS . 'think-captcha' . DS . '/assets/bgs/';
+        $path = dirname(app()->getThinkPath(), 2) . DS . 'think-captcha' . DS . '/assets/bgs/';
         $dir = dir($path);
 
         $bgs = [];

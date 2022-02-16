@@ -14,7 +14,7 @@ import request from '@/libs/request'
  * @description 用户管理--列表
  * @param {Object} param data {Object} 传值参数
  */
-export function userList (data) {
+export function userList(data) {
     return request({
         url: 'user/user',
         method: 'get',
@@ -26,7 +26,7 @@ export function userList (data) {
  * @description 编辑表单数据
  * @param {Number} param id {Number} 会员id
  */
-export function getUserData (id) {
+export function getUserData(id) {
     return request({
         url: `user/user/${id}/edit`,
         method: 'get'
@@ -37,7 +37,7 @@ export function getUserData (id) {
  * @description 开关
  * @param {Number} param id {Number}
  */
-export function memberCard (data) {
+export function memberCard(data) {
     return request({
         url: `user/member_ship/set_ship_status`,
         method: 'get',
@@ -49,7 +49,7 @@ export function memberCard (data) {
  * @description 会员列表开关
  * @param {Number} param id {Number}
  */
-export function memberCardStatus (data) {
+export function memberCardStatus(data) {
     return request({
         url: `user/member_card/set_status`,
         method: 'get',
@@ -61,7 +61,7 @@ export function memberCardStatus (data) {
  * @description 会员管理修改显示
  * @param {Object} param data {Object} 传入的状态值，用户id
  */
-export function isShowApi (data) {
+export function isShowApi(data) {
     return request({
         url: `user/set_status/${data.status}/${data.id}`,
         method: 'put'
@@ -72,7 +72,7 @@ export function isShowApi (data) {
  * @description 优惠券列表
  * @param {Object} param params {Object} 传值
  */
-export function couponApi (params) {
+export function couponApi(params) {
     return request({
         url: `marketing/coupon/grant`,
         method: 'get',
@@ -84,7 +84,7 @@ export function couponApi (params) {
  * @description 发送优惠券
  * @param {Object} param data {Object} 传值
  */
-export function sendCouponApi (data) {
+export function sendCouponApi(data) {
     return request({
         url: `marketing/coupon/user/grant`,
         method: 'POST',
@@ -96,7 +96,7 @@ export function sendCouponApi (data) {
  * @description 修改积分余额表单
  * @param {Number} param id {Number} 用户id
  */
-export function editOtherApi (id) {
+export function editOtherApi(id) {
     return request({
         url: `user/edit_other/${id}`,
         method: 'get'
@@ -107,7 +107,7 @@ export function editOtherApi (id) {
  * @description 会员管理-详情
  * @param {Number} param id {Number} 用户id
  */
-export function detailsApi (id) {
+export function detailsApi(id) {
     return request({
         url: `user/user/${id}`,
         method: 'get'
@@ -118,7 +118,7 @@ export function detailsApi (id) {
  * @description 会员管理详情中tab选项
  * @param {Number} param id {Number} 用户id
  */
-export function infoApi (data) {
+export function infoApi(data) {
     return request({
         url: `user/one_info/${data.id}`,
         method: 'get',
@@ -130,7 +130,7 @@ export function infoApi (data) {
  * @description 会员等级-列表
  * @param {Object} param data {Object} 传值参数
  */
-export function levelListApi (data) {
+export function levelListApi(data) {
     return request({
         url: 'user/user_level/vip_list',
         method: 'get',
@@ -142,7 +142,7 @@ export function levelListApi (data) {
  * @description 会员等级-编辑表单
  * @param {Number} param id {Number} 会员等级id
  */
-export function levelEditApi (id) {
+export function levelEditApi(id) {
     return request({
         url: `user/user_level/set_value/${id}`,
         method: 'PUT'
@@ -153,7 +153,7 @@ export function levelEditApi (id) {
  * @description 会员等级-修改显示隐藏
  * @param {Number} param id {Number} 会员等级id
  */
-export function setShowApi (data) {
+export function setShowApi(data) {
     return request({
         url: `user/user_level/set_show/${data.id}/${data.is_show}`,
         method: 'PUT'
@@ -176,7 +176,7 @@ export function setShowApi (data) {
  * @description 会员等级任务-列表
  * @param {Object} param data {Object} 传值参数
  */
-export function taskListApi (id, data) {
+export function taskListApi(id, data) {
     return request({
         url: `user/user_level/task/${id}`,
         method: 'get',
@@ -189,7 +189,7 @@ export function taskListApi (id, data) {
  * @param {Number} param data.id {Number} 会员等级任务id
  * @param {Number} param data.is_show {Number} 会员等级任务显示隐藏
  */
-export function setTaskShowApi (data) {
+export function setTaskShowApi(data) {
     return request({
         url: `user/user_level/set_task_show/${data.id}/${data.is_show}`,
         method: 'PUT'
@@ -201,7 +201,7 @@ export function setTaskShowApi (data) {
  * @param {Number} param data.id {Number} 会员等级任务id
  * @param {Number} param data.is_must {Number} 会员等级任务是否务必达成
  */
-export function setTaskMustApi (data) {
+export function setTaskMustApi(data) {
     return request({
         url: `user/user_level/set_task_must/${data.id}/${data.is_must}`,
         method: 'PUT'
@@ -212,7 +212,7 @@ export function setTaskMustApi (data) {
  * @description 会员等级任务-新建表单 编辑表单
  * @param {Object} param data {Object} 会员等级任务对象传值
  */
-export function createTaskApi (data) {
+export function createTaskApi(data) {
     return request({
         url: `/user/user_level/create_task`,
         method: 'get',
@@ -224,7 +224,7 @@ export function createTaskApi (data) {
  * @description 会员等级-创建表单
  * @param {Object} param data {Object} 会员等级任务对象传值
  */
-export function createApi (id) {
+export function createApi(id) {
     return request({
         url: `user/user_level/create`,
         method: 'get',
@@ -236,7 +236,7 @@ export function createApi (id) {
  * @description 会员管理 --- 赠送会员等级
  * @param {Number} param id {Number} 会员id
  */
-export function giveLevelApi (id) {
+export function giveLevelApi(id) {
     return request({
         url: `user/give_level/${id}`,
         method: 'get'
@@ -247,7 +247,7 @@ export function giveLevelApi (id) {
  * @description 会员管理 --- 赠送会员时长
  * @param {Number} param id {Number} 会员id
  */
-export function giveLevelTimeApi (id) {
+export function giveLevelTimeApi(id) {
     return request({
         url: `user/give_level_time/${id}`,
         method: 'get'
@@ -258,7 +258,7 @@ export function giveLevelTimeApi (id) {
  * @description 会员等级-删除
  * @param {Number} param id {Number} 会员等级id
  */
-export function delLevelApi (id) {
+export function delLevelApi(id) {
     return request({
         url: `user/user_level/delete/${id}`,
         method: 'PUT'
@@ -269,7 +269,7 @@ export function delLevelApi (id) {
  * @description 会员分组-列表
  * @param {Object} param data {Object} 传值参数
  */
-export function userGroupApi (data) {
+export function userGroupApi(data) {
     return request({
         url: 'user/user_group/list',
         method: 'get',
@@ -281,7 +281,7 @@ export function userGroupApi (data) {
  * @description 会员删除 --- 删除分组
  * @param {Number} param id {Number} 会员id
  */
-export function groupDelApi (id) {
+export function groupDelApi(id) {
     return request({
         url: `user/user_group/del/${id}`,
         method: 'DELETE'
@@ -292,7 +292,7 @@ export function groupDelApi (id) {
  * @description 会员添加表单/删除表单 --- 表单
  * @param {Number} param id {Number} 会员id
  */
-export function groupAddApi (id) {
+export function groupAddApi(id) {
     return request({
         url: `user/user_group/add/${id}`,
         method: 'get'
@@ -303,7 +303,7 @@ export function groupAddApi (id) {
  * @description 个人中心 --- 修改密码
  * data 请求参数
  */
-export function updtaeAdmin (data) {
+export function updtaeAdmin(data) {
     return request({
         url: `setting/update_admin`,
         method: 'PUT',
@@ -315,7 +315,7 @@ export function updtaeAdmin (data) {
  * @description 个人中心 --- 设置会员等级
  * data 请求参数
  */
-export function userSetGroup (data) {
+export function userSetGroup(data) {
     return request({
         url: `user/set_group`,
         method: 'post',
@@ -327,7 +327,7 @@ export function userSetGroup (data) {
  * @description 个人中心 --- 会员标签列表
  * data 请求参数
  */
-export function userLabelApi (data) {
+export function userLabelApi(data) {
     return request({
         url: `user/user_label`,
         method: 'get',
@@ -339,7 +339,7 @@ export function userLabelApi (data) {
  * @description 获取标签分类（全部）
  * data 请求参数
  */
-export function userLabelAll (data) {
+export function userLabelAll(data) {
     return request({
         url: `user/user_label_cate/all`,
         method: 'get',
@@ -350,7 +350,7 @@ export function userLabelAll (data) {
 /**
  * 添加用户
  */
-export function getUserSaveForm () {
+export function getUserSaveForm() {
     return request({
         url: `/user/user/create`,
         method: 'get'
@@ -360,7 +360,7 @@ export function getUserSaveForm () {
 /**
  * 同步用户
  */
-export function userSynchro () {
+export function userSynchro() {
     return request({
         url: `/user/user/syncUsers`,
         method: 'get'
@@ -371,7 +371,7 @@ export function userSynchro () {
  * @description 获取用户标签分类编辑表单
  * data 请求参数
  */
-export function userLabelEdit (id) {
+export function userLabelEdit(id) {
     return request({
         url: `user/user_label_cate/${id}/edit`,
         method: 'get'
@@ -382,7 +382,7 @@ export function userLabelEdit (id) {
  * @description 获取用户标签分类创建表单
  * data 请求参数
  */
-export function userLabelCreate (id) {
+export function userLabelCreate(id) {
     return request({
         url: `user/user_label_cate/create`,
         method: 'get'
@@ -393,9 +393,9 @@ export function userLabelCreate (id) {
  * @description 个人中心 --- 会员标签表单生成
  * data 请求参数
  */
-export function userLabelAddApi (id) {
+export function userLabelAddApi(id, cate_id) {
     return request({
-        url: `user/user_label/add/${id}`,
+        url: `user/user_label/add/${id}?cate_id=${cate_id ? cate_id : 0}`,
         method: 'get'
     })
 }
@@ -404,7 +404,7 @@ export function userLabelAddApi (id) {
  * @description 个人中心 --- 获取设置会员标签表单
  * data 请求参数
  */
-export function userSetLabelApi (data) {
+export function userSetLabelApi(data) {
     return request({
         url: `user/set_label`,
         method: 'post',
@@ -415,7 +415,7 @@ export function userSetLabelApi (data) {
 /**
  * 批次卡列表
  */
-export function userMemberBatch (data) {
+export function userMemberBatch(data) {
     return request({
         url: '/user/member_batch/index',
         method: 'get',
@@ -427,7 +427,7 @@ export function userMemberBatch (data) {
  * 生成批次卡
  * @param {*} id id
  */
-export function memberBatchSave (id, data) {
+export function memberBatchSave(id, data) {
     return request({
         url: `/user/member_batch/save/${id}`,
         method: 'post',
@@ -439,7 +439,7 @@ export function memberBatchSave (id, data) {
  * 列表操作（启用，名称修改）
  * @param {*} id id
  */
-export function memberBatchSetValue (id, data) {
+export function memberBatchSetValue(id, data) {
     return request({
         url: `/user/member_batch/set_value/${id}`,
         method: 'get',
@@ -451,7 +451,7 @@ export function memberBatchSetValue (id, data) {
  * 会员卡列表
  * @param {*} id id
  */
-export function userMemberCard (id, data) {
+export function userMemberCard(id, data) {
     return request({
         url: `/user/member_card/index/${id}`,
         method: 'get',
@@ -463,7 +463,7 @@ export function userMemberCard (id, data) {
  * 会员卡导出
  * @param {*} id id
  */
-export function exportMemberCard (id) {
+export function exportMemberCard(id) {
     return request({
         url: `/export/memberCard/${id}`,
         method: 'get'
@@ -473,7 +473,7 @@ export function exportMemberCard (id) {
 /**
  * 会员类型
  */
-export function userMemberShip () {
+export function userMemberShip() {
     return request({
         url: '/user/member/ship',
         method: 'get'
@@ -485,7 +485,7 @@ export function userMemberShip () {
  * @param {*} id id
  * @param {*} data data
  */
-export function memberShipSave (id, data) {
+export function memberShipSave(id, data) {
     return request({
         url: `/user/member_ship/save/${id}`,
         method: 'post',
@@ -496,7 +496,7 @@ export function memberShipSave (id, data) {
 /**
  * 兑换会员卡二维码
  */
-export function userMemberScan () {
+export function userMemberScan() {
     return request({
         url: '/user/member_scan',
         method: 'get'
@@ -506,10 +506,10 @@ export function userMemberScan () {
 /**
  * 会员卡记录
  */
-export function memberRecord (data) {
+export function memberRecord(data) {
     return request({
-        url:'/user/member/record',
-        method:'get',
+        url: '/user/member/record',
+        method: 'get',
         params: data
     });
 }
@@ -517,10 +517,10 @@ export function memberRecord (data) {
 /**
  * 会员权益
  */
-export function memberRight () {
+export function memberRight() {
     return request({
-        url:'user/member/right',
-        method:'get'
+        url: 'user/member/right',
+        method: 'get'
     });
 }
 
@@ -528,7 +528,7 @@ export function memberRight () {
  * 会员权益编辑
  * @param {*} data
  */
-export function memberRightSave (data) {
+export function memberRightSave(data) {
     return request({
         url: `user/member_right/save/${data.id}`,
         method: 'post',
@@ -540,7 +540,7 @@ export function memberRightSave (data) {
  * 编辑会员协议
  * @param {*} id
  */
-export function memberAgreementSave (id, data) {
+export function memberAgreementSave(id, data) {
     return request({
         url: `user/member_agreement/save/${id}`,
         method: 'post',
@@ -548,20 +548,42 @@ export function memberAgreementSave (id, data) {
     });
 }
 
+
 /**
  * 会员协议
  */
-export function memberAgreement () {
+export function memberAgreement() {
     return request({
         url: `user/member/agreement`,
         method: 'get'
+    });
+}
+/**
+ * 代理商申请协议
+ */
+export function agentAgreement() {
+    return request({
+        url: `agent/division/agent_agreement/info`,
+        method: 'get'
+    });
+}
+
+/**
+ * 代理商保存协议
+ * @param {*} id
+ */
+export function agentAgreementSave(data) {
+    return request({
+        url: `agent/division/agent_agreement/save`,
+        method: 'post',
+        data
     });
 }
 
 /**
  * 获取用户标签
  */
-export function getUserLabel (uid) {
+export function getUserLabel(uid) {
     return request({
         url: `user/label/${uid}`,
         method: 'get'
@@ -571,10 +593,55 @@ export function getUserLabel (uid) {
 /**
  * 设置用户标签
  */
-export function putUserLabel (uid,data) {
+export function putUserLabel(uid, data) {
     return request({
         url: `user/label/${uid}`,
         method: 'post',
         data
+    });
+}
+
+/**
+ * @description 创建用户
+ * @param {Object} param data {Object} 传值参数
+ */
+export function setUser(data) {
+    return request({
+        url: 'user/user',
+        method: 'post',
+        data
+    })
+}
+
+/**
+ * @description 编辑用户
+ * @param {Object} param data {Object} 传值参数
+ */
+export function editUser(data) {
+    return request({
+        url: 'user/user/' + data.uid,
+        method: 'put',
+        data
+    })
+}
+/**
+ * @description 编辑用户
+ * @param {Object} param data {Object} 传值参数
+ */
+export function saveSetLabel(data) {
+    return request({
+        url: 'user/save_set_label',
+        method: 'put',
+        data
+    })
+}
+
+/**
+ * 获取用户信息
+ */
+export function getUserInfo(uid) {
+    return request({
+        url: `user/user/user_save_info/${uid}`,
+        method: 'get'
     });
 }

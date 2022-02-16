@@ -34,6 +34,7 @@ class SystemStoreStaffServices extends BaseServices
      * 构造方法
      * SystemStoreStaffServices constructor.
      * @param SystemStoreStaffDao $dao
+     * @param FormBuilder $builder
      */
     public function __construct(SystemStoreStaffDao $dao, FormBuilder $builder)
     {
@@ -51,7 +52,7 @@ class SystemStoreStaffServices extends BaseServices
      */
     public function verifyStatus($uid)
     {
-        return $this->dao->getOne(['uid' => $uid, 'status' => 1, 'verify_status' => 1]) ? true : false;
+        return (bool)$this->dao->getOne(['uid' => $uid, 'status' => 1, 'verify_status' => 1]);
     }
 
     /**

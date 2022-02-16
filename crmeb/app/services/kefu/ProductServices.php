@@ -84,7 +84,7 @@ class ProductServices extends BaseServices
         $cateService = app()->make(StoreProductCateServices::class);
         $where['id'] = $cateService->cateIdByProduct($cateService->productIdByCateId($productIds));
         $where['store_name'] = $storeName;
-        return $this->dao->getUserProductHotSale($where,$limit,$page);
+        return $this->dao->getUserProductHotSale($where, $page, $limit);
     }
 
     /**

@@ -15,7 +15,6 @@ use app\services\BaseServices;
 use app\services\serve\ServeServices;
 use app\jobs\TaskJob;
 use think\exception\ValidateException;
-use think\facade\Log;
 
 /**
  * 短信发送

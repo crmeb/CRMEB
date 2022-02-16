@@ -16,8 +16,8 @@ use app\services\order\StoreOrderServices;
 use app\services\order\StoreOrderStatusServices;
 use app\services\other\QrcodeServices;
 use app\services\system\attachment\SystemAttachmentServices;
-use app\services\user\UserBillServices;
 use app\services\user\UserBrokerageFrozenServices;
+use app\services\user\UserBrokerageServices;
 use app\services\user\UserExtractServices;
 use app\services\user\UserServices;
 use crmeb\exceptions\AdminException;
@@ -34,15 +34,19 @@ class AgentManageServices extends BaseServices
 
     /**
      * @param array $where
+     * @param bool $is_page
      * @return array
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
      */
     public function agentSystemPage(array $where, $is_page = true)
     {
         /** @var UserServices $userServices */
         $userServices = app()->make(UserServices::class);
         $data = $userServices->getAgentUserList($where, '*', $is_page);
-        /** @var UserBrokerageFrozenServices $frozenPrices */
-        $frozenPrices = app()->make(UserBrokerageFrozenServices::class);
+        /** @var UserBrokerageServices $frozenPrices */
+        $frozenPrices = app()->make(UserBrokerageServices::class);
         foreach ($data['list'] as &$item) {
             $item['headimgurl'] = $item['avatar'];
             $item['extract_count_price'] = $item['extract'][0]['extract_count_price'] ?? 0;
@@ -54,12 +58,12 @@ class AgentManageServices extends BaseServices
             $item['spread_count'] = $item['spreadCount'][0]['spread_count'] ?? 0;
             $item['order_price'] = $item['order'][0]['order_price'] ?? 0;
             $item['order_count'] = $item['order'][0]['order_count'] ?? 0;
-            $item['broken_commission'] = array_bc_sum($frozenPrices->getUserFrozenPrice($item['uid']));
+            $item['broken_commission'] = $frozenPrices->getUserFrozenPrice($item['uid']);
             if ($item['broken_commission'] < 0)
                 $item['broken_commission'] = 0;
             $item['new_money'] = $item['bill'][0]['brokerage_money'] ?? 0;
             if ($item['brokerage_price'] > $item['broken_commission'])
-                $item['new_money'] = bcsub($item['brokerage_price'], $item['broken_commission'], 2);
+                $item['new_money'] = bcsub((string)$item['brokerage_price'], (string)$item['broken_commission'], 2);
             else
                 $item['new_money'] = 0;
             $item['brokerage_money'] = $item['brokerage_price'];
@@ -168,6 +172,8 @@ class AgentManageServices extends BaseServices
         return $data;
     }
 
+    //TODO 废弃
+
     /**
      * 推广人头部信息
      * @param array $where
@@ -205,8 +211,12 @@ class AgentManageServices extends BaseServices
 
     /**
      * 推广订单
+     * @param int $uid
      * @param array $where
      * @return array
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
      */
     public function getStairOrderList(int $uid, array $where)
     {
@@ -249,52 +259,7 @@ class AgentManageServices extends BaseServices
         return $data;
     }
 
-    /**
-     * TODO 获取分销员列表头部统计信息
-     * @param $where
-     * @return array[]
-     */
-    public function getStairOrderBadge(array $where)
-    {
-        $data = [];
-        return [
-            [
-                'name' => '总金额(元)',
-                'count' => $data['order_price'] ?? 0,
-                'col' => 6,
-            ],
-            [
-                'name' => '订单总数(单)',
-                'count' => $data['order_count'] ?? 0,
-                'col' => 6,
-            ],
-            [
-                'name' => '返佣总金额(元)',
-                'count' => $data['number_price'] ?? 0,
-                'col' => 6,
-            ],
-            [
-                'name' => '一级总金额(元)',
-                'count' => $data['one_price'] ?? 0,
-                'col' => 6,
-            ],
-            [
-                'name' => '一级订单数(单)',
-                'count' => $data['one_count'] ?? 0,
-                'col' => 6,
-            ],
-            [
-                'name' => '二级总金额(元)',
-                'count' => $data['two_price'] ?? 0,
-                'col' => 6,
-            ],
-            [
-                'name' => '二级订单数(单)',
-                'count' => $data['two_count'] ?? 0,
-                'col' => 6,
-            ],
-        ];
-    }
+
 
     /**
      * 获取永久二维码
@@ -340,7 +305,7 @@ class AgentManageServices extends BaseServices
             }
             if (!$res) throw new ValidateException('二维码生成失败');
             $upload = UploadService::init();
-            if ($upload->to('routine/spread/code')->stream((string)$res['res'], $name) === false) {
+            if ($upload->to('routine/spread/code')->setAuthThumb(false)->stream((string)$res['res'], $name) === false) {
                 return $upload->getError();
             }
             $imageInfo = $upload->getUploadInfo();
@@ -381,13 +346,18 @@ class AgentManageServices extends BaseServices
     public function delSpread(int $uid)
     {
         $userServices = app()->make(UserServices::class);
-        if (!$userServices->getUserInfo($uid)) {
+        $userInfo = $userServices->getUserInfo($uid);
+        if (!$userInfo) {
             throw new AdminException('数据不存在');
         }
-        if ($userServices->update($uid, ['spread_uid' => 0, 'spread_time' => 0]) !== false)
+        $spreadInfo = $userServices->get($userInfo['spread_uid']);
+        $spreadInfo->spread_count = $spreadInfo->spread_count - 1;
+        $spreadInfo->save();
+        if ($userServices->update($uid, ['spread_uid' => 0, 'spread_time' => 0]) !== false) {
             return true;
-        else
+        } else {
             throw new AdminException('解除失败');
+        }
     }
 
     /**

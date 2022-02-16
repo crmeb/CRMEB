@@ -1,8 +1,13 @@
 <template>
 	<view class="orderGoods">
-		<view class='total' v-if="!split">共{{totalNmu}}件商品</view>
-		<view class='total' v-if="split">
-			<text>订单包裹{{index + 1}}</text>
+		<view class='total' v-if="is_behalf"><text>
+				代付金额：
+				<text class="pay-price">¥{{pay_price}}</text>
+			</text>
+		</view>
+		<view class='total' v-else-if="!split && !is_behalf">共 {{totalNmu}} 件商品</view>
+		<view class='total' v-else-if="split">
+			<text>订单包裹 {{index + 1}}</text>
 			<!-- <view class="rig-btn" v-if="status_type === 2">
 				<view class="logistics sure" @click="confirmOrder(orderId)">确认收货</view>
 				<view v-if="delivery_type === 'express'" class="logistics" @click="logistics(orderId)">查看物流</view>
@@ -20,7 +25,7 @@
 
 		<view class='goodWrapper'>
 			<view class='' :class="{op:!item.is_valid}" v-for="(item,index) in cartInfo" :key="index"
-				@click="jumpCon(item.product_id,item.advance_id)">
+				@click="jumpCon(item.product_id)">
 				<view class="item acea-row row-between-wrapper">
 					<view class='pictrue'>
 						<image :src='item.productInfo.attrInfo.image' v-if="item.productInfo.attrInfo"></image>
@@ -37,24 +42,26 @@
 							<text>
 								￥{{item.productInfo.attrInfo.price}}
 							</text>
-							<text class="valid" v-if="!item.is_valid">不送达</text>
+							<view class="refund" v-if="item.refund_num && statusType !=-2">{{item.refund_num}}件退款中
+							</view>
+							<text class="valid" v-if="!item.is_valid && shipping_type === 0">不送达</text>
+							<text class="valid" v-if="!item.productInfo.store_mention && shipping_type === 1">不自提</text>
 						</view>
 						<view class='money font-color pic' v-else>
 							<text>￥{{item.productInfo.price}}</text>
-							<text class="valid" v-if="!item.is_valid">不送达</text>
+							<text class="valid" v-if="!item.is_valid && shipping_type === 0">不送达</text>
+							<text class="valid" v-if="!item.productInfo.store_mention && shipping_type === 1">不自提</text>
 						</view>
-						<view class='evaluate' v-if='item.is_reply==0 && evaluate==3 && pid != -1'
-							@click.stop="evaluateTap(item.unique,orderId)">评价</view>
 						<view class='evaluate' v-else-if="item.is_reply==1">已评价</view>
 					</view>
 				</view>
 				<view class="botton-btn">
-					<view class='logistics' v-if="cartInfo.length > 1 && !is_confirm && !split && !is_confirm  && pid <= 0"
-						@click.stop="openSubcribe(item.id)">
-						申请退款</view>
+					<view class='logistics' v-if="item.is_reply==0 && evaluate==3 && pid != -1"
+						@click.stop="evaluateTap(item.unique,orderId)">
+						评价</view>
 					<view class='logistics'
-						v-else-if="!is_confirm && index === cartInfo.length - 1 && split  && refund_status === 0"
-						@click.stop="openSubcribeSplit()">
+						v-if="paid === 1 && refund_status === 0 && item.refund_num !=item.cart_num && !is_confirm"
+						@click.stop="openSubcribe(item)">
 						申请退款</view>
 					<view class="rig-btn" v-if="status_type === 2 && index === cartInfo.length - 1 || !split">
 						<view v-if="delivery_type === 'express'" class="logistics" @click.stop="logistics(orderId)">查看物流
@@ -72,7 +79,21 @@
 <script>
 	export default {
 		props: {
+			// 订单状态
+			statusType: {
+				type: Number,
+				default: 0,
+			},
 			evaluate: {
+				type: Number,
+				default: 0,
+			},
+			oid: {
+				type: Number,
+				default: 0,
+			},
+			// 1已支付 0未支付
+			paid: {
 				type: Number,
 				default: 0,
 			},
@@ -86,7 +107,15 @@
 				type: String,
 				default: '',
 			},
+			shipping_type: {
+				type: Number,
+				default: -1,
+			},
 			delivery_type: {
+				type: String,
+				default: '',
+			},
+			pay_price: {
 				type: String,
 				default: '',
 			},
@@ -95,6 +124,11 @@
 				default: false,
 			},
 			is_confirm: {
+				type: Boolean,
+				default: false,
+			},
+			// is_behalf 是否是代付列表
+			is_behalf: {
 				type: Boolean,
 				default: false,
 			},
@@ -136,6 +170,7 @@
 				nVal.forEach((item, index) => {
 					num += item.cart_num
 				})
+				console.log(num)
 				this.totalNmu = num
 			}
 		},
@@ -145,6 +180,7 @@
 				this.cartInfo.forEach((item, index) => {
 					num += item.cart_num
 				})
+				console.log(num)
 				this.$set(this, 'totalNmu', num)
 			})
 
@@ -155,12 +191,8 @@
 					url: "/pages/users/goods_comment_con/index?unique=" + unique + "&uni=" + orderId
 				})
 			},
-			jumpCon(id, advance_id) {
-				if (advance_id) {
-					uni.navigateTo({
-						url: `/pages/activity/presell_details/index?id=${advance_id}`
-					})
-				} else if (this.jump) {
+			jumpCon(id) {
+				if (this.jump) {
 					uni.navigateTo({
 						url: `/pages/goods_details/index?id=${id}`
 					})
@@ -181,11 +213,15 @@
 			changeOperation() {
 				this.operationModel = !this.operationModel
 			},
-			openSubcribe(id) {
-				this.$emit('openSubcribe', `/pages/users/goods_return/index?orderId=${this.orderId}&cart_id=${id}`)
-			},
-			openSubcribeSplit() {
-				this.$emit('openSubcribe', `/pages/users/goods_return/index?orderId=${this.orderId}`)
+			openSubcribe(item) {
+				let cartList = [];
+				cartList.push({
+					cart_id: item.id,
+					cart_num: item.surplus_refund_num
+				})
+				let obj = JSON.stringify(cartList);
+				this.$emit('openSubcribe',
+					`/pages/users/goods_return/index?orderId=${this.orderId}&id=${this.oid}&cartIds=${obj}`)
 			},
 		}
 	}
@@ -198,7 +234,6 @@
 
 	.orderGoods {
 		background-color: #fff;
-		margin-top: 12rpx;
 	}
 
 	.orderGoods .total {
@@ -221,7 +256,7 @@
 		display: flex;
 		align-items: right;
 		justify-content: flex-end;
-		padding: 20rpx 20rpx;
+		padding: 0rpx 20rpx 20rpx 20rpx;
 	}
 
 	.rig-btn {
@@ -242,11 +277,11 @@
 	.logistics {
 		// height: 46rpx;
 		line-height: 30rpx;
-		color: #999999;
+		color: #666666;
 		font-size: 20rpx;
-		border: 1px solid;
+		border: 1px solid #CCCCCC;
 		border-radius: 30rpx;
-		padding: 6rpx 12rpx;
+		padding: 8rpx 22rpx;
 		margin-left: 10rpx;
 	}
 
@@ -293,6 +328,17 @@
 	}
 
 	.valid {
+		margin-left: 20rpx;
 		font-size: 24rpx;
+	}
+
+	.pay-price {
+		color: #E93323;
+	}
+
+	.refund {
+		text-align: right;
+		font-size: 26rpx;
+		color: var(--view-theme);
 	}
 </style>

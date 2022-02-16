@@ -145,7 +145,7 @@ class SystemMenusServices extends BaseServices
         $params = $formData['params'] ?? '';
 //        $field[] = Form::input('params', '参数', is_array($params) ? '' : $params)->placeholder('举例:a/123/b/234');
         $field[] = Form::frameInput('icon', '图标', $this->url('admin/widget.widgets/icon', ['fodder' => 'icon']), $formData['icon'] ?? '')->icon('md-add')->height('505px')->modal(['footer-hide' => true]);
-        $field[] = Form::number('sort', '排序', (int)($formData['sort'] ?? 0));
+        $field[] = Form::number('sort', '排序', (int)($formData['sort'] ?? 0))->precision(0);
         $field[] = Form::radio('auth_type', '类型', $formData['auth_type'] ?? 1)->options([['value' => 2, 'label' => '接口'], ['value' => 1, 'label' => '菜单(包含页面按钮)']]);
         $field[] = Form::radio('is_show', '状态', $formData['is_show'] ?? 1)->options([['value' => 0, 'label' => '关闭'], ['value' => 1, 'label' => '开启']]);
         $field[] = Form::radio('is_show_path', '是否为前端隐藏菜单', $formData['is_show_path'] ?? 0)->options([['value' => 1, 'label' => '是'], ['value' => 0, 'label' => '否']]);

@@ -123,6 +123,7 @@ class AliPayService
      * @param string $passbackParams 备注
      * @param string $quitUrl 同步跳转地址
      * @param string $siteUrl
+     * @param bool $isCode
      * @return \Alipay\EasySDK\Payment\Wap\Models\AlipayTradeWapPayResponse
      */
     public function create(string $title, string $orderId, string $totalAmount, string $passbackParams, string $quitUrl = '', string $siteUrl = '', bool $isCode = false)
@@ -139,7 +140,7 @@ class AliPayService
                 $result = Factory::payment()->wap()->optional('passback_params', $passbackParams)->pay($title, $orderId, $totalAmount, $quitUrl, $siteUrl);
             }
             if ($this->response->success($result)) {
-                return isset($result->body) ? $result->body : $result;
+                return $result->body ?? $result;
             } else {
                 throw new PayException('失败原因:' . $result->msg . ',' . $result->subMsg);
             }

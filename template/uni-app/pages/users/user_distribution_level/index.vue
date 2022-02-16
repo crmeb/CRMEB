@@ -195,6 +195,7 @@
 					if (this.levelInfo.rate > 100) {
 						this.levelInfo.rate = 100;
 					}
+					console.log(level_info, level_list)
 					const index = level_list.findIndex((
 							grade, v
 						) =>

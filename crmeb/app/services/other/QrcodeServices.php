@@ -228,6 +228,10 @@ class QrcodeServices extends BaseServices
                 $page = 'pages/annex/vip_paid/index';
                 $namePath = 'routine_pay_vip_code.jpg';
                 break;
+            case 6:
+                $page = 'pages/annex/special/index?id=' . $id;
+                $namePath = $id . 'routine_index_code.jpg';
+                break;
         }
         if (!$page || !$namePath) {
             return false;
@@ -235,7 +239,7 @@ class QrcodeServices extends BaseServices
         try {
             if (!$isSaveAttach) {
                 $imageInfo = "";
-            }else{
+            } else {
                 $imageInfo = $systemAttachmentService->getOne(['name' => $namePath]);
             }
             $siteUrl = sys_config('site_url');
@@ -245,7 +249,7 @@ class QrcodeServices extends BaseServices
                 $uploadType = (int)sys_config('upload_type', 1);
                 $upload = UploadService::init();
                 $res = (string)EntityBody::factory($res);
-                $res = $upload->to('routine/product')->validate()->stream($res, $namePath);
+                $res = $upload->to('routine/product')->validate()->setAuthThumb(false)->stream($res, $namePath);
                 if ($res === false) {
                     return false;
                 }

@@ -50,6 +50,7 @@
 				this.$emit('closeChange');
 			},
 			goShare: function() {
+				console.log(this.isAnimate)
 				if (this.isAnimate) {
 					this.$emit('listenerActionSheet');
 				} else {

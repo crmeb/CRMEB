@@ -142,13 +142,22 @@ export default {
       component: () => import('@/pages/app/routine/download/index')
     },
     {
-      path: 'version_list',
-      name: `${pre}routineTemplate`,
+      path: 'app/version',
+      name: `${pre}version`,
       meta: {
-        auth: ['app_version_list'],
+        auth: ['admin-app-version'],
         title: 'APP版本管理'
       },
       component: () => import('@/pages/app/version/index')
+    },
+    {
+      path: 'app/agreement',
+      name: `${pre}agreement `,
+      meta: {
+        auth: ['admin-app-agreement'],
+        title: '隐私协议'
+      },
+      component: () => import('@/pages/app/app/index')
     },
   ]
 }

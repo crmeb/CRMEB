@@ -203,7 +203,7 @@ class LuckLotteryRecord extends BaseModel
      */
     public function searchIsReceiveAttr($query, $value)
     {
-        if ($value !== '') $query->where('is_receive', $value);
+        if ($value !== '') $query->where('is_reveive', $value);
     }
 
     /**

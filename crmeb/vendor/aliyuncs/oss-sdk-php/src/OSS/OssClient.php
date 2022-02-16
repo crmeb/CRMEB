@@ -189,7 +189,7 @@ class OssClient
         $result = new ExistResult($response);
         return $result->getData();
     }
-    
+
     /**
      * 获取bucket所属的数据中心位置信息
      *
@@ -209,7 +209,7 @@ class OssClient
         $result = new GetLocationResult($response);
         return $result->getData();
     }
-    
+
     /**
      * 获取Bucket的Meta信息
      *
@@ -605,7 +605,7 @@ class OssClient
         $info = $result->getData();
         $info->setName($channelName);
         $info->setDescription($channelConfig->getDescription());
-        
+
         return $info;
     }
 
@@ -617,7 +617,7 @@ class OssClient
      * @param string channelStatus $channelStatus 为enabled或disabled
      * @param array $options
      * @throws OssException
-     * @return null 
+     * @return null
      */
     public function putLiveChannelStatus($bucket, $channelName, $channelStatus, $options = NULL)
     {
@@ -672,7 +672,7 @@ class OssClient
         $options[self::OSS_OBJECT] = $channelName;
         $options[self::OSS_SUB_RESOURCE] = 'live';
         $options[self::OSS_COMP] = 'stat';
-      
+
         $response = $this->auth($options);
         $result = new GetLiveChannelStatusResult($response);
         return $result->getData();
@@ -700,7 +700,7 @@ class OssClient
         $result = new GetLiveChannelHistoryResult($response);
         return $result->getData();
     }
-  
+
     /**
      *获取指定Bucket下的live channel列表
      *
@@ -733,7 +733,7 @@ class OssClient
      * 为指定LiveChannel生成播放列表
      *
      * @param string $bucket bucket名称
-     * @param string channelName $channelName 
+     * @param string channelName $channelName
      * @param string $playlistName 指定生成的点播播放列表的名称，必须以“.m3u8”结尾
      * @param array $setTime  startTime和EndTime以unix时间戳格式给定,跨度不能超过一天
      * @throws OssException
@@ -748,7 +748,7 @@ class OssClient
         $options[self::OSS_SUB_RESOURCE] = 'vod';
         $options[self::OSS_LIVE_CHANNEL_END_TIME] = $setTime['EndTime'];
         $options[self::OSS_LIVE_CHANNEL_START_TIME] = $setTime['StartTime'];
-       
+
         $response = $this->auth($options);
         $result = new PutSetDeleteResult($response);
         return $result->getData();
@@ -951,7 +951,7 @@ class OssClient
         $result = new GetRefererResult($response);
         return $result->getData();
     }
-    
+
     /**
      * 设置bucket的容量大小，单位GB
      * 当bucket的容量大于设置的容量时，禁止继续写入
@@ -976,7 +976,7 @@ class OssClient
         $result = new PutSetDeleteResult($response);
         return $result->getData();
     }
-    
+
     /**
      * 获取bucket的容量大小，单位GB
      *
@@ -1087,18 +1087,18 @@ class OssClient
         	$content_md5 = base64_encode(md5($content, true));
         	$options[self::OSS_CONTENT_MD5] = $content_md5;
         }
-        
+
         if (!isset($options[self::OSS_CONTENT_TYPE])) {
             $options[self::OSS_CONTENT_TYPE] = $this->getMimeType($object);
         }
         $response = $this->auth($options);
-        
+
         if (isset($options[self::OSS_CALLBACK]) && !empty($options[self::OSS_CALLBACK])) {
             $result = new CallbackResult($response);
         } else {
             $result = new PutSetDeleteResult($response);
         }
-            
+
         return $result->getData();
     }
 
@@ -1208,7 +1208,7 @@ class OssClient
         } else {
             $options[self::OSS_CONTENT_LENGTH] = $options[self::OSS_LENGTH];
         }
-        
+
         $is_check_md5 = $this->isCheckMD5($options);
         if ($is_check_md5) {
         	$content_md5 = base64_encode(md5($content, true));
@@ -2203,7 +2203,7 @@ class OssClient
                 $data = $this->auth($options);
             }
         }
-        
+
         $this->redirects = 0;
         return $data;
     }
@@ -2473,7 +2473,7 @@ class OssClient
 
         foreach($queryStringParams as $params)
         {
-             $queryStringSorted .= $params . '&';    
+             $queryStringSorted .= $params . '&';
         }
 
         $queryStringSorted = substr($queryStringSorted, 0, -1);

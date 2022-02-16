@@ -1,0 +1,1 @@
+<view hidden="{{!(!isSortType)}}"><block wx:if="{{heightConfig}}"><view class="lines" style="{{('padding:0 '+lrEdge*2+'rpx;margin-top:'+mbConfig*2+'rpx;')}}"><view class="item" style="{{('border-bottom-width:'+heightConfig*2+'rpx;border-bottom-color:'+lineColor+';border-bottom-style:'+lineStyle+';')}}"></view></view></block></view>

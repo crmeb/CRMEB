@@ -150,7 +150,7 @@
 		width: 100%;
 		background-color: #FFFFFF;
 		border-radius: 16rpx 16rpx 0 0;
-		z-index: 555;
+		z-index: 999;
 		transform: translate3d(0, 100%, 0);
 		transition: all .3s cubic-bezier(.25, .5, .5, .9);
 	}

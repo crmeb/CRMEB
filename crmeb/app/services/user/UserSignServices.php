@@ -14,6 +14,7 @@ namespace app\services\user;
 
 use app\services\BaseServices;
 use app\dao\user\UserSignDao;
+use app\services\user\member\MemberCardServices;
 use think\facade\Log;
 use think\exception\ValidateException;
 
@@ -41,7 +42,7 @@ class UserSignServices extends BaseServices
      */
     public function getIsSign(int $uid, string $type = 'today')
     {
-        return $this->dao->count(['uid' => $uid, 'time' => $type]) ? true : false;
+        return (bool)$this->dao->count(['uid' => $uid, 'time' => $type]);
     }
 
     /**
@@ -68,7 +69,7 @@ class UserSignServices extends BaseServices
         $data['uid'] = $uid;
         $data['title'] = $title;
         $data['number'] = $number;
-        $data['balance'] = $integral_balance;
+        $data['balance'] = $integral_balance + $number;
         $data['add_time'] = time();
         if (!$this->dao->save($data)) {
             throw new ValidateException('添加签到数据失败');
@@ -83,7 +84,7 @@ class UserSignServices extends BaseServices
             $data['category'] = 'exp';
             $data['type'] = 'sign';
             $data['title'] = $data['mark'] = '签到奖励';
-            $data['balance'] = $exp_banlance;
+            $data['balance'] = $exp_banlance + $exp_num;
             $data['pm'] = 1;
             $data['status'] = 1;
             if (!$userBill->save($data)) {
@@ -220,13 +221,16 @@ class UserSignServices extends BaseServices
         if ($integral || $all) {
             /** @var UserBillServices $userBill */
             $userBill = app()->make(UserBillServices::class);
-            $user['sum_integral'] = intval($userBill->getRecordCount($user['uid'], 'integral', 'sign,system_add,gain,lottery_add'));
-            $user['deduction_integral'] = intval($userBill->getRecordCount($user['uid'], 'integral', 'deduction,lottery_use', '', true) ?? 0);
-            $user['today_integral'] = intval($userBill->getRecordCount($user['uid'], 'integral', 'sign,system_add,gain,lottery_add', 'today'));
+            $user['sum_integral'] = intval($userBill->getRecordCount($user['uid'], 'integral', 'sign,system_add,gain,lottery_add,product_gain,pay_product_integral_back'));
+            $user['deduction_integral'] = intval($userBill->getRecordCount($user['uid'], 'integral', 'deduction,lottery_use,order_deduction', '', true) ?? 0);
+            $user['today_integral'] = intval($userBill->getRecordCount($user['uid'], 'integral', 'sign,system_add,gain,product_gain,lottery_add,pay_product_integral_back', 'today'));
+            /** @var UserBillServices $userBillServices */
+            $userBillServices = app()->make(UserBillServices::class);
+            $user['frozen_integral'] = $userBillServices->getBillSum(['uid' => $user['uid'], 'is_frozen' => 1]);
         }
         unset($user['pwd']);
         if (!$user['is_promoter']) {
-            $user['is_promoter'] = (int)sys_config('store_brokerage_statu') == 2 ? true : false;
+            $user['is_promoter'] = (int)sys_config('store_brokerage_statu') == 2;
         }
         return $user->hidden(['account', 'real_name', 'birthday', 'card_id', 'mark', 'partner_id', 'group_id', 'add_time', 'add_ip', 'phone', 'last_time', 'last_ip', 'spread_uid', 'spread_time', 'user_type', 'status', 'level', 'clean_time', 'addres'])->toArray();
     }

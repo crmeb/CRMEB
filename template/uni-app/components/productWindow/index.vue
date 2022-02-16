@@ -16,7 +16,7 @@
 							<text class='vip-money'
 								v-if="is_vip>0 && attr.productSelect.vip_price">￥{{attr.productSelect.vip_price}}</text>
 							<view class="vipImg" v-if="is_vip>0 && attr.productSelect.vip_price">
-								<image src="../../static/images/vip.png"></image>
+								<image src="../../static/images/svip.gif"></image>
 							</view>
 						</view>
 						<text class="stock" v-if='isShow'>库存: {{ attr.productSelect.stock }}</text>
@@ -126,7 +126,9 @@
 		data() {
 			return {};
 		},
-		mounted() {},
+		mounted() {
+			
+		},
 		methods: {
 			getpreviewImage: function() {
 				uni.previewImage({
@@ -154,6 +156,7 @@
 				this.$emit('ChangeCartNum', true);
 			},
 			tapAttr: function(indexw, indexn) {
+				
 				let that = this;
 				that.$emit("attrVal", {
 					indexw: indexw,
@@ -164,6 +167,13 @@
 					.getCheckedValue()
 					.join(",");
 				that.$emit("ChangeAttr", value);
+				if(this.limitNum == 1){
+					if(this.attr.productSelect.quota>0){
+						this.attr.productSelect.cart_num = 1
+					}else{
+						this.attr.productSelect.cart_num = 0
+					}
+				}
 
 			},
 			//获取被选中属性；

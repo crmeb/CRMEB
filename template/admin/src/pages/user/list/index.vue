@@ -89,25 +89,29 @@
               </Col>
               <Col v-bind="grid">
                 <FormItem label="用户标签：" label-for="label_id">
-                  <Select
-                    v-model="label_id"
-                    placeholder="请选择"
-                    element-id="label_id"
-                    clearable
+                  <div
+                    class="labelInput acea-row row-between-wrapper"
+                    @click="openSelectLabel"
                   >
-                    <Option value="all">全部</Option>
-                    <Option
-                      :value="item.id"
-                      v-for="(item, index) in labelLists"
-                      :key="index"
-                      >{{ item.label_name }}</Option
-                    >
-                  </Select>
+                    <div style="width: 90%">
+                      <div v-if="selectDataLabel.length">
+                        <Tag
+                          :closable="false"
+                          v-for="(item, index) in selectDataLabel"
+                          @on-close="closeLabel(item)"
+                          :key="index"
+                          >{{ item.label_name }}</Tag
+                        >
+                      </div>
+                      <span class="span" v-else>选择用户关联标签</span>
+                    </div>
+                    <div class="ivu-icon ivu-icon-ios-arrow-down"></div>
+                  </div>
                 </FormItem>
               </Col>
             </Col>
             <Col span="18">
-              <!-- <Col v-bind="grid">
+              <Col v-bind="grid">
                 <FormItem label="付费会员：" label-for="isMember">
                   <!-- <Select
                     v-model="userFrom.isMember"
@@ -119,7 +123,7 @@
                     <Option :value="1">是</Option>
                     <Option :value="0">否</Option>
                   </Select> -->
-                   <RadioGroup v-model="userFrom.isMember" type="button">
+                  <RadioGroup v-model="userFrom.isMember" type="button">
                     <Radio label="">
                       <span>全部</span>
                     </Radio>
@@ -131,7 +135,7 @@
                     </Radio>
                   </RadioGroup>
                 </FormItem>
-              </Col> -->
+              </Col>
               <Col v-bind="grid">
                 <FormItem label="国家：" label-for="country">
                   <Select
@@ -277,7 +281,7 @@
             v-auth="['admin-user-save']"
             type="primary"
             class="mr20"
-            @click="save"
+            @click="edit({ uid: 0 })"
             >添加用户</Button
           >
           <Button v-auth="['admin-user-coupon']" class="mr20" @click="onSend"
@@ -477,23 +481,59 @@
       scrollable
       title="请选择用户标签"
       :closable="false"
-      width="320"
+      width="500"
       :footer-hide="true"
     >
       <userLabel
         v-if="labelShow"
         :uid="labelActive.uid"
+        :only_get="!labelActive.uid"
         @close="labelClose"
+        @activeData="activeData"
         @onceGetList="onceGetList"
+      ></userLabel>
+    </Modal>
+    <Modal
+      v-model="modals"
+      title="用户信息填写"
+      class="order_box"
+      :closable="false"
+      width="600"
+      :z-index="50"
+    >
+      <userEdit ref="userEdit" v-if="modals" :userData="userData"></userEdit>
+      <div slot="footer">
+        <Button @click="modals = false">取消</Button>
+        <Button type="primary" @click="setUser">提交</Button>
+      </div>
+    </Modal>
+    <!-- 用户标签 -->
+    <Modal
+      v-model="selectLabelShow"
+      scrollable
+      title="请选择用户标签"
+      :closable="false"
+      width="500"
+      :footer-hide="true"
+      :mask-closable="false"
+    >
+      <userLabel
+        v-if="selectLabelShow"
+        :uid="0"
+        ref="userLabel"
+        :only_get="true"
+        @activeData="activeSelectData"
+        @close="labelClose"
       ></userLabel>
     </Modal>
   </div>
 </template>
 
 <script>
-import userLabel from "../../../components/userLabel";
+import userLabel from "@/components/userLabel";
 import { mapState } from "vuex";
 import expandRow from "./tableExpand.vue";
+import userEdit from "./handle/userEdit.vue";
 import {
   userList,
   getUserData,
@@ -508,6 +548,10 @@ import {
   userSynchro,
   getUserSaveForm,
   giveLevelTimeApi,
+  getUserInfo,
+  setUser,
+  editUser,
+  saveSetLabel,
 } from "@/api/user";
 import { agentSpreadApi } from "@/api/agent";
 import editFrom from "../../../components/from/from";
@@ -526,9 +570,15 @@ export default {
     newsCategory,
     customerInfo,
     userLabel,
+    userEdit,
   },
   data() {
     return {
+      dataLabel: [],
+      selectDataLabel: [],
+      userData: {},
+      modals: false,
+      selectLabelShow: false,
       labelShow: false,
       customerShow: false,
       promoterShow: false,
@@ -650,6 +700,7 @@ export default {
         { type: "routine", name: "微信小程序" },
         { type: "h5", name: "H5" },
         { type: "pc", name: "PC" },
+        { type: "app", name: "APP" },
       ],
       address: [],
       addresData: city,
@@ -733,11 +784,11 @@ export default {
           slot: "nickname",
           minWidth: 150,
         },
-        // {
-        //   title: "付费会员",
-        //   slot: "isMember",
-        //   minWidth: 90,
-        // },
+        {
+          title: "付费会员",
+          slot: "isMember",
+          minWidth: 90,
+        },
         {
           title: "用户等级",
           key: "level",
@@ -808,15 +859,51 @@ export default {
   mounted() {
     this.userGroup();
     this.levelLists();
-    this.groupLists();
+    // this.groupLists();
   },
   methods: {
+    setUser() {
+      let data = this.$refs.userEdit.formItem;
+      let ids = [];
+      this.$refs.userEdit.dataLabel.map((i) => {
+        ids.push(i.id);
+      });
+      data.label_id = ids;
+      // if (!data.real_name) return this.$Message.warning("请输入真实姓名");
+      // if (!data.phone) return this.$Message.warning("请输入手机号");
+      // if (!data.pwd) return this.$Message.warning("请输入密码");
+      // if (!data.true_pwd) return this.$Message.warning("请输入确认密码");
+      if (data.uid) {
+        editUser(data)
+          .then((res) => {
+            this.modals = false;
+            this.$Message.success(res.msg);
+            this.getList();
+          })
+          .catch((err) => {
+            this.$Message.error(err.msg);
+          });
+      } else {
+        setUser(data)
+          .then((res) => {
+            this.modals = false;
+            this.$Message.success(res.msg);
+            this.getList();
+          })
+          .catch((err) => {
+            this.$Message.error(err.msg);
+          });
+      }
+    },
     onceGetList() {
+      this.labelActive.uid = 0;
       this.getList();
     },
     // 标签弹窗关闭
     labelClose() {
+      this.labelActive.uid = 0;
       this.labelShow = false;
+      this.selectLabelShow = false;
     },
     // 提交
     putSend(name) {
@@ -838,15 +925,18 @@ export default {
         }
       });
     },
+
     save() {
-      this.$modalForm(getUserSaveForm())
-        .then(() => {
-          this.userFrom.page = 1;
-          this.getList();
-        })
-        .catch((res) => {
-          this.$Message.error(res.msg);
-        });
+      this.modals = true;
+
+      // this.$modalForm(getUserSaveForm())
+      //   .then(() => {
+      //     this.userFrom.page = 1;
+      //     this.getList();
+      //   })
+      //   .catch((res) => {
+      //     this.$Message.error(res.msg);
+      //   });
     },
     synchro() {
       userSynchro()
@@ -912,10 +1002,39 @@ export default {
         this.$Message.warning("请选择要设置标签的用户");
       } else {
         let uids = { uids: this.ids };
-        this.$modalForm(userSetLabelApi(uids)).then(() =>
-          this.$refs.sends.getList()
-        );
+        this.labelActive.uid = 0;
+        this.labelShow = true;
+        // this.$modalForm(userSetLabelApi(uids)).then(() =>
+        //   this.$refs.sends.getList()
+        // );
       }
+    },
+    activeSelectData(data) {
+      console.log(data);
+      // let labels = [];
+      // if (!data.length) return;
+      // data.map((i) => {
+      //   labels.push(i.id);
+      // });
+      this.selectLabelShow = false;
+      this.selectDataLabel = data || [];
+    },
+    // 批量设置标签
+    activeData(data) {
+      let labels = [];
+      if (!data.length) return;
+      data.map((i) => {
+        labels.push(i.id);
+      });
+      saveSetLabel({
+        uids: this.ids.join(","),
+        label_id: labels,
+      }).then((res) => {
+        this.labelShow = false;
+        this.selectedIds = new Set();
+        this.getList();
+        this.$Message.success(res.msg);
+      });
     },
     //是否为付费会员；
     changeMember() {
@@ -988,6 +1107,9 @@ export default {
       this.labelShow = true;
       this.labelActive.uid = row.uid;
     },
+    openSelectLabel() {
+      this.selectLabelShow = true;
+    },
     editS(row) {
       this.promoterShow = true;
       this.formInline.uid = row.uid;
@@ -1059,6 +1181,16 @@ export default {
     },
     // 会员列表
     getList() {
+      console.log("1111111111111");
+      console.log(this.selectDataLabel);
+      if (this.selectDataLabel.length) {
+        let activeIds = [];
+        this.selectDataLabel.forEach((item) => {
+          activeIds.push(item.id);
+        });
+        console.log(activeIds);
+        this.userFrom.label_id = activeIds.join(",");
+      }
       this.userFrom.user_type = this.userFrom.user_type || "";
       this.userFrom.status = this.userFrom.status || "";
       this.userFrom.sex = this.userFrom.sex || "";
@@ -1067,7 +1199,6 @@ export default {
       this.userFrom.pay_count = this.pay_count === "all" ? "" : this.pay_count;
       this.userFrom.user_time_type =
         this.user_time_type === "all" ? "" : this.user_time_type;
-      this.userFrom.label_id = this.label_id === "all" ? "" : this.label_id;
       this.userFrom.field_key = this.field_key === "all" ? "" : this.field_key;
       this.userFrom.level = this.level === "all" ? "" : this.level;
       this.userFrom.group_id = this.group_id === "all" ? "" : this.group_id;
@@ -1100,7 +1231,7 @@ export default {
     // 重置
     reset(name) {
       this.userFrom = {
-        user_type: "",
+        user_type: this.userFrom.user_type,
         status: "",
         sex: "",
         is_promoter: "",
@@ -1119,26 +1250,38 @@ export default {
       this.field_key = "";
       this.level = "";
       this.group_id = "";
-      this.label_id = "";
+      this.dataLabel = [];
+      this.selectDataLabel = [];
       this.user_time_type = "";
       this.pay_count = "";
       this.timeVal = [];
+      this.selectedIds = new Set();
       this.getList();
     },
     // 获取编辑表单数据
     getUserFrom(id) {
-      getUserData(id)
+      getUserInfo(id)
         .then(async (res) => {
-          if (res.data.status === false) {
-            return this.$authLapse(res.data);
-          }
-          this.FromData = res.data;
-          this.$refs.edits.modals = true;
+          this.modals = true;
+          this.userData = res.data;
         })
         .catch((res) => {
           this.$Message.error(res.msg);
         });
     },
+    // getUserFrom(id) {
+    //   getUserData(id)
+    //     .then(async (res) => {
+    //       if (res.data.status === false) {
+    //         return this.$authLapse(res.data);
+    //       }
+    //       this.FromData = res.data;
+    //       this.$refs.edits.modals = true;
+    //     })
+    //     .catch((res) => {
+    //       this.$Message.error(res.msg);
+    //     });
+    // },
     // 获取积分余额表单
     getOtherFrom(id) {
       editOtherApi(id)
@@ -1329,6 +1472,23 @@ img {
 .listbox {
   >>>.ivu-divider-horizontal {
     margin: 0 !important;
+  }
+}
+
+.labelInput {
+  border: 1px solid #dcdee2;
+  padding: 0 6px;
+  border-radius: 5px;
+  min-height: 30px;
+  cursor: pointer;
+
+  .span {
+    color: #c5c8ce;
+  }
+
+  .ivu-icon-ios-arrow-down {
+    font-size: 14px;
+    color: #808695;
   }
 }
 </style>

@@ -14,13 +14,13 @@ namespace app\services\wechat;
 
 use app\services\BaseServices;
 use app\dao\wechat\WechatUserDao;
-use app\services\coupon\StoreCouponIssueServices;
 use app\services\user\LoginServices;
 use app\services\user\UserServices;
 use crmeb\exceptions\AdminException;
 use crmeb\exceptions\AuthException;
 use crmeb\services\WechatService;
 use think\exception\ValidateException;
+use think\facade\Log;
 
 /**
  *
@@ -109,10 +109,11 @@ class WechatUserServices extends BaseServices
      */
     public function saveUser($openid)
     {
-        if ($this->getWechatUserInfo(['openid' => $openid]))
+        if ($this->getWechatUserInfo(['openid' => $openid])) {
             $this->updateUser($openid);
-        else
+        } else {
             $this->setNewUser($openid);
+        }
     }
 
     /**
@@ -123,8 +124,18 @@ class WechatUserServices extends BaseServices
     public function updateUser($openid)
     {
         $userInfo = WechatService::getUserInfo($openid);
-        $userInfo['tagid_list'] = implode(',', $userInfo['tagid_list']);
-        if (!$this->dao->update($openid, $userInfo->toArray(), 'openid'))
+        $userInfo = is_object($userInfo) ? $userInfo->toArray() : $userInfo;
+        if (isset($userInfo['nickname']) && $userInfo['nickname']) {
+            $userInfo['nickname'] = filter_emoji($userInfo['nickname']);
+        } else {
+            mt_srand();
+            $userInfo['nickname'] = 'wx' . rand(100000, 999999);
+            $userInfo['avatar'] = sys_config('h5_avatar');
+        }
+        if (isset($userInfo['tagid_list'])) {
+            $userInfo['tagid_list'] = implode(',', $userInfo['tagid_list']);
+        }
+        if (!$this->dao->update($openid, $userInfo, 'openid'))
             throw new AdminException('更新失败');
         return true;
     }
@@ -137,14 +148,22 @@ class WechatUserServices extends BaseServices
     public function setNewUser($openid)
     {
         $userInfo = WechatService::getUserInfo($openid);
-        if (!isset($userInfo['subscribe']) || !$userInfo['subscribe'] || !isset($userInfo['openid']))
+        if (!isset($userInfo['openid']))
             throw new ValidateException('请关注公众号!');
-        $userInfo = $userInfo->toArray();
-        $userInfo['tagid_list'] = implode(',', $userInfo['tagid_list']);
-        //判断 unionid 是否存在
         $userInfo = is_object($userInfo) ? $userInfo->toArray() : $userInfo;
+        if (isset($userInfo['nickname']) && $userInfo['nickname']) {
+            $userInfo['nickname'] = filter_emoji($userInfo['nickname']);
+        } else {
+            mt_srand();
+            $userInfo['nickname'] = 'wx' . rand(100000, 999999);
+            $userInfo['avatar'] = sys_config('h5_avatar');
+        }
+        if (isset($userInfo['tagid_list'])) {
+            $userInfo['tagid_list'] = implode(',', $userInfo['tagid_list']);
+        }
         $wechatInfo = [];
         $uid = 0;
+        $userInfoData = null;
         if (isset($userInfo['unionid'])) {
             $wechatInfo = $this->getWechatUserInfo(['unionid' => $userInfo['unionid']]);
         }
@@ -165,6 +184,7 @@ class WechatUserServices extends BaseServices
         if (!$this->dao->save($userInfo)) {
             throw new AdminException('用户储存失败!');
         }
+        //TODO 这个返回值待完善
         return $userInfoData;
     }
 
@@ -240,8 +260,16 @@ class WechatUserServices extends BaseServices
         [$openid, $wechatInfo, $spreadId, $login_type, $userType] = $data;
         /** @var UserServices $userServices */
         $userServices = app()->make(UserServices::class);
-        if (!$userServices->getUserInfo((int)$spreadId)) {
+        $spreadInfo = $userServices->getUserInfo((int)$spreadId);
+        if (!$spreadInfo) {
             $spreadId = 0;
+            $wechatInfo['staff_id'] = 0;
+            $wechatInfo['agent_id'] = 0;
+            $wechatInfo['division_id'] = 0;
+        } else {
+            $wechatInfo['staff_id'] = $spreadInfo['staff_id'];
+            $wechatInfo['agent_id'] = $spreadInfo['agent_id'];
+            $wechatInfo['division_id'] = $spreadInfo['division_id'];
         }
         if (isset($wechatInfo['subscribe_scene'])) {
             unset($wechatInfo['subscribe_scene']);
@@ -310,6 +338,7 @@ class WechatUserServices extends BaseServices
             //user表没有用户,wechat_user表没有用户创建新用户
             //不存在则创建用户
             $userInfo = $this->transaction(function () use ($userServices, $wechatInfo, $spreadId, $userType) {
+                Log::error($wechatInfo);
                 $userInfo = $userServices->setUserInfo($wechatInfo, (int)$spreadId, $userType);
                 if (!$userInfo) {
                     throw new AuthException('生成User用户失败!');
@@ -349,11 +378,12 @@ class WechatUserServices extends BaseServices
                 foreach ($beOpenids as $openid) {
                     try {
                         $info = WechatService::getUserInfo($openid);
+                        $info = is_object($info) ? $info->toArray() : $info;
                     } catch (\Throwable $e) {
                         $info = [];
                     }
                     if (!$info) continue;
-                    $data['subscribe'] = $info['subscribe'];
+                    $data['subscribe'] = $info['subscribe'] ?? 1;
                     if ($info['subscribe'] == 1) {
                         $data['unionid'] = $info['unionid'] ?? '';
                         $data['nickname'] = $info['nickname'] ?? '';

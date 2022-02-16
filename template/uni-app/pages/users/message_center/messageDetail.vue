@@ -41,6 +41,7 @@
 				getMsgDetails(id).then(res => {
 					uni.hideLoading();
 					this.msgData = res.data
+					console.log(res)
 				}).catch(err => {
 					uni.hideLoading();
 					return this.$util.Tips({

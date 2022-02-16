@@ -15,7 +15,7 @@
       </div>
       <div class="table-box">
         <Card :bordered="false" dis-hover class="ivu-mt">
-          <Row type="flex" class="mb20">
+          <Row type="flex" class="mb20" v-if="currentTab == 1">
             <Col v-bind="grid">
               <Button
                 v-auth="['app-wechat-template-sync']"
@@ -35,7 +35,7 @@
               >
             </Col>
           </Row>
-          <Alert v-if="industry">
+          <Alert v-if="industry && currentTab == 1">
             <template slot="desc">
               <div>
                 主营行业：{{

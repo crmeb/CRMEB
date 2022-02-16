@@ -90,8 +90,10 @@ class AccessToken extends HttpService
 
     /**
      * AccessTokenServeService constructor.
-     * @param string $account
-     * @param string $secret
+     * @param string $component_appid
+     * @param string $component_appsecret
+     * @param string $component_verify_ticket
+     * @param string $authorizer_appid
      * @param Cache|null $cache
      */
     public function __construct(string $component_appid, string $component_appsecret, string $component_verify_ticket, string $authorizer_appid = '', $cache = null)
@@ -279,8 +281,7 @@ class AccessToken extends HttpService
         if (!$res) {
             throw new ApiException('请求微信服务器发生异常，请稍后重试');
         }
-        $result = json_decode($res, true) ?: false;
-        return $result;
+        return json_decode($res, true) ?: false;
     }
 
     /**

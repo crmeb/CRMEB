@@ -5,11 +5,14 @@
 			<view class="ChangePassword">
 				<view class="list">
 					<view class="item">
-						<input type='number' placeholder='填写手机号码' placeholder-class='placeholder' v-model="phone"></input>
+						<input type='number' placeholder='填写手机号码' placeholder-class='placeholder'
+							v-model="phone"></input>
 					</view>
 					<view class="item acea-row row-between-wrapper">
-						<input type='number' placeholder='填写验证码' placeholder-class='placeholder' class="codeIput" v-model="captcha"></input>
-						<button class="code font-color" :class="disabled === true ? 'on' : ''" :disabled='disabled' @click="code">
+						<input type='number' placeholder='填写验证码' placeholder-class='placeholder' class="codeIput"
+							v-model="captcha"></input>
+						<button class="code font-color" :class="disabled === true ? 'on' : ''" :disabled='disabled'
+							@click="code">
 							{{ text }}
 						</button>
 					</view>
@@ -20,7 +23,6 @@
 	</view>
 	<view class="lottie-bg" v-else>
 		<view id="lottie">
-			<!-- <image src="/static/img/live-logo.gif" rel="preload" /> -->
 		</view>
 	</view>
 </template>
@@ -37,7 +39,9 @@
 		LOGINTYPE,
 		BACK_URL
 	} from '@/config/cache';
-	import { silenceAuth } from '@/api/public';
+	import {
+		silenceAuth
+	} from '@/api/public';
 	import {
 		registerVerify,
 		bindingPhone,
@@ -48,10 +52,10 @@
 		mixins: [sendVerifyCode],
 		data() {
 			return {
-				phone:'',
-				captcha:'',
+				phone: '',
+				captcha: '',
 				key: '',
-				authKey:'',
+				authKey: '',
 				scope: '',
 				bindPhone: false,
 			};
@@ -71,7 +75,10 @@
 				this.url = options.url || options.back_url || '';
 				let spread = this.$Cache.get("spread");
 				let loginType = this.$Cache.get(LOGINTYPE);
-				silenceAuth({ code : options.code || '',spread : spread }).then( res => {
+				silenceAuth({
+					code: options.code || '',
+					spread: spread
+				}).then(res => {
 					if (res.data.key !== undefined) {
 						this.bindPhone = true;
 						this.authKey = res.data.key;
@@ -94,7 +101,7 @@
 						decodeURIComponent(options.back_url)
 					);
 					getUserInfo().then(res => {
-						that.$store.commit("SETUID", res.data.uid);			
+						that.$store.commit("SETUID", res.data.uid);
 					});
 				}).catch(() => {
 					location.replace("/");
@@ -125,7 +132,10 @@
 					key: this.authKey
 				}).then(res => {
 					let time = res.data.expires_time - this.$Cache.time();
-					this.$store.commit('LOGIN', { token : res.data.token, time : time });
+					this.$store.commit('LOGIN', {
+						token: res.data.token,
+						time: time
+					});
 					if (this.url && this.url.indexOf('http') !== -1) {
 						location.href = this.url;
 					} else {
@@ -167,7 +177,7 @@
 						});
 					});
 				});
-				
+
 			}
 		}
 	};
@@ -177,48 +187,48 @@
 	page {
 		background-color: #fff !important;
 	}
-	
+
 	.ChangePassword .phone {
 		font-size: 32rpx;
 		font-weight: bold;
 		text-align: center;
 		margin-top: 55rpx;
 	}
-	
+
 	.ChangePassword .list {
 		width: 580rpx;
 		margin: 53rpx auto 0 auto;
 	}
-	
+
 	.ChangePassword .list .item {
 		width: 100%;
 		height: 110rpx;
 		border-bottom: 2rpx solid #f0f0f0;
 	}
-	
+
 	.ChangePassword .list .item input {
 		width: 100%;
 		height: 100%;
 		font-size: 32rpx;
 	}
-	
+
 	.ChangePassword .list .item .placeholder {
 		color: #b9b9bc;
 	}
-	
+
 	.ChangePassword .list .item input.codeIput {
 		width: 340rpx;
 	}
-	
+
 	.ChangePassword .list .item .code {
 		font-size: 32rpx;
 		background-color: #fff;
 	}
-	
+
 	.ChangePassword .list .item .code.on {
 		color: #b9b9bc !important;
 	}
-	
+
 	.ChangePassword .confirmBnt {
 		font-size: 32rpx;
 		width: 580rpx;
@@ -229,6 +239,7 @@
 		text-align: center;
 		line-height: 90rpx;
 	}
+
 	.lottie-bg {
 		position: fixed;
 		left: 0;

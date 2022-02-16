@@ -8,11 +8,7 @@
     <Card :bordered="false" dis-hover class="ivu-mt">
       <Row type="flex" class="mb20">
         <Col span="24">
-          <Button
-            type="primary"
-            icon="md-add"
-            @click="add"
-            class="mr10"
+          <Button type="primary" icon="md-add" @click="add" class="mr10"
             >发布版本</Button
           >
         </Col>
@@ -25,17 +21,40 @@
         no-userFrom-text="暂无数据"
         no-filtered-userFrom-text="暂无筛选结果"
       >
+        <template slot-scope="{ row }" slot="version">
+          <Poptip
+            v-if="row.is_new"
+            trigger="hover"
+            placement="top-start"
+            content="当前为最新线上版本!"
+          >
+            <Icon
+              size="16"
+              type="ios-bookmark"
+              color="red"
+              style="margin-right: 10px"
+            />
+          </Poptip>
+          <Icon
+            v-else
+            size="16"
+            type="ios-bookmark"
+            color="white"
+            style="margin-right: 10px"
+          />
+          <span>{{ row.version }} </span>
+        </template>
         <template slot-scope="{ row }" slot="platform">
           <span>{{ row.platform === 1 ? "安卓" : "苹果" }}</span>
         </template>
         <template slot-scope="{ row }" slot="is_force">
           <span>{{ row.is_force === 1 ? "强制" : "非强制" }}</span>
         </template>
-        <!-- <template slot-scope="{ row, index }" slot="action">
+        <template slot-scope="{ row, index }" slot="action">
           <a @click="edit(row)">编辑</a>
-          <Divider type="vertical" />
-          <a @click="del(row, '删除版本', index)">删除</a>
-        </template> -->
+          <!-- <Divider type="vertical" /> -->
+          <!-- <a @click="del(row, '删除版本', index)">删除</a> -->
+        </template>
       </Table>
       <div class="acea-row row-right page">
         <Page
@@ -76,7 +95,7 @@ export default {
       columns1: [
         {
           title: "版本号",
-          key: "version",
+          slot: "version",
           width: 80,
         },
         {
@@ -93,6 +112,11 @@ export default {
         {
           title: "是否强制",
           slot: "is_force",
+          minWidth: 120,
+        },
+        {
+          title: "发布日期",
+          key: "add_time",
           minWidth: 120,
         },
         {
@@ -128,7 +152,7 @@ export default {
     },
     // 添加
     add() {
-      this.$modalForm(versionCrate()).then((res) => {
+      this.$modalForm(versionCrate(0)).then((res) => {
         this.getList();
       });
     },
@@ -146,12 +170,18 @@ export default {
           this.loading = false;
         });
     },
+    // 添加
+    edit(row) {
+      this.$modalForm(versionCrate(row.id)).then((res) => {
+        this.getList();
+      });
+    },
     // 删除
     del(row, tit, num) {
       let delfromData = {
         title: tit,
         num: num,
-        url: `app/wechat/kefu/${row.id}`,
+        url: `app/version/del/${row.id}`,
         method: "DELETE",
         ids: "",
       };

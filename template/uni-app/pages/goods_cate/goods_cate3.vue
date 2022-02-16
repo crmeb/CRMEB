@@ -1,8 +1,8 @@
 <template>
 	<view class="goodCate">
 		<view class="header acea-row row-center-wrapper">
-			<navigator open-type="switchTab" url='/pages/index/index' class="pageIndex acea-row row-center-wrapper"
-				hover-class="none">
+			<navigator open-type="switchTab" url='/pages/index/index' @click="jumpIndex"
+				class="pageIndex acea-row row-center-wrapper" hover-class="none">
 				<text class="iconfont icon-fanhuishouye"></text>
 			</navigator>
 			<navigator url="/pages/goods_search/index" class="search acea-row row-middle" hover-class="none">
@@ -163,6 +163,7 @@
 			// }
 		},
 		onLoad() {
+			console.log('aaaa')
 			this.$nextTick(() => {
 				uni.createSelectorQuery().select('#cart').boundingClientRect(res => {
 					const {
@@ -192,6 +193,9 @@
 			// this.getAllCategory();
 		},
 		methods: {
+			jumpIndex() {
+				this.$emit('jumpIndex')
+			},
 			addCart(detail) {
 				// #ifdef H5
 				const {
@@ -199,11 +203,11 @@
 				} = uni.getSystemInfoSync()
 				detail.y += windowTop
 				// #endif
-				this.$refs.Ball.showBall({
-					start: detail,
-					src: [detail.img, ''][Math.round(Math.random())],
-					end: this.endLocation
-				}).then(() => {})
+				// this.$refs.Ball.showBall({
+				// 	start: detail,
+				// 	src: [detail.img, ''][Math.round(Math.random())],
+				// 	end: this.endLocation
+				// }).then(() => {})
 			},
 			// 生成订单；
 			subOrder: function() {
@@ -434,16 +438,7 @@
 						that.loadTitle = '加载更多'
 				});
 			},
-			// 点击默认单属性购物车
-			goCartDan(item, index) {
-				if (!this.isLogin) {
-					this.getIsLogin();
-				} else {
-					this.tempArr[index].cart_num = 1;
-					this.$set(this, 'tempArr', this.tempArr);
-					this.goCat(0, item.id, 1);
-				}
-			},
+
 			// 改变单属性购物车
 			ChangeCartNumDan(changeValue, index, item) {
 				let num = this.tempArr[index];
@@ -567,11 +562,14 @@
 							that.$util.Tips({
 								title: "添加购物车成功"
 							});
-							that.page = 1;
-							that.loadend = false;
+							// that.page = 1;
+							// that.loadend = false;
 							that.tempArr.forEach((item, index) => {
 								if (item.id == that.id) {
-									item.cart_num = item.cart_num + 1
+									let arrtStock = that.attr.productSelect.stock
+									let objNum = parseInt(item.cart_num) + parseInt(that.attr.productSelect
+										.cart_num);
+									item.cart_num = objNum > arrtStock ? arrtStock : objNum
 								}
 							})
 							// that.productslist();
@@ -587,13 +585,40 @@
 						});
 					});
 			},
+			// 点击默认单属性购物车
+			goCartDan(item, index) {
+				if (!this.isLogin) {
+					this.getIsLogin();
+				} else {
+					if (!item.cart_button) {
+						goShopDetail(item, this.uid).then(res => {
+							uni.navigateTo({
+								url: `/pages/goods_details/index?id=${item.id}`
+							});
+						});
+						return
+					}
+					this.tempArr[index].cart_num = 1;
+					this.$set(this, 'tempArr', this.tempArr);
+					this.goCat(0, item.id, 1);
+				}
+			},
 			goCartDuo(item) {
 				if (!this.isLogin) {
 					this.getIsLogin();
 				} else {
+					if (!item.cart_button) {
+						goShopDetail(item, this.uid).then(res => {
+							uni.navigateTo({
+								url: `/pages/goods_details/index?id=${item.id}`
+							});
+						});
+						return
+					}
 					uni.showLoading({
 						title: '加载中'
 					});
+
 					this.storeName = item.store_name;
 					this.getAttrs(item.id);
 					this.$set(this, 'id', item.id);

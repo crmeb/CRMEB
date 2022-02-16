@@ -5,7 +5,7 @@
 			<view class="section-bd">
 				<view class="input-group">
 					￥
-					<input v-model.number="money" class="input" name="money" type="digit" placeholder="0.00" />
+					<input v-model.number="money" class="input" name="money" type="digit" @input="inputChange" placeholder="0.00" />
 				</view>
 				<view v-if="payPrice" class="discount">会员优惠价：￥{{ payPrice }}</view>
 			</view>
@@ -97,6 +97,14 @@
 			//#endif
 		},
 		methods: {
+			inputChange(e){
+				var that = this
+				e.target.value = (e.target.value.match(/^\d*(.?\d{0,2})/g)[0]) || ""
+				this.$nextTick(() => {
+					this.money = e.target.value
+					this.checkPrice()
+				})
+			},
 			getPayType() {
 				orderOfflinePayType()
 					.then(res => {

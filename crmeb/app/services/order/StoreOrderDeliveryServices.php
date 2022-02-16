@@ -13,12 +13,10 @@ namespace app\services\order;
 
 use app\services\BaseServices;
 use app\dao\order\StoreOrderDao;
-use app\services\user\UserServices;
 use app\services\serve\ServeServices;
 use think\exception\ValidateException;
 use crmeb\services\FormBuilder as Form;
 use app\services\shipping\ExpressServices;
-use app\services\message\sms\SmsSendServices;
 
 /**
  * 订单发货
@@ -60,6 +58,11 @@ class StoreOrderDeliveryServices extends BaseServices
         }
         if (isset($orderInfo['pinkStatus']) && $orderInfo['pinkStatus'] != 2) {
             throw new ValidateException('拼团未完成暂不能发货!');
+        }
+        /** @var StoreOrderRefundServices $storeOrderRefundServices */
+        $storeOrderRefundServices = app()->make(StoreOrderRefundServices::class);
+        if ($storeOrderRefundServices->count(['store_order_id' => $id, 'refund_type' => [1, 2, 4, 5], 'is_cancel' => 0, 'is_del' => 0])) {
+            throw new ValidateException('订单有售后申请请先处理');
         }
         $this->doDelivery($id, $orderInfo, $data);
         return true;
@@ -285,6 +288,9 @@ class StoreOrderDeliveryServices extends BaseServices
                     throw new ValidateException('请输入快递单号');
                 }
                 break;
+            case 'fictitious':
+                throw new ValidateException('虚拟发货，无需修改发货信息');
+                break;
             default:
                 throw new ValidateException('未发货，请先发货再修改配送信息');
                 break;
@@ -350,47 +356,40 @@ class StoreOrderDeliveryServices extends BaseServices
         if ($orderInfo->is_del) {
             throw new ValidateException('订单已删除,不能发货!');
         }
-        if ($orderInfo->pid > 0) {
-            throw new ValidateException('该订单是拆分发货订单，不支持再次拆分!');
-        }
         if ($orderInfo->shipping_type == 2) {
             throw new ValidateException('核销订单不能发货!');
         }
         if (isset($orderInfo['pinkStatus']) && $orderInfo['pinkStatus'] != 2) {
             throw new ValidateException('拼团未完成暂不能发货!');
         }
+        /** @var StoreOrderRefundServices $storeOrderRefundServices */
+        $storeOrderRefundServices = app()->make(StoreOrderRefundServices::class);
+        if ($storeOrderRefundServices->count(['store_order_id' => $id, 'refund_type' => [1, 2, 4, 5], 'is_cancel' => 0, 'is_del' => 0])) {
+            throw new ValidateException('订单有售后申请请先处理');
+        }
         $cart_ids = $data['cart_ids'];
         /** @var StoreOrderCartInfoServices $storeOrderCartInfoServices */
         $storeOrderCartInfoServices = app()->make(StoreOrderCartInfoServices::class);
-        //检测选择商品是否还可拆分
-        $storeOrderCartInfoServices->checkCartIdsIsSplit($id, $cart_ids);
         unset($data['cart_ids']);
         $this->transaction(function () use ($id, $cart_ids, $orderInfo, $data, $storeOrderCartInfoServices) {
             /** @var StoreOrderSplitServices $storeOrderSplitServices */
             $storeOrderSplitServices = app()->make(StoreOrderSplitServices::class);
-            //拆单
-            $orderInfo = $storeOrderSplitServices->split($id, $cart_ids, $orderInfo);
-            $orderInfo['refund_status'] = 0;
-            //拆分订单执行发货
-            $this->doDelivery((int)$orderInfo->id, $orderInfo, $data);
-            //默认部分发货
-            $delivery_data = ['pid' => -1, 'delivery_type' => 'split', 'status' => 4];
-            $status_data = ['oid' => $id, 'change_time' => time()];
-            //检测原订单商品是否 全部拆分发货完成  改原订单状态
-            if (!$storeOrderCartInfoServices->getSplitCartList($id, 'cart_id')) {//发货完成
-                $delivery_data['status'] = 1;
+            //订单拆单
+            [$splitOrderInfo, $otherOrder] = $storeOrderSplitServices->equalSplit($id, $cart_ids, $orderInfo);
+            if ($splitOrderInfo) {
+                $splitOrderInfo['refund_status'] = 0;
+                //拆分订单执行发货
+                $this->doDelivery((int)$splitOrderInfo->id, $splitOrderInfo, $data);
+                /** @var StoreOrderStatusServices $services */
+                $services = app()->make(StoreOrderStatusServices::class);
+                //记录原订单状态
+                $status_data = ['oid' => $id, 'change_time' => time()];
                 $status_data['change_type'] = 'delivery_split';
                 $status_data['change_message'] = '已拆分发货';
+                $services->save($status_data);
             } else {
-                $status_data['change_type'] = 'delivery_part_split';
-                $status_data['change_message'] = '已拆分部分发货';
+                $this->doDelivery($id, $orderInfo, $data);
             }
-            //改变原订单状态
-            $this->dao->update($id, $delivery_data);
-            /** @var StoreOrderStatusServices $services */
-            $services = app()->make(StoreOrderStatusServices::class);
-            //记录原订单状态
-            $services->save($status_data);
         });
         return true;
     }
@@ -426,17 +425,6 @@ class StoreOrderDeliveryServices extends BaseServices
                 break;
             default:
                 throw new ValidateException('暂时不支持其他发货类型');
-        }
-
-        if ($orderInfo['pid'] > 0) {
-            /** @var StoreOrderCartInfoServices $cartInfoService */
-            $cartInfoService = app()->make(StoreOrderCartInfoServices::class);
-            $res = $cartInfoService->getSplitCartList($orderInfo['pid']);
-            if ($res) {
-                $this->dao->update($orderInfo['pid'], ['status' => 3]);
-            } else {
-                $this->dao->update($orderInfo['pid'], ['status' => 4]);
-            }
         }
         event('order.delivery', [$orderInfo, $storeName, $data, $type]);
         return true;
@@ -544,6 +532,6 @@ class StoreOrderDeliveryServices extends BaseServices
                 $weight = bcadd((string)$weight, (string)bcmul((string)$cart['cart_num'] ?? '0', (string)$cart['productInfo']['attrInfo']['weight'] ?? '0', 4), 2);
             }
         }
-        return $weight ? $weight : ($default === false ? 0 : $default);
+        return $weight ?: ($default === false ? 0 : $default);
     }
 }

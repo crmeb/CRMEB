@@ -239,43 +239,35 @@ export default {
 				ctx.setTextAlign('left')
 				ctx.setFontSize(36);
 				ctx.setFillStyle('#999');
-				ctx.fillText('￥' + ot_price, 50, 876 + contentHh);
-
-				var underline = function(ctx, text, x, y, size, color, thickness, offset) {
-					var width = ctx.measureText(text).width;
-
-					switch (ctx.textAlign) {
-						case "center":
-							x -= (width / 2);
-							break;
-						case "right":
-							x -= width;
-							break;
+					
+				if(ot_price){
+					ctx.fillText('￥' + ot_price, 50, 876 + contentHh);
+					var underline = function(ctx, text, x, y, size, color, thickness, offset) {
+						var width = ctx.measureText(text).width;
+						switch (ctx.textAlign) {
+							case "center":
+								x -= (width / 2);
+								break;
+							case "right":
+								x -= width;
+								break;
+						}
+					
+						y += size + offset;
+					
+						ctx.beginPath();
+						ctx.strokeStyle = color;
+						ctx.lineWidth = thickness;
+						ctx.moveTo(x, y);
+						ctx.lineTo(x + width, y);
+						ctx.stroke();
 					}
-
-					y += size + offset;
-
-					ctx.beginPath();
-					ctx.strokeStyle = color;
-					ctx.lineWidth = thickness;
-					ctx.moveTo(x, y);
-					ctx.lineTo(x + width, y);
-					ctx.stroke();
-				}
-				underline(ctx, '￥' + ot_price, 55, 865, 36, '#999', 2, 0)
-
-
-
-
-
+					underline(ctx, '￥' + ot_price, 55, 865, 36, '#999', 2, 0)
+				} 
 				ctx.setTextAlign('left')
 				ctx.setFontSize(28);
 				ctx.setFillStyle('#999');
 				ctx.fillText('长按或扫描查看', 490, 1030 + contentHh);
-
-
-
-
 				ctx.draw(true, function() {
 					uni.canvasToTempFilePath({
 						canvasId: 'myCanvas',

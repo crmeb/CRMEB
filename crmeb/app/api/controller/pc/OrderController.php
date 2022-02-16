@@ -13,6 +13,7 @@ namespace app\api\controller\pc;
 
 
 use app\Request;
+use app\services\order\StoreOrderRefundServices;
 use app\services\pc\OrderServices;
 
 class OrderController
@@ -60,5 +61,21 @@ class OrderController
         $where['is_system_del'] = 0;
         if (!in_array($where['status'], [-1, -2, -3])) $where['pid'] = 0;
         return app('json')->successful($this->services->getOrderList($where));
+    }
+
+    /**
+     * 退款单列表
+     * @param Request $request
+     * @param StoreOrderRefundServices $refundServices
+     * @return mixed
+     */
+    public function getRefundOrderList(Request $request,StoreOrderRefundServices $refundServices)
+    {
+        $where['uid'] = $request->uid();
+        $where['is_cancel'] = 0;
+        $where['is_del'] = 0;
+        $where['is_system_del'] = 0;
+        $data = $refundServices->refundList($where);
+        return app('json')->successful($data);
     }
 }

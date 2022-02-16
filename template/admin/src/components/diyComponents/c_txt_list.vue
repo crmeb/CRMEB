@@ -146,12 +146,10 @@ export default {
       this.$refs.linkaddres.modals = true;
     },
     linkUrl(e) {
-      console.log(this.datas[this.name].list[this.activeIndex]);
       this.datas[this.name].list[this.activeIndex].chiild[this.keyIndex].val =
         e;
     },
     addHotTxt() {
-      console.log("1111");
       let val = {
         children: [
           {
@@ -168,7 +166,6 @@ export default {
           },
         ],
       };
-      console.log(this.name);
       if (this.name == "newList") {
         let obj = JSON.parse(
           JSON.stringify(

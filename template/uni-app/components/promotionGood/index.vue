@@ -6,8 +6,7 @@
 					<image :src='item.image'></image>
 				</view>
 				<view class='money'>
-					<text class="rmb">¥</text>
-					<text class="price">{{item.price}}</text>
+					<text class="rmb">¥ </text><text class="price"> {{item.price}}</text>
 					<!-- <text class="ot-price">{{item.ot_price}}</text> -->
 				</view>
 			</view>
@@ -83,18 +82,22 @@
 				font-size: 30rpx;
 				color: var(--view-priceColor);
 				margin-top: 10rpx;
-				overflow:hidden; //超出的文本隐藏
-				text-overflow:ellipsis; //溢出用省略号显示
-				white-space:nowrap; //溢出不换行
+				overflow: hidden; //超出的文本隐藏
+				text-overflow: ellipsis; //溢出用省略号显示
+				white-space: nowrap; //溢出不换行
 				margin: 0 auto;
+
 				.rmb {
 					font-weight: bold;
 					color: var(--view-priceColor);
 					font-size: 20rpx;
+					margin-right: 2rpx;
 				}
-				.price{
+
+				.price {
 					font-weight: bold;
 				}
+
 				.ot-price {
 					color: #999;
 					text-decoration: line-through;

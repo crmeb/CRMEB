@@ -1,10 +1,11 @@
 <template>
     <div>
-        <div class="i-layout-page-header">
-            <div class="i-layout-page-header">
-              <router-link :to="{path:'/admin/app/wechat/reply/keyword'}"><Button icon="ios-arrow-back" size="small"  class="mr20" v-show="$route.params.id">返回</Button></router-link>
-              <span class="ivu-page-header-title mr20" v-text="($route.params.key || $route.params.id !== '0')?'关键字编辑':'关键字添加'" v-if="$route.params.id"></span>
-              <span class="ivu-page-header-title mr20" v-text="$route.meta.title" v-else></span>
+        <div class="i-layout-page-header header_top">
+            <div class="i-layout-page-header fl_header">
+              <router-link :to="{path:'/admin/app/wechat/reply/keyword'}"><Button icon="ios-arrow-back" size="small" type="text" v-show="$route.params.id">返回</Button></router-link>
+              <Divider type="vertical" />
+              <span class="ivu-page-header-title mr20" style="padding: 0" v-text="($route.params.key || $route.params.id !== '0')?'关键字编辑':'关键字添加'" v-if="$route.params.id"></span>
+              <span class="ivu-page-header-title mr20" style="padding: 0" v-text="$route.meta.title" v-else></span>
             </div>
         </div>
         <Card :bordered="false" dis-hover class="ivu-mt">
@@ -436,12 +437,15 @@
     }
 
     .centent {
-        background: #F4F5F9;
+        background: #f4f5f9;
         min-height: 438px;
         position: absolute;
         top: 63px;
         width: 320px;
+        height: 60%;
+        overflow-y: auto;
         padding: 15px;
+        -webkit-box-sizing: border-box;
         box-sizing: border-box;
     }
 

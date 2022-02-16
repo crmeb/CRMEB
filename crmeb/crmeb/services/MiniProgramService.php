@@ -408,14 +408,14 @@ class MiniProgramService
         if (sys_config('pay_weixin_client_key') == '' || sys_config('pay_weixin_client_cert') == '') throw new AdminException('请配置支付证书');
         $totalFee = floatval(bcmul($opt['pay_price'], 100, 0));
         $refundFee = isset($opt['refund_price']) ? floatval(bcmul($opt['refund_price'], 100, 0)) : null;
-        $refundReason = isset($opt['desc']) ? $opt['desc'] : '';
-        $refundNo = isset($opt['refund_id']) ? $opt['refund_id'] : $orderNo;
-        $opUserId = isset($opt['op_user_id']) ? $opt['op_user_id'] : null;
-        $type = isset($opt['type']) ? $opt['type'] : 'out_trade_no';
+        $refundReason = $opt['desc'] ?? '';
+        $refundNo = $opt['refund_id'] ?? $orderNo;
+        $opUserId = $opt['op_user_id'] ?? null;
+        $type = $opt['type'] ?? 'out_trade_no';
         /*仅针对老资金流商户使用
         REFUND_SOURCE_UNSETTLED_FUNDS---未结算资金退款（默认使用未结算资金退款）
         REFUND_SOURCE_RECHARGE_FUNDS---可用余额退款*/
-        $refundAccount = isset($opt['refund_account']) ? $opt['refund_account'] : 'REFUND_SOURCE_UNSETTLED_FUNDS';
+        $refundAccount = $opt['refund_account'] ?? 'REFUND_SOURCE_UNSETTLED_FUNDS';
         try {
             $res = (self::refund($orderNo, $refundNo, $totalFee, $refundFee, $opUserId, $refundReason, $type, $refundAccount));
             if ($res->return_code == 'FAIL') throw new AdminException('退款失败:' . $res->return_msg);
@@ -726,6 +726,6 @@ class MiniProgramService
                 $message = self::MSG_CODE[$errcode] ?? $message;
             }
         }
-        return $message ? $message : self::MSG_CODE[$e->getCode()] ?? $e->getMessage();
+        return $message ?: self::MSG_CODE[$e->getCode()] ?? $e->getMessage();
     }
 }

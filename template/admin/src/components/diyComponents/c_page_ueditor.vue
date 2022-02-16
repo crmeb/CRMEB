@@ -7,7 +7,7 @@
       style="width: 100%; height: 60%"
     ></vue-ueditor-wrap>
   </div>
-</template>
+</template> 
 
 <script>
 import VueUeditorWrap from "vue-ueditor-wrap";

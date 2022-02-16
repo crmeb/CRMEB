@@ -121,7 +121,8 @@ class SystemAdminServices extends BaseServices
             'slide' => sys_data('admin_login_slide') ?? [],
             'logo_square' => sys_config('site_logo_square'),//透明
             'logo_rectangle' => sys_config('site_logo'),//方形
-            'login_logo' => sys_config('login_logo')//登陆
+            'login_logo' => sys_config('login_logo'),//登陆
+            'site_name' => sys_config('site_name')
         ];
     }
 

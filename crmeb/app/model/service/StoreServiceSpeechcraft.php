@@ -19,7 +19,7 @@ use think\Model;
 
 /**
  * 客服话术
- * @mixin \think\Model
+ * @mixin Model
  */
 class StoreServiceSpeechcraft extends BaseModel
 {

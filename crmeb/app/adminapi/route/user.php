@@ -20,6 +20,8 @@ Route::group('user', function () {
     Route::post('user/save', 'v1.user.user/save_info')->option(['real_name' => '添加用户']);
     //同步微信用户
     Route::get('user/syncUsers', 'v1.user.user/syncWechatUsers')->option(['real_name' => '同步微信用户']);
+    //用户信息
+    Route::get('user/user_save_info/:uid', 'v1.user.user/userSaveInfo')->option(['real_name' => '添加编辑用户信息时候的信息']);
     //用户表单头
     Route::get('user/type_header', 'v1.user.user/type_header')->option(['real_name' => '用户列表头部数据']);
     //赠送会员等级
@@ -131,6 +133,8 @@ Route::group('user', function () {
     Route::post('member_agreement/save/:id', 'v1.user.member.MemberCardBatch/save_member_agreement')->option(['real_name' => '会员协议']);
     //获取会员协议
     Route::get('member/agreement', 'v1.user.member.MemberCardBatch/getAgreement')->option(['real_name' => '获取会员协议']);
+    //用户标签（分类）树形列表
+    Route::get('user_tree_label', 'v1.user.UserLabel/tree_list')->option(['real_name' => '用户标签（分类）树形列表']);
 })->middleware([
     \app\http\middleware\AllowOriginMiddleware::class,
     \app\adminapi\middleware\AdminAuthTokenMiddleware::class,

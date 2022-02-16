@@ -94,17 +94,33 @@ class SystemRoleServices extends BaseServices
      */
     public function verifiAuth(Request $request)
     {
-        $auth = $this->getRolesByAuth($request->adminInfo()['roles'], 2);
+
         $rule = trim(strtolower($request->rule()->getRule()));
         $method = trim(strtolower($request->method()));
         if (in_array($rule, ['setting/admin/logout', 'menuslist'])) {
             return true;
         }
+
+        //权限菜单未添加时返回true
+        $allAuth = Cache::remember('all_auth', function () {
+            /** @var SystemMenusServices $menusService */
+            $menusService = app()->make(SystemMenusServices::class);
+            return $menusService->getColumn([['api_url', '<>', ''], ['auth_type', '=', 2]], 'api_url,methods');
+        });
+        if (!in_array($rule, array_map(function ($item) {
+            return trim(strtolower(str_replace(' ', '', $item)));
+        }, array_column($allAuth, 'api_url')))) {
+            return true;
+        }
+
+        //菜单按钮能看到的情况下所有接口都能访问
+        $auth = $this->getRolesByAuth($request->adminInfo()['roles'], 2);
         //验证访问接口是否存在
         if (!in_array($rule, array_map(function ($item) {
             return trim(strtolower(str_replace(' ', '', $item)));
         }, array_column($auth, 'api_url')))) {
-            throw new AuthException(ApiErrorCode::ERR_RULE);
+//            throw new AuthException(ApiErrorCode::ERR_RULE);
+            return true;
         }
         //验证访问接口是否有权限
         if (empty(array_filter($auth, function ($item) use ($rule, $method) {

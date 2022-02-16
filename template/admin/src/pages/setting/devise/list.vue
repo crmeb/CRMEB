@@ -80,18 +80,60 @@
                 <template slot-scope="{ row, index }" slot="region">
                   <div class="font-blue">首页</div>
                 </template>
+                <template slot-scope="{ row, index }" slot="type_name">
+                  <Tag color="primary" v-if="row.is_diy">{{ row.type_name }}</Tag>
+                  <Tag color="success" v-else>{{ row.type_name }}</Tag>
+                </template>
                 <template slot-scope="{ row, index }" slot="action">
+                  <div
+                    style="display: inline-block"
+                    v-if="row.status || row.is_diy"
+                    @click="edit(row)"
+                  >
+                    <a
+                      v-if="row.is_diy === 1"
+                      class="target"
+                      ref="target"
+                      :href="`${url}/admin/setting/pages/diy_index?id=${
+                        row.id
+                      }&name=${row.template_name || 'moren'}`"
+                      target="_blank"
+                    >
+                      编辑</a
+                    >
+                    <a v-else class="target">编辑</a>
+                  </div>
+                  <Divider
+                    type="vertical"
+                    v-if="
+                      (row.status || row.is_diy) &&
+                      row.id != 1 &&
+                      row.status != 1
+                    "
+                  />
+
+                  <div
+                    style="display: inline-block"
+                    v-if="row.id != 1 && row.status != 1"
+                  >
+                    <a @click="del(row, '删除此模板', index)">删除</a>
+                  </div>
+                  <Divider
+                    type="vertical"
+                    v-if="(row.id != 1 && row.status != 1) || row.is_diy"
+                  />
+                  <div style="display: inline-block" v-if="row.is_diy">
+                    <a @click="preview(row, index)">预览</a>
+                  </div>
+                  <Divider
+                    type="vertical"
+                    v-if="row.is_diy && row.status != 1"
+                  />
                   <div style="display: inline-block" v-if="row.status != 1">
                     <a @click="setStatus(row, index)">设为首页</a>
                   </div>
-                  <Divider type="vertical" v-if="row.status != 1" />
-                  <div
-                    style="display: inline-block"
-                    v-if="row.status || row.type"
-                  >
-                    <a @click="edit(row)">编辑</a>
-                  </div>
-                  <Divider type="vertical" v-if="row.status || row.type" />
+
+                  <!-- <Divider type="vertical" v-if="row.status != 1" />
                   <template>
                     <Dropdown @on-click="changeMenu(row, index, $event)">
                       <a href="javascript:void(0)"
@@ -110,7 +152,7 @@
                         >
                       </DropdownMenu>
                     </Dropdown>
-                  </template>
+                  </template> -->
                 </template>
               </Table>
               <div class="acea-row row-right page">
@@ -214,6 +256,7 @@ import {
   recovery,
   getRoutineCode,
   getDiyCreate,
+  setDefault,
 } from "@/api/diy";
 import { mapState } from "vuex";
 import QRCode from "qrcodejs2";
@@ -264,6 +307,11 @@ export default {
           minWidth: 100,
         },
         {
+          title: "模板类型",
+          slot: "type_name",
+          minWidth: 100,
+        },
+        {
           title: "添加时间",
           key: "add_time",
           minWidth: 100,
@@ -276,7 +324,7 @@ export default {
         {
           title: "操作",
           slot: "action",
-          fixed: "right",
+          // fixed: "right",
           minWidth: 180,
         },
       ],
@@ -304,6 +352,7 @@ export default {
           { required: true, message: "请输入移动端链接", trigger: "blur" },
         ],
       },
+      url: window.location.origin,
     };
   },
   created() {
@@ -398,7 +447,7 @@ export default {
     },
     //设置默认数据
     setDefault(row) {
-      getRecovery(row.id)
+      setDefault(row.id)
         .then((res) => {
           this.$Message.success(res.msg);
           this.getList();
@@ -441,18 +490,27 @@ export default {
     // 编辑
     edit(row) {
       this.formItem.id = row.id;
-      if (row.type) {
-        this.isTemplate = true;
-      } else {
-        this.$router.push({
-          path: "/admin/setting/pages/diy",
-          query: { id: row.id, type: 0 },
-        });
+      if (!row.is_diy) {
+        if (!row.status) {
+          this.$Message.error("请先设为首页在进行编辑");
+        } else {
+          this.$router.push({
+            path: "/admin/setting/pages/diy",
+            query: { id: row.id, type: 0 },
+          });
+        }
       }
     },
     // 添加
+    // add() {
+    //   this.$modalForm(getDiyCreate()).then(() => this.getList());
+    // },
+    // 添加
     add() {
-      this.$modalForm(getDiyCreate()).then(() => this.getList());
+      this.$router.push({
+        path: "/admin/setting/pages/diy_index",
+        query: { id: 0, name: "首页", type: 1 },
+      });
     },
     // 删除
     del(row) {
@@ -483,23 +541,26 @@ export default {
             type: 1,
           })
             .then((res) => {
-              if (res.data.status) {
-                this.$Message.success(res.data.msg);
-                this.$Modal.remove();
-                this.getList();
-              } else {
-                setTimeout((e) => {
-                  this.$Modal.confirm({
-                    title: "提示",
-                    content: "<p>尚未安装模板，请购买安装后再试！</p>",
-                    loading: false,
-                    okText: "点击购买",
-                    onOk: () => {
-                      window.open("http://s.crmeb.com/goods_cate", `_blank`);
-                    },
-                  });
-                }, 200);
-              }
+              this.$Message.success(res.msg);
+              this.$Modal.remove();
+              this.getList();
+              // if (res.data.status) {
+              //   this.$Message.success(res.data.msg);
+              //   this.$Modal.remove();
+              //   this.getList();
+              // } else {
+              //   setTimeout((e) => {
+              //     this.$Modal.confirm({
+              //       title: "提示",
+              //       content: "<p>尚未安装模板，请购买安装后再试！</p>",
+              //       loading: false,
+              //       okText: "点击购买",
+              //       onOk: () => {
+              //         window.open("http://s.crmeb.com/goods_cate", `_blank`);
+              //       },
+              //     });
+              //   }, 200);
+              // }
             })
             .catch((res) => {
               this.$Modal.remove();

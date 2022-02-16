@@ -36,7 +36,8 @@ class Common extends AuthController
     {
         return app('json')->success([
             'logo' => sys_config('site_logo'),
-            'logo_square' => sys_config('site_logo_square')
+            'logo_square' => sys_config('site_logo_square'),
+            'site_name' => sys_config('site_name')
         ]);
     }
 
@@ -126,10 +127,8 @@ class Common extends AuthController
                     return app('json')->fail('授权成功，写入数据库失败，请检查数据库链接配置');
                 }
                 return app('json')->success(['status' => 1, 'authCode' => $authCode, 'day' => 0]);
-                break;
             default:
                 return app('json')->success(['status' => -9]);
-                break;
         }
     }
 

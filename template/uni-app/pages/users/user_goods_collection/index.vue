@@ -1,28 +1,48 @@
 <template>
-	<view>
+	<view :style="colorStyle">
 		<view class='collectionGoods' v-if="collectProductList.length">
-			<navigator :url='"/pages/goods_details/index?id="+item.pid' hover-class='none' class='item acea-row row-between-wrapper'
-			 v-for="(item,index) in collectProductList" :key="index">
-				<view class='pictrue'>
-					<image :src="item.image"></image>
-				</view>
-				<view class='text acea-row row-column-between'>
-					<view class='name line1'>{{item.store_name}}</view>
-					<view class='acea-row row-between-wrapper'>
-						<view class='money font-color'>￥{{item.price}}</view>
-						<view class='delete' @click.stop='delCollection(item.pid,index)'>删除</view>
+			<view class="title-admin">
+				<view>当前共 <text class="text">{{count}}</text> 件商品</view>
+				<view class="admin" @click="showRadio">{{checkbox_show?'取消':'管理'}}</view>
+			</view>
+			<checkbox-group @change="checkboxChange">
+				<view class='item acea-row' v-for="(item,index) in collectProductList" :key="index">
+					<view class="left">
+						<checkbox v-show="checkbox_show" :value="item.pid.toString()" :checked="item.checked" />
+						<view class='pictrue'>
+							<image :src="item.image"></image>
+						</view>
+					</view>
+					<view class='text acea-row row-column-between' @click="jump(item)">
+						<view class='name line2'>{{item.store_name}}</view>
+						<view class='acea-row row-between-wrapper'>
+							<view class='money font-color'>￥{{item.price}}</view>
+							<!-- <view class='delete' @click.stop='delCollection(item.pid,index)'>删除</view> -->
+						</view>
 					</view>
 				</view>
-			</navigator>
-			<view class='loadingicon acea-row row-center-wrapper'>
-				<text class='loading iconfont icon-jiazai' :hidden='loading==false'></text>{{loadTitle}}
-			</view>
+				<view class='loadingicon acea-row row-center-wrapper'>
+					<text class='loading iconfont icon-jiazai' :hidden='loading==false'></text>{{loadTitle}}
+				</view>
+			</checkbox-group>
 		</view>
+
 		<view class='noCommodity' v-else-if="!collectProductList.length && page > 1">
 			<view class='pictrue'>
 				<image src='../../../static/images/noCollection.png'></image>
 			</view>
 			<recommend :hostProduct="hostProduct"></recommend>
+		</view>
+		<view class='footer acea-row row-between-wrapper' v-if="checkbox_show">
+			<view>
+				<checkbox-group @change="checkboxAllChange">
+					<checkbox value="all" :checked="!!isAllSelect" />
+					<text class='checkAll'>全选({{ids.length}})</text>
+				</checkbox-group>
+			</view>
+			<view class='button acea-row row-middle'>
+				<button class='bnt' formType="submit" @click="subDel">取关</button>
+			</view>
 		</view>
 		<!-- #ifdef MP -->
 		<!-- <authorize @onLoadFun="onLoadFun" :isAuto="isAuto" :isShowAuth="isShowAuth" @authColse="authColse"></authorize> -->
@@ -50,6 +70,7 @@
 	import authorize from '@/components/Authorize';
 	// #endif
 	import home from '@/components/home';
+	import colors from '@/mixins/color.js';
 	export default {
 		components: {
 			recommend,
@@ -58,20 +79,25 @@
 			// #endif
 			home
 		},
+		mixins: [colors],
 		data() {
 			return {
+				ids: [],
 				hostProduct: [],
+				checkbox_show: false,
 				loadTitle: '加载更多',
 				loading: false,
 				loadend: false,
 				collectProductList: [],
+				count: 0,
 				limit: 8,
 				page: 1,
 				isAuto: false, //没有授权的不会自动授权
-				isShowAuth: false ,//是否隐藏授权
-				hotScroll:false,
-				hotPage:1,
-				hotLimit:10
+				isShowAuth: false, //是否隐藏授权
+				hotScroll: false,
+				hotPage: 1,
+				hotLimit: 10,
+				isAllSelect: false, //全选
 			};
 		},
 		computed: mapGetters(['isLogin']),
@@ -80,43 +106,110 @@
 				this.loadend = false;
 				this.page = 1;
 				this.collectProductList = [];
-				this.get_user_collect_product();
-				this.get_host_product();
+				this.getUserCollectProduct();
 			} else {
 				toLogin();
 			}
 		},
-		onShow(){
+		onShow() {
 			this.loadend = false;
 			this.page = 1;
-			this.$set(this,'collectProductList',[]);
-			this.get_user_collect_product();
+			this.$set(this, 'collectProductList', []);
+			this.getUserCollectProduct();
 		},
 		/**
 		 * 页面上拉触底事件的处理函数
 		 */
 		onReachBottom: function() {
-			this.get_user_collect_product();
+			this.getUserCollectProduct();
 		},
 		methods: {
+			showRadio() {
+				this.checkbox_show = !this.checkbox_show
+			},
+			checkboxChange(e) {
+				console.log(this.ids.length)
+				console.log(e.detail.value)
+				if (e.detail.value.length < this.ids.length) {
+					this.$set(this, 'isAllSelect', false);
+				} else if (e.detail.value.length === this.collectProductList.length) {
+					this.$set(this, 'isAllSelect', true);
+				}
+				console.log(this.isAllSelect)
+				this.$set(this, 'ids', e.detail.value);
+			},
+			subDel() {
+				let that = this
+				if (this.ids.length) {
+					collectDel(that.ids).then(res => {
+						that.loadend = false;
+						that.$util.Tips({
+							title: res.msg
+						});
+						that.page = 1;
+						that.collectProductList = [];
+						this.getUserCollectProduct();
+					});
+				} else {
+					return that.$util.Tips({
+						title: '请选择商品'
+					});
+				}
+
+			},
+			checkboxAllChange(event) {
+				console.log(event.detail.value)
+				let value = event.detail.value;
+				if (value.length > 0) {
+					this.setAllSelectValue(1)
+				} else {
+					this.setAllSelectValue(0)
+				}
+			},
+			setAllSelectValue(status) {
+				let that = this;
+				let selectValue = [];
+				let valid = that.collectProductList;
+				if (valid.length > 0) {
+					let newValid = valid.map(item => {
+						if (status) {
+							item.checked = true;
+							selectValue.push(item.pid);
+							that.isAllSelect = true;
+						} else {
+							item.checked = false;
+							that.isAllSelect = false;
+						}
+						return item;
+					});
+					that.$set(that, 'collectProductList', newValid);
+					console.log(selectValue)
+					that.$set(that, 'ids', selectValue);
+				}
+			},
+			jump(item) {
+				uni.navigateTo({
+					url: "/pages/goods_details/index?id=" + item.pid
+				})
+			},
 			/**
 			 * 授权回调
 			 */
 			onLoadFun: function() {
 				this.loadend = false;
 				this.page = 1;
-				this.$set(this,'collectProductList',[]);
-				this.get_user_collect_product();
-				this.get_host_product();
+				this.$set(this, 'collectProductList', []);
+				this.getUserCollectProduct();
+				// this.get_host_product();
 			},
 			// 授权关闭
-			authColse: function(e) {
+			authColse(e) {
 				this.isShowAuth = e
 			},
 			/**
 			 * 获取收藏产品
 			 */
-			get_user_collect_product: function() {
+			getUserCollectProduct() {
 				let that = this;
 				if (this.loading) return;
 				if (this.loadend) return;
@@ -126,12 +219,19 @@
 					page: that.page,
 					limit: that.limit
 				}).then(res => {
-					let collectProductList = res.data;
+					this.count = res.data.count;
+					let collectProductList = res.data.list;
+					collectProductList.map(e => {
+						e.checked = false
+					})
+
 					let loadend = collectProductList.length < that.limit;
-					that.collectProductList = that.$util.SplitArray(collectProductList, that.collectProductList);
+					that.collectProductList = that.$util.SplitArray(collectProductList, that
+						.collectProductList);
 					that.$set(that, 'collectProductList', that.collectProductList);
 					that.loadend = loadend;
 					that.loadTitle = loadend ? '我也是有底线的' : '加载更多';
+					if (!that.collectProductList.length && that.page == 1) this.get_host_product();
 					that.page = that.page + 1;
 					that.loading = false;
 				}).catch(err => {
@@ -140,38 +240,23 @@
 				});
 			},
 			/**
-			 * 取消收藏
-			 */
-			delCollection: function(id, index) {
-				let that = this;
-				collectDel(id).then(res => {
-					return that.$util.Tips({
-						title: '取消收藏成功',
-						icon: 'success'
-					}, function() {
-						that.collectProductList.splice(index, 1);
-						that.$set(that, 'collectProductList', that.collectProductList);
-					});
-				});
-			},
-			/**
 			 * 获取我的推荐
 			 */
-			get_host_product: function() {
+			get_host_product() {
 				let that = this;
-				if(that.hotScroll) return
+				if (that.hotScroll) return
 				getProductHot(
 					that.hotPage,
 					that.hotLimit,
 				).then(res => {
 					that.hotPage++
-					that.hotScroll = res.data.length<that.hotLimit
+					that.hotScroll = res.data.length < that.hotLimit
 					that.hostProduct = that.hostProduct.concat(res.data)
 				});
 			}
 		},
 		onReachBottom() {
-			this.get_host_product();
+			this.getUserCollectProduct();
 		}
 	}
 </script>
@@ -184,14 +269,24 @@
 
 	.collectionGoods .item {
 		margin-left: 30rpx;
-		padding-right: 30rpx;
 		border-bottom: 1rpx solid #eee;
 		height: 180rpx;
+		display: flex;
+		align-items: center;
+		flex-wrap: nowrap;
+	}
+
+	.left {
+		display: flex;
+		align-items: center;
+		margin-right: 20rpx;
 	}
 
 	.collectionGoods .item .pictrue {
 		width: 130rpx;
 		height: 130rpx;
+		margin-left: 20rpx;
+
 	}
 
 	.collectionGoods .item .pictrue image {
@@ -201,14 +296,13 @@
 	}
 
 	.collectionGoods .item .text {
-		width: 535rpx;
 		height: 130rpx;
 		font-size: 28rpx;
 		color: #282828;
 	}
 
 	.collectionGoods .item .text .name {
-		width: 100%;
+		width: max-contnet;
 	}
 
 	.collectionGoods .item .text .money {
@@ -230,5 +324,81 @@
 		background-color: #fff;
 		padding-top: 1rpx;
 		border-top: 0;
+	}
+
+	.title-admin {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		padding: 20rpx;
+		border-bottom: 1px solid #f2f2f2;
+
+		.text {
+			color: var(--view-theme);
+		}
+
+		.admin {
+			color: var(--view-theme);
+		}
+	}
+
+	.footer {
+		z-index: 999;
+		width: 100%;
+		height: 96rpx;
+		background-color: #fafafa;
+		position: fixed;
+		padding: 0 30rpx;
+		box-sizing: border-box;
+		border-top: 1rpx solid #eee;
+		bottom: 0;
+	}
+
+	.footer.on {
+		// #ifndef H5
+		bottom: 0rpx;
+		// #endif
+		// #ifdef MP || APP-PLUS
+		bottom: 100rpx;
+		bottom: calc(100rpx + constant(safe-area-inset-bottom)); ///兼容 IOS<11.2/
+		bottom: calc(100rpx + env(safe-area-inset-bottom)); ///兼容 IOS>11.2/
+		// #endif
+	}
+
+	.footer .checkAll {
+		font-size: 28rpx;
+		color: #282828;
+		margin-left: 16rpx;
+	}
+
+	// .shoppingCart .footer checkbox .wx-checkbox-input{background-color:#fafafa;}
+	.footer .money {
+		font-size: 30rpx;
+	}
+
+	.footer .placeOrder {
+		color: #fff;
+		font-size: 30rpx;
+		width: 226rpx;
+		height: 70rpx;
+		border-radius: 50rpx;
+		text-align: center;
+		line-height: 70rpx;
+		margin-left: 22rpx;
+	}
+
+	.footer .button .bnt {
+		font-size: 28rpx;
+		color: #999;
+		border-radius: 50rpx;
+		border: 1px solid #999;
+		width: 160rpx;
+		height: 60rpx;
+		text-align: center;
+		line-height: 60rpx;
+	}
+
+	.footer .button form~form {
+		margin-left: 17rpx;
 	}
 </style>

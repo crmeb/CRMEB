@@ -229,4 +229,22 @@ class UserBill extends BaseModel
         if (is_array($value) && count($value) == 2) $query->whereTime('add_time', 'between', $value);
     }
 
+    /**
+     * @param $query
+     * @param $value
+     */
+    public function searchTradingTypeAttr($query, $value)
+    {
+        if ($value !== '') $query->where('type', $value);
+    }
+
+    /**
+     * @param $query
+     * @param $value
+     */
+    public function searchIsFrozenAttr($query, $value)
+    {
+        if ($value) $query->where('frozen_time', '>', time());
+    }
+
 }

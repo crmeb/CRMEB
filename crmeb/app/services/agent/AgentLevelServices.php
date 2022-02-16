@@ -17,7 +17,6 @@ use app\services\user\UserServices;
 use crmeb\exceptions\AdminException;
 use crmeb\services\FormBuilder as Form;
 use think\exception\ValidateException;
-use think\facade\Log;
 use think\facade\Route as Url;
 
 
@@ -257,8 +256,8 @@ class AgentLevelServices extends BaseServices
         $field[] = Form::input('name', '等级名称')->col(24);
         $field[] = Form::number('grade', '等级', 0)->min(0)->precision(0);
         $field[] = Form::frameImage('image', '背景图', Url::buildUrl('admin/widget.images/index', array('fodder' => 'image')))->icon('ios-add')->width('950px')->height('505px')->modal(['footer-hide' => true]);
-        $field[] = Form::number('one_brokerage', '一级上浮', 0)->info('在分销一级佣金基础上浮（0-1000之间整数）百分比')->min(0)->max(1000);
-        $field[] = Form::number('two_brokerage', '二级上浮', 0)->info('在分销二级佣金基础上浮（0-1000之间整数）百分比')->min(0)->max(1000);
+        $field[] = Form::number('one_brokerage', '一级上浮', 0)->info('在分销一级佣金基础上浮（0-1000之间整数）百分比')->min(0)->max(1000)->precision(0);
+        $field[] = Form::number('two_brokerage', '二级上浮', 0)->info('在分销二级佣金基础上浮（0-1000之间整数）百分比')->min(0)->max(1000)->precision(0);
         $field[] = Form::radio('status', '是否显示', 1)->options([['value' => 1, 'label' => '显示'], ['value' => 0, 'label' => '隐藏']]);
         return create_form('添加分销员等级', $field, Url::buildUrl('/agent/level'), 'POST');
     }
@@ -279,8 +278,8 @@ class AgentLevelServices extends BaseServices
         $field[] = Form::input('name', '等级名称', $levelInfo['name'])->col(24);
         $field[] = Form::number('grade', '等级', $levelInfo['grade'])->min(0)->precision(0);
         $field[] = Form::frameImage('image', '背景图', Url::buildUrl('admin/widget.images/index', array('fodder' => 'image')), $levelInfo['image'])->icon('ios-add')->width('950px')->height('505px')->modal(['footer-hide' => true]);
-        $field[] = Form::number('one_brokerage', '一级上浮', $levelInfo['one_brokerage'])->info('在分销一级佣金基础上浮（0-1000之间整数）百分比')->min(0)->max(1000);
-        $field[] = Form::number('two_brokerage', '二级上浮', $levelInfo['two_brokerage'])->info('在分销二级佣金基础上浮（0-1000之间整数）百分比')->min(0)->max(1000);
+        $field[] = Form::number('one_brokerage', '一级上浮', $levelInfo['one_brokerage'])->info('在分销一级佣金基础上浮（0-1000之间整数）百分比')->min(0)->max(1000)->precision(0);
+        $field[] = Form::number('two_brokerage', '二级上浮', $levelInfo['two_brokerage'])->info('在分销二级佣金基础上浮（0-1000之间整数）百分比')->min(0)->max(1000)->precision(0);
         $field[] = Form::radio('status', '是否显示', $levelInfo['status'])->options([['value' => 1, 'label' => '显示'], ['value' => 0, 'label' => '隐藏']]);
 
         return create_form('编辑分销员等级', $field, Url::buildUrl('/agent/level/' . $id), 'PUT');

@@ -93,6 +93,7 @@
             :value="row.is_show"
             :true-value="1"
             :false-value="0"
+            :disabled="row.stop_status ? true : false"
             @on-change="onchangeIsShow(row)"
             size="large"
           >
@@ -245,7 +246,7 @@ export default {
         },
 
         {
-          title: "状态",
+          title: "上架状态",
           slot: "is_show",
           minWidth: 120,
         },
@@ -270,7 +271,7 @@ export default {
       return this.isMobile ? "top" : "left";
     },
   },
-  created() {
+  activated() {
     this.getList();
   },
   methods: {

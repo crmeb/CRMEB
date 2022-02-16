@@ -106,7 +106,7 @@
               ></Input>
             </FormItem>
           </Col>
-          <Col v-bind="grid" v-if="authType">
+          <Col v-bind="grid">
             <FormItem label="权限标识：" prop="unique_auth">
               <Input
                 v-model="formValidate.unique_auth"

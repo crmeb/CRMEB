@@ -11,6 +11,8 @@
 
 namespace crmeb\services;
 
+use app\services\system\config\SystemStorageServices;
+use crmeb\exceptions\UploadException;
 use crmeb\services\upload\Upload;
 
 /**
@@ -44,30 +46,38 @@ class UploadService
                 $config = [
                     'accessKey' => sys_config('qiniu_accessKey'),
                     'secretKey' => sys_config('qiniu_secretKey'),
-                    'uploadUrl' => sys_config('qiniu_uploadUrl'),
-                    'storageName' => sys_config('qiniu_storage_name'),
-                    'storageRegion' => sys_config('qiniu_storage_region'),
                 ];
                 break;
             case 3:// oss 阿里云
                 $config = [
                     'accessKey' => sys_config('accessKey'),
                     'secretKey' => sys_config('secretKey'),
-                    'uploadUrl' => sys_config('uploadUrl'),
-                    'storageName' => sys_config('storage_name'),
-                    'storageRegion' => sys_config('storage_region'),
                 ];
                 break;
             case 4:// cos 腾讯云
                 $config = [
                     'accessKey' => sys_config('tengxun_accessKey'),
                     'secretKey' => sys_config('tengxun_secretKey'),
-                    'uploadUrl' => sys_config('tengxun_uploadUrl'),
-                    'storageName' => sys_config('tengxun_storage_name'),
-                    'storageRegion' => sys_config('tengxun_storage_region'),
+                    'appid' => sys_config('tengxun_appid'),
                 ];
                 break;
+            case 1:
+                break;
+            default:
+                throw new UploadException('您已关闭上传功能');
+                break;
         }
+
+        //除了本地存储其他都去获取配置信息
+        if (1 !== $type) {
+            /** @var SystemStorageServices $make */
+            $make = app()->make(SystemStorageServices::class);
+            $res = $make->getConfig($type);
+            $config['uploadUrl'] = $res['domain'];
+            $config['storageName'] = $res['name'];
+            $config['storageRegion'] = $res['region'];
+        }
+
         $thumb = SystemConfigService::more(['thumb_big_height', 'thumb_big_width', 'thumb_mid_height', 'thumb_mid_width', 'thumb_small_height', 'thumb_small_width',]);
         $water = SystemConfigService::more([
             'image_watermark_status',
@@ -100,20 +110,15 @@ class UploadService
             $filePath = explode($uploadUrl, $filePath)[1] ?? '';
             return self::init(1)->setFilepath($filePath);
         }
-        //七牛云
-        $uploadUrl = sys_config('qiniu_uploadUrl');
-        if ($uploadUrl && strpos($filePath, $uploadUrl) !== false) {
-            return self::init(2)->setFilepath($filePath);
-        }
-        //阿里云
-        $uploadUrl = sys_config('uploadUrl');
-        if ($uploadUrl && strpos($filePath, $uploadUrl) !== false) {
-            return self::init(3)->setFilepath($filePath);
-        }
-        //腾讯云
-        $uploadUrl = sys_config('tengxun_uploadUrl');
-        if ($uploadUrl && strpos($filePath, $uploadUrl) !== false) {
-            return self::init(4)->setFilepath($filePath);
+        $fileArr = parse_url($filePath);
+        $fileHost = $fileArr['scheme'] . '://' . $fileArr['host'];
+        /** @var SystemStorageServices $storageServices */
+        $storageServices = app()->make(SystemStorageServices::class);
+        $storageArr = $storageServices->selectList([])->toArray();
+        foreach ($storageArr as $item) {
+            if ($fileHost == $item['domain']) {
+                return self::init($item['type'])->setFilepath($filePath);
+            }
         }
         //远程图片 下载到本地处理
         if ($is_remote_down) {

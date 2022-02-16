@@ -5,12 +5,11 @@
         <span class="ivu-page-header-title">订单管理</span>
         <div>
           <Tabs v-model="currentTab" @on-click="onClickTab" v-if="tablists">
-            <TabPane :label="'全部订单（' + tablists.all + '）'" name=" " />
-            <TabPane :label="'普通订单（' + tablists.general + '）'" name="1" />
-            <TabPane :label="'拼团订单（' + tablists.pink + '）'" name="2" />
-            <TabPane :label="'秒杀订单（' + tablists.seckill + '）'" name="3" />
-            <TabPane :label="'砍价订单（' + tablists.bargain + '）'" name="4" />
-            <TabPane :label="'预售订单（' + tablists.advance + '）'" name="5" />
+            <TabPane
+              v-for="(item, index) in tabs"
+              :label="item.label"
+              :name="item.type"
+            />
           </Tabs>
         </div>
       </div>
@@ -33,6 +32,92 @@ export default {
   },
   data() {
     return {
+      tabs: [
+        {
+          type: "",
+          label: (h) => {
+            return h("div", [
+              h("span", "全部订单"),
+              h("Badge", {
+                props: {
+                  count: this.tablists.all,
+                  "overflow-count": 999999,
+                },
+              }),
+            ]);
+          },
+        },
+        {
+          type: "1",
+          label: (h) => {
+            return h("div", [
+              h("span", "普通订单"),
+              h("Badge", {
+                props: {
+                  count: this.tablists.general,
+                  "overflow-count": 999999,
+                },
+              }),
+            ]);
+          },
+        },
+        {
+          type: "2",
+          label: (h) => {
+            return h("div", [
+              h("span", "拼团订单"),
+              h("Badge", {
+                props: {
+                  count: this.tablists.pink,
+                  "overflow-count": 999999,
+                },
+              }),
+            ]);
+          },
+        },
+        {
+          type: "3",
+          label: (h) => {
+            return h("div", [
+              h("span", "秒杀订单"),
+              h("Badge", {
+                props: {
+                  count: this.tablists.seckill,
+                  "overflow-count": 999999,
+                },
+              }),
+            ]);
+          },
+        },
+        {
+          type: "4",
+          label: (h) => {
+            return h("div", [
+              h("span", "砍价订单"),
+              h("Badge", {
+                props: {
+                  count: this.tablists.bargain,
+                  "overflow-count": 999999,
+                },
+              }),
+            ]);
+          },
+        },
+        {
+          type: "5",
+          label: (h) => {
+            return h("div", [
+              h("span", "预售订单"),
+              h("Badge", {
+                props: {
+                  count: this.tablists.advance,
+                  "overflow-count": 999999,
+                },
+              }),
+            ]);
+          },
+        },
+      ],
       spinShow: false,
       currentTab: "",
       data: [],
@@ -69,7 +154,6 @@ export default {
       "getOrderTime",
       "getOrderNum",
       "getfieldKey",
-      "onChangeTabs",
       "getOrderType",
       "getisDelIdListl",
       "getIsDel",
@@ -91,22 +175,14 @@ export default {
           this.spinShow = false;
           this.$Message.error(res.msg);
         });
-      // getOrdes({}).then(async res => {
-      //     this.tablists = res.data;
-      //     this.onChangeChart(this.tablists)
-      //     this.spinShow = false;
-      // }).catch(res => {
-      //     this.spinShow = false;
-      //     this.$Message.error(res.msg);
-      // })
     },
     onClickTab() {
       this.onChangeTabs(Number(this.currentTab));
-      this.$store.dispatch("order/getOrderTabs", {
-        data: "",
-        type: Number(this.currentTab),
-      });
-      this.$refs.productlist.getChangeTabs();
+      // this.$store.dispatch("order/getOrderTabs", {
+      //   data: "",
+      //   type: Number(this.currentTab),
+      // });
+      // this.$refs.productlist.getChangeTabs();
       this.$store.dispatch("order/getOrderTabs", { type: this.currentTab });
     },
   },
@@ -123,5 +199,14 @@ export default {
 
 .product_tabs >>> .ivu-page-header-breadcrumb {
   margin-bottom: 0px !important;
+}
+
+.i-layout-page-header /deep/ .ivu-badge-count-alone {
+  top: -7px;
+}
+
+.i-layout-page-header /deep/ .ivu-badge-count {
+  line-height: 14px;
+  height: 15px;
 }
 </style>

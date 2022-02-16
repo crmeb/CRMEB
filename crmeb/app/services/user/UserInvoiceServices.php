@@ -40,9 +40,9 @@ class UserInvoiceServices extends BaseServices
      */
     public function invoiceFuncStatus(bool $is_speclial = true)
     {
-        $invoice = sys_config('invoice_func_status', 0) ? true : false;
+        $invoice = (bool)sys_config('invoice_func_status', 0);
         if ($is_speclial) {
-            $specialInvoice = sys_config('special_invoice_status', 0) ? true : false;
+            $specialInvoice = sys_config('special_invoice_status', 0);
             return ['invoice_func' => $invoice, 'special_invoice' => $invoice && $specialInvoice];
         }
         return $invoice;

@@ -24,44 +24,44 @@
                   <p class="mb5"><span>短信条数</span></p>
                   <div v-if="sms.open ===0">
                     <p>暂未开通</p>
-                    <Button size="small" type="primary" class="mt3" @click="onOpen('sms')">开通服务</Button>
+                    <Button size="small" type="primary" class="mt3 samll_font" @click="onOpen('sms')">开通服务</Button>
                   </div>
                   <div v-else>
                     <p>{{sms.num || 0}}</p>
-                    <Button size="small" type="primary" class="mt3" @click="mealPay('sms')">套餐购买</Button>
+                    <Button size="small" type="primary" class="mt3 samll_font" style="textAlign: center;" @click="mealPay('sms')">套餐购买</Button>
                   </div>
                 </div>
                 <div class="header-extra">
                   <p class="mb5"><span>采集次数</span></p>
                   <div v-if="copy.open ===0">
                     <p>暂未开通</p>
-                    <Button size="small" type="primary" class="mt3" @click="onOpen('copy')">开通服务</Button>
+                    <Button size="small" type="primary" class="mt3 samll_font" @click="onOpen('copy')">开通服务</Button>
                   </div>
                   <div v-else>
                     <p>{{copy.num || 0}}</p>
-                    <Button size="small" type="primary" class="mt3" @click="mealPay('copy')">套餐购买</Button>
+                    <Button size="small" type="primary" class="mt3 samll_font" @click="mealPay('copy')">套餐购买</Button>
                   </div>
                 </div>
                 <div class="header-extra">
                   <p class="mb5"><span>物流查询次数</span></p>
                   <div v-if="query.open ===0">
                     <p>暂未开通</p>
-                    <Button size="small" type="primary" class="mt3" @click="onOpen('query')">开通服务</Button>
+                    <Button size="small" type="primary" class="mt3 samll_font" @click="onOpen('query')">开通服务</Button>
                   </div>
                   <div v-else>
                     <p>{{query.num || 0}}</p>
-                    <Button size="small" type="primary" class="mt3" @click="mealPay('expr_query')">套餐购买</Button>
+                    <Button size="small" type="primary" class="mt3 samll_font" @click="mealPay('expr_query')">套餐购买</Button>
                   </div>
                 </div>
                 <div class="header-extra" style="border: none;">
                   <p class="mb5"><span>面单打印次数</span> </p>
                   <div v-if="dump.open ===0">
                     <p>暂未开通</p>
-                    <Button size="small" type="primary" class="mt3" @click="onOpen('dump')">开通服务</Button>
+                    <Button size="small" type="primary" class="mt3 samll_font" @click="onOpen('dump')">开通服务</Button>
                   </div>
                   <div v-else>
                     <p>{{dump.num || 0}}</p>
-                    <Button size="small" type="primary" class="mt3" @click="mealPay('expr_dump')">套餐购买</Button>
+                    <Button size="small" type="primary" class="mt3 samll_font" @click="mealPay('expr_dump')">套餐购买</Button>
                   </div>
                 </div>
               </div>
@@ -333,5 +333,9 @@
     @{aaa} .ivu-page-header{
       padding: 16px 0px 0 32px !important;
     }
+  }
+  .samll_font{
+    text-align: center;
+    padding: 0px 10px;
   }
 </style>

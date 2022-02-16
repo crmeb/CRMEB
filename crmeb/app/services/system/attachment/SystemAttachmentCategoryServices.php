@@ -8,7 +8,7 @@
 // +----------------------------------------------------------------------
 // | Author: CRMEB Team <admin@crmeb.com>
 // +----------------------------------------------------------------------
-declare (strict_types = 1);
+declare (strict_types=1);
 
 namespace app\services\system\attachment;
 
@@ -16,7 +16,6 @@ use app\services\BaseServices;
 use app\dao\system\attachment\SystemAttachmentCategoryDao;
 use crmeb\exceptions\AdminException;
 use crmeb\services\FormBuilder as Form;
-use crmeb\utils\Arr;
 use think\facade\Route as Url;
 
 /**

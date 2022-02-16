@@ -25,6 +25,7 @@ import shopping from './module/shopping'
 import fresh from './module/fresh'
 import kefu from './module/kefu'
 import integralOrder from './module/integralOrder'
+import mobildConfig from './module/mobildConfig'
 
 Vue.use(Vuex)
 // 持久化储存
@@ -43,18 +44,19 @@ export default new Vuex.Store({
     actions: {
         //
     },
-    plugins:[
+    plugins: [
         new VuexPersistence({
             reducer: state => ({
                 user: state.user, //这个就是存入localStorage的值
-                app:state.app,
-                menus:state.menus,
-                userInfo:state.userInfo,
-                userLevel:state.userLevel,
-                order:state.order,
-                media:state.media,
-                kefu:state.kefu,
-                integralOrder:state.integralOrder
+                app: state.app,
+                menus: state.menus,
+                userInfo: state.userInfo,
+                userLevel: state.userLevel,
+                order: state.order,
+                media: state.media,
+                kefu: state.kefu,
+                integralOrder: state.integralOrder,
+                mobildConfig: state.mobildConfig
             }),
             storage: window.localStorage
         }).plugin
@@ -72,6 +74,7 @@ export default new Vuex.Store({
         shopping,
         fresh,
         kefu,
+        mobildConfig,
         integralOrder
     }
 })

@@ -184,3 +184,48 @@ export function exportUserRechargeApi (data) {
         params: data
     })
 }
+
+/**
+ * @description 财务管理 -- 资金流水统计
+ * @param {Number} param data {Number} 请求参数data
+ */
+ export function getFlowList (data) {
+    return request({
+        url: `statistic/flow/get_list`,
+        method: 'get',
+        params: data
+    })
+}
+/**
+ * @description 资金流水 -- 备注
+ * @param {Number} param id {Number} 提现申请id
+ */
+ export function setMarks (id, data) {
+    return request({
+        url: `statistic/flow/set_mark/${id}`,
+        method: 'post',
+        data
+    })
+};
+/**
+ * @description 财务管理 -- 余额列表
+ * @param {Number} param data {Number} 请求参数data
+ */
+ export function getBalanceList (data) {
+    return request({
+        url: `finance/balance/list`,
+        method: 'get',
+        params: data
+    })
+}
+/**
+ * @description 余额列表-- 备注
+ * @param {Number} balanceMark id {Number} 提现申请id
+ */
+ export function setBalanceMark (id, data) {
+    return request({
+        url: `finance/balance/set_mark/${id}`,
+        method: 'post',
+        data
+    })
+};

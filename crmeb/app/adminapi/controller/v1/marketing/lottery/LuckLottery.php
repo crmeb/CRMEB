@@ -38,10 +38,10 @@ class LuckLottery extends AuthController
     public function index()
     {
         $where = $this->request->postMore([
-            ['start_status', '','','start'],
+            ['start_status', '', '', 'start'],
             ['status', ''],
             ['factor', ''],
-            ['store_name', '','','keyword'],
+            ['store_name', '', '', 'keyword'],
         ]);
         return app('json')->success($this->services->getList($where));
     }
@@ -52,6 +52,14 @@ class LuckLottery extends AuthController
             return app('json')->fail('缺少参数id');
         }
         return app('json')->success($this->services->getlotteryInfo((int)$id));
+    }
+
+    public function factorInfo($factor)
+    {
+        if (!$factor) {
+            return app('json')->fail('缺少参数');
+        }
+        return app('json')->success($this->services->getlotteryFactorInfo((int)$factor));
     }
 
     public function add()

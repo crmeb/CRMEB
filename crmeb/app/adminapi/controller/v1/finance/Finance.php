@@ -67,7 +67,8 @@ class Finance extends AuthController
             ['price_max', ''],
             ['price_min', ''],
             ['sum_number', 'normal'],
-            ['brokerage_price', 'normal']
+            ['brokerage_price', 'normal'],
+            ['time', '']
         ]);
         return app('json')->success($this->services->getCommissionList($where));
     }
@@ -94,7 +95,7 @@ class Finance extends AuthController
             ['nickname', '']
         ]);
         $where['category'] = 'now_money';
-        $where['type'] = ['brokerage','brokerage_user'];
+        $where['type'] = ['brokerage', 'brokerage_user'];
         return app('json')->success($this->services->getBillOneList((int)$id, $where));
     }
 

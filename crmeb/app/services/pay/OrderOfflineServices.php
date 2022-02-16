@@ -17,6 +17,8 @@ use app\services\order\StoreOrderInvoiceServices;
 use app\services\order\StoreOrderServices;
 use app\services\order\StoreOrderStatusServices;
 use app\jobs\ProductLogJob;
+use app\services\user\UserServices;
+use app\services\statistic\CapitalFlowServices;
 use think\exception\ValidateException;
 
 /**
@@ -57,6 +59,16 @@ class OrderOfflineServices extends BaseServices
         //修改开票数据支付状态
         $orderInvoiceServices = app()->make(StoreOrderInvoiceServices::class);
         $orderInvoiceServices->update(['order_id' => $orderInfo['id']], ['is_pay' => 1]);
+
+        /** @var CapitalFlowServices $capitalFlowServices */
+        $capitalFlowServices = app()->make(CapitalFlowServices::class);
+        /** @var UserServices $userServices */
+        $userServices = app()->make(UserServices::class);
+        $userInfo = $userServices->get($orderInfo['uid']);
+        $orderInfo['nickname'] = $userInfo['nickname'];
+        $orderInfo['phone'] = $userInfo['phone'];
+        $capitalFlowServices->setFlow($orderInfo, 'order');
+
         //支付记录
         ProductLogJob::dispatch(['pay', ['uid' => $orderInfo['uid'], 'order_id' => $orderInfo['id']]]);
         return $res && $orderInfo->save();

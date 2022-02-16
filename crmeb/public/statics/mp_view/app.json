@@ -1,21 +1,64 @@
 {
   "pages": [
+    "pages/guide/index",
     "pages/index/index",
     "pages/order_addcart/order_addcart",
     "pages/user/index",
     "pages/goods_cate/goods_cate",
-    "pages/retrieve_password/index",
-    "pages/customer_list/index",
-    "pages/customer_list/chat",
-    "pages/goods_list/index",
-    "pages/news_list/index",
-    "pages/news_details/index",
-    "pages/goods_search/index",
-    "pages/order_pay_status/index",
-    "pages/order_pay_status/payLottery",
-    "pages/live_list/index"
+    "pages/retrieve_password/index"
   ],
   "subPackages": [
+    {
+      "root": "pages/news_list",
+      "pages": [
+        "index"
+      ],
+      "name": "news_list"
+    },
+    {
+      "root": "pages/goods_list",
+      "pages": [
+        "index"
+      ],
+      "name": "goods_list"
+    },
+    {
+      "root": "pages/goods_search",
+      "pages": [
+        "index"
+      ],
+      "name": "goods_search"
+    },
+    {
+      "root": "pages/customer_list",
+      "pages": [
+        "index",
+        "chat"
+      ],
+      "name": "customer_list"
+    },
+    {
+      "root": "pages/news_details",
+      "pages": [
+        "index"
+      ],
+      "name": "news_details"
+    },
+    {
+      "root": "pages/order_pay_status",
+      "pages": [
+        "index",
+        "payLottery"
+      ],
+      "name": "order_pay_status_index"
+    },
+    {
+      "root": "pages/live_list",
+      "pages": [
+        "index"
+      ],
+      "name": "live_list"
+    },
     {
       "root": "pages/users",
       "pages": [
@@ -24,6 +67,7 @@
         "message_center/index",
         "message_center/messageDetail",
         "user_invoice_order/index",
+        "order_refund_goods/index",
         "scan_login/index",
         "order_details/index",
         "user_invoice_list/index",
@@ -61,25 +105,22 @@
         "goods_logistics/index",
         "user_return_list/index",
         "goods_return/index",
+        "goods_return_list/index",
         "login/index",
         "goods_comment_list/index",
         "goods_comment_con/index",
-        "goods_comment_con/lottery_comment"
+        "goods_comment_con/lottery_comment",
+        "payment_on_behalf/index",
+        "payment_on_behalf/pay_status",
+        "staff_list/index"
       ],
       "name": "users",
       "plugins": {
         "live-player-plugin": {
-          "version": "1.3.0",
+          "version": "1.3.2",
           "provider": "wx2b03c6e691cd7370"
         }
       }
-    },
-    {
-      "root": "pages/admin",
-      "pages": [
-        "order_cancellation/index"
-      ],
-      "name": "adminOrder"
     },
     {
       "root": "pages/goods_details",
@@ -108,6 +149,19 @@
       "name": "activity"
     },
     {
+      "root": "pages/admin",
+      "pages": [
+        "custom_date/index",
+        "order/index",
+        "orderList/index",
+        "orderDetail/index",
+        "delivery/index",
+        "statistics/index",
+        "order_cancellation/index"
+      ],
+      "name": "adminOrder"
+    },
+    {
       "root": "pages/columnGoods",
       "pages": [
         "HotNewGoods/index",
@@ -119,8 +173,14 @@
       "root": "pages/annex",
       "pages": [
         "web_view/index",
+        "vip_paid/index",
+        "vip_coupon/index",
+        "vip_clause/index",
+        "vip_active/index",
         "offline_pay/index",
-        "offline_result/index"
+        "offline_result/index",
+        "special/index",
+        "settled/index"
       ]
     },
     {

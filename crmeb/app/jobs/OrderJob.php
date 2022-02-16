@@ -11,17 +11,17 @@
 
 namespace app\jobs;
 
-use app\services\activity\StoreBargainServices;
-use app\services\activity\StoreCombinationServices;
-use app\services\activity\StoreSeckillServices;
-use app\services\coupon\StoreCouponUserServices;
+use app\services\activity\bargain\StoreBargainServices;
+use app\services\activity\combination\StoreCombinationServices;
+use app\services\activity\seckill\StoreSeckillServices;
+use app\services\activity\coupon\StoreCouponUserServices;
 use app\services\message\service\StoreServiceServices;
 use app\services\message\sms\SmsSendServices;
 use app\services\order\StoreOrderCartInfoServices;
 use app\services\order\StoreOrderEconomizeServices;
 use app\services\order\StoreOrderServices;
 use app\services\product\product\StoreProductServices;
-use app\services\user\MemberCardServices;
+use app\services\user\member\MemberCardServices;
 use app\services\user\UserLabelRelationServices;
 use app\services\user\UserLevelServices;
 use app\services\user\UserServices;
@@ -54,7 +54,7 @@ class OrderJob extends BaseJobs
             $this->setEconomizeMoney($order);
         } catch (\Throwable $e) {
             Log::error('计算节省金额,失败原因:' . $e->getMessage());
-        };
+        }
         //更新用户支付订单数量
         try {
             $this->setUserPayCountAndPromoter($order);
@@ -196,7 +196,6 @@ class OrderJob extends BaseJobs
             foreach ($serviceOrderNotice as $key => $item) {
                 $admin_name = $item['nickname'];
                 $order_id = $order['order_id'];
-//                $smsServices->send($switch, $item['phone'], compact('admin_name', 'order_id'), 'ADMIN_PAY_SUCCESS_CODE');
                 $userInfo = $wechatUserServices->getOne(['uid' => $item['uid'], 'user_type' => 'wechat']);
                 if ($userInfo) {
                     $userInfo = $userInfo->toArray();

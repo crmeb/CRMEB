@@ -296,14 +296,14 @@ export default {
   },
   computed: {
     ...mapState({
-      titleTxt: (state) => state.admin.mobildConfig.pageTitle || "首页",
-      nameTxt: (state) => state.admin.mobildConfig.pageName || "模板",
-      showTxt: (state) => state.admin.mobildConfig.pageShow,
-      colorTxt: (state) => state.admin.mobildConfig.pageColor,
-      picTxt: (state) => state.admin.mobildConfig.pagePic,
-      colorPickerTxt: (state) => state.admin.mobildConfig.pageColorPicker,
-      tabValTxt: (state) => state.admin.mobildConfig.pageTabVal,
-      picUrlTxt: (state) => state.admin.mobildConfig.pagePicUrl,
+      titleTxt: (state) => state.mobildConfig.pageTitle || "首页",
+      nameTxt: (state) => state.mobildConfig.pageName || "模板",
+      showTxt: (state) => state.mobildConfig.pageShow,
+      colorTxt: (state) => state.mobildConfig.pageColor,
+      picTxt: (state) => state.mobildConfig.pagePic,
+      colorPickerTxt: (state) => state.mobildConfig.pageColorPicker,
+      tabValTxt: (state) => state.mobildConfig.pageTabVal,
+      picUrlTxt: (state) => state.mobildConfig.pagePicUrl,
     }),
   },
   data() {
@@ -359,7 +359,7 @@ export default {
       link: "/pages/order_addcart/order_addcart",
     };
     this.$nextTick(() => {
-      this.$store.commit("admin/mobildConfig/FOOTER", {
+      this.$store.commit("mobildConfig/FOOTER", {
         title: "是否自定义",
         name: imgList,
       });
@@ -387,7 +387,7 @@ export default {
           this.isFllow = true;
         } else {
           this.$store.commit(
-            "admin/mobildConfig/ARRAYREAST",
+            "mobildConfig/ARRAYREAST",
             this.mConfig[0].num
           );
           this.mConfig.splice(0, 1);
@@ -395,7 +395,7 @@ export default {
       }
       if ((this.isFllow = true && newIndex >= 1)) {
         this.$store.commit(
-          "admin/mobildConfig/ARRAYREAST",
+          "mobildConfig/ARRAYREAST",
           this.mConfig[0].num
         );
       }
@@ -501,8 +501,8 @@ export default {
         let tempItem = JSON.parse(JSON.stringify(item));
         this.rConfig.push(tempItem);
         this.activeIndex = evt.moved.newIndex;
-        this.$store.commit("admin/mobildConfig/SETCONFIGNAME", item.name);
-        this.$store.commit("admin/mobildConfig/defaultArraySort", evt.moved);
+        this.$store.commit("mobildConfig/SETCONFIGNAME", item.name);
+        this.$store.commit("mobildConfig/defaultArraySort", evt.moved);
       }
       // 从左向右拖拽排序
       if (evt.added) {
@@ -522,8 +522,8 @@ export default {
         evt.added.list = this.mConfig;
         this.activeIndex = evt.added.newIndex;
         // 保存组件名称
-        this.$store.commit("admin/mobildConfig/SETCONFIGNAME", data.name);
-        this.$store.commit("admin/mobildConfig/defaultArraySort", evt.added);
+        this.$store.commit("mobildConfig/SETCONFIGNAME", data.name);
+        this.$store.commit("mobildConfig/defaultArraySort", evt.added);
       }
     },
     cloneDog(data) {
@@ -583,8 +583,8 @@ export default {
       } else {
         this.activeIndex = index + 1;
       }
-      this.$store.commit("admin/mobildConfig/SETCONFIGNAME", item.name);
-      this.$store.commit("admin/mobildConfig/defaultArraySort", obj);
+      this.$store.commit("mobildConfig/SETCONFIGNAME", item.name);
+      this.$store.commit("mobildConfig/defaultArraySort", obj);
     },
     // 组件添加
     addDomCon(item, type, index) {
@@ -637,8 +637,8 @@ export default {
       // 保存组件名称
       obj.element = item;
       obj.list = this.mConfig;
-      this.$store.commit("admin/mobildConfig/SETCONFIGNAME", item.name);
-      this.$store.commit("admin/mobildConfig/defaultArraySort", obj);
+      this.$store.commit("mobildConfig/SETCONFIGNAME", item.name);
+      this.$store.commit("mobildConfig/defaultArraySort", obj);
     },
     //中间页点击添加模块；
     bindAddDom(item, type, index) {
@@ -660,7 +660,7 @@ export default {
       let tempItem = JSON.parse(JSON.stringify(item));
       this.rConfig.push(tempItem);
       this.activeIndex = index;
-      this.$store.commit("admin/mobildConfig/SETCONFIGNAME", item.name);
+      this.$store.commit("mobildConfig/SETCONFIGNAME", item.name);
     },
     // 组件删除
     bindDelete(item, key) {
@@ -683,7 +683,7 @@ export default {
         }
       }
       // 删除第几个配置
-      this.$store.commit("admin/mobildConfig/DELETEARRAY", item);
+      this.$store.commit("mobildConfig/DELETEARRAY", item);
     },
     // 组件返回
     config(data) {
@@ -767,10 +767,10 @@ export default {
         return this.$Message.error("暂未添加任何组件，保存失败！");
       }
       this.loading = true;
-      let val = this.$store.state.admin.mobildConfig.defaultArray;
+      let val = this.$store.state.mobildConfig.defaultArray;
       if (!this.footActive) {
         let timestamp = new Date().getTime() * 1000;
-        val[timestamp] = this.$store.state.admin.mobildConfig.pageFooter;
+        val[timestamp] = this.$store.state.mobildConfig.pageFooter;
         this.footActive = true;
       }
       this.$nextTick(function () {
@@ -784,27 +784,27 @@ export default {
       }).then(({ data }) => {
         let obj = {};
         let tempARR = [];
-        this.$store.commit("admin/mobildConfig/titleUpdata", data.info.title);
-        this.$store.commit("admin/mobildConfig/nameUpdata", data.info.name);
-        this.$store.commit("admin/mobildConfig/showUpdata", data.info.is_show);
+        this.$store.commit("mobildConfig/titleUpdata", data.info.title);
+        this.$store.commit("mobildConfig/nameUpdata", data.info.name);
+        this.$store.commit("mobildConfig/showUpdata", data.info.is_show);
         this.$store.commit(
-          "admin/mobildConfig/colorUpdata",
+          "mobildConfig/colorUpdata",
           data.info.is_bg_color || 0
         );
         this.$store.commit(
-          "admin/mobildConfig/picUpdata",
+          "mobildConfig/picUpdata",
           data.info.is_bg_pic || 0
         );
         this.$store.commit(
-          "admin/mobildConfig/pickerUpdata",
+          "mobildConfig/pickerUpdata",
           data.info.color_picker || "#f5f5f5"
         );
         this.$store.commit(
-          "admin/mobildConfig/radioUpdata",
+          "mobildConfig/radioUpdata",
           data.info.bg_tab_val || 0
         );
         this.$store.commit(
-          "admin/mobildConfig/picurlUpdata",
+          "mobildConfig/picurlUpdata",
           data.info.bg_pic || ""
         );
         let newArr = this.objToArr(data.info.value);
@@ -835,7 +835,7 @@ export default {
               obj[el.timestamp] = el;
               this.mConfig.push(tempItem);
               // 保存默认组件配置
-              this.$store.commit("admin/mobildConfig/ADDARRAY", {
+              this.$store.commit("mobildConfig/ADDARRAY", {
                 num: el.timestamp,
                 val: el,
               });
@@ -846,7 +846,7 @@ export default {
         let objs = newArr[newArr.length - 1];
 
         if (objs.name == "pageFoot") {
-          this.$store.commit("admin/mobildConfig/footPageUpdata", objs);
+          this.$store.commit("mobildConfig/footPageUpdata", objs);
         }
         this.showTitle();
         // this.rConfig = [];
@@ -879,26 +879,26 @@ export default {
     },
   },
   beforeDestroy() {
-    this.$store.commit("admin/mobildConfig/titleUpdata", "");
-    this.$store.commit("admin/mobildConfig/nameUpdata", "");
-    this.$store.commit("admin/mobildConfig/showUpdata", 1);
-    this.$store.commit("admin/mobildConfig/colorUpdata", 0);
-    this.$store.commit("admin/mobildConfig/picUpdata", 0);
-    this.$store.commit("admin/mobildConfig/pickerUpdata", "#f5f5f5");
-    this.$store.commit("admin/mobildConfig/radioUpdata", 0);
-    this.$store.commit("admin/mobildConfig/picurlUpdata", "");
-    this.$store.commit("admin/mobildConfig/SETEMPTY");
+    this.$store.commit("mobildConfig/titleUpdata", "");
+    this.$store.commit("mobildConfig/nameUpdata", "");
+    this.$store.commit("mobildConfig/showUpdata", 1);
+    this.$store.commit("mobildConfig/colorUpdata", 0);
+    this.$store.commit("mobildConfig/picUpdata", 0);
+    this.$store.commit("mobildConfig/pickerUpdata", "#f5f5f5");
+    this.$store.commit("mobildConfig/radioUpdata", 0);
+    this.$store.commit("mobildConfig/picurlUpdata", "");
+    this.$store.commit("mobildConfig/SETEMPTY");
   },
   destroyed() {
-    this.$store.commit("admin/mobildConfig/titleUpdata", "");
-    this.$store.commit("admin/mobildConfig/nameUpdata", "");
-    this.$store.commit("admin/mobildConfig/showUpdata", 1);
-    this.$store.commit("admin/mobildConfig/colorUpdata", 0);
-    this.$store.commit("admin/mobildConfig/picUpdata", 0);
-    this.$store.commit("admin/mobildConfig/pickerUpdata", "#f5f5f5");
-    this.$store.commit("admin/mobildConfig/radioUpdata", 0);
-    this.$store.commit("admin/mobildConfig/picurlUpdata", "");
-    this.$store.commit("admin/mobildConfig/SETEMPTY");
+    this.$store.commit("mobildConfig/titleUpdata", "");
+    this.$store.commit("mobildConfig/nameUpdata", "");
+    this.$store.commit("mobildConfig/showUpdata", 1);
+    this.$store.commit("mobildConfig/colorUpdata", 0);
+    this.$store.commit("mobildConfig/picUpdata", 0);
+    this.$store.commit("mobildConfig/pickerUpdata", "#f5f5f5");
+    this.$store.commit("mobildConfig/radioUpdata", 0);
+    this.$store.commit("mobildConfig/picurlUpdata", "");
+    this.$store.commit("mobildConfig/SETEMPTY");
   },
 };
 </script>

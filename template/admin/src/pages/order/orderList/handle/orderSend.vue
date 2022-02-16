@@ -17,8 +17,8 @@
     >
       <FormItem label="选择类型：">
         <RadioGroup v-model="formItem.type" @on-change="changeRadio">
-          <Radio label="1">发货</Radio>
-          <Radio label="2">送货</Radio>
+          <Radio label="1" v-if="virtual_type !== 3">发货</Radio>
+          <Radio label="2" v-if="virtual_type !== 3">送货</Radio>
           <Radio label="3">无需配送</Radio>
         </RadioGroup>
       </FormItem>
@@ -209,6 +209,13 @@ export default {
     status: Number,
     // total_num: Number,
     pay_type: String,
+    virtual_type: Number,
+  },
+  watch: {
+    orderId(val) {
+      console.log(val, this.virtual_type);
+      if (this.virtual_type == 3) this.formItem.type = "3";
+    },
   },
   data() {
     return {
@@ -244,6 +251,7 @@ export default {
           title: "商品信息",
           slot: "image",
           width: 200,
+          align: "center",
         },
         {
           title: "规格",
@@ -269,16 +277,18 @@ export default {
           align: "center",
           width: 180,
           render: (h, params) => {
+            console.log(params.row.surplus_num);
             return h("div", [
               h("InputNumber", {
                 props: {
                   min: 1,
                   max: params.row.surplus_num,
-                  value: params.row.surplus_num,
+                  value: params.row.num || params.row.surplus_num,
                 },
                 on: {
                   "on-change": (e) => {
-                    params.row.surplus_num = e || 1;
+                    // params.row.surplus_num = e || 1;
+                    params.row.num = e || 1;
                     this.manyFormValidate[params.index] = params.row;
                     this.selectData.forEach((v, index) => {
                       if (v.cart_id === params.row.cart_id) {
@@ -438,7 +448,7 @@ export default {
         this.selectData.forEach((v) => {
           data.datas.cart_ids.push({
             cart_id: v.cart_id,
-            cart_num: v.surplus_num,
+            cart_num: v.num || v.surplus_num,
           });
         });
         splitDelivery(data)
@@ -471,6 +481,8 @@ export default {
       this.orderStatus = 0;
       this.splitSwitch = false;
       this.selectData = [];
+      this.formItem.type = "1";
+      this.$emit("clearId");
       this.reset();
       // this.$refs[name].resetFields();
       // this.formItem.type = '1';

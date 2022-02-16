@@ -28,6 +28,10 @@
                    :loading="loading" highlight-row
                    no-userFrom-text="暂无数据"
                    no-filtered-userFrom-text="暂无筛选结果">
+                <template slot-scope="{ row }" slot="number">
+                    <div v-if="row.pm" class="z-price">+ {{ row.number }}</div>
+                    <div v-else class="f-price">- {{ row.number }}</div>
+                </template>
             </Table>
             <div class="acea-row row-right page">
                 <Page :total="total" :current="tableFrom.page" show-elevator show-total @on-change="pageChange"
@@ -70,13 +74,13 @@
                         minWidth: 130
                     },
                     {
-                        title: '变动前积分',
-                        key: 'balance',
+                        title: '积分变动',
+                        slot: 'number',
                         minWidth: 100
                     },
                     {
-                        title: '积分变动',
-                        key: 'number',
+                        title: '变动后积分',
+                        key: 'balance',
                         minWidth: 100
                     },
                     {
@@ -85,7 +89,7 @@
                         minWidth: 100
                     },
                     {
-                        title: '用户微信昵称',
+                        title: '用户名称',
                         key: 'nickname',
                         minWidth: 150
                     },
@@ -194,4 +198,11 @@
 <style scoped lang="stylus">
     .tab_data >>> .ivu-form-item-content
         display flex!important
+    .z-price {
+        color: red;
+    }
+
+    .f-price {
+        color: green;
+    }
 </style>

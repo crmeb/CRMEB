@@ -106,7 +106,7 @@ class StoreServiceServices extends BaseServices
             $field[] = $this->builder->input('true_password', '确认密码')->type('password')->col(24)->required();
         }
         $field[] = $this->builder->switches('status', '客服状态', (int)($formData['status'] ?? 1))->appendControl(1, [
-//            $this->builder->switches('customer', '手机订单管理', $formData['customer'] ?? 0)->falseValue(0)->trueValue(1)->openStr('打开')->closeStr('关闭')->size('large'),
+            $this->builder->switches('customer', '手机订单管理', $formData['customer'] ?? 0)->falseValue(0)->trueValue(1)->openStr('打开')->closeStr('关闭')->size('large'),
             $this->builder->switches('notify', '订单通知', $formData['notify'] ?? 0)->falseValue(0)->trueValue(1)->openStr('打开')->closeStr('关闭')->size('large'),
         ])->falseValue(0)->trueValue(1)->openStr('开启')->closeStr('关闭')->size('large');
         return $field;
@@ -168,7 +168,7 @@ class StoreServiceServices extends BaseServices
      */
     public function checkoutIsService(array $where)
     {
-        return $this->dao->count($where) ? true : false;
+        return (bool)$this->dao->count($where);
     }
 
     /**

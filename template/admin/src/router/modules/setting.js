@@ -380,20 +380,20 @@ export default {
       path: 'theme_style',
       name: `${pre}themeStyle`,
       meta: {
-          auth: ['admin-setting-theme_style'],
-          title: '主题风格'
+        auth: ['admin-setting-theme_style'],
+        title: '主题风格'
       },
       component: () => import('@/pages/setting/themeStyle/index')
-  },
-  {
+    },
+    {
       path: 'pages/devise',
       name: `${pre}devise`,
       meta: {
-          auth: ['admin-setting-pages-devise'],
-          title: '店铺装修'
+        auth: ['admin-setting-pages-devise'],
+        title: '店铺装修'
       },
       component: () => import('@/pages/setting/devise/list')
-  },
+    },
     {
       path: 'pages/diy',
       name: `${pre}diy`,
@@ -402,6 +402,16 @@ export default {
         title: '页面设计'
       },
       component: () => import('@/pages/setting/devisePage/index')
+    },
+    {
+      path: 'pages/diy_index',
+      name: `${pre}index_diy`,
+      meta: {
+        auth: ['admin-setting-pages-diy'],
+        title: '首页设计',
+        fullScreen: true   //是否全屏显示main区域
+      },
+      component: () => import('@/pages/setting/devise/diyIndex')
     },
     {
       path: 'pages/links',
@@ -479,19 +489,100 @@ export default {
       path: 'pc_group_data',
       name: `${pre}systemGroupData`,
       meta: {
-          auth: ['setting-system-pc_data'],
-          title: 'PC商城'
+        auth: ['setting-system-pc_data'],
+        title: 'PC商城'
       },
       component: () => import('@/pages/system/group/pc')
-  },
-  {
-    path: 'system_visualization_data',
-    name: `${pre}systemGroupData`,
-    meta: {
+    },
+    {
+      path: 'system_visualization_data',
+      name: `${pre}systemGroupData`,
+      meta: {
         auth: ['admin-setting-system_visualization_data'],
         title: '数据配置'
+      },
+      component: () => import('@/pages/system/group/visualization')
     },
-    component: () => import('@/pages/system/group/visualization')
-},
+    {
+      path: 'storage',
+      name: `${pre}storage`,
+      meta: {
+        auth: ['setting-storage'],
+        title: '储存配置'
+      },
+      component: () => import('@/pages/setting/storage')
+    },
+    {
+      path: 'wechat_config/:type?/:tab_id?',
+      name: `${pre}wechat_config`,
+      meta: {
+        ...meta,
+        title: '公众号配置'
+      },
+      component: () => import('@/pages/setting/setSystem/index')
+    },
+    {
+      path: 'routine_config/:type?/:tab_id?',
+      name: `${pre}routine_config`,
+      meta: {
+        ...meta,
+        title: '小程序配置'
+      },
+      component: () => import('@/pages/setting/setSystem/index')
+    },
+    {
+      path: 'app_config/:type?/:tab_id?',
+      name: `${pre}app_config`,
+      meta: {
+        ...meta,
+        title: 'app配置'
+      },
+      component: () => import('@/pages/setting/setSystem/index')
+    },
+    {
+      path: 'pc_config/:type?/:tab_id?',
+      name: `${pre}pc_config`,
+      meta: {
+        ...meta,
+        title: 'PC配置'
+      },
+      component: () => import('@/pages/setting/setSystem/index')
+    },
+    {
+      path: 'other_config/print/:type?/:tab_id?',
+      name: `${pre}other_print`,
+      meta: {
+        auth: ['setting-other-print'],
+        title: '小票打印配置'
+      },
+      component: () => import('@/pages/setting/setSystem/index')
+    },
+    {
+      path: 'other_config/copy/:type?/:tab_id?',
+      name: `${pre}other_copy`,
+      meta: {
+        auth: ['setting-other-copy'],
+        title: '商品采集配置'
+      },
+      component: () => import('@/pages/setting/setSystem/index')
+    },
+    {
+      path: 'other_config/logistics/:type?/:tab_id?',
+      name: `${pre}other_logistics`,
+      meta: {
+        auth: ['setting-other-logistics'],
+        title: '物流查询配置'
+      },
+      component: () => import('@/pages/setting/setSystem/index')
+    },
+    {
+      path: 'other_config/electronic/:type?/:tab_id?',
+      name: `${pre}other_electronic`,
+      meta: {
+        auth: ['setting-other-electronic'],
+        title: '电子面单配置'
+      },
+      component: () => import('@/pages/setting/setSystem/index')
+    },
   ]
 }

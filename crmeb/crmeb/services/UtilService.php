@@ -203,7 +203,7 @@ class UtilService
         }
         $uploadType = (int)sys_config('upload_type', 1);
         $upload = UploadService::init();
-        $res = $upload->to($path)->validate()->stream($res, $key);
+        $res = $upload->to($path)->validate()->setAuthThumb(false)->stream($res, $key);
         if ($res === false) {
             return $upload->getError();
         } else {
@@ -281,7 +281,7 @@ class UtilService
                 return $info;
             } else {
                 $upload = UploadService::init($uploadType);
-                $res = $upload->to($outfiles)->validate()->stream($content, $name);
+                $res = $upload->to($outfiles)->validate()->setAuthThumb(false)->stream($content, $name);
                 if ($res === false) {
                     return $upload->getError();
                 }

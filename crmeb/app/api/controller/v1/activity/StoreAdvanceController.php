@@ -12,7 +12,7 @@
 namespace app\api\controller\v1\activity;
 
 use app\Request;
-use app\services\activity\StoreAdvanceServices;
+use app\services\activity\advance\StoreAdvanceServices;
 
 /**
  * 预售控制器

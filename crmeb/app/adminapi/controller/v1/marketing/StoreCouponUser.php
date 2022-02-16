@@ -11,8 +11,8 @@
 namespace app\adminapi\controller\v1\marketing;
 
 use app\adminapi\controller\AuthController;
-use app\services\coupon\StoreCouponIssueServices;
-use app\services\coupon\StoreCouponUserServices;
+use app\services\activity\coupon\StoreCouponIssueServices;
+use app\services\activity\coupon\StoreCouponUserServices;
 use think\facade\App;
 
 /**

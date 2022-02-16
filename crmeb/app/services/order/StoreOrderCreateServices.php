@@ -12,9 +12,10 @@
 namespace app\services\order;
 
 
-use app\services\activity\StoreAdvanceServices;
+use app\services\activity\advance\StoreAdvanceServices;
 use app\services\agent\AgentLevelServices;
-use app\services\coupon\StoreCouponUserServices;
+use app\services\activity\coupon\StoreCouponUserServices;
+use app\services\agent\DivisionServices;
 use app\services\pay\PayServices;
 use app\services\product\product\StoreCategoryServices;
 use app\services\shipping\ShippingTemplatesFreeServices;
@@ -28,11 +29,12 @@ use app\services\user\UserServices;
 use think\exception\ValidateException;
 use app\services\user\UserBillServices;
 use app\services\user\UserAddressServices;
-use app\services\activity\StoreBargainServices;
-use app\services\activity\StoreSeckillServices;
+use app\services\activity\bargain\StoreBargainServices;
+use app\services\activity\seckill\StoreSeckillServices;
 use app\services\system\store\SystemStoreServices;
-use app\services\activity\StoreCombinationServices;
+use app\services\activity\combination\StoreCombinationServices;
 use app\services\product\product\StoreProductServices;
+use think\facade\Cache;
 use think\facade\Log;
 
 /**
@@ -59,11 +61,16 @@ class StoreOrderCreateServices extends BaseServices
     public function getNewOrderId(string $prefix = 'wx')
     {
         $snowflake = new \Godruoyi\Snowflake\Snowflake();
+        $is_callable = function ($currentTime) {
+            $redis = Cache::store('redis');
+            $swooleSequenceResolver = new \Godruoyi\Snowflake\RedisSequenceResolver($redis->handler());
+            return $swooleSequenceResolver->sequence($currentTime);
+        };
         //32位
         if (PHP_INT_SIZE == 4) {
-            $id = abs($snowflake->id());
+            $id = abs($snowflake->setSequenceResolver($is_callable)->id());
         } else {
-            $id = $snowflake->setStartTimeStamp(strtotime('2020-06-05') * 1000)->id();
+            $id = $snowflake->setStartTimeStamp(strtotime('2020-06-05') * 1000)->setSequenceResolver($is_callable)->id();
         }
         return $prefix . $id;
     }
@@ -113,7 +120,7 @@ class StoreOrderCreateServices extends BaseServices
      * @throws \think\db\exception\DbException
      * @throws \think\db\exception\ModelNotFoundException
      */
-    public function createOrder($uid, $key, $cartGroup, $userInfo, $addressId, $payType, $useIntegral = false, $couponId = 0, $mark = '', $combinationId = 0, $pinkId = 0, $seckillId = 0, $bargainId = 0, $isChannel = 0, $shippingType = 1, $real_name = '', $phone = '', $storeId = 0, $news = false, $advanceId = 0, $virtual_type = 0)
+    public function createOrder($uid, $key, $cartGroup, $userInfo, $addressId, $payType, $useIntegral = false, $couponId = 0, $mark = '', $combinationId = 0, $pinkId = 0, $seckillId = 0, $bargainId = 0, $isChannel = 0, $shippingType = 1, $real_name = '', $phone = '', $storeId = 0, $news = false, $advanceId = 0, $virtual_type = 0, $customForm = [])
     {
         /** @var StoreOrderComputedServices $computedServices */
         $computedServices = app()->make(StoreOrderComputedServices::class);
@@ -155,7 +162,12 @@ class StoreOrderCreateServices extends BaseServices
             $cartInfoGainIntegral = isset($cart['productInfo']['give_integral']) ? bcmul((string)$cart['cart_num'], (string)$cart['productInfo']['give_integral'], 0) : 0;
             $gainIntegral = bcadd((string)$gainIntegral, (string)$cartInfoGainIntegral, 0);
         }
-        $deduction = $seckillId || $bargainId || $combinationId || $advanceId;
+        if (count($cartInfo) == 1 && isset($cartInfo[0]['productInfo']['presale']) && $cartInfo[0]['productInfo']['presale'] == 1) {
+            $advance_id = $cartInfo[0]['product_id'];
+        } else {
+            $advance_id = 0;
+        }
+        $deduction = $seckillId || $bargainId || $combinationId;
         if ($deduction) {
             $couponId = 0;
             $useIntegral = false;
@@ -193,7 +205,7 @@ class StoreOrderCreateServices extends BaseServices
             'pink_id' => $pinkId,
             'seckill_id' => $seckillId,
             'bargain_id' => $bargainId,
-            'advance_id' => $advanceId,
+            'advance_id' => $advance_id,
             'cost' => $priceGroup['costPrice'],
             'is_channel' => $isChannel,
             'add_time' => time(),
@@ -203,7 +215,12 @@ class StoreOrderCreateServices extends BaseServices
             'province' => $userInfo['user_type'] == 'wechat' || $userInfo['user_type'] == 'routine' ? $wechatServices->value(['uid' => $uid, 'user_type' => $userInfo['user_type']], 'province') : '',
             'spread_uid' => 0,
             'spread_two_uid' => 0,
-            'virtual_type' => $virtual_type
+            'virtual_type' => $virtual_type,
+            'pay_uid' => $uid,
+            'custom_form' => json_encode($customForm),
+            'division_id' => $userInfo['division_id'],
+            'agent_id' => $userInfo['agent_id'],
+            'staff_id' => $userInfo['staff_id'],
         ];
 
         if ($shippingType === 2) {
@@ -273,7 +290,7 @@ class StoreOrderCreateServices extends BaseServices
             $res3 = $userBillServices->income('deduction', $uid, [
                 'number' => $priceData['usedIntegral'],
                 'deductionPrice' => $priceData['deduction_price']
-            ], $userInfo['integral'], $orderId);
+            ], $userInfo['integral'] - $priceData['usedIntegral'], $orderId);
 
             $res2 = $res2 && false != $res3;
         }
@@ -353,7 +370,7 @@ class StoreOrderCreateServices extends BaseServices
      * @param int $uid
      * @return array
      */
-    public function computeOrderProductTruePrice(array $cartInfo, array $priceData, $addressId, int $uid)
+    public function computeOrderProductTruePrice(array $cartInfo, array $priceData, $addressId, int $uid, $orderInfo)
     {
         //统一放入默认数据
         foreach ($cartInfo as &$cart) {
@@ -362,10 +379,10 @@ class StoreOrderCreateServices extends BaseServices
             $cart['coupon_price'] = 0.00;
         }
         try {
-            [$cartInfo, $spread_ids] = $this->computeOrderProductBrokerage($uid, $cartInfo);
+            [$cartInfo, $spread_ids] = $this->computeOrderProductBrokerage($uid, $cartInfo, $orderInfo);
             $cartInfo = $this->computeOrderProductCoupon($cartInfo, $priceData);
             $cartInfo = $this->computeOrderProductIntegral($cartInfo, $priceData);
-            $cartInfo = $this->computeOrderProductPostage($cartInfo, $priceData, $addressId);
+//            $cartInfo = $this->computeOrderProductPostage($cartInfo, $priceData, $addressId);
         } catch (\Throwable $e) {
             Log::error('订单商品结算失败,File：' . $e->getFile() . ',Line：' . $e->getLine() . ',Message：' . $e->getMessage());
             throw new ValidateException('订单商品结算失败');
@@ -375,14 +392,14 @@ class StoreOrderCreateServices extends BaseServices
         foreach ($cartInfo as &$cart) {
             $coupon_price = $cart['coupon_price'] ?? 0;
             $integral_price = $cart['integral_price'] ?? 0;
+            $cart['sum_true_price'] = bcmul((string)$cart['truePrice'], (string)$cart['cart_num'], 2);
             if ($coupon_price) {
-                $cart['sum_true_price'] = bcsub((string)bcmul((string)$cart['truePrice'], (string)$cart['cart_num'], 4), (string)$coupon_price, 2);
+                $cart['sum_true_price'] = bcsub((string)$cart['sum_true_price'], (string)$coupon_price, 2);
                 $uni_coupon_price = (string)bcdiv((string)$coupon_price, (string)$cart['cart_num'], 4);
                 $cart['truePrice'] = $cart['truePrice'] > $uni_coupon_price ? bcsub((string)$cart['truePrice'], $uni_coupon_price, 2) : 0;
             }
             if ($integral_price) {
-                $sum = $coupon_price && isset($cart['sum_true_price']) ? (string)$cart['sum_true_price'] : (string)bcmul((string)$cart['truePrice'], (string)$cart['cart_num'], 4);
-                $cart['sum_true_price'] = bcsub($sum, (string)$integral_price, 2);
+                $cart['sum_true_price'] = bcsub((string)$cart['sum_true_price'], (string)$integral_price, 2);
                 $uni_integral_price = (string)bcdiv((string)$integral_price, (string)$cart['cart_num'], 4);
                 $cart['truePrice'] = $cart['truePrice'] > $uni_integral_price ? bcsub((string)$cart['truePrice'], $uni_integral_price, 2) : 0;
             }
@@ -421,7 +438,7 @@ class StoreOrderCreateServices extends BaseServices
                 $temp_num = [];
                 foreach ($cartInfo as $cart) {
                     $tempId = $cart['productInfo']['temp_id'] ?? 1;
-                    $type = isset($temp[$tempId]['type']) ? $temp[$tempId]['type'] : $temp[1]['type'];
+                    $type = $temp[$tempId]['type'] ?? $temp[1]['type'];
                     if ($type == 1) {
                         $num = $cart['cart_num'];
                     } elseif ($type == 2) {
@@ -429,7 +446,7 @@ class StoreOrderCreateServices extends BaseServices
                     } else {
                         $num = $cart['cart_num'] * $cart['productInfo']['attrInfo']['volume'];
                     }
-                    $region = isset($regions[$tempId]) ? $regions[$tempId] : $regions[1];
+                    $region = $regions[$tempId] ?? $regions[1];
                     if (!isset($temp_num[$cart['productInfo']['temp_id']])) {
                         $temp_num[$cart['productInfo']['temp_id']]['cart_id'][] = $cart['id'];
                         $temp_num[$cart['productInfo']['temp_id']]['number'] = $num;
@@ -638,32 +655,47 @@ class StoreOrderCreateServices extends BaseServices
      * @throws \think\db\exception\DbException
      * @throws \think\db\exception\ModelNotFoundException
      */
-    public function computeOrderProductBrokerage(int $uid, array $cartInfo)
+    public function computeOrderProductBrokerage(int $uid, array $cartInfo, $orderInfo)
     {
-        //获取后台一级返佣比例
-        $storeBrokerageRatio = sys_config('store_brokerage_ratio');
-        //获取二级返佣比例
-        $storeBrokerageTwo = sys_config('store_brokerage_two');
         /** @var AgentLevelServices $agentLevelServices */
         $agentLevelServices = app()->make(AgentLevelServices::class);
         [$one_brokerage_up, $two_brokerage_up, $spread_one_uid, $spread_two_uid] = $agentLevelServices->getAgentLevelBrokerage($uid);
+
+        $BrokerageOne = sys_config('store_brokerage_ratio') != '' ?: 0;
+        $BrokerageTwo = sys_config('store_brokerage_two') != '' ?: 0;
+        $storeBrokerageRatio = $BrokerageOne + (($BrokerageOne * $one_brokerage_up) / 100);
+        $storeBrokerageTwo = $BrokerageTwo + (($BrokerageTwo * $two_brokerage_up) / 100);
+
+        /** @var DivisionServices $divisionService */
+        $divisionService = app()->make(DivisionServices::class);
+        [$storeBrokerageRatio, $storeBrokerageTwo, $staffPercent, $agentPercent, $divisionPercent] = $divisionService->getDivisionPercent($uid, $storeBrokerageRatio, $storeBrokerageTwo, sys_config('is_self_brokerage', 0));
+
         foreach ($cartInfo as &$cart) {
             $oneBrokerage = '0';//一级返佣金额
             $twoBrokerage = '0';//二级返佣金额
+            $staffBrokerage = '0';//店员返佣金额
+            $agentBrokerage = '0';//代理商返佣金额
+            $divisionBrokerage = '0';//事业部返佣金额
             $cartNum = (string)$cart['cart_num'] ?? '0';
             if (isset($cart['productInfo'])) {
                 $productInfo = $cart['productInfo'];
+
+                //计算商品金额
+                if (isset($productInfo['attrInfo'])) {
+                    $price = bcmul((string)($productInfo['attrInfo']['price'] ?? '0'), $cartNum, 4);
+                } else {
+                    $price = bcmul((string)($productInfo['price'] ?? '0'), $cartNum, 4);
+                }
+
+                $staffBrokerage = bcmul((string)$price, (string)bcdiv($staffPercent, 100, 4), 2);
+                $agentBrokerage = bcmul((string)$price, (string)bcdiv($agentPercent, 100, 4), 2);
+                $divisionBrokerage = bcmul((string)$price, (string)bcdiv($divisionPercent, 100, 4), 2);
+
                 //指定返佣金额
                 if (isset($productInfo['is_sub']) && $productInfo['is_sub'] == 1) {
                     $oneBrokerage = bcmul((string)($productInfo['attrInfo']['brokerage'] ?? '0'), $cartNum, 2);
                     $twoBrokerage = bcmul((string)($productInfo['attrInfo']['brokerage_two'] ?? '0'), $cartNum, 2);
                 } else {
-                    //比例返佣
-                    if (isset($productInfo['attrInfo'])) {
-                        $price = bcmul((string)($productInfo['attrInfo']['price'] ?? '0'), $cartNum, 4);
-                    } else {
-                        $price = bcmul((string)($productInfo['price'] ?? '0'), $cartNum, 4);
-                    }
                     if ($price) {
                         //一级返佣比例 小于等于零时直接返回 不返佣
                         if ($storeBrokerageRatio > 0) {
@@ -680,11 +712,12 @@ class StoreOrderCreateServices extends BaseServices
                     }
                 }
             }
-            if ($one_brokerage_up) $oneBrokerage = bcadd((string)$oneBrokerage, (string)bcmul((string)$oneBrokerage, (string)bcdiv((string)$one_brokerage_up, '100', 2), 4), 2);
-            if ($two_brokerage_up) $twoBrokerage = bcadd((string)$twoBrokerage, (string)bcmul((string)$twoBrokerage, (string)bcdiv((string)$two_brokerage_up, '100', 2), 4), 2);
 
             $cart['one_brokerage'] = $oneBrokerage;
             $cart['two_brokerage'] = $twoBrokerage;
+            $cart['staff_brokerage'] = $staffBrokerage;
+            $cart['agent_brokerage'] = $agentBrokerage;
+            $cart['division_brokerage'] = $divisionBrokerage;
         }
 
         return [$cartInfo, [$spread_one_uid, $spread_two_uid]];

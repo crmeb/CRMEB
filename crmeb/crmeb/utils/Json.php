@@ -12,7 +12,6 @@
 namespace crmeb\utils;
 
 
-use think\exception\HttpResponseException;
 use think\facade\Config;
 use think\facade\Lang;
 use think\Response;

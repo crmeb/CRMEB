@@ -17,6 +17,9 @@ use app\http\middleware\AllowOriginMiddleware;
  * 无需授权的接口
  */
 Route::group(function () {
+    //升级程序
+    Route::get('upgrade', 'UpgradeController/index');
+    Route::get('upgrade/run', 'UpgradeController/upgrade');
     //用户名密码登录
     Route::post('login', 'Login/login')->name('AdminLogin')->option(['real_name' => '下载表备份记录']);
     //后台登录页面数据
@@ -27,9 +30,8 @@ Route::group(function () {
     Route::get('captcha_pro', 'Login/captcha')->name('')->option(['real_name' => '获取验证码']);
     //获取客服数据
     Route::get('get_workerman_url', 'PublicController/getWorkerManUrl')->option(['real_name' => '获取客服数据']);
-
+    //测试
     Route::get('index', 'Test/index')->option(['real_name' => '测试地址']);
-
 })->middleware(AllowOriginMiddleware::class);
 
 /**

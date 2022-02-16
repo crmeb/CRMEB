@@ -12,7 +12,7 @@
 namespace app\adminapi\controller\v1\marketing;
 
 use app\adminapi\controller\AuthController;
-use app\services\activity\StoreSeckillServices;
+use app\services\activity\seckill\StoreSeckillServices;
 use app\services\product\sku\StoreProductAttrValueServices;
 use crmeb\services\CacheService;
 use think\facade\App;
@@ -67,7 +67,7 @@ class StoreSeckill extends AuthController
             [['title', 's'], ''],
             [['info', 's'], ''],
             [['unit_name', 's'], ''],
-            ['image', ''],
+//            ['image', ''],
             ['images', []],
             [['give_integral', 'd'], 0],
             ['section_time', []],
@@ -81,7 +81,12 @@ class StoreSeckill extends AuthController
             [['description', 's'], ''],
             ['attrs', []],
             ['items', []],
-            ['copy', 0]
+            ['copy', 0],
+            ['logistics', []],//物流方式
+            ['freight', 1],//运费设置
+            ['postage', 0],//邮费
+            ['custom_form', ''],
+            ['virtual_type', 0],
         ]);
         $this->validate($data, \app\adminapi\validate\marketing\StoreSeckillValidate::class, 'save');
         if ($data['section_time']) {

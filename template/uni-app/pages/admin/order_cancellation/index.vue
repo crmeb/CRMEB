@@ -35,7 +35,9 @@
 			</view>
 			<view class="mask"></view>
 		</view>
+		<!-- #ifndef MP -->
 		<home></home>
+		<!-- #endif -->
 	</view>
 </template>
 

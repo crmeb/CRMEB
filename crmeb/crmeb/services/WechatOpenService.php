@@ -11,7 +11,7 @@
 
 namespace crmeb\services;
 
-use EasyWeChat\Foundation\Application;
+use crmeb\services\easywechat\Application;
 
 class WechatOpenService
 {

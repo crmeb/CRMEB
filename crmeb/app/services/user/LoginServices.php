@@ -86,31 +86,56 @@ class LoginServices extends BaseServices
         $data['phone'] = !isset($user['phone']) || !$user['phone'] ? $userInfo->phone : $user['phone'];
         $data['last_time'] = time();
         $data['last_ip'] = app()->request->ip();
+        //如果扫了员工邀请码，上级，代理商，区域代理都会改动。
+        if (isset($user['is_staff']) && !$userInfo['is_agent'] && !$userInfo['is_division']) {
+            $spreadUid = isset($user['code']) ? $user['code'] : 0;
+            $spreadInfo = $this->dao->get($spreadUid);
+            if ($userInfo['uid'] != $spreadUid) {
+                $data['spread_uid'] = $spreadUid;
+                $data['spread_time'] = $userInfo->last_time;
+            }
+            $data['agent_id'] = $spreadInfo->agent_id;
+            $data['division_id'] = $spreadInfo->division_id;
+            $data['staff_id'] = $userInfo['uid'];
+            $data['is_staff'] = $user['is_staff'] ?? 0;
+            $data['division_type'] = 3;
+            $data['division_change_time'] = time();
+            $data['division_end_time'] = $spreadInfo->division_end_time;
+            //如果店员切换代理商，则店员在之前代理商下推广的用户，他们的直接上级从当前店员变为之前代理商
+            if ($userInfo->agent_id != 0 && $userInfo->agent_id != $spreadInfo->agent_id) {
+                $this->dao->update($userInfo['uid'], ['spread_uid' => $userInfo->agent_id], 'spread_uid');
+            }
+        }
         //永久绑定
         $store_brokergae_binding_status = sys_config('store_brokerage_binding_status', 1);
-        if ($userInfo->spread_uid && $store_brokergae_binding_status == 1) {
+        if ($userInfo->spread_uid && $store_brokergae_binding_status == 1 && !isset($user['is_staff'])) {
             $data['login_type'] = $user['login_type'] ?? $userInfo->login_type;
         } else {
+            $spreadUid = isset($user['code']) && $user['code'] && $user['code'] != $userInfo->uid ? $user['code'] : 0;
+            if ($spreadUid && $userInfo->uid == $this->dao->value(['uid' => $spreadUid], 'spread_uid')) {
+                $spreadUid = 0;
+            }
             //绑定分销关系 = 所有用户
             if (sys_config('brokerage_bindind', 1) == 1) {
                 //分销绑定类型为时间段且过期 ｜｜临时
                 $store_brokerage_binding_time = sys_config('store_brokerage_binding_time', 30);
                 if (!$userInfo['spread_uid'] || $store_brokergae_binding_status == 3 || ($store_brokergae_binding_status == 2 && ($userInfo['spread_time'] + $store_brokerage_binding_time * 24 * 3600) < time())) {
-                    $spreadUid = isset($user['code']) && $user['code'] && $user['code'] != $userInfo->uid ? $user['code'] : 0;
-                    if ($spreadUid && $userInfo->uid == $this->dao->value(['uid' => $spreadUid], 'spread_uid')) {
-                        $spreadUid = 0;
-                    }
                     if ($spreadUid) {
+                        $spreadInfo = $this->dao->get($spreadUid);
                         $spreadUid = (int)$spreadUid;
                         $data['spread_uid'] = $spreadUid;
                         $data['spread_time'] = time();
-                        $this->dao->incField($spreadUid, 'spread_count', 1);
-                        //绑定用户后置事件
-                        event('user.register', [$spreadUid, $userInfo['user_type'], $userInfo['nickname'], $userInfo['uid'], 0]);
-                        //推送消息
-                        event('notice.notice', [['spreadUid' => $spreadUid, 'user_type' => $userInfo['user_type'], 'nickname' => $userInfo['nickname']], 'bind_spread_uid']);
+                        $data['agent_id'] = $spreadInfo->agent_id;
+                        $data['division_id'] = $spreadInfo->division_id;
+                        $data['staff_id'] = $spreadInfo->staff_id;
                     }
                 }
+            }
+            if ($spreadUid) {
+                //绑定用户后置事件
+                event('user.register', [$spreadUid, $userInfo['user_type'], $userInfo['nickname'], $userInfo['uid'], 0]);
+                //推送消息
+                event('notice.notice', [['spreadUid' => $spreadUid, 'user_type' => $userInfo['user_type'], 'nickname' => $userInfo['nickname']], 'bind_spread_uid']);
             }
         }
         if (!$this->dao->update($userInfo['uid'], $data, 'uid')) {

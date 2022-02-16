@@ -24,10 +24,10 @@
               <div class="line"></div>
               <div class="right title">小程序设置</div>
             </div>
-            <Alert v-if="!pageData.appId">
+            <Alert v-if="!pageData.appId && !pageData.code">
               <template slot="desc">
                 您尚未配置小程序信息，请<router-link
-                  :to="{ path: '/admin/setting/system_config?from=download' }"
+                  :to="{ path: '/admin/setting/system_config_retail/3/7' }"
                   >立即设置</router-link
                 ></template
               >
@@ -111,7 +111,6 @@ export default {
   },
   created() {
     routineInfo().then((res) => {
-      console.log(res);
       this.pageData = res.data;
     });
   },
@@ -133,8 +132,7 @@ export default {
         is_live: this.is_live,
       })
         .then((res) => {
-          console.log(res);
-          window.open(res.data.url, "_blank");
+          window.open(res.data.url);
         })
         .catch((err) => {
           this.$Message.warning(err.msg);

@@ -15,11 +15,12 @@ use app\services\BaseServices;
 use app\dao\order\StoreOrderDao;
 use app\services\pay\PayServices;
 use app\services\product\product\StoreCategoryServices;
-use app\services\user\MemberCardServices;
+use app\services\user\member\MemberCardServices;
+use app\services\user\UserBillServices;
 use app\services\user\UserServices;
 use think\exception\ValidateException;
 use app\services\user\UserAddressServices;
-use app\services\coupon\StoreCouponUserServices;
+use app\services\activity\coupon\StoreCouponUserServices;
 use app\services\shipping\ShippingTemplatesFreeServices;
 use app\services\shipping\ShippingTemplatesRegionServices;
 use app\services\shipping\ShippingTemplatesServices;
@@ -81,7 +82,7 @@ class StoreOrderComputedServices extends BaseServices
         $offlinePayStatus = (int)sys_config('offline_pay_status') ?? (int)2;
         $systemPayType = PayServices::PAY_TYPE;
         if ($offlinePayStatus == 2) unset($systemPayType['offline']);
-        if (strtolower($payType) != 'pc') {
+        if (strtolower($payType) != 'pc' && strtolower($payType) != 'friend') {
             if (!array_key_exists($payType, $systemPayType)) {
                 throw new ValidateException('选择支付方式有误');
             }
@@ -224,14 +225,19 @@ class StoreOrderComputedServices extends BaseServices
      */
     public function useIntegral(bool $useIntegral, $userInfo, string $payPrice, array $other)
     {
+        /** @var UserBillServices $userBillServices */
+        $userBillServices = app()->make(UserBillServices::class);
+        // 可用积分
+        $usable = bcsub((string)$userInfo['integral'], (string)$userBillServices->getBillSum(['uid' => $userInfo['uid'], 'is_frozen' => 1]), 0);
+
         $SurplusIntegral = 0;
         if ($useIntegral && $userInfo['integral'] > 0) {
             //积分抵扣上限
             $integralMaxNum = sys_config('integral_max_num', 200);
-            if ($integralMaxNum > 0 && $userInfo['integral'] > $integralMaxNum) {
+            if ($integralMaxNum > 0 && $usable > $integralMaxNum) {
                 $integral = $integralMaxNum;
             } else {
-                $integral = $userInfo['integral'];
+                $integral = $usable;
             }
             $deductionPrice = (float)bcmul((string)$integral, (string)$other['integralRatio'], 2);
             if ($deductionPrice < $payPrice) {
@@ -244,7 +250,7 @@ class StoreOrderComputedServices extends BaseServices
             }
             $deductionPrice = $deductionPrice > 0 ? $deductionPrice : 0;
             $usedIntegral = $usedIntegral > 0 ? $usedIntegral : 0;
-            $SurplusIntegral = (int)bcsub((string)$userInfo['integral'], $usedIntegral, 0);
+            $SurplusIntegral = (int)bcsub((string)$usable, $usedIntegral, 0);
         } else {
             $deductionPrice = 0;
             $usedIntegral = 0;
@@ -313,6 +319,19 @@ class StoreOrderComputedServices extends BaseServices
         $totalPrice = $this->getOrderSumPrice($cartInfo, 'truePrice');//获取订单svip、用户等级优惠之后总金额
         $costPrice = $this->getOrderSumPrice($cartInfo, 'costPrice');//获取订单成本价
         $vipPrice = $this->getOrderSumPrice($cartInfo, 'vip_truePrice');//获取订单会员优惠金额
+
+        // 判断商品包邮和固定运费
+        foreach ($cartInfo as $key => &$item) {
+            if ($item['productInfo']['freight'] == 1) {
+                $item['postage_price'] = 0;
+//                unset($cartInfo[$key]);
+            } elseif ($item['productInfo']['freight'] == 2) {
+                $item['postage_price'] = bcmul((string)$item['productInfo']['postage'], (string)$item['cart_num'], 2);
+                $storePostage = bcadd((string)$storePostage, (string)$item['postage_price'], 2);
+//                unset($cartInfo[$key]);
+            }
+        }
+        $postageArr = [];
         if (isset($cartInfo[0]['productInfo']['is_virtual']) && $cartInfo[0]['productInfo']['is_virtual'] == 1) {
             $storePostage = 0;
         } elseif ($storeFreePostage && $cartInfo && $addr) {
@@ -324,7 +343,9 @@ class StoreOrderComputedServices extends BaseServices
                 $cityId = $addr['city_id'] ?? 0;
                 $tempIds[] = 1;
                 foreach ($cartInfo as $key_c => $item_c) {
-                    $tempIds[] = $item_c['productInfo']['temp_id'];
+                    if (isset($item_c['productInfo']['freight']) && $item_c['productInfo']['freight'] == 3) {
+                        $tempIds[] = $item_c['productInfo']['temp_id'];
+                    }
                 }
                 $tempIds = array_unique($tempIds);
                 /** @var ShippingTemplatesServices $shippServices */
@@ -335,8 +356,11 @@ class StoreOrderComputedServices extends BaseServices
                 $regions = $regionServices->getTempRegionList($tempIds, [$cityId, 0], 'temp_id,first,first_price,continue,continue_price', 'temp_id');
                 $temp_num = [];
                 foreach ($cartInfo as $cart) {
+                    if (isset($cart['productInfo']['freight']) && in_array($cart['productInfo']['freight'], [1, 2])) {
+                        continue;
+                    }
                     $tempId = $cart['productInfo']['temp_id'] ?? 1;
-                    $type = isset($temp[$tempId]['type']) ? $temp[$tempId]['type'] : $temp[1]['type'];
+                    $type = $temp[$tempId]['type'] ?? $temp[1]['type'];
                     if ($type == 1) {
                         $num = $cart['cart_num'];
                     } elseif ($type == 2) {
@@ -344,7 +368,7 @@ class StoreOrderComputedServices extends BaseServices
                     } else {
                         $num = $cart['cart_num'] * $cart['productInfo']['attrInfo']['volume'];
                     }
-                    $region = isset($regions[$tempId]) ? $regions[$tempId] : $regions[1];
+                    $region = $regions[$tempId] ?? $regions[1];
                     if (!isset($temp_num[$tempId])) {
                         $temp_num[$tempId] = [
                             'number' => $num,
@@ -379,6 +403,8 @@ class StoreOrderComputedServices extends BaseServices
                 $maxFirstPrice = $temp_num ? max(array_column($temp_num, 'first_price')) : 0;
                 //初始运费为0
                 $storePostage_arr = [];
+
+                $i = 0;
                 //循环运费数组
                 foreach ($temp_num as $fk => $fv) {
                     //找到首件运费等于最大值
@@ -396,16 +422,21 @@ class StoreOrderComputedServices extends BaseServices
                                 $Postage = bcadd(bcadd($Postage, $fv['first_price'], 2), bcmul(ceil(bcdiv(bcsub($fv['number'], $fv['first'], 2), $fv['continue'] ?? 0, 2)), $fv['continue_price'], 4), 2);
                             }
                         }
+                        $postageArr[$i]['data'][$fk] = $Postage;
+
                         //删除计算过的首件数据
                         unset($tempArr[$fk]);
                         //循环计算剩余运费
-                        foreach ($tempArr as $cv) {
+                        foreach ($tempArr as $ck => $cv) {
                             if ($cv['continue'] <= 0) {
                                 $Postage = $Postage;
                             } else {
-                                $Postage = bcadd($Postage, bcmul(ceil(bcdiv($cv['number'], $cv['continue'] ?? 0, 2)), $cv['continue_price'], 2), 2);
+                                $one_postage = bcmul(ceil(bcdiv($cv['number'], $cv['continue'] ?? 0, 2)), $cv['continue_price'], 2);
+                                $Postage = bcadd($Postage, $one_postage, 2);
+                                $postageArr[$i]['data'][$ck] = $one_postage;
                             }
                         }
+                        $postageArr[$i]['sum'] = $Postage;
                         $storePostage_arr[] = $Postage;
                     }
                 }
@@ -417,6 +448,7 @@ class StoreOrderComputedServices extends BaseServices
         }
         //会员邮费享受折扣
         if ($storePostage) {
+            $express_rule_number = 0;
             if (!$userInfo) {
                 /** @var UserServices $userService */
                 $userService = app()->make(UserServices::class);
@@ -427,19 +459,67 @@ class StoreOrderComputedServices extends BaseServices
                 /** @var MemberCardServices $memberCardService */
                 $memberCardService = app()->make(MemberCardServices::class);
                 $express_rule_number = $memberCardService->isOpenMemberCard('express');
-                if ($express_rule_number) {
-                    if ($express_rule_number <= 0) {
-                        $storePostageDiscount = $storePostage;
-                        $storePostage = 0;
-                    } else if ($express_rule_number < 100) {
-                        $storePostageDiscount = $storePostage;
-                        $storePostage = bcmul($storePostage, bcdiv($express_rule_number, 100, 4), 2);
-                        $storePostageDiscount = bcsub($storePostageDiscount, $storePostage, 2);
-                    }
+
+                $express_rule_number = $express_rule_number <= 0 ? 0 : $express_rule_number;
+
+//                if ($express_rule_number) {
+//                    if ($express_rule_number <= 0) {
+//                        $storePostageDiscount = $storePostage;
+//                        $storePostage = 0;
+//                    } else if ($express_rule_number < 100) {
+//                        $storePostageDiscount = $storePostage;
+//                        $storePostage = bcmul($storePostage, bcdiv($express_rule_number, 100, 4), 2);
+//                        $storePostageDiscount = bcsub($storePostageDiscount, $storePostage, 2);
+//                    }
+//                }
+            }
+
+            $truePostageArr = [];
+            foreach ($postageArr as $postitem) {
+                if ($postitem['sum'] == $storePostage) {
+                    $truePostageArr = $postitem['data'];
+                    break;
                 }
             }
+
+            $cartAlready = [];
+            foreach ($cartInfo as &$item) {
+                if (isset($item['productInfo']['freight']) && in_array($item['productInfo']['freight'], [1, 2])) {
+                    continue;
+                }
+                $tempId = $item['productInfo']['temp_id'] ?? 0;
+                $tempPostage = $truePostageArr[$tempId] ?? 0;
+                $tempNumber = $temp_num[$tempId]['number'] ?? 0;
+                if (!$tempId || !$tempPostage || !$tempNumber) continue;
+                $cartNumber = $item['cart_num'];
+
+                if ((($cartAlready[$tempId]['number'] ?? 0) + $cartNumber) >= $tempNumber) {
+                    $price = isset($cartAlready[$tempId]['price']) ? bcsub((string)$tempPostage, (string)$cartAlready[$tempId]['price'], 6) : $tempPostage;
+                } else {
+                    $price = bcmul((string)$tempPostage, bcdiv((string)$cartNumber, (string)$tempNumber, 6), 6);
+                }
+
+                $cartAlready[$tempId]['number'] = bcadd((string)($cartNumber[$tempId]['number'] ?? 0), (string)$cartNumber, 4);
+                $cartAlready[$tempId]['price'] = bcadd((string)($cartNumber[$tempId]['price'] ?? 0.00), (string)$price, 4);
+
+                if ($express_rule_number && $express_rule_number < 100) {
+                    $price = bcmul($price, bcdiv($express_rule_number, 100, 4), 4);
+                }
+                $price = sprintf("%.2f", $price);
+                $item['postage_price'] = $price;
+            }
+            if ($express_rule_number && $express_rule_number < 100) {
+                $storePostageDiscount = $storePostage;
+                $storePostage = bcmul($storePostage, bcdiv($express_rule_number, 100, 4), 2);
+                $storePostageDiscount = bcsub($storePostageDiscount, $storePostage, 2);
+//                $storePostageDiscount = bcsub((string)$storePostage, (string)$resultStorePostage, 2);
+//                $storePostage = $resultStorePostage;
+            } else {
+                $storePostageDiscount = 0;
+                $storePostage = $storePostage;
+            }
         }
-        return compact('storePostage', 'storeFreePostage', 'isStoreFreePostage', 'sumPrice', 'totalPrice', 'costPrice', 'vipPrice', 'storePostageDiscount');
+        return compact('storePostage', 'storeFreePostage', 'isStoreFreePostage', 'sumPrice', 'totalPrice', 'costPrice', 'vipPrice', 'storePostageDiscount', 'cartInfo');
     }
 
     /**

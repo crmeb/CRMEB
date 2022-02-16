@@ -1,14 +1,16 @@
 <template>
   <div>
-    <div class="i-layout-page-header">
-      <div class="i-layout-page-header">
+    <div class="i-layout-page-header header_top">
+      <div class="i-layout-page-header fl_header">
         <router-link :to="{ path: '/admin/marketing/store_integral/index' }"
-          ><Button icon="ios-arrow-back" size="small" class="mr20"
+          ><Button icon="ios-arrow-back" size="small" type="text"
             >返回</Button
           ></router-link
         >
+        <Divider type="vertical" />
         <span
           class="ivu-page-header-title mr20"
+          style="padding: 0"
           v-text="$route.params.id ? '编辑积分商品' : '添加积分商品'"
         ></span>
       </div>
@@ -200,6 +202,15 @@
                     highlight-row
                     @on-selection-change="changeCheckbox"
                   >
+                    <template slot-scope="{ row, index }" slot="price">
+                      <InputNumber
+                        v-model="row.price"
+                        :min="0"
+                        :precision="2"
+                        class="priceBox"
+                        :active-change="false"
+                      ></InputNumber>
+                    </template>
                     <template slot-scope="{ row, index }" slot="pic">
                       <div
                         class="acea-row row-middle row-center-wrapper"
@@ -227,12 +238,11 @@
             <Row v-show="current === 2">
               <Col span="24">
                 <FormItem label="内容：">
-                  <vue-ueditor-wrap
-                    v-model="formValidate.description"
-                    @beforeInit="addCustomDialog"
-                    :config="myConfig"
+                  <WangEditor
                     style="width: 90%"
-                  ></vue-ueditor-wrap>
+                    :content="formValidate.description"
+                    @editorContent="getEditorContent"
+                  ></WangEditor>
                 </FormItem>
               </Col>
             </Row>
@@ -298,7 +308,7 @@
 import { mapState } from "vuex";
 import goodsList from "@/components/goodsList/index";
 import UeditorWrap from "@/components/ueditorFrom/index";
-import VueUeditorWrap from "vue-ueditor-wrap";
+import WangEditor from "@/components/wangEditor/index.vue";
 import uploadPictures from "@/components/uploadPictures";
 import {
   integralAddApi,
@@ -308,7 +318,7 @@ import {
 
 export default {
   name: "storeIntegralCreate",
-  components: { UeditorWrap, goodsList, uploadPictures, VueUeditorWrap },
+  components: { UeditorWrap, goodsList, uploadPictures, WangEditor },
   data() {
     return {
       submitOpen: false,
@@ -478,6 +488,9 @@ export default {
     }
   },
   methods: {
+    getEditorContent(data) {
+      this.formValidate.description = data;
+    },
     // 规格；
     productAttrs(rows) {
       let that = this;
@@ -517,20 +530,18 @@ export default {
           title: title,
           key: key,
           align: "center",
-          minWidth: 120,
+          minWidth: 100,
           render: (h, params) => {
             return h("div", [
               h("InputNumber", {
                 props: {
-                  min: 0,
-                  max: 99999,
-                  value: key === "price" ? params.row.price : params.row.quota,
+                  min: 1,
+                  precision: 0,
+                  value: params.row.quota,
                 },
                 on: {
                   "on-change": (e) => {
-                    key === "price"
-                      ? (params.row.price = e)
-                      : (params.row.quota = e);
+                    params.row.quota = e;
                     that.specsData[params.index] = params.row;
                     if (
                       !!that.formValidate.attrs &&
@@ -763,42 +774,6 @@ export default {
       const dst = newItems.indexOf(item);
       newItems.splice(dst, 0, ...newItems.splice(src, 1));
       this.formValidate.images = newItems;
-    },
-    // 添加自定义弹窗
-    addCustomDialog(editorId) {
-      window.UE.registerUI(
-        "test-dialog",
-        function (editor, uiName) {
-          // 创建 dialog
-          let dialog = new window.UE.ui.Dialog({
-            // 指定弹出层中页面的路径，这里只能支持页面，路径参考常见问题 2
-            iframeUrl: "/admin/widget.images/index.html?fodder=dialog",
-            // 需要指定当前的编辑器实例
-            editor: editor,
-            // 指定 dialog 的名字
-            name: uiName,
-            // dialog 的标题
-            title: "上传图片",
-            // 指定 dialog 的外围样式
-            cssRules: "width:960px;height:550px;padding:20px;",
-          });
-          this.dialog = dialog;
-          // 参考上面的自定义按钮
-          var btn = new window.UE.ui.Button({
-            name: "dialog-button",
-            title: "上传图片",
-            cssRules: `background-image: url(../../../assets/images/icons.png);background-position: -726px -77px;`,
-            onclick: function () {
-              // 渲染dialog
-              dialog.render();
-              dialog.open();
-            },
-          });
-          return btn;
-        },
-        37 /* 指定添加到工具栏上的那个位置，默认时追加到最后 */,
-        editorId /* 指定这个UI是哪个编辑器实例上的，默认是页面上所有的编辑器都会添加这个按钮 */
-      );
     },
   },
 };

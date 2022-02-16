@@ -186,24 +186,70 @@ export function storeDiscountsList(id) {
 /**
  * 购车添加、减少、修改
  * 
-*/
+ */
 export function postCartNum(data) {
-  return request.post('v2/set_cart_num', data);
+	return request.post('v2/set_cart_num', data);
+}
+/**
+ * 代理商申请
+ * 
+ */
+export function create(data) {
+	return request.post(`agent/apply/${data.id}`, data);
+}
+
+/**
+ * 代理商规则
+ * @param object data
+ */
+export function getAgentAgreement(data) {
+	return request.get('agent/get_agent_agreement', {}, {
+		noAuth: true
+	});
+}
+
+/**
+ * h5用户发送验证码
+ * @param data object 用户手机号
+ */
+export function registerVerify(data) {
+	return request.post("register/verify", data, {
+		noAuth: true
+	});
+}
+
+/**
+ * 验证码key
+ */
+export function getCodeApi() {
+	return request.get("verify_code", {}, {
+		noAuth: true
+	});
+}
+/**
+ * 获取代理商表单信息
+ */
+export function getGoodsDetails() {
+	return request.get("agent/apply/info", {}, {
+		noAuth: true
+	});
 }
 
 /**
  * 获取首页的属性
  * @returns {*}
  */
-export function getAttr(id,type) {
-  return request.get("v2/get_attr/"+id+"/"+type);
+export function getAttr(id, type) {
+	return request.get("v2/get_attr/" + id + "/" + type);
 }
 /**
  * 获取首页商品列表（所有活动的）
  * @param object data
-*/
-export function getHomeProducts(data){
-  return request.get('home/products',data,{noAuth:true});
+ */
+export function getHomeProducts(data) {
+	return request.get('home/products', data, {
+		noAuth: true
+	});
 }
 
 /**
@@ -211,5 +257,5 @@ export function getHomeProducts(data){
  * @returns {*}
  */
 export function getPresellProductDetail(id) {
-  return request.get("advance/detail/" + id);
+	return request.get("advance/detail/" + id);
 }

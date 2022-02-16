@@ -38,7 +38,7 @@ class RoutineTemplateListService extends NoticeService
      */
     public function isOpen(string $mark)
     {
-        $this->isopend = $this->notceinfo['is_routine'] === 1 ? true : false;
+        $this->isopend = $this->notceinfo['is_routine'] === 1;
         return $this;
 
     }
@@ -67,7 +67,7 @@ class RoutineTemplateListService extends NoticeService
     public function sendTemplate(string $tempCode, int $uid, array $data, string $link = null, string $color = null)
     {
         try {
-            $this->isopend = $this->notceinfo['is_routine'] === 1 ? true : false;
+            $this->isopend = $this->notceinfo['is_routine'] === 1;
             if ($this->isopend) {
                 $openid = $this->getOpenidByUid($uid);
                 //放入队列执行

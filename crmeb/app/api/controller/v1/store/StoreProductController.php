@@ -15,6 +15,7 @@ use app\services\other\QrcodeServices;
 use app\services\product\product\StoreCategoryServices;
 use app\services\product\product\StoreProductReplyServices;
 use app\services\product\product\StoreProductServices;
+use app\services\user\UserServices;
 
 /**
  * 商品类
@@ -107,7 +108,7 @@ class StoreProductController
                     /** @var QrcodeServices $qrcodeService */
                     $qrcodeService = app()->make(QrcodeServices::class);
                     $url = $qrcodeService->getRoutineQrcodePath($id, $user['uid'], 0, ['is_promoter' => $user['is_promoter']]);
-                    if ($url === false)
+                    if (!$url)
                         return app('json')->fail('二维码生成失败');
                     else
                         return app('json')->successful(['code' => $url]);
@@ -138,9 +139,10 @@ class StoreProductController
      * 为你推荐
      * @return mixed
      */
-    public function product_hot()
+    public function product_hot(Request $request)
     {
-        $list = $this->services->getProducts(['is_hot' => 1, 'is_show' => 1, 'is_del' => 0]);
+        $vip_user = $request->uid() ? app()->make(UserServices::class)->value(['uid' => $request->uid()], 'is_money_level') : 0;
+        $list = $this->services->getProducts(['is_hot' => 1, 'is_show' => 1, 'is_del' => 0, 'vip_user' => $vip_user]);
         return app('json')->success(get_thumb_water($list, 'mid'));
     }
 
@@ -206,5 +208,17 @@ class StoreProductController
         return app('json')->successful(get_thumb_water($list, 'small', ['pics']));
     }
 
+    /**
+     * 获取预售列表
+     * @param Request $request
+     * @return mixed
+     */
+    public function advanceList(Request $request)
+    {
+        $where = $request->getMore([
+            [['time_type', 'd'], 0]
+        ]);
+        return app('json')->successful($this->services->getAdvanceList($where));
+    }
 
 }

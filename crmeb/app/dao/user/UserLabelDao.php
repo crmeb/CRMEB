@@ -37,15 +37,19 @@ class UserLabelDao extends BaseDao
      * @param string $field
      * @param int $page
      * @param int $limit
+     * @param array $where
+     * @param array $field
      * @return array
      * @throws \think\db\exception\DataNotFoundException
      * @throws \think\db\exception\DbException
      * @throws \think\db\exception\ModelNotFoundException
      */
-    public function getList(int $page = 0, int $limit = 0, array $where = []): array
+    public function getList(int $page = 0, int $limit = 0, array $where = [], array $field = ['*']): array
     {
-        return $this->getModel()->with(['cateName'])->when(isset($where['label_cate']) && $where['label_cate'], function ($query) use ($where) {
+        return $this->search($where)->with(['cateName'])->when(isset($where['label_cate']) && $where['label_cate'], function ($query) use ($where) {
             $query->where('label_cate', $where['label_cate']);
-        })->page($page, $limit)->select()->toArray();
+        })->when($page && $limit, function ($query) use ($page, $limit) {
+            $query->page($page, $limit);
+        })->field($field)->select()->toArray();
     }
 }

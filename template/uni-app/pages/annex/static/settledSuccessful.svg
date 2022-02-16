@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="378" height="314" viewBox="0 0 378 314">
+  <defs>
+    <linearGradient id="linear-gradient" x1="0.5" x2="0.621" y2="1" gradientUnits="objectBoundingBox">
+      <stop offset="0" stop-color="#ffbc6c"/>
+      <stop offset="1" stop-color="#fd8a24"/>
+    </linearGradient>
+    <linearGradient id="linear-gradient-2" x1="0.054" y1="1" x2="0.559" y2="0.427" gradientUnits="objectBoundingBox">
+      <stop offset="0" stop-color="#fd9c46"/>
+      <stop offset="1" stop-color="#fc9235"/>
+    </linearGradient>
+  </defs>
+  <g id="组_3776" data-name="组 3776" transform="translate(-186 -260)">
+    <g id="矩形_1754" data-name="矩形 1754" transform="translate(186 260)" fill="#fff" stroke="#707070" stroke-width="1" opacity="0">
+      <rect width="378" height="314" stroke="none"/>
+      <rect x="0.5" y="0.5" width="377" height="313" fill="none"/>
+    </g>
+    <g id="组_3775" data-name="组 3775" transform="translate(11 13)">
+      <g id="组_3733" data-name="组 3733" transform="translate(5 4)">
+        <line id="直线_2" data-name="直线 2" x2="91.209" transform="translate(390.71 321.419)" fill="none" stroke="#fff0de" stroke-width="2"/>
+        <line id="直线_3" data-name="直线 3" y1="45.162" transform="translate(481.919 321.419)" fill="none" stroke="#fff0de" stroke-width="2"/>
+        <line id="直线_4" data-name="直线 4" x2="40.734" transform="translate(441.185 366.581)" fill="none" stroke="#fff0de" stroke-width="2"/>
+        <circle id="椭圆_13" data-name="椭圆 13" cx="4.5" cy="4.5" r="4.5" transform="translate(477 317)" fill="#fff0de"/>
+        <circle id="椭圆_14" data-name="椭圆 14" cx="4.5" cy="4.5" r="4.5" transform="translate(477 362)" fill="#fff0de"/>
+      </g>
+      <rect id="矩形_1736" data-name="矩形 1736" width="170" height="96" rx="4" transform="translate(206 385)" fill="#fff0de" opacity="0.35"/>
+      <rect id="矩形_1738" data-name="矩形 1738" width="161" height="134" rx="4" transform="translate(356 414)" fill="#fff0de" opacity="0.35"/>
+      <rect id="矩形_1735" data-name="矩形 1735" width="130" height="72" rx="4" transform="translate(226 397)" fill="#fff0de"/>
+      <rect id="矩形_1739" data-name="矩形 1739" width="123" height="77" rx="4" transform="translate(375 425)" fill="#fff0de"/>
+      <rect id="矩形_1740" data-name="矩形 1740" width="36" height="22" rx="4" transform="translate(462 511)" fill="#fff0de"/>
+      <rect id="矩形_1737" data-name="矩形 1737" width="155" height="74" rx="4" transform="translate(266 300)" fill="#fff0de"/>
+      <g id="椭圆_15" data-name="椭圆 15" transform="translate(491 281)" fill="none" stroke="#ffdeb7" stroke-width="2">
+        <circle cx="7" cy="7" r="7" stroke="none"/>
+        <circle cx="7" cy="7" r="6" fill="none"/>
+      </g>
+      <g id="椭圆_17" data-name="椭圆 17" transform="translate(468 299)" fill="none" stroke="#ffdeb7" stroke-width="1">
+        <circle cx="4.5" cy="4.5" r="4.5" stroke="none"/>
+        <circle cx="4.5" cy="4.5" r="4" fill="none"/>
+      </g>
+      <circle id="椭圆_19" data-name="椭圆 19" cx="3" cy="3" r="3" transform="translate(260 527)" fill="#ffdeb7"/>
+      <g id="椭圆_20" data-name="椭圆 20" transform="translate(221 502)" fill="none" stroke="#ffdeb7" stroke-width="2">
+        <circle cx="8.5" cy="8.5" r="8.5" stroke="none"/>
+        <circle cx="8.5" cy="8.5" r="7.5" fill="none"/>
+      </g>
+      <circle id="椭圆_18" data-name="椭圆 18" cx="2.5" cy="2.5" r="2.5" transform="translate(391 283)" fill="#ffdeb7"/>
+      <g id="组_3734" data-name="组 3734" transform="translate(-16.078 -39.078)">
+        <rect id="矩形_1741" data-name="矩形 1741" width="21" height="5" rx="2.5" transform="translate(447.078 309.078)" fill="#ffdeb7"/>
+        <rect id="矩形_1742" data-name="矩形 1742" width="21" height="5" rx="2.5" transform="translate(455.078 322.078) rotate(-90)" fill="#ffdeb7"/>
+        <circle id="椭圆_16" data-name="椭圆 16" cx="2.5" cy="2.5" r="2.5" transform="translate(455.078 309.078)" fill="#fff"/>
+      </g>
+      <g id="组_3726" data-name="组 3726" transform="translate(290.558 342.65)">
+        <path id="减去_3" data-name="减去 3" d="M106.857,175.894H16a16,16,0,0,1-16-16V16A16,16,0,0,1,16,0H140.351a16,16,0,0,1,16,16v86.214A44.408,44.408,0,0,0,91.626,160.06a44.708,44.708,0,0,0,15.228,15.832Z" transform="translate(0 0)" fill="#f9c98f" stroke="rgba(0,0,0,0)" stroke-width="1"/>
+        <path id="减去_4" data-name="减去 4" d="M106.855,175.9H15.634A15.653,15.653,0,0,1,0,160.258V15.634A15.652,15.652,0,0,1,15.634,0H97.719l58.633,58.631v43.588a44.409,44.409,0,1,0-49.506,73.671Z" transform="translate(0.004 0)" stroke="rgba(0,0,0,0)" stroke-width="1" fill="url(#linear-gradient)"/>
+        <path id="圆角矩形_2" data-name="圆角矩形 2" d="M491.632,613.632H445.344A12.344,12.344,0,0,1,433,601.288V555" transform="translate(-335.278 -555)" fill="url(#linear-gradient-2)"/>
+        <rect id="矩形_95" data-name="矩形 95" width="78.942" height="11.841" rx="5.921" transform="translate(11.842 51.312)" fill="#fff"/>
+        <rect id="矩形_94" data-name="矩形 94" width="78.942" height="11.841" rx="5.921" transform="translate(11.842 78.942)" fill="#fff"/>
+        <rect id="矩形_96" data-name="矩形 96" width="55.259" height="11.841" rx="5.921" transform="translate(11.842 23.683)" fill="#fff"/>
+        <g id="椭圆_6" data-name="椭圆 6" transform="translate(91.772 99.665)" fill="none" stroke="#fd8a24" stroke-width="6">
+          <circle cx="38.484" cy="38.484" r="38.484" stroke="none"/>
+          <circle cx="38.484" cy="38.484" r="35.484" fill="none"/>
+        </g>
+        <path id="路径_1446" data-name="路径 1446" d="M0,25.784V0H16.317" transform="translate(128.942 147.286) rotate(-135)" fill="none" stroke="#fd8a24" stroke-linecap="round" stroke-linejoin="round" stroke-width="6"/>
+      </g>
+    </g>
+  </g>
+</svg>

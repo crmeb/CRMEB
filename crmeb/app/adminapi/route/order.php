@@ -120,10 +120,21 @@ Route::group('order', function () {
  */
 Route::group('refund', function () {
     //售后列表
-    Route::get('list', 'v1.order.RefundOrder/getRefundList');
+    Route::get('list', 'v1.order.RefundOrder/getRefundList')->option(['real_name' => '售后订单列表']);
     //商家同意退款，等待用户退货
-    Route::get('agree/:order_id', 'v1.order.RefundOrder/agreeRefund');
-
+    Route::get('agree/:id', 'v1.order.RefundOrder/agreeExpress')->option(['real_name' => '商家同意退款，等待用户退货']);
+    //售后订单备注
+    Route::put('remark/:id', 'v1.order.RefundOrder/remark')->option(['real_name' => '售后订单备注']);
+    //售后订单退款表单
+    Route::get('refund/:id', 'v1.order.RefundOrder/refund')->option(['real_name' => '售后订单退款表单']);
+    //售后订单退款
+    Route::put('refund/:id', 'v1.order.RefundOrder/refundPrice')->option(['real_name' => '售后订单退款']);
+    //获取不退款表格
+    Route::get('no_refund/:id', 'v1.order.RefundOrder/noRefund')->option(['real_name' => '获取不退款表单']);
+    //修改不退款理由
+    Route::put('no_refund/:id', 'v1.order.RefundOrder/refuseRefund')->option(['real_name' => '修改不退款理由']);
+    //退款单信息
+    Route::get('info/:uni', 'v1.order.RefundOrder/getRefundInfo')->option(['real_name' => '获取退款单详情']);
 })->middleware([
     \app\http\middleware\AllowOriginMiddleware::class,
     \app\adminapi\middleware\AdminAuthTokenMiddleware::class,

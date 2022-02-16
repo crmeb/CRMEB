@@ -12,10 +12,6 @@
 namespace crmeb\basic;
 
 use crmeb\services\AccessTokenServeService;
-use crmeb\services\HttpService;
-use think\exception\ValidateException;
-use think\facade\Config;
-use crmeb\services\CacheService;
 
 /**
  * Class BaseExpress

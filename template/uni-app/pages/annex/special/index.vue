@@ -1,66 +1,67 @@
 <template>
-<view v-if="pageShow" class="page"
+	<view v-if="pageShow" class="page"
 		:class="bgTabVal==2?'fullsize noRepeat':bgTabVal==1?'repeat ysize':'noRepeat ysize'"
-		:style="'background-color:'+bgColor+';background-image: url('+bgPic+');min-height:'+windowHeight+'px;'">	
-	<view :style="{ marginTop: sortMpTop + 'px' }">
-		<!-- #ifdef H5 -->
-		<view v-for="(item, index) in styleConfig" :key="index">
-			<component :is="item.name" :index="index" :dataConfig="item" @changeBarg="changeBarg" @changeTab="changeTab"
-				:tempArr="tempArr" :iSshowH="iSshowH" @detail="goDetail"></component>
-		</view>
-		<!-- #endif -->
-		<!-- #ifdef MP || APP-PLUS-->
-		<block v-for="(item, index) in styleConfig" :key="index">
-			<activeParty v-if="item.name == 'activeParty'" :dataConfig="item"></activeParty>
-			<articleList v-if="item.name == 'articleList'" :dataConfig="item"></articleList>
-			<bargain v-if="item.name == 'bargain'" :dataConfig="item" @changeBarg="changeBarg"></bargain>
-			<blankPage v-if="item.name == 'blankPage'" :dataConfig="item"></blankPage>
-			<combination v-if="item.name == 'combination'" :dataConfig="item"></combination>
-			<coupon v-if="item.name == 'coupon'" :dataConfig="item"></coupon>
-			<customerService v-if="item.name == 'customerService'" :dataConfig="item"></customerService>
-			<goodList v-if="item.name == 'goodList'" :dataConfig="item" @detail="goDetail"></goodList>
-			<guide v-if="item.name == 'guide'" :dataConfig="item"></guide>
-			<headerSerch v-if="item.name == 'headerSerch'" :dataConfig="item"></headerSerch>
-			<liveBroadcast v-if="item.name == 'liveBroadcast'" :dataConfig="item"></liveBroadcast>
-			<menus v-if="item.name == 'menus'" :dataConfig="item"></menus>
-			<news v-if="item.name == 'news'" :dataConfig="item"></news>
-			<pictureCube v-if="item.name == 'pictureCube'" :dataConfig="item" :isSortType="isSortType">
-			</pictureCube>
-			<promotionList v-if="item.name == 'promotionList'" :dataConfig="item" @changeTab="changeTab"
-				:tempArr="tempArr" :iSshowH="iSshowH" @detail="goDetail"></promotionList>
-			<richText v-if="item.name == 'richText'" :dataConfig="item"></richText>
-			<seckill v-if="item.name == 'seckill'" :dataConfig="item"></seckill>
-			<swiperBg v-if="item.name == 'swiperBg'" :dataConfig="item"></swiperBg>
-			<swipers v-if="item.name == 'swipers'" :dataConfig="item"></swipers>
-			<tabNav v-if="item.name == 'tabNav'" :dataConfig="item"></tabNav>
-			<titles v-if="item.name == 'titles'" :dataConfig="item"></titles>
-		</block>
-		<!-- #endif -->
-		<view class="loadingicon acea-row row-center-wrapper"
-			v-if="tempArr.length && styleConfig[styleConfig.length - 1].name == 'promotionList'">
-			<text class="loading iconfont icon-jiazai" :hidden="loading == false"></text>
-			{{ loadTitle }}
-		</view>
-		<view class="foot" v-if="newData.menuList && footerStatus">
-			<view class="page-footer" id="target" :style="{'background-color':newData.bgColor.color[0].item}">
-				<view class="foot-item" v-for="(item,index) in newData.menuList" :key="index" @click="goRouter(item)">
-					<block v-if="item.link == activeRouter">
-						<image :src="item.imgList[0]"></image>
-						<view class="txt" :style="{color:newData.activeTxtColor.color[0].item}">{{item.name}}</view>
-					</block>
-					<block v-else>
-						<image :src="item.imgList[1]"></image>
-						<view class="txt" :style="{color:newData.txtColor.color[0].item}">{{item.name}}</view>
-					</block>
-					<div class="count-num"
-						v-if="item.link === '/pages/order_addcart/order_addcart' && $store.state.indexData.cartNum && $store.state.indexData.cartNum > 0">
-						{{$store.state.indexData.cartNum}}
-					</div>
+		:style="'background-color:'+bgColor+';background-image: url('+bgPic+');min-height:'+windowHeight+'px;'">
+		<view :style="{ marginTop: sortMpTop + 'px' }">
+			<!-- #ifdef H5 -->
+			<view v-for="(item, index) in styleConfig" :key="index">
+				<component :is="item.name" :index="index" :dataConfig="item" @changeBarg="changeBarg"
+					@changeTab="changeTab" :tempArr="tempArr" :iSshowH="iSshowH" @detail="goDetail"></component>
+			</view>
+			<!-- #endif -->
+			<!-- #ifdef MP || APP-PLUS-->
+			<block v-for="(item, index) in styleConfig" :key="index">
+				<activeParty v-if="item.name == 'activeParty'" :dataConfig="item"></activeParty>
+				<articleList v-if="item.name == 'articleList'" :dataConfig="item"></articleList>
+				<bargain v-if="item.name == 'bargain'" :dataConfig="item" @changeBarg="changeBarg"></bargain>
+				<blankPage v-if="item.name == 'blankPage'" :dataConfig="item"></blankPage>
+				<combination v-if="item.name == 'combination'" :dataConfig="item"></combination>
+				<coupon v-if="item.name == 'coupon'" :dataConfig="item"></coupon>
+				<customerService v-if="item.name == 'customerService'" :dataConfig="item"></customerService>
+				<goodList v-if="item.name == 'goodList'" :dataConfig="item" @detail="goDetail"></goodList>
+				<guide v-if="item.name == 'guide'" :dataConfig="item"></guide>
+				<headerSerch v-if="item.name == 'headerSerch'" :dataConfig="item" :special="1"></headerSerch>
+				<liveBroadcast v-if="item.name == 'liveBroadcast'" :dataConfig="item"></liveBroadcast>
+				<menus v-if="item.name == 'menus'" :dataConfig="item"></menus>
+				<news v-if="item.name == 'news'" :dataConfig="item"></news>
+				<pictureCube v-if="item.name == 'pictureCube'" :dataConfig="item" :isSortType="isSortType">
+				</pictureCube>
+				<promotionList v-if="item.name == 'promotionList'" :dataConfig="item" @changeTab="changeTab"
+					:tempArr="tempArr" :iSshowH="iSshowH" @detail="goDetail"></promotionList>
+				<richText v-if="item.name == 'richText'" :dataConfig="item"></richText>
+				<seckill v-if="item.name == 'seckill'" :dataConfig="item"></seckill>
+				<swiperBg v-if="item.name == 'swiperBg'" :dataConfig="item"></swiperBg>
+				<swipers v-if="item.name == 'swipers'" :dataConfig="item"></swipers>
+				<tabNav v-if="item.name == 'tabNav'" :dataConfig="item"></tabNav>
+				<titles v-if="item.name == 'titles'" :dataConfig="item"></titles>
+			</block>
+			<!-- #endif -->
+			<view class="loadingicon acea-row row-center-wrapper"
+				v-if="tempArr.length && styleConfig[styleConfig.length - 1].name == 'promotionList'">
+				<text class="loading iconfont icon-jiazai" :hidden="loading == false"></text>
+				{{ loadTitle }}
+			</view>
+			<view class="foot" v-if="newData.menuList && footerStatus">
+				<view class="page-footer" id="target" :style="{'background-color':newData.bgColor.color[0].item}">
+					<view class="foot-item" v-for="(item,index) in newData.menuList" :key="index"
+						@click="goRouter(item)">
+						<block v-if="item.link == activeRouter">
+							<image :src="item.imgList[0]"></image>
+							<view class="txt" :style="{color:newData.activeTxtColor.color[0].item}">{{item.name}}</view>
+						</block>
+						<block v-else>
+							<image :src="item.imgList[1]"></image>
+							<view class="txt" :style="{color:newData.txtColor.color[0].item}">{{item.name}}</view>
+						</block>
+						<div class="count-num"
+							v-if="item.link === '/pages/order_addcart/order_addcart' && $store.state.indexData.cartNum && $store.state.indexData.cartNum > 0">
+							{{$store.state.indexData.cartNum}}
+						</div>
+					</view>
 				</view>
 			</view>
 		</view>
 	</view>
-</view>	
 </template>
 
 <script>
@@ -74,34 +75,34 @@
 		getShare
 	} from '@/api/public.js';
 	// #ifdef H5
-	import mConfig from '@/pages/index/components/index.js';
+	import mConfig from '@/pages/index/diy/components/index.js';
 	import {
 		silenceAuth
 	} from '@/api/public.js';
 	// #endif
 	// #ifdef MP || APP-PLUS
 	import authorize from '@/components/Authorize';
-	import activeParty from '@/pages/index/components/activeParty';
-	import headerSerch from '@/pages/index/components/headerSerch';
-	import swipers from '@/pages/index/components/swipers';
-	import coupon from '@/pages/index/components/coupon';
-	import articleList from '@/pages/index/components/articleList';
-	import bargain from '@/pages/index/components/bargain';
-	import blankPage from '@/pages/index/components/blankPage';
-	import combination from '@/pages/index/components/combination';
-	import customerService from '@/pages/index/components/customerService';
-	import goodList from '@/pages/index/components/goodList';
-	import guide from '@/pages/index/components/guide';
-	import liveBroadcast from '@/pages/index/components/liveBroadcast';
-	import menus from '@/pages/index/components/menus';
-	import news from '@/pages/index/components/news';
-	import promotionList from '@/pages/index/components/promotionList';
-	import richText from '@/pages/index/components/richText';
-	import seckill from '@/pages/index/components/seckill';
-	import swiperBg from '@/pages/index/components/swiperBg';
-	import tabNav from '@/pages/index/components/tabNav';
-	import titles from '@/pages/index/components/titles';
-	import pictureCube from '@/pages/index/components/pictureCube';
+	import activeParty from '@/pages/index/diy/components/activeParty';
+	import headerSerch from '@/pages/index/diy/components/headerSerch';
+	import swipers from '@/pages/index/diy/components/swipers';
+	import coupon from '@/pages/index/diy/components/coupon';
+	import articleList from '@/pages/index/diy/components/articleList';
+	import bargain from '@/pages/index/diy/components/bargain';
+	import blankPage from '@/pages/index/diy/components/blankPage';
+	import combination from '@/pages/index/diy/components/combination';
+	import customerService from '@/pages/index/diy/components/customerService';
+	import goodList from '@/pages/index/diy/components/goodList';
+	import guide from '@/pages/index/diy/components/guide';
+	import liveBroadcast from '@/pages/index/diy/components/liveBroadcast';
+	import menus from '@/pages/index/diy/components/menus';
+	import news from '@/pages/index/diy/components/news';
+	import promotionList from '@/pages/index/diy/components/promotionList';
+	import richText from '@/pages/index/diy/components/richText';
+	import seckill from '@/pages/index/diy/components/seckill';
+	import swiperBg from '@/pages/index/diy/components/swiperBg';
+	import tabNav from '@/pages/index/diy/components/tabNav';
+	import titles from '@/pages/index/diy/components/titles';
+	import pictureCube from '@/pages/index/diy/components/pictureCube';
 
 	import {
 		getTemlIds
@@ -170,7 +171,7 @@
 				goodType: 3,
 				loading: false,
 				loadend: false,
-				loadTitle: '下拉加载更多', //提示语
+				loadTitle: '加载更多', //提示语
 				page: 1,
 				limit: this.$config.LIMIT,
 				iSshowH: false,
@@ -183,7 +184,7 @@
 				footConfig: {},
 				pageId: '',
 				sortMpTop: 0,
-				newData:{},
+				newData: {},
 				activeRouter: '',
 				footerStatus: false,
 				bgColor: '',
@@ -194,6 +195,7 @@
 			};
 		},
 		onLoad(options) {
+			console.log(options)
 			let that = this
 			this.$nextTick(function() {
 				uni.getSystemInfo({
@@ -207,9 +209,16 @@
 				scope
 			} = options;
 			this.pageId = options.id
+			// #ifdef MP
+			if (options.scene) {
+				let value = that.$util.getUrlParams(decodeURIComponent(options.scene));
+				this.pageId = value.id
+			}
+			// #endif
 			uni.setNavigationBarTitle({
 				title: '专题栏'
 			});
+
 			// #ifdef APP-PLUS
 			this.sortMpTop = -50
 			// #endif
@@ -235,7 +244,7 @@
 			})
 			let routes = getCurrentPages(); // 获取当前打开过的页面路由数组
 			let curRoute = routes[routes.length - 1].route //获取当前页面路由
-			this.activeRouter = '/' + curRoute+'?id='+this.pageId
+			this.activeRouter = '/' + curRoute + '?id=' + this.pageId
 		},
 		watch: {
 			isLogin: {
@@ -255,7 +264,7 @@
 				}
 			}
 		},
-		onShow() {
+		mounted() {
 			// 优惠券弹窗
 			var newDates = new Date().toLocaleDateString();
 			if (this.isLogin) {
@@ -346,6 +355,8 @@
 			// #endif
 			// 对象转数组
 			objToArr(data) {
+				console.log(data)
+				if(!data) return
 				const keys = Object.keys(data)
 				keys.sort((a, b) => a - b)
 				const m = keys.map(key => data[key]);
@@ -362,7 +373,7 @@
 							tab: 3
 						})
 					}
-					
+
 					if (data.is_bg_color) {
 						this.bgColor = data.color_picker
 					}
@@ -375,6 +386,7 @@
 						title: res.data.title
 					})
 					let temp = []
+					console.log(res.data)
 					let lastArr = that.objToArr(res.data.value)
 					lastArr.forEach((item, index, arr) => {
 						if (item.name == 'pageFoot') {
@@ -393,8 +405,7 @@
 					that.styleConfig = temp;
 				});
 			},
-			getIndexData() {
-			},
+			getIndexData() {},
 			changeBarg(item) {
 				if (!this.isLogin) {
 					toLogin();
@@ -436,13 +447,13 @@
 						let tempArr = that.$util.SplitArray(list, that.tempArr);
 						that.$set(that, 'tempArr', tempArr.slice(0, this.numConfig));
 						that.loadend = loadend;
-						that.loadTitle = loadend ? '我也是有底线的' : '下拉加载更多';
+						that.loadTitle = loadend ? '没有更多内容啦~' : '加载更多';
 						that.page = that.page + 1;
 						that.loading = false;
 					})
 					.catch(res => {
 						that.loading = false;
-						that.loadTitle = '下拉加载更多';
+						that.loadTitle = '加载更多';
 					});
 			},
 			goDetail(item) {
@@ -493,22 +504,23 @@
 	.page {
 		padding-bottom: 50px;
 	}
-	
+
 	.ysize {
 		background-size: 100%;
 	}
-	
+
 	.fullsize {
 		background-size: 100% 100%;
 	}
-	
+
 	.repeat {
 		background-repeat: repeat;
 	}
-	
+
 	.noRepeat {
 		background-repeat: no-repeat;
 	}
+
 	.page-footer {
 		position: fixed;
 		bottom: 0;
@@ -525,7 +537,7 @@
 		box-shadow: 0px 0px 17rpx 1rpx rgba(206, 206, 206, 0.32);
 		padding-bottom: constant(safe-area-inset-bottom); ///兼容 IOS<11.2/
 		padding-bottom: env(safe-area-inset-bottom); ///兼容 IOS>11.2/
-	
+
 		.foot-item {
 			display: flex;
 			width: max-content;
@@ -533,7 +545,7 @@
 			justify-content: center;
 			flex-direction: column;
 			position: relative;
-	
+
 			.count-num {
 				position: absolute;
 				display: flex;
@@ -550,20 +562,19 @@
 				padding: 4rpx;
 			}
 		}
-	
+
 		.foot-item image {
 			height: 50rpx;
 			width: 50rpx;
 			text-align: center;
 			margin: 0 auto;
 		}
-	
+
 		.foot-item .txt {
 			font-size: 24rpx;
-	
-	
+
+
 			&.active {}
 		}
 	}
-	
 </style>

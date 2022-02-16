@@ -222,7 +222,7 @@ class UserController
         if ($request->uid()) {
             /** @var WechatUserServices $wechatUserService */
             $wechatUserService = app()->make(WechatUserServices::class);
-            $subscribe = $wechatUserService->value(['uid' => $request->uid()], 'subscribe') ? true : false;
+            $subscribe = (bool)$wechatUserService->value(['uid' => $request->uid()], 'subscribe');
             return app('json')->success(['subscribe' => $subscribe]);
         } else {
             return app('json')->success(['subscribe' => true]);

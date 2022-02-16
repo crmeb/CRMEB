@@ -41,7 +41,7 @@
 		components: {
 			zbCode
 		},
-		mixins:[colors],
+		mixins: [colors],
 		data() {
 			return {
 				canvasStatus: true,
@@ -120,20 +120,24 @@
 			if (this.type == 1) {
 				this.val = window.location.origin + '/pages/activity/goods_bargain_details/index?id=' + this.id +
 					'&bargain=' +
+					this.$store.state.app.uid +
+					'&spread=' +
 					this.$store.state.app.uid
 			} else if (this.type == 2) {
 				this.val = window.location.origin + '/pages/activity/goods_combination_status/index?id=' + this.id +
-					'&bargain=' +
+					'&spread=' +
 					this.$store.state.app.uid
 			}
 			// #endif
 			// #ifdef APP-PLUS
 			if (this.type == 1) {
 				this.val = HTTP_REQUEST_URL + '/pages/activity/goods_bargain_details/index?id=' + this.id + '&bargain=' +
+					this.$store.state.app.uid +
+					'&spread=' +
 					this.$store.state.app.uid
 			} else if (this.type == 2) {
 				this.val = HTTP_REQUEST_URL + '/pages/activity/goods_combination_status/index?id=' + this.id +
-					'&bargain=' +
+					'&spread=' +
 					this.$store.state.app.uid
 			}
 
@@ -151,8 +155,8 @@
 				}).exec();
 			})
 			this.routineCode()
-			
-			
+
+
 		},
 		methods: {
 			async getPosterInfo() {
@@ -380,16 +384,17 @@
 </script>
 
 <style>
-	.posterCon{
+	.posterCon {
 		position: fixed;
-		top:0;
+		top: 0;
 		width: 100%;
-		left:0;
+		left: 0;
 		height: 100%;
 		background-color: var(--view-theme);
 		bottom: 0;
 		overflow-y: auto;
 	}
+
 	.poster-poster .tip {
 		height: 80rpx;
 		font-size: 26rpx;

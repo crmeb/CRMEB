@@ -10,6 +10,39 @@
 
 import request from '@/libs/request'
 
+
+/**
+ * @description 获取分类
+ */
+export function categoryList() {
+    return request({
+        url: '/cms/category_list',
+        method: 'get'
+    });
+}
+
+/**
+ * @description 恢复模板初始数据
+ * @param {Object} param data {Object} 传值参数
+ */
+export function recovery(id) {
+    return request({
+        url: 'diy/recovery/' + id,
+        method: 'get'
+    });
+}
+
+/**
+ * @description 设置初始数据
+ * @param {Object} param data {Object} 传值参数
+ */
+export function setDefault(id) {
+    return request({
+        url: 'diy/set_recovery/' + id,
+        method: 'get'
+    });
+}
+
 /**
  * @description 保存DIY数据
  * @param {Object} param data {Object} 传值参数
@@ -21,9 +54,20 @@ export function diySave(id, data) {
         data: data
     });
 }
+/**
+ * @description 保存DIY数据
+ * @param {Object} param data {Object} 传值参数
+ */
+export function saveDiy(id, data) {
+    return request({
+        url: 'diy/diy_save/' + id,
+        method: 'post',
+        data: data
+    });
+}
 
 /**
- * @description 获取DIY数据
+ * @description 获取可视化数据
  * @param {Object} param data {Object} 传值参数
  */
 export function diyGetInfo(id, data) {
@@ -31,6 +75,40 @@ export function diyGetInfo(id, data) {
         url: 'diy/get_info/' + id,
         method: 'get',
         params: data
+    });
+}
+
+/**
+ * @description 使用diy模板(活动商品)
+ * @param {Object} param data {Object} 传值参数
+ */
+ export function getGroomList(type,data) {
+    return request({
+        url: 'diy/groom_list/'+type,
+        method: 'get',
+        params: data
+    });
+}
+
+/**
+ * @description 获取商品列表
+ */
+ export function getProduct (data) {
+    return request({
+        url: 'diy/get_product',
+        method: 'get',
+        params: data
+    });
+}
+
+/**
+ * @description 获取DIY数据
+ * @param {Object} param data {Object} 传值参数
+ */
+ export function getDiyInfo(id) {
+    return request({
+        url: 'diy/get_diy_info/' + id,
+        method: 'get',
     });
 }
 
@@ -110,16 +188,7 @@ export function storeStatus() {
     });
 }
 
-/**
- * @description 恢复模板初始数据
- * @param {Object} param data {Object} 传值参数
- */
-export function recovery(id) {
-    return request({
-        url: 'diy/recovery/' + id,
-        method: 'get'
-    });
-}
+
 
 /**
  * @description 添加模板
@@ -138,7 +207,7 @@ export function getDiyCreate() {
  */
 export function getRecovery(id) {
     return request({
-        url: 'diy/set_recovery/'+id,
+        url: 'diy/set_recovery/' + id,
         method: 'get'
     });
 }
@@ -158,7 +227,7 @@ export function getProductList(params) {
 /**
  * @description 换色 -- 一键换色、分类提交；
  */
- export function colorChange (status,name) {
+export function colorChange(status, name) {
     return request({
         url: `diy/color_change/${status}/${name}`,
         method: 'put'
@@ -168,7 +237,7 @@ export function getProductList(params) {
 /**
  * @description 换色 -- 一键换色、分类信息；
  */
- export function getColorChange (name) {
+export function getColorChange(name) {
     return request({
         url: `diy/get_color_change/${name}`,
         method: 'get'
@@ -178,7 +247,7 @@ export function getProductList(params) {
 /**
  * @description 个人中心-获取信息；
  */
- export function getMember () {
+export function getMember() {
     return request({
         url: `diy/get_member`,
         method: 'get'
@@ -188,7 +257,7 @@ export function getProductList(params) {
 /**
  * @description 小程序 -- 二维码；
  */
- export function getRoutineCode (id) {
+export function getRoutineCode(id) {
     return request({
         url: `diy/get_routine_code/${id}`,
         method: 'get'
@@ -198,7 +267,7 @@ export function getProductList(params) {
 /**
  * @description 个人中心-提交信息；
  */
- export function memberSave (data) {
+export function memberSave(data) {
     return request({
         url: `diy/member_save`,
         method: 'post',
@@ -209,7 +278,7 @@ export function getProductList(params) {
 /**
  * @description 页面链接-获取分类；
  */
- export function pageCategory () {
+export function pageCategory() {
     return request({
         url: `diy/get_page_category`,
         method: 'get'
@@ -220,7 +289,7 @@ export function getProductList(params) {
 /**
  * @description 页面链接-获取链接；
  */
- export function pageLink (id) {
+export function pageLink(id) {
     return request({
         url: `diy/get_page_link/${id}`,
         method: 'get'
@@ -230,7 +299,7 @@ export function getProductList(params) {
 /**
  * @description 页面链接-自定义链接提交；
  */
-export function saveLink (data,id) {
+export function saveLink(data, id) {
     return request({
         url: `diy/save_link/${id}`,
         method: 'post',

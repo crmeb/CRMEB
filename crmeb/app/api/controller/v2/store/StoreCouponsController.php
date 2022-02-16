@@ -10,7 +10,7 @@
 // +----------------------------------------------------------------------
 namespace app\api\controller\v2\store;
 
-use app\services\coupon\StoreCouponIssueServices;
+use app\services\activity\coupon\StoreCouponIssueServices;
 use app\services\product\product\StoreProductCouponServices;
 use think\Request;
 
