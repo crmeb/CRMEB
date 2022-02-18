@@ -147,7 +147,7 @@ class ArticleCategory extends AuthController
      */
     public function categoryList()
     {
-        return app('json')->success($this->service->getArticleCategory());
+        return app('json')->success($this->service->getArticleTwoCategory());
     }
 
     /**

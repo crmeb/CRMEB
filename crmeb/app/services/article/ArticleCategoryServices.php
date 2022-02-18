@@ -22,6 +22,7 @@ use think\facade\Route as Url;
  * Class ArticleCategoryServices
  * @package app\services\article
  * @method getArticleCategory()
+ * @method getArticleTwoCategory()
  */
 class ArticleCategoryServices extends BaseServices
 {

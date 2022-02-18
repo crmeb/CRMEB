@@ -82,7 +82,7 @@ class StoreOrderSplitServices extends BaseServices
             $other_cart_ids[] = $other;
         }
         $cart_ids_arr = ['new' => $cart_ids, 'other' => $other_cart_ids];
-        if (empty($cart_ids_arr['other'])) return $old_order;
+        if (empty($cart_ids_arr['other'])) return [$old_order, ['id' => 0]];
         return $this->transaction(function () use ($id, $cart_ids_arr, $orderInfo, $orderInfoOld, $cartInfo, $storeOrderCreateServices, $storeOrderCartInfoServices, $statusService) {
             $order = $otherOrder = [];
             $statusData = $statusService->getColumn(['oid' => $id], '*');

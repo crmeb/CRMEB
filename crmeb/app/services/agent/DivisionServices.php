@@ -140,7 +140,7 @@ class DivisionServices extends BaseServices
             'pwd' => $data['pwd'],
             'conf_pwd' => $data['conf_pwd'],
             'real_name' => $data['real_name'],
-            'roles' => $data['roles'],
+            'roles' => implode(',', $data['roles']),
             'status' => 1,
             'level' => 1,
             'division_id' => $uid
@@ -175,8 +175,9 @@ class DivisionServices extends BaseServices
                     if ($adminData['pwd'] != $adminData['conf_pwd']) throw new AdminException('两次输入的密码不一致');
                     $adminInfo->pwd = $this->passwordHash($adminData['pwd']);
                 }
-
                 $adminInfo->real_name = $adminData['real_name'];
+                $adminInfo->account = $adminData['account'];
+                $adminInfo->roles = implode(',', $adminData['roles']);
                 if ($adminInfo->save())
                     return true;
                 else

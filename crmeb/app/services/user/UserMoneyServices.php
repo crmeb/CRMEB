@@ -347,7 +347,7 @@ class UserMoneyServices extends BaseServices
         $times = [];
         if ($list) {
             foreach ($list as &$item) {
-                $item['time_key'] = $item['add_time'] ? date('Y-m', (int)$item['add_time']) : '';
+                $item['time'] = $item['time_key'] = $item['add_time'] ? date('Y-m', (int)$item['add_time']) : '';
                 $item['add_time'] = $item['add_time'] ? date('Y-m-d H:i', (int)$item['add_time']) : '';
             }
             $times = array_merge(array_unique(array_column($list, 'time_key')));

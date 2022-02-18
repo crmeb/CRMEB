@@ -503,9 +503,6 @@ class StoreOrderRefundServices extends BaseServices
             } else if ($bargain_id) {
                 $type = 2;
                 $res5 = $res5 && $bargainServices->incBargainStock($cart_num, (int)$bargain_id, $unique);
-            } else if ($advance_id) {
-                $type = 6;
-                $res5 = $res5 && $advanceServices->incAdvanceStock($cart_num, (int)$advance_id, $unique);
             } else {
                 $res5 = $res5 && $services->incProductStock($cart_num, (int)$cart['cart_info']['productInfo']['id'], $unique);
             }

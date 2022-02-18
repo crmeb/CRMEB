@@ -74,7 +74,7 @@ class StoreProductAttrValueDao extends BaseDao
      */
     public function getProductAttrValue(array $where)
     {
-        return $this->search($where)->select()->toArray();
+        return $this->search($where)->order('id asc')->select()->toArray();
     }
 
     /**获取属性列表

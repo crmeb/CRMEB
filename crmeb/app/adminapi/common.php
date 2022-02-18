@@ -117,6 +117,7 @@ if (!function_exists('attr_format')) {
         $data = [];
         $res = [];
         $count = count($arr);
+        $arr = array_merge($arr);
         if ($count > 1) {
             for ($i = 0; $i < $count - 1; $i++) {
                 if ($i == 0) $data = $arr[$i]['detail'];

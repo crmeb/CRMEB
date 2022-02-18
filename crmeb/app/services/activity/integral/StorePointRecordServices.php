@@ -54,7 +54,7 @@ class StorePointRecordServices extends BaseServices
         /** @var StoreIntegralOrderServices $integralOrderServices */
         $integralOrderServices = app()->make(StoreIntegralOrderServices::class);
         foreach ($list as &$item) {
-            $item['nickname'] = $nicknameArr[$item['uid']];
+            $item['nickname'] = $nicknameArr[$item['uid']] ?? '未知用户';
             if ($item['type'] == 'gain' || $item['type'] == 'deduction' || $item['type'] == 'product_deduction' || $item['type'] == 'pay_product_integral_back') {
                 $item['relation'] = $orderServices->value(['id' => $item['link_id']], 'order_id');
             } elseif ($item['type'] == 'storeIntegral_use') {

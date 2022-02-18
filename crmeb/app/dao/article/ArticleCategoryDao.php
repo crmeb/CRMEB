@@ -61,6 +61,25 @@ class ArticleCategoryDao extends BaseDao
     }
 
     /**
+     * 二级文章分类
+     * @return array
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     */
+    public function getArticleTwoCategory()
+    {
+        return $this->getModel()
+            ->where('hidden', 0)
+            ->where('is_del', 0)
+            ->where('status', 1)
+            ->where('pid', '>', 0)
+            ->order('sort DESC')
+            ->field('id,pid,title')
+            ->select()->toArray();
+    }
+
+    /**
      * 添加修改选择上级分类列表
      * @param array $where
      * @return array
