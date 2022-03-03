@@ -217,12 +217,15 @@
 				}
 			}
 		},
-		onLoad: function(option) {
+		onShow() {
+			console.log('111')
+			this.getIndex();
+		},
+		onLoad(option) {
 			let self = this
 			this.order_id = option.id;
 			this.goname = option.goname
 			this.order_type = option.types
-			this.getIndex();
 			// #ifdef H5
 			this.$nextTick(function() {
 				var clipboard = new ClipboardJS('.copy-data');

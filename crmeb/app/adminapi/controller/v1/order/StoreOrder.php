@@ -481,6 +481,7 @@ class StoreOrder extends AuthController
             $orderInfo['_store_name'] = $storeServices->value(['id' => $orderInfo['store_id']], 'name');
         } else
             $orderInfo['_store_name'] = '';
+        $orderInfo['spread_name'] = $services->value(['uid'=>$orderInfo['spread_uid']],'nickname') ?? '无';
         $userInfo = $userInfo->toArray();
         return app('json')->success(compact('orderInfo', 'userInfo'));
     }

@@ -240,7 +240,7 @@
 				})
 				openOrderSubscribe().then(res => {
 					uni.hideLoading();
-					uni.navigateTo({
+					uni.redirectTo({
 						url: '/pages/users/order_details/index?order_id=' + that.orderId
 					});
 				}).catch(() => {
@@ -248,7 +248,7 @@
 				});
 				// #endif
 				// #ifndef MP
-				uni.navigateTo({
+				uni.redirectTo({
 					url: '/pages/users/order_details/index?order_id=' + that.orderId
 				})
 				// #endif

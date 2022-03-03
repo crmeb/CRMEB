@@ -1,5 +1,5 @@
 {
-  "navigationBarTitleText": "商品详情",
+  "navigationStyle": "custom",
   "usingComponents": {
     "product-con-swiper": "/components/productConSwiper/index",
     "product-window": "/pages/points_mall/component/productWindow",

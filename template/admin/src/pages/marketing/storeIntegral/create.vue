@@ -392,6 +392,7 @@ export default {
         attrs: [],
         items: [],
       },
+      description: "",
       templateList: [],
       timeList: [],
       columns: [],
@@ -489,7 +490,7 @@ export default {
   },
   methods: {
     getEditorContent(data) {
-      this.formValidate.description = data;
+      this.description = data;
     },
     // 规格；
     productAttrs(rows) {
@@ -654,6 +655,7 @@ export default {
     next(name) {
       let that = this;
       if (this.current === 2) {
+        this.formValidate.description = this.description;
         this.$refs[name].validate((valid) => {
           if (valid) {
             if (this.copy == 1) this.formValidate.copy = 1;

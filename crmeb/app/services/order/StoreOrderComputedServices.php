@@ -322,13 +322,12 @@ class StoreOrderComputedServices extends BaseServices
 
         // 判断商品包邮和固定运费
         foreach ($cartInfo as $key => &$item) {
+            $item['postage_price'] = 0;
             if ($item['productInfo']['freight'] == 1) {
                 $item['postage_price'] = 0;
-//                unset($cartInfo[$key]);
             } elseif ($item['productInfo']['freight'] == 2) {
                 $item['postage_price'] = bcmul((string)$item['productInfo']['postage'], (string)$item['cart_num'], 2);
                 $storePostage = bcadd((string)$storePostage, (string)$item['postage_price'], 2);
-//                unset($cartInfo[$key]);
             }
         }
         $postageArr = [];
@@ -459,21 +458,8 @@ class StoreOrderComputedServices extends BaseServices
                 /** @var MemberCardServices $memberCardService */
                 $memberCardService = app()->make(MemberCardServices::class);
                 $express_rule_number = $memberCardService->isOpenMemberCard('express');
-
                 $express_rule_number = $express_rule_number <= 0 ? 0 : $express_rule_number;
-
-//                if ($express_rule_number) {
-//                    if ($express_rule_number <= 0) {
-//                        $storePostageDiscount = $storePostage;
-//                        $storePostage = 0;
-//                    } else if ($express_rule_number < 100) {
-//                        $storePostageDiscount = $storePostage;
-//                        $storePostage = bcmul($storePostage, bcdiv($express_rule_number, 100, 4), 2);
-//                        $storePostageDiscount = bcsub($storePostageDiscount, $storePostage, 2);
-//                    }
-//                }
             }
-
             $truePostageArr = [];
             foreach ($postageArr as $postitem) {
                 if ($postitem['sum'] == $storePostage) {
@@ -481,7 +467,6 @@ class StoreOrderComputedServices extends BaseServices
                     break;
                 }
             }
-
             $cartAlready = [];
             foreach ($cartInfo as &$item) {
                 if (isset($item['productInfo']['freight']) && in_array($item['productInfo']['freight'], [1, 2])) {
@@ -512,8 +497,6 @@ class StoreOrderComputedServices extends BaseServices
                 $storePostageDiscount = $storePostage;
                 $storePostage = bcmul($storePostage, bcdiv($express_rule_number, 100, 4), 2);
                 $storePostageDiscount = bcsub($storePostageDiscount, $storePostage, 2);
-//                $storePostageDiscount = bcsub((string)$storePostage, (string)$resultStorePostage, 2);
-//                $storePostage = $resultStorePostage;
             } else {
                 $storePostageDiscount = 0;
                 $storePostage = $storePostage;

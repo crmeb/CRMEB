@@ -82,27 +82,27 @@
 				switch (res.data.status) {
 					case 1:
 						uni.setStorageSync('viewColor', blue)
-						uni.$emit('ok', blue)
+						uni.$emit('ok', blue,res.data.status)
 						break;
 					case 2:
 						uni.setStorageSync('viewColor', green)
-						uni.$emit('ok', green)
+						uni.$emit('ok', green,res.data.status)
 						break;
 					case 3:
 						uni.setStorageSync('viewColor', red)
-						uni.$emit('ok', red)
+						uni.$emit('ok', red,res.data.status)
 						break;
 					case 4:
 						uni.setStorageSync('viewColor', pink)
-						uni.$emit('ok', pink)
+						uni.$emit('ok', pink,res.data.status)
 						break;
 					case 5:
 						uni.setStorageSync('viewColor', orange)
-						uni.$emit('ok', orange)
+						uni.$emit('ok', orange,res.data.status)
 						break;
 					default:
 						uni.setStorageSync('viewColor', red)
-						uni.$emit('ok', red)
+						uni.$emit('ok', red,res.data.status)
 						break
 				}
 			});

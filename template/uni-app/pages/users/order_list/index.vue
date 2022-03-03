@@ -51,9 +51,7 @@
 							</view>
 							<view v-if="item._status._type == 9" class="font-color">线下付款,未支付</view>
 							<view v-else-if="item._status._type == 0" class="font-color">待付款</view>
-							<view
-								v-else-if="item._status._type == 1 && (item.shipping_type == 1 || item.shipping_type == 3)"
-								class="font-color">待发货
+							<view v-else-if="item._status._type == 1 && item.shipping_type == 1" class="font-color">待发货
 								<text v-if="item.refund.length">{{item.is_all_refund?'，退款中':'，部分退款中'}}</text>
 							</view>
 							<view v-else-if="item._status._type == 2" class="font-color">待收货
@@ -65,15 +63,10 @@
 							<view v-else-if="item._status._type == 4" class="font-color">已完成
 								<text v-if="item.refund.length">{{item.is_all_refund?'，退款中':'，部分退款中'}}</text>
 							</view>
-							<!-- 	<view v-else-if="item._status._type == -1" class="font-color">申请退款中
-							</view> -->
-							<view v-else-if="item._status._type == -2" class="font-color">已退款
-							</view>
 							<view v-else-if="item._status._type == 5 && item.status == 0" class="font-color">未核销
 								<text v-if="item.refund.length">{{item.is_all_refund?'，退款中':'，部分退款中'}}</text>
 							</view>
-							<view v-else-if="item._status._type == 5 && item.status == 5" class="font-color">部分核销
-								<text v-if="item.refund.length">{{item.is_all_refund?'，退款中':'，部分退款中'}}</text>
+							<view v-else-if="item._status._type == -2" class="font-color">已退款
 							</view>
 
 						</view>
@@ -123,7 +116,10 @@
 				{{ loadTitle }}
 			</view>
 			<view v-if="orderList.length == 0">
-				<emptyPage title="暂无订单~"></emptyPage>
+				<emptyPage v-if="!loading" title="暂无订单~"></emptyPage>
+				<view class="loadingicon acea-row row-center-wrapper">
+					<text class="loading iconfont icon-jiazai" :hidden="loading == false"></text>
+				</view>
 			</view>
 		</view>
 		<!-- #ifndef MP -->

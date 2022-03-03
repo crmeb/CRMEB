@@ -170,7 +170,7 @@
                 <FormItem label="">
                   <div class="acea-row">
                     <InputNumber
-                      min="0.01"
+                      :min="0.01"
                       v-model="formValidate.postage"
                       placeholder="请输入金额"
                       class="perW20 maxW"
@@ -309,6 +309,11 @@
                         :min="0.01"
                         :precision="2"
                         class="priceBox"
+                        @on-change="
+                          (e) => {
+                            changePrice(e, index);
+                          }
+                        "
                         :active-change="false"
                       ></InputNumber>
                     </template>
@@ -506,6 +511,7 @@ export default {
         attrs: [],
         items: [],
       },
+      description: "",
       templateList: [],
       timeList: [],
       columns: [],
@@ -629,7 +635,7 @@ export default {
   },
   methods: {
     getEditorContent(data) {
-      this.formValidate.description = data;
+      this.description = data;
     },
     // 添加运费模板
     freight() {
@@ -796,7 +802,7 @@ export default {
           this.$set(this.formValidate, "items", info.attrs.items);
           this.columns = info.attrs.header;
           this.columns.unshift(selection);
-          this.specsData = info.attrs.value;
+          that.specsData = info.attrs.value;
           that.specsData.forEach(function (item, index) {
             that.$set(that.specsData[index], "id", index);
           });
@@ -808,7 +814,7 @@ export default {
             }
           }
           that.formValidate.attrs = attr;
-          that.inputChange(data);
+          this.inputChange(data);
           this.spinShow = false;
         })
         .catch((res) => {
@@ -816,10 +822,17 @@ export default {
           this.$Message.error(res.msg);
         });
     },
+    changePrice(e, index) {
+      console.log(e, index);
+      this.$set(this.specsData[index], "price", e);
+    },
     // 下一步
     next(name) {
       let that = this;
+      console.log(this.formValidate);
+      console.log(this.specsData);
       if (this.current === 2) {
+        this.formValidate.description = this.description;
         this.$refs[name].validate((valid) => {
           if (valid) {
             if (this.copy == 1) this.formValidate.copy = 1;

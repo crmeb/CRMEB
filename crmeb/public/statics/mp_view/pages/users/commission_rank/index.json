@@ -3,6 +3,7 @@
   "navigationBarBackgroundColor": "#FFFFFF",
   "navigationBarTextStyle": "black",
   "usingComponents": {
-    "authorize": "/components/Authorize"
+    "authorize": "/components/Authorize",
+    "empty-page": "/components/emptyPage"
   }
 }

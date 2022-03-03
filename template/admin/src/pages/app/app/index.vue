@@ -2,14 +2,14 @@
   <div :style="bgcolors">
     <div class="i-layout-page-header">
       <span class="ivu-page-header-title mr20">{{ $route.meta.title }}</span>
-      <div>
-        <div style="float: right">
-          <Button class="bnt" type="primary" @click="save">保存</Button>
-        </div>
+      <div style="float: right">
+        <Button class="bnt" type="primary" @click="onsubmit('formValidate')"
+          >保存</Button
+        >
       </div>
     </div>
     <div class="box-wrapper">
-      <div v-if="a == 1" class="iframe" :bordered="false">
+      <div class="iframe" :bordered="false">
         <div class="agreement-box">
           <div class="template"></div>
           <div class="htmls_box">
@@ -18,11 +18,11 @@
               <div class="ok">我同意</div>
               <div>不同意</div>
             </div>
-            <div class="htmls" v-html="formValidate.content"></div>
+            <div class="htmls" v-html="content"></div>
           </div>
         </div>
       </div>
-      <div v-if="a == 1" style="margin-left: 40px">
+      <div style="margin-left: 40px">
         <div class="table_box">
           <div type="flex">
             <div v-bind="grid">
@@ -39,7 +39,7 @@
               @submit.native.prevent
             >
               <div class="goodsTitle acea-row"></div>
-              <FormItem label="" prop="content" style="margin: 0px">
+              <FormItem label="" style="margin: 0px">
                 <WangEditor
                   style="width: 90%"
                   :content="formValidate.content"
@@ -122,6 +122,7 @@ export default {
       columns1: [],
       bgCol: "",
       name: "",
+      content: "",
       grid: {
         xl: 7,
         lg: 7,
@@ -160,8 +161,11 @@ export default {
   },
   mounted() {},
   methods: {
+    linkUrl(e) {
+      this.tabList.list[this.activeIndexs].link = e;
+    },
     getEditorContent(data) {
-      this.formValidate.content = data;
+      this.content = data;
     },
     color() {
       getColorChange("color_change").then((res) => {
@@ -189,32 +193,6 @@ export default {
         }
       });
     },
-
-    save() {
-      if (this.a == 1) {
-        this.onsubmit("formValidate");
-      } else if (this.guide == 2) {
-        this.formItem.value = this.tabList.list;
-        openAdvSave(this.formItem).then((res) => {
-          this.$Message.success(res.msg);
-        });
-      } else {
-        this.loadingExist = true;
-        groupSaveApi({
-          gid: this.pageId,
-          config_name: this.name,
-          data: this.tabList.list,
-        })
-          .then((res) => {
-            this.loadingExist = false;
-            this.$Message.success(res.msg);
-          })
-          .catch((err) => {
-            this.loadingExist = false;
-            this.$Message.error(err.msg);
-          });
-      }
-    },
     link(index) {
       this.activeIndexs = index;
       this.$refs.linkaddres.modals = true;
@@ -239,19 +217,14 @@ export default {
     },
     // 提交数据
     onsubmit(name) {
-      this.$refs[name].validate((valid) => {
-        if (valid) {
-          setAgreement(this.formValidate)
-            .then(async (res) => {
-              this.$Message.success(res.msg);
-            })
-            .catch((res) => {
-              this.$Message.error(res.msg);
-            });
-        } else {
-          return false;
-        }
-      });
+      this.formValidate.content = this.content;
+      setAgreement(this.formValidate)
+        .then(async (res) => {
+          this.$Message.success(res.msg);
+        })
+        .catch((res) => {
+          this.$Message.error(res.msg);
+        });
     },
     //详情
     getAgreement() {
@@ -261,6 +234,7 @@ export default {
           this.formValidate = {
             content: data.content,
           };
+          this.content = data.content;
         })
         .catch((res) => {
           this.loading = false;

@@ -14,6 +14,7 @@ namespace app\services\product\product;
 
 use app\services\BaseServices;
 use app\services\product\sku\StoreProductAttrServices;
+use app\services\product\sku\StoreProductAttrValueServices;
 use app\services\serve\ServeServices;
 use app\services\system\attachment\SystemAttachmentCategoryServices;
 use app\services\system\attachment\SystemAttachmentServices;
@@ -244,6 +245,8 @@ class CopyTaobaoServices extends BaseServices
         $systemAttachmentCategoryService = app()->make(SystemAttachmentCategoryServices::class);
         /** @var StoreProductServices $StoreProductServices */
         $StoreProductServices = app()->make(StoreProductServices::class);
+        /** @var StoreProductAttrValueServices $StoreProductAttrValueServices */
+        $StoreProductAttrValueServices = app()->make(StoreProductAttrValueServices::class);
         $AttachmentCategory = $systemAttachmentCategoryService->getOne(['name' => $this->AttachmentCategoryName]);
         //不存在则创建
         if (!$AttachmentCategory) $AttachmentCategory = $systemAttachmentCategoryService->save(['pid' => '0', 'name' => $this->AttachmentCategoryName, 'enname' => '']);
@@ -274,6 +277,7 @@ class CopyTaobaoServices extends BaseServices
         $image = $slider_images[0];
         $slider_images = $slider_images ? json_encode($slider_images) : '';
         $StoreProductServices->update($id, ['slider_image' => $slider_images, 'image' => $image]);
+        $StoreProductAttrValueServices->update(['product_id' => $id], ['image' => $image]);
     }
 
 //    /**

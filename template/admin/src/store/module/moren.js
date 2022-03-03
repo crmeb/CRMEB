@@ -549,7 +549,7 @@ export default {
                     },
                     imgList: {
                         isDelete: true,
-                        title: '最多可添加3组模块，第一张260*260px,后两张416*124px',
+                        title: '最多可添加3组模块，第一张336*298px,后两张416*124px',
                         max: 3,
                         list: [
                             {
@@ -631,7 +631,7 @@ export default {
                     },
                     imgList: {
                         isDelete: true,
-                        title: '最多可添加3组模块，第一张260*260px,后两张416*124px',
+                        title: '最多可添加3组模块，第一张336*298px,后两张416*124px',
                         max: 3,
                         list: [
                             {

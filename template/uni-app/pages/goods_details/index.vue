@@ -2,155 +2,131 @@
 	<view class="product-con" :style="colorStyle">
 		<skeleton :show="showSkeleton" :isNodes="isNodes" ref="skeleton" loading="chiaroscuro" selector="skeleton"
 			bgcolor="#FFF"></skeleton>
-		<view class="product-con skeleton" :style="{ visibility: showSkeleton ? 'hidden' : 'visible' }">
-			<!-- #ifdef APP-PLUS -->
-			<view class="navbar" :style="{ height: navH + 'rpx', opacity: opacity, paddingTop: sysHeight }">
-				<!-- #endif -->
-				<!-- #ifndef APP-PLUS -->
-				<view class="navbar" :style="{ height: navH + 'rpx', opacity: opacity }">
-					<!-- #endif -->
-					<view class="navbarH" :style="'height:' + navH + 'rpx;'">
-						<view class="navbarCon acea-row row-center-wrapper"
-							:style="{ paddingRight: (navbarRight-20) + 'px' }">
-							<view class="header acea-row row-center-wrapper">
-								<view class="item" :class="navActive === index ? 'on' : ''"
-									v-for="(item, index) in navList" :key="index" @tap="tap(index)">{{ item }}</view>
-							</view>
-						</view>
-					</view>
-				</view>
-				<!-- <view class='iconfont icon-xiangzuo' :style="{top:navH/2+'rpx',opacity:(1-opacity)}" @tap='returns'></view> -->
-				<!-- #ifdef APP-PLUS -->
-				<view id="home" class="home acea-row row-center-wrapper" :class="[opacity>0.5?'on':'']"
-					:style="{ top:(navH/2-58)+'rpx' ,marginTop:sysHeight}">
-					<!-- #endif -->
-					<!-- #ifndef APP-PLUS -->
-					<view id="home" class="home acea-row row-center-wrapper" :class="[opacity>0.5?'on':'']"
-						:style="{ top: homeTop +'rpx'}">
-						<!-- #endif -->
-						<view class="iconfont icon-fanhui2" @tap="returns"></view>
-						<!-- #ifdef MP -->
-						<view class="line"></view>
-						<view class="iconfont icon-gengduo5" @click="moreNav"></view>
-						<!-- #endif -->
-					</view>
 
-					<!-- #ifdef APP-PLUS -->
-					<view id="home" class="home right acea-row row-center-wrapper" :class="[opacity>0.5?'on':'']"
-						:style="{ top:(navH/2-58)+'rpx' ,marginTop:sysHeight}">
-						<!-- #endif -->
-						<!-- #ifdef H5 -->
-						<view id="home" class="home right acea-row row-center-wrapper" :class="[opacity>0.5?'on':'']"
-							:style="{ top: homeTop +'rpx'}">
-							<!-- #endif -->
-							<!-- #ifdef APP-PLUS || H5 -->
-							<view class="iconfont icon-gengduo2" @click="moreNav"></view>
-						</view>
-						<!-- #endif -->
-						<homeList :navH="navH" :returnShow="returnShow" :currentPage="currentPage"
-							:sysHeight="sysHeight"></homeList>
-						<!-- 		<view class="navbar" :style="{ height: navH + 'rpx', opacity: opacity }">
+		<view class="product-con skeleton" :style="{ visibility: showSkeleton ? 'hidden' : 'visible' }">
+
+			<!-- #ifndef APP-PLUS -->
+			<view class="navbar" :style="{ height: navH + 'rpx', opacity: opacity }">
 				<view class="navbarH" :style="'height:' + navH + 'rpx;'">
-					<view class="navbarCon acea-row row-center-wrapper" :style="{ paddingRight: navbarRight + 'px' }">
+					<view class="navbarCon acea-row row-center-wrapper"
+						:style="{ paddingRight: (navbarRight-20) + 'px' }">
 						<view class="header acea-row row-center-wrapper">
 							<view class="item" :class="navActive === index ? 'on' : ''" v-for="(item, index) in navList"
 								:key="index" @tap="tap(index)">{{ item }}</view>
 						</view>
 					</view>
 				</view>
-			</view> -->
-						<!-- <view class='iconfont icon-xiangzuo' :style="{top:navH/2+'rpx',opacity:(1-opacity)}" @tap='returns'></view> -->
-						<!-- #ifndef APP-PLUS -->
-						<!-- <menuIcon :showMenuIcon="showMenuIcon" @open="open" :opacity="opacity"></menuIcon> -->
+			</view>
+			<!-- #endif -->
+			<!-- <view class='iconfont icon-xiangzuo' :style="{top:navH/2+'rpx',opacity:(1-opacity)}" @tap='returns'></view> -->
+
+			<!-- #ifndef APP-PLUS -->
+			<view id="home" class="home acea-row row-center-wrapper" :class="[opacity>0.5?'on':'']"
+				:style="{ top: homeTop +'rpx'}">
+				<view class="iconfont icon-fanhui2" @tap="returns"></view>
+				<!-- #ifdef MP -->
+				<view class="line"></view>
+				<view class="iconfont icon-gengduo5" @click="moreNav"></view>
+				<!-- #endif -->
+			</view>
+			<!-- #endif -->
+			<!-- #ifdef H5 -->
+			<view id="home" class="home right acea-row row-center-wrapper" :class="[opacity>0.5?'on':'']"
+				:style="{ top: homeTop +'rpx'}">
+				<!-- #endif -->
+				<!-- #ifdef H5 -->
+				<view class="iconfont icon-gengduo2" @click="moreNav"></view>
+			</view>
+			<!-- #endif -->
+			<homeList :navH="navH" :returnShow="returnShow" :currentPage="currentPage" :sysHeight="sysHeight">
+			</homeList>
+			<view>
+				<scroll-view :scroll-top="scrollTop" scroll-y="true" scroll-with-animation="true"
+					:style="'height:' + height + 'px;'" @scroll="scroll">
+					<view id="past0">
+						<!-- #ifdef APP-PLUS || MP -->
+						<view class="" :style="'width:100%;' + 'height:'+sysHeight"></view>
 						<!-- #endif -->
-						<view>
-							<scroll-view :scroll-top="scrollTop" scroll-y="true" scroll-with-animation="true"
-								:style="'height:' + height + 'px;'" @scroll="scroll">
-								<view id="past0">
-									<productConSwiper class="skeleton-rect" :imgUrls="storeInfo.slider_image"
-										:videoline="storeInfo.video_link" @videoPause="videoPause"></productConSwiper>
-									<view class="wrapper">
-										<view class="share acea-row row-between row-bottom">
-											<view class="money font-color skeleton-rect">
-												￥
-												<text class="num" v-text="storeInfo.price || 0"></text>
-												<text v-if="storeInfo.spec_type">起</text>
-												<text class="vip-money" v-if="
+						<productConSwiper class="skeleton-rect" :imgUrls="storeInfo.slider_image"
+							:videoline="storeInfo.video_link" @videoPause="videoPause"></productConSwiper>
+						<view class="wrapper">
+							<view class="share acea-row row-between row-bottom">
+								<view class="money font-color skeleton-rect">
+									￥
+									<text class="num" v-text="storeInfo.price || 0"></text>
+									<text v-if="storeInfo.spec_type">起</text>
+									<text class="vip-money" v-if="
                       storeInfo.vip_price &&
                       storeInfo.vip_price > 0 &&
                       storeInfo.is_vip == 1
                     ">￥{{ storeInfo.vip_price }}</text>
-												<image v-if="
+									<image v-if="
                       storeInfo.vip_price &&
                       storeInfo.vip_price > 0 &&
                       storeInfo.is_vip == 1
                     " src="../../static/images/svip.gif"></image>
-											</view>
-											<view class="iconfont icon-fenxiang skeleton-rect"
-												@click="listenerActionSheet"></view>
-										</view>
-										<view class="introduce skeleton-rect" v-text="storeInfo.store_name"></view>
-										<view class="label acea-row row-between-wrapper" style="padding-bottom: 20rpx">
-											<view class="skeleton-rect" v-text="'原价:￥' + (storeInfo.ot_price || 0)">
-											</view>
-											<view class="skeleton-rect" v-text="
+								</view>
+								<view class="iconfont icon-fenxiang skeleton-rect" @click="listenerActionSheet"></view>
+							</view>
+							<view class="introduce skeleton-rect" v-text="storeInfo.store_name"></view>
+							<view class="label acea-row row-between-wrapper" style="padding-bottom: 20rpx">
+								<view class="skeleton-rect" v-text="'原价:￥' + (storeInfo.ot_price || 0)">
+								</view>
+								<view class="skeleton-rect" v-text="
                     '库存:' +
                     (storeInfo.stock || 0) +
                     (storeInfo.unit_name || '')
                   "></view>
-											<view class="skeleton-rect" v-text="
+								<view class="skeleton-rect" v-text="
                     '销量:' +
                     (storeInfo.fsales || 0) +
                     (storeInfo.unit_name || '')
                   "></view>
-										</view>
-										<view v-if="
+							</view>
+							<view v-if="
                   !is_money_level && storeInfo.vip_price && storeInfo.is_vip
                 " class="svip acea-row row-between-wrapper">
-											<view class="">开通“超级会员”立省{{ diff }}元</view>
-											<navigator url="/pages/annex/vip_paid/index">
-												立即开通
-												<text class="iconfont icon-jiantou"></text>
-											</navigator>
-										</view>
-										<view class="presell_count" v-if="storeInfo.presale">
-											<view>
-												<view>预售活动时间：</view>
-												<view v-if="storeInfo.presale_start_time && storeInfo.presale_end_time"
-													class="presell_time">
-													<view class='iconfont icon-shijian1'></view>
-													{{storeInfo.presale_start_time}}
-													<span class='area_line'>~</span>
-													{{storeInfo.presale_end_time}}
-												</view>
-											</view>
-											<view>预售结束后{{ storeInfo.presale_day }}天内发货</view>
-										</view>
-										<!-- <view class='coupon acea-row row-between-wrapper' v-if="storeInfo.give_integral > 0">
+								<view class="">开通“超级会员”立省{{ diff }}元</view>
+								<navigator url="/pages/annex/vip_paid/index">
+									立即开通
+									<text class="iconfont icon-jiantou"></text>
+								</navigator>
+							</view>
+							<view class="presell_count" v-if="storeInfo.presale">
+								<view>
+									<view>预售活动时间：</view>
+									<view v-if="storeInfo.presale_start_time && storeInfo.presale_end_time"
+										class="presell_time">
+										<view class='iconfont icon-shijian1'></view>
+										{{storeInfo.presale_start_time}}
+										<span class='area_line'>~</span>
+										{{storeInfo.presale_end_time}}
+									</view>
+								</view>
+								<view>预售结束后{{ storeInfo.presale_day }}天内发货</view>
+							</view>
+							<!-- <view class='coupon acea-row row-between-wrapper' v-if="storeInfo.give_integral > 0">
 									<view class='hide line1 acea-row'>
 										赠积分：
 										<view class='activity'>赠送 {{storeInfo.give_integral}} 积分</view>
 									</view>
 								</view> -->
-										<view v-if="couponList.length"
-											class="coupon acea-row row-between-wrapper skeleton-rect" @click="couponTap"
-											style="margin-top: 0rpx">
-											<view class="hide line1 acea-row">
-												优惠券：
-												<template v-for="(item, index) in couponList">
-													<view v-if="index < 2" class="activity" :key="index">
-														满{{ item.use_min_price }}减{{ item.coupon_price }}</view>
-												</template>
-											</view>
-											<view class="iconfont icon-jiantou"></view>
-										</view>
-										<view class="coupon acea-row row-between-wrapper skeleton-rect"
-											v-if="activity.length">
-											<view class="line1 acea-row">
-												<text>活&nbsp;&nbsp;&nbsp;动：</text>
-												<view v-for="(item, index) in activity" :key="index"
-													@click="goActivity(item)">
-													<view v-if="item.type === '1'" :class="
+							<view v-if="couponList.length" class="coupon acea-row row-between-wrapper skeleton-rect"
+								@click="couponTap" style="margin-top: 0rpx">
+								<view class="hide line1 acea-row">
+									优惠券：
+									<template v-for="(item, index) in couponList">
+										<view v-if="index < 2" class="activity" :key="index">
+											满{{ item.use_min_price }}减{{ item.coupon_price }}</view>
+									</template>
+								</view>
+								<view class="iconfont icon-jiantou"></view>
+							</view>
+							<view class="coupon acea-row row-between-wrapper skeleton-rect" v-if="activity.length">
+								<view class="line1 acea-row">
+									<text>活&nbsp;&nbsp;&nbsp;动：</text>
+									<view v-for="(item, index) in activity" :key="index" @click="goActivity(item)">
+										<view v-if="item.type === '1'" :class="
                         index == 0
                           ? 'activity_pin'
                           : '' || index == 1
@@ -159,10 +135,10 @@
                           ? 'activity_kan'
                           : ''
                       ">
-														<text class="iconfonts iconfont icon-pintuan"></text>
-														<text class="activity_title">参与秒杀</text>
-													</view>
-													<view :class="
+											<text class="iconfonts iconfont icon-pintuan"></text>
+											<text class="activity_title">参与秒杀</text>
+										</view>
+										<view :class="
                         index == 0
                           ? 'activity_pin'
                           : '' || index == 1
@@ -171,10 +147,10 @@
                           ? 'activity_kan'
                           : ''
                       " v-if="item.type === '2'">
-														<text class="iconfonts iconfont icon-shenhezhong"></text>
-														<text class="activity_title">参与砍价</text>
-													</view>
-													<view :class="
+											<text class="iconfonts iconfont icon-shenhezhong"></text>
+											<text class="activity_title">参与砍价</text>
+										</view>
+										<view :class="
                         index == 0
                           ? 'activity_pin'
                           : '' || index == 1
@@ -183,182 +159,180 @@
                           ? 'activity_kan'
                           : ''
                       " v-if="item.type === '3'">
-														<text class="iconfonts iconfont icon-kanjia"></text>
-														<text class="activity_title">参与拼团</text>
-													</view>
-												</view>
-											</view>
+											<text class="iconfonts iconfont icon-kanjia"></text>
+											<text class="activity_title">参与拼团</text>
 										</view>
 									</view>
-									<view class="attribute acea-row row-between-wrapper skeleton-rect"
-										@click="selecAttr" v-if="attr.productAttr.length">
-										<view class="flex">
-											<view style="display: flex; align-items: center; width: 90%">
-												<view class="attr-txt"> {{ attrTxt }}： </view>
-												<view class="atterTxt line1" style="width: 82%">{{
+								</view>
+							</view>
+						</view>
+						<view class="attribute acea-row row-between-wrapper skeleton-rect" @click="selecAttr"
+							v-if="attr.productAttr.length">
+							<view class="flex">
+								<view style="display: flex; align-items: center; width: 90%">
+									<view class="attr-txt"> {{ attrTxt }}： </view>
+									<view class="atterTxt line1" style="width: 82%">{{
                     attrValue
                   }}</view>
-											</view>
-											<view class="iconfont icon-jiantou"></view>
-										</view>
-										<view class="acea-row row-between-wrapper"
-											style="margin-top: 7px; padding-left: 60px" v-if="skuArr.length > 1">
-											<view class="flexs">
-												<image :src="item.image" v-for="(item, index) in skuArr.slice(0, 4)"
-													:key="index" class="attrImg"></image>
-											</view>
-											<view class="switchTxt">共{{ skuArr.length }}种规格可选</view>
-										</view>
-									</view>
 								</view>
-								<view class="userEvaluation skeleton-rect" id="past1" v-if="replyCount">
-									<view class="title acea-row row-between-wrapper">
-										<view>用户评价({{ replyCount }})</view>
-										<navigator class="praise" hover-class="none"
-											:url="'/pages/users/goods_comment_list/index?product_id=' + id">
-											<text class="font-num">{{ replyChance }}%</text>
-											好评率
-											<text class="iconfont icon-jiantou"></text>
-										</navigator>
-									</view>
-									<block v-if="replyCount">
-										<userEvaluation :reply="reply"></userEvaluation>
-									</block>
+								<view class="iconfont icon-jiantou"></view>
+							</view>
+							<view class="acea-row row-between-wrapper" style="margin-top: 7px; padding-left: 60px"
+								v-if="skuArr.length > 1">
+								<view class="flexs">
+									<image :src="item.image" v-for="(item, index) in skuArr.slice(0, 4)" :key="index"
+										class="attrImg"></image>
 								</view>
-								<!-- 优品推荐 -->
-								<view class="superior" v-if="good_list.length" id="past2">
-									<view class="title acea-row row-center-wrapper">
-										<!-- <image src="../../static/images/ling.png"></image> -->
-										<view class="lingw acea-row row-center-wrapper">
-											<view class="lingn"></view>
-										</view>
-										<view class="titleTxt">优品推荐</view>
-										<view class="lingw acea-row row-center-wrapper">
-											<view class="lingn"></view>
-										</view>
-										<!--<image src="../../static/images/ling.png"></image> -->
-									</view>
-									<view class="slider-banner banner">
-										<swiper indicator-dots="true" :autoplay="autoplay" :circular="circular"
-											:interval="interval" :duration="duration" indicator-color="#999"
-											indicator-active-color="var(--view-theme)"
-											:style="'height:' + clientHeight + 'px'">
-											<swiper-item v-for="(item, indexw) in good_list" :key="indexw">
-												<view class="list acea-row row-middle" :id="'list' + indexw">
-													<view class="item" v-for="(val, indexn) in item.list" :key="indexn"
-														@click="goDetail(val)">
-														<view class="pictrue">
-															<image :src="val.image"></image>
-															<span class="pictrue_log pictrue_log_class"
-																v-if="val.activity && val.activity.type === '1'">秒杀</span>
-															<span class="pictrue_log pictrue_log_class"
-																v-if="val.activity && val.activity.type === '2'">砍价</span>
-															<span class="pictrue_log pictrue_log_class"
-																v-if="val.activity && val.activity.type === '3'">拼团</span>
-														</view>
-														<view class="name line1">{{ val.store_name }}</view>
-														<view class="money font-color">¥{{ val.price }}</view>
-													</view>
-												</view>
-											</swiper-item>
-											<!-- <view class="swiper-pagination" slot="pagination"></view> -->
-										</swiper>
-									</view>
-								</view>
-								<view class="product-intro" id="past3">
-									<view class="title">产品介绍</view>
-									<view class="conter">
-										<parser :html="description" ref="article" :tag-style="tagStyle"></parser>
-										<!-- <view class="description" v-html="description"></view> -->
-									</view>
-								</view>
-							</scroll-view>
+								<view class="switchTxt">共{{ skuArr.length }}种规格可选</view>
+							</view>
 						</view>
-						<!-- <view class="uni-p-b-98"></view> -->
-						<view class="footer acea-row row-between-wrapper">
-							<!-- <button open-type="contact" hover-class='none' class='item'>
+					</view>
+					<view class="userEvaluation skeleton-rect" id="past1" v-if="replyCount">
+						<view class="title acea-row row-between-wrapper">
+							<view>用户评价({{ replyCount }})</view>
+							<navigator class="praise" hover-class="none"
+								:url="'/pages/users/goods_comment_list/index?product_id=' + id">
+								<text class="font-num">{{ replyChance }}%</text>
+								好评率
+								<text class="iconfont icon-jiantou"></text>
+							</navigator>
+						</view>
+						<block v-if="replyCount">
+							<userEvaluation :reply="reply"></userEvaluation>
+						</block>
+					</view>
+					<!-- 优品推荐 -->
+					<view class="superior" v-if="good_list.length" id="past2">
+						<view class="title acea-row row-center-wrapper">
+							<!-- <image src="../../static/images/ling.png"></image> -->
+							<view class="lingw acea-row row-center-wrapper">
+								<view class="lingn"></view>
+							</view>
+							<view class="titleTxt">优品推荐</view>
+							<view class="lingw acea-row row-center-wrapper">
+								<view class="lingn"></view>
+							</view>
+							<!--<image src="../../static/images/ling.png"></image> -->
+						</view>
+						<view class="slider-banner banner">
+							<swiper indicator-dots="true" :autoplay="autoplay" :circular="circular" :interval="interval"
+								:duration="duration" indicator-color="#999" indicator-active-color="var(--view-theme)"
+								:style="'height:' + clientHeight + 'px'">
+								<swiper-item v-for="(item, indexw) in good_list" :key="indexw">
+									<view class="list acea-row row-middle" :id="'list' + indexw">
+										<view class="item" v-for="(val, indexn) in item.list" :key="indexn"
+											@click="goDetail(val)">
+											<view class="pictrue">
+												<image :src="val.image"></image>
+												<span class="pictrue_log pictrue_log_class"
+													v-if="val.activity && val.activity.type === '1'">秒杀</span>
+												<span class="pictrue_log pictrue_log_class"
+													v-if="val.activity && val.activity.type === '2'">砍价</span>
+												<span class="pictrue_log pictrue_log_class"
+													v-if="val.activity && val.activity.type === '3'">拼团</span>
+											</view>
+											<view class="name line1">{{ val.store_name }}</view>
+											<view class="money font-color">¥{{ val.price }}</view>
+										</view>
+									</view>
+								</swiper-item>
+								<!-- <view class="swiper-pagination" slot="pagination"></view> -->
+							</swiper>
+						</view>
+					</view>
+					<view class="product-intro" id="past3">
+						<view class="title">产品介绍</view>
+						<view class="conter">
+							<!-- #ifndef APP-PLUS -->
+							<parser :html="description" ref="article" :tag-style="tagStyle"></parser>
+							<!-- #endif -->
+							<!-- #ifdef APP-PLUS -->
+							<view class="description" v-html="description"></view>
+							<!-- #endif -->
+						</view>
+					</view>
+				</scroll-view>
+			</view>
+			<!-- <view class="uni-p-b-98"></view> -->
+			<view class="footer acea-row row-between-wrapper">
+				<!-- <button open-type="contact" hover-class='none' class='item'>
 						<view class='iconfont icon-kefu'></view>
 						<view>客服</view>
 					</button> -->
 
-							<navigator hover-class="none" class="item skeleton-rect" open-type="switchTab"
-								url="/pages/index/index">
-								<view class="iconfont icon-shouye6"></view>
-								<view class="p_center">首页</view>
-							</navigator>
-							<view @click="setCollect" class="item skeleton-rect">
-								<view class="iconfont icon-shoucang1" v-if="storeInfo.userCollect"></view>
-								<view class="iconfont icon-shoucang" v-else></view>
-								<view class="p_center">收藏</view>
-							</view>
-							<navigator open-type="reLaunch" class="animated item skeleton-rect"
-								:class="animated == true ? 'bounceIn' : ''" url="/pages/order_addcart/order_addcart"
-								hover-class="none">
-								<view class="iconfont icon-gouwuche1">
-									<text class="num bg-color" v-if="parseFloat(CartCount) > 0">{{
+				<navigator hover-class="none" class="item skeleton-rect" open-type="switchTab" url="/pages/index/index">
+					<view class="iconfont icon-shouye6"></view>
+					<view class="p_center">首页</view>
+				</navigator>
+				<view @click="setCollect" class="item skeleton-rect">
+					<view class="iconfont icon-shoucang1" v-if="storeInfo.userCollect"></view>
+					<view class="iconfont icon-shoucang" v-else></view>
+					<view class="p_center">收藏</view>
+				</view>
+				<view class="animated item skeleton-rect" :class="animated == true ? 'bounceIn' : ''" @click="goCart">
+					<view class="iconfont icon-gouwuche1">
+						<text class="num bg-color" v-if="parseFloat(CartCount) > 0">{{
               CartCount || 0
             }}</text>
-								</view>
-								<view class="p_center skeleton-rect">购物车</view>
-							</navigator>
-							<view v-if="a" class="presale">
-								<view class="acea-row">
-									<form class=" bnts bg-color-hui"><button class=" bnts bg-color-hui"
-											form-type="submit">暂无产品</button></form>
-								</view>
-							</view>
-							<view v-else>
-								<view v-if="!storeInfo.presale">
-									<view class="bnt acea-row" :class="!storeInfo.cart_button ? 'virbnt' : ''"
-										v-if="attr.productSelect.stock <= 0">
-										<form v-if="storeInfo.cart_button" @submit="joinCart" class="joinCart bnts"
-											:class="!storeInfo.cart_button ? 'virbnt' : ''">
-											<button class="joinCart bnts" form-type="submit">
-												加入购物车
-											</button>
-										</form>
-										<form class="buy bnts bg-color-hui">
-											<button class="buy bnts bg-color-hui" form-type="submit"
-												:class="!storeInfo.cart_button ? 'virbnt' : ''">
-												已售罄
-											</button>
-										</form>
-									</view>
-									<view class="bnt acea-row skeleton-rect" v-else>
-										<form v-if="storeInfo.cart_button" @submit="joinCart" class="joinCart bnts">
-											<button class="joinCart bnts" form-type="submit">
-												加入购物车
-											</button>
-										</form>
-										<form @submit="goBuy" class="buy bnts"
-											:class="!storeInfo.cart_button ? 'virbnt' : ''">
-											<button class="buy bnts" :class="!storeInfo.cart_button ? 'virbnt' : ''"
-												form-type="submit">
-												立即购买
-											</button>
-										</form>
-									</view>
-								</view>
-								<view class="presale" v-else>
-									<view class="acea-row" v-if="presale_pay_status === 1 || presale_pay_status === 3">
-										<form class="bnts bg-color-hui"><button class="bnts bg-color-hui"
-												form-type="submit">{{presale_pay_status === 1?'未开始':'已结束'}}</button>
-										</form>
-									</view>
-									<view class="acea-row"
-										v-else-if="attr.productSelect.quota <= 0 || attr.productSelect.quota < attr.productSelect.cart_num">
-										<form class=" bnts bg-color-hui"><button class=" bnts bg-color-hui"
-												form-type="submit">已售罄</button></form>
-									</view>
-									<view class="bnts acea-row" v-else-if="presale_pay_status === 2">
-										<form @submit="goBuy" class="bnts"><button class="bnts"
-												form-type="submit">立即购买</button>
-										</form>
-									</view>
-								</view>
-							</view>
+					</view>
+					<view class="p_center skeleton-rect">购物车</view>
+				</view>
+				<view v-if="a" class="presale">
+					<view class="acea-row">
+						<form class=" bnts bg-color-hui"><button class=" bnts bg-color-hui"
+								form-type="submit">暂无产品</button></form>
+					</view>
+				</view>
+				<view v-else>
+					<view v-if="!storeInfo.presale">
+						<view class="bnt acea-row" :class="!storeInfo.cart_button ? 'virbnt' : ''"
+							v-if="attr.productSelect.stock <= 0">
+							<form v-if="storeInfo.cart_button" @submit="joinCart" class="joinCart bnts"
+								:class="!storeInfo.cart_button ? 'virbnt' : ''">
+								<button class="joinCart bnts" form-type="submit">
+									加入购物车
+								</button>
+							</form>
+							<form class="buy bnts bg-color-hui">
+								<button class="buy bnts bg-color-hui" form-type="submit"
+									:class="!storeInfo.cart_button ? 'virbnt' : ''">
+									已售罄
+								</button>
+							</form>
+						</view>
+						<view class="bnt acea-row skeleton-rect" v-else>
+							<form v-if="storeInfo.cart_button" @submit="joinCart" class="joinCart bnts">
+								<button class="joinCart bnts" form-type="submit">
+									加入购物车
+								</button>
+							</form>
+							<form @submit="goBuy" class="buy bnts" :class="!storeInfo.cart_button ? 'virbnt' : ''">
+								<button class="buy bnts" :class="!storeInfo.cart_button ? 'virbnt' : ''"
+									form-type="submit">
+									立即购买
+								</button>
+							</form>
+						</view>
+					</view>
+					<view class="presale" v-else>
+						<view class="acea-row" v-if="presale_pay_status === 1 || presale_pay_status === 3">
+							<form class="bnts bg-color-hui"><button class="bnts bg-color-hui"
+									form-type="submit">{{presale_pay_status === 1?'未开始':'已结束'}}</button>
+							</form>
+						</view>
+						<view class="acea-row"
+							v-else-if="attr.productSelect.quota <= 0 || attr.productSelect.quota < attr.productSelect.cart_num">
+							<form class=" bnts bg-color-hui"><button class=" bnts bg-color-hui"
+									form-type="submit">已售罄</button></form>
+						</view>
+						<view class="bnts acea-row" v-else-if="presale_pay_status === 2">
+							<form @submit="goBuy" class="bnts"><button class="bnts" form-type="submit">立即购买</button>
+							</form>
+						</view>
+					</view>
+				</view>
 
-							<!-- 	<view v-else>
+				<!-- 	<view v-else>
 						<view class="virbnt acea-row" :class="storeInfo.is_virtual?'virbnt':''" v-if="attr.productSelect.stock <= 0">
 							<form class="buy bnts bg-color-hui"><button class="virbuy virbnts bg-color-hui"
 									form-type="submit">已售罄</button></form>
@@ -368,90 +342,87 @@
 							</form>
 						</view>
 					</view> -->
-						</view>
-						<shareRedPackets :sharePacket="sharePacket" @listenerActionSheet="listenerActionSheet"
-							@closeChange="closeChange" :showAnimate="showAnimate" @boxStatus="boxStatus">
-						</shareRedPackets>
-						<!-- 组件 -->
-						<productWindow :attr="attr" :isShow="1" :iSplus="1" @myevent="onMyEvent"
-							@ChangeAttr="ChangeAttr" @ChangeCartNum="ChangeCartNum" @attrVal="attrVal"
-							@iptCartNum="iptCartNum" id="product-window" :is_vip="is_vip" @getImg="showImg"
-							:is_virtual="storeInfo.is_virtual"></productWindow>
-						<cus-previewImg ref="cusPreviewImg" :list="skuArr" @changeSwitch="changeSwitch"
-							@shareFriend="listenerActionSheet" />
-						<couponListWindow :coupon="coupon" v-if="coupon" @ChangCouponsClone="ChangCouponsClone"
-							@ChangCoupons="ChangCoupons" @ChangCouponsUseState="ChangCouponsUseState"
-							@tabCouponType="tabCouponType">
-						</couponListWindow>
-						<!-- 分享按钮 -->
-						<view class="generate-posters acea-row row-middle" :class="posters ? 'on' : ''">
-							<!-- #ifndef MP -->
-							<button class="item" hover-class="none" v-if="weixinStatus === true"
-								@click="H5ShareBox = true">
-								<view class="iconfont icon-weixin3"></view>
-								<view class="">发送给朋友</view>
-							</button>
-							<!-- #endif -->
-							<!-- #ifdef MP -->
-							<button class="item" open-type="share" hover-class="none" @click="goFriend">
-								<view class="iconfont icon-weixin3"></view>
-								<view class="">发送给朋友</view>
-							</button>
-							<!-- #endif -->
-							<!-- #ifdef H5  -->
-							<div class="item copy-data" v-if="storeInfo.command_word != ''"
-								:data-clipboard-text="storeInfo.command_word">
-								<view class="iconfont icon-fuzhikouling"></view>
-								<text>复制口令</text>
-							</div>
-							<!-- #endif -->
-							<!-- #ifdef APP-PLUS -->
-							<view class="item" @click="appShare('WXSceneSession')">
-								<view class="iconfont icon-weixin3"></view>
-								<view class="">微信好友</view>
-							</view>
-							<view class="item" @click="appShare('WXSenceTimeline')">
-								<view class="iconfont icon-pengyouquan"></view>
-								<view class="">微信朋友圈</view>
-							</view>
-							<!-- #endif -->
-							<button class="item" hover-class="none" @click="goPoster">
-								<view class="iconfont icon-haibao"></view>
-								<view class="">生成海报</view>
-							</button>
-						</view>
-						<view class="mask" v-if="posters" @click="listenerActionClose"></view>
-						<!-- #ifdef MP -->
-						<!-- <authorize @onLoadFun="onLoadFun" :isAuto="isAuto" :isShowAuth="isShowAuth" @authColse="authColse"></authorize> -->
-						<!-- #endif -->
-						<!-- 海报展示 -->
-						<view class="poster-pop" v-if="posterImageStatus">
-							<image src="../../static/images/poster-close.png" class="close" @click="posterImageClose">
-							</image>
-							<image :src="posterImage"></image>
-							<!-- #ifndef H5  -->
-							<view class="save-poster" @click="savePosterPath">保存到手机</view>
-							<!-- #endif -->
-							<!-- #ifdef H5 -->
-							<view class="keep">长按图片可以保存到手机</view>
-							<!-- #endif -->
-						</view>
-						<view class="mask" v-if="posterImageStatus"></view>
-						<canvas class="canvas" canvas-id="myCanvas" v-if="canvasStatus"></canvas>
-						<!-- 发送给朋友图片 -->
-						<view class="share-box" v-if="H5ShareBox">
-							<image src="/static/images/share-info.png" @click="H5ShareBox = false"></image>
-						</view>
-						<kefuIcon :ids="parseInt(id)" :routineContact="routineContact" :storeInfo="storeInfo"
-							:goodsCon="1">
-						</kefuIcon>
-						<!-- #ifdef H5 || APP-PLUS -->
-						<zb-code ref="qrcode" :show="codeShow" :cid="cid" :val="codeVal" :size="size" :unit="unit"
-							:background="background" :foreground="foreground" :pdground="pdground" :icon="codeIcon"
-							:iconSize="iconsize" :onval="onval" :loadMake="loadMake" @result="qrR" />
-						<!-- #endif -->
-					</view>
+			</view>
+			<shareRedPackets :sharePacket="sharePacket" @listenerActionSheet="listenerActionSheet"
+				@closeChange="closeChange" :showAnimate="showAnimate" @boxStatus="boxStatus">
+			</shareRedPackets>
+			<!-- 组件 -->
+			<productWindow :attr="attr" :isShow="1" :iSplus="1" @myevent="onMyEvent" @ChangeAttr="ChangeAttr"
+				@ChangeCartNum="ChangeCartNum" @attrVal="attrVal" @iptCartNum="iptCartNum" id="product-window"
+				:is_vip="is_vip" @getImg="showImg" :is_virtual="storeInfo.is_virtual"></productWindow>
+			<cus-previewImg ref="cusPreviewImg" :list="skuArr" @changeSwitch="changeSwitch"
+				@shareFriend="listenerActionSheet" />
+			<couponListWindow :coupon="coupon" v-if="coupon" @ChangCouponsClone="ChangCouponsClone"
+				@ChangCoupons="ChangCoupons" @ChangCouponsUseState="ChangCouponsUseState"
+				@tabCouponType="tabCouponType">
+			</couponListWindow>
+			<!-- 分享按钮 -->
+			<view class="generate-posters acea-row row-middle" :class="posters ? 'on' : ''">
+				<!-- #ifndef MP -->
+				<button class="item" hover-class="none" v-if="weixinStatus === true" @click="H5ShareBox = true">
+					<view class="iconfont icon-weixin3"></view>
+					<view class="">发送给朋友</view>
+				</button>
+				<!-- #endif -->
+				<!-- #ifdef MP -->
+				<button class="item" open-type="share" hover-class="none" @click="goFriend">
+					<view class="iconfont icon-weixin3"></view>
+					<view class="">发送给朋友</view>
+				</button>
+				<!-- #endif -->
+				<!-- #ifdef H5  -->
+				<div class="item copy-data" v-if="storeInfo.command_word != ''"
+					:data-clipboard-text="storeInfo.command_word">
+					<view class="iconfont icon-fuzhikouling"></view>
+					<text>复制口令</text>
+				</div>
+				<!-- #endif -->
+				<!-- #ifdef APP-PLUS -->
+				<view class="item" @click="appShare('WXSceneSession')">
+					<view class="iconfont icon-weixin3"></view>
+					<view class="">微信好友</view>
 				</view>
+				<view class="item" @click="appShare('WXSenceTimeline')">
+					<view class="iconfont icon-pengyouquan"></view>
+					<view class="">微信朋友圈</view>
+				</view>
+				<!-- #endif -->
+				<button class="item" hover-class="none" @click="goPoster">
+					<view class="iconfont icon-haibao"></view>
+					<view class="">生成海报</view>
+				</button>
+			</view>
+			<view class="mask" v-if="posters" @click="listenerActionClose"></view>
+			<!-- #ifdef MP -->
+			<!-- <authorize @onLoadFun="onLoadFun" :isAuto="isAuto" :isShowAuth="isShowAuth" @authColse="authColse"></authorize> -->
+			<!-- #endif -->
+			<!-- 海报展示 -->
+			<view class="poster-pop" v-if="posterImageStatus">
+				<image src="../../static/images/poster-close.png" class="close" @click="posterImageClose">
+				</image>
+				<image :src="posterImage"></image>
+				<!-- #ifndef H5  -->
+				<view class="save-poster" @click="savePosterPath">保存到手机</view>
+				<!-- #endif -->
+				<!-- #ifdef H5 -->
+				<view class="keep">长按图片可以保存到手机</view>
+				<!-- #endif -->
+			</view>
+			<view class="mask" v-if="posterImageStatus"></view>
+			<canvas class="canvas" canvas-id="myCanvas" v-if="canvasStatus"></canvas>
+			<!-- 发送给朋友图片 -->
+			<view class="share-box" v-if="H5ShareBox">
+				<image src="/static/images/share-info.png" @click="H5ShareBox = false"></image>
+			</view>
+			<kefuIcon :ids="parseInt(id)" :routineContact="routineContact" :storeInfo="storeInfo" :goodsCon="1">
+			</kefuIcon>
+			<!-- #ifdef H5 || APP-PLUS -->
+			<zb-code ref="qrcode" :show="codeShow" :cid="cid" :val="codeVal" :size="size" :unit="unit"
+				:background="background" :foreground="foreground" :pdground="pdground" :icon="codeIcon"
+				:iconSize="iconsize" :onval="onval" :loadMake="loadMake" @result="qrR" />
+			<!-- #endif -->
+		</view>
+	</view>
 </template>
 
 <script>
@@ -611,7 +582,7 @@
 				tagStyle: {
 					img: "width:100%;display:block;",
 					table: "width:100%",
-					video: "width:100%",
+					video: "width:100%;height:100%;",
 				},
 				returnShow: true, //判断顶部返回是否出现
 				diff: "",
@@ -741,7 +712,11 @@
 				path: "/pages/goods_details/index?id=" + that.id + "&spid=" + that.uid,
 			};
 		},
+
 		// #endif
+		onNavigationBarButtonTap(e) {
+			this.currentPage = !this.currentPage
+		},
 		methods: {
 			// 操作菜单
 			moreNav() {
@@ -1067,6 +1042,11 @@
 								/<img/gi,
 								'<img style="max-width:100%;height:auto;float:left;display:block" '
 							);
+							this.description = this.description.replace(
+								/<video/gi,
+								'<video style="width:100%;height:300px;display:block" '
+							);
+
 						}
 						that.$set(that, 'presale_pay_status', res.data.storeInfo
 							.presale_pay_status); // 1未开始; 2进行中; 3已结束
@@ -1422,6 +1402,11 @@
 				} else {
 					this.goCat();
 				}
+			},
+			goCart() {
+				uni.switchTab({
+					url: '/pages/order_addcart/order_addcart'
+				})
 			},
 			/*
 			 * 加入购物车

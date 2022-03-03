@@ -139,7 +139,7 @@
 		<view class="uni-p-b-98"></view>
 		<!-- <pageFooter :countNum="cartCount"></pageFooter> -->
 		<tabBar v-if="!is_diy" :pagePath="'/pages/order_addcart/order_addcart'"></tabBar>
-		<view  class="foot" v-else-if="is_diy && newData.status && newData.status.status">
+		<view class="foot" v-else-if="is_diy && newData.status && newData.status.status">
 			<view class="page-footer" id="target" :style="{'background-color':newData.bgColor.color[0].item}">
 				<view class="foot-item" v-for="(item,index) in newData.menuList" :key="index" @click="goRouter(item)">
 					<block v-if="item.link == activeRouter">
@@ -248,28 +248,14 @@
 				cartId: 0,
 				product_id: 0,
 				sysHeight: sysHeight,
-				footerSee: false,
 				newData: {},
 				activeRouter: ''
 			};
 		},
 		computed: mapGetters(['isLogin']),
 		onLoad(options) {
-			// uni.hideTabBar()
-
-
-			let that = this;
-			if (that.isLogin == false) {
-				toLogin();
-			}
-			let routes = getCurrentPages(); // 获取当前打开过的页面路由数组
-			let curRoute = routes[routes.length - 1].route //获取当前页面路由
-			this.activeRouter = '/' + curRoute
-		},
-		onShow() {
 			if (this.is_diy) {
 				if (uni.getStorageSync('FOOTER_BAR')) {
-					this.footerSee = true
 					uni.hideTabBar()
 				}
 				getNavigation().then(res => {
@@ -280,7 +266,18 @@
 						uni.showTabBar()
 					}
 				})
+			} else {
+				uni.hideTabBar()
 			}
+			let that = this;
+			if (that.isLogin == false) {
+				toLogin();
+			}
+			let routes = getCurrentPages(); // 获取当前打开过的页面路由数组
+			let curRoute = routes[routes.length - 1].route //获取当前页面路由
+			this.activeRouter = '/' + curRoute
+		},
+		onShow() {
 			this.canShow = false
 			if (this.isLogin == true) {
 				this.hotPage = 1;
@@ -805,7 +802,7 @@
 				}
 				getCartCounts().then(async c => {
 					that.cartCount = c.data.count;
-					for (let i = 0; i < Math.ceil(that.cartCount / that.limit); i++) {
+					for (let i = 0; i < Math.ceil(c.data.ids.length / that.limit); i++) {
 						let cartList = await this.getCartData(data)
 						let valid = cartList.valid
 						let validList = that.$util.SplitArray(valid, that.cartList.valid);
@@ -1198,6 +1195,11 @@
 		border-radius: 0 3rpx 3rpx 0;
 	}
 
+	.shoppingCart .list .item .picTxt .carnum .plus.on {
+		border-color: #e3e3e3;
+		color: #dedede;
+	}
+
 	.shoppingCart .list .item .picTxt .carnum .num {
 		color: var(--view-theme);
 	}
@@ -1299,9 +1301,9 @@
 		bottom: 0rpx;
 		// #endif
 		// #ifdef MP || APP-PLUS
-		bottom: 100rpx;
-		bottom: calc(100rpx + constant(safe-area-inset-bottom)); ///兼容 IOS<11.2/
-		bottom: calc(100rpx + env(safe-area-inset-bottom)); ///兼容 IOS>11.2/
+		bottom: 98rpx;
+		bottom: calc(98rpx + constant(safe-area-inset-bottom)); ///兼容 IOS<11.2/
+		bottom: calc(98rpx + env(safe-area-inset-bottom)); ///兼容 IOS>11.2/
 		// #endif
 	}
 

@@ -219,7 +219,7 @@ class StoreOrderDao extends BaseDao
      * @throws \think\db\exception\DbException
      * @throws \think\db\exception\ModelNotFoundException
      */
-    public function getOrderList(array $where, array $field, int $page = 0, int $limit = 0, array $with = [], $order = 'pay_time DESC,id DESC')
+    public function getOrderList(array $where, array $field, int $page = 0, int $limit = 0, array $with = [], $order = 'add_time DESC,id DESC')
     {
         return $this->search($where)->field($field)->with(array_merge(['user', 'spread', 'refund'], $with))->when($page && $limit, function ($query) use ($page, $limit) {
             $query->page($page, $limit);
@@ -359,7 +359,7 @@ class StoreOrderDao extends BaseDao
      */
     public function storeOrderCount()
     {
-        return $this->search(['paid' => 1, 'is_del' => 0, 'refund_status' => 0, 'status' => 1, 'shipping_type' => 1])->count();
+        return $this->search(['paid' => 1, 'is_del' => 0, 'refund_status' => 0, 'status' => 1, 'shipping_type' => 1, 'pid' => 0])->count();
     }
 
     /**

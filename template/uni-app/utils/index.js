@@ -76,11 +76,32 @@ export function getCustomer(url) {
 			// #ifdef APP-PLUS
 			plus.runtime.openURL(res.data.customer_url)
 			// #endif
-			// #ifdef H5
-			// window.open(res.data.customer_url, '_blank')
-			uni.navigateTo({
-				url: `/pages/annex/web_view/index?url=${res.data.customer_url}`
-			});
+			// #ifdef H5 || MP
+			if (res.data.customer_url.indexOf('work.weixin.qq.com') > 0) {
+				// #ifdef H5
+				return window.location.href = res.data.customer_url
+				// #endif			
+				// #ifdef MP
+				uni.openCustomerServiceChat({
+					extInfo: {
+						url: res.data.customer_url
+					},
+					corpId: res.data.customer_corpId,
+					success(res) {},
+					fail(err) {
+						uni.showToast({
+							title: '请先配置企业ID',
+							icon: 'none',
+							duration: 2000
+						});
+					}
+				})
+				// #endif
+			} else {
+				uni.navigateTo({
+					url: `/pages/annex/web_view/index?url=${res.data.customer_url}`
+				});
+			}
 			// #endif
 		}
 	})

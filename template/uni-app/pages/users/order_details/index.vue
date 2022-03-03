@@ -40,11 +40,10 @@
 				<view class='nav'>
 					<view class='navCon acea-row row-between-wrapper'>
 						<view :class="status.type == 0 || status.type == -9 ? 'on':''">待付款</view>
-						<view :class="status.type == 1 || status.type == 5 ? 'on':''" v-if="orderInfo.shipping_type!=4">
-							{{(orderInfo.shipping_type==1 || orderInfo.shipping_type==3) ? '待发货':'待核销'}}
+						<view :class="status.type == 1 || status.type == 5 ? 'on':''">
+							{{orderInfo.shipping_type==1 ? '待发货':'待核销'}}
 						</view>
-						<view :class="status.type == 2 ? 'on':''"
-							v-if="orderInfo.shipping_type == 1 || orderInfo.shipping_type == 3">待收货</view>
+						<view :class="status.type == 2 ? 'on':''" v-if="orderInfo.shipping_type == 1">待收货</view>
 						<view :class="status.type == 3 ? 'on':''">待评价</view>
 						<view :class="status.type == 4 ? 'on':''">已完成</view>
 					</view>
@@ -52,18 +51,18 @@
 						<view class='iconfont'
 							:class='(status.type == 0 || status.type == -9  ? "icon-webicon318":"icon-yuandianxiao") + " " + (status.type >= 0 ? "font-num":"")'>
 						</view>
-						<view class='line' :class='status.type > 0 ? "bg-color":""' v-if="orderInfo.shipping_type!=4">
+						<view class='line' :class='status.type > 0 ? "bg-color":""'>
 						</view>
 						<view class='iconfont'
 							:class='(status.type == 1 || status.type == 5 ? "icon-webicon318":"icon-yuandianxiao") + " " + (status.type >= 1 ? "font-num":"")'
 							v-if="orderInfo.shipping_type!=4">
 						</view>
 						<view class='line' :class='status.type > 1 && status.type != 5 ? "bg-color":""'
-							v-if="orderInfo.shipping_type == 1 || orderInfo.shipping_type == 3">
+							v-if="orderInfo.shipping_type == 1">
 						</view>
 						<view class='iconfont'
 							:class='(status.type == 2 ? "icon-webicon318":"icon-yuandianxiao") + " " +(status.type >= 2 ? "font-num":"")'
-							v-if="orderInfo.shipping_type == 1 || orderInfo.shipping_type == 3"></view>
+							v-if="orderInfo.shipping_type == 1"></view>
 						<view class='line' :class='status.type > 2 && status.type != 5 ? "bg-color":""'></view>
 						<view class='iconfont'
 							:class='(status.type == 3 ? "icon-webicon318":"icon-yuandianxiao") + " " + (status.type >= 3 && status.type != 5  ? "font-num":"")'>
@@ -119,7 +118,7 @@
 				</view>
 
 				<view v-if="orderInfo.virtual_type == 0">
-					<view class='address' v-if="orderInfo.shipping_type === 1 || orderInfo.shipping_type === 3">
+					<view class='address' v-if="orderInfo.shipping_type === 1">
 						<view class='name'>{{orderInfo.real_name}}<text class='phone'>{{orderInfo.user_phone}}</text>
 						</view>
 						<view>{{orderInfo.user_address}}</view>
@@ -209,9 +208,8 @@
 					<view class='conter'>{{orderInfo.remark}}</view>
 				</view>
 			</view>
-			<view class='wrapper' v-if="orderInfo.custom_form && orderInfo.custom_form.length">
-				<view class='item acea-row row-between' v-for="(item,index) in orderInfo.custom_form">
-
+			<view class='wrapper' v-if="customForm && customForm.length">
+				<view class='item acea-row row-between' v-for="(item,index) in customForm">
 					<view class='upload' v-if="item.label == 'img'">
 						<view>{{item.title}}：</view>
 						<view class='pictrue' v-for="(img,index) in item.value" :key="index">
@@ -459,6 +457,7 @@
 		mixins: [colors],
 		data() {
 			return {
+				customForm: '', //自定义留言
 				//二维码参数
 				codeShow: false,
 				cid: '1',
@@ -660,7 +659,11 @@
 						phoneNumber: this.customerInfo.customer_phone
 					});
 				} else if (this.customerInfo.customer_type == 2) {
+
 					let href = this.customerInfo.customer_url;
+					// #ifdef APP-PLUS
+					plus.runtime.openURL(href)
+					// #endif
 					let hrefO = href + '?uid=' + this.userInfo.uid + '&nickName=' + this.userInfo.nickname + '&phone=' +
 						this.userInfo.phone + '&sex=' + this.userInfo.sex + '&avatar=' + this.userInfo.avatar +
 						'&openid=' + this.userInfo.openid;
@@ -668,9 +671,31 @@
 						this.userInfo.phone + '&sex=' + this.userInfo.sex + '&avatar=' + this.userInfo.avatar +
 						'&openid=' + this.userInfo.openid;
 					let urls = encodeURIComponent(href.indexOf('?') === -1 ? hrefO : hrefT);
-					uni.navigateTo({
-						url: `/pages/annex/web_view/index?url=${urls}`
-					});
+					if (href.indexOf('work.weixin.qq.com') > 0) {
+						// #ifdef H5
+						return window.location.href = href
+						// #endif			
+						// #ifdef MP
+						uni.openCustomerServiceChat({
+							extInfo: {
+								url: href
+							},
+							corpId: this.customerInfo.customer_corpId,
+							success(res) {},
+							fail(err) {
+								uni.showToast({
+									title: '请先配置企业ID',
+									icon: 'none',
+									duration: 2000
+								});
+							}
+						})
+						// #endif
+					} else {
+						uni.navigateTo({
+							url: `/pages/annex/web_view/index?url=${urls}`
+						});
+					}
 				} else {
 					uni.navigateTo({
 						url: `/pages/customer_list/chat?orderId=${self.order_id}&isReturen=${this.isReturen}`
@@ -887,6 +912,15 @@
 					let _type = res.data._status._type;
 					uni.hideLoading();
 					that.$set(that, 'orderInfo', res.data);
+					//处理自定义留言非必填项的数据展示
+					let arr = []
+					that.orderInfo.custom_form.map(i => {
+						if (i.value != '') {
+							arr.push(i)
+						}
+					})
+					that.$set(that, 'customForm', arr);
+
 					that.$set(that, 'cartInfo', res.data.cartInfo);
 					that.$set(that, 'pid', res.data.pid);
 					that.$set(that, 'split', res.data.split);
@@ -1127,12 +1161,12 @@
 			 * 
 			 * 删除订单
 			 */
-			delOrder: function() {
+			delOrder() {
 				let that = this;
 				uni.showModal({
 					title: '删除订单',
 					content: '确定删除该订单',
-					success: function(res) {
+					success: (res) => {
 						if (res.confirm) {
 							(that.isReturen ? refundOrderDel : orderDel)(that.order_id).then(res => {
 								if (that.status.type == -2) {
@@ -1176,14 +1210,21 @@
 						if (res.confirm) {
 							orderCancel(self.orderInfo.order_id)
 								.then((data) => {
+									// #ifndef MP
 									self.$util.Tips({
 										title: data.msg
 									}, {
 										tab: 3
 									})
+									// #endif
+									// #ifdef MP
+									self.$util.Tips({
+										title: data.msg
+									}, '/pages/users/order_list/index');
+									// #endif
 								})
 								.catch(() => {
-									self.getDetail();
+									self.getOrderInfo();
 								});
 						} else if (res.cancel) {
 							console.log('用户点击取消');
@@ -1205,11 +1246,11 @@
 			margin-right: 6rpx;
 		}
 	}
-	
+
 	.refund-tip1 {
 		font-size: 24rpx;
 		color: var(--view-theme);
-	
+
 		.iconfont {
 			font-size: 24rpx;
 			margin-right: 6rpx;
@@ -2161,7 +2202,8 @@
 	}
 
 	.upload .pictrue {
-		margin: 22rpx 23rpx 20rpx 0;
+		display: inline-block;
+		margin: 22rpx 17rpx 20rpx 0;
 		width: 156rpx;
 		height: 156rpx;
 		color: #bbb;

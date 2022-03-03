@@ -55,7 +55,12 @@
           部分退款中
         </div>
         <div
-          v-if="row.is_all_refund && row.refund.length && row.refund_type != 6"
+          v-if="
+            row.refund_status == 0 &&
+            row.is_all_refund &&
+            row.refund.length &&
+            row.refund_type != 6
+          "
           class="trip"
         >
           退款中
@@ -408,7 +413,7 @@ export default {
           break;
         case "4":
           this.$refs.remarks.modals = true;
-          this.$refs.remarks.formValidate.remark = row.remark
+          this.$refs.remarks.formValidate.remark = row.remark;
           break;
         case "5":
           this.getRefundData(row.id);
@@ -662,6 +667,7 @@ export default {
     // 修改成功
     submitFail() {
       this.getList();
+      this.$emit("changeGetTabs");
     },
     // 获取退款表单数据
     getRefundData(id) {

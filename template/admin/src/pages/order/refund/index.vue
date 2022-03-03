@@ -275,6 +275,7 @@
       ref="detailss"
       :orderDatalist="orderDatalist"
       :orderId="orderId"
+      :is_refund="1"
     ></details-from>
     <!-- 备注 -->
     <order-remark

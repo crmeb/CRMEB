@@ -49,7 +49,12 @@
 					{{resData.pay_price}}
 				</view>
 			</view>
-			<!-- #ifndef MP -->
+			<!-- #ifdef APP-PLUS -->
+			<view v-if="!resData.paid && !resData.type" class="order-btn" @click="appShare('WXSceneSession')">
+				发送给微信好友
+			</view>
+			<!-- #endif -->
+			<!-- #ifdef H5 -->
 			<view v-if="!resData.paid && !resData.type" class="order-btn" @click="shareFriend">
 				发送给微信好友
 			</view>
@@ -60,6 +65,9 @@
 				发送给微信好友
 			</button>
 			<!-- #endif -->
+			<button v-if="!resData.paid && !resData.type" class="order-btn detail" @click="goOrderDetail()">
+				查看订单详情
+			</button>
 			<button class="order-btn" v-if="!resData.paid && resData.type" @tap='payOpen()'>立即付款</button>
 			<button class="order-btn on-pay" v-if="resData.paid && resData.type">订单已支付</button>
 			<button class="order-btn" v-if="resData.paid && !resData.type" @tap='goOrderDetail()'>查看订单详情</button>
@@ -76,6 +84,9 @@
 		</view>
 		<payment :payMode='payMode' :pay_close="pay_close" :friendPay="true" @onChangeFun='onChangeFun'
 			:order_id="order_id" :totalPrice='resData.pay_price'></payment>
+		<!-- #ifndef MP -->
+		<home></home>
+		<!-- #endif -->
 	</view>
 </template>
 
@@ -83,9 +94,13 @@
 	import orderGoods from '@/components/orderGoods';
 	import colors from "@/mixins/color";
 	import payment from '@/components/payment';
+	import home from '@/components/home/index.vue'
 	import {
 		friendDetail
 	} from '@/api/user.js'
+	import {
+		HTTP_REQUEST_URL
+	} from "@/config/app.js";
 	import {
 		toLogin
 	} from '@/libs/login.js';
@@ -97,7 +112,8 @@
 		mixins: [colors],
 		components: {
 			orderGoods,
-			payment
+			payment,
+			home
 		},
 		computed: mapGetters(["isLogin"]),
 		data() {
@@ -157,7 +173,8 @@
 			return {
 				title: "",
 				imageUrl: "",
-				path: "/pages/users/payment_on_behalf/index?order_id=" + that.order_id + "&spread=" + this.$store.state.app.uid,
+				path: "/pages/users/payment_on_behalf/index?order_id=" + that.order_id + "&spread=" + this.$store.state.app
+					.uid,
 			};
 		},
 		// #endif
@@ -186,7 +203,7 @@
 				let href = location.href;
 				if (this.$wechat.isWeixin()) {
 					let configAppMessage = {
-						desc: '快来帮我付款吧~',
+						desc: '帮我付一下这件商品了，谢谢~',
 						title: "好友代付",
 						link: href,
 						imgUrl: data.avatar,
@@ -206,6 +223,37 @@
 				}
 			},
 			//#endif
+			// #ifdef APP-PLUS
+			appShare(scene) {
+				let that = this;
+				let routes = getCurrentPages(); // 获取当前打开过的页面路由数组
+				let curRoute = routes[routes.length - 1].$page.fullPath; // 获取当前页面路由，也就是最后一个打开的页面路由
+				uni.share({
+					provider: "weixin",
+					scene: scene,
+					type: 0,
+					href: `${HTTP_REQUEST_URL}${curRoute}`,
+					title: '好友代付',
+					summary: '帮我付一下这件商品了，谢谢~',
+					imageUrl: that.resData.paid && !that.resData.type && that.resData.pay_uid === that.$store.state
+						.app.uid ? that.resData.pay_avatar : that.resData.avatar,
+					success: function(res) {
+						uni.showToast({
+							title: "分享成功",
+							icon: "success",
+							duration: 2000,
+						});
+					},
+					fail: function(err) {
+						uni.showToast({
+							title: "分享失败",
+							icon: "none",
+							duration: 2000,
+						});
+					},
+				});
+			},
+			// #endif
 			shareFriend() {
 				// #ifndef MP
 				this.shareModal = true;
@@ -370,6 +418,13 @@
 				font-size: 30rpx;
 				text-align: center;
 				margin-top: 60rpx;
+			}
+
+			.order-btn.detail {
+				margin-top: 20rpx;
+				color: var(--view-theme);
+				background-color: #fff;
+				border: 1px solid var(--view-theme);
 			}
 
 			.order-btn.on-pay {

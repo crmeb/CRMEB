@@ -5,9 +5,8 @@
 	<!-- 	<navigator :url="'/pages/customer_list/chat?productId='+ids" hover-class="none" class="acea-row row-center-wrapper cartf iconfont icon-kefu3" :style="{ top: top + 'px'}" @touchmove.stop.prevent="setTouchMove"></navigator> -->
 	<!-- #endif -->
 	<!-- #ifdef MP -->
-	<navigator :url="'/pages/customer_list/chat?productId='+ids" hover-class="none"
-		class="acea-row row-center-wrapper cartf iconfont icon-kefu3" :style="{ top: top + 'px'}"
-		@touchmove.stop.prevent="setTouchMove" v-if="routineContact == 0"></navigator>
+	<view v-if="routineContact == 0" class="acea-row row-center-wrapper cartf iconfont icon-kefu3"
+		:style="{ top: top + 'px'}" @touchmove.stop.prevent="setTouchMove" @click="goCustomer"></view>
 	<button class="acea-row row-center-wrapper cartf iconfont icon-kefu3" open-type='contact'
 		:style="{ top: top + 'px'}" @touchmove.stop.prevent="setTouchMove"
 		v-else-if="routineContact==1 && !goodsCon"></button>
@@ -20,7 +19,9 @@
 </template>
 
 <script>
-	import {getCustomer} from '@/utils/index.js'
+	import {
+		getCustomer
+	} from '@/utils/index.js'
 	let app = getApp();
 	export default {
 		name: "kefuIcon",
@@ -35,7 +36,7 @@
 			},
 			storeInfo: {
 				type: Object,
-				default: ()=>{}
+				default: () => {}
 			},
 			goodsCon: {
 				type: Number,

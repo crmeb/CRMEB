@@ -290,7 +290,7 @@
 				}
 			} catch (e) {}
 			this.$nextTick(() => {
-				this.$refs.appUpdate.update(); //调用子组件 检查更新
+				// this.$refs.appUpdate.update(); //调用子组件 检查更新
 			});
 			// #endif
 			let that = this;

@@ -217,6 +217,7 @@ export default {
         cid: "",
         visit: 0,
       },
+      content: "",
       ruleValidate: {
         title: [{ required: true, message: "请输入标题", trigger: "blur" }],
         cid: [
@@ -280,13 +281,7 @@ export default {
   },
   methods: {
     getEditorContent(data) {
-      this.formValidate.content = data;
-    },
-    // ...mapActions('admin/page', [
-    //   'close'
-    // ]),
-    getContent(val) {
-      this.formValidate.content = val;
+      this.content = data;
     },
     // 选择图片
     modalPicTap() {
@@ -310,6 +305,7 @@ export default {
     // 提交数据
     onsubmit(name) {
       this.$refs[name].validate((valid) => {
+        this.formValidate.content = this.content;
         if (valid) {
           cmsAddApi(this.formValidate)
             .then(async (res) => {
@@ -441,7 +437,7 @@ export default {
 .Modals .address .iconfont {
   font-size: 20px;
 }
-.tip{
+.tip {
   margin-top: 10px;
   color: #bbb;
 }

@@ -730,8 +730,9 @@
 			goMenuPage(url, name) {
 				if (this.isLogin) {
 					if (url.indexOf('http') === -1) {
-						// #ifdef H5
+						// #ifdef H5 || APP-PLUS
 						if (name && name === '客服接待') {
+							// return window.location.href = `${location.origin}${url}`
 							return uni.navigateTo({
 								url: `/pages/annex/web_view/index?url=${location.origin}${url}`
 							});
@@ -739,10 +740,18 @@
 							return getCustomer(url)
 
 						} else if (name === '订单核销') {
-							return window.location.href = `${location.origin}${url}`
+							console.log(`${url}`)
+							return uni.navigateTo({
+								url:url
+							});
+							// return window.location.href = `${location.origin}${url}`
 						}
 						// #endif
+
 						// #ifdef MP
+						if (name && name === '联系客服') {
+							return getCustomer(url)
+						}
 						if (url != '#' && url == '/pages/users/user_info/index') {
 							uni.openSetting({
 								success: function(res) {}

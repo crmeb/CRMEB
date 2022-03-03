@@ -310,9 +310,9 @@ export default {
                   item.type = "input";
                   item.props.disabled = true;
                   row[key] = "永久";
-                  // item.validate = [
-                  //   { type: "string", message: "", requred: true },
-                  // ];
+                  item.validate = [
+                    { type: "string", message: "", requred: true },
+                  ];
                 } else {
                   item.props.disabled = false;
                   item.props.min = 1;

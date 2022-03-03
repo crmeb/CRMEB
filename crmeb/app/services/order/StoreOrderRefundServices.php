@@ -34,6 +34,7 @@ use crmeb\services\MiniProgramService;
 use crmeb\services\WechatService;
 use crmeb\services\workerman\ChannelService;
 use think\exception\ValidateException;
+use think\facade\Log;
 
 
 /**
@@ -231,10 +232,22 @@ class StoreOrderRefundServices extends BaseServices
                 'refund_price' => $orderRefundInfo['refund_price'],
             ], 'id');
             $this->dao->update($id, ['store_order_id' => $splitOrderInfo['id']]);
-            if ($orderInfo['id'] != $otherOrder['id']) {//拆分生成新订单了
+            if ($otherOrder['id'] != 0 && $orderInfo['id'] != $otherOrder['id']) {//拆分生成新订单了
                 //修改原订单还在申请的退款单
                 $this->dao->update(['store_order_id' => $orderInfo['id']], ['store_order_id' => $otherOrder['id']]);
             }
+
+            /** @var CapitalFlowServices $capitalFlowServices */
+            $capitalFlowServices = app()->make(CapitalFlowServices::class);
+            /** @var UserServices $userServices */
+            $userServices = app()->make(UserServices::class);
+            $userInfo = $userServices->get($splitOrderInfo['uid']);
+            $splitOrderInfo['nickname'] = $userInfo['nickname'];
+            $splitOrderInfo['phone'] = $userInfo['phone'];
+            if ($splitOrderInfo['pay_type'] == 'alipay' || $splitOrderInfo['pay_type'] == 'weixin' || $splitOrderInfo['pay_type'] == 'offline') {
+                $capitalFlowServices->setFlow($splitOrderInfo, 'refund');
+            }
+
             return $splitOrderInfo;
         });
 

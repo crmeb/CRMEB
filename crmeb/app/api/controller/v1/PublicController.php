@@ -479,6 +479,7 @@ class PublicController
         $data['customer_type'] = sys_config('customer_type', 0);
         $data['customer_phone'] = sys_config('customer_phone', 0);
         $data['customer_url'] = sys_config('customer_url', 0);
+        $data['customer_corpId'] = sys_config('customer_corpId', 0);
         return app('json')->success($data);
     }
 

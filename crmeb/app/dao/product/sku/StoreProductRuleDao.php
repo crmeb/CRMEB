@@ -39,9 +39,11 @@ class StoreProductRuleDao extends BaseDao
      * @throws \think\db\exception\DbException
      * @throws \think\db\exception\ModelNotFoundException
      */
-    public function getList(array $where = [], int $page, int $limit)
+    public function getList(array $where = [], int $page = 0, int $limit = 0)
     {
-        return $this->search($where)->page($page, $limit)->order('id desc')->select()->toArray();
+        return $this->search($where)->when($page && $limit, function ($query) use ($page, $limit) {
+            $query->page($page, $limit);
+        })->order('id desc')->select()->toArray();
     }
 
     /**

@@ -2,131 +2,121 @@
 	<view :style="colorStyle">
 		<view class="product-con">
 			<!-- 头部 -->
-			<!-- #ifdef APP-PLUS -->
-			<view class="navbar" :style="{ height: (navH)+'rpx', opacity: opacity, }">
-				<!-- #endif -->
-				<!-- #ifndef APP-PLUS -->
-				<view class='navbar' :style="{height:navH+'rpx',opacity:opacity}">
-					<!-- #endif -->
-					<view class='navbarH' :style='"height:"+navH+"rpx;"'>
-						<view class='navbarCon acea-row row-center-wrapper'>
-							<view class="header acea-row row-center-wrapper">
-								<view class="item line1">
-									{{storeInfo.title}}
-								</view>
+
+			<!-- #ifndef APP-PLUS -->
+			<view class='navbar' :style="{height:navH+'rpx',opacity:opacity}">
+				<view class='navbarH' :style='"height:"+navH+"rpx;"'>
+					<view class='navbarCon acea-row row-center-wrapper'>
+						<view class="header acea-row row-center-wrapper">
+							<view class="item line1">
+								{{storeInfo.title}}
 							</view>
 						</view>
 					</view>
 				</view>
-				<!-- #ifdef APP-PLUS -->
-				<view id="home" class="home-nav acea-row row-center-wrapper" :class="[opacity>0.5?'on':'']"
-					:style="{ top:(navH / 2-92)+'rpx',marginTop:sysHeight}">
+			</view>
+			<view id="home" class="home-nav acea-row row-center-wrapper" :class="[opacity>0.5?'on':'']"
+				:style="{ top: homeTop +'rpx'}">
+				<view class="iconfont icon-fanhui2" @tap="returns"></view>
+				<!-- #ifdef MP -->
+				<view class="line"></view>
+				<view class="iconfont icon-gengduo5" @click="moreNav"></view>
+				<!-- #endif -->
+			</view>
+			<!-- #endif -->
+			<!-- #ifdef H5 -->
+			<view id="home" class="home-nav right acea-row row-center-wrapper" :class="[opacity>0.5?'on':'']"
+				:style="{ top: homeTop +'rpx'}">
+				<!-- #ifdef APP-PLUS || H5 -->
+				<view class="iconfont icon-gengduo2" @click="moreNav"></view>
+			</view>
+			<!-- #endif -->
+			<!-- #endif -->
+			<homeList :navH="navH" :returnShow="returnShow" :currentPage="currentPage" :sysHeight="sysHeight">
+			</homeList>
+			<scroll-view :scroll-top="scrollTop" scroll-y="true" scroll-with-animation="true"
+				:style="'height:' + height + 'px;'" @scroll="scroll">
+				<view id="past0">
+					<!-- #ifdef APP-PLUS || MP -->
+					<view class="" :style="'width:100%;' + 'height:'+sysHeight"></view>
 					<!-- #endif -->
-					<!-- #ifndef APP-PLUS -->
-					<view id="home" class="home-nav acea-row row-center-wrapper" :class="[opacity>0.5?'on':'']"
-						:style="{ top: homeTop +'rpx'}">
-						<!-- #endif -->
-						<view class="iconfont icon-fanhui2" @tap="returns"></view>
-						<!-- #ifdef MP -->
-						<view class="line"></view>
-						<view class="iconfont icon-gengduo5" @click="moreNav"></view>
-						<!-- #endif -->
-					</view>
-					<!-- #ifdef APP-PLUS -->
-					<view id="home" class="home-nav right acea-row row-center-wrapper" :class="[opacity>0.5?'on':'']"
-						:style="{ top:(navH/2-92)+'rpx',marginTop:sysHeight}">
-						<!-- #endif -->
-						<!-- #ifdef H5 -->
-						<view id="home" class="home-nav right acea-row row-center-wrapper"
-							:class="[opacity>0.5?'on':'']" :style="{ top: homeTop +'rpx'}">
-							<!-- #endif -->
-							<!-- #ifdef APP-PLUS || H5 -->
-							<view class="iconfont icon-gengduo2" @click="moreNav"></view>
+					<productConSwiper :imgUrls="imgUrls"></productConSwiper>
+					<view class="nav acea-row row-between-wrapper">
+						<view class="share acea-row row-between row-bottom">
+							<view class="money font-color">
+								<image src="/static/images/my-point.png" mode=""></image>
+								<text class="num" v-text="storeInfo.price || 0"></text>积分
+							</view>
+							<view></view>
 						</view>
-						<!-- #endif -->
-						<homeList :navH="navH" :returnShow="returnShow" :currentPage="currentPage"
-							:sysHeight="sysHeight">
-						</homeList>
-						<scroll-view :scroll-top="scrollTop" scroll-y="true" scroll-with-animation="true"
-							:style="'height:' + height + 'px;'" @scroll="scroll">
-							<view id="past0">
-								<productConSwiper :imgUrls="imgUrls"></productConSwiper>
-								<view class="nav acea-row row-between-wrapper">
-									<view class="share acea-row row-between row-bottom">
-										<view class="money font-color">
-											<image src="/static/images/my-point.png" mode=""></image>
-											<text class="num" v-text="storeInfo.price || 0"></text>积分
-										</view>
-										<view></view>
-									</view>
-								</view>
-								<view class="wrapper">
-									<view class="introduce acea-row row-between">
-										<view class="infor"> {{ storeInfo.title }}</view>
-									</view>
-									<view class="label acea-row row-middle">
-										<view class="stock">原价：{{ storeInfo.product_price }}</view>
-										<view class="stock">限量:
-											{{ storeInfo.quota_show }}
-										</view>
-										<view class="stock">已兑换：{{ storeInfo.sales }} </view>
-									</view>
-								</view>
-								<view class="attribute acea-row row-between-wrapper" @tap="selecAttr"
-									v-if="attribute.productAttr.length">
-									<!-- <view class="df"><text class='atterTxt line1'>{{attr}}：{{attrValue}}</text></view>
+					</view>
+					<view class="wrapper">
+						<view class="introduce acea-row row-between">
+							<view class="infor"> {{ storeInfo.title }}</view>
+						</view>
+						<view class="label acea-row row-middle">
+							<view class="stock">原价：{{ storeInfo.product_price }}</view>
+							<view class="stock">限量:
+								{{ storeInfo.quota_show }}
+							</view>
+							<view class="stock">已兑换：{{ storeInfo.sales }} </view>
+						</view>
+					</view>
+					<view class="attribute acea-row row-between-wrapper" @tap="selecAttr"
+						v-if="attribute.productAttr.length">
+						<!-- <view class="df"><text class='atterTxt line1'>{{attr}}：{{attrValue}}</text></view>
 						<view class='iconfont icon-jiantou'></view> -->
-									<view class="flex">
-										<view style="display: flex; align-items: center; width: 90%">
-											<view class="attr-txt"> {{ attr }}： </view>
-											<view class="atterTxt line1" style="width: 82%">{{
+						<view class="flex">
+							<view style="display: flex; align-items: center; width: 90%">
+								<view class="attr-txt"> {{ attr }}： </view>
+								<view class="atterTxt line1" style="width: 82%">{{
                   attrValue
                 }}</view>
-										</view>
-										<view class="iconfont icon-jiantou"></view>
-									</view>
-									<view class="acea-row row-between-wrapper"
-										style="margin-top: 7px; padding-left: 70px" v-if="skuArr.length > 1">
-										<view class="flexs">
-											<image :src="item.image" v-for="(item, index) in skuArr.slice(0, 4)"
-												:key="index" class="attrImg"></image>
-										</view>
-										<view class="switchTxt">共{{ skuArr.length }}种规格可选</view>
-									</view>
-								</view>
 							</view>
-							<view class="product-intro" id="past2">
-								<view class="title">产品介绍</view>
-								<view class="conter">
-									<view class="" v-html="storeInfo.description"> </view>
-								</view>
+							<view class="iconfont icon-jiantou"></view>
+						</view>
+						<view class="acea-row row-between-wrapper" style="margin-top: 7px; padding-left: 70px"
+							v-if="skuArr.length > 1">
+							<view class="flexs">
+								<image :src="item.image" v-for="(item, index) in skuArr.slice(0, 4)" :key="index"
+									class="attrImg"></image>
 							</view>
-						</scroll-view>
-						<view class="footer acea-row row-between-wrapper">
-							<navigator hover-class="none" open-type="switchTab" class="item" url="/pages/index/index">
-								<view class="iconfont icon-shouye6"></view>
-								<view class="p_center">首页</view>
-							</navigator>
-							<view class="bnt acea-row" v-if="
+							<view class="switchTxt">共{{ skuArr.length }}种规格可选</view>
+						</view>
+					</view>
+				</view>
+				<view class="product-intro" id="past2">
+					<view class="title">产品介绍</view>
+					<view class="conter">
+						<view class="" v-html="storeInfo.description"> </view>
+					</view>
+				</view>
+			</scroll-view>
+			<view class="footer acea-row row-between-wrapper">
+				<navigator hover-class="none" open-type="switchTab" class="item" url="/pages/index/index">
+					<view class="iconfont icon-shouye6"></view>
+					<view class="p_center">首页</view>
+				</navigator>
+				<view class="bnt acea-row" v-if="
             attribute.productSelect.quota > 0 &&
             attribute.productSelect.product_stock > 0
           ">
-								<view class="buy bnts" @tap="goCat">立即兑换</view>
-							</view>
-							<view class="bnt acea-row" v-else>
-								<view class="bnts no-goods">无法兑换</view>
-							</view>
-						</view>
-					</view>
-					<product-window :attr="attribute" :limitNum="1" @myevent="onMyEvent" @ChangeAttr="ChangeAttr"
-						@ChangeCartNum="ChangeCartNum" @attrVal="attrVal" @iptCartNum="iptCartNum" @getImg="showImg">
-					</product-window>
-					<cus-previewImg ref="cusPreviewImg" :list="skuArr" @changeSwitch="changeSwitch"
-						@shareFriend="listenerActionSheet" />
-					<!-- 分享按钮 -->
-					<kefuIcon :ids="storeInfo.product_id" :routineContact="routineContact"></kefuIcon>
-					<!-- 发送给朋友图片 -->
+					<view class="buy bnts" @tap="goCat">立即兑换</view>
 				</view>
+				<view class="bnt acea-row" v-else>
+					<view class="bnts no-goods">无法兑换</view>
+				</view>
+			</view>
+		</view>
+		<product-window :attr="attribute" :limitNum="1" @myevent="onMyEvent" @ChangeAttr="ChangeAttr"
+			@ChangeCartNum="ChangeCartNum" @attrVal="attrVal" @iptCartNum="iptCartNum" @getImg="showImg">
+		</product-window>
+		<cus-previewImg ref="cusPreviewImg" :list="skuArr" @changeSwitch="changeSwitch"
+			@shareFriend="listenerActionSheet" />
+		<!-- 分享按钮 -->
+		<kefuIcon :ids="storeInfo.product_id" :routineContact="routineContact"></kefuIcon>
+		<!-- 发送给朋友图片 -->
+	</view>
 </template>
 
 <script>
@@ -281,13 +271,14 @@
 				},
 			});
 			this.isLogin && silenceBindingSpread();
-			// #ifndef APP-PLUS
-			this.navH = app.globalData.navHeight
+			// #ifdef H5
+			that.navH = 96;
 			// #endif
-			// #ifndef MP
-			this.navH = 96;
+			// #ifdef APP-PLUS
+			that.navH = 30;
 			// #endif
 			// #ifdef MP
+			this.navH = app.globalData.navHeight;
 			let menuButtonInfo = uni.getMenuButtonBoundingClientRect()
 			this.meunHeight = menuButtonInfo.height
 			this.backH = (that.navH / 2) + (this.meunHeight / 2)
@@ -333,6 +324,9 @@
 					.exec();
 				// #endif
 			})
+		},
+		onNavigationBarButtonTap(e) {
+			this.currentPage = !this.currentPage
 		},
 		methods: {
 			moreNav() {

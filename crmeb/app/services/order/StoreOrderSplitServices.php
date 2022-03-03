@@ -159,9 +159,12 @@ class StoreOrderSplitServices extends BaseServices
                         ];
                     }
                 }
-                if ($orderInfo['pid'] == 0 || $orderInfo['pid'] > 0 && $key == 'new') {
-                    $storeOrderCartInfoServices->saveAll($cart_data_all);
+
+                if ($orderInfo['pid'] > 0 && $key == 'other') {
+                    $storeOrderCartInfoServices->delete(['oid' => $new_id]);
                 }
+                $storeOrderCartInfoServices->saveAll($cart_data_all);
+
                 $new_order = $this->dao->get($new_id);
                 $storeOrderCartInfoServices->clearOrderCartInfo($new_id);
                 $this->splitComputeOrder((int)$new_id, $cart_data_all, (float)($change_price ? $order_pay_price : 0), (float)$orderInfo['pay_price'], (float)($new_order['pay_price'] ?? 0));
@@ -286,7 +289,7 @@ class StoreOrderSplitServices extends BaseServices
             $deduction_price = bcadd((string)$deduction_price, (string)$_info['integral_price'], 2);
             $coupon_price = bcadd((string)$coupon_price, (string)$_info['coupon_price'], 2);
             $use_integral = bcadd((string)$use_integral, (string)$_info['use_integral'], 0);
-            $pay_postage = bcadd((string)$pay_postage, (string)$_info['postage_price'], 2);
+            $pay_postage = isset($_info['postage_price']) ? bcadd((string)$pay_postage, (string)$_info['postage_price'], 2) : 0;
             $cartInfoGainIntegral = bcmul((string)$cart['cart_num'], (string)($_info['productInfo']['give_integral'] ?? '0'), 0);
             $gainIntegral = bcadd((string)$gainIntegral, (string)$cartInfoGainIntegral, 0);
             $one_brokerage = bcadd((string)$one_brokerage, (string)$_info['one_brokerage'], 2);

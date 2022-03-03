@@ -91,11 +91,11 @@
           <Col span="12" class="mb10"
             >支付方式：{{ orderDatalist.orderInfo._status._payType }}</Col
           >
-          <Col span="12" class="mb10"
+          <Col span="12" class="mb10" v-if="is_refund!=1"
             >推广人：{{
-              orderDatalist.userInfo.spread_name +
+              orderDatalist.orderInfo.spread_name +
               "/" +
-              orderDatalist.userInfo.spread_uid
+              orderDatalist.orderInfo.spread_uid
             }}</Col
           >
           <Col
@@ -253,6 +253,7 @@ export default {
   props: {
     orderDatalist: Object,
     orderId: Number,
+    is_refund: Number,
   },
   methods: {
     openLogistics() {

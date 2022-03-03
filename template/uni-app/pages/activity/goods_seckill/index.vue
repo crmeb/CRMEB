@@ -158,8 +158,7 @@
 			},
 			goDetails(item) {
 				uni.navigateTo({
-					url: '/pages/activity/goods_seckill_details/index?id=' + item.id + '&time=' + this.timeList[
-						this.active].stop + '&status=' + this.status
+					url: '/pages/activity/goods_seckill_details/index?id=' + item.id
 				})
 			}
 		},

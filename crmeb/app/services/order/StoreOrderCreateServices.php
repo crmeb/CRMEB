@@ -661,8 +661,8 @@ class StoreOrderCreateServices extends BaseServices
         $agentLevelServices = app()->make(AgentLevelServices::class);
         [$one_brokerage_up, $two_brokerage_up, $spread_one_uid, $spread_two_uid] = $agentLevelServices->getAgentLevelBrokerage($uid);
 
-        $BrokerageOne = sys_config('store_brokerage_ratio') != '' ?: 0;
-        $BrokerageTwo = sys_config('store_brokerage_two') != '' ?: 0;
+        $BrokerageOne = sys_config('store_brokerage_ratio') != '' ? sys_config('store_brokerage_ratio') : 0;
+        $BrokerageTwo = sys_config('store_brokerage_two') != '' ? sys_config('store_brokerage_two') : 0;
         $storeBrokerageRatio = $BrokerageOne + (($BrokerageOne * $one_brokerage_up) / 100);
         $storeBrokerageTwo = $BrokerageTwo + (($BrokerageTwo * $two_brokerage_up) / 100);
 

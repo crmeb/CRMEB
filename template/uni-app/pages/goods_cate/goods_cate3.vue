@@ -12,7 +12,7 @@
 		</view>
 		<view class="conter">
 			<view class='aside'>
-				<scroll-view scroll-y="true" scroll-with-animation='true' style="height: 100%;">
+				<scroll-view scroll-y="true" scroll-with-animation='true' style="height: calc(100% - 100rpx)">
 					<view class='item acea-row row-center-wrapper' :class='index==navActive?"on":""'
 						v-for="(item,index) in categoryList" :key="index" @click="tapNav(index,item)">
 						<text>{{item.cate_name}}</text>

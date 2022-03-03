@@ -64,6 +64,6 @@ class WechatQrcode extends BaseModel
 
     public function searchIsDelAttr($query, $value)
     {
-        if ($value != '') $query->where('is_del', $value);
+        if ($value !== '') $query->where('is_del', $value);
     }
 }

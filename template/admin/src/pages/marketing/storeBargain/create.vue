@@ -22,6 +22,7 @@
             <Step title="选择砍价商品"></Step>
             <Step title="填写基础信息"></Step>
             <Step title="修改商品详情"></Step>
+            <Step title="修改商品规则"></Step>
           </Steps>
         </Col>
         <Col span="23">
@@ -361,6 +362,8 @@
                   @editorContent="getEditorContent"
                 ></WangEditor>
               </FormItem>
+            </div>
+            <div v-show="current === 3">
               <FormItem label="规则：">
                 <!-- <vue-ueditor-wrap
                   v-model="formValidate.rule"
@@ -388,10 +391,10 @@
               >
               <Button
                 type="primary"
-                :disabled="submitOpen && current === 2"
+                :disabled="submitOpen && current === 3"
                 class="submission"
                 @click="next('formValidate')"
-                v-text="current === 2 ? '提交' : '下一步'"
+                v-text="current === 3 ? '提交' : '下一步'"
               ></Button>
             </FormItem>
             <Spin size="large" fix v-if="spinShow"></Spin>
@@ -453,7 +456,6 @@ import { productGetTemplateApi } from "@/api/product";
 import freightTemplate from "@/components/freightTemplate/index";
 // import VueUeditorWrap from "vue-ueditor-wrap";
 import WangEditor from "@/components/wangEditor/index.vue";
-import WangEditor2 from "@/components/wangEditor/index.vue";
 
 export default {
   name: "storeBargainCreate",
@@ -546,6 +548,8 @@ export default {
         freight: 2, //运费设置
         postage: 1, //设置运费金额
       },
+      description: "",
+      rule: "",
       ruleValidate: {
         image: [{ required: true, message: "请选择主图", trigger: "change" }],
         images: [
@@ -675,11 +679,13 @@ export default {
     this.productGetTemplate();
   },
   methods: {
+    // 详情内容
     getEditorContent(data) {
-      this.formValidate.description = data;
+      this.description = data;
     },
+    // 规则内容
     getEditorContent2(data) {
-      this.formValidate.rule = data;
+      this.rule = data;
     },
     // 添加运费模板
     freight() {
@@ -919,7 +925,11 @@ export default {
     },
     // 下一步
     next(name) {
-      if (this.current === 2) {
+      if (this.current === 3) {
+        console.log("12321321321");
+
+        this.formValidate.description = this.description;
+        this.formValidate.rule = this.rule;
         this.$refs[name].validate((valid) => {
           if (valid) {
             if (this.copy == 1) this.formValidate.copy = 1;

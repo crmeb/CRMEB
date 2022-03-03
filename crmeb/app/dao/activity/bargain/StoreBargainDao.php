@@ -107,19 +107,20 @@ class StoreBargainDao extends BaseDao
      * 砍价列表
      * @param int $page
      * @param int $limit
+     * @param string $field
      * @return array
      * @throws \think\db\exception\DataNotFoundException
      * @throws \think\db\exception\DbException
      * @throws \think\db\exception\ModelNotFoundException
      */
-    public function bargainList(int $page, int $limit)
+    public function bargainList(int $page, int $limit, string $field = '*')
     {
         return $this->search(['is_del' => 0, 'status' => 1])
             ->where('start_time', '<=', time())
             ->where('stop_time', '>=', time())
             ->where('product_id', 'IN', function ($query) {
                 $query->name('store_product')->where('is_show', 1)->where('is_del', 0)->field('id');
-            })->with('product')->page($page, $limit)->order('sort DESC,id DESC')->select()->toArray();
+            })->with('product')->field($field)->page($page, $limit)->order('sort DESC,id DESC')->select()->toArray();
     }
 
     /**
@@ -132,7 +133,8 @@ class StoreBargainDao extends BaseDao
      * @throws \think\db\exception\DbException
      * @throws \think\db\exception\ModelNotFoundException
      */
-    public function DiyBargainList(array $where,int $page, int $limit){
+    public function DiyBargainList(array $where, int $page, int $limit)
+    {
         return $this->search($where)
             ->when(isset($where['sid']) && $where['sid'], function ($query) use ($where) {
                 $query->whereIn('id', function ($query) use ($where) {
@@ -161,7 +163,8 @@ class StoreBargainDao extends BaseDao
      * @throws \think\db\exception\DbException
      * @throws \think\db\exception\ModelNotFoundException
      */
-    public function getHomeList(array $where,int $page, int $limit){
+    public function getHomeList(array $where, int $page, int $limit)
+    {
         return $this->search($where)
             ->when(isset($where['sid']) && $where['sid'], function ($query) use ($where) {
                 $query->whereIn('id', function ($query) use ($where) {
@@ -229,6 +232,7 @@ class StoreBargainDao extends BaseDao
                 $query->name('store_product')->where('is_show', 1)->where('is_del', 0)->field('id');
             })->count();
     }
+
     /**
      * 修改砍价状态
      * @param int $id

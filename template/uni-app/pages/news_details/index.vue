@@ -112,12 +112,15 @@
 			setShareInfo: function() {
 				let href = location.href;
 				let configAppMessage = {
-					desc: this.articleInfo.synopsis,
 					title: this.articleInfo.title,
+					desc: this.articleInfo.synopsis,
 					link: href,
 					imgUrl: this.articleInfo.image_input.length ? this.articleInfo.image_input[0] : ""
 				};
-				this.$wechat.wechatEvevt(["updateAppMessageShareData", "updateTimelineShareData"], configAppMessage);
+				this.$wechat.wechatEvevt(["updateAppMessageShareData", "updateTimelineShareData",
+					"onMenuShareAppMessage",
+					"onMenuShareTimeline",
+				], configAppMessage);
 			}
 		}
 	}

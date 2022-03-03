@@ -1,6 +1,8 @@
 <template>
 	<view :style="colorStyle">
 		<!-- 头部 -->
+
+		<!-- #ifndef APP-PLUS -->
 		<view class='navbar' :style="{height:navH+'rpx',opacity:opacity}">
 			<view class='navbarH' :style='"height:"+navH+"rpx;"'>
 				<view class='navbarCon acea-row row-center-wrapper'>
@@ -13,234 +15,229 @@
 				</view>
 			</view>
 		</view>
-		<!-- #ifdef APP-PLUS -->
 		<view id="home" class="home-nav acea-row row-center-wrapper" :class="[opacity>0.5?'on':'']"
-			:style="{ top:(navH/2-92)+'rpx' ,marginTop:sysHeight}">
+			:style="{ top: homeTop +'rpx'}">
+			<view class="iconfont icon-fanhui2" @tap="returns"></view>
+			<!-- #ifdef MP -->
+			<view class="line"></view>
+			<view class="iconfont icon-gengduo5" @click="moreNav"></view>
 			<!-- #endif -->
-			<!-- #ifndef APP-PLUS -->
-			<view id="home" class="home-nav acea-row row-center-wrapper" :class="[opacity>0.5?'on':'']"
-				:style="{ top: homeTop +'rpx'}">
-				<!-- #endif -->
-				<view class="iconfont icon-fanhui2" @tap="returns"></view>
-				<!-- #ifdef MP -->
-				<view class="line"></view>
-				<view class="iconfont icon-gengduo5" @click="moreNav"></view>
-				<!-- #endif -->
-			</view>
+		</view>
+		<!-- #endif -->
 
-
-			<!-- #ifdef APP-PLUS -->
-			<view id="home" class="home-nav right acea-row row-center-wrapper" :class="[opacity>0.5?'on':'']"
-				:style="{ top:(navH/2-92)+'rpx',marginTop:sysHeight}">
-				<!-- #endif -->
-				<!-- #ifdef H5 -->
-				<view id="home" class="home-nav right acea-row row-center-wrapper" :class="[opacity>0.5?'on':'']"
-					:style="{ top: homeTop +'rpx'}">
+		<!-- #ifdef H5 -->
+		<view id="home" class="home-nav right acea-row row-center-wrapper" :class="[opacity>0.5?'on':'']"
+			:style="{ top: homeTop +'rpx'}">
+			<!-- #ifdef  H5 -->
+			<view class="iconfont icon-gengduo2" @click="moreNav"></view>
+		</view>
+		<!-- #endif -->
+		<!-- #endif -->
+		<homeList :navH="navH" :returnShow="returnShow" :currentPage="currentPage" :sysHeight="sysHeight">
+		</homeList>
+		<view class='product-con'>
+			<scroll-view :scroll-top="scrollTop" scroll-y='true' scroll-with-animation="true"
+				:style="'height:'+height+'px;'" @scroll="scroll">
+				<view id="past0">
+					<!-- #ifdef APP-PLUS || MP -->
+					<view class="" :style="'width:100%;' + 'height:'+sysHeight"></view>
 					<!-- #endif -->
-					<!-- #ifdef APP-PLUS || H5 -->
-					<view class="iconfont icon-gengduo2" @click="moreNav"></view>
-				</view>
-				<!-- #endif -->
-				<homeList :navH="navH" :returnShow="returnShow" :currentPage="currentPage" :sysHeight="sysHeight">
-				</homeList>
-				<!-- #ifndef APP-PLUS -->
-				<!-- <menuIcon :showMenuIcon="showMenuIcon" @open="open"></menuIcon> -->
-				<!-- #endif -->
-				<view class='product-con'>
-					<scroll-view :scroll-top="scrollTop" scroll-y='true' scroll-with-animation="true"
-						:style="'height:'+height+'px;'" @scroll="scroll">
-						<view id="past0">
-							<productConSwiper :imgUrls='imgUrls'></productConSwiper>
-							<view class="bg-color">
-								<view class='nav acea-row row-between-wrapper'>
-									<view class='money'>￥<text class='num'>{{storeInfo.price}}</text>
-										<text
-											v-if="attribute.productAttr.length && (attribute.productAttr.length?attribute.productAttr[0].attr_values.length:0) > 1">起</text>
-										<text class='y-money'>￥{{storeInfo.ot_price}}</text>
-									</view>
-									<view class='acea-row row-middle'>
-										<view class='timeItem' v-if="status == 1">
-											<view>距秒杀结束仅剩</view>
-											<countDown :is-day="false" :tip-text="' '" :day-text="' '"
-												:hour-text="' : '" :minute-text="' : '" :second-text="' '"
-												:datatime="datatime" style="margin-top: 4rpx;"></countDown>
-										</view>
-										<!-- <view class="timeState" wx:if="{{status == 0}}">已结束</view>
+					<productConSwiper :imgUrls='imgUrls'></productConSwiper>
+					<view class="bg-color">
+						<view class='nav acea-row row-between-wrapper'>
+							<view class='money'>￥<text class='num'>{{storeInfo.price}}</text>
+								<text
+									v-if="attribute.productAttr.length && (attribute.productAttr.length?attribute.productAttr[0].attr_values.length:0) > 1">起</text>
+								<text class='y-money'>￥{{storeInfo.ot_price}}</text>
+							</view>
+							<view class='acea-row row-middle'>
+								<view class='timeItem' v-if="status == 1">
+									<view>距秒杀结束仅剩</view>
+									<countDown :is-day="false" :tip-text="' '" :day-text="' '" :hour-text="' : '"
+										:minute-text="' : '" :second-text="' '" :datatime="datatime"
+										style="margin-top: 4rpx;"></countDown>
+								</view>
+								<!-- <view class="timeState" wx:if="{{status == 0}}">已结束</view>
 						  <view class="timeState" wx:if="{{status == 2}}">即将开始</view> -->
-										<!-- <view class='iconfont icon-jiantou'></view> -->
-									</view>
-								</view>
+								<!-- <view class='iconfont icon-jiantou'></view> -->
 							</view>
-							<view class='wrapper'>
-								<view class='introduce acea-row row-between'>
-									<view class='infor'> {{storeInfo.title}}</view>
-									<!-- <button class='iconfont icon-fenxiang' open-type='share'></button> -->
-									<view class='iconfont icon-fenxiang' @click="listenerActionSheet"></view>
-								</view>
-								<view class='label acea-row row-middle'>
-									<!-- <view class='stock'>库存：{{storeInfo.stock}}{{storeInfo.unit_name}}</view> -->
-									<view class='stock'>
-										累计销售：{{storeInfo.total?storeInfo.total:0}}{{storeInfo.unit_name || ''}}
-									</view>
-									<view>限量: {{ storeInfo.quota ? storeInfo.quota : 0 }}{{storeInfo.unit_name || ''}}
-									</view>
-								</view>
+						</view>
+					</view>
+					<view class='wrapper'>
+						<view class='introduce acea-row row-between'>
+							<view class='infor'> {{storeInfo.title}}</view>
+							<!-- <button class='iconfont icon-fenxiang' open-type='share'></button> -->
+							<view class='iconfont icon-fenxiang' @click="listenerActionSheet"></view>
+						</view>
+						<view class='label acea-row row-middle'>
+							<!-- <view class='stock'>库存：{{storeInfo.stock}}{{storeInfo.unit_name}}</view> -->
+							<view class='stock'>
+								累计销售：{{storeInfo.total?storeInfo.total:0}}{{storeInfo.unit_name || ''}}
 							</view>
-							<view class='attribute acea-row row-between-wrapper' @tap='selecAttr'
-								v-if='attribute.productAttr.length'>
-								<!-- 	<view>{{attr}}：<text class='atterTxt'>{{attrValue}}</text></view>
+							<view>限量: {{ storeInfo.quota ? storeInfo.quota : 0 }}{{storeInfo.unit_name || ''}}
+							</view>
+						</view>
+					</view>
+					<view class='attribute acea-row row-between-wrapper' @tap='selecAttr'
+						v-if='attribute.productAttr.length'>
+						<!-- 	<view>{{attr}}：<text class='atterTxt'>{{attrValue}}</text></view>
 						<view class='iconfont icon-jiantou'></view> -->
-								<view class="flex">
-									<view style="display: flex; align-items: center; width: 90%">
-										<view class="attr-txt"> {{ attr }}： </view>
-										<view class="atterTxt line1" style="width: 82%">{{
+						<view class="flex">
+							<view style="display: flex; align-items: center; width: 90%">
+								<view class="attr-txt"> {{ attr }}： </view>
+								<view class="atterTxt line1" style="width: 82%">{{
 						      attrValue
 						    }}</view>
-									</view>
-									<view class="iconfont icon-jiantou"></view>
-								</view>
-								<view class="acea-row row-between-wrapper" style="margin-top: 7px; padding-left: 70px"
-									v-if="skuArr.length > 1">
-									<view class="flexs">
-										<image :src="item.image" v-for="(item, index) in skuArr.slice(0, 4)"
-											:key="index" class="attrImg"></image>
-									</view>
-									<view class="switchTxt">共{{ skuArr.length }}种规格可选</view>
-								</view>
 							</view>
+							<view class="iconfont icon-jiantou"></view>
 						</view>
-						<view class='userEvaluation' id="past1" v-if="replyCount">
-							<view class='title acea-row row-between-wrapper'>
-								<view>用户评价({{replyCount}})</view>
-								<navigator class='praise' hover-class='none'
-									:url="'/pages/users/goods_comment_list/index?product_id='+storeInfo.product_id">
-									<text class='font-color'>{{replyChance}}%</text>好评率
-									<text class='iconfont icon-jiantou'></text>
-								</navigator>
+						<view class="acea-row row-between-wrapper" style="margin-top: 7px; padding-left: 70px"
+							v-if="skuArr.length > 1">
+							<view class="flexs">
+								<image :src="item.image" v-for="(item, index) in skuArr.slice(0, 4)" :key="index"
+									class="attrImg"></image>
 							</view>
-							<userEvaluation :reply="reply"></userEvaluation>
+							<view class="switchTxt">共{{ skuArr.length }}种规格可选</view>
 						</view>
-						<view class='product-intro' id="past2">
-							<view class='title'>产品介绍</view>
-							<view class='conter'>
-								<!-- <view class="" v-html="storeInfo.description">
+					</view>
+				</view>
+				<view class='userEvaluation' id="past1" v-if="replyCount">
+					<view class='title acea-row row-between-wrapper'>
+						<view>用户评价({{replyCount}})</view>
+						<navigator class='praise' hover-class='none'
+							:url="'/pages/users/goods_comment_list/index?product_id='+storeInfo.product_id">
+							<text class='font-color'>{{replyChance}}%</text>好评率
+							<text class='iconfont icon-jiantou'></text>
+						</navigator>
+					</view>
+					<userEvaluation :reply="reply"></userEvaluation>
+				</view>
+				<view class='product-intro' id="past2">
+					<view class='title'>产品介绍</view>
+					<view class='conter'>
+						<!-- <view class="" v-html="storeInfo.description">
 						</view> -->
-								<parser :html="storeInfo.description" ref="article" :tag-style="tagStyle"></parser>
-							</view>
-						</view>
-					</scroll-view>
-					<view class='footer acea-row row-between-wrapper'>
-						<!-- #ifdef MP -->
-						<!-- <button open-type="contact" hover-class='none' class='item'>
+
+						<!-- #ifndef APP-PLUS -->
+						<parser :html="storeInfo.description" ref="article" :tag-style="tagStyle"></parser>
+						<!-- #endif -->
+						<!-- #ifdef APP-PLUS -->
+						<view class="description" v-html="storeInfo.description"></view>
+						<!-- #endif -->
+					</view>
+				</view>
+			</scroll-view>
+			<view class='footer acea-row row-between-wrapper'>
+				<!-- #ifdef MP -->
+				<!-- <button open-type="contact" hover-class='none' class='item'>
 					<view class='iconfont icon-kefu'></view>
 					<view class="p_center">客服</view>
 				</button> -->
-						<!-- #endif -->
-						<!-- #ifndef MP -->
-						<!-- 	<navigator hover-class="none" class="item" url="/pages/customer_list/chat">
+				<!-- #endif -->
+				<!-- #ifndef MP -->
+				<!-- 	<navigator hover-class="none" class="item" url="/pages/customer_list/chat">
 					<view class="iconfont icon-kefu"></view>
 					<view class="p_center">客服</view>
 				</navigator> -->
-						<!-- #endif -->
-						<navigator hover-class="none" open-type="switchTab" class="item" url="/pages/index/index">
-							<view class="iconfont icon-shouye6"></view>
-							<view class="p_center">首页</view>
-						</navigator>
-						<view @tap='setCollect' class='item'>
-							<view class='iconfont icon-shoucang1' v-if="storeInfo.userCollect"></view>
-							<view class='iconfont icon-shoucang' v-else></view>
-							<view class="p_center">收藏</view>
-						</view>
-						<view class="bnt acea-row"
-							v-if="status == 1 && attribute.productSelect.quota > 0 && attribute.productSelect.product_stock>0">
-							<view class="joinCart bnts" @tap="openAlone">单独购买</view>
-							<view class="buy bnts" @tap="goCat">立即购买</view>
-						</view>
-						<view class="bnt acea-row"
-							v-if="(status == 1 && attribute.productSelect.quota <= 0) || (status == 3 && attribute.productSelect.quota <= 0) || (status == 1 && attribute.productSelect.product_stock <= 0) || (status == 3 && attribute.productSelect.product_stock <= 0)">
-							<view class="joinCart bnts" @tap="openAlone">单独购买</view>
-							<view class="buy bnts bg-color-hui">已售罄</view>
-						</view>
-						<view class="bnt acea-row" v-if="!dataShow && status == 1">
-							<view class="joinCart bnts" @tap="openAlone">单独购买</view>
-							<view class="buy bnts bg-color-hui">立即购买</view>
-						</view>
-						<view class="bnt acea-row" v-if="status == 2">
-							<view class="joinCart bnts" @tap="openAlone">单独购买</view>
-							<view class="buy bnts bg-color-hui">未开始</view>
-						</view>
-						<view class="bnt acea-row" v-if="status == 0">
-							<view class="joinCart bnts" @tap="openAlone">单独购买</view>
-							<view class="buy bnts bg-color-hui">已结束</view>
-						</view>
-					</view>
-				</view>
-				<cus-previewImg ref="cusPreviewImg" :list="skuArr" @changeSwitch="changeSwitch"
-					@shareFriend="listenerActionSheet" />
-				<product-window :attr='attribute' :limitNum='1' @myevent="onMyEvent" @ChangeAttr="ChangeAttr"
-					:type="'seckill'" @ChangeCartNum="ChangeCartNum" @attrVal="attrVal" @iptCartNum="iptCartNum"
-					@getImg="showImg">
-				</product-window>
-
-				<!-- #ifdef MP -->
-				<!-- <authorize @onLoadFun="onLoadFun" :isAuto="isAuto" :isShowAuth="isShowAuth"></authorize> -->
 				<!-- #endif -->
-				<!-- 分享按钮 -->
-				<view class="generate-posters acea-row row-middle" :class="posters ? 'on' : ''">
-					<!-- #ifndef MP -->
-					<button class="item" hover-class='none' v-if="weixinStatus === true" @click="H5ShareBox = true">
-						<!-- <button class="item" hover-class='none' v-if="weixinStatus === true" @click="setShareInfoStatus"> -->
-						<view class="iconfont icon-weixin3"></view>
-						<view class="">发送给朋友</view>
-					</button>
-					<!-- #endif -->
-					<!-- #ifdef MP -->
-					<button class="item" open-type="share" hover-class='none' @click="goFriend">
-						<view class="iconfont icon-weixin3"></view>
-						<view class="">发送给朋友</view>
-					</button>
-					<!-- #endif -->
-					<!-- #ifdef APP-PLUS -->
-					<view class="item" @click="appShare('WXSceneSession')">
-						<view class="iconfont icon-weixin3"></view>
-						<view class="">微信好友</view>
-					</view>
-					<view class="item" @click="appShare('WXSenceTimeline')">
-						<view class="iconfont icon-pengyouquan"></view>
-						<view class="">微信朋友圈</view>
-					</view>
-					<!-- #endif -->
-					<button class="item" hover-class='none' @tap="goPoster">
-						<view class="iconfont icon-haibao"></view>
-						<view class="">生成海报</view>
-					</button>
+				<navigator hover-class="none" open-type="switchTab" class="item" url="/pages/index/index">
+					<view class="iconfont icon-shouye6"></view>
+					<view class="p_center">首页</view>
+				</navigator>
+				<view @tap='setCollect' class='item'>
+					<view class='iconfont icon-shoucang1' v-if="storeInfo.userCollect"></view>
+					<view class='iconfont icon-shoucang' v-else></view>
+					<view class="p_center">收藏</view>
 				</view>
-				<view class="mask" v-if="posters" @click="listenerActionClose"></view>
-
-				<!-- 海报展示 -->
-				<view class='poster-pop' v-if="posterImageStatus">
-					<image src='/static/images/poster-close.png' class='close' @click="posterImageClose"></image>
-					<image :src='posterImage'></image>
-					<!-- #ifndef H5  -->
-					<view class='save-poster' @click="savePosterPath">保存到手机</view>
-					<!-- #endif -->
-					<!-- #ifdef H5 -->
-					<view class="keep">长按图片可以保存到手机</view>
-					<!-- #endif -->
+				<view class="bnt acea-row"
+					v-if="status == 1 && attribute.productSelect.quota > 0 && attribute.productSelect.product_stock>0">
+					<view class="joinCart bnts" @tap="openAlone">单独购买</view>
+					<view class="buy bnts" @tap="goCat">立即购买</view>
 				</view>
-				<view class='mask1' v-if="posterImageStatus"></view>
-				<canvas class="canvas" canvas-id='myCanvas' v-if="canvasStatus"></canvas>
-				<kefuIcon :ids='storeInfo.product_id' :routineContact='routineContact'></kefuIcon>
-				<!-- 发送给朋友图片 -->
-				<view class="share-box" v-if="H5ShareBox">
-					<image src="/static/images/share-info.png" @click="H5ShareBox = false"></image>
+				<view class="bnt acea-row"
+					v-if="(status == 1 && attribute.productSelect.quota <= 0) || (status == 3 && attribute.productSelect.quota <= 0) || (status == 1 && attribute.productSelect.product_stock <= 0) || (status == 3 && attribute.productSelect.product_stock <= 0)">
+					<view class="joinCart bnts" @tap="openAlone">单独购买</view>
+					<view class="buy bnts bg-color-hui">已售罄</view>
 				</view>
-				<!-- #ifdef H5 || APP-PLUS -->
-				<zb-code ref="qrcode" :show="codeShow" :cid="cid" :val="codeVal" :size="size" :unit="unit"
-					:background="background" :foreground="foreground" :pdground="pdground" :icon="codeIcon"
-					:iconSize="iconsize" :onval="onval" :loadMake="loadMake" @result="qrR" />
-				<!-- #endif -->
+				<view class="bnt acea-row" v-if="!dataShow && status == 1">
+					<view class="joinCart bnts" @tap="openAlone">单独购买</view>
+					<view class="buy bnts bg-color-hui">立即购买</view>
+				</view>
+				<view class="bnt acea-row" v-if="status == 2">
+					<view class="joinCart bnts" @tap="openAlone">单独购买</view>
+					<view class="buy bnts bg-color-hui">未开始</view>
+				</view>
+				<view class="bnt acea-row" v-if="status == 0">
+					<view class="joinCart bnts" @tap="openAlone">单独购买</view>
+					<view class="buy bnts bg-color-hui">已结束</view>
+				</view>
 			</view>
+		</view>
+		<cus-previewImg ref="cusPreviewImg" :list="skuArr" @changeSwitch="changeSwitch"
+			@shareFriend="listenerActionSheet" />
+		<product-window :attr='attribute' :limitNum='1' @myevent="onMyEvent" @ChangeAttr="ChangeAttr" :type="'seckill'"
+			@ChangeCartNum="ChangeCartNum" @attrVal="attrVal" @iptCartNum="iptCartNum" @getImg="showImg">
+		</product-window>
+
+		<!-- #ifdef MP -->
+		<!-- <authorize @onLoadFun="onLoadFun" :isAuto="isAuto" :isShowAuth="isShowAuth"></authorize> -->
+		<!-- #endif -->
+		<!-- 分享按钮 -->
+		<view class="generate-posters acea-row row-middle" :class="posters ? 'on' : ''">
+			<!-- #ifndef MP -->
+			<button class="item" hover-class='none' v-if="weixinStatus === true" @click="H5ShareBox = true">
+				<!-- <button class="item" hover-class='none' v-if="weixinStatus === true" @click="setShareInfoStatus"> -->
+				<view class="iconfont icon-weixin3"></view>
+				<view class="">发送给朋友</view>
+			</button>
+			<!-- #endif -->
+			<!-- #ifdef MP -->
+			<button class="item" open-type="share" hover-class='none' @click="goFriend">
+				<view class="iconfont icon-weixin3"></view>
+				<view class="">发送给朋友</view>
+			</button>
+			<!-- #endif -->
+			<!-- #ifdef APP-PLUS -->
+			<view class="item" @click="appShare('WXSceneSession')">
+				<view class="iconfont icon-weixin3"></view>
+				<view class="">微信好友</view>
+			</view>
+			<view class="item" @click="appShare('WXSenceTimeline')">
+				<view class="iconfont icon-pengyouquan"></view>
+				<view class="">微信朋友圈</view>
+			</view>
+			<!-- #endif -->
+			<button class="item" hover-class='none' @tap="goPoster">
+				<view class="iconfont icon-haibao"></view>
+				<view class="">生成海报</view>
+			</button>
+		</view>
+		<view class="mask" v-if="posters" @click="listenerActionClose"></view>
+
+		<!-- 海报展示 -->
+		<view class='poster-pop' v-if="posterImageStatus">
+			<image src='/static/images/poster-close.png' class='close' @click="posterImageClose"></image>
+			<image :src='posterImage'></image>
+			<!-- #ifndef H5  -->
+			<view class='save-poster' @click="savePosterPath">保存到手机</view>
+			<!-- #endif -->
+			<!-- #ifdef H5 -->
+			<view class="keep">长按图片可以保存到手机</view>
+			<!-- #endif -->
+		</view>
+		<view class='mask1' v-if="posterImageStatus"></view>
+		<canvas class="canvas" canvas-id='myCanvas' v-if="canvasStatus"></canvas>
+		<kefuIcon :ids='storeInfo.product_id' :routineContact='routineContact'></kefuIcon>
+		<!-- 发送给朋友图片 -->
+		<view class="share-box" v-if="H5ShareBox">
+			<image src="/static/images/share-info.png" @click="H5ShareBox = false"></image>
+		</view>
+		<!-- #ifdef H5 || APP-PLUS -->
+		<zb-code ref="qrcode" :show="codeShow" :cid="cid" :val="codeVal" :size="size" :unit="unit"
+			:background="background" :foreground="foreground" :pdground="pdground" :icon="codeIcon" :iconSize="iconsize"
+			:onval="onval" :loadMake="loadMake" @result="qrR" />
+		<!-- #endif -->
+	</view>
 </template>
 
 <script>
@@ -402,17 +399,14 @@
 			let that = this
 			let statusBarHeight = ''
 			var pages = getCurrentPages();
+			if (options.id) {
+				this.id = options.id
+				//记录推广人uid
+				if (options.pid) app.globalData.spid = options.pid;
+				// if (options.time) this.datatime = Number(options.time);
+			}
 			that.returnShow = pages.length === 1 ? false : true;
-			// #ifdef H5
-			this.codeVal = window.location.origin + '/pages/activity/goods_seckill_details/index?id=' + that.id +
-				'&time=' + that.time +
-				'&status=' + that.status + '&spid=' + that.storeInfo.uid
-			// #endif	
-			// #ifdef APP-PLUS
-			this.codeVal = HTTP_REQUEST_URL + '/pages/activity/goods_seckill_details/index?id=' + that.id +
-				'&time=' + that.time +
-				'&status=' + that.status + '&spid=' + that.storeInfo.uid
-			// #endif	
+
 			//设置商品列表高度
 			uni.getSystemInfo({
 				success: function(res) {
@@ -422,11 +416,14 @@
 				},
 			});
 			this.isLogin && silenceBindingSpread();
-			// #ifndef APP-PLUS
-			this.navH = app.globalData.navHeight
+			// #ifdef MP
+			this.navH = app.globalData.navHeight;
+			// #endif
+			// #ifdef H5
+			that.navH = 96;
 			// #endif
 			// #ifdef APP-PLUS
-			this.navH = 96
+			that.navH = 30;
 			// #endif
 			// #ifdef MP
 			let menuButtonInfo = uni.getMenuButtonBoundingClientRect()
@@ -451,13 +448,6 @@
 				// if (value.time) this.datatime = value.time
 			}
 			// #endif
-
-			if (options.id) {
-				this.id = options.id
-				//记录推广人uid
-				if (options.pid) app.globalData.spid = options.pid;
-				// if (options.time) this.datatime = Number(options.time);
-			}
 			if (this.isLogin) {
 				this.getSeckillDetail();
 			} else {
@@ -475,6 +465,9 @@
 					.exec();
 				// #endif
 			})
+		},
+		onNavigationBarButtonTap(e) {
+			this.currentPage = !this.currentPage
 		},
 		methods: {
 			moreNav() {
@@ -549,6 +542,10 @@
 					this.imgUrls = res.data.storeInfo.images;
 					this.storeInfo.description = this.storeInfo.description.replace(/<img/gi,
 						'<img style="max-width:100%;height:auto;float:left;display:block" ');
+					this.storeInfo.description = this.storeInfo.description.replace(
+						/<video/gi,
+						'<video style="width:100%;height:300px;display:block" '
+					);
 					// this.attribute.productAttr = res.data.productAttr;
 					that.$set(that.attribute, "productAttr", res.data.productAttr);
 					this.productValue = res.data.productValue;
@@ -602,9 +599,16 @@
 					setTimeout(() => {
 						that.infoScroll();
 					}, 500);
+					// #ifdef H5
+					this.codeVal = window.location.origin + '/pages/activity/goods_seckill_details/index?id=' +
+						that.id + '&spid=' + that.storeInfo.uid
+					// #endif	
+					// #ifdef APP-PLUS
+					this.codeVal = HTTP_REQUEST_URL + '/pages/activity/goods_seckill_details/index?id=' + that
+						.id + '&spid=' + that.storeInfo.uid
+					// #endif	
 					app.globalData.openPages = '/pages/activity/goods_seckill_details/index?id=' + that.id +
-						'&time=' + that.time +
-						'&status=' + that.status + '&spid=' + that.storeInfo.uid;
+						'&spid=' + that.storeInfo.uid;
 					// wxParse.wxParse('description', 'html', that.data.storeInfo.description || '', that, 0);
 					// wxh.time(that.data.time, that);
 				}).catch(err => {

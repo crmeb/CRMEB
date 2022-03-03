@@ -11,13 +11,16 @@
 export default {
 	data() {
 		return {
-			colorStyle: ''
+			colorStyle: '',
+			colorStatus: ''
 		};
 	},
 	created() {
 		this.colorStyle = uni.getStorageSync('viewColor')
-		uni.$on('ok', data => {
+		uni.$on('ok', (data, status) => {
+			console.log(status)
 			this.colorStyle = data
+			this.colorStatus = status
 		})
 	},
 	methods: {}

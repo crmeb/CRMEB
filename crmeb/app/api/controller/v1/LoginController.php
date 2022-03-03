@@ -443,6 +443,7 @@ class LoginController
                 return app('json')->fail('验证码错误');
             }
         }
+        if ($email == '') $email = substr(md5($openId), 0, 12);
         $userInfo = [
             'openId' => $openId,
             'unionid' => '',

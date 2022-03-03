@@ -198,7 +198,7 @@
 				this.qrcode = await this.imgToBase(res.data.qrcode)
 				// #endif
 				let codeUrl = "?spread=" + this.userInfo.uid
-				// #ifdef MP || APP-PLUS
+				// #ifdef MP
 				await this.routineCode()
 				let mpUrl = await this.downloadFilestoreImage(this.mpUrl)
 				// #endif

@@ -40,7 +40,7 @@ export default {
               h("span", "全部订单"),
               h("Badge", {
                 props: {
-                  count: this.tablists.all,
+                  count: Number(this.tablists.all),
                   "overflow-count": 999999,
                 },
               }),
@@ -54,7 +54,7 @@ export default {
               h("span", "普通订单"),
               h("Badge", {
                 props: {
-                  count: this.tablists.general,
+                  count: Number(this.tablists.general),
                   "overflow-count": 999999,
                 },
               }),
@@ -68,7 +68,7 @@ export default {
               h("span", "拼团订单"),
               h("Badge", {
                 props: {
-                  count: this.tablists.pink,
+                  count: Number(this.tablists.pink),
                   "overflow-count": 999999,
                 },
               }),
@@ -82,7 +82,7 @@ export default {
               h("span", "秒杀订单"),
               h("Badge", {
                 props: {
-                  count: this.tablists.seckill,
+                  count: Number(this.tablists.seckill),
                   "overflow-count": 999999,
                 },
               }),
@@ -96,7 +96,7 @@ export default {
               h("span", "砍价订单"),
               h("Badge", {
                 props: {
-                  count: this.tablists.bargain,
+                  count: Number(this.tablists.bargain),
                   "overflow-count": 999999,
                 },
               }),
@@ -110,7 +110,7 @@ export default {
               h("span", "预售订单"),
               h("Badge", {
                 props: {
-                  count: this.tablists.advance,
+                  count: Number(this.tablists.advance),
                   "overflow-count": 999999,
                 },
               }),

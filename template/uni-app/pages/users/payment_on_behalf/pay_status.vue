@@ -54,7 +54,7 @@
 				deep: true
 			}
 		},
-		onLoad: function(options) {
+		onLoad(options) {
 			this.options = options
 			if (!options.order_id) return this.$util.Tips({
 				title: '缺少参数无法查看订单支付状态'
@@ -90,15 +90,13 @@
 			openTap() {
 				this.$set(this, 'couponsHidden', !this.couponsHidden);
 			},
-			onLoadFun: function() {
+			onLoadFun() {
 				this.getDetail();
 			},
 			/**
-			 * 
 			 * 支付完成查询支付状态
-			 * 
 			 */
-			getOrderPayInfo: function() {
+			getOrderPayInfo() {
 				let that = this;
 				uni.showLoading({
 					title: '正在加载中'
@@ -118,7 +116,7 @@
 			/**
 			 * 去首页关闭当前所有页面
 			 */
-			goIndex: function(e) {
+			goIndex(e) {
 				uni.switchTab({
 					url: '/pages/index/index'
 				});

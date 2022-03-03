@@ -395,9 +395,6 @@
 			let curRoute = routes[routes.length - 1].route //获取当前页面路由
 			this.activeRouter = '/' + curRoute
 			// #ifdef APP-PLUS
-			this.$nextTick(() => {
-				this.$refs.appUpdate.update(); //调用子组件 检查更新
-			});
 			try {
 				let val = uni.getStorageSync('privacyStatus') || false
 				if (!val) {

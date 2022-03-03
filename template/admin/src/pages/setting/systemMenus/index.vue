@@ -59,8 +59,9 @@
         :loading="loading"
         ref="xTable"
         header-row-class-name="false"
-        :tree-config="{ children: 'children' }"
+        :tree-config="tabconfig"
         :data="tableData"
+        row-id="id"
       >
         <vxe-table-column
           field="id"
@@ -156,6 +157,7 @@ export default {
   name: "systemMenus",
   data() {
     return {
+      tabconfig: { children: "children", reserve: true, accordion: true },
       spinShow: false,
       grid: {
         xl: 7,
@@ -200,7 +202,7 @@ export default {
       isShowApi(data)
         .then(async (res) => {
           this.$Message.success(res.msg);
-          this.$store.dispatch("admin/menus/getMenusNavList");
+          this.$store.dispatch("menus/getMenusNavList");
         })
         .catch((res) => {
           this.$Message.error(res.msg);
@@ -209,7 +211,7 @@ export default {
     // 请求列表
     getList() {
       this.formValidate = Object.assign({}, this.$options.data().formValidate);
-      // this.getData();
+      this.getData();
     },
     selectRule(data) {
       this.formValidate.menu_name = data.real_name;
@@ -268,7 +270,7 @@ export default {
         .then((res) => {
           this.$Message.success(res.msg);
           // this.getData();
-          this.$store.dispatch("admin/menus/getMenusNavList");
+          this.$store.dispatch("menus/getMenusNavList");
         })
         .catch((res) => {
           this.$Message.error(res.msg);

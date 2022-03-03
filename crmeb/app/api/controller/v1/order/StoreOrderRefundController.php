@@ -93,4 +93,19 @@ class StoreOrderRefundController
         else
             return app('json')->fail('提交失败');
     }
+
+    /**
+     * 删除退款单
+     * @param Request $request
+     * @param $order_id
+     * @return mixed
+     */
+    public function delRefund(Request $request, $uni)
+    {
+        $res = $this->services->update(['order_id' => $uni, 'uid' => $request->uid()], ['is_del' => 1]);
+        if ($res)
+            return app('json')->successful('删除成功');
+        else
+            return app('json')->fail('删除失败');
+    }
 }

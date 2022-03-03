@@ -69,16 +69,17 @@
 						uni.getImageInfo({
 							src: this.imgUrls.length ? this.imgUrls[0].img : '',
 							success: (res) => {
+								console.log('2222222222')
 								if (res && res.height > 0) {
 									this.$set(this, 'imageH',
 										res.height / res
 										.width * 690)
 								} else {
-									this.$set(this, 'imageH', 375);
+									this.$set(this, 'imageH', 320);
 								}
 							},
 							fail: (error) => {
-								this.$set(this, 'imageH', 375);
+								this.$set(this, 'imageH', 320);
 							}
 						})
 					}
@@ -100,12 +101,11 @@
 				isIframe: false,
 				mt: -55,
 				isShow: true,
-				imageH: 250,
+				imageH: 320,
 				swiperCur: 0,
 			};
 		},
 		created() {
-
 			// #ifdef MP || APP-PLUS
 			const res = uni.getSystemInfoSync()
 			const system = res.platform

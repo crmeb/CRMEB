@@ -340,6 +340,11 @@
                         :precision="2"
                         class="priceBox"
                         :active-change="false"
+                        @on-change="
+                          (e) => {
+                            changePrice(e, index);
+                          }
+                        "
                       ></InputNumber>
                     </template>
                     <template slot-scope="{ row, index }" slot="pic">
@@ -646,6 +651,7 @@ export default {
         ],
       },
       copy: 0,
+      description: "",
     };
   },
   computed: {
@@ -666,8 +672,12 @@ export default {
     this.productGetTemplate();
   },
   methods: {
+    changePrice(e, index) {
+      console.log(e, index);
+      this.$set(this.specsData[index], "price", e);
+    },
     getEditorContent(data) {
-      this.formValidate.description = data;
+      this.description = data;
     },
     // setVirtualPeople (){
     //     console.log(this.formValidate.virtualPeople)
@@ -860,6 +870,7 @@ export default {
     next(name) {
       let that = this;
       if (this.current === 2) {
+        this.formValidate.description = this.description;
         this.$refs[name].validate((valid) => {
           if (valid) {
             if (this.copy == 1) this.formValidate.copy = 1;

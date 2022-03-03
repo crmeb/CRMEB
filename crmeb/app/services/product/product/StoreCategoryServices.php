@@ -205,7 +205,7 @@ class StoreCategoryServices extends BaseServices
     {
         $cate = $this->dao->getOne(['cate_name' => $data['cate_name']]);
         if ($cate && $cate['id'] != $id) {
-            throw new AdminException('该分类不存在');
+            throw new AdminException('该分类已存在');
         }
         $this->transaction(function () use ($id, $data) {
             $res = $this->dao->update($id, $data);

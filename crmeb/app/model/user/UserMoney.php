@@ -47,6 +47,15 @@ class UserMoney extends BaseModel
      * @param Model $query
      * @param $value
      */
+    public function searchNotTypeAttr($query, $value)
+    {
+        if (is_array($value) && count($value)) $query->whereNotIn('type', $value);
+    }
+
+    /**
+     * @param Model $query
+     * @param $value
+     */
     public function searchPmAttr($query, $value)
     {
         if ($value !== '') $query->where('pm', $value);

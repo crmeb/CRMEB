@@ -660,7 +660,7 @@ class StoreOrderController
         $orderData = $this->services->tidyOrder($order, true, true);
         $splitNum = $storeOrderCartInfoServices->getSplitCartNum($order['cart_id']);
         foreach ($orderData['cartInfo'] ?? [] as $key => $cart) {
-            $orderData['cartInfo'][$key]['one_postage_price'] = bcdiv($cart['postage_price'], $cart['cart_num'], 2);
+            $orderData['cartInfo'][$key]['one_postage_price'] = isset($cart['postage_price']) ? bcdiv($cart['postage_price'], $cart['cart_num'], 2) : 0;
             if ($cartId != '') {
                 if ($cart['id'] != $cartId) {
                     unset($orderData['cartInfo'][$key]);

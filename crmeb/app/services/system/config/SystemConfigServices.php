@@ -100,15 +100,6 @@ class SystemConfigServices extends BaseServices
             ],
             'show_value' => 1
         ],
-//        'pay_success_printing_switch' => [
-//            'son_type' => [
-//                'develop_id' => '',
-//                'printing_api_key' => '',
-//                'printing_client_id' => '',
-//                'terminal_number' => '',
-//            ],
-//            'show_value' => 1
-//        ],
         'wss_open' => [
             'son_type' => [
                 'wss_local_cert' => '',
@@ -138,18 +129,6 @@ class SystemConfigServices extends BaseServices
             ],
             'show_value' => 1
         ],
-//        'system_product_copy_type' => [
-//            'son_type' => [
-//                'copy_product_apikey' => '',
-//            ],
-//            'show_value' => 2
-//        ],
-//        'logistics_type' => [
-//            'son_type' => [
-//                'system_express_app_code' => '',
-//            ],
-//            'show_value' => 2
-//        ],
         'ali_pay_status' => [
             'son_type' => [
                 'ali_pay_appid' => '',
@@ -168,15 +147,6 @@ class SystemConfigServices extends BaseServices
             ],
             'show_value' => 1
         ],
-//        'config_export_open' => [
-//            'son_type' => [
-//                'config_export_to_name' => '',
-//                'config_export_to_tel' => '',
-//                'config_export_to_address' => '',
-//                'config_export_siid' => '',
-//            ],
-//            'show_value' => 1
-//        ],
         'image_watermark_status' => [
             'son_type' => [
                 'watermark_type' => [
@@ -211,6 +181,7 @@ class SystemConfigServices extends BaseServices
         'customer_type@' => [
             'son_type' => [
                 'customer_url' => '',
+                'customer_corpId' => '',
             ],
             'show_value' => 2
         ],

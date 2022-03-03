@@ -96,18 +96,23 @@
 							{{fileSizeString}}<text class="iconfont icon-xiangyou"></text>
 						</view>
 					</view>
+					<view class="item acea-row row-between-wrapper" @click="updateApp">
+						<view>当前版本</view>
+						<view class="input">
+							{{version}}<text class="iconfont icon-xiangyou"></text>
+						</view>
+					</view>
 					<!-- #endif -->
 
 
 				</view>
 
 				<button class='modifyBnt bg-color' formType="submit">保存修改</button>
-				<!-- #ifdef H5 -->
-				<view class="logOut cartcolor acea-row row-center-wrapper" @click="outLogin"
-					v-if="!this.$wechat.isWeixin()">退出登录</view>
+				<!-- #ifdef H5 || APP-PLUS -->
+				<view class="logOut cartcolor acea-row row-center-wrapper" @click="outLogin">退出登录</view>
 				<!-- #endif -->
 				<!-- #ifdef APP-PLUS -->
-				<view class="logOut cartcolor acea-row row-center-wrapper" @click="outLogin">退出登录</view>
+				<app-update ref="appUpdate" :force="true" :tabbar="false" :getVer='true' @isNew="isNew"></app-update>
 				<!-- #endif -->
 			</view>
 		</form>
@@ -116,6 +121,7 @@
 		<!-- #endif -->
 		<canvas canvas-id="canvas" v-if="canvasStatus"
 			:style="{width: canvasWidth + 'px', height: canvasHeight + 'px',position: 'absolute',left:'-100000px',top:'-100000px'}"></canvas>
+
 	</view>
 </template>
 
@@ -139,8 +145,12 @@
 	import authorize from '@/components/Authorize';
 	// #endif
 	import colors from '@/mixins/color.js';
+	import appUpdate from "@/components/update/app-update.vue";
 	export default {
 		components: {
+			// #ifdef APP-PLUS
+			appUpdate
+			// #endif
 			// #ifdef MP
 			authorize
 			// #endif
@@ -157,7 +167,8 @@
 				canvasWidth: "",
 				canvasHeight: "",
 				canvasStatus: false,
-				fileSizeString: ''
+				fileSizeString: '',
+				version: ''
 			};
 		},
 		computed: mapGetters(['isLogin']),
@@ -176,12 +187,26 @@
 				this.getUserInfo();
 				// #ifdef APP-PLUS
 				this.formatSize()
+				// 获取版本号
+				plus.runtime.getProperty(plus.runtime.appid, (inf) => {
+					console.log(inf.version)
+					this.version = inf.version;
+				});
 				// #endif 
 			} else {
 				toLogin();
 			}
 		},
 		methods: {
+			isNew() {
+				that.$util.Tips({
+					title: '当前为最新版本'
+				});
+			},
+
+			updateApp() {
+				this.$refs.appUpdate.update(); //调用子组件 检查更新
+			},
 			formatSize() {
 				let that = this;
 				plus.cache.calculate(function(size) {
@@ -320,6 +345,7 @@
 							if (res.confirm) {
 								getLogout()
 									.then(res => {
+										// uni.clearStorage()
 										that.$store.commit("LOGOUT");
 										uni.reLaunch({
 											url: '/pages/index/index'

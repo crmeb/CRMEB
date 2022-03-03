@@ -1,6 +1,5 @@
 {
-  "navigationStyle": "custom",
-  "navigationBarTextStyle": "white",
+  "navigationBarTitleText": "砍价活动",
   "usingComponents": {
     "jyf-parser": "/components/mp-html/mp-html",
     "count-down": "/components/countDown/index",

@@ -221,7 +221,7 @@ class WechatQrcodeServices extends BaseServices
             foreach ($qrcodeInfo['label_id'] as $item) {
                 $labelArr[] = [
                     'uid' => $userInfo['uid'],
-                    'label_id' => $item
+                    'label_id' => $item['id'] ?? $item
                 ];
             }
             $labelServices->saveAll($labelArr);

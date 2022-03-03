@@ -14,6 +14,8 @@ namespace app\api\controller\pc;
 
 use app\Request;
 use app\services\pc\UserServices;
+use app\services\user\UserBrokerageServices;
+use app\services\user\UserMoneyServices;
 
 class UserController
 {
@@ -33,7 +35,23 @@ class UserController
     public function getBalanceRecord(Request $request, $type)
     {
         $uid = (int)$request->uid();
-        return app('json')->successful($this->services->getBalanceRecord($uid, $type));
+        $data = [];
+        switch ($type) {
+            case 0:
+            case 1:
+            case 2:
+                /** @var UserMoneyServices $moneyService */
+                $moneyService = app()->make(UserMoneyServices::class);
+                $data = $moneyService->getMoneyList($uid, $type);
+                break;
+            case 3:
+            case 4:
+                /** @var UserBrokerageServices $brokerageService */
+                $brokerageService = app()->make(UserBrokerageServices::class);
+                $data = $brokerageService->getBrokerageList($uid, $type);
+                break;
+        }
+        return app('json')->successful($data);
     }
 
     /**

@@ -12,7 +12,7 @@
 		</view>
 		<view class="scroll-box">
 			<view class='aside'>
-				<scroll-view scroll-y="true" scroll-with-animation='true' style="height: 100%;">
+				<scroll-view scroll-y="true" scroll-with-animation='true' style="height: calc(100% - 100rpx)">
 					<view class='item acea-row row-center-wrapper' :class='index==navActive?"on":""'
 						v-for="(item,index) in productList" :key="index" @click='tap(index,"b"+index)'>
 						<text>{{item.cate_name}}</text>

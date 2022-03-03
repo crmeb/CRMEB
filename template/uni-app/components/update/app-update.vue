@@ -44,6 +44,10 @@
 				type: Boolean,
 				default: false, //是否有原生tabbar组件
 			},
+			getVer: {
+				type: Boolean,
+				default: false, //是否有原生tabbar组件
+			},
 		},
 		data() {
 			return {
@@ -65,6 +69,7 @@
 		},
 		created() {
 			vm = this;
+			if (!this.getVer) this.update()
 		},
 		computed: {
 			// 下载进度计算
@@ -79,7 +84,7 @@
 					width: w + "%", //return 宽度半分比
 				};
 			},
-			getHeight: function() {
+			getHeight() {
 				let bottom = 0;
 				if (this.tabbar) {
 					bottom = 50;
@@ -119,11 +124,12 @@
 						console.log(res.data)
 						const tagDate = uni.getStorageSync('app_update_time') || '',
 							nowDate = new Date().toLocaleDateString();
-						console.log(tagDate === nowDate)
-						if (tagDate !== nowDate) {
+						if (tagDate !== nowDate && !this.getVer) {
 							uni.setStorageSync('app_update_time', new Date().toLocaleDateString());
-						} else {
+						} else if ((tagDate !== nowDate) && this.getVer) {
 							if (!res.data.is_force) return
+						} else if (tagDate == nowDate && !this.getVer && !res.data.is_force) {
+							return
 						}
 						// 这里的返回的数据跟后台约定
 						let data = res.data;
@@ -157,6 +163,8 @@
 						});
 						vm.viewObj.show(); //显示原生遮罩
 					}
+				} else {
+					this.$emit('isNew')
 				}
 			},
 

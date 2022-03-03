@@ -67,7 +67,10 @@ class StoreBargainController
      */
     public function detail(Request $request, $id)
     {
-        $data = $this->services->getBargain($request, $id);
+        list($bargainUid) = $request->getMore([
+            ['bargainUid', 0]
+        ], true);
+        $data = $this->services->getBargain($request, $id, (int)$bargainUid);
         return app('json')->successful($data);
     }
 
@@ -100,9 +103,7 @@ class StoreBargainController
         list($bargainId) = $request->postMore([
             ['bargainId', 0]
         ], true);
-        $code = $this->services->setBargain($request->uid(), $bargainId);
-        if ($code === 'subscribe') return app('json')->fail('请先关注公众号', ['code' => 'subscribe']);
-        return app('json')->status($code, '参与成功');
+        return app('json')->successful($this->services->setBargain($request->uid(), $bargainId));
     }
 
     /**
@@ -120,49 +121,47 @@ class StoreBargainController
             ['bargainId', 0],
             ['bargainUserUid', 0]
         ], true);
-        $code = $this->services->setHelpBargain($request->uid(), $bargainId, $bargainUserUid);
-        if ($code === 'subscribe') return app('json')->fail('请先关注公众号', ['code' => 'subscribe']);
-        return app('json')->status($code, '砍价成功');
+        return app('json')->successful($this->services->setHelpBargain($request->uid(), $bargainId, $bargainUserUid));
     }
 
-    /**
-     * 砍价 砍掉金额
-     * @param Request $request
-     * @return mixed
-     */
-    public function help_price(Request $request)
-    {
-        list($bargainId, $bargainUserUid) = $request->postMore([
-            ['bargainId', 0],
-            ['bargainUserUid', 0]
-        ], true);
+//    /**
+//     * 砍价 砍掉金额
+//     * @param Request $request
+//     * @return mixed
+//     */
+//    public function help_price(Request $request)
+//    {
+//        list($bargainId, $bargainUserUid) = $request->postMore([
+//            ['bargainId', 0],
+//            ['bargainUserUid', 0]
+//        ], true);
+//
+//        /** @var StoreBargainUserHelpServices $bargainUserHelp */
+//        $bargainUserHelp = app()->make(StoreBargainUserHelpServices::class);
+//        $price = $bargainUserHelp->getPrice($request->uid(), (int)$bargainId, (int)$bargainUserUid);
+//        return app('json')->successful($price);
+//    }
 
-        /** @var StoreBargainUserHelpServices $bargainUserHelp */
-        $bargainUserHelp = app()->make(StoreBargainUserHelpServices::class);
-        $price = $bargainUserHelp->getPrice($request->uid(), (int)$bargainId, (int)$bargainUserUid);
-        return app('json')->successful($price);
-    }
-
-    /**
-     * 砍价 砍价帮总人数、剩余金额、进度条、已经砍掉的价格
-     * @param Request $request
-     * @return mixed
-     * @throws \think\Exception
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\ModelNotFoundException
-     * @throws \think\exception\DbException
-     */
-    public function help_count(Request $request)
-    {
-        list($bargainId, $bargainUserUid) = $request->postMore([
-            ['bargainId', 0],
-            ['bargainUserUid', 0]
-        ], true);
-        /** @var StoreBargainUserServices $bargainUserService */
-        $bargainUserService = app()->make(StoreBargainUserServices::class);
-        $data = $bargainUserService->helpCount($request, (int)$bargainId, (int)$bargainUserUid);
-        return app('json')->successful($data);
-    }
+//    /**
+//     * 砍价 砍价帮总人数、剩余金额、进度条、已经砍掉的价格
+//     * @param Request $request
+//     * @return mixed
+//     * @throws \think\Exception
+//     * @throws \think\db\exception\DataNotFoundException
+//     * @throws \think\db\exception\ModelNotFoundException
+//     * @throws \think\exception\DbException
+//     */
+//    public function help_count(Request $request)
+//    {
+//        list($bargainId, $bargainUserUid) = $request->postMore([
+//            ['bargainId', 0],
+//            ['bargainUserUid', 0]
+//        ], true);
+//        /** @var StoreBargainUserServices $bargainUserService */
+//        $bargainUserService = app()->make(StoreBargainUserServices::class);
+//        $data = $bargainUserService->helpCount($request, (int)$bargainId, (int)$bargainUserUid);
+//        return app('json')->successful($data);
+//    }
 
 
     /**

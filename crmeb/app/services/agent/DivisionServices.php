@@ -140,7 +140,7 @@ class DivisionServices extends BaseServices
             'pwd' => $data['pwd'],
             'conf_pwd' => $data['conf_pwd'],
             'real_name' => $data['real_name'],
-            'roles' => implode(',', $data['roles']),
+            'roles' => $data['roles'],
             'status' => 1,
             'level' => 1,
             'division_id' => $uid
@@ -281,7 +281,10 @@ class DivisionServices extends BaseServices
     {
         /** @var UserServices $userServices */
         $userServices = app()->make(UserServices::class);
+        /** @var SystemAdminServices $adminServices */
+        $adminServices = app()->make(SystemAdminServices::class);
         $res = $userServices->update($uid, ['division_status' => $status]);
+        $res = $res && $adminServices->update(['division_id' => $uid], ['status' => $status]);
         if ($res) {
             return true;
         } else {

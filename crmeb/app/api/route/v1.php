@@ -44,9 +44,33 @@ Route::group(function () {
 
 })->middleware(\app\http\middleware\AllowOriginMiddleware::class)->middleware(\app\api\middleware\StationOpenMiddleware::class);
 
+
+//管理员订单操作类
+Route::group(function () {
+    Route::get('admin/order/statistics', 'v1.admin.StoreOrderController/statistics')->name('adminOrderStatistics');//订单数据统计
+    Route::get('admin/order/data', 'v1.admin.StoreOrderController/data')->name('adminOrderData');//订单每月统计数据
+    Route::get('admin/order/list', 'v1.admin.StoreOrderController/lst')->name('adminOrderList');//订单列表
+    Route::get('admin/refund_order/list', 'v1.admin.StoreOrderController/refundOrderList')->name('adminOrderRefundList');//退款订单列表
+    Route::get('admin/order/detail/:orderId', 'v1.admin.StoreOrderController/detail')->name('adminOrderDetail');//订单详情
+    Route::get('admin/refund_order/detail/:uni', 'v1.admin.StoreOrderController/refundOrderDetail')->name('RefundOrderDetail');//退款订单详情
+    Route::get('admin/order/delivery/gain/:orderId', 'v1.admin.StoreOrderController/delivery_gain')->name('adminOrderDeliveryGain');//订单发货获取订单信息
+    Route::post('admin/order/delivery/keep/:id', 'v1.admin.StoreOrderController/delivery_keep')->name('adminOrderDeliveryKeep');//订单发货
+    Route::post('admin/order/price', 'v1.admin.StoreOrderController/price')->name('adminOrderPrice');//订单改价
+    Route::post('admin/order/remark', 'v1.admin.StoreOrderController/remark')->name('adminOrderRemark');//订单备注
+    Route::post('admin/refund_order/remark', 'v1.admin.StoreOrderController/refundRemark')->name('refundRemark');//退款订单备注
+    Route::get('admin/order/time', 'v1.admin.StoreOrderController/time')->name('adminOrderTime');//订单交易额时间统计
+    Route::post('admin/order/offline', 'v1.admin.StoreOrderController/offline')->name('adminOrderOffline');//订单支付
+    Route::post('admin/order/refund', 'v1.admin.StoreOrderController/refund')->name('adminOrderRefund');//订单退款
+    Route::post('order/order_verific', 'v1.admin.StoreOrderController/order_verific')->name('order');//订单核销
+    Route::get('admin/order/delivery', 'v1.admin.StoreOrderController/getDeliveryAll')->name('getDeliveryAll');//获取配送员
+    Route::get('admin/order/delivery_info', 'v1.admin.StoreOrderController/getDeliveryInfo')->name('getDeliveryInfo');//获取电子面单默认信息
+    Route::get('admin/order/export_temp', 'v1.admin.StoreOrderController/getExportTemp')->name('getExportTemp');//获取电子面单模板获取
+    Route::get('admin/order/export_all', 'v1.admin.StoreOrderController/getExportAll')->name('getExportAll');//获取物流公司
+})->middleware(\app\http\middleware\AllowOriginMiddleware::class)->middleware(\app\api\middleware\StationOpenMiddleware::class)->middleware(\app\api\middleware\AuthTokenMiddleware::class, true)->middleware(\app\api\middleware\CustomerMiddleware::class);
+
 //会员授权接口
 Route::group(function () {
-    Route::post('order/order_verific', 'v1.admin.StoreOrderController/order_verific')->name('order');//订单核销
+
     //用户修改手机号
     Route::post('user/updatePhone', 'v1.LoginController/update_binding_phone')->name('updateBindingPhone');
     //设置登录code
@@ -219,6 +243,7 @@ Route::group(function () {
     Route::get('order/refund/detail/:uni', 'v1.order.StoreOrderRefundController/refundDetail')->name('refundDetail');//退款单详情
     Route::post('order/refund/cancel/:uni', 'v1.order.StoreOrderRefundController/cancelApply')->name('cancelApply');//用户取消退款申请
     Route::post('order/refund/express', 'v1.order.StoreOrderRefundController/applyExpress')->name('refundDetail');//退款单详情
+    Route::get('order/refund/del/:uni', 'v1.order.StoreOrderRefundController/delRefund')->name('delRefund');//用户取消退款申请
 
     /** 代理商相关 */
     Route::get('agent/apply/info', 'v1.user.DivisionController/applyInfo')->name('申请详情');//申请详情

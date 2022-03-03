@@ -12,7 +12,7 @@
  * 布局菜单配置
  * */
 import { menusApi } from '@/api/account'
-function getMenusName () {
+function getMenusName() {
     let storage = window.localStorage
     let menuList = JSON.parse(storage.getItem('menuList'))
     if (typeof menuList !== 'object' || menuList === null) {
@@ -27,18 +27,18 @@ export default {
         openMenus: []
     },
     mutations: {
-        getmenusNav (state, menuList) {
+        getmenusNav(state, menuList) {
             state.menusName = menuList
         },
         // getopenMenus (state, openList) {
         //   state.openMenus = openList
         // }
-        setopenMenus (state, openList) {
+        setopenMenus(state, openList) {
             state.openMenus = openList
         }
     },
     actions: {
-        getMenusNavList ({ commit }) {
+        getMenusNavList({ commit }) {
             return new Promise((resolve, reject) => {
                 menusApi().then(async res => {
                     resolve(res)

@@ -65,9 +65,9 @@
     "vuescroll": "^4.16.1",
     "vuex": "^3.0.1",
     "vuex-persist": "^2.2.0",
-    "vxe-table": "^2.5.22",
+    "vxe-table": "^3.4.15",
     "wangeditor": "^4.7.9",
-    "xe-utils": "^2.2.11",
+    "xe-utils": "^3.5.4",
     "xlsx": "^0.13.5"
   },
   "devDependencies": {

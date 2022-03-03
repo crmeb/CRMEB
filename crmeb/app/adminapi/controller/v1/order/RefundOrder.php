@@ -36,7 +36,7 @@ class RefundOrder extends AuthController
     {
         $where = $this->request->getMore([
             ['order_id', ''],
-            ['time', '', '', 'add_time'],
+            ['time', ''],
             ['refund_type', 0]
         ]);
         $where['is_cancel'] = 0;
@@ -174,8 +174,8 @@ class RefundOrder extends AuthController
             }
             //修改订单退款状态
             unset($data['refund_price']);
-            if ($this->services->update($id, $data)) {
-                $this->services->agreeRefund($id, $refund_data);
+            if ($this->services->agreeRefund($id, $refund_data)) {
+                $this->services->update($id, $data);
                 return app('json')->success('退款成功');
             } else {
                 $this->services->storeProductOrderRefundYFasle((int)$id, $refund_price);

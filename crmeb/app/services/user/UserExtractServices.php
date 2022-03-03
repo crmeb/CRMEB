@@ -410,7 +410,7 @@ class UserExtractServices extends BaseServices
             $mark = '使用微信提现' . $insertData['extract_price'] . '元';
             /** @var WechatUserServices $wechatServices */
             $wechatServices = app()->make(WechatUserServices::class);
-            $openid = $wechatServices->getWechatOpenid($uid, request()->isRoutine() ? 'routine' : 'wechat');
+            $openid = $wechatServices->getWechatOpenid($uid, 'wechat');
             if (sys_config('brokerage_type', 0) && $openid) {
                 $insertData['status'] = 1;
                 /** @var StoreOrderCreateServices $services */

@@ -93,6 +93,15 @@ export function orderPay(data) {
 }
 
 /**
+ * 删除已退款和拒绝退款的订单
+ * @param string uni
+ * 
+ */
+export function refundOrderDel(uni) {
+	return request.get('order/refund/del/' + uni, {});
+}
+
+/**
  * 订单统计数据
  */
 export function orderData() {
@@ -186,7 +195,7 @@ export function orderRefundVerify(data) {
  * 订单确认获取订单详细信息
  * @param string cartId
  */
-export function orderConfirm(cartId, news, addressId,shipping_type) {
+export function orderConfirm(cartId, news, addressId, shipping_type) {
 	return request.post('order/confirm', {
 		cartId,
 		'new': news,

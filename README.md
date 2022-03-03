@@ -53,7 +53,7 @@
 技术交流社区：<a href="https://q.crmeb.com"  target="_blank">https://q.crmeb.com
 
 
-[![](readme/images/1思维脑图+功能清单.jpg)](http://s.crmeb.com/goods_detail/730)
+[![](readme/images/1思维脑图功能清单.jpg)](http://s.crmeb.com/goods_detail/730)
 [![](readme/images/2高清UI设计图.jpg)](http://s.crmeb.com/goods_detail/728)
 [![](readme/images/3前后端接口文档.jpg)](http://s.crmeb.com/goods_detail/729)
 [![](readme/images/4PC端前端模板.jpg)](http://s.crmeb.com/goods_detail/711)
@@ -68,8 +68,8 @@
 
 ```
 Nignx/Apache/IIS
-PHP 7.1 ~ 7.3 
-MySQL 5.5-7.0
+PHP 7.1 ~ 7.4 
+MySQL 5.7
 Redis
 ```
 
@@ -78,7 +78,7 @@ Redis
 
 
 
-### 官方客服
+### 官方技术交流群
 ![输入图片说明](readme/images/image.jpg)
 ### CRMEB官方论坛：https://q.crmeb.com
 

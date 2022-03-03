@@ -5,21 +5,14 @@
 				<view class='name acea-row row-center-wrapper'>
 					<!-- 当前佣金 -->
 					<view>
-						<view class="user-msg" @click="jumbPath">
+						<view class="user-msg">
 							<image class="avatar" :src="userInfo.avatar" mode=""></image>
 							<view class="nickname">{{userInfo.nickname}}</view>
-							<view class="level" v-if="userInfo.agent_level_name">
-								{{userInfo.agent_level_name}}
-								<text class='iconfont icon-xiangyou'></text>
+							<view v-if="userInfo.is_agent_level" class="level" @click="jumbPath">
+								<text>{{userInfo.agent_level_name?userInfo.agent_level_name:'分销等级'}}</text>
+								<text v-if="userInfo.is_agent_level" class='iconfont icon-xiangyou'></text>
 							</view>
-							<text class='iconfont icon-xiangyou' v-else></text>
 						</view>
-					</view>
-					<view class="distribution acea-row row-center-wrapper" :class="userInfo.agent_level_name?'on':''"
-						@click="jumbPath" v-if="userInfo.is_agent_level">
-						<text class="iconfont icon-dengjitubiao"></text>
-						<text>{{userInfo.agent_level_name?userInfo.agent_level_name:'分销等级'}}</text>
-						<text class="iconfont icon-you"></text>
 					</view>
 				</view>
 				<view class='num'>{{userInfo.brokerage_price}}</view>
@@ -33,6 +26,15 @@
 						<view class='money'>{{userInfo.extractTotalPrice}}</view>
 					</view>
 				</view>
+				<!-- <view class="apply"
+					v-if="(userInfo.is_division && userInfo.division_invite && userInfo.division_status) || (!userInfo.is_division && !userInfo.is_agent)">
+					<view v-if="userInfo.is_division">邀请码：{{userInfo.division_invite}}</view>
+					<view v-if="!userInfo.is_division && !userInfo.is_agent">
+						<navigator url='/pages/annex/settled/index' hover-class="none">
+							<view>代理商申请</view>
+						</navigator>
+					</view>
+				</view> -->
 			</view>
 			<!-- #ifdef APP-PLUS || H5 -->
 			<navigator url="/pages/users/user_cash/index" hover-class="none" class='bnt bg-color'>立即提现</navigator>
@@ -218,14 +220,15 @@
 		background-repeat: no-repeat;
 		background-size: 100% 100%;
 		width: 100%;
-		height: 400rpx;
+		// height: 480rpx;
+		padding-bottom: 20rpx;
 		background-color: var(--view-theme);
 	}
 
 	.my-promotion .header .name {
 		font-size: 30rpx;
 		color: #fff;
-		padding-top: 57rpx;
+		padding-top: 37rpx;
 		position: relative;
 
 		.distribution {
@@ -256,30 +259,33 @@
 		.user-msg {
 			display: flex;
 			align-items: center;
+			justify-content: center;
+			flex-direction: column;
 
 			.nickname {
-				font-size: 28rpx;
+				font-size: 32rpx;
+				margin: 10rpx 0;
 			}
 
 			.level {
-				border: 1px solid #fff;
-				font-size: 32rpx;
-				padding: 2rpx 8rpx;
+				font-size: 18rpx;
+				padding: 4rpx 10rpx;
+				background: linear-gradient(135deg, var(--view-bntColor) 0%, var(--view-main-over) 100%);
 				border-radius: 6rpx;
-				transform: scale(0.6);
+				transform: scale(0.9);
 				display: flex;
 				align-items: center;
 
 				.icon-xiangyou {
+					transform: scale(0.7);
 					font-size: 28rpx;
 				}
 			}
 
 			image {
-				width: 46rpx;
-				height: 46rpx;
+				width: 100rpx;
+				height: 100rpx;
 				border-radius: 50%;
-				margin-right: 10rpx;
 			}
 		}
 	}
@@ -300,7 +306,7 @@
 	.my-promotion .header .num {
 		text-align: center;
 		color: #fff;
-		margin-top: 28rpx;
+		margin-top: 8rpx;
 		font-size: 90rpx;
 		font-family: 'Guildford Pro';
 	}

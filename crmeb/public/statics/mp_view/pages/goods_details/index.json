@@ -1,5 +1,6 @@
 {
   "navigationStyle": "custom",
+  "transparentTitle": "auto",
   "usingComponents": {
     "product-con-swiper": "/components/productConSwiper/index",
     "coupon-list-window": "/components/couponListWindow/index",

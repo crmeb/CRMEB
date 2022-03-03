@@ -89,8 +89,8 @@ export function getBargainUserList(data) {
 /**
  * 砍价产品详情
  */
-export function getBargainDetail(id) {
-	return request.get("bargain/detail/" + id);
+export function getBargainDetail(id, uid) {
+	return request.get(`bargain/detail/${id}?bargainUid=${uid}`);
 }
 
 /**
@@ -304,5 +304,5 @@ export function orderDel(data) {
  * 预售商品列表
  */
 export function getPresellList(data) {
-  return request.get("advance/list", data);
+	return request.get("advance/list", data);
 }

@@ -1532,7 +1532,7 @@ HTML;
         $data['bargain_id'] = $bargain_id;
         $data['advance_id'] = $advance_id;
         $data['cartInfo'] = $cartGroup['cartInfo'];
-        $data['custom_form'] = json_decode($cartGroup['cartInfo'][0]['productInfo']['custom_form'], true);
+        $data['custom_form'] = json_decode($cartGroup['cartInfo'][0]['productInfo']['custom_form'], true) ?? [];
         $data['priceGroup'] = $priceGroup;
         $data['orderKey'] = $this->cacheOrderInfo($user['uid'], $validCartInfo, $priceGroup, $other);
         $data['offlinePostage'] = $other['offlinePostage'];

@@ -341,6 +341,7 @@ class UserMoneyServices extends BaseServices
             $where['pm'] = 0;
         } elseif ($type == 2) {
             $where['pm'] = 1;
+            $where['not_type'] = ['pay_product_refund'];
         }
         $list = $this->dao->getList($where, $page, $limit);
         $count = $this->dao->count($where);

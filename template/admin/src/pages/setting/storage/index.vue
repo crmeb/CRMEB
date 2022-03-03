@@ -70,11 +70,14 @@
         <Row type="flex">
           <Col span="24">
             <span class="save-type"> 存储方式： </span>
-            <RadioGroup v-model="saveType" @on-change="changeSave">
-              <Radio :label="1">本地存储</Radio>
-              <Radio :label="2">七牛云存储</Radio>
-              <Radio :label="3">阿里云存储</Radio>
-              <Radio :label="4">腾讯云存储</Radio>
+            <RadioGroup
+              v-model="formValidate.upload_type"
+              @on-change="changeSave"
+            >
+              <Radio label="1">本地存储</Radio>
+              <Radio label="2">七牛云存储</Radio>
+              <Radio label="3">阿里云存储</Radio>
+              <Radio label="4">腾讯云存储</Radio>
             </RadioGroup>
             <!-- <i-switch
               v-model="localStorage"
@@ -659,7 +662,7 @@ export default {
       if (res.data.type == 1) {
         this.localStorage = true;
       }
-      this.saveType = res.data.type;
+      this.formValidate.upload_type = res.data.type;
       this.changeTab(res.data.type.toString());
     });
   },
@@ -673,7 +676,6 @@ export default {
   },
   methods: {
     changeSave(type) {
-      console.log(type);
       saveType(type).then((res) => {
         this.$Message.success(res.msg);
       });
@@ -798,7 +800,6 @@ export default {
       let that = this;
       positionInfoApi().then((res) => {
         this.formValidate = res.data;
-
         if (res.data.image_watermark_status == 1) {
           that.formValidate.image_watermark_status = true;
         } else {

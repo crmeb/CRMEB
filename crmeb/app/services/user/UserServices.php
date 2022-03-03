@@ -1392,13 +1392,13 @@ class UserServices extends BaseServices
         $messageSystemServices = app()->make(MessageSystemServices::class);
         /** @var DiyServices $diyServices */
         $diyServices = app()->make(DiyServices::class);
+        /** @var AgentLevelServices $agentLevelServices */
+        $agentLevelServices = app()->make(AgentLevelServices::class);
         //看付费会员是否开启
         $isOpenMember = $memberCardService->isOpenMemberCard();
         $user['is_open_member'] = $isOpenMember;
         $user['agent_level_name'] = '';
         if ($user['agent_level']) {
-            /** @var AgentLevelServices $agentLevelServices */
-            $agentLevelServices = app()->make(AgentLevelServices::class);
             $levelInfo = $agentLevelServices->getLevelInfo((int)$user['agent_level'], 'id,name');
             $user['agent_level_name'] = $levelInfo && $levelInfo['name'] ? $levelInfo['name'] : '';
         }
@@ -1415,8 +1415,10 @@ class UserServices extends BaseServices
         /** @var UserMoneyServices $userMoney */
         $userMoney = app()->make(UserMoneyServices::class);
 
-        $user['recharge'] = $userMoney->sum(['uid' => $uid, 'pm' => 1], 'number');
-        $user['orderStatusSum'] = $userMoney->sum(['uid' => $uid, 'pm' => 0], 'number');
+        $user['recharge'] = $userMoney->sum([
+            ['uid', '=', $uid], ['pm', '=', 1], ['type', 'in', ['recharge', 'system_add', 'extract']]
+        ], 'number');
+        $user['orderStatusSum'] = bcsub((string)$user['recharge'], (string)$user['now_money'], 2);
         $user['extractTotalPrice'] = $userExtract->getExtractSum(['uid' => $uid, 'status' => 1]);//累计提现
         $user['extractPrice'] = $user['brokerage_price'];//可提现
         $user['statu'] = (int)sys_config('store_brokerage_statu');
@@ -1499,6 +1501,7 @@ class UserServices extends BaseServices
         $user['spread_level_count'] = $agentLevel->count(['status' => 1, 'is_del' => 0]);
         $user['extract_type'] = sys_config('extract_type');
         $user['integral'] = intval($user['integral']);
+        $user['is_agent_level'] = $agentLevelServices->count(['status' => 1, 'is_del' => 0]) > 0 ? 1 : 0;
         return $user;
     }
 

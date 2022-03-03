@@ -8,12 +8,12 @@
 				</view>
 				<view class="bnt" @click="codeChange">立即核销</view>
 			</view>
-			<!-- #ifdef MP || MP-WEIXIN -->
+			<!-- #ifdef MP || MP-WEIXIN || APP-PLUS -->
 			<view class="scan" @click="scanCode">
 				<image src="../static/scan.gif"></image>
 			</view>
 			<!-- #endif -->
-			<!-- #ifdef H5 -->
+			<!-- #ifdef H5  -->
 			<view v-if="isWeixin" class="scan" @click="scanCode">
 				<image src="../static/scan.gif"></image>
 			</view>
@@ -51,7 +51,7 @@
 		components: {
 			home
 		},
-		mixins:[colors],
+		mixins: [colors],
 		data() {
 			return {
 				iShidden: false,
@@ -69,12 +69,12 @@
 			/**
 			 * 去订单详情
 			 */
-			goOrderDetails: function(id,type) {
-				if(type == 'integral'){
+			goOrderDetails: function(id, type) {
+				if (type == 'integral') {
 					uni.navigateTo({
 						url: '/pages/points_mall/integral_order_details?order_id=' + id
 					});
-				}else{
+				} else {
 					uni.navigateTo({
 						url: '/pages/users/admin_order_detail/index?id=' + id + '&goname=look'
 					});
@@ -110,7 +110,7 @@
 			// 扫码核
 			scanCode() {
 				var self = this;
-				// #ifdef MP
+				// #ifdef MP || APP-PLUS
 				wx.scanCode({
 					scanType: ["qrCode", "barCode"],
 					success(res) {

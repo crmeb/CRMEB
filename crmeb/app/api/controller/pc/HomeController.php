@@ -11,6 +11,7 @@
 namespace app\api\controller\pc;
 
 
+use app\Request;
 use app\services\pc\HomeServices;
 use app\services\other\QrcodeServices;
 
@@ -49,9 +50,9 @@ class HomeController
      * 首页分类尚品
      * @return mixed
      */
-    public function getCategoryProduct()
+    public function getCategoryProduct(Request $request)
     {
-        $data = $this->services->getCategoryProduct();
+        $data = $this->services->getCategoryProduct((int)$request->uid());
         return app('json')->successful($data);
     }
 

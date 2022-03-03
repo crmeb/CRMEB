@@ -37,6 +37,8 @@ import './plugin/emoji-awesome/css/google.min.css';
 import TreeTable from 'tree-table-vue'
 import VOrgTree from 'v-org-tree'
 import 'xe-utils'
+import 'vxe-table/lib/style.css'
+
 import 'v-org-tree/dist/v-org-tree.css'
 import './styles/index.less'
 import 'swiper/css/swiper.css'
@@ -68,6 +70,7 @@ import * as tools from "@/libs/tools";
 import moment from 'moment'
 Vue.prototype.$moment = moment
 moment.locale('zh-cn')
+
 
 // 全局过滤
 import * as filters from './filters' // global filters modalTemplates

@@ -210,7 +210,7 @@
 								});
 							} else {
 								that.$wechat.pay(data.result.jsConfig)
-									.finally(() => {
+									.then(() => {
 										return that.$util.Tips({
 											title: "支付成功",
 											icon: 'success'
@@ -220,7 +220,7 @@
 											});
 										});
 									})
-									.catch(function() {
+									.catch(()=> {
 										return that.$util.Tips({
 											title: '支付失败'
 										}, () => {

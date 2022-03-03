@@ -1,5 +1,5 @@
 <template>
-	<view class="main">
+	<view class="main" @touchstart="start" @touchend="end">
 		<view class="top-tabs" :style="colorStyle">
 			<view class="tabs" :class="{btborder:type === index}" v-for="(item,index) in tabsList" :key="index"
 				@tap="changeTabs(index)">
@@ -66,7 +66,7 @@
 	import colors from '@/mixins/color.js';
 	import home from '@/components/home';
 	export default {
-		mixins:[colors],
+		mixins: [colors],
 		components: {
 			home
 		},
@@ -84,7 +84,11 @@
 				}, {
 					key: 1,
 					name: '客服消息'
-				}]
+				}],
+				startData: {
+					clientX: 0,
+					clientY: 0
+				}
 			};
 		},
 		onShow() {
@@ -112,6 +116,34 @@
 			}
 		},
 		methods: {
+			start(e) {
+				this.startData.clientX = e.changedTouches[0].clientX;
+				this.startData.clientY = e.changedTouches[0].clientY;
+			},
+			end(e) {
+				// console.log(e)
+				const subX = e.changedTouches[0].clientX - this.startData.clientX;
+				const subY = e.changedTouches[0].clientY - this.startData.clientY;
+				if (subY > 50 || subY < -50) {
+					console.log('上下滑')
+				} else {
+					if (subX > 50) {
+						console.log('右滑')
+						if (this.type == 1) {
+							this.type = 0
+							this.changeTabs(this.type)
+						}
+					} else if (subX < -50) {
+						if (this.type == 0) {
+							this.type = 1
+							this.changeTabs(this.type)
+						}
+						console.log('左滑')
+					} else {
+						console.log('无效')
+					}
+				}
+			},
 			changeTabs(index) {
 				this.type = index
 				this.page = 1
@@ -232,10 +264,11 @@
 			~.item {
 				border-top: 1rpx solid #f5f5f5;
 			}
-			.image{
+
+			.image {
 				border-radius: 50%;
 			}
-			
+
 		}
 
 		.image-wrap {
@@ -336,6 +369,7 @@
 
 	.main {
 		position: relative;
+		min-height: 100vh;
 	}
 
 	.top-tabs {
@@ -349,6 +383,7 @@
 		padding: 20rpx 0;
 		margin-bottom: 10rpx;
 		z-index: 1000;
+		transition: all 0.3s;
 	}
 
 	.tabs {
@@ -356,11 +391,56 @@
 		align-items: center;
 		padding: 4rpx 15rpx;
 		margin: 0 20rpx;
+		animation: Gradient 0.3s;
+		border-radius: 30rpx;
+		transition: all 0.4s;
 	}
 
 	.btborder {
 		color: #fff;
 		background-color: var(--view-theme);
 		border-radius: 30rpx;
+	}
+
+	@-webkit-keyframes Gradient {
+		0% {
+			background-color: pink;
+		}
+
+		50% {
+			background-position: 100% 50%
+		}
+
+		100% {
+			background-position: 0% 50%
+		}
+	}
+
+	@-moz-keyframes Gradient {
+		0% {
+			background-position: 0% 50%
+		}
+
+		50% {
+			background-position: 100% 50%
+		}
+
+		100% {
+			background-position: 0% 50%
+		}
+	}
+
+	@keyframes Gradient {
+		0% {
+			background-position: 0% 50%
+		}
+
+		50% {
+			background-position: 100% 50%
+		}
+
+		100% {
+			background-position: 0% 50%
+		}
 	}
 </style>

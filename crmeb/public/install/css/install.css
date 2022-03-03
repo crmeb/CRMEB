@@ -191,6 +191,11 @@ section {
 ===================
 */
 body{
+	display: flex;
+	align-items: center;
+	flex-direction: column;
+	justify-content: center;
+	height: 100vh;
 	font:12px/1.5 Arial,Microsoft Yahei,Simsun;
 	color:#333;
 	background:url(../images/install/bg.png);

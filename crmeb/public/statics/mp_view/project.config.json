@@ -12,7 +12,7 @@
   "compileType": "miniprogram",
   "libVersion": "",
   "appid": "wx1234567890",
-  "projectname": "routineTitle",
+  "projectname": "CRMEB",
   "condition": {
     "search": {
       "current": -1,

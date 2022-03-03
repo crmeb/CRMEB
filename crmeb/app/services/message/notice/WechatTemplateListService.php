@@ -125,8 +125,8 @@ class WechatTemplateListService extends NoticeService
             'keyword1' => $goodsName,
             'keyword2' => $order['pay_type'] == 'offline' ? '线下支付' : date('Y/m/d H:i', $order['pay_time']),
             'keyword3' => $order['user_address'],
-            'keyword4' => $data['delivery_name'],
-            'keyword5' => $data['delivery_id'],
+            'keyword4' => $order['delivery_name'],
+            'keyword5' => $order['delivery_id'],
             'remark' => '点击查看订单详情'
         ], '/pages/users/order_details/index?order_id=' . $order['order_id']);
     }

@@ -39,25 +39,25 @@ class StoreBargainUserHelpServices extends BaseServices
         $this->dao = $dao;
     }
 
-    /**
-     * TODO 获取用户还剩余的砍价金额
-     * @param int $bargainId $bargainId 砍价商品编号
-     * @param int $bargainUserUid $bargainUserUid 开启砍价用户编号
-     * @return float
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\ModelNotFoundException
-     * @throws \think\exception\DbException
-     */
-    public function getSurplusPrice($bargainId = 0, $bargainUserUid = 0)
-    {
-        /** @var StoreBargainServices $bargainUserService */
-        $bargainUserService = app()->make(StoreBargainServices::class);
-        $bargainUserTableId = $bargainUserService->getBargainUserTableId($bargainId, $bargainUserUid);// TODO 获取用户参与砍价表编号
-        $coverPrice = $bargainUserService->getBargainUserDiffPriceFloat($bargainUserTableId);//TODO 获取用户可以砍掉的金额  好友砍价之后获取砍价金额
-        $alreadyPrice = $bargainUserService->getBargainUserPrice($bargainUserTableId);//TODO 用户已经砍掉的价格 好友砍价之后获取用户已经砍掉的价格
-        $surplusPrice = (float)bcsub((string)$coverPrice, (string)$alreadyPrice, 2);//TODO 用户剩余要砍掉的价格
-        return $surplusPrice;
-    }
+//    /**
+//     * TODO 获取用户还剩余的砍价金额
+//     * @param int $bargainId $bargainId 砍价商品编号
+//     * @param int $bargainUserUid $bargainUserUid 开启砍价用户编号
+//     * @return float
+//     * @throws \think\db\exception\DataNotFoundException
+//     * @throws \think\db\exception\ModelNotFoundException
+//     * @throws \think\exception\DbException
+//     */
+//    public function getSurplusPrice($bargainId = 0, $bargainUserUid = 0)
+//    {
+//        /** @var StoreBargainServices $bargainUserService */
+//        $bargainUserService = app()->make(StoreBargainServices::class);
+//        $bargainUserTableId = $bargainUserService->getBargainUserTableId($bargainId, $bargainUserUid);// TODO 获取用户参与砍价表编号
+//        $coverPrice = $bargainUserService->getBargainUserDiffPriceFloat($bargainUserTableId);//TODO 获取用户可以砍掉的金额  好友砍价之后获取砍价金额
+//        $alreadyPrice = $bargainUserService->getBargainUserPrice($bargainUserTableId);//TODO 用户已经砍掉的价格 好友砍价之后获取用户已经砍掉的价格
+//        $surplusPrice = (float)bcsub((string)$coverPrice, (string)$alreadyPrice, 2);//TODO 用户剩余要砍掉的价格
+//        return $surplusPrice;
+//    }
 
     /**
      * 获取砍价帮列表
@@ -89,30 +89,30 @@ class StoreBargainUserHelpServices extends BaseServices
         return array_values($list);
     }
 
-    /**
-     * 获取砍价金额
-     * @param int $uid
-     * @param int $bargainId
-     * @param int $bargainUserUid
-     * @return array
-     */
-    public function getPrice(int $uid, int $bargainId, int $bargainUserUid)
-    {
-        if (!$bargainId || !$bargainUserUid) throw new ValidateException('参数错误');
-        /** @var StoreBargainUserServices $bargainUserService */
-        $bargainUserService = app()->make(StoreBargainUserServices::class);
-        $bargainUserTable = $bargainUserService->get(['bargain_id' => $bargainId, 'uid' => $bargainUserUid, 'is_del' => 0], ['id', 'status', 'bargain_price_min', 'bargain_price', 'price']);//TODO 获取用户参与砍价表编号
-        if (!$bargainUserTable) {
-            throw new ValidateException('砍价信息没有查询到');
-        }
-        if (bcsub($bargainUserTable['bargain_price'], $bargainUserTable['price'], 2) == $bargainUserTable['bargain_price_min']) {
-            $status = true;
-        } else {
-            $status = false;
-        }
-        $price = $this->dao->value(['uid' => $uid, 'bargain_id' => $bargainId, 'bargain_user_id' => $bargainUserTable['id']], 'price');
-        return ['price' => $price, 'status' => $status];
-    }
+//    /**
+//     * 获取砍价金额
+//     * @param int $uid
+//     * @param int $bargainId
+//     * @param int $bargainUserUid
+//     * @return array
+//     */
+//    public function getPrice(int $uid, int $bargainId, int $bargainUserUid)
+//    {
+//        if (!$bargainId || !$bargainUserUid) throw new ValidateException('参数错误');
+//        /** @var StoreBargainUserServices $bargainUserService */
+//        $bargainUserService = app()->make(StoreBargainUserServices::class);
+//        $bargainUserTable = $bargainUserService->get(['bargain_id' => $bargainId, 'uid' => $bargainUserUid, 'is_del' => 0], ['id', 'status', 'bargain_price_min', 'bargain_price', 'price']);//TODO 获取用户参与砍价表编号
+//        if (!$bargainUserTable) {
+//            throw new ValidateException('砍价信息没有查询到');
+//        }
+//        if (bcsub($bargainUserTable['bargain_price'], $bargainUserTable['price'], 2) == $bargainUserTable['bargain_price_min']) {
+//            $status = true;
+//        } else {
+//            $status = false;
+//        }
+//        $price = $this->dao->value(['uid' => $uid, 'bargain_id' => $bargainId, 'bargain_user_id' => $bargainUserTable['id']], 'price');
+//        return ['price' => $price, 'status' => $status];
+//    }
 
     /**
      * 判断是否能砍价
@@ -129,64 +129,53 @@ class StoreBargainUserHelpServices extends BaseServices
     }
 
     /**
-     * TODO 帮忙砍价
-     * @param int $bargainId
-     * @param int $bargainUserTableId
-     * @param int $uid
-     * @return bool
-     * @throws \think\Exception
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\ModelNotFoundException
-     * @throws \think\exception\DbException
+     * 用户砍价，写入砍价记录
+     * @param $uid
+     * @param $bargainUserInfo
+     * @param $bargainInfo
+     * @return false|string
      */
-    public function setBargainUserHelp($bargainId, $bargainUserTableId, $uid)
+    public function setBargainRecord($uid, $bargainUserInfo, $bargainInfo)
     {
-        /** @var StoreBargainServices $bargainService */
-        $bargainService = app()->make(StoreBargainServices::class);
-        $bargainInfo = $bargainService->get($bargainId);
-
-        /** @var StoreBargainUserServices $bargainUserService */
-        $bargainUserService = app()->make(StoreBargainUserServices::class);
-        $alreadyPrice = $bargainUserService->value(['id' => $bargainUserTableId], 'price');//TODO 用户已经砍掉的价格
-
-        $people = $this->dao->count(['bargain_user_id' => $bargainUserTableId]);//已经参与砍价的人数
-
-        $coverPrice = bcsub((string)$bargainInfo->price, (string)$bargainInfo->min_price, 2);
-        $surplusPrice = bcsub((string)$coverPrice, (string)$alreadyPrice, 2);//TODO 用户剩余要砍掉的价格
-        if (0.00 === (float)$surplusPrice) return false;
-
-        $data['uid'] = $uid;
-        $data['bargain_id'] = $bargainId;
-        $data['bargain_user_id'] = $bargainUserTableId;
-        if (($bargainInfo->people_num - $people) == 1) {
-            $data['price'] = $surplusPrice;
+        //已经参与砍价的人数
+        $people = $this->dao->count(['bargain_user_id' => $bargainUserInfo['id']]);
+        //剩余砍价金额
+        $coverPrice = bcsub((string)$bargainUserInfo['bargain_price'], (string)$bargainUserInfo['bargain_price_min'], 2);
+        $surplusPrice = bcsub((string)$coverPrice, (string)$bargainUserInfo['price'], 2);//TODO 用户剩余要砍掉的价格
+        if (0.00 === (float)$surplusPrice) throw new ValidateException('砍价已结束');
+        if (($bargainInfo['people_num'] - $people) == 1) {
+            $price = $surplusPrice;
         } else {
             /** @var UserServices $userServices */
             $userServices = app()->make(UserServices::class);
             $userInfo = $userServices->get($uid);
-            $data['price'] = $this->randomFloat($surplusPrice, $bargainInfo->people_num - $people, $userInfo->add_time == $userInfo->last_time && !$this->dao->count(['uid' => $uid]));
+            $price = $this->randomFloat($surplusPrice, $bargainInfo['people_num'] - $people, $userInfo->add_time == $userInfo->last_time && !$this->dao->count(['uid' => $uid]));
         }
-        $data['add_time'] = time();
-        if ($bargainUserService->value(['id' => $bargainUserTableId], 'uid') == $uid) {
-            $data['type'] = 1;
+        $allPrice = bcadd((string)$bargainUserInfo['price'], (string)$price, 2);
+        if ($bargainUserInfo['uid'] == $uid) {
+            $type = 1;
         } else {
             //帮砍次数限制
-            $count = $this->dao->count(['uid' => $uid, 'bargain_id' => $bargainId, 'type' => 0]);
-            if ($count >= $bargainInfo->bargain_num) throw new ValidateException('您不能再帮砍此件商品');
-            $data['type'] = 0;
+            $count = $this->dao->count(['uid' => $uid, 'bargain_id' => $bargainInfo['id'], 'type' => 0]);
+            if ($count >= $bargainInfo['bargain_num']) throw new ValidateException('您不能再帮砍此件商品');
+            $type = 0;
         }
-
-        $price = bcadd((string)$alreadyPrice, (string)$data['price'], 2);
-        $bargainUserData['price'] = $price;
-        return $this->transaction(function () use ($bargainUserService, $bargainUserTableId, $bargainUserData, $data) {
-            $res1 = $bargainUserService->update($bargainUserTableId, $bargainUserData);
-            $res2 = $this->dao->save($data);
-            $res = $res1 && $res2;
-            if (!$res) throw new ValidateException('砍价失败');
-            return $res;
-        });
-
+        /** @var StoreBargainUserServices $bargainUserService */
+        $bargainUserService = app()->make(StoreBargainUserServices::class);
+        $res1 = $bargainUserService->update($bargainUserInfo['id'], ['price' => $allPrice]);
+        $res2 = $this->dao->save([
+            'uid' => $uid,
+            'bargain_id' => $bargainInfo['id'],
+            'bargain_user_id' => $bargainUserInfo['id'],
+            'price' => $price,
+            'add_time' => time(),
+            'type' => $type,
+        ]);
+        $res = $res1 && $res2;
+        if (!$res) throw new ValidateException('砍价失败');
+        return $price;
     }
+
 
     /**
      * 随机金额
