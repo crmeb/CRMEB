@@ -87,7 +87,6 @@ class StoreOrderController
             ['field_key', ''],
             ['field_value', ''],
         ]);
-        $where['shipping_type'] = 1;
         $where['is_system_del'] = 0;
         if (!in_array($where['status'], [-1, -2, -3])) {
             $where['pid'] = 0;

@@ -393,26 +393,27 @@ class StoreOrderController
         if ($order['pink_id'] && $services->isPinkStatus($order['pink_id'])) {
             return app('json')->fail('该订单已失效!');
         }
-        if (!Cache::get('pay_' . $order['order_id'])) {
+        $isChannel = $this->getChennel[$from];
+        //缓存不存在 ｜｜ 切换另一端支付
+        if (!Cache::get('pay_' . $order['order_id']) || $isChannel != $order['is_channel']) {
             switch ($from) {
                 case 'weixin':
-                    if ($type == 1) {
-                        $order['order_id'] = mt_rand(100, 999) . '_' . $order['order_id'];
-                    } elseif (in_array($order->is_channel, [1, 2, 3])) {//0
+                    if ($type == 1 || in_array($order['is_channel'], [1, 2, 3, 4])) {//0
                         $order['order_id'] = mt_rand(100, 999) . '_' . $order['order_id'];
                     }
                     break;
                 case 'weixinh5':
-                    if ($type == 1) {
-                        $order['order_id'] = mt_rand(100, 999) . '_' . $order['order_id'];
-                    } elseif (in_array($order->is_channel, [0, 1, 3])) {
+                    if ($type == 1 || in_array($order['is_channel'], [0, 1, 3, 4])) {
                         $order['order_id'] = mt_rand(100, 999) . '_' . $order['order_id'];
                     }
                     break;
                 case 'routine':
-                    if ($type == 1) {
+                    if ($type == 1 || in_array($order['is_channel'], [0, 2, 3, 4])) {
                         $order['order_id'] = mt_rand(100, 999) . '_' . $order['order_id'];
-                    } elseif (in_array($order->is_channel, [0, 2, 3])) {
+                    }
+                    break;
+                case 'app':
+                    if ($type == 1 || in_array($order['is_channel'], [0, 1, 2, 3])) {
                         $order['order_id'] = mt_rand(100, 999) . '_' . $order['order_id'];
                     }
                     break;

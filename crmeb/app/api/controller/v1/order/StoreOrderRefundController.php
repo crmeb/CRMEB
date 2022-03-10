@@ -4,6 +4,7 @@ namespace app\api\controller\v1\order;
 
 use app\Request;
 use app\services\order\StoreOrderRefundServices;
+use app\services\order\StoreOrderServices;
 
 class StoreOrderRefundController
 {
@@ -102,7 +103,11 @@ class StoreOrderRefundController
      */
     public function delRefund(Request $request, $uni)
     {
+        $oid = $this->services->value(['order_id' => $uni, 'uid' => $request->uid()], 'store_order_id');
         $res = $this->services->update(['order_id' => $uni, 'uid' => $request->uid()], ['is_del' => 1]);
+        /** @var StoreOrderServices $orderServices */
+        $orderServices = app()->make(StoreOrderServices::class);
+        $orderServices->update($oid, ['is_del' => 1], 'id');
         if ($res)
             return app('json')->successful('删除成功');
         else

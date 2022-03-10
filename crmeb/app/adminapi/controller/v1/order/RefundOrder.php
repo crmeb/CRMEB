@@ -40,7 +40,6 @@ class RefundOrder extends AuthController
             ['refund_type', 0]
         ]);
         $where['is_cancel'] = 0;
-        $where['is_del'] = 0;
         return app('json')->success($this->services->refundList($where));
     }
 
