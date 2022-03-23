@@ -678,6 +678,9 @@ export default {
     changeSave(type) {
       saveType(type).then((res) => {
         this.$Message.success(res.msg);
+      })
+      .catch((err) => {
+        this.$Message.error(err.msg);
       });
     },
     bindbox(item) {

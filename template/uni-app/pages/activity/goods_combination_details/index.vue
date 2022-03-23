@@ -658,11 +658,11 @@
 					// #endif
 					// #ifdef APP-PLUS
 					that.downloadFilestoreImage();
-					that.downloadFileAppCode();
+					// that.downloadFileAppCode();
 					// #endif
 					// #ifdef MP
 					that.downloadFilestoreImage();
-					// that.downloadFilePromotionCode();
+					that.downloadFilePromotionCode();
 					// #endif
 					// that.setProductSelect();
 					that.DefaultSelect();

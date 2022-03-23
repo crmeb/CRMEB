@@ -2,8 +2,8 @@
     "name" : "CRMEB",
     "appid" : "__UNI__A3F1ED4",
     "description" : "CRMEB标准版",
-    "versionName" : "1.1.0",
-    "versionCode" : 110,
+    "versionName" : "1.0.0",
+    "versionCode" : 107,
     "transformPx" : false,
     /* 5+App特有相关 */
     "app-plus" : {
@@ -18,9 +18,11 @@
         /* 模块配置 */
         "modules" : {
             "OAuth" : {},
+            "Geolocation" : {},
             "Payment" : {},
             "Share" : {},
-            "VideoPlayer" : {}
+            "VideoPlayer" : {},
+            "Maps" : {}
         },
         "safearea" : {
             "bottom" : {
@@ -37,7 +39,6 @@
                     "<uses-permission android:name=\"android.permission.ACCESS_NETWORK_STATE\"/>",
                     "<uses-permission android:name=\"android.permission.ACCESS_WIFI_STATE\"/>",
                     "<uses-permission android:name=\"android.permission.CALL_PHONE\"/>",
-                    "<uses-permission android:name=\"android.permission.CAMERA\"/>",
                     "<uses-permission android:name=\"android.permission.CAPTURE_AUDIO_OUTPUT\"/>",
                     "<uses-permission android:name=\"android.permission.CHANGE_NETWORK_STATE\"/>",
                     "<uses-permission android:name=\"android.permission.CHANGE_WIFI_STATE\"/>",
@@ -89,7 +90,12 @@
                     }
                 },
                 "push" : {},
-                "maps" : {},
+                "maps" : {
+                    "amap" : {
+                        "appkey_ios" : "aeb768547b9d752891e37e1ca0a2b66d",
+                        "appkey_android" : "41ec5c3f4d110ce02a326210fe147be8"
+                    }
+                },
                 "oauth" : {
                     "apple" : {},
                     "weixin" : {
@@ -99,7 +105,13 @@
                     }
                 },
                 "ad" : {},
-                "geolocation" : {},
+                "geolocation" : {
+                    "amap" : {
+                        "__platform__" : [ "ios", "android" ],
+                        "appkey_ios" : "aeb768547b9d752891e37e1ca0a2b66d",
+                        "appkey_android" : "41ec5c3f4d110ce02a326210fe147be8"
+                    }
+                },
                 "statics" : {
                     "google" : {
                         "config_ios" : "",

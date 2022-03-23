@@ -187,7 +187,7 @@ class StoreCategoryServices extends BaseServices
      */
     public function createData($data)
     {
-        if ($this->dao->getOne(['cate_name' => $data['cate_name']])) {
+        if ($this->dao->getOne(['cate_name' => $data['cate_name'], 'pid' => $data['pid']])) {
             throw new AdminException('该分类已经存在');
         }
         $data['add_time'] = time();
@@ -203,7 +203,7 @@ class StoreCategoryServices extends BaseServices
      */
     public function editData($id, $data)
     {
-        $cate = $this->dao->getOne(['cate_name' => $data['cate_name']]);
+        $cate = $this->dao->getOne(['cate_name' => $data['cate_name'], 'pid' => $data['pid']]);
         if ($cate && $cate['id'] != $id) {
             throw new AdminException('该分类已存在');
         }

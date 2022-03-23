@@ -248,6 +248,10 @@ class SystemStorage extends AuthController
      */
     public function uploadType(SystemConfigServices $services, $type)
     {
+        $status = $this->services->count(['type' => $type, 'status' => 1]);
+        if (!$status && $type != 1) {
+            return app('json')->success('未有正在使用的存储空间');
+        }
         $services->update('upload_type', ['value' => json_encode($type)], 'menu_name');
         \crmeb\services\CacheService::clear();
         if ($type != 1) {

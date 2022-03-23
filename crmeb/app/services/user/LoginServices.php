@@ -78,7 +78,7 @@ class LoginServices extends BaseServices
      * @throws \think\db\exception\DbException
      * @throws \think\db\exception\ModelNotFoundException
      */
-    public function updateUserInfo($user, $userInfo)
+    public function updateUserInfo($user, $userInfo, $is_new = false)
     {
         $data = [];
         $data['nickname'] = !isset($user['nickname']) || !$user['nickname'] ? $userInfo->nickname : $user['nickname'];
@@ -86,9 +86,9 @@ class LoginServices extends BaseServices
         $data['phone'] = !isset($user['phone']) || !$user['phone'] ? $userInfo->phone : $user['phone'];
         $data['last_time'] = time();
         $data['last_ip'] = app()->request->ip();
+        $spreadUid = isset($user['code']) ? $user['code'] : 0;
         //如果扫了员工邀请码，上级，代理商，区域代理都会改动。
         if (isset($user['is_staff']) && !$userInfo['is_agent'] && !$userInfo['is_division']) {
-            $spreadUid = isset($user['code']) ? $user['code'] : 0;
             $spreadInfo = $this->dao->get($spreadUid);
             if ($userInfo['uid'] != $spreadUid) {
                 $data['spread_uid'] = $spreadUid;
@@ -106,36 +106,46 @@ class LoginServices extends BaseServices
                 $this->dao->update($userInfo['uid'], ['spread_uid' => $userInfo->agent_id], 'spread_uid');
             }
         }
-        //永久绑定
-        $store_brokergae_binding_status = sys_config('store_brokerage_binding_status', 1);
-        if ($userInfo->spread_uid && $store_brokergae_binding_status == 1 && !isset($user['is_staff'])) {
-            $data['login_type'] = $user['login_type'] ?? $userInfo->login_type;
-        } else {
-            $spreadUid = isset($user['code']) && $user['code'] && $user['code'] != $userInfo->uid ? $user['code'] : 0;
-            if ($spreadUid && $userInfo->uid == $this->dao->value(['uid' => $spreadUid], 'spread_uid')) {
-                $spreadUid = 0;
-            }
-            //绑定分销关系 = 所有用户
-            if (sys_config('brokerage_bindind', 1) == 1) {
-                //分销绑定类型为时间段且过期 ｜｜临时
-                $store_brokerage_binding_time = sys_config('store_brokerage_binding_time', 30);
-                if (!$userInfo['spread_uid'] || $store_brokergae_binding_status == 3 || ($store_brokergae_binding_status == 2 && ($userInfo['spread_time'] + $store_brokerage_binding_time * 24 * 3600) < time())) {
-                    if ($spreadUid) {
-                        $spreadInfo = $this->dao->get($spreadUid);
-                        $spreadUid = (int)$spreadUid;
-                        $data['spread_uid'] = $spreadUid;
-                        $data['spread_time'] = time();
-                        $data['agent_id'] = $spreadInfo->agent_id;
-                        $data['division_id'] = $spreadInfo->division_id;
-                        $data['staff_id'] = $spreadInfo->staff_id;
-                    }
-                }
-            }
+        if ($is_new) {
             if ($spreadUid) {
+                $spreadInfo = $this->dao->get($spreadUid);
+                $spreadUid = (int)$spreadUid;
+                $data['spread_uid'] = $spreadUid;
+                $data['spread_time'] = time();
+                $data['agent_id'] = $spreadInfo->agent_id;
+                $data['division_id'] = $spreadInfo->division_id;
+                $data['staff_id'] = $spreadInfo->staff_id;
                 //绑定用户后置事件
                 event('user.register', [$spreadUid, $userInfo['user_type'], $userInfo['nickname'], $userInfo['uid'], 0]);
                 //推送消息
                 event('notice.notice', [['spreadUid' => $spreadUid, 'user_type' => $userInfo['user_type'], 'nickname' => $userInfo['nickname']], 'bind_spread_uid']);
+            }
+        } else {
+            //永久绑定
+            $store_brokerage_binding_status = sys_config('store_brokerage_binding_status', 1);
+            if ($userInfo->spread_uid && $store_brokerage_binding_status == 1 && !isset($user['is_staff'])) {
+                $data['login_type'] = $user['login_type'] ?? $userInfo->login_type;
+            } else {
+                //绑定分销关系 = 所有用户
+                if (sys_config('brokerage_bindind', 1) == 1) {
+                    //分销绑定类型为时间段且过期 ｜｜临时
+                    $store_brokerage_binding_time = sys_config('store_brokerage_binding_time', 30);
+                    if (!$userInfo['spread_uid'] || $store_brokerage_binding_status == 3 || ($store_brokerage_binding_status == 2 && ($userInfo['spread_time'] + $store_brokerage_binding_time * 24 * 3600) < time())) {
+                        if ($spreadUid && $user['code'] != $userInfo->uid && $userInfo->uid != $this->dao->value(['uid' => $spreadUid], 'spread_uid')) {
+                            $spreadInfo = $this->dao->get($spreadUid);
+                            $spreadUid = (int)$spreadUid;
+                            $data['spread_uid'] = $spreadUid;
+                            $data['spread_time'] = time();
+                            $data['agent_id'] = $spreadInfo->agent_id;
+                            $data['division_id'] = $spreadInfo->division_id;
+                            $data['staff_id'] = $spreadInfo->staff_id;
+                            //绑定用户后置事件
+                            event('user.register', [$spreadUid, $userInfo['user_type'], $userInfo['nickname'], $userInfo['uid'], 0]);
+                            //推送消息
+                            event('notice.notice', [['spreadUid' => $spreadUid, 'user_type' => $userInfo['user_type'], 'nickname' => $userInfo['nickname']], 'bind_spread_uid']);
+                        }
+                    }
+                }
             }
         }
         if (!$this->dao->update($userInfo['uid'], $data, 'uid')) {

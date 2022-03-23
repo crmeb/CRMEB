@@ -894,22 +894,26 @@ class StoreOrderRefundServices extends BaseServices
                 }
                 $refund_num = bcadd((string)$refund_num, (string)$cart['cart_num'], 0);
             }
-            /** @var StoreOrderSplitServices $storeOrderSpliteServices */
-            $storeOrderSpliteServices = app()->make(StoreOrderSplitServices::class);
-            $cartInfos = $storeOrderSpliteServices->getSplitOrderCartInfo($id, $cart_ids, $order);
-            $total_price = $pay_postage = 0;
-            foreach ($cartInfos as $cart) {
-                $_info = is_string($cart['cart_info']) ? json_decode($cart['cart_info'], true) : $cart['cart_info'];
-                $total_price = bcadd((string)$total_price, bcmul((string)($_info['truePrice'] ?? 0), (string)$cart['cart_num'], 4), 2);
-                $pay_postage = bcadd((string)$pay_postage, (string)($_info['postage_price'] ?? 0), 2);
-            }
-            $refund_pay_price = bcadd((string)$total_price, (string)$pay_postage, 2);
-            //订单实际支付金额
-            $order_pay_price = bcsub((string)bcadd((string)$order['total_price'], (string)$order['pay_postage'], 2), (string)bcadd((string)$order['deduction_price'], (string)$order['coupon_price'], 2), 2);
-            if ($order_pay_price != $order['pay_price'] && $refund_pay_price != $order_pay_price) {//有改价
-                $refund_price = bcmul((string)bcdiv((string)$order['pay_price'], (string)$order_pay_price, 4), (string)$refund_pay_price, 2);
-            } else {
-                $refund_price = $refund_pay_price;
+            //总共申请多少件
+            $total_num = array_sum(array_column($cart_ids, 'cart_num'));
+            if ($total_num < $order['total_num']) {
+                /** @var StoreOrderSplitServices $storeOrderSpliteServices */
+                $storeOrderSpliteServices = app()->make(StoreOrderSplitServices::class);
+                $cartInfos = $storeOrderSpliteServices->getSplitOrderCartInfo($id, $cart_ids, $order);
+                $total_price = $pay_postage = 0;
+                foreach ($cartInfos as $cart) {
+                    $_info = is_string($cart['cart_info']) ? json_decode($cart['cart_info'], true) : $cart['cart_info'];
+                    $total_price = bcadd((string)$total_price, bcmul((string)($_info['truePrice'] ?? 0), (string)$cart['cart_num'], 4), 2);
+                    $pay_postage = bcadd((string)$pay_postage, (string)($_info['postage_price'] ?? 0), 2);
+                }
+                $refund_pay_price = bcadd((string)$total_price, (string)$pay_postage, 2);
+                //订单实际支付金额
+                $order_pay_price = bcsub((string)bcadd((string)$order['total_price'], (string)$order['pay_postage'], 2), (string)bcadd((string)$order['deduction_price'], (string)$order['coupon_price'], 2), 2);
+                if ($order_pay_price != $order['pay_price'] && $refund_pay_price != $order_pay_price) {//有改价
+                    $refund_price = bcmul((string)bcdiv((string)$order['pay_price'], (string)$order_pay_price, 4), (string)$refund_pay_price, 2);
+                } else {
+                    $refund_price = $refund_pay_price;
+                }
             }
         } else {
             foreach ($cartInfos as $cart) {

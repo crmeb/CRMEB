@@ -337,6 +337,19 @@ class CopyProductService
             $result['slider_image'] = $info['images'] ?? [];
             $result['description'] = $info['desc'] ?? '';
             $result['description_images'] = $info['descImgs'] ?? [];
+            $result['description_images'] = array_map(function ($item) {
+                if (strstr($item, 'http') === false) {
+                    $item = 'http:' . $item;
+                }
+                return $item;
+            }, $result['description_images']);
+            if (strstr($result['description'], '<style>') !== false && strstr($result['description'], '<img') === false) {
+                $content = '';
+                foreach ($result['description_images'] as $item_img) {
+                    $content .= '<p><img src="' . $item_img . '"></p>';
+                }
+                $result['description'] = $content;
+            }
             $items = [];
             if (isset($info['skuProps']) && $info['skuProps']) {
                 foreach ($info['skuProps'] as $key => $prop) {

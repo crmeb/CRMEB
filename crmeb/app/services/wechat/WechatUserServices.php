@@ -106,13 +106,19 @@ class WechatUserServices extends BaseServices
     /**
      * 用户存在就更新 不存在就添加
      * @param $openid
+     * @return bool
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
      */
     public function saveUser($openid)
     {
         if ($this->getWechatUserInfo(['openid' => $openid])) {
             $this->updateUser($openid);
+            return false;
         } else {
             $this->setNewUser($openid);
+            return true;
         }
     }
 
@@ -156,7 +162,7 @@ class WechatUserServices extends BaseServices
         } else {
             mt_srand();
             $userInfo['nickname'] = 'wx' . rand(100000, 999999);
-            $userInfo['avatar'] = sys_config('h5_avatar');
+            $userInfo['headimgurl'] = sys_config('h5_avatar');
         }
         if (isset($userInfo['tagid_list'])) {
             $userInfo['tagid_list'] = implode(',', $userInfo['tagid_list']);

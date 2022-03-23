@@ -618,6 +618,51 @@
 					})
 				});
 			},
+			/**
+			 * 获取产品分销二维码
+			 * @param function successFn 下载完成回调
+			 *
+			 */
+			downloadFilePromotionCode: function(successFn) {
+				let that = this;
+				// #ifdef MP
+				seckillCode(that.id)
+					.then((res) => {
+						uni.downloadFile({
+							url: that.setDomain(res.data.code),
+							success: function(res) {
+								that.$set(that, "isDown", false);
+								that.$set(that, "PromotionCode", res.tempFilePath)
+								if (typeof successFn == "function")
+									successFn && successFn(res.tempFilePath);
+							},
+							fail: function() {
+								that.$set(that, "isDown", false);
+								that.$set(that, "PromotionCode", "");
+							},
+						});
+					})
+					.catch((err) => {
+						that.$set(that, "isDown", false);
+						that.$set(that, "PromotionCode", "");
+					});
+				// #endif
+				// #ifdef APP-PLUS
+				uni.downloadFile({
+					url: that.setDomain(that.PromotionCode),
+					success: function(res) {
+						that.$set(that, "isDown", false);
+						if (typeof successFn == "function")
+							successFn && successFn(res.tempFilePath);
+						else that.$set(that, "PromotionCode", res.tempFilePath);
+					},
+					fail: function() {
+						that.$set(that, "isDown", false);
+						that.$set(that, "PromotionCode", "");
+					},
+				});
+				// #endif
+			},
 			setShare() {
 				this.$wechat.isWeixin() &&
 					this.$wechat.wechatEvevt([

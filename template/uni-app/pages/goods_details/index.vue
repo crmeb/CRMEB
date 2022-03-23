@@ -460,7 +460,8 @@
 	import kefuIcon from "@/components/kefuIcon";
 	import menuIcon from "@/components/menuIcon.vue";
 	import {
-		silenceBindingSpread
+		silenceBindingSpread,
+		updateURLParameter
 	} from "@/utils";
 	import mpHtml from "@/components/mp-html/mp-html";
 	import ClipboardJS from "@/plugin/clipboard/clipboard.js";
@@ -1637,7 +1638,6 @@
 				});
 			},
 			// #endif
-
 			//#ifdef H5
 			ShareInfo() {
 				let data = this.storeInfo;
@@ -1647,8 +1647,7 @@
 						href =
 							href.indexOf("?") === -1 ?
 							href + "?spread=" + res.data.uid :
-							href + "&spread=" + res.data.uid;
-
+							updateURLParameter(href, 'spread', res.data.uid);
 						let configAppMessage = {
 							desc: data.store_info,
 							title: data.store_name,

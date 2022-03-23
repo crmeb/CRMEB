@@ -1300,11 +1300,6 @@
 		// #ifndef H5
 		bottom: 0rpx;
 		// #endif
-		// #ifdef MP || APP-PLUS
-		bottom: 98rpx;
-		bottom: calc(98rpx + constant(safe-area-inset-bottom)); ///兼容 IOS<11.2/
-		bottom: calc(98rpx + env(safe-area-inset-bottom)); ///兼容 IOS>11.2/
-		// #endif
 	}
 
 	.shoppingCart .footer .checkAll {

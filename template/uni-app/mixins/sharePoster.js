@@ -94,7 +94,7 @@ export const sharePoster = {
 					// #endif
 					// #ifdef MP
 					return that.$util.Tips({
-						title: "小程序二维码需要发布正式版后才能获取到",
+						title: "正在下载海报,请稍后再试",
 					});
 					// #endif
 				},

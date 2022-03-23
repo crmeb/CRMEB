@@ -190,8 +190,8 @@
 								<image :src='items' class="img"></image>
 								<text class='iconfont icon-guanbi1 font-num del' @click='DelPic(index,indexs)'></text>
 							</view>
-							<view class='pictrue acea-row row-center-wrapper row-column bor' @click='uploadpic(index)'
-								v-if="item.value.length < 8">
+							<view class='pictrue acea-row row-center-wrapper row-column bor'
+								@click='uploadpic(index,item)' v-if="item.value.length < 8">
 								<text class='iconfont icon-icon25201'></text>
 								<view>上传图片</view>
 							</view>
@@ -781,6 +781,9 @@
 					console.log("confirm:", res.data.custom_form)
 					that.$set(that, 'userInfo', res.data.userInfo);
 					that.$set(that, 'confirm', res.data.custom_form || []);
+					this.confirm.map(e => {
+						if (e.label === 'img') e.value = []
+					})
 					that.$set(that, 'integral', res.data.usable_integral);
 					that.$set(that, 'usable_integral', res.data.usable_integral);
 					that.$set(that, 'contacts', res.data.userInfo.real_name);
@@ -1327,18 +1330,17 @@
 				day = day > 9 ? day : '0' + day;
 				return `${year}-${month}-${day}`;
 			},
-			uploadpic: function(index) {
+			uploadpic: function(index, item) {
 				let that = this;
 				this.canvasStatus = true
 				that.$util.uploadImageChange('upload/image', function(res) {
-					that.newImg.push(res.data.url);
+					item.value.push(res.data.url);
 				}, (res) => {
 					this.canvasStatus = false
 				}, (res) => {
 					this.canvasWidth = res.w
 					this.canvasHeight = res.h
 				});
-				that.confirm[index].value = this.newImg
 			},
 			DelPic: function(index, indexs) {
 				let that = this,

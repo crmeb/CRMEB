@@ -58,10 +58,6 @@ class WechatMessageServices extends BaseServices
      */
     public function wechatMessageBefore($message)
     {
-        /** @var WechatUserServices $wechatUser */
-        $wechatUser = app()->make(WechatUserServices::class);
-        $wechatUser->saveUser($message->FromUserName);
-
         $event = isset($message->Event) ?
             $message->MsgType . (
             $message->Event == 'subscribe' && isset($message->EventKey) ? '_scan' : ''

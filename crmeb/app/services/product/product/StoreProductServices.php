@@ -252,7 +252,7 @@ class StoreProductServices extends BaseServices
         $productInfo['give_integral'] = floatval($productInfo['give_integral']);
         $productInfo['presale'] = boolval($productInfo['presale'] ?? 0);
         $productInfo['vip_product'] = boolval($productInfo['vip_product'] ?? 0);
-        $productInfo['presale_time'] = $productInfo['presale_start_time'] == 0 ? [] : [date('Y-m-d M:i:s', $productInfo['presale_start_time']), date('Y-m-d M:i:s', $productInfo['presale_end_time'])];
+        $productInfo['presale_time'] = $productInfo['presale_start_time'] == 0 ? [] : [date('Y-m-d H:i:s', $productInfo['presale_start_time']), date('Y-m-d H:i:s', $productInfo['presale_end_time'])];
         $productInfo['description'] = $storeDescriptionServices->getDescription(['product_id' => $id, 'type' => 0]);
         $productInfo['custom_form'] = json_decode($productInfo['custom_form'], true);
         /** @var StoreProductAttrServices $storeProductAttrServices */

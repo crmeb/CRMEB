@@ -45,4 +45,24 @@ class SystemStorage extends BaseModel
     {
         $query->where('name', $value);
     }
+
+    /**
+     * 类型搜索器
+     * @param $query
+     * @param $value
+     */
+    public function searchTypeAttr($query, $value)
+    {
+        if ($value) $query->where('type', $value);
+    }
+
+    /**
+     * 状态搜索器
+     * @param $query
+     * @param $value
+     */
+    public function searchStatusAttr($query, $value)
+    {
+        if ($value !== '') $query->where('status', $value);
+    }
 }

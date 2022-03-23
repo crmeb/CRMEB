@@ -1487,6 +1487,7 @@ HTML;
         } else {
             $addr = [];
         }
+        if ($shipping_type == 2) $addr = [];
         /** @var StoreCartServices $cartServices */
         $cartServices = app()->make(StoreCartServices::class);
         $cartGroup = $cartServices->getUserProductCartListV1($user['uid'], $cartId, $new, $addr, $shipping_type);

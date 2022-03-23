@@ -581,6 +581,7 @@ export default {
     return {
       selectDataLabel: [],
       selectLabelShow: false,
+      content: "",
       tabs: [
         {
           name: "积分抽取",
@@ -842,7 +843,7 @@ export default {
       this.getInfo(e);
     },
     getEditorContent(data) {
-      this.formValidate.content = data;
+      this.content = data;
     },
     //用户标签列表
     labelListApi() {
@@ -873,6 +874,7 @@ export default {
             this.formValidate.user_level = res.data.user_level || [];
             this.selectDataLabel = res.data.user_label || [];
             this.formValidate.is_svip = res.data.is_svip;
+            this.content = res.data.is_content ? res.data.content : "";
             this.formValidate.factor = res.data.factor.toString();
             this.formValidate.period = [
               this.formatDate(res.data.start_time) || "",
@@ -989,7 +991,7 @@ export default {
       console.log(this.selectDataLabel);
       this.formValidate.prize = this.specsData;
       if (this.formValidate.is_content) {
-        this.formValidate.content = formatRichText(this.formValidate.content);
+        this.formValidate.content = formatRichText(this.content);
       }
       if (this.formValidate.attends_user == 2) {
         if (this.selectDataLabel.length) {
@@ -1045,14 +1047,6 @@ export default {
     // 上一步
     step() {
       this.current--;
-    },
-    // 内容
-    getContent(val) {
-      this.formValidate.content = val;
-    },
-    // 规则
-    getRole(val) {
-      this.formValidate.rule = val;
     },
     // 点击商品图
     modalPicTap(tit, picTit, index) {

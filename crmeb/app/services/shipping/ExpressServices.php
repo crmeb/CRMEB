@@ -33,6 +33,20 @@ class ExpressServices extends BaseServices
 {
     public $_cacheKey = "plat_express_list";
 
+    //物流查询物流公司code
+    public $express_code = [
+        'yunda' => 'yunda',
+        'yundakuaiyun' => 'yunda56',
+        'ems' => 'EMS',
+        'youzhengguonei' => 'chinapost',
+        'huitongkuaidi' => 'HTKY',
+        'baishiwuliu' => 'BSKY',
+        'shentong' => 'STO',
+        'jd' => 'JD',
+        'zhongtong' => 'ZTO',
+        'zhongtongkuaiyun' => 'ZTO56',
+    ];
+
     /**
      * 构造方法
      * ExpressServices constructor.
@@ -63,6 +77,7 @@ class ExpressServices extends BaseServices
     {
         return $this->dao->getExpressList([], '*', 0, 0);
     }
+
     /**
      * 物流表单
      * @param array $formData
@@ -164,7 +179,7 @@ class ExpressServices extends BaseServices
 
     public function expressList($where = [])
     {
-        if(empty($where)) $where =  ['is_show' => 1];
+        if (empty($where)) $where = ['is_show' => 1];
         return $this->dao->getExpressList($where, 'id,name,code,partner_id,partner_key,net,account,key,net_name', 0, 0);
     }
 
@@ -180,6 +195,7 @@ class ExpressServices extends BaseServices
         $resultData = CacheService::get($cacheName, null);
         if ($resultData === null || !is_array($resultData)) {
             $data = [];
+            $com = $this->express_code[$com] ?? '';
             $cacheTime = 0;
             switch ((int)sys_config('logistics_type')) {
                 case 1:
@@ -196,7 +212,7 @@ class ExpressServices extends BaseServices
                     }
                     break;
                 case 2:
-                    $result = ExpressService::query($expressNum);
+                    $result = ExpressService::query($expressNum, $com);
                     if (is_array($result) &&
                         isset($result['result']) &&
                         isset($result['result']['deliverystatus']) &&
