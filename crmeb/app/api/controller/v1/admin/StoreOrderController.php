@@ -538,6 +538,7 @@ class StoreOrderController
             ['time', ''],
             ['refund_type', 0],
         ]);
+        $where['is_cancel'] = 0;
         $data = $services->refundList($where)['list'];
         return app('json')->success($data);
     }

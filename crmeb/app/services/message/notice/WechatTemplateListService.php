@@ -141,8 +141,8 @@ class WechatTemplateListService extends NoticeService
     {
         return $this->sendTemplate('ORDER_POSTAGE_SUCCESS', $uid, [
             'keyword1' => $order['order_id'],
-            'keyword2' => $data['delivery_name'],
-            'keyword3' => $data['delivery_id'],
+            'keyword2' => $order['delivery_name'],
+            'keyword3' => $order['delivery_id'],
             'first' => '亲,您的订单已发货,请注意查收',
             'remark' => '点击查看订单详情'
         ], '/pages/users/order_details/index?order_id=' . $order['order_id']);
@@ -213,19 +213,19 @@ class WechatTemplateListService extends NoticeService
 
     /**
      * 发送退款模板消息
-     * @param array $data
+     * @param $data
      * @param $order
      * @return bool|mixed
      */
-    public function sendOrderRefundSuccess($uid, array $data, $order)
+    public function sendOrderRefundSuccess($uid, $data, $order)
     {
         return $this->sendTemplate('ORDER_REFUND_STATUS', $uid, [
             'first' => '亲，您购买的商品已退款,本次退款' . $data['refund_price'] . '金额',
-            'keyword1' => $order['order_id'],
+            'keyword1' => $data['order_id'],
             'keyword2' => $order['pay_price'],
             'keyword3' => date('Y-m-d H:i:s', $order['add_time']),
             'remark' => '点击查看订单详情'
-        ], '/pages/users/order_details/index?order_id=' . $order['order_id']);
+        ], '/pages/users/order_details/index?order_id=' . $data['order_id'] . '&isReturen=1');
     }
 
     /**
@@ -242,16 +242,16 @@ class WechatTemplateListService extends NoticeService
             'keyword2' => $order['pay_price'],
             'keyword3' => date('Y-m-d H:i:s', $order['add_time']),
             'remark' => '点击查看订单详情'
-        ], '/pages/users/order_details/index?order_id=' . $order['order_id']);
+        ], '/pages/users/order_details/index?order_id=' . $order['order_id'] . '&isReturen=1');
     }
 
     /**
      * 发送用户充值退款模板消息
-     * @param array $data
+     * @param $data
      * @param $userRecharge
      * @return bool|mixed
      */
-    public function sendRechargeRefundStatus($uid, array $data, $userRecharge)
+    public function sendRechargeRefundStatus($uid, $data, $userRecharge)
     {
         return $this->sendTemplate('ORDER_REFUND_STATUS', $uid, [
             'first' => '亲，您充值的金额已退款,本次退款' .
