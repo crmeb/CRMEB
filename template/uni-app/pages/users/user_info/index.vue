@@ -103,7 +103,18 @@
 						</view>
 					</view>
 					<!-- #endif -->
-
+					<view class="item acea-row row-between-wrapper">
+						<view>地址管理</view>
+						<navigator url="/pages/users/user_address_list/index" hover-class="none" class="input">
+							点击前往<text class="iconfont icon-xiangyou"></text>
+						</navigator>
+					</view>
+					<view class="item acea-row row-between-wrapper">
+						<view>发票管理</view>
+						<navigator url="/pages/users/user_invoice_list/index" hover-class="none" class="input">
+							点击前往<text class="iconfont icon-xiangyou"></text>
+						</navigator>
+					</view>
 
 				</view>
 
@@ -199,7 +210,7 @@
 		},
 		methods: {
 			isNew() {
-				that.$util.Tips({
+				this.$util.Tips({
 					title: '当前为最新版本'
 				});
 			},

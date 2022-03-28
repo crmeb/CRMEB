@@ -52,12 +52,19 @@ class WechatMessageServices extends BaseServices
         if ($res) Cache::set($cacheName, 1, $cacheTime);
         return $res;
     }
+
     /**
      * 微信消息前置操作
      * @param $event
      */
     public function wechatMessageBefore($message)
     {
+        //后台开启，用户直接关注公众号才会生成用户
+        if (intval(sys_config('create_wechat_user', 0))) {
+            /** @var WechatUserServices $wechatUser */
+            $wechatUser = app()->make(WechatUserServices::class);
+            $wechatUser->saveUser($message->FromUserName);
+        }
         $event = isset($message->Event) ?
             $message->MsgType . (
             $message->Event == 'subscribe' && isset($message->EventKey) ? '_scan' : ''
@@ -66,7 +73,7 @@ class WechatMessageServices extends BaseServices
         $openid = $message->FromUserName;
         $type = strtolower($event);
         $add_time = time();
-        if(!$this->dao->save(compact('result','openid','type','add_time'))){
+        if (!$this->dao->save(compact('result', 'openid', 'type', 'add_time'))) {
             throw new ValidateException('更新信息失败');
         }
         return true;

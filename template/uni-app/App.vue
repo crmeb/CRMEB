@@ -82,27 +82,27 @@
 				switch (res.data.status) {
 					case 1:
 						uni.setStorageSync('viewColor', blue)
-						uni.$emit('ok', blue,res.data.status)
+						uni.$emit('ok', blue, res.data.status)
 						break;
 					case 2:
 						uni.setStorageSync('viewColor', green)
-						uni.$emit('ok', green,res.data.status)
+						uni.$emit('ok', green, res.data.status)
 						break;
 					case 3:
 						uni.setStorageSync('viewColor', red)
-						uni.$emit('ok', red,res.data.status)
+						uni.$emit('ok', red, res.data.status)
 						break;
 					case 4:
 						uni.setStorageSync('viewColor', pink)
-						uni.$emit('ok', pink,res.data.status)
+						uni.$emit('ok', pink, res.data.status)
 						break;
 					case 5:
 						uni.setStorageSync('viewColor', orange)
-						uni.$emit('ok', orange,res.data.status)
+						uni.$emit('ok', orange, res.data.status)
 						break;
 					default:
 						uni.setStorageSync('viewColor', red)
-						uni.$emit('ok', red,res.data.status)
+						uni.$emit('ok', red, res.data.status)
 						break
 				}
 			});
@@ -111,6 +111,12 @@
 				that.globalData.spid = option.query.spread;
 				that.globalData.pid = option.query.spread;
 				silenceBindingSpread()
+			}
+			if (option.query.spid) {
+				that.$Cache.set('spread', option.query.spid);
+				that.globalData.spid = option.query.spid;
+				that.globalData.pid = option.query.spid;
+				// silenceBindingSpread()
 			}
 			// #ifdef APP-PLUS || H5
 			uni.getSystemInfo({

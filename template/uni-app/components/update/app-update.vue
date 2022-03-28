@@ -121,7 +121,10 @@
 				//向后台发起请求，获取最新版本号
 				getUpdateInfo(this.platform === "ios" ? 2 : 1)
 					.then((res) => {
-						console.log(res.data)
+						console.log(res)
+						if(Array.isArray(res.data)){
+						 return	this.$emit('isNew')
+						}
 						const tagDate = uni.getStorageSync('app_update_time') || '',
 							nowDate = new Date().toLocaleDateString();
 						if (tagDate !== nowDate && !this.getVer) {
@@ -138,6 +141,7 @@
 						if (!vm.update_info.platform) {
 							// 后台未配置当前系统的升级数据
 						} else {
+							console.log('111111111111111')
 							vm.checkUpdate(); ///检查是否更新
 						}
 					})

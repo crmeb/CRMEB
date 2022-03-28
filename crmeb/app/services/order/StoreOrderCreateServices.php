@@ -190,7 +190,7 @@ class StoreOrderCreateServices extends BaseServices
             'cart_id' => $cartIds,
             'total_num' => $totalNum,
             'total_price' => $priceGroup['totalPrice'],
-            'total_postage' => $priceGroup['storePostage'],
+            'total_postage' => $shippingType == 1 ? $priceGroup['storePostage'] : 0,
             'coupon_id' => $couponId,
             'coupon_price' => $priceData['coupon_price'],
             'pay_price' => $priceData['pay_price'],

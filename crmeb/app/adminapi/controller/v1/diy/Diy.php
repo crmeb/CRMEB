@@ -277,9 +277,9 @@ class Diy extends AuthController
             if ($info['is_diy']) {
                 foreach ($info['value'] as &$item) {
                     if ($item['name'] === 'goodList') {
-                        if(isset($item['goodsList']['ids']) && count($item['goodsList']['ids'])){
+                        if (isset($item['goodsList']['ids']) && count($item['goodsList']['ids'])) {
                             $item['goodsList']['list'] = $services->getSearchList(['ids' => $item['goodsList']['ids']]);
-                        }else{
+                        } else {
                             $item['goodsList']['list'] = [];
                         }
                     } elseif ($item['name'] === 'articleList') {//文章
@@ -401,6 +401,7 @@ class Diy extends AuthController
         ]);
         $id = $where['id'];
         unset($where['id']);
+        $where['is_show'] = 1;
         /** @var StoreCategoryServices $storeCategoryServices */
         $storeCategoryServices = app()->make(StoreCategoryServices::class);
         if ($storeCategoryServices->value(['id' => $id], 'pid')) {

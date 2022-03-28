@@ -209,7 +209,7 @@ class Notice implements ListenerInterface
                         }
                         //模板消息小程序订阅消息
                         if ($userType == 'routine') {
-                            $RoutineTemplateList->sendOrderRefundSuccess($order['uid'], $order, $storeTitle);
+                            $RoutineTemplateList->sendOrderRefundSuccess($order['uid'], $order, $storeTitle, $datas);
                         }
                         break;
                     //退款未通过

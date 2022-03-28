@@ -105,8 +105,8 @@
 				<recommend :hostProduct='hostProduct'></recommend>
 			</view>
 			<view style='height:120rpx;color: #F5F5F5;'></view>
-			<view class='footer acea-row row-between-wrapper' :class="newData.status && newData.status.status?'':'on'"
-				v-if="cartList.valid.length > 0 && canShow">
+			<view class='footer acea-row row-between-wrapper' v-if="cartList.valid.length > 0 && canShow"
+				:class="is_diy && is_diy_set? 'on' : ''">
 				<view>
 					<checkbox-group @change="checkboxAllChange">
 						<checkbox value="all" :checked="!!isAllSelect" />
@@ -249,7 +249,8 @@
 				product_id: 0,
 				sysHeight: sysHeight,
 				newData: {},
-				activeRouter: ''
+				activeRouter: '',
+				is_diy_set: false
 			};
 		},
 		computed: mapGetters(['isLogin']),
@@ -257,6 +258,8 @@
 			if (this.is_diy) {
 				if (uni.getStorageSync('FOOTER_BAR')) {
 					uni.hideTabBar()
+				} else {
+					this.is_diy_set = true
 				}
 				getNavigation().then(res => {
 					this.newData = res.data

@@ -143,14 +143,14 @@ class RoutineTemplateListService extends NoticeService
      * @param array $order
      * @return bool
      */
-    public function sendOrderRefundSuccess($openid, $order, $storeTitle)
+    public function sendOrderRefundSuccess($openid, $order, $storeTitle, $data)
     {
         return $this->sendTemplate('ORDER_REFUND', $openid, [
             'thing1' => '已成功退款',
             'thing2' => $storeTitle,
             'amount3' => $order['pay_price'],
-            'character_string6' => $order['order_id']
-        ], '/pages/users/order_details/index?order_id=' . $order['order_id'] . '&isReturen=1');
+            'character_string6' => $data['order_id']
+        ], '/pages/users/order_details/index?order_id=' . $data['order_id'] . '&isReturen=1');
     }
 
     /**
