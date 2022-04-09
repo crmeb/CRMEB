@@ -72,8 +72,6 @@ class UserExtractController
         } else if ($extractInfo['extract_type'] == 'bank') {
             if (!$extractInfo['cardnum']) return app('json')->fail('请输入银行卡账号');
             if (!$extractInfo['bankname']) return app('json')->fail('请输入开户行信息');
-        } else if ($extractInfo['extract_type'] == 'weixin') {
-            if (!$extractInfo['weixin']) return app('json')->fail('请输入微信账号');
         }
         $uid = (int)$request->uid();
         if ($this->services->cash($uid, $extractInfo))

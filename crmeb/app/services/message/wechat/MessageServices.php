@@ -153,6 +153,7 @@ class MessageServices extends BaseServices
                 if (strtolower($qrInfo['third_type']) == 'spread') {
                     try {
                         $spreadUid = $qrInfo['third_id'];
+                        $wechatUser->saveUser($message->FromUserName);
                         $uid = $wechatUser->getFieldValue($message->FromUserName, 'openid', 'uid', ['user_type', '<>', 'h5']);
                         if ($spreadUid == $uid) return '自己不能推荐自己';
                         $userInfo = $userService->get($uid);
@@ -171,6 +172,7 @@ class MessageServices extends BaseServices
                 try {
                     $spreadUid = $qrInfo['third_id'];
                     $spreadInfo = $userService->get($spreadUid);
+                    $is_new = $wechatUser->saveUser($message->FromUserName);
                     $uid = $wechatUser->getFieldValue($message->FromUserName, 'openid', 'uid', ['user_type', '<>', 'h5']);
                     $userInfo = $userService->get($uid);
                     if ($spreadUid == $uid) {
@@ -183,7 +185,7 @@ class MessageServices extends BaseServices
                         $response = '您是事业部,不能绑定成为别人的员工';
                     } else if ($userInfo->is_agent) {
                         $response = '您是代理商,不能绑定成为别人的员工';
-                    } else if ($loginService->updateUserInfo(['code' => $spreadUid, 'is_staff' => 1], $userInfo)) {
+                    } else if ($loginService->updateUserInfo(['code' => $spreadUid, 'is_staff' => 1, ], $userInfo, $is_new)) {
                         $response = '绑定店员成功!';
                     }
                 } catch (\Exception $e) {
@@ -198,6 +200,7 @@ class MessageServices extends BaseServices
                     $qrcodeInfo = $wechatQrcodeService->qrcodeInfo($qrInfo['third_id']);
                     $spreadUid = $qrcodeInfo['uid'];
                     $spreadInfo = $userService->get($spreadUid);
+                    $is_new = $wechatUser->saveUser($message->FromUserName);
                     $uid = $wechatUser->getFieldValue($message->FromUserName, 'openid', 'uid', ['user_type', '<>', 'h5']);
                     $userInfo = $userService->get($uid);
 
@@ -209,7 +212,7 @@ class MessageServices extends BaseServices
                         $response = '用户不存在';
                     } else if (!$spreadInfo) {
                         $response = '上级用户不存在';
-                    } else if ($loginService->updateUserInfo(['code' => $spreadUid], $userInfo)) {
+                    } else if ($loginService->updateUserInfo(['code' => $spreadUid], $userInfo, $is_new)) {
                         //写入扫码记录,返回内容
                         $response = $wechatQrcodeService->wechatQrcodeRecord($qrcodeInfo, $userInfo, $spreadInfo);
                     }

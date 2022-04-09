@@ -223,7 +223,7 @@ class StoreProductDao extends BaseDao
             ->when($limit, function ($query) use ($limit) {
                 $query->limit($limit);
             })
-            ->order('sort DESC, id DESC')->select()->toArray();
+            ->order(($field == 'is_hot' ? 'sales DESC' : 'sort DESC') . ', id DESC')->select()->toArray();
 
     }
 

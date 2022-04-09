@@ -150,7 +150,7 @@ class OtherOrderController
                             return app('json')->status('pay_error', $pay);
                     }
                 case PayServices::ALIAPY_PAY:
-                    if (!$quitUrl && $from != 'routine') {
+                    if (!$quitUrl && $from != 'routine' && !request()->isApp()) {
                         return app('json')->status('pay_error', '请传入支付宝支付回调URL', $info);
                     }
                     //支付金额为0

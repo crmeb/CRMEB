@@ -14,9 +14,11 @@ return [
     // 多语言加载
     // \think\middleware\LoadLangPack::class,
     // Session初始化
-     \think\middleware\SessionInit::class,
+    \think\middleware\SessionInit::class,
     //多语言初始化
-     \think\middleware\LoadLangPack::class,
+    \think\middleware\LoadLangPack::class,
     // 页面Trace调试
     // \think\middleware\TraceDebug::class,
+    //初始化基础中间件
+    \app\http\middleware\BaseMiddleware::class,
 ];

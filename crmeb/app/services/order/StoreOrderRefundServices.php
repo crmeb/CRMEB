@@ -11,6 +11,7 @@
 namespace app\services\order;
 
 use app\dao\order\StoreOrderRefundDao;
+use app\jobs\ProductLogJob;
 use app\services\activity\advance\StoreAdvanceServices;
 use app\services\activity\bargain\StoreBargainServices;
 use app\services\activity\combination\StoreCombinationServices;
@@ -250,7 +251,8 @@ class StoreOrderRefundServices extends BaseServices
 
             return $splitOrderInfo;
         });
-
+        //订单退款记录
+        ProductLogJob::dispatch(['refund', ['uid' => $order['uid'], 'order_id' => $order['id']]]);
         //订单同意退款事件
         event('order.refund', [$refundData, $order, 'order_refund']);
         event('notice.notice', [['data' => $refundData, 'order' => $order], 'order_refund']);

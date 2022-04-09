@@ -2830,13 +2830,13 @@ export default {
       this.tabIndex = index;
 
       if (this.formValidate.virtual_type === 1) {
-        if (data.virtual_list.length) {
-          this.disk_type = 2;
-          this.virtualList = data.virtual_list;
-        } else if (data.disk_info.length) {
+        if (data.disk_info != "") {
           this.disk_type = 1;
           this.disk_info = data.disk_info;
           this.stock = data.stock;
+        } else if (data.virtual_list.length) {
+          this.disk_type = 2;
+          this.virtualList = data.virtual_list;
         }
         this.addVirtualModel = true;
       } else {
@@ -3473,19 +3473,24 @@ export default {
             // return this.$Message.warning('请点击生成规格！');
           }
           let item = this.formValidate.attrs;
+          for (let i = 0; i < item.length; i++) {
+            if (item[i].stock > 1000000) {
+              return this.$Message.error("规格库存-库存超出系统范围(1000000)");
+            }
+          }
           if (this.formValidate.is_sub[0] === 1) {
             for (let i = 0; i < item.length; i++) {
               if (
                 item[i].brokerage === null ||
                 item[i].brokerage_two === null
               ) {
-                return this.$Message.error("其他设置- 一二级返佣不能为空");
+                return this.$Message.error("营销设置- 一二级返佣不能为空");
               }
             }
           } else {
             for (let i = 0; i < item.length; i++) {
               if (item[i].vip_price === null) {
-                return this.$Message.error("其他设置-会员价不能为空");
+                return this.$Message.error("营销设置-会员价不能为空");
               }
             }
           }
@@ -3497,7 +3502,7 @@ export default {
                 item[i].vip_price === null
               ) {
                 return this.$Message.error(
-                  "其他设置- 一二级返佣和会员价不能为空"
+                  "营销设置- 一二级返佣和会员价不能为空"
                 );
               }
             }

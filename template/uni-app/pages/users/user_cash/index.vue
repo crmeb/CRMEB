@@ -47,7 +47,7 @@
 				</view>
 				<view :hidden='currentTab != 1' class='list'>
 					<form @submit="subCash">
-						<view class='item acea-row row-between-wrapper'>
+						<view class='item acea-row row-between-wrapper' v-if="!brokerageType">
 							<view class='name'>账号</view>
 							<view class='input'><input placeholder='请填写您的微信账号' placeholder-class='placeholder'
 									name="name"></input></view>
@@ -57,7 +57,7 @@
 							<view class='input'><input :placeholder='"最低提现金额"+minPrice' placeholder-class='placeholder'
 									name="money" type='digit'></input></view>
 						</view>
-						<view class='item acea-row row-top row-between'>
+						<view class='item acea-row row-top row-between' v-if="!brokerageType">
 							<view class='name'>收款码</view>
 							<view class="input acea-row">
 								<view class="picEwm" v-if="qrcodeUrlW">
@@ -161,7 +161,8 @@
 				isShowAuth: false, //是否隐藏授权
 				qrcodeUrlW: "",
 				qrcodeUrlZ: "",
-				prevent: false //避免重复提交成功多次
+				prevent: false, //避免重复提交成功多次
+				brokerageType: 0 // 佣金到账方式
 			};
 		},
 		computed: mapGetters(['isLogin']),
@@ -230,6 +231,7 @@
 					array.unshift("请选择银行");
 					that.$set(that, 'array', array);
 					that.minPrice = res.data.minPrice;
+					that.brokerageType = res.data.brokerageType ? parseInt(res.data.brokerageType) : 0;
 				});
 			},
 			/**
@@ -289,7 +291,9 @@
 					value.bankname = that.array[that.index];
 				} else if (that.currentTab == 1) { //微信
 					value.extract_type = 'weixin';
-					if (!value.name.trim()) return this.$util.Tips({
+					
+					// 自动提现隐藏账号
+					if (!that.brokerageType && !value.name.trim()) return this.$util.Tips({
 						title: '请填写微信号'
 					});
 					value.weixin = value.name;

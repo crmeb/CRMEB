@@ -399,6 +399,7 @@ class LoginServices extends BaseServices
         }
         $data = [];
         $data['phone'] = $phone;
+        $data['account'] = $phone;
         if ($this->dao->update($userInfo['uid'], $data, 'uid'))
             return ['msg' => '修改成功', 'data' => []];
         else

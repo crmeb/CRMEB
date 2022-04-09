@@ -1,1 +1,1 @@
-<block wx:if="{{isDiy}}"><diy vue-id="8dd740cc-1" bind:__l="__l"></diy></block><block wx:else><visualization vue-id="8dd740cc-2" bind:__l="__l"></visualization></block>
+<block wx:if="{{isDiy}}"><diy class="vue-ref" vue-id="8dd740cc-1" data-ref="diy" bind:__l="__l"></diy></block><block wx:else><visualization vue-id="8dd740cc-2" bind:__l="__l"></visualization></block>

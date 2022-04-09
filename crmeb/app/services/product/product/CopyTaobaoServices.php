@@ -229,6 +229,7 @@ class CopyTaobaoServices extends BaseServices
         $description = preg_replace('#<style>.*?</style>#is', '', $description);
         $description = $this->uploadImage([], $description, 1, $AttachmentCategory['id']);
         $storeDescriptionServices->saveDescription((int)$id, $description);
+        return true;
     }
 
     /**
@@ -278,6 +279,7 @@ class CopyTaobaoServices extends BaseServices
         $slider_images = $slider_images ? json_encode($slider_images) : '';
         $StoreProductServices->update($id, ['slider_image' => $slider_images, 'image' => $image]);
         $StoreProductAttrValueServices->update(['product_id' => $id], ['image' => $image]);
+        return true;
     }
 
 //    /**

@@ -270,7 +270,7 @@ class SystemAttachmentServices extends BaseServices
             if (file_exists($all_dir . '/' . $data['filename'])) {
                 $res['code'] = 2;
                 $res['msg'] = 'success';
-                $res['file_path'] = $dir . '/' . $data['filename'];
+                $res['file_path'] = sys_config('site_url') . $dir . '/' . $data['filename'];
             }
         } else {
             if (file_exists($all_dir . '/' . $data['filename'] . '__' . $data['chunkNumber'])) {

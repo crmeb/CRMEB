@@ -1,0 +1,13 @@
+/.git
+/.idea
+/crmeb/.constant
+/crmeb/runtime
+/crmeb/public/uploads
+*.log
+/crmeb/public/install/install.lock
+/crmeb/.env
+/crmeb/timer.pid
+/crmeb/workerman.pid
+/docker-compose/mysql/data/
+/docker-compose/mysql/log/
+/docker-compose/nginx/log/

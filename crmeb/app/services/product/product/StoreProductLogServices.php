@@ -16,6 +16,7 @@ use app\dao\product\product\StoreProductLogDao;
 use app\services\order\StoreOrderCartInfoServices;
 use app\services\BaseServices;
 use think\exception\ValidateException;
+use think\facade\Log;
 
 /**
  * 商品访问记录日志
@@ -42,7 +43,7 @@ class StoreProductLogServices extends BaseServices
      */
     public function createLog(string $type, array $data)
     {
-        if (!in_array($type, ['order', 'pay']) && (!isset($data['product_id']) || !$data['product_id'])) {
+        if (!in_array($type, ['order', 'pay', 'refund']) && (!isset($data['product_id']) || !$data['product_id'])) {
             throw new ValidateException('缺少商品ID');
         }
         if ($type != 'visit' && (!isset($data['uid']) || !$data['uid'])) {
@@ -95,6 +96,21 @@ class StoreProductLogServices extends BaseServices
                 }
                 break;
             case 'refund'://退款
+                if (!isset($data['order_id']) || !$data['order_id']) {
+                    throw new ValidateException('缺少订单ID');
+                }
+                /** @var StoreOrderCartInfoServices $cartInfoServices */
+                $cartInfoServices = app()->make(StoreOrderCartInfoServices::class);
+                $cartInfo = $cartInfoServices->getOrderCartInfo($data['order_id']);
+                foreach ($cartInfo as $value) {
+                    $product = $value['cart_info'];
+                    $log_data['product_id'] = $product['product_id'] ?? 0;
+                    $log_data['uid'] = $data['uid'] ?? 0;
+                    $log_data['pay_uid'] = $data['uid'] ?? 0;
+                    $log_data['refund_num'] = $product['cart_num'] ?? 0;
+                    $log_data['refund_price'] = $product['truePrice'] ?? 0;
+                    $log_data_all[] = $log_data;
+                }
                 break;
             default:
                 throw new ValidateException('暂不支持该类型记录');

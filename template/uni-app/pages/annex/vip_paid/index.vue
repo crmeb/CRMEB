@@ -170,14 +170,17 @@
 						value: 'weixin',
 						title: '微信快捷支付',
 						payStatus: true
-					},
+					}
+					// #ifdef H5 ||APP-PLUS
+					,
 					{
 						name: '支付宝支付',
 						icon: 'icon-zhifubao',
 						value: 'alipay',
 						title: '支付宝支付',
 						payStatus: true
-					}
+					},
+					// #endif
 				],
 				pay_close: false,
 				totalPrice: '0',
@@ -330,7 +333,9 @@
 						pay_weixin_open
 					} = res.data;
 					this.payMode[0].payStatus = pay_weixin_open === 1 ? true : false;
-					this.payMode[1].payStatus = ali_pay_status == 1 ? true : false;
+					// #ifdef APP-PLUS || H5
+					this.payMode[1].payStatus = !!ali_pay_status;
+					// #endif
 					//#ifdef MP
 					this.payMode[1].payStatus = false;
 					//#endif
@@ -409,6 +414,9 @@
 					// #endif
 					// #ifdef MP
 					from: 'routine',
+					// #endif
+					// #ifdef APP-PLUS
+					from: 'weixin',
 					// #endif
 					member_type: this.svip.type,
 					mc_id: this.mc_id,
@@ -520,7 +528,7 @@
 							}
 						});
 						// #endif
-						// #ifndef MP
+						// #ifdef H5
 						this.$wechat.pay(result.jsConfig).then(res => {
 							this.$util.Tips({
 								title: '支付成功',
@@ -536,6 +544,31 @@
 									icon: 'none'
 								});
 							}
+						});
+						// #endif
+						// #ifdef APP-PLUS
+						uni.requestPayment({
+							provider: 'wxpay',
+							orderInfo: jsConfig,
+							success: (e) => {
+
+								uni.showToast({
+									title: "支付成功"
+								})
+								setTimeout(res => {
+									uni.navigateBack()
+								}, 2000)
+							},
+							fail: (e) => {
+								uni.showToast({
+									title: "支付失败",
+									icon: 'none',
+									duration: 2000
+								})
+							},
+							complete: () => {
+								uni.hideLoading();
+							},
 						});
 						// #endif
 						break;
@@ -565,6 +598,35 @@
 						// #ifdef MP
 						uni.navigateTo({
 							url: `/pages/users/alipay_invoke/index?id=${data.data.result.order_id}&link=${jsConfig.qrCode}&from=member`
+						});
+						// #endif
+						// #ifdef APP-PLUS
+						uni.requestPayment({
+							provider: 'alipay',
+							orderInfo: jsConfig,
+							success: (e) => {
+								uni.showToast({
+									title: "支付成功"
+								})
+								setTimeout(res => {
+									uni.navigateBack()
+								}, 2000)
+
+							},
+							fail: (e) => {
+								uni.showModal({
+									content: "支付失败",
+									showCancel: false,
+									success: function(res) {
+										if (res.confirm) {
+
+										} else if (res.cancel) {}
+									}
+								})
+							},
+							complete: () => {
+								uni.hideLoading();
+							},
 						});
 						// #endif
 						break;

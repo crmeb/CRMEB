@@ -746,6 +746,8 @@ export default {
           writeUpdate(row.order_id).then((res) => {
             self.$Message.success(res.msg);
             self.getList();
+          }).catch((res) => {
+            self.$Message.error(res.msg);
           });
         },
       });

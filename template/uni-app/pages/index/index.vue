@@ -1,17 +1,19 @@
 <template>
-	<diy v-if="isDiy"></diy>
+	<diy ref="diy" v-if="isDiy"></diy>
 	<visualization v-else></visualization>
 </template>
 
 <script>
 	import diy from './diy'
 	import visualization from './visualization'
-	import {getShare} from "@/api/public.js";
+	import {
+		getShare
+	} from "@/api/public.js";
 	export default {
 		data() {
 			return {
 				isDiy: uni.getStorageSync('is_diy'),
-				shareInfo:{}
+				shareInfo: {}
 			}
 		},
 		components: {
@@ -57,6 +59,11 @@
 					// #endif
 				});
 			},
+		},
+		onReachBottom: function() {
+			if (this.isDiy) {
+				this.$refs.diy.onsollBotton()
+			}
 		},
 		// #ifdef MP
 		//发送给朋友

@@ -75,7 +75,7 @@ class StoreProductAttrServices extends BaseServices
             $productVirtual = app()->make(StoreProductVirtualServices::class);
             foreach ($data['valueGroup'] as &$item) {
                 $res = $storeProductAttrValueServices->save($item);
-                if ($item['is_virtual'] && count($item['virtual_list']) && !$item['coupon_id']) {
+                if ($item['is_virtual'] && (count($item['virtual_list']) || $item['disk_info'] != '') && !$item['coupon_id']) {
                     $productVirtual->delete(['product_id' => $id, 'attr_unique' => $item['unique'], 'uid' => 0]);
                     $data = [];
                     foreach ($item['virtual_list'] as &$items) {

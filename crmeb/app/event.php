@@ -19,7 +19,7 @@ return [
     'listen' => [
         'AppInit' => [],
         'HttpRun' => [],
-        'HttpEnd' => [],
+        'HttpEnd' => [\app\listener\http\HttpEnd::class], //HTTP请求结束回调事件
         'LogLevel' => [],
         'LogWrite' => [],
         'StoreProductOrderDeliveryAfter' => [], // OrderSubscribe 送货 发送模板消息 admin模块 order.StoreOrder控制器/order.combinationOrder控制器

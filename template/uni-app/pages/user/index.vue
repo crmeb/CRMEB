@@ -1026,6 +1026,7 @@
 							.avatar {
 								border: 2px solid #FFAC65;
 								border-radius: 50%;
+								box-sizing: border-box;
 							}
 						}
 					}

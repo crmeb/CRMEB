@@ -402,39 +402,6 @@
 				}
 			} catch (e) {}
 			// #endif
-			// const {
-			// 	state,
-			// 	scope
-			// } = options;
-			// #ifndef H5
-			uni.getLocation({
-				type: 'wgs84',
-				success: function(res) {
-					try {
-						uni.setStorageSync('user_latitude', res.latitude);
-						uni.setStorageSync('user_longitude', res.longitude);
-					} catch {}
-				}
-			});
-			// #endif
-			// #ifdef H5
-			if (this.$wechat.isWeixin()) {
-				this.$wechat.location().then(res => {
-					uni.setStorageSync('user_latitude', res.latitude);
-					uni.setStorageSync('user_longitude', res.longitude);
-				})
-			} else {
-				uni.getLocation({
-					type: 'wgs84',
-					success: function(res) {
-						try {
-							uni.setStorageSync('user_latitude', res.latitude);
-							uni.setStorageSync('user_longitude', res.longitude);
-						} catch {}
-					}
-				});
-			}
-			// #endif
 			this.diyData();
 			this.getIndexData();
 			// #ifdef MP
@@ -799,7 +766,7 @@
 					uni.stopPullDownRefresh({
 						success: (e) => {},
 					});
-					
+
 				}).catch(error => {
 					// #ifdef APP-PLUS
 					if (error.status) {
@@ -888,13 +855,18 @@
 					});
 				});
 			},
-		},
-		onReachBottom: function() {
-			if (this.isSortType == 0) {
-				// this.getGroomList();
-			} else {
-				this.getGoodsList();
+			onsollBotton() {
+				console.log('????', this.isSortType)
+				if (this.isSortType == 0) {
+					// this.getGroomList();
+				} else {
+					this.getGoodsList();
+				}
 			}
+		},
+
+		onReachBottom: function() {
+
 		},
 		onPageScroll(e) {
 			// #ifdef H5

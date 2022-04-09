@@ -1,41 +1,30 @@
 <?php
 
-include 'auto.php';
-if (IS_SAE)
-    header("Location: index_sae.php");
+//最低php版本要求
+define('PHP_EDITION','7.1.0');
+//服务环境检测
+if (function_exists('saeAutoLoader') || isset($_SERVER['HTTP_BAE_ENV_APPID']))
+    showHtml('对不起，当前环境不支持本系统，请使用独立服务或云主机！');
 
 define('APP_DIR', _dir_path(substr(dirname(__FILE__), 0, -15)));//项目目录
 define('SITE_DIR', _dir_path(substr(dirname(__FILE__), 0, -8)));//入口文件目录
 
 if (file_exists('./install.lock')) {
-    echo '
-		<html>
-        <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-        </head>
-        <body>
-        	你已经安装过该系统，如果想重新安装，请先删除install目录下的 install.lock 文件，然后再安装。
-        </body>
-        </html>';
-    exit;
+    showHtml('你已经安装过该系统，如果想重新安装，请先删除install目录下的 install.lock 文件，然后再安装。');
 }
 @set_time_limit(1000);
 
 if (PHP_EDITION > phpversion()) {
-    header("Content-type:text/html;charset=utf-8");
-    exit('您的php版本过低，不能安装本软件，请升级到' . PHP_EDITION . '或更高版本再安装，谢谢！');
+    showHtml('您的php版本过低，不能安装本软件，请升级到' . PHP_EDITION . '或更高版本再安装，谢谢！');
 }
 if (phpversion() > '8.0') {
-    header("Content-type:text/html;charset=utf-8");
-    exit('您的php版本太高，不能安装本软件，兼容php版本7.1~7.4，谢谢！');
+    showHtml('您的php版本太高，不能安装本软件，兼容php版本7.1~7.4，谢谢！');
 }
 define("CRMEB_VERSION", '20180601');
 date_default_timezone_set('PRC');
 error_reporting(E_ALL & ~E_NOTICE);
 header('Content-Type: text/html; charset=UTF-8');
-//define('SITEDIR2', substr(SITEDIR,0,-7));
-//echo SITEDIR;
-//exit;SITE_DIR
+
 //数据库
 $sqlFile = 'crmeb.sql';
 $configFile = '.env';
@@ -99,7 +88,7 @@ switch ($step) {
         if (extension_loaded('redis')) {
             $redis = '<span class="correct_span">&radic;</span> 已安装';
         } else {
-            $redis = '<a href="http://help.crmeb.net/crmebpro/1707557" target="_blank"><span class="correct_span error_span">&radic;</span> 点击查看帮助</a>';
+            $redis = '<a href="https://doc.crmeb.com/web/single/crmeb_v4/913" target="_blank"><span class="correct_span error_span">&radic;</span> 点击查看帮助</a>';
             $err++;
         }
 
@@ -143,7 +132,7 @@ switch ($step) {
         if (function_exists('finfo_open')) {
             $finfo_open = '<span class="correct_span">&radic;</span> 启用';
         } else {
-            $finfo_open = '<a href="http://help.crmeb.net/crmebpro/1707557" target="_blank"><span class="correct_span error_span">&radic;</span>点击查看帮助</a>';
+            $finfo_open = '<a href="https://doc.crmeb.com/web/single/crmeb_v4/913" target="_blank"><span class="correct_span error_span">&radic;</span>点击查看帮助</a>';
             $err++;
         }
 
@@ -214,24 +203,53 @@ switch ($step) {
     case '3':
         $dbName = strtolower(trim($_POST['dbName']));
         $_POST['dbport'] = $_POST['dbport'] ?: '3306';
-        if ($_GET['testdbpwd']) {
+        if ($_GET['mysqldbpwd']) {
             $dbHost = $_POST['dbHost'];
             $conn = @mysqli_connect($dbHost, $_POST['dbUser'], $_POST['dbPwd'], NULL, $_POST['dbport']);
-            if (mysqli_connect_errno($conn)) {
-                die(json_encode(0));
+//            var_dump(mysqli_connect_errno($conn));
+            if ($error = mysqli_connect_errno($conn)) {
+                if($error == 2002) {
+                    die(json_encode(2002));//地址或端口错误
+                } else if($error == 1045) {
+                    die(json_encode(1045));//用户名或密码错误
+                } else {
+                    die(json_encode(-1));//链接失败
+                }
             } else {
+
                 $result = mysqli_query($conn, "SELECT @@global.sql_mode");
                 $result = $result->fetch_array();
                 $version = mysqli_get_server_info($conn);
                 if ($version >= 5.7) {
                     if (strstr($result[0], 'STRICT_TRANS_TABLES') || strstr($result[0], 'STRICT_ALL_TABLES') || strstr($result[0], 'TRADITIONAL') || strstr($result[0], 'ANSI'))
-                        exit(json_encode(-4));
+                        exit(json_encode(-2));//数据库配置需要修改
                 }
                 $result = mysqli_query($conn, "select count(table_name) as c from information_schema.`TABLES` where table_schema='$dbName'");
                 $result = $result->fetch_array();
-                if ($result['c'] > 0)
-                    exit(json_encode(-2));
+                if ($result['c'] > 0) {
+                    mysqli_close($conn);
+                    exit(json_encode(-3));//数据库存在
+                } else {
+                    if (!mysqli_select_db($conn, $dbName)) {
+                        //创建数据时同时设置编码
+                        if (!mysqli_query($conn, "CREATE DATABASE IF NOT EXISTS `" . $dbName . "` DEFAULT CHARACTER SET utf8;")) {
+                            exit(json_encode(-4));//无权限创建数据库
+                        } else {
+                            mysqli_query($conn, "DROP DATABASE `" . $dbName . "` ;");
+                            mysqli_close($conn);
+                            exit(json_encode(1));//数据库配置成功
+                        }
+                    } else {
+                        mysqli_close($conn);
+                        exit(json_encode(1));//数据库配置成功
+                    }
+
+                }
+
+
             }
+        }
+        if ($_GET['redisdbpwd']) {
 
             //redis数据库信息
             $rbhost = $_POST['rbhost'] ?? '127.0.0.1';
@@ -261,8 +279,6 @@ switch ($step) {
                 exit(json_encode(-3));
             }
         }
-
-
         include_once("./templates/step3.php");
         exit();
 
@@ -282,40 +298,35 @@ switch ($step) {
             $dbPrefix = empty($_POST['dbprefix']) ? 'eb_' : trim($_POST['dbprefix']);
 
             $username = trim($_POST['manager']);
-            $password = trim($_POST['manager_pwd']);
+            $password = trim($_POST['manager_pwd']) ?:'crmeb.com';
             $email = trim($_POST['manager_email']);
 
             if (!function_exists('mysqli_connect')) {
                 $arr['msg'] = "请安装 mysqli 扩展!";
-                echo json_encode($arr);
-                exit;
+                exit(json_encode($arr));
             }
             $conn = @mysqli_connect($dbHost, $dbUser, $dbPwd, NULL, $_POST['dbport']);
             if (mysqli_connect_errno($conn)) {
                 $arr['msg'] = "连接数据库失败!" . mysqli_connect_error($conn);
-                echo json_encode($arr);
-                exit;
+                exit(json_encode($arr));
             }
             mysqli_set_charset($conn, "utf8"); //,character_set_client=binary,sql_mode='';
             $version = mysqli_get_server_info($conn);
             if ($version < 5.1) {
                 $arr['msg'] = '数据库版本太低! 必须5.1以上';
-                echo json_encode($arr);
-                exit;
+                exit(json_encode($arr));
             }
 
             if (!mysqli_select_db($conn, $dbName)) {
                 //创建数据时同时设置编码
                 if (!mysqli_query($conn, "CREATE DATABASE IF NOT EXISTS `" . $dbName . "` DEFAULT CHARACTER SET utf8;")) {
                     $arr['msg'] = '数据库 ' . $dbName . ' 不存在，也没权限创建新的数据库！';
-                    echo json_encode($arr);
-                    exit;
+                    exit(json_encode($arr));
                 }
                 if ($n == -1) {
                     $arr['n'] = 0;
                     $arr['msg'] = "成功创建数据库:{$dbName}<br>";
-                    echo json_encode($arr);
-                    exit;
+                    exit(json_encode($arr));
                 }
                 mysqli_select_db($conn, $dbName);
             }
@@ -344,8 +355,7 @@ switch ($step) {
                     }
                     $i++;
                     $arr = array('n' => $i, 'msg' => $message);
-                    echo json_encode($arr);
-                    exit;
+                    exit(json_encode($arr));
                 } else {
                     if (trim($sql) == '')
                         continue;
@@ -448,13 +458,11 @@ switch ($step) {
             if ($res) {
                 $message = '成功添加管理员<br />成功写入配置文件<br>安装完成．';
                 $arr = array('n' => 999999, 'msg' => $message);
-                echo json_encode($arr);
-                exit;
+                exit(json_encode($arr));
             } else {
                 $message = '添加管理员失败<br />成功写入配置文件<br>安装完成．';
                 $arr = array('n' => 999999, 'msg' => $message);
-                echo json_encode($arr);
-                exit;
+                exit(json_encode($arr));
             }
 
         }
@@ -661,5 +669,17 @@ function delFile($dir, $file_type = '')
         if (file_exists($dir)) unlink($dir);
     }
 }
-
+//错误提示方法
+function showHtml($str) {
+    echo '
+		<html>
+        <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        </head>
+        <body>
+        '.$str.'
+        </body>
+        </html>';
+    exit;
+}
 ?>

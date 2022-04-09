@@ -179,15 +179,44 @@ class UserExtractServices extends BaseServices
                 $order_id = '';
                 break;
         }
+
+        $insertData = ['order_id' => $order_id, 'nickname' => $nickname, 'phone' => $phone];
+
+        $openid = $wechatServices->getWechatOpenid($userExtract['uid'], 'wechat');
+
+        //自动提现到零钱
+        if ($userExtract['extract_type'] == 'weixin' && sys_config('brokerage_type', 0) && $openid) {
+
+            /** @var StoreOrderCreateServices $services */
+            $services = app()->make(StoreOrderCreateServices::class);
+            $insertData['order_id'] = $services->getNewOrderId();
+
+            // 微信提现
+            $res = WechatService::merchantPay($openid, $insertData['order_id'], $userExtract['extract_price'], '提现佣金到零钱');
+            if (!$res) {
+                throw new ValidateException('企业付款到零钱失败，请稍后再试');
+            }
+
+            // 更新 提现申请记录 wechat_order_id
+            $this->dao->update($id, ['wechat_order_id' => $insertData['order_id']]);
+
+            /** @var UserServices $userService */
+            $userService = app()->make(UserServices::class);
+            $user = $userService->getUserInfo($userExtract['uid']);
+
+            $insertData['nickname'] = $user['nickname'];
+            $insertData['phone'] = $user['phone'];
+        }
+
         /** @var CapitalFlowServices $capitalFlowServices */
         $capitalFlowServices = app()->make(CapitalFlowServices::class);
         $capitalFlowServices->setFlow([
-            'order_id' => $order_id,
+            'order_id' => $insertData['order_id'],
             'uid' => $userExtract['uid'],
             'price' => bcmul('-1', $extractNumber, 2),
             'pay_type' => $userExtract['extract_type'],
-            'nickname' => $nickname,
-            'phone' => $phone
+            'nickname' => $insertData['nickname'],
+            'phone' => $insertData['phone']
         ], 'extract');
         return true;
     }
@@ -336,6 +365,7 @@ class UserExtractServices extends BaseServices
         $extractBank = str_replace("\r\n", "\n", $extractBank);//防止不兼容
         $data['extractBank'] = explode("\n", is_array($extractBank) ? ($extractBank[0] ?? $extractBank) : $extractBank);
         $data['minPrice'] = sys_config('user_extract_min_price');//提现最低金额
+        $data['brokerageType'] = sys_config('brokerage_type', 0);//到账方式
         return $data;
     }
 
@@ -352,8 +382,10 @@ class UserExtractServices extends BaseServices
         if (!$user) {
             throw new ValidateException('数据不存在');
         }
-        /** @var UserBillServices $userBill */
-        $userBill = app()->make(UserBillServices::class);
+
+        if ($data['extract_type'] == 'weixin' && !sys_config('brokerage_type', 0) && !$data['weixin']) {
+            throw new ValidateException('请输入微信账号');
+        }
 
         /** @var UserBrokerageServices $services */
         $services = app()->make(UserBrokerageServices::class);
@@ -412,16 +444,12 @@ class UserExtractServices extends BaseServices
             $wechatServices = app()->make(WechatUserServices::class);
             $openid = $wechatServices->getWechatOpenid($uid, 'wechat');
             if (sys_config('brokerage_type', 0) && $openid) {
-                $insertData['status'] = 1;
-                /** @var StoreOrderCreateServices $services */
-                $services = app()->make(StoreOrderCreateServices::class);
-                $insertData['wechat_order_id'] = $services->getNewOrderId();
                 if ($data['money'] < 1) {
                     throw new ValidateException('企业微信付款到零钱最低金额为1元');
                 }
             }
         }
-        $res1 = $this->transaction(function () use ($insertData, $data, $uid, $userService, $user, $mark, $openid) {
+        $res1 = $this->transaction(function () use ($insertData, $data, $uid, $userService, $user, $mark) {
             if (!$res1 = $this->dao->save($insertData)) {
                 throw new ValidateException('提现失败');
             }

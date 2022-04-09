@@ -79,7 +79,7 @@ class ApiErrorCode
         40060 => 'when deleting a single text, the specified article_ Illegal idx',
         40051 => 'illegal group name',
         40050 => 'illegal group ID',
-        40040 => 'invalid URL',
+        40048 => 'invalid URL',
         40039 => 'illegal URL length',
         40038 => 'illegal request format',
         40035 => 'illegal parameter',
