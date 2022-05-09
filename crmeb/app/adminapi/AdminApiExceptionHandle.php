@@ -12,6 +12,7 @@
 namespace app\adminapi;
 
 
+use app\exceptions\CommonException;
 use crmeb\exceptions\AdminException;
 use crmeb\exceptions\ApiException;
 use crmeb\exceptions\AuthException;
@@ -34,6 +35,7 @@ class AdminApiExceptionHandle extends Handle
         AuthException::class,
         AdminException::class,
         ApiException::class,
+        CommonException::class,
     ];
 
     /**
@@ -86,7 +88,7 @@ class AdminApiExceptionHandle extends Handle
         // 添加自定义异常处理机制
         if ($e instanceof DbException) {
             return app('json')->fail('数据获取失败', $massageData);
-        } elseif ($e instanceof AuthException || $e instanceof ValidateException || $e instanceof ApiException) {
+        } elseif ($e instanceof AuthException || $e instanceof ValidateException || $e instanceof ApiException || $e instanceof CommonException) {
             return app('json')->make($e->getCode() ? : 400, $e->getMessage());
         } elseif ($e instanceof AdminException) {
             return app('json')->fail($e->getMessage(), $massageData);

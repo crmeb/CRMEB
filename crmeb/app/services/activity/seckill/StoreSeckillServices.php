@@ -364,19 +364,17 @@ class StoreSeckillServices extends BaseServices
     {
         /** @var StoreProductAttrValueServices $storeProductAttrValueServices */
         $storeProductAttrValueServices = app()->make(StoreProductAttrValueServices::class);
-        $value = attr_format($attr)[1];
+        list($value, $head) = attr_format($attr);
         $valueNew = [];
         $count = 0;
-        foreach ($value as $key => $item) {
-            $detail = $item['detail'];
-//            sort($item['detail'], SORT_STRING);
-            $suk = implode(',', $item['detail']);
+        foreach ($value as $suk) {
+            $detail = explode(',', $suk);
             $sukValue = $storeProductAttrValueServices->getColumn(['product_id' => $id, 'type' => $type, 'suk' => $suk], 'bar_code,cost,price,ot_price,stock,image as pic,weight,volume,brokerage,brokerage_two,quota', 'suk');
             if (count($sukValue)) {
-                foreach (array_values($detail) as $k => $v) {
+                foreach ($detail as $k => $v) {
                     $valueNew[$count]['value' . ($k + 1)] = $v;
                 }
-                $valueNew[$count]['detail'] = json_encode($detail);
+                $valueNew[$count]['detail'] = json_encode(array_combine($head, $detail));
                 $valueNew[$count]['pic'] = $sukValue[$suk]['pic'] ?? '';
                 $valueNew[$count]['price'] = $sukValue[$suk]['price'] ? floatval($sukValue[$suk]['price']) : 0;
                 $valueNew[$count]['cost'] = $sukValue[$suk]['cost'] ? floatval($sukValue[$suk]['cost']) : 0;

@@ -23,8 +23,8 @@
 			<image src="/static/images/line.jpg" />
 		</view>
 		<view class="pos-order-goods">
-			<navigator :url="`/pages/goods_details/index?id=${item.productInfo.id}`" hover-class="none" class="goods acea-row row-between-wrapper"
-			 v-for="(item, index) in orderInfo.cartInfo" :key="index">
+			<navigator :url="`/pages/goods_details/index?id=${item.productInfo.id}`" hover-class="none"
+				class="goods acea-row row-between-wrapper" v-for="(item, index) in orderInfo.cartInfo" :key="index">
 				<view class="picTxt acea-row row-between-wrapper">
 					<view class="pictrue">
 						<image :src="item.productInfo.image" />
@@ -75,6 +75,18 @@
 			<view class="item acea-row row-between">
 				<view>买家留言：</view>
 				<view class="conter">{{ orderInfo.mark }}</view>
+			</view>
+		</view>
+		<view class='wrapper' v-if="customForm && customForm.length">
+			<view class='item acea-row row-between' v-for="(item,index) in customForm" :key="index">
+				<view class='upload' v-if="item.label == 'img'">
+					<view>{{item.title}}：</view>
+					<view class='pictrue' v-for="(img,index) in item.value" :key="index">
+						<image :src='img'></image>
+					</view>
+				</view>
+				<view v-if="item.label !== 'img'">{{item.title}}：</view>
+				<view v-if="item.label !== 'img'" class='conter'>{{item.value}}</view>
 			</view>
 		</view>
 		<view class="wrapper">
@@ -143,7 +155,8 @@
 				payType: "",
 				types: "",
 				clickNum: 1,
-				goname: ''
+				goname: '',
+				customForm: []
 			};
 		},
 		watch: {
@@ -170,6 +183,15 @@
 						that.types = res.data._status._type;
 						that.title = res.data._status._title;
 						that.payType = res.data._status._payType;
+						if (that.orderInfo.custom_form && that.orderInfo.custom_form.length) {
+							let arr = []
+							that.orderInfo.custom_form.map(i => {
+								if (i.value != '') {
+									arr.push(i)
+								}
+							})
+							that.$set(that, 'customForm', arr);
+						}
 					},
 					err => {
 						that.$util.Tips({
@@ -578,5 +600,18 @@
 
 	.public-total .money {
 		color: #ff4c3c;
+	}
+
+	.upload .pictrue {
+		display: inline-block;
+		margin: 22rpx 17rpx 20rpx 0;
+		width: 156rpx;
+		height: 156rpx;
+		color: #bbb;
+	}
+
+	.upload .pictrue image {
+		width: 100%;
+		height: 100%;
 	}
 </style>

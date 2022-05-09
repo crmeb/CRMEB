@@ -18,7 +18,7 @@
 			<swiper-item v-if="videoline">
 				<view class="item">
 					<view v-show="!controls" style="width:100%;height:100% ">
-						<video id="myVideo" :src='videoline' objectFit="cover" controls style="width:100%;height:100% "
+						<video id="myVideo" :src='videoline' objectFit="contain" controls style="width:100%;height:100% "
 						 show-center-play-btn show-mute-btn="true" auto-pause-if-navigate :custom-cache="false" :enable-progress-gesture="false" :poster="imgUrls[0]" @pause="videoPause"></video>
 					</view>
 					<view class="poster" v-show="controls">

@@ -16,7 +16,6 @@ use think\Response;
 Route::any('wechat/serve', 'v1.wechat.WechatController/serve');//公众号服务
 Route::any('wechat/notify', 'v1.wechat.WechatController/notify');//公众号支付回调
 Route::any('routine/notify', 'v1.wechat.AuthController/notify');//小程序支付回调
-
 Route::any('pay/notify/:type', 'v1.PayController/notify');//支付回调
 Route::get('get_script', 'v1.PublicController/getScript');//获取统计代码
 
@@ -182,6 +181,7 @@ Route::group(function () {
     Route::get('integral/list', 'v1.user.UserBillController/integral_list')->name('integralList');//积分记录
     Route::get('user/routine_code', 'v1.user.UserBillController/getRoutineCode')->name('getRoutineCode');//小程序二维码
     Route::get('user/spread_info', 'v1.user.UserBillController/getSpreadInfo')->name('getSpreadInfo');//获取分销背景等信息
+    Route::post('division/order', 'v1.user.UserBillController/divisionOrder')->name('divisionOrder');//事业部推广订单
     //提现类
     Route::get('extract/bank', 'v1.user.UserExtractController/bank')->name('extractBank');//提现银行/提现最低金额
     Route::post('extract/cash', 'v1.user.UserExtractController/cash')->name('extractCash');//提现申请
@@ -252,6 +252,11 @@ Route::group(function () {
     Route::get('agent/get_staff_list', 'v1.user.DivisionController/getStaffList')->name('getStaffList');//员工列表
     Route::post('agent/set_staff_percent', 'v1.user.DivisionController/setStaffPercent')->name('setStaffPercent');//设置员工分佣比例
     Route::get('agent/del_staff/:uid', 'v1.user.DivisionController/delStaff')->name('delStaff');//删除员工
+
+    /** 用户注销 */
+
+    Route::get('user_cancel', 'v1.user.UserController/SetUserCancel')->name('SetUserCancel');//用户注销
+
 
 })->middleware(\app\http\middleware\AllowOriginMiddleware::class)->middleware(\app\api\middleware\StationOpenMiddleware::class)->middleware(\app\api\middleware\AuthTokenMiddleware::class, true);
 //未授权接口
@@ -360,6 +365,7 @@ Route::group(function () {
     Route::get('get_open_adv', 'v1.PublicController/getOpenAdv')->name('getOpenAdv');
     //获取用户协议
     Route::get('user_agreement', 'v1.PublicController/getUserAgreement')->name('getUserAgreement');
+    Route::get('get_agreement/:type', 'v1.PublicController/getAgreement')->name('getAgreement');
 })->middleware(\app\http\middleware\AllowOriginMiddleware::class)->middleware(\app\api\middleware\StationOpenMiddleware::class)->middleware(\app\api\middleware\AuthTokenMiddleware::class, false);
 
 Route::miss(function () {

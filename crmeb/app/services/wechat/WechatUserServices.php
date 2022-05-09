@@ -203,7 +203,7 @@ class WechatUserServices extends BaseServices
     {
         $user = [];
         //兼容老用户
-        $uids = $this->dao->getColumn(['unionid|openid' => $openid], 'uid,user_type', 'user_type');
+        $uids = $this->dao->getColumn(['unionid|openid' => $openid, 'is_del' => 0], 'uid,user_type', 'user_type');
         if ($uids) {
             $uid = $uids[$user_type]['uid'] ?? 0;
             if (!$uid) {
@@ -303,13 +303,13 @@ class WechatUserServices extends BaseServices
         $userInfo = [];
         $uid = 0;
         if (isset($wechatInfo['phone']) && $wechatInfo['phone']) {
-            $userInfo = $userServices->getOne(['phone' => $wechatInfo['phone']]);
+            $userInfo = $userServices->getOne(['phone' => $wechatInfo['phone'], 'is_del' => 0]);
         }
         if (!$userInfo) {
             if (isset($wechatInfo['unionid']) && $wechatInfo['unionid']) {
-                $uid = $this->dao->value(['unionid' => $wechatInfo['unionid']], 'uid');
+                $uid = $this->dao->value(['unionid' => $wechatInfo['unionid'], 'is_del' => 0], 'uid');
                 if ($uid) {
-                    $userInfo = $userServices->getOne(['uid' => $uid]);
+                    $userInfo = $userServices->getOne(['uid' => $uid, 'is_del' => 0]);
                 }
             } else {
                 $userInfo = $this->getAuthUserInfo($openid, $userType);
@@ -323,7 +323,7 @@ class WechatUserServices extends BaseServices
         if ($userInfo) {
             //更新用户表和wechat_user表
             //判断该类性用户在wechatUser中是否存在
-            $wechatUser = $this->dao->getOne(['uid' => $uid, 'user_type' => $userType]);
+            $wechatUser = $this->dao->getOne(['uid' => $uid, 'user_type' => $userType, 'is_del' => 0]);
             /** @var LoginServices $loginService */
             $loginService = app()->make(LoginServices::class);
             $this->transaction(function () use ($loginService, $wechatInfo, $userInfo, $uid, $userType, $spreadId, $wechatUser) {
@@ -409,5 +409,17 @@ class WechatUserServices extends BaseServices
             }
         }
         return $noBeOpenids;
+    }
+
+    /**
+     * 用户关注
+     * @param $openid
+     * @return bool
+     */
+    public function subscribe($openid): bool
+    {
+        if (!$this->dao->update($openid, ['subscribe' => 1, 'subscribe_time' => time()], 'openid'))
+            throw new AdminException('用户关注失败');
+        return true;
     }
 }

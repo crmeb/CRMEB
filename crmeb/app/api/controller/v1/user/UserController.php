@@ -11,6 +11,7 @@
 namespace app\api\controller\v1\user;
 
 use app\Request;
+use app\services\user\UserCancelServices;
 use app\services\user\UserServices;
 use app\services\wechat\WechatUserServices;
 
@@ -229,4 +230,16 @@ class UserController
         }
     }
 
+    /**
+     * 用户注销
+     * @param Request $request
+     * @return mixed
+     */
+    public function SetUserCancel(Request $request)
+    {
+        /** @var UserCancelServices $userCancelServices */
+        $userCancelServices = app()->make(UserCancelServices::class);
+        $userCancelServices->SetUserCancel($request->uid());
+        return app('json')->success('注销成功');
+    }
 }

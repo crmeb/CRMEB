@@ -507,3 +507,25 @@ export function setAgreement(data) {
         data
     })
 }
+
+/**
+ * @description 获取协议
+ * @param data
+ */
+ export function getAgreements(type) {
+    return request({
+        url: `setting/get_agreement/${type}`,
+        method: 'get',
+    })
+}
+/**
+ * @description 设置隐私协议
+ * @param data
+ */
+ export function setAgreements(data, type) {
+    return request({
+        url: `setting/save_agreement`,
+        method: 'post',
+        data
+    })
+}

@@ -65,16 +65,26 @@ export default {
             },
             component: () => import("@/pages/user/label/index")
         },
-      {
-        path: "recharge/:id",
-        name: `${pre}recharge`,
-        meta: {
-          auth: ["user-user-recharge"],
-          footer: true,
-          title: "充值配置"
+        {
+            path: "cancel",
+            name: `${pre}cancel`,
+            meta: {
+                auth: ["user-user-cancel"],
+                footer: true,
+                title: "用户标签"
+            },
+            component: () => import("@/pages/user/cancel/index")
         },
-        component: () => import('@/pages/system/group/list')
-      },
+        {
+            path: "recharge/:id",
+            name: `${pre}recharge`,
+            meta: {
+                auth: ["user-user-recharge"],
+                footer: true,
+                title: "充值配置"
+            },
+            component: () => import('@/pages/system/group/list')
+        },
         {
             path: "grade/type",
             name: `${pre}type`,

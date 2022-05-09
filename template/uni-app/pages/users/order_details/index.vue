@@ -209,7 +209,7 @@
 				</view>
 			</view>
 			<view class='wrapper' v-if="customForm && customForm.length">
-				<view class='item acea-row row-between' v-for="(item,index) in customForm">
+				<view class='item acea-row row-between' v-for="(item,index) in customForm" :key="index">
 					<view class='upload' v-if="item.label == 'img'">
 						<view>{{item.title}}：</view>
 						<view class='pictrue' v-for="(img,index) in item.value" :key="index">

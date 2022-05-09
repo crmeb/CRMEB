@@ -248,7 +248,7 @@
 						</button>
 						<!-- #endif -->
 						<!-- #ifdef APP-PLUS -->
-						<view class="item" hover-class="none" @click="goMenuPage('/pages/users/privacy/index')">
+						<view class="item" hover-class="none" @click="goMenuPage('/pages/users/privacy/index?type=3')">
 							<image src="/static/images/menu.png"></image>
 							<text>隐私协议</text>
 						</view>

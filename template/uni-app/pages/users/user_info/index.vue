@@ -115,6 +115,12 @@
 							点击前往<text class="iconfont icon-xiangyou"></text>
 						</navigator>
 					</view>
+					<view class="item acea-row row-between-wrapper">
+						<view>账号注销</view>
+						<navigator url="/pages/users/user_cancellation/index" hover-class="none" class="input">
+							注销后无法恢复<text class="iconfont icon-xiangyou"></text>
+						</navigator>
+					</view>
 
 				</view>
 

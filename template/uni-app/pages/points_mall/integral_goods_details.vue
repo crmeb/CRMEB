@@ -55,7 +55,7 @@
 							<view class="infor"> {{ storeInfo.title }}</view>
 						</view>
 						<view class="label acea-row row-middle">
-							<view class="stock">原价：{{ storeInfo.product_price }}</view>
+							<view class="stock">划线价：{{ storeInfo.product_price }}</view>
 							<view class="stock">限量:
 								{{ storeInfo.quota_show }}
 							</view>

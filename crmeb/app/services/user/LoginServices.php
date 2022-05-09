@@ -48,7 +48,7 @@ class LoginServices extends BaseServices
      */
     public function login($account, $password, $spread)
     {
-        $user = $this->dao->getOne(['account|phone' => $account]);
+        $user = $this->dao->getOne(['account|phone' => $account, 'is_del' => 0]);
         if ($user) {
             if ($user->pwd !== md5((string)$password))
                 throw new ValidateException('账号或密码错误');
@@ -156,7 +156,7 @@ class LoginServices extends BaseServices
 
     public function verify(SmsSendServices $services, $phone, $type, $time, $ip)
     {
-        if ($this->dao->getOne(['account' => $phone]) && $type == 'register') {
+        if ($this->dao->getOne(['account' => $phone, 'is_del' => 0]) && $type == 'register') {
             throw new ValidateException('手机号已注册');
         }
         $default = Config::get('sms.default', 'yunxin');
@@ -190,7 +190,7 @@ class LoginServices extends BaseServices
      */
     public function register($account, $password, $spread, $user_type = 'h5')
     {
-        if ($this->dao->getOne(['account|phone' => $account])) {
+        if ($this->dao->getOne(['account|phone' => $account, 'is_del' => 0])) {
             throw new ValidateException('用户已存在,请去修改密码');
         }
         $phone = $account;
@@ -236,7 +236,7 @@ class LoginServices extends BaseServices
      */
     public function reset($account, $password)
     {
-        $user = $this->dao->getOne(['account|phone' => $account]);
+        $user = $this->dao->getOne(['account|phone' => $account, 'is_del' => 0]);
         if (!$user) {
             throw new ValidateException('用户不存在');
         }
@@ -258,7 +258,7 @@ class LoginServices extends BaseServices
     public function mobile($phone, $spread, $user_type = 'h5')
     {
         //数据库查询
-        $user = $this->dao->getOne(['phone' => $phone]);
+        $user = $this->dao->getOne(['phone' => $phone, 'is_del' => 0]);
         if (!$user) {
             $user = $this->register($phone, '123456', $spread, $user_type);
             if (!$user) {
@@ -288,11 +288,11 @@ class LoginServices extends BaseServices
     public function switchAccount($user, $from)
     {
         if ($from === 'h5') {
-            $where = [['phone', '=', $user['phone']], ['user_type', '<>', 'h5']];
+            $where = [['phone', '=', $user['phone']], ['user_type', '<>', 'h5'], ['is_del', '=', 0]];
             $login_type = 'wechat';
         } else {
             //数据库查询
-            $where = [['account|phone', '=', $user['phone']], ['user_type', '=', 'h5']];
+            $where = [['account|phone', '=', $user['phone']], ['user_type', '=', 'h5'], ['is_del', '=', 0]];
             $login_type = 'h5';
         }
         $switch_user = $this->dao->getOne($where);
@@ -359,14 +359,14 @@ class LoginServices extends BaseServices
         if (!$userInfo) {
             throw new ValidateException('用户不存在');
         }
-        if ($this->dao->getOne([['phone', '=', $phone], ['user_type', '<>', 'h5']])) {
+        if ($this->dao->getOne([['phone', '=', $phone], ['user_type', '<>', 'h5'], ['is_del', '=', 0]])) {
             throw new ValidateException('此手机已经绑定，无法多次绑定！');
         }
         if ($userInfo->phone) {
             throw new ValidateException('您的账号已经绑定过手机号码！');
         }
         $data = [];
-        if ($this->dao->getOne(['account' => $phone, 'phone' => $phone, 'user_type' => 'h5'])) {
+        if ($this->dao->getOne(['account' => $phone, 'phone' => $phone, 'user_type' => 'h5', 'is_del' => 0])) {
             if (!$step) return ['msg' => 'H5已有账号是否绑定此账号上', 'data' => ['is_bind' => 1]];
         } else {
             $data['account'] = $phone;
@@ -387,14 +387,14 @@ class LoginServices extends BaseServices
      */
     public function updateBindindPhone(int $uid, $phone)
     {
-        $userInfo = $this->dao->get($uid);
+        $userInfo = $this->dao->get(['uid' => $uid, 'is_del' => 0]);
         if (!$userInfo) {
             throw new ValidateException('用户不存在');
         }
         if ($userInfo->phone == $phone) {
             throw new ValidateException('新手机号和原手机号相同，无需修改');
         }
-        if ($this->dao->getOne([['phone', '=', $phone]])) {
+        if ($this->dao->getOne([['phone', '=', $phone], ['is_del', '=', 0]])) {
             throw new ValidateException('此手机已经注册');
         }
         $data = [];

@@ -566,4 +566,24 @@ class StoreOrder extends BaseModel
             }
         }
     }
+
+    /**
+     * 事业部推广订单
+     * @param $query
+     * @param $value
+     */
+    public function searchDivisionIdAttr($query, $value)
+    {
+        if ($value !== '') $query->where('division_id', $value);
+    }
+
+    /**
+     * 代理商推广订单
+     * @param $query
+     * @param $value
+     */
+    public function searchAgentIdAttr($query, $value)
+    {
+        if ($value !== '') $query->where('agent_id', $value);
+    }
 }

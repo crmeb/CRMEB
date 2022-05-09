@@ -19,6 +19,13 @@
 						<view>冻结积分</view>
 					</view>
 				</view>
+				<view class="apply">
+					<view>
+						<navigator url='/pages/users/privacy/index?type=6' hover-class="none">
+							<view>积分规则</view>
+						</navigator>
+					</view>
+				</view>
 			</view>
 			<view class='wrapper'>
 				<view class='nav acea-row'>
@@ -30,7 +37,8 @@
 					<view class='tip acea-row row-middle' v-if="!isTime"><text
 							class='iconfont icon-shuoming'></text>提示：积分数值的高低会直接影响您的会员等级</view>
 					<view class='tip acea-row row-middle' v-else><text
-							class='iconfont icon-shuoming'></text>提示：你有{{userInfo.clear_integral}}积分在{{ userInfo.clear_time | dateFormat }}过期，请尽快使用</view>
+							class='iconfont icon-shuoming'></text>提示：你有{{userInfo.clear_integral}}积分在{{ userInfo.clear_time | dateFormat }}过期，请尽快使用
+					</view>
 					<view class='item acea-row row-between-wrapper' v-for="(item,index) in integralList" :key="index">
 						<view>
 							<view class='state'>{{item.mark}}</view>
@@ -101,7 +109,7 @@
 				return dayjs(value * 1000).format('YYYY-MM-DD');
 			}
 		},
-		mixins:[colors],
+		mixins: [colors],
 		data() {
 			return {
 				navList: [{
@@ -173,11 +181,11 @@
 				}).then(function(res) {
 					that.$set(that, 'userInfo', res.data);
 					let clearTime = res.data.clear_time;
-					let showTime = clearTime-(86400*14);
-					let timestamp = Date.parse(new Date())/1000;
-					if(showTime < timestamp){
+					let showTime = clearTime - (86400 * 14);
+					let timestamp = Date.parse(new Date()) / 1000;
+					if (showTime < timestamp) {
 						that.isTime = 1
-					}else{
+					} else {
 						that.isTime = 0
 					}
 				});
@@ -287,7 +295,7 @@
 
 	.integral-details .wrapper .nav .item.on {
 		background-color: #fff;
-		color: var( --view-theme);
+		color: var(--view-theme);
 		font-weight: bold;
 		border-radius: 20rpx 0 0 0;
 	}
@@ -342,9 +350,9 @@
 		font-family: 'Guildford Pro';
 		color: #16AC57;
 	}
-	
-	.integral-details .wrapper .list .item .num.font-color{
-		color: #E93323!important;
+
+	.integral-details .wrapper .list .item .num.font-color {
+		color: #E93323 !important;
 	}
 
 	.integral-details .wrapper .list2 {
@@ -392,5 +400,21 @@
 		height: 52rpx;
 		width: 160rpx;
 		border-radius: 50rpx;
+	}
+
+	.apply {
+		top: 52rpx;
+		right: 0;
+		position: absolute;
+		width: max-content;
+		height: 56rpx;
+		padding: 0 14rpx;
+		background-color: #fff1db;
+		color: #a56a15;
+		font-size: 22rpx;
+		border-radius: 30rpx 0 0 30rpx;
+		display: flex;
+		align-items: center;
+		justify-content: center;
 	}
 </style>

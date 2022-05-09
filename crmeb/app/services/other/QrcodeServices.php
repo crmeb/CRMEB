@@ -229,7 +229,7 @@ class QrcodeServices extends BaseServices
                 $namePath = 'routine_pay_vip_code.jpg';
                 break;
             case 6:
-                $page = 'pages/annex/special/index?id=' . $id;
+                $page = 'pages/annex/special/index';
                 $namePath = $id . 'routine_index_code.jpg';
                 break;
         }

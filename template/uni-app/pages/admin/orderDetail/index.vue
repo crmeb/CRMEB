@@ -97,6 +97,18 @@
 				<view class="conter">{{ orderInfo.mark }}</view>
 			</view>
 		</view>
+		<view class='wrapper' v-if="customForm && customForm.length">
+			<view class='item acea-row row-between' v-for="(item,index) in customForm" :key="index">
+				<view class='upload' v-if="item.label == 'img'">
+					<view>{{item.title}}：</view>
+					<view class='pictrue' v-for="(img,index) in item.value" :key="index">
+						<image :src='img'></image>
+					</view>
+				</view>
+				<view v-if="item.label !== 'img'">{{item.title}}：</view>
+				<view v-if="item.label !== 'img'" class='conter'>{{item.value}}</view>
+			</view>
+		</view>
 		<view class="wrapper">
 			<view class="item acea-row row-between">
 				<view>支付金额：</view>
@@ -114,6 +126,7 @@
 				实付款：<span class="money">￥{{ orderInfo.pay_price }}</span>
 			</view>
 		</view>
+
 		<view class="wrapper" v-if="
         orderInfo.delivery_type != 'fictitious' && orderInfo._status._type === 2
       ">
@@ -205,7 +218,8 @@
 				types: "",
 				order_type: "",
 				clickNum: 1,
-				goname: ''
+				goname: '',
+				customForm: []
 			};
 		},
 		watch: {
@@ -262,9 +276,20 @@
 				fn(that.order_id).then(
 					res => {
 						that.orderInfo = res.data;
+						//处理自定义留言非必填项的数据展示
+
 						that.types = res.data._status._type;
 						that.title = res.data._status._title;
 						that.payType = res.data._status._payType;
+						if (that.orderInfo.custom_form && that.orderInfo.custom_form.length) {
+							let arr = []
+							that.orderInfo.custom_form.map(i => {
+								if (i.value != '') {
+									arr.push(i)
+								}
+							})
+							that.$set(that, 'customForm', arr);
+						}
 					},
 					err => {
 						// that.$util.Tips({
@@ -816,5 +841,18 @@
 		padding: 0px 7px;
 		margin-left: 12px;
 		height: 20px;
+	}
+
+	.upload .pictrue {
+		display: inline-block;
+		margin: 22rpx 17rpx 20rpx 0;
+		width: 156rpx;
+		height: 156rpx;
+		color: #bbb;
+	}
+
+	.upload .pictrue image {
+		width: 100%;
+		height: 100%;
 	}
 </style>

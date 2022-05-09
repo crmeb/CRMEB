@@ -106,7 +106,7 @@
 				<view class="content">
 					请务必审慎阅读、充分理解“服务协议与 隐私政策”各条款，包括但不限于：为了 向你提供即时通讯、内容分享等服务，我 们需要收集你的设备信息、操作日志等个 人信息。你可以在“设置”中查看、变更、
 					删除个人信息并管理你的授权。<br>
-					你可以阅读<navigator url="/pages/users/privacy/index">《服务协议与隐私政策》</navigator>了解
+					你可以阅读<navigator url="/pages/users/privacy/index?type=3">《服务协议与隐私政策》</navigator>了解
 					详细信息。如你同意，请点击“我同意”开始接受我们的服务。
 				</view>
 				<view class="btn-box">
@@ -283,15 +283,16 @@
 		created() {
 			uni.hideTabBar();
 			// #ifdef APP-PLUS
-			try {
-				let val = uni.getStorageSync("privacyStatus") || false;
-				if (!val) {
-					this.privacyStatus = true;
-				}
-			} catch (e) {}
-			this.$nextTick(() => {
-				// this.$refs.appUpdate.update(); //调用子组件 检查更新
-			});
+			uni.setStorageSync("privacyStatus", true);
+			// try {
+			// 	let val = uni.getStorageSync("privacyStatus") || false;
+			// 	if (!val) {
+			// 		this.privacyStatus = true;
+			// 	}
+			// } catch (e) {}
+			// this.$nextTick(() => {
+			// 	// this.$refs.appUpdate.update(); //调用子组件 检查更新
+			// });
 			// #endif
 			let that = this;
 			// #ifdef H5
@@ -526,7 +527,7 @@
 					this.$Cache.set("TAB_BAR", data.tabBar.default.tabBarList);
 					setTimeout(() => {
 						this.showSkeleton = false;
-					}, 1000);
+					}, 300);
 				});
 			},
 			getIndexData() {

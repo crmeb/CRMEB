@@ -1,14 +1,14 @@
 {
     "version" : "1",
-    "prompt" : "none",
-    "title" : "服务协议与隐私政策",
-    "message" : "\t请务必审慎阅读、充分理解“服务协议与 隐私政策”各条款，包括但不限于：为了 向你提供即时通讯、内容分享等服务，我 们需要收集你的设备信息、操作日志等个 人信息。你可以在“设置”中查看、变更、删除个人信息并管理你的授权。<br>\r\r
-\t\t\t你可以阅读<a href=\"https://baidu.com\">《服务协议与隐私政策》</a>了解详细信息。如你同意，请点击“我同意”开始接受我们的服务。",
+    "prompt" : "template",
+    "title" : "用户协议与隐私政策",
+    "message" : "\t请务必审慎阅读、充分理解“用户协议与 隐私政策”各条款，包括但不限于：为了 向你提供即时通讯、内容分享等服务，我 们需要收集你的设备信息、操作日志等个 人信息。你可以在“设置”中查看、变更、删除个人信息并管理你的授权。<br/>
+ 你可以阅读 <a href=\"/pages/columnGoods/static/yhxy.html\">《用户协议》</a>与 <a href=\"/pages/columnGoods/static/yszc.html\">《隐私政策》</a>了解详细信息。如你同意，请点击“我同意”开始接受我们的服务。",
     "buttonAccept" : "同意并接受",
     "buttonRefuse" : "暂不同意",
     "second" : {
         "title" : "确认提示",
-        "message" : "进入应用前，你需先同意<a href=\"https://baidu.com\">《服务协议与隐私政策》</a>，否则将退出应用。",
+        "message" : "进入应用前，你需先同意<a href=\"pages/columnGoods/static/yhxy.html\">《用户协议》</a>与<a href=\"pages/columnGoods/static/yszc.html\">《隐私政策》</a>，否则将退出应用。",
         "buttonAccept" : "同意并继续",
         "buttonRefuse" : "退出应用"
     },
@@ -16,7 +16,7 @@
         "backgroundColor" : "#fff",
         "borderRadius" : "5px",
         "title" : {
-            "color" : "#ff00ff"
+            "color" : "#000"
         },
         "buttonAccept" : {
             "color" : "#fff"

@@ -259,6 +259,7 @@ class StoreCartServices extends BaseServices
             $info['cart_num'] = $cart_num;
             $info['productInfo'] = $productInfo ? $productInfo->toArray() : [];
             $info['productInfo']['attrInfo'] = $attrInfo->toArray();
+            $info['attrInfo'] = $attrInfo->toArray();
             $info['sum_price'] = $info['productInfo']['attrInfo']['price'];
             //砍价
             if ($bargain_id) {

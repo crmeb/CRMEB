@@ -16,7 +16,7 @@
                     </FormItem>
                     <FormItem prop="password" class="maxInpt">
                         <Input type="password" v-model="formInline.password" prefix="ios-lock-outline"
-                               placeholder="请输入短信平台密码/token" />
+                               placeholder="请输入密码" />
                     </FormItem>
                     <!--<FormItem prop="password">-->
                     <!--<Input type="password" v-model="formInline.password" prefix="ios-lock-outline"-->
@@ -77,7 +77,7 @@
                         { required: true, message: '请输入短信平台账号', trigger: 'blur' }
                     ],
                     password: [
-                        { required: true, message: '请输入短信平台密码/token', trigger: 'blur' }
+                        { required: true, message: '请输入密码', trigger: 'blur' }
                     ],
                     url: [
                         { required: true, message: '请输入网址域名', trigger: 'blur' }

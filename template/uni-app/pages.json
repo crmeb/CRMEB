@@ -238,6 +238,19 @@
 					}
 				},
 				{
+					"path": "user_cancellation/index",
+					"style": {
+						"navigationBarTitleText": "注销说明",
+						"app-plus": {
+							// #ifdef APP-PLUS
+							"titleNView": {
+								"type": "default"
+							}
+							// #endif
+						}
+					}
+				},
+				{
 					"path": "message_center/index",
 					"style": {
 						"navigationBarTitleText": "消息中心",
@@ -1000,7 +1013,7 @@
 					"style": {
 						// #ifdef MP
 						"navigationBarTitleText": "砍价活动",
-							// #endif
+						// #endif
 						"app-plus": {
 							// #ifdef APP-PLUS
 							"titleNView": {

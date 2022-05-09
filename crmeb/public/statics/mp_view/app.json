@@ -64,6 +64,7 @@
       "pages": [
         "user_vip_areer/index",
         "privacy/index",
+        "user_cancellation/index",
         "message_center/index",
         "message_center/messageDetail",
         "user_invoice_order/index",

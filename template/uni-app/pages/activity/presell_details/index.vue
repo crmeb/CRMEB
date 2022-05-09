@@ -33,7 +33,7 @@
 							<view class="iconfont icon-fenxiang" @click="listenerActionSheet"></view>
 						</view>
 						<view class="label acea-row row-between-wrapper" style="padding-bottom: 20rpx;">
-							<view v-text="'原价:￥' + (storeInfo.ot_price || 0)"></view>
+							<view v-text="'划线价:￥' + (storeInfo.ot_price || 0)"></view>
 							<view v-text="'已预订：' + (storeInfo.sales || 0) + (storeInfo.unit_name || '')"></view>
 						</view>
 						<view class="introduce" v-text="storeInfo.title"></view>

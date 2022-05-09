@@ -431,4 +431,13 @@ class User extends BaseModel
         if ($value !== '') $query->where('uid|nickname', 'like', '%' . $value . '%');
     }
 
+    /**
+     * 注销搜索器
+     * @param $query
+     * @param $value
+     */
+    public function searchIsDelAttr($query, $value)
+    {
+        if ($value !== '') $query->where('is_del', $value);
+    }
 }

@@ -276,14 +276,6 @@ class SystemConfig extends AuthController
                 return app('json')->fail('提现最低金额只能为数字!');
             }
         }
-        foreach ($post as $k => $v) {
-            $config_one = $this->services->getOne(['menu_name' => $k]);
-            if ($config_one) {
-                $config_one['value'] = $v;
-                $this->services->valiDateValue($config_one);
-                $this->services->update($k, ['value' => json_encode($v)], 'menu_name');
-            }
-        }
         if (isset($post['wss_open'])) {
             $this->services->saveSslFilePath((int)$post['wss_open'], $post['wss_local_pk'] ?? '', $post['wss_local_cert'] ?? '');
         }
@@ -313,6 +305,14 @@ class SystemConfig extends AuthController
             @copy($from, $toAdmin);
             @copy($from, $toHome);
             @copy($from, $toPublic);
+        }
+        foreach ($post as $k => $v) {
+            $config_one = $this->services->getOne(['menu_name' => $k]);
+            if ($config_one) {
+                $config_one['value'] = $v;
+                $this->services->valiDateValue($config_one);
+                $this->services->update($k, ['value' => json_encode($v)], 'menu_name');
+            }
         }
         \crmeb\services\CacheService::clear();
         return app('json')->success('修改成功');

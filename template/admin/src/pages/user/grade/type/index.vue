@@ -7,54 +7,25 @@
     </div>
     <Card :bordered="false" dis-hover class="ivu-mt">
       <Button type="primary" @click="addType">添加类型</Button>
-      <Table
-        class="mt25"
-        :columns="thead"
-        :data="tbody"
-        :loading="loading"
-        highlight-row
-        no-userFrom-text="暂无数据"
-        no-filtered-userFrom-text="暂无筛选结果"
-      >
+      <Table class="mt25" :columns="thead" :data="tbody" :loading="loading" highlight-row no-userFrom-text="暂无数据"
+        no-filtered-userFrom-text="暂无筛选结果">
         <template slot-scope="{ row, index }" slot="is_del">
-          <i-switch
-            v-model="row.is_del"
-            :value="row.is_del"
-            :true-value="0"
-            :false-value="1"
-            @on-change="onchangeIsShow(row)"
-            size="large"
-          >
+          <i-switch v-model="row.is_del" :value="row.is_del" :true-value="0" :false-value="1"
+            @on-change="onchangeIsShow(row)" size="large">
             <span slot="open">启用</span>
             <span slot="close">禁用</span>
           </i-switch>
         </template>
         <template slot-scope="{ row, index }" slot="action">
           <a href="javascript:" @click="editType(row)">编辑</a>
-          <Divider
-            type="vertical"
-            v-if="row.type !== 'free' && row.type !== 'ever'"
-          />
-          <a
-            v-if="row.type !== 'free' && row.type !== 'ever'"
-            href="javascript:"
-            @click="del(row, '删除类型', index)"
-            >删除</a
-          >
+          <Divider type="vertical" v-if="row.type !== 'free' && row.type !== 'ever'" />
+          <a v-if="row.type !== 'free' && row.type !== 'ever'" href="javascript:"
+            @click="del(row, '删除类型', index)">删除</a>
         </template>
       </Table>
     </Card>
-    <Modal
-      v-model="modal"
-      :title="`${rowModelType}${rowEdit && rowEdit.title}会员`"
-      footer-hide
-      @on-cancel="cancel"
-    >
-      <form-create
-        v-model="fapi"
-        :rule="rule"
-        @on-submit="onSubmit"
-      ></form-create>
+    <Modal v-model="modal" :title="`${rowModelType}${rowEdit && rowEdit.title}会员`" footer-hide @on-cancel="cancel">
+      <form-create v-model="fapi" :rule="rule" @on-submit="onSubmit"></form-create>
     </Modal>
   </div>
 </template>
@@ -134,6 +105,7 @@ export default {
           value: "",
           props: {
             disabled: false,
+            placeholder: '输入会员名'
           },
           validate: [
             {
@@ -154,6 +126,8 @@ export default {
             precision: 0,
             disabled: false,
             type: "text",
+            placeholder: '输入有限期',
+
           },
           validate: [
             {
@@ -172,8 +146,8 @@ export default {
           value: null,
           props: {
             min: 0,
-            precision: 2,
             disabled: false,
+            placeholder: '输入原价'
           },
           validate: [
             {
@@ -192,8 +166,8 @@ export default {
           value: null,
           props: {
             min: 0,
-            precision: 2,
             disabled: false,
+            placeholder: '输入优惠价'
           },
           validate: [
             {
@@ -214,6 +188,7 @@ export default {
             min: 1,
             max: 1000000,
             disabled: false,
+            placeholder: '请输入排序'
           },
           validate: [
             {
@@ -240,7 +215,7 @@ export default {
   created() {
     this.getMemberShip();
   },
-  mounted() {},
+  mounted() { },
   methods: {
     onchangeIsShow(row) {
       let data = {
@@ -366,6 +341,7 @@ export default {
 /deep/ .ivu-modal {
   top: 20% !important;
 }
+
 /deep/ .ivu-input {
   width: 80px;
 }

@@ -1045,7 +1045,7 @@
             >
               <div class="acea-row">
                 <InputNumber
-                  :min="0.01"
+                  :min="0"
                   v-model="formValidate.postage"
                   placeholder="请输入金额"
                   class="perW20 maxW"

@@ -121,7 +121,7 @@
 							       <div class="right-box">
 									   <div class="hot_imgs">
 									       <div class="title">页面设置</div>
-										   <div class="title-text">建议尺寸：690 * 240px</div>
+										   <div class="title-text">建议尺寸：140px * 60px</div>
 										   <div class="title-text">除LOGO图标外，页面其他内容仅供参考</div>
 									       <div class="list-box">
 											   

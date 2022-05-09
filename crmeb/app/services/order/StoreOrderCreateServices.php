@@ -693,8 +693,8 @@ class StoreOrderCreateServices extends BaseServices
 
                 //指定返佣金额
                 if (isset($productInfo['is_sub']) && $productInfo['is_sub'] == 1) {
-                    $oneBrokerage = bcmul((string)($productInfo['attrInfo']['brokerage'] ?? '0'), $cartNum, 2);
-                    $twoBrokerage = bcmul((string)($productInfo['attrInfo']['brokerage_two'] ?? '0'), $cartNum, 2);
+                    $oneBrokerage = $storeBrokerageRatio > 0 ? bcmul((string)($productInfo['attrInfo']['brokerage'] ?? '0'), $cartNum, 2) : 0;
+                    $twoBrokerage = $storeBrokerageTwo > 0 ? bcmul((string)($productInfo['attrInfo']['brokerage_two'] ?? '0'), $cartNum, 2) : 0;
                 } else {
                     if ($price) {
                         //一级返佣比例 小于等于零时直接返回 不返佣

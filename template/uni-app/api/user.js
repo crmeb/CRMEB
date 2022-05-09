@@ -209,6 +209,15 @@ export function spreadOrder(data) {
 	return request.post('spread/order', data);
 }
 
+/**
+ * 
+ * 事业部/推广订单
+ * @param object data
+ */
+export function divisionOrder(data) {
+	return request.post('division/order', data);
+}
+
 /*
  * 获取推广人排行
  * */
@@ -589,8 +598,8 @@ export function appleLogin(data) {
 /*
  * 获取隐私协议
  * */
-export function getUserAgreement() {
-	return request.get("user_agreement", {}, {
+export function getUserAgreement(type) {
+	return request.get(`get_agreement/${type}`, {}, {
 		noAuth: true
 	});
 }
@@ -623,25 +632,34 @@ export function friendDetail(id) {
  * 员工列表
  * @param object data
  * 
-*/
-export function clerkPeople(data){
-  return request.get('agent/get_staff_list',data)
+ */
+export function clerkPeople(data) {
+	return request.get('agent/get_staff_list', data)
 }
 
 /**
  * 
  * 员工比例
  * @param object data
-*/
-export function setClerkPercent(data){
-  return request.post('agent/set_staff_percent',data);
+ */
+export function setClerkPercent(data) {
+	return request.post('agent/set_staff_percent', data);
 }
 
 /**
  * 
  * 删除员工
  * @param object data
-*/
-export function delClerkPercent(id){
-  return request.get(`agent/del_staff/${id}`);
+ */
+export function delClerkPercent(id) {
+	return request.get(`agent/del_staff/${id}`);
+}
+
+/**
+ * 注销用户
+ * @param int id
+ * 
+ */
+export function cancelUser() {
+	return request.get('user_cancel');
 }

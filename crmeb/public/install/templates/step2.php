@@ -147,28 +147,32 @@
                 foreach ($file as $dir) {
                     $Testdir = APP_DIR . $dir;
                      @unlink($Testdir);
-                }
-                $file_env = APP_DIR . ".env";
-                @fopen($file_env, "w");
-                if (testwrite($file_env)) {
-                    $w = '<span class="correct_span">&radic;</span>可写 ';
-                } else {
-                    $w = '<span class="correct_span error_span">&radic;</span>不可写 ';
-                    $err++;
-                }
-                if (is_readable($file_env)) {
-                    $r = '<span class="correct_span">&radic;</span>可读';
-                } else {
-                    $r = '<span class="correct_span error_span">&radic;</span>不可读';
-                    $err++;
+                    $file_env = APP_DIR . ".env";
+                    @fopen($file_env, "w");
+                    if (testwrite($file_env)) {
+                        $w = '<span class="correct_span">&radic;</span>可写 ';
+                    } else {
+                        $w = '<span class="correct_span error_span">&radic;</span>不可写 ';
+                        $err++;
+                    }
+                    if (is_readable($file_env)) {
+                        $r = '<span class="correct_span">&radic;</span>可读';
+                    } else {
+                        $r = '<span class="correct_span error_span">&radic;</span>不可读';
+                        $err++;
+                    }
+                    ?>
+
+                    <tr>
+                        <td><?php echo $dir; ?></td>
+                        <td>读写</td>
+                        <td><?php echo $w; ?></td>
+                        <td><?php echo $r; ?></td>
+                    </tr>
+                <?php
                 }
                 ?>
-                <tr>
-                    <td>/</td>
-                    <td>读写</td>
-                    <td><?php echo $w; ?></td>
-                    <td><?php echo $r; ?></td>
-                </tr>
+
 
             </table>
             <table width="100%">

@@ -57,7 +57,7 @@ class Timer extends Command
     protected function execute(Input $input, Output $output)
     {
         $this->init($input, $output);
-        Worker::$pidFile = app()->getRootPath().'timer.pid';
+        Worker::$pidFile = app()->getRootPath().'runtime/timer.pid';
         $task = new Worker();
         $task->count = 1;
         event('Task_6');

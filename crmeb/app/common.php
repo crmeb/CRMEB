@@ -86,7 +86,7 @@ if (!function_exists('sys_config')) {
             if (strpos($sysConfig, '/uploads/system/') !== false) $sysConfig = set_file_url($sysConfig);
         }
         $config = is_array($sysConfig) ? $sysConfig : trim($sysConfig);
-        if ($config === '' || $config == false) {
+        if ($config === '' || $config === false) {
             return $default;
         } else {
             return $config;

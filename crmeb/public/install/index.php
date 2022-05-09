@@ -1,5 +1,4 @@
 <?php
-
 //最低php版本要求
 define('PHP_EDITION','7.1.0');
 //服务环境检测
@@ -9,7 +8,7 @@ if (function_exists('saeAutoLoader') || isset($_SERVER['HTTP_BAE_ENV_APPID']))
 define('APP_DIR', _dir_path(substr(dirname(__FILE__), 0, -15)));//项目目录
 define('SITE_DIR', _dir_path(substr(dirname(__FILE__), 0, -8)));//入口文件目录
 
-if (file_exists('./install.lock')) {
+if (file_exists('../install.lock')) {
     showHtml('你已经安装过该系统，如果想重新安装，请先删除install目录下的 install.lock 文件，然后再安装。');
 }
 @set_time_limit(1000);
@@ -138,7 +137,7 @@ switch ($step) {
 
 
         $folder = array(
-            'public/install',
+            'public',
             'public/uploads',
             'runtime',
         );
@@ -476,7 +475,7 @@ switch ($step) {
         $version = trim($curent_version['version']);
         installlog();
         include_once("./templates/step5.php");
-        @touch('./install.lock');
+        @touch('../install.lock');
         exit();
 }
 //读取版本号

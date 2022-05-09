@@ -165,7 +165,7 @@ export default {
       tbody: [],
       loading: false,
       total: 0,
-      animal: 1,
+      animal: 0, // 隐藏装饰边框
       pagination: {
         page: 1,
         limit: 30,
@@ -360,7 +360,7 @@ export default {
 }
 .QRpic {
   width: 180px;
-  height: 259px;
+  // height: 259px;
 
   img {
     width: 100%;

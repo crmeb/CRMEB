@@ -43,7 +43,7 @@ class HomeServices extends BaseServices
                     $item['star'] = '3.0';
                 }
             }
-            $info['productList'] = get_thumb_water($productList, 'mid');
+            $info['productList'] = get_thumb_water($productList, 'big');
         }
         $data['list'] = array_merge($list);
         $data['count'] = $category->getCidCount();

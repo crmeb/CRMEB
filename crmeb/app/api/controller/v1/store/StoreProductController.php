@@ -67,12 +67,8 @@ class StoreProductController
         if (!$where['ids']) {
             unset($where['ids']);
         }
-        $type = 'mid';
+        $type = 'big';
         $field = ['image', 'recommend_image'];
-        if ($where['store_name']) {
-            $type = 'small';
-            $field = ['image'];
-        }
         $list = $this->services->getGoodsList($where, (int)$request->uid());
         return app('json')->successful(get_thumb_water($list, $type, $field));
     }
@@ -205,7 +201,7 @@ class StoreProductController
         /** @var StoreProductReplyServices $replyService */
         $replyService = app()->make(StoreProductReplyServices::class);
         $list = $replyService->getProductReplyList($id, $type);
-        return app('json')->successful(get_thumb_water($list, 'small', ['pics']));
+        return app('json')->successful(get_thumb_water($list, 'mid', ['pics']));
     }
 
     /**

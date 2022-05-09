@@ -4,11 +4,8 @@
   "author": "Lison<lison16new@163.com>",
   "private": false,
   "scripts": {
-    "serve": "vue-cli-service serve --open",
-    "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint",
-    "test:unit": "vue-cli-service test:unit",
-    "test:e2e": "vue-cli-service test:e2e"
+    "serve": "vue-cli-service serve --open --mode=dev",
+    "build": "vue-cli-service build --mode=production"
   },
   "dependencies": {
     "@babel/polyfill": "^7.8.7",

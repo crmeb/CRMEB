@@ -23,22 +23,27 @@
 				content: ``
 			}
 		},
-		mounted() {
-			getUserAgreement().then(res => {
+		onLoad(options) {
+			getUserAgreement(options.type).then(res => {
 				this.content = res.data.content
+				uni.setNavigationBarTitle({
+					title: res.data.title
+				});
 			}).catch(err => {
 				that.$util.Tips({
-					title: err.msg
+					title: err
 				});
 			})
 		}
+		
 	}
 </script>
 
 <style scoped>
-	page{
+	page {
 		background-color: #fff;
 	}
+
 	.content {
 		padding: 40rpx 30rpx;
 		line-height: 2;

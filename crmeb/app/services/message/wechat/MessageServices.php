@@ -214,12 +214,17 @@ class MessageServices extends BaseServices
                         $response = '上级用户不存在';
                     } else if ($loginService->updateUserInfo(['code' => $spreadUid], $userInfo, $is_new)) {
                         //写入扫码记录,返回内容
-                        $response = $wechatQrcodeService->wechatQrcodeRecord($qrcodeInfo, $userInfo, $spreadInfo);
+                        $response = $wechatQrcodeService->wechatQrcodeRecord($qrcodeInfo, $userInfo, $spreadInfo, 1);
                     }
                 } catch (\Exception $e) {
                     $response = $e->getMessage();
                 }
             }
+        }
+
+        // 更新关注标识
+        if (!is_string($response)) {
+            $wechatUser->subscribe($message->FromUserName);
         }
         return $response;
     }

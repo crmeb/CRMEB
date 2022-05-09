@@ -68,7 +68,7 @@ class UserAuthServices extends BaseServices
             throw new AuthException('登录已过期,请重新登录', 410001);
         }
 
-        $user = $this->dao->get($id);
+        $user = $this->dao->get(['uid' => $id, 'is_del' => 0]);
 
         if (!$user || $user->uid != $tokenData['uid']) {
             if (!request()->isCli()) CacheService::clearToken($md5Token);

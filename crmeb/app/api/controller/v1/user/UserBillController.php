@@ -440,4 +440,15 @@ class UserBillController
         $uid = (int)$request->uid();
         return app('json')->success($this->services->brokerage_rank($uid, $data['type']));
     }
+
+    /**
+     * 事业部/代理商推广订单
+     * @param Request $request
+     * @return mixed
+     */
+    public function divisionOrder(Request $request)
+    {
+        $uid = (int)$request->uid();
+        return app('json')->successful($this->services->divisionOrder($uid));
+    }
 }

@@ -4,40 +4,17 @@
       <div ref="wang-editor" class="wang-editor" />
     </div>
     <div v-if="monacoBox">
-      <Button type="primary" class="bottom" @click="getHtmlint"
-        >可视化界面</Button
-      >
+      <Button type="primary" class="bottom" @click="getHtmlint">可视化界面</Button>
       <monaco @change="changeValue" :value="newHtml" />
     </div>
 
-    <Modal
-      v-model="modalPic"
-      width="1024px"
-      scrollable
-      footer-hide
-      closable
-      title="上传图片"
-      :mask-closable="false"
-      :z-index="9"
-    >
-      <uploadPictures
-        v-if="modalPic"
-        :isChoice="isChoice"
-        @getPic="getPic"
-        @getPicD="getPicD"
-      ></uploadPictures>
+    <Modal v-model="modalPic" width="1024px" scrollable footer-hide closable title="上传图片" :mask-closable="false"
+      :z-index="9">
+      <uploadPictures v-if="modalPic" :isChoice="isChoice" @getPic="getPic" @getPicD="getPicD"></uploadPictures>
     </Modal>
-    <Modal
-      v-model="modalVideo"
-      width="1024px"
-      scrollable
-      footer-hide
-      closable
-      title="上传视频"
-      :mask-closable="false"
-      :z-index="9"
-    >
-      <uploadVideo @getVideo="getvideo"></uploadVideo>
+    <Modal v-model="modalVideo" width="800px" scrollable footer-hide closable title="上传视频" :mask-closable="false"
+      :z-index="9">
+      <uploadVideo v-if="modalVideo" @getVideo="getvideo"></uploadVideo>
     </Modal>
   </div>
 </template>
@@ -50,7 +27,7 @@ import uploadPictures from "@/components/uploadPictures";
 import uploadVideo from "@/components/uploadVideo2";
 import { getCookies } from "@/libs/util";
 
-import util from '../../utils/bus'
+import util from "../../utils/bus";
 export default {
   name: "Index",
   components: {
@@ -84,28 +61,22 @@ export default {
     };
   },
   watch: {
-    content: function (val) {
-      if (val !== "") {
-        this.editor.txt.html(val);
-      } else {
-        this.editor.txt.clear();
-      }
+    content(val) {
+      this.editor.txt.html(val);
     },
   },
   created() {
     // window.getvideoint = this.getvideoint;
     // window.getHtmlint = this.getHtmlint;
-    
   },
   mounted() {
     this.createEditor();
-    util.$on('Video',(Video)=>{
-        this.getvideoint();
-    })
-       util.$on('Html',(Html)=>{
-        this.getHtmlint();
-    })
-
+    util.$on("Video", (Video) => {
+      this.getvideoint();
+    });
+    util.$on("Html", (Html) => {
+      this.getHtmlint();
+    });
   },
 
   methods: {
@@ -142,6 +113,8 @@ export default {
     getPicD(data) {
       let _this = this;
       _this.modalPic = false;
+      console.log("222");
+
       data.map((d) => {
         this.editor.cmd.do(
           "insertHTML",
@@ -153,10 +126,16 @@ export default {
       let _this = this;
       _this.modalVideo = false;
       this.video = data;
-      this.editor.cmd.do(
-        "insertHTML",
-        `<video src="${_this.video}" controls style="max-width:100%;"/>`
-      );
+      // this.editor.cmd.do(
+      //   "insertHTML",
+      //   `<video src="${_this.video}" controls style="max-width:100%;"/>`
+      // );
+
+      let videoHTML =
+        '<video src="' +
+        this.video +
+        '" controls style="max-width:100%"></video>';
+      this.editor.cmd.do("insertHTML", videoHTML);
     },
 
     createEditor() {
@@ -213,7 +192,7 @@ export default {
         this.newHtml = newHtml;
         this.$emit("editorContent", newHtml);
       };
-      this.editor.config.onchangeTimeout = 800; // change后多久更新数据
+      this.editor.config.onchangeTimeout = 300; // change后多久更新数据
 
       this.editor.create();
     },
@@ -222,8 +201,8 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
-.bottom{
-  margin-bottom: 10px
-  cursor pointer
+.bottom {
+  margin-bottom: 10px;
+  cursor: pointer;
 }
 </style>

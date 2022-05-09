@@ -37,13 +37,16 @@
 										<view v-if="child.type == 'brokerage'"><text
 												class='name'>返佣时间：</text>{{child.time}}</view>
 										<view v-else><text class='name'>下单时间：</text>{{child.time}}</view>
-										<view class="more" v-if="child.children && child.children.length" @click="open(child)">
+										<view class="more" v-if="child.children && child.children.length"
+											@click="open(child)">
 											{{child.open?"收起":"更多"}}
-											<text class="iconfont" :class="child.open?'icon-xiangshang':'icon-xiangxia'"></text>
+											<text class="iconfont"
+												:class="child.open?'icon-xiangshang':'icon-xiangxia'"></text>
 										</view>
 									</view>
 									<view class="more-record" v-if="child.open">
-										<view class="more-record-list" v-for="(sp,indexs) in child.children" :key="indexs">
+										<view class="more-record-list" v-for="(sp,indexs) in child.children"
+											:key="indexs">
 											<view class="more-record-box">
 												<view><text class='name'>单号：</text>{{sp.order_id}}</view>
 												<view class='money' v-if="sp.type == 'brokerage'">返佣：<text
@@ -74,7 +77,8 @@
 
 <script>
 	import {
-		spreadOrder
+		spreadOrder,
+		divisionOrder
 	} from '@/api/user.js';
 	import {
 		toLogin
@@ -106,20 +110,22 @@
 				times: [],
 				recordCount: 0,
 				count: 0,
+				orderType: 0,
 				isAuto: false, //没有授权的不会自动授权
 				isShowAuth: false //是否隐藏授权
 			};
 		},
 		computed: mapGetters(['isLogin']),
-		onLoad() {
+		onLoad(options) {
 			if (this.isLogin) {
-				this.getRecordOrderList();
+				this.orderType = options.type || 0
+				this.getRecordOrderList(options.type);
 			} else {
 				toLogin();
 			}
 		},
 		methods: {
-			open(item){
+			open(item) {
 				item.open = !item.open
 			},
 			onLoadFun() {
@@ -129,13 +135,23 @@
 			authColse: function(e) {
 				this.isShowAuth = e
 			},
-			getRecordOrderList: function() {
+			getRecordOrderList() {
 				let that = this;
 				let page = that.page;
 				let limit = that.limit;
 				let status = that.status;
 				if (status == true) return;
-				spreadOrder({
+				let fun
+				if (this.orderType) {
+					fun = divisionOrder
+					uni.setNavigationBarTitle({
+						title: '推广订单列表'
+					})
+				} else {
+					fun = spreadOrder
+				}
+				console.log(fun)
+				fun({
 					page: page,
 					limit: limit
 				}).then(res => {
@@ -165,7 +181,7 @@
 				});
 			}
 		},
-		onReachBottom: function() {
+		onReachBottom() {
 			this.getRecordOrderList();
 		}
 	}
@@ -189,13 +205,16 @@
 		background-color: #fff;
 		// margin: 0 $uni-index-margin-row;
 		border-radius: 8rpx;
-		.more-record{
+
+		.more-record {
 			color: #999;
 			font-size: 24rpx;
-			.more-record-list{
+
+			.more-record-list {
 				padding: 20rpx 30rpx;
 				border-top: 1px solid #f2f2f2;
-				.more-record-box{
+
+				.more-record-box {
 					display: flex;
 					justify-content: space-between;
 				}
@@ -254,6 +273,7 @@
 			position: absolute;
 			right: 12rpx;
 			bottom: 24rpx;
+
 			.iconfont {
 				font-size: 22rpx;
 				margin-left: 5rpx;

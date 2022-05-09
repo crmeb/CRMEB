@@ -474,21 +474,25 @@ class StoreOrderComputedServices extends BaseServices
                 }
                 $tempId = $item['productInfo']['temp_id'] ?? 0;
                 $tempPostage = $truePostageArr[$tempId] ?? 0;
+                $type = $temp_num[$tempId]['type'];
                 $tempNumber = $temp_num[$tempId]['number'] ?? 0;
                 if (!$tempId || !$tempPostage || !$tempNumber) continue;
                 $cartNumber = $item['cart_num'];
-
                 if ((($cartAlready[$tempId]['number'] ?? 0) + $cartNumber) >= $tempNumber) {
                     $price = isset($cartAlready[$tempId]['price']) ? bcsub((string)$tempPostage, (string)$cartAlready[$tempId]['price'], 6) : $tempPostage;
                 } else {
                     $price = bcmul((string)$tempPostage, bcdiv((string)$cartNumber, (string)$tempNumber, 6), 6);
                 }
-
                 $cartAlready[$tempId]['number'] = bcadd((string)($cartNumber[$tempId]['number'] ?? 0), (string)$cartNumber, 4);
                 $cartAlready[$tempId]['price'] = bcadd((string)($cartNumber[$tempId]['price'] ?? 0.00), (string)$price, 4);
 
                 if ($express_rule_number && $express_rule_number < 100) {
                     $price = bcmul($price, bcdiv($express_rule_number, 100, 4), 4);
+                }
+                if ($type == 2) {
+                    $price = bcmul($price, $item['productInfo']['attrInfo']['weight'], 6);
+                } elseif ($type == 3) {
+                    $price = bcmul($price, $item['productInfo']['attrInfo']['volume'], 6);
                 }
                 $price = sprintf("%.2f", $price);
                 $item['postage_price'] = $price;

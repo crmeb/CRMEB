@@ -153,6 +153,8 @@ class StoreProductDao extends BaseDao
         })->when(!isset($where['ids']), function ($query) use ($where) {
             if (isset($where['timeOrder']) && $where['timeOrder'] == 1) {
                 $query->order('id desc');
+            } else if (isset($where['is_best']) && $where['is_best'] == 1) {
+                $query->order('sales desc,sort desc');
             } else {
                 $query->order('sort desc,id desc');
             }
@@ -223,7 +225,7 @@ class StoreProductDao extends BaseDao
             ->when($limit, function ($query) use ($limit) {
                 $query->limit($limit);
             })
-            ->order(($field == 'is_hot' ? 'sales DESC' : 'sort DESC') . ', id DESC')->select()->toArray();
+            ->order((in_array($field, ['is_hot','is_best']) ? 'sales DESC' : 'sort DESC') . ', id DESC')->select()->toArray();
 
     }
 

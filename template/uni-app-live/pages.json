@@ -238,6 +238,19 @@
 					}
 				},
 				{
+					"path": "user_cancellation/index",
+					"style": {
+						"navigationBarTitleText": "注销说明",
+						"app-plus": {
+							// #ifdef APP-PLUS
+							"titleNView": {
+								"type": "default"
+							}
+							// #endif
+						}
+					}
+				},
+				{
 					"path": "message_center/index",
 					"style": {
 						"navigationBarTitleText": "消息中心",
@@ -951,7 +964,7 @@
 			],
 			"plugins": {
 				"live-player-plugin": {
-					"version": "1.3.2",
+					"version": "1.3.4",
 					"provider": "wx2b03c6e691cd7370"
 				}
 			}
@@ -1006,7 +1019,7 @@
 					"style": {
 						// #ifdef MP
 						"navigationBarTitleText": "砍价活动",
-							// #endif
+						// #endif
 						"app-plus": {
 							// #ifdef APP-PLUS
 							"titleNView": {

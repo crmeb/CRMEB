@@ -202,15 +202,6 @@
                     highlight-row
                     @on-selection-change="changeCheckbox"
                   >
-                    <template slot-scope="{ row, index }" slot="price">
-                      <InputNumber
-                        v-model="row.price"
-                        :min="0"
-                        :precision="2"
-                        class="priceBox"
-                        :active-change="false"
-                      ></InputNumber>
-                    </template>
                     <template slot-scope="{ row, index }" slot="pic">
                       <div
                         class="acea-row row-middle row-center-wrapper"
@@ -531,18 +522,20 @@ export default {
           title: title,
           key: key,
           align: "center",
-          minWidth: 100,
+          minWidth: 120,
           render: (h, params) => {
             return h("div", [
               h("InputNumber", {
                 props: {
-                  min: 1,
+                  min: 0,
                   precision: 0,
-                  value: params.row.quota,
+                  value: key === "price" ? params.row.price : params.row.quota,
                 },
                 on: {
                   "on-change": (e) => {
-                    params.row.quota = e;
+                    key === "price"
+                      ? (params.row.price = e)
+                      : (params.row.quota = e);
                     that.specsData[params.index] = params.row;
                     if (
                       !!that.formValidate.attrs &&

@@ -13,6 +13,7 @@ namespace app\services\product\product;
 
 
 use app\dao\product\product\StoreProductDao;
+use app\exceptions\CommonException;
 use app\Request;
 use app\services\activity\advance\StoreAdvanceServices;
 use app\services\activity\bargain\StoreBargainServices;
@@ -39,6 +40,7 @@ use crmeb\exceptions\AdminException;
 use app\jobs\ProductLogJob;
 use app\jobs\ProductCopyJob;
 use crmeb\services\GroupDataService;
+use crmeb\utils\AdminApiErrorCode;
 use Lizhichao\Word\VicWord;
 use think\exception\ValidateException;
 use think\facade\Config;
@@ -371,15 +373,13 @@ class StoreProductServices extends BaseServices
         $attr = $data['attrs'];
         $is_virtual = $data['is_virtual']; //是否虚拟商品
         $virtual_type = $data['virtual_type']; //虚拟商品类型
-        $value = attr_format($attr)[1];
+        list($value, $head) = attr_format($attr);
         $valueNew = [];
         $count = 0;
-        foreach ($value as $key => $item) {
-            $detail = $item['detail'];
-            foreach ($detail as $v => $d) {
-                $detail[$v] = trim($d);
-            }
-            $suk = implode(',', $detail);
+
+        foreach ($value as $suk) {
+            $detail = explode(',', $suk);
+
             $types = 1;
             if ($id) {
                 $sukValue = $storeProductAttrValueServices->getColumn(['product_id' => $id, 'type' => 0, 'suk' => $suk], 'bar_code,cost,price,ot_price,stock,image as pic,weight,volume,brokerage,brokerage_two,vip_price,is_virtual,coupon_id,unique,disk_info', 'suk');
@@ -423,16 +423,16 @@ class StoreProductServices extends BaseServices
                 $sukValue[$suk]['brokerage_two'] = 0;
             }
             if ($types) { //编辑商品时，将没有规格的数据不生成默认值
-                foreach (array_keys($detail) as $k => $title) {
+                foreach ($head as $k => $title) {
                     $header[$k]['title'] = $title;
                     $header[$k]['align'] = 'center';
                     $header[$k]['minWidth'] = 130;
                 }
-                foreach (array_values($detail) as $k => $v) {
+                foreach ($detail as $k => $v) {
                     $valueNew[$count]['value' . ($k + 1)] = $v;
                     $header[$k]['key'] = 'value' . ($k + 1);
                 }
-                $valueNew[$count]['detail'] = $detail;
+                $valueNew[$count]['detail'] = array_combine($head, $detail);
                 $valueNew[$count]['pic'] = $sukValue[$suk]['pic'] ?? '';
                 $valueNew[$count]['price'] = $sukValue[$suk]['price'] ? floatval($sukValue[$suk]['price']) : 0;
                 $valueNew[$count]['cost'] = $sukValue[$suk]['cost'] ? floatval($sukValue[$suk]['cost']) : 0;
@@ -494,9 +494,11 @@ class StoreProductServices extends BaseServices
      */
     public function save(int $id, array $data)
     {
-        if (count($data['cate_id']) < 1) throw new AdminException('请选择商品分类');
-        if (!$data['store_name']) throw new AdminException('请输入商品名称');
-        if (count($data['slider_image']) < 1) throw new AdminException('请上传商品轮播图');
+        if (count($data['cate_id']) < 1) throw new CommonException(AdminApiErrorCode::ERR_PLEASE_SELECT_PRODUCT_CATEGORY);
+        if (!$data['store_name']) throw new CommonException(AdminApiErrorCode::ERR_PLEASE_ENTER_THE_PRODUCT_NAME);
+
+        // $data['slider_image'] = [];
+        if (count($data['slider_image']) < 1) throw new CommonException(AdminApiErrorCode::ERR_PLEASE_UPLOAD_SLIDER_IMAGE);
 
         $detail = $data['attrs'];
         $attr = $data['items'];
@@ -553,6 +555,7 @@ class StoreProductServices extends BaseServices
         }
         $data['cate_id'] = implode(',', $data['cate_id']);
         $data['label_id'] = implode(',', $data['label_id']);
+        $slider_image = $data['slider_image'];
         $data['image'] = $data['slider_image'][0];
         $data['slider_image'] = json_encode($data['slider_image']);
         $data['stock'] = array_sum(array_column($detail, 'stock'));
@@ -573,7 +576,7 @@ class StoreProductServices extends BaseServices
         if (isset($data['description_images'])) {
             $descriptionImages = $data['description_images'];
         }
-        $this->transaction(function () use ($id, $is_copy, $data, $descriptionImages, $description, $cate_id, $storeDescriptionServices, $storeProductCateServices, $storeProductAttrServices, $storeProductCouponServices, $storeCategoryServices, $detail, $attr, $coupon_ids, $type) {
+        $this->transaction(function () use ($id, $is_copy, $data, $descriptionImages, $description, $cate_id, $storeDescriptionServices, $storeProductCateServices, $storeProductAttrServices, $storeProductCouponServices, $storeCategoryServices, $detail, $attr, $coupon_ids, $type, $slider_image) {
             if ($data['spec_type'] == 0) {
                 $attr = [
                     [
@@ -637,11 +640,18 @@ class StoreProductServices extends BaseServices
                 $attrRes = $storeProductAttrServices->saveProductAttr($skuList, $res->id, 0, $data['is_vip'], $data['virtual_type']);
                 if (!empty($coupon_ids)) $storeProductCouponServices->setCoupon($res->id, $coupon_ids);
                 if (!$attrRes) throw new AdminException('添加失败！');
+
+                //采集商品下载图片
                 if ($type == -1) {
-                    //下载商品详情图片
-                    ProductCopyJob::dispatchDo('copyDescriptionImage', [$res->id]);
-                    //下载商品轮播图片
-                    ProductCopyJob::dispatchDo('copySliderImage', [$res->id]);
+                    //下载商品轮播图
+                    foreach ($slider_image as $s_image) {
+                        ProductCopyJob::dispatchDo('copySliderImage', [$res->id, $s_image, count($slider_image)]);
+                    }
+                    preg_match_all('#<img.*?src="([^"]*)"[^>]*>#i', $description, $match);
+                    foreach ($match[1] as $d_image) {
+                        ProductCopyJob::dispatchDo('copyDescriptionImage', [$res->id, $description, $d_image, count($match[1])]);
+                    }
+
                 }
             }
         });
@@ -872,24 +882,23 @@ class StoreProductServices extends BaseServices
             $attr[$key]['attrHidden'] = true;
             $attr[$key]['detail'] = $value['attr_values'];
         }
-        $value = attr_format($attr)[1];
+        list($value, $head) = attr_format($attr);
         $valueNew = [];
         $count = 0;
         $sukValue = $sukDefaultValue = $storeProductAttrValueServices->getSkuArray(['product_id' => $id, 'type' => 0]);
-        foreach ($value as $key => $item) {
-            $detail = $item['detail'];
-            $suk = implode(',', $item['detail']);
+        foreach ($value as $suk) {
+            $detail = explode(',', $suk);
             if (!isset($sukDefaultValue[$suk])) continue;
-            foreach (array_keys($detail) as $k => $title) {
+            foreach ($head as $k => $title) {
                 $header[$k]['title'] = $title;
                 $header[$k]['align'] = 'center';
                 $header[$k]['minWidth'] = 80;
             }
-            foreach (array_values($detail) as $k => $v) {
+            foreach ($detail as $k => $v) {
                 $valueNew[$count]['value' . ($k + 1)] = $v;
                 $header[$k]['key'] = 'value' . ($k + 1);
             }
-            $valueNew[$count]['detail'] = $detail;
+            $valueNew[$count]['detail'] = array_combine($head, $detail);
             $valueNew[$count]['pic'] = $sukValue[$suk]['pic'];
             $valueNew[$count]['price'] = floatval($sukValue[$suk]['price']);
             if ($type == 2) $valueNew[$count]['min_price'] = 0;
@@ -920,7 +929,7 @@ class StoreProductServices extends BaseServices
             $header[] = ['title' => '成本价', 'key' => 'cost', 'align' => 'center', 'minWidth' => 80];
             $header[] = ['title' => '日常售价', 'key' => 'r_price', 'align' => 'center', 'minWidth' => 80];
         } elseif ($type == 4) {
-            $header[] = ['title' => '兑换积分', 'slot' => 'price', 'align' => 'center', 'minWidth' => 80];
+            $header[] = ['title' => '兑换积分', 'key' => 'price', 'type' => 1, 'align' => 'center', 'minWidth' => 80];
         } elseif ($type == 6) {
             $header[] = ['title' => '预售价', 'key' => 'price', 'type' => 1, 'align' => 'center', 'minWidth' => 80];
             $header[] = ['title' => '成本价', 'key' => 'cost', 'align' => 'center', 'minWidth' => 80];
@@ -1257,7 +1266,7 @@ class StoreProductServices extends BaseServices
         $storeInfo['userCollect'] = $storeProductRelationServices->isProductRelation(['uid' => $uid, 'product_id' => $id, 'type' => 'collect', 'category' => 'product']);
         $storeInfo['userLike'] = false;
         $storeInfo['small_image'] = $storeInfo['image'];
-        $storeInfo = get_thumb_water($storeInfo, 'big', ['image', 'slider_image', 'small_image']);
+        $storeInfo = get_thumb_water($storeInfo, 'small', ['small_image']);
 
         //预售相关
         if ($storeInfo['presale']) {
@@ -1321,6 +1330,7 @@ class StoreProductServices extends BaseServices
         /** @var MemberCardServices $memberCardService */
         $memberCardService = app()->make(MemberCardServices::class);
         $data['svip_open'] = $vipStatus = $memberCardService->isOpenMemberCard('vip_price');
+        $data['svip_price_open'] = (int)sys_config('member_price_status');
         $data['storeInfo']['svip_economize_price'] = bcsub((string)$data['storeInfo']['price'], (string)$data['storeInfo']['vip_price'], 2);
         if (!$this->vipIsOpen(!!$storeInfo['is_vip'], $vipStatus)) {
             $data['storeInfo']['vip_price'] = 0;
@@ -1658,7 +1668,7 @@ class StoreProductServices extends BaseServices
      * @param string $type
      * @return array[]
      */
-    public function getRecommendProductArr(int $uid, array $fields, bool $is_num = true, string $type = 'small')
+    public function getRecommendProductArr(int $uid, array $fields, bool $is_num = true, string $type = 'mid')
     {
         $baseList = $firstList = $benefitList = $hotList = $vipList = [];
         $data = [$baseList, $firstList, $benefitList, $hotList, $vipList];
@@ -1746,7 +1756,7 @@ class StoreProductServices extends BaseServices
      * @throws \think\db\exception\DbException
      * @throws \think\db\exception\ModelNotFoundException
      */
-    public function getRecommendProduct(int $uid, $field, int $num = 0, string $type = 'small')
+    public function getRecommendProduct(int $uid, $field, int $num = 0, string $type = 'mid')
     {
         [$page, $limit] = $this->getPageValue();
         $where['vip_user'] = $uid ? app()->make(UserServices::class)->value(['uid' => $uid], 'is_money_level') : 0;

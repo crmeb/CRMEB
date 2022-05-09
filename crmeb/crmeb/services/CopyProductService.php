@@ -589,14 +589,12 @@ class CopyProductService
      */
     public static function formatAttr(array $attr, array $sku = [])
     {
-        $value = attr_format($attr)[1];
+        list($value, $head) = attr_format($attr);
         $valueNew = [];
         $count = 0;
 
-        foreach ($value as $key => $item) {
-            $detail = $item['detail'];
-//            sort($item['detail'], SORT_STRING);
-            $suk = implode(',', $item['detail']);
+        foreach ($value as $suk) {
+            $detail = explode(',', $suk);
 
             $sukValue[$suk]['pic'] = '';
             $sukValue[$suk]['price'] = $sku[$suk]['price'] ?? 0;
@@ -609,18 +607,18 @@ class CopyProductService
             $sukValue[$suk]['brokerage'] = 0;
             $sukValue[$suk]['brokerage_two'] = 0;
 
-            foreach (array_keys($detail) as $k => $title) {
+            foreach ($head as $k => $title) {
                 if ($title == '') continue;
                 $header[$k]['title'] = $title;
                 $header[$k]['align'] = 'center';
                 $header[$k]['minWidth'] = 120;
             }
-            foreach (array_values($detail) as $k => $v) {
+            foreach ($detail as $k => $v) {
                 if ($v == '') continue;
                 $valueNew[$count]['value' . ($k + 1)] = $v;
                 $header[$k]['key'] = 'value' . ($k + 1);
             }
-            $valueNew[$count]['detail'] = $detail;
+            $valueNew[$count]['detail'] = array_combine($head, $detail);
             $valueNew[$count]['pic'] = $sukValue[$suk]['pic'] ?? '';
             $valueNew[$count]['price'] = $sukValue[$suk]['price'] ? floatval($sukValue[$suk]['price']) : 0;
             $valueNew[$count]['cost'] = $sukValue[$suk]['cost'] ? floatval($sukValue[$suk]['cost']) : 0;

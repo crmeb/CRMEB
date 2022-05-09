@@ -15,6 +15,7 @@ use app\services\activity\combination\StorePinkServices;
 use app\services\diy\DiyServices;
 use app\services\message\service\StoreServiceServices;
 use app\services\order\DeliveryServiceServices;
+use app\services\other\AgreementServices;
 use app\services\other\CacheServices;
 use app\services\product\product\StoreCategoryServices;
 use app\services\product\product\StoreProductServices;
@@ -524,5 +525,20 @@ class PublicController
         $cache = app()->make(CacheServices::class);
         $content = $cache->getDbCache('user_agreement', '');
         return app('json')->success(compact('content'));
+    }
+
+    /**
+     * 获取协议
+     * @param AgreementServices $agreementServices
+     * @param $type
+     * @return mixed
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     */
+    public function getAgreement(AgreementServices $agreementServices, $type)
+    {
+        $data = $agreementServices->getAgreementBytype($type);
+        return app('json')->success($data);
     }
 }

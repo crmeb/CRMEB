@@ -33,6 +33,7 @@ return [
         'application/vnd.ms-excel',
         'text/xml',
         'image/x-icon',
+        'image/vnd.microsoft.icon',
     ],
     //驱动模式
     'stores' => [

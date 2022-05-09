@@ -71,6 +71,7 @@ class Notice implements ListenerInterface
                             $name = $data['nickname'] ?? '';
                             //站内信
                             $SystemMsg->sendMsg($data['spreadUid'], ['nickname' => $name]);
+                            $userType = $UserServices->value(['uid' => $data['spreadUid']], 'user_type');
                             //模板消息公众号模版消息
                             if ($userType == 'wechat') {
                                 $WechatTemplateList->sendBindSpreadUidSuccess($data['spreadUid'], $name);

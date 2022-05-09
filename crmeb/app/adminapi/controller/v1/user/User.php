@@ -126,10 +126,14 @@ class User extends AuthController
             if (!check_phone($data['phone'])) {
                 return app('json')->fail('手机号码格式不正确');
             }
-            if ($this->services->count(['phone' => $data['phone']])) {
+            if ($this->services->count(['phone' => $data['phone'], 'is_del' => 0])) {
                 return app('json')->fail('手机号已经存在不能添加相同的手机号用户');
             }
-            $data['nickname'] = substr_replace($data['phone'], '****', 3, 4);
+            if (trim($data['real_name']) != '') {
+                $data['nickname'] = $data['real_name'];
+            } else {
+                $data['nickname'] = substr_replace($data['phone'], '****', 3, 4);
+            }
         }
         if ($data['card_id']) {
             if (!check_card($data['card_id'])) return app('json')->fail('请输入正确的身份证');

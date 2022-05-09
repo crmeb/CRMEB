@@ -29,7 +29,7 @@ class StoreIntegralController
         $where = ['is_show' => 1];
         $where['is_host'] = 1;
         $data['list'] = $this->services->getIntegralList($where);
-        return app('json')->successful(get_thumb_water($data, 'mid'));
+        return app('json')->successful(get_thumb_water($data, 'big'));
     }
 
     /**
@@ -46,7 +46,7 @@ class StoreIntegralController
         ]);
         $where['is_show'] = 1;
         $list = $this->services->getIntegralList($where);
-        return app('json')->successful(get_thumb_water($list));
+        return app('json')->successful(get_thumb_water($list, 'mid'));
     }
 
     /**

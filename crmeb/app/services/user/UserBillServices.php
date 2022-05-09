@@ -1191,7 +1191,7 @@ class UserBillServices extends BaseServices
         $time = [];
         $where = ['paid' => 1, 'type' => 1, 'spread_or_uid' => $uid, 'pid' => 0];
         $list = $storeOrderServices->getlist($where, ['id,order_id,uid,add_time,spread_uid,status,spread_two_uid,one_brokerage,two_brokerage,pay_price,pid'], $page, $limit, ['split']);
-        $result['count'] = $storeOrderServices->count($where + ['pid' => 0]);
+        $result['count'] = $storeOrderServices->count($where);
         $time_data = [];
         if ($list) {
             $uids = array_unique(array_column($list, 'uid'));
@@ -1239,5 +1239,61 @@ class UserBillServices extends BaseServices
             case "group" :
                 return $this->dao->getGroupField($where, $rechargeSumField, $group);
         }
+    }
+
+    /**
+     * 事业部/代理商订单
+     * @param $uid
+     * @return array
+     */
+    public function divisionOrder($uid)
+    {
+        /** @var UserServices $userService */
+        $userService = app()->make(UserServices::class);
+        /** @var StoreOrderServices $storeOrderServices */
+        $storeOrderServices = app()->make(StoreOrderServices::class);
+        $userInfo = $userService->getUserInfo($uid);
+        if (!$userInfo) {
+            throw new ValidateException('数据不存在');
+        }
+        $division_type = $userInfo['division_type'];
+        [$page, $limit] = $this->getPageValue();
+        $where = ['paid' => 1, 'type' => 1, 'pid' => 0];
+        if ($division_type == 1) {
+            $where = $where + ['division_id' => $uid];
+        } elseif ($division_type == 2) {
+            $where = $where + ['agent_id' => $uid];
+        }
+
+        $list = $storeOrderServices->getlist($where, ['id,order_id,uid,add_time,spread_uid,division_id,agent_id,status,spread_two_uid,one_brokerage,two_brokerage,agent_brokerage,division_brokerage,pay_price,pid'], $page, $limit, ['split']);
+        $result['count'] = $storeOrderServices->count($where);
+        $time_data = [];
+        if ($list) {
+            $uids = array_unique(array_column($list, 'uid'));
+            $userInfos = $userService->getColumn([['uid', 'in', $uids]], 'uid,avatar,nickname', 'uid');
+            foreach ($list as &$item) {
+                $item['avatar'] = $userInfos[$item['uid']]['avatar'] ?? '';
+                $item['nickname'] = $userInfos[$item['uid']]['nickname'] ?? '';
+                $item['time'] = $item['add_time'] ? date('Y-m-d H:i', $item['add_time']) : '';
+                $item['time_key'] = $item['add_time'] ? date('Y-m', $item['add_time']) : '';
+                $item['type'] = in_array($item['status'], [2, 3]) ? 'brokerage' : 'number';
+                if ($division_type == 1) {
+                    $item['number'] = $item['division_brokerage'];
+                } elseif ($division_type == 2) {
+                    $item['number'] = $item['agent_brokerage'];
+                }
+            }
+            $times = array_unique(array_column($list, 'time_key'));
+            $time_data = [];
+            $i = 0;
+            foreach ($times as $time) {
+                $time_data[$i]['time'] = $time;
+                $time_data[$i]['count'] = $storeOrderServices->getMonthCount($where + ['pid' => 0], $time);
+                $i++;
+            }
+        }
+        $result['list'] = $list;
+        $result['time'] = $time_data;
+        return $result;
     }
 }

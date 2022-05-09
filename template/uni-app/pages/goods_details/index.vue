@@ -58,19 +58,21 @@
 									<text class="vip-money" v-if="
                       storeInfo.vip_price &&
                       storeInfo.vip_price > 0 &&
-                      storeInfo.is_vip == 1
+                      storeInfo.is_vip == 1 &&
+					  svip_price_open == 1
                     ">￥{{ storeInfo.vip_price }}</text>
 									<image v-if="
                       storeInfo.vip_price &&
                       storeInfo.vip_price > 0 &&
-                      storeInfo.is_vip == 1
+                      storeInfo.is_vip == 1 &&
+					  svip_price_open == 1
                     " src="../../static/images/svip.gif"></image>
 								</view>
 								<view class="iconfont icon-fenxiang skeleton-rect" @click="listenerActionSheet"></view>
 							</view>
 							<view class="introduce skeleton-rect" v-text="storeInfo.store_name"></view>
 							<view class="label acea-row row-between-wrapper" style="padding-bottom: 20rpx">
-								<view class="skeleton-rect" v-text="'原价:￥' + (storeInfo.ot_price || 0)">
+								<view class="skeleton-rect" v-text="'划线价:￥' + (storeInfo.ot_price || 0)">
 								</view>
 								<view class="skeleton-rect" v-text="
                     '库存:' +
@@ -595,6 +597,7 @@
 				skuArr: [],
 				selectSku: {},
 				currentPage: false,
+				svip_price_open: 1
 			};
 		},
 		computed: mapGetters(["isLogin"]),
@@ -1100,6 +1103,7 @@
 						// }
 						that.$set(that, "navList", navList);
 						that.$set(that, "storeImage", that.storeInfo.image);
+						that.$set(that, "svip_price_open", res.data.svip_price_open);
 						// #ifdef H5
 						if (that.isLogin) {
 							that.ShareInfo();
@@ -1134,7 +1138,7 @@
 						that.getCartCount();
 						setTimeout(() => {
 							this.showSkeleton = false;
-						}, 1000);
+						}, 100);
 					})
 					.catch((err) => {
 						//状态异常返回上级页面

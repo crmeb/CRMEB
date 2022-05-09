@@ -645,3 +645,24 @@ export function getUserInfo(uid) {
         method: 'get'
     });
 }
+
+/**
+ * 用户注销列表
+ */
+export function userCancelList(data) {
+    return request({
+        url: '/user/cancel_list',
+        method: 'get',
+        params: data
+    });
+}
+/**
+ * 用户注销列表
+ */
+export function userCancelSetMark(data) {
+    return request({
+        url: '/user/cancel/set_mark',
+        method: 'post',
+        data
+    });
+}

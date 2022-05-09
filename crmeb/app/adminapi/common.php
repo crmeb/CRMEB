@@ -49,20 +49,20 @@ if (!function_exists('setconfig')) {
                 $pats[$i] = '/\'' . $pat[$i] . '\'(.*?),/';
                 $reps[$i] = "'" . $pat[$i] . "'" . "=>" . "'" . $rep[$i] . "',";
             }
-            $fileurl = app()->getConfigPath() . $name.".php";
+            $fileurl = app()->getConfigPath() . $name . ".php";
             $string = file_get_contents($fileurl); //加载配置文件
             $string = preg_replace($pats, $reps, $string); // 正则查找然后替换
             @file_put_contents($fileurl, $string); // 写入配置文件
             return true;
-        } else if(is_string($pat) && is_string($rep)){
+        } else if (is_string($pat) && is_string($rep)) {
             $pats = '/\'' . $pat . '\'(.*?),/';
-            if(substr_count($rep,'[')){
-                $reps = "'" . $pat . "'" . "=>" .  $rep . ",";
-            } else{
-                $rep = str_replace('\'',"",$rep);
+            if (substr_count($rep, '[')) {
+                $reps = "'" . $pat . "'" . "=>" . $rep . ",";
+            } else {
+                $rep = str_replace('\'', "", $rep);
                 $reps = "'" . $pat . "'" . "=>" . "'" . $rep . "',";
             }
-            $fileurl = app()->getConfigPath() . $name.".php";
+            $fileurl = app()->getConfigPath() . $name . ".php";
             $string = file_get_contents($fileurl); //加载配置文件
             $string = preg_replace($pats, $reps, $string); // 正则查找然后替换
             @file_put_contents($fileurl, $string); // 写入配置文件
@@ -81,26 +81,26 @@ if (!function_exists('arrayToText')) {
      */
     function arrayToText($array)
     {
-        $config = print_r($array,true);
-        $config = str_replace('[',"\"",$config);
-        $config = str_replace(']',"\"",$config);
+        $config = print_r($array, true);
+        $config = str_replace('[', "\"", $config);
+        $config = str_replace(']', "\"", $config);
         $input = explode("\n", $config);
-        foreach ($input as $k=>$v){
-            if(empty($v) || strpos($v, 'Array')!==false || strpos($v, '(')!==false || strpos($v, ')')!==false){
+        foreach ($input as $k => $v) {
+            if (empty($v) || strpos($v, 'Array') !== false || strpos($v, '(') !== false || strpos($v, ')') !== false) {
                 continue;
             }
             $tmpValArr = explode('=>', $v);
-            if(count($tmpValArr) == 2){
-                $input[$k] = $tmpValArr[0] . '=> \'' .trim($tmpValArr[1]) . '\',';
+            if (count($tmpValArr) == 2) {
+                $input[$k] = $tmpValArr[0] . '=> \'' . trim($tmpValArr[1]) . '\',';
             }
         }
         $config = implode("\n", $input);
-        $config = str_replace('Array',"",$config);
-        $config = str_replace('(',"[",$config);
-        $config = str_replace(')',"],",$config);
-        $config = rtrim($config,"\n");
-        $config = rtrim($config,",");
-        $config = "<?php \n return ".$config.';';
+        $config = str_replace('Array', "", $config);
+        $config = str_replace('(', "[", $config);
+        $config = str_replace(')', "],", $config);
+        $config = rtrim($config, "\n");
+        $config = rtrim($config, ",");
+        $config = "<?php \n return " . $config . ';';
 //        $fileurl = app()->getConfigPath() ."templates.php";
 //        @file_put_contents($fileurl, $config); // 写入配置文件
         return $config;
@@ -112,47 +112,31 @@ if (!function_exists('attr_format')) {
      * @param $arr
      * @return array
      */
-    function attr_format($arr)
+    function attr_format($arr): array
     {
-        $data = [];
-        $res = [];
-        $count = count($arr);
-        $arr = array_merge($arr);
-        if ($count > 1) {
-            for ($i = 0; $i < $count - 1; $i++) {
-                if ($i == 0) $data = $arr[$i]['detail'];
-                //替代变量1
-                $rep1 = $rep4 = [];
-                foreach ($data as $v) {
-                    foreach ($arr[$i + 1]['detail'] as $g) {
-                        //替代变量2
-                        $rep2 = ($i != 0 ? '' : $arr[$i]['value'] . '_$_') . $v . '-$-' . $arr[$i + 1]['value'] . '_$_' . $g;
-                        $tmp[] = $rep2;
-//                        if ($i == $count - 2) {
-                        foreach (explode('-$-', $rep2) as $k => $h) {
-                            //替代变量3
-                            $rep3 = explode('_$_', $h);
-                            //替代变量4
-                            $rep4['detail'][$rep3[0]] = $rep3[1] ?? '';
+        $len = count($arr);
+        $title = array_column($arr, 'value');
+        $result = [];
+
+        if ($len > 0) {
+            if ($len > 1) {
+                $result = $arr[0]['detail'];
+                for ($i = 0; $i < $len - 1; $i++) {
+                    $temp = $result;
+                    $result = [];
+                    foreach ($temp as $item) {
+                        foreach ($arr[$i + 1]['detail'] as $datum) {
+                            $result[] = trim($item) . ',' . trim($datum);
                         }
-                        if ($count == count($rep4['detail']))
-                            $res[] = $rep4;
-//                        }
                     }
                 }
-                $data = $tmp ?? [];
-            }
-        } else {
-            $dataArr = [];
-            foreach ($arr as $k => $v) {
-                foreach ($v['detail'] as $kk => $vv) {
-                    $dataArr[$kk] = $v['value'] . '_' . $vv;
-                    $res[$kk]['detail'][$v['value']] = $vv;
+            } else {
+                foreach ($arr[0]['detail'] as $item) {
+                    $result[] = trim($item);
                 }
             }
-            $data[] = implode('-', $dataArr);
         }
-        return [$data, array_merge(array_unique($res, SORT_REGULAR))];
+        return [$result, $title];
     }
 }
 

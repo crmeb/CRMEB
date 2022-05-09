@@ -584,5 +584,14 @@ export default {
       },
       component: () => import('@/pages/setting/setSystem/index')
     },
+    {
+      path: 'agreement',
+      name: `${pre}notification`,
+      meta: {
+        auth: ['setting-agreement'],
+        title: '协议设置'
+      },
+      component: () => import('@/pages/setting/agreement/index')
+    },
   ]
 }

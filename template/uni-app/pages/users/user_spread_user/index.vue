@@ -27,7 +27,7 @@
 					</view>
 				</view>
 				<!-- <view class="apply"
-					v-if="(userInfo.is_division && userInfo.division_invite && userInfo.division_status) || (!userInfo.is_division && !userInfo.is_agent)">
+					v-if="(userInfo.is_division && userInfo.division_invite && userInfo.division_status) || (!userInfo.is_division && !userInfo.is_agent) && userInfo.id">
 					<view v-if="userInfo.is_division">邀请码：{{userInfo.division_invite}}</view>
 					<view v-if="!userInfo.is_division && !userInfo.is_agent">
 						<navigator url='/pages/annex/settled/index' hover-class="none">
@@ -59,10 +59,15 @@
 					<view>佣金明细</view>
 				</navigator>
 
-				<navigator url='/pages/users/promoter-order/index' hover-class="none"
+				<navigator  v-if="!userInfo.is_agent && !userInfo.is_division" url='/pages/users/promoter-order/index' hover-class="none"
 					class='item acea-row row-center-wrapper row-column'>
 					<text class='iconfont icon-dingdan'></text>
 					<view>推广人订单</view>
+				</navigator>
+				<navigator v-if="userInfo.is_agent || userInfo.is_division" url='/pages/users/promoter-order/index?type=1' hover-class="none"
+					class='item acea-row row-center-wrapper row-column'>
+					<text class='iconfont icon-dingdan'></text>
+					<view>{{userInfo.is_division?'事业部':'代理商'}}推广订单</view>
 				</navigator>
 				<navigator url='/pages/users/promoter_rank/index' hover-class="none"
 					class='item acea-row row-center-wrapper row-column'>
@@ -79,6 +84,7 @@
 					<text class='iconfont icon-tuandui'></text>
 					<view>员工列表</view>
 				</navigator>
+				
 			</view>
 		</view>
 		<!-- #ifdef MP -->

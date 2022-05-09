@@ -38,7 +38,7 @@
 				<view>有效期至<text class="time">{{memberEndTime}}</text></view>
 			</view>
 			<scroll-view class="scroll" scroll-x="true">
-				<view v-for="item in memberType" :key="item.type" class="item" :class="{on: item.type === type}"
+				<view v-for="item in memberType" :key="item.type" class="item" :class="{on: item.mc_id === mc_id}"
 					@click="checkType(item)">
 					<view>{{item.title}}</view>
 					<view class="new">￥<text class="num">{{item.pre_price | moneyFormat}}</text></view>
