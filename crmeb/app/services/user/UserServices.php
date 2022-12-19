@@ -1201,14 +1201,14 @@ class UserServices extends BaseServices
         if (!$userInfo) {
             throw new AdminException(100026);
         }
-        $info = [
+        $userInfo['avatar'] = strpos($userInfo['avatar'], 'http') === false ? (sys_config('site_url') . $userInfo['avatar']) : $userInfo['avatar'];
+        return [
             'uid' => $uid,
             'userinfo' => $this->getUserDetailed($uid, $userInfo),
             'headerList' => $this->getHeaderList($uid, $userInfo),
             'count' => $this->getUserBillCountData($uid),
             'ps_info' => $userInfo
         ];
-        return $info;
     }
 
     /**
