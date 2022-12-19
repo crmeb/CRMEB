@@ -501,7 +501,7 @@ class StoreBargainServices extends BaseServices
             $userBargainInfo['bargainType'] = 1; //立即支付
         }
         $data['userBargainInfo'] = $userBargainInfo;
-        $data['bargain']['price'] = bcsub($data['bargain']['price'], $userBargainInfo['alreadyPrice'], 2);
+        $data['bargain']['price'] = bcsub($data['bargain']['price'], (string)$userBargainInfo['alreadyPrice'], 2);
 
         //用户访问事件
         event('user.userVisit', [$user['uid'], $id, 'bargain', $bargain['product_id'], 'view']);
