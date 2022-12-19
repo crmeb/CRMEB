@@ -64,11 +64,11 @@
 </template>
 
 <script>
-import { userMemberCard, memberRecord, memberCardStatus } from "@/api/user";
-import { mapState } from "vuex";
+import { userMemberCard, memberRecord, memberCardStatus } from '@/api/user';
+import { mapState } from 'vuex';
 
 export default {
-  name: "card",
+  name: 'card',
   props: {
     id: {
       default: 0,
@@ -78,47 +78,47 @@ export default {
     return {
       columns1: [
         {
-          title: "编号",
-          key: "id",
+          title: '编号',
+          key: 'id',
           minWidth: 100,
-          align: "center",
+          align: 'center',
         },
         {
-          title: "卡号",
-          key: "card_number",
+          title: '卡号',
+          key: 'card_number',
           minWidth: 105,
-          align: "center",
+          align: 'center',
         },
         {
-          title: "密码",
-          key: "card_password",
-          align: "center",
+          title: '密码',
+          key: 'card_password',
+          align: 'center',
           minWidth: 100,
         },
         {
-          title: "领取人名称",
-          key: "username",
-          align: "center",
+          title: '领取人名称',
+          key: 'username',
+          align: 'center',
 
           minWidth: 100,
         },
         {
-          title: "领取人电话",
-          key: "phone",
-          align: "center",
+          title: '领取人电话',
+          key: 'phone',
+          align: 'center',
 
           minWidth: 100,
         },
         {
-          title: "领取时间",
-          key: "use_time",
-          align: "center",
+          title: '领取时间',
+          key: 'use_time',
+          align: 'center',
 
           minWidth: 100,
         },
         {
-          title: "是否激活",
-          slot: "status",
+          title: '是否激活',
+          slot: 'status',
           minWidth: 100,
         },
       ],
@@ -128,19 +128,19 @@ export default {
       table: {
         page: 1,
         limit: 15,
-        card_number: "",
-        phone: "",
-        is_use: "",
+        card_number: '',
+        phone: '',
+        is_use: '',
       },
     };
   },
   computed: {
-    ...mapState("media", ["isMobile"]),
+    ...mapState('media', ['isMobile']),
     labelWidth() {
       return this.isMobile ? undefined : 75;
     },
     labelPosition() {
-      return this.isMobile ? "top" : "right";
+      return this.isMobile ? 'top' : 'right';
     },
   },
   created() {

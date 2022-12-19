@@ -1,22 +1,19 @@
 <template>
 	<view>
-		<view :style="{height:footHeight+'px'}"></view>
-		<view v-if="newData.bgColor">
-			<view class="page-footer" id="target" :style="{'background-color':newData.bgColor.color[0].item}">
-				<view class="foot-item" v-for="(item,index) in newData.menuList" :key="index" @click="goRouter(item)">
-					<block v-if="item.link == activeRouter">
-						<image :src="item.imgList[0]"></image>
-						<view class="txt" :style="{color:newData.activeTxtColor.color[0].item}">{{item.name}}</view>
-					</block>
-					<block v-else>
-						<image :src="item.imgList[1]"></image>
-						<view class="txt" :style="{color:newData.txtColor.color[0].item}">{{item.name}}</view>
-					</block>
-					<div class="count-num"
-						v-if="item.link === '/pages/order_addcart/order_addcart' && $store.state.indexData.cartNum && $store.state.indexData.cartNum>0">
-						{{$store.state.indexData.cartNum}}
-					</div>
-				</view>
+		<view v-if="newData" class="page-footer" id="target">
+			<view class="foot-item" v-for="(item,index) in newData.menuList" :key="index" @click="goRouter(item)"
+				:style="{'background-color':newData.bgColor.color[0].item}">
+				<block v-if="item.link == activeRouter">
+					<image :src="item.imgList[0]"></image>
+					<view class="txt" :style="{color:newData.activeTxtColor.color[0].item}">{{item.name}}</view>
+				</block>
+				<block v-else>
+					<image :src="item.imgList[1]"></image>
+					<view class="txt" :style="{color:newData.txtColor.color[0].item}">{{item.name}}</view>
+				</block>
+				<div class="count-num" v-if="item.link === '/pages/order_addcart/order_addcart' &&  cartNum>0">
+					{{cartNum > 99 ? '99+' : cartNum}}
+				</div>
 			</view>
 		</view>
 	</view>
@@ -36,10 +33,6 @@
 	export default {
 		name: 'pageFooter',
 		props: {
-			noTop: {
-				type: Boolean,
-				default: true
-			},
 			status: {
 				type: Number | String,
 				default: 1
@@ -48,6 +41,11 @@
 				type: Number | String,
 				default: 0
 			},
+		},
+		data() {
+			return {
+				newData: undefined
+			}
 		},
 		computed: {
 			...mapState({
@@ -72,19 +70,6 @@
 				},
 				deep: true
 			},
-			cartNum(a, b) {
-				this.$store.commit('indexData/setCartNum', a + '')
-				if (a > 0) {
-					uni.setTabBarBadge({
-						index: Number(uni.getStorageSync('FOOTER_ADDCART')),
-						text: a + ''
-					})
-				} else {
-					wx.hideTabBarRedDot({
-						index: Number(uni.getStorageSync('FOOTER_ADDCART'))
-					})
-				}
-			}
 		},
 		created() {
 			let routes = getCurrentPages(); // 获取当前打开过的页面路由数组
@@ -92,26 +77,18 @@
 			this.activeRouter = '/' + curRoute
 		},
 		onShow() {
+
+		},
+		mounted() {
 			getNavigation().then(res => {
 				uni.setStorageSync('pageFoot', res.data)
 				this.$store.commit('FOOT_UPLOAD', res.data)
 				this.newData = res.data
-				if (this.newData.status && this.newData.status.status) {
-					// uni.hideTabBar()
-				} else {
-					uni.showTabBar()
-				}
 			})
-		},
-		mounted() {
 			let that = this
+			uni.hideTabBar()
+			console.log(this.cartNum, 'cartNum')
 			this.newData = this.$store.state.app.pageFooter
-			if (this.newData.status && this.newData.status.status) {
-				uni.hideTabBar()
-			} else {
-				uni.showTabBar()
-			}
-			console.log(this.newData)
 			if (this.isLogin) {
 				this.getCartNum()
 			}
@@ -126,11 +103,7 @@
 		methods: {
 			goRouter(item) {
 				var pages = getCurrentPages();
-				if (pages.length) {
-					var page = (pages[pages.length - 1]).$page.fullPath;
-				} else {
-					page = ''
-				}
+				var page = (pages[pages.length - 1]).$page.fullPath;
 				if (item.link == page) return
 				uni.switchTab({
 					url: item.link,
@@ -177,16 +150,19 @@
 			justify-content: center;
 			flex-direction: column;
 			position: relative;
+			width: 100%;
+			height: 100%;
 
 			.count-num {
 				position: absolute;
 				display: flex;
+
 				justify-content: center;
 				align-items: center;
 				width: 40rpx;
 				height: 40rpx;
 				top: 0rpx;
-				right: -15rpx;
+				right: calc(50% - 55rpx);
 				color: #fff;
 				font-size: 20rpx;
 				background-color: #FD502F;

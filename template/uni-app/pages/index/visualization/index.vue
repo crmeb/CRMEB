@@ -6,9 +6,9 @@
 		<!-- #ifdef H5 -->
 		<view class="followMe" v-if="$wechat.isWeixin()">
 			<view class="follow acea-row row-between-wrapper" v-if="followHid && followUrl && !subscribe">
-				<view>点击“立即关注”即可关注公众号</view>
+				<view>{{$t(`点击“立即关注”即可关注公众号`)}}</view>
 				<view class="acea-row row-middle">
-					<view class="bnt" @click="followTap">立即关注</view>
+					<view class="bnt" @click="followTap">{{$t(`立即关注`)}}</view>
 					<span class="iconfont icon-guanbi" @click="closeFollow"></span>
 				</view>
 			</view>
@@ -21,7 +21,8 @@
 		<!-- #ifdef MP -->
 		<view class="indexTip" :style="'top:' + (navH + 50) + 'px'" :hidden="iShidden">
 			<view class="tip acea-row row-between-wrapper">
-				<view class="text">点击“<image src="/static/images/spot.png"></image>”添加到我的小程序， 微信首页下拉即可访问商城。</view>
+				<view class="text">{{$t(`点击`)}}“<image src="/static/images/spot.png"></image>
+					”{{$t(`添加到我的小程序， 微信首页下拉即可访问商城。`)}}</view>
 				<view class="iconfont icon-guanbi1" @click="closeTip"></view>
 			</view>
 		</view>
@@ -70,9 +71,6 @@
 				@click.native="bindEdit('tabNav', 'default')" @bindSortId="bindSortId" @bindHeight="bindHeighta">
 			</tabNav>
 			<!-- 商品列表 -->
-			<!-- 			<goodsWaterfall :class="{ nothing: loading }"
-				v-if="!isIframe && tabNav.default && tabNav.default.isShow.val" :dataLists="goodLists"
-				@click.native="bindEdit('List')"></goodsWaterfall> -->
 			<indexGoods v-if="!isIframe && tabNav.default && tabNav.default.isShow.val" :dataLists="goodLists"
 				@click.native="bindEdit('List')"></indexGoods>
 			<!-- <recommend :dataConfig="goodList.aa" @click.native="bindEdit('goodList','aa')"></recommend> -->
@@ -84,8 +82,9 @@
           goodLists.length == 0 &&
           !loading
         ">
-				<view class="empty-box">
-					<image src="/static/images/noShopper.png"></image>
+				<view class='emptyBox'>
+					<image :src="imgHost + '/statics/images/no-thing.png'"></image>
+					<view class="tips">{{$t(`暂无商品，去看点别的吧`)}}</view>
 				</view>
 			</view>
 		</view>
@@ -102,16 +101,16 @@
 		<app-update v-if="!privacyStatus" ref="appUpdate" :force="true" :tabbar="false"></app-update>
 		<view class="privacy-wrapper" v-if="privacyStatus">
 			<view class="privacy-box">
-				<view class="title">服务协议与隐私政策</view>
+				<view class="title">{{$t(`服务协议与隐私政策`)}}</view>
 				<view class="content">
-					请务必审慎阅读、充分理解“服务协议与 隐私政策”各条款，包括但不限于：为了 向你提供即时通讯、内容分享等服务，我 们需要收集你的设备信息、操作日志等个 人信息。你可以在“设置”中查看、变更、
-					删除个人信息并管理你的授权。<br>
-					你可以阅读<navigator url="/pages/users/privacy/index?type=3">《服务协议与隐私政策》</navigator>了解
-					详细信息。如你同意，请点击“我同意”开始接受我们的服务。
+					{{$t(`请务必审慎阅读、充分理解“服务协议与 隐私政策”各条款，包括但不限于：为了 向你提供即时通讯、内容分享等服务，我 们需要收集你的设备信息、操作日志等个 人信息。你可以在“设置”中查看、变更、删除个人信息并管理你的授权。`)}}<br>
+					{{$t(`你可以阅读`)}}
+					<navigator url="/pages/users/privacy/index?type=3">{{$t(`《服务协议与隐私政策》`)}}</navigator>
+					{{$t(`了解详细信息。如你同意，请点击“我同意”开始接受我们的服务。`)}}
 				</view>
 				<view class="btn-box">
-					<view class="btn-item" @click="confirmApp">我同意</view>
-					<view class="btn" @click="closeModel">残忍拒绝</view>
+					<view class="btn-item" @click="confirmApp">{{$t(`我同意`)}}</view>
+					<view class="btn" @click="closeModel">{{$t(`残忍拒绝`)}}</view>
 				</view>
 			</view>
 		</view>
@@ -157,7 +156,7 @@
 	} from "@/config/cache";
 	// #endif
 	import {
-		getTemlIds,
+		getTempIds,
 		siteConfig
 	} from "@/api/api.js";
 	import {
@@ -182,8 +181,10 @@
 	import {
 		toLogin
 	} from "@/libs/login.js";
+	import {
+		HTTP_REQUEST_URL
+	} from '@/config/app';
 	import colors from "@/mixins/color";
-	import goodsWaterfall from "@/components/goodsWaterfall/goodsWaterfall.vue";
 	import skeletons from "./components/skeleton.vue";
 	let app = getApp();
 	let statusBarHeight = uni.getSystemInfoSync().statusBarHeight;
@@ -215,7 +216,6 @@
 			tabBar,
 			tabNav,
 			Loading,
-			goodsWaterfall,
 			skeletons,
 			indexGoods,
 			appUpdate, //APP更新
@@ -223,6 +223,7 @@
 		mixins: [colors],
 		data() {
 			return {
+				imgHost: HTTP_REQUEST_URL,
 				showSkeleton: true, //骨架屏显示隐藏
 				isNodes: 0, //控制什么时候开始抓取元素节点,只要数值改变就重新抓取
 				isSortType: 0,
@@ -246,7 +247,7 @@
 				goodType: 3,
 				loading: false,
 				loadend: false,
-				loadTitle: "下拉加载更多", //提示语
+				loadTitle: this.$t(`下拉加载更多`), //提示语
 				page: 1,
 				limit: this.$config.LIMIT,
 				numConfig: 0,
@@ -293,6 +294,7 @@
 			// this.$nextTick(() => {
 			// 	// this.$refs.appUpdate.update(); //调用子组件 检查更新
 			// });
+
 			// #endif
 			let that = this;
 			// #ifdef H5
@@ -317,11 +319,12 @@
 			}
 			this.getFollow();
 			// #endif
+
 			this.diyData();
 			this.getIndexData();
 			// #ifdef MP
 			if (this.$Cache.get(TIPS_KEY)) this.iShidden = true;
-			this.getTemlIds();
+			this.getTempIds();
 			// #endif
 			siteConfig()
 				.then((res) => {
@@ -425,7 +428,6 @@
 				// #ifndef H5
 				this.domOffsetTop = data.top - 110;
 				// #endif
-				console.log(this.domOffsetTop);
 			},
 			// 优惠券弹窗
 			getCoupon() {
@@ -438,7 +440,6 @@
 						const {
 							data
 						} = res;
-						console.log(res)
 						if (data.list.length) {
 							this.isCouponShow = true;
 							this.couponObj = data;
@@ -476,19 +477,13 @@
 					this.getNewCoupon();
 				}
 			},
-			// 授权关闭
-			// authColse: function(e) {
-			// 	this.isShowAuth = e;
-			// },
 			// #ifdef MP
-			getTemlIds() {
-				let messageTmplIds = wx.getStorageSync(SUBSCRIBE_MESSAGE);
-				if (!messageTmplIds) {
-					getTemlIds().then((res) => {
-						if (res.data)
-							wx.setStorageSync(SUBSCRIBE_MESSAGE, JSON.stringify(res.data));
-					});
-				}
+			getTempIds() {
+				getTempIds().then((res) => {
+					if (res.data) {
+						wx.setStorageSync(SUBSCRIBE_MESSAGE, JSON.stringify(res.data));
+					}
+				});
 			},
 			// #endif
 			goICP() {
@@ -528,6 +523,23 @@
 					setTimeout(() => {
 						this.showSkeleton = false;
 					}, 300);
+				}).catch(error => {
+					// #ifdef APP-PLUS
+					if (error.status) {
+						uni.showToast({
+							title: this.$t(`连接失败`),
+							icon: 'none',
+							duration: 2000
+						})
+						setTimeout(e => {
+							this.diyData();
+							this.getIndexData();
+							getShare().then(res => {
+								this.shareInfo = res.data;
+							});
+						}, 2000)
+					}
+					// #endif
 				});
 			},
 			getIndexData() {
@@ -830,13 +842,18 @@
 		margin: 20rpx;
 	}
 
-	.empty-box {
+	.emptyBox {
 		text-align: center;
 		padding: 150rpx 0;
 
+		.tips {
+			color: #aaa;
+			font-size: 26rpx;
+		}
+
 		image {
-			width: 410rpx;
-			height: 336rpx;
+			width: 414rpx;
+			height: 304rpx;
 		}
 	}
 

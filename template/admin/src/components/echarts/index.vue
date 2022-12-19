@@ -1,80 +1,80 @@
 <template>
-    <div>
-        <div :id="echarts" style="height: 300px;"></div>
-    </div>
+  <div>
+    <div :id="echarts" style="height: 300px"></div>
+  </div>
 </template>
 
 <script>
-import echarts from 'echarts'
+import echarts from 'echarts';
 export default {
   name: 'index',
   props: {
     infoList: {
       type: Object,
-      default: null
+      default: null,
     },
     series: Array,
     echartsTitle: {
       type: String,
-      default: ''
+      default: '',
     },
     yAxisData: {
-       type: Array,
-       default: () => []
+      type: Array,
+      default: () => [],
     },
-    bingXdata: Array
+    bingXdata: Array,
   },
-  data () {
+  data() {
     return {
       infoLists: this.infoList,
-      seriesArray: this.series
-    }
+      seriesArray: this.series,
+    };
   },
   watch: {
     infoList: {
-      handler (newVal, oldVal) {
-        this.infoLists = newVal
-        this.handleSetVisitChart()
+      handler(newVal, oldVal) {
+        this.infoLists = newVal;
+        this.handleSetVisitChart();
       },
-      deep: true // 对象内部属性的监听，关键。
+      deep: true, // 对象内部属性的监听，关键。
     },
     series: {
-      handler (newVal, oldVal) {
-        this.seriesArray = newVal
-        this.handleSetVisitChart()
+      handler(newVal, oldVal) {
+        this.seriesArray = newVal;
+        this.handleSetVisitChart();
       },
-      deep: true // 对象内部属性的监听，关键。
-    }
+      deep: true, // 对象内部属性的监听，关键。
+    },
   },
   computed: {
-    echarts () {
-      return 'echarts' + Math.ceil(Math.random() * 100)
-    }
+    echarts() {
+      return 'echarts' + Math.ceil(Math.random() * 100);
+    },
   },
   mounted: function () {
-      const vm = this
-      vm.$nextTick(() => {
-          vm.handleSetVisitChart()
-          window.addEventListener('resize', this.wsFunc)
-      })
+    const vm = this;
+    vm.$nextTick(() => {
+      vm.handleSetVisitChart();
+      window.addEventListener('resize', this.wsFunc);
+    });
   },
   methods: {
-      wsFunc() {
-          this.myChart.resize()
-      },
-    handleSetVisitChart () {
-      this.myChart = echarts.init(document.getElementById(this.echarts))
-      let option = null
+    wsFunc() {
+      this.myChart.resize();
+    },
+    handleSetVisitChart() {
+      this.myChart = echarts.init(document.getElementById(this.echarts));
+      let option = null;
       if (this.echartsTitle === 'circle') {
         option = {
           tooltip: {
             trigger: 'item',
-            formatter: '{a} <br/>{b} : {c} ({d}%)'
+            formatter: '{a} <br/>{b} : {c} ({d}%)',
           },
           legend: {
             orient: 'vertical',
             left: 'right',
-            data: this.infoLists.bing_xdata || []
+            data: this.infoLists.bing_xdata || [],
           },
           series: [
             {
@@ -87,20 +87,20 @@ export default {
                 itemStyle: {
                   shadowBlur: 10,
                   shadowOffsetX: 0,
-                  shadowColor: 'rgba(0, 0, 0, 0.5)'
-                }
-              }
-            }
-          ]
-        }
+                  shadowColor: 'rgba(0, 0, 0, 0.5)',
+                },
+              },
+            },
+          ],
+        };
       } else {
         option = {
           tooltip: {
-            trigger: 'axis'
+            trigger: 'axis',
           },
           toolbox: {},
           legend: {
-            data: this.infoLists.legend || []
+            data: this.infoLists.legend || [],
           },
           color: ['#1495EB', '#00CC66', '#F9D249', '#ff9900', '#9860DF'],
           grid: {
@@ -108,27 +108,27 @@ export default {
             right: 25,
             bottom: 10,
             top: 40,
-            containLabel: true
+            containLabel: true,
           },
           xAxis: [
             {
               type: 'category',
               axisLine: {
                 lineStyle: {
-                  color: '#D7DDE4'
-                }
+                  color: '#D7DDE4',
+                },
               },
               axisTick: {
                 alignWithLabel: true,
                 lineStyle: {
-                  color: '#D7DDE4'
-                }
+                  color: '#D7DDE4',
+                },
               },
               splitLine: {
                 show: false,
                 lineStyle: {
-                  color: '#F5F7F9'
-                }
+                  color: '#F5F7F9',
+                },
               },
               // axisPointer: {
               //     type: 'shadow'
@@ -137,53 +137,53 @@ export default {
                 interval: 0,
                 rotate: 40,
                 textStyle: {
-                  color: '#7F8B9C'
-                }
+                  color: '#7F8B9C',
+                },
               },
-              data: this.infoLists.xAxis
-            }
+              data: this.infoLists.xAxis,
+            },
           ],
-          yAxis: this.yAxisData.length?this.yAxisData:{
-            axisLine: {
-              show: false
-            },
-            axisTick: {
-              show: false
-            },
-            axisLabel: {
-              textStyle: {
-                color: '#7F8B9C'
-              }
-            },
-            splitLine: {
-              show: true,
-              lineStyle: {
-                color: '#F5F7F9'
-              }
-            },
-            type: 'value'
-          },
-          series: this.seriesArray
-        }
+          yAxis: this.yAxisData.length
+            ? this.yAxisData
+            : {
+                axisLine: {
+                  show: false,
+                },
+                axisTick: {
+                  show: false,
+                },
+                axisLabel: {
+                  textStyle: {
+                    color: '#7F8B9C',
+                  },
+                },
+                splitLine: {
+                  show: true,
+                  lineStyle: {
+                    color: '#F5F7F9',
+                  },
+                },
+                type: 'value',
+              },
+          series: this.seriesArray,
+        };
       }
       // 基于准备好的dom，初始化echarts实例
-      this.myChart.setOption(option, true)
+      this.myChart.setOption(option, true);
     },
-    handleResize () {
-      this.myChart.resize()
-    }
+    handleResize() {
+      this.myChart.resize();
+    },
   },
-  beforeDestroy () {
-      window.removeEventListener('resize', this.wsFunc)
-      if (!this.myChart) {
-          return
-      }
-      this.myChart.dispose()
-      this.myChart = null
-  }
-}
+  beforeDestroy() {
+    window.removeEventListener('resize', this.wsFunc);
+    if (!this.myChart) {
+      return;
+    }
+    this.myChart.dispose();
+    this.myChart = null;
+  },
+};
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

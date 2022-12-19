@@ -21,7 +21,7 @@
 
 <script>
 export default {
-  name: "c_input_number",
+  name: 'c_input_number',
   props: {
     name: {
       type: String,
@@ -31,7 +31,7 @@ export default {
     },
     configNum: {
       type: Number | String,
-      default: "default",
+      default: 'default',
     },
   },
   data() {

@@ -2,8 +2,8 @@
 	<view :style="colorStyle">
 		<view class='collectionGoods' v-if="collectProductList.length">
 			<view class="title-admin">
-				<view>当前共 <text class="text">{{count}}</text> 件商品</view>
-				<view class="admin" @click="showRadio">{{checkbox_show?'取消':'管理'}}</view>
+				<view>{{$t(`当前共`)}} <text class="text"> {{count}} </text> {{$t(`件商品`)}}</view>
+				<view class="admin" @click="showRadio">{{checkbox_show?$t(`取消`):$t(`管理`)}}</view>
 			</view>
 			<checkbox-group @change="checkboxChange">
 				<view class='item acea-row' v-for="(item,index) in collectProductList" :key="index">
@@ -16,7 +16,7 @@
 					<view class='text acea-row row-column-between' @click="jump(item)">
 						<view class='name line2'>{{item.store_name}}</view>
 						<view class='acea-row row-between-wrapper'>
-							<view class='money font-color'>￥{{item.price}}</view>
+							<view class='money font-color'>{{$t(`￥`)}}{{item.price}}</view>
 							<!-- <view class='delete' @click.stop='delCollection(item.pid,index)'>删除</view> -->
 						</view>
 					</view>
@@ -29,19 +29,19 @@
 
 		<view class='noCommodity' v-else-if="!collectProductList.length && page > 1">
 			<view class='pictrue'>
-				<image src='../../../static/images/noCollection.png'></image>
+				<image :src="imgHost + '/statics/images/noCollection.png'"></image>
 			</view>
 			<recommend :hostProduct="hostProduct"></recommend>
 		</view>
-		<view class='footer acea-row row-between-wrapper' v-if="checkbox_show">
+		<view class='footer acea-row row-between-wrapper' v-if="checkbox_show && collectProductList.length">
 			<view>
 				<checkbox-group @change="checkboxAllChange">
 					<checkbox value="all" :checked="!!isAllSelect" />
-					<text class='checkAll'>全选({{ids.length}})</text>
+					<text class='checkAll'>{{$t(`全选`)}}({{ids.length}})</text>
 				</checkbox-group>
 			</view>
 			<view class='button acea-row row-middle'>
-				<button class='bnt' formType="submit" @click="subDel">取关</button>
+				<button class='bnt' formType="submit" @click="subDel">{{$t(`取关`)}}</button>
 			</view>
 		</view>
 		<!-- #ifdef MP -->
@@ -71,6 +71,7 @@
 	// #endif
 	import home from '@/components/home';
 	import colors from '@/mixins/color.js';
+	import {HTTP_REQUEST_URL} from '@/config/app';
 	export default {
 		components: {
 			recommend,
@@ -82,10 +83,11 @@
 		mixins: [colors],
 		data() {
 			return {
+				imgHost:HTTP_REQUEST_URL,
 				ids: [],
 				hostProduct: [],
 				checkbox_show: false,
-				loadTitle: '加载更多',
+				loadTitle: this.$t(`加载更多`),
 				loading: false,
 				loadend: false,
 				collectProductList: [],
@@ -128,14 +130,11 @@
 				this.checkbox_show = !this.checkbox_show
 			},
 			checkboxChange(e) {
-				console.log(this.ids.length)
-				console.log(e.detail.value)
 				if (e.detail.value.length < this.ids.length) {
 					this.$set(this, 'isAllSelect', false);
 				} else if (e.detail.value.length === this.collectProductList.length) {
 					this.$set(this, 'isAllSelect', true);
 				}
-				console.log(this.isAllSelect)
 				this.$set(this, 'ids', e.detail.value);
 			},
 			subDel() {
@@ -149,16 +148,16 @@
 						that.page = 1;
 						that.collectProductList = [];
 						this.getUserCollectProduct();
+						this.ids.length = '';
 					});
 				} else {
 					return that.$util.Tips({
-						title: '请选择商品'
+						title: that.$t(`请选择商品`)
 					});
 				}
 
 			},
 			checkboxAllChange(event) {
-				console.log(event.detail.value)
 				let value = event.detail.value;
 				if (value.length > 0) {
 					this.setAllSelectValue(1)
@@ -183,7 +182,6 @@
 						return item;
 					});
 					that.$set(that, 'collectProductList', newValid);
-					console.log(selectValue)
 					that.$set(that, 'ids', selectValue);
 				}
 			},
@@ -230,13 +228,13 @@
 						.collectProductList);
 					that.$set(that, 'collectProductList', that.collectProductList);
 					that.loadend = loadend;
-					that.loadTitle = loadend ? '我也是有底线的' : '加载更多';
+					that.loadTitle = loadend ? that.$t(`我也是有底线的`) : that.$t(`加载更多`);
 					if (!that.collectProductList.length && that.page == 1) this.get_host_product();
 					that.page = that.page + 1;
 					that.loading = false;
 				}).catch(err => {
 					that.loading = false;
-					that.loadTitle = "加载更多";
+					that.loadTitle = that.$t(`加载更多`);
 				});
 			},
 			/**

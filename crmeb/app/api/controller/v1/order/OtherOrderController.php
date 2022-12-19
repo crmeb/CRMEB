@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -52,7 +52,7 @@ class OtherOrderController
     {
         list($pay_price) = $request->getMore([['pay_price', 0]], true);
         $old_price = $pay_price;
-        if (!$pay_price || !is_numeric($pay_price)) return app('json')->fail('请输入付款金额');
+        if (!$pay_price || !is_numeric($pay_price)) return app('json')->fail(410190);
         $uid = $request->uid();
         /** @var UserServices $userService */
         $userService = app()->make(UserServices::class);
@@ -69,7 +69,7 @@ class OtherOrderController
         }
         $show = true;
         if ($old_price == $pay_price) $show = false;
-        return app('json')->successful(['pay_price' => $pay_price, 'show' => $show]);
+        return app('json')->success(['pay_price' => $pay_price, 'show' => $show]);
 
     }
 
@@ -97,20 +97,20 @@ class OtherOrderController
             ['quitUrl', ''],
             ['mc_id', 0]
         ], true);
-        if ($money <= 0.00) return app('json')->fail('支付金额不能为 0 !');
+        if ($money <= 0.00) return app('json')->fail(410191);
         $payType = strtolower($payType);
         if (in_array($type, [1, 2])) {
             /** @var MemberCardServices $memberCardService */
             $memberCardService = app()->make(MemberCardServices::class);
             $isOpenMember = $memberCardService->isOpenMemberCard();
-            if (!$isOpenMember) return app('json')->fail('付费会员功能暂未开启!');
+            if (!$isOpenMember) return app('json')->fail(410192);
         }
         $channelType = $userServices->getUserInfo($uid)['user_type'];
         $order = $OtherOrderServices->createOrder($uid, $channelType, $memberType, $price, $payType, $type, $money, $mcId);
-        if ($order === false) return app('json')->fail('支付数据生成失败');
+        if ($order === false) return app('json')->fail(410193);
         $order_id = $order['order_id'];
         $orderInfo = $OtherOrderServices->getOne(['order_id' => $order_id]);
-        if (!$orderInfo) return app('json')->fail('支付订单不存在!');
+        if (!$orderInfo) return app('json')->fail(410194);
         $orderInfo = $orderInfo->toArray();
 
         $info = compact('order_id');
@@ -118,13 +118,13 @@ class OtherOrderController
         if ($order_id) {
             switch ($payType) {
                 case PayServices::WEIXIN_PAY:
-                    if ($orderInfo['paid']) return app('json')->fail('已支付!');
+                    if ($orderInfo['paid']) return app('json')->fail(410174);
                     //支付金额为0
                     if (bcsub((string)$orderInfo['pay_price'], '0', 2) <= 0) {
                         //创建订单jspay支付
                         $payPriceStatus = $OtherOrderServices->zeroYuanPayment($orderInfo, $uid);
                         if ($payPriceStatus)//0元支付成功
-                            return app('json')->status('success', '微信支付成功', $info);
+                            return app('json')->status('success', 410195, $info);
                         else
                             return app('json')->status('pay_error');
                     } else {
@@ -132,9 +132,9 @@ class OtherOrderController
                         $payServices = app()->make(OrderPayServices::class);
                         $info['jsConfig'] = $payServices->orderPay($orderInfo, $from);
                         if ($from == 'weixinh5') {
-                            return app('json')->status('wechat_h5_pay', '前往支付', $info);
+                            return app('json')->status('wechat_h5_pay', 410196, $info);
                         } else {
-                            return app('json')->status('wechat_pay', '前往支付', $info);
+                            return app('json')->status('wechat_pay', 410196, $info);
                         }
                     }
                 case PayServices::YUE_PAY:
@@ -142,7 +142,7 @@ class OtherOrderController
                     $yueServices = app()->make(YuePayServices::class);
                     $pay = $yueServices->yueOrderPay($orderInfo, $uid);
                     if ($pay['status'] === true)
-                        return app('json')->status('success', '余额支付成功', $info);
+                        return app('json')->status('success', 410197, $info);
                     else {
                         if (is_array($pay))
                             return app('json')->status($pay['status'], $pay['msg'], $info);
@@ -151,14 +151,14 @@ class OtherOrderController
                     }
                 case PayServices::ALIAPY_PAY:
                     if (!$quitUrl && $from != 'routine' && !request()->isApp()) {
-                        return app('json')->status('pay_error', '请传入支付宝支付回调URL', $info);
+                        return app('json')->status('pay_error', 410198, $info);
                     }
                     //支付金额为0
                     if (bcsub((string)$orderInfo['pay_price'], '0', 2) <= 0) {
                         //创建订单jspay支付
                         $payPriceStatus = $OtherOrderServices->zeroYuanPayment($orderInfo);
                         if ($payPriceStatus)//0元支付成功
-                            return app('json')->status('success', '支付宝支付成功', $info);
+                            return app('json')->status('success', 410199, $info);
                         else
                             return app('json')->status('pay_error');
                     } else {
@@ -168,12 +168,12 @@ class OtherOrderController
                         $payKey = md5($orderInfo['order_id']);
                         CacheService::set($payKey, ['order_id' => $orderInfo['order_id'], 'other_pay_type' => true], 300);
                         $info['pay_key'] = $payKey;
-                        return app('json')->status(PayServices::ALIAPY_PAY . '_pay', '前往支付', $info);
+                        return app('json')->status(PayServices::ALIAPY_PAY . '_pay',  410196, $info);
                     }
                 case PayServices::OFFLINE_PAY:
-                    return app('json')->status('success', '前往支付', $info);
+                    return app('json')->status('success', 410196, $info);
             }
-        } else return app('json')->fail('订单生成失败!');
+        } else return app('json')->fail(410200);
     }
 
     /**
@@ -189,6 +189,6 @@ class OtherOrderController
         $payType['now_money'] = $request->user('now_money');
         $payType['offline_pay_status'] = true;
         $payType['yue_pay_status'] = (int)sys_config('balance_func_status') && (int)sys_config('yue_pay_status') == 1 ? 1 : 0;//余额支付 1 开启 2 关闭
-        return app('json')->successful($payType);
+        return app('json')->success($payType);
     }
 }

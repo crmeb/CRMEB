@@ -1,17 +1,7 @@
 <template>
   <div>
-    <div class="i-layout-page-header">
-      <div class="i-layout-page-header">
-        <span class="ivu-page-header-title">{{ $route.meta.title }}</span>
-      </div>
-    </div>
     <Card :bordered="false" dis-hover class="ivu-mt">
-      <Form
-        ref="formValidate"
-        :model="formValidate"
-        class="tabform"
-        @submit.native.prevent
-      >
+      <Form ref="formValidate" :model="formValidate" class="tabform" @submit.native.prevent>
         <Row :gutter="24" type="flex">
           <Col span="24">
             <FormItem label="订单时间：">
@@ -21,12 +11,7 @@
                 @on-change="selectChange(formValidate.data)"
                 class="mr"
               >
-                <Radio
-                  :label="item.val"
-                  v-for="(item, i) in fromList.fromTxt"
-                  :key="i"
-                  >{{ item.text }}</Radio
-                >
+                <Radio :label="item.val" v-for="(item, i) in fromList.fromTxt" :key="i">{{ item.text }}</Radio>
               </RadioGroup>
               <DatePicker
                 :editable="false"
@@ -42,17 +27,8 @@
         ></Row>
       </Form>
     </Card>
-    <cards-data
-      :cardLists="cardLists"
-      v-if="cardLists.length >= 0"
-    ></cards-data>
-    <echarts-new
-      :option-data="optionData"
-      :styles="style"
-      height="100%"
-      width="100%"
-      v-if="optionData"
-    ></echarts-new>
+    <cards-data :cardLists="cardLists" v-if="cardLists.length >= 0"></cards-data>
+    <echarts-new :option-data="optionData" :styles="style" height="100%" width="100%" v-if="optionData"></echarts-new>
     <Spin size="large" fix v-if="spinShow"></Spin>
     <div class="code-row-bg">
       <Card :bordered="false" dis-hover class="ivu-mt">
@@ -86,69 +62,69 @@
 </template>
 
 <script>
-import cardsData from "@/components/cards/cards";
-import echartsNew from "@/components/echartsNew/index";
+import cardsData from '@/components/cards/cards';
+import echartsNew from '@/components/echartsNew/index';
 
 export default {
-  name: "index",
+  name: 'index',
   components: { cardsData, echartsNew },
   data() {
     return {
       timeVal: [],
-      style: { height: "400px" },
+      style: { height: '400px' },
 
       fromList: {
-        title: "选择时间",
+        title: '选择时间',
         custom: true,
         fromTxt: [
-          { text: "全部", val: "" },
-          { text: "今天", val: "today" },
-          { text: "本周", val: "week" },
-          { text: "本月", val: "month" },
-          { text: "本季度", val: "quarter" },
-          { text: "本年", val: "year" },
+          { text: '全部', val: '' },
+          { text: '今天', val: 'today' },
+          { text: '本周', val: 'week' },
+          { text: '本月', val: 'month' },
+          { text: '本季度', val: 'quarter' },
+          { text: '本年', val: 'year' },
         ],
       },
       formValidate: {
-        status: "",
-        date: "",
+        status: '',
+        date: '',
       },
       cardLists: [
         {
           col: 6,
           count: 0,
-          name: "参与人数(人)",
-          className: "ios-speedometer-outline",
+          name: '参与人数(人)',
+          className: 'ios-speedometer-outline',
         },
         {
           col: 6,
           count: 0,
-          name: "成团数量(个)",
-          className: "md-rose",
+          name: '成团数量(个)',
+          className: 'md-rose',
         },
         {
           col: 6,
           count: 0,
-          name: "参与人数(人)",
-          className: "ios-speedometer-outline",
+          name: '参与人数(人)',
+          className: 'ios-speedometer-outline',
         },
         {
           col: 6,
           count: 0,
-          name: "成团数量(个)",
-          className: "md-rose",
+          name: '成团数量(个)',
+          className: 'md-rose',
         },
         {
           col: 6,
           count: 0,
-          name: "参与人数(人)",
-          className: "ios-speedometer-outline",
+          name: '参与人数(人)',
+          className: 'ios-speedometer-outline',
         },
         {
           col: 6,
           count: 0,
-          name: "成团数量(个)",
-          className: "md-rose",
+          name: '成团数量(个)',
+          className: 'md-rose',
         },
       ],
       optionData: {},
@@ -162,7 +138,7 @@ export default {
     // 具体日期
     onchangeTime(e) {
       this.timeVal = e;
-      this.dataTime = this.timeVal.join("-");
+      this.dataTime = this.timeVal.join('-');
       this.name = this.dataTime;
     },
     // 统计图
@@ -174,12 +150,12 @@ export default {
             return item.name;
           });
           let xAxis = res.data.xAxis;
-          let col = ["#5B8FF9", "#5AD8A6", "#FFAB2B", "#5D7092"];
+          let col = ['#5B8FF9', '#5AD8A6', '#FFAB2B', '#5D7092'];
           let series = [];
           res.data.series.map((item, index) => {
             series.push({
               name: item.name,
-              type: "line",
+              type: 'line',
               data: item.value,
               itemStyle: {
                 normal: {
@@ -191,22 +167,22 @@ export default {
           });
           this.optionData = {
             tooltip: {
-              trigger: "axis",
+              trigger: 'axis',
               axisPointer: {
-                type: "cross",
+                type: 'cross',
                 label: {
-                  backgroundColor: "#6a7985",
+                  backgroundColor: '#6a7985',
                 },
               },
             },
             legend: {
-              x: "center",
+              x: 'center',
               data: legend,
             },
             grid: {
-              left: "3%",
-              right: "4%",
-              bottom: "3%",
+              left: '3%',
+              right: '4%',
+              bottom: '3%',
               containLabel: true,
             },
             toolbox: {
@@ -215,7 +191,7 @@ export default {
               },
             },
             xAxis: {
-              type: "category",
+              type: 'category',
               boundaryGap: true,
               // axisTick:{
               //     show:false
@@ -230,13 +206,13 @@ export default {
                 interval: 0,
                 rotate: 40,
                 textStyle: {
-                  color: "#000000",
+                  color: '#000000',
                 },
               },
               data: xAxis,
             },
             yAxis: {
-              type: "value",
+              type: 'value',
               axisLine: {
                 show: false,
               },
@@ -245,13 +221,13 @@ export default {
               },
               axisLabel: {
                 textStyle: {
-                  color: "#7F8B9C",
+                  color: '#7F8B9C',
                 },
               },
               splitLine: {
                 show: true,
                 lineStyle: {
-                  color: "#F5F7F9",
+                  color: '#F5F7F9',
                 },
               },
             },

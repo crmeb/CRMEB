@@ -30,7 +30,7 @@ class SystemAgreement extends AuthController
      */
     public function getAgreement($type)
     {
-        if (!$type) return app('json')->fail('协议类型不存在');
+        if (!$type) return app('json')->fail(400184);
         $info = $this->services->getAgreementBytype($type);
         return app('json')->success($info);
     }
@@ -49,6 +49,6 @@ class SystemAgreement extends AuthController
         ]);
         $data['status'] = 1;
         $this->services->saveAgreement($data, $data['id']);
-        return app('json')->success('保存成功');
+        return app('json')->success(100000);
     }
 }

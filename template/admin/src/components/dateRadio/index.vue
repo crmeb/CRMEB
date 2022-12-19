@@ -1,23 +1,18 @@
 <template>
   <RadioGroup v-model="selectIndexTime" type="button" @on-change="onSelectTime">
-    <Radio
-      :label="index"
-      v-for="(item, index) in options.shortcuts"
-      :key="index"
-      >{{ item.text }}</Radio
-    >
+    <Radio :label="index" v-for="(item, index) in options.shortcuts" :key="index">{{ item.text }}</Radio>
   </RadioGroup>
 </template>
 
 <script>
-import { formatDate } from "@/utils/validate";
+import { formatDate } from '@/utils/validate';
 
 export default {
   filters: {
     formatDate(time) {
       if (time !== 0) {
         let date = new Date(time);
-        return formatDate(date, "yyyy/MM/dd");
+        return formatDate(date, 'yyyy/MM/dd');
       }
     },
   },
@@ -25,24 +20,16 @@ export default {
     return {
       timeVal: [],
       options: this.$timeOptions,
-      selectIndexTime: "",
+      selectIndexTime: '',
     };
   },
   methods: {
     onSelectTime(e) {
       let time = [
-        this.$options.filters.formatDate(
-          this.dateToMs(
-            this.$timeOptions.shortcuts[this.selectIndexTime].value()[0]
-          )
-        ),
-        this.$options.filters.formatDate(
-          this.dateToMs(
-            this.$timeOptions.shortcuts[this.selectIndexTime].value()[1]
-          )
-        ),
+        this.$options.filters.formatDate(this.dateToMs(this.$timeOptions.shortcuts[this.selectIndexTime].value()[0])),
+        this.$options.filters.formatDate(this.dateToMs(this.$timeOptions.shortcuts[this.selectIndexTime].value()[1])),
       ];
-      this.$emit("selectDate", time.join("-"));
+      this.$emit('selectDate', time.join('-'));
     },
     dateToMs(date) {
       let result = new Date(date).getTime();
@@ -52,5 +39,4 @@ export default {
 };
 </script>
 
-<style>
-</style>
+<style></style>

@@ -1,33 +1,19 @@
 <template>
   <div>
-    <div class="i-layout-page-header">
-      <div class="i-layout-page-header">
-        <span class="ivu-page-header-title">{{ $route.meta.title }}</span>
-      </div>
-    </div>
     <Card :bordered="false" dis-hover class="ivu-mt">
       <div class="acea-row row-between-wrapper mb20">
         <Row type="flex">
           <Col v-bind="grid">
             <div class="button acea-row row-middle">
-              <Button class="mr20" type="primary" icon="md-add" @click="add(0)"
-                >添加省份</Button
-              >
+              <Button class="mr20" type="primary" icon="md-add" @click="add(0)">添加省份</Button>
               <Button type="primary" @click="cleanCache">清除缓存</Button>
             </div>
           </Col>
         </Row>
       </div>
-      <Table
-        row-key="id"
-        :load-data="handleLoadData"
-        :columns="columns1"
-        :data="cityLists"
-      >
+      <Table row-key="id" :load-data="handleLoadData" :columns="columns1" :data="cityLists">
         <template slot-scope="{ row, index }" slot="action">
-          <a v-if="row.hasOwnProperty('children')" @click="add(row.city_id)"
-            >添加</a
-          >
+          <a v-if="row.hasOwnProperty('children')" @click="add(row.city_id)">添加</a>
           <Divider v-if="row.hasOwnProperty('children')" type="vertical" />
           <a @click="edit(row.id)">编辑</a>
           <Divider type="vertical" />
@@ -39,15 +25,10 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
-import {
-  cityListApi,
-  cityAddApi,
-  cityApi,
-  cityCleanCacheApi,
-} from "@/api/setting";
+import { mapState } from 'vuex';
+import { cityListApi, cityAddApi, cityApi, cityCleanCacheApi } from '@/api/setting';
 export default {
-  name: "setting_dada",
+  name: 'setting_dada',
   data() {
     return {
       grid: {
@@ -60,25 +41,25 @@ export default {
       loading: false,
       columns1: [
         {
-          title: "编号",
-          key: "id",
+          title: '编号',
+          key: 'id',
           width: 80,
         },
         {
-          title: "地区名称",
-          key: "label",
+          title: '地区名称',
+          key: 'label',
           minWidth: 300,
           tree: true,
         },
         {
-          title: "上级名称",
-          key: "parent_name",
+          title: '上级名称',
+          key: 'parent_name',
           minWidth: 300,
         },
         {
-          title: "操作",
-          slot: "action",
-          fixed: "right",
+          title: '操作',
+          slot: 'action',
+          fixed: 'right',
           minWidth: 120,
         },
       ],
@@ -87,12 +68,12 @@ export default {
     };
   },
   computed: {
-    ...mapState("media", ["isMobile"]),
+    ...mapState('media', ['isMobile']),
     labelWidth() {
       return this.isMobile ? undefined : 75;
     },
     labelPosition() {
-      return this.isMobile ? "top" : "left";
+      return this.isMobile ? 'top' : 'left';
     },
   },
   created() {
@@ -147,8 +128,8 @@ export default {
         title: tit,
         num: num,
         url: `setting/city/del/${row.city_id}`,
-        method: "DELETE",
-        ids: "",
+        method: 'DELETE',
+        ids: '',
       };
       this.$modalSure(delfromData)
         .then((res) => {

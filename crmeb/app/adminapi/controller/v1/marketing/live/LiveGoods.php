@@ -2,13 +2,12 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
 // | Author: CRMEB Team <admin@crmeb.com>
 // +----------------------------------------------------------------------
-
 namespace app\adminapi\controller\v1\marketing\live;
 
 use app\adminapi\controller\AuthController;
@@ -33,6 +32,10 @@ class LiveGoods extends AuthController
         $this->services = $services;
     }
 
+    /**
+     * 直播间商品列表
+     * @return mixed
+     */
     public function list()
     {
         $where = $this->request->postMore([
@@ -44,75 +47,115 @@ class LiveGoods extends AuthController
         return app('json')->success($this->services->getList($where));
     }
 
+    /**
+     * 生成直播商品
+     * @return mixed
+     */
     public function create()
     {
         [$product_ids] = $this->request->postMore([
             ['product_id', []]
         ], true);
-        if (!$product_ids) return app('json')->fail('请选择商品');
         return app('json')->success($this->services->create($product_ids));
     }
 
+    /**
+     * 上传直播商品
+     * @return mixed
+     * @throws \EasyWeChat\Core\Exceptions\InvalidArgumentException
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     */
     public function add()
     {
         [$goods_info] = $this->request->postMore([
             ['goods_info', []]
         ], true);
-        if (!$goods_info) return app('json')->fail('请选择商品');
         foreach ($goods_info as $goods) {
-            if (!$goods['id']) return app('json')->fail('请选择商品');
-            if (!$goods['store_name']) return app('json')->fail('请输入名称');
-            if (!$goods['image']) return app('json')->fail('请选择背景图');
-            if (!$goods['price']) return app('json')->fail('请输入直播价格');
-            if ($goods['price'] <= 0) return app('json')->fail('直播价格必须大于0');
+            $this->validate($goods, \app\adminapi\validate\marketing\LiveGoodsValidate::class, 'save');
         }
         $this->services->add($goods_info);
-        return app('json')->success('添加成功');
+        return app('json')->success(100000);
     }
 
+    /**
+     * 商品详情
+     * @param $id
+     * @return mixed
+     */
     public function detail($id)
     {
-        if (!$id)
-            return app('json')->fail('数据不存在');
+        if (!$id) return app('json')->fail(100100);
         $goods = $this->services->get($id, ['*'], ['product']);
-        return app('json')->success('ok', $goods ? $goods->toArray() : []);
+        return app('json')->success($goods ? $goods->toArray() : []);
     }
 
+    /**
+     * 同步直播商品
+     * @return mixed
+     */
     public function syncGoods()
     {
         $this->services->syncGoodStatus();
-        return app('json')->success('同步成功');
+        return app('json')->success(100038);
     }
 
+    /**
+     * 重新提交审核
+     * @param $id
+     * @return mixed
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     */
     public function audit($id)
     {
-        if (!$id)
-            return app('json')->fail('数据不存在');
+        if (!$id) return app('json')->fail(100100);
         $this->services->audit((int)$id);
-        return app('json')->success('提交审核成功');
+        return app('json')->success(100014);
     }
 
+    /**
+     * 撤回审核
+     * @param $id
+     * @return mixed
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     */
     public function resetAudit($id)
     {
-        if (!$id)
-            return app('json')->fail('数据不存在');
+        if (!$id) return app('json')->fail(100100);
         $this->services->resetAudit((int)$id);
-        return app('json')->success('撤销成功');
+        return app('json')->success(100014);
     }
 
+    /**
+     * 设置状态
+     * @param int $id
+     * @param $is_show
+     * @return mixed
+     */
     public function setShow(int $id, $is_show)
     {
-        if (!$id)
-            return app('json')->fail('数据不存在');
+        if (!$id) return app('json')->fail(100100);
         return app('json')->success($this->services->isShow($id, $is_show));
     }
 
+    /**
+     * 删除商品
+     * @param $id
+     * @return mixed
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     */
     public function delete($id)
     {
-        if (!$id)
-            return app('json')->fail('数据不存在');
+        if (!$id) return app('json')->fail(100100);
         $this->services->delete($id);
-        return app('json')->success('删除成功');
+        return app('json')->success(100002);
     }
 
 }

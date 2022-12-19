@@ -11,9 +11,9 @@ use app\services\other\QrcodeServices;
 use app\services\system\attachment\SystemAttachmentServices;
 use app\services\user\UserServices;
 use crmeb\exceptions\AdminException;
+use crmeb\exceptions\ApiException;
 use crmeb\services\FormBuilder as Form;
-use crmeb\services\UploadService;
-use think\exception\ValidateException;
+use app\services\other\UploadService;
 use think\facade\Route;
 
 class DivisionAgentApplyServices extends BaseServices
@@ -58,7 +58,7 @@ class DivisionAgentApplyServices extends BaseServices
         /** @var UserServices $userServices */
         $userServices = app()->make(UserServices::class);
         $divisionId = $userServices->value(['division_invite' => $data['division_invite']], 'division_id');
-        if (!$divisionId) throw new ValidateException('邀请码无效');
+        if (!$divisionId) throw new ApiException(410073);
         $data['division_id'] = $divisionId;
         if ($id) {
             $data['status'] = 0;
@@ -67,7 +67,7 @@ class DivisionAgentApplyServices extends BaseServices
             $this->dao->update(['uid' => $data['uid']], ['is_del' => 1]);
             $res = $this->dao->save($data);
         }
-        if (!$res) throw new ValidateException('提交失败');
+        if (!$res) throw new ApiException(100018);
         return true;
     }
 
@@ -101,7 +101,7 @@ class DivisionAgentApplyServices extends BaseServices
     public function delApply($id)
     {
         $res = $this->dao->update($id, ['is_del' => 1]);
-        if (!$res) throw new AdminException('删除失败');
+        if (!$res) throw new AdminException(100008);
         return true;
     }
 
@@ -114,7 +114,7 @@ class DivisionAgentApplyServices extends BaseServices
      */
     public function examineApply($id, $type)
     {
-        if (!$id) throw new AdminException('参数错误，找不到用户');
+        if (!$id) throw new AdminException(100100);
         $field = [];
         $field[] = Form::hidden('type', $type);
         $field[] = Form::hidden('id', $id);
@@ -152,14 +152,16 @@ class DivisionAgentApplyServices extends BaseServices
                     'is_staff' => 0,
                     'division_percent' => $data['division_percent'],
                     'division_change_time' => time(),
-                    'division_end_time' => strtotime($data['division_end_time'])
+                    'division_end_time' => strtotime($data['division_end_time']),
+                    'spread_uid' => $applyInfo['division_id'],
+                    'spread_time' => time()
                 ];
                 /** @var UserServices $userServices */
                 $userServices = app()->make(UserServices::class);
                 $division_info = $userServices->getUserInfo($applyInfo['division_id'], 'division_end_time,division_percent');
                 if ($applyInfo['division_id'] != 0) {
-                    if ($agentData['division_percent'] > $division_info['division_percent']) throw new AdminException('代理商佣金比例不能大于事业部佣金比例');
-                    if ($agentData['division_end_time'] > $division_info['division_end_time']) throw new AdminException('代理商到期时间不能大于事业部到期时间');
+                    if ($agentData['division_percent'] > $division_info['division_percent']) throw new AdminException(400448);
+                    if ($agentData['division_end_time'] > $division_info['division_end_time']) throw new AdminException(400449);
                 }
                 $applyInfo->status = 1;
                 $res = $applyInfo->save();
@@ -169,7 +171,7 @@ class DivisionAgentApplyServices extends BaseServices
                 $applyInfo->refusal_reason = $data['refusal_reason'];
                 $res = $applyInfo->save();
             }
-            if (!$res) throw new AdminException('审核错误');
+            if (!$res) throw new AdminException(100005);
             return true;
         });
     }
@@ -215,7 +217,7 @@ class DivisionAgentApplyServices extends BaseServices
             } else {
                 $res = false;
             }
-            if (!$res) throw new AdminException('二维码生成失败');
+            if (!$res) throw new ApiException(410167);
             $imageInfo = $this->downloadImage($resCode['url'], $name);
             $systemAttachment->attachmentAdd($name, $imageInfo['size'], $imageInfo['type'], $imageInfo['att_dir'], $imageInfo['att_dir'], 1, $imageInfo['image_type'], time(), 2);
         }

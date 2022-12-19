@@ -4,6 +4,7 @@
 namespace app\jobs;
 
 
+use app\services\activity\combination\StoreCombinationServices;
 use app\services\order\StoreOrderCartInfoServices;
 use app\services\order\StoreOrderCreateServices;
 use app\services\order\StoreOrderComputedServices;
@@ -57,15 +58,21 @@ class OrderCreateAfterJob extends BaseJobs
                 if ($spread_uid) {
                     $orderData['spread_uid'] = $spread_uid;
                 }
-                if ($spread_uid > 0) {
+                if ($spread_uid > 0 && sys_config('brokerage_level') == 2) {
                     $spread_two_uid = $userServices->getSpreadUid($spread_uid, [], false);
                     if ($spread_two_uid) {
                         $orderData['spread_two_uid'] = $spread_two_uid;
                     }
                 }
             }
-
-            if ($cartInfo && !$activity) {
+            $isCommission = 0;
+            if ($orderInfo['combination_id']) {
+                //检测拼团是否参与返佣
+                /** @var StoreCombinationServices $combinationServices */
+                $combinationServices = app()->make(StoreCombinationServices::class);
+                $isCommission = $combinationServices->value(['id' => $orderInfo['combination_id']], 'is_commission');
+            }
+            if ($cartInfo && (!$activity || $isCommission)) {
                 /** @var StoreOrderComputedServices $orderComputed */
                 $orderComputed = app()->make(StoreOrderComputedServices::class);
                 if ($userServices->checkUserPromoter($spread_uid)) $orderData['one_brokerage'] = $orderComputed->getOrderSumPrice($cartInfo, 'one_brokerage', false);

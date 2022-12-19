@@ -1,17 +1,7 @@
 <template>
   <div>
-    <div class="i-layout-page-header">
-      <div class="i-layout-page-header">
-        <span class="ivu-page-header-title">{{ $route.meta.title }}</span>
-      </div>
-    </div>
     <Card :bordered="false" dis-hover class="ivu-mt">
-      <Form
-        :model="gradeFrom"
-        :label-width="labelWidth"
-        :label-position="labelPosition"
-        @submit.native.prevent
-      >
+      <Form :model="gradeFrom" :label-width="labelWidth" :label-position="labelPosition" @submit.native.prevent>
         <Row type="flex" :gutter="24">
           <Col v-bind="grid">
             <FormItem label="批次名称：" label-for="title">
@@ -27,9 +17,7 @@
         </Row>
         <Row type="flex">
           <Col v-bind="grid">
-            <Button type="primary" icon="md-add" @click="addBatch" class="mr20"
-              >添加批次</Button
-            >
+            <Button type="primary" icon="md-add" @click="addBatch" class="mr20">添加批次</Button>
             <Button @click="getMemberScan">下载二维码</Button>
           </Col>
         </Row>
@@ -58,7 +46,7 @@
         </template>
         <template slot-scope="{ row, index }" slot="action">
           <template>
-            <Dropdown @on-click="changeMenu(row, $event, index)">
+            <Dropdown @on-click="changeMenu(row, $event, index)" :transfer="true">
               <a href="javascript:void(0)">
                 更多
                 <Icon type="ios-arrow-down"></Icon>
@@ -84,11 +72,7 @@
       </div>
     </Card>
     <Modal v-model="modal" title="添加批次" footer-hide>
-      <form-create
-        v-model="fapi"
-        :rule="rule"
-        @on-submit="onSubmit"
-      ></form-create>
+      <form-create v-model="fapi" :rule="rule" @on-submit="onSubmit"></form-create>
     </Modal>
     <Modal v-model="cardModal" title="卡列表" footer-hide width="1000">
       <cardList v-if="cardModal" :id="id"></cardList>
@@ -98,19 +82,13 @@
     </Modal>
     <Modal v-model="modal3" title="二维码" footer-hide>
       <div v-if="qrcode" class="acea-row row-around">
-        <div
-          v-if="qrcode && qrcode.wechat_img"
-          class="acea-row row-column-around row-between-wrapper"
-        >
+        <div v-if="qrcode && qrcode.wechat_img" class="acea-row row-column-around row-between-wrapper">
           <div v-viewer class="QRpic">
             <img v-lazy="qrcode.wechat_img" />
           </div>
           <span class="mt10">公众号二维码</span>
         </div>
-        <div
-          v-if="qrcode && qrcode.routine"
-          class="acea-row row-column-around row-between-wrapper"
-        >
+        <div v-if="qrcode && qrcode.routine" class="acea-row row-column-around row-between-wrapper">
           <div v-viewer class="QRpic">
             <img v-lazy="qrcode.routine" />
           </div>
@@ -123,18 +101,12 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
-import cardList from "./list.vue";
-import {
-  userMemberBatch,
-  memberBatchSave,
-  memberBatchSetValue,
-  exportMemberCard,
-  userMemberScan,
-} from "@/api/user";
+import { mapState } from 'vuex';
+import cardList from './list.vue';
+import { userMemberBatch, memberBatchSave, memberBatchSetValue, exportMemberCard, userMemberScan } from '@/api/user';
 
 export default {
-  name: "index",
+  name: 'index',
   components: { cardList },
   data() {
     return {
@@ -149,47 +121,47 @@ export default {
       },
       columns: [
         {
-          title: "编号",
-          key: "id",
+          title: '编号',
+          key: 'id',
         },
         {
-          title: "批次名称",
-          key: "title",
+          title: '批次名称',
+          key: 'title',
         },
         {
-          title: "体验天数",
-          key: "use_day",
+          title: '体验天数',
+          key: 'use_day',
         },
         {
-          title: "发卡总数量",
-          key: "total_num",
+          title: '发卡总数量',
+          key: 'total_num',
         },
         {
-          title: "使用数量",
-          key: "use_num",
+          title: '使用数量',
+          key: 'use_num',
         },
         {
-          title: "制卡时间",
-          key: "add_time",
+          title: '制卡时间',
+          key: 'add_time',
         },
         {
-          title: "是否激活",
-          slot: "status",
+          title: '是否激活',
+          slot: 'status',
         },
         {
-          title: "备注",
-          key: "remark",
+          title: '备注',
+          key: 'remark',
         },
         {
-          title: "操作",
-          slot: "action",
-          fixed: "right",
+          title: '操作',
+          slot: 'action',
+          fixed: 'right',
         },
       ],
       tbody: [],
       total: 0,
       gradeFrom: {
-        title: "",
+        title: '',
         page: 1,
         limit: 15,
       },
@@ -197,21 +169,21 @@ export default {
       modal: false,
       rule: [
         {
-          type: "input",
-          field: "title",
-          title: "批次名称",
+          type: 'input',
+          field: 'title',
+          title: '批次名称',
           validate: [
             {
               required: true,
-              message: "请输入批次名称",
-              trigger: "blur",
+              message: '请输入批次名称',
+              trigger: 'blur',
             },
           ],
         },
         {
-          type: "InputNumber",
-          field: "total_num",
-          title: "制卡数量",
+          type: 'InputNumber',
+          field: 'total_num',
+          title: '制卡数量',
           value: 1,
           props: {
             min: 1,
@@ -219,7 +191,7 @@ export default {
             max: 100000,
           },
           on: {
-            "on-change": (data) => {
+            'on-change': (data) => {
               if (data > 100000) {
                 this.$nextTick((e) => {
                   this.rule[1].value = 100000;
@@ -229,9 +201,9 @@ export default {
           },
         },
         {
-          type: "InputNumber",
-          field: "use_day",
-          title: "体验天数",
+          type: 'InputNumber',
+          field: 'use_day',
+          title: '体验天数',
           value: 1,
           props: {
             min: 1,
@@ -239,7 +211,7 @@ export default {
             max: 100000,
           },
           on: {
-            "on-change": (data) => {
+            'on-change': (data) => {
               if (data > 100000) {
                 this.$nextTick((e) => {
                   this.rule[2].value = 100000;
@@ -249,47 +221,47 @@ export default {
           },
         },
         {
-          type: "radio",
-          field: "status",
-          title: "是否激活",
-          value: "0",
+          type: 'radio',
+          field: 'status',
+          title: '是否激活',
+          value: '0',
           options: [
             {
-              value: "0",
-              label: "冻结",
+              value: '0',
+              label: '冻结',
             },
             {
-              value: "1",
-              label: "激活",
+              value: '1',
+              label: '激活',
             },
           ],
         },
         {
-          type: "input",
-          field: "remark",
-          title: "备注",
+          type: 'input',
+          field: 'remark',
+          title: '备注',
           props: {
-            type: "textarea",
+            type: 'textarea',
           },
         },
       ],
       modal2: false,
       rule2: [
         {
-          type: "hidden",
-          field: "id",
-          value: "",
+          type: 'hidden',
+          field: 'id',
+          value: '',
         },
         {
-          type: "input",
-          field: "title",
-          title: "批次名称",
-          value: "",
+          type: 'input',
+          field: 'title',
+          title: '批次名称',
+          value: '',
           validate: [
             {
               required: true,
-              message: "请输入批次名称",
-              trigger: "blur",
+              message: '请输入批次名称',
+              trigger: 'blur',
             },
           ],
         },
@@ -300,12 +272,12 @@ export default {
     };
   },
   computed: {
-    ...mapState("media", ["isMobile"]),
+    ...mapState('media', ['isMobile']),
     labelWidth() {
       return this.isMobile ? undefined : 75;
     },
     labelPosition() {
-      return this.isMobile ? "top" : "right";
+      return this.isMobile ? 'top' : 'right';
     },
   },
   created() {
@@ -334,7 +306,7 @@ export default {
     // 激活 | 冻结
     onchangeIsShow(row) {
       memberBatchSetValue(row.id, {
-        field: "status",
+        field: 'status',
         value: row.status,
       })
         .then((res) => {
@@ -360,16 +332,16 @@ export default {
     // 更多
     changeMenu(row, name) {
       switch (name) {
-        case "1":
+        case '1':
           this.rule2[0].value = row.id;
           this.rule2[1].value = row.title;
           this.modal2 = true;
           break;
-        case "2":
+        case '2':
           this.id = row.id;
           this.cardModal = true;
           break;
-        case "3":
+        case '3':
           this.exportExcel(row);
           break;
       }
@@ -399,7 +371,7 @@ export default {
     },
     onSubmit2(formData) {
       memberBatchSetValue(formData.id, {
-        field: "title",
+        field: 'title',
         value: formData.title,
       })
         .then((res) => {

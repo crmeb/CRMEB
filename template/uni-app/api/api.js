@@ -1,7 +1,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2021 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -11,12 +11,23 @@
 import request from "@/utils/request.js";
 /**
  * 公共接口 ，优惠券接口 , 行业此讯 , 手机号码注册
- * 
+ *
  */
+export function getAjcaptcha(data) {
+	return request.get("ajcaptcha", data, {
+		noAuth: true
+	});
+}
+
+export function ajcaptchaCheck(data) {
+	return request.post("ajcheck", data, {
+		noAuth: true
+	});
+}
 
 /**
  * 获取主页数据 无需授权
- * 
+ *
  */
 export function getIndexData() {
 	return request.get("v2/index", {}, {
@@ -25,7 +36,7 @@ export function getIndexData() {
 }
 /**
  * 获取服务器类型
- * 
+ *
  */
 export function getServerType() {
 	return request.get("v2/site_serve", {}, {
@@ -35,7 +46,7 @@ export function getServerType() {
 
 /**
  * 获取登录授权login
- * 
+ *
  */
 export function getLogo() {
 	return request.get('wechat/get_logo', {}, {
@@ -46,7 +57,7 @@ export function getLogo() {
 
 /**
  * 保存form_id
- * @param string formId 
+ * @param string formId
  */
 export function setFormId(formId) {
 	return request.post("wechat/set_form_id", {
@@ -57,7 +68,7 @@ export function setFormId(formId) {
 /**
  * 领取优惠卷
  * @param int couponId
- * 
+ *
  */
 export function setCouponReceive(couponId) {
 	return request.post('coupon/receive', {
@@ -93,7 +104,7 @@ export function getUserCoupons(types, data) {
 
 /**
  * 首页新人优惠券
- * 
+ *
  */
 export function getNewCoupon() {
 	return request.get('v2/new_coupon')
@@ -101,7 +112,7 @@ export function getNewCoupon() {
 
 /**
  * 文章分类列表
- * 
+ *
  */
 export function getArticleCategoryList() {
 	return request.get('article/category/list', {}, {
@@ -112,7 +123,7 @@ export function getArticleCategoryList() {
 /**
  * 文章列表
  * @param int cid
- * 
+ *
  */
 export function getArticleList(cid, data) {
 	return request.get('article/list/' + cid, data, {
@@ -122,7 +133,7 @@ export function getArticleList(cid, data) {
 
 /**
  * 文章 热门列表
- * 
+ *
  */
 export function getArticleHotList() {
 	return request.get('article/hot/list', {}, {
@@ -132,7 +143,7 @@ export function getArticleHotList() {
 
 /**
  * 文章 轮播列表
- * 
+ *
  */
 export function getArticleBannerList() {
 	return request.get('article/banner/list', {}, {
@@ -142,8 +153,8 @@ export function getArticleBannerList() {
 
 /**
  * 文章详情
- * @param int id 
- * 
+ * @param int id
+ *
  */
 export function getArticleDetails(id) {
 	return request.get('article/details/' + id, {}, {
@@ -175,12 +186,13 @@ export function verifyCode() {
  * 验证码发送
  * @param object phone
  */
-export function registerVerify(phone, reset, key, code) {
+export function registerVerify(phone, reset, key, captchaType, captchaVerification) {
 	return request.post('register/verify', {
 		phone: phone,
 		type: reset === undefined ? 'reset' : reset,
 		key: key,
-		code: code
+		captchaType: captchaType,
+		captchaVerification: captchaVerification
 	}, {
 		noAuth: true
 	})
@@ -189,7 +201,7 @@ export function registerVerify(phone, reset, key, code) {
 /**
  * 手机号注册
  * @param object data
- * 
+ *
  */
 export function phoneRegister(data) {
 	return request.post('register', data, {
@@ -200,7 +212,7 @@ export function phoneRegister(data) {
 /**
  * 手机号修改密码
  * @param object data
- * 
+ *
  */
 export function phoneRegisterReset(data) {
 	return request.post('register/reset', data, {
@@ -211,7 +223,7 @@ export function phoneRegisterReset(data) {
 /**
  * 手机号+密码登录
  * @param object data
- * 
+ *
  */
 export function phoneLogin(data) {
 	return request.post('login', data, {
@@ -244,7 +256,7 @@ export function switchH5Login() {
 
 /**
  * 绑定手机号
- * 
+ *
  */
 export function bindingPhone(data) {
 	return request.post('binding', data, {
@@ -256,7 +268,7 @@ export function bindingPhone(data) {
 
 /**
  * 绑定手机号
- * 
+ *
  */
 export function bindingUserPhone(data) {
 	return request.post('user/binding', data);
@@ -264,7 +276,7 @@ export function bindingUserPhone(data) {
 
 /**
  * 退出登錄
- * 
+ *
  */
 export function logout() {
 	return request.get('logout');
@@ -273,8 +285,8 @@ export function logout() {
 /**
  * 获取订阅消息id
  */
-export function getTemlIds() {
-	return request.get('wechat/teml_ids', {}, {
+export function getTempIds() {
+	return request.get('wechat/temp_ids', {}, {
 		noAuth: true
 	});
 }
@@ -429,4 +441,13 @@ export function getOpenAdv(data) {
 	return request.get("get_open_adv", {}, {
 		noAuth: true
 	});
+}
+
+/**
+ * 获取版权信息
+ */
+export function getCrmebCopyRight() {
+	return request.get('copyright', {}, {
+		noAuth: true
+	})
 }

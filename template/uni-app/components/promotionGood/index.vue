@@ -6,7 +6,7 @@
 					<image :src='item.image'></image>
 				</view>
 				<view class='money'>
-					<text class="rmb">¥ </text><text class="price"> {{item.price}}</text>
+					<text class="rmb">{{$t(`￥`)}} </text><text class="price"> {{item.price}}</text>
 					<!-- <text class="ot-price">{{item.ot_price}}</text> -->
 				</view>
 			</view>

@@ -3,23 +3,13 @@
     <div class="c_row-item" v-if="this.$route.query.type !== 2">
       <Col class="label" span="4"> 模板名称 </Col>
       <Col span="19" class="slider-box">
-        <Input
-          v-model="name"
-          placeholder="选填不超过15个字"
-          maxlength="15"
-          @on-change="changName"
-        />
+        <Input v-model="name" placeholder="选填不超过15个字" maxlength="15" @on-change="changName" />
       </Col>
     </div>
     <div class="c_row-item">
       <Col class="label" span="4"> 页面标题 </Col>
       <Col span="19" class="slider-box">
-        <Input
-          v-model="value"
-          placeholder="选填不超过30个字"
-          maxlength="30"
-          @on-change="changVal"
-        />
+        <Input v-model="value" placeholder="选填不超过30个字" maxlength="30" @on-change="changVal" />
       </Col>
     </div>
     <div class="c_row-item">
@@ -33,10 +23,7 @@
       <Col span="19" class="slider-box">
         <div class="acea-row row-between row-top color">
           <Checkbox v-model="bgColor" @on-change="bgColorTap">背景色</Checkbox>
-          <ColorPicker
-            v-model="colorPicker"
-            @on-change="colorPickerTap(colorPicker)"
-          />
+          <ColorPicker v-model="colorPicker" @on-change="colorPickerTap(colorPicker)" />
         </div>
         <div class="acea-row row-between row-top color">
           <Checkbox v-model="bgPic" @on-change="bgPicTap">背景图</Checkbox>
@@ -83,25 +70,25 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
-import uploadPictures from "@/components/uploadPictures";
+import { mapState } from 'vuex';
+import uploadPictures from '@/components/uploadPictures';
 export default {
-  name: "pageTitle",
+  name: 'pageTitle',
   components: {
     uploadPictures,
   },
   data() {
     return {
-      value: "",
-      name: "",
+      value: '',
+      name: '',
       isShow: true,
-      picList: ["icondantu", "iconpingpu", "iconlashen"],
+      picList: ['icondantu', 'iconpingpu', 'iconlashen'],
       bgColor: false,
       bgPic: false,
       tabVal: 0,
-      colorPicker: "#f5f5f5",
+      colorPicker: '#f5f5f5',
       modalPic: false,
-      isChoice: "单选",
+      isChoice: '单选',
       gridBtn: {
         xl: 4,
         lg: 8,
@@ -116,7 +103,7 @@ export default {
         sm: 12,
         xs: 12,
       },
-      bgPicUrl: "",
+      bgPicUrl: '',
     };
   },
   created() {
@@ -136,35 +123,35 @@ export default {
       this.modalPic = true;
     },
     bindDelete() {
-      this.bgPicUrl = "";
+      this.bgPicUrl = '';
     },
     getPic(pc) {
       this.$nextTick(() => {
         this.bgPicUrl = pc.att_dir;
         this.modalPic = false;
-        this.$store.commit("mobildConfig/UPPICURL", pc.att_dir);
+        this.$store.commit('mobildConfig/UPPICURL', pc.att_dir);
       });
     },
     colorPickerTap(colorPicker) {
-      this.$store.commit("mobildConfig/UPPICKER", colorPicker);
+      this.$store.commit('mobildConfig/UPPICKER', colorPicker);
     },
     radioTap(val) {
-      this.$store.commit("mobildConfig/UPRADIO", val);
+      this.$store.commit('mobildConfig/UPRADIO', val);
     },
     changVal(val) {
-      this.$store.commit("mobildConfig/UPTITLE", val.target.value);
+      this.$store.commit('mobildConfig/UPTITLE', val.target.value);
     },
     changName(val) {
-      this.$store.commit("mobildConfig/UPNAME", val.target.value);
+      this.$store.commit('mobildConfig/UPNAME', val.target.value);
     },
     changeState(val) {
-      this.$store.commit("mobildConfig/UPSHOW", val);
+      this.$store.commit('mobildConfig/UPSHOW', val);
     },
     bgColorTap(val) {
-      this.$store.commit("mobildConfig/UPCOLOR", val);
+      this.$store.commit('mobildConfig/UPCOLOR', val);
     },
     bgPicTap(val) {
-      this.$store.commit("mobildConfig/UPPIC", val);
+      this.$store.commit('mobildConfig/UPPIC', val);
     },
   },
 };

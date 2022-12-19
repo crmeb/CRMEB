@@ -6,7 +6,7 @@
 					<view class="nav acea-row row-center-wrapper">
 						<view class="item" :class="active == index ? 'font-color' : ''" v-for="(item,index) in navList" :key="index"
 						 @click="switchTap(index)">
-							{{ item }}
+							{{ $t(item) }}
 						</view>
 					</view>
 					<view class="rank acea-row row-bottom row-around">
@@ -15,21 +15,21 @@
 								<image :src="Two.avatar"></image>
 							</view>
 							<view class="name line1">{{Two.nickname}}</view>
-							<view class="num">{{Two.count}}人</view>
+							<view class="num">{{Two.count}}{{$t(`人`)}}</view>
 						</view>
 						<view class="item one" v-if="One.uid">
 							<view class="pictrue">
 								<image :src="One.avatar"></image>
 							</view>
 							<view class="name line1">{{One.nickname}}</view>
-							<view class="num">{{One.count}}人</view>
+							<view class="num">{{One.count}}{{$t(`人`)}}</view>
 						</view>
 						<view class="item three" v-if="Three.uid">
 							<view class="pictrue">
 								<image :src="Three.avatar"></image>
 							</view>
 							<view class="name line1">{{Three.nickname}}</view>
-							<view class="num">{{Three.count}}人</view>
+							<view class="num">{{Three.count}}{{$t(`人`)}}</view>
 						</view>
 					</view>
 				</view>
@@ -43,7 +43,7 @@
 						</view>
 						<view class="text line1">{{item.nickname}}</view>
 					</view>
-					<view class="people font-color">{{item.count}}人</view>
+					<view class="people font-color">{{item.count}}{{$t(`人`)}}</view>
 				</view>
 			</view>
 		</view>
@@ -81,7 +81,7 @@
 		mixins:[colors],
 		data() {
 			return {
-				navList: ["周榜", "月榜"],
+				navList: [this.$t(`周榜`), this.$t(`月榜`)],
 				active: 0,
 				page: 1,
 				limit: 10,

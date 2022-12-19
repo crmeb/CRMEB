@@ -1,10 +1,5 @@
 <template>
   <div>
-    <div class="i-layout-page-header">
-      <div class="i-layout-page-header">
-        <span class="ivu-page-header-title">{{ $route.meta.title }}</span>
-      </div>
-    </div>
     <Card :bordered="false" dis-hover class="ivu-mt">
       <Form
         ref="pagination"
@@ -43,13 +38,7 @@
           </Col>
           <Col v-bind="grid">
             <FormItem label="用户名：" label-for="title">
-              <Input
-                search
-                enter-button
-                v-model="pagination.name"
-                placeholder="请输入用户名"
-                @on-search="nameSearch"
-              />
+              <Input search enter-button v-model="pagination.name" placeholder="请输入用户名" @on-search="nameSearch" />
             </FormItem>
           </Col>
         </Row>
@@ -96,17 +85,13 @@
             <div class="QRpic">
               <img v-lazy="qrcode && qrcode.wechat" />
             </div>
-            <span class="mt10">{{
-              animal ? "公众号收款码" : "公众号二维码"
-            }}</span>
+            <span class="mt10">{{ animal ? '公众号收款码' : '公众号二维码' }}</span>
           </div>
           <div class="acea-row row-column-around row-between-wrapper">
             <div class="QRpic">
               <img v-lazy="qrcode && qrcode.routine" />
             </div>
-            <span class="mt10">{{
-              animal ? "小程序收款码" : "小程序二维码"
-            }}</span>
+            <span class="mt10">{{ animal ? '小程序收款码' : '小程序二维码' }}</span>
           </div>
         </div>
       </div>
@@ -115,8 +100,8 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
-import { orderScanList, orderOfflineScan } from "@/api/order";
+import { mapState } from 'vuex';
+import { orderScanList, orderOfflineScan } from '@/api/order';
 
 export default {
   data() {
@@ -130,8 +115,8 @@ export default {
       },
       thead: [
         {
-          title: "订单号",
-          key: "order_id",
+          title: '订单号',
+          key: 'order_id',
         },
         // {
         //     title: "订单类型",
@@ -140,16 +125,16 @@ export default {
         //     }
         // },
         {
-          title: "用户信息",
-          key: "nickname",
+          title: '用户信息',
+          key: 'nickname',
         },
         {
-          title: "实际支付",
-          key: "pay_price",
+          title: '实际支付',
+          key: 'pay_price',
         },
         {
-          title: "优惠价格",
-          key: "true_price",
+          title: '优惠价格',
+          key: 'true_price',
         },
         // {
         //     title: "订单状态",
@@ -158,8 +143,8 @@ export default {
         //     }
         // },
         {
-          title: "支付时间",
-          key: "pay_time",
+          title: '支付时间',
+          key: 'pay_time',
         },
       ],
       tbody: [],
@@ -169,107 +154,71 @@ export default {
       pagination: {
         page: 1,
         limit: 30,
-        order_id: "",
-        add_time: "",
+        order_id: '',
+        add_time: '',
       },
       options: {
         shortcuts: [
           {
-            text: "今天",
+            text: '今天',
             value() {
               const end = new Date();
               const start = new Date();
-              start.setTime(
-                new Date(
-                  new Date().getFullYear(),
-                  new Date().getMonth(),
-                  new Date().getDate()
-                )
-              );
+              start.setTime(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate()));
               return [start, end];
             },
           },
           {
-            text: "昨天",
+            text: '昨天',
             value() {
               const end = new Date();
               const start = new Date();
               start.setTime(
-                start.setTime(
-                  new Date(
-                    new Date().getFullYear(),
-                    new Date().getMonth(),
-                    new Date().getDate() - 1
-                  )
-                )
+                start.setTime(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate() - 1)),
               );
               end.setTime(
-                end.setTime(
-                  new Date(
-                    new Date().getFullYear(),
-                    new Date().getMonth(),
-                    new Date().getDate() - 1
-                  )
-                )
+                end.setTime(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate() - 1)),
               );
               return [start, end];
             },
           },
           {
-            text: "最近7天",
+            text: '最近7天',
             value() {
               const end = new Date();
               const start = new Date();
               start.setTime(
-                start.setTime(
-                  new Date(
-                    new Date().getFullYear(),
-                    new Date().getMonth(),
-                    new Date().getDate() - 6
-                  )
-                )
+                start.setTime(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate() - 6)),
               );
               return [start, end];
             },
           },
           {
-            text: "最近30天",
+            text: '最近30天',
             value() {
               const end = new Date();
               const start = new Date();
               start.setTime(
-                start.setTime(
-                  new Date(
-                    new Date().getFullYear(),
-                    new Date().getMonth(),
-                    new Date().getDate() - 29
-                  )
-                )
+                start.setTime(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate() - 29)),
               );
               return [start, end];
             },
           },
           {
-            text: "本月",
+            text: '本月',
             value() {
               const end = new Date();
               const start = new Date();
-              start.setTime(
-                start.setTime(
-                  new Date(new Date().getFullYear(), new Date().getMonth(), 1)
-                )
-              );
+              start.setTime(start.setTime(new Date(new Date().getFullYear(), new Date().getMonth(), 1)));
               return [start, end];
             },
           },
           {
-            text: "本年",
+            text: '本年',
             value() {
               const end = new Date();
               const start = new Date();
-              start.setTime(
-                start.setTime(new Date(new Date().getFullYear(), 0, 1))
-              );
+              start.setTime(start.setTime(new Date(new Date().getFullYear(), 0, 1)));
               return [start, end];
             },
           },
@@ -278,17 +227,17 @@ export default {
       timeVal: [],
       modal: false,
       qrcode: null,
-      name: "",
+      name: '',
       spin: false,
     };
   },
   computed: {
-    ...mapState("media", ["isMobile"]),
+    ...mapState('media', ['isMobile']),
     labelWidth() {
       return this.isMobile ? undefined : 75;
     },
     labelPosition() {
-      return this.isMobile ? "top" : "right";
+      return this.isMobile ? 'top' : 'right';
     },
   },
   created() {
@@ -303,7 +252,7 @@ export default {
     onchangeTime(e) {
       this.pagination.page = 1;
       this.timeVal = e;
-      this.pagination.add_time = this.timeVal[0] ? this.timeVal.join("-") : "";
+      this.pagination.add_time = this.timeVal[0] ? this.timeVal.join('-') : '';
       this.getOrderList();
     },
     // 订单列表

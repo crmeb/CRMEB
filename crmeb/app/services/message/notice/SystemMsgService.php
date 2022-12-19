@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -12,10 +12,9 @@
 namespace app\services\message\notice;
 
 use app\services\message\NoticeService;
-use app\services\message\service\StoreServiceServices;
+use app\services\kefu\service\StoreServiceServices;
 use app\services\message\MessageSystemServices;
 use think\facade\Log;
-
 
 /**
  * 短信发送消息列表
@@ -44,11 +43,11 @@ class SystemMsgService extends NoticeService
 
     }
 
-
     /**
      * 发送消息
-     * @param $uid uid
-     * @param array $data 模板内容
+     * @param int $uid
+     * @param $data
+     * @return bool|void
      */
     public function sendMsg(int $uid, $data)
     {
@@ -68,6 +67,7 @@ class SystemMsgService extends NoticeService
                 $sdata['title'] = $title;
                 $sdata['type'] = 1;
                 $sdata['add_time'] = time();
+                $sdata['data'] = json_encode($data);
                 /** @var MessageSystemServices $MessageSystemServices */
                 $MessageSystemServices = app()->make(MessageSystemServices::class);
                 $MessageSystemServices->save($sdata);
@@ -80,8 +80,8 @@ class SystemMsgService extends NoticeService
 
     /**
      * 给客服发站内信
-     * @param array $notceinfo
-     * @param array $data
+     * @param $data
+     * @return bool|void
      */
     public function kefuSystemSend($data)
     {
@@ -106,6 +106,7 @@ class SystemMsgService extends NoticeService
                     $save[$key]['title'] = $title;
                     $save[$key]['type'] = 2;
                     $save[$key]['add_time'] = time();
+                    $save[$key]['data'] = json_encode($data);
                 }
                 $MessageSystemServices->saveAll($save);
             }
@@ -114,6 +115,4 @@ class SystemMsgService extends NoticeService
             return true;
         }
     }
-
-
 }

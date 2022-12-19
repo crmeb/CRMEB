@@ -35,13 +35,13 @@
 }
 </style>
 <script>
-import { menusListApi } from "@/api/account";
+import { menusListApi } from '@/api/account';
 
 export default {
-  name: "iHeaderSearch",
+  name: 'iHeaderSearch',
   data() {
     return {
-      currentVal: "",
+      currentVal: '',
       loading: false,
       menusList: [],
     };

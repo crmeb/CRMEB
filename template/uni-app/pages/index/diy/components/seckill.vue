@@ -6,12 +6,12 @@
 					<image :src="imgUrl" class="icon" v-if="imgUrl"></image>
 					<image src="/static/images/spike-icon-002.gif" class="icon" v-else></image>
 					
-					<view class="name">限时秒杀</view>
+					<view class="name">{{$t(`限时秒杀`)}}</view>
 					<!-- <image src="/static/images/spike-icon-001.png" class="title"></image> -->
 					<countDown :is-day="false" :tip-text="' '" :day-text="' '" :hour-text="' : '" :minute-text="' : '" :second-text="' '"
 					 :datatime="datatime" :bgColor="countDownColor" :colors="themeColor"></countDown>
 				</view>
-				<navigator class="more" url="/pages/activity/goods_seckill/index">更多 <text class="iconfont icon-jiantou"
+				<navigator class="more" url="/pages/activity/goods_seckill/index">{{$t(`更多`)}} <text class="iconfont icon-jiantou"
 					 hover-class='none'></text></navigator>
 			</view>
 			<view class="spike-wrapper">
@@ -20,13 +20,13 @@
 					 hover-class='none'>
 						<view class="img-box">
 							<image :src="item.image" mode="aspectFill"></image>
-							<view v-if="discountShow" class="msg flex-aj-center" :style="'color:'+ themeColor +';border-color:'+ themeColor +';'">{{item.discountNum}}折起</view>
+							<view v-if="discountShow" class="msg flex-aj-center" :style="'color:'+ themeColor +';border-color:'+ themeColor +';'">{{item.discountNum}}{{$t(`折`)}}</view>
 						</view>
 						<view class="info">
 							<view v-if="titleShow" class="name line1">{{item.title}}</view>
 							<view class="price-box">
-								<text v-if="seckillShow" class="tips" :style="'background-color:'+ themeColor +';'">抢</text>
-								<text v-if="priceShow" class="price" :style="'color:'+themeColor+';'"><text>￥</text>{{item.price}}</text>
+								<text v-if="seckillShow" class="tips" :style="'background-color:'+ themeColor +';'">{{$t(`抢`)}}</text>
+								<text v-if="priceShow" class="price" :style="'color:'+themeColor+';'"><text>{{$t(`￥`)}}</text>{{item.price}}</text>
 							</view>
 						</view>
 					</navigator>

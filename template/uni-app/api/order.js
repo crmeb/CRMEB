@@ -1,7 +1,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2021 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -201,6 +201,17 @@ export function orderConfirm(cartId, news, addressId, shipping_type) {
 		'new': news,
 		addressId,
 		shipping_type
+	});
+}
+
+/**
+ * 获取确认订单页面是否展示快递配送和到店自提
+ * @param string cartId
+ */
+export function checkShipping(cartId, news) {
+	return request.post('order/check_shipping', {
+		cartId,
+		'new': news
 	});
 }
 

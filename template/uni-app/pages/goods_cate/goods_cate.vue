@@ -3,7 +3,6 @@
 		<goodsCate1 v-show="category==1" ref="classOne"></goodsCate1>
 		<goodsCate2 v-show="category==2" ref="classTwo" @jumpIndex="jumpIndex"></goodsCate2>
 		<goodsCate3 v-show="category==3" ref="classThree" @jumpIndex="jumpIndex"></goodsCate3>
-		<!-- <tabBar v-show="category == 1" :pagePath="'/pages/goods_cate/goods_cate'"></tabBar> -->
 	</view>
 </template>
 
@@ -43,28 +42,20 @@
 		},
 		onShow() {
 			if (this.status == 2 || this.status == 3) {
-				uni.hideTabBar()
+				uni.hideTabBar();
 			} else if (this.status == 1) {
-				if (!this.is_diy) {
-					uni.hideTabBar()
-				} else {
-					this.$refs.classOne.getNav();
-				}
+				this.$refs.classOne.getNav();
 			}
 		},
 		methods: {
 			jumpIndex() {
-				if (this.is_diy) {
-					if (!uni.getStorageSync('FOOTER_BAR')) {
-						uni.showTabBar()
-					}
-				}
+				if (this.is_diy) {}
 			},
 			classStyle() {
 				colorChange('category').then(res => {
 					let status = res.data.status;
-					this.status = res.data.status
 					this.category = status
+					this.status = res.data.status
 					if (status == 2) {
 						if (this.isLogin) {
 							this.$refs.classTwo.getCartNum();
@@ -84,9 +75,8 @@
 					} else {
 						if (!this.is_diy) {
 							uni.hideTabBar()
-						} else {
-							this.$refs.classOne.getNav();
-						}
+						} else {}
+						this.$refs.classOne.getNav();
 					}
 				})
 			}

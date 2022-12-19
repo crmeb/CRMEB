@@ -4,10 +4,10 @@
 			<view class='promoterHeader bg-color'>
 				<view class='headerCon acea-row row-between-wrapper'>
 					<view>
-						<view class='name'>员工人数
-							<view class="invitation" @click="showCode">邀请</view>
+						<view class='name'>{{$t(`员工人数`)}}
+							<view class="invitation" @click="showCode">{{$t(`邀请`)}}</view>
 						</view>
-						<view><text class='num'>{{teamCount}}</text>人</view>
+						<view><text class='num'>{{teamCount}}</text>{{$t(`人`)}}</view>
 					</view>
 					<view class='iconfont icon-tuandui'></view>
 				</view>
@@ -26,19 +26,19 @@
 							</view>
 							<view class='text'>
 								<view class='name line1'>{{item.nickname}}</view>
-								<view>加入时间: {{item.division_change_time}}</view>
-								<view>分佣比例: {{item.division_percent}}%</view>
+								<view>{{$t(`加入时间`)}}: {{item.division_change_time}}</view>
+								<view>{{$t(`分佣比例`)}}: {{item.division_percent}}%</view>
 							</view>
 						</view>
 						<view class="right">
-							<view><text class='num font-color'>{{item.childCount ? item.childCount : 0}}</text>人</view>
-							<view><text class="num">{{item.orderCount ? item.orderCount : 0}}</text>单</view>
-							<view><text class="num">{{item.numberCount ? item.numberCount : 0}}</text>元</view>
+							<view><text class='num font-color'>{{item.childCount ? item.childCount : 0}}</text>{{$t(`人`)}}</view>
+							<view><text class="num">{{item.orderCount ? item.orderCount : 0}}</text>{{$t(`单`)}}</view>
+							<view><text class="num">{{item.numberCount ? item.numberCount : 0}}</text>{{$t(`元`)}}</view>
 						</view>
 					</view>
 					<view class="item-btn">
-						<view class="change" @click="changeData(item)">修改分佣比例</view>
-						<view class="clear" @click="clear(item,index)">删除</view>
+						<view class="change" @click="changeData(item)">{{$t(`修改分佣比例`)}}</view>
+						<view class="clear" @click="clear(item,index)">{{$t(`删除`)}}</view>
 					</view>
 				</block>
 			</view>
@@ -50,14 +50,14 @@
 		<view class="refund-input" :class="refund_close ? 'on' : ''">
 			<view class="input-msg">
 				<text class='iconfont icon-guanbi5' @tap='refund_close = false'></text>
-				<view class="refund-input-title">修改分佣比例
+				<view class="refund-input-title">{{$t(`修改分佣比例`)}}
 				</view>
 				<view class="refund-input-sty">
-					<input type="number" v-model="agent_percent" placeholder="请输入百分比" />
+					<input type="number" v-model="agent_percent" :placeholder="$t(`请输入百分比`)" />
 				</view>
 				<view class="refund-bth">
 					<!-- <view class="close-refund" @click="refund_close = false">取消</view> -->
-					<view class="submit-refund" @click="refundSubmit()">提交</view>
+					<view class="submit-refund" @click="refundSubmit()">{{$t(`提交`)}}</view>
 				</view>
 			</view>
 		</view>
@@ -67,10 +67,10 @@
 			<image src="/static/images/poster-close.png" class="close" @click="posterImageClose"></image>
 			<image :src="codeSrc"></image>
 			<!-- #ifndef H5  -->
-			<view class="save-poster" @click="savePosterPath">保存到手机</view>
+			<view class="save-poster" @click="savePosterPath">{{$t(`保存到手机`)}}</view>
 			<!-- #endif -->
 			<!-- #ifdef H5 -->
-			<view class="keep">长按图片可以保存到手机</view>
+			<view class="keep">{{$t(`长按图片可以保存到手机`)}}</view>
 			<!-- #endif -->
 		</view>
 		<zb-code ref="qrcode" :show="codeShow" :cid="cid" :val="val" :size="size" :unit="unit" :background="background"
@@ -161,7 +161,6 @@
 		methods: {
 			qrR(res) {
 				this.codeSrc = res
-				console.log(res)
 			},
 			showCode() {
 				this.codeModal = true
@@ -198,8 +197,8 @@
 			clear(data, index) {
 				let that = this;
 				uni.showModal({
-					title: '删除员工',
-					content: '确定删除该员工?',
+					title: that.$t(`删除员工`),
+					content: that.$t(`确定删除该员工?`),
 					success: function(res) {
 						if (res.confirm) {
 							delClerkPercent(data.uid)
@@ -208,7 +207,7 @@
 									that.$set(that, 'recordList', that.recordList);
 									// that.userSpreadNewList();
 									return that.$util.Tips({
-										title: '删除成功',
+										title: that.$t(`删除成功`),
 										icon: 'success'
 									});
 								})
@@ -219,7 +218,7 @@
 								});
 						} else if (res.cancel) {
 							return that.$util.Tips({
-								title: '已取消'
+								title: that.$t(`已取消`)
 							});
 						}
 					}
@@ -232,7 +231,7 @@
 			refundSubmit() {
 				if (this.agent_percent < 0) {
 					return this.$util.Tips({
-						title: '请输入比例'
+						title: this.$t(`请输入比例`)
 					})
 				}
 				setClerkPercent({

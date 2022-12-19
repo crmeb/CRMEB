@@ -1,0 +1,7 @@
+/*.xml.dist export-ignore
+/tests export-ignore
+/.github export-ignore
+/.repo-metadata.json export-ignore
+/.OwlBot.yaml export-ignore
+/owlbot.py export-ignore
+/src/**/gapic_metadata.json export-ignore

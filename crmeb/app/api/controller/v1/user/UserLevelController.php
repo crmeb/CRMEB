@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -10,6 +10,7 @@
 // +----------------------------------------------------------------------
 namespace app\api\controller\v1\user;
 
+use app\model\system\SystemUserTask;
 use app\Request;
 use app\services\user\UserLevelServices;
 
@@ -38,7 +39,7 @@ class UserLevelController
      */
     public function detection(Request $request)
     {
-        return app('json')->successful($this->services->detection((int)$request->uid()));
+        return app('json')->success($this->services->detection((int)$request->uid()));
     }
 
     /**
@@ -48,7 +49,7 @@ class UserLevelController
      */
     public function grade(Request $request)
     {
-        return app('json')->successful(['list'=>$this->services->grade((int)$request->uid()),'task'=>['list'=>[],'task'=>[]]]);
+        return app('json')->success(['list'=>$this->services->grade((int)$request->uid()),'task'=>['list'=>[],'task'=>[]]]);
     }
 
     /**
@@ -59,7 +60,7 @@ class UserLevelController
      */
     public function task(Request $request, $id)
     {
-        return app('json')->successful((new SystemUserTask())->getTashList($id, $request->uid()));
+        return app('json')->success((new SystemUserTask())->getTashList($id, $request->uid()));
     }
 
     /**
@@ -69,7 +70,7 @@ class UserLevelController
      */
     public function userLevelInfo(Request $request)
     {
-        return app('json')->successful($this->services->getUserLevelInfo((int)$request->uid()));
+        return app('json')->success($this->services->getUserLevelInfo((int)$request->uid()));
     }
 
     /**
@@ -79,7 +80,7 @@ class UserLevelController
      */
     public function expList(Request $request)
     {
-        return app('json')->successful($this->services->expList((int)$request->uid()));
+        return app('json')->success($this->services->expList((int)$request->uid()));
     }
 
 }

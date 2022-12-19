@@ -1,7 +1,7 @@
 <template>
 	<view class="posterCon" :style="colorStyle">
 		<view class='poster-poster'>
-			<view class='tip'><text class='iconfont icon-shuoming'></text>提示：点击图片即可保存至手机相册 </view>
+			<view class='tip'><text class='iconfont icon-shuoming'></text>{{$t(`提示：点击图片即可保存至手机相册`)}}</view>
 			<view class='pictrue'>
 				<!-- <image :src='image' mode="widthFix"></image> -->
 				<image class="canvas" :src="posterImage" v-if="posterImage" @click="savePosterPathMp(posterImage)">
@@ -49,7 +49,7 @@
 				parameter: {
 					'navbar': '1',
 					'return': '1',
-					'title': '拼团海报',
+					'title': this.$t(`拼团海报`),
 					'color': true,
 					'class': '0'
 				},
@@ -97,16 +97,16 @@
 				if (options.type == 1) {
 					this.bargain = options.bargain
 					uni.setNavigationBarTitle({
-						title: '砍价海报'
+						title: that.$t(`砍价海报`)
 					})
 				} else {
 					uni.setNavigationBarTitle({
-						title: '拼团海报'
+						title: that.$t(`拼团海报`)
 					})
 				}
 			} else {
 				return app.Tips({
-					title: '参数错误',
+					title: that.$t(`参数错误`),
 					icon: 'none'
 				}, {
 					tab: 3,
@@ -172,7 +172,7 @@
 				// #ifdef MP
 				// #endif
 				uni.showLoading({
-					title: '海报生成中',
+					title: that.$t(`海报生成中`),
 					mask: true
 				});
 				if (that.type == 1) {
@@ -180,7 +180,7 @@
 						resData = res.data
 					}).catch(err => {
 						that.$util.Tips({
-							title: '海报图片获取失败'
+							title: that.$t(`海报图片获取失败`)
 						});
 						return
 					})
@@ -189,7 +189,7 @@
 						resData = res.data
 					}).catch(err => {
 						that.$util.Tips({
-							title: '海报图片获取失败'
+							title: that.$t(`海报图片获取失败`)
 						});
 						return
 					})
@@ -261,13 +261,13 @@
 					filePath: url,
 					success: function(res) {
 						that.$util.Tips({
-							title: '保存成功',
+							title: that.$t(`保存成功`),
 							icon: 'success'
 						});
 					},
 					fail: function(res) {
 						that.$util.Tips({
-							title: '保存失败'
+							title: that.$t(`保存失败`)
 						});
 					}
 				});
@@ -283,20 +283,20 @@
 										filePath: url,
 										success: function(res) {
 											that.$util.Tips({
-												title: '保存成功',
+												title: that.$t(`保存成功`),
 												icon: 'success'
 											});
 										},
 										fail: function(res) {
 											that.$util.Tips({
-												title: '保存失败'
+												title: that.$t(`保存失败`)
 											});
 										}
 									});
 								},
 								fail: function(res) {
 									that.$util.Tips({
-										title: '请先开启文件访问权限'
+										title: that.$t(`enable_file_access`)
 									});
 								}
 							});
@@ -305,13 +305,13 @@
 								filePath: url,
 								success: function(res) {
 									that.$util.Tips({
-										title: '保存成功',
+										title: that.$t(`保存成功`),
 										icon: 'success'
 									});
 								},
 								fail: function(res) {
 									that.$util.Tips({
-										title: '保存失败'
+										title: that.$t(`保存失败`)
 									});
 								}
 							});
@@ -322,7 +322,7 @@
 				// #ifdef H5
 				// 创建隐藏的可下载链接
 				var eleLink = document.createElement('a');
-				eleLink.download = '海报';
+				eleLink.download = that.$t(`海报`);
 				eleLink.href = url;
 				// 触发点击
 				document.body.appendChild(eleLink);
@@ -346,13 +346,13 @@
 										success: function(res) {
 											that.posterImageClose();
 											that.$util.Tips({
-												title: '保存成功',
+												title: that.$t(`保存成功`),
 												icon: 'success'
 											});
 										},
 										fail: function(res) {
 											that.$util.Tips({
-												title: '保存失败'
+												title: that.$t(`保存失败`)
 											});
 										}
 									});
@@ -364,13 +364,13 @@
 								success: function(res) {
 									that.posterImageClose();
 									that.$util.Tips({
-										title: '保存成功',
+										title: that.$t(`保存成功`),
 										icon: 'success'
 									});
 								},
 								fail: function(res) {
 									that.$util.Tips({
-										title: '保存失败'
+										title: that.$t(`保存失败`)
 									});
 								}
 							});

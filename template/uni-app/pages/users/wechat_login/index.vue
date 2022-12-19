@@ -9,7 +9,7 @@
 			<view class="icon" @click="home" v-else>
 				<image src="../static/home.png"></image>
 			</view>
-			账户登录
+			{{$t(`账户登录`)}}
 		</view>
 		<!-- #endif -->
 		<view class="wechat_login">
@@ -18,15 +18,17 @@
 			</view>
 			<view class="btn-wrapper">
 				<!-- #ifdef H5 -->
-				<button hover-class="none" @click="wechatLogin" class="bg-green btn1">微信登录</button>
+				<button hover-class="none" @click="wechatLogin" class="bg-green btn1">{{$t(`微信登录`)}}</button>
 				<!-- #endif -->
 				<!-- #ifdef MP -->
-				<button v-if="canUseGetUserProfile && code" hover-class="none" @tap="getUserProfile"
-					class="bg-green btn1">微信登录</button>
+				<button hover-class="none" v-if="mp_is_new" @tap="userLogin"
+					class="bg-green btn1">{{$t(`微信登录`)}}</button>
+				<button v-else-if="canUseGetUserProfile && code" hover-class="none" @tap="getUserProfile"
+					class="bg-green btn1">{{$t(`微信登录`)}}</button>
 				<button v-else hover-class="none" open-type="getUserInfo" @getuserinfo="setUserInfo"
-					class="bg-green btn1">微信登录</button>
+					class="bg-green btn1">{{$t(`微信登录`)}}</button>
 				<!-- #endif -->
-				<button hover-class="none" @click="isUp = true" class="btn2">手机号登录</button>
+				<button hover-class="none" @click="isUp = true" class="btn2">{{$t(`手机号登录`)}}</button>
 			</view>
 		</view>
 		<block v-if="isUp">
@@ -42,13 +44,14 @@
 <script>
 	const app = getApp();
 	let statusBarHeight = uni.getSystemInfoSync().statusBarHeight + 'px';
-	import mobileLogin from '@/components/login_mobile/index.vue';
-	import routinePhone from '@/components/login_mobile/routine_phone.vue';
+	import mobileLogin from '../components/login_mobile/index.vue';
+	import routinePhone from '../components/login_mobile/routine_phone.vue';
 	import {
 		getLogo,
 		silenceAuth,
 		getUserPhone,
-		wechatAuthV2
+		wechatAuthV2,
+		authLogin
 	} from '@/api/public';
 	import {
 		LOGO_URL,
@@ -62,8 +65,9 @@
 	import Routine from '@/libs/routine';
 	import wechat from '@/libs/wechat';
 	import colors from '@/mixins/color.js';
+	import Auth from '@/libs/wechat.js';
 	export default {
-		mixins:[colors],
+		mixins: [colors],
 		data() {
 			return {
 				isUp: false,
@@ -77,7 +81,8 @@
 				options: '',
 				userInfo: {},
 				codeNum: 0,
-				canUseGetUserProfile: false
+				canUseGetUserProfile: false,
+				mp_is_new: this.$Cache.get('MP_VERSION_ISNEW') || false
 			};
 		},
 		components: {
@@ -136,9 +141,74 @@
 							that.wechatPhone();
 						}
 					})
-					.catch(error => {
-						// location.replace("/");
+					.catch(err => {
+						uni.hideLoading();
+						uni.showToast({
+							title: err,
+							icon: 'none',
+							duration: 2000
+						});
 					});
+			} else if (code && this.options.scope == 'snsapi_base' && !this.$Cache.has('snsapiKey')) {
+				//公众号静默授权
+				let snsapiBase = 'snsapi_base';
+				let urlData = location.pathname + location.search;
+				// if (!that.$store.getters.isLogin && uni.getStorageSync('authIng')) {
+				// 	uni.setStorageSync('authIng', false)
+				// }
+				if (options.back_url) {
+					uni.setStorageSync('snRouter', options.back_url);
+				}
+				if (!that.$store.getters.isLogin && Auth.isWeixin()) {
+					let code
+					if (options.code instanceof Array) {
+						code = options.code[options.code.length - 1]
+					} else {
+						code = options.code
+					}
+					if (code && code != uni.getStorageSync('snsapiCode') && !this.$Cache.has('snsapiKey')) {
+						// 存储静默授权code
+						uni.setStorageSync('snsapiCode', code);
+						uni.setStorageSync('authIng', true)
+						silenceAuth({
+								code: code,
+								spread: that.$Cache.get('spread'),
+								spid: that.$Cache.get('spread')
+							})
+							.then(res => {
+								// uni.setStorageSync('authIng', false)
+								// uni.setStorageSync('snRouter', decodeURIComponent(decodeURIComponent(options.query
+								// 	.back_url)));
+								if (res.data.key !== undefined && res.data.key) {
+									this.$Cache.set('snsapiKey', res.data.key);
+									uni.navigateTo({
+										url: '/pages/users/wechat_login/index'
+									})
+								}
+							})
+							.catch(error => {
+								uni.setStorageSync('authIng', false)
+								let url = ''
+								if (options.back_url instanceof Array) {
+									url = options.back_url[options.back_url.length - 1]
+								} else {
+									url = options.back_url
+								}
+								if (!that.$Cache.has('snsapiKey')) {
+									Auth.oAuth(snsapiBase, url);
+								}
+							});
+					} else {
+						Auth.oAuth(snsapiBase, urlData)
+					}
+				} else {
+					if (options.query.back_url) {
+						location.replace(uni.getStorageSync('snRouter'));
+					}
+				}
+			} else if (!this.$Cache.has('snsapiKey')) {
+				let urlData = location.pathname + location.search;
+				Auth.oAuth('snsapi_base', urlData)
 			}
 			// #endif
 			let pages = getCurrentPages();
@@ -150,6 +220,45 @@
 			}
 		},
 		methods: {
+			// 小程序 22.11.8日删除getUserProfile 接口获取用户昵称头像
+			userLogin() {
+				Routine.getCode()
+					.then(code => {
+						uni.showLoading({
+							title: this.$t(`正在登录中`)
+						});
+						authLogin({
+								code,
+								spread_spid: app.globalData.spid,
+								spread_code: app.globalData.code
+							}).then(res => {
+								if (res.data.key !== undefined && res.data.key) {
+									uni.hideLoading();
+									this.authKey = res.data.key;
+									this.isPhoneBox = true;
+								} else {
+									uni.hideLoading();
+									let time = res.data.expires_time - this.$Cache.time();
+									this.$store.commit('LOGIN', {
+										token: res.data.token,
+										time: time
+									});
+									this.getUserInfo()
+								}
+							})
+							.catch(err => {
+								uni.hideLoading();
+								uni.showToast({
+									title: err,
+									icon: 'none',
+									duration: 2000
+								});
+							});
+					})
+					.catch(err => {
+						console.log(err)
+					});
+			},
 			back() {
 				uni.navigateBack();
 			},
@@ -166,7 +275,7 @@
 				if (data.isStatus) {
 					this.isPhoneBox = false;
 					this.$util.Tips({
-						title: '登录成功',
+						title: this.$t(`登录成功`),
 						icon: 'success'
 					}, {
 						tab: 3
@@ -179,7 +288,7 @@
 			// 小程序获取手机号码
 			getphonenumber(e) {
 				uni.showLoading({
-					title: '正在登录中'
+					title: this.$t(`正在登录中`)
 				});
 				Routine.getCode()
 					.then(code => {
@@ -210,7 +319,7 @@
 						this.$store.commit('UPDATE_USERINFO', res.data.userInfo);
 						this.$Cache.clear('snsapiKey');
 						this.$util.Tips({
-							title: '登录成功',
+							title: this.$t(`登录成功`),
 							icon: 'success'
 						}, {
 							tab: 3
@@ -231,7 +340,7 @@
 					that.$store.commit('SETUID', res.data.uid);
 					that.$store.commit('UPDATE_USERINFO', res.data);
 					that.$util.Tips({
-						title: '登录成功',
+						title: that.$t(`登录成功`),
 						icon: 'success'
 					}, {
 						tab: 3
@@ -240,7 +349,7 @@
 			},
 			setUserInfo(e) {
 				uni.showLoading({
-					title: '正在登录中'
+					title: this.$t(`正在登录中`)
 				});
 				Routine.getCode()
 					.then(code => {
@@ -253,7 +362,7 @@
 			//小程序授权api替换 getUserInfo
 			getUserProfile() {
 				uni.showLoading({
-					title: '正在登录中'
+					title: this.$t(`正在登录中`)
 				});
 				let self = this;
 				Routine.getUserProfile()
@@ -372,17 +481,23 @@
 					if (!url) {
 						url = '/pages/index/index';
 					}
-					let self = this;
 					this.isUp = false;
 					uni.showToast({
-						title: '登录成功',
+						title: this.$t(`登录成功`),
 						icon: 'none'
 					});
 					setTimeout(res => {
 						location.href = url;
 					}, 800);
 				} else {
-					uni.navigateBack();
+					this.isUp = false;
+					uni.showToast({
+						title: this.$t(`登录成功`),
+						icon: 'none'
+					});
+					setTimeout(res => {
+						location.href = '/pages/index/index';
+					}, 800);
 				}
 			}
 			// #endif

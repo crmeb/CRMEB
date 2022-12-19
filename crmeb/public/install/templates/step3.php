@@ -182,7 +182,7 @@
                         $('#J_install_tip_dbpw').html('<span for="dbname" generated="true" class="tips_error" >数据库链接配置失败</span>');
                         mysqlstatu = false;
                     } else if (msg == -2) {
-                        $('#J_install_tip_dbpw').html('<span for="dbname" generated="true" class="tips_error" >请在mysql配置文件修sql-mode或sql_mode为NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION,<a half="https://doc.crmeb.com/web/single/crmeb_v4/936" target="_blank">查看文档</a></span>');
+                        $('#J_install_tip_dbpw').html('<span for="dbname" generated="true" class="tips_error" >请在mysql配置文件修sql-mode或sql_mode为NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION</span><a href="https://doc.crmeb.com/web/single/crmeb_v4/936" target="_blank">查看文档</a>');
                         mysqlstatu = false;
                     } else if (msg == -3) {
                         $('#J_install_tip_dbpw').html('');
@@ -290,9 +290,11 @@
         function submitForm() {
             if(!mysqlstatu) {
                 mysqlDbPwd(1);
+                return false;
             }
             if(!redisstatu) {
                 redisDbPwd(1);
+                return false;
             }
             if(checkForm()) {
                 $("#J_install_form").submit(); // ajax 验证通过后再提交表单

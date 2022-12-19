@@ -1,7 +1,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2021 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -27,70 +27,72 @@ export default {
     uploadListDataactivity: {},
     uploadListDatarecommend: {},
     uploadListDataadsRecommend: {},
-    txtListData:{}
+    txtListData: {},
   },
   mutations: {
     //当删除数据并提交时存储默认数据(可视化)
-    uploadListswiperBg(state,data){
+    uploadListswiperBg(state, data) {
       state.uploadListDataswiperBg = data;
     },
-    uploadListmenus(state,data){
+    uploadListmenus(state, data) {
       state.uploadListDatamenus = data;
     },
-    uploadListrecommend(state,data){
+    uploadListrecommend(state, data) {
       state.uploadListDatarecommend = data;
     },
-    uploadListactivity(state,data){
+    uploadListactivity(state, data) {
       state.uploadListDataactivity = data;
     },
-    uploadListadsRecommend(state,data){
+    uploadListadsRecommend(state, data) {
       state.uploadListDataadsRecommend = data;
     },
-    txtList(state,data){
+    txtList(state, data) {
       state.txtListData = data;
     },
     //
-    setPageName(state,id){
-      state.pageName = id
+    setPageName(state, id) {
+      state.pageName = id;
     },
-    userInfo (state, userInfo) {
-      state.userInfo = userInfo
+    userInfo(state, userInfo) {
+      state.userInfo = userInfo;
     },
-    uniqueAuth (state, uniqueAuth) {
-      state.uniqueAuth = uniqueAuth
+    uniqueAuth(state, uniqueAuth) {
+      state.uniqueAuth = uniqueAuth;
     },
-    name (state, name) {
-      state.name = name
+    name(state, name) {
+      state.name = name;
     },
-    avatar (state, avatar) {
-      state.avatar = avatar
+    avatar(state, avatar) {
+      state.avatar = avatar;
     },
-    access (state, access) {
-      state.access = access
+    access(state, access) {
+      state.access = access;
     },
-    logo (state, logo) {
-      state.logo = logo
+    logo(state, logo) {
+      state.logo = logo;
     },
-    logoSmall (state, logoSmall) {
-      state.logoSmall = logoSmall
+    logoSmall(state, logoSmall) {
+      state.logoSmall = logoSmall;
     },
-    version (state, version) {
-      state.version = version
+    version(state, version) {
+      state.version = version;
     },
-    newOrderAudioLink (state, newOrderAudioLink) {
-      state.newOrderAudioLink = newOrderAudioLink
-    }
+    newOrderAudioLink(state, newOrderAudioLink) {
+      state.newOrderAudioLink = newOrderAudioLink;
+    },
   },
   actions: {
-    getMenusNavList ({ commit }) {
+    getMenusNavList({ commit }) {
       return new Promise((resolve, reject) => {
-        menusApi().then(async res => {
-          resolve(res)
-          commit('getmenusNav', res.data.menus)
-        }).catch(res => {
-          reject(res)
-        })
-      })
-    }
-  }
-}
+        menusApi()
+          .then(async (res) => {
+            resolve(res);
+            commit('getmenusNav', res.data.menus);
+          })
+          .catch((res) => {
+            reject(res);
+          });
+      });
+    },
+  },
+};

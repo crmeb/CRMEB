@@ -117,6 +117,16 @@ class StoreOrderRefund extends BaseModel
     }
 
     /**
+     * is_system_del搜索器
+     * @param Model $query
+     * @param $value
+     */
+    public function searchIsSystemDelAttr($query, $value)
+    {
+        if ($value !== '' && !is_null($value)) $query->where('is_system_del', $value);
+    }
+
+    /**
      * refund_type
      * @param $query
      * @param $value
@@ -140,6 +150,36 @@ class StoreOrderRefund extends BaseModel
             $query->whereIn('refund_type', [1, 2, 4, 5]);
         } elseif ($value == 2) {
             $query->where('refund_type', 6);
+        }
+    }
+
+    /**
+     * 一对一关联订单表
+     * @return StoreOrderRefund|\think\model\relation\HasOne
+     */
+    public function orderData()
+    {
+        return $this->hasOne(StoreOrder::class, 'id', 'store_order_id')->field('id, order_id, pay_type, paid, real_name,user_phone, user_address,pay_uid, pay_time')
+            ->bind([
+                'store_order_sn' => 'order_id',
+                'pay_type',
+                'paid',
+                'real_name',
+                'user_phone',
+                'user_address',
+                'pay_uid',
+                'pay_time'
+            ]);
+    }
+
+    /**
+     * @param $query
+     * @param $value
+     */
+    public function searchKeywordsAttr($query, $value)
+    {
+        if ($value !== '') {
+            $query->where('order_id|refund_phone', 'like', '%' . $value . '%');
         }
     }
 }

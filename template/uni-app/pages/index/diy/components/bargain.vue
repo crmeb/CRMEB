@@ -2,7 +2,7 @@
 	<view v-show="!isSortType" :style="{padding:'0 '+prConfig*2+'rpx'}">
 		<view class="barg" :class="bgStyle===0?'':'borderRadius15'" :style="'background: linear-gradient(180deg, '+ bgColor[0].item +' 0%, '+ bgColor[1].item +' 100%);margin-top:' + mbCongfig*2 +'rpx;'" v-if="bargList.length>0">
 				<view class="title" :style="'color:'+titleColor+';'">
-					砍价专区·BARGAINING
+					{{$t(`砍价专区·BARGAINING`)}}
 					<!-- <image src="/static/images/barg001.png" mode=""></image> -->
 				</view>
 				<view class="barg-swiper">
@@ -12,13 +12,13 @@
 								<view class='list-box' :style="'margin-right:'+productGap*2+'rpx;'" @click="bargDetail(item)">
 									<image :src="item.image" mode="aspectFill" class="slide-image"></image>
 									<view class="info-txt" v-if="priceShow||bntShow">
-										<view v-if="priceShow" class="price" :style="'color:'+themeColor+';'"><text>￥</text>{{item.price}}</view>
-										<view v-if="bntShow" class="txt" :style="'background-color:'+ themeColor +';'">立即砍价</view>
+										<view v-if="priceShow" class="price" :style="'color:'+themeColor+';'"><text>{{$t(`￥`)}}</text>{{item.price}}</view>
+										<view v-if="bntShow" class="txt" :style="'background-color:'+ themeColor +';'">{{$t(`立即砍价`)}}</view>
 									</view>
 								</view>
 							</block>
 							<navigator url="/pages/activity/goods_bargain/index" class="more-box" hover-class="none">
-								<view class="txt">查看更多</view>
+								<view class="txt">{{$t(`查看更多`)}}</view>
 								<image src="/static/images/mores.png"></image>
 							</navigator>
 						</view>

@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -35,12 +35,12 @@ class StoreProductController
             ['id', 0],
             ['type', 0]
         ], true);
-        if (!$id) return app('json')->fail('参数错误');
+        if (!$id) return app('json')->fail(100100);
         /** @var StoreProductAttrServices $storeProductAttrServices */
         $storeProductAttrServices = app()->make(StoreProductAttrServices::class);
         list($data['productAttr'], $data['productValue']) = $storeProductAttrServices->getProductAttrDetail($id, $request->uid(), $type);
         $storeInfo = $this->services->getOne(['id' => $id]);
         $data['storeInfo'] = $storeInfo ? $storeInfo->toArray() : [];
-        return app('json')->successful($data);
+        return app('json')->success($data);
     }
 }

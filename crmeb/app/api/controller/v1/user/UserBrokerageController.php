@@ -24,7 +24,7 @@ class UserBrokerageController
     public function commission(Request $request)
     {
         $uid = (int)$request->uid();
-        return app('json')->successful($this->services->commission($uid));
+        return app('json')->success($this->services->commission($uid));
     }
 
     /**

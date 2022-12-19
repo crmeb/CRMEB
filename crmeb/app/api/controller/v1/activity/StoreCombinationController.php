@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -36,7 +36,7 @@ class StoreCombinationController
     public function lst()
     {
         $list = $this->services->getCombinationList();
-        return app('json')->successful(get_thumb_water($list));
+        return app('json')->success(get_thumb_water($list));
     }
 
 
@@ -49,7 +49,7 @@ class StoreCombinationController
     public function detail(Request $request, $id)
     {
         $data = $this->services->combinationDetail($request, $id);
-        return app('json')->successful($data);
+        return app('json')->success($data);
     }
 
     /**
@@ -61,7 +61,7 @@ class StoreCombinationController
     public function pink(Request $request, $id)
     {
         $data = $this->services->getPinkInfo($request, (int)$id);
-        return app('json')->successful($data);
+        return app('json')->success($data);
     }
 
     /**
@@ -75,11 +75,11 @@ class StoreCombinationController
             ['id', 0],
             ['cid', 0],
         ], true);
-        if (!$id || !$cid) return app('json')->fail('缺少参数');
+        if (!$id || !$cid) return app('json')->fail(100100);
         /** @var StorePinkServices $pinkService */
         $pinkService = app()->make(StorePinkServices::class);
         $pinkService->removePink($request->uid(), $cid, $id);
-        return app('json')->successful('取消成功');
+        return app('json')->success(100010);
     }
 
 
@@ -94,12 +94,12 @@ class StoreCombinationController
             ['id', 0],
             ['from', 'wechat']
         ], true);
-        if (!$pinkId) return app('json')->fail('参数错误');
+        if (!$pinkId) return app('json')->fail(100100);
         $user = $request->user();
         /** @var StorePinkServices $pinkService */
         $pinkService = app()->make(StorePinkServices::class);
         $res = $pinkService->getPinkPoster($pinkId, $from, $user);
-        return app('json')->successful(['url' => $res]);
+        return app('json')->success(['url' => $res]);
     }
 
     /**

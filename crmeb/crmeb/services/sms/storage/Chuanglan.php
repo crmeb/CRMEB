@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -11,8 +11,8 @@
 
 namespace crmeb\services\sms\storage;
 
-use crmeb\basic\BaseSmss;
-use think\exception\ValidateException;
+use crmeb\services\sms\BaseSms;
+use crmeb\exceptions\AdminException;
 use think\facade\Config;
 
 
@@ -20,7 +20,7 @@ use think\facade\Config;
  * Class Chuanglan
  * @package crmeb\services\sms\storage
  */
-class Chuanglan extends BaseSmss
+class Chuanglan extends BaseSms
 {
 
     /**
@@ -221,7 +221,7 @@ class Chuanglan extends BaseSmss
     public function send(string $phone, string $templateId, array $data = [])
     {
         if (!$phone) {
-            throw new ValidateException('手机号不能为空');
+            throw new AdminException(400719);
         }
         $param = [
             'phone' => $phone,
@@ -229,7 +229,7 @@ class Chuanglan extends BaseSmss
         ];
         $param['temp_id'] = $this->getTemplateCode($templateId);
         if (is_null($param['temp_id'])) {
-            throw new ValidateException('模版ID不存在');
+            throw new AdminException(400720);
         }
         $param['param'] = json_encode($data);
         return $this->accessToken->httpRequest(self::SMS_SEND, $param);

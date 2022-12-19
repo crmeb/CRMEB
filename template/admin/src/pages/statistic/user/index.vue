@@ -1,18 +1,10 @@
 <template>
   <div class="article-manager">
-    <div class="i-layout-page-header">
-      <div class="i-layout-page-header">
-        <span class="ivu-page-header-title">用户统计</span>
-      </div>
+    <div class="i-layout-page-header  pt10">
       <Form ref="formInline" :model="formInline" inline>
         <FormItem class="mr20">
           用户渠道:
-          <Select
-            v-model="channel_type"
-            style="width: 300px"
-            placeholder="用户渠道"
-            @on-change="changeTxt"
-          >
+          <Select v-model="channel_type" style="width: 300px" placeholder="用户渠道" @on-change="changeTxt">
             <Option value="all">全部</Option>
             <Option value="wechat">公众号</Option>
             <Option value="routine">小程序</Option>
@@ -37,9 +29,7 @@
           ></DatePicker>
         </FormItem>
         <FormItem>
-          <Button type="primary" @click="handleSubmit('formInline')"
-            >查询</Button
-          >
+          <Button type="primary" @click="handleSubmit('formInline')">查询</Button>
         </FormItem>
         <FormItem>
           <Button type="primary" @click="excel">导出</Button>
@@ -47,28 +37,19 @@
       </Form>
     </div>
     <user-info :formInline="formInline" ref="userInfos" key="1"></user-info>
-    <wechet-info
-      :formInline="formInline"
-      ref="wechetInfos"
-      v-if="isShow"
-      key="2"
-    ></wechet-info>
-    <user-region
-      :formInline="formInline"
-      ref="userRegions"
-      key="3"
-    ></user-region>
+    <wechet-info :formInline="formInline" ref="wechetInfos" v-if="isShow" key="2"></wechet-info>
+    <user-region :formInline="formInline" ref="userRegions" key="3"></user-region>
   </div>
 </template>
 
 <script>
-import userInfo from "./components/userInfo";
-import wechetInfo from "./components/wechetInfo";
-import userRegion from "./components/userRegion";
-import { statisticUserExcel } from "@/api/statistic";
-import { formatDate } from "@/utils/validate";
+import userInfo from './components/userInfo';
+import wechetInfo from './components/wechetInfo';
+import userRegion from './components/userRegion';
+import { statisticUserExcel } from '@/api/statistic';
+import { formatDate } from '@/utils/validate';
 export default {
-  name: "index",
+  name: 'index',
   components: {
     userInfo,
     wechetInfo,
@@ -78,10 +59,10 @@ export default {
     return {
       options: this.$timeOptions,
       formInline: {
-        channel_type: "",
-        data: "",
+        channel_type: '',
+        data: '',
       },
-      channel_type: "all",
+      channel_type: 'all',
       timeVal: [],
       isShow: false,
     };
@@ -89,23 +70,13 @@ export default {
   created() {
     const end = new Date();
     const start = new Date();
-    start.setTime(
-      start.setTime(
-        new Date(
-          new Date().getFullYear(),
-          new Date().getMonth(),
-          new Date().getDate() - 29
-        )
-      )
-    );
+    start.setTime(start.setTime(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate() - 29)));
     this.timeVal = [start, end];
-    this.formInline.data =
-      formatDate(start, "yyyy/MM/dd") + "-" + formatDate(end, "yyyy/MM/dd");
+    this.formInline.data = formatDate(start, 'yyyy/MM/dd') + '-' + formatDate(end, 'yyyy/MM/dd');
   },
   methods: {
     changeTxt() {
-      this.formInline.channel_type =
-        this.channel_type === "all" ? "" : this.channel_type;
+      this.formInline.channel_type = this.channel_type === 'all' ? '' : this.channel_type;
     },
     // 导出
     excel() {
@@ -118,14 +89,14 @@ export default {
     // 具体日期
     onchangeTime(e) {
       this.timeVal = e;
-      this.formInline.data = this.timeVal.join("-");
+      this.formInline.data = this.timeVal.join('-');
     },
     handleSubmit() {
       this.$refs.userInfos.getStatistics();
       this.$refs.userInfos.getTrend();
       this.$refs.userRegions.getTrend();
       this.$refs.userRegions.getSex();
-      if (this.formInline.channel_type === "wechat") {
+      if (this.formInline.channel_type === 'wechat') {
         this.isShow = true;
         this.$refs.wechetInfos.getStatistics();
         this.$refs.wechetInfos.getTrend();
@@ -138,4 +109,14 @@ export default {
 </script>
 
 <style scoped>
-</style>
+.pt10{
+  padding-top: 10px;
+}
+.i-layout-page-header{
+  margin: 10px 0 10px 0;
+}
+.ivu-form-item{
+  padding-bottom: 10px;
+  margin-bottom: 0;
+}
+  </style>

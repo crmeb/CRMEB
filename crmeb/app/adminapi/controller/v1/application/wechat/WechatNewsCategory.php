@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -11,7 +11,7 @@
 namespace app\adminapi\controller\v1\application\wechat;
 
 use app\adminapi\controller\AuthController;
-use crmeb\services\WechatService;
+use crmeb\services\app\WechatService;
 use think\facade\App;
 use app\services\wechat\WechatNewsCategoryServices;
 use app\services\article\ArticleServices;
@@ -56,9 +56,6 @@ class WechatNewsCategory extends AuthController
      * 图文详情
      * @param $id
      * @return mixed
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\ModelNotFoundException
-     * @throws \think\exception\DbException
      */
     public function read($id)
     {
@@ -79,16 +76,14 @@ class WechatNewsCategory extends AuthController
     public function delete($id)
     {
         if (!$this->services->delete($id))
-            return app('json')->fail('删除失败,请稍候再试!');
+            return app('json')->fail(100008);
         else
-            return app('json')->success('删除成功!');
+            return app('json')->success(100002);
     }
 
     /**
      * 新增或编辑保存
      * @return mixed
-     * @throws \think\Exception
-     * @throws \think\exception\PDOException
      */
     public function save()
     {
@@ -99,14 +94,14 @@ class WechatNewsCategory extends AuthController
         try {
             $id = [];
             $countList = count($data['list']);
-            if (!$countList) return app('json')->fail('请添加图文');
+            if (!$countList) return app('json')->fail(400243);
             /** @var ArticleServices $services */
             $services = app()->make(ArticleServices::class);
             foreach ($data['list'] as $k => $v) {
-                if ($v['title'] == '') return app('json')->fail('标题不能为空');
-                if ($v['author'] == '') return app('json')->fail('作者不能为空');
-                if ($v['content'] == '') return app('json')->fail('正文不能为空');
-                if ($v['synopsis'] == '') return app('json')->fail('摘要不能为空');
+                if ($v['title'] == '') return app('json')->fail(400244);
+                if ($v['author'] == '') return app('json')->fail(400245);
+                if ($v['content'] == '') return app('json')->fail(400246);
+                if ($v['synopsis'] == '') return app('json')->fail(400247);
                 $v['status'] = 1;
                 $v['add_time'] = time();
                 if ($v['id']) {
@@ -124,8 +119,8 @@ class WechatNewsCategory extends AuthController
             }
             $countId = count($id);
             if ($countId != $countList) {
-                if ($data['id']) return app('json')->fail('修改失败');
-                else return app('json')->fail('添加失败');
+                if ($data['id']) return app('json')->fail(100007);
+                else return app('json')->fail(100022);
             } else {
                 $newsCategory['cate_name'] = $data['list'][0]['title'];
                 $newsCategory['new_id'] = implode(',', $id);
@@ -134,22 +129,19 @@ class WechatNewsCategory extends AuthController
                 $newsCategory['status'] = 1;
                 if ($data['id']) {
                     $this->services->update($data['id'], $newsCategory, 'id');
-                    return app('json')->success('修改成功');
+                    return app('json')->success(100001);
                 } else {
                     $this->services->save($newsCategory);
-                    return app('json')->success('添加成功');
+                    return app('json')->success(100021);
                 }
             }
         } catch (\Exception $e) {
-            return app('json')->fail($e->getMessage());
+            return app('json')->fail(100101);
         }
     }
 
     /**
      * 发送消息
-     * @param int $id
-     * @param string $wechat
-     * $wechat  不为空  发消息  /  空 群发消息
      */
     public function push()
     {
@@ -157,7 +149,7 @@ class WechatNewsCategory extends AuthController
             ['id', 0],
             ['user_ids', '']
         ]);
-        if (!$data['id']) return app('json')->fail('参数错误');
+        if (!$data['id']) return app('json')->fail(100100);
         $list = $this->services->getWechatNewsItem($data['id']);
         $wechatNews = [];
         if ($list) {
@@ -187,9 +179,9 @@ class WechatNewsCategory extends AuthController
                         $errorLog[] = $v['nickname'] . '没有关注发送失败(不是微信公众号用户)';
                     }
                 }
-            } else return app('json')->fail('发送失败，参数不正确');
-            if (!count($errorLog)) return app('json')->success('全部发送成功');
-            else return app('json')->success(implode(',', $errorLog) . '，剩余的发送成功');
+            } else return app('json')->fail(100031);
+            if (!count($errorLog)) return app('json')->success(100030);
+            else return app('json')->success(100030);
         }
 
     }

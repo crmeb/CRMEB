@@ -4,160 +4,160 @@
 			<view v-if="orderInfo && orderInfo.invoice" class='header bg-color acea-row row-middle'>
 				<view class='iconfont icon-fapiao1'></view>
 				<view class='data'>
-					<view class='state'>{{orderInfo.invoice.is_invoice ? '已开票' : '未开票'}}</view>
+					<view class='state'>{{orderInfo.invoice.is_invoice ? $t(`已开票`) : $t(`未开票`)}}</view>
 					<view>{{orderInfo.invoice.add_time}}</view>
 				</view>
 			</view>
 			<view v-if="orderInfo && orderInfo.invoice" class="wrapper">
 				<view class="item acea-row row-between-wrapper">
-					<view>发票类型</view>
-					<view class="conter">{{orderInfo.invoice.type === 1 ? '增值税电子普通发票' : '增值税电子专用发票'}}</view>
+					<view>{{$t(`发票类型`)}}</view>
+					<view class="conter">{{orderInfo.invoice.type === 1 ? $t(`增值税电子普通发票`) : $t(`增值税电子专用发票`)}}</view>
 				</view>
 				<view class="item acea-row row-between-wrapper">
-					<view>发票抬头</view>
+					<view>{{$t(`发票抬头`)}}</view>
 					<view class="conter">{{orderInfo.invoice.name}}</view>
 				</view>
 				<view v-if="orderInfo.invoice.duty_number" class="item acea-row row-between-wrapper">
-					<view>税号</view>
+					<view>{{$t(`税号`)}}</view>
 					<view class="conter">{{orderInfo.invoice.duty_number}}</view>
 				</view>
 				<view class="item acea-row row-between-wrapper">
-					<view>手机号</view>
+					<view>{{$t(`手机号`)}}</view>
 					<view class="conter">{{orderInfo.invoice.drawer_phone}}</view>
 				</view>
 				<view class="item acea-row row-between-wrapper">
-					<view>邮箱</view>
+					<view>{{$t(`邮箱`)}}</view>
 					<view class="conter">{{orderInfo.invoice.email}}</view>
 				</view>
 				<template v-if="orderInfo.invoice.type === 2">
 					<view class="item acea-row row-between-wrapper">
-						<view>开户银行</view>
+						<view>{{$t(`开户银行`)}}</view>
 						<view class="conter">{{orderInfo.invoice.bank}}</view>
 					</view>
 					<view class="item acea-row row-between-wrapper">
-						<view>银行账号</view>
+						<view>{{$t(`银行账号`)}}</view>
 						<view class="conter">{{orderInfo.invoice.card_number}}</view>
 					</view>
 					<view class="item acea-row row-between-wrapper">
-						<view>企业地址</view>
+						<view>{{$t(`企业地址`)}}</view>
 						<view class="conter">{{orderInfo.invoice.address}}</view>
 					</view>
 					<view class="item acea-row row-between-wrapper">
-						<view>企业电话</view>
+						<view>{{$t(`企业电话`)}}</view>
 						<view class="conter">{{orderInfo.invoice.tell}}</view>
 					</view>
 				</template>
 				<view class="item acea-row row-between-wrapper" v-if='orderInfo.invoice.invoice_number'>
-					<view>发票编号</view>
+					<view>{{$t(`发票编号`)}}</view>
 					<view class="conter">{{orderInfo.invoice.invoice_number}}</view>
 				</view>
 				<view class="item acea-row row-between-wrapper" v-if='orderInfo.invoice.remark'>
-					<view>发票备注</view>
+					<view>{{$t(`发票备注`)}}</view>
 					<view class="conter">{{orderInfo.invoice.remark}}</view>
 				</view>
 			</view>
-			<orderGoods :evaluate='evaluate' :orderId="order_id" :cartInfo="cartInfo" :jump="true"></orderGoods>
+			<orderGoods :evaluate='evaluate' :orderId="order_id" :cartInfo="cartInfo" :jump="true" :paid="orderInfo.paid" :oid="orderInfo.id" :isShow="false" :statusType="status.type"></orderGoods>
 			<view class='wrapper'>
 				<view class='item acea-row row-between'>
-					<view>订单编号：</view>
+					<view>{{$t(`订单编号`)}}：</view>
 					<view class='conter acea-row row-middle row-right'>{{orderInfo.order_id}}
 						<!-- #ifndef H5 -->
-						<text class='copy' @tap='copy'>复制</text>
+						<text class='copy' @tap='copy'>{{$t(`复制`)}}</text>
 						<!-- #endif -->
 						<!-- #ifdef H5 -->
-						<text class='copy copy-data' :data-clipboard-text="orderInfo.order_id">复制</text>
+						<text class='copy copy-data' :data-clipboard-text="orderInfo.order_id">{{$t(`复制`)}}</text>
 						<!-- #endif -->
 					</view>
 				</view>
 				<view class='item acea-row row-between'>
-					<view>下单时间：</view>
+					<view>{{$t(`下单时间`)}}：</view>
 					<view class='conter'>{{(orderInfo.add_time_y || '') +' '+(orderInfo.add_time_h || 0)}}</view>
 				</view>
 				<view class='item acea-row row-between'>
-					<view>支付状态：</view>
-					<view class='conter' v-if="orderInfo.paid">已支付</view>
-					<view class='conter' v-else>未支付</view>
+					<view>{{$t(`支付状态`)}}：</view>
+					<view class='conter' v-if="orderInfo.paid">{{$t(`已支付`)}}</view>
+					<view class='conter' v-else>{{$t(`未支付`)}}</view>
 				</view>
 				<view class='item acea-row row-between'>
-					<view>支付方式：</view>
+					<view>{{$t(`支付方式`)}}：</view>
 					<view class='conter'>{{orderInfo._status._payType}}</view>
 				</view>
 				<view class='item acea-row row-between' v-if="orderInfo.mark">
-					<view>买家留言：</view>
+					<view>{{$t(`买家留言`)}}：</view>
 					<view class='conter'>{{orderInfo.mark}}</view>
 				</view>
 				<view class='item acea-row row-between' v-if="orderInfo.fictitious_content">
-					<view>备注：</view>
+					<view>{{$t(`备注`)}}：</view>
 					<view class='conter'>{{orderInfo.fictitious_content}}</view>
 				</view>
 			</view>
 			<!-- 退款订单详情 -->
 			<view class='wrapper' v-if="isGoodsReturn">
 				<view class='item acea-row row-between'>
-					<view>收货人：</view>
+					<view>{{$t(`收货人`)}}：</view>
 					<view class='conter'>{{orderInfo.real_name}}</view>
 				</view>
 				<view class='item acea-row row-between'>
-					<view>联系电话：</view>
+					<view>{{$t(`联系电话`)}}：</view>
 					<view class='conter'>{{orderInfo.user_phone}}</view>
 				</view>
 				<view class='item acea-row row-between'>
-					<view>收货地址：</view>
+					<view>{{$t(`收货地址`)}}：</view>
 					<view class='conter'>{{orderInfo.user_address}}</view>
 				</view>
 			</view>
 			<view v-if="orderInfo.status!=0">
 				<view class='wrapper' v-if='orderInfo.delivery_type=="express"'>
 					<view class='item acea-row row-between'>
-						<view>配送方式：</view>
-						<view class='conter'>发货</view>
+						<view>{{$t(`配送方式`)}}：</view>
+						<view class='conter'>{{$t(`发货`)}}</view>
 					</view>
 					<view class='item acea-row row-between'>
-						<view>快递公司：</view>
+						<view>{{$t(`快递公司`)}}：</view>
 						<view class='conter'>{{orderInfo.delivery_name || ''}}</view>
 					</view>
 					<view class='item acea-row row-between'>
-						<view>快递号：</view>
+						<view>{{$t(`快递号`)}}：</view>
 						<view class='conter'>{{orderInfo.delivery_id || ''}}</view>
 					</view>
 				</view>
 				<view class='wrapper' v-else-if='orderInfo.delivery_type=="send"'>
 					<view class='item acea-row row-between'>
-						<view>配送方式：</view>
-						<view class='conter'>送货</view>
+						<view>{{$t(`配送方式`)}}：</view>
+						<view class='conter'>{{$t(`送货`)}}</view>
 					</view>
 					<view class='item acea-row row-between'>
-						<view>配送人姓名：</view>
+						<view>{{$t(`配送人姓名`)}}：</view>
 						<view class='conter'>{{orderInfo.delivery_name || ''}}</view>
 					</view>
 					<view class='item acea-row row-between'>
-						<view>联系电话：</view>
-						<view class='conter acea-row row-middle row-right'>{{orderInfo.delivery_id || ''}}<text class='copy' @tap='goTel'>拨打</text></view>
+						<view>{{$t(`联系电话`)}}：</view>
+						<view class='conter acea-row row-middle row-right'>{{orderInfo.delivery_id || ''}}<text class='copy' @tap='goTel'>{{$t(`dial`)}}</text></view>
 					</view>
 				</view>
 				<view class='wrapper' v-else-if='orderInfo.delivery_type=="fictitious"'>
 					<view class='item acea-row row-between'>
-						<view>虚拟发货：</view>
-						<view class='conter'>已发货，请注意查收</view>
+						<view>{{$t(`虚拟发货`)}}：</view>
+						<view class='conter'>{{$t(`已发货，请注意查收`)}}</view>
 					</view>
 				</view>
 			</view>
 			<view class='wrapper'>
 				<view class='item acea-row row-between'>
-					<view>支付金额：</view>
-					<view class='conter'>￥{{orderInfo.total_price}}</view>
+					<view>{{$t(`支付金额`)}}：</view>
+					<view class='conter'>{{$t(`￥`)}}{{orderInfo.total_price}}</view>
 				</view>
 				<view class='item acea-row row-between' v-if='orderInfo.coupon_id'>
-					<view>优惠券抵扣：</view>
-					<view class='conter'>-￥{{orderInfo.coupon_price}}</view>
+					<view>{{$t(`优惠券抵扣`)}}：</view>
+					<view class='conter'>-{{$t(`￥`)}}{{orderInfo.coupon_price}}</view>
 				</view>
 				<view class='item acea-row row-between' v-if="orderInfo.use_integral > 0">
-					<view>积分抵扣：</view>
-					<view class='conter'>-￥{{orderInfo.deduction_price}}</view>
+					<view>{{$t(`积分抵扣`)}}：</view>
+					<view class='conter'>-{{$t(`￥`)}}{{orderInfo.deduction_price}}</view>
 				</view>
 				<view class='item acea-row row-between' v-if="orderInfo.pay_postage > 0">
-					<view>运费：</view>
-					<view class='conter'>￥{{orderInfo.pay_postage}}</view>
+					<view>{{$t(`运费`)}}：</view>
+					<view class='conter'>{{$t(`￥`)}}{{orderInfo.pay_postage}}</view>
 				</view>
 			</view>
 		</view>
@@ -584,27 +584,29 @@
 				status: {}, //订单底部按钮状态
 				isClose: false,
 				payMode: [{
-						name: "微信支付",
+						name: this.$t(`微信支付`),
 						icon: "icon-weixinzhifu",
 						value: 'weixin',
-						title: '微信快捷支付'
+						title: this.$t(`使用微信快捷支付`),
+						payStatus: true,
 					},
 					// #ifdef H5 || APP-PLUS
 					{
-						name: '支付宝支付',
+						name: this.$t(`支付宝支付`),
 						icon: 'icon-zhifubao',
 						value: 'alipay',
-						title: '支付宝支付',
+						title: this.$t(`使用支付宝支付`),
 						payStatus: true
 					},
 					// #endif
 					{
-						name: "余额支付",
+						name: this.$t(`余额支付`),
 						icon: "icon-yuezhifu",
 						value: 'yue',
-						title: '可用余额:',
-						number: 0
-					},
+						title: this.$t(`可用余额`),
+						number: 0,
+						payStatus: true
+					}, 
 				],
 				pay_close: false,
 				pay_order_id: '',
@@ -636,7 +638,7 @@
 				const clipboard = new ClipboardJS(".copy-data");
 				clipboard.on("success", () => {
 					this.$util.Tips({
-						title: '复制成功'
+						title: this.$t(`复制成功`)
 					});
 				});
 			});
@@ -646,13 +648,13 @@
 			goGoodCall() {
 				let self = this
 				uni.navigateTo({
-					url: `/pages/customer_list/chat?orderId=${self.order_id}`
+					url: `/pages/extension/customer_list/chat?orderId=${self.order_id}`
 				})
 			},
 			openSubcribe: function(e) {
 				let page = e;
 				uni.showLoading({
-					title: '正在加载',
+					title: this.$t(`正在加载中`),
 				})
 				openOrderRefundSubscribe().then(res => {
 					uni.hideLoading();
@@ -687,7 +689,7 @@
 			 */
 			showMaoLocation: function() {
 				if (!this.system_store.latitude || !this.system_store.longitude) return this.$util.Tips({
-					title: '缺少经纬度信息无法查看地图！'
+					title: this.$t(`缺少经纬度信息无法查看地图！`)
 				});
 				uni.openLocation({
 					latitude: parseFloat(this.system_store.latitude),
@@ -759,7 +761,7 @@
 			getOrderInfo: function() {
 				let that = this;
 				uni.showLoading({
-					title: "正在加载中"
+					title: that.$t(`正在加载中`)
 				});
 				orderInvoiceDetail(this.order_id).then(res => {
 					let _type = res.data._status._type;
@@ -842,20 +844,20 @@
 				let that = this;
 				orderAgain(that.orderInfo.order_id).then(res => {
 					return uni.navigateTo({
-						url: '/pages/users/order_confirm/index?new=1&cartId=' + res.data.cateId
+						url: '/pages/goods/order_confirm/index?new=1&cartId=' + res.data.cateId
 					});
 				});
 			},
 			confirmOrder: function() {
 				let that = this;
 				uni.showModal({
-					title: '确认收货',
-					content: '为保障权益，请收到货确认无误后，再确认收货',
+					title: this.$t(`确认收货`),
+					content: this.$t(`为保障权益，请收到货确认无误后，再确认收货`),
 					success: function(res) {
 						if (res.confirm) {
 							orderTake(that.order_id).then(res => {
 								return that.$util.Tips({
-									title: '操作成功',
+									title: that.$t(`操作成功`),
 									icon: 'success'
 								}, function() {
 									that.getOrderInfo();
@@ -877,7 +879,7 @@
 				let that = this;
 				orderDel(this.order_id).then(res => {
 					return that.$util.Tips({
-						title: '删除成功',
+						title: that.$t(`删除成功`),
 						icon: 'success'
 					}, {
 						tab: 3,
@@ -892,8 +894,8 @@
 			cancelOrder() {
 				let self = this
 				uni.showModal({
-					title: '提示',
-					content: '确认取消该订单?',
+					title: that.$t(`提示`),
+					content: that.$t(`确认取消该订单`),
 					success: function(res) {
 						if (res.confirm) {
 							orderCancel(self.orderInfo.order_id)
@@ -908,7 +910,6 @@
 									self.getDetail();
 								});
 						} else if (res.cancel) {
-							console.log('用户点击取消');
 						}
 					}
 				});
@@ -930,5 +931,11 @@
 		color: #aaa;
 		border: 1px solid #ddd;
 		margin-right: 20rpx;
+	}
+	.acea-row {
+		flex-wrap: nowrap;
+	}
+	.wrapper .item .conter {
+		width: 396rpx;
 	}
 </style>

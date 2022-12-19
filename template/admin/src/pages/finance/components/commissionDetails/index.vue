@@ -10,11 +10,7 @@
       <Row type="flex" :gutter="24">
         <Col v-bind="grid">
           <FormItem label="订单搜索：" label-for="status1">
-            <Input
-              v-model="formValidate.keywords"
-              placeholder="请输入交易单号/交易人"
-              class="input"
-            ></Input>
+            <Input v-model="formValidate.keywords" placeholder="请输入交易单号/交易人" class="input"></Input>
           </FormItem>
         </Col>
         <Col>
@@ -39,9 +35,7 @@
         <div>{{ row.extract_price }}</div>
       </template>
       <template slot-scope="{ row }" slot="pay_type">
-        <div v-for="item in payment" :key="item.value">
-          <span v-if="row.pay_type == item.value"> {{ item.title }} </span>
-        </div>
+          <span > {{ row.pay_type_name }} </span>
       </template>
       <template slot-scope="{ row }" slot="price">
         <div v-if="row.price >= 0" class="z-price">+{{ row.price }}</div>
@@ -65,11 +59,11 @@
 </template>
 
 <script>
-import { getFlowList } from "@/api/finance";
-import { mapState } from "vuex";
+import { getFlowList } from '@/api/finance';
+import { mapState } from 'vuex';
 
 export default {
-  name: "commissionDetails",
+  name: 'commissionDetails',
   data() {
     return {
       grid: {
@@ -85,75 +79,75 @@ export default {
       staff: [],
       formValidate: {
         trading_type: 0,
-        time: "",
-        keywords: "",
+        time: '',
+        keywords: '',
         page: 1,
         limit: 20,
       },
       total: 0,
       columns: [
         {
-          title: "交易单号",
-          key: "flow_id",
+          title: '交易单号',
+          key: 'flow_id',
           width: 180,
         },
         {
-          title: "关联订单",
-          key: "order_id",
+          title: '关联订单',
+          key: 'order_id',
           minWidth: 180,
         },
         {
-          title: "交易时间",
-          key: "add_time",
+          title: '交易时间',
+          key: 'add_time',
           minWidth: 120,
         },
         {
-          title: "交易金额",
-          slot: "price",
+          title: '交易金额',
+          slot: 'price',
           minWidth: 80,
         },
         {
-          title: "交易用户",
-          key: "nickname",
+          title: '交易用户',
+          key: 'nickname',
           minWidth: 80,
         },
         {
-          title: "交易类型",
-          key: "trading_type",
+          title: '交易类型',
+          key: 'trading_type',
           minWidth: 80,
         },
         {
-          title: "支付方式",
-          slot: "pay_type",
+          title: '支付方式',
+          slot: 'pay_type',
           minWidth: 100,
         },
         {
-          title: "备注",
-          key: "mark",
+          title: '备注',
+          key: 'mark',
           minWidth: 100,
         },
       ],
       tabList: [],
       payment: [
         {
-          title: "全部",
-          value: "",
+          title: '全部',
+          value: '',
         },
         {
-          title: "微信",
-          value: "weixin",
+          title: '微信',
+          value: 'weixin',
         },
         {
-          title: "支付宝",
-          value: "alipay",
+          title: '支付宝',
+          value: 'alipay',
         },
         {
-          title: "银行卡",
-          value: "bank",
+          title: '银行卡',
+          value: 'bank',
         },
         {
-          title: "线下支付",
-          value: "offline",
+          title: '线下支付',
+          value: 'offline',
         },
       ],
     };
@@ -161,20 +155,20 @@ export default {
   props: {
     ids: {
       type: String,
-      default: "",
+      default: '',
     },
     time: {
       type: String,
-      default: "",
+      default: '',
     },
   },
   computed: {
-    ...mapState("admin/layout", ["isMobile"]),
+    ...mapState('admin/layout', ['isMobile']),
     labelWidth() {
       return this.isMobile ? undefined : 80;
     },
     labelPosition() {
-      return this.isMobile ? "top" : "left";
+      return this.isMobile ? 'top' : 'left';
     },
   },
   mounted() {
@@ -219,9 +213,9 @@ export default {
     reset() {
       this.formValidate = {
         ids: this.ids,
-        store_id: "",
-        keywork: "",
-        data: "",
+        store_id: '',
+        keywork: '',
+        data: '',
         page: 1,
         limit: 10,
       };
@@ -229,12 +223,12 @@ export default {
     },
     // 关闭按钮
     cancel() {
-      this.$emit("close");
+      this.$emit('close');
       this.formValidate = {
-        ids: "",
-        store_id: "",
-        keywork: "",
-        data: "",
+        ids: '',
+        store_id: '',
+        keywork: '',
+        data: '',
         page: 1,
         limit: 10,
       };

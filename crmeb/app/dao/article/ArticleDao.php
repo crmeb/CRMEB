@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -12,6 +12,7 @@ namespace app\dao\article;
 
 use app\dao\BaseDao;
 use app\model\article\Article;
+use think\exception\ValidateException;
 
 /**
  * 文章dao
@@ -56,6 +57,7 @@ class ArticleDao extends BaseDao
     public function read($id)
     {
         $data = $this->search()->with(['content', 'storeInfo', 'cateName'])->find($id);
+        if (!$data) throw new ValidateException('文章不存在');
         $data['store_info'] = $data['storeInfo'];
         return $data;
     }

@@ -12,17 +12,17 @@
 				<view :hidden='currentTab != 0' class='list'>
 					<form @submit="subCash">
 						<view class='item acea-row row-between-wrapper'>
-							<view class='name'>持卡人</view>
-							<view class='input'><input placeholder='请输入持卡人姓名' placeholder-class='placeholder'
+							<view class='name'>{{$t(`持卡人`)}}</view>
+							<view class='input'><input :placeholder='$t(`请输入持卡人姓名`)' placeholder-class='placeholder'
 									name="name"></input></view>
 						</view>
 						<view class='item acea-row row-between-wrapper'>
-							<view class='name'>卡号</view>
-							<view class='input'><input type='number' placeholder='请填写卡号' placeholder-class='placeholder'
+							<view class='name'>{{$t(`卡号`)}}</view>
+							<view class='input'><input type='number' :placeholder='$t(`请填写卡号`)' placeholder-class='placeholder'
 									name="cardnum"></input></view>
 						</view>
 						<view class='item acea-row row-between-wrapper'>
-							<view class='name'>银行</view>
+							<view class='name'>{{$t(`银行`)}}</view>
 							<view class='input'>
 								<picker @change="bindPickerChange" :value="index" :range="array">
 									<text class='Bank'>{{array[index]}}</text>
@@ -31,34 +31,34 @@
 							</view>
 						</view>
 						<view class='item acea-row row-between-wrapper'>
-							<view class='name'>提现</view>
-							<view class='input'><input :placeholder='"最低提现金额"+minPrice' placeholder-class='placeholder'
+							<view class='name'>{{$t(`提现`)}}</view>
+							<view class='input'><input :placeholder='$t(`最低提现金额`)+minPrice' placeholder-class='placeholder'
 									name="money" type='digit'></input></view>
 						</view>
 						<view class='tip'>
-							当前可提现金额: <text
-								class="price">￥{{userInfo.commissionCount}},</text>冻结佣金：￥{{userInfo.broken_commission}}
+							{{$t(`当前可提现金额`)}}: <text
+								class="price">{{$t(`￥`)}}{{userInfo.commissionCount}},</text>{{$t(`冻结佣金`)}}：{{$t(`￥`)}}{{userInfo.broken_commission}}
 						</view>
 						<view class='tip'>
-							说明: 每笔佣金的冻结期为{{userInfo.broken_day}}天，到期后可提现
+							{{$t(`说明: 每笔佣金的冻结期为`)}}{{userInfo.broken_day}}{{$t(`天，到期后可提现`)}}
 						</view>
-						<button formType="submit" class='bnt bg-color'>提现</button>
+						<button formType="submit" class='bnt bg-color'>{{$t(`提现`)}}</button>
 					</form>
 				</view>
 				<view :hidden='currentTab != 1' class='list'>
 					<form @submit="subCash">
 						<view class='item acea-row row-between-wrapper' v-if="!brokerageType">
-							<view class='name'>账号</view>
-							<view class='input'><input placeholder='请填写您的微信账号' placeholder-class='placeholder'
+							<view class='name'>{{$t(`账号`)}}</view>
+							<view class='input'><input :placeholder='$t(`请填写您的微信账号`)' placeholder-class='placeholder'
 									name="name"></input></view>
 						</view>
 						<view class='item acea-row row-between-wrapper'>
-							<view class='name'>提现</view>
-							<view class='input'><input :placeholder='"最低提现金额"+minPrice' placeholder-class='placeholder'
+							<view class='name'>{{$t(`提现`)}}</view>
+							<view class='input'><input :placeholder='$t(`最低提现金额`)+minPrice' placeholder-class='placeholder'
 									name="money" type='digit'></input></view>
 						</view>
 						<view class='item acea-row row-top row-between' v-if="!brokerageType">
-							<view class='name'>收款码</view>
+							<view class='name'>{{$t(`收款码`)}}</view>
 							<view class="input acea-row">
 								<view class="picEwm" v-if="qrcodeUrlW">
 									<image :src="qrcodeUrlW"></image>
@@ -67,34 +67,34 @@
 								<view class='pictrue acea-row row-center-wrapper row-column' @click='uploadpic("W")'
 									v-else>
 									<text class='iconfont icon-icon25201'></text>
-									<view>上传图片</view>
+									<view>{{$t(`上传图片`)}}</view>
 								</view>
 							</view>
 						</view>
 						<view class='tip'>
-							当前可提现金额: <text
-								class="price">￥{{userInfo.commissionCount}},</text>冻结佣金：￥{{userInfo.broken_commission}}
+							{{$t(`当前可提现金额`)}}: <text
+								class="price">{{$t(`￥`)}}{{userInfo.commissionCount}},</text>{{$t(`冻结佣金`)}}：{{$t(`￥`)}}{{userInfo.broken_commission}}
 						</view>
 						<view class='tip'>
-							说明: 每笔佣金的冻结期为{{userInfo.broken_day}}天，到期后可提现
+							{{$t(`说明: 每笔佣金的冻结期为`)}}{{userInfo.broken_day}}{{$t(`天，到期后可提现`)}}
 						</view>
-						<button formType="submit" class='bnt bg-color'>提现</button>
+						<button formType="submit" class='bnt bg-color'>{{$t(`提现`)}}</button>
 					</form>
 				</view>
 				<view :hidden='currentTab != 2' class='list'>
 					<form @submit="subCash">
 						<view class='item acea-row row-between-wrapper'>
-							<view class='name'>账号</view>
-							<view class='input'><input placeholder='请填写您的支付宝账号' placeholder-class='placeholder'
+							<view class='name'>{{$t(`账号`)}}</view>
+							<view class='input'><input :placeholder='$t(`请填写您的支付宝账号`)' placeholder-class='placeholder'
 									name="name"></input></view>
 						</view>
 						<view class='item acea-row row-between-wrapper'>
-							<view class='name'>提现</view>
-							<view class='input'><input :placeholder='"最低提现金额"+minPrice' placeholder-class='placeholder'
+							<view class='name'>{{$t(`提现`)}}</view>
+							<view class='input'><input :placeholder='$t(`最低提现金额`)+minPrice' placeholder-class='placeholder'
 									name="money" type='digit'></input></view>
 						</view>
 						<view class='item acea-row row-top row-between'>
-							<view class='name'>收款码</view>
+							<view class='name'>{{$t(`收款码`)}}</view>
 							<view class="input acea-row">
 								<view class="picEwm" v-if="qrcodeUrlZ">
 									<image :src="qrcodeUrlZ"></image>
@@ -103,18 +103,18 @@
 								<view class='pictrue acea-row row-center-wrapper row-column' @click='uploadpic("Z")'
 									v-else>
 									<text class='iconfont icon-icon25201'></text>
-									<view>上传图片</view>
+									<view>{{$t(`上传图片`)}}</view>
 								</view>
 							</view>
 						</view>
 						<view class='tip'>
-							当前可提现金额: <text
-								class="price">￥{{userInfo.commissionCount}},</text>冻结佣金：￥{{userInfo.broken_commission}}
+							{{$t(`当前可提现金额`)}}: <text
+								class="price">{{$t(`￥`)}}{{userInfo.commissionCount}},</text>{{$t(`冻结佣金`)}}：{{$t(`￥`)}}{{userInfo.broken_commission}}
 						</view>
 						<view class='tip'>
-							说明: 每笔佣金的冻结期为{{userInfo.broken_day}}天，到期后可提现
+							{{$t(`说明: 每笔佣金的冻结期为`)}}{{userInfo.broken_day}}{{$t(`天，到期后可提现`)}}
 						</view>
-						<button formType="submit" class='bnt bg-color'>提现</button>
+						<button formType="submit" class='bnt bg-color'>{{$t(`提现`)}}</button>
 					</form>
 				</view>
 			</view>
@@ -228,7 +228,10 @@
 				let that = this;
 				extractBank().then(res => {
 					let array = res.data.extractBank;
-					array.unshift("请选择银行");
+					array.unshift('请选择银行');
+					array.forEach((v, i) => {
+					    array.splice(i,1,that.$t(v))
+					})
 					that.$set(that, 'array', array);
 					that.minPrice = res.data.minPrice;
 					that.brokerageType = res.data.brokerageType ? parseInt(res.data.brokerageType) : 0;
@@ -241,17 +244,17 @@
 				let that = this;
 				getUserInfo().then(res => {
 					that.navList = [{
-							'name': '银行卡',
+							'name': that.$t(`银行卡`),
 							'icon': 'icon-yinhangqia',
 							'id': 0
 						},
 						{
-							'name': '微信',
+							'name': that.$t(`微信`),
 							'icon': 'icon-weixin2',
 							'id': 1
 						},
 						{
-							'name': '支付宝',
+							'name': that.$t(`支付宝`),
 							'icon': 'icon-icon34',
 							'id': 2
 						}
@@ -279,13 +282,13 @@
 				if (this.prevent) return
 				if (that.currentTab == 0) { //银行卡
 					if (!value.name.trim()) return this.$util.Tips({
-						title: '请填写持卡人姓名'
+						title: this.$t(`请填写持卡人姓名`)
 					});
 					if (!value.cardnum.trim()) return this.$util.Tips({
-						title: '请填写卡号'
+						title: this.$t(`请填写卡号`)
 					});
 					if (that.index == 0) return this.$util.Tips({
-						title: "请选择银行"
+						title: this.$t(`请选择银行`)
 					});
 					value.extract_type = 'bank';
 					value.bankname = that.array[that.index];
@@ -294,23 +297,23 @@
 					
 					// 自动提现隐藏账号
 					if (!that.brokerageType && !value.name.trim()) return this.$util.Tips({
-						title: '请填写微信号'
+						title: this.$t(`请填写微信号`)
 					});
 					value.weixin = value.name;
 					value.qrcode_url = that.qrcodeUrlW;
 				} else if (that.currentTab == 2) { //支付宝
 					value.extract_type = 'alipay';
 					if (value.name.length == 0) return this.$util.Tips({
-						title: '请填写账号'
+						title: this.$t(`请填写账号`)
 					});
 					value.alipay_code = value.name;
 					value.qrcode_url = that.qrcodeUrlZ;
 				}
 				if (!value.money.trim()) return this.$util.Tips({
-					title: '请填写提现金额'
+					title: this.$t(`请填写提现金额`)
 				});
 				if (Number(value.money) < Number(that.minPrice)) return this.$util.Tips({
-					title: '提现金额不能低于' + that.minPrice
+					title: this.$t(`提现金额不能低于`) + that.minPrice
 				});
 				this.prevent = true
 				extractCash(value).then(res => {

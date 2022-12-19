@@ -2,19 +2,14 @@
   <div>
     <div class="mt20 ml20">
       <Input class="perW35" v-model="videoLink" placeholder="请输入视频链接" />
-      <input
-        type="file"
-        ref="refid"
-        style="display: none"
-        @change="zh_uploadFile_change"
-      />
+      <input type="file" ref="refid" style="display: none" @change="zh_uploadFile_change" />
       <Button
         v-if="upload_type !== '1' || videoLink"
         type="primary"
         icon="ios-cloud-upload-outline"
         class="ml10"
         @click="zh_uploadFile"
-        >{{ videoLink ? "确认添加" : "上传视频" }}</Button
+        >{{ videoLink ? '确认添加' : '上传视频' }}</Button
       >
       <Upload
         v-if="upload_type === '1' && !videoLink"
@@ -49,25 +44,25 @@
 </template>
 
 <script>
-import { uploadByPieces } from "@/utils/upload"; //引入uploadByPieces方法
-import { productGetTempKeysApi, uploadType } from "@/api/product";
-import Setting from "@/setting";
-import { getCookies } from "@/libs/util";
+import { uploadByPieces } from '@/utils/upload'; //引入uploadByPieces方法
+import { productGetTempKeysApi, uploadType } from '@/api/product';
+import Setting from '@/setting';
+import { getCookies } from '@/libs/util';
 // import "../../../public/UEditor/dialogs/internal";
 export default {
-  name: "vide11o",
+  name: 'vide11o',
   data() {
     return {
-      fileUrl: Setting.apiBaseURL + "/file/upload",
+      fileUrl: Setting.apiBaseURL + '/file/upload',
       upload: {
         videoIng: false, // 是否显示进度条；
       },
       progress: 0, // 进度条默认0
-      videoLink: "",
+      videoLink: '',
       formValidate: {
-        video_link: "",
+        video_link: '',
       },
-      upload_type: "",
+      upload_type: '',
       uploadData: {},
       header: {},
     };
@@ -99,7 +94,7 @@ export default {
     // 删除视频；
     delVideo() {
       let that = this;
-      that.$set(that.formValidate, "video_link", "");
+      that.$set(that.formValidate, 'video_link', '');
     },
     //获取视频上传类型
     uploadType() {
@@ -117,7 +112,7 @@ export default {
       }
     },
     getToken() {
-      this.header["Authori-zation"] = "Bearer " + getCookies("token");
+      this.header['Authori-zation'] = 'Bearer ' + getCookies('token');
     },
     beforeUpload() {
       this.uploadData = {};
@@ -137,13 +132,8 @@ export default {
     },
     zh_uploadFile_change(evfile) {
       let that = this;
-      // console.log(evfile.target.files[0].type);
-      // let suffix = evfile.target.files[0].name.substr(
-      //   evfile.target.files[0].name.indexOf(".")
-      // );
-      // console.log(suffix);
-      if (evfile.target.files[0].type !== "video/mp4") {
-        return that.$Message.error("只能上传mp4文件");
+      if (evfile.target.files[0].type !== 'video/mp4') {
+        return that.$Message.error('只能上传mp4文件');
       }
       productGetTempKeysApi().then((res) => {
         that.$videoCloud
@@ -157,7 +147,7 @@ export default {
           })
           .then((res) => {
             that.formValidate.video_link = res.url;
-            that.$Message.success("视频上传成功");
+            that.$Message.success('视频上传成功');
           })
           .catch((res) => {
             that.$Message.error(res);
@@ -165,13 +155,7 @@ export default {
       });
     },
     uploads() {
-      this.$emit("getVideo", this.formValidate.video_link);
-      // console.log(this.formValidate.video_link)
-      // nowEditor.editor.execCommand(
-      //   "inserthtml",
-      //   `<p><img/><video src='${this.formValidate.video_link}' controls></video><br/></p>`
-      // );
-      // nowEditor.dialog.close(true);
+      this.$emit('getVideo', this.formValidate.video_link);
     },
   },
 };

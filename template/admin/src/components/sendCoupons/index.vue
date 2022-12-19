@@ -32,34 +32,28 @@
         no-filtered-userFrom-text="暂无筛选结果"
       >
         <template slot-scope="{ row, index }" slot="coupon_time">
-          <div v-if="row.coupon_time">{{row.coupon_time}}</div>
-          <div v-else>{{row.use_time}}</div>
+          <div v-if="row.coupon_time">{{ row.coupon_time }}</div>
+          <div v-else>{{ row.use_time }}</div>
         </template>
         <template slot-scope="{ row, index }" slot="action">
           <a @click="sendGrant(row, '发送优惠券', index)">发送</a>
         </template>
       </Table>
       <div class="acea-row row-right page">
-        <Page
-          :total="total"
-          show-elevator
-          show-total
-          @on-change="pageChange"
-          :page-size="page.limit"
-        />
+        <Page :total="total" show-elevator show-total @on-change="pageChange" :page-size="page.limit" />
       </div>
     </Modal>
   </div>
 </template>
 
 <script>
-import { couponApi } from "@/api/user";
+import { couponApi } from '@/api/user';
 export default {
-  name: "send",
+  name: 'send',
   props: {
     userIds: {
       type: String,
-      default: "",
+      default: '',
     },
   },
   data() {
@@ -69,40 +63,40 @@ export default {
       couponList: [],
       columns: [
         {
-          title: "优惠券名称",
-          key: "title",
-          align: "center",
+          title: '优惠券名称',
+          key: 'title',
+          align: 'center',
           minWidth: 100,
         },
         {
-          title: "优惠券面值",
-          key: "coupon_price",
-          align: "center",
+          title: '优惠券面值',
+          key: 'coupon_price',
+          align: 'center',
           minWidth: 80,
         },
         {
-          title: "优惠券最低消费",
-          key: "use_min_price",
-          align: "center",
+          title: '优惠券最低消费',
+          key: 'use_min_price',
+          align: 'center',
           minWidth: 150,
         },
         {
-          title: "优惠券有效期限",
-          slot: "coupon_time",
-          align: "center",
+          title: '优惠券有效期限',
+          slot: 'coupon_time',
+          align: 'center',
           minWidth: 120,
         },
         {
-          title: "操作",
-          slot: "action",
-          align: "center",
+          title: '操作',
+          slot: 'action',
+          align: 'center',
           width: 120,
         },
       ],
       page: {
         page: 1, // 当前页
         limit: 15,
-        coupon_title: "",
+        coupon_title: '',
         receive_type: 3,
       },
       total: 0, // 总条数
@@ -143,7 +137,7 @@ export default {
         title: tit,
         num: num,
         url: `marketing/coupon/user/grant`,
-        method: "post",
+        method: 'post',
         ids: {
           id: row.id,
           uid: this.userIds,

@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -34,9 +34,11 @@ class Express extends AuthController
     }
 
     /**
-     * 显示资源列表
-     *
-     * @return \think\Response
+     * 获取物流列表
+     * @return mixed
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
      */
     public function index()
     {
@@ -47,9 +49,9 @@ class Express extends AuthController
     }
 
     /**
-     * 显示创建资源表单页.
-     *
-     * @return \think\Response
+     * 显示创建资源表单页
+     * @return mixed
+     * @throws \FormBuilder\Exception\FormBuilderException
      */
     public function create()
     {
@@ -58,7 +60,6 @@ class Express extends AuthController
 
     /**
      * 保存新建的资源
-     *
      * @return \think\Response
      */
     public function save()
@@ -68,27 +69,16 @@ class Express extends AuthController
             'code',
             ['sort', 0],
             ['is_show', 0]]);
-        if (!$data['name']) return app('json')->fail('请输入公司名称');
+        if (!$data['name']) return app('json')->fail(400400);
         $this->services->save($data);
-        return app('json')->success('添加公司成功!');
+        return app('json')->success(400401);
     }
 
     /**
-     * 显示指定的资源
-     *
-     * @param int $id
-     * @return \think\Response
-     */
-    public function read($id)
-    {
-        //
-    }
-
-    /**
-     * 显示编辑资源表单页.
-     *
-     * @param int $id
-     * @return \think\Response
+     * 显示编辑资源表单页
+     * @param $id
+     * @return mixed
+     * @throws \FormBuilder\Exception\FormBuilderException
      */
     public function edit($id)
     {
@@ -97,9 +87,8 @@ class Express extends AuthController
 
     /**
      * 保存更新的资源
-     *
-     * @param int $id
-     * @return \think\Response
+     * @param $id
+     * @return mixed
      */
     public function update($id)
     {
@@ -107,42 +96,56 @@ class Express extends AuthController
             ['account', ''],
             ['key', ''],
             ['net_name', ''],
+            ['courier_name', ''],
+            ['customer_name', ''],
+            ['code_name', ''],
             ['sort', 0],
             ['is_show', 0]]);
-        if (!$expressInfo = $this->services->get($id)) return app('json')->fail('编辑的记录不存在!');
+        if (!$expressInfo = $this->services->get($id)) return app('json')->fail(100026);
         if ($expressInfo['partner_id'] == 1 && !$data['account']) {
-            return app('json')->fail('请输入月结账号');
+            return app('json')->fail(400402);
         }
         if ($expressInfo['partner_key'] == 1 && !$data['key']) {
-            return app('json')->fail('请输入月结密码');
+            return app('json')->fail(400403);
         }
         if ($expressInfo['net'] == 1 && !$data['net_name']) {
-            return app('json')->fail('请输入取件网点');
+            return app('json')->fail(400404);
+        }
+        if ($expressInfo['check_man'] == 1 && !$data['courier_name']) {
+            return app('json')->fail(500001);
+        }
+        if ($expressInfo['partner_name'] == 1 && !$data['customer_name']) {
+            return app('json')->fail(500002);
+        }
+        if ($expressInfo['is_code'] == 1 && !$data['code_name']) {
+            return app('json')->fail(500003);
         }
         $expressInfo->account = $data['account'];
         $expressInfo->key = $data['key'];
         $expressInfo->net_name = $data['net_name'];
+        $expressInfo->courier_name = $data['courier_name'];
+        $expressInfo->customer_name = $data['customer_name'];
+        $expressInfo->code_name = $data['code_name'];
         $expressInfo->sort = $data['sort'];
         $expressInfo->is_show = $data['is_show'];
         $expressInfo->status = 1;
         $expressInfo->save();
-        return app('json')->success('修改成功!');
+        return app('json')->success(100001);
     }
 
     /**
      * 删除指定资源
-     *
-     * @param int $id
-     * @return \think\Response
+     * @param $id
+     * @return mixed
      */
     public function delete($id)
     {
-        if (!$id) return app('json')->fail('参数错误，请重新打开');
+        if (!$id) return app('json')->fail(100100);
         $res = $this->services->delete($id);
         if (!$res)
-            return app('json')->fail('删除失败,请稍候再试!');
+            return app('json')->fail(100008);
         else
-            return app('json')->success('删除成功!');
+            return app('json')->success(100002);
     }
 
     /**
@@ -153,9 +156,9 @@ class Express extends AuthController
      */
     public function set_status($id = 0, $status = '')
     {
-        if ($status == '' || $id == 0) return app('json')->fail('参数错误');
+        if ($status == '' || $id == 0) return app('json')->fail(100100);
         $this->services->update($id, ['is_show' => $status]);
-        return app('json')->success($status == 0 ? '隐藏成功' : '显示成功');
+        return app('json')->success(100014);
     }
 
     /**
@@ -165,6 +168,6 @@ class Express extends AuthController
     public function syncExpress()
     {
         $this->services->syncExpress();
-        return app('json')->success('同步成功');
+        return app('json')->success(100038);
     }
 }

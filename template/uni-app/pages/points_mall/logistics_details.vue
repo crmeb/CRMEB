@@ -8,7 +8,7 @@
 				<view class='text acea-row row-between'>
 					<view class='name line2'>{{orderInfo.store_name}}</view>
 					<view class='money'>
-						<view>{{orderInfo.total_price}}积分</view>
+						<view>{{orderInfo.total_price}}{{$t(`积分`)}}</view>
 						<view>x{{orderInfo.total_num}}</view>
 					</view>
 				</view>
@@ -18,15 +18,15 @@
 					<view class='picTxt acea-row row-between-wrapper'>
 						<view class='iconfont icon-wuliu'></view>
 						<view class='text'>
-							<view><text class='name line1'>物流公司：</text> {{orderInfo.delivery_name}}</view>
-							<view class='express line1'><text class='name'>快递单号：</text> {{orderInfo.delivery_id}}</view>
+							<view><text class='name line1'>{{$t(`物流公司`)}}：</text> {{orderInfo.delivery_name}}</view>
+							<view class='express line1'><text class='name'>{{$t(`快递单号`)}}：</text> {{orderInfo.delivery_id}}</view>
 						</view>
 					</view>
 					<!-- #ifndef H5 -->
-					<view class='copy' @tap='copyOrderId'>复制单号</view>
+					<view class='copy' @tap='copyOrderId'>{{$t(`复制单号`)}}</view>
 					<!-- #endif -->
 					<!-- #ifdef H5 -->
-					<view class='copy copy-data' :data-clipboard-text="orderInfo.delivery_id">复制单号</view>
+					<view class='copy copy-data' :data-clipboard-text="orderInfo.delivery_id">{{$t(`复制单号`)}}</view>
 					<!-- #endif -->
 				</view>
 				<view class='item' v-for="(item,index) in expressList" :key="index">
@@ -97,7 +97,7 @@
 		},
 		onLoad: function(options) {
 			if (!options.order_id) return this.$util.Tips({
-				title: '缺少订单号'
+				title: this.$t(`缺少订单号`)
 			});
 			this.orderId = options.order_id;
 			if (this.isLogin) {
@@ -113,7 +113,7 @@
 				const clipboard = new ClipboardJS(".copy-data");
 				clipboard.on("success", () => {
 					this.$util.Tips({
-						title: '复制成功'
+						title: this.$t(`复制成功`)
 					});
 				});
 			});

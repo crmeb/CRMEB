@@ -1,0 +1,38 @@
+{
+  "name": "alibabacloud/tea-utils",
+  "description": "Alibaba Cloud Tea Utils for PHP",
+  "type": "library",
+  "license": "Apache-2.0",
+  "authors": [
+    {
+      "name": "Alibaba Cloud SDK",
+      "email": "sdk-team@alibabacloud.com"
+    }
+  ],
+  "support": {
+    "source": "https://github.com/aliyun/tea-util",
+    "issues": "https://github.com/aliyun/tea-util/issues"
+  },
+  "require": {
+    "php": ">5.5",
+    "alibabacloud/tea": "^3.1"
+  },
+  "autoload": {
+    "psr-4": {
+      "AlibabaCloud\\Tea\\Utils\\": "src"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "AlibabaCloud\\Tea\\Utils\\Tests\\": "tests"
+    }
+  },
+  "scripts": {
+    "fixer": "php-cs-fixer fix ./",
+    "test": [
+      "@clearCache",
+      "./vendor/bin/phpunit --colors=always"
+    ],
+    "clearCache": "rm -rf cache/*"
+  }
+}

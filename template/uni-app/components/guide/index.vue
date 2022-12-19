@@ -14,7 +14,7 @@
 			<video class="vid" :src="advData.video_link" :autoplay="true" :loop="true" :muted="true"
 				:controls="false"></video>
 		</view>
-		<view class="jump-over" @click.stop="launchFlag()">跳过<text v-if="closeType == 1">{{times}}</text></view>
+		<view class="jump-over" @click.stop="launchFlag()">{{$t(`跳过`)}}<text v-if="closeType == 1">{{times}}</text></view>
 	</view>
 </template>
 
@@ -24,8 +24,8 @@
 			return {
 				autoplay: false,
 				duration: 500,
-				jumpover: '跳过',
-				experience: '立即体验',
+				jumpover: this.$t(`跳过`),
+				experience: this.$t(`立即体验`),
 				timecount: undefined,
 				times: 0
 			}

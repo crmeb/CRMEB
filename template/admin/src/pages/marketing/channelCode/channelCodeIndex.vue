@@ -1,10 +1,5 @@
 <template>
   <div>
-    <div class="i-layout-page-header">
-      <div class="i-layout-page-header">
-        <span class="ivu-page-header-title">{{ $route.meta.title }}</span>
-      </div>
-    </div>
     <Row class="ivu-mt box-wrapper">
       <Col span="3" class="left-wrapper">
         <Menu :theme="theme3" :active-name="sortName" width="auto">
@@ -21,20 +16,13 @@
               <div class="icon-box" v-if="index != 0">
                 <Icon type="ios-more" size="24" @click.stop="showMenu(item)" />
               </div>
-              <div
-                class="right-menu ivu-poptip-inner"
-                v-show="item.status"
-                v-if="index != 0"
-              >
+              <div class="right-menu ivu-poptip-inner" v-show="item.status" v-if="index != 0">
                 <div class="ivu-poptip-body" @click="labelEdit(item)">
                   <div class="ivu-poptip-body-content">
                     <div class="ivu-poptip-body-content-inner">编辑分类</div>
                   </div>
                 </div>
-                <div
-                  class="ivu-poptip-body"
-                  @click="deleteSort(item, '删除分类', index)"
-                >
+                <div class="ivu-poptip-body" @click="deleteSort(item, '删除分类', index)">
                   <div class="ivu-poptip-body-content">
                     <div class="ivu-poptip-body-content-inner">删除分类</div>
                   </div>
@@ -48,12 +36,7 @@
         <Card :bordered="false" dis-hover>
           <Row type="flex" class="mb20">
             <Col span="20">
-              <Button
-                v-auth="['marketing-channel_code-create']"
-                type="primary"
-                icon="md-add"
-                @click="add"
-                class="mr10"
+              <Button v-auth="['marketing-channel_code-create']" type="primary" icon="md-add" @click="add" class="mr10"
                 >新建二维码</Button
               >
               <Button
@@ -95,21 +78,15 @@
             </template>
             <template slot-scope="{ row, index }" slot="label_name">
               <div v-if="row.label_name.length">
-                <Tag
-                  :checkable="false"
-                  color="primary"
-                  v-for="(item, index) in row.label_name"
-                  :key="index"
-                  >{{ item }}</Tag
-                >
+                <Tag :checkable="false" color="primary" v-for="(item, index) in row.label_name" :key="index">{{
+                  item
+                }}</Tag>
               </div>
               <div v-else>--</div>
             </template>
             <template slot-scope="{ row, index }" slot="add_time">
               <span v-if="row.stop === 0"> 永久 </span>
-              <span v-if="row.stop === 1">
-                {{ row.add_time }} - {{ row.end_time }}</span
-              >
+              <span v-if="row.stop === 1"> {{ row.add_time }} - {{ row.end_time }}</span>
               <span v-if="row.stop === -1">已过期</span>
             </template>
             <template slot-scope="{ row, index }" slot="status">
@@ -132,7 +109,7 @@
               <Divider type="vertical" />
               <a @click="del(row, '删除二维码', index)">删除</a>
               <Divider type="vertical" />
-              <Dropdown @on-click="changeMenu(row, $event)">
+              <Dropdown @on-click="changeMenu(row, $event)" transfer="true">
                 <a href="javascript:void(0)"
                   >更多
                   <Icon type="ios-arrow-down"></Icon>
@@ -146,26 +123,12 @@
             </template>
           </Table>
           <div class="acea-row row-right page">
-            <Page
-              :total="total"
-              show-elevator
-              show-total
-              @on-change="pageChange"
-              :page-size="tableFrom.limit"
-            />
+            <Page :total="total" show-elevator show-total @on-change="pageChange" :page-size="tableFrom.limit" />
           </div>
         </Card>
       </Col>
     </Row>
-    <Modal
-      v-model="modals"
-      scrollable
-      footer-hide
-      closable
-      title="渠道码用户列表"
-      :mask-closable="false"
-      width="900"
-    >
+    <Modal v-model="modals" scrollable footer-hide closable title="渠道码用户列表" :mask-closable="false" width="900">
       <Table
         ref="selection"
         :columns="columns4"
@@ -196,32 +159,32 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
+import { mapState } from 'vuex';
 import {
   wechatQrcodeList,
   wechatQrcodeCreate,
   wechatQrcodeTree,
   wechatQrcodeStatusApi,
   getUserList,
-} from "@/api/setting";
+} from '@/api/setting';
 export default {
-  name: "index",
+  name: 'index',
   filters: {
     typeFilter(status) {
       const statusMap = {
-        wechat: "微信用户",
-        routine: "小程序用户",
+        wechat: '微信用户',
+        routine: '小程序用户',
       };
       return statusMap[status];
     },
   },
   computed: {
-    ...mapState("media", ["isMobile"]),
+    ...mapState('media', ['isMobile']),
     labelWidth() {
       return this.isMobile ? undefined : 80;
     },
     labelPosition() {
-      return this.isMobile ? "top" : "left";
+      return this.isMobile ? 'top' : 'left';
     },
   },
   data() {
@@ -250,9 +213,9 @@ export default {
       formValidate: {
         page: 1,
         limit: 15,
-        data: "",
-        type: "",
-        nickname: "",
+        data: '',
+        type: '',
+        nickname: '',
       },
       tableList2: [],
       modals: false,
@@ -261,7 +224,7 @@ export default {
         page: 1,
         limit: 15,
         cate_id: 0,
-        name: "",
+        name: '',
       },
       userData: {
         id: 0,
@@ -273,66 +236,66 @@ export default {
       tableList: [],
       columns4: [
         {
-          title: "UID",
-          key: "uid",
+          title: 'UID',
+          key: 'uid',
           minWidth: 120,
         },
         {
-          title: "用户头像",
-          slot: "avatar",
+          title: '用户头像',
+          slot: 'avatar',
           minWidth: 120,
         },
         {
-          title: "用户昵称",
-          key: "nickname",
+          title: '用户昵称',
+          key: 'nickname',
           minWidth: 120,
         },
       ],
       columns1: [
         {
-          title: "二维码",
-          slot: "image",
+          title: '二维码',
+          slot: 'image',
           width: 80,
         },
         {
-          title: "二维码名称",
-          key: "name",
+          title: '二维码名称',
+          key: 'name',
           minWidth: 120,
         },
         {
-          title: "总关注数",
-          key: "follow",
+          title: '总关注数',
+          key: 'follow',
           minWidth: 120,
         },
         {
-          title: "昨日新增关注",
-          key: "y_follow",
+          title: '昨日新增关注',
+          key: 'y_follow',
           minWidth: 120,
         },
         {
-          title: "用户标签",
-          slot: "label_name",
+          title: '用户标签',
+          slot: 'label_name',
           minWidth: 60,
         },
         {
-          title: "时间",
-          slot: "add_time",
+          title: '时间',
+          slot: 'add_time',
           minWidth: 120,
         },
         {
-          title: "关联推广员",
-          slot: "avatar",
+          title: '关联推广员',
+          slot: 'avatar',
           minWidth: 60,
         },
         {
-          title: "状态",
-          slot: "status",
+          title: '状态',
+          slot: 'status',
           minWidth: 60,
         },
         {
-          title: "操作",
-          slot: "action",
-          fixed: "right",
+          title: '操作',
+          slot: 'action',
+          fixed: 'right',
           minWidth: 150,
         },
       ],
@@ -344,9 +307,9 @@ export default {
       selections: [],
       rows: {},
       rowRecord: {},
-      theme3: "light",
+      theme3: 'light',
       labelSort: [],
-      sortName: "",
+      sortName: '',
       current: 0,
       uid: 0,
     };
@@ -358,15 +321,15 @@ export default {
     changeMenu(row, name) {
       this.orderId = row.id;
       switch (name) {
-        case "1":
+        case '1':
           this.downLoadCode(row.image);
           break;
-        case "2":
+        case '2':
           this.$router.push({
-            path: "/admin/marketing/channel_code/code_statistic?id=" + row.id,
+            path: '/admin/marketing/channel_code/code_statistic?id=' + row.id,
           });
           break;
-        case "3":
+        case '3':
           this.modals = true;
           this.userData.id = row.id;
           this.getUserList();
@@ -375,21 +338,21 @@ export default {
       }
     },
     downLoadCode(url) {
-      if (!url) return this.$Message.warning("暂无二维码");
+      if (!url) return this.$Message.warning('暂无二维码');
       var image = new Image();
       image.src = url;
       // 解决跨域 Canvas 污染问题
-      image.setAttribute("crossOrigin", "anonymous");
+      image.setAttribute('crossOrigin', 'anonymous');
       image.onload = function () {
-        var canvas = document.createElement("canvas");
+        var canvas = document.createElement('canvas');
         canvas.width = image.width;
         canvas.height = image.height;
-        var context = canvas.getContext("2d");
+        var context = canvas.getContext('2d');
         context.drawImage(image, 0, 0, image.width, image.height);
         var url = canvas.toDataURL(); //得到图片的base64编码数据
-        var a = document.createElement("a"); // 生成一个a元素
-        var event = new MouseEvent("click"); // 创建一个单击事件
-        a.download = name || "photo"; // 设置图片名称
+        var a = document.createElement('a'); // 生成一个a元素
+        var event = new MouseEvent('click'); // 创建一个单击事件
+        a.download = name || 'photo'; // 设置图片名称
         a.href = url; // 将生成的URL设置为a.href属性
         a.dispatchEvent(event); // 触发a的单击事件
       };
@@ -424,8 +387,8 @@ export default {
       wechatQrcodeTree().then((res) => {
         let data = res.data.data;
         let obj = {
-          cate_name: "全部",
-          id: "",
+          cate_name: '全部',
+          id: '',
         };
         data.unshift(obj);
         data.forEach((el) => {
@@ -445,17 +408,15 @@ export default {
     },
     //编辑标签
     labelEdit(item) {
-      this.$modalForm(wechatQrcodeCreate(item.id)).then(() =>
-        this.getUserLabelAll(1)
-      );
+      this.$modalForm(wechatQrcodeCreate(item.id)).then(() => this.getUserLabelAll(1));
     },
     deleteSort(row, tit, num) {
       let delfromData = {
         title: tit,
         num: num,
         url: `app/wechat_qrcode/cate/del/${row.id}`,
-        method: "DELETE",
-        ids: "",
+        method: 'DELETE',
+        ids: '',
       };
       this.$modalSure(delfromData)
         .then((res) => {
@@ -491,21 +452,21 @@ export default {
       this.formValidate = {
         page: 1,
         limit: 10,
-        data: "",
-        type: "",
-        nickname: "",
+        data: '',
+        type: '',
+        nickname: '',
       };
     },
     // 编辑
     edit(row) {
       this.$router.push({
-        path: "/admin/marketing/channel_code/create?id=" + row.id,
+        path: '/admin/marketing/channel_code/create?id=' + row.id,
       });
     },
     // 添加
     add() {
       this.$router.push({
-        path: "/admin/marketing/channel_code/create",
+        path: '/admin/marketing/channel_code/create',
       });
     },
     //
@@ -537,8 +498,8 @@ export default {
         title: tit,
         num: num,
         url: `/app/wechat_qrcode/del/${row.id}`,
-        method: "DELETE",
-        ids: "",
+        method: 'DELETE',
+        ids: '',
       };
       this.$modalSure(delfromData)
         .then((res) => {

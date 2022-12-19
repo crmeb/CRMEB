@@ -1,11 +1,6 @@
 <template>
   <div>
-    <Form
-      ref="formValidate"
-      :model="formValidate"
-      :rules="ruleValidate"
-      :label-width="90"
-    >
+    <Form ref="formValidate" :model="formValidate" :rules="ruleValidate" :label-width="90">
       <FormItem label="奖品" prop="type">
         <RadioGroup v-model="formValidate.type">
           <Radio :label="1">未中奖</Radio>
@@ -18,17 +13,11 @@
       </FormItem>
       <FormItem label="赠送优惠券：" v-if="formValidate.type == 5">
         <div v-if="couponName.length" class="mb20">
-          <Tag
-            closable
-            v-for="(item, index) in couponName"
-            :key="index"
-            @on-close="handleClose(item)"
-            >{{ item.title }}</Tag
-          >
+          <Tag closable v-for="(item, index) in couponName" :key="index" @on-close="handleClose(item)">{{
+            item.title
+          }}</Tag>
         </div>
-        <Button type="primary" @click="addCoupon" v-if="!couponName.length"
-          >添加优惠券</Button
-        >
+        <Button type="primary" @click="addCoupon" v-if="!couponName.length">添加优惠券</Button>
       </FormItem>
       <FormItem
         :label="[3, 4].includes(formValidate.type) ? '金额信息' : '积分数量'"
@@ -45,10 +34,10 @@
         <div class="ml100 grey">
           {{
             formValidate.type == 3
-              ? "用户领取余额后会自动到账余额账户"
+              ? '用户领取余额后会自动到账余额账户'
               : formValidate.type == 4
-              ? "用户领取红包后会自动到账微信零钱，添加此奖品需开通微信支付,并且账户中金额不能小于1元"
-              : ""
+              ? '用户领取红包后会自动到账微信零钱，添加此奖品需开通微信支付,并且账户中金额不能小于1元'
+              : ''
           }}
         </div>
       </FormItem>
@@ -64,12 +53,7 @@
         </div>
       </FormItem>
       <FormItem label="奖品名称" prop="name">
-        <Input
-          v-model="formValidate.name"
-          :maxlength="10"
-          placeholder="请输入奖品名称"
-          style="width: 300px"
-        ></Input>
+        <Input v-model="formValidate.name" :maxlength="10" placeholder="请输入奖品名称" style="width: 300px"></Input>
       </FormItem>
       <FormItem label="奖品图片" prop="image">
         <template v-if="formValidate.image">
@@ -104,17 +88,10 @@
         ></InputNumber>
       </FormItem>
       <FormItem label="提示语" prop="prompt">
-        <Input
-          v-model="formValidate.prompt"
-          :maxlength="15"
-          placeholder="请输入提示语"
-          style="width: 300px"
-        ></Input>
+        <Input v-model="formValidate.prompt" :maxlength="15" placeholder="请输入提示语" style="width: 300px"></Input>
       </FormItem>
       <FormItem>
-        <Button type="primary" @click="handleSubmit('formValidate')"
-          >提交</Button
-        >
+        <Button type="primary" @click="handleSubmit('formValidate')">提交</Button>
       </FormItem>
     </Form>
     <!-- 上传图片-->
@@ -128,11 +105,7 @@
       :mask-closable="false"
       :z-index="1"
     >
-      <uploadPictures
-        :isChoice="isChoice"
-        @getPic="getPic"
-        v-if="modalPic"
-      ></uploadPictures>
+      <uploadPictures :isChoice="isChoice" @getPic="getPic" v-if="modalPic"></uploadPictures>
     </Modal>
     <Modal
       v-model="modals"
@@ -143,17 +116,9 @@
       width="900"
       @on-cancel="cancel"
     >
-      <goods-list
-        ref="goodslist"
-        v-if="modals"
-        @getProductId="getProductId"
-      ></goods-list>
+      <goods-list ref="goodslist" v-if="modals" @getProductId="getProductId"></goods-list>
     </Modal>
-    <coupon-list
-      ref="couponTemplates"
-      :luckDraw="true"
-      @getCouponId="getCouponId"
-    ></coupon-list>
+    <coupon-list ref="couponTemplates" :luckDraw="true" @getCouponId="getCouponId"></coupon-list>
     <!--<coupon-list-->
     <!--ref="couponTemplates"-->
     <!--@nameId="nameId"-->
@@ -164,81 +129,81 @@
 </template>
 
 <script>
-import couponList from "@/components/couponList";
-import uploadPictures from "@/components/uploadPictures";
-import goodsList from "@/components/goodsList/index";
-import freightTemplate from "@/components/freightTemplate";
+import couponList from '@/components/couponList';
+import uploadPictures from '@/components/uploadPictures';
+import goodsList from '@/components/goodsList/index';
+import freightTemplate from '@/components/freightTemplate';
 export default {
   components: { uploadPictures, goodsList, freightTemplate, couponList },
   data() {
     return {
       modalPic: false,
       modals: false,
-      isChoice: "单选",
+      isChoice: '单选',
       updateIds: [],
       updateName: [],
       goodsData: {
-        pic: "",
-        product_id: "",
-        img: "",
-        coverImg: "",
+        pic: '',
+        product_id: '',
+        img: '',
+        coverImg: '',
       },
       formValidate: {
         type: 5, //类型 1：未中奖2：积分  3:余额  4：红包 5:优惠券 6：站内商品
-        name: "", //活动名称
+        name: '', //活动名称
         num: 0, //奖品数量
-        image: "", //奖品图片
+        image: '', //奖品图片
         chance: 1, //中奖权重
         product_id: 0, //商品id
         coupon_id: 0, //优惠券id
         total: 0, //奖品数量
-        prompt: "", //提示语
-        goods_image: "", //自用商品图
-        coupon_title: "", //优惠券名称
+        prompt: '', //提示语
+        goods_image: '', //自用商品图
+        coupon_title: '', //优惠券名称
       },
       ruleValidate: {
         name: [
           {
             required: true,
-            message: "商品名称",
-            trigger: "blur",
+            message: '商品名称',
+            trigger: 'blur',
           },
         ],
         goods_image: [
           {
             required: true,
-            message: "请添加商品",
-            trigger: "blur",
+            message: '请添加商品',
+            trigger: 'blur',
           },
         ],
         num: [
           {
             required: true,
-            type: "number",
-            message: "请输入金额数量",
-            trigger: "blur",
+            type: 'number',
+            message: '请输入金额数量',
+            trigger: 'blur',
           },
         ],
         chance: [
           {
             required: true,
-            type: "number",
-            message: "请输入商品权重",
-            trigger: "blur",
+            type: 'number',
+            message: '请输入商品权重',
+            trigger: 'blur',
           },
         ],
         image: [
           {
             required: true,
-            message: "请选择奖品图片",
-            trigger: "blur",
+            message: '请选择奖品图片',
+            trigger: 'blur',
           },
         ],
         prompt: [
           {
             required: true,
-            message: "请输入提示语",
-            trigger: "blur",
+            message: '请输入提示语',
+            trigger: 'blur',
           },
         ],
       },
@@ -252,14 +217,13 @@ export default {
     },
   },
   watch: {
-    editData(data) {
-    },
+    editData(data) {},
   },
   mounted() {
     let keys = Object.keys(this.editData);
     keys.forEach((item) => {
       this.formValidate[item] = this.editData[item];
-      if (item === "coupon_title") {
+      if (item === 'coupon_title') {
         this.couponName.push({
           title: this.editData[item],
           id: this.editData.coupon_id,
@@ -278,10 +242,10 @@ export default {
     handleSubmit(name) {
       this.$refs[name].validate((valid) => {
         if (valid) {
-          this.$emit("addGoodsData", this.formValidate);
-          this.$Message.success("添加成功");
+          this.$emit('addGoodsData', this.formValidate);
+          this.$Message.success('添加成功');
         } else {
-          this.$Message.warning("请完善数据");
+          this.$Message.warning('请完善数据');
         }
       });
     },
@@ -312,11 +276,11 @@ export default {
       // });
     },
     removeGoods() {
-      this.formValidate.product_id = "";
-      this.formValidate.goods_image = "";
+      this.formValidate.product_id = '';
+      this.formValidate.goods_image = '';
     },
     remove() {
-      this.formValidate.image = "";
+      this.formValidate.image = '';
     },
     // 添加优惠券
     addCoupon() {
@@ -326,19 +290,7 @@ export default {
     handleClose(name) {
       this.couponName.splice(0, 1);
       this.formValidate.coupon_id = 0;
-      // let index = this.couponName.indexOf(name);
-      // this.couponName.splice(index, 1);
-      // console.log(this.couponName.splice(index, 1));
-      //
-      // let couponIds = this.formValidate.coupon_id;
-      // couponIds.splice(index, 1);
-      // this.updateIds = couponIds;
-      // this.updateName = this.couponName;
     },
-    // nameId(id, names) {
-    //   this.formValidate.coupon_id = id[0];
-    //   this.couponName = this.unique(names);
-    // },
     //对象数组去重；
     unique(arr) {
       const res = new Map();

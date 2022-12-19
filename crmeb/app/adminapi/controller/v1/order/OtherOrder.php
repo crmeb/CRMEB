@@ -2,13 +2,12 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
 // | Author: CRMEB Team <admin@crmeb.com>
 // +----------------------------------------------------------------------
-
 namespace app\adminapi\controller\v1\order;
 
 use app\adminapi\controller\AuthController;
@@ -18,6 +17,7 @@ use crmeb\utils\Canvas;
 use think\facade\App;
 
 /**
+ * 线下收银
  * Class OtherOrder
  * @package app\adminapi\controller\v1\order
  */
@@ -34,8 +34,8 @@ class OtherOrder extends AuthController
         $this->services = $service;
     }
 
-
-    /**线下收银
+    /**
+     * 线下收银订单列表
      * @return mixed
      * @throws \think\db\exception\DataNotFoundException
      * @throws \think\db\exception\DbException
@@ -54,8 +54,10 @@ class OtherOrder extends AuthController
         return app('json')->success($data);
     }
 
-    /** 获取线下二维码
+    /**
+     * 线下收银二维码
      * @return mixed
+     * @throws \Exception
      */
     public function offline_scan()
     {

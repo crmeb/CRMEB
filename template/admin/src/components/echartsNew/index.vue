@@ -5,67 +5,65 @@
 </template>
 
 <script>
-import echarts from 'echarts'
+import echarts from 'echarts';
 export default {
   name: 'Index',
   props: {
     styles: {
       type: Object,
-      default: null
+      default: null,
     },
     optionData: {
       type: Object,
-      default: null
-    }
+      default: null,
+    },
   },
   data() {
     return {
-      myChart: null
-    }
+      myChart: null,
+    };
   },
   computed: {
     echarts() {
-      return 'echarts' + Math.ceil(Math.random() * 100)
-    }
+      return 'echarts' + Math.ceil(Math.random() * 100);
+    },
   },
   watch: {
     optionData: {
       handler(newVal, oldVal) {
-        this.handleSetVisitChart()
+        this.handleSetVisitChart();
       },
-      deep: true // 对象内部属性的监听，关键。
-    }
+      deep: true, // 对象内部属性的监听，关键。
+    },
   },
-  mounted: function() {
-    const vm = this
+  mounted: function () {
+    const vm = this;
     vm.$nextTick(() => {
-      vm.handleSetVisitChart()
-      window.addEventListener('resize', this.wsFunc)
-    })
+      vm.handleSetVisitChart();
+      window.addEventListener('resize', this.wsFunc);
+    });
   },
   beforeDestroy() {
-    window.removeEventListener('resize', this.wsFunc)
+    window.removeEventListener('resize', this.wsFunc);
     if (!this.myChart) {
-      return
+      return;
     }
-    this.myChart.dispose()
-    this.myChart = null
+    this.myChart.dispose();
+    this.myChart = null;
   },
   methods: {
     wsFunc() {
-      this.myChart.resize()
+      this.myChart.resize();
     },
     handleSetVisitChart() {
-      this.myChart = echarts.init(document.getElementById(this.echarts))
-      let option = null
-      option = this.optionData
+      this.myChart = echarts.init(document.getElementById(this.echarts));
+      let option = null;
+      option = this.optionData;
       // 基于准备好的dom，初始化echarts实例
-      this.myChart.setOption(option, true)
-    }
-  }
-}
+      this.myChart.setOption(option, true);
+    },
+  },
+};
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

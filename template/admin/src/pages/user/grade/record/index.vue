@@ -1,10 +1,5 @@
 <template>
   <div>
-    <div class="i-layout-page-header">
-      <div class="i-layout-page-header">
-        <span class="ivu-page-header-title">{{ $route.meta.title }}</span>
-      </div>
-    </div>
     <Card :bordered="false" dis-hover class="ivu-mt">
       <Form
         ref="formValidate"
@@ -17,25 +12,16 @@
         <Row :gutter="24" type="flex" justify="end">
           <Col span="24" class="ivu-text-left">
             <Col span="7" class="ivu-text-left">
-                <FormItem label="会员类型：">
-                    <Select v-model="formValidate.member_type"  clearable @on-change="userSearchs">
-                        <Option v-for="item in treeSelect" :value="item.id" :key="item.id">{{ item.label }}</Option>
-                    </Select>
-                </FormItem>
+              <FormItem label="会员类型：">
+                <Select v-model="formValidate.member_type" clearable @on-change="userSearchs">
+                  <Option v-for="item in treeSelect" :value="item.id" :key="item.id">{{ item.label }}</Option>
+                </Select>
+              </FormItem>
             </Col>
             <Col span="7" class="ivu-text-left ml20">
               <FormItem label="支付方式：">
-                <Select
-                  v-model="formValidate.pay_type"
-                  clearable
-                  @on-change="paySearchs"
-                >
-                  <Option
-                    v-for="item in payList"
-                    :value="item.val"
-                    :key="item.val"
-                    >{{ item.label }}</Option
-                  >
+                <Select v-model="formValidate.pay_type" clearable @on-change="paySearchs">
+                  <Option v-for="item in payList" :value="item.val" :key="item.val">{{ item.label }}</Option>
                 </Select>
               </FormItem>
             </Col>
@@ -110,102 +96,99 @@
 </template>
 
 <script>
-import { userMemberCard, memberRecord } from "@/api/user";
-import { mapState } from "vuex";
+import { userMemberCard, memberRecord } from '@/api/user';
+import { mapState } from 'vuex';
 
 export default {
-  name: "card",
+  name: 'card',
   data() {
     return {
       treeSelect: [
         {
-          id: "free",
-          label: "试用",
+          id: 'free',
+          label: '试用',
         },
         {
-          id: "card",
-          label: "卡密",
+          id: 'card',
+          label: '卡密',
         },
         {
-          id: "month",
-          label: "月卡",
+          id: 'month',
+          label: '月卡',
         },
         {
-          id: "quarter",
-          label: "季卡",
+          id: 'quarter',
+          label: '季卡',
         },
         {
-          id: "year",
-          label: "年卡",
+          id: 'year',
+          label: '年卡',
         },
         {
-          id: "ever",
-          label: "永久",
+          id: 'ever',
+          label: '永久',
         },
       ],
       payList: [
         {
-          val: "free",
-          label: "免费",
+          val: 'free',
+          label: '免费',
         },
         {
-          val: "weixin",
-          label: "微信",
+          val: 'weixin',
+          label: '微信',
         },
         {
-          val: "alipay",
-          label: "支付宝",
+          val: 'alipay',
+          label: '支付宝',
         },
       ],
       thead: [
         {
-          title: "订单号",
-          key: "order_id",
+          title: '订单号',
+          key: 'order_id',
           minWidth: 100,
         },
         {
-          title: "用户名",
+          title: '用户名',
           minWidth: 50,
           ellipsis: true,
           render: (h, params) => {
-            return h("span", params.row.user.nickname);
+            return h('span', params.row.user.nickname);
           },
         },
         {
-          title: "手机号码",
+          title: '手机号码',
           minWidth: 80,
           render: (h, params) => {
-            return h("span", params.row.user.phone || "--");
+            return h('span', params.row.user.phone || '--');
           },
         },
         {
-          title: "会员类型",
-          key: "member_type",
+          title: '会员类型',
+          key: 'member_type',
           minWidth: 40,
         },
         {
-          title: "有效期限（天）",
+          title: '有效期限（天）',
           minWidth: 50,
           render: (h, params) => {
-            return h(
-              "span",
-              params.row.vip_day === -1 ? "永久" : params.row.vip_day
-            );
+            return h('span', params.row.vip_day === -1 ? '永久' : params.row.vip_day);
           },
         },
         {
-          title: "支付金额（元）",
-          key: "pay_price",
+          title: '支付金额（元）',
+          key: 'pay_price',
           minWidth: 50,
         },
         {
-          title: "支付方式",
-          key: "pay_type",
+          title: '支付方式',
+          key: 'pay_type',
           minWidth: 30,
         },
         {
-          title: "购买时间",
-          key: "pay_time",
+          title: '购买时间',
+          key: 'pay_time',
           minWidth: 90,
         },
       ],
@@ -213,109 +196,73 @@ export default {
       loading: false,
       total: 0,
       formValidate: {
-        name: "",
-        member_type: "",
-        pay_type: "",
-        add_time: "",
+        name: '',
+        member_type: '',
+        pay_type: '',
+        add_time: '',
       },
       options: {
         shortcuts: [
           {
-            text: "今天",
+            text: '今天',
             value() {
               const end = new Date();
               const start = new Date();
-              start.setTime(
-                new Date(
-                  new Date().getFullYear(),
-                  new Date().getMonth(),
-                  new Date().getDate()
-                )
-              );
+              start.setTime(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate()));
               return [start, end];
             },
           },
           {
-            text: "昨天",
+            text: '昨天',
             value() {
               const end = new Date();
               const start = new Date();
               start.setTime(
-                start.setTime(
-                  new Date(
-                    new Date().getFullYear(),
-                    new Date().getMonth(),
-                    new Date().getDate() - 1
-                  )
-                )
+                start.setTime(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate() - 1)),
               );
               end.setTime(
-                end.setTime(
-                  new Date(
-                    new Date().getFullYear(),
-                    new Date().getMonth(),
-                    new Date().getDate() - 1
-                  )
-                )
+                end.setTime(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate() - 1)),
               );
               return [start, end];
             },
           },
           {
-            text: "最近7天",
+            text: '最近7天',
             value() {
               const end = new Date();
               const start = new Date();
               start.setTime(
-                start.setTime(
-                  new Date(
-                    new Date().getFullYear(),
-                    new Date().getMonth(),
-                    new Date().getDate() - 6
-                  )
-                )
+                start.setTime(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate() - 6)),
               );
               return [start, end];
             },
           },
           {
-            text: "最近30天",
+            text: '最近30天',
             value() {
               const end = new Date();
               const start = new Date();
               start.setTime(
-                start.setTime(
-                  new Date(
-                    new Date().getFullYear(),
-                    new Date().getMonth(),
-                    new Date().getDate() - 29
-                  )
-                )
+                start.setTime(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate() - 29)),
               );
               return [start, end];
             },
           },
           {
-            text: "本月",
+            text: '本月',
             value() {
               const end = new Date();
               const start = new Date();
-              start.setTime(
-                start.setTime(
-                  new Date(new Date().getFullYear(), new Date().getMonth(), 1)
-                )
-              );
+              start.setTime(start.setTime(new Date(new Date().getFullYear(), new Date().getMonth(), 1)));
               return [start, end];
             },
           },
           {
-            text: "本年",
+            text: '本年',
             value() {
               const end = new Date();
               const start = new Date();
-              start.setTime(
-                start.setTime(new Date(new Date().getFullYear(), 0, 1))
-              );
+              start.setTime(start.setTime(new Date(new Date().getFullYear(), 0, 1)));
               return [start, end];
             },
           },
@@ -329,12 +276,12 @@ export default {
     };
   },
   computed: {
-    ...mapState("media", ["isMobile"]),
+    ...mapState('media', ['isMobile']),
     labelWidth() {
       return this.isMobile ? undefined : 75;
     },
     labelPosition() {
-      return this.isMobile ? "top" : "right";
+      return this.isMobile ? 'top' : 'right';
     },
   },
   created() {
@@ -359,9 +306,7 @@ export default {
     // 具体日期
     onchangeTime(e) {
       this.timeVal = e;
-      this.formValidate.add_time = this.timeVal[0]
-        ? this.timeVal.join("-")
-        : "";
+      this.formValidate.add_time = this.timeVal[0] ? this.timeVal.join('-') : '';
       this.tablePage.page = 1;
       this.getMemberRecord();
     },

@@ -112,7 +112,6 @@ utils 自定义工具js 独立命名，一般不用新建文件夹
 │   │    └──searchFrom        # 订单页的搜索
 │   │    └──sendCoupons       # 发送优惠券
 │   │    └──systemStore       # 添加提货点
-│   │    └──ueditorFrom       # 编辑器组件（供参考，没用到，主要用安装组件--vue-ueditor-wrap）
 │   │    └──uploadPictures    # 上传图片
 │   │    └──uploadVideo       # 上传视频（用于商品编辑器里面）
 │   ├── i18n                   # 多语言
@@ -287,20 +286,10 @@ $ npm run build
 
 `$ VUE_APP_API_URL='http://自己的域名/adminapi'`
 
-*管理端ws*
-
-`$ VUE_APP_WS_ADMIN_URL = 'ws://自己的域名/ws'`
-
 ### 生产环境
 
 *接口请求地址 (http)或 (https)://www.crmeb.com(换成你的域名)/adminapi 非独立部署默认为空*
 
 `$ VUE_APP_API_URL=''`
-
-*管理端ws*
-
-*socket 系统连接地址 (ws)或(wss)://www.crmeb.com(换成你的域名)/ws 非独立部署默认为空*
-
-`$ VUE_APP_WS_ADMIN_URL=''`
 
 

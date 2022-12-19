@@ -1,44 +1,20 @@
 <template>
   <div class="article-manager">
-    <div class="i-layout-page-header">
-      <div class="i-layout-page-header">
-        <span class="ivu-page-header-title">商品分类</span>
-      </div>
-    </div>
     <Card :bordered="false" dis-hover class="ivu-mt">
-      <Form
-        ref="artFrom"
-        :model="artFrom"
-        :label-width="75"
-        label-position="right"
-        @submit.native.prevent
-      >
+      <Form ref="artFrom" :model="artFrom" :label-width="75" label-position="right" @submit.native.prevent>
         <Row type="flex" :gutter="24">
           <Col v-bind="grid">
             <FormItem label="商品分类：" prop="pid" label-for="pid">
-              <Select
-                v-model="artFrom.pid"
-                placeholder="请选择商品分类"
-                @on-change="userSearchs"
-                clearable
-              >
-                <Option
-                  v-for="item in treeSelect"
-                  :value="item.id"
-                  :key="item.id"
-                  >{{ item.html + item.cate_name }}</Option
-                >
+              <Select v-model="artFrom.pid" placeholder="请选择商品分类" @on-change="userSearchs" clearable>
+                <Option v-for="item in treeSelect" :value="item.id" :key="item.id">{{
+                  item.html + item.cate_name
+                }}</Option>
               </Select>
             </FormItem>
           </Col>
           <Col v-bind="grid">
             <FormItem label="分类状态：" label-for="is_show">
-              <Select
-                v-model="artFrom.is_show"
-                placeholder="请选择分类状态"
-                clearable
-                @on-change="userSearchs"
-              >
+              <Select v-model="artFrom.is_show" placeholder="请选择分类状态" clearable @on-change="userSearchs">
                 <Option value="1">显示</Option>
                 <Option value="0">隐藏</Option>
               </Select>
@@ -58,12 +34,7 @@
         </Row>
         <Row type="flex">
           <Col v-bind="grid">
-            <Button
-              v-auth="['product-save-cate']"
-              type="primary"
-              class="bnt"
-              icon="md-add"
-              @click="addClass"
+            <Button v-auth="['product-save-cate']" type="primary" class="bnt" icon="md-add" @click="addClass"
               >添加分类</Button
             >
           </Col>
@@ -77,18 +48,8 @@
         :tree-config="{ children: 'children' }"
         :data="tableData"
       >
-        <vxe-table-column
-          field="id"
-          title="ID"
-          tooltip
-          width="80"
-        ></vxe-table-column>
-        <vxe-table-column
-          field="cate_name"
-          tree-node
-          title="分类名称"
-          min-width="250"
-        ></vxe-table-column>
+        <vxe-table-column field="id" title="ID" tooltip width="80"></vxe-table-column>
+        <vxe-table-column field="cate_name" tree-node title="分类名称" min-width="250"></vxe-table-column>
         <vxe-table-column field="pic" title="分类图标" min-width="100">
           <template v-slot="{ row }">
             <div class="tabBox_img" v-viewer v-if="row.pic">
@@ -96,12 +57,7 @@
             </div>
           </template>
         </vxe-table-column>
-        <vxe-table-column
-          field="sort"
-          title="排序"
-          min-width="100"
-          tooltip="true"
-        ></vxe-table-column>
+        <vxe-table-column field="sort" title="排序" min-width="100" tooltip="true"></vxe-table-column>
         <vxe-table-column field="is_show" title="状态" min-width="120">
           <template v-slot="{ row }">
             <i-switch
@@ -117,13 +73,7 @@
             </i-switch>
           </template>
         </vxe-table-column>
-        <vxe-table-column
-          field="date"
-          title="操作"
-          width="250"
-          fixed="right"
-          align="center"
-        >
+        <vxe-table-column field="date" title="操作" width="250" fixed="right" align="center">
           <template v-slot="{ row, index }">
             <a @click="edit(row)">编辑</a>
             <Divider type="vertical" />
@@ -137,26 +87,16 @@
       <!--            </div>-->
     </Card>
     <!-- 添加 编辑表单-->
-    <edit-from
-      ref="edits"
-      :FromData="FromData"
-      @submitFail="userSearchs"
-    ></edit-from>
+    <edit-from ref="edits" :FromData="FromData" @submitFail="userSearchs"></edit-from>
   </div>
 </template>
 
 <script>
-import { mapState } from "vuex";
-import {
-  productListApi,
-  productCreateApi,
-  productEditApi,
-  setShowApi,
-  treeListApi,
-} from "@/api/product";
-import editFrom from "../../../components/from/from";
+import { mapState } from 'vuex';
+import { productListApi, productCreateApi, productEditApi, setShowApi, treeListApi } from '@/api/product';
+import editFrom from '../../../components/from/from';
 export default {
-  name: "product_productClassify",
+  name: 'product_productClassify',
   components: {
     editFrom,
   },
@@ -174,9 +114,9 @@ export default {
       loading: false,
       artFrom: {
         pid: 0,
-        is_show: "",
+        is_show: '',
         page: 1,
-        cate_name: "",
+        cate_name: '',
         limit: 15,
       },
       total: 0,
@@ -184,7 +124,7 @@ export default {
     };
   },
   computed: {
-    ...mapState("admin/userLevel", ["categoryId"]),
+    ...mapState('admin/userLevel', ['categoryId']),
   },
   mounted() {
     this.goodsCategory();
@@ -204,8 +144,8 @@ export default {
     // 列表
     getList() {
       this.loading = true;
-      this.artFrom.is_show = this.artFrom.is_show || "";
-      this.artFrom.pid = this.artFrom.pid || "";
+      this.artFrom.is_show = this.artFrom.is_show || '';
+      this.artFrom.pid = this.artFrom.pid || '';
       productListApi(this.artFrom)
         .then(async (res) => {
           let data = res.data;
@@ -246,8 +186,8 @@ export default {
     },
     // 下拉树
     handleCheckChange(data) {
-      let value = "";
-      let title = "";
+      let value = '';
+      let title = '';
       this.list = [];
       this.artFrom.pid = 0;
       data.forEach((item, index) => {
@@ -269,8 +209,8 @@ export default {
         title: tit,
         num: num,
         url: `product/category/${row.id}`,
-        method: "DELETE",
-        ids: "",
+        method: 'DELETE',
+        ids: '',
       };
       this.$modalSure(delfromData)
         .then((res) => {

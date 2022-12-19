@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -14,6 +14,28 @@ use think\Validate;
 
 class StoreProductReplyValidate extends Validate
 {
+    public function __construct()
+    {
+        parent::__construct();
+
+        /**
+         * 定义错误信息
+         * 格式：'字段名.规则名'    =>    '错误信息'
+         *
+         * @var array
+         */
+        $this->message = [
+            'product_id.require' => '400337',
+            'avatar.require' => '400000',
+            'nickname.require' => '400001',
+            'comment.require' => '400002',
+            'product_score.require' => '400003',
+            'service_score.require' => '400004',
+            'product_score.In' => '400005',
+            'service_score.In' => '400006',
+        ];
+    }
+
     /**
      * 定义验证规则
      * 格式：'字段名'    =>    ['规则1','规则2'...]
@@ -27,23 +49,6 @@ class StoreProductReplyValidate extends Validate
         'comment' => 'require',
         'product_score' => ['require','In:1,2,3,4,5'],
         'service_score' => ['require','In:1,2,3,4,5'],
-    ];
-
-    /**
-     * 定义错误信息
-     * 格式：'字段名.规则名'    =>    '错误信息'
-     *
-     * @var array
-     */
-    protected $message = [
-        'product_id.require' => '请选择商品',
-        'avatar.require' => '请选择用户头像',
-        'nickname.require' => '请填写用户昵称',
-        'comment.require' => '请填写评论内容',
-        'product_score.require' => '请选择商品分数',
-        'service_score.require' => '请选择服务分数',
-        'product_score.In' => '商品分数必须是1-5之间的整数',
-        'service_score.In' => '服务分数必须是1-5之间的整数',
     ];
 
     protected $scene = [

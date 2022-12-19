@@ -1,1 +1,1 @@
-<block wx:if="{{status}}"><view class="load">加载中...</view></block>
+<block wx:if="{{status}}"><view class="load">{{''+$root.m0+''}}</view></block>

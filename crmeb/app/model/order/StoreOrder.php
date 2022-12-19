@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -63,8 +63,9 @@ class StoreOrder extends BaseModel
      * 创建时间修改器
      * @return int
      */
-    protected function setAddTimeAttr()
+    protected function setAddTimeAttr($time = 0)
     {
+        if ($time) return $time;
         return time();
     }
 
@@ -320,7 +321,9 @@ class StoreOrder extends BaseModel
      */
     public function searchPaidAttr($query, $value)
     {
-        $query->where('paid', $value);
+        if (in_array($value, [0, 1])) {
+            $query->where('paid', $value);
+        }
     }
 
     /**

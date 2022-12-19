@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -33,15 +33,12 @@ class StoreBargainController
     /**
      * 砍价列表顶部图
      * @return mixed
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\ModelNotFoundException
-     * @throws \think\exception\DbException
      */
     public function config()
     {
         $lovely = sys_data('routine_lovely') ?? [];//banner图
         $info = $lovely[2] ?? [];
-        return app('json')->successful($info);
+        return app('json')->success($info);
     }
 
     /**
@@ -52,7 +49,7 @@ class StoreBargainController
     public function lst(Request $request)
     {
         $bargainList = $this->services->getBargainList();
-        return app('json')->successful(get_thumb_water($bargainList));
+        return app('json')->success(get_thumb_water($bargainList));
     }
 
     /**
@@ -60,10 +57,9 @@ class StoreBargainController
      * @param Request $request
      * @param $id
      * @return mixed
-     * @throws \think\Exception
      * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
      * @throws \think\db\exception\ModelNotFoundException
-     * @throws \think\exception\DbException
      */
     public function detail(Request $request, $id)
     {
@@ -71,7 +67,7 @@ class StoreBargainController
             ['bargainUid', 0]
         ], true);
         $data = $this->services->getBargain($request, $id, (int)$bargainUid);
-        return app('json')->successful($data);
+        return app('json')->success($data);
     }
 
     /**
@@ -86,34 +82,35 @@ class StoreBargainController
         list($bargainId) = $request->postMore([['bargainId', 0]], true);
         $data['lookCount'] = $this->services->sum([], 'look');//TODO 观看人数
         $data['userCount'] = $bargainUserHelpService->count([]);//TODO 参与人数
-        if (!$bargainId) return app('json')->successful($data);
+        if (!$bargainId) return app('json')->success($data);
         $this->services->addBargain($bargainId, 'share');
         $data['shareCount'] = $this->services->sum([], 'share');//TODO 分享人数
-        return app('json')->successful($data);
+        return app('json')->success($data);
     }
 
     /**
      * 砍价开启
      * @param Request $request
      * @return mixed
-     * @throws \think\Exception
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
      */
     public function start(Request $request)
     {
         list($bargainId) = $request->postMore([
             ['bargainId', 0]
         ], true);
-        return app('json')->successful($this->services->setBargain($request->uid(), $bargainId));
+        return app('json')->success($this->services->setBargain($request->uid(), $bargainId));
     }
 
     /**
      * 砍价 帮助好友砍价
      * @param Request $request
      * @return mixed
-     * @throws \think\Exception
      * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
      * @throws \think\db\exception\ModelNotFoundException
-     * @throws \think\exception\DbException
      */
     public function help(Request $request)
     {
@@ -121,57 +118,13 @@ class StoreBargainController
             ['bargainId', 0],
             ['bargainUserUid', 0]
         ], true);
-        return app('json')->successful($this->services->setHelpBargain($request->uid(), $bargainId, $bargainUserUid));
+        return app('json')->success($this->services->setHelpBargain($request->uid(), $bargainId, $bargainUserUid));
     }
-
-//    /**
-//     * 砍价 砍掉金额
-//     * @param Request $request
-//     * @return mixed
-//     */
-//    public function help_price(Request $request)
-//    {
-//        list($bargainId, $bargainUserUid) = $request->postMore([
-//            ['bargainId', 0],
-//            ['bargainUserUid', 0]
-//        ], true);
-//
-//        /** @var StoreBargainUserHelpServices $bargainUserHelp */
-//        $bargainUserHelp = app()->make(StoreBargainUserHelpServices::class);
-//        $price = $bargainUserHelp->getPrice($request->uid(), (int)$bargainId, (int)$bargainUserUid);
-//        return app('json')->successful($price);
-//    }
-
-//    /**
-//     * 砍价 砍价帮总人数、剩余金额、进度条、已经砍掉的价格
-//     * @param Request $request
-//     * @return mixed
-//     * @throws \think\Exception
-//     * @throws \think\db\exception\DataNotFoundException
-//     * @throws \think\db\exception\ModelNotFoundException
-//     * @throws \think\exception\DbException
-//     */
-//    public function help_count(Request $request)
-//    {
-//        list($bargainId, $bargainUserUid) = $request->postMore([
-//            ['bargainId', 0],
-//            ['bargainUserUid', 0]
-//        ], true);
-//        /** @var StoreBargainUserServices $bargainUserService */
-//        $bargainUserService = app()->make(StoreBargainUserServices::class);
-//        $data = $bargainUserService->helpCount($request, (int)$bargainId, (int)$bargainUserUid);
-//        return app('json')->successful($data);
-//    }
-
 
     /**
      * 砍价 砍价帮
      * @param Request $request
      * @return mixed
-     * @throws \think\Exception
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\ModelNotFoundException
-     * @throws \think\exception\DbException
      */
     public function help_list(Request $request)
     {
@@ -187,17 +140,13 @@ class StoreBargainController
         $bargainUserHelp = app()->make(StoreBargainUserHelpServices::class);
         [$page, $limit] = $this->services->getPageValue();
         $storeBargainUserHelp = $bargainUserHelp->getHelpList($bargainUserTableId, $page, $limit);
-        return app('json')->successful($storeBargainUserHelp);
+        return app('json')->success($storeBargainUserHelp);
     }
 
     /**
      * 砍价 开启砍价用户信息
      * @param Request $request
      * @return mixed
-     * @throws \think\Exception
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\ModelNotFoundException
-     * @throws \think\exception\DbException
      */
     public function start_user(Request $request)
     {
@@ -205,16 +154,15 @@ class StoreBargainController
             ['bargainId', 0],
             ['bargainUserUid', 0],
         ], true);
-        if (!$bargainId || !$bargainUserUid) return app('json')->fail('参数错误');
+        if (!$bargainId || !$bargainUserUid) return app('json')->fail(100100);
         /** @var UserServices $userServices */
         $userServices = app()->make(UserServices::class);
         $userInfo = $userServices->getUserInfo((int)$bargainUserUid);
         if (!$userInfo) {
-            return app('json')->fail('用户信息获取失败');
+            return app('json')->fail(410044);
         }
-        return app('json')->successful(['nickname' => $userInfo['nickname'], 'avatar' => $userInfo['avatar']]);
+        return app('json')->success(['nickname' => $userInfo['nickname'], 'avatar' => $userInfo['avatar']]);
     }
-
 
     /**
      * 砍价列表(已参与)
@@ -228,8 +176,8 @@ class StoreBargainController
         $bargainUser = app()->make(StoreBargainUserServices::class);
         $bargainUser->editBargainUserStatus($uid);// TODO 判断过期砍价活动
         $list = $bargainUser->getBargainUserAll($uid);
-        if (count($list)) return app('json')->successful(get_thumb_water($list));
-        else return app('json')->successful([]);
+        if (count($list)) return app('json')->success(get_thumb_water($list));
+        else return app('json')->success([]);
     }
 
     /**
@@ -240,12 +188,12 @@ class StoreBargainController
     public function user_cancel(Request $request)
     {
         list($bargainId) = $request->postMore([['bargainId', 0]], true);
-        if (!$bargainId) return app('json')->fail('参数错误');
+        if (!$bargainId) return app('json')->fail(100100);
         /** @var StoreBargainUserServices $bargainUser */
         $bargainUser = app()->make(StoreBargainUserServices::class);
         $res = $bargainUser->cancelBargain($bargainId, $request->uid());
-        if ($res) return app('json')->successful('取消成功');
-        else return app('json')->successful('取消失败');
+        if ($res) return app('json')->success(100019);
+        else return app('json')->success(100020);
     }
 
     /**
@@ -266,7 +214,7 @@ class StoreBargainController
         if ($posterUrl) {
             return app('json')->success(['url' => $posterUrl]);
         } else {
-            return app('json')->fail('生成海报失败');
+            return app('json')->fail(410172);
         }
     }
 

@@ -1,20 +1,19 @@
 <template>
 	<view v-if="sharePacket.isState" class='sharing-packets' :class='sharePacket.isState && showAnimate ? "":"right"'>
-		<!-- 		<view class='iconfont icon-guanbi' @click="closeShare"></view>
-		<view class='line'></view> -->
 		<view class='sharing-con' @click='goShare'>
-			<image src='../../static/images/red-packets.png'></image>
+			<image :src="imgHost + '/statics/images/red-packets.png'" />
 			<view class='text font-color'>
-				<view>最高返佣</view>
-				<view class='money'><text class='label'>￥</text>{{sharePacket.priceName}}</view>
-				<view class='tip'>推广享佣金</view>
-				<view class='shareBut'>立即分享</view>
+				<view>{{$t(`最高返佣`)}}</view>
+				<view class='money'><text class='label'>{{$t(`￥`)}}</text>{{sharePacket.priceName}}</view>
+				<view class='tip'>{{$t(`推广享佣金`)}}</view>
+				<view class='shareBut'>{{$t(`立即分享`)}}</view>
 			</view>
 		</view>
 	</view>
 </template>
 
 <script>
+	import {HTTP_REQUEST_URL} from '@/config/app';
 	export default {
 
 		props: {
@@ -41,6 +40,7 @@
 		},
 		data() {
 			return {
+				imgHost:HTTP_REQUEST_URL,
 				isAnimate: true
 			};
 		},
@@ -50,7 +50,6 @@
 				this.$emit('closeChange');
 			},
 			goShare: function() {
-				console.log(this.isAnimate)
 				if (this.isAnimate) {
 					this.$emit('listenerActionSheet');
 				} else {

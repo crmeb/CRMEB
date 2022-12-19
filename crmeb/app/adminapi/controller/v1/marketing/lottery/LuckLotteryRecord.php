@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -35,7 +35,10 @@ class LuckLotteryRecord extends AuthController
         $this->services = $services;
     }
 
-
+    /**
+     * 抽奖记录列表
+     * @return mixed
+     */
     public function index()
     {
         $where = $this->request->postMore([
@@ -49,6 +52,14 @@ class LuckLotteryRecord extends AuthController
         return app('json')->success($this->services->getList($where));
     }
 
+    /**
+     * 中奖发货
+     * @param $id
+     * @return mixed
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     */
     public function deliver($id)
     {
         $data = $this->request->postMore([
@@ -57,8 +68,9 @@ class LuckLotteryRecord extends AuthController
             ['mark', ''],
         ]);
         if (!$id) {
-            return app('json')->fail('缺少ID');
+            return app('json')->fail(100100);
         }
-        return app('json')->success($this->services->setDeliver((int)$id, $data) ? '处理成功' : '处理失败');
+        $this->services->setDeliver((int)$id, $data);
+        return app('json')->success($this->services->setDeliver((int)$id, $data) ? 100014 : 100015);
     }
 }

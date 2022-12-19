@@ -18,12 +18,18 @@
 		getCartCounts,
 	} from '@/api/order.js';
 	import {
-		colorChange
+		colorChange,
+		getCrmebCopyRight,
+
 	} from '@/api/api.js';
+	import {
+		getLangJson
+	} from '@/api/user.js'
 	import {
 		mapGetters
 	} from "vuex"
 	import colors from '@/mixins/color.js';
+	import Cache from '@/utils/cache';
 	let green =
 		'--view-theme: rgba(66,202,77,1);--view-theme-16: #42CA4D;--view-priceColor:#FF7600;--view-minorColor:rgba(108, 198, 94, 0.5);--view-minorColorT:rgba(66, 202, 77, 0.1);--view-bntColor:#FE960F;--view-op-ten: rgba(66,202,77, 0.1);--view-main-start:#70E038; --view-main-over:#42CA4D;--view-op-point-four: rgba(66,202,77, 0.04);'
 	let red =
@@ -45,7 +51,8 @@
 			globalData: false,
 			isIframe: false,
 			tabbarShow: true,
-			windowHeight: 0
+			windowHeight: 0,
+			locale: ''
 		},
 		mixins: [colors],
 		computed: mapGetters(['isLogin', 'cartNum']),
@@ -74,7 +81,46 @@
 				}
 			}
 		},
+		onShow() {
+			const queryData = uni.getEnterOptionsSync() // uni-app版本 3.5.1+ 支持
+			if (queryData.query.spread) {
+				this.$Cache.set('spread', queryData.query.spread);
+				this.globalData.spid = queryData.query.spread;
+				this.globalData.pid = queryData.query.spread;
+				silenceBindingSpread(this.globalData)
+			}
+			if (queryData.query.spid) {
+				this.$Cache.set('spread', queryData.query.spid);
+				this.globalData.spid = queryData.query.spid;
+				this.globalData.pid = queryData.query.spid;
+				silenceBindingSpread(this.globalData)
+			}
+			// #ifdef MP
+			if (queryData.query.scene) {
+				switch (queryData.scene) {
+					//扫描小程序码
+					case 1047:
+						this.globalData.code = queryData.query.scene;
+						break;
+						//长按图片识别小程序码
+					case 1048:
+						this.globalData.code = queryData.query.scene;
+						break;
+						//手机相册选取小程序码
+					case 1049:
+						this.globalData.code = queryData.query.scene;
+						break;
+						//直接进入小程序
+					case 1001:
+						this.globalData.spid = queryData.query.scene;
+						break;
+				}
+				silenceBindingSpread(this.globalData)
+			}
+			// #endif
+		},
 		async onLaunch(option) {
+			uni.hideTabBar()
 			let that = this;
 			colorChange('color_change').then(res => {
 				uni.setStorageSync('is_diy', res.data.is_diy)
@@ -106,18 +152,14 @@
 						break
 				}
 			});
-			if (option.query.spread) {
-				that.$Cache.set('spread', option.query.spread);
-				that.globalData.spid = option.query.spread;
-				that.globalData.pid = option.query.spread;
-				silenceBindingSpread()
+			if (!Cache.has('localeSet')) {
+				getLangJson().then(res => {
+					Cache.set('locale', Object.keys(res.data)[0])
+					uni.setStorageSync('localeJson', res.data);
+					Cache.set('localeSet', true, 600) // 语言类型缓存时间
+				})
 			}
-			if (option.query.spid) {
-				that.$Cache.set('spread', option.query.spid);
-				that.globalData.spid = option.query.spid;
-				that.globalData.pid = option.query.spid;
-				// silenceBindingSpread()
-			}
+
 			// #ifdef APP-PLUS || H5
 			uni.getSystemInfo({
 				success: function(res) {
@@ -141,53 +183,42 @@
 				);
 				return false;
 			}
-			if (option.query.hasOwnProperty('scene')) {
 
-				switch (option.scene) {
-					//扫描小程序码
-					case 1047:
-						let val = that.$util.getUrlParams(decodeURIComponent(option.query.scene));
-						that.globalData.code = val.pid === undefined ? val : val.pid;
-						break;
-						//长按图片识别小程序码
-					case 1048:
-						that.globalData.code = option.query.scene;
-						break;
-						//手机相册选取小程序码
-					case 1049:
-						that.globalData.code = option.query.scene;
-						break;
-						//直接进入小程序
-					case 1001:
-						that.globalData.spid = option.query.scene;
-						break;
-				}
-			}
 			const updateManager = wx.getUpdateManager();
-
-			updateManager.onCheckForUpdate(function(res) {
-				// 请求完新版本信息的回调
-			});
-
-			updateManager.onUpdateReady(function() {
-				wx.showModal({
-					title: '更新提示',
-					content: '新版本已经准备好，是否重启应用？',
-					success: function(res) {
-						if (res.confirm) {
-							// 新的版本已经下载好，调用 applyUpdate 应用新版本并重启
-							updateManager.applyUpdate();
-						}
+			const startParamObj = wx.getEnterOptionsSync();
+			if (wx.canIUse('getUpdateManager') && startParamObj.scene != 1154) {
+				const updateManager = wx.getUpdateManager()
+				updateManager.onCheckForUpdate(function(res) {
+					// 请求完新版本信息的回调
+					// console.log(res.hasUpdate)
+					if (res.hasUpdate) {
+						updateManager.onUpdateFailed(function() {
+							return that.Tips({
+								title: '新版本下载失败'
+							});
+						});
+						updateManager.onUpdateReady(function() {
+							wx.showModal({
+								title: '更新提示',
+								content: '新版本已经下载好，是否重启当前应用？',
+								success(res) {
+									if (res.confirm) {
+										updateManager.applyUpdate()
+									}
+								}
+							})
+						})
+						updateManager.onUpdateFailed(function() {
+							wx.showModal({
+								title: '发现新版本',
+								content: '请删除当前小程序，重启搜索打开...',
+							})
+						})
 					}
-				});
-			});
-
-			updateManager.onUpdateFailed(function() {
-				return that.Tips({
-					title: '新版本下载失败'
-				});
-			});
+				})
+			}
 			// #endif
+
 			// getShopConfig().then(res => {
 			// 	this.$store.commit('SETPHONESTATUS', res.data.status);
 			// });
@@ -200,6 +231,12 @@
 			// #ifdef MP
 			let menuButtonInfo = uni.getMenuButtonBoundingClientRect();
 			that.globalData.navH = menuButtonInfo.top * 2 + menuButtonInfo.height / 2;
+			const version = uni.getSystemInfoSync().SDKVersion
+			if (Routine.compareVersion(version, '2.21.3') >= 0) {
+				that.$Cache.set('MP_VERSION_ISNEW', true)
+			} else {
+				that.$Cache.set('MP_VERSION_ISNEW', false)
+			}
 			// #endif
 
 			// #ifdef H5
@@ -216,99 +253,18 @@
 			} else {
 				this.globalData.isIframe = false;
 			}
-
-			//公众号静默授权
-			if (window.location.pathname !== '/' && option.query.scope === 'snsapi_base') {
-				let snsapiBase = 'snsapi_base';
-				let urlData = location.pathname + location.search;
-				// if (!that.$store.getters.isLogin && uni.getStorageSync('authIng')) {
-				// 	uni.setStorageSync('authIng', false)
-				// }
-				if (!that.$store.getters.isLogin && Auth.isWeixin()) {
-					let code,
-						state,
-						scope = ''
-
-					if (option.query.code instanceof Array) {
-						code = option.query.code[option.query.code.length - 1]
-					} else {
-						code = option.query.code
-					}
-
-
-					if (code && code != uni.getStorageSync('snsapiCode') && location.pathname.indexOf(
-							'/pages/users/wechat_login/index') === -1) {
-						// 存储静默授权code
-						uni.setStorageSync('snsapiCode', code);
-						let spread = that.globalData.spid ? that.globalData.spid : '';
-						uni.setStorageSync('authIng', true)
-						silenceAuth({
-								code: code,
-								spread: that.$Cache.get('spread'),
-								spid: that.globalData.code
-							})
-							.then(res => {
-								uni.setStorageSync('authIng', false)
-								uni.setStorageSync('snRouter', decodeURIComponent(decodeURIComponent(option.query
-									.back_url)));
-								if (res.data.key !== undefined && res.data.key) {
-									this.$Cache.set('snsapiKey', res.data.key);
-								} else {
-
-									let time = res.data.expires_time - this.$Cache.time();
-									this.$store.commit('LOGIN', {
-										token: res.data.token,
-										time: time
-									});
-									this.$Cache.set('WX_AUTH', code);
-									this.$store.commit('SETUID', res.data.userInfo.uid);
-									this.$store.commit('UPDATE_USERINFO', res.data.userInfo);
-
-									if (option.query.back_url) {
-										location.replace(decodeURIComponent(decodeURIComponent(option.query
-											.back_url)));
-									}
-								}
-							})
-							.catch(error => {
-								uni.setStorageSync('authIng', false)
-								let url = ''
-								if (option.query.back_url instanceof Array) {
-									url = option.query.back_url[option.query.back_url.length - 1]
-								} else {
-									url = option.query.back_url
-								}
-								if (!that.$Cache.has('snsapiKey')) {
-									if (location.pathname.indexOf('/pages/users/wechat_login/index') === -1) {
-										Auth.oAuth(snsapiBase, url);
-									}
-								}
-							});
-					} else {
-						if (!this.$Cache.has('snsapiKey')) {
-							if (location.pathname.indexOf('/pages/users/wechat_login/index') === -1) {
-								Auth.oAuth(snsapiBase, urlData);
-							}
-						}
-					}
-				} else {
-					if (option.query.back_url) {
-						location.replace(uni.getStorageSync('snRouter'));
-					}
-				}
-			}
 			// #endif
 			// #ifdef MP
 			// 小程序静默授权
-			if (!this.$store.getters.isLogin) {
-				Routine.getCode()
-					.then(code => {
-						this.silenceAuth(code);
-					})
-					.catch(res => {
-						uni.hideLoading();
-					});
-			}
+			// if (!this.$store.getters.isLogin) {
+			// 	Routine.getCode()
+			// 		.then(code => {
+			// 			this.silenceAuth(code);
+			// 		})
+			// 		.catch(res => {
+			// 			uni.hideLoading();
+			// 		});
+			// }
 			// #endif
 			// #ifdef H5
 			// 添加crmeb chat 统计
@@ -316,40 +272,46 @@
 			__s.src = `${HTTP_REQUEST_URL}/api/get_script`;
 			document.head.appendChild(__s);
 			// #endif
+			getCrmebCopyRight().then(res => {
+				uni.setStorageSync('copyRight', res.data)
+			})
 		},
+		// #ifdef H5
+		onHide() {
+			this.$Cache.clear('snsapiKey')
+		},
+		// #endif
 		methods: {
 			// 小程序静默授权
-			silenceAuth(code) {
-				let that = this;
-				let spread = that.globalData.spid ? that.globalData.spid : '';
-				silenceAuth({
-						code: code,
-						spread_spid: spread,
-						spread_code: that.globalData.code
-					})
-					.then(res => {
-						if (res.data.token !== undefined && res.data.token) {
-							uni.hideLoading();
-							let time = res.data.expires_time - this.$Cache.time();
-							that.$store.commit('LOGIN', {
-								token: res.data.token,
-								time: time
-							});
-							that.$store.commit('SETUID', res.data.userInfo.uid);
-							that.$store.commit('UPDATE_USERINFO', res.data.userInfo);
-						}
-					})
-					.catch(res => {});
-			},
+			// silenceAuth(code) {
+			// 	let that = this;
+			// 	let spread = that.globalData.spid ? that.globalData.spid : '';
+			// 	silenceAuth({
+			// 			code: code,
+			// 			spread_spid: spread,
+			// 			spread_code: that.globalData.code
+			// 		})
+			// 		.then(res => {
+			// 			if (res.data.token !== undefined && res.data.token) {
+			// 				uni.hideLoading();
+			// 				let time = res.data.expires_time - this.$Cache.time();
+			// 				that.$store.commit('LOGIN', {
+			// 					token: res.data.token,
+			// 					time: time
+			// 				});
+			// 				that.$store.commit('SETUID', res.data.userInfo.uid);
+			// 				that.$store.commit('UPDATE_USERINFO', res.data.userInfo);
+			// 			}
+			// 		})
+			// 		.catch(res => {});
+			// },
 		},
-		onHide: function() {
 
-		}
 	};
 </script>
 
 <style>
-	@import url('@/plugin/emoji-awesome/css/google.min.css');
+	@import url('@/plugin/emoji-awesome/css/tuoluojiang.css');
 	@import url('@/plugin/animate/animate.min.css');
 	@import 'static/css/base.css';
 	@import 'static/iconfont/iconfont.css';

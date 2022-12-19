@@ -1,10 +1,5 @@
 <template>
   <div>
-    <div class="i-layout-page-header">
-      <div class="i-layout-page-header">
-        <span class="ivu-page-header-title">{{ $route.meta.title }}</span>
-      </div>
-    </div>
     <Row class="ivu-mt box-wrapper">
       <Col span="3" class="left-wrapper">
         <Menu :theme="theme3" :active-name="sortName" width="auto">
@@ -21,20 +16,13 @@
               <div class="icon-box" v-if="index != 0">
                 <Icon type="ios-more" size="24" @click.stop="showMenu(item)" />
               </div>
-              <div
-                class="right-menu ivu-poptip-inner"
-                v-show="item.status"
-                v-if="index != 0"
-              >
+              <div class="right-menu ivu-poptip-inner" v-show="item.status" v-if="index != 0">
                 <div class="ivu-poptip-body" @click="labelEdit(item)">
                   <div class="ivu-poptip-body-content">
                     <div class="ivu-poptip-body-content-inner">编辑</div>
                   </div>
                 </div>
-                <div
-                  class="ivu-poptip-body"
-                  @click="deleteSort(item, '删除分类', index)"
-                >
+                <div class="ivu-poptip-body" @click="deleteSort(item, '删除分类', index)">
                   <div class="ivu-poptip-body-content">
                     <div class="ivu-poptip-body-content-inner">删除</div>
                   </div>
@@ -48,13 +36,7 @@
         <Card :bordered="false" dis-hover>
           <Row type="flex">
             <Col v-bind="grid">
-              <Button
-                v-auth="['admin-user-label_add']"
-                type="primary"
-                icon="md-add"
-                @click="add"
-                >添加标签</Button
-              >
+              <Button v-auth="['admin-user-label_add']" type="primary" icon="md-add" @click="add">添加标签</Button>
               <Button
                 v-auth="['admin-user-label_add']"
                 type="success"
@@ -87,13 +69,7 @@
             </template>
           </Table>
           <div class="acea-row row-right page">
-            <Page
-              :total="total"
-              show-elevator
-              show-total
-              @on-change="pageChange"
-              :page-size="labelFrom.limit"
-            />
+            <Page :total="total" show-elevator show-total @on-change="pageChange" :page-size="labelFrom.limit" />
           </div>
         </Card>
       </Col>
@@ -102,16 +78,10 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
-import {
-  userLabelAll,
-  userLabelApi,
-  userLabelAddApi,
-  userLabelEdit,
-  userLabelCreate,
-} from "@/api/user";
+import { mapState } from 'vuex';
+import { userLabelAll, userLabelApi, userLabelAddApi, userLabelEdit, userLabelCreate } from '@/api/user';
 export default {
-  name: "user_label",
+  name: 'user_label',
   data() {
     return {
       grid: {
@@ -124,48 +94,48 @@ export default {
       loading: false,
       columns1: [
         {
-          title: "ID",
-          key: "id",
-          align: "center",
+          title: 'ID',
+          key: 'id',
+          align: 'center',
           width: 120,
         },
         {
-          title: "分类名称",
-          key: "cate_name",
-          align: "center",
+          title: '分类名称',
+          key: 'cate_name',
+          align: 'center',
         },
         {
-          title: "标签名称",
-          key: "label_name",
-          align: "center",
+          title: '标签名称',
+          key: 'label_name',
+          align: 'center',
         },
         {
-          title: "操作",
-          slot: "action",
-          fixed: "right",
+          title: '操作',
+          slot: 'action',
+          fixed: 'right',
           width: 120,
         },
       ],
       labelFrom: {
         page: 1,
         limit: 15,
-        label_cate: "",
+        label_cate: '',
       },
       labelLists: [],
       total: 0,
-      theme3: "light",
+      theme3: 'light',
       labelSort: [],
-      sortName: "",
+      sortName: '',
       current: 0,
     };
   },
   computed: {
-    ...mapState("media", ["isMobile"]),
+    ...mapState('media', ['isMobile']),
     labelWidth() {
       return this.isMobile ? undefined : 75;
     },
     labelPosition() {
-      return this.isMobile ? "top" : "right";
+      return this.isMobile ? 'top' : 'right';
     },
   },
   created() {
@@ -174,9 +144,7 @@ export default {
   methods: {
     // 添加
     add() {
-      this.$modalForm(userLabelAddApi(0, this.labelFrom.label_cate)).then(() =>
-        this.getList()
-      );
+      this.$modalForm(userLabelAddApi(0, this.labelFrom.label_cate)).then(() => this.getList());
     },
     // 分组列表
     getList() {
@@ -207,14 +175,14 @@ export default {
         title: tit,
         num: num,
         url: `user/user_label/del/${row.id}`,
-        method: "DELETE",
-        ids: "",
+        method: 'DELETE',
+        ids: '',
       };
       this.$modalSure(delfromData)
         .then((res) => {
           this.$Message.success(res.msg);
           this.labelLists.splice(num, 1);
-
+          this.labelFrom.page = 1;
           this.getList();
         })
         .catch((res) => {
@@ -225,8 +193,8 @@ export default {
     getUserLabelAll(key) {
       userLabelAll().then((res) => {
         let obj = {
-          name: "全部",
-          id: "",
+          name: '全部',
+          id: '',
         };
         res.data.unshift(obj);
         res.data.forEach((el) => {
@@ -252,9 +220,7 @@ export default {
     },
     //编辑标签
     labelEdit(item) {
-      this.$modalForm(userLabelEdit(item.id)).then(() =>
-        this.getUserLabelAll(1)
-      );
+      this.$modalForm(userLabelEdit(item.id)).then(() => this.getUserLabelAll(1));
     },
     // 添加分类
     addSort() {
@@ -265,8 +231,8 @@ export default {
         title: tit,
         num: num,
         url: `user/user_label_cate/${row.id}`,
-        method: "DELETE",
-        ids: "",
+        method: 'DELETE',
+        ids: '',
       };
       this.$modalSure(delfromData)
         .then((res) => {

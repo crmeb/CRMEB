@@ -16,9 +16,7 @@
     >
       <template slot-scope="{ row, index }" slot="order_id">
         <span v-text="row.order_id" style="display: block"></span>
-        <span v-show="row.is_del == 1" style="color: #ed4014; display: block"
-          >用户已删除</span
-        >
+        <span v-show="row.is_del == 1" style="color: #ed4014; display: block">用户已删除</span>
       </template>
       <template slot-scope="{ row, index }" slot="nickname">
         <a @click="showUserInfo(row)">{{ row.nickname }}/{{ row.uid }}</a>
@@ -28,12 +26,8 @@
           <div class="tabBox_img" v-viewer>
             <img v-lazy="row.image" />
           </div>
-          <span class="tabBox_tit">
-            {{ row.store_name + " | " }}{{ row.suk ? row.suk : "" }}
-          </span>
-          <span class="tabBox_pice">{{
-            "积分" + row.total_price + " x " + row.total_num
-          }}</span>
+          <span class="tabBox_tit"> {{ row.store_name + ' | ' }}{{ row.suk ? row.suk : '' }} </span>
+          <span class="tabBox_pice">{{ '积分' + row.total_price + ' x ' + row.total_num }}</span>
         </div>
       </template>
       <template slot-scope="{ row, index }" slot="action">
@@ -50,21 +44,11 @@
             <DropdownMenu slot="list">
               <DropdownItem name="2">订单详情</DropdownItem>
               <DropdownItem name="3">订单记录</DropdownItem>
-              <DropdownItem
-                name="11"
-                v-show="row.status >= 1 && row.express_dump"
-                >电子面单打印</DropdownItem
-              >
-              <DropdownItem name="10" v-show="row.status >= 1"
-                >小票打印</DropdownItem
-              >
+              <DropdownItem name="11" v-show="row.status >= 1 && row.express_dump">电子面单打印</DropdownItem>
+              <DropdownItem name="10" v-show="row.status >= 1">小票打印</DropdownItem>
               <!-- <DropdownItem name="10" v-show="row._status >= 2">订单打印</DropdownItem> -->
-              <DropdownItem name="4" v-show="row.status !== 4"
-                >订单备注</DropdownItem
-              >
-              <DropdownItem name="8" v-show="row.status === 2"
-                >已收货</DropdownItem
-              >
+              <DropdownItem name="4" v-show="row.status !== 4">订单备注</DropdownItem>
+              <DropdownItem name="8" v-show="row.status === 2">已收货</DropdownItem>
               <!-- <DropdownItem name="9">删除订单</DropdownItem> -->
             </DropdownMenu>
           </Dropdown>
@@ -84,38 +68,22 @@
       />
     </div>
     <!-- 编辑 退款 退积分 不退款-->
-    <edit-from
-      ref="edits"
-      :FromData="FromData"
-      @submitFail="submitFail"
-    ></edit-from>
+    <edit-from ref="edits" :FromData="FromData" @submitFail="submitFail"></edit-from>
     <!-- 会员详情-->
     <user-details ref="userDetails"></user-details>
     <!-- 详情 -->
-    <details-from
-      ref="detailss"
-      :orderDatalist="orderDatalist"
-      :orderId="orderId"
-    ></details-from>
+    <details-from ref="detailss" :orderDatalist="orderDatalist" :orderId="orderId"></details-from>
     <!-- 备注 -->
-    <order-remark
-      ref="remarks"
-      :orderId="orderId"
-      @submitFail="submitFail"
-    ></order-remark>
+    <order-remark ref="remarks" :orderId="orderId" @submitFail="submitFail"></order-remark>
     <!-- 记录 -->
     <order-record ref="record"></order-record>
     <!-- 发送货 -->
-    <order-send
-      ref="send"
-      :orderId="orderId"
-      @submitFail="submitFail"
-    ></order-send>
+    <order-send ref="send" :orderId="orderId" @submitFail="submitFail"></order-send>
   </div>
 </template>
 
 <script>
-import expandRow from "./tableExpand.vue";
+import expandRow from './tableExpand.vue';
 import {
   orderList,
   getOrdeDatas,
@@ -125,22 +93,18 @@ import {
   refundIntegral,
   getDistribution,
   writeUpdate,
-} from "@/api/order";
-import {
-  getIntegralOrderDataInfo,
-  integralOrderList,
-  getIntegralOrderDistribution,
-} from "@/api/marketing";
-import { mapState, mapMutations } from "vuex";
-import editFrom from "../../../../components/from/from";
-import detailsFrom from "../handle/orderDetails";
-import orderRemark from "../handle/orderRemark";
-import orderRecord from "../handle/orderRecord";
-import orderSend from "../handle/orderSend";
-import userDetails from "@/pages/user/list/handle/userDetails";
+} from '@/api/order';
+import { getIntegralOrderDataInfo, integralOrderList, getIntegralOrderDistribution } from '@/api/marketing';
+import { mapState, mapMutations } from 'vuex';
+import editFrom from '../../../../components/from/from';
+import detailsFrom from '../handle/orderDetails';
+import orderRemark from '../handle/orderRemark';
+import orderRecord from '../handle/orderRecord';
+import orderSend from '../handle/orderSend';
+import userDetails from '@/pages/user/list/handle/userDetails';
 
 export default {
-  name: "table_list",
+  name: 'table_list',
   components: {
     expandRow,
     editFrom,
@@ -150,7 +114,7 @@ export default {
     orderSend,
     userDetails,
   },
-  props: ["where", "isAll"],
+  props: ['where', 'isAll'],
   data() {
     return {
       delfromData: {},
@@ -161,7 +125,7 @@ export default {
       orderId: 0,
       columns: [
         {
-          type: "expand",
+          type: 'expand',
           width: 30,
           render: (h, params) => {
             return h(expandRow, {
@@ -172,42 +136,42 @@ export default {
           },
         },
         {
-          title: "订单号",
-          align: "center",
-          slot: "order_id",
+          title: '订单号',
+          align: 'center',
+          slot: 'order_id',
           minWidth: 150,
         },
         {
-          title: "用户信息",
-          slot: "nickname",
+          title: '用户信息',
+          slot: 'nickname',
           minWidth: 100,
         },
         {
-          title: "商品信息",
-          slot: "info",
+          title: '商品信息',
+          slot: 'info',
           minWidth: 330,
         },
         {
-          title: "兑换积分",
-          key: "total_price",
+          title: '兑换积分',
+          key: 'total_price',
           minWidth: 70,
         },
         {
-          title: "订单状态",
-          key: "status_name",
+          title: '订单状态',
+          key: 'status_name',
           minWidth: 100,
         },
         {
-          title: "下单时间",
-          key: "add_time",
+          title: '下单时间',
+          key: 'add_time',
           minWidth: 100,
         },
         {
-          title: "操作",
-          slot: "action",
-          fixed: "right",
+          title: '操作',
+          slot: 'action',
+          fixed: 'right',
           minWidth: 150,
-          align: "center",
+          align: 'center',
         },
       ],
       page: {
@@ -218,25 +182,18 @@ export default {
       data: [],
       FromData: null,
       orderDatalist: null,
-      modalTitleSs: "",
+      modalTitleSs: '',
       isDelIdList: [],
       checkBox: false,
       formSelection: [],
       selectionCopy: [],
-      display: "none",
+      display: 'none',
       autoDisabled: false,
       // isAll: -1,
     };
   },
   computed: {
-    ...mapState("integralOrder", [
-      "orderPayType",
-      "orderStatus",
-      "orderTime",
-      "orderNum",
-      "fieldKey",
-      "orderType",
-    ]),
+    ...mapState('integralOrder', ['orderPayType', 'orderStatus', 'orderTime', 'orderNum', 'fieldKey', 'orderType']),
   },
   mounted() {
     this.getList();
@@ -250,11 +207,11 @@ export default {
       this.getList();
     },
     formSelection(value) {
-      this.$emit("order-select", value);
+      this.$emit('order-select', value);
       if (value.length) {
-        this.$emit("auto-disabled", 0);
+        this.$emit('auto-disabled', 0);
       } else {
-        this.$emit("auto-disabled", 1);
+        this.$emit('auto-disabled', 1);
       }
       let isDel = value.some((item) => {
         return item.is_del === 1;
@@ -282,7 +239,7 @@ export default {
     },
   },
   methods: {
-    ...mapMutations("integralOrder", ["getIsDel", "getisDelIdListl"]),
+    ...mapMutations('integralOrder', ['getIsDel', 'getisDelIdListl']),
     selectAll(row) {
       if (row.length) {
         this.formSelection = row;
@@ -301,32 +258,32 @@ export default {
     changeMenu(row, name) {
       this.orderId = row.id;
       switch (name) {
-        case "2":
+        case '2':
           this.getData(row.id);
           break;
-        case "3":
+        case '3':
           this.$refs.record.modals = true;
           this.$refs.record.getList(row.id);
           break;
-        case "4":
+        case '4':
           this.$refs.remarks.modals = true;
           this.$refs.remarks.formValidate.remark = row.remark;
           break;
-        case "5":
+        case '5':
           this.getRefundData(row.id);
           break;
-        case "6":
+        case '6':
           this.getRefundIntegral(row.id);
           break;
-        case "7":
+        case '7':
           this.getNoRefundData(row.id);
           break;
-        case "8":
+        case '8':
           this.delfromData = {
-            title: "修改确认收货",
+            title: '修改确认收货',
             url: `marketing/integral/order/take/${row.id}`,
-            method: "put",
-            ids: "",
+            method: 'put',
+            ids: '',
           };
           this.$modalSure(this.delfromData)
             .then((res) => {
@@ -338,31 +295,31 @@ export default {
             });
           // this.modalTitleSs = '修改确认收货';
           break;
-        case "10":
+        case '10':
           this.delfromData = {
-            title: "立即打印订单",
-            info: "您确认打印此订单吗?",
+            title: '立即打印订单',
+            info: '您确认打印此订单吗?',
             url: `marketing/integral/order/print/${row.id}`,
-            method: "get",
-            ids: "",
+            method: 'get',
+            ids: '',
           };
           this.$modalSure(this.delfromData)
             .then((res) => {
               this.$Message.success(res.msg);
-              this.$emit("changeGetTabs");
+              this.$emit('changeGetTabs');
               this.getList();
             })
             .catch((res) => {
               this.$Message.error(res.msg);
             });
           break;
-        case "11":
+        case '11':
           this.delfromData = {
-            title: "立即打印电子面单",
-            info: "您确认打印此电子面单吗?",
+            title: '立即打印电子面单',
+            info: '您确认打印此电子面单吗?',
             url: `/order/order_dump/${row.id}`,
-            method: "get",
-            ids: "",
+            method: 'get',
+            ids: '',
           };
           this.$modalSure(this.delfromData)
             .then((res) => {
@@ -375,10 +332,10 @@ export default {
           break;
         default:
           this.delfromData = {
-            title: "删除订单",
+            title: '删除订单',
             url: `marketing/integral/order/del/${row.id}`,
-            method: "DELETE",
-            ids: "",
+            method: 'DELETE',
+            ids: '',
           };
           // this.modalTitleSs = '删除订单';
           this.delOrder(row, this.delfromData);
@@ -408,7 +365,7 @@ export default {
         data: this.orderTime,
         real_name: this.orderNum,
         field_key: this.fieldKey,
-        type: this.orderType === 0 ? "" : this.orderType,
+        type: this.orderType === 0 ? '' : this.orderType,
         product_id: this.$route.query.product_id,
       })
         .then(async (res) => {
@@ -425,7 +382,7 @@ export default {
           });
           this.orderCards = data.stat;
           this.page.total = data.count;
-          this.$emit("on-changeCards", data.stat);
+          this.$emit('on-changeCards', data.stat);
           this.loading = false;
         })
         .catch((res) => {
@@ -458,9 +415,8 @@ export default {
             this.$Message.error(res.msg);
           });
       } else {
-        const title = "错误！";
-        const content =
-          "<p>您选择的的订单存在用户未删除的订单，无法删除用户未删除的订单！</p>";
+        const title = '错误！';
+        const content = '<p>您选择的的订单存在用户未删除的订单，无法删除用户未删除的订单！</p>';
         this.$Modal.error({
           title: title,
           content: content,
@@ -491,7 +447,7 @@ export default {
           if (this.orderDatalist.orderInfo.refund_reason_wap_img) {
             try {
               this.orderDatalist.orderInfo.refund_reason_wap_img = JSON.parse(
-                this.orderDatalist.orderInfo.refund_reason_wap_img
+                this.orderDatalist.orderInfo.refund_reason_wap_img,
               );
             } catch (e) {
               this.orderDatalist.orderInfo.refund_reason_wap_img = [];
@@ -504,7 +460,7 @@ export default {
     },
     // 修改成功
     submitFail() {
-      this.$emit("updata");
+      this.$emit('updata');
       this.getList();
     },
     // 发送货
@@ -530,7 +486,7 @@ export default {
     // 数据导出；
     exportData: function () {
       this.$refs.table.exportCsv({
-        filename: "商品列表",
+        filename: '商品列表',
       });
     },
     onSelectCancel(selection, row) {},

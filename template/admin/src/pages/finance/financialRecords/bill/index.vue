@@ -17,12 +17,7 @@
         <Row :gutter="24" type="flex">
           <Col :xl="6" :lg="12" :md="13" :sm="12" :xs="24">
             <FormItem label="关键字：">
-              <Input
-                enter-button
-                placeholder="请输入"
-                element-id="name"
-                v-model="formValidate.nickname"
-              />
+              <Input enter-button placeholder="请输入" element-id="name" v-model="formValidate.nickname" />
             </FormItem>
           </Col>
           <Col :xl="6" :lg="12" :md="13" :sm="12" :xs="24">
@@ -40,30 +35,15 @@
           </Col>
           <Col :xl="6" :lg="12" :md="13" :sm="12" :xs="24">
             <FormItem label="筛选类型：" class="tab_data">
-              <Select
-                v-model="formValidate.type"
-                style="width: 200px; height: 32px"
-                clearable
-              >
-                <Option
-                  v-for="(item, index) in billList"
-                  :key="index"
-                  :value="item.type"
-                  >{{ item.title }}</Option
-                >
+              <Select v-model="formValidate.type" style="width: 200px; height: 32px" clearable>
+                <Option v-for="(item, index) in billList" :key="index" :value="item.type">{{ item.title }}</Option>
               </Select>
             </FormItem>
           </Col>
           <Col span="6">
             <FormItem>
-              <Button type="primary" icon="ios-search" @click="userSearchs"
-                >搜索</Button
-              >
-              <Button
-                v-auth="['export-userFinance']"
-                class="export"
-                icon="ios-share-outline"
-                @click="exports"
+              <Button type="primary" icon="ios-search" @click="userSearchs">搜索</Button>
+              <Button v-auth="['export-userFinance']" class="export" icon="ios-share-outline" @click="exports"
                 >导出
               </Button>
             </FormItem>
@@ -81,7 +61,7 @@
       >
         <template slot-scope="{ row }" slot="number">
           <div :class="[row.pm === 1 ? 'green' : 'red']">
-            {{ row.pm === 1 ? row.number : "-" + row.number }}
+            {{ row.pm === 1 ? row.number : '-' + row.number }}
           </div>
         </template>
       </Table>
@@ -100,19 +80,19 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
-import { billTypeApi, billListApi, userFinanceApi } from "@/api/finance";
+import { mapState } from 'vuex';
+import { billTypeApi, billListApi, userFinanceApi } from '@/api/finance';
 
 export default {
-  name: "bill",
+  name: 'bill',
   data() {
     return {
       billList: [],
       formValidate: {
-        nickname: "",
-        start_time: "",
-        end_time: "",
-        type: "",
+        nickname: '',
+        start_time: '',
+        end_time: '',
+        type: '',
         page: 1, // 当前页
         limit: 20, // 每页显示条数
       },
@@ -121,20 +101,20 @@ export default {
       total: 0,
       columns: [
         {
-          title: "用户ID",
-          key: "uid",
+          title: '用户ID',
+          key: 'uid',
           sortable: true,
           width: 80,
         },
         {
-          title: "昵称",
-          key: "nickname",
+          title: '昵称',
+          key: 'nickname',
           minWidth: 150,
         },
         {
-          title: "金额",
+          title: '金额',
           minWidth: 150,
-          slot: "number",
+          slot: 'number',
           // render: (h, params) => {
           //     return h('div', {
           //         style: {
@@ -144,30 +124,30 @@ export default {
           // }
         },
         {
-          title: "类型",
-          key: "title",
+          title: '类型',
+          key: 'title',
           minWidth: 100,
         },
         {
-          title: "备注",
-          key: "mark",
+          title: '备注',
+          key: 'mark',
           minWidth: 150,
         },
         {
-          title: "创建时间",
-          key: "add_time",
+          title: '创建时间',
+          key: 'add_time',
           minWidth: 200,
         },
       ],
     };
   },
   computed: {
-    ...mapState("media", ["isMobile"]),
+    ...mapState('media', ['isMobile']),
     labelWidth() {
       return this.isMobile ? undefined : 80;
     },
     labelPosition() {
-      return this.isMobile ? "top" : "right";
+      return this.isMobile ? 'top' : 'right';
     },
   },
   created() {

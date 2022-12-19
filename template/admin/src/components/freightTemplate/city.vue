@@ -1,18 +1,10 @@
 <template>
   <div>
-    <Modal
-      v-model="addressModal"
-      title="选择可配送区域"
-      width="50%"
-      class="modal"
-      :mask="true"
-    >
+    <Modal v-model="addressModal" title="选择可配送区域" width="50%" class="modal" :mask="true">
       <Row :gutter="24" type="flex">
         <Col :xl="24" :lg="24" :md="24" :sm="24" :xs="24" class="item">
           <div class="acea-row row-right row-middle">
-            <Checkbox v-model="iSselect" @on-change="allCheckbox"
-              >全选</Checkbox
-            >
+            <Checkbox v-model="iSselect" @on-change="allCheckbox">全选</Checkbox>
             <div class="empty" @click="empty">清空</div>
           </div>
         </Col>
@@ -30,14 +22,10 @@
           v-if="item.isShow"
         >
           <div @mouseenter="enter(index)" @mouseleave="leave()">
-            <Checkbox
-              v-model="item.checked"
-              :label="item.name"
-              @on-change="checkedClick(index)"
-              >{{ item.name }}</Checkbox
-            ><span class="red"
-              >({{ (item.count || 0) + "/" + item.childNum }})</span
-            >
+            <Checkbox v-model="item.checked" :label="item.name" @on-change="checkedClick(index)">{{
+              item.name
+            }}</Checkbox
+            ><span class="red">({{ (item.count || 0) + '/' + item.childNum }})</span>
             <div class="city" v-show="activeCity === index">
               <div class="checkBox">
                 <div class="arrow"></div>
@@ -68,10 +56,10 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
-import { templatesCityListApi } from "@/api/setting";
+import { mapState } from 'vuex';
+import { templatesCityListApi } from '@/api/setting';
 export default {
-  name: "city",
+  name: 'city',
   props: {
     type: {
       type: Number,
@@ -145,18 +133,14 @@ export default {
       let that = this,
         checked = this.iSselect;
       that.cityList.forEach(function (item, key) {
-        that.$set(that.cityList[key], "checked", checked);
+        that.$set(that.cityList[key], 'checked', checked);
         if (checked) {
-          that.$set(
-            that.cityList[key],
-            "count",
-            that.cityList[key].children.length
-          );
+          that.$set(that.cityList[key], 'count', that.cityList[key].children.length);
         } else {
-          that.$set(that.cityList[key], "count", 0);
+          that.$set(that.cityList[key], 'count', 0);
         }
         that.cityList[key].children.forEach(function (val, k) {
-          that.$set(that.cityList[key].children[k], "checked", checked);
+          that.$set(that.cityList[key].children[k], 'checked', checked);
         });
       });
       // this.render();
@@ -165,11 +149,11 @@ export default {
     empty() {
       let that = this;
       that.cityList.forEach(function (item, key) {
-        that.$set(that.cityList[key], "checked", false);
+        that.$set(that.cityList[key], 'checked', false);
         that.cityList[key].children.forEach(function (val, k) {
-          that.$set(that.cityList[key].children[k], "checked", false);
+          that.$set(that.cityList[key].children[k], 'checked', false);
         });
-        that.$set(that.cityList[key], "count", 0);
+        that.$set(that.cityList[key], 'count', 0);
       });
       this.iSselect = false;
     },
@@ -180,15 +164,15 @@ export default {
     checkedClick: function (index) {
       let that = this;
       if (that.cityList[index].checked) {
-        that.$set(that.cityList[index], "count", that.cityList[index].childNum);
+        that.$set(that.cityList[index], 'count', that.cityList[index].childNum);
         that.cityList[index].children.forEach(function (item, key) {
-          that.$set(that.cityList[index].children[key], "checked", true);
+          that.$set(that.cityList[index].children[key], 'checked', true);
         });
       } else {
-        that.$set(that.cityList[index], "count", 0);
-        that.$set(that.cityList[index], "checked", false);
+        that.$set(that.cityList[index], 'count', 0);
+        that.$set(that.cityList[index], 'checked', false);
         that.cityList[index].children.forEach(function (item, key) {
-          that.$set(that.cityList[index].children[key], "checked", false);
+          that.$set(that.cityList[index].children[key], 'checked', false);
         });
         that.iSselect = false;
       }
@@ -208,8 +192,8 @@ export default {
           count++;
         }
       });
-      this.$set(this.cityList[index], "count", count);
-      this.$set(this.cityList[index], "checked", checked);
+      this.$set(this.cityList[index], 'count', count);
+      this.$set(this.cityList[index], 'checked', checked);
       // this.render();
     },
     // 确定;
@@ -238,9 +222,9 @@ export default {
         }
       });
       if (selectList.length === 0) {
-        return that.$Message.error("至少选择一个省份或者城市");
+        return that.$Message.error('至少选择一个省份或者城市');
       } else {
-        this.$emit("selectCity", selectList, this.type);
+        this.$emit('selectCity', selectList, this.type);
         that.addressModal = false;
         this.cityList = [];
       }

@@ -1,11 +1,5 @@
 <template>
-  <Modal
-    scrollable
-    v-model="modal"
-    @on-cancel="onCancel"
-    title="商品规格"
-    width="950"
-  >
+  <Modal scrollable v-model="modal" @on-cancel="onCancel" title="商品规格" width="950">
     <Form
       ref="formDynamic"
       :model="formDynamic"
@@ -19,20 +13,11 @@
         <Col span="24">
           <Col span="8" class="mb15">
             <FormItem label="规格模板名称：" prop="rule_name">
-              <Input
-                placeholder="请输入标题名称"
-                :maxlength="20"
-                v-model.trim="formDynamic.rule_name"
-              />
+              <Input placeholder="请输入标题名称" :maxlength="20" v-model.trim="formDynamic.rule_name" />
             </FormItem>
           </Col>
         </Col>
-        <Col
-          span="23"
-          class="noForm"
-          v-for="(item, index) in formDynamic.spec"
-          :key="index"
-        >
+        <Col span="23" class="noForm" v-for="(item, index) in formDynamic.spec" :key="index">
           <FormItem>
             <div class="acea-row row-middle">
               <span class="mr5">{{ item.value }}</span
@@ -81,31 +66,19 @@
         </Col>
         <Spin size="large" fix v-if="spinShow"></Spin>
       </Row>
-      <Button
-        type="primary"
-        icon="md-add"
-        @click="addBtn"
-        v-if="!isBtn"
-        class="ml95 mt10"
-        >添加新规格</Button
-      >
+      <Button type="primary" icon="md-add" @click="addBtn" v-if="!isBtn" class="ml95 mt10">添加新规格</Button>
     </Form>
     <div slot="footer">
-      <Button
-        type="primary"
-        :loading="modal_loading"
-        @click="handleSubmit('formDynamic')"
-        >确定</Button
-      >
+      <Button type="primary" :loading="modal_loading" @click="handleSubmit('formDynamic')">确定</Button>
     </div>
   </Modal>
 </template>
 
 <script>
-import { mapState } from "vuex";
-import { ruleAddApi, ruleInfoApi } from "@/api/product";
+import { mapState } from 'vuex';
+import { ruleAddApi, ruleInfoApi } from '@/api/product';
 export default {
-  name: "addAttr",
+  name: 'addAttr',
   data() {
     return {
       spinShow: false,
@@ -120,16 +93,14 @@ export default {
       modal: false,
       index: 1,
       rules: {
-        rule_name: [
-          { required: true, message: "请输入规格名称", trigger: "blur" },
-        ],
+        rule_name: [{ required: true, message: '请输入规格名称', trigger: 'blur' }],
       },
       formDynamic: {
-        rule_name: "",
+        rule_name: '',
         spec: [],
       },
-      attrsName: "",
-      attrsVal: "",
+      attrsName: '',
+      attrsVal: '',
       formDynamicNameData: [],
       isBtn: false,
       formDynamicName: [],
@@ -167,7 +138,7 @@ export default {
       this.$refs[name].validate((valid) => {
         if (valid) {
           if (this.formDynamic.spec.length === 0) {
-            return this.$Message.warning("请至少添加一条商品规格！");
+            return this.$Message.warning('请至少添加一条商品规格！');
           }
           this.modal_loading = true;
           setTimeout(() => {
@@ -179,7 +150,7 @@ export default {
                   this.modal_loading = false;
                 }, 500);
                 setTimeout(() => {
-                  this.$emit("getList");
+                  this.$emit('getList');
                   this.clear();
                 }, 600);
               })
@@ -194,11 +165,11 @@ export default {
       });
     },
     clear() {
-      this.$refs["formDynamic"].resetFields();
+      this.$refs['formDynamic'].resetFields();
       this.formDynamic.spec = [];
       this.isBtn = false;
-      this.attrsName = "";
-      this.attrsVal = "";
+      this.attrsName = '';
+      this.attrsVal = '';
       this.ids = 0;
     },
     // 取消
@@ -222,20 +193,16 @@ export default {
         };
         this.formDynamic.spec.push(data);
         var hash = {};
-        this.formDynamic.spec = this.formDynamic.spec.reduce(function (
-          item,
-          next
-        ) {
+        this.formDynamic.spec = this.formDynamic.spec.reduce(function (item, next) {
           /* eslint-disable */
-          hash[next.value] ? "" : (hash[next.value] = true && item.push(next));
+          hash[next.value] ? '' : (hash[next.value] = true && item.push(next));
           return item;
-        },
-        []);
-        this.attrsName = "";
-        this.attrsVal = "";
+        }, []);
+        this.attrsName = '';
+        this.attrsVal = '';
         this.isBtn = false;
       } else {
-        this.$Message.warning("请添加规格名称或规格值");
+        this.$Message.warning('请添加规格名称或规格值');
       }
     },
     // 添加属性
@@ -243,15 +210,13 @@ export default {
       if (num) {
         this.formDynamic.spec[idx].detail.push(num);
         var hash = {};
-        this.formDynamic.spec[idx].detail = this.formDynamic.spec[
-          idx
-        ].detail.reduce(function (item, next) {
+        this.formDynamic.spec[idx].detail = this.formDynamic.spec[idx].detail.reduce(function (item, next) {
           /* eslint-disable */
-          hash[next] ? "" : (hash[next] = true && item.push(next));
+          hash[next] ? '' : (hash[next] = true && item.push(next));
           return item;
         }, []);
       } else {
-        this.$Message.warning("请添加属性");
+        this.$Message.warning('请添加属性');
       }
     },
   },

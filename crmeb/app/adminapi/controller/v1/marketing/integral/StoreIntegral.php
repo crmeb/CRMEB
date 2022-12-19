@@ -2,20 +2,17 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
 // | Author: CRMEB Team <admin@crmeb.com>
 // +----------------------------------------------------------------------
-
 namespace app\adminapi\controller\v1\marketing\integral;
-
 
 use app\adminapi\controller\AuthController;
 use app\services\activity\integral\StoreIntegralServices;
 use think\facade\App;
-
 
 /**
  * 积分商城管理
@@ -50,11 +47,12 @@ class StoreIntegral extends AuthController
         $list = $this->services->systemPage($where);
         return app('json')->success($list);
     }
+
     /**
      * 保存商品
      * @param int $id
      */
-    public function save($id)
+    public function save($id = 0)
     {
         $data = $this->request->postMore([
             [['product_id', 'd'], 0],
@@ -72,39 +70,35 @@ class StoreIntegral extends AuthController
             ['items', []],
             ['copy', 0]
         ]);
-
         $this->validate($data, \app\adminapi\validate\marketing\StoreIntegralValidate::class, 'save');
-        $bragain = [];
         if ($id) {
-            $bragain = $this->services->get((int)$id);
-            if (!$bragain) {
-                return app('json')->fail('数据不存在');
+            $integral = $this->services->get((int)$id);
+            if (!$integral) {
+                return app('json')->fail(100026);
             }
-        }
-        if ($data['num'] < $data['once_num']) {
-            return app('json')->fail('限制单次购买数量不能大于总购买数量');
         }
         if ($data['copy'] == 1) {
             $id = 0;
             unset($data['copy']);
         }
         $this->services->saveData($id, $data);
-        return app('json')->success('保存成功');
+        return app('json')->success(100000);
     }
 
     /**
      * 批量添加商品
      * @return mixed
      */
-    public function batch_add(){
+    public function batch_add()
+    {
         $data = $this->request->postMore([
             ['attrs', []],
             [['is_show', 'd'], 0]
         ]);
-        if(!$data['attrs']) return app('json')->fail('请选择提交的商品');
         $this->services->saveBatchData($data);
-        return app('json')->success('保存成功');
+        return app('json')->success(100000);
     }
+
     /**
      * 详情
      * @param $id
@@ -115,6 +109,7 @@ class StoreIntegral extends AuthController
         $info = $this->services->getInfo($id);
         return app('json')->success(compact('info'));
     }
+
     /**
      * 修改状态
      * @param $id
@@ -124,8 +119,9 @@ class StoreIntegral extends AuthController
     public function set_show($id, $is_show)
     {
         $this->services->update($id, ['is_show' => $is_show]);
-        return app('json')->success($is_show == 0 ? '下架成功' : '上架成功');
+        return app('json')->success(100014);
     }
+
     /**
      * 删除指定资源
      *
@@ -134,9 +130,9 @@ class StoreIntegral extends AuthController
      */
     public function delete($id)
     {
-        if (!$id) return app('json')->fail('缺少参数');
+        if (!$id) return app('json')->fail(100100);
         $this->services->update($id, ['is_del' => 1]);
-        return app('json')->success('删除成功!');
+        return app('json')->success(100002);
     }
 
 }

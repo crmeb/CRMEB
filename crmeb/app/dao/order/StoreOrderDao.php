@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -92,6 +92,33 @@ class StoreOrderDao extends BaseDao
                 case -4://已删除
                     $query->where('is_del', 1);
                     break;
+                case 9://全部用户未删除的订单
+                    $query->where('is_del', 0);
+                    break;
+            }
+        })->when(isset($where['paid']) && $where['paid'] !== '', function ($query) use ($where) {
+            if (in_array($where['paid'], [0, 1])) {
+                $query->where('paid', $where['paid']);
+            }
+        })->when(isset($where['order_status']) && $where['order_status'] !== '', function ($query) use ($where) {
+            switch ((int)$where['order_status']) {
+                case 0://未发货
+                    $query->where('status', 0)->where('refund_status', 0)->where('is_del', 0);
+                    break;
+                case 1://已发货
+                    $query->where('paid', 1)->where('status', 1)->whereIn('refund_status', [0, 3])->when(isset($where['shipping_type']), function ($query) {
+                        $query->where('shipping_type', 1);
+                    })->where('is_del', 0);
+                    break;
+                case 2://已收货
+                    $query->where('paid', 1)->where('status', 2)->whereIn('refund_status', [0, 3])->where('is_del', 0);
+                    break;
+                case 3://已完成
+                    $query->where('paid', 1)->where('status', 3)->whereIn('refund_status', [0, 3])->where('is_del', 0);
+                    break;
+                case -2://已退款
+                    $query->where('paid', 1)->where('status', -2)->where('is_del', 0);
+                    break;
             }
         })->when(isset($where['type']), function ($query) use ($where) {
             switch ($where['type']) {
@@ -109,6 +136,11 @@ class StoreOrderDao extends BaseDao
                     break;
                 case 5:
                     $query->where('advance_id', ">", 0);
+                    break;
+                case 6:
+                    $query->where(function ($query) {
+                        $query->where('one_brokerage', '>', 0)->whereOr('two_brokerage', '>', 0);
+                    });
                     break;
             }
         })->when(isset($where['pay_type']), function ($query) use ($where) {
@@ -830,5 +862,109 @@ class StoreOrderDao extends BaseDao
             $query->page($page, $limit);
         })->order('refund_reason_time desc')->select()->toArray();
         return compact('list', 'count');
+    }
+
+    /**
+     * 订单搜索列表
+     * @param array $where
+     * @param array $field
+     * @param int $page
+     * @param int $limit
+     * @param array $with
+     * @param string $order
+     * @return array
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     */
+    public function getOutOrderList(array $where, array $field, int $page = 0, int $limit = 0, array $with = [], string $order = 'add_time DESC,id DESC'): array
+    {
+        return $this->search($where)->field($field)->with($with)->when($page && $limit, function ($query) use ($page, $limit) {
+            $query->page($page, $limit);
+        })->order($order)->select()->toArray();
+    }
+
+    /**
+     * 秒杀参与人统计
+     * @param $id
+     * @param $keyword
+     * @param int $page
+     * @param int $limit
+     * @return mixed
+     */
+    public function seckillPeople($id, $keyword, $page = 0, $limit = 0)
+    {
+        return $this->getModel()
+            ->when($id != 0, function ($query) use ($id) {
+                $query->where('seckill_id', $id);
+            })->when($keyword != '', function ($query) use ($keyword) {
+                $query->where('real_name|uid|user_phone', 'like', '%' . $keyword . '%');
+            })->where('paid', 1)->field([
+                'real_name',
+                'uid',
+                'SUM(total_num) as goods_num',
+                'COUNT(id) as order_num',
+                'SUM(pay_price) as total_price',
+                'add_time'
+            ])->group('uid')->order("add_time desc")->when($page && $limit, function ($query) use ($page, $limit) {
+                $query->page($page, $limit);
+            })->select()->toArray();
+    }
+
+    /**
+     * 秒杀订单统计
+     * @param $id
+     * @param $where
+     * @param int $page
+     * @param int $limit
+     * @return array
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     */
+    public function seckillOrder($id, $where, $page = 0, $limit = 0)
+    {
+        return $this->search($where)->where('seckill_id', $id)
+            ->when($page && $limit, function ($query) use ($page, $limit) {
+                $query->page($page, $limit);
+            })->field(['order_id', 'real_name', 'status', 'pay_price', 'total_num', 'add_time', 'pay_time', 'paid'])->select()->toArray();
+    }
+
+    /**
+     * 砍价订单统计
+     * @param $id
+     * @param $where
+     * @param int $page
+     * @param int $limit
+     * @return array
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     */
+    public function bargainStatisticsOrder($id, $where, $page = 0, $limit = 0)
+    {
+        return $this->search($where)->where('bargain_id', $id)
+            ->when($page && $limit, function ($query) use ($page, $limit) {
+                $query->page($page, $limit);
+            })->field(['order_id', 'real_name', 'status', 'pay_price', 'total_num', 'add_time', 'pay_time', 'paid'])->select()->toArray();
+    }
+
+    /**
+     * 拼团订单统计
+     * @param $id
+     * @param $where
+     * @param int $page
+     * @param int $limit
+     * @return array
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     */
+    public function combinationStatisticsOrder($id, $where, $page = 0, $limit = 0)
+    {
+        return $this->search($where)->where('combination_id', $id)
+            ->when($page && $limit, function ($query) use ($page, $limit) {
+                $query->page($page, $limit);
+            })->field(['order_id', 'real_name', 'status', 'pay_price', 'total_num', 'add_time', 'pay_time', 'paid'])->select()->toArray();
     }
 }

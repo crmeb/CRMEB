@@ -1,292 +1,295 @@
 <template>
-    <div class="chatList">
-        <div class="tab-head">
-            <div class="item" :class="{active:item.key == hdTabCur}" v-for="(item, index) in hdTab" :key="index" @click="changeTab(item)">{{item.title}}</div>
-        </div>
-        <div class="scroll-box">
-            <vue-scroll :ops="ops" @handle-scroll="handleScroll" v-if="userList.length>0"
-            >
-                <div class="chat-item" v-for="(item,index) in userList" :key="index" :class="{active:curId == item.id}" @click="selectUser(item)">
-                    <div class="avatar">
-                        <img v-lazy="item.avatar" alt="">
-                        <div class="status" :class="{off:item.online == 0}"></div>
-                    </div>
-                    <div class="user-info">
-                        <div class="hd">
-                            <span class="name line1">{{item.nickname}}</span>
-                            <template v-if="item.type == 2">
-                                <span class="label">小程序</span>
-                            </template>
-                            <template v-if="item.type == 3">
-                                <span class="label H5">H5</span>
-                            </template>
-                            <template v-if="item.type == 1">
-                                <span class="label wechat">公众号</span>
-                            </template>
-                            <template v-if="item.type == 0">
-                                <span class="label pc">PC端</span>
-                            </template>
-                        </div>
-                        <div class="bd line1">
-                            <template v-if="item.message_type <=2">{{item.message}}</template>
-                            <template v-if="item.message_type ==3">[图片]</template>
-                            <template v-if="item.message_type ==5">[商品]</template>
-                            <template v-if="item.message_type ==6">[订单]</template>
-                        </div>
-                    </div>
-                    <div class="right-box">
-                        <div class="time">{{item.update_time | toDay}}</div>
-                        <div class="num">
-                            <Badge :count="item.mssage_num">
-                                <a href="#" class="demo-badge"></a>
-                            </Badge>
-                        </div>
-                    </div>
-                </div>
-            </vue-scroll>
-            <empty v-else msg="暂无用户列表" status="1"></empty>
-        </div>
-
-
-
-
+  <div class="chatList">
+    <div class="tab-head">
+      <div
+        class="item"
+        :class="{ active: item.key == hdTabCur }"
+        v-for="(item, index) in hdTab"
+        :key="index"
+        @click="changeTab(item)"
+      >
+        {{ item.title }}
+      </div>
     </div>
+    <div class="scroll-box">
+      <vue-scroll :ops="ops" @handle-scroll="handleScroll" v-if="userList.length > 0">
+        <div
+          class="chat-item"
+          v-for="(item, index) in userList"
+          :key="index"
+          :class="{ active: curId == item.id }"
+          @click="selectUser(item)"
+        >
+          <div class="avatar">
+            <img v-lazy="item.avatar" alt="" />
+            <div class="status" :class="{ off: item.online == 0 }"></div>
+          </div>
+          <div class="user-info">
+            <div class="hd">
+              <span class="name line1">{{ item.nickname }}</span>
+              <template v-if="item.type == 2">
+                <span class="label">小程序</span>
+              </template>
+              <template v-if="item.type == 3">
+                <span class="label H5">H5</span>
+              </template>
+              <template v-if="item.type == 1">
+                <span class="label wechat">公众号</span>
+              </template>
+              <template v-if="item.type == 0">
+                <span class="label pc">PC端</span>
+              </template>
+            </div>
+            <div class="bd line1">
+              <template v-if="item.message_type <= 2">{{ item.message }}</template>
+              <template v-if="item.message_type == 3">[图片]</template>
+              <template v-if="item.message_type == 5">[商品]</template>
+              <template v-if="item.message_type == 6">[订单]</template>
+            </div>
+          </div>
+          <div class="right-box">
+            <div class="time">{{ item.update_time | toDay }}</div>
+            <div class="num">
+              <Badge :count="item.mssage_num">
+                <a href="#" class="demo-badge"></a>
+              </Badge>
+            </div>
+          </div>
+        </div>
+      </vue-scroll>
+      <empty v-else msg="暂无用户列表" status="1"></empty>
+    </div>
+  </div>
 </template>
 
 <script>
-    import {Socket} from '@/libs/socket';
-    import dayjs from 'dayjs'
-    import { record } from '@/api/kefu'
-    import { HappyScroll } from 'vue-happy-scroll'
-    import empty from "../../components/empty";
-    import {forEach} from "../../../../libs/tools";
-    export default {
-        name: "chatList",
-        props:{
-            userOnline:{
-                type:Object,
-                default:function () {
-                    return {}
-                }
-            },
-            newRecored:{
-                type:Object,
-                default:function () {
-                    return {}
-                }
-            },
-            searchData:{
-                type:String,
-                default:''
+import { Socket } from '@/libs/socket';
+import dayjs from 'dayjs';
+import { record } from '@/api/kefu';
+import { HappyScroll } from 'vue-happy-scroll';
+import empty from '../../components/empty';
+import { forEach } from '../../../../libs/tools';
+export default {
+  name: 'chatList',
+  props: {
+    userOnline: {
+      type: Object,
+      default: function () {
+        return {};
+      },
+    },
+    newRecored: {
+      type: Object,
+      default: function () {
+        return {};
+      },
+    },
+    searchData: {
+      type: String,
+      default: '',
+    },
+  },
+  components: {
+    HappyScroll,
+    empty,
+  },
+  watch: {
+    userOnline: {
+      handler(nVal, oVal) {
+        if (nVal.hasOwnProperty('to_uid')) {
+          this.userList.forEach((el, index) => {
+            if (el.to_uid == nVal.to_uid) {
+              el.online = nVal.online;
+              if (nVal.online == 1) {
+                this.$Notice.info({
+                  title: '上线通知',
+                  desc: `${el.nickname}上线`,
+                });
+              }
             }
-        },
-        components:{
-            HappyScroll,
-            empty
-        },
-        watch:{
-            userOnline:{
-                handler(nVal,oVal){
-                    if(nVal.hasOwnProperty('to_uid')){
-                        this.userList.forEach((el,index)=>{
-                            if(el.to_uid == nVal.to_uid){
-                                el.online = nVal.online
-                                if(nVal.online == 1){
-                                    this.$Notice.info({
-                                        title: '上线通知',
-                                        desc: `${el.nickname}上线`
-                                    });
-                                }
-
-                            }
-                        })
-                    }
-                },
-                deep:true
-            },
-            searchData:{
-                handler(nVal,oVal){
-                    if(nVal !=oVal){
-                        this.nickname = nVal
-                        this.page = 1
-                        this.isScroll = true
-                        this.userList = []
-                        this.isSearch = true
-                        this.getList()
-                    }
-                },
-                deep:true
-            }
-        },
-        data(){
-            return {
-                hdTabCur:0,
-                hdTab:[
-                    {
-                        key:0,
-                        title:'用户列表'
-                    },
-                    {
-                        key:1,
-                        title:'游客列表'
-                    }
-                ],
-                userList:[],
-                curId:'',
-                page:1,
-                limit:15,
-                isScroll:true,
-                nickname:'',
-                isSearch:false,
-                ops:{
-                    vuescroll:{
-                        mode: 'native',
-                        enable: false,
-                        tips: {
-                            deactive: 'Push to Load',
-                            active: 'Release to Load',
-                            start: 'Loading...',
-                            beforeDeactive: 'Load Successfully!'
-                        },
-                        auto: false,
-                        autoLoadDistance: 0,
-                        pullRefresh: {
-                            enable: false
-                        },
-                        pushLoad: {
-                            enable: true,
-                            auto: true,
-                            autoLoadDistance: 10
-                        }
-                    },
-                    bar:{
-                        background:'#393232',
-                        opacity:'.5',
-                        size:'5px'
-                    }
-                },
-            }
-        },
-        filters: {
-            toDay: function (value) {
-                if (!value) return ''
-                return  dayjs.unix(value).format('M月D日 HH:mm')
-
-            }
-        },
-        mounted() {
-            let that = this
-            Socket.then(ws=>{
-                //用户转接
-                ws.$on('transfer', data => {
-                    let status = false
-                    that.userList.forEach((el,index,arr)=>{
-                        if(data.recored.id == el.id){
-                            status = true
-                            if(data.recored.is_tourist == that.hdTabCur){
-                                let oldVal = data.recored
-                                arr.splice(index,1)
-
-                                if(index == 0){
-                                    this.$emit('setDataId',oldVal)
-                                    oldVal.mssage_num = 0
-                                }
-                                arr.unshift(oldVal)
-                            }
-                            this.$Notice.info({
-                                title: '您有一条转接消息！',
-                            });
-                        }
-                    })
-                    if(!status){
-                        if(data.recored.is_tourist == this.hdTabCur)
-                            this.userList.unshift(data.recored)
-                    }
-                })
-                ws.$on('mssage_num', data => {
-                    if(data.recored.id){
-                        let status = false
-                        that.userList.forEach((el,index,arr)=>{
-                            if(data.recored.id == el.id){
-                                status = true
-                                if(data.recored.is_tourist == that.hdTabCur){
-                                    let oldVal = data.recored
-                                    arr.splice(index,1)
-                                    arr.unshift(oldVal)
-                                }
-                            }
-                        })
-                        if(!status){
-                            if(data.recored.is_tourist == this.hdTabCur)
-                                this.userList.unshift(data.recored)
-                        }
-                    }
-                    if(data.recored.is_tourist != this.hdTabCur && data.recored.id){
-                        this.$Notice.info({
-                            title: this.hdTabCur?'用户发来消息啦！':'游客发来消息啦！',
-                        });
-                    }
-                })
-            });
-            this.bus.$on('change', data => {
-                this.nickname = data
-            })
-            this.getList()
-
-        },
-        methods:{
-            //切换
-            changeTab(item){
-                if(this.hdTabCur == item.key) return
-                this.hdTabCur = item.key
-                this.isScroll = true
-                this.page = 1
-                this.userList = []
-                this.$emit('changeType',item.key)
-                this.getList()
-            },
-            getList(){
-                if(!this.isScroll) return
-                record({
-                    nickname:this.nickname,
-                    page:this.page,
-                    limit:this.limit,
-                    is_tourist:this.hdTabCur
-                }).then( res => {
-                    if(res.data.length>0){
-                        res.data[0].mssage_num = 0
-                        this.isScroll = res.data.length>=this.limit
-
-                        this.userList = this.userList.concat(res.data)
-
-                        if (this.page == 1 && res.data.length>0 &&!this.isSearch ) {
-                            this.curId = res.data[0].id
-                            this.$emit('setDataId',res.data[0])
-                        }
-                        this.page++
-                    }else{
-                        this.$emit('setDataId',0)
-                    }
-
-                })
-            },
-            chartReachBottom(){
-                this.getList()
-            },
-            // 选择用户
-            selectUser(item){
-                if(this.curId == item.id) return
-                item.mssage_num = 0
-                this.curId = item.id
-                this.$emit('setDataId',item)
-            },
-            handleScroll(vertical, horizontal, nativeEvent) {
-                if(vertical.process == 1){
-                    this.getList()
-                }
-            }
+          });
         }
-    }
+      },
+      deep: true,
+    },
+    searchData: {
+      handler(nVal, oVal) {
+        if (nVal != oVal) {
+          this.nickname = nVal;
+          this.page = 1;
+          this.isScroll = true;
+          this.userList = [];
+          this.isSearch = true;
+          this.getList();
+        }
+      },
+      deep: true,
+    },
+  },
+  data() {
+    return {
+      hdTabCur: 0,
+      hdTab: [
+        {
+          key: 0,
+          title: '用户列表',
+        },
+        {
+          key: 1,
+          title: '游客列表',
+        },
+      ],
+      userList: [],
+      curId: '',
+      page: 1,
+      limit: 15,
+      isScroll: true,
+      nickname: '',
+      isSearch: false,
+      ops: {
+        vuescroll: {
+          mode: 'native',
+          enable: false,
+          tips: {
+            deactive: 'Push to Load',
+            active: 'Release to Load',
+            start: 'Loading...',
+            beforeDeactive: 'Load Successfully!',
+          },
+          auto: false,
+          autoLoadDistance: 0,
+          pullRefresh: {
+            enable: false,
+          },
+          pushLoad: {
+            enable: true,
+            auto: true,
+            autoLoadDistance: 10,
+          },
+        },
+        bar: {
+          background: '#393232',
+          opacity: '.5',
+          size: '5px',
+        },
+      },
+    };
+  },
+  filters: {
+    toDay: function (value) {
+      if (!value) return '';
+      return dayjs.unix(value).format('M月D日 HH:mm');
+    },
+  },
+  mounted() {
+    let that = this;
+    Socket.then((ws) => {
+      //用户转接
+      ws.$on('transfer', (data) => {
+        let status = false;
+        that.userList.forEach((el, index, arr) => {
+          if (data.recored.id == el.id) {
+            status = true;
+            if (data.recored.is_tourist == that.hdTabCur) {
+              let oldVal = data.recored;
+              arr.splice(index, 1);
+
+              if (index == 0) {
+                this.$emit('setDataId', oldVal);
+                oldVal.mssage_num = 0;
+              }
+              arr.unshift(oldVal);
+            }
+            this.$Notice.info({
+              title: '您有一条转接消息！',
+            });
+          }
+        });
+        if (!status) {
+          if (data.recored.is_tourist == this.hdTabCur) this.userList.unshift(data.recored);
+        }
+      });
+      ws.$on('mssage_num', (data) => {
+        if (data.recored.id) {
+          let status = false;
+          that.userList.forEach((el, index, arr) => {
+            if (data.recored.id == el.id) {
+              status = true;
+              if (data.recored.is_tourist == that.hdTabCur) {
+                let oldVal = data.recored;
+                arr.splice(index, 1);
+                arr.unshift(oldVal);
+              }
+            }
+          });
+          if (!status) {
+            if (data.recored.is_tourist == this.hdTabCur) this.userList.unshift(data.recored);
+          }
+        }
+        if (data.recored.is_tourist != this.hdTabCur && data.recored.id) {
+          this.$Notice.info({
+            title: this.hdTabCur ? '用户发来消息啦！' : '游客发来消息啦！',
+          });
+        }
+      });
+    });
+    this.bus.$on('change', (data) => {
+      this.nickname = data;
+    });
+    this.getList();
+  },
+  methods: {
+    //切换
+    changeTab(item) {
+      if (this.hdTabCur == item.key) return;
+      this.hdTabCur = item.key;
+      this.isScroll = true;
+      this.page = 1;
+      this.userList = [];
+      this.$emit('changeType', item.key);
+      this.getList();
+    },
+    getList() {
+      if (!this.isScroll) return;
+      record({
+        nickname: this.nickname,
+        page: this.page,
+        limit: this.limit,
+        is_tourist: this.hdTabCur,
+      }).then((res) => {
+        if (res.data.length > 0) {
+          res.data[0].mssage_num = 0;
+          this.isScroll = res.data.length >= this.limit;
+
+          this.userList = this.userList.concat(res.data);
+
+          if (this.page == 1 && res.data.length > 0 && !this.isSearch) {
+            this.curId = res.data[0].id;
+            this.$emit('setDataId', res.data[0]);
+          }
+          this.page++;
+        } else {
+          this.$emit('setDataId', 0);
+        }
+      });
+    },
+    chartReachBottom() {
+      this.getList();
+    },
+    // 选择用户
+    selectUser(item) {
+      if (this.curId == item.id) return;
+      item.mssage_num = 0;
+      this.curId = item.id;
+      this.$emit('setDataId', item);
+    },
+    handleScroll(vertical, horizontal, nativeEvent) {
+      if (vertical.process == 1) {
+        this.getList();
+      }
+    },
+  },
+};
 </script>
 
 <style lang="stylus" scoped>
@@ -402,4 +405,3 @@
 .chart-scroll
     margin-top -10px
 </style>
-

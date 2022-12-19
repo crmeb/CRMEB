@@ -2,31 +2,31 @@
 	<view class="goodsList">
 		<view class="item" v-for="(item,index) in tempArr" :key='index' @click="goDetail(item)">
 			<view class="pictrue">
-				<span class="pictrue_log pictrue_log_class" v-if="item.activity && item.activity.type === '1'">秒杀</span>
-				<span class="pictrue_log pictrue_log_class" v-if="item.activity && item.activity.type === '2'">砍价</span>
-				<span class="pictrue_log pictrue_log_class" v-if="item.activity && item.activity.type === '3'">拼团</span>
+				<span class="pictrue_log pictrue_log_class" v-if="item.activity && item.activity.type === '1'">{{$t(`秒杀`)}}</span>
+				<span class="pictrue_log pictrue_log_class" v-if="item.activity && item.activity.type === '2'">{{$t(`砍价`)}}</span>
+				<span class="pictrue_log pictrue_log_class" v-if="item.activity && item.activity.type === '3'">{{$t(`拼团`)}}</span>
 				<image :src="item.recommend_image" mode="" v-if="item.recommend_image"></image>
 				<image :src="item.image" mode="" v-else></image>
 			</view>
 			<view class="text line2">{{item.store_name}}</view>
 			<view class="bottom acea-row row-between-wrapper">
 				<view class="sales acea-row row-middle">
-					<view class="money font-color"><text>￥</text>{{item.price}}</view>
-					<view>已售 {{item.sales}}</view>
+					<view class="money font-color"><text>{{$t(`￥`)}}</text>{{item.price}}</view>
+					<view>{{$t(`已售`)}}{{item.sales}}</view>
 				</view>
 				<view v-if="item.stock>0">
 					<view class="bnt"
 						v-if="(item.activity && (item.activity.type === '1' || item.activity.type === '2' || item.activity.type === '3') || item.is_virtual) || !item.cart_button">
-						立即购买</view>
+						{{$t(`立即购买`)}}</view>
 					<view v-else>
 						<!-- 多规格 -->
 						<view class="bnt" @click.stop="goCartDuo(item)" v-if="item.spec_type">
-							加入购物车
+							{{$t(`加入购物车`)}}
 							<view class="num" v-if="isLogin && item.cart_num">{{item.cart_num}}</view>
 						</view>
 						<!-- 单规格 -->
 						<view class="bnt" v-if="!item.spec_type && !item.cart_num" @click.stop="goCartDan(item,index)">
-							加入购物车</view>
+							{{$t(`加入购物车`)}}</view>
 						<view class="cart acea-row row-middle" v-if="!item.spec_type && item.cart_num">
 							<view class="pictrue iconfont icon-jianhao" @click.stop="CartNumDes(index,item)"></view>
 							<view class="num">{{item.cart_num}}</view>
@@ -34,7 +34,7 @@
 						</view>
 					</view>
 				</view>
-				<view class="bnt end" v-else>已售罄</view>
+				<view class="bnt end" v-else>{{$t(`已售罄`)}}</view>
 			</view>
 		</view>
 	</view>
@@ -58,7 +58,9 @@
 			}
 		},
 		data() {
-			return {};
+			return {
+				addIng: false
+			};
 		},
 		created() {},
 		mounted() {},
@@ -73,9 +75,13 @@
 				this.$emit('gocartdan', item, index);
 			},
 			CartNumDes(index, item) {
+				if (this.addIng) return
+				this.addIng = true
 				this.$emit('ChangeCartNumDan', false, index, item);
 			},
 			CartNumAdd(index, item) {
+				if (this.addIng) return
+				this.addIng = true
 				this.$emit('ChangeCartNumDan', true, index, item);
 			}
 		}

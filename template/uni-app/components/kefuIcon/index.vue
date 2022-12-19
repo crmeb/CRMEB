@@ -2,7 +2,6 @@
 	<!-- #ifdef APP-PLUS || H5 -->
 	<text class="acea-row row-center-wrapper cartf iconfont icon-kefu3" :style="{ top: top + 'px'}" @click="goCustomer"
 		@touchmove.stop.prevent="setTouchMove"></text>
-	<!-- 	<navigator :url="'/pages/customer_list/chat?productId='+ids" hover-class="none" class="acea-row row-center-wrapper cartf iconfont icon-kefu3" :style="{ top: top + 'px'}" @touchmove.stop.prevent="setTouchMove"></navigator> -->
 	<!-- #endif -->
 	<!-- #ifdef MP -->
 	<view v-if="routineContact == 0" class="acea-row row-center-wrapper cartf iconfont icon-kefu3"
@@ -55,7 +54,7 @@
 		},
 		methods: {
 			goCustomer() {
-				getCustomer(`/pages/customer_list/chat?productId=${this.ids}`)
+				getCustomer(`/pages/extension/customer_list/chat?productId=${this.ids}`)
 			},
 			setTouchMove(e) {
 				let that = this;

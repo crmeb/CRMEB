@@ -1,0 +1,24 @@
+{
+    "name": "google/grpc-gcp",
+    "description": "gRPC GCP library for channel management",
+    "license": "Apache-2.0",
+    "require": {
+        "php": ">=5.5.0",
+        "google/protobuf": "^v3.3.0",
+        "grpc/grpc": "^v1.13.0",
+        "google/auth": "^1.3",
+        "psr/cache": "^1.0.1||^2.0.0||^3.0.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "4.8.36",
+        "google/cloud-spanner": "^1.7"
+    },
+    "autoload": {
+        "psr-4": {
+            "Grpc\\Gcp\\": "src/"
+        },
+        "classmap": [
+            "src/generated/"
+        ]
+    }
+}

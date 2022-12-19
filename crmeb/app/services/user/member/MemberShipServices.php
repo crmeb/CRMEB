@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -54,21 +54,21 @@ class MemberShipServices extends BaseServices
      */
     public function save(int $id, array $data)
     {
-        if (!$data['title']) throw new AdminException("请填写会员卡名称");
-        if (!$data['type']) throw new AdminException("会员卡类型缺失");
+        if (!$data['title']) throw new AdminException(400641);
+        if (!$data['type']) throw new AdminException(400642);
         if ($data['type'] == "ever") {
             $data['vip_day'] = -1;
         } else {
-            if (!$data['vip_day']) throw new AdminException("请填写有效期（天）");
-            if ($data['vip_day'] < 0) throw new AdminException("有效期（天）不能为负数");
+            if (!$data['vip_day']) throw new AdminException(400643);
+            if ($data['vip_day'] < 0) throw new AdminException(400644);
         }
         if ($data['type'] == "free") {
             $data['pre_price'] = 0.00;
         } else {
-            if ($data['pre_price'] == 0 || $data['price'] == 0) throw new AdminException("请填写价格");
+            if ($data['pre_price'] == 0 || $data['price'] == 0) throw new AdminException(400645);
         }
-        if ($data['pre_price'] < 0 || $data['price'] < 0) throw new AdminException("价格不能为负数");
-        if ($data['pre_price'] > $data['price']) throw new AdminException("优惠价不能大于原价");
+        if ($data['pre_price'] < 0 || $data['price'] < 0) throw new AdminException(400646);
+        if ($data['pre_price'] > $data['price']) throw new AdminException(400647);
         if ($id){
             return $this->dao->update($id, $data);
         }else{

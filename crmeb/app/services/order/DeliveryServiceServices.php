@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -14,7 +14,7 @@ namespace app\services\order;
 
 use app\dao\order\DeliveryServiceDao;
 use app\services\BaseServices;
-use app\services\message\service\StoreServiceLogServices;
+use app\services\kefu\service\StoreServiceLogServices;
 use app\services\user\UserServices;
 use crmeb\exceptions\AdminException;
 use crmeb\services\FormBuilder;
@@ -112,7 +112,7 @@ class DeliveryServiceServices extends BaseServices
     {
         $serviceInfo = $this->dao->get($id);
         if (!$serviceInfo) {
-            throw new AdminException('数据不存在!');
+            throw new AdminException(100026);
         }
         return create_form('编辑配送员', $this->createServiceForm($serviceInfo->toArray()), $this->url('/order/delivery/update/' . $id), 'PUT');
     }
@@ -149,5 +149,72 @@ class DeliveryServiceServices extends BaseServices
     public function checkoutIsService(int $uid)
     {
         return (bool)$this->dao->count(['uid' => $uid, 'status' => 1]);
+    }
+
+    /**
+     * 保存新建的资源
+     * @param array $data
+     * @return void
+     */
+    public function saveDeliveryService(array $data)
+    {
+        if ($data['image'] == '') throw new AdminException(400466);
+        $data['uid'] = $data['image']['uid'];
+        /** @var UserServices $userService */
+        $userService = app()->make(UserServices::class);
+        $userInfo = $userService->get($data['uid']);
+        if ($data['phone'] == '') {
+            if (!$userInfo['phone']) {
+                throw new AdminException(400132);
+            } else {
+                $data['phone'] = $userInfo['phone'];
+            }
+        } else {
+            if (!check_phone($data['phone'])) {
+                throw new AdminException(400252);
+            }
+        }
+        if ($data['nickname'] == '') $data['nickname'] = $userInfo['nickname'];
+        $data['avatar'] = $data['image']['image'];
+        if ($this->dao->count(['uid' => $data['uid']])) {
+            throw new AdminException(400467);
+        }
+        if ($this->dao->count(['phone' => $data['phone']])) {
+            throw new AdminException(400468);
+        }
+        unset($data['image']);
+        $data['add_time'] = time();
+        $res = $this->dao->save($data);
+        if (!$res) throw new AdminException(100006);
+        return true;
+    }
+
+    /**
+     * 更新资源
+     * @param int $id
+     * @param array $data
+     * @return void
+     */
+    public function updateDeliveryService(int $id, array $data)
+    {
+        $delivery = $this->dao->get($id);
+        if (!$delivery) {
+            throw new AdminException(100026);
+        }
+        if ($data["nickname"] == '') {
+            throw new AdminException(400469);
+        }
+        if (!$data['phone']) {
+            throw new AdminException(400132);
+        }
+        if (!check_phone($data['phone'])) {
+            throw new AdminException(400252);
+        }
+        if ($delivery['phone'] != $data['phone'] && $this->dao->count(['phone' => $data['phone']])) {
+            throw new AdminException(400468);
+        }
+        $res = $this->dao->update($id, $data);
+        if (!$res) throw new AdminException(100007);
+        return true;
     }
 }

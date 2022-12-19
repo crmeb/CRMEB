@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -10,6 +10,7 @@
 // +----------------------------------------------------------------------
 namespace app\adminapi\controller;
 
+use crmeb\services\CacheService;
 use think\facade\App;
 use crmeb\utils\Captcha;
 use app\services\system\admin\SystemAdminServices;
@@ -48,6 +49,34 @@ class Login extends AuthController
     }
 
     /**
+     * @return mixed
+     */
+    public function ajcaptcha()
+    {
+        $captchaType = $this->request->get('captchaType');
+        return app('json')->success(aj_captcha_create($captchaType));
+    }
+
+    /**
+     * 一次验证
+     * @return mixed
+     */
+    public function ajcheck()
+    {
+        [$token, $pointJson, $captchaType] = $this->request->postMore([
+            ['token', ''],
+            ['pointJson', ''],
+            ['captchaType', ''],
+        ], true);
+        try {
+            aj_captcha_check_one($captchaType, $token, $pointJson);
+            return app('json')->success();
+        } catch (\Throwable $e) {
+            return app('json')->fail(400336);
+        }
+    }
+
+    /**
      * 登陆
      * @return mixed
      * @throws \think\db\exception\DataNotFoundException
@@ -56,17 +85,34 @@ class Login extends AuthController
      */
     public function login()
     {
-        [$account, $password, $imgcode] = $this->request->postMore([
-            'account', 'pwd', ['imgcode', '']
+        [$account, $password, $key, $captchaVerification, $captchaType] = $this->request->postMore([
+            'account',
+            'pwd',
+            ['key', ''],
+            ['captchaVerification', ''],
+            ['captchaType', '']
         ], true);
 
-        if (!app()->make(Captcha::class)->check($imgcode)) {
-            return app('json')->fail('验证码错误，请重新输入');
+        if ($captchaVerification != '') {
+            try {
+                aj_captcha_check_two($captchaType, $captchaVerification);
+            } catch (\Throwable $e) {
+                return app('json')->fail(400336);
+            }
         }
 
         $this->validate(['account' => $account, 'pwd' => $password], \app\adminapi\validate\setting\SystemAdminValidata::class, 'get');
-
-        return app('json')->success($this->services->login($account, $password, 'admin'));
+        $result = $this->services->login($account, $password, 'admin', $key);
+        if (!$result) {
+            $num = CacheService::redisHandler()->get('login_captcha',1);
+            if ($num > 1) {
+                return app('json')->fail(400140, ['login_captcha' => 1]);
+            }
+            CacheService::redisHandler()->set('login_captcha', $num + 1, 60);
+            return app('json')->fail(400140, ['login_captcha' => 0]);
+        }
+        CacheService::redisHandler()->delete('login_captcha');
+        return app('json')->success($result);
     }
 
     /**

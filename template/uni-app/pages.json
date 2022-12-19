@@ -60,81 +60,22 @@
 				}
 
 			}
-		},
+		}
 		//#ifdef H5
+		,
 		{
 			"path": "pages/auth/index",
 			"style": {
 				"navigationBarTitleText": ""
 			}
-		},
-		//#endif
-		{
-			"path": "pages/retrieve_password/index",
-			"style": {
-				"navigationBarTitleText": "找回密码"
-			}
 		}
+		//#endif
 	],
 	"subPackages": [{
-			"root": "pages/news_list",
-			"name": "news_list",
+			"root": "pages/extension",
+			"name": "extension",
 			"pages": [{
-				"path": "index",
-				"style": {
-					"navigationBarTitleText": "资讯",
-					"app-plus": {
-						// #ifdef APP-PLUS
-						"titleNView": {
-							"type": "default"
-						}
-						// #endif
-					}
-				}
-			}]
-		}, {
-			"root": "pages/goods_list",
-			"name": "goods_list",
-			"pages": [{
-				"path": "index",
-				"style": {
-					"navigationBarTitleText": "商品列表",
-					"app-plus": {
-						// #ifdef APP-PLUS
-						"titleNView": {
-							"type": "default"
-						}
-						// #endif
-					}
-				}
-			}]
-		}, {
-			"root": "pages/goods_search",
-			"name": "goods_search",
-			"pages": [{
-				"path": "index",
-				"style": {
-					"navigationBarTitleText": "搜索商品",
-					"app-plus": {
-						// #ifdef APP-PLUS
-						"titleNView": {
-							"type": "default"
-						}
-						// #endif
-					}
-				}
-			}]
-		}, {
-			"root": "pages/customer_list",
-			"name": "customer_list",
-			"pages": [{
-					"path": "index",
-					"style": {
-						"navigationBarTitleText": "客服列表"
-					}
-				},
-				{
-					"path": "chat",
+					"path": "customer_list/chat",
 					"style": {
 						"navigationBarTitleText": "对话详情",
 						"navigationStyle": "custom",
@@ -149,65 +90,244 @@
 						},
 						"disableScroll": true
 					}
+				},
+				{
+					"path": "news_list/index",
+					"style": {
+						"navigationBarTitleText": "资讯",
+						"app-plus": {
+							// #ifdef APP-PLUS
+							"titleNView": {
+								"type": "default"
+							}
+							// #endif
+						}
+					}
+				},
+				{
+					"path": "news_details/index",
+					"style": {
+						"navigationBarTitleText": "资讯详情",
+						"app-plus": {
+							// #ifdef APP-PLUS
+							"titleNView": {
+								"type": "default"
+							}
+							// #endif
+						}
+					}
 				}
 			]
 		}, {
-			"root": "pages/news_details",
-			"name": "news_details",
+			"root": "pages/goods",
+			"name": "goods",
 			"pages": [{
-				"path": "index",
-				"style": {
-					"navigationBarTitleText": "资讯详情",
-					"app-plus": {
-						// #ifdef APP-PLUS
-						"titleNView": {
-							"type": "default"
+					"path": "goods_list/index",
+					"style": {
+						"navigationBarTitleText": "商品列表",
+						"app-plus": {
+							// #ifdef APP-PLUS
+							"titleNView": {
+								"type": "default"
+							}
+							// #endif
 						}
-						// #endif
+					}
+				}, {
+					"path": "goods_search/index",
+					"style": {
+						"navigationBarTitleText": "搜索商品",
+						"app-plus": {
+							// #ifdef APP-PLUS
+							"titleNView": {
+								"type": "default"
+							}
+							// #endif
+						}
+					}
+				}, {
+					"path": "order_pay_status/index",
+					"style": {
+						"navigationBarTitleText": "支付成功",
+						"app-plus": {
+							// #ifdef APP-PLUS
+							"titleNView": {
+								"type": "default"
+							}
+							// #endif
+						}
+					}
+				}, {
+					"path": "admin_order_detail/index",
+					"style": {
+						"navigationBarTitleText": "订单详情",
+						"app-plus": {
+							// #ifdef APP-PLUS
+							"titleNView": {
+								"type": "default"
+							}
+							// #endif
+						}
+					}
+				}, {
+					"path": "goods_comment_con/index",
+					"style": {
+						"navigationBarTitleText": "商品评价",
+						"app-plus": {
+							// #ifdef APP-PLUS
+							"titleNView": {
+								"type": "default"
+							}
+							// #endif
+						}
+					}
+				}, {
+					"path": "goods_comment_con/lottery_comment",
+					"style": {
+						"navigationBarTitleText": "订单评价",
+						"app-plus": {
+							// #ifdef APP-PLUS
+							"titleNView": {
+								"type": "default"
+							}
+							// #endif
+						}
+					}
+				}, {
+					"path": "goods_comment_list/index",
+					"style": {
+						"navigationBarTitleText": "商品评分",
+						"app-plus": {
+							// #ifdef APP-PLUS
+							"titleNView": {
+								"type": "default"
+							}
+							// #endif
+						}
+					}
+				}, {
+					"path": "goods_details_store/index",
+					"style": {
+						"navigationBarTitleText": "门店列表",
+						"app-plus": {
+							// #ifdef APP-PLUS
+							"titleNView": {
+								"type": "default"
+							}
+							// #endif
+						}
+					}
+				}, {
+					"path": "goods_logistics/index",
+					"style": {
+						"navigationBarTitleText": "物流信息",
+						"app-plus": {
+							// #ifdef APP-PLUS
+							"titleNView": {
+								"type": "default"
+							}
+							// #endif
+						}
+					}
+				}, {
+					"path": "goods_return/index",
+					"style": {
+						"navigationBarTitleText": "申请退货",
+						"app-plus": {
+							// #ifdef APP-PLUS
+							"titleNView": {
+								"type": "default"
+							}
+							// #endif
+						}
+					}
+				}, {
+					"path": "goods_return_list/index",
+					"style": {
+						"navigationBarTitleText": "退货列表",
+						"app-plus": {
+							// #ifdef APP-PLUS
+							"titleNView": {
+								"type": "default"
+							}
+							// #endif
+						}
+					}
+				}, {
+					"path": "lottery/grids/index",
+					"style": {
+						"navigationBarTitleText": "抽奖活动",
+						"app-plus": {
+							// #ifdef APP-PLUS
+							"titleNView": {
+								"type": "default"
+							}
+							// #endif
+						}
+					}
+				},
+				{
+					"path": "lottery/grids/record",
+					"style": {
+						"navigationBarTitleText": "中奖记录",
+						"app-plus": {
+							// #ifdef APP-PLUS
+							"titleNView": {
+								"type": "default"
+							}
+							// #endif
+						}
+					}
+				}, {
+					"path": "order_confirm/index",
+					"style": {
+						"navigationBarTitleText": "提交订单",
+						"app-plus": {
+							// #ifdef APP-PLUS
+							"titleNView": {
+								"type": "default"
+							}
+							// #endif
+						}
+					}
+				}, {
+					"path": "order_details/index",
+					"style": {
+						"navigationBarTitleText": "订单详情",
+						"app-plus": {
+							// #ifdef APP-PLUS
+							"titleNView": {
+								"type": "default"
+							}
+							// #endif
+						}
+					}
+				}, {
+					"path": "order_list/index",
+					"style": {
+						"navigationBarTitleText": "我的订单",
+						"app-plus": {
+							// #ifdef APP-PLUS
+							"titleNView": {
+								"type": "default"
+							}
+							// #endif
+						}
+					}
+				}, {
+					"path": "order_refund_goods/index",
+					"style": {
+						"navigationBarTitleText": "退回商品",
+						"app-plus": {
+							// #ifdef APP-PLUS
+							"titleNView": {
+								"type": "default"
+							}
+							// #endif
+						}
 					}
 				}
-			}]
-		}, {
-			"root": "pages/order_pay_status",
-			"name": "order_pay_status_index",
-			"pages": [{
-				"path": "index",
-				"style": {
-					"navigationBarTitleText": "支付成功",
-					"app-plus": {
-						// #ifdef APP-PLUS
-						"titleNView": {
-							"type": "default"
-						}
-						// #endif
-					}
-				}
-			}]
-		}, {
-			"root": "pages/order_pay_status",
-			"name": "order_pay_status",
-			"pages": [{
-				"path": "payLottery",
-				"style": {
-					"navigationBarTitleText": "支付成功",
-					"app-plus": {
-						// #ifdef APP-PLUS
-						"titleNView": {
-							"type": "default"
-						}
-						// #endif
-					}
-				}
-			}]
-		}, {
-			"root": "pages/live_list",
-			"name": "live_list",
-			"pages": [{
-				"path": "index",
-				"style": {
-					"navigationBarTitleText": "精彩内容"
-				}
-			}]
+			]
 		}, {
 			"root": "pages/users",
 			"name": "users",
@@ -289,36 +409,11 @@
 							// #endif
 						}
 					}
-				}, {
-					"path": "order_refund_goods/index",
-					"style": {
-						"navigationBarTitleText": "退回商品",
-						"app-plus": {
-							// #ifdef APP-PLUS
-							"titleNView": {
-								"type": "default"
-							}
-							// #endif
-						}
-					}
 				},
 				{
 					"path": "scan_login/index",
 					"style": {
 						"navigationBarTitleText": "授权登录"
-					}
-				},
-				{
-					"path": "order_details/index",
-					"style": {
-						"navigationBarTitleText": "订单详情",
-						"app-plus": {
-							// #ifdef APP-PLUS
-							"titleNView": {
-								"type": "default"
-							}
-							// #endif
-						}
 					}
 				},
 				{
@@ -355,19 +450,6 @@
 					}
 				},
 				//#endif
-				{
-					"path": "admin_order_detail/index",
-					"style": {
-						"navigationBarTitleText": "订单详情",
-						"app-plus": {
-							// #ifdef APP-PLUS
-							"titleNView": {
-								"type": "default"
-							}
-							// #endif
-						}
-					}
-				},
 				{
 					"path": "wechat_login/index",
 					"style": {
@@ -412,6 +494,19 @@
 							// #ifdef APP-PLUS
 							"titleNView": {
 								"type": "default"
+							}
+							// #endif
+						}
+					}
+				},
+				{
+					"path": "visit_list/index",
+					"style": {
+						"navigationBarTitleText": "浏览记录",
+						"app-plus": {
+							// #ifdef APP-PLUS
+							"titleNView": {
+				  		"type": "default"
 							}
 							// #endif
 						}
@@ -706,32 +801,6 @@
 					}
 				},
 				{
-					"path": "order_confirm/index",
-					"style": {
-						"navigationBarTitleText": "提交订单",
-						"app-plus": {
-							// #ifdef APP-PLUS
-							"titleNView": {
-								"type": "default"
-							}
-							// #endif
-						}
-					}
-				},
-				{
-					"path": "goods_details_store/index",
-					"style": {
-						"navigationBarTitleText": "门店列表",
-						"app-plus": {
-							// #ifdef APP-PLUS
-							"titleNView": {
-								"type": "default"
-							}
-							// #endif
-						}
-					}
-				},
-				{
 					"path": "promoter-list/index",
 					"style": {
 						"navigationBarTitleText": "推广人列表"
@@ -810,59 +879,7 @@
 					}
 				},
 				{
-					"path": "order_list/index",
-					"style": {
-						"navigationBarTitleText": "我的订单",
-						"app-plus": {
-							// #ifdef APP-PLUS
-							"titleNView": {
-								"type": "default"
-							}
-							// #endif
-						}
-					}
-				},
-				{
-					"path": "goods_logistics/index",
-					"style": {
-						"navigationBarTitleText": "物流信息",
-						"app-plus": {
-							// #ifdef APP-PLUS
-							"titleNView": {
-								"type": "default"
-							}
-							// #endif
-						}
-					}
-				},
-				{
 					"path": "user_return_list/index",
-					"style": {
-						"navigationBarTitleText": "退货列表",
-						"app-plus": {
-							// #ifdef APP-PLUS
-							"titleNView": {
-								"type": "default"
-							}
-							// #endif
-						}
-					}
-				},
-				{
-					"path": "goods_return/index",
-					"style": {
-						"navigationBarTitleText": "申请退货",
-						"app-plus": {
-							// #ifdef APP-PLUS
-							"titleNView": {
-								"type": "default"
-							}
-							// #endif
-						}
-					}
-				},
-				{
-					"path": "goods_return_list/index",
 					"style": {
 						"navigationBarTitleText": "退货列表",
 						"app-plus": {
@@ -888,44 +905,6 @@
 					}
 				},
 				{
-					"path": "goods_comment_list/index",
-					"style": {
-						"navigationBarTitleText": "商品评分",
-						"app-plus": {
-							// #ifdef APP-PLUS
-							"titleNView": {
-								"type": "default"
-							}
-							// #endif
-						}
-					}
-				},
-				{
-					"path": "goods_comment_con/index",
-					"style": {
-						"navigationBarTitleText": "商品评价",
-						"app-plus": {
-							// #ifdef APP-PLUS
-							"titleNView": {
-								"type": "default"
-							}
-							// #endif
-						}
-					}
-				},
-				{
-					"path": "goods_comment_con/lottery_comment",
-					"style": {
-						"navigationBarTitleText": "订单评价",
-						"app-plus": {
-							// #ifdef APP-PLUS
-							"titleNView": {
-								"type": "default"
-							}
-							// #endif
-						}
-					}
-				}, {
 					"path": "payment_on_behalf/index",
 					"style": {
 						"navigationBarTitleText": "好友代付",
@@ -961,7 +940,13 @@
 						// #endif
 					}
 				}
-			]
+			],
+			"plugins": {
+				"live-player-plugin": {
+					"version": "1.3.5",
+					"provider": "wx2b03c6e691cd7370"
+				}
+			}
 		},
 		{
 			"root": "pages/goods_details",
@@ -1159,32 +1144,6 @@
 							// #endif
 						}
 					}
-				},
-				{
-					"path": "lottery/grids/index",
-					"style": {
-						"navigationBarTitleText": "抽奖活动",
-						"app-plus": {
-							// #ifdef APP-PLUS
-							"titleNView": {
-								"type": "default"
-							}
-							// #endif
-						}
-					}
-				},
-				{
-					"path": "lottery/grids/record",
-					"style": {
-						"navigationBarTitleText": "中奖记录",
-						"app-plus": {
-							// #ifdef APP-PLUS
-							"titleNView": {
-								"type": "default"
-							}
-							// #endif
-						}
-					}
 				}
 			]
 		},
@@ -1306,6 +1265,12 @@
 							}
 							// #endif
 						}
+					}
+				},
+				{
+					"path": "live_list/index",
+					"style": {
+						"navigationBarTitleText": "精彩内容"
 					}
 				}
 			]

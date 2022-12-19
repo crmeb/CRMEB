@@ -7,7 +7,7 @@
 					<image v-else mode="aspectFit" :src="item.imgList[1]"></image>
 				</view>
 				<view class="uni-tabbar_label" :class="{'active': item.link == pagePath}">
-					{{item.name}}
+					{{$t(item.name)}}
 				</view>
 			</view>
 		</view>
@@ -18,11 +18,11 @@
 					<image v-else mode="aspectFit" :src="item.imgList[1]"></image>
 				</view>
 				<view class="uni-tabbar_label" :class="{'active': item.link == pagePath}">
-					{{item.name}}
+					{{$t(item.name)}}
 				</view>
 			</view>
 		</view>
-		<view v-if="isIframe && !tabbar.length" class="empty-img uni-tabbar acea-row row-around row-middle">暂无数据，请设置
+		<view v-if="isIframe && !tabbar.length" class="empty-img uni-tabbar acea-row row-around row-middle">{{$t(`暂无数据，请设置`)}}
 		</view>
 	</view>
 </template>

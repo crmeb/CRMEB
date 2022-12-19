@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -28,6 +28,10 @@ Route::group(function () {
     Route::get('download', 'PublicController/download')->option(['real_name' => '下载文件']);
     //验证码
     Route::get('captcha_pro', 'Login/captcha')->name('')->option(['real_name' => '获取验证码']);
+    //获取验证码
+    Route::get('ajcaptcha', 'Login/ajcaptcha')->name('ajcaptcha')->option(['real_name' => '获取验证码']);
+    //一次验证
+    Route::post('ajcheck', 'Login/ajcheck')->name('ajcheck')->option(['real_name' => '一次验证']);
     //获取客服数据
     Route::get('get_workerman_url', 'PublicController/getWorkerManUrl')->option(['real_name' => '获取客服数据']);
     //测试

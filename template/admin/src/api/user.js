@@ -1,25 +1,25 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2021 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
 // | Author: CRMEB Team <admin@crmeb.com>
 // +----------------------------------------------------------------------
 
-import request from '@/libs/request'
+import request from '@/libs/request';
 
 /**
  * @description 用户管理--列表
  * @param {Object} param data {Object} 传值参数
  */
 export function userList(data) {
-    return request({
-        url: 'user/user',
-        method: 'get',
-        params: data
-    })
+  return request({
+    url: 'user/user',
+    method: 'get',
+    params: data,
+  });
 }
 
 /**
@@ -27,10 +27,10 @@ export function userList(data) {
  * @param {Number} param id {Number} 会员id
  */
 export function getUserData(id) {
-    return request({
-        url: `user/user/${id}/edit`,
-        method: 'get'
-    })
+  return request({
+    url: `user/user/${id}/edit`,
+    method: 'get',
+  });
 }
 
 /**
@@ -38,11 +38,11 @@ export function getUserData(id) {
  * @param {Number} param id {Number}
  */
 export function memberCard(data) {
-    return request({
-        url: `user/member_ship/set_ship_status`,
-        method: 'get',
-        params: data
-    })
+  return request({
+    url: `user/member_ship/set_ship_status`,
+    method: 'get',
+    params: data,
+  });
 }
 
 /**
@@ -50,11 +50,11 @@ export function memberCard(data) {
  * @param {Number} param id {Number}
  */
 export function memberCardStatus(data) {
-    return request({
-        url: `user/member_card/set_status`,
-        method: 'get',
-        params: data
-    })
+  return request({
+    url: `user/member_card/set_status`,
+    method: 'get',
+    params: data,
+  });
 }
 
 /**
@@ -62,10 +62,10 @@ export function memberCardStatus(data) {
  * @param {Object} param data {Object} 传入的状态值，用户id
  */
 export function isShowApi(data) {
-    return request({
-        url: `user/set_status/${data.status}/${data.id}`,
-        method: 'put'
-    })
+  return request({
+    url: `user/set_status/${data.status}/${data.id}`,
+    method: 'put',
+  });
 }
 
 /**
@@ -73,11 +73,11 @@ export function isShowApi(data) {
  * @param {Object} param params {Object} 传值
  */
 export function couponApi(params) {
-    return request({
-        url: `marketing/coupon/grant`,
-        method: 'get',
-        params
-    })
+  return request({
+    url: `marketing/coupon/grant`,
+    method: 'get',
+    params,
+  });
 }
 
 /**
@@ -85,11 +85,11 @@ export function couponApi(params) {
  * @param {Object} param data {Object} 传值
  */
 export function sendCouponApi(data) {
-    return request({
-        url: `marketing/coupon/user/grant`,
-        method: 'POST',
-        data
-    })
+  return request({
+    url: `marketing/coupon/user/grant`,
+    method: 'POST',
+    data,
+  });
 }
 
 /**
@@ -97,10 +97,10 @@ export function sendCouponApi(data) {
  * @param {Number} param id {Number} 用户id
  */
 export function editOtherApi(id) {
-    return request({
-        url: `user/edit_other/${id}`,
-        method: 'get'
-    })
+  return request({
+    url: `user/edit_other/${id}`,
+    method: 'get',
+  });
 }
 
 /**
@@ -108,10 +108,10 @@ export function editOtherApi(id) {
  * @param {Number} param id {Number} 用户id
  */
 export function detailsApi(id) {
-    return request({
-        url: `user/user/${id}`,
-        method: 'get'
-    })
+  return request({
+    url: `user/user/${id}`,
+    method: 'get',
+  });
 }
 
 /**
@@ -119,11 +119,11 @@ export function detailsApi(id) {
  * @param {Number} param id {Number} 用户id
  */
 export function infoApi(data) {
-    return request({
-        url: `user/one_info/${data.id}`,
-        method: 'get',
-        params: data.datas
-    })
+  return request({
+    url: `user/one_info/${data.id}`,
+    method: 'get',
+    params: data.datas,
+  });
 }
 
 /**
@@ -131,11 +131,11 @@ export function infoApi(data) {
  * @param {Object} param data {Object} 传值参数
  */
 export function levelListApi(data) {
-    return request({
-        url: 'user/user_level/vip_list',
-        method: 'get',
-        params: data
-    })
+  return request({
+    url: 'user/user_level/vip_list',
+    method: 'get',
+    params: data,
+  });
 }
 
 /**
@@ -143,10 +143,10 @@ export function levelListApi(data) {
  * @param {Number} param id {Number} 会员等级id
  */
 export function levelEditApi(id) {
-    return request({
-        url: `user/user_level/set_value/${id}`,
-        method: 'PUT'
-    })
+  return request({
+    url: `user/user_level/set_value/${id}`,
+    method: 'PUT',
+  });
 }
 
 /**
@@ -154,10 +154,10 @@ export function levelEditApi(id) {
  * @param {Number} param id {Number} 会员等级id
  */
 export function setShowApi(data) {
-    return request({
-        url: `user/user_level/set_show/${data.id}/${data.is_show}`,
-        method: 'PUT'
-    })
+  return request({
+    url: `user/user_level/set_show/${data.id}/${data.is_show}`,
+    method: 'PUT',
+  });
 }
 
 /**
@@ -177,11 +177,11 @@ export function setShowApi(data) {
  * @param {Object} param data {Object} 传值参数
  */
 export function taskListApi(id, data) {
-    return request({
-        url: `user/user_level/task/${id}`,
-        method: 'get',
-        params: data
-    })
+  return request({
+    url: `user/user_level/task/${id}`,
+    method: 'get',
+    params: data,
+  });
 }
 
 /**
@@ -190,10 +190,10 @@ export function taskListApi(id, data) {
  * @param {Number} param data.is_show {Number} 会员等级任务显示隐藏
  */
 export function setTaskShowApi(data) {
-    return request({
-        url: `user/user_level/set_task_show/${data.id}/${data.is_show}`,
-        method: 'PUT'
-    })
+  return request({
+    url: `user/user_level/set_task_show/${data.id}/${data.is_show}`,
+    method: 'PUT',
+  });
 }
 
 /**
@@ -202,10 +202,10 @@ export function setTaskShowApi(data) {
  * @param {Number} param data.is_must {Number} 会员等级任务是否务必达成
  */
 export function setTaskMustApi(data) {
-    return request({
-        url: `user/user_level/set_task_must/${data.id}/${data.is_must}`,
-        method: 'PUT'
-    })
+  return request({
+    url: `user/user_level/set_task_must/${data.id}/${data.is_must}`,
+    method: 'PUT',
+  });
 }
 
 /**
@@ -213,11 +213,11 @@ export function setTaskMustApi(data) {
  * @param {Object} param data {Object} 会员等级任务对象传值
  */
 export function createTaskApi(data) {
-    return request({
-        url: `/user/user_level/create_task`,
-        method: 'get',
-        params: data
-    })
+  return request({
+    url: `/user/user_level/create_task`,
+    method: 'get',
+    params: data,
+  });
 }
 
 /**
@@ -225,11 +225,11 @@ export function createTaskApi(data) {
  * @param {Object} param data {Object} 会员等级任务对象传值
  */
 export function createApi(id) {
-    return request({
-        url: `user/user_level/create`,
-        method: 'get',
-        params: id
-    })
+  return request({
+    url: `user/user_level/create`,
+    method: 'get',
+    params: id,
+  });
 }
 
 /**
@@ -237,10 +237,10 @@ export function createApi(id) {
  * @param {Number} param id {Number} 会员id
  */
 export function giveLevelApi(id) {
-    return request({
-        url: `user/give_level/${id}`,
-        method: 'get'
-    })
+  return request({
+    url: `user/give_level/${id}`,
+    method: 'get',
+  });
 }
 
 /**
@@ -248,10 +248,10 @@ export function giveLevelApi(id) {
  * @param {Number} param id {Number} 会员id
  */
 export function giveLevelTimeApi(id) {
-    return request({
-        url: `user/give_level_time/${id}`,
-        method: 'get'
-    })
+  return request({
+    url: `user/give_level_time/${id}`,
+    method: 'get',
+  });
 }
 
 /**
@@ -259,10 +259,10 @@ export function giveLevelTimeApi(id) {
  * @param {Number} param id {Number} 会员等级id
  */
 export function delLevelApi(id) {
-    return request({
-        url: `user/user_level/delete/${id}`,
-        method: 'PUT'
-    })
+  return request({
+    url: `user/user_level/delete/${id}`,
+    method: 'PUT',
+  });
 }
 
 /**
@@ -270,11 +270,11 @@ export function delLevelApi(id) {
  * @param {Object} param data {Object} 传值参数
  */
 export function userGroupApi(data) {
-    return request({
-        url: 'user/user_group/list',
-        method: 'get',
-        params: data
-    })
+  return request({
+    url: 'user/user_group/list',
+    method: 'get',
+    params: data,
+  });
 }
 
 /**
@@ -282,10 +282,10 @@ export function userGroupApi(data) {
  * @param {Number} param id {Number} 会员id
  */
 export function groupDelApi(id) {
-    return request({
-        url: `user/user_group/del/${id}`,
-        method: 'DELETE'
-    })
+  return request({
+    url: `user/user_group/del/${id}`,
+    method: 'DELETE',
+  });
 }
 
 /**
@@ -293,10 +293,10 @@ export function groupDelApi(id) {
  * @param {Number} param id {Number} 会员id
  */
 export function groupAddApi(id) {
-    return request({
-        url: `user/user_group/add/${id}`,
-        method: 'get'
-    })
+  return request({
+    url: `user/user_group/add/${id}`,
+    method: 'get',
+  });
 }
 
 /**
@@ -304,11 +304,22 @@ export function groupAddApi(id) {
  * data 请求参数
  */
 export function updtaeAdmin(data) {
-    return request({
-        url: `setting/update_admin`,
-        method: 'PUT',
-        data
-    })
+  return request({
+    url: `setting/update_admin`,
+    method: 'PUT',
+    data,
+  });
+}
+/**
+ * @description 文件管理 --- 设置密码
+ * data 请求参数
+ */
+export function setFilePassword(data) {
+  return request({
+    url: `setting/set_file_password`,
+    method: 'PUT',
+    data,
+  });
 }
 
 /**
@@ -316,11 +327,11 @@ export function updtaeAdmin(data) {
  * data 请求参数
  */
 export function userSetGroup(data) {
-    return request({
-        url: `user/set_group`,
-        method: 'post',
-        data
-    })
+  return request({
+    url: `user/set_group`,
+    method: 'post',
+    data,
+  });
 }
 
 /**
@@ -328,11 +339,11 @@ export function userSetGroup(data) {
  * data 请求参数
  */
 export function userLabelApi(data) {
-    return request({
-        url: `user/user_label`,
-        method: 'get',
-        params: data
-    })
+  return request({
+    url: `user/user_label`,
+    method: 'get',
+    params: data,
+  });
 }
 
 /**
@@ -340,31 +351,31 @@ export function userLabelApi(data) {
  * data 请求参数
  */
 export function userLabelAll(data) {
-    return request({
-        url: `user/user_label_cate/all`,
-        method: 'get',
-        params: data
-    });
+  return request({
+    url: `user/user_label_cate/all`,
+    method: 'get',
+    params: data,
+  });
 }
 
 /**
  * 添加用户
  */
 export function getUserSaveForm() {
-    return request({
-        url: `/user/user/create`,
-        method: 'get'
-    });
+  return request({
+    url: `/user/user/create`,
+    method: 'get',
+  });
 }
 
 /**
  * 同步用户
  */
 export function userSynchro() {
-    return request({
-        url: `/user/user/syncUsers`,
-        method: 'get'
-    });
+  return request({
+    url: `/user/user/syncUsers`,
+    method: 'get',
+  });
 }
 
 /**
@@ -372,10 +383,10 @@ export function userSynchro() {
  * data 请求参数
  */
 export function userLabelEdit(id) {
-    return request({
-        url: `user/user_label_cate/${id}/edit`,
-        method: 'get'
-    });
+  return request({
+    url: `user/user_label_cate/${id}/edit`,
+    method: 'get',
+  });
 }
 
 /**
@@ -383,10 +394,10 @@ export function userLabelEdit(id) {
  * data 请求参数
  */
 export function userLabelCreate(id) {
-    return request({
-        url: `user/user_label_cate/create`,
-        method: 'get'
-    });
+  return request({
+    url: `user/user_label_cate/create`,
+    method: 'get',
+  });
 }
 
 /**
@@ -394,10 +405,10 @@ export function userLabelCreate(id) {
  * data 请求参数
  */
 export function userLabelAddApi(id, cate_id) {
-    return request({
-        url: `user/user_label/add/${id}?cate_id=${cate_id ? cate_id : 0}`,
-        method: 'get'
-    })
+  return request({
+    url: `user/user_label/add/${id}?cate_id=${cate_id ? cate_id : 0}`,
+    method: 'get',
+  });
 }
 
 /**
@@ -405,22 +416,22 @@ export function userLabelAddApi(id, cate_id) {
  * data 请求参数
  */
 export function userSetLabelApi(data) {
-    return request({
-        url: `user/set_label`,
-        method: 'post',
-        data
-    })
+  return request({
+    url: `user/set_label`,
+    method: 'post',
+    data,
+  });
 }
 
 /**
  * 批次卡列表
  */
 export function userMemberBatch(data) {
-    return request({
-        url: '/user/member_batch/index',
-        method: 'get',
-        params: data
-    });
+  return request({
+    url: '/user/member_batch/index',
+    method: 'get',
+    params: data,
+  });
 }
 
 /**
@@ -428,11 +439,11 @@ export function userMemberBatch(data) {
  * @param {*} id id
  */
 export function memberBatchSave(id, data) {
-    return request({
-        url: `/user/member_batch/save/${id}`,
-        method: 'post',
-        data
-    });
+  return request({
+    url: `/user/member_batch/save/${id}`,
+    method: 'post',
+    data,
+  });
 }
 
 /**
@@ -440,11 +451,11 @@ export function memberBatchSave(id, data) {
  * @param {*} id id
  */
 export function memberBatchSetValue(id, data) {
-    return request({
-        url: `/user/member_batch/set_value/${id}`,
-        method: 'get',
-        params: data
-    });
+  return request({
+    url: `/user/member_batch/set_value/${id}`,
+    method: 'get',
+    params: data,
+  });
 }
 
 /**
@@ -452,11 +463,11 @@ export function memberBatchSetValue(id, data) {
  * @param {*} id id
  */
 export function userMemberCard(id, data) {
-    return request({
-        url: `/user/member_card/index/${id}`,
-        method: 'get',
-        params: data
-    });
+  return request({
+    url: `/user/member_card/index/${id}`,
+    method: 'get',
+    params: data,
+  });
 }
 
 /**
@@ -464,20 +475,20 @@ export function userMemberCard(id, data) {
  * @param {*} id id
  */
 export function exportMemberCard(id) {
-    return request({
-        url: `/export/memberCard/${id}`,
-        method: 'get'
-    });
+  return request({
+    url: `/export/memberCard/${id}`,
+    method: 'get',
+  });
 }
 
 /**
  * 会员类型
  */
 export function userMemberShip() {
-    return request({
-        url: '/user/member/ship',
-        method: 'get'
-    });
+  return request({
+    url: '/user/member/ship',
+    method: 'get',
+  });
 }
 
 /**
@@ -486,42 +497,42 @@ export function userMemberShip() {
  * @param {*} data data
  */
 export function memberShipSave(id, data) {
-    return request({
-        url: `/user/member_ship/save/${id}`,
-        method: 'post',
-        data
-    });
+  return request({
+    url: `/user/member_ship/save/${id}`,
+    method: 'post',
+    data,
+  });
 }
 
 /**
  * 兑换会员卡二维码
  */
 export function userMemberScan() {
-    return request({
-        url: '/user/member_scan',
-        method: 'get'
-    });
+  return request({
+    url: '/user/member_scan',
+    method: 'get',
+  });
 }
 
 /**
  * 会员卡记录
  */
 export function memberRecord(data) {
-    return request({
-        url: '/user/member/record',
-        method: 'get',
-        params: data
-    });
+  return request({
+    url: '/user/member/record',
+    method: 'get',
+    params: data,
+  });
 }
 
 /**
  * 会员权益
  */
 export function memberRight() {
-    return request({
-        url: 'user/member/right',
-        method: 'get'
-    });
+  return request({
+    url: 'user/member/right',
+    method: 'get',
+  });
 }
 
 /**
@@ -529,11 +540,11 @@ export function memberRight() {
  * @param {*} data
  */
 export function memberRightSave(data) {
-    return request({
-        url: `user/member_right/save/${data.id}`,
-        method: 'post',
-        data
-    })
+  return request({
+    url: `user/member_right/save/${data.id}`,
+    method: 'post',
+    data,
+  });
 }
 
 /**
@@ -541,31 +552,30 @@ export function memberRightSave(data) {
  * @param {*} id
  */
 export function memberAgreementSave(id, data) {
-    return request({
-        url: `user/member_agreement/save/${id}`,
-        method: 'post',
-        data
-    });
+  return request({
+    url: `user/member_agreement/save/${id}`,
+    method: 'post',
+    data,
+  });
 }
-
 
 /**
  * 会员协议
  */
 export function memberAgreement() {
-    return request({
-        url: `user/member/agreement`,
-        method: 'get'
-    });
+  return request({
+    url: `user/member/agreement`,
+    method: 'get',
+  });
 }
 /**
  * 代理商申请协议
  */
 export function agentAgreement() {
-    return request({
-        url: `agent/division/agent_agreement/info`,
-        method: 'get'
-    });
+  return request({
+    url: `agent/division/agent_agreement/info`,
+    method: 'get',
+  });
 }
 
 /**
@@ -573,32 +583,32 @@ export function agentAgreement() {
  * @param {*} id
  */
 export function agentAgreementSave(data) {
-    return request({
-        url: `agent/division/agent_agreement/save`,
-        method: 'post',
-        data
-    });
+  return request({
+    url: `agent/division/agent_agreement/save`,
+    method: 'post',
+    data,
+  });
 }
 
 /**
  * 获取用户标签
  */
 export function getUserLabel(uid) {
-    return request({
-        url: `user/label/${uid}`,
-        method: 'get'
-    });
+  return request({
+    url: `user/label/${uid}`,
+    method: 'get',
+  });
 }
 
 /**
  * 设置用户标签
  */
 export function putUserLabel(uid, data) {
-    return request({
-        url: `user/label/${uid}`,
-        method: 'post',
-        data
-    });
+  return request({
+    url: `user/label/${uid}`,
+    method: 'post',
+    data,
+  });
 }
 
 /**
@@ -606,11 +616,11 @@ export function putUserLabel(uid, data) {
  * @param {Object} param data {Object} 传值参数
  */
 export function setUser(data) {
-    return request({
-        url: 'user/user',
-        method: 'post',
-        data
-    })
+  return request({
+    url: 'user/user',
+    method: 'post',
+    data,
+  });
 }
 
 /**
@@ -618,51 +628,51 @@ export function setUser(data) {
  * @param {Object} param data {Object} 传值参数
  */
 export function editUser(data) {
-    return request({
-        url: 'user/user/' + data.uid,
-        method: 'put',
-        data
-    })
+  return request({
+    url: 'user/user/' + data.uid,
+    method: 'put',
+    data,
+  });
 }
 /**
  * @description 编辑用户
  * @param {Object} param data {Object} 传值参数
  */
 export function saveSetLabel(data) {
-    return request({
-        url: 'user/save_set_label',
-        method: 'put',
-        data
-    })
+  return request({
+    url: 'user/save_set_label',
+    method: 'put',
+    data,
+  });
 }
 
 /**
  * 获取用户信息
  */
 export function getUserInfo(uid) {
-    return request({
-        url: `user/user/user_save_info/${uid}`,
-        method: 'get'
-    });
+  return request({
+    url: `user/user/user_save_info/${uid}`,
+    method: 'get',
+  });
 }
 
 /**
  * 用户注销列表
  */
 export function userCancelList(data) {
-    return request({
-        url: '/user/cancel_list',
-        method: 'get',
-        params: data
-    });
+  return request({
+    url: '/user/cancel_list',
+    method: 'get',
+    params: data,
+  });
 }
 /**
  * 用户注销列表
  */
 export function userCancelSetMark(data) {
-    return request({
-        url: '/user/cancel/set_mark',
-        method: 'post',
-        data
-    });
+  return request({
+    url: '/user/cancel/set_mark',
+    method: 'post',
+    data,
+  });
 }

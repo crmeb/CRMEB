@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -34,8 +34,8 @@ class StoreServiceSpeechcraftValidata extends Validate
      * @var array
      */
     protected $message = [
-        'message.require' => '请填写话术内容',
-        'sort.require' => '请填写排序数字',
-        'sort.number' => '排序序号为整数',
+        'message.require' => '400022',
+        'sort.require' => '400023',
+        'sort.number' => '400024',
     ];
 }

@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -120,10 +120,10 @@ class ArticleCategoryServices extends BaseServices
         /** @var ArticleServices $articleService */
         $articleService = app()->make(ArticleServices::class);
         $pidCount = $this->dao->count(['pid' => $id]);
-        if($pidCount > 0) throw new AdminException('该分类有下级分类，无法删除！');
+        if($pidCount > 0) throw new AdminException(400454);
         $count = $articleService->count(['cid' => $id]);
         if ($count > 0) {
-            throw new AdminException('该分类下有文章，无法删除！');
+            throw new AdminException(400455);
         } else {
             return $this->dao->delete($id);
         }

@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -41,7 +41,7 @@ class MemberRightServices extends BaseServices
     {
         [$page, $limit] = $this->getPageValue();
         $list = $this->dao->getSearchList($where, $page, $limit);
-        foreach ($list as &$item){
+        foreach ($list as &$item) {
             $item['image'] = set_file_url($item['image']);
         }
         $count = $this->dao->count($where);
@@ -56,29 +56,31 @@ class MemberRightServices extends BaseServices
      */
     public function save(int $id, array $data)
     {
-        if (!$data['right_type']) throw new AdminException("会员权益类型缺失");
-        if (!$id) throw new AdminException("id参数缺失");
-        if (!$data['title'] || !$data['show_title']) throw new AdminException("请设置权益名称");
-        if (!$data['image']) throw new AdminException("请上传会员权益图标");
+        if (!$data['right_type']) throw new AdminException(400630);
+        if (!$id) throw new AdminException(100100);
+        if (!$data['title'] || !$data['show_title']) throw new AdminException(400631);
+        if (!$data['image']) throw new AdminException(400632);
+        if (mb_strlen($data['show_title']) > 6) throw new AdminException(400755);
+        if (mb_strlen($data['explain']) > 8) throw new AdminException(400752);
         switch ($data['right_type']) {
             case "integral":
-                if (!$data['number']) throw new AdminException("请设置返还积分倍数");
-                if ($data['number'] < 0) throw new AdminException("返还积分倍数不能为负数");
+                if (!$data['number']) throw new AdminException(400633);
+                if ($data['number'] < 0) throw new AdminException(400634);
                 $save['number'] = abs($data['number']);
                 break;
             case "express" :
-                if (!$data['number']) throw new AdminException("请设置运费折扣");
-                if ($data['number'] < 0) throw new AdminException("运费折扣不能为负数");
+                if (!$data['number']) throw new AdminException(400635);
+                if ($data['number'] < 0) throw new AdminException(400636);
                 $save['number'] = abs($data['number']);
                 break;
             case "sign" :
-                if (!$data['number']) throw new AdminException("请设置签到积分倍数");
-                if ($data['number'] < 0) throw new AdminException("签到积分倍数不能为负数");
+                if (!$data['number']) throw new AdminException(400637);
+                if ($data['number'] < 0) throw new AdminException(400638);
                 $save['number'] = abs($data['number']);
                 break;
             case "offline" :
-                if (!$data['number']) throw new AdminException("请设置线下付款折扣");
-                if ($data['number'] < 0) throw new AdminException("线下付款不能为负数");
+                if (!$data['number']) throw new AdminException(400639);
+                if ($data['number'] < 0) throw new AdminException(400640);
                 $save['number'] = abs($data['number']);
         }
         $save['show_title'] = $data['show_title'];

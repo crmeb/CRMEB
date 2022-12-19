@@ -6,35 +6,21 @@
       width="70%"
       if="isTemplate"
       @on-cancel="cancel"
+      @on-visible-change="close"
     >
       <div class="Modals">
-        <Form
-          class="form"
-          ref="formData"
-          :label-width="120"
-          label-position="right"
-        >
+        <Form class="form" ref="formData" :label-width="120" label-position="right">
           <Row :gutter="24" type="flex">
             <Col :xl="18" :lg="18" :md="18" :sm="24" :xs="24">
               <FormItem label="模板名称：" prop="name">
-                <Input
-                  type="text"
-                  placeholder="请输入模板名称"
-                  :maxlength="20"
-                  v-model="formData.name"
-                />
+                <Input type="text" placeholder="请输入模板名称" :maxlength="20" v-model="formData.name" />
               </FormItem>
             </Col>
           </Row>
           <Row :gutter="24" type="flex">
             <Col :xl="18" :lg="18" :md="18" :sm="24" :xs="24">
               <FormItem label="计费方式：" props="state" label-for="state">
-                <RadioGroup
-                  class="radio"
-                  v-model="formData.type"
-                  @on-change="changeRadio"
-                  element-id="state"
-                >
+                <RadioGroup class="radio" v-model="formData.type" @on-change="changeRadio" element-id="state">
                   <Radio :label="1">按件数</Radio>
                   <Radio :label="2">按重量</Radio>
                   <Radio :label="3">按体积</Radio>
@@ -44,12 +30,7 @@
           </Row>
           <Row :gutter="24" type="flex">
             <Col :xl="24" :lg="24" :md="24" :sm="24" :xs="24">
-              <FormItem
-                class="label"
-                label="配送区域及运费："
-                props="state"
-                label-for="state"
-              >
+              <FormItem class="label" label="配送区域及运费：" props="state" label-for="state">
                 <Table
                   ref="table"
                   :columns="columns"
@@ -59,18 +40,12 @@
                   border
                 >
                   <template slot-scope="{ row, index }" slot="action">
-                    <a
-                      v-if="row.regionName !== '默认全国'"
-                      @click="delCity(row, '配送区域', index, 1)"
-                      >删除</a
-                    >
+                    <a v-if="row.regionName !== '默认全国'" @click="delCity(row, '配送区域', index, 1)">删除</a>
                   </template>
                 </Table>
                 <Row type="flex" class="addTop">
                   <Col>
-                    <Button type="primary" icon="md-add" @click="addCity(1)"
-                      >单独添加配送区域</Button
-                    >
+                    <Button type="primary" icon="md-add" @click="addCity(1)">单独添加配送区域</Button>
                   </Col>
                 </Row>
               </FormItem>
@@ -78,11 +53,7 @@
           </Row>
           <Row :gutter="24" type="flex">
             <Col :xl="24" :lg="24" :md="24" :sm="24" :xs="24">
-              <FormItem
-                label="指定包邮："
-                prop="store_name"
-                label-for="store_name"
-              >
+              <FormItem label="指定包邮：" prop="store_name" label-for="store_name">
                 <Radio-group class="radio" v-model="formData.appoint_check">
                   <Radio :label="1">开启</Radio>
                   <Radio :label="0">关闭</Radio>
@@ -97,22 +68,12 @@
                   v-if="formData.appoint_check === 1"
                 >
                   <template slot-scope="{ row, index }" slot="action">
-                    <a
-                      v-if="row.regionName !== '默认全国'"
-                      @click="delCity(row, '配送区域', index, 2)"
-                      >删除</a
-                    >
+                    <a v-if="row.regionName !== '默认全国'" @click="delCity(row, '配送区域', index, 2)">删除</a>
                   </template>
                 </Table>
-                <Row
-                  type="flex"
-                  class="addTop"
-                  v-if="formData.appoint_check === 1"
-                >
+                <Row type="flex" class="addTop" v-if="formData.appoint_check === 1">
                   <Col>
-                    <Button type="primary" icon="md-add" @click="addCity(2)"
-                      >单独指定包邮</Button
-                    >
+                    <Button type="primary" icon="md-add" @click="addCity(2)">单独指定包邮</Button>
                   </Col>
                 </Row>
               </FormItem>
@@ -120,11 +81,7 @@
           </Row>
           <Row :gutter="24" type="flex">
             <Col :xl="24" :lg="24" :md="24" :sm="24" :xs="24">
-              <FormItem
-                label="指定不送达："
-                prop="store_name"
-                label-for="store_name"
-              >
+              <FormItem label="指定不送达：" prop="store_name" label-for="store_name">
                 <Radio-group class="radio" v-model="formData.no_delivery_check">
                   <Radio :label="1">开启</Radio>
                   <Radio :label="0">关闭</Radio>
@@ -139,22 +96,12 @@
                   v-if="formData.no_delivery_check === 1"
                 >
                   <template slot-scope="{ row, index }" slot="action">
-                    <a
-                      v-if="row.regionName !== '默认全国'"
-                      @click="delCity(row, '配送区域', index, 3)"
-                      >删除</a
-                    >
+                    <a v-if="row.regionName !== '默认全国'" @click="delCity(row, '配送区域', index, 3)">删除</a>
                   </template>
                 </Table>
-                <Row
-                  type="flex"
-                  class="addTop"
-                  v-if="formData.no_delivery_check === 1"
-                >
+                <Row type="flex" class="addTop" v-if="formData.no_delivery_check === 1">
                   <Col>
-                    <Button type="primary" icon="md-add" @click="addCity(3)"
-                      >单独指定不送达</Button
-                    >
+                    <Button type="primary" icon="md-add" @click="addCity(3)">单独指定不送达</Button>
                   </Col>
                 </Row>
               </FormItem>
@@ -163,20 +110,14 @@
           <Row :gutter="24" type="flex">
             <Col :xl="18" :lg="18" :md="18" :sm="24" :xs="24">
               <FormItem label="排序：" prop="store_name" label-for="store_name">
-                <InputNumber
-                  :min="0"
-                  placeholder="输入值越大越靠前"
-                  v-model="formData.sort"
-                ></InputNumber>
+                <InputNumber :min="0" placeholder="输入值越大越靠前" v-model="formData.sort"></InputNumber>
               </FormItem>
             </Col>
           </Row>
           <Row :gutter="24" type="flex">
             <Col>
               <FormItem prop="store_name" label-for="store_name">
-                <Button type="primary" @click="handleSubmit">{{
-                  id ? "立即修改" : "立即提交"
-                }}</Button>
+                <Button type="primary" @click="handleSubmit">{{ id ? '立即修改' : '立即提交' }}</Button>
               </FormItem>
             </Col>
           </Row>
@@ -184,21 +125,16 @@
       </div>
       <div slot="footer"></div>
     </Modal>
-    <city
-      ref="city"
-      @selectCity="selectCity"
-      :type="type"
-      :selectArr="selectArr"
-    ></city>
+    <city ref="city" @selectCity="selectCity" :type="type" :selectArr="selectArr"></city>
   </div>
 </template>
 
 <script>
-import { mapState } from "vuex";
-import city from "@/components/freightTemplate/city";
-import { templatesSaveApi, shipTemplatesApi } from "@/api/setting";
+import { mapState } from 'vuex';
+import city from '@/components/freightTemplate/city';
+import { templatesSaveApi, shipTemplatesApi } from '@/api/setting';
 export default {
-  name: "freightTemplate",
+  name: 'freightTemplate',
   components: { city },
   props: {},
   data() {
@@ -207,33 +143,33 @@ export default {
       isTemplate: false,
       columns: [
         {
-          title: "可配送区域",
-          key: "regionName",
+          title: '可配送区域',
+          key: 'regionName',
           minWidth: 100,
           render: (h, params) => {
-            return h("Input", {
+            return h('Input', {
               props: {
-                type: "text",
+                type: 'text',
                 readonly: true,
-                size: "small",
+                size: 'small',
                 value: that.templateList[params.index].regionName,
               },
             });
           },
         },
         {
-          title: "首件",
-          key: "first",
+          title: '首件',
+          key: 'first',
           minWidth: 70,
           render: (h, params) => {
-            return h("Input", {
+            return h('Input', {
               props: {
-                type: "number",
-                size: "small",
+                type: 'number',
+                size: 'small',
                 value: that.templateList[params.index].first, // 此处如何让数据双向绑定
               },
               on: {
-                "on-change": (event) => {
+                'on-change': (event) => {
                   that.templateList[params.index].first = event.target.value;
                 },
               },
@@ -241,18 +177,18 @@ export default {
           },
         },
         {
-          title: "运费（元）",
-          key: "price",
+          title: '运费（元）',
+          key: 'price',
           minWidth: 70,
           render: (h, params) => {
-            return h("Input", {
+            return h('Input', {
               props: {
-                type: "number",
-                size: "small",
+                type: 'number',
+                size: 'small',
                 value: that.templateList[params.index].price, // 此处如何让数据双向绑定
               },
               on: {
-                "on-change": (event) => {
+                'on-change': (event) => {
                   that.templateList[params.index].price = event.target.value;
                 },
               },
@@ -260,18 +196,18 @@ export default {
           },
         },
         {
-          title: "续件",
-          key: "continue",
+          title: '续件',
+          key: 'continue',
           minWidth: 70,
           render: (h, params) => {
-            return h("Input", {
+            return h('Input', {
               props: {
-                type: "number",
-                size: "small",
+                type: 'number',
+                size: 'small',
                 value: that.templateList[params.index].continue, // 此处如何让数据双向绑定
               },
               on: {
-                "on-change": (event) => {
+                'on-change': (event) => {
                   that.templateList[params.index].continue = event.target.value;
                 },
               },
@@ -279,60 +215,59 @@ export default {
           },
         },
         {
-          title: "续费（元）",
-          key: "continue_price",
+          title: '续费（元）',
+          key: 'continue_price',
           minWidth: 70,
           render: (h, params) => {
-            return h("Input", {
+            return h('Input', {
               props: {
-                type: "number",
-                size: "small",
+                type: 'number',
+                size: 'small',
                 value: that.templateList[params.index].continue_price, // 此处如何让数据双向绑定
               },
               on: {
-                "on-change": (event) => {
-                  that.templateList[params.index].continue_price =
-                    event.target.value;
+                'on-change': (event) => {
+                  that.templateList[params.index].continue_price = event.target.value;
                 },
               },
             });
           },
         },
         {
-          title: "操作",
-          slot: "action",
+          title: '操作',
+          slot: 'action',
           minWidth: 70,
         },
       ],
       columns2: [
         {
-          title: "选择地区",
-          key: "placeName",
+          title: '选择地区',
+          key: 'placeName',
           minWidth: 250,
           render: (h, params) => {
-            return h("Input", {
+            return h('Input', {
               props: {
-                type: "text",
+                type: 'text',
                 readonly: true,
-                size: "small",
+                size: 'small',
                 value: that.appointList[params.index].placeName,
               },
             });
           },
         },
         {
-          title: "包邮件数",
-          key: "a_num",
+          title: '包邮件数',
+          key: 'a_num',
           minWidth: 100,
           render: (h, params) => {
-            return h("Input", {
+            return h('Input', {
               props: {
-                type: "number",
-                size: "small",
+                type: 'number',
+                size: 'small',
                 value: that.appointList[params.index].a_num, // 此处如何让数据双向绑定
               },
               on: {
-                "on-change": (event) => {
+                'on-change': (event) => {
                   that.appointList[params.index].a_num = event.target.value;
                 },
               },
@@ -340,18 +275,18 @@ export default {
           },
         },
         {
-          title: "包邮金额（元）",
-          key: "a_price",
+          title: '包邮金额（元）',
+          key: 'a_price',
           minWidth: 100,
           render: (h, params) => {
-            return h("Input", {
+            return h('Input', {
               props: {
-                type: "number",
-                size: "small",
+                type: 'number',
+                size: 'small',
                 value: that.appointList[params.index].a_price, // 此处如何让数据双向绑定
               },
               on: {
-                "on-change": (event) => {
+                'on-change': (event) => {
                   that.appointList[params.index].a_price = event.target.value;
                 },
               },
@@ -359,30 +294,30 @@ export default {
           },
         },
         {
-          title: "操作",
-          slot: "action",
+          title: '操作',
+          slot: 'action',
           minWidth: 100,
         },
       ],
       columns3: [
         {
-          title: "选择地区",
-          key: "placeName",
+          title: '选择地区',
+          key: 'placeName',
           minWidth: 250,
           render: (h, params) => {
-            return h("Input", {
+            return h('Input', {
               props: {
-                type: "text",
+                type: 'text',
                 readonly: true,
-                size: "small",
+                size: 'small',
                 value: that.noDeliveryList[params.index].placeName,
               },
             });
           },
         },
         {
-          title: "操作",
-          slot: "action",
+          title: '操作',
+          slot: 'action',
           minWidth: 100,
         },
       ],
@@ -390,11 +325,11 @@ export default {
         {
           region: [
             {
-              name: "默认全国",
+              name: '默认全国',
               city_id: 0,
             },
           ],
-          regionName: "默认全国",
+          regionName: '默认全国',
           first: 1,
           price: 0,
           continue: 1,
@@ -407,7 +342,7 @@ export default {
       formData: {
         type: 1,
         sort: 0,
-        name: "",
+        name: '',
         appoint_check: 0,
         no_delivery_check: 0,
       },
@@ -420,8 +355,8 @@ export default {
       activeCity: -1,
       provinceAllGroup: [],
       index: -1,
-      displayData: "",
-      currentProvince: "",
+      displayData: '',
+      currentProvince: '',
       selectArr: [], // 传递选中的城市
       noShippingArr: [], // 不包邮选择的城市数据
       yesShippingArr: [], // 包邮选择的城市数据
@@ -430,6 +365,11 @@ export default {
   },
   computed: {},
   methods: {
+    close(status) {
+      if (!status) {
+        this.$emit('close');
+      }
+    },
     editFrom(id) {
       this.id = id;
       shipTemplatesApi(id).then((res) => {
@@ -452,7 +392,7 @@ export default {
         .map(function (item) {
           return item.name;
         })
-        .join(";");
+        .join(';');
       switch (type) {
         case 1:
           this.templateList.push({
@@ -485,12 +425,7 @@ export default {
     },
     // 单独添加配送区域
     addCity(type) {
-      this.selectArr =
-        type == 1
-          ? this.noShippingArr
-          : type == 2
-          ? this.yesShippingArr
-          : this.noDeliveryArr;
+      this.selectArr = type == 1 ? this.noShippingArr : type == 2 ? this.yesShippingArr : this.noDeliveryArr;
       this.type = type;
       this.$refs.city.getCityList();
       this.$refs.city.addressModal = true;
@@ -501,46 +436,46 @@ export default {
     headerType() {
       let that = this;
       if (this.formData.type === 2) {
-        that.columns[1].title = "首件重量(KG)";
-        that.columns[3].title = "续件重量(KG)";
-        that.columns2[1].title = "包邮重量(KG)";
+        that.columns[1].title = '首件重量(KG)';
+        that.columns[3].title = '续件重量(KG)';
+        that.columns2[1].title = '包邮重量(KG)';
       } else if (this.formData.type === 3) {
-        that.columns[1].title = "首件体积(m³)";
-        that.columns[3].title = "续件体积(m³)";
-        that.columns2[1].title = "包邮体积(m³)";
+        that.columns[1].title = '首件体积(m³)';
+        that.columns[3].title = '续件体积(m³)';
+        that.columns2[1].title = '包邮体积(m³)';
       } else {
-        that.columns[1].title = "首件";
-        that.columns[3].title = "续件";
-        that.columns2[1].title = "包邮件数";
+        that.columns[1].title = '首件';
+        that.columns[3].title = '续件';
+        that.columns2[1].title = '包邮件数';
       }
     },
     // 提交
     handleSubmit: function () {
       let that = this;
       if (!that.formData.name.trim().length) {
-        return that.$Message.error("请填写模板名称");
+        return that.$Message.error('请填写模板名称');
       }
       for (let i = 0; i < that.templateList.length; i++) {
         if (that.templateList[i].first <= 0) {
-          return that.$Message.error("首件/重量/体积应大于0");
+          return that.$Message.error('首件/重量/体积应大于0');
         }
         if (that.templateList[i].price < 0) {
-          return that.$Message.error("运费应大于等于0");
+          return that.$Message.error('运费应大于等于0');
         }
         if (that.templateList[i].continue <= 0) {
-          return that.$Message.error("续件/重量/体积应大于0");
+          return that.$Message.error('续件/重量/体积应大于0');
         }
         if (that.templateList[i].continue_price < 0) {
-          return that.$Message.error("续费应大于等于0");
+          return that.$Message.error('续费应大于等于0');
         }
       }
       if (that.formData.appoint_check === 1) {
         for (let i = 0; i < that.appointList.length; i++) {
           if (that.appointList[i].a_num <= 0) {
-            return that.$Message.error("包邮件数应大于0");
+            return that.$Message.error('包邮件数应大于0');
           }
           if (that.appointList[i].a_price < 0) {
-            return that.$Message.error("包邮金额应大于等于0");
+            return that.$Message.error('包邮金额应大于等于0');
           }
         }
       }
@@ -560,7 +495,7 @@ export default {
         this.formData = {
           type: 1,
           sort: 0,
-          name: "",
+          name: '',
           appoint_check: 0,
           no_delivery_check: 0,
         };
@@ -571,18 +506,18 @@ export default {
           {
             region: [
               {
-                name: "默认全国",
+                name: '默认全国',
                 city_id: 0,
               },
             ],
-            regionName: "默认全国",
+            regionName: '默认全国',
             first: 1,
             price: 0,
             continue: 1,
             continue_price: 0,
           },
         ];
-        this.$emit("addSuccess");
+        this.$emit('addSuccess');
         this.$Message.success(res.msg);
       });
     },
@@ -619,7 +554,7 @@ export default {
       this.formData = {
         type: 1,
         sort: 0,
-        name: "",
+        name: '',
         appoint_check: 0,
         no_delivery_check: 0,
       };
@@ -630,11 +565,11 @@ export default {
         {
           region: [
             {
-              name: "默认全国",
+              name: '默认全国',
               city_id: 0,
             },
           ],
-          regionName: "默认全国",
+          regionName: '默认全国',
           first: 0,
           price: 0,
           continue: 0,
@@ -653,9 +588,7 @@ export default {
       this.activeCity = null;
     },
   },
-  mounted() {
-    // console.log(this.provinceAllGroup)
-  },
+  mounted() {},
 };
 </script>
 <style lang="stylus" scoped>

@@ -1,0 +1,9 @@
+{
+  "component": true,
+  "usingComponents": {
+    "authorize": "/components/Authorize",
+    "grids-lottery": "/pages/goods/components/lottery/index",
+    "lottery-aleart": "/pages/goods/order_pay_status/components/lotteryAleart",
+    "user-address": "/pages/goods/order_pay_status/components/userAddress"
+  }
+}

@@ -1,21 +1,21 @@
 <template>
 	<view :style="colorStyle">
 		<view class='coupon-window' :class='window==true?"on":""'>
-			<image class="co-bag" src="../../static/images/co-bag.png" mode=""></image>
+			<image class="co-bag" :src="imgHost + '/statics/images/co-bag.png'" mode=""></image>
 			<view class='couponWinList'>
 				<view class='item acea-row row-between-wrapper' v-for="(item,index) in couponList" :key="index">
-					<view class='money font-color'>￥<text class='num'>{{item.coupon_price}}</text></view>
+					<view class='money font-color'>{{$t(`￥`)}}<text class='num'>{{item.coupon_price}}</text></view>
 					<view class='text'>
-						<view class='name'>购物满{{item.use_min_price}}减{{item.coupon_price}}</view>
-						<view v-if="item.coupon_time">领取后{{item.coupon_time}}天内可用</view>
+						<view class='name'>{{$t(`购物满`)}}{{item.use_min_price}}{{$t(`减`)}}{{item.coupon_price}}</view>
+						<view v-if="item.coupon_time">{{$t(`领取后`)}}{{item.coupon_time}}{{$t(`天内可用`)}}</view>
 						<view v-else>
-							{{item.start_time ? item.start_time+'-' : ''}}{{item.end_time === 0 ? '不限时': item.end_time}}
+							{{item.start_time ? item.start_time+'-' : ''}}{{item.end_time === 0 ? $t(`不限时`) : item.end_time}}
 						</view>
 					</view>
 				</view>
 			</view>
 			<view class='lid'>
-				<navigator hover-class='none' url='/pages/users/user_get_coupon/index' class='bnt'>立即领取</navigator>
+				<navigator v-if="window" hover-class='none' url='/pages/users/user_get_coupon/index' class='bnt'>{{$t(`立即领取`)}}</navigator>
 				<view class='iconfont icon-guanbi3' @click="close"></view>
 			</view>
 		</view>
@@ -25,8 +25,8 @@
 
 <script>
 	import colors from "@/mixins/color";
+	import {HTTP_REQUEST_URL} from '@/config/app';
 	export default {
-
 		props: {
 			window: {
 				type: Boolean | String | Number,
@@ -46,7 +46,7 @@
 		mixins: [colors],
 		data() {
 			return {
-
+				imgHost:HTTP_REQUEST_URL
 			};
 		},
 		methods: {

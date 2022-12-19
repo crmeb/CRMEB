@@ -6,7 +6,7 @@
 		<view class='header acea-row row-center-wrapper'>
 			<view class='acea-row row-between-wrapper input'>
 				<text class='iconfont icon-sousuo'></text>
-				<input type='text' placeholder='点击搜索商品信息' @confirm="searchSubmitValue" confirm-type='search'
+				<input type='text' :placeholder="$t('搜索商品名称')" @confirm="searchSubmitValue" confirm-type='search'
 					name="search" placeholder-class='placeholder'></input>
 			</view>
 		</view>
@@ -15,7 +15,7 @@
 				<scroll-view scroll-y="true" scroll-with-animation='true' style="height: calc(100% - 100rpx)">
 					<view class='item acea-row row-center-wrapper' :class='index==navActive?"on":""'
 						v-for="(item,index) in productList" :key="index" @click='tap(index,"b"+index)'>
-						<text>{{item.cate_name}}</text>
+						<text>{{$t(item.cate_name)}}</text>
 					</view>
 					<!-- #ifdef APP-PLUS -->
 					<view class="item" v-if="newData.status && newData.status.status"></view>
@@ -31,19 +31,19 @@
 						<view class='listw' :id="'b'+index">
 							<view class='title acea-row row-center-wrapper'>
 								<view class='line'></view>
-								<view class='name'>{{item.cate_name}}</view>
+								<view class='name'>{{$t(item.cate_name)}}</view>
 								<view class='line'></view>
 							</view>
 							<view class='list acea-row'>
 								<block v-for="(itemn,indexn) in item.children" :key="indexn">
 									<navigator hover-class='none'
-										:url='"/pages/goods_list/index?sid="+itemn.id+"&title="+itemn.cate_name'
+										:url='"/pages/goods/goods_list/index?sid="+itemn.id+"&title="+itemn.cate_name'
 										class='item acea-row row-column row-middle'>
 										<view class='picture'>
 											<image :src='itemn.pic' v-if="itemn.pic"></image>
 											<image src="/static/images/sort-img.png" v-else></image>
 										</view>
-										<view class='name line1'>{{itemn.cate_name}}</view>
+										<view class='name line1'>{{$t(itemn.cate_name)}}</view>
 									</navigator>
 								</block>
 							</view>
@@ -54,23 +54,7 @@
 			</view>
 		</view>
 		<tabBar v-if="!is_diy" :pagePath="'/pages/goods_cate/goods_cate'"></tabBar>
-		<view class="foot" v-else-if="is_diy && newData.status && newData.status.status">
-			<view class="page-footer" id="target" :style="{'background-color':newData.bgColor.color[0].item}">
-				<view class="foot-item" v-for="(item,index) in newData.menuList" :key="index" @click="goRouter(item)">
-					<block v-if="item.link == activeRouter">
-						<image :src="item.imgList[0]"></image>
-						<view class="txt" :style="{color:newData.activeTxtColor.color[0].item}">{{item.name}}</view>
-					</block>
-					<block v-else>
-						<image :src="item.imgList[1]"></image>
-						<view class="txt" :style="{color:newData.txtColor.color[0].item}">{{item.name}}</view>
-					</block>
-					<div class="count-num" v-if="item.link === '/pages/order_addcart/order_addcart' && cartNum > 0">
-						{{cartNum}}
-					</div>
-				</view>
-			</view>
-		</view>
+		<pageFooter v-else></pageFooter>
 	</view>
 </template>
 
@@ -83,10 +67,10 @@
 		mapState,
 		mapGetters
 	} from "vuex"
-	import pageFooter from '@/components/pageFooter/index.vue'
 	import {
 		getNavigation
 	} from '@/api/public.js'
+	import pageFooter from '@/components/pageFooter/index.vue'
 	import tabBar from "@/pages/index/visualization/components/tabBar.vue";
 	const app = getApp();
 	export default {
@@ -114,7 +98,6 @@
 				// #ifdef APP-PLUS
 				pageHeight: app.globalData.windowHeight,
 				// #endif
-				footerStatus: false,
 				lock: false
 			}
 		},
@@ -125,18 +108,6 @@
 		},
 		mounted() {
 			let that = this
-			let routes = getCurrentPages();
-			let curRoute = routes[routes.length - 1].route
-			this.activeRouter = '/' + curRoute
-			this.getAllCategory();
-			// if (uni.getStorageSync('FOOTER_BAR')) {
-			// 	this.footerStatus = true
-			// 	uni.hideTabBar()
-			// 	getNavigation().then(res => {
-			// 		this.newData = res.data
-			// 	})
-			// }
-
 			// #ifdef H5
 			uni.getSystemInfo({
 				success: function(res) {
@@ -144,16 +115,17 @@
 				}
 			});
 			// #endif
+			let routes = getCurrentPages();
+			let curRoute = routes[routes.length - 1].route
+			this.activeRouter = '/' + curRoute
+			this.getAllCategory();
+
+
 		},
 		methods: {
 			getNav() {
 				getNavigation().then(res => {
 					this.newData = res.data
-					if (this.newData.status && this.newData.status.status) {
-						uni.hideTabBar()
-					} else {
-						uni.showTabBar()
-					}
 				})
 			},
 			goRouter(item) {
@@ -232,11 +204,11 @@
 			searchSubmitValue: function(e) {
 				if (this.$util.trim(e.detail.value).length > 0)
 					uni.navigateTo({
-						url: '/pages/goods_list/index?searchValue=' + e.detail.value
+						url: '/pages/goods/goods_list/index?searchValue=' + e.detail.value
 					})
 				else
 					return this.$util.Tips({
-						title: '请填写要搜索的产品信息'
+						title: this.$t(`搜索商品名称`)
 					});
 			},
 		}
@@ -408,62 +380,5 @@
 		line-height: 56rpx;
 		width: 120rpx;
 		text-align: center;
-	}
-
-	.page-footer {
-		position: fixed;
-		bottom: 0;
-		z-index: 30;
-		display: flex;
-		align-items: center;
-		justify-content: space-around;
-		width: 100%;
-		height: calc(98rpx+ constant(safe-area-inset-bottom)); ///兼容 IOS<11.2/
-		height: calc(98rpx + env(safe-area-inset-bottom)); ///兼容 IOS>11.2/
-		box-sizing: border-box;
-		border-top: solid 1rpx #F3F3F3;
-		background-color: #fff;
-		box-shadow: 0px 0px 17rpx 1rpx rgba(206, 206, 206, 0.32);
-		padding-bottom: constant(safe-area-inset-bottom); ///兼容 IOS<11.2/
-		padding-bottom: env(safe-area-inset-bottom); ///兼容 IOS>11.2/
-
-		.foot-item {
-			display: flex;
-			width: max-content;
-			align-items: center;
-			justify-content: center;
-			flex-direction: column;
-			position: relative;
-
-			.count-num {
-				position: absolute;
-				display: flex;
-				justify-content: center;
-				align-items: center;
-				width: 40rpx;
-				height: 40rpx;
-				top: 0rpx;
-				right: -15rpx;
-				color: #fff;
-				font-size: 20rpx;
-				background-color: #FD502F;
-				border-radius: 50%;
-				padding: 4rpx;
-			}
-		}
-
-		.foot-item image {
-			height: 50rpx;
-			width: 50rpx;
-			text-align: center;
-			margin: 0 auto;
-		}
-
-		.foot-item .txt {
-			font-size: 24rpx;
-
-
-			&.active {}
-		}
 	}
 </style>

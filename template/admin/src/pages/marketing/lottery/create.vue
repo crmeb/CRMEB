@@ -19,11 +19,7 @@
     <Card :bordered="false" dis-hover class="ivu-mt">
       <div>
         <Tabs v-model="formValidate.factor" @on-click="onClickTab">
-          <TabPane
-            v-for="(item, index) in tabs"
-            :label="item.name"
-            :name="item.type"
-          />
+          <TabPane v-for="(item, index) in tabs" :label="item.name" :name="item.type" :key="index" />
         </Tabs>
       </div>
       <Row type="flex" class="mt30 acea-row row-middle row-center">
@@ -41,12 +37,7 @@
             <Row type="flex">
               <Col span="24">
                 <FormItem label="活动名称：" prop="name" label-for="name">
-                  <Input
-                    class="perW30"
-                    placeholder="请输入活动名称"
-                    element-id="name"
-                    v-model="formValidate.name"
-                  />
+                  <Input class="perW30" placeholder="请输入活动名称" element-id="name" v-model="formValidate.name" />
                 </FormItem>
               </Col>
               <Col span="24">
@@ -65,70 +56,33 @@
                 </FormItem>
               </Col>
               <Col span="24">
-                <FormItem
-                  label="参与用户："
-                  prop="attends_user"
-                  label-for="attends_user"
-                >
-                  <RadioGroup
-                    element-id="attends_user"
-                    v-model="formValidate.attends_user"
-                    @on-change="changeUsers"
-                  >
+                <FormItem label="参与用户：" prop="attends_user" label-for="attends_user">
+                  <RadioGroup element-id="attends_user" v-model="formValidate.attends_user" @on-change="changeUsers">
                     <Radio :label="1" class="radio">全部用户</Radio>
                     <Radio :label="2">部分用户</Radio>
                   </RadioGroup>
                 </FormItem>
               </Col>
               <Col span="24" v-if="formValidate.attends_user == 2">
-                <FormItem
-                  label=""
-                  :prop="formValidate.attends_user == 2 ? 'user_level' : ''"
-                >
+                <FormItem label="" :prop="formValidate.attends_user == 2 ? 'user_level' : ''">
                   <div class="acea-row row-middle">
-                    <Select
-                      multiple
-                      v-model="formValidate.user_level"
-                      class="perW30"
-                      placeholder="请选择用户等级"
-                    >
-                      <Option
-                        v-for="item in userLevelListApi"
-                        :value="item.id"
-                        :key="item.id"
-                        >{{ item.name }}</Option
-                      >
+                    <Select multiple v-model="formValidate.user_level" class="perW30" placeholder="请选择用户等级">
+                      <Option v-for="item in userLevelListApi" :value="item.id" :key="item.id">{{ item.name }}</Option>
                     </Select>
                   </div>
                 </FormItem>
               </Col>
               <Col span="24" v-if="formValidate.attends_user == 2">
-                <FormItem
-                  label=""
-                  :prop="formValidate.attends_user == 2 ? 'is_svip' : ''"
-                >
+                <FormItem label="" :prop="formValidate.attends_user == 2 ? 'is_svip' : ''">
                   <div class="acea-row row-middle">
-                    <Select
-                      v-model="formValidate.is_svip"
-                      class="perW30"
-                      clearable
-                      placeholder="请选择是否是付费会员"
-                    >
-                      <Option
-                        v-for="item in templateList"
-                        :value="item.id"
-                        :key="item.id"
-                        >{{ item.name }}</Option
-                      >
+                    <Select v-model="formValidate.is_svip" class="perW30" clearable placeholder="请选择是否是付费会员">
+                      <Option v-for="item in templateList" :value="item.id" :key="item.id">{{ item.name }}</Option>
                     </Select>
                   </div>
                 </FormItem>
               </Col>
               <Col span="24" v-if="formValidate.attends_user == 2">
-                <FormItem
-                  label=""
-                  :prop="formValidate.attends_user == 2 ? 'user_label' : ''"
-                >
+                <FormItem label="" :prop="formValidate.attends_user == 2 ? 'user_label' : ''">
                   <div class="acea-row row-middle">
                     <!-- <Select
                       multiple
@@ -143,10 +97,7 @@
                         >{{ item.label_name }}</Option
                       >
                     </Select> -->
-                    <div
-                      class="labelInput acea-row row-between-wrapper"
-                      @click="selectLabelShow = true"
-                    >
+                    <div class="labelInput acea-row row-between-wrapper" @click="selectLabelShow = true">
                       <div class="">
                         <div v-if="selectDataLabel.length">
                           <Tag
@@ -162,9 +113,7 @@
                       <div class="ivu-icon ivu-icon-ios-arrow-down"></div>
                     </div>
                   </div>
-                  <div class="ml100 grey">
-                    三个条件都设置后,必须这些条件都满足的用户才能参加抽奖
-                  </div>
+                  <div class="ml100 grey">三个条件都设置后,必须这些条件都满足的用户才能参加抽奖</div>
                 </FormItem>
               </Col>
               <Col span="24" v-if="formValidate.factor == 5">
@@ -173,10 +122,7 @@
                   :prop="formValidate.factor == 5 ? 'lottery_num_term' : ''"
                   label-for="status"
                 >
-                  <RadioGroup
-                    element-id="lottery_num_term"
-                    v-model="formValidate.lottery_num_term"
-                  >
+                  <RadioGroup element-id="lottery_num_term" v-model="formValidate.lottery_num_term">
                     <Radio :label="1" class="radio">每天N次</Radio>
                     <Radio :label="2">每人N次</Radio>
                   </RadioGroup>
@@ -222,24 +168,11 @@
                   </div>
                 </FormItem>
               </Col>
-              <Col
-                span="24"
-                v-if="
-                  formValidate.factor == 1 ||
-                  formValidate.factor == 3 ||
-                  formValidate.factor == 4
-                "
-              >
+              <Col span="24" v-if="formValidate.factor == 1 || formValidate.factor == 3 || formValidate.factor == 4">
                 <FormItem
-                  :label="
-                    formValidate.factor == 1 ? '抽奖消耗积分：' : '抽奖次数：'
-                  "
+                  :label="formValidate.factor == 1 ? '抽奖消耗积分：' : '抽奖次数：'"
                   :prop="
-                    formValidate.factor == 1 ||
-                    formValidate.factor == 3 ||
-                    formValidate.factor == 4
-                      ? 'factor_num'
-                      : ''
+                    formValidate.factor == 1 || formValidate.factor == 3 || formValidate.factor == 4 ? 'factor_num' : ''
                   "
                   label-for="factor_num"
                 >
@@ -253,9 +186,7 @@
                       v-model="formValidate.factor_num"
                       class="perW20"
                     />
-                    <div class="ml10 grey" v-if="formValidate.factor !== 1">
-                      次
-                    </div>
+                    <div class="ml10 grey" v-if="formValidate.factor !== 1">次</div>
                   </div>
                 </FormItem>
               </Col>
@@ -263,30 +194,14 @@
             <Row>
               <Col span="24">
                 <FormItem label="规格选择：" prop="prize">
-                  <Table
-                    :data="specsData"
-                    :columns="columns"
-                    border
-                    :draggable="true"
-                    @on-drag-drop="onDragDrop"
-                  >
+                  <Table :data="specsData" :columns="columns" border :draggable="true" @on-drag-drop="onDragDrop">
                     <template slot-scope="{ row, index }" slot="image">
-                      <div
-                        class="acea-row row-middle row-center-wrapper"
-                        @click="modalPicTap('dan', 'goods', index)"
-                      >
+                      <div class="acea-row row-middle row-center-wrapper" @click="modalPicTap('dan', 'goods', index)">
                         <div class="pictrue pictrueTab" v-if="row.image">
                           <img v-lazy="row.image" />
                         </div>
-                        <div
-                          class="upLoad pictrueTab acea-row row-center-wrapper"
-                          v-else
-                        >
-                          <Icon
-                            type="ios-camera-outline"
-                            size="21"
-                            class="iconfonts"
-                          />
+                        <div class="upLoad pictrueTab acea-row row-center-wrapper" v-else>
+                          <Icon type="ios-camera-outline" size="21" class="iconfonts" />
                         </div>
                       </div>
                     </template>
@@ -308,7 +223,7 @@
                       <InputNumber
                         v-model="row.chance"
                         :max="100"
-                        :min="1"
+                        :min="0"
                         :precision="0"
                         class="priceBox"
                         @on-change="
@@ -322,9 +237,7 @@
                       <div>{{ row.type | typeName }}</div>
                     </template>
                     <template slot-scope="{ row, index }" slot="setting">
-                      <Button class="submission mr15" @click="editGoods(index)"
-                        >编辑</Button
-                      >
+                      <Button class="submission mr15" @click="editGoods(index)">编辑</Button>
                       <!-- <Button
                         v-if="row.type !== 1"
                         class="submission mr15"
@@ -333,11 +246,7 @@
                       > -->
                     </template>
                   </Table>
-                  <Button
-                    v-if="specsData.length < 8"
-                    type="primary"
-                    class="submission mr15 mt20"
-                    @click="addGoods"
+                  <Button v-if="specsData.length < 8" type="primary" class="submission mr15 mt20" @click="addGoods"
                     >添加商品</Button
                   >
                 </FormItem>
@@ -347,10 +256,7 @@
                     <Poptip placement="bottom" width="380">
                       <a>查看位置示例图</a>
                       <div class="api" slot="content">
-                        <img
-                          src="../../../assets/images/lotteryTest.png"
-                          alt=""
-                        />
+                        <img src="../../../assets/images/lotteryTest.png" alt="" />
                       </div>
                     </Poptip>
                   </div>
@@ -360,11 +266,7 @@
             <div>
               <FormItem
                 v-if="formValidate.factor != 3 && formValidate.factor != 4"
-                :prop="
-                  formValidate.factor != 3 && formValidate.factor != 4
-                    ? 'image'
-                    : ''
-                "
+                :prop="formValidate.factor != 3 && formValidate.factor != 4 ? 'image' : ''"
               >
                 <div class="custom-label" slot="label">
                   <div>
@@ -376,40 +278,20 @@
                 <div class="acea-row">
                   <div class="pictrue" v-if="formValidate.image">
                     <img v-lazy="formValidate.image" />
-                    <Button
-                      shape="circle"
-                      icon="md-close"
-                      @click.native="handleRemove()"
-                      class="btndel"
-                    ></Button>
+                    <Button shape="circle" icon="md-close" @click.native="handleRemove()" class="btndel"></Button>
                   </div>
-                  <div
-                    v-else
-                    class="upLoad acea-row row-center-wrapper"
-                    @click="modalPicTap('dan', 'danFrom')"
-                  >
-                    <Icon
-                      type="ios-camera-outline"
-                      size="26"
-                      class="iconfonts"
-                    />
+                  <div v-else class="upLoad acea-row row-center-wrapper" @click="modalPicTap('dan', 'danFrom')">
+                    <Icon type="ios-camera-outline" size="26" class="iconfonts" />
                   </div>
                 </div>
               </FormItem>
               <FormItem
                 v-if="formValidate.factor != 3 && formValidate.factor != 4"
                 label="中奖名单："
-                :prop="
-                  formValidate.factor != 3 && formValidate.factor != 4
-                    ? 'is_all_record'
-                    : ''
-                "
+                :prop="formValidate.factor != 3 && formValidate.factor != 4 ? 'is_all_record' : ''"
                 label-for="is_all_record"
               >
-                <RadioGroup
-                  element-id="is_all_record"
-                  v-model="formValidate.is_all_record"
-                >
+                <RadioGroup element-id="is_all_record" v-model="formValidate.is_all_record">
                   <Radio :label="0">关闭</Radio>
                   <Radio :label="1" class="radio">开启</Radio>
                 </RadioGroup>
@@ -417,17 +299,10 @@
               <FormItem
                 v-if="formValidate.factor != 3 && formValidate.factor != 4"
                 label="个人中奖记录："
-                :prop="
-                  formValidate.factor != 3 && formValidate.factor != 4
-                    ? 'is_personal_record'
-                    : ''
-                "
+                :prop="formValidate.factor != 3 && formValidate.factor != 4 ? 'is_personal_record' : ''"
                 label-for="is_personal_record"
               >
-                <RadioGroup
-                  element-id="is_personal_record"
-                  v-model="formValidate.is_personal_record"
-                >
+                <RadioGroup element-id="is_personal_record" v-model="formValidate.is_personal_record">
                   <Radio :label="0">关闭</Radio>
                   <Radio :label="1" class="radio">开启</Radio>
                 </RadioGroup>
@@ -438,10 +313,7 @@
                 prop="is_content"
                 label-for="is_content"
               >
-                <RadioGroup
-                  element-id="is_content"
-                  v-model="formValidate.is_content"
-                >
+                <RadioGroup element-id="is_content" v-model="formValidate.is_content">
                   <Radio :label="0">关闭</Radio>
                   <Radio :label="1" class="radio">开启</Radio>
                 </RadioGroup>
@@ -449,17 +321,9 @@
               <FormItem
                 label=""
                 :prop="
-                  formValidate.factor != 3 &&
-                  formValidate.factor != 4 &&
-                  formValidate.is_content == 1
-                    ? 'content'
-                    : ''
+                  formValidate.factor != 3 && formValidate.factor != 4 && formValidate.is_content == 1 ? 'content' : ''
                 "
-                v-show="
-                  formValidate.factor != 3 &&
-                  formValidate.factor != 4 &&
-                  formValidate.is_content == 1
-                "
+                v-show="formValidate.factor != 3 && formValidate.factor != 4 && formValidate.is_content == 1"
               >
                 <WangEditor
                   style="width: 90%"
@@ -475,12 +339,7 @@
               </FormItem>
             </div>
             <FormItem>
-              <Button
-                type="primary"
-                class="submission"
-                :loading="submitOpen"
-                @click="next('formValidate')"
-              >
+              <Button type="primary" class="submission" :loading="submitOpen" @click="next('formValidate')">
                 <div v-if="!submitOpen">提交</div>
                 <div v-else>提交中</div>
               </Button>
@@ -502,11 +361,7 @@
       :mask-closable="false"
       :z-index="1"
     >
-      <uploadPictures
-        :isChoice="isChoice"
-        @getPic="getPic"
-        v-if="modalPic"
-      ></uploadPictures>
+      <uploadPictures :isChoice="isChoice" @getPic="getPic" v-if="modalPic"></uploadPictures>
     </Modal>
     <!-- 上传图片-->
     <Modal
@@ -519,11 +374,7 @@
       :mask-closable="false"
       :z-index="1"
     >
-      <addGoods
-        v-if="addGoodsModel"
-        @addGoodsData="addGoodsData"
-        :editData="editData"
-      ></addGoods>
+      <addGoods v-if="addGoodsModel" @addGoodsData="addGoodsData" :editData="editData"></addGoods>
     </Modal>
     <!-- 用户标签 -->
     <Modal
@@ -549,27 +400,22 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
-import goodsList from "@/components/goodsList/index";
-import uploadPictures from "@/components/uploadPictures";
-import userLabel from "@/components/userLabel";
-import addGoods from "./addGoods";
-import {
-  lotteryNewDetailApi,
-  lotteryDetailApi,
-  lotteryCreateApi,
-  lotteryEditApi,
-} from "@/api/lottery"; //详情 创建 编辑
-import { lotteryFrom } from "./formRule/lotteryFrom";
-import { labelListApi } from "@/api/product";
-import { levelListApi } from "@/api/user";
-import WangEditor from "@/components/wangEditor/index.vue";
+import { mapState } from 'vuex';
+import goodsList from '@/components/goodsList/index';
+import uploadPictures from '@/components/uploadPictures';
+import userLabel from '@/components/userLabel';
+import addGoods from './addGoods';
+import { lotteryNewDetailApi, lotteryDetailApi, lotteryCreateApi, lotteryEditApi } from '@/api/lottery'; //详情 创建 编辑
+import { lotteryFrom } from './formRule/lotteryFrom';
+import { labelListApi } from '@/api/product';
+import { levelListApi } from '@/api/user';
+import WangEditor from '@/components/wangEditor/index.vue';
 
-import { formatDate } from "@/utils/validate";
-import { formatRichText } from "@/utils/editorImg";
+import { formatDate } from '@/utils/validate';
+import { formatRichText } from '@/utils/editorImg';
 
 export default {
-  name: "lotteryCreate",
+  name: 'lotteryCreate',
   components: {
     goodsList,
     uploadPictures,
@@ -581,22 +427,22 @@ export default {
     return {
       selectDataLabel: [],
       selectLabelShow: false,
-      content: "",
+      content: '',
       tabs: [
         {
-          name: "积分抽取",
-          type: "1",
+          name: '积分抽取',
+          type: '1',
         },
         {
-          name: "订单支付",
-          type: "3",
+          name: '订单支付',
+          type: '3',
         },
         {
-          name: "订单评价",
-          type: "4",
+          name: '订单评价',
+          type: '4',
         },
       ],
-      title: "添加商品",
+      title: '添加商品',
       loading: false,
       userLabelList: [], //用户标签列表
       userLevelListApi: [], //用户等级列表
@@ -607,160 +453,160 @@ export default {
       myConfig: {
         autoHeightEnabled: false, // 编辑器不自动被内容撑高
         initialFrameHeight: 500, // 初始容器高度
-        initialFrameWidth: "100%", // 初始容器宽度
-        UEDITOR_HOME_URL: "/admin/UEditor/",
-        serverUrl: "",
+        initialFrameWidth: '100%', // 初始容器宽度
+        UEDITOR_HOME_URL: '/admin/UEditor/',
+        serverUrl: '',
       },
-      isChoice: "单选",
+      isChoice: '单选',
       current: 0,
       modalPic: false,
       modal_loading: false,
       images: [],
       templateList: [
-        { id: 0, name: "非付费会员" },
-        { id: 1, name: "付费会员" },
+        { id: 0, name: '非付费会员' },
+        { id: 1, name: '付费会员' },
       ],
       columns: [
         {
-          title: "序号",
-          type: "index",
+          title: '序号',
+          type: 'index',
           width: 60,
-          align: "center",
+          align: 'center',
         },
         {
-          title: "图片",
-          slot: "image",
-          align: "center",
+          title: '图片',
+          slot: 'image',
+          align: 'center',
           minWidth: 120,
         },
         {
-          title: "名称",
-          align: "center",
+          title: '名称',
+          align: 'center',
           minWidth: 80,
-          key: "name",
+          key: 'name',
         },
         {
-          title: "奖品",
-          slot: "type",
-          align: "center",
-          minWidth: 80,
-        },
-        {
-          title: "提示语",
-          key: "prompt",
-          align: "center",
+          title: '奖品',
+          slot: 'type',
+          align: 'center',
           minWidth: 80,
         },
         {
-          title: "数量",
-          slot: "total",
-          align: "center",
+          title: '提示语',
+          key: 'prompt',
+          align: 'center',
           minWidth: 80,
         },
         {
-          title: "奖品权重",
-          slot: "chance",
-          align: "center",
+          title: '数量',
+          slot: 'total',
+          align: 'center',
           minWidth: 80,
         },
         {
-          title: "奖品概率",
-          key: "probability",
-          align: "center",
+          title: '奖品权重',
+          slot: 'chance',
+          align: 'center',
           minWidth: 80,
         },
         {
-          title: "操作",
-          slot: "setting",
-          align: "center",
+          title: '奖品概率',
+          key: 'probability',
+          align: 'center',
+          minWidth: 80,
+        },
+        {
+          title: '操作',
+          slot: 'setting',
+          align: 'center',
           minWidth: 80,
         },
       ],
       specsData: [
         {
           type: 1, //类型 1：未中奖 2：积分  3:余额  4：红包 5:优惠券 6：站内商品
-          name: "", //活动名称
+          name: '', //活动名称
           num: 10, //奖品数量
-          image: "", //奖品图片
-          chance: 1, //中奖权重
+          image: '', //奖品图片
+          chance: 0, //中奖权重
           total: 0, //奖品数量
-          prompt: "", //提示语
+          prompt: '', //提示语
         },
         {
           type: 1, //类型 1：未中奖2：积分  3:余额  4：红包 5:优惠券 6：站内商品
-          name: "", //活动名称
+          name: '', //活动名称
           num: 0, //奖品数量
-          image: "", //奖品图片
+          image: '', //奖品图片
           chance: 0, //中奖权重
           total: 0, //奖品数量
-          prompt: "", //提示语
+          prompt: '', //提示语
         },
         {
           type: 1, //类型 1：未中奖2：积分  3:余额  4：红包 5:优惠券 6：站内商品
-          name: "", //活动名称
+          name: '', //活动名称
           num: 0, //奖品数量
-          image: "", //奖品图片
+          image: '', //奖品图片
           chance: 0, //中奖权重
           total: 0, //奖品数量
-          prompt: "", //提示语
+          prompt: '', //提示语
         },
         {
           type: 1, //类型 1：未中奖2：积分  3:余额  4：红包 5:优惠券 6：站内商品
-          name: "", //活动名称
+          name: '', //活动名称
           num: 0, //奖品数量
-          image: "", //奖品图片
+          image: '', //奖品图片
           chance: 0, //中奖权重
           total: 0, //奖品数量
-          prompt: "", //提示语
+          prompt: '', //提示语
         },
         {
           type: 1, //类型 1：未中奖2：积分  3:余额  4：红包 5:优惠券 6：站内商品
-          name: "", //活动名称
+          name: '', //活动名称
           num: 0, //奖品数量
-          image: "", //奖品图片
+          image: '', //奖品图片
           chance: 0, //中奖权重
           total: 0, //奖品数量
-          prompt: "", //提示语
+          prompt: '', //提示语
         },
         {
           type: 1, //类型 1：未中奖2：积分  3:余额  4：红包 5:优惠券 6：站内商品
-          name: "", //活动名称
+          name: '', //活动名称
           num: 0, //奖品数量
-          image: "", //奖品图片
+          image: '', //奖品图片
           chance: 0, //中奖权重
           total: 0, //奖品数量
-          prompt: "", //提示语
+          prompt: '', //提示语
         },
         {
           type: 1, //类型 1：未中奖2：积分  3:余额  4：红包 5:优惠券 6：站内商品
-          name: "", //活动名称
+          name: '', //活动名称
           num: 0, //奖品数量
-          image: "", //奖品图片
+          image: '', //奖品图片
           chance: 0, //中奖权重
           total: 0, //奖品数量
-          prompt: "", //提示语
+          prompt: '', //提示语
         },
         {
           type: 1, //类型 1：未中奖2：积分  3:余额  4：红包 5:优惠券 6：站内商品
-          name: "", //活动名称
+          name: '', //活动名称
           num: 0, //奖品数量
-          image: "", //奖品图片
+          image: '', //奖品图片
           chance: 0, //中奖权重
           total: 0, //奖品数量
-          prompt: "", //提示语
+          prompt: '', //提示语
         },
       ],
       formValidate: {
         images: [],
-        name: "", //活动名称
-        desc: "", //活动描述
-        image: "", //活动背景图
-        factor: "1", //抽奖类型：1:积分 2:余额 3：下单支付成功 4:订单评价',5:关注
+        name: '', //活动名称
+        desc: '', //活动描述
+        image: '', //活动背景图
+        factor: '1', //抽奖类型：1:积分 2:余额 3：下单支付成功 4:订单评价',5:关注
         factor_num: 1, //获取一次抽奖的条件数量
         attends_user: 1, //参与用户1：所有  2：部分
         user_level: [], //参与用户等级
         user_label: [], //参与用户标签
-        is_svip: "-1", //参与用户是否付费会员
+        is_svip: '-1', //参与用户是否付费会员
         prize_num: 0, //奖品数量
         period: [], //活动时间
         prize: [], //奖品数组
@@ -770,43 +616,43 @@ export default {
         is_all_record: 0, //中奖纪录展示
         is_personal_record: 0, //个人中奖纪录展示
         is_content: 0, //活动规格是否展示
-        content: "", //富文本内容
+        content: '', //富文本内容
         status: 0, //状态
       },
       ruleValidate: lotteryFrom,
-      currentid: "",
-      picTit: "",
+      currentid: '',
+      picTit: '',
       tableIndex: 0,
       copy: 0,
       editIndex: null,
-      id: "",
+      id: '',
       copy: 0,
     };
   },
   filters: {
     typeName(type) {
       if (type == 1) {
-        return "未中奖";
+        return '未中奖';
       } else if (type == 2) {
-        return "积分";
+        return '积分';
       } else if (type == 3) {
-        return "余额";
+        return '余额';
       } else if (type == 4) {
-        return "红包";
+        return '红包';
       } else if (type == 5) {
-        return "优惠券";
+        return '优惠券';
       } else if (type == 6) {
-        return "商品";
+        return '商品';
       }
     },
   },
   computed: {
-    ...mapState("admin/layout", ["isMobile"]),
+    ...mapState('admin/layout', ['isMobile']),
     labelWidth() {
       return this.isMobile ? undefined : 135;
     },
     labelPosition() {
-      return this.isMobile ? "top" : "right";
+      return this.isMobile ? 'top' : 'right';
     },
   },
   mounted() {
@@ -816,11 +662,10 @@ export default {
   },
   methods: {
     changeUsers(e) {
-      console.log(e);
       if (e == 1) {
         this.formValidate.user_level = []; //参与用户等级
         this.formValidate.user_label = []; //参与用户标签
-        this.formValidate.is_svip = "-1"; //参与用户是否付费会员
+        this.formValidate.is_svip = '-1'; //参与用户是否付费会员
         this.selectDataLabel = []; //参与用户是否付费会员
       }
     },
@@ -829,12 +674,6 @@ export default {
       this.selectLabelShow = false;
     },
     activeSelectData(data) {
-      console.log(data);
-      // let labels = [];
-      // if (!data.length) return;
-      // data.map((i) => {
-      //   labels.push(i.id);
-      // });
       this.selectLabelShow = false;
       this.selectDataLabel = data;
     },
@@ -860,7 +699,7 @@ export default {
     // 具体日期
     onchangeTime(e) {
       this.$nextTick(() => {
-        this.$set(this.formValidate, "period", e);
+        this.$set(this.formValidate, 'period', e);
       });
     },
     // 详情
@@ -868,17 +707,16 @@ export default {
       this.spinShow = true;
       lotteryNewDetailApi(this.formValidate.factor)
         .then((res) => {
-          console.log(typeof res.data);
           if (res.status == 200 && !Array.isArray(res.data)) {
             this.formValidate = res.data;
             this.formValidate.user_level = res.data.user_level || [];
             this.selectDataLabel = res.data.user_label || [];
             this.formValidate.is_svip = res.data.is_svip;
-            this.content = res.data.is_content ? res.data.content : "";
+            this.content = res.data.is_content ? res.data.content : '';
             this.formValidate.factor = res.data.factor.toString();
             this.formValidate.period = [
-              this.formatDate(res.data.start_time) || "",
-              this.formatDate(res.data.end_time) || "",
+              this.formatDate(res.data.start_time) || '',
+              this.formatDate(res.data.end_time) || '',
             ];
 
             this.specsData = res.data.prize;
@@ -886,15 +724,15 @@ export default {
           } else {
             this.formValidate = {
               images: [],
-              name: "", //活动名称
-              desc: "", //活动描述
-              image: "", //活动背景图
+              name: '', //活动名称
+              desc: '', //活动描述
+              image: '', //活动背景图
               factor: e.toString(), //抽奖类型：1:积分 2:余额 3：下单支付成功 4:订单评价',5:关注
               factor_num: 1, //获取一次抽奖的条件数量
               attends_user: 1, //参与用户1：所有  2：部分
               user_level: [], //参与用户等级
               user_label: [], //参与用户标签
-              is_svip: "-1", //参与用户是否付费会员
+              is_svip: '-1', //参与用户是否付费会员
               prize_num: 0, //奖品数量
               period: [], //活动时间
               prize: [], //奖品数组
@@ -904,81 +742,81 @@ export default {
               is_all_record: 0, //中奖纪录展示
               is_personal_record: 0, //个人中奖纪录展示
               is_content: 0, //活动规格是否展示
-              content: "", //富文本内容
+              content: '', //富文本内容
               status: 0, //状态
             };
             this.specsData = [
               {
                 type: 1, //类型 1：未中奖 2：积分  3:余额  4：红包 5:优惠券 6：站内商品
-                name: "", //活动名称
+                name: '', //活动名称
                 num: 10, //奖品数量
-                image: "", //奖品图片
-                chance: 1, //中奖权重
+                image: '', //奖品图片
+                chance: 0, //中奖权重
                 total: 0, //奖品数量
-                prompt: "", //提示语
+                prompt: '', //提示语
               },
               {
                 type: 1, //类型 1：未中奖2：积分  3:余额  4：红包 5:优惠券 6：站内商品
-                name: "", //活动名称
+                name: '', //活动名称
                 num: 0, //奖品数量
-                image: "", //奖品图片
+                image: '', //奖品图片
                 chance: 0, //中奖权重
                 total: 0, //奖品数量
-                prompt: "", //提示语
+                prompt: '', //提示语
               },
               {
                 type: 1, //类型 1：未中奖2：积分  3:余额  4：红包 5:优惠券 6：站内商品
-                name: "", //活动名称
+                name: '', //活动名称
                 num: 0, //奖品数量
-                image: "", //奖品图片
+                image: '', //奖品图片
                 chance: 0, //中奖权重
                 total: 0, //奖品数量
-                prompt: "", //提示语
+                prompt: '', //提示语
               },
               {
                 type: 1, //类型 1：未中奖2：积分  3:余额  4：红包 5:优惠券 6：站内商品
-                name: "", //活动名称
+                name: '', //活动名称
                 num: 0, //奖品数量
-                image: "", //奖品图片
+                image: '', //奖品图片
                 chance: 0, //中奖权重
                 total: 0, //奖品数量
-                prompt: "", //提示语
+                prompt: '', //提示语
               },
               {
                 type: 1, //类型 1：未中奖2：积分  3:余额  4：红包 5:优惠券 6：站内商品
-                name: "", //活动名称
+                name: '', //活动名称
                 num: 0, //奖品数量
-                image: "", //奖品图片
+                image: '', //奖品图片
                 chance: 0, //中奖权重
                 total: 0, //奖品数量
-                prompt: "", //提示语
+                prompt: '', //提示语
               },
               {
                 type: 1, //类型 1：未中奖2：积分  3:余额  4：红包 5:优惠券 6：站内商品
-                name: "", //活动名称
+                name: '', //活动名称
                 num: 0, //奖品数量
-                image: "", //奖品图片
+                image: '', //奖品图片
                 chance: 0, //中奖权重
                 total: 0, //奖品数量
-                prompt: "", //提示语
+                prompt: '', //提示语
               },
               {
                 type: 1, //类型 1：未中奖2：积分  3:余额  4：红包 5:优惠券 6：站内商品
-                name: "", //活动名称
+                name: '', //活动名称
                 num: 0, //奖品数量
-                image: "", //奖品图片
+                image: '', //奖品图片
                 chance: 0, //中奖权重
                 total: 0, //奖品数量
-                prompt: "", //提示语
+                prompt: '', //提示语
               },
               {
                 type: 1, //类型 1：未中奖2：积分  3:余额  4：红包 5:优惠券 6：站内商品
-                name: "", //活动名称
+                name: '', //活动名称
                 num: 0, //奖品数量
-                image: "", //奖品图片
+                image: '', //奖品图片
                 chance: 0, //中奖权重
                 total: 0, //奖品数量
-                prompt: "", //提示语
+                prompt: '', //提示语
               },
             ];
           }
@@ -988,7 +826,6 @@ export default {
     },
     // 下一步
     next(name) {
-      console.log(this.selectDataLabel);
       this.formValidate.prize = this.specsData;
       if (this.formValidate.is_content) {
         this.formValidate.content = formatRichText(this.content);
@@ -1051,14 +888,14 @@ export default {
     // 点击商品图
     modalPicTap(tit, picTit, index) {
       this.modalPic = true;
-      this.isChoice = tit === "dan" ? "单选" : "多选";
-      this.picTit = picTit || "";
+      this.isChoice = tit === 'dan' ? '单选' : '多选';
+      this.picTit = picTit || '';
       this.tableIndex = index;
     },
     // 获取单张图片信息
     getPic(pc) {
       switch (this.picTit) {
-        case "danFrom":
+        case 'danFrom':
           this.formValidate.image = pc.att_dir;
           break;
         default:
@@ -1067,7 +904,7 @@ export default {
       this.modalPic = false;
     },
     handleRemove() {
-      this.formValidate.image = "";
+      this.formValidate.image = '';
     },
     // 表单验证
     validate(prop, status, error) {
@@ -1081,13 +918,13 @@ export default {
     //新增商品
     addGoods() {
       this.addGoodsModel = true;
-      this.title = "添加商品";
+      this.title = '添加商品';
       this.editData = {};
     },
     //编辑商品
     editGoods(index) {
       this.addGoodsModel = true;
-      this.title = "添加奖品";
+      this.title = '添加奖品';
       this.editData = this.specsData[index];
       this.editIndex = index;
     },
@@ -1101,54 +938,46 @@ export default {
       for (let i = 0; i < arr.length; i++) {
         arrData.push(arr[i][name]);
       }
-      return eval(arrData.join("+"));
+      return eval(arrData.join('+'));
     },
     addGoodsData(data) {
       this.editIndex != null
         ? this.$set(this.specsData, [this.editIndex], data)
         : this.specsData.length < 8
         ? this.specsData.push(data)
-        : this.$Message.warning("最多添加8个奖品");
+        : this.$Message.warning('最多添加8个奖品');
       this.getProbability();
       this.addGoodsModel = false;
       this.editIndex = null;
     },
     changeChance(data, index) {
-      this.$set(this.specsData[index], "chance", data);
+      this.$set(this.specsData[index], 'chance', data);
       this.$nextTick((e) => {
         this.getProbability();
       });
     },
     changeTotal(data, index) {
-      this.$set(this.specsData[index], "total", data);
+      this.$set(this.specsData[index], 'total', data);
     },
     //获取商品中奖概率
     getProbability() {
       let sum = 0;
-      sum = this.sumArr(this.specsData, "chance");
+      sum = this.sumArr(this.specsData, 'chance');
       for (let j = 0; j < this.specsData.length; j++) {
-        this.$set(
-          this.specsData[j],
-          "probability",
-          ((this.specsData[j].chance / sum) * 100).toFixed(2) + "%"
-        );
+        this.$set(this.specsData[j], 'probability', ((this.specsData[j].chance / sum) * 100).toFixed(2) + '%');
       }
     },
     //修改排序
     onDragDrop(a, b) {
-      this.specsData.splice(
-        b,
-        1,
-        ...this.specsData.splice(a, 1, this.specsData[b])
-      );
+      this.specsData.splice(b, 1, ...this.specsData.splice(a, 1, this.specsData[b]));
     },
     //时间格式转换
     formatDate(time) {
       if (time) {
         let date = new Date(time * 1000);
-        return formatDate(date, "yyyy-MM-dd hh:mm");
+        return formatDate(date, 'yyyy-MM-dd hh:mm');
       } else {
-        return "";
+        return '';
       }
     },
   },

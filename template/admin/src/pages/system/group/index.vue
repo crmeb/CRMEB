@@ -1,10 +1,5 @@
 <template>
   <div>
-    <div class="i-layout-page-header">
-      <div class="i-layout-page-header">
-        <span class="ivu-page-header-title">{{ $route.meta.title }}</span>
-      </div>
-    </div>
     <Card :bordered="false" dis-hover class="ivu-mt">
       <Form
         ref="formValidate"
@@ -28,13 +23,7 @@
         </Row>
         <Row type="flex">
           <Col v-bind="grid">
-            <Button
-              type="primary"
-              icon="md-add"
-              @click="groupAdd('添加数据组')"
-              class="mr20"
-              >添加数据组</Button
-            >
+            <Button type="primary" icon="md-add" @click="groupAdd('添加数据组')" class="mr20">添加数据组</Button>
           </Col>
         </Row>
       </Form>
@@ -92,11 +81,11 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
-import groupFrom from "./components/groupFrom";
-import { groupListApi } from "@/api/system";
+import { mapState } from 'vuex';
+import groupFrom from './components/groupFrom';
+import { groupListApi } from '@/api/system';
 export default {
-  name: "group",
+  name: 'group',
   components: { groupFrom },
   data() {
     return {
@@ -110,52 +99,52 @@ export default {
       formValidate: {
         page: 1,
         limit: 20,
-        title: "",
+        title: '',
       },
       loading: false,
       tabList: [],
       total: 0,
       columns1: [
         {
-          title: "ID",
-          key: "id",
+          title: 'ID',
+          key: 'id',
           width: 80,
         },
         {
-          title: "KEY",
-          key: "config_name",
+          title: 'KEY',
+          key: 'config_name',
           minWidth: 130,
         },
         {
-          title: "数据组名称",
-          key: "name",
+          title: '数据组名称',
+          key: 'name',
           minWidth: 130,
         },
         {
-          title: "简介",
-          key: "info",
+          title: '简介',
+          key: 'info',
           minWidth: 130,
         },
         {
-          title: "操作",
-          slot: "action",
-          fixed: "right",
+          title: '操作',
+          slot: 'action',
+          fixed: 'right',
           minWidth: 150,
         },
       ],
       FromData: null,
-      titleFrom: "",
+      titleFrom: '',
       groupId: 0,
-      addId: "",
+      addId: '',
     };
   },
   computed: {
-    ...mapState("media", ["isMobile"]),
+    ...mapState('media', ['isMobile']),
     labelWidth() {
       return this.isMobile ? undefined : 75;
     },
     labelPosition() {
-      return this.isMobile ? "top" : "right";
+      return this.isMobile ? 'top' : 'right';
     },
   },
   mounted() {
@@ -165,7 +154,7 @@ export default {
     // 跳转到组合数据列表页面
     goList(row) {
       this.$router.push({
-        path: "/admin/system/config/system_group/list/" + row.id,
+        path: '/admin/system/config/system_group/list/' + row.id,
       });
     },
     // 列表
@@ -196,7 +185,7 @@ export default {
     groupAdd(title) {
       this.$refs.groupfroms.modals = true;
       this.titleFrom = title;
-      this.addId = "addId";
+      this.addId = 'addId';
       this.groupId = 0;
     },
     // 删除
@@ -205,8 +194,8 @@ export default {
         title: tit,
         num: num,
         url: `setting/group/${row.id}`,
-        method: "DELETE",
-        ids: "",
+        method: 'DELETE',
+        ids: '',
       };
       this.$modalSure(delfromData)
         .then((res) => {
@@ -224,11 +213,10 @@ export default {
       this.groupId = row.id;
       this.$refs.groupfroms.fromData(row.id);
       this.$refs.groupfroms.modals = true;
-      this.addId = "";
+      this.addId = '';
     },
   },
 };
 </script>
 
-<style scoped>
-</style>
+<style scoped></style>

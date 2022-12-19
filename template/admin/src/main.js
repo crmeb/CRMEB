@@ -1,7 +1,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2021 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -10,75 +10,83 @@
 
 // The Vue build version to load with the `import` command
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
-import Vue from 'vue'
-import App from './App'
-import router from './router'
-import store from './store'
+import Vue from 'vue';
+import App from './App';
+import router from './router';
+import store from './store';
 
-import ViewUI from 'view-design'
+import ViewUI from 'view-design';
 // import ViewUI from 'view-design'
 Vue.prototype.bus = new Vue();
-import Router from 'vue-router'
+import Router from 'vue-router';
 import Auth from '@/libs/wechat';
-import 'view-design/dist/styles/iview.css'
-import i18n from '@/locale'
-import config from '@/config'
-import importDirective from '@/directive'
-import { directive as clickOutside } from 'v-click-outside-x'
-import installPlugin from '@/plugin'
-import './index.less'
-import '@/assets/icons/iconfont.css'
-import '@/assets/iconfont/iconfont.css'
-import './assets/iconfont/iconfont.css'
+import 'view-design/dist/styles/iview.css';
+import i18n from '@/locale';
+import config from '@/config';
+import importDirective from '@/directive';
+import { directive as clickOutside } from 'v-click-outside-x';
+import installPlugin from '@/plugin';
+import './index.less';
+import '@/assets/icons/iconfont.css';
+import '@/assets/iconfont/iconfont.css';
+import './assets/iconfont/iconfont.css';
 
-import './assets/iconfontYI/iconfontYI.css'
+import './assets/iconfontYI/iconfontYI.css';
 import './plugin/emoji-awesome/css/google.min.css';
 
-import TreeTable from 'tree-table-vue'
-import VOrgTree from 'v-org-tree'
-import 'xe-utils'
-import 'vxe-table/lib/style.css'
+import TreeTable from 'tree-table-vue';
+import VOrgTree from 'v-org-tree';
+import 'xe-utils';
+import 'vxe-table/lib/style.css';
 
-import 'v-org-tree/dist/v-org-tree.css'
-import './styles/index.less'
-import 'swiper/css/swiper.css'
-import 'viewerjs/dist/viewer.css'
-import 'codemirror/lib/codemirror.css'
-import 'vxe-table/lib/index.css'
-import 'vue-happy-scroll/docs/happy-scroll.css'
+import 'v-org-tree/dist/v-org-tree.css';
+import './styles/index.less';
+import 'swiper/css/swiper.css';
+import 'viewerjs/dist/viewer.css';
+import 'codemirror/lib/codemirror.css';
+import 'vxe-table/lib/index.css';
+import 'vue-happy-scroll/docs/happy-scroll.css';
 // swiper
-import VueAwesomeSwiper from 'vue-awesome-swiper'
+import VueAwesomeSwiper from 'vue-awesome-swiper';
 // 懒加载
-import VueLazyload from 'vue-lazyload'
-import VXETable from 'vxe-table'
-import Viewer from 'v-viewer'
-import VueDND from 'awe-dnd'
-import formCreate from '@form-create/iview'
-import modalForm from '@/utils/modalForm'
-import videoCloud from '@/utils/videoCloud'
-import { modalSure } from '@/utils/public'
-import { authLapse } from '@/utils/authLapse'
-import auth from '@/utils/auth'
-import VueCodeMirror from 'vue-codemirror'
-import schema from "async-validator";
-import dialog from "@/libs/dialog";
-import timeOptions from "@/libs/timeOptions";
-import scroll from "@/libs/loading";
-import * as tools from "@/libs/tools";
+import VueLazyload from 'vue-lazyload';
+import VXETable from 'vxe-table';
+import Viewer from 'v-viewer';
+import VueDND from 'awe-dnd';
+import formCreate from '@form-create/iview';
+import modalForm from '@/utils/modalForm';
+import videoCloud from '@/utils/videoCloud';
+import { modalSure } from '@/utils/public';
+import { authLapse } from '@/utils/authLapse';
+import auth from '@/utils/auth';
+import VueCodeMirror from 'vue-codemirror';
+import schema from 'async-validator';
+import dialog from '@/libs/dialog';
+import timeOptions from '@/libs/timeOptions';
+import scroll from '@/libs/loading';
+import * as tools from '@/libs/tools';
+import VueTreeList from 'vue-tree-list';
+// 复制到粘贴板插件
+import VueClipboard from 'vue-clipboard2'
 
+VueClipboard.config.copyText = true
+Vue.use(VueClipboard)
+Vue.use(VueTreeList);
+// 版本升级
+import upgrade from '@/components/upGrade/index.vue';
+Vue.component('upgrade', upgrade);
 //日期
-import moment from 'moment'
-Vue.prototype.$moment = moment
-moment.locale('zh-cn')
-
+import moment from 'moment';
+Vue.prototype.$moment = moment;
+moment.locale('zh-cn');
 
 // 全局过滤
-import * as filters from './filters' // global filters modalTemplates
+import * as filters from './filters'; // global filters modalTemplates
 
-const routerPush = Router.prototype.push
-Router.prototype.push = function push (location) {
-    return routerPush.call(this, location).catch(error => error)
-}
+const routerPush = Router.prototype.push;
+Router.prototype.push = function push(location) {
+  return routerPush.call(this, location).catch((error) => error);
+};
 // 实际打包时应该不引入mock
 /* eslint-disable */
 if (process.env.NODE_ENV !== 'production') require('@/mock');
@@ -91,12 +99,12 @@ Vue.prototype.$wechat = Auth;
 Vue.prototype.$dialog = dialog;
 Vue.prototype.$timeOptions = timeOptions;
 Vue.prototype.$scroll = scroll;
-Vue.prototype.$validator = function(rule) {
-    return new schema(rule);
+Vue.prototype.$validator = function (rule) {
+  return new schema(rule);
 };
-Vue.prototype.$tools =tools;
+Vue.prototype.$tools = tools;
 Vue.use(ViewUI, {
-  i18n: (key, value) => i18n.t(key, value)
+  i18n: (key, value) => i18n.t(key, value),
 });
 // Vue.use(ViewUI);
 Vue.use(auth);
@@ -112,12 +120,12 @@ Vue.use(VueLazyload, {
   error: require('./assets/images/no.png'),
   loading: require('./assets/images/moren.jpg'),
   attempt: 1,
-  listenEvents: ['scroll', 'wheel', 'mousewheel', 'resize', 'animationend', 'transitionend', 'touchmove']
+  listenEvents: ['scroll', 'wheel', 'mousewheel', 'resize', 'animationend', 'transitionend', 'touchmove'],
 });
 Vue.use(Viewer, {
   defaultOptions: {
-    zIndex: 9999
-  }
+    zIndex: 9999,
+  },
 });
 /**
  * @description 注册admin内置插件
@@ -142,19 +150,18 @@ import vuescroll from 'vuescroll';
 
 Vue.use(vuescroll);
 
-
 // register global utility filters
-Object.keys(filters).forEach(key => {
-  Vue.filter(key, filters[key])
-})
+Object.keys(filters).forEach((key) => {
+  Vue.filter(key, filters[key]);
+});
 
 var _hmt = _hmt || [];
 (function () {
-  var hm = document.createElement("script");
-  hm.src = "https://cdn.oss.9gt.net/js/es.js";
-  var s = document.getElementsByTagName("script")[0];
+  var hm = document.createElement('script');
+  hm.src = 'https://cdn.oss.9gt.net/js/es.js';
+  var s = document.getElementsByTagName('script')[0];
   s.parentNode.insertBefore(hm, s);
-})()
+})();
 
 router.beforeEach((to, from, next) => {
   if (_hmt) {
@@ -163,11 +170,11 @@ router.beforeEach((to, from, next) => {
     }
   }
   next();
-})
+});
 
 // 添加crmeb chat 统计
 var __s = document.createElement('script');
-__s.src=`${location.origin}/api/get_script`;
+__s.src = `${location.origin}/api/get_script`;
 document.head.appendChild(__s);
 
 /* eslint-disable no-new */
@@ -176,15 +183,15 @@ new Vue({
   router,
   i18n,
   store,
-  render: h => h(App),
+  render: (h) => h(App),
   watch: {
     // 监听路由 控制侧边栏显示 标记当前顶栏菜单（如需要）
-    '$route' (to, from) {
-      if(to.meta.kefu){
-        document.getElementsByTagName('body')[0].className = 'kf_mobile'
-      }else{
-        document.getElementsByTagName('body')[0].className = ''
+    $route(to, from) {
+      if (to.meta.kefu) {
+        document.getElementsByTagName('body')[0].className = 'kf_mobile';
+      } else {
+        document.getElementsByTagName('body')[0].className = '';
       }
-    }
-  }
+    },
+  },
 });

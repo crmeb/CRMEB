@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -38,12 +38,12 @@ class ExpressValidata extends Validate
      * @var array
      */
     protected $message = [
-        'com.require' => '请选择快递公司',
-        'temp_id.number' => '请选择快递模板',
-        'to_name.require' => '请填写寄件人姓名',
-        'to_tel.require' => '请输入寄件人手机号码',
-        'to_tel.mobile' => '寄件人手机号码不正确',
-        'to_address.require' => '请填写寄件人详细地址',
-        'siid.require' => '请填写云打印机编号',
+        'com.require' => '400007',
+        'temp_id.number' => '400360',
+        'to_name.require' => '400008',
+        'to_tel.require' => '400009',
+        'to_tel.mobile' => '400010',
+        'to_address.require' => '400011',
+        'siid.require' => '400012',
     ];
 }

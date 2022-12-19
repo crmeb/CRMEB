@@ -1,13 +1,5 @@
 <template>
   <div :style="bgcolors">
-    <div class="i-layout-page-header">
-      <span class="ivu-page-header-title mr20">{{ $route.meta.title }}</span>
-      <div>
-        <div style="float: right">
-          <!-- <Button class="bnt" type="primary" @click="save">保存</Button> -->
-        </div>
-      </div>
-    </div>
     <div class="box-wrapper">
       <div v-if="name == 'user_recharge_quota'" class="iframe">
         <div class="iframe-boxs">
@@ -22,12 +14,7 @@
                 <div>佣金导入</div>
               </div>
               <div class="box3">
-                <div
-                  v-show="item.status != 0"
-                  class="box3_box"
-                  v-for="(item, index) in sginList.list"
-                  :key="index"
-                >
+                <div v-show="item.status != 0" class="box3_box" v-for="(item, index) in sginList.list" :key="index">
                   <div>{{ item.price }}<i class="font">元</i></div>
                   <div class="font">赠送:{{ item.give_money }}元</div>
                 </div>
@@ -40,9 +27,7 @@
                 <div class="tips-samll">
                   <p>充值后帐户的金额不能提现，可用于商城消费使用。</p>
                   <p>佣金导入账户之后不能再次导出、不可提现。</p>
-                  <p>
-                    账户充值出现问题可联系商城客服，也可拨打商城客服热线：40088888889。
-                  </p>
+                  <p>账户充值出现问题可联系商城客服，也可拨打商城客服热线：40088888889。</p>
                 </div>
               </div>
               <div class="box5">立即充值</div>
@@ -104,10 +89,10 @@
 </template>
 
 <script>
-import Setting from "@/setting";
-import { getColorChange } from "@/api/diy";
-import { mapState } from "vuex";
-import { productGetTempKeysApi, uploadType } from "@/api/product";
+import Setting from '@/setting';
+import { getColorChange } from '@/api/diy';
+import { mapState } from 'vuex';
+import { productGetTempKeysApi, uploadType } from '@/api/product';
 import {
   groupAllApi,
   groupDataListApi,
@@ -120,14 +105,14 @@ import {
   getAgreement,
   setAgreement,
   getOpenAdv,
-} from "@/api/system";
-import draggable from "vuedraggable";
-import uploadPictures from "@/components/uploadPictures";
-import linkaddress from "@/components/linkaddress";
-import { getCookies } from "@/libs/util";
+} from '@/api/system';
+import draggable from 'vuedraggable';
+import uploadPictures from '@/components/uploadPictures';
+import linkaddress from '@/components/linkaddress';
+import { getCookies } from '@/libs/util';
 
 export default {
-  name: "list",
+  name: 'list',
   components: {
     draggable,
     uploadPictures,
@@ -136,36 +121,36 @@ export default {
   computed: {
     bgcolors() {
       return {
-        "--color-theme": this.bgCol,
+        '--color-theme': this.bgCol,
       };
     },
     labelWidth() {
       return this.isMobile ? undefined : 120;
     },
     labelPosition() {
-      return this.isMobile ? "top" : "right";
+      return this.isMobile ? 'top' : 'right';
     },
-    ...mapState("admin/layout", ["menuCollapse"]),
+    ...mapState('admin/layout', ['menuCollapse']),
   },
   data() {
     return {
       formValidate: {
-        content: "",
+        content: '',
       },
       ruleValidate: {},
       myConfig: {
         autoHeightEnabled: false, // 编辑器不自动被内容撑高
         initialFrameHeight: 500, // 初始容器高度
-        initialFrameWidth: "100%", // 初始容器宽度
-        UEDITOR_HOME_URL: "/admin/UEditor/",
-        serverUrl: "",
+        initialFrameWidth: '100%', // 初始容器宽度
+        UEDITOR_HOME_URL: '/admin/UEditor/',
+        serverUrl: '',
       },
       a: 0, //判断的隐私协议
       guide: 0,
       bgimg: 0,
       columns1: [],
-      bgCol: "",
-      name: "user_recharge_quota",
+      bgCol: '',
+      name: 'user_recharge_quota',
       grid: {
         xl: 7,
         lg: 7,
@@ -179,12 +164,12 @@ export default {
       swiperOption: {
         //显示分页
         pagination: {
-          el: ".swiper-pagination",
+          el: '.swiper-pagination',
         },
         //设置点击箭头
         navigation: {
-          nextEl: ".swiper-button-next",
-          prevEl: ".swiper-button-prev",
+          nextEl: '.swiper-button-next',
+          prevEl: '.swiper-button-prev',
         },
         //自动轮播
         autoplay: {
@@ -195,24 +180,24 @@ export default {
         //开启循环模式
         loop: false,
       },
-      url: "",
-      BaseURL: Setting.apiBaseURL.replace(/adminapi/, ""),
+      url: '',
+      BaseURL: Setting.apiBaseURL.replace(/adminapi/, ''),
       pageId: 62,
-      theme3: "light",
+      theme3: 'light',
       tabList: [],
-      upload_type: "", //视频上传类型 1 本地上传 2 3 4 OSS上传
+      upload_type: '', //视频上传类型 1 本地上传 2 3 4 OSS上传
       uploadData: {}, // 上传参数
       lastObj: {
-        add_time: "",
-        comment: "",
-        gid: "",
-        id: "",
-        img: "",
-        link: "",
-        sort: "",
+        add_time: '',
+        comment: '',
+        gid: '',
+        id: '',
+        img: '',
+        link: '',
+        sort: '',
         status: 1,
       },
-      isChoice: "单选",
+      isChoice: '单选',
       modalPic: false,
       gridPic: {
         xl: 6,
@@ -235,14 +220,14 @@ export default {
       cmsList: [],
       loadingExist: false,
       formItem: {
-        time: "",
-        type: "pic",
+        time: '',
+        type: 'pic',
         status: 1,
         value: [],
-        video_link: "",
+        video_link: '',
       },
-      fileUrl: Setting.apiBaseURL + "/file/upload",
-      cardUrl: Setting.apiBaseURL + "/file/upload/1",
+      fileUrl: Setting.apiBaseURL + '/file/upload',
+      cardUrl: Setting.apiBaseURL + '/file/upload/1',
       header: {},
       type: 0,
       upload: {
@@ -256,7 +241,7 @@ export default {
     this.getToken();
     this.guide = 0;
     this.a = 0;
-    this.url = "";
+    this.url = '';
     this.getListHeader();
   },
   mounted() {
@@ -270,7 +255,7 @@ export default {
     // 删除视频；
     delVideo() {
       let that = this;
-      that.$set(that.formItem, "video_link", "");
+      that.$set(that.formItem, 'video_link', '');
     },
     //获取视频上传类型
     uploadType() {
@@ -281,7 +266,7 @@ export default {
     // 上传成功
     handleSuccess(res, file, fileList) {
       if (res.status === 200) {
-        this.$set(this.formItem, "video_link", res.data.src);
+        this.$set(this.formItem, 'video_link', res.data.src);
         this.$Message.success(res.msg);
       } else {
         this.$Message.error(res.msg);
@@ -296,11 +281,9 @@ export default {
     },
     zh_uploadFile_change(evfile) {
       let that = this;
-      let suffix = evfile.target.files[0].name.substr(
-        evfile.target.files[0].name.indexOf(".")
-      );
-      if (suffix.indexOf(".mp4") === -1) {
-        return that.$Message.error("只能上传MP4文件");
+      let suffix = evfile.target.files[0].name.substr(evfile.target.files[0].name.indexOf('.'));
+      if (suffix.indexOf('.mp4') === -1) {
+        return that.$Message.error('只能上传MP4文件');
       }
       productGetTempKeysApi()
         .then((res) => {
@@ -315,7 +298,7 @@ export default {
             })
             .then((res) => {
               that.formValidate.video_link = res.url;
-              that.$Message.success("视频上传成功");
+              that.$Message.success('视频上传成功');
             })
             .catch((res) => {
               that.$Message.error(res);
@@ -327,7 +310,7 @@ export default {
     },
     // 上传头部token
     getToken() {
-      this.header["Authori-zation"] = "Bearer " + getCookies("token");
+      this.header['Authori-zation'] = 'Bearer ' + getCookies('token');
     },
     beforeUpload() {
       this.uploadData = {};
@@ -342,26 +325,26 @@ export default {
       this.tabList.list[this.activeIndexs].link = e;
     },
     color() {
-      getColorChange("color_change").then((res) => {
+      getColorChange('color_change').then((res) => {
         switch (res.data.status) {
           case 1:
-            this.bgCol = "#3875EA";
+            this.bgCol = '#3875EA';
             this.bgimg = 1;
             break;
           case 2:
-            this.bgCol = "#00C050";
+            this.bgCol = '#00C050';
             this.bgimg = 2;
             break;
           case 3:
-            this.bgCol = "#E93323";
+            this.bgCol = '#E93323';
             this.bgimg = 3;
             break;
           case 4:
-            this.bgCol = "#FF448F";
+            this.bgCol = '#FF448F';
             this.bgimg = 4;
             break;
           case 5:
-            this.bgCol = "#FE5C2D";
+            this.bgCol = '#FE5C2D';
             this.bgimg = 5;
             break;
         }
@@ -369,33 +352,30 @@ export default {
     },
     // 添加表单
     groupAdd() {
-      this.$modalForm(
-        groupDataAddApi(
-          { gid: this.pageId, config_name: this.name },
-          "setting/group_data/create"
-        )
-      ).then(() => {
-        this.url = this.BaseURL + "pages/users/user_sgin/index";
-        this.info();
-      });
+      this.$modalForm(groupDataAddApi({ gid: this.pageId, config_name: this.name }, 'setting/group_data/create')).then(
+        () => {
+          this.url = this.BaseURL + 'pages/users/user_sgin/index';
+          this.info();
+        },
+      );
     },
     info() {
-      groupDataListApi({ config_name: this.name }, "setting/group_data")
+      groupDataListApi({ config_name: this.name }, 'setting/group_data')
         .then(async (res) => {
           this.tabList = res.data;
-          if (this.name == "admin_login_slide") {
+          if (this.name == 'admin_login_slide') {
             this.tabList.list.forEach((item, index, array) => {
-              if (typeof item.slide != "string" && item.slide != "undefined") {
+              if (typeof item.slide != 'string' && item.slide != 'undefined') {
                 item.slide = item.slide[0];
               }
             });
-          } else if (this.name == "sign_day_num") {
+          } else if (this.name == 'sign_day_num') {
             this.cmsList = res.data.list;
-          } else if (this.name == "user_recharge_quota") {
+          } else if (this.name == 'user_recharge_quota') {
             this.sginList = res.data;
           } else {
             this.tabList.list.forEach((item, index, array) => {
-              if (typeof item.img != "string" && item.img != "undefined") {
+              if (typeof item.img != 'string' && item.img != 'undefined') {
                 item.img = item.img[0];
               }
             });
@@ -408,7 +388,7 @@ export default {
     },
     edits(row) {
       this.pageId = row.id || 0;
-      this.name = row.config_name || "";
+      this.name = row.config_name || '';
       if (row == 1) {
         this.a = 1;
         this.guide = 0;
@@ -425,40 +405,32 @@ export default {
         this.guide = 0;
         this.a = 0;
         switch (row.config_name) {
-          case "routine_home_bast_banner":
-            this.url =
-              this.BaseURL +
-              "pages/columnGoods/HotNewGoods/index?type=1&name=精品推荐";
+          case 'routine_home_bast_banner':
+            this.url = this.BaseURL + 'pages/columnGoods/HotNewGoods/index?type=1&name=精品推荐';
             break;
-          case "sign_day_num":
-            this.url = "";
+          case 'sign_day_num':
+            this.url = '';
             this.getListHeader();
             break;
-          case "combination_banner":
-            this.url = this.BaseURL + "pages/activity/goods_combination/index";
+          case 'combination_banner':
+            this.url = this.BaseURL + 'pages/activity/goods_combination/index';
             break;
-          case "routine_home_hot_banner":
-            this.url =
-              this.BaseURL +
-              "pages/columnGoods/HotNewGoods/index?type=2&name=热门榜单";
+          case 'routine_home_hot_banner':
+            this.url = this.BaseURL + 'pages/columnGoods/HotNewGoods/index?type=2&name=热门榜单';
             break;
-          case "routine_home_new_banner":
-            this.url =
-              this.BaseURL +
-              "pages/columnGoods/HotNewGoods/index?type=3&name=首发新品";
+          case 'routine_home_new_banner':
+            this.url = this.BaseURL + 'pages/columnGoods/HotNewGoods/index?type=3&name=首发新品';
             break;
-          case "routine_home_benefit_banner":
-            this.url =
-              this.BaseURL +
-              "pages/columnGoods/HotNewGoods/index?type=4&name=促销单品";
+          case 'routine_home_benefit_banner':
+            this.url = this.BaseURL + 'pages/columnGoods/HotNewGoods/index?type=4&name=促销单品';
             break;
-          case "user_recharge_quota":
+          case 'user_recharge_quota':
             break;
-          case "admin_login_slide":
-            this.url = "";
+          case 'admin_login_slide':
+            this.url = '';
             break;
-          case "integral_shop_banner":
-            this.url = "";
+          case 'integral_shop_banner':
+            this.url = '';
             break;
         }
       }
@@ -467,18 +439,18 @@ export default {
       if (this.tabList.list.length == 0) {
         this.tabList.list.push(this.lastObj);
         this.lastObj = {
-          add_time: "",
-          comment: "",
-          gid: "",
-          id: "",
-          img: "",
-          link: "",
-          sort: "",
+          add_time: '',
+          comment: '',
+          gid: '',
+          id: '',
+          img: '',
+          link: '',
+          sort: '',
           status: 1,
         };
       } else {
         if (this.tabList.list.length == 5) {
-          this.$Message.warning("最多添加五张呦");
+          this.$Message.warning('最多添加五张呦');
         } else {
           let obj = JSON.parse(JSON.stringify(this.lastObj));
           this.tabList.list.push(obj);
@@ -497,7 +469,7 @@ export default {
     // 获取图片信息
     getPic(pc) {
       this.$nextTick(() => {
-        if (this.name == "admin_login_slide") {
+        if (this.name == 'admin_login_slide') {
           this.tabList.list[this.activeIndex].slide = pc.att_dir;
         } else {
           this.tabList.list[this.activeIndex].img = pc.att_dir;
@@ -507,7 +479,7 @@ export default {
     },
     save() {
       if (this.a == 1) {
-        this.onsubmit("formValidate");
+        this.onsubmit('formValidate');
       } else if (this.guide == 2) {
         this.formItem.value = this.tabList.list;
         openAdvSave(this.formItem).then((res) => {
@@ -536,7 +508,7 @@ export default {
     },
     getListHeader() {
       this.loading = true;
-      groupDataHeaderApi({ config_name: this.name }, "setting/sign_data/header")
+      groupDataHeaderApi({ config_name: this.name }, 'setting/sign_data/header')
         .then((res) => {
           let data = res.data;
           let header = data.header;
@@ -552,13 +524,10 @@ export default {
     // 编辑
     edit(row) {
       this.$modalForm(
-        groupDataEditApi(
-          { gid: this.pageId, config_name: this.name },
-          "setting/group_data/" + row.id + "/edit"
-        )
+        groupDataEditApi({ gid: this.pageId, config_name: this.name }, 'setting/group_data/' + row.id + '/edit'),
       ).then(() => {
         this.info();
-        this.url = this.BaseURL + "pages/users/user_sgin/index";
+        this.url = this.BaseURL + 'pages/users/user_sgin/index';
       });
     },
     // 删除
@@ -566,9 +535,9 @@ export default {
       let delfromData = {
         title: tit,
         num: num,
-        url: "setting/group_data/" + row.id,
-        method: "DELETE",
-        ids: "",
+        url: 'setting/group_data/' + row.id,
+        method: 'DELETE',
+        ids: '',
       };
       this.$modalSure(delfromData)
         .then((res) => {
@@ -581,16 +550,14 @@ export default {
     },
     // 修改是否显示
     onchangeIsShow(row) {
-      groupDataSetApi(
-        "setting/group_data/set_status/" + row.id + "/" + row.status
-      )
+      groupDataSetApi('setting/group_data/set_status/' + row.id + '/' + row.status)
         .then(async (res) => {
-          this.url = this.BaseURL + "/pages/users/user_sgin/index";
+          this.url = this.BaseURL + '/pages/users/user_sgin/index';
           this.$Message.success(res.msg);
           this.info();
         })
         .catch((res) => {
-          this.url = this.BaseURL + "/pages/users/user_sgin/index";
+          this.url = this.BaseURL + '/pages/users/user_sgin/index';
           this.$Message.error(res.msg);
         });
     },
@@ -1454,4 +1421,3 @@ export default {
   text-align: center;
 }
 </style>
-	

@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -15,7 +15,6 @@ use crmeb\utils\Str;
 use app\services\BaseServices;
 use crmeb\services\CacheService;
 use app\dao\order\StoreOrderCartInfoDao;
-use think\exception\ValidateException;
 
 /**
  * Class StoreOrderCartInfoServices
@@ -188,15 +187,17 @@ class StoreOrderCartInfoServices extends BaseServices
     /**
      * 保存购物车info
      * @param $oid
+     * @param $uid
      * @param array $cartInfo
      * @return int
      */
-    public function setCartInfo($oid, array $cartInfo)
+    public function setCartInfo($oid, $uid, array $cartInfo)
     {
         $group = [];
         foreach ($cartInfo as $cart) {
             $group[] = [
                 'oid' => $oid,
+                'uid' => $uid,
                 'cart_id' => $cart['id'],
                 'product_id' => $cart['productInfo']['id'],
                 'cart_info' => json_encode($cart),
@@ -256,40 +257,6 @@ class StoreOrderCartInfoServices extends BaseServices
             }
         }
         return $cartInfo;
-    }
-
-    /**
-     * TODO 弃用
-     * 检测这些商品是否还可以拆分
-     * @param int $oid
-     * @param array $cart_data
-     * @return bool
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\DbException
-     * @throws \think\db\exception\ModelNotFoundException
-     */
-    public function checkCartIdsIsSplit(int $oid, array $cart_data)
-    {
-        if (!$cart_data) return false;
-        $ids = array_unique(array_column($cart_data, 'cart_id'));
-        if ($this->dao->getCartInfoList(['oid' => $oid, 'cart_id' => $ids, 'split_status' => 2], ['cart_id'])) {
-            throw new ValidateException('您选择的商品已经拆分完成，请刷新或稍后重新选择');
-        }
-        $cartInfo = $this->getSplitCartList($oid, 'surplus_num,cart_info,cart_num', 'cart_id');
-        if (!$cartInfo) {
-            throw new ValidateException('该订单已发货完成');
-        }
-        foreach ($cart_data as $cart) {
-            $surplus_num = $cartInfo[$cart['cart_id']]['surplus_num'] ?? 0;
-            if (!$surplus_num) {//兼容之前老数据
-                $_info = $cartInfo[$cart['cart_id']]['cart_info'];
-                $surplus_num = $_info['cart_num'] ?? 0;
-            }
-            if ($cart['cart_num'] > $surplus_num) {
-                throw new ValidateException('您选择商品拆分数量大于购买数量');
-            }
-        }
-        return true;
     }
 
     /**

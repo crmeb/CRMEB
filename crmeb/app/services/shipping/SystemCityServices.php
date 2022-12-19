@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -127,7 +127,7 @@ class SystemCityServices extends BaseServices
     {
         $info = $this->dao->get($id);
         if (!$info) {
-            throw new AdminException('需改的数据不存在');
+            throw new AdminException(100026);
         }
         $info = $info->toArray();
         $info['parent_name'] = $this->dao->value(['city_id' => $info['parent_id']], 'name') ?: '中国';

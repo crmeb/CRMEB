@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{$title|default=''} - {$powered|default=''}</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link href="https://www.layuicdn.com/layui-v2.5.6/css/layui.css" rel="stylesheet">
+    <script src="https://www.layuicdn.com/layui/layui.js"></script>
+    <script src="https://cdn.bootcss.com/vue/2.6.11/vue.min.js"></script>
+    <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdn.bootcss.com/axios/0.19.2/axios.min.js"></script>
+    <style>
+        body {
+            background-color: #f3f3f4;
+            margin-top: 10px;
+        }
+        .centered {
+            text-align: center;
+        }
+        .centered button {
+            width: 200px;
+            height: 60px;
+        }
+    </style>
+</head>
+<body>
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15" id="app" v-cloak="">
+        <div class="layui-card">
+            <div class="centered">
+                <div class="layui-progress">
+                    <div class="layui-progress-bar layui-bg-blue" lay-percent="100%"></div>
+                </div>
+            </div>
+            <div class="layui-card-header">升级系统</div>
+            <div class="layui-card-body">
+                <div class="layui-row">
+                    <p style="font-size: 18px;">版本更迭: <span style="color: red">{$version_now} - {$version_new}</span></p>
+                    <div class="layui-form-item" style="margin-top: 10px">
+                        <label class="layui-form-label" style="font-size: 18px;padding-left: 0;">表前缀</label>
+                        <div class="layui-input-block">
+                            <input type="text" style="width: 10%" v-model="prefix" name="title" lay-verify="title"
+                                   autocomplete="off" placeholder="请输入表前缀" class="layui-input">
+                        </div>
+                    </div>
+                </div>
+                <div class="centered">
+                    <button type="button" class="layui-btn layui-btn-normal layui-btn-radius" v-if="isUpgrade && executeIng">
+                        正在升级中
+                    </button>
+                    <button type="button" class="layui-btn layui-btn-normal layui-btn-radius" v-if="isUpgrade && !executeIng"
+                            @click="startUpgrade">立即升级
+                    </button>
+                    <button type="button" class="layui-btn layui-btn-normal layui-btn-radius" v-else-if="isUpgrade == false">无需升级</button>
+                </div>
+            </div>
+            <div class="layui-card-body">
+                <div class="layui-form">
+                    <table class="layui-table">
+                        <thead>
+                        <tr>
+                            <th>表名</th>
+                            <th>执行状态</th>
+                            <th width="40%">错误原因</th>
+                            <th>执行时间</th>
+                            <th width="12%">操作</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr v-for="(item,index) in upgradeData">
+                            <td>{{item.table}}</td>
+                            <td>{{item.status ? '执行成功':'执行失败'}}</td>
+                            <td>{{item.error}}</td>
+                            <td>{{item.add_time}}</td>
+                            <td>无操作</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="layui-form">
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript" charset="utf-8">
+    var isUpgrade = <?=$isUpgrade ? 'true' : 'false'?>;
+    new Vue({
+        el: '#app',
+        data: {
+            sleep: 0,
+            prefix: 'eb_',
+            upgradeData: [],
+            isUpgrade: isUpgrade,
+            executeIng: false,
+            page: 1,
+        },
+        methods: {
+            startUpgrade: function () {
+                var that = this;
+                if (!that.prefix) {
+                    return that.showMsg('请填写表前缀');
+                }
+                this.requestGet('upgrade/run', {
+                    sleep: this.sleep,
+                    prefix: this.prefix,
+                    page: this.page
+                }).then(function (res) {
+                    if (res.data.sleep !== -1) {
+                        if (res.data.page) {
+                            that.page = res.data.page;
+                        }
+                        that.sleep = res.data.sleep;
+                        that.upgradeData.push(res.data);
+                        that.executeIng = true;
+                        setTimeout(function () {
+                            that.startUpgrade();
+                        }, 100);
+                    } else {
+                        that.isUpgrade = false;
+                        that.nextAction = true;
+                        that.executeIng = false;
+                        return that.showMsg('执行完毕');
+                    }
+                }).catch(function (res) {
+                    return that.showMsg(res.msg);
+                });
+            },
+            requestGet: function (url, data) {
+                var params = Object.keys(data).map(function (key) {
+                    return key + '=' + data[key];
+                }).join('&');
+                return new Promise(function (resolve, reject) {
+                    axios.get(url + (params ? '?' + params : '')).then(function (res) {
+                        if (res.status == 200) {
+                            resolve(res.data)
+                        } else {
+                            reject(res.data);
+                        }
+                    }).catch(function (err) {
+                        reject({msg: err})
+                    });
+                })
+            },
+            showMsg: function (msg, success) {
+                layui.use(['layer'], function () {
+                    layui.layer.msg(msg, success);
+                });
+            },
+        }
+    })
+</script>
+</body>
+</html>

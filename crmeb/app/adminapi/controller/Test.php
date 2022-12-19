@@ -6,13 +6,11 @@
 
 namespace app\adminapi\controller;
 
-use crmeb\services\UploadService;
-
 class Test
 {
     public function index()
     {
- 
+
     }
 }
 

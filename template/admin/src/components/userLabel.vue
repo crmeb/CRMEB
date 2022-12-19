@@ -1,12 +1,7 @@
 <template>
   <div class="label-wrapper">
     <div v-if="!labelList[0]" class="nonefont">暂无标签</div>
-    <div
-      v-else
-      class="label-box"
-      v-for="(item, index) in labelList"
-      :key="index"
-    >
+    <div v-else class="label-box" v-for="(item, index) in labelList" :key="index">
       <div class="title">{{ item.name }}</div>
       <div class="list">
         <div
@@ -29,13 +24,13 @@
 </template>
 
 <script>
-import { getUserLabel, putUserLabel } from "@/api/user";
+import { getUserLabel, putUserLabel } from '@/api/user';
 export default {
-  name: "userLabel",
+  name: 'userLabel',
   props: {
     uid: {
       type: String | Number,
-      default: "",
+      default: '',
     },
     only_get: {
       default: false,
@@ -81,8 +76,6 @@ export default {
             });
           });
         }
-
-        console.log(res.data);
         res.data.map((el) => {
           el.label.map((label) => {
             if (label.disabled) {
@@ -114,7 +107,7 @@ export default {
             }
           });
         });
-        this.$emit("activeData", unLaberids);
+        this.$emit('activeData', unLaberids);
         return;
       }
       this.labelList.map((item) => {
@@ -130,11 +123,11 @@ export default {
         un_label_ids: this.unLaberids,
       })
         .then((res) => {
-          this.$emit("onceGetList");
+          this.$emit('onceGetList');
           this.activeIds = [];
           this.unLaberids = [];
           this.$Message.success(res.msg);
-          this.$emit("close");
+          this.$emit('close');
         })
         .catch((error) => {
           this.$Message.error(error.msg);
@@ -143,7 +136,7 @@ export default {
     cancel() {
       this.activeIds = [];
       this.unLaberids = [];
-      this.$emit("close");
+      this.$emit('close');
     },
   },
 };

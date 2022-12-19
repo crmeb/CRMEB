@@ -6,7 +6,7 @@
 				<view class="pictrue"><image :src="imgConfig"></image></view>
 				<view class="name line1">{{ titleConfig }}</view>
 			</view>
-			<view class="notes acea-row row-center-wrapper" :style="'color:' + themeColor + ';border-color:' + themeColor + ';'" @click="followTap">关注</view>
+			<view class="notes acea-row row-center-wrapper" :style="'color:' + themeColor + ';border-color:' + themeColor + ';'" @click="followTap">{{$t(`关注`)}}</view>
 		</view>
 		<view class="followCode" v-if="followCode">
 			<view class="pictrue">

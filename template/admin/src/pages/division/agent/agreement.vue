@@ -8,10 +8,7 @@
     <Card :bordered="false" dis-hover class="ivu-mt">
       <Form :label-width="80" @submit.native.prevent>
         <FormItem label="协议内容：">
-          <WangEditor
-            :content="agreement.content"
-            @editorContent="getEditorContent"
-          ></WangEditor>
+          <WangEditor :content="agreement.content" @editorContent="getEditorContent"></WangEditor>
         </FormItem>
         <FormItem>
           <Button type="primary" @click="memberAgreementSave">保存</Button>
@@ -23,8 +20,8 @@
 </template>
 
 <script>
-import WangEditor from "@/components/wangEditor/index.vue";
-import { agentAgreement, agentAgreementSave } from "@/api/user";
+import WangEditor from '@/components/wangEditor/index.vue';
+import { agentAgreement, agentAgreementSave } from '@/api/user';
 
 export default {
   components: { WangEditor },
@@ -33,12 +30,12 @@ export default {
       ueConfig: {
         autoHeightEnabled: false,
         initialFrameHeight: 500,
-        initialFrameWidth: "100%",
-        UEDITOR_HOME_URL: "/admin/UEditor/",
-        serverUrl: "",
+        initialFrameWidth: '100%',
+        UEDITOR_HOME_URL: '/admin/UEditor/',
+        serverUrl: '',
       },
       agreement: {
-        content: "",
+        content: '',
         id: 0,
       },
       spinShow: false,
@@ -71,7 +68,7 @@ export default {
       agentAgreementSave(this.agreement)
         .then((res) => {
           this.$Spin.hide();
-          this.$Message.success("保存成功");
+          this.$Message.success('保存成功');
           this.memberAgreement();
         })
         .catch((err) => {

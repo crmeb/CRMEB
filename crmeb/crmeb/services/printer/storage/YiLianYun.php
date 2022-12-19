@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -10,7 +10,7 @@
 // +----------------------------------------------------------------------
 namespace crmeb\services\printer\storage;
 
-use crmeb\basic\BasePrinter;
+use crmeb\services\printer\BasePrinter;
 
 /**
  * Class YiLianYun
@@ -39,7 +39,7 @@ class YiLianYun extends BasePrinter
         if (!$this->printerContent) {
             return $this->setError('Missing print');
         }
-        $request = $this->accessToken->postRequest($this->accessToken->getApiUrl('print/index'), [
+        $request = $this->accessToken->postRequest('https://open-api.10ss.net/print/index', [
             'client_id' => $this->accessToken->clientId,
             'access_token' => $this->accessToken->getAccessToken(),
             'machine_code' => $this->accessToken->machineCode,
@@ -66,8 +66,7 @@ class YiLianYun extends BasePrinter
      */
     public function setPrinterContent(array $config): self
     {
-        $timeYmd = date('Y-m-d', time());
-        $timeHis = date('H:i:s', time());
+        $printTime = date('Y-m-d H:i:s', time());
         $goodsStr = '<table><tr><td>商品名称</td><td>数量</td><td>单价</td><td>金额</td></tr>';
         $product = $config['product'];
         foreach ($product as $item) {
@@ -79,13 +78,14 @@ class YiLianYun extends BasePrinter
         }
         $goodsStr .= '</table>';
         $orderInfo = $config['orderInfo'];
+        $orderTime = date('Y-m-d H:i:s',$orderInfo['pay_time']);
         $name = $config['name'];
         $this->printerContent = <<<CONTENT
 <FB><center> ** {$name} **</center></FB>
 <FH2><FW2>----------------</FW2></FH2>
 订单编号：{$orderInfo['order_id']}\r
-日    期: {$timeYmd} \r
-时    间: {$timeHis}\r
+打印时间: {$printTime} \r
+付款时间: {$orderTime}\r
 姓    名: {$orderInfo['real_name']}\r
 电    话: {$orderInfo['user_phone']}\r
 地    址: {$orderInfo['user_address']}\r
@@ -103,6 +103,4 @@ class YiLianYun extends BasePrinter
 CONTENT;
         return $this;
     }
-
-
 }

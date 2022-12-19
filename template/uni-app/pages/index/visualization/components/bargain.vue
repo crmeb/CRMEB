@@ -1,15 +1,15 @@
 <template>
 	<view>
 		<view class="default" v-if="isIframe && !bargList.length">
-			<text>砍价模块，暂无数据</text>
+			<text>{{$t(`砍价模块，暂无数据`)}}</text>
 		</view>
 		<view class="combination index-wrapper" v-if="bargList.length&&isShow&&!isIframe">
 			<view class='title acea-row row-between-wrapper index-wrapper'>
 				<view class='text'>
-					<view class='name line1'>砍价活动</view>
-					<view class='line1'>呼朋唤友来砍价</view>
+					<view class='name line1'>{{$t(`砍价活动`)}}</view>
+					<view class='line1'>{{$t(`呼朋唤友来砍价`)}}</view>
 				</view>
-				<navigator class='more' url="/pages/activity/goods_combination/index" hover-class="none">更多<text class='iconfont icon-jiantou'></text></navigator>
+				<navigator class='more' url="/pages/activity/goods_combination/index" hover-class="none">{{$t(`更多`)}}<text class='iconfont icon-jiantou'></text></navigator>
 			</view>
 			<view class="conter">
 				<scroll-view scroll-x="true" style="white-space: nowrap; vertical-align: middle;" show-scrollbar="false">
@@ -20,8 +20,8 @@
 							</view>
 							<view class="name line1">{{item.title}}</view>
 							<view class="money">
-								<view class="x_money">¥<text class="num">{{item.min_price}}</text></view>
-								<view class="y_money">¥{{item.ot_price}}</view>
+								<view class="x_money">{{$t(`￥`)}}<text class="num">{{item.min_price}}</text></view>
+								<view class="y_money">{{$t(`￥`)}}{{item.ot_price}}</view>
 							</view>
 						</view>
 					</view>
@@ -31,10 +31,10 @@
 		<view class="combination index-wrapper" v-if="bargList.length&&isIframe">
 			<view class='title acea-row row-between-wrapper index-wrapper'>
 				<view class='text'>
-					<view class='name line1'>砍价活动</view>
-					<view class='line1'>呼朋唤友来砍价</view>
+					<view class='name line1'>{{$t(`砍价活动`)}}</view>
+					<view class='line1'>{{$t(`呼朋唤友来砍价`)}}</view>
 				</view>
-				<navigator class='more'>更多<text class='iconfont icon-jiantou'></text></navigator>
+				<navigator class='more'>{{$t(`更多`)}}<text class='iconfont icon-jiantou'></text></navigator>
 			</view>
 			<view class="conter">
 				<scroll-view scroll-x="true" style="white-space: nowrap; vertical-align: middle;" show-scrollbar="false">
@@ -45,8 +45,8 @@
 							</view>
 							<view class="name line1">{{item.title}}</view>
 							<view class="money">
-								<view class="x_money">¥<text class="num">{{item.min_price}}</text></view>
-								<view class="y_money">¥{{item.ot_price}}</view>
+								<view class="x_money">￥<text class="num">{{item.min_price}}</text></view>
+								<view class="y_money">￥{{item.ot_price}}</view>
 							</view>
 						</view>
 					</view>

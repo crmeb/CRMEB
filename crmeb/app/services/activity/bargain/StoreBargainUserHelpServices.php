@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -15,8 +15,9 @@ namespace app\services\activity\bargain;
 use app\services\BaseServices;
 use app\dao\activity\bargain\StoreBargainUserHelpDao;
 use app\services\user\UserServices;
+use crmeb\exceptions\AdminException;
+use crmeb\exceptions\ApiException;
 use crmeb\traits\ServicesTrait;
-use think\exception\ValidateException;
 
 /**
  *
@@ -89,31 +90,6 @@ class StoreBargainUserHelpServices extends BaseServices
         return array_values($list);
     }
 
-//    /**
-//     * 获取砍价金额
-//     * @param int $uid
-//     * @param int $bargainId
-//     * @param int $bargainUserUid
-//     * @return array
-//     */
-//    public function getPrice(int $uid, int $bargainId, int $bargainUserUid)
-//    {
-//        if (!$bargainId || !$bargainUserUid) throw new ValidateException('参数错误');
-//        /** @var StoreBargainUserServices $bargainUserService */
-//        $bargainUserService = app()->make(StoreBargainUserServices::class);
-//        $bargainUserTable = $bargainUserService->get(['bargain_id' => $bargainId, 'uid' => $bargainUserUid, 'is_del' => 0], ['id', 'status', 'bargain_price_min', 'bargain_price', 'price']);//TODO 获取用户参与砍价表编号
-//        if (!$bargainUserTable) {
-//            throw new ValidateException('砍价信息没有查询到');
-//        }
-//        if (bcsub($bargainUserTable['bargain_price'], $bargainUserTable['price'], 2) == $bargainUserTable['bargain_price_min']) {
-//            $status = true;
-//        } else {
-//            $status = false;
-//        }
-//        $price = $this->dao->value(['uid' => $uid, 'bargain_id' => $bargainId, 'bargain_user_id' => $bargainUserTable['id']], 'price');
-//        return ['price' => $price, 'status' => $status];
-//    }
-
     /**
      * 判断是否能砍价
      * @param $bargainId
@@ -142,7 +118,7 @@ class StoreBargainUserHelpServices extends BaseServices
         //剩余砍价金额
         $coverPrice = bcsub((string)$bargainUserInfo['bargain_price'], (string)$bargainUserInfo['bargain_price_min'], 2);
         $surplusPrice = bcsub((string)$coverPrice, (string)$bargainUserInfo['price'], 2);//TODO 用户剩余要砍掉的价格
-        if (0.00 === (float)$surplusPrice) throw new ValidateException('砍价已结束');
+        if (0.00 === (float)$surplusPrice) throw new ApiException(410299);
         if (($bargainInfo['people_num'] - $people) == 1) {
             $price = $surplusPrice;
         } else {
@@ -157,7 +133,7 @@ class StoreBargainUserHelpServices extends BaseServices
         } else {
             //帮砍次数限制
             $count = $this->dao->count(['uid' => $uid, 'bargain_id' => $bargainInfo['id'], 'type' => 0]);
-            if ($count >= $bargainInfo['bargain_num']) throw new ValidateException('您不能再帮砍此件商品');
+            if ($count >= $bargainInfo['bargain_num']) throw new ApiException(410310);
             $type = 0;
         }
         /** @var StoreBargainUserServices $bargainUserService */
@@ -172,7 +148,7 @@ class StoreBargainUserHelpServices extends BaseServices
             'type' => $type,
         ]);
         $res = $res1 && $res2;
-        if (!$res) throw new ValidateException('砍价失败');
+        if (!$res) throw new AdminException(410307);
         return $price;
     }
 

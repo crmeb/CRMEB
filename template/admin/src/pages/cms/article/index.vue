@@ -1,10 +1,5 @@
 <template>
   <div>
-    <div class="i-layout-page-header">
-      <div class="i-layout-page-header">
-        <span class="ivu-page-header-title">{{ $route.meta.title }}</span>
-      </div>
-    </div>
     <Card :bordered="false" dis-hover class="ivu-mt">
       <Form
         ref="artFrom"
@@ -16,24 +11,11 @@
         <Row type="flex" :gutter="24">
           <Col v-bind="grid">
             <FormItem label="文章分类：" label-for="pid">
-              <i-select
-                :value="artFrom.pid"
-                placeholder="请选择"
-                style="width: 80%"
-                class="treeSel"
-              >
-                <i-option
-                  v-for="(item, index) of list"
-                  :value="item.value"
-                  :key="index"
-                  style="display: none"
-                >
+              <i-select :value="artFrom.pid" placeholder="请选择" style="width: 80%" class="treeSel">
+                <i-option v-for="(item, index) of list" :value="item.value" :key="index" style="display: none">
                   {{ item.title }}
                 </i-option>
-                <Tree
-                  :data="treeData"
-                  @on-select-change="handleCheckChange"
-                ></Tree>
+                <Tree :data="treeData" @on-select-change="handleCheckChange"></Tree>
               </i-select>
             </FormItem>
           </Col>
@@ -52,12 +34,8 @@
         </Row>
         <Row type="flex">
           <Col v-bind="grid">
-            <router-link
-              :to="'/admin/cms/article/add_article'"
-              v-auth="['cms-article-creat']"
-              ><Button type="primary" class="bnt" icon="md-add"
-                >添加文章</Button
-              ></router-link
+            <router-link :to="'/admin/cms/article/add_article'" v-auth="['cms-article-creat']"
+              ><Button type="primary" class="bnt" icon="md-add">添加文章</Button></router-link
             >
           </Col>
         </Row>
@@ -73,15 +51,11 @@
         no-filtered-userFrom-text="暂无筛选结果"
       >
         <template slot-scope="{ row, index }" slot="titles">
-          <span>{{ " [ " + row.catename + " ] " + row.title }}</span>
+          <span>{{ ' [ ' + row.catename + ' ] ' + row.title }}</span>
         </template>
         <template slot-scope="{ row, index }" slot="image_inputs">
           <div v-if="row.image_input.length !== 0" v-viewer>
-            <div
-              class="tabBox_img"
-              v-for="(item, index) in row.image_input"
-              :key="index"
-            >
+            <div class="tabBox_img" v-for="(item, index) in row.image_input" :key="index">
               <img v-lazy="item" />
             </div>
           </div>
@@ -89,9 +63,7 @@
         <template slot-scope="{ row, index }" slot="action">
           <a @click="edit(row)">编辑</a>
           <Divider type="vertical" />
-          <a @click="artRelation(row, '取消关联', index)">{{
-            row.product_id === 0 ? "关联" : "取消关联"
-          }}</a>
+          <a @click="artRelation(row, '取消关联', index)">{{ row.product_id === 0 ? '关联' : '取消关联' }}</a>
           <Divider type="vertical" />
           <a @click="del(row, '删除文章', index)">删除</a>
         </template>
@@ -117,27 +89,23 @@
       width="900"
       @on-cancel="cancel"
     >
-      <goods-list
-        ref="goodslist"
-        @getProductId="getProductId"
-        v-if="modals"
-      ></goods-list>
+      <goods-list ref="goodslist" @getProductId="getProductId" v-if="modals"></goods-list>
     </Modal>
   </div>
 </template>
 
 <script>
-import { mapState } from "vuex";
-import { cmsListApi, categoryListApi, relationApi } from "@/api/cms";
-import relationList from "./relation";
-import { formatDate } from "@/utils/validate";
-import goodsList from "@/components/goodsList/index";
+import { mapState } from 'vuex';
+import { cmsListApi, categoryListApi, relationApi } from '@/api/cms';
+import relationList from './relation';
+import { formatDate } from '@/utils/validate';
+import goodsList from '@/components/goodsList/index';
 export default {
-  name: "addArticle",
+  name: 'addArticle',
   data() {
     return {
-      modalTitleSs: "",
-      currentTab: "",
+      modalTitleSs: '',
+      currentTab: '',
       grid: {
         xl: 8,
         lg: 8,
@@ -148,30 +116,30 @@ export default {
       loading: false,
       artFrom: {
         pid: 0,
-        title: "",
+        title: '',
         page: 1,
         limit: 20,
       },
       total: 0,
       columns1: [
         {
-          title: "ID",
-          key: "id",
+          title: 'ID',
+          key: 'id',
           width: 80,
         },
         {
-          title: "文章图片",
-          slot: "image_inputs",
+          title: '文章图片',
+          slot: 'image_inputs',
           minWidth: 90,
         },
         {
-          title: "文章名称",
-          slot: "titles",
+          title: '文章名称',
+          slot: 'titles',
           minWidth: 130,
         },
         {
-          title: "关联商品",
-          key: "store_name",
+          title: '关联商品',
+          key: 'store_name',
           minWidth: 130,
         },
         // {
@@ -180,29 +148,23 @@ export default {
         //     minWidth: 60
         // },
         {
-          title: "浏览量",
-          key: "visit",
+          title: '浏览量',
+          key: 'visit',
           minWidth: 80,
         },
         {
-          title: "时间",
-          key: "add_time",
+          title: '时间',
+          key: 'add_time',
           sortable: true,
           render: (h, params) => {
-            return h(
-              "div",
-              formatDate(
-                new Date(Number(params.row.add_time) * 1000),
-                "yyyy-MM-dd hh:mm"
-              )
-            );
+            return h('div', formatDate(new Date(Number(params.row.add_time) * 1000), 'yyyy-MM-dd hh:mm'));
           },
           minWidth: 120,
         },
         {
-          title: "操作",
-          slot: "action",
-          fixed: "right",
+          title: '操作',
+          slot: 'action',
+          fixed: 'right',
           minWidth: 150,
         },
       ],
@@ -224,12 +186,12 @@ export default {
     goodsList,
   },
   computed: {
-    ...mapState("media", ["isMobile"]),
+    ...mapState('media', ['isMobile']),
     labelWidth() {
       return this.isMobile ? undefined : 75;
     },
     labelPosition() {
-      return this.isMobile ? "top" : "right";
+      return this.isMobile ? 'top' : 'right';
     },
   },
   created() {},
@@ -286,7 +248,7 @@ export default {
           this.treeData = data;
           let obj = {
             id: 0,
-            title: "全部",
+            title: '全部',
           };
           this.treeData.unshift(obj);
         })
@@ -300,8 +262,8 @@ export default {
     },
     // 下拉树
     handleCheckChange(data) {
-      let value = "";
-      let title = "";
+      let value = '';
+      let title = '';
       this.list = [];
       this.artFrom.pid = 0;
       data.forEach((item, index) => {
@@ -320,7 +282,7 @@ export default {
     },
     // 编辑
     edit(row) {
-      this.$router.push({ path: "/admin/cms/article/add_article/" + row.id });
+      this.$router.push({ path: '/admin/cms/article/add_article/' + row.id });
     },
     // 关联
     artRelation(row, tit, num) {
@@ -332,8 +294,8 @@ export default {
           title: tit,
           num: num,
           url: `/cms/cms/unrelation/${row.id}`,
-          method: "PUT",
-          ids: "",
+          method: 'PUT',
+          ids: '',
         };
         this.$modalSure(delfromData)
           .then((res) => {
@@ -351,8 +313,8 @@ export default {
         title: tit,
         num: num,
         url: `cms/cms/${row.id}`,
-        method: "DELETE",
-        ids: "",
+        method: 'DELETE',
+        ids: '',
       };
       this.$modalSure(delfromData)
         .then((res) => {

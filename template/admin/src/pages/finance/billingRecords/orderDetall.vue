@@ -4,20 +4,12 @@
       <div class="box-title">收货信息</div>
       <div class="msg-wrapper">
         <div class="msg-item">
-          <div class="item">
-            <span>用户昵称：</span>{{ orderDetail.userInfo.nickname }}
-          </div>
-          <div class="item">
-            <span>收货人：</span>{{ orderDetail.orderInfo.real_name }}
-          </div>
+          <div class="item"><span>用户昵称：</span>{{ orderDetail.userInfo.nickname }}</div>
+          <div class="item"><span>收货人：</span>{{ orderDetail.orderInfo.real_name }}</div>
         </div>
         <div class="msg-item">
-          <div class="item">
-            <span>联系电话：</span>{{ orderDetail.orderInfo.user_phone }}
-          </div>
-          <div class="item">
-            <span>收货地址：</span>{{ orderDetail.orderInfo.user_address }}
-          </div>
+          <div class="item"><span>联系电话：</span>{{ orderDetail.orderInfo.user_phone }}</div>
+          <div class="item"><span>收货地址：</span>{{ orderDetail.orderInfo.user_address }}</div>
         </div>
       </div>
     </div>
@@ -25,64 +17,36 @@
       <div class="box-title">订单信息</div>
       <div class="msg-wrapper">
         <div class="msg-item">
-          <div class="item">
-            <span>订单ID：</span>{{ orderDetail.orderInfo.order_id }}
-          </div>
+          <div class="item"><span>订单ID：</span>{{ orderDetail.orderInfo.order_id }}</div>
           <div class="item" style="color: red">
-            <span style="color: red">订单状态：</span
-            >{{ orderDetail.orderInfo._status._title }}
+            <span style="color: red">订单状态：</span>{{ orderDetail.orderInfo._status._title }}
           </div>
         </div>
         <div class="msg-item">
-          <div class="item">
-            <span>商品总数：</span>{{ orderDetail.orderInfo.total_num }}
-          </div>
+          <div class="item"><span>商品总数：</span>{{ orderDetail.orderInfo.total_num }}</div>
           <div class="item">
             <span>商品总价：</span
-            >{{
-              parseFloat(orderDetail.orderInfo.total_price) +
-              parseFloat(orderDetail.orderInfo.vip_true_price || 0)
-            }}
+            >{{ parseFloat(orderDetail.orderInfo.total_price) + parseFloat(orderDetail.orderInfo.vip_true_price || 0) }}
           </div>
         </div>
         <div class="msg-item">
-          <div class="item">
-            <span>交付邮费：</span>{{ orderDetail.orderInfo.pay_postage }}
-          </div>
-          <div class="item">
-            <span>优惠券金额：</span>{{ orderDetail.orderInfo.coupon_price }}
-          </div>
+          <div class="item"><span>交付邮费：</span>{{ orderDetail.orderInfo.pay_postage }}</div>
+          <div class="item"><span>优惠券金额：</span>{{ orderDetail.orderInfo.coupon_price }}</div>
         </div>
         <div class="msg-item">
-          <div class="item">
-            <span>会员商品优惠：</span
-            >{{ orderDetail.orderInfo.vip_true_price || 0.0 }}
-          </div>
-          <div class="item">
-            <span>积分抵扣：</span
-            >{{ orderDetail.orderInfo.deduction_price || 0.0 }}
-          </div>
+          <div class="item"><span>会员商品优惠：</span>{{ orderDetail.orderInfo.vip_true_price || 0.0 }}</div>
+          <div class="item"><span>积分抵扣：</span>{{ orderDetail.orderInfo.deduction_price || 0.0 }}</div>
         </div>
         <div class="msg-item">
-          <div class="item">
-            <span>实际支付：</span>{{ orderDetail.orderInfo.pay_price }}
-          </div>
-          <div class="item">
-            <span>创建时间：</span>{{ orderDetail.orderInfo.add_time }}
-          </div>
+          <div class="item"><span>实际支付：</span>{{ orderDetail.orderInfo.pay_price }}</div>
+          <div class="item"><span>创建时间：</span>{{ orderDetail.orderInfo.add_time }}</div>
         </div>
         <div class="msg-item">
-          <div class="item">
-            <span>支付方式：</span>{{ orderDetail.orderInfo._status._payType }}
-          </div>
-          <div class="item">
-            <span>推广人：</span>{{ orderDetail.userInfo.spread_name }}
-          </div>
+          <div class="item"><span>支付方式：</span>{{ orderDetail.orderInfo._status._payType }}</div>
+          <div class="item"><span>推广人：</span>{{ orderDetail.userInfo.spread_name }}</div>
         </div>
         <div class="msg-item">
-          <div class="item">
-            <span>商家备注：</span>{{ orderDetail.orderInfo.mark }}
-          </div>
+          <div class="item"><span>商家备注：</span>{{ orderDetail.orderInfo.mark }}</div>
         </div>
       </div>
     </div>
@@ -113,13 +77,13 @@
 </template>
 
 <script>
-import { orderInvoiceInfo } from "@/api/order";
+import { orderInvoiceInfo } from '@/api/order';
 export default {
-  name: "order_detail",
+  name: 'order_detail',
   props: {
     orderId: {
       type: String | Number,
-      default: "",
+      default: '',
     },
   },
   data() {
@@ -128,26 +92,26 @@ export default {
       orderList: [],
       columns1: [
         {
-          title: "商品ID",
-          slot: "id",
+          title: '商品ID',
+          slot: 'id',
           maxWidth: 80,
         },
         {
-          title: "商品名称",
-          slot: "name",
+          title: '商品名称',
+          slot: 'name',
           minWidth: 160,
         },
         {
-          title: "商品分类",
-          slot: "className",
+          title: '商品分类',
+          slot: 'className',
         },
         {
-          title: "商品售价",
-          slot: "price",
+          title: '商品售价',
+          slot: 'price',
         },
         {
-          title: "商品数量",
-          slot: "total_num",
+          title: '商品数量',
+          slot: 'total_num',
         },
       ],
       spinShow: false,
@@ -168,7 +132,7 @@ export default {
         .catch((err) => {
           this.spinShow = false;
           this.$Message.error(err.msg);
-          this.$emit("detall", false);
+          this.$emit('detall', false);
         });
     },
   },

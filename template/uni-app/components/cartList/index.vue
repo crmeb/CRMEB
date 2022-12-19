@@ -2,8 +2,8 @@
 	<view>
 		<view class="cartList" :class="cartData.iScart?'on':''">
 			<view class="title acea-row row-between-wrapper">
-				<view class="name">已选商品</view>
-				<view class="del acea-row row-middle" @click="subDel"><view class="iconfont icon-shanchu1"></view>清空</view>
+				<view class="name">{{$t(`已选商品`)}}</view>
+				<view class="del acea-row row-middle" @click="subDel"><view class="iconfont icon-shanchu1"></view>{{$t(`清空`)}}</view>
 			</view>
 			<view class="list">
 				<view class="item acea-row row-between-wrapper" v-for="(item,index) in cartData.cartList" :key="index">
@@ -17,7 +17,7 @@
 						<view v-if="item.attrStatus && item.status">
 							<view class="info" v-if="item.productInfo.attrInfo">{{item.productInfo.attrInfo.suk}}</view>
 							<view class="bottom acea-row row-between-wrapper">
-								<view class="money">￥<text class="num">{{item.truePrice}}</text></view>
+								<view class="money">{{$t(`￥`)}}<text class="num">{{item.truePrice}}</text></view>
 								<view class="cartNum acea-row row-middle">
 									<view class="reduce iconfont icon-jianhao1" @click="leaveCart(index)"></view>
 									<view class="num">{{item.cart_num}}</view>
@@ -25,9 +25,9 @@
 								</view>
 							</view>
 						</view>
-						<view class="noBnt" v-else-if="!item.attrStatus">已售罄</view>
-						<view class="noBnt" v-else-if="!item.status">已下架</view>
-						<view class="delTxt acea-row row-right" v-if="!item.status || !item.attrStatus"><text @click="oneDel(item.id,index)">删除</text></view>
+						<view class="noBnt" v-else-if="!item.attrStatus">{{$t(`已售罄`)}}</view>
+						<view class="noBnt" v-else-if="!item.status">{{$t(`已下架`)}}</view>
+						<view class="delTxt acea-row row-right" v-if="!item.status || !item.attrStatus"><text @click="oneDel(item.id,index)">{{$t(`删除`)}}</text></view>
 					</view>
 				</view>
 			</view>

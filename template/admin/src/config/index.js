@@ -1,7 +1,7 @@
 // +---------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +---------------------------------------------------------------------
-// | Copyright (c) 2016~2021 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +---------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +---------------------------------------------------------------------
@@ -9,10 +9,11 @@
 // +---------------------------------------------------------------------
 
 export default {
+  s: `1`,
   /**
    * @description 配置显示在浏览器标签的title
    */
-  title: localStorage.getItem('ADMIN_TITLE') || 'CRMEB',
+  title: localStorage.getItem('ADMIN_TITLE') || '',
   /**
    * @description token在Cookie中存储的天数，默认1天
    */
@@ -28,7 +29,7 @@ export default {
    */
   baseUrl: {
     dev: '',
-    pro: ''
+    pro: '',
   },
   /**
    * @description 默认打开的首页的路由name值，默认为home
@@ -40,7 +41,7 @@ export default {
   plugin: {
     'error-store': {
       showInHeader: true, // 设为false后不会在顶部显示错误日志徽标
-      developmentOff: false // 设为true后在开发环境不会收集错误信息，方便开发中排查错误
-    }
-  }
-}
+      developmentOff: false, // 设为true后在开发环境不会收集错误信息，方便开发中排查错误
+    },
+  },
+};

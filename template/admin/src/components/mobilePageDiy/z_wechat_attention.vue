@@ -1,149 +1,146 @@
 <template>
-
-        <div class="mobile-page">
-            <div class="flex-box" :style="{background:bgColor,marginTop:mTOP+'px'}">
-                <div class="left">
-                    <div class="img-box">
-                        <img :src="imgUrl" alt="" v-if="imgUrl">
-                        <div class="empty-box on" v-else><span class="iconfont-diy icontupian"></span></div>
-                    </div>
-                    <div class="name">{{txt}}</div>
-                </div>
-                <div class="btn" :style="{borderColor:themeColor,color:themeColor}">关注</div>
-            </div>
+  <div class="mobile-page">
+    <div class="flex-box" :style="{ background: bgColor, marginTop: mTOP + 'px' }">
+      <div class="left">
+        <div class="img-box">
+          <img :src="imgUrl" alt="" v-if="imgUrl" />
+          <div class="empty-box on" v-else><span class="iconfont-diy icontupian"></span></div>
         </div>
+        <div class="name">{{ txt }}</div>
+      </div>
+      <div class="btn" :style="{ borderColor: themeColor, color: themeColor }">关注</div>
+    </div>
+  </div>
 </template>
 
-    <script>
-    import { mapState, mapMutations } from 'vuex'
-    export default {
-        name: 'z_wechat_attention',
-        cname: '关注公众号',
-        configName: 'c_wechat_attention',
-        icon: 'iconguanzhugongzhonghao1',
-        type: 2, // 0 基础组件 1 营销组件 2工具组件
-        defaultName: 'follow', // 外面匹配名称
-        props: {
-            index: {
-                type: null,
-                default: -1
+<script>
+import { mapState, mapMutations } from 'vuex';
+export default {
+  name: 'z_wechat_attention',
+  cname: '关注公众号',
+  configName: 'c_wechat_attention',
+  icon: 'iconguanzhugongzhonghao1',
+  type: 2, // 0 基础组件 1 营销组件 2工具组件
+  defaultName: 'follow', // 外面匹配名称
+  props: {
+    index: {
+      type: null,
+      default: -1,
+    },
+    num: {
+      type: null,
+    },
+  },
+  computed: {
+    ...mapState('mobildConfig', ['defaultArray']),
+  },
+  watch: {
+    pageData: {
+      handler(nVal, oVal) {},
+      deep: true,
+    },
+    num: {
+      handler(nVal, oVal) {
+        let data = this.$store.state.mobildConfig.defaultArray[nVal];
+        this.setConfig(data);
+      },
+      deep: true,
+    },
+    defaultArray: {
+      handler(nVal, oVal) {
+        let data = this.$store.state.mobildConfig.defaultArray[this.num];
+        this.setConfig(data);
+      },
+      deep: true,
+    },
+  },
+  data() {
+    return {
+      // 默认初始化数据禁止修改
+      defaultConfig: {
+        name: 'follow',
+        timestamp: this.num,
+        setUp: {
+          tabVal: 0,
+        },
+        titleConfig: {
+          title: '名称',
+          value: '标题',
+          place: '请输入标题',
+          max: 30,
+        },
+        imgConfig: {
+          title: '最多可添加1张图片，建议宽度92 * 92px',
+          url: '',
+        },
+        codeConfig: {
+          title: '添加二维码，建议宽度92 * 92p',
+          url: '',
+        },
+        themeColor: {
+          title: '主题颜色',
+          default: [
+            {
+              item: '#F96E29',
             },
-            num: {
-                type: null
-            }
-        },
-        computed: {
-            ...mapState('mobildConfig', ['defaultArray'])
-        },
-        watch: {
-            pageData: {
-                handler (nVal, oVal) {
-
-                },
-                deep: true
+          ],
+          color: [
+            {
+              item: '#F96E29',
             },
-            num: {
-                handler (nVal, oVal) {
-                    let data = this.$store.state.mobildConfig.defaultArray[nVal]
-                    this.setConfig(data)
-                },
-                deep: true
+          ],
+        },
+        bgColor: {
+          title: '背景颜色',
+          default: [
+            {
+              item: '#f5f5f5',
             },
-            'defaultArray': {
-                handler (nVal, oVal) {
-                    let data = this.$store.state.mobildConfig.defaultArray[this.num]
-                    this.setConfig(data);
-                },
-                deep: true
-            }
+          ],
+          color: [
+            {
+              item: '#f5f5f5',
+            },
+          ],
         },
-        data () {
-            return {
-                // 默认初始化数据禁止修改
-                defaultConfig: {
-                    name: 'follow',
-                    timestamp: this.num,
-                    setUp: {
-                        tabVal: 0
-                    },
-                    titleConfig: {
-                        title: '名称',
-                        value: '标题',
-                        place: '请输入标题',
-                        max: 30
-                    },
-                    imgConfig: {
-                        title: '最多可添加1张图片，建议宽度92 * 92px',
-                        url: ''
-                    },
-                    codeConfig: {
-                        title: '添加二维码，建议宽度92 * 92p',
-                        url: ''
-                    },
-                    themeColor: {
-                        title: '主题颜色',
-                        default: [
-                            {
-                                item: '#F96E29'
-                            }
-                        ],
-                        color: [
-                            {
-                                item: '#F96E29'
-                            }
-                        ]
-                    },
-                    bgColor: {
-                        title: '背景颜色',
-                        default: [
-                            {
-                                item: '#f5f5f5'
-                            }
-                        ],
-                        color: [
-                            {
-                                item: '#f5f5f5'
-                            }
-                        ]
-                    },
-                    mbConfig: {
-                        title: '页面间距',
-                        val: 0,
-                        min: 0
-                    }
-                },
-                cSlider: '',
-                bgColor: '',
-                confObj: {},
-                pageData: {},
-                edge: '',
-                udEdge: '',
-                themeColor: '',
-                mTOP: 0,
-                imgUrl: '',
-                txt:''
-            }
+        mbConfig: {
+          title: '页面间距',
+          val: 0,
+          min: 0,
         },
-        mounted () {
-            this.$nextTick(() => {
-                this.pageData = this.$store.state.mobildConfig.defaultArray[this.num]
-                this.setConfig(this.pageData)
-            })
-        },
-        methods: {
-            setConfig (data) {
-                if(!data) return
-                if(data.mbConfig){
-                    this.bgColor = data.bgColor.color[0].item
-                    this.themeColor = data.themeColor.color[0].item
-                    this.mTOP = data.mbConfig.val;
-                    this.imgUrl = data.imgConfig.url
-                    this.txt = data.titleConfig.value
-                }
-            }
-        }
-    }
-    </script>
+      },
+      cSlider: '',
+      bgColor: '',
+      confObj: {},
+      pageData: {},
+      edge: '',
+      udEdge: '',
+      themeColor: '',
+      mTOP: 0,
+      imgUrl: '',
+      txt: '',
+    };
+  },
+  mounted() {
+    this.$nextTick(() => {
+      this.pageData = this.$store.state.mobildConfig.defaultArray[this.num];
+      this.setConfig(this.pageData);
+    });
+  },
+  methods: {
+    setConfig(data) {
+      if (!data) return;
+      if (data.mbConfig) {
+        this.bgColor = data.bgColor.color[0].item;
+        this.themeColor = data.themeColor.color[0].item;
+        this.mTOP = data.mbConfig.val;
+        this.imgUrl = data.imgConfig.url;
+        this.txt = data.titleConfig.value;
+      }
+    },
+  },
+};
+</script>
 
 <style scoped lang="stylus">
 .flex-box

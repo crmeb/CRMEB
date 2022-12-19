@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -149,46 +149,6 @@ class Arr
     }
 
     /**
-     * 获取二维数组中最大的值
-     * @param $arr
-     * @param $field
-     * @return int|string
-     */
-    public static function getArrayMax($arr, $field)
-    {
-        $temp = [];
-        foreach ($arr as $k => $v) {
-            $temp[] = $v[$field];
-        }
-        if (!count($temp)) return 0;
-        $maxNumber = max($temp);
-        foreach ($arr as $k => $v) {
-            if ($maxNumber == $v[$field]) return $k;
-        }
-        return 0;
-    }
-
-    /**
-     * 获取二维数组中最小的值
-     * @param $arr
-     * @param $field
-     * @return int|string
-     */
-    public static function getArrayMin($arr, $field)
-    {
-        $temp = [];
-        foreach ($arr as $k => $v) {
-            $temp[] = $v[$field];
-        }
-        if (!count($temp)) return 0;
-        $minNumber = min($temp);
-        foreach ($arr as $k => $v) {
-            if ($minNumber == $v[$field]) return $k;
-        }
-        return 0;
-    }
-
-    /**
      * 数组转字符串去重复
      * @param array $data
      * @return false|string[]
@@ -210,7 +170,7 @@ class Arr
     }
 
     /**
-     * 获取数组钟随机值
+     * 获取数组中随机值
      * @param array $data
      * @return bool|mixed
      */

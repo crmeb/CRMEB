@@ -3,9 +3,7 @@
     <div class="i-layout-page-header header_top">
       <div class="i-layout-page-header fl_header">
         <router-link :to="{ path: '/admin/marketing/store_integral/index' }"
-          ><Button icon="ios-arrow-back" size="small" type="text"
-            >返回</Button
-          ></router-link
+          ><Button icon="ios-arrow-back" size="small" type="text">返回</Button></router-link
         >
         <Divider type="vertical" />
         <span
@@ -35,11 +33,7 @@
             :label-position="labelPosition"
             @submit.native.prevent
           >
-            <FormItem
-              label="选择商品："
-              prop="image_input"
-              v-if="current === 0"
-            >
+            <FormItem label="选择商品：" prop="image_input" v-if="current === 0">
               <div class="picBox" @click="changeGoods">
                 <div class="pictrue" v-if="formValidate.image">
                   <img v-lazy="formValidate.image" />
@@ -64,11 +58,7 @@
                       <img v-lazy="formValidate.image" />
                     </div>
                     <div class="upLoad acea-row row-center-wrapper" v-else>
-                      <Icon
-                        type="ios-camera-outline"
-                        size="26"
-                        class="iconfonts"
-                      />
+                      <Icon type="ios-camera-outline" size="26" class="iconfonts" />
                     </div>
                   </div>
                 </FormItem>
@@ -106,11 +96,7 @@
                       class="upLoad acea-row row-center-wrapper"
                       @click="modalPicTap('duo')"
                     >
-                      <Icon
-                        type="ios-camera-outline"
-                        size="26"
-                        class="iconfonts"
-                      />
+                      <Icon type="ios-camera-outline" size="26" class="iconfonts" />
                     </div>
                   </div>
                 </FormItem>
@@ -118,11 +104,7 @@
               <Col span="24">
                 <Col v-bind="grid">
                   <FormItem label="商品标题：" prop="title" label-for="title">
-                    <Input
-                      placeholder="请输入商品标题"
-                      element-id="title"
-                      v-model="formValidate.title"
-                    />
+                    <Input placeholder="请输入商品标题" element-id="title" v-model="formValidate.title" />
                   </FormItem>
                 </Col>
               </Col>
@@ -168,25 +150,15 @@
               </Col>
               <Col span="24">
                 <FormItem label="上架状态：" props="is_show" label-for="status">
-                  <RadioGroup
-                    element-id="is_show"
-                    v-model="formValidate.is_show"
-                  >
+                  <RadioGroup element-id="is_show" v-model="formValidate.is_show">
                     <Radio :label="1" class="radio">开启</Radio>
                     <Radio :label="0">关闭</Radio>
                   </RadioGroup>
                 </FormItem>
               </Col>
               <Col v-bind="grid2">
-                <FormItem
-                  label="热门推荐："
-                  props="is_host"
-                  label-for="is_host"
-                >
-                  <RadioGroup
-                    element-id="is_host"
-                    v-model="formValidate.is_host"
-                  >
+                <FormItem label="热门推荐：" props="is_host" label-for="is_host">
+                  <RadioGroup element-id="is_host" v-model="formValidate.is_host">
                     <Radio :label="1" class="radio">开启</Radio>
                     <Radio :label="0">关闭</Radio>
                   </RadioGroup>
@@ -210,15 +182,8 @@
                         <div class="pictrue pictrueTab" v-if="row.pic">
                           <img v-lazy="row.pic" />
                         </div>
-                        <div
-                          class="upLoad pictrueTab acea-row row-center-wrapper"
-                          v-else
-                        >
-                          <Icon
-                            type="ios-camera-outline"
-                            size="21"
-                            class="iconfont"
-                          />
+                        <div class="upLoad pictrueTab acea-row row-center-wrapper" v-else>
+                          <Icon type="ios-camera-outline" size="21" class="iconfont" />
                         </div>
                       </div>
                     </template>
@@ -296,25 +261,20 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
-import goodsList from "@/components/goodsList/index";
-import UeditorWrap from "@/components/ueditorFrom/index";
-import WangEditor from "@/components/wangEditor/index.vue";
-import uploadPictures from "@/components/uploadPictures";
-import {
-  integralAddApi,
-  productAttrsApi,
-  integralInfoApi,
-} from "@/api/marketing";
+import { mapState } from 'vuex';
+import goodsList from '@/components/goodsList/index';
+import WangEditor from '@/components/wangEditor/index.vue';
+import uploadPictures from '@/components/uploadPictures';
+import { integralAddApi, productAttrsApi, integralInfoApi } from '@/api/marketing';
 
 export default {
-  name: "storeIntegralCreate",
-  components: { UeditorWrap, goodsList, uploadPictures, WangEditor },
+  name: 'storeIntegralCreate',
+  components: { goodsList, uploadPictures, WangEditor },
   data() {
     return {
       submitOpen: false,
       spinShow: false,
-      isChoice: "",
+      isChoice: '',
       current: 0,
       modalPic: false,
       grid: {
@@ -348,19 +308,19 @@ export default {
       myConfig: {
         autoHeightEnabled: false, // 编辑器不自动被内容撑高
         initialFrameHeight: 500, // 初始容器高度
-        initialFrameWidth: "100%", // 初始容器宽度
-        UEDITOR_HOME_URL: "/admin/UEditor/",
-        serverUrl: "",
+        initialFrameWidth: '100%', // 初始容器宽度
+        UEDITOR_HOME_URL: '/admin/UEditor/',
+        serverUrl: '',
       },
       modals: false,
       modal_loading: false,
       images: [],
       formValidate: {
         images: [],
-        info: "",
-        title: "",
-        image: "",
-        unit_name: "",
+        info: '',
+        title: '',
+        image: '',
+        unit_name: '',
         price: 0,
         ot_price: 0,
         cost: 0,
@@ -375,88 +335,86 @@ export default {
         is_postage: 0,
         is_hot: 0,
         status: 0,
-        description: "",
+        description: '',
         id: 0,
         product_id: 0,
-        temp_id: "",
-        time_id: "",
+        temp_id: '',
+        time_id: '',
         attrs: [],
         items: [],
       },
-      description: "",
+      description: '',
       templateList: [],
       timeList: [],
       columns: [],
       specsData: [],
-      picTit: "",
+      picTit: '',
       tableIndex: 0,
       ruleValidate: {
-        image: [{ required: true, message: "请选择主图", trigger: "change" }],
+        image: [{ required: true, message: '请选择主图', trigger: 'change' }],
         images: [
           {
             required: true,
-            type: "array",
-            message: "请选择主图",
-            trigger: "change",
+            type: 'array',
+            message: '请选择主图',
+            trigger: 'change',
           },
           {
-            type: "array",
+            type: 'array',
             min: 1,
-            message: "Choose two hobbies at best",
-            trigger: "change",
+            message: 'Choose two hobbies at best',
+            trigger: 'change',
           },
         ],
-        title: [{ required: true, message: "请输入商品标题", trigger: "blur" }],
-        info: [
-          { required: true, message: "请输入积分活动简介", trigger: "blur" },
-        ],
-        unit_name: [{ required: true, message: "请输入单位", trigger: "blur" }],
+        title: [{ required: true, message: '请输入商品标题', trigger: 'blur' }],
+        info: [{ required: true, message: '请输入积分活动简介', trigger: 'blur' }],
+        unit_name: [{ required: true, message: '请输入单位', trigger: 'blur' }],
         price: [
           {
             required: true,
-            type: "number",
-            message: "请输入兑换积分",
-            trigger: "blur",
+            type: 'number',
+            message: '请输入兑换积分',
+            trigger: 'blur',
           },
         ],
         ot_price: [
           {
             required: true,
-            type: "number",
-            message: "请输入原价",
-            trigger: "blur",
+            type: 'number',
+            message: '请输入原价',
+            trigger: 'blur',
           },
         ],
         cost: [
           {
             required: true,
-            type: "number",
-            message: "请输入成本价",
-            trigger: "blur",
+            type: 'number',
+            message: '请输入成本价',
+            trigger: 'blur',
           },
         ],
         stock: [
           {
             required: true,
-            type: "number",
-            message: "请输入库存",
-            trigger: "blur",
+            type: 'number',
+            message: '请输入库存',
+            trigger: 'blur',
           },
         ],
         num: [
           {
             required: true,
-            type: "number",
-            message: "请输入兑换数量限制",
-            trigger: "blur",
+            type: 'number',
+            message: '请输入兑换数量限制',
+            trigger: 'blur',
           },
         ],
         once_num: [
           {
             required: true,
-            type: "number",
-            message: "请输入单次兑换数量限制",
-            trigger: "blur",
+            type: 'number',
+            message: '请输入单次兑换数量限制',
+            trigger: 'blur',
           },
         ],
       },
@@ -464,12 +422,12 @@ export default {
     };
   },
   computed: {
-    ...mapState("media", ["isMobile"]),
+    ...mapState('media', ['isMobile']),
     labelWidth() {
       return this.isMobile ? undefined : 135;
     },
     labelPosition() {
-      return this.isMobile ? "top" : "right";
+      return this.isMobile ? 'top' : 'right';
     },
   },
   mounted() {
@@ -490,13 +448,13 @@ export default {
         .then((res) => {
           let data = res.data.info;
           let selection = {
-            type: "selection",
+            type: 'selection',
             width: 60,
-            align: "center",
+            align: 'center',
           };
           that.specsData = data.attrs;
           that.specsData.forEach(function (item, index) {
-            that.$set(that.specsData[index], "id", index);
+            that.$set(that.specsData[index], 'id', index);
           });
           that.formValidate.items = data.items;
           that.columns = data.header;
@@ -521,26 +479,21 @@ export default {
         let row = {
           title: title,
           key: key,
-          align: "center",
+          align: 'center',
           minWidth: 120,
           render: (h, params) => {
-            return h("div", [
-              h("InputNumber", {
+            return h('div', [
+              h('InputNumber', {
                 props: {
                   min: 0,
                   precision: 0,
-                  value: key === "price" ? params.row.price : params.row.quota,
+                  value: key === 'price' ? params.row.price : params.row.quota,
                 },
                 on: {
-                  "on-change": (e) => {
-                    key === "price"
-                      ? (params.row.price = e)
-                      : (params.row.quota = e);
+                  'on-change': (e) => {
+                    key === 'price' ? (params.row.price = e) : (params.row.quota = e);
                     that.specsData[params.index] = params.row;
-                    if (
-                      !!that.formValidate.attrs &&
-                      that.formValidate.attrs.length
-                    ) {
+                    if (!!that.formValidate.attrs && that.formValidate.attrs.length) {
                       that.formValidate.attrs.forEach((v, index) => {
                         if (v.id === params.row.id) {
                           that.formValidate.attrs.splice(index, 1, params.row);
@@ -616,17 +569,17 @@ export default {
           let that = this;
           let info = res.data.info;
           let selection = {
-            type: "selection",
+            type: 'selection',
             width: 60,
-            align: "center",
+            align: 'center',
           };
           this.formValidate = info;
-          this.$set(this.formValidate, "items", info.attrs.items);
+          this.$set(this.formValidate, 'items', info.attrs.items);
           this.columns = info.attrs.header;
           this.columns.unshift(selection);
           this.specsData = info.attrs.value;
           that.specsData.forEach(function (item, index) {
-            that.$set(that.specsData[index], "id", index);
+            that.$set(that.specsData[index], 'id', index);
           });
           let data = info.attrs;
           let attr = [];
@@ -660,7 +613,7 @@ export default {
                 this.$Message.success(res.msg);
                 setTimeout(() => {
                   this.$router.push({
-                    path: "/admin/marketing/store_integral/index",
+                    path: '/admin/marketing/store_integral/index',
                   });
                 }, 500);
               })
@@ -676,24 +629,24 @@ export default {
         this.$refs[name].validate((valid) => {
           if (valid) {
             if (!that.formValidate.attrs) {
-              return that.$Message.error("请选择属性规格");
+              return that.$Message.error('请选择属性规格');
             } else {
               for (let index in that.formValidate.attrs) {
                 if (that.formValidate.attrs[index].quota <= 0) {
-                  return that.$Message.error("兑换次数必须大于0");
+                  return that.$Message.error('兑换次数必须大于0');
                 }
               }
             }
             this.current += 1;
           } else {
-            return this.$Message.warning("请完善您的信息");
+            return this.$Message.warning('请完善您的信息');
           }
         });
       } else {
         if (this.formValidate.image) {
           this.current += 1;
         } else {
-          this.$Message.warning("请选择商品");
+          this.$Message.warning('请选择商品');
         }
       }
     },
@@ -708,14 +661,14 @@ export default {
     // 点击商品图
     modalPicTap(tit, picTit, index) {
       this.modalPic = true;
-      this.isChoice = tit === "dan" ? "单选" : "多选";
+      this.isChoice = tit === 'dan' ? '单选' : '多选';
       this.picTit = picTit;
       this.tableIndex = index;
     },
     // 获取单张图片信息
     getPic(pc) {
       switch (this.picTit) {
-        case "danFrom":
+        case 'danFrom':
           this.formValidate.image = pc.att_dir;
           break;
         // case 'danTable':
@@ -723,7 +676,7 @@ export default {
         //     break;
         default:
           if (!!this.formValidate.attrs && this.formValidate.attrs.length) {
-            this.$set(this.specsData[this.tableIndex], "_checked", true);
+            this.$set(this.specsData[this.tableIndex], '_checked', true);
           }
           this.specsData[this.tableIndex].pic = pc.att_dir;
       }
@@ -745,7 +698,7 @@ export default {
     // 选择商品
     changeGoods() {
       this.modals = true;
-      this.$refs.goodslist.formValidate.is_virtual = 0;
+      this.$refs.goodslist.formValidate.is_presale = 0;
       this.$refs.goodslist.getList();
       this.$refs.goodslist.goodsCategory();
     }, // 移动
@@ -757,10 +710,10 @@ export default {
     },
     // 首先把div变成可以放置的元素，即重写dragenter/dragover
     handleDragOver(e) {
-      e.dataTransfer.dropEffect = "move"; // e.dataTransfer.dropEffect="move";//在dragenter中针对放置目标来设置!
+      e.dataTransfer.dropEffect = 'move'; // e.dataTransfer.dropEffect="move";//在dragenter中针对放置目标来设置!
     },
     handleDragEnter(e, item) {
-      e.dataTransfer.effectAllowed = "move"; // 为需要移动的元素设置dragstart事件
+      e.dataTransfer.effectAllowed = 'move'; // 为需要移动的元素设置dragstart事件
       if (item === this.dragging) {
         return;
       }

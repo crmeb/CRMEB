@@ -1,7 +1,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2021 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -9,7 +9,6 @@
 // +----------------------------------------------------------------------
 
 import request from '@/libs/request';
-
 
 /**
  * @description 列表
@@ -20,7 +19,7 @@ export function membershipDataListApi(data) {
     url: 'agent/level',
     // url: `setting/group_data`,
     method: 'get',
-    params: data
+    params: data,
   });
 }
 
@@ -33,7 +32,7 @@ export function membershipDataEditApi(data, url) {
   return request({
     url: url,
     method: 'get',
-    params: data
+    params: data,
   });
 }
 
@@ -46,7 +45,7 @@ export function membershipDataAddApi(id, url) {
     url: url,
     // url: `setting/group_data/create`,
     method: 'get',
-    params: id
+    params: id,
   });
 }
 
@@ -54,11 +53,11 @@ export function membershipDataAddApi(id, url) {
  * @description 组合数据列表 -- 修改状态
  * @param {Object} param data {Object} 组合数据列表传值
  */
- export function membershipSetApi(url) {
+export function membershipSetApi(url) {
   return request({
-      url: url,
-      // url: `/setting/group_data/set_status/${data.id}/${data.status}`,
-      method: 'PUT'
+    url: url,
+    // url: `/setting/group_data/set_status/${data.id}/${data.status}`,
+    method: 'PUT',
   });
 }
 
@@ -66,11 +65,11 @@ export function membershipDataAddApi(id, url) {
  * @description 组合数据列表 -- 修改状态
  * @param {Object} param data {Object} 组合数据列表传值
  */
- export function levelTaskSetApi(url) {
+export function levelTaskSetApi(url) {
   return request({
-      url: url,
-      // url: `/setting/group_data/set_status/${data.id}/${data.status}`,
-      method: 'PUT'
+    url: url,
+    // url: `/setting/group_data/set_status/${data.id}/${data.status}`,
+    method: 'PUT',
   });
 }
 
@@ -83,7 +82,7 @@ export function levelTaskListDataAddApi(data) {
     url: 'agent/level_task',
     // url: `setting/group_data`,
     method: 'get',
-    params: data
+    params: data,
   });
 }
 
@@ -92,11 +91,11 @@ export function levelTaskListDataAddApi(data) {
  * @param {Number} param id {Number} 组合数据列表id
  * @param {Object} param data {Object} 组合数据id对象
  */
- export function levelTaskDataEditApi(data, url) {
+export function levelTaskDataEditApi(data, url) {
   return request({
     url: url,
     method: 'get',
-    params: data
+    params: data,
   });
 }
 
@@ -109,6 +108,6 @@ export function levelTaskDataAddApi(id, url) {
     url: url,
     // url: `setting/group_data/create`,
     method: 'get',
-    params: id
+    params: id,
   });
 }

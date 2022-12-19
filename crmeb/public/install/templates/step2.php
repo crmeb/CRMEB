@@ -144,18 +144,15 @@
                 }
                 ?>
                 <?php
-                foreach ($file as $dir) {
-                    $Testdir = APP_DIR . $dir;
-                     @unlink($Testdir);
-                    $file_env = APP_DIR . ".env";
-                    @fopen($file_env, "w");
-                    if (testwrite($file_env)) {
+                foreach ($file as $filename) {
+                    $filedir = APP_DIR . $filename;
+                    if (is_writeable($filedir)) {
                         $w = '<span class="correct_span">&radic;</span>可写 ';
                     } else {
                         $w = '<span class="correct_span error_span">&radic;</span>不可写 ';
                         $err++;
                     }
-                    if (is_readable($file_env)) {
+                    if (is_readable($filedir)) {
                         $r = '<span class="correct_span">&radic;</span>可读';
                     } else {
                         $r = '<span class="correct_span error_span">&radic;</span>不可读';
@@ -164,7 +161,7 @@
                     ?>
 
                     <tr>
-                        <td><?php echo $dir; ?></td>
+                        <td><?php echo $filename; ?></td>
                         <td>读写</td>
                         <td><?php echo $w; ?></td>
                         <td><?php echo $r; ?></td>
@@ -175,38 +172,38 @@
 
 
             </table>
-            <table width="100%">
-                <tr>
-                  <td class="td1" width="25%">函数检测必须开启</td>
-                  <td class="td1" width="25%">当前状态</td>
-                  <td class="td1" width="25%">函数检测必须开启</td>
-                  <td class="td1" width="25%">当前状态</td>
-                </tr>
-              <tr>
-                    <td>file_put_contents</td>
-                    <td><?php echo $file_put_contents; ?></td>
-                <td>imagettftext</td>
-                <td><?php echo $imagettftext; ?></td>
-                </tr>
-                <tr>
-                    <td>proc_open</td>
-                    <td><?php echo $proc_open; ?></td>
-                    <td>pcntl_signal</td>
-                    <td><?php echo $pcntl_signal; ?></td>
-                </tr>
-                <tr>
-                    <td>pcntl_signal_dispatch</td>
-                    <td><?php echo $pcntl_signal_dispatch; ?></td>
-                    <td>pcntl_fork</td>
-                    <td><?php echo $pcntl_fork; ?></td>
-                </tr>
-                <tr>
-                    <td>pcntl_wait</td>
-                    <td><?php echo $pcntl_wait; ?></td>
-                    <td>pcntl_alarm</td>
-                    <td><?php echo $pcntl_alarm; ?></td>
-                </tr>
-            </table>
+<!--            <table width="100%">-->
+<!--                <tr>-->
+<!--                  <td class="td1" width="25%">函数检测必须开启</td>-->
+<!--                  <td class="td1" width="25%">当前状态</td>-->
+<!--                  <td class="td1" width="25%">函数检测必须开启</td>-->
+<!--                  <td class="td1" width="25%">当前状态</td>-->
+<!--                </tr>-->
+<!--              <tr>-->
+<!--                    <td>file_put_contents</td>-->
+<!--                    <td>--><?php //echo $file_put_contents; ?><!--</td>-->
+<!--                <td>imagettftext</td>-->
+<!--                <td>--><?php //echo $imagettftext; ?><!--</td>-->
+<!--                </tr>-->
+<!--                <tr>-->
+<!--                    <td>proc_open</td>-->
+<!--                    <td>--><?php //echo $proc_open; ?><!--</td>-->
+<!--                    <td>pcntl_signal</td>-->
+<!--                    <td>--><?php //echo $pcntl_signal; ?><!--</td>-->
+<!--                </tr>-->
+<!--                <tr>-->
+<!--                    <td>pcntl_signal_dispatch</td>-->
+<!--                    <td>--><?php //echo $pcntl_signal_dispatch; ?><!--</td>-->
+<!--                    <td>pcntl_fork</td>-->
+<!--                    <td>--><?php //echo $pcntl_fork; ?><!--</td>-->
+<!--                </tr>-->
+<!--                <tr>-->
+<!--                    <td>pcntl_wait</td>-->
+<!--                    <td>--><?php //echo $pcntl_wait; ?><!--</td>-->
+<!--                    <td>pcntl_alarm</td>-->
+<!--                    <td>--><?php //echo $pcntl_alarm; ?><!--</td>-->
+<!--                </tr>-->
+<!--            </table>-->
         </div>
         <div class="bottom tac">
             <a href="<?php echo $_SERVER['PHP_SELF']; ?>?step=2" class="btn">重新检测</a>

@@ -1,10 +1,5 @@
 <template>
   <div>
-    <div class="i-layout-page-header">
-      <div class="i-layout-page-header">
-        <span class="ivu-page-header-title">{{ $route.meta.title }}</span>
-      </div>
-    </div>
     <Card :bordered="false" dis-hover class="ivu-mt">
       <Form
         ref="tableFrom"
@@ -75,12 +70,7 @@
           </Col>
         </Row>
         <Row type="flex" class="mb20">
-          <Button
-            v-auth="['marketing-store_bargain-create']"
-            type="primary"
-            icon="md-add"
-            @click="add"
-            class="mr10"
+          <Button v-auth="['marketing-store_bargain-create']" type="primary" icon="md-add" @click="add" class="mr10"
             >添加抽奖</Button
           >
         </Row>
@@ -94,12 +84,7 @@
         no-filtered-userFrom-text="暂无筛选结果"
       >
         <template slot-scope="{ row, index }" slot="is_fail">
-          <Icon
-            type="md-checkmark"
-            v-if="row.is_fail === 1"
-            color="#0092DC"
-            size="14"
-          />
+          <Icon type="md-checkmark" v-if="row.is_fail === 1" color="#0092DC" size="14" />
           <Icon type="md-close" v-else color="#ed5565" size="14" />
         </template>
         <template slot-scope="{ row, index }" slot="image">
@@ -114,11 +99,11 @@
           <span>{{ row.bargain_min_price }}~{{ row.bargain_max_price }}</span>
         </template>
         <template slot-scope="{ row, index }" slot="status">
-          {{ status == 0 ? "开启" : "关闭" }}
+          {{ status == 0 ? '开启' : '关闭' }}
         </template>
         <template slot-scope="{ row, index }" slot="time">
-          <div>起：{{ row.start_time || "--" }}</div>
-          <div>止：{{ row.end_time || "--" }}</div>
+          <div>起：{{ row.start_time || '--' }}</div>
+          <div>止：{{ row.end_time || '--' }}</div>
         </template>
         <template slot-scope="{ row, index }" slot="status">
           <i-switch
@@ -159,16 +144,16 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
-import { lotteryListApi, lotteryStatusApi } from "@/api/lottery";
-import { formatDate } from "@/utils/validate";
+import { mapState } from 'vuex';
+import { lotteryListApi, lotteryStatusApi } from '@/api/lottery';
+import { formatDate } from '@/utils/validate';
 export default {
-  name: "storeBargain",
+  name: 'storeBargain',
   filters: {
     formatDate(time) {
       if (time !== 0) {
         let date = new Date(time * 1000);
-        return formatDate(date, "yyyy-MM-dd hh:mm");
+        return formatDate(date, 'yyyy-MM-dd hh:mm');
       }
     },
   },
@@ -177,77 +162,77 @@ export default {
       loading: false,
       columns1: [
         {
-          title: "ID",
-          key: "id",
+          title: 'ID',
+          key: 'id',
           width: 80,
         },
         {
-          title: "活动名称",
-          key: "name",
+          title: '活动名称',
+          key: 'name',
           minWidth: 90,
         },
         {
-          title: "活动类型",
-          key: "lottery_type",
+          title: '活动类型',
+          key: 'lottery_type',
           minWidth: 130,
         },
         {
-          title: "参与次数",
-          key: "lottery_all",
+          title: '参与次数',
+          key: 'lottery_all',
           minWidth: 100,
         },
         {
-          title: "抽奖人数",
-          key: "lottery_people",
+          title: '抽奖人数',
+          key: 'lottery_people',
           minWidth: 100,
         },
         {
-          title: "中奖人数",
-          key: "lottery_win",
+          title: '中奖人数',
+          key: 'lottery_win',
           minWidth: 100,
         },
         {
-          title: "活动状态",
-          key: "status_name",
+          title: '活动状态',
+          key: 'status_name',
           minWidth: 100,
         },
         {
-          title: "上架状态",
-          slot: "status",
+          title: '上架状态',
+          slot: 'status',
           minWidth: 100,
         },
         {
-          title: "活动时间",
-          slot: "time",
+          title: '活动时间',
+          slot: 'time',
           minWidth: 100,
         },
         {
-          title: "操作",
-          slot: "action",
-          fixed: "right",
+          title: '操作',
+          slot: 'action',
+          fixed: 'right',
           minWidth: 130,
         },
       ],
       tableList: [],
       tableFrom: {
-        start_status: "",
-        status: "",
-        store_name: "",
+        start_status: '',
+        status: '',
+        store_name: '',
         export: 0,
         page: 1,
-        factor: "",
+        factor: '',
         limit: 15,
       },
       total: 0,
     };
   },
   computed: {
-    ...mapState("admin/layout", ["isMobile"]),
+    ...mapState('admin/layout', ['isMobile']),
     labelWidth() {
       return this.isMobile ? undefined : 80;
     },
     labelPosition() {
-      return this.isMobile ? "top" : "left";
+      return this.isMobile ? 'top' : 'left';
     },
   },
   created() {
@@ -256,12 +241,12 @@ export default {
   methods: {
     // 添加
     add() {
-      this.$router.push({ path: "/admin/marketing/lottery/create" });
+      this.$router.push({ path: '/admin/marketing/lottery/create' });
     },
     // 编辑
     edit(row) {
       this.$router.push({
-        name: "marketing_create",
+        name: 'marketing_create',
         query: {
           id: row.id,
         },
@@ -270,7 +255,7 @@ export default {
     // 一键复制
     copy(row) {
       this.$router.push({
-        name: "marketing_create",
+        name: 'marketing_create',
         query: {
           id: row.id,
           copy: 1,
@@ -283,8 +268,8 @@ export default {
         title: tit,
         num: num,
         url: `marketing/lottery/del/${row.id}`,
-        method: "DELETE",
-        ids: "",
+        method: 'DELETE',
+        ids: '',
       };
       this.$modalSure(delfromData)
         .then((res) => {
@@ -307,8 +292,8 @@ export default {
     // 列表
     getList() {
       this.loading = true;
-      this.tableFrom.start_status = this.tableFrom.start_status || "";
-      this.tableFrom.status = this.tableFrom.status || "";
+      this.tableFrom.start_status = this.tableFrom.start_status || '';
+      this.tableFrom.status = this.tableFrom.status || '';
       lotteryListApi(this.tableFrom)
         .then(async (res) => {
           let data = res.data;

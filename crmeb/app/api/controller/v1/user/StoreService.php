@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -12,10 +12,10 @@ namespace app\api\controller\v1\user;
 
 use app\api\validate\user\StoreServiceFeedbackValidate;
 use app\Request;
-use app\services\message\service\StoreServiceFeedbackServices;
-use app\services\message\service\StoreServiceLogServices;
-use app\services\message\service\StoreServiceRecordServices;
-use app\services\message\service\StoreServiceServices;
+use app\services\kefu\service\StoreServiceFeedbackServices;
+use app\services\kefu\service\StoreServiceLogServices;
+use app\services\kefu\service\StoreServiceRecordServices;
+use app\services\kefu\service\StoreServiceServices;
 use app\services\other\CacheServices;
 use crmeb\services\CacheService;
 
@@ -42,20 +42,28 @@ class StoreService
 
     /**
      * 客服列表
+     * @param StoreServiceServices $services
      * @return mixed
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
      */
     public function lst(StoreServiceServices $services)
     {
         $serviceInfoList = $services->getServiceList(['status' => 1]);
-        if (!count($serviceInfoList)) return app('json')->successful([]);
-        return app('json')->successful($serviceInfoList['list']);
+        if (!count($serviceInfoList)) return app('json')->success([]);
+        return app('json')->success($serviceInfoList['list']);
     }
 
     /**
      * 客服聊天记录
      * @param Request $request
-     * @param $toUid
-     * @return array
+     * @param StoreServiceServices $services
+     * @param StoreServiceRecordServices $recordServices
+     * @return mixed
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
      */
     public function record(Request $request, StoreServiceServices $services, StoreServiceRecordServices $recordServices)
     {
@@ -63,14 +71,14 @@ class StoreService
             ['uidTo', 0]
         ], true);
         $serviceInfoList = $services->getServiceList(['status' => 1]);
-        if (!count($serviceInfoList)) return app('json')->fail('暂无客服人员在线，请稍后联系');
+        if (!count($serviceInfoList)) return app('json')->fail(410136);
         $uid = $request->uid();
         $uids = array_column($serviceInfoList['list'], 'uid');
         if (!$uidTo) {
             //自己是客服
             if (in_array($uid, $uids)) {
                 $uids = array_merge(array_diff($uids, [$uid]));
-                if (!$uids) return app('json')->fail('不能和自己聊天');
+                if (!$uids) return app('json')->fail(410137);
             }
         } else {
             if (in_array($uid, $uids)) {
@@ -78,7 +86,7 @@ class StoreService
             }
         }
         if (!$uids) {
-            return app('json')->fail('暂无客服人员在线，请稍后联系');
+            return app('json')->fail(410136);
         }
         //上次聊天客服优先对话
         $toUid = $recordServices->value(['user_id' => $uid], 'to_uid');
@@ -89,14 +97,14 @@ class StoreService
             $toUid = $uids[array_rand($uids)] ?? 0;
         }
 
-        if (!$toUid) return app('json')->fail('暂无客服人员在线，请稍后联系');
+        if (!$toUid) return app('json')->fail(410136);
         $result = ['serviceList' => [], 'uid' => $toUid];
         $serviceLogList = $this->services->getChatList(['uid' => $uid], $uid);
-        if (!$serviceLogList) return app('json')->successful($result);
+        if (!$serviceLogList) return app('json')->success($result);
         $idArr = array_column($serviceLogList, 'id');
         array_multisort($idArr, SORT_ASC, $serviceLogList);
         $result['serviceList'] = $serviceLogList;
-        return app('json')->successful($result);
+        return app('json')->success($result);
     }
 
     /**
@@ -108,7 +116,7 @@ class StoreService
         /** @var CacheServices $cache */
         $cache = app()->make(CacheServices::class);
         $content = $cache->getDbCache('kf_adv', '');
-        return app('json')->successful(compact('content'));
+        return app('json')->success(compact('content'));
     }
 
     /**
@@ -131,7 +139,7 @@ class StoreService
         $data['add_time'] = time();
         $data['uid'] = $request->uid();
         $services->save($data);
-        return app('json')->success('保存成功');
+        return app('json')->success(100000);
     }
 
     /**
@@ -146,26 +154,27 @@ class StoreService
     /**
      * 确认登录
      * @param Request $request
+     * @param StoreServiceServices $services
      * @param string $code
      * @return mixed
      */
     public function setLoginCode(Request $request, StoreServiceServices $services, string $code)
     {
         if (!$code) {
-            return app('json')->fail('登录CODE不存在');
+            return app('json')->fail(410020);
         }
         $cacheCode = CacheService::get($code);
         if ($cacheCode === false || $cacheCode === null) {
-            return app('json')->fail('二维码已过期请重新扫描');
+            return app('json')->fail(410021);
         }
         $userInfo = $services->get(['uid' => $request->uid()]);
         if (!$userInfo) {
-            return app('json')->fail('您不是客服无法登录');
+            return app('json')->fail(410138);
         }
         $userInfo->uniqid = $code;
         $userInfo->save();
         CacheService::set($code, '0', 600);
-        return app('json')->success('登录成功');
+        return app('json')->success(410001);
     }
 
     /**

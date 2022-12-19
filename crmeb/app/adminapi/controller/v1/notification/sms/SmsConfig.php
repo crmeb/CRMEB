@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -10,7 +10,7 @@
 // +----------------------------------------------------------------------
 namespace app\adminapi\controller\v1\notification\sms;
 
-use app\services\message\sms\SmsAdminServices;
+use app\services\yihaotong\SmsAdminServices;
 use app\services\serve\ServeServices;
 use crmeb\services\CacheService;
 use app\adminapi\controller\AuthController;
@@ -35,10 +35,10 @@ class SmsConfig extends AuthController
         $this->services = $services;
     }
 
-
     /**
      * 保存短信配置
      * @return mixed
+     * @throws \Psr\SimpleCache\InvalidArgumentException
      */
     public function save_basics()
     {
@@ -50,15 +50,17 @@ class SmsConfig extends AuthController
         $this->validate(['sms_account' => $account, 'sms_token' => $token], \app\adminapi\validate\notification\SmsConfigValidate::class);
 
         if ($this->services->login($account, $token)) {
-            return app('json')->success('登录成功');
+            return app('json')->success(400139);
         } else {
-            return app('json')->fail('账号或密码错误');
+            return app('json')->fail(400140);
         }
     }
 
     /**
      * 检测登录
+     * @param ServeServices $services
      * @return mixed
+     * @throws \Psr\SimpleCache\InvalidArgumentException
      */
     public function is_login(ServeServices $services)
     {
@@ -105,14 +107,15 @@ class SmsConfig extends AuthController
         if ($res) {
             $this->services->updateSmsConfig('', '');
             CacheService::clear();
-            return app('json')->success('退出成功');
+            return app('json')->success(100042);
         } else {
-            return app('json')->fail('退出失败');
+            return app('json')->fail(100043);
         }
     }
 
     /**
      * 短信发送记录
+     * @param ServeServices $services
      * @return mixed
      */
     public function record(ServeServices $services)
@@ -126,6 +129,7 @@ class SmsConfig extends AuthController
     }
 
     /**
+     * 获取当前登陆的短信账号信息
      * @return mixed
      */
     public function data()

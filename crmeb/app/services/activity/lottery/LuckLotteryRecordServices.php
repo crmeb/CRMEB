@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -21,8 +21,8 @@ use app\services\user\UserBillServices;
 use app\services\user\UserMoneyServices;
 use app\services\user\UserServices;
 use app\services\wechat\WechatUserServices;
-use crmeb\services\WechatService;
-use think\exception\ValidateException;
+use crmeb\exceptions\ApiException;
+use crmeb\services\app\WechatService;
 use think\facade\Log;
 
 /**
@@ -118,10 +118,10 @@ class LuckLotteryRecordServices extends BaseServices
             $userInfo = $userServices->getUserInfo($uid);
         }
         if (!$userInfo) {
-            throw new ValidateException('用户不存在');
+            throw new ApiException(410032);
         }
         if (!$prize) {
-            throw new ValidateException('奖品不存在');
+            throw new ApiException(410048);
         }
         $data = [];
         $data['uid'] = $uid;
@@ -130,7 +130,7 @@ class LuckLotteryRecordServices extends BaseServices
         $data['type'] = $prize['type'];
         $data['add_time'] = time();
         if (!$res = $this->dao->save($data)) {
-            throw new ValidateException('写入中奖记录失败');
+            throw new ApiException(400439);
         }
         return $res;
     }
@@ -151,14 +151,14 @@ class LuckLotteryRecordServices extends BaseServices
         $userServices = app()->make(UserServices::class);
         $userInfo = $userServices->getUserInfo($uid);
         if (!$userInfo) {
-            throw new ValidateException('用户不存在');
+            throw new ApiException(410032);
         }
         $lotteryRecord = $this->dao->get($lottery_record_id, ['*'], ['prize']);
         if (!$lotteryRecord || !isset($lotteryRecord['prize'])) {
-            throw new ValidateException('请继续参与活动抽奖');
+            throw new ApiException(410050);
         }
         if ($lotteryRecord['is_receive'] == 1) {
-            throw new ValidateException('已经领取成功');
+            throw new ApiException(410051);
         }
         $data = ['is_receive' => 1, 'receive_time' => time(), 'receive_info' => $receive_info];
         $prize = $lotteryRecord['prize'];
@@ -212,10 +212,10 @@ class LuckLotteryRecordServices extends BaseServices
                     break;
                 case 6:
                     if (!$receive_info['name'] || !$receive_info['phone'] || !$receive_info['address']) {
-                        throw new ValidateException('请输入收货人信息');
+                        throw new ApiException(410052);
                     }
                     if (!check_phone($receive_info['phone'])) {
-                        throw new ValidateException('请输入正确的收货人电话');
+                        throw new ApiException(410053);
                     }
                     break;
                 case 7:
@@ -244,17 +244,17 @@ class LuckLotteryRecordServices extends BaseServices
     {
         $lotteryRecord = $this->dao->get($lottery_record_id);
         if (!$lotteryRecord) {
-            throw new ValidateException('抽奖记录不存在');
+            throw new ApiException(410054);
         }
         $deliver_info = $lotteryRecord['deliver_info'];
         $edit = [];
         //备注
         if($data['deliver_name'] && $data['deliver_number']) {
             if ($lotteryRecord['type'] != 6 && ($data['deliver_name'] || $data['deliver_number'])) {
-                throw new ValidateException('该奖品不需要发货');
+                throw new ApiException(410055);
             }
             if ($lotteryRecord['type'] == 6 && (!$data['deliver_name'] || !$data['deliver_number'])) {
-                throw new ValidateException('请选择快递公司或输入快递单号');
+                throw new ApiException(410056);
             }
             $deliver_info['deliver_name'] = $data['deliver_name'];
             $deliver_info['deliver_number'] = $data['deliver_number'];
@@ -264,7 +264,7 @@ class LuckLotteryRecordServices extends BaseServices
         $deliver_info['mark'] = $data['mark'];
         $edit['deliver_info'] = $deliver_info;
         if (!$this->dao->update($lottery_record_id, $edit, 'id')) {
-            throw new ValidateException('处理失败');
+            throw new ApiException(100005);
         }
         return true;
     }

@@ -1,7 +1,7 @@
 {
   "navigationBarTitleText": "砍价活动",
   "usingComponents": {
-    "jyf-parser": "/components/mp-html/mp-html",
+    "jyf-parser": "/components/jyf-parser/jyf-parser",
     "count-down": "/components/countDown/index",
     "authorize": "/components/Authorize",
     "home": "/components/home/index"

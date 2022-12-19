@@ -1,9 +1,14 @@
 <template>
-	<view class="main" @touchstart="start" @touchend="end">
+	<view class="main">
 		<view class="top-tabs" :style="colorStyle">
-			<view class="tabs" :class="{btborder:type === index}" v-for="(item,index) in tabsList" :key="index"
-				@tap="changeTabs(index)">
-				{{item.name}}
+			<view class="tabs">
+				<view class="item" :class="{btborder:type === index}" v-for="(item,index) in tabsList" :key="index"
+					@tap="changeTabs(index)">
+					{{$t(item.name)}}
+				</view>
+			</view>
+			<view class="read-all" @click="allLook()">
+				{{$t(`全部已读`)}}
 			</view>
 		</view>
 		<view v-if="list.length && type ===1" class="list">
@@ -13,44 +18,53 @@
 				</view>
 				<view class="text-wrap">
 					<view class="name-wrap">
-						<view class="name">{{ item.nickname }}</view>
+						<view class="name">{{ $t(item.nickname) }}</view>
 						<view>{{ item._update_time }}</view>
 					</view>
 					<view class="info-wrap">
 						<view v-if="item.message_type === 1" class="info" v-html="item.message"></view>
 						<view v-if="item.message_type === 2" class="info" v-html="item.message"></view>
-						<view v-if="item.message_type === 3" class="info">[图片]</view>
-						<view v-if="item.message_type === 4" class="info">[语音]</view>
-						<view v-if="item.message_type === 5" class="info">[商品]</view>
-						<view v-if="item.message_type === 6" class="info">[订单]</view>
+						<view v-if="item.message_type === 3" class="info">{{$t(`[图片]`)}}</view>
+						<view v-if="item.message_type === 4" class="info">{{$t(`[语音]`)}}</view>
+						<view v-if="item.message_type === 5" class="info">{{$t(`[商品]`)}}</view>
+						<view v-if="item.message_type === 6" class="info">{{$t(`[订单]`)}}</view>
 						<view class="num" v-if="item.mssage_num">{{ item.mssage_num }}</view>
 					</view>
 				</view>
 			</view>
 		</view>
 		<view class="list" v-if="list.length && type === 0">
-			<view v-for="(item, index) in list" :key="index" class="item" @click="goDetail(item.id)">
-				<view class="image-wrap">
-					<image v-if="item.type === 1" class="image" src="../../../static/images/admin-msg.png"></image>
-					<image v-else class="image" src="../../../static/images/user-msg.png"></image>
-					<view class="no-look" v-if="!item.look"></view>
-				</view>
-				<view class="text-wrap">
-					<view class="name-wrap">
-						<view class="name">{{ item.title || '--' }}</view>
-						<view>{{ item.add_time }}</view>
-					</view>
-					<view class="info-wrap">
-						<view class="info" v-html="item.content"></view>
-					</view>
-				</view>
+			<view v-for="(item, index) in list" :key="index">
+				<tuiDrawer @click="(e)=>bindClick(e,item)" :key="item.id" :actions="!item.look ? actions :actionsIsLook"
+					:params="{id:item.id}">
+					<template v-slot:content>
+						<view class="item" @click="goDetail(item.id)">
+							<view class="image-wrap">
+								<image v-if="item.type === 1" class="image" src="../static/admin-msg.png"></image>
+								<image v-else class="image" src="../static/user-msg.png"></image>
+								<view class="no-look" v-if="!item.look"></view>
+							</view>
+							<view class="text-wrap">
+								<view class="name-wrap">
+									<view class="name">{{ $t(item.title) || '--' }}</view>
+									<view>{{ item.add_time }}</view>
+								</view>
+								<view class="info-wrap">
+									<view class="info" v-html="item.content"></view>
+								</view>
+							</view>
+						</view>
+
+					</template>
+
+				</tuiDrawer>
 			</view>
 		</view>
 		<view v-else-if="finished && !list.length" class="empty-wrap">
 			<view class="image-wrap">
-				<image class="image" src="../../../static/images/noMessage.png"></image>
+				<image class="image" :src="imgHost + '/statics/images/noMessage.png'"></image>
 			</view>
-			<view>亲、暂无消息记录哟！</view>
+			<view>{{$t(`亲、暂无消息记录哟！`)}}</view>
 		</view>
 		<!-- #ifndef MP -->
 		<home></home>
@@ -61,17 +75,24 @@
 <script>
 	import {
 		serviceRecord,
-		messageSystem
+		messageSystem,
+		msgLookDel
 	} from '@/api/user.js';
 	import colors from '@/mixins/color.js';
 	import home from '@/components/home';
+	import tuiDrawer from '@/components/tuiDrawer/index.vue'
+	import {
+		HTTP_REQUEST_URL
+	} from '@/config/app';
 	export default {
 		mixins: [colors],
 		components: {
-			home
+			home,
+			tuiDrawer
 		},
 		data() {
 			return {
+				imgHost: HTTP_REQUEST_URL,
 				list: [],
 				page: 1,
 				type: 0,
@@ -88,13 +109,34 @@
 				startData: {
 					clientX: 0,
 					clientY: 0
-				}
+				},
+				actions: [{
+						name: '删除',
+						color: '#fff',
+						fontsize: 28, //单位rpx
+						width: 70, //单位px
+						background: '#E6A23C'
+					},
+					{
+						name: '已读',
+						color: '#fff',
+						fontsize: 28, //单位rpx
+						width: 70, //单位px
+						background: '#409EFF'
+					},
+				],
+				actionsIsLook: [{
+					name: '删除',
+					color: '#fff',
+					fontsize: 28, //单位rpx
+					width: 70, //单位px
+					background: '#E6A23C'
+				}, ]
 			};
 		},
 		onShow() {
 			this.page = 1
 			this.list = []
-			console.log(this.type)
 			this.changeTabs(this.type)
 		},
 		onReachBottom() {
@@ -105,7 +147,6 @@
 			}
 		},
 		onPullDownRefresh() {
-			console.log('refresh');
 			this.page = 1
 			this.finished = false
 			this.list = []
@@ -121,7 +162,6 @@
 				this.startData.clientY = e.changedTouches[0].clientY;
 			},
 			end(e) {
-				// console.log(e)
 				const subX = e.changedTouches[0].clientX - this.startData.clientX;
 				const subY = e.changedTouches[0].clientY - this.startData.clientY;
 				if (subY > 50 || subY < -50) {
@@ -144,6 +184,63 @@
 					}
 				}
 			},
+			// 滑动点击操作
+			bindClick(e, item) {
+				if (e.index == 0) {
+					msgLookDel({
+						id: item.id,
+						key: 'is_del',
+						value: 1
+					}).then(res => {
+						let i = this.list.findIndex(e=>{
+							return e.id === item.id
+						})
+						this.list.splice(i,1)
+					}).catch(err => {
+						uni.showToast({
+							title: err.msg,
+							icon: 'none'
+						})
+					})
+				} else {
+					// 已读
+					msgLookDel({
+						id: item.id,
+						key: 'look',
+						value: 1
+					}).then(res => {
+						item.look = 1
+					}).catch(err => {
+						uni.showToast({
+							title: err.msg,
+							icon: 'none'
+						})
+					})
+				}
+			},
+			allLook() {
+				msgLookDel({
+					id: 0,
+					key: 'look',
+					value: 1,
+					all: 1
+				}).then(res => {
+					this.page = 1
+					this.limit = 20
+					this.list = []
+					this.finished = false
+					if (this.type === 1) {
+						this.getList()
+					} else {
+						this.messageSystem()
+					}
+				}).catch(err => {
+					uni.showToast({
+						title: err.msg,
+						icon: 'none'
+					})
+				})
+			},
 			changeTabs(index) {
 				this.type = index
 				this.page = 1
@@ -163,14 +260,13 @@
 				}
 				this.loading = true;
 				uni.showLoading({
-					title: '加载中'
+					title: this.$t(`加载中`)
 				});
 				messageSystem({
 						page: this.page,
 						limit: this.limit
 					})
 					.then(res => {
-						console.log(res)
 						let data = res.data;
 						uni.hideLoading();
 						this.loading = false;
@@ -180,7 +276,6 @@
 						uni.stopPullDownRefresh();
 					})
 					.catch(err => {
-						console.log(err)
 						uni.showToast({
 							title: err.msg,
 							icon: 'none'
@@ -229,9 +324,8 @@
 				return str;
 			},
 			goChat(id) {
-				// this.$router.push({ path: '/pages/customer_list/chat'})
 				uni.navigateTo({
-					url: '/pages/customer_list/chat?to_uid=' + id + '&type=1'
+					url: '/pages/extension/customer_list/chat?to_uid=' + id + '&type=1'
 				})
 			},
 			goDetail(id) {
@@ -384,9 +478,19 @@
 		margin-bottom: 10rpx;
 		z-index: 1000;
 		transition: all 0.3s;
+		justify-content: space-between;
+
+		.read-all {
+			margin-right: 24rpx;
+			font-size: 24rpx;
+		}
 	}
 
 	.tabs {
+		display: flex;
+	}
+
+	.item {
 		display: flex;
 		align-items: center;
 		padding: 4rpx 15rpx;

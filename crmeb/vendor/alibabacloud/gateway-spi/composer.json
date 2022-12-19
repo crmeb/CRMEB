@@ -1,0 +1,30 @@
+{
+  "name": "alibabacloud/gateway-spi",
+  "description": "Alibaba Cloud Gateway SPI Client",
+  "type": "library",
+  "license": "Apache-2.0",
+  "authors": [
+    {
+      "name": "Alibaba Cloud SDK",
+      "email": "sdk-team@alibabacloud.com"
+    }
+  ],
+  "require": {
+    "php": ">5.5",
+    "alibabacloud/credentials": "^1.1"
+  },
+  "autoload": {
+    "psr-4": {
+      "Darabonba\\GatewaySpi\\": "src"
+    }
+  },
+  "scripts": {
+    "fixer": "php-cs-fixer fix ./"
+  },
+  "config": {
+    "sort-packages": true,
+    "preferred-install": "dist",
+    "optimize-autoloader": true
+  },
+  "prefer-stable": true
+}

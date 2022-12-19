@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -10,7 +10,7 @@
 // +----------------------------------------------------------------------
 namespace crmeb\services;
 
-use think\exception\ValidateException;
+use crmeb\exceptions\AdminException;
 
 /**
  * 文件操作类
@@ -387,9 +387,10 @@ class FileService
      * @param string $new_path 指定新文件路径（需要新的文件名和后缀名）
      * @param string $type 文件操作类型
      * @param boolean $overWrite 是否覆盖已存在文件
+     * @param array $ignore 按后缀名过滤
      * @return boolean
      */
-    public function handleFile(string $old_path, string $new_path, string $type = 'copy', bool $overWrite = FALSE)
+    public function handleFile(string $old_path, string $new_path, string $type = 'copy', bool $overWrite = FALSE, array $ignore = [])
     {
         $old_path = $this->dirReplace($old_path);
         $new_path = $this->dirReplace($new_path);
@@ -397,6 +398,11 @@ class FileService
             return FALSE;
         } else if (file_exists($new_path) && $overWrite = TRUE) {
             $this->unlinkFile($new_path);
+        }
+
+        $extension = pathinfo($old_path, PATHINFO_EXTENSION);
+        if ($ignore && $extension && in_array($extension, $ignore)) {
+            return true;
         }
 
         $aimDir = dirname($new_path);
@@ -415,9 +421,10 @@ class FileService
      * @param string $aimDir 指定新文件夹路径
      * @param string $type 操作类型
      * @param boolean $overWrite 是否覆盖文件和文件夹
+     * @param array $ignore 按目录名过滤
      * @return boolean
      */
-    public function handleDir(string $old_path, string $new_path, string $type = 'copy', bool $overWrite = FALSE)
+    public function handleDir(string $old_path, string $new_path, string $type = 'copy', bool $overWrite = FALSE, array $ignore = [])
     {
         $new_path = $this->checkPath($new_path);
         $old_path = $this->checkPath($old_path);
@@ -437,6 +444,9 @@ class FileService
             if (!is_dir($old_path . $file)) {
                 $boolean = $this->handleFile($old_path . $file, $new_path . $file, $type, $overWrite);
             } else {
+                if ($ignore && in_array($file, $ignore)) {
+                    break;
+                }
                 $this->handleDir($old_path . $file, $new_path . $file, $type, $overWrite);
             }
         }
@@ -942,7 +952,7 @@ class FileService
     {
         if (!$filePath) return false;
         $pathInfo = pathinfo($filePath, PATHINFO_EXTENSION);
-        if (!$pathInfo || $pathInfo != "xlsx") throw new ValidateException('必须上传xlsx格式文件');
+        if (!$pathInfo || $pathInfo != "xlsx") throw new AdminException(400728);
         //加载读取模型
         $readModel = \PhpOffice\PhpSpreadsheet\IOFactory::createReader($suffix);
         // 创建读操作
@@ -954,7 +964,7 @@ class FileService
             $highestRow = $sheet->getHighestRow();
             $lines = $highestRow - 1;
             if ($lines <= 0) {
-                throw new ValidateException('数据不能为空');
+                throw new AdminException(400729);
             }
             // 用于存储表格数据
             $data = [];
@@ -970,7 +980,7 @@ class FileService
             }
             return $data;
         } catch (\Exception $e) {
-            throw new ValidateException($e->getMessage());
+            throw new AdminException($e->getMessage());
         }
     }
 
@@ -1017,6 +1027,23 @@ class FileService
             $zip->addFromString(basename($source), file_get_contents($source));
         }
         return $zip->close();
+    }
+
+    /**
+     * 解压缩文件夹及文件
+     * @param string $source 需要解压缩的文件路径
+     * @param string $folder 文件夹前缀，保存时需要去掉的父级文件夹
+     * @return boolean
+     */
+    public function extractFile(string $source, string $folder): bool
+    {
+        if (!extension_loaded('zip') || !file_exists($source)) {
+            return false;
+        }
+
+        $zip = new \ZipArchive;
+        $zip->open($source);
+        return $zip->extractTo($folder);
     }
 
 }

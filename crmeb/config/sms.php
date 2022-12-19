@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -10,8 +10,8 @@
 // +----------------------------------------------------------------------
 
 return [
-    //默认支付模式
-    'default' => 'yunxin',
+    //默认扩展
+    'default' => 'yihaotong',
     //单个手机每日发送上限
     'maxPhoneCount' => 10,
     //验证码每分钟发送上线
@@ -20,90 +20,25 @@ return [
     'maxIpCount' => 50,
     //驱动模式
     'stores' => [
-        //云信
-        'yunxin' => [
-            //短信模板id
-            'template_id' => [
-                //验证码自定义时效
-                'VERIFICATION_CODE_TIME' => 538393,
-                //验证码
-                'VERIFICATION_CODE' => 518076,
-                //支付成功
-                'PAY_SUCCESS_CODE' => 520268,
-                //发货提醒
-                'DELIVER_GOODS_CODE' => 520269,
-                //确认收货提醒
-                'TAKE_DELIVERY_CODE' => 520271,
-                //管理员下单提醒
-                'ADMIN_PLACE_ORDER_CODE' => 520272,
-                //管理员退货提醒
-                'ADMIN_RETURN_GOODS_CODE' => 520274,
-                //管理员支付成功提醒
-                'ADMIN_PAY_SUCCESS_CODE' => 520273,
-                //管理员确认收货
-                'ADMIN_TAKE_DELIVERY_CODE' => 520422,
-                //改价提醒
-                'PRICE_REVISION_CODE' => 528288,
-                //订单未支付
-                'ORDER_PAY_FALSE' => 528116,
-            ],
-        ],
-        //创蓝
-        'chuanglan' => [
-            //短信模板id
-            'template_id' => [
-                //验证码自定义时效
-                'VERIFICATION_CODE_TIME' => 435250,
-                //验证码
-                'VERIFICATION_CODE' => 441495,
-                //支付成功
-                'PAY_SUCCESS_CODE' => 440396,
-                //发货提醒
-                'DELIVER_GOODS_CODE' => 441596,
-                //确认收货提醒
-                'TAKE_DELIVERY_CODE' => 440402,
-                //管理员下单提醒
-                'ADMIN_PLACE_ORDER_CODE' => 440405,
-                //管理员退货提醒
-                'ADMIN_RETURN_GOODS_CODE' => 440415,
-                //管理员支付成功提醒
-                'ADMIN_PAY_SUCCESS_CODE' => 440406,
-                //管理员确认收货
-                'ADMIN_TAKE_DELIVERY_CODE' => 440408,
-                //改价提醒
-                'PRICE_REVISION_CODE' => 440410,
-                //订单未支付
-                'ORDER_PAY_FALSE' => 440409,
-            ],
+        //一号通
+        'yihaotong' => [
+            'sms_account' => '',
+            'sms_token' => ''
         ],
         //阿里云
         'aliyun' => [
-            'template_id' => [
-                //验证码
-                'VERIFICATION_CODE' => '',
-                //支付成功
-                'PAY_SUCCESS_CODE' => '',
-                //发货提醒
-                'DELIVER_GOODS_CODE' => '',
-                //确认收货提醒
-                'TAKE_DELIVERY_CODE' => '',
-                //管理员下单提醒
-                'ADMIN_PLACE_ORDER_CODE' => '',
-                //管理员退货提醒
-                'ADMIN_RETURN_GOODS_CODE' => '',
-                //管理员支付成功提醒
-                'ADMIN_PAY_SUCCESS_CODE' => '',
-                //管理员确认收货
-                'ADMIN_TAKE_DELIVERY_CODE' => '',
-                //改价提醒
-                'PRICE_REVISION_CODE' => '',
-                //订单未支付
-                'ORDER_PAY_FALSE' => '',
-            ],
-            'sign_name' => '',
-            'access_key_id' => '',
-            'access_key_secret' => '',
-            'region_id' => ''
+            'aliyun_SignName' => '',
+            'aliyun_AccessKeyId' => '',
+            'aliyun_AccessKeySecret' => '',
+            'aliyun_RegionId' => '',
+        ],
+        //腾讯云
+        'tencent' => [
+            'tencent_sms_app_id' => '',
+            'tencent_sms_secret_id' => '',
+            'tencent_sms_secret_key' => '',
+            'tencent_sms_sign_name' => '',
+            'tencent_sms_region' => '',
         ]
     ]
 ];

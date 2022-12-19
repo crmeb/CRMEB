@@ -12,9 +12,13 @@ use app\services\user\UserLabelRelationServices;
 use app\services\user\UserLabelServices;
 use app\services\user\UserServices;
 use crmeb\exceptions\AdminException;
-use crmeb\services\UploadService;
-use crmeb\services\WechatService;
+use app\services\other\UploadService;
+use crmeb\services\app\WechatService;
 
+/**
+ * Class WechatQrcodeServices
+ * @package app\services\wechat
+ */
 class WechatQrcodeServices extends BaseServices
 {
     /**
@@ -61,7 +65,7 @@ class WechatQrcodeServices extends BaseServices
         if ($info) {
             $info = $info->toArray();
         } else {
-            throw new AdminException('数据不存在');
+            throw new AdminException(100026);
         }
         /** @var UserServices $userService */
         $userService = app()->make(UserServices::class);
@@ -106,15 +110,15 @@ class WechatQrcodeServices extends BaseServices
         $data['data'] = json_encode($data['data']);
         if ($id) {
             $info = $this->dao->get($id);
-            if (!$info) throw new AdminException('数据不存在');
+            if (!$info) throw new AdminException(100026);
             if ($info['image'] == '') $data['image'] = $this->getChannelCode($id);
             $info = $this->dao->update($id, $data);
-            if (!$info) throw new AdminException('保存失败');
+            if (!$info) throw new AdminException(100006);
         } else {
             $info = $this->dao->save($data);
             $image = $this->getChannelCode($info['id']);
             $info = $this->dao->update($info['id'], ['image' => $image]);
-            if (!$info) throw new AdminException('保存失败');
+            if (!$info) throw new AdminException(100006);
         }
         return true;
     }
@@ -144,7 +148,7 @@ class WechatQrcodeServices extends BaseServices
             } else {
                 $res = false;
             }
-            if (!$res) throw new AdminException('二维码生成失败');
+            if (!$res) throw new AdminException(400237);
             $imageInfo = $this->downloadImage($resCode['url'], $name);
             $systemAttachment->attachmentAdd($name, $imageInfo['size'], $imageInfo['type'], $imageInfo['att_dir'], $imageInfo['att_dir'], 1, $imageInfo['image_type'], time(), 2);
         }

@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -34,7 +34,7 @@ class Clear extends AuthController
     public function refresh_cache()
     {
         $this->services->refresCache();
-        return app('json')->success('数据缓存刷新成功!');
+        return app('json')->success(400302);
     }
 
 
@@ -44,7 +44,7 @@ class Clear extends AuthController
     public function delete_log()
     {
         $this->services->deleteLog();
-        return app('json')->success('数据缓存刷新成功!');
+        return app('json')->success(100002);
     }
 }
 

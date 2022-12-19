@@ -5,10 +5,10 @@
 				<view class='title acea-row row-between-wrapper'>
 					<view class='text'>
 						
-						<view class='name line1'><text class="iconfont icon-cuxiaodanpin"></text>{{titleInfo[0].val}}</view>
-						<view class='line1 txt-btn'>{{titleInfo[1].val}}</view>
+						<view class='name line1'><text class="iconfont icon-cuxiaodanpin"></text>{{$t(titleInfo[0].val)}}</view>
+						<view class='line1 txt-btn'>{{$t(titleInfo[1].val)}}</view>
 					</view>
-					<view class='more' @click="gopage(titleInfo[2].val)">更多<text class='iconfont icon-jiantou'></text>
+					<view class='more' @click="gopage(titleInfo[2].val)">{{$t(`更多`)}}<text class='iconfont icon-jiantou'></text>
 					</view>
 				</view>
 				<promotionGood :benefit="benefit"></promotionGood>
@@ -19,7 +19,7 @@
 						<view class='name line1'><text class="iconfont icon-cuxiaodanpin"></text>{{titleInfo[0].val}}</view>
 						<view class='line1 txt-btn'>{{titleInfo[1].val}}</view>
 					</view>
-					<view class='more' @click="gopage(titleInfo[1].val)">更多<text class='iconfont icon-jiantou'></text>
+					<view class='more' @click="gopage(titleInfo[1].val)">{{$t(`更多`)}}<text class='iconfont icon-jiantou'></text>
 					</view>
 				</view>
 				<promotionGood :benefit="benefit"></promotionGood>
@@ -30,10 +30,10 @@
 						<view class='name line1'><text class="iconfont icon-cuxiaodanpin"></text>{{titleInfo[0].val}}</view>
 						<view class='line1 txt-btn'>{{titleInfo[1].val}}</view>
 					</view>
-					<view class='more' @click="gopage(titleInfo[1].val)">更多<text class='iconfont icon-jiantou'></text>
+					<view class='more' @click="gopage(titleInfo[1].val)">{{$t(`更多`)}}<text class='iconfont icon-jiantou'></text>
 					</view>
 				</view>
-				<view class="empty-img">促销单品，暂无数据</view>
+				<view class="empty-img">{{$t(`促销单品，暂无数据`)}}</view>
 			</view>
 		</view>
 	</view>
@@ -88,7 +88,7 @@
 		data() {
 			return {
 				benefit: [],
-				salesInfo: "库存商品优惠促销活动",
+				salesInfo: this.$t(`库存商品优惠促销活动`),
 				name: this.$options.name,
 				isShow: true,
 				isIframe: app.globalData.isIframe,

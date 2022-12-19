@@ -2,27 +2,27 @@
 	<view>
 		<view class='integral-details' :style="colorStyle">
 			<view class='header'>
-				<view class='currentScore'>当前积分</view>
+				<view class='currentScore'>{{$t(`当前积分`)}}</view>
 				<view class="scoreNum">{{userInfo.integral}}</view>
 				<view class='line'></view>
 				<view class='nav acea-row'>
 					<view class='item'>
 						<view class='num'>{{userInfo.sum_integral}}</view>
-						<view>累计积分</view>
+						<view>{{$t(`累计积分`)}}</view>
 					</view>
 					<view class='item'>
 						<view class='num'>{{userInfo.deduction_integral}}</view>
-						<view>累计消费</view>
+						<view>{{$t(`累计消费`)}}</view>
 					</view>
 					<view class='item'>
 						<view class='num'>{{userInfo.frozen_integral}}</view>
-						<view>冻结积分</view>
+						<view>{{$t(`冻结积分`)}}</view>
 					</view>
 				</view>
 				<view class="apply">
 					<view>
 						<navigator url='/pages/users/privacy/index?type=6' hover-class="none">
-							<view>积分规则</view>
+							<view>{{$t(`积分规则`)}}</view>
 						</navigator>
 					</view>
 				</view>
@@ -35,13 +35,13 @@
 				</view>
 				<view class='list' :hidden='current!=0'>
 					<view class='tip acea-row row-middle' v-if="!isTime"><text
-							class='iconfont icon-shuoming'></text>提示：积分数值的高低会直接影响您的会员等级</view>
+							class='iconfont icon-shuoming'></text>{{$t(`提示：积分数值的高低会直接影响您的会员等级`)}}</view>
 					<view class='tip acea-row row-middle' v-else><text
-							class='iconfont icon-shuoming'></text>提示：你有{{userInfo.clear_integral}}积分在{{ userInfo.clear_time | dateFormat }}过期，请尽快使用
+							class='iconfont icon-shuoming'></text>{{$t(`提示：你有`)}}{{userInfo.clear_integral}}{{$t(`积分在`)}}{{ userInfo.clear_time | dateFormat }}{{$t(`过期，请尽快使用`)}}
 					</view>
 					<view class='item acea-row row-between-wrapper' v-for="(item,index) in integralList" :key="index">
 						<view>
-							<view class='state'>{{item.mark}}</view>
+							<view class='state'>{{$t(item.title)}}</view>
 							<view>{{item.add_time}}</view>
 						</view>
 						<view class='num font-color' v-if="item.pm">+{{item.number}}</view>
@@ -51,25 +51,25 @@
 						<text class='loading iconfont icon-jiazai' :hidden='loading==false'></text>{{loadTitle}}
 					</view>
 					<view v-if="integralList.length == 0">
-						<emptyPage title="暂无积分记录哦～"></emptyPage>
+						<emptyPage :title="$t(`暂无积分记录哦～`)"></emptyPage>
 					</view>
 				</view>
 				<view class='list2' :hidden='current!=1'>
 					<navigator class='item acea-row row-between-wrapper' hover-class='none' open-type="switchTab"
 						url='/pages/index/index'>
 						<view class='pictrue'>
-							<image src='./../static/score.png'></image>
+							<image src='../static/score.png'></image>
 						</view>
-						<view class='name'>购买商品可获得积分奖励</view>
-						<view class='earn'>赚积分</view>
+						<view class='name'>{{$t(`购买商品可获得积分奖励`)}}</view>
+						<view class='earn'>{{$t(`赚积分`)}}</view>
 					</navigator>
 					<navigator class='item acea-row row-between-wrapper' hover-class='none'
 						url='/pages/users/user_sgin/index'>
 						<view class='pictrue'>
-							<image src='./../static/score.png'></image>
+							<image src='../static/score.png'></image>
 						</view>
-						<view class='name'>每日签到可获得积分奖励</view>
-						<view class='earn'>赚积分</view>
+						<view class='name'>{{$t(`每日签到可获得积分奖励`)}}</view>
+						<view class='earn'>{{$t(`赚积分`)}}</view>
 					</navigator>
 				</view>
 			</view>
@@ -113,11 +113,11 @@
 		data() {
 			return {
 				navList: [{
-						'name': '分值明细',
+						'name': this.$t(`分值明细`),
 						'icon': 'icon-mingxi'
 					},
 					{
-						'name': '分值提升',
+						'name': this.$t(`分值提升`),
 						'icon': 'icon-tishengfenzhi'
 					}
 				],
@@ -128,7 +128,7 @@
 				userInfo: {},
 				loadend: false,
 				loading: false,
-				loadTitle: '加载更多',
+				loadTitle: this.$t(`加载更多`),
 				isAuto: false, //没有授权的不会自动授权
 				isShowAuth: false, //是否隐藏授权
 				isTime: 0
@@ -211,10 +211,10 @@
 					that.page = that.page + 1;
 					that.loading = false;
 					that.loadend = loadend;
-					that.loadTitle = loadend ? '哼~😕我也是有底线的~' : "加载更多";
+					that.loadTitle = loadend ? that.$t(`我也是有底线的`) : that.$t(`加载更多`);
 				}, function(res) {
 					this.loading = false;
-					that.loadTitle = '加载更多';
+					that.loadTitle = that.$t(`加载更多`);
 				});
 			},
 			nav: function(current) {

@@ -4,12 +4,12 @@
 		<view class="serch-wrapper row-middle">
 			<view class="logo">
 				<image class="skeleton-rect" :src="logoConfig" mode="heightFix"></image>
-				<view class="swiger">{{titleInfo.length ? titleInfo[0].val : ''}}</view>
+				<view class="swiger">{{titleInfo.length ? $t(titleInfo[0].val) : ''}}</view>
 
 			</view>
 			<view class="input acea-row row-middle fillet skeleton-rect" hover-class="none" @click="goPage"><text
 					class="iconfont icon-sousuo"></text>
-				搜索商品</view>
+				{{$t('搜索商品')}}</view>
 		</view>
 	</view>
 	<view v-else-if="isIframe" class="header">
@@ -20,7 +20,7 @@
 			</view>
 			<view class="input acea-row row-middle fillet" hover-class="none" @click="goPage"><text
 					class="iconfont icon-sousuo"></text>
-				搜索商品</view>
+				{{$t('搜索商品')}}</view>
 		</view>
 	</view>
 	<!-- #endif -->
@@ -34,9 +34,9 @@
 						<image class="skeleton-rect" :src="logoConfig" mode="heightFix"></image>
 						<view class="swiger">{{titleInfo.length ? titleInfo[0].val : ''}}</view>
 					</view>
-					<navigator url="/pages/goods_search/index" class="input acea-row row-middle fillet"
+					<navigator url="/pages/goods/goods_search/index" class="input acea-row row-middle fillet"
 						hover-class="none"><text class="iconfont icon-sousuo"></text>
-						搜索商品</navigator>
+						{{$t('搜索商品')}}</navigator>
 				</view>
 			</view>
 		</view>
@@ -101,7 +101,7 @@
 			goPage() {
 				goPage().then(res => {
 					uni.navigateTo({
-						url: '/pages/goods_search/index'
+						url: '/pages/goods/goods_search/index'
 					})
 				})
 			}

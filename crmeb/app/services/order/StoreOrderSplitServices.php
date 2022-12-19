@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -12,7 +12,7 @@ namespace app\services\order;
 
 use app\services\BaseServices;
 use app\dao\order\StoreOrderDao;
-use think\exception\ValidateException;
+use crmeb\exceptions\AdminException;
 
 /**
  * 订单拆分
@@ -60,7 +60,7 @@ class StoreOrderSplitServices extends BaseServices
         $ids = array_unique(array_column($cart_ids, 'cart_id'));
         if (!$cart_ids || !$ids) return false;
         if (!$orderInfo) $orderInfo = $this->dao->get($id, ['*']);
-        if (!$orderInfo) throw new ValidateException('订单未能查到,不能拆分订单!');
+        if (!$orderInfo) throw new AdminException(400118);
         $old_order = $orderInfo;
         $orderInfo = $orderInfoOld = is_object($orderInfo) ? $orderInfo->toArray() : $orderInfo;
         foreach ($this->order_data as $field) {
@@ -95,13 +95,12 @@ class StoreOrderSplitServices extends BaseServices
                     $order_data = $key == 'other' ? $orderInfoOld : $orderInfo;
                     $order_data['pid'] = $orderInfo['pid'] > 0 ? $orderInfo['pid'] : $id;
                     mt_srand();
-                    $order_data['order_id'] = $storeOrderCreateServices->getNewOrderId();
+                    $order_data['order_id'] = $storeOrderCreateServices->getNewOrderId('cp');
                     $order_data['cart_id'] = [];
                     $order_data['unique'] = $storeOrderCreateServices->getNewOrderId('');
-                    $order_data['add_time'] = time();
                     $new_order = $this->dao->save($order_data);
                     if (!$new_order) {
-                        throw new ValidateException('生成新订单失败');
+                        throw new AdminException(400544);
                     }
                     $new_id = (int)$new_order->id;
                     $allData = [];
@@ -127,6 +126,7 @@ class StoreOrderSplitServices extends BaseServices
                     if ($orderInfo['pid'] == 0 || $orderInfo['pid'] > 0 && $key == 'new') {
                         $_info = is_string($cartInfo[$cart['cart_id']]['cart_info']) ? json_decode($cartInfo[$cart['cart_id']]['cart_info'], true) : $cartInfo[$cart['cart_id']]['cart_info'];
                         $new_cart_data['oid'] = $new_id;
+                        $new_cart_data['uid'] = $orderInfo['uid'];
                         $new_cart_data['cart_id'] = $storeOrderCreateServices->getNewOrderId('');
                         $new_cart_data['product_id'] = $_info['product_id'];
                         $new_cart_data['old_cart_id'] = $cart['cart_id'];
@@ -149,6 +149,7 @@ class StoreOrderSplitServices extends BaseServices
                         $cart_info->save();
                         $cart_data_all[] = [
                             'oid' => $new_id,
+                            'uid' => $orderInfo['uid'],
                             'cart_id' => $cart_info->cart_id,
                             'product_id' => $cart_info->product_id,
                             'old_cart_id' => $cart_info->old_cart_id,
@@ -168,6 +169,7 @@ class StoreOrderSplitServices extends BaseServices
                 $new_order = $this->dao->get($new_id);
                 $storeOrderCartInfoServices->clearOrderCartInfo($new_id);
                 $this->splitComputeOrder((int)$new_id, $cart_data_all, (float)($change_price ? $order_pay_price : 0), (float)$orderInfo['pay_price'], (float)($new_order['pay_price'] ?? 0));
+                $new_order = $this->dao->get($new_id);
                 if ($key == 'new') {
                     $order = $new_order;
                 } else {
@@ -203,7 +205,7 @@ class StoreOrderSplitServices extends BaseServices
             $orderInfo = $this->dao->get($id, ['*']);
         }
         if (!$orderInfo) {
-            throw new ValidateException('订单未能查到,不能拆分订单!');
+            throw new AdminException(400118);
         }
         /** @var StoreOrderCreateServices $storeOrderCreateServices */
         $storeOrderCreateServices = app()->make(StoreOrderCreateServices::class);
@@ -220,7 +222,7 @@ class StoreOrderSplitServices extends BaseServices
         $order_data['add_time'] = time();
         $new_order = $this->dao->save($order_data);
         if (!$new_order) {
-            throw new ValidateException('生成新订单失败');
+            throw new AdminException(400544);
         }
         $new_id = (int)$new_order->id;
         /** @var StoreOrderStatusServices $statusService */
@@ -260,12 +262,12 @@ class StoreOrderSplitServices extends BaseServices
 
             //修改原来订单商品信息
             if (false === $storeOrderCartInfoServices->update(['oid' => $id, 'cart_id' => $cart['cart_id']], $update_data)) {
-                throw new ValidateException('修改原来订单商品拆分状态失败，请稍候重试');
+                throw new AdminException(400545);
             }
             $cart_data_all[] = $cart_data;
         }
         if (!$storeOrderCartInfoServices->saveAll($cart_data_all)) {
-            throw new ValidateException('新增拆分订单商品信息失败');
+            throw new AdminException(400546);
         }
         $new_order = $this->dao->get($new_id);
         $this->splitComputeOrder($new_id, $cart_data_all, $new_order);
@@ -322,7 +324,7 @@ class StoreOrderSplitServices extends BaseServices
         $order_update['agent_brokerage'] = $agentBrokerage;
         $order_update['division_brokerage'] = $divisionBrokerage;
         if (false === $this->dao->update($id, $order_update, 'id')) {
-            throw new ValidateException('保存新订单商品信息失败');
+            throw new AdminException(400547);
         }
         return true;
     }
@@ -378,7 +380,7 @@ class StoreOrderSplitServices extends BaseServices
             $orderInfo = $this->dao->get($id, ['*']);
         }
         if (!$orderInfo) {
-            throw new ValidateException('订单未能查到,不能拆分订单!');
+            throw new AdminException(400118);
         }
         /** @var StoreOrderCartInfoServices $storeOrderCartInfoServices */
         $storeOrderCartInfoServices = app()->make(StoreOrderCartInfoServices::class);

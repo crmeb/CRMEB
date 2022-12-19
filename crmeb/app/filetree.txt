@@ -1,0 +1,24 @@
+.
+├── adminapi  //后台管理端API接口
+├── api //移动端API接口
+├── dao //dao层
+├── http //中间件
+├── jobs //队列
+├── kefuapi //客服端API接口
+├── lang //语言包
+├── listener //事件目录
+├── model //model层
+├── services //services层
+├── subscribes //订阅事件
+├── AppService.php //
+├── ExceptionHandle.php //异常处理
+├── Request.php //封装request类
+├── build.php //
+├── common.php //公共方法
+├── event.php //事件配置
+├── middleware.php //中间件
+├── provider.php //容器Provider定义文件
+├── service.php
+└── filetree.txt //目录说明
+
+11 directories, 12 files

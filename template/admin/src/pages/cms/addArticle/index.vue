@@ -3,9 +3,7 @@
     <div class="i-layout-page-header header_top">
       <div class="i-layout-page-header fl_header">
         <router-link :to="{ path: '/admin/cms/article/index' }"
-          ><Button icon="ios-arrow-back" size="small" type="text"
-            >返回</Button
-          ></router-link
+          ><Button icon="ios-arrow-back" size="small" type="text">返回</Button></router-link
         >
         <Divider type="vertical" />
         <span
@@ -31,47 +29,26 @@
         <Row :gutter="24" type="flex">
           <Col v-bind="grid" class="mr50">
             <FormItem label="标题：" prop="title" label-for="title">
-              <Input
-                v-model="formValidate.title"
-                placeholder="请输入"
-                element-id="title"
-                style="width: 90%"
-              />
+              <Input v-model="formValidate.title" placeholder="请输入" element-id="title" style="width: 90%" />
             </FormItem>
           </Col>
           <Col v-bind="grid" class="mr50">
             <FormItem label="作者：" prop="author" label-for="author">
-              <Input
-                v-model="formValidate.author"
-                placeholder="请输入"
-                element-id="author"
-                style="width: 90%"
-              />
+              <Input v-model="formValidate.author" placeholder="请输入" element-id="author" style="width: 90%" />
             </FormItem>
           </Col>
           <Col v-bind="grid" class="mr50">
             <FormItem label="文章分类：" label-for="cid" prop="cid">
               <div class="perW90">
                 <Select v-model="formValidate.cid">
-                  <Option
-                    v-for="item in treeData"
-                    :value="item.id"
-                    :disabled="item.pid === 0"
-                    :key="item.id"
-                    >{{ item.html + item.title }}</Option
-                  >
+                  <Option v-for="item in treeData" :value="item.id" :key="item.id">{{ item.html + item.title }}</Option>
                 </Select>
               </div>
             </FormItem>
           </Col>
           <Col v-bind="grid" class="mr50">
             <FormItem label="文章简介：" prop="synopsis" label-for="synopsis">
-              <Input
-                v-model="formValidate.synopsis"
-                type="textarea"
-                placeholder="请输入"
-                style="width: 90%"
-              />
+              <Input v-model="formValidate.synopsis" type="textarea" placeholder="请输入" style="width: 90%" />
             </FormItem>
           </Col>
           <Col v-bind="grid" class="mr50">
@@ -92,11 +69,7 @@
           <div class="title">文章内容</div>
         </div>
         <FormItem label="文章内容：" prop="content">
-          <WangEditor
-            style="width: 90%"
-            :content="formValidate.content"
-            @editorContent="getEditorContent"
-          ></WangEditor>
+          <WangEditor style="width: 90%" :content="formValidate.content" @editorContent="getEditorContent"></WangEditor>
         </FormItem>
         <div class="goodsTitle acea-row">
           <div class="title">其他设置</div>
@@ -109,10 +82,7 @@
           <!--                    </Col>-->
           <Col span="24">
             <FormItem label="banner显示：" label-for="is_banner">
-              <RadioGroup
-                v-model="formValidate.is_banner"
-                element-id="is_banner"
-              >
+              <RadioGroup v-model="formValidate.is_banner" element-id="is_banner">
                 <Radio :label="1" class="radio">显示</Radio>
                 <Radio :label="0">不显示</Radio>
               </RadioGroup>
@@ -127,12 +97,7 @@
             </FormItem>
           </Col>
         </Row>
-        <Button
-          type="primary"
-          class="submission"
-          @click="onsubmit('formValidate')"
-          >提交</Button
-        >
+        <Button type="primary" class="submission" @click="onsubmit('formValidate')">提交</Button>
       </Form>
       <Modal
         v-model="modalPic"
@@ -157,31 +122,31 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
-import uploadPictures from "@/components/uploadPictures";
-import WangEditor from "@/components/wangEditor/index.vue";
-import { cmsAddApi, createApi, categoryTreeListApi } from "@/api/cms";
+import { mapState } from 'vuex';
+import uploadPictures from '@/components/uploadPictures';
+import WangEditor from '@/components/wangEditor/index.vue';
+import { cmsAddApi, createApi, categoryTreeListApi } from '@/api/cms';
 export default {
-  name: "addArticle",
+  name: 'addArticle',
   components: { uploadPictures, WangEditor },
   data() {
     const validateUpload = (rule, value, callback) => {
       if (this.formValidate.image_input) {
         callback();
       } else {
-        callback(new Error("请上传图文封面"));
+        callback(new Error('请上传图文封面'));
       }
     };
     const validateUpload2 = (rule, value, callback) => {
       if (!this.formValidate.cid) {
-        callback(new Error("请选择文章分类"));
+        callback(new Error('请选择文章分类'));
       } else {
         callback();
       }
     };
     return {
       dialog: {},
-      isChoice: "单选",
+      isChoice: '单选',
       grid: {
         xl: 8,
         lg: 8,
@@ -206,36 +171,32 @@ export default {
       loading: false,
       formValidate: {
         id: 0,
-        title: "",
-        author: "",
-        image_input: "",
-        content: "",
-        synopsis: "",
-        url: "",
+        title: '',
+        author: '',
+        image_input: '',
+        content: '',
+        synopsis: '',
+        url: '',
         is_hot: 0,
         is_banner: 0,
-        cid: "",
+        cid: '',
         visit: 0,
       },
-      content: "",
+      content: '',
       ruleValidate: {
-        title: [{ required: true, message: "请输入标题", trigger: "blur" }],
+        title: [{ required: true, message: '请输入标题', trigger: 'blur' }],
         cid: [
           {
             required: true,
             validator: validateUpload2,
-            trigger: "change",
-            type: "number",
+            trigger: 'change',
+            type: 'number',
           },
         ],
-        image_input: [
-          { required: true, validator: validateUpload, trigger: "change" },
-        ],
-        content: [
-          { required: true, message: "请输入文章内容", trigger: "change" },
-        ],
+        image_input: [{ required: true, validator: validateUpload, trigger: 'change' }],
+        content: [{ required: true, message: '请输入文章内容', trigger: 'change' }],
       },
-      value: "",
+      value: '',
       modalPic: false,
       template: false,
       treeData: [],
@@ -245,19 +206,19 @@ export default {
       myConfig: {
         autoHeightEnabled: false, // 编辑器不自动被内容撑高
         initialFrameHeight: 500, // 初始容器高度
-        initialFrameWidth: "100%", // 初始容器宽度
-        UEDITOR_HOME_URL: "/admin/UEditor/",
-        serverUrl: "",
+        initialFrameWidth: '100%', // 初始容器宽度
+        UEDITOR_HOME_URL: '/admin/UEditor/',
+        serverUrl: '',
       },
     };
   },
   computed: {
-    ...mapState("media", ["isMobile"]),
+    ...mapState('media', ['isMobile']),
     labelWidth() {
       return this.isMobile ? undefined : 120;
     },
     labelPosition() {
-      return this.isMobile ? "top" : "right";
+      return this.isMobile ? 'top' : 'right';
     },
   },
   watch: {
@@ -267,12 +228,12 @@ export default {
       } else {
         this.formValidate = {
           id: 0,
-          title: "",
-          author: "",
-          image_input: "",
-          content: "",
-          synopsis: "",
-          url: "",
+          title: '',
+          author: '',
+          image_input: '',
+          content: '',
+          synopsis: '',
+          url: '',
           is_hot: 0,
           is_banner: 0,
         };
@@ -304,14 +265,14 @@ export default {
     },
     // 提交数据
     onsubmit(name) {
+      this.formValidate.content = this.content;
       this.$refs[name].validate((valid) => {
-        this.formValidate.content = this.content;
         if (valid) {
           cmsAddApi(this.formValidate)
             .then(async (res) => {
               this.$Message.success(res.msg);
               setTimeout(() => {
-                this.$router.push({ path: "/admin/cms/article/index" });
+                this.$router.push({ path: '/admin/cms/article/index' });
               }, 500);
             })
             .catch((res) => {

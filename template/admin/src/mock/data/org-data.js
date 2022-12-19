@@ -8,18 +8,21 @@ export default {
       children: [
         {
           id: 5,
-          label: '研发-前端'
-        }, {
+          label: '研发-前端',
+        },
+        {
           id: 6,
-          label: '研发-后端'
-        }, {
+          label: '研发-后端',
+        },
+        {
           id: 9,
-          label: 'UI设计'
-        }, {
+          label: 'UI设计',
+        },
+        {
           id: 10,
-          label: '产品经理'
-        }
-      ]
+          label: '产品经理',
+        },
+      ],
     },
     {
       id: 3,
@@ -27,19 +30,21 @@ export default {
       children: [
         {
           id: 7,
-          label: '销售一部'
-        }, {
+          label: '销售一部',
+        },
+        {
           id: 8,
-          label: '销售二部'
-        }
-      ]
+          label: '销售二部',
+        },
+      ],
     },
     {
       id: 4,
-      label: '财务部'
-    }, {
+      label: '财务部',
+    },
+    {
       id: 11,
-      label: 'HR人事'
-    }
-  ]
-}
+      label: 'HR人事',
+    },
+  ],
+};

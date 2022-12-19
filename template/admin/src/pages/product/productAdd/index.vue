@@ -3,9 +3,7 @@
     <div class="i-layout-page-header header_top">
       <div class="i-layout-page-header fl_header">
         <router-link :to="{ path: '/admin/product/product_list' }"
-          ><Button icon="ios-arrow-back" size="small" type="text"
-            >返回</Button
-          ></router-link
+          ><Button icon="ios-arrow-back" size="small" type="text">返回</Button></router-link
         >
         <Divider type="vertical" />
         <span
@@ -17,18 +15,7 @@
     </div>
     <Card :bordered="false" dis-hover class="ivu-mt">
       <Tabs v-model="currentTab" @on-click="onhangeTab">
-        <TabPane
-          v-for="(item, index) in headTab"
-          :key="index"
-          :label="item.tit"
-          :name="item.name"
-        ></TabPane>
-        <!-- <TabPane label="基础信息" name="1"></TabPane>
-        <TabPane label="规格库存" name="2"></TabPane>
-        <TabPane label="商品详情" name="3"></TabPane>
-        <TabPane v-show="formValidate.is_virtual ==0" label="物流设置" name="4"></TabPane>
-        <TabPane label="营销设置" name="5"></TabPane>
-        <TabPane label="其他设置" name="6"></TabPane> -->
+        <TabPane v-for="(item, index) in headTab" :key="index" :label="item.tit" :name="item.name"></TabPane>
       </Tabs>
       <Form
         class="formValidate mt20"
@@ -45,118 +32,39 @@
             <FormItem label="商品类型：" props="is_virtual">
               <div
                 class="virtual"
-                :class="
-                  formValidate.virtual_type == item.id
-                    ? 'virtual_boder'
-                    : 'virtual_boder2'
-                "
+                :class="formValidate.virtual_type == item.id ? 'virtual_boder' : 'virtual_boder2'"
                 v-for="(item, index) in virtual"
                 :key="index"
                 @click="virtualbtn(item.id, 2)"
               >
                 <div class="virtual_top">{{ item.tit }}</div>
                 <div class="virtual_bottom">({{ item.tit2 }})</div>
-                <div
-                  v-if="formValidate.virtual_type == item.id"
-                  class="virtual_san"
-                ></div>
-                <div
-                  v-if="formValidate.virtual_type == item.id"
-                  class="virtual_dui"
-                >
-                  ✓
-                </div>
+                <div v-if="formValidate.virtual_type == item.id" class="virtual_san"></div>
+                <div v-if="formValidate.virtual_type == item.id" class="virtual_dui">✓</div>
               </div>
             </FormItem>
           </Col>
-          <!-- <Col span="24">
-            <FormItem label="商品类型：" props="is_virtual">
-              <RadioGroup
-                v-model="formValidate.is_virtual"
-                @on-change="changeSpec"
-              >
-                <Radio :label="0" class="radio">普通商品</Radio>
-                <Radio :label="1">虚拟商品</Radio>
-              </RadioGroup>
-            </FormItem>
-          </Col> -->
-          <!-- <Col span="24" v-if="formValidate.virtual_type == 1">
-            <FormItem label="虚拟类型：" props="is_virtual">
-              <RadioGroup
-                v-model="formValidate.virtual_type"
-                @on-change="changeSpec"
-              >
-                <Radio :label="1">卡密</Radio>
-                <Radio :label="2">优惠券</Radio>
-              </RadioGroup>
-            </FormItem>
-          </Col> -->
-
           <Col span="24">
             <FormItem label="商品分类：" prop="cate_id">
-              <Select
-                v-model="formValidate.cate_id"
-                placeholder="请选择商品分类"
-                multiple
-                class="perW20"
-              >
-                <Option
-                  v-for="item in treeSelect"
-                  :disabled="item.pid === 0"
-                  :value="item.id"
-                  :key="item.id"
-                  >{{ item.html + item.cate_name }}</Option
-                >
+              <Select v-model="formValidate.cate_id" placeholder="请选择商品分类" multiple class="perW20">
+                <Option v-for="item in treeSelect" :disabled="item.pid === 0" :value="item.id" :key="item.id">{{
+                  item.html + item.cate_name
+                }}</Option>
               </Select>
               <span class="addfont" @click="addCate">新增分类</span>
             </FormItem>
           </Col>
           <Col span="24">
             <FormItem label="商品名称：" prop="store_name">
-              <Input
-                class="perW20"
-                v-model.trim="formValidate.store_name"
-                placeholder="请输入商品名称"
-              />
+              <Input class="perW20" v-model.trim="formValidate.store_name" placeholder="请输入商品名称" />
             </FormItem>
           </Col>
 
           <Col span="24">
             <FormItem label="单位：" prop="unit_name">
-              <Input
-                class="perW20"
-                v-model="formValidate.unit_name"
-                placeholder="请输入单位"
-              />
+              <Input class="perW20" v-model="formValidate.unit_name" placeholder="请输入单位" />
             </FormItem>
           </Col>
-
-          <!--<Col v-bind="grid2">-->
-          <!--<FormItem label="邮费：">-->
-          <!--<InputNumber v-width="'100%'" v-model="formValidate.postage" placeholder="请输入邮费"  />-->
-          <!--</FormItem>-->
-          <!--</Col>-->
-          <!-- <Col span="24">
-            <FormItem label="商品封面图：" prop="image">
-              <div class="pictrueBox" @click="modalPicTap('dan', 'danFrom')">
-                <div class="pictrue" v-if="formValidate.image">
-                  <img v-lazy="formValidate.image" />
-                  <Input
-                    v-model="formValidate.image"
-                    style="display: none"
-                  ></Input>
-                </div>
-                <div class="upLoad acea-row row-center-wrapper" v-else>
-                  <Input
-                    v-model="formValidate.image"
-                    style="display: none"
-                  ></Input>
-                  <Icon type="ios-camera-outline" size="26" />
-                </div>
-              </div>
-              <div class="tips">(345*345)</div>
-            </FormItem>
-          </Col> -->
           <Col span="24">
             <FormItem label="商品轮播图：" prop="slider_image">
               <div class="acea-row">
@@ -171,12 +79,7 @@
                   @dragend="handleDragEnd($event, item)"
                 >
                   <img v-lazy="item" />
-                  <Button
-                    shape="circle"
-                    icon="md-close"
-                    @click.native="handleRemove(index)"
-                    class="btndel"
-                  ></Button>
+                  <Button shape="circle" icon="md-close" @click.native="handleRemove(index)" class="btndel"></Button>
                 </div>
                 <div
                   v-if="formValidate.slider_image.length < 10"
@@ -185,15 +88,10 @@
                 >
                   <Icon type="ios-camera-outline" size="26" />
                 </div>
-                <Input
-                  v-model="formValidate.slider_image[0]"
-                  style="display: none"
-                ></Input>
+                <Input v-model="formValidate.slider_image[0]" style="display: none"></Input>
               </div>
 
-              <div class="titTip">
-                建议尺寸：800*800，可拖拽改变图片顺序，默认首张图为主图，最多上传10张
-              </div>
+              <div class="titTip">建议尺寸：800*800，可拖拽改变图片顺序，默认首张图为主图，最多上传10张</div>
 
               <!-- <div class="tips">(最多10张<br />750*750)</div> -->
             </FormItem>
@@ -222,29 +120,16 @@
                 v-model="videoLink"
                 placeholder="请输入视频链接"
               />
-              <input
-                type="file"
-                ref="refid"
-                @change="zh_uploadFile_change"
-                style="display: none"
-              />
+              <input type="file" ref="refid" @change="zh_uploadFile_change" style="display: none" />
               <div
-                v-if="
-                  seletVideo == 0 &&
-                  (upload_type !== '1' || videoLink) &&
-                  !formValidate.video_link
-                "
+                v-if="seletVideo == 0 && (upload_type !== '1' || videoLink) && !formValidate.video_link"
                 class="ml10 videbox"
                 @click="zh_uploadFile"
               >
                 +
               </div>
               <Button
-                v-if="
-                  seletVideo == 1 &&
-                  (upload_type !== '1' || videoLink) &&
-                  !formValidate.video_link
-                "
+                v-if="seletVideo == 1 && (upload_type !== '1' || videoLink) && !formValidate.video_link"
                 type="primary"
                 icon="ios-cloud-upload-outline"
                 class="ml10"
@@ -261,38 +146,20 @@
                 :multiple="true"
                 style="display: inline-block"
               >
-                <div
-                  v-if="seletVideo === 0 && !formValidate.video_link"
-                  class="videbox"
-                >
-                  +
-                </div>
+                <div v-if="seletVideo === 0 && !formValidate.video_link" class="videbox">+</div>
               </Upload>
               <div class="iview-video-style" v-if="formValidate.video_link">
                 <video
-                  style="
-                    width: 100%;
-                    height: 100% !important;
-                    border-radius: 10px;
-                  "
+                  style="width: 100%; height: 100% !important; border-radius: 10px"
                   :src="formValidate.video_link"
                   controls="controls"
                 >
                   您的浏览器不支持 video 标签。
                 </video>
                 <div class="mark"></div>
-                <Icon
-                  type="ios-trash-outline"
-                  class="iconv"
-                  @click="delVideo"
-                />
+                <Icon type="ios-trash-outline" class="iconv" @click="delVideo" />
               </div>
-              <Progress
-                class="progress"
-                :percent="progress"
-                :stroke-width="5"
-                v-if="upload.videoIng || videoIng"
-              />
+              <Progress class="progress" :percent="progress" :stroke-width="5" v-if="upload.videoIng || videoIng" />
               <div class="titTip">建议时长：9～30秒，视频宽高比16:9</div>
             </FormItem>
           </Col>
@@ -317,10 +184,7 @@
         <Row :gutter="24" type="flex" v-show="currentTab === '2'">
           <Col span="24">
             <FormItem label="商品规格：" props="spec_type">
-              <RadioGroup
-                v-model="formValidate.spec_type"
-                @on-change="changeSpec"
-              >
+              <RadioGroup v-model="formValidate.spec_type" @on-change="changeSpec">
                 <Radio :label="0" class="radio">单规格</Radio>
                 <Radio :label="1">多规格</Radio>
               </RadioGroup>
@@ -332,16 +196,11 @@
               <FormItem label="选择规格：" prop="">
                 <div class="acea-row row-middle">
                   <Select v-model="formValidate.selectRule" class="perW20">
-                    <Option
-                      v-for="(item, index) in ruleList"
-                      :value="item.rule_name"
-                      :key="index"
-                      >{{ item.rule_name }}</Option
-                    >
+                    <Option v-for="(item, index) in ruleList" :value="item.rule_name" :key="index">{{
+                      item.rule_name
+                    }}</Option>
                   </Select>
-                  <Button type="primary" class="mr20" @click="confirm"
-                    >确认</Button
-                  >
+                  <Button type="primary" class="mr20" @click="confirm">确认</Button>
                   <Button @click="addRule">添加规格模板</Button>
                 </div>
               </FormItem>
@@ -356,26 +215,14 @@
                   :move="checkMove"
                   @end="end"
                 >
-                  <div
-                    v-for="(item, index) in attrs"
-                    :key="index"
-                    class="acea-row row-middle mb10"
-                  >
+                  <div v-for="(item, index) in attrs" :key="index" class="acea-row row-middle mb10">
                     <div class="move-icon">
                       <span class="iconfont icondrag2"></span>
                     </div>
-                    <div
-                      style="width: 90%"
-                      :class="moveIndex === index ? 'borderStyle' : ''"
-                    >
+                    <div style="width: 90%" :class="moveIndex === index ? 'borderStyle' : ''">
                       <div class="acea-row row-middle">
                         <span class="mr5">{{ item.value }}</span
-                        ><Icon
-                          type="ios-close-circle"
-                          size="14"
-                          class="curs"
-                          @click="handleRemoveRole(index)"
-                        />
+                        ><Icon type="ios-close-circle" size="14" class="curs" @click="handleRemoveRole(index)" />
                       </div>
                       <div class="rulesBox">
                         <draggable :list="item.detail" handle=".drag">
@@ -414,38 +261,24 @@
             </Col>
             <Col span="24" v-if="createBnt">
               <FormItem>
-                <Button
-                  type="primary"
-                  icon="md-add"
-                  @click="addBtn"
-                  class="mr15"
-                  >添加新规格</Button
-                >
+                <Button type="primary" icon="md-add" @click="addBtn" class="mr15">添加新规格</Button>
                 <Button type="success" @click="generate(1)">立即生成</Button>
               </FormItem>
             </Col>
             <Col span="24" v-if="showIput">
               <Col :xl="6" :lg="9" :md="10" :sm="24" :xs="24">
                 <FormItem label="规格：">
-                  <Input
-                    placeholder="请输入规格"
-                    v-model="formDynamic.attrsName"
-                  />
+                  <Input placeholder="请输入规格" v-model="formDynamic.attrsName" />
                 </FormItem>
               </Col>
               <Col :xl="6" :lg="9" :md="10" :sm="24" :xs="24">
                 <FormItem label="规格值：">
-                  <Input
-                    v-model="formDynamic.attrsVal"
-                    placeholder="请输入规格值"
-                  />
+                  <Input v-model="formDynamic.attrsVal" placeholder="请输入规格值" />
                 </FormItem>
               </Col>
               <Col :xl="6" :lg="5" :md="10" :sm="24" :xs="24">
                 <FormItem>
-                  <Button type="primary" class="mr15" @click="createAttrName"
-                    >确定</Button
-                  >
+                  <Button type="primary" class="mr15" @click="createAttrName">确定</Button>
                   <Button @click="offAttrName">取消</Button>
                 </FormItem>
               </Col>
@@ -457,41 +290,20 @@
               :md="24"
               :sm="24"
               :xs="24"
-              v-if="
-                manyFormValidate.length &&
-                formValidate.header.length !== 0 &&
-                attrs.length !== 0
-              "
+              v-if="manyFormValidate.length && formValidate.header.length !== 0 && attrs.length !== 0"
             >
               <!-- 批量设置-->
 
               <Col span="24" v-if="!formValidate.is_virtual">
                 <FormItem label="批量设置：" class="labeltop">
-                  <Table
-                    :data="oneFormBatch"
-                    :columns="formValidate.is_virtual ? columns3 : columns2"
-                    border
-                  >
+                  <Table :data="oneFormBatch" :columns="formValidate.is_virtual ? columns3 : columns2" border>
                     <template slot-scope="{ row, index }" slot="pic">
-                      <div
-                        class="acea-row row-middle row-center-wrapper"
-                        @click="modalPicTap('dan', 'duopi', index)"
-                      >
-                        <div
-                          class="pictrue pictrueTab"
-                          v-if="oneFormBatch[0].pic"
-                        >
+                      <div class="acea-row row-middle row-center-wrapper" @click="modalPicTap('dan', 'duopi', index)">
+                        <div class="pictrue pictrueTab" v-if="oneFormBatch[0].pic">
                           <img v-lazy="oneFormBatch[0].pic" />
                         </div>
-                        <div
-                          class="upLoad pictrueTab acea-row row-center-wrapper"
-                          v-else
-                        >
-                          <Icon
-                            type="ios-camera-outline"
-                            size="21"
-                            class="iconfont"
-                          />
+                        <div class="upLoad pictrueTab acea-row row-center-wrapper" v-else>
+                          <Icon type="ios-camera-outline" size="21" class="iconfont" />
                         </div>
                       </div>
                     </template>
@@ -512,19 +324,12 @@
                       ></InputNumber>
                     </template>
                     <template slot-scope="{ row, index }" slot="ot_price">
-                      <InputNumber
-                        v-model="oneFormBatch[0].ot_price"
-                        :min="0"
-                        class="priceBox"
-                      ></InputNumber>
+                      <InputNumber v-model="oneFormBatch[0].ot_price" :min="0" class="priceBox"></InputNumber>
                     </template>
                     <template slot-scope="{ row, index }" slot="stock">
                       <InputNumber
                         v-model="oneFormBatch[0].stock"
-                        :disabled="
-                          formValidate.is_virtual == 1 &&
-                          formValidate.virtual_type == 1
-                        "
+                        :disabled="formValidate.is_virtual == 1 && formValidate.virtual_type == 1"
                         :min="0"
                         :max="99999999"
                         class="priceBox"
@@ -538,26 +343,18 @@
                       >
                       <span
                         class="see"
-                        v-else-if="
-                          row.coupon_id && formValidate.virtual_type == 2
-                        "
+                        v-else-if="row.coupon_id && formValidate.virtual_type == 2"
                         @click="see(row, 'manyFormValidate', index)"
                         >{{ row.coupon_name }}</span
                       >
                       <Button
-                        v-else-if="
-                          !row.virtual_list.length &&
-                          formValidate.virtual_type == 1
-                        "
+                        v-else-if="!row.virtual_list.length && formValidate.virtual_type == 1"
                         @click="addVirtual(index, 'oneFormBatch')"
                         >添加卡密</Button
                       >
                       <span
                         class="see"
-                        v-else-if="
-                          row.virtual_list.length &&
-                          formValidate.virtual_type == 1
-                        "
+                        v-else-if="row.virtual_list.length && formValidate.virtual_type == 1"
                         @click="see(row, 'oneFormBatch', index)"
                         >已设置</span
                       >
@@ -594,31 +391,17 @@
               <!-- 多规格表格-->
               <Col span="24">
                 <FormItem label="商品属性：" class="labeltop">
-                  <Table
-                    :data="manyFormValidate"
-                    :columns="formValidate.header"
-                    border
-                  >
+                  <Table :data="manyFormValidate" :columns="formValidate.header" border>
                     <template slot-scope="{ row, index }" slot="pic">
                       <div
                         class="acea-row row-middle row-center-wrapper"
                         @click="modalPicTap('dan', 'duoTable', index)"
                       >
-                        <div
-                          class="pictrue pictrueTab"
-                          v-if="manyFormValidate[index].pic"
-                        >
+                        <div class="pictrue pictrueTab" v-if="manyFormValidate[index].pic">
                           <img v-lazy="manyFormValidate[index].pic" />
                         </div>
-                        <div
-                          class="upLoad pictrueTab acea-row row-center-wrapper"
-                          v-else
-                        >
-                          <Icon
-                            type="ios-camera-outline"
-                            size="21"
-                            class="iconfont"
-                          />
+                        <div class="upLoad pictrueTab acea-row row-center-wrapper" v-else>
+                          <Icon type="ios-camera-outline" size="21" class="iconfont" />
                         </div>
                       </div>
                     </template>
@@ -649,10 +432,7 @@
                     <template slot-scope="{ row, index }" slot="stock">
                       <InputNumber
                         v-model="manyFormValidate[index].stock"
-                        :disabled="
-                          formValidate.is_virtual == 1 &&
-                          formValidate.virtual_type == 1
-                        "
+                        :disabled="formValidate.is_virtual == 1 && formValidate.virtual_type == 1"
                         :min="0"
                         :max="99999999"
                         :precision="0"
@@ -686,27 +466,18 @@
                       >
                       <span
                         class="see"
-                        v-else-if="
-                          row.coupon_id && formValidate.virtual_type == 2
-                        "
+                        v-else-if="row.coupon_id && formValidate.virtual_type == 2"
                         @click="see(row, 'manyFormValidate', index)"
                         >{{ row.coupon_name }}</span
                       >
                       <Button
-                        v-else-if="
-                          !row.virtual_list &&
-                          !row.stock &&
-                          formValidate.virtual_type == 1
-                        "
+                        v-else-if="!row.virtual_list && !row.stock && formValidate.virtual_type == 1"
                         @click="addVirtual(index, 'manyFormValidate')"
                         >添加卡密</Button
                       >
                       <span
                         class="see"
-                        v-else-if="
-                          (row.virtual_list.length || row.stock) &&
-                          formValidate.virtual_type == 1
-                        "
+                        v-else-if="(row.virtual_list.length || row.stock) && formValidate.virtual_type == 1"
                         @click="see(row, 'manyFormValidate', index)"
                         >已设置</span
                       >
@@ -723,22 +494,13 @@
           <div v-if="formValidate.spec_type === 0">
             <Col span="24">
               <FormItem label="图片：">
-                <div
-                  class="pictrueBox"
-                  @click="modalPicTap('dan', 'danTable', 0)"
-                >
+                <div class="pictrueBox" @click="modalPicTap('dan', 'danTable', 0)">
                   <div class="pictrue" v-if="oneFormValidate[0].pic">
                     <img v-lazy="oneFormValidate[0].pic" />
-                    <Input
-                      v-model="oneFormValidate[0].pic"
-                      style="display: none"
-                    ></Input>
+                    <Input v-model="oneFormValidate[0].pic" style="display: none"></Input>
                   </div>
                   <div class="upLoad acea-row row-center-wrapper" v-else>
-                    <Input
-                      v-model="oneFormValidate[0].pic"
-                      style="display: none"
-                    ></Input>
+                    <Input v-model="oneFormValidate[0].pic" style="display: none"></Input>
                     <Icon type="ios-camera-outline" size="26" />
                   </div>
                 </div>
@@ -794,58 +556,30 @@
             </Col>
             <Col span="24">
               <FormItem label="商品编号：">
-                <Input
-                  v-model.trim="oneFormValidate[0].bar_code"
-                  class="perW20"
-                ></Input>
+                <Input v-model.trim="oneFormValidate[0].bar_code" class="perW20"></Input>
               </FormItem>
             </Col>
             <Col span="24" v-if="formValidate.virtual_type == 0">
               <FormItem label="重量（KG）：">
-                <InputNumber
-                  v-model="oneFormValidate[0].weight"
-                  :min="0"
-                  :max="99999999"
-                  class="perW20"
-                ></InputNumber>
+                <InputNumber v-model="oneFormValidate[0].weight" :min="0" :max="99999999" class="perW20"></InputNumber>
               </FormItem>
             </Col>
             <Col span="24">
-              <FormItem
-                label="体积(m³)："
-                v-if="formValidate.virtual_type == 0"
-              >
-                <InputNumber
-                  v-model="oneFormValidate[0].volume"
-                  :min="0"
-                  :max="99999999"
-                  class="perW20"
-                ></InputNumber>
+              <FormItem label="体积(m³)：" v-if="formValidate.virtual_type == 0">
+                <InputNumber v-model="oneFormValidate[0].volume" :min="0" :max="99999999" class="perW20"></InputNumber>
               </FormItem>
             </Col>
 
             <Col span="24">
-              <FormItem
-                label="虚拟商品："
-                v-if="
-                  formValidate.virtual_type == 1 ||
-                  formValidate.virtual_type == 2
-                "
-              >
+              <FormItem label="虚拟商品：" v-if="formValidate.virtual_type == 1 || formValidate.virtual_type == 2">
                 <Button
-                  v-if="
-                    !oneFormValidate[0].coupon_id &&
-                    formValidate.virtual_type == 2
-                  "
+                  v-if="!oneFormValidate[0].coupon_id && formValidate.virtual_type == 2"
                   @click="addGoodsCoupon(0, 'oneFormValidate')"
                   >添加优惠券</Button
                 >
                 <span
                   class="see"
-                  v-else-if="
-                    oneFormValidate[0].coupon_id &&
-                    formValidate.virtual_type == 2
-                  "
+                  v-else-if="oneFormValidate[0].coupon_id && formValidate.virtual_type == 2"
                   @click="see(oneFormValidate[0], 'oneFormValidate', 0)"
                   >{{ oneFormValidate[0].coupon_name }}</span
                 >
@@ -861,8 +595,7 @@
                 <span
                   class="see"
                   v-else-if="
-                    (oneFormValidate[0].virtual_list.length ||
-                      oneFormValidate[0].stock > 0) &&
+                    (oneFormValidate[0].virtual_list.length || oneFormValidate[0].stock > 0) &&
                     formValidate.virtual_type == 1
                   "
                   @click="see(oneFormValidate[0], 'oneFormValidate', 0)"
@@ -871,139 +604,12 @@
               </FormItem>
             </Col>
           </div>
-
-          <!-- <Col
-            :xl="23"
-            :lg="24"
-            :md="24"
-            :sm="24"
-            :xs="24"
-            v-if="formValidate.spec_type === 0"
-          >
-            <FormItem>
-              <Table
-                :data="oneFormValidate"
-                :columns="
-                  formValidate.is_virtual ? columns3.slice(0, 7) : columns
-                "
-                border
-              >
-                <template slot-scope="{ row, index }" slot="pic">
-                  <div
-                    class="acea-row row-middle row-center-wrapper"
-                    @click="modalPicTap('dan', 'danTable', index)"
-                  >
-                    <div
-                      class="pictrue pictrueTab"
-                      v-if="oneFormValidate[0].pic"
-                    >
-                      <img v-lazy="oneFormValidate[0].pic" />
-                    </div>
-                    <div
-                      class="upLoad pictrueTab acea-row row-center-wrapper"
-                      v-else
-                    >
-                      <Icon type="ios-camera-outline" size="21" />
-                    </div>
-                  </div>
-                </template>
-                <template slot-scope="{ row, index }" slot="price">
-                  <InputNumber
-                    v-model="oneFormValidate[0].price"
-                    :min="0"
-                    :max="99999999"
-                    class="priceBox"
-                  ></InputNumber>
-                </template>
-                <template slot-scope="{ row, index }" slot="cost">
-                  <InputNumber
-                    v-model="oneFormValidate[0].cost"
-                    :min="0"
-                    :max="99999999"
-                    class="priceBox"
-                  ></InputNumber>
-                </template>
-                <template slot-scope="{ row, index }" slot="ot_price">
-                  <InputNumber
-                    v-model="oneFormValidate[0].ot_price"
-                    :min="0"
-                    :max="99999999"
-                    class="priceBox"
-                  ></InputNumber>
-                </template>
-                <template slot-scope="{ row, index }" slot="stock">
-                  <InputNumber
-                    v-model="oneFormValidate[0].stock"
-                    :min="0"
-                    :max="99999999"
-                    :disabled="
-                      formValidate.is_virtual == 1 &&
-                      formValidate.virtual_type == 1
-                    "
-                    :precision="0"
-                    class="priceBox"
-                  ></InputNumber>
-                </template>
-                <template slot-scope="{ row, index }" slot="bar_code">
-                  <Input v-model="oneFormValidate[0].bar_code"></Input>
-                </template>
-                <template slot-scope="{ row, index }" slot="weight">
-                  <InputNumber
-                    v-model="oneFormValidate[0].weight"
-                    :min="0"
-                    :max="99999999"
-                    class="priceBox"
-                  ></InputNumber>
-                </template>
-                <template slot-scope="{ row, index }" slot="fictitious">
-                  <Button
-                    v-if="!row.coupon_id && formValidate.virtual_type == 2"
-                    @click="addGoodsCoupon(index, 'oneFormValidate')"
-                    >添加优惠券</Button
-                  >
-                  <span
-                    class="see"
-                    v-else-if="row.coupon_id && formValidate.virtual_type == 2"
-                    @click="see(row, 'oneFormValidate', index)"
-                    >{{ row.coupon_name }}</span
-                  >
-                  <Button
-                    v-if="
-                      !row.virtual_list.length && formValidate.virtual_type == 1
-                    "
-                    @click="addVirtual(index, 'oneFormValidate')"
-                    >添加卡密</Button
-                  >
-                  <span
-                    class="see"
-                    v-else-if="
-                      row.virtual_list.length && formValidate.virtual_type == 1
-                    "
-                    @click="see(row, 'oneFormValidate', index)"
-                    >已设置</span
-                  >
-                </template>
-                <template slot-scope="{ row, index }" slot="volume">
-                  <InputNumber
-                    v-model="oneFormValidate[0].volume"
-                    :min="0"
-                    :max="99999999"
-                    class="priceBox"
-                  ></InputNumber>
-                </template>
-              </Table>
-            </FormItem>
-          </Col> -->
         </Row>
         <!-- 商品详情-->
         <Row v-show="currentTab === '3'">
           <Col span="16">
             <FormItem label="商品详情：">
-              <WangEditor
-                style="width: 100%"
-                :content="contents"
-                @editorContent="getEditorContent"
-              ></WangEditor>
+              <WangEditor style="width: 100%" :content="contents" @editorContent="getEditorContent"></WangEditor>
             </FormItem>
           </Col>
           <Col span="6" style="width: 33%">
@@ -1017,11 +623,9 @@
         <Row v-show="headTab.length === 6 ? currentTab === '4' : false">
           <Col span="24">
             <FormItem label="物流方式：" prop="logistics">
-              <CheckboxGroup
-                v-model="formValidate.logistics"
-                @on-change="logisticsBtn"
-              >
-                <Checkbox label="1" disabled>快递</Checkbox>
+              <CheckboxGroup v-model="formValidate.logistics" @on-change="logisticsBtn">
+                <Checkbox label="1">快递</Checkbox>
+
                 <Checkbox label="2">到店核销</Checkbox>
               </CheckboxGroup>
             </FormItem>
@@ -1035,39 +639,18 @@
               </RadioGroup>
             </FormItem>
           </Col>
-          <Col
-            span="24"
-            v-if="formValidate.freight != 3 && formValidate.freight != 1"
-          >
-            <FormItem
-              label=""
-              :prop="formValidate.freight != 1 ? 'freight' : ''"
-            >
+          <Col span="24" v-if="formValidate.freight != 3 && formValidate.freight != 1">
+            <FormItem label="" :prop="formValidate.freight != 1 ? 'freight' : ''">
               <div class="acea-row">
-                <InputNumber
-                  :min="0"
-                  v-model="formValidate.postage"
-                  placeholder="请输入金额"
-                  class="perW20 maxW"
-                />
+                <InputNumber :min="0" v-model="formValidate.postage" placeholder="请输入金额" class="perW20 maxW" />
               </div>
             </FormItem>
           </Col>
           <Col span="24" v-if="formValidate.freight == 3">
             <FormItem label="" prop="temp_id">
               <div class="acea-row">
-                <Select
-                  v-model="formValidate.temp_id"
-                  clearable
-                  placeholder="请选择运费模板"
-                  class="perW20 maxW"
-                >
-                  <Option
-                    v-for="(item, index) in templateList"
-                    :value="item.id"
-                    :key="index"
-                    >{{ item.name }}</Option
-                  >
+                <Select v-model="formValidate.temp_id" clearable placeholder="请选择运费模板" class="perW20 maxW">
+                  <Option v-for="(item, index) in templateList" :value="item.id" :key="index">{{ item.name }}</Option>
                 </Select>
                 <span class="addfont" @click="addTemp">新增运费模板</span>
               </div>
@@ -1075,31 +658,15 @@
           </Col>
         </Row>
         <!-- 营销设置-->
-        <Row
-          :gutter="24"
-          type="flex"
-          v-show="
-            headTab.length === 6 ? currentTab === '5' : currentTab === '4'
-          "
-        >
+        <Row :gutter="24" type="flex" v-show="headTab.length === 6 ? currentTab === '5' : currentTab === '4'">
           <Col span="24">
             <FormItem label="虚拟销量：">
-              <InputNumber
-                :min="0"
-                :max="999999"
-                v-model="formValidate.ficti"
-                placeholder="请输入虚拟销量"
-              />
+              <InputNumber :min="0" :max="999999" v-model="formValidate.ficti" placeholder="请输入虚拟销量" />
             </FormItem>
           </Col>
           <Col span="24">
             <FormItem label="排序：">
-              <InputNumber
-                :min="0"
-                :max="999999"
-                v-model="formValidate.sort"
-                placeholder="请输入排序"
-              />
+              <InputNumber :min="0" :max="999999" v-model="formValidate.sort" placeholder="请输入排序" />
             </FormItem>
           </Col>
           <Col span="24">
@@ -1107,58 +674,29 @@
           </Col>
 
           <Col span="24">
-            <FormItem label="赠送积分：" prop="give_integral">
-              <InputNumber
-                v-model="formValidate.give_integral"
-                :min="0"
-                :max="999999"
-                placeholder="请输入积分"
-              />
+            <FormItem label="购买送积分：" prop="give_integral">
+              <InputNumber v-model="formValidate.give_integral" :min="0" :max="999999" placeholder="请输入积分" />
             </FormItem>
           </Col>
           <Col v-bind="grid3">
-            <FormItem label="赠送优惠券：">
+            <FormItem label="购买送优惠券：">
               <div v-if="couponName.length" class="mb20">
-                <Tag
-                  closable
-                  v-for="(item, index) in couponName"
-                  :key="index"
-                  @on-close="handleClose(item)"
-                  >{{ item.title }}</Tag
-                >
+                <Tag closable v-for="(item, index) in couponName" :key="index" @on-close="handleClose(item)">{{
+                  item.title
+                }}</Tag>
               </div>
               <Button type="primary" @click="addCoupon">添加优惠券</Button>
             </FormItem>
           </Col>
           <Col span="24">
             <FormItem label="关联用户标签：" prop="label_id">
-              <!-- <Select
-                v-model="formValidate.label_id"
-                placeholder="请选择关联用户标签"
-                multiple
-                class="perW20"
-              >
-                <Option
-                  v-for="item in dataLabel"
-                  :value="item.id"
-                  :key="item.id"
-                  >{{ item.label_name }}</Option
-                >
-              </Select>
-              <span class="addfont" @click="addLabel">新增标签</span> -->
               <div style="display: flex">
-                <div
-                  class="labelInput acea-row row-between-wrapper"
-                  @click="openLabel"
-                >
+                <div class="labelInput acea-row row-between-wrapper" @click="openLabel">
                   <div style="width: 90%">
                     <div v-if="dataLabel.length">
-                      <Tag
-                        closable
-                        v-for="(item, index) in dataLabel"
-                        @on-close="closeLabel(item)"
-                        >{{ item.label_name }}</Tag
-                      >
+                      <Tag closable v-for="(item, index) in dataLabel" @on-close="closeLabel(item)" :key="index">{{
+                        item.label_name
+                      }}</Tag>
                     </div>
                     <span class="span" v-else>选择用户关联标签</span>
                   </div>
@@ -1182,10 +720,7 @@
           </Col>
           <Col span="24">
             <FormItem label="单独设置：">
-              <CheckboxGroup
-                v-model="formValidate.is_sub"
-                @on-change="checkAllGroupChange"
-              >
+              <CheckboxGroup v-model="formValidate.is_sub" @on-change="checkAllGroupChange">
                 <Checkbox :label="1">佣金设置（数字即返佣金额）</Checkbox>
                 <Checkbox :label="0">付费会员价</Checkbox>
               </CheckboxGroup>
@@ -1204,24 +739,12 @@
                     <img v-lazy="oneFormValidate[0].pic" />
                   </div>
                 </template>
-                <template slot-scope="{ row, index }" slot="price">{{
-                  oneFormValidate[0].price
-                }}</template>
-                <template slot-scope="{ row, index }" slot="cost">{{
-                  oneFormValidate[0].cost
-                }}</template>
-                <template slot-scope="{ row, index }" slot="ot_price">{{
-                  oneFormValidate[0].ot_price
-                }}</template>
-                <template slot-scope="{ row, index }" slot="stock">{{
-                  oneFormValidate[0].stock
-                }}</template>
-                <template slot-scope="{ row, index }" slot="bar_code">{{
-                  oneFormValidate[0].bar_code
-                }}</template>
-                <template slot-scope="{ row, index }" slot="weight">{{
-                  oneFormValidate[0].weight
-                }}</template>
+                <template slot-scope="{ row, index }" slot="price">{{ oneFormValidate[0].price }}</template>
+                <template slot-scope="{ row, index }" slot="cost">{{ oneFormValidate[0].cost }}</template>
+                <template slot-scope="{ row, index }" slot="ot_price">{{ oneFormValidate[0].ot_price }}</template>
+                <template slot-scope="{ row, index }" slot="stock">{{ oneFormValidate[0].stock }}</template>
+                <template slot-scope="{ row, index }" slot="bar_code">{{ oneFormValidate[0].bar_code }}</template>
+                <template slot-scope="{ row, index }" slot="weight">{{ oneFormValidate[0].weight }}</template>
                 <template slot-scope="{ row, index }" slot="fictitious">
                   <Button
                     v-if="!row.coupon_id && formValidate.virtual_type == 2"
@@ -1235,27 +758,18 @@
                     >{{ row.coupon_name }}</span
                   >
                   <Button
-                    v-else-if="
-                      !row.virtual_list.length &&
-                      !row.stock &&
-                      formValidate.virtual_type == 1
-                    "
+                    v-else-if="!row.virtual_list.length && !row.stock && formValidate.virtual_type == 1"
                     @click="addVirtual(index, 'oneFormValidate')"
                     >添加卡密</Button
                   >
                   <span
                     class="see"
-                    v-else-if="
-                      (row.virtual_list.length || row.stock) &&
-                      formValidate.virtual_type == 1
-                    "
+                    v-else-if="(row.virtual_list.length || row.stock) && formValidate.virtual_type == 1"
                     @click="see(row, 'oneFormValidate', index)"
                     >已设置</span
                   >
                 </template>
-                <template slot-scope="{ row, index }" slot="volume">{{
-                  oneFormValidate[0].volume
-                }}</template>
+                <template slot-scope="{ row, index }" slot="volume">{{ oneFormValidate[0].volume }}</template>
                 <template slot-scope="{ row, index }" slot="brokerage">
                   <InputNumber
                     v-model="oneFormValidate[0].brokerage"
@@ -1264,7 +778,7 @@
                     class="priceBox"
                   ></InputNumber>
                 </template>
-                <template slot-scope="{ row, index }" slot="brokerage_two">
+                <template slot-scope="{ row }" slot="brokerage_two">
                   <InputNumber
                     v-model="oneFormValidate[0].brokerage_two"
                     :min="0"
@@ -1272,7 +786,7 @@
                     class="priceBox"
                   ></InputNumber>
                 </template>
-                <template slot-scope="{ row, index }" slot="vip_price">
+                <template slot-scope="{ row }" slot="vip_price">
                   <InputNumber
                     v-model="oneFormValidate[0].vip_price"
                     :min="0"
@@ -1331,39 +845,19 @@
                                 <Button type="primary" @click="vipPriceSetUp">批量设置</Button>
                             </template> -->
             </FormItem>
-            <FormItem
-              label="商品属性："
-              v-if="formValidate.spec_type === 1 && manyFormValidate.length"
-            >
-              <Table
-                v-if="formValidate.is_sub"
-                :data="manyFormValidate"
-                :columns="columnsInstal2"
-                border
-              >
+            <FormItem label="商品属性：" v-if="formValidate.spec_type === 1 && manyFormValidate.length">
+              <Table v-if="formValidate.is_sub" :data="manyFormValidate" :columns="columnsInstal2" border>
                 <template slot-scope="{ row, index }" slot="pic">
                   <div class="pictrue pictrueTab">
                     <img v-lazy="manyFormValidate[index].pic" />
                   </div>
                 </template>
-                <template slot-scope="{ row, index }" slot="price">{{
-                  manyFormValidate[index].price
-                }}</template>
-                <template slot-scope="{ row, index }" slot="cost">{{
-                  manyFormValidate[index].cost
-                }}</template>
-                <template slot-scope="{ row, index }" slot="ot_price">{{
-                  manyFormValidate[index].ot_price
-                }}</template>
-                <template slot-scope="{ row, index }" slot="stock">{{
-                  manyFormValidate[index].stock
-                }}</template>
-                <template slot-scope="{ row, index }" slot="bar_code">{{
-                  manyFormValidate[index].bar_code
-                }}</template>
-                <template slot-scope="{ row, index }" slot="weight">{{
-                  manyFormValidate[index].weight
-                }}</template>
+                <template slot-scope="{ row, index }" slot="price">{{ manyFormValidate[index].price }}</template>
+                <template slot-scope="{ row, index }" slot="cost">{{ manyFormValidate[index].cost }}</template>
+                <template slot-scope="{ row, index }" slot="ot_price">{{ manyFormValidate[index].ot_price }}</template>
+                <template slot-scope="{ row, index }" slot="stock">{{ manyFormValidate[index].stock }}</template>
+                <template slot-scope="{ row, index }" slot="bar_code">{{ manyFormValidate[index].bar_code }}</template>
+                <template slot-scope="{ row, index }" slot="weight">{{ manyFormValidate[index].weight }}</template>
                 <template slot-scope="{ row, index }" slot="fictitious">
                   <Button
                     v-if="!row.coupon_id && formValidate.virtual_type == 2"
@@ -1377,27 +871,18 @@
                     >{{ row.coupon_name }}</span
                   >
                   <Button
-                    v-else-if="
-                      !row.virtual_list.length &&
-                      !row.stock &&
-                      formValidate.virtual_type == 1
-                    "
+                    v-else-if="!row.virtual_list.length && !row.stock && formValidate.virtual_type == 1"
                     @click="addVirtual(index, 'manyFormValidate')"
                     >添加卡密</Button
                   >
                   <span
                     class="see"
-                    v-else-if="
-                      (row.virtual_list.length || row.stock) &&
-                      formValidate.virtual_type == 1
-                    "
+                    v-else-if="(row.virtual_list.length || row.stock) && formValidate.virtual_type == 1"
                     @click="see(row, 'manyFormValidate', index)"
                     >已设置</span
                   >
                 </template>
-                <template slot-scope="{ row, index }" slot="volume">{{
-                  manyFormValidate[index].volume
-                }}</template>
+                <template slot-scope="{ row, index }" slot="volume">{{ manyFormValidate[index].volume }}</template>
                 <template slot-scope="{ row, index }" slot="brokerage">
                   <InputNumber
                     v-model="manyFormValidate[index].brokerage"
@@ -1439,7 +924,33 @@
           <Col span="24">
             <div class="line"></div>
           </Col>
-          <Col span="24" v-if="formValidate.virtual_type == 0">
+          <Col span="24">
+            <FormItem label="是否限购：">
+              <i-switch v-model="formValidate.is_limit" size="large">
+                <span slot="open">开启</span>
+                <span slot="close">关闭</span>
+              </i-switch>
+            </FormItem>
+          </Col>
+          <Col span="24">
+            <FormItem label="限购类型：" v-if="formValidate.is_limit">
+              <RadioGroup v-model="formValidate.limit_type">
+                <Radio :label="1">单次限购</Radio>
+                <Radio :label="2">永久限购</Radio>
+              </RadioGroup>
+              <div class="titTip">单次限购是限制每次下单最多购买的数量，永久限购是限制一个用户总共可以购买的数量</div>
+            </FormItem>
+          </Col>
+          <Col span="24" v-if="formValidate.is_limit">
+            <FormItem label="限购数量：" prop="limit_num">
+              <div class="acea-row row-middle">
+                <span class="mr10"></span>
+                <InputNumber placeholder="请输入限购数量" :precision="0" :min="1" v-model="formValidate.limit_num" />
+                <span class="ml10"> 件 </span>
+              </div>
+            </FormItem>
+          </Col>
+          <Col span="24" v-if="formValidate.virtual_type == 0 || formValidate.virtual_type == 3">
             <FormItem label="预售商品：">
               <i-switch v-model="formValidate.presale" size="large">
                 <span slot="open">开启</span>
@@ -1460,21 +971,14 @@
                   v-model="formValidate.presale_time"
                 ></DatePicker>
               </div>
-              <div class="titTip">
-                设置活动开启结束时间，用户可以在设置时间内发起参与预售
-              </div>
+              <div class="titTip">设置活动开启结束时间，用户可以在设置时间内发起参与预售</div>
             </FormItem>
           </Col>
           <Col span="24" v-if="formValidate.presale">
             <FormItem label="发货时间：" prop="presale_day">
               <div class="acea-row row-middle">
                 <span class="mr10">预售活动结束后</span>
-                <InputNumber
-                  placeholder="请输入发货时间"
-                  :precision="0"
-                  :min="1"
-                  v-model="formValidate.presale_day"
-                />
+                <InputNumber placeholder="请输入发货时间" :precision="0" :min="1" v-model="formValidate.presale_day" />
                 <span class="ml10"> 天之内 </span>
                 <div class="ml10 grey"></div>
               </div>
@@ -1483,10 +987,7 @@
 
           <Col span="24">
             <FormItem label="商品推荐：">
-              <CheckboxGroup
-                v-model="formValidate.recommend"
-                @on-change="recommendBtn"
-              >
+              <CheckboxGroup v-model="formValidate.recommend">
                 <Checkbox label="is_hot">热卖单品</Checkbox>
                 <Checkbox label="is_benefit">促销单品</Checkbox>
                 <Checkbox label="is_best">精品推荐</Checkbox>
@@ -1558,11 +1059,7 @@
           <Col v-bind="grid3">
             <FormItem label="选择优品推荐商品：">
               <div class="picBox">
-                <div
-                  class="pictrue"
-                  v-for="(item, index) in formValidate.recommend_list"
-                  :key="index"
-                >
+                <div class="pictrue" v-for="(item, index) in formValidate.recommend_list" :key="index">
                   <img v-lazy="item.image" />
                   <Button
                     shape="circle"
@@ -1571,10 +1068,7 @@
                     class="btndel"
                   ></Button>
                 </div>
-                <div
-                  class="upLoad acea-row row-center-wrapper"
-                  @click="changeGoods"
-                >
+                <div class="upLoad acea-row row-center-wrapper" @click="changeGoods">
                   <Icon type="ios-add" size="26" class="iconfonts" />
                 </div>
               </div>
@@ -1585,17 +1079,11 @@
         <Row
           type="flex"
           justify="space-between"
-          v-show="
-            headTab.length === 6 ? currentTab === '6' : currentTab === '5'
-          "
+          v-show="headTab.length === 6 ? currentTab === '6' : currentTab === '5'"
         >
           <Col span="24">
             <FormItem label="商品关键字：">
-              <Input
-                class="perW20"
-                v-model.trim="formValidate.keyword"
-                placeholder="请输入商品关键字"
-              />
+              <Input class="perW20" v-model.trim="formValidate.keyword" placeholder="请输入商品关键字" />
             </FormItem>
           </Col>
           <Col span="24">
@@ -1623,22 +1111,13 @@
 
           <Col span="24">
             <FormItem label="商品推荐图：">
-              <div
-                class="pictrueBox"
-                @click="modalPicTap('dan', 'recommend_image')"
-              >
+              <div class="pictrueBox" @click="modalPicTap('dan', 'recommend_image')">
                 <div class="pictrue" v-if="formValidate.recommend_image">
                   <img v-lazy="formValidate.recommend_image" />
-                  <Input
-                    v-model.trim="formValidate.recommend_image"
-                    style="display: none"
-                  ></Input>
+                  <Input v-model.trim="formValidate.recommend_image" style="display: none"></Input>
                 </div>
                 <div class="upLoad acea-row row-center-wrapper" v-else>
-                  <Input
-                    v-model.trim="formValidate.recommend_image"
-                    style="display: none"
-                  ></Input>
+                  <Input v-model.trim="formValidate.recommend_image" style="display: none"></Input>
                   <Icon type="ios-camera-outline" size="26" />
                 </div>
                 <div class="titTip">建议比例：5:2</div>
@@ -1647,36 +1126,21 @@
           </Col>
           <Col span="24">
             <FormItem label="自定义留言：">
-              <i-switch
-                v-model="customBtn"
-                @on-change="customMessBtn"
-                size="large"
-              >
+              <i-switch v-model="customBtn" @on-change="customMessBtn" size="large">
                 <span slot="open">开启</span>
                 <span slot="close">关闭</span>
               </i-switch>
               <div class="addCustom_content" v-if="customBtn">
-                <div
-                  v-for="(item, index) in formValidate.custom_form"
-                  type="flex"
-                  :key="index"
-                  class="custom_box"
-                >
+                <div v-for="(item, index) in formValidate.custom_form" type="flex" :key="index" class="custom_box">
                   <Input
                     v-model.trim="item.title"
                     :placeholder="'留言标题' + (index + 1)"
                     style="width: 100px; margin-right: 10px"
                   />
-                  <Select
-                    v-model="item.label"
-                    style="width: 200px; margin-left: 6px; margin-right: 10px"
-                  >
-                    <Option
-                      v-for="items in CustomList"
-                      :value="items.value"
-                      :key="items.value"
-                      >{{ items.label }}</Option
-                    >
+                  <Select v-model="item.label" style="width: 200px; margin-left: 6px; margin-right: 10px">
+                    <Option v-for="items in CustomList" :value="items.value" :key="items.value">{{
+                      items.label
+                    }}</Option>
                   </Select>
                   <Checkbox v-model="item.status">必填</Checkbox>
                   <div class="addfont" @click="delcustom(index)">删除</div>
@@ -1710,10 +1174,7 @@
             :disabled="openSubimit"
             class="submission"
             @click="handleSubmit('formValidate')"
-            v-if="
-              ($route.params.id || currentTab === '6') &&
-              formValidate.virtual_type == 0
-            "
+            v-if="($route.params.id || currentTab === '6') && formValidate.virtual_type == 0"
             >保存</Button
           >
           <Button
@@ -1721,10 +1182,7 @@
             :disabled="openSubimit"
             class="submission"
             @click="handleSubmit('formValidate')"
-            v-if="
-              ($route.params.id || currentTab === '5') &&
-              formValidate.virtual_type != 0
-            "
+            v-if="($route.params.id || currentTab === '5') && formValidate.virtual_type != 0"
             >保存</Button
           >
         </FormItem>
@@ -1769,31 +1227,16 @@
               </RadioGroup>
               <div v-if="disk_type == 1">
                 <div class="stock-disk">
-                  <Input
-                    v-model="disk_info"
-                    size="large"
-                    type="textarea"
-                    :rows="4"
-                    placeholder="填写卡密信息"
-                  />
+                  <Input v-model="disk_info" size="large" type="textarea" :rows="4" placeholder="填写卡密信息" />
                 </div>
                 <div class="stock-input">
-                  <Input
-                    type="number"
-                    v-model="stock"
-                    size="large"
-                    placeholder="填写库存数量"
-                  >
+                  <Input type="number" v-model="stock" size="large" placeholder="填写库存数量">
                     <span slot="append">件</span>
                   </Input>
                 </div>
               </div>
               <div class="scroll-virtual" v-if="disk_type == 2">
-                <div
-                  class="virtual-data mb10"
-                  v-for="(item, index) in virtualList"
-                  :key="index"
-                >
+                <div class="virtual-data mb10" v-for="(item, index) in virtualList" :key="index">
                   <span class="mr10 virtual-title">卡号{{ index + 1 }}：</span>
                   <Input
                     class="mr10"
@@ -1810,20 +1253,15 @@
                     style="width: 150px"
                     placeholder="请输入卡密"
                   ></Input>
-                  <span class="deteal-btn" @click="removeVirtual(index)"
-                    >删除</span
-                  >
+                  <span class="deteal-btn" @click="removeVirtual(index)">删除</span>
                 </div>
               </div>
               <div class="add-more" v-if="disk_type == 2">
-                <Button type="primary" @click="handleAdd" icon="md-add"
-                  >新增</Button
-                >
+                <Button type="primary" @click="handleAdd" icon="md-add">新增</Button>
                 <Upload
                   class="ml10"
                   :action="cardUrl"
                   :data="uploadData"
-                  :before-upload="beforeUpload"
                   :headers="header"
                   :on-success="upFile"
                 >
@@ -1839,11 +1277,7 @@
         </div>
       </Modal>
     </Card>
-    <freightTemplate
-      :template="template"
-      v-on:changeTemplate="changeTemplate"
-      ref="templates"
-    ></freightTemplate>
+    <freightTemplate :template="template" v-on:changeTemplate="changeTemplate" ref="templates"></freightTemplate>
     <add-attr ref="addattr" @getList="userSearchs"></add-attr>
     <coupon-list
       ref="couponTemplates"
@@ -1852,12 +1286,7 @@
       :updateIds="updateIds"
       :updateName="updateName"
     ></coupon-list>
-    <coupon-list
-      ref="goodsCoupon"
-      many="one"
-      :luckDraw="true"
-      @getCouponId="goodsCouponId"
-    ></coupon-list>
+    <coupon-list ref="goodsCoupon" many="one" :luckDraw="true" @getCouponId="goodsCouponId"></coupon-list>
     <!-- 生成淘宝京东表单-->
     <Modal
       v-model="modals"
@@ -1873,20 +1302,8 @@
     >
       <tao-bao ref="taobaos" v-if="modals" @on-close="onClose"></tao-bao>
     </Modal>
-    <Modal
-      v-model="goods_modals"
-      title="商品列表"
-      footerHide
-      class="paymentFooter"
-      scrollable
-      width="900"
-    >
-      <goods-list
-        v-if="goods_modals"
-        ref="goodslist"
-        :ischeckbox="true"
-        @getProductId="getProductId"
-      ></goods-list>
+    <Modal v-model="goods_modals" title="商品列表" footerHide class="paymentFooter" scrollable width="900">
+      <goods-list v-if="goods_modals" ref="goodslist" :ischeckbox="true" @getProductId="getProductId"></goods-list>
     </Modal>
     <!-- 用户标签 -->
     <Modal
@@ -1898,31 +1315,23 @@
       :footer-hide="true"
       :mask-closable="false"
     >
-      <userLabel
-        ref="userLabel"
-        @activeData="activeData"
-        @close="labelClose"
-      ></userLabel>
+      <userLabel ref="userLabel" @activeData="activeData" @close="labelClose"></userLabel>
     </Modal>
   </div>
 </template>
 
 <script>
-import userLabel from "@/components/labelList";
-
-// import COS from 'cos-js-sdk-v5'
-import { mapState } from "vuex";
-import vuedraggable from "vuedraggable";
-import uploadPictures from "@/components/uploadPictures";
-import freightTemplate from "@/components/freightTemplate";
-import couponList from "@/components/couponList";
-import addAttr from "../productAttr/addAttr";
-import VueUeditorWrap from "vue-ueditor-wrap";
-import goodsList from "@/components/goodsList/index";
-import taoBao from "./taoBao";
-import WangEditor from "@/components/wangEditor/index.vue";
-import { userLabelAddApi } from "@/api/user";
-
+import userLabel from '@/components/labelList';
+import { mapState } from 'vuex';
+import vuedraggable from 'vuedraggable';
+import uploadPictures from '@/components/uploadPictures';
+import freightTemplate from '@/components/freightTemplate';
+import couponList from '@/components/couponList';
+import addAttr from '../productAttr/addAttr';
+import goodsList from '@/components/goodsList/index';
+import taoBao from './taoBao';
+import WangEditor from '@/components/wangEditor/index.vue';
+import { userLabelAddApi } from '@/api/user';
 import {
   productInfoApi,
   treeListApi,
@@ -1932,22 +1341,20 @@ import {
   productGetTemplateApi,
   productGetTempKeysApi,
   checkActivityApi,
-  labelListApi,
   productCache,
   cacheDelete,
   uploadType,
   importCard,
   productCreateApi,
-} from "@/api/product";
-import Setting from "@/setting";
-import { getCookies } from "@/libs/util";
-import Editor from "wangeditor";
-import { uploadByPieces } from "@/utils/upload"; //引入uploadByPieces方法
+} from '@/api/product';
+import Setting from '@/setting';
+import { getCookies } from '@/libs/util';
+import { uploadByPieces } from '@/utils/upload'; //引入uploadByPieces方法
 
 export default {
-  name: "product_productAdd",
+  name: 'product_productAdd',
   components: {
-    VueUeditorWrap,
+    // VueUeditorWrap,
     uploadPictures,
     freightTemplate,
     addAttr,
@@ -1962,29 +1369,28 @@ export default {
     return {
       labelShow: false,
       dataLabel: [],
-      // dataLabel:[{"id":4,"value":4,"label_cate":0,"label_name":"啊啊啊","label":"啊啊啊","store_id":0,"type":1,"children":[{"id":10,"store_id":0,"label_cate":4,"label_name":"标签1","type":1,"label":"标签1","value":10},{"id":11,"store_id":0,"label_cate":4,"label_name":"标签2","type":1,"label":"标签2","value":11},{"id":12,"store_id":0,"label_cate":4,"label_name":"标签3","type":1,"label":"标签3","value":12}]},{"id":6,"value":6,"label_cate":0,"label_name":"0000","label":"0000","store_id":0,"type":1,"children":[{"id":13,"store_id":0,"label_cate":6,"label_name":"1111111","type":1,"label":"1111111","value":13},{"id":14,"store_id":0,"label_cate":6,"label_name":"2222222","type":1,"label":"2222222","value":14}]},{"id":5,"value":5,"label_cate":0,"label_name":"kk","label":"kk","store_id":0,"type":1,"children":[]}],
       headTab: [
-        { tit: "基础信息", name: "1" },
-        { tit: "规格库存", name: "2" },
-        { tit: "商品详情", name: "3" },
-        { tit: "物流设置", name: "4" },
-        { tit: "营销设置", name: "5" },
-        { tit: "其他设置", name: "6" },
+        { tit: '基础信息', name: '1' },
+        { tit: '规格库存', name: '2' },
+        { tit: '商品详情', name: '3' },
+        { tit: '物流设置', name: '4' },
+        { tit: '营销设置', name: '5' },
+        { tit: '其他设置', name: '6' },
       ],
       virtual: [
-        { tit: "普通商品", id: 0, tit2: "物流发货" },
-        { tit: "卡密/网盘", id: 1, tit2: "自动发货" },
-        { tit: "优惠卷", id: 2, tit2: "自动发货" },
-        { tit: "虚拟商品", id: 3, tit2: "虚拟发货" },
+        { tit: '普通商品', id: 0, tit2: '物流发货' },
+        { tit: '卡密/网盘', id: 1, tit2: '自动发货' },
+        { tit: '优惠卷', id: 2, tit2: '自动发货' },
+        { tit: '虚拟商品', id: 3, tit2: '虚拟发货' },
       ],
       seletVideo: 0, //选择视频类型
       customBtn: false, //自定义留言开关
-      content: "",
-      contents: "",
-      fileUrl: Setting.apiBaseURL + "/file/upload",
-      fileUrl2: Setting.apiBaseURL + "/file/video_upload",
-      cardUrl: Setting.apiBaseURL + "/file/upload/1",
-      upload_type: "", //视频上传类型 1 本地上传 2 3 4 OSS上传
+      content: '',
+      contents: '',
+      fileUrl: Setting.apiBaseURL + '/file/upload',
+      fileUrl2: Setting.apiBaseURL + '/file/video_upload',
+      cardUrl: Setting.apiBaseURL + '/file/upload/1',
+      upload_type: '', //视频上传类型 1 本地上传 2 3 4 OSS上传
       uploadData: {}, // 上传参数
       header: {},
 
@@ -1993,11 +1399,11 @@ export default {
       goods_modals: false,
       spinShow: false,
       openSubimit: false,
-      virtualData: "",
+      virtualData: '',
       virtualList: [
         {
-          key: "",
-          value: "",
+          key: '',
+          value: '',
         },
       ],
       grid2: {
@@ -2017,151 +1423,135 @@ export default {
       // 批量设置表格data
       oneFormBatch: [
         {
-          pic: "",
+          pic: '',
           price: 0,
           cost: 0,
           ot_price: 0,
           stock: 0,
-          bar_code: "",
+          bar_code: '',
           weight: 0,
           volume: 0,
         },
       ],
       // 规格数据
       formDynamic: {
-        attrsName: "",
-        attrsVal: "",
+        attrsName: '',
+        attrsVal: '',
       },
       disk_type: 1, //卡密类型
       tabIndex: 0,
-      tabName: "",
+      tabName: '',
       formDynamicNameData: [],
       isBtn: false,
       columns2: [
         {
-          title: "图片",
-          slot: "pic",
-          align: "center",
+          title: '图片',
+          slot: 'pic',
+          align: 'center',
           minWidth: 80,
         },
         {
-          title: "售价",
-          slot: "price",
-          align: "center",
+          title: '售价',
+          slot: 'price',
+          align: 'center',
           minWidth: 95,
         },
         {
-          title: "成本价",
-          slot: "cost",
-          align: "center",
+          title: '成本价',
+          slot: 'cost',
+          align: 'center',
           minWidth: 95,
         },
         {
-          title: "原价",
-          slot: "ot_price",
-          align: "center",
+          title: '原价',
+          slot: 'ot_price',
+          align: 'center',
           minWidth: 95,
         },
         {
-          title: "库存",
-          slot: "stock",
-          align: "center",
+          title: '库存',
+          slot: 'stock',
+          align: 'center',
           minWidth: 95,
         },
         {
-          title: "商品编号",
-          slot: "bar_code",
-          align: "center",
+          title: '商品编号',
+          slot: 'bar_code',
+          align: 'center',
           minWidth: 120,
         },
         {
-          title: "重量（KG）",
-          slot: "weight",
-          align: "center",
+          title: '重量（KG）',
+          slot: 'weight',
+          align: 'center',
           minWidth: 95,
         },
         {
-          title: "体积(m³)",
-          slot: "volume",
-          align: "center",
+          title: '体积(m³)',
+          slot: 'volume',
+          align: 'center',
           minWidth: 95,
         },
         {
-          title: "操作",
-          slot: "action",
-          fixed: "right",
-          align: "center",
+          title: '操作',
+          slot: 'action',
+          fixed: 'right',
+          align: 'center',
           minWidth: 140,
         },
       ],
       columns3: [
         {
-          title: "图片",
-          slot: "pic",
-          align: "center",
+          title: '图片',
+          slot: 'pic',
+          align: 'center',
           minWidth: 80,
         },
         {
-          title: "售价",
-          slot: "price",
-          align: "center",
+          title: '售价',
+          slot: 'price',
+          align: 'center',
           minWidth: 95,
         },
         {
-          title: "成本价",
-          slot: "cost",
-          align: "center",
+          title: '成本价',
+          slot: 'cost',
+          align: 'center',
           minWidth: 95,
         },
         {
-          title: "原价",
-          slot: "ot_price",
-          align: "center",
+          title: '原价',
+          slot: 'ot_price',
+          align: 'center',
           minWidth: 95,
         },
         {
-          title: "库存",
-          slot: "stock",
-          align: "center",
+          title: '库存',
+          slot: 'stock',
+          align: 'center',
           minWidth: 95,
         },
         {
-          title: "商品编号",
-          slot: "bar_code",
-          align: "center",
+          title: '商品编号',
+          slot: 'bar_code',
+          align: 'center',
           minWidth: 120,
         },
         {
-          title: "虚拟商品",
-          slot: "fictitious",
-          align: "center",
+          title: '虚拟商品',
+          slot: 'fictitious',
+          align: 'center',
           minWidth: 95,
         },
         {
-          title: "操作",
-          slot: "action",
-          fixed: "right",
-          align: "center",
+          title: '操作',
+          slot: 'action',
+          fixed: 'right',
+          align: 'center',
           minWidth: 140,
         },
       ],
       columns: [],
-      // columnsInsta8: [
-      //     {
-      //         title: '会员价',
-      //         slot: 'vip_price',
-      //         align: 'center',
-      //         minWidth: 140
-      //     }
-      // ],
-      // columnsInsta9: [
-      //     {
-      //         title: '会员价',
-      //         slot: 'vip_price',
-      //         align: 'center',
-      //         minWidth: 140
-      //     }
-      // ],
       columnsInstall: [],
       columnsInstal2: [],
       gridPic: {
@@ -2181,36 +1571,36 @@ export default {
       //自定义留言下拉选择
       CustomList: [
         {
-          value: "text",
-          label: "文本框",
+          value: 'text',
+          label: '文本框',
         },
         {
-          value: "number",
-          label: "数字",
+          value: 'number',
+          label: '数字',
         },
         {
-          value: "email",
-          label: "邮件",
+          value: 'email',
+          label: '邮件',
         },
         {
-          value: "data",
-          label: "日期",
+          value: 'data',
+          label: '日期',
         },
         {
-          value: "time",
-          label: "时间",
+          value: 'time',
+          label: '时间',
         },
         {
-          value: "id",
-          label: "身份证",
+          value: 'id',
+          label: '身份证',
         },
         {
-          value: "phone",
-          label: "手机号",
+          value: 'phone',
+          label: '手机号',
         },
         {
-          value: "img",
-          label: "图片",
+          value: 'img',
+          label: '图片',
         },
       ],
       customess: {
@@ -2218,26 +1608,29 @@ export default {
       }, //自定义留言内容
 
       formValidate: {
-        disk_info: "", //卡密类型
-        logistics: ["1"], //选择物流方式
+        disk_info: '', //卡密类型
+        logistics: ['1'], //选择物流方式
         freight: 2, //运费设置
         postage: 0, //设置运费金额
         recommend: [], //商品推荐
         presale_day: 1, //预售发货时间-结束
         presale: false, //预售商品开关
+        is_limit: false,
+        limit_type: 0,
+        limit_num: 0,
         video_open: false, //视频按钮是否显示
         vip_product: false, //付费会员专属开关
         custom_form: [], //自定义留言
-        store_name: "",
+        store_name: '',
         cate_id: [],
         label_id: [],
-        keyword: "",
-        unit_name: "",
-        store_info: "",
-        image: "",
-        recommend_image: "",
+        keyword: '',
+        unit_name: '',
+        store_info: '',
+        image: '',
+        recommend_image: '',
         slider_image: [],
-        description: "",
+        description: '',
         ficti: 0,
         give_integral: 0,
         sort: 0,
@@ -2255,26 +1648,26 @@ export default {
         id: 0,
         spec_type: 0,
         is_virtual: 0,
-        video_link: "",
+        video_link: '',
         // postage: 0,
-        temp_id: "",
+        temp_id: '',
         attrs: [],
         items: [
           {
-            pic: "",
+            pic: '',
             price: 0,
             cost: 0,
             ot_price: 0,
             stock: 0,
-            bar_code: "",
+            bar_code: '',
           },
         ],
-        activity: ["默认", "秒杀", "砍价", "拼团"],
+        activity: ['默认', '秒杀', '砍价', '拼团'],
         couponName: [],
         header: [],
-        selectRule: "",
+        selectRule: '',
         coupon_ids: [],
-        command_word: "",
+        command_word: '',
       },
       ruleList: [],
       templateList: [],
@@ -2284,12 +1677,12 @@ export default {
       // 单规格表格data
       oneFormValidate: [
         {
-          pic: "",
+          pic: '',
           price: 0,
           cost: 0,
           ot_price: 0,
           stock: 0,
-          bar_code: "",
+          bar_code: '',
           weight: 0,
           volume: 0,
           brokerage: 0,
@@ -2300,9 +1693,9 @@ export default {
         },
       ],
       images: [],
-      imagesTable: "",
-      currentTab: "1",
-      isChoice: "",
+      imagesTable: '',
+      currentTab: '1',
+      isChoice: '',
       grid: {
         xl: 8,
         lg: 8,
@@ -2316,72 +1709,64 @@ export default {
       template: false,
       uploadList: [],
       treeSelect: [],
-      picTit: "",
+      picTit: '',
       tableIndex: 0,
       ruleValidate: {
-        store_name: [
-          { required: true, message: "请输入商品名称", trigger: "blur" },
-        ],
+        store_name: [{ required: true, message: '请输入商品名称', trigger: 'blur' }],
         cate_id: [
           {
             required: true,
-            message: "请选择商品分类",
-            trigger: "change",
-            type: "array",
-            min: "1",
+            message: '请选择商品分类',
+            trigger: 'change',
+            type: 'array',
+            min: '1',
           },
         ],
-        unit_name: [{ required: true, message: "请输入单位", trigger: "blur" }],
+        unit_name: [{ required: true, message: '请输入单位', trigger: 'blur' }],
         // image: [{ required: true, message: "请上传商品图", trigger: "change" }],
         slider_image: [
           {
             required: true,
-            message: "请上传商品轮播图",
-            type: "array",
-            trigger: "change",
+            message: '请上传商品轮播图',
+            type: 'array',
+            trigger: 'change',
           },
         ],
-        spec_type: [
-          { required: true, message: "请选择商品规格", trigger: "change" },
-        ],
-        is_virtual: [
-          { required: true, message: "请选择商品类型", trigger: "change" },
-        ],
-        selectRule: [
-          { required: true, message: "请选择商品规格属性", trigger: "change" },
-        ],
+        spec_type: [{ required: true, message: '请选择商品规格', trigger: 'change' }],
+        is_virtual: [{ required: true, message: '请选择商品类型', trigger: 'change' }],
+        selectRule: [{ required: true, message: '请选择商品规格属性', trigger: 'change' }],
         temp_id: [
           {
             required: true,
-            message: "请选择运费模板",
-            trigger: "change",
-            type: "number",
+            message: '请选择运费模板',
+            trigger: 'change',
+            type: 'number',
           },
         ],
         presale_time: [
           {
             required: true,
-            type: "array",
-            message: "请选择活动时间",
-            trigger: "change",
+            type: 'array',
+            message: '请选择活动时间',
+            trigger: 'change',
           },
         ],
         logistics: [
           {
             required: true,
-            type: "array",
+            type: 'array',
             min: 1,
-            message: "请选择物流方式",
-            trigger: "change",
+            message: '请选择物流方式',
+            trigger: 'change',
           },
           {
-            type: "array",
+            type: 'array',
             max: 2,
-            message: "请选择物流方式",
-            trigger: "change",
+            message: '请选择物流方式',
+            trigger: 'change',
           },
         ],
-        give_integral: [{ type: "integer", message: "请输入整数" }],
+        give_integral: [{ type: 'integer', message: '请输入整数' }],
       },
       manyBrokerage: 0,
       manyBrokerageTwo: 0,
@@ -2392,50 +1777,50 @@ export default {
       videoIng: false, // 是否显示进度条；
       progress: 0, // 进度条默认0
       stock: 0,
-      disk_info: "",
-      videoLink: "",
+      disk_info: '',
+      videoLink: '',
       attrs: [],
-      activity: { 默认: "red", 秒杀: "blue", 砍价: "green", 拼团: "yellow" },
+      activity: { 默认: 'red', 秒杀: 'blue', 砍价: 'green', 拼团: 'yellow' },
       couponName: [],
       updateIds: [],
       updateName: [],
-      couponIds: "",
+      couponIds: '',
       couponNames: [],
       rakeBack: [
         {
-          title: "一级返佣",
-          slot: "brokerage",
-          align: "center",
+          title: '一级返佣',
+          slot: 'brokerage',
+          align: 'center',
           width: 95,
         },
         {
-          title: "二级返佣",
-          slot: "brokerage_two",
-          align: "center",
+          title: '二级返佣',
+          slot: 'brokerage_two',
+          align: 'center',
           width: 95,
         },
       ],
       member: [
         {
-          title: "会员价",
-          slot: "vip_price",
-          align: "center",
+          title: '会员价',
+          slot: 'vip_price',
+          align: 'center',
           width: 95,
         },
       ],
       columnsInstalM: [],
-      moveIndex: "",
+      moveIndex: '',
       // aa: [],
       // openSubimit: false
     };
   },
   computed: {
-    ...mapState("media", ["isMobile"]),
+    ...mapState('media', ['isMobile']),
     labelWidth() {
       return this.isMobile ? undefined : 120;
     },
     labelPosition() {
-      return this.isMobile ? "top" : "right";
+      return this.isMobile ? 'top' : 'right';
     },
     labelBottom() {
       return this.isMobile ? undefined : 15;
@@ -2449,9 +1834,9 @@ export default {
     // this.columnsInsta8 = this.columns2.slice(0, 4).concat(this.columnsInsta8);
   },
   mounted() {
-    if (this.$route.params.id !== "0" && this.$route.params.id) {
+    if (this.$route.params.id !== '0' && this.$route.params.id) {
       this.getInfo();
-    } else if (this.$route.params.id === "0") {
+    } else if (this.$route.params.id === '0') {
       productCache()
         .then((res) => {
           let data = res.data.info;
@@ -2473,14 +1858,13 @@ export default {
             // this.couponName = data.coupons;
             // that.couponName = names;
             this.dataLabel = data.label_id;
-
             this.formValidate.coupon_ids = ids;
             this.updateIds = ids;
             this.updateName = data.coupons;
             this.formValidate.cate_id = cate_id;
             // this.formValidate.label_id = label_id;
             this.oneFormValidate = data.attrs;
-            this.formValidate.logistics = data.logistics || ["1"];
+            this.formValidate.logistics = data.logistics || ['1'];
             this.formValidate.header = [];
             this.generate(0);
             this.manyFormValidate = data.attrs;
@@ -2502,7 +1886,7 @@ export default {
                   cost: 0,
                   ot_price: 0,
                   stock: 0,
-                  bar_code: "",
+                  bar_code: '',
                   weight: 0,
                   volume: 0,
                   brokerage: 0,
@@ -2533,26 +1917,7 @@ export default {
     this.uploadType();
   },
   methods: {
-    activeData(dataLabel) {
-      this.labelShow = false;
-      this.dataLabel = dataLabel;
-    },
-    // 标签弹窗关闭
-    labelClose() {
-      this.labelShow = false;
-    },
-    closeLabel(label) {
-      let index = this.dataLabel.indexOf(
-        this.dataLabel.filter((d) => d.id == label.id)[0]
-      );
-      this.dataLabel.splice(index, 1);
-    },
-    openLabel(row) {
-      this.labelShow = true;
-      this.$refs.userLabel.userLabel(
-        JSON.parse(JSON.stringify(this.dataLabel))
-      );
-    },
+    // 分片上传
     videoSaveToUrl(file) {
       uploadByPieces({
         file: file, // 视频实体
@@ -2572,7 +1937,7 @@ export default {
       });
       return false;
     },
-    processButtonClick() {},
+    // 类型选择/填入内容判断
     virtualbtn(index, type) {
       if (type != 1) {
         this.formValidate.is_sub = [];
@@ -2591,48 +1956,48 @@ export default {
           this.formValidate.virtual_type = 0;
           this.formValidate.is_virtual = 0;
           this.headTab = [
-            { tit: "基础信息", name: "1" },
-            { tit: "规格库存", name: "2" },
-            { tit: "商品详情", name: "3" },
-            { tit: "物流设置", name: "4" },
-            { tit: "营销设置", name: "5" },
-            { tit: "其他设置", name: "6" },
+            { tit: '基础信息', name: '1' },
+            { tit: '规格库存', name: '2' },
+            { tit: '商品详情', name: '3' },
+            { tit: '物流设置', name: '4' },
+            { tit: '营销设置', name: '5' },
+            { tit: '其他设置', name: '6' },
           ];
           break;
         case 1:
           this.formValidate.virtual_type = 1;
           this.formValidate.postage = 0;
           this.headTab = [
-            { tit: "基础信息", name: "1" },
-            { tit: "规格库存", name: "2" },
-            { tit: "商品详情", name: "3" },
+            { tit: '基础信息', name: '1' },
+            { tit: '规格库存', name: '2' },
+            { tit: '商品详情', name: '3' },
             // { tit: "物流设置", name: "4" },
-            { tit: "营销设置", name: "4" },
-            { tit: "其他设置", name: "5" },
+            { tit: '营销设置', name: '4' },
+            { tit: '其他设置', name: '5' },
           ];
           break;
         case 2:
           this.formValidate.virtual_type = 2;
           this.formValidate.is_virtual = 1;
           this.headTab = [
-            { tit: "基础信息", name: "1" },
-            { tit: "规格库存", name: "2" },
-            { tit: "商品详情", name: "3" },
+            { tit: '基础信息', name: '1' },
+            { tit: '规格库存', name: '2' },
+            { tit: '商品详情', name: '3' },
             // { tit: "物流设置", name: "4" },
-            { tit: "营销设置", name: "4" },
-            { tit: "其他设置", name: "5" },
+            { tit: '营销设置', name: '4' },
+            { tit: '其他设置', name: '5' },
           ];
           break;
         case 3:
           this.formValidate.virtual_type = 3;
           this.formValidate.is_virtual = 1;
           this.headTab = [
-            { tit: "基础信息", name: "1" },
-            { tit: "规格库存", name: "2" },
-            { tit: "商品详情", name: "3" },
+            { tit: '基础信息', name: '1' },
+            { tit: '规格库存', name: '2' },
+            { tit: '商品详情', name: '3' },
             // { tit: "物流设置", name: "4" },
-            { tit: "营销设置", name: "4" },
-            { tit: "其他设置", name: "5" },
+            { tit: '营销设置', name: '4' },
+            { tit: '其他设置', name: '5' },
           ];
           break;
         case 1:
@@ -2640,40 +2005,46 @@ export default {
           this.formValidate.is_virtual = 1;
           // this.formValidate.virtual_type  =1;
           this.headTab = [
-            { tit: "基础信息", name: "1" },
-            { tit: "规格库存", name: "2" },
-            { tit: "商品详情", name: "3" },
-            { tit: "营销设置", name: "4" },
-            { tit: "其他设置", name: "5" },
+            { tit: '基础信息', name: '1' },
+            { tit: '规格库存', name: '2' },
+            { tit: '商品详情', name: '3' },
+            { tit: '营销设置', name: '4' },
+            { tit: '其他设置', name: '5' },
           ];
       }
     },
+    // 新增分类
     addCate() {
       this.$modalForm(productCreateApi()).then(() => this.goodsCategory());
     },
+    // 物流方式选择
     logisticsBtn(e) {
       this.formValidate.logistics = e;
     },
+    // 新增标签
     addLabel() {
       this.$modalForm(userLabelAddApi(0)).then(() => this.userLabel());
     },
+    // 自定义留言 开启关闭
     customMessBtn(e) {
       if (!e) {
         this.formValidate.custom_form = [];
       }
     },
+    // 自定义留言 新增表单
     addcustom() {
       if (this.formValidate.custom_form.length > 9) {
-        this.$Message.warning("最多添加10条");
+        this.$Message.warning('最多添加10条');
       } else {
         this.formValidate.custom_form.push({
-          title: "",
-          label: "text",
-          value: "",
+          title: '',
+          label: 'text',
+          value: '',
           status: false,
         });
       }
     },
+    // 删除
     delcustom(index) {
       this.formValidate.custom_form.splice(index, 1);
     },
@@ -2681,27 +2052,18 @@ export default {
     onchangeTime(e) {
       this.formValidate.presale_time = e;
     },
-    recommendBtn(e) {},
+    // 商品详情
     getEditorContent(data) {
       this.content = data;
     },
     cancel() {
-      this.$router.push({ path: "/admin/product/product_list" });
+      this.$router.push({ path: '/admin/product/product_list' });
     },
     // 上传头部token
     getToken() {
-      this.header["Authori-zation"] = "Bearer " + getCookies("token");
+      this.header['Authori-zation'] = 'Bearer ' + getCookies('token');
     },
-    beforeUpload(e) {
-      this.video = e.raw;
-      // this.uploadData = {};
-      // let promise = new Promise((resolve) => {
-      //   this.$nextTick(function () {
-      //     resolve(true);
-      //   });
-      // });
-      // return promise;
-    },
+    // 导入卡密
     upFile(res) {
       importCard({ file: res.data.src }).then((res) => {
         this.virtualList = this.virtualList.concat(res.data);
@@ -2713,6 +2075,7 @@ export default {
         this.upload_type = res.data.upload_type;
       });
     },
+    // 初始化数据展示
     infoData(data) {
       let cate_id = data.cate_id.map(Number);
       let label_id = data.label_id.map(Number);
@@ -2730,35 +2093,33 @@ export default {
       this.dataLabel = data.label_id;
       this.updateName = data.coupons;
       this.virtualbtn(data.virtual_type, 1);
-      this.formValidate.logistics = data.logistics || ["1"];
+      this.formValidate.logistics = data.logistics || ['1'];
       this.formValidate.custom_form = data.custom_form || [];
       if (this.formValidate.custom_form.length != 0) {
         this.customBtn = true;
       }
       this.formValidate.cate_id = cate_id;
-      // this.formValidate.label_id = label_id;
       if (data.attr) {
         this.oneFormValidate = [data.attr];
       }
       this.formValidate.header = [];
       this.generate(0);
       // this.manyFormValidate = data.attrs;
-      this.$set(this, "manyFormValidate", data.attrs);
+      this.$set(this, 'manyFormValidate', data.attrs);
       this.spec_type = data.spec_type;
       this.formValidate.is_virtual = data.is_virtual;
-      this.virtual[data.is_virtual].id = data.is_virtual;
       if (data.spec_type === 0) {
         this.manyFormValidate = [];
       } else {
         this.createBnt = true;
         this.oneFormValidate = [
           {
-            pic: "",
+            pic: '',
             price: 0,
             cost: 0,
             ot_price: 0,
             stock: 0,
-            bar_code: "",
+            bar_code: '',
             weight: 0,
             volume: 0,
             brokerage: 0,
@@ -2780,8 +2141,9 @@ export default {
       this.moveIndex = evt.draggedContext.index;
     },
     end() {
-      this.moveIndex = "";
+      this.moveIndex = '';
     },
+    // 单独设置会员设置
     checkAllGroupChange(data) {
       this.checkAllGroup(data);
     },
@@ -2795,28 +2157,18 @@ export default {
           this.columnsInstall = this.columns2.slice(0, 4);
         }
         if (data.length === 2) {
-          this.columnsInstall = this.columns2
-            .slice(0, 4)
-            .concat(this.rakeBack)
-            .concat(this.member);
+          this.columnsInstall = this.columns2.slice(0, 4).concat(this.rakeBack).concat(this.member);
         }
       } else {
         if (data.indexOf(0) > -1) {
-          this.columnsInstal2 = this.columnsInstalM
-            .slice(0, 4)
-            .concat(this.member);
+          this.columnsInstal2 = this.columnsInstalM.slice(0, 4).concat(this.member);
         } else if (data.indexOf(1) > -1) {
-          this.columnsInstal2 = this.columnsInstalM
-            .slice(0, 4)
-            .concat(this.rakeBack);
+          this.columnsInstal2 = this.columnsInstalM.slice(0, 4).concat(this.rakeBack);
         } else {
           this.columnsInstal2 = this.columnsInstalM.slice(0, 4);
         }
         if (data.length === 2) {
-          this.columnsInstal2 = this.columnsInstalM
-            .slice(0, 4)
-            .concat(this.rakeBack)
-            .concat(this.member);
+          this.columnsInstal2 = this.columnsInstalM.slice(0, 4).concat(this.rakeBack).concat(this.member);
         }
       }
     },
@@ -2825,12 +2177,13 @@ export default {
       this.$refs.couponTemplates.isTemplate = true;
       this.$refs.couponTemplates.tableList();
     },
+    // 规格中优惠券查看
     see(data, name, index) {
       this.tabName = name;
       this.tabIndex = index;
 
       if (this.formValidate.virtual_type === 1) {
-        if (data.disk_info != "") {
+        if (data.disk_info != '') {
           this.disk_type = 1;
           this.disk_info = data.disk_info;
           this.stock = data.stock;
@@ -2844,6 +2197,7 @@ export default {
         this.$refs.goodsCoupon.tableList(3);
       }
     },
+    // 添加优惠券
     addGoodsCoupon(index, name) {
       this.tabIndex = index;
       this.tabName = name;
@@ -2855,68 +2209,50 @@ export default {
       this.tabName = name;
       this.addVirtualModel = true;
     },
+    // 提交卡密信息
     upVirtual() {
       if (this.disk_type == 2) {
         for (let i = 0; i < this.virtualList.length; i++) {
           const element = this.virtualList[i];
           if (!element.value) {
-            this.$Message.error("请输入所有卡密");
+            this.$Message.error('请输入所有卡密');
             return;
           }
         }
-        this.$set(
-          this[this.tabName][this.tabIndex],
-          "virtual_list",
-          this.virtualList
-        );
-        this.$set(
-          this[this.tabName][this.tabIndex],
-          "stock",
-          this.virtualList.length
-        );
+        this.$set(this[this.tabName][this.tabIndex], 'virtual_list', this.virtualList);
+        this.$set(this[this.tabName][this.tabIndex], 'stock', this.virtualList.length);
         this.virtualList = [
           {
-            key: "",
-            value: "",
+            key: '',
+            value: '',
           },
         ];
-        this.$set(this[this.tabName][this.tabIndex], "disk_info", "");
+        this.$set(this[this.tabName][this.tabIndex], 'disk_info', '');
       } else {
         if (!this.disk_info.length) {
-          return this.$Message.error("请填写卡密信息");
+          return this.$Message.error('请填写卡密信息');
         }
         if (!this.stock) {
-          return this.$Message.error("请填写库存数量");
+          return this.$Message.error('请填写库存数量');
         }
-        this.$set(
-          this[this.tabName][this.tabIndex],
-          "stock",
-          Number(this.stock)
-        );
-        this.$set(
-          this[this.tabName][this.tabIndex],
-          "stock",
-          Number(this.stock)
-        );
-        this.$set(
-          this[this.tabName][this.tabIndex],
-          "disk_info",
-          this.disk_info
-        );
-        this.$set(this[this.tabName][this.tabIndex], "virtual_list", []);
+        this.$set(this[this.tabName][this.tabIndex], 'stock', Number(this.stock));
+        this.$set(this[this.tabName][this.tabIndex], 'stock', Number(this.stock));
+        this.$set(this[this.tabName][this.tabIndex], 'disk_info', this.disk_info);
+        this.$set(this[this.tabName][this.tabIndex], 'virtual_list', []);
       }
       this.addVirtualModel = false;
       this.closeVirtual();
     },
+    //  初始化卡密数据信息
     closeVirtual() {
       this.addVirtualModel = false;
       this.virtualList = [
         {
-          key: "",
-          value: "",
+          key: '',
+          value: '',
         },
       ];
-      this.disk_info = "";
+      this.disk_info = '';
       this.stock = 0;
     },
     //对象数组去重；
@@ -2924,15 +2260,17 @@ export default {
       const res = new Map();
       return arr.filter((arr) => !res.has(arr.id) && res.set(arr.id, 1));
     },
+    // 获取优惠券id数据
     nameId(id, names) {
       this.formValidate.coupon_ids = id;
       this.couponName = this.unique(names);
     },
+    // 获取优惠券信息
     goodsCouponId(data) {
       // this[this.tabName][this.tabIndex].coupon_id = data.id;
       // this[this.tabName][this.tabIndex].coupon_name = data.title;
-      this.$set(this[this.tabName][this.tabIndex], "coupon_id", data.id);
-      this.$set(this[this.tabName][this.tabIndex], "coupon_name", data.title);
+      this.$set(this[this.tabName][this.tabIndex], 'coupon_id', data.id);
+      this.$set(this[this.tabName][this.tabIndex], 'coupon_name', data.title);
       this.$refs.goodsCoupon.isTemplate = false;
     },
     handleClose(name) {
@@ -2954,8 +2292,8 @@ export default {
     // 删除视频；
     delVideo() {
       let that = this;
-      that.$set(that.formValidate, "video_link", "");
-      that.$set(that, "progress", 0);
+      that.$set(that.formValidate, 'video_link', '');
+      that.$set(that, 'progress', 0);
       that.videoIng = false;
       that.upload.videoIng = false;
     },
@@ -2966,16 +2304,16 @@ export default {
         this.$refs.refid.click();
       }
     },
+    // 上传视频
     zh_uploadFile_change(evfile) {
       let that = this;
-      let suffix = evfile.target.files[0].name.substr(
-        evfile.target.files[0].name.indexOf(".")
-      );
-      if (suffix.indexOf(".mp4") === -1) {
-        return that.$Message.error("只能上传MP4文件");
+      let suffix = evfile.target.files[0].name.substr(evfile.target.files[0].name.indexOf('.'));
+      if (suffix.indexOf('.mp4') === -1) {
+        return that.$Message.error('只能上传MP4文件');
       }
       productGetTempKeysApi()
         .then((res) => {
+          console.log(res, '??');
           that.$videoCloud
             .videoUpload({
               type: res.data.type,
@@ -2990,7 +2328,7 @@ export default {
             })
             .then((res) => {
               that.formValidate.video_link = res.url;
-              that.$Message.success("视频上传成功");
+              that.$Message.success('视频上传成功');
               that.upload.videoIng = false;
             })
             .catch((res) => {
@@ -3022,60 +2360,49 @@ export default {
       let that = this;
       if (that.formValidate.is_sub.indexOf(1) > -1) {
         if (that.manyBrokerage <= 0 || that.manyBrokerageTwo <= 0) {
-          return that.$Message.error("请填写返佣金额后进行批量添加");
+          return that.$Message.error('请填写返佣金额后进行批量添加');
         }
       } else if (that.formValidate.is_sub.indexOf(0) > -1) {
         if (that.manyVipPrice <= 0) {
-          return that.$Message.error("请填写会员价后进行批量添加");
+          return that.$Message.error('请填写会员价后进行批量添加');
         }
       }
       if (this.formValidate.is_sub.length === 2) {
-        if (
-          that.manyBrokerage <= 0 ||
-          that.manyBrokerageTwo <= 0 ||
-          that.manyVipPrice <= 0
-        ) {
-          return that.$Message.error("请填写完金额后进行批量添加");
+        if (that.manyBrokerage <= 0 || that.manyBrokerageTwo <= 0 || that.manyVipPrice <= 0) {
+          return that.$Message.error('请填写完金额后进行批量添加');
         }
       }
       for (let val of that.manyFormValidate) {
-        this.$set(val, "brokerage", that.manyBrokerage);
-        this.$set(val, "brokerage_two", that.manyBrokerageTwo);
-        this.$set(val, "vip_price", that.manyVipPrice);
+        this.$set(val, 'brokerage', that.manyBrokerage);
+        this.$set(val, 'brokerage_two', that.manyBrokerageTwo);
+        this.$set(val, 'vip_price', that.manyVipPrice);
       }
-      // let that = this;
-      // if (that.manyBrokerage <= 0 || that.manyBrokerageTwo <= 0) {
-      //     return that.$Message.error('请填写返佣金额在进行批量添加');
-      // } else {
-      //     for (let val of that.manyFormValidate) {
-      //         this.$set(val, 'brokerage', that.manyBrokerage);
-      //         this.$set(val, 'brokerage_two', that.manyBrokerageTwo);
-      //     }
-      // }
     },
     // 批量设置会员价
     vipPriceSetUp() {
       let that = this;
       if (that.manyVipPrice <= 0) {
-        return that.$Message.error("请填写会员价在进行批量添加");
+        return that.$Message.error('请填写会员价在进行批量添加');
       } else {
         for (let val of that.manyFormValidate) {
-          this.$set(val, "vip_price", that.manyVipPrice);
+          this.$set(val, 'vip_price', that.manyVipPrice);
         }
       }
     },
+    // 新增卡密
     handleAdd() {
       this.virtualList.push({
-        key: "",
-        value: "",
+        key: '',
+        value: '',
       });
     },
+    // 初始化卡密信息
     initVirtualData(status) {
       if (!status) {
         this.virtualList = [
           {
-            key: "",
-            value: "",
+            key: '',
+            value: '',
           },
         ];
       }
@@ -3083,15 +2410,16 @@ export default {
     removeVirtual(index) {
       this.virtualList.splice(index, 1);
     },
+    // 清空批量规格信息
     batchDel() {
       this.oneFormBatch = [
         {
-          pic: "",
+          pic: '',
           price: 0,
           cost: 0,
           ot_price: 0,
           stock: 0,
-          bar_code: "",
+          bar_code: '',
           weight: 0,
           volume: 0,
         },
@@ -3101,7 +2429,7 @@ export default {
       let that = this;
       that.createBnt = true;
       if (that.formValidate.selectRule.trim().length <= 0) {
-        return that.$Message.error("请选择属性");
+        return that.$Message.error('请选择属性');
       }
       that.ruleList.forEach(function (item, index) {
         if (item.rule_name === that.formValidate.selectRule) {
@@ -3139,43 +2467,31 @@ export default {
     },
     // 批量添加
     batchAdd() {
-      // if (!this.oneFormBatch[0].pic || !this.oneFormBatch[0].price || !this.oneFormBatch[0].cost || !this.oneFormBatch[0].ot_price ||
-      //     !this.oneFormBatch[0].stock || !this.oneFormBatch[0].bar_code) return this.$Message.warning('请填写完整的批量设置内容！');
-      // if (!this.oneFormBatch[0].pic) {
-      //     return this.$Message.warning('请选择有效图片');
-      // }
       for (let val of this.manyFormValidate) {
         if (this.oneFormBatch[0].pic) {
-          this.$set(val, "pic", this.oneFormBatch[0].pic);
+          this.$set(val, 'pic', this.oneFormBatch[0].pic);
         }
         if (this.oneFormBatch[0].price > 0) {
-          this.$set(val, "price", this.oneFormBatch[0].price);
+          this.$set(val, 'price', this.oneFormBatch[0].price);
         }
         if (this.oneFormBatch[0].cost > 0) {
-          this.$set(val, "cost", this.oneFormBatch[0].cost);
+          this.$set(val, 'cost', this.oneFormBatch[0].cost);
         }
         if (this.oneFormBatch[0].ot_price > 0) {
-          this.$set(val, "ot_price", this.oneFormBatch[0].ot_price);
+          this.$set(val, 'ot_price', this.oneFormBatch[0].ot_price);
         }
         if (this.oneFormBatch[0].stock > 0) {
-          this.$set(val, "stock", this.oneFormBatch[0].stock);
+          this.$set(val, 'stock', this.oneFormBatch[0].stock);
         }
-        if (this.oneFormBatch[0].bar_code !== "") {
-          this.$set(val, "bar_code", this.oneFormBatch[0].bar_code);
+        if (this.oneFormBatch[0].bar_code !== '') {
+          this.$set(val, 'bar_code', this.oneFormBatch[0].bar_code);
         }
         if (this.oneFormBatch[0].weight > 0) {
-          this.$set(val, "weight", this.oneFormBatch[0].weight);
+          this.$set(val, 'weight', this.oneFormBatch[0].weight);
         }
         if (this.oneFormBatch[0].volume > 0) {
-          this.$set(val, "volume", this.oneFormBatch[0].volume);
+          this.$set(val, 'volume', this.oneFormBatch[0].volume);
         }
-        // this.$set(val, 'price', this.oneFormBatch[0].price);
-        // this.$set(val, 'cost', this.oneFormBatch[0].cost);
-        // this.$set(val, 'ot_price', this.oneFormBatch[0].ot_price);
-        // this.$set(val, 'stock', this.oneFormBatch[0].stock);
-        // this.$set(val, 'bar_code', this.oneFormBatch[0].bar_code);
-        // this.$set(val, 'weight', this.oneFormBatch[0].weight);
-        // this.$set(val, 'volume', this.oneFormBatch[0].volume);
       }
     },
     // 添加按钮
@@ -3193,25 +2509,16 @@ export default {
           virtual_type: this.formValidate.virtual_type,
         },
         this.formValidate.id,
-        type
+        type,
       )
         .then((res) => {
           let info = res.data.info,
             header1 = JSON.parse(JSON.stringify(info.header));
-          if (
-            this.$route.params.id !== "0" &&
-            (this.$route.query.type != -1 || type)
-          ) {
+          if (this.$route.params.id !== '0' && (this.$route.query.type != -1 || type)) {
             this.manyFormValidate = info.value;
           }
           let header = info.header;
           if ([1, 2].includes(this.formValidate.virtual_type)) {
-            // let aaa = header.splice(7, 2, {
-            //   title: "虚拟商品",
-            //   slot: "fictitious",
-            //   align: "center",
-            //   minWidth: 95,
-            // });
             this.columnsInstalM = header;
             this.formValidate.header = header;
           } else {
@@ -3243,8 +2550,8 @@ export default {
       this.createBnt = true;
     },
     clearAttr() {
-      this.formDynamic.attrsName = "";
-      this.formDynamic.attrsVal = "";
+      this.formDynamic.attrsName = '';
+      this.formDynamic.attrsVal = '';
     },
     // 删除规格
     handleRemoveRole(index) {
@@ -3266,14 +2573,14 @@ export default {
         var hash = {};
         this.attrs = this.attrs.reduce(function (item, next) {
           /* eslint-disable */
-          hash[next.value] ? "" : (hash[next.value] = true && item.push(next));
+          hash[next.value] ? '' : (hash[next.value] = true && item.push(next));
           return item;
         }, []);
         this.clearAttr();
         this.showIput = false;
         this.createBnt = true;
       } else {
-        this.$Message.warning("请添加完整的规格！");
+        this.$Message.warning('请添加完整的规格！');
       }
     },
     // 添加属性
@@ -3281,17 +2588,13 @@ export default {
       if (num) {
         this.attrs[idx].detail.push(num);
         var hash = {};
-        this.attrs[idx].detail = this.attrs[idx].detail.reduce(function (
-          item,
-          next
-        ) {
+        this.attrs[idx].detail = this.attrs[idx].detail.reduce(function (item, next) {
           /* eslint-disable */
-          hash[next] ? "" : (hash[next] = true && item.push(next));
+          hash[next] ? '' : (hash[next] = true && item.push(next));
           return item;
-        },
-        []);
+        }, []);
       } else {
-        this.$Message.warning("请添加属性");
+        this.$Message.warning('请添加属性');
       }
     },
     // 商品分类；
@@ -3304,21 +2607,10 @@ export default {
           this.$Message.error(res.msg);
         });
     },
-    // 用户标签
-    // userLabel() {
-    //   labelListApi()
-    //     .then((res) => {
-    //       console.log(res)
-    //       this.dataLabel = res.data.list;
-    //     })
-    //     .catch((res) => {
-    //       this.$Message.error(res.msg);
-    //     });
-    // },
     //视视上传类型
     changeVideo(e) {
-      this.formValidate.video_link = "";
-      this.videoLink = "";
+      this.formValidate.video_link = '';
+      this.videoLink = '';
     },
     // 改变规格
     changeSpec() {
@@ -3341,45 +2633,6 @@ export default {
         .then(async (res) => {
           let data = res.data.productInfo;
           this.infoData(data);
-          // let cate_id = data.cate_id.map(Number);
-          // let label_id = data.label_id.map(Number);
-          // this.attrs = data.items || [];
-          // let ids = [];
-          // data.coupons.map((item) => {
-          //   ids.push(item.id);
-          // });
-          // that.formValidate = data;
-          // that.couponName = data.coupons;
-          // that.formValidate.coupon_ids = ids;
-          // that.updateIds = ids;
-          // that.updateName = data.coupons;
-          // that.formValidate.cate_id = cate_id;
-          // that.formValidate.label_id = label_id;
-          // that.oneFormValidate = [data.attr];
-          // that.formValidate.header = [];
-          // that.manyFormValidate = data.attrs;
-          // that.generate(0);
-          // that.spec_type = data.spec_type;
-          // if (data.spec_type === 0) {
-          //   that.manyFormValidate = [];
-          // } else {
-          //   that.createBnt = true;
-          //   that.oneFormValidate = [
-          //     {
-          //       pic: data.image,
-          //       price: 0,
-          //       cost: 0,
-          //       ot_price: 0,
-          //       stock: 0,
-          //       bar_code: "",
-          //       weight: 0,
-          //       volume: 0,
-          //       brokerage: 0,
-          //       brokerage_two: 0,
-          //       vip_price: 0,
-          //     },
-          //   ];
-          // }
           this.spinShow = false;
         })
         .catch((res) => {
@@ -3403,14 +2656,14 @@ export default {
     // 点击商品图
     modalPicTap(tit, picTit, index) {
       this.modalPic = true;
-      this.isChoice = tit === "dan" ? "单选" : "多选";
+      this.isChoice = tit === 'dan' ? '单选' : '多选';
       this.picTit = picTit;
       this.tableIndex = index;
     },
     // 获取单张图片信息
     getPic(pc) {
       switch (this.picTit) {
-        case "danFrom":
+        case 'danFrom':
           this.formValidate.image = pc.att_dir;
           if (!this.$route.params.id) {
             if (this.formValidate.spec_type === 0) {
@@ -3423,13 +2676,13 @@ export default {
             }
           }
           break;
-        case "danTable":
+        case 'danTable':
           this.oneFormValidate[this.tableIndex].pic = pc.att_dir;
           break;
-        case "duopi":
+        case 'duopi':
           this.oneFormBatch[this.tableIndex].pic = pc.att_dir;
           break;
-        case "recommend_image":
+        case 'recommend_image':
           this.formValidate.recommend_image = pc.att_dir;
           break;
         default:
@@ -3442,10 +2695,7 @@ export default {
       this.images = pc;
       this.images.map((item) => {
         this.formValidate.slider_image.push(item.att_dir);
-        this.formValidate.slider_image = this.formValidate.slider_image.splice(
-          0,
-          10
-        );
+        this.formValidate.slider_image = this.formValidate.slider_image.splice(0, 10);
       });
       this.oneFormValidate[0].pic = this.formValidate.slider_image[0];
       this.modalPic = false;
@@ -3465,50 +2715,38 @@ export default {
             this.formValidate.attrs = this.manyFormValidate;
             this.formValidate.is_copy = 1;
           }
-          if (
-            this.formValidate.spec_type === 1 &&
-            this.manyFormValidate.length === 0
-          ) {
-            return this.$Message.warning("商品信息-请点击生成多规格");
+          if (this.formValidate.spec_type === 1 && this.manyFormValidate.length === 0) {
+            return this.$Message.warning('商品信息-请点击生成多规格');
             // return this.$Message.warning('请点击生成规格！');
           }
           let item = this.formValidate.attrs;
           for (let i = 0; i < item.length; i++) {
             if (item[i].stock > 1000000) {
-              return this.$Message.error("规格库存-库存超出系统范围(1000000)");
+              return this.$Message.error('规格库存-库存超出系统范围(1000000)');
             }
           }
           if (this.formValidate.is_sub[0] === 1) {
             for (let i = 0; i < item.length; i++) {
-              if (
-                item[i].brokerage === null ||
-                item[i].brokerage_two === null
-              ) {
-                return this.$Message.error("营销设置- 一二级返佣不能为空");
+              if (item[i].brokerage === null || item[i].brokerage_two === null) {
+                return this.$Message.error('营销设置- 一二级返佣不能为空');
               }
             }
           } else {
             for (let i = 0; i < item.length; i++) {
               if (item[i].vip_price === null) {
-                return this.$Message.error("营销设置-会员价不能为空");
+                return this.$Message.error('营销设置-会员价不能为空');
               }
             }
           }
           if (this.formValidate.is_sub.length === 2) {
             for (let i = 0; i < item.length; i++) {
-              if (
-                item[i].brokerage === null ||
-                item[i].brokerage_two === null ||
-                item[i].vip_price === null
-              ) {
-                return this.$Message.error(
-                  "营销设置- 一二级返佣和会员价不能为空"
-                );
+              if (item[i].brokerage === null || item[i].brokerage_two === null || item[i].vip_price === null) {
+                return this.$Message.error('营销设置- 一二级返佣和会员价不能为空');
               }
             }
           }
           if (this.formValidate.freight == 3 && !this.formValidate.temp_id) {
-            return this.$Message.warning("商品信息-运费模板不能为空");
+            return this.$Message.warning('商品信息-运费模板不能为空');
           }
           let activeIds = [];
           this.dataLabel.forEach((item) => {
@@ -3521,14 +2759,14 @@ export default {
             .then(async (res) => {
               this.openSubimit = false;
               this.$Message.success(res.msg);
-              if (this.$route.params.id === "0") {
+              if (this.$route.params.id === '0') {
                 cacheDelete().catch((err) => {
                   this.$Message.error(err.msg);
                 });
               }
               setTimeout(() => {
                 this.openSubimit = false;
-                this.$router.push({ path: "/admin/product/product_list" });
+                this.$router.push({ path: '/admin/product/product_list' });
               }, 500);
             })
             .catch((res) => {
@@ -3539,24 +2777,18 @@ export default {
             });
         } else {
           if (!this.formValidate.store_name) {
-            return this.$Message.warning("商品信息-商品名称不能为空");
+            return this.$Message.warning('商品信息-商品名称不能为空');
           } else if (!this.formValidate.cate_id.length) {
-            return this.$Message.warning("商品信息-商品分类不能为空");
+            return this.$Message.warning('商品信息-商品分类不能为空');
           } else if (!this.formValidate.unit_name) {
-            return this.$Message.warning("商品信息-商品单位不能为空");
+            return this.$Message.warning('商品信息-商品单位不能为空');
           } else if (!this.formValidate.slider_image.length) {
-            return this.$Message.warning("商品信息-商品轮播图不能为空");
-          } else if (
-            !this.formValidate.temp_id &&
-            this.formValidate.freight == 3
-          ) {
-            return this.$Message.warning("商品信息-运费模板不能为空");
+            return this.$Message.warning('商品信息-商品轮播图不能为空');
+          } else if (!this.formValidate.logistics.length && !this.formValidate.virtual_type) {
+            return this.$Message.warning('物流设置-至少选择一种物流方式');
+          } else if (!this.formValidate.temp_id && this.formValidate.freight == 3) {
+            return this.$Message.warning('商品信息-运费模板不能为空');
           }
-          //    if(!this.formValidate.store_name || !this.formValidate.cate_id || !this.formValidate.keyword
-          //    || !this.formValidate.unit_name || !this.formValidate.store_info
-          //        || !this.formValidate.image || !this.formValidate.slider_image){
-          //        this.$Message.warning("请填写完整商品信息！");
-          //    }
         }
       });
     },
@@ -3577,10 +2809,10 @@ export default {
       this.dragging = null;
     },
     handleDragOver(e) {
-      e.dataTransfer.dropEffect = "move";
+      e.dataTransfer.dropEffect = 'move';
     },
     handleDragEnter(e, item) {
-      e.dataTransfer.effectAllowed = "move";
+      e.dataTransfer.effectAllowed = 'move';
       if (item === this.dragging) {
         return;
       }
@@ -3590,32 +2822,22 @@ export default {
       newItems.splice(dst, 0, ...newItems.splice(src, 1));
       this.formValidate.slider_image = newItems;
     },
+    // 过滤详情内容
     formatRichText(html) {
       let newContent = html.replace(/<img[^>]*>/gi, function (match, capture) {
-        match = match
-          .replace(/style="[^"]+"/gi, "")
-          .replace(/style='[^']+'/gi, "");
-        match = match
-          .replace(/width="[^"]+"/gi, "")
-          .replace(/width='[^']+'/gi, "");
-        match = match
-          .replace(/height="[^"]+"/gi, "")
-          .replace(/height='[^']+'/gi, "");
+        match = match.replace(/style="[^"]+"/gi, '').replace(/style='[^']+'/gi, '');
+        match = match.replace(/width="[^"]+"/gi, '').replace(/width='[^']+'/gi, '');
+        match = match.replace(/height="[^"]+"/gi, '').replace(/height='[^']+'/gi, '');
         return match;
       });
-      newContent = newContent.replace(
-        /style="[^"]+"/gi,
-        function (match, capture) {
-          match = match
-            .replace(/width:[^;]+;/gi, "max-width:100%;")
-            .replace(/width:[^;]+;/gi, "max-width:100%;");
-          return match;
-        }
-      );
-      newContent = newContent.replace(/<br[^>]*\/>/gi, "");
+      newContent = newContent.replace(/style="[^"]+"/gi, function (match, capture) {
+        match = match.replace(/width:[^;]+;/gi, 'max-width:100%;').replace(/width:[^;]+;/gi, 'max-width:100%;');
+        return match;
+      });
+      newContent = newContent.replace(/<br[^>]*\/>/gi, '');
       newContent = newContent.replace(
         /\<img/gi,
-        '<img style="max-width:100%;height:auto;display:block;margin-top:0;margin-bottom:0;"'
+        '<img style="max-width:100%;height:auto;display:block;margin-top:0;margin-bottom:0;"',
       );
       return newContent;
     },
@@ -3625,10 +2847,30 @@ export default {
       let arr = this.formValidate.recommend_list.concat(row);
       this.formValidate.recommend_list = this.uniques(arr);
     },
+    // 选择推荐商品
     changeGoods() {
       this.goods_modals = true;
       this.$refs.goodslist.getList();
       this.$refs.goodslist.goodsCategory();
+    },
+    // 选择用户标签
+    activeData(dataLabel) {
+      this.labelShow = false;
+      this.dataLabel = dataLabel;
+    },
+    // 标签弹窗关闭
+    labelClose() {
+      this.labelShow = false;
+    },
+    // 删除用户标签
+    closeLabel(label) {
+      let index = this.dataLabel.indexOf(this.dataLabel.filter((d) => d.id == label.id)[0]);
+      this.dataLabel.splice(index, 1);
+    },
+    // 打开选择用户标签
+    openLabel(row) {
+      this.labelShow = true;
+      this.$refs.userLabel.userLabel(JSON.parse(JSON.stringify(this.dataLabel)));
     },
     uniques(songs) {
       let result = {};

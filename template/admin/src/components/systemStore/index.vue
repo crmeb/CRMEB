@@ -26,44 +26,27 @@
               <Col span="24">
                 <Col v-bind="grid">
                   <FormItem label="提货点名称：" prop="name" label-for="name">
-                    <Input
-                      v-model="formItem.name"
-                      placeholder="请输入提货点名称"
-                    />
+                    <Input v-model="formItem.name" placeholder="请输入提货点名称" />
                   </FormItem>
                 </Col>
               </Col>
               <Col span="24">
                 <Col v-bind="grid">
                   <FormItem label="提货点简介：" label-for="introduction">
-                    <Input
-                      v-model="formItem.introduction"
-                      placeholder="请输入提货点简介"
-                    />
+                    <Input v-model="formItem.introduction" placeholder="请输入提货点简介" />
                   </FormItem>
                 </Col>
               </Col>
               <Col span="24">
                 <Col v-bind="grid">
-                  <FormItem
-                    label="提货点手机号："
-                    label-for="phone"
-                    prop="phone"
-                  >
-                    <Input
-                      v-model="formItem.phone"
-                      placeholder="请输入提货点手机号"
-                    />
+                  <FormItem label="提货点手机号：" label-for="phone" prop="phone">
+                    <Input v-model="formItem.phone" placeholder="请输入提货点手机号" />
                   </FormItem>
                 </Col>
               </Col>
               <Col span="24">
                 <Col v-bind="grid">
-                  <FormItem
-                    label="提货点地址："
-                    label-for="address"
-                    prop="address"
-                  >
+                  <FormItem label="提货点地址：" label-for="address" prop="address">
                     <Cascader
                       :data="addresData"
                       :value="formItem.address"
@@ -75,15 +58,8 @@
               </Col>
               <Col span="24">
                 <Col v-bind="grid">
-                  <FormItem
-                    label="详细地址："
-                    label-for="detailed_address"
-                    prop="detailed_address"
-                  >
-                    <Input
-                      v-model="formItem.detailed_address"
-                      placeholder="请输入详细地址"
-                    />
+                  <FormItem label="详细地址：" label-for="detailed_address" prop="detailed_address">
+                    <Input v-model="formItem.detailed_address" placeholder="请输入详细地址" />
                   </FormItem>
                 </Col>
               </Col>
@@ -96,11 +72,7 @@
               <!--</Col>-->
               <Col span="24">
                 <Col v-bind="grid">
-                  <FormItem
-                    label="提货点营业："
-                    label-for="day_time"
-                    prop="day_time"
-                  >
+                  <FormItem label="提货点营业：" label-for="day_time" prop="day_time">
                     <TimePicker
                       type="timerange"
                       @on-change="onchangeTime"
@@ -162,7 +134,7 @@
             <Row type="flex">
               <div class="btn">
                 <Button type="primary" long @click="handleSubmit('formItem')">{{
-                  formItem.id ? "修改" : "提交"
+                  formItem.id ? '修改' : '提交'
                 }}</Button>
               </div>
             </Row>
@@ -199,13 +171,7 @@
           :z-index="1"
           class="mapBox"
         >
-          <iframe
-            id="mapPage"
-            width="100%"
-            height="100%"
-            frameborder="0"
-            v-bind:src="keyUrl"
-          ></iframe>
+          <iframe id="mapPage" width="100%" height="100%" frameborder="0" v-bind:src="keyUrl"></iframe>
         </Modal>
       </div>
     </Modal>
@@ -213,34 +179,34 @@
 </template>
 
 <script>
-import { storeApi, keyApi, storeAddApi, storeGetInfoApi } from "@/api/setting";
-import { mapState } from "vuex";
-import city from "@/utils/city";
-import uploadPictures from "@/components/uploadPictures";
+import { storeApi, keyApi, storeAddApi, storeGetInfoApi } from '@/api/setting';
+import { mapState } from 'vuex';
+import city from '@/utils/city';
+import uploadPictures from '@/components/uploadPictures';
 export default {
-  name: "systemStore",
+  name: 'systemStore',
   components: { uploadPictures },
   props: {},
   data() {
     const validatePhone = (rule, value, callback) => {
       if (!value) {
-        return callback(new Error("请填写手机号"));
+        return callback(new Error('请填写手机号'));
       } else if (!/^1[3456789]\d{9}$/.test(value)) {
-        callback(new Error("手机号格式不正确!"));
+        callback(new Error('手机号格式不正确!'));
       } else {
         callback();
       }
     };
     const validateUpload = (rule, value, callback) => {
       if (!this.formItem.image) {
-        callback(new Error("请上传提货点logo"));
+        callback(new Error('请上传提货点logo'));
       } else {
         callback();
       }
     };
     const oblongImageUpload = (rule, value, callback) => {
       if (!this.formItem.oblong_image) {
-        callback(new Error("请上传提货点大图"));
+        callback(new Error('请上传提货点大图'));
       } else {
         callback();
       }
@@ -250,72 +216,64 @@ export default {
       spinShow: false,
       modalMap: false,
       addresData: [],
-      modalTitle: "",
+      modalTitle: '',
       formItem: {
-        name: "",
-        introduction: "",
-        phone: "",
+        name: '',
+        introduction: '',
+        phone: '',
         address: [],
         address2: [],
-        detailed_address: "",
+        detailed_address: '',
         valid_time: [],
         day_time: [],
-        latlng: "",
+        latlng: '',
         id: 0,
       },
       ruleValidate: {
-        name: [
-          { required: true, message: "请输入提货点名称", trigger: "blur" },
-        ],
+        name: [{ required: true, message: '请输入提货点名称', trigger: 'blur' }],
         mail: [
           {
             required: true,
-            message: "Mailbox cannot be empty",
-            trigger: "blur",
+            message: 'Mailbox cannot be empty',
+            trigger: 'blur',
           },
-          { type: "email", message: "Incorrect email format", trigger: "blur" },
+          { type: 'email', message: 'Incorrect email format', trigger: 'blur' },
         ],
         address: [
           {
             required: true,
-            message: "请选择提货点地址",
-            type: "array",
-            trigger: "change",
+            message: '请选择提货点地址',
+            type: 'array',
+            trigger: 'change',
           },
         ],
         valid_time: [
           {
             required: true,
-            type: "array",
-            message: "请选择核销时效",
-            trigger: "change",
+            type: 'array',
+            message: '请选择核销时效',
+            trigger: 'change',
             fields: {
-              0: { type: "date", required: true, message: "请选择年度范围" },
-              1: { type: "date", required: true, message: "请选择年度范围" },
+              0: { type: 'date', required: true, message: '请选择年度范围' },
+              1: { type: 'date', required: true, message: '请选择年度范围' },
             },
           },
         ],
         day_time: [
           {
             required: true,
-            type: "array",
-            message: "请选择提货点营业时间",
-            trigger: "change",
+            type: 'array',
+            message: '请选择提货点营业时间',
+            trigger: 'change',
           },
         ],
-        phone: [{ required: true, validator: validatePhone, trigger: "blur" }],
-        detailed_address: [
-          { required: true, message: "请输入详细地址", trigger: "blur" },
-        ],
-        image: [
-          { required: true, validator: validateUpload, trigger: "change" },
-        ],
-        oblong_image: [
-          { required: true, validator: oblongImageUpload, trigger: "change" },
-        ],
-        latlng: [{ required: true, message: "请选择经纬度", trigger: "blur" }],
+        phone: [{ required: true, validator: validatePhone, trigger: 'blur' }],
+        detailed_address: [{ required: true, message: '请输入详细地址', trigger: 'blur' }],
+        image: [{ required: true, validator: validateUpload, trigger: 'change' }],
+        oblong_image: [{ required: true, validator: oblongImageUpload, trigger: 'change' }],
+        latlng: [{ required: true, message: '请选择经纬度', trigger: 'blur' }],
       },
-      keyUrl: "",
+      keyUrl: '',
       grid: {
         xl: 20,
         lg: 20,
@@ -338,7 +296,7 @@ export default {
         xs: 8,
       },
       modalPic: false,
-      isChoice: "单选",
+      isChoice: '单选',
     };
   },
   created() {
@@ -363,33 +321,33 @@ export default {
   computed: {},
   mounted: function () {
     window.addEventListener(
-      "message",
+      'message',
       function (event) {
         // 接收位置信息，用户选择确认位置点后选点组件会触发该事件，回传用户的位置信息
         var loc = event.data;
-        if (loc && loc.module === "locationPicker") {
+        if (loc && loc.module === 'locationPicker') {
           // 防止其他应用也会向该页面post信息，需判断module是否为'locationPicker'
           window.parent.selectAdderss(loc);
         }
       },
-      false
+      false,
     );
     window.selectAdderss = this.selectAdderss;
   },
   methods: {
     cancel() {
-      this.$refs["formItem"].resetFields();
+      this.$refs['formItem'].resetFields();
       this.clearFrom();
     },
     clearFrom() {
-      this.formItem.introduction = "";
+      this.formItem.introduction = '';
       this.formItem.day_time = [];
-      this.formItem.oblong_image = "";
+      this.formItem.oblong_image = '';
       this.formItem.id = 0;
     },
     // 选择经纬度
     selectAdderss(data) {
-      this.formItem.latlng = data.latlng.lat + "," + data.latlng.lng;
+      this.formItem.latlng = data.latlng.lat + ',' + data.latlng.lng;
       this.modalMap = false;
     },
     // key值
@@ -413,17 +371,17 @@ export default {
     },
     // 选择图片
     modalPicTap(tit, picTit) {
-      this.modalTitle = picTit == "oblong" ? "提货点大图" : "提货点LOGO";
+      this.modalTitle = picTit == 'oblong' ? '提货点大图' : '提货点LOGO';
       this.modalPic = true;
       this.picTit = picTit;
     },
     // 选中图片
     getPic(pc) {
       switch (this.picTit) {
-        case "logo":
+        case 'logo':
           this.formItem.image = pc.att_dir;
           break;
-        case "oblong":
+        case 'oblong':
           this.formItem.oblong_image = pc.att_dir;
           break;
       }

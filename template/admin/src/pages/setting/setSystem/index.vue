@@ -1,28 +1,16 @@
 <template>
   <div class="article-manager">
-    <div class="i-layout-page-header">
-      <div class="i-layout-page-header">
-        <span class="ivu-page-header-title">{{ title }}</span>
-        <div>
-          <Tabs v-model="currentTab" @on-click="changeTab">
-            <TabPane
-              :icon="item.icon"
-              :label="item.label"
-              :name="item.value.toString()"
-              v-for="(item, index) in headerList"
-              :key="index"
-            />
-          </Tabs>
-        </div>
-      </div>
-    </div>
     <Card :bordered="false" dis-hover class="ivu-mt fromBox">
-      <Tabs
-        type="card"
-        v-model="childrenId"
-        v-if="headerChildrenList.length"
-        @on-click="changeChildrenTab"
-      >
+      <Tabs v-model="currentTab" @on-click="changeTab" v-if="headerList.length">
+        <TabPane
+          :icon="item.icon"
+          :label="item.label"
+          :name="item.value.toString()"
+          v-for="(item, index) in headerList"
+          :key="index"
+        />
+      </Tabs>
+      <Tabs type="card" v-model="childrenId" v-if="headerChildrenList.length" @on-click="changeChildrenTab">
         <TabPane
           :label="item.label"
           :name="item.id.toString()"
@@ -30,24 +18,19 @@
           :key="index"
         ></TabPane>
       </Tabs>
-      <form-create
-        :option="option"
-        :rule="rules"
-        @on-submit="onSubmit"
-        v-if="rules.length !== 0"
-      ></form-create>
+      <form-create :option="option" :rule="rules" @on-submit="onSubmit" v-if="rules.length !== 0"></form-create>
       <Spin size="large" fix v-if="spinShow"></Spin>
     </Card>
   </div>
 </template>
 
 <script>
-import formCreate from "@form-create/iview";
-import { headerListApi, dataFromApi } from "@/api/setting";
-import request from "@/libs/request";
-import { getLogo } from "@/api/common";
+import formCreate from '@form-create/iview';
+import { headerListApi, dataFromApi } from '@/api/setting';
+import request from '@/libs/request';
+import { getLogo } from '@/api/common';
 export default {
-  name: "setting_setSystem",
+  name: 'setting_setSystem',
   components: { formCreate: formCreate.$form() },
   data() {
     return {
@@ -84,11 +67,11 @@ export default {
       },
       spinShow: false,
       FromData: null,
-      currentTab: "",
+      currentTab: '',
       headerList: [],
       headerChildrenList: [],
-      childrenId: "",
-      title: "",
+      childrenId: '',
+      title: '',
     };
   },
   created() {
@@ -113,9 +96,7 @@ export default {
             that.headerChildrenList = [];
           } else {
             that.headerChildrenList = item.children;
-            that.childrenId = item.children.length
-              ? item.children[index ? index : 0].id.toString()
-              : "";
+            that.childrenId = item.children.length ? item.children[index ? index : 0].id.toString() : '';
           }
         }
       });
@@ -148,8 +129,8 @@ export default {
     getFrom() {
       this.spinShow = true;
       return new Promise((resolve, reject) => {
-        let ids = "";
-        if (this.$route.params.type === "3") {
+        let ids = '';
+        if (this.$route.params.type === '3') {
           ids = this.$route.params.tab_id;
         } else {
           if (this.childrenId) {
@@ -161,19 +142,19 @@ export default {
         let data = {
           tab_id: Number(ids),
         };
-        let logistics = "freight/config/edit_basics",
-          agent = "agent/config/edit_basics",
-          integral = "marketing/integral_config/edit_basics",
-          sms = "serve/sms_config/edit_basics",
-          config = "setting/config/edit_basics";
+        let logistics = 'freight/config/edit_basics',
+          agent = 'agent/config/edit_basics',
+          integral = 'marketing/integral_config/edit_basics',
+          sms = 'serve/sms_config/edit_basics',
+          config = 'setting/config/edit_basics';
         let url =
-          this.$route.name === "setting_logistics"
+          this.$route.name === 'setting_logistics'
             ? logistics
-            : this.$route.name === "setting_distributionSet"
+            : this.$route.name === 'setting_distributionSet'
             ? agent
-            : this.$route.name === "setting_message"
+            : this.$route.name === 'setting_message'
             ? sms
-            : this.$route.name === "setting_setSystem"
+            : this.$route.name === 'setting_setSystem'
             ? config
             : integral;
         dataFromApi(data, url)
@@ -193,10 +174,9 @@ export default {
       });
     },
     async getAllData() {
-      if (this.$route.query.from === "download") {
+      if (this.$route.query.from === 'download') {
         await this.getHeader(2);
-      } else if (this.$route.params.type !== "3") {
-
+      } else if (this.$route.params.type !== '3') {
         await this.getHeader();
       } else {
         this.headerList = [];
@@ -228,7 +208,7 @@ export default {
     },
     getAdminTitle() {
       getLogo().then((res) => {
-        localStorage.setItem("ADMIN_TITLE", res.data.site_name);
+        localStorage.setItem('ADMIN_TITLE', res.data.site_name);
       });
     },
   },

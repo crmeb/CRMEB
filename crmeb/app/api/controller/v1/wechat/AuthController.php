@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -38,10 +38,6 @@ class AuthController
      * 小程序授权登录
      * @param Request $request
      * @return mixed
-     * @throws \Psr\SimpleCache\InvalidArgumentException
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\ModelNotFoundException
-     * @throws \think\exception\DbException
      */
     public function mp_auth(Request $request)
     {
@@ -57,26 +53,25 @@ class AuthController
         $token = $this->services->mp_auth($code, $cache_key, $login_type, $spread_spid, $spread_code, $iv, $encryptedData);
         if ($token) {
             if (isset($token['key']) && $token['key']) {
-                return app('json')->successful('授权成功，请绑定手机号', $token);
+                return app('json')->success(410022, $token);
             } else {
-                return app('json')->successful('登录成功！', [
+                return app('json')->success(410001, [
                     'userInfo' => $token['userInfo']
                 ]);
             }
         } else
-            return app('json')->fail('获取用户访问token失败!');
+            return app('json')->fail(410019);
     }
 
     /**
      * 获取授权logo
-     * @param Request $request
      * @return mixed
      */
     public function get_logo()
     {
         $logo = sys_config('wap_login_logo');
         if (strstr($logo, 'http') === false && $logo) $logo = sys_config('site_url') . $logo;
-        return app('json')->successful(['logo_url' => str_replace('\\', '/', $logo)]);
+        return app('json')->success(['logo_url' => str_replace('\\', '/', $logo)]);
     }
 
     /**
@@ -91,9 +86,9 @@ class AuthController
      * 获取小程序订阅消息id
      * @return mixed
      */
-    public function teml_ids()
+    public function temp_ids()
     {
-        return app('json')->success($this->services->temlIds());
+        return app('json')->success($this->services->tempIds());
     }
 
     /**

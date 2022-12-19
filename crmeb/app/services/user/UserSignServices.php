@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -15,8 +15,8 @@ namespace app\services\user;
 use app\services\BaseServices;
 use app\dao\user\UserSignDao;
 use app\services\user\member\MemberCardServices;
+use crmeb\exceptions\ApiException;
 use think\facade\Log;
-use think\exception\ValidateException;
 
 /**
  *
@@ -72,7 +72,7 @@ class UserSignServices extends BaseServices
         $data['balance'] = $integral_balance + $number;
         $data['add_time'] = time();
         if (!$this->dao->save($data)) {
-            throw new ValidateException('添加签到数据失败');
+            throw new ApiException(410290);
         }
         /** @var UserBillServices $userBill */
         $userBill = app()->make(UserBillServices::class);
@@ -88,7 +88,7 @@ class UserSignServices extends BaseServices
             $data['pm'] = 1;
             $data['status'] = 1;
             if (!$userBill->save($data)) {
-                throw new ValidateException('赠送经验失败');
+                throw new ApiException(410291);
             }
             //检测会员等级
             try {
@@ -131,16 +131,16 @@ class UserSignServices extends BaseServices
     {
         $sign_list = \crmeb\services\GroupDataService::getData('sign_day_num') ?: [];
         if (!count($sign_list)) {
-            throw new ValidateException('请先配置签到天数');
+            throw new ApiException(410292);
         }
         /** @var UserServices $userServices */
         $userServices = app()->make(UserServices::class);
         $user = $userServices->getUserInfo($uid);
         if (!$user) {
-            throw new ValidateException('用户不存在');
+            throw new ApiException(410032);
         }
         if ($this->getIsSign($uid, 'today')) {
-            throw new ValidateException('已经签到');
+            throw new ApiException(410293);
         }
         $sign_num = 0;
         $user_sign_num = $user['sign_num'];
@@ -158,6 +158,14 @@ class UserSignServices extends BaseServices
                 break;
             }
         }
+
+        $user->sign_num += 1;
+        if ($user->sign_num == count($sign_list)) {
+            $title = '连续签到奖励';
+        } else {
+            $title = '签到奖励';
+        }
+
         //会员签到积分会员奖励
         if ($user->is_money_level > 0) {
             //看是否开启签到积分翻倍奖励
@@ -165,16 +173,17 @@ class UserSignServices extends BaseServices
             $memberCardService = app()->make(MemberCardServices::class);
             $sign_rule_number = $memberCardService->isOpenMemberCard('sign');
             if ($sign_rule_number) {
+                $old_num = $sign_num;
                 $sign_num = (int)$sign_rule_number * $sign_num;
+                $up_num = $sign_num - $old_num;
+                if ($user->sign_num == count($sign_list)) {
+                    $title = '连续签到奖励(SVIP+' . $up_num . ')';
+                } else {
+                    $title = '签到奖励(SVIP+' . $up_num . ')';
+                }
             }
+        }
 
-        }
-        $user->sign_num += 1;
-        if ($user->sign_num == count($sign_list)) {
-            $title = '连续签到奖励';
-        } else {
-            $title = '签到奖励';
-        }
         //用户等级是否开启
         $exp_num = 0;
         if (sys_config('member_func_status', 1)) {
@@ -186,7 +195,7 @@ class UserSignServices extends BaseServices
             $user->integral = (int)$user->integral + (int)$sign_num;
             if ($exp_num) $user->exp = (int)$user->exp + (int)$exp_num;
             if (!$user->save()) {
-                throw new ValidateException('修改用户信息失败');
+                throw new ApiException(410287);
             }
         });
         return $sign_num;
@@ -206,7 +215,7 @@ class UserSignServices extends BaseServices
         $userServices = app()->make(UserServices::class);
         $user = $userServices->getUserInfo($uid);
         if (!$user) {
-            throw new ValidateException('数据不存在');
+            throw new ApiException(100026);
         }
         //是否统计签到
         if ($sign || $all) {

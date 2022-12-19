@@ -13,7 +13,6 @@
 // | 应用设置
 // +----------------------------------------------------------------------
 
-use crmeb\basic\BaseAuth;
 use think\facade\Env;
 
 return [
@@ -45,4 +44,6 @@ return [
     'error_message'    => '页面错误！请稍后再试～',
     // 显示错误信息
     'show_error_msg'   => false,
+    // 没有开启消息队列命令或者定时任务命令的提醒开关
+    'console_remind'   => true
 ];

@@ -3,14 +3,10 @@
     <div class="i-layout-page-header header_top">
       <div class="i-layout-page-header fl_header">
         <router-link :to="{ path: '/admin/marketing/live/live_goods' }"
-          ><Button icon="ios-arrow-back" size="small" type="text"
-            >返回</Button
-          ></router-link
+          ><Button icon="ios-arrow-back" size="small" type="text">返回</Button></router-link
         >
         <Divider type="vertical" />
-        <span class="ivu-page-header-title" style="padding: 0">{{
-          $route.meta.title
-        }}</span>
+        <span class="ivu-page-header-title" style="padding: 0">{{ $route.meta.title }}</span>
       </div>
     </div>
     <Card :bordered="false" dis-hover class="ivu-mt">
@@ -26,17 +22,9 @@
           <Col span="24">
             <FormItem label="选择商品：">
               <div class="box">
-                <div
-                  class="box-item"
-                  v-for="(item, index) in goodsList"
-                  :key="index"
-                >
+                <div class="box-item" v-for="(item, index) in goodsList" :key="index">
                   <img :src="item.image" alt="" />
-                  <Icon
-                    type="ios-close-circle"
-                    size="20"
-                    @click="bindDelete(index)"
-                  />
+                  <Icon type="ios-close-circle" size="20" @click="bindDelete(index)" />
                 </div>
                 <div class="upload-box" @click="modals = true">
                   <Icon type="ios-camera-outline" size="36" />
@@ -71,46 +59,32 @@
         </Table>
 
         <div class="sub_btn">
-          <Button type="primary" style="width: 8%" @click="bindSub"
-            >提交</Button
-          >
+          <Button type="primary" style="width: 8%" @click="bindSub" :disabled="disabled" :loading="loadings">提交</Button>
         </div>
       </div>
     </Card>
-    <Modal
-      v-model="modals"
-      title="商品列表"
-      class="paymentFooter"
-      scrollable
-      width="900"
-      :footer-hide="true"
-    >
-      <goods-list
-        ref="goodslist"
-        @getProductId="getProductId"
-        v-if="modals"
-        :ischeckbox="true"
-      ></goods-list>
+    <Modal v-model="modals" title="商品列表" class="paymentFooter" scrollable width="900" :footer-hide="true">
+      <goods-list ref="goodslist" @getProductId="getProductId" v-if="modals" :ischeckbox="true"></goods-list>
     </Modal>
   </div>
 </template>
 
 <script>
-import { mapState } from "vuex";
-import goodsList from "@/components/goodsList";
-import { liveGoodsCreat, liveGoodsAdd } from "@/api/live";
+import { mapState } from 'vuex';
+import goodsList from '@/components/goodsList';
+import { liveGoodsCreat, liveGoodsAdd } from '@/api/live';
 export default {
-  name: "add_goods",
+  name: 'add_goods',
   components: {
     goodsList,
   },
   computed: {
-    ...mapState("media", ["isMobile"]),
+    ...mapState('media', ['isMobile']),
     labelWidth() {
       return this.isMobile ? undefined : 100;
     },
     labelPosition() {
-      return this.isMobile ? "top" : "right";
+      return this.isMobile ? 'top' : 'right';
     },
   },
   data() {
@@ -122,15 +96,15 @@ export default {
       tempGoods: {},
       formValidate: {},
       columns1: [
-        { key: "id", title: "商品ID" },
-        { slot: "img", title: "商品信息" },
+        { key: 'id', title: '商品ID' },
+        { slot: 'img', title: '商品信息' },
         {
-          key: "price",
-          title: "直播售价",
+          key: 'price',
+          title: '直播售价',
           render: (h, params) => {
-            return h("Input", {
+            return h('Input', {
               props: {
-                type: "number",
+                type: 'number',
                 value: params.row.price,
               },
               on: {
@@ -142,12 +116,12 @@ export default {
           },
         },
         {
-          key: "cost_price",
-          title: "直播原价",
+          key: 'cost_price',
+          title: '直播原价',
           render: (h, params) => {
-            return h("Input", {
+            return h('Input', {
               props: {
-                type: "number",
+                type: 'number',
                 value: params.row.cost_price,
               },
               on: {
@@ -158,10 +132,12 @@ export default {
             });
           },
         },
-        { key: "stock", title: "库存" },
-        { slot: "action", fixed: "right", title: "操作" },
+        { key: 'stock', title: '库存' },
+        { slot: 'action', fixed: 'right', title: '操作' },
       ],
       tabList: [],
+      disabled: false,
+      loadings: false,
     };
   },
   methods: {
@@ -198,16 +174,20 @@ export default {
     },
     // 提交
     bindSub() {
+      this.disabled = true;
+      this.loadings = true;
       liveGoodsAdd({
         goods_info: this.tabList,
       })
         .then((res) => {
-          this.$Message.success("添加成功");
+          this.$Message.success('添加成功');
+          this.disabled = false;
           setTimeout(() => {
-            this.$router.push({ path: "/admin/marketing/live/live_goods" });
+            this.$router.push({ path: '/admin/marketing/live/live_goods' });
           }, 500);
         })
         .catch((error) => {
+          this.disabled = false;
           this.$Message.error(error.msg);
         });
     },

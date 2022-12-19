@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -16,7 +16,6 @@ use app\services\activity\coupon\StoreCouponUserServices;
 use app\services\order\OtherOrderServices;
 use app\services\other\AgreementServices;
 use app\services\user\member\MemberCardServices;
-use app\services\user\member\MemberRecordServices;
 
 /** 会员卡
  * Class MemberCardController
@@ -37,9 +36,13 @@ class MemberCardController
         $this->services = $memberCardServices;
     }
 
-    /**会员卡主页数据接口
+    /**
+     * 会员卡主页数据接口
      * @param Request $request
      * @return mixed
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
      */
     public function index(Request $request)
     {
@@ -55,7 +58,7 @@ class MemberCardController
         /** @var StoreCouponUserServices $couponUserService */
         $couponUserService = app()->make(StoreCouponUserServices::class);
         $coupons = $couponUserService->getMemberCoupon($request->uid());
-        return app('json')->successful([
+        return app('json')->success([
             'member_rights' => $member_rights['member_right'],
             'is_get_free' => $is_get_free,
             'member_explain' => $member_explain,
@@ -64,7 +67,8 @@ class MemberCardController
         ]);
     }
 
-    /** 卡密领取会员卡
+    /**
+     * 卡密领取会员卡
      * @param Request $request
      * @return mixed
      */
@@ -76,14 +80,15 @@ class MemberCardController
             ['from', 'weixin'],
         ]);
         $data['from'] = strtolower(trim($data['from']));
-        if (!array_key_exists($data['from'], $this->channelType)) return app('json')->fail('非法渠道');
+        if (!array_key_exists($data['from'], $this->channelType)) return app('json')->fail(100101);
         $data['from'] = $this->channelType[$data['from']];
         $uid = (int)$request->uid();
         $this->services->drawMemberCard($data, $uid);
-        return app('json')->successful("激活成功");
+        return app('json')->success(410165);
     }
 
-    /** 会员券接口
+    /**
+     * 会员券接口
      * @param Request $request
      * @return mixed
      * @throws \think\db\exception\DataNotFoundException
@@ -95,10 +100,11 @@ class MemberCardController
         /** @var StoreCouponUserServices $couponUserService */
         $couponUserService = app()->make(StoreCouponUserServices::class);
         $coupons = $couponUserService->getMemberCoupon($request->uid());
-        return app('json')->successful($coupons);
+        return app('json')->success($coupons);
     }
 
-    /**计算会员天数
+    /**
+     * 计算会员天数
      * @param Request $request
      * @return mixed
      */
@@ -131,7 +137,7 @@ class MemberCardController
             $res = date('Y-m-d', $overdue_time);
         }
 
-        return app('json')->successful(['data' => $res]);
+        return app('json')->success(['data' => $res]);
     }
 
 

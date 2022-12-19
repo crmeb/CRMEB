@@ -1,6 +1,6 @@
 <template>
-    <div>
-		<!-- <div class="i-layout-page-header">
+  <div>
+    <!-- <div class="i-layout-page-header">
 			<PageHeader
 					class="product_tabs"
 					:title="$route.meta.title"
@@ -16,178 +16,206 @@
 				</div>
 			</PageHeader>
 		</div> -->
-		<div class="i-layout-page-header">
+    <div class="i-layout-page-header">
       <span class="ivu-page-header-title mr20">{{ $route.meta.title }}</span>
       <div>
         <div style="float: right">
-          <Button
-            class="bnt"
-            type="primary"
-            @click="save"
-            >保存</Button
-          >
+          <Button class="bnt" type="primary" @click="save">保存</Button>
         </div>
       </div>
     </div>
-        <Card :bordered="false" dis-hover class="ivu-mt">
-            <Row class="ivu-mt box-wrapper">
-                <Col :xs="24" :sm="24" :md="6" :lg="3" class="left-wrapper" >
-					<div class="left_box">
-						<div class="left_cont" :class="pageId == 1 ? 'on':''" @click="menu(1)">网站LOGO</div>
-						<div class="left_cont" :class="pageId == 'pc_home_banner' ? 'on':''" @click="menu('pc_home_banner')">首页轮播图</div>
-						<div class="left_cont" :class="pageId == 3 ? 'on':''" @click="menu(3)">客服页面广告</div>
-					</div>
+    <Card :bordered="false" dis-hover class="ivu-mt">
+      <Row class="ivu-mt box-wrapper">
+        <Col :xs="24" :sm="24" :md="6" :lg="3" class="left-wrapper">
+          <div class="left_box">
+            <div class="left_cont" :class="pageId == 1 ? 'on' : ''" @click="menu(1)">网站LOGO</div>
+            <div class="left_cont" :class="pageId == 'pc_home_banner' ? 'on' : ''" @click="menu('pc_home_banner')">
+              首页轮播图
+            </div>
+            <div class="left_cont" :class="pageId == 3 ? 'on' : ''" @click="menu(3)">客服页面广告</div>
+          </div>
+        </Col>
+        <div style="display: flex; width: 83%">
+          <Col v-if="pageId == 1 || pageId == 'pc_home_banner'" class="pciframe" :bordered="false" dis-hover>
+            <img src="../../../assets/images/pcbanner.png" class="pciframe-box" />
+            <div v-if="pageId == 1" class="logoimg">
+              <img :src="pclogo" />
+            </div>
+            <div v-if="pageId == 'pc_home_banner'" class="pcmoddile_goods">
+              <div class="nofonts" v-if="tabList.list == ''">暂无照片，请添加~</div>
+              <swiper v-else :options="swiperOption" class="pcswiperimg_goods">
+                <swiper-slide class="spcwiperimg_goods" v-for="(item, index) in tabList.list" :key="index">
+                  <img :src="item.image" />
+                </swiper-slide>
+              </swiper>
+            </div>
+          </Col>
+          <Col v-if="pageId == 3" class="pciframe" :bordered="false" dis-hover>
+            <img src="../../../assets/images/kefu.png" class="pciframe-box" />
+            <div class="box3_sile">
+              <!-- {{formValidate}} -->
+              <div v-html="formValidate.content"></div>
+            </div>
+          </Col>
+          <Col v-if="pageId == 'pc_home_banner'">
+            <div class="content">
+              <div class="right-box">
+                <div class="hot_imgs">
+                  <div class="title">轮播图设置</div>
+                  <div class="title-text">建议尺寸：690 * 240px，拖拽图片可调整图片顺序哦，最多添加五张。</div>
+                  <div class="title-text">除轮播图外，页面其他内容仅供参考</div>
+                  <div class="list-box">
+                    <draggable
+                      v-if="pageId == 'pc_home_banner'"
+                      class="dragArea list-group"
+                      :list="tabList.list"
+                      group="peoples"
+                      handle=".move-icon"
+                    >
+                      <div class="item" v-for="(item, index) in tabList.list" :key="index">
+                        <div class="move-icon">
+                          <span class="iconfont icondrag2"></span>
+                        </div>
+                        <div class="img-box imgBoxs" @click="modalPicTap('单选', index)">
+                          <img :src="item.image" alt="" v-if="item.image" />
+                          <div class="upload-box" v-else>
+                            <Icon type="ios-camera-outline" size="36" />
+                          </div>
+                          <div class="delect-btn" style="line-height: 0px" @click.stop="bindDelete(item, index)">
+                            <Icon type="md-close-circle" size="26" />
+                          </div>
+                        </div>
+                        <div class="info">
+                          <div class="info-item">
+                            <span>图片名称：</span>
+                            <div class="input-box">
+                              <Input v-model="item.title" placeholder="请填写名称" />
+                            </div>
+                          </div>
+                          <div class="info-item">
+                            <span>链接地址：</span>
+                            <!-- @click="link(index) icon="ios-arrow-forward" "-->
+                            <div class="input-box">
+                              <Input v-model="item.url" placeholder="选择链接" />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </draggable>
+                    <div>
+                      <Modal
+                        v-model="modalPic"
+                        width="950px"
+                        scrollable
+                        footer-hide
+                        closable
+                        title="上传商品图"
+                        :mask-closable="false"
+                        :z-index="999"
+                      >
+                        <uploadPictures
+                          :isChoice="isChoice"
+                          @getPic="getPic"
+                          :gridBtn="gridBtn"
+                          :gridPic="gridPic"
+                          v-if="modalPic"
+                        ></uploadPictures>
+                      </Modal>
+                    </div>
+                  </div>
+                  <template>
+                    <div class="add-btn">
+                      <Button
+                        type="primary"
+                        ghost
+                        style="width: 100px; height: 35px; background-color: #1890ff; color: #ffffff"
+                        @click="addBox"
+                        >添加图片
+                      </Button>
+                    </div>
+                  </template>
+                </div>
+              </div>
+            </div>
+          </Col>
+          <Col v-if="pageId == 1">
+            <div class="content">
+              <div class="right-box">
+                <div class="hot_imgs">
+                  <div class="title">页面设置</div>
+                  <div class="title-text">建议尺寸：140px * 60px</div>
+                  <div class="title-text">除LOGO图标外，页面其他内容仅供参考</div>
+                  <div class="list-box">
+                    <div class="img-boxs" @click="modalPicTap('单选', 0)">
+                      <img :src="pclogo" alt="" />
+                      <div class="img_font"></div>
+                      <div class="img_fonts">更换图片</div>
+                    </div>
+                    <div>
+                      <Modal
+                        v-model="modalPic"
+                        width="950px"
+                        scrollable
+                        footer-hide
+                        closable
+                        title="上传商品图"
+                        :mask-closable="false"
+                        :z-index="999"
+                      >
+                        <uploadPictures
+                          :isChoice="isChoice"
+                          @getPic="getPic"
+                          :gridBtn="gridBtn"
+                          :gridPic="gridPic"
+                          v-if="modalPic"
+                        ></uploadPictures>
+                      </Modal>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </Col>
+          <Col v-if="pageId == 3" :xs="24" :sm="24" :md="12" :lg="14" style="margin-left: 40px">
+            <div class="table_box">
+              <Row type="flex">
+                <Col v-bind="grid">
+                  <div class="title">隐私权限页面展示：</div>
                 </Col>
-				<div style="display: flex; width: 83%;">
-						<Col v-if="pageId == 1 || pageId == 'pc_home_banner'" class="pciframe" :bordered="false" dis-hover>
-						   <img src="../../../assets/images/pcbanner.png" class="pciframe-box"></img>
-						   <div v-if="pageId == 1" class="logoimg">
-							   <img :src="pclogo" >
-						   </div>
-							<div v-if="pageId == 'pc_home_banner'" class="pcmoddile_goods">
-								<div class="nofonts" v-if="tabList.list == ''">暂无照片，请添加~</div>
-								<swiper v-else :options="swiperOption" class="pcswiperimg_goods">
-								    <swiper-slide class="spcwiperimg_goods" v-for="(item,index) in tabList.list" :key="index">
-										<img :src="item.image" >
-									</swiper-slide>
-								</swiper>
-							</div>
-						</Col>
-						<Col v-if="pageId == 3" class="pciframe" :bordered="false" dis-hover>
-						   <img src="../../../assets/images/kefu.png" class="pciframe-box"></img>
-						   <div class="box3_sile">
-							   <!-- {{formValidate}} -->
-							   <div v-html="formValidate.content"></div>
-						   </div>
-						</Col>
-						<Col v-if="pageId == 'pc_home_banner'">
-							<div class="content">
-							       <div class="right-box">
-									   <div class="hot_imgs">
-									       <div class="title">轮播图设置</div>
-										   <div class="title-text">建议尺寸：690 * 240px，拖拽图片可调整图片顺序哦，最多添加五张。</div>
-										   <div class="title-text">除轮播图外，页面其他内容仅供参考</div>
-									       <div class="list-box">
-											  <draggable v-if="pageId == 'pc_home_banner'" class="dragArea list-group" :list="tabList.list" group="peoples" handle=".move-icon">
-												<div class="item" v-for="(item,index) in tabList.list" :key="index">
-													<div class="move-icon">
-													   <span class="iconfont icondrag2"></span>
-													</div>
-													<div class="img-box imgBoxs" @click="modalPicTap('单选',index)">
-													   <img :src="item.image" alt="" v-if="item.image">
-													   <div class="upload-box" v-else>
-														   <Icon type="ios-camera-outline" size="36"/>
-													   </div>
-													   <div class="delect-btn" style="line-height: 0px;" @click.stop="bindDelete(item,index)"><Icon type="md-close-circle" size="26"/></div>
-													</div>
-													<div class="info">
-														<div class="info-item">
-															  <span>图片名称：</span>
-															  <div class="input-box">
-																  <Input v-model="item.title" placeholder="请填写名称"/>
-															  </div>
-														</div>
-														<div class="info-item">
-														    <span>链接地址：</span>
-															<!-- @click="link(index) icon="ios-arrow-forward" "-->
-														    <div class="input-box">
-														        <Input v-model="item.url" placeholder="选择链接" />
-														    </div>
-														</div>
-													</div>
-												</div>
-											  </draggable>
-									           <div>
-									               <Modal v-model="modalPic" width="950px" scrollable footer-hide closable title='上传商品图'
-									                      :mask-closable="false" :z-index="999">
-									                   <uploadPictures :isChoice="isChoice" @getPic="getPic" :gridBtn="gridBtn" :gridPic="gridPic"
-									                                   v-if="modalPic"></uploadPictures>
-									               </Modal>
-									           </div>
-									       </div>
-									       <template > 
-									          <div class="add-btn">
-									               <Button type="primary" ghost style="width: 100px; height: 35px; background-color:#1890FF; color: #FFFFFF;"
-									                       @click="addBox">添加图片
-									               </Button>
-									           </div>
-									       </template>
-									   </div>
-								   </div>
-							   </div>
-						</Col>
-						<Col v-if="pageId == 1">
-							<div class="content">
-							       <div class="right-box">
-									   <div class="hot_imgs">
-									       <div class="title">页面设置</div>
-										   <div class="title-text">建议尺寸：140px * 60px</div>
-										   <div class="title-text">除LOGO图标外，页面其他内容仅供参考</div>
-									       <div class="list-box">
-											   
-												<div class="img-boxs" @click="modalPicTap('单选',0)">
-												   <img :src="pclogo" alt="" >
-												   <div class="img_font"></div>
-												   <div class="img_fonts">更换图片</div>
-												</div>
-												<div>
-												   <Modal v-model="modalPic" width="950px" scrollable footer-hide closable title='上传商品图'
-														  :mask-closable="false" :z-index="999">
-													   <uploadPictures :isChoice="isChoice" @getPic="getPic" :gridBtn="gridBtn" :gridPic="gridPic"
-																	   v-if="modalPic"></uploadPictures>
-												   </Modal>
-												</div>
-									       </div>
-									   </div>
-								   </div>
-							   </div>
-						</Col>
-						<Col v-if="pageId == 3" :xs="24" :sm="24" :md="12" :lg="14" style="margin-left: 40px;">
-							<div class="table_box">
-								<Row type="flex">
-									<Col v-bind="grid">
-										<div class="title">隐私权限页面展示：</div>
-									</Col>
-								</Row>
-								<div>
-									<Form
-									  class="form"
-									  ref="formValidate"
-									  :model="formValidate"
-									  :rules="ruleValidate"
-									  :label-width="labelWidth"
-									  :label-position="labelPosition"
-									  @submit.native.prevent
-									>
-									  <div class="goodsTitle acea-row">
-									  </div>
-									  <FormItem label="" prop="content" style="margin: 0px;">
-									    <WangEditor
-                        :content="formValidate.content"
-                        @editorContent="getEditorContent"
-                      ></WangEditor>
-									  </FormItem>
-									</Form>
-								</div>
-							</div>
-						</Col>
-					
-				</div>
-			</Row>
-			
-        </Card>
-		<!-- <div class="save">
+              </Row>
+              <div>
+                <Form
+                  class="form"
+                  ref="formValidate"
+                  :model="formValidate"
+                  :rules="ruleValidate"
+                  :label-width="labelWidth"
+                  :label-position="labelPosition"
+                  @submit.native.prevent
+                >
+                  <div class="goodsTitle acea-row"></div>
+                  <FormItem label="" prop="content" style="margin: 0px">
+                    <WangEditor :content="formValidate.content" @editorContent="getEditorContent"></WangEditor>
+                  </FormItem>
+                </Form>
+              </div>
+            </div>
+          </Col>
+        </div>
+      </Row>
+    </Card>
+    <!-- <div class="save">
 			<Button type="primary" @click="save" >保存</Button>
 		</div> -->
-		<linkaddress ref="linkaddres" @linkUrl="linkUrl"></linkaddress>
-    </div>
+    <linkaddress ref="linkaddres" @linkUrl="linkUrl"></linkaddress>
+  </div>
 </template>
 
 <script>
-import { mapState } from "vuex";
-import WangEditor from "@/components/wangEditor/index.vue";
-import { diyGetInfo, diySave } from "@/api/diy";
-import editFrom from "@/components/from/from";
+import { mapState } from 'vuex';
+import WangEditor from '@/components/wangEditor/index.vue';
+import { diyGetInfo, diySave } from '@/api/diy';
+import editFrom from '@/components/from/from';
 import {
   groupDataListApi,
   groupSaveApi,
@@ -196,12 +224,12 @@ import {
   pcLogoSave,
   getKfAdv,
   setKfAdv,
-} from "@/api/system";
-import draggable from "vuedraggable";
-import uploadPictures from "@/components/uploadPictures";
-import linkaddress from "@/components/linkaddress";
+} from '@/api/system';
+import draggable from 'vuedraggable';
+import uploadPictures from '@/components/uploadPictures';
+import linkaddress from '@/components/linkaddress';
 export default {
-  name: "list",
+  name: 'list',
   components: {
     editFrom,
     draggable,
@@ -213,9 +241,9 @@ export default {
     return {
       ruleValidate: {},
       formValidate: {
-        content: "",
+        content: '',
       },
-      pclogo: "",
+      pclogo: '',
       grid: {
         xl: 7,
         lg: 7,
@@ -226,12 +254,12 @@ export default {
       swiperOption: {
         //显示分页
         pagination: {
-          el: ".swiper-pagination",
+          el: '.swiper-pagination',
         },
         //设置点击箭头
         navigation: {
-          nextEl: ".swiper-button-next",
-          prevEl: ".swiper-button-prev",
+          nextEl: '.swiper-button-next',
+          prevEl: '.swiper-button-prev',
         },
         //自动轮播
         autoplay: {
@@ -245,16 +273,16 @@ export default {
       pageId: 1,
       tabList: [],
       lastObj: {
-        add_time: "",
-        config_name: "",
-        id: "",
-        image: "",
+        add_time: '',
+        config_name: '',
+        id: '',
+        image: '',
         sort: 1,
         status: 1,
-        title: "",
-        url: "",
+        title: '',
+        url: '',
       },
-      isChoice: "单选",
+      isChoice: '单选',
       modalPic: false,
       gridPic: {
         xl: 6,
@@ -274,20 +302,20 @@ export default {
       myConfig: {
         autoHeightEnabled: false, // 编辑器不自动被内容撑高
         initialFrameHeight: 500, // 初始容器高度
-        initialFrameWidth: "100%", // 初始容器宽度
-        UEDITOR_HOME_URL: "/admin/UEditor/",
-        serverUrl: "",
+        initialFrameWidth: '100%', // 初始容器宽度
+        UEDITOR_HOME_URL: '/admin/UEditor/',
+        serverUrl: '',
       },
       activeIndexs: 0,
     };
   },
   computed: {
-    ...mapState("admin/layout", ["isMobile"]),
+    ...mapState('admin/layout', ['isMobile']),
     labelWidth() {
       return this.isMobile ? undefined : 120;
     },
     labelPosition() {
-      return this.isMobile ? "top" : "right";
+      return this.isMobile ? 'top' : 'right';
     },
   },
   mounted() {
@@ -337,20 +365,17 @@ export default {
     },
     // 添加表单
     groupAdd() {
-      this.$modalForm(
-        groupDataAddApi(
-          { config_name: this.pageId },
-          "setting/group_data/create"
-        )
-      ).then(() => this.info());
+      this.$modalForm(groupDataAddApi({ config_name: this.pageId }, 'setting/group_data/create')).then(() =>
+        this.info(),
+      );
     },
     info() {
-      if (this.pageId == "pc_home_banner") {
-        groupDataListApi({ config_name: this.pageId }, "setting/group_data")
+      if (this.pageId == 'pc_home_banner') {
+        groupDataListApi({ config_name: this.pageId }, 'setting/group_data')
           .then(async (res) => {
             this.tabList = res.data;
             this.tabList.list.forEach((item, index, array) => {
-              if (typeof item.image != "string" && item.image != "undefined") {
+              if (typeof item.image != 'string' && item.image != 'undefined') {
                 item.image = item.image[0];
               }
             });
@@ -360,7 +385,7 @@ export default {
           });
       }
       if (this.pageId == 1) {
-        pcLogoApi("pc_logo").then((res) => {
+        pcLogoApi('pc_logo').then((res) => {
           this.pclogo = res.data.value;
         });
       }
@@ -376,18 +401,18 @@ export default {
       if (this.tabList.list.length == 0) {
         this.tabList.list.push(this.lastObj);
         this.lastObj = {
-          add_time: "",
-          comment: "",
-          gid: "",
-          id: "",
-          img: "",
-          link: "",
-          sort: "",
+          add_time: '',
+          comment: '',
+          gid: '',
+          id: '',
+          img: '',
+          link: '',
+          sort: '',
           status: 1,
         };
       } else {
         if (this.tabList.list.length == 5) {
-          this.$Message.warning("最多添加五张呦");
+          this.$Message.warning('最多添加五张呦');
         } else {
           let obj = JSON.parse(JSON.stringify(this.lastObj));
           this.tabList.list.push(obj);
@@ -409,7 +434,7 @@ export default {
     // 获取图片信息
     getPic(pc) {
       this.$nextTick(() => {
-        if (this.pageId == "pc_home_banner") {
+        if (this.pageId == 'pc_home_banner') {
           this.tabList.list[this.activeIndex].image = pc.att_dir;
         } else {
           this.pclogo = pc.att_dir;
@@ -418,7 +443,7 @@ export default {
       });
     },
     save() {
-      if (this.pageId == "pc_home_banner") {
+      if (this.pageId == 'pc_home_banner') {
         groupSaveApi({ config_name: this.pageId, data: this.tabList.list })
           .then((res) => {
             this.$Message.success(res.msg);
@@ -437,7 +462,7 @@ export default {
           });
       }
       if (this.pageId == 3) {
-        this.onsubmit("formValidate");
+        this.onsubmit('formValidate');
       }
     },
     link(index) {

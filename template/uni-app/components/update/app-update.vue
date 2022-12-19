@@ -5,12 +5,12 @@
 				<view class="update-wrap">
 					<image src="./images/img.png" class="top-img"></image>
 					<view class="content">
-						<text class="title">发现新版本{{ update_info.version }}</text>
+						<text class="title">{{$t(`发现新版本`)}}{{ update_info.version }}</text>
 						<!-- 升级描述 -->
 						<view class="title-sub" v-html="update_info.info"></view>
 						<!-- 升级按钮 -->
 						<button class="btn" v-if="downstatus < 1" @click="nowUpdate()">
-							立即升级
+							{{$t(`立即升级`)}}
 						</button>
 						<!-- 下载进度 -->
 						<view class="sche-wrap" v-else>
@@ -18,7 +18,7 @@
 							<view class="sche-bg">
 								<view class="sche-bg-jindu" :style="lengthWidth"></view>
 							</view>
-							<text class="down-text">下载进度:{{ (downSize / 1024 / 1024).toFixed(2) }}M/{{
+							<text class="down-text">{{$t(`下载进度`)}}:{{ (downSize / 1024 / 1024).toFixed(2) }}M/{{
                   (fileSize / 1024 / 1024).toFixed(2)
                 }}M</text>
 						</view>
@@ -121,7 +121,6 @@
 				//向后台发起请求，获取最新版本号
 				getUpdateInfo(this.platform === "ios" ? 2 : 1)
 					.then((res) => {
-						console.log(res)
 						if(Array.isArray(res.data)){
 						 return	this.$emit('isNew')
 						}
@@ -141,13 +140,11 @@
 						if (!vm.update_info.platform) {
 							// 后台未配置当前系统的升级数据
 						} else {
-							console.log('111111111111111')
 							vm.checkUpdate(); ///检查是否更新
 						}
 					})
 					.catch((err) => {
 						vm.popup_show = false
-						console.log(err);
 					});
 			},
 			// 检查是否更新

@@ -3,14 +3,9 @@
     <div class="i-layout-page-header">
       <div class="i-layout-page-header">
         <router-link :to="{ path: '/admin/marketing/store_integral/index' }"
-          ><Button icon="ios-arrow-back" size="small" class="mr20"
-            >返回</Button
-          ></router-link
+          ><Button icon="ios-arrow-back" size="small" class="mr20">返回</Button></router-link
         >
-        <span
-          class="ivu-page-header-title mr20"
-          v-text="$route.params.id ? '编辑积分商品' : '添加积分商品'"
-        ></span>
+        <span class="ivu-page-header-title mr20" v-text="$route.params.id ? '编辑积分商品' : '添加积分商品'"></span>
       </div>
     </div>
     <Card :bordered="false" dis-hover class="ivu-mt">
@@ -27,16 +22,9 @@
           >
             <FormItem label="选择商品：" prop="image_input">
               <div class="picBox" @click="changeGoods">
-                <div
-                  class="pictrue"
-                  v-for="(item, index) in goodsImg"
-                  :key="index"
-                >
+                <div class="pictrue" v-for="(item, index) in goodsImg" :key="index">
                   <img v-lazy="item.image" v-if="item.image" />
-                  <span
-                    class="iconfont icondel_1"
-                    @click.stop="bindDelete(index)"
-                  ></span>
+                  <span class="iconfont icondel_1" @click.stop="bindDelete(index)"></span>
                 </div>
 
                 <div class="upLoad acea-row row-center-wrapper">
@@ -64,15 +52,8 @@
                         <div class="pictrue pictrueTab" v-if="row.pic">
                           <img v-lazy="row.pic" />
                         </div>
-                        <div
-                          class="upLoad pictrueTab acea-row row-center-wrapper"
-                          v-else
-                        >
-                          <Icon
-                            type="ios-camera-outline"
-                            size="21"
-                            class="iconfont"
-                          />
+                        <div class="upLoad pictrueTab acea-row row-center-wrapper" v-else>
+                          <Icon type="ios-camera-outline" size="21" class="iconfont" />
                         </div>
                       </div>
                     </template>
@@ -80,15 +61,8 @@
                 </FormItem>
               </Col>
               <Col span="24">
-                <FormItem
-                  label="上架状态："
-                  props="is_show"
-                  label-for="is_show"
-                >
-                  <RadioGroup
-                    element-id="is_show"
-                    v-model="formValidate.is_show"
-                  >
+                <FormItem label="上架状态：" props="is_show" label-for="is_show">
+                  <RadioGroup element-id="is_show" v-model="formValidate.is_show">
                     <Radio :label="0">关闭</Radio>
                     <Radio :label="1" class="radio">开启</Radio>
                   </RadioGroup>
@@ -128,12 +102,7 @@
       width="900"
       @on-cancel="cancel"
     >
-      <goods-list
-        v-if="modals"
-        ref="goodslist"
-        :ischeckbox="true"
-        @getProductId="getProductId"
-      ></goods-list>
+      <goods-list v-if="modals" ref="goodslist" :ischeckbox="true" @getProductId="getProductId"></goods-list>
     </Modal>
     <!-- 上传图片-->
     <Modal
@@ -159,20 +128,14 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
-import goodsList from "@/components/goodsList/index";
-import UeditorWrap from "@/components/ueditorFrom/index";
-import VueUeditorWrap from "vue-ueditor-wrap";
-import uploadPictures from "@/components/uploadPictures";
-import {
-  integralAddBatch,
-  productAttrsApi,
-  integralInfoApi,
-} from "@/api/marketing";
+import { mapState } from 'vuex';
+import goodsList from '@/components/goodsList/index';
+import uploadPictures from '@/components/uploadPictures';
+import { integralAddBatch, productAttrsApi, integralInfoApi } from '@/api/marketing';
 
 export default {
-  name: "storeIntegralCreate",
-  components: { UeditorWrap, goodsList, uploadPictures, VueUeditorWrap },
+  name: 'storeIntegralCreate',
+  components: { goodsList, uploadPictures },
   data() {
     return {
       loading: false,
@@ -180,7 +143,7 @@ export default {
       productsId: [],
       submitOpen: false,
       spinShow: false,
-      isChoice: "",
+      isChoice: '',
       current: 0,
       modalPic: false,
       grid: {
@@ -214,9 +177,9 @@ export default {
       myConfig: {
         autoHeightEnabled: false, // 编辑器不自动被内容撑高
         initialFrameHeight: 500, // 初始容器高度
-        initialFrameWidth: "100%", // 初始容器宽度
-        UEDITOR_HOME_URL: "/admin/UEditor/",
-        serverUrl: "",
+        initialFrameWidth: '100%', // 初始容器宽度
+        UEDITOR_HOME_URL: '/admin/UEditor/',
+        serverUrl: '',
       },
       modals: false,
       modal_loading: false,
@@ -229,32 +192,32 @@ export default {
       timeList: [],
       columns: [],
       specsData: [],
-      picTit: "",
+      picTit: '',
       tableIndex: 0,
       ruleValidate: {
         price: [
           {
             required: true,
-            type: "number",
-            message: "请输入兑换积分",
-            trigger: "blur",
+            type: 'number',
+            message: '请输入兑换积分',
+            trigger: 'blur',
           },
         ],
 
         num: [
           {
             required: true,
-            type: "number",
-            message: "请输入购买数量限制",
-            trigger: "blur",
+            type: 'number',
+            message: '请输入购买数量限制',
+            trigger: 'blur',
           },
         ],
         once_num: [
           {
             required: true,
-            type: "number",
-            message: "请输入单次购买数量限制",
-            trigger: "blur",
+            type: 'number',
+            message: '请输入单次购买数量限制',
+            trigger: 'blur',
           },
         ],
       },
@@ -262,12 +225,12 @@ export default {
     };
   },
   computed: {
-    ...mapState("media", ["isMobile"]),
+    ...mapState('media', ['isMobile']),
     labelWidth() {
       return this.isMobile ? undefined : 135;
     },
     labelPosition() {
-      return this.isMobile ? "top" : "right";
+      return this.isMobile ? 'top' : 'right';
     },
   },
   mounted() {
@@ -287,13 +250,13 @@ export default {
           .then((res) => {
             let data = res.data.info;
             let selection = {
-              type: "selection",
+              type: 'selection',
               width: 60,
-              align: "center",
+              align: 'center',
             };
             that.specsData = that.specsData.concat(data.attrs);
             that.specsData.forEach(function (item, index) {
-              that.$set(that.specsData[index], "id", index);
+              that.$set(that.specsData[index], 'id', index);
             });
             that.columns = data.header;
             that.columns.unshift(selection);
@@ -323,26 +286,21 @@ export default {
         let row = {
           title: title,
           key: key,
-          align: "center",
+          align: 'center',
           minWidth: 120,
           render: (h, params) => {
-            return h("div", [
-              h("InputNumber", {
+            return h('div', [
+              h('InputNumber', {
                 props: {
                   min: 0,
                   precision: 0,
-                  value: key === "price" ? params.row.price : params.row.quota,
+                  value: key === 'price' ? params.row.price : params.row.quota,
                 },
                 on: {
-                  "on-change": (e) => {
-                    key === "price"
-                      ? (params.row.price = e)
-                      : (params.row.quota = e);
+                  'on-change': (e) => {
+                    key === 'price' ? (params.row.price = e) : (params.row.quota = e);
                     that.specsData[params.index] = params.row;
-                    if (
-                      !!that.formValidate.attrs &&
-                      that.formValidate.attrs.length
-                    ) {
+                    if (!!that.formValidate.attrs && that.formValidate.attrs.length) {
                       that.formValidate.attrs.forEach((v, index) => {
                         if (v.id === params.row.id) {
                           that.formValidate.attrs.splice(index, 1, params.row);
@@ -367,7 +325,7 @@ export default {
       for (let i = 0; i < this.goodsImg.length; i++) {
         const element = this.goodsImg[i];
         if (element.product_id === row.product_id) {
-          this.$Message.error("该商品已经添加");
+          this.$Message.error('该商品已经添加');
           return;
         }
       }
@@ -399,16 +357,16 @@ export default {
           let that = this;
           let info = res.data.info;
           let selection = {
-            type: "selection",
+            type: 'selection',
             width: 60,
-            align: "center",
+            align: 'center',
           };
           this.formValidate = info;
           this.columns = info.attrs.header;
           this.columns.unshift(selection);
           this.specsData = info.attrs.value;
           that.specsData.forEach(function (item, index) {
-            that.$set(that.specsData[index], "id", index);
+            that.$set(that.specsData[index], 'id', index);
           });
           let data = info.attrs;
           let attr = [];
@@ -436,11 +394,11 @@ export default {
     next(name) {
       let that = this;
       if (!this.formValidate.attrs.length) {
-        return that.$Message.error("请先选择商品规格");
+        return that.$Message.error('请先选择商品规格');
       }
       for (let index in that.formValidate.attrs) {
         if (that.formValidate.attrs[index].quota <= 0) {
-          return that.$Message.error("商品限量必须大于0");
+          return that.$Message.error('商品限量必须大于0');
         }
       }
       this.$refs[name].validate((valid) => {
@@ -454,7 +412,7 @@ export default {
               this.$Message.success(res.msg);
               setTimeout(() => {
                 this.$router.push({
-                  path: "/admin/marketing/store_integral/index",
+                  path: '/admin/marketing/store_integral/index',
                 });
               }, 500);
             })
@@ -478,14 +436,14 @@ export default {
     // 点击商品图
     modalPicTap(tit, picTit, index) {
       this.modalPic = true;
-      this.isChoice = tit === "dan" ? "单选" : "多选";
+      this.isChoice = tit === 'dan' ? '单选' : '多选';
       this.picTit = picTit;
       this.tableIndex = index;
     },
     // 获取单张图片信息
     getPic(pc) {
       switch (this.picTit) {
-        case "danFrom":
+        case 'danFrom':
           this.formValidate.image = pc.att_dir;
           break;
         // case 'danTable':
@@ -493,7 +451,7 @@ export default {
         //     break;
         default:
           if (!!this.formValidate.attrs && this.formValidate.attrs.length) {
-            this.$set(this.specsData[this.tableIndex], "_checked", true);
+            this.$set(this.specsData[this.tableIndex], '_checked', true);
           }
           this.specsData[this.tableIndex].pic = pc.att_dir;
       }
@@ -524,10 +482,10 @@ export default {
     },
     // 首先把div变成可以放置的元素，即重写dragenter/dragover
     handleDragOver(e) {
-      e.dataTransfer.dropEffect = "move"; // e.dataTransfer.dropEffect="move";//在dragenter中针对放置目标来设置!
+      e.dataTransfer.dropEffect = 'move'; // e.dataTransfer.dropEffect="move";//在dragenter中针对放置目标来设置!
     },
     handleDragEnter(e, item) {
-      e.dataTransfer.effectAllowed = "move"; // 为需要移动的元素设置dragstart事件
+      e.dataTransfer.effectAllowed = 'move'; // 为需要移动的元素设置dragstart事件
       if (item === this.dragging) {
         return;
       }
@@ -540,26 +498,26 @@ export default {
     // 添加自定义弹窗
     addCustomDialog(editorId) {
       window.UE.registerUI(
-        "test-dialog",
+        'test-dialog',
         function (editor, uiName) {
           // 创建 dialog
           let dialog = new window.UE.ui.Dialog({
             // 指定弹出层中页面的路径，这里只能支持页面，路径参考常见问题 2
-            iframeUrl: "/admin/widget.images/index.html?fodder=dialog",
+            iframeUrl: '/admin/widget.images/index.html?fodder=dialog',
             // 需要指定当前的编辑器实例
             editor: editor,
             // 指定 dialog 的名字
             name: uiName,
             // dialog 的标题
-            title: "上传图片",
+            title: '上传图片',
             // 指定 dialog 的外围样式
-            cssRules: "width:960px;height:550px;padding:20px;",
+            cssRules: 'width:960px;height:550px;padding:20px;',
           });
           this.dialog = dialog;
           // 参考上面的自定义按钮
           var btn = new window.UE.ui.Button({
-            name: "dialog-button",
-            title: "上传图片",
+            name: 'dialog-button',
+            title: '上传图片',
             cssRules: `background-image: url(../../../assets/images/icons.png);background-position: -726px -77px;`,
             onclick: function () {
               // 渲染dialog
@@ -570,7 +528,7 @@ export default {
           return btn;
         },
         37 /* 指定添加到工具栏上的那个位置，默认时追加到最后 */,
-        editorId /* 指定这个UI是哪个编辑器实例上的，默认是页面上所有的编辑器都会添加这个按钮 */
+        editorId /* 指定这个UI是哪个编辑器实例上的，默认是页面上所有的编辑器都会添加这个按钮 */,
       );
     },
   },

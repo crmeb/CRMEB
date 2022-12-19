@@ -1,17 +1,17 @@
 <template>
 	<view>
 		<view class="default" v-if="isIframe && !spikeList.length">
-			<text>秒杀模块，暂无数据</text>
+			<text>{{$t(`秒杀模块，暂无数据`)}}</text>
 		</view>
 		<view class="seckill" v-if="spikeList.length && isShow && !isIframe">
 			<view class="title acea-row row-between-wrapper">
 				<view class="acea-row row-middle">
-					<view class="name">限时秒杀</view>
-					<view class="point">{{point}} 场</view>
+					<view class="name">{{$t(`限时秒杀`)}}</view>
+					<view class="point">{{point}} {{$t(`场`)}}</view>
 					<countDown :is-day="false" :tip-text="' '" :day-text="' '" :hour-text="' : '" :minute-text="' : '" :second-text="' '"
 					 :datatime="datatime"></countDown>
 				</view>
-				<navigator url="/pages/activity/goods_seckill/index" hover-class="none" class="more acea-row row-center-wrapper">更多<text class="iconfont icon-jiantou"></text></navigator>
+				<navigator url="/pages/activity/goods_seckill/index" hover-class="none" class="more acea-row row-center-wrapper">{{$t(`更多`)}}<text class="iconfont icon-jiantou"></text></navigator>
 			</view>
 			<view class="conter">
 				<scroll-view scroll-x="true" style="white-space: nowrap; vertical-align: middle;" show-scrollbar="false">
@@ -22,8 +22,8 @@
 							</view>
 							<view class="name line1">{{item.title}}</view>
 							<view class="money">
-								<view class="x_money">¥<text class="num">{{item.price}}</text></view>
-								<view class="y_money">¥{{item.ot_price}}</view>
+								<view class="x_money">{{$t(`￥`)}}<text class="num">{{item.price}}</text></view>
+								<view class="y_money">{{$t(`￥`)}}{{item.ot_price}}</view>
 							</view>
 						</view>
 					</view>
@@ -33,12 +33,12 @@
 		<view class="seckill" v-if="spikeList.length && isIframe">
 			<view class="title acea-row row-between-wrapper">
 					<view class="acea-row row-middle">
-						<view class="name">限时秒杀</view>
-						<view class="point">{{point}} 场</view>
+						<view class="name">{{$t(`限时秒杀`)}}</view>
+						<view class="point">{{point}} {{$t(`场`)}}</view>
 						<countDown :is-day="false" :tip-text="' '" :day-text="' '" :hour-text="' : '" :minute-text="' : '" :second-text="' '"
 						 :datatime="datatime"></countDown>
 					</view>
-					<navigator class="more acea-row row-center-wrapper">更多<text class="iconfont icon-jiantou"></text></navigator>
+					<navigator class="more acea-row row-center-wrapper">{{$t(`更多`)}}<text class="iconfont icon-jiantou"></text></navigator>
 				</view>
 				<view class="conter">
 					<scroll-view scroll-x="true" style="white-space: nowrap; vertical-align: middle;" show-scrollbar="false">
@@ -49,8 +49,8 @@
 								</view>
 								<view class="name line1">{{item.title}}</view>
 								<view class="money">
-									<view class="x_money">¥<text class="num">{{item.price}}</text></view>
-									<view class="y_money">¥{{item.ot_price}}</view>
+									<view class="x_money">{{$t(`￥`)}}<text class="num">{{item.price}}</text></view>
+									<view class="y_money">{{$t(`￥`)}}{{item.ot_price}}</view>
 								</view>
 							</view>
 						</view>

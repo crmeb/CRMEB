@@ -6,7 +6,7 @@
 					<view class='pictrue'>
 						<image class="skeleton-radius" :src='item.img'></image>
 					</view>
-					<view class="menu-txt">{{item.info[0].value}}</view>
+					<view class="menu-txt">{{$t(item.info[0].value)}}</view>
 				</view>
 			</block>
 		</view>
@@ -25,7 +25,7 @@
 				<view class='pictrue default'>
 					<text class="iconfont icon-icon25201"></text>
 				</view>
-				<view class="menu-txt">默认</view>
+				<view class="menu-txt">{{$t(`默认`)}}</view>
 			</view>
 		</view>
 	</view>

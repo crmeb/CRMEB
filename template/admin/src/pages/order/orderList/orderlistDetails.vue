@@ -4,23 +4,17 @@
       :cardLists="cardLists"
       v-if="cardLists.length >= 0"
     ></cards-data> -->
-    <Card :bordered="false" dis-hover class="mt10">
       <table-form @getList="getData" />
-      <table-list
-        ref="table"
-        @on-changeCards="getCards"
-        @changeGetTabs="changeGetTabs"
-      />
-    </Card>
+      <table-list ref="table" @on-changeCards="getCards" @changeGetTabs="changeGetTabs" />
   </div>
 </template>
 
 <script>
-import cardsData from "../../../components/cards/cards";
-import tableForm from "./components/tableFrom";
-import tableList from "./components/tableList";
+import cardsData from '../../../components/cards/cards';
+import tableForm from './components/tableFrom';
+import tableList from './components/tableList';
 export default {
-  name: "orderlistDetails",
+  name: 'orderlistDetails',
   components: {
     tableForm,
     tableList,
@@ -28,7 +22,7 @@ export default {
   },
   data() {
     return {
-      currentTab: "",
+      currentTab: '',
       cardLists: [],
     };
   },

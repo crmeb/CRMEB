@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit backupGlobals="false" backupStaticAttributes="false" bootstrap="tests/bootstrap.php" colors="true"
+         convertErrorsToExceptions="true" convertNoticesToExceptions="true" convertWarningsToExceptions="true"
+         executionOrder="depends,defects" processIsolation="false" stopOnFailure="false">
+    <logging>
+        <log type="coverage-html" target="cache/coverage" lowUpperBound="35" highLowerBound="70"/>
+        <log type="coverage-clover" target="cache/coverage.clover"/>
+    </logging>
+
+    <testsuites>
+        <testsuite name="default">
+            <directory suffix="Test.php">tests</directory>
+        </testsuite>
+    </testsuites>
+</phpunit>

@@ -1,10 +1,5 @@
 <template>
   <div>
-    <div class="i-layout-page-header">
-      <div class="i-layout-page-header">
-        <span class="ivu-page-header-title">{{ $route.meta.title }}</span>
-      </div>
-    </div>
     <Card :bordered="false" dis-hover class="ivu-mt">
       <Form
         ref="tableFrom"
@@ -16,12 +11,7 @@
         <Row type="flex" :gutter="24">
           <Col v-bind="grid">
             <FormItem label="秒杀状态：">
-              <Select
-                placeholder="请选择"
-                clearable
-                v-model="tableFrom.status"
-                @on-change="userSearchs"
-              >
+              <Select placeholder="请选择" clearable v-model="tableFrom.status" @on-change="userSearchs">
                 <Option value="1">开启</Option>
                 <Option value="0">关闭</Option>
               </Select>
@@ -41,19 +31,10 @@
         </Row>
         <Row type="flex" class="mb20">
           <Col v-bind="grid">
-            <Button
-              v-auth="['marketing-store_seckill-create']"
-              type="primary"
-              icon="md-add"
-              @click="add"
-              class="mr10"
+            <Button v-auth="['marketing-store_seckill-create']" type="primary" icon="md-add" @click="add" class="mr10"
               >添加秒杀商品</Button
             >
-            <Button
-              v-auth="['export-storeSeckill']"
-              class="export"
-              icon="ios-share-outline"
-              @click="exports"
+            <Button v-auth="['export-storeSeckill']" class="export" icon="ios-share-outline" @click="exports"
               >导出</Button
             >
           </Col>
@@ -94,6 +75,8 @@
           <a @click="copy(row)">复制</a>
           <Divider type="vertical" />
           <a @click="del(row, '删除秒杀商品', index)">删除</a>
+          <Divider type="vertical" />
+          <a @click="viewInfo(row)">统计</a>
         </template>
       </Table>
       <div class="acea-row row-right page">
@@ -111,20 +94,16 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
-import {
-  seckillListApi,
-  seckillStatusApi,
-  storeSeckillApi,
-} from "@/api/marketing";
-import { formatDate } from "@/utils/validate";
+import { mapState } from 'vuex';
+import { seckillListApi, seckillStatusApi, storeSeckillApi } from '@/api/marketing';
+import { formatDate } from '@/utils/validate';
 export default {
-  name: "storeSeckill",
+  name: 'storeSeckill',
   filters: {
     formatDate(time) {
       if (time !== 0) {
         let date = new Date(time * 1000);
-        return formatDate(date, "yyyy-MM-dd");
+        return formatDate(date, 'yyyy-MM-dd');
       }
     },
   },
@@ -133,64 +112,64 @@ export default {
       loading: false,
       columns1: [
         {
-          title: "ID",
-          key: "id",
+          title: 'ID',
+          key: 'id',
           width: 80,
         },
         {
-          title: "商品图片",
-          slot: "image",
+          title: '商品图片',
+          slot: 'image',
           minWidth: 90,
         },
         {
-          title: "活动标题",
-          key: "title",
+          title: '活动标题',
+          key: 'title',
           minWidth: 130,
         },
         {
-          title: "活动简介",
-          key: "info",
+          title: '活动简介',
+          key: 'info',
           minWidth: 100,
         },
         {
-          title: "原价",
-          key: "ot_price",
+          title: '原价',
+          key: 'ot_price',
           minWidth: 100,
         },
         {
-          title: "秒杀价",
-          key: "price",
+          title: '秒杀价',
+          key: 'price',
           minWidth: 100,
         },
         {
-          title: "限量",
-          key: "quota_show",
+          title: '限量',
+          key: 'quota_show',
           minWidth: 130,
         },
         {
-          title: "限量剩余",
-          key: "quota",
+          title: '限量剩余',
+          key: 'quota',
           minWidth: 130,
         },
         {
-          title: "秒杀状态",
-          key: "start_name",
+          title: '秒杀状态',
+          key: 'start_name',
           minWidth: 100,
         },
         {
-          title: "结束时间",
-          slot: "stop_time",
+          title: '结束时间',
+          slot: 'stop_time',
           minWidth: 100,
         },
         {
-          title: "状态",
-          slot: "status",
+          title: '状态',
+          slot: 'status',
           minWidth: 100,
         },
         {
-          title: "操作",
-          slot: "action",
-          fixed: "right",
+          title: '操作',
+          slot: 'action',
+          fixed: 'right',
           minWidth: 130,
         },
       ],
@@ -203,8 +182,8 @@ export default {
         xs: 24,
       },
       tableFrom: {
-        status: "",
-        store_name: "",
+        status: '',
+        store_name: '',
         page: 1,
         limit: 15,
       },
@@ -212,12 +191,12 @@ export default {
     };
   },
   computed: {
-    ...mapState("media", ["isMobile"]),
+    ...mapState('media', ['isMobile']),
     labelWidth() {
       return this.isMobile ? undefined : 80;
     },
     labelPosition() {
-      return this.isMobile ? "top" : "left";
+      return this.isMobile ? 'top' : 'left';
     },
   },
   activated() {
@@ -226,7 +205,7 @@ export default {
   methods: {
     // 添加
     add() {
-      this.$router.push({ path: "/admin/marketing/store_seckill/create" });
+      this.$router.push({ path: '/admin/marketing/store_seckill/create' });
     },
     // 导出
     exports() {
@@ -246,13 +225,13 @@ export default {
     // 编辑
     edit(row) {
       this.$router.push({
-        path: "/admin/marketing/store_seckill/create/" + row.id + "/0",
+        path: '/admin/marketing/store_seckill/create/' + row.id + '/0',
       });
     },
     // 一键复制
     copy(row) {
       this.$router.push({
-        path: "/admin/marketing/store_seckill/create/" + row.id + "/1",
+        path: '/admin/marketing/store_seckill/create/' + row.id + '/1',
       });
     },
     // 删除
@@ -261,8 +240,8 @@ export default {
         title: tit,
         num: num,
         url: `marketing/seckill/${row.id}`,
-        method: "DELETE",
-        ids: "",
+        method: 'DELETE',
+        ids: '',
       };
       this.$modalSure(delfromData)
         .then((res) => {
@@ -273,10 +252,15 @@ export default {
           this.$Message.error(res.msg);
         });
     },
+    viewInfo(row) {
+      this.$router.push({
+        path: '/admin/marketing/store_seckill/statistics/' + row.id,
+      });
+    },
     // 列表
     getList() {
       this.loading = true;
-      this.tableFrom.status = this.tableFrom.status || "";
+      this.tableFrom.status = this.tableFrom.status || '';
       seckillListApi(this.tableFrom)
         .then(async (res) => {
           let data = res.data;

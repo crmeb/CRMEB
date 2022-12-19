@@ -1,10 +1,5 @@
 <template>
   <div>
-    <div class="i-layout-page-header">
-      <div class="i-layout-page-header">
-        <span class="ivu-page-header-title">{{ $route.meta.title }}</span>
-      </div>
-    </div>
     <Card :bordered="false" dis-hover class="ivu-mt">
       <Form
         ref="tableFrom"
@@ -16,12 +11,7 @@
         <Row type="flex" :gutter="24">
           <Col v-bind="grid">
             <FormItem label="是否有效：" label-for="status">
-              <Select
-                v-model="tableFrom.status"
-                placeholder="请选择"
-                clearable
-                @on-change="userSearchs"
-              >
+              <Select v-model="tableFrom.status" placeholder="请选择" clearable @on-change="userSearchs">
                 <Option value="1">正常</Option>
                 <Option value="0">未开启</Option>
               </Select>
@@ -29,12 +19,7 @@
           </Col>
           <Col v-bind="grid">
             <FormItem label="类型：" label-for="status">
-              <Select
-                v-model="receive_type"
-                placeholder="请选择"
-                clearable
-                @on-change="userSearchs"
-              >
+              <Select v-model="receive_type" placeholder="请选择" clearable @on-change="userSearchs">
                 <Option value="all">全部</Option>
                 <Option value="1">手动领取</Option>
                 <Option value="2">新人券</Option>
@@ -58,11 +43,7 @@
         </Row>
         <Row type="flex">
           <Col v-bind="grid">
-            <Button
-              v-auth="['admin-marketing-store_coupon-add']"
-              type="primary"
-              icon="md-add"
-              @click="add"
+            <Button v-auth="['admin-marketing-store_coupon-add']" type="primary" icon="md-add" @click="add"
               >添加优惠券</Button
             >
           </Col>
@@ -99,9 +80,7 @@
           <span v-else>虚拟购买</span>
         </template>
         <template slot-scope="{ row }" slot="start_time">
-          <div v-if="row.start_time">
-            {{ row.start_time | formatDate }} - {{ row.end_time | formatDate }}
-          </div>
+          <div v-if="row.start_time">{{ row.start_time | formatDate }} - {{ row.end_time | formatDate }}</div>
           <span v-else>不限时</span>
         </template>
         <template slot-scope="{ row }" slot="start_use_time">
@@ -144,15 +123,7 @@
       </div>
     </Card>
     <!-- 领取记录 -->
-    <Modal
-      v-model="modals2"
-      scrollable
-      footer-hide
-      closable
-      title="领取记录"
-      :mask-closable="false"
-      width="700"
-    >
+    <Modal v-model="modals2" scrollable footer-hide closable title="领取记录" :mask-closable="false" width="700">
       <Table
         :columns="columns2"
         :data="receiveList"
@@ -170,35 +141,29 @@
         </template>
       </Table>
       <div class="acea-row row-right page">
-        <Page
-          :total="total2"
-          show-elevator
-          show-total
-          @on-change="receivePageChange"
-          :page-size="receiveFrom.limit"
-        />
+        <Page :total="total2" show-elevator show-total @on-change="receivePageChange" :page-size="receiveFrom.limit" />
       </div>
     </Modal>
   </div>
 </template>
 
 <script>
-import { mapState } from "vuex";
+import { mapState } from 'vuex';
 import {
   releasedListApi,
   releasedissueLogApi,
   releaseStatusApi,
   delCouponReleased,
   couponStatusApi,
-} from "@/api/marketing";
-import { formatDate } from "@/utils/validate";
+} from '@/api/marketing';
+import { formatDate } from '@/utils/validate';
 export default {
-  name: "storeCouponIssue",
+  name: 'storeCouponIssue',
   filters: {
     formatDate(time) {
       if (time !== 0) {
         let date = new Date(time * 1000);
-        return formatDate(date, "yyyy-MM-dd hh:mm");
+        return formatDate(date, 'yyyy-MM-dd hh:mm');
       }
     },
   },
@@ -215,13 +180,13 @@ export default {
       loading: false,
       columns1: [
         {
-          title: "ID",
-          key: "id",
+          title: 'ID',
+          key: 'id',
           width: 80,
         },
         {
-          title: "优惠券名称",
-          key: "coupon_title",
+          title: '优惠券名称',
+          key: 'coupon_title',
           minWidth: 150,
           // render (h, data) {
           //     let row = data.row, content = '';
@@ -241,55 +206,55 @@ export default {
           // }
         },
         {
-          title: "优惠券类型",
-          slot: "type",
+          title: '优惠券类型',
+          slot: 'type',
           minWidth: 80,
         },
         {
-          title: "面值",
-          key: "coupon_price",
+          title: '面值',
+          key: 'coupon_price',
           minWidth: 100,
         },
         {
-          title: "领取方式",
-          slot: "receive_type",
+          title: '领取方式',
+          slot: 'receive_type',
           minWidth: 100,
         },
         {
-          title: "领取日期",
-          slot: "start_time",
+          title: '领取日期',
+          slot: 'start_time',
           minWidth: 250,
         },
         {
-          title: "使用时间",
-          slot: "start_use_time",
+          title: '使用时间',
+          slot: 'start_use_time',
           minWidth: 250,
         },
         {
-          title: "发布数量",
-          slot: "count",
+          title: '发布数量',
+          slot: 'count',
           minWidth: 90,
         },
         {
-          title: "是否开启",
-          slot: "status",
+          title: '是否开启',
+          slot: 'status',
           minWidth: 90,
         },
         {
-          title: "操作",
-          slot: "action",
-          fixed: "right",
+          title: '操作',
+          slot: 'action',
+          fixed: 'right',
           minWidth: 200,
         },
       ],
       tableFrom: {
-        status: "",
-        coupon_title: "",
-        receive_type: "",
+        status: '',
+        coupon_title: '',
+        receive_type: '',
         page: 1,
         limit: 15,
       },
-      receive_type: "",
+      receive_type: '',
       tableList: [],
       total: 0,
       FromData: null,
@@ -297,23 +262,23 @@ export default {
       loading2: false,
       columns2: [
         {
-          title: "ID",
-          key: "uid",
+          title: 'ID',
+          key: 'uid',
           minWidth: 150,
         },
         {
-          title: "用户名",
-          key: "nickname",
+          title: '用户名',
+          key: 'nickname',
           minWidth: 150,
         },
         {
-          title: "用户头像",
-          slot: "avatar",
+          title: '用户头像',
+          slot: 'avatar',
           minWidth: 100,
         },
         {
-          title: "领取时间",
-          key: "add_time",
+          title: '领取时间',
+          key: 'add_time',
           minWidth: 140,
         },
       ],
@@ -329,12 +294,12 @@ export default {
     this.getList();
   },
   computed: {
-    ...mapState("media", ["isMobile"]),
+    ...mapState('media', ['isMobile']),
     labelWidth() {
       return this.isMobile ? undefined : 90;
     },
     labelPosition() {
-      return this.isMobile ? "top" : "right";
+      return this.isMobile ? 'top' : 'right';
     },
   },
   methods: {
@@ -344,8 +309,8 @@ export default {
         title: tit,
         num: num,
         url: `marketing/coupon/status/${row.id}`,
-        method: "PUT",
-        ids: "",
+        method: 'PUT',
+        ids: '',
       };
       this.$refs.modelSure.modals = true;
     },
@@ -380,8 +345,8 @@ export default {
         title: tit,
         num: num,
         url: `marketing/coupon/released/${row.id}`,
-        method: "DELETE",
-        ids: "",
+        method: 'DELETE',
+        ids: '',
       };
       this.$modalSure(delfromData)
         .then((res) => {
@@ -395,9 +360,8 @@ export default {
     // 列表
     getList() {
       this.loading = true;
-      this.tableFrom.receive_type =
-        this.receive_type === "all" ? "" : this.receive_type;
-      this.tableFrom.status = this.tableFrom.status || "";
+      this.tableFrom.receive_type = this.receive_type === 'all' ? '' : this.receive_type;
+      this.tableFrom.status = this.tableFrom.status || '';
       releasedListApi(this.tableFrom)
         .then(async (res) => {
           let data = res.data;
@@ -421,7 +385,7 @@ export default {
     },
     // 添加优惠券
     add() {
-      this.$router.push({ path: "/admin/marketing/store_coupon_issue/create" });
+      this.$router.push({ path: '/admin/marketing/store_coupon_issue/create' });
     },
     // 复制
     copy(data) {
@@ -460,4 +424,3 @@ export default {
   }
 }
 </style>
-

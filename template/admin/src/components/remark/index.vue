@@ -1,18 +1,6 @@
 <template>
-  <Modal
-    v-model="modals"
-    scrollable
-    title="备注"
-    class="order_box"
-    :closable="false"
-  >
-    <Form
-      ref="formValidate"
-      :model="formValidate"
-      :rules="ruleValidate"
-      :label-width="80"
-      @submit.native.prevent
-    >
+  <Modal v-model="modals" scrollable title="备注" class="order_box" :closable="false">
+    <Form ref="formValidate" :model="formValidate" :rules="ruleValidate" :label-width="80" @submit.native.prevent>
       <FormItem label="备注：" prop="remark">
         <Input
           v-model="formValidate.remark"
@@ -33,16 +21,16 @@
 
 <script>
 export default {
-  name: "orderMark",
+  name: 'orderMark',
   data() {
     return {
       formValidate: {
-        remark: "",
+        remark: '',
       },
       modals: false,
       ruleValidate: {
         remark: [
-          { required: true, message: "请输入备注信息", trigger: "blur" },
+          { required: true, message: '请输入备注信息', trigger: 'blur' },
           // { type: 'string', min: 20, message: 'Introduce no less than 20 words', trigger: 'blur' }
         ],
       },
@@ -50,7 +38,7 @@ export default {
   },
   props: {
     remark: {
-      default: "",
+      default: '',
       type: String,
     },
   },
@@ -62,9 +50,9 @@ export default {
     putRemark(name) {
       this.$refs[name].validate((valid) => {
         if (valid) {
-          this.$emit("submitFail", this.formValidate.remark);
+          this.$emit('submitFail', this.formValidate.remark);
         } else {
-          this.$Message.warning("请填写备注信息");
+          this.$Message.warning('请填写备注信息');
         }
       });
     },
@@ -72,5 +60,4 @@ export default {
 };
 </script>
 
-<style scoped>
-</style>
+<style scoped></style>

@@ -1,10 +1,5 @@
 <template>
   <div>
-    <div class="i-layout-page-header">
-      <div class="i-layout-page-header">
-        <span class="ivu-page-header-title">{{ $route.meta.title }}</span>
-      </div>
-    </div>
     <Card :bordered="false" dis-hover class="ivu-mt">
       <Form
         ref="tableFrom"
@@ -16,12 +11,7 @@
         <Row type="flex" :gutter="24">
           <Col>
             <FormItem label="活动类型：" clearable>
-              <RadioGroup
-                v-model="tableFrom.factor"
-                type="button"
-                @on-change="selectChangeFactor()"
-                class="mr"
-              >
+              <RadioGroup v-model="tableFrom.factor" type="button" @on-change="selectChangeFactor()" class="mr">
                 <Radio :label="1">积分抽取</Radio>
                 <Radio :label="3">订单支付</Radio>
                 <Radio :label="4">订单评价</Radio>
@@ -30,18 +20,8 @@
           </Col>
           <Col span="24">
             <FormItem label="时间选择：">
-              <RadioGroup
-                v-model="tableFrom.data"
-                type="button"
-                @on-change="selectChange(tableFrom.data)"
-                class="mr"
-              >
-                <Radio
-                  :label="item.val"
-                  v-for="(item, i) in fromList.fromTxt"
-                  :key="i"
-                  >{{ item.text }}</Radio
-                >
+              <RadioGroup v-model="tableFrom.data" type="button" @on-change="selectChange(tableFrom.data)" class="mr">
+                <Radio :label="item.val" v-for="(item, i) in fromList.fromTxt" :key="i">{{ item.text }}</Radio>
               </RadioGroup>
               <DatePicker
                 :editable="false"
@@ -57,18 +37,8 @@
           </Col>
           <Col span="24">
             <FormItem label="奖品类型：">
-              <RadioGroup
-                v-model="tableFrom.type"
-                type="button"
-                @on-change="selectType()"
-                class="mr"
-              >
-                <Radio
-                  :label="item.val"
-                  v-for="(item, i) in typeList"
-                  :key="i"
-                  >{{ item.text }}</Radio
-                >
+              <RadioGroup v-model="tableFrom.type" type="button" @on-change="selectType()" class="mr">
+                <Radio :label="item.val" v-for="(item, i) in typeList" :key="i">{{ item.text }}</Radio>
               </RadioGroup>
             </FormItem>
           </Col>
@@ -120,12 +90,7 @@
         no-filtered-userFrom-text="暂无筛选结果"
       >
         <template slot-scope="{ row, index }" slot="is_fail">
-          <Icon
-            type="md-checkmark"
-            v-if="row.is_fail === 1"
-            color="#0092DC"
-            size="14"
-          />
+          <Icon type="md-checkmark" v-if="row.is_fail === 1" color="#0092DC" size="14" />
           <Icon type="md-close" v-else color="#ed5565" size="14" />
         </template>
         <template slot-scope="{ row, index }" slot="user">
@@ -139,9 +104,7 @@
             <div>姓名：{{ row.receive_info.name }}</div>
             <div>电话：{{ row.receive_info.phone }}</div>
             <div>地址：{{ row.receive_info.address }}</div>
-            <div v-if="row.receive_info.mark">
-              备注：{{ row.receive_info.mark }}
-            </div>
+            <div v-if="row.receive_info.mark">备注：{{ row.receive_info.mark }}</div>
           </div>
         </template>
         <template slot-scope="{ row, index }" slot="prize">
@@ -151,16 +114,8 @@
           </div>
         </template>
         <template slot-scope="{ row, index }" slot="action">
-          <a
-            @click="deliver(row, 1)"
-            v-if="row.type == 6 && row.is_deliver === 0"
-            >发货</a
-          >
-          <a
-            v-else-if="row.type == 6 && row.is_deliver === 1"
-            @click="isDeliver(row)"
-            >配送信息</a
-          >
+          <a @click="deliver(row, 1)" v-if="row.type == 6 && row.is_deliver === 0">发货</a>
+          <a v-else-if="row.type == 6 && row.is_deliver === 1" @click="isDeliver(row)">配送信息</a>
           <Divider type="vertical" v-if="row.type == 6" />
           <a @click="deliver(row, 2)">备注</a>
         </template>
@@ -196,19 +151,11 @@
       >
         <FormItem v-if="modelType === 1" label="快递公司" prop="deliver_name">
           <Select v-model="shipForm.deliver_name">
-            <Option
-              v-for="item in locationList"
-              :value="item.value"
-              :key="item.id"
-              >{{ item.value }}</Option
-            >
+            <Option v-for="item in locationList" :value="item.value" :key="item.id">{{ item.value }}</Option>
           </Select>
         </FormItem>
         <FormItem v-if="modelType === 1" label="快递单号" prop="deliver_number">
-          <Input
-            v-model="shipForm.deliver_number"
-            placeholder="请输入快递单号"
-          ></Input>
+          <Input v-model="shipForm.deliver_number" placeholder="请输入快递单号"></Input>
           <div class="trips" v-if="shipForm.deliver_name == '顺丰速运'">
             <p>顺丰请输入单号 :收件人或寄件人手机号后四位</p>
             <p>例如：SF000000000000:3941</p>
@@ -218,14 +165,8 @@
           <Input v-model="markForm.mark" placeholder="请输入备注"></Input>
         </FormItem>
         <FormItem>
-          <Button
-            type="primary"
-            @click="ok(modelType === 1 ? 'shipForm' : 'markForm')"
-            >提交</Button
-          >
-          <Button @click="cancel('formValidate')" style="margin-left: 8px"
-            >关闭</Button
-          >
+          <Button type="primary" @click="ok(modelType === 1 ? 'shipForm' : 'markForm')">提交</Button>
+          <Button @click="cancel('formValidate')" style="margin-left: 8px">关闭</Button>
         </FormItem></Form
       >
     </Modal>
@@ -233,18 +174,18 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
-import { lotteryRecordList, lotteryRecordDeliver } from "@/api/lottery";
-import { formatDate } from "@/utils/validate";
-import { getExpressData } from "@/api/order";
-import { ruleShip, ruleMark } from "./formRule/ruleShip";
+import { mapState } from 'vuex';
+import { lotteryRecordList, lotteryRecordDeliver } from '@/api/lottery';
+import { formatDate } from '@/utils/validate';
+import { getExpressData } from '@/api/order';
+import { ruleShip, ruleMark } from './formRule/ruleShip';
 export default {
-  name: "lotteryRecordList",
+  name: 'lotteryRecordList',
   filters: {
     formatDate(time) {
       if (time !== 0) {
         let date = new Date(time * 1000);
-        return formatDate(date, "yyyy-MM-dd hh:mm");
+        return formatDate(date, 'yyyy-MM-dd hh:mm');
       }
     },
   },
@@ -254,72 +195,72 @@ export default {
       loading: false,
       locationList: [],
       shipForm: {
-        id: "",
-        deliver_name: "",
+        id: '',
+        deliver_name: '',
         deliver_number: null,
       },
       markForm: {
-        id: "",
-        mark: "",
+        id: '',
+        mark: '',
       },
       ruleShip: ruleShip,
       ruleMark: ruleMark,
       fromList: {
-        title: "选择时间",
+        title: '选择时间',
         fromTxt: [
-          { text: "全部", val: "" },
-          { text: "今天", val: "today" },
-          { text: "昨天", val: "yesterday" },
-          { text: "最近7天", val: "lately7" },
-          { text: "最近30天", val: "lately30" },
-          { text: "本月", val: "month" },
-          { text: "本年", val: "year" },
+          { text: '全部', val: '' },
+          { text: '今天', val: 'today' },
+          { text: '昨天', val: 'yesterday' },
+          { text: '最近7天', val: 'lately7' },
+          { text: '最近30天', val: 'lately30' },
+          { text: '本月', val: 'month' },
+          { text: '本年', val: 'year' },
         ],
       },
       typeList: [
-        { text: "全部", val: "" },
-        { text: "未中奖", val: "1" },
-        { text: "积分", val: "2" },
-        { text: "余额", val: "3" },
-        { text: "红包", val: "4" },
-        { text: "优惠券", val: "5" },
-        { text: "商品", val: "6" },
+        { text: '全部', val: '' },
+        { text: '未中奖', val: '1' },
+        { text: '积分', val: '2' },
+        { text: '余额', val: '3' },
+        { text: '红包', val: '4' },
+        { text: '优惠券', val: '5' },
+        { text: '商品', val: '6' },
       ],
       columns1: [
         {
-          title: "ID",
-          key: "id",
+          title: 'ID',
+          key: 'id',
           width: 80,
         },
         {
-          title: "用户信息",
-          slot: "user",
+          title: '用户信息',
+          slot: 'user',
           minWidth: 90,
         },
         {
-          title: "奖品信息",
-          slot: "prize",
+          title: '奖品信息',
+          slot: 'prize',
           minWidth: 130,
         },
         {
-          title: "抽奖时间",
-          key: "add_time",
+          title: '抽奖时间',
+          key: 'add_time',
           minWidth: 100,
         },
         {
-          title: "收货信息",
-          slot: "receive_info",
+          title: '收货信息',
+          slot: 'receive_info',
           minWidth: 100,
         },
         {
-          title: "备注",
-          slot: "mark",
+          title: '备注',
+          slot: 'mark',
           minWidth: 100,
         },
         {
-          title: "操作",
-          slot: "action",
-          fixed: "right",
+          title: '操作',
+          slot: 'action',
+          fixed: 'right',
           minWidth: 130,
         },
       ],
@@ -332,7 +273,7 @@ export default {
         xs: 24,
       },
       tableFrom: {
-        keyword: "",
+        keyword: '',
         date: [],
         page: 1,
         limit: 15,
@@ -341,17 +282,17 @@ export default {
       total: 0,
       timeVal: [],
       modelType: 1,
-      lottery_id: "",
-      modelTitle: "",
+      lottery_id: '',
+      modelTitle: '',
     };
   },
   computed: {
-    ...mapState("admin/layout", ["isMobile"]),
+    ...mapState('admin/layout', ['isMobile']),
     labelWidth() {
       return this.isMobile ? undefined : 80;
     },
     labelPosition() {
-      return this.isMobile ? "top" : "left";
+      return this.isMobile ? 'top' : 'left';
     },
   },
   created() {
@@ -364,8 +305,8 @@ export default {
     deliver(row, type) {
       this.markForm.id = row.id;
       this.shipForm.id = row.id;
-      this.shipForm.deliver_name = "";
-      this.shipForm.deliver_number = "";
+      this.shipForm.deliver_name = '';
+      this.shipForm.deliver_number = '';
       this.markForm.mark = row.deliver_info.mark;
       this.modelType = type;
       this.shipModel = true;
@@ -374,29 +315,27 @@ export default {
       this.markForm.id = row.id;
       this.shipForm.id = row.id;
       this.modelType = 1;
-      this.modelTitle = "配送信息";
+      this.modelTitle = '配送信息';
       this.shipModel = true;
       this.shipForm.deliver_name = row.deliver_info.deliver_name;
       this.shipForm.deliver_number = row.deliver_info.deliver_number;
     },
     ok(name) {
       this.$refs[name].validate((valid) => {
-        lotteryRecordDeliver(
-          this.modelType == 1 ? this.shipForm : this.markForm
-        )
+        lotteryRecordDeliver(this.modelType == 1 ? this.shipForm : this.markForm)
           .then((res) => {
-            this.$Message.success("操作成功");
+            this.$Message.success('操作成功');
             this.shipModel = false;
             this.getList();
             this.shipForm = {
-              id: "",
-              deliver_name: "",
+              id: '',
+              deliver_name: '',
               deliver_number: null,
             };
-            this.modelTitle = "";
+            this.modelTitle = '';
             this.markForm = {
-              id: "",
-              mark: "",
+              id: '',
+              mark: '',
             };
           })
           .catch((err) => {
@@ -406,7 +345,7 @@ export default {
     },
     cancel() {
       this.modelType = 1;
-      this.modelTitle = "";
+      this.modelTitle = '';
       this.shipModel = false;
     },
     // 物流公司列表
@@ -422,7 +361,7 @@ export default {
     // 具体日期
     onchangeTime(e) {
       this.timeVal = e;
-      this.tableFrom.data = this.timeVal[0] ? this.timeVal.join("-") : "";
+      this.tableFrom.data = this.timeVal[0] ? this.timeVal.join('-') : '';
       this.tableFrom.page = 1;
       this.getList();
     },

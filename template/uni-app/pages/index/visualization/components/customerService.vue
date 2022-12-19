@@ -2,7 +2,7 @@
 	<view style="touch-action: none;">
 		<!-- #ifdef H5 || APP-PLUS -->
 		<view class="customerService" :style="'top:'+topConfig" @touchmove.stop.prevent="setTouchMove" v-if="isShow && logoConfig && !isIframe">
-			<navigator class="pictrue" url="/pages/customer_list/chat" hover-class="none">
+			<navigator class="pictrue" url="/pages/extension/customer_list/chat" hover-class="none">
 				<image :src="logoConfig"></image>
 			</navigator>
 		</view>
@@ -12,12 +12,12 @@
 			</view>
 		</view>
 		<view class="customerService borderService" :style="'top:'+topConfig" v-if="!logoConfig && isIframe">
-			<view class="pictrue">客服</view>
+			<view class="pictrue">{{$t(`客服`)}}</view>
 		</view>
 		<!-- #endif -->
 		<!-- #ifdef MP -->
 		<view class="customerService" :style="'top:'+topConfig" @touchmove.stop.prevent="setTouchMove" v-if="routineContact === '0' && logoConfig">
-			<navigator class="pictrue" url="/pages/customer_list/chat" hover-class="none">
+			<navigator class="pictrue" url="/pages/extension/customer_list/chat" hover-class="none">
 				<image :src="logoConfig"></image>
 			</navigator>
 		</view>

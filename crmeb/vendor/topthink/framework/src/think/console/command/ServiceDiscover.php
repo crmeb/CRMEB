@@ -29,6 +29,10 @@ class ServiceDiscover extends Command
         if (is_file($path = $this->app->getRootPath() . 'vendor/composer/installed.json')) {
             $packages = json_decode(@file_get_contents($path), true);
 
+            if (isset($packages['packages'])) {
+                $packages = $packages['packages'];
+            }
+            
             $services = [];
             foreach ($packages as $package) {
                 if (!empty($package['extra']['think']['services'])) {

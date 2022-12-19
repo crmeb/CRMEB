@@ -1,7 +1,7 @@
 <template>
 	<view v-show="!isSortType">
 		<view class='richText' :style="'background-color:'+bgColor+';margin:'+ udConfig +'rpx '+ lrConfig +'rpx;'" v-if="description">
-			<jyf-parser :content="description" ref="article" :tag-style="tagStyle"></jyf-parser>
+			<jyf-parser :html="description" ref="article" :tag-style="tagStyle"></jyf-parser>
 		</view>
 	</view>
 
@@ -9,7 +9,7 @@
 
 
 <script>
-	import parser from "@/components/mp-html/mp-html";
+	import parser from "@/components/jyf-parser/jyf-parser";
 	export default {
 		name: 'richText',
 		props: {
@@ -28,7 +28,9 @@
 		data() {
 			return {
 				tagStyle: {
-					img: 'width:100%;'
+					img: 'width:100%;display:block;',
+					table: 'width:100%',
+					video: 'width:100%'
 				},
 				bgColor:this.dataConfig.bgColor.color[0].item,
 				lrConfig:this.dataConfig.lrConfig.val,

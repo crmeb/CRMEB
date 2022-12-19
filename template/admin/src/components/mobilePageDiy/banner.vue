@@ -26,12 +26,7 @@
         :style="{
           paddingLeft: edge + 10 + 'px',
           paddingRight: edge + 10 + 'px',
-          justifyContent:
-            dotPosition === 1
-              ? 'center'
-              : dotPosition === 2
-              ? 'flex-end'
-              : 'flex-start',
+          justifyContent: dotPosition === 1 ? 'center' : dotPosition === 2 ? 'flex-end' : 'flex-start',
         }"
         v-if="docStyle == 0"
       >
@@ -44,12 +39,7 @@
         :style="{
           paddingLeft: edge + 10 + 'px',
           paddingRight: edge + 10 + 'px',
-          justifyContent:
-            dotPosition === 1
-              ? 'center'
-              : dotPosition === 2
-              ? 'flex-end'
-              : 'flex-start',
+          justifyContent: dotPosition === 1 ? 'center' : dotPosition === 2 ? 'flex-end' : 'flex-start',
         }"
         v-if="docStyle == 1"
       >
@@ -62,12 +52,7 @@
         :style="{
           paddingLeft: edge + 10 + 'px',
           paddingRight: edge + 10 + 'px',
-          justifyContent:
-            dotPosition === 1
-              ? 'center'
-              : dotPosition === 2
-              ? 'flex-end'
-              : 'flex-start',
+          justifyContent: dotPosition === 1 ? 'center' : dotPosition === 2 ? 'flex-end' : 'flex-start',
         }"
         v-if="docStyle == 2"
       >
@@ -78,13 +63,13 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
+import { mapState } from 'vuex';
 export default {
-  name: "banner", // 组件名称
-  cname: "轮播图", // 标题名称
-  icon: "icontupianguanggao1",
-  defaultName: "swiperBg", // 外面匹配名称
-  configName: "c_banner", // 右侧配置名称
+  name: 'banner', // 组件名称
+  cname: '轮播图', // 标题名称
+  icon: 'icontupianguanggao1',
+  defaultName: 'swiperBg', // 外面匹配名称
+  configName: 'c_banner', // 右侧配置名称
   type: 0, // 0 基础组件 1 营销组件 2工具组件
   props: {
     index: {
@@ -95,7 +80,7 @@ export default {
     },
   },
   computed: {
-    ...mapState("mobildConfig", ["defaultArray"]),
+    ...mapState('mobildConfig', ['defaultArray']),
   },
   watch: {
     pageData: {
@@ -123,7 +108,7 @@ export default {
     return {
       // 默认初始化数据禁止修改
       defaultConfig: {
-        name: "swiperBg",
+        name: 'swiperBg',
         timestamp: this.num,
         setUp: {
           tabVal: 0,
@@ -149,23 +134,22 @@ export default {
         // },
         // 图片列表
         swiperConfig: {
-          title:
-            "最多可添加10张图片，建议宽度750px；鼠标拖拽左侧圆点可调整图片 顺序",
+          title: '最多可添加10张图片，建议宽度750px；鼠标拖拽左侧圆点可调整图片 顺序',
           maxList: 10,
           list: [
             {
-              img: "",
+              img: '',
               info: [
                 {
-                  title: "标题",
-                  value: "今日推荐",
-                  tips: "选填，不超过4个字",
+                  title: '标题',
+                  value: '今日推荐',
+                  tips: '选填，不超过4个字',
                   max: 4,
                 },
                 {
-                  title: "链接",
-                  value: "",
-                  tips: "请输入链接",
+                  title: '链接',
+                  value: '',
+                  tips: '请输入链接',
                   max: 100,
                 },
               ],
@@ -173,109 +157,109 @@ export default {
           ],
         },
         isShow: {
-          title: "是否显示背景色",
+          title: '是否显示背景色',
           val: true,
         },
         // 背景颜色
         bgColor: {
-          title: "背景颜色(渐变)",
+          title: '背景颜色(渐变)',
           default: [
             {
-              item: "#F62C2C",
+              item: '#F62C2C',
             },
             {
-              item: "#F96E29",
+              item: '#F96E29',
             },
           ],
           color: [
             {
-              item: "#F62C2C",
+              item: '#F62C2C',
             },
             {
-              item: "#F96E29",
+              item: '#F96E29',
             },
           ],
         },
         dotColor: {
-          title: "指示器颜色",
+          title: '指示器颜色',
           default: [
             {
-              item: "#fff",
+              item: '#fff',
             },
           ],
           color: [
             {
-              item: "#fff",
+              item: '#fff',
             },
           ],
         },
         // 左右间距
         lrConfig: {
-          title: "左右边距",
+          title: '左右边距',
           val: 10,
           min: 0,
         },
         // 页面间距
         mbConfig: {
-          title: "页面间距",
+          title: '页面间距',
           val: 0,
           min: 0,
         },
         // 轮播图点样式
         docConfig: {
-          cname: "swiper",
-          title: "指示器样式",
+          cname: 'swiper',
+          title: '指示器样式',
           type: 0,
           list: [
             {
-              val: "圆形",
-              icon: "iconDot",
+              val: '圆形',
+              icon: 'iconDot',
             },
             {
-              val: "直线",
-              icon: "iconSquarepoint",
+              val: '直线',
+              icon: 'iconSquarepoint',
             },
             {
-              val: "数字",
-              icon: "iconshuzi",
+              val: '数字',
+              icon: 'iconshuzi',
             },
             {
-              val: "无指示器",
-              icon: "iconjinyong",
+              val: '无指示器',
+              icon: 'iconjinyong',
             },
           ],
         },
         txtStyle: {
-          title: "指示器位置",
+          title: '指示器位置',
           type: 0,
           list: [
             {
-              val: "居左",
-              icon: "icondoc_left",
+              val: '居左',
+              icon: 'icondoc_left',
             },
             {
-              val: "居中",
-              icon: "icondoc_center",
+              val: '居中',
+              icon: 'icondoc_center',
             },
             {
-              val: "居右",
-              icon: "icondoc_right",
+              val: '居右',
+              icon: 'icondoc_right',
             },
           ],
         },
         // 图片样式
         imgConfig: {
-          cname: "docStyle",
-          title: "轮播图样式",
+          cname: 'docStyle',
+          title: '轮播图样式',
           type: 0,
           list: [
             {
-              val: "圆角",
-              icon: "iconPic_fillet",
+              val: '圆角',
+              icon: 'iconPic_fillet',
             },
             {
-              val: "直角",
-              icon: "iconPic_square",
+              val: '直角',
+              icon: 'iconPic_square',
             },
           ],
         },
@@ -285,10 +269,10 @@ export default {
       mTOP: 0,
       edge: 0,
       imgStyle: 0,
-      imgSrc: "",
+      imgSrc: '',
       docStyle: 0,
       dotPosition: 0,
-      dotColor: "",
+      dotColor: '',
       isShow: true,
     };
   },
@@ -307,9 +291,7 @@ export default {
         this.mTOP = data.mbConfig.val;
         this.edge = data.lrConfig.val;
         this.imgStyle = data.imgConfig.type;
-        this.imgSrc = data.swiperConfig.list.length
-          ? data.swiperConfig.list[0].img
-          : "";
+        this.imgSrc = data.swiperConfig.list.length ? data.swiperConfig.list[0].img : '';
         this.docStyle = data.docConfig.type;
         this.dotPosition = data.txtStyle.type;
         this.dotColor = data.dotColor.color[0].item;

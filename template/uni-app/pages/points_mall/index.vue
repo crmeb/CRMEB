@@ -21,8 +21,8 @@
 		</view>
 		<view class="body">
 			<view class="body-title">
-				<text class="title">大家都在换</text>
-				<text class="jump-trip" @click="jumpMore">查看更多
+				<text class="title">{{$t(`大家都在换`)}}</text>
+				<text class="jump-trip" @click="jumpMore">{{$t(`查看更多`)}}
 					<text class="iconfont icon-xiangyou"></text></text>
 			</view>
 			<view class="product-list" v-if="goodList.length">
@@ -31,72 +31,72 @@
 					<view class="info">
 						<view class="title line1">{{ item.title }}</view>
 						<view class="price-box">
-							{{ item.price }}积分
+							{{ item.price }} {{$t(`积分`)}}
 						</view>
-						<view class="sales">{{item.sales}}人兑换</view>
+						<view class="sales">{{item.sales}}{{$t(`人兑换`)}}</view>
 					</view>
 				</view>
 			</view>
 			<view v-else class="no-goods">
-				<image src="../../static/images/no-thing.png" mode=""></image>
-				<view class="fontimg">暂无商品，去看点别的吧</view>
+				<image :src="imgHost + '/statics/images/no-thing.png'" mode=""></image>
+				<view class="fontimg">{{$t(`暂无商品，去看点别的吧`)}}</view>
 			</view>
 			<view class="footer">
 				<view class="body-title">
-					<text class="title">轻松赚积分</text>
+					<text class="title">{{$t(`轻松赚积分`)}}</text>
 					<text></text>
 				</view>
 				<view class="footer-list">
 					<view class="list-left">
-						<image class="icon-sty" src="../../static/images/go-shoping.png" mode=""></image>
+						<image class="icon-sty" src="./static/go-shoping.png" mode=""></image>
 						<view class="list-left-right">
 							<view class="title">
-								购买商品
+								{{$t(`购买商品`)}}
 							</view>
 							<view class="trip">
-								购买商品可获得积分奖励
+								{{$t(`购买商品可获得积分奖励`)}}
 							</view>
 						</view>
 					</view>
 					<navigator url="/pages/index/index" open-type="switchTab" class="right-box">
 						<text class="go-jump">
-							去完成
+							{{$t(`去完成`)}}
 						</text>
 					</navigator>
 				</view>
 				<view class="footer-list">
 					<view class="list-left">
-						<image class="icon-sty" src="../../static/images/everyday.png" mode=""></image>
+						<image class="icon-sty" src="./static/everyday.png" mode=""></image>
 						<view class="list-left-right">
 							<view class="title">
-								每日签到活动
+								{{$t(`每日签到活动`)}}
 							</view>
 							<view class="trip">
-								每日签到可获得积分奖励
+								{{$t(`每日签到可获得积分奖励`)}}
 							</view>
 						</view>
 					</view>
 					<navigator url="/pages/users/user_sgin/index" class="right-box">
 						<text class="go-jump">
-							去完成
+							{{$t(`去完成`)}}
 						</text>
 					</navigator>
 				</view>
 				<view class="footer-list">
 					<view class="list-left">
-						<image class="icon-sty" src="../../static/images/luck-draw.png" mode=""></image>
+						<image class="icon-sty" src="./static/luck-draw.png" mode=""></image>
 						<view class="list-left-right">
 							<view class="title">
-								九宫格抽奖活动
+								{{$t(`九宫格抽奖活动`)}}
 							</view>
 							<view class="trip">
-								幸运抽奖可获得积分奖励
+								{{$t(`幸运抽奖可获得积分奖励`)}}
 							</view>
 						</view>
 					</view>
-					<navigator url="/pages/activity/lottery/grids/index?type=1" class="right-box">
+					<navigator url="/pages/goods/lottery/grids/index?type=1" class="right-box">
 						<text class="go-jump">
-							去完成
+							{{$t(`去完成`)}}
 						</text>
 					</navigator>
 				</view>
@@ -117,6 +117,7 @@
 		goShopDetail
 	} from '@/libs/order.js';
 	import colors from "@/mixins/color";
+	import {HTTP_REQUEST_URL} from '@/config/app';
 	export default {
 		components: {
 			// swipers
@@ -124,6 +125,7 @@
 		mixins: [colors],
 		data() {
 			return {
+				imgHost:HTTP_REQUEST_URL,
 				autoplay: true,
 				circular: true,
 				interval: 3000,
@@ -131,21 +133,21 @@
 				imgUrls: [],
 				goodList: [],
 				modelList: [{
-						title: '我的积分',
-						imgUrl: '../../static/images/my-point.png',
+						title: this.$t(`我的积分`),
+						imgUrl: './static/my-point.png',
 						url: "/pages/users/user_integral/index"
 					},
 					{
-						title: '每日签到',
-						imgUrl: '../../static/images/sign-in.png',
+						title: this.$t(`每日签到`),
+						imgUrl: './static/sign-in.png',
 						url: '/pages/users/user_sgin/index'
 					}, {
-						title: '积分抽奖',
-						imgUrl: '../../static/images/points-lottery.png',
-						url: '/pages/activity/lottery/grids/index?type=1'
+						title: this.$t(`积分抽奖`),
+						imgUrl: './static/points-lottery.png',
+						url: '/pages/goods/lottery/grids/index?type=1'
 					}, {
-						title: '兑换记录',
-						imgUrl: '../../static/images/exchange.png',
+						title: this.$t(`兑换记录`),
+						imgUrl: './static/exchange.png',
 						url: "/pages/points_mall/exchange_record"
 					},
 				]

@@ -1,7 +1,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2021 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -13,12 +13,10 @@ import {
 } from "../../api/user.js";
 import {
 	LOGIN_STATUS,
-	UID
-} from '../../config/cache';
-import Cache from '../../utils/cache';
-import {
+	UID,
 	USER_INFO
 } from '../../config/cache';
+import Cache from '../../utils/cache';
 
 const state = {
 	token: Cache.get(LOGIN_STATUS) || false,
@@ -26,19 +24,19 @@ const state = {
 	userInfo: {},
 	uid: Cache.get(UID) || 0,
 	homeActive: false,
-	phoneStatus:true,
-	pageFooter:uni.getStorageSync('pageFoot') || {}
+	phoneStatus: true,
+	pageFooter: uni.getStorageSync('pageFoot') || {}
 };
 
 const mutations = {
-	SETPHONESTATUS(state,val){
+	SETPHONESTATUS(state, val) {
 		state.phoneStatus = val;
 	},
 	LOGIN(state, opt) {
 		state.token = opt.token;
 		Cache.set(LOGIN_STATUS, opt.token, opt.time);
 	},
-	SETUID(state,val){
+	SETUID(state, val) {
 		state.uid = val;
 		Cache.set(UID, val);
 	},
@@ -46,10 +44,12 @@ const mutations = {
 		state.token = token;
 	},
 	LOGOUT(state) {
-		state.token = undefined;
-		state.uid = undefined
+		state.token = false;
+		state.uid = 0
 		Cache.clear(LOGIN_STATUS);
+		Cache.clear(USER_INFO);
 		Cache.clear(UID);
+		Cache.clear('snsapiCode');
 	},
 	BACKGROUND_COLOR(state, color) {
 		state.color = color;
@@ -65,7 +65,7 @@ const mutations = {
 	CLOSE_HOME(state) {
 		state.homeActive = false;
 	},
-	FOOT_UPLOAD(state,data){
+	FOOT_UPLOAD(state, data) {
 		state.pageFooter = data
 	}
 };

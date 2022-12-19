@@ -1,21 +1,5 @@
 <template>
   <div>
-    <div class="i-layout-page-header">
-      <div class="i-layout-page-header">
-        <span class="ivu-page-header-title">发票管理</span>
-        <div>
-          <Tabs v-model="currentTab" @on-click="onClickTab" v-if="tablists">
-            <TabPane :label="'全部发票（' + tablists.all + '）'" name=" " />
-            <TabPane
-              :label="'待开发票（' + tablists.noOpened + '）'"
-              name="1"
-            />
-            <TabPane :label="'已开发票（' + tablists.opened + '）'" name="2" />
-            <TabPane :label="'退款发票（' + tablists.refund + '）'" name="3" />
-          </Tabs>
-        </div>
-      </div>
-    </div>
     <Card :bordered="false" dis-hover class="ivu-mt">
       <div class="table_box">
         <Form
@@ -70,11 +54,7 @@
                     element-id="name"
                     @on-search="orderSearch()"
                   >
-                    <Select
-                      v-model="orderData.field_key"
-                      slot="prepend"
-                      style="width: 80px"
-                    >
+                    <Select v-model="orderData.field_key" slot="prepend" style="width: 80px">
                       <Option value="all">全部</Option>
                       <Option value="order_id">订单号</Option>
                       <Option value="uid">UID</Option>
@@ -88,6 +68,12 @@
           </Row>
         </Form>
       </div>
+      <Tabs v-model="currentTab" @on-click="onClickTab" v-if="tablists" class="mb20">
+        <TabPane :label="'全部发票（' + tablists.all + '）'" name=" " />
+        <TabPane :label="'待开发票（' + tablists.noOpened + '）'" name="1" />
+        <TabPane :label="'已开发票（' + tablists.opened + '）'" name="2" />
+        <TabPane :label="'退款发票（' + tablists.refund + '）'" name="3" />
+      </Tabs>
       <Table
         :columns="columns"
         :data="orderList"
@@ -145,25 +131,15 @@
       @on-cancel="cancel"
       footer-hide
     >
-      <Form
-        ref="formInline"
-        :model="formInline"
-        :label-width="100"
-        @submit.native.prevent
-      >
-        <div
-          v-if="invoiceDetails.header_type === 1 && invoiceDetails.type === 1"
-        >
+      <Form ref="formInline" :model="formInline" :label-width="100" @submit.native.prevent>
+        <div v-if="invoiceDetails.header_type === 1 && invoiceDetails.type === 1">
           <div class="list">
             <div class="title">发票信息</div>
             <Row class="row">
               <Col span="12"
-                >发票抬头:
-                <span class="info">{{ invoiceDetails.name }}</span></Col
+                >发票抬头: <span class="info">{{ invoiceDetails.name }}</span></Col
               >
-              <Col span="12"
-                >发票类型: <span class="info">电子普通发票</span></Col
-              >
+              <Col span="12">发票类型: <span class="info">电子普通发票</span></Col>
             </Row>
             <Row class="row">
               <Col span="12">发票抬头类型: 个人</Col>
@@ -181,19 +157,15 @@
             </Row>
           </div>
         </div>
-        <div
-          v-if="invoiceDetails.header_type === 2 && invoiceDetails.type === 1"
-        >
+        <div v-if="invoiceDetails.header_type === 2 && invoiceDetails.type === 1">
           <div class="list">
             <div class="title">发票信息</div>
             <Row class="row">
               <Col span="12"
-                >发票抬头:
-                <span class="info">{{ invoiceDetails.name }}</span></Col
+                >发票抬头: <span class="info">{{ invoiceDetails.name }}</span></Col
               >
               <Col span="12"
-                >企业税号:
-                <span class="info">{{ invoiceDetails.duty_number }}</span></Col
+                >企业税号: <span class="info">{{ invoiceDetails.duty_number }}</span></Col
               >
             </Row>
             <Row class="row">
@@ -212,19 +184,15 @@
             </Row>
           </div>
         </div>
-        <div
-          v-if="invoiceDetails.header_type === 2 && invoiceDetails.type === 2"
-        >
+        <div v-if="invoiceDetails.header_type === 2 && invoiceDetails.type === 2">
           <div class="list">
             <div class="title">发票信息</div>
             <Row class="row">
               <Col span="12"
-                >发票抬头:
-                <span class="info">{{ invoiceDetails.name }}</span></Col
+                >发票抬头: <span class="info">{{ invoiceDetails.name }}</span></Col
               >
               <Col span="12"
-                >企业税号:
-                <span class="info">{{ invoiceDetails.duty_number }}</span></Col
+                >企业税号: <span class="info">{{ invoiceDetails.duty_number }}</span></Col
               >
             </Row>
             <Row class="row">
@@ -233,12 +201,10 @@
             </Row>
             <Row class="row">
               <Col span="12"
-                >开户银行:
-                <span class="info">{{ invoiceDetails.bank }}</span></Col
+                >开户银行: <span class="info">{{ invoiceDetails.bank }}</span></Col
               >
               <Col span="12"
-                >银行账号:
-                <span class="info">{{ invoiceDetails.card_number }}</span></Col
+                >银行账号: <span class="info">{{ invoiceDetails.card_number }}</span></Col
               >
             </Row>
             <Row class="row">
@@ -258,19 +224,13 @@
           </div>
         </div>
         <FormItem label="开票状态：" style="margin-top: 14px">
-          <RadioGroup
-            v-model="formInline.is_invoice"
-            @on-change="kaiInvoice(formInline.is_invoice)"
-          >
+          <RadioGroup v-model="formInline.is_invoice" @on-change="kaiInvoice(formInline.is_invoice)">
             <Radio :label="1">已开票</Radio>
             <Radio :label="0">未开票</Radio>
           </RadioGroup>
         </FormItem>
         <FormItem label="发票编号：" v-if="formInline.is_invoice === 1">
-          <Input
-            v-model="formInline.invoice_number"
-            placeholder="请输入发票编号"
-          ></Input>
+          <Input v-model="formInline.invoice_number" placeholder="请输入发票编号"></Input>
         </FormItem>
         <FormItem label="发票备注：" v-if="formInline.is_invoice === 1">
           <Input
@@ -281,50 +241,30 @@
             placeholder="请输入发票备注"
           ></Input>
         </FormItem>
-        <Button
-          type="primary"
-          @click="handleSubmit()"
-          style="width: 100%; margin: 0 10px"
-          >确定</Button
-        >
+        <Button type="primary" @click="handleSubmit()" style="width: 100%; margin: 0 10px">确定</Button>
       </Form>
     </Modal>
-    <Modal
-      v-model="orderShow"
-      scrollable
-      title="订单详情"
-      footer-hide
-      class="order_box"
-      width="700"
-    >
-      <orderDetall
-        :orderId="orderId"
-        @detall="detall"
-        v-if="orderShow"
-      ></orderDetall>
+    <Modal v-model="orderShow" scrollable title="订单详情" footer-hide class="order_box" width="700">
+      <orderDetall :orderId="orderId" @detall="detall" v-if="orderShow"></orderDetall>
     </Modal>
   </div>
 </template>
 <script>
-import orderDetall from "./orderDetall";
-import {
-  orderInvoiceChart,
-  orderInvoiceList,
-  orderInvoiceSet,
-} from "@/api/order";
-import { mapState } from "vuex";
+import orderDetall from './orderDetall';
+import { orderInvoiceChart, orderInvoiceList, orderInvoiceSet } from '@/api/order';
+import { mapState } from 'vuex';
 export default {
-  name: "invoice",
+  name: 'invoice',
   components: {
     orderDetall,
   },
   computed: {
-    ...mapState("media", ["isMobile"]),
+    ...mapState('media', ['isMobile']),
     labelWidth() {
       return this.isMobile ? undefined : 75;
     },
     labelPosition() {
-      return this.isMobile ? "top" : "right";
+      return this.isMobile ? 'top' : 'right';
     },
   },
   data() {
@@ -334,111 +274,75 @@ export default {
       invoiceDetails: {},
       formInline: {
         is_invoice: 0,
-        invoice_number: "",
-        remark: "",
+        invoice_number: '',
+        remark: '',
       },
       loading: false,
-      currentTab: "",
+      currentTab: '',
       tablists: null,
       timeVal: [],
       options: {
         shortcuts: [
           {
-            text: "今天",
+            text: '今天',
             value() {
               const end = new Date();
               const start = new Date();
-              start.setTime(
-                new Date(
-                  new Date().getFullYear(),
-                  new Date().getMonth(),
-                  new Date().getDate()
-                )
-              );
+              start.setTime(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate()));
               return [start, end];
             },
           },
           {
-            text: "昨天",
+            text: '昨天',
             value() {
               const end = new Date();
               const start = new Date();
               start.setTime(
-                start.setTime(
-                  new Date(
-                    new Date().getFullYear(),
-                    new Date().getMonth(),
-                    new Date().getDate() - 1
-                  )
-                )
+                start.setTime(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate() - 1)),
               );
               end.setTime(
-                end.setTime(
-                  new Date(
-                    new Date().getFullYear(),
-                    new Date().getMonth(),
-                    new Date().getDate() - 1
-                  )
-                )
+                end.setTime(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate() - 1)),
               );
               return [start, end];
             },
           },
           {
-            text: "最近7天",
+            text: '最近7天',
             value() {
               const end = new Date();
               const start = new Date();
               start.setTime(
-                start.setTime(
-                  new Date(
-                    new Date().getFullYear(),
-                    new Date().getMonth(),
-                    new Date().getDate() - 6
-                  )
-                )
+                start.setTime(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate() - 6)),
               );
               return [start, end];
             },
           },
           {
-            text: "最近30天",
+            text: '最近30天',
             value() {
               const end = new Date();
               const start = new Date();
               start.setTime(
-                start.setTime(
-                  new Date(
-                    new Date().getFullYear(),
-                    new Date().getMonth(),
-                    new Date().getDate() - 29
-                  )
-                )
+                start.setTime(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate() - 29)),
               );
               return [start, end];
             },
           },
           {
-            text: "本月",
+            text: '本月',
             value() {
               const end = new Date();
               const start = new Date();
-              start.setTime(
-                start.setTime(
-                  new Date(new Date().getFullYear(), new Date().getMonth(), 1)
-                )
-              );
+              start.setTime(start.setTime(new Date(new Date().getFullYear(), new Date().getMonth(), 1)));
               return [start, end];
             },
           },
           {
-            text: "本年",
+            text: '本年',
             value() {
               const end = new Date();
               const start = new Date();
-              start.setTime(
-                start.setTime(new Date(new Date().getFullYear(), 0, 1))
-              );
+              start.setTime(start.setTime(new Date(new Date().getFullYear(), 0, 1)));
               return [start, end];
             },
           },
@@ -453,8 +357,8 @@ export default {
       },
       columns: [
         {
-          title: "订单号",
-          key: "order_id",
+          title: '订单号',
+          key: 'order_id',
           minWidth: 170,
         },
         // {
@@ -463,21 +367,21 @@ export default {
         //     minWidth: 150
         // },
         {
-          title: "订单金额",
-          slot: "pay_price",
+          title: '订单金额',
+          slot: 'pay_price',
           minWidth: 100,
         },
         {
-          title: "发票类型",
-          slot: "type",
+          title: '发票类型',
+          slot: 'type',
           minWidth: 120,
           filters: [
             {
-              label: "电子普通发票",
+              label: '电子普通发票',
               value: 1,
             },
             {
-              label: "纸质专用发票",
+              label: '纸质专用发票',
               value: 2,
             },
           ],
@@ -491,16 +395,16 @@ export default {
           },
         },
         {
-          title: "发票抬头类型",
-          slot: "header_type",
+          title: '发票抬头类型',
+          slot: 'header_type',
           minWidth: 110,
           filters: [
             {
-              label: "个人",
+              label: '个人',
               value: 1,
             },
             {
-              label: "企业",
+              label: '企业',
               value: 2,
             },
           ],
@@ -519,27 +423,27 @@ export default {
         //     minWidth: 90
         // },
         {
-          title: "下单时间",
-          key: "add_time",
+          title: '下单时间',
+          key: 'add_time',
           minWidth: 150,
           sortable: true,
         },
         {
-          title: "开票状态",
-          slot: "is_invoice",
+          title: '开票状态',
+          slot: 'is_invoice',
           minWidth: 80,
         },
         {
-          title: "订单状态",
-          slot: "status",
+          title: '订单状态',
+          slot: 'status',
           minWidth: 80,
         },
         {
-          title: "操作",
-          slot: "action",
-          fixed: "right",
+          title: '操作',
+          slot: 'action',
+          fixed: 'right',
           minWidth: 150,
-          align: "center",
+          align: 'center',
         },
       ],
       orderList: [],
@@ -547,11 +451,11 @@ export default {
       orderData: {
         page: 1, // 当前页
         limit: 10, // 每页显示条数
-        status: "",
-        data: "",
-        real_name: "",
-        field_key: "",
-        type: "",
+        status: '',
+        data: '',
+        real_name: '',
+        field_key: '',
+        type: '',
       },
       orderId: 0,
     };
@@ -572,8 +476,8 @@ export default {
     empty() {
       this.formInline = {
         is_invoice: 1,
-        invoice_number: "",
-        remark: "",
+        invoice_number: '',
+        remark: '',
       };
     },
     cancel() {
@@ -582,14 +486,13 @@ export default {
     },
     kaiInvoice(invoice) {
       if (invoice !== 1) {
-        this.formInline.invoice_number = "";
-        this.formInline.remark = "";
+        this.formInline.invoice_number = '';
+        this.formInline.remark = '';
       }
     },
     handleSubmit() {
       if (this.formInline.is_invoice === 1) {
-        if (this.formInline.invoice_number.trim() === "")
-          return this.$Message.error("请填写发票编号");
+        if (this.formInline.invoice_number.trim() === '') return this.$Message.error('请填写发票编号');
       }
       orderInvoiceSet(this.invoiceDetails.invoice_id, this.formInline)
         .then((res) => {
@@ -646,7 +549,7 @@ export default {
     onchangeTime(e) {
       this.orderData.page = 1;
       this.timeVal = e;
-      this.orderData.data = this.timeVal[0] ? this.timeVal.join("-") : "";
+      this.orderData.data = this.timeVal[0] ? this.timeVal.join('-') : '';
       this.getList();
     },
     //订单状态搜索()

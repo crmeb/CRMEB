@@ -1,23 +1,15 @@
 <template>
   <div>
-    Î
     <div class="i-layout-page-header">
       <router-link :to="{ path: '/admin/setting/pages/devise' }"
-        ><Button icon="ios-arrow-back" size="small" class="mr20"
-          >返回</Button
-        ></router-link
+        ><Button icon="ios-arrow-back" size="small" class="mr20">返回</Button></router-link
       >
       <span class="ivu-page-header-title mr20">页面设计</span>
     </div>
     <Card :bordered="false" dis-hover class="ivu-mt">
       <div class="flex-wrapper">
         <!-- :src="iframeUrl" -->
-        <iframe
-          class="iframe-box"
-          :src="iframeUrl"
-          frameborder="0"
-          ref="iframe"
-        ></iframe>
+        <iframe class="iframe-box" :src="iframeUrl" frameborder="0" ref="iframe"></iframe>
         <div>
           <div class="content">
             <rightConfig :name="configName" :pageId="pageId"></rightConfig>
@@ -30,30 +22,30 @@
 </template>
 
 <script>
-import { diyGetInfo, diySave } from "@/api/diy";
-import { mapMutations } from "vuex";
-import rightConfig from "@/components/rightConfig/index";
-import links from "./links";
+import { diyGetInfo, diySave } from '@/api/diy';
+import { mapMutations } from 'vuex';
+import rightConfig from '@/components/rightConfig/index';
+import links from './links';
 export default {
-  name: "index",
+  name: 'index',
   components: {
     rightConfig,
     links,
   },
   data() {
     return {
-      configName: "",
-      iframeUrl: "",
-      setConfig: "",
-      updataConfig: "",
+      configName: '',
+      iframeUrl: '',
+      setConfig: '',
+      updataConfig: '',
       pageId: 0,
     };
   },
   created() {
     let pageId = this.$route.query.id;
     let names = this.$route.query.name;
-    this.setConfig = "admin/" + names + "/setConfig";
-    this.updataConfig = "admin/" + names + "/updataConfig";
+    this.setConfig = 'admin/' + names + '/setConfig';
+    this.updataConfig = 'admin/' + names + '/updataConfig';
     this.pageId = parseInt(pageId);
     this.iframeUrl = `${location.origin}/pages/index/index?type=iframeWindow`;
     diyGetInfo(parseInt(pageId)).then((datas) => {
@@ -63,7 +55,7 @@ export default {
   },
   mounted() {
     //监听子页面给当前页面传值
-    window.addEventListener("message", this.handleMessage, false);
+    window.addEventListener('message', this.handleMessage, false);
   },
   methods: {
     //接收iframe值

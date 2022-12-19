@@ -16,14 +16,12 @@
         }
     ],
     "autoload": {
-        "psr-4": {
-            "Qcloud\\Cos\\": "src/Qcloud/Cos/"
-        },
-        "files": ["src/Qcloud/Cos/Common.php"]
+      "psr-0": {
+        "Qcloud\\Cos\\": "src/"
+     }
     },
     "require": {
         "php": ">=5.3.0",
-        "guzzlehttp/guzzle": "~6.3",
-        "guzzlehttp/guzzle-services": "~1.1"
+        "guzzle/guzzle": "~3.7"
     }
 }

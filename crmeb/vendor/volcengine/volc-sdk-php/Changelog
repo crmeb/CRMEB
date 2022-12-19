@@ -1,0 +1,211 @@
+Change log
+
+2022-11-10 Bumped to version v1.0.54
+- Added live service
+- Updated apis for security
+
+2022-10-27 Bumped to version v1.0.53
+- Updated apis for vod
+
+2022-10-13 Bumped to version v1.0.52
+- Updated apis for vod
+
+2022-09-15 Bumped to version v1.0.51
+- Updated apis for vod
+
+2022-09-09 Bumped to version v1.0.50
+- Added apis for billing
+
+2022-09-06 Bumped to version v1.0.49
+- Updated apis for security
+
+2022-08-25 Bumped to version v1.0.48
+- Added apis for live
+- Fixed apis for imagex
+
+2022-08-11 Bumped to version v1.0.47
+- Updated apis for vod
+
+2022-08-04 Bumped to version v1.0.46
+- Added apis for sts
+- Updated demo for rtc
+
+2022-07-28 Bumped to version v1.0.45
+- Upgraded apis for vod\rtc
+
+2022-07-25 Bumped to version v1.0.44
+- Added apis for security
+
+2022-07-07 Bumped to version v1.0.43
+- Added apis for live\rtc
+
+2022-06-23 Bumped to version v1.0.42
+- Added apis for vod
+
+2022-06-17 Bumped to version v1.0.41
+- Updated apis for vod
+- Updated demo for rtc
+
+2022-06-09 Bumped to version v1.0.40
+- Added service secertNumber
+- Fixed apis for cdn
+
+2022-05-26 Bumped to version v1.0.39
+- Added rtc service
+- Added apis for ocr
+
+2022-05-20 Bumped to version v1.0.38
+- Added notify service
+
+2022-05-12 Bumped to version v1.0.37
+- Added apis for vod\live\FaceSwap
+
+2022-04-14 Bumped to version v1.0.36 
+- Added apis for vod\cdn\imagex\security
+
+2022-04-07 Bumped to version v1.0.35
+- Added imp service
+
+2022-03-31 Bumped to version v1.0.34
+- Upgraded api for vod
+
+2022-03-18 Bumped to version v1.0.33
+- Add some apis of space\callback\cdn for vod
+
+2022-03-03 Bumped to version v1.0.32
+- BREAKING CHANGE: only accept json body as the in parameter.
+- Implement related example for apis
+- Add new apis
+- Add Video-Classification For VOD
+
+2022-02-15 Bumped to version v1.0.31
+- Fixed protobuf dependency
+
+2022-02-15 Bumped to version v1.0.30
+- Fixed sign only method 
+- Fixed guzzle version to *
+- Added mobile_status api
+
+2022-02-10 Bumped to version v1.0.29
+- 号码验证2期需求
+
+2022-01-21 Bumped to version v1.0.28
+- 点播火山引擎转码处理新增 EnableLowPriority 字段
+
+2022-01-19 Bumped to version v1.0.27
+- Fixed signing url method
+- Removed multi catch for 7.0
+
+2022-01-14 Bumped to version v1.0.26
+- Downgrade PHP to 7.0
+
+2021-12-30 Bumped to version v1.0.25
+- Refactored signing method
+
+2021-12-28 Bumped to version v1.0.24
+- Added live php sdk
+
+2021-12-16 Bumped to version v1.0.23
+- element verify
+- DescribeCdnUpperIp and describeCdnDataDetail apis
+- Fix foreach warning
+
+
+2021-11-15 Bumped to version v1.0.22
+- Updated example and remove unused formal param
+- Increased default timeouts
+
+2021-10-27 Bumped to version v1.0.21
+- Fixed Vod large file
+- Fixed HDR support for vod api
+
+2021-09-29 Bumped to version v1.0.20
+- Minor refactor
+
+2021-09-28 Bumped to version v1.0.19
+- SubmitRefreshTask
+- SubmitPreloadTask
+- DescribeContentTasks
+- DescribeContentQuota
+- DescribeCdnData
+- DescribeCdnOriginData
+- DescribeCdnRegionAndIsp
+- DescribeCdnDomainTopData
+- DescribeCdnAccountingData
+- DescribeCdnAccessLog
+- StartCdnDomain
+- StopCdnDomain
+- DeleteCdnDomain
+- ListCdnDomains
+
+2021-09-16 Bumped to version v1.0.18
+- Added sms v2 sdk
+- Added private drm for vod
+
+2021-08-05 Bumped to version v1.0.17
+- Added sms sdk
+- Added ocr sdk
+
+2021-07-22 Bumped to version v1.0.16
+- Fixed cr32
+
+2021-07-15 Bumped to version v1.0.15
+- Upgraded signer method to latest
+
+2021-07-01 Bumped to version v1.0.14
+- Added subtitle sdk
+
+2021-06-02 Bumped to version v1.0.13
+- Added async risk result
+- Updated media list
+- Added product game protect
+- Added Vod support material ext
+
+2021-05-20 Bumped to version v1.0.12
+- Add hls drm utils for vod
+- Support material upload
+- Add retry after http error
+- Add imagex image fetch API
+
+2021-04-20 Bumped to version v1.0.11
+- Added pcdn and barrageMask support.
+- Added store key res.
+
+2021-03-24 Bumped to version v1.0.10
+- Added sms sdk.
+
+2021-03-24 Bumped to version v1.0.9
+- Added async and risk result.
+- Added delete media support.
+
+2021-03-02 Bumped to version v1.0.8
+- Visual: add new apis: FaceSwap, HumanSegment, GeneralSegment, EnhancePhoto, ConvertPhoto
+
+2021-02-22 Bumped to version v1.0.7
+- Visual:add JPCartoon api.
+
+2021-02-18 Bumped to version v1.0.6
+- Upgrade adblock sdk.
+- Vod: bug fix.
+
+2021-02-04 Bumped to version v1.0.5
+- VEdit: support more cloud-edit sdk.
+
+2021-01-28 Bumped to version v1.0.4
+- Fixed sts2_ak.
+- Fixed visual null pointer.
+- more vod sdk support.
+
+2021-01-19 Bumped to version v1.0.3
+- Add adblock sdk.
+- Vod:enable large-file slice upload function.
+
+2020-12-30 Bumped to version v1.0.2
+- ImageX:add delete api.
+
+2020-12-22 Bumped to version v1.0.1
+- Add vod sdk.
+- Add ImageX sdk.
+
+2020-12-11 Bumped to version v1.0.0
+- Add iam sdk.

@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -17,7 +17,7 @@ use app\services\BaseServices;
 use app\services\serve\ServeServices;
 use crmeb\exceptions\AdminException;
 use crmeb\services\CacheService;
-use crmeb\services\ExpressService;
+use crmeb\services\express\Express;
 use crmeb\services\FormBuilder as Form;
 
 /**
@@ -86,9 +86,12 @@ class ExpressServices extends BaseServices
      */
     public function createExpressForm(array $formData = [])
     {
-        if (isset($formData['partner_id']) && $formData['partner_id'] == 1) $field[] = Form::input('account', '月结账号', $formData['account'] ?? '');
-        if (isset($formData['partner_key']) && $formData['partner_key'] == 1) $field[] = Form::input('key', '月结密码', $formData['key'] ?? '');
-        if (isset($formData['net']) && $formData['net'] == 1) $field[] = Form::input('net_name', '取件网点', $formData['net_name'] ?? '');
+        if (isset($formData['partner_id']) && $formData['partner_id'] == 1) $field[] = Form::input('account', '月结账号', $formData['account'] ?? '')->required();
+        if (isset($formData['partner_key']) && $formData['partner_key'] == 1) $field[] = Form::input('key', '月结密码', $formData['key'] ?? '')->required();
+        if (isset($formData['net']) && $formData['net'] == 1) $field[] = Form::input('net_name', '取件网点', $formData['net_name'] ?? '')->required();
+        if (isset($formData['check_man']) && $formData['check_man'] == 1) $field[] = Form::input('courier_name', '承载快递员名', $formData['courier_name'] ?? '')->required();
+        if (isset($formData['partner_name']) && $formData['partner_name'] == 1) $field[] = Form::input('customer_name', '客户账户名称', $formData['customer_name'] ?? '')->required();
+        if (isset($formData['is_code']) && $formData['is_code'] == 1) $field[] = Form::input('code_name', '电子面单承载编号', $formData['code_name'] ?? '')->required();
         $field[] = Form::number('sort', '排序', (int)($formData['sort'] ?? 0))->precision(0);
         $field[] = Form::radio('is_show', '是否启用', $formData['is_show'] ?? 1)->options([['value' => 0, 'label' => '隐藏'], ['value' => 1, 'label' => '启用']]);
         return $field;
@@ -114,7 +117,7 @@ class ExpressServices extends BaseServices
     {
         $express = $this->dao->get($id);
         if (!$express) {
-            throw new AdminException('查询数据失败,无法修改');
+            throw new AdminException(100026);
         }
         return create_form('编辑物流公司', $this->createExpressForm($express->toArray()), $this->url('/freight/express/' . $id), 'PUT');
     }
@@ -172,7 +175,7 @@ class ExpressServices extends BaseServices
         //$list = $this->dao->getExpress($where, 'name', 'id');
         $data = [];
         foreach ($list as $key => $value) {
-            $data[] = ['label' => $value['name'], 'value' => $value['id']];
+            $data[] = ['label' => $value['name'], 'value' => $value['code']];
         }
         return $data;
     }
@@ -190,18 +193,17 @@ class ExpressServices extends BaseServices
      * @param string|null $com
      * @return array
      */
-    public function query(string $cacheName, string $expressNum, string $com = null)
+    public function query(string $cacheName, string $expressNum, string $com = null, $phone = '')
     {
         $resultData = CacheService::get($cacheName, null);
         if ($resultData === null || !is_array($resultData)) {
             $data = [];
-            $com = $this->express_code[$com] ?? '';
             $cacheTime = 0;
             switch ((int)sys_config('logistics_type')) {
                 case 1:
                     /** @var ServeServices $services */
                     $services = app()->make(ServeServices::class);
-                    $result = $services->express()->query($expressNum, $com);
+                    $result = $services->express()->query($expressNum, $com, $phone);
                     if (isset($result['ischeck']) && $result['ischeck'] == 1) {
                         $cacheTime = 0;
                     } else {
@@ -212,7 +214,9 @@ class ExpressServices extends BaseServices
                     }
                     break;
                 case 2:
-                    $result = ExpressService::query($expressNum, $com);
+                    /** @var Express $services */
+                    $services = app()->make(Express::class, ['aliyun_express']);
+                    $result = $services->query($expressNum, '', sys_config('system_express_app_code'));
                     if (is_array($result) &&
                         isset($result['result']) &&
                         isset($result['result']['deliverystatus']) &&
@@ -252,10 +256,13 @@ class ExpressServices extends BaseServices
                 $data['code'] = $express['code'] ?? '';
                 $data['partner_id'] = $express['partner_id'] ?? '';
                 $data['partner_key'] = $express['partner_key'] ?? '';
+                $data['check_man'] = $express['check_man'] ?? '';
+                $data['partner_name'] = $express['partner_name'] ?? '';
+                $data['is_code'] = $express['is_code'] ?? '';
                 $data['net'] = $express['net'] ?? '';
                 $data['is_show'] = 1;
                 $data['status'] = 0;
-                if ($express['partner_id'] == 0 && $express['partner_key'] == 0 && $express['net'] == 0) {
+                if ($express['partner_id'] == 0 && $express['partner_key'] == 0 && $express['net'] == 0 && $express['check_man'] == 0 && $express['partner_name'] == 0 && $express['is_code'] == 0) {
                     $data['status'] = 1;
                 }
                 $data_all[] = $data;

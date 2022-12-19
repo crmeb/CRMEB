@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -56,12 +56,12 @@ class ApiExceptionHandle extends Handle
             $log = [
                 request()->uid(),                                                                     //用户ID
                 request()->ip(),                                                                      //客户ip
-                ceil(msectime() - (request()->time(true) * 1000)),                                    //耗时（毫秒）
+                ceil(msectime() - (request()->time(true) * 1000)),                               //耗时（毫秒）
                 request()->rule()->getMethod(),                                                       //请求类型
-                str_replace("/", "", request()->rootUrl()),                                           //应用
+                str_replace("/", "", request()->rootUrl()),                             //应用
                 request()->baseUrl(),                                                                 //路由
-                json_encode(request()->param(), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),     //请求参数
-                json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),                  //报错数据
+                json_encode(request()->param(), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),//请求参数
+                json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),             //报错数据
 
             ];
             Log::write(implode("|", $log), "error");
@@ -77,24 +77,19 @@ class ApiExceptionHandle extends Handle
      */
     public function render($request, Throwable $e): Response
     {
+        $massageData = Env::get('app_debug', false) ? [
+            'message' => $e->getMessage(),
+            'file' => $e->getFile(),
+            'line' => $e->getLine(),
+            'trace' => $e->getTrace(),
+            'previous' => $e->getPrevious(),
+        ] : [];
+        $message = Env::get('app_debug', false) ? '接口报错：' . $e->getMessage() : '很抱歉，系统开小差了';
         // 添加自定义异常处理机制
-        if ($e instanceof DbException) {
-            return app('json')->fail('数据获取失败', [
-                'file' => $e->getFile(),
-                'message' => $e->getMessage(),
-                'line' => $e->getLine(),
-            ]);
-        } elseif ($e instanceof AuthException || $e instanceof ApiException || $e instanceof ValidateException) {
-            return app('json')->fail($e->getMessage());
+        if ($e instanceof AuthException || $e instanceof AdminException || $e instanceof ApiException) {
+            return app('json')->make($e->getCode() ?: 400, $message, $massageData);
         } else {
-            return app('json')->fail('很抱歉!系统开小差了', Env::get('app_debug', false) ? [
-                'message' => $e->getMessage(),
-                'file' => $e->getFile(),
-                'code' => $e->getCode(),
-                'line' => $e->getLine(),
-                'trace' => $e->getTrace(),
-                'previous' => $e->getPrevious(),
-            ] : []);
+            return app('json')->fail($message, $massageData);
         }
     }
 

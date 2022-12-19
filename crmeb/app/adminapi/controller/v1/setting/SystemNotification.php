@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -56,14 +56,14 @@ class SystemNotification extends AuthController
             ['type', ''],
             ['id', 0]
         ]);
-        if (!$where['id']) return app('json')->fail('参数错误');
+        if (!$where['id']) return app('json')->fail(100100);
         return app('json')->success($this->services->getNotInfo($where));
     }
 
     /**
      * 保存新建的资源
-     *
-     * @return \think\Response
+     * @return mixed
+     * @throws \Psr\SimpleCache\InvalidArgumentException
      */
     public function save()
     {
@@ -86,27 +86,41 @@ class SystemNotification extends AuthController
             ['wechat_id', ''],
             ['routine_id', ''],
             ['mark', ''],
+            ['sms_id', ''],
         ]);
-        if (!$data['id']) return app('json')->fail('参数错误');
+        if ($data['mark'] == 'verify_code') $data['type'] = 'is_sms';
+        if (!$data['id']) return app('json')->fail(100100);
         if ($this->services->saveData($data)) {
-            CacheService::delete('NOTCE_'. $data['mark']);
-            return app('json')->success('修改成功!');
+            CacheService::delete('NOTICE_SMS_' . $data['mark']);
+            CacheService::delete('wechat_' . $data['mark']);
+            CacheService::delete('routine_' . $data['mark']);
+            CacheService::delete('TEMP_IDS_LIST');
+            return app('json')->success(100001);
         } else {
-            return app('json')->fail('修改失败,请稍候再试!');
+            return app('json')->fail(100007);
         }
     }
 
     /**
      * 修改消息状态
-     *
-     * @return array
+     * @param $type
+     * @param $status
+     * @param $id
+     * @return mixed
+     * @throws \Psr\SimpleCache\InvalidArgumentException
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
      */
     public function set_status($type, $status, $id)
     {
-        if ($type == '' || $status == '' || $id == 0) return app('json')->fail('参数错误');
+        if ($type == '' || $status == '' || $id == 0) return app('json')->fail(100100);
         $this->services->update($id, [$type => $status]);
-        $res = $this->services->getOneNotce(['id'=>$id]);
-        CacheService::delete('NOTCE_'.$res->mark);
-        return app('json')->success($status == 1 ? '开启成功' : '关闭成功');
+        $res = $this->services->getOneNotce(['id' => $id]);
+        CacheService::delete('NOTICE_SMS_' . $res->mark);
+        CacheService::delete('wechat_' . $res->mark);
+        CacheService::delete('routine_' . $res->mark);
+        CacheService::delete('TEMP_IDS_LIST');
+        return app('json')->success(100014);
     }
 }

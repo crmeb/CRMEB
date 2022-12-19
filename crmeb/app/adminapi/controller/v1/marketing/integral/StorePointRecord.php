@@ -1,11 +1,22 @@
 <?php
-
+// +----------------------------------------------------------------------
+// | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
+// +----------------------------------------------------------------------
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
+// +----------------------------------------------------------------------
+// | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
+// +----------------------------------------------------------------------
+// | Author: CRMEB Team <admin@crmeb.com>
+// +----------------------------------------------------------------------
 namespace app\adminapi\controller\v1\marketing\integral;
 
 use app\adminapi\controller\AuthController;
 use app\services\activity\integral\StorePointRecordServices;
 use think\facade\App;
 
+/**
+ * 积分记录
+ */
 class StorePointRecord extends AuthController
 {
     /**
@@ -41,10 +52,8 @@ class StorePointRecord extends AuthController
         [$mark] = $this->request->postMore([
             ['mark', '']
         ], true);
-        if (!$id) return app('json')->fail('参数错误');
-        if ($mark === '') return app('json')->fail('备注不能为空');
         $this->services->recordRemark($id, $mark);
-        return app('json')->success('备注成功');
+        return app('json')->success(100024);
     }
 
     /**

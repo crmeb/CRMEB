@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -16,6 +16,7 @@ use app\dao\other\CacheDao;
 use app\services\BaseServices;
 
 /**
+ * 数据库表缓存
  * Class CacheServices
  * @package app\services\other
  * @method delectDeOverdueDbCache() 删除过期缓存

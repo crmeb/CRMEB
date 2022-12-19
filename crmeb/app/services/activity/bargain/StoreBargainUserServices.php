@@ -2,13 +2,13 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
 // | Author: CRMEB Team <admin@crmeb.com>
 // +----------------------------------------------------------------------
-declare (strict_types = 1);
+declare (strict_types=1);
 
 namespace app\services\activity\bargain;
 
@@ -202,9 +202,9 @@ class StoreBargainUserServices extends BaseServices
     public function cancelBargain($bargainId, $uid)
     {
         $status = $this->dao->getBargainUserStatus($bargainId, $uid);
-        if ($status != 1) return app('json')->fail('状态错误');
+        if ($status != 1) return app('json')->fail(100020);
         $id = $this->dao->value(['bargain_id' => $bargainId, 'uid' => $uid, 'is_del' => 0], 'id');
-        return $this->dao->update($id, ['is_del' => 1]);
+        return $this->dao->update($id, ['is_del' => 1, 'status' => 2]);
     }
 
     /**
@@ -239,6 +239,7 @@ class StoreBargainUserServices extends BaseServices
         $nums = $bargainUserHelpService->getNums();
         foreach ($list as &$item) {
             $item['num'] = $item['people_num'] - ($nums[$item['id']] ?? 0);
+            $item['already_num'] = $nums[$item['id']] ?? 0;
             $item['now_price'] = bcsub((string)$item['bargain_price'], (string)$item['price'], 2);
             $item['add_time'] = $item['add_time'] ? date('Y-m-d H:i:s', (int)$item['add_time']) : '';
             $item['datatime'] = $item['datatime'] ? date('Y-m-d H:i:s', (int)$item['datatime']) : '';

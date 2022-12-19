@@ -3,18 +3,11 @@
     <Card>
       <div>
         生成的商品默认是没有上架的，请手动上架商品！
-        <a
-          href="http://help.crmeb.net/crmeb-v4/1863579"
-          v-if="copyConfig.copy_type == 2"
-          target="_blank"
+        <a href="http://help.crmeb.net/crmeb-v4/1863579" v-if="copyConfig.copy_type == 2" target="_blank"
           >如何配置密钥</a
         >
         <span v-else
-          >您当前剩余{{ copyConfig.copy_num }}条采集次数，<a
-            href="#"
-            @click="mealPay('copy')"
-            >增加采集次数</a
-          ></span
+          >您当前剩余{{ copyConfig.copy_num }}条采集次数，<a href="#" @click="mealPay('copy')">增加采集次数</a></span
         >
       </div>
       <div>商品采集设置：设置 > 系统设置 > 第三方接口设置 > 采集商品配置</div>
@@ -57,82 +50,47 @@
           <div v-if="isData">
             <Col span="24" class="">
               <FormItem label="商品名称：" prop="store_name">
-                <Input
-                  v-model="formValidate.store_name"
-                  placeholder="请输入商品名称"
-                />
+                <Input v-model="formValidate.store_name" placeholder="请输入商品名称" />
               </FormItem>
             </Col>
             <Col span="24">
-              <FormItem
-                label="商品简介："
-                prop="store_info"
-                label-for="store_info"
-              >
-                <Input
-                  v-model="formValidate.store_info"
-                  type="textarea"
-                  :rows="3"
-                  placeholder="请输入商品简介"
-                />
+              <FormItem label="商品简介：" prop="store_info" label-for="store_info">
+                <Input v-model="formValidate.store_info" type="textarea" :rows="3" placeholder="请输入商品简介" />
               </FormItem>
             </Col>
             <Col span="24">
               <FormItem label="商品分类：" prop="cate_id">
                 <Select v-model="formValidate.cate_id" multiple>
-                  <Option
-                    v-for="item in treeSelect"
-                    :disabled="item.pid === 0"
-                    :value="item.id"
-                    :key="item.id"
-                    >{{ item.html + item.cate_name }}</Option
-                  >
+                  <Option v-for="item in treeSelect" :disabled="item.pid === 0" :value="item.id" :key="item.id">{{
+                    item.html + item.cate_name
+                  }}</Option>
                 </Select>
               </FormItem>
             </Col>
             <Col v-bind="grid">
               <FormItem label="商品关键字：" prop="keyword" label-for="keyword">
-                <Input
-                  v-model="formValidate.keyword"
-                  placeholder="请输入商品关键字"
-                />
+                <Input v-model="formValidate.keyword" placeholder="请输入商品关键字" />
               </FormItem>
             </Col>
             <Col v-bind="grid">
               <FormItem label="单位：" prop="unit_name" label-for="unit_name">
-                <Input
-                  v-model="formValidate.unit_name"
-                  placeholder="请输入单位"
-                />
+                <Input v-model="formValidate.unit_name" placeholder="请输入单位" />
               </FormItem>
             </Col>
             <Col v-bind="grid">
               <FormItem label="虚拟销量：" label-for="ficti">
-                <InputNumber
-                  class="perW100"
-                  v-model="formValidate.ficti"
-                  placeholder="请输入虚拟销量"
-                />
+                <InputNumber class="perW100" v-model="formValidate.ficti" placeholder="请输入虚拟销量" />
               </FormItem>
             </Col>
             <Col v-bind="grid">
               <FormItem label="积分：" label-for="give_integral">
-                <InputNumber
-                  class="perW100"
-                  v-model="formValidate.give_integral"
-                  placeholder="请输入积分"
-                />
+                <InputNumber class="perW100" v-model="formValidate.give_integral" placeholder="请输入积分" />
               </FormItem>
             </Col>
             <Col v-bind="grid">
               <FormItem label="运费模板：" prop="temp_id">
                 <Select v-model="formValidate.temp_id" clearable>
-                  <Option
-                    v-for="(item, index) in templateList"
-                    :value="item.id"
-                    :key="index"
-                    >{{ item.name }}</Option
-                  >
+                  <Option v-for="(item, index) in templateList" :value="item.id" :key="index">{{ item.name }}</Option>
                 </Select>
               </FormItem>
             </Col>
@@ -173,86 +131,40 @@
               </FormItem>
             </Col>
             <Col span="24">
-              <FormItem
-                label="批量设置："
-                class="labeltop"
-                v-if="formValidate.attrs"
-              >
+              <FormItem label="批量设置：" class="labeltop" v-if="formValidate.attrs">
                 <Col :xl="23" :lg="24" :md="24" :sm="24" :xs="24">
                   <FormItem>
                     <Table :data="oneFormBatch" :columns="columnsBatch" border>
                       <template slot-scope="{ row, index }" slot="pic">
-                        <div
-                          class="acea-row row-middle row-center-wrapper"
-                          @click="modalPicTap('dan', 'duopi', index)"
-                        >
-                          <div
-                            class="pictrue pictrueTab"
-                            v-if="oneFormBatch[0].pic"
-                          >
+                        <div class="acea-row row-middle row-center-wrapper" @click="modalPicTap('dan', 'duopi', index)">
+                          <div class="pictrue pictrueTab" v-if="oneFormBatch[0].pic">
                             <img v-lazy="oneFormBatch[0].pic" />
                           </div>
-                          <div
-                            class="
-                              upLoad
-                              pictrueTab
-                              acea-row
-                              row-center-wrapper
-                            "
-                            v-else
-                          >
-                            <Icon
-                              type="ios-camera-outline"
-                              size="21"
-                              class="iconfont"
-                            />
+                          <div class="upLoad pictrueTab acea-row row-center-wrapper" v-else>
+                            <Icon type="ios-camera-outline" size="21" class="iconfont" />
                           </div>
                         </div>
                       </template>
                       <template slot-scope="{ row, index }" slot="price">
-                        <InputNumber
-                          v-model="oneFormBatch[0].price"
-                          :min="0"
-                          class="priceBox"
-                        ></InputNumber>
+                        <InputNumber v-model="oneFormBatch[0].price" :min="0" class="priceBox"></InputNumber>
                       </template>
                       <template slot-scope="{ row, index }" slot="cost">
-                        <InputNumber
-                          v-model="oneFormBatch[0].cost"
-                          :min="0"
-                          class="priceBox"
-                        ></InputNumber>
+                        <InputNumber v-model="oneFormBatch[0].cost" :min="0" class="priceBox"></InputNumber>
                       </template>
                       <template slot-scope="{ row, index }" slot="ot_price">
-                        <InputNumber
-                          v-model="oneFormBatch[0].ot_price"
-                          :min="0"
-                          class="priceBox"
-                        ></InputNumber>
+                        <InputNumber v-model="oneFormBatch[0].ot_price" :min="0" class="priceBox"></InputNumber>
                       </template>
                       <template slot-scope="{ row, index }" slot="stock">
-                        <InputNumber
-                          v-model="oneFormBatch[0].stock"
-                          :min="0"
-                          class="priceBox"
-                        ></InputNumber>
+                        <InputNumber v-model="oneFormBatch[0].stock" :min="0" class="priceBox"></InputNumber>
                       </template>
                       <template slot-scope="{ row, index }" slot="bar_code">
                         <Input v-model="oneFormBatch[0].bar_code"></Input>
                       </template>
                       <template slot-scope="{ row, index }" slot="weight">
-                        <InputNumber
-                          v-model="oneFormBatch[0].weight"
-                          :min="0"
-                          class="priceBox"
-                        ></InputNumber>
+                        <InputNumber v-model="oneFormBatch[0].weight" :min="0" class="priceBox"></InputNumber>
                       </template>
                       <template slot-scope="{ row, index }" slot="volume">
-                        <InputNumber
-                          v-model="oneFormBatch[0].volume"
-                          :min="0"
-                          class="priceBox"
-                        ></InputNumber>
+                        <InputNumber v-model="oneFormBatch[0].volume" :min="0" class="priceBox"></InputNumber>
                       </template>
                       <template slot-scope="{ row, index }" slot="action">
                         <a @click="batchAdd">添加</a>
@@ -265,80 +177,41 @@
               </FormItem>
             </Col>
             <Col span="24">
-              <FormItem
-                label="商品规格："
-                props="spec_type"
-                label-for="spec_type"
-              >
+              <FormItem label="商品规格：" props="spec_type" label-for="spec_type">
                 <!-- 单规格表格-->
                 <Col :xl="23" :lg="24" :md="24" :sm="24" :xs="24">
                   <FormItem>
                     <Table :data="items" :columns="columns" border>
                       <template slot-scope="{ row, index }" slot="pic">
-                        <div
-                          class="acea-row row-middle row-center-wrapper"
-                          @click="modalPicTap('dan', index)"
-                        >
-                          <div
-                            class="pictrue pictrueTab"
-                            v-if="formValidate.attrs[index].pic"
-                          >
+                        <div class="acea-row row-middle row-center-wrapper" @click="modalPicTap('dan', index)">
+                          <div class="pictrue pictrueTab" v-if="formValidate.attrs[index].pic">
                             <img v-lazy="formValidate.attrs[index].pic" />
                           </div>
-                          <div
-                            class="upLoad upLoadTab acea-row row-center-wrapper"
-                            v-else
-                          >
-                            <Icon
-                              type="ios-camera-outline"
-                              size="26"
-                              class="iconfont"
-                            />
+                          <div class="upLoad upLoadTab acea-row row-center-wrapper" v-else>
+                            <Icon type="ios-camera-outline" size="26" class="iconfont" />
                           </div>
                         </div>
                       </template>
                       <template slot-scope="{ row, index }" slot="price">
-                        <InputNumber
-                          v-model="formValidate.attrs[index].price"
-                          class="priceBox"
-                        ></InputNumber>
+                        <InputNumber v-model="formValidate.attrs[index].price" class="priceBox"></InputNumber>
                       </template>
                       <template slot-scope="{ row, index }" slot="cost">
-                        <InputNumber
-                          v-model="formValidate.attrs[index].cost"
-                          class="priceBox"
-                        ></InputNumber>
+                        <InputNumber v-model="formValidate.attrs[index].cost" class="priceBox"></InputNumber>
                       </template>
                       <template slot-scope="{ row, index }" slot="ot_price">
-                        <InputNumber
-                          v-model="formValidate.attrs[index].ot_price"
-                          class="priceBox"
-                        ></InputNumber>
+                        <InputNumber v-model="formValidate.attrs[index].ot_price" class="priceBox"></InputNumber>
                       </template>
                       <template slot-scope="{ row, index }" slot="stock">
-                        <InputNumber
-                          v-model="formValidate.attrs[index].stock"
-                          class="priceBox"
-                        ></InputNumber>
+                        <InputNumber v-model="formValidate.attrs[index].stock" class="priceBox"></InputNumber>
                       </template>
                       <template slot-scope="{ row, index }" slot="bar_code">
-                        <Input
-                          v-model="formValidate.attrs[index].bar_code"
-                        ></Input>
+                        <Input v-model="formValidate.attrs[index].bar_code"></Input>
                       </template>
                       <template slot-scope="{ row, index }" slot="weight">
-                        <InputNumber
-                          v-model="formValidate.attrs[index].weight"
-                          :min="0"
-                          class="priceBox"
-                        ></InputNumber>
+                        <InputNumber v-model="formValidate.attrs[index].weight" :min="0" class="priceBox"></InputNumber>
                       </template>
                       <template slot-scope="{ row, index }" slot="volume">
-                        <InputNumber
-                          v-model="formValidate.attrs[index].volume"
-                          :min="0"
-                          class="priceBox"
-                        ></InputNumber>
+                        <InputNumber v-model="formValidate.attrs[index].volume" :min="0" class="priceBox"></InputNumber>
                       </template>
                       <template slot-scope="{ row, index }" slot="action">
                         <a @click="delAttrTable(index)">删除</a>
@@ -350,22 +223,16 @@
             </Col>
             <Col span="24">
               <FormItem label="商品详情：">
-                <vue-ueditor-wrap
-                  v-model="formValidate.description"
-                  @beforeInit="addCustomDialog"
-                  :config="myConfig"
+                <WangEditor
                   style="width: 100%"
-                  class="ueditor"
-                ></vue-ueditor-wrap>
+                  :content="formValidate.description"
+                  @editorContent="getEditorContent"
+                ></WangEditor>
               </FormItem>
             </Col>
             <Col span="24">
               <FormItem>
-                <Button
-                  type="primary"
-                  :loading="modal_loading"
-                  class="submission"
-                  @click="handleSubmit('formValidate')"
+                <Button type="primary" :loading="modal_loading" class="submission" @click="handleSubmit('formValidate')"
                   >提交</Button
                 >
               </FormItem>
@@ -397,93 +264,88 @@
 </template>
 
 <script>
-import {
-  crawlFromApi,
-  treeListApi,
-  crawlSaveApi,
-  productGetTemplateApi,
-  copyConfigApi,
-} from "@/api/product";
-import VueUeditorWrap from "vue-ueditor-wrap";
-import uploadPictures from "@/components/uploadPictures";
+import { crawlFromApi, treeListApi, crawlSaveApi, productGetTemplateApi, copyConfigApi } from '@/api/product';
+import uploadPictures from '@/components/uploadPictures';
+import WangEditor from '@/components/wangEditor/index.vue';
+
 export default {
-  name: "taoBao",
+  name: 'taoBao',
   data() {
     return {
       // 批量设置表格data
       oneFormBatch: [
         {
-          pic: "",
+          pic: '',
           price: 0,
           cost: 0,
           ot_price: 0,
           stock: 0,
-          bar_code: "",
+          bar_code: '',
           weight: 0,
           volume: 0,
         },
       ],
       columnsBatch: [
         {
-          title: "图片",
-          slot: "pic",
-          align: "center",
+          title: '图片',
+          slot: 'pic',
+          align: 'center',
           minWidth: 80,
         },
         {
-          title: "售价",
-          slot: "price",
-          align: "center",
+          title: '售价',
+          slot: 'price',
+          align: 'center',
           minWidth: 95,
         },
         {
-          title: "成本价",
-          slot: "cost",
-          align: "center",
+          title: '成本价',
+          slot: 'cost',
+          align: 'center',
           minWidth: 95,
         },
         {
-          title: "原价",
-          slot: "ot_price",
-          align: "center",
+          title: '原价',
+          slot: 'ot_price',
+          align: 'center',
           minWidth: 95,
         },
         {
-          title: "库存",
-          slot: "stock",
-          align: "center",
+          title: '库存',
+          slot: 'stock',
+          align: 'center',
           minWidth: 95,
         },
         {
-          title: "商品编号",
-          slot: "bar_code",
-          align: "center",
+          title: '商品编号',
+          slot: 'bar_code',
+          align: 'center',
           minWidth: 120,
         },
         {
-          title: "重量（KG）",
-          slot: "weight",
-          align: "center",
+          title: '重量（KG）',
+          slot: 'weight',
+          align: 'center',
           minWidth: 95,
         },
         {
-          title: "体积(m³)",
-          slot: "volume",
-          align: "center",
+          title: '体积(m³)',
+          slot: 'volume',
+          align: 'center',
           minWidth: 95,
         },
         {
-          title: "操作",
-          slot: "action",
-          align: "center",
+          title: '操作',
+          slot: 'action',
+          align: 'center',
           minWidth: 140,
         },
       ],
       modal_loading: false,
-      images: "",
-      soure_link: "",
+      images: '',
+      soure_link: '',
       modalPic: false,
-      isChoice: "",
+      isChoice: '',
       spinShow: false,
       gridPic: {
         xl: 6,
@@ -505,18 +367,18 @@ export default {
         cate_id: [
           {
             required: true,
-            message: "请选择商品分类",
-            trigger: "change",
-            type: "array",
-            min: "1",
+            message: '请选择商品分类',
+            trigger: 'change',
+            type: 'array',
+            min: '1',
           },
         ],
         temp_id: [
           {
             required: true,
-            message: "请选择运费模板",
-            trigger: "change",
-            type: "number",
+            message: '请选择运费模板',
+            trigger: 'change',
+            type: 'number',
           },
         ],
       },
@@ -534,23 +396,16 @@ export default {
         sm: 24,
         xs: 24,
       },
-      myConfig: {
-        autoHeightEnabled: false, // 编辑器不自动被内容撑高
-        initialFrameHeight: 500, // 初始容器高度
-        initialFrameWidth: "100%", // 初始容器宽度
-        UEDITOR_HOME_URL: "/admin/UEditor/",
-        serverUrl: "",
-      },
       formValidate: {
-        store_name: "",
+        store_name: '',
         cate_id: [],
-        temp_id: "",
-        keyword: "",
-        unit_name: "",
-        store_info: "",
-        image: "",
+        temp_id: '',
+        keyword: '',
+        unit_name: '',
+        store_info: '',
+        image: '',
         slider_image: [],
-        description: "",
+        description: '',
         ficti: 0,
         give_integral: 0,
         is_show: 0,
@@ -558,20 +413,20 @@ export default {
         cost: 0,
         ot_price: 0,
         stock: 0,
-        soure_link: "",
-        description_images: "",
+        soure_link: '',
+        description_images: '',
         postage: 0,
         attrs: [],
         items: [],
       },
       items: [
         {
-          pic: "",
+          pic: '',
           price: 0,
           cost: 0,
           ot_price: 0,
           stock: 0,
-          bar_code: "",
+          bar_code: '',
           weight: 0,
           volume: 0,
         },
@@ -583,13 +438,14 @@ export default {
       },
       isData: false,
       artFrom: {
-        type: "taobao",
-        url: "",
+        type: 'taobao',
+        url: '',
       },
       tableIndex: 0,
+      content: '',
     };
   },
-  components: { VueUeditorWrap, uploadPictures },
+  components: { WangEditor, uploadPictures },
   computed: {},
 
   created() {
@@ -602,19 +458,19 @@ export default {
   methods: {
     mealPay(val) {
       this.$router.push({
-        path: "/admin/setting/sms/sms_pay/index",
+        path: '/admin/setting/sms/sms_pay/index',
         query: { type: val },
       });
     },
     batchDel() {
       this.oneFormBatch = [
         {
-          pic: "",
+          pic: '',
           price: 0,
           cost: 0,
           ot_price: 0,
           stock: 0,
-          bar_code: "",
+          bar_code: '',
           weight: 0,
           volume: 0,
         },
@@ -624,7 +480,7 @@ export default {
       let formBatch = this.oneFormBatch[0];
       this.$set(
         this.formValidate,
-        "attrs",
+        'attrs',
         this.formValidate.attrs.map((item) => {
           if (formBatch.pic) {
             item.pic = formBatch.pic;
@@ -651,8 +507,11 @@ export default {
             item.weight = formBatch.volume;
           }
           return item;
-        })
+        }),
       );
+    },
+    getEditorContent(data) {
+      this.content = data;
     },
     // 删除表格中的属性
     delAttrTable(index) {
@@ -691,10 +550,9 @@ export default {
     // 生成表单
     add() {
       if (this.soure_link) {
-        var reg =
-          /(http|ftp|https):\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=%&:/~\+#]*[\w\-\@?^=%&/~\+#])?/;
+        var reg = /(http|ftp|https):\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=%&:/~\+#]*[\w\-\@?^=%&/~\+#])?/;
         if (!reg.test(this.soure_link)) {
-          return this.$Message.warning("请输入以http开头的地址！");
+          return this.$Message.warning('请输入以http开头的地址！');
         }
         this.spinShow = true;
         this.artFrom.url = this.soure_link;
@@ -717,11 +575,12 @@ export default {
             this.$Message.error(res.msg);
           });
       } else {
-        this.$Message.warning("请输入链接地址！");
+        this.$Message.warning('请输入链接地址！');
       }
     },
     // 提交
     handleSubmit(name) {
+      this.formValidate.description = this.content;
       this.$refs[name].validate((valid) => {
         if (valid) {
           this.modal_loading = true;
@@ -740,12 +599,12 @@ export default {
           // this.formValidate.items = [];
           crawlSaveApi(this.formValidate)
             .then((res) => {
-              this.$Message.success("商品默认为不上架状态请手动上架商品!");
+              this.$Message.success('商品默认为不上架状态请手动上架商品!');
               setTimeout(() => {
                 this.modal_loading = false;
               }, 500);
               setTimeout(() => {
-                this.$emit("on-close");
+                this.$emit('on-close');
               }, 600);
             })
             .catch((res) => {
@@ -754,7 +613,7 @@ export default {
             });
         } else {
           if (!this.formValidate.cate_id) {
-            this.$Message.warning("请填写商品分类！");
+            this.$Message.warning('请填写商品分类！');
           }
         }
       });
@@ -762,12 +621,12 @@ export default {
     // 点击商品图
     modalPicTap(tit, index) {
       this.modalPic = true;
-      this.isChoice = tit === "dan" ? "单选" : "多选";
+      this.isChoice = tit === 'dan' ? '单选' : '多选';
       this.tableIndex = index;
     },
     // 获取单张图片信息
     getPic(pc) {
-      if (this.tableIndex === "duopi") {
+      if (this.tableIndex === 'duopi') {
         this.oneFormBatch[0].pic = pc.att_dir;
       } else {
         this.formValidate.attrs[this.tableIndex].pic = pc.att_dir;
@@ -783,11 +642,11 @@ export default {
     // 首先把div变成可以放置的元素，即重写dragenter/dragover
     handleDragOver(e) {
       // e.dataTransfer.dropEffect="move";//在dragenter中针对放置目标来设置!
-      e.dataTransfer.dropEffect = "move";
+      e.dataTransfer.dropEffect = 'move';
     },
     handleDragEnter(e, item) {
       // 为需要移动的元素设置dragstart事件
-      e.dataTransfer.effectAllowed = "move";
+      e.dataTransfer.effectAllowed = 'move';
       if (item === this.dragging) {
         return;
       }
@@ -800,20 +659,20 @@ export default {
     // 添加自定义弹窗
     addCustomDialog(editorId) {
       window.UE.registerUI(
-        "test-dialog",
+        'test-dialog',
         function (editor, uiName) {
           // 创建 dialog
           let dialog = new window.UE.ui.Dialog({
-            iframeUrl: "/admin/widget.images/index.html?fodder=dialog",
+            iframeUrl: '/admin/widget.images/index.html?fodder=dialog',
             editor: editor,
             name: uiName,
-            title: "上传图片",
-            cssRules: "width:960px;height:550px;padding:20px;",
+            title: '上传图片',
+            cssRules: 'width:960px;height:550px;padding:20px;',
           });
           this.dialog = dialog;
           let btn = new window.UE.ui.Button({
-            name: "dialog-button",
-            title: "上传图片",
+            name: 'dialog-button',
+            title: '上传图片',
             cssRules: `background-image: url(../../../assets/images/icons.png);background-position: -726px -77px;`,
             onclick: function () {
               // 渲染dialog
@@ -823,7 +682,7 @@ export default {
           });
           return btn;
         },
-        37
+        37,
       );
       // window.UE.registerUI('test-dialog', function (editor, uiName) {
       //     let dialog = new window.UE.ui.Dialog({

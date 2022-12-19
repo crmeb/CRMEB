@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -33,40 +33,42 @@ class UserSignController
         $this->services = $services;
     }
 
-
     /**
      * 签到 配置
+     * @param Request $request
+     * @param UserServices $userServices
      * @return mixed
      * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
      * @throws \think\db\exception\ModelNotFoundException
-     * @throws \think\exception\DbException
      */
     public function sign_config(Request $request, UserServices $userServices)
     {
         $signConfig = sys_data('sign_day_num') ?? [];
-        $uid = (int)$request->uid();
-        $user = $userServices->getUserInfo($uid);
-        //是否是付费会员
-        if ($user['is_money_level'] > 0) {
-            //看是否开启签到积分翻倍奖励
-            /** @var MemberCardServices $memberCardService */
-            $memberCardService = app()->make(MemberCardServices::class);
-            $sign_rule_number = $memberCardService->isOpenMemberCard('sign');
-            if ($sign_rule_number) {
-                foreach ($signConfig as &$value) {
-                    $value['sign_num'] = (int)$sign_rule_number * $value['sign_num'];
-                }
-            }
-        }
-        return app('json')->successful($signConfig);
+//        $uid = (int)$request->uid();
+//        $user = $userServices->getUserInfo($uid);
+//        //是否是付费会员
+//        if ($user['is_money_level'] > 0) {
+//            //看是否开启签到积分翻倍奖励
+//            /** @var MemberCardServices $memberCardService */
+//            $memberCardService = app()->make(MemberCardServices::class);
+//            $sign_rule_number = $memberCardService->isOpenMemberCard('sign');
+//            if ($sign_rule_number) {
+//                foreach ($signConfig as &$value) {
+//                    $value['sign_num'] = (int)$sign_rule_number * $value['sign_num'];
+//                }
+//            }
+//        }
+        return app('json')->success($signConfig);
     }
 
     /**
      * 签到 列表
      * @param Request $request
-     * @param $page
-     * @param $limit
      * @return mixed
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
      */
     public function sign_list(Request $request)
     {
@@ -74,23 +76,26 @@ class UserSignController
             ['page', 0],
             ['limit', 0]
         ], true);
-        if (!$limit) return app('json')->successful([]);
+        if (!$limit) return app('json')->success([]);
         $uid = (int)$request->uid();
-        return app('json')->successful($this->services->getUserSignList($uid));
+        return app('json')->success($this->services->getUserSignList($uid));
     }
 
     /**
      * 签到
      * @param Request $request
      * @return mixed
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
      */
     public function sign_integral(Request $request)
     {
         $uid = (int)$request->uid();
         if ($integral = $this->services->sign($uid)) {
-            return app('json')->successful('签到获得' . floatval($integral) . '积分', ['integral' => $integral]);
+            return app('json')->success(410127, ['integral' => $integral], ['integral' => $integral]);
         }
-        return app('json')->fail('签到失败');
+        return app('json')->fail(410128);
     }
 
     /**
@@ -111,14 +116,13 @@ class UserSignController
 
     /**
      * 签到列表（年月）
-     *
      * @param Request $request
      * @return mixed
      */
     public function sign_month(Request $request)
     {
         $uid = (int)$request->uid();
-        return app('json')->successful($this->services->getSignMonthList($uid));
+        return app('json')->success($this->services->getSignMonthList($uid));
     }
 
 }

@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -11,7 +11,9 @@
 
 namespace crmeb\services;
 
+use Alipay\EasySDK\Payment\Wap\Models\AlipayTradeWapPayResponse;
 use crmeb\utils\Hook;
+use think\facade\Event;
 use think\facade\Log;
 use think\facade\Route as Url;
 use Alipay\EasySDK\Kernel\Config;
@@ -124,10 +126,11 @@ class AliPayService
      * @param string $quitUrl 同步跳转地址
      * @param string $siteUrl
      * @param bool $isCode
-     * @return \Alipay\EasySDK\Payment\Wap\Models\AlipayTradeWapPayResponse
+     * @return AlipayTradeWapPayResponse
      */
     public function create(string $title, string $orderId, string $totalAmount, string $passbackParams, string $quitUrl = '', string $siteUrl = '', bool $isCode = false)
     {
+        $title = trim($title);
         try {
             if ($isCode) {
                 //二维码支付
@@ -245,7 +248,7 @@ class AliPayService
             ['auth_app_id', ''],
             ['buyer_logon_id', ''],
             ['point_amount', ''],
-        ]);
+        ], false, false);
 
         //商户订单号
         $postOrder['out_trade_no'] = $paramInfo['out_trade_no'] ?? '';
@@ -261,6 +264,7 @@ class AliPayService
                     return 'success';
                 }
             } catch (\Exception $e) {
+                Log::error($e->getMessage());
                 Log::error('支付宝异步会回调成功,执行函数错误。错误单号：' . $postOrder['out_trade_no']);
             }
         }

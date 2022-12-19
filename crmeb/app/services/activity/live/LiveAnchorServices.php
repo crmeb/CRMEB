@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -19,7 +19,7 @@ use crmeb\exceptions\AdminException;
 use crmeb\services\CacheService;
 use app\jobs\LiveJob;
 use crmeb\services\FormBuilder as Form;
-use crmeb\services\MiniProgramService;
+use crmeb\services\app\MiniProgramService;
 use FormBuilder\components\Validate;
 use think\facade\Route as Url;
 
@@ -97,26 +97,26 @@ class LiveAnchorServices extends BaseServices
     {
         $liveAnchor = $this->dao->get(['wechat' => $data['wechat']]);
         if (!MiniProgramService::getRoleList(2, 0, 30, $data['wechat'])) {
-            return ['auth' => true];
+            throw new AdminException(400426);
         }
         if ($id) {
             if ($liveAnchor && $id != $liveAnchor['id']) {
-                throw new AdminException('该主播已经存在');
+                throw new AdminException(400425);
             }
             if ($this->dao->update($id, $data)) {
                 return true;
             } else {
-                throw new AdminException('修改失败或者您没有修改什么！');
+                throw new AdminException(100007);
             }
         } else {
             unset($data['id']);
             if ($liveAnchor) {
-                throw new AdminException('该主播已经存在');
+                throw new AdminException(400425);
             }
             if ($this->dao->save($data)) {
                 return true;
             } else {
-                throw new AdminException('添加失败！');
+                throw new AdminException(100022);
             }
         }
     }
@@ -130,7 +130,7 @@ class LiveAnchorServices extends BaseServices
     {
         if ($anchor = $this->getLiveAnchor($id)) {
             if (!$this->dao->update($id, ['is_del' => 1])) {
-                throw new AdminException('删除失败,请稍候再试!');
+                throw new AdminException(100008);
             }
             /** @var LiveRoomServices $liveRoom */
             $liveRoom = app()->make(LiveRoomServices::class);
@@ -151,11 +151,11 @@ class LiveAnchorServices extends BaseServices
     public function setShow(int $id, $is_show)
     {
         if (!$this->getLiveAnchor($id))
-            throw new AdminException('数据不存在');
+            throw new AdminException(100026);
         if ($this->dao->update($id, ['is_show' => $is_show])) {
-            return $is_show == 1 ? '显示成功' : '隐藏成功';
+            return true;
         } else {
-            throw new AdminException($is_show == 1 ? '显示失败' : '隐藏失败');
+            throw new AdminException(100015);
         }
     }
 

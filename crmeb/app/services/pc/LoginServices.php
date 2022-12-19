@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -16,10 +16,9 @@ namespace app\services\pc;
 use app\services\BaseServices;
 use app\services\user\UserServices;
 use app\services\wechat\WechatUserServices;
+use crmeb\exceptions\ApiException;
 use crmeb\services\CacheService;
-use crmeb\services\WechatOpenService;
-use crmeb\services\WechatService as WechatAuthService;
-use think\exception\ValidateException;
+use crmeb\services\oauth\OAuth;
 use think\facade\Cache;
 
 class LoginServices extends BaseServices
@@ -70,13 +69,13 @@ class LoginServices extends BaseServices
 
         $userInfo = $user->get(['account' => $account]);
         if (!$userInfo) {
-            throw new ValidateException('没有此用户');
+            throw new ApiException(410141);
         }
         if ($password && !password_verify($password, $userInfo->password)) {
-            throw new ValidateException('账号或密码错误');
+            throw new ApiException(410025);
         }
         if (!$userInfo->status) {
-            throw new ValidateException('您已被禁止登录');
+            throw new ApiException(410027);
         }
         $token = $this->createToken($userInfo->id, 'api');
         $userInfo->update_time = time();
@@ -98,20 +97,21 @@ class LoginServices extends BaseServices
      */
     public function wechatAuth()
     {
-        /** @var WechatOpenService $service */
-        $service = app()->make(WechatOpenService::class);
-        $info = $service->getAuthorizationInfo();
+        /** @var OAuth $oauth */
+        $oauth = app()->make(OAuth::class);
+        $info = $oauth->oauth(null, ['open' => true]);
+
         if (!$info) {
-            throw new ValidateException('授权失败');
+            throw new ApiException(410131);
         }
         $wechatInfo = $info->getOriginal();
         if (!isset($wechatInfo['unionid'])) {
-            throw new ValidateException('unionid不存在');
+            throw new ApiException(410132);
         }
         if (!isset($wechatInfo['nickname'])) {
-            $wechatInfo = WechatAuthService::oauth2Service()->getUserInfo($wechatInfo['openid'])->toArray();
+            $wechatInfo = $oauth->getUserInfo($wechatInfo['openid']);
             if (!isset($wechatInfo['nickname']))
-                throw new ValidateException('授权失败');
+                throw new ApiException(410131);
             if (isset($wechatInfo['tagid_list']))
                 $wechatInfo['tagid_list'] = implode(',', $wechatInfo['tagid_list']);
         } else {

@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -86,7 +86,7 @@ class MemberCard extends AuthController
             ['sort', ''],
         ]);
         $memberShipServices->save((int)$id, $data);
-        return app('json')->success($id ? "编辑成功" : '添加成功');
+        return app('json')->success($id ? 100001 : 100021);
     }
 
     /**
@@ -97,9 +97,9 @@ class MemberCard extends AuthController
      */
     public function delete($id,MemberShipServices $memberShipServices)
     {
-        if (!$id) return app('json')->fail('数据不存在');
+        if (!$id) return app('json')->fail(100026);
         $res = $memberShipServices->delete((int)$id);
-        return app('json')->success($res ? "删除成功" : '删除失败');
+        return app('json')->success($res ? 100002 : 100008);
     }
 
     /**
@@ -151,7 +151,7 @@ class MemberCard extends AuthController
             ['status', ''],
         ]);
         $memberRightServices->save((int)$id, $data);
-        return app('json')->success("权益编辑成功");
+        return app('json')->success(400312);
     }
 
     /**
@@ -164,10 +164,9 @@ class MemberCard extends AuthController
             ['card_id', 0],
             ['status', 0],
         ], true);
-        $msg = $status == 1 ? '激活' : '冻结';
         $res = $this->services->setStatus($card_id, $status);
-        if ($res) return app('json')->success($msg . '成功');
-        return app('json')->success($msg . '失败');
+        if ($res) return app('json')->success(100010);
+        return app('json')->success(100005);
     }
 
     /**
@@ -182,9 +181,8 @@ class MemberCard extends AuthController
         ], true);
         /** @var MemberShipServices $memberShipService */
         $memberShipService = app()->make(MemberShipServices::class);
-        $msg = $is_del == 1 ? '禁用' : '启用';
         $res = $memberShipService->setStatus($id, $is_del);
-        if ($res) return app('json')->success($msg . '成功');
-        return app('json')->success($msg . '失败');
+        if ($res) return app('json')->success(100010);
+        return app('json')->success(100005);
     }
 }

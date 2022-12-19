@@ -1,10 +1,5 @@
 <template>
   <div>
-    <div class="i-layout-page-header">
-      <div class="i-layout-page-header">
-        <span class="ivu-page-header-title">{{ $route.meta.title }}</span>
-      </div>
-    </div>
     <Card :bordered="false" dis-hover class="ivu-mt">
       <dateRadio @selectDate="onSelectDate"></dateRadio>
       <DatePicker
@@ -21,36 +16,20 @@
         class="mr20"
       ></DatePicker>
     </Card>
-    <cards-data
-      :cardLists="cardLists"
-      v-if="cardLists.length >= 0"
-    ></cards-data>
+    <cards-data :cardLists="cardLists" v-if="cardLists.length >= 0"></cards-data>
     <Card :bordered="false" dis-hover>
       <h3>积分使用趋势</h3>
-      <echarts-new
-        :option-data="optionData"
-        :styles="style"
-        height="100%"
-        width="100%"
-        v-if="optionData"
-      ></echarts-new>
+      <echarts-new :option-data="optionData" :styles="style" height="100%" width="100%" v-if="optionData"></echarts-new>
     </Card>
     <Spin size="large" fix v-if="spinShow"></Spin>
     <div class="code-row-bg">
       <Card :bordered="false" dis-hover class="ivu-mt">
         <div class="acea-row row-between-wrapper">
           <h3 class="header-title">积分来源分析</h3>
-          <div class="change-style" @click="echartLeft = !echartLeft">
-            切换样式
-          </div>
+          <div class="change-style" @click="echartLeft = !echartLeft">切换样式</div>
         </div>
         <div class="ech-box">
-          <echarts-from
-            v-if="echartLeft"
-            ref="visitChart"
-            :infoList="infoList"
-            echartsTitle="circle"
-          ></echarts-from>
+          <echarts-from v-if="echartLeft" ref="visitChart" :infoList="infoList" echartsTitle="circle"></echarts-from>
           <Table
             v-show="!echartLeft"
             ref="selection"
@@ -65,10 +44,7 @@
               <div class="percent-box">
                 <div class="line">
                   <div class="bg"></div>
-                  <div
-                    class="percent"
-                    :style="'width:' + row.percent + '%;'"
-                  ></div>
+                  <div class="percent" :style="'width:' + row.percent + '%;'"></div>
                 </div>
                 <div class="num">{{ row.percent }}%</div>
               </div>
@@ -79,17 +55,10 @@
       <Card :bordered="false" dis-hover class="ivu-mt">
         <div class="acea-row row-between-wrapper">
           <h3 class="header-title">积分消耗</h3>
-          <div class="change-style" @click="echartRight = !echartRight">
-            切换样式
-          </div>
+          <div class="change-style" @click="echartRight = !echartRight">切换样式</div>
         </div>
         <div class="ech-box">
-          <echarts-from
-            v-if="echartRight"
-            ref="visitChart"
-            :infoList="infoList2"
-            echartsTitle="circle"
-          ></echarts-from>
+          <echarts-from v-if="echartRight" ref="visitChart" :infoList="infoList2" echartsTitle="circle"></echarts-from>
           <Table
             v-show="!echartRight"
             ref="selection"
@@ -104,10 +73,7 @@
               <div class="percent-box">
                 <div class="line">
                   <div class="bg"></div>
-                  <div
-                    class="percent"
-                    :style="'width:' + row.percent + '%;'"
-                  ></div>
+                  <div class="percent" :style="'width:' + row.percent + '%;'"></div>
                 </div>
                 <div class="num">{{ row.percent }}%</div>
               </div>
@@ -120,25 +86,20 @@
 </template>
 
 <script>
-import cardsData from "@/components/cards/cards";
-import echartsNew from "@/components/echartsNew/index";
-import {
-  getPointBasic,
-  getPointTrend,
-  getChannel,
-  getType,
-} from "@/api/marketing";
-import { formatDate } from "@/utils/validate";
-import echartsFrom from "@/components/echarts/index";
-import dateRadio from "@/components/dateRadio";
+import cardsData from '@/components/cards/cards';
+import echartsNew from '@/components/echartsNew/index';
+import { getPointBasic, getPointTrend, getChannel, getType } from '@/api/marketing';
+import { formatDate } from '@/utils/validate';
+import echartsFrom from '@/components/echarts/index';
+import dateRadio from '@/components/dateRadio';
 
 export default {
-  name: "index",
+  name: 'index',
   components: { cardsData, echartsNew, echartsFrom, dateRadio },
   data() {
     return {
       timeVal: [],
-      style: { height: "400px" },
+      style: { height: '400px' },
       infoList: {},
       infoList2: {},
       echartLeft: true,
@@ -146,38 +107,38 @@ export default {
       loading: false,
       loading2: false,
       fromList: {
-        title: "选择时间",
+        title: '选择时间',
         custom: true,
         fromTxt: [
-          { text: "全部", val: "" },
-          { text: "今天", val: "today" },
-          { text: "本周", val: "week" },
-          { text: "本月", val: "month" },
-          { text: "本季度", val: "quarter" },
-          { text: "本年", val: "year" },
+          { text: '全部', val: '' },
+          { text: '今天', val: 'today' },
+          { text: '本周', val: 'week' },
+          { text: '本月', val: 'month' },
+          { text: '本季度', val: 'quarter' },
+          { text: '本年', val: 'year' },
         ],
       },
       formValidate: {
-        time: "",
+        time: '',
       },
       cardLists: [
         {
           col: 6,
           count: 0,
-          name: "当前积分",
-          className: "md-rose",
+          name: '当前积分',
+          className: 'md-rose',
         },
         {
           col: 6,
           count: 0,
-          name: "累计总积分",
-          className: "ios-speedometer-outline",
+          name: '累计总积分',
+          className: 'ios-speedometer-outline',
         },
         {
           col: 6,
           count: 0,
-          name: "累计消耗积分",
-          className: "ios-speedometer-outline",
+          name: '累计消耗积分',
+          className: 'ios-speedometer-outline',
         },
       ],
       optionData: {},
@@ -185,28 +146,28 @@ export default {
       options: this.$timeOptions,
       columns: [
         {
-          title: "序号",
-          type: "index",
+          title: '序号',
+          type: 'index',
           width: 60,
-          align: "center",
+          align: 'center',
         },
         {
-          title: "来源",
-          key: "name",
+          title: '来源',
+          key: 'name',
           minWidth: 80,
-          align: "center",
+          align: 'center',
         },
         {
-          title: "金额",
+          title: '金额',
           width: 180,
-          key: "value",
-          align: "center",
+          key: 'value',
+          align: 'center',
         },
         {
-          title: "占比率",
-          slot: "percent",
+          title: '占比率',
+          slot: 'percent',
           minWidth: 100,
-          align: "center",
+          align: 'center',
         },
       ],
       tabList: [],
@@ -216,18 +177,9 @@ export default {
   created() {
     const end = new Date();
     const start = new Date();
-    start.setTime(
-      start.setTime(
-        new Date(
-          new Date().getFullYear(),
-          new Date().getMonth(),
-          new Date().getDate() - 29
-        )
-      )
-    );
+    start.setTime(start.setTime(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate() - 29)));
     this.timeVal = [start, end];
-    this.formValidate.time =
-      formatDate(start, "yyyy/MM/dd") + "-" + formatDate(end, "yyyy/MM/dd");
+    this.formValidate.time = formatDate(start, 'yyyy/MM/dd') + '-' + formatDate(end, 'yyyy/MM/dd');
     this.onInit();
   },
   methods: {
@@ -243,7 +195,7 @@ export default {
     },
     getPointBasic() {
       getPointBasic(this.formValidate).then((res) => {
-        let arr = ["now_point", "all_point", "pay_point"];
+        let arr = ['now_point', 'all_point', 'pay_point'];
         this.cardLists.map((i, index) => {
           i.count = res.data[arr[index]];
         });
@@ -268,7 +220,7 @@ export default {
     // 具体日期
     onchangeTime(e) {
       this.timeVal = e;
-      this.formValidate.time = this.timeVal.join("-");
+      this.formValidate.time = this.timeVal.join('-');
       this.name = this.formValidate.time;
       this.getPointBasic();
       this.getPointTrend();
@@ -282,12 +234,12 @@ export default {
             return item.name;
           });
           let xAxis = res.data.xAxis;
-          let col = ["#5B8FF9", "#5AD8A6", "#FFAB2B", "#5D7092"];
+          let col = ['#5B8FF9', '#5AD8A6', '#FFAB2B', '#5D7092'];
           let series = [];
           res.data.series.map((item, index) => {
             series.push({
               name: item.name,
-              type: "line",
+              type: 'line',
               data: item.data,
               itemStyle: {
                 normal: {
@@ -299,22 +251,22 @@ export default {
           });
           this.optionData = {
             tooltip: {
-              trigger: "axis",
+              trigger: 'axis',
               axisPointer: {
-                type: "cross",
+                type: 'cross',
                 label: {
-                  backgroundColor: "#6a7985",
+                  backgroundColor: '#6a7985',
                 },
               },
             },
             legend: {
-              x: "center",
+              x: 'center',
               data: legend,
             },
             grid: {
-              left: "3%",
-              right: "4%",
-              bottom: "3%",
+              left: '3%',
+              right: '4%',
+              bottom: '3%',
               containLabel: true,
             },
             toolbox: {
@@ -323,7 +275,7 @@ export default {
               },
             },
             xAxis: {
-              type: "category",
+              type: 'category',
               boundaryGap: true,
               // axisTick:{
               //     show:false
@@ -338,13 +290,13 @@ export default {
                 interval: 0,
                 rotate: 40,
                 textStyle: {
-                  color: "#000000",
+                  color: '#000000',
                 },
               },
               data: xAxis,
             },
             yAxis: {
-              type: "value",
+              type: 'value',
               axisLine: {
                 show: false,
               },
@@ -353,13 +305,13 @@ export default {
               },
               axisLabel: {
                 textStyle: {
-                  color: "#7F8B9C",
+                  color: '#7F8B9C',
                 },
               },
               splitLine: {
                 show: true,
                 lineStyle: {
-                  color: "#F5F7F9",
+                  color: '#F5F7F9',
                 },
               },
             },

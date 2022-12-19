@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -24,24 +24,6 @@ Route::group('marketing', function () {
     Route::get('coupon/copy/:id', 'v1.marketing.StoreCouponIssue/copy')->option(['real_name' => '一键复制优惠券']);
     //发送优惠券列表
     Route::get('coupon/grant', 'v1.marketing.StoreCouponIssue/index')->option(['real_name' => '发送优惠券列表']);
-
-
-    //优惠券相关 资源路由
-    Route::get('coupon/list', 'v1.marketing.StoreCoupon/index')->option(['real_name' => '优惠券']);
-    //优惠卷添加
-    Route::get('coupon/create/:type', 'v1.marketing.StoreCoupon/create')->option(['real_name' => '优惠卷添加']);
-    //优惠卷数据添加添加
-    Route::post('coupon/save', 'v1.marketing.StoreCoupon/save')->option(['real_name' => '优惠卷数据添加']);
-    //优惠卷修改
-    Route::delete('coupon/del/:id', 'v1.marketing.StoreCoupon/delete')->option(['real_name' => '优惠卷修改']);
-    //修改状态
-    Route::put('coupon/status/:id', 'v1.marketing.StoreCoupon/status')->option(['real_name' => '修改优惠券状态']);
-    //发布优惠券表单
-    Route::get('coupon/issue/:id', 'v1.marketing.StoreCoupon/issue')->option(['real_name' => '发布优惠券表单']);
-    //发布优惠券
-    Route::post('coupon/issue/:id', 'v1.marketing.StoreCoupon/update_issue')->option(['real_name' => '发布优惠券']);
-
-
     //已发布优惠券删除
     Route::delete('coupon/released/:id', 'v1.marketing.StoreCouponIssue/delete')->option(['real_name' => '已发布优惠券删除']);
     //已发布优惠券修改状态表单
@@ -69,6 +51,12 @@ Route::group('marketing', function () {
     Route::get('bargain_list', 'v1.marketing.StoreBargain/bargainList')->option(['real_name' => '参与砍价列表']);
     //砍价人列表
     Route::get('bargain_list_info/:id', 'v1.marketing.StoreBargain/bargainListInfo')->option(['real_name' => '砍价人列表']);
+    //砍价统计
+    Route::get('bargain/statistics/head/:id', 'v1.marketing.StoreBargain/bargainStatistics')->option(['real_name' => '砍价统计']);
+    //砍价列表
+    Route::get('bargain/statistics/list/:id', 'v1.marketing.StoreBargain/bargainStatisticsList')->option(['real_name' => '砍价统计列表']);
+    //砍价订单
+    Route::get('bargain/statistics/order/:id', 'v1.marketing.StoreBargain/bargainStatisticsOrder')->option(['real_name' => '砍价统计订单']);
 
     //拼团商品列表
     Route::get('combination', 'v1.marketing.StoreCombination/index')->option(['real_name' => '拼团商品列表']);
@@ -86,6 +74,13 @@ Route::group('marketing', function () {
     Route::get('combination/combine/list', 'v1.marketing.StoreCombination/combine_list')->option(['real_name' => '参与拼团列表']);
     //拼团人列表
     Route::get('combination/order_pink/:id', 'v1.marketing.StoreCombination/order_pink')->option(['real_name' => '拼团人列表']);
+    //拼团统计
+    Route::get('combination/statistics/head/:id', 'v1.marketing.StoreCombination/combinationStatistics')->option(['real_name' => '拼团统计']);
+    //拼团列表
+    Route::get('combination/statistics/list/:id', 'v1.marketing.StoreCombination/combinationStatisticsList')->option(['real_name' => '拼团统计列表']);
+    //拼团订单
+    Route::get('combination/statistics/order/:id', 'v1.marketing.StoreCombination/combinationStatisticsOrder')->option(['real_name' => '拼团统计订单']);
+
 
     //秒杀列表
     Route::get('seckill', 'v1.marketing.StoreSeckill/index')->option(['real_name' => '秒杀商品列表']);
@@ -99,6 +94,12 @@ Route::group('marketing', function () {
     Route::delete('seckill/:id', 'v1.marketing.StoreSeckill/delete')->option(['real_name' => '删除秒杀商品']);
     //修改秒杀状态
     Route::put('seckill/set_status/:id/:status', 'v1.marketing.StoreSeckill/set_status')->option(['real_name' => '修改秒杀商品状态']);
+    //秒杀统计
+    Route::get('seckill/statistics/head/:id', 'v1.marketing.StoreSeckill/seckillStatistics')->option(['real_name' => '秒杀统计']);
+    //参与活动人员
+    Route::get('seckill/statistics/people/:id','v1.marketing.StoreSeckill/seckillPeople')->option(['real_name' => '秒杀参与人']);
+    //秒杀订单
+    Route::get('seckill/statistics/order/:id','v1.marketing.StoreSeckill/seckillOrder')->option(['real_name' => '秒杀参与人']);
 
     //积分日志列表
     Route::get('integral', 'v1.marketing.UserPoint/index')->option(['real_name' => '积分日志列表']);
@@ -191,6 +192,6 @@ Route::group('marketing', function () {
 })->middleware([
     \app\http\middleware\AllowOriginMiddleware::class,
     \app\adminapi\middleware\AdminAuthTokenMiddleware::class,
-    \app\adminapi\middleware\AdminCkeckRoleMiddleware::class,
+    \app\adminapi\middleware\AdminCheckRoleMiddleware::class,
     \app\adminapi\middleware\AdminLogMiddleware::class
 ]);

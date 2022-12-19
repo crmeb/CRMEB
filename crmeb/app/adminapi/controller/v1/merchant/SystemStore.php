@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -35,8 +35,11 @@ class SystemStore extends AuthController
     }
 
     /**
-     * 获取门店列表1
+     * 门店列表
      * @return mixed
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
      */
     public function index()
     {
@@ -80,7 +83,7 @@ class SystemStore extends AuthController
     public function select_address()
     {
         $key = sys_config('tengxun_map_key');
-        if (!$key) return app('json')->fail('请前往设置->系统设置->第三方接口设置 配置腾讯地图KEY');
+        if (!$key) return app('json')->fail(400124);
         return app('json')->success(compact('key'));
     }
 
@@ -88,23 +91,24 @@ class SystemStore extends AuthController
      * 设置单个门店是否显示
      * @param string $is_show
      * @param string $id
-     * @return json
+     * @return mixed
      */
     public function set_show($is_show = '', $id = '')
     {
-        ($is_show == '' || $id == '') && app('json')->fail('缺少参数');
+        ($is_show == '' || $id == '') && app('json')->fail(100100);
         $res = $this->services->update((int)$id, ['is_show' => (int)$is_show]);
         if ($res) {
-            return app('json')->success($is_show == 1 ? '设置显示成功' : '设置隐藏成功');
+            return app('json')->success(100014);
         } else {
-            return app('json')->fail($is_show == 1 ? '设置显示失败' : '设置隐藏失败');
+            return app('json')->fail(100015);
         }
     }
 
     /**
      * 保存修改门店信息
-     * param int $id
-     * */
+     * @param int $id
+     * @return mixed
+     */
     public function save($id = 0)
     {
         $data = $this->request->postMore([
@@ -123,7 +127,7 @@ class SystemStore extends AuthController
         $data['address'] = implode(',', $data['address']);
         $data['latlng'] = explode(',', $data['latlng']);
         if (!isset($data['latlng'][0]) || !isset($data['latlng'][1])) {
-            return app('json')->fail('请选择门店位置');
+            return app('json')->fail(400125);
         }
         $data['latitude'] = $data['latlng'][0];
         $data['longitude'] = $data['latlng'][1];
@@ -134,32 +138,33 @@ class SystemStore extends AuthController
             $data['image'] = $site_url . $data['image'];
         }
         $this->services->saveStore((int)$id, $data);
-        return app('json')->success('操作成功!');
+        return app('json')->success(100014);
     }
 
     /**
      * 删除恢复门店
      * @param $id
+     * @return mixed
      */
     public function delete($id)
     {
-        if (!$id) return app('json')->fail('数据不存在');
+        if (!$id) return app('json')->fail(100100);
         $storeInfo = $this->services->get($id);
         if (!$storeInfo) {
-            return app('json')->fail('数据不存在');
+            return app('json')->fail(100026);
         }
         if ($storeInfo->is_del == 1) {
             $storeInfo->is_del = 0;
             if (!$storeInfo->save())
-                return app('json')->fail('恢复失败,请稍候再试!');
+                return app('json')->fail(100041);
             else
-                return app('json')->success('恢复门店成功!');
+                return app('json')->success(100040);
         } else {
             $storeInfo->is_del = 1;
             if (!$storeInfo->save())
-                return app('json')->fail('删除失败,请稍候再试!');
+                return app('json')->fail(100008);
             else
-                return app('json')->success('删除门店成功!');
+                return app('json')->success(100002);
         }
     }
 }

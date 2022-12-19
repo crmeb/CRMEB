@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -18,7 +18,7 @@ use crmeb\exceptions\AuthException;
 use think\db\exception\DbException;
 use think\exception\Handle;
 use think\exception\ValidateException;
-use think\facade\Config;
+use think\facade\Env;
 use think\facade\Log;
 use think\Response;
 use Throwable;
@@ -77,19 +77,19 @@ class KefuApiExceptionHandle extends Handle
      */
     public function render($request, Throwable $e): Response
     {
-        $massageData = Config::get('app_debug', false) ? [
+        $massageData = Env::get('app_debug', false) ? [
+            'message' => $e->getMessage(),
             'file' => $e->getFile(),
             'line' => $e->getLine(),
             'trace' => $e->getTrace(),
             'previous' => $e->getPrevious(),
         ] : [];
+        $message = Env::get('app_debug', false) ? '接口报错：' . $e->getMessage() : '很抱歉，系统开小差了';
         // 添加自定义异常处理机制
-        if ($e instanceof DbException) {
-            return app('json')->fail('数据获取失败', $massageData);
-        } elseif ($e instanceof ValidateException || $e instanceof AuthException) {
-            return app('json')->make($e->getCode() ? : 400, $e->getMessage());
+        if ($e instanceof AuthException || $e instanceof AdminException || $e instanceof ApiException) {
+            return app('json')->make($e->getCode() ?: 400, $message, $massageData);
         } else {
-            return app('json')->code(200)->make(400, $e->getMessage(), $massageData);
+            return app('json')->fail($message, $massageData);
         }
     }
 }

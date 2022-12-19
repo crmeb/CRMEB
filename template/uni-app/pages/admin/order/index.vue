@@ -4,64 +4,64 @@
 			<view class="header acea-row">
 				<navigator class="item" url="/pages/admin/orderList/index?types=0" hover-class="none">
 					<view class="num">{{ census.unpaid_count }}</view>
-					<view>待付款</view>
+					<view>{{$t(`待付款`)}}</view>
 				</navigator>
 				<navigator class="item" url="/pages/admin/orderList/index?types=1" hover-class="none">
 					<view class="num">{{ census.unshipped_count }}</view>
-					<view>待发货</view>
+					<view>{{$t(`待发货`)}}</view>
 				</navigator>
 				<navigator class="item" url="/pages/admin/orderList/index?types=2" hover-class="none">
 					<view class="num">{{ census.received_count }}</view>
-					<view>待收货</view>
+					<view>{{$t(`待收货`)}}</view>
 				</navigator>
 				<navigator class="item" url="/pages/admin/orderList/index?types=3" hover-class="none">
 					<view class="num">{{ census.evaluated_count }}</view>
-					<view>待评价</view>
+					<view>{{$t(`待评价`)}}</view>
 				</navigator>
 				<navigator class="item" url="/pages/admin/orderList/index?types=-3" hover-class="none">
 					<view class="num">{{ census.refund_count }}</view>
-					<view>退款</view>
+					<view>{{$t(`退款`)}}</view>
 				</navigator>
 			</view>
 			<view class="wrapper">
 				<view class="title">
-					<span class="iconfont icon-shujutongji"></span>数据统计
+					<span class="iconfont icon-shujutongji"></span>{{$t(`数据统计`)}}
 				</view>
 				<view class="list acea-row">
 					<navigator class="item" url="/pages/admin/statistics/index?type=price&time=today" hover-class="none">
 						<view class="num">{{ census.todayPrice }}</view>
-						<view>今日成交额</view>
+						<view>{{$t(`今日成交额`)}}</view>
 					</navigator>
 					<navigator class="item" url="/pages/admin/statistics/index?type=price&time=yesterday" hover-class="none">
 						<view class="num">{{ census.proPrice }}</view>
-						<view>昨日成交额</view>
+						<view>{{$t(`昨日成交额`)}}</view>
 					</navigator>
 					<navigator class="item" url="/pages/admin/statistics/index?type=price&time=month" hover-class="none">
 						<view class="num">{{ census.monthPrice }}</view>
-						<view>本月成交额</view>
+						<view>{{$t(`本月成交额`)}}</view>
 					</navigator>
 					<navigator class="item" url="/pages/admin/statistics/index?type=order&time=today" hover-class="none">
 						<view class="num">{{ census.todayCount }}</view>
-						<view>今日订单数</view>
+						<view>{{$t(`今日订单数`)}}</view>
 					</navigator>
 					<navigator class="item" url="/pages/admin/statistics/index?type=order&time=yesterday" hover-class="none">
 						<view class="num">{{ census.proCount }}</view>
-						<view>昨日订单数</view>
+						<view>{{$t(`昨日订单数`)}}</view>
 					</navigator>
 					<navigator class="item" url="/pages/admin/statistics/index?type=order&time=month" hover-class="none">
 						<view class="num">{{ census.monthCount }}</view>
-						<view>本月订单数</view>
+						<view>{{$t(`本月订单数`)}}</view>
 					</navigator>
 				</view>
 			</view>
 			<view class="public-wrapper">
 				<view class="title">
-					<span class="iconfont icon-xiangxishuju"></span>详细数据
+					<span class="iconfont icon-xiangxishuju"></span>{{$t(`详细数据`)}}
 				</view>
 				<view class="nav acea-row row-between-wrapper">
-					<view class="data">日期</view>
-					<view class="browse">订单数</view>
-					<view class="turnover">成交额</view>
+					<view class="data">{{$t(`日期`)}}</view>
+					<view class="browse">{{$t(`订单数`)}}</view>
+					<view class="turnover">{{$t(`成交额`)}}</view>
 				</view>
 				<view class="conter">
 					<view class="item acea-row row-between-wrapper" v-for="(item, index) in list" :key="index">
@@ -243,12 +243,12 @@
 	}
 
 	.public-wrapper .browse {
-		width: 192upx;
+		width: 200upx;
 		text-align: left;
 	}
 
 	.public-wrapper .turnover {
-		width: 227upx;
+		width: 220upx;
 		text-align: right;
 	}
 

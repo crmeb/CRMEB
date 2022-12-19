@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -12,16 +12,16 @@
 namespace crmeb\services\workerman\chat;
 
 use app\services\kefu\LoginServices;
-use app\services\message\service\StoreServiceLogServices;
-use app\services\message\service\StoreServiceRecordServices;
-use app\services\message\service\StoreServiceServices;
+use app\services\kefu\service\StoreServiceLogServices;
+use app\services\kefu\service\StoreServiceRecordServices;
+use app\services\kefu\service\StoreServiceServices;
 use app\services\order\StoreOrderServices;
 use app\services\product\product\StoreProductServices;
 use app\services\user\UserServices;
 use app\services\wechat\WechatUserServices;
 use app\services\user\UserAuthServices;
 use crmeb\exceptions\AuthException;
-use crmeb\services\WechatService;
+use crmeb\services\app\WechatService;
 use crmeb\services\workerman\Response;
 use crmeb\utils\Arr;
 use think\facade\Log;
@@ -296,7 +296,7 @@ class ChatHandle
                     $url = sys_config('site_url') . '/kefu/mobile_chat?toUid=' . $uid . '&nickname=' . $_userInfo['nickname'];
                 } else {
                     $head = '客服回复消息提醒';
-                    $url = sys_config('site_url') . '/pages/customer_list/chat?uid=' . $uid;
+                    $url = sys_config('site_url') . '/pages/extension/customer_list/chat?uid=' . $uid;
                 }
                 $message = WechatService::newsMessage($head, $description, $url, $_userInfo['avatar']);
                 $userInfo = $userInfo->toArray();

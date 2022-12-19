@@ -40,7 +40,7 @@
 			</view>
 		</block>
 		<block v-if="isIframe && (!imgUrls.length || !imageH)">
-			<view class="empty-img">暂无图片，请上传图片</view>
+			<view class="empty-img">{{$t(`暂无图片，请上传图片`)}}</view>
 		</block>
 	</view>
 </template>
@@ -69,7 +69,6 @@
 						uni.getImageInfo({
 							src: this.imgUrls.length ? this.imgUrls[0].img : '',
 							success: (res) => {
-								console.log('2222222222')
 								if (res && res.height > 0) {
 									this.$set(this, 'imageH',
 										res.height / res
@@ -138,9 +137,15 @@
 									url: urls
 								})
 							} else {
-								uni.reLaunch({
-									url: urls
+								uni.switchTab({
+									url: urls,
+									fail() {
+										uni.reLaunch({
+											url: urls
+										})
+									}
 								})
+
 							}
 						}
 					}

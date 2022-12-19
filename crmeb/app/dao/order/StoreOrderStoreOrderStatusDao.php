@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -79,10 +79,14 @@ class StoreOrderStoreOrderStatusDao extends BaseDao
     /**
      * 获取确认收货订单id
      * @param array $where
+     * @param int $limit
      * @return array
      */
-    public function getTakeOrderIds(array $where)
+    public function getTakeOrderIds(array $where, int $limit = 0)
     {
-        return $this->search($where)->whereIn('refund_status', [0, 1])->field([$this->alias . '.*'])->select()->toArray();
+        return $this->search($where)->whereIn('refund_type', [0, 3])->where('pid', '<>', -1)->field([$this->alias . '.*'])
+            ->when($limit != 0, function ($query) use ($limit) {
+                $query->limit($limit);
+            })->select()->toArray();
     }
 }

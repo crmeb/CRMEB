@@ -1,18 +1,24 @@
 <template>
 	<view class="empty-box">
-		<image src="/static/images/empty-box.png"></image>
-		<view class="txt">{{title}}</view>
+		<image :src="imgHost + '/statics/images/empty-box.png'"></image>
+		<view class="txt">{{title || $t(`暂无记录`)}}</view>
 	</view>
 </template>
 
 <script>
+	import {HTTP_REQUEST_URL} from '@/config/app';
 	export default{
 		props: {
 			title: {
 				type: String,
-				default: '暂无记录',
+				default: '',
 			},
 		},
+		data(){
+			return{
+				imgHost:HTTP_REQUEST_URL
+			}
+		}
 	}
 	
 </script>

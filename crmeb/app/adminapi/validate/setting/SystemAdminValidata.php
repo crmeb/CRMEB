@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -35,13 +35,13 @@ class SystemAdminValidata extends Validate
      * @var array
      */
     protected $message = [
-        'account.require' => '请填写管理员账号',
-        'account.alphaDash' => '管理员账号为英文字母',
-        'conf_pwd.require' => '请输入确认密码',
-        'pwd.require' => '请输入密码',
-        'real_name.require' => '请输管理员姓名',
-        'roles.require' => '请选择管理员身份',
-        'roles.array' => '身份必须为数组',
+        'account.require' => '400033',
+        'account.alphaDash' => '400034',
+        'conf_pwd.require' => '400263',
+        'pwd.require' => '400256',
+        'real_name.require' => '400035',
+        'roles.require' => '400036',
+        'roles.array' => '400037',
     ];
 
     protected $scene = [

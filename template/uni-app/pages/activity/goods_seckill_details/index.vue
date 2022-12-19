@@ -45,14 +45,14 @@
 					<productConSwiper :imgUrls='imgUrls'></productConSwiper>
 					<view class="bg-color">
 						<view class='nav acea-row row-between-wrapper'>
-							<view class='money'>￥<text class='num'>{{storeInfo.price}}</text>
+							<view class='money'>{{$t(`￥`)}}<text class='num'>{{storeInfo.price}}</text>
 								<text
-									v-if="attribute.productAttr.length && (attribute.productAttr.length?attribute.productAttr[0].attr_values.length:0) > 1">起</text>
-								<text class='y-money'>￥{{storeInfo.ot_price}}</text>
+									v-if="attribute.productAttr.length && (attribute.productAttr.length?attribute.productAttr[0].attr_values.length:0) > 1">{{$t(`起`)}}</text>
+								<text class='y-money'>{{$t(`￥`)}}{{storeInfo.ot_price}}</text>
 							</view>
 							<view class='acea-row row-middle'>
 								<view class='timeItem' v-if="status == 1">
-									<view>距秒杀结束仅剩</view>
+									<view>{{$t(`距秒杀结束仅剩`)}}</view>
 									<countDown :is-day="false" :tip-text="' '" :day-text="' '" :hour-text="' : '"
 										:minute-text="' : '" :second-text="' '" :datatime="datatime"
 										style="margin-top: 4rpx;"></countDown>
@@ -72,9 +72,9 @@
 						<view class='label acea-row row-middle'>
 							<!-- <view class='stock'>库存：{{storeInfo.stock}}{{storeInfo.unit_name}}</view> -->
 							<view class='stock'>
-								累计销售：{{storeInfo.total?storeInfo.total:0}}{{storeInfo.unit_name || ''}}
+								{{$t(`累计销售`)}}：{{storeInfo.total?storeInfo.total:0}}{{$t(storeInfo.unit_name) || ''}}
 							</view>
-							<view>限量: {{ storeInfo.quota ? storeInfo.quota : 0 }}{{storeInfo.unit_name || ''}}
+							<view>{{$t(`限量`)}}: {{ storeInfo.quota ? storeInfo.quota : 0 }}{{$t(storeInfo.unit_name) || ''}}
 							</view>
 						</view>
 					</view>
@@ -97,23 +97,23 @@
 								<image :src="item.image" v-for="(item, index) in skuArr.slice(0, 4)" :key="index"
 									class="attrImg"></image>
 							</view>
-							<view class="switchTxt">共{{ skuArr.length }}种规格可选</view>
+							<view class="switchTxt">{{$t(`共`)}}{{ skuArr.length }}{{$t(`种规格可选`)}}</view>
 						</view>
 					</view>
 				</view>
 				<view class='userEvaluation' id="past1" v-if="replyCount">
 					<view class='title acea-row row-between-wrapper'>
-						<view>用户评价({{replyCount}})</view>
+						<view>{{$t(`用户评价`)}}({{replyCount}})</view>
 						<navigator class='praise' hover-class='none'
-							:url="'/pages/users/goods_comment_list/index?product_id='+storeInfo.product_id">
-							<text class='font-color'>{{replyChance}}%</text>好评率
+							:url="'/pages/goods/goods_comment_list/index?product_id='+storeInfo.product_id">
+							<text class='font-color'>{{replyChance}}%</text>{{$t(`好评率`)}}
 							<text class='iconfont icon-jiantou'></text>
 						</navigator>
 					</view>
 					<userEvaluation :reply="reply"></userEvaluation>
 				</view>
 				<view class='product-intro' id="past2">
-					<view class='title'>产品介绍</view>
+					<view class='title'>{{$t(`产品介绍`)}}</view>
 					<view class='conter'>
 						<!-- <view class="" v-html="storeInfo.description">
 						</view> -->
@@ -128,48 +128,36 @@
 				</view>
 			</scroll-view>
 			<view class='footer acea-row row-between-wrapper'>
-				<!-- #ifdef MP -->
-				<!-- <button open-type="contact" hover-class='none' class='item'>
-					<view class='iconfont icon-kefu'></view>
-					<view class="p_center">客服</view>
-				</button> -->
-				<!-- #endif -->
-				<!-- #ifndef MP -->
-				<!-- 	<navigator hover-class="none" class="item" url="/pages/customer_list/chat">
-					<view class="iconfont icon-kefu"></view>
-					<view class="p_center">客服</view>
-				</navigator> -->
-				<!-- #endif -->
 				<navigator hover-class="none" open-type="switchTab" class="item" url="/pages/index/index">
 					<view class="iconfont icon-shouye6"></view>
-					<view class="p_center">首页</view>
+					<view class="p_center">{{$t(`首页`)}}</view>
 				</navigator>
 				<view @tap='setCollect' class='item'>
 					<view class='iconfont icon-shoucang1' v-if="storeInfo.userCollect"></view>
 					<view class='iconfont icon-shoucang' v-else></view>
-					<view class="p_center">收藏</view>
+					<view class="p_center">{{$t(`收藏`)}}</view>
 				</view>
 				<view class="bnt acea-row"
 					v-if="status == 1 && attribute.productSelect.quota > 0 && attribute.productSelect.product_stock>0">
-					<view class="joinCart bnts" @tap="openAlone">单独购买</view>
-					<view class="buy bnts" @tap="goCat">立即购买</view>
+					<view class="joinCart bnts" @tap="openAlone">{{$t(`单独购买`)}}</view>
+					<view class="buy bnts" @tap="goCat">{{$t(`立即购买`)}}</view>
 				</view>
 				<view class="bnt acea-row"
 					v-if="(status == 1 && attribute.productSelect.quota <= 0) || (status == 3 && attribute.productSelect.quota <= 0) || (status == 1 && attribute.productSelect.product_stock <= 0) || (status == 3 && attribute.productSelect.product_stock <= 0)">
-					<view class="joinCart bnts" @tap="openAlone">单独购买</view>
-					<view class="buy bnts bg-color-hui">已售罄</view>
+					<view class="joinCart bnts" @tap="openAlone">{{$t(`单独购买`)}}</view>
+					<view class="buy bnts bg-color-hui">{{$t(`已售罄`)}}</view>
 				</view>
 				<view class="bnt acea-row" v-if="!dataShow && status == 1">
-					<view class="joinCart bnts" @tap="openAlone">单独购买</view>
-					<view class="buy bnts bg-color-hui">立即购买</view>
+					<view class="joinCart bnts" @tap="openAlone">{{$t(`单独购买`)}}</view>
+					<view class="buy bnts bg-color-hui">{{$t(`立即购买`)}}</view>
 				</view>
 				<view class="bnt acea-row" v-if="status == 2">
-					<view class="joinCart bnts" @tap="openAlone">单独购买</view>
-					<view class="buy bnts bg-color-hui">未开始</view>
+					<view class="joinCart bnts" @tap="openAlone">{{$t(`单独购买`)}}</view>
+					<view class="buy bnts bg-color-hui">{{$t(`未开始`)}}</view>
 				</view>
 				<view class="bnt acea-row" v-if="status == 0">
-					<view class="joinCart bnts" @tap="openAlone">单独购买</view>
-					<view class="buy bnts bg-color-hui">已结束</view>
+					<view class="joinCart bnts" @tap="openAlone">{{$t(`单独购买`)}}</view>
+					<view class="buy bnts bg-color-hui">{{$t(`已结束`)}}</view>
 				</view>
 			</view>
 		</view>
@@ -188,28 +176,28 @@
 			<button class="item" hover-class='none' v-if="weixinStatus === true" @click="H5ShareBox = true">
 				<!-- <button class="item" hover-class='none' v-if="weixinStatus === true" @click="setShareInfoStatus"> -->
 				<view class="iconfont icon-weixin3"></view>
-				<view class="">发送给朋友</view>
+				<view class="">{{$t(`发送给朋友`)}}</view>
 			</button>
 			<!-- #endif -->
 			<!-- #ifdef MP -->
 			<button class="item" open-type="share" hover-class='none' @click="goFriend">
 				<view class="iconfont icon-weixin3"></view>
-				<view class="">发送给朋友</view>
+				<view class="">{{$t(`发送给朋友`)}}</view>
 			</button>
 			<!-- #endif -->
 			<!-- #ifdef APP-PLUS -->
 			<view class="item" @click="appShare('WXSceneSession')">
 				<view class="iconfont icon-weixin3"></view>
-				<view class="">微信好友</view>
+				<view class="">{{$t(`微信好友`)}}</view>
 			</view>
 			<view class="item" @click="appShare('WXSenceTimeline')">
 				<view class="iconfont icon-pengyouquan"></view>
-				<view class="">微信朋友圈</view>
+				<view class="">{{$t(`微信朋友圈`)}}</view>
 			</view>
 			<!-- #endif -->
-			<button class="item" hover-class='none' @tap="goPoster">
+			<button class="item" hover-class='none' @tap="goPoster('seckill')">
 				<view class="iconfont icon-haibao"></view>
-				<view class="">生成海报</view>
+				<view class="">{{$t(`生成海报`)}}</view>
 			</button>
 		</view>
 		<view class="mask" v-if="posters" @click="listenerActionClose"></view>
@@ -219,10 +207,10 @@
 			<image src='/static/images/poster-close.png' class='close' @click="posterImageClose"></image>
 			<image :src='posterImage'></image>
 			<!-- #ifndef H5  -->
-			<view class='save-poster' @click="savePosterPath">保存到手机</view>
+			<view class='save-poster' @click="savePosterPath">{{$t(`保存到手机`)}}</view>
 			<!-- #endif -->
 			<!-- #ifdef H5 -->
-			<view class="keep">长按图片可以保存到手机</view>
+			<view class="keep">{{$t(`长按图片可以保存到手机`)}}</view>
 			<!-- #endif -->
 		</view>
 		<view class='mask1' v-if="posterImageStatus"></view>
@@ -230,7 +218,7 @@
 		<kefuIcon :ids='storeInfo.product_id' :routineContact='routineContact'></kefuIcon>
 		<!-- 发送给朋友图片 -->
 		<view class="share-box" v-if="H5ShareBox">
-			<image src="/static/images/share-info.png" @click="H5ShareBox = false"></image>
+			<image :src="imgHost + '/statics/images/share-info.png'" @click="H5ShareBox = false"></image>
 		</view>
 		<!-- #ifdef H5 || APP-PLUS -->
 		<zb-code ref="qrcode" :show="codeShow" :cid="cid" :val="codeVal" :size="size" :unit="unit"
@@ -261,7 +249,6 @@
 	// #ifdef MP
 	import authorize from '@/components/Authorize';
 	// #endif
-	// import parser from "@/components/mp-html/mp-html";
 	import countDown from '@/components/countDown';
 	import {
 		imageBase64
@@ -270,15 +257,11 @@
 		toLogin
 	} from '@/libs/login.js';
 	import {
-		silenceBindingSpread
-	} from "@/utils";
-	import {
 		getUserInfo
 	} from '@/api/user.js';
 	// #ifdef APP-PLUS
 	import {
-		TOKENNAME,
-		HTTP_REQUEST_URL
+		TOKENNAME
 	} from '@/config/app.js';
 	// #endif
 	import colors from '@/mixins/color.js';
@@ -288,6 +271,7 @@
 	import {
 		sharePoster
 	} from "@/mixins/sharePoster";
+	import {HTTP_REQUEST_URL} from '@/config/app';
 	import homeList from '@/components/homeList'
 	let sysHeight = uni.getSystemInfoSync().statusBarHeight + 'px';
 
@@ -310,6 +294,7 @@
 		},
 		data() {
 			return {
+				imgHost:HTTP_REQUEST_URL,
 				showMenuIcon: false,
 				dataShow: 0,
 				id: 0,
@@ -322,7 +307,7 @@
 				parameter: {
 					'navbar': '1',
 					'return': '1',
-					'title': '抢购详情页',
+					'title': this.$t(`抢购详情页`),
 					'color': false
 				},
 				attribute: {
@@ -332,7 +317,7 @@
 				},
 				productValue: [],
 				isOpen: false,
-				attr: '请选择',
+				attr: this.$t(`请选择`),
 				attrValue: '',
 				status: 1,
 				isAuto: false,
@@ -344,7 +329,7 @@
 				reply: [], //评论列表
 				replyChance: 0,
 				navH: "",
-				navList: ['商品', '评价', '详情'],
+				navList: [this.$t(`商品`), this.$t(`评价`), this.$t(`详情`)],
 				opacity: 0,
 				scrollY: 0,
 				topArr: [],
@@ -415,7 +400,6 @@
 					//res.windowHeight:获取整个窗口高度为px，*2为rpx；98为头部占据的高度；
 				},
 			});
-			this.isLogin && silenceBindingSpread();
 			// #ifdef MP
 			this.navH = app.globalData.navHeight;
 			// #endif
@@ -437,7 +421,7 @@
 					this.id = value.id;
 				} else {
 					return this.$util.Tips({
-						title: '缺少参数无法查看商品'
+						title: this.$t(`缺少参数无法查看商品`)
 					}, {
 						tab: 3,
 						url: 1
@@ -489,14 +473,14 @@
 					imageUrl: that.storeInfo.small_image,
 					success: function(res) {
 						uni.showToast({
-							title: '分享成功',
+							title: this.$t(`分享成功`),
 							icon: 'success'
 						})
 						that.posters = false;
 					},
 					fail: function(err) {
 						uni.showToast({
-							title: '分享失败',
+							title: this.$t(`分享失败`),
 							icon: 'none',
 							duration: 2000
 						})
@@ -563,9 +547,9 @@
 						that.skuArr.push(obj);
 					}
 					this.$set(this, "selectSku", that.skuArr[0]);
-					var navList = ['商品', '详情'];
+					var navList = [that.$t(`商品`), that.$t(`详情`)];
 					if (res.data.replyCount) {
-						navList.splice(1, 0, '评价');
+						navList.splice(1, 0, that.$t(`评价`));
 					}
 					that.$set(that, 'navList', navList);
 					// #ifdef H5 || APP-PLUS
@@ -581,7 +565,7 @@
 						},
 						fail: function() {
 							return that.$util.Tips({
-								title: '二维码获取失败'
+								title: that.$t(`二维码获取失败`)
 							});
 						},
 					});
@@ -593,7 +577,7 @@
 					// #endif
 					// #ifndef H5 || APP-PLUS
 					that.downloadFilestoreImage();
-					that.downloadFilePromotionCode();
+					// that.downloadFilePromotionCode();
 					// #endif
 					that.DefaultSelect();
 					setTimeout(() => {
@@ -612,7 +596,6 @@
 					// wxParse.wxParse('description', 'html', that.data.storeInfo.description || '', that, 0);
 					// wxh.time(that.data.time, that);
 				}).catch(err => {
-					console.log(err)
 					that.$util.Tips({
 						title: err
 					})
@@ -727,7 +710,7 @@
 					self.$set(self.attribute.productSelect, "unique", "");
 					self.$set(self.attribute.productSelect, "cart_num", 0);
 					self.$set(self, "attrValue", "");
-					self.$set(self, "attrTxt", "请选择");
+					self.$set(self, "attrTxt", this.$t(`请选择`));
 				} else if (!productSelect && !productAttr.length) {
 					self.$set(
 						self.attribute.productSelect,
@@ -748,7 +731,7 @@
 					self.$set(self.attribute.productSelect, "quota", productSelect.quota);
 					self.$set(self.attribute.productSelect, "product_stock", productSelect.product_stock);
 					self.$set(self, "attrValue", "");
-					self.$set(self, "attrTxt", "请选择");
+					self.$set(self, "attrTxt", this.$t(`请选择`));
 				}
 			},
 			selecAttr: function() {
@@ -842,7 +825,7 @@
 					this.$set(this.attribute.productSelect, "quota_show", productSelect.quota_show);
 					this.$set(this, "attrValue", res);
 
-					this.attrTxt = "已选择"
+					this.attrTxt = this.$t(`已选择`)
 				} else {
 					this.$set(this.attribute.productSelect, "image", this.storeInfo.image);
 					this.$set(this.attribute.productSelect, "price", this.storeInfo.price);
@@ -852,7 +835,7 @@
 					this.$set(this.attribute.productSelect, "quota", 0);
 					this.$set(this.attribute.productSelect, "quota_show", 0);
 					this.$set(this, "attrValue", "");
-					this.attrTxt = "已选择"
+					this.attrTxt = this.$t(`已选择`)
 
 				}
 			},
@@ -953,7 +936,7 @@
 				//如果有属性,没有选择,提示用户选择
 				if (this.attribute.productAttr.length && productSelect === undefined && this.isOpen == true) return app
 					.$util.Tips({
-						title: '请选择属性'
+						title: that.$t(`请选择属性`)
 					});
 				postCartAdd({
 					productId: that.storeInfo.product_id,
@@ -966,7 +949,7 @@
 				}).then(res => {
 					this.isOpen = false
 					uni.navigateTo({
-						url: '/pages/users/order_confirm/index?new=1&cartId=' + res.data.cartId
+						url: '/pages/goods/order_confirm/index?new=1&cartId=' + res.data.cartId
 					});
 				}).catch(err => {
 					return this.$util.Tips({
@@ -1027,13 +1010,13 @@
 										success: function(res) {
 											that.posterImageClose();
 											that.$util.Tips({
-												title: '保存成功',
+												title: that.$t(`保存成功`),
 												icon: 'success'
 											});
 										},
 										fail: function(res) {
 											that.$util.Tips({
-												title: '保存失败'
+												title: that.$t(`保存失败`)
 											});
 										}
 									})
@@ -1045,13 +1028,13 @@
 								success: function(res) {
 									that.posterImageClose();
 									that.$util.Tips({
-										title: '保存成功',
+										title: that.$t(`保存成功`),
 										icon: 'success'
 									});
 								},
 								fail: function(res) {
 									that.$util.Tips({
-										title: '保存失败'
+										title: that.$t(`保存失败`)
 									});
 								},
 							})
@@ -1068,13 +1051,13 @@
 					success: function(res) {
 						that.posterImageClose();
 						that.$util.Tips({
-							title: '保存成功',
+							title: that.$t(`保存成功`),
 							icon: 'success'
 						});
 					},
 					fail: function(res) {
 						that.$util.Tips({
-							title: '保存失败'
+							title: that.$t(`保存失败`)
 						});
 					}
 				});
@@ -1108,11 +1091,9 @@
 			},
 			//滑动轮播图选择商品
 			changeSwitch(e) {
-				console.log(this.skuArr[e])
 				let productSelect = this.skuArr[e];
 				this.$set(this, "selectSku", productSelect);
 				var skuList = productSelect.suk.split(",");
-				console.log(this.attribute.productAttr)
 				this.$set(this.attribute.productAttr[0], "index", skuList[0]);
 				if (skuList.length == 2) {
 					this.$set(this.attribute.productAttr[0], "index", skuList[0]);
@@ -1133,7 +1114,7 @@
 					this.$set(this.attribute.productSelect, "stock", productSelect.stock);
 					this.$set(this.attribute.productSelect, "unique", productSelect.id);
 					this.$set(this.attribute.productSelect, "vipPrice", productSelect.vipPrice);
-					this.$set(this, "attrTxt", "已选择");
+					this.$set(this, "attrTxt", this.$t(`已选择`));
 					this.$set(this, "attrValue", productSelect.suk);
 				}
 			},

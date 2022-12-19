@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -39,8 +39,8 @@ class UserLabeCateValidata extends Validate
      * @var array
      */
     protected $message = [
-        'name.require' => '请填写标签分类名称',
-        'sort.require' => '请填写标签分类排序',
-        'sort.number' => '标签分类必须为数字'
+        'name.require' => '400086',
+        'sort.require' => '400087',
+        'sort.number' => '400088'
     ];
 }

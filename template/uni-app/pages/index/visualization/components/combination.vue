@@ -1,15 +1,15 @@
 <template>
 	<view>
 		<view class="default" v-if="isIframe && !combinationList.length">
-			<text>拼团模块，暂无数据</text>
+			<text>{{$t(`拼团模块，暂无数据`)}}</text>
 		</view>
 		<view class="combination index-wrapper" v-if="combinationList.length&&isShow&&!isIframe">
 			<view class='title acea-row row-between-wrapper'>
 				<view class='text'>
-					<view class='name line1'>拼团惠</view>
-					<view class='line1'>享超值开团价</view>
+					<view class='name line1'>{{$t(`拼团活动`)}}</view>
+					<view class='line1'>{{$t(`享超值开团价`)}}</view>
 				</view>
-				<navigator class='more' url="/pages/activity/goods_combination/index" hover-class="none">更多<text class='iconfont icon-jiantou'></text></navigator>
+				<navigator class='more' url="/pages/activity/goods_combination/index" hover-class="none">{{$t(`更多`)}}<text class='iconfont icon-jiantou'></text></navigator>
 			</view>
 			<view class="conter">
 				<scroll-view scroll-x="true" style="white-space: nowrap; vertical-align: middle;" show-scrollbar="false">
@@ -21,10 +21,10 @@
 							<view class="name line1">{{item.title}}</view>
 							<view class="money">
 								<view class="price acea-row row-middle">
-									<view class="label">拼团价</view>
-									<view class="x_money">¥<text class="num">{{item.price}}</text></view>
+									<view class="label">{{$t(`拼团价`)}}</view>
+									<view class="x_money">{{$t(`￥`)}}<text class="num">{{item.price}}</text></view>
 								</view>
-								<view class="bnt">参与拼团</view>
+								<view class="bnt">{{$t(`参与拼团`)}}</view>
 							</view>
 						</view>
 					</view>
@@ -34,10 +34,10 @@
 		<view class="combination index-wrapper" v-if="combinationList.length&&isIframe">
 			<view class='title acea-row row-between-wrapper'>
 				<view class='text'>
-					<view class='name line1'>拼团惠</view>
-					<view class='line1'>享超值开团价</view>
+					<view class='name line1'>{{$t(`拼团活动`)}}</view>
+					<view class='line1'>{{$t(`享超值开团价`)}}</view>
 				</view>
-				<navigator class='more'>更多<text class='iconfont icon-jiantou'></text></navigator>
+				<navigator class='more'>{{$t(`更多`)}}<text class='iconfont icon-jiantou'></text></navigator>
 			</view>
 		<view class="conter">
 			<scroll-view scroll-x="true" style="white-space: nowrap; vertical-align: middle;" show-scrollbar="false">
@@ -49,10 +49,10 @@
 						<view class="name line1">{{item.title}}</view>
 						<view class="money">
 							<view class="price acea-row row-middle">
-								<view class="label">拼团价</view>
-								<view class="x_money">¥<text class="num">{{item.price}}</text></view>
+								<view class="label">{{$t(`拼团价`)}}</view>
+								<view class="x_money">{{$t(`￥`)}}<text class="num">{{item.price}}</text></view>
 							</view>
-							<view class="bnt">参与拼团</view>
+							<view class="bnt">{{$t(`参与拼团`)}}</view>
 						</view>
 					</view>
 				</view>

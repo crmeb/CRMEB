@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -35,8 +35,10 @@ class UserExtract extends AuthController
 
     /**
      * 显示资源列表
-     *
-     * @return \think\Response
+     * @return mixed
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
      */
     public function index()
     {
@@ -53,30 +55,28 @@ class UserExtract extends AuthController
     }
 
     /**
-     * 显示编辑资源表单页.
-     *
-     * @param int $id
-     * @return \think\Response
+     * 显示编辑资源表单页
+     * @param $id
+     * @return mixed
      */
     public function edit($id)
     {
-        if (!$id) return app('json')->fail('数据不存在');
+        if (!$id) return app('json')->fail(100026);
         return app('json')->success($this->services->edit((int)$id));
     }
 
     /**
      * 保存更新的资源
-     *
      * @param Request $request
-     * @param int $id
-     * @return \think\Response
+     * @param $id
+     * @return mixed
      */
     public function update(Request $request, $id)
     {
-        if (!$id) return app('json')->fail('缺少参数!');
+        if (!$id) return app('json')->fail(100100);
         $id = (int)$id;
         $UserExtract = $this->services->getExtract($id);
-        if (!$UserExtract) app('json')->fail('数据不存在');
+        if (!$UserExtract) app('json')->fail(100026);
         if ($UserExtract['extract_type'] == 'alipay') {
             $data = $this->request->postMore([
                 'real_name',
@@ -84,9 +84,9 @@ class UserExtract extends AuthController
                 'extract_price',
                 'alipay_code',
             ]);
-            if (!$data['real_name']) return app('json')->fail('请输入姓名');
-            if ($data['extract_price'] <= -1) return app('json')->fail('请输入提现金额');
-            if (!$data['alipay_code']) return app('json')->fail('请输入支付宝账号');
+            if (!$data['real_name']) return app('json')->fail(400107);
+            if ($data['extract_price'] <= -1) return app('json')->fail(400108);
+            if (!$data['alipay_code']) return app('json')->fail(400109);
         } else if ($UserExtract['extract_type'] == 'weixin') {
             $data = $this->request->postMore([
                 'real_name',
@@ -94,8 +94,8 @@ class UserExtract extends AuthController
                 'extract_price',
                 'wechat',
             ]);
-            if ($data['extract_price'] <= -1) return app('json')->fail('请输入提现金额');
-            if (!$data['wechat']) return app('json')->fail('请输入微信账号');
+            if ($data['extract_price'] <= -1) return app('json')->fail(400108);
+            if (!$data['wechat']) return app('json')->fail(400110);
         } else {
             $data = $this->request->postMore([
                 'real_name',
@@ -104,12 +104,12 @@ class UserExtract extends AuthController
                 'bank_code',
                 'bank_address',
             ]);
-            if (!$data['real_name']) return app('json')->fail('请输入姓名');
-            if ($data['extract_price'] <= -1) return app('json')->fail('请输入提现金额');
-            if (!$data['bank_code']) return app('json')->fail('请输入银行卡号');
-            if (!$data['bank_address']) return app('json')->fail('请输入开户行');
+            if (!$data['real_name']) return app('json')->fail(400107);
+            if ($data['extract_price'] <= -1) return app('json')->fail(400108);
+            if (!$data['bank_code']) return app('json')->fail(400111);
+            if (!$data['bank_address']) return app('json')->fail(400112);
         }
-        return app('json')->success($this->services->update($id, $data) ? '修改成功' : '修改失败');
+        return app('json')->success($this->services->update($id, $data) ? 100001 : 100007);
     }
 
     /**
@@ -119,12 +119,12 @@ class UserExtract extends AuthController
      */
     public function refuse($id)
     {
-        if (!$id) app('json')->fail('缺少参数');
+        if (!$id) app('json')->fail(100100);
         $data = $this->request->postMore([
             ['message', '']
         ]);
-        if ($data['message'] == '') return app('json')->fail('拒绝理由不能为空');
-        return app('json')->success($this->services->refuse((int)$id, $data['message']) ? '操作成功' : '操作失败');
+        if ($data['message'] == '') return app('json')->fail(400113);
+        return app('json')->success($this->services->refuse((int)$id, $data['message']) ? 100014 : 100015);
     }
 
     /**
@@ -134,7 +134,7 @@ class UserExtract extends AuthController
      */
     public function adopt($id)
     {
-        if (!$id) app('json')->fail('缺少参数');
-        return app('json')->success($this->services->adopt((int)$id) ? '操作成功' : '操作失败');
+        if (!$id) app('json')->fail(100100);
+        return app('json')->success($this->services->adopt((int)$id) ? 100014 : 100015);
     }
 }

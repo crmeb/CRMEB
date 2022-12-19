@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -29,8 +29,11 @@ class StoreCouponUser extends AuthController
     }
 
     /**
-     * 发放列表
+     * 用户领取记录
      * @return mixed
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
      */
     public function index()
     {
@@ -45,9 +48,7 @@ class StoreCouponUser extends AuthController
 
     /**
      * 发放优惠券到指定个人
-     * @param $id
-     * @param $uid
-     * @return \think\response\Json
+     * @return mixed
      */
     public function grant()
     {
@@ -55,20 +56,20 @@ class StoreCouponUser extends AuthController
             ['id', 0],
             ['uid', '']
         ]);
-        if (!$data['id']) return app('json')->fail('数据不存在!');
+        if (!$data['id']) return app('json')->fail(100100);
         /** @var StoreCouponIssueServices $issueService */
         $issueService = app()->make(StoreCouponIssueServices::class);
         $coupon = $issueService->get($data['id']);
         if (!$coupon) {
-            return app('json')->fail('数据不存在!');
+            return app('json')->fail(100026);
         } else {
             $coupon = $coupon->toArray();
         }
         $user = explode(',', $data['uid']);
         if (!$issueService->setCoupon($coupon, $user))
-            return app('json')->fail('发放失败,请稍候再试!');
+            return app('json')->fail(100031);
         else
-            return app('json')->success('发放成功!');
+            return app('json')->success(100030);
 
     }
 }

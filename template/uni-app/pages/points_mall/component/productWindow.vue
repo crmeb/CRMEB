@@ -12,10 +12,10 @@
 					</view>
 					<view class="money font-color">
 						<view class="acea-row row-middle">
-							<text class="num">{{ attr.productSelect.price }}积分</text>
+							<text class="num">{{ attr.productSelect.price }}{{$t(`积分`)}}</text>
 						</view>
-						<text class="stock" v-if='isShow'>库存: {{ attr.productSelect.stock }}</text>
-						<text class='stock' v-if="limitNum">剩余: {{attr.productSelect.quota}}</text>
+						<text class="stock" v-if='isShow'>{{$t(`库存`)}}: {{ attr.productSelect.stock }}</text>
+						<text class='stock' v-if="limitNum">{{$t(`剩余`)}}: {{attr.productSelect.quota}}</text>
 					</view>
 				</view>
 				<view class="iconfont icon-guanbi" @click="closeAttr"></view>
@@ -34,7 +34,7 @@
 					</view>
 				</view>
 				<view class="cart acea-row row-between-wrapper">
-					<view class="title">数量</view>
+					<view class="title">{{$t(`数量`)}}</view>
 					<view class="carnum acea-row row-left">
 						<view class="item reduce acea-row row-center-wrapper"
 							:class="attr.productSelect.cart_num <= 1 ? 'on' : ''" @click="CartNumDes">

@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -18,8 +18,8 @@ use app\services\order\OtherOrderServices;
 use app\services\order\StoreOrderCreateServices;
 use app\services\user\UserServices;
 use crmeb\exceptions\AdminException;
+use crmeb\exceptions\ApiException;
 use crmeb\services\SystemConfigService;
-use think\exception\ValidateException;
 
 class MemberCardServices extends BaseServices
 {
@@ -71,10 +71,10 @@ class MemberCardServices extends BaseServices
     public function addCard(array $data)
     {
         if (!isset($data['card_batch_id']) || !$data['card_batch_id'] || $data['card_batch_id'] == 0 || !isset($data['total_num']) || !$data['total_num'] || $data['total_num'] == 0) {
-            throw new AdminException("非法参数");
+            throw new AdminException(100100);
         }
         try {
-            if (!isset($data['total_num'])) throw new AdminException("数据缺失");
+            if (!isset($data['total_num'])) throw new AdminException(100100);
             $num = $data['total_num'];
             unset($data['total_num']);
             $res = [];
@@ -92,7 +92,7 @@ class MemberCardServices extends BaseServices
             }
             return true;
         } catch (\Exception $exception) {
-            throw new AdminException("生成卡失败");
+            throw new AdminException(400620);
         }
     }
 
@@ -127,34 +127,32 @@ class MemberCardServices extends BaseServices
      */
     public function drawMemberCard(array $data, int $uid)
     {
-        if (!$uid || !$data) throw new ValidateException('参数缺失!');
+        if (!$uid || !$data) throw new ApiException(100100);
         $isOpenMember = $this->isOpenMemberCard();
-        if (!$isOpenMember) throw new ValidateException('会员功能暂未开启!');
-        if (!isset($data['member_card_code']) || !$data['member_card_code']) throw new ValidateException('请输入会员卡号!');
-        if (!isset($data['member_card_code']) || !$data['member_card_pwd']) throw new ValidateException('请输入领取卡密!');
+        if (!$isOpenMember) throw new ApiException(400621);
+        if (!isset($data['member_card_code']) || !$data['member_card_code']) throw new ApiException(400622);
+        if (!isset($data['member_card_code']) || !$data['member_card_pwd']) throw new ApiException(400623);
         $card_info = $this->dao->getOneByWhere(['card_number' => trim($data['member_card_code'])]);
-        if (!$card_info) throw new ValidateException('会员卡不存在!');
+        if (!$card_info) throw new ApiException(400624);
         /** @var MemberCardBatchServices $memberBatchServices */
         $memberBatchServices = app()->make(MemberCardBatchServices::class);
         $batch_info = $memberBatchServices->getOne($card_info['card_batch_id']);
-        if (!$batch_info) throw new ValidateException('会员卡未激活，暂无法使用.');
-        if ($batch_info->status != 1) throw new ValidateException('会员卡未激活，暂无法使用..');
-        if ($card_info['status'] == 0) throw new ValidateException('会员卡暂未激活');
-        if ($card_info['card_password'] != trim($data['member_card_pwd'])) throw new ValidateException('会员卡密码有误!');
-        if ($card_info['use_uid'] && $card_info['use_time']) throw new ValidateException('会员卡已使用!');
+        if (!$batch_info) throw new ApiException(400625);
+        if ($batch_info->status != 1) throw new ApiException(400625);
+        if ($card_info['status'] == 0) throw new ApiException(400625);
+        if ($card_info['card_password'] != trim($data['member_card_pwd'])) throw new ApiException(400626);
+        if ($card_info['use_uid'] && $card_info['use_time']) throw new ApiException(400627);
         /** @var UserServices $userServices */
         $userServices = app()->make(UserServices::class);
         $user_info = $userServices->getUserInfo($uid);
-        if (!$user_info) throw new ValidateException('用户不存在，请重新登录');
-        if ($user_info->is_money_level > 0 && $user_info->is_ever_level == 1) throw new ValidateException('您已是永久会员，无需再领取，可以将此卡转送亲朋好友，一起享受优惠');
+        if (!$user_info) throw new ApiException(400214);
+        if ($user_info->is_money_level > 0 && $user_info->is_ever_level == 1) throw new ApiException(400628);
 
 
         /**
          * 批次卡具体使用期限，业务需要打开即可，勿删。
          */
-        //if ($batch_info->use_start_time > time()) throw new ValidateException('卡片未在合法有效期内，暂无法使用');
-        //if ($batch_info->use_end_time < time()) throw new ValidateException('卡片已经失效，无法使用');
-        if ($card_info->status != 1) throw new ValidateException('会员卡未激活,暂无法使用...');
+        if ($card_info->status != 1) throw new ApiException(400625);
         $this->transaction(function () use ($card_info, $user_info, $batch_info, $memberBatchServices, $userServices, $data) {
             $res1 = $this->dao->update($card_info->id, ['use_uid' => $user_info->uid, 'use_time' => time(), 'update_time' => time()], 'id');
             if ($res1) {
@@ -206,7 +204,7 @@ class MemberCardServices extends BaseServices
     public function checkmemberType(string $member_type)
     {
         $member_type_arr = $this->getMemberTypeInfo();
-        if (!array_key_exists($member_type, $member_type_arr)) throw new ValidateException('暂无此类型会员卡');
+        if (!array_key_exists($member_type, $member_type_arr)) throw new ApiException(400629);
         return true;
     }
 
@@ -321,8 +319,14 @@ class MemberCardServices extends BaseServices
         return $otherOrderSevice->getMemberRecord($where);
     }
 
-    /**看是否开启会员功能
-     * @return bool
+    /**
+     * 看是否开启会员功能
+     * @param string $rightType
+     * @param bool $get_number
+     * @return bool|mixed
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
      */
     public function isOpenMemberCard(string $rightType = '', bool $get_number = true)
     {

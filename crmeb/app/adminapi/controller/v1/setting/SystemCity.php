@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -27,7 +27,7 @@ class SystemCity extends AuthController
      * 构造方法
      * SystemCity constructor.
      * @param App $app
-     * @param SystemStoreServices $services
+     * @param SystemCityServices $services
      */
     public function __construct(App $app, SystemCityServices $services)
     {
@@ -90,12 +90,12 @@ class SystemCity extends AuthController
             $data['level'] = $data['level'] + 1;
             $data['city_id'] = intval($this->services->getCityIdMax() + 1);
             $this->services->save($data);
-            return app('json')->success('添加城市成功!');
+            return app('json')->success(100000);
         } else {
             unset($data['level']);
             unset($data['parent_id']);
             $this->services->update($data['id'], $data);
-            return app('json')->success('修改城市成功!');
+            return app('json')->success(100001);
         }
     }
 
@@ -124,7 +124,7 @@ class SystemCity extends AuthController
             [['city_id', 'd'], 0]
         ], true);
         $this->services->deleteCity($id);
-        return app('json')->success('删除成功!');
+        return app('json')->success(100002);
     }
 
     /**
@@ -133,12 +133,11 @@ class SystemCity extends AuthController
      */
     public function clean_cache()
     {
-        $res = CacheService::delete('tree_city_list');
-        $res = $res && CacheService::delete('CITY_LIST');
+        $res = CacheService::delete('CITY_LIST');
         if ($res) {
-            return app('json')->success('清除成功!');
+            return app('json')->success(400185);
         } else {
-            return app('json')->fail('清除失败或缓存未生成!');
+            return app('json')->fail(400186);
         }
     }
 }

@@ -1,10 +1,5 @@
 <template>
   <div>
-    <div class="i-layout-page-header">
-      <div class="i-layout-page-header">
-        <span class="ivu-page-header-title">{{ $route.meta.title }}</span>
-      </div>
-    </div>
     <Card :bordered="false" dis-hover class="ivu-mt">
       <Form
         ref="pagination"
@@ -20,9 +15,7 @@
               type="button"
               @on-change="selectChange2(pagination.refund_type)"
             >
-              <Radio v-for="(item, index) in num" :key="index" :label="index">{{
-                item.name
-              }}</Radio>
+              <Radio v-for="(item, index) in num" :key="index" :label="index">{{ item.name }}</Radio>
             </RadioGroup>
           </FormItem>
         </Col>
@@ -68,9 +61,7 @@
       >
         <template slot-scope="{ row, index }" slot="order_id">
           <span v-text="row.order_id" style="display: block"></span>
-          <span v-show="row.is_del === 1" style="color: #ed4014; display: block"
-            >用户已删除</span
-          >
+          <span v-show="row.is_del === 1" style="color: #ed4014; display: block">用户已删除</span>
         </template>
         <template slot-scope="{ row, index }" slot="user">
           <div>用户名：{{ row.nickname }}</div>
@@ -102,34 +93,21 @@
               />
             </div>
             <span class="tabBox_tit"
-              >{{ val.cart_info.productInfo.store_name + " | "
-              }}{{
-                val.cart_info.productInfo.attrInfo
-                  ? val.cart_info.productInfo.attrInfo.suk
-                  : ""
-              }}</span
+              >{{ val.cart_info.productInfo.store_name + ' | '
+              }}{{ val.cart_info.productInfo.attrInfo ? val.cart_info.productInfo.attrInfo.suk : '' }}</span
             >
-            <span class="tabBox_pice">{{
-              "￥" + val.cart_info.truePrice + " x " + val.cart_info.cart_num
-            }}</span>
+            <span class="tabBox_pice">{{ '￥' + val.cart_info.truePrice + ' x ' + val.cart_info.cart_num }}</span>
           </div>
         </template>
         <template slot-scope="{ row, index }" slot="order_info">
           <div>订单金额：{{ row.pay_price }}</div>
           <div>付款方式：{{ row.pay_type_name }}</div>
-          <div>
-            订单状态：<span v-html="row.status_name.status_name"></span>
-          </div>
+          <div>订单状态：<span v-html="row.status_name.status_name"></span></div>
         </template>
         <template slot-scope="{ row, index }" slot="statusName">
           <div v-html="row.refund_reason" class="pt5"></div>
-          <div class="pictrue-box">
-            <div
-              v-viewer
-              v-if="row.refund_img"
-              v-for="(item, index) in row.refund_img || []"
-              :key="index"
-            >
+          <div class="pictrue-box" v-if="row.refund_img.length">
+            <div v-viewer v-for="(item, index) in row.refund_img || []" :key="index">
               <img class="pictrue mr10" v-lazy="item" :src="item" />
             </div>
           </div>
@@ -184,7 +162,7 @@
           <!--            "-->
           <!--          />-->
           <template>
-            <Dropdown @on-click="changeMenu(row, $event)">
+            <Dropdown @on-click="changeMenu(row, $event)" transfer="true">
               <a href="javascript:void(0)"
                 >更多
                 <Icon type="ios-arrow-down"></Icon>
@@ -193,11 +171,7 @@
                 <DropdownItem
                   name="1"
                   ref="ones"
-                  v-show="
-                    row._status === 1 &&
-                    row.paid === 0 &&
-                    row.pay_type === 'offline'
-                  "
+                  v-show="row._status === 1 && row.paid === 0 && row.pay_type === 'offline'"
                   >立即支付</DropdownItem
                 >
                 <DropdownItem name="2">订单详情</DropdownItem>
@@ -214,9 +188,7 @@
                   name="4"
                   v-show="
                     row._status !== 1 ||
-                    (row._status === 3 &&
-                      row.use_integral > 0 &&
-                      row.use_integral >= row.back_integral)
+                    (row._status === 3 && row.use_integral > 0 && row.use_integral >= row.back_integral)
                   "
                   >售后备注</DropdownItem
                 >
@@ -224,13 +196,9 @@
                   name="5"
                   v-show="
                     [1, 2, 5].includes(row.refund_type) &&
-                    (parseFloat(row.pay_price) >
-                      parseFloat(row.refunded_price) ||
-                      row.pay_price == 0)
+                    (parseFloat(row.pay_price) > parseFloat(row.refunded_price) || row.pay_price == 0)
                   "
-                  >{{
-                    row.refund_type == 2 ? "同意退货" : "立即退款"
-                  }}</DropdownItem
+                  >{{ row.refund_type == 2 ? '同意退货' : '立即退款' }}</DropdownItem
                 >
                 <!--                <DropdownItem-->
                 <!--                  name="6"-->
@@ -241,13 +209,10 @@
                 <!--                  "-->
                 <!--                  >退积分</DropdownItem-->
                 <!--                >-->
-                <DropdownItem
-                  name="7"
-                  v-show="
-                    [1, 2].includes(row.refund_type) && row.is_pink_cancel === 0
-                  "
+                <DropdownItem name="7" v-show="[1, 2].includes(row.refund_type) && row.is_pink_cancel === 0"
                   >不退款</DropdownItem
                 >
+                <DropdownItem name="8" v-show="row.is_del == 1">删除订单</DropdownItem>
               </DropdownMenu>
             </Dropdown>
           </template>
@@ -265,32 +230,18 @@
       </div>
     </Card>
     <!-- 编辑 退款 退积分 不退款-->
-    <edit-from
-      ref="edits"
-      :FromData="FromData"
-      @submitFail="submitFail"
-    ></edit-from>
+    <edit-from ref="edits" :FromData="FromData" @submitFail="submitFail"></edit-from>
     <!-- 详情 -->
-    <details-from
-      ref="detailss"
-      :orderDatalist="orderDatalist"
-      :orderId="orderId"
-      :is_refund="1"
-    ></details-from>
+    <details-from ref="detailss" :orderDatalist="orderDatalist" :orderId="orderId" :is_refund="1"></details-from>
     <!-- 备注 -->
-    <order-remark
-      ref="remarks"
-      remarkType="refund"
-      :orderId="orderId"
-      @submitFail="submitFail"
-    ></order-remark>
+    <order-remark ref="remarks" remarkType="refund" :orderId="orderId" @submitFail="submitFail"></order-remark>
     <!-- 记录 -->
     <order-record ref="record"></order-record>
   </div>
 </template>
 
 <script>
-import { mapState } from "vuex";
+import { mapState } from 'vuex';
 import {
   orderRefundList,
   orderList,
@@ -303,11 +254,11 @@ import {
   refundIntegral,
   getDistribution,
   writeUpdate,
-} from "@/api/order";
-import editFrom from "@/components/from/from";
-import detailsFrom from "../orderList/handle/orderDetails";
-import orderRemark from "../orderList/handle/orderRemark";
-import orderRecord from "../orderList/handle/orderRecord";
+} from '@/api/order';
+import editFrom from '@/components/from/from';
+import detailsFrom from '../orderList/handle/orderDetails';
+import orderRemark from '../orderList/handle/orderRemark';
+import orderRecord from '../orderList/handle/orderRecord';
 export default {
   components: { editFrom, detailsFrom, orderRemark, orderRecord },
   data() {
@@ -321,52 +272,52 @@ export default {
       },
       thead: [
         {
-          title: "订单号",
-          align: "center",
-          slot: "order_id",
+          title: '订单号',
+          align: 'center',
+          slot: 'order_id',
           minWidth: 150,
         },
         {
-          title: "用户信息",
-          key: "nickname",
+          title: '用户信息',
+          key: 'nickname',
           minWidth: 100,
         },
         {
-          title: "商品信息",
-          slot: "info",
+          title: '商品信息',
+          slot: 'info',
           minWidth: 330,
         },
         {
-          title: "实际支付",
-          key: "pay_price",
+          title: '实际支付',
+          key: 'pay_price',
           minWidth: 70,
         },
         {
-          title: "发起退款时间",
-          key: "add_time",
+          title: '发起退款时间',
+          key: 'add_time',
           minWidth: 100,
         },
         {
-          title: "退款状态",
-          slot: "refund_type",
+          title: '退款状态',
+          slot: 'refund_type',
           minWidth: 100,
         },
         {
-          title: "退款信息",
-          slot: "statusName",
+          title: '退款信息',
+          slot: 'statusName',
           minWidth: 120,
         },
         {
-          title: "售后备注",
-          key: "remark",
+          title: '售后备注',
+          key: 'remark',
           minWidth: 100,
         },
         {
-          title: "操作",
-          slot: "action",
-          fixed: "right",
+          title: '操作',
+          slot: 'action',
+          fixed: 'right',
           minWidth: 150,
-          align: "center",
+          align: 'center',
         },
       ],
       tbody: [],
@@ -380,108 +331,72 @@ export default {
       pagination: {
         page: 1,
         limit: 15,
-        order_id: "",
-        time: "",
+        order_id: '',
+        time: '',
         refund_type: 0,
       },
       options: {
         shortcuts: [
           {
-            text: "今天",
+            text: '今天',
             value() {
               const end = new Date();
               const start = new Date();
-              start.setTime(
-                new Date(
-                  new Date().getFullYear(),
-                  new Date().getMonth(),
-                  new Date().getDate()
-                )
-              );
+              start.setTime(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate()));
               return [start, end];
             },
           },
           {
-            text: "昨天",
+            text: '昨天',
             value() {
               const end = new Date();
               const start = new Date();
               start.setTime(
-                start.setTime(
-                  new Date(
-                    new Date().getFullYear(),
-                    new Date().getMonth(),
-                    new Date().getDate() - 1
-                  )
-                )
+                start.setTime(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate() - 1)),
               );
               end.setTime(
-                end.setTime(
-                  new Date(
-                    new Date().getFullYear(),
-                    new Date().getMonth(),
-                    new Date().getDate() - 1
-                  )
-                )
+                end.setTime(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate() - 1)),
               );
               return [start, end];
             },
           },
           {
-            text: "最近7天",
+            text: '最近7天',
             value() {
               const end = new Date();
               const start = new Date();
               start.setTime(
-                start.setTime(
-                  new Date(
-                    new Date().getFullYear(),
-                    new Date().getMonth(),
-                    new Date().getDate() - 6
-                  )
-                )
+                start.setTime(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate() - 6)),
               );
               return [start, end];
             },
           },
           {
-            text: "最近30天",
+            text: '最近30天',
             value() {
               const end = new Date();
               const start = new Date();
               start.setTime(
-                start.setTime(
-                  new Date(
-                    new Date().getFullYear(),
-                    new Date().getMonth(),
-                    new Date().getDate() - 29
-                  )
-                )
+                start.setTime(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate() - 29)),
               );
               return [start, end];
             },
           },
           {
-            text: "本月",
+            text: '本月',
             value() {
               const end = new Date();
               const start = new Date();
-              start.setTime(
-                start.setTime(
-                  new Date(new Date().getFullYear(), new Date().getMonth(), 1)
-                )
-              );
+              start.setTime(start.setTime(new Date(new Date().getFullYear(), new Date().getMonth(), 1)));
               return [start, end];
             },
           },
           {
-            text: "本年",
+            text: '本年',
             value() {
               const end = new Date();
               const start = new Date();
-              start.setTime(
-                start.setTime(new Date(new Date().getFullYear(), 0, 1))
-              );
+              start.setTime(start.setTime(new Date(new Date().getFullYear(), 0, 1)));
               return [start, end];
             },
           },
@@ -490,18 +405,18 @@ export default {
       timeVal: [],
       modal: false,
       qrcode: null,
-      name: "",
+      name: '',
       spin: false,
     };
   },
   computed: {
-    ...mapState("order", ["orderChartType"]),
+    ...mapState('order', ['orderChartType']),
     // ...mapState("admin/layout", ["isMobile"]),
     labelWidth() {
       return this.isMobile ? undefined : 75;
     },
     labelPosition() {
-      return this.isMobile ? "top" : "right";
+      return this.isMobile ? 'top' : 'right';
     },
   },
   created() {
@@ -516,19 +431,19 @@ export default {
     onchangeTime(e) {
       this.pagination.page = 1;
       this.timeVal = e;
-      this.pagination.time = this.timeVal[0] ? this.timeVal.join("-") : "";
+      this.pagination.time = this.timeVal[0] ? this.timeVal.join('-') : '';
       this.getOrderList();
     },
     // 操作
     changeMenu(row, name) {
       this.orderId = row.id;
       switch (name) {
-        case "1":
+        case '1':
           this.delfromData = {
-            title: "修改立即支付",
+            title: '修改立即支付',
             url: `/order/pay_offline/${row.id}`,
-            method: "post",
-            ids: "",
+            method: 'post',
+            ids: '',
           };
           this.$modalSure(this.delfromData)
             .then((res) => {
@@ -540,68 +455,60 @@ export default {
             });
           // this.modalTitleSs = '修改立即支付';
           break;
-        case "2":
+        case '2':
           this.getData(row.order_id);
           break;
-        case "3":
+        case '3':
           this.$refs.record.modals = true;
           this.$refs.record.getList(row.id);
           break;
-        case "4":
+        case '4':
           this.$refs.remarks.modals = true;
           this.$refs.remarks.formValidate.remark = row.remark;
           break;
-        case "5":
+        case '5':
           this.getRefundData(row.id, row.refund_type);
           break;
-        case "6":
+        case '6':
           this.getRefundIntegral(row.id);
           break;
-        case "7":
+        case '7':
           this.getNoRefundData(row.id);
           break;
-        case "8":
+        case '8':
           this.delfromData = {
-            title: "修改确认收货",
-            url: `/order/take/${row.id}`,
-            method: "put",
-            ids: "",
+            title: '删除订单',
+            url: `/order/del/${row.store_order_id}`,
+            method: 'DELETE',
+            ids: '',
           };
-          this.$modalSure(this.delfromData)
-            .then((res) => {
-              this.$Message.success(res.msg);
-              this.getOrderList();
-            })
-            .catch((res) => {
-              this.$Message.error(res.msg);
-            });
-          // this.modalTitleSs = '修改确认收货';
+          this.delOrder(row, this.delfromData);
           break;
-        case "10":
+        case '10':
           this.delfromData = {
-            title: "立即打印订单",
-            info: "您确认打印此订单吗?",
+            title: '立即打印订单',
+            info: '您确认打印此订单吗?',
             url: `/order/print/${row.id}`,
-            method: "get",
-            ids: "",
+            method: 'get',
+            ids: '',
           };
           this.$modalSure(this.delfromData)
             .then((res) => {
               this.$Message.success(res.msg);
-              this.$emit("changeGetTabs");
+              this.$emit('changeGetTabs');
               this.getOrderList();
             })
             .catch((res) => {
               this.$Message.error(res.msg);
             });
           break;
-        case "11":
+        case '11':
           this.delfromData = {
-            title: "立即打印电子面单",
-            info: "您确认打印此电子面单吗?",
+            title: '立即打印电子面单',
+            info: '您确认打印此电子面单吗?',
             url: `/order/order_dump/${row.id}`,
-            method: "get",
-            ids: "",
+            method: 'get',
+            ids: '',
           };
           this.$modalSure(this.delfromData)
             .then((res) => {
@@ -614,10 +521,10 @@ export default {
           break;
         default:
           this.delfromData = {
-            title: "删除订单",
+            title: '删除订单',
             url: `/order/del/${row.id}`,
-            method: "DELETE",
-            ids: "",
+            method: 'DELETE',
+            ids: '',
           };
           // this.modalTitleSs = '删除订单';
           this.delOrder(row, this.delfromData);
@@ -627,9 +534,9 @@ export default {
     getRefundData(id, refund_type) {
       if (refund_type == 2) {
         this.delfromData = {
-          title: "是否立即退货退款?",
+          title: '立即退货退款',
           url: `/refund/agree/${id}`,
-          method: "get",
+          method: 'get',
         };
         this.$modalSure(this.delfromData)
           .then((res) => {
@@ -642,7 +549,7 @@ export default {
       } else {
         this.$modalForm(getNewRefundFrom(id)).then(() => {
           this.getOrderList();
-          this.$emit("changeGetTabs");
+          this.$emit('changeGetTabs');
         });
       }
     },
@@ -665,9 +572,7 @@ export default {
           this.orderDatalist = res.data;
           if (this.orderDatalist.orderInfo.refund_img) {
             try {
-              this.orderDatalist.orderInfo.refund_img = JSON.parse(
-                this.orderDatalist.orderInfo.refund_img
-              );
+              this.orderDatalist.orderInfo.refund_img = JSON.parse(this.orderDatalist.orderInfo.refund_img);
             } catch (e) {
               this.orderDatalist.orderInfo.refund_img = [];
             }
@@ -689,9 +594,8 @@ export default {
             this.$Message.error(res.msg);
           });
       } else {
-        const title = "错误！";
-        const content =
-          "<p>您选择的的订单存在用户未删除的订单，无法删除用户未删除的订单！</p>";
+        const title = '错误！';
+        const content = '<p>您选择的的订单存在用户未删除的订单，无法删除用户未删除的订单！</p>';
         this.$Modal.error({
           title: title,
           content: content,
@@ -712,7 +616,7 @@ export default {
     getNoRefundData(id) {
       this.$modalForm(getNewnoRefundFrom(id)).then(() => {
         this.getOrderList();
-        this.$emit("changeGetTabs");
+        this.$emit('changeGetTabs');
       });
     },
     // 订单列表

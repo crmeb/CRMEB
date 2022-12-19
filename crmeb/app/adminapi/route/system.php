@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -45,12 +45,6 @@ Route::group('system', function () {
     Route::get('log/search_admin', 'v1.system.SystemLog/search_admin')->option(['real_name' => '系统日志管理员搜索条件']);
     //文件校验
     Route::get('file', 'v1.system.SystemFile/index')->name('SystemFile')->option(['real_name' => '文件校验']);
-    //打开目录
-//    Route::get('file/opendir', 'v1.system.SystemFile/opendir')->option(['real_name' => '打开目录']);
-    //读取文件
-//    Route::get('file/openfile', 'v1.system.SystemFile/openfile')->option(['real_name' => '读取文件']);
-    //保存文件
-//    Route::post('file/savefile', 'v1.system.SystemFile/savefile')->option(['real_name' => '保存文件']);
     //数据所有表
     Route::get('backup', 'v1.system.SystemDatabackup/index')->option(['real_name' => '数据库所有表']);
     //数据备份详情
@@ -83,9 +77,53 @@ Route::group('system', function () {
     Route::get('version_crate/:id', 'v1.system.AppVersion/crate')->option(['real_name' => '添加版本']);
     //添加版本信息
     Route::post('version_save', 'v1.system.AppVersion/save')->option(['real_name' => '添加版本']);
+
+    //升级状态
+    Route::get('upgrade_status', 'UpgradeController/upgradeStatus')->option(['real_name' => '升级状态']);
+    //升级包列表
+    Route::get('upgrade/list', 'UpgradeController/upgradeList')->option(['real_name' => '升级包列表']);
+    //可升级包列表
+    Route::get('upgradeable/list', 'UpgradeController/upgradeableList')->option(['real_name' => '可升级包列表']);
+    //升级协议
+    Route::get('upgrade/agreement', 'UpgradeController/agreement')->option(['real_name' => '升级协议']);
+    //升级包下载
+    Route::post('upgrade_download/:package_key', 'UpgradeController/download')->option(['real_name' => '升级包下载']);
+    //升级进度
+    Route::get('upgrade_progress', 'UpgradeController/progress')->option(['real_name' => '升级进度']);
+    //升级记录
+    Route::get('upgrade_log/list', 'UpgradeController/upgradeLogList')->option(['real_name' => '升级记录']);
+    //导出备份项目
+    Route::get('upgrade_export/:id/:type', 'UpgradeController/export')->option(['real_name' => '导出备份']);
+    //文件管理登录
+    Route::post('file/login', 'v1.system.SystemFile/login')->option(['real_name' => '文件管理登录']);
 })->middleware([
     \app\http\middleware\AllowOriginMiddleware::class,
     \app\adminapi\middleware\AdminAuthTokenMiddleware::class,
-    \app\adminapi\middleware\AdminCkeckRoleMiddleware::class,
+    \app\adminapi\middleware\AdminCheckRoleMiddleware::class,
     \app\adminapi\middleware\AdminLogMiddleware::class
 ]);
+
+Route::group('system', function () {
+
+    //打开目录
+    Route::get('file/opendir', 'v1.system.SystemFile/opendir')->option(['real_name' => '打开目录']);
+    //读取文件
+    Route::get('file/openfile', 'v1.system.SystemFile/openfile')->option(['real_name' => '读取文件']);
+    //保存文件
+    Route::post('file/savefile', 'v1.system.SystemFile/savefile')->option(['real_name' => '保存文件']);
+    //创建文件夹
+    Route::get('file/createFolder', 'v1.system.SystemFile/createFolder')->option(['real_name' => '创建文件夹']);
+    //创建文件
+    Route::get('file/createFile', 'v1.system.SystemFile/createFile')->option(['real_name' => '创建文件']);
+    //删除文件夹或者文件
+    Route::get('file/delFolder', 'v1.system.SystemFile/delFolder')->option(['real_name' => '删除文件夹']);
+    //重命名文件
+    Route::get('file/rename', 'v1.system.SystemFile/rename')->option(['real_name' => '重命名文件夹']);
+})->middleware([
+    \app\http\middleware\AllowOriginMiddleware::class,
+    \app\adminapi\middleware\AdminAuthTokenMiddleware::class,
+    \app\adminapi\middleware\AdminCheckRoleMiddleware::class,
+    \app\adminapi\middleware\AdminEditorTokenMiddleware::class,
+    \app\adminapi\middleware\AdminLogMiddleware::class
+]);
+

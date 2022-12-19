@@ -47,31 +47,31 @@
 				text_opacity: 0,
 				menuButton:{},
 				iconList: [{
-						name: '首页',
+						name: this.$t(`首页`),
 						iconName: "icon-shouye8",
 						path: '/pages/index/index',
 						jumpType: 1
 					},
 					{
-						name: '购物车',
+						name: this.$t(`购物车`),
 						iconName: "icon-gouwuche7",
 						path: '/pages/order_addcart/order_addcart',
 						jumpType: 1
 					},
 					{
-						name: '搜索',
+						name: this.$t(`搜索`),
 						iconName: "icon-sousuo6",
-						path: '/pages/goods_search/index',
+						path: '/pages/goods/goods_search/index',
 						jumpType: 0
 					},
 					{
-						name: '收藏',
+						name: this.$t(`我的收藏`),
 						iconName: "icon-shoucang3",
 						path: '/pages/users/user_goods_collection/index',
 						jumpType: 0
 					},
 					{
-						name: '我的',
+						name: this.$t(`个人中心`),
 						iconName: "icon-yonghu1",
 						path: '/pages/user/index',
 						jumpType: 1
@@ -104,7 +104,6 @@
 				// #ifdef MP
 				this.menuButton = uni.getMenuButtonBoundingClientRect();
 				const query = uni.createSelectorQuery().in(this);
-				console.log(this.menuButton)
 				query
 					.select('#home')
 					.boundingClientRect(data => {

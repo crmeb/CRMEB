@@ -1,7 +1,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2021 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -18,28 +18,27 @@ import {
 import {
 	getWorkermanUrl
 } from '@/api/kefu.js'
+import store from '@/store';
 /**
  * 绑定用户授权
  * @param {Object} puid
  */
-export function silenceBindingSpread() {
-
-
+export function silenceBindingSpread(app) {
 	//#ifdef H5
 	let puid = Cache.get('spread'),
 		code = 0;
 	//#endif
 
 	//#ifdef MP || APP-PLUS
-	let puid = getApp().globalData.spid,
-		code = getApp().globalData.code;
+	let puid = app.spid,
+		code = app.code;
 	//#endif
 
 	puid = parseInt(puid);
 	if (Number.isNaN(puid)) {
 		puid = 0;
 	}
-	if (puid) {
+	if ((code || puid) && store.state.app.token) {
 		spread({
 			puid,
 			code
@@ -47,10 +46,9 @@ export function silenceBindingSpread() {
 			//#ifdef H5
 			Cache.clear('spread');
 			//#endif
-
 			//#ifdef MP || APP-PLUS
-			getApp().globalData.spid = 0;
-			getApp().globalData.code = 0;
+			app.spid = 0;
+			app.code = 0;
 			//#endif
 
 		}).catch(res => {});
@@ -66,7 +64,7 @@ export function getCustomer(url) {
 		let type = res.data.customer_type
 		if (type == '0') {
 			uni.navigateTo({
-				url: url || '/pages/customer_list/chat'
+				url: url || '/pages/extension/customer_list/chat'
 			})
 		} else if (type == '1') {
 			uni.makePhoneCall({
@@ -90,7 +88,7 @@ export function getCustomer(url) {
 					success(res) {},
 					fail(err) {
 						uni.showToast({
-							title: '请先配置企业ID',
+							title: err.errMsg,
 							icon: 'none',
 							duration: 2000
 						});

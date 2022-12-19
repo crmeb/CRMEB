@@ -1,2 +1,2 @@
-import Main from './main.vue'
-export default Main
+import Main from './main.vue';
+export default Main;

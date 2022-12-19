@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -32,13 +32,13 @@ class AddressValidate extends Validate
     ];
 
     protected $message = [
-        'real_name.require' => '名称必须填写',
-        'real_name.max' => '名称最多不能超过25个字符',
-        'phone.require' => '手机号必须填写',
-        'phone.regex' => '手机号格式错误',
-        'province.require' => '省必须填写',
-        'city.require' => '市名称必须填写',
-        'district.require' => '区/县名称必须填写',
-        'detail.require' => '详细地址必须填写',
+        'real_name.require' => '410155',
+        'real_name.max' => '410156',
+        'phone.require' => '410157',
+        'phone.regex' => '410158',
+        'province.require' => '410159',
+        'city.require' => '410160',
+        'district.require' => '410161',
+        'detail.require' => '410162',
     ];
 }

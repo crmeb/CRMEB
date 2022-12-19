@@ -4,9 +4,9 @@
 			<view class='promoterHeader bg-color'>
 				<view class='headerCon acea-row row-between-wrapper'>
 					<view>
-						<view class='name'>{{name}}</view>
-						<view class='money' v-if="recordType == 4">￥<text class='num'>{{extractCount}}</text></view>
-						<view class='money' v-else>￥<text class='num'>{{recordCount}}</text></view>
+						<view class='name'>{{$t(name)}}</view>
+						<view class='money' v-if="recordType == 4">{{$t(`￥`)}}<text class='num'>{{extractCount}}</text></view>
+						<view class='money' v-else>{{$t(`￥`)}}<text class='num'>{{recordCount}}</text></view>
 					</view>
 					<view class='iconfont icon-jinbi1'></view>
 				</view>
@@ -19,11 +19,11 @@
 							<view class='listn'>
 								<block v-for="(child,indexn) in item.child" :key="indexn">
 									<view class='itemn acea-row row-between-wrapper'>
-										<view>
-											<view class='name line1'>{{child.title}}</view>
+										<view class="title">
+											<view class='name line1'>{{$t(child.title)}}</view>
 											<view>{{child.add_time}}</view>
 											<view class="fail-msg" v-if="child.fail_msg">
-												原因：{{child.fail_msg}}
+												{{$t(`原因`)}}：{{child.fail_msg}}
 											</view>
 										</view>
 										<view class='num font-color' v-if="child.pm == 1">+{{child.number}}</view>
@@ -39,7 +39,7 @@
 					<text class='loading iconfont icon-jiazai' :hidden='loading==false'></text>{{loadTitle}}
 				</view>
 				<view v-if="recordList.length < 1 && page > 1">
-					<emptyPage title='暂无数据~'></emptyPage>
+					<emptyPage :title='$t(`暂无数据~`)'></emptyPage>
 				</view>
 			</view>
 		</view>
@@ -83,7 +83,7 @@
 				limit: 15,
 				loading: false,
 				loadend: false,
-				loadTitle: '加载更多',
+				loadTitle: this.$t(`加载更多`),
 				recordList: [],
 				recordType: 0,
 				recordCount: 0,
@@ -171,12 +171,12 @@
 					}
 					let loadend = res.data.list.length < that.limit;
 					that.loadend = loadend;
-					that.loadTitle = loadend ? '没有更多内容啦~' : '加载更多';
+					that.loadTitle = loadend ? that.$t(`我也是有底线的`) : that.$t(`加载更多`);
 					that.page += 1;
 					that.loading = false;
 				}).catch(err => {
 					that.loading = false;
-					that.loadTitle = '加载更多';
+					that.loadTitle = that.$t(`加载更多`);
 				})
 			},
 			getRecordListCount: function() {
@@ -200,5 +200,14 @@
 
 	.commission-details .promoterHeader .headerCon .money .num {
 		font-family: 'Guildford Pro';
+	}
+	.sign-record .list .item .listn .itemn .name{
+		width: 100%;
+		// max-width: 100%;
+		white-space: break-spaces;
+	}
+	.sign-record .list .item .listn .itemn .title {
+		padding-right: 30rpx;
+		flex: 1;
 	}
 </style>

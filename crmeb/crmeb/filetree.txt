@@ -1,0 +1,73 @@
+.
+├── basic
+│   ├── BaseController.php //控制器基类
+│   ├── BaseJobs.php //队列基类
+│   ├── BaseManager.php //驱动管理基类
+│   ├── BaseModel.php //model基类
+│   └── BaseStorage.php //驱动基类
+├── command
+│   ├── stubs //命令模版
+│   ├── Dao.php //创建Dao类命令
+│   ├── Service.php //创建Service类命令
+│   ├── Timer.php //定时任务命令类
+│   └── Workerman.php //workman命令类
+├── exceptions
+│   ├── AdminException.php //后台管理端异常处理
+│   ├── ApiException.php //移动端接口异常处理
+│   ├── AuthException.php //用户授权异常处理
+│   ├── PayException.php //支付异常处理
+│   ├── SmsException.php //短信异常处理
+│   ├── TemplateException.php //微信模版消息异常处理
+│   ├── UploadException.php //上传异常处理
+│   └── WechatReplyException.php //微信自动回复异常处理
+├── interfaces
+│   ├── JobInterface.php //队列任务
+│   ├── ListenerInterface.php //事件
+│   ├── MiddlewareInterface.php //中间件
+│   └── ProviderInterface.php //容器
+├── services
+│   ├── app //应用端
+│   ├── easywechat //easywechat
+│   ├── express //物流查询
+│   ├── pay //支付
+│   ├── printer //打印机
+│   ├── copyproduct //采集商品
+│   ├── serve //服务平台
+│   ├── sms //短信
+│   ├── template //模版消息
+│   ├── upload //上传
+│   ├── workerman //workerman
+│   ├── AccessTokenServeService.php //获取token
+│   ├── AliPayService.php
+│   ├── CacheService.php //缓存类
+│   ├── FileService.php //文件处理类
+│   ├── FormBuilder.php //自动生成表单类
+│   ├── GroupDataService.php //组合数据类
+│   ├── HttpService.php //curl 请求处理类
+│   ├── MysqlBackupService.php //数据库备份管理类
+│   ├── SpreadsheetExcelService.php //excel处理类
+│   ├── SystemConfigService.php //系统配置获取类
+│   ├── UpgradeService.php //系统更新类
+│   └──  UploadService.php //文件上传类
+├── traits
+│   ├── ErrorTrait.php //错误处理扩展类
+│   ├── JwtAuthModelTrait.php //Jwt鉴权扩展类
+│   ├── ModelTrait.php //model扩展类
+│   ├── QueueTrait.php //队列扩展累
+│   ├── SearchDaoTrait.php //dao扩展类
+│   └── ServicesTrait.php //Services扩展类
+├── utils
+│   ├── Arr.php //操作数组帮助类
+│   ├── Canvas.php //图片处理类
+│   ├── Captcha.php //验证码类
+│   ├── DownloadImage.php //远程图片下载类
+│   ├── ErrorCode.php //错误码处理类
+│   ├── Hook.php //钩子类
+│   ├── Json.php //Json处理类
+│   ├── JwtAuth.php //Jwt鉴权类
+│   ├── QRcode.php //二维码获取类 TODO
+│   ├── Queue.php //队列类
+│   └── Str.php //字符处理类
+└── filetree.txt
+
+17 directories, 70 files

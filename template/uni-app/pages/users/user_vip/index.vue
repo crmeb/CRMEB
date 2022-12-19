@@ -11,16 +11,16 @@
 								<view class="acea-row row-middle user-wrap">
 									<image class="image" :src="userInfo.avatar"></image>
 									<view class="text">
-										<view class="name">{{userInfo.nickname}}</view>
-										<view>商城购物可享<text class="num">{{item.discount}}</text>折</view>
+										<view class="name">{{$t(userInfo.nickname)}}</view>
+										<view>{{$t(`商城购物可享`)}}<text class="num">{{item.discount}}</text>{{$t(`折`)}}</view>
 									</view>
-									<view v-if="item.grade === levelInfo.grade" class="state">当前等级</view>
-									<view v-if="!levelInfo.grade || item.grade > levelInfo.grade" class="state">未达成
+									<view v-if="item.grade === levelInfo.grade" class="state">{{$t(`当前等级`)}}</view>
+									<view v-if="!levelInfo.grade || item.grade > levelInfo.grade" class="state">{{$t(`未达成`)}}
 									</view>
 								</view>
 								<template v-if="item.grade === levelInfo.grade">
 									<view class="grow-wrap">
-										<view>今日成长值<text class="num">{{levelInfo.today_exp}}</text>点</view>
+										<view>{{$t(`今日成长值`)}}<text class="num">{{levelInfo.today_exp}}</text>{{$t(`点`)}}</view>
 										<view class="process">
 											<view
 												:style="{width: `${Math.floor((levelInfo.exp / item.next_exp_num) > 1 ? 100 : levelInfo.exp / item.next_exp_num * 100)}%`}"
@@ -31,31 +31,31 @@
 									</view>
 									<navigator class="acea-row row-between-wrapper record-wrap"
 										url="/pages/users/user_vip_areer/index" hover-class="none">
-										<view>我的成长值记录</view>
+										<view>{{$t(`我的成长值记录`)}}</view>
 										<view class="iconfont icon-jiantou"></view>
 									</navigator>
 								</template>
 								<template v-if="!levelInfo.grade || item.grade > levelInfo.grade">
 									<view class="grow-wrap">
 										<view class='lock'><text
-												class='iconfont icon-quanxianguanlisuozi'></text>暂未解锁该等级</view>
+												class='iconfont icon-quanxianguanlisuozi'></text>{{$t(`暂未解锁该等级`)}}</view>
 										<view class="process">
 											<view :style="{width: `${Math.floor(levelInfo.exp / item.exp_num * 100)}%`}"
 												class="fill"></view>
 										</view>
 										<view class="ratio">
 											<text
-												class="num">当前<text>{{levelInfo.exp}}</text>点，需达到<text>{{item.exp_num}}</text>点解锁</text>
+												class="num">{{$t(`当前`)}}<text>{{levelInfo.exp}}</text>{{$t(`点，需达到`)}}<text>{{item.exp_num}}</text>{{$t(`点解锁`)}}</text>
 										</view>
 										<navigator class="acea-row row-between-wrapper record-wrap" style="padding-left: 0;"
 											url="/pages/users/user_vip_areer/index" hover-class="none">
-											<view>我的成长值记录</view>
+											<view>{{$t(`我的成长值记录`)}}</view>
 											<view class="iconfont icon-jiantou"></view>
 										</navigator>
 									</view>
 								</template>
-								<view class="level">{{item.name}}</view>
-								<view v-if="item.grade < levelInfo.grade" class="pass">已解锁更高等级</view>
+								<view class="level">{{$t(item.name)}}</view>
+								<view v-if="item.grade < levelInfo.grade" class="pass">{{$t(`已解锁更高等级`)}}</view>
 								<!-- <view v-if="!levelInfo.grade || item.grade > levelInfo.grade" class='lock'><text class='iconfont icon-quanxianguanlisuozi'></text>暂未解锁该等级</view> -->
 							</view>
 						</swiper-item>
@@ -63,53 +63,53 @@
 				</swiper>
 				<view class="right-section">
 					<view class="section-hd acea-row row-between-wrapper">
-						<view>我的成长特权</view>
-						<navigator v-if="is_open_member" class="svip" url="/pages/annex/vip_paid/index">升级SVIP</navigator>
+						<view>{{$t(`我的成长特权`)}}</view>
+						<navigator v-if="is_open_member" class="svip" url="/pages/annex/vip_paid/index">{{$t(`立即升级`)}}</navigator>
 					</view>
 					<view class="section-bd acea-row">
 						<view class="item">
 							<image class="image" src="../static/1.png"></image>
-							<view class="">购物折扣</view>
+							<view class="">{{$t(`购物折扣`)}}</view>
 						</view>
 						<view class="item">
 							<image class="image" src="../static/2.png"></image>
-							<view class="">专属徽章</view>
+							<view class="">{{$t(`专属徽章`)}}</view>
 						</view>
 						<view class="item">
 							<image class="image" src="../static/3.png"></image>
-							<view class="">经验累积</view>
+							<view class="">{{$t(`经验累积`)}}</view>
 						</view>
 						<view class="item">
 							<image class="image" src="../static/4.png"></image>
-							<view class="">尊享客服</view>
+							<view class="">{{$t(`尊享客服`)}}</view>
 						</view>
 					</view>
 				</view>
 			</view>
 			<view class="skill-section">
-				<view class="section-hd">快速升级技巧</view>
+				<view class="section-hd">{{$t(`快速升级技巧`)}}</view>
 				<view class="section-bd">
 					<view class="item acea-row row-middle">
 						<view class="text">
-							<view class="title">签到<text class="mark">可获得{{taskInfo.sign}}点经验</text></view>
-							<view class="info">每日签到可获得经验值，已签到{{taskInfo.sign_count}}天</view>
+							<view class="title">{{$t(`签到`)}}<text class="mark">{{$t(`可获得`)}}{{taskInfo.sign}}{{$t(`点经验`)}}</text></view>
+							<view class="info">{{$t(`每日签到可获得经验值，已签到`)}}{{taskInfo.sign_count}}{{$t(`天`)}}</view>
 						</view>
-						<navigator class="link" url="/pages/users/user_sgin/index" hover-class="none">去签到</navigator>
+						<navigator class="link" url="/pages/users/user_sgin/index" hover-class="none">{{$t(`去签到`)}}</navigator>
 					</view>
 					<view class="item acea-row row-middle">
 						<view class="text">
-							<view class="title">购买商品<text class="mark">+{{taskInfo.order}}点经验/元</text></view>
-							<view class="info">购买商品可获得对应的经验值</view>
+							<view class="title">{{$t(`购买商品`)}}<text class="mark">+{{taskInfo.order}}{{$t(`点经验/元`)}}</text></view>
+							<view class="info">{{$t(`购买商品可获得对应的经验值`)}}</view>
 						</view>
 						<navigator class="link" open-type="switchTab" url="/pages/goods_cate/goods_cate"
-							hover-class="none">去购买</navigator>
+							hover-class="none">{{$t(`去购买`)}}</navigator>
 					</view>
 					<view class="item acea-row row-middle">
 						<view class="text">
-							<view class="title">邀请好友<text class="mark">+{{taskInfo.invite}}点经验/人</text></view>
-							<view class="info">邀请好友注册商城可获得经验值</view>
+							<view class="title">{{$t(`邀请好友`)}}<text class="mark">+{{taskInfo.invite}}{{$t(`点经验/人`)}}</text></view>
+							<view class="info">{{$t(`邀请好友注册商城可获得经验值`)}}</view>
 						</view>
-						<navigator class="link" url="/pages/users/user_spread_code/index" hover-class="none">去邀请
+						<navigator class="link" url="/pages/users/user_spread_code/index" hover-class="none">{{$t(`去邀请`)}}
 						</navigator>
 					</view>
 				</view>
@@ -180,15 +180,15 @@
 				level_discount: '',
 				levelInfo: {},
 				task_list: [{
-						real_name: '积分数',
+						real_name: this.$t(`积分数`),
 						number: 0
 					},
 					{
-						real_name: '消费金额',
+						real_name: this.$t(`消费金额`),
 						number: 0
 					},
 					{
-						real_name: '优惠券',
+						real_name: this.$t(`优惠券`),
 						number: 0
 					}
 				],
@@ -240,15 +240,15 @@
 				getUserInfo().then(res => {
 					this.is_open_member = res.data.is_open_member
 					this.task_list = [{
-							real_name: '积分数',
+							real_name: this.$t(`积分数`),
 							number: res.data.integral
 						},
 						{
-							real_name: '消费金额',
+							real_name: this.$t(`消费金额`),
 							number: res.data.orderStatusSum
 						},
 						{
-							real_name: '优惠券',
+							real_name: this.$t(`优惠券`),
 							number: res.data.couponCount
 						}
 					];
@@ -654,7 +654,7 @@
 			}
 
 			.link {
-				width: 140rpx;
+				width: 146rpx;
 				height: 50rpx;
 				border-radius: 25rpx;
 				background: linear-gradient(-90deg, #E7B667 0%, #FFEAB5 100%);

@@ -3,14 +3,10 @@
     <div class="i-layout-page-header header_top">
       <div class="i-layout-page-header fl_header">
         <router-link :to="{ path: '/admin/marketing/live/live_room' }"
-          ><Button icon="ios-arrow-back" size="small" type="text"
-            >返回</Button
-          ></router-link
+          ><Button icon="ios-arrow-back" size="small" type="text">返回</Button></router-link
         >
         <Divider type="vertical" />
-        <span class="ivu-page-header-title" style="padding: 0">{{
-          $route.meta.title
-        }}</span>
+        <span class="ivu-page-header-title" style="padding: 0">{{ $route.meta.title }}</span>
       </div>
     </div>
     <Card :bordered="false" dis-hover class="ivu-mt">
@@ -23,13 +19,8 @@
         @submit.native.prevent
       >
         <Col span="24">
-          <Alert
-            type="warning"
-            show-icon
-            style="width: 550px; margin-left: 17px; margin-bottom: 25px"
-            >必须前往微信小程序官方后台开通直播权限，关注<span
-              style="color: red; cursor: pointer"
-              @click="codeImg"
+          <Alert type="warning" show-icon style="width: 550px; margin-left: 17px; margin-bottom: 25px"
+            >必须前往微信小程序官方后台开通直播权限，关注<span style="color: red; cursor: pointer" @click="codeImg"
               >【小程序直播】</span
             >须知直播状态</Alert
           >
@@ -43,12 +34,7 @@
               style="width: 300px"
               @on-change="anchorName"
             >
-              <Option
-                v-for="(item, index) in liveList"
-                :value="item.wechat"
-                :key="index"
-                >{{ item.wechat }}</Option
-              >
+              <Option v-for="(item, index) in liveList" :value="item.wechat" :key="index">{{ item.wechat }}</Option>
             </Select>
           </FormItem>
         </Col>
@@ -68,38 +54,26 @@
             <div style="display: flex">
               <FormItem label="背景图：">
                 <div @click="modalPicTap(0)" class="box">
-                  <img
-                    :src="formValidate.cover_img"
-                    alt=""
-                    v-if="formValidate.cover_img"
-                  />
+                  <img :src="formValidate.cover_img" alt="" v-if="formValidate.cover_img" />
                   <div class="upload-box" v-else>
                     <Icon type="ios-camera-outline" size="36" />
                   </div>
                 </div>
               </FormItem>
-              <span style="margin-left: 20px; color: #b0bac5"
-                >尺寸：1080*1920px</span
-              >
+              <span style="margin-left: 20px; color: #b0bac5">尺寸：1080*1920px</span>
             </div>
           </Col>
           <Col span="24">
             <div style="display: flex">
               <FormItem label="分享图：">
                 <div @click="modalPicTap(1)" class="box">
-                  <img
-                    :src="formValidate.share_img"
-                    alt=""
-                    v-if="formValidate.share_img"
-                  />
+                  <img :src="formValidate.share_img" alt="" v-if="formValidate.share_img" />
                   <div class="upload-box" v-else>
                     <Icon type="ios-camera-outline" size="36" />
                   </div>
                 </div>
               </FormItem>
-              <span style="margin-left: 20px; color: #b0bac5"
-                >尺寸：800*640px</span
-              >
+              <span style="margin-left: 20px; color: #b0bac5">尺寸：800*640px</span>
             </div>
           </Col>
           <!--<Col span="24">-->
@@ -145,11 +119,7 @@
           <Col span="24">
             <FormItem label="显示样式：">
               <RadioGroup v-model="formValidate.screen_type">
-                <Radio
-                  :label="item.label"
-                  v-for="(item, index) in screen_type"
-                  :key="index"
-                >
+                <Radio :label="item.label" v-for="(item, index) in screen_type" :key="index">
                   <span>{{ item.value }}</span>
                 </Radio>
               </RadioGroup>
@@ -158,11 +128,7 @@
           <Col span="24">
             <FormItem label="直播间类型：">
               <RadioGroup v-model="formValidate.type">
-                <Radio
-                  :label="item.label"
-                  v-for="(item, index) in type"
-                  :key="index"
-                >
+                <Radio :label="item.label" v-for="(item, index) in type" :key="index">
                   <span>{{ item.value }}</span>
                 </Radio>
               </RadioGroup>
@@ -171,11 +137,7 @@
           <Col span="24">
             <FormItem label="直播间点赞：">
               <RadioGroup v-model="formValidate.close_like">
-                <Radio
-                  :label="item.label"
-                  v-for="(item, index) in close_like"
-                  :key="index"
-                >
+                <Radio :label="item.label" v-for="(item, index) in close_like" :key="index">
                   <span>{{ item.value }}</span>
                 </Radio>
               </RadioGroup>
@@ -184,11 +146,7 @@
           <Col span="24">
             <FormItem label="直播卖货：">
               <RadioGroup v-model="formValidate.close_goods">
-                <Radio
-                  :label="item.label"
-                  v-for="(item, index) in close_goods"
-                  :key="index"
-                >
+                <Radio :label="item.label" v-for="(item, index) in close_goods" :key="index">
                   <span>{{ item.value }}</span>
                 </Radio>
               </RadioGroup>
@@ -197,11 +155,7 @@
           <Col span="24">
             <FormItem label="直播间评论：">
               <RadioGroup v-model="formValidate.close_comment">
-                <Radio
-                  :label="item.label"
-                  v-for="(item, index) in close_comment"
-                  :key="index"
-                >
+                <Radio :label="item.label" v-for="(item, index) in close_comment" :key="index">
                   <span>{{ item.value }}</span>
                 </Radio>
               </RadioGroup>
@@ -210,12 +164,7 @@
         </Row>
         <Row :gutter="24" type="flex">
           <Col v-bind="grid" span="24">
-            <Button
-              :loading="loading"
-              type="primary"
-              style="margin-left: 99px"
-              @click="handleSubmit('formItem')"
-            >
+            <Button :loading="loading" type="primary" style="margin-left: 99px" @click="handleSubmit('formItem')">
               <span v-if="!loading">提交</span>
               <span v-else>提交中...</span>
             </Button>
@@ -252,9 +201,7 @@
     <Modal v-model="modal3" title="二维码" @on-cancel="cancel" footer-hide>
       <div class="acea-row row-around">
         <div v-viewer class="QRpic">
-          <img
-            src="https://res.wx.qq.com/op_res/9rSix1dhHfK4rR049JL0PHJ7TpOvkuZ3mE0z7Ou_Etvjf-w1J_jVX0rZqeStLfwh"
-          />
+          <img src="https://res.wx.qq.com/op_res/9rSix1dhHfK4rR049JL0PHJ7TpOvkuZ3mE0z7Ou_Etvjf-w1J_jVX0rZqeStLfwh" />
         </div>
       </div>
       <!-- <Spin fix v-if="spin"></Spin> -->
@@ -263,21 +210,21 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
-import uploadPictures from "@/components/uploadPictures";
-import { liveAdd, liveAuchorList } from "@/api/live";
+import { mapState } from 'vuex';
+import uploadPictures from '@/components/uploadPictures';
+import { liveAdd, liveAuchorList } from '@/api/live';
 export default {
-  name: "creat_live",
+  name: 'creat_live',
   components: {
     uploadPictures,
   },
   computed: {
-    ...mapState("media", ["isMobile"]),
+    ...mapState('media', ['isMobile']),
     labelWidth() {
       return this.isMobile ? undefined : 100;
     },
     labelPosition() {
-      return this.isMobile ? "top" : "right";
+      return this.isMobile ? 'top' : 'right';
     },
   },
   data() {
@@ -305,27 +252,27 @@ export default {
       },
       loading: false,
       formValidate: {
-        name: "",
-        anchor_name: "",
-        anchor_wechat: "",
-        phone: "",
+        name: '',
+        anchor_name: '',
+        anchor_wechat: '',
+        phone: '',
         screen_type: 0,
         close_like: 1,
         close_goods: 1,
         close_comment: 1,
-        cover_img: "",
-        share_img: "",
+        cover_img: '',
+        share_img: '',
         sort: 0,
         type: 0,
-        start_time: "",
+        start_time: '',
       },
       screen_type: [
         {
-          value: "竖屏",
+          value: '竖屏',
           label: 0,
         },
         {
-          value: "横屏",
+          value: '横屏',
           label: 1,
         },
       ],
@@ -335,43 +282,43 @@ export default {
         //     label:1
         // },
         {
-          value: "手机直播",
+          value: '手机直播',
           label: 0,
         },
       ],
       close_like: [
         {
-          value: "开启",
+          value: '开启',
           label: 1,
         },
         {
-          value: "关闭",
+          value: '关闭',
           label: 0,
         },
       ],
       close_goods: [
         {
-          value: "开启",
+          value: '开启',
           label: 1,
         },
         {
-          value: "关闭",
+          value: '关闭',
           label: 0,
         },
       ],
       close_comment: [
         {
-          value: "开启",
+          value: '开启',
           label: 1,
         },
         {
-          value: "关闭",
+          value: '关闭',
           label: 0,
         },
       ],
-      timeVal: "",
+      timeVal: '',
       modalPic: false,
-      isChoice: "单选",
+      isChoice: '单选',
       activeIndex: 0,
       liveList: [],
       modal3: false,
@@ -397,9 +344,9 @@ export default {
     //主播列表；
     getLive() {
       let formValidate = {
-        kerword: "",
-        page: "",
-        limit: "",
+        kerword: '',
+        page: '',
+        limit: '',
       };
       liveAuchorList(formValidate)
         .then((res) => {
@@ -434,10 +381,10 @@ export default {
       this.loading = true;
       liveAdd(this.formValidate)
         .then((res) => {
-          this.$Message.success("添加成功");
+          this.$Message.success('添加成功');
           setTimeout(() => {
             this.loading = false;
-            this.$router.push({ path: "/admin/marketing/live/live_room" });
+            this.$router.push({ path: '/admin/marketing/live/live_room' });
           }, 500);
         })
         .catch((error) => {

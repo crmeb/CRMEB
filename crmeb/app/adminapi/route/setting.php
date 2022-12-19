@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -25,6 +25,8 @@ Route::group('setting', function () {
     Route::get('info', 'v1.setting.SystemAdmin/info')->name('SystemAdminInfo')->option(['real_name' => '获取当前管理员信息']);
     //修改当前管理员信息
     Route::put('update_admin', 'v1.setting.SystemAdmin/update_admin')->name('SystemAdminUpdateAdmin')->option(['real_name' => '修改当前管理员信息']);
+    //设置文件管理密码
+    Route::put('set_file_password', 'v1.setting.SystemAdmin/set_file_password')->name('SystemAdminSetFilePassword')->option(['real_name' => '设置当前文件管理密码']);
     //权限菜单资源路由
     Route::resource('menus', 'v1.setting.SystemMenus')->option(['real_name' => '权限菜单']);
     //未添加的权限规则列表
@@ -152,9 +154,68 @@ Route::group('setting', function () {
     Route::get('get_agreement/:type', 'v1.setting.SystemAgreement/getAgreement')->option(['real_name' => '获取协议内容']);
     Route::post('save_agreement', 'v1.setting.SystemAgreement/saveAgreement')->option(['real_name' => '设置协议内容']);
 
+    //获取版权信息
+    Route::get('get_version', 'v1.setting.SystemConfig/getVersion')->option(['real_name' => '获取版权信息']);
+
+    //对外接口账号信息
+    Route::get('system_out_account/index', 'v1.setting.SystemOutAccount/index')->option(['real_name' => '对外接口账号信息']);
+    //对外接口账号添加
+    Route::post('system_out_account/save', 'v1.setting.SystemOutAccount/save')->option(['real_name' => '对外接口账号添加']);
+    //对外接口账号修改
+    Route::post('system_out_account/update/:id', 'v1.setting.SystemOutAccount/update')->option(['real_name' => '对外接口账号修改']);
+    //设置账号是否禁用
+    Route::put('system_out_account/set_status/:id/:status', 'v1.setting.SystemOutAccount/set_status')->option(['real_name' => '设置账号是否禁用']);
+    //设置账号推送接口
+    Route::put('system_out_account/set_up/:id', 'v1.setting.SystemOutAccount/outSetUpSave')->option(['real_name' => '设置账号推送接口']);
+    //删除账号
+    Route::delete('system_out_account/:id', 'v1.setting.SystemOutAccount/delete')->option(['real_name' => '删除账号']);
+    //测试获取token接口
+    Route::post('system_out_account/text_out_url', 'v1.setting.SystemOutAccount/textOutUrl')->option(['real_name' => '测试获取token接口']);
+
+    //对外接口列表
+    Route::get('system_out_interface/list', 'v1.setting.SystemOutAccount/outInterfaceList')->option(['real_name' => '对外接口列表']);
+    //新增修改对外接口
+    Route::post('system_out_interface/save/:id', 'v1.setting.SystemOutAccount/saveInterface')->option(['real_name' => '新增修改对外接口']);
+    //对外接口信息
+    Route::get('system_out_interface/info/:id', 'v1.setting.SystemOutAccount/interfaceInfo')->option(['real_name' => '对外接口信息']);
+    //修改接口名称
+    Route::put('system_out_interface/edit_name', 'v1.setting.SystemOutAccount/editInterfaceName')->option(['real_name' => '修改接口名称']);
+    //删除接口
+    Route::delete('system_out_interface/del/:id', 'v1.setting.SystemOutAccount/delInterface')->option(['real_name' => '删除接口']);
+
+
+    /** 多语言 */
+    //语言国家列表
+    Route::get('lang_country/list', 'v1.setting.LangCountry/langCountryList')->option(['real_name' => '语言国家列表']);
+    //添加语言地区表单
+    Route::get('lang_country/form/:id', 'v1.setting.LangCountry/langCountryForm')->option(['real_name' => '添加语言地区表单']);
+    //保存语言地区
+    Route::post('lang_country/save/:id', 'v1.setting.LangCountry/langCountrySave')->option(['real_name' => '保存语言地区']);
+    //删除语言地区
+    Route::delete('lang_country/del/:id', 'v1.setting.LangCountry/langCountryDel')->option(['real_name' => '删除语言地区']);
+    //语言类型列表
+    Route::get('lang_type/list', 'v1.setting.LangType/langTypeList')->option(['real_name' => '语言类型列表']);
+    //新增修改语言类型表单
+    Route::get('lang_type/form/:id', 'v1.setting.LangType/langTypeForm')->option(['real_name' => '新增修改语言类型表单']);
+    //保存新增修改语言
+    Route::post('lang_type/save/:id', 'v1.setting.LangType/langTypeSave')->option(['real_name' => '保存新增修改语言']);
+    //删除语言
+    Route::delete('lang_type/del/:id', 'v1.setting.LangType/langTypeDel')->option(['real_name' => '删除语言']);
+    //修改语言类型状态
+    Route::put('lang_type/status/:id/:status', 'v1.setting.LangType/langTypeStatus')->option(['real_name' => '修改语言类型状态']);
+    //获取语言列表
+    Route::get('lang_code/list', 'v1.setting.LangCode/langCodeList')->option(['real_name' => '语言列表']);
+    //获取语言信息
+    Route::get('lang_code/info', 'v1.setting.LangCode/langCodeInfo')->option(['real_name' => '语言详情']);
+    //保存修改语言
+    Route::post('lang_code/save', 'v1.setting.LangCode/langCodeSave')->option(['real_name' => '保存修改语言']);
+    //删除语言
+    Route::delete('lang_code/del/:id', 'v1.setting.LangCode/langCodeDel')->option(['real_name' => '删除语言']);
+    //机器翻译
+    Route::post('lang_code/translate', 'v1.setting.LangCode/langCodeTranslate')->option(['real_name' => '机器翻译']);
 })->middleware([
     \app\http\middleware\AllowOriginMiddleware::class,
     \app\adminapi\middleware\AdminAuthTokenMiddleware::class,
-    \app\adminapi\middleware\AdminCkeckRoleMiddleware::class,
+    \app\adminapi\middleware\AdminCheckRoleMiddleware::class,
     \app\adminapi\middleware\AdminLogMiddleware::class
 ]);

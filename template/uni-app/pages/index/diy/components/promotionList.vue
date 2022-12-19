@@ -2,27 +2,27 @@
 	<view class="index-product-wrapper" :class="iSshowH?'on':''" :style="'margin-top:'+mbConfig*2+'rpx;'" v-show="!isSortType">
 		<view class="nav-bd" :style="{justifyContent:titleConfig===0?'flex-start':titleConfig===1?'space-around':'flex-end'}">
 			<view class="item" v-for="(item,index) in explosiveMoney" :index="index" @click="ProductNavTab(item.link.activeVal,index)">
-				<view class="txt" :style="{ 'color': index==ProductNavindex ? themeColor : '' }">{{item.chiild[0].val}}</view>
-				<view class="label" :style="{ 'background': index==ProductNavindex ? themeColor : '','color': index==ProductNavindex ? '#fff' : '' }">{{item.chiild[1].val}}</view>
+				<view class="txt" :style="{ 'color': index==ProductNavindex ? themeColor : '' }">{{$t(item.chiild[0].val)}}</view>
+				<view class="label" :style="{ 'background': index==ProductNavindex ? themeColor : '','color': index==ProductNavindex ? '#fff' : '' }">{{$t(item.chiild[1].val)}}</view>
 			</view>
 		</view>
 		<!-- 首发新品 -->
 		<view class="list-box animated" :class='tempArr.length > 0?"fadeIn on":""'>
 			<view class="item" v-for="(item,index) in tempArr" :key="index" @click="goDetail(item)">
 				<view class="pictrue">
-					<span class="pictrue_log pictrue_log_class" :style="'background-color:'+labelColor" v-if="item.activity && item.activity.type === '1'">秒杀</span>
-					<span class="pictrue_log pictrue_log_class" :style="'background-color:'+labelColor" v-if="item.activity && item.activity.type === '2'">砍价</span>
-					<span class="pictrue_log pictrue_log_class" :style="'background-color:'+labelColor" v-if="item.activity && item.activity.type === '3'">拼团</span>
-					<image :src="item.image" mode="aspectFill"></image>
+					<span class="pictrue_log pictrue_log_class" :style="'background-color:'+labelColor" v-if="item.activity && item.activity.type === '1'">{{$t(`秒杀`)}}</span>
+					<span class="pictrue_log pictrue_log_class" :style="'background-color:'+labelColor" v-if="item.activity && item.activity.type === '2'">{{$t(`砍价`)}}</span>
+					<span class="pictrue_log pictrue_log_class" :style="'background-color:'+labelColor" v-if="item.activity && item.activity.type === '3'">{{$t(`拼团`)}}</span>
+					<image :src="item.image" mode="aspectFit"></image>
 				</view>
 				<view class="text-info">
 					<view class="title line1" v-if="titleShow">{{item.store_name}}</view>
-					<view class="old-price" v-if="opriceShow"><text>¥</text>{{item.ot_price}}</view>
+					<view class="old-price" v-if="opriceShow"><text>{{$t(`￥`)}}</text>{{item.ot_price}}</view>
 					<view class="price" :style="{color:fontColor}">
 						<view v-if="priceShow">
-							<text>￥</text>{{item.price}}
+							<text>{{$t(`￥`)}}</text>{{item.price}}
 						</view>
-						<view class="txt" :style="'border:1px solid '+labelColor+';color:'+labelColor" :class="priceShow?'':'on'" v-if="item.checkCoupon && couponShow">券</view>
+						<view class="txt" :style="'border:1px solid '+labelColor+';color:'+labelColor" :class="priceShow?'':'on'" v-if="item.checkCoupon && couponShow">{{$t(`券`)}}</view>
 					</view>
 				</view>
 			</view>

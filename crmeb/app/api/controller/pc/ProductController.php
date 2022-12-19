@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -58,7 +58,7 @@ class ProductController
         if (!$where['ids']) {
             unset($where['ids']);
         }
-        return app('json')->successful($this->services->getProductList($where, $request->uid()));
+        return app('json')->success($this->services->getProductList($where, $request->uid()));
     }
 
     /**
@@ -72,7 +72,7 @@ class ProductController
             ['product_id', 0],
         ], true);
         $routineCode = $this->services->getProductRoutineCode((int)$product_id);
-        return app('json')->successful(['routineCode' => $routineCode]);
+        return app('json')->success(['routineCode' => $routineCode]);
     }
 
     /**
@@ -110,7 +110,7 @@ class ProductController
             }
         }
         $data['count'] = $product->getCount($where);
-        return app('json')->successful($data);
+        return app('json')->success($data);
     }
 
     /**
@@ -125,6 +125,6 @@ class ProductController
         /** @var StoreProductServices $product */
         $product = app()->make(StoreProductServices::class);
         $list = get_thumb_water($product->getProducts(['is_good' => 1, 'is_del' => 0, 'is_show' => 1]), 'mid');
-        return app('json')->successful(compact('list'));
+        return app('json')->success(compact('list'));
     }
 }

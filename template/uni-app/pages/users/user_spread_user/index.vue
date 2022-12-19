@@ -9,7 +9,7 @@
 							<image class="avatar" :src="userInfo.avatar" mode=""></image>
 							<view class="nickname">{{userInfo.nickname}}</view>
 							<view v-if="userInfo.is_agent_level" class="level" @click="jumbPath">
-								<text>{{userInfo.agent_level_name?userInfo.agent_level_name:'分销等级'}}</text>
+								<text>{{userInfo.agent_level_name?$t(userInfo.agent_level_name):$t(`分销等级`)}}</text>
 								<text v-if="userInfo.is_agent_level" class='iconfont icon-xiangyou'></text>
 							</view>
 						</view>
@@ -18,71 +18,71 @@
 				<view class='num'>{{userInfo.brokerage_price}}</view>
 				<view class='profit acea-row row-between-wrapper'>
 					<view class='item'>
-						<view>昨日收益</view>
+						<view>{{$t(`昨日收益`)}}</view>
 						<view class='money'>{{userInfo.yesterDay}}</view>
 					</view>
 					<view class='item' @click="jumbPath(1)">
-						<view>累积已提<text class='iconfont icon-xiangyou'></text></view>
+						<view>{{$t(`累积已提`)}}<text class='iconfont icon-xiangyou'></text></view>
 						<view class='money'>{{userInfo.extractTotalPrice}}</view>
 					</view>
 				</view>
-				<!-- <view class="apply"
-					v-if="(userInfo.is_division && userInfo.division_invite && userInfo.division_status) || (!userInfo.is_division && !userInfo.is_agent) && userInfo.id">
-					<view v-if="userInfo.is_division">邀请码：{{userInfo.division_invite}}</view>
+				<view class="apply"
+					v-if="userInfo.division_open && ((userInfo.is_division && userInfo.division_invite && userInfo.division_status) || (!userInfo.is_division && !userInfo.is_agent))">
+					<view v-if="userInfo.is_division">{{$t(`邀请码`)}}：{{userInfo.division_invite}}</view>
 					<view v-if="!userInfo.is_division && !userInfo.is_agent">
 						<navigator url='/pages/annex/settled/index' hover-class="none">
-							<view>代理商申请</view>
+							<view>{{$t(`代理商申请`)}}</view>
 						</navigator>
 					</view>
-				</view> -->
+				</view>
 			</view>
 			<!-- #ifdef APP-PLUS || H5 -->
-			<navigator url="/pages/users/user_cash/index" hover-class="none" class='bnt bg-color'>立即提现</navigator>
+			<navigator url="/pages/users/user_cash/index" hover-class="none" class='bnt bg-color'>{{$t(`立即提现`)}}</navigator>
 			<!-- #endif -->
 			<!-- #ifdef MP -->
-			<view @click="openSubscribe('/pages/users/user_cash/index')" class='bnt bg-color'>立即提现</view>
+			<view @click="openSubscribe('/pages/users/user_cash/index')" class='bnt bg-color'>{{$t(`立即提现`)}}</view>
 			<!-- #endif -->
 			<view class='list acea-row row-between-wrapper'>
 				<navigator url='/pages/users/user_spread_code/index' hover-class="none"
 					class='item acea-row row-center-wrapper row-column'>
 					<text class='iconfont icon-erweima'></text>
-					<view>推广名片</view>
+					<view>{{$t(`推广名片`)}}</view>
 				</navigator>
 				<navigator url='/pages/users/promoter-list/index' hover-class="none"
 					class='item acea-row row-center-wrapper row-column'>
 					<text class='iconfont icon-tongji'></text>
-					<view>推广人统计</view>
+					<view>{{$t(`推广人统计`)}}</view>
 				</navigator>
 				<navigator url='/pages/users/user_spread_money/index?type=2' hover-class="none"
 					class='item acea-row row-center-wrapper row-column'>
 					<text class='iconfont icon-qiandai'></text>
-					<view>佣金明细</view>
+					<view>{{$t(`佣金明细`)}}</view>
 				</navigator>
 
-				<navigator  v-if="!userInfo.is_agent && !userInfo.is_division" url='/pages/users/promoter-order/index' hover-class="none"
+				<navigator  v-if="(userInfo.division_open && !userInfo.is_agent && !userInfo.is_division) || !userInfo.division_open" url='/pages/users/promoter-order/index' hover-class="none"
 					class='item acea-row row-center-wrapper row-column'>
 					<text class='iconfont icon-dingdan'></text>
-					<view>推广人订单</view>
+					<view>{{$t(`推广人订单`)}}</view>
 				</navigator>
-				<navigator v-if="userInfo.is_agent || userInfo.is_division" url='/pages/users/promoter-order/index?type=1' hover-class="none"
+				<navigator v-if="userInfo.division_open && (userInfo.is_agent || userInfo.is_division)" url='/pages/users/promoter-order/index?type=1' hover-class="none"
 					class='item acea-row row-center-wrapper row-column'>
 					<text class='iconfont icon-dingdan'></text>
-					<view>{{userInfo.is_division?'事业部':'代理商'}}推广订单</view>
+					<view>{{userInfo.is_division?$t(`事业部`):$t(`agent`)}}{{$t(`推广订单`)}}</view>
 				</navigator>
 				<navigator url='/pages/users/promoter_rank/index' hover-class="none"
 					class='item acea-row row-center-wrapper row-column'>
 					<text class='iconfont icon-paihang1'></text>
-					<view>推广人排行</view>
+					<view>{{$t(`推广人排行`)}}</view>
 				</navigator>
 				<navigator url='/pages/users/commission_rank/index' hover-class="none"
 					class='item acea-row row-center-wrapper row-column'>
 					<text class='iconfont icon-paihang'></text>
-					<view>佣金排行</view>
+					<view>{{$t(`佣金排行`)}}</view>
 				</navigator>
-				<navigator v-if="userInfo.is_agent" url='/pages/users/staff_list/index' hover-class="none"
+				<navigator v-if="userInfo.division_open && userInfo.is_agent" url='/pages/users/staff_list/index' hover-class="none"
 					class='item acea-row row-center-wrapper row-column'>
 					<text class='iconfont icon-tuandui'></text>
-					<view>员工列表</view>
+					<view>{{$t(`员工列表`)}}</view>
 				</navigator>
 				
 			</view>
@@ -187,7 +187,7 @@
 			},
 			openSubscribe: function(page) {
 				uni.showLoading({
-					title: '正在加载',
+					title: this.$t(`正在加载`),
 				})
 				openExtrctSubscribe().then(res => {
 					uni.hideLoading();
@@ -207,7 +207,7 @@
 					that.$set(that, 'userInfo', res.data);
 					if (!res.data.spread_status) {
 						that.$util.Tips({
-							title: "您目前暂无推广权限"
+							title: that.$t(`您目前暂无推广权限`)
 						}, {
 							tab: 2,
 							url: '/pages/index/index'

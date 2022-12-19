@@ -1,17 +1,6 @@
 <template>
-  <Modal
-    v-model="modals"
-    scrollable
-    title="订单发送货"
-    class="order_box"
-    :closable="false"
-  >
-    <Form
-      ref="formItem"
-      :model="formItem"
-      :label-width="100"
-      @submit.native.prevent
-    >
+  <Modal v-model="modals" scrollable title="订单发送货" class="order_box" :closable="false">
+    <Form ref="formItem" :model="formItem" :label-width="100" @submit.native.prevent>
       <FormItem label="选择类型：">
         <RadioGroup v-model="formItem.type" @on-change="changeRadio">
           <Radio label="1">打印电子面单</Radio>
@@ -28,12 +17,7 @@
             style="width: 80%"
             @on-change="expressChange"
           >
-            <Option
-              v-for="(item, i) in express"
-              :value="item.value"
-              :key="item.value"
-              >{{ item.value }}</Option
-            >
+            <Option v-for="(item, i) in express" :value="item.value" :key="item.value">{{ item.value }}</Option>
           </Select>
         </FormItem>
         <template v-if="formItem.type === '1'">
@@ -44,37 +28,18 @@
               style="width: 80%"
               @on-change="expressTempChange"
             >
-              <Option
-                v-for="(item, i) in expressTemp"
-                :value="item.temp_id"
-                :key="i"
-                >{{ item.title }}</Option
-              >
+              <Option v-for="(item, i) in expressTemp" :value="item.temp_id" :key="i">{{ item.title }}</Option>
             </Select>
-            <Button v-if="formItem.express_temp_id" type="text" @click="preview"
-              >预览</Button
-            >
+            <Button v-if="formItem.express_temp_id" type="text" @click="preview">预览</Button>
           </FormItem>
           <FormItem label="寄件人姓名：">
-            <Input
-              v-model="formItem.to_name"
-              placeholder="请输入寄件人姓名"
-              style="width: 80%"
-            ></Input>
+            <Input v-model="formItem.to_name" placeholder="请输入寄件人姓名" style="width: 80%"></Input>
           </FormItem>
           <FormItem label="寄件人电话：">
-            <Input
-              v-model="formItem.to_tel"
-              placeholder="请输入寄件人电话"
-              style="width: 80%"
-            ></Input>
+            <Input v-model="formItem.to_tel" placeholder="请输入寄件人电话" style="width: 80%"></Input>
           </FormItem>
           <FormItem label="寄件人地址：">
-            <Input
-              v-model="formItem.to_addr"
-              placeholder="请输入寄件人地址"
-              style="width: 80%"
-            ></Input>
+            <Input v-model="formItem.to_addr" placeholder="请输入寄件人地址" style="width: 80%"></Input>
           </FormItem>
         </template>
       </div>
@@ -115,15 +80,9 @@
 </template>
 
 <script>
-import {
-  getExpressData,
-  orderExpressTemp,
-  orderDeliveryList,
-  orderSheetInfo,
-  otherBatchDelivery,
-} from "@/api/order";
+import { getExpressData, orderExpressTemp, orderDeliveryList, orderSheetInfo, otherBatchDelivery } from '@/api/order';
 export default {
-  name: "orderSend",
+  name: 'orderSend',
   props: {
     isAll: {
       type: Number,
@@ -145,16 +104,16 @@ export default {
   data() {
     return {
       formItem: {
-        type: "1",
-        express_record_type: "2",
-        delivery_name: "",
-        delivery_id: "",
-        express_temp_id: "",
-        to_name: "",
-        to_tel: "",
-        to_addr: "",
-        sh_delivery: "",
-        fictitious_content: "",
+        type: '1',
+        express_record_type: '2',
+        delivery_name: '',
+        delivery_id: '',
+        express_temp_id: '',
+        to_name: '',
+        to_tel: '',
+        to_addr: '',
+        sh_delivery: '',
+        fictitious_content: '',
       },
       modals: false,
       express: [],
@@ -165,39 +124,39 @@ export default {
     };
   },
   watch: {
-    "formItem.express_temp_id"(value) {},
+    'formItem.express_temp_id'(value) {},
   },
   methods: {
     changeRadio(o) {
       this.$refs.formItem.resetFields();
       switch (o) {
-        case "1":
-          this.formItem.delivery_name = "";
-          this.formItem.delivery_id = "";
-          this.formItem.express_temp_id = "";
-          this.formItem.express_record_type = "2";
+        case '1':
+          this.formItem.delivery_name = '';
+          this.formItem.delivery_id = '';
+          this.formItem.express_temp_id = '';
+          this.formItem.express_record_type = '2';
           this.expressTemp = [];
           break;
-        case "2":
-          this.formItem.sh_delivery = "";
-          this.formItem.express_record_type = "1";
+        case '2':
+          this.formItem.sh_delivery = '';
+          this.formItem.express_record_type = '1';
           break;
-        case "3":
-          this.formItem.fictitious_content = "";
-          this.formItem.express_record_type = "1";
+        case '3':
+          this.formItem.fictitious_content = '';
+          this.formItem.express_record_type = '1';
           break;
       }
     },
     changeExpress(j) {
       switch (j) {
-        case "2":
-          this.formItem.delivery_name = "";
-          this.formItem.express_temp_id = "";
+        case '2':
+          this.formItem.delivery_name = '';
+          this.formItem.express_temp_id = '';
           this.expressTemp = [];
           break;
-        case "1":
-          this.formItem.delivery_name = "";
-          this.formItem.delivery_id = "";
+        case '1':
+          this.formItem.delivery_name = '';
+          this.formItem.delivery_id = '';
           break;
         default:
           break;
@@ -205,17 +164,17 @@ export default {
     },
     reset() {
       this.formItem = {
-        type: "1",
-        express_record_type: "2",
-        delivery_name: "",
-        delivery_id: "",
-        express_temp_id: "",
+        type: '1',
+        express_record_type: '2',
+        delivery_name: '',
+        delivery_id: '',
+        express_temp_id: '',
         expressTemp: [],
-        to_name: "",
-        to_tel: "",
-        to_addr: "",
-        sh_delivery: "",
-        fictitious_content: "",
+        to_name: '',
+        to_tel: '',
+        to_addr: '',
+        sh_delivery: '',
+        fictitious_content: '',
       };
     },
     // 物流公司列表
@@ -244,27 +203,27 @@ export default {
         data.all = 0;
         data.ids = arr;
       }
-      if (this.formItem.type === "1") {
-        if (this.formItem.delivery_name === "") {
-          return this.$Message.error("快递公司不能为空");
-        } else if (this.formItem.express_temp_id === "") {
-          return this.$Message.error("电子面单不能为空");
-        } else if (this.formItem.to_name === "") {
-          return this.$Message.error("寄件人姓名不能为空");
-        } else if (this.formItem.to_tel === "") {
-          return this.$Message.error("寄件人电话不能为空");
+      if (this.formItem.type === '1') {
+        if (this.formItem.delivery_name === '') {
+          return this.$Message.error('快递公司不能为空');
+        } else if (this.formItem.express_temp_id === '') {
+          return this.$Message.error('电子面单不能为空');
+        } else if (this.formItem.to_name === '') {
+          return this.$Message.error('寄件人姓名不能为空');
+        } else if (this.formItem.to_tel === '') {
+          return this.$Message.error('寄件人电话不能为空');
         } else if (!/^1(3|4|5|7|8|9|6)\d{9}$/i.test(this.formItem.to_tel)) {
-          return this.$Message.error("请输入正确的手机号码");
-        } else if (this.formItem.to_addr === "") {
-          return this.$Message.error("寄件人地址不能为空");
+          return this.$Message.error('请输入正确的手机号码');
+        } else if (this.formItem.to_addr === '') {
+          return this.$Message.error('寄件人地址不能为空');
         }
       }
-      if (this.formItem.type === "2") {
+      if (this.formItem.type === '2') {
         if (this.formItem.express_temp_id) {
-          this.formItem.express_temp_id = "";
+          this.formItem.express_temp_id = '';
         }
-        if (this.formItem.sh_delivery === "") {
-          return this.$Message.error("送货人不能为空");
+        if (this.formItem.sh_delivery === '') {
+          return this.$Message.error('送货人不能为空');
         }
       }
       otherBatchDelivery(data)
@@ -291,16 +250,16 @@ export default {
         return;
       }
       this.formItem.delivery_code = expressItem.code;
-      if (this.formItem.type === "1") {
+      if (this.formItem.type === '1') {
         this.expressTemp = [];
-        this.formItem.express_temp_id = "";
+        this.formItem.express_temp_id = '';
         orderExpressTemp({
           com: this.formItem.delivery_code,
         })
           .then((res) => {
             this.expressTemp = res.data;
             if (!res.data.length) {
-              this.$Message.error("请配置你所选快递公司的电子面单");
+              this.$Message.error('请配置你所选快递公司的电子面单');
             }
           })
           .catch((err) => {
@@ -322,14 +281,13 @@ export default {
         .then((res) => {
           const data = res.data;
           for (const key in data) {
-            if (data.hasOwnProperty(key) && key !== "express_temp_id") {
+            if (data.hasOwnProperty(key) && key !== 'express_temp_id') {
               this.formItem[key] = data[key];
             }
           }
-          this.export_open =
-            data.export_open === undefined ? true : data.export_open;
+          this.export_open = data.export_open === undefined ? true : data.export_open;
           if (!this.export_open) {
-            this.formItem.express_record_type = "1";
+            this.formItem.express_record_type = '1';
           }
           this.formItem.to_addr = data.to_add;
         })

@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -14,7 +14,7 @@ namespace app\services\order;
 
 use app\dao\order\StoreOrderEconomizeDao;
 use app\services\BaseServices;
-use think\exception\ValidateException;
+use crmeb\exceptions\ApiException;
 
 /**
  * Class StoreOrderInvoiceServices
@@ -37,7 +37,7 @@ class StoreOrderEconomizeServices extends BaseServices
      */
     public function addEconomize(array $add)
     {
-        if (!$add) throw new ValidateException('数据不存在');
+        if (!$add) throw new ApiException(100026);
         return $this->dao->save($add);
     }
 
@@ -50,7 +50,7 @@ class StoreOrderEconomizeServices extends BaseServices
      */
     public function getOne(array $where)
     {
-        if (!$where) throw new ValidateException('条件缺失');
+        if (!$where) throw new ApiException(100100);
         return $this->dao->getOne($where);
     }
 

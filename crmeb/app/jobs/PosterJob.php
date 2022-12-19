@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -11,12 +11,12 @@
 
 namespace app\jobs;
 
+use app\services\other\PosterServices;
 use app\services\other\QrcodeServices;
 use app\services\system\attachment\SystemAttachmentServices;
 use crmeb\basic\BaseJobs;
-use crmeb\services\MiniProgramService;
-use crmeb\services\UploadService;
-use crmeb\services\UtilService;
+use crmeb\services\app\MiniProgramService;
+use app\services\other\UploadService;
 use crmeb\traits\QueueTrait;
 
 /**
@@ -64,7 +64,7 @@ class PosterJob extends BaseJobs
             }
             if (!$imageInfo_routine) {
                 $resForever = $qrcodeService->getForeverQrcode('spread', $user['uid']);
-                $resCode    = MiniProgramService::qrcodeService()->appCodeUnlimit($resForever->id, '', 280);
+                $resCode    = MiniProgramService::appCodeUnlimitService($resForever->id, '', 280);
                 if ($resCode) {
                     $res = ['res' => $resCode, 'id' => $resForever->id];
                 } else {
@@ -86,7 +86,7 @@ class PosterJob extends BaseJobs
             if ($imageInfo_routine['image_type'] == 1) $urlCode_routine = $siteUrl . $urlCode_routine;
             if (!$imageInfo_wap) {
                 $codeUrl       = set_http_type($siteUrl . '?spread=' . $user['uid'], $isSsl ? 0 : 1);//二维码链接
-                $imageInfo_wap = UtilService::getQRCodePath($codeUrl, $name_wap);
+                $imageInfo_wap = PosterServices::getQRCodePath($codeUrl, $name_wap);
                 if (is_string($imageInfo_wap)) return false;
                 $attachment->attachmentAdd($imageInfo_wap['name'], $imageInfo_wap['size'], $imageInfo_wap['type'], $imageInfo_wap['dir'], $imageInfo_wap['thumb_path'], 1, $imageInfo_wap['image_type'], $imageInfo_wap['time'], 2);
                 $urlCode_wap = $imageInfo_wap['dir'];
@@ -137,7 +137,7 @@ class PosterJob extends BaseJobs
                     ),
                     'background' => $item['pic']
                 );
-                $resRoutine         = $resRoutine && $posterInfo_routine = UtilService::setSharePoster($config, 'routine/spread/poster', $user['uid'] . '_' . $user['is_promoter'] . '_user_routine_poster_' . $key . '.jpg');
+                $resRoutine         = $resRoutine && $posterInfo_routine = PosterServices::setSharePoster($config, 'routine/spread/poster', $user['uid'] . '_' . $user['is_promoter'] . '_user_routine_poster_' . $key . '.jpg');
                 if (!is_array($posterInfo_routine)) return false;
                 $attachment->attachmentAdd($posterInfo_routine['name'], $posterInfo_routine['size'], $posterInfo_routine['type'], $posterInfo_routine['dir'], $posterInfo_routine['thumb_path'], 1, $posterInfo_routine['image_type'], $posterInfo_routine['time'], 2);
                 if ($resRoutine) {
@@ -186,7 +186,7 @@ class PosterJob extends BaseJobs
                     ),
                     'background' => $item['pic']
                 );
-                $resWap         = $resWap && $posterInfo_wap = UtilService::setSharePoster($config, 'wap/spread/poster', $user['uid'] . '_' . $user['is_promoter'] . '_user_wap_poster_' . $key . '.jpg');
+                $resWap         = $resWap && $posterInfo_wap = PosterServices::setSharePoster($config, 'wap/spread/poster', $user['uid'] . '_' . $user['is_promoter'] . '_user_wap_poster_' . $key . '.jpg');
                 if (!is_array($posterInfo_wap)) return false;
                 $attachment->attachmentAdd($posterInfo_wap['name'], $posterInfo_wap['size'], $posterInfo_wap['type'], $posterInfo_wap['dir'], $posterInfo_wap['thumb_path'], 1, $posterInfo_wap['image_type'], $posterInfo_wap['time'], 2);
                 if ($resWap) {

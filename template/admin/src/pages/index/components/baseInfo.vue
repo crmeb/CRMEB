@@ -1,11 +1,6 @@
 <template>
   <Row :gutter="24">
-    <Col
-      v-bind="grid"
-      class="ivu-mb"
-      v-for="(item, index) in infoList"
-      :key="index"
-    >
+    <Col v-bind="grid" class="ivu-mb" v-for="(item, index) in infoList" :key="index">
       <Card :bordered="false" dis-hover :padding="12">
         <p slot="title">
           <span v-text="item.title"></span>
@@ -19,11 +14,7 @@
               <!--日同比 <Trend :flag="Number(item.today_ratio)>=0?'up':'down'">{{Number(item.today_ratio)}}%</Trend>-->
               日环比 {{ Number(item.today_ratio) }}%
               <Icon
-                :type="
-                  Number(item.today_ratio) >= 0
-                    ? 'md-arrow-dropup'
-                    : 'md-arrow-dropdown'
-                "
+                :type="Number(item.today_ratio) >= 0 ? 'md-arrow-dropup' : 'md-arrow-dropdown'"
                 class="iconColor"
                 :class="Number(item.today_ratio) >= 0 ? ' ' : 'on'"
               />
@@ -32,11 +23,7 @@
               <!--周同比 <Trend :flag="Number(item.week_ratio)>=0?'up':'down'">{{Number(item.week_ratio)}}%</Trend>-->
               周环比 {{ Number(item.week_ratio) }}%
               <Icon
-                :type="
-                  Number(item.week_ratio) >= 0
-                    ? 'md-arrow-dropup'
-                    : 'md-arrow-dropdown'
-                "
+                :type="Number(item.week_ratio) >= 0 ? 'md-arrow-dropup' : 'md-arrow-dropdown'"
                 class="iconColor"
                 :class="Number(item.week_ratio) >= 0 ? ' ' : 'on'"
               />
@@ -55,8 +42,8 @@
   </Row>
 </template>
 <script>
-import echarts from "echarts";
-import { headerApi } from "@/api/index";
+import echarts from 'echarts';
+import { headerApi } from '@/api/index';
 export default {
   data() {
     return {
@@ -69,8 +56,8 @@ export default {
         xs: 24,
       },
       excessStyle: {
-        color: "#f56a00",
-        backgroundColor: "#fde3cf",
+        color: '#f56a00',
+        backgroundColor: '#fde3cf',
       },
       avatarList: [],
     };

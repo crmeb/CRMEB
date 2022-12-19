@@ -12,10 +12,10 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
+import { mapState } from 'vuex';
 
 export default {
-  name: "index.vue",
+  name: 'index.vue',
   props: {
     configObj: {
       type: Object,
@@ -25,21 +25,21 @@ export default {
     },
     configNme: {
       type: String,
-      default: "",
+      default: '',
     },
   },
   data() {
     return {
       status: true,
-      txtColor: "",
-      activeTxtColor: "",
-      bgColor: "",
+      txtColor: '',
+      activeTxtColor: '',
+      bgColor: '',
       menuList: [],
       isSpecial: 2,
     };
   },
   computed: {
-    ...mapState("mobildConfig", ["pageFooter"]),
+    ...mapState('mobildConfig', ['pageFooter']),
   },
   watch: {
     pageFooter: {
@@ -60,8 +60,8 @@ export default {
       this.activeTxtColor = data.activeTxtColor.color[0].item;
       this.bgColor = data.bgColor.color[0].item;
       this.menuList = [];
-      this.$set(this, "menuList", data.menuList);
-      if (data.status.title == "是否显示") {
+      this.$set(this, 'menuList', data.menuList);
+      if (data.status.title == '是否显示') {
         this.isSpecial = 2;
       } else {
         this.isSpecial = 0;

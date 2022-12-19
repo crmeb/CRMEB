@@ -2,23 +2,23 @@
 	<view class="feedback-wrapper">
 		<view class="head">
 			<view class="left-wrapper">
-				<view class="title">商城客服已离线</view>
+				<view class="title">{{$t(`商城客服已离线`)}}</view>
 				<view class="txt">{{feedback}}</view>
 			</view>
 			<view class="img-box"><image src="../static/feed-icon.png" mode=""></image></view>
 		</view>
 		<view class="main">
-			<view class="title">我要反馈</view>
+			<view class="title">{{$t(`我要反馈`)}}</view>
 			<view class="input-box">
-				<input type="text" placeholder="请输入您的姓名" v-model="name">
+				<input type="text" :placeholder="$t(`请输入姓名`)" v-model="name">
 			</view>
 			<view class="input-box">
-				<input type="text" placeholder="请输入您的联系电话" v-model="phone">
+				<input type="text" :placeholder="$t(`请输入手机号`)" v-model="phone">
 			</view>
 			<view class="input-box">
-				<textarea type="text" placeholder="请填写内容" v-model="con" />
+				<textarea type="text" :placeholder="$t(`请填写内容`)" v-model="con" />
 			</view>
-			<view class="sub_btn" @click="subMit">提交</view>
+			<view class="sub_btn" @click="subMit">{{$t(`提交`)}}</view>
 		</view>
 	</view>
 </template>
@@ -47,17 +47,17 @@
 			subMit(){
 				if(!this.name){
 					return this.$util.Tips({
-						title:'请填写姓名'
+						title: this.$t(`请输入姓名`)
 					})
 				}
 				if(!this.phone || !(/^1(3|4|5|7|8|9|6)\d{9}$/i.test(this.phone))){
 					return this.$util.Tips({
-						title:'请填写正确的手机号码'
+						title:this.$t(`请输入正确的手机号码`)
 					})
 				}
 				if(!this.con){
 					return this.$util.Tips({
-						title:'请填写内容'
+						title: this.$t(`请填写内容`)
 					})
 				}
 				feedBackPost({

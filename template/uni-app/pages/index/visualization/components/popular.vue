@@ -17,13 +17,13 @@
 				<view class='text'>
 					<view class='name line1'>
 						<text class="iconfont icon-shoufaxinpin"></text>
-						{{titleInfo[0].val}}
+						{{$t(titleInfo[0].val)}}
 						<!-- <text class='new font-color'>NEW~</text> -->
 					</view>
-					<view class='line1 txt-btn'>{{titleInfo[1].val}}</view>
+					<view class='line1 txt-btn'>{{$t(titleInfo[1].val)}}</view>
 				</view>
 				<view class='more' @click="gopage(titleInfo[2].val)">
-					更多
+					{{$t(`更多`)}}
 					<text class='iconfont icon-jiantou'></text>
 				</view>
 			</view>
@@ -37,7 +37,7 @@
 							<image v-else-if="index == 2" src='/static/images/three.png' class='numPic'></image>
 						</view>
 						<view class="rectangle">
-							热度 TOP {{index+1}}
+							{{$t(`热度 TOP`)}} {{index+1}}
 						</view>
 						<view class='name line1'>{{item.store_name}}</view>
 						<!-- <view class='money font-color'>
@@ -71,7 +71,7 @@
 					<view class='line1 txt-btn'>{{titleInfo[1].val}}</view>
 				</view>
 				<view class='more' @click="gopage(titleInfo[2].val)">
-					更多
+					{{$t(`更多`)}}
 					<text class='iconfont icon-jiantou'></text>
 				</view>
 			</view>
@@ -104,7 +104,7 @@
 					<view class='line1 txt-btn'>{{titleInfo[1].val}}</view>
 				</view>
 				<view class='more' @click="gopage(titleInfo[2].val)">
-					更多
+					{{$t(`更多`)}}
 					<text class='iconfont icon-jiantou'></text>
 				</view>
 			</view>
@@ -120,7 +120,7 @@
 					</view>
 				</view>
 			</view> -->
-			<view class="empty-img">排行榜、暂无数据</view>
+			<view class="empty-img">{{$t(`排行榜、暂无数据`)}}</view>
 		</view>
 	</view>
 </template>

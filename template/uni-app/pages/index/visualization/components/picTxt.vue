@@ -41,7 +41,8 @@
 				isIframe:app.globalData.isIframe,
 				isShow:true,
 				tagStyle: {
-					img: 'width:100%;display:block',
+					img: 'width:100%;display:block;',
+					table: 'width:100%',
 					video: 'width: 100% !important;'
 				}
 			};

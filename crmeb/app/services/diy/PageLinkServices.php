@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -53,6 +53,6 @@ class PageLinkServices extends BaseServices
      */
     public function del(int $id){
         $res = $this->dao->delete($id);
-        if (!$res) throw new AdminException('删除失败');
+        if (!$res) throw new AdminException(100008);
     }
 }

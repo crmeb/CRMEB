@@ -3,21 +3,21 @@
 		<view class='index-wrapper skeleton-rect' v-if="isShow && fastList.length">
 			<view class='title acea-row row-between-wrapper'>
 				<view class='text'>
-					<view class='name line1'>{{titleInfo[0].val}}</view>
-					<view class='line1 txt-btn'>{{titleInfo[1].val}}</view>
+					<view class='name line1'>{{$t(titleInfo[0].val)}}</view>
+					<view class='line1 txt-btn'>{{$t(titleInfo[1].val)}}</view>
 				</view>
-				<navigator class='more' open-type="switchTab" :url="titleInfo[2].val">更多<text
+				<navigator class='more' open-type="switchTab" :url="titleInfo[2].val">{{$t(`更多`)}}<text
 						class='iconfont icon-jiantou'></text></navigator>
 			</view>
 			<view class='scroll-product'>
 				<scroll-view class="scroll-view_x" scroll-x style="width:auto;overflow:hidden;">
 					<block v-for="(item,index) in fastList" :key='index'>
 						<view hover-class="none" class='item'
-							@click="gopage('/pages/goods_list/index?sid='+item.id+'&title='+item.cate_name)">
+							@click="gopage('/pages/goods/goods_list/index?sid='+item.id+'&title='+item.cate_name)">
 							<view class='img-box'>
 								<image :src='item.pic'></image>
 							</view>
-							<view class='pro-info line1'>{{item.cate_name}}</view>
+							<view class='pro-info line1'>{{$t(item.cate_name)}}</view>
 						</view>
 					</block>
 				</scroll-view>
@@ -29,14 +29,14 @@
 					<view class='name line1'>{{titleInfo[0].val}}</view>
 					<view class='line1 txt-btn'>{{titleInfo[1].val}}</view>
 				</view>
-				<navigator class='more' open-type="switchTab" :url="titleInfo[2].val">更多<text
+				<navigator class='more' open-type="switchTab" :url="titleInfo[2].val">{{$t(`更多`)}}<text
 						class='iconfont icon-jiantou'></text></navigator>
 			</view>
 			<view class='scroll-product'>
 				<scroll-view class="scroll-view_x" scroll-x style="width:auto;overflow:hidden;">
 					<block v-for="(item,index) in fastList" :key='index'>
 						<view hover-class="none" class='item'
-							@click="gopage('/pages/goods_list/index?sid='+item.id+'&title='+item.cate_name)">
+							@click="gopage('/pages/goods/goods_list/index?sid='+item.id+'&title='+item.cate_name)">
 							<view class='img-box'>
 								<image :src='item.pic'></image>
 							</view>
@@ -52,11 +52,11 @@
 					<view class='name line1'>{{titleInfo[0].val}}</view>
 					<view class='line1 txt-btn'>{{titleInfo[1].val}}</view>
 				</view>
-				<navigator class='more' open-type="switchTab" :url="titleInfo[2].val">更多<text
+				<navigator class='more' open-type="switchTab" :url="titleInfo[2].val">{{$t(`更多`)}}<text
 						class='iconfont icon-jiantou'></text></navigator>
 			</view>
 			<view class='scroll-product'>
-				<view class="empty-img">快速选择，暂无数据</view>
+				<view class="empty-img">{{$t(`快速选择，暂无数据`)}}</view>
 			</view>
 		</view>
 	</view>
@@ -104,7 +104,7 @@
 		mounted() {},
 		data() {
 			return {
-				fastInfo: '上百种商品分类任您选择',
+				fastInfo: this.$t(`上百种商品分类任您选择`),
 				fastList: [],
 				name: this.$options.name,
 				isShow: true,

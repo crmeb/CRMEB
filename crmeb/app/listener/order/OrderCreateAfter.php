@@ -5,6 +5,7 @@ namespace app\listener\order;
 
 
 use app\jobs\OrderCreateAfterJob;
+use app\jobs\OrderJob;
 use app\jobs\ProductLogJob;
 use app\jobs\UnpaidOrderCancelJob;
 use app\jobs\UnpaidOrderSend;
@@ -26,10 +27,10 @@ class OrderCreateAfter implements ListenerInterface
     {
         [$order, $group, $uid, $key, $combinationId, $seckillId, $bargainId] = $event;
 
-        //设置默认地址，清理购物车
+        //订单数据创建之后的商品实际金额计算，佣金计算，优惠折扣计算，设置默认地址，清理购物车
         /** @var StoreOrderCreateServices $orderCreate */
         $orderCreate = app()->make(StoreOrderCreateServices::class);
-        $orderCreate->orderCreateAfter($order, $group);
+        $orderCreate->orderCreateAfter($order, $group, $combinationId || $seckillId || $bargainId);
 
         //清除订单缓存
         CacheService::redisHandler()->delete('user_order_' . $uid . $key);
@@ -46,8 +47,10 @@ class OrderCreateAfter implements ListenerInterface
 
         //订单自动取消
         $this->pushJob($order['id'], $combinationId, $seckillId, $bargainId);
+
         //计算订单实际金额
-        OrderCreateAfterJob::dispatch([$order, $group, $combinationId || $seckillId || $bargainId]);
+        //OrderCreateAfterJob::dispatch([$order, $group, $combinationId || $seckillId || $bargainId]);
+
         //下单记录
         ProductLogJob::dispatch(['order', ['uid' => $uid, 'order_id' => $order['id']]]);
     }

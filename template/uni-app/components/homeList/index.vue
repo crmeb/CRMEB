@@ -46,31 +46,31 @@
 		data: function() {
 			return {
 				selectNavList: [{
-						name: '首页',
+						name: this.$t(`首页`),
 						icon: 'icon-shouye8',
 						url: '/pages/index/index',
 						after: 'dialog_after'
 					},
 					{
-						name: '搜索',
+						name: this.$t(`搜索`),
 						icon: 'icon-sousuo6',
-						url: '/pages/goods_search/index',
+						url: '/pages/goods/goods_search/index',
 						after: 'dialog_after'
 					},
 					{
-						name: '购物车',
+						name: this.$t(`购物车`),
 						icon: 'icon-gouwuche7',
 						url: '/pages/order_addcart/order_addcart',
 						after: 'dialog_after'
 					},
 					{
-						name: '我的收藏',
+						name: this.$t(`我的收藏`),
 						icon: 'icon-shoucang3',
 						url: '/pages/users/user_goods_collection/index',
 						after: 'dialog_after'
 					},
 					{
-						name: '个人中心',
+						name: this.$t(`个人中心`),
 						icon: 'icon-gerenzhongxin1',
 						url: '/pages/user/index'
 					},

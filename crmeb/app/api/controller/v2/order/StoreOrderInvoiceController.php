@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -14,9 +14,9 @@ namespace app\api\controller\v2\order;
 
 use app\services\order\StoreOrderInvoiceServices;
 use app\services\order\StoreOrderServices;
+use app\services\other\PosterServices;
 use app\services\system\attachment\SystemAttachmentServices;
 use app\services\system\store\SystemStoreServices;
-use crmeb\services\UtilService;
 use think\Request;
 
 /**
@@ -50,10 +50,8 @@ class StoreOrderInvoiceController
             ['order_id', 0],
             ['invoice_id', 0]
         ], true);
-        if (!$order_id) return app('json')->fail('请选择要开票订单');
-        if (!$invoice_id) return app('json')->fail('请选择发票');
         $uid = (int)$request->uid;
-        return app('json')->successful($this->services->makeUp($uid, $order_id, (int)$invoice_id));
+        return app('json')->success($this->services->makeUp($uid, $order_id, (int)$invoice_id));
     }
 
     /**
@@ -64,7 +62,7 @@ class StoreOrderInvoiceController
     public function list(Request $request)
     {
         $uid = (int)$request->uid();
-        return app('json')->successful($this->services->getOrderInvoiceList(['uid' => $uid]));
+        return app('json')->success($this->services->getOrderInvoiceList(['uid' => $uid]));
     }
 
     /**
@@ -73,13 +71,13 @@ class StoreOrderInvoiceController
      * @param $uni
      * @return mixed
      */
-    public function detail(StoreOrderServices $services,Request $request, $uni)
+    public function detail(StoreOrderServices $services, Request $request, $uni)
     {
-        if (!strlen(trim($uni))) return app('json')->fail('参数错误');
-        $order = $services->getUserOrderDetail($uni, (int)$request->uid());
-        if (!$order) return app('json')->fail('订单不存在');
+        if (!strlen(trim($uni))) return app('json')->fail(100100);
+        $order = $services->getUserOrderDetail($uni, (int)$request->uid(), []);
+        if (!$order) return app('json')->fail(410173);
         $order = $order->toArray();
-        $orderInvoice = $this->services->getOne(['order_id'=>$order['id']]);
+        $orderInvoice = $this->services->getOne(['order_id' => $order['id']]);
         $order['invoice'] = $orderInvoice;
         //是否开启门店自提
         $store_self_mention = sys_config('store_self_mention');
@@ -104,7 +102,7 @@ class StoreOrderInvoiceController
             $imageInfo = $attachmentServices->getInfo(['name' => $name]);
             $siteUrl = sys_config('site_url');
             if (!$imageInfo) {
-                $imageInfo = UtilService::getQRCodePath($order['verify_code'], $name);
+                $imageInfo = PosterServices::getQRCodePath($order['verify_code'], $name);
                 if (is_array($imageInfo)) {
                     $attachmentServices->attachmentAdd($imageInfo['name'], $imageInfo['size'], $imageInfo['type'], $imageInfo['dir'], $imageInfo['thumb_path'], 1, $imageInfo['image_type'], $imageInfo['time'], 2);
                     $url = $imageInfo['dir'];
@@ -117,7 +115,7 @@ class StoreOrderInvoiceController
         $order['mapKey'] = sys_config('tengxun_map_key');
         $order['yue_pay_status'] = (int)sys_config('balance_func_status') && (int)sys_config('yue_pay_status') == 1 ? (int)1 : (int)2;//余额支付 1 开启 2 关闭
         $order['pay_weixin_open'] = (int)sys_config('pay_weixin_open') ?? 0;//微信支付 1 开启 0 关闭
-        $order['ali_pay_status'] = (bool)sys_config('ali_pay_status');//支付包支付 1 开启 0 关闭
-        return app('json')->successful('ok', $services->tidyOrder($order, true, true));
+        $order['ali_pay_status'] = (bool)sys_config('ali_pay_status');//支付宝支付 1 开启 0 关闭
+        return app('json')->success($services->tidyOrder($order, true, true));
     }
 }

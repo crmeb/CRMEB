@@ -3,9 +3,9 @@
 		<view class="head">
 			<image :src="userInfo.avatar" mode=""></image>
 			<view class="big">{{userInfo.nickname}}</view>
-			<view class="small">点击授权登录您的客服工作台</view>
-			<view class="sub_btn btn" @click="scanLogin">授权登录</view>
-			<view class="out btn" @click="closePage">取消</view>
+			<view class="small">{{$t(`点击授权登录您的客服工作台`)}}</view>
+			<view class="sub_btn btn" @click="scanLogin">{{$t(`授权登录`)}}</view>
+			<view class="out btn" @click="closePage">{{$t(`取消`)}}</view>
 		</view>
 	</view>
 </template>
@@ -55,19 +55,19 @@
 						this.openModel(error)
 					})
 				}else{
-					this.openModel('没有登录的code，请重新扫码')
+					this.openModel(this.$t(`没有登录的code，请重新扫码`))
 				}
 				
 			},
 			openModel(data){
 				uni.showModal({
-					title:'提示',
+					title: this.$t(`提示`),
 					content:data,
 					success: function (res) {
 							if (res.confirm) {
 									WeixinJSBridge.call('closeWindow');
 							} else if (res.cancel) {
-									console.log('用户点击取消');
+									console.log(this.$t(`用户点击取消`));
 							}
 					}
 				})

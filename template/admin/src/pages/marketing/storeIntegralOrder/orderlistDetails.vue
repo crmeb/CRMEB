@@ -26,11 +26,11 @@
 </template>
 
 <script>
-import cardsData from "../../../components/cards/cards";
-import tableForm from "./components/tableFrom";
-import tableList from "./components/tableList";
+import cardsData from '../../../components/cards/cards';
+import tableForm from './components/tableFrom';
+import tableList from './components/tableList';
 export default {
-  name: "orderlistDetails",
+  name: 'orderlistDetails',
   components: {
     tableForm,
     tableList,
@@ -38,15 +38,15 @@ export default {
   },
   data() {
     return {
-      currentTab: "",
+      currentTab: '',
       cardLists: [],
       selection: [],
       orderData: {
-        status: "",
-        data: "",
-        real_name: "",
-        field_key: "all",
-        pay_type: "",
+        status: '',
+        data: '',
+        real_name: '',
+        field_key: 'all',
+        pay_type: '',
       },
       // display: 'none',
       autoDisabled: true,

@@ -1,6 +1,6 @@
 {
   "component": true,
   "usingComponents": {
-    "jyf-parser": "/components/mp-html/mp-html"
+    "jyf-parser": "/components/jyf-parser/jyf-parser"
   }
 }

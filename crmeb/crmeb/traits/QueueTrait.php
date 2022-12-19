@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -33,8 +33,8 @@ trait QueueTrait
     /**
      * 加入队列
      * @param array|string|int $action
-     * @param int|null $secs
      * @param array $data
+     * @param string|null $queueName
      * @return mixed
      */
     public static function dispatch($action, array $data = [], string $queueName = null)
@@ -47,8 +47,8 @@ trait QueueTrait
         }
         if ($queueName) {
             $queue->setQueueName($queueName);
-        } else if (self::queueName()) {
-            $queue->setQueueName(self::queueName());
+        } else if (static::queueName()) {
+            $queue->setQueueName(static::queueName());
         }
         return $queue->push();
     }
@@ -58,6 +58,7 @@ trait QueueTrait
      * @param int $secs
      * @param $action
      * @param array $data
+     * @param string|null $queueName
      * @return mixed
      */
     public static function dispatchSece(int $secs, $action, array $data = [], string $queueName = null)
@@ -70,8 +71,8 @@ trait QueueTrait
         }
         if ($queueName) {
             $queue->setQueueName($queueName);
-        } else if (self::queueName()) {
-            $queue->setQueueName(self::queueName());
+        } else if (static::queueName()) {
+            $queue->setQueueName(static::queueName());
         }
         return $queue->push();
     }
@@ -81,6 +82,7 @@ trait QueueTrait
      * @param string $do
      * @param array $data
      * @param int|null $secs
+     * @param string|null $queueName
      * @return mixed
      */
     public static function dispatchDo(string $do, array $data = [], int $secs = null, string $queueName = null)
@@ -94,8 +96,8 @@ trait QueueTrait
         }
         if ($queueName) {
             $queue->setQueueName($queueName);
-        } else if (self::queueName()) {
-            $queue->setQueueName(self::queueName());
+        } else if (static::queueName()) {
+            $queue->setQueueName(static::queueName());
         }
         return $queue->push();
     }

@@ -30,30 +30,15 @@
         </div>
       </div>
     </div>
-    <Card
-      :bordered="false"
-      dis-hover
-      class="ivu-mt"
-      :style="'min-height:' + clientHeight + 'px'"
-    >
+    <Card :bordered="false" dis-hover class="ivu-mt" :style="'min-height:' + clientHeight + 'px'">
       <Form :label-width="labelWidth">
         <FormItem label="选择配色方案：">
           <RadioGroup v-model="current" @on-change="changeColor">
-            <Radio :label="1" border class="box"
-              >天空蓝<i class="iconfont iconxuanzhong6"></i
-            ></Radio>
-            <Radio :label="2" border class="box green"
-              >生鲜绿<i class="iconfont iconxuanzhong6"></i
-            ></Radio>
-            <Radio :label="3" border class="box red"
-              >热情红<i class="iconfont iconxuanzhong6"></i
-            ></Radio>
-            <Radio :label="4" border class="box pink"
-              >魅力粉<i class="iconfont iconxuanzhong6"></i
-            ></Radio>
-            <Radio :label="5" border class="box orange"
-              >活力橙<i class="iconfont iconxuanzhong6"></i
-            ></Radio>
+            <Radio :label="1" border class="box">天空蓝<i class="iconfont iconxuanzhong6"></i></Radio>
+            <Radio :label="2" border class="box green">生鲜绿<i class="iconfont iconxuanzhong6"></i></Radio>
+            <Radio :label="3" border class="box red">热情红<i class="iconfont iconxuanzhong6"></i></Radio>
+            <Radio :label="4" border class="box pink">魅力粉<i class="iconfont iconxuanzhong6"></i></Radio>
+            <Radio :label="5" border class="box orange">活力橙<i class="iconfont iconxuanzhong6"></i></Radio>
           </RadioGroup>
         </FormItem>
         <FormItem label="当前风格示例：">
@@ -72,10 +57,10 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
-import { colorChange, getColorChange } from "@/api/diy";
+import { mapState } from 'vuex';
+import { colorChange, getColorChange } from '@/api/diy';
 export default {
-  name: "themeStyle",
+  name: 'themeStyle',
   data() {
     return {
       grid: {
@@ -86,23 +71,23 @@ export default {
         xs: 24,
       },
       picList: [],
-      picListBule: [{ image: require("@/assets/images/bule.jpg") }],
-      picListGreen: [{ image: require("@/assets/images/green.jpg") }],
-      picListRed: [{ image: require("@/assets/images/red.jpg") }],
-      picListPink: [{ image: require("@/assets/images/pink.jpg") }],
-      picListOrange: [{ image: require("@/assets/images/orange.jpg") }],
-      current: "",
+      picListBule: [{ image: require('@/assets/images/bule.jpg') }],
+      picListGreen: [{ image: require('@/assets/images/green.jpg') }],
+      picListRed: [{ image: require('@/assets/images/red.jpg') }],
+      picListPink: [{ image: require('@/assets/images/pink.jpg') }],
+      picListOrange: [{ image: require('@/assets/images/orange.jpg') }],
+      current: '',
       clientHeight: 0,
       loadingExist: false,
     };
   },
   computed: {
-    ...mapState("admin/layout", ["isMobile"]),
+    ...mapState('admin/layout', ['isMobile']),
     labelWidth() {
       return this.isMobile ? undefined : 100;
     },
     labelPosition() {
-      return this.isMobile ? "top" : "right";
+      return this.isMobile ? 'top' : 'right';
     },
   },
   created() {
@@ -120,7 +105,7 @@ export default {
   },
   methods: {
     getInfo() {
-      getColorChange("color_change")
+      getColorChange('color_change')
         .then((res) => {
           this.current = res.data.status ? res.data.status : 3;
           this.changeColor(this.current);
@@ -131,7 +116,7 @@ export default {
     },
     submit() {
       this.loadingExist = true;
-      colorChange(this.current, "color_change")
+      colorChange(this.current, 'color_change')
         .then((res) => {
           this.loadingExist = false;
           this.$Message.success(res.msg);

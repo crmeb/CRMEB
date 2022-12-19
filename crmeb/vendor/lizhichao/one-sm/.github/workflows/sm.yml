@@ -1,0 +1,33 @@
+name: sm
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php-versions: [ '5.6','7.0','7.1', '7.2', '7.4', '8.0' ]
+    name: PHP ${{ matrix.php-versions }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Install PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-versions }}
+          coverage: none
+          ini-values: opcache.jit_buffer_size=256M, opcache.jit=1205, pcre.jit=1, opcache.enable=1, opcache.enable_cli=1
+      - name: Check PHP Version
+        run: php -v && php -i | grep opcache
+      - name: Install Dependencies
+        run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
+      - name: Execute tests sm3
+        run: php tests/sm3.php
+      - name: Execute tests sm4
+        run: php tests/sm4.php

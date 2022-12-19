@@ -2,13 +2,12 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
 // | Author: CRMEB Team <admin@crmeb.com>
 // +----------------------------------------------------------------------
-
 namespace app\adminapi\controller\v1\marketing;
 
 use app\adminapi\controller\AuthController;
@@ -36,9 +35,11 @@ class StoreBargain extends AuthController
     }
 
     /**
-     * 显示资源列表
-     *
-     * @return \think\Response
+     * 砍价列表
+     * @return mixed
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
      */
     public function index()
     {
@@ -53,10 +54,9 @@ class StoreBargain extends AuthController
     }
 
     /**
-     * 保存新建的资源
-     *
-     * @param \think\Request $request
-     * @return \think\Response
+     * 保存砍价商品
+     * @param $id
+     * @return mixed
      */
     public function save($id)
     {
@@ -92,20 +92,20 @@ class StoreBargain extends AuthController
         if ($data['section_time']) {
             [$start_time, $end_time] = $data['section_time'];
             if (strtotime($end_time) < time()) {
-                return app('json')->fail('活动结束时间不能小于当前时间');
+                return app('json')->fail(400507);
             }
         }
         $bragain = [];
         if ($id) {
             $bragain = $this->services->get((int)$id);
             if (!$bragain) {
-                return app('json')->fail('数据不存在');
+                return app('json')->fail(100026);
             }
         }
         //限制编辑
         if ($data['copy'] == 0 && $bragain) {
             if ($bragain['stop_time'] < time()) {
-                return app('json')->fail('活动已结束,请重新添加或复制');
+                return app('json')->fail(400508);
             }
         }
         if ($data['copy'] == 1) {
@@ -113,14 +113,13 @@ class StoreBargain extends AuthController
             unset($data['copy']);
         }
         $this->services->saveData($id, $data);
-        return app('json')->success('保存成功');
+        return app('json')->success(100000);
     }
 
     /**
-     * 显示指定的资源
-     *
-     * @param int $id
-     * @return \think\Response
+     * 获取详情
+     * @param $id
+     * @return mixed
      */
     public function read($id)
     {
@@ -129,10 +128,9 @@ class StoreBargain extends AuthController
     }
 
     /**
-     * 删除指定资源
-     *
-     * @param int $id
-     * @return \think\Response
+     * 删除砍价
+     * @param $id
+     * @return mixed
      */
     public function delete($id)
     {
@@ -140,7 +138,7 @@ class StoreBargain extends AuthController
         /** @var StoreBargainUserServices $bargainUserService */
         $bargainUserService = app()->make(StoreBargainUserServices::class);
         $bargainUserService->userBargainStatusFail($id, true);
-        return app('json')->success('删除成功!');
+        return app('json')->success(100002);
     }
 
     /**
@@ -155,7 +153,7 @@ class StoreBargain extends AuthController
         $bargainUserService = app()->make(StoreBargainUserServices::class);
         $bargainUserService->userBargainStatusFail($id, false);
         $this->services->update($id, ['status' => $status]);
-        return app('json')->success($status == 0 ? '关闭成功' : '开启成功');
+        return app('json')->success($status == 0 ? 100001 : 100007);
     }
 
     /**
@@ -185,5 +183,44 @@ class StoreBargain extends AuthController
         $bargainUserHelpService = app()->make(StoreBargainUserHelpServices::class);
         $list = $bargainUserHelpService->getHelpList($id);
         return app('json')->success(compact('list'));
+    }
+
+    /**
+     * 砍价统计
+     * @param $id
+     * @return mixed
+     */
+    public function bargainStatistics($id)
+    {
+        $data = $this->services->bargainStatistics($id);
+        return app('json')->success($data);
+    }
+
+    /**
+     * 砍价列表
+     * @param $id
+     * @return mixed
+     */
+    public function bargainStatisticsList($id)
+    {
+        $where = $this->request->getMore([
+            ['real_name', ''],
+        ]);
+        $data = $this->services->bargainStatisticsList($id, $where);
+        return app('json')->success($data);
+    }
+
+    /**
+     * 砍价订单
+     * @param $id
+     * @return mixed
+     */
+    public function bargainStatisticsOrder($id)
+    {
+        $where = $this->request->getMore([
+            ['real_name', ''],
+            ['status', '']
+        ]);
+        return app('json')->success($this->services->bargainStatisticsOrder($id, $where));
     }
 }

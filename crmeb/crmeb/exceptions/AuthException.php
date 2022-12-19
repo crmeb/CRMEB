@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -11,16 +11,13 @@
 
 namespace crmeb\exceptions;
 
-
-use Throwable;
-
 /**
  * Class AuthException
  * @package crmeb\exceptions
  */
 class AuthException extends \RuntimeException
 {
-    public function __construct($message = "", $code = 0, Throwable $previous = null)
+    public function __construct($message = "", $replace = [], $code = 0, \Throwable $previous = null)
     {
         if (is_array($message)) {
             $errInfo = $message;
@@ -28,6 +25,11 @@ class AuthException extends \RuntimeException
             if ($code === 0) {
                 $code = $errInfo[0] ?? 400;
             }
+        }
+
+        if (is_numeric($message)) {
+            $code = $message;
+            $message = getLang($message, $replace);
         }
 
         parent::__construct($message, $code, $previous);

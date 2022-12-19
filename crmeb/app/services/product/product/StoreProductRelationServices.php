@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -15,7 +15,7 @@ namespace app\services\product\product;
 use app\dao\product\product\StoreProductRelationDao;
 use app\services\BaseServices;
 use app\jobs\ProductLogJob;
-use think\exception\ValidateException;
+use crmeb\exceptions\ApiException;
 
 /**
  * Class StoreProductRelationService
@@ -107,7 +107,7 @@ class StoreProductRelationServices extends BaseServices
         }
         $data['add_time'] = time();
         if (!$this->dao->save($data)) {
-            throw new ValidateException('添加失败');
+            throw new ApiException(100006);
         }
         //收藏记录
         ProductLogJob::dispatch(['collect', ['uid' => $uid, 'product_id' => $productId]]);
@@ -133,7 +133,7 @@ class StoreProductRelationServices extends BaseServices
             ['type', '=', $relationType],
             ['category', '=', $category]
         ]);
-        if (!$storeProductRelation) throw new ValidateException('取消失败');
+        if (!$storeProductRelation) throw new ApiException(100020);
         return true;
     }
 
@@ -150,6 +150,7 @@ class StoreProductRelationServices extends BaseServices
         $relationType = strtolower($relationType);
         $category = strtolower($category);
         $relationData = [];
+        $productIdS = array_unique($productIdS);
         $relationProductIdS = $this->dao->getColumn(['uid' => $uid, 'type' => $relationType, 'category' => $category, 'product_id' => $productIdS], 'product_id');
         foreach ($productIdS as $productId) {
             if (!in_array($productId, $relationProductIdS)) {
@@ -158,7 +159,7 @@ class StoreProductRelationServices extends BaseServices
         }
         if ($relationData) {
             if (!$this->dao->saveAll($relationData)) {
-                throw new ValidateException('添加失败');
+                throw new ApiException(100022);
             }
         }
         return true;

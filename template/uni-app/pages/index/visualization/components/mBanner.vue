@@ -25,7 +25,7 @@
 			</swiper>
 		</view>
 		<block v-if="isIframe && !bastBanner.length">
-			<view class="empty-img">暂无图片，请上传图片</view>
+			<view class="empty-img">{{$t(`暂无图片，请上传图片`)}}</view>
 		</block>
 	</view>
 </template>

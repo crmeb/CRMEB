@@ -1,61 +1,69 @@
 <template>
-    <div class="label-wrapper">
-        <div class="label-box">
-            <div class="list">
-                <div class="label-item" :class="{on:label.id == groupId}" v-for="(label,j) in labelList" :key="j" @click="selectLabel(label)">{{label.group_name}}</div>
-            </div>
+  <div class="label-wrapper">
+    <div class="label-box">
+      <div class="list">
+        <div
+          class="label-item"
+          :class="{ on: label.id == groupId }"
+          v-for="(label, j) in labelList"
+          :key="j"
+          @click="selectLabel(label)"
+        >
+          {{ label.group_name }}
         </div>
-        <!-- <div class="footer">
+      </div>
+    </div>
+    <!-- <div class="footer">
             <Button type="primary" class="btns" @click="subBtn">确定</Button>
             <Button type="primary" class="btns" ghost @click="cancel">取消</Button>
         </div> -->
-    </div>
+  </div>
 </template>
 
 <script>
-    import { userLabel,userLabelPut } from '@/api/kefu'
-    export default {
-        name: "userLabel",
-        props:{
-            uid:{
-                type:String | Number,
-                default:''
-            },
-            groupId:{
-                type:String | Number,
-                default:''
-            },
-            labelList:{
-                type:Array,
-                default:()=>{
-                    []
-                }
+import { userLabel, userLabelPut } from '@/api/kefu';
+export default {
+  name: 'userLabel',
+  props: {
+    uid: {
+      type: String | Number,
+      default: '',
+    },
+    groupId: {
+      type: String | Number,
+      default: '',
+    },
+    labelList: {
+      type: Array,
+      default: () => {
+        [];
+      },
+    },
+  },
+  data() {
+    return {
+      activeIds: [],
+      labelLists,
+    };
+  },
+  methods: {
+    getList() {
+      userLabel(this.uid).then((res) => {
+        res.data.map((el) => {
+          el.label.map((label) => {
+            if (label.disabled) {
+              this.activeIds.push(label.id);
             }
-        },
-        data(){
-            return {
-                activeIds:[],
-                labelLists
-            }
-        },
-        methods:{
-            getList(){
-                userLabel(this.uid).then(res=>{
-                    res.data.map(el=>{
-                        el.label.map(label=>{
-                            if(label.disabled){
-                                this.activeIds.push(label.id)
-                            }
-                        })
-                    })
-                    this.labelList =res.data
-                })
-            },
-            selectLabel(label){
-                this.$emit('editUserLabel',label.id)
-            },
-        }
-    }
+          });
+        });
+        this.labelList = res.data;
+      });
+    },
+    selectLabel(label) {
+      this.$emit('editUserLabel', label.id);
+    },
+  },
+};
 </script>
 
 <style lang="stylus" scoped>
@@ -85,5 +93,4 @@
     height 24px
 .title
     font-size 13px
-
 </style>

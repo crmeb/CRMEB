@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -47,7 +47,6 @@ class LiveAnchor extends AuthController
     /**
      * 添加修改表单
      * @return mixed
-     * @throws \FormBuilder\Exception\FormBuilderException
      */
     public function add()
     {
@@ -59,7 +58,6 @@ class LiveAnchor extends AuthController
 
     /**
      * 保存标签表单数据
-     * @param int $id
      * @return mixed
      */
     public function save()
@@ -71,21 +69,18 @@ class LiveAnchor extends AuthController
             ['phone', ''],
             ['cover_img', '']
         ]);
-        if (!$data['name'] = trim($data['name'])) return app('json')->fail('名称不能为空！');
-        if (!$data['wechat'] = trim($data['wechat'])) return app('json')->fail('微信号不能为空！');
-        if (!$data['phone'] = trim($data['phone'])) return app('json')->fail('手机号不能为空！');
-        if (!check_phone($data['phone'])) return app('json')->fail('请输入正确手机号');
-        if (!$data['cover_img'] = trim($data['cover_img'])) return app('json')->fail('请选择主播图像');
+        $this->validate($data, \app\adminapi\validate\marketing\LiveAnchorValidate::class, 'save');
         $res = $this->services->save((int)$data['id'], $data);
         if ($res === true) {
-            return app('json')->success('保存成功', ['auth' => false]);
+            return app('json')->success(100000, ['auth' => false]);
+        }else{
+            return app('json')->fail(100006);
         }
-        return app('json')->success('请先去小程序认证主播', $res);
     }
 
     /**
      * 删除
-     * @param $id
+     * @return mixed
      * @throws \Exception
      */
     public function delete()
@@ -93,20 +88,22 @@ class LiveAnchor extends AuthController
         list($id) = $this->request->getMore([
             ['id', 0],
         ], true);
-        if (!$id) return app('json')->fail('数据不存在');
+        if (!$id) return app('json')->fail(100100);
         $this->services->delAnchor((int)$id);
-        return app('json')->success('刪除成功！');
+        return app('json')->success(100002);
     }
 
     /**
      * 设置会员等级显示|隐藏
-     *
-     * @return json
+     * @param string $id
+     * @param string $is_show
+     * @return mixed
      */
     public function setShow($id = '', $is_show = '')
     {
-        if ($is_show == '' || $id == '') return app('json')->fail('缺少参数');
-        return app('json')->success($this->services->setShow((int)$id, (int)$is_show));
+        if ($is_show == '' || $id == '') return app('json')->fail(100100);
+        $this->services->setShow((int)$id, (int)$is_show);
+        return app('json')->success(100014);
     }
 
     /**
@@ -116,6 +113,6 @@ class LiveAnchor extends AuthController
     public function syncAnchor()
     {
         $this->services->syncAnchor();
-        return app('json')->success('同步成功');
+        return app('json')->success(100038);
     }
 }

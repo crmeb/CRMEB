@@ -1,0 +1,112 @@
+.
+├── activity
+│   ├── advance
+│   ├── bargain
+│   ├── combination
+│   ├── coupon
+│   ├── integral
+│   ├── live
+│   ├── lottery
+│   └── seckill
+├── agent
+│   ├── AgentLevel.php
+│   ├── AgentLevelTask.php
+│   ├── AgentLevelTaskRecord.php
+│   └── DivisionAgentApply.php
+├── article
+│   ├── Article.php
+│   ├── ArticleCategory.php
+│   └── ArticleContent.php
+├── diy
+│   ├── Diy.php
+│   ├── PageCategory.php
+│   └── PageLink.php
+├── order
+│   ├── DeliveryService.php
+│   ├── OtherOrder.php
+│   ├── OtherOrderStatus.php
+│   ├── StoreCart.php
+│   ├── StoreOrder.php
+│   ├── StoreOrderCartInfo.php
+│   ├── StoreOrderEconomize.php
+│   ├── StoreOrderInvoice.php
+│   ├── StoreOrderRefund.php
+│   ├── StoreOrderStatus.php
+│   └── StorePink.php
+├── other
+│   ├── Agreement.php
+│   ├── Auxiliary.php
+│   ├── Cache.php
+│   ├── Category.php
+│   ├── Express.php
+│   ├── Qrcode.php
+│   └── TemplateMessage.php
+├── product
+│   ├── product
+│   └── sku
+├── service
+│   ├── StoreService.php
+│   ├── StoreServiceFeedback.php
+│   ├── StoreServiceLog.php
+│   ├── StoreServiceRecord.php
+│   └── StoreServiceSpeechcraft.php
+├── shipping
+│   ├── ShippingTemplates.php
+│   ├── ShippingTemplatesFree.php
+│   ├── ShippingTemplatesNoDelivery.php
+│   ├── ShippingTemplatesRegion.php
+│   └── SystemCity.php
+├── sms
+│   └── SmsRecord.php
+├── system
+│   ├── admin
+│   ├── attachment
+│   ├── config
+│   ├── log
+│   ├── statistics
+│   ├── store
+│   ├── AppVersion.php
+│   ├── MessageSystem.php
+│   ├── SystemMenus.php
+│   ├── SystemNotification.php
+│   ├── SystemUserLevel.php
+│   └── SystemUserTask.php
+├── user
+│   ├── MemberCard.php
+│   ├── MemberCardBatch.php
+│   ├── MemberRight.php
+│   ├── MemberShip.php
+│   ├── User.php
+│   ├── UserAddress.php
+│   ├── UserBill.php
+│   ├── UserBrokerage.php
+│   ├── UserBrokerageFrozen.php
+│   ├── UserCancel.php
+│   ├── UserExtract.php
+│   ├── UserFriends.php
+│   ├── UserGroup.php
+│   ├── UserInvoice.php
+│   ├── UserLabel.php
+│   ├── UserLabelCate.php
+│   ├── UserLabelRelation.php
+│   ├── UserLevel.php
+│   ├── UserMoney.php
+│   ├── UserRecharge.php
+│   ├── UserSearch.php
+│   ├── UserSign.php
+│   ├── UserSpread.php
+│   ├── UserTaskFinish.php
+│   └── UserVisit.php
+├── wechat
+│   ├── WechatKey.php
+│   ├── WechatMedia.php
+│   ├── WechatMessage.php
+│   ├── WechatNewsCategory.php
+│   ├── WechatQrcode.php
+│   ├── WechatQrcodeCate.php
+│   ├── WechatQrcodeRecord.php
+│   ├── WechatReply.php
+│   └── WechatUser.php
+└── filetree.txt
+
+29 directories, 80 files

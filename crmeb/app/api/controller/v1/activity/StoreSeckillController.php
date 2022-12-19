@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -10,12 +10,10 @@
 // +----------------------------------------------------------------------
 namespace app\api\controller\v1\activity;
 
-
 use app\Request;
 use app\services\activity\seckill\StoreSeckillServices;
 use app\services\other\QrcodeServices;
 use crmeb\services\GroupDataService;
-
 
 /**
  * 秒杀商品类
@@ -35,9 +33,6 @@ class StoreSeckillController
     /**
      * 秒杀商品时间区间
      * @return mixed
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\ModelNotFoundException
-     * @throws \think\exception\DbException
      */
     public function index()
     {
@@ -89,23 +84,22 @@ class StoreSeckillController
         $data['lovely'] = str_replace('\\', '/', $data['lovely']);
         $data['seckillTime'] = $seckillTime;
         $data['seckillTimeIndex'] = $seckillTimeIndex;
-        return app('json')->successful($data);
+        return app('json')->success($data);
     }
 
     /**
      * 秒杀商品列表
-     * @param Request $request
      * @param $time
      * @return mixed
      * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
      * @throws \think\db\exception\ModelNotFoundException
-     * @throws \think\exception\DbException
      */
     public function lst($time)
     {
-        if (!$time) return app('json')->fail('参数错误');
+        if (!$time) return app('json')->fail(100100);
         $seckillInfo = $this->services->getListByTime($time);
-        return app('json')->successful(get_thumb_water($seckillInfo));
+        return app('json')->success(get_thumb_water($seckillInfo));
     }
 
     /**
@@ -113,11 +107,14 @@ class StoreSeckillController
      * @param Request $request
      * @param $id
      * @return mixed
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
      */
     public function detail(Request $request, $id)
     {
         $data = $this->services->seckillDetail($request, $id);
-        return app('json')->successful($data);
+        return app('json')->success($data);
     }
 
     /**

@@ -63,22 +63,22 @@ export default {
 				success(res) {
 					Cache.set(STATE_R_KEY, res.code, 10800);
 					let spread = app.globalData.spid ? app.globalData.spid : '';
-					silenceAuth({ code: res.code, spread: spread, spid: app.globalData.code })
-						.then(res => {
-							if (res.data.key !== undefined && res.data.key) {
-								that.authKey = res.data.key;
-							} else {
-								app.globalData.code = 0;
-								let time = res.data.expires_time - Cache.time();
-								// store.commit('UPDATE_USERINFO', res.data.userInfo);
-								store.commit('LOGIN', { token: res.data.token, time: time });
-								// store.commit('SETUID', res.data.userInfo.uid);
-								// Cache.set(EXPIRES_TIME,res.data.expires_time,time);
-								// Cache.set(USER_INFO,res.data.userInfo,time);
-							}
-						})
-						.catch(res => {
-						});
+					// silenceAuth({ code: res.code, spread: spread, spid: app.globalData.code })
+					// 	.then(res => {
+					// 		if (res.data.key !== undefined && res.data.key) {
+					// 			that.authKey = res.data.key;
+					// 		} else {
+					// 			app.globalData.code = 0;
+					// 			let time = res.data.expires_time - Cache.time();
+					// 			// store.commit('UPDATE_USERINFO', res.data.userInfo);
+					// 			store.commit('LOGIN', { token: res.data.token, time: time });
+					// 			// store.commit('SETUID', res.data.userInfo.uid);
+					// 			// Cache.set(EXPIRES_TIME,res.data.expires_time,time);
+					// 			// Cache.set(USER_INFO,res.data.userInfo,time);
+					// 		}
+					// 	})
+					// 	.catch(res => {
+					// 	});
 				}
 			});
 		} else {

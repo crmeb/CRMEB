@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2021 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -86,23 +86,23 @@ class StoreAdvance extends AuthController
             $storeSeckillService = app()->make(StoreSeckillServices::class);
             $res1 = $storeSeckillService->count(['product_id' => $data['product_id'], 'is_del' => 0, 'status' => 1, 'seckill_time' => 1]);
             if ($res1) {
-                throw new AdminException('商品参与秒杀活动开启，无法开启预售');
+                throw new AdminException(400506);
             }
             /** @var StoreBargainServices $storeBargainService */
             $storeBargainService = app()->make(StoreBargainServices::class);
             $res2 = $storeBargainService->count(['product_id' => $data['product_id'], 'is_del' => 0, 'status' => 1, 'bargain_time' => 1]);
             if ($res2) {
-                throw new AdminException('商品参与砍价活动开启，无法开启预售');
+                throw new AdminException(400506);
             }
             /** @var StoreCombinationServices $storeCombinationService */
             $storeCombinationService = app()->make(StoreCombinationServices::class);
             $res3 = $storeCombinationService->count(['product_id' => $data['product_id'], 'is_del' => 0, 'is_show' => 1, 'pinkIngTime' => 1]);
             if ($res3) {
-                throw new AdminException('商品参与拼团活动开启，无法开启预售');
+                throw new AdminException(400506);
             }
         }
         $this->services->saveData($id, $data);
-        return app('json')->success('保存成功');
+        return app('json')->success(100000);
     }
 
     /**
@@ -125,9 +125,9 @@ class StoreAdvance extends AuthController
     {
         $res = $this->services->update($id, ['is_del' => 1]);
         if ($res) {
-            return app('json')->success('删除成功');
+            return app('json')->success(100002);
         } else {
-            return app('json')->fail('删除成功');
+            return app('json')->fail(100008);
         }
     }
 
@@ -140,11 +140,10 @@ class StoreAdvance extends AuthController
     public function setStatus($id, $status)
     {
         $res = $this->services->update($id, ['status' => $status]);
-        $msg = $status == 1 ? '上架' : '下架';
         if ($res) {
-            return app('json')->success($msg . '成功');
+            return app('json')->success(100014);
         } else {
-            return app('json')->fail($msg . '成功');
+            return app('json')->fail(100015);
         }
     }
 }

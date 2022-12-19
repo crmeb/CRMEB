@@ -26,7 +26,6 @@
     "tab-bar": "/pages/index/visualization/components/tabBar",
     "tab-nav": "/pages/index/visualization/components/tabNav",
     "loading": "/components/Loading/index",
-    "goods-waterfall": "/components/goodsWaterfall/goodsWaterfall",
     "skeletons": "/pages/index/visualization/components/skeleton",
     "index-goods": "/components/indexGoods/index",
     "app-update": "/components/update/app-update"

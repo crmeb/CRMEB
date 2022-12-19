@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -14,7 +14,7 @@ namespace app\services\order;
 
 
 use app\services\BaseServices;
-use think\exception\ValidateException;
+use crmeb\exceptions\ApiException;
 use app\dao\order\StoreOrderInvoiceDao;
 use app\services\user\UserInvoiceServices;
 
@@ -112,25 +112,28 @@ class StoreOrderInvoiceServices extends BaseServices
      */
     public function makeUp(int $uid, $order_id, int $invoice_id)
     {
+        if (!$order_id) throw new ApiException(100100);
+        if (!$invoice_id) throw new ApiException(410325);
+
         /** @var StoreOrderServices $storeOrderServices */
         $storeOrderServices = app()->make(StoreOrderServices::class);
         /** @var UserInvoiceServices $userInvoiceServices */
         $userInvoiceServices = app()->make(UserInvoiceServices::class);
         $order = $storeOrderServices->getOne(['order_id|id' => $order_id, 'is_del' => 0]);
         if (!$order) {
-            throw new ValidateException('订单不存在');
+            throw new ApiException(410173);
         }
         //检测再带查询
         $invoice = $userInvoiceServices->checkInvoice($invoice_id, $uid);
 
         if ($this->dao->getOne(['order_id' => $order['id'], 'uid' => $uid])) {
-            throw new ValidateException('发票已申请，正在审核打印中');
+            throw new ApiException(410249);
         }
         if ($order['refund_status'] == 2) {
-            throw new ValidateException('订单已退款');
+            throw new ApiException(410226);
         }
         if ($order['refund_status'] == 1) {
-            throw new ValidateException('正在申请退款中');
+            throw new ApiException(410250);
         }
         unset($invoice['id'], $invoice['add_time']);
         $data = [];
@@ -141,7 +144,7 @@ class StoreOrderInvoiceServices extends BaseServices
         $data['is_pay'] = $order['paid'] == 1 ? 1 : 0;
         $data = array_merge($data, $invoice);
         if (!$re = $this->dao->save($data)) {
-            throw new ValidateException('申请失败，请稍后重试');
+            throw new ApiException(410251);
         }
         return ['id' => $re->id];
     }
@@ -150,11 +153,11 @@ class StoreOrderInvoiceServices extends BaseServices
     {
         $orderInvoice = $this->dao->get($id);
         if (!$orderInvoice) {
-            throw new ValidateException('数据不存在');
+            throw new ApiException(100026);
         }
         $data['invoice_time'] = time();
         if (!$this->dao->update($id, $data, 'id')) {
-            throw new ValidateException('设置失败，请重试');
+            throw new ApiException(100015);
         }
         return true;
     }
@@ -173,7 +176,7 @@ class StoreOrderInvoiceServices extends BaseServices
         $storeOrderServices = app()->make(StoreOrderServices::class);
         $orderInfo = $storeOrderServices->getOne(['id' => $oid, 'is_del' => 0]);
         if (!$orderInfo) {
-            throw new ValidateException('订单不存在');
+            throw new ApiException(410173);
         }
         $pid = $orderInfo['pid'] > 0 ? $orderInfo['pid'] : $orderInfo['id'];
         //查询开票记录

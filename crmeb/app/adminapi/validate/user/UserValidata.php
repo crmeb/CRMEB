@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -35,10 +35,10 @@ class UserValidata extends Validate
      * @var array
      */
     protected $message = [
-        'account.require' => '请输入用户账号',
-        'account.alphaNum' => '账号只能为数字和字母',
-        'pwd.require' => '请填写密码',
-        'true_pwd.require' => '请填写确认密码',
-        'nickname.number' => '请输入用户昵称'
+        'account.require' => '400254',
+        'account.alphaNum' => '400089',
+        'pwd.require' => '400134',
+        'true_pwd.require' => '400263',
+        'nickname.number' => '400187'
     ];
 }

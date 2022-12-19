@@ -4,17 +4,17 @@
 			v-if="explosiveMoney.length">
 			<view class="hd skeleton-rect">
 				<!-- <image src="/static/images/explosion-title.png" mode=""></image> -->
-				<view class="title" :style="'color:'+themeColor+';'">{{titleConfig}}</view>
+				<view class="title" :style="'color:'+themeColor+';'">{{$t(titleConfig)}}</view>
 				<view class="txt"
 					:style="'background: linear-gradient(90deg, '+ bgColor[0].item +' 0%, '+ bgColor[1].item +' 100%);'">
-					{{desConfig}}
+					{{$t(desConfig)}}
 				</view>
 			</view>
 			<view class="bd">
 				<view class="item skeleton-rect" @click="goDetail(item)" v-for="(item,index) in explosiveMoney" :key="index">
 					<view class="con-box">
-						<view class="title line1">{{item.info[0].value}}</view>
-						<view class="con line2">{{item.info[1].value}}</view>
+						<view class="title line1">{{$t(item.info[0].value)}}</view>
+						<view class="con line2">{{$t(item.info[1].value)}}</view>
 						<view class="go">GO！<image src="/static/images/right-icon.png" mode=""></image>
 						</view>
 					</view>

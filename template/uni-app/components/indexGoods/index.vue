@@ -7,20 +7,20 @@
 						<image :src="item.image" mode="scaleToFill" fade-show style="width: 100%;"></image>
 						<view class="info">
 							<view class="title line2">
-								<text class="tag" v-if="item.activity && item.activity.type === '1'">秒杀</text>
-								<text class="tag" v-if="item.activity && item.activity.type === '2'">砍价</text>
-								<text class="tag" v-if="item.activity && item.activity.type === '3'">拼团</text>
-								<text class="tag" v-if="item.checkCoupon">券</text>
+								<text class="tag" v-if="item.activity && item.activity.type === '1'">{{$t(`秒杀`)}}</text>
+								<text class="tag" v-if="item.activity && item.activity.type === '2'">{{$t(`砍价`)}}</text>
+								<text class="tag" v-if="item.activity && item.activity.type === '3'">{{$t(`拼团`)}}</text>
+								<text class="tag" v-if="item.checkCoupon">{{$t(`券`)}}</text>
 								{{ item.store_name }}
 							</view>
 
 							<view class="price-box">
 								<view>
-									<text>￥</text>
+									<text>{{$t(`￥`)}}</text>
 									{{ item.price }}
 								</view>
 								<view class="sales">
-									已售 {{item.sales}}
+									{{$t(`已售`)}} {{item.sales}}
 								</view>
 							</view>
 						</view>

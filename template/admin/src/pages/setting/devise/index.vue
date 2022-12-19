@@ -1,10 +1,5 @@
 <template>
   <div class="diy-page">
-    <div class="i-layout-page-header">
-      <div class="i-layout-page-header">
-        <span class="ivu-page-header-title mr20">页面设计</span>
-      </div>
-    </div>
     <Card :bordered="false" dis-hover class="ivu-mt" style="margin: 0 10px">
       <div class="diy-wrapper" :style="'height:' + clientHeight + 'px;'">
         <!-- 左侧 -->
@@ -20,11 +15,7 @@
               {{ item.title }}
             </div>
           </div>
-          <div
-            class="wrapper"
-            :style="'height:' + (clientHeight - 46) + 'px;'"
-            v-if="tabCur == 0"
-          >
+          <div class="wrapper" :style="'height:' + (clientHeight - 46) + 'px;'" v-if="tabCur == 0">
             <div v-for="(item, index) in leftMenu" :key="index">
               <div class="tips" @click="item.isOpen = !item.isOpen">
                 {{ item.title }}
@@ -51,13 +42,8 @@
                   v-show="item.isOpen"
                 >
                   <div>
-                    <div class="position" style="display: none">
-                      释放鼠标将组建添加到此处
-                    </div>
-                    <span
-                      class="conter iconfont-diy"
-                      :class="element.icon"
-                    ></span>
+                    <div class="position" style="display: none">释放鼠标将组建添加到此处</div>
+                    <span class="conter iconfont-diy" :class="element.icon"></span>
                     <p class="conter">{{ element.cname }}</p>
                   </div>
                 </div>
@@ -65,16 +51,8 @@
             </div>
           </div>
           <!--                    <div style="padding: 0 20px"><Button type="primary" style="width: 100%" @click="saveConfig">保存</Button></div>-->
-          <div
-            class="wrapper"
-            v-else
-            :style="'height:' + (clientHeight - 46) + 'px;'"
-          >
-            <div
-              class="link-item"
-              v-for="(item, index) in urlList"
-              :key="index"
-            >
+          <div class="wrapper" v-else :style="'height:' + (clientHeight - 46) + 'px;'">
+            <div class="link-item" v-for="(item, index) in urlList" :key="index">
               <div class="name">{{ item.name }}</div>
               <div class="link-txt">地址：{{ item.url }}</div>
               <div class="params">
@@ -83,13 +61,7 @@
               </div>
               <div class="lable">
                 <p class="txt">例如：{{ item.example }}</p>
-                <Button
-                  size="small"
-                  v-clipboard:copy="item.example"
-                  v-clipboard:success="onCopy"
-                  v-clipboard:error="onError"
-                  >复制
-                </Button>
+                <Button size="small" @click="onCopy(item.example)">复制 </Button>
               </div>
             </div>
           </div>
@@ -97,34 +69,15 @@
         <!-- 中间 -->
         <div
           class="wrapper-con"
-          style="
-            flex: 1;
-            background: #f0f2f5;
-            display: flex;
-            justify-content: center;
-            padding-top: 20px;
-            height: 100%;
-          "
+          style="flex: 1; background: #f0f2f5; display: flex; justify-content: center; padding-top: 20px; height: 100%"
         >
           <div class="content">
-            <div
-              class="contxt"
-              style="
-                display: flex;
-                flex-direction: column;
-                overflow: hidden;
-                height: 100%;
-              "
-            >
+            <div class="contxt" style="display: flex; flex-direction: column; overflow: hidden; height: 100%">
               <div class="overflowy">
                 <div class="picture">
                   <img src="@/assets/images/electric.png" />
                 </div>
-                <div
-                  class="page-title"
-                  :class="{ on: activeIndex == -100 }"
-                  @click="showTitle"
-                >
+                <div class="page-title" :class="{ on: activeIndex == -100 }" @click="showTitle">
                   {{ titleTxt }}
                   <div class="delete-box"></div>
                   <div class="handle"></div>
@@ -165,17 +118,12 @@
                         class="mConfig-item"
                         :class="{
                           on: activeIndex == key,
-                          top:
-                            item.name == 'search_box' || item.name == 'nav_bar',
+                          top: item.name == 'search_box' || item.name == 'nav_bar',
                         }"
                         v-for="(item, key) in mConfig"
                         :key="key"
                         @click.stop="bindconfig(item, key)"
-                        :style="
-                          colorTxt
-                            ? 'background-color:' + colorPickerTxt + ';'
-                            : 'background-color:#fff;'
-                        "
+                        :style="colorTxt ? 'background-color:' + colorPickerTxt + ';' : 'background-color:#fff;'"
                       >
                         <component
                           :is="item.name"
@@ -186,14 +134,8 @@
                         ></component>
                         <div class="delete-box">
                           <div class="handleType">
-                            <div
-                              class="iconfont iconshanchu2"
-                              @click.stop="bindDelete(item, key)"
-                            ></div>
-                            <div
-                              class="iconfont iconfuzhi"
-                              @click.stop="bindAddDom(item, 0, key)"
-                            ></div>
+                            <div class="iconfont iconshanchu2" @click.stop="bindDelete(item, key)"></div>
+                            <div class="iconfont iconfuzhi" @click.stop="bindAddDom(item, 0, key)"></div>
                             <div
                               class="iconfont iconshangyi"
                               :class="key === 0 ? 'on' : ''"
@@ -213,11 +155,7 @@
                 </div>
               </div>
               <div class="overflowy">
-                <div
-                  class="page-foot"
-                  @click="showFoot"
-                  :class="{ on: activeIndex == -101 }"
-                >
+                <div class="page-foot" @click="showFoot" :class="{ on: activeIndex == -101 }">
                   <footPage></footPage>
                   <div class="delete-box"></div>
                   <div class="handle"></div>
@@ -232,12 +170,7 @@
         </div>
         <!-- 右侧 -->
         <div class="right-box">
-          <div
-            class="mConfig-item"
-            style="background-color: #fff"
-            v-for="(item, key) in rConfig"
-            :key="key"
-          >
+          <div class="mConfig-item" style="background-color: #fff" v-for="(item, key) in rConfig" :key="key">
             <div class="title-bar">{{ item.cname }}</div>
             <component
               :is="item.configName"
@@ -260,26 +193,19 @@
   </div>
 </template>
 
-<script crossorigin='anonymous'>
-import {
-  categoryList,
-  diyGetInfo,
-  diySave,
-  getUrl,
-  setDefault,
-  recovery,
-} from "@/api/diy";
-import vuedraggable from "vuedraggable";
-import mPage from "@/components/mobilePage/index.js";
-import mConfig from "@/components/mobileConfig/index.js";
-import footPage from "@/components/pagesFoot";
-import { mapState } from "vuex";
-import html2canvas from "html2canvas";
+<script crossorigin="anonymous">
+import { categoryList, diyGetInfo, diySave, getUrl, setDefault, recovery } from '@/api/diy';
+import vuedraggable from 'vuedraggable';
+import mPage from '@/components/mobilePage/index.js';
+import mConfig from '@/components/mobileConfig/index.js';
+import footPage from '@/components/pagesFoot';
+import { mapState } from 'vuex';
+import html2canvas from 'html2canvas';
 
 let idGlobal = 0;
 export default {
-  inject: ["reload"],
-  name: "index.vue",
+  inject: ['reload'],
+  name: 'index.vue',
   components: {
     footPage,
     html2canvas,
@@ -296,8 +222,8 @@ export default {
   },
   computed: {
     ...mapState({
-      titleTxt: (state) => state.mobildConfig.pageTitle || "首页",
-      nameTxt: (state) => state.mobildConfig.pageName || "模板",
+      titleTxt: (state) => state.mobildConfig.pageTitle || '首页',
+      nameTxt: (state) => state.mobildConfig.pageName || '模板',
       showTxt: (state) => state.mobildConfig.pageShow,
       colorTxt: (state) => state.mobildConfig.pageColor,
       picTxt: (state) => state.mobildConfig.pagePic,
@@ -308,27 +234,27 @@ export default {
   },
   data() {
     return {
-      clientHeight: "", //页面动态高度
-      rollHeight: "",
+      clientHeight: '', //页面动态高度
+      rollHeight: '',
       leftMenu: [], // 左侧菜单
       lConfig: [], // 左侧组件
       mConfig: [], // 中间组件渲染
       rConfig: [], // 右侧组件配置
-      activeConfigName: "",
+      activeConfigName: '',
       propsObj: {}, // 组件传递的数据,
       activeIndex: -100, // 选中的下标
       number: 0,
-      pageId: "",
-      pageName: "",
-      pageType: "",
+      pageId: '',
+      pageName: '',
+      pageType: '',
       category: [],
       tabList: [
         {
-          title: "组件库",
+          title: '组件库',
           key: 0,
         },
         {
-          title: "页面链接",
+          title: '页面链接',
           key: 1,
         },
       ],
@@ -351,16 +277,13 @@ export default {
   },
   mounted() {
     let imgList = {
-      imgList: [
-        require("@/assets/images/foot-005.png"),
-        require("@/assets/images/foot-006.png"),
-      ],
-      name: "购物车",
-      link: "/pages/order_addcart/order_addcart",
+      imgList: [require('@/assets/images/foot-005.png'), require('@/assets/images/foot-006.png')],
+      name: '购物车',
+      link: '/pages/order_addcart/order_addcart',
     };
     this.$nextTick(() => {
-      this.$store.commit("mobildConfig/FOOTER", {
-        title: "是否自定义",
+      this.$store.commit('mobildConfig/FOOTER', {
+        title: '是否自定义',
         name: imgList,
       });
       this.arraySort();
@@ -383,33 +306,33 @@ export default {
   methods: {
     leftRemove({ to, from, item, clone, oldIndex, newIndex }) {
       if (this.isSearch && newIndex == 0) {
-        if (item._underlying_vm_.name == "z_wechat_attention") {
+        if (item._underlying_vm_.name == 'z_wechat_attention') {
           this.isFllow = true;
         } else {
-          this.$store.commit(
-            "mobildConfig/ARRAYREAST",
-            this.mConfig[0].num
-          );
+          this.$store.commit('mobildConfig/ARRAYREAST', this.mConfig[0].num);
           this.mConfig.splice(0, 1);
         }
       }
       if ((this.isFllow = true && newIndex >= 1)) {
-        this.$store.commit(
-          "mobildConfig/ARRAYREAST",
-          this.mConfig[0].num
-        );
+        this.$store.commit('mobildConfig/ARRAYREAST', this.mConfig[0].num);
       }
     },
     onMove(e) {
-      if (e.relatedContext.element.name == "search_box") return false;
-      if (e.relatedContext.element.name == "nav_bar") return false;
+      if (e.relatedContext.element.name == 'search_box') return false;
+      if (e.relatedContext.element.name == 'nav_bar') return false;
       return true;
     },
-    onCopy() {
-      this.$Message.success("复制成功");
+    onCopy(copyData) {
+      this.$copyText(copyData)
+        .then((message) => {
+          this.$Message.success('复制成功');
+        })
+        .catch((err) => {
+          this.$Message.error('复制失败');
+        });
     },
     onError() {
-      this.$Message.error("复制失败");
+      this.$Message.error('复制失败');
     },
     //设置默认数据
     setmoren() {
@@ -447,11 +370,11 @@ export default {
       this.activeIndex = -100;
       let obj = {};
       for (var i in mConfig) {
-        if (i == "pageTitle") {
+        if (i == 'pageTitle') {
           // this.rConfig = obj
           obj = mConfig[i];
           obj.configName = mConfig[i].name;
-          obj.cname = "页面设置";
+          obj.cname = '页面设置';
         }
       }
       let abc = obj;
@@ -463,11 +386,11 @@ export default {
       this.activeIndex = -101;
       let obj = {};
       for (var i in mConfig) {
-        if (i == "pageFoot") {
+        if (i == 'pageFoot') {
           // this.rConfig = obj
           obj = mConfig[i];
           obj.configName = mConfig[i].name;
-          obj.cname = "底部菜单";
+          obj.cname = '底部菜单';
         }
       }
       let abc = obj;
@@ -483,8 +406,8 @@ export default {
     log(evt) {
       // 中间拖拽排序
       if (evt.moved) {
-        if (evt.moved.element.name == "search_box") {
-          return this.$Message.warning("该组件禁止拖拽");
+        if (evt.moved.element.name == 'search_box') {
+          return this.$Message.warning('该组件禁止拖拽');
         }
         // if (evt.moved.element.name == "nav_bar") {
         //     return this.$Message.warning("该组件禁止拖拽");
@@ -501,8 +424,8 @@ export default {
         let tempItem = JSON.parse(JSON.stringify(item));
         this.rConfig.push(tempItem);
         this.activeIndex = evt.moved.newIndex;
-        this.$store.commit("mobildConfig/SETCONFIGNAME", item.name);
-        this.$store.commit("mobildConfig/defaultArraySort", evt.moved);
+        this.$store.commit('mobildConfig/SETCONFIGNAME', item.name);
+        this.$store.commit('mobildConfig/defaultArraySort', evt.moved);
       }
       // 从左向右拖拽排序
       if (evt.added) {
@@ -512,7 +435,7 @@ export default {
         data.num = timestamp;
         this.activeConfigName = data.name;
         let tempItem = JSON.parse(JSON.stringify(data));
-        tempItem.id = "id" + tempItem.num;
+        tempItem.id = 'id' + tempItem.num;
         this.mConfig[evt.added.newIndex] = tempItem;
         this.rConfig = [];
         this.rConfig.push(tempItem);
@@ -522,8 +445,8 @@ export default {
         evt.added.list = this.mConfig;
         this.activeIndex = evt.added.newIndex;
         // 保存组件名称
-        this.$store.commit("mobildConfig/SETCONFIGNAME", data.name);
-        this.$store.commit("mobildConfig/defaultArraySort", evt.added);
+        this.$store.commit('mobildConfig/SETCONFIGNAME', data.name);
+        this.$store.commit('mobildConfig/defaultArraySort', evt.added);
       }
     },
     cloneDog(data) {
@@ -548,16 +471,16 @@ export default {
           return;
         }
       }
-      if (item.name == "search_box") {
-        return this.$Message.warning("该组件禁止移动");
+      if (item.name == 'search_box') {
+        return this.$Message.warning('该组件禁止移动');
       }
       // if (item.name == "nav_bar") {
       //     return this.$Message.warning("该组件禁止移动");
       // }
       if (type) {
         // if(this.mConfig[index-1].name  == "search_box" || this.mConfig[index-1].name  == "nav_bar"){
-        if (this.mConfig[index - 1].name == "search_box") {
-          return this.$Message.warning("搜索框必须为顶部");
+        if (this.mConfig[index - 1].name == 'search_box') {
+          return this.$Message.warning('搜索框必须为顶部');
         }
         this.swapArray(this.mConfig, index - 1, index);
       } else {
@@ -583,17 +506,17 @@ export default {
       } else {
         this.activeIndex = index + 1;
       }
-      this.$store.commit("mobildConfig/SETCONFIGNAME", item.name);
-      this.$store.commit("mobildConfig/defaultArraySort", obj);
+      this.$store.commit('mobildConfig/SETCONFIGNAME', item.name);
+      this.$store.commit('mobildConfig/defaultArraySort', obj);
     },
     // 组件添加
     addDomCon(item, type, index) {
-      if (item.name == "search_box") {
-        if (this.isSearch) return this.$Message.error("该组件只能添加一次");
+      if (item.name == 'search_box') {
+        if (this.isSearch) return this.$Message.error('该组件只能添加一次');
         this.isSearch = true;
       }
-      if (item.name == "nav_bar") {
-        if (this.isTab) return this.$Message.error("该组件只能添加一次");
+      if (item.name == 'nav_bar') {
+        if (this.isTab) return this.$Message.error('该组件只能添加一次');
         this.isTab = true;
       }
       idGlobal += 1;
@@ -603,7 +526,7 @@ export default {
       item.id = `id${timestamp}`;
       this.activeConfigName = item.name;
       let tempItem = JSON.parse(JSON.stringify(item));
-      if (item.name == "search_box") {
+      if (item.name == 'search_box') {
         this.rConfig = [];
         this.mConfig.unshift(tempItem);
         this.activeIndex = 0;
@@ -637,8 +560,8 @@ export default {
       // 保存组件名称
       obj.element = item;
       obj.list = this.mConfig;
-      this.$store.commit("mobildConfig/SETCONFIGNAME", item.name);
-      this.$store.commit("mobildConfig/defaultArraySort", obj);
+      this.$store.commit('mobildConfig/SETCONFIGNAME', item.name);
+      this.$store.commit('mobildConfig/defaultArraySort', obj);
     },
     //中间页点击添加模块；
     bindAddDom(item, type, index) {
@@ -660,14 +583,14 @@ export default {
       let tempItem = JSON.parse(JSON.stringify(item));
       this.rConfig.push(tempItem);
       this.activeIndex = index;
-      this.$store.commit("mobildConfig/SETCONFIGNAME", item.name);
+      this.$store.commit('mobildConfig/SETCONFIGNAME', item.name);
     },
     // 组件删除
     bindDelete(item, key) {
-      if (item.name == "search_box") {
+      if (item.name == 'search_box') {
         this.isSearch = false;
       }
-      if (item.name == "nav_bar") {
+      if (item.name == 'nav_bar') {
         this.isTab = false;
       }
       this.mConfig.splice(key, 1);
@@ -683,7 +606,7 @@ export default {
         }
       }
       // 删除第几个配置
-      this.$store.commit("mobildConfig/DELETEARRAY", item);
+      this.$store.commit('mobildConfig/DELETEARRAY', item);
     },
     // 组件返回
     config(data) {
@@ -699,17 +622,17 @@ export default {
     arraySort() {
       let tempArr = [];
       let basis = {
-        title: "基础组件",
+        title: '基础组件',
         list: [],
         isOpen: true,
       };
       let marketing = {
-        title: "营销组件",
+        title: '营销组件',
         list: [],
         isOpen: true,
       };
       let tool = {
-        title: "工具组件",
+        title: '工具组件',
         list: [],
         isOpen: true,
       };
@@ -764,7 +687,7 @@ export default {
     // 保存配置
     saveConfig() {
       if (this.mConfig.length == 0) {
-        return this.$Message.error("暂未添加任何组件，保存失败！");
+        return this.$Message.error('暂未添加任何组件，保存失败！');
       }
       this.loading = true;
       let val = this.$store.state.mobildConfig.defaultArray;
@@ -784,29 +707,14 @@ export default {
       }).then(({ data }) => {
         let obj = {};
         let tempARR = [];
-        this.$store.commit("mobildConfig/titleUpdata", data.info.title);
-        this.$store.commit("mobildConfig/nameUpdata", data.info.name);
-        this.$store.commit("mobildConfig/showUpdata", data.info.is_show);
-        this.$store.commit(
-          "mobildConfig/colorUpdata",
-          data.info.is_bg_color || 0
-        );
-        this.$store.commit(
-          "mobildConfig/picUpdata",
-          data.info.is_bg_pic || 0
-        );
-        this.$store.commit(
-          "mobildConfig/pickerUpdata",
-          data.info.color_picker || "#f5f5f5"
-        );
-        this.$store.commit(
-          "mobildConfig/radioUpdata",
-          data.info.bg_tab_val || 0
-        );
-        this.$store.commit(
-          "mobildConfig/picurlUpdata",
-          data.info.bg_pic || ""
-        );
+        this.$store.commit('mobildConfig/titleUpdata', data.info.title);
+        this.$store.commit('mobildConfig/nameUpdata', data.info.name);
+        this.$store.commit('mobildConfig/showUpdata', data.info.is_show);
+        this.$store.commit('mobildConfig/colorUpdata', data.info.is_bg_color || 0);
+        this.$store.commit('mobildConfig/picUpdata', data.info.is_bg_pic || 0);
+        this.$store.commit('mobildConfig/pickerUpdata', data.info.color_picker || '#f5f5f5');
+        this.$store.commit('mobildConfig/radioUpdata', data.info.bg_tab_val || 0);
+        this.$store.commit('mobildConfig/picurlUpdata', data.info.bg_pic || '');
         let newArr = this.objToArr(data.info.value);
 
         function sortNumber(a, b) {
@@ -815,27 +723,27 @@ export default {
 
         newArr.sort(sortNumber);
         newArr.map((el, index) => {
-          if (el.name == "headerSerch") {
+          if (el.name == 'headerSerch') {
             this.isSearch = true;
           }
-          if (el.name == "tabNav") {
+          if (el.name == 'tabNav') {
             this.isTab = true;
           }
-          if (el.name == "goodList") {
+          if (el.name == 'goodList') {
             let storage = window.localStorage;
             storage.setItem(el.timestamp, el.selectConfig.activeValue);
           }
-          el.id = "id" + el.timestamp;
+          el.id = 'id' + el.timestamp;
           this.lConfig.map((item, j) => {
             if (el.name == item.defaultName) {
               item.num = el.timestamp;
-              item.id = "id" + el.timestamp;
+              item.id = 'id' + el.timestamp;
               let tempItem = JSON.parse(JSON.stringify(item));
               tempARR.push(tempItem);
               obj[el.timestamp] = el;
               this.mConfig.push(tempItem);
               // 保存默认组件配置
-              this.$store.commit("mobildConfig/ADDARRAY", {
+              this.$store.commit('mobildConfig/ADDARRAY', {
                 num: el.timestamp,
                 val: el,
               });
@@ -845,8 +753,8 @@ export default {
 
         let objs = newArr[newArr.length - 1];
 
-        if (objs.name == "pageFoot") {
-          this.$store.commit("mobildConfig/footPageUpdata", objs);
+        if (objs.name == 'pageFoot') {
+          this.$store.commit('mobildConfig/footPageUpdata', objs);
         }
         this.showTitle();
         // this.rConfig = [];
@@ -862,11 +770,11 @@ export default {
     // 重置
     reast() {
       if (this.pageId == 0) {
-        this.$Message.error("新增页面，无法重置");
+        this.$Message.error('新增页面，无法重置');
       } else {
         this.$Modal.confirm({
-          title: "提示",
-          content: "<p>是否重置当前页面数据</p>",
+          title: '提示',
+          content: '<p>是否重置当前页面数据</p>',
           onOk: () => {
             this.mConfig = [];
             this.rConfig = [];
@@ -879,26 +787,26 @@ export default {
     },
   },
   beforeDestroy() {
-    this.$store.commit("mobildConfig/titleUpdata", "");
-    this.$store.commit("mobildConfig/nameUpdata", "");
-    this.$store.commit("mobildConfig/showUpdata", 1);
-    this.$store.commit("mobildConfig/colorUpdata", 0);
-    this.$store.commit("mobildConfig/picUpdata", 0);
-    this.$store.commit("mobildConfig/pickerUpdata", "#f5f5f5");
-    this.$store.commit("mobildConfig/radioUpdata", 0);
-    this.$store.commit("mobildConfig/picurlUpdata", "");
-    this.$store.commit("mobildConfig/SETEMPTY");
+    this.$store.commit('mobildConfig/titleUpdata', '');
+    this.$store.commit('mobildConfig/nameUpdata', '');
+    this.$store.commit('mobildConfig/showUpdata', 1);
+    this.$store.commit('mobildConfig/colorUpdata', 0);
+    this.$store.commit('mobildConfig/picUpdata', 0);
+    this.$store.commit('mobildConfig/pickerUpdata', '#f5f5f5');
+    this.$store.commit('mobildConfig/radioUpdata', 0);
+    this.$store.commit('mobildConfig/picurlUpdata', '');
+    this.$store.commit('mobildConfig/SETEMPTY');
   },
   destroyed() {
-    this.$store.commit("mobildConfig/titleUpdata", "");
-    this.$store.commit("mobildConfig/nameUpdata", "");
-    this.$store.commit("mobildConfig/showUpdata", 1);
-    this.$store.commit("mobildConfig/colorUpdata", 0);
-    this.$store.commit("mobildConfig/picUpdata", 0);
-    this.$store.commit("mobildConfig/pickerUpdata", "#f5f5f5");
-    this.$store.commit("mobildConfig/radioUpdata", 0);
-    this.$store.commit("mobildConfig/picurlUpdata", "");
-    this.$store.commit("mobildConfig/SETEMPTY");
+    this.$store.commit('mobildConfig/titleUpdata', '');
+    this.$store.commit('mobildConfig/nameUpdata', '');
+    this.$store.commit('mobildConfig/showUpdata', 1);
+    this.$store.commit('mobildConfig/colorUpdata', 0);
+    this.$store.commit('mobildConfig/picUpdata', 0);
+    this.$store.commit('mobildConfig/pickerUpdata', '#f5f5f5');
+    this.$store.commit('mobildConfig/radioUpdata', 0);
+    this.$store.commit('mobildConfig/picurlUpdata', '');
+    this.$store.commit('mobildConfig/SETEMPTY');
   },
 };
 </script>

@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -14,10 +14,10 @@ namespace app\services\system\config;
 
 use app\dao\system\config\SystemStorageDao;
 use app\services\BaseServices;
+use crmeb\exceptions\AdminException;
 use crmeb\services\FormBuilder;
-use crmeb\services\UploadService;
+use app\services\other\UploadService;
 use crmeb\traits\ServicesTrait;
-use think\exception\ValidateException;
 
 /**
  * Class SystemStorageServices
@@ -164,17 +164,17 @@ class SystemStorageServices extends BaseServices
     {
         $storageInfo = $this->dao->get(['is_delete' => 0, 'id' => $id]);
         if (!$storageInfo) {
-            throw new ValidateException('删除的云存储不存在');
+            throw new AdminException(400608);
         }
         if ($storageInfo->status) {
-            throw new ValidateException('云存储正在使用中,需要启动其他空间才能删除');
+            throw new AdminException(400609);
         }
 
         try {
             $upload = UploadService::init($storageInfo->type);
             $upload->deleteBucket($storageInfo->name, $storageInfo->region);
         } catch (\Throwable $e) {
-            throw new ValidateException($e->getMessage());
+            throw new AdminException($e->getMessage());
         }
         $storageInfo->is_delete = 1;
         $storageInfo->save();
@@ -230,14 +230,14 @@ class SystemStorageServices extends BaseServices
         //保存配置信息
         $this->saveConfig($type, $data);
         if ($this->dao->count(['name' => $data['name']])) {
-            throw new ValidateException('云空间名称不能重复');
+            throw new AdminException(400610);
         }
         //保存云存储
         $data['type'] = $type;
         $upload = UploadService::init($type);
         $res = $upload->createBucket($data['name'], $data['region'], $data['acl']);
         if (false === $res) {
-            throw new ValidateException($upload->getError());
+            throw new AdminException($upload->getError());
         }
         if (3 === $type) {
             $data['region'] = $this->getReagionHost($type, $data['region']);
@@ -427,7 +427,7 @@ class SystemStorageServices extends BaseServices
     {
         $info = $this->dao->get($id);
         if (!$info) {
-            throw new ValidateException('没有查询到数据');
+            throw new AdminException(100026);
         }
         if ($info->domain != $domain) {
             $info->domain = $domain;
@@ -439,7 +439,7 @@ class SystemStorageServices extends BaseServices
                 //绑定域名到云储存桶
                 $res = $upload->bindDomian($info->name, $domain, $info->region);
                 if (false === $res) {
-                    throw new ValidateException($upload->getError());
+                    throw new AdminException($upload->getError());
                 }
             }
             //七牛云需要通过接口获取cname

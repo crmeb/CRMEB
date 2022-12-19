@@ -1,23 +1,13 @@
 <template>
   <div class="numbox" v-if="datas[name]">
-    <div
-      class="c_row-item"
-      v-for="(item, index) in datas[name].list"
-      :key="index"
-    >
+    <div class="c_row-item" v-for="(item, index) in datas[name].list" :key="index">
       <div class="dif" v-if="item.title === '链接'">
         <Col class="label" span="4">
           <span>{{ item.title }}</span>
         </Col>
         <Col span="19" class="slider-box">
           <div class="input-box" @click="getLink(index)">
-            <Input
-              v-model="item.val"
-              :placeholder="item.pla"
-              :maxlength="item.max"
-              icon="ios-arrow-forward"
-              readonly
-            />
+            <Input v-model="item.val" :placeholder="item.pla" :maxlength="item.max" icon="ios-arrow-forward" readonly />
           </div>
         </Col>
       </div>
@@ -26,12 +16,7 @@
           <span>{{ item.title }}</span>
         </Col>
         <Col span="19" class="slider-box">
-          <Input
-            v-model="item.val"
-            :placeholder="item.pla"
-            :maxlength="item.max"
-            style="text-align: right"
-          />
+          <Input v-model="item.val" :placeholder="item.pla" :maxlength="item.max" style="text-align: right" />
         </Col>
       </div>
     </div>
@@ -40,10 +25,10 @@
 </template>
 
 <script>
-import linkaddress from "@/components/linkaddress";
+import linkaddress from '@/components/linkaddress';
 
 export default {
-  name: "c_input_list",
+  name: 'c_input_list',
   props: {
     name: {
       type: String,
@@ -53,7 +38,7 @@ export default {
     },
     configNum: {
       type: Number | String,
-      default: "default",
+      default: 'default',
     },
   },
   components: {

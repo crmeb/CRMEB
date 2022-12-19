@@ -5,29 +5,16 @@
         <div style="width: 375px">
           <div class="title-box">商品详情</div>
           <div class="swiper-box">
-            <Carousel
-              :autoplay="goodsInfo.productInfo.slider_image.length > 1"
-              v-model="value2"
-              loop
-              arrow="never"
-            >
-              <CarouselItem
-                v-for="(item, index) in goodsInfo.productInfo.slider_image"
-                :key="index"
-              >
+            <Carousel :autoplay="goodsInfo.productInfo.slider_image.length > 1" v-model="value2" loop arrow="never">
+              <CarouselItem v-for="(item, index) in goodsInfo.productInfo.slider_image" :key="index">
                 <div class="demo-carousel"><img :src="item" alt="" /></div>
               </CarouselItem>
             </Carousel>
           </div>
           <div class="goods_info">
             <div class="number-wrapper">
-              <div class="price">
-                <span>¥</span>{{ goodsInfo.productInfo.price }}
-              </div>
-              <div
-                class="old-price"
-                v-if="goodsInfo.productInfo.vip_price != '0.00'"
-              >
+              <div class="price"><span>¥</span>{{ goodsInfo.productInfo.price }}</div>
+              <div class="old-price" v-if="goodsInfo.productInfo.vip_price != '0.00'">
                 ¥{{ goodsInfo.productInfo.vip_price }}
               </div>
               <div v-if="goodsInfo.productInfo.vip_price != '0.00'">
@@ -36,19 +23,17 @@
             </div>
             <div class="name">{{ goodsInfo.productInfo.store_name }}</div>
             <div class="msg">
+              <div class="item">原价:￥{{ goodsInfo.productInfo.ot_price }}</div>
+              <div class="item">库存:{{ goodsInfo.productInfo.stock }}{{ goodsInfo.productInfo.unit_name }}</div>
               <div class="item">
-                原价:￥{{ goodsInfo.productInfo.ot_price }}
+                销量:{{ goodsInfo.productInfo.sales + goodsInfo.productInfo.ficti
+                }}{{ goodsInfo.productInfo.unit_name }}
               </div>
-              <div class="item">库存:{{ goodsInfo.productInfo.stock }}{{goodsInfo.productInfo.unit_name}}</div> 
-              <div class="item">销量:{{ goodsInfo.productInfo.sales+goodsInfo.productInfo.ficti }}{{goodsInfo.productInfo.unit_name}}</div>
             </div>
           </div>
           <div class="con-box">
             <div class="title-box">商品介绍</div>
-            <div
-              class="content"
-              v-html="goodsInfo.productInfo.description"
-            ></div>
+            <div class="content" v-html="goodsInfo.productInfo.description"></div>
           </div>
         </div>
       </HappyScroll>
@@ -57,14 +42,14 @@
 </template>
 
 <script>
-import { HappyScroll } from "vue-happy-scroll";
-import { productInfoApi } from "@/api/product";
+import { HappyScroll } from 'vue-happy-scroll';
+import { productInfoApi } from '@/api/product';
 export default {
-  name: "goods_detail",
+  name: 'goods_detail',
   props: {
     goodsId: {
       type: String | Number,
-      default: "",
+      default: '',
     },
   },
   components: {

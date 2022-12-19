@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -13,12 +13,12 @@ declare (strict_types=1);
 namespace app\services\pc;
 
 use app\services\BaseServices;
+use app\services\other\PosterServices;
 use app\services\product\product\StoreProductServices;
 use app\services\system\attachment\SystemAttachmentServices;
 use app\services\user\UserServices;
-use crmeb\services\MiniProgramService;
-use crmeb\services\UploadService;
-use crmeb\services\UtilService;
+use crmeb\services\app\MiniProgramService;
+use app\services\other\UploadService;
 use Guzzle\Http\EntityBody;
 
 class ProductServices extends BaseServices
@@ -68,7 +68,7 @@ class ProductServices extends BaseServices
             $imageInfo = $systemAttachmentService->getOne(['name' => $namePath]);
             $siteUrl = sys_config('site_url');
             if (!$imageInfo) {
-                $res = MiniProgramService::qrcodeService()->appCodeUnlimit($data, 'pages/goods_details/index', 280);
+                $res = MiniProgramService::appCodeUnlimitService($data, 'pages/goods_details/index', 280);
                 if (!$res) return false;
                 $uploadType = (int)sys_config('upload_type', 1);
                 $upload = UploadService::init();
@@ -79,8 +79,8 @@ class ProductServices extends BaseServices
                 }
                 $imageInfo = $upload->getUploadInfo();
                 $imageInfo['image_type'] = $uploadType;
-                if ($imageInfo['image_type'] == 1) $remoteImage = UtilService::remoteImage($siteUrl . $imageInfo['dir']);
-                else $remoteImage = UtilService::remoteImage($imageInfo['dir']);
+                if ($imageInfo['image_type'] == 1) $remoteImage = PosterServices::remoteImage($siteUrl . $imageInfo['dir']);
+                else $remoteImage = PosterServices::remoteImage($imageInfo['dir']);
                 if (!$remoteImage['status']) return false;
                 $systemAttachmentService->save([
                     'name' => $imageInfo['name'],

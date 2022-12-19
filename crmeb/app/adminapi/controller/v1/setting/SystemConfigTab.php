@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -75,9 +75,9 @@ class SystemConfigTab extends AuthController
             ['sort', 0],
             ['pid', 0],
         ]);
-        if (!$data['title']) return app('json')->fail('请输入按钮名称');
+        if (!$data['title']) return app('json')->fail(400291);
         $this->services->save($data);
-        return app('json')->success('添加配置分类成功!');
+        return app('json')->success(400292);
     }
 
     /**
@@ -119,10 +119,10 @@ class SystemConfigTab extends AuthController
             ['sort', 0],
             ['pid', 0],
         ]);
-        if (!$data['title']) return app('json')->fail('请输入分类昵称');
-        if (!$data['eng_title']) return app('json')->fail('请输入分类字段');
+        if (!$data['title']) return app('json')->fail(400291);
+        if (!$data['eng_title']) return app('json')->fail(400275);
         $this->services->update($id, $data);
-        return app('json')->success('修改成功!');
+        return app('json')->success(100001);
     }
 
     /**
@@ -134,12 +134,12 @@ class SystemConfigTab extends AuthController
     public function delete(SystemConfigServices $services, $id)
     {
         if ($services->count(['tab_id' => $id])) {
-            return app('json')->fail('存在下级配置，无法删除！');
+            return app('json')->fail(400293);
         }
         if (!$this->services->delete($id))
-            return app('json')->fail('删除失败,请稍候再试!');
+            return app('json')->fail(100008);
         else
-            return app('json')->success('删除成功!');
+            return app('json')->success(100002);
     }
 
     /**
@@ -151,9 +151,9 @@ class SystemConfigTab extends AuthController
     public function set_status($id, $status)
     {
         if ($status == '' || $id == 0) {
-            return app('json')->fail('参数错误');
+            return app('json')->fail(100100);
         }
         $this->services->update($id, ['status' => $status]);
-        return app('json')->success($status == 0 ? '隐藏成功' : '显示成功');
+        return app('json')->success(100014);
     }
 }

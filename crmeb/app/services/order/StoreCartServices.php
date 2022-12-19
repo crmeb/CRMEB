@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -22,8 +22,8 @@ use app\services\system\SystemUserLevelServices;
 use app\services\user\member\MemberCardServices;
 use app\services\user\UserServices;
 use app\jobs\ProductLogJob;
+use crmeb\exceptions\ApiException;
 use crmeb\services\CacheService;
-use think\exception\ValidateException;
 use app\services\activity\seckill\StoreSeckillServices;
 use app\services\activity\bargain\StoreBargainServices;
 use app\services\activity\combination\StoreCombinationServices;
@@ -99,7 +99,7 @@ class StoreCartServices extends BaseServices
             $cartInfo = $this->dao->getCartList(['uid' => $uid, 'status' => 1, 'id' => $cartIds], 0, 0, ['productInfo', 'attrInfo']);
         }
         if (!$cartInfo) {
-            throw new ValidateException('获取购物车信息失败');
+            throw new ApiException(410233);
         }
         [$cartInfo, $valid, $invalid] = $this->handleCartList($uid, $cartInfo, $addr, $shipping_type);
         $seckillIds = array_unique(array_column($cartInfo, 'seckill_id'));
@@ -156,26 +156,26 @@ class StoreCartServices extends BaseServices
                 $productServices = app()->make(StoreProductServices::class);
                 $productInfo = $productServices->isValidProduct($productId);
                 if (!$productInfo) {
-                    throw new ValidateException('该商品已下架或删除');
+                    throw new ApiException(410295);
                 }
                 $attrInfo = $attrValueServices->getOne(['unique' => $unique, 'type' => 0]);
                 if (!$unique || !$attrInfo || $attrInfo['product_id'] != $productId) {
-                    throw new ValidateException('请选择有效的商品属性');
+                    throw new ApiException(410305);
                 }
                 $nowStock = $attrInfo['stock'];//现有库存
                 if ($cartNum > $nowStock) {
-                    throw new ValidateException('该商品库存不足' . $cartNum);
+                    throw new ApiException(410297, ['num' => $cartNum]);
                 }
                 if ($productInfo['is_virtual'] == 1 && $productInfo['virtual_type'] == 2 && $attrInfo['coupon_id']) {
                     /** @var StoreCouponIssueServices $issueCoupon */
                     $issueCoupon = app()->make(StoreCouponIssueServices::class);
                     if (!$issueCoupon->getCount(['id' => $attrInfo['coupon_id'], 'status' => 1, 'is_del' => 0])) {
-                        throw new ValidateException('您要购买的优惠券已失效，无法购买');
+                        throw new ApiException(410234);
                     }
                     /** @var StoreCouponIssueUserServices $issueUserCoupon */
                     $issueUserCoupon = app()->make(StoreCouponIssueUserServices::class);
                     if ($issueUserCoupon->getCount(['uid' => $uid, 'issue_coupon_id' => $attrInfo['coupon_id']])) {
-                        throw new ValidateException('您已获取过该优惠券，无法再次购买');
+                        throw new ApiException(410235);
                     }
                 }
                 $stockNum = $this->dao->value(['product_id' => $productId, 'product_attr_unique' => $unique, 'uid' => $uid, 'status' => 1], 'cart_num') ?: 0;
@@ -207,16 +207,16 @@ class StoreCartServices extends BaseServices
                 [$attrInfo, $unique, $productInfo] = $advanceService->checkAdvanceStock($uid, $advanceId, $cartNum, $unique);
                 break;
             default:
-                throw new ValidateException('请刷新后重试');
+                throw new ApiException(410236);
         }
         if ($type && $type != 6) {
             //根商品规格库存
             $product_stock = $attrValueServices->value(['product_id' => $productInfo['product_id'], 'suk' => $attrInfo['suk'], 'type' => 0], 'stock');
             if ($product_stock < $cartNum) {
-                throw new ValidateException('商品库存不足' . $cartNum);
+                throw new ApiException(410297, ['num' => $cartNum]);
             }
             if ($type != 5 && !CacheService::checkStock($unique, (int)$cartNum, $type)) {
-                throw new ValidateException('商品库存不足' . $cartNum . ',无法购买请选择其他商品!');
+                throw new ApiException(410297, ['num' => $cartNum]);
             }
         }
         return [$attrInfo, $unique, $bargainUserInfo['bargain_price_min'] ?? 0, $cartNum, $productInfo];
@@ -242,6 +242,8 @@ class StoreCartServices extends BaseServices
     public function setCart(int $uid, int $product_id, int $cart_num = 1, string $product_attr_unique = '', int $type = 0, bool $new = true, int $combination_id = 0, int $seckill_id = 0, int $bargain_id = 0, int $advance_id = 0)
     {
         if ($cart_num < 1) $cart_num = 1;
+        //检查限购
+        $this->checkLimit($uid, $product_id, $cart_num, $new);
         //检测库存限量
         [$attrInfo, $product_attr_unique, $bargainPriceMin, $cart_num, $productInfo] = $this->checkProductStock($uid, $cart_num, $product_attr_unique, $type, $product_id, $seckill_id, $bargain_id, $combination_id, $advance_id);
         if ($new) {
@@ -278,7 +280,7 @@ class StoreCartServices extends BaseServices
             try {
                 CacheService::redisHandler()->set($key, $info, 3600);
             } catch (\Throwable $e) {
-                throw new ValidateException($e->getMessage());
+                throw new ApiException($e->getMessage());
             }
             return $key;
         } else {//加入购物车记录
@@ -325,9 +327,8 @@ class StoreCartServices extends BaseServices
         /** @var StoreProductServices $StoreProduct */
         $StoreProduct = app()->make(StoreProductServices::class);
         $stock = $StoreProduct->getProductStock($carInfo->product_id, $carInfo->product_attr_unique);
-        if (!$stock) throw new ValidateException('暂无库存');
-        if (!$number) throw new ValidateException('库存错误');
-        if ($stock < $number) throw new ValidateException('库存不足' . $number);
+        if (!$stock) throw new ApiException(410237);
+        if ($stock < $number) throw new ApiException(410297, ['num' => $number]);
         if ($carInfo->cart_num == $number) return true;
         return $this->dao->changeUserCartNum(['uid' => $uid, 'id' => $id], (int)$number);
     }
@@ -382,7 +383,7 @@ class StoreCartServices extends BaseServices
         if ($stock > 0) {
             $this->dao->update($cart_id, ['product_attr_unique' => $unique, 'cart_num' => 1]);
         } else {
-            throw new ValidateException('选择的规格库存不足');
+            throw new ApiException(410238);
         }
     }
 
@@ -433,13 +434,13 @@ class StoreCartServices extends BaseServices
         $productServices = app()->make(StoreProductServices::class);
 
         if (!$productServices->isValidProduct((int)$productId)) {
-            throw new ValidateException('该商品已下架或删除');
+            throw new ApiException(410295);
         }
         if (!($unique && $attrValueServices->getAttrvalueCount($productId, $unique, 0))) {
-            throw new ValidateException('请选择有效的商品属性');
+            throw new ApiException(410305);
         }
         if ($productServices->getProductStock((int)$productId, $unique) < $num) {
-            throw new ValidateException('该商品库存不足' . $num);
+            throw new ApiException(410297, ['num' => $num]);
         }
 
         $cart = $this->dao->getOne(['uid' => $uid, 'product_id' => $productId, 'product_attr_unique' => $unique]);
@@ -622,7 +623,7 @@ class StoreCartServices extends BaseServices
                 switch ($shipping_type) {
                     case 1:
                         //不送达
-                        if (in_array($item['productInfo']['temp_id'], $tempIds)) {
+                        if (in_array($item['productInfo']['temp_id'], $tempIds) || (isset($item['productInfo']['logistics']) && !in_array(1, explode(',', $item['productInfo']['logistics'])) && $item['productInfo']['logistics'] != 0)) {
                             $item['is_valid'] = 0;
                             $invalid[] = $item;
                         } else {
@@ -632,7 +633,7 @@ class StoreCartServices extends BaseServices
                         break;
                     case 2:
                         //不支持到店自提
-                        if (isset($item['productInfo']['logistics']) && $item['productInfo']['logistics'] && !in_array(2, explode(',', $item['productInfo']['logistics']))) {
+                        if (isset($item['productInfo']['logistics']) && $item['productInfo']['logistics'] && !in_array(2, explode(',', $item['productInfo']['logistics'])) && $item['productInfo']['logistics'] != 0) {
                             $item['is_valid'] = 0;
                             $invalid[] = $item;
                         } else {
@@ -645,5 +646,44 @@ class StoreCartServices extends BaseServices
             unset($item['attrInfo']);
         }
         return [$cartList, $valid, $invalid];
+    }
+
+    /**
+     * 检查限购
+     * @param $uid
+     * @param $product_id
+     * @param $num
+     * @param $new
+     * @return bool
+     */
+    public function checkLimit($uid, $product_id, $num, $new)
+    {
+        /** @var StoreProductServices $productServices */
+        $productServices = app()->make(StoreProductServices::class);
+        /** @var StoreOrderCartInfoServices $orderCartServices */
+        $orderCartServices = app()->make(StoreOrderCartInfoServices::class);
+
+        $limitInfo = $productServices->get($product_id, ['is_limit', 'limit_type', 'limit_num']);
+        if (!$limitInfo) throw new ApiException(410294);
+        $limitInfo = $limitInfo->toArray();
+        if (!$limitInfo['is_limit']) return true;
+        if ($limitInfo['limit_type'] == 1) {
+            $cartNum = 0;
+            if (!$new) {
+                $cartNum = $this->dao->sum(['uid' => $uid, 'product_id' => $product_id], 'cart_num');
+            }
+            if (($num + $cartNum) > $limitInfo['limit_num']) {
+                throw new ApiException(410239, ['limit' => $limitInfo['limit_num']]);
+            }
+        } else if ($limitInfo['limit_type'] == 2) {
+            $cartNum = $this->dao->sum(['uid' => $uid, 'product_id' => $product_id], 'cart_num');
+            $orderPayNum = $orderCartServices->sum(['uid' => $uid, 'product_id' => $product_id], 'cart_num');
+            $orderRefundNum = $orderCartServices->sum(['uid' => $uid, 'product_id' => $product_id], 'refund_num');
+            $orderNum = $orderPayNum - $orderRefundNum;
+            if (($num + $orderNum + $cartNum) > $limitInfo['limit_num']) {
+                throw new ApiException(410240, ['limit' => $limitInfo['limit_num'], 'pay_num' => $orderNum]);
+            }
+        }
+        return true;
     }
 }

@@ -10,9 +10,7 @@
             <div>在选定条件下，访问商城页面的去重人数</div>
             <br />
             <div>浏览量</div>
-            <div>
-              在选定条件下，用户浏览商城页面的次数。每打开一个页面或每刷新一次页面都记录1次
-            </div>
+            <div>在选定条件下，用户浏览商城页面的次数。每打开一个页面或每刷新一次页面都记录1次</div>
             <br />
             <div>新增用户数</div>
             <div>在选定条件下，新注册的用户</div>
@@ -56,48 +54,30 @@
             </div>
             <div class="info">
               <span class="sp1" v-text="item.name"></span>
-              <span
-                class="sp2"
-                v-if="index === list.length - 1"
-                v-text="item.list.num"
-              ></span>
+              <span class="sp2" v-if="index === list.length - 1" v-text="item.list.num"></span>
               <span class="sp2" v-else v-text="item.list.num"></span>
               <span class="content-time spBlock"
-                >环比增长：<i
-                  class="content-is"
-                  :class="Number(item.list.percent) >= 0 ? 'up' : 'down'"
+                >环比增长：<i class="content-is" :class="Number(item.list.percent) >= 0 ? 'up' : 'down'"
                   >{{ item.list.percent }}%</i
                 ><Icon
-                  :color="
-                    Number(item.list.percent) >= 0 ? '#F5222D' : '#39C15B'
-                  "
-                  :type="
-                    Number(item.list.percent) >= 0
-                      ? 'md-arrow-dropup'
-                      : 'md-arrow-dropdown'
-                  "
+                  :color="Number(item.list.percent) >= 0 ? '#F5222D' : '#39C15B'"
+                  :type="Number(item.list.percent) >= 0 ? 'md-arrow-dropup' : 'md-arrow-dropdown'"
               /></span>
             </div>
           </div>
         </Col>
       </Row>
     </div>
-    <echarts-new
-      :option-data="optionData"
-      :styles="style"
-      height="100%"
-      width="100%"
-      v-if="optionData"
-    ></echarts-new>
+    <echarts-new :option-data="optionData" :styles="style" height="100%" width="100%" v-if="optionData"></echarts-new>
     <Spin size="large" fix v-if="spinShow"></Spin>
   </Card>
 </template>
 
 <script>
-import { statisticUserBasicApi, statisticUserTrendApi } from "@/api/statistic";
-import echartsNew from "@/components/echartsNew/index";
+import { statisticUserBasicApi, statisticUserTrendApi } from '@/api/statistic';
+import echartsNew from '@/components/echartsNew/index';
 export default {
-  name: "userInfo",
+  name: 'userInfo',
   components: {
     echartsNew,
   },
@@ -106,8 +86,8 @@ export default {
       type: Object,
       default: function () {
         return {
-          channel_type: "",
-          data: "",
+          channel_type: '',
+          data: '',
         };
       },
     },
@@ -122,12 +102,12 @@ export default {
         sm: 24,
         xs: 24,
       },
-      name: "近30天",
+      name: '近30天',
       timeVal: [],
-      dataTime: "",
+      dataTime: '',
       list: [],
       optionData: {},
-      style: { height: "400px" },
+      style: { height: '400px' },
     };
   },
   mounted() {
@@ -142,7 +122,7 @@ export default {
     // 具体日期
     onchangeTime(e) {
       this.timeVal = e;
-      this.dataTime = this.timeVal.join("-");
+      this.dataTime = this.timeVal.join('-');
       this.name = this.dataTime;
     },
     // 统计
@@ -152,76 +132,76 @@ export default {
           const cardLists = res.data;
           this.list = [
             {
-              name: "访客数",
-              icon: "iconfangkeshu",
+              name: '访客数',
+              icon: 'iconfangkeshu',
               list: cardLists.people,
-              colors: "one",
+              colors: 'one',
             },
             {
-              name: "浏览量",
-              icon: "iconshangpinliulanliang",
+              name: '浏览量',
+              icon: 'iconshangpinliulanliang',
               list: cardLists.browse,
-              colors: "two",
+              colors: 'two',
             },
             {
-              name: "新增用户数",
-              icon: "iconxinzengyonghushu",
+              name: '新增用户数',
+              icon: 'iconxinzengyonghushu',
               list: cardLists.newUser,
-              colors: "three",
+              colors: 'three',
             },
             {
-              name: "成交用户数",
-              icon: "iconchengjiaoyonghushu",
+              name: '成交用户数',
+              icon: 'iconchengjiaoyonghushu',
               list: cardLists.payPeople,
-              colors: "four",
+              colors: 'four',
             },
             {
-              name: "访客-支付转化率",
-              icon: "iconfangke-zhifuzhuanhuashuai",
+              name: '访客-支付转化率',
+              icon: 'iconfangke-zhifuzhuanhuashuai',
               list: cardLists.payPercent,
-              colors: "three",
+              colors: 'three',
             },
             {
-              name: "付费会员数",
-              icon: "iconfufeihuiyuanshu",
+              name: '付费会员数',
+              icon: 'iconfufeihuiyuanshu',
               list: cardLists.payUser,
-              colors: "four",
+              colors: 'four',
             },
             {
-              name: "充值用户数",
-              icon: "iconchongzhiyonghushu",
+              name: '充值用户数',
+              icon: 'iconchongzhiyonghushu',
               list: cardLists.rechargePeople,
-              colors: "two",
+              colors: 'two',
             },
             {
-              name: "客单价",
-              icon: "iconkedanjia",
+              name: '客单价',
+              icon: 'iconkedanjia',
               list: cardLists.payPrice,
-              colors: "one",
+              colors: 'one',
             },
             {
-              name: "累计用户",
-              icon: "iconleijiyonghu",
+              name: '累计用户',
+              icon: 'iconleijiyonghu',
               list: cardLists.cumulativeUser,
-              colors: "four",
+              colors: 'four',
             },
             {
-              name: "累计付费会员数",
-              icon: "iconfufeihuiyuanshu",
+              name: '累计付费会员数',
+              icon: 'iconfufeihuiyuanshu',
               list: cardLists.cumulativePayUser,
-              colors: "one",
+              colors: 'one',
             },
             {
-              name: "累计充值用户数",
-              icon: "iconchongzhiyonghushu",
+              name: '累计充值用户数',
+              icon: 'iconchongzhiyonghushu',
               list: cardLists.cumulativeRechargePeople,
-              colors: "four",
+              colors: 'four',
             },
             {
-              name: "累计成交用户数",
-              icon: "iconchengjiaoyonghushu",
+              name: '累计成交用户数',
+              icon: 'iconchengjiaoyonghushu',
               list: cardLists.cumulativePayPeople,
-              colors: "three",
+              colors: 'three',
             },
           ];
         })
@@ -238,12 +218,12 @@ export default {
             return item.name;
           });
           let xAxis = res.data.xAxis;
-          let col = ["#5B8FF9", "#5AD8A6", "#FFAB2B", "#5D7092"];
+          let col = ['#5B8FF9', '#5AD8A6', '#FFAB2B', '#5D7092'];
           let series = [];
           res.data.series.map((item, index) => {
             series.push({
               name: item.name,
-              type: "line",
+              type: 'line',
               data: item.value,
               itemStyle: {
                 normal: {
@@ -255,22 +235,22 @@ export default {
           });
           this.optionData = {
             tooltip: {
-              trigger: "axis",
+              trigger: 'axis',
               axisPointer: {
-                type: "cross",
+                type: 'cross',
                 label: {
-                  backgroundColor: "#6a7985",
+                  backgroundColor: '#6a7985',
                 },
               },
             },
             legend: {
-              x: "center",
+              x: 'center',
               data: legend,
             },
             grid: {
-              left: "3%",
-              right: "4%",
-              bottom: "3%",
+              left: '3%',
+              right: '4%',
+              bottom: '3%',
               containLabel: true,
             },
             toolbox: {
@@ -279,7 +259,7 @@ export default {
               },
             },
             xAxis: {
-              type: "category",
+              type: 'category',
               boundaryGap: true,
               // axisTick:{
               //     show:false
@@ -294,13 +274,13 @@ export default {
                 interval: 0,
                 rotate: 40,
                 textStyle: {
-                  color: "#000000",
+                  color: '#000000',
                 },
               },
               data: xAxis,
             },
             yAxis: {
-              type: "value",
+              type: 'value',
               axisLine: {
                 show: false,
               },
@@ -309,13 +289,13 @@ export default {
               },
               axisLabel: {
                 textStyle: {
-                  color: "#7F8B9C",
+                  color: '#7F8B9C',
                 },
               },
               splitLine: {
                 show: true,
                 lineStyle: {
-                  color: "#F5F7F9",
+                  color: '#F5F7F9',
                 },
               },
             },

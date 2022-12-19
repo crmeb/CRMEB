@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -29,7 +29,6 @@ class ArticleController
 
     /**
      * 文章列表
-     * @param Request $request
      * @param $cid
      * @return mixed
      */
@@ -37,62 +36,49 @@ class ArticleController
     {
         [$page, $limit] = $this->services->getPageValue();
         $list = $this->services->cidByArticleList(['cid' => $cid], $page, $limit, "id,title,image_input,visit,from_unixtime(add_time,'%Y-%m-%d %H:%i') as add_time,synopsis,url");
-        return app('json')->successful($list);
+        return app('json')->success($list);
     }
 
     /**
      * 文章详情
      * @param $id
      * @return mixed
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\ModelNotFoundException
-     * @throws \think\exception\DbException
      */
     public function details($id)
     {
         $info = $this->services->getInfo($id);
-        return app('json')->successful($info);
+        return app('json')->success($info);
     }
 
     /**
      * 获取热门文章
      * @return mixed
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\DbException
-     * @throws \think\db\exception\ModelNotFoundException
      */
     public function hot()
     {
         [$page, $limit] = $this->services->getPageValue();
         $list = $this->services->cidByArticleList(['is_hot' => 1], $page, $limit, "id,title,image_input,visit,from_unixtime(add_time,'%Y-%m-%d %H:%i') as add_time,synopsis,url");
-        return app('json')->successful($list);
+        return app('json')->success($list);
     }
 
     /**
-     * 获取最新文章
      * @return mixed
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\DbException
-     * @throws \think\db\exception\ModelNotFoundException
      */
     public function new()
     {
         [$page, $limit] = $this->services->getPageValue();
         $list = $this->services->cidByArticleList([], $page, $limit, "id,title,image_input,visit,from_unixtime(add_time,'%Y-%m-%d %H:%i') as add_time,synopsis,url");
-        return app('json')->successful($list);
+        return app('json')->success($list);
     }
 
     /**
      * 获取顶部banner文章
      * @return mixed
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\DbException
-     * @throws \think\db\exception\ModelNotFoundException
      */
     public function banner()
     {
         [$page, $limit] = $this->services->getPageValue();
         $list = $this->services->cidByArticleList(['is_banner' => 1], $page, $limit, "id,title,image_input,visit,from_unixtime(add_time,'%Y-%m-%d %H:%i') as add_time,synopsis,url");
-        return app('json')->successful($list);
+        return app('json')->success($list);
     }
 }

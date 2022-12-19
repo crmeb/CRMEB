@@ -1,7 +1,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2021 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -540,8 +540,8 @@ export function memberOverdueTime(data) {
 }
 
 /**
- * 新版分享海报信息获取
- * 
+ * 新版分享海报信息获取
+ * 
  */
 export function spreadMsg() {
 	return request.get('user/spread_info');
@@ -549,23 +549,23 @@ export function spreadMsg() {
 
 
 /**
- * 图片链接转base64
- * 
+ * 图片链接转base64
+ * 
  */
 export function imgToBase(data) {
 	return request.post('image_base64', data);
 }
 
 /**
- * 获取小程序二维码
- * 
+ * 获取小程序二维码
+ * 
  */
 export function routineCode(data) {
 	return request.get('user/routine_code', data);
 }
 
 /**
- * 消息中心
+ * 消息中心
  */
 export function serviceRecord(data) {
 	return request.get('user/record', data);
@@ -583,6 +583,13 @@ export function messageSystem(data) {
  */
 export function getMsgDetails(id) {
 	return request.get('user/message_system/detail/' + id);
+}
+
+/**
+ * 消息中心-消息已读/删除
+ */
+export function msgLookDel(data) {
+	return request.get('user/message_system/edit_message', data);
 }
 
 /**
@@ -662,4 +669,23 @@ export function delClerkPercent(id) {
  */
 export function cancelUser() {
 	return request.get('user_cancel');
+}
+/**
+ * 获取多语言类型
+ */
+
+export function getLangList() {
+	return request.get('get_lang_type_list', {}, {
+		noAuth: true
+	})
+}
+
+/**
+ * 获取多语言JSON
+ */
+
+export function getLangJson() {
+	return request.get('get_lang_json', {}, {
+		noAuth: true
+	})
 }

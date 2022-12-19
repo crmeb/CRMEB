@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -66,11 +66,11 @@ abstract class BaseServices
      * @param $type
      * @return array
      */
-    public function createToken(int $id, $type)
+    public function createToken(int $id, $type, $pwd = '')
     {
         /** @var JwtAuth $jwtAuth */
         $jwtAuth = app()->make(JwtAuth::class);
-        return $jwtAuth->createToken($id, $type);
+        return $jwtAuth->createToken($id, $type, ['pwd' => md5($pwd)]);
     }
 
     /**

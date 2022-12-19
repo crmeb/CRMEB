@@ -4,6 +4,7 @@
   "navigationStyle": "custom",
   "navigationBarTextStyle": "black",
   "usingComponents": {
-    "tab-bar": "/pages/index/visualization/components/tabBar"
+    "tab-bar": "/pages/index/visualization/components/tabBar",
+    "page-footer": "/components/pageFooter/index"
   }
 }

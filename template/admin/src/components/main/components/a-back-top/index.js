@@ -1,2 +1,2 @@
-import ABackTop from './index.vue'
-export default ABackTop
+import ABackTop from './index.vue';
+export default ABackTop;

@@ -31,11 +31,7 @@
             :label-position="labelPosition"
             @submit.native.prevent
           >
-            <FormItem
-              label="选择商品："
-              prop="image_input"
-              v-if="current === 0"
-            >
+            <FormItem label="选择商品：" prop="image_input" v-if="current === 0">
               <div class="picBox" @click="changeGoods">
                 <div class="pictrue" v-if="formValidate.image">
                   <img v-lazy="formValidate.image" />
@@ -92,11 +88,7 @@
               <Col span="24">
                 <Col v-bind="grid">
                   <FormItem label="预售名称：" prop="title" label-for="title">
-                    <Input
-                      placeholder="请输入预售名称"
-                      element-id="title"
-                      v-model="formValidate.title"
-                    />
+                    <Input placeholder="请输入预售名称" element-id="title" v-model="formValidate.title" />
                   </FormItem>
                 </Col>
               </Col>
@@ -134,9 +126,7 @@
                       :value="formValidate.section_time"
                       v-model="formValidate.section_time"
                     ></DatePicker>
-                    <div class="ml10 grey">
-                      设置活动开启结束时间，用户可以在设置时间内发起参与预售
-                    </div>
+                    <div class="ml10 grey">设置活动开启结束时间，用户可以在设置时间内发起参与预售</div>
                   </div>
                 </FormItem>
               </Col>
@@ -168,12 +158,7 @@
                 <FormItem label="运费模板：" prop="temp_id">
                   <div class="acea-row row-middle">
                     <Select v-model="formValidate.temp_id" class="perW20">
-                      <Option
-                        v-for="item in templateList"
-                        :value="item.id"
-                        :key="item.id"
-                        >{{ item.name }}
-                      </Option>
+                      <Option v-for="item in templateList" :value="item.id" :key="item.id">{{ item.name }} </Option>
                     </Select>
                     <div class="ml10 col" @click="freight">添加运费模板</div>
                   </div>
@@ -270,12 +255,7 @@
               </Col> -->
               <Col span="24">
                 <FormItem label="规格选择：">
-                  <Table
-                    :data="specsData"
-                    :columns="columns"
-                    border
-                    @on-selection-change="changeCheckbox"
-                  >
+                  <Table :data="specsData" :columns="columns" border @on-selection-change="changeCheckbox">
                     <template slot-scope="{ row, index }" slot="pic">
                       <div
                         class="acea-row row-middle row-center-wrapper"
@@ -284,10 +264,7 @@
                         <div class="pictrue pictrueTab" v-if="row.pic">
                           <img v-lazy="row.pic" />
                         </div>
-                        <div
-                          class="upLoad pictrueTab acea-row row-center-wrapper"
-                          v-else
-                        >
+                        <div class="upLoad pictrueTab acea-row row-center-wrapper" v-else>
                           <Icon type="ios-camera-outline" size="21" />
                         </div>
                       </div>
@@ -369,31 +346,22 @@
       ></uploadPictures>
     </Modal>
     <!-- 运费模板-->
-    <freight-template
-      ref="template"
-      @addSuccess="productGetTemplate"
-    ></freight-template>
+    <freight-template ref="template" @addSuccess="productGetTemplate"></freight-template>
   </div>
 </template>
 
 <script>
-import { mapState } from "vuex";
-import goodsList from "@/components/goodsList/index";
-import UeditorWrap from "@/components/ueditorFrom/index";
-import WangEditor from "@/components/wangEditor/index.vue";
-import uploadPictures from "@/components/uploadPictures";
-import freightTemplate from "@/components/freightTemplate/index";
-import {
-  presellInfoApi,
-  presellCreatApi,
-  productAttrsApi,
-} from "@/api/marketing";
-import { productGetTemplateApi } from "@/api/product";
+import { mapState } from 'vuex';
+import goodsList from '@/components/goodsList/index';
+import WangEditor from '@/components/wangEditor/index.vue';
+import uploadPictures from '@/components/uploadPictures';
+import freightTemplate from '@/components/freightTemplate/index';
+import { presellInfoApi, presellCreatApi, productAttrsApi } from '@/api/marketing';
+import { productGetTemplateApi } from '@/api/product';
 
 export default {
-  name: "storePersellCreate",
+  name: 'storePersellCreate',
   components: {
-    UeditorWrap,
     goodsList,
     uploadPictures,
     WangEditor,
@@ -403,7 +371,7 @@ export default {
     return {
       submitOpen: false,
       spinShow: false,
-      isChoice: "",
+      isChoice: '',
       current: 0,
       modalPic: false,
       grid: {
@@ -437,9 +405,9 @@ export default {
       myConfig: {
         autoHeightEnabled: false, // 编辑器不自动被内容撑高
         initialFrameHeight: 500, // 初始容器高度
-        initialFrameWidth: "100%", // 初始容器宽度
-        UEDITOR_HOME_URL: "/admin/UEditor/",
-        serverUrl: "",
+        initialFrameWidth: '100%', // 初始容器宽度
+        UEDITOR_HOME_URL: '/admin/UEditor/',
+        serverUrl: '',
       },
       modals: false,
       modal_loading: false,
@@ -447,55 +415,55 @@ export default {
       templateList: [],
       columns: [],
       specsData: [],
-      picTit: "",
+      picTit: '',
       tableIndex: 0,
       formValidate: {
         images: [],
-        info: "",
-        title: "",
-        image: "",
-        unit_name: "",
+        info: '',
+        title: '',
+        image: '',
+        unit_name: '',
         stock: 1,
         sales: 0,
         deliver_time: 3,
         sort: 0,
         status: 1,
         section_time: [],
-        description: "",
+        description: '',
         id: 0,
         product_id: 0,
         // pay_time: [],
         // type: 1,
         num: 1,
         deposit: 1,
-        temp_id: "",
+        temp_id: '',
         attrs: [],
         items: [],
       },
       ruleValidate: {
-        image: [{ required: true, message: "请选择主图", trigger: "change" }],
+        image: [{ required: true, message: '请选择主图', trigger: 'change' }],
         images: [
           {
             required: true,
-            type: "array",
-            message: "请选择主图",
-            trigger: "change",
+            type: 'array',
+            message: '请选择主图',
+            trigger: 'change',
           },
           {
-            type: "array",
+            type: 'array',
             min: 1,
-            message: "Choose two hobbies at best",
-            trigger: "change",
+            message: 'Choose two hobbies at best',
+            trigger: 'change',
           },
         ],
-        title: [{ required: true, message: "请输入预售名称", trigger: "blur" }],
-        info: [{ required: true, message: "请输入预售简介", trigger: "blur" }],
+        title: [{ required: true, message: '请输入预售名称', trigger: 'blur' }],
+        info: [{ required: true, message: '请输入预售简介', trigger: 'blur' }],
         section_time: [
           {
             required: true,
-            type: "array",
-            message: "请选择活动时间",
-            trigger: "change",
+            type: 'array',
+            message: '请选择活动时间',
+            trigger: 'change',
           },
         ],
         // pay_time: [
@@ -506,93 +474,93 @@ export default {
         //     trigger: "change",
         //   },
         // ],
-        unit_name: [{ required: true, message: "请输入单位", trigger: "blur" }],
+        unit_name: [{ required: true, message: '请输入单位', trigger: 'blur' }],
         price: [
           {
             required: true,
-            type: "number",
-            message: "请输入预售价",
-            trigger: "blur",
+            type: 'number',
+            message: '请输入预售价',
+            trigger: 'blur',
           },
         ],
         cost: [
           {
             required: true,
-            type: "number",
-            message: "请输入成本价",
-            trigger: "blur",
+            type: 'number',
+            message: '请输入成本价',
+            trigger: 'blur',
           },
         ],
         stock: [
           {
             required: true,
-            type: "number",
-            message: "请输入库存",
-            trigger: "blur",
+            type: 'number',
+            message: '请输入库存',
+            trigger: 'blur',
           },
         ],
         give_integral: [
           {
             required: true,
-            type: "number",
-            message: "请输入赠送积分",
-            trigger: "blur",
+            type: 'number',
+            message: '请输入赠送积分',
+            trigger: 'blur',
           },
         ],
         effective_time: [
           {
             required: true,
-            type: "number",
-            message: "请输入预售时效(单位 小时)",
-            trigger: "blur",
+            type: 'number',
+            message: '请输入预售时效(单位 小时)',
+            trigger: 'blur',
           },
         ],
         people: [
           {
             required: true,
-            type: "number",
-            message: "请输入预售人数",
-            trigger: "blur",
+            type: 'number',
+            message: '请输入预售人数',
+            trigger: 'blur',
           },
         ],
         num: [
           {
             required: true,
-            type: "number",
-            message: "请输入购买数量限制",
-            trigger: "blur",
+            type: 'number',
+            message: '请输入购买数量限制',
+            trigger: 'blur',
           },
         ],
         deposit: [
           {
             required: true,
-            type: "number",
-            message: "请输入定金金额",
-            trigger: "blur",
+            type: 'number',
+            message: '请输入定金金额',
+            trigger: 'blur',
           },
         ],
         once_num: [
           {
             required: true,
-            type: "number",
-            message: "请输入单次购买数量限制",
-            trigger: "blur",
+            type: 'number',
+            message: '请输入单次购买数量限制',
+            trigger: 'blur',
           },
         ],
         virtualPeople: [
           {
             required: true,
-            type: "number",
-            message: "请输入虚拟成团补齐人数",
-            trigger: "blur",
+            type: 'number',
+            message: '请输入虚拟成团补齐人数',
+            trigger: 'blur',
           },
         ],
         temp_id: [
           {
             required: true,
-            message: "请选择运费模板",
-            trigger: "change",
-            type: "number",
+            message: '请选择运费模板',
+            trigger: 'change',
+            type: 'number',
           },
         ],
       },
@@ -600,12 +568,12 @@ export default {
     };
   },
   computed: {
-    ...mapState("media", ["isMobile"]),
+    ...mapState('media', ['isMobile']),
     labelWidth() {
       return this.isMobile ? undefined : 155;
     },
     labelPosition() {
-      return this.isMobile ? "top" : "right";
+      return this.isMobile ? 'top' : 'right';
     },
   },
   mounted() {
@@ -620,16 +588,6 @@ export default {
     getEditorContent(data) {
       this.formValidate.description = data;
     },
-    // setVirtualPeople (){
-    //     console.log(this.formValidate.virtualPeople)
-    //     console.log(this.formValidate.people)
-    //     if(this.formValidate.virtualPeople >= this.formValidate.people){
-    //         this.formValidate.virtualPeople = this.formValidate.people;
-    //     }
-    //     console.log(this.formValidate.virtualPeople)
-    //     this.formValidate.virtual = parseInt((this.formValidate.people - this.formValidate.virtualPeople) / this.formValidate.people * 100);
-    // },
-
     // 添加运费模板
     freight() {
       this.$refs.template.id = 0;
@@ -642,13 +600,13 @@ export default {
         .then((res) => {
           let data = res.data.info;
           let selection = {
-            type: "selection",
+            type: 'selection',
             width: 60,
-            align: "center",
+            align: 'center',
           };
           that.specsData = data.attrs;
           that.specsData.forEach(function (item, index) {
-            that.$set(that.specsData[index], "id", index);
+            that.$set(that.specsData[index], 'id', index);
           });
           that.formValidate.items = data.items;
           that.columns = data.header;
@@ -673,27 +631,23 @@ export default {
         let row = {
           title: title,
           key: key,
-          align: "center",
+          align: 'center',
           minWidth: 100,
           render: (h, params) => {
-            return h("div", [
-              h("InputNumber", {
+            return h('div', [
+              h('InputNumber', {
                 props: {
                   min: 1,
-                  max: key === "price" ? 10000000 : params.row.stock,
-                  value: key === "price" ? params.row.price : params.row.quota,
+                  max: key === 'price' ? 10000000 : params.row.stock,
+                  value: key === 'price' ? params.row.price : params.row.quota,
                 },
                 on: {
-                  "on-change": (e) => {
-                    key === "price"
+                  'on-change': (e) => {
+                    key === 'price'
                       ? (params.row.price = e)
-                      : (params.row.quota =
-                          e < params.row.stock ? e : params.row.stock);
+                      : (params.row.quota = e < params.row.stock ? e : params.row.stock);
                     that.specsData[params.index] = params.row;
-                    if (
-                      !!that.formValidate.attrs &&
-                      that.formValidate.attrs.length
-                    ) {
+                    if (!!that.formValidate.attrs && that.formValidate.attrs.length) {
                       that.formValidate.attrs.forEach((v, index) => {
                         if (v.id === params.row.id) {
                           that.formValidate.attrs.splice(index, 1, params.row);
@@ -773,21 +727,20 @@ export default {
           let that = this;
           let info = res.data.info;
           let selection = {
-            type: "selection",
+            type: 'selection',
             width: 60,
-            align: "center",
+            align: 'center',
           };
           this.formValidate = info;
           this.formValidate.virtualPeople = parseInt(
-            this.formValidate.people -
-              this.formValidate.people * (this.formValidate.virtual / 100)
+            this.formValidate.people - this.formValidate.people * (this.formValidate.virtual / 100),
           );
-          this.$set(this.formValidate, "items", info.attrs.items);
+          this.$set(this.formValidate, 'items', info.attrs.items);
           this.columns = info.attrs.header;
           this.columns.unshift(selection);
           this.specsData = info.attrs.value;
           that.specsData.forEach(function (item, index) {
-            that.$set(that.specsData[index], "id", index);
+            that.$set(that.specsData[index], 'id', index);
           });
           let data = info.attrs;
           let attr = [];
@@ -815,9 +768,7 @@ export default {
             this.formValidate.id = Number(this.$route.params.id) || 0;
             this.submitOpen = true;
             this.formValidate.virtual = parseInt(
-              ((this.formValidate.people - this.formValidate.virtualPeople) /
-                this.formValidate.people) *
-                100
+              ((this.formValidate.people - this.formValidate.virtualPeople) / this.formValidate.people) * 100,
             );
             presellCreatApi(this.formValidate)
               .then(async (res) => {
@@ -825,7 +776,7 @@ export default {
                 this.$Message.success(res.msg);
                 setTimeout(() => {
                   this.$router.push({
-                    path: "/admin/marketing/presell/index",
+                    path: '/admin/marketing/presell/index',
                   });
                 }, 500);
               })
@@ -841,36 +792,33 @@ export default {
         this.$refs[name].validate((valid) => {
           if (valid) {
             if (that.formValidate.people < 2) {
-              return that.$Message.error("预售人数必须大于2");
+              return that.$Message.error('预售人数必须大于2');
             }
             if (that.formValidate.num < 0) {
-              return that.$Message.error("购买数量限制必须大于0");
+              return that.$Message.error('购买数量限制必须大于0');
             }
             if (!that.formValidate.attrs) {
-              return that.$Message.error("请选择属性规格");
+              return that.$Message.error('请选择属性规格');
             } else {
               for (let index in that.formValidate.attrs) {
                 if (that.formValidate.attrs[index].quota <= 0) {
-                  return that.$Message.error("预售限量必须大于0");
+                  return that.$Message.error('预售限量必须大于0');
                 }
-                if (
-                  this.formValidate.attrs[index].quota >
-                  this.formValidate.attrs[index]["stock"]
-                ) {
-                  return this.$Message.error("预售限量不能超过规格库存");
+                if (this.formValidate.attrs[index].quota > this.formValidate.attrs[index]['stock']) {
+                  return this.$Message.error('预售限量不能超过规格库存');
                 }
               }
             }
             this.current += 1;
           } else {
-            return this.$Message.warning("请完善您的信息");
+            return this.$Message.warning('请完善您的信息');
           }
         });
       } else {
         if (this.formValidate.image) {
           this.current += 1;
         } else {
-          this.$Message.warning("请选择商品");
+          this.$Message.warning('请选择商品');
         }
       }
     },
@@ -885,19 +833,19 @@ export default {
     // 点击商品图
     modalPicTap(tit, picTit, index) {
       this.modalPic = true;
-      this.isChoice = tit === "dan" ? "单选" : "多选";
+      this.isChoice = tit === 'dan' ? '单选' : '多选';
       this.picTit = picTit;
       this.tableIndex = index;
     },
     // 获取单张图片信息
     getPic(pc) {
       switch (this.picTit) {
-        case "danFrom":
+        case 'danFrom':
           this.formValidate.image = pc.att_dir;
           break;
         default:
           if (!!this.formValidate.attrs && this.formValidate.attrs.length) {
-            this.$set(this.specsData[this.tableIndex], "_checked", true);
+            this.$set(this.specsData[this.tableIndex], '_checked', true);
           }
           this.specsData[this.tableIndex].pic = pc.att_dir;
       }
@@ -932,10 +880,10 @@ export default {
     },
     // 首先把div变成可以放置的元素，即重写dragenter/dragover
     handleDragOver(e) {
-      e.dataTransfer.dropEffect = "move";
+      e.dataTransfer.dropEffect = 'move';
     },
     handleDragEnter(e, item) {
-      e.dataTransfer.effectAllowed = "move";
+      e.dataTransfer.effectAllowed = 'move';
       if (item === this.dragging) {
         return;
       }

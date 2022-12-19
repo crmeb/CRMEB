@@ -3,20 +3,10 @@
     <div class="i-layout-page-header header_top">
       <div class="i-layout-page-header fl_header">
         <router-link :to="{ path: '/admin/app/wechat/news_category/index' }"
-          ><Button
-            icon="ios-arrow-back"
-            size="small"
-            type="text"
-            v-show="$route.params.id"
-            >返回</Button
-          ></router-link
+          ><Button icon="ios-arrow-back" size="small" type="text" v-show="$route.params.id">返回</Button></router-link
         >
         <Divider type="vertical" />
-        <span
-          class="ivu-page-header-title mr20"
-          style="padding: 0"
-          v-text="$route.meta.title"
-        ></span>
+        <span class="ivu-page-header-title mr20" style="padding: 0" v-text="$route.meta.title"></span>
       </div>
     </div>
     <Card :bordered="false" dis-hover class="save_from ivu-mt">
@@ -34,39 +24,20 @@
               <div
                 class="news_pic"
                 :style="{
-                  backgroundImage:
-                    'url(' +
-                    (item.image_input ? item.image_input : baseImg) +
-                    ')',
+                  backgroundImage: 'url(' + (item.image_input ? item.image_input : baseImg) + ')',
                   backgroundSize: '100% 100%',
                 }"
               >
-                <Button
-                  type="error"
-                  shape="circle"
-                  icon="md-trash"
-                  @click="del(i)"
-                  v-show="isDel"
-                ></Button>
+                <Button type="error" shape="circle" icon="md-trash" @click="del(i)" v-show="isDel"></Button>
               </div>
               <span class="news_sp">{{ item.title }}</span>
             </div>
-            <div
-              class="news_cent"
-              v-else
-              @click="onSubSave(i)"
-              :class="{ checkClass: i === current }"
-            >
+            <div class="news_cent" v-else @click="onSubSave(i)" :class="{ checkClass: i === current }">
               <span class="news_sp1">{{ item.title }}</span>
               <div class="news_cent_img ivu-mr-8">
                 <img :src="item.image_input ? item.image_input : baseImg" />
               </div>
-              <Button
-                type="error"
-                shape="circle"
-                icon="md-trash"
-                @click="del(i)"
-              ></Button>
+              <Button type="error" shape="circle" icon="md-trash" @click="del(i)"></Button>
             </div>
           </div>
           <!-- <div class="acea-row row-center-wrapper">
@@ -92,32 +63,17 @@
             <Row :gutter="24" type="flex">
               <Col span="24" class="ml40">
                 <FormItem label="标题：" prop="title">
-                  <Input
-                    style="width: 60%"
-                    v-model="saveForm.title"
-                    type="text"
-                    placeholder="请输入文章标题"
-                  />
+                  <Input style="width: 60%" v-model="saveForm.title" type="text" placeholder="请输入文章标题" />
                 </FormItem>
               </Col>
               <Col span="24" class="ml40">
                 <FormItem label="作者：" prop="author">
-                  <Input
-                    style="width: 60%"
-                    v-model="saveForm.author"
-                    type="text"
-                    placeholder="请输入作者名称"
-                  />
+                  <Input style="width: 60%" v-model="saveForm.author" type="text" placeholder="请输入作者名称" />
                 </FormItem>
               </Col>
               <Col span="24" class="ml40">
                 <FormItem label="摘要：" prop="synopsis">
-                  <Input
-                    style="width: 60%"
-                    v-model="saveForm.synopsis"
-                    type="textarea"
-                    placeholder="请输入摘要"
-                  />
+                  <Input style="width: 60%" v-model="saveForm.synopsis" type="textarea" placeholder="请输入摘要" />
                 </FormItem>
               </Col>
               <Col span="24" class="ml40">
@@ -141,12 +97,7 @@
               </Col>
               <Col span="24" class="ml40">
                 <FormItem>
-                  <Button
-                    type="primary"
-                    class="submission"
-                    @click="subFrom('saveForm')"
-                    >提交</Button
-                  >
+                  <Button type="primary" class="submission" @click="subFrom('saveForm')">提交</Button>
                 </FormItem>
               </Col>
               <Modal
@@ -176,25 +127,25 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
-import WangEditor from "@/components/wangEditor/index.vue";
-import uploadPictures from "@/components/uploadPictures";
-import { wechatNewsAddApi, wechatNewsInfotApi } from "@/api/app";
+import { mapState } from 'vuex';
+import WangEditor from '@/components/wangEditor/index.vue';
+import uploadPictures from '@/components/uploadPictures';
+import { wechatNewsAddApi, wechatNewsInfotApi } from '@/api/app';
 export default {
-  name: "newsCategorySave",
+  name: 'newsCategorySave',
   components: { uploadPictures, WangEditor },
   watch: {
     $route(to, from) {
-      if (this.$route.params.id !== "0") {
+      if (this.$route.params.id !== '0') {
         this.info();
       } else {
         this.list = [
           {
-            title: "",
-            author: "",
-            synopsis: "",
-            image_input: "",
-            content: "",
+            title: '',
+            author: '',
+            synopsis: '',
+            image_input: '',
+            content: '',
             id: 0,
           },
         ];
@@ -207,50 +158,46 @@ export default {
       if (this.saveForm.image_input) {
         callback();
       } else {
-        callback(new Error("请上传图文封面"));
+        callback(new Error('请上传图文封面'));
       }
     };
     return {
       myConfig: {
         autoHeightEnabled: false, // 编辑器不自动被内容撑高
         initialFrameHeight: 500, // 初始容器高度
-        initialFrameWidth: "100%", // 初始容器宽度
-        UEDITOR_HOME_URL: "/admin/UEditor/",
-        serverUrl: "",
+        initialFrameWidth: '100%', // 初始容器宽度
+        UEDITOR_HOME_URL: '/admin/UEditor/',
+        serverUrl: '',
       },
       ruleValidate: {
-        title: [{ required: true, message: "请输入标题", trigger: "blur" }],
-        author: [{ required: true, message: "请输入作者", trigger: "blur" }],
-        image_input: [
-          { required: true, validator: validateUpload, trigger: "change" },
-        ],
-        content: [{ required: true, message: "请输入正文", trigger: "change" }],
-        synopsis: [
-          { required: true, message: "请输入文章摘要", trigger: "blur" },
-        ],
+        title: [{ required: true, message: '请输入标题', trigger: 'blur' }],
+        author: [{ required: true, message: '请输入作者', trigger: 'blur' }],
+        image_input: [{ required: true, validator: validateUpload, trigger: 'change' }],
+        content: [{ required: true, message: '请输入正文', trigger: 'change' }],
+        synopsis: [{ required: true, message: '请输入文章摘要', trigger: 'blur' }],
       },
-      isChoice: "单选",
+      isChoice: '单选',
       dragging: null,
       isDel: false,
-      msg: "",
+      msg: '',
       count: [],
-      baseImg: require("../../../../assets/images/bjt.png"),
+      baseImg: require('../../../../assets/images/bjt.png'),
       saveForm: {
-        title: "",
-        author: "",
-        synopsis: "",
-        image_input: "",
-        content: "",
+        title: '',
+        author: '',
+        synopsis: '',
+        image_input: '',
+        content: '',
         id: 0,
       },
       current: 0,
       list: [
         {
-          title: "",
-          author: "",
-          synopsis: "",
-          image_input: "",
-          content: "",
+          title: '',
+          author: '',
+          synopsis: '',
+          image_input: '',
+          content: '',
           id: 0,
         },
       ],
@@ -273,16 +220,16 @@ export default {
     };
   },
   computed: {
-    ...mapState("media", ["isMobile"]),
+    ...mapState('media', ['isMobile']),
     labelWidth() {
       return this.isMobile ? undefined : 120;
     },
     labelPosition() {
-      return this.isMobile ? "top" : "right";
+      return this.isMobile ? 'top' : 'right';
     },
   },
   mounted() {
-    if (this.$route.params.id !== "0") {
+    if (this.$route.params.id !== '0') {
       this.info();
     } else {
       this.saveForm = this.list[this.current];
@@ -305,11 +252,11 @@ export default {
     handleAdd() {
       if (!this.check()) return false;
       let obj = {
-        title: "",
-        author: "",
-        synopsis: "",
-        image_input: "",
-        content: "",
+        title: '',
+        author: '',
+        synopsis: '',
+        image_input: '',
+        content: '',
         id: 0,
       };
       this.list.push(obj);
@@ -319,14 +266,13 @@ export default {
       this.current = i;
       this.list.map((item, index) => {
         /* eslint-disable */
-        if (index === this.current)
-          return (this.saveForm = this.list[this.current]);
+        if (index === this.current) return (this.saveForm = this.list[this.current]);
       });
     },
     // 删除
     del(i) {
       if (i === 0) {
-        this.$Message.warning("不能再删除了");
+        this.$Message.warning('不能再删除了');
       } else {
         this.list.splice(i, 1);
         this.saveForm = {};
@@ -357,7 +303,7 @@ export default {
               this.$Message.success(res.msg);
               setTimeout(() => {
                 this.$router.push({
-                  path: "/admin/app/wechat/news_category/index",
+                  path: '/admin/app/wechat/news_category/index',
                 });
               }, 500);
             })
@@ -372,19 +318,19 @@ export default {
     check() {
       for (let index in this.list) {
         if (!this.list[index].title) {
-          this.$Message.warning("请输入文章的标题");
+          this.$Message.warning('请输入文章的标题');
           return false;
         } else if (!this.list[index].author) {
-          this.$Message.warning("请输入文章的作者");
+          this.$Message.warning('请输入文章的作者');
           return false;
         } else if (!this.list[index].synopsis) {
-          this.$Message.warning("请输入文章的摘要");
+          this.$Message.warning('请输入文章的摘要');
           return false;
         } else if (!this.list[index].image_input) {
-          this.$Message.warning("请输入文章的图文封面");
+          this.$Message.warning('请输入文章的图文封面');
           return false;
         } else if (!this.list[index].content) {
-          this.$Message.warning("请输入文章的内容");
+          this.$Message.warning('请输入文章的内容');
           return false;
         } else {
           return true;

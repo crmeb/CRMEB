@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -15,7 +15,7 @@ namespace app\services\user;
 
 use app\dao\user\UserInvoiceDao;
 use app\services\BaseServices;
-use think\exception\ValidateException;
+use crmeb\exceptions\ApiException;
 
 
 /**
@@ -79,16 +79,16 @@ class UserInvoiceServices extends BaseServices
     {
         $invoice = $this->getInvoice($id, $uid);
         if (!$invoice) {
-            throw new ValidateException('发票不存在或删除');
+            throw new ApiException(100026);
         }
         $invoice_func = $this->invoiceFuncStatus();
         if (!$invoice_func['invoice_func']) {
-            throw new ValidateException('暂未开启开票，请联系管理员');
+            throw new ApiException(410280);
         }
         //专用发票
         if ($invoice['type'] == 2) {
             if (!$invoice_func['special_invoice']) {
-                throw new ValidateException('暂未开启专用发票，请联系管理员');
+                throw new ApiException(410281);
             }
         }
         return $invoice;
@@ -142,7 +142,7 @@ class UserInvoiceServices extends BaseServices
         $invoice = $this->dao->get(['uid' => $uid, 'name' => $data['name'], 'drawer_phone' => $data['drawer_phone'], 'is_del' => 0]);
         if ($id) {
             if ($invoice && $id != $invoice['id']) {
-                throw new ValidateException('该发票已经存在');
+                throw new ApiException(410282);
             }
             if ($this->dao->update($id, $data, 'id')) {
                 if ($data['is_default']) {
@@ -150,11 +150,11 @@ class UserInvoiceServices extends BaseServices
                 }
                 return ['type' => 'edit', 'msg' => '修改发票成功', 'data' => []];
             } else {
-                throw new ValidateException('修改失败或者您没有修改什么');
+                throw new ApiException(100007);
             }
         } else {
             if ($invoice) {
-                throw new ValidateException('该发票已经存在');
+                throw new ApiException(410282);
             }
             if ($add_invoice = $this->dao->save($data)) {
                 $id = (int)$add_invoice['id'];
@@ -163,7 +163,7 @@ class UserInvoiceServices extends BaseServices
                 }
                 return ['type' => 'add', 'msg' => '添加发票成功', 'data' => ['id' => $id]];
             } else {
-                throw new ValidateException('添加失败');
+                throw new ApiException(100022);
             }
         }
     }
@@ -179,13 +179,13 @@ class UserInvoiceServices extends BaseServices
     public function setDefaultInvoice(int $uid, int $id)
     {
         if (!$invoice = $this->getInvoice($id)) {
-            throw new ValidateException('发票不存在');
+            throw new ApiException(100026);
         }
         if ($invoice['uid'] != $uid) {
-            throw new ValidateException('数据错误');
+            throw new ApiException(100101);
         }
         if (!$this->dao->setDefault($uid, $id, $invoice['header_type'], $invoice['type'])) {
-            throw new ValidateException('设置默认发票失败');
+            throw new ApiException(410283);
         }
         return true;
     }
@@ -199,10 +199,10 @@ class UserInvoiceServices extends BaseServices
     {
         if ($invoice = $this->getInvoice($id)) {
             if ($invoice['uid'] != $uid) {
-                throw new ValidateException('数据错误');
+                throw new ApiException(100101);
             }
             if (!$this->dao->update($id, ['is_del' => 1])) {
-                throw new ValidateException('删除失败,请稍候再试!');
+                throw new ApiException(100008);
             }
         }
         return true;

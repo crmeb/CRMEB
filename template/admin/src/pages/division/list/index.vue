@@ -1,13 +1,5 @@
 <template>
   <div>
-    <div class="i-layout-page-header">
-      <div class="i-layout-page-header">
-        <span
-          class="ivu-page-header-title mr20"
-          v-text="$route.meta.title"
-        ></span>
-      </div>
-    </div>
     <Card :bordered="false" dis-hover class="ivu-mt">
       <Form
         ref="formValidate"
@@ -37,9 +29,7 @@
         <Col :xs="24" :sm="24" ref="rightBox">
           <Row type="flex">
             <Col v-bind="grid">
-              <Button type="primary" @click="groupAdd('0')" class="mr20"
-                >添加事业部</Button
-              >
+              <Button type="primary" @click="groupAdd('0')" class="mr20">添加事业部</Button>
             </Col>
           </Row>
           <Table
@@ -59,20 +49,8 @@
             </template>
             <template slot-scope="{ row, index }" slot="nickname">
               <div class="acea-row">
-                <Icon
-                  type="md-male"
-                  v-show="row.sex === '男'"
-                  color="#2db7f5"
-                  size="15"
-                  class="mr5"
-                />
-                <Icon
-                  type="md-female"
-                  v-show="row.sex === '女'"
-                  color="#ed4014"
-                  size="15"
-                  class="mr5"
-                />
+                <Icon type="md-male" v-show="row.sex === '男'" color="#2db7f5" size="15" class="mr5" />
+                <Icon type="md-female" v-show="row.sex === '女'" color="#ed4014" size="15" class="mr5" />
                 <div v-text="row.nickname"></div>
               </div>
               <!--                    <div v-show="row.vip_name" class="vipName">{{row.vip_name}}</div>-->
@@ -117,14 +95,7 @@
         </Col>
       </Row>
     </Card>
-    <Modal
-      v-model="staffModal"
-      scrollable
-      title="代理商列表"
-      class="order_box"
-      width="800"
-      footer-hide
-    >
+    <Modal v-model="staffModal" scrollable title="代理商列表" class="order_box" width="800" footer-hide>
       <Table
         :columns="columns2"
         :data="clerkLists"
@@ -142,20 +113,8 @@
         </template>
         <template slot-scope="{ row, index }" slot="nickname">
           <div class="acea-row">
-            <Icon
-              type="md-male"
-              v-show="row.sex === '男'"
-              color="#2db7f5"
-              size="15"
-              class="mr5"
-            />
-            <Icon
-              type="md-female"
-              v-show="row.sex === '女'"
-              color="#ed4014"
-              size="15"
-              class="mr5"
-            />
+            <Icon type="md-male" v-show="row.sex === '男'" color="#2db7f5" size="15" class="mr5" />
+            <Icon type="md-female" v-show="row.sex === '女'" color="#ed4014" size="15" class="mr5" />
             <div v-text="row.nickname"></div>
           </div>
           <!--                    <div v-show="row.vip_name" class="vipName">{{row.vip_name}}</div>-->
@@ -182,11 +141,11 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
-import { regionList, regionFrom, isShowApi, clerkList } from "@/api/agent";
-import { formatDate } from "@/utils/validate";
+import { mapState } from 'vuex';
+import { regionList, regionFrom, isShowApi, clerkList } from '@/api/agent';
+import { formatDate } from '@/utils/validate';
 export default {
-  name: "agent_extra",
+  name: 'agent_extra',
   data() {
     return {
       grid: {
@@ -202,95 +161,95 @@ export default {
       formInline: {
         uid: 0,
         proportion: 0,
-        image: "",
+        image: '',
       },
       columns2: [
         {
-          title: "用户UID",
-          key: "uid",
+          title: '用户UID',
+          key: 'uid',
           width: 80,
         },
         {
-          title: "头像",
-          slot: "avatars",
+          title: '头像',
+          slot: 'avatars',
           minWidth: 60,
         },
         {
-          title: "姓名",
-          slot: "nickname",
+          title: '姓名',
+          slot: 'nickname',
           minWidth: 150,
         },
         {
-          title: "邀请码",
-          key: "division_invite",
+          title: '邀请码',
+          key: 'division_invite',
           minWidth: 150,
         },
         {
-          title: "分销比例",
-          slot: "division_percent",
+          title: '分销比例',
+          slot: 'division_percent',
           minWidth: 100,
         },
         {
-          title: "用户数量",
-          key: "user_count",
+          title: '用户数量',
+          key: 'user_count',
           minWidth: 100,
         },
         {
-          title: "订单数量",
-          key: "order_count",
+          title: '订单数量',
+          key: 'order_count',
           minWidth: 100,
         },
       ],
       columns: [
         {
-          title: "用户UID",
-          key: "uid",
+          title: '用户UID',
+          key: 'uid',
           width: 80,
         },
         {
-          title: "头像",
-          slot: "avatars",
+          title: '头像',
+          slot: 'avatars',
           minWidth: 60,
         },
         {
-          title: "姓名",
-          slot: "nickname",
+          title: '姓名',
+          slot: 'nickname',
           minWidth: 150,
         },
         {
-          title: "邀请码",
-          key: "division_invite",
+          title: '邀请码',
+          key: 'division_invite',
           minWidth: 150,
         },
         {
-          title: "分销比例",
-          slot: "division_percent",
+          title: '分销比例',
+          slot: 'division_percent',
           minWidth: 100,
         },
         {
-          title: "代理商数量",
-          key: "agent_count",
+          title: '代理商数量',
+          key: 'agent_count',
           minWidth: 100,
         },
         {
-          title: "订单数量",
-          key: "order_count",
+          title: '订单数量',
+          key: 'order_count',
           minWidth: 100,
         },
         {
-          title: "截止时间",
-          slot: "division_end_time",
+          title: '截止时间',
+          slot: 'division_end_time',
           minWidth: 100,
         },
         {
-          title: "状态",
-          slot: "status",
+          title: '状态',
+          slot: 'status',
           minWidth: 100,
         },
         {
-          title: "操作",
-          slot: "action",
-          fixed: "right",
+          title: '操作',
+          slot: 'action',
+          fixed: 'right',
           minWidth: 120,
         },
       ],
@@ -300,7 +259,7 @@ export default {
       formValidate: {
         page: 1,
         limit: 15,
-        keyword: "",
+        keyword: '',
       },
       staffModal: false,
       clerkReqData: {
@@ -315,17 +274,17 @@ export default {
     formatDate(time) {
       if (time !== 0) {
         let date = new Date(time * 1000);
-        return formatDate(date, "yyyy-MM-dd hh:mm");
+        return formatDate(date, 'yyyy-MM-dd hh:mm');
       }
     },
   },
   computed: {
-    ...mapState("media", ["isMobile"]),
+    ...mapState('media', ['isMobile']),
     labelWidth() {
       return this.isMobile ? undefined : 75;
     },
     labelPosition() {
-      return this.isMobile ? "top" : "right";
+      return this.isMobile ? 'top' : 'right';
     },
   },
   mounted() {
@@ -401,7 +360,7 @@ export default {
     del(row, tit, num) {
       let delfromData = {
         title: tit,
-        method: "DELETE",
+        method: 'DELETE',
         uid: row.uid,
         url: `agent/division/del/1/${row.uid}`,
       };
@@ -417,7 +376,6 @@ export default {
   },
 };
 </script>
-
 
 <style scoped lang="stylus">
 .ivu-form-item {

@@ -3,9 +3,7 @@
     <div class="i-layout-page-header">
       <span class="ivu-page-header-title mr20">{{ $route.meta.title }}</span>
       <div style="float: right">
-        <Button class="bnt" type="primary" @click="onsubmit('formValidate')"
-          >保存</Button
-        >
+        <Button class="bnt" type="primary" @click="onsubmit('formValidate')">保存</Button>
       </div>
     </div>
     <div class="box-wrapper">
@@ -56,12 +54,12 @@
 </template>
 
 <script>
-import WangEditor from "@/components/wangEditor/index.vue";
-import Setting from "@/setting";
-import { getColorChange } from "@/api/diy";
-import { mapState } from "vuex";
-import editFrom from "@/components/from/from";
-import { productGetTempKeysApi, uploadType } from "@/api/product";
+import WangEditor from '@/components/wangEditor/index.vue';
+import Setting from '@/setting';
+import { getColorChange } from '@/api/diy';
+import { mapState } from 'vuex';
+import editFrom from '@/components/from/from';
+import { productGetTempKeysApi, uploadType } from '@/api/product';
 import {
   groupAllApi,
   groupDataListApi,
@@ -74,14 +72,14 @@ import {
   getAgreement,
   setAgreement,
   getOpenAdv,
-} from "@/api/system";
-import draggable from "vuedraggable";
-import uploadPictures from "@/components/uploadPictures";
-import linkaddress from "@/components/linkaddress";
-import { getCookies } from "@/libs/util";
+} from '@/api/system';
+import draggable from 'vuedraggable';
+import uploadPictures from '@/components/uploadPictures';
+import linkaddress from '@/components/linkaddress';
+import { getCookies } from '@/libs/util';
 
 export default {
-  name: "list",
+  name: 'list',
   components: {
     editFrom,
     draggable,
@@ -92,37 +90,37 @@ export default {
   computed: {
     bgcolors() {
       return {
-        "--color-theme": this.bgCol,
+        '--color-theme': this.bgCol,
       };
     },
     labelWidth() {
       return this.isMobile ? undefined : 120;
     },
     labelPosition() {
-      return this.isMobile ? "top" : "right";
+      return this.isMobile ? 'top' : 'right';
     },
-    ...mapState("admin/layout", ["menuCollapse"]),
+    ...mapState('admin/layout', ['menuCollapse']),
   },
   data() {
     return {
       formValidate: {
-        content: "",
+        content: '',
       },
       ruleValidate: {},
       myConfig: {
         autoHeightEnabled: false, // 编辑器不自动被内容撑高
         initialFrameHeight: 500, // 初始容器高度
-        initialFrameWidth: "100%", // 初始容器宽度
-        UEDITOR_HOME_URL: "/admin/UEditor/",
-        serverUrl: "",
+        initialFrameWidth: '100%', // 初始容器宽度
+        UEDITOR_HOME_URL: '/admin/UEditor/',
+        serverUrl: '',
       },
       a: 1, //判断的隐私协议
       guide: 0,
       bgimg: 0,
       columns1: [],
-      bgCol: "",
-      name: "",
-      content: "",
+      bgCol: '',
+      name: '',
+      content: '',
       grid: {
         xl: 7,
         lg: 7,
@@ -133,8 +131,8 @@ export default {
       loading: false,
       sginList: [],
       progress: 0, // 进度条默认0
-      url: "",
-      BaseURL: Setting.apiBaseURL.replace(/adminapi/, ""),
+      url: '',
+      BaseURL: Setting.apiBaseURL.replace(/adminapi/, ''),
       pageId: 0,
       groupAll: [],
       activeIndex: 0,
@@ -143,11 +141,11 @@ export default {
       cmsList: [],
       loadingExist: false,
       formItem: {
-        time: "",
-        type: "pic",
+        time: '',
+        type: 'pic',
         status: 1,
         value: [],
-        video_link: "",
+        video_link: '',
       },
       header: {},
       type: 0,
@@ -168,26 +166,26 @@ export default {
       this.content = data;
     },
     color() {
-      getColorChange("color_change").then((res) => {
+      getColorChange('color_change').then((res) => {
         switch (res.data.status) {
           case 1:
-            this.bgCol = "#3875EA";
+            this.bgCol = '#3875EA';
             this.bgimg = 1;
             break;
           case 2:
-            this.bgCol = "#00C050";
+            this.bgCol = '#00C050';
             this.bgimg = 2;
             break;
           case 3:
-            this.bgCol = "#E93323";
+            this.bgCol = '#E93323';
             this.bgimg = 3;
             break;
           case 4:
-            this.bgCol = "#FF448F";
+            this.bgCol = '#FF448F';
             this.bgimg = 4;
             break;
           case 5:
-            this.bgCol = "#FE5C2D";
+            this.bgCol = '#FE5C2D';
             this.bgimg = 5;
             break;
         }
@@ -199,7 +197,7 @@ export default {
     },
     getListHeader() {
       this.loading = true;
-      groupDataHeaderApi({ config_name: this.name }, "setting/sign_data/header")
+      groupDataHeaderApi({ config_name: this.name }, 'setting/sign_data/header')
         .then((res) => {
           let data = res.data;
           let header = data.header;
@@ -473,4 +471,3 @@ export default {
   margin: 20px;
 }
 </style>
-	

@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -36,12 +36,12 @@ class MealValidata extends Validate
      * @var array
      */
     protected $message = [
-        'meal_id.require' => '请传入套餐id',
-        'meal_id.number' => '套餐id必须为数字',
-        'price.require' => '请填写套餐金额',
-        'num.require' => '请填写购买数量',
-        'num.number' => '购买数量必须为数字',
-        'type.require' => '请填写购买套餐类型'
+        'meal_id.require' => '400013',
+        'meal_id.number' => '400014',
+        'price.require' => '400015',
+        'num.require' => '400016',
+        'num.number' => '400017',
+        'type.require' => '400018'
     ];
 
 }

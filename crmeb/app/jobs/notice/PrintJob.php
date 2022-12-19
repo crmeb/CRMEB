@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -28,19 +28,21 @@ class PrintJob extends BaseJobs
     use QueueTrait;
 
     /**
-     * 发送短信
-     * @param $switch
-     * @param $adminList
+     * 小票打印
+     * @param $type
+     * @param $configData
      * @param $order
-     * @return bool
+     * @param $product
+     * @return bool|void
      */
-    public function doJob($type, $configdata, $order, $product)
+    public function doJob($type, $configData, $order, $product)
     {
 
         try {
-            $printer = new Printer($type, $configdata);
+            $printer = new Printer($type, $configData);
             $printer->setPrinterContent([
                 'name' => sys_config('site_name'),
+                'url' => sys_config('site_url'),
                 'orderInfo' => is_object($order) ? $order->toArray() : $order,
                 'product' => $product
             ])->startPrinter();

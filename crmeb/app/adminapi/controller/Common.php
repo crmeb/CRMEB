@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -15,11 +15,13 @@ use app\services\system\SystemAuthServices;
 use app\services\order\StoreOrderServices;
 use app\services\product\product\StoreProductServices;
 use app\services\product\product\StoreProductReplyServices;
+use app\services\system\UpgradeServices;
 use app\services\user\UserExtractServices;
 use app\services\product\sku\StoreProductAttrValueServices;
 use app\services\system\SystemMenusServices;
 use app\services\user\UserServices;
 use crmeb\services\HttpService;
+use think\facade\Cache;
 
 /**
  * 公共接口基类 主要存放公共接口
@@ -42,70 +44,53 @@ class Common extends AuthController
     }
 
     /**
+     * 获取授权信息
      * @return mixed
      */
     public function auth()
     {
         $version = get_crmeb_version();
-
+        $host = $this->request->host();
+        // 正常域名
         $res = HttpService::request('http://authorize.crmeb.net/api/auth_cert_query', 'post', [
-            'domain_name' => $this->request->host(),
-            'label' => 19,
+            'domain_name' => $host,
+            'label' => 34,
             'version' => $version
         ]);
         $res = $res ? json_decode($res, true) : [];
+
+        //兼容test.
         if ($res['data']['status'] !== 1) {
-            $host = $this->request->host();
-            $data = explode('.', $host);
-            $n = count($data);
-            $preg = '/[\w].+\.(com|net|org|gov|edu)\.cn$/';
-            if (($n > 2) && preg_match($preg, $host)) {
-                //双后缀取后3位
-                $url = $data[$n - 3] . '.' . $data[$n - 2] . '.' . $data[$n - 1];
-            } else {
-                //非双后缀取后两位
-                $url = $data[$n - 2] . '.' . $data[$n - 1];
-            }
+            $host = str_replace('test.', '', $host);
             $res = HttpService::request('http://authorize.crmeb.net/api/auth_cert_query', 'post', [
-                'domain_name' => $url,
-                'label' => 19,
+                'domain_name' => $host,
+                'label' => 34,
                 'version' => $version
             ]);
             $res = $res ? json_decode($res, true) : [];
         }
+
+        //如果是主域名兼容www.
         if ($res['data']['status'] !== 1) {
+            $host = str_replace('www.', '', $host);
             $res = HttpService::request('http://authorize.crmeb.net/api/auth_cert_query', 'post', [
-                'domain_name' => $this->request->host(),
-                'label' => 1,
+                'domain_name' => $host,
+                'label' => 34,
                 'version' => $version
             ]);
             $res = $res ? json_decode($res, true) : [];
         }
-        if ($res['data']['status'] !== 1) {
-            $host = $this->request->host();
-            $data = explode('.', $host);
-            $n = count($data);
-            $preg = '/[\w].+\.(com|net|org|gov|edu)\.cn$/';
-            if (($n > 2) && preg_match($preg, $host)) {
-                //双后缀取后3位
-                $url = $data[$n - 3] . '.' . $data[$n - 2] . '.' . $data[$n - 1];
-            } else {
-                //非双后缀取后两位
-                $url = $data[$n - 2] . '.' . $data[$n - 1];
-            }
-            $res = HttpService::request('http://authorize.crmeb.net/api/auth_cert_query', 'post', [
-                'domain_name' => $url,
-                'label' => 1,
-                'version' => $version
-            ]);
-            $res = $res ? json_decode($res, true) : [];
-        }
+
+        //升级状态
+        /** @var UpgradeServices $upgradeServices */
+        $upgradeServices = app()->make(UpgradeServices::class);
+        $upgradeStatus = $upgradeServices->getUpgradeStatus();
+
         $status = $res['data']['status'] ?? -9;
-        $defaultRecordCode = '00000000';
         switch ((int)$status) {
             case 1:
                 //审核成功
-                $authCode = $res['data']['auth_code'] ?? $defaultRecordCode;
+                $authCode = $res['data']['auth_code'] ?? '';
                 $autoContent = $res['data']['auto_content'] ?? '';
                 try {
                     /** @var SystemConfigServices $services */
@@ -124,11 +109,11 @@ class Common extends AuthController
                         ]);
                     }
                 } catch (\Throwable $e) {
-                    return app('json')->fail('授权成功，写入数据库失败，请检查数据库链接配置');
+                    return app('json')->fail(400330);
                 }
-                return app('json')->success(['status' => 1, 'authCode' => $authCode, 'day' => 0]);
+                return app('json')->success(['status' => 1, 'copyright' => $res['data']['copyright'], 'authCode' => $authCode, 'day' => 0, 'force_reminder' => $upgradeStatus['force_reminder'] ?? 0]);
             default:
-                return app('json')->success(['status' => -9]);
+                return app('json')->success(['status' => -9, 'force_reminder' => $upgradeStatus['force_reminder'] ?? 0]);
         }
     }
 
@@ -138,7 +123,6 @@ class Common extends AuthController
      */
     public function auth_apply(SystemAuthServices $services)
     {
-        $version = get_crmeb_version();
         $data = $this->request->postMore([
             ['company_name', ''],
             ['domain_name', ''],
@@ -148,34 +132,23 @@ class Common extends AuthController
             ['captcha', ''],
         ]);
         if (!$data['company_name']) {
-            return app('json')->fail('请填写公司名称');
+            return app('json')->fail(400331);
         }
         if (!$data['domain_name']) {
-            return app('json')->fail('请填写授权域名');
+            return app('json')->fail(400332);
         }
 
         if (!$data['phone']) {
-            return app('json')->fail('请填写手机号码');
+            return app('json')->fail(400333);
         }
         if (!$data['order_id']) {
-            return app('json')->fail('请填写订单id');
+            return app('json')->fail(400334);
         }
         if (!$data['captcha']) {
-            return app('json')->fail('请填写验证码');
+            return app('json')->fail(400137);
         }
-        $datas = explode('.', $data['domain_name']);
-        $n = count($datas);
-        $preg = '/[\w].+\.(com|net|org|gov|edu)\.cn$/';
-        if (($n > 2) && preg_match($preg, $data['domain_name'])) {
-            //双后缀取后3位
-            $domain_name = $datas[$n - 3] . '.' . $datas[$n - 2] . '.' . $datas[$n - 1];
-        } else {
-            //非双后缀取后两位
-            $domain_name = $datas[$n - 2] . '.' . $datas[$n - 1];
-        }
-        $data['domain_name'] = $domain_name;
         $services->authApply($data);
-        return app('json')->success("申请授权成功!");
+        return app('json')->success(400335);
 
     }
 
@@ -380,6 +353,90 @@ class Common extends AuthController
             }
         }
         return app('json')->success(sort_list_tier($data));
+    }
+
+    /**
+     * 查询购买版权
+     * @return mixed
+     */
+    public function copyright()
+    {
+        try {
+            if (Cache::has('nncnL_crmeb_copyright')) {
+                $copyrightContext = Cache::get('nncnL_crmeb_copyright');
+            } else {
+                /** @var SystemConfigServices $services */
+                $services = app()->make(SystemConfigServices::class);
+                $copyrightContext = $services->value(['menu_name' => 'nncnL_crmeb_copyright'], 'value');
+                $copyrightContext = $copyrightContext ? json_decode($copyrightContext, true) : null;
+                Cache::set('nncnL_crmeb_copyright', $copyrightContext, 3600);
+            }
+
+            if (Cache::has('nncnL_crmeb_copyright_image')) {
+                $copyrightImage = Cache::get('nncnL_crmeb_copyright_image');
+            } else {
+                /** @var SystemConfigServices $services */
+                $services = app()->make(SystemConfigServices::class);
+                $copyrightImage = $services->value(['menu_name' => 'nncnL_crmeb_copyright_image'], 'value');
+                $copyrightImage = $copyrightImage ? json_decode($copyrightImage, true) : null;
+                Cache::set('nncnL_crmeb_copyright_image', $copyrightImage, 3600);
+            }
+        } catch (\Throwable $e) {
+            $copyrightContext = '';
+            $copyrightImage = '';
+        }
+        return app('json')->success(compact('copyrightContext', 'copyrightImage'));
+    }
+
+    /**
+     * 保存版权
+     * @return mixed
+     */
+    public function saveCopyright()
+    {
+        [$copyright, $copyrightImg] = $this->request->postMore(['copyright', 'copyright_img',], true);
+
+        /** @var SystemConfigServices $services */
+        $services = app()->make(SystemConfigServices::class);
+        if ($services->count(['menu_name' => 'nncnL_crmeb_copyright'])) {
+            $services->update([
+                'menu_name' => 'nncnL_crmeb_copyright'
+            ], [
+                'value' => json_encode($copyright)
+            ]);
+        } else {
+            $services->save([
+                'menu_name' => 'nncnL_crmeb_copyright',
+                'type' => 'text',
+                'input_type' => 'input',
+                'config_tab_id' => 1,
+                'value' => json_encode($copyright),
+                'status' => 2,
+                'info' => ''
+            ]);
+        }
+
+        if ($services->count(['menu_name' => 'nncnL_crmeb_copyright_image'])) {
+            $services->update([
+                'menu_name' => 'nncnL_crmeb_copyright_image'
+            ], [
+                'value' => json_encode($copyrightImg)
+            ]);
+        } else {
+            $services->save([
+                'menu_name' => 'nncnL_crmeb_copyright_image',
+                'type' => 'text',
+                'input_type' => 'input',
+                'config_tab_id' => 1,
+                'value' => json_encode($copyrightImg),
+                'status' => 2,
+                'info' => ''
+            ]);
+        }
+
+        Cache::set('nncnL_crmeb_copyright', $copyright, 3600);
+        Cache::set('nncnL_crmeb_copyright_image', $copyrightImg, 3600);
+        return app('json')->success(100000);
     }
 
 

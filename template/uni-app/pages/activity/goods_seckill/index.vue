@@ -7,7 +7,7 @@
 			</view>
 			<view class="seckillList acea-row row-between-wrapper">
 				<view class="priceTag">
-					<image src="/static/images/priceTag.png"></image>
+					<image src="../static/priceTag.png"></image>
 				</view>
 				<view class='timeLsit'>
 					<scroll-view class="scroll-view_x" scroll-x scroll-with-animation :scroll-left="scrollLeft"
@@ -16,7 +16,7 @@
 							<view @tap='settimeList(item,index)' class='item' :class="active == index?'on':''"
 								:id='"sort"+index'>
 								<view class='time'>{{item.time}}</view>
-								<view class="state">{{item.state}}</view>
+								<view class="state">{{$t(item.state)}}</view>
 							</view>
 						</block>
 					</scroll-view>
@@ -30,27 +30,28 @@
 						</view>
 						<view class='text acea-row row-column-around'>
 							<view class='name line1'>{{item.title}}</view>
-							<view class='money'>￥
+							<view class='money'>{{$t(`￥`)}}
 								<text class='num font-color'>{{item.price}}</text>
-								<text class="y_money">￥{{item.ot_price}}</text>
+								<text class="y_money">{{$t(`￥`)}}{{item.ot_price}}</text>
 							</view>
-							<view class="limit">限量 <text
-									class="limitPrice">{{item.quota_show}}{{item.unit_name || ''}}</text></view>
+							<view class="limit">{{$t(`限量`)}} <text
+									class="limitPrice">{{item.quota_show}}{{$t(item.unit_name) || ''}}</text></view>
 							<view class="progress">
 								<view class='bg-reds' :style="'width:'+item.percent+'%;'"></view>
-								<view class='piece'>已抢{{item.percent}}%</view>
+								<view class='piece'>{{$t(`已抢`)}}{{item.percent}}%</view>
 							</view>
 						</view>
-						<view class='grab bg-color' v-if="status == 1">马上抢</view>
-						<view class='grab bg-color' v-else-if="status == 2">未开始</view>
-						<view class='grab bg-color-hui' v-else>已结束</view>
+						<view class='grab bg-color' v-if="status == 1">{{$t(`抢购中`)}}</view>
+						<view class='grab bg-color' v-else-if="status == 2">{{$t(`未开始`)}}</view>
+						<view class='grab bg-color-hui' v-else>{{$t(`已结束`)}}</view>
 					</view>
 				</block>
 			</view>
 		</view>
 		<view class='noCommodity' v-if="seckillList.length == 0 && (page != 1 || active== 0)">
-			<view class='pictrue'>
-				<image src='/static/images/noShopper.png'></image>
+			<view class='emptyBox'>
+				<image :src="imgHost + '/statics/images/no-thing.png'"></image>
+				<view class="tips">{{$t(`暂无商品，去看点别的吧`)}}</view>
 			</view>
 		</view>
 		<!-- #ifndef MP -->
@@ -66,6 +67,7 @@
 	} from '../../../api/activity.js';
 	import home from '@/components/home/index.vue'
 	import colors from '@/mixins/color.js'
+	import {HTTP_REQUEST_URL} from '@/config/app';
 	export default {
 		components: {
 			home
@@ -73,6 +75,7 @@
 		mixins: [colors],
 		data() {
 			return {
+				imgHost:HTTP_REQUEST_URL,
 				topImage: '',
 				seckillList: [],
 				timeList: [],
@@ -171,9 +174,26 @@
 	}
 </script>
 
-<style>
+<style lang="scss">
 	page {
 		background-color: #F5F5F5 !important;
+	}
+	
+	.noCommodity {
+		background-color: #fff;
+		padding-bottom: 30rpx;
+		.emptyBox{
+			text-align: center;
+			padding-top: 20rpx;
+			.tips{
+				color: #aaa;
+				font-size: 26rpx;
+			}
+			image {
+				width: 414rpx;
+				height: 304rpx;
+			}
+		}
 	}
 
 	.flash-sale .header {
@@ -221,6 +241,7 @@
 	}
 
 	.flash-sale .timeLsit .item .time {
+		width: 120rpx;
 		font-size: 36rpx;
 		font-weight: 600;
 		color: #333;
@@ -231,7 +252,7 @@
 	}
 
 	.flash-sale .timeLsit .item.on .state {
-		width: 90rpx;
+		width: 120rpx;
 		height: 30rpx;
 		border-radius: 15rpx;
 		background: var(--view-theme);

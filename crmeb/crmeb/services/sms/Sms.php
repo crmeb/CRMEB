@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -13,7 +13,7 @@ namespace crmeb\services\sms;
 
 use crmeb\basic\BaseManager;
 use crmeb\services\AccessTokenServeService;
-use crmeb\services\sms\storage\Yunxin;
+use crmeb\services\sms\storage\yihaotong;
 use think\Container;
 use think\facade\Config;
 
@@ -21,7 +21,7 @@ use think\facade\Config;
 /**
  * Class Sms1
  * @package crmeb\services\sms
- * @mixin Yunxin
+ * @mixin yihaotong
  */
 class Sms extends BaseManager
 {
@@ -38,9 +38,8 @@ class Sms extends BaseManager
      */
     protected function getDefaultDriver()
     {
-        return Config::get('sms.default', 'yunxin');
+        return Config::get('sms.default');
     }
-
 
     /**
      * 获取类的实例
@@ -58,8 +57,8 @@ class Sms extends BaseManager
             $this->config = Config::get($this->configFile . '.stores.' . $this->name, []);
         }
 
-        $handleAccessToken = new AccessTokenServeService($this->config['account'] ?? '', $this->config['secret'] ?? '');
-        $handle = Container::getInstance()->invokeClass($class, [$this->name, $handleAccessToken, $this->configFile]);
+        $handleAccessToken = new AccessTokenServeService($this->config['sms_account'] ?? '', $this->config['sms_token'] ?? '');
+        $handle = Container::getInstance()->invokeClass($class, [$this->name, $handleAccessToken, $this->configFile, $this->config]);
         $this->config = [];
         return $handle;
     }

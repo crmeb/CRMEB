@@ -3,8 +3,8 @@
 	<view v-show="!isSortType">
 		<view :style="[{'margin-top': mbConfig + 'rpx'},{'background':bg}]" v-if="liveList.length > 0" style="padding-bottom: 20rpx;">
 			<view class="title-box">
-				<text>推荐好货</text>
-				<navigator hover-class="none" url="/pages/live_list/index" class="more">更多<text class="iconfont icon-jiantou"></text></navigator>
+				<text>{{$t(`推荐好货`)}}</text>
+				<navigator hover-class="none" url="/pages/columnGoods/live_list/index" class="more">{{$t(`更多`)}}<text class="iconfont icon-jiantou"></text></navigator>
 			</view>
 			<!--  -->
 			<block v-if="listStyle == 0">
@@ -12,16 +12,16 @@
 					<navigator class="live-item-a" v-for="(item,index) in liveList" :key="index" :url="'plugin-private://wx2b03c6e691cd7370/pages/live-player-plugin?room_id=' + item.room_id+'&custom_params='+custom_params" hover-class="none" :style="[{'box-shadow':`0px 1px 20px ${boxShadow}`}]">
 						<view class="img-box">
 							<view class="label bgblue" v-if="item.live_status == 102">
-								<view class="txt">预告</view>
+								<view class="txt">{{$t(`预告`)}}</view>
 								<view class="msg">{{item.show_time}}</view>
 							</view>
 							<view class="label bggary" v-if="item.live_status==103">
 								<image src="/static/images/live-02.png" mode="" style="width: 20rpx; height: 20rpx;"></image>
-								<text>回放</text>
+								<text>{{$t(`回放`)}}</text>
 							</view>
 							<view class="label bgred" v-if="item.live_status==101">
 								<image src="/static/images/live-01.png" mode="" style="width: 21rpx; height: 22rpx;"></image>
-								<text>进行中</text>
+								<text>{{$t(`进行中`)}}</text>
 							</view>
 							<image :src="item.share_img"></image>
 						</view>
@@ -35,13 +35,13 @@
 								<block v-if="item.goods.length <= 3">
 									<view class="goods-item" v-for="(goods,index) in item.goods" :key="index">
 										<image :src="goods.cover_img" alt="">
-										<text class="line1">￥{{goods.price}}</text>
+										<text class="line1">{{$t(`￥`)}}{{goods.price}}</text>
 									</view>
 								</block>
 								<block v-if=" item.goods.length > 3">
 									<view class="goods-item" v-for="(goods,index) in item.goods" :key="index" v-if="index<2">
 										<image :src="goods.cover_img" alt="">
-										<text class="line1">￥{{goods.price}}</text>
+										<text class="line1">{{$t(`￥`)}}{{goods.price}}</text>
 									</view>
 									<view class="goods-item">
 										<image :src="item.goods[item.goods.length-1].cover_img" alt="">
@@ -49,7 +49,7 @@
 									</view>
 								</block>
 								<block v-if="item.goods.length == 0">
-									<view class="empty-goods" >暂无商品</view>
+									<view class="empty-goods" >{{$t(`暂无商品`)}}</view>
 								</block>
 							</view>
 						</view>
@@ -61,16 +61,16 @@
 					<navigator class="live-item-b" v-for="(item,index) in liveList" :key="index" :url="'plugin-private://wx2b03c6e691cd7370/pages/live-player-plugin?room_id=' + item.room_id+'&custom_params='+custom_params" hover-class="none" :style="[{'box-shadow':`0px 1px 20px ${boxShadow}`}]">
 						<view class="img-box">
 							<view class="label bgblue" v-if="item.live_status == 102">
-								<view class="txt">预告</view>
+								<view class="txt">{{$t(`预告`)}}</view>
 								<view class="msg">{{item.show_time}}</view>
 							</view>
 							<view class="label bggary" v-if="item.live_status==103">
 								<image src="/static/images/live-02.png" mode="" style="width: 20rpx; height: 20rpx;"></image>
-								<text>回放</text>
+								<text>{{$t(`回放`)}}</text>
 							</view>
 							<view class="label bgred" v-if="item.live_status==101">
 								<image src="/static/images/live-01.png" mode="" style="width: 21rpx; height: 22rpx;"></image>
-								<text>进行中</text>
+								<text>{{$t(`进行中`)}}</text>
 							</view>
 							<image :src="item.share_img"></image>
 						</view>
@@ -89,16 +89,16 @@
 					<navigator class="live-item-a" v-for="(item,index) in liveList" :key="index" :url="'plugin-private://wx2b03c6e691cd7370/pages/live-player-plugin?room_id=' + item.room_id+'&custom_params='+custom_params" hover-class="none" :style="[{'box-shadow':`0px 1px 20px ${boxShadow}`}]">
 						<view class="img-box">
 							<view class="label bgblue" v-if="item.live_status == 102">
-								<view class="txt">预告</view>
+								<view class="txt">{{$t(`预告`)}}</view>
 								<view class="msg">{{item.show_time}}</view>
 							</view>  
 							<view class="label bggary" v-if="item.live_status==103">
 								<image src="/static/images/live-02.png" mode="" style="width: 20rpx; height: 20rpx;"></image>
-								<text>回放</text>
+								<text>{{$t(`回放`)}}</text>
 							</view>
 							<view class="label bgred" v-if="item.live_status==101">
 								<image src="/static/images/live-01.png" mode="" style="width: 21rpx; height: 22rpx;"></image>
-								<text>进行中</text>
+								<text>{{$t(`进行中`)}}</text>
 							</view>
 							<image :src="item.share_img"></image>
 						</view>
@@ -114,13 +114,13 @@
 								<block v-if="item.goods.length <= 2">
 									<view class="goods-item" v-for="(goods,index) in item.goods" :key="index">
 										<image :src="goods.cover_img" alt="">
-										<text class="line1">￥{{goods.price}}</text>
+										<text class="line1">{{$t(`￥`)}}{{goods.price}}</text>
 									</view>
 								</block>
 								<block v-if=" item.goods.length > 2">
 									<view class="goods-item" v-for="(goods,index) in item.goods" :key="index" v-if="index<1">
 										<image :src="goods.cover_img" alt="">
-										<text class="line1">￥{{goods.price}}</text>
+										<text class="line1">{{$t(`￥`)}}{{goods.price}}</text>
 									</view>
 									<view class="goods-item">
 										<image :src="item.goods[item.goods.length-1].cover_img" alt="">
@@ -162,10 +162,10 @@
 				listStyle: this.dataConfig.listStyle.type,
 				mbConfig: this.dataConfig.mbConfig.val,
 				liveList: [],
-				custom_params:''
+				custom_params:'',
 				// bg:this.dataConfig.bg.color[0].item,
 				// boxShadow: this.dataConfig.boxShadow.color[0].item,
-				// limit:this.dataConfig.limit.val
+				limit:this.dataConfig.limit.val
 			};
 		},
 		created() {},

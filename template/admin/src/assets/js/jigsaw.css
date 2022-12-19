@@ -25,7 +25,7 @@
 .sliderContainer_active .slider {
   height: 38px;
   top: -1px;
-  border: 1px solid #1991FA;
+  border: 1px solid #1991fa;
 }
 
 .sliderContainer_active .sliderMask {
@@ -36,14 +36,14 @@
 .sliderContainer_success .slider {
   height: 38px;
   top: -1px;
-  border: 1px solid #52CCBA;
-  background-color: #52CCBA !important;
+  border: 1px solid #52ccba;
+  background-color: #52ccba !important;
 }
 
 .sliderContainer_success .sliderMask {
   height: 38px;
-  border: 1px solid #52CCBA;
-  background-color: #D2F4EF;
+  border: 1px solid #52ccba;
+  background-color: #d2f4ef;
 }
 
 .sliderContainer_success .sliderIcon {
@@ -67,7 +67,9 @@
   top: 14px;
   background-position: 0 -82px !important;
 }
-.sliderContainer_active .sliderText, .sliderContainer_success .sliderText, .sliderContainer_fail .sliderText {
+.sliderContainer_active .sliderText,
+.sliderContainer_success .sliderText,
+.sliderContainer_fail .sliderText {
   display: none;
 }
 
@@ -76,8 +78,8 @@
   left: 0;
   top: 0;
   height: 40px;
-  border: 0 solid #1991FA;
-  background: #D1E9FE;
+  border: 0 solid #1991fa;
+  background: #d1e9fe;
 }
 
 .slider {
@@ -88,7 +90,7 @@
   height: 40px;
   background: #fff;
   box-shadow: 0 0 3px rgba(0, 0, 0, 0.3);
-  transition: background .2s linear;
+  transition: background 0.2s linear;
   cursor: pointer;
   cursor: grab;
 }
@@ -98,7 +100,7 @@
 }
 
 .slider:hover {
-  background: #1991FA;
+  background: #1991fa;
 }
 
 .slider:hover .sliderIcon {

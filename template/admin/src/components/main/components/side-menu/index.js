@@ -1,2 +1,2 @@
-import SideMenu from './side-menu.vue'
-export default SideMenu
+import SideMenu from './side-menu.vue';
+export default SideMenu;

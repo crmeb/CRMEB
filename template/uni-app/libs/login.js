@@ -1,7 +1,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2021 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -75,14 +75,16 @@ function _toLogin(push, pathLogin) {
 		} else {
 			urlData += '?go_longin=1';
 		}
-		if (!Cache.has('snsapiKey')) {
-			auth.oAuth('snsapi_base', urlData);
-		} else {
-			uni.navigateTo({
-				url: '/pages/users/wechat_login/index',
-			});
-		}
-
+		// if (!Cache.has('snsapiKey')) {
+		// 	auth.oAuth('snsapi_base', urlData);
+		// } else {
+		// 	uni.navigateTo({
+		// 		url: '/pages/users/wechat_login/index',
+		// 	});
+		// }
+		uni.navigateTo({
+			url: '/pages/users/wechat_login/index',
+		});
 
 	} else {
 		uni.navigateTo({
@@ -92,19 +94,19 @@ function _toLogin(push, pathLogin) {
 	// #endif
 
 	// #ifdef MP 
-	// uni.navigateTo({
-	// 	url: '/pages/users/wechat_login/index'
-	// })
-	Routine.getCode()
-		.then(code => {
-			console.log(code)
-			Routine.silenceAuth(code).then(res => {
-				console.log(res)
-			})
-		})
-		.catch(err => {
-			uni.hideLoading();
-		});
+	uni.navigateTo({
+		url: '/pages/users/wechat_login/index'
+	})
+	// Routine.getCode()
+	// 	.then(code => {
+	// 		console.log(code)
+	// 		Routine.silenceAuth(code).then(res => {
+	// 			console.log(res)
+	// 		})
+	// 	})
+	// 	.catch(err => {
+	// 		uni.hideLoading();
+	// 	});
 	// #endif
 
 	// #ifdef APP-PLUS

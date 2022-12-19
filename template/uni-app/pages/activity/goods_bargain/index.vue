@@ -15,10 +15,10 @@
 						</view>
 						<view class='text acea-row row-column-around'>
 							<view class='name line1'>{{item.title}}</view>
-							<view class='num'><text class='iconfont icon-pintuan'></text>{{item.people}}人正在参与</view>
-							<view class='money'>最低: ￥<text class='price'>{{item.min_price}}</text></view>
+							<view class='num'><text class='iconfont icon-pintuan'></text>{{item.people}}{{$t(`人正在参与`)}}</view>
+							<view class='money'>{{$t(`最低`)}} : {{$t(`￥`)}}<text class='price'>{{item.min_price}}</text></view>
 						</view>
-						<view class='cutBnt'><text class='iconfont icon-kanjia'></text>参与砍价</view>
+						<view class='cutBnt'><text class='iconfont icon-kanjia'></text>{{$t(`参与砍价`)}}</view>
 					</view>
 				</block>
 			</view>
@@ -112,7 +112,7 @@
 			var pages = getCurrentPages();
 			this.returnShow = pages.length === 1 ? false : true;
 			uni.setNavigationBarTitle({
-				title: "砍价列表"
+				title: this.$t(`砍价列表`),
 			})
 			// #ifdef MP
 			this.navH = app.globalData.navH * 2.5;
@@ -182,7 +182,7 @@
 				// #endif
 				// #ifdef MP
 				uni.showLoading({
-					title: '正在加载',
+					title: this.$t(`正在加载中`),
 				})
 				openBargainSubscribe().then(res => {
 					uni.hideLoading();

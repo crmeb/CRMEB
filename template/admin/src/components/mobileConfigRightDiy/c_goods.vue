@@ -1,11 +1,7 @@
 <template>
   <div class="goods-box" v-if="defaults.goodsList">
     <div class="wrapper">
-      <draggable
-        class="dragArea list-group"
-        :list="defaults.goodsList.list"
-        group="peoples"
-      >
+      <draggable class="dragArea list-group" :list="defaults.goodsList.list" group="peoples">
         <div
           class="item"
           v-for="(goods, index) in defaults.goodsList.list"
@@ -13,10 +9,7 @@
           v-if="defaults.goodsList.list.length"
         >
           <img :src="goods.image" alt="" />
-          <span
-            class="iconfont-diy icondel_1"
-            @click.stop="bindDelete(index)"
-          ></span>
+          <span class="iconfont-diy icondel_1" @click.stop="bindDelete(index)"></span>
         </div>
         <div class="add-item item" @click="modals = true">
           <span class="iconfont-diy iconaddto"></span>
@@ -45,10 +38,10 @@
 </template>
 
 <script>
-import vuedraggable from "vuedraggable";
-import goodsList from "@/components/goodsList";
+import vuedraggable from 'vuedraggable';
+import goodsList from '@/components/goodsList';
 export default {
-  name: "c_goods",
+  name: 'c_goods',
   props: {
     configObj: {
       type: Object,

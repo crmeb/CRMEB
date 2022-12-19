@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -13,13 +13,15 @@ namespace app\services\order;
 
 
 use app\dao\order\StoreOrderDao;
+use app\services\activity\combination\StoreCombinationServices;
+use app\services\activity\combination\StorePinkServices;
 use app\services\BaseServices;
 use app\services\user\member\MemberCardServices;
 use app\services\user\UserBillServices;
 use app\services\user\UserBrokerageServices;
 use app\services\user\UserServices;
+use crmeb\exceptions\ApiException;
 use crmeb\utils\Str;
-use think\exception\ValidateException;
 use think\facade\Log;
 
 /**
@@ -50,17 +52,17 @@ class StoreOrderTakeServices extends BaseServices
     {
         $order = $this->dao->getUserOrderDetail($uni, $uid);
         if (!$order) {
-            throw new ValidateException('订单不存在!');
+            throw new ApiException(410173);
         }
         /** @var StoreOrderServices $orderServices */
         $orderServices = app()->make(StoreOrderServices::class);
         $order = $orderServices->tidyOrder($order);
         if ($order['_status']['_type'] != 2) {
-            throw new ValidateException('订单状态错误!');
+            throw new ApiException(410266);
         }
         //存在拆分发货 需要分开收货
         if ($this->dao->count(['pid' => $order['id']])) {
-            throw new ValidateException('拆分发货，请去订单详情中包裹确认收货');
+            throw new ApiException(410266);
         }
         $order->status = 2;
         /** @var StoreOrderStatusServices $statusService */
@@ -73,7 +75,7 @@ class StoreOrderTakeServices extends BaseServices
             ]);
         $res = $res && $this->storeProductOrderUserTakeDelivery($order);
         if (!$res) {
-            throw new ValidateException('收货失败');
+            throw new ApiException(410205);
         }
         return $order;
     }
@@ -104,7 +106,7 @@ class StoreOrderTakeServices extends BaseServices
             //事业部
             $res4 = $this->divisionBrokerage($order, $userInfo);
             if (!($res1 && $res2 && $res3 && $res4)) {
-                throw new ValidateException('收货失败!');
+                throw new ApiException(410205);
             }
             return true;
         }, $isTran);
@@ -132,6 +134,9 @@ class StoreOrderTakeServices extends BaseServices
      * @param $userInfo
      * @param $storeTitle
      * @return bool
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
      */
     public function gainUserIntegral($order, $userInfo, $storeTitle)
     {
@@ -157,6 +162,8 @@ class StoreOrderTakeServices extends BaseServices
             $integral = $userInfo['integral'] + $order['gain_integral'];
             $userInfo->integral = $integral;
             $res1 = false != $userInfo->save();
+        } else {
+            $res2 = true;
         }
         $order_integral = 0;
 
@@ -173,7 +180,6 @@ class StoreOrderTakeServices extends BaseServices
                 }
             }
             $order_integral = bcmul((string)$order_give_integral, (string)($order_integral ?: $order['pay_price']), 0);
-
             $res3 = false != $userBillServices->income('order_give_integral', $order['uid'], $order_integral, $userInfo['integral'] + $order_integral, $order['id']);
             $integral = $userInfo['integral'] + $order_integral;
             $userInfo->integral = $integral;
@@ -181,6 +187,9 @@ class StoreOrderTakeServices extends BaseServices
         }
         $give_integral = $order_integral + $order['gain_integral'];
         if ($give_integral > 0 && $res1 && $res2 && $res3) {
+            /** @var StoreOrderServices $orderServices */
+            $orderServices = app()->make(StoreOrderServices::class);
+            $orderServices->update($order['id'], ['gain_integral' => $give_integral], 'id');
             event('notice.notice', [['order' => $order, 'storeTitle' => $storeTitle, 'give_integral' => $give_integral, 'integral' => $integral], 'integral_accout']);
             return true;
         }
@@ -201,7 +210,13 @@ class StoreOrderTakeServices extends BaseServices
         }
         // 营销产品不返佣金
         if (isset($orderInfo['combination_id']) && $orderInfo['combination_id']) {
-            return true;
+            //检测拼团是否参与返佣
+            /** @var StoreCombinationServices $combinationServices */
+            $combinationServices = app()->make(StoreCombinationServices::class);
+            $isCommission = $combinationServices->value(['id' => $orderInfo['combination_id']], 'is_commission');
+            if (!$isCommission) {
+                return true;
+            }
         }
         if (isset($orderInfo['seckill_id']) && $orderInfo['seckill_id']) {
             return true;
@@ -273,6 +288,8 @@ class StoreOrderTakeServices extends BaseServices
      */
     public function backOrderBrokerage($orderInfo, $userInfo)
     {
+        /** @var UserServices $userServices */
+        $userServices = app()->make(UserServices::class);
         // 当前订单｜用户不存在  直接返回
         if (!$orderInfo || !$userInfo) {
             return true;
@@ -282,7 +299,33 @@ class StoreOrderTakeServices extends BaseServices
 
         // 营销产品不返佣金
         if (isset($orderInfo['combination_id']) && $orderInfo['combination_id']) {
-            return true;
+            //检测拼团是否参与返佣
+            /** @var StoreCombinationServices $combinationServices */
+            $combinationServices = app()->make(StoreCombinationServices::class);
+            $combinationInfo = $combinationServices->getOne(['id' => $orderInfo['combination_id']], 'is_commission,head_commission');
+            if ($combinationInfo['head_commission']) {
+                /** @var StorePinkServices $pinkServices */
+                $pinkServices = app()->make(StorePinkServices::class);
+                $pinkMasterUid = $pinkServices->value(['id' => $orderInfo['pink_id']], 'uid');
+                if ($orderInfo['uid'] == $pinkMasterUid && $userServices->checkUserPromoter($pinkMasterUid)) {
+                    $pinkMasterPrice = bcmul((string)$orderInfo['pay_price'], bcdiv((string)$combinationInfo['head_commission'], 100, 2), 2);
+                    $userServices->bcInc($pinkMasterUid, 'brokerage_price', $pinkMasterPrice, 'uid');
+                    //冻结时间
+                    $broken_time = intval(sys_config('extract_time'));
+                    $frozen_time = time() + $broken_time * 86400;
+                    // 添加佣金记录
+                    /** @var UserBrokerageServices $userBrokerageServices */
+                    $userBrokerageServices = app()->make(UserBrokerageServices::class);
+                    //团长返佣
+                    $userBrokerageServices->income('get_pink_master_brokerage', $pinkMasterUid, [
+                        'number' => floatval($pinkMasterPrice),
+                        'frozen_time' => $frozen_time
+                    ], bcadd((string)$userInfo['brokerage_price'], $pinkMasterPrice, 2), $orderInfo['id']);
+                }
+            }
+            if (!$combinationInfo['is_commission']) {
+                return true;
+            }
         }
         if (isset($orderInfo['seckill_id']) && $orderInfo['seckill_id']) {
             return true;
@@ -306,8 +349,6 @@ class StoreOrderTakeServices extends BaseServices
             $one_spread_uid = $orderInfo['spread_uid'];
         }
         //检测是否是分销员
-        /** @var UserServices $userServices */
-        $userServices = app()->make(UserServices::class);
         if (!$userServices->checkUserPromoter($one_spread_uid)) {
             return $this->backOrderBrokerageTwo($orderInfo, $userInfo, $isSelfBrokerage);
         }
@@ -543,13 +584,37 @@ class StoreOrderTakeServices extends BaseServices
                         ]);
                     $res = $res && $this->storeProductOrderUserTakeDelivery($order, false);
                     if (!$res) {
-                        throw new ValidateException('订单号' . $order['order_id'] . '自动收货失败');
+                        Log::error('订单号' . $order['order_id'] . '自动收货失败');
                     }
                 });
             } catch (\Throwable $e) {
                 Log::error('自动收货失败,失败原因：' . $e->getMessage());
             }
 
+        }
+    }
+
+    /**
+     * 检查主订单是否需要修改状态
+     * @param $pid
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     */
+    public function checkMaster($pid)
+    {
+        $p_order = $this->dao->get((int)$pid, ['id,pid,status']);
+        //主订单全部发货 且子订单没有待收货 有待评价
+        if ($p_order['status'] == 1 && !$this->dao->count(['pid' => $pid, 'status' => 2]) && $this->dao->count(['pid' => $pid, 'status' => 3])) {
+            $this->dao->update($p_order['id'], ['status' => 2]);
+            /** @var StoreOrderStatusServices $statusService */
+            $statusService = app()->make(StoreOrderStatusServices::class);
+            $statusService->save([
+                'oid' => $p_order['id'],
+                'change_type' => 'take_delivery',
+                'change_message' => '已收货',
+                'change_time' => time()
+            ]);
         }
     }
 }

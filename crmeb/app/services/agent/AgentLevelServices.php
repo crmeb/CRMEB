@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -15,8 +15,8 @@ use app\dao\agent\AgentLevelDao;
 use app\services\BaseServices;
 use app\services\user\UserServices;
 use crmeb\exceptions\AdminException;
+use crmeb\exceptions\ApiException;
 use crmeb\services\FormBuilder as Form;
-use think\exception\ValidateException;
 use think\facade\Route as Url;
 
 
@@ -84,7 +84,7 @@ class AgentLevelServices extends BaseServices
         $userServices = app()->make(UserServices::class);
         $user = $userServices->getUserInfo($uid);
         if (!$user) {
-            throw new ValidateException('没有此用户');
+            throw new ApiException(410032);
         }
         //检测升级
         $this->checkUserLevelFinish($uid);
@@ -272,7 +272,7 @@ class AgentLevelServices extends BaseServices
     {
         $levelInfo = $this->getLevelInfo($id);
         if (!$levelInfo)
-            throw new AdminException('数据不存在');
+            throw new AdminException(100026);
         $field = [];
         $field[] = Form::hidden('id', $id);
         $field[] = Form::input('name', '等级名称', $levelInfo['name'])->col(24);
@@ -300,7 +300,7 @@ class AgentLevelServices extends BaseServices
         $userServices = app()->make(UserServices::class);
         $userInfo = $userServices->getUserInfo($uid);
         if (!$userInfo) {
-            throw new AdminException('分销员不存在');
+            throw new AdminException(400214);
         }
         $levelList = $this->dao->getList(['is_del' => 0, 'status' => 1], '*', [], 0, 0, $userInfo['agent_level']);
         $setOptionLabel = function () use ($levelList) {
@@ -330,14 +330,14 @@ class AgentLevelServices extends BaseServices
         $userServices = app()->make(UserServices::class);
         $userInfo = $userServices->getUserInfo($uid);
         if (!$userInfo) {
-            throw new AdminException('分销员不存在');
+            throw new AdminException(400214);
         }
         $levelInfo = $this->getLevelInfo($id);
         if (!$levelInfo) {
-            throw new AdminException('分销等级不存在');
+            throw new AdminException(400442);
         }
         if ($userServices->update($uid, ['agent_level' => $id]) === false) {
-            throw new AdminException('赠送失败');
+            throw new AdminException(400219);
         }
         return true;
     }

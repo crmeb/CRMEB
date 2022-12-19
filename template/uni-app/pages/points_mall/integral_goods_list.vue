@@ -3,22 +3,22 @@
 		<view class='productList'>
 			<view class='search bg-color acea-row row-between-wrapper'>
 				<view class='input acea-row row-between-wrapper'><text class='iconfont icon-sousuo'></text>
-					<input placeholder='搜索商品名称' placeholder-class='placeholder' confirm-type='search' name="search"
+					<input :placeholder='$t(`搜索商品名称`)' placeholder-class='placeholder' confirm-type='search' name="search"
 						:value='where.store_name' @confirm="searchSubmit"></input>
 				</view>
 				<view class='iconfont' :class='is_switch==true?"icon-pailie":"icon-tupianpailie"' @click='Changswitch'>
 				</view>
 			</view>
 			<view class='nav acea-row row-middle'>
-				<view class='item line1' :class='title ? "font-num":""' @click='set_where(1)'>默认</view>
+				<view class='item line1' :class='title ? "font-num":""' @click='set_where(1)'>{{$t(`默认`)}}</view>
 				<view class='item' @click='set_where(2)'>
-					积分
+					{{$t(`积分`)}}
 					<image v-if="price==1" src='../../static/images/up.png'></image>
 					<image v-else-if="price==2" src='../../static/images/down.png'></image>
 					<image v-else src='../../static/images/horn.png'></image>
 				</view>
 				<view class='item' @click='set_where(3)'>
-					销量
+					{{$t(`销量`)}}
 					<image v-if="stock==1" src='../../static/images/up.png'></image>
 					<image v-else-if="stock==2" src='../../static/images/down.png'></image>
 					<image v-else src='../../static/images/horn.png'></image>
@@ -33,16 +33,16 @@
 					<view class='text' :class='is_switch==true?"":"on"'>
 						<view class='name line1'>{{item.title}}</view>
 						<view class='money font-color' :class='is_switch==true?"":"on"'><text
-								class='num'>{{item.price}}积分</text></view>
+								class='num'>{{item.price}}{{$t(`积分`)}}</text></view>
 						<view class='vip acea-row row-between-wrapper' :class='is_switch==true?"":"on"'>
-							<view class='vip-money' v-if="item.vip_price && item.vip_price > 0">{{item.vip_price}}积分
+							<view class='vip-money' v-if="item.vip_price && item.vip_price > 0">{{item.vip_price}} {{$t(`积分`)}}
 								<image src='../../static/images/vip.png'></image>
 							</view>
 							<view class="sales">
 								<view class="">
-									{{item.sales}}人兑换
+									{{item.sales}}{{$t(`人兑换`)}}
 								</view>
-								<view class="exchange">兑换</view>
+								<view class="exchange">{{$t(`兑换`)}}</view>
 							</view>
 						</view>
 					</view>
@@ -53,8 +53,8 @@
 			</view>
 		</view>
 		<view class='noCommodity' v-if="productList.length==0 && where.page > 1">
-			<view class='pictrue'>
-				<image src='../../static/images/noShopper.png'></image>
+			<view class='emptyBox'>
+				<image :src="imgHost + '/statics/images/no-thing.png'"></image>
 			</view>
 			<recommend :hostProduct="hostProduct"></recommend>
 		</view>
@@ -80,6 +80,7 @@
 		goShopDetail
 	} from '@/libs/order.js'
 	import colors from "@/mixins/color";
+	import {HTTP_REQUEST_URL} from '@/config/app';
 	export default {
 		computed: mapGetters(['uid']),
 		components: {
@@ -89,6 +90,7 @@
 		mixins: [colors],
 		data() {
 			return {
+				imgHost:HTTP_REQUEST_URL,
 				productList: [],
 				is_switch: true,
 				where: {
@@ -103,7 +105,7 @@
 				nows: false,
 				loadend: false,
 				loading: false,
-				loadTitle: '加载更多',
+				loadTitle: this.$t(`加载更多`),
 				title: '',
 				hostProduct: [],
 				hotPage: 1,
@@ -214,12 +216,12 @@
 					let loadend = list.length < that.where.limit;
 					that.loadend = loadend;
 					that.loading = false;
-					that.loadTitle = loadend ? '已全部加载' : '加载更多';
+					that.loadTitle = loadend ? that.$t(`我也是有底线的`) : that.$t(`加载更多`);
 					that.$set(that, 'productList', productList);
 					that.$set(that.where, 'page', that.where.page + 1);
 				}).catch(err => {
 					that.loading = false;
-					that.loadTitle = '加载更多';
+					that.loadTitle = that.$t(`加载更多`);
 				});
 			},
 		},
@@ -416,5 +418,17 @@
 	.noCommodity {
 		background-color: #fff;
 		padding-bottom: 30rpx;
+		.emptyBox{
+			text-align: center;
+			padding-top: 20rpx;
+			.tips{
+				color: #aaa;
+				font-size: 26rpx;
+			}
+			image {
+				width: 414rpx;
+				height: 304rpx;
+			}
+		}
 	}
 </style>

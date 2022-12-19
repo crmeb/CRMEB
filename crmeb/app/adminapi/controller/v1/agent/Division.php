@@ -1,5 +1,13 @@
 <?php
-
+// +----------------------------------------------------------------------
+// | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
+// +----------------------------------------------------------------------
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
+// +----------------------------------------------------------------------
+// | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
+// +----------------------------------------------------------------------
+// | Author: CRMEB Team <admin@crmeb.com>
+// +----------------------------------------------------------------------
 namespace app\adminapi\controller\v1\agent;
 
 use app\adminapi\controller\AuthController;
@@ -10,6 +18,11 @@ use app\services\user\UserServices;
 use crmeb\exceptions\AdminException;
 use think\facade\App;
 
+/**
+ * 事业部控制器
+ * Class Division
+ * @package app\adminapi\controller\v1\agent
+ */
 class Division extends AuthController
 {
     /**
@@ -26,6 +39,9 @@ class Division extends AuthController
     /**
      * 事业部列表
      * @return mixed
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
      */
     public function divisionList()
     {
@@ -61,6 +77,7 @@ class Division extends AuthController
      * 添加编辑事业部
      * @param $uid
      * @return mixed
+     * @throws \FormBuilder\Exception\FormBuilderException
      */
     public function divisionCreate($uid)
     {
@@ -86,13 +103,14 @@ class Division extends AuthController
             ['roles', []]
         ]);
         $this->services->divisionSave($data);
-        return app('json')->success('保存成功');
+        return app('json')->success(100000);
     }
 
     /**
      * 添加编辑代理商
      * @param $uid
      * @return mixed
+     * @throws \FormBuilder\Exception\FormBuilderException
      */
     public function divisionAgentCreate($uid)
     {
@@ -114,10 +132,10 @@ class Division extends AuthController
             ['edit', 0],
         ]);
         $userInfo = $userServices->get((int)$data['uid']);
-        if (!$userInfo) throw new AdminException('参数错误，找不到用户');
+        if (!$userInfo) throw new AdminException(100100);
         $data['division_id'] = $this->adminInfo['division_id'];
         $this->services->divisionAgentSave($data);
-        return app('json')->success('保存成功');
+        return app('json')->success(100000);
     }
 
     /**
@@ -129,7 +147,7 @@ class Division extends AuthController
     public function setDivisionStatus($status, $uid)
     {
         $this->services->setDivisionStatus($status, $uid);
-        return app('json')->success($status ? '开启成功' : '关闭成功');
+        return app('json')->success(100014);
     }
 
     /**
@@ -141,7 +159,7 @@ class Division extends AuthController
     public function delDivision($type, $uid)
     {
         $this->services->delDivision($type, $uid);
-        return app('json')->success('删除成功');
+        return app('json')->success(100002);
     }
 
     /**
@@ -203,7 +221,7 @@ class Division extends AuthController
         /** @var DivisionAgentApplyServices $applyServices */
         $applyServices = app()->make(DivisionAgentApplyServices::class);
         $data = $applyServices->applyAgentSave($data);
-        return app('json')->success('处理成功');
+        return app('json')->success(100014);
     }
 
     /**
@@ -216,40 +234,6 @@ class Division extends AuthController
         /** @var DivisionAgentApplyServices $applyServices */
         $applyServices = app()->make(DivisionAgentApplyServices::class);
         $applyServices->delApply($id);
-        return app('json')->success('删除成功');
-    }
-
-    /**
-     * 获取代理商协议
-     * @param AgreementServices $agreementServices
-     * @return mixed
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\DbException
-     * @throws \think\db\exception\ModelNotFoundException
-     */
-    public function agentAgreementInfo(AgreementServices $agreementServices)
-    {
-        $list = $agreementServices->getAgreementBytype(2);
-        return app('json')->success($list);
-    }
-
-    /**
-     * 保存代理商协议
-     * @param AgreementServices $agreementServices
-     * @return mixed
-     */
-    public function agentAgreementSave(AgreementServices $agreementServices)
-    {
-        $data = $this->request->postMore([
-            ['id', 0],
-            ['type', 2],
-            ['title', ""],
-            ['content', ''],
-            ['status', ''],
-        ]);
-        $data['title'] = '代理商规则';
-        $data['status'] = 1;
-        $res = $agreementServices->saveAgreement($data, $data['id']);
-        return app('json')->success('保存成功');
+        return app('json')->success(100002);
     }
 }

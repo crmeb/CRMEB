@@ -32,7 +32,8 @@ export default {
   modalTitle: 'Modal Title',
   content: 'This is the modal box content.',
   buttonText: 'Show Modal',
-  'i18n-tip': 'Note: Only this page is multi-language, other pages do not add language content to the multi-language package.',
+  'i18n-tip':
+    'Note: Only this page is multi-language, other pages do not add language content to the multi-language package.',
   error_store_page: 'Error Collection',
   error_logger_page: 'Error Logger',
   query: 'Query',
@@ -42,5 +43,5 @@ export default {
   tree_table_page: 'Tree Table',
   org_tree_page: 'Org Tree',
   drag_drawer_page: 'Draggable Drawer',
-  tree_select_page: 'Tree Selector'
-}
+  tree_select_page: 'Tree Selector',
+};

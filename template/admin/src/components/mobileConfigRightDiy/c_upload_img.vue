@@ -7,11 +7,7 @@
       <div class="upload-box" v-else>
         <Icon type="ios-camera-outline" size="36" />
       </div>
-      <span
-        class="iconfont-diy icondel_1"
-        @click.stop="bindDelete"
-        v-if="configData.url && configData.type"
-      ></span>
+      <span class="iconfont-diy icondel_1" @click.stop="bindDelete" v-if="configData.url && configData.type"></span>
     </div>
     <div>
       <Modal
@@ -37,10 +33,10 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
-import uploadPictures from "@/components/uploadPictures";
+import { mapState } from 'vuex';
+import uploadPictures from '@/components/uploadPictures';
 export default {
-  name: "c_upload_img",
+  name: 'c_upload_img',
   components: {
     uploadPictures,
   },
@@ -61,18 +57,18 @@ export default {
     return {
       defaultList: [
         {
-          name: "a42bdcc1178e62b4694c830f028db5c0",
-          url: "https://o5wwk8baw.qnssl.com/a42bdcc1178e62b4694c830f028db5c0/avatar",
+          name: 'a42bdcc1178e62b4694c830f028db5c0',
+          url: 'https://o5wwk8baw.qnssl.com/a42bdcc1178e62b4694c830f028db5c0/avatar',
         },
         {
-          name: "bc7521e033abdd1e92222d733590f104",
-          url: "https://o5wwk8baw.qnssl.com/bc7521e033abdd1e92222d733590f104/avatar",
+          name: 'bc7521e033abdd1e92222d733590f104',
+          url: 'https://o5wwk8baw.qnssl.com/bc7521e033abdd1e92222d733590f104/avatar',
         },
       ],
       defaults: {},
       configData: {},
       modalPic: false,
-      isChoice: "单选",
+      isChoice: '单选',
       gridBtn: {
         xl: 4,
         lg: 8,
@@ -106,7 +102,7 @@ export default {
   },
   methods: {
     bindDelete() {
-      this.configData.url = "";
+      this.configData.url = '';
     },
     // 点击图文封面
     modalPicTap(title) {
@@ -115,20 +111,20 @@ export default {
     // 添加自定义弹窗
     addCustomDialog(editorId) {
       window.UE.registerUI(
-        "test-dialog",
+        'test-dialog',
         function (editor, uiName) {
           let dialog = new window.UE.ui.Dialog({
-            iframeUrl: "/admin/widget.images/index.html?fodder=dialog",
+            iframeUrl: '/admin/widget.images/index.html?fodder=dialog',
             editor: editor,
             name: uiName,
-            title: "上传图片",
-            cssRules: "width:1200px;height:500px;padding:20px;",
+            title: '上传图片',
+            cssRules: 'width:1200px;height:500px;padding:20px;',
           });
           this.dialog = dialog;
           // 参考上面的自定义按钮
           var btn = new window.UE.ui.Button({
-            name: "dialog-button",
-            title: "上传图片",
+            name: 'dialog-button',
+            title: '上传图片',
             cssRules: `background-image: url(../../../assets/images/icons.png);background-position: -726px -77px;`,
             onclick: function () {
               // 渲染dialog
@@ -139,7 +135,7 @@ export default {
 
           return btn;
         },
-        37
+        37,
       );
     },
     // 获取图片信息

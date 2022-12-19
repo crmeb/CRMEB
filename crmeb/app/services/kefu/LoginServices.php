@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -13,15 +13,14 @@ namespace app\services\kefu;
 
 
 use crmeb\exceptions\AuthException;
-use crmeb\utils\ApiErrorCode;
+use crmeb\services\oauth\OAuth;
 use crmeb\utils\JwtAuth;
 use Firebase\JWT\ExpiredException;
 use think\facade\Cache;
 use app\services\BaseServices;
 use crmeb\services\CacheService;
 use app\dao\service\StoreServiceDao;
-use crmeb\services\WechatOpenService;
-use think\exception\ValidateException;
+use crmeb\services\app\WechatOpenService;
 use app\services\wechat\WechatUserServices;
 
 /**
@@ -54,13 +53,13 @@ class LoginServices extends BaseServices
     {
         $kefuInfo = $this->dao->get(['account' => $account]);
         if (!$kefuInfo) {
-            throw new ValidateException('没有此用户');
+            throw new AuthException(410141);
         }
         if ($password && !password_verify($password, $kefuInfo->password)) {
-            throw new ValidateException('账号或密码错误');
+            throw new AuthException(410025);
         }
         if (!$kefuInfo->status) {
-            throw new ValidateException('您已被禁止登录');
+            throw new AuthException(410027);
         }
         $token = $this->createToken($kefuInfo->id, 'kefu');
         $kefuInfo->update_time = time();
@@ -90,15 +89,15 @@ class LoginServices extends BaseServices
         //检测token是否过期
         $md5Token = md5($token);
         if (!$token || !$cacheService->hasToken($md5Token) || !($cacheToken = $cacheService->getTokenBucket($md5Token))) {
-            throw new AuthException(ApiErrorCode::ERR_LOGIN,410003);
+            throw new AuthException(110005);
         }
         if ($token === 'undefined') {
-            throw new AuthException(ApiErrorCode::ERR_LOGIN,410003);
+            throw new AuthException(110005);
         }
         //是否超出有效次数
         if (isset($cacheToken['invalidNum']) && $cacheToken['invalidNum'] >= 3) {
             $cacheService->clearToken($md5Token);
-            throw new AuthException(ApiErrorCode::ERR_LOGIN_INVALID,410003);
+            throw new AuthException(110006);
         }
 
         /** @var JwtAuth $jwtAuth */
@@ -115,14 +114,14 @@ class LoginServices extends BaseServices
             $cacheService->setTokenBucket($md5Token, $cacheToken, $cacheToken['exp']);
         } catch (\Throwable $e) {
             $noCli && $cacheService->clearToken($md5Token);
-            throw new AuthException(ApiErrorCode::ERR_LOGIN_INVALID,410003);
+            throw new AuthException(110006);
         }
 
         //获取管理员信息
         $adminInfo = $this->dao->get($id);
         if (!$adminInfo || !$adminInfo->id) {
             $noCli && $cacheService->clearToken($md5Token);
-            throw new AuthException(ApiErrorCode::ERR_LOGIN_STATUS,410003);
+            throw new AuthException(110007);
         }
 
         $adminInfo->type = $type;
@@ -137,28 +136,24 @@ class LoginServices extends BaseServices
      */
     public function wechatAuth()
     {
-        /** @var WechatOpenService $service */
-        $service = app()->make(WechatOpenService::class);
-        $info = $service->getAuthorizationInfo();
-        if (!$info) {
-            throw new ValidateException('授权失败');
-        }
-        $original = $info->getOriginal();
+        /** @var OAuth $oauth */
+        $oauth = app()->make(OAuth::class);
+        $original = $oauth->oauth(null, ['open' => true]);
         if (!isset($original['unionid'])) {
-            throw new ValidateException('unionid不存在');
+            throw new AuthException(410132);
         }
         /** @var WechatUserServices $userService */
         $userService = app()->make(WechatUserServices::class);
         $uid = $userService->value(['unionid' => $original['unionid']], 'uid');
         if (!$uid) {
-            throw new ValidateException('获取用户UID失败');
+            throw new AuthException(410133);
         }
         $kefuInfo = $this->dao->get(['uid' => $uid]);
         if (!$kefuInfo) {
-            throw new ValidateException('客服不存在');
+            throw new AuthException(410142);
         }
         if (!$kefuInfo->status) {
-            throw new ValidateException('您已被禁止登录');
+            throw new AuthException(410027);
         }
         $token = $this->createToken($kefuInfo->id, 'kefu');
         $kefuInfo->update_time = time();

@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -10,13 +10,11 @@
 // +----------------------------------------------------------------------
 namespace app\adminapi\controller\v1\agent;
 
-
 use app\adminapi\controller\AuthController;
 use app\services\agent\AgentLevelServices;
 use app\services\agent\AgentManageServices;
 use app\services\user\UserServices;
 use think\facade\App;
-
 
 /**
  * 分销商管理控制器
@@ -39,6 +37,9 @@ class AgentManage extends AuthController
     /**
      * 分销管理列表
      * @return mixed
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
      */
     public function index()
     {
@@ -52,6 +53,9 @@ class AgentManage extends AuthController
     /**
      * 分销头部统计
      * @return mixed
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
      */
     public function get_badge()
     {
@@ -76,8 +80,6 @@ class AgentManage extends AuthController
         ]);
         return app('json')->success($this->services->getStairList($where));
     }
-
-    //TODO 废弃
 
     /**
      * 推广人列表头部统计
@@ -112,50 +114,51 @@ class AgentManage extends AuthController
         return app('json')->success($this->services->getStairOrderList((int)$where['uid'], $where));
     }
 
-
-
     /**
      * 查看公众号推广二维码
-     * @param int $uid
-     * @return json
-     * */
+     * @param string $uid
+     * @param string $action
+     * @return mixed
+     */
     public function look_code($uid = '', $action = '')
     {
-        if (!$uid || !$action) return app('json')->fail('缺少参数');
+        if (!$uid || !$action) return app('json')->fail(100100);
         try {
             if (method_exists($this, $action)) {
                 $res = $this->$action($uid);
                 if ($res)
                     return app('json')->success($res);
                 else
-                    return app('json')->fail($res['msg'] ?? '获取失败，请稍后再试！');
+                    return app('json')->fail(100016);
             } else
-                return app('json')->fail('暂无此方法');
+                return app('json')->fail(100029);
         } catch (\Exception $e) {
-            return app('json')->fail('获取推广二维码失败，请检查您的微信配置', ['line' => $e->getLine(), 'messag' => $e->getMessage()]);
+            return app('json')->fail(400212, ['line' => $e->getLine(), 'messag' => $e->getMessage()]);
         }
     }
 
     /**
      * 获取公众号二维码
-     * */
+     * @param $uid
+     * @return array
+     */
     public function wechant_code($uid)
     {
         $qr_code = $this->services->wechatCode((int)$uid);
         if (isset($qr_code['url']))
             return ['code_src' => $qr_code['url']];
         else
-            return app('json')->fail('获取失败，请稍后再试！');
+            return app('json')->fail(100016);
     }
 
     /**
-     * TODO 查看小程序推广二维码
+     * 查看小程序推广二维码
      * @param string $uid
      */
     public function look_xcx_code($uid = '')
     {
         if (!strlen(trim($uid))) {
-            return app('json')->fail('缺少参数');
+            return app('json')->fail(100100);
         }
         return app('json')->success($this->services->lookXcxCode((int)$uid));
     }
@@ -167,18 +170,19 @@ class AgentManage extends AuthController
      */
     public function look_h5_code($uid = '')
     {
-        if (!strlen(trim($uid))) return app('json')->fail('缺少参数');
+        if (!strlen(trim($uid))) return app('json')->fail(100100);
         return app('json')->success($this->services->lookH5Code((int)$uid));
     }
 
     /**
      * 解除单个用户的推广权限
-     * @param int $uid
-     * */
+     * @param $uid
+     * @return mixed
+     */
     public function delete_spread($uid)
     {
-        if (!$uid) app('json')->fail('缺少参数');
-        return app('json')->success($this->services->delSpread((int)$uid) ? '解除成功' : '解除失败');
+        if (!$uid) app('json')->fail(100100);
+        return app('json')->success($this->services->delSpread((int)$uid) ? 100014 : 100015);
     }
 
     /**
@@ -193,24 +197,24 @@ class AgentManage extends AuthController
             [['spread_uid', 'd'], 0],
         ], true);
         if (!$uid || !$spreadUid) {
-            return app('json')->fail('缺少参数');
+            return app('json')->fail(100100);
         }
         if ($uid == $spreadUid) {
-            return app('json')->fail('上级推广人不能为自己');
+            return app('json')->fail(400213);
         }
         $userInfo = $services->get($uid);
         if (!$userInfo) {
-            return app('json')->fail('用户不存在');
+            return app('json')->fail(400214);
         }
         if (!$services->count(['uid' => $spreadUid])) {
-            return app('json')->fail('上级用户不存在');
+            return app('json')->fail(400215);
         }
         if ($userInfo->spread_uid == $spreadUid) {
-            return app('json')->fail('当前推广人已经是所选人');
+            return app('json')->fail(400216);
         }
         $spreadInfo = $services->get($spreadUid);
         if ($spreadInfo->spread_uid == $uid) {
-            return app('json')->fail('上级推广人不能为自己下级');
+            return app('json')->fail(400217);
         }
         //之前的上级减少推广人数
         if ($userInfo->spread_uid) {
@@ -222,8 +226,11 @@ class AgentManage extends AuthController
         $spreadInfo->save();
         $userInfo->spread_uid = $spreadUid;
         $userInfo->spread_time = time();
+        $userInfo->division_id = $spreadInfo->division_id;
+        $userInfo->agent_id = $spreadInfo->agent_id;
+        $userInfo->is_staff = $spreadInfo->is_staff;
         $userInfo->save();
-        return app('json')->success('修改成功');
+        return app('json')->success(100001);
     }
 
     /**
@@ -233,8 +240,8 @@ class AgentManage extends AuthController
      */
     public function delete_system_spread($uid)
     {
-        if (!$uid) app('json')->fail('缺少参数');
-        return app('json')->success($this->services->delSystemSpread((int)$uid) ? '取消成功' : '取消失败');
+        if (!$uid) app('json')->fail(100100);
+        return app('json')->success($this->services->delSystemSpread((int)$uid) ? 100019 : 100020);
     }
 
     /**
@@ -249,7 +256,7 @@ class AgentManage extends AuthController
      */
     public function getLevelForm(AgentLevelServices $services, $uid)
     {
-        if (!$uid) app('json')->fail('缺少参数');
+        if (!$uid) app('json')->fail(100100);
         return app('json')->success($services->levelForm((int)$uid));
     }
 
@@ -268,8 +275,8 @@ class AgentManage extends AuthController
             [['id', 'd'], 0],
         ], true);
         if (!$uid || !$id) {
-            app('json')->fail('缺少参数');
+            return app('json')->fail(100100);
         }
-        return app('json')->success($services->givelevel((int)$uid, (int)$id) ? '赠送成功' : '赠送失败');
+        return app('json')->success($services->givelevel((int)$uid, (int)$id) ? 400218 : 400219);
     }
 }

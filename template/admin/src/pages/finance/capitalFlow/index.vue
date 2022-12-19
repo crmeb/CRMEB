@@ -1,10 +1,5 @@
 <template>
   <div>
-    <div class="i-layout-page-header">
-      <div class="i-layout-page-header">
-        <span class="ivu-page-header-title">{{ $route.meta.title }}</span>
-      </div>
-    </div>
     <Card :bordered="false" dis-hover class="ivu-mt">
       <Form
         ref="formValidate"
@@ -41,13 +36,9 @@
                 @on-change="selChange"
                 style="width: 30%"
               >
-                <Option
-                  :label="item"
-                  :value="index"
-                  v-for="(item, index) in withdrawal"
-                  :key="index"
-                  >{{ item }}</Option
-                >
+                <Option :label="item" :value="index" v-for="(item, index) in withdrawal" :key="index">{{
+                  item
+                }}</Option>
               </Select>
             </FormItem>
           </Col>
@@ -95,9 +86,7 @@
           <span> {{ row.add_time | formatDate }}</span>
         </template>
         <template slot-scope="{ row }" slot="set">
-          <Button size="small" type="primary" class="item" @click="setMark(row)"
-            >备注</Button
-          >
+          <Button size="small" type="primary" class="item" @click="setMark(row)">备注</Button>
         </template>
       </Table>
       <div class="acea-row row-right page">
@@ -112,106 +101,88 @@
       </div>
     </Card>
     <!-- 拒绝通过-->
-    <Modal
-      v-model="modals"
-      scrollable
-      closable
-      title="备注"
-      :mask-closable="false"
-    >
-      <Input
-        v-model="mark_msg.mark"
-        type="textarea"
-        :rows="4"
-        placeholder="请输入备注"
-      />
+    <Modal v-model="modals" scrollable closable title="备注" :mask-closable="false">
+      <Input v-model="mark_msg.mark" type="textarea" :rows="4" placeholder="请输入备注" />
       <div slot="footer">
-        <Button
-          type="primary"
-          size="large"
-          long
-          :loading="modal_loading"
-          @click.prevent="oks"
-          >确定</Button
-        >
+        <Button type="primary" size="large" long :loading="modal_loading" @click.prevent="oks">确定</Button>
       </div>
     </Modal>
   </div>
 </template>
 <script>
-import searchFrom from "@/components/publicSearchFrom";
-import { mapState } from "vuex";
-import { getFlowList, cashEditApi, setMarks } from "@/api/finance";
-import { formatDate } from "@/utils/validate";
-import editFrom from "@/components/from/from";
+import searchFrom from '@/components/publicSearchFrom';
+import { mapState } from 'vuex';
+import { getFlowList, cashEditApi, setMarks } from '@/api/finance';
+import { formatDate } from '@/utils/validate';
+import editFrom from '@/components/from/from';
 export default {
-  name: "cashApply",
+  name: 'cashApply',
   components: { searchFrom, editFrom },
   filters: {
     formatDate(time) {
       if (time !== 0) {
         let date = new Date(time * 1000);
-        return formatDate(date, "yyyy-MM-dd hh:mm");
+        return formatDate(date, 'yyyy-MM-dd hh:mm');
       }
     },
   },
   data() {
     return {
-      images: ["1.jpg", "2.jpg"],
+      images: ['1.jpg', '2.jpg'],
       modal_loading: false,
       options: this.$timeOptions,
 
       mark_msg: {
-        mark: "",
+        mark: '',
       },
       modals: false,
       total: 0,
       loading: false,
       columns: [
         {
-          title: "交易单号",
-          key: "flow_id",
+          title: '交易单号',
+          key: 'flow_id',
           width: 180,
         },
         {
-          title: "关联订单",
-          key: "order_id",
+          title: '关联订单',
+          key: 'order_id',
           minWidth: 180,
         },
         {
-          title: "交易时间",
-          key: "add_time",
+          title: '交易时间',
+          key: 'add_time',
           minWidth: 90,
         },
         {
-          title: "交易金额",
-          slot: "price",
+          title: '交易金额',
+          slot: 'price',
           minWidth: 150,
         },
         {
-          title: "交易用户",
-          key: "nickname",
+          title: '交易用户',
+          key: 'nickname',
           minWidth: 150,
         },
         {
-          title: "交易类型",
-          key: "trading_type",
+          title: '交易类型',
+          key: 'trading_type',
           minWidth: 100,
         },
         {
-          title: "支付方式",
-          slot: "pay_type",
+          title: '支付方式',
+          slot: 'pay_type',
           minWidth: 100,
         },
         {
-          title: "备注",
-          key: "mark",
+          title: '备注',
+          key: 'mark',
           minWidth: 100,
         },
         {
-          title: "操作",
-          slot: "set",
-          fixed: "right",
+          title: '操作',
+          slot: 'set',
+          fixed: 'right',
           width: 100,
         },
       ],
@@ -219,30 +190,30 @@ export default {
       withdrawal: [],
       payment: [
         {
-          title: "全部",
-          value: "",
+          title: '全部',
+          value: '',
         },
         {
-          title: "微信",
-          value: "weixin",
+          title: '微信',
+          value: 'weixin',
         },
         {
-          title: "支付宝",
-          value: "alipay",
+          title: '支付宝',
+          value: 'alipay',
         },
         {
-          title: "银行卡",
-          value: "bank",
+          title: '银行卡',
+          value: 'bank',
         },
         {
-          title: "线下支付",
-          value: "offline",
+          title: '线下支付',
+          value: 'offline',
         },
       ],
       formValidate: {
         trading_type: 0,
-        time: "",
-        keywords: "",
+        time: '',
+        keywords: '',
         page: 1,
         limit: 20,
       },
@@ -252,12 +223,12 @@ export default {
     };
   },
   computed: {
-    ...mapState("media", ["isMobile"]),
+    ...mapState('media', ['isMobile']),
     labelWidth() {
       return this.isMobile ? undefined : 80;
     },
     labelPosition() {
-      return this.isMobile ? "top" : "left";
+      return this.isMobile ? 'top' : 'left';
     },
   },
   mounted() {
@@ -288,7 +259,7 @@ export default {
     // 具体日期
     onchangeTime(e) {
       this.timeVal = e;
-      this.formValidate.time = this.timeVal.join("-");
+      this.formValidate.time = this.timeVal.join('-');
       this.formValidate.page = 1;
       this.getList();
     },

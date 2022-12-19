@@ -1,0 +1,7 @@
+/vendor
+.idea
+.vscode
+.svn
+.DS_Store
+composer.lock
+cache/

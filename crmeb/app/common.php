@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -10,10 +10,17 @@
 // +----------------------------------------------------------------------
 
 // 应用公共文件
-
+use crmeb\services\CacheService;
+use crmeb\services\HttpService;
+use Fastknife\Service\ClickWordCaptchaService;
 use think\exception\ValidateException;
 use crmeb\services\FormBuilder as Form;
-use crmeb\services\UploadService;
+use app\services\other\UploadService;
+use Fastknife\Service\BlockPuzzleCaptchaService;
+use app\services\system\lang\LangTypeServices;
+use app\services\system\lang\LangCodeServices;
+use app\services\system\lang\LangCountryServices;
+use think\facade\Config;
 
 if (!function_exists('getWorkerManUrl')) {
 
@@ -34,10 +41,12 @@ if (!function_exists('object2array')) {
 
     /**
      * 对象转数组
-     * @return mixed
+     * @param $object
+     * @return array|mixed
      */
     function object2array($object)
     {
+        $array = [];
         if (is_object($object)) {
             foreach ($object as $key => $value) {
                 $array[$key] = $value;
@@ -52,12 +61,10 @@ if (!function_exists('object2array')) {
 if (!function_exists('exception')) {
     /**
      * 抛出异常处理
-     *
-     * @param string $msg 异常消息
-     * @param integer $code 异常代码 默认为0
-     * @param string $exception 异常类
-     *
-     * @throws Exception
+     * @param $msg
+     * @param int $code
+     * @param string $exception
+     * @throws \think\Exception
      */
     function exception($msg, $code = 0, $exception = '')
     {
@@ -80,10 +87,10 @@ if (!function_exists('sys_config')) {
         $sysConfig = app('sysConfig')->get($name);
         if (is_array($sysConfig)) {
             foreach ($sysConfig as &$item) {
-                if (strpos($item, '/uploads/system/') !== false) $item = set_file_url($item);
+                if (strpos($item, '/uploads/system/') !== false || strpos($item, '/statics/system_images/') !== false) $item = set_file_url($item);
             }
         } else {
-            if (strpos($sysConfig, '/uploads/system/') !== false) $sysConfig = set_file_url($sysConfig);
+            if (strpos($sysConfig, '/uploads/system/') !== false || strpos($sysConfig, '/statics/system_images/') !== false) $sysConfig = set_file_url($sysConfig);
         }
         $config = is_array($sysConfig) ? $sysConfig : trim($sysConfig);
         if ($config === '' || $config === false) {
@@ -905,3 +912,148 @@ if (!function_exists('get_thumb_water')) {
     }
 }
 
+if (!function_exists('getLang')) {
+    /**
+     * 多语言
+     * @param $code
+     * @param array $replace
+     * @return array|string|string[]
+     */
+    function getLang($code, array $replace = [])
+    {
+        /** @var LangCountryServices $langCountryServices */
+        $langCountryServices = app()->make(LangCountryServices::class);
+        /** @var LangTypeServices $langTypeServices */
+        $langTypeServices = app()->make(LangTypeServices::class);
+        /** @var LangCodeServices $langCodeServices */
+        $langCodeServices = app()->make(LangCodeServices::class);
+
+        $request = app()->request;
+        //获取接口传入的语言类型
+        if (!$range = $request->header('cb-lang')) {
+            //没有传入则使用系统默认语言显示
+            if (!$range = $langTypeServices->value(['is_default' => 1], 'file_name')) {
+                //系统没有设置默认语言的话，根据浏览器语言显示，如果浏览器语言在库中找不到，则使用简体中文
+                if ($request->header('accept-language') !== null) {
+                    $range = explode(',', $request->header('accept-language'))[0];
+                } else {
+                    $range = 'zh-CN';
+                }
+            }
+        }
+
+        // 获取type_id
+        $typeId = $langCountryServices->value(['code' => $range], 'type_id') ?: 1;
+
+        // 获取类型
+        $langData = CacheService::redisHandler()->remember('lang_type_data', function () use ($langTypeServices) {
+            return $langTypeServices->getColumn(['status' => 1, 'is_del' => 0], 'file_name', 'id');
+        }, 3600);
+
+        // 获取缓存key
+        $langStr = 'lang_' . str_replace('-', '_', $langData[$typeId]);
+
+        //读取当前语言的语言包
+        $lang = CacheService::redisHandler()->remember($langStr, function () use ($typeId, $range, $langCodeServices) {
+            return $langCodeServices->getColumn(['type_id' => $typeId, 'is_admin' => 1], 'lang_explain', 'code');
+        }, 3600);
+        //获取返回文字
+        $message = (string)($lang[$code] ?? 'Code Error');
+
+        //替换变量
+        if (!empty($replace) && is_array($replace)) {
+            // 关联索引解析
+            $key = array_keys($replace);
+            foreach ($key as &$v) {
+                $v = "{:{$v}}";
+            }
+            $message = str_replace($key, $replace, $message);
+        }
+
+        return $message;
+    }
+}
+
+if (!function_exists('aj_captcha_check_one')) {
+    /**
+     * 验证滑块1次验证
+     * @param string $token
+     * @param string $pointJson
+     * @return bool
+     */
+    function aj_captcha_check_one(string $captchaType, string $token, string $pointJson)
+    {
+        aj_get_serevice($captchaType)->check($token, $pointJson);
+        return true;
+    }
+}
+
+if (!function_exists('aj_captcha_check_two')) {
+    /**
+     * 验证滑块2次验证
+     * @param string $token
+     * @param string $pointJson
+     * @return bool
+     */
+    function aj_captcha_check_two(string $captchaType, string $captchaVerification)
+    {
+        aj_get_serevice($captchaType)->verificationByEncryptCode($captchaVerification);
+        return true;
+    }
+}
+
+
+if (!function_exists('aj_captcha_create')) {
+    /**
+     * 创建验证码
+     * @return array
+     */
+    function aj_captcha_create(string $captchaType)
+    {
+        return aj_get_serevice($captchaType)->get();
+    }
+}
+
+if (!function_exists('aj_get_serevice')) {
+
+    /**
+     * @param string $captchaType
+     * @return ClickWordCaptchaService|BlockPuzzleCaptchaService
+     */
+    function aj_get_serevice(string $captchaType)
+    {
+        $config = Config::get('ajcaptcha');
+        switch ($captchaType) {
+            case "clickWord":
+                $service = new ClickWordCaptchaService($config);
+                break;
+            case "blockPuzzle":
+                $service = new BlockPuzzleCaptchaService($config);
+                break;
+            default:
+                throw new ValidateException('captchaType参数不正确！');
+        }
+        return $service;
+    }
+}
+
+if (!function_exists('out_push')) {
+    /**
+     * 默认数据推送
+     * @param string $pushUrl
+     * @param array $data
+     * @param string $tip
+     * @return bool
+     */
+    function out_push(string $pushUrl, array $data, string $tip = ''): bool
+    {
+        $param = json_encode($data, JSON_UNESCAPED_UNICODE);
+        $res = HttpService::postRequest($pushUrl, $param, ['Content-Type:application/json', 'Content-Length:' . strlen($param)]);
+        $res = $res ? json_decode($res, true) : [];
+        if (!$res || !isset($res['code']) || $res['code'] != 0) {
+            \think\facade\Log::error(['msg' => $tip . '推送失败', 'data' => $res]);
+            return false;
+        }
+        return true;
+    }
+}

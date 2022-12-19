@@ -13,12 +13,7 @@
         >
       </div>
       <div class="search-box">
-        <Input
-          placeholder="搜索快捷回复"
-          style="width: 100%"
-          v-model="searchTxt"
-          @on-enter="bindSearch"
-        >
+        <Input placeholder="搜索快捷回复" style="width: 100%" v-model="searchTxt" @on-enter="bindSearch">
           <Icon type="ios-search" slot="suffix" />
         </Input>
       </div>
@@ -39,35 +34,19 @@
           >
             <p>{{ item.name }}</p>
             <template v-if="tabCur">
-              <span
-                class="iconfont iconDot"
-                @click.top="bindEdit(item, index)"
-              ></span>
+              <span class="iconfont iconDot" @click.top="bindEdit(item, index)"></span>
 
               <div class="edit-wrapper" v-show="item.isEdit">
                 <div class="edit-item" @click="editSort(item)">编辑</div>
-                <div
-                  class="edit-item"
-                  @click="delSort(item, '删除分类', index)"
-                >
-                  删除
-                </div>
+                <div class="edit-item" @click="delSort(item, '删除分类', index)">删除</div>
               </div>
-              <div
-                class="edit-bg"
-                v-show="item.isEdit"
-                @click.stop="item.isEdit = false"
-              ></div>
+              <div class="edit-bg" v-show="item.isEdit" @click.stop="item.isEdit = false"></div>
             </template>
           </div>
         </vue-scroll>
       </div>
       <div class="right-box">
-        <Scroll
-          :on-reach-bottom="handleReachBottom"
-          class="right-scroll"
-          height="360"
-        >
+        <Scroll :on-reach-bottom="handleReachBottom" class="right-scroll" height="360">
           <div class="msg-item add-box" v-if="tabCur" style="margin-top: 0">
             <div class="box2">
               <Input
@@ -79,26 +58,12 @@
               />
               <div class="conBox" :class="{ active: addMsg.isEdit }">
                 <div class="content">
-                  <Input
-                    v-model="addMsg.message"
-                    type="textarea"
-                    :rows="4"
-                    placeholder="请输入内容"
-                  />
+                  <Input v-model="addMsg.message" type="textarea" :rows="4" placeholder="请输入内容" />
                 </div>
                 <div class="bom">
                   <div class="select">
-                    <Select
-                      v-model="addMsg.cateId"
-                      style="width: 100px"
-                      size="small"
-                    >
-                      <Option
-                        v-for="item in sortList"
-                        :value="item.id"
-                        :key="item.id"
-                        >{{ item.name }}
-                      </Option>
+                    <Select v-model="addMsg.cateId" style="width: 100px" size="small">
+                      <Option v-for="item in sortList" :value="item.id" :key="item.id">{{ item.name }} </Option>
                     </Select>
                   </div>
                   <div class="btns-box">
@@ -109,61 +74,31 @@
               </div>
             </div>
           </div>
-          <div
-            class="msg-item"
-            v-for="(item, index) in list"
-            :key="index"
-            v-if="item.id"
-          >
+          <div class="msg-item" v-for="(item, index) in list" :key="index" v-if="item.id">
             <div class="box1" v-if="!item.isEdit">
               <div class="txt-box" @click="bindRadio(item)">
-                <span class="title" v-if="item.title">{{
-                  item.title | filtersTitle
-                }}</span>
+                <span class="title" v-if="item.title">{{ item.title | filtersTitle }}</span>
                 <span v-if="item.message">{{ item.message | filtersCon }}</span>
               </div>
               <div class="edit-box" v-if="tabCur">
-                <span
-                  class="iconfont iconbianji"
-                  @click.stop="editMsg(item)"
-                ></span>
-                <span
-                  class="iconfont iconshanchu"
-                  @click.stop="delMsg(item, '删除话术', index)"
-                ></span>
+                <span class="iconfont iconbianji" @click.stop="editMsg(item)"></span>
+                <span class="iconfont iconshanchu" @click.stop="delMsg(item, '删除话术', index)"></span>
               </div>
             </div>
             <div class="box2" v-else>
-              <Input
-                class="input-box"
-                v-model="item.title"
-                placeholder="输入标题（选填）"
-                style="width: 100%"
-              />
+              <Input class="input-box" v-model="item.title" placeholder="输入标题（选填）" style="width: 100%" />
               <div class="content">
-                <Input
-                  v-model="item.message"
-                  type="textarea"
-                  :rows="4"
-                  placeholder="请输入内容"
-                />
+                <Input v-model="item.message" type="textarea" :rows="4" placeholder="请输入内容" />
               </div>
               <div class="bom">
                 <div class="select">
                   <Select v-model="cateId" style="width: 100px" size="small">
-                    <Option
-                      v-for="item in sortList"
-                      :value="item.id"
-                      :key="item.id"
-                      >{{ item.name }}
-                    </Option>
+                    <Option v-for="item in sortList" :value="item.id" :key="item.id">{{ item.name }} </Option>
                   </Select>
                 </div>
                 <div class="btns-box">
                   <Button @click.stop="item.isEdit = false">取消</Button>
-                  <Button type="primary" @click.stop="updataMsg(item)"
-                    >保存</Button
-                  >
+                  <Button type="primary" @click.stop="updataMsg(item)">保存</Button>
                 </div>
               </div>
             </div>
@@ -171,14 +106,7 @@
         </Scroll>
       </div>
     </div>
-    <Modal
-      v-model="isAddSort"
-      :title="maskTitle"
-      width="304"
-      :mask="false"
-      class="class-box"
-      :footer-hide="true"
-    >
+    <Modal v-model="isAddSort" :title="maskTitle" width="304" :mask="false" class="class-box" :footer-hide="true">
       <div class="item">
         <span>分组名称：</span>
         <Input v-model="classTitle" placeholder="分组名称" />
@@ -188,12 +116,7 @@
         <Input v-model="classSort" placeholder="输入排序" />
       </div>
       <div class="btn">
-        <Button
-          type="primary"
-          style="background: #1890ff; width: 100%"
-          @click="addServiceCate"
-          >确定</Button
-        >
+        <Button type="primary" style="background: #1890ff; width: 100%" @click="addServiceCate">确定</Button>
       </div>
     </Modal>
   </div>
@@ -207,20 +130,20 @@ import {
   addSpeeChcraft,
   addServiceCate,
   editServiceCate,
-} from "@/api/kefu";
+} from '@/api/kefu';
 export default {
-  name: "msgWindow",
+  name: 'msgWindow',
   data() {
     return {
       ops: {
         vuescroll: {
-          mode: "native",
+          mode: 'native',
           enable: false,
           tips: {
-            deactive: "Push to Load",
-            active: "Release to Load",
-            start: "Loading...",
-            beforeDeactive: "Load Successfully!",
+            deactive: 'Push to Load',
+            active: 'Release to Load',
+            start: 'Loading...',
+            beforeDeactive: 'Load Successfully!',
           },
           auto: false,
           autoLoadDistance: 0,
@@ -234,9 +157,9 @@ export default {
           },
         },
         bar: {
-          background: "#393232",
-          opacity: ".5",
-          size: "2px",
+          background: '#393232',
+          opacity: '.5',
+          size: '2px',
         },
       },
       isScroll: true,
@@ -245,34 +168,34 @@ export default {
       tabCur: 1,
       tabList: [
         {
-          title: "个人库",
+          title: '个人库',
           key: 1,
         },
         {
-          title: "公共库",
+          title: '公共库',
           key: 0,
         },
       ],
-      searchTxt: "", // 搜索
+      searchTxt: '', // 搜索
       list: [
         {
           isEdit: false,
         },
       ], // 列表
-      model1: "",
-      msgTitle: "", // 填写的标题
+      model1: '',
+      msgTitle: '', // 填写的标题
       sortList: [], // 分类
-      cateId: "", // 选中的id
+      cateId: '', // 选中的id
       addMsg: {
-        title: "",
-        message: "",
-        cateId: "",
+        title: '',
+        message: '',
+        cateId: '',
         isEdit: false,
       },
       isAddSort: false, // 添加分类
-      classTitle: "", // 分类名称
-      classSort: "", // 分类排序
-      maskTitle: "", // 弹窗标题
+      classTitle: '', // 分类名称
+      classSort: '', // 分类排序
+      maskTitle: '', // 弹窗标题
       editObj: {}, // 编辑分类对象
     };
   },
@@ -329,7 +252,7 @@ export default {
     // 头部选择
     bindTab(item) {
       this.tabCur = item.key;
-      this.cateId = "";
+      this.cateId = '';
       this.sortList = [];
       this.isScroll = true;
       this.page = 1;
@@ -365,8 +288,8 @@ export default {
         title: tit,
         num: num,
         url: `/service/cate/${row.id}`,
-        method: "DELETE",
-        ids: "",
+        method: 'DELETE',
+        ids: '',
         kefu: true,
       };
       this.$modalSure(delfromData)
@@ -375,7 +298,7 @@ export default {
           this.isScroll = true;
           this.page = 1;
           this.list = [];
-          this.cateId = "";
+          this.cateId = '';
           this.serviceCate();
         })
         .catch((res) => {
@@ -388,15 +311,15 @@ export default {
         type: this.tabCur,
       }).then((res) => {
         let obj = {
-          id: "",
-          name: "全部",
+          id: '',
+          name: '全部',
         };
         res.data.data.forEach((el, index) => {
           el.isEdit = false;
         });
         // res.data.data.unshift(obj)
         this.sortList = res.data.data;
-        if (this.cateId === "") {
+        if (this.cateId === '') {
           this.cateId = res.data.data[0].id;
         }
         this.getList();
@@ -428,7 +351,7 @@ export default {
         message: item.message,
       })
         .then((res) => {
-          this.$Message.success("修改成功");
+          this.$Message.success('修改成功');
           item.isEdit = false;
         })
         .catch((error) => {
@@ -446,7 +369,7 @@ export default {
     // 打开添加窗口
     openAddSort() {
       this.isAddSort = true;
-      this.maskTitle = "添加分组";
+      this.maskTitle = '添加分组';
       this.editObj.id = 0;
     },
     // 添加话术
@@ -457,9 +380,9 @@ export default {
         message: this.addMsg.message,
       })
         .then((res) => {
-          this.addMsg.title = "";
-          this.addMsg.message = "";
-          this.addMsg.cateId = "";
+          this.addMsg.title = '';
+          this.addMsg.message = '';
+          this.addMsg.cateId = '';
           this.addMsg.isEdit = false;
           this.$Message.success(res.msg);
           res.data.isEdit = false;
@@ -478,8 +401,8 @@ export default {
         title: tit,
         num: num,
         url: `service/speechcraft/${row.id}`,
-        method: "DELETE",
-        ids: "",
+        method: 'DELETE',
+        ids: '',
         kefu: true,
       };
       this.$modalSure(delfromData)
@@ -499,8 +422,8 @@ export default {
           sort: this.classSort,
         })
           .then((res) => {
-            this.classTitle = "";
-            this.classSort = "";
+            this.classTitle = '';
+            this.classSort = '';
             this.$Message.success(res.msg);
             this.isAddSort = false;
             this.page = 1;
@@ -509,8 +432,8 @@ export default {
             this.serviceCate();
           })
           .catch((error) => {
-            this.classTitle = "";
-            this.classSort = "";
+            this.classTitle = '';
+            this.classSort = '';
             this.$Message.error(res.msg);
           });
       } else {
@@ -519,8 +442,8 @@ export default {
           sort: this.classSort,
         })
           .then((res) => {
-            this.classTitle = "";
-            this.classSort = "";
+            this.classTitle = '';
+            this.classSort = '';
             this.$Message.success(res.msg);
             this.isAddSort = false;
             this.page = 1;
@@ -529,8 +452,8 @@ export default {
             this.serviceCate();
           })
           .catch((error) => {
-            this.classTitle = "";
-            this.classSort = "";
+            this.classTitle = '';
+            this.classSort = '';
             this.$Message.error(res.msg);
           });
       }
@@ -540,14 +463,14 @@ export default {
       this.classSort = item.sort;
       this.classTitle = item.name;
       this.isAddSort = true;
-      this.maskTitle = "编辑分组";
+      this.maskTitle = '编辑分组';
       this.editObj = item;
     },
     handleReachBottom() {
       this.getList();
     },
     bindRadio(data) {
-      this.$emit("activeTxt", data.message);
+      this.$emit('activeTxt', data.message);
     },
   },
 };

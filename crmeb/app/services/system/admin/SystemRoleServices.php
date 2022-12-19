@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -17,7 +17,6 @@ use app\Request;
 use app\services\BaseServices;
 use app\services\system\SystemMenusServices;
 use crmeb\exceptions\AuthException;
-use crmeb\utils\ApiErrorCode;
 use think\facade\Cache;
 
 
@@ -91,43 +90,41 @@ class SystemRoleServices extends BaseServices
     /**
      * 后台验证权限
      * @param Request $request
+     * @return bool|void
+     * @throws \throwable
      */
-    public function verifiAuth(Request $request)
+    public function verifyAuth(Request $request)
     {
-
+        // 获取当前的接口于接口类型
         $rule = trim(strtolower($request->rule()->getRule()));
         $method = trim(strtolower($request->method()));
+
+        // 判断接口是一下两种的时候放行
         if (in_array($rule, ['setting/admin/logout', 'menuslist'])) {
             return true;
         }
 
-        //权限菜单未添加时返回true
+        // 获取所有接口类型以及对应的接口
         $allAuth = Cache::remember('all_auth', function () {
             /** @var SystemMenusServices $menusService */
             $menusService = app()->make(SystemMenusServices::class);
-            return $menusService->getColumn([['api_url', '<>', ''], ['auth_type', '=', 2]], 'api_url,methods');
+            $allList = $menusService->getColumn([['api_url', '<>', ''], ['auth_type', '=', 2]], 'api_url,methods');
+            $allAuth = [];
+            foreach ($allList as $item) {
+                $allAuth[trim(strtolower($item['methods']))][] = trim(strtolower(str_replace(' ', '', $item['api_url'])));
+            }
+            return $allAuth;
         });
-        if (!in_array($rule, array_map(function ($item) {
-            return trim(strtolower(str_replace(' ', '', $item)));
-        }, array_column($allAuth, 'api_url')))) {
-            return true;
-        }
 
-        //菜单按钮能看到的情况下所有接口都能访问
+        // 权限菜单未添加时放行
+        if (!in_array($rule, $allAuth[$method])) return true;
+
+        // 获取管理员的接口权限列表，存在时放行
         $auth = $this->getRolesByAuth($request->adminInfo()['roles'], 2);
-        //验证访问接口是否存在
-        if (!in_array($rule, array_map(function ($item) {
-            return trim(strtolower(str_replace(' ', '', $item)));
-        }, array_column($auth, 'api_url')))) {
-//            throw new AuthException(ApiErrorCode::ERR_RULE);
+        if (isset($auth[$method]) && in_array($rule, $auth[$method])) {
             return true;
-        }
-        //验证访问接口是否有权限
-        if (empty(array_filter($auth, function ($item) use ($rule, $method) {
-            if (trim(strtolower($item['api_url'])) === $rule && $method === trim(strtolower($item['methods'])))
-                return true;
-        }))) {
-            throw new AuthException(ApiErrorCode::ERR_AUTH);
+        } else {
+            throw new AuthException(110000);
         }
     }
 
@@ -146,7 +143,12 @@ class SystemRoleServices extends BaseServices
         return Cache::remember($cacheName, function () use ($rules, $type) {
             /** @var SystemMenusServices $menusService */
             $menusService = app()->make(SystemMenusServices::class);
-            return $menusService->getColumn([['id', 'IN', $this->getRoleIds($rules)], ['auth_type', '=', $type]], 'api_url,methods');
+            $authList = $menusService->getColumn([['id', 'IN', $this->getRoleIds($rules)], ['auth_type', '=', $type]], 'api_url,methods');
+            $rolesAuth = [];
+            foreach ($authList as $item) {
+                $rolesAuth[trim(strtolower($item['methods']))][] = trim(strtolower(str_replace(' ', '', $item['api_url'])));
+            }
+            return $rolesAuth;
         });
     }
 

@@ -1,10 +1,5 @@
 <template>
   <div>
-    <div class="i-layout-page-header">
-      <div class="i-layout-page-header">
-        <span class="ivu-page-header-title">{{ $route.meta.title }}</span>
-      </div>
-    </div>
     <Card :bordered="false" dis-hover class="ivu-mt">
       <Form
         ref="formValidate"
@@ -16,12 +11,7 @@
         <Row type="flex" :gutter="24">
           <Col v-bind="grid">
             <FormItem label="是否显示：">
-              <Select
-                v-model="formValidate.status"
-                placeholder="请选择"
-                clearable
-                @on-change="userSearchs"
-              >
+              <Select v-model="formValidate.status" placeholder="请选择" clearable @on-change="userSearchs">
                 <Option value="1">显示</Option>
                 <Option value="0">不显示</Option>
               </Select>
@@ -41,9 +31,7 @@
         </Row>
         <Row type="flex">
           <Col v-bind="grid">
-            <Button type="primary" icon="md-add" @click="classAdd" class="mr20"
-              >添加配置分类</Button
-            >
+            <Button type="primary" icon="md-add" @click="classAdd" class="mr20">添加配置分类</Button>
           </Col>
         </Row>
       </Form>
@@ -58,23 +46,9 @@
         :data="classList"
         row-id="id"
       >
-        <vxe-table-column
-          field="id"
-          title="ID"
-          tooltip
-          min-width="60"
-        ></vxe-table-column>
-        <vxe-table-column
-          field="title"
-          tree-node
-          title="分类名称"
-          min-width="150"
-        ></vxe-table-column>
-        <vxe-table-column
-          field="eng_title"
-          title="分类字段"
-          min-width="150"
-        ></vxe-table-column>
+        <vxe-table-column field="id" title="ID" tooltip min-width="60"></vxe-table-column>
+        <vxe-table-column field="title" tree-node title="分类名称" min-width="150"></vxe-table-column>
+        <vxe-table-column field="eng_title" title="分类字段" min-width="150"></vxe-table-column>
         <vxe-table-column field="statuss" title="状态" min-width="150">
           <template v-slot="{ row }">
             <i-switch
@@ -90,12 +64,7 @@
             </i-switch>
           </template>
         </vxe-table-column>
-        <vxe-table-column
-          field="action"
-          title="操作"
-          min-width="150"
-          fixed="right"
-        >
+        <vxe-table-column field="action" title="操作" min-width="150" fixed="right">
           <template v-slot="{ row, index }">
             <a @click="goList(row)">配置列表</a>
             <Divider type="vertical" />
@@ -118,30 +87,20 @@
     </Card>
 
     <!-- 新建  编辑表单-->
-    <edit-from
-      ref="edits"
-      :update="true"
-      :FromData="FromData"
-      @submitFail="submitFail"
-    ></edit-from>
+    <edit-from ref="edits" :update="true" :FromData="FromData" @submitFail="submitFail"></edit-from>
   </div>
 </template>
 
 <script>
-import { mapState } from "vuex";
-import editFrom from "@/components/from/from";
-import {
-  classListApi,
-  classAddApi,
-  classEditApi,
-  setStatusApi,
-} from "@/api/system";
+import { mapState } from 'vuex';
+import editFrom from '@/components/from/from';
+import { classListApi, classAddApi, classEditApi, setStatusApi } from '@/api/system';
 export default {
-  name: "configTab",
+  name: 'configTab',
   components: { editFrom },
   data() {
     return {
-      tabconfig: { children: "children", reserve: true, accordion: true },
+      tabconfig: { children: 'children', reserve: true, accordion: true },
       grid: {
         xl: 7,
         lg: 7,
@@ -151,10 +110,10 @@ export default {
       },
       loading: false,
       formValidate: {
-        status: "",
+        status: '',
         page: 1,
         limit: 100,
-        title: "",
+        title: '',
       },
       total: 0,
       FromData: null,
@@ -163,12 +122,12 @@ export default {
     };
   },
   computed: {
-    ...mapState("media", ["isMobile"]),
+    ...mapState('media', ['isMobile']),
     labelWidth() {
       return this.isMobile ? undefined : 75;
     },
     labelPosition() {
-      return this.isMobile ? "top" : "right";
+      return this.isMobile ? 'top' : 'right';
     },
   },
   mounted() {
@@ -178,7 +137,7 @@ export default {
     // 跳转到配置列表页面
     goList(row) {
       this.$router.push({
-        path: "/admin/system/config/system_config_tab/list/" + row.id,
+        path: '/admin/system/config/system_config_tab/list/' + row.id,
       });
     },
     // 添加配置分类
@@ -212,8 +171,8 @@ export default {
         title: tit,
         num: num,
         url: `setting/config_class/${row.id}`,
-        method: "DELETE",
-        ids: "",
+        method: 'DELETE',
+        ids: '',
       };
       this.$modalSure(delfromData)
         .then((res) => {
@@ -228,7 +187,7 @@ export default {
     // 列表
     getList() {
       this.loading = true;
-      this.formValidate.status = this.formValidate.status || "";
+      this.formValidate.status = this.formValidate.status || '';
       classListApi(this.formValidate)
         .then(async (res) => {
           let data = res.data;
@@ -272,5 +231,4 @@ export default {
 };
 </script>
 
-<style scoped>
-</style>
+<style scoped></style>

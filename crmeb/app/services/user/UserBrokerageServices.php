@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2021 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -13,7 +13,7 @@ namespace app\services\user;
 
 use app\dao\user\UserBrokerageDao;
 use app\services\BaseServices;
-use think\exception\ValidateException;
+use crmeb\exceptions\ApiException;
 
 /**
  * 用户佣金
@@ -105,6 +105,13 @@ class UserBrokerageServices extends BaseServices
             'status' => 1,
             'pm' => 1
         ],
+        'get_pink_master_brokerage' => [
+            'title' => '获得拼团团长佣金',
+            'type' => 'pink_master_brokerage',
+            'mark' => '开团成功，奖励团长佣金{%number%}',
+            'status' => 1,
+            'pm' => 1
+        ],
     ];
 
 
@@ -181,7 +188,7 @@ class UserBrokerageServices extends BaseServices
         $id = (int)$order['id'];
         $where = [
             'uid' => [$order['spread_uid'], $order['spread_two_uid'], $order['staff_id'], $order['agent_id'], $order['division_id']],
-            'type' => ['self_brokerage', 'one_brokerage', 'two_brokerage', 'staff_brokerage', 'agent_brokerage', 'division_brokerage'],
+            'type' => ['self_brokerage', 'one_brokerage', 'two_brokerage', 'staff_brokerage', 'agent_brokerage', 'division_brokerage', 'pink_master_brokerage'],
             'link_id' => $id,
             'pm' => 1
         ];
@@ -305,7 +312,7 @@ class UserBrokerageServices extends BaseServices
         /** @var UserServices $userServices */
         $userServices = app()->make(UserServices::class);
         if (!$userServices->getUserInfo($uid)) {
-            throw new ValidateException('数据不存在');
+            throw new ApiException(100026);
         }
         /** @var UserExtractServices $userExtract */
         $userExtract = app()->make(UserExtractServices::class);
@@ -384,7 +391,7 @@ class UserBrokerageServices extends BaseServices
         /** @var UserServices $userService */
         $userService = app()->make(UserServices::class);
         if (!$userService->getUserInfo($uid)) {
-            throw new ValidateException('数据不存在');
+            throw new ApiException(100026);
         }
         return [
             'rank' => $this->brokerageRankList($type),

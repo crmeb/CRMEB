@@ -12,30 +12,19 @@
         ></component>
       </div>
       <div style="text-align: center" v-if="rCom.length">
-        <Button
-          type="primary"
-          style="width: 100%; margin: 0 auto; height: 40px"
-          @click="saveConfig"
-          >保存</Button
-        >
+        <Button type="primary" style="width: 100%; margin: 0 auto; height: 40px" @click="saveConfig">保存</Button>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import {
-  getCategory,
-  getByCategory,
-  getProduct,
-  diySave,
-  storeStatus,
-} from "@/api/diy";
-import toolCom from "@/components/diyComponents/index.js";
-import { mapMutations } from "vuex";
-import { mapState } from "vuex";
+import { getCategory, getByCategory, getProduct, diySave, storeStatus } from '@/api/diy';
+import toolCom from '@/components/diyComponents/index.js';
+import { mapMutations } from 'vuex';
+import { mapState } from 'vuex';
 export default {
-  name: "rightConfig",
+  name: 'rightConfig',
   components: {
     ...toolCom,
   },
@@ -50,7 +39,7 @@ export default {
     },
     configNum: {
       type: Number | String,
-      default: "default",
+      default: 'default',
     },
   },
   computed: {
@@ -67,20 +56,16 @@ export default {
         this.rCom = [];
         this.configData = this.$store.state.moren.defaultConfig[nVal.name];
         if (!this.configData.hasOwnProperty(this.configNum)) {
-          let defaultObj = JSON.parse(
-            JSON.stringify(this.configData.defaultVal)
-          );
+          let defaultObj = JSON.parse(JSON.stringify(this.configData.defaultVal));
           this.configData[nVal.num] = defaultObj;
-          this.$store.commit("moren/upDataName", this.configData);
+          this.$store.commit('moren/upDataName', this.configData);
         }
         let that = this;
         setTimeout(function () {
           that.rCom = that.$store.state.moren.component[nVal.name].list;
         }, 30);
         if (this.configData[nVal.num].selectConfig) {
-          let type = this.configData[nVal.num].selectConfig.type
-            ? this.configData[nVal.num].selectConfig.type
-            : 0;
+          let type = this.configData[nVal.num].selectConfig.type ? this.configData[nVal.num].selectConfig.type : 0;
           if (type) {
             this.getByCategory();
           } else {
@@ -128,7 +113,7 @@ export default {
           });
         });
         this.configData[this.name.num].selectConfig.list = data;
-        this.bus.$emit("upData", data);
+        this.bus.$emit('upData', data);
       });
     },
     //获取二级分类
@@ -143,35 +128,30 @@ export default {
           });
         });
         this.configData[this.name.num].selectConfig.list = data;
-        this.bus.$emit("upData", data);
+        this.bus.$emit('upData', data);
       });
     },
     // 保存数据
     saveConfig() {
       let data = this.$store.state.moren.defaultConfig;
-      if (this.name.name == "tabBar") {
+      if (this.name.name == 'tabBar') {
         if (!this.status) {
           let list = data.tabBar.default.tabBarList.list;
           for (let i = 0; i < list.length; i++) {
-            if (
-              list[i].link == "/pages/storeList/index" ||
-              list[i].link == "pages/storeList/index"
-            ) {
-              return this.$Message.error(
-                "请先开启您的周边功能(/pages/storeList/index)"
-              );
+            if (list[i].link == '/pages/storeList/index' || list[i].link == 'pages/storeList/index') {
+              return this.$Message.error('请先开启您的周边功能(/pages/storeList/index)');
             }
           }
         }
         if (data.tabBar.default.tabBarList.list.length < 2) {
-          return this.$Message.error("您最少应添加2个导航");
+          return this.$Message.error('您最少应添加2个导航');
         }
       }
 
       diySave(this.pageId, {
         value: data,
       }).then((res) => {
-        this.$Message.success("保存成功");
+        this.$Message.success('保存成功');
       });
     },
     // 对象转数组

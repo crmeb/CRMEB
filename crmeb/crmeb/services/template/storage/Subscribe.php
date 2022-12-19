@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -11,8 +11,8 @@
 namespace crmeb\services\template\storage;
 
 use app\services\message\TemplateMessageServices;
-use crmeb\basic\BaseMessage;
-use crmeb\services\MiniProgramService;
+use crmeb\services\template\BaseMessage;
+use crmeb\services\app\MiniProgramService;
 use think\facade\Log;
 
 /**
@@ -22,6 +22,7 @@ use think\facade\Log;
  */
 class Subscribe extends BaseMessage
 {
+    protected $error;
 
     protected function initialize(array $config)
     {
@@ -41,17 +42,12 @@ class Subscribe extends BaseMessage
 
     /**
      * 发送订阅消息
-     * @param string $templateId
+     * @param string $tempid
      * @param array $data
      * @return bool|\EasyWeChat\Support\Collection|mixed|null
      */
-    public function send(string $templateId, array $data = [])
+    public function send(string $tempid, array $data = [])
     {
-        $templateId = $this->getTemplateCode($templateId);
-        if (!$templateId) {
-            return $this->setError('Template number does not exist');
-        }
-        $tempid = $this->getTempId($templateId);
         if (!$tempid) {
             return $this->setError('Template ID does not exist');
         }
@@ -81,5 +77,27 @@ class Subscribe extends BaseMessage
     public function list()
     {
         // TODO: Implement list() method.
+    }
+
+    /**
+     * 设置错误信息
+     * @param string|null $error
+     * @return bool
+     */
+    protected function setError(?string $error = null)
+    {
+        $this->error = $error ?: '未知错误';
+        return false;
+    }
+
+    /**
+     * 获取错误信息
+     * @return string
+     */
+    public function getError()
+    {
+        $error = $this->error;
+        $this->error = null;
+        return $error;
     }
 }

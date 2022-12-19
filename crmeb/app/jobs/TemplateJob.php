@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -12,7 +12,9 @@
 namespace app\jobs;
 
 
+use app\services\message\SystemNotificationServices;
 use crmeb\basic\BaseJobs;
+use crmeb\services\CacheService;
 use crmeb\services\template\Template;
 use crmeb\traits\QueueTrait;
 use think\facade\Log;
@@ -45,19 +47,24 @@ class TemplateJob extends BaseJobs
                 $template->color($color);
             }
             if ($link) {
-
                 switch ($type) {
                     case 'wechat':
-                        $link =
-                            sys_config('site_url') . Route::buildUrl($link)
-                                ->suffix('')
-                                ->domain(false)->build();
+                        $link = sys_config('site_url') . Route::buildUrl($link)->suffix('')->domain(false)->build();
+                        break;
+                    default:
                         break;
                 }
-
                 $template->url($link);
             }
-            return $template->send($tempCode, $data);
+            //判断小程序还是公众号，获取数据id
+            $is_type = $type == 'wechat' ? 'is_wechat' : 'is_routine';
+            $key = $is_type == 'is_wechat' ? 'wechat_' . $tempCode : 'routine_' . $tempCode;
+            $tempid = CacheService::get($key, function () use ($type, $tempCode, $is_type) {
+                /** @var SystemNotificationServices $notifyServices */
+                $notifyServices = app()->make(SystemNotificationServices::class);
+                return $notifyServices->getNotInfo(['type' => $is_type, 'mark' => $tempCode])['tempid'];
+            });
+            return $template->send($tempid, $data);
         } catch (\Exception $e) {
             Log::error($e->getMessage());
             return true;

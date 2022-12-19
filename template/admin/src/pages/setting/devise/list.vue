@@ -4,13 +4,7 @@
       <span class="ivu-page-header-title mr20">页面装修</span>
       <div>
         <div style="float: right" v-if="cardShow == 1 || cardShow == 2">
-          <Button
-            class="bnt"
-            type="primary"
-            @click="submit"
-            :loading="loadingExist"
-            >保存</Button
-          >
+          <Button class="bnt" type="primary" @click="submit" :loading="loadingExist">保存</Button>
           <Button class="bnt ml20" @click="reast">重置</Button>
         </div>
       </div>
@@ -34,35 +28,16 @@
       <Col span="21" class="right-wrapper">
         <Card :bordered="false" dis-hover v-if="cardShow == 0">
           <Row v-if="cardShow == 0">
-            <Col
-              style="
-                width: 310px;
-                height: 550px;
-                margin-right: 30px;
-                position: relative;
-              "
-              v-if="isDiy"
-            >
-              <iframe
-                class="iframe-box"
-                :src="imgUrl"
-                frameborder="0"
-                ref="iframe"
-              ></iframe>
+            <Col style="width: 310px; height: 550px; margin-right: 30px; position: relative" v-if="isDiy">
+              <iframe class="iframe-box" :src="imgUrl" frameborder="0" ref="iframe"></iframe>
               <div class="mask"></div>
             </Col>
-            <Col
-              :span="isDiy ? '' : 24"
-              v-bind="isDiy ? grid : ''"
-              :class="isDiy ? 'table' : ''"
-            >
+            <Col :span="isDiy ? '' : 24" v-bind="isDiy ? grid : ''" :class="isDiy ? 'table' : ''">
               <div class="acea-row row-between-wrapper">
                 <Row type="flex">
                   <Col v-bind="grid">
                     <div class="button acea-row row-middle">
-                      <Button type="primary" icon="md-add" @click="add"
-                        >添加</Button
-                      >
+                      <Button type="primary" icon="md-add" @click="add">添加专题页</Button>
                     </div>
                   </Col>
                 </Row>
@@ -81,54 +56,33 @@
                   <div class="font-blue">首页</div>
                 </template>
                 <template slot-scope="{ row, index }" slot="type_name">
-                  <Tag color="primary" v-if="row.is_diy">{{ row.type_name }}</Tag>
-                  <Tag color="success" v-else>{{ row.type_name }}</Tag>
+                  <Tag color="primary" v-if="row.is_diy">{{ row.type_name }}{{row.id}}</Tag>
+                  <Tag color="warning" v-else>{{ row.type_name }}</Tag>
+                  <Tag color="success" v-if="row.status == 1">首页</Tag>
                 </template>
                 <template slot-scope="{ row, index }" slot="action">
-                  <div
-                    style="display: inline-block"
-                    v-if="row.status || row.is_diy"
-                    @click="edit(row)"
-                  >
+                  <div style="display: inline-block" v-if="row.status || row.is_diy" @click="edit(row)">
                     <a
                       v-if="row.is_diy === 1"
                       class="target"
                       ref="target"
-                      :href="`${url}/admin/setting/pages/diy_index?id=${
-                        row.id
-                      }&name=${row.template_name || 'moren'}`"
+                      :href="`${url}/admin/setting/pages/diy_index?id=${row.id}&name=${row.template_name || 'moren'}`"
                       target="_blank"
                     >
                       编辑</a
                     >
                     <a v-else class="target">编辑</a>
                   </div>
-                  <Divider
-                    type="vertical"
-                    v-if="
-                      (row.status || row.is_diy) &&
-                      row.id != 1 &&
-                      row.status != 1
-                    "
-                  />
+                  <Divider type="vertical" v-if="(row.status || row.is_diy) && row.id != 1 && row.status != 1" />
 
-                  <div
-                    style="display: inline-block"
-                    v-if="row.id != 1 && row.status != 1"
-                  >
+                  <div style="display: inline-block" v-if="row.id != 1 && row.status != 1">
                     <a @click="del(row, '删除此模板', index)">删除</a>
                   </div>
-                  <Divider
-                    type="vertical"
-                    v-if="(row.id != 1 && row.status != 1) || row.is_diy"
-                  />
+                  <Divider type="vertical" v-if="(row.id != 1 && row.status != 1) || row.is_diy" />
                   <div style="display: inline-block" v-if="row.is_diy">
                     <a @click="preview(row, index)">预览</a>
                   </div>
-                  <Divider
-                    type="vertical"
-                    v-if="row.is_diy && row.status != 1"
-                  />
+                  <Divider type="vertical" v-if="row.is_diy && row.status != 1" />
                   <div style="display: inline-block" v-if="row.status != 1">
                     <a @click="setStatus(row, index)">设为首页</a>
                   </div>
@@ -168,11 +122,7 @@
             </Col>
           </Row>
         </Card>
-        <goodClass
-          v-else-if="cardShow == 1"
-          ref="category"
-          @parentFun="getChildData"
-        ></goodClass>
+        <goodClass v-else-if="cardShow == 1" ref="category" @parentFun="getChildData"></goodClass>
         <users v-else ref="users" @parentFun="getChildData"></users>
       </Col>
     </Row>
@@ -199,28 +149,15 @@
             <Row type="flex" :gutter="24">
               <Col span="24">
                 <Col v-bind="grid">
-                  <FormItem
-                    label="开发移动端链接："
-                    prop="link"
-                    label-for="link"
-                  >
-                    <Input
-                      v-model="formItem.link"
-                      placeholder="http://localhost:8080"
-                    />
+                  <FormItem label="开发移动端链接：" prop="link" label-for="link">
+                    <Input v-model="formItem.link" placeholder="http://localhost:8080" />
                   </FormItem>
                 </Col>
               </Col>
             </Row>
             <Row type="flex">
               <Col v-bind="grid">
-                <Button
-                  type="primary"
-                  class="ml20"
-                  @click="handleSubmit('formItem')"
-                  style="width: 100%"
-                  >提交</Button
-                >
+                <Button type="primary" class="ml20" @click="handleSubmit('formItem')" style="width: 100%">提交</Button>
               </Col>
             </Row>
           </Form>
@@ -247,26 +184,18 @@
 </template>
 
 <script>
-import Setting from "@/setting";
-import ClipboardJS from "clipboard";
-import {
-  diyList,
-  diyDel,
-  setStatus,
-  recovery,
-  getRoutineCode,
-  getDiyCreate,
-  setDefault,
-} from "@/api/diy";
-import { mapState } from "vuex";
-import QRCode from "qrcodejs2";
-import goodClass from "./goodClass";
-import users from "./users";
-import { getCookies, setCookies } from "@/libs/util";
+import Setting from '@/setting';
+import ClipboardJS from 'clipboard';
+import { diyList, diyDel, setStatus, recovery, getRoutineCode, getDiyCreate, setDefault } from '@/api/diy';
+import { mapState } from 'vuex';
+import QRCode from 'qrcodejs2';
+import goodClass from './goodClass';
+import users from './users';
+import { getCookies, setCookies } from '@/libs/util';
 export default {
-  name: "devise_list",
+  name: 'devise_list',
   computed: {
-    ...mapState("admin/layout", ["menuCollapse"]),
+    ...mapState('admin/layout', ['menuCollapse']),
   },
   components: {
     goodClass,
@@ -280,77 +209,75 @@ export default {
         lg: 19,
       },
       loading: false,
-      theme3: "light",
+      theme3: 'light',
       menuList: [
         {
-          name: "商城首页",
+          name: '商城首页',
           id: 1,
         },
         {
-          name: "商品分类",
+          name: '商品分类',
           id: 2,
         },
         {
-          name: "个人中心",
+          name: '个人中心',
           id: 3,
         },
       ],
       columns1: [
         {
-          title: "页面ID",
-          key: "id",
+          title: '页面ID',
+          key: 'id',
           width: 80,
         },
         {
-          title: "模板名称",
-          key: "name",
+          title: '模板名称',
+          key: 'name',
           minWidth: 100,
         },
         {
-          title: "模板类型",
-          slot: "type_name",
+          title: '模板类型',
+          slot: 'type_name',
           minWidth: 100,
         },
         {
-          title: "添加时间",
-          key: "add_time",
+          title: '添加时间',
+          key: 'add_time',
           minWidth: 100,
         },
         {
-          title: "更新时间",
-          key: "update_time",
+          title: '更新时间',
+          key: 'update_time',
           minWidth: 100,
         },
         {
-          title: "操作",
-          slot: "action",
+          title: '操作',
+          slot: 'action',
           // fixed: "right",
           minWidth: 180,
         },
       ],
       list: [],
-      imgUrl: "",
+      imgUrl: '',
       modal: false,
-      BaseURL: Setting.apiBaseURL.replace(/adminapi/, ""),
+      BaseURL: Setting.apiBaseURL.replace(/adminapi/, ''),
       cardShow: 0,
       loadingExist: false,
       isDiy: 1,
-      qrcodeImg: "",
+      qrcodeImg: '',
       diyFrom: {
-        type: "",
+        type: '',
         page: 1,
         limit: 10,
       },
       total: 0,
       formItem: {
         id: 0,
-        link: "",
+        link: '',
       },
       isTemplate: false,
       ruleValidate: {
-        link: [
-          { required: true, message: "请输入移动端链接", trigger: "blur" },
-        ],
+        link: [{ required: true, message: '请输入移动端链接', trigger: 'blur' }],
       },
       url: window.location.origin,
     };
@@ -362,7 +289,7 @@ export default {
   mounted: function () {},
   methods: {
     cancel() {
-      this.$refs["formItem"].resetFields();
+      this.$refs['formItem'].resetFields();
     },
     getChildData(e) {
       this.loadingExist = e;
@@ -385,21 +312,21 @@ export default {
       this.cardShow = index;
     },
     onCopy() {
-      this.$Message.success("复制预览链接成功");
+      this.$Message.success('复制预览链接成功');
     },
     onError() {
-      this.$Message.error("复制预览链接失败");
+      this.$Message.error('复制预览链接失败');
     },
     //生成二维码
     creatQrCode(id) {
-      this.$refs.qrCodeUrl.innerHTML = "";
+      this.$refs.qrCodeUrl.innerHTML = '';
       let url = `${this.BaseURL}pages/annex/special/index?id=${id}`;
       var qrcode = new QRCode(this.$refs.qrCodeUrl, {
         text: url, // 需要转换为二维码的内容
         width: 160,
         height: 160,
-        colorDark: "#000000",
-        colorLight: "#ffffff",
+        colorDark: '#000000',
+        colorLight: '#ffffff',
         correctLevel: QRCode.CorrectLevel.H,
       });
     },
@@ -421,9 +348,9 @@ export default {
     handleSubmit(name) {
       this.$refs[name].validate((valid) => {
         if (valid) {
-          setCookies("moveLink", this.formItem.link);
+          setCookies('moveLink', this.formItem.link);
           this.$router.push({
-            path: "/admin/setting/pages/diy",
+            path: '/admin/setting/pages/diy',
             query: { id: this.formItem.id, type: 1 },
           });
         } else {
@@ -433,14 +360,14 @@ export default {
     },
     changeMenu(row, index, name) {
       switch (name) {
-        case "1":
+        case '1':
           this.setDefault(row);
           break;
-        case "2":
+        case '2':
           this.recovery(row);
           break;
-        case "3":
-          this.del(row, "删除此模板", index);
+        case '3':
+          this.del(row, '删除此模板', index);
           break;
         default:
       }
@@ -467,20 +394,6 @@ export default {
         let data = res.data;
         this.list = data.list;
         this.total = data.count;
-        // data.list.forEach(function (e) {
-        //   console.log("dddd", e.status);
-        //   if (e.status == 1) {
-        //     console.log("dddd22");
-        //     that.isDiy = e.is_diy;
-        //     let imgUrl = `${that.BaseURL}pages/annex/special/index?id=${e.id}`;
-        //     storage.setItem("imgUrl", imgUrl);
-        //     that.imgUrl = imgUrl;
-        //     console.log("ddddd", storage.getItem("imgUrl"));
-        //     // let imgUrl = JSON.parse(storage.getItem('menuList'));
-        //     // that.imgUrl = `http://192.168.1.12:8080/pages/annex/special/index?id=${e.id}`;
-        //     console.log("3333", that.imgUrl);
-        //   }
-        // });
       });
     },
     pageChange(status) {
@@ -492,10 +405,10 @@ export default {
       this.formItem.id = row.id;
       if (!row.is_diy) {
         if (!row.status) {
-          this.$Message.error("请先设为首页在进行编辑");
+          this.$Message.error('请先设为首页在进行编辑');
         } else {
           this.$router.push({
-            path: "/admin/setting/pages/diy",
+            path: '/admin/setting/pages/diy',
             query: { id: row.id, type: 0 },
           });
         }
@@ -508,17 +421,17 @@ export default {
     // 添加
     add() {
       this.$router.push({
-        path: "/admin/setting/pages/diy_index",
-        query: { id: 0, name: "首页", type: 1 },
+        path: '/admin/setting/pages/diy_index',
+        query: { id: 0, name: '首页', type: 1 },
       });
     },
     // 删除
     del(row) {
       let delfromData = {
-        title: "删除",
+        title: '删除',
         num: 2000,
-        url: "diy/del/" + row.id,
-        method: "DELETE",
+        url: 'diy/del/' + row.id,
+        method: 'DELETE',
         data: {
           type: 1,
         },
@@ -534,8 +447,8 @@ export default {
     // 使用模板
     async setStatus(row) {
       this.$Modal.confirm({
-        title: "提示",
-        content: "<p>是否把该模板设为首页</p>",
+        title: '提示',
+        content: '<p>是否把该模板设为首页</p>',
         onOk: () => {
           setStatus(row.id, {
             type: 1,

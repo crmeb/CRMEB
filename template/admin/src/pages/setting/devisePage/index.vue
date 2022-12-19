@@ -3,9 +3,7 @@
     <div class="i-layout-page-header header_top">
       <div class="i-layout-page-header fl_header">
         <router-link :to="{ path: '/admin/setting/pages/devise' }"
-          ><Button icon="ios-arrow-back" size="small" type="text"
-            >返回</Button
-          ></router-link
+          ><Button icon="ios-arrow-back" size="small" type="text">返回</Button></router-link
         >
         <Divider type="vertical" />
         <span class="ivu-page-header-title mr20" style="padding: 0">页面设计</span>
@@ -14,19 +12,10 @@
     <Card :bordered="false" dis-hover class="ivu-mt">
       <div class="flex-wrapper">
         <!-- :src="iframeUrl" -->
-        <iframe
-          class="iframe-box"
-          :src="iframeUrl"
-          frameborder="0"
-          ref="iframe"
-        ></iframe>
+        <iframe class="iframe-box" :src="iframeUrl" frameborder="0" ref="iframe"></iframe>
         <div>
           <div class="content">
-            <rightConfig
-              :name="configName"
-              :pageId="pageId"
-              :configNum="configNum"
-            ></rightConfig>
+            <rightConfig :name="configName" :pageId="pageId" :configNum="configNum"></rightConfig>
           </div>
         </div>
         <!-- <links v-if="show"></links> -->
@@ -36,13 +25,13 @@
 </template>
 
 <script>
-import { diyGetInfo, diySave } from "@/api/diy";
-import { mapMutations } from "vuex";
-import rightConfig from "@/components/rightConfig/index";
-import links from "./links";
-import { getCookies, setCookies } from "@/libs/util";
+import { diyGetInfo, diySave } from '@/api/diy';
+import { mapMutations } from 'vuex';
+import rightConfig from '@/components/rightConfig/index';
+import links from './links';
+import { getCookies, setCookies } from '@/libs/util';
 export default {
-  name: "index",
+  name: 'index',
   components: {
     rightConfig,
     links,
@@ -50,10 +39,10 @@ export default {
   data() {
     return {
       configName: {},
-      configNum: "default",
-      iframeUrl: "",
-      setConfig: "",
-      updataConfig: "",
+      configNum: 'default',
+      iframeUrl: '',
+      setConfig: '',
+      updataConfig: '',
       pageId: 0,
     };
   },
@@ -62,7 +51,7 @@ export default {
     let pageId = this.$route.query.id;
     let defaultData = this.$store.state.moren.defaultConfig;
     this.pageId = parseInt(pageId);
-    let moveLink = getCookies("moveLink");
+    let moveLink = getCookies('moveLink');
     if (Number(this.$route.query.type) === 1) {
       this.iframeUrl = `${moveLink}/pages/index/index?type=iframeWindow`;
     } else {
@@ -81,7 +70,7 @@ export default {
   },
   mounted() {
     //监听子页面给当前页面传值
-    window.addEventListener("message", this.handleMessage, false);
+    window.addEventListener('message', this.handleMessage, false);
   },
   methods: {
     //接收iframe值
@@ -94,10 +83,10 @@ export default {
       }
     },
     add(data) {
-      this.$store.commit("moren/setConfig", data);
+      this.$store.commit('moren/setConfig', data);
     },
     upData(data) {
-      this.$store.commit("moren/updataConfig", data);
+      this.$store.commit('moren/updataConfig', data);
     },
     // ...mapMutations({
     //     add: 'diy/setConfig',

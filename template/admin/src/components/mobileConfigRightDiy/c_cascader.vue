@@ -20,7 +20,7 @@
 
 <script>
 export default {
-  name: "c_cascader",
+  name: 'c_cascader',
   props: {
     configObj: {
       type: Object,
@@ -36,7 +36,7 @@ export default {
     return {
       defaults: {},
       configData: {},
-      timeStamp: "",
+      timeStamp: '',
     };
   },
   mounted() {
@@ -61,7 +61,7 @@ export default {
     sliderChange(e) {
       let storage = window.localStorage;
       this.configData.activeValue = e ? e : storage.getItem(this.timeStamp);
-      this.$emit("getConfig", { name: "cascader", values: e });
+      this.$emit('getConfig', { name: 'cascader', values: e });
     },
   },
 };

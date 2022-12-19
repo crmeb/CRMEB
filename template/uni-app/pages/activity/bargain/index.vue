@@ -9,27 +9,27 @@
 						</div>
 						<div class="text acea-row row-column-around">
 							<div class="line1" style="width: 100%;">{{ item.title }}</div>
-							<count-down :justify-left="'justify-content:left'" :is-day="true" :tip-text="'倒计时 '"
-								:day-text="' 天 '" :hour-text="' 时 '" :minute-text="' 分 '" :second-text="' 秒'"
+							<count-down :justify-left="'justify-content:left'" :is-day="true" :tip-text="$t(`倒计时`) "
+								:day-text=" $t(`天`) " :hour-text=" $t(`时`) " :minute-text=" $t(`分`) " :second-text=" $t(`秒`)"
 								:datatime="item.datatime" v-if="item.status === 1"></count-down>
-							<div class="successTxt font-num" v-else-if="item.status === 3">砍价成功</div>
-							<div class="endTxt" v-else>活动已结束</div>
+							<div class="successTxt font-num" v-else-if="item.status === 3">{{$t(`砍价成功`)}}</div>
+							<div class="endTxt" v-else>{{$t(`活动已结束`)}}</div>
 							<div class="money font-num">
-								已砍至<span class="symbol">￥</span><span class="num">{{ item.residue_price }}</span>
+								{{$t(`已砍至`)}}<span class="symbol">{{$t(`￥`)}}</span><span class="num">{{ item.residue_price }}</span>
 							</div>
 						</div>
 					</div>
 					<div class="bottom acea-row row-between-wrapper">
-						<div class="purple" v-if="item.status === 1">活动进行中</div>
-						<div class="success" v-else-if="item.status === 3">砍价成功</div>
-						<div class="end" v-else>活动已结束</div>
+						<div class="purple" v-if="item.status === 1">{{$t(`活动进行中`)}}</div>
+						<div class="success" v-else-if="item.status === 3">{{$t(`砍价成功`)}}</div>
+						<div class="end" v-else>{{$t(`活动已结束`)}}</div>
 						<div class="acea-row row-middle row-right">
 							<div class="bnt cancel" v-if="item.status === 1"
 								@click="getBargainUserCancel(item.bargain_id)">
-								取消活动
+								{{$t(`取消活动`)}}
 							</div>
 							<div class="bnt bg-color-red" v-if="item.status === 1" @click="goDetail(item.bargain_id)">
-								继续砍价
+								{{$t(`继续砍价`)}}
 							</div>
 							<!-- <div class="bnt bg-color-red" v-else @click="goList">重开一个</div> -->
 						</div>
@@ -39,7 +39,7 @@
 			</div>
 		</block>
 		<block v-if="bargain.length == 0">
-			<emptyPage title="暂无砍价记录～"></emptyPage>
+			<emptyPage :title="$t(`暂无砍价记录`)"></emptyPage>
 		</block>
 		<!-- #ifndef MP -->
 		<home></home>

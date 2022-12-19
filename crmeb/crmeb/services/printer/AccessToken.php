@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -12,6 +12,7 @@ namespace crmeb\services\printer;
 
 
 use app\services\other\CacheServices;
+use crmeb\exceptions\AdminException;
 use crmeb\services\HttpService;
 use think\facade\Config;
 use think\helper\Str;
@@ -79,7 +80,6 @@ class AccessToken extends HttpService
         $this->machineCode = $config['terminal'] ?? null;
         $this->name = $name;
         $this->configFile = $configFile;
-        $this->apiUrl = Config::get($this->configFile . '.stores.' . $this->name . '.apiUrl', 'https://open-api.10ss.net/');
     }
 
     /**
@@ -111,7 +111,7 @@ class AccessToken extends HttpService
         /** @var CacheServices $cacheServices */
         $cacheServices = app()->make(CacheServices::class);
         $this->accessToken[$this->name] = $cacheServices->getDbCache('YLY_access_token', function () {
-            $request = self::postRequest($this->apiUrl . 'oauth/oauth', [
+            $request = self::postRequest('https://open-api.10ss.net/auth/oauth', [
                 'client_id' => $this->clientId,
                 'grant_type' => 'client_credentials',
                 'sign' => strtolower(md5($this->clientId . time() . $this->apiKey)),
@@ -126,20 +126,11 @@ class AccessToken extends HttpService
                 return $request['body']['access_token'] ?? '';
             }
             return '';
-        },86400);
+        }, 86400);
         if (!$this->accessToken[$this->name])
-            throw new \Exception('获取access_token获取失败');
+            throw new AdminException(400718);
 
         return $this->accessToken[$this->name];
-    }
-
-    /**
-     * 获取请求链接
-     * @return string
-     */
-    public function getApiUrl(string $url = '')
-    {
-        return $url ? $this->apiUrl . $url : $this->apiUrl;
     }
 
     /**

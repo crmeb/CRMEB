@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -248,7 +248,7 @@ class SystemGroupDataServices extends BaseServices
     {
         $groupData = $this->dao->get($id);
         if (!$groupData) {
-            throw new AdminException('修改失败未查到数据!');
+            throw new AdminException(100026);
         }
         return create_form('编辑数据', $this->createGroupForm($gid, $groupData->toArray()), $this->url('/setting/group_data/' . $id), 'PUT');
     }
@@ -311,7 +311,7 @@ class SystemGroupDataServices extends BaseServices
         /** @var SystemGroupServices $systemGroupServices */
         $systemGroupServices = app()->make(SystemGroupServices::class);
         $gid = $systemGroupServices->value(['config_name' => $config_name], 'id');
-        if (!$gid) throw new AdminException('该数据不存在!');
+        if (!$gid) throw new AdminException(100026);
         $group = $systemGroupServices->getOne(['id' => $gid], 'id,config_name,fields');
         $fields = json_decode($group['fields'], true) ?? [];
         $this->transaction(function () use ($gid, $params, $fields) {
@@ -324,7 +324,7 @@ class SystemGroupDataServices extends BaseServices
                     foreach ($fields as $index => $field) {
                         if ($key == $field["title"]) {
                             if ($param == "") {
-                                throw new AdminException($field["name"] . "不能为空！");
+                                throw new AdminException(400607, ['name' => $field["name"]]);
                             } else {
                                 $value[$key]["type"] = $field["type"];
                                 $value[$key]["value"] = $param;
@@ -345,5 +345,48 @@ class SystemGroupDataServices extends BaseServices
         });
         \crmeb\services\CacheService::clear();
         return true;
+    }
+
+    /**
+     * 检查秒杀时间段
+     * @param SystemGroupServices $services
+     * @param $gid
+     * @param $params
+     * @param int $id
+     * @return mixed
+     */
+    public function checkSeckillTime(SystemGroupServices $services, $gid, $params, $id = 0)
+    {
+        $name = $services->value(['id' => $gid], 'config_name');
+        if ($name == 'routine_seckill_time') {
+            if ($params['time'] == '') {
+                throw new AdminException(400190);
+            }
+            if (!$params['continued']) {
+                throw new AdminException(400191);
+            }
+            if (!preg_match('/^(\d|1\d|2[0-3])$/', $params['time'])) {
+                throw new AdminException(400192);
+            }
+            if (!preg_match('/^([1-9]|1\d|2[0-4])$/', $params['continued'])) {
+                throw new AdminException(400193);
+            }
+            if (($params['time'] + $params['continued']) > 24) throw new AdminException(400194);
+            $list = $this->dao->getColumn(['gid' => $gid], 'value', 'id');
+            if ($id) unset($list[$id]);
+            $times = $time = [];
+            foreach ($list as $item) {
+                $info = json_decode($item, true);
+                for ($i = 0; $i < $info['continued']['value']; $i++) {
+                    $times[] = $info['time']['value'] + $i;
+                }
+            }
+            for ($i = 0; $i < $params['continued']; $i++) {
+                $time[] = $params['time'] + $i;
+            }
+            foreach ($time as $v) {
+                if (in_array($v, $times)) throw new AdminException(400195);
+            }
+        }
     }
 }

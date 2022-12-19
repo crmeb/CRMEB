@@ -1,14 +1,19 @@
 <?php
-
-
+// +----------------------------------------------------------------------
+// | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
+// +----------------------------------------------------------------------
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
+// +----------------------------------------------------------------------
+// | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
+// +----------------------------------------------------------------------
+// | Author: CRMEB Team <admin@crmeb.com>
+// +----------------------------------------------------------------------
 namespace app\adminapi\controller\v1\application\wechat;
-
 
 use app\adminapi\controller\AuthController;
 use app\services\wechat\WechatQrcodeCateServices;
 use app\services\wechat\WechatQrcodeRecordServices;
 use app\services\wechat\WechatQrcodeServices;
-use crmeb\exceptions\AdminException;
 use think\facade\App;
 
 class WechatQrcode extends AuthController
@@ -66,7 +71,7 @@ class WechatQrcode extends AuthController
             ['cate_name', '']
         ]);
         $this->qrcodeCateServices->saveData($data);
-        return app('json')->success('保存成功');
+        return app('json')->success(100000);
     }
 
     /**
@@ -77,7 +82,7 @@ class WechatQrcode extends AuthController
     public function delCate($id)
     {
         $this->qrcodeCateServices->delCate($id);
-        return app('json')->success('保存成功');
+        return app('json')->success(100000);
     }
 
     /**
@@ -98,7 +103,7 @@ class WechatQrcode extends AuthController
             ['time', 0],
         ]);
         $this->wechatQrcodeServices->saveQrcode($id, $data);
-        return app('json')->success('保存成功');
+        return app('json')->success(100000);
     }
 
     /**
@@ -123,7 +128,7 @@ class WechatQrcode extends AuthController
      */
     public function qrcodeInfo($id = 0)
     {
-        if (!$id) return app('json')->fail('参数错误');
+        if (!$id) return app('json')->fail(100100);
         $info = $this->wechatQrcodeServices->qrcodeInfo($id);
         return app('json')->success($info);
     }
@@ -135,9 +140,9 @@ class WechatQrcode extends AuthController
      */
     public function delQrcode($id = 0)
     {
-        if (!$id) return app('json')->fail('参数错误');
+        if (!$id) return app('json')->fail(100100);
         $this->wechatQrcodeServices->update($id, ['is_del' => 1]);
-        return app('json')->success('删除成功');
+        return app('json')->success(100002);
     }
 
     /**
@@ -148,9 +153,9 @@ class WechatQrcode extends AuthController
      */
     public function setStatus($id, $status)
     {
-        if (!$id) return app('json')->fail('参数错误');
+        if (!$id) return app('json')->fail(100100);
         $this->wechatQrcodeServices->update($id, ['status' => $status]);
-        return app('json')->success('设置成功');
+        return app('json')->success(100014);
     }
 
     /**

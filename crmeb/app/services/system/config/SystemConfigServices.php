@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -18,7 +18,6 @@ use app\services\BaseServices;
 use crmeb\exceptions\AdminException;
 use crmeb\services\FileService;
 use crmeb\services\FormBuilder;
-use think\exception\ValidateException;
 use think\facade\Log;
 
 /**
@@ -140,10 +139,21 @@ class SystemConfigServices extends BaseServices
         'pay_weixin_open' => [
             'son_type' => [
                 'pay_weixin_mchid' => '',
-                'pay_weixin_key' => '',
+                'pay_wechat_type' => [
+                    'son_type' => [
+                        'pay_weixin_key' => '',
+                    ],
+                    'show_value' => 0
+                ],
+                'pay_wechat_type@' => [
+                    'son_type' => [
+                        'pay_weixin_serial_no' => '',
+                        'pay_weixin_key_v3' => ''
+                    ],
+                    'show_value' => 1
+                ],
                 'pay_weixin_client_cert' => '',
                 'pay_weixin_client_key' => '',
-                'paydir' => '',
             ],
             'show_value' => 1
         ],
@@ -185,6 +195,12 @@ class SystemConfigServices extends BaseServices
             ],
             'show_value' => 2
         ],
+        'pay_new_weixin_open' => [
+            'son_type' => [
+                'pay_new_weixin_mchid' => ''
+            ],
+            'show_value' => 1
+        ]
     ];
 
     /**
@@ -800,7 +816,7 @@ class SystemConfigServices extends BaseServices
         }
         $auth = $this->postUrl[$name]['auth'] ?? false;
         if ($auth === false) {
-            throw new ValidateException('请求不被允许');
+            throw new AdminException(400601);
         }
         if ($auth) {
             /** @var SystemConfigTabServices $systemConfigTabServices */
@@ -808,7 +824,7 @@ class SystemConfigServices extends BaseServices
             foreach ($post as $key => $value) {
                 $tab_ids = $systemConfigTabServices->getColumn([['eng_title', 'IN', $auth]], 'id');
                 if (!$tab_ids || !in_array($key, $this->dao->getColumn([['config_tab_id', 'IN', $tab_ids]], 'menu_name'))) {
-                    throw new ValidateException('设置类目不被允许');
+                    throw new AdminException(400602);
                 }
             }
         }
@@ -828,7 +844,7 @@ class SystemConfigServices extends BaseServices
     {
         $menu = $this->dao->get($id)->getData();
         if (!$menu) {
-            throw new AdminException('修改数据不存在!');
+            throw new AdminException(100026);
         }
         /** @var SystemConfigTabServices $service */
         $service = app()->make(SystemConfigTabServices::class);
@@ -1002,7 +1018,7 @@ class SystemConfigServices extends BaseServices
         $data['parameter'] = str_replace("\r\n", "\n", $data['parameter']);//防止不兼容
         $parameter = explode("\n", $data['parameter']);
         if (count($parameter) < 2) {
-            throw new AdminException('请输入正确格式的配置参数');
+            throw new AdminException(400603);
         }
         foreach ($parameter as $k => $v) {
             if (isset($v) && !empty($v)) {
@@ -1010,7 +1026,7 @@ class SystemConfigServices extends BaseServices
             }
         }
         if (count($option) < 2) {
-            throw new AdminException('请输入正确格式的配置参数');
+            throw new AdminException(400603);
         }
         $bool = 1;
         foreach ($option as $k => $v) {
@@ -1023,13 +1039,13 @@ class SystemConfigServices extends BaseServices
             }
         }
         if (!$bool) {
-            throw new AdminException('请输入正确格式的配置参数');
+            throw new AdminException(400603);
         }
         $num1 = count($option_new);//提取该数组的数目
         $arr2 = array_unique($option_new);//合并相同的元素
         $num2 = count($arr2);//提取合并后数组个数
         if ($num1 > $num2) {
-            throw new AdminException('请输入正确格式的配置参数');
+            throw new AdminException(400603);
         }
         return true;
     }
@@ -1053,12 +1069,12 @@ class SystemConfigServices extends BaseServices
                 switch ($k) {
                     case 'required':
                         if ($v == 'true' && $data['value'] === '') {
-                            throw new ValidateException(($data['info'] ?? '') . '请输入默认值');
+                            throw new AdminException(400604, ['name' => $data['info'] ?? '']);
                         }
                         break;
                     case 'url':
                         if ($v == 'true' && !check_link($data['value'])) {
-                            throw new ValidateException(($data['info'] ?? '') . '请输入正确url');
+                            throw new AdminException(400605, ['name' => $data['info'] ?? '']);
                         }
                         break;
                 }
@@ -1123,7 +1139,7 @@ WSS;
         try {
             file_put_contents($wssFile, $content);
         } catch (\Throwable $e) {
-            throw new ValidateException('保存wss证书失败，失败原因：' . $e->getMessage());
+            throw new AdminException(400606);
         }
     }
 

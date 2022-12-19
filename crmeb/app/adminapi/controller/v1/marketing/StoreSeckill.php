@@ -2,13 +2,12 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
 // | Author: CRMEB Team <admin@crmeb.com>
 // +----------------------------------------------------------------------
-
 namespace app\adminapi\controller\v1\marketing;
 
 use app\adminapi\controller\AuthController;
@@ -32,8 +31,10 @@ class StoreSeckill extends AuthController
 
     /**
      * 显示资源列表
-     *
-     * @return \think\Response
+     * @return mixed
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
      */
     public function index()
     {
@@ -67,7 +68,6 @@ class StoreSeckill extends AuthController
             [['title', 's'], ''],
             [['info', 's'], ''],
             [['unit_name', 's'], ''],
-//            ['image', ''],
             ['images', []],
             [['give_integral', 'd'], 0],
             ['section_time', []],
@@ -89,45 +89,18 @@ class StoreSeckill extends AuthController
             ['virtual_type', 0],
         ]);
         $this->validate($data, \app\adminapi\validate\marketing\StoreSeckillValidate::class, 'save');
-        if ($data['section_time']) {
-            [$start_time, $end_time] = $data['section_time'];
-            if (strtotime($end_time) + 86400 < time()) {
-                return app('json')->fail('活动结束时间不能小于当前时间');
-            }
-        }
-        $seckill = [];
-        if ($id) {
-            $seckill = $this->services->get((int)$id);
-            if (!$seckill) {
-                return app('json')->fail('数据不存在');
-            }
-        }
-        //限制编辑
-        if ($data['copy'] == 0 && $seckill) {
-            if ($seckill['stop_time'] + 86400 < time()) {
-                return app('json')->fail('活动已结束,请重新添加或复制');
-            }
-        }
-        if ($data['num'] < $data['once_num']) {
-            return app('json')->fail('限制单次购买数量不能大于总购买数量');
-        }
-        if ($data['copy'] == 1) {
-            $id = 0;
-            unset($data['copy']);
-        }
         $this->services->saveData($id, $data);
-        return app('json')->success('保存成功');
+        return app('json')->success(100000);
     }
 
     /**
-     * 删除指定资源
-     *
-     * @param int $id
-     * @return \think\Response
+     * 删除秒杀
+     * @param $id
+     * @return mixed
      */
     public function delete($id)
     {
-        if (!$id) return app('json')->fail('缺少参数');
+        if (!$id) return app('json')->fail(100100);
         $this->services->update($id, ['is_del' => 1]);
         /** @var StoreProductAttrValueServices $storeProductAttrValueServices */
         $storeProductAttrValueServices = app()->make(StoreProductAttrValueServices::class);
@@ -138,7 +111,7 @@ class StoreSeckill extends AuthController
             $cache = app()->make(CacheService::class);
             $cache->del($name);
         }
-        return app('json')->success('删除成功!');
+        return app('json')->success(100002);
     }
 
     /**
@@ -150,17 +123,53 @@ class StoreSeckill extends AuthController
     public function set_status($id, $status)
     {
         $this->services->update($id, ['status' => $status]);
-        return app('json')->success($status == 0 ? '关闭成功' : '开启成功');
+        return app('json')->success(100014);
     }
 
     /**
      * 秒杀时间段列表
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\ModelNotFoundException
+     * @return mixed
      */
     public function time_list()
     {
         $list['data'] = sys_data('routine_seckill_time');
         return app('json')->success(compact('list'));
+    }
+
+    /**
+     * 秒杀统计
+     * @return mixed
+     */
+    public function seckillStatistics($id)
+    {
+        $data = $this->services->seckillStatistics($id);
+        return app('json')->success($data);
+    }
+
+    /**
+     * 秒杀参与人统计
+     * @param $id
+     * @return mixed
+     */
+    public function seckillPeople($id)
+    {
+        [$keyword] = $this->request->getMore([
+            ['keyword', '']
+        ], true);
+        return app('json')->success($this->services->seckillPeople($id, $keyword));
+    }
+
+    /**
+     * 秒杀订单统计
+     * @param $id
+     * @return mixed
+     */
+    public function seckillOrder($id)
+    {
+        $where = $this->request->getMore([
+            ['real_name', ''],
+            ['status', '']
+        ]);
+        return app('json')->success($this->services->seckillOrder($id, $where));
     }
 }

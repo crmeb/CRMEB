@@ -1,10 +1,5 @@
 <template>
   <div>
-    <div class="i-layout-page-header">
-      <div class="i-layout-page-header">
-        <span class="ivu-page-header-title">{{ $route.meta.title }}</span>
-      </div>
-    </div>
     <Card :bordered="false" dis-hover class="ivu-mt">
       <Table
         class="mt25"
@@ -38,14 +33,7 @@
         </template>
       </Table>
       <div class="acea-row row-right page">
-        <Page
-          :total="total"
-          :current="page"
-          :page-size="limit"
-          show-elevator
-          show-total
-          @on-change="pageChange"
-        />
+        <Page :total="total" :current="page" :page-size="limit" show-elevator show-total @on-change="pageChange" />
       </div>
     </Card>
     <Modal v-model="modal1" title="编辑会员权益" footer-hide :z-index="555">
@@ -54,11 +42,7 @@
         <Input v-model="form.status" style="display: none"></Input>
         <Input v-model="form.right_type" style="display: none"></Input>
         <FormItem label="权益名称" prop="title">
-          <Input
-            v-model.trim="form.title"
-            placeholder="请输入权益名称"
-            disabled
-          ></Input>
+          <Input v-model.trim="form.title" placeholder="请输入权益名称" disabled></Input>
         </FormItem>
         <FormItem label="展示名称" prop="show_title">
           <Input v-model.trim="form.show_title" placeholder="请输入展示名称"></Input>
@@ -79,13 +63,9 @@
           ></Input>
         </FormItem>
         <FormItem
-          v-show="
-            form.right_type !== 'coupon' && form.right_type !== 'vip_price'
-          "
+          v-show="form.right_type !== 'coupon' && form.right_type !== 'vip_price'"
           :label="
-            form.right_type === 'offline' ||
-            form.right_type === 'express' ||
-            form.right_type === 'vip_price'
+            form.right_type === 'offline' || form.right_type === 'express' || form.right_type === 'vip_price'
               ? '折扣数(%)'
               : '积分倍数'
           "
@@ -98,15 +78,7 @@
         </FormItem>
       </Form>
     </Modal>
-    <Modal
-      v-model="modal2"
-      width="950px"
-      scrollable
-      footer-hide
-      closable
-      title="选择权益图标"
-      :z-index="888"
-    >
+    <Modal v-model="modal2" width="950px" scrollable footer-hide closable title="选择权益图标" :z-index="888">
       <uploadPictures
         v-if="modal2"
         isChoice="单选"
@@ -119,9 +91,9 @@
 </template>
 
 <script>
-import { mapState, mapMutations } from "vuex";
-import { memberRight, memberRightSave } from "@/api/user";
-import uploadPictures from "@/components/uploadPictures";
+import { mapState, mapMutations } from 'vuex';
+import { memberRight, memberRightSave } from '@/api/user';
+import uploadPictures from '@/components/uploadPictures';
 
 export default {
   components: { uploadPictures },
@@ -129,28 +101,28 @@ export default {
     return {
       thead: [
         {
-          title: "权益名称",
-          key: "title",
+          title: '权益名称',
+          key: 'title',
         },
         {
-          title: "展示名称",
-          key: "show_title",
+          title: '展示名称',
+          key: 'show_title',
         },
         {
-          title: "权益图标",
-          slot: "image",
+          title: '权益图标',
+          slot: 'image',
         },
         {
-          title: "权益简介",
-          key: "explain",
+          title: '权益简介',
+          key: 'explain',
         },
         {
-          title: "权益状态",
-          slot: "status",
+          title: '权益状态',
+          slot: 'status',
         },
         {
-          title: "操作",
-          slot: "action",
+          title: '操作',
+          slot: 'action',
         },
       ],
       tbody: [],
@@ -160,25 +132,21 @@ export default {
       limit: 30,
       modal1: false,
       form: {
-        id: "",
-        right_type: "",
-        title: "",
-        show_title: "",
-        image: "",
-        explain: "",
+        id: '',
+        right_type: '',
+        title: '',
+        show_title: '',
+        image: '',
+        explain: '',
         number: 1,
         status: 1,
       },
       rules: {
-        title: [{ required: true, message: "请输入权益名称", trigger: "blur" }],
-        show_title: [
-          { required: true, message: "请输入展示名称", trigger: "blur" },
-        ],
-        image: [{ required: true, message: "请上传权益图标" }],
-        explain: [
-          { required: true, message: "请输入权益简介", trigger: "blur" },
-        ],
-        number: [{ required: true, type: "integer", message: "请输入正整数" }],
+        title: [{ required: true, message: '请输入权益名称', trigger: 'blur' }],
+        show_title: [{ required: true, message: '请输入展示名称', trigger: 'blur' }],
+        image: [{ required: true, message: '请上传权益图标' }],
+        explain: [{ required: true, message: '请输入权益简介', trigger: 'blur' }],
+        number: [{ required: true, type: 'integer', message: '请输入正整数' }],
       },
       modal2: false,
       gridPic: {
@@ -198,7 +166,7 @@ export default {
     };
   },
   computed: {
-    ...mapState("media", ["isMobile"]),
+    ...mapState('media', ['isMobile']),
   },
   created() {
     this.getRightList();

@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -180,7 +180,7 @@ class SystemMenusServices extends BaseServices
     {
         $menusInfo = $this->dao->get($id);
         if (!$menusInfo) {
-            throw new AdminException('数据不存在');
+            throw new AdminException(100026);
         }
         return create_form('修改权限', $this->createMenusForm($menusInfo->getData()), $this->url('/setting/update/' . $id), 'PUT');
     }
@@ -194,7 +194,7 @@ class SystemMenusServices extends BaseServices
     {
         $menusInfo = $this->dao->get($id);
         if (!$menusInfo) {
-            throw new AdminException('数据不存在');
+            throw new AdminException(100026);
         }
         $menu = $menusInfo->getData();
         $menu['pid'] = (int)$menu['pid'];
@@ -224,7 +224,7 @@ class SystemMenusServices extends BaseServices
     public function delete(int $id)
     {
         if ($this->dao->count(['pid' => $id])) {
-            throw new AdminException('请先删除改菜单下的子菜单');
+            throw new AdminException(400613);
         }
         return $this->dao->delete($id);
     }
@@ -240,13 +240,15 @@ class SystemMenusServices extends BaseServices
     public function getMenus($roles): array
     {
         $field = ['menu_name', 'pid', 'id'];
+        $where = ['is_del' => 0];
         if (!$roles) {
-            $menus = $this->dao->getMenusRoule(['is_del' => 0], $field);
+            $menus = $this->dao->getMenusRoule($where, $field);
         } else {
             /** @var SystemRoleServices $service */
             $service = app()->make(SystemRoleServices::class);
-            $ids = $service->value([['id', 'in', $roles]], 'GROUP_CONCAT(rules) as ids');
-            $menus = $this->dao->getMenusRoule(['rule' => $ids], $field);
+            $roles = is_string($roles) ? explode(',', $roles) : $roles;
+            $ids = $service->getRoleIds($roles);
+            $menus = $this->dao->getMenusRoule(['rule' => $ids] + $where, $field);
         }
         return $this->tidyMenuTier(false, $menus);
     }

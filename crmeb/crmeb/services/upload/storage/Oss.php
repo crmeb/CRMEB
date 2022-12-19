@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -10,14 +10,14 @@
 // +----------------------------------------------------------------------
 namespace crmeb\services\upload\storage;
 
-use crmeb\basic\BaseUpload;
+use crmeb\services\upload\BaseUpload;
+use crmeb\exceptions\AdminException;
 use crmeb\exceptions\UploadException;
 use Guzzle\Http\EntityBody;
 use OSS\Core\OssException;
 use OSS\Model\CorsConfig;
 use OSS\Model\CorsRule;
 use OSS\OssClient;
-use think\exception\ValidateException;
 
 
 /**
@@ -101,7 +101,7 @@ class Oss extends BaseUpload
     protected function app()
     {
         if (!$this->accessKey || !$this->secretKey) {
-            throw new UploadException('Please configure accessKey and secretKey');
+            throw new UploadException(400721);
         }
         $this->handle = new OssClient($this->accessKey, $this->secretKey, $this->storageRegion);
         //不再自动创建
@@ -131,7 +131,7 @@ class Oss extends BaseUpload
                     $file . '.fileMime' => 'Upload fileMine error'
                 ];
                 validate([$file => $this->validate], $error)->check([$file => $fileHandle]);
-            } catch (ValidateException $e) {
+            } catch (\Exception $e) {
                 return $this->setError($e->getMessage());
             }
         }
@@ -156,11 +156,12 @@ class Oss extends BaseUpload
 
     /**
      * 文件流上传
-     * @param string $fileContent
+     * @param $fileContent
      * @param string|null $key
-     * @return bool|mixed
+     * @return array|bool|mixed
+     * @throws OssException
      */
-    public function stream(string $fileContent, string $key = null)
+    public function stream($fileContent, string $key = null)
     {
         try {
             if (!$key) {
@@ -234,13 +235,13 @@ class Oss extends BaseUpload
             switch ($waterConfig['watermark_type']) {
                 case 1://图片
                     if (!$waterConfig['watermark_image']) {
-                        throw new ValidateException('请先配置水印图片');
+                        throw new AdminException(400722);
                     }
                     $waterPath = $filePath .= '/watermark,image_' . base64_encode($waterConfig['watermark_image']) . ',t_' . $waterConfig['watermark_opacity'] . ',g_' . ($this->position[$waterConfig['watermark_position']] ?? 'nw') . ',x_' . $waterConfig['watermark_x'] . ',y_' . $waterConfig['watermark_y'];
                     break;
                 case 2://文字
                     if (!$waterConfig['watermark_text']) {
-                        throw new ValidateException('请先配置水印文字');
+                        throw new AdminException(400723);
                     }
                     $waterConfig['watermark_text_color'] = str_replace('#', '', $waterConfig['watermark_text_color']);
                     $waterPath = $filePath .= '/watermark,text_' . base64_encode($waterConfig['watermark_text']) . ',color_' . $waterConfig['watermark_text_color'] . ',size_' . $waterConfig['watermark_text_size'] . ',g_' . ($this->position[$waterConfig['watermark_position']] ?? 'nw') . ',x_' . $waterConfig['watermark_x'] . ',y_' . $waterConfig['watermark_y'];

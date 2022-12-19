@@ -48,7 +48,7 @@ abstract class BaseDao
      * @param array $where
      * @return int
      */
-    public function count(array $where = []): int
+    public function count(array $where = [])
     {
         return $this->search($where)->count();
     }
@@ -59,17 +59,24 @@ abstract class BaseDao
      * @param string $field
      * @param int $page
      * @param int $limit
+     * @param bool $search
      * @return \think\Collection
      * @throws \think\db\exception\DataNotFoundException
      * @throws \think\db\exception\DbException
      * @throws \think\db\exception\ModelNotFoundException
      */
-    public function selectList(array $where, $field = '*', $page = 0, $limit = 0)
+    public function selectList(array $where, string $field = '*', int $page = 0, int $limit = 0, string $order = '', bool $search = false)
     {
-        return $this->getModel()->where($where)->field($field)
-            ->when($page && $limit, function ($query) use ($page, $limit) {
-                $query->page($page, $limit);
-            })->select();
+        if ($search) {
+            $model = $this->search($where);
+        } else {
+            $model = $this->getModel()->where($where);
+        }
+        return $model->field($field)->when($page && $limit, function ($query) use ($page, $limit) {
+            $query->page($page, $limit);
+        })->when($order !== '', function ($query) use ($order) {
+            $query->order($order);
+        })->select();
     }
 
     /**
@@ -92,7 +99,7 @@ abstract class BaseDao
      * @throws \think\db\exception\DbException
      * @throws \think\db\exception\ModelNotFoundException
      */
-    public function getDistinctCount(array $where, $field, $search = true)
+    public function getDistinctCount(array $where, $field, bool $search = true)
     {
         if ($search) {
             return $this->search($where)->field('COUNT(distinct(' . $field . ')) as count')->select()->toArray()[0]['count'] ?? 0;
@@ -112,7 +119,7 @@ abstract class BaseDao
 
     /**
      * 获取主键
-     * @return mixed
+     * @return array|string
      */
     protected function getPk()
     {
@@ -121,7 +128,7 @@ abstract class BaseDao
 
     /**
      * 获取一条数据
-     * @param int|array $id
+     * @param $id
      * @param array|null $field
      * @param array|null $with
      * @return array|Model|null
@@ -136,7 +143,7 @@ abstract class BaseDao
         } else {
             $where = [$this->getPk() => $id];
         }
-        return $this->getModel()::where($where)->when(count($with), function ($query) use ($with) {
+        return $this->getModel()->where($where)->when(count($with), function ($query) use ($with) {
             $query->with($with);
         })->field($field ?? ['*'])->find();
     }
@@ -179,7 +186,7 @@ abstract class BaseDao
     public function value(array $where, ?string $field = '')
     {
         $pk = $this->getPk();
-        return $this->getModel()::where($where)->value($field ?: $pk);
+        return $this->getModel()->where($where)->value($field ?: $pk);
     }
 
     /**
@@ -191,7 +198,7 @@ abstract class BaseDao
      */
     public function getColumn(array $where, string $field, string $key = '')
     {
-        return $this->getModel()::where($where)->column($field, $key);
+        return $this->getModel()->where($where)->column($field, $key);
     }
 
     /**
@@ -206,7 +213,7 @@ abstract class BaseDao
         } else {
             $where = [is_null($key) ? $this->getPk() : $key => $id];
         }
-        return $this->getModel()::where($where)->delete();
+        return $this->getModel()->where($where)->delete();
     }
 
     /**
@@ -214,7 +221,7 @@ abstract class BaseDao
      * @param int|string|array $id
      * @param array $data
      * @param string|null $key
-     * @return mixed
+     * @return BaseModel
      */
     public function update($id, array $data, ?string $key = null)
     {
@@ -235,7 +242,7 @@ abstract class BaseDao
      */
     public function batchUpdate(array $ids, array $data, ?string $key = null)
     {
-        return $this->getModel()::whereIn(is_null($key) ? $this->getPk() : $key, $ids)->update($data);
+        return $this->getModel()->whereIn(is_null($key) ? $this->getPk() : $key, $ids)->update($data);
     }
 
     /**
@@ -251,18 +258,19 @@ abstract class BaseDao
     /**
      * 插入数据
      * @param array $data
-     * @return mixed
+     * @return \think\Collection
+     * @throws \Exception
      */
     public function saveAll(array $data)
     {
-        return $this->getModel()::insertAll($data);
+        return $this->getModel()->saveAll($data);
     }
 
     /**
      * 获取某个字段内的值
      * @param $value
      * @param string $filed
-     * @param string $valueKey
+     * @param string|null $valueKey
      * @param array|string[] $where
      * @return mixed
      */
@@ -281,10 +289,10 @@ abstract class BaseDao
     {
         $with = [];
         $whereKey = [];
-        $respones = new \ReflectionClass($this->setModel());
+        $responses = new \ReflectionClass($this->setModel());
         foreach ($withSearch as $fieldName) {
             $method = 'search' . Str::studly($fieldName) . 'Attr';
-            if ($respones->hasMethod($method)) {
+            if ($responses->hasMethod($method)) {
                 $with[] = $fieldName;
             } else {
                 $whereKey[] = $fieldName;
@@ -297,7 +305,8 @@ abstract class BaseDao
      * 根据搜索器获取搜索内容
      * @param array $withSearch
      * @param array|null $data
-     * @return Model
+     * @return BaseModel
+     * @throws \ReflectionException
      */
     protected function withSearchSelect(array $withSearch, ?array $data = [])
     {
@@ -308,7 +317,8 @@ abstract class BaseDao
     /**
      * 搜索
      * @param array $where
-     * @return BaseModel|mixed
+     * @return BaseModel
+     * @throws \ReflectionException
      */
     protected function search(array $where = [])
     {
@@ -325,27 +335,25 @@ abstract class BaseDao
      * @param string $field
      * @param bool $search
      * @return float
+     * @throws \ReflectionException
      */
     public function sum(array $where, string $field, bool $search = false)
     {
         if ($search) {
             return $this->search($where)->sum($field);
         } else {
-            return $this->getModel()::where($where)->sum($field);
+            return $this->getModel()->where($where)->sum($field);
         }
     }
 
     /**
      * 高精度加法
-     * @param int|string $key
+     * @param $key
      * @param string $incField
      * @param string $inc
      * @param string|null $keyField
      * @param int $acc
      * @return bool
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\DbException
-     * @throws \think\db\exception\ModelNotFoundException
      */
     public function bcInc($key, string $incField, string $inc, string $keyField = null, int $acc = 2)
     {
@@ -354,12 +362,11 @@ abstract class BaseDao
 
     /**
      * 高精度 减法
-     * @param int|string $uid id
-     * @param string $decField 相减的字段
-     * @param float|int $dec 减的值
-     * @param string $keyField id的字段
-     * @param bool $minus 是否可以为负数
-     * @param int $acc 精度
+     * @param $key
+     * @param string $decField
+     * @param string $dec
+     * @param string|null $keyField
+     * @param int $acc
      * @return bool
      */
     public function bcDec($key, string $decField, string $dec, string $keyField = null, int $acc = 2)
@@ -405,7 +412,7 @@ abstract class BaseDao
      * @param int $num
      * @param string $stock
      * @param string $sales
-     * @return mixed
+     * @return false
      * @throws \think\db\exception\DataNotFoundException
      * @throws \think\db\exception\DbException
      * @throws \think\db\exception\ModelNotFoundException
@@ -485,5 +492,27 @@ abstract class BaseDao
 //        } else {
 //            return false;
 //        }
+    }
+
+    /**
+     * 获取条件数据中的某个值的最大值
+     * @param array $where
+     * @param string $field
+     * @return mixed
+     */
+    public function getMax(array $where = [], string $field = '')
+    {
+        return $this->getModel()->where($where)->max($field);
+    }
+
+    /**
+     * 获取条件数据中的某个值的最小值
+     * @param array $where
+     * @param string $field
+     * @return mixed
+     */
+    public function getMin(array $where = [], string $field = '')
+    {
+        return $this->getModel()->where($where)->min($field);
     }
 }

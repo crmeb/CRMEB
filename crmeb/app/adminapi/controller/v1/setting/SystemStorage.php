@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -15,7 +15,7 @@ namespace app\adminapi\controller\v1\setting;
 use app\adminapi\controller\AuthController;
 use app\services\system\config\SystemConfigServices;
 use app\services\system\config\SystemStorageServices;
-use crmeb\services\UploadService;
+use app\services\other\UploadService;
 use think\facade\App;
 
 /**
@@ -53,7 +53,7 @@ class SystemStorage extends AuthController
     public function create($type)
     {
         if (!$type) {
-            return app('json')->fail('缺少参数');
+            return app('json')->fail(100100);
         }
         return app('json')->success($this->services->getFormStorage((int)$type));
     }
@@ -101,7 +101,7 @@ class SystemStorage extends AuthController
 
         $this->services->saveConfig((int)$type, $data);
 
-        return app('json')->success('保存成功');
+        return app('json')->success(100000);
     }
 
     /**
@@ -111,7 +111,7 @@ class SystemStorage extends AuthController
     public function synch($type)
     {
         $this->services->synchronization((int)$type);
-        return app('json')->success('同步成功');
+        return app('json')->success(100038);
     }
 
     /**
@@ -132,7 +132,7 @@ class SystemStorage extends AuthController
         $type = (int)$type;
         if ($type === 4) {
             if (!$data['appid'] && !sys_config('tengxun_appid')) {
-                return app('json')->fail('缺少APPID');
+                return app('json')->fail(400224);
             }
         }
         if (!$data['accessKey']) {
@@ -140,7 +140,7 @@ class SystemStorage extends AuthController
         }
         $this->services->saveStorage((int)$type, $data);
 
-        return app('json')->success('添加成功');
+        return app('json')->success(100021);
     }
 
     /**
@@ -152,13 +152,13 @@ class SystemStorage extends AuthController
     public function status(SystemConfigServices $services, $id)
     {
         if (!$id) {
-            return app('json')->fail('缺少参数');
+            return app('json')->fail(100100);
         }
 
         $info = $this->services->get($id);
         $info->status = 1;
         if (!$info->domain) {
-            return app('json')->fail('请先设置空间域名');
+            return app('json')->fail(400225);
         }
 //        $services->update('upload_type', ['value' => json_encode($info->type)], 'menu_name');
         \crmeb\services\CacheService::clear();
@@ -176,7 +176,7 @@ class SystemStorage extends AuthController
             $this->services->update(['type' => $info->type], ['status' => 0]);
             $info->save();
         });
-        return app('json')->success('修改成功');
+        return app('json')->success(100001);
     }
 
     /**
@@ -204,10 +204,10 @@ class SystemStorage extends AuthController
             ['ca', '']
         ]);
         if (!$domain) {
-            return app('json')->fail('缺少参数');
+            return app('json')->fail(100100);
         }
         if (strstr($domain, 'https://') === false && strstr($domain, 'http://') === false) {
-            return app('json')->fail('格式错误，请输入格式为：http://域名');
+            return app('json')->fail(400226);
 
         }
 //        if (strstr($domain, 'https://') !== false && !$data['pri']) {
@@ -216,7 +216,7 @@ class SystemStorage extends AuthController
 
         $this->services->updateDomain($id, $domain);
 
-        return app('json')->success('修改成功');
+        return app('json')->success(100001);
     }
 
     /**
@@ -230,13 +230,13 @@ class SystemStorage extends AuthController
     public function delete($id)
     {
         if (!$id) {
-            return app('json')->fail('缺少参数');
+            return app('json')->fail(100100);
         }
 
         if ($this->services->deleteStorage($id)) {
-            return app('json')->success('删除成功');
+            return app('json')->success(100002);
         } else {
-            return app('json')->fail('删除失败');
+            return app('json')->fail(100008);
         }
     }
 
@@ -250,14 +250,14 @@ class SystemStorage extends AuthController
     {
         $status = $this->services->count(['type' => $type, 'status' => 1]);
         if (!$status && $type != 1) {
-            return app('json')->success('未有正在使用的存储空间');
+            return app('json')->success(400227);
         }
         $services->update('upload_type', ['value' => json_encode($type)], 'menu_name');
         \crmeb\services\CacheService::clear();
         if ($type != 1) {
-            $msg = '切换云存储成功,请检查是否开启使用了存储空间！';
+            $msg = 400228;
         } else {
-            $msg = '切换本地存储成功';
+            $msg = 400229;
         }
         return app('json')->success($msg);
     }

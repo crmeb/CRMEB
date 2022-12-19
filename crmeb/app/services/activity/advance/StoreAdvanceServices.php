@@ -2,13 +2,13 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2021 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
 // | Author: CRMEB Team <admin@crmeb.com>
 // +----------------------------------------------------------------------
-declare (strict_types = 1);
+declare (strict_types=1);
 
 namespace app\services\activity\advance;
 
@@ -26,8 +26,8 @@ use app\services\product\sku\StoreProductAttrResultServices;
 use app\services\product\sku\StoreProductAttrServices;
 use app\services\product\sku\StoreProductAttrValueServices;
 use crmeb\exceptions\AdminException;
+use crmeb\exceptions\ApiException;
 use crmeb\services\CacheService;
-use think\exception\ValidateException;
 
 /**
  * 商品预售
@@ -94,7 +94,7 @@ class StoreAdvanceServices extends BaseServices
         /** @var StoreProductServices $storeProductServices */
         $storeProductServices = app()->make(StoreProductServices::class);
         if ($data['quota'] > $storeProductServices->value(['id' => $data['product_id']], 'stock')) {
-            throw new AdminException('限量不能超过商品库存');
+            throw new AdminException(400090);
         }
         $this->transaction(function () use ($id, $data, $description, $detail, $items, $storeDescriptionServices, $storeProductAttrServices, $storeProductServices) {
             if ($id) {
@@ -102,10 +102,10 @@ class StoreAdvanceServices extends BaseServices
                 $storeDescriptionServices->saveDescription((int)$id, $description, 6);
                 $skuList = $storeProductServices->validateProductAttr($items, $detail, (int)$id, 6);
                 $valueGroup = $storeProductAttrServices->saveProductAttr($skuList, (int)$id, 6);
-                if (!$res) throw new AdminException('修改失败');
+                if (!$res) throw new AdminException(100007);
             } else {
                 if (!$storeProductServices->getOne(['is_show' => 1, 'is_del' => 0, 'id' => $data['product_id']])) {
-                    throw new AdminException('原商品已下架或移入回收站');
+                    throw new AdminException(400091);
                 }
                 $data['add_time'] = time();
                 $res = $this->dao->save($data);
@@ -113,14 +113,14 @@ class StoreAdvanceServices extends BaseServices
                 $storeDescriptionServices->saveDescription((int)$res->id, $description, 6);
                 $skuList = $storeProductServices->validateProductAttr($items, $detail, (int)$res->id, 6);
                 $valueGroup = $storeProductAttrServices->saveProductAttr($skuList, (int)$res->id, 6);
-                if (!$res) throw new AdminException('添加失败');
+                if (!$res) throw new AdminException(100022);
             }
             $res = true;
             foreach ($valueGroup->toArray() as $item) {
                 $res = $res && CacheService::setStock($item['unique'], (int)$item['quota_show'], 6);
             }
             if (!$res) {
-                throw new AdminException('占用库存失败');
+                throw new AdminException(400092);
             }
         });
     }
@@ -223,7 +223,7 @@ class StoreAdvanceServices extends BaseServices
                 foreach ($detail as $k => $v) {
                     $valueNew[$count]['value' . ($k + 1)] = $v;
                 }
-                $valueNew[$count]['detail'] = json_encode(array_combine($head,$detail));
+                $valueNew[$count]['detail'] = json_encode(array_combine($head, $detail));
                 $valueNew[$count]['pic'] = $sukValue[$suk]['pic'] ?? '';
                 $valueNew[$count]['price'] = $sukValue[$suk]['price'] ? floatval($sukValue[$suk]['price']) : 0;
                 $valueNew[$count]['cost'] = $sukValue[$suk]['cost'] ? floatval($sukValue[$suk]['cost']) : 0;
@@ -256,7 +256,7 @@ class StoreAdvanceServices extends BaseServices
         $uid = (int)$request->uid();
         $storeInfo = $this->dao->getOne(['id' => $id], '*', ['description']);
         if (!$storeInfo) {
-            throw new ValidateException('商品不存在');
+            throw new ApiException(410294);
         } else {
             $storeInfo = $storeInfo->toArray();
         }
@@ -402,8 +402,8 @@ class StoreAdvanceServices extends BaseServices
      */
     public function checkAdvanceStock(int $uid, int $advanceId, int $cartNum = 1, string $unique = '')
     {
-        $productInfo = $this->dao->getOne(['id' => $advanceId, 'status' => 1, 'is_del' => 0],'*,title as store_name');
-        if (!$productInfo) throw new ValidateException('预售商品已下架或已删除');
+        $productInfo = $this->dao->getOne(['id' => $advanceId, 'status' => 1, 'is_del' => 0], '*,title as store_name');
+        if (!$productInfo) throw new ApiException(400093);
         /** @var StoreProductAttrValueServices $attrValueServices */
         $attrValueServices = app()->make(StoreProductAttrValueServices::class);
         if ($unique == '') {
@@ -411,18 +411,18 @@ class StoreAdvanceServices extends BaseServices
         }
         $attrInfo = $attrValueServices->getOne(['product_id' => $advanceId, 'unique' => $unique, 'type' => 6]);
         if (!$attrInfo || $attrInfo['product_id'] != $advanceId) {
-            throw new ValidateException('请选择有效的商品属性');
+            throw new ApiException(400094);
         }
         /** @var StoreOrderServices $orderServices */
         $orderServices = app()->make(StoreOrderServices::class);
         $userBuyCount = $orderServices->getBuyCount($uid, 'advance_id', $advanceId);
         if ($productInfo['num'] < ($userBuyCount + $cartNum)) {
-            throw new ValidateException('每人总共限购' . $productInfo['num'] . '件');
+            throw new ApiException(410298, ['num' => $productInfo['num']]);
         }
-        if ($productInfo['start_time'] > time()) throw new ValidateException('预售活动未开始');
-        if ($productInfo['stop_time'] < time()) throw new ValidateException('预售活动已结束');
+        if ($productInfo['start_time'] > time()) throw new ApiException(410321);
+        if ($productInfo['stop_time'] < time()) throw new ApiException(410322);
         if ($cartNum > $attrInfo['quota']) {
-            throw new ValidateException('该商品库存不足' . $cartNum);
+            throw new ApiException(410297, ['num' => $cartNum]);
         }
         return [$attrInfo, $unique, $productInfo];
     }

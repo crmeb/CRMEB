@@ -24,8 +24,8 @@
 								<view class='name line2'>{{item.store_name}}</view>
 								<view class='booking'>
 									<text v-if="item.presell_type != 0 && active != 1" class="count"
-										style="color: #999;">已预定{{item.sales ? item.sales : 0}}{{item.unit_name}}</text>
-									<text v-else style="color: #999; font-size: 24rpx;">暂未开始</text>
+										style="color: #999;">{{$t(`已预定`)}}{{item.sales ? item.sales : 0}}{{item.unit_name}}</text>
+									<text v-else style="color: #999; font-size: 24rpx;">{{$t(`未开始`)}}</text>
 								</view>
 								<view v-if="item.coupon" class='coupon acea-row row-between-wrapper'
 									style="margin-top: 14rpx;">
@@ -37,14 +37,14 @@
 								</view>
 								<view class="progress">
 									<view class='presell_price'>
-										<text class="presell_text">预售价</text>
-										<text class="price">¥ <text>{{ item.price }}</text></text>
+										<text class="presell_text">{{$t(`预售价`)}}</text>
+										<text class="price">{{$t(`￥`)}} <text>{{ item.price }}</text></text>
 									</view>
 									<text class="iconfont icon-yushouanniu"></text>
-									<view v-if="active != 1" class='order_btn'>{{ active === 2  ? '立即预定' : '已结束' }}
+									<view v-if="active != 1" class='order_btn'>{{ active === 2  ? $t(`立即预定`) : $t(`已结束`) }}
 									</view>
 									<view v-else class="unStartBtn">
-										<text>开售时间</text>
+										<text>{{$t(`开售时间`)}}</text>
 										<view>{{ new Date(item.presale_start_time*1000).getMonth()+1 }}/{{ new Date(item.presale_start_time*1000).getDate() }}
 											{{ new Date(item.presale_start_time*1000).getHours()<10?'0'+ 
 										new Date(item.presale_start_time*1000).getHours():new Date(item.presale_start_time*1000).getHours() || '00'}}:
@@ -86,13 +86,13 @@
 				topImage: '',
 				presellList: [],
 				timeList: [{
-					name: '未开始',
+					name: this.$t(`未开始`),
 					key: 1
 				}, {
-					name: '正在进行',
+					name: this.$t(`抢购中`),
 					key: 2
 				}, {
-					name: '已结束',
+					name: this.$t(`已结束`),
 					key: 3
 				}, ],
 				active: 2,
@@ -125,13 +125,13 @@
 				menus: ['shareAppMessage', 'shareTimeline']
 			})
 			return {
-				title: '预售活动',
+				title: this.$t(`预售活动`),
 				path: 'pages/activity/presell/index',
 			}
 		},
 		onShareTimeline: function() {
 			return {
-				title: '预售活动',
+				title: this.$t(`预售活动`),
 				query: {
 					key: ''
 				},

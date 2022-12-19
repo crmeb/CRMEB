@@ -2,14 +2,13 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
 // | Author: CRMEB Team <admin@crmeb.com>
 // +----------------------------------------------------------------------
 namespace app\adminapi\controller\v1\order;
-
 
 use app\adminapi\controller\AuthController;
 use app\adminapi\validate\order\StoreOrderValidate;
@@ -62,8 +61,11 @@ class StoreOrder extends AuthController
     }
 
     /**
-     * 获取订单列表
+     * 订单列表
      * @return mixed
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
      */
     public function lst()
     {
@@ -86,12 +88,11 @@ class StoreOrder extends AuthController
 
     /**
      * 核销码核销
-     * @param $code 核销码
-     * @param int $confirm 确认核销 0=确认，1=核销
+     * @param StoreOrderWriteOffServices $services
      * @return mixed
      * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
      * @throws \think\db\exception\ModelNotFoundException
-     * @throws \think\exception\DbException
      */
     public function write_order(StoreOrderWriteOffServices $services)
     {
@@ -99,12 +100,12 @@ class StoreOrder extends AuthController
             ['code', ''],
             ['confirm', 0]
         ], true);
-        if (!$code) return app('json')->fail('Lack of write-off code');
+        if (!$code) return app('json')->fail(100100);
         $orderInfo = $services->writeOffOrder($code, (int)$confirm);
         if ($confirm == 0) {
-            return app('json')->success('验证成功', $orderInfo);
+            return app('json')->success(400151, $orderInfo);
         }
-        return app('json')->success('Write off successfully');
+        return app('json')->success(400152);
     }
 
     /**
@@ -120,39 +121,41 @@ class StoreOrder extends AuthController
     {
         $orderInfo = $this->services->getOne(['order_id' => $order_id, 'is_del' => 0]);
         if ($orderInfo->shipping_type != 2 && $orderInfo->delivery_type != 'send') {
-            return app('json')->fail('核销订单未查到!');
+            return app('json')->fail(400153);
         } else {
             if (!$orderInfo->verify_code) {
-                return app('json')->fail('Lack of write-off code');
+                return app('json')->fail(100100);
             }
             $orderInfo = $services->writeOffOrder($orderInfo->verify_code, 1);
             if ($orderInfo) {
-                return app('json')->success('Write off successfully');
+                return app('json')->success(400151);
             } else {
-                return app('json')->fail('核销失败!');
+                return app('json')->fail(400154);
             }
         }
     }
 
     /**
-     * 修改支付金额等
+     * 订单改价表单
      * @param $id
-     * @return mixed|\think\response\Json|void
+     * @return mixed
+     * @throws \FormBuilder\Exception\FormBuilderException
      */
     public function edit($id)
     {
-        if (!$id) return app('json')->fail('Data does not exist!');
+        if (!$id) return app('json')->fail(100100);
         return app('json')->success($this->services->updateForm($id));
     }
 
     /**
-     * 修改订单
+     * 订单改价
      * @param $id
      * @return mixed
+     * @throws \Exception
      */
     public function update($id)
     {
-        if (!$id) return app('json')->fail('Missing order ID');
+        if (!$id) return app('json')->fail(100100);
         $data = $this->request->postMore([
             ['order_id', ''],
             ['total_price', 0],
@@ -164,11 +167,11 @@ class StoreOrder extends AuthController
 
         $this->validate($data, StoreOrderValidate::class);
 
-        if ($data['total_price'] < 0) return app('json')->fail('Please enter the total price');
-        if ($data['pay_price'] < 0) return app('json')->fail('Please enter the actual payment amount');
+        if ($data['total_price'] < 0) return app('json')->fail(400155);
+        if ($data['pay_price'] < 0) return app('json')->fail(400155);
 
         $this->services->updateOrder((int)$id, $data);
-        return app('json')->success('Modified success');
+        return app('json')->success(100001);
     }
 
     /**
@@ -194,13 +197,13 @@ class StoreOrder extends AuthController
         [$ids] = $this->request->postMore([
             ['ids', []],
         ], true);
-        if (!count($ids)) return app('json')->fail('请选择需要删除的订单');
+        if (!count($ids)) return app('json')->fail(400156);
         if ($this->services->getOrderIdsCount($ids))
-            return app('json')->fail('您选择的的订单存在用户未删除的订单');
+            return app('json')->fail(400157);
         if ($this->services->batchUpdate($ids, ['is_system_del' => 1]))
-            return app('json')->success('SUCCESS');
+            return app('json')->success(100002);
         else
-            return app('json')->fail('ERROR');
+            return app('json')->fail(100008);
     }
 
     /**
@@ -211,19 +214,23 @@ class StoreOrder extends AuthController
     public function del($id)
     {
         if (!$id || !($orderInfo = $this->services->get($id)))
-            return app('json')->fail('订单不存在');
+            return app('json')->fail(400118);
         if (!$orderInfo->is_del)
-            return app('json')->fail('订单用户未删除无法删除');
+            return app('json')->fail(400157);
         $orderInfo->is_system_del = 1;
-        if ($orderInfo->save())
-            return app('json')->success('SUCCESS');
-        else
-            return app('json')->fail('ERROR');
+        if ($orderInfo->save()) {
+            /** @var StoreOrderRefundServices $refundServices */
+            $refundServices = app()->make(StoreOrderRefundServices::class);
+            $refundServices->update(['store_order_id' => $id], ['is_system_del' => 1]);
+            return app('json')->success(100002);
+        } else
+            return app('json')->fail(100008);
     }
 
     /**
      * 订单发送货
-     * @param $id 订单id
+     * @param $id
+     * @param StoreOrderDeliveryServices $services
      * @return mixed
      */
     public function update_delivery($id, StoreOrderDeliveryServices $services)
@@ -247,12 +254,13 @@ class StoreOrder extends AuthController
             ['fictitious_content', '']//虚拟发货内容
         ]);
         $services->delivery((int)$id, $data);
-        return app('json')->success('SUCCESS');
+        return app('json')->success(100010);
     }
 
     /**
      * 订单拆单发送货
-     * @param $id 订单id
+     * @param $id
+     * @param StoreOrderDeliveryServices $services
      * @return mixed
      */
     public function split_delivery($id, StoreOrderDeliveryServices $services)
@@ -278,18 +286,18 @@ class StoreOrder extends AuthController
             ['cart_ids', []]
         ]);
         if (!$id) {
-            return app('json')->fail('缺少发货ID');
+            return app('json')->fail(100100);
         }
         if (!$data['cart_ids']) {
-            return app('json')->fail('请选择发货商品');
+            return app('json')->fail(400158);
         }
         foreach ($data['cart_ids'] as $cart) {
             if (!isset($cart['cart_id']) || !$cart['cart_id'] || !isset($cart['cart_num']) || !$cart['cart_num']) {
-                return app('json')->fail('请重新选择发货商品，或发货件数');
+                return app('json')->fail(400159);
             }
         }
         $services->splitDelivery((int)$id, $data);
-        return app('json')->success('SUCCESS');
+        return app('json')->success(100010);
     }
 
     /**
@@ -301,7 +309,7 @@ class StoreOrder extends AuthController
     public function split_cart_info($id, StoreOrderCartInfoServices $services)
     {
         if (!$id) {
-            return app('json')->fail('缺少发货ID');
+            return app('json')->fail(100100);
         }
         return app('json')->success($services->getSplitCartList((int)$id));
     }
@@ -313,7 +321,7 @@ class StoreOrder extends AuthController
     public function split_order($id)
     {
         if (!$id) {
-            return app('json')->fail('缺少订单ID');
+            return app('json')->fail(100100);
         }
         return app('json')->success($this->services->getSplitOrderList(['pid' => $id, 'is_system_del' => 0], ['*'], ['split', 'pink', 'invoice']));
     }
@@ -327,24 +335,24 @@ class StoreOrder extends AuthController
      */
     public function take_delivery(StoreOrderTakeServices $services, $id)
     {
-        if (!$id) return app('json')->fail('缺少参数');
+        if (!$id) return app('json')->fail(100100);
         $order = $this->services->get($id);
         if (!$order)
-            return app('json')->fail('Data does not exist!');
+            return app('json')->fail(400118);
         if ($order['status'] == 2)
-            return app('json')->fail('不能重复收货!');
+            return app('json')->fail(400114);
         if ($order['paid'] == 1 && $order['status'] == 1)
             $data['status'] = 2;
         else if ($order['pay_type'] == 'offline')
             $data['status'] = 2;
         else
-            return app('json')->fail('请先发货或者送货!');
+            return app('json')->fail(400115);
 
         if (!$this->services->update($id, $data)) {
-            return app('json')->fail('收货失败,请稍候再试!');
+            return app('json')->fail(400116);
         } else {
             $services->storeProductOrderUserTakeDelivery($order);
-            return app('json')->success('收货成功');
+            return app('json')->success(400117);
         }
     }
 
@@ -374,7 +382,7 @@ class StoreOrder extends AuthController
     public function refund(StoreOrderRefundServices $services, $id)
     {
         if (!$id) {
-            return app('json')->fail('Data does not exist!');
+            return app('json')->fail(100100);
         }
         return app('json')->success($services->refundOrderForm((int)$id));
     }
@@ -394,27 +402,27 @@ class StoreOrder extends AuthController
             ['type', 1]
         ]);
         if (!$id) {
-            return app('json')->fail('Data does not exist!');
+            return app('json')->fail(100100);
         }
         $order = $this->services->get($id);
         if (!$order) {
-            return app('json')->fail('Data does not exist!');
+            return app('json')->fail(400118);
         }
         //0元退款
         if ($order['pay_price'] == 0 && in_array($order['refund_status'], [0, 1])) {
             $refund_price = 0;
         } else {
             if ($order['pay_price'] == $order['refund_price']) {
-                return app('json')->fail('已退完支付金额!不能再退款了');
+                return app('json')->fail(400147);
             }
             if (!$data['refund_price']) {
-                return app('json')->fail('请输入退款金额');
+                return app('json')->fail(400146);
             }
             $refund_price = $data['refund_price'];
             $data['refund_price'] = bcadd($data['refund_price'], $order['refund_price'], 2);
             $bj = bccomp((string)$order['pay_price'], (string)$data['refund_price'], 2);
             if ($bj < 0) {
-                return app('json')->fail('退款金额大于支付金额，请修改退款金额');
+                return app('json')->fail(400148);
             }
         }
         if ($data['type'] == 1) {
@@ -435,10 +443,10 @@ class StoreOrder extends AuthController
         //修改订单退款状态
         if ($this->services->update($id, $data)) {
             $services->storeProductOrderRefundY($data, $order, $refund_price);
-            return app('json')->success('退款成功');
+            return app('json')->success(400149);
         } else {
             $services->storeProductOrderRefundYFasle((int)$id, $refund_price);
-            return app('json')->fail('退款失败');
+            return app('json')->fail(400150);
         }
     }
 
@@ -450,12 +458,12 @@ class StoreOrder extends AuthController
     public function order_info($id)
     {
         if (!$id || !($orderInfo = $this->services->get($id))) {
-            return app('json')->fail('订单不存在');
+            return app('json')->fail(400118);
         }
         /** @var UserServices $services */
         $services = app()->make(UserServices::class);
         $userInfo = $services->get($orderInfo['uid']);
-        if (!$userInfo) return app('json')->fail('用户信息不存在');
+        if (!$userInfo) return app('json')->fail(400119);
         $userInfo = $userInfo->hidden(['pwd', 'add_ip', 'last_ip', 'login_type']);
         $userInfo['spread_name'] = '无';
         if ($userInfo['spread_uid']) {
@@ -481,7 +489,7 @@ class StoreOrder extends AuthController
             $orderInfo['_store_name'] = $storeServices->value(['id' => $orderInfo['store_id']], 'name');
         } else
             $orderInfo['_store_name'] = '';
-        $orderInfo['spread_name'] = $services->value(['uid'=>$orderInfo['spread_uid']],'nickname') ?? '无';
+        $orderInfo['spread_name'] = $services->value(['uid' => $orderInfo['spread_uid']], 'nickname') ?? '无';
         $userInfo = $userInfo->toArray();
         return app('json')->success(compact('orderInfo', 'userInfo'));
     }
@@ -494,15 +502,15 @@ class StoreOrder extends AuthController
     public function get_express($id, ExpressServices $services)
     {
         if (!$id || !($orderInfo = $this->services->get($id)))
-            return app('json')->fail('订单不存在');
+            return app('json')->fail(400118);
         if ($orderInfo['delivery_type'] != 'express' || !$orderInfo['delivery_id'])
-            return app('json')->fail('该订单不存在快递单号');
+            return app('json')->fail(400120);
 
         $cacheName = $orderInfo['order_id'] . $orderInfo['delivery_id'];
 
         $data['delivery_name'] = $orderInfo['delivery_name'];
         $data['delivery_id'] = $orderInfo['delivery_id'];
-        $data['result'] = $services->query($cacheName, $orderInfo['delivery_id'], $orderInfo['delivery_code'] ?? null);
+        $data['result'] = $services->query($cacheName, $orderInfo['delivery_id'], $orderInfo['delivery_code'] ?? null, $orderInfo['user_phone']);
         return app('json')->success($data);
     }
 
@@ -516,7 +524,7 @@ class StoreOrder extends AuthController
     public function distribution(StoreOrderDeliveryServices $services, $id)
     {
         if (!$id) {
-            return app('json')->fail('订单不存在');
+            return app('json')->fail(100100);
         }
         return app('json')->success($services->distributionForm((int)$id));
     }
@@ -528,10 +536,10 @@ class StoreOrder extends AuthController
      */
     public function update_distribution(StoreOrderDeliveryServices $services, $id)
     {
-        $data = $this->request->postMore([['delivery_name', ''], ['delivery_id', '']]);
-        if (!$id) return app('json')->fail('Data does not exist!');
+        $data = $this->request->postMore([['delivery_name', ''], ['delivery_code', ''], ['delivery_id', '']]);
+        if (!$id) return app('json')->fail(100100);
         $services->updateDistribution($id, $data);
-        return app('json')->success('Modified success');
+        return app('json')->success(100010);
     }
 
     /**
@@ -542,7 +550,7 @@ class StoreOrder extends AuthController
      */
     public function no_refund(StoreOrderRefundServices $services, $id)
     {
-        if (!$id) return app('json')->fail('Data does not exist!');
+        if (!$id) return app('json')->fail(100100);
         return app('json')->success($services->noRefundForm((int)$id));
     }
 
@@ -555,10 +563,10 @@ class StoreOrder extends AuthController
     public function update_un_refund(StoreOrderRefundServices $services, $id)
     {
         if (!$id || !($orderInfo = $this->services->get($id)))
-            return app('json')->fail('订单不存在');
+            return app('json')->fail(400118);
         [$refund_reason] = $this->request->postMore([['refund_reason', '']], true);
         if (!$refund_reason) {
-            return app('json')->fail('请输入不退款原因');
+            return app('json')->fail(400113);
         }
         $orderInfo->refund_reason = $refund_reason;
         $orderInfo->refund_status = 0;
@@ -577,7 +585,7 @@ class StoreOrder extends AuthController
         $services->storeProductOrderRefundNo((int)$id, $refund_reason);
         //提醒推送
         event('notice.notice', [['orderInfo' => $orderInfo], 'send_order_refund_no_status']);
-        return app('json')->success('Modified success');
+        return app('json')->success(100010);
     }
 
     /**
@@ -587,12 +595,12 @@ class StoreOrder extends AuthController
      */
     public function pay_offline(OrderOfflineServices $services, $id)
     {
-        if (!$id) return app('json')->fail('缺少参数');
+        if (!$id) return app('json')->fail(100100);
         $res = $services->orderOffline((int)$id);
         if ($res) {
-            return app('json')->success('Modified success');
+            return app('json')->success(100010);
         } else {
-            return app('json')->fail('Modification failed');
+            return app('json')->fail(100005);
         }
     }
 
@@ -605,7 +613,7 @@ class StoreOrder extends AuthController
     public function refund_integral(StoreOrderRefundServices $services, $id)
     {
         if (!$id)
-            return app('json')->fail('订单不存在');
+            return app('json')->fail(100100);
         return app('json')->success($services->refundIntegralForm((int)$id));
     }
 
@@ -618,29 +626,29 @@ class StoreOrder extends AuthController
     {
         [$back_integral] = $this->request->postMore([['back_integral', 0]], true);
         if (!$id || !($orderInfo = $this->services->get($id))) {
-            return app('json')->fail('订单不存在');
+            return app('json')->fail(400118);
         }
         if ($orderInfo->is_del) {
-            return app('json')->fail('订单已删除无法退积分');
+            return app('json')->fail(400160);
         }
         if ($back_integral <= 0) {
-            return app('json')->fail('请输入积分');
+            return app('json')->fail(400161);
         }
         if ($orderInfo['use_integral'] == $orderInfo['back_integral']) {
-            return app('json')->fail('已退完积分!不能再积分了');
+            return app('json')->fail(400162);
         }
 
         $data['back_integral'] = bcadd((string)$back_integral, (string)$orderInfo['back_integral'], 2);
         $bj = bccomp((string)$orderInfo['use_integral'], (string)$data['back_integral'], 2);
         if ($bj < 0) {
-            return app('json')->fail('退积分大于支付积分，请修改退积分');
+            return app('json')->fail(400163);
         }
         //积分退款处理
         $orderInfo->back_integral = $data['back_integral'];
         if ($services->refundIntegral($orderInfo, $back_integral)) {
-            return app('json')->success('退积分成功');
+            return app('json')->success(400164);
         } else {
-            return app('json')->fail('退积分失败');
+            return app('json')->fail(400165);
         }
     }
 
@@ -653,18 +661,18 @@ class StoreOrder extends AuthController
     {
         $data = $this->request->postMore([['remark', '']]);
         if (!$data['remark'])
-            return app('json')->fail('请输入要备注的内容');
+            return app('json')->fail(400106);
         if (!$id)
-            return app('json')->fail('缺少参数');
+            return app('json')->fail(100100);
 
         if (!$order = $this->services->get($id)) {
-            return app('json')->fail('修改的订单不存在!');
+            return app('json')->fail(400118);
         }
         $order->remark = $data['remark'];
         if ($order->save()) {
-            return app('json')->success('备注成功');
+            return app('json')->success(100024);
         } else
-            return app('json')->fail('备注失败');
+            return app('json')->fail(100025);
     }
 
     /**
@@ -674,7 +682,7 @@ class StoreOrder extends AuthController
      */
     public function status(StoreOrderStatusServices $services, $id)
     {
-        if (!$id) return app('json')->fail('缺少参数');
+        if (!$id) return app('json')->fail(100100);
         return app('json')->success($services->getStatusList(['oid' => $id])['list']);
     }
 
@@ -685,16 +693,13 @@ class StoreOrder extends AuthController
      */
     public function order_print($id)
     {
-        if (!$id) return app('json')->fail('缺少参数');
-        $order = $this->services->get($id);
-        if (!$order) {
-            return app('json')->fail('订单没有查到,无法打印!');
-        }
-        $res = $this->services->orderPrint($order, $order->cart_id);
+        if (!$id) return app('json')->fail(100100);
+
+        $res = $this->services->orderPrint($id);
         if ($res) {
-            return app('json')->success('打印成功');
+            return app('json')->success(100010);
         } else {
-            return app('json')->fail('打印失败');
+            return app('json')->fail(100005);
         }
     }
 
@@ -706,7 +711,7 @@ class StoreOrder extends AuthController
     public function expr_temp(ServeServices $services, $com)
     {
         if (!$com) {
-            return app('json')->fail('快递公司编号缺失');
+            return app('json')->fail(400123);
         }
         $list = $services->express()->temp($com);
         return app('json')->success($list);
@@ -718,6 +723,9 @@ class StoreOrder extends AuthController
     public function express_temp(ServeServices $services)
     {
         $data = $this->request->getMore([['com', '']]);
+        if (!$data['com']) {
+            return app('json')->fail(400123);
+        }
         $tpd = $services->express()->temp($data['com']);
         return app('json')->success($tpd['data']);
     }

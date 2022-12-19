@@ -3,78 +3,78 @@
 		<form @submit="formSubmit">
 			<view class="panel">
 				<view class="acea-row row-middle">
-					<view>抬头类型</view>
+					<view>{{$t(`抬头类型`)}}</view>
 					<radio-group name="header_type" @change="changeTitleType">
 						<label>
-							<radio class="disabled" value="1" :checked="header_type === '1'" /><text>个人</text>
+							<radio class="disabled" value="1" :checked="header_type === '1'" /><text>{{$t(`个人`)}}</text>
 						</label>
 						<label>
-							<radio value="2" :checked="header_type === '2'" /><text>企业</text>
+							<radio value="2" :checked="header_type === '2'" /><text>{{$t(`企业`)}}</text>
 						</label>
 					</radio-group>
 				</view>
 				<view class="acea-row row-middle">
-					<view>发票类型</view>
-					<input name="type" :value="type === '2' && header_type === '2' ? '增值税电子专用发票' : '增值税电子普通发票'" disabled
+					<view>{{$t(`发票类型`)}}</view>
+					<input name="type" :value="type === '2' && header_type === '2' ? $t(`增值税电子专用发票`) : $t(`增值税电子普通发票`)" disabled
 						@click="callType" />
 					<text class="iconfont icon-xiangyou"></text>
 				</view>
 				<view class="acea-row row-middle">
-					<view>发票抬头</view>
-					<input name="name" :value="name" :placeholder="header_type === '1' ? '需要开具发票的姓名' : '需要开具发票的企业名称'" />
+					<view>{{$t(`发票抬头`)}}</view>
+					<input name="name" :value="name" :placeholder="header_type === '1' ? $t(`需要开具发票的姓名`) : $t(`需要开具发票的企业名称`)" />
 				</view>
 				<view v-show="header_type === '2'" class="acea-row row-middle">
-					<view>税号</view>
-					<input name="duty_number" :value="duty_number" placeholder="纳税人识别号" />
+					<view>{{$t(`税号`)}}</view>
+					<input name="duty_number" :value="duty_number" :placeholder="$t(`纳税人识别号`)" />
 				</view>
 				<view class="acea-row row-middle">
-					<view>手机号</view>
-					<input name="drawer_phone" :value="drawer_phone" placeholder="您的手机号" />
+					<view>{{$t(`手机号`)}}</view>
+					<input name="drawer_phone" :value="drawer_phone" :placeholder="$t(`您的手机号`)" />
 				</view>
 				<view class="acea-row row-middle">
-					<view>邮箱</view>
-					<input name="email" :value="email" placeholder="您的联系邮箱" />
+					<view>{{$t(`邮箱`)}}</view>
+					<input name="email" :value="email" :placeholder="$t(`您的联系邮箱`)" />
 				</view>
 			</view>
 			<view v-show="type === '2'" class="panel">
 				<view class="acea-row row-middle">
-					<view>开户银行</view>
-					<input name="bank" :value="bank" placeholder="您的开户银行" />
+					<view>{{$t(`开户银行`)}}</view>
+					<input name="bank" :value="bank" :placeholder="$t(`您的开户银行`)" />
 				</view>
 				<view class="acea-row row-middle">
-					<view>银行账号</view>
-					<input name="card_number" :value="card_number" placeholder="您的银行账号" />
+					<view>{{$t(`银行账号`)}}</view>
+					<input name="card_number" :value="card_number" :placeholder="$t(`您的银行账号`)" />
 				</view>
 				<view class="acea-row row-middle">
-					<view>企业地址</view>
-					<input name="address" :value="address" placeholder="您所在的企业地址" />
+					<view>{{$t(`企业地址`)}}</view>
+					<input name="address" :value="address" :placeholder="$t(`您所在的企业地址`)" />
 				</view>
 				<view class="acea-row row-middle">
-					<view>企业电话</view>
-					<input name="tell" :value="tell" placeholder="您的企业电话" />
+					<view>{{$t(`企业电话`)}}</view>
+					<input name="tell" :value="tell" :placeholder="$t(`您的企业电话`)" />
 				</view>
 			</view>
 			<checkbox-group class="acea-row row-middle panel" name="is_default">
 				<label>
-					<checkbox :checked="is_default.length !== 0" /><text>设置为默认抬头</text>
+					<checkbox :checked="is_default.length !== 0" /><text>{{$t(`设置为默认抬头`)}}</text>
 				</label>
 			</checkbox-group>
 			<view class="button-section">
-				<button class="button" form-type="submit">保存</button>
-				<navigator class="navigator" :url="backUrl" hover-class="none">取消</navigator>
+				<button class="button" form-type="submit">{{$t(`保存`)}}</button>
+				<navigator class="navigator" :url="backUrl" hover-class="none">{{$t(`取消`)}}</navigator>
 			</view>
 		</form>
 		<view :class="{ mask: popupType }"></view>
 		<view class="popup" :class="{ on: popupType }">
-			<view class="title">发票类型选择<text class="iconfont icon-guanbi" @click="closeType"></text></view>
+			<view class="title">{{$t(`发票类型选择`)}}<text class="iconfont icon-guanbi" @click="closeType"></text></view>
 			<scroll-view scroll-y="true">
 				<radio-group name="invoice-type" @change="changeType">
 					<template v-for="item in invoiceTypeList">
 						<label v-if="item.value === '1' || item.value === '2' && specialInvoice" :key="item.type"
 							class="acea-row row-middle">
 							<view class="text">
-								<view>{{ item.name }}</view>
-								<view class="info">{{ item.info }}</view>
+								<view>{{ $t(item.name) }}</view>
+								<view class="info">{{ $t(item.info) }}</view>
 							</view>
 							<radio :value="item.value" :checked="item.value === type" />
 						</label>
@@ -103,14 +103,14 @@
 		data() {
 			return {
 				invoiceTypeList: [{
-						name: '增值税电子普通发票',
+						name: this.$t(`增值税电子普通发票`),
 						value: '1',
-						info: '纸质发票开出后将以邮寄形式交付'
+						info: this.$t(`纸质发票开出后将以邮寄形式交付`)
 					},
 					{
-						name: '增值税电子专用发票',
+						name: this.$t(`增值税电子专用发票`),
 						value: '2',
-						info: '纸质发票开出后将以邮寄形式交付'
+						info: this.$t(`纸质发票开出后将以邮寄形式交付`)
 					}
 				],
 				id: '', // 修改时为必须参数
@@ -137,7 +137,7 @@
 			backUrl() {
 				switch (this.from) {
 					case 'order_confirm':
-						return `/pages/users/order_confirm/index${this.urlQuery}`;
+						return `/pages/goods/order_confirm/index${this.urlQuery}`;
 						break;
 					default:
 						return '/pages/users/user_invoice_list/index?from=invoice_form';
@@ -183,7 +183,7 @@
 			// 获取发票数据
 			getInvoiceDetail() {
 				uni.showLoading({
-					title: '加载中'
+					title: this.$t(`加载中`)
 				});
 				invoiceDetail(this.id).then(res => {
 					uni.hideLoading();
@@ -209,36 +209,37 @@
 			},
 			// 保存
 			formSubmit(e) {
+				let that = this;
 				const formData = e.detail.value;
 				formData.type = this.type;
 				if (formData.header_type === '1') {
 					if (!formData.name) {
 						return uni.showToast({
-							title: '请输入需要开具发票的姓名',
+							title: that.$t(`请输入需要开具发票的姓名`),
 							icon: 'none'
 						});
 					}
 					if (!formData.drawer_phone) {
 						return uni.showToast({
-							title: '请输入您的手机号',
+							title: that.$t(`请输入您的手机号`),
 							icon: 'none'
 						});
 					}
 					if (!/^1(3|4|5|7|8|9|6)\d{9}$/i.test(formData.drawer_phone)) {
 						return uni.showToast({
-							title: '请正确输入您的手机号',
+							title: that.$t(`请正确输入您的手机号`),
 							icon: 'none'
 						});
 					}
 					if (!formData.email) {
 						return uni.showToast({
-							title: '请输入您的联系邮箱',
+							title: that.$t(`请输入您的联系邮箱`),
 							icon: 'none'
 						});
 					}
 					if (!/^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/.test(formData.email)) {
 						return uni.showToast({
-							title: '请正确输入您的联系邮箱',
+							title: that.$t(`请正确输入您的联系邮箱`),
 							icon: 'none'
 						});
 					}
@@ -247,43 +248,43 @@
 					if (formData.type === '1') {
 						if (!formData.name) {
 							return uni.showToast({
-								title: '请输入需要开具发票的企业名称',
+								title: that.$t(`请输入需要开具发票的企业名称`),
 								icon: 'none'
 							});
 						}
 						if (!formData.duty_number) {
 							return uni.showToast({
-								title: '请输入纳税人识别号',
+								title: that.$t(`请输入纳税人识别号`),
 								icon: 'none'
 							});
 						}
 						if (!/[0-9A-HJ-NPQRTUWXY]{2}\d{6}[0-9A-HJ-NPQRTUWXY]{10}/.test(formData.duty_number)) {
 							return uni.showToast({
-								title: '请正确输入纳税人识别号',
+								title: that.$t(`请正确输入纳税人识别号`),
 								icon: 'none'
 							});
 						}
 						if (!formData.drawer_phone) {
 							return uni.showToast({
-								title: '请输入您的手机号',
+								title: that.$t(`请输入您的手机号`),
 								icon: 'none'
 							});
 						}
 						if (!/^1(3|4|5|7|8|9|6)\d{9}$/i.test(formData.drawer_phone)) {
 							return uni.showToast({
-								title: '请正确输入您的手机号',
+								title: that.$t(`请正确输入您的手机号`),
 								icon: 'none'
 							});
 						}
 						if (!formData.email) {
 							return uni.showToast({
-								title: '请输入您的联系邮箱',
+								title: that.$t(`请输入您的联系邮箱`),
 								icon: 'none'
 							});
 						}
 						if (!/^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/.test(formData.email)) {
 							return uni.showToast({
-								title: '请正确输入您的联系邮箱',
+								title: that.$t(`请正确输入您的联系邮箱`),
 								icon: 'none'
 							});
 						}
@@ -291,73 +292,73 @@
 					if (formData.type === '2') {
 						if (!formData.name) {
 							return uni.showToast({
-								title: '请输入需要开具发票的企业名称',
+								title: that.$t(`请输入需要开具发票的企业名称`),
 								icon: 'none'
 							});
 						}
 						if (!formData.duty_number) {
 							return uni.showToast({
-								title: '请输入纳税人识别号',
+								title: that.$t(`请输入纳税人识别号`),
 								icon: 'none'
 							});
 						}
 						if (!/[0-9A-HJ-NPQRTUWXY]{2}\d{6}[0-9A-HJ-NPQRTUWXY]{10}/.test(formData.duty_number)) {
 							return uni.showToast({
-								title: '请正确输入纳税人识别号',
+								title: that.$t(`请正确输入纳税人识别号`),
 								icon: 'none'
 							});
 						}
 						if (!formData.drawer_phone) {
 							return uni.showToast({
-								title: '请输入您的手机号',
+								title: that.$t(`请输入您的手机号`),
 								icon: 'none'
 							});
 						}
 						if (!/^1(3|4|5|7|8|9|6)\d{9}$/i.test(formData.drawer_phone)) {
 							return uni.showToast({
-								title: '请正确输入您的手机号',
+								title: that.$t(`请正确输入您的手机号`),
 								icon: 'none'
 							});
 						}
 						if (!formData.email) {
 							return uni.showToast({
-								title: '请输入您的联系邮箱',
+								title: that.$t(`请输入您的联系邮箱`),
 								icon: 'none'
 							});
 						}
 						if (!/^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/.test(formData.email)) {
 							return uni.showToast({
-								title: '请正确输入您的联系邮箱',
+								title: that.$t(`请正确输入您的联系邮箱`),
 								icon: 'none'
 							});
 						}
 						if (!formData.bank) {
 							return uni.showToast({
-								title: '请输入您的开户银行',
+								title: that.$t(`请输入您的开户银行`),
 								icon: 'none'
 							});
 						}
 						if (!formData.card_number) {
 							return uni.showToast({
-								title: '请输入您的银行账号',
+								title: that.$t(`请输入您的银行账号`),
 								icon: 'none'
 							});
 						}
 						if (!/^\d{16}|\d{19}$/.test(formData.card_number)) {
 							return uni.showToast({
-								title: '请正确输入您的银行账号',
+								title: that.$t(`请正确输入您的银行账号`),
 								icon: 'none'
 							});
 						}
 						if (!formData.address) {
 							return uni.showToast({
-								title: '请输入您所在的企业地址',
+								title: that.$t(`请输入您所在的企业地址`),
 								icon: 'none'
 							});
 						}
 						if (!formData.tell) {
 							return uni.showToast({
-								title: '请输入您的企业电话',
+								title: that.$t(`请输入您的企业电话`),
 								icon: 'none'
 							});
 						}
@@ -366,10 +367,9 @@
 				formData.is_default = formData.is_default.length;
 				formData.id = this.id;
 				uni.showLoading({
-					title: '保存中'
+					title: that.$t(`保存中`)
 				});
 				invoiceSave(formData).then(res => {
-					let that = this;
 					uni.showToast({
 						title: res.msg,
 						icon: 'success',
@@ -378,22 +378,22 @@
 								case 'order_confirm':
 									if (that.id) {
 										uni.navigateTo({
-											url: `/pages/users/order_confirm/index${that.urlQuery}&invoice_id=${that.id}&invoice_type=${formData.type}`
+											url: `/pages/goods/order_confirm/index${that.urlQuery}&invoice_id=${that.id}&invoice_type=${formData.type}`
 										})
 									} else {
 										uni.navigateTo({
-											url: `/pages/users/order_confirm/index${that.urlQuery}&invoice_id=${res.data.id}&invoice_type=${formData.type}`
+											url: `/pages/goods/order_confirm/index${that.urlQuery}&invoice_id=${res.data.id}&invoice_type=${formData.type}`
 										})
 									}
 									break;
 								case 'order_details':
 									if (that.id) {
 										uni.navigateTo({
-											url: `/pages/users/order_details/index?order_id=${that.order_id}&invoice_id=${that.id}`
+											url: `/pages/goods/order_details/index?order_id=${that.order_id}&invoice_id=${that.id}`
 										})
 									} else {
 										uni.navigateTo({
-											url: `/pages/users/order_details/index?order_id=${that.order_id}&invoice_id=${res.data.id}`
+											url: `/pages/goods/order_details/index?order_id=${that.order_id}&invoice_id=${res.data.id}`
 										})
 									}
 									break;

@@ -1,7 +1,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2021 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -258,4 +258,20 @@ export function getHomeProducts(data) {
  */
 export function getPresellProductDetail(id) {
 	return request.get("advance/detail/" + id);
+}
+
+/**
+ * 获取浏览记录列表
+ * @param object data
+ */
+export function getVisitList(data) {
+	return request.get('user/visit_list', data)
+}
+
+/**
+ * 获取浏览记录列表-删除 
+ * @param object data
+ */
+export function deleteVisitList(data) {
+	return request.delete('user/visit', data)
 }

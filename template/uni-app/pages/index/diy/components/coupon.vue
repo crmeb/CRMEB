@@ -9,18 +9,18 @@
 				 :key="index" hover-class="none">
 					<view class="itemCon acea-row row-between-wrapper">
 						<view class="text">
-							<view class="money"><text>¥</text>{{item.coupon_price}}</view>
-							<view class="info">满{{item.use_min_price}}元可用</view>
+							<view class="money"><text>{{$t(`¥`)}}</text>{{item.coupon_price}}</view>
+							<view class="info">{{$t(`满`)}}{{item.use_min_price}}{{$t(`元可用`)}}</view>
 						</view>
-						<view class="bnt" v-if="item.is_use===true"><text>已 领 取</text></view>
-						<view class="bnt" v-else-if="item.is_use===false" @click="receiveCoupon(item)"><text>立 即 领 取</text></view>
-						<view class="bnt" v-else-if="item.is_use===2"><text>已 过 期</text></view>
+						<view class="bnt" v-if="item.is_use===true"><text>{{$t(`已领取`)}}</text></view>
+						<view class="bnt" v-else-if="item.is_use===false" @click="receiveCoupon(item)"><text>{{$t(`立即领取`)}}</text></view>
+						<view class="bnt" v-else-if="item.is_use===2"><text>{{$t(`已过期`)}}</text></view>
 					</view>
 					<view class="roll up-roll" :style="{background:bgColor}"></view>
 					<view class="roll down-roll" :style="{background:bgColor}"></view>
 				</view>
 				<navigator url="/pages/users/user_get_coupon/index" class="more-box" hover-class="none">
-					<view class="txt">更多</view>
+					<view class="txt">{{$t(`更多`)}}</view>
 					<image src="/static/images/mores.png"></image>
 				</navigator>
 				</view>	
@@ -117,7 +117,7 @@
 							item.is_use = true;
 							that.$set(that, 'couponList', that.couponList);
 							that.$util.Tips({
-								title: "领取成功"
+								title: that.$t(`领取成功`)
 							});
 						})
 						.catch(function(err) {

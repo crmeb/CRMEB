@@ -10,7 +10,7 @@
 									<view class="pictrue skeleton-radius" :class="menuStyle?'':'on'">
 										<image :src="itemn.img" mode="aspectFill"></image>
 									</view>
-									<view class="menu-txt">{{ itemn.info[0].value }}</view>
+									<view class="menu-txt">{{ $t(itemn.info[0].value) }}</view>
 								</view>
 							</view>
 						</swiper-item>
@@ -28,7 +28,7 @@
 						<view class="pictrue skeleton-radius" :class="menuStyle?'':'on'">
 							<image :src="item.img" mode="aspectFill"></image>
 						</view>
-						<view class="menu-txt">{{ item.info[0].value }}</view>
+						<view class="menu-txt">{{ $t(item.info[0].value) }}</view>
 					</view>
 				</block>
 			</scroll-view>

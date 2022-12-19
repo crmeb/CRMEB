@@ -6,10 +6,10 @@
 			<view class="logo skeleton-rect" v-if="logoConfig">
 				<image :src="logoConfig" mode="heightFix"></image>
 			</view>
-			<navigator url="/pages/goods_search/index" class="input acea-row row-middle skeleton-rect"
+			<navigator url="/pages/goods/goods_search/index" class="input acea-row row-middle skeleton-rect"
 				:class="[boxStyle?'':'fillet',logoConfig?'':'on',txtStyle?'row-center':'']" hover-class="none"><text
 					class="iconfont icon-sousuo"></text>
-				搜索商品</navigator>
+				{{$t(`搜索商品`)}}</navigator>
 		</view>
 	</view>
 	<!-- #endif -->
@@ -20,10 +20,10 @@
 			<view class="logo skeleton-rect" v-if="logoConfig">
 				<image :src="logoConfig" mode="heightFix"></image>
 			</view>
-			<navigator url="/pages/goods_search/index" class="input acea-row row-middle skeleton-rect"
+			<navigator url="/pages/goods/goods_search/index" class="input acea-row row-middle skeleton-rect"
 				:class="[boxStyle?'':'fillet',logoConfig?'':'on',txtStyle?'row-center':'']" hover-class="none"><text
 					class="iconfont icon-sousuo"></text>
-				搜索商品</navigator>
+				{{$t(`搜索商品名称`)}}</navigator>
 		</view>
 	</view>
 	<view v-else>
@@ -35,10 +35,10 @@
 					<view class="logo skeleton-rect" v-if="logoConfig">
 						<image :src="logoConfig" mode="heightFix"></image>
 					</view>
-					<navigator url="/pages/goods_search/index" class="input acea-row row-middle skeleton-rect"
+					<navigator url="/pages/goods/goods_search/index" class="input acea-row row-middle skeleton-rect"
 						:class="[boxStyle?'':'fillet',logoConfig?'':'on',txtStyle?'row-center':'']" hover-class="none">
 						<text class="iconfont icon-sousuo"></text>
-						搜索商品
+						{{$t(`搜索商品名称`)}}
 					</navigator>
 				</view>
 			</view>

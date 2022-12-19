@@ -4,17 +4,8 @@
       {{ datas[name].title }}
     </div>
     <div class="list-box">
-      <draggable
-        class="dragArea list-group"
-        :list="datas[name].list"
-        group="peoples"
-        handle=".move-icon"
-      >
-        <div
-          class="item"
-          v-for="(item, index) in datas[name].list"
-          :key="index"
-        >
+      <draggable class="dragArea list-group" :list="datas[name].list" group="peoples" handle=".move-icon">
+        <div class="item" v-for="(item, index) in datas[name].list" :key="index">
           <div class="move-icon">
             <span class="iconfont icondrag2"></span>
           </div>
@@ -23,11 +14,7 @@
             <div class="upload-box" v-else>
               <Icon type="ios-camera-outline" size="36" />
             </div>
-            <div
-              v-if="!datas[name].isDelete"
-              class="delect-btn"
-              @click.stop="bindDelete(item, index)"
-            >
+            <div v-if="!datas[name].isDelete" class="delect-btn" @click.stop="bindDelete(item, index)">
               <Icon type="md-close-circle" size="26" />
             </div>
           </div>
@@ -48,12 +35,7 @@
               <div v-else class="info-item">
                 <span>{{ infos.title }}</span>
                 <div class="input-box">
-                  <Input
-                    v-model="infos.value"
-                    :placeholder="infos.tips"
-                    :maxlength="infos.maxlength"
-                    width="250px"
-                  />
+                  <Input v-model="infos.value" :placeholder="infos.tips" :maxlength="infos.maxlength" width="250px" />
                 </div>
               </div>
             </div>
@@ -82,21 +64,11 @@
       </div>
     </div>
     <template v-if="datas[name]">
-      <div
-        class="add-btn"
-        v-if="
-          datas[name].list.length < datas[name].max || datas[name].max == ''
-        "
-      >
+      <div class="add-btn" v-if="datas[name].list.length < datas[name].max || datas[name].max == ''">
         <Button
           type="primary"
           ghost
-          style="
-            width: 100%;
-            height: 40px;
-            border-color: #1890ff;
-            color: #1890ff;
-          "
+          style="width: 100%; height: 40px; border-color: #1890ff; color: #1890ff"
           @click="addBox"
           >添加图片
         </Button>
@@ -107,12 +79,12 @@
 </template>
 
 <script>
-import linkaddress from "@/components/linkaddress";
+import linkaddress from '@/components/linkaddress';
 
-import uploadPictures from "@/components/uploadPictures";
-import vuedraggable from "vuedraggable";
+import uploadPictures from '@/components/uploadPictures';
+import vuedraggable from 'vuedraggable';
 export default {
-  name: "c_upload_list",
+  name: 'c_upload_list',
   props: {
     name: {
       type: String,
@@ -123,7 +95,7 @@ export default {
     },
     configNum: {
       type: Number | String,
-      default: "default",
+      default: 'default',
     },
     moduleName: {
       type: String,
@@ -139,7 +111,7 @@ export default {
       defaults: {},
       menus: [],
       modalPic: false,
-      isChoice: "单选",
+      isChoice: '单选',
       gridBtn: {
         xl: 4,
         lg: 8,
@@ -175,42 +147,38 @@ export default {
       this.$refs.linkaddres.modals = true;
     },
     linkUrl(e) {
-      this.datas[this.name].list[this.activeIndex].info[this.keyIndex].value =
-        e;
+      this.datas[this.name].list[this.activeIndex].info[this.keyIndex].value = e;
     },
     addBox() {
       let val = {
-        img: "",
+        img: '',
         info: [
           {
             maxlength: 10,
-            tips: "选填，不超过十个字",
-            title: "标题",
-            value: "",
+            tips: '选填，不超过十个字',
+            title: '标题',
+            value: '',
           },
           {
             maxlength: 999,
-            tips: "请填写链接",
-            title: "链接",
-            value: "",
+            tips: '请填写链接',
+            title: '链接',
+            value: '',
           },
         ],
       };
-      if (this.moduleName == "swiperBg" || this.moduleName == "menus") {
+      if (this.moduleName == 'swiperBg' || this.moduleName == 'menus') {
         this.configData[this.configNum][this.name].list.push(val);
         return;
       }
       if (this.configData[this.configNum][this.name].list.length == 0) {
-        let uploadListData =
-          this.$store.state.userInfo["uploadListData" + this.moduleName];
+        let uploadListData = this.$store.state.userInfo['uploadListData' + this.moduleName];
         this.configData[this.configNum][this.name].list.push(uploadListData);
       } else {
         let obj = JSON.parse(
           JSON.stringify(
-            this.configData[this.configNum][this.name].list[
-              this.configData[this.configNum][this.name].list.length - 1
-            ]
-          )
+            this.configData[this.configNum][this.name].list[this.configData[this.configNum][this.name].list.length - 1],
+          ),
         );
         this.configData[this.configNum][this.name].list.push(obj);
       }
@@ -223,20 +191,20 @@ export default {
     // 添加自定义弹窗
     addCustomDialog(editorId) {
       window.UE.registerUI(
-        "test-dialog",
+        'test-dialog',
         function (editor, uiName) {
           let dialog = new window.UE.ui.Dialog({
-            iframeUrl: "/admin/widget.images/index.html?fodder=dialog",
+            iframeUrl: '/admin/widget.images/index.html?fodder=dialog',
             editor: editor,
             name: uiName,
-            title: "上传图片",
-            cssRules: "width:960px;height:550px;padding:20px;",
+            title: '上传图片',
+            cssRules: 'width:960px;height:550px;padding:20px;',
           });
           this.dialog = dialog;
           // 参考上面的自定义按钮
           var btn = new window.UE.ui.Button({
-            name: "dialog-button",
-            title: "上传图片",
+            name: 'dialog-button',
+            title: '上传图片',
             cssRules: `background-image: url(../../../assets/images/icons.png);background-position: -726px -77px;`,
             onclick: function () {
               // 渲染dialog
@@ -247,14 +215,13 @@ export default {
 
           return btn;
         },
-        37
+        37,
       );
     },
     // 获取图片信息
     getPic(pc) {
       this.$nextTick(() => {
-        this.configData[this.configNum][this.name].list[this.activeIndex].img =
-          pc.att_dir;
+        this.configData[this.configNum][this.name].list[this.activeIndex].img = pc.att_dir;
         this.modalPic = false;
       });
     },
@@ -262,7 +229,7 @@ export default {
     bindDelete(item, index) {
       if (this.configData[this.configNum][this.name].list.length == 1) {
         let lastObj = this.configData[this.configNum][this.name].list[0];
-        this.$store.commit("userInfo/uploadList" + this.moduleName, lastObj);
+        this.$store.commit('userInfo/uploadList' + this.moduleName, lastObj);
       }
       this.configData[this.configNum][this.name].list.splice(index, 1);
     },

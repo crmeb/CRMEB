@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -17,7 +17,6 @@ use app\services\BaseServices;
 use app\services\other\CacheServices;
 use crmeb\exceptions\AuthException;
 use crmeb\services\CacheService;
-use crmeb\utils\ApiErrorCode;
 use crmeb\utils\JwtAuth;
 use Firebase\JWT\ExpiredException;
 
@@ -44,24 +43,24 @@ class AdminAuthServices extends BaseServices
      * @return array
      * @throws \Psr\SimpleCache\InvalidArgumentException
      */
-    public function parseToken(string $token): array
+    public function parseToken(string $token, int $code = 110003): array
     {
         /** @var CacheService $cacheService */
         $cacheService = app()->make(CacheService::class);
 
         if (!$token || $token === 'undefined') {
-            throw new AuthException(ApiErrorCode::ERR_LOGIN);
+            throw new AuthException($code);
         }
         /** @var JwtAuth $jwtAuth */
         $jwtAuth = app()->make(JwtAuth::class);
         //设置解析token
-        [$id, $type] = $jwtAuth->parseToken($token);
+        [$id, $type, $pwd] = $jwtAuth->parseToken($token);
 
         //检测token是否过期
         $md5Token = md5($token);
         if (!$cacheService->hasToken($md5Token) || !($cacheToken = $cacheService->getTokenBucket($md5Token))) {
             $this->authFailAfter($id, $type);
-            throw new AuthException(ApiErrorCode::ERR_LOGIN);
+            throw new AuthException($code);
         }
         //是否超出有效次数
         if (isset($cacheToken['invalidNum']) && $cacheToken['invalidNum'] >= 3) {
@@ -69,7 +68,7 @@ class AdminAuthServices extends BaseServices
                 $cacheService->clearToken($md5Token);
             }
             $this->authFailAfter($id, $type);
-            throw new AuthException(ApiErrorCode::ERR_LOGIN_INVALID);
+            throw new AuthException($code);
         }
 
 
@@ -85,7 +84,7 @@ class AdminAuthServices extends BaseServices
                 $cacheService->clearToken($md5Token);
             }
             $this->authFailAfter($id, $type);
-            throw new AuthException(ApiErrorCode::ERR_LOGIN_INVALID);
+            throw new AuthException($code);
         }
 
         //获取管理员信息
@@ -95,7 +94,10 @@ class AdminAuthServices extends BaseServices
                 $cacheService->clearToken($md5Token);
             }
             $this->authFailAfter($id, $type);
-            throw new AuthException(ApiErrorCode::ERR_LOGIN_STATUS);
+            throw new AuthException($code);
+        }
+        if ($pwd !== '' && $pwd !== md5($adminInfo->pwd)) {
+            throw new AuthException($code);
         }
 
         $adminInfo->type = $type;

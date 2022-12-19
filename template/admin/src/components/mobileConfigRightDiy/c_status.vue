@@ -3,12 +3,7 @@
     <div class="c_row-item" v-if="configData">
       <Col span="8" class="c_label">{{ configData.title }}</Col>
       <Col span="14" class="color-box">
-        <i-switch
-          :true-value="true"
-          :false-value="false"
-          v-model="configData.status"
-          @on-change="change"
-        />
+        <i-switch :true-value="true" :false-value="false" v-model="configData.status" @on-change="change" />
       </Col>
     </div>
   </div>
@@ -16,7 +11,7 @@
 
 <script>
 export default {
-  name: "c_status",
+  name: 'c_status',
   props: {
     configObj: {
       type: Object,
@@ -50,7 +45,7 @@ export default {
     change(status) {
       this.$nextTick(() => {
         this.configData.status = status;
-        this.$store.commit("mobildConfig/footStatus", status);
+        this.$store.commit('mobildConfig/footStatus', status);
       });
       //   this.$emit("getConfig", this.configData);
     },

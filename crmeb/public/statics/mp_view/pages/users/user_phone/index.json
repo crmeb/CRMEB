@@ -1,6 +1,7 @@
 {
   "navigationBarTitleText": "绑定手机",
   "usingComponents": {
-    "authorize": "/components/Authorize"
+    "authorize": "/components/Authorize",
+    "verify": "/components/verify/verify"
   }
 }

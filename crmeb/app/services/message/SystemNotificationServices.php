@@ -2,13 +2,13 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
 // | Author: CRMEB Team <admin@crmeb.com>
 // +----------------------------------------------------------------------
-declare (strict_types = 1);
+declare (strict_types=1);
 
 namespace app\services\message;
 
@@ -21,9 +21,10 @@ use think\facade\Cache;
 use crmeb\exceptions\AdminException;
 
 /**
- *
+ * 消息管理类
  * Class SystemNotificationServices
  * @package app\services\system
+ * @method value($where, $value) 条件获取某个字段的值
  */
 class SystemNotificationServices extends BaseServices
 {
@@ -49,41 +50,24 @@ class SystemNotificationServices extends BaseServices
     {
         return $this->dao->getOne($where);
     }
-    
 
     /**
      * 后台获取列表
-     * @param $where
+     * @param array $where
+     * @return array
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
      */
     public function getNotList(array $where)
     {
-        $industry = CacheService::get('wechat_industry', function () {
-            try {
-                $cache = (new Template('wechat'))->getIndustry();
-                if ($cache['primary_industry']['first_class'] != 'IT科技' || $cache['primary_industry']['second_class'] != '互联网|电子商务' || $cache['secondary_industry']['first_class'] != 'IT科技' || $cache['secondary_industry']['second_class'] != 'IT软件与服务') {
-                    (new Template('wechat'))->setIndustry(1, 2);
-                }
-                return $cache->toArray();
-            } catch (\Exception $e) {
-                return $e->getMessage();
-            }
-        }, 0) ?: [];
-        !is_array($industry) && $industry = [];
-        $industry['primary_industry'] = isset($industry['primary_industry']) ? $industry['primary_industry']['first_class'] . ' | ' . $industry['primary_industry']['second_class'] : '未选择';
-        $industry['secondary_industry'] = isset($industry['secondary_industry']) ? $industry['secondary_industry']['first_class'] . ' | ' . $industry['secondary_industry']['second_class'] : '未选择';
-        $list = [
-            'industry' => $industry,
-            'list' => $this->dao->getList($where),
-        ];
-        return $list;
-//        return $this->dao->getList($where);
+        return $this->dao->getList($where);
     }
 
     /**
      * 获取单条数据
      * @param array $where
      * @return array
-     * @throws \Psr\SimpleCache\InvalidArgumentException
      * @throws \think\db\exception\DataNotFoundException
      * @throws \think\db\exception\DbException
      * @throws \think\db\exception\ModelNotFoundException
@@ -98,7 +82,6 @@ class SystemNotificationServices extends BaseServices
         $type = $where['type'];
         unset($where['type']);
         $info = $this->dao->getOne($where);
-//        var_dump($info);
         if (!$info) return [];
         $info = $info->toArray();
         switch ($type) {
@@ -106,30 +89,17 @@ class SystemNotificationServices extends BaseServices
                 $info['content'] = $info['system_text'] ?? '';
                 break;
             case 'is_sms':
-                $snsCacheName = 'sms_template_list';
-                $smsTem = [];
-                if (Cache::has($snsCacheName)) {
-                    $smsTem = Cache::get($snsCacheName);
-                } else {
-                    $list = $ServeServices->sms()->temps(1, 30, 0);
-                    if (isset($list['data']) && $list['data']) {
-                        foreach ($list['data'] as $item) {
-                            $smsTem[$item['temp_id']] = $item['content'];
-                        }
-                    }
-                    if ($smsTem) Cache::set($snsCacheName, $smsTem, 172800);
-                }
-                $info['content'] = $smsTem[$info['sms_id']] ?? '';
+                $info['content'] = $info['sms_text'];
                 break;
             case 'is_wechat':
-                $wechat = $TemplateMessageServices->getOne(['notification_id' => $info['id'], 'type' => 1]);
+                $wechat = $TemplateMessageServices->getOne(['id' => $info['wechat_id'], 'type' => 1]);
                 $info['templage_message_id'] = $wechat['id'] ?? '';
                 $info['tempkey'] = $wechat['tempkey'] ?? '';
                 $info['tempid'] = $wechat['tempid'] ?? '';
                 $info['content'] = $wechat['content'] ?? '';
                 break;
             case 'is_routine':
-                $wechat = $TemplateMessageServices->getOne(['notification_id' => $info['id'], 'type' => 0]);
+                $wechat = $TemplateMessageServices->getOne(['id' => $info['routine_id'], 'type' => 0]);
                 $info['templage_message_id'] = $wechat['id'] ?? '';
                 $info['tempkey'] = $wechat['tempkey'] ?? '';
                 $info['tempid'] = $wechat['tempid'] ?? '';
@@ -142,6 +112,10 @@ class SystemNotificationServices extends BaseServices
     /**
      * 保存数据
      * @param array $data
+     * @return bool|\crmeb\basic\BaseModel|null
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
      */
     public function saveData(array $data)
     {
@@ -149,7 +123,7 @@ class SystemNotificationServices extends BaseServices
         $id = $data['id'];
         $info = $this->dao->get($id);
         if (!$info) {
-            throw new AdminException('数据不存在');
+            throw new AdminException(100026);
         }
         /** @var TemplateMessageServices $TemplateMessageServices */
         $TemplateMessageServices = app()->make(TemplateMessageServices::class);
@@ -170,6 +144,7 @@ class SystemNotificationServices extends BaseServices
                 $update['name'] = $data['name'];
                 $update['title'] = $data['title'];
                 $update['is_sms'] = $data['is_sms'];
+                $update['sms_id'] = $data['sms_id'];
                 $res = $this->dao->update((int)$id, $update);
                 break;
             case 'is_wechat':

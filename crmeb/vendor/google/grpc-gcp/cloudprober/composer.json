@@ -1,0 +1,9 @@
+{
+  "name": "grpc_gcp_prober",
+  "description": "grpc cloudprober for PHP",
+  "require": {
+    "grpc/grpc": "^v1.15.0",
+    "google/auth": "^v1.4.0",
+    "google/cloud": "^v0.86.0"
+  }
+}

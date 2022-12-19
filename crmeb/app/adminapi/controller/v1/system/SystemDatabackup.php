@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -60,7 +60,7 @@ class SystemDatabackup extends AuthController
     {
         $tables = $this->request->param('tables', '', 'htmlspecialchars');
         $res = $this->services->getDbBackup()->optimize($tables);
-        return app('json')->success($res ? '优化成功' : '优化失败');
+        return app('json')->success($res ? 100047 : 100048);
     }
 
     /**
@@ -70,7 +70,7 @@ class SystemDatabackup extends AuthController
     {
         $tables = $this->request->param('tables', '', 'htmlspecialchars');
         $res = $this->services->getDbBackup()->repair($tables);
-        return app('json')->success($res ? '修复成功' : '修复失败');
+        return app('json')->success($res ? 100049 : 100050);
     }
 
     /**
@@ -80,7 +80,7 @@ class SystemDatabackup extends AuthController
     {
         $tables = $this->request->param('tables', '', 'htmlspecialchars');
         $data = $this->services->backup($tables);
-        return app('json')->success($data ? '备份失败' . $data : '备份成功');
+        return app('json')->success(100051);
     }
 
     /**
@@ -98,7 +98,7 @@ class SystemDatabackup extends AuthController
     {
         $filename = intval(request()->post('filename'));
         $files = $this->services->getDbBackup()->delFile($filename);
-        return app('json')->success('删除成功');
+        return app('json')->success(100002);
     }
 
     /**
@@ -116,35 +116,35 @@ class SystemDatabackup extends AuthController
             $list = $db->getFile('timeverif', $time);
             if (is_array($list)) {
                 session::set('backup_list', $list);
-                return app('json')->success('初始化完成！', array('part' => 1, 'start' => 0));
+                return app('json')->success(400307, array('part' => 1, 'start' => 0));
             } else {
-                return app('json')->fail('备份文件可能已经损坏，请检查！');
+                return app('json')->fail(400308);
             }
         } else if (is_numeric($part) && is_numeric($start) && $part && $start) {
             $list = session::get('backup_list');
             $start = $db->setFile($list)->import($start);
             if (false === $start) {
-                return app('json')->fail('还原数据出错！');
+                return app('json')->fail(400309);
             } elseif (0 === $start) {
                 if (isset($list[++$part])) {
                     $data = array('part' => $part, 'start' => 0);
-                    return app('json')->success("正在还原...#{$part}", $data);
+                    return app('json')->success(400310, $data);
                 } else {
                     session::delete('backup_list');
-                    return app('json')->success('还原完成！');
+                    return app('json')->success(400311);
                 }
             } else {
                 $data = array('part' => $part, 'start' => $start[0]);
                 if ($start[1]) {
                     $rate = floor(100 * ($start[0] / $start[1]));
-                    return app('json')->success("正在还原...#{$part}({$rate}%)", $data);
+                    return app('json')->success(400310, $data);
                 } else {
                     $data['gz'] = 1;
-                    return app('json')->success("正在还原...#{$part}", $data);
+                    return app('json')->success(400310, $data);
                 }
             }
         } else {
-            return app('json')->fail('参数错误！');
+            return app('json')->fail(100100);
         }
     }
 

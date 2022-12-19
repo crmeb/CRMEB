@@ -6,12 +6,9 @@
       </Col>
       <Col span="19" class="slider-box">
         <Select v-model="configData.activeValue" @on-change="sliderChange">
-          <Option
-            v-for="(item, index) in configData.list"
-            :value="item.activeValue"
-            :key="index"
-            >{{ item.title }}</Option
-          >
+          <Option v-for="(item, index) in configData.list" :value="item.activeValue" :key="index">{{
+            item.title
+          }}</Option>
         </Select>
       </Col>
     </div>
@@ -20,7 +17,7 @@
 
 <script>
 export default {
-  name: "c_select",
+  name: 'c_select',
   props: {
     configObj: {
       type: Object,
@@ -36,7 +33,7 @@ export default {
     return {
       defaults: {},
       configData: {},
-      timeStamp: "",
+      timeStamp: '',
     };
   },
   mounted() {
@@ -61,7 +58,7 @@ export default {
     sliderChange(e) {
       let storage = window.localStorage;
       this.configData.activeValue = e ? e : storage.getItem(this.timeStamp);
-      this.$emit("getConfig", { name: "select", values: e });
+      this.$emit('getConfig', { name: 'select', values: e });
     },
   },
 };

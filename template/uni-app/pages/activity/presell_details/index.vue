@@ -25,29 +25,29 @@
 					<view class="wrapper">
 						<view class="share acea-row row-between row-bottom">
 							<view class="money font-color">
-								￥
+								{{$(`￥`)}}
 								<text class="num" v-text="storeInfo.price || 0"></text>
-								<text v-if="storeInfo.spec_type">起</text>
-								<text class="price_text">预售价</text>
+								<text v-if="storeInfo.spec_type">{{$t(`起`)}}</text>
+								<text class="price_text">{{$t(`预售价`)}}</text>
 							</view>
 							<view class="iconfont icon-fenxiang" @click="listenerActionSheet"></view>
 						</view>
 						<view class="label acea-row row-between-wrapper" style="padding-bottom: 20rpx;">
-							<view v-text="'划线价:￥' + (storeInfo.ot_price || 0)"></view>
-							<view v-text="'已预订：' + (storeInfo.sales || 0) + (storeInfo.unit_name || '')"></view>
+							<view v-text="$t(`划线价`)':'$t(`￥`) + (storeInfo.ot_price || 0)"></view>
+							<view v-text="$t(`已预订`)':' + (storeInfo.sales || 0) + (storeInfo.unit_name || '')"></view>
 						</view>
 						<view class="introduce" v-text="storeInfo.title"></view>
 						<view v-if="!is_money_level && storeInfo.vip_price && storeInfo.is_vip"
 							class="svip acea-row row-between-wrapper">
-							<view class="">开通“超级会员”立省{{ diff }}元</view>
+							<view class="">{{$t(`开通“超级会员”立省`)}}{{ diff }}{{$t(`元`)}}</view>
 							<navigator url="/pages/annex/vip_paid/index">
-								立即开通
+								{{$t(`立即开通`)}}
 								<text class="iconfont icon-jiantou"></text>
 							</navigator>
 						</view>
 						<view class="presell_count">
 							<view>
-								<view>预售活动时间：</view>
+								<view>{{$t(`预售活动时间`)}}：</view>
 								<view v-if="storeInfo.start_time && storeInfo.stop_time" class="presell_time">
 									<view class='iconfont icon-shijian1'></view>
 									{{storeInfo.start_time}}
@@ -55,45 +55,39 @@
 									{{storeInfo.stop_time}}
 								</view>
 							</view>
-							<view>预售结束后{{ storeInfo.deliver_time }}天内发货</view>
+							<view>{{$t(`预售结束后`)}}{{ storeInfo.deliver_time }}{{$t(`天内发货`)}}</view>
 						</view>
-						<!-- <view class='coupon acea-row row-between-wrapper' v-if="storeInfo.give_integral > 0">
-							<view class='hide line1 acea-row'>
-								赠积分：
-								<view class='activity'>赠送 {{storeInfo.give_integral}} 积分</view>
-							</view>
-						</view> -->
 						<view v-if="couponList.length" class="coupon acea-row row-between-wrapper" @click="couponTap"
 							style="margin-top: 0rpx;">
 							<view class="hide line1 acea-row">
-								优惠券：
+								{{$t(`优惠券`)}}：
 								<template v-for="(item, index) in couponList">
 									<view v-if="index < 2" class="activity" :key="index">
-										满{{ item.use_min_price }}减{{ item.coupon_price }}</view>
+										{{$t(`满`)}}{{ item.use_min_price }}{{$t(`减`)}}{{ item.coupon_price }}</view>
 								</template>
 							</view>
 							<view class="iconfont icon-jiantou"></view>
 						</view>
 						<view class="coupon acea-row row-between-wrapper" v-if="activity.length">
 							<view class="line1 acea-row">
-								<text>活&nbsp;&nbsp;&nbsp;动：</text>
+								<text>{{$t(`活动`)}}：</text>
 								<view v-for="(item, index) in activity" :key="index" @click="goActivity(item)">
 									<view v-if="item.type === '1'"
 										:class="index == 0 ? 'activity_pin' : '' || index == 1 ? 'activity_miao' : '' || index == 2 ? 'activity_kan' : ''">
 										<text class="iconfonts iconfont icon-pintuan"></text>
-										<text class="activity_title">参与秒杀</text>
+										<text class="activity_title">{{$t(`参与秒杀`)}}</text>
 									</view>
 									<view
 										:class="index == 0 ? 'activity_pin' : '' || index == 1 ? 'activity_miao' : '' || index == 2 ? 'activity_kan' : ''"
 										v-if="item.type === '2'">
 										<text class="iconfonts iconfont icon-shenhezhong"></text>
-										<text class="activity_title">参与砍价</text>
+										<text class="activity_title">{{$t(`参与砍价`)}}</text>
 									</view>
 									<view
 										:class="index == 0 ? 'activity_pin' : '' || index == 1 ? 'activity_miao' : '' || index == 2 ? 'activity_kan' : ''"
 										v-if="item.type === '3'">
 										<text class="iconfonts iconfont icon-kanjia"></text>
-										<text class="activity_title">参与拼团</text>
+										<text class="activity_title">{{$t(`参与拼团`)}}</text>
 									</view>
 								</view>
 							</view>
@@ -121,17 +115,17 @@
 								<image :src="item.image" v-for="(item, index) in skuArr.slice(0, 4)" :key="index"
 									class="attrImg"></image>
 							</view>
-							<view class="switchTxt">共{{ skuArr.length }}种规格可选</view>
+							<view class="switchTxt">{{$t(`共`)}}{{ skuArr.length }}{{$t(`种规格可选`)}}</view>
 						</view>
 					</view>
 				</view>
 				<view class="userEvaluation" id="past1">
 					<view class="title acea-row row-between-wrapper">
-						<view>用户评价({{ replyCount }})</view>
+						<view>{{$t(`用户评价`)}}({{ replyCount }})</view>
 						<navigator class="praise" hover-class="none"
-							:url="'/pages/users/goods_comment_list/index?product_id=' + storeInfo.product_id">
+							:url="'/pages/goods/goods_comment_list/index?product_id=' + storeInfo.product_id">
 							<text class="font-color">{{ replyChance }}%</text>
-							好评率
+							{{$t(`好评率`)}}
 							<text class="iconfont icon-jiantou"></text>
 						</navigator>
 					</view>
@@ -140,7 +134,7 @@
 					</block>
 				</view>
 				<view class="product-intro" id="past3">
-					<view class="title">产品介绍</view>
+					<view class="title">{{$t(`产品介绍`)}}</view>
 					<view class="conter">
 						<jyf-parser :html="description" ref="article" :tag-style="tagStyle"></jyf-parser>
 					</view>
@@ -157,24 +151,24 @@
 
 			<navigator hover-class="none" open-type="switchTab" class="item" url="/pages/index/index">
 				<view class="iconfont icon-shouye6"></view>
-				<view class="p_center">首页</view>
+				<view class="p_center">{{$t(`首页`)}}</view>
 			</navigator>
 			<view @click="setCollect" class="item">
 				<view class="iconfont icon-shoucang1" v-if="storeInfo.userCollect"></view>
 				<view class="iconfont icon-shoucang" v-else></view>
-				<view class="p_center">收藏</view>
+				<view class="p_center">{{$t(`收藏`)}}</view>
 			</view>
 			<view class="bnt acea-row" v-if="pay_status === 1 || pay_status === 3">
 				<form @submit="goBuy" class="buy bnts bg-color-hui"><button class="buy bnts"
-						form-type="submit">{{pay_status === 1?'未开始':'已结束'}}</button></form>
+						form-type="submit">{{pay_status === 1?$t(`未开始`):$t(`已结束`)}}</button></form>
 			</view>
 			<view class="bnt acea-row"
 				v-else-if="attr.productSelect.quota <= 0 || attr.productSelect.quota < attr.productSelect.cart_num">
 				<form class="buy bnts bg-color-hui"><button class="buy bnts bg-color-hui"
-						form-type="submit">已售罄</button></form>
+						form-type="submit">{{$t(`已售罄`)}}</button></form>
 			</view>
 			<view class="bnt acea-row" v-else-if="pay_status === 2">
-				<form @submit="goBuy" class="buy bnts"><button class="buy bnts" form-type="submit">立即购买</button></form>
+				<form @submit="goBuy" class="buy bnts"><button class="buy bnts" form-type="submit">{{$t(`立即购买`)}}</button></form>
 			</view>
 		</view>
 		<!-- 		<shareRedPackets :sharePacket="sharePacket" @listenerActionSheet="listenerActionSheet"
@@ -193,24 +187,24 @@
 			<!-- #ifndef MP -->
 			<button class="item" hover-class="none" v-if="weixinStatus === true" @click="H5ShareBox = true">
 				<view class="iconfont icon-weixin3"></view>
-				<view class="">发送给朋友</view>
+				<view class="">{{$t(`发送给朋友`)}}</view>
 			</button>
 			<!-- #endif -->
 			<!-- #ifdef MP -->
 			<button class="item" open-type="share" hover-class="none" @click="goFriend">
 				<view class="iconfont icon-weixin3"></view>
-				<view class="">发送给朋友</view>
+				<view class="">{{$t(`发送给朋友`)}}</view>
 			</button>
 			<!-- #endif -->
 			<!-- #ifdef H5  -->
 			<div class="item copy-data" v-if="storeInfo.command_word" :data-clipboard-text="storeInfo.command_word">
 				<view class="iconfont icon-fuzhikouling"></view>
-				<text>复制口令</text>
+				<text>{{$t(`复制口令`)}}</text>
 			</div>
 			<!-- #endif -->
 			<button class="item" hover-class="none" @click="goPoster">
 				<view class="iconfont icon-haibao"></view>
-				<view class="">生成海报</view>
+				<view class="">{{$t(`生成海报`)}}</view>
 			</button>
 		</view>
 		<view class="mask" v-if="posters" @click="listenerActionClose"></view>
@@ -222,17 +216,17 @@
 			<image src="/static/images/poster-close.png" class="close" @click="posterImageClose"></image>
 			<image :src="posterImage"></image>
 			<!-- #ifndef H5  -->
-			<view class="save-poster" @click="savePosterPath">保存到手机</view>
+			<view class="save-poster" @click="savePosterPath">{{$t(`保存到手机`)}}</view>
 			<!-- #endif -->
 			<!-- #ifdef H5 -->
-			<view class="keep">长按图片可以保存到手机</view>
+			<view class="keep">{{$t(`长按图片可以保存到手机`)}}</view>
 			<!-- #endif -->
 		</view>
 		<view class="mask" v-if="posterImageStatus"></view>
 		<canvas class="canvas" canvas-id="myCanvas" v-if="canvasStatus"></canvas>
 		<!-- 发送给朋友图片 -->
 		<view class="share-box" v-if="H5ShareBox">
-			<image src="/static/images/share-info.png" @click="H5ShareBox = false"></image>
+			<image :src="imgHost + '/statics/images/share-info.png'" @click="H5ShareBox = false"></image>
 		</view>
 		<kefuIcon :ids='parseInt(id)' :routineContact="routineContact"></kefuIcon>
 	</view>
@@ -271,15 +265,13 @@
 	import userEvaluation from '@/components/userEvaluation';
 	import shareRedPackets from '@/components/shareRedPackets';
 	import kefuIcon from '@/components/kefuIcon';
-	import {
-		silenceBindingSpread
-	} from '@/utils';
 	import parser from '@/components/jyf-parser/jyf-parser';
 	import ClipboardJS from '@/plugin/clipboard/clipboard.js';
 	// #ifdef MP
 	import authorize from '@/components/Authorize';
 	// #endif
 	import colors from "@/mixins/color";
+	import {HTTP_REQUEST_URL} from '@/config/app';
 	import cusPreviewImg from "@/components/cusPreviewImg/index.vue";
 	let app = getApp();
 	export default {
@@ -307,6 +299,7 @@
 		data() {
 			let that = this;
 			return {
+				imgHost:HTTP_REQUEST_URL,
 				//属性是否打开
 				coupon: {
 					coupon: false,
@@ -314,7 +307,7 @@
 					list: [],
 					count: []
 				},
-				attrTxt: '请选择', //属性页面提示
+				attrTxt: that.$t(`请选择`), //属性页面提示
 				attrValue: '', //已选属性
 				animated: false, //购物车动画
 				id: 0, //商品id
@@ -435,7 +428,7 @@
 			}
 			if (!options.id) {
 				return that.$util.Tips({
-					title: '缺少参数无法查看商品'
+					title: that.$t(`缺少参数无法查看商品`)
 				}, {
 					tab: 3,
 					url: 1
@@ -448,10 +441,6 @@
 			if (options.spid) app.globalData.spid = options.spid;
 			// #endif
 			that.getGoodsDetails();
-			// that.getCouponList(0);
-			//#ifdef H5
-			that.isLogin && silenceBindingSpread();
-			//#endif
 		},
 		onReady: function() {
 			this.$nextTick(function() {
@@ -469,7 +458,7 @@
 				const clipboard = new ClipboardJS('.copy-data');
 				clipboard.on('success', () => {
 					this.$util.Tips({
-						title: '复制成功'
+						title: this.$t(`复制成功`)
 					});
 				});
 				// #endif
@@ -641,7 +630,6 @@
 			 *
 			 */
 			ChangeAttr: function(res) {
-				console.log(this.productValue[res])
 				let productSelect = this.productValue[res];
 				this.$set(this, "selectSku", productSelect);
 				if (productSelect && productSelect.stock > 0) {
@@ -653,7 +641,7 @@
 					this.$set(this.attr.productSelect, 'cart_num', 1);
 					this.$set(this.attr.productSelect, 'vip_price', productSelect.vip_price);
 					this.$set(this, 'attrValue', res);
-					this.$set(this, 'attrTxt', '已选择');
+					this.$set(this, 'attrTxt', this.$t(`已选择`));
 				} else {
 					this.$set(this.attr.productSelect, 'image', productSelect.image);
 					this.$set(this.attr.productSelect, 'price', this.storeInfo.price);
@@ -663,7 +651,7 @@
 					this.$set(this.attr.productSelect, 'quota', productSelect.quota);
 					this.$set(this.attr.productSelect, 'vip_price', this.storeInfo.vip_price);
 					this.$set(this, 'attrValue', '');
-					this.$set(this, 'attrTxt', '请选择');
+					this.$set(this, 'attrTxt', this.$t(`请选择`));
 				}
 			},
 			/**
@@ -720,9 +708,9 @@
 						}
 						console.log(that.skuArr)
 						that.$set(that, "selectSku", that.skuArr[0]);
-						var navList = ['商品', '评价', '详情'];
+						var navList = [that.$t(`商品`), that.$t(`评价`), that.$t(`详情`)];
 						if (goodArray.length) {
-							navList.splice(2, 0, '推荐');
+							navList.splice(2, 0, that.$t(`推荐`));
 						}
 						that.$set(that, 'navList', navList);
 						// #ifdef H5
@@ -751,7 +739,7 @@
 							},
 							fail: function() {
 								return that.$util.Tips({
-									title: '二维码获取失败'
+									title: that.$t(`二维码获取失败`)
 								});
 							},
 						});
@@ -769,7 +757,6 @@
 						that.getCartCount();
 					})
 					.catch(err => {
-						状态异常返回上级页面
 						return that.$util.Tips({
 							title: err.toString()
 						}, {
@@ -816,7 +803,7 @@
 			showMaoLocation: function() {
 				if (!this.systemStore.latitude || !this.systemStore.longitude)
 					return this.$util.Tips({
-						title: '缺少经纬度信息无法查看地图！'
+						title: this.$t(`缺少经纬度信息无法查看地图`)
 					});
 				uni.openLocation({
 					latitude: parseFloat(this.systemStore.latitude),
@@ -855,7 +842,7 @@
 					this.$set(this.attr.productSelect, 'quota', productSelect.quota);
 					this.$set(this, 'attrValue', value.join(','));
 					this.$set(this.attr.productSelect, 'vip_price', productSelect.vip_price);
-					this.$set(this, 'attrTxt', '已选择');
+					this.$set(this, 'attrTxt', this.$t(`已选择`));
 				} else if (!productSelect && productAttr.length) {
 					this.$set(this.attr.productSelect, 'store_name', this.storeInfo.store_name);
 					this.$set(this.attr.productSelect, 'image', this.storeInfo.image);
@@ -866,7 +853,7 @@
 					this.$set(this.attr.productSelect, 'quota', productSelect.quota);
 					this.$set(this.attr.productSelect, 'vip_price', this.storeInfo.vip_price);
 					this.$set(this, 'attrValue', '');
-					this.$set(this, 'attrTxt', '请选择');
+					this.$set(this, 'attrTxt', this.$t(`请选择`));
 				} else if (!productSelect && !productAttr.length) {
 					this.$set(this.attr.productSelect, 'store_name', this.storeInfo.store_name);
 					this.$set(this.attr.productSelect, 'image', this.storeInfo.image);
@@ -876,7 +863,7 @@
 					this.$set(this.attr.productSelect, 'cart_num', 1);
 					this.$set(this.attr.productSelect, 'vip_price', this.storeInfo.vip_price);
 					this.$set(this, 'attrValue', '');
-					this.$set(this, 'attrTxt', '请选择');
+					this.$set(this, 'attrTxt', this.$t(`请选择`));
 				}
 			},
 			/**
@@ -1014,7 +1001,7 @@
 				//如果有属性,没有选择,提示用户选择
 				if (that.attr.productAttr.length && productSelect === undefined && that.isOpen === true)
 					return that.$util.Tips({
-						title: '产品库存不足，请选择其它属性'
+						title: that.$t(`产品库存不足，请选择其它属性`)
 					});
 				let q = {
 					productId: that.storeInfo.product_id,
@@ -1028,7 +1015,7 @@
 						that.isOpen = false;
 						that.attr.cartAttr = false;
 						uni.navigateTo({
-							url: '/pages/users/order_confirm/index?new=1&cartId=' + res.data.cartId
+							url: '/pages/goods/order_confirm/index?new=1&cartId=' + res.data.cartId
 						});
 					})
 					.catch(err => {
@@ -1070,7 +1057,6 @@
 			},
 			// 授权关闭
 			authColse: function(e) {
-				console.log(e, 'eeeee');
 				this.isShowAuth = e;
 			},
 			/**
@@ -1180,7 +1166,7 @@
 						// #endif
 						// #ifdef MP
 						return that.$util.Tips({
-							title: "正在下载海报,请稍后再试",
+							title: that.$t(`正在下载海报,请稍后再试`),
 						});
 						// #endif
 					},
@@ -1191,7 +1177,7 @@
 								arr2[2] = msgPromotionCode;
 								if (arr2[2] == '')
 									return that.$util.Tips({
-										title: '海报二维码生成失败！'
+										title: that.$t(`海报二维码生成失败`)
 									});
 								that.$util.PosterCanvas(arr2, that.storeInfo.title, that.storeInfo
 									.price, that.storeInfo.ot_price,
@@ -1251,13 +1237,13 @@
 										success: function(res) {
 											that.posterImageClose();
 											that.$util.Tips({
-												title: '保存成功',
+												title: that.$t(`保存成功`),
 												icon: 'success'
 											});
 										},
 										fail: function(res) {
 											that.$util.Tips({
-												title: '保存失败'
+												title: that.$t(`保存失败`)
 											});
 										}
 									});
@@ -1269,13 +1255,13 @@
 								success: function(res) {
 									that.posterImageClose();
 									that.$util.Tips({
-										title: '保存成功',
+										title: that.$t(`保存成功`),
 										icon: 'success'
 									});
 								},
 								fail: function(res) {
 									that.$util.Tips({
-										title: '保存失败'
+										title: that.$t(`保存失败`)
 									});
 								}
 							});
@@ -1323,12 +1309,10 @@
 			},
 			//滑动轮播图选择商品
 			changeSwitch(e) {
-				console.log(this.skuArr, e)
 				let productSelect = this.skuArr[e];
 				this.$set(this, "selectSku", productSelect);
 				var skuList = productSelect.suk.split(",");
 				this.$set(this.attr.productAttr[0], "index", skuList[0]);
-				console.log(this.skuList)
 				if (skuList.length == 2) {
 					this.$set(this.attr.productAttr[0], "index", skuList[0]);
 					this.$set(this.attr.productAttr[1], "index", skuList[1]);
@@ -1348,7 +1332,7 @@
 			 	this.$set(this.attr.productSelect, "stock", productSelect.stock);
 					this.$set(this.attr.productSelect, "unique", productSelect.unique);
 					this.$set(this.attr.productSelect, "vipPrice", productSelect.vipPrice);
-					this.$set(this, "attrTxt", "已选择");
+					this.$set(this, "attrTxt", this.$t(`已选择`));
 					this.$set(this, "attrValue", productSelect.suk);
 				}
 			},

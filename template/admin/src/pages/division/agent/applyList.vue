@@ -1,13 +1,5 @@
 <template>
   <div>
-    <div class="i-layout-page-header">
-      <div class="i-layout-page-header">
-        <span
-          class="ivu-page-header-title mr20"
-          v-text="$route.meta.title"
-        ></span>
-      </div>
-    </div>
     <Card :bordered="false" dis-hover class="ivu-mt">
       <Form
         ref="formValidate"
@@ -28,12 +20,9 @@
                 @on-change="userSearchs"
               >
                 <Option value="all">全部</Option>
-                <Option
-                  :value="item.id"
-                  v-for="(item, index) in statusList"
-                  :key="index"
-                  >{{ item.status_name }}</Option
-                >
+                <Option :value="item.id" v-for="(item, index) in statusList" :key="index">{{
+                  item.status_name
+                }}</Option>
               </Select>
             </FormItem>
           </Col>
@@ -67,23 +56,13 @@
           >
             <template slot-scope="{ row, index }" slot="images">
               <div class="pictrue-box" v-if="row.images.length">
-                <div
-                  v-viewer
-                  v-for="(item, index) in row.images || []"
-                  :key="index"
-                >
+                <div v-viewer v-for="(item, index) in row.images || []" :key="index">
                   <img class="pictrue mr10" v-lazy="item" :src="item" />
                 </div>
               </div>
             </template>
             <template slot-scope="{ row, index }" slot="status">
-              <Tag>{{
-                row.status == 0
-                  ? "申请中"
-                  : row.status == 1
-                  ? "已同意"
-                  : "已拒绝"
-              }}</Tag>
+              <Tag>{{ row.status == 0 ? '申请中' : row.status == 1 ? '已同意' : '已拒绝' }}</Tag>
             </template>
             <template slot-scope="{ row, index }" slot="division_end_time">
               <span> {{ row.division_end_time }}</span>
@@ -113,11 +92,11 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
-import { divisionList, divisionFrom, isShowApi, clerkList } from "@/api/agent";
-import { formatDate } from "@/utils/validate";
+import { mapState } from 'vuex';
+import { divisionList, divisionFrom, isShowApi, clerkList } from '@/api/agent';
+import { formatDate } from '@/utils/validate';
 export default {
-  name: "agent_extra",
+  name: 'agent_extra',
   data() {
     return {
       grid: {
@@ -133,67 +112,67 @@ export default {
       formInline: {
         uid: 0,
         proportion: 0,
-        image: "",
+        image: '',
       },
       statusList: [
         {
-          status_name: "申请中",
+          status_name: '申请中',
           id: 0,
         },
         {
-          status_name: "已同意",
+          status_name: '已同意',
           id: 1,
         },
         {
-          status_name: "已拒绝",
+          status_name: '已拒绝',
           id: 2,
         },
       ],
       columns: [
         {
-          title: "用户UID",
-          key: "uid",
+          title: '用户UID',
+          key: 'uid',
           width: 80,
         },
         {
-          title: "代理商名称",
-          key: "agent_name",
+          title: '代理商名称',
+          key: 'agent_name',
           minWidth: 150,
         },
         {
-          title: "代理商电话",
-          key: "phone",
+          title: '代理商电话',
+          key: 'phone',
           minWidth: 100,
         },
         {
-          title: "事业部ID",
-          key: "division_id",
+          title: '事业部ID',
+          key: 'division_id',
           minWidth: 100,
         },
         {
-          title: "申请图片",
-          slot: "images",
+          title: '申请图片',
+          slot: 'images',
           minWidth: 100,
         },
         {
-          title: "申请时间",
-          key: "add_time",
+          title: '申请时间',
+          key: 'add_time',
           minWidth: 100,
         },
         {
-          title: "申请状态",
-          slot: "status",
+          title: '申请状态',
+          slot: 'status',
           minWidth: 100,
         },
         {
-          title: "邀请码",
-          key: "division_invite",
+          title: '邀请码',
+          key: 'division_invite',
           minWidth: 100,
         },
         {
-          title: "操作",
-          slot: "action",
-          fixed: "right",
+          title: '操作',
+          slot: 'action',
+          fixed: 'right',
           minWidth: 120,
         },
       ],
@@ -203,8 +182,8 @@ export default {
       formValidate: {
         page: 1,
         limit: 15,
-        keyword: "",
-        status: "all",
+        keyword: '',
+        status: 'all',
       },
       staffModal: false,
       clerkReqData: {
@@ -219,17 +198,17 @@ export default {
     formatDate(time) {
       if (time !== 0) {
         let date = new Date(time * 1000);
-        return formatDate(date, "yyyy-MM-dd hh:mm");
+        return formatDate(date, 'yyyy-MM-dd hh:mm');
       }
     },
   },
   computed: {
-    ...mapState("media", ["isMobile"]),
+    ...mapState('media', ['isMobile']),
     labelWidth() {
       return this.isMobile ? undefined : 75;
     },
     labelPosition() {
-      return this.isMobile ? "top" : "right";
+      return this.isMobile ? 'top' : 'right';
     },
   },
   mounted() {
@@ -303,7 +282,7 @@ export default {
     del(row, tit, num) {
       let delfromData = {
         title: tit,
-        method: "DELETE",
+        method: 'DELETE',
         uid: row.id,
         url: `agent/division/del_apply/${row.id}`,
       };
@@ -319,7 +298,6 @@ export default {
   },
 };
 </script>
-
 
 <style scoped lang="stylus">
 .ivu-form-item {

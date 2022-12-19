@@ -9,6 +9,11 @@ use app\services\user\UserBillServices;
 use crmeb\interfaces\ListenerInterface;
 use think\facade\Log;
 
+/**
+ * 订单确认收货
+ * Class OrderTake
+ * @package app\listener\order
+ */
 class OrderTake implements ListenerInterface
 {
     public function handle($event): void
@@ -29,20 +34,12 @@ class OrderTake implements ListenerInterface
                 'change_message' => '已收货',
                 'change_time' => time()
             ]);
-            /** @var StoreOrderTakeServices $storeOrderTake */
-            $storeOrderTake = app()->make(StoreOrderTakeServices::class);
+
+            //检查主订单是否需要修改状态
             if ($order['pid'] > 0) {
-                $p_order = $storeOrderTake->get((int)$order['pid'], ['id,pid,status']);
-                //主订单全部发货 且子订单没有待收货 有待评价
-                if ($p_order['status'] == 1 && !$storeOrderTake->count(['pid' => $order['pid'], 'status' => 2]) && $storeOrderTake->count(['pid' => $order['pid'], 'status' => 3])) {
-                    $storeOrderTake->update($p_order['id'], ['status' => 2]);
-                    $statusService->save([
-                        'oid' => $p_order['id'],
-                        'change_type' => 'take_delivery',
-                        'change_message' => '已收货',
-                        'change_time' => time()
-                    ]);
-                }
+                /** @var StoreOrderTakeServices $storeOrderTake */
+                $storeOrderTake = app()->make(StoreOrderTakeServices::class);
+                $storeOrderTake->checkMaster($order['pid']);
             }
         } catch (\Throwable $e) {
             Log::error($e->getMessage());

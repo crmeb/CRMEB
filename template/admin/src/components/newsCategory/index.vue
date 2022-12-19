@@ -1,21 +1,11 @@
 <template>
   <div :style="{ height: scrollerHeight + 'px' || '' }">
     <Card :bordered="false" dis-hover class="ivu-mt">
-      <Form
-        ref="formValidate"
-        :model="formValidate"
-        :label-width="80"
-        label-position="left"
-        class="tabform"
-      >
+      <Form ref="formValidate" :model="formValidate" :label-width="80" label-position="left" class="tabform">
         <Row :gutter="24" type="flex" justify="end">
           <Col span="24">
             <Col v-bind="grid" class="mr">
-              <FormItem
-                label="图文搜索："
-                prop="cate_name"
-                label-for="cate_name"
-              >
+              <FormItem label="图文搜索：" prop="cate_name" label-for="cate_name">
                 <Input
                   search
                   enter-button
@@ -28,38 +18,25 @@
             </Col>
           </Col>
         </Row>
-        <Row
-          type="flex"
-          v-show="$route.path === '/admin/app/wechat/news_category/index'"
-        >
+        <Row type="flex" v-show="$route.path === '/admin/app/wechat/news_category/index'">
           <router-link :to="'/admin/app/wechat/news_category/save/0'">
-            <Button type="primary" class="bnt" icon="md-add"
-              >添加图文消息</Button
-            >
+            <Button type="primary" class="bnt" icon="md-add">添加图文消息</Button>
           </router-link>
         </Row>
       </Form>
     </Card>
     <div class="contentBox">
-      <div
-        id="content"
-        :style="{ top: contentTop + 'px' || '', width: contentWidth }"
-        ref="content"
-      >
+      <div id="content" :style="{ top: contentTop + 'px' || '', width: contentWidth }" ref="content">
         <vue-waterfall-easy
           :imgsArr="imgsArr"
-          :maxCols="cols"
+          :maxCols="maxCol"
           :width="screenWidth"
           @click="clickFn"
           @scrollReachBottom="getData"
           ref="waterfall"
           :reachBottomDistance="30"
         >
-          <div
-            class="img-info"
-            slot-scope="props"
-            v-if="props.value.new.length !== 0"
-          >
+          <div class="img-info" slot-scope="props" v-if="props.value.new.length !== 0">
             <div v-for="(j, i) in props.value.new" :key="i">
               <div v-if="i === 0">
                 <div
@@ -114,23 +91,23 @@
 </template>
 
 <script>
-import vueWaterfallEasy from "vue-waterfall-easy";
-import { wechatNewsListApi } from "@/api/app";
-import { mapState } from "vuex";
+import vueWaterfallEasy from 'vue-waterfall-easy';
+import { wechatNewsListApi } from '@/api/app';
+import { mapState } from 'vuex';
 export default {
-  name: "newsCategory",
+  name: 'newsCategory',
   props: {
     scrollerHeight: {
       type: String,
-      default: "100%",
+      default: '100%',
     },
     contentTop: {
       type: String,
-      default: "230",
+      default: '230',
     },
     contentWidth: {
       type: String,
-      default: "100%",
+      default: '100%',
     },
     maxCols: {
       type: Number,
@@ -177,19 +154,24 @@ export default {
         xs: 24,
       },
       formValidate: {
-        cate_name: "",
+        cate_name: '',
         page: 1,
         limit: 10,
       },
       screenWidth: document.body.clientWidth - 200,
+      maxCol: 1,
     };
   },
   created() {
+    if (this.maxCols === 5) {
+      this.$set(this, 'maxCol', this.screenWidth / 240);
+    } else {
+      this.maxCol = this.maxCols;
+    }
+    console.log(this.maxCol);
     this.getData();
   },
-  mounted() {
-    this.$set(this, "cols", this.screenWidth / 240);
-  },
+  mounted() {},
   computed: {},
   methods: {
     // 发送图文消息
@@ -198,7 +180,7 @@ export default {
         title: tit,
         num: num,
         url: `app/wechat/push`,
-        method: "post",
+        method: 'post',
         ids: {
           id: row.id,
           user_ids: this.userIds,
@@ -214,8 +196,8 @@ export default {
     },
     clickFn(event, { index, value }) {
       event.preventDefault();
-      if (event.target.tagName.toLowerCase() === "div") {
-        this.$emit("getCentList", value);
+      if (event.target.tagName.toLowerCase() === 'div') {
+        this.$emit('getCentList', value);
       }
     },
     // 删除
@@ -224,8 +206,8 @@ export default {
         title: tit,
         num: num,
         url: `app/wechat/news/${row.id}`,
-        method: "DELETE",
-        ids: "",
+        method: 'DELETE',
+        ids: '',
       };
       this.$modalSure(delfromData)
         .then((res) => {
@@ -254,16 +236,16 @@ export default {
     // 编辑
     clkk(item) {
       this.$router.push({
-        path: "/admin/app/wechat/news_category/save/" + item.id,
+        path: '/admin/app/wechat/news_category/save/' + item.id,
       });
     },
     // 鼠标移进
     mouseenterOut(item) {
-      this.$set(item, "isDel", true);
+      this.$set(item, 'isDel', true);
     },
     // 鼠标移出
     mouseenterOver(item) {
-      this.$set(item, "isDel", false);
+      this.$set(item, 'isDel', false);
     },
     // 搜索
     userSearchs() {

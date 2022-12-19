@@ -16,23 +16,14 @@
         <Row type="flex" :gutter="24">
           <Col v-bind="grid">
             <FormItem label="拼团状态：" clearable>
-              <Select
-                v-model="formValidate.is_show"
-                placeholder="请选择"
-                clearable
-                @on-change="userSearchs"
-              >
+              <Select v-model="formValidate.is_show" placeholder="请选择" clearable @on-change="userSearchs">
                 <Option :value="1">开启</Option>
                 <Option :value="0">关闭</Option>
               </Select>
             </FormItem>
           </Col>
           <Col v-bind="grid">
-            <FormItem
-              label="商品搜索："
-              prop="store_name"
-              label-for="store_name"
-            >
+            <FormItem label="商品搜索：" prop="store_name" label-for="store_name">
               <Input
                 search
                 enter-button
@@ -52,11 +43,7 @@
             @click="add"
             >添加拼团商品</Button
           >
-          <Button
-            v-auth="['export-storeCombination']"
-            class="export"
-            icon="ios-share-outline"
-            @click="exports"
+          <Button v-auth="['export-storeCombination']" class="export" icon="ios-share-outline" @click="exports"
             >导出</Button
           >
         </Row>
@@ -71,12 +58,7 @@
         no-filtered-userFrom-text="暂无筛选结果"
       >
         <template slot-scope="{ row, index }" slot="is_fail">
-          <Icon
-            type="md-checkmark"
-            v-if="row.is_fail === 1"
-            color="#0092DC"
-            size="14"
-          />
+          <Icon type="md-checkmark" v-if="row.is_fail === 1" color="#0092DC" size="14" />
           <Icon type="md-close" v-else color="#ed5565" size="14" />
         </template>
         <template slot-scope="{ row, index }" slot="image">
@@ -112,6 +94,8 @@
           <a @click="copy(row)">复制</a>
           <Divider type="vertical" />
           <a @click="del(row, '删除拼团商品', index)">删除</a>
+          <Divider type="vertical" />
+          <a @click="viewInfo(row)">统计</a>
         </template>
       </Table>
       <div class="acea-row row-right page">
@@ -129,20 +113,16 @@
 </template>
 
 <script>
-import {
-  combinationListApi,
-  combinationSetStatusApi,
-  storeCombinationApi,
-} from "@/api/marketing";
-import { mapState } from "vuex";
-import { formatDate } from "@/utils/validate";
+import { combinationListApi, combinationSetStatusApi, storeCombinationApi } from '@/api/marketing';
+import { mapState } from 'vuex';
+import { formatDate } from '@/utils/validate';
 export default {
-  name: "index",
+  name: 'index',
   filters: {
     formatDate(time) {
       if (time !== 0) {
         let date = new Date(time * 1000);
-        return formatDate(date, "yyyy-MM-dd hh:mm");
+        return formatDate(date, 'yyyy-MM-dd hh:mm');
       }
     },
   },
@@ -157,36 +137,36 @@ export default {
         xs: 24,
       },
       formValidate: {
-        is_show: "",
-        store_name: "",
+        is_show: '',
+        store_name: '',
         page: 1,
         limit: 15,
       },
-      value: "",
+      value: '',
       columns1: [
         {
-          title: "ID",
-          key: "id",
+          title: 'ID',
+          key: 'id',
           width: 80,
         },
         {
-          title: "拼团图片",
-          slot: "image",
+          title: '拼团图片',
+          slot: 'image',
           minWidth: 90,
         },
         {
-          title: "拼团名称",
-          key: "title",
+          title: '拼团名称',
+          key: 'title',
           minWidth: 130,
         },
         {
-          title: "原价",
-          key: "ot_price",
+          title: '原价',
+          key: 'ot_price',
           minWidth: 100,
         },
         {
-          title: "拼团价",
-          key: "price",
+          title: '拼团价',
+          key: 'price',
           minWidth: 120,
         },
         // {
@@ -195,8 +175,8 @@ export default {
         //     minWidth: 100
         // },
         {
-          title: "拼团人数",
-          key: "count_people",
+          title: '拼团人数',
+          key: 'count_people',
           minWidth: 100,
         },
         // {
@@ -210,13 +190,13 @@ export default {
         //     minWidth: 150
         // },
         {
-          title: "参与人数",
-          key: "count_people_all",
+          title: '参与人数',
+          key: 'count_people_all',
           minWidth: 100,
         },
         {
-          title: "成团数量",
-          key: "count_people_pink",
+          title: '成团数量',
+          key: 'count_people_pink',
           minWidth: 100,
         },
         // {
@@ -225,35 +205,35 @@ export default {
         //     minWidth: 150
         // },
         {
-          title: "限量",
-          key: "quota_show",
+          title: '限量',
+          key: 'quota_show',
           minWidth: 100,
         },
         {
-          title: "限量剩余",
-          key: "quota",
+          title: '限量剩余',
+          key: 'quota',
           minWidth: 100,
         },
         {
-          title: "活动状态",
-          slot: "start_name",
+          title: '活动状态',
+          slot: 'start_name',
           minWidth: 100,
         },
         {
-          title: "结束时间",
-          slot: "stop_time",
+          title: '结束时间',
+          slot: 'stop_time',
           minWidth: 150,
         },
 
         {
-          title: "上架状态",
-          slot: "is_show",
+          title: '上架状态',
+          slot: 'is_show',
           minWidth: 120,
         },
         {
-          title: "操作",
-          slot: "action",
-          fixed: "right",
+          title: '操作',
+          slot: 'action',
+          fixed: 'right',
           minWidth: 170,
         },
       ],
@@ -263,12 +243,12 @@ export default {
     };
   },
   computed: {
-    ...mapState("media", ["isMobile"]),
+    ...mapState('media', ['isMobile']),
     labelWidth() {
       return this.isMobile ? undefined : 80;
     },
     labelPosition() {
-      return this.isMobile ? "top" : "left";
+      return this.isMobile ? 'top' : 'left';
     },
   },
   activated() {
@@ -292,18 +272,18 @@ export default {
     },
     // 添加
     add() {
-      this.$router.push({ path: "/admin/marketing/store_combination/create" });
+      this.$router.push({ path: '/admin/marketing/store_combination/create' });
     },
     // 编辑
     edit(row) {
       this.$router.push({
-        path: "/admin/marketing/store_combination/create/" + row.id + "/0",
+        path: '/admin/marketing/store_combination/create/' + row.id + '/0',
       });
     },
     // 一键复制
     copy(row) {
       this.$router.push({
-        path: "/admin/marketing/store_combination/create/" + row.id + "/1",
+        path: '/admin/marketing/store_combination/create/' + row.id + '/1',
       });
     },
     // 删除
@@ -312,8 +292,8 @@ export default {
         title: tit,
         num: num,
         url: `marketing/combination/${row.id}`,
-        method: "DELETE",
-        ids: "",
+        method: 'DELETE',
+        ids: '',
       };
       this.$modalSure(delfromData)
         .then((res) => {
@@ -323,6 +303,11 @@ export default {
         .catch((res) => {
           this.$Message.error(res.msg);
         });
+    },
+    viewInfo(row) {
+      this.$router.push({
+        path: '/admin/marketing/store_combination/statistics/' + row.id,
+      });
     },
     // 列表
     getList() {

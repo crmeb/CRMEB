@@ -3,9 +3,7 @@
     <div class="i-layout-page-header header_top">
       <div class="i-layout-page-header fl_header">
         <router-link :to="{ path: '/admin/marketing/store_coupon_issue/index' }"
-          ><Button icon="ios-arrow-back" size="small" type="text"
-            >返回</Button
-          ></router-link
+          ><Button icon="ios-arrow-back" size="small" type="text">返回</Button></router-link
         >
         <Divider type="vertical" />
         <span
@@ -18,10 +16,7 @@
     <Card :bordered="false" dis-hover class="ivu-mt">
       <Form :model="formData" :label-width="150">
         <FormItem label="优惠券名称">
-          <Input
-            v-model="formData.coupon_title"
-            placeholder="请输入优惠券名称"
-          ></Input>
+          <Input v-model="formData.coupon_title" placeholder="请输入优惠券名称"></Input>
         </FormItem>
         <FormItem label="发送方式">
           <RadioGroup v-model="formData.receive_type">
@@ -41,17 +36,9 @@
         </FormItem>
         <FormItem v-show="formData.type === 2">
           <template>
-            <div
-              class="upload-list"
-              v-for="item in productList"
-              :key="item.product_id"
-            >
+            <div class="upload-list" v-for="item in productList" :key="item.product_id">
               <img :src="item.image" />
-              <Icon
-                type="ios-close-circle"
-                size="16"
-                @click="remove(item.product_id)"
-              />
+              <Icon type="ios-close-circle" size="16" @click="remove(item.product_id)" />
             </div>
           </template>
           <Icon type="ios-camera-outline" size="26" @click="modals = true" />
@@ -59,21 +46,12 @@
         </FormItem>
         <FormItem v-show="formData.type === 1">
           <Select v-model="formData.category_id" style="width: 320px">
-            <Option
-              v-for="item in categoryList"
-              :value="item.id"
-              :key="item.id"
-              >{{ item.cate_name }}</Option
-            >
+            <Option v-for="item in categoryList" :value="item.id" :key="item.id">{{ item.cate_name }}</Option>
           </Select>
           <div class="info">选择商品的品类</div>
         </FormItem>
         <FormItem label="优惠券面值">
-          <InputNumber
-            :min="1"
-            :max="100000000"
-            v-model="formData.coupon_price"
-          ></InputNumber>
+          <InputNumber :min="1" :max="100000000" v-model="formData.coupon_price"></InputNumber>
         </FormItem>
         <FormItem label="使用门槛">
           <RadioGroup v-model="isMinPrice">
@@ -82,11 +60,7 @@
           </RadioGroup>
         </FormItem>
         <FormItem v-if="isMinPrice">
-          <InputNumber
-            :min="1"
-            :max="100000000"
-            v-model="formData.use_min_price"
-          ></InputNumber>
+          <InputNumber :min="1" :max="100000000" v-model="formData.use_min_price"></InputNumber>
           <div class="info">填写优惠券的最低消费金额</div>
         </FormItem>
         <FormItem label="使用时间">
@@ -96,11 +70,7 @@
           </RadioGroup>
         </FormItem>
         <FormItem v-show="isCouponTime" label="">
-          <InputNumber
-            :min="1"
-            v-model="formData.coupon_time"
-            :precision="0"
-          ></InputNumber>
+          <InputNumber :min="1" v-model="formData.coupon_time" :precision="0"></InputNumber>
           <div class="info">领取后多少天内有效</div>
         </FormItem>
         <FormItem v-show="!isCouponTime" label="">
@@ -126,10 +96,7 @@
             @on-change="timeChange"
           ></DatePicker>
         </FormItem>
-        <FormItem
-          label="是否限量"
-          v-if="formData.receive_type != 2 && formData.receive_type != 3"
-        >
+        <FormItem label="是否限量" v-if="formData.receive_type != 2 && formData.receive_type != 3">
           <RadioGroup v-model="formData.is_permanent">
             <Radio :label="0">限量</Radio>
             <Radio :label="1">不限量</Radio>
@@ -140,12 +107,7 @@
           label=""
           v-if="formData.receive_type != 2 && formData.receive_type != 3"
         >
-          <InputNumber
-            :min="1"
-            :max="100000000"
-            v-model="formData.total_count"
-            :precision="0"
-          ></InputNumber>
+          <InputNumber :min="1" :max="100000000" v-model="formData.total_count" :precision="0"></InputNumber>
           <div class="info">填写优惠券的发布数量</div>
         </FormItem>
         <!--                <FormItem label="排序">-->
@@ -163,9 +125,7 @@
           </RadioGroup>
         </FormItem>
         <FormItem>
-          <Button type="primary" @click="save" :disabled="disabled"
-            >立即创建</Button
-          >
+          <Button type="primary" @click="save" :disabled="disabled">立即创建</Button>
         </FormItem>
       </Form>
     </Card>
@@ -178,26 +138,17 @@
       width="900"
       @on-cancel="cancel"
     >
-      <goods-list
-        ref="goodslist"
-        v-if="modals"
-        :ischeckbox="true"
-        @getProductId="getProductId"
-      ></goods-list>
+      <goods-list ref="goodslist" v-if="modals" :ischeckbox="true" @getProductId="getProductId"></goods-list>
     </Modal>
   </div>
 </template>
 
 <script>
-import { mapState } from "vuex";
-import goodsList from "@/components/goodsList/index";
-import {
-  couponCategoryApi,
-  couponSaveApi,
-  couponDetailApi,
-} from "@/api/marketing";
+import { mapState } from 'vuex';
+import goodsList from '@/components/goodsList/index';
+import { couponCategoryApi, couponSaveApi, couponDetailApi } from '@/api/marketing';
 export default {
-  name: "storeCouponCreate",
+  name: 'storeCouponCreate',
   components: {
     goodsList,
   },
@@ -205,7 +156,7 @@ export default {
     return {
       disabled: false,
       formData: {
-        coupon_title: "",
+        coupon_title: '',
         coupon_price: 0,
         type: 0,
         use_min_price: 0,
@@ -219,7 +170,7 @@ export default {
         total_count: 1,
         sort: 0,
         status: 1,
-        product_id: "",
+        product_id: '',
         category_id: 0,
       },
       categoryList: [],
@@ -233,7 +184,7 @@ export default {
     };
   },
   computed: {
-    ...mapState("media", ["isMobile"]),
+    ...mapState('media', ['isMobile']),
   },
   created() {
     this.getCategoryList();
@@ -273,21 +224,14 @@ export default {
           this.formData.end_time = data.end_time;
           this.formData.total_count = data.total_count;
           this.formData.sort = data.sort;
-          if ("productInfo" in data) {
+          if ('productInfo' in data) {
             this.productList = data.productInfo;
           }
           if (!data.coupon_time) {
             this.isCouponTime = 0;
-            this.datetime1 = [
-              data.start_use_time * 1000,
-              data.end_use_time * 1000,
-            ];
-            this.formData.start_use_time = this.makeDate(
-              data.start_use_time * 1000
-            );
-            this.formData.end_use_time = this.makeDate(
-              data.end_use_time * 1000
-            );
+            this.datetime1 = [data.start_use_time * 1000, data.end_use_time * 1000];
+            this.formData.start_use_time = this.makeDate(data.start_use_time * 1000);
+            this.formData.end_use_time = this.makeDate(data.end_use_time * 1000);
           }
           if (data.start_time) {
             this.isReceiveTime = 1;
@@ -302,61 +246,54 @@ export default {
     },
     makeDate(data) {
       let date = new Date(data);
-      let YY = date.getFullYear() + "-";
-      let MM =
-        (date.getMonth() + 1 < 10
-          ? "0" + (date.getMonth() + 1)
-          : date.getMonth() + 1) + "-";
-      let DD = date.getDate() < 10 ? "0" + date.getDate() : date.getDate();
-      let hh =
-        (date.getHours() < 10 ? "0" + date.getHours() : date.getHours()) + ":";
-      let mm =
-        (date.getMinutes() < 10 ? "0" + date.getMinutes() : date.getMinutes()) +
-        ":";
-      let ss =
-        date.getSeconds() < 10 ? "0" + date.getSeconds() : date.getSeconds();
-      return YY + MM + DD + " " + hh + mm + ss;
+      let YY = date.getFullYear() + '-';
+      let MM = (date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1) + '-';
+      let DD = date.getDate() < 10 ? '0' + date.getDate() : date.getDate();
+      let hh = (date.getHours() < 10 ? '0' + date.getHours() : date.getHours()) + ':';
+      let mm = (date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes()) + ':';
+      let ss = date.getSeconds() < 10 ? '0' + date.getSeconds() : date.getSeconds();
+      return YY + MM + DD + ' ' + hh + mm + ss;
     },
     // 创建
     save() {
       if (!this.formData.coupon_title) {
-        return this.$Message.error("请输入优惠券名称");
+        return this.$Message.error('请输入优惠券名称');
       }
       if (this.formData.type === 2) {
         if (!this.formData.product_id) {
-          return this.$Message.error("请选择商品");
+          return this.$Message.error('请选择商品');
         }
       }
       if (this.formData.type === 1) {
         if (!this.formData.category_id) {
-          return this.$Message.error("请选择品类");
+          return this.$Message.error('请选择品类');
         }
       }
       if (this.formData.coupon_price <= 0) {
-        return this.$Message.error("优惠券面值不能小于0");
+        return this.$Message.error('优惠券面值不能小于0');
       }
       if (!this.isMinPrice) {
         this.formData.use_min_price = 0;
       } else {
         if (this.formData.use_min_price < 1) {
-          return this.$Message.error("优惠券最低消费不能小于0");
+          return this.$Message.error('优惠券最低消费不能小于0');
         }
       }
       if (this.isCouponTime) {
         this.formData.start_use_time = 0;
         this.formData.end_use_time = 0;
         if (this.formData.coupon_time < 1) {
-          return this.$Message.error("使用有效期限不能小于1天");
+          return this.$Message.error('使用有效期限不能小于1天');
         }
       } else {
         this.formData.coupon_time = 0;
         if (!this.formData.start_use_time) {
-          return this.$Message.error("请选择使用有效期限");
+          return this.$Message.error('请选择使用有效期限');
         }
       }
       if (this.isReceiveTime) {
         if (!this.formData.start_time) {
-          return this.$Message.error("请选择领取时间");
+          return this.$Message.error('请选择领取时间');
         }
       } else {
         this.formData.start_time = 0;
@@ -369,7 +306,7 @@ export default {
         this.formData.total_count = 0;
       } else {
         if (this.formData.total_count < 1) {
-          return this.$Message.error("发布数量不能小于1");
+          return this.$Message.error('发布数量不能小于1');
         }
       }
 
@@ -380,7 +317,7 @@ export default {
           this.$Message.success(res.msg);
           setTimeout(() => {
             this.$router.push({
-              path: "/admin/marketing/store_coupon_issue/index",
+              path: '/admin/marketing/store_coupon_issue/index',
             });
           }, 1000);
         })
@@ -401,15 +338,13 @@ export default {
     //对象数组去重；
     unique(arr) {
       const res = new Map();
-      return arr.filter(
-        (arr) => !res.has(arr.product_id) && res.set(arr.product_id, 1)
-      );
+      return arr.filter((arr) => !res.has(arr.product_id) && res.set(arr.product_id, 1));
     },
     // 选择的商品
     getProductId(productList) {
       this.modals = false;
       this.productList = this.unique(this.productList.concat(productList));
-      this.formData.product_id = "";
+      this.formData.product_id = '';
       this.productList.forEach((value) => {
         if (this.formData.product_id) {
           this.formData.product_id += `,${value.product_id}`;
@@ -428,7 +363,7 @@ export default {
           this.productList.splice(index, 1);
         }
       }
-      this.formData.product_id = "";
+      this.formData.product_id = '';
       this.productList.forEach((value) => {
         if (this.formData.product_id) {
           this.formData.product_id += `,${value.product_id}`;

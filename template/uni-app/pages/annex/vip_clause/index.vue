@@ -22,7 +22,7 @@
 		methods: {
 			memberCard() {
 				uni.showLoading({
-					title: '加载中'
+					title: this.$t(`正在加载中`)
 				});
 				memberCard().then(res => {
 					uni.hideLoading();
@@ -44,7 +44,7 @@
 	}
 </style>
 
-<style scoped>
+<style scoped lang="scss">
 	.title {
 		padding-top: 60rpx;
 		font-size: 30rpx;
@@ -53,5 +53,10 @@
 
 	.cont {
 		padding: 50rpx 30rpx;
+	    /deep/ img {
+			max-width: 100% !important; 
+		}
 	}
+	
+	
 </style>

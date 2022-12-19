@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -15,7 +15,7 @@ use think\facade\Log;
 use think\Response;
 
 /**
- * 订单创建事件
+ * 请求结束事件
  * Class Create
  * @package app\listener\http
  */
@@ -24,7 +24,7 @@ class HttpEnd
     public function handle(Response $response):void
     {
         //业务成功和失败分开存储
-        $status = isset($response->getData()["status"]) ? $response->getData()["status"] : 0;
+        $status = $response->getData()["status"] ?? 0;
         if ($status == 200) {
             //业务成功日志开关
             if (!config("log.success_log")) return;

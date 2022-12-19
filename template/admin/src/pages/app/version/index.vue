@@ -1,16 +1,9 @@
 <template>
   <div>
-    <div class="i-layout-page-header">
-      <div class="i-layout-page-header">
-        <span class="ivu-page-header-title">{{ $route.meta.title }}</span>
-      </div>
-    </div>
     <Card :bordered="false" dis-hover class="ivu-mt">
       <Row type="flex" class="mb20">
         <Col span="24">
-          <Button type="primary" icon="md-add" @click="add" class="mr10"
-            >发布版本</Button
-          >
+          <Button type="primary" icon="md-add" @click="add" class="mr10">发布版本</Button>
         </Col>
       </Row>
       <Table
@@ -22,33 +15,17 @@
         no-filtered-userFrom-text="暂无筛选结果"
       >
         <template slot-scope="{ row }" slot="version">
-          <Poptip
-            v-if="row.is_new"
-            trigger="hover"
-            placement="top-start"
-            content="当前为最新线上版本!"
-          >
-            <Icon
-              size="16"
-              type="ios-bookmark"
-              color="red"
-              style="margin-right: 10px"
-            />
+          <Poptip v-if="row.is_new" trigger="hover" placement="top-start" content="当前为最新线上版本!">
+            <Icon size="16" type="ios-bookmark" color="red" style="margin-right: 10px" />
           </Poptip>
-          <Icon
-            v-else
-            size="16"
-            type="ios-bookmark"
-            color="white"
-            style="margin-right: 10px"
-          />
+          <Icon v-else size="16" type="ios-bookmark" color="white" style="margin-right: 10px" />
           <span>{{ row.version }} </span>
         </template>
         <template slot-scope="{ row }" slot="platform">
-          <span>{{ row.platform === 1 ? "安卓" : "苹果" }}</span>
+          <span>{{ row.platform === 1 ? '安卓' : '苹果' }}</span>
         </template>
         <template slot-scope="{ row }" slot="is_force">
-          <span>{{ row.is_force === 1 ? "强制" : "非强制" }}</span>
+          <span>{{ row.is_force === 1 ? '强制' : '非强制' }}</span>
         </template>
         <template slot-scope="{ row, index }" slot="action">
           <a @click="edit(row)">编辑</a>
@@ -57,31 +34,25 @@
         </template>
       </Table>
       <div class="acea-row row-right page">
-        <Page
-          :total="total"
-          show-elevator
-          show-total
-          @on-change="pageChange"
-          :page-size="tableFrom.limit"
-        />
+        <Page :total="total" show-elevator show-total @on-change="pageChange" :page-size="tableFrom.limit" />
       </div>
     </Card>
   </div>
 </template>
 
 <script>
-import { mapState } from "vuex";
-import { versionList, versionCrate } from "@/api/system";
+import { mapState } from 'vuex';
+import { versionList, versionCrate } from '@/api/system';
 export default {
-  name: "index",
+  name: 'index',
   computed: {
-    ...mapState("media", ["isMobile"]),
-    ...mapState("userLevel", ["categoryId"]),
+    ...mapState('media', ['isMobile']),
+    ...mapState('userLevel', ['categoryId']),
     labelWidth() {
       return this.isMobile ? undefined : 80;
     },
     labelPosition() {
-      return this.isMobile ? "top" : "left";
+      return this.isMobile ? 'top' : 'left';
     },
   },
   data() {
@@ -94,40 +65,40 @@ export default {
       },
       columns1: [
         {
-          title: "版本号",
-          slot: "version",
+          title: '版本号',
+          slot: 'version',
           width: 80,
         },
         {
-          title: "平台类型",
-          slot: "platform",
-          align: "center",
+          title: '平台类型',
+          slot: 'platform',
+          align: 'center',
           minWidth: 120,
         },
         {
-          title: "升级信息",
-          key: "info",
+          title: '升级信息',
+          key: 'info',
           minWidth: 60,
         },
         {
-          title: "是否强制",
-          slot: "is_force",
+          title: '是否强制',
+          slot: 'is_force',
           minWidth: 120,
         },
         {
-          title: "发布日期",
-          key: "add_time",
+          title: '发布日期',
+          key: 'add_time',
           minWidth: 120,
         },
         {
-          title: "下载地址",
-          key: "url",
+          title: '下载地址',
+          key: 'url',
           minWidth: 120,
         },
         {
-          title: "操作",
-          slot: "action",
-          align: "center",
+          title: '操作',
+          slot: 'action',
+          align: 'center',
           minWidth: 50,
         },
       ],
@@ -182,8 +153,8 @@ export default {
         title: tit,
         num: num,
         url: `app/version/del/${row.id}`,
-        method: "DELETE",
-        ids: "",
+        method: 'DELETE',
+        ids: '',
       };
       this.$modalSure(delfromData)
         .then((res) => {
@@ -197,9 +168,9 @@ export default {
     handleSubmit(name) {
       this.$refs[name].validate((valid) => {
         if (valid) {
-          this.$Message.success("成功!");
+          this.$Message.success('成功!');
         } else {
-          this.$Message.error("失败!");
+          this.$Message.error('失败!');
         }
       });
     },

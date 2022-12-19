@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -72,18 +72,8 @@ class StoreCouponIssue extends AuthController
             ['sort', 0],
             ['status', 0],
         ]);
-        if ($data['start_time'] && $data['start_use_time']) {
-            if ($data['start_use_time'] < $data['start_time']) {
-                return app('json')->fail('使用开始时间不能小于领取开始时间');
-            }
-        }
-        if ($data['end_time'] && $data['end_use_time']) {
-            if ($data['end_use_time'] < $data['end_time']) {
-                return app('json')->fail('使用结束时间不能小于领取结束时间');
-            }
-        }
         $res = $this->services->saveCoupon($data);
-        if ($res) return app('json')->success('添加成功!');
+        if ($res) return app('json')->success(100000);
     }
 
     /**
@@ -95,7 +85,7 @@ class StoreCouponIssue extends AuthController
     public function status($id, $status)
     {
         $this->services->update($id, ['status' => $status]);
-        return app('json')->success('修改成功');
+        return app('json')->success(100001);
     }
 
     /**
@@ -105,7 +95,7 @@ class StoreCouponIssue extends AuthController
      */
     public function copy($id = 0)
     {
-        if (!$id) return app('json')->fail('参数错误');
+        if (!$id) return app('json')->fail(100100);
         $info = $this->services->get($id);
         if ($info) $info = $info->toArray();
         if ($info['product_id'] != '') {
@@ -135,7 +125,7 @@ class StoreCouponIssue extends AuthController
         $storeProductService = app()->make(StoreProductCouponServices::class);
         //删除商品关联这个优惠券
         $storeProductService->delete(['issue_coupon_id' => $id]);
-        return app('json')->success('删除成功!');
+        return app('json')->success(100002);
     }
 
     /**

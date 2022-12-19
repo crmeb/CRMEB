@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -10,6 +10,7 @@
 // +----------------------------------------------------------------------
 namespace crmeb\services;
 
+use crmeb\exceptions\AdminException;
 use think\facade\Db;
 
 class MysqlBackupService
@@ -65,7 +66,7 @@ class MysqlBackupService
         $this->setDbConn();
         //检查文件是否可写
         if (!$this->checkPath($this->config['path'])) {
-            throw new \Exception("The current directory is not writable");
+            throw new AdminException(400734);
         }
     }
 
@@ -197,7 +198,7 @@ class MysqlBackupService
     {
         //
         if (!is_numeric($time)) {
-            throw new \Exception("{$time} Illegal data type");
+            throw new AdminException(400735);
         }
         switch ($type) {
             case 'time':
@@ -219,7 +220,7 @@ class MysqlBackupService
                 if (count($list) === $last[0]) {
                     return $list;
                 } else {
-                    throw new \Exception("File {$files['0']} may be damaged, please check again");
+                    throw new AdminException(400736);
                 }
             case 'pathname':
                 return "{$this->config['path']}{$this->file['name']}-{$this->file['part']}.sql";
@@ -245,12 +246,12 @@ class MysqlBackupService
             $file = $this->getFile('time', $time);
             array_map("unlink", $this->getFile('time', $time));
             if (count($this->getFile('time', $time))) {
-                throw new \Exception("File {$time} deleted failed");
+                throw new AdminException(100008);
             } else {
                 return $time;
             }
         } else {
-            throw new \Exception("{$time} Time parameter is incorrect");
+            throw new AdminException(400735);
         }
     }
 
@@ -280,7 +281,7 @@ class MysqlBackupService
             header('Content-Disposition: attachment; filename=' . basename($fileName));
             return readfile($fileName);
         } else {
-            throw new \Exception("{$time} File is abnormal");
+            throw new AdminException(400736);
         }
     }
 
@@ -406,11 +407,11 @@ class MysqlBackupService
                 $list = $db->query("OPTIMIZE TABLE {$tables}");
             }
             if (!$list) {
-                throw new \Exception("data sheet'{$tables}'Repair mistakes please try again!");
+                throw new AdminException(400737);
             }
             return $list;
         } else {
-            throw new \Exception("Please specify the table to be repaired!");
+            throw new AdminException(400738);
         }
     }
 
@@ -435,10 +436,10 @@ class MysqlBackupService
             if ($list) {
                 return $list;
             } else {
-                throw new \Exception("data sheet'{$tables}'Repair mistakes please try again!");
+                throw new AdminException(400737);
             }
         } else {
-            throw new \Exception("Please specify the table to be repaired!");
+            throw new AdminException(400738);
         }
     }
 

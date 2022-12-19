@@ -22,9 +22,7 @@
     >
       <template slot-scope="{ row, index }" slot="order_id">
         <span v-text="row.order_id" style="display: block"></span>
-        <span v-show="row.is_del === 1" style="color: #ed4014; display: block"
-          >用户已删除</span
-        >
+        <span v-show="row.is_del === 1" style="color: #ed4014; display: block">用户已删除</span>
       </template>
       <template slot-scope="{ row, index }" slot="nickname">
         <a @click="showUserInfo(row)">{{ row.nickname }}</a>
@@ -41,27 +39,16 @@
             />
           </div>
           <span class="tabBox_tit">
-            {{ val.cart_info.productInfo.store_name + " | "
-            }}{{
-              val.cart_info.productInfo.attrInfo
-                ? val.cart_info.productInfo.attrInfo.suk
-                : ""
-            }}
+            {{ val.cart_info.productInfo.store_name + ' | '
+            }}{{ val.cart_info.productInfo.attrInfo ? val.cart_info.productInfo.attrInfo.suk : '' }}
           </span>
-          <span class="tabBox_pice">{{
-            "￥" + val.cart_info.truePrice + " x " + val.cart_info.cart_num
-          }}</span>
+          <span class="tabBox_pice">{{ '￥' + val.cart_info.truePrice + ' x ' + val.cart_info.cart_num }}</span>
         </div>
       </template>
       <template slot-scope="{ row, index }" slot="statusName">
         <div v-html="row.status_name.status_name" class="pt5"></div>
         <div class="pictrue-box">
-          <div
-            v-viewer
-            v-if="row.status_name.pics"
-            v-for="(item, index) in row.status_name.pics || []"
-            :key="index"
-          >
+          <div v-viewer v-if="row.status_name.pics" v-for="(item, index) in row.status_name.pics || []" :key="index">
             <img class="pictrue mr10" v-lazy="item" :src="item" />
           </div>
         </div>
@@ -80,33 +67,19 @@
         <a @click="delivery(row)" v-if="row._status === 4">配送信息</a>
         <a
           @click="bindWrite(row)"
-          v-if="
-            row.shipping_type == 2 &&
-            row.status == 0 &&
-            row.paid == 1 &&
-            row.refund_status === 0
-          "
+          v-if="row.shipping_type == 2 && row.status == 0 && row.paid == 1 && row.refund_status === 0"
           >立即核销</a
         >
-        <Divider
-          type="vertical"
-          v-if="row._status === 2 || row._status === 8"
-        />
-        <a @click="splitOrderDetail(row)" v-if="row._status === 8"
-          >查看子订单</a
-        >
+        <Divider type="vertical" v-if="row._status === 2 || row._status === 8" />
+        <a @click="splitOrderDetail(row)" v-if="row._status === 8">查看子订单</a>
 
         <Divider
           type="vertical"
           v-if="
             row._status === 1 ||
-            ((row._status === 2 || row._status === 8) &&
-              (row.pinkStatus === null || row.pinkStatus === 2)) ||
+            ((row._status === 2 || row._status === 8) && (row.pinkStatus === null || row.pinkStatus === 2)) ||
             row._status === 4 ||
-            (row.shipping_type == 2 &&
-              row.status == 0 &&
-              row.paid == 1 &&
-              row.refund_status === 0)
+            (row.shipping_type == 2 && row.status == 0 && row.paid == 1 && row.refund_status === 0)
           "
         />
         <template>
@@ -119,31 +92,19 @@
               <DropdownItem
                 name="1"
                 ref="ones"
-                v-show="
-                  row._status === 1 &&
-                  row.paid === 0 &&
-                  row.pay_type === 'offline'
-                "
+                v-show="row._status === 1 && row.paid === 0 && row.pay_type === 'offline'"
                 >立即支付</DropdownItem
               >
               <DropdownItem name="2">订单详情</DropdownItem>
               <DropdownItem name="3">订单记录</DropdownItem>
-              <DropdownItem
-                name="11"
-                v-show="row._status >= 3 && row.express_dump"
-                >电子面单打印</DropdownItem
-              >
-              <DropdownItem name="10" v-show="row._status >= 2"
-                >小票打印</DropdownItem
-              >
+              <DropdownItem name="11" v-show="row._status >= 3 && row.express_dump">电子面单打印</DropdownItem>
+              <DropdownItem name="10" v-show="row._status >= 2">小票打印</DropdownItem>
               <!-- <DropdownItem name="10" v-show="row._status >= 2">订单打印</DropdownItem> -->
               <DropdownItem
                 name="4"
                 v-show="
                   row._status !== 1 ||
-                  (row._status === 3 &&
-                    row.use_integral > 0 &&
-                    row.use_integral >= row.back_integral)
+                  (row._status === 3 && row.use_integral > 0 && row.use_integral >= row.back_integral)
                 "
                 >订单备注</DropdownItem
               >
@@ -169,12 +130,8 @@
               <DropdownItem name="7" v-show="row._status === 3"
                 >不退款</DropdownItem
               > -->
-              <DropdownItem name="8" v-show="row._status === 4"
-                >已收货</DropdownItem
-              >
-              <DropdownItem name="9" v-if="row.is_del == 1"
-                >删除订单</DropdownItem
-              >
+              <DropdownItem name="8" v-show="row._status === 4">已收货</DropdownItem>
+              <DropdownItem name="9" v-if="row.is_del == 1">删除订单</DropdownItem>
             </DropdownMenu>
           </Dropdown>
         </template>
@@ -193,39 +150,22 @@
       /> -->
     </div>
     <!-- 编辑 退款 退积分 不退款-->
-    <edit-from
-      ref="edits"
-      :FromData="FromData"
-      @submitFail="submitFail"
-    ></edit-from>
+    <edit-from ref="edits" :FromData="FromData" @submitFail="submitFail"></edit-from>
     <!-- 会员详情-->
     <user-details ref="userDetails"></user-details>
     <!-- 详情 -->
-    <details-from
-      ref="detailss"
-      :orderDatalist="orderDatalist"
-      :orderId="orderId"
-    ></details-from>
+    <details-from ref="detailss" :orderDatalist="orderDatalist" :orderId="orderId"></details-from>
     <!-- 备注 -->
-    <order-remark
-      ref="remarks"
-      :orderId="orderId"
-      @submitFail="submitFail"
-    ></order-remark>
+    <order-remark ref="remarks" :orderId="orderId" @submitFail="submitFail"></order-remark>
     <!-- 记录 -->
     <order-record ref="record"></order-record>
     <!-- 发送货 -->
-    <order-send
-      ref="send"
-      :orderId="orderId"
-      :status="status"
-      @submitFail="submitFail"
-    ></order-send>
+    <order-send ref="send" :orderId="orderId" :status="status" @submitFail="submitFail"></order-send>
   </div>
 </template>
 
 <script>
-import expandRow from "./components/tableExpand.vue";
+import expandRow from './components/tableExpand.vue';
 import {
   orderList,
   getOrdeDatas,
@@ -236,17 +176,17 @@ import {
   getDistribution,
   writeUpdate,
   splitOrderList,
-} from "@/api/order";
-import { mapState, mapMutations } from "vuex";
-import editFrom from "../../../components/from/from";
-import detailsFrom from "./handle/orderDetails";
-import orderRemark from "./handle/orderRemark";
-import orderRecord from "./handle/orderRecord";
-import orderSend from "./handle/orderSend";
-import userDetails from "@/pages/user/list/handle/userDetails";
+} from '@/api/order';
+import { mapState, mapMutations } from 'vuex';
+import editFrom from '../../../components/from/from';
+import detailsFrom from './handle/orderDetails';
+import orderRemark from './handle/orderRemark';
+import orderRecord from './handle/orderRecord';
+import orderSend from './handle/orderSend';
+import userDetails from '@/pages/user/list/handle/userDetails';
 
 export default {
-  name: "table_list",
+  name: 'table_list',
   components: {
     expandRow,
     editFrom,
@@ -256,7 +196,7 @@ export default {
     orderSend,
     userDetails,
   },
-  props: ["where", "isAll"],
+  props: ['where', 'isAll'],
   data() {
     return {
       delfromData: {},
@@ -267,7 +207,7 @@ export default {
       orderId: 0,
       columns: [
         {
-          type: "expand",
+          type: 'expand',
           width: 30,
           render: (h, params) => {
             return h(expandRow, {
@@ -279,127 +219,127 @@ export default {
         },
         {
           width: 50,
-          align: "center",
+          align: 'center',
           renderHeader: (h, params) => {
             return h(
-              "div",
+              'div',
               {
                 class: {
-                  "select-panel": true,
+                  'select-panel': true,
                 },
                 on: {
                   mouseenter: (e) => {
-                    this.display = "block";
+                    this.display = 'block';
                   },
                   mouseleave: (e) => {
-                    this.display = "none";
+                    this.display = 'none';
                   },
                 },
               },
               [
-                h("Checkbox", {
+                h('Checkbox', {
                   props: {
                     value: this.checkBox,
                   },
                   on: {
-                    "on-change": (e) => {
+                    'on-change': (e) => {
                       this.checkBox = e;
                       this.$refs.table.selectAll(this.checkBox);
-                      this.$emit("on-all", e ? 0 : -1);
+                      this.$emit('on-all', e ? 0 : -1);
                     },
                   },
                 }),
                 h(
-                  "div",
+                  'div',
                   {
                     style: {
-                      position: "absolute",
+                      position: 'absolute',
                       top: 0,
                       zIndex: 2,
                       display: this.display,
-                      width: "80px",
-                      height: "100%",
-                      padding: "0px 0",
-                      borderRadius: "4px",
-                      backgroundColor: "#fff",
-                      boxShadow: "0 0px 5px rgba(0, 0, 0, 0.2)",
-                      transform: "translateX(25%)",
+                      width: '80px',
+                      height: '100%',
+                      padding: '0px 0',
+                      borderRadius: '4px',
+                      backgroundColor: '#fff',
+                      boxShadow: '0 0px 5px rgba(0, 0, 0, 0.2)',
+                      transform: 'translateX(25%)',
                     },
                   },
                   [
                     h(
-                      "div",
+                      'div',
                       {
                         class: {
-                          "select-item": true,
+                          'select-item': true,
                           on: this.isAll == 0,
                         },
                         style: {
-                          padding: "1px 6px",
-                          cursor: "pointer",
-                          height: "50%",
+                          padding: '1px 6px',
+                          cursor: 'pointer',
+                          height: '50%',
                         },
                         on: {
                           click: (e) => {
                             if (this.isAll === 0) {
-                              this.$emit("on-all", -1);
+                              this.$emit('on-all', -1);
                               this.checkBox = false;
                               this.$refs.table.selectAll(this.checkBox);
                             } else {
-                              this.$emit("on-all", 0);
+                              this.$emit('on-all', 0);
                               if (!this.formSelection.length) {
                                 this.checkBox = true;
                                 this.$refs.table.selectAll(this.checkBox);
                               }
                             }
-                            this.display = "none";
+                            this.display = 'none';
                           },
                         },
                       },
-                      "选择当页"
+                      '选择当页',
                     ),
                     h(
-                      "div",
+                      'div',
                       {
                         class: {
-                          "select-item": true,
+                          'select-item': true,
                           on: this.isAll == 1,
                         },
                         style: {
-                          padding: "1px 6px",
-                          cursor: "pointer",
-                          height: "50%",
+                          padding: '1px 6px',
+                          cursor: 'pointer',
+                          height: '50%',
                         },
                         on: {
                           click: (e) => {
                             if (this.isAll === 1) {
                               this.isAll = -1;
-                              this.$emit("on-all", -1);
+                              this.$emit('on-all', -1);
                               this.checkBox = false;
                             } else {
                               this.isAll = 1;
-                              this.$emit("on-all", 1);
+                              this.$emit('on-all', 1);
                               this.checkBox = true;
                             }
                             this.$refs.table.selectAll(this.checkBox);
-                            this.display = "none";
+                            this.display = 'none';
                           },
                         },
                       },
-                      "选择全部"
+                      '选择全部',
                     ),
-                  ]
+                  ],
                 ),
-              ]
+              ],
             );
           },
           render: (h, params) => {
-            return h("Checkbox", {
+            return h('Checkbox', {
               props: {
                 value: params.row.checkBox,
               },
               on: {
-                "on-change": (e) => {
+                'on-change': (e) => {
                   if (e) {
                     this.formSelection.push(params.row);
                   } else {
@@ -410,66 +350,66 @@ export default {
                       }
                     });
                   }
-                  this.$emit("on-all", this.formSelection.length ? 0 : -1);
+                  this.$emit('on-all', this.formSelection.length ? 0 : -1);
                   // this.responseData为查询出的结果数据
                   // params.row.checkBox = e;
                   params.row.checkBox = e;
                   this.orderList[params.index].checkBox = e;
                 },
               },
-              ref: "checkbox",
+              ref: 'checkbox',
               refInFor: true,
             });
           },
         },
         {
-          title: "订单号",
-          align: "center",
-          slot: "order_id",
+          title: '订单号',
+          align: 'center',
+          slot: 'order_id',
           minWidth: 150,
         },
         {
-          title: "订单类型",
-          key: "pink_name",
+          title: '订单类型',
+          key: 'pink_name',
           minWidth: 120,
         },
         {
-          title: "用户信息",
-          slot: "nickname",
+          title: '用户信息',
+          slot: 'nickname',
           minWidth: 100,
         },
         {
-          title: "商品信息",
-          slot: "info",
+          title: '商品信息',
+          slot: 'info',
           minWidth: 330,
         },
         {
-          title: "实际支付",
-          key: "pay_price",
+          title: '实际支付',
+          key: 'pay_price',
           minWidth: 70,
         },
         {
-          title: "支付时间",
-          key: "_pay_time",
+          title: '支付时间',
+          key: '_pay_time',
           minWidth: 100,
         },
         {
-          title: "支付状态",
-          key: "pay_type_name",
+          title: '支付状态',
+          key: 'pay_type_name',
           minWidth: 80,
         },
         {
-          title: "订单状态",
-          key: "statusName",
-          slot: "statusName",
+          title: '订单状态',
+          key: 'statusName',
+          slot: 'statusName',
           minWidth: 120,
         },
         {
-          title: "操作",
-          slot: "action",
-          fixed: "right",
+          title: '操作',
+          slot: 'action',
+          fixed: 'right',
           minWidth: 150,
-          align: "center",
+          align: 'center',
         },
       ],
       page: {
@@ -480,26 +420,19 @@ export default {
       data: [],
       FromData: null,
       orderDatalist: null,
-      modalTitleSs: "",
+      modalTitleSs: '',
       isDelIdList: [],
       checkBox: false,
       formSelection: [],
       selectionCopy: [],
-      display: "none",
+      display: 'none',
       autoDisabled: false,
       status: 0, //发货状态判断
       // isAll: -1,
     };
   },
   computed: {
-    ...mapState("admin/order", [
-      "orderPayType",
-      "orderStatus",
-      "orderTime",
-      "orderNum",
-      "fieldKey",
-      "orderType",
-    ]),
+    ...mapState('admin/order', ['orderPayType', 'orderStatus', 'orderTime', 'orderNum', 'fieldKey', 'orderType']),
   },
   mounted() {},
   created() {
@@ -511,11 +444,11 @@ export default {
       this.getList();
     },
     formSelection(value) {
-      this.$emit("order-select", value);
+      this.$emit('order-select', value);
       if (value.length) {
-        this.$emit("auto-disabled", 0);
+        this.$emit('auto-disabled', 0);
       } else {
-        this.$emit("auto-disabled", 1);
+        this.$emit('auto-disabled', 1);
       }
       let isDel = value.some((item) => {
         return item.is_del === 1;
@@ -543,7 +476,7 @@ export default {
     },
   },
   methods: {
-    ...mapMutations("admin/order", ["getIsDel", "getisDelIdListl"]),
+    ...mapMutations('admin/order', ['getIsDel', 'getisDelIdListl']),
     selectAll(row) {
       if (row.length) {
         this.formSelection = row;
@@ -562,17 +495,17 @@ export default {
     changeMenu(row, name) {
       this.orderId = row.id;
       switch (name) {
-        case "1":
+        case '1':
           this.delfromData = {
-            title: "修改立即支付",
+            title: '修改立即支付',
             url: `/order/pay_offline/${row.id}`,
-            method: "post",
-            ids: "",
+            method: 'post',
+            ids: '',
           };
           this.$modalSure(this.delfromData)
             .then((res) => {
               this.$Message.success(res.msg);
-              this.$emit("changeGetTabs");
+              this.$emit('changeGetTabs');
               this.getList();
             })
             .catch((res) => {
@@ -580,31 +513,31 @@ export default {
             });
           // this.modalTitleSs = '修改立即支付';
           break;
-        case "2":
+        case '2':
           this.getData(row.id);
           break;
-        case "3":
+        case '3':
           this.$refs.record.modals = true;
           this.$refs.record.getList(row.id);
           break;
-        case "4":
+        case '4':
           this.$refs.remarks.modals = true;
           break;
-        case "5":
+        case '5':
           this.getRefundData(row.id);
           break;
-        case "6":
+        case '6':
           this.getRefundIntegral(row.id);
           break;
-        case "7":
+        case '7':
           this.getNoRefundData(row.id);
           break;
-        case "8":
+        case '8':
           this.delfromData = {
-            title: "修改确认收货",
+            title: '修改确认收货',
             url: `/order/take/${row.id}`,
-            method: "put",
-            ids: "",
+            method: 'put',
+            ids: '',
           };
           this.$modalSure(this.delfromData)
             .then((res) => {
@@ -616,31 +549,31 @@ export default {
             });
           // this.modalTitleSs = '修改确认收货';
           break;
-        case "10":
+        case '10':
           this.delfromData = {
-            title: "立即打印订单",
-            info: "您确认打印此订单吗?",
+            title: '立即打印订单',
+            info: '您确认打印此订单吗?',
             url: `/order/print/${row.id}`,
-            method: "get",
-            ids: "",
+            method: 'get',
+            ids: '',
           };
           this.$modalSure(this.delfromData)
             .then((res) => {
               this.$Message.success(res.msg);
-              this.$emit("changeGetTabs");
+              this.$emit('changeGetTabs');
               this.getList();
             })
             .catch((res) => {
               this.$Message.error(res.msg);
             });
           break;
-        case "11":
+        case '11':
           this.delfromData = {
-            title: "立即打印电子面单",
-            info: "您确认打印此电子面单吗?",
+            title: '立即打印电子面单',
+            info: '您确认打印此电子面单吗?',
             url: `/order/order_dump/${row.id}`,
-            method: "get",
-            ids: "",
+            method: 'get',
+            ids: '',
           };
           this.$modalSure(this.delfromData)
             .then((res) => {
@@ -653,10 +586,10 @@ export default {
           break;
         default:
           this.delfromData = {
-            title: "删除订单",
+            title: '删除订单',
             url: `/order/del/${row.id}`,
-            method: "DELETE",
-            ids: "",
+            method: 'DELETE',
+            ids: '',
           };
           // this.modalTitleSs = '删除订单';
           this.delOrder(row, this.delfromData);
@@ -697,7 +630,7 @@ export default {
           });
           this.orderCards = data.stat;
           this.page.total = data.count;
-          this.$emit("on-changeCards", data.stat);
+          this.$emit('on-changeCards', data.stat);
           this.loading = false;
         })
         .catch((res) => {
@@ -720,7 +653,7 @@ export default {
     },
     splitOrderDetail(row) {
       this.$router.push({
-        path: "split_order",
+        path: 'split_order',
         query: {
           id: row.id,
         },
@@ -738,9 +671,8 @@ export default {
             this.$Message.error(res.msg);
           });
       } else {
-        const title = "错误！";
-        const content =
-          "<p>您选择的的订单存在用户未删除的订单，无法删除用户未删除的订单！</p>";
+        const title = '错误！';
+        const content = '<p>您选择的的订单存在用户未删除的订单，无法删除用户未删除的订单！</p>';
         this.$Modal.error({
           title: title,
           content: content,
@@ -771,7 +703,7 @@ export default {
           if (this.orderDatalist.orderInfo.refund_reason_wap_img) {
             try {
               this.orderDatalist.orderInfo.refund_reason_wap_img = JSON.parse(
-                this.orderDatalist.orderInfo.refund_reason_wap_img
+                this.orderDatalist.orderInfo.refund_reason_wap_img,
               );
             } catch (e) {
               this.orderDatalist.orderInfo.refund_reason_wap_img = [];
@@ -791,7 +723,7 @@ export default {
     getRefundData(id) {
       this.$modalForm(getRefundFrom(id)).then(() => {
         this.getList();
-        this.$emit("changeGetTabs");
+        this.$emit('changeGetTabs');
       });
     },
     // 获取退积分表单数据
@@ -809,7 +741,7 @@ export default {
     getNoRefundData(id) {
       this.$modalForm(getnoRefund(id)).then(() => {
         this.getList();
-        this.$emit("changeGetTabs");
+        this.$emit('changeGetTabs');
       });
     },
     // 发送货
@@ -838,16 +770,16 @@ export default {
     // 数据导出；
     exportData: function () {
       this.$refs.table.exportCsv({
-        filename: "商品列表",
+        filename: '商品列表',
       });
     },
     // 核销订单
     bindWrite(row) {
       let self = this;
       this.$Modal.confirm({
-        title: "提示",
-        content: "确定要核销该订单吗？",
-        cancelText: "取消",
+        title: '提示',
+        content: '确定要核销该订单吗？',
+        cancelText: '取消',
         closable: true,
         maskClosable: true,
         onOk: function () {

@@ -1,25 +1,15 @@
 <template>
-	<!-- <view class='product-bg'>
-	        <swiper  :indicator-dots="indicatorDots"
-	            :autoplay="autoplay" :circular="circular" :interval="interval" :duration="duration" @change="change">
-	            <block v-for="(item,index) in imgUrls" :key="index"> 
-	                <swiper-item>
-	                   <image :src="item" class="slide-image"/>
-					   
-	                </swiper-item>
-	            </block>
-	        </swiper>
-	        <view class='pages'>{{currents}}/{{imgUrls.length || 1}}</view>
-	    </view> -->
 	<view class='product-bg'>
-		<swiper :indicator-dots="indicatorDots" indicator-active-color="var(--view-theme)" :autoplay="autoplay" :circular="circular"
-		 :interval="interval" :duration="duration" @change="change" v-if="isPlay">
-		 <!-- #ifndef APP-PLUS -->
+		<swiper :indicator-dots="indicatorDots" indicator-active-color="var(--view-theme)" :autoplay="autoplay"
+			:circular="circular" :interval="interval" :duration="duration" @change="change" v-if="isPlay">
+			<!-- #ifndef APP-PLUS -->
 			<swiper-item v-if="videoline">
 				<view class="item">
 					<view v-show="!controls" style="width:100%;height:100% ">
-						<video id="myVideo" :src='videoline' objectFit="contain" controls style="width:100%;height:100% "
-						 show-center-play-btn show-mute-btn="true" auto-pause-if-navigate :custom-cache="false" :enable-progress-gesture="false" :poster="imgUrls[0]" @pause="videoPause"></video>
+						<video id="myVideo"  :src='videoline' objectFit="contain" controls
+							style="width:100%;height:100% " show-center-play-btn show-mute-btn="true"
+							auto-pause-if-navigate :custom-cache="false" :enable-progress-gesture="false"
+							:poster="imgUrls[0]" @pause="videoPause"></video>
 					</view>
 					<view class="poster" v-show="controls">
 						<image class="image" :src="imgUrls[0]"></image>
@@ -49,9 +39,10 @@
 			</block>
 		</swiper>
 		<!-- #ifdef APP-PLUS -->
-		<view v-if="!isPlay" style="width: 100%; height: 750rpx;">
-			<video id="myVideo" :src='videoline' objectFit="cover" controls style="width:100%;height:100% "
-			 show-center-play-btn show-mute-btn="true" autoplay="true" auto-pause-if-navigate :custom-cache="false" :enable-progress-gesture="false" :poster="imgUrls[0]" @pause="videoPause"></video>
+		<view v-if="!isPlay" style="width: 750rpx; height: 750rpx;">
+			<video id="myVideo" class="goods-video" :src='videoline' controls show-center-play-btn show-mute-btn="true"
+				autoplay="true" auto-pause-if-navigate :custom-cache="false" :enable-progress-gesture="false"
+				:poster="imgUrls[0]" @pause="videoPause"></video>
 		</view>
 		<!-- #endif -->
 	</view>
@@ -80,12 +71,12 @@
 				duration: 500,
 				currents: "1",
 				controls: true,
-				isPlay:true,
-				videoContext:''
+				isPlay: true,
+				videoContext: ''
 			};
 		},
 		mounted() {
-			if(this.videoline){
+			if (this.videoline) {
 				this.imgUrls.shift()
 			}
 			// #ifndef APP-PLUS
@@ -93,21 +84,24 @@
 			// #endif
 		},
 		methods: {
-			videoPause(e){
+			videoPause(e) {
 				// #ifdef APP-PLUS
-				this.isPlay= true
+				this.isPlay = true
 				this.autoplay = true
 				// #endif
 			},
+			videoIsPause() {
+				this.videoContext = uni.createVideoContext('myVideo', this);
+				this.videoContext.pause();
+			},
 			bindPause: function() {
-				
 				// #ifndef APP-PLUS
 				this.videoContext.play();
 				this.$set(this, 'controls', false)
 				this.autoplay = false
 				// #endif
 				// #ifdef APP-PLUS
-				this.isPlay= false
+				this.isPlay = false
 				this.videoContext = uni.createVideoContext('myVideo', this);
 				this.videoContext.play();
 				// #endif
@@ -152,9 +146,13 @@
 
 	#myVideo {
 		width: 100%;
-		height: 100%
+		height: 100%;
 	}
 
+	.goods-video{
+		width: 100%;
+		height: 100%;
+	}
 	.product-bg .item {
 		position: relative;
 		width: 100%;

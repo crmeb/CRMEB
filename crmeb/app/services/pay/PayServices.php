@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -12,10 +12,8 @@ declare (strict_types=1);
 
 namespace app\services\pay;
 
-use crmeb\services\AliPayService;
-use crmeb\services\MiniProgramService;
-use crmeb\services\WechatService;
-use think\exception\ValidateException;
+use crmeb\exceptions\ApiException;
+use crmeb\services\pay\Pay;
 
 /**
  * 支付统一入口
@@ -74,31 +72,30 @@ class PayServices
     public function pay(string $payType, string $openid, string $orderId, string $price, string $successAction, string $body, bool $isCode = false)
     {
         try {
-            switch ($payType) {
-                case 'routine':
-                    if (request()->isApp()) {
-                        return MiniProgramService::appPay($openid, $orderId, $price, $successAction, $body);
-                    } else {
-                        return MiniProgramService::jsPay($openid, $orderId, $price, $successAction, $body);
-                    }
-                case 'weixinh5':
-                    return WechatService::paymentPrepare(null, $orderId, $price, $successAction, $body, '', 'MWEB');
-                case 'weixin':
-                    if (request()->isApp()) {
-                        return WechatService::appPay($openid, $orderId, $price, $successAction, $body);
-                    } else {
-                        return WechatService::jsPay($openid, $orderId, $price, $successAction, $body);
-                    }
-                case 'alipay':
-                    return AliPayService::instance()->create($body, $orderId, $price, $successAction, $openid, $openid, $isCode);
-                case 'pc':
-                case 'store':
-                    return WechatService::nativePay($openid, $orderId, $price, $successAction, $body);
-                default:
-                    throw new ValidateException('支付方式不存在');
+
+            //这些全都是微信支付
+            if (in_array($payType, ['routine', 'weixinh5', 'weixin', 'pc', 'store'])) {
+                $payType = 'wechat_pay';
+                //判断是否使用v3
+                if (sys_config('pay_wechat_type') == 1) {
+                    $payType = 'v3_wechat_pay';
+                }
             }
+
+            if ($payType == 'alipay') {
+                $payType = 'ali_pay';
+            }
+
+            /** @var Pay $pay */
+            $pay = app()->make(Pay::class, [$payType]);
+
+            return $pay->create($orderId, $price, $successAction, $body, '', ['openid' => $openid, 'isCode' => $isCode, 'pay_new_weixin_open' => (bool)sys_config('pay_new_weixin_open')]);
+
         } catch (\Exception $e) {
-            throw new ValidateException($e->getMessage());
+            if (strpos($e->getMessage(), 'api unauthorized rid') !== false) {
+                throw new ApiException('请在微信支付配置中将小程序商户号选择改为商户号绑定');
+            }
+            throw new ApiException($e->getMessage());
         }
     }
 }

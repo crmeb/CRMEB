@@ -1,0 +1,15 @@
+<?php
+return PhpCsFixer\Config::create()
+    ->setRules([
+        '@PSR2' => true,
+        'concat_space' => ['spacing' => 'one'],
+        'no_unused_imports' => true,
+        'method_argument_space' => false,
+    ])
+    ->setFinder(
+        PhpCsFixer\Finder::create()
+	    ->notPath('firestore')
+            ->in(__DIR__)
+    )
+;
+

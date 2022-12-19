@@ -2,36 +2,36 @@
 	<view>
 		<view class='coupon-list-window' :class='coupon.coupon==true?"on":""'>
 			<view v-if="coupon.count" class="nav acea-row row-around">
-				<view v-if="coupon.count[2]" :class="['acea-row', 'row-middle', coupon.type === 2 ? 'on' : '']" @click="setType(2)">商品券</view>
-				<view v-if="coupon.count[1]" :class="['acea-row', 'row-middle', coupon.type === 1 ? 'on' : '']" @click="setType(1)">品类券</view>
-				<view v-if="coupon.count[0]" :class="['acea-row', 'row-middle', coupon.type === 0 ? 'on' : '']" @click="setType(0)">通用券</view>
+				<view v-if="coupon.count[2]" :class="['acea-row', 'row-middle', coupon.type === 2 ? 'on' : '']" @click="setType(2)">{{$t(`商品券`)}}</view>
+				<view v-if="coupon.count[1]" :class="['acea-row', 'row-middle', coupon.type === 1 ? 'on' : '']" @click="setType(1)">{{$t(`品类券`)}}</view>
+				<view v-if="coupon.count[0]" :class="['acea-row', 'row-middle', coupon.type === 0 ? 'on' : '']" @click="setType(0)">{{$t(`通用券`)}}</view>
 			</view>
-			<view class='title' v-else>优惠券<text class='iconfont icon-guanbi' @click='close'></text></view>
+			<view class='title' v-else>{{$t(`优惠券`)}}<text class='iconfont icon-guanbi' @click='close'></text></view>
 			<view v-if="coupon.count" class="occupy"></view>
 			<view class='coupon-list' v-if="coupon.list.length">
 				<view class='item acea-row row-center-wrapper' v-for="(item,index) in coupon.list" @click="getCouponUser(index,item.id)"
 				 :key='index' :class="{svip: item.receive_type === 4}">
 				  <view class="moneyCon acea-row row-center-wrapper">
 						<view class='money acea-row row-column row-center-wrapper' :class='item.is_use && coupon.count?"moneyGray":""'>
-							<view>￥<text class='num'>{{item.coupon_price}}</text></view>
-							<view class="pic-num" v-if="item.use_min_price > 0">满{{item.use_min_price}}元可用</view>
-							<view class="pic-num" v-else>无门槛券</view>
+							<view>{{$t(`￥`)}}<text class='num'>{{item.coupon_price}}</text></view>
+							<view class="pic-num" v-if="item.use_min_price > 0">{{$t(`满`)}}{{item.use_min_price}}{{$t(`元可用`)}}</view>
+							<view class="pic-num" v-else>{{$t(`无门槛券`)}}</view>
 						</view>
 					</view>
 					<view class='text'>
 						<view class='condition line2' :class="coupon.count?'':'order'">
-							<span class='line-title' :class='item.is_use && coupon.count?"gray":""' v-if='item.type===0'>通用劵</span>
-							<span class='line-title' :class='item.is_use && coupon.count?"gray":""' v-else-if='item.type===1'>品类券</span>
-							<span class='line-title' :class='item.is_use && coupon.count?"gray":""' v-else>商品券</span>
+							<span class='line-title' :class='item.is_use && coupon.count?"gray":""' v-if='item.type===0'>{{$t(`通用券`)}}</span>
+							<span class='line-title' :class='item.is_use && coupon.count?"gray":""' v-else-if='item.type===1'>{{$t(`品类券`)}}</span>
+							<span class='line-title' :class='item.is_use && coupon.count?"gray":""' v-else>{{$t(`商品券`)}}</span>
 							<image src='../../static/images/fvip.png' class="pic" v-if="item.receive_type===4"></image>
-							<span class='name'>{{item.title}}</span>
+							<span class='name'>{{$t(item.title)}}</span>
 						</view>
 						<view class='data acea-row row-between-wrapper'>
-							<view v-if="item.coupon_time">领取后{{item.coupon_time}}天内可用</view>
+							<view v-if="item.coupon_time">{{$t(`领取后`)}}{{item.coupon_time}}{{$t(`天内可用`)}}</view>
 							<view v-else>{{ item.start_time ? item.start_time + "-" : ""}}{{ item.end_time }}</view>
 							<view v-if="coupon.count">
-								<view class='bnt gray' v-if="item.is_use">{{item.use_title || '已领取'}}</view>
-								<view class='bnt bg-color' v-else>{{coupon.statusTile || '立即领取'}}</view>
+								<view class='bnt gray' v-if="item.is_use">{{item.use_title || $t(`已领取`)}}</view>
+								<view class='bnt bg-color' v-else>{{coupon.statusTile || $t(`立即领取`)}}</view>
 							</view>
 							<view v-else class="orderCou">
 								<view class="iconfont icon-xuanzhong11" :class="item.receive_type === 4?'svip':'font-num'" v-if="item.is_use"></view>
@@ -43,7 +43,7 @@
 			</view>
 			<!-- 无优惠券 -->
 			<view class='pictrue' v-else>
-				<image src='../../static/images/noCoupon.png'></image>
+				<image :src="imgHost + '/statics/images/noCoupon.png'"></image>
 			</view>
 		</view>
 		<view class='mask' catchtouchmove="true" :hidden='coupon.coupon==false' @click='close'></view>
@@ -54,6 +54,7 @@
 	import {
 		setCouponReceive
 	} from '@/api/api.js';
+	import {HTTP_REQUEST_URL} from '@/config/app';
 	export default {
 		props: {
 			//打开状态 0=领取优惠券,1=使用优惠券
@@ -70,6 +71,7 @@
 		},
 		data() {
 			return {
+				imgHost:HTTP_REQUEST_URL,
 				type: 0
 			};
 		},

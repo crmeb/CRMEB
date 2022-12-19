@@ -20,12 +20,7 @@
       <Row type="flex" :gutter="24">
         <Col v-bind="grid">
           <FormItem label="状态：">
-            <Select
-              v-model="levelFrom.is_show"
-              placeholder="是否显示"
-              clearable
-              @on-change="userSearchs"
-            >
+            <Select v-model="levelFrom.is_show" placeholder="是否显示" clearable @on-change="userSearchs">
               <Option value="1">显示</Option>
               <Option value="0">不显示</Option>
             </Select>
@@ -51,9 +46,7 @@
         <Button type="primary" icon="md-add" @click="add">添加等级任务</Button>
       </Col>
       <Col span="24" class="userAlert">
-        <Alert show-icon closable
-          >添加等级任务,任务类型中的{$num}会自动替换成限定数量+系统预设的单位生成任务名</Alert
-        >
+        <Alert show-icon closable>添加等级任务,任务类型中的{$num}会自动替换成限定数量+系统预设的单位生成任务名</Alert>
       </Col>
     </Row>
     <Divider dashed />
@@ -97,35 +90,19 @@
       </template>
     </Table>
     <div class="acea-row row-right page">
-      <Page
-        :total="total"
-        show-elevator
-        show-total
-        @on-change="pageChange"
-        :page-size="levelFrom.limit"
-      />
+      <Page :total="total" show-elevator show-total @on-change="pageChange" :page-size="levelFrom.limit" />
     </div>
     <!-- 新建 编辑表单-->
-    <edit-from
-      ref="edits"
-      :FromData="FromData"
-      @submitFail="submitFail"
-      :titleType="titleType"
-    ></edit-from>
+    <edit-from ref="edits" :FromData="FromData" @submitFail="submitFail" :titleType="titleType"></edit-from>
   </Modal>
 </template>
 
 <script>
-import { mapState, mapMutations } from "vuex";
-import {
-  taskListApi,
-  setTaskShowApi,
-  setTaskMustApi,
-  createTaskApi,
-} from "@/api/user";
-import editFrom from "@/components/from/from";
+import { mapState, mapMutations } from 'vuex';
+import { taskListApi, setTaskShowApi, setTaskMustApi, createTaskApi } from '@/api/user';
+import editFrom from '@/components/from/from';
 export default {
-  name: "task",
+  name: 'task',
   components: { editFrom },
   data() {
     return {
@@ -139,8 +116,8 @@ export default {
       },
       modals: false,
       levelFrom: {
-        is_show: "",
-        name: "",
+        is_show: '',
+        name: '',
         page: 1,
         limit: 20,
       },
@@ -149,70 +126,70 @@ export default {
       loading: false,
       columns1: [
         {
-          title: "ID",
-          key: "id",
+          title: 'ID',
+          key: 'id',
           sortable: true,
           width: 80,
         },
         {
-          title: "等级名称",
-          key: "level_name",
+          title: '等级名称',
+          key: 'level_name',
           minWidth: 100,
         },
         {
-          title: "任务名称",
-          key: "name",
+          title: '任务名称',
+          key: 'name',
           minWidth: 120,
         },
         {
-          title: "排序",
-          sort: "grade",
+          title: '排序',
+          sort: 'grade',
           sortable: true,
           minWidth: 100,
         },
         {
-          title: "是否显示",
-          slot: "is_shows",
+          title: '是否显示',
+          slot: 'is_shows',
           minWidth: 110,
         },
         {
-          title: "务必达成",
-          slot: "is_musts",
+          title: '务必达成',
+          slot: 'is_musts',
           minWidth: 135,
         },
         {
-          title: "任务说明",
-          key: "illustrate",
+          title: '任务说明',
+          key: 'illustrate',
           minWidth: 120,
         },
         {
-          title: "操作",
-          slot: "action",
-          fixed: "right",
+          title: '操作',
+          slot: 'action',
+          fixed: 'right',
           minWidth: 120,
         },
       ],
       FromData: null,
       ids: 0,
-      modalTitleSs: "",
-      titleType: "task",
+      modalTitleSs: '',
+      titleType: 'task',
     };
   },
   computed: {
-    ...mapState("media", ["isMobile"]),
-    ...mapState("userLevel", ["levelId"]),
+    ...mapState('media', ['isMobile']),
+    ...mapState('userLevel', ['levelId']),
     labelWidth() {
       return this.isMobile ? undefined : 75;
     },
     labelPosition() {
-      return this.isMobile ? "top" : "right";
+      return this.isMobile ? 'top' : 'right';
     },
   },
   methods: {
-    ...mapMutations("userLevel", ["getTaskId", "getlevelId"]),
+    ...mapMutations('userLevel', ['getTaskId', 'getlevelId']),
     // 添加
     add() {
-      this.ids = "";
+      this.ids = '';
       this.getFrom();
     },
     // 新建 编辑表单
@@ -239,7 +216,7 @@ export default {
     // 任务列表
     getList() {
       this.loading = true;
-      this.levelFrom.is_show = this.levelFrom.is_show || "";
+      this.levelFrom.is_show = this.levelFrom.is_show || '';
       taskListApi(this.levelId, this.levelFrom)
         .then(async (res) => {
           let data = res.data;
@@ -294,8 +271,8 @@ export default {
         title: tit,
         num: num,
         url: `user/user_level/delete_task/${row.id}`,
-        method: "DELETE",
-        ids: "",
+        method: 'DELETE',
+        ids: '',
       };
       this.$modalSure(delfromData)
         .then((res) => {
@@ -310,5 +287,4 @@ export default {
 };
 </script>
 
-<style scoped>
-</style>
+<style scoped></style>

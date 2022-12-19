@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -14,12 +14,12 @@ namespace app\services\kefu;
 
 use app\dao\user\UserDao;
 use app\services\BaseServices;
+use crmeb\exceptions\ApiException;
 use crmeb\traits\ServicesTrait;
-use think\exception\ValidateException;
 use app\services\user\UserLabelServices;
 use app\services\system\SystemUserLevelServices;
 use app\services\user\UserLabelRelationServices;
-use app\services\message\service\StoreServiceRecordServices;
+use app\services\kefu\service\StoreServiceRecordServices;
 
 /**
  * Class UserServices
@@ -51,11 +51,11 @@ class UserServices extends BaseServices
         /** @var StoreServiceRecordServices $kefuService */
         $kefuService = app()->make(StoreServiceRecordServices::class);
         if (!$kefuService->count(['to_uid' => $uid])) {
-            throw new ValidateException('不存在此用户');
+            throw new ApiException(410032);
         }
         $userInfo = $this->dao->get($uid, ['nickname', 'avatar', 'spread_uid', 'is_promoter', 'birthday', 'now_money', 'user_type', 'level', 'group_id', 'phone', 'is_money_level'], ['userGroup']);
         if (!$userInfo) {
-            throw new ValidateException('用户不存在');
+            throw new ApiException(410032);
         }
         /** @var UserLabelRelationServices $labalServices */
         $labalServices = app()->make(UserLabelRelationServices::class);

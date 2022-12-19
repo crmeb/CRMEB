@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -16,12 +16,12 @@ use app\Request;
 use app\services\system\attachment\SystemAttachmentServices;
 use app\services\user\UserGroupServices;
 use crmeb\services\CacheService;
-use crmeb\services\UploadService;
+use app\services\other\UploadService;
 use think\facade\App;
 use app\services\kefu\UserServices;
 use app\services\user\UserLabelCateServices;
 use app\services\user\UserLabelRelationServices;
-use app\services\message\service\StoreServiceRecordServices;
+use app\services\kefu\service\StoreServiceRecordServices;
 use think\facade\Config;
 use think\facade\Cache;
 
@@ -102,19 +102,19 @@ class User extends AuthController
     public function setUserGroup(UserGroupServices $services, UserServices $userServices, $uid, $id)
     {
         if (!$services->count(['id' => $id])) {
-            return app('json')->fail('添加的会员标签不存在');
+            return app('json')->fail(100026);
         }
         if (!($userInfo = $userServices->get($uid))) {
-            return app('json')->fail('用户不存在');
+            return app('json')->fail(410113);
         }
         if ($userInfo->group_id == $id) {
-            return app('json')->fail('已拥有此分组');
+            return app('json')->fail(410103);
         }
         $userInfo->group_id = $id;
         if ($userInfo->save()) {
-            return app('json')->success('设置成功');
+            return app('json')->success(100014);
         } else {
-            return app('json')->fail('设置失败');
+            return app('json')->fail(100015);
         }
     }
 
@@ -131,12 +131,12 @@ class User extends AuthController
             ['un_label_ids', []]
         ], true);
         if (!count($labels) && !count($unLabelIds)) {
-            return app('json')->fail('缺少标签id');
+            return app('json')->fail(410104);
         }
         if ($services->setUserLable($uid, $labels) && $services->unUserLabel($uid, $unLabelIds)) {
-            return app('json')->success('设置成功');
+            return app('json')->success(100014);
         } else {
-            return app('json')->fail('设置失败');
+            return app('json')->fail(100015);
         }
     }
 
@@ -162,7 +162,7 @@ class User extends AuthController
         $data = $request->postMore([
             ['filename', 'file'],
         ]);
-        if (!$data['filename']) return app('json')->fail('参数有误');
+        if (!$data['filename']) return app('json')->fail(100100);
         if (Cache::has('start_uploads_' . $request->kefuId()) && Cache::get('start_uploads_' . $request->kefuId()) >= 100) return app('json')->fail('非法操作');
         $upload = UploadService::init();
         $info = $upload->to('store/comment')->validate()->move($data['filename']);
@@ -179,7 +179,7 @@ class User extends AuthController
         Cache::set('start_uploads_' . $request->kefuId(), $start_uploads, 86400);
         $res['dir'] = path_to_url($res['dir']);
         if (strpos($res['dir'], 'http') === false) $res['dir'] = $request->domain() . $res['dir'];
-        return app('json')->success('图片上传成功!', ['name' => $res['name'], 'url' => $res['dir']]);
+        return app('json')->success(410091, ['name' => $res['name'], 'url' => $res['dir']]);
     }
 
 }

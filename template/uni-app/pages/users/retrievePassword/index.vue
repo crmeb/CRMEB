@@ -2,23 +2,23 @@
 	<div class="register absolute">
 		<div class="shading">
 			<div class="pictrue acea-row row-center-wrapper">
-				<image src="/static/images/logo2.png" />
+				<image src="../static/logo2.png" />
 			</div>
 		</div>
 		<div class="whiteBg">
-			<div class="title">找回密码</div>
+			<div class="title">{{$t(`找回密码`)}}</div>
 			<div class="list">
 				<div class="item">
 					<div class="acea-row row-middle">
-						<image src="/static/images/phone_1.png"></image>
-						<input type="text" placeholder="输入手机号码" v-model="account" />
+						<image src="../static/phone_1.png"></image>
+						<input type="text" :placeholder="$t(`输入手机号码`)" v-model="account" />
 					</div>
 				</div>
 				<div class="item">
 
 					<div class="acea-row row-middle">
-						<image src="/static/images/code_2.png"></image>
-						<input type="text" placeholder="填写验证码" class="codeIput" v-model="captcha" />
+						<image src="../static/code_2.png"></image>
+						<input type="text" :placeholder="$t(`填写验证码`)" class="codeIput" v-model="captcha" />
 						<button class="code" :disabled="disabled" :class="disabled === true ? 'on' : ''" @click="code">
 							{{ text }}
 						</button>
@@ -26,20 +26,20 @@
 				</div>
 				<div class="item">
 					<div class="acea-row row-middle">
-						<image src="/static/images/code_2.png"></image>
-						<input type="password" placeholder="填写您的新密码" v-model="password" />
+						<image src="../static//code_2.png"></image>
+						<input type="password" :placeholder="$t(`填写您的新密码`)" v-model="password" />
 					</div>
 				</div>
 				<div class="item" v-if="isShowCode">
 					<div class="align-left">
-						<input type="text" placeholder="填写验证码" class="codeIput" v-model="codeVal" />
+						<input type="text" :placeholder="$t(`填写验证码`)" class="codeIput" v-model="codeVal" />
 						<div class="code" @click="again"><img :src="codeUrl" /></div>
 					</div>
 				</div>
 			</div>
-			<div class="logon" @click="registerReset">确认</div>
+			<div class="logon" @click="registerReset">{{$t(`确认`)}}</div>
 			<div class="tip">
-				<span class="font-color-red" @click="back">立即登录</span>
+				<span class="font-color-red" @click="back">{{$t(`立即登录`)}}</span>
 			</div>
 		</div>
 		<div class="bottom"></div>
@@ -89,20 +89,20 @@
 					})
 					.catch(res => {
 						this.$util.Tips({
-							title: res.msg.msg || '加载失败'
+							title: res.msg.msg || this.$t(`加载失败`)
 						})
 					});
 			},
 			async registerReset() {
 				var that = this;
 				if (!that.account) return that.$util.Tips({
-					title: '请填写手机号码'
+					title: that.$t(`请填写手机号码`)
 				});
 				if (!/^1(3|4|5|7|8|9|6)\d{9}$/i.test(that.account)) return that.$util.Tips({
-					title: '请输入正确的手机号码'
+					title: that.$t(`请输入正确的手机号码`)
 				});
 				if (!that.captcha) return that.$util.Tips({
-					title: '请填写验证码'
+					title: that.$t(`请填写验证码`)
 				});
 				registerReset({
 						account: that.account,
@@ -126,10 +126,10 @@
 			async code() {
 				let that = this;
 				if (!that.account) return that.$util.Tips({
-					title: '请填写手机号码'
+					title: that.$t(`请填写手机号码`)
 				});
 				if (!/^1(3|4|5|7|8|9|6)\d{9}$/i.test(that.account)) return that.$util.Tips({
-					title: '请输入正确的手机号码'
+					title: that.$t(`请输入正确的手机号码`)
 				});
 				if (that.formItem == 2) that.type = "register";
 				await registerVerify({
@@ -140,7 +140,7 @@
 					})
 					.then(res => {
 						this.$util.Tips({
-							title: res.msg || '加载失败'
+							title: res.msg || that.$t(`加载失败`)
 						})
 						that.sendCode();
 					})

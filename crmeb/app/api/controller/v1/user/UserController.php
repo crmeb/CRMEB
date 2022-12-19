@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -11,6 +11,7 @@
 namespace app\api\controller\v1\user;
 
 use app\Request;
+use app\services\product\product\StoreProductLogServices;
 use app\services\user\UserCancelServices;
 use app\services\user\UserServices;
 use app\services\wechat\WechatUserServices;
@@ -49,15 +50,11 @@ class UserController
      * 用户资金统计
      * @param Request $request
      * @return mixed
-     * @throws \think\Exception
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\ModelNotFoundException
-     * @throws \think\exception\DbException
      */
     public function balance(Request $request)
     {
         $uid = (int)$request->uid();
-        return app('json')->successful($this->services->balance($uid));
+        return app('json')->success($this->services->balance($uid));
     }
 
     /**
@@ -72,43 +69,12 @@ class UserController
     }
 
     /**
-     * 添加点赞
-     *
-     * @param Request $request
-     * @return mixed
-     */
-//    public function like_add(Request $request)
-//    {
-//        list($id, $category) = UtilService::postMore([['id',0], ['category','product']], $request, true);
-//        if(!$id || !is_numeric($id))  return app('json')->fail('参数错误');
-//        $res = StoreProductRelation::productRelation($id,$request->uid(),'like',$category);
-//        if(!$res) return  app('json')->fail(StoreProductRelation::getErrorInfo());
-//        else return app('json')->successful();
-//    }
-
-    /**
-     * 取消点赞
-     *
-     * @param Request $request
-     * @return mixed
-     */
-//    public function like_del(Request $request)
-//    {
-//        list($id, $category) = UtilService::postMore([['id',0], ['category','product']], $request, true);
-//        if(!$id || !is_numeric($id)) return app('json')->fail('参数错误');
-//        $res = StoreProductRelation::unProductRelation($id, $request->uid(),'like',$category);
-//        if(!$res) return app('json')->fail(StoreProductRelation::getErrorInfo());
-//        else return app('json')->successful();
-//    }
-
-
-    /**
      * 获取活动状态
      * @return mixed
      */
     public function activity()
     {
-        return app('json')->successful($this->services->activity());
+        return app('json')->success($this->services->activity());
     }
 
     /**
@@ -123,13 +89,13 @@ class UserController
             ['nickname', ''],
         ], true);
         if (!$avatar && $nickname == '') {
-            return app('json')->fail('请输入昵称或者选择头像');
+            return app('json')->fail(410134);
         }
         $uid = (int)$request->uid();
         if ($this->services->eidtNickname($uid, ['avatar' => $avatar, 'nickname' => $nickname])) {
-            return app('json')->successful('修改成功');
+            return app('json')->success(100001);
         }
-        return app('json')->fail('修改失败');
+        return app('json')->fail(100007);
     }
 
     /**
@@ -138,7 +104,6 @@ class UserController
      * @return mixed
      * @throws \think\db\exception\DataNotFoundException
      * @throws \think\db\exception\ModelNotFoundException
-     * @throws \think\exception\DbException
      */
     public function rank(Request $request)
     {
@@ -161,13 +126,13 @@ class UserController
             ['url', ''],
             ['stay_time', 0]
         ]);
-        if ($data['url'] == '') return app('json')->fail('未获取页面路径');
+        if ($data['url'] == '') return app('json')->fail(100100);
         $data['uid'] = (int)$request->uid();
         $data['ip'] = $request->ip();
         if ($this->services->setVisit($data)) {
-            return app('json')->success('添加访问记录成功');
+            return app('json')->success(100021);
         } else {
-            return app('json')->fail('添加访问记录失败');
+            return app('json')->fail(100022);
         }
     }
 
@@ -175,6 +140,9 @@ class UserController
      * 静默绑定推广人
      * @param Request $request
      * @return mixed
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
      */
     public function spread(Request $request)
     {
@@ -183,21 +151,14 @@ class UserController
             ['code', 0]
         ], true);
         $uid = (int)$request->uid();
-        $this->services->spread($uid, (int)$spreadUid, $code);
-        return app('json')->success();
+        $res = $this->services->spread($uid, (int)$spreadUid, $code);
+        return app('json')->success($res);
     }
 
     /**
      * 推荐用户
      * @param Request $request
      * @return mixed
-     *
-     * grade == 0  获取一级推荐人
-     * grade == 1  获取二级推荐人
-     *
-     * keyword 会员名称查询
-     *
-     * sort  childCount ASC/DESC  团队排序   numberCount ASC/DESC  金额排序  orderCount  ASC/DESC  订单排序
      */
     public function spread_people(Request $request)
     {
@@ -207,10 +168,10 @@ class UserController
             ['sort', ''],
         ]);
         if (!in_array($spreadInfo['grade'], [0, 1])) {
-            return app('json')->fail('等级错误');
+            return app('json')->fail(100100);
         }
         $uid = $request->uid();
-        return app('json')->successful($this->services->getUserSpreadGrade($uid, $spreadInfo['grade'], $spreadInfo['sort'], $spreadInfo['keyword']));
+        return app('json')->success($this->services->getUserSpreadGrade($uid, $spreadInfo['grade'], $spreadInfo['sort'], $spreadInfo['keyword']));
     }
 
     /**
@@ -240,6 +201,58 @@ class UserController
         /** @var UserCancelServices $userCancelServices */
         $userCancelServices = app()->make(UserCancelServices::class);
         $userCancelServices->SetUserCancel($request->uid());
-        return app('json')->success('注销成功');
+        return app('json')->success(410135);
+    }
+
+    /**
+     * 商品浏览记录
+     * @param Request $request
+     * @param StoreProductLogServices $services
+     * @return mixed
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     */
+    public function visitList(Request $request, StoreProductLogServices $services)
+    {
+        $where['uid'] = (int)$request->uid();
+        $where['type'] = 'visit';
+        $result = $services->getList($where, 'product_id', 'id,product_id,max(add_time) as add_time');
+        $time_data = [];
+        if ($result['list']) {
+            foreach ($result['list'] as $key => &$item) {
+                $add_time = strtotime($item['add_time']);
+                if (date('Y') == date('Y', $add_time)) {//今年
+                    $item['time_key'] = date('m-d', $add_time);
+                } else {
+                    $item['time_key'] = date('Y-m-d', $add_time);
+                }
+            }
+            $time_data = array_merge(array_unique(array_column($result['list'], 'time_key')));
+        }
+        $result['time'] = $time_data;
+        return app('json')->success($result);
+    }
+
+    /**
+     * 商品浏览记录删除
+     * @param Request $request
+     * @param StoreProductLogServices $services
+     * @return mixed
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     */
+    public function visitDelete(Request $request, StoreProductLogServices $services)
+    {
+        $uid = (int)$request->uid();
+        [$ids] = $request->postMore([
+            ['ids', []],
+        ], true);
+        if ($ids) {
+            $where = ['uid' => $uid, 'product_id' => $ids];
+            $services->delete($where);
+        }
+        return app('json')->success('删除成功');
     }
 }

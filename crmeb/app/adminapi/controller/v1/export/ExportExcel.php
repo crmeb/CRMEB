@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -125,6 +125,9 @@ class ExportExcel extends AuthController
      * 分销管理 用户推广
      * @param AgentManageServices $services
      * @return mixed
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
      */
     public function userAgent(AgentManageServices $services)
     {
@@ -138,7 +141,7 @@ class ExportExcel extends AuthController
     }
 
     /**
-     * 微信用户导出
+     * 微信用户导出（弃用）
      * @param WechatUserServices $services
      * @return mixed
      */
@@ -184,7 +187,7 @@ class ExportExcel extends AuthController
     }
 
     /**
-     * 商铺拼团导出
+     * 拼团导出
      * @param StoreCombinationServices $services
      * @return mixed
      */
@@ -220,7 +223,7 @@ class ExportExcel extends AuthController
     }
 
     /**
-     * 商铺秒杀导出
+     * 秒杀导出
      * @param StoreSeckillServices $services
      * @return mixed
      */
@@ -236,7 +239,7 @@ class ExportExcel extends AuthController
     }
 
     /**
-     * 商铺产品导出
+     * 产品导出
      * @param StoreProductServices $services
      * @return mixed
      */
@@ -280,7 +283,11 @@ class ExportExcel extends AuthController
 
     /**
      * 获取提货点
+     * @param SystemStoreServices $services
      * @return mixed
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
      */
     public function storeMerchant(SystemStoreServices $services)
     {
@@ -292,7 +299,8 @@ class ExportExcel extends AuthController
         return app('json')->success($this->service->storeMerchant($data));
     }
 
-    /**会员卡导出
+    /**
+     * 会员卡导出
      * @param int $id
      * @param MemberCardServices $services
      * @return mixed

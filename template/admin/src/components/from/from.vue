@@ -11,10 +11,7 @@
       @on-cancel="cancel"
     >
       <template>
-        <div
-          class="radio acea-row row-middle"
-          v-if="FromData.action === '/marketing/coupon/save.html'"
-        >
+        <div class="radio acea-row row-middle" v-if="FromData.action === '/marketing/coupon/save.html'">
           <div class="name ivu-form-item-content">优惠券类型</div>
           <Radio-group v-model="type" @on-change="couponsType">
             <Radio :label="0">通用券</Radio>
@@ -36,16 +33,16 @@
 </template>
 
 <script>
-import formCreate from "@form-create/iview";
-import request from "@/libs/request";
-import { mapState } from "vuex";
+import formCreate from '@form-create/iview';
+import request from '@/libs/request';
+import { mapState } from 'vuex';
 export default {
-  name: "edit",
+  name: 'edit',
   components: {
     formCreate: formCreate.$form(),
   },
   computed: {
-    ...mapState("userLevel", ["taskId", "levelId"]),
+    ...mapState('userLevel', ['taskId', 'levelId']),
   },
   props: {
     FromData: {
@@ -96,7 +93,7 @@ export default {
           this.$Message.success(res.msg);
           this.modals = false;
           setTimeout(() => {
-            this.$emit("submitFail");
+            this.$emit('submitFail');
           }, 1000);
         })
         .catch((res) => {

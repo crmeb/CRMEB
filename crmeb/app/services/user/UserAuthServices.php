@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -46,13 +46,13 @@ class UserAuthServices extends BaseServices
         $md5Token = is_null($token) ? '' : md5($token);
 
         if ($token === 'undefined') {
-            throw new AuthException('请登录', 410000);
+            throw new AuthException(110002);
         }
         if (!$token || !$tokenData = CacheService::getTokenBucket($md5Token))
-            throw new AuthException('请登录', 410000);
+            throw new AuthException(110002);
 
         if (!is_array($tokenData) || empty($tokenData) || !isset($tokenData['uid'])) {
-            throw new AuthException('请登录', 410000);
+            throw new AuthException(110002);
         }
 
         /** @var JwtAuth $jwtAuth */
@@ -65,14 +65,14 @@ class UserAuthServices extends BaseServices
             $jwtAuth->verifyToken();
         } catch (\Throwable $e) {
             if (!request()->isCli()) CacheService::clearToken($md5Token);
-            throw new AuthException('登录已过期,请重新登录', 410001);
+            throw new AuthException(110003);
         }
 
         $user = $this->dao->get(['uid' => $id, 'is_del' => 0]);
 
         if (!$user || $user->uid != $tokenData['uid']) {
             if (!request()->isCli()) CacheService::clearToken($md5Token);
-            throw new AuthException('登录状态有误,请重新登录', 410002);
+            throw new AuthException(110004);
         }
         $tokenData['type'] = $type;
         return compact('user', 'tokenData');

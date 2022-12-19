@@ -17,10 +17,7 @@
         <span class="ivu-page-header-title">{{ $route.meta.title }}</span>
       </div>
     </div>
-    <cards-data
-      :cardLists="cardLists"
-      v-if="cardLists.length >= 0"
-    ></cards-data>
+    <cards-data :cardLists="cardLists" v-if="cardLists.length >= 0"></cards-data>
     <Card :bordered="false" dis-hover class="ivu-mt">
       <div class="table-head">
         <h3>关注趋势</h3>
@@ -38,38 +35,26 @@
           class="mr20"
         ></DatePicker>
       </div>
-      <echarts-new
-        :option-data="optionData"
-        :styles="style"
-        height="100%"
-        width="100%"
-        v-if="optionData"
-      ></echarts-new>
+      <echarts-new :option-data="optionData" :styles="style" height="100%" width="100%" v-if="optionData"></echarts-new>
     </Card>
     <Spin size="large" fix v-if="spinShow"></Spin>
   </div>
 </template>
 
 <script>
-import cardsData from "@/components/cards/cards";
-import echartsNew from "@/components/echartsNew/index";
-import {
-  getBasic,
-  getTrend,
-  getChannel,
-  getType,
-  wechatQrcodeStatistic,
-} from "@/api/statistic";
-import { formatDate } from "@/utils/validate";
-import echartsFrom from "@/components/echarts/index";
+import cardsData from '@/components/cards/cards';
+import echartsNew from '@/components/echartsNew/index';
+import { getBasic, getTrend, getChannel, getType, wechatQrcodeStatistic } from '@/api/statistic';
+import { formatDate } from '@/utils/validate';
+import echartsFrom from '@/components/echarts/index';
 
 export default {
-  name: "index",
+  name: 'index',
   components: { cardsData, echartsNew, echartsFrom },
   data() {
     return {
       timeVal: [],
-      style: { height: "400px" },
+      style: { height: '400px' },
       infoList: {},
       infoList2: {},
       echartLeft: true,
@@ -77,44 +62,44 @@ export default {
       loading: false,
       loading2: false,
       fromList: {
-        title: "选择时间",
+        title: '选择时间',
         custom: true,
         fromTxt: [
-          { text: "全部", val: "" },
-          { text: "今天", val: "today" },
-          { text: "本周", val: "week" },
-          { text: "本月", val: "month" },
-          { text: "本季度", val: "quarter" },
-          { text: "本年", val: "year" },
+          { text: '全部', val: '' },
+          { text: '今天', val: 'today' },
+          { text: '本周', val: 'week' },
+          { text: '本月', val: 'month' },
+          { text: '本季度', val: 'quarter' },
+          { text: '本年', val: 'year' },
         ],
       },
       formValidate: {
-        time: "",
+        time: '',
       },
       cardLists: [
         {
           col: 6,
           count: 0,
-          name: "昨日新增关注",
-          className: "md-rose",
+          name: '昨日新增关注',
+          className: 'md-rose',
         },
         {
           col: 6,
           count: 0,
-          name: "昨日参与",
-          className: "ios-speedometer-outline",
+          name: '昨日参与',
+          className: 'ios-speedometer-outline',
         },
         {
           col: 6,
           count: 0,
-          name: "总关注",
-          className: "ios-speedometer-outline",
+          name: '总关注',
+          className: 'ios-speedometer-outline',
         },
         {
           col: 6,
           count: 0,
-          name: "参与总人数",
-          className: "md-rose",
+          name: '参与总人数',
+          className: 'md-rose',
         },
       ],
       optionData: {},
@@ -122,28 +107,28 @@ export default {
       options: this.$timeOptions,
       columns: [
         {
-          title: "序号",
-          type: "index",
+          title: '序号',
+          type: 'index',
           width: 60,
-          align: "center",
+          align: 'center',
         },
         {
-          title: "来源",
-          key: "name",
+          title: '来源',
+          key: 'name',
           minWidth: 80,
-          align: "center",
+          align: 'center',
         },
         {
-          title: "金额",
+          title: '金额',
           width: 180,
-          key: "value",
-          align: "center",
+          key: 'value',
+          align: 'center',
         },
         {
-          title: "占比率",
-          slot: "percent",
+          title: '占比率',
+          slot: 'percent',
           minWidth: 100,
-          align: "center",
+          align: 'center',
         },
       ],
     };
@@ -152,18 +137,9 @@ export default {
     this.id = this.$route.query.id;
     const end = new Date();
     const start = new Date();
-    start.setTime(
-      start.setTime(
-        new Date(
-          new Date().getFullYear(),
-          new Date().getMonth(),
-          new Date().getDate() - 29
-        )
-      )
-    );
+    start.setTime(start.setTime(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate() - 29)));
     this.timeVal = [start, end];
-    this.formValidate.time =
-      formatDate(start, "yyyy/MM/dd") + "-" + formatDate(end, "yyyy/MM/dd");
+    this.formValidate.time = formatDate(start, 'yyyy/MM/dd') + '-' + formatDate(end, 'yyyy/MM/dd');
     // this.getBasic();
     // this.getTrend();
     // this.getChannel();
@@ -173,8 +149,7 @@ export default {
   methods: {
     wechatQrcodeStatistic() {
       wechatQrcodeStatistic(this.id, this.formValidate).then((res) => {
-        console.log(res);
-        let arr = ["y_follow", "y_scan", "all_follow", "all_scan"];
+        let arr = ['y_follow', 'y_scan', 'all_follow', 'all_scan'];
         this.cardLists.map((i, index) => {
           i.count = res.data[arr[index]];
         });
@@ -185,26 +160,26 @@ export default {
       var d = new Date(dd);
       var datetime =
         d.getFullYear() +
-        "-" +
+        '-' +
         (d.getMonth() + 1) +
-        "-" +
+        '-' +
         d.getDate() +
-        " " +
+        ' ' +
         d.getHours() +
-        ":" +
+        ':' +
         d.getMinutes() +
-        ":" +
+        ':' +
         d.getSeconds();
       return datetime;
     },
 
     selectChange(e) {
-      console.log(this.timeG(e.split(",")[0]), this.timeG(e.split(",")[1]));
+      console.log(this.timeG(e.split(',')[0]), this.timeG(e.split(',')[1]));
     },
     // 具体日期
     onchangeTime(e) {
       this.timeVal = e;
-      this.formValidate.time = this.timeVal.join("-");
+      this.formValidate.time = this.timeVal.join('-');
       this.name = this.formValidate.time;
       this.wechatQrcodeStatistic();
     },
@@ -215,12 +190,12 @@ export default {
         return item.name;
       });
       let xAxis = xAxisData;
-      let col = ["#5B8FF9", "#5AD8A6", "#FFAB2B", "#5D7092"];
+      let col = ['#5B8FF9', '#5AD8A6', '#FFAB2B', '#5D7092'];
       let series = [];
       seriesData.map((item, index) => {
         series.push({
           name: item.name,
-          type: "line",
+          type: 'line',
           data: item.data,
           itemStyle: {
             normal: {
@@ -232,22 +207,22 @@ export default {
       });
       this.optionData = {
         tooltip: {
-          trigger: "axis",
+          trigger: 'axis',
           axisPointer: {
-            type: "cross",
+            type: 'cross',
             label: {
-              backgroundColor: "#6a7985",
+              backgroundColor: '#6a7985',
             },
           },
         },
         legend: {
-          x: "center",
+          x: 'center',
           data: legend,
         },
         grid: {
-          left: "3%",
-          right: "4%",
-          bottom: "3%",
+          left: '3%',
+          right: '4%',
+          bottom: '3%',
           containLabel: true,
         },
         toolbox: {
@@ -256,7 +231,7 @@ export default {
           },
         },
         xAxis: {
-          type: "category",
+          type: 'category',
           boundaryGap: true,
           // axisTick:{
           //     show:false
@@ -271,13 +246,13 @@ export default {
             interval: 0,
             rotate: 40,
             textStyle: {
-              color: "#000000",
+              color: '#000000',
             },
           },
           data: xAxis,
         },
         yAxis: {
-          type: "value",
+          type: 'value',
           axisLine: {
             show: false,
           },
@@ -286,13 +261,13 @@ export default {
           },
           axisLabel: {
             textStyle: {
-              color: "#7F8B9C",
+              color: '#7F8B9C',
             },
           },
           splitLine: {
             show: true,
             lineStyle: {
-              color: "#F5F7F9",
+              color: '#F5F7F9',
             },
           },
         },

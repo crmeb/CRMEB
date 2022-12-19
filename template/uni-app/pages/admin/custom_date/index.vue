@@ -1,12 +1,12 @@
 <template>
 	<view>
 		<uni-calendar range @change="change"></uni-calendar>
-		<navigator class="back" open-type="navigateBack" hover-class="none">取消</navigator>
+		<navigator class="back" open-type="navigateBack" hover-class="none">{{$t(`取消`)}}</navigator>
 	</view>
 </template>
 
 <script>
-	import uniCalendar from '@/components/uni-calendar/uni-calendar.vue';
+	import uniCalendar from '../components/uni-calendar/uni-calendar.vue';
 
 	export default {
 		components: {

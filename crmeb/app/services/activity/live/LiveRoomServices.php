@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -16,8 +16,8 @@ namespace app\services\activity\live;
 use app\dao\activity\live\LiveRoomDao;
 use app\services\BaseServices;
 use crmeb\exceptions\AdminException;
-use crmeb\services\DownloadImageService;
-use crmeb\services\MiniProgramService;
+use crmeb\utils\DownloadImage;
+use crmeb\services\app\MiniProgramService;
 use think\facade\Log;
 
 /**
@@ -72,7 +72,7 @@ class LiveRoomServices extends BaseServices
     {
         $room = $this->dao->get(['id' => $id, 'is_del' => 0]);
         if (!$room) {
-            throw new AdminException('数据不存在');
+            throw new AdminException(100026);
         }
         [$page, $limit] = $this->getPageValue();
         return MiniProgramService::getLivePlayback($room['room_id'], $page, $limit);
@@ -80,22 +80,23 @@ class LiveRoomServices extends BaseServices
 
     public function add(array $data)
     {
+        [$data['start_time'], $data['end_time']] = $data['start_time'];
         /** @var LiveAnchorServices $anchorServices */
         $anchorServices = app()->make(LiveAnchorServices::class);
         $anchor = $anchorServices->get(['wechat' => $data['anchor_wechat']]);
         if (!$anchor) {
-            throw new AdminException('该主播不存在');
+            throw new AdminException(400432);
         }
         $data['start_time'] = strtotime($data['start_time']);
         $data['end_time'] = strtotime($data['end_time']);
         $time = time() + 600;
         $time6 = time() + 180 * 24 * 3600;
         if ($data['start_time'] < $time || $data['start_time'] > $time6) {
-            throw new AdminException('开播时间需要在当前时间的10分钟后 并且 开始时间不能在 6 个月后');
+            throw new AdminException(400433);
         }
         $t = $data['end_time'] - $data['start_time'];
         if ($t < 1800 || $t > 24 * 3600) {
-            throw new AdminException('开播时间和结束时间间隔不得短于30分钟，不得超过24小时');
+            throw new AdminException(400434);
         }
         $data['anchor_name'] = $data['anchor_name'] ?? $anchor['name'];
         $data['add_time'] = time();
@@ -104,7 +105,7 @@ class LiveRoomServices extends BaseServices
         $data['status'] = 2;
 
         if (!$this->dao->save($data)) {
-            throw new AdminException('添加直播间数据失败');
+            throw new AdminException(100021);
         }
 
         return true;
@@ -113,9 +114,13 @@ class LiveRoomServices extends BaseServices
 
     public function apply($id, $status, $msg = '')
     {
+        if (!$id) throw new AdminException(100100);
+        $status = $status == 1 ? 1 : -1;
+        if ($status == -1 && !$msg) throw new AdminException(400435);
+
         $room = $this->dao->get($id);
         if (!$room) {
-            throw new AdminException('数据不存在');
+            throw new AdminException(100026);
         }
         $room->status = $status;
         if ($status == -1)
@@ -130,8 +135,10 @@ class LiveRoomServices extends BaseServices
     public function wxCreate($room)
     {
         try {
-            $coverImg = app()->make(DownloadImageService::class)->downloadImage($room['cover_img'])['path'];
-            $shareImg = app()->make(DownloadImageService::class)->downloadImage($room['share_img'])['path'];
+            /** @var DownloadImage $downloadImage */
+            $downloadImage = app()->make(DownloadImage::class);
+            $coverImg = $downloadImage->downloadImage($room['cover_img'])['path'];
+            $shareImg = $downloadImage->downloadImage($room['share_img'])['path'];
         } catch (\Throwable $e) {
             Log::error('添加直播间封面图出错误，原因：' . $e->getMessage());
             $coverImg = $room['cover_img'];
@@ -161,16 +168,18 @@ class LiveRoomServices extends BaseServices
 
     public function isShow(int $id, $is_show)
     {
+        if (!$id) throw new AdminException(100100);
         $this->dao->update($id, ['is_show' => $is_show]);
-        return $is_show == 1 ? '显示成功' : '隐藏成功';
+        return true;
     }
 
     public function delete(int $id)
     {
+        if (!$id) throw new AdminException(100100);
         $room = $this->dao->get(['id' => $id, 'is_del' => 0]);
         if ($room) {
             if (!$this->dao->update($id, ['is_del' => 1])) {
-                throw new AdminException('删除失败');
+                throw new AdminException(100008);
             }
             /** @var LiveRoomGoodsServices $liveRoomGoods */
             $liveRoomGoods = app()->make(LiveRoomGoodsServices::class);
@@ -195,11 +204,13 @@ class LiveRoomServices extends BaseServices
      */
     public function exportGoods(int $room_id, array $ids)
     {
+        if (!$room_id) throw new AdminException(100100);
+        if (!$ids) throw new AdminException(100100);
         $liveGoodsServices = app()->make(LiveGoodsServices::class);
         if (count($ids) != count($goods = $liveGoodsServices->goodsList($ids)))
-            throw new AdminException('请选择正确的直播商品');
+            throw new AdminException(400436);
         if (!$room = $this->dao->validRoom($room_id))
-            throw new AdminException('直播间状态有误');
+            throw new AdminException(400437);
         $data = [];
         /** @var LiveRoomGoodsServices $liveRoomGoodsServices */
         $liveRoomGoodsServices = app()->make(LiveRoomGoodsServices::class);

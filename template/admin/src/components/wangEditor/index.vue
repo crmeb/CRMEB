@@ -8,28 +8,44 @@
       <monaco @change="changeValue" :value="newHtml" />
     </div>
 
-    <Modal v-model="modalPic" width="1024px" scrollable footer-hide closable title="上传图片" :mask-closable="false"
-      :z-index="9">
+    <Modal
+      v-model="modalPic"
+      width="1024px"
+      scrollable
+      footer-hide
+      closable
+      title="上传图片"
+      :mask-closable="false"
+      :z-index="9"
+    >
       <uploadPictures v-if="modalPic" :isChoice="isChoice" @getPic="getPic" @getPicD="getPicD"></uploadPictures>
     </Modal>
-    <Modal v-model="modalVideo" width="800px" scrollable footer-hide closable title="上传视频" :mask-closable="false"
-      :z-index="9">
+    <Modal
+      v-model="modalVideo"
+      width="800px"
+      scrollable
+      footer-hide
+      closable
+      title="上传视频"
+      :mask-closable="false"
+      :z-index="9"
+    >
       <uploadVideo v-if="modalVideo" @getVideo="getvideo"></uploadVideo>
     </Modal>
   </div>
 </template>
 <script>
-import monaco from "./monaco";
-import E from "wangeditor";
-import AlertMenu from "./editor";
-import HtmlMenu from "./html";
-import uploadPictures from "@/components/uploadPictures";
-import uploadVideo from "@/components/uploadVideo2";
-import { getCookies } from "@/libs/util";
+import monaco from './monaco';
+import E from 'wangeditor';
+import AlertMenu from './editor';
+import HtmlMenu from './html';
+import uploadPictures from '@/components/uploadPictures';
+import uploadVideo from '@/components/uploadVideo2';
+import { getCookies } from '@/libs/util';
 
-import util from "../../utils/bus";
+import util from '../../utils/bus';
 export default {
-  name: "Index",
+  name: 'Index',
   components: {
     uploadPictures,
     uploadVideo,
@@ -38,22 +54,22 @@ export default {
   props: {
     content: {
       type: String,
-      default: "",
+      default: '',
     },
   },
 
   data() {
     return {
       monacoBox: false,
-      value: "",
+      value: '',
       modalPic: false,
-      isChoice: "多选",
-      picTit: "danFrom",
-      img: "",
+      isChoice: '多选',
+      picTit: 'danFrom',
+      img: '',
       modalVideo: false,
       editor: null,
       uploadSize: 2,
-      video: "",
+      video: '',
 
       // header: {
       //   "Authori-zation": "Bearer " + getCookies("token"),
@@ -71,10 +87,10 @@ export default {
   },
   mounted() {
     this.createEditor();
-    util.$on("Video", (Video) => {
+    util.$on('Video', (Video) => {
       this.getvideoint();
     });
-    util.$on("Html", (Html) => {
+    util.$on('Html', (Html) => {
       this.getHtmlint();
     });
   },
@@ -82,23 +98,20 @@ export default {
   methods: {
     changeValue(value) {
       this.newHtml = value;
-      this.$emit("editorContent", value);
+      this.$emit('editorContent', value);
 
-      this.$emit("input", value);
+      this.$emit('input', value);
     },
     // 获取多张图信息
     getPic(pc) {
       let _this = this;
       _this.img = pc.att_dir;
       _this.modalPic = false;
-      this.editor.cmd.do(
-        "insertHTML",
-        `<img src="${_this.img}" style="max-width:100%;"/>`
-      );
+      this.editor.cmd.do('insertHTML', `<img src="${_this.img}" style="max-width:100%;"/>`);
     },
     getimg() {
       this.modalPic = true;
-      this.isChoice = "多选";
+      this.isChoice = '多选';
     },
     getvideoint() {
       this.modalVideo = true;
@@ -113,36 +126,24 @@ export default {
     getPicD(data) {
       let _this = this;
       _this.modalPic = false;
-      console.log("222");
 
       data.map((d) => {
-        this.editor.cmd.do(
-          "insertHTML",
-          `<img src="${d.att_dir}" style="max-width:100%;"/>`
-        );
+        this.editor.cmd.do('insertHTML', `<img src="${d.att_dir}" style="max-width:100%;"/>`);
       });
     },
     getvideo(data) {
       let _this = this;
       _this.modalVideo = false;
       this.video = data;
-      // this.editor.cmd.do(
-      //   "insertHTML",
-      //   `<video src="${_this.video}" controls style="max-width:100%;"/>`
-      // );
-
-      let videoHTML =
-        '<video src="' +
-        this.video +
-        '" controls style="max-width:100%"></video>';
-      this.editor.cmd.do("insertHTML", videoHTML);
+      let videoHTML = '<video src="' + this.video + '" controls style="max-width:100%;min-height:500rpx"></video>';
+      this.editor.cmd.do('insertHTML', videoHTML);
     },
 
     createEditor() {
       let _this = this;
-      const menuKey = "alertMenuKey";
-      const html = "alertHtml";
-      this.editor = new E(this.$refs["wang-editor"]);
+      const menuKey = 'alertMenuKey';
+      const html = 'alertHtml';
+      this.editor = new E(this.$refs['wang-editor']);
 
       this.editor.menus.extend(menuKey, AlertMenu);
       this.editor.menus.extend(html, HtmlMenu);
@@ -154,29 +155,29 @@ export default {
       // this.editor.config.uploadVideoHeaders = _this.header;
       this.editor.config.height = 600;
       this.editor.config.menus = [
-        "alertHtml",
-        "head",
-        "bold",
-        "fontSize",
-        "fontName",
-        "italic",
-        "underline",
-        "strikeThrough",
-        "indent",
-        "lineHeight",
-        "foreColor",
-        "backColor",
-        "link",
-        "list",
+        'alertHtml',
+        'head',
+        'bold',
+        'fontSize',
+        'fontName',
+        'italic',
+        'underline',
+        'strikeThrough',
+        'indent',
+        'lineHeight',
+        'foreColor',
+        'backColor',
+        'link',
+        'list',
         // "todo",
-        "justify",
-        "quote",
-        "emoticon",
-        "image",
-        "alertMenuKey",
+        'justify',
+        'quote',
+        'emoticon',
+        'image',
+        'alertMenuKey',
         // "table",
-        "code",
-        "splitLine",
+        'code',
+        'splitLine',
       ];
       // 配置全屏功能按钮是否展示
       //   this.editor.config.showFullScreen = false
@@ -190,7 +191,7 @@ export default {
       };
       this.editor.config.onchange = (newHtml) => {
         this.newHtml = newHtml;
-        this.$emit("editorContent", newHtml);
+        this.$emit('editorContent', newHtml);
       };
       this.editor.config.onchangeTimeout = 300; // change后多久更新数据
 

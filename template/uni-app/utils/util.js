@@ -1,7 +1,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2021 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -13,6 +13,7 @@ import {
 	HTTP_REQUEST_URL
 } from '../config/app.js';
 import store from '../store';
+import i18n from './lang.js';
 import {
 	pathToBase64
 } from '@/plugin/image-tools/index.js';
@@ -181,7 +182,7 @@ export default {
 	PosterCanvas: function(arr2, store_name, price, ot_price, successFn) {
 		let that = this;
 		uni.showLoading({
-			title: '海报生成中',
+			title: i18n.t(`海报生成中`),
 			mask: true
 		});
 		const ctx = uni.createCanvasContext('myCanvas');
@@ -234,14 +235,14 @@ export default {
 				ctx.setTextAlign('left')
 				ctx.setFontSize(72);
 				ctx.setFillStyle('#DA4F2A');
-				ctx.fillText('￥' + price, 40, 820 + contentHh);
+				ctx.fillText(i18n.t(`￥`) + price, 40, 820 + contentHh);
 
 				ctx.setTextAlign('left')
 				ctx.setFontSize(36);
 				ctx.setFillStyle('#999');
-					
-				if(ot_price){
-					ctx.fillText('￥' + ot_price, 50, 876 + contentHh);
+
+				if (ot_price) {
+					ctx.fillText(i18n.t(`￥`) + ot_price, 50, 876 + contentHh);
 					var underline = function(ctx, text, x, y, size, color, thickness, offset) {
 						var width = ctx.measureText(text).width;
 						switch (ctx.textAlign) {
@@ -252,9 +253,9 @@ export default {
 								x -= width;
 								break;
 						}
-					
+
 						y += size + offset;
-					
+
 						ctx.beginPath();
 						ctx.strokeStyle = color;
 						ctx.lineWidth = thickness;
@@ -262,12 +263,12 @@ export default {
 						ctx.lineTo(x + width, y);
 						ctx.stroke();
 					}
-					underline(ctx, '￥' + ot_price, 55, 865, 36, '#999', 2, 0)
-				} 
+					underline(ctx, i18n.t(`￥`) + ot_price, 55, 865, 36, '#999', 2, 0)
+				}
 				ctx.setTextAlign('left')
 				ctx.setFontSize(28);
 				ctx.setFillStyle('#999');
-				ctx.fillText('长按或扫描查看', 490, 1030 + contentHh);
+				ctx.fillText(i18n.t(`长按或扫描查看`), 490, 1030 + contentHh);
 				ctx.draw(true, function() {
 					uni.canvasToTempFilePath({
 						canvasId: 'myCanvas',
@@ -284,7 +285,7 @@ export default {
 			fail: function(err) {
 				uni.hideLoading();
 				that.Tips({
-					title: '无法获取图片信息'
+					title: i18n.t(`无法获取图片信息`)
 				});
 			}
 		})
@@ -326,7 +327,7 @@ export default {
 				let picturex = 0.1571 //商品图左上点
 				let picturey = 0.2916
 				let picturebx = 0.6857 //商品图右下点
-				let pictureby = 0.3916
+				let pictureby = 0.4316
 				let msgx = 0.1036 //msg
 				let msgy = 0.2306
 				let codew = 0.25
@@ -389,7 +390,7 @@ export default {
 			fail: function(err) {
 				uni.hideLoading();
 				that.Tips({
-					title: '无法获取图片信息'
+					title: i18n.t(`无法获取图片信息`)
 				});
 			}
 		})
@@ -443,7 +444,7 @@ export default {
 				} else {
 					ctx.setFontSize(10);
 				}
-				ctx.fillText('邀请您加入' + sitename, w * markx, h * marky);
+				ctx.fillText(i18n.t(`邀请您加入`) + sitename, w * markx, h * marky);
 				ctx.save();
 				ctx.draw(true, function() {
 					uni.canvasToTempFilePath({
@@ -459,7 +460,7 @@ export default {
 			fail: function(err) {
 				uni.hideLoading();
 				that.Tips({
-					title: '无法获取图片信息'
+					title: i18n.t(`无法获取图片信息`)
 				});
 			}
 		})
@@ -491,7 +492,7 @@ export default {
 			success: function(res) {
 				//启动上传等待中...  
 				uni.showLoading({
-					title: '图片上传中',
+					title: i18n.t(`图片上传中`),
 				});
 				uni.uploadFile({
 					url: HTTP_REQUEST_URL + '/api/' + uploadUrl,
@@ -528,7 +529,7 @@ export default {
 					fail: function(res) {
 						uni.hideLoading();
 						that.Tips({
-							title: '上传图片失败'
+							title: i18n.t(`上传图片失败`)
 						});
 					}
 				})
@@ -566,7 +567,7 @@ export default {
 					src: res.tempFilePaths[0],
 					success(ress) {
 						uni.showLoading({
-							title: '图片上传中',
+							title: i18n.t(`图片上传中`),
 						});
 						if (res.tempFiles[0].size <= 2097152) {
 							uploadImg(ress.path)
@@ -651,13 +652,101 @@ export default {
 				fail: function(res) {
 					uni.hideLoading();
 					that.Tips({
-						title: '上传图片失败'
+						title: i18n.t(`上传图片失败`)
 					});
 				}
 			})
 		}
 	},
+	/**
+	 * 小程序头像获取上传
+	 * @param uploadUrl 上传接口地址
+	 * @param filePath 上传文件路径 
+	 * @param successCallback success回调 
+	 * @param errorCallback err回调
+	 */
+	uploadImgs(uploadUrl, filePath, successCallback, errorCallback) {
+		let that = this;
+		uni.uploadFile({
+			url: HTTP_REQUEST_URL + '/api/' +
+				uploadUrl,
+			filePath: filePath,
+			fileType: 'image',
+			name: 'pics',
+			formData: {
+				'filename': 'pics'
+			},
+			header: {
+				// #ifdef MP
+				"Content-Type": "multipart/form-data",
+				// #endif
+				[TOKENNAME]: 'Bearer ' + store.state
+					.app.token
+			},
+			success: (res) => {
+				uni.hideLoading();
+				if (res.statusCode == 403) {
+					that.Tips({
+						title: res.data
+					});
+				} else {
+					let data = res.data ? JSON
+						.parse(res.data) : {};
+					if (data.status == 200) {
+						successCallback &&
+							successCallback(
+								data)
+					} else {
+						errorCallback &&
+							errorCallback(data);
+						that.Tips({
+							title: data
+								.msg
+						});
+					}
+				}
+			},
+			fail: (err) => {
+				uni.hideLoading();
+				that.Tips({
+					title: i18n.t(
+						`上传图片失败`)
+				});
+			}
+		})
+	},
+	/**
+	 * 小程序比较版本信息
+	 * @param v1 当前版本
+	 * @param v2 进行比较的版本 
+	 * @return boolen
+	 * 
+	 */
+	compareVersion(v1, v2) {
+		v1 = v1.split('.')
+		v2 = v2.split('.')
+		const len = Math.max(v1.length, v2.length)
 
+		while (v1.length < len) {
+			v1.push('0')
+		}
+		while (v2.length < len) {
+			v2.push('0')
+		}
+
+		for (let i = 0; i < len; i++) {
+			const num1 = parseInt(v1[i])
+			const num2 = parseInt(v2[i])
+
+			if (num1 > num2) {
+				return 1
+			} else if (num1 < num2) {
+				return -1
+			}
+		}
+
+		return 0
+	},
 	/**
 	 * 处理服务器扫码带进来的参数
 	 * @param string param 扫码携带参数
@@ -822,7 +911,7 @@ export default {
 					// #ifndef MP-BAIDU
 					if (err.errMsg.indexOf("auth deny") >= 0) {
 						uni.showToast({
-							title: "访问位置被拒绝"
+							title: i18n.t(`访问位置被拒绝`)
 						})
 					} else {
 						uni.showToast({
@@ -868,8 +957,8 @@ export default {
 				status = 1;
 			} else if (status === 2) {
 				uni.showModal({
-					content: "系统定位已关闭",
-					confirmText: "确定",
+					content: i18n.t(`系统定位已关闭`),
+					confirmText: i18n.t(`确定`),
 					showCancel: false,
 					success: function(res) {}
 				})
@@ -879,8 +968,8 @@ export default {
 				})
 			} else {
 				uni.showModal({
-					content: "需要定位权限",
-					confirmText: "设置",
+					content: i18n.t(`需要定位权限`),
+					confirmText: i18n.t(`确定`),
 					success: function(res) {
 						if (res.confirm) {
 							permision.gotoAppSetting();

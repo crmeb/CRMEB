@@ -1,10 +1,5 @@
 <template>
   <div>
-    <div class="i-layout-page-header">
-      <div class="i-layout-page-header">
-        <span class="ivu-page-header-title">{{ $route.meta.title }}</span>
-      </div>
-    </div>
     <Card :bordered="false" dis-hover class="ivu-mt">
       <Form
         ref="tableFrom"
@@ -59,12 +54,7 @@
         </Row>
         <Row type="flex" class="mb20">
           <Col>
-            <Button
-              v-auth="['marketing-store_seckill-create']"
-              type="primary"
-              icon="md-add"
-              @click="add"
-              class="mr10"
+            <Button v-auth="['marketing-store_integral-create']" type="primary" icon="md-add" @click="add" class="mr10"
               >添加积分商品</Button
             >
             <!-- <Button
@@ -137,20 +127,16 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
-import {
-  integralProductListApi,
-  integralIsShowApi,
-  storeSeckillApi,
-} from "@/api/marketing";
-import { formatDate } from "@/utils/validate";
+import { mapState } from 'vuex';
+import { integralProductListApi, integralIsShowApi, storeSeckillApi } from '@/api/marketing';
+import { formatDate } from '@/utils/validate';
 export default {
-  name: "storeIntegral",
+  name: 'storeIntegral',
   filters: {
     formatDate(time) {
       if (time !== 0) {
         let date = new Date(time * 1000);
-        return formatDate(date, "yyyy-MM-dd");
+        return formatDate(date, 'yyyy-MM-dd');
       }
     },
   },
@@ -159,54 +145,54 @@ export default {
       loading: false,
       columns1: [
         {
-          title: "ID",
-          key: "id",
+          title: 'ID',
+          key: 'id',
           width: 80,
         },
         {
-          title: "商品图片",
-          slot: "image",
+          title: '商品图片',
+          slot: 'image',
           minWidth: 90,
         },
         {
-          title: "活动标题",
-          key: "title",
+          title: '活动标题',
+          key: 'title',
           minWidth: 130,
         },
         {
-          title: "兑换积分",
-          key: "price",
+          title: '兑换积分',
+          key: 'price',
           minWidth: 100,
         },
         {
-          title: "限量",
-          key: "quota_show",
+          title: '限量',
+          key: 'quota_show',
           minWidth: 130,
         },
         {
-          title: "限量剩余",
-          key: "quota",
+          title: '限量剩余',
+          key: 'quota',
           minWidth: 130,
         },
         {
-          title: "创建时间",
-          key: "add_time",
+          title: '创建时间',
+          key: 'add_time',
           minWidth: 130,
         },
         {
-          title: "排序",
-          key: "sort",
+          title: '排序',
+          key: 'sort',
           minWidth: 50,
         },
         {
-          title: "状态",
-          slot: "is_show",
+          title: '状态',
+          slot: 'is_show',
           minWidth: 100,
         },
         {
-          title: "操作",
-          slot: "action",
-          fixed: "right",
+          title: '操作',
+          slot: 'action',
+          fixed: 'right',
           minWidth: 130,
         },
       ],
@@ -220,9 +206,9 @@ export default {
         xs: 24,
       },
       tableFrom: {
-        integral_time: "",
-        is_show: "",
-        store_name: "",
+        integral_time: '',
+        is_show: '',
+        store_name: '',
         page: 1,
         limit: 15,
       },
@@ -230,12 +216,12 @@ export default {
     };
   },
   computed: {
-    ...mapState("media", ["isMobile"]),
+    ...mapState('media', ['isMobile']),
     labelWidth() {
       return this.isMobile ? undefined : 80;
     },
     labelPosition() {
-      return this.isMobile ? "top" : "left";
+      return this.isMobile ? 'top' : 'left';
     },
   },
   activated() {
@@ -244,16 +230,16 @@ export default {
   methods: {
     // 添加
     add() {
-      this.$router.push({ path: "/admin/marketing/store_integral/create" });
+      this.$router.push({ path: '/admin/marketing/store_integral/create' });
     },
     addMore() {
       this.$router.push({
-        path: "/admin/marketing/store_integral/add_store_integral",
+        path: '/admin/marketing/store_integral/add_store_integral',
       });
     },
     orderList(row) {
       this.$router.push({
-        path: "/admin/marketing/store_integral/order_list",
+        path: '/admin/marketing/store_integral/order_list',
         query: {
           product_id: row.id,
         },
@@ -278,13 +264,13 @@ export default {
     // 编辑
     edit(row) {
       this.$router.push({
-        path: "/admin/marketing/store_integral/create/" + row.id + "/0",
+        path: '/admin/marketing/store_integral/create/' + row.id + '/0',
       });
     },
     // 一键复制
     copy(row) {
       this.$router.push({
-        path: "/admin/marketing/store_integral/create/" + row.id + "/1",
+        path: '/admin/marketing/store_integral/create/' + row.id + '/1',
       });
     },
     // 删除
@@ -293,8 +279,8 @@ export default {
         title: tit,
         num: num,
         url: `marketing/integral/${row.id}`,
-        method: "DELETE",
-        ids: "",
+        method: 'DELETE',
+        ids: '',
       };
       this.$modalSure(delfromData)
         .then((res) => {
@@ -308,8 +294,8 @@ export default {
     // 列表
     getList() {
       this.loading = true;
-      this.tableFrom.start_status = this.tableFrom.start_status || "";
-      this.tableFrom.is_show = this.tableFrom.is_show || "";
+      this.tableFrom.start_status = this.tableFrom.start_status || '';
+      this.tableFrom.is_show = this.tableFrom.is_show || '';
       integralProductListApi(this.tableFrom)
         .then(async (res) => {
           let data = res.data;
@@ -334,7 +320,7 @@ export default {
     // 具体日期
     onchangeTime(e) {
       this.timeVal = e;
-      this.tableFrom.integral_time = this.timeVal.join("-");
+      this.tableFrom.integral_time = this.timeVal.join('-');
     },
     // 修改是否显示
     onchangeIsShow(row) {

@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -10,17 +10,17 @@
 // +----------------------------------------------------------------------
 namespace app\adminapi\controller\v1\application\routine;
 
+use app\jobs\notice\SyncMessageJob;
 use app\services\other\QrcodeServices;
 use app\services\message\TemplateMessageServices;
 use app\services\system\attachment\SystemAttachmentServices;
 use crmeb\exceptions\AdminException;
 use think\exception\ValidateException;
 use think\facade\App;
-use think\Request;
-use think\facade\Route as Url;
 use app\adminapi\controller\AuthController;
-use crmeb\services\{FileService, FormBuilder as Form, MiniProgramService, template\Template, UploadService};
-use think\facade\Cache;
+use crmeb\services\FileService;
+use app\services\other\UploadService;
+use crmeb\services\app\MiniProgramService;
 
 /**
  * Class RoutineTemplate
@@ -43,161 +43,6 @@ class RoutineTemplate extends AuthController
     }
 
     /**
-     * 显示资源列表
-     *
-     * @return \think\Response
-     */
-    public function index()
-    {
-        $where = $this->request->getMore([
-            ['name', ''],
-            ['status', '']
-        ]);
-        $where['type'] = 0;
-        $data = $this->services->getTemplateList($where);
-        $industry = Cache::tag($this->cacheTag)->remember('_wechat_industry', function () {
-            try {
-                $cache = (new Template('wechat'))->getIndustry();
-                if (!$cache) return [];
-                Cache::tag($this->cacheTag, ['_wechat_industry']);
-                return $cache->toArray();
-            } catch (\Exception $e) {
-                return $e->getMessage();
-            }
-        }, 0) ?: [];
-        !is_array($industry) && $industry = [];
-        $industry['primary_industry'] = isset($industry['primary_industry']) ? $industry['primary_industry']['first_class'] . ' | ' . $industry['primary_industry']['second_class'] : '未选择';
-        $industry['secondary_industry'] = isset($industry['secondary_industry']) ? $industry['secondary_industry']['first_class'] . ' | ' . $industry['secondary_industry']['second_class'] : '未选择';
-        $lst = [
-            'industry' => $industry,
-            'count' => $data['count'],
-            'list' => $data['list']
-        ];
-        return app('json')->success($lst);
-    }
-
-    /**
-     * 显示创建资源表单页.
-     *
-     * @return \think\Response
-     */
-    public function create()
-    {
-        $f = array();
-        $f[] = Form::input('tempkey', '模板编号');
-        $f[] = Form::input('tempid', '模板ID');
-        $f[] = Form::input('name', '模板名');
-        $f[] = Form::input('content', '回复内容')->type('textarea');
-        $f[] = Form::radio('status', '状态', 1)->options([['label' => '开启', 'value' => 1], ['label' => '关闭', 'value' => 0]]);
-        return app('json')->success(create_form('添加模板消息', $f, Url::buildUrl('/app/routine'), 'POST'));
-    }
-
-    /**
-     * 保存新建的资源
-     *
-     * @param Request $request
-     * @return \think\Response
-     */
-    public function save(Request $request)
-    {
-        $data = $this->request->postMore([
-            'tempkey',
-            'tempid',
-            'name',
-            'content',
-            ['status', 0]
-        ]);
-        if ($data['tempkey'] == '') return app('json')->fail('请输入模板编号');
-        if ($data['tempkey'] != '' && $this->services->getOne(['tempkey' => $data['tempkey']]))
-            return app('json')->fail('请输入模板编号已存在,请重新输入');
-        if ($data['tempid'] == '') return app('json')->fail('请输入模板ID');
-        if ($data['name'] == '') return app('json')->fail('请输入模板名');
-        if ($data['content'] == '') return app('json')->fail('请输入回复内容');
-        $data['add_time'] = time();
-        $this->services->save($data);
-        return app('json')->success('添加模板消息成功!');
-    }
-
-    /**
-     * 显示指定的资源
-     *
-     * @param int $id
-     * @return \think\Response
-     */
-    public function read($id)
-    {
-        //
-    }
-
-    /**
-     * 显示编辑资源表单页.
-     *
-     * @param int $id
-     * @return \think\Response
-     */
-    public function edit($id)
-    {
-        if (!$id) return app('json')->fail('数据不存在');
-        $product = $this->services->get($id);
-        if (!$product) return app('json')->fail('数据不存在!');
-        $f = array();
-        $f[] = Form::input('tempkey', '模板编号', $product->getData('tempkey'))->disabled(1);
-        $f[] = Form::input('name', '模板名', $product->getData('name'))->disabled(1);
-        $f[] = Form::input('tempid', '模板ID', $product->getData('tempid'));
-        $f[] = Form::radio('status', '状态', $product->getData('status'))->options([['label' => '开启', 'value' => 1], ['label' => '关闭', 'value' => 0]]);
-        return app('json')->success(create_form('编辑模板消息', $f, Url::buildUrl('/app/routine/' . $id), 'PUT'));
-    }
-
-    /**
-     * 保存更新的资源
-     *
-     * @param Request $request
-     * @param int $id
-     * @return \think\Response
-     */
-    public function update(Request $request, $id)
-    {
-        $data = $this->request->postMore([
-            'tempid',
-            ['status', 0]
-        ]);
-        if ($data['tempid'] == '') return app('json')->fail('请输入模板ID');
-        if (!$id) return app('json')->fail('数据不存在');
-        $product = $this->services->get($id);
-        if (!$product) return app('json')->fail('数据不存在!');
-        $this->services->update($id, $data, 'id');
-        return app('json')->success('修改成功!');
-    }
-
-    /**
-     * 删除指定资源
-     *
-     * @param int $id
-     * @return \think\Response
-     */
-    public function delete($id)
-    {
-        if (!$id) return app('json')->fail('数据不存在!');
-        if (!$this->services->delete($id))
-            return app('json')->fail('删除失败,请稍候再试!');
-        else
-            return app('json')->success('删除成功!');
-    }
-
-    /**
-     * 修改状态
-     * @param $id
-     * @param $status
-     * @return mixed
-     */
-    public function set_status($id, $status)
-    {
-        if ($status == '' || $id == 0) return app('json')->fail('参数错误');
-        $this->services->update($id, ['status' => $status], 'id');
-        return app('json')->success($status == 0 ? '关闭成功' : '开启成功');
-    }
-
-    /**
      * 同步订阅消息
      * @return mixed
      * @throws \think\db\exception\DataNotFoundException
@@ -207,77 +52,19 @@ class RoutineTemplate extends AuthController
     public function syncSubscribe()
     {
         if (!sys_config('routine_appId') || !sys_config('routine_appsecret')) {
-            throw new AdminException('请先配置小程序appid、appSecret等参数');
+            throw new AdminException(400236);
         }
         $all = $this->services->getTemplateList(['status' => 1, 'type' => 0]);
-        $errData = [];
-        $errMessage = [
-            '-1' => '系统繁忙，此时请稍候再试',
-            '40001' => 'AppSecret错误或者AppSecret不属于这个小程序，请确认AppSecret 的正确性',
-            '40002' => '请确保grant_type字段值为client_credential',
-            '40013' => '不合法的AppID，请检查AppID的正确性，避免异常字符，注意大小写',
-            '40125' => '小程序配置无效，请检查配置',
-            '41002' => '缺少appid参数',
-            '41004' => '缺少secret参数',
-            '43104' => 'appid与openid不匹配',
-            '45009' => '达到微信api每日限额上限',
-            '200011' => '此账号已被封禁，无法操作',
-            '200012' => '个人模版数已达上限，上限25个',
-            '200014' => '请检查小程序所属类目',
-        ];
+        $list = MiniProgramService::getSubscribeTemplateList();
+        foreach ($list->data as $v) {
+            MiniProgramService::delSubscribeTemplate($v['priTmplId']);
+        }
         if ($all['list']) {
-            $time = time();
             foreach ($all['list'] as $template) {
-                if ($template['tempkey']) {
-                    if (!isset($template['kid'])) {
-                        return app('json')->fail('数据库模版表(template_message)缺少字段：kid');
-                    }
-                    if (isset($template['kid']) && $template['kid']) {
-                        continue;
-                    }
-                    $works = [];
-                    try {
-                        $works = MiniProgramService::getSubscribeTemplateKeyWords($template['tempkey']);
-                    } catch (\Throwable $e) {
-                        $wechatErr = $e->getMessage();
-                        if (is_string($wechatErr)) throw new AdminException($wechatErr);
-                        if (in_array($wechatErr->getCode(), array_keys($errMessage))) {
-                            throw new AdminException($errMessage[$wechatErr->getCode()]);
-                        }
-                        $errData[1] = '获取关键词列表失败：' . $wechatErr->getMessage();
-                    }
-                    $kid = [];
-                    if ($works) {
-                        $works = array_combine(array_column($works, 'name'), $works);
-                        $content = is_array($template['content']) ? $template['content'] : explode("\n", $template['content']);
-                        foreach ($content as $c) {
-                            $name = explode('{{', $c)[0] ?? '';
-                            if ($name && isset($works[$name])) {
-                                $kid[] = $works[$name]['kid'];
-                            }
-                        }
-                    }
-                    if ($kid && isset($template['kid']) && !$template['kid']) {
-                        $tempid = '';
-                        try {
-                            $tempid = MiniProgramService::addSubscribeTemplate($template['tempkey'], $kid, $template['name']);
-                        } catch (\Throwable $e) {
-                            $wechatErr = $e->getMessage();
-                            if (is_string($wechatErr)) throw new AdminException($wechatErr);
-                            if (in_array($wechatErr->getCode(), array_keys($errMessage))) {
-                                throw new AdminException($errMessage[$wechatErr->getCode()]);
-                            }
-                            $errData[2] = '添加订阅消息模版失败：' . $wechatErr->getMessage();
-                        }
-                        if ($tempid != $template['tempid']) {
-                            $this->services->update($template['id'], ['tempid' => $tempid, 'kid' => json_encode($kid), 'add_time' => $time], 'id');
-                        }
-                    }
-                }
+                SyncMessageJob::dispatchDo('SyncSubscribe', [$template]);
             }
         }
-        $msg = $errData ? implode('\n', $errData) : '同步成功';
-        return app('json')->success($msg);
+        return app('json')->success(100038);
     }
 
     /**
@@ -290,7 +77,7 @@ class RoutineTemplate extends AuthController
             ['name', ''],
             ['is_live', 0]
         ], true);
-        if (sys_config('routine_appId', '') == '') throw new AdminException('请先配置小程序appId');
+        if (sys_config('routine_appId', '') == '') throw new AdminException(400236);
         try {
             @unlink(public_path() . 'statics/download/routine.zip');
             //拷贝源文件
@@ -367,6 +154,14 @@ class RoutineTemplate extends AuthController
         @file_put_contents($newFileUrl, $string); // 写入配置文件
     }
 
+    /**
+     * 获取小程序码
+     * @return string
+     * @throws \think\Exception
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     */
     public function getDownloadInfo()
     {
         $data['routine_name'] = sys_config('routine_name', '');
@@ -382,12 +177,12 @@ class RoutineTemplate extends AuthController
                 $qrcode = app()->make(QrcodeServices::class);
                 $resForever = $qrcode->qrCodeForever(0, 'code');
                 if ($resForever) {
-                    $resCode = MiniProgramService::qrcodeService()->appCodeUnlimit($resForever->id, '', 280);
+                    $resCode = MiniProgramService::appCodeUnlimitService($resForever->id, '', 280);
                     $res = ['res' => $resCode, 'id' => $resForever->id];
                 } else {
                     $res = false;
                 }
-                if (!$res) throw new ValidateException('二维码生成失败');
+                if (!$res) throw new ValidateException(400237);
                 $upload = UploadService::init(1);
                 if ($upload->to('routine/code')->setAuthThumb(false)->stream((string)$res['res'], $name) === false) {
                     return $upload->getError();

@@ -2,24 +2,14 @@
   <div class="article-manager">
     <div class="i-layout-page-header">
       <div class="i-layout-page-header">
-        <router-link
-          :to="{ path: '/admin/product/product_list' }"
-          v-if="$route.params.id"
-          ><Button icon="ios-arrow-back" size="small" class="mr20"
-            >返回</Button
-          ></router-link
+        <router-link :to="{ path: '/admin/product/product_list' }" v-if="$route.params.id"
+          ><Button icon="ios-arrow-back" size="small" class="mr20">返回</Button></router-link
         >
         <span class="ivu-page-header-title mr20">商品评论管理</span>
       </div>
     </div>
     <Card :bordered="false" dis-hover class="ivu-mt">
-      <Form
-        ref="formValidate"
-        :model="formValidate"
-        :label-width="75"
-        label-position="left"
-        @submit.native.prevent
-      >
+      <Form ref="formValidate" :model="formValidate" :label-width="75" label-position="left" @submit.native.prevent>
         <Row type="flex" :gutter="24">
           <Col span="24">
             <FormItem label="评论时间：">
@@ -29,12 +19,7 @@
                 @on-change="selectChange(formValidate.data)"
                 class="mr"
               >
-                <Radio
-                  :label="item.val"
-                  v-for="(item, i) in fromList.fromTxt"
-                  :key="i"
-                  >{{ item.text }}</Radio
-                >
+                <Radio :label="item.val" v-for="(item, i) in fromList.fromTxt" :key="i">{{ item.text }}</Radio>
               </RadioGroup>
               <DatePicker
                 :editable="false"
@@ -50,12 +35,7 @@
           </Col>
           <Col v-bind="grid">
             <FormItem label="评价状态：">
-              <Select
-                v-model="formValidate.is_reply"
-                placeholder="请选择"
-                clearable
-                @on-change="userSearchs"
-              >
+              <Select v-model="formValidate.is_reply" placeholder="请选择" clearable @on-change="userSearchs">
                 <Option value="1">已回复</Option>
                 <Option value="0">未回复</Option>
               </Select>
@@ -74,20 +54,12 @@
           </Col>
           <Col v-bind="grid">
             <FormItem label="用户名称：" label-for="account">
-              <Input
-                size="default"
-                enter-button
-                placeholder="请输入"
-                clearable
-                v-model="formValidate.account"
-              />
+              <Input size="default" enter-button placeholder="请输入" clearable v-model="formValidate.account" />
             </FormItem>
           </Col>
           <Col :xl="3" :lg="3" :md="12" :sm="12" :xs="24" class="search">
             <FormItem>
-              <Button type="primary" icon="ios-search" @click="userSearchs"
-                >搜索</Button
-              >
+              <Button type="primary" icon="ios-search" @click="userSearchs">搜索</Button>
             </FormItem>
           </Col>
         </Row>
@@ -97,11 +69,7 @@
       <!--            </div>-->
       <Row type="flex">
         <Col v-bind="grid">
-          <Button
-            v-auth="['product-reply-save_fictitious_reply']"
-            type="primary"
-            icon="md-add"
-            @click="add"
+          <Button v-auth="['product-reply-save_fictitious_reply']" type="primary" icon="md-add" @click="add"
             >添加虚拟评论</Button
           >
         </Col>
@@ -124,12 +92,7 @@
         </template>
         <template slot-scope="{ row }" slot="content">
           <div class="mb5 content_font">{{ row.comment }}</div>
-          <div
-            v-viewer
-            class="pictrue mr10"
-            v-for="(item, index) in row.pics || []"
-            :key="index"
-          >
+          <div v-viewer class="pictrue mr10" v-for="(item, index) in row.pics || []" :key="index">
             <img v-lazy="item" :src="item" />
           </div>
         </template>
@@ -151,20 +114,9 @@
       </div>
     </Card>
     <Modal v-model="modals" scrollable title="回复内容" closable>
-      <Form
-        ref="contents"
-        :model="contents"
-        :rules="ruleInline"
-        label-position="right"
-        @submit.native.prevent
-      >
+      <Form ref="contents" :model="contents" :rules="ruleInline" label-position="right" @submit.native.prevent>
         <FormItem prop="content">
-          <Input
-            v-model="contents.content"
-            type="textarea"
-            :rows="4"
-            placeholder="请输入回复内容"
-          />
+          <Input v-model="contents.content" type="textarea" :rows="4" placeholder="请输入回复内容" />
         </FormItem>
       </Form>
       <div slot="footer">
@@ -176,10 +128,10 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
-import { replyListApi, setReplyApi, fictitiousReply } from "@/api/product";
+import { mapState } from 'vuex';
+import { replyListApi, setReplyApi, fictitiousReply } from '@/api/product';
 export default {
-  name: "product_productEvaluate",
+  name: 'product_productEvaluate',
   data() {
     return {
       modals: false,
@@ -191,99 +143,95 @@ export default {
         xs: 24,
       },
       formValidate: {
-        is_reply: "",
-        data: "",
-        store_name: "",
-        key: "",
-        order: "",
-        account: "",
-        product_id:
-          this.$route.params.id === undefined ? 0 : this.$route.params.id,
+        is_reply: '',
+        data: '',
+        store_name: '',
+        key: '',
+        order: '',
+        account: '',
+        product_id: this.$route.params.id === undefined ? 0 : this.$route.params.id,
         page: 1,
         limit: 15,
       },
       fromList: {
-        title: "选择时间",
+        title: '选择时间',
         custom: true,
         fromTxt: [
-          { text: "全部", val: "" },
-          { text: "今天", val: "today" },
-          { text: "昨天", val: "yesterday" },
-          { text: "最近7天", val: "lately7" },
-          { text: "最近30天", val: "lately30" },
-          { text: "本月", val: "month" },
-          { text: "本年", val: "year" },
+          { text: '全部', val: '' },
+          { text: '今天', val: 'today' },
+          { text: '昨天', val: 'yesterday' },
+          { text: '最近7天', val: 'lately7' },
+          { text: '最近30天', val: 'lately30' },
+          { text: '本月', val: 'month' },
+          { text: '本年', val: 'year' },
         ],
       },
-      value: "45",
+      value: '45',
       tableList: [],
       total: 0,
       loading: false,
       columns: [
         {
-          title: "评论ID",
-          key: "id",
+          title: '评论ID',
+          key: 'id',
           width: 80,
         },
         {
-          title: "商品信息",
-          slot: "info",
+          title: '商品信息',
+          slot: 'info',
           minWidth: 230,
         },
         {
-          title: "用户名称",
-          key: "nickname",
+          title: '用户名称',
+          key: 'nickname',
           minWidth: 150,
         },
         {
-          title: "评分",
-          key: "score",
+          title: '评分',
+          key: 'score',
           sortable: true,
           minWidth: 90,
         },
         {
-          title: "评价内容",
-          slot: "content",
+          title: '评价内容',
+          slot: 'content',
           minWidth: 210,
         },
         {
-          title: "回复内容",
-          key: "merchant_reply_content",
+          title: '回复内容',
+          key: 'merchant_reply_content',
           minWidth: 250,
         },
         {
-          title: "评价时间",
-          key: "add_time",
+          title: '评价时间',
+          key: 'add_time',
           sortable: true,
           minWidth: 150,
         },
         {
-          title: "操作",
-          slot: "action",
-          fixed: "right",
+          title: '操作',
+          slot: 'action',
+          fixed: 'right',
           minWidth: 150,
         },
       ],
       timeVal: [],
       contents: {
-        content: "",
+        content: '',
       },
       ruleInline: {
-        content: [
-          { required: true, message: "请输入回复内容", trigger: "blur" },
-        ],
+        content: [{ required: true, message: '请输入回复内容', trigger: 'blur' }],
       },
       rows: {},
     };
   },
   computed: {},
   created() {
-    if (this.$route.query.is_reply == 0)
-      this.formValidate.is_reply = this.$route.query.is_reply;
+    if (this.$route.query.is_reply == 0) this.formValidate.is_reply = this.$route.query.is_reply;
     this.getList();
   },
   watch: {
-    "$route.params.id"(to, from) {
+    '$route.params.id'(to, from) {
       this.formValidate.product_id = 0;
       this.getList();
     },
@@ -291,19 +239,17 @@ export default {
   methods: {
     // 添加虚拟评论；
     add() {
-      this.$modalForm(fictitiousReply(this.formValidate.product_id)).then(() =>
-        this.getList()
-      );
+      this.$modalForm(fictitiousReply(this.formValidate.product_id)).then(() => this.getList());
     },
     oks() {
       this.modals = true;
-      this.$refs["contents"].validate((valid) => {
+      this.$refs['contents'].validate((valid) => {
         if (valid) {
           setReplyApi(this.contents, this.rows.id)
             .then(async (res) => {
               this.$Message.success(res.msg);
               this.modals = false;
-              this.$refs["contents"].resetFields();
+              this.$refs['contents'].resetFields();
               this.getList();
             })
             .catch((res) => {
@@ -316,7 +262,7 @@ export default {
     },
     cancels() {
       this.modals = false;
-      this.$refs["contents"].resetFields();
+      this.$refs['contents'].resetFields();
     },
     // 删除
     del(row, tit, num) {
@@ -324,13 +270,14 @@ export default {
         title: tit,
         num: num,
         url: `product/reply/${row.id}`,
-        method: "DELETE",
-        ids: "",
+        method: 'DELETE',
+        ids: '',
       };
       this.$modalSure(delfromData)
         .then((res) => {
           this.$Message.success(res.msg);
           this.tableList.splice(num, 1);
+          this.total = this.total - 1;
         })
         .catch((res) => {
           this.$Message.error(res.msg);
@@ -344,14 +291,14 @@ export default {
     // 具体日期
     onchangeTime(e) {
       this.timeVal = e;
-      this.formValidate.data = this.timeVal[0] ? this.timeVal.join("-") : "";
+      this.formValidate.data = this.timeVal[0] ? this.timeVal.join('-') : '';
       this.formValidate.page = 1;
       this.getList();
     },
     sortMethod(a) {
-      if (a.order === "normal") {
-        this.formValidate.key = "";
-        this.formValidate.order = "";
+      if (a.order === 'normal') {
+        this.formValidate.key = '';
+        this.formValidate.order = '';
       } else {
         this.formValidate.key = a.key;
         this.formValidate.order = a.order;
@@ -368,8 +315,8 @@ export default {
     // 列表
     getList() {
       this.loading = true;
-      this.formValidate.is_reply = this.formValidate.is_reply || "";
-      this.formValidate.store_name = this.formValidate.store_name || "";
+      this.formValidate.is_reply = this.formValidate.is_reply || '';
+      this.formValidate.store_name = this.formValidate.store_name || '';
       replyListApi(this.formValidate)
         .then(async (res) => {
           let data = res.data;

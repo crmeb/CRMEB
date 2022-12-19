@@ -1,36 +1,17 @@
 module.exports = {
   root: true,
-  env: {
-    node: true
-  },
-  'extends': [
-    'plugin:vue/essential',
-    '@vue/standard'
-  ],
-  rules: {
-    "semi": [0],
-    "camelcase": [0, {"properties": "always"}],
-    'no-irregular-whitespace':'off',
-    'no-unused-vars':'off',
-    'indent': 'off',
-    'vue/no-unused-vars': 'off',
-    'vue/script-indent': [
-      'error',
-      4,
-      {
-        'baseIndent': 1
-      }
-    ],
-    'no-console': process.env.NODE_ENV === 'production' ? 'error' : 'off',
-    'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off',
-    'vue/no-parsing-error': [
-      2,
-      {
-        "x-invalid-end-tag": false
-      }
-    ]
-  },
+  parser: 'vue-eslint-parser',
   parserOptions: {
-    parser: 'babel-eslint'
-  }
-}
+    ecmaVersion: 2020,
+    sourceType: 'module',
+    ecmaFeatures: {
+      jsx: true,
+    },
+  },
+
+  extends: ['prettier', 'plugin:prettier/recommended'],
+
+  rules: {
+    // override/add rules settings here, such as:
+  },
+};

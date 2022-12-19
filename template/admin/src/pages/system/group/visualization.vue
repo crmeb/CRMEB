@@ -1,6 +1,6 @@
 <template>
-    <div  :style="bgcolors">
-		    <div class="i-layout-page-header">
+  <div :style="bgcolors">
+    <div class="i-layout-page-header">
       <span class="ivu-page-header-title mr20">{{ $route.meta.title }}</span>
       <div>
         <div style="float: right">
@@ -9,371 +9,481 @@
       </div>
     </div>
     <div class="box-wrapper">
-      <div  class="left-wrapper" v-if="!$route.params.id && groupAll.length">
-        <Menu :theme="theme3" :active-name="sortName" width="auto" >
+      <div class="left-wrapper" v-if="!$route.params.id && groupAll.length">
+        <Menu :theme="theme3" :active-name="sortName" width="auto">
           <MenuGroup>
-            <MenuItem :name="item.config_name" class="menu-item" v-for="(item,index) in groupAll" :key="index" @click.native='edits(item)'>
-              {{item.name}}
+            <MenuItem
+              :name="item.config_name"
+              class="menu-item"
+              v-for="(item, index) in groupAll"
+              :key="index"
+              @click.native="edits(item)"
+            >
+              {{ item.name }}
             </MenuItem>
-            <MenuItem name="guide" class="menu-item" @click.native='edits(2)'>
-              开屏广告
-            </MenuItem>
+            <MenuItem name="guide" class="menu-item" @click.native="edits(2)"> 开屏广告 </MenuItem>
           </MenuGroup>
         </Menu>
       </div>
-				<div v-if="name == 'user_recharge_quota'" class="iframe">
-					<div class="iframe-boxs">
-						<div class="moneyBox">
-							<div class="box1">
-								<div class="font1">我的余额</div>
-								<div>￥ <i class="font2">0.00</i></div>
-							</div>
-							<div class="moneyBox_content">
-								<div class="box2">
-									<div>账户充值</div>
-									<div>佣金导入</div>
-								</div>
-								<div class="box3">
-										<div v-show="item.status != 0" class="box3_box" v-for="(item,index) in sginList.list" :key="index">
-											<div>{{item.price}}<i class="font">元</i></div>
-											<div  class="font">赠送:{{item.give_money}}元</div>
-										</div>
-									<div class="box3_box">
-										<div class="other">其他</div>
-									</div>
-									
-								</div>
-								<div class="box4">
-									<div class="tips">注意事项：</div>
-									<div class="tips-samll">
-										<p>充值后帐户的金额不能提现，可用于商城消费使用。</p>
-										<p>佣金导入账户之后不能再次导出、不可提现。</p>
-										<p>账户充值出现问题可联系商城客服，也可拨打商城客服热线：40088888889。</p>
-									</div>
-								</div>
-								<div class="box5">立即充值</div>
-							</div>
-						</div>
-					</div>
-					
-				</div>
-				<div v-if="name == 'admin_login_slide'" class="pciframe" :bordered="false" dis-hover>
-				   <img src="../../../assets/images/pclogin.png" class="pciframe-box"></img>
-					<div class="pcmoddile_goods">
-						<div class="nofont" v-if="tabList.list == ''">暂无照片，请添加~</div>
-						<swiper v-else :options="swiperOption" class="pcswiperimg_goods">
-						    <swiper-slide class="spcwiperimg_goods" v-for="(item,index) in tabList.list" :key="index">
-								<img :src="item.slide" >
-							</swiper-slide>
-						</swiper>
-					</div>
-				</div>
-				<div v-if="name == 'integral_shop_banner'" class="iframe" :bordered="false">
-					<div class="iframe-box">
-						<img src="../../../assets/images/integral.png" style="width: 100%;">
-						<div class="moddile_goods">
-							<div class="nofonts" v-if="tabList.list == '' || !tabList.list.length || !tabList.list[0].img">暂无照片，请添加~</div>
-							<swiper v-else :options="swiperOption" class="pcswiperimg_goods">
-							    <swiper-slide class="swiperimg_goods" v-for="(item,index) in tabList.list" :key="index">
-									<img :src="item.img" >
-								</swiper-slide>
-							</swiper>
-						</div>
-					</div>
-					
-				</div>
-				<div v-if="name != 'sign_day_num' && name != 'admin_login_slide' && name != 'user_recharge_quota' && name != 'integral_shop_banner' && a != 1&& guide != 2" class="iframe" :bordered="false" dis-hover>
-				   <iframe :src="url" class="iframe-box" frameborder="0"></iframe>
-				    <div class="moddile"></div>
-					<div v-if="name == 'routine_home_bast_banner' || name == 'routine_home_hot_banner' || name == 'routine_home_new_banner' || name == 'routine_home_benefit_banner'" class="moddile_box">
-						<div class="nofonts" v-if="tabList.list == '' || !tabList.list.length || !tabList.list[0].img">暂无照片，请添加~</div>
-						<swiper v-else :options="swiperOption" class="swiperimg">
-						    <swiper-slide class="swiperimg" v-for="(item,index) in tabList.list" :key="index">
-								<img :src="item.img" >
-							</swiper-slide>
-						</swiper>
-					</div>
-					<div v-if="name == 'combination_banner'" class="moddile_goods">
-						<div class="nofonts" v-if="tabList.list == ''">暂无照片，请添加~</div>
-						<swiper v-else :options="swiperOption" class="swiperimg_goods">
-						    <swiper-slide class="swiperimg_goods" v-for="(item,index) in tabList.list" :key="index">
-								<img :src="item.img" >
-							</swiper-slide>
-						</swiper>
-					</div>
-					
-				</div>
-				<div v-if="name == 'sign_day_num'" class="iframe" :bordered="false">
-					<div class="iframe-box">
-						<img v-if="bgimg == 1" src="../../../assets/images/bluesgin.png">
-						<img v-if="bgimg == 2" src="../../../assets/images/greesgin.png">
-						<img v-if="bgimg == 3" src="../../../assets/images/redsgin.png">
-						<img v-if="bgimg == 4" src="../../../assets/images/pinksgin.png">
-						<img v-if="bgimg == 5" src="../../../assets/images/oragesgin.png">
-					</div>
-					
-				</div>
-				<div v-if="a == 1" class="iframe" :bordered="false">
-					<div class="agreement-box">
-						<div class="template"></div>
-						<div class="htmls_box">
-							<div class="htmls_top">服务协议与隐私政策</div>
-							<div class="htmls_font">
-								<div class="ok">我同意</div>
-								<div>不同意</div>
-							</div>
-							<div class="htmls" v-html="formValidate.content"></div>
-						</div>
-					</div>
-					
-				</div>
-				<div v-if="a == 1" style="margin-left: 40px;">
-					<div class="table_box">
-						<div type="flex">
-							<div v-bind="grid">
-								<div class="title">隐私权限页面展示：</div>
-							</div>
-						</div>
-						<div>
-							<Form
-							  class="form"
-							  ref="formValidate"
-							  :model="formValidate"
-							  :rules="ruleValidate"
-							  :label-width="labelWidth"
-							  :label-position="labelPosition"
-							  @submit.native.prevent
-							>
-							  <div class="goodsTitle acea-row">
-							  </div>
-							  <FormItem label="" prop="content" style="margin: 0px;">
-                  <WangEditor
-                    style="width: 90%"
-                    :content="formValidate.content"
-                    @editorContent="getEditorContent"
-                  ></WangEditor>
-							  </FormItem>
-							</Form>
-						</div>
-					</div>
-				</div>
-        <div v-if="guide == 2" class="iframe" :bordered="false">
-				    <div class="nofonts"  v-if="tabList.list == '' || !tabList.list.length || !tabList.list[0].img">暂无照片，请添加~</div>
-						<swiper :options="swiperOption" class="swiperimgs" v-else>
-						    <swiper-slide class="swiperimgs" v-for="(item,index) in tabList.list" :key="index">
-								<img :src="item.img" >
-							</swiper-slide>
-						</swiper>
-				</div>
-				<div v-if="name == 'sign_day_num'" style="margin-left: 20px;">
-					<div class="table_box">
-						<div type="flex">
-							<div v-bind="grid">
-								<div class="title">签到天数设置</div>
-								<Button type="primary" icon="md-add" @click="groupAdd('添加数据')" style="margin-left: 14px;margin-top: 30px;">添加数据</Button>
-							</div>
-						</div>
-						<div class="table">
-							<Table :columns="columns1" :data="cmsList" ref="table" class="mt25"
-								   :loading="loading" highlight-row
-								   no-userFrom-text="暂无数据"
-								   no-filtered-userFrom-text="暂无筛选结果">
-								<template slot-scope="{ row, index }" slot="status">
-									<i-switch v-model="row.status" :value="row.status" :true-value="1" :false-value="0" @on-change="onchangeIsShow(row)" size="large">
-										<span slot="open">显示</span>
-										<span slot="close">隐藏</span>
-									</i-switch>
-								</template>
-								<template slot-scope="{ row, index }" slot="action">
-									<a @click="edit(row, '编辑')">编辑</a>
-									<Divider type="vertical"/>
-									<a @click="del(row,'删除这条信息',index)">删除</a>
-								</template>
-							</Table>
-						</div>
-					</div>
-				</div>
-				<div v-if="name == 'user_recharge_quota'" style="margin-left: 20px;">
-					<div class="table_box">
-						<div type="flex">
-							<div v-bind="grid">
-								<div class="title">充值金额设置</div>
-								<Button type="primary" icon="md-add" @click="groupAdd('添加数据')" style="margin-left: 14px;margin-top: 30px;">添加数据</Button>
-							</div>
-						</div>
-						<div class="table">
-							<Table :columns="columns1" :data="sginList.list" ref="table" class="mt25"
-								   :loading="loading" highlight-row
-								   no-userFrom-text="暂无数据"
-								   no-filtered-userFrom-text="暂无筛选结果">
-								<template slot-scope="{ row, index }" slot="status">
-									<i-switch v-model="row.status" :value="row.status" :true-value="1" :false-value="0" @on-change="onchangeIsShow(row)" size="large">
-										<span slot="open">显示</span>
-										<span slot="close">隐藏</span>
-									</i-switch>
-								</template>
-								<template slot-scope="{ row, index }" slot="action">
-									<a @click="edit(row, '编辑')">编辑</a>
-									<Divider type="vertical"/>
-									<a @click="del(row,'删除这条信息',index)">删除</a>
-								</template>
-							</Table>
-						</div>
-					</div>
-				</div>
-				<div v-else>
-					<div v-if="name != 'sign_day_num' && a != 1&& guide != 2" :class=" name !='admin_login_slide' ?'content':'contents'">
-					       <div class="right-box">
-							   <div class="hot_imgs">
-							       <div class="title" v-if="name == 'admin_login_slide'">幻灯片设置</div>
-							       <div class="title" v-else>轮播图设置</div>
-								   <div class="title-text">建议尺寸：690 * 240px，拖拽图片可调整图片顺序哦，最多添加五张</div>
-							       <div class="list-box">
-									   <draggable v-if="name=='admin_login_slide'" class="dragArea list-group Bbox" :list="tabList.list" group="peoples" handle=".move-icon">
-											<div class="items" v-for="(item,index) in tabList.list" :key="index">
-												<div class="move-icon">
-												   <span class="iconfont icondrag2"></span>
-												</div>
-												<div class="img-box" @click="modalPicTap('单选',index)">
-												   <img :src="item.slide" alt="" v-if="item.slide">
-												   <div class="upload-box" v-else>
-													   <Icon type="ios-camera-outline" size="36"/>
-												   </div>
-												   <div class="delect-btn" @click.stop="bindDelete(item,index)"><Icon type="md-close-circle" size="26" /></div>
-												</div>
-												<div class="info">
-												</div>
-											</div>
-									   </draggable>
-							           <draggable v-else class="dragArea list-group" :list="tabList.list" group="peoples" handle=".move-icon">
-											<div class="item" v-for="(item,index) in tabList.list" :key="index">
-											    <div class="move-icon">
-												   <span class="iconfont icondrag2"></span>
-										 	    </div>
-											    <div class="img-box" @click="modalPicTap('单选',index)">
-												   <img :src="item.img" alt="" v-if="item.img">
-												   <div class="upload-box" v-else>
-													   <Icon type="ios-camera-outline" size="36"/>
-												   </div>
-												   <div class="delect-btn" @click.stop="bindDelete(item,index)"><Icon type="md-close-circle" size="26" /></div>
-											    </div>
-												<div class="info">
-												<div class="info-item">
-													  <span>图片名称：</span>
-													  <div class="input-box">
-														  <Input v-model="item.comment" placeholder="请填写名称"/>
-													  </div>
-												</div>
-												   <div class="info-item">
-												       <span>链接地址：</span>
-												       <div class="input-box" @click="link(index)">
-														   <Input v-model="item.link" icon="ios-arrow-forward" readonly placeholder="选择链接" />
-												       </div>
-												   </div>
-												</div>
-											</div>
-							           </draggable>
-							           <div>
-							               <Modal v-model="modalPic" width="950px" scrollable footer-hide closable title='上传商品图'
-							                      :mask-closable="false" :z-index="999">
-							                   <uploadPictures :isChoice="isChoice" @getPic="getPic" :gridBtn="gridBtn" :gridPic="gridPic"
-							                                   v-if="modalPic"></uploadPictures>
-							               </Modal>
-							           </div>
-							       </div>
-							       <template > 
-							          <div class="add-btn">
-							               <Button type="primary" ghost style="width: 100px; height: 35px; background-color:#1890FF; color: #FFFFFF;"
-							                       @click="addBox">添加图片
-							               </Button>
-							           </div>
-							       </template>
-							   </div>
-						   </div>
-					   </div>
-				</div>
-        <div v-if="guide === 2" :class=" name !='admin_login_slide' ?'content':'contents'">
-					<div class="right-box">
-            <div class="hot_imgs">
-              <div class="title">引导页设置</div>
-              <div class="title-text">建议尺寸：750 * 1334px，拖拽图片可调整图片顺序哦，最多添加五张</div>
-                <div class="list-box">
-                  <div>
-                    <Form :model="formItem" :label-width="80">
-                      <FormItem label="开屏广告:">
-                        <i-switch v-model="formItem.status" :true-value="1" :false-value='0' size="large">
-                          <span slot="开">开启</span>
-                          <span slot="关">关闭</span>
-                        </i-switch>
-                      </FormItem>
-                      <FormItem label="广告时间:">
-                        <Input
-                          v-model.number="formItem.time"
-                          type="number"
-                          placeholder="请输入开屏广告时间"
-                          style="width: 150px"
-                        ></Input> 单位(秒)
-                      </FormItem>
-                    </Form>
-                  </div>
-                  <draggable class="dragArea list-group" :list="tabList.list" group="peoples" handle=".move-icon">
-                    <div class="item" v-for="(item,index) in tabList.list" :key="index">
-                        <div class="move-icon">
-                        <span class="iconfont icondrag2"></span>
-                        </div>
-                        <div class="img-box" @click="modalPicTap('单选',index)">
-                        <img :src="item.img" alt="" v-if="item.img">
-                        <div class="upload-box" v-else>
-                          <Icon type="ios-camera-outline" size="36"/>
-                        </div>
-                        <div class="delect-btn" @click.stop="bindDelete(item,index)"><Icon type="md-close-circle" size="26" /></div>
-                        </div>
-                      <div class="info">
-                      <div class="info-item">
-                          <span>图片名称：</span>
-                          <div class="input-box">
-                            <Input v-model="item.comment" placeholder="请填写名称"/>
-                          </div>
-                      </div>
-                        <div class="info-item">
-                            <span>链接地址：</span>
-                            <div class="input-box" @click="link(index)">
-                            <Input v-model="item.link" icon="ios-arrow-forward" readonly placeholder="选择链接" />
-                            </div>
-                        </div>
-                      </div>
-                    </div>
-                  </draggable>
-                  <div>
-                    <Modal v-model="modalPic" width="950px" scrollable footer-hide closable title='上传商品图'
-                          :mask-closable="false" :z-index="999">
-                        <uploadPictures :isChoice="isChoice" @getPic="getPic" :gridBtn="gridBtn" :gridPic="gridPic"
-                          v-if="modalPic"></uploadPictures>
-                    </Modal>
-                  </div>
-                  </div>
-                  <template v-if="tabList.list.length < 5"> 
-                    <div class="add-btn" >
-                        <Button type="primary" ghost style="width: 100px; height: 35px; background-color:#1890FF; color: #FFFFFF;"
-                                @click="addBox">添加图片
-                        </Button>
-                    </div>
-                  </template>
+      <div v-if="name == 'user_recharge_quota'" class="iframe">
+        <div class="iframe-boxs">
+          <div class="moneyBox">
+            <div class="box1">
+              <div class="font1">我的余额</div>
+              <div>￥ <i class="font2">0.00</i></div>
+            </div>
+            <div class="moneyBox_content">
+              <div class="box2">
+                <div>账户充值</div>
+                <div>佣金导入</div>
+              </div>
+              <div class="box3">
+                <div v-show="item.status != 0" class="box3_box" v-for="(item, index) in sginList.list" :key="index">
+                  <div>{{ item.price }}<i class="font">元</i></div>
+                  <div class="font">赠送:{{ item.give_money }}元</div>
                 </div>
-						  </div>
-					  </div>
-				</div>
-		<linkaddress ref="linkaddres" @linkUrl="linkUrl"></linkaddress>
+                <div class="box3_box">
+                  <div class="other">其他</div>
+                </div>
+              </div>
+              <div class="box4">
+                <div class="tips">注意事项：</div>
+                <div class="tips-samll">
+                  <p>充值后帐户的金额不能提现，可用于商城消费使用。</p>
+                  <p>佣金导入账户之后不能再次导出、不可提现。</p>
+                  <p>账户充值出现问题可联系商城客服，也可拨打商城客服热线：40088888889。</p>
+                </div>
+              </div>
+              <div class="box5">立即充值</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div v-if="name == 'admin_login_slide'" class="pciframe" :bordered="false" dis-hover>
+        <img src="../../../assets/images/pclogin.png" class="pciframe-box" />
+        <div class="pcmoddile_goods">
+          <div class="nofont" v-if="tabList.list == ''">暂无照片，请添加~</div>
+          <swiper v-else :options="swiperOption" class="pcswiperimg_goods">
+            <swiper-slide class="spcwiperimg_goods" v-for="(item, index) in tabList.list" :key="index">
+              <img :src="item.slide" />
+            </swiper-slide>
+          </swiper>
+        </div>
+      </div>
+      <div v-if="name == 'integral_shop_banner'" class="iframe" :bordered="false">
+        <div class="iframe-box">
+          <img src="../../../assets/images/integral.png" style="width: 100%" />
+          <div class="moddile_goods">
+            <div class="nofonts" v-if="tabList.list == '' || !tabList.list.length || !tabList.list[0].img">
+              暂无照片，请添加~
+            </div>
+            <swiper v-else :options="swiperOption" class="pcswiperimg_goods">
+              <swiper-slide class="swiperimg_goods" v-for="(item, index) in tabList.list" :key="index">
+                <img :src="item.img" />
+              </swiper-slide>
+            </swiper>
+          </div>
+        </div>
+      </div>
+      <div
+        v-if="
+          name != 'sign_day_num' &&
+          name != 'admin_login_slide' &&
+          name != 'user_recharge_quota' &&
+          name != 'integral_shop_banner' &&
+          a != 1 &&
+          guide != 2
+        "
+        class="iframe"
+        :bordered="false"
+        dis-hover
+      >
+        <iframe :src="url" class="iframe-box" frameborder="0"></iframe>
+        <div class="moddile"></div>
+        <div
+          v-if="
+            name == 'routine_home_bast_banner' ||
+            name == 'routine_home_hot_banner' ||
+            name == 'routine_home_new_banner' ||
+            name == 'routine_home_benefit_banner'
+          "
+          class="moddile_box"
+        >
+          <div class="nofonts" v-if="tabList.list == '' || !tabList.list.length || !tabList.list[0].img">
+            暂无照片，请添加~
+          </div>
+          <swiper v-else :options="swiperOption" class="swiperimg">
+            <swiper-slide class="swiperimg" v-for="(item, index) in tabList.list" :key="index">
+              <img :src="item.img" />
+            </swiper-slide>
+          </swiper>
+        </div>
+        <div v-if="name == 'combination_banner'" class="moddile_goods">
+          <div class="nofonts" v-if="tabList.list == ''">暂无照片，请添加~</div>
+          <swiper v-else :options="swiperOption" class="swiperimg_goods">
+            <swiper-slide class="swiperimg_goods" v-for="(item, index) in tabList.list" :key="index">
+              <img :src="item.img" />
+            </swiper-slide>
+          </swiper>
+        </div>
+      </div>
+      <div v-if="name == 'sign_day_num'" class="iframe" :bordered="false">
+        <div class="iframe-box">
+          <img v-if="bgimg == 1" src="../../../assets/images/bluesgin.png" />
+          <img v-if="bgimg == 2" src="../../../assets/images/greesgin.png" />
+          <img v-if="bgimg == 3" src="../../../assets/images/redsgin.png" />
+          <img v-if="bgimg == 4" src="../../../assets/images/pinksgin.png" />
+          <img v-if="bgimg == 5" src="../../../assets/images/oragesgin.png" />
+        </div>
+      </div>
+      <div v-if="a == 1" class="iframe" :bordered="false">
+        <div class="agreement-box">
+          <div class="template"></div>
+          <div class="htmls_box">
+            <div class="htmls_top">服务协议与隐私政策</div>
+            <div class="htmls_font">
+              <div class="ok">我同意</div>
+              <div>不同意</div>
+            </div>
+            <div class="htmls" v-html="formValidate.content"></div>
+          </div>
+        </div>
+      </div>
+      <div v-if="a == 1" style="margin-left: 40px">
+        <div class="table_box">
+          <div type="flex">
+            <div v-bind="grid">
+              <div class="title">隐私权限页面展示：</div>
+            </div>
+          </div>
+          <div>
+            <Form
+              class="form"
+              ref="formValidate"
+              :model="formValidate"
+              :rules="ruleValidate"
+              :label-width="labelWidth"
+              :label-position="labelPosition"
+              @submit.native.prevent
+            >
+              <div class="goodsTitle acea-row"></div>
+              <FormItem label="" prop="content" style="margin: 0px">
+                <WangEditor
+                  style="width: 90%"
+                  :content="formValidate.content"
+                  @editorContent="getEditorContent"
+                ></WangEditor>
+              </FormItem>
+            </Form>
+          </div>
+        </div>
+      </div>
+      <div v-if="guide == 2" class="iframe" :bordered="false">
+        <div class="nofonts" v-if="tabList.list == '' || !tabList.list.length || !tabList.list[0].img">
+          暂无照片，请添加~
+        </div>
+        <swiper :options="swiperOption" class="swiperimgs" v-else>
+          <swiper-slide class="swiperimgs" v-for="(item, index) in tabList.list" :key="index">
+            <img :src="item.img" />
+          </swiper-slide>
+        </swiper>
+      </div>
+      <div v-if="name == 'sign_day_num'" style="margin-left: 20px">
+        <div class="table_box">
+          <div type="flex">
+            <div v-bind="grid">
+              <div class="title">签到天数设置</div>
+              <Button
+                type="primary"
+                icon="md-add"
+                @click="groupAdd('添加数据')"
+                style="margin-left: 14px; margin-top: 30px"
+                >添加数据</Button
+              >
+            </div>
+          </div>
+          <div class="table">
+            <Table
+              :columns="columns1"
+              :data="cmsList"
+              ref="table"
+              class="mt25"
+              :loading="loading"
+              highlight-row
+              no-userFrom-text="暂无数据"
+              no-filtered-userFrom-text="暂无筛选结果"
+            >
+              <template slot-scope="{ row, index }" slot="status">
+                <i-switch
+                  v-model="row.status"
+                  :value="row.status"
+                  :true-value="1"
+                  :false-value="0"
+                  @on-change="onchangeIsShow(row)"
+                  size="large"
+                >
+                  <span slot="open">显示</span>
+                  <span slot="close">隐藏</span>
+                </i-switch>
+              </template>
+              <template slot-scope="{ row, index }" slot="action">
+                <a @click="edit(row, '编辑')">编辑</a>
+                <Divider type="vertical" />
+                <a @click="del(row, '删除这条信息', index)">删除</a>
+              </template>
+            </Table>
+          </div>
+        </div>
+      </div>
+      <div v-if="name == 'user_recharge_quota'" style="margin-left: 20px">
+        <div class="table_box">
+          <div type="flex">
+            <div v-bind="grid">
+              <div class="title">充值金额设置</div>
+              <Button
+                type="primary"
+                icon="md-add"
+                @click="groupAdd('添加数据')"
+                style="margin-left: 14px; margin-top: 30px"
+                >添加数据</Button
+              >
+            </div>
+          </div>
+          <div class="table">
+            <Table
+              :columns="columns1"
+              :data="sginList.list"
+              ref="table"
+              class="mt25"
+              :loading="loading"
+              highlight-row
+              no-userFrom-text="暂无数据"
+              no-filtered-userFrom-text="暂无筛选结果"
+            >
+              <template slot-scope="{ row, index }" slot="status">
+                <i-switch
+                  v-model="row.status"
+                  :value="row.status"
+                  :true-value="1"
+                  :false-value="0"
+                  @on-change="onchangeIsShow(row)"
+                  size="large"
+                >
+                  <span slot="open">显示</span>
+                  <span slot="close">隐藏</span>
+                </i-switch>
+              </template>
+              <template slot-scope="{ row, index }" slot="action">
+                <a @click="edit(row, '编辑')">编辑</a>
+                <Divider type="vertical" />
+                <a @click="del(row, '删除这条信息', index)">删除</a>
+              </template>
+            </Table>
+          </div>
+        </div>
+      </div>
+      <div v-else>
+        <div
+          v-if="name != 'sign_day_num' && a != 1 && guide != 2"
+          :class="name != 'admin_login_slide' ? 'content' : 'contents'"
+        >
+          <div class="right-box">
+            <div class="hot_imgs">
+              <div class="title" v-if="name == 'admin_login_slide'">幻灯片设置</div>
+              <div class="title" v-else>轮播图设置</div>
+              <div class="title-text">建议尺寸：690 * 240px，拖拽图片可调整图片顺序哦，最多添加五张</div>
+              <div class="list-box">
+                <draggable
+                  v-if="name == 'admin_login_slide'"
+                  class="dragArea list-group Bbox"
+                  :list="tabList.list"
+                  group="peoples"
+                  handle=".move-icon"
+                >
+                  <div class="items" v-for="(item, index) in tabList.list" :key="index">
+                    <div class="move-icon">
+                      <span class="iconfont icondrag2"></span>
+                    </div>
+                    <div class="img-box" @click="modalPicTap('单选', index)">
+                      <img :src="item.slide" alt="" v-if="item.slide" />
+                      <div class="upload-box" v-else>
+                        <Icon type="ios-camera-outline" size="36" />
+                      </div>
+                      <div class="delect-btn" @click.stop="bindDelete(item, index)">
+                        <Icon type="md-close-circle" size="26" />
+                      </div>
+                    </div>
+                    <div class="info"></div>
+                  </div>
+                </draggable>
+                <draggable v-else class="dragArea list-group" :list="tabList.list" group="peoples" handle=".move-icon">
+                  <div class="item" v-for="(item, index) in tabList.list" :key="index">
+                    <div class="move-icon">
+                      <span class="iconfont icondrag2"></span>
+                    </div>
+                    <div class="img-box" @click="modalPicTap('单选', index)">
+                      <img :src="item.img" alt="" v-if="item.img" />
+                      <div class="upload-box" v-else>
+                        <Icon type="ios-camera-outline" size="36" />
+                      </div>
+                      <div class="delect-btn" @click.stop="bindDelete(item, index)">
+                        <Icon type="md-close-circle" size="26" />
+                      </div>
+                    </div>
+                    <div class="info">
+                      <div class="info-item">
+                        <span>图片名称：</span>
+                        <div class="input-box">
+                          <Input v-model="item.comment" placeholder="请填写名称" />
+                        </div>
+                      </div>
+                      <div class="info-item">
+                        <span>链接地址：</span>
+                        <div class="input-box" @click="link(index)">
+                          <Input v-model="item.link" icon="ios-arrow-forward" readonly placeholder="选择链接" />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </draggable>
+                <div>
+                  <Modal
+                    v-model="modalPic"
+                    width="950px"
+                    scrollable
+                    footer-hide
+                    closable
+                    title="上传商品图"
+                    :mask-closable="false"
+                    :z-index="999"
+                  >
+                    <uploadPictures
+                      :isChoice="isChoice"
+                      @getPic="getPic"
+                      :gridBtn="gridBtn"
+                      :gridPic="gridPic"
+                      v-if="modalPic"
+                    ></uploadPictures>
+                  </Modal>
+                </div>
+              </div>
+              <template>
+                <div class="add-btn">
+                  <Button
+                    type="primary"
+                    ghost
+                    style="width: 100px; height: 35px; background-color: #1890ff; color: #ffffff"
+                    @click="addBox"
+                    >添加图片
+                  </Button>
+                </div>
+              </template>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div v-if="guide === 2" :class="name != 'admin_login_slide' ? 'content' : 'contents'">
+        <div class="right-box">
+          <div class="hot_imgs">
+            <div class="title">引导页设置</div>
+            <div class="title-text">建议尺寸：750 * 1334px，拖拽图片可调整图片顺序哦，最多添加五张</div>
+            <div class="list-box">
+              <div>
+                <Form :model="formItem" :label-width="80">
+                  <FormItem label="开屏广告:">
+                    <i-switch v-model="formItem.status" :true-value="1" :false-value="0" size="large">
+                      <span slot="开">开启</span>
+                      <span slot="关">关闭</span>
+                    </i-switch>
+                  </FormItem>
+                  <FormItem label="广告时间:">
+                    <Input
+                      v-model.number="formItem.time"
+                      type="number"
+                      placeholder="请输入开屏广告时间"
+                      style="width: 150px"
+                    ></Input>
+                    单位(秒)
+                  </FormItem>
+                </Form>
+              </div>
+              <draggable class="dragArea list-group" :list="tabList.list" group="peoples" handle=".move-icon">
+                <div class="item" v-for="(item, index) in tabList.list" :key="index">
+                  <div class="move-icon">
+                    <span class="iconfont icondrag2"></span>
+                  </div>
+                  <div class="img-box" @click="modalPicTap('单选', index)">
+                    <img :src="item.img" alt="" v-if="item.img" />
+                    <div class="upload-box" v-else>
+                      <Icon type="ios-camera-outline" size="36" />
+                    </div>
+                    <div class="delect-btn" @click.stop="bindDelete(item, index)">
+                      <Icon type="md-close-circle" size="26" />
+                    </div>
+                  </div>
+                  <div class="info">
+                    <div class="info-item">
+                      <span>图片名称：</span>
+                      <div class="input-box">
+                        <Input v-model="item.comment" placeholder="请填写名称" />
+                      </div>
+                    </div>
+                    <div class="info-item">
+                      <span>链接地址：</span>
+                      <div class="input-box" @click="link(index)">
+                        <Input v-model="item.link" icon="ios-arrow-forward" readonly placeholder="选择链接" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </draggable>
+              <div>
+                <Modal
+                  v-model="modalPic"
+                  width="950px"
+                  scrollable
+                  footer-hide
+                  closable
+                  title="上传商品图"
+                  :mask-closable="false"
+                  :z-index="999"
+                >
+                  <uploadPictures
+                    :isChoice="isChoice"
+                    @getPic="getPic"
+                    :gridBtn="gridBtn"
+                    :gridPic="gridPic"
+                    v-if="modalPic"
+                  ></uploadPictures>
+                </Modal>
+              </div>
+            </div>
+            <template v-if="tabList.list.length < 5">
+              <div class="add-btn">
+                <Button
+                  type="primary"
+                  ghost
+                  style="width: 100px; height: 35px; background-color: #1890ff; color: #ffffff"
+                  @click="addBox"
+                  >添加图片
+                </Button>
+              </div>
+            </template>
+          </div>
+        </div>
+      </div>
     </div>
+    <linkaddress ref="linkaddres" @linkUrl="linkUrl"></linkaddress>
+  </div>
 </template>
 
 <script>
-import WangEditor from "@/components/wangEditor/index.vue";
-import Setting from "@/setting";
-import { diyGetInfo, diySave, getColorChange } from "@/api/diy";
-import { mapState } from "vuex";
-import editFrom from "@/components/from/from";
-import { productGetTempKeysApi, uploadType } from "@/api/product";
+import WangEditor from '@/components/wangEditor/index.vue';
+import Setting from '@/setting';
+import { diyGetInfo, diySave, getColorChange } from '@/api/diy';
+import { mapState } from 'vuex';
+import editFrom from '@/components/from/from';
+import { productGetTempKeysApi, uploadType } from '@/api/product';
 import {
   groupAllApi,
   groupDataListApi,
@@ -386,14 +496,14 @@ import {
   getAgreement,
   setAgreement,
   getOpenAdv,
-} from "@/api/system";
-import draggable from "vuedraggable";
-import uploadPictures from "@/components/uploadPictures";
-import linkaddress from "@/components/linkaddress";
-import { getCookies } from "@/libs/util";
+} from '@/api/system';
+import draggable from 'vuedraggable';
+import uploadPictures from '@/components/uploadPictures';
+import linkaddress from '@/components/linkaddress';
+import { getCookies } from '@/libs/util';
 
 export default {
-  name: "list",
+  name: 'list',
   components: {
     editFrom,
     draggable,
@@ -404,36 +514,36 @@ export default {
   computed: {
     bgcolors() {
       return {
-        "--color-theme": this.bgCol,
+        '--color-theme': this.bgCol,
       };
     },
     labelWidth() {
       return this.isMobile ? undefined : 120;
     },
     labelPosition() {
-      return this.isMobile ? "top" : "right";
+      return this.isMobile ? 'top' : 'right';
     },
-    ...mapState("admin/layout", ["menuCollapse"]),
+    ...mapState('admin/layout', ['menuCollapse']),
   },
   data() {
     return {
       formValidate: {
-        content: "",
+        content: '',
       },
       ruleValidate: {},
       myConfig: {
         autoHeightEnabled: false, // 编辑器不自动被内容撑高
         initialFrameHeight: 500, // 初始容器高度
-        initialFrameWidth: "100%", // 初始容器宽度
-        UEDITOR_HOME_URL: "/admin/UEditor/",
-        serverUrl: "",
+        initialFrameWidth: '100%', // 初始容器宽度
+        UEDITOR_HOME_URL: '/admin/UEditor/',
+        serverUrl: '',
       },
       a: 0, //判断的隐私协议
       guide: 0,
       bgimg: 0,
       columns1: [],
-      bgCol: "",
-      name: "routine_home_bast_banner",
+      bgCol: '',
+      name: 'routine_home_bast_banner',
       grid: {
         xl: 7,
         lg: 7,
@@ -447,12 +557,12 @@ export default {
       swiperOption: {
         //显示分页
         pagination: {
-          el: ".swiper-pagination",
+          el: '.swiper-pagination',
         },
         //设置点击箭头
         navigation: {
-          nextEl: ".swiper-button-next",
-          prevEl: ".swiper-button-prev",
+          nextEl: '.swiper-button-next',
+          prevEl: '.swiper-button-prev',
         },
         //自动轮播
         autoplay: {
@@ -463,24 +573,24 @@ export default {
         //开启循环模式
         loop: false,
       },
-      url: "",
-      BaseURL: Setting.apiBaseURL.replace(/adminapi/, ""),
+      url: '',
+      BaseURL: Setting.apiBaseURL.replace(/adminapi/, ''),
       pageId: 0,
-      theme3: "light",
+      theme3: 'light',
       tabList: [],
-      upload_type: "", //视频上传类型 1 本地上传 2 3 4 OSS上传
+      upload_type: '', //视频上传类型 1 本地上传 2 3 4 OSS上传
       uploadData: {}, // 上传参数
       lastObj: {
-        add_time: "",
-        comment: "",
-        gid: "",
-        id: "",
-        img: "",
-        link: "",
-        sort: "",
+        add_time: '',
+        comment: '',
+        gid: '',
+        id: '',
+        img: '',
+        link: '',
+        sort: '',
         status: 1,
       },
-      isChoice: "单选",
+      isChoice: '单选',
       modalPic: false,
       gridPic: {
         xl: 6,
@@ -503,14 +613,14 @@ export default {
       cmsList: [],
       loadingExist: false,
       formItem: {
-        time: "",
-        type: "pic",
+        time: '',
+        type: 'pic',
         status: 1,
         value: [],
-        video_link: "",
+        video_link: '',
       },
-      fileUrl: Setting.apiBaseURL + "/file/upload",
-      cardUrl: Setting.apiBaseURL + "/file/upload/1",
+      fileUrl: Setting.apiBaseURL + '/file/upload',
+      cardUrl: Setting.apiBaseURL + '/file/upload/1',
       header: {},
       type: 0,
       upload: {
@@ -526,7 +636,7 @@ export default {
   mounted() {
     this.getGroupAll();
     this.info();
-    this.url = this.BaseURL + "pages/columnGoods/HotNewGoods/index?type=1";
+    this.url = this.BaseURL + 'pages/columnGoods/HotNewGoods/index?type=1';
   },
   methods: {
     getEditorContent(data) {
@@ -535,7 +645,7 @@ export default {
     // 删除视频；
     delVideo() {
       let that = this;
-      that.$set(that.formItem, "video_link", "");
+      that.$set(that.formItem, 'video_link', '');
     },
     //获取视频上传类型
     uploadType() {
@@ -546,7 +656,7 @@ export default {
     // 上传成功
     handleSuccess(res, file, fileList) {
       if (res.status === 200) {
-        this.$set(this.formItem, "video_link", res.data.src);
+        this.$set(this.formItem, 'video_link', res.data.src);
         this.$Message.success(res.msg);
       } else {
         this.$Message.error(res.msg);
@@ -561,11 +671,9 @@ export default {
     },
     zh_uploadFile_change(evfile) {
       let that = this;
-      let suffix = evfile.target.files[0].name.substr(
-        evfile.target.files[0].name.indexOf(".")
-      );
-      if (suffix.indexOf(".mp4") === -1) {
-        return that.$Message.error("只能上传MP4文件");
+      let suffix = evfile.target.files[0].name.substr(evfile.target.files[0].name.indexOf('.'));
+      if (suffix.indexOf('.mp4') === -1) {
+        return that.$Message.error('只能上传MP4文件');
       }
       productGetTempKeysApi()
         .then((res) => {
@@ -580,7 +688,7 @@ export default {
             })
             .then((res) => {
               that.formValidate.video_link = res.url;
-              that.$Message.success("视频上传成功");
+              that.$Message.success('视频上传成功');
             })
             .catch((res) => {
               that.$Message.error(res);
@@ -592,7 +700,7 @@ export default {
     },
     // 上传头部token
     getToken() {
-      this.header["Authori-zation"] = "Bearer " + getCookies("token");
+      this.header['Authori-zation'] = 'Bearer ' + getCookies('token');
     },
     beforeUpload() {
       this.uploadData = {};
@@ -607,26 +715,26 @@ export default {
       this.tabList.list[this.activeIndexs].link = e;
     },
     color() {
-      getColorChange("color_change").then((res) => {
+      getColorChange('color_change').then((res) => {
         switch (res.data.status) {
           case 1:
-            this.bgCol = "#3875EA";
+            this.bgCol = '#3875EA';
             this.bgimg = 1;
             break;
           case 2:
-            this.bgCol = "#00C050";
+            this.bgCol = '#00C050';
             this.bgimg = 2;
             break;
           case 3:
-            this.bgCol = "#E93323";
+            this.bgCol = '#E93323';
             this.bgimg = 3;
             break;
           case 4:
-            this.bgCol = "#FF448F";
+            this.bgCol = '#FF448F';
             this.bgimg = 4;
             break;
           case 5:
-            this.bgCol = "#FE5C2D";
+            this.bgCol = '#FE5C2D';
             this.bgimg = 5;
             break;
         }
@@ -634,33 +742,30 @@ export default {
     },
     // 添加表单
     groupAdd() {
-      this.$modalForm(
-        groupDataAddApi(
-          { gid: this.pageId, config_name: this.name },
-          "setting/group_data/create"
-        )
-      ).then(() => {
-        this.url = this.BaseURL + "pages/users/user_sgin/index";
-        this.info();
-      });
+      this.$modalForm(groupDataAddApi({ gid: this.pageId, config_name: this.name }, 'setting/group_data/create')).then(
+        () => {
+          this.url = this.BaseURL + 'pages/users/user_sgin/index';
+          this.info();
+        },
+      );
     },
     info() {
-      groupDataListApi({ config_name: this.name }, "setting/group_data")
+      groupDataListApi({ config_name: this.name }, 'setting/group_data')
         .then(async (res) => {
           this.tabList = res.data;
-          if (this.name == "admin_login_slide") {
+          if (this.name == 'admin_login_slide') {
             this.tabList.list.forEach((item, index, array) => {
-              if (typeof item.slide != "string" && item.slide != "undefined") {
+              if (typeof item.slide != 'string' && item.slide != 'undefined') {
                 item.slide = item.slide[0];
               }
             });
-          } else if (this.name == "sign_day_num") {
+          } else if (this.name == 'sign_day_num') {
             this.cmsList = res.data.list;
-          } else if (this.name == "user_recharge_quota") {
+          } else if (this.name == 'user_recharge_quota') {
             this.sginList = res.data;
           } else {
             this.tabList.list.forEach((item, index, array) => {
-              if (typeof item.img != "string" && item.img != "undefined") {
+              if (typeof item.img != 'string' && item.img != 'undefined') {
                 item.img = item.img[0];
               }
             });
@@ -673,7 +778,7 @@ export default {
     },
     edits(row) {
       this.pageId = row.id || 0;
-      this.name = row.config_name || "";
+      this.name = row.config_name || '';
       if (row == 1) {
         this.a = 1;
         this.guide = 0;
@@ -687,11 +792,11 @@ export default {
             this.tabList.list = res.data.value;
           } else {
             this.formItem = {
-              time: "",
-              type: "pic",
+              time: '',
+              type: 'pic',
               status: 1,
               value: [],
-              video_link: "",
+              video_link: '',
             };
             this.tabList.list = [];
           }
@@ -701,42 +806,34 @@ export default {
         this.guide = 0;
         this.a = 0;
         switch (row.config_name) {
-          case "routine_home_bast_banner":
-            this.url =
-              this.BaseURL +
-              "pages/columnGoods/HotNewGoods/index?type=1&name=精品推荐";
+          case 'routine_home_bast_banner':
+            this.url = this.BaseURL + 'pages/columnGoods/HotNewGoods/index?type=1&name=精品推荐';
             break;
-          case "sign_day_num":
-            this.url = "";
+          case 'sign_day_num':
+            this.url = '';
             this.getListHeader();
             break;
-          case "combination_banner":
-            this.url = this.BaseURL + "pages/activity/goods_combination/index";
+          case 'combination_banner':
+            this.url = this.BaseURL + 'pages/activity/goods_combination/index';
             break;
-          case "routine_home_hot_banner":
-            this.url =
-              this.BaseURL +
-              "pages/columnGoods/HotNewGoods/index?type=2&name=热门榜单";
+          case 'routine_home_hot_banner':
+            this.url = this.BaseURL + 'pages/columnGoods/HotNewGoods/index?type=2&name=热门榜单';
             break;
-          case "routine_home_new_banner":
-            this.url =
-              this.BaseURL +
-              "pages/columnGoods/HotNewGoods/index?type=3&name=首发新品";
+          case 'routine_home_new_banner':
+            this.url = this.BaseURL + 'pages/columnGoods/HotNewGoods/index?type=3&name=首发新品';
             break;
-          case "routine_home_benefit_banner":
-            this.url =
-              this.BaseURL +
-              "pages/columnGoods/HotNewGoods/index?type=4&name=促销单品";
+          case 'routine_home_benefit_banner':
+            this.url = this.BaseURL + 'pages/columnGoods/HotNewGoods/index?type=4&name=促销单品';
             break;
-          case "user_recharge_quota":
-            this.url = "";
+          case 'user_recharge_quota':
+            this.url = '';
             this.getListHeader();
             break;
-          case "admin_login_slide":
-            this.url = "";
+          case 'admin_login_slide':
+            this.url = '';
             break;
-          case "integral_shop_banner":
-            this.url = "";
+          case 'integral_shop_banner':
+            this.url = '';
             break;
         }
       }
@@ -745,18 +842,18 @@ export default {
       if (this.tabList.list.length == 0) {
         this.tabList.list.push(this.lastObj);
         this.lastObj = {
-          add_time: "",
-          comment: "",
-          gid: "",
-          id: "",
-          img: "",
-          link: "",
-          sort: "",
+          add_time: '',
+          comment: '',
+          gid: '',
+          id: '',
+          img: '',
+          link: '',
+          sort: '',
           status: 1,
         };
       } else {
         if (this.tabList.list.length == 5) {
-          this.$Message.warning("最多添加五张呦");
+          this.$Message.warning('最多添加五张呦');
         } else {
           let obj = JSON.parse(JSON.stringify(this.lastObj));
           this.tabList.list.push(obj);
@@ -775,7 +872,7 @@ export default {
     // 获取图片信息
     getPic(pc) {
       this.$nextTick(() => {
-        if (this.name == "admin_login_slide") {
+        if (this.name == 'admin_login_slide') {
           this.tabList.list[this.activeIndex].slide = pc.att_dir;
         } else {
           this.tabList.list[this.activeIndex].img = pc.att_dir;
@@ -785,7 +882,7 @@ export default {
     },
     save() {
       if (this.a == 1) {
-        this.onsubmit("formValidate");
+        this.onsubmit('formValidate');
       } else if (this.guide == 2) {
         this.formItem.value = this.tabList.list;
         openAdvSave(this.formItem).then((res) => {
@@ -814,7 +911,7 @@ export default {
     },
     getListHeader() {
       this.loading = true;
-      groupDataHeaderApi({ config_name: this.name }, "setting/sign_data/header")
+      groupDataHeaderApi({ config_name: this.name }, 'setting/sign_data/header')
         .then((res) => {
           let data = res.data;
           let header = data.header;
@@ -830,13 +927,10 @@ export default {
     // 编辑
     edit(row) {
       this.$modalForm(
-        groupDataEditApi(
-          { gid: this.pageId, config_name: this.name },
-          "setting/group_data/" + row.id + "/edit"
-        )
+        groupDataEditApi({ gid: this.pageId, config_name: this.name }, 'setting/group_data/' + row.id + '/edit'),
       ).then(() => {
         this.info();
-        this.url = this.BaseURL + "pages/users/user_sgin/index";
+        this.url = this.BaseURL + 'pages/users/user_sgin/index';
       });
     },
     // 删除
@@ -844,9 +938,9 @@ export default {
       let delfromData = {
         title: tit,
         num: num,
-        url: "setting/group_data/" + row.id,
-        method: "DELETE",
-        ids: "",
+        url: 'setting/group_data/' + row.id,
+        method: 'DELETE',
+        ids: '',
       };
       this.$modalSure(delfromData)
         .then((res) => {
@@ -859,16 +953,14 @@ export default {
     },
     // 修改是否显示
     onchangeIsShow(row) {
-      groupDataSetApi(
-        "setting/group_data/set_status/" + row.id + "/" + row.status
-      )
+      groupDataSetApi('setting/group_data/set_status/' + row.id + '/' + row.status)
         .then(async (res) => {
-          this.url = this.BaseURL + "/pages/users/user_sgin/index";
+          this.url = this.BaseURL + '/pages/users/user_sgin/index';
           this.$Message.success(res.msg);
           this.info();
         })
         .catch((res) => {
-          this.url = this.BaseURL + "/pages/users/user_sgin/index";
+          this.url = this.BaseURL + '/pages/users/user_sgin/index';
           this.$Message.error(res.msg);
         });
     },
@@ -1744,4 +1836,3 @@ export default {
   text-align: center;
 }
 </style>
-	

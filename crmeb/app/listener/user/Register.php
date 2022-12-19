@@ -54,6 +54,13 @@ class Register implements ListenerInterface
             /**@var StoreCouponIssueServices $storeCoupon */
             $storeCoupon = app()->make(StoreCouponIssueServices::class);
             $storeCoupon->userFirstSubGiveCoupon((int)$uid);
+
+            //人人分销开启推广权限
+            if (sys_config('brokerage_func_status') && sys_config('store_brokerage_statu') == 2) {
+                /** @var UserServices $userServices */
+                $userServices = app()->make(UserServices::class);
+                $userServices->update($uid, ['is_promoter' => 1]);
+            }
         }
     }
 }

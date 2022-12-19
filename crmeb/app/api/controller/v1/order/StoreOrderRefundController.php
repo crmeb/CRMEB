@@ -48,33 +48,36 @@ class StoreOrderRefundController
     public function refundDetail(Request $request, $uni)
     {
         $orderData = $this->services->refundDetail($uni);
-        return app('json')->successful($orderData);
+        return app('json')->success($orderData);
     }
 
     /**
      * 取消申请
-     * @param $id
+     * @param Request $request
+     * @param $uni
      * @return mixed
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
      */
     public function cancelApply(Request $request, $uni)
     {
-        if (!strlen(trim($uni))) return app('json')->fail('参数错误');
+        if (!strlen(trim($uni))) return app('json')->fail(100100);
         $orderRefund = $this->services->get(['order_id' => $uni, 'is_cancel' => 0]);
         if (!$orderRefund || $orderRefund['uid'] != $request->uid()) {
-            return app('json')->fail('订单不存在');
+            return app('json')->fail(410173);
         }
         if (!in_array($orderRefund['refund_type'], [1, 2, 4, 5])) {
-            return app('json')->fail('当前状态不能取消申请');
+            return app('json')->fail(410224);
         }
         $this->services->update($orderRefund['id'], ['is_cancel' => 1]);
         $this->services->cancelOrderRefundCartInfo((int)$orderRefund['id'], (int)$orderRefund['store_order_id'], $orderRefund);
-        return app('json')->success('取消成功');
+        return app('json')->success(100019);
     }
 
     /**
      * 用户退货提交快递单号
      * @param Request $request
-     * @param StoreOrderRefundServices $services
      * @return mixed
      */
     public function applyExpress(Request $request)
@@ -87,18 +90,18 @@ class StoreOrderRefundController
             ['refund_img', ''],
             ['refund_explain', ''],
         ]);
-        if ($data['id'] == '') return app('json')->fail('参数错误!');
+        if ($data['id'] == '') return app('json')->fail(100100);
         $res = $this->services->editRefundExpress($data);
         if ($res)
-            return app('json')->successful('提交成功');
+            return app('json')->success(100017);
         else
-            return app('json')->fail('提交失败');
+            return app('json')->fail(100018);
     }
 
     /**
      * 删除退款单
      * @param Request $request
-     * @param $order_id
+     * @param $uni
      * @return mixed
      */
     public function delRefund(Request $request, $uni)
@@ -109,8 +112,8 @@ class StoreOrderRefundController
         $orderServices = app()->make(StoreOrderServices::class);
         $orderServices->update($oid, ['is_del' => 1], 'id');
         if ($res)
-            return app('json')->successful('删除成功');
+            return app('json')->success(100002);
         else
-            return app('json')->fail('删除失败');
+            return app('json')->fail(100008);
     }
 }

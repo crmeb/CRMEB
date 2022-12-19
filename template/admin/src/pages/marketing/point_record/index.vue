@@ -1,10 +1,5 @@
 <template>
   <div>
-    <div class="i-layout-page-header">
-      <div class="i-layout-page-header">
-        <span class="ivu-page-header-title">{{ $route.meta.title }}</span>
-      </div>
-    </div>
     <Card :bordered="false" dis-hover class="ivu-mt">
       <Form
         ref="formValidate"
@@ -17,7 +12,7 @@
         <Row :gutter="24" type="flex">
           <Col span="24">
             <FormItem label="订单时间：">
-              <dateRadio @selectDate="onSelectDate"></dateRadio>
+              <!-- <dateRadio @selectDate="onSelectDate"></dateRadio> -->
               <DatePicker
                 :editable="false"
                 :clearable="false"
@@ -96,132 +91,114 @@
       </div>
     </Card>
     <!-- 拒绝通过-->
-    <Modal
-      v-model="modals"
-      scrollable
-      closable
-      title="备注"
-      :mask-closable="false"
-    >
-      <Input
-        v-model="mark_msg.mark"
-        type="textarea"
-        :rows="4"
-        placeholder="请输入备注"
-      />
+    <Modal v-model="modals" scrollable closable title="备注" :mask-closable="false">
+      <Input v-model="mark_msg.mark" type="textarea" :rows="4" placeholder="请输入备注" />
       <div slot="footer">
-        <Button
-          type="primary"
-          size="large"
-          long
-          :loading="modal_loading"
-          @click="oks"
-          >确定</Button
-        >
+        <Button type="primary" size="large" long :loading="modal_loading" @click="oks">确定</Button>
       </div>
     </Modal>
   </div>
 </template>
 <script>
-import { mapState } from "vuex";
-import { pointRecordList, setPointRecordMark } from "@/api/marketing";
-import { formatDate } from "@/utils/validate";
-import dateRadio from "@/components/dateRadio";
+import { mapState } from 'vuex';
+import { pointRecordList, setPointRecordMark } from '@/api/marketing';
+import { formatDate } from '@/utils/validate';
+import dateRadio from '@/components/dateRadio';
 export default {
-  name: "cashApply",
+  name: 'cashApply',
   components: { dateRadio },
   filters: {
     formatDate(time) {
       if (time !== 0) {
         let date = new Date(time * 1000);
-        return formatDate(date, "yyyy-MM-dd hh:mm");
+        return formatDate(date, 'yyyy-MM-dd hh:mm');
       }
     },
   },
   data() {
     return {
-      images: ["1.jpg", "2.jpg"],
+      images: ['1.jpg', '2.jpg'],
       modal_loading: false,
       options: this.$timeOptions,
 
       mark_msg: {
-        mark: "",
+        mark: '',
       },
       modals: false,
       total: 0,
       loading: false,
       columns: [
         {
-          title: "ID",
-          key: "id",
+          title: 'ID',
+          key: 'id',
           width: 50,
         },
         {
-          title: "关联订单",
-          key: "relation",
+          title: '关联订单',
+          key: 'relation',
           minWidth: 120,
         },
         {
-          title: "交易时间",
-          key: "add_time",
+          title: '交易时间',
+          key: 'add_time',
           minWidth: 90,
         },
         {
-          title: "交易积分",
-          slot: "number",
+          title: '交易积分',
+          slot: 'number',
           minWidth: 100,
         },
         {
-          title: "用户",
-          key: "nickname",
+          title: '用户',
+          key: 'nickname',
           minWidth: 80,
         },
         {
-          title: "交易类型",
-          key: "type_name",
+          title: '交易类型',
+          key: 'type_name',
           minWidth: 100,
         },
         {
-          title: "备注",
-          key: "mark",
+          title: '备注',
+          key: 'mark',
           minWidth: 100,
         },
         {
-          title: "操作",
-          slot: "set",
-          fixed: "right",
+          title: '操作',
+          slot: 'set',
+          fixed: 'right',
           width: 100,
         },
       ],
       tabList: [],
       withdrawal: [],
-      selectIndexTime: "",
+      selectIndexTime: '',
       payment: [
         {
-          title: "全部",
-          value: "",
+          title: '全部',
+          value: '',
         },
         {
-          title: "微信",
-          value: "weixin",
+          title: '微信',
+          value: 'weixin',
         },
         {
-          title: "支付宝",
-          value: "alipay",
+          title: '支付宝',
+          value: 'alipay',
         },
         {
-          title: "银行卡",
-          value: "bank",
+          title: '银行卡',
+          value: 'bank',
         },
         {
-          title: "线下支付",
-          value: "offline",
+          title: '线下支付',
+          value: 'offline',
         },
       ],
       formValidate: {
-        trading_type: "",
-        time: "",
-        keywords: "",
+        trading_type: '',
+        time: '',
+        keywords: '',
         page: 1,
         limit: 20,
       },
@@ -231,12 +208,12 @@ export default {
     };
   },
   computed: {
-    ...mapState("media", ["isMobile"]),
+    ...mapState('media', ['isMobile']),
     labelWidth() {
       return this.isMobile ? undefined : 80;
     },
     labelPosition() {
-      return this.isMobile ? "top" : "left";
+      return this.isMobile ? 'top' : 'left';
     },
   },
   mounted() {
@@ -277,7 +254,7 @@ export default {
     // 具体日期
     onchangeTime(e) {
       this.timeVal = e;
-      this.formValidate.time = this.timeVal.join("-");
+      this.formValidate.time = this.timeVal.join('-');
       this.formValidate.page = 1;
       this.getList();
     },

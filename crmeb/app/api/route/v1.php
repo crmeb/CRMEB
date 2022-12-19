@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -15,9 +15,11 @@ use think\Response;
 
 Route::any('wechat/serve', 'v1.wechat.WechatController/serve');//公众号服务
 Route::any('wechat/notify', 'v1.wechat.WechatController/notify');//公众号支付回调
+Route::any('wechat/v3notify', 'v1.wechat.WechatController/v3notify');//公众号支付回调
 Route::any('routine/notify', 'v1.wechat.AuthController/notify');//小程序支付回调
 Route::any('pay/notify/:type', 'v1.PayController/notify');//支付回调
 Route::get('get_script', 'v1.PublicController/getScript');//获取统计代码
+Route::get('version', 'v1.PublicController/getVersion');//获取统计代码
 
 Route::group(function () {
     //apple快捷登陆
@@ -30,6 +32,10 @@ Route::group(function () {
     Route::post('login/mobile', 'v1.LoginController/mobile')->name('loginMobile');
     //图片验证码
     Route::get('sms_captcha', 'v1.LoginController/captcha')->name('captcha');
+    //图形验证码
+    Route::get('ajcaptcha', 'v1.LoginController/ajcaptcha')->name('ajcaptcha');
+    //图形验证码
+    Route::post('ajcheck', 'v1.LoginController/ajcheck')->name('ajcheck');
     //验证码发送
     Route::post('register/verify', 'v1.LoginController/verify')->name('registerVerify');
     //手机号注册
@@ -40,6 +46,8 @@ Route::group(function () {
     Route::post('binding', 'v1.LoginController/binding_phone')->name('bindingPhone');
     // 支付宝复制链接支付
     Route::get('ali_pay', 'v1.order.StoreOrderController/aliPay')->name('aliPay');
+    //查询版权
+    Route::get('copyright', 'v1.PublicController/copyright')->option(['real_name' => '申请版权']);
 
 })->middleware(\app\http\middleware\AllowOriginMiddleware::class)->middleware(\app\api\middleware\StationOpenMiddleware::class);
 
@@ -56,6 +64,7 @@ Route::group(function () {
     Route::post('admin/order/delivery/keep/:id', 'v1.admin.StoreOrderController/delivery_keep')->name('adminOrderDeliveryKeep');//订单发货
     Route::post('admin/order/price', 'v1.admin.StoreOrderController/price')->name('adminOrderPrice');//订单改价
     Route::post('admin/order/remark', 'v1.admin.StoreOrderController/remark')->name('adminOrderRemark');//订单备注
+    Route::post('admin/order/agreeExpress', 'v1.admin.StoreOrderController/agreeExpress')->name('adminOrderAgreeExpress');//订单同意退货
     Route::post('admin/refund_order/remark', 'v1.admin.StoreOrderController/refundRemark')->name('refundRemark');//退款订单备注
     Route::get('admin/order/time', 'v1.admin.StoreOrderController/time')->name('adminOrderTime');//订单交易额时间统计
     Route::post('admin/order/offline', 'v1.admin.StoreOrderController/offline')->name('adminOrderOffline');//订单支付
@@ -69,7 +78,8 @@ Route::group(function () {
 
 //会员授权接口
 Route::group(function () {
-
+    //获取支付方式
+    Route::get('pay/config', 'v1.PayController/config')->name('payConfig');
     //用户修改手机号
     Route::post('user/updatePhone', 'v1.LoginController/update_binding_phone')->name('updateBindingPhone');
     //设置登录code
@@ -138,6 +148,7 @@ Route::group(function () {
     Route::post('cart/num', 'v1.store.StoreCartController/num')->name('cartNum'); //购物车 修改商品数量
     Route::get('cart/count', 'v1.store.StoreCartController/count')->name('cartCount'); //购物车 获取数量
     //订单类
+    Route::post('order/check_shipping', 'v1.order.StoreOrderController/checkShipping')->name('checkShipping'); //检测是否显示快递和自提标签
     Route::post('order/confirm', 'v1.order.StoreOrderController/confirm')->name('orderConfirm'); //订单确认
     Route::post('order/computed/:key', 'v1.order.StoreOrderController/computedOrder')->name('computedOrder'); //计算订单金额
     Route::post('order/create/:key', 'v1.order.StoreOrderController/create')->name('orderCreate'); //订单创建
@@ -217,7 +228,7 @@ Route::group(function () {
     //消息站内信
     Route::get('user/message_system/list', 'v1.user.MessageSystemController/message_list')->name('MessageSystemList'); //站内信列表
     Route::get('user/message_system/detail/:id', 'v1.user.MessageSystemController/detail')->name('MessageSystemDetail'); //详情
-    Route::get('user/message_system/edit_message', 'v1.user.MessageSystemController/edit_message')->name('EditMessage');//站内信设为未读/删除ß
+    Route::get('user/message_system/edit_message', 'v1.user.MessageSystemController/edit_message')->name('EditMessage');//站内信设为未读/删除
 
     //积分商城订单
     Route::post('store_integral/order/confirm', 'v1.order.StoreIntegralOrderController/confirm')->name('storeIntegralOrderConfirm'); //订单确认
@@ -256,6 +267,10 @@ Route::group(function () {
     /** 用户注销 */
 
     Route::get('user_cancel', 'v1.user.UserController/SetUserCancel')->name('SetUserCancel');//用户注销
+
+    /** 用户浏览记录 */
+    Route::get('user/visit_list', 'v1.user.UserController/visitList')->name('visitList');//商品浏览列表
+    Route::delete('user/visit', 'v1.user.UserController/visitDelete')->name('visitDelete');//商品浏览记录删除
 
 
 })->middleware(\app\http\middleware\AllowOriginMiddleware::class)->middleware(\app\api\middleware\StationOpenMiddleware::class)->middleware(\app\api\middleware\AuthTokenMiddleware::class, true);
@@ -315,7 +330,7 @@ Route::group(function () {
     //小程序登陆
     Route::post('wechat/mp_auth', 'v1.wechat.AuthController/mp_auth')->name('mpAuth');//小程序登陆
     Route::get('wechat/get_logo', 'v1.wechat.AuthController/get_logo')->name('getLogo');//小程序登陆授权展示logo
-    Route::get('wechat/teml_ids', 'v1.wechat.AuthController/teml_ids')->name('wechatTemlIds');//小程序订阅消息
+    Route::get('wechat/temp_ids', 'v1.wechat.AuthController/temp_ids')->name('wechatTempIds');//小程序订阅消息
     Route::get('wechat/live', 'v1.wechat.AuthController/live')->name('wechatLive');//小程序直播列表
     Route::get('wechat/livePlaybacks/:id', 'v1.wechat.AuthController/livePlaybacks')->name('livePlaybacks');//小程序直播回放
 
@@ -366,6 +381,13 @@ Route::group(function () {
     //获取用户协议
     Route::get('user_agreement', 'v1.PublicController/getUserAgreement')->name('getUserAgreement');
     Route::get('get_agreement/:type', 'v1.PublicController/getAgreement')->name('getAgreement');
+
+    //获取多语言类型列表
+    Route::get('get_lang_type_list', 'v1.PublicController/getLangTypeList')->name('getLangTypeList');
+    //获取当前语言json
+    Route::get('get_lang_json', 'v1.PublicController/getLangJson')->name('getLangJson');
+    //获取当前后台设置的默认语言类型
+    Route::get('get_default_lang_type', 'v1.PublicController/getDefaultLangType')->name('getLangJson');
 })->middleware(\app\http\middleware\AllowOriginMiddleware::class)->middleware(\app\api\middleware\StationOpenMiddleware::class)->middleware(\app\api\middleware\AuthTokenMiddleware::class, false);
 
 Route::miss(function () {

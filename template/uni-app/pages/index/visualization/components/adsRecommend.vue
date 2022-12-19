@@ -3,7 +3,7 @@
 		<view class="pictrue acea-row row-center-wrapper" v-if="isIframe && !recommendList.length">
 			<view style="text-align: center;">
 				<text class="iconfont icon-icon25201"></text>
-				<view>广告位</view>
+				<view>{{$t(`广告位`)}}</view>
 			</view>
 		</view>
 		<view class="pictrue" v-for="(item, index) in recommendList" :key="index" @click="goDetail(item)" v-if="recommendList.length && isShow && !isIframe">

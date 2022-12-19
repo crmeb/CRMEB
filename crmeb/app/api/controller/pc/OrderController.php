@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -39,7 +39,7 @@ class OrderController
         $data['status'] = $this->services->checkOrderStatus((string)$order_id);
         $time = $end_time - time();
         $data['time'] = $time > 0 ? $time : 0;
-        return app('json')->successful($data);
+        return app('json')->success($data);
     }
 
     /**
@@ -60,7 +60,7 @@ class OrderController
         $where['is_del'] = 0;
         $where['is_system_del'] = 0;
         if (!in_array($where['status'], [-1, -2, -3])) $where['pid'] = 0;
-        return app('json')->successful($this->services->getOrderList($where));
+        return app('json')->success($this->services->getOrderList($where));
     }
 
     /**
@@ -76,6 +76,6 @@ class OrderController
         $where['is_del'] = 0;
         $where['is_system_del'] = 0;
         $data = $refundServices->refundList($where);
-        return app('json')->successful($data);
+        return app('json')->success($data);
     }
 }

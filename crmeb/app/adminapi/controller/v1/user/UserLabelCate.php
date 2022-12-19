@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -76,14 +76,14 @@ class UserLabelCate extends AuthController
         $this->validate($data, UserLabeCateValidata::class);
 
         if ($this->services->count(['name' => $data['name']])) {
-            return app('json')->fail('分类已经存在，请勿重复添加');
+            return app('json')->fail(400101);
         }
         $data['type'] = 0;
         if ($this->services->save($data)) {
             $this->services->deleteCateCache();
-            return app('json')->success('保存分类成功');
+            return app('json')->success(100000);
         } else {
-            return app('json')->fail('保存分类失败');
+            return app('json')->fail(100006);
         }
     }
 
@@ -96,11 +96,11 @@ class UserLabelCate extends AuthController
     public function read($id)
     {
         if (!$id) {
-            return app('json')->fail('缺少标签分类id');
+            return app('json')->fail(100100);
         }
         $info = $this->services->get($id);
         if (!$info) {
-            return app('json')->fail('获取标签分类失败');
+            return app('json')->fail(100026);
         }
         return app('json')->success($info->toArray());
     }
@@ -134,9 +134,9 @@ class UserLabelCate extends AuthController
 
         if ($this->services->update($id, $data)) {
             $this->services->deleteCateCache();
-            return app('json')->success('修改成功');
+            return app('json')->success(100001);
         } else {
-            return app('json')->fail('修改失败');
+            return app('json')->fail(100007);
         }
     }
 
@@ -149,17 +149,17 @@ class UserLabelCate extends AuthController
     public function delete($id)
     {
         if (!$id || !($info = $this->services->get($id))) {
-            return app('json')->fail('删除的数据不存在');
+            return app('json')->fail(100026);
         }
         /** @var $labelService $labelservice */
         $labelService = app()->make(UserLabelServices::class);
         $count = $labelService->getCount(['label_cate' => $id]);
-        if($count) return app('json')->fail('该分类下有标签，请先删除标签');
+        if($count) return app('json')->fail(400323);
         if ($info->delete()) {
             $this->services->deleteCateCache();
-            return app('json')->success('删除成功');
+            return app('json')->success(100002);
         } else {
-            return app('json')->fail('删除失败');
+            return app('json')->fail(100008);
         }
     }
 

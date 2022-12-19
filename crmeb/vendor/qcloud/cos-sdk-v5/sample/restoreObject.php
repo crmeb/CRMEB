@@ -13,7 +13,7 @@ $cosClient = new Qcloud\Cos\Client(
             'secretId'  => $secretId ,
             'secretKey' => $secretKey)));
 try {
-    $result = $cosClient->restoreObject(array(
+    $result = $cosClient->putObject(array(
         'Bucket' => 'examplebucket-125000000', //格式：BucketName-APPID
         'Key' => 'exampleobject',
         'Days' => integer,

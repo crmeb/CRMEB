@@ -105,10 +105,7 @@ class Application extends Container
         ServiceProviders\ShakeAroundServiceProvider::class,
         ServiceProviders\OpenPlatformServiceProvider::class,
         ServiceProviders\MiniProgramServiceProvider::class,
-        ServiceProviders\CommentServiceProvider::class,
-        \crmeb\services\easywechat\subscribe\ProgramProvider::class,
-        \crmeb\services\easywechat\wechatlive\ProgramProvider::class,
-        \crmeb\services\easywechat\Open3rd\ProgramProvider::class,
+        ServiceProviders\CommentServiceProvider::class
     ];
 
     /**

@@ -1,43 +1,22 @@
 <template>
   <div class="article-manager">
-    <div class="i-layout-page-header">
-      <div class="i-layout-page-header">
-        <span class="ivu-page-header-title">商品管理</span>
-        <div>
-          <Tabs v-model="artFrom.type" @on-click="onClickTab">
-            <TabPane
-              :label="item.name + '(' + item.count + ')'"
-              :name="item.type.toString()"
-              v-for="(item, index) in headeNum"
-              :key="index"
-            />
-          </Tabs>
-        </div>
-      </div>
-    </div>
     <Card :bordered="false" dis-hover class="ivu-mt">
-      <Form
-        ref="artFrom"
-        :model="artFrom"
-        :label-width="75"
-        label-position="right"
-        @submit.native.prevent
-      >
+      <Tabs class="mb20" v-model="artFrom.type" @on-click="onClickTab">
+        <TabPane
+          :label="item.name + '(' + item.count + ')'"
+          :name="item.type.toString()"
+          v-for="(item, index) in headeNum"
+          :key="index"
+        />
+      </Tabs>
+      <Form ref="artFrom" :model="artFrom" :label-width="75" label-position="right" @submit.native.prevent>
         <Row type="flex" :gutter="24">
           <Col v-bind="grid">
             <FormItem label="商品分类：" label-for="pid">
-              <Select
-                v-model="artFrom.cate_id"
-                placeholder="请选择商品分类"
-                clearable
-                @on-change="userSearchs"
-              >
-                <Option
-                  v-for="item in treeSelect"
-                  :value="item.id"
-                  :key="item.id"
-                  >{{ item.html + item.cate_name }}</Option
-                >
+              <Select v-model="artFrom.cate_id" placeholder="请选择商品分类" clearable @on-change="userSearchs">
+                <Option v-for="item in treeSelect" :value="item.id" :key="item.id">{{
+                  item.html + item.cate_name
+                }}</Option>
               </Select>
             </FormItem>
           </Col>
@@ -55,20 +34,24 @@
         </Row>
       </Form>
       <div class="Button">
-        <router-link
-          v-auth="['product-product-save']"
-          :to="'/admin/product/add_product'"
-          ><Button type="primary" class="bnt mr15" icon="md-add"
-            >添加商品</Button
-          ></router-link
+        <router-link v-auth="['product-product-save']" :to="'/admin/product/add_product'"
+          ><Button type="primary" class="bnt mr15" icon="md-add">添加商品</Button></router-link
         >
-        <Button
-          v-auth="['product-crawl-save']"
-          type="success"
-          class="bnt mr15"
-          @click="onCopy"
-          >商品采集</Button
-        >
+        <Button v-auth="['product-crawl-save']" type="success" class="bnt mr15" @click="onCopy">商品采集</Button>
+        <Dropdown class="bnt mr15" @on-click="batchSelect" :transfer="true">
+          <Button type="info">
+            批量修改
+            <Icon type="ios-arrow-down"></Icon>
+          </Button>
+          <DropdownMenu slot="list">
+            <DropdownItem :name="1">商品分类</DropdownItem>
+            <DropdownItem :name="2">物流设置</DropdownItem>
+            <DropdownItem :name="3">购买送积分</DropdownItem>
+            <DropdownItem :name="4">购买送优惠券</DropdownItem>
+            <DropdownItem :name="5">关联用户标签</DropdownItem>
+            <DropdownItem :name="6">活动推荐</DropdownItem>
+          </DropdownMenu>
+        </Dropdown>
         <Button
           v-auth="['product-product-product_show']"
           class="bnt mr15"
@@ -83,19 +66,11 @@
           v-show="artFrom.type === '2'"
           >批量上架</Button
         >
-        <Button
-          v-auth="['export-storeProduct']"
-          class="export"
-          icon="ios-share-outline"
-          @click="exports"
-          >导出</Button
-        >
+        <Button v-auth="['export-storeProduct']" class="export" icon="ios-share-outline" @click="exports">导出</Button>
       </div>
       <Table
         ref="table"
-        :columns="
-          artFrom.type !== '1' && artFrom.type !== '2' ? columns2 : columns
-        "
+        :columns="artFrom.type !== '1' && artFrom.type !== '2' ? columns2 : columns"
         :data="tableList"
         class="ivu-mt"
         :loading="loading"
@@ -133,13 +108,9 @@
           <Divider type="vertical" />
           <a @click="edit(row)">编辑</a>
           <Divider type="vertical" />
-          <router-link :to="{ path: '/admin/product/product_reply/' + row.id }"
-            ><a>查看评论</a></router-link
-          >
+          <router-link :to="{ path: '/admin/product/product_reply/' + row.id }"><a>查看评论</a></router-link>
           <Divider type="vertical" />
-          <a @click="del(row, '恢复商品', index)" v-if="artFrom.type === '6'"
-            >恢复商品</a
-          >
+          <a @click="del(row, '恢复商品', index)" v-if="artFrom.type === '6'">恢复商品</a>
           <a @click="del(row, '移入回收站', index)" v-else>移到回收站</a>
         </template>
       </Table>
@@ -153,10 +124,7 @@
           :page-size="artFrom.limit"
         />
       </div>
-      <attribute
-        :attrTemplate="attrTemplate"
-        v-on:changeTemplate="changeTemplate"
-      ></attribute>
+      <attribute :attrTemplate="attrTemplate" v-on:changeTemplate="changeTemplate"></attribute>
     </Card>
     <!-- 生成淘宝京东表单-->
     <Modal
@@ -172,41 +140,178 @@
     >
       <tao-bao ref="taobaos" v-if="modals" @on-close="onClose"></tao-bao>
     </Modal>
+    <Modal
+      v-model="batchModal"
+      class="batch-box"
+      scrollable
+      closable
+      title="批量设置"
+      :mask-closable="false"
+      width="1000"
+      @on-ok="batchSub"
+      @on-visible-change="clearBatchData"
+    >
+      <Form
+        class="batchFormData"
+        ref="batchFormData"
+        :rules="ruleBatch"
+        :model="batchFormData"
+        :label-width="120"
+        label-position="right"
+        @submit.native.prevent
+      >
+        <Row :gutter="24" type="flex">
+          <Col span="24" v-if="batchType == 1">
+            <Divider orientation="left">基础设置</Divider>
+            <FormItem label="商品分类：" prop="cate_id">
+              <Select v-model="batchFormData.cate_id" placeholder="请选择商品分类" multiple class="perW20">
+                <Option v-for="item in treeSelect" :disabled="item.pid === 0" :value="item.id" :key="item.id">{{
+                  item.html + item.cate_name
+                }}</Option>
+              </Select>
+            </FormItem>
+          </Col>
+          <Col span="24" v-if="batchType == 2">
+            <Divider orientation="left">物流设置</Divider>
+            <FormItem label="物流方式：" prop="logistics">
+              <CheckboxGroup v-model="batchFormData.logistics" @on-change="logisticsBtn">
+                <Checkbox label="1">快递</Checkbox>
+
+                <Checkbox label="2">到店核销</Checkbox>
+              </CheckboxGroup>
+            </FormItem>
+            <FormItem label="运费设置：">
+              <RadioGroup v-model="batchFormData.freight">
+                <!-- <Radio :label="1">包邮</Radio> -->
+                <Radio :label="2">固定邮费</Radio>
+                <Radio :label="3">运费模板</Radio>
+              </RadioGroup>
+            </FormItem>
+            <FormItem label="" v-if="batchFormData.freight == 2">
+              <div class="acea-row">
+                <InputNumber :min="0" v-model="batchFormData.postage" placeholder="请输入金额" class="perW20 maxW" />
+              </div>
+            </FormItem>
+            <FormItem label="" v-if="batchFormData.freight == 3" prop="temp_id">
+              <div class="acea-row">
+                <Select v-model="batchFormData.temp_id" clearable placeholder="请选择运费模板" class="perW20 maxW">
+                  <Option v-for="(item, index) in templateList" :value="item.id" :key="index">{{ item.name }}</Option>
+                </Select>
+              </div>
+            </FormItem>
+          </Col>
+          <Col span="24" v-if="[3, 4, 5, 6].includes(batchType)">
+            <Divider orientation="left" v-if="[3, 4, 5, 6].includes(batchType)">营销设置</Divider>
+            <FormItem label="赠送积分：" prop="give_integral" v-if="batchType == 3">
+              <InputNumber v-model="batchFormData.give_integral" :min="0" :max="999999" placeholder="请输入积分" />
+            </FormItem>
+            <FormItem label="赠送优惠券：" v-if="batchType == 4">
+              <div v-if="couponName.length" class="mb20">
+                <Tag closable v-for="(item, index) in couponName" :key="index" @on-close="handleClose(item)">{{
+                  item.title
+                }}</Tag>
+              </div>
+              <Button type="primary" @click="addCoupon">添加优惠券</Button>
+            </FormItem>
+            <FormItem label="关联用户标签：" prop="label_id" v-if="batchType == 5">
+              <div style="display: flex">
+                <div class="labelInput acea-row row-between-wrapper" @click="openLabel">
+                  <div style="width: 90%">
+                    <div v-if="dataLabel.length">
+                      <Tag closable v-for="(item, index) in dataLabel" @on-close="closeLabel(item)" :key="index">{{
+                        item.label_name
+                      }}</Tag>
+                    </div>
+                    <span class="span" v-else>选择用户关联标签</span>
+                  </div>
+                  <div class="iconfont iconxiayi"></div>
+                </div>
+              </div>
+            </FormItem>
+            <FormItem label="商品推荐：" v-if="batchType == 6">
+              <CheckboxGroup v-model="batchFormData.recommend">
+                <Checkbox label="is_hot">热卖单品</Checkbox>
+                <Checkbox label="is_benefit">促销单品</Checkbox>
+                <Checkbox label="is_best">精品推荐</Checkbox>
+                <Checkbox label="is_new">首发新品</Checkbox>
+                <Checkbox label="is_good">优品推荐</Checkbox>
+              </CheckboxGroup>
+            </FormItem>
+          </Col>
+        </Row>
+      </Form>
+    </Modal>
+    <!-- 用户标签 -->
+    <Modal
+      v-model="labelShow"
+      scrollable
+      title="请选择用户标签"
+      :closable="false"
+      width="500"
+      :footer-hide="true"
+      :mask-closable="false"
+    >
+      <userLabel ref="userLabel" @activeData="activeData" @close="labelClose"></userLabel>
+    </Modal>
     <!-- 商品弹窗 -->
     <div v-if="isProductBox">
       <div class="bg" @click="isProductBox = false"></div>
       <goodsDetail :goodsId="goodsId"></goodsDetail>
     </div>
+    <coupon-list ref="couponTemplates" @nameId="nameId" :couponids="batchFormData.coupon_ids"></coupon-list>
   </div>
 </template>
 
 <script>
-import expandRow from "./tableExpand.vue";
-import attribute from "./attribute";
-import toExcel from "../../../utils/Excel.js";
-import { mapState } from "vuex";
-import taoBao from "./taoBao";
-import goodsDetail from "./components/goodsDetail.vue";
+import expandRow from './tableExpand.vue';
+import attribute from './attribute';
+import toExcel from '../../../utils/Excel.js';
+import { mapState } from 'vuex';
+import taoBao from './taoBao';
+import goodsDetail from './components/goodsDetail.vue';
+import couponList from '@/components/couponList';
 
 import {
   getGoodHeade,
   getGoods,
   PostgoodsIsShow,
-  treeListApi,
+  treeListApi, // 分类列表
   productShowApi,
   productUnshowApi,
   storeProductApi,
-} from "@/api/product";
+  batchSetting,
+  productGetTemplateApi,
+} from '@/api/product';
+import userLabel from '@/components/labelList';
+
 export default {
-  name: "product_productList",
-  components: { expandRow, attribute, taoBao, goodsDetail },
+  name: 'product_productList',
+  components: { expandRow, attribute, taoBao, goodsDetail, userLabel, couponList },
   computed: {
-    ...mapState("userLevel", ["categoryId"]),
+    ...mapState('userLevel', ['categoryId']),
   },
   data() {
     return {
       template: false,
       modals: false,
+      batchModal: false,
+      labelShow: false,
+      batchType: 1, // 批量设置类型
+      batchFormData: {
+        cate_id: [],
+        logistics: [],
+        freight: 2,
+        postage: 0,
+        temp_id: null,
+        give_integral: 0,
+        label_id: [],
+        coupon_ids: [],
+        recommend: [],
+      },
+      ruleBatch: {},
+      couponName: [], // 优惠券
+      dataLabel: [], // 标签
+      templateList: [], // 运费模版
       grid: {
         xl: 6,
         lg: 8,
@@ -217,9 +322,9 @@ export default {
       artFrom: {
         page: 1,
         limit: 15,
-        cate_id: "",
-        type: "1",
-        store_name: "",
+        cate_id: '',
+        type: '1',
+        store_name: '',
         excel: 0,
       },
       list: [],
@@ -229,7 +334,7 @@ export default {
       loading: false,
       columns: [
         {
-          type: "expand",
+          type: 'expand',
           width: 50,
           render: (h, params) => {
             return h(expandRow, {
@@ -240,61 +345,61 @@ export default {
           },
         },
         {
-          type: "selection",
+          type: 'selection',
           width: 60,
-          align: "center",
+          align: 'center',
         },
         {
-          title: "商品ID",
-          key: "id",
+          title: '商品ID',
+          key: 'id',
           width: 80,
         },
         {
-          title: "商品图",
-          slot: "image",
+          title: '商品图',
+          slot: 'image',
           minWidth: 80,
         },
         {
-          title: "商品名称",
-          key: "store_name",
+          title: '商品名称',
+          key: 'store_name',
           minWidth: 250,
         },
         {
-          title: "商品类型",
-          key: "product_type",
+          title: '商品类型',
+          key: 'product_type',
           minWidth: 100,
         },
         {
-          title: "商品售价",
-          key: "price",
+          title: '商品售价',
+          key: 'price',
           minWidth: 90,
         },
         {
-          title: "销量",
-          key: "sales",
+          title: '销量',
+          key: 'sales',
           minWidth: 90,
         },
         {
-          title: "库存",
-          key: "stock",
+          title: '库存',
+          key: 'stock',
           minWidth: 80,
         },
         {
-          title: "排序",
-          key: "sort",
+          title: '排序',
+          key: 'sort',
           minWidth: 70,
         },
         {
-          title: "状态",
-          slot: "state",
+          title: '状态',
+          slot: 'state',
           width: 100,
           filters: [
             {
-              label: "上架",
+              label: '上架',
               value: 1,
             },
             {
-              label: "下架",
+              label: '下架',
               value: 0,
             },
           ],
@@ -304,9 +409,9 @@ export default {
           filterMultiple: false,
         },
         {
-          title: "操作",
-          slot: "action",
-          fixed: "right",
+          title: '操作',
+          slot: 'action',
+          fixed: 'right',
           minWidth: 220,
         },
       ],
@@ -315,13 +420,14 @@ export default {
       attrTemplate: false,
       selectedIds: new Set(), //选中合并项的id
       ids: [],
-      goodsId: "",
+      goodsId: '',
       isProductBox: false,
+      treeSelect: [],
     };
   },
   watch: {
     $route() {
-      if (this.$route.fullPath === "/admin/product/product_list?type=5") {
+      if (this.$route.fullPath === '/admin/product/product_list?type=5') {
         this.getPath();
       }
     },
@@ -330,24 +436,119 @@ export default {
   activated() {
     this.goodHeade();
     this.goodsCategory();
-    if (this.$route.fullPath === "/admin/product/product_list?type=5") {
+    if (this.$route.fullPath === '/admin/product/product_list?type=5') {
       this.getPath();
     } else {
       this.getDataList();
     }
   },
   methods: {
+    batchSub() {
+      console.log(this.selectedIds, this.ids);
+      let data = this.batchFormData;
+      data.ids = this.ids;
+      data.type = this.batchType;
+      let activeIds = [];
+      this.dataLabel.forEach((item) => {
+        activeIds.push(item.id);
+      });
+      data.label_id = activeIds;
+      batchSetting(data)
+        .then((res) => {
+          this.$Message.success(res.msg);
+          this.getDataList();
+          this.clearBatchData();
+        })
+        .catch((err) => {
+          this.$Message.error(err.msg);
+        });
+    },
+    clearBatchData(status) {
+      if (!status) {
+        this.batchFormData = {
+          cate_id: [],
+          logistics: [],
+          freight: 0,
+          postage: null,
+          temp_id: null,
+          give_integral: null,
+          label_id: [],
+          coupon_ids: [],
+          recommend: [],
+        };
+        this.ids = [];
+        this.dataLabel = [];
+        this.clearAll(false);
+      }
+    },
+    // 批量设置商品
+    batchSelect(type) {
+      console.log(type);
+      if (!this.ids.length) {
+        this.$Message.warning('请选择要设置的商品');
+      } else {
+        this.batchType = type;
+        this.batchModal = true;
+        this.productGetTemplate();
+      }
+    },
+    activeData(dataLabel) {
+      this.labelShow = false;
+      this.dataLabel = dataLabel;
+    },
+    nameId(id, names) {
+      this.batchFormData.coupon_ids = id;
+      this.couponName = this.unique(names);
+    },
+    handleClose(name) {
+      let index = this.couponName.indexOf(name);
+      this.couponName.splice(index, 1);
+      this.formValidate.coupon_ids.splice(index, 1);
+    },
+    //对象数组去重；
+    unique(arr) {
+      const res = new Map();
+      return arr.filter((arr) => !res.has(arr.id) && res.set(arr.id, 1));
+    },
+    // 获取运费模板；
+    productGetTemplate() {
+      productGetTemplateApi().then((res) => {
+        this.templateList = res.data;
+      });
+    },
+    // 标签弹窗关闭
+    labelClose() {
+      this.labelShow = false;
+    },
     look(row) {
       this.goodsId = row.id;
       this.isProductBox = true;
     },
+    // 物流方式
+    logisticsBtn(e) {
+      this.batchFormData.logistics = e;
+    },
+    // 关联用户标签
+    openLabel(row) {
+      this.labelShow = true;
+      this.$refs.userLabel.userLabel(JSON.parse(JSON.stringify(this.dataLabel)));
+    },
+    closeLabel(label) {
+      let index = this.dataLabel.indexOf(this.dataLabel.filter((d) => d.id == label.id)[0]);
+      this.dataLabel.splice(index, 1);
+    },
+    // 添加优惠券
+    addCoupon() {
+      this.$refs.couponTemplates.isTemplate = true;
+      this.$refs.couponTemplates.tableList();
+    },
     getPath() {
       this.columns2 = [...this.columns];
-      if (name !== "1" && name !== "2") {
+      if (name !== '1' && name !== '2') {
         this.columns2.shift({
-          type: "selection",
+          type: 'selection',
           width: 60,
-          align: "center",
+          align: 'center',
         });
       }
       this.artFrom.page = 1;
@@ -379,7 +580,7 @@ export default {
     // 批量上架
     onShelves() {
       if (this.ids.length === 0) {
-        this.$Message.warning("请选择要上架的商品");
+        this.$Message.warning('请选择要上架的商品');
       } else {
         let data = {
           ids: this.ids,
@@ -398,7 +599,7 @@ export default {
     // 批量下架
     onDismount() {
       if (this.ids.length === 0) {
-        this.$Message.warning("请选择要下架的商品");
+        this.$Message.warning('请选择要下架的商品');
       } else {
         let data = {
           ids: this.ids,
@@ -415,6 +616,7 @@ export default {
           });
       }
     },
+
     // 全选
     // onSelectTab (selection) {
     //     let data = []
@@ -451,6 +653,9 @@ export default {
         this.setChecked();
       });
     },
+    clearAll(status) {
+      this.$refs.table.selectAll(status);
+    },
     //  取消某一行
     handleCancelRow(selection, row) {
       this.selectedIds.delete(row.id);
@@ -477,7 +682,7 @@ export default {
     // 复制淘宝
     onCopy() {
       this.$router.push({
-        path: "/admin/product/add_product",
+        path: '/admin/product/add_product',
         query: { type: -1 },
       });
       // this.modals = true
@@ -486,11 +691,11 @@ export default {
     onClickTab(name) {
       this.artFrom.type = name;
       this.columns2 = [...this.columns];
-      if (name !== "1" && name !== "2") {
+      if (name !== '1' && name !== '2') {
         this.columns2.shift({
-          type: "selection",
+          type: 'selection',
           width: 60,
-          align: "center",
+          align: 'center',
         });
       }
       this.artFrom.page = 1;
@@ -499,8 +704,8 @@ export default {
     },
     // 下拉树
     handleCheckChange(data) {
-      let value = "";
-      let title = "";
+      let value = '';
+      let title = '';
       this.list = [];
       this.artFrom.cate_id = 0;
       data.forEach((item, index) => {
@@ -539,7 +744,7 @@ export default {
     // 商品列表；
     getDataList() {
       this.loading = true;
-      this.artFrom.cate_id = this.artFrom.cate_id || "";
+      this.artFrom.cate_id = this.artFrom.cate_id || '';
       getGoods(this.artFrom)
         .then((res) => {
           let data = res.data;
@@ -580,33 +785,13 @@ export default {
     },
     // 数据导出；
     exportData: function () {
-      let th = [
-        "商品名称",
-        "商品简介",
-        "商品分类",
-        "价格",
-        "库存",
-        "销量",
-        "收藏人数",
-      ];
-      let filterVal = [
-        "store_name",
-        "store_info",
-        "cate_name",
-        "price",
-        "stock",
-        "sales",
-        "collect",
-      ];
-      this.where.page = "nopage";
+      let th = ['商品名称', '商品简介', '商品分类', '价格', '库存', '销量', '收藏人数'];
+      let filterVal = ['store_name', 'store_info', 'cate_name', 'price', 'stock', 'sales', 'collect'];
+      this.where.page = 'nopage';
       getGoods(this.where).then((res) => {
         let data = res.data.map((v) => filterVal.map((k) => v[k]));
         let fileTime = Date.parse(new Date());
-        let [fileName, fileType, sheetName] = [
-          "商户数据_" + fileTime,
-          "xlsx",
-          "商户数据",
-        ];
+        let [fileName, fileType, sheetName] = ['商户数据_' + fileTime, 'xlsx', '商户数据'];
         toExcel({ th, data, fileName, fileType, sheetName });
       });
     },
@@ -619,7 +804,7 @@ export default {
     },
     // 编辑
     edit(row) {
-      this.$router.push({ path: "/admin/product/add_product/" + row.id });
+      this.$router.push({ path: '/admin/product/add_product/' + row.id });
     },
     // 确认
     del(row, tit, num) {
@@ -627,8 +812,8 @@ export default {
         title: tit,
         num: num,
         url: `product/product/${row.id}`,
-        method: "DELETE",
-        ids: "",
+        method: 'DELETE',
+        ids: '',
         un: 1,
       };
       this.$modalSure(delfromData)
@@ -664,7 +849,13 @@ export default {
     overflow: auto;
   }
 }
+.batch-box{
+   >>> .ivu-modal-body {
+    overflow: auto;
+    min-height: 350px;
 
+  }
+}
 .tabBox_img {
   width: 36px;
   height: 36px;
@@ -712,6 +903,23 @@ export default {
     height: 100px;
     position: relative;
     border: 1px solid #eee;
+  }
+}
+
+.labelInput {
+  border: 1px solid #dcdee2;
+  width: 20%;
+  padding: 0 5px;
+  border-radius: 5px;
+  min-height: 30px;
+  cursor: pointer;
+
+  .span {
+    color: #c5c8ce;
+  }
+
+  .iconxiayi {
+    font-size: 12px;
   }
 }
 </style>

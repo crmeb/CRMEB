@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -14,6 +14,7 @@ use think\Validate;
 
 class StoreBargainValidate extends Validate
 {
+
     /**
      * 定义验证规则
      * 格式：'字段名'    =>    ['规则1','规则2'...]
@@ -43,21 +44,21 @@ class StoreBargainValidate extends Validate
      * @var array
      */
     protected $message = [
-        'product_id.require' => '请选择商品',
-        'title.require' => '请填写商品标题',
-        'info.require' => '请填写砍价活动简介',
-        'unit_name.require' => '请填写单位',
-        'images.require' => '请选择商品轮播图',
-        'section_time.require' => '请选择时间段',
-        'num.require' => '请填写购买数量限制',
-        'num.gt' => '购买数量限制必须大于0',
-        'bargain_num.require' => '请填写帮砍次数',
-        'bargain_num.gt' => '帮砍次数必须大于0',
-        'people_num.require' => '请填写砍价人数',
-        'people_num.gt' => '砍价人数必须大于1',
-        'temp_id.require' => '请选择运费模板',
-        'description.require' => '请填写砍价商品详情',
-        'attrs.require' => '请选择规格',
+        'product_id.require' => '400337',
+        'title.require' => '400338',
+        'info.require' => '400347',
+        'unit_name.require' => '400348',
+        'images.require' => '400349',
+        'section_time.require' => '400353',
+        'num.require' => '400354',
+        'num.gt' => '400355',
+        'bargain_num.require' => '400356',
+        'bargain_num.gt' => '400357',
+        'people_num.require' => '400358',
+        'people_num.gt' => '400359',
+        'temp_id.require' => '400360',
+        'description.require' => '400361',
+        'attrs.require' => '400362',
     ];
 
     protected $scene = [

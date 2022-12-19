@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -13,15 +13,11 @@ declare (strict_types=1);
 namespace app\services\product\product;
 
 use app\services\BaseServices;
-use app\services\product\sku\StoreProductAttrServices;
-use app\services\product\sku\StoreProductAttrValueServices;
 use app\services\serve\ServeServices;
 use app\services\system\attachment\SystemAttachmentCategoryServices;
 use app\services\system\attachment\SystemAttachmentServices;
 use crmeb\exceptions\AdminException;
-use crmeb\services\CopyProductService;
-use crmeb\services\UploadService;
-use think\facade\Log;
+use app\services\other\UploadService;
 
 /**
  *
@@ -59,7 +55,7 @@ class CopyTaobaoServices extends BaseServices
             case 1://平台
                 /** @var ServeServices $services */
                 $services = app()->make(ServeServices::class);
-                $resultData = $services->copy()->goods($url);
+                $resultData = $services->copy('copy')->goods($url);
                 if (isset($resultData['description_image']) && is_string($resultData['description_image'])) {
                     $resultData['description_image'] = json_decode($resultData['description_image'], true);
                 }
@@ -71,70 +67,12 @@ class CopyTaobaoServices extends BaseServices
                 break;
             case 2://99API
                 $apikey = sys_config('copy_product_apikey');
-                if (!$apikey) throw new AdminException('请先配置接口密钥');
-                if ((!$type || !$id) && $url) {
-                    $url_arr = parse_url($url);
-                    if (isset($url_arr['host'])) {
-                        foreach ($this->host as $name) {
-                            if (strpos($url_arr['host'], $name) !== false) {
-                                $type = $name;
-                            }
-                        }
-                    }
-                    $type = ($type == 'pinduoduo' || $type == 'yangkeduo') ? 'pdd' : $type;
-                    switch ($type) {
-                        case 'taobao':
-                        case 'tmall':
-                            $params = [];
-                            if (isset($url_arr['query']) && $url_arr['query']) {
-                                $queryParts = explode('&', $url_arr['query']);
-                                foreach ($queryParts as $param) {
-                                    $item = explode('=', $param);
-                                    if (isset($item[0]) && $item[1]) $params[$item[0]] = $item[1];
-                                }
-                            }
-                            $id = $params['id'] ?? '';
-                            break;
-                        case 'jd':
-                            $params = [];
-                            if (isset($url_arr['path']) && $url_arr['path']) {
-                                $path = str_replace('.html', '', $url_arr['path']);
-                                $params = explode('/', $path);
-                            }
-                            $id = $params[1] ?? '';
-                            break;
-                        case 'pdd':
-                            $params = [];
-                            if (isset($url_arr['query']) && $url_arr['query']) {
-                                $queryParts = explode('&', $url_arr['query']);
-                                foreach ($queryParts as $param) {
-                                    $item = explode('=', $param);
-                                    if (isset($item[0]) && $item[1]) $params[$item[0]] = $item[1];
-                                }
-                            }
-                            $id = $params['goods_id'] ?? $params['goodsId'] ?? '';
-                            break;
-                        case 'suning':
-                            $params = [];
-                            if (isset($url_arr['path']) && $url_arr['path']) {
-                                $path = str_replace('.html', '', $url_arr['path']);
-                                $params = explode('/', $path);
-                            }
-                            $id = $params[2] ?? '';
-                            $shopid = $params[1] ?? '';
-                            break;
-                        case '1688':
-                            $params = [];
-                            if (isset($url_arr['query']) && $url_arr['query']) {
-                                $path = str_replace('.html', '', $url_arr['path']);
-                                $params = explode('/', $path);
-                            }
-                            $id = $params[2] ?? '';
-                            $shopid = $params[1] ?? '';
-                            break;
-                    }
-                }
-                $result = CopyProductService::getInfo($type, ['itemid' => $id, 'shopid' => $shopid], $apikey);
+                if (!$apikey) throw new AdminException(400554);
+                /** @var ServeServices $services */
+                $services = app()->make(ServeServices::class);
+                $result = $services->copy('copy99api')->goods($url, [
+                    'apikey' => $apikey,
+                ]);
                 break;
         }
         if (isset($result['status']) && $result['status']) {
@@ -219,12 +157,12 @@ class CopyTaobaoServices extends BaseServices
         //生成附件目录
         try {
             if (make_path('attach', 3, true) === '')
-                throw new AdminException('无法创建文件夹，请检查您的上传目录权限：' . app()->getRootPath() . 'public' . DS . 'uploads' . DS . 'attach' . DS);
+                throw new AdminException(400555);
         } catch (\Exception $e) {
-            throw new AdminException($e->getMessage() . '或无法创建文件夹，请检查您的上传目录权限：' . app()->getRootPath() . 'public' . DS . 'uploads' . DS . 'attach' . DS);
+            throw new AdminException(400555);
         }
         $description = $storeDescriptionServices->getDescription(['product_id ' => $id, 'type' => 0]);
-        if (!$description) throw new AdminException('商品参数错误！');
+        if (!$description) throw new AdminException(400556);
         //替换并下载详情里面的图片默认下载全部图片
         $description = preg_replace('#<style>.*?</style>#is', '', $description);
         $description = $this->uploadImage([], $description, 1, $AttachmentCategory['id']);
@@ -322,7 +260,7 @@ class CopyTaobaoServices extends BaseServices
                 return $html;
                 break;
             default:
-                throw new AdminException('上传方式错误');
+                throw new AdminException(400557);
                 break;
         }
         return $uploadImage;
@@ -350,7 +288,7 @@ class CopyTaobaoServices extends BaseServices
             $ext = $this->getImageExtname($name)['ext_name'];
         }
         if (in_array($ext, ['php', 'js', 'html'])) {
-            throw new AdminException('格式错误');
+            throw new AdminException(400558);
         }
         //TODO 获取远程文件所采用的方法
         if ($type) {
@@ -378,7 +316,7 @@ class CopyTaobaoServices extends BaseServices
             }
         }
         $size = strlen(trim($content));
-        if (!$content || $size <= 2) throw new AdminException('图片流获取失败');
+        if (!$content || $size <= 2) throw new AdminException(400559);
         $date_dir = date('Y') . '/' . date('m') . '/' . date('d');
         $upload_type = sys_config('upload_type', 1);
         $upload = UploadService::init($upload_type);
@@ -435,8 +373,8 @@ class CopyTaobaoServices extends BaseServices
     {
         //查询附件分类
         /** @var SystemAttachmentCategoryServices $systemAttachmentCategoryService */
-        $attachmentCategoryService = app()->make(SystemAttachmentCategoryServices::class);
-        $AttachmentCategory = $attachmentCategoryService->getOne(['name' => '远程下载']);
+        $systemAttachmentCategoryService = app()->make(SystemAttachmentCategoryServices::class);
+        $AttachmentCategory = $systemAttachmentCategoryService->getOne(['name' => '远程下载']);
         //不存在则创建
         if (!$AttachmentCategory) {
             $AttachmentCategory = $systemAttachmentCategoryService->save(['pid' => '0', 'name' => '远程下载', 'enname' => '']);
@@ -444,7 +382,7 @@ class CopyTaobaoServices extends BaseServices
 
         //生成附件目录
         if (make_path('attach', 3, true) === '') {
-            throw new AdminException('无法创建文件夹，请检查您的上传目录权限：' . app()->getRootPath() . 'public' . DS . 'uploads' . DS . 'attach' . DS);
+            throw new AdminException(400555);
         }
 
         //上传图片

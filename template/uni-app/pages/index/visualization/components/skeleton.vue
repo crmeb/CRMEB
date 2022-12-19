@@ -2,8 +2,8 @@
   <view
     v-if="show"
     :style="{
-      width: systemInfo.width * 2 + 'rpx',
-      height: (systemInfo.height + 100) * 2 + 'rpx',
+      width: '100vw',
+      height: '100vh',
       backgroundColor: bgcolor,
       position: 'absolute',
       left: 0,

@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -15,14 +15,21 @@ use app\services\system\attachment\SystemAttachmentServices;
 use think\facade\App;
 
 /**
- * 图片管理类
+ * 附件管理类
  * Class SystemAttachment
  * @package app\adminapi\controller\v1\file
  */
 class SystemAttachment extends AuthController
 {
+    /**
+     * @var SystemAttachmentServices
+     */
     protected $service;
 
+    /**
+     * @param App $app
+     * @param SystemAttachmentServices $service
+     */
     public function __construct(App $app, SystemAttachmentServices $service)
     {
         parent::__construct($app);
@@ -43,9 +50,7 @@ class SystemAttachment extends AuthController
 
     /**
      * 删除指定资源
-     *
-     * @param string $ids
-     * @return \think\Response
+     * @return mixed
      */
     public function delete()
     {
@@ -53,7 +58,7 @@ class SystemAttachment extends AuthController
             ['ids', '']
         ], true);
         $this->service->del($ids);
-        return app('json')->success('删除成功');
+        return app('json')->success(100002);
     }
 
     /**
@@ -70,7 +75,7 @@ class SystemAttachment extends AuthController
             ['menu_name', '']
         ], true);
         $res = $this->service->upload((int)$pid, $file, $upload_type, $type, $menuName);
-        return app('json')->success('上传成功', ['src' => $res]);
+        return app('json')->success(100032, ['src' => $res]);
     }
 
     /**
@@ -84,7 +89,7 @@ class SystemAttachment extends AuthController
             ['images', '']
         ]);
         $this->service->move($data);
-        return app('json')->success('移动成功');
+        return app('json')->success(100034);
     }
 
     /**
@@ -96,10 +101,10 @@ class SystemAttachment extends AuthController
     {
         $realName = $this->request->post('real_name', '');
         if (!$realName) {
-            return app('json')->fail('文件名称不能为空');
+            return app('json')->fail(400104);
         }
         $this->service->update($id, ['real_name' => $realName]);
-        return app('json')->success('修改成功');
+        return app('json')->success(100001);
     }
 
     /**

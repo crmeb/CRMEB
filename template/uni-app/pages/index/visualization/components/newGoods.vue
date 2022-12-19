@@ -7,13 +7,13 @@
 					<view class='text'>
 						<view class='name line1'>
 							<text class="iconfont icon-shoufaxinpin"></text>
-							{{titleInfo[0].val}}
+							{{$t(titleInfo[0].val)}}
 							<!-- <text class='new font-color'>NEW~</text> -->
 						</view>
-						<view class='line1 txt-btn'>{{titleInfo[1].val}}</view>
+						<view class='line1 txt-btn'>{{$t(titleInfo[1].val)}}</view>
 					</view>
 					<view class='more' @click="gopage(titleInfo[2].val)">
-						更多
+						{{$t(`更多`)}}
 						<text class='iconfont icon-jiantou'></text>
 					</view>
 				</view>
@@ -25,19 +25,19 @@
 									<image :src='item.image'></image>
 									<text class="pictrue_log_medium pictrue_log_class"
 										v-if="item.activity && item.activity.type ==='1'">
-										秒杀
+										{{$t(`秒杀`)}}
 									</text>
 									<text class="pictrue_log_medium pictrue_log_class"
 										v-if="item.activity && item.activity.type === '2'">
-										砍价
+										{{$t(`砍价`)}}
 									</text>
 									<text class="pictrue_log_medium pictrue_log_class"
 										v-if="item.activity && item.activity.type === '3'">
-										拼团
+										{{$t(`拼团`)}}
 									</text>
 								</view>
 								<view class='pro-info line1'>{{item.store_name}}</view>
-								<view class='money font-color'><text class="rmb">￥</text>{{item.price}}</view>
+								<view class='money font-color'><text class="rmb">{{$t(`￥`)}}</text>{{item.price}}</view>
 							</view>
 						</block>
 					</scroll-view>
@@ -53,7 +53,7 @@
 						<view class='line1 txt-btn'>{{titleInfo[1].val}}</view>
 					</view>
 					<view class='more' @click="gopage(titleInfo[2].val)">
-						更多
+						{{$t(`更多`)}}
 						<text class='iconfont icon-jiantou'></text>
 					</view>
 				</view>
@@ -65,20 +65,20 @@
 									<image :src='item.image'></image>
 									<text class="pictrue_log_medium pictrue_log_class"
 										v-if="item.activity && item.activity.type ==='1'">
-										秒杀
+										{{$t(`秒杀`)}}
 									</text>
 									<text class="pictrue_log_medium pictrue_log_class"
 										v-if="item.activity && item.activity.type === '2'">
-										砍价
+										{{$t(`砍价`)}}
 									</text>
 									<text class="pictrue_log_medium pictrue_log_class"
 										v-if="item.activity && item.activity.type === '3'">
-										拼团
+										{{$t(`拼团`)}}
 									</text>
 								</view>
 								<view class='pro-info line1'>{{item.store_name}}</view>
 								<view class='money font-color'>
-									<text class="rmb">￥</text>{{item.price}}
+									<text class="rmb">{{$t(`￥`)}}</text>{{item.price}}
 								</view>
 							</view>
 						</block>
@@ -95,12 +95,12 @@
 						<view class='line1 txt-btn'>{{titleInfo[1].val}}</view>
 					</view>
 					<view class='more' @click="gopage(titleInfo[2].val)">
-						更多
+						{{$t(`更多`)}}
 						<text class='iconfont icon-jiantou'></text>
 					</view>
 				</view>
 				<view class='newProducts'>
-					<view class="empty-img">首发新品，暂无数据</view>
+					<view class="empty-img">{{$t(`首发新品，暂无数据`)}}</view>
 				</view>
 			</view>
 		</view>
@@ -157,7 +157,7 @@
 		data() {
 			return {
 				firstList: [],
-				firstInfo: "多个优质商品最新上架",
+				firstInfo: this.$t(`多个优质商品最新上架`),
 				name: this.$options.name,
 				isShow: true,
 				isIframe: app.globalData.isIframe,

@@ -14,9 +14,7 @@
       <span
         class="line1"
         style="text-align: left"
-        v-text="
-          orderInfo.remark ? orderInfo.remark : '订单未备注，点击添加备注信息'
-        "
+        v-text="orderInfo.remark ? orderInfo.remark : '订单未备注，点击添加备注信息'"
         @click="modify(1)"
       />
     </div>
@@ -25,18 +23,13 @@
     </div>
     <div class="address">
       <div class="name">
-        {{ orderInfo.real_name
-        }}<span class="phone">{{ orderInfo.user_phone }}</span>
+        {{ orderInfo.real_name }}<span class="phone">{{ orderInfo.user_phone }}</span>
       </div>
       <div>{{ orderInfo.user_address }}</div>
     </div>
     <div class="line"><img src="../../../../assets/images/line.jpg" /></div>
     <div class="pos-order-goods">
-      <div
-        class="goods acea-row row-between-wrapper"
-        v-for="(item, index) in orderInfo.cartInfo"
-        :key="index"
-      >
+      <div class="goods acea-row row-between-wrapper" v-for="(item, index) in orderInfo.cartInfo" :key="index">
         <div class="picTxt acea-row row-between-wrapper">
           <div class="pictrue">
             <img :src="item.productInfo.image" />
@@ -56,8 +49,7 @@
       </div>
     </div>
     <div class="public-total">
-      共{{ orderInfo.cart_num }}件商品，应支付
-      <span class="money">￥{{ orderInfo.pay_price }}</span> ( 邮费 ¥{{
+      共{{ orderInfo.cart_num }}件商品，应支付 <span class="money">￥{{ orderInfo.pay_price }}</span> ( 邮费 ¥{{
         orderInfo.pay_postage
       }}
       )
@@ -67,9 +59,7 @@
         <div>订单编号：</div>
         <div class="conter acea-row row-middle row-right">
           {{ orderInfo.order_id }}
-          <span class="copy copy-data" :data-clipboard-text="orderInfo.order_id"
-            >复制</span
-          >
+          <span class="copy copy-data" :data-clipboard-text="orderInfo.order_id">复制</span>
         </div>
       </div>
       <div class="item acea-row row-between">
@@ -85,7 +75,7 @@
       <div class="item acea-row row-between">
         <div>支付方式：</div>
         <div class="conter">
-          {{ orderInfo._status ? orderInfo._status._payType : "" }}
+          {{ orderInfo._status ? orderInfo._status._payType : '' }}
         </div>
       </div>
       <div class="item acea-row row-between">
@@ -107,17 +97,13 @@
         <div class="conter">￥{{ orderInfo.total_postage }}</div>
       </div>
       <div class="actualPay acea-row row-right">
-        实付款：<span class="money font-color-red"
-          >￥{{ orderInfo.pay_price }}</span
-        >
+        实付款：<span class="money font-color-red">￥{{ orderInfo.pay_price }}</span>
       </div>
     </div>
     <div class="wrapper" v-if="orderInfo.deliveryType === 'express'">
       <div class="item acea-row row-between">
         <div>配送方式：</div>
-        <div class="conter" v-if="orderInfo.delivery_type === 'express'">
-          快递
-        </div>
+        <div class="conter" v-if="orderInfo.delivery_type === 'express'">快递</div>
         <div class="conter" v-if="orderInfo.delivery_type === 'send'">送货</div>
       </div>
       <div class="item acea-row row-between">
@@ -130,32 +116,17 @@
         <div v-if="orderInfo.delivery_type === 'send'">送货人电话：</div>
         <div class="conter">
           {{ orderInfo.delivery_id
-          }}<span
-            class="copy copy-data"
-            :data-clipboard-text="orderInfo.delivery_id"
-            >复制</span
-          >
+          }}<span class="copy copy-data" :data-clipboard-text="orderInfo.delivery_id">复制</span>
         </div>
       </div>
     </div>
     <div style="height: 1.2rem"></div>
-    <div
-      class="footer acea-row row-right row-middle"
-      v-if="$route.params.goname != 'looks'"
-    >
+    <div class="footer acea-row row-right row-middle" v-if="$route.params.goname != 'looks'">
       <div class="more"></div>
-      <div class="bnt cancel" @click="modify(0)" v-if="types === 0">
-        一键改价
-      </div>
-      <div class="bnt cancel" @click="modify(0)" v-if="types === -1">
-        立即退款
-      </div>
+      <div class="bnt cancel" @click="modify(0)" v-if="types === 0">一键改价</div>
+      <div class="bnt cancel" @click="modify(0)" v-if="types === -1">立即退款</div>
       <div class="bnt cancel" @click="modify(1)">订单备注</div>
-      <div
-        class="bnt cancel"
-        v-if="orderInfo.pay_type === 'offline' && orderInfo.paid === 0"
-        @click="offlinePay"
-      >
+      <div class="bnt cancel" v-if="orderInfo.pay_type === 'offline' && orderInfo.paid === 0" @click="offlinePay">
         确认付款
       </div>
       <router-link
@@ -175,14 +146,14 @@
   </div>
 </template>
 <script>
-import PriceChange from "../../components/PriceChange";
-import ClipboardJS from "clipboard";
-import { orderInfo } from "@/api/kefu";
-import { required, num } from "@/utils/validate";
-import { validatorDefaultCatch } from "@/libs/dialog";
+import PriceChange from '../../components/PriceChange';
+import ClipboardJS from 'clipboard';
+import { orderInfo } from '@/api/kefu';
+import { required, num } from '@/utils/validate';
+import { validatorDefaultCatch } from '@/libs/dialog';
 
 export default {
-  name: "AdminOrder",
+  name: 'AdminOrder',
   components: {
     PriceChange,
   },
@@ -191,16 +162,16 @@ export default {
     return {
       order: false,
       change: false,
-      orderId: "",
+      orderId: '',
       orderInfo: {},
       status: 0,
-      title: "",
-      payType: "",
-      types: "",
+      title: '',
+      payType: '',
+      types: '',
     };
   },
   watch: {
-    "$route.params.id": function (newVal) {
+    '$route.params.id': function (newVal) {
       let that = this;
       if (newVal != undefined) {
         that.orderId = newVal;
@@ -212,10 +183,10 @@ export default {
     // this.orderId = this.$route.params.id;
     this.getIndex();
     this.$nextTick(function () {
-      var copybtn = document.getElementsByClassName("copy-data");
+      var copybtn = document.getElementsByClassName('copy-data');
       const clipboard = new ClipboardJS(copybtn);
-      clipboard.on("success", () => {
-        this.$dialog.success("复制成功");
+      clipboard.on('success', () => {
+        this.$dialog.success('复制成功');
       });
     });
   },
@@ -242,16 +213,16 @@ export default {
           that.types = res.data.orderInfo._status._type;
           that.title = res.data.orderInfo._status._title;
           this.$nextTick(function () {
-            let copybtn = document.getElementsByClassName("copy-data");
+            let copybtn = document.getElementsByClassName('copy-data');
             const clipboard = new ClipboardJS(copybtn);
-            clipboard.on("success", () => {
-              this.$dialog.success("复制成功");
+            clipboard.on('success', () => {
+              this.$dialog.success('复制成功');
             });
           });
         },
         (err) => {
           that.$dialog.error(err.msg);
-        }
+        },
       );
     },
     offlinePay: function () {
@@ -262,7 +233,7 @@ export default {
         },
         (err) => {
           this.$dialog.error(err.msg);
-        }
+        },
       );
     },
   },
@@ -629,7 +600,7 @@ input {
 }
 
 .pos-order-details .footer .more .order .arrow:before {
-  content: "";
+  content: '';
   width: 0;
   height: 0;
   border-left: 0.09rem solid transparent;

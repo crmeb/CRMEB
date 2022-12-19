@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -17,8 +17,7 @@ use app\services\BaseServices;
 use app\dao\user\UserAddressDao;
 use app\services\shipping\SystemCityServices;
 use crmeb\exceptions\AdminException;
-use think\Exception;
-use think\exception\ValidateException;
+use crmeb\exceptions\ApiException;
 
 /**
  *
@@ -107,7 +106,7 @@ class UserAddressServices extends BaseServices
     public function create(array $data)
     {
         if (!$this->dao->save($data))
-            throw new AdminException('写入失败');
+            throw new AdminException(100022);
         return true;
     }
 
@@ -120,7 +119,7 @@ class UserAddressServices extends BaseServices
     public function updateAddress(int $id, array $data)
     {
         if (!$this->dao->update($id, $data))
-            throw new AdminException('修改失败');
+            throw new AdminException(100007);
         return true;
     }
 
@@ -133,12 +132,12 @@ class UserAddressServices extends BaseServices
     public function setDefault(int $uid, int $id)
     {
         if (!$this->getAddress($id)) {
-            throw new ValidateException('地址不存在');
+            throw new ApiException(400648);
         }
         if (!$this->dao->update($uid, ['is_default' => 0], 'uid'))
-            throw new Exception('取消原来默认地址');
+            throw new ApiException(400649);
         if (!$this->dao->update($id, ['is_default' => 1]))
-            throw new Exception('设置默认地址失败');
+            throw new ApiException(400650);
         return true;
     }
 
@@ -151,7 +150,7 @@ class UserAddressServices extends BaseServices
     {
         $addressInfo = $this->getAddress($id);
         if (!$addressInfo || $addressInfo['is_del'] == 1) {
-            throw new ValidateException('数据不存在');
+            throw new ApiException(100026);
         }
         return $addressInfo->toArray();
     }
@@ -176,7 +175,7 @@ class UserAddressServices extends BaseServices
                 $where += ['city_id', '=', $addressInfo['address']['city_id']];
             }
             $res = $this->dao->getCount($where);
-            if ($res) throw new ValidateException('地址已存在，请勿重复添加');
+            if ($res) throw new ApiException(400651);
         }
 
         if ($addressInfo['type'] == 1 && !$addressInfo['id']) {
@@ -189,12 +188,12 @@ class UserAddressServices extends BaseServices
             } else {
                 $cityInfo = $systemCity->getOne([['name', 'like', "%$city%"], ['parent_id', '<>', 0]]);
                 if (!$cityInfo) {
-                    throw new ValidateException('收货地址格式错误!修改后请重新导入!');
+                    throw new ApiException(400652);
                 }
                 $addressInfo['address']['city_id'] = $cityInfo['city_id'];
             }
         }
-        if (!isset($addressInfo['address']['city_id']) || $addressInfo['address']['city_id'] == 0) throw new ValidateException('添加收货地址失败!');
+        if (!isset($addressInfo['address']['city_id']) || $addressInfo['address']['city_id'] == 0) throw new ApiException(100022);
         $addressInfo['province'] = $addressInfo['address']['province'];
         $addressInfo['city'] = $addressInfo['address']['city'];
         $addressInfo['city_id'] = $addressInfo['address']['city_id'] ?? 0;
@@ -212,7 +211,7 @@ class UserAddressServices extends BaseServices
             $id = (int)$addressInfo['id'];
             unset($addressInfo['id']);
             if (!$this->dao->update($id, $addressInfo, 'id')) {
-                throw new ValidateException('编辑收货地址失败');
+                throw new ApiException(100007);
             }
             if ($addressInfo['is_default']) {
                 $this->setDefault($uid, $id);
@@ -226,7 +225,7 @@ class UserAddressServices extends BaseServices
             if (!$addrCount) $addressInfo['is_default'] = 1;
 
             if (!$address = $this->dao->save($addressInfo)) {
-                throw new ValidateException('添加收货地址失败');
+                throw new ApiException(100022);
             }
             if ($addressInfo['is_default']) {
                 $this->setDefault($uid, (int)$address->id);
@@ -245,12 +244,12 @@ class UserAddressServices extends BaseServices
     {
         $addressInfo = $this->getAddress($id);
         if (!$addressInfo || $addressInfo['is_del'] == 1 || $addressInfo['uid'] != $uid) {
-            throw new ValidateException('数据不存在');
+            throw new ApiException(100026);
         }
         if ($this->dao->update($id, ['is_del' => '1'], 'id'))
             return true;
         else
-            throw new ValidateException('删除地址失败!');
+            throw new ApiException(100008);
     }
 
     /**

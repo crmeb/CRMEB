@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -16,7 +16,7 @@ use app\services\order\OtherOrderServices;
 use app\services\order\StoreOrderSuccessServices;
 use app\services\user\UserMoneyServices;
 use app\services\user\UserServices;
-use think\exception\ValidateException;
+use crmeb\exceptions\ApiException;
 
 /**
  * 余额支付
@@ -35,10 +35,10 @@ class YuePayServices extends BaseServices
     public function yueOrderPay(array $orderInfo, $uid)
     {
         if (!$orderInfo) {
-            throw new ValidateException('订单不存在!');
+            throw new ApiException(410173);
         }
         if ($orderInfo['paid']) {
-            throw new ValidateException('该订单已支付!');
+            throw new ApiException(410174);
         }
         $type = 'pay_product';
         if (isset($orderInfo['member_type'])) {
@@ -73,7 +73,7 @@ class YuePayServices extends BaseServices
                     break;
             }
             if (!$res) {
-                throw new ValidateException('余额支付失败!');
+                throw new ApiException(410279);
             }
         });
         return ['status' => true];

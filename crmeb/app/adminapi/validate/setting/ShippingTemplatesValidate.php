@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -38,14 +38,14 @@ class ShippingTemplatesValidate extends Validate
      * @var array
      */
     protected $message = [
-        'name.require' => '请填写运费模板名称',
-        'region_info.array' => '运费信息必须为数组',
-        'appoint_info.array' => '包邮信息必须为数组',
-        'no_delivery_info.array' => '不送达信息必须为数组',
-        'type.number' => 'type数据格式错误，应为1或2或3',
-        'appoint.number' => 'appoint数据格式错误，应为0或1',
-        'no_delivery.number' => 'no_delivery数据格式错误，应为0或1',
-        'sort.number' => 'sort数据格式错误，应为整数',
+        'name.require' => '400025',
+        'region_info.array' => '400026',
+        'appoint_info.array' => '400027',
+        'no_delivery_info.array' => '400028',
+        'type.number' => '400029',
+        'appoint.number' => '400030',
+        'no_delivery.number' => '400031',
+        'sort.number' => '400032',
     ];
 
     protected $scene = [

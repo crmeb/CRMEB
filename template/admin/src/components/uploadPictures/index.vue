@@ -16,13 +16,7 @@
           <div class="trees-coadd">
             <div class="scollhide">
               <div class="trees">
-                <Tree
-                  :data="treeData"
-                  :render="renderContent"
-                  :load-data="loadData"
-                  class="treeBox"
-                  ref="tree"
-                ></Tree>
+                <Tree :data="treeData" :render="renderContent" :load-data="loadData" class="treeBox" ref="tree"></Tree>
               </div>
             </div>
           </div>
@@ -55,25 +49,11 @@
                 <Button type="primary">上传图片</Button>
               </Upload>
               <!--<Button type="success" @click.stop="add" class="mr10">添加分类</Button>-->
-              <Button
-                type="error"
-                class="mr10"
-                :disabled="checkPicList.length === 0"
-                @click.stop="editPicList('图片')"
+              <Button type="error" class="mr10" :disabled="checkPicList.length === 0" @click.stop="editPicList('图片')"
                 >删除图片</Button
               >
-              <i-select
-                :value="pids"
-                placeholder="图片移动至"
-                style="width: 250px"
-                class="treeSel"
-              >
-                <i-option
-                  v-for="(item, index) of list"
-                  :value="item.value"
-                  :key="index"
-                  style="display: none"
-                >
+              <i-select :value="pids" placeholder="图片移动至" style="width: 250px" class="treeSel">
+                <i-option v-for="(item, index) of list" :value="item.value" :key="index" style="display: none">
                   {{ item.title }}
                 </i-option>
                 <Tree
@@ -111,11 +91,7 @@
                     @click.stop="changImage(item, index, pictrueList)"
                   />
                   <div
-                    style="
-                      display: flex;
-                      align-items: center;
-                      justify-content: space-between;
-                    "
+                    style="display: flex; align-items: center; justify-content: space-between"
                     @mouseenter="enterLeave(item)"
                     @mouseleave="enterLeave(item)"
                   >
@@ -136,10 +112,7 @@
                       v-if="item.isShowEdit"
                     ></span>
                   </div>
-                  <div
-                    class="nameStyle"
-                    v-show="item.realName && item.real_name"
-                  >
+                  <div class="nameStyle" v-show="item.realName && item.real_name">
                     {{ item.real_name }}
                   </div>
                 </div>
@@ -154,13 +127,7 @@
             </Row>
           </div>
           <div class="footer acea-row row-right">
-            <Page
-              :total="total"
-              show-elevator
-              show-total
-              @on-change="pageChange"
-              :page-size="fileData.limit"
-            />
+            <Page :total="total" show-elevator show-total @on-change="pageChange" :page-size="fileData.limit" />
           </div>
         </div>
       </Col>
@@ -176,16 +143,16 @@ import {
   categoryEditApi,
   moveApi,
   fileUpdateApi,
-} from "@/api/uploadPictures";
-import Setting from "@/setting";
-import { getCookies } from "@/libs/util";
+} from '@/api/uploadPictures';
+import Setting from '@/setting';
+import { getCookies } from '@/libs/util';
 export default {
-  name: "uploadPictures",
+  name: 'uploadPictures',
   // components: { editFrom },
   props: {
     isChoice: {
       type: String,
-      default: "",
+      default: '',
     },
     gridBtn: {
       type: Object,
@@ -207,7 +174,7 @@ export default {
   data() {
     return {
       spinShow: false,
-      fileUrl: Setting.apiBaseURL + "/file/upload",
+      fileUrl: Setting.apiBaseURL + '/file/upload',
       modalPic: false,
       treeData: [],
       treeData2: [],
@@ -215,14 +182,14 @@ export default {
       uploadData: {}, // 上传参数
       checkPicList: [],
       uploadName: {
-        name: "",
+        name: '',
       },
       FromData: null,
       treeId: 0,
       isJudge: false,
       buttonProps: {
-        type: "default",
-        size: "small",
+        type: 'default',
+        size: 'small',
       },
       fileData: {
         pid: 0,
@@ -232,7 +199,7 @@ export default {
       total: 0,
       pids: 0,
       list: [],
-      modalTitleSs: "",
+      modalTitleSs: '',
       isShowPic: false,
       header: {},
       ids: [], // 选中附件的id集合
@@ -252,7 +219,7 @@ export default {
     },
     // 上传头部token
     getToken() {
-      this.header["Authori-zation"] = "Bearer " + getCookies("token");
+      this.header['Authori-zation'] = 'Bearer ' + getCookies('token');
     },
     // 树状图
     renderContent(h, { root, node, data }) {
@@ -260,59 +227,59 @@ export default {
       if (data.pid == 0) {
         operate.push(
           h(
-            "div",
+            'div',
             {
-              class: ["ivu-dropdown-item"],
+              class: ['ivu-dropdown-item'],
               on: {
                 click: () => {
                   this.append(root, node, data);
                 },
               },
             },
-            "添加分类"
-          )
+            '添加分类',
+          ),
         );
       }
-      if (data.id !== "") {
+      if (data.id !== '') {
         operate.push(
           h(
-            "div",
+            'div',
             {
-              class: ["ivu-dropdown-item"],
+              class: ['ivu-dropdown-item'],
               on: {
                 click: () => {
                   this.editPic(root, node, data);
                 },
               },
             },
-            "编辑分类"
+            '编辑分类',
           ),
           h(
-            "div",
+            'div',
             {
-              class: ["ivu-dropdown-item"],
+              class: ['ivu-dropdown-item'],
               on: {
                 click: () => {
-                  this.remove(root, node, data, "分类");
+                  this.remove(root, node, data, '分类');
                 },
               },
             },
-            "删除分类"
-          )
+            '删除分类',
+          ),
         );
       }
       return h(
-        "span",
+        'span',
         {
-          class: ["ivu-span"],
+          class: ['ivu-span'],
           style: {
-            display: "inline-block",
-            width: "88%",
-            height: "32px",
-            lineHeight: "32px",
-            position: "relative",
-            color: "rgba(0,0,0,0.6)",
-            cursor: "pointer",
+            display: 'inline-block',
+            width: '88%',
+            height: '32px',
+            lineHeight: '32px',
+            position: 'relative',
+            color: 'rgba(0,0,0,0.6)',
+            cursor: 'pointer',
           },
           on: {
             mouseenter: () => {
@@ -328,7 +295,7 @@ export default {
         },
         [
           h(
-            "span",
+            'span',
             {
               on: {
                 click: (e) => {
@@ -336,25 +303,25 @@ export default {
                 },
               },
             },
-            data.title
+            data.title,
           ),
           h(
-            "div",
+            'div',
             {
               style: {
-                display: "inline-block",
-                float: "right",
+                display: 'inline-block',
+                float: 'right',
               },
             },
             [
-              h("Icon", {
+              h('Icon', {
                 props: {
-                  type: "ios-more",
+                  type: 'ios-more',
                 },
                 style: {
-                  marginRight: "8px",
-                  fontSize: "20px",
-                  display: "inline",
+                  marginRight: '8px',
+                  fontSize: '20px',
+                  display: 'inline',
                 },
                 on: {
                   click: (e) => {
@@ -363,23 +330,23 @@ export default {
                 },
               }),
               h(
-                "div",
+                'div',
                 {
-                  class: ["right-menu ivu-poptip-inner"],
+                  class: ['right-menu ivu-poptip-inner'],
                   style: {
-                    width: "80px",
-                    position: "absolute",
-                    zIndex: "9",
-                    top: "0",
-                    right: "0",
-                    display: data.flag2 ? "block" : "none",
+                    width: '80px',
+                    position: 'absolute',
+                    zIndex: '9',
+                    top: '0',
+                    right: '0',
+                    display: data.flag2 ? 'block' : 'none',
                   },
                 },
-                operate
+                operate,
               ),
-            ]
+            ],
           ),
-        ]
+        ],
       );
     },
     // renderContent (h, { root, node, data }) {
@@ -455,32 +422,32 @@ export default {
     // },
     renderContentSel(h, { root, node, data }) {
       return h(
-        "div",
+        'div',
         {
           style: {
-            display: "inline-block",
-            width: "90%",
+            display: 'inline-block',
+            width: '90%',
           },
         },
         [
-          h("span", [
+          h('span', [
             h(
-              "span",
+              'span',
               {
                 style: {
-                  cursor: "pointer",
+                  cursor: 'pointer',
                 },
-                class: ["ivu-tree-title"],
+                class: ['ivu-tree-title'],
                 on: {
                   click: (e) => {
                     this.handleCheckChange(root, node, data, e);
                   },
                 },
               },
-              data.title
+              data.title,
             ),
           ]),
-        ]
+        ],
       );
     },
     // 下拉树
@@ -497,15 +464,13 @@ export default {
         this.pids = value;
         this.getMove();
       } else {
-        this.$Message.warning("请先选择图片");
+        this.$Message.warning('请先选择图片');
       }
-      let selected = this.$refs.reference.$el.querySelectorAll(
-        ".ivu-tree-title-selected"
-      );
+      let selected = this.$refs.reference.$el.querySelectorAll('.ivu-tree-title-selected');
       for (let i = 0; i < selected.length; i++) {
-        selected[i].className = "ivu-tree-title";
+        selected[i].className = 'ivu-tree-title';
       }
-      e.path[0].className = "ivu-tree-title  ivu-tree-title-selected"; // 当前点击的元素
+      e.path[0].className = 'ivu-tree-title  ivu-tree-title-selected'; // 当前点击的元素
     },
     // 移动分类
     getMove() {
@@ -532,9 +497,9 @@ export default {
         ids: this.ids.toString(),
       };
       let delfromData = {
-        title: "删除选中图片",
+        title: '删除选中图片',
         url: `file/file/delete`,
-        method: "POST",
+        method: 'POST',
         ids: ids,
       };
       this.$modalSure(delfromData)
@@ -549,7 +514,6 @@ export default {
     },
     // 鼠标移入 移出
     onMouseOver(root, node, data) {
-      // console.log('sss333',data);
       event.preventDefault();
       data.flag = !data.flag;
       if (data.flag2) {
@@ -568,13 +532,11 @@ export default {
       this.treeId = data.id;
       this.fileData.page = 1;
       this.getFileList();
-      let selected = this.$refs.tree.$el.querySelectorAll(
-        ".ivu-tree-title-selected"
-      );
+      let selected = this.$refs.tree.$el.querySelectorAll('.ivu-tree-title-selected');
       for (let i = 0; i < selected.length; i++) {
-        selected[i].className = "ivu-tree-title";
+        selected[i].className = 'ivu-tree-title';
       }
-      e.path[0].className = "ivu-tree-title  ivu-tree-title-selected"; // 当前点击的元素
+      e.path[0].className = 'ivu-tree-title  ivu-tree-title-selected'; // 当前点击的元素
     },
     // 点击添加
     append(root, node, data) {
@@ -585,10 +547,10 @@ export default {
     remove(root, node, data, tit) {
       this.tits = tit;
       let delfromData = {
-        title: "删除 [ " + data.title + " ] " + "分类",
+        title: '删除 [ ' + data.title + ' ] ' + '分类',
         url: `file/category/${data.id}`,
-        method: "DELETE",
-        ids: "",
+        method: 'DELETE',
+        ids: '',
       };
       this.$modalSure(delfromData)
         .then((res) => {
@@ -616,20 +578,20 @@ export default {
     },
     // 搜索分类
     changePage() {
-      this.getList("search");
+      this.getList('search');
     },
     // 分类列表树
     getList(type) {
       let data = {
-        title: "全部图片",
-        id: "",
+        title: '全部图片',
+        id: '',
         pid: 0,
       };
       getCategoryListApi(this.uploadName)
         .then(async (res) => {
           this.treeData = res.data.list;
           this.treeData.unshift(data);
-          if (type !== "search") {
+          if (type !== 'search') {
             this.treeData2 = [...this.treeData];
           }
           this.addFlag(this.treeData);
@@ -650,8 +612,8 @@ export default {
     },
     addFlag(treedata) {
       treedata.map((item) => {
-        this.$set(item, "flag", false);
-        this.$set(item, "flag2", false);
+        this.$set(item, 'flag', false);
+        this.$set(item, 'flag2', false);
         item.children && this.addFlag(item.children);
       });
     },
@@ -703,7 +665,7 @@ export default {
       //   this.$Message.error(file.name + "大小超过2M!");
       // } else
       if (!/image\/\w+/.test(file.type)) {
-        this.$Message.error("请上传以jpg、jpeg、png等结尾的图片文件"); //FileExt.toLowerCase()
+        this.$Message.error('请上传以jpg、jpeg、png等结尾的图片文件'); //FileExt.toLowerCase()
         return false;
       }
       this.uploadData = {
@@ -728,7 +690,7 @@ export default {
     },
     // 关闭
     cancel() {
-      this.$emit("changeCancel");
+      this.$emit('changeCancel');
     },
     // 选中图片
     changImage(item, index, row) {
@@ -764,33 +726,26 @@ export default {
     },
     // 点击使用选中图片
     checkPics() {
-      if (this.isChoice === "单选") {
-        if (this.checkPicList.length > 1)
-          return this.$Message.warning("最多只能选一张图片");
-        this.$emit("getPic", this.checkPicList[0]);
+      if (this.isChoice === '单选') {
+        if (this.checkPicList.length > 1) return this.$Message.warning('最多只能选一张图片');
+        this.$emit('getPic', this.checkPicList[0]);
       } else {
         let maxLength = this.$route.query.maxLength;
-        if (
-          maxLength != undefined &&
-          this.checkPicList.length > Number(maxLength)
-        )
-          return this.$Message.warning("最多只能选" + maxLength + "张图片");
-        this.$emit("getPicD", this.checkPicList);
+        if (maxLength != undefined && this.checkPicList.length > Number(maxLength))
+          return this.$Message.warning('最多只能选' + maxLength + '张图片');
+        this.$emit('getPicD', this.checkPicList);
       }
     },
     editName(item) {
-      let it = item.real_name.split(".");
+      let it = item.real_name.split('.');
       let it1 = it[1] == undefined ? [] : it[1];
       let len = it[0].length + it1.length;
-      item.editName =
-        len < 10
-          ? item.real_name
-          : item.real_name.substr(0, 2) + "..." + item.real_name.substr(-5, 5);
+      item.editName = len < 10 ? item.real_name : item.real_name.substr(0, 2) + '...' + item.real_name.substr(-5, 5);
     },
     // 修改图片文字上传
     bindTxt(item) {
-      if (item.real_name == "") {
-        this.$Message.error("请填写内容");
+      if (item.real_name == '') {
+        this.$Message.error('请填写内容');
       }
       fileUpdateApi(item.att_id, {
         real_name: item.real_name,

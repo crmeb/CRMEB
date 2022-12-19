@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -11,12 +11,14 @@
 namespace crmeb\services\template\storage;
 
 use app\services\message\TemplateMessageServices;
-use crmeb\basic\BaseMessage;
-use crmeb\services\WechatService;
+use crmeb\services\template\BaseMessage;
+use crmeb\services\app\WechatService;
 use think\facade\Log;
 
 class Wechat extends BaseMessage
 {
+    protected $error;
+
     /**
      * 初始化
      * @param array $config
@@ -40,19 +42,12 @@ class Wechat extends BaseMessage
 
     /**
      * 发送消息
-     * @param string $templateId
+     * @param string $tempid
      * @param array $data
      * @return bool|mixed
      */
-    public function send(string $templateId, array $data = [])
+    public function send(string $tempid, array $data = [])
     {
-        //从配置文件中获取模版编号
-        $templateId = $this->getTemplateCode($templateId);
-        if (!$templateId) {
-            return $this->setError('Template number does not exist');
-        }
-        //根据模版编号获取模版ID
-        $tempid = $this->getTempId($templateId);
         if (!$tempid) {
             return $this->setError('Template ID does not exist');
         }
@@ -106,12 +101,35 @@ class Wechat extends BaseMessage
     {
         return WechatService::noticeService()->getIndustry();
     }
+
     /**
      * 设置模版消息行业
      * @return \EasyWeChat\Support\Collection
      */
-    public function setIndustry($one,$two)
+    public function setIndustry($one, $two)
     {
-        return WechatService::noticeService()->setIndustry($one,$two);
+        return WechatService::noticeService()->setIndustry($one, $two);
+    }
+
+    /**
+     * 设置错误信息
+     * @param string|null $error
+     * @return bool
+     */
+    protected function setError(?string $error = null)
+    {
+        $this->error = $error ?: '未知错误';
+        return false;
+    }
+
+    /**
+     * 获取错误信息
+     * @return string
+     */
+    public function getError()
+    {
+        $error = $this->error;
+        $this->error = null;
+        return $error;
     }
 }

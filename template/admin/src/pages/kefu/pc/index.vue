@@ -1,12 +1,7 @@
 <template>
   <div class="kefu-layouts">
     <div class="content-wrapper">
-      <baseHeader
-        :kefuInfo="kefuInfo"
-        :online="online"
-        @setOnline="setOnline"
-        @search="bindSearch"
-      ></baseHeader>
+      <baseHeader :kefuInfo="kefuInfo" :online="online" @setOnline="setOnline" @search="bindSearch"></baseHeader>
       <div class="container">
         <chatList
           @setDataId="setDataId"
@@ -17,34 +12,17 @@
         ></chatList>
         <div class="chat-content">
           <div class="chat-body">
-            <happy-scroll
-              size="5"
-              resize
-              hide-horizontal
-              :scroll-top="scrollTop"
-              @vertical-start="scrollHandler"
-            >
-              <div
-                style="width: 600px; padding: 20px"
-                id="chat_scroll"
-                ref="scrollBox"
-              >
+            <happy-scroll size="5" resize hide-horizontal :scroll-top="scrollTop" @vertical-start="scrollHandler">
+              <div style="width: 600px; padding: 20px" id="chat_scroll" ref="scrollBox">
                 <Spin v-show="isLoad">
-                  <Icon
-                    type="ios-loading"
-                    size="18"
-                    class="demo-spin-icon-load"
-                  ></Icon>
+                  <Icon type="ios-loading" size="18" class="demo-spin-icon-load"></Icon>
                   <div>Loading</div>
                 </Spin>
                 <div
                   class="chat-item"
                   v-for="(item, index) in records"
                   :key="index"
-                  :class="[
-                    { 'right-box': item.uid == kefuInfo.uid },
-                    { gary: item.msn_type == 5 },
-                  ]"
+                  :class="[{ 'right-box': item.uid == kefuInfo.uid }, { gary: item.msn_type == 5 }]"
                   :id="`chat_${item.id}`"
                 >
                   <div class="time" v-show="item.show">{{ item.time }}</div>
@@ -76,60 +54,30 @@
                             <div class="sku">
                               库存：{{ item.productInfo.stock }} 销量：{{
                                 parseInt(item.productInfo.sales) +
-                                parseInt(
-                                  item.productInfo.ficti
-                                    ? item.productInfo.ficti
-                                    : 0
-                                )
+                                parseInt(item.productInfo.ficti ? item.productInfo.ficti : 0)
                               }}
                             </div>
                             <div class="price-box">
-                              <div class="num">
-                                ¥ {{ item.productInfo.price }}
-                              </div>
-                              <a
-                                herf="javascript:;"
-                                class="more"
-                                @click.stop="lookGoods(item)"
-                                >查看商品 ></a
-                              >
+                              <div class="num">¥ {{ item.productInfo.price }}</div>
+                              <a herf="javascript:;" class="more" @click.stop="lookGoods(item)">查看商品 ></a>
                             </div>
                           </div>
                         </div>
                       </template>
                       <!-- 订单 -->
-                      <template
-                        v-if="
-                          item.msn_type == 6 &&
-                          (item.orderInfo.length > 0 || item.orderInfo.id)
-                        "
-                      >
+                      <template v-if="item.msn_type == 6 && (item.orderInfo.length > 0 || item.orderInfo.id)">
                         <div class="order-wrapper pad16">
                           <div class="img-box">
-                            <img
-                              :src="
-                                item.orderInfo.cartInfo[0].productInfo.image
-                              "
-                              alt=""
-                            />
+                            <img :src="item.orderInfo.cartInfo[0].productInfo.image" alt="" />
                           </div>
                           <div class="order-info">
                             <div class="name line1">
                               {{ item.orderInfo.order_id }}
                             </div>
-                            <div class="sku">
-                              商品数量：{{ item.orderInfo.total_num }}
-                            </div>
+                            <div class="sku">商品数量：{{ item.orderInfo.total_num }}</div>
                             <div class="price-box">
-                              <div class="num">
-                                ¥ {{ item.orderInfo.pay_price }}
-                              </div>
-                              <a
-                                href="javascript:;"
-                                class="more"
-                                @click.stop="lookOrder(item)"
-                                >查看订单 ></a
-                              >
+                              <div class="num">¥ {{ item.orderInfo.pay_price }}</div>
+                              <a href="javascript:;" class="more" @click.stop="lookOrder(item)">查看订单 ></a>
                             </div>
                           </div>
                         </div>
@@ -169,25 +117,13 @@
                   <span>转接</span>
                 </div>
                 <div class="transfer-box" v-if="isTransfer">
-                  <transfer
-                    @close="msgClose"
-                    @transferPeople="transferPeople"
-                    :userUid="userActive.to_uid"
-                  ></transfer>
+                  <transfer @close="msgClose" @transferPeople="transferPeople" :userUid="userActive.to_uid"></transfer>
                 </div>
-                <div
-                  class="transfer-bg"
-                  v-if="isTransfer"
-                  @click.stop="isTransfer = false"
-                ></div>
+                <div class="transfer-bg" v-if="isTransfer" @click.stop="isTransfer = false"></div>
               </div>
               <!-- 表情 -->
               <div class="emoji-box" v-show="isEmoji">
-                <div
-                  class="emoji-item"
-                  v-for="(emoji, index) in emojiList"
-                  :key="index"
-                >
+                <div class="emoji-item" v-for="(emoji, index) in emojiList" :key="index">
                   <i class="em" :class="emoji" @click.stop="select(emoji)"></i>
                 </div>
               </div>
@@ -198,19 +134,12 @@
                 v-model="chatCon"
                 type="textarea"
                 :rows="4"
-                @keydown.native="listen($event)"
+                @on-keydown="listen($event)"
                 placeholder="请输入文字内容"
-                @on-enter="bindEnter"
                 style="font-size: 14px"
               />
               <div class="send-btn">
-                <Button
-                  class="btns"
-                  type="primary"
-                  :disabled="disabled"
-                  @click.stop="sendText"
-                  >发送</Button
-                >
+                <Button class="btns" type="primary" :disabled="disabled" @click.stop="sendText">发送</Button>
               </div>
             </div>
           </div>
@@ -225,18 +154,8 @@
         </div>
       </div>
       <!-- 用户标签 -->
-      <Modal
-        v-model="isMsg"
-        :mask="true"
-        class="none-radius isMsgbox"
-        width="600"
-        :footer-hide="true"
-      >
-        <msgWindow
-          v-if="isMsg"
-          @close="msgClose"
-          @activeTxt="activeTxt"
-        ></msgWindow>
+      <Modal v-model="isMsg" :mask="true" class="none-radius isMsgbox" width="600" :footer-hide="true">
+        <msgWindow v-if="isMsg" @close="msgClose" @activeTxt="activeTxt"></msgWindow>
       </Modal>
       <!-- 商品弹窗 -->
       <div v-if="isProductBox">
@@ -245,14 +164,7 @@
       </div>
       <!-- 订单详情 -->
       <div v-if="isOrder">
-        <Modal
-          v-model="isOrder"
-          title="订单信息"
-          width="700"
-          :footer-hide="true"
-          :mask="true"
-          class="none-radius"
-        >
+        <Modal v-model="isOrder" title="订单信息" width="700" :footer-hide="true" :mask="true" class="none-radius">
           <orderDetail :orderId="orderId"></orderDetail>
         </Modal>
       </div>
@@ -261,24 +173,24 @@
 </template>
 
 <script>
-var mp3 = require("../../../assets/video/notice.wav");
+var mp3 = require('../../../assets/video/notice.wav');
 var mp3 = new Audio(mp3);
-import Setting from "@/setting";
-import { HappyScroll } from "vue-happy-scroll";
-import baseHeader from "./components/baseHeader";
-import chatList from "./components/chatList";
-import rightMenu from "./components/rightMenu";
-import emojiList from "@/utils/emoji";
-import { Socket } from "@/libs/socket";
-import util from "@/libs/util";
-import msgWindow from "./components/msgWindow";
-import transfer from "./components/transfer";
-import { serviceList, uploadImg } from "@/api/kefu";
-import goodsDetail from "./components/goods_detail";
-import orderDetail from "./components/order_detail";
-import { mapState } from "vuex";
-import { getCookies, removeCookies, setCookies } from "@/libs/util";
-import { serviceInfo } from "@/api/kefu_mobile";
+import Setting from '@/setting';
+import { HappyScroll } from 'vue-happy-scroll';
+import baseHeader from './components/baseHeader';
+import chatList from './components/chatList';
+import rightMenu from './components/rightMenu';
+import emojiList from '@/utils/emoji';
+import { Socket } from '@/libs/socket';
+import util from '@/libs/util';
+import msgWindow from './components/msgWindow';
+import transfer from './components/transfer';
+import { serviceList, uploadImg } from '@/api/kefu';
+import goodsDetail from './components/goods_detail';
+import orderDetail from './components/order_detail';
+import { mapState } from 'vuex';
+import { getCookies, removeCookies, setCookies } from '@/libs/util';
+import { serviceInfo } from '@/api/kefu_mobile';
 const chunk = function (arr, num) {
   num = num * 1 || 1;
   var ret = [];
@@ -291,7 +203,7 @@ const chunk = function (arr, num) {
   return ret;
 };
 export default {
-  name: "index",
+  name: 'index',
   components: {
     baseHeader,
     chatList,
@@ -305,17 +217,17 @@ export default {
   data() {
     return {
       isEmoji: false,
-      chatCon: "",
+      chatCon: '',
       emojiGroup: chunk(emojiList, 20), // 表情列表
       emojiList: emojiList,
-      html: "",
+      html: '',
       userActive: {}, //左侧用户列表选中信息
       kefuInfo: {}, //客服信息
       isMsg: false,
       isTransfer: false,
-      activeMsg: "", // 选中的话术
+      activeMsg: '', // 选中的话术
       chatList: [],
-      text: "",
+      text: '',
       limit: 20,
       upperId: 0,
       online: true, //当前客服在线状态
@@ -324,19 +236,19 @@ export default {
       oldHeight: 0,
       isLoad: false,
       isProductBox: false,
-      goodsId: "",
+      goodsId: '',
       isOrder: false,
-      orderId: "",
-      upload: "",
+      orderId: '',
+      upload: '',
       header: {},
       uploadData: {
-        filename: "file",
+        filename: 'file',
       },
       userOnline: {},
       newRecored: {}, //新对话信息
-      searchData: "", // 搜索文字
+      searchData: '', // 搜索文字
       scrollNum: 0, //滚动次数
-      transferId: "", //转接id
+      transferId: '', //转接id
       bodyClose: false,
       tourist: 0,
     };
@@ -354,7 +266,7 @@ export default {
     },
     records() {
       return this.chatList.map((item, index) => {
-        item.time = this.$moment(item.add_time * 1000).format("MMMDo H:mm");
+        item.time = this.$moment(item.add_time * 1000).format('MMMDo H:mm');
         if (index) {
           if (item.add_time - this.chatList[index - 1].add_time >= 300) {
             item.show = true;
@@ -372,7 +284,7 @@ export default {
   directives: {
     paste: {
       bind(el, binding, vnode) {
-        el.addEventListener("paste", function (event) {
+        el.addEventListener('paste', function (event) {
           //这里直接监听元素的粘贴事件
           binding.value(event);
         });
@@ -393,59 +305,59 @@ export default {
     // }
   },
   created() {
-    this.upload = Setting.apiBaseURL.replace("adminapi", "kefuapi") + "/upload";
+    this.upload = Setting.apiBaseURL.replace('adminapi', 'kefuapi') + '/upload';
     serviceInfo().then((res) => {
       this.kefuInfo = res.data;
       if (this.kefuInfo.site_name) {
         document.title = this.kefuInfo.site_name;
       } else {
-        this.kefuInfo.site_name = "";
+        this.kefuInfo.site_name = '';
       }
     });
   },
   mounted() {
     let self = this;
-    window.addEventListener("click", function () {
+    window.addEventListener('click', function () {
       self.isEmoji = false;
     });
     setTimeout((e) => {
       Socket.then((ws) => {
         ws.send({
-          type: "kefu_login",
-          data: getCookies("kefu_token"),
+          type: 'kefu_login',
+          data: getCookies('kefu_token'),
         });
-        ws.$on(["reply", "chat"], (data) => {
+        ws.$on(['reply', 'chat'], (data) => {
           if (data.msn_type == 1) {
             data.msn = this.replace_em(data.msn);
           }
           if (data.msn_type == 2) {
-            if (data.msn.indexOf("[") == -1) {
+            if (data.msn.indexOf('[') == -1) {
               data.msn = this.replace_em(`[${data.msn}]`);
             }
           }
           this.chatList.push(data);
           this.$nextTick(function () {
             setTimeout(() => {
-              var container = document.querySelector("#chat_scroll");
+              var container = document.querySelector('#chat_scroll');
               this.scrollTop = container.offsetHeight;
             }, 800);
           });
         });
-        ws.$on("reply", (data) => {
+        ws.$on('reply', (data) => {
           // mp3.play();
         });
-        ws.$on("socket_error", () => {
-          this.$Message.error("连接失败");
+        ws.$on('socket_error', () => {
+          this.$Message.error('连接失败');
         });
-        ws.$on("err_tip", (data) => {
+        ws.$on('err_tip', (data) => {
           this.$Message.error(data.msg);
         });
         //用户上线提醒广播
-        ws.$on("user_online", (data) => {
+        ws.$on('user_online', (data) => {
           this.userOnline = data;
         });
         //用户未读消息条数更改
-        ws.$on("mssage_num", (data) => {
+        ws.$on('mssage_num', (data) => {
           if (data.num > 0) {
             mp3.play();
           }
@@ -460,21 +372,15 @@ export default {
         });
       });
     }, 2000);
-    this.header["Authori-zation"] = "Bearer " + getCookies("kefu_token");
-    this.text = this.replace_em("[em-smiling_imp]");
+    this.header['Authori-zation'] = 'Bearer ' + getCookies('kefu_token');
+    this.text = this.replace_em('[em-smiling_imp]');
     // Socket.init(this,'kefu');
   },
   methods: {
     handleFormatError(file) {
-      this.$Message.error("上传图片只能是 jpg、jpg、jpeg、gif 格式!");
+      this.$Message.error('上传图片只能是 jpg、jpg、jpeg、gif 格式!');
     },
-    bindEnter(e) {
-      if (e.target.value == "") {
-        return this.$Message.error("请输入消息");
-      }
-      this.sendMsg(e.target.value, 1);
-      this.chatCon = "";
-    },
+    bindEnter(e) {},
     //微信截图上传图片时触发
     handleParse(e) {
       let file = null;
@@ -482,15 +388,14 @@ export default {
         e.clipboardData &&
         e.clipboardData.items[0] &&
         e.clipboardData.items[0].type &&
-        e.clipboardData.items[0].type.indexOf("image") > -1
+        e.clipboardData.items[0].type.indexOf('image') > -1
       ) {
         //这里就是判断是否有粘贴进来的文件且文件为图片格式
         file = e.clipboardData.items[0].getAsFile();
       } else {
         this.$message({
-          type: "warning",
-          message:
-            "上传的文件必须为图片且无法复制本地图片且无法同时复制多张图片",
+          type: 'warning',
+          message: '上传的文件必须为图片且无法复制本地图片且无法同时复制多张图片',
         });
         return;
       }
@@ -500,8 +405,8 @@ export default {
       // 上传照片
       let file = e;
       let param = new FormData(); // 创建form对象
-      param.append("filename", "file"); // 通过append向form对象添加数据进去
-      param.append("file", file); // 通过append向form对象添加数据进去
+      param.append('filename', 'file'); // 通过append向form对象添加数据进去
+      param.append('file', file); // 通过append向form对象添加数据进去
       // 添加请求头
       uploadImg(param).then((res) => {
         this.sendMsg(res.data.url, 3);
@@ -527,16 +432,21 @@ export default {
           data: {
             online: data,
           },
-          type: "online",
+          type: 'online',
         });
       });
       this.online = data;
     },
     // 阻止浏览器默认换行操作
     listen(e) {
-      if (e.keyCode == 13) {
-        e.preventDefault();
-        return false;
+      if (e.shiftKey && e.keyCode == 13) {
+        console.log('换行');
+      } else if (e.keyCode == 13) {
+        if (e.target.value == '') {
+          return this.$Message.error('请输入消息');
+        }
+        this.sendMsg(e.target.value, 1);
+        this.chatCon = '';
       }
     },
     // 输入框选择表情
@@ -547,7 +457,7 @@ export default {
     },
     // 聊天表情转换
     replace_em(str) {
-      str = str.replace(/\[em-([a-z_]*)\]/g, "<span class='em em-$1'/></span>");
+      str = str.replace(/\[em-([\s\S]*)\]/g, "<span class='em em-$1'/></span>");
       return str;
     },
     // 获取是否游客
@@ -564,14 +474,14 @@ export default {
       if (data) {
         window.document.title = data.nickname
           ? `正在和${data.nickname}对话中 - ${this.kefuInfo.site_name}`
-          : "正在和游客对话中 - " + this.kefuInfo.site_name;
+          : '正在和游客对话中 - ' + this.kefuInfo.site_name;
 
         Socket.then((ws) => {
           ws.send({
             data: {
               id: this.userActive.to_uid,
             },
-            type: "to_chat",
+            type: 'to_chat',
           });
         });
         this.getChatList();
@@ -590,13 +500,13 @@ export default {
     // 文本发送
     sendText() {
       this.sendMsg(this.chatCon, 1);
-      this.chatCon = "";
+      this.chatCon = '';
     },
 
     // 统一发送处理
     sendMsg(msn, type) {
       let obj = {
-        type: "chat",
+        type: 'chat',
         data: {
           msn,
           type,
@@ -629,9 +539,9 @@ export default {
             el.msn = this.replace_em(`[${el.msn}]`);
           }
         });
-        let selector = "";
+        let selector = '';
         if (this.upperId == 0) {
-          selector = "";
+          selector = '';
         } else {
           selector = `chat_${this.chatList[0].id}`;
         }
@@ -652,17 +562,15 @@ export default {
       this.$nextTick(() => {
         if (selector) {
           setTimeout(() => {
-            let num =
-              parseFloat(document.getElementById(selector).offsetTop) - 60;
+            let num = parseFloat(document.getElementById(selector).offsetTop) - 60;
             this.scrollTop = num;
           }, 0);
         } else {
-          var container = document.querySelector("#chat_scroll");
+          var container = document.querySelector('#chat_scroll');
           this.scrollTop = container.offsetHeight;
           setTimeout((res) => {
             if (this.scrollTop != this.$refs.scrollBox.offsetHeight) {
-              this.scrollTop =
-                document.querySelector("#chat_scroll").offsetHeight;
+              this.scrollTop = document.querySelector('#chat_scroll').offsetHeight;
             }
           }, 300);
         }
@@ -678,7 +586,7 @@ export default {
     },
     // 滚动条动画
     scrollToTop(duration) {
-      var container = document.querySelector("#chat_scroll");
+      var container = document.querySelector('#chat_scroll');
       this.scrollTop = container.offsetHeight - this.oldHeight;
       setTimeout((res) => {
         this.scrollTop = this.$refs.scrollBox.offsetHeight - this.oldHeight;
@@ -704,10 +612,10 @@ export default {
     transferPeople(data) {
       this.transferId = data.id;
       this.isTransfer = false;
-      this.$Message.success("转接成功");
+      this.$Message.success('转接成功');
       Socket.then((ws) => {
         ws.send({
-          type: "to_chat",
+          type: 'to_chat',
           data: { id: data.uid },
         });
       });
@@ -791,6 +699,7 @@ textarea.ivu-input {
 
             .txt-wrapper {
               word-break: break-all;
+              white-space: pre-wrap;
             }
 
             .pad16 {
@@ -949,6 +858,8 @@ textarea.ivu-input {
             padding: 15px 9px;
             box-shadow: 0px 0px 13px 1px rgba(0, 0, 0, 0.1);
             background: #fff;
+            overflow: auto;
+            height: 240px;
 
             .emoji-item {
               margin-right: 13px;
@@ -1029,5 +940,8 @@ textarea.ivu-input {
   >>> .ivu-modal-body {
     padding: 0;
   }
+}
+.emoji-box::-webkit-scrollbar {
+  width: 0;
 }
 </style>

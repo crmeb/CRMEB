@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -17,7 +17,7 @@ use app\services\activity\combination\StorePinkServices;
 use app\services\BaseServices;
 use app\services\system\store\SystemStoreStaffServices;
 use app\services\user\UserServices;
-use think\exception\ValidateException;
+use crmeb\exceptions\ApiException;
 
 /**
  * 核销订单
@@ -51,15 +51,15 @@ class StoreOrderWriteOffServices extends BaseServices
     {
         $orderInfo = $this->dao->getOne(['verify_code' => $code, 'paid' => 1, 'refund_status' => 0, 'is_del' => 0]);
         if (!$orderInfo) {
-            throw new ValidateException('Write off order does not exist');
+            throw new ApiException(410173);
         }
         if (!$orderInfo['verify_code'] || ($orderInfo->shipping_type != 2 && $orderInfo->delivery_type != 'send')) {
-            throw new ValidateException('此订单不能被核销');
+            throw new ApiException(410267);
         }
         /** @var StoreOrderRefundServices $storeOrderRefundServices */
         $storeOrderRefundServices = app()->make(StoreOrderRefundServices::class);
         if ($storeOrderRefundServices->count(['store_order_id' => $orderInfo['id'], 'refund_type' => [1, 2, 4, 5], 'is_cancel' => 0, 'is_del' => 0])) {
-            throw new ValidateException('订单有售后申请请先处理');
+            throw new ApiException(410268);
         }
         if ($uid) {
             $isAuth = true;
@@ -76,11 +76,11 @@ class StoreOrderWriteOffServices extends BaseServices
                     break;
             }
             if (!$isAuth) {
-                throw new ValidateException('您无权限核销此订单，请联系管理员');
+                throw new ApiException(410269);
             }
         }
         if ($orderInfo->status == 2) {
-            throw new ValidateException('订单已核销');
+            throw new ApiException(410270);
         }
         /** @var StoreOrderCartInfoServices $orderCartInfo */
         $orderCartInfo = app()->make(StoreOrderCartInfoServices::class);
@@ -90,14 +90,14 @@ class StoreOrderWriteOffServices extends BaseServices
         if ($cartInfo) $orderInfo['image'] = $cartInfo['cart_info']['productInfo']['image'];
         if ($orderInfo->shipping_type == 2) {
             if ($orderInfo->status > 0) {
-                throw new ValidateException('Order written off');
+                throw new ApiException(410270);
             }
         }
         if ($orderInfo->combination_id && $orderInfo->pink_id) {
             /** @var StorePinkServices $services */
             $services = app()->make(StorePinkServices::class);
             $res = $services->getCount([['id', '=', $orderInfo->pink_id], ['status', '<>', 2]]);
-            if ($res) throw new ValidateException('Failed to write off the group order');
+            if ($res) throw new ApiException(410271);
         }
         if ($confirm == 0) {
             /** @var UserServices $services */
@@ -116,11 +116,11 @@ class StoreOrderWriteOffServices extends BaseServices
             $storeOrdeTask = app()->make(StoreOrderTakeServices::class);
             $re = $storeOrdeTask->storeProductOrderUserTakeDelivery($orderInfo);
             if (!$re) {
-                throw new ValidateException('Write off failure');
+                throw new ApiException(410272);
             }
             return $orderInfo->toArray();
         } else {
-            throw new ValidateException('Write off failure');
+            throw new ApiException(410272);
         }
     }
 }

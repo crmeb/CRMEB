@@ -1,37 +1,45 @@
 <template>
 	<view class="pos-order-list" ref="container">
+		<view class='search acea-row row-between-wrapper'>
+			<view class='input acea-row row-between-wrapper'>
+				<text class='iconfont icon-sousuo'></text>
+				<input type='text' v-model='where.keywords' @confirm="inputConfirm" :focus='focus'
+					:placeholder='$t(`搜索用户名/订单号/电话`)' placeholder-class='placeholder' @input="setValue"></input>
+			</view>
+			<view class='bnt' @tap='searchBut'>{{$t(`搜索`)}}</view>
+		</view>
 		<view class="nav acea-row row-around row-middle">
 			<view class="item" :class="where.status == 0 ? 'on' : ''" @click="changeStatus(0)">
-				待付款
+				{{$t(`待付款`)}}
 			</view>
 			<view class="item" :class="where.status == 1 ? 'on' : ''" @click="changeStatus(1)">
-				待发货
+				{{$t(`待发货`)}}
 			</view>
 			<view class="item" :class="where.status == 2 ? 'on' : ''" @click="changeStatus(2)">
-				待收货
+				{{$t(`待收货`)}}
 			</view>
 			<view class="item" :class="where.status == 3 ? 'on' : ''" @click="changeStatus(3)">
-				待评价
+				{{$t(`待评价`)}}
 			</view>
 			<view class="item" :class="where.status == 4 ? 'on' : ''" @click="changeStatus(4)">
-				已完成
+				{{$t(`已完成`)}}
 			</view>
 			<view class="item" :class="where.status == -3 ? 'on' : ''" @click="changeStatus(-3)">
-				退款
+				{{$t(`退款`)}}
 			</view>
 		</view>
 		<view class="list" v-if="list.length">
 			<view class="item" v-for="(item, index) in list" :key="index">
 				<view class="order-num acea-row row-between-wrapper" @click="toDetail(item)">
 					<view>
-						<view>订单号：{{ item.order_id }}</view>
-						<view class="time">下单时间：{{ item.add_time }}</view>
+						<view>{{$t(`订单号`)}}：{{ item.order_id }}</view>
+						<view class="time">{{$t(`下单时间`)}}：{{ item.add_time }}</view>
 					</view>
 					<view class="state"
 						:class="(item.refund_status==0 && where.status != 0 && item.refund.length)?'on':''">
-						{{item.refund_status==1?'退款中':item.refund_status==2?'已退款':item.refund_status==3?'拒绝退款':item.status_name.status_name}}
+						{{item.refund_status==1?$t(`退款中`):item.refund_status==2?$t(`已退款`):item.refund_status==3?$t(`拒绝退款`):$t(item.status_name.status_name)}}
 						<text
-							v-if="item.refund_status==0 && where.status != 0 && item.refund.length">{{item.is_all_refund?'，退款中':'，部分退款中'}}</text>
+							v-if="item.refund_status==0 && where.status != 0 && item.refund.length">{{item.is_all_refund?$t(`退款中`):$t(`部分退款中`)}}</text>
 					</view>
 				</view>
 				<view class="pos-order-goods" v-for="(val, key) in item._info" :key="key">
@@ -52,66 +60,51 @@
 						</view>
 						<view class="money">
 							<view class="x-money">
-								￥{{ val.cart_info.productInfo.attrInfo?val.cart_info.productInfo.attrInfo.price:val.cart_info.productInfo.price }}
+								{{$t(`￥`)}}{{ val.cart_info.productInfo.attrInfo?val.cart_info.productInfo.attrInfo.price:val.cart_info.productInfo.price }}
 							</view>
 							<view class="num">x{{ val.cart_info.cart_num }}</view>
-							<!-- 	<view class="y-money">
-								￥{{ val.cart_info.productInfo.ot_price }}
-							</view> -->
 							<view class="info" v-if="val.cart_info.refund_num && item._status._type !=-2">
-								{{val.cart_info.refund_num}}件退款中
+								{{val.cart_info.refund_num}}{{$t(`件退款中`)}}
 							</view>
 						</view>
 					</view>
 				</view>
 				<view class="public-total">
-					共{{ item.total_num }}件商品，实付款
-					<span class="money">￥{{ item.pay_price }}</span> ( 邮费 ¥{{
+					{{$t(`共`)}}{{ item.total_num }}{{$t(`件商品，实付款`)}}
+					<span class="money">{{$t(`￥`)}}{{ item.pay_price }}</span> ( {{$t(`邮费`)}} {{$t(`￥`)}}{{
 	            item.pay_postage
 	          }}
 					)
 				</view>
 				<view class="operation acea-row row-between-wrapper">
-					<view class="more">
-						<!--            <view class="iconfont icon-gengduo" @click="more(index)"></view>-->
-						<!--            <view class="order" v-show="current === index">-->
-						<!--              <view class="items">-->
-						<!--                {{ where.status > 0 ? "删除" : "取消" }}订单-->
-						<!--              </view>-->
-						<!--              <view class="arrow"></view>-->
-						<!--            </view>-->
-					</view>
 					<view class="acea-row row-middle">
 						<view class="bnt" @click="modify(item, 0)" v-if="where.status == 0">
-							一键改价
+							{{$t(`一键改价`)}}
 						</view>
-						<view class="bnt" @click="modify(item, 1)">订单备注</view>
-						<!-- 						<view class="bnt" @click="modify(item, 0)" v-if="where.status == -3 && item.refund_status === 1">
-							立即退款
-						</view> -->
-						<view class="bnt" @click="modify(item, 2, 1)"
+						<view class="bnt" @click="modify(item, 1)">{{$t(`订单备注`)}}</view>
+						<view class="bnt" @click="modify(item, 2)"
 							v-if="(item.refund_type == 0 || item.refund_type == 1 || item.refund_type == 5 ) && where.status == -3 && parseFloat(item.pay_price) > 0">
-							立即退款
+							{{$t(`立即退款`)}}
 						</view>
-						<view class="bnt" @click="modify(item, 2, 0)"
-							v-if="where.status == -3 && item.refund_type == 2">同意退货</view>
-						<view class="wait" v-if="where.status == -3 && item.refund_type == 4">待用户发货</view>
+						<view class="bnt" @click="agreeExpress(item)"
+							v-if="where.status == -3 && item.refund_type == 2">{{$t(`同意退货`)}}</view>
+						<view class="wait" v-if="where.status == -3 && item.refund_type == 4">{{$t(`待用户发货`)}}</view>
 						<view class="bnt cancel" v-if="item.pay_type === 'offline' && item.paid === 0"
 							@click="offlinePay(item)">
-							确认付款
+							{{$t(`确认付款`)}}
 						</view>
 						<navigator class="bnt"
 							v-if="where.status == 1 && item.shipping_type === 1 && (item.pinkStatus === null || item.pinkStatus === 2)"
 							:url="'/pages/admin/delivery/index?id='+item.order_id+'&listId='+item.id+'&totalNum='+item.total_num+'&orderStatus='+item._status+'&comeType=1'">
-							去发货
+							{{$t(`去发货`)}}
 						</navigator>
 					</view>
 				</view>
 			</view>
 		</view>
 		<view v-else class="nothing">
-			<image v-if="!loading" src="../../../static/images/no-thing.png" alt="">
-				<view v-if="!loading">暂无记录</view>
+			<image v-if="!loading" :src="imgHost + '/statics/images/no-thing.png'" alt="">
+				<view v-if="!loading">{{$t(`暂无记录`)}}</view>
 		</view>
 		<Loading :loaded="loaded" :loading="loading"></Loading>
 		<PriceChange :change="change" :orderInfo="orderInfo" :isRefund="isRefund" v-on:closechange="changeclose($event)"
@@ -127,11 +120,14 @@
 		setAdminRefundRemark,
 		setOfflinePay,
 		setOrderRefund,
-		orderRefundAgree,
+		agreeExpress,
 		orderRefund_order
 	} from "@/api/admin";
 	import Loading from '@/components/Loading/index'
-	import PriceChange from '@/components/PriceChange/index'
+	import PriceChange from '../components/PriceChange/index.vue'
+	import {
+		HTTP_REQUEST_URL
+	} from '@/config/app'
 	import {
 		isMoney
 	} from '@/utils/validate.js'
@@ -143,10 +139,12 @@
 		},
 		data() {
 			return {
+				imgHost: HTTP_REQUEST_URL,
 				current: "",
 				change: false,
 				types: 0,
 				where: {
+					keywords: '',
 					page: 1,
 					limit: 10,
 					status: 0
@@ -154,6 +152,7 @@
 				list: [],
 				loaded: false,
 				loading: false,
+				focus: false,
 				orderInfo: {},
 				status: "",
 				isRefund: 0 //1是仅退款;0是退货退款
@@ -165,8 +164,32 @@
 			this.init();
 		},
 		methods: {
+			setValue(event) {
+				this.$set(this.where, 'keywords', event.detail.value);
+			},
+			inputConfirm(event) {
+				if (event.detail.value) {
+					uni.hideKeyboard();
+					this.getIndex();
+				}
+			},
+			searchBut() {
+				let that = this;
+				if (!that.where.keywords.trim()) return this.$util.Tips({
+					title: that.$t(`请输入要搜索的商品`)
+				});
+				that.focus = false;
+				that.where.page = 1;
+				that.loading = false;
+				that.loaded = false;
+				that.$set(that, 'list', []);
+				uni.showLoading({
+					title: that.$t(`正在搜索中`)
+				});
+				that.getIndex();
+			},
 			// 获取数据
-			getIndex: function() {
+			getIndex() {
 				let that = this;
 				if (that.loading || that.loaded) return;
 				that.loading = true;
@@ -178,8 +201,10 @@
 						that.loaded = res.data.length < that.where.limit;
 						that.list.push.apply(that.list, res.data);
 						that.where.page = that.where.page + 1;
+						uni.hideLoading();
 					},
 					err => {
+						uni.hideLoading();
 						that.$util.Tips({
 							title: err
 						})
@@ -187,7 +212,7 @@
 				);
 			},
 			// 初始化
-			init: function() {
+			init() {
 				this.list = [];
 				this.where.page = 1;
 				this.loaded = false;
@@ -203,15 +228,15 @@
 				}
 			},
 			// 商品操作
-			modify: function(item, status, type) {
+			modify(item, status) {
 				this.change = true;
 				this.status = status.toString();
 				this.orderInfo = item;
 				if (status == 2) {
-					this.isRefund = type
+					this.isRefund = 1
 				}
 			},
-			changeclose: function(msg) {
+			changeclose(msg) {
 				this.change = msg;
 			},
 			async savePrice(opt) {
@@ -225,7 +250,7 @@
 				if (that.status == 0) {
 					if (!isMoney(price)) {
 						return that.$util.Tips({
-							title: '请输入正确的金额'
+							title: that.$t(`请输入正确的金额`)
 						});
 					}
 					data.price = price;
@@ -233,7 +258,7 @@
 						res => {
 							that.change = false;
 							that.$util.Tips({
-								title: '改价成功',
+								title: that.$t(`改价成功`),
 								icon: 'success'
 							})
 							that.init();
@@ -241,53 +266,38 @@
 						err => {
 							that.change = false;
 							that.$util.Tips({
-								title: '改价失败',
+								title: that.$t(`改价失败`),
 								icon: 'none'
 							})
 						}
 					);
 				} else if (that.status == 2) {
-					if (this.isRefund) {
-						if (!isMoney(refund_price)) {
-							return that.$util.Tips({
-								title: '请输入正确的金额'
-							});
-						}
-						data.price = refund_price;
-						data.type = opt.type;
-						setOrderRefund(data).then(
-							res => {
-								that.change = false;
-								that.$util.Tips({
-									title: res.msg
-								});
-								that.init();
-							},
-							err => {
-								that.change = false;
-								that.$util.Tips({
-									title: err
-								});
-							}
-						);
-					} else {
-						orderRefundAgree(this.orderInfo.id).then(res => {
+					if (!isMoney(refund_price)) {
+						return that.$util.Tips({
+							title: that.$t(`请输入正确的金额`)
+						});
+					}
+					data.price = refund_price;
+					data.type = opt.type;
+					setOrderRefund(data).then(
+						res => {
 							that.change = false;
 							that.$util.Tips({
 								title: res.msg
 							});
 							that.init();
-						}).catch(err => {
+						},
+						err => {
 							that.change = false;
 							that.$util.Tips({
 								title: err
 							});
-						})
-					}
+						}
+					);
 				} else {
 					if (!remark) {
 						return this.$util.Tips({
-							title: '请输入备注'
+							title: that.$t(`请输入备注`)
 						})
 					}
 					data.remark = remark;
@@ -315,12 +325,27 @@
 					);
 				}
 			},
+			agreeExpress(item) {
+				let that = this;
+				agreeExpress({
+					id: item.id
+				}).then(res => {
+					that.$util.Tips({
+						title: res.msg
+					});
+					that.init();
+				}).catch(err => {
+					that.$util.Tips({
+						title: err
+					});
+				})
+			},
 			toDetail(item) {
 				uni.navigateTo({
 					url: `/pages/admin/orderDetail/index?id=${item.order_id}&types=${this.where.status}`
 				})
 			},
-			offlinePay: function(item) {
+			offlinePay(item) {
 				setOfflinePay({
 					order_id: item.order_id
 				}).then(
@@ -343,15 +368,59 @@
 	}
 </script>
 
-<style>
+<style lang="scss" scoped>
+	.pos-order-list {
+		padding-top: 96rpx;
+		.search {
+			padding-left: 30rpx;
+			padding-top: 30rpx;
+			background-color: #fff;
+			position: fixed;
+			top: 0;
+			left: 0;
+			z-index: 999;
+			.input {
+				width: 598rpx;
+				background-color: #f7f7f7;
+				border-radius: 33rpx;
+				padding: 0 35rpx;
+				box-sizing: border-box;
+				height: 66rpx;
+			}
+
+			.input input {
+				width: 472rpx;
+				font-size: 28rpx;
+			}
+
+			.input .placeholder {
+				color: #999;
+			}
+
+			.input .iconfont {
+				color: #555;
+				font-size: 35rpx;
+			}
+
+			.bnt {
+				width: 120rpx;
+				text-align: center;
+				height: 66rpx;
+				line-height: 66rpx;
+				font-size: 30rpx;
+				color: #282828;
+			}
+		}
+	}
+
 	.pos-order-list .nav {
 		width: 100%;
 		height: 96upx;
 		background-color: #fff;
-		font-size: 30upx;
+		font-size: 28rpx;
 		color: #282828;
 		position: fixed;
-		top: 0;
+		top: 96rpx;
 		left: 0;
 		z-index: 9999;
 	}
@@ -365,7 +434,7 @@
 	}
 
 	.pos-order-list .nothing {
-		margin-top: 120upx;
+		margin-top: 220upx;
 		text-align: center;
 		color: #cfcfcf;
 	}
@@ -479,6 +548,7 @@
 
 	.pos-order-list .list .item .operation .wait {
 		margin-left: 30rpx;
+		color: orangered;
 	}
 
 	.pos-order-goods {

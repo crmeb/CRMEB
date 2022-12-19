@@ -4,38 +4,38 @@
 			<!--失败时： 用icon-iconfontguanbi fail替换icon-duihao2 bg-color-->
 			<view class='iconfont icons icon-duihao2 bg-color'></view>
 			<!-- 失败时：商品兑换失败 -->
-			<view class='status' v-if="order_pay_info.pay_type != 'offline'">商品兑换成功
+			<view class='status' v-if="order_pay_info.pay_type != 'offline'">{{$t(`商品兑换成功`)}}
 			</view>
-			<view class='status' v-else>订单创建成功</view>
+			<view class='status' v-else>{{$t(`订单创建成功`)}}</view>
 			<view class='wrapper'>
 				<view class='item acea-row row-between-wrapper'>
-					<view>订单编号</view>
+					<view>{{$t(`订单编号`)}}</view>
 					<view class='itemCom'>{{orderId}}</view>
 				</view>
 				<view class='item acea-row row-between-wrapper'>
-					<view>兑换时间</view>
+					<view>{{$t(`兑换时间`)}}</view>
 					<view class='itemCom'>{{order_pay_info.add_time}}</view>
 				</view>
 				<view class='item acea-row row-between-wrapper'>
-					<view>兑换方式</view>
-					<view class='itemCom'>积分兑换</view>
+					<view>{{$t(`兑换方式`)}}</view>
+					<view class='itemCom'>{{$t(`积分兑换`)}}</view>
 				</view>
 				<view class='item acea-row row-between-wrapper'>
-					<view>兑换积分</view>
+					<view>{{$t(`兑换积分`)}}</view>
 					<view class='itemCom'>{{order_pay_info.total_price}}</view>
 				</view>
 				<!--失败时加上这个  -->
 				<view class='item acea-row row-between-wrapper'
 					v-if="order_pay_info.paid==0 && order_pay_info.pay_type != 'offline'">
-					<view>失败原因</view>
-					<view class='itemCom'>{{status==2 ? '取消兑换':msg}}</view>
+					<view>{{$t(`失败原因`)}}</view>
+					<view class='itemCom'>{{status==2 ? $t(`取消兑换`):msg}}</view>
 				</view>
 			</view>
 			<!--失败时： 重新购买 -->
 			<view @tap="goOrderDetails">
-				<button formType="submit" class='returnBnt bg-color' hover-class='none'>查看详情</button>
+				<button formType="submit" class='returnBnt bg-color' hover-class='none'>{{$t(`查看详情`)}}</button>
 			</view>
-			<button @click="goIndex" class='returnBnt cart-color' formType="submit" hover-class='none'>返回首页</button>
+			<button @click="goIndex" class='returnBnt cart-color' formType="submit" hover-class='none'>{{$t(`返回首页`)}}</button>
 		</view>
 		<!-- #ifdef MP -->
 		<!-- <authorize @onLoadFun="onLoadFun" :isAuto="isAuto" :isShowAuth="isShowAuth" @authColse="authColse"></authorize> -->
@@ -95,7 +95,7 @@
 		},
 		onLoad: function(options) {
 			if (!options.order_id) return this.$util.Tips({
-				title: '缺少参数无法查看订单兑换状态'
+				title: this.$t(`缺少参数无法查看订单兑换状态`)
 			}, {
 				tab: 3,
 				url: 1
@@ -112,7 +112,7 @@
 			document.addEventListener('visibilitychange', (e) => {
 				let state = document.visibilityState
 				if (state == 'hidden') {
-					console.log('用户离开了');
+					console.log(this.$t(`用户离开了`));
 				}
 				if (state == 'visible') {
 					this.getOrderPayInfo();
@@ -135,13 +135,13 @@
 			getOrderPayInfo: function() {
 				let that = this;
 				uni.showLoading({
-					title: '正在加载中'
+					title: that.$t(`正在加载中`)
 				});
 				integralOrderDetails(that.orderId).then(res => {
 					uni.hideLoading();
 					that.$set(that, 'order_pay_info', res.data);
 					uni.setNavigationBarTitle({
-						title: 兑换成功
+						title: that.$t(`兑换成功`)
 					});
 					that.getOrderCoupon();
 				}).catch(err => {

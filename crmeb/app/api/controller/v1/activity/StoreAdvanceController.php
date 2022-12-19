@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2021 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -45,7 +45,7 @@ class StoreAdvanceController
         ]);
         $where['status'] = 1;
         $data = $this->services->getList($where);
-        return app('json')->successful($data);
+        return app('json')->success($data);
     }
 
     /**
@@ -60,6 +60,6 @@ class StoreAdvanceController
     public function detail(Request $request, $id)
     {
         $data = $this->services->getAdvanceinfo($request, $id);
-        return app('json')->successful($data);
+        return app('json')->success($data);
     }
 }

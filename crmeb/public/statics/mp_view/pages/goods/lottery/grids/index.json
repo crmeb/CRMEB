@@ -1,0 +1,12 @@
+{
+  "navigationBarTitleText": "抽奖活动",
+  "usingComponents": {
+    "grids-lottery": "/pages/goods/components/lottery/index",
+    "show-box": "/pages/goods/lottery/components/showbox",
+    "notice-bar": "/pages/goods/lottery/components/noticeBar",
+    "lottery-aleart": "/pages/goods/lottery/components/lotteryAleart",
+    "user-address": "/pages/goods/lottery/components/userAddress",
+    "zb-code": "/components/zb-code/zb-code",
+    "home": "/components/home/index"
+  }
+}

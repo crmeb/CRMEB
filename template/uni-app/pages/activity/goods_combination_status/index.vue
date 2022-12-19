@@ -5,9 +5,9 @@
 			<div class="text">
 				<div class="line1" v-text="storeCombination.title"></div>
 				<div class="money">
-					￥
+					{{$t(`￥`)}}
 					<span class="num" v-text="storeCombination.price"></span>
-					<span class="team cart-color" v-text="storeCombination.people + '人拼'"></span>
+					<span class="team cart-color" v-text="storeCombination.people + $t(`人拼`)"></span>
 				</div>
 			</div>
 			<div v-if="pinkBool === -1" class="iconfont icon-pintuanshibai"></div>
@@ -17,16 +17,16 @@
 			<div class="title acea-row row-center-wrapper" v-if="pinkBool === 0">
 				<div class="line"></div>
 				<div class="name acea-row row-center-wrapper">
-					剩余
+					{{$t(`剩余`)}}
 					<CountDown :is-day="false" :tip-text="' '" :day-text="' '" :hour-text="' : '" :minute-text="' : '"
 						:second-text="' '" :datatime="pinkT.stop_time"></CountDown>
-					结束
+					{{$t(`结束`)}}
 				</div>
 				<div class="line"></div>
 			</div>
-			<div class="tips font-num" v-if="pinkBool === 1">恭喜您拼团成功</div>
-			<div class="tips" v-else-if="pinkBool === -1">还差{{ count }}人，拼团失败</div>
-			<div class="tips font-num" v-else-if="pinkBool === 0">拼团中，还差{{ count }}人拼团成功</div>
+			<div class="tips font-num" v-if="pinkBool === 1">{{$t(`恭喜您拼团成功`)}}</div>
+			<div class="tips" v-else-if="pinkBool === -1">{{$t(`还差`)}}{{ count }}{{$t(`人，拼团失败`)}}</div>
+			<div class="tips font-num" v-else-if="pinkBool === 0">{{$t(`拼团中，还差`)}}{{ count }}{{$t(`人拼团成功`)}}</div>
 			<div class="list acea-row row-middle"
 				:class="[pinkBool === 1 || pinkBool === -1 ? 'result' : '', iShidden ? 'on' : '']">
 				<div class="pictrue"><img :src="pinkT.avatar" /></div>
@@ -34,36 +34,36 @@
 					<div class="pictrue" v-for="(item, index) in pinkAll" :key="index"><img :src="item.avatar" /></div>
 				</div>
 				<div class="pictrue" v-for="index in count" :key="index">
-					<image class="img-none" src="/static/images/vacancy.png"> </image>
+					<image class="img-none" src="../static/vacancy.png"> </image>
 				</div>
 			</div>
 			<div v-if="(pinkBool === 1 || pinkBool === -1) && count > 9" class="lookAll acea-row row-center-wrapper"
 				@click="lookAll">
-				{{ iShidden ? '收起' : '查看全部' }}
+				{{ iShidden ? $t(`收起`) : $t(`查看更多`) }}
 				<span class="iconfont" :class="iShidden ? 'icon-xiangshang' : 'icon-xiangxia'"></span>
 			</div>
 			<div v-if="userBool === 1 && isOk == 0 && pinkBool === 0">
-				<div class="teamBnt bg-color-red" @click="listenerActionSheet">邀请好友参团</div>
+				<div class="teamBnt bg-color-red" @click="listenerActionSheet">{{$t(`邀请好友参团`)}}</div>
 			</div>
 			<div class="teamBnt bg-color-red" v-else-if="userBool === 0 && pinkBool === 0 && count > 0" @click="pay">
-				我要参团</div>
+				{{$t(`我要参团`)}}</div>
 			<div class="teamBnt bg-color-red" v-if="pinkBool === 1 || pinkBool === -1"
-				@click="goDetail(storeCombination.id)">再次开团</div>
+				@click="goDetail(storeCombination.id)">{{$t(`再次开团`)}}</div>
 			<div class="cancel" @click="getCombinationRemove"
 				v-if="pinkBool === 0 && userBool === 1 && pinkT.uid == userInfo.uid">
 				<span class="iconfont icon-guanbi3"></span>
-				取消开团
+				{{$t(`取消开团`)}}
 			</div>
-			<div class="lookOrder" v-if="pinkBool === 1" @click="goOrder">
-				查看订单信息
+			<div class="lookOrder" v-if="pinkBool === 1 && orderPid === 0" @click="goOrder">
+				{{$t(`查看订单信息`)}}
 				<span class="iconfont icon-xiangyou"></span>
 			</div>
 		</div>
 		<div class="group-recommend">
 			<div class="title acea-row row-between-wrapper">
-				<div>大家都在拼</div>
+				<div>{{$t(`大家都在拼`)}}</div>
 				<div class="more" @click="goList">
-					更多拼团
+					{{$t(`更多拼团`)}}
 					<span class="iconfont icon-jiantou"></span>
 				</div>
 			</div>
@@ -71,10 +71,10 @@
 				<div class="item" v-for="(item, index) in storeCombinationHost" :key="index" @click="goDetail(item.id)">
 					<div class="pictrue">
 						<img :src="item.image" />
-						<div class="team" v-text="item.people + '人团'"></div>
+						<div class="team" v-text="item.people + $t(`人团`)"></div>
 					</div>
 					<div class="name line1" v-text="item.title"></div>
-					<div class="money font-color-red" v-text="'￥' + item.price"></div>
+					<div class="money font-color-red" v-text="$t(`￥`) + item.price"></div>
 				</div>
 			</div>
 		</div>
@@ -86,36 +86,36 @@
 			<button class="item" hover-class='none' v-if="weixinStatus === true" @click="H5ShareBox = true">
 				<!-- <button class="item" hover-class='none' v-if="weixinStatus === true" @click="setShareInfoStatus"> -->
 				<view class="iconfont icon-weixin3"></view>
-				<view class="">发送给朋友</view>
+				<view class="">{{$t(`发送给朋友`)}}</view>
 			</button>
 			<!-- #endif -->
 			<!-- #ifdef MP -->
 			<button class="item" open-type="share" hover-class='none' @click="goFriend">
 				<view class="iconfont icon-weixin3"></view>
-				<view class="">发送给朋友</view>
+				<view class="">{{$t(`发送给朋友`)}}</view>
 			</button>
 			<!-- #endif -->
 			<!-- #ifdef APP-PLUS -->
 			<view class="item" @click="appShare('WXSceneSession')">
 				<view class="iconfont icon-weixin3"></view>
-				<view class="">微信好友</view>
+				<view class="">{{$t(`微信好友`)}}</view>
 			</view>
 			<view class="item" @click="appShare('WXSenceTimeline')">
 				<view class="iconfont icon-pengyouquan"></view>
-				<view class="">微信朋友圈</view>
+				<view class="">{{$t(`微信朋友圈`)}}</view>
 			</view>
 			<!-- #endif -->
 			<!-- #ifndef APP-PLUS -->
 			<button class="item" hover-class='none' @tap="goPoster">
 				<view class="iconfont icon-haibao"></view>
-				<view class="">生成海报</view>
+				<view class="">{{$t(`生成海报`)}}</view>
 			</button>
 			<!-- #endif -->
 		</view>
 		<view class="mask" v-if="posters" @click="listenerActionClose"></view>
 		<!-- 发送给朋友图片 -->
 		<view class="share-box" v-if="H5ShareBox">
-			<image src="/static/images/share-info.png" @click="H5ShareBox = false"></image>
+			<image :src="imgHost + '/statics/images/share-info.png'" @click="H5ShareBox = false"></image>
 		</view>
 		<!-- #ifdef MP -->
 		<!-- <authorize @onLoadFun="onLoadFun" :isAuto="isAuto" :isShowAuth="isShowAuth" @authColse="authColse"></authorize> -->
@@ -150,12 +150,12 @@
 	const NAME = 'GroupRule';
 	// #ifdef APP-PLUS
 	import {
-		TOKENNAME,
-		HTTP_REQUEST_URL
+		TOKENNAME
 	} from '@/config/app.js';
 	// #endif
 	const app = getApp();
 	import colors from '@/mixins/color.js';
+	import {HTTP_REQUEST_URL} from '@/config/app';
 	export default {
 		name: NAME,
 		components: {
@@ -170,6 +170,7 @@
 		mixins: [colors],
 		data: function() {
 			return {
+				imgHost:HTTP_REQUEST_URL,
 				currentPinkOrder: '', //当前拼团订单
 				isOk: 0, //判断拼团是否完成
 				pinkBool: 0, //判断拼团是否成功|0=失败,1=成功
@@ -204,8 +205,9 @@
 				H5ShareBox: false, //公众号分享图片
 				isAuto: false, //没有授权的不会自动授权
 				isShowAuth: false, //是否隐藏授权
-				attrTxt: '请选择', //属性页面提示
-				attrValue: '' //已选属性
+				attrTxt: this.$t(`请选择`), //属性页面提示
+				attrValue: '' ,//已选属性,
+				orderPid: 0
 			};
 		},
 		computed: mapGetters({
@@ -251,10 +253,6 @@
 			if (that.isLogin == false) {
 				this.$Cache.set('login_back_url', `/pages/activity/goods_combination_status/index?id=${options.id}`);
 				toLogin();
-			} else {
-				// #ifdef H5
-				this.getCombinationPink();
-				// #endif
 			}
 		},
 		//#ifdef MP
@@ -264,7 +262,7 @@
 		onShareAppMessage: function() {
 			let that = this;
 			return {
-				title: '您的好友' + that.userInfo.nickname + '邀请您参团' + that.storeCombination.title,
+				title: that.$t(`您的好友`) + that.userInfo.nickname + this.$t(`邀请您参团`) + that.storeCombination.title,
 				path: app.globalData.openPages,
 				imageUrl: that.storeCombination.image
 			};
@@ -285,18 +283,18 @@
 					scene: scene,
 					type: 0,
 					href: `${HTTP_REQUEST_URL}${curRoute}`,
-					title: '您的好友' + that.userInfo.nickname + '邀请您参团' + that.storeCombination.title,
+					title: that.$t(`您的好友`) + that.userInfo.nickname + that.$t(`邀请您参团`) + that.storeCombination.title,
 					imageUrl: that.storeCombination.small_image,
 					success: function(res) {
 						uni.showToast({
-							title: '分享成功',
+							title: that.$t(`分享成功`),
 							icon: 'success'
 						})
 						that.posters = false;
 					},
 					fail: function(err) {
 						uni.showToast({
-							title: '分享失败',
+							title: that.$t(`分享失败`),
 							icon: 'none',
 							duration: 2000
 						})
@@ -379,7 +377,7 @@
 					this.$set(this.attr.productSelect, 'product_stock', productSelect.product_stock);
 					this.$set(this.attr.productSelect, 'quota_show', productSelect.quota_show);
 					this.$set(this, 'attrValue', res);
-					this.$set(this, 'attrTxt', '已选择');
+					this.$set(this, 'attrTxt', this.$t(`已选择`));
 				} else {
 					this.$set(this.attr.productSelect, 'image', this.storeCombination.image);
 					this.$set(this.attr.productSelect, 'price', this.storeCombination.price);
@@ -389,7 +387,7 @@
 					this.$set(this.attr.productSelect, 'quota_show', 0);
 					this.$set(this.attr.productSelect, 'product_stock', 0);
 					this.$set(this, 'attrValue', '');
-					this.$set(this, 'attrTxt', '请选择');
+					this.$set(this, 'attrTxt', this.$t(`请选择`));
 				}
 			},
 			ChangeCartNum: function(res) {
@@ -485,7 +483,7 @@
 					this.$set(this.attr.productSelect, 'quota_show', productSelect.quota_show);
 					this.$set(this, 'attrValue', value.join(','));
 					this.attrValue = value.join(',');
-					this.$set(this, 'attrTxt', '已选择');
+					this.$set(this, 'attrTxt', this.$t(`已选择`));
 				} else if (!productSelect && productAttr.length) {
 					this.$set(this.attr.productSelect, 'store_name', this.storeCombination.title);
 					this.$set(this.attr.productSelect, 'image', this.storeCombination.image);
@@ -496,7 +494,7 @@
 					this.$set(this.attr.productSelect, 'product_stock', 0);
 					this.$set(this.attr.productSelect, 'quota_show', 0);
 					this.$set(this, 'attrValue', '');
-					this.$set(this, 'attrTxt', '请选择');
+					this.$set(this, 'attrTxt', this.$t(`请选择`));
 				} else if (!productSelect && !productAttr.length) {
 					this.$set(this.attr.productSelect, 'store_name', this.storeCombination.title);
 					this.$set(this.attr.productSelect, 'image', this.storeCombination.image);
@@ -507,7 +505,7 @@
 					this.$set(this.attr.productSelect, 'quota_show', 0);
 					this.$set(this.attr.productSelect, 'product_stock', 0);
 					this.$set(this, 'attrValue', '');
-					this.$set(this, 'attrTxt', '请选择');
+					this.$set(this, 'attrTxt', this.$t(`请选择`));
 				}
 			},
 			setProductSelect: function() {
@@ -539,7 +537,7 @@
 				postCartAdd(data)
 					.then(res => {
 						uni.navigateTo({
-							url: '/pages/users/order_confirm/index?new=1&cartId=' + res.data.cartId +
+							url: '/pages/goods/order_confirm/index?new=1&cartId=' + res.data.cartId +
 								'&pinkId=' + that.pinkId
 						});
 					})
@@ -559,7 +557,7 @@
 			goOrder: function() {
 				var that = this;
 				uni.navigateTo({
-					url: '/pages/users/order_details/index?order_id=' + that.currentPinkOrder
+					url: '/pages/goods/order_details/index?order_id=' + that.currentPinkOrder
 				});
 			},
 			//拼团列表
@@ -596,6 +594,7 @@
 						that.$set(that, 'isOk', res.data.is_ok);
 						that.$set(that, 'currentPinkOrder', res.data.current_pink_order);
 						that.$set(that, 'userInfo', res.data.userInfo);
+						that.$set(that, 'orderPid', res.data.order_pid);
 						that.attr.productAttr = res.data.store_combination.productAttr;
 						that.productValue = res.data.store_combination.productValue;
 						//#ifdef H5
@@ -605,7 +604,7 @@
 						if (that.attr.productAttr != 0) that.DefaultSelect();
 						if (res.data.is_ok == 1 && res.data.userBool == 0) {
 							return this.$util.Tips({
-								title: '你不是该团的成员',
+								title: that.$t(`你不是该团的成员`),
 							}, () => {
 								uni.navigateTo({
 									url: '/pages/activity/goods_combination/index'
@@ -628,7 +627,7 @@
 			setOpenShare() {
 				let that = this;
 				let configTimeline = {
-					title: '您的好友' + that.userInfo.nickname + '邀请您参团' + that.storeCombination.title,
+					title: that.$t(`您的好友`) + that.userInfo.nickname + that.$t(`邀请您参团`) + that.storeCombination.title,
 					desc: that.storeCombination.title,
 					link: window.location.protocol + '//' + window.location.host +
 						'/pages/activity/goods_combination_status/index?id=' + that.pinkId,

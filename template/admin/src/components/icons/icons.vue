@@ -8,28 +8,26 @@ export default {
   props: {
     type: {
       type: String,
-      required: true
+      required: true,
     },
     color: {
       type: String,
-      default: '#5c6b77'
+      default: '#5c6b77',
     },
     size: {
       type: Number,
-      default: 16
-    }
+      default: 16,
+    },
   },
   computed: {
-    styles () {
+    styles() {
       return {
         fontSize: `${this.size}px`,
-        color: this.color
-      }
-    }
-  }
-}
+        color: this.color,
+      };
+    },
+  },
+};
 </script>
 
-<style>
-
-</style>
+<style></style>

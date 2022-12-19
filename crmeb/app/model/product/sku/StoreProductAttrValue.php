@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -129,6 +129,21 @@ class StoreProductAttrValue extends BaseModel
     public function storeIntegral()
     {
         return $this->hasOne(StoreIntegral::class, 'id', 'product_id')->field('title store_name,id')->where('is_show', 1)->where('is_del', 0)->bind(['store_name']);
+    }
+
+    /**
+     * 编号搜索器
+     * @param Model $query
+     * @param $value
+     * @param $data
+     */
+    public function searchBarCodeAttr($query, $value)
+    {
+        if (is_array($value)) {
+            $query->whereIn('bar_code', $value);
+        } else {
+            $query->where('bar_code', $value);
+        }
     }
 
 }

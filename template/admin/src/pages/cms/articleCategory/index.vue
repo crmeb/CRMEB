@@ -1,10 +1,5 @@
 <template>
   <div>
-    <div class="i-layout-page-header">
-      <div class="i-layout-page-header">
-        <span class="ivu-page-header-title">{{ $route.meta.title }}</span>
-      </div>
-    </div>
     <Card :bordered="false" dis-hover class="ivu-mt">
       <Form
         ref="formValidate"
@@ -16,13 +11,7 @@
         <Row type="flex" :gutter="24">
           <Col v-bind="grid">
             <FormItem label="是否显示：" label-for="status">
-              <Select
-                v-model="status"
-                placeholder="请选择"
-                element-id="status"
-                clearable
-                @on-change="userSearchs"
-              >
+              <Select v-model="status" placeholder="请选择" element-id="status" clearable @on-change="userSearchs">
                 <Option value="all">全部</Option>
                 <Option value="1">显示</Option>
                 <Option value="0">不显示</Option>
@@ -43,13 +32,7 @@
         </Row>
         <Row type="flex">
           <Col v-bind="grid">
-            <Button
-              v-auth="['cms-category-create']"
-              type="primary"
-              icon="md-add"
-              @click="add"
-              >添加文章分类</Button
-            >
+            <Button v-auth="['cms-category-create']" type="primary" icon="md-add" @click="add">添加文章分类</Button>
           </Col>
         </Row>
       </Form>
@@ -62,18 +45,8 @@
         :tree-config="{ children: 'children' }"
         :data="categoryList"
       >
-        <vxe-table-column
-          field="id"
-          title="ID"
-          tooltip
-          width="80"
-        ></vxe-table-column>
-        <vxe-table-column
-          field="title"
-          tree-node
-          title="分类昵称"
-          min-width="130"
-        ></vxe-table-column>
+        <vxe-table-column field="id" title="ID" tooltip width="80"></vxe-table-column>
+        <vxe-table-column field="title" tree-node title="分类昵称" min-width="130"></vxe-table-column>
         <vxe-table-column field="image" title="分类图片" min-width="130">
           <template v-slot="{ row }">
             <div class="tabBox_img" v-viewer v-if="row.image">
@@ -96,13 +69,7 @@
             </i-switch>
           </template>
         </vxe-table-column>
-        <vxe-table-column
-          field="date"
-          title="操作"
-          align="center"
-          width="250"
-          fixed="right"
-        >
+        <vxe-table-column field="date" title="操作" align="center" width="250" fixed="right">
           <template v-slot="{ row }">
             <a @click="edit(row)">编辑</a>
             <Divider type="vertical" />
@@ -120,15 +87,10 @@
   </div>
 </template>
 <script>
-import { mapState, mapMutations } from "vuex";
-import {
-  categoryAddApi,
-  categoryEditApi,
-  categoryListApi,
-  statusApi,
-} from "@/api/cms";
+import { mapState, mapMutations } from 'vuex';
+import { categoryAddApi, categoryEditApi, categoryListApi, statusApi } from '@/api/cms';
 export default {
-  name: "articleCategory",
+  name: 'articleCategory',
   data() {
     return {
       grid: {
@@ -140,61 +102,61 @@ export default {
       },
       loading: false,
       formValidate: {
-        status: "",
+        status: '',
         page: 1,
         limit: 20,
         type: 0,
       },
-      status: "",
+      status: '',
       total: 0,
       columns1: [
         {
-          title: "ID",
-          key: "id",
+          title: 'ID',
+          key: 'id',
           width: 80,
         },
         {
-          title: "分类昵称",
-          key: "title",
+          title: '分类昵称',
+          key: 'title',
           minWidth: 130,
         },
         {
-          title: "分类图片",
-          slot: "images",
+          title: '分类图片',
+          slot: 'images',
           minWidth: 130,
         },
         {
-          title: "状态",
-          slot: "statuss",
+          title: '状态',
+          slot: 'statuss',
           minWidth: 130,
         },
         {
-          title: "操作",
-          slot: "action",
-          fixed: "right",
+          title: '操作',
+          slot: 'action',
+          fixed: 'right',
           minWidth: 120,
         },
       ],
       FromData: null,
-      modalTitleSs: "",
+      modalTitleSs: '',
       categoryId: 0,
       categoryList: [],
     };
   },
   computed: {
-    ...mapState("media", ["isMobile"]),
+    ...mapState('media', ['isMobile']),
     labelWidth() {
       return this.isMobile ? undefined : 75;
     },
     labelPosition() {
-      return this.isMobile ? "top" : "right";
+      return this.isMobile ? 'top' : 'right';
     },
   },
   mounted() {
     this.getList();
   },
   methods: {
-    ...mapMutations("userLevel", ["getCategoryId"]),
+    ...mapMutations('userLevel', ['getCategoryId']),
     // 添加
     add() {
       this.$modalForm(categoryAddApi()).then(() => this.getList());
@@ -221,8 +183,8 @@ export default {
         title: tit,
         num: 0,
         url: `cms/category/${row.id}`,
-        method: "DELETE",
-        ids: "",
+        method: 'DELETE',
+        ids: '',
       };
       this.$modalSure(delfromData)
         .then((res) => {
@@ -236,7 +198,7 @@ export default {
     // 列表
     getList() {
       this.loading = true;
-      this.formValidate.status = this.status === "all" ? "" : this.status;
+      this.formValidate.status = this.status === 'all' ? '' : this.status;
       categoryListApi(this.formValidate)
         .then(async (res) => {
           let data = res.data;
@@ -275,7 +237,7 @@ export default {
     // 查看文章
     lookUp(row) {
       this.$router.push({
-        path: "/admin/cms/article/index",
+        path: '/admin/cms/article/index',
         query: {
           id: row.id,
         },

@@ -1,10 +1,5 @@
 <template>
   <div>
-    <div class="i-layout-page-header">
-      <div class="i-layout-page-header">
-        <span class="ivu-page-header-title">{{ $route.meta.title }}</span>
-      </div>
-    </div>
     <Card :bordered="false" dis-hover class="ivu-mt">
       <Form
         ref="formValidate"
@@ -17,18 +12,10 @@
         <Row :gutter="24" type="flex">
           <Col span="24">
             <FormItem label="直播状态：">
-              <RadioGroup
-                type="button"
-                v-model="formValidate.status"
-                class="mr15"
-                @on-change="selChange"
-              >
-                <Radio
-                  :label="itemn.value"
-                  v-for="(itemn, indexn) in treeData.withdrawal"
-                  :key="indexn"
-                  >{{ itemn.title }}</Radio
-                >
+              <RadioGroup type="button" v-model="formValidate.status" class="mr15" @on-change="selChange">
+                <Radio :label="itemn.value" v-for="(itemn, indexn) in treeData.withdrawal" :key="indexn">{{
+                  itemn.title
+                }}</Radio>
               </RadioGroup>
             </FormItem>
           </Col>
@@ -48,11 +35,7 @@
         </Row>
         <Row type="flex">
           <Col v-bind="grid">
-            <Button
-              v-auth="['setting-system_menus-add']"
-              type="primary"
-              @click="menusAdd('添加直播间')"
-              icon="md-add"
+            <Button v-auth="['setting-system_menus-add']" type="primary" @click="menusAdd('添加直播间')" icon="md-add"
               >添加直播间</Button
             >
             <Button
@@ -112,25 +95,11 @@
       </div>
     </Card>
     <!--详情-->
-    <Modal
-      v-model="modals"
-      title="直播间详情"
-      class="paymentFooter"
-      scrollable
-      width="700"
-      :footer-hide="true"
-    >
+    <Modal v-model="modals" title="直播间详情" class="paymentFooter" scrollable width="700" :footer-hide="true">
       <details-from ref="studioDetail" />
     </Modal>
     <!-- 添加商品 -->
-    <Modal
-      v-model="isShowBox"
-      title="添加商品"
-      class="paymentFooter"
-      scrollable
-      width="700"
-      :footer-hide="true"
-    >
+    <Modal v-model="isShowBox" title="添加商品" class="paymentFooter" scrollable width="700" :footer-hide="true">
       <!--            <addGoods :datas="activeItem" @getData="getData" ref="liveAdd"></addGoods>-->
       <goods-list
         ref="goodslist"
@@ -144,13 +113,13 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
-import { liveList, liveShow, liveRoomGoodsAdd, liveSyncRoom } from "@/api/live";
-import detailsFrom from "./components/live_detail";
-import addGoods from "./components/add_goods";
-import goodsList from "@/components/goodsList";
+import { mapState } from 'vuex';
+import { liveList, liveShow, liveRoomGoodsAdd, liveSyncRoom } from '@/api/live';
+import detailsFrom from './components/live_detail';
+import addGoods from './components/add_goods';
+import goodsList from '@/components/goodsList';
 export default {
-  name: "live",
+  name: 'live',
   components: {
     detailsFrom,
     addGoods,
@@ -169,43 +138,43 @@ export default {
         xs: 24,
       },
       formValidate: {
-        status: "",
-        kerword: "",
+        status: '',
+        kerword: '',
         page: 1,
         limit: 20,
       },
       treeData: {
         withdrawal: [
           {
-            title: "全部",
-            value: "",
+            title: '全部',
+            value: '',
           },
           {
-            title: "直播中",
+            title: '直播中',
             value: 1,
           },
           {
-            title: "未开始",
+            title: '未开始',
             value: 2,
           },
           {
-            title: "已结束",
+            title: '已结束',
             value: 3,
           },
         ],
       },
       columns1: [
-        { key: "id", title: "直播间ID", minWidth: 35 },
-        { key: "name", minWidth: 35, title: "直播间名称" },
-        { key: "anchor_name", minWidth: 35, title: "主播昵称" },
-        { key: "anchor_wechat", minWidth: 35, title: "主播微信号" },
-        { key: "start_time", minWidth: 35, title: "直播开始时间" },
-        { key: "end_time", minWidth: 35, title: "计划结束时间" },
-        { key: "add_time", minWidth: 35, title: "创建时间" },
-        { slot: "is_mer_show", title: "显示状态", minWidth: 80 },
-        { slot: "status", minWidth: 35, title: "直播状态" },
-        { key: "sort", minWidth: 35, title: "排序" },
-        { slot: "action", fixed: "right", title: "操作", minWidth: 120 },
+        { key: 'id', title: '直播间ID', minWidth: 35 },
+        { key: 'name', minWidth: 35, title: '直播间名称' },
+        { key: 'anchor_name', minWidth: 35, title: '主播昵称' },
+        { key: 'anchor_wechat', minWidth: 35, title: '主播微信号' },
+        { key: 'start_time', minWidth: 35, title: '直播开始时间' },
+        { key: 'end_time', minWidth: 35, title: '计划结束时间' },
+        { key: 'add_time', minWidth: 35, title: '创建时间' },
+        { slot: 'is_mer_show', title: '显示状态', minWidth: 80 },
+        { slot: 'status', minWidth: 35, title: '直播状态' },
+        { key: 'sort', minWidth: 35, title: '排序' },
+        { slot: 'action', fixed: 'right', title: '操作', minWidth: 120 },
       ],
       tabList: [],
       loading: false,
@@ -213,12 +182,12 @@ export default {
     };
   },
   computed: {
-    ...mapState("media", ["isMobile"]),
+    ...mapState('media', ['isMobile']),
     labelWidth() {
       return this.isMobile ? undefined : 80;
     },
     labelPosition() {
-      return this.isMobile ? "top" : "left";
+      return this.isMobile ? 'top' : 'left';
     },
   },
   created() {
@@ -242,7 +211,7 @@ export default {
     // 添加直播间
     menusAdd() {
       this.$router.push({
-        path: "/admin/marketing/live/add_live_room",
+        path: '/admin/marketing/live/add_live_room',
       });
     },
     // 分页
@@ -303,8 +272,8 @@ export default {
         title: tit,
         num: num,
         url: `live/room/del/${row.id}`,
-        method: "DELETE",
-        ids: "",
+        method: 'DELETE',
+        ids: '',
       };
       this.$modalSure(delfromData)
         .then((res) => {

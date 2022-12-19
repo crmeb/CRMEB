@@ -39,7 +39,7 @@ var entities = {
 	divide: '÷',
 	cent: '￠',
 	pound: '£',
-	yen: '¥',
+	yen: '￥',
 	euro: '€',
 	sect: '§'
 };

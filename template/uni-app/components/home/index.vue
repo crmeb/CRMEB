@@ -15,10 +15,10 @@
 				<view @click="open" class="pictrueBox">
 					<view class="pictrue">
 						<image :src="
-		          homeActive === true
-		            ? '/static/images/close.gif'
-		            : '/static/images/open.gif'
-		        " class="image" />
+						  homeActive === true
+						    ? imgHost + '/statics/images/close.gif'
+						    : imgHost + '/statics/images/open.gif'
+						" class="image" />
 					</view>
 				</view>
 			</view>
@@ -30,13 +30,15 @@
 		mapGetters
 	} from "vuex";
 	import colors from '@/mixins/color.js';
+	import {HTTP_REQUEST_URL} from '@/config/app';
 	export default {
 		name: "Home",
 		props: {},
 		mixins:[colors],
 		data: function() {
 			return {
-				top: "545"
+				top: "545",
+				imgHost:HTTP_REQUEST_URL
 			};
 		},
 		computed: mapGetters(["homeActive"]),

@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -12,7 +12,7 @@ namespace app\api\controller\v2\store;
 
 use app\services\activity\coupon\StoreCouponIssueServices;
 use app\services\product\product\StoreProductCouponServices;
-use think\Request;
+use app\Request;
 
 class StoreCouponsController
 {
@@ -25,8 +25,11 @@ class StoreCouponsController
 
     /**
      * 可领取优惠券列表
-     * @param \app\Request $request
+     * @param Request $request
      * @return mixed
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
      */
     public function lst(Request $request)
     {
@@ -34,12 +37,16 @@ class StoreCouponsController
             ['type', 0],
             ['product_id', 0]
         ]);
-        return app('json')->successful($this->services->getIssueCouponList($request->uid(), $where));
+        return app('json')->success($this->services->getIssueCouponList($request->uid(), $where));
     }
 
     /**
      * 获取新人券
+     * @param Request $request
      * @return mixed
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
      */
     public function getNewCoupon(Request $request)
     {
@@ -54,8 +61,6 @@ class StoreCouponsController
         } else {
             $data['show'] = 0;
         }
-        //会员领取优惠券
-        //$couponService->sendMemberCoupon($userInfo->uid);
         return app('json')->success($data);
     }
 
@@ -68,9 +73,9 @@ class StoreCouponsController
     public function getOrderProductCoupon(Request $request, $orderId)
     {
 
-        $uid = (int)$request->uid();
+        $uid = (int)$request->uid() ?? 0;
         if (!$orderId) {
-            return app('json')->fail('参数错误');
+            return app('json')->fail(100100);
         }
         /** @var StoreProductCouponServices $storeProductCoupon */
         $storeProductCoupon = app()->make(StoreProductCouponServices::class);
@@ -84,8 +89,7 @@ class StoreCouponsController
      */
     public function getTodayCoupon(Request $request)
     {
-        $uid = 0;
-        if ($request->hasMacro('uid')) $uid = $request->uid();
+        $uid = $request->uid() ?? 0;
         /** @var StoreCouponIssueServices $couponService */
         $couponService = app()->make(StoreCouponIssueServices::class);
         $data['list'] = $couponService->getTodayCoupon($uid);

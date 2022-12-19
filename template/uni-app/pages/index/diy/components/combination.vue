@@ -6,7 +6,7 @@
 					<image :src="imgUrl" mode=""v-if="imgUrl" class="icon"></image>
 					<image src="/static/images/group02.gif" class="icon" v-else></image>
 					
-					<view class="name">拼团活动</view>
+					<view class="name">{{$t(`拼团活动`)}}</view>
 					<!-- <image src="/static/images/group01.png" class="title"></image> -->
 					<view class="person">
 						<view class="avatar-box">
@@ -14,25 +14,25 @@
 								<image :src="item" mode=""></image>
 							</block>
 						</view>
-						<view class="num" v-if="pinkInfo.pink_count>0">{{pinkInfo.pink_count}}人拼团成功</view>
+						<view class="num" v-if="pinkInfo.pink_count>0">{{pinkInfo.pink_count}} {{$t(`人拼团成功.`)}}</view>
 					</view>
 				</view>
-				<navigator class="more" url="/pages/activity/goods_combination/index" hover-class="none">更多 <text class="iconfont icon-jiantou"></text></navigator>
+				<navigator class="more" url="/pages/activity/goods_combination/index" hover-class="none">{{$t(`更多`)}} <text class="iconfont icon-jiantou"></text></navigator>
 			</view>
 			<view class="group-scroll">
 				<scroll-view scroll-x="true" style="white-space: nowrap; display: flex" show-scrollbar="false">
 					<navigator class="group-item" :style="'margin-right:'+ lrConfig*2 +'rpx;'" v-for="(item,index) in combinationList" :key="index"
 					 :url="'/pages/activity/goods_combination_details/index?id='+item.id" hover-class="none">
 						<image :src="item.image" mode="aspectFill"></image>
-						<view class="people" v-if="joinShow">{{item.people}}人参团</view>
+						<view class="people" v-if="joinShow">{{item.people}}{{$t(`人团`)}}</view>
 						<view class="info">
 							<view class="name line1" v-if="titleShow">{{item.title}}</view>
 							<view class="price-box">
-								<text v-if="pinkShow" class="tips" :style="'background-color:'+txtColor+';color:'+themeColor+';'">拼团价</text>
-								<text v-if="priceShow" class="price" :style="'color:'+themeColor+';'"><text>￥</text>{{item.price}}</text>
+								<!-- <text v-if="pinkShow" class="tips" :style="'background-color:'+txtColor+';color:'+themeColor+';'">{{$t(`拼团价`)}}</text> -->
+								<text v-if="priceShow" class="price" :style="'color:'+themeColor+';'"><text>{{$t(`￥`)}}</text>{{item.price}}</text>
 							</view>
 						</view>
-						<view v-if="bntShow" class="bom-btn" :style="'background-color:'+themeColor+';'">参与拼团</view>
+						<view v-if="bntShow" class="bom-btn" :style="'background-color:'+themeColor+';'">{{$t(`参与拼团`)}}</view>
 					</navigator>
 				</scroll-view>
 			</view>

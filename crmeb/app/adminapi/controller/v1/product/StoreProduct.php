@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -17,7 +17,7 @@ use app\services\other\CacheServices;
 use app\services\product\product\StoreCategoryServices;
 use app\services\product\product\StoreProductServices;
 use crmeb\services\FileService;
-use crmeb\services\UploadService;
+use app\services\other\UploadService;
 use think\facade\App;
 
 /**
@@ -98,7 +98,7 @@ class StoreProduct extends AuthController
             ['type', 0]
         ]);
         $services->setDbCache($this->adminId . '_product_data', $data, 68400);
-        return app('json')->success();
+        return app('json')->success(100000);
     }
 
     /**
@@ -109,7 +109,7 @@ class StoreProduct extends AuthController
     public function deleteCacheData(CacheServices $services)
     {
         $services->delectDbCache($this->adminId . '_product_data');
-        return app('json')->success();
+        return app('json')->success(100002);
     }
 
     /**
@@ -137,7 +137,7 @@ class StoreProduct extends AuthController
     public function set_show($is_show = '', $id = '')
     {
         $this->service->setShow([$id], $is_show);
-        return app('json')->success($is_show == 1 ? '上架成功' : '下架成功');
+        return app('json')->success(100014);
     }
 
     /**
@@ -149,9 +149,8 @@ class StoreProduct extends AuthController
         [$ids] = $this->request->postMore([
             ['ids', []]
         ], true);
-        if (empty($ids)) return app('json')->fail('请选择需要上架的商品');
         $this->service->setShow($ids, 1);
-        return app('json')->success('上架成功');
+        return app('json')->success(100014);
     }
 
     /**
@@ -163,9 +162,8 @@ class StoreProduct extends AuthController
         [$ids] = $this->request->postMore([
             ['ids', []]
         ], true);
-        if (empty($ids)) return app('json')->fail('请选择需要下架的商品');
         $this->service->setShow($ids, 0);
-        return app('json')->success('下架成功');
+        return app('json')->success(100014);
     }
 
     /**
@@ -237,9 +235,12 @@ class StoreProduct extends AuthController
             ['custom_form', []],//自定义表单
             ['type', 0],
             ['is_copy', 0],//是否是复制商品
+            ['is_limit', 0],//是否限购
+            ['limit_type', 0],//限购类型
+            ['limit_num', 0]//限购数量
         ]);
         $this->service->save((int)$id, $data);
-        return app('json')->success('添加商品成功!');
+        return app('json')->success(100000);
     }
 
     /**
@@ -291,7 +292,8 @@ class StoreProduct extends AuthController
             ['type', 1],
             ['is_live', 0],
             ['is_new', ''],
-            ['is_virtual', -1]
+            ['is_virtual', -1],
+            ['is_presale', -1]
         ]);
         $where['is_show'] = 1;
         $where['is_del'] = 0;
@@ -341,7 +343,7 @@ class StoreProduct extends AuthController
     {
         $upload = UploadService::init();
         $re = $upload->getTempKeys();
-        return $re ? app('json')->success($re) : app('json')->fail($upload->getError());
+        return $re ? app('json')->success($re) : app('json')->fail(100016);
     }
 
     /**
@@ -354,19 +356,47 @@ class StoreProduct extends AuthController
     public function check_activity($id)
     {
         $this->service->checkActivity($id);
-        return app('json')->success('删除成功');
+        return app('json')->success(100002);
     }
 
+    /**
+     * 导入卡密
+     * @return mixed
+     * @throws \PhpOffice\PhpSpreadsheet\Reader\Exception
+     */
     public function import_card()
     {
         $data = $this->request->getMore([
             ['file', ""]
         ]);
-        if (!$data['file']) return app('json')->fail('请上传文件');
+        if (!$data['file']) return app('json')->fail(400168);
         $file = public_path() . substr($data['file'], 1);
         /** @var FileService $readExcelService */
         $readExcelService = app()->make(FileService::class);
         $cardData = $readExcelService->readExcel($file);
         return app('json')->success($cardData);
+    }
+
+    /**
+     * 商品批量设置
+     * @return mixed
+     */
+    public function batchSetting()
+    {
+        $data = $this->request->postMore([
+            ['ids', []],
+            ['cate_id', []],
+            ['logistics', []],
+            ['freight', 2],
+            ['postage', 0],
+            ['temp_id', 1],
+            ['give_integral', 0],
+            ['coupon_ids', []],
+            ['label_id', []],
+            ['recommend', []],
+            ['type', 0]
+        ]);
+        $this->service->batchSetting($data);
+        return app('json')->success(100014);
     }
 }

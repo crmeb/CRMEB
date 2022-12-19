@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -16,10 +16,13 @@ use app\jobs\notice\EnterpriseWechatJob;
 use app\jobs\notice\PrintJob;
 use app\services\BaseServices;
 use app\services\order\StoreOrderCartInfoServices;
+use crmeb\exceptions\AdminException;
 use crmeb\services\CacheService;
-use think\exception\ValidateException;
 
-
+/**
+ * 站内信services类
+ * Class MessageSystemServices
+ */
 class NoticeService extends BaseServices
 {
 
@@ -28,7 +31,7 @@ class NoticeService extends BaseServices
      * @var array
      */
 //    protected $type = [
-//        'is_sms' => NoticeSmsService::class,
+//        'is_sms' => SmsService::class,
 //        'is_system' => SystemSendServices::class,
 //        'is_wechat' => WechatTemplateService::class,
 //        'is_routine' => RoutineTemplateServices::class,
@@ -68,22 +71,6 @@ class NoticeService extends BaseServices
     }
 
     /**
-     * @param array $notceinfo
-     * @param $data
-     * @param string $msgtype
-     */
-    //企业微信群机器人
-    public function EnterpriseWechatSend($data)
-    {
-        if ($this->notceinfo['is_ent_wechat'] == 1 && $this->notceinfo['url'] !== '') {
-            $url = $this->notceinfo['url'];
-            $ent_wechat_text = $this->notceinfo['ent_wechat_text'];
-            EnterpriseWechatJob::dispatchDo('doJob', [$data, $url, $ent_wechat_text]);
-
-        }
-    }
-
-    /**
      * 打印订单
      * @param $order
      * @param array $cartId
@@ -94,7 +81,7 @@ class NoticeService extends BaseServices
         $cartServices = app()->make(StoreOrderCartInfoServices::class);
         $product = $cartServices->getCartInfoPrintProduct($order['cart_id']);
         if (!$product) {
-            throw new ValidateException('订单商品获取失败,无法打印!');
+            throw new AdminException(400463);
         }
         $configdata = [
             'clientId' => sys_config('printing_client_id', ''),
@@ -104,10 +91,10 @@ class NoticeService extends BaseServices
         ];
         $switch = (bool)sys_config('pay_success_printing_switch');
         if (!$switch) {
-            throw new ValidateException('小票打印未开启!');
+            throw new AdminException(400464);
         }
         if (!$configdata['clientId'] || !$configdata['apiKey'] || !$configdata['partner'] || !$configdata['terminal']) {
-            throw new ValidateException('请先配置小票打印开发者');
+            throw new AdminException(400465);
         }
         PrintJob::dispatch('doJob', ['yi_lian_yun', $configdata, $order, $product]);
     }

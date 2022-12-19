@@ -1,2 +1,2 @@
-import ParentView from './parent-view.vue'
-export default ParentView
+import ParentView from './parent-view.vue';
+export default ParentView;

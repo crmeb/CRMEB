@@ -5,38 +5,17 @@
       <span>{{ datas[name].title }}</span>
     </div>
     <div class="input-box">
-      <draggable
-        class="dragArea list-group"
-        :list="datas[name].list"
-        group="peoples"
-        handle=".icon"
-      >
-        <div
-          class="input-item"
-          v-for="(item, index) in datas[name].list"
-          :key="index"
-        >
+      <draggable class="dragArea list-group" :list="datas[name].list" group="peoples" handle=".icon">
+        <div class="input-item" v-for="(item, index) in datas[name].list" :key="index">
           <div class="icon"><Icon type="ios-keypad" size="20" /></div>
-          <Input
-            v-model="item.val"
-            placeholder="选填，不超过十个字"
-            :maxlength="item.maxlength || 10"
-          />
+          <Input v-model="item.val" placeholder="选填，不超过十个字" :maxlength="item.maxlength || 10" />
           <div class="close" @click="close(index)">
             <Icon type="md-close" size="20" style="color: #d8d8d8" />
           </div>
         </div>
       </draggable>
       <div class="add-btn" @click="addHotTxt">
-        <Button
-          type="primary"
-          ghost
-          style="
-            width: 100%;
-            height: 40px;
-            border-color: #1890ff;
-            color: #1890ff;
-          "
+        <Button type="primary" ghost style="width: 100%; height: 40px; border-color: #1890ff; color: #1890ff"
           >添加热词</Button
         >
       </div>
@@ -44,9 +23,9 @@
   </div>
 </template>
 <script>
-import vuedraggable from "vuedraggable";
+import vuedraggable from 'vuedraggable';
 export default {
-  name: "c_hot_word",
+  name: 'c_hot_word',
   props: {
     name: {
       type: String,
@@ -56,7 +35,7 @@ export default {
     },
     configNum: {
       type: Number | String,
-      default: "default",
+      default: 'default',
     },
   },
   components: {
@@ -82,20 +61,12 @@ export default {
   methods: {
     addHotTxt() {
       let obj = {
-        val: "",
+        val: '',
       };
-      console.log(this.datas[this.name].list);
-      // if(this.datas[this.name].list.length>0){
-      //     obj= JSON.parse(JSON.stringify(this.datas.hotList.list[this.datas.hotList.list.length - 1]))
-      // }else{
-      //     obj= {
-      //         val:''
-      //     }
-      // }
       if (this.datas[this.name].list.length < 20) {
         this.datas[this.name].list.push(obj);
       } else {
-        this.$Message.warning("最多添加20个热词");
+        this.$Message.warning('最多添加20个热词');
       }
     },
     close(index) {

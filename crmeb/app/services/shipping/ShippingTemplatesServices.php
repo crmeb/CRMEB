@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -65,7 +65,7 @@ class ShippingTemplatesServices extends BaseServices
     {
         $templates = $this->dao->get($id);
         if (!$templates) {
-            throw new AdminException('修改的模板不存在');
+            throw new AdminException(400592);
         }
         /** @var ShippingTemplatesFreeServices $freeServices */
         $freeServices = app()->make(ShippingTemplatesFreeServices::class);
@@ -113,7 +113,7 @@ class ShippingTemplatesServices extends BaseServices
             //设置区域配送
             $res = $res && $regionServices->saveRegion($data['region_info'], (int)$data['type'], (int)$id);
             if (!$res) {
-                throw new AdminException('指定区域邮费添加失败!');
+                throw new AdminException(400593);
             }
             //设置指定包邮
             if ($data['appoint']) {
@@ -132,7 +132,7 @@ class ShippingTemplatesServices extends BaseServices
             if ($res) {
                 return true;
             } else {
-                throw new AdminException('保存失败');
+                throw new AdminException(100006);
             }
         });
     }

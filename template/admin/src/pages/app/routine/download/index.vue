@@ -1,20 +1,10 @@
 <template>
   <div>
-    <div class="i-layout-page-header">
-      <div class="i-layout-page-header">
-        <span class="ivu-page-header-title">{{ $route.meta.title }}</span>
-      </div>
-    </div>
     <Card :bordered="false" dis-hover class="ivu-mt">
       <div class="flex-wrapper">
         <!-- :src="iframeUrl" -->
         <div>
-          <iframe
-            class="iframe-box"
-            :src="iframeUrl"
-            frameborder="0"
-            ref="iframe"
-          ></iframe>
+          <iframe class="iframe-box" :src="iframeUrl" frameborder="0" ref="iframe"></iframe>
           <div class="mask"></div>
         </div>
 
@@ -26,22 +16,19 @@
             </div>
             <Alert v-if="!pageData.appId && !pageData.code">
               <template slot="desc">
-                您尚未配置小程序信息，请<router-link
-                  :to="{ path: '/admin/setting/system_config_retail/3/7' }"
+                您尚未配置小程序信息，请<router-link :to="{ path: '/admin/setting/system_config_retail/3/7' }"
                   >立即设置</router-link
                 ></template
               >
             </Alert>
             <div class="content-box">
               <div class="left">小程序名称：</div>
-              <div class="right">{{ pageData.routine_name || "未命名" }}</div>
+              <div class="right">{{ pageData.routine_name || '未命名' }}</div>
             </div>
             <div class="content-box">
               <div class="left">小程序码：</div>
               <div class="right">
-                <Button type="primary" @click="downLoadCode(pageData.code)"
-                  >下载小程序码</Button
-                >
+                <Button type="primary" @click="downLoadCode(pageData.code)">下载小程序码</Button>
               </div>
             </div>
             <div class="content-box">
@@ -58,15 +45,12 @@
               <div class="left"></div>
               <div class="right">
                 <div>
-                  请谨慎选择是否有开通小程序直播功能，否则将影响小程序的发布
-                  可前往
+                  请谨慎选择是否有开通小程序直播功能，否则将影响小程序的发布 可前往
                   <a :href="pageData.help" target="_blank">帮助文档</a>
                   查看如何开通直播功能
                 </div>
 
-                <Button class="mt10" type="primary" @click="downLoad()"
-                  >下载小程序包</Button
-                >
+                <Button class="mt10" type="primary" @click="downLoad()">下载小程序包</Button>
               </div>
             </div>
           </div>
@@ -77,16 +61,16 @@
 </template>
 
 <script>
-import { routineDownload, routineInfo } from "@/api/app";
-import { mapState } from "vuex";
-import { formatDate } from "@/utils/validate";
+import { routineDownload, routineInfo } from '@/api/app';
+import { mapState } from 'vuex';
+import { formatDate } from '@/utils/validate';
 export default {
-  name: "routineTemplate",
+  name: 'routineTemplate',
   filters: {
     formatDate(time) {
       if (time !== 0) {
         let date = new Date(time * 1000);
-        return formatDate(date, "yyyy-MM-dd hh:mm");
+        return formatDate(date, 'yyyy-MM-dd hh:mm');
       }
     },
   },
@@ -102,10 +86,10 @@ export default {
       iframeUrl: `${location.origin}/pages/index/index?type=iframeWindow`,
       is_live: 1,
       pageData: {
-        code: "",
-        routine_name: "",
-        help: "",
-        appId: "1",
+        code: '',
+        routine_name: '',
+        help: '',
+        appId: '1',
       },
     };
   },
@@ -118,12 +102,12 @@ export default {
     $route(to, from) {},
   },
   computed: {
-    ...mapState("media", ["isMobile"]),
+    ...mapState('media', ['isMobile']),
     labelWidth() {
       return this.isMobile ? undefined : 80;
     },
     labelPosition() {
-      return this.isMobile ? "top" : "left";
+      return this.isMobile ? 'top' : 'left';
     },
   },
   methods: {
@@ -139,21 +123,21 @@ export default {
         });
     },
     downLoadCode(url) {
-      if (!url) return this.$Message.warning("暂无小程序码");
+      if (!url) return this.$Message.warning('暂无小程序码');
       var image = new Image();
       image.src = url;
       // 解决跨域 Canvas 污染问题
-      image.setAttribute("crossOrigin", "anonymous");
+      image.setAttribute('crossOrigin', 'anonymous');
       image.onload = function () {
-        var canvas = document.createElement("canvas");
+        var canvas = document.createElement('canvas');
         canvas.width = image.width;
         canvas.height = image.height;
-        var context = canvas.getContext("2d");
+        var context = canvas.getContext('2d');
         context.drawImage(image, 0, 0, image.width, image.height);
         var url = canvas.toDataURL(); //得到图片的base64编码数据
-        var a = document.createElement("a"); // 生成一个a元素
-        var event = new MouseEvent("click"); // 创建一个单击事件
-        a.download = name || "photo"; // 设置图片名称
+        var a = document.createElement('a'); // 生成一个a元素
+        var event = new MouseEvent('click'); // 创建一个单击事件
+        a.download = name || 'photo'; // 设置图片名称
         a.href = url; // 将生成的URL设置为a.href属性
         a.dispatchEvent(event); // 触发a的单击事件
       };

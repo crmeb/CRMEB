@@ -8,7 +8,6 @@
     "user-evaluation": "/components/userEvaluation/index",
     "share-red-packets": "/components/shareRedPackets/index",
     "kefu-icon": "/components/kefuIcon/index",
-    "mp-html": "/components/mp-html/mp-html",
     "menu-icon": "/components/menuIcon",
     "cus-preview-img": "/components/cusPreviewImg/index",
     "authorize": "/components/Authorize",

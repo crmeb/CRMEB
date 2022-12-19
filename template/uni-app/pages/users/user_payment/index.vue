@@ -2,49 +2,49 @@
 	<view>
 		<form @submit="submitSub" :style="colorStyle">
 			<view class="payment-top acea-row row-column row-center-wrapper">
-				<span class="name">我的余额</span>
+				<span class="name">{{$t(`我的余额`)}}</span>
 				<view class="pic">
-					￥<span class="pic-font">{{ userinfo.now_money || 0 }}</span>
+					<span class="pic-font"><span class="num"> {{$t(`￥`)}}</span>{{ userinfo.now_money || 0 }}</span>
 				</view>
 			</view>
 			<view class="payment">
 				<view class="nav acea-row row-around row-middle">
-					<view class="item" :class="active==index?'on':''" v-for="(item,index) in navRecharge" :key="index" @click="navRecharges(index)">{{item}}</view>
+					<view class="item" :class="active==index?'on':''" v-for="(item,index) in navRecharge" :key="index" @click="navRecharges(index)">{{$t(item)}}</view>
 				</view>
 				<view class='tip picList' v-if='!active' >
 					<view class="pic-box pic-box-color acea-row row-center-wrapper row-column" :class="activePic == index ? 'pic-box-color-active' : ''"
 					 v-for="(item, index) in picList" :key="index" @click="picCharge(index, item)" v-if="item.price">
 						<view class="pic-number-pic">
-							{{ item.price }}<span class="pic-number"> 元</span>
+							{{ item.price }}<span class="pic-number"> {{$t(`元`)}}</span>
 						</view>
-						<view class="pic-number">赠送：{{ item.give_money }} 元</view>
+						<view class="pic-number">{{$t(`赠送`)}}：{{ item.give_money }} {{$t(`元`)}} </view>
 					</view>
 					<view class="pic-box pic-box-color acea-row row-center-wrapper" :class="activePic == picList.length ? 'pic-box-color-active' : ''"
 					 @click="picCharge(picList.length)">
-						<input type="number" placeholder="其他" v-model="money" class="pic-box-money pic-number-pic" :class="activePic == picList.length ? 'pic-box-color-active' : ''" />
+						<input type="number" :placeholder="$t(`其他`)" v-model="money" class="pic-box-money pic-number-pic" :class="activePic == picList.length ? 'pic-box-color-active' : ''" />
 					</view>
 					<view class="tips-box">
-						<view class="tips mt-30">注意事项：</view>
+						<view class="tips mt-30">{{$t(`注意事项`)}}：</view>
 						<view class="tips-samll" v-for="item in rechargeAttention" :key="item">
-							{{ item }}
+							{{ $t(item) }}
 						</view>
 					</view>
 
 				</view>
 				<view class="tip" v-else>
-					<view class='input'><text>￥</text><input placeholder="0.00" type='number' placeholder-class='placeholder' :value="number" name="number"></input></view>
+					<view class='input'><text>{{$t(`￥`)}}</text><input placeholder="0.00" type='number' placeholder-class='placeholder' :value="number" name="number"></input></view>
 					<view class="tips-title">
-						<view style="font-weight: bold; font-size: 26rpx;">提示：</view>
-						<view style="margin-top: 10rpx;">当前可转入佣金为 <text class='font-color'>￥{{userinfo.commissionCount || 0}}</text>,冻结佣金为<text class='font-color'>￥{{userinfo.broken_commission}}</text></view>
+						<view style="font-weight: bold; font-size: 26rpx;">{{$t(`提示`)}}：</view>
+						<view style="margin-top: 10rpx;">{{$t(`当前可转入佣金为`)}} <text class='font-color'>{{$t(`￥`)}}{{userinfo.commissionCount || 0}}</text>{{$t(`冻结佣金为`)}}<text class='font-color'>{{$t(`￥`)}}{{userinfo.broken_commission}}</text></view>
 					</view>
 					<view class="tips-box">
-						<view class="tips mt-30">注意事项：</view>
+						<view class="tips mt-30">{{$t(`注意事项`)}}：</view>
 						<view class="tips-samll" v-for="item in rechargeAttention" :key="item">
-							{{ item }}
+							{{ $t(item) }}
 						</view>
 					</view>
 				</view>
-				<button class='but bg-color' formType="submit"> {{active ? '立即转入': '立即充值' }}</button>
+				<button class='but bg-color' formType="submit"> {{active ? $t(`立即转入`): $t(`立即充值`) }}</button>
 			</view>
 		</form>
 		<!-- #ifdef MP -->
@@ -86,7 +86,7 @@
 			let that = this;
 			return {
 				now_money: 0,
-				navRecharge: ['账户充值', '佣金转入'],
+				navRecharge: [this.$t(`账户充值`), this.$t(`佣金转入`)],
 				active: 0,
 				number: '',
 				userinfo: {},
@@ -193,12 +193,12 @@
 				if (that.active) {
 					if (parseFloat(value) < 0 || parseFloat(value) == NaN || value == undefined || value == "") {
 						return that.$util.Tips({
-							title: '请输入金额'
+							title: that.$t(`请输入金额`)
 						});
 					}
 					uni.showModal({
-						title: '转入余额',
-						content: '转入余额后无法再次转出，确认是否转入余额',
+						title: that.$t(`转入余额`),
+						content: that.$t(`转入余额后无法再次转出，确认是否转入余额`),
 						success(res) {
 							if (res.confirm) {
 								// #ifdef MP || APP-PLUS
@@ -217,7 +217,7 @@
 									.then(res => {
 										// that.$set(that, 'userinfo.now_money', that.$util.$h.Add(value, that.userinfo.now_money))
 										return that.$util.Tips({
-											title: '转入成功',
+											title: that.$t(`转入成功`),
 											icon: 'success'
 										}, {
 											tab: 5,
@@ -230,23 +230,23 @@
 									});
 							} else if (res.cancel) {
 								return that.$util.Tips({
-									title: '已取消'
+									title: that.$t(`已取消`)
 								});
 							}
 						},
 					})
 				} else {
 					uni.showLoading({
-						title: '正在支付',
+						title: that.$t(`正在支付`),
 					})
 					// #ifdef MP || APP-PLUS
 					let money = parseFloat(this.money);
 					if( this.rechar_id == 0){
 						if(Number.isNaN(money)){
-							return that.$util.Tips({title: '充值金额必须为数字'});
+							return that.$util.Tips({title: that.$t(`充值金额必须为数字`)});
 						}
 						if(money <= 0){
-							return that.$util.Tips({title: '充值金额不能为0'});
+							return that.$util.Tips({title: that.$t(`充值金额不能为0`)});
 						}
 					}else{
 						money = this.numberPic
@@ -259,7 +259,18 @@
 					}).then(res => {
 						uni.hideLoading();
 						let jsConfig = res.data;
+						// #ifdef MP
+						let mp_pay_name=''
+						if(uni.requestOrderPayment){
+							mp_pay_name='requestOrderPayment'
+						}else{
+							mp_pay_name='requestPayment'
+						}
+						uni[mp_pay_name]({
+						// #endif
+						// #ifdef APP-PLUS
 						uni.requestPayment({
+						// #endif
 							// #ifdef MP
 							timeStamp: jsConfig.timestamp,
 							nonceStr: jsConfig.nonceStr,
@@ -274,7 +285,7 @@
 							success: function(res) {
 								that.$set(that, 'userinfo.now_money', that.$util.$h.Add(value, that.userinfo.now_money));
 								return that.$util.Tips({
-									title: '支付成功',
+									title: that.$t(`支付成功`),
 									icon: 'success'
 								}, {
 									tab: 5,
@@ -283,12 +294,12 @@
 							},
 							fail: function() {
 								return that.$util.Tips({
-									title: '支付失败'
+									title: that.$t(`支付失败`)
 								});
 							},
 							complete: function(res) {
 								if (res.errMsg == 'requestPayment:cancel') return that.$util.Tips({
-									title: '取消支付'
+									title: that.$t(`取消支付`)
 								});
 							}
 						})
@@ -309,7 +320,7 @@
 						if (data.type == "weixinh5") {
 							location.replace(data.data.mweb_url);
 							return that.$util.Tips({
-								title: '支付成功',
+								title: that.$t(`支付成功`),
 								icon: 'success'
 							}, {
 								tab: 5,
@@ -320,7 +331,7 @@
 								.finally(() => {
 									that.$set(that, 'userinfo.now_money', that.$util.$h.Add(value, that.userinfo.now_money));
 									return that.$util.Tips({
-										title: '支付成功',
+										title: that.$t(`支付成功`),
 										icon: 'success'
 									}, {
 										tab: 5,
@@ -329,7 +340,7 @@
 								})
 								.catch(function() {
 									return that.$util.Tips({
-										title: '支付失败'
+										title: that.$t(`支付失败`)
 									});
 								});
 						}
@@ -445,6 +456,10 @@
 		.pic {
 			font-size: 32rpx;
 			color: #fff;
+			
+			.num {
+				font-size: 56rpx;
+			}
 		}
 
 		.pic-font {

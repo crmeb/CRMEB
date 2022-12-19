@@ -66,6 +66,7 @@ services:
     working_dir: /var/www
     volumes:
       - ../crmeb:/var/www #程序运行目录
+      - ../crmeb/runtime:/var/www/temp #程序缓存目录
       - ./php/php-ini-overrides.ini:/etc/php/7.4/fpm/conf.d/99-overrides.ini
     networks:
       app_net:

@@ -2,14 +2,13 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
 // | Author: CRMEB Team <admin@crmeb.com>
 // +----------------------------------------------------------------------
 namespace app\adminapi\controller\v1\application\wechat;
-
 
 use app\adminapi\controller\AuthController;
 use app\services\wechat\WechatMenuServices;
@@ -51,8 +50,8 @@ class Menus extends AuthController
     public function save()
     {
         $buttons = request()->post('button/a', []);
-        if (!count($buttons)) return app('json')->fail('请添加至少一个按钮');
+        if (!count($buttons)) return app('json')->fail(400238);
         $this->services->saveMenu($buttons);
-        return app('json')->success('修改成功!');
+        return app('json')->success(100001);
     }
 }

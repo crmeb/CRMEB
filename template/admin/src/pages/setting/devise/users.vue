@@ -38,47 +38,26 @@
                 <div class="font">优惠券</div>
               </div>
             </div>
-            <div
-              class="bottom acea-row row-between-wrapper"
-              v-if="userData.status == 1"
-            >
+            <div class="bottom acea-row row-between-wrapper" v-if="userData.status == 1">
               <div>会员到期 2022-12-31</div>
-              <div class="renew">
-                立即续费<span class="iconfont iconjinru"></span>
-              </div>
+              <div class="renew">立即续费<span class="iconfont iconjinru"></span></div>
             </div>
-            <div
-              class="bottomB acea-row row-between"
-              v-if="userData.status == 3"
-            >
-              <div class="vip">
-                <img src="../../../assets/images/member01.png" />开通会员VIP
-              </div>
-              <div>
-                会员可享多项权益<span class="iconfont iconjinru"></span>
-              </div>
+            <div class="bottomB acea-row row-between" v-if="userData.status == 3">
+              <div class="vip"><img src="../../../assets/images/member01.png" />开通会员VIP</div>
+              <div>会员可享多项权益<span class="iconfont iconjinru"></span></div>
             </div>
           </div>
-          <div
-            class="member acea-row row-between-wrapper"
-            v-if="userData.status == 2"
-          >
+          <div class="member acea-row row-between-wrapper" v-if="userData.status == 2">
             <div class="text">
               <div class="title">会员可享多项权益</div>
               <div>会员剩余360天</div>
             </div>
             <div class="bnt">立即续费</div>
           </div>
-          <div
-            class="orderCenter on dotted"
-            :class="current == 4 ? 'solid' : ''"
-            @click="currentShow(4)"
-          >
+          <div class="orderCenter on dotted" :class="current == 4 ? 'solid' : ''" @click="currentShow(4)">
             <div class="title acea-row row-between-wrapper">
               <div>订单中心</div>
-              <div class="all">
-                查看全部<span class="iconfont iconjinru"></span>
-              </div>
+              <div class="all">查看全部<span class="iconfont iconjinru"></span></div>
             </div>
             <div class="list acea-row row-around">
               <div class="item">
@@ -103,65 +82,35 @@
               </div>
             </div>
           </div>
-          <div
-            class="carousel dotted"
-            :class="current == 1 ? 'solid' : ''"
-            @click="currentShow(1)"
-          >
-            <swiper
-              :options="swiperOption"
-              class="swiperimg"
-              v-if="userData.routine_my_banner.length"
-            >
-              <swiper-slide
-                class="swiperimg"
-                v-for="(item, index) in userData.routine_my_banner"
-                :key="index"
-              >
+          <div class="carousel dotted" :class="current == 1 ? 'solid' : ''" @click="currentShow(1)">
+            <swiper :options="swiperOption" class="swiperimg" v-if="userData.routine_my_banner.length">
+              <swiper-slide class="swiperimg" v-for="(item, index) in userData.routine_my_banner" :key="index">
                 <img :src="item.pic" />
               </swiper-slide>
               <div class="swiper-pagination" slot="pagination"></div>
             </swiper>
             <div v-else class="default">暂无广告数据</div>
           </div>
-          <div
-            class="orderCenter service dotted"
-            :class="current == 2 ? 'solid' : ''"
-            @click="currentShow(2)"
-          >
+          <div class="orderCenter service dotted" :class="current == 2 ? 'solid' : ''" @click="currentShow(2)">
             <div class="title acea-row row-between-wrapper">
               <div>我的服务</div>
             </div>
             <div class="list acea-row">
-              <div
-                class="item"
-                v-for="(item, index) in MyMenus"
-                :key="index"
-                v-if="item.pic"
-              >
+              <div class="item" v-for="(item, index) in MyMenus" :key="index" v-if="item.pic">
                 <div class="pictrue">
                   <img :src="item.pic" v-if="item.pic && item.pic != ''" />
                   <span class="iconfont icontupian1" v-else></span>
                 </div>
-                <div>{{ item.name ? item.name : "服务名称" }}</div>
+                <div>{{ item.name ? item.name : '服务名称' }}</div>
               </div>
             </div>
           </div>
-          <div
-            class="orderCenter service dotted"
-            :class="current == 3 ? 'solid' : ''"
-            @click="currentShow(3)"
-          >
+          <div class="orderCenter service dotted" :class="current == 3 ? 'solid' : ''" @click="currentShow(3)">
             <div class="title acea-row row-between-wrapper">
               <div>商家管理</div>
             </div>
             <div class="list acea-row">
-              <div
-                class="item"
-                v-for="(item, index) in storeMenu"
-                :key="index"
-                v-if="item.pic"
-              >
+              <div class="item" v-for="(item, index) in storeMenu" :key="index" v-if="item.pic">
                 <div class="pictrue">
                   <img :src="item.pic" />
                 </div>
@@ -194,10 +143,7 @@
           <div class="c_row-item" v-if="current == 4">
             <Col class="label" span="4"> 订单中心： </Col>
             <Col span="20" class="slider-box">
-              <RadioGroup
-                v-model="userData.order_status"
-                @on-change="orderStyle"
-              >
+              <RadioGroup v-model="userData.order_status" @on-change="orderStyle">
                 <Radio :label="1">
                   <Icon></Icon>
                   <span>样式1</span>
@@ -224,35 +170,22 @@
           <div class="c_row-item acea-row row-top" v-if="current == 1">
             <Col class="label" span="4"> 广告位： </Col>
             <Col span="20" class="slider-box">
-              <i-switch
-                v-model="userData.my_banner_status"
-                style="margin-bottom: 12px"
-              />
-              <div class="info">
-                建议尺寸：690 *
-                240px，拖拽图片可调整图片显示顺序哦，最多添加五张
-              </div>
-              <uploadPic
-                :listData="userData.routine_my_banner"
-                :type="2"
-              ></uploadPic>
+              <i-switch v-model="userData.my_banner_status" style="margin-bottom: 12px" />
+              <div class="info">建议尺寸：690 * 240px，拖拽图片可调整图片显示顺序哦，最多添加五张</div>
+              <uploadPic :listData="userData.routine_my_banner" :type="2"></uploadPic>
             </Col>
           </div>
           <div class="c_row-item acea-row row-top" v-if="current == 2">
             <Col class="label" span="4"> 我的服务： </Col>
             <Col span="20" class="slider-box">
-              <div class="info">
-                建议尺寸：86 * 86px，拖拽图片可调整图片显示顺序哦
-              </div>
+              <div class="info">建议尺寸：86 * 86px，拖拽图片可调整图片显示顺序哦</div>
               <uploadPic :listData="MyMenus"></uploadPic>
             </Col>
           </div>
           <div class="c_row-item acea-row row-top" v-if="current == 3">
             <Col class="label" span="4"> 商家管理： </Col>
             <Col span="20" class="slider-box">
-              <div class="info">
-                建议尺寸：86 * 86px，拖拽图片可调整图片显示顺序哦，最多添加五张
-              </div>
+              <div class="info">建议尺寸：86 * 86px，拖拽图片可调整图片显示顺序哦，最多添加五张</div>
               <uploadPic :listData="storeMenu" :type="1"></uploadPic>
             </Col>
           </div>
@@ -263,10 +196,10 @@
 </template>
 
 <script>
-import { getMember, memberSave } from "@/api/diy";
-import uploadPic from "./components/uploadPic";
+import { getMember, memberSave } from '@/api/diy';
+import uploadPic from './components/uploadPic';
 export default {
-  name: "users",
+  name: 'users',
   components: {
     uploadPic,
   },
@@ -276,7 +209,7 @@ export default {
       swiperOption: {
         //显示分页
         pagination: {
-          el: ".swiper-pagination",
+          el: '.swiper-pagination',
         },
         //自动轮播
         autoplay: {
@@ -291,48 +224,48 @@ export default {
         my_banner_status: true,
         routine_my_banner: [],
         routine_my_menus: [],
-        status: "",
-        order_status: "",
+        status: '',
+        order_status: '',
       },
-      MyMenus: [{ pic: "", url: "", name: "", sort: 1, status: 1 }],
-      storeMenu: [{ pic: "", url: "", name: "", sort: 1, status: 1 }],
+      MyMenus: [{ pic: '', url: '', name: '', sort: 1, status: 1 }],
+      storeMenu: [{ pic: '', url: '', name: '', sort: 1, status: 1 }],
       current: 1,
-      colorStyle: "",
+      colorStyle: '',
       order: {},
       order01: {
-        dfk: "icondaifukuan1",
-        dfh: "icondaifahuo1",
-        dsh: "icondaishouhuo1",
-        dpj: "icondaipingjia1",
-        sh: "iconshouhou_tuikuan",
+        dfk: 'icondaifukuan1',
+        dfh: 'icondaifahuo1',
+        dsh: 'icondaishouhuo1',
+        dpj: 'icondaipingjia1',
+        sh: 'iconshouhou_tuikuan',
       },
       order02: {
-        dfk: "icondaifukuan-lan",
-        dfh: "icondaifahuo-lan",
-        dsh: "icondaishouhuo-lan",
-        dpj: "icondaipingjia-lan",
-        sh: "iconshouhou-tuikuan-lan",
+        dfk: 'icondaifukuan-lan',
+        dfh: 'icondaifahuo-lan',
+        dsh: 'icondaishouhuo-lan',
+        dpj: 'icondaipingjia-lan',
+        sh: 'iconshouhou-tuikuan-lan',
       },
       order03: {
-        dfk: "icondaifukuan-ju",
-        dfh: "icondaifahuo-ju",
-        dsh: "icondaishouhuo-ju",
-        dpj: "icondaipingjia-ju",
-        sh: "iconshouhou-tuikuan-ju",
+        dfk: 'icondaifukuan-ju',
+        dfh: 'icondaifahuo-ju',
+        dsh: 'icondaishouhuo-ju',
+        dpj: 'icondaipingjia-ju',
+        sh: 'iconshouhou-tuikuan-ju',
       },
       order04: {
-        dfk: "icondaifukuan-fen",
-        dfh: "icondaifahuo-fen",
-        dsh: "icondaishouhuo-fen",
-        dpj: "icondaipingjia-fen",
-        sh: "icona-shouhoutuikuan-fen",
+        dfk: 'icondaifukuan-fen',
+        dfh: 'icondaifahuo-fen',
+        dsh: 'icondaishouhuo-fen',
+        dpj: 'icondaipingjia-fen',
+        sh: 'icona-shouhoutuikuan-fen',
       },
       order05: {
-        dfk: "icondaifukuan-lv",
-        dfh: "icondaifahuo-lv",
-        dsh: "icondaishouhuo-lv",
-        dpj: "icondaipingjia-lv",
-        sh: "iconshouhou-tuikuan-lv",
+        dfk: 'icondaifukuan-lv',
+        dfh: 'icondaifahuo-lv',
+        dsh: 'icondaishouhuo-lv',
+        dpj: 'icondaipingjia-lv',
+        sh: 'iconshouhou-tuikuan-lv',
       },
     };
   },
@@ -370,15 +303,15 @@ export default {
     },
     getInfo() {
       let green =
-        "--view-theme: #42CA4D;--view-priceColor:#FF7600;--view-minorColor:rgba(108, 198, 94, 0.5);--view-minorColorT:rgba(66, 202, 77, 0.1);--view-bntColor:#FE960F;";
+        '--view-theme: #42CA4D;--view-priceColor:#FF7600;--view-minorColor:rgba(108, 198, 94, 0.5);--view-minorColorT:rgba(66, 202, 77, 0.1);--view-bntColor:#FE960F;';
       let red =
-        "--view-theme: #e93323;--view-priceColor:#e93323;--view-minorColor:rgba(233, 51, 35, 0.5);--view-minorColorT:rgba(233, 51, 35, 0.1);--view-bntColor:#FE960F;";
+        '--view-theme: #e93323;--view-priceColor:#e93323;--view-minorColor:rgba(233, 51, 35, 0.5);--view-minorColorT:rgba(233, 51, 35, 0.1);--view-bntColor:#FE960F;';
       let blue =
-        "--view-theme: #1DB0FC;--view-priceColor:#FD502F;--view-minorColor:rgba(58, 139, 236, 0.5);--view-minorColorT:rgba(9, 139, 243, 0.1);--view-bntColor:#22CAFD;";
+        '--view-theme: #1DB0FC;--view-priceColor:#FD502F;--view-minorColor:rgba(58, 139, 236, 0.5);--view-minorColorT:rgba(9, 139, 243, 0.1);--view-bntColor:#22CAFD;';
       let pink =
-        "--view-theme: #FF448F;--view-priceColor:#FF448F;--view-minorColor:rgba(255, 68, 143, 0.5);--view-minorColorT:rgba(255, 68, 143, 0.1);--view-bntColor:#282828;";
+        '--view-theme: #FF448F;--view-priceColor:#FF448F;--view-minorColor:rgba(255, 68, 143, 0.5);--view-minorColorT:rgba(255, 68, 143, 0.1);--view-bntColor:#282828;';
       let orange =
-        "--view-theme: #FE5C2D;--view-priceColor:#FE5C2D;--view-minorColor:rgba(254, 92, 45, 0.5);--view-minorColorT:rgba(254, 92, 45, 0.1);--view-bntColor:#FDB000;";
+        '--view-theme: #FE5C2D;--view-priceColor:#FE5C2D;--view-minorColor:rgba(254, 92, 45, 0.5);--view-minorColorT:rgba(254, 92, 45, 0.1);--view-bntColor:#FDB000;';
       getMember().then((res) => {
         this.userData.status = res.data.status;
         this.userData.order_status = res.data.order_status;
@@ -421,9 +354,9 @@ export default {
             el.pic = el.pic[0];
           }
           if (
-            el.url == "/pages/admin/order/index" ||
-            el.url == "/pages/admin/order_cancellation/index" ||
-            el.name == "客服接待"
+            el.url == '/pages/admin/order/index' ||
+            el.url == '/pages/admin/order_cancellation/index' ||
+            el.name == '客服接待'
           ) {
             storeMenu.push(el);
           } else {
@@ -440,15 +373,15 @@ export default {
     },
     onSubmit() {
       this.userData.routine_my_menus = this.MyMenus.concat(this.storeMenu);
-      this.$emit("parentFun", true);
+      this.$emit('parentFun', true);
       memberSave(this.userData)
         .then((res) => {
-          this.$emit("parentFun", false);
+          this.$emit('parentFun', false);
           this.$Message.success(res.msg);
         })
         .catch((err) => {
           this.$Message.error(err.msg);
-          this.$emit("parentFun", false);
+          this.$emit('parentFun', false);
         });
     },
   },

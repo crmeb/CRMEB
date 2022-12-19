@@ -1,0 +1,24 @@
+.
+├── app 程序主目录
+├── backup 数据库/程序升级备份目录
+├── config 系统配置
+├── crmeb crmeb核心文件目录
+├── public 程序入口目录
+├── route 程序入口路由配置
+├── runtime 缓存目录
+├── temp docker临时文件目录
+├── vendor 扩展包compose 安装目录
+├── LICENSE.txt 开源协议
+├── README.md 系统说明
+├── baota.sh 宝塔快速配置环境文件
+├── build.example.php
+├── composer.json
+├── composer.lock
+├── filetree.txt
+├── think tp命令文件入口
+├── timer.pid 定时任务生成文件
+├── updatesql.sql
+├── workerman.bat windows 启动workerman命令文件
+└── workerman.pid workerman生成文件
+
+9 directories, 12 files

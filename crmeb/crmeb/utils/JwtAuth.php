@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -33,19 +33,16 @@ class JwtAuth
 
     /**
      * 获取token
-     * @param int $id
+     * @param int|string $id
      * @param string $type
      * @param array $params
      * @return array
      */
-    public function getToken(int $id, string $type, array $params = []): array
+    public function getToken($id, string $type, array $params = []): array
     {
         $host = app()->request->host();
         $time = time();
         $exp_time = strtotime('+ 30day');
-//        if (app()->request->isApp()) {
-//            $exp_time = strtotime('+ 30day');
-//        }
         $params += [
             'iss' => $host,
             'aud' => $host,
@@ -69,7 +66,7 @@ class JwtAuth
         $this->token = $jwt;
         list($headb64, $bodyb64, $cryptob64) = explode('.', $this->token);
         $payload = JWT::jsonDecode(JWT::urlsafeB64Decode($bodyb64));
-        return [$payload->jti->id, $payload->jti->type];
+        return [$payload->jti->id, $payload->jti->type, $payload->pwd ?? ''];
     }
 
     /**
@@ -86,18 +83,19 @@ class JwtAuth
 
     /**
      * 获取token并放入令牌桶
-     * @param int $id
+     * @param $id
      * @param string $type
      * @param array $params
      * @return array
+     * @throws \Psr\SimpleCache\InvalidArgumentException
      */
-    public function createToken(int $id, string $type, array $params = [])
+    public function createToken($id, string $type, array $params = [])
     {
         $tokenInfo = $this->getToken($id, $type, $params);
         $exp = $tokenInfo['params']['exp'] - $tokenInfo['params']['iat'] + 60;
         $res = CacheService::setTokenBucket(md5($tokenInfo['token']), ['uid' => $id, 'type' => $type, 'token' => $tokenInfo['token'], 'exp' => $exp], (int)$exp, $type);
         if (!$res) {
-            throw new AdminException(ApiErrorCode::ERR_SAVE_TOKEN);
+            throw new AdminException(100023);
         }
         return $tokenInfo;
     }

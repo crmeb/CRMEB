@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -38,7 +38,7 @@ class StoreCartController
             ['product_id', 0]
         ], true);
         $this->services->resetCart($id, $request->uid(), $product_id, $unique, $num);
-        return app('json')->successful('修改成功');
+        return app('json')->success(100001);
     }
 
     /**
@@ -51,7 +51,7 @@ class StoreCartController
         $uid = (int)$request->uid();
         $data = $this->services->getCartList(['uid' => $uid, 'is_del' => 0, 'is_new' => 0, 'is_pay' => 0, 'combination_id' => 0, 'seckill_id' => 0, 'bargain_id' => 0], 0, 0, ['productInfo', 'attrInfo']);
         [$data, $valid, $invalid] = $this->services->handleCartList($uid, $data);
-        return app('json')->successful($data);
+        return app('json')->success($data);
     }
 
     /**
@@ -72,9 +72,9 @@ class StoreCartController
         ], true);
         /** @var StoreCartServices $cartService */
         $cartService = app()->make(StoreCartServices::class);
-        if (!$product_id || !is_numeric($product_id)) return app('json')->fail('参数错误');
+        if (!$product_id || !is_numeric($product_id)) return app('json')->fail(100100);
         $res = $cartService->setCartNum($request->uid(), $product_id, $num, $unique, $type);
-        if ($res) return app('json')->successful('修改成功');
-        return app('json')->fail('修改失败');
+        if ($res) return app('json')->success(100001);
+        return app('json')->fail(100007);
     }
 }

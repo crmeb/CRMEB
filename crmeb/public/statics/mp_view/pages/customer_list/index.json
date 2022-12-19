@@ -1,6 +1,0 @@
-{
-  "navigationBarTitleText": "客服列表",
-  "usingComponents": {
-    "home": "/components/home/index"
-  }
-}

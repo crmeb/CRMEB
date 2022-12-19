@@ -1,7 +1,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2021 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -28,17 +28,17 @@ class Cache {
 	time() {
 		return Math.round(new Date() / 1000);
 	}
-	
+
 	/**
 	 * 字符串转时间戳
 	 * @param {Object} expiresTime
 	 */
-	strTotime(expiresTime){
+	strTotime(expiresTime) {
 		let expires_time = expiresTime.substring(0, 19);
 		expires_time = expires_time.replace(/-/g, '/');
 		return Math.round(new Date(expires_time).getTime() / 1000);
 	}
-	
+
 
 	/**
 	 * 设置过期时间缓存
@@ -48,7 +48,9 @@ class Cache {
 	setExpireCaheTag(key, expire) {
 		expire = expire !== undefined ? expire : EXPIRE;
 		if (typeof expire === 'number') {
-			let tag = this.cacheGetHandler(this.cacheExpire), newTag = [],newKeys = [];
+			let tag = this.cacheGetHandler(this.cacheExpire),
+				newTag = [],
+				newKeys = [];
 			if (typeof tag === 'object' && tag.length) {
 				newTag = tag.map(item => {
 					newKeys.push(item.key);
@@ -57,7 +59,7 @@ class Cache {
 					}
 					return item;
 				});
-			} 
+			}
 			if (!newKeys.length || newKeys.indexOf(key) === -1) {
 				newTag.push({
 					key: key,
@@ -75,10 +77,12 @@ class Cache {
 	 */
 	getExpireCahe(key, $bool) {
 		try {
-			let tag = this.cacheGetHandler(this.cacheExpire),time = 0,index = false;
+			let tag = this.cacheGetHandler(this.cacheExpire),
+				time = 0,
+				index = false;
 			if (typeof tag === 'object' && tag.length) {
-				tag.map((item,i) => {
-					if(item.key === key){
+				tag.map((item, i) => {
+					if (item.key === key) {
 						time = item.expire
 						index = i
 					}
@@ -88,9 +92,9 @@ class Cache {
 					if (time && time < this.time() && !Number.isNaN(newTime)) {
 						if ($bool === undefined || $bool === true) {
 							this.cacheClearHandler(key);
-							if(index !== false){
-								tag.splice(index,1)
-								this.cacheClearHandler(this.cacheExpire,tag);
+							if (index !== false) {
+								tag.splice(index, 1)
+								this.cacheClearHandler(this.cacheExpire, tag);
 							}
 						}
 						return false;
@@ -129,9 +133,9 @@ class Cache {
 	 * 检测缓存是否存在
 	 * @param {Object} key
 	 */
-	has(checkwhethethecacheexists) {
+	has(checkwhethethecacheexists, isDel) {
 		this.clearOverdue();
-		return this.getExpireCahe(checkwhethethecacheexists);
+		return this.getExpireCahe(checkwhethethecacheexists, isDel);
 	}
 
 	/**

@@ -22,13 +22,12 @@
 		</div>
 		<view class="wrapper">
 			<GoodList :bastList="goodsList" :is-sort="false"></GoodList>
-			<view class="txt-bar" v-if="goodsList.length > 0 && !isScroll">我是有底线的~</view>
-			<emptyPage v-if="goodsList.length == 0 && !isScroll" title="暂无数据~"></emptyPage>
+			<emptyPage v-if="goodsList.length == 0 && !isScroll" :title="$t(`暂无数据`)"></emptyPage>
 		</view>
 		<!-- #ifndef MP -->
 		<home></home>
 		<!-- #endif -->
-		<pageFooter v-if="footerStatus"></pageFooter>
+		<pageFooter></pageFooter>
 	</div>
 </template>
 <script>
@@ -60,8 +59,8 @@
 				name: '',
 				icon: '',
 				type: 0,
-				typeName: ['', '精品推荐', '热门榜单', '首发新品',
-					'促销单品'
+				typeName: ['', this.$t(`精品推荐`), this.$t(`热门榜单`), this.$t(`首发新品`),
+					this.$t(`促销单品`)
 				],
 				autoplay: true,
 				circular: true,
@@ -70,14 +69,9 @@
 				page: 1,
 				limit: 8,
 				isScroll: true,
-				footerStatus: false
 			};
 		},
 		onLoad: function(option) {
-			if (uni.getStorageSync('FOOTER_BAR')) {
-				this.footerStatus = true
-				uni.hideTabBar()
-			}
 			this.type = option.type;
 			this.titleInfo();
 			this.name = option.name;
@@ -180,7 +174,7 @@
 			}
 
 			.line {
-				width: 230rpx;
+				width: 190rpx;
 				height: 2rpx;
 				background-color: #e9e9e9;
 			}
@@ -193,5 +187,8 @@
 		font-size: 26rpx;
 		color: #666;
 		background-color: #f5f5f5;
+	}
+	.acea-row {
+		flex-wrap: nowrap !important;
 	}
 </style>

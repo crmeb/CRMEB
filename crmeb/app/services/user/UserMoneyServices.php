@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2021 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -83,6 +83,13 @@ class UserMoneyServices extends BaseServices
             'title' => '抽奖中奖赠送余额',
             'type' => 'lottery_add',
             'mark' => '抽奖中奖赠送{%num%}余额',
+            'status' => 1,
+            'pm' => 1
+        ],
+        'register_system_add' => [
+            'title' => '新用户注册赠送余额',
+            'type' => 'register_system_add',
+            'mark' => '新用户注册赠送{%num%}余额',
             'status' => 1,
             'pm' => 1
         ],
@@ -181,7 +188,7 @@ class UserMoneyServices extends BaseServices
         if ($this->dao->update($id, ['mark' => $mark])) {
             return true;
         } else {
-            throw new AdminException('备注失败');
+            throw new AdminException(100025);
         }
     }
 
@@ -208,7 +215,7 @@ class UserMoneyServices extends BaseServices
     public function getTrend($where)
     {
         $time = explode('-', $where['time']);
-        if (count($time) != 2) throw new AdminException('参数错误');
+        if (count($time) != 2) throw new AdminException(100100);
         $dayCount = (strtotime($time[1]) - strtotime($time[0])) / 86400 + 1;
         $data = [];
         if ($dayCount == 1) {

@@ -1,12 +1,13 @@
 <template>
 	<view class="previewImg" v-if="showBox" @touchmove.stop.prevent>
 		<view class="mask" @click="close">
-			<swiper @change="changeSwiper" class="mask-swiper" :current="currentIndex" :circular="circular" :duration="duration">
+			<swiper @change="changeSwiper" class="mask-swiper" :current="currentIndex" :circular="circular"
+				:duration="duration">
 				<swiper-item v-for="(src, i) in list" :key="i" class="flex flex-column justify-center align-center">
 					<image class="mask-swiper-img" :src="src.image" mode="widthFix" />
 					<view class="mask_sku">
 						<text class="sku_name">{{src.suk}}</text>
-						<text class="sku_price">￥{{src.price}}</text>
+						<text class="sku_price">{{$t(`￥`)}}{{src.price}}</text>
 					</view>
 				</swiper-item>
 			</swiper>
@@ -45,25 +46,23 @@
 			};
 		},
 		watch: {
-			list(val) {
-				// console.log('图片预览', val)
-			}
+			list(val) {}
 		},
 		methods: {
 			// 左右切换
 			changeSwiper(e) {
 				this.currentIndex = e.target.current;
-				this.$emit('changeSwitch',e.target.current)
+				this.$emit('changeSwitch', e.target.current)
 			},
 			open(current) {
 				if (!current || !this.list.length) return;
-				this.currentIndex = this.list.map((item)=>item.suk).indexOf(current);
+				this.currentIndex = this.list.map((item) => item.suk).indexOf(current);
 				this.showBox = true;
 			},
 			close() {
 				this.showBox = false;
 			},
-			shareFriend(){
+			shareFriend() {
 				this.$emit('shareFriend')
 			}
 		}
@@ -71,73 +70,91 @@
 </script>
 
 <style lang="scss" scoped>
-@mixin full {
-	width: 100%;
-	height: 100%;
-}
+	@mixin full {
+		width: 100%;
+		height: 100%;
+	}
 
-.previewImg {
-	position: fixed;
-	top: 0;
-	left: 0;
-	z-index: 300;
-	@include full;
-	.mask {
-		display: flex;
-		justify-content: center;
-		align-items: center;
-		background-color: #000;
-		opacity: 1;
-		z-index: 8;
+	.previewImg {
+		position: fixed;
+		top: 0;
+		left: 0;
+		z-index: 300;
 		@include full;
-		&-swiper {
+
+		.mask {
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			background-color: #000;
+			opacity: 1;
+			z-index: 8;
 			@include full;
-			&-img {
-				width: 100%;
+
+			&-swiper {
+				@include full;
+
+				&-img {
+					width: 100%;
+				}
 			}
 		}
+
+		.pagebox {
+			position: absolute;
+			width: 100%;
+			bottom: 20rpx;
+			z-index: 300;
+			color: #fff;
+			text-align: center;
+		}
 	}
-	.pagebox{
-		position: absolute;
-		width: 100%;
-		bottom: 20rpx;
-		z-index: 300;
+
+	.mask_sku {
 		color: #fff;
+		max-width: 80%;
+		z-index: 300;
 		text-align: center;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		margin-top: 30rpx;
+
+		.sku_name {
+			font-size: 12px;
+			border: 1px solid #fff;
+			padding: 10rpx 30rpx 10rpx;
+			border-radius: 40px;
+			box-sizing: border-box;
+		}
+
+		.sku_price {
+			padding-top: 10px;
+		}
 	}
-}
-.mask_sku{
-	color: #fff;
-	max-width: 80%;
-	z-index: 300;
-	text-align: center;
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	margin-top: 30rpx;
-	.sku_name{
-		font-size: 12px;
-		border: 1px solid #fff;
-		padding: 10rpx 30rpx 10rpx;
-		border-radius: 40px;
-		box-sizing: border-box;
+
+	.font12 {
+		font-size: 24rpx;
 	}
-	.sku_price{
-		padding-top: 10px;
+
+	.share_btn {
+		position: absolute;
+		top: 70rpx;
+		right: 50rpx;
+		font-size: 40rpx;
+		color: #fff;
+		z-index: 300;
 	}
-}
-.font12{
-	font-size: 24rpx;
-}
-.share_btn{
-	position: absolute;
-	top:70rpx;
-	right:50rpx;
-	font-size: 40rpx;
-	color:#fff;
-	z-index: 300;
-}
-.flex-column{flex-direction: column;}
-.justify-center {justify-content: center;}
-.align-center {align-items: center;}
+
+	.flex-column {
+		flex-direction: column;
+	}
+
+	.justify-center {
+		justify-content: center;
+	}
+
+	.align-center {
+		align-items: center;
+	}
 </style>

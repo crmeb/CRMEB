@@ -1,6 +1,6 @@
 <template>
   <div class="user-avatar-dropdown">
-    <Dropdown @on-click="handleClick">
+    <Dropdown @on-click="handleClick" :transfer="true">
       <!--<Badge :dot="!!messageUnreadCount">-->
       <!--<Avatar :src="avatars"/>-->
       <!--</Badge>-->
@@ -10,15 +10,9 @@
         <!--<DropdownItem name="message">-->
         <!--消息中心<Badge style="margin-left: 10px" :count="messageUnreadCount"></Badge>-->
         <!--</DropdownItem>-->
-        <DropdownItem name="userCenter"
-          ><Icon
-            type="ios-contact-outline"
-            class="iconImg"
-          />个人中心</DropdownItem
-        >
-        <DropdownItem name="logout"
-          ><Icon type="ios-log-out" class="iconImg" />退出登录</DropdownItem
-        >
+        <DropdownItem name="userCenter"><Icon type="ios-contact-outline" class="iconImg" />个人中心</DropdownItem>
+		    <!-- <DropdownItem v-show = "info.level === 0" name="fileEdit"><Icon type="ios-document-outline" class="iconImg" />文件管理</DropdownItem> -->
+        <DropdownItem name="logout"><Icon type="ios-log-out" class="iconImg" />退出登录</DropdownItem>
       </DropdownMenu>
     </Dropdown>
   </div>
@@ -34,21 +28,21 @@
 }
 </style>
 <script>
-import "./user.less";
-import { AccountLogout } from "@/api/account";
-import { removeCookies } from "@/libs/util";
-import { Modal } from "iview";
+import './user.less';
+import { AccountLogout } from '@/api/account';
+import { removeCookies } from '@/libs/util';
+import { Modal } from 'iview';
 export default {
-  name: "User",
+  name: 'User',
   data() {
     return {
-      info: "",
+      info: '',
     };
   },
   props: {
     userAvatar: {
       type: String,
-      default: "",
+      default: '',
     },
     messageUnreadCount: {
       type: Number,
@@ -62,17 +56,17 @@ export default {
     logout() {
       let that = this;
       this.$Modal.confirm({
-        title: "退出登录确认",
-        content: "您确定退出当前账户吗？",
+        title: '退出登录确认',
+        content: '您确定退出当前账户吗？',
         onOk() {
           AccountLogout()
             .then((res) => {
-              that.$Message.success("您已成功退出");
-              that.$router.replace("/admin/login");
+              that.$Message.success('您已成功退出');
+              that.$router.replace('/admin/login');
               localStorage.clear();
-              removeCookies("token");
-              removeCookies("expires_time");
-              removeCookies("uuid");
+              removeCookies('token');
+              removeCookies('expires_time');
+              removeCookies('uuid');
               // window.location.reload()
             })
             .catch((res) => {});
@@ -80,24 +74,30 @@ export default {
       });
     },
     userCenter() {
-      this.$router.push("/admin/system/user");
+      this.$router.push('/admin/system/user');
+    },
+    fileEdit(){
+      this.$router.push('/admin/system/files');
     },
     message() {
       this.$router.push({
-        name: "message_page",
+        name: 'message_page',
       });
     },
     handleClick(name) {
       switch (name) {
-        case "logout":
+        case 'logout':
           this.logout();
           break;
-        case "userCenter":
+        case 'userCenter':
           this.userCenter();
           break;
-        case "message":
+        case 'message':
           this.message();
           break;
+        case 'fileEdit':
+          this.fileEdit();
+        break;
       }
     },
   },

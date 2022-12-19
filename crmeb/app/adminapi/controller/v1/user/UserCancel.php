@@ -44,16 +44,16 @@ class UserCancel extends AuthController
             ['mark', ''],
         ], true);
         $this->services->serMark($id, $mark);
-        return app('json')->success('备注成功');
+        return app('json')->success(100024);
     }
 
     public function agreeCancel($id)
     {
-        return app('json')->success('注销成功');
+        return app('json')->success(400319);
     }
 
     public function refuseCancel($id)
     {
-        return app('json')->success('拒绝注销');
+        return app('json')->success(400320);
     }
 }

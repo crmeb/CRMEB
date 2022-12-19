@@ -6,7 +6,7 @@
 			</view>
 			<!-- paid: 0 未支付 1 已支付 type:0 本人 1 好友-->
 			<view class="order-status" v-if="!resData.paid && !resData.type">
-				代付订单创建成功，发给好友帮你付款吧~
+				{{$t(`代付订单创建成功，发给好友帮你付款吧~`)}}
 			</view>
 		</view>
 		<view class="head-other" v-else>
@@ -21,58 +21,58 @@
 					{{resData.paid && !resData.type && resData.pay_uid === $store.state.app.uid ? resData.pay_nickname : resData.nickname}}
 				</view>
 				<view class="head-other-trip" v-if="!resData.paid && resData.type">
-					帮我付一下这件商品了，谢谢~
+					{{$t(`帮我付一下这件商品了，谢谢~`)}}
 				</view>
 				<view class="head-other-trip"
 					v-if="resData.pay_uid !== $store.state.app.uid && resData.paid && resData.type">
-					已经有人替我代付，谢谢啦~
+					{{$t(`已经有人替我代付，谢谢啦~`)}}
 				</view>
 				<view class="head-other-trip"
 					v-if="resData.pay_uid === $store.state.app.uid && resData.paid && resData.type">
-					谢谢你帮我支付，么么哒~
+					{{$t(`谢谢你帮我支付，么么哒~`)}}
 				</view>
 				<view class="head-other-trip" v-if="resData.pay_uid !== resData.uid  && resData.paid && !resData.type">
-					我已为你代付成功，商家正在努力发货中~
+					{{$t(`我已为你代付成功，商家正在努力发货中~`)}}
 				</view>
 			</view>
 		</view>
 		<view class="order-msg">
 			<view class="pay-success" v-if="resData.paid && !resData.type">
-				好友代付成功，商家正在努力发货中~
+				{{$t(`好友代付成功，商家正在努力发货中~`)}}
 			</view>
 			<view v-else class="pay--box">
 				<view class="order-top">
-					代付金额
+					{{$t(`代付金额`)}}
 				</view>
 				<view class="order-num">
-					<text class="icon">¥</text>
+					<text class="icon">{{$t(`￥`)}}</text>
 					{{resData.pay_price}}
 				</view>
 			</view>
 			<!-- #ifdef APP-PLUS -->
 			<view v-if="!resData.paid && !resData.type" class="order-btn" @click="appShare('WXSceneSession')">
-				发送给微信好友
+				{{$t(`发送给微信好友`)}}
 			</view>
 			<!-- #endif -->
 			<!-- #ifdef H5 -->
 			<view v-if="!resData.paid && !resData.type" class="order-btn" @click="shareFriend">
-				发送给微信好友
+				{{$t(`发送给微信好友`)}}
 			</view>
 			<!-- #endif -->
 			<!-- #ifdef MP -->
 			<button v-if="!resData.paid && !resData.type" class="order-btn" open-type="share" hover-class="none"
 				@click="shareModal = false">
-				发送给微信好友
+				{{$t(`发送给微信好友`)}}
 			</button>
 			<!-- #endif -->
 			<button v-if="!resData.paid && !resData.type" class="order-btn detail" @click="goOrderDetail()">
-				查看订单详情
+				{{$t(`查看订单详情`)}}
 			</button>
-			<button class="order-btn" v-if="!resData.paid && resData.type" @tap='payOpen()'>立即付款</button>
-			<button class="order-btn on-pay" v-if="resData.paid && resData.type">订单已支付</button>
-			<button class="order-btn" v-if="resData.paid && !resData.type" @tap='goOrderDetail()'>查看订单详情</button>
+			<button class="order-btn" v-if="!resData.paid && resData.type" @tap='payOpen()'>{{$t(`立即付款`)}}</button>
+			<button class="order-btn on-pay" v-if="resData.paid && resData.type">{{$t(`订单已支付`)}}</button>
+			<button class="order-btn" v-if="resData.paid && !resData.type" @tap='goOrderDetail()'>{{$t(`查看订单详情`)}}</button>
 			<view class="order-trip" v-if="resData.pay_uid === $store.state.app.uid && resData.type">
-				如果订单申请退款，已支付金额将原路退还给您
+				{{$t(`如果订单申请退款，已支付金额将原路退还给您`)}}
 			</view>
 		</view>
 		<view class="order-list">
@@ -80,7 +80,7 @@
 				:is_behalf="resData.paid && !resData.type ? true :false"></orderGoods>
 		</view>
 		<view class="share-box" v-if="shareModal">
-			<image src="/static/images/share-info2.png" @click="shareModal = false"></image>
+			<image src="../static/share-info2.png" @click="shareModal = false"></image>
 		</view>
 		<payment :payMode='payMode' :pay_close="pay_close" :friendPay="true" @onChangeFun='onChangeFun'
 			:order_id="order_id" :totalPrice='resData.pay_price'></payment>
@@ -122,10 +122,10 @@
 				cartInfo: [],
 				resData: {},
 				payMode: [{
-						name: "微信支付",
+						name: this.$t(`微信支付`),
 						icon: "icon-weixinzhifu",
 						value: 'weixin',
-						title: '使用微信快捷支付',
+						title: this.$t(`使用微信快捷支付`),
 						payStatus: true,
 					},
 					// #ifdef H5 || APP-PLUS
@@ -187,8 +187,8 @@
 				this.pay_close = true;
 			},
 			getDetail() {
+				let that = this;
 				friendDetail(this.order_id).then(res => {
-					console.log(res)
 					this.resData = res.data.info
 					if (this.resData.paid && !this.resData.type) {
 						this.goOrderDetail()
@@ -196,15 +196,22 @@
 					//#ifdef H5
 					this.ShareInfo(this.resData)
 					//#endif
-				})
+				}).catch((err) => {
+					that.$util.Tips({
+						title: err
+					}, {
+						tab: 4,
+						url: '/pages/index/index'
+					});
+				});
 			},
 			//#ifdef H5
 			ShareInfo(data) {
 				let href = location.href;
 				if (this.$wechat.isWeixin()) {
 					let configAppMessage = {
-						desc: '帮我付一下这件商品了，谢谢~',
-						title: "好友代付",
+						desc: this.$t(`帮我付一下这件商品了，谢谢~`),
+						title: this.$t(`好友代付`),
 						link: href,
 						imgUrl: data.avatar,
 					};
@@ -233,20 +240,20 @@
 					scene: scene,
 					type: 0,
 					href: `${HTTP_REQUEST_URL}${curRoute}`,
-					title: '好友代付',
-					summary: '帮我付一下这件商品了，谢谢~',
+					title: that.$t(`好友代付`),
+					summary: that.$t(`帮我付一下这件商品了，谢谢~`),
 					imageUrl: that.resData.paid && !that.resData.type && that.resData.pay_uid === that.$store.state
 						.app.uid ? that.resData.pay_avatar : that.resData.avatar,
 					success: function(res) {
 						uni.showToast({
-							title: "分享成功",
+							title: that.$t(`分享成功`),
 							icon: "success",
 							duration: 2000,
 						});
 					},
 					fail: function(err) {
 						uni.showToast({
-							title: "分享失败",
+							title: that.$t(`分享失败`),
 							icon: "none",
 							duration: 2000,
 						});
@@ -293,7 +300,7 @@
 			},
 			goOrderDetail() {
 				uni.navigateTo({
-					url: '/pages/users/order_details/index?order_id=' + this.order_id
+					url: '/pages/goods/order_details/index?order_id=' + this.order_id
 				})
 			}
 		}

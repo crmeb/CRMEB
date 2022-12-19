@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -13,11 +13,13 @@ namespace app\services\serve;
 
 
 use app\services\BaseServices;
+use crmeb\services\copyproduct\CopyProduct;
 use crmeb\services\express\Express;
 use crmeb\services\FormBuilder;
-use crmeb\services\product\Product;
+use crmeb\services\printer\Printer;
 use crmeb\services\serve\Serve;
 use crmeb\services\sms\Sms;
+use think\facade\Config;
 
 /**
  * 平台服务入口
@@ -43,6 +45,7 @@ class ServeServices extends BaseServices
 
     /**
      * 获取配置
+     * @param array $config
      * @return array
      */
     public function getConfig(array $config = [])
@@ -53,26 +56,55 @@ class ServeServices extends BaseServices
         ], $config);
     }
 
+
+    /**
+     * 根据类型获取短信发送配置
+     * @param $type
+     * @param array $configDefault
+     * @return array
+     */
+    protected function getTypeConfig($type, array $configDefault = [])
+    {
+        if (!$type) {
+            $type = Config::get('sms.default', '');
+        }
+        $config = Config::get('sms.stores.' . $type);
+        foreach ($config as $key => &$item) {
+            if (empty($item)) {
+                $item = sys_config($key);
+            }
+        }
+        if ($configDefault) {
+            $config = array_merge($config, $configDefault);
+        }
+        return $config;
+    }
+
     /**
      * 短信
+     * @param string|null $type
+     * @param array $config
      * @return Sms
      */
-    public function sms(array $config = [])
+    public function sms(string $type = null, array $config = [])
     {
-        return app()->make(Sms::class, [$this->getConfig($config)]);
+        return app()->make(Sms::class, [$type, $this->getTypeConfig($type, $config)]);
     }
 
     /**
      * 复制商品
-     * @return Product
+     * @param string|null $type
+     * @param array $config
+     * @return CopyProduct
      */
-    public function copy(array $config = [])
+    public function copy(string $type = null, array $config = [])
     {
-        return app()->make(Product::class, [$this->getConfig($config)]);
+        return app()->make(CopyProduct::class, [$type, $this->getConfig($config)]);
     }
 
     /**
      * 电子面单
+     * @param array $config
      * @return Express
      */
     public function express(array $config = [])
@@ -81,7 +113,18 @@ class ServeServices extends BaseServices
     }
 
     /**
+     * 小票打印
+     * @param array $config
+     * @return Express
+     */
+    public function orderPrint(array $config = [])
+    {
+        return app()->make(Printer::class, [$this->getConfig($config)]);
+    }
+
+    /**
      * 用户
+     * @param array $config
      * @return Serve
      */
     public function user(array $config = [])
@@ -126,7 +169,7 @@ class ServeServices extends BaseServices
         $field = [
             $this->builder->input('title', '模板名称')->placeholder('模板名称,如：订单支付成功'),
             $this->builder->input('content', '模板内容')->type('textarea')->placeholder('模板内容，如：您购买的商品已支付成功，支付金额{$pay_price}元，订单号{$order_id},感谢您的光临！（注：模板内容不要添加短信签名）'),
-            $this->builder->radio('type', '模板类型', 1)->options([['label' => '验证码', 'value' => 1], ['label' => '通知', 'value' => 2], ['label' => '推广', 'value' => 3]])
+            $this->builder->radio('type', '模板类型', 1)->options([['label' => '验证码', 'value' => 1], ['label' => '通知', 'value' => 2], ['label' => '营销', 'value' => 3]])
         ];
         return $field;
     }

@@ -1,44 +1,44 @@
 <template>
 	<view :style="colorStyle">
 		<view class="navbar acea-row row-around">
-			<view class="item acea-row row-center-wrapper" :class="{ on: navOn === 1 }" @click="onNav(1)">未使用</view>
-			<view class="item acea-row row-center-wrapper" :class="{ on: navOn === 2 }" @click="onNav(2)">已使用/过期</view>
+			<view class="item acea-row row-center-wrapper" :class="{ on: navOn === 1 }" @click="onNav(1)">{{$t(`未使用`)}}</view>
+			<view class="item acea-row row-center-wrapper" :class="{ on: navOn === 2 }" @click="onNav(2)">{{$t(`已使用/过期`)}}</view>
 		</view>
 		<view class='coupon-list' v-if="couponsList.length">
 			<view class='item acea-row row-center-wrapper' v-for='(item,index) in couponsList' :key="index"
 				:class="{svip: item.receive_type === 4}" @click="useCoupon(item)">
 				<view class="moneyCon acea-row row-center-wrapper">
 					<view class='money' :class='item._type == 0 ? "moneyGray" : ""'>
-						<view>￥<text class='num'>{{item.coupon_price}}</text></view>
-						<view class="pic-num" v-if="item.use_min_price > 0">满{{item.use_min_price}}元可用</view>
-						<view class="pic-num" v-else>无门槛券</view>
+						<view>{{$t(`￥`)}}<text class='num'>{{item.coupon_price}}</text></view>
+						<view class="pic-num" v-if="item.use_min_price > 0">{{$t(`满`)}}{{item.use_min_price}}{{$t(`元可用`)}}</view>
+						<view class="pic-num" v-else>{{$t(`无门槛券`)}}</view>
 					</view>
 				</view>
 				<view class='text'>
 					<view class='condition'>
 						<view class="name line2">
 							<view class="line-title" :class="item._type === 0 ? 'bg-color-huic' : 'bg-color-check'"
-								v-if="item.applicable_type === 0">通用劵</view>
+								v-if="item.applicable_type === 0">{{$t(`通用劵`)}}</view>
 							<view class="line-title" :class="item._type === 0 ? 'bg-color-huic' : 'bg-color-check'"
-								v-else-if="item.applicable_type === 1">品类券</view>
+								v-else-if="item.applicable_type === 1">{{$t(`品类券`)}}</view>
 							<view class="line-title" :class="item._type === 0 ? 'bg-color-huic' : 'bg-color-check'"
-								v-else>商品券</view>
+								v-else>{{$t(`商品券`)}}</view>
 							<image src="../../../static/images/fvip.png" class="pic" v-if="item.receive_type===4">
 							</image>
-							<text>{{item.coupon_title}}</text>
+							<text>{{$t(item.coupon_title)}}</text>
 						</view>
 					</view>
 					<view class='data acea-row row-between-wrapper'>
 						<view>{{item.add_time}}-{{item.end_time}}</view>
-						<view class='bnt gray' v-if="item._type==0">{{item._msg}}</view>
-						<view class='bnt bg-color' v-else>{{item._msg}}</view>
+						<view class='bnt gray' v-if="item._type==0">{{$t(item._msg)}}</view>
+						<view class='bnt bg-color' v-else>{{$t(item._msg)}}</view>
 					</view>
 				</view>
 			</view>
 		</view>
 		<view class='noCommodity' v-if="!couponsList.length && page === 2">
 			<view class='pictrue'>
-				<image src='../../../static/images/noCoupon.png'></image>
+				<image :src="imgHost + '/statics/images/noCoupon.png'"></image>
 			</view>
 		</view>
 		<!-- #ifdef MP -->
@@ -65,6 +65,7 @@
 	// #endif
 	import home from '@/components/home';
 	import colors from '@/mixins/color.js';
+	import {HTTP_REQUEST_URL} from '@/config/app';
 	export default {
 		components: {
 			// #ifdef MP
@@ -75,6 +76,7 @@
 		mixins:[colors],
 		data() {
 			return {
+				imgHost:HTTP_REQUEST_URL,
 				couponsList: [],
 				loading: false,
 				isAuto: false, //没有授权的不会自动授权
@@ -117,13 +119,13 @@
 			useCoupon(item){
 				let url = '';
 				if (item.category_id == 0 && item.product_id == '') {
-					url = '/pages/goods_list/index?title=默认'
+					url = '/pages/goods/goods_list/index?title=默认'
 				}
 				if (item.category_id != 0) {
 					if (item.category_type == 1) {
-						url = '/pages/goods_list/index?cid='+item.category_id+'&title='+item.category_name
+						url = '/pages/goods/goods_list/index?cid='+item.category_id+'&title='+item.category_name
 					}else{
-						url = '/pages/goods_list/index?sid='+item.category_id+'&title='+item.category_name
+						url = '/pages/goods/goods_list/index?sid='+item.category_id+'&title='+item.category_name
 					}
 				}
 				if (item.product_id != '') {
@@ -132,7 +134,7 @@
 					if (num == 1) {
 						url = '/pages/goods_details/index?id='+item.product_id
 					} else {
-						url = '/pages/goods_list/index?productId='+item.product_id+'&title=默认'
+						url = '/pages/goods/goods_list/index?productId='+item.product_id+'&title=默认'
 					}
 				}
 				uni.navigateTo({
@@ -159,7 +161,7 @@
 				}
 				that.loading = true;
 				uni.showLoading({
-					title: '正在加载…'
+					title: that.$t(`正在加载…`)
 				});
 				getUserCoupons(this.navOn, {
 					page: this.page,
@@ -216,8 +218,9 @@
 	}
 
 	.condition .line-title {
-		width: 70rpx;
+		/* width: 70rpx; */
 		height: 32rpx !important;
+		padding: 0 5px;
 		line-height: 30rpx;
 		text-align: center;
 		box-sizing: border-box;

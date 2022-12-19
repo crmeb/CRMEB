@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -43,7 +43,7 @@ class HomeController
     public function getBanner()
     {
         $list = sys_data('pc_home_banner');
-        return app('json')->successful(compact('list'));
+        return app('json')->success(compact('list'));
     }
 
     /**
@@ -53,7 +53,7 @@ class HomeController
     public function getCategoryProduct(Request $request)
     {
         $data = $this->services->getCategoryProduct((int)$request->uid());
-        return app('json')->successful($data);
+        return app('json')->success($data);
     }
 
     /**
@@ -64,7 +64,7 @@ class HomeController
     {
         $phoneBuy = sys_config('product_phone_buy_url', 1);
         $siteUrl = sys_config('site_url');
-        return app('json')->successful(['phone_buy' => $phoneBuy, 'sit_url' => $siteUrl]);
+        return app('json')->success(['phone_buy' => $phoneBuy, 'sit_url' => $siteUrl]);
     }
 
     /**
@@ -84,6 +84,6 @@ class HomeController
             //生成小程序地址
             $codeUrl = $QrcodeService->getRoutineQrcodePath(0, 0, 5, [], false);
         }
-        return app('json')->successful(['url' => $codeUrl ?: '']);
+        return app('json')->success(['url' => $codeUrl ?: '']);
     }
 }

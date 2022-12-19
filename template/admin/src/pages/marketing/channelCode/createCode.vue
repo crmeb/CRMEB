@@ -3,19 +3,10 @@
     <div class="i-layout-page-header header">
       <div class="i-layout-page-header fl_header">
         <span class="">
-          <Button
-            icon="ios-arrow-back"
-            size="small"
-            type="text"
-            @click="$router.go(-1)"
-            >返回</Button
-          >
+          <Button icon="ios-arrow-back" size="small" type="text" @click="$router.go(-1)">返回</Button>
         </span>
         <Divider class="" type="vertical" />
-        <span
-          class="ivu-page-header-title mr20"
-          v-text="$route.query.id ? '编辑渠道码' : '添加渠道码'"
-        ></span>
+        <span class="ivu-page-header-title mr20" v-text="$route.query.id ? '编辑渠道码' : '添加渠道码'"></span>
       </div>
     </div>
 
@@ -26,12 +17,7 @@
         </FormItem>
         <FormItem label="二维码分组" :label-width="150">
           <Select v-model="formData.cate_id" style="width: 320px">
-            <Option
-              :value="item.id"
-              v-for="(item, index) in labelSort"
-              :key="index"
-              >{{ item.cate_name }}</Option
-            >
+            <Option :value="item.id" v-for="(item, index) in labelSort" :key="index">{{ item.cate_name }}</Option>
           </Select>
         </FormItem>
         <FormItem label="用户标签" :label-width="150">
@@ -51,19 +37,12 @@
           </Select>
           <span class="addfont" @click="addLabel">新增标签</span> -->
           <div style="display: flex">
-            <div
-              class="labelInput acea-row row-between-wrapper"
-              @click="openLabel"
-            >
+            <div class="labelInput acea-row row-between-wrapper" @click="openLabel">
               <div style="width: 90%">
                 <div v-if="dataLabel.length">
-                  <Tag
-                    closable
-                    v-for="(item, index) in dataLabel"
-                    @on-close="closeLabel(item)"
-                    :key="index"
-                    >{{ item.label_name }}</Tag
-                  >
+                  <Tag closable v-for="(item, index) in dataLabel" @on-close="closeLabel(item)" :key="index">{{
+                    item.label_name
+                  }}</Tag>
                 </div>
                 <span class="span" v-else>选择用户关联标签</span>
               </div>
@@ -81,9 +60,7 @@
               <Icon type="ios-camera-outline" size="26" />
             </div>
           </div>
-          <div class="trip">
-            扫码注册的新用户,将自动成为此推广员的下级,与分销推广功能一致
-          </div>
+          <div class="trip">扫码注册的新用户,将自动成为此推广员的下级,与分销推广功能一致</div>
         </FormItem>
         <FormItem label="有效期">
           <RadioGroup v-model="isReceiveTime">
@@ -101,19 +78,12 @@
             ></InputNumber>
             天
           </span>
-          <div class="trip">
-            临时码过期后不能再扫码,永久二维码最大创建数量为10万个
-          </div>
+          <div class="trip">临时码过期后不能再扫码,永久二维码最大创建数量为10万个</div>
         </FormItem>
         <FormItem label="回复内容">
           <Row>
             <Col span="4">
-              <Menu
-                theme="light"
-                style="width: 150px"
-                :active-name="formData.type"
-                @on-select="selectMenu"
-              >
+              <Menu theme="light" style="width: 150px" :active-name="formData.type" @on-select="selectMenu">
                 <MenuItem name="text">文字内容</MenuItem>
                 <!-- <MenuItem name="url">网址链接</MenuItem> -->
                 <!-- <MenuItem name="3">小程序</MenuItem> -->
@@ -123,28 +93,17 @@
               </Menu>
             </Col>
             <Col span="18">
-              <FormItem
-                label="消息内容："
-                prop="content"
-                v-if="formData.type === 'text' || formData.type === 'url'"
-              >
+              <FormItem label="消息内容：" prop="content" v-if="formData.type === 'text' || formData.type === 'url'">
                 <textarea
                   v-model="formData.content.content"
-                  :placeholder="
-                    formData.type === 'text'
-                      ? '请填写消息内容'
-                      : '请填写网址链接'
-                  "
+                  :placeholder="formData.type === 'text' ? '请填写消息内容' : '请填写网址链接'"
                   style="width: 50%"
                 ></textarea>
               </FormItem>
               <FormItem label="选取图文：" v-if="formData.type === 'news'">
                 <Button type="info" @click="modals = true">选择图文消息</Button>
                 <div class="news-box" v-if="formData.content.list.title">
-                  <img
-                    class="news_pic"
-                    :src="formData.content.list.image_input[0]"
-                  />
+                  <img class="news_pic" :src="formData.content.list.image_input[0]" />
                   <span>{{ formData.content.list.title }}</span>
                 </div>
               </FormItem>
@@ -165,9 +124,7 @@
                     :show-upload-list="false"
                     :action="fileUrl"
                     :on-success="handleSuccess"
-                    :format="
-                      formData.type === 'image' ? formatImg : formatVoice
-                    "
+                    :format="formData.type === 'image' ? formatImg : formatVoice"
                     :max-size="2048"
                     :headers="header"
                     :on-format-error="handleFormatError"
@@ -178,43 +135,20 @@
                     <Button type="primary">上传</Button>
                   </Upload>
                 </div>
-                <span v-show="formData.type === 'image'"
-                  >文件最大2Mb，支持bmp/png/jpeg/jpg/gif格式</span
-                >
-                <span v-show="formData.type === 'voice'"
-                  >文件最大2Mb，支持mp3/wma/wav/amr格式,播放长度不超过60s</span
-                >
+                <span v-show="formData.type === 'image'">文件最大2Mb，支持bmp/png/jpeg/jpg/gif格式</span>
+                <span v-show="formData.type === 'voice'">文件最大2Mb，支持mp3/wma/wav/amr格式,播放长度不超过60s</span>
               </FormItem>
             </Col>
           </Row>
         </FormItem>
       </Form>
-      <Button class="submit" type="primary" @click="save" :disabled="disabled"
-        >立即提交</Button
-      >
+      <Button class="submit" type="primary" @click="save" :loading="loading" :disabled="disabled">立即提交</Button>
     </Card>
-    <Modal
-      v-model="customerShow"
-      scrollable
-      title="请选择商城用户"
-      :closable="false"
-      width="800"
-    >
-      <customerInfo
-        v-if="customerShow"
-        @imageObject="imageObject"
-      ></customerInfo>
+    <Modal v-model="customerShow" scrollable title="请选择商城用户" :closable="false" width="800">
+      <customerInfo v-if="customerShow" @imageObject="imageObject"></customerInfo>
     </Modal>
     <!--图文消息 -->
-    <Modal
-      v-model="modals"
-      scrollable
-      title="发送消息"
-      width="1200"
-      height="800"
-      footer-hide
-      class="modelBox"
-    >
+    <Modal v-model="modals" scrollable title="发送消息" width="1200" height="800" footer-hide class="modelBox">
       <news-category
         v-if="modals"
         @getCentList="getCentList"
@@ -233,34 +167,26 @@
       :footer-hide="true"
       :mask-closable="false"
     >
-      <userLabel
-        ref="userLabel"
-        @activeData="activeData"
-        @close="labelClose"
-      ></userLabel>
+      <userLabel ref="userLabel" @activeData="activeData" @close="labelClose"></userLabel>
     </Modal>
   </div>
 </template>
 
 <script>
-import { mapState } from "vuex";
-import userLabel from "@/components/labelList";
+import { mapState } from 'vuex';
+import userLabel from '@/components/labelList';
 
-import goodsList from "@/components/goodsList/index";
-import newsCategory from "@/components/newsCategory/index";
-import { labelListApi } from "@/api/product";
-import { userLabelAddApi } from "@/api/user";
-import {
-  wechatQrcodeSaveApi,
-  wechatQrcodeTree,
-  wechatQrcodeDetail,
-} from "@/api/setting";
-import Setting from "@/setting";
-import { getCookies } from "@/libs/util";
-import customerInfo from "@/components/customerInfo";
+import goodsList from '@/components/goodsList/index';
+import newsCategory from '@/components/newsCategory/index';
+import { labelListApi } from '@/api/product';
+import { userLabelAddApi } from '@/api/user';
+import { wechatQrcodeSaveApi, wechatQrcodeTree, wechatQrcodeDetail } from '@/api/setting';
+import Setting from '@/setting';
+import { getCookies } from '@/libs/util';
+import customerInfo from '@/components/customerInfo';
 
 export default {
-  name: "storeCouponCreate",
+  name: 'storeCouponCreate',
   components: {
     goodsList,
     newsCategory,
@@ -276,24 +202,24 @@ export default {
       maxCols: 4,
       labelSelect: [],
 
-      scrollerHeight: "600",
-      contentTop: "130",
-      contentWidth: "98%",
-      formatImg: ["jpg", "jpeg", "png", "bmp", "gif"],
-      formatVoice: ["mp3", "wma", "wav", "amr"],
+      scrollerHeight: '600',
+      contentTop: '130',
+      contentWidth: '98%',
+      formatImg: ['jpg', 'jpeg', 'png', 'bmp', 'gif'],
+      formatVoice: ['mp3', 'wma', 'wav', 'amr'],
       header: {},
-      fileUrl: Setting.apiBaseURL + "/file/upload/1",
+      fileUrl: Setting.apiBaseURL + '/file/upload/1',
 
       formData: {
-        name: "",
-        type: "text",
+        name: '',
+        type: 'text',
         time: 0,
         label_id: [],
-        image: "",
-        cate_id: "",
+        image: '',
+        cate_id: '',
         content: {
-          content: "",
-          src: "",
+          content: '',
+          src: '',
           list: {},
         },
       },
@@ -304,24 +230,25 @@ export default {
         name: [
           {
             required: true,
-            message: "请填写二维码名称",
-            trigger: "blur",
+            message: '请填写二维码名称',
+            trigger: 'blur',
           },
         ],
         cate_id: [
           {
             required: true,
-            message: "请选择二维码分组",
-            trigger: "change",
+            message: '请选择二维码分组',
+            trigger: 'change',
           },
         ],
       },
       id: 0,
       dataLabel: [],
+      loading: false,
     };
   },
   computed: {
-    ...mapState("media", ["isMobile"]),
+    ...mapState('media', ['isMobile']),
   },
   created() {
     this.getUserLabelAll();
@@ -343,14 +270,10 @@ export default {
     },
     openLabel(row) {
       this.labelShow = true;
-      this.$refs.userLabel.userLabel(
-        JSON.parse(JSON.stringify(this.dataLabel))
-      );
+      this.$refs.userLabel.userLabel(JSON.parse(JSON.stringify(this.dataLabel)));
     },
     closeLabel(label) {
-      let index = this.dataLabel.indexOf(
-        this.dataLabel.filter((d) => d.id == label.id)[0]
-      );
+      let index = this.dataLabel.indexOf(this.dataLabel.filter((d) => d.id == label.id)[0]);
       this.dataLabel.splice(index, 1);
     },
     getDetail() {
@@ -396,18 +319,18 @@ export default {
       }
     },
     handleFormatError(file) {
-      if (this.formData.type === "image") {
-        this.$Message.warning("请上传bmp/png/jpeg/jpg/gif格式的图片");
+      if (this.formData.type === 'image') {
+        this.$Message.warning('请上传bmp/png/jpeg/jpg/gif格式的图片');
       } else {
-        this.$Message.warning("请上传mp3/wma/wav/amr格式的语音");
+        this.$Message.warning('请上传mp3/wma/wav/amr格式的语音');
       }
     },
     handleMaxSize(file) {
-      this.$Message.warning("请上传文件2M以内的文件");
+      this.$Message.warning('请上传文件2M以内的文件');
     },
     // 上传头部token
     getToken() {
-      this.header["Authori-zation"] = "Bearer " + getCookies("token");
+      this.header['Authori-zation'] = 'Bearer ' + getCookies('token');
     },
     selectMenu(name) {
       this.formData.type = name;
@@ -422,13 +345,13 @@ export default {
     // 创建
     save() {
       if (!this.formData.name) {
-        return this.$Message.error("请输入二维码名称");
+        return this.$Message.error('请输入二维码名称');
       }
       if (!this.formData.cate_id) {
-        return this.$Message.error("请选择分组");
+        return this.$Message.error('请选择分组');
       }
       if (!this.dataLabel.length) {
-        return this.$Message.error("请选择用户标签");
+        return this.$Message.error('请选择用户标签');
       } else {
         let ids = [];
         this.dataLabel.map((i) => {
@@ -437,38 +360,39 @@ export default {
         this.formData.label_id = ids;
       }
       if (!this.formData.uid) {
-        return this.$Message.error("请选择推广员");
+        return this.$Message.error('请选择推广员');
       }
       if (this.isReceiveTime) {
         if (this.formData.time < 1) {
-          return this.$Message.error("使用有效期限不能小于1天");
+          return this.$Message.error('使用有效期限不能小于1天');
         }
       } else {
         this.formData.time = 0;
       }
-      if (this.formData.type === "text" || this.formData.type === "url") {
+      if (this.formData.type === 'text' || this.formData.type === 'url') {
         if (!this.formData.content.content.trim()) {
-          return this.$Message.error("请输入内容");
+          return this.$Message.error('请输入内容');
         }
       }
-      if (this.formData.type === "voice" || this.formData.type === "image") {
+      if (this.formData.type === 'voice' || this.formData.type === 'image') {
         if (!this.formData.content.src.trim()) {
-          return this.$Message.error("请先上传消息");
+          return this.$Message.error('请先上传消息');
         }
       }
-      if (this.formData.type === "news") {
+      if (this.formData.type === 'news') {
         if (!this.formData.content.list.title.trim()) {
-          return this.$Message.error("请选择图文消息");
+          return this.$Message.error('请选择图文消息');
         }
       }
       this.disabled = false;
+      this.loading = true;
       wechatQrcodeSaveApi(this.id, this.formData)
         .then((res) => {
           this.disabled = true;
           this.$Message.success(res.msg);
           setTimeout(() => {
             this.$router.push({
-              path: "/admin/marketing/channel_code/channelCodeIndex",
+              path: '/admin/marketing/channel_code/channelCodeIndex',
             });
           }, 1000);
         })

@@ -32,10 +32,10 @@ class StoreIntegralOrderController
             'num'
         ], true);
         if (!$unique) {
-            return app('json')->fail('请提交购买的商品');
+            return app('json')->fail(410201);
         }
         $user = $request->user()->toArray();
-        return app('json')->successful($this->services->getOrderConfirmData($user, $unique, $num));
+        return app('json')->success($this->services->getOrderConfirmData($user, $unique, $num));
     }
 
     /**
@@ -59,7 +59,7 @@ class StoreIntegralOrderController
         ], true);
         $productInfo = $storeProductAttrValueServices->uniqueByField($unique);
         if (!$productInfo || !isset($productInfo['storeIntegral']) || !$productInfo['storeIntegral']) {
-            return app('json')->fail('商品不存在，请重新选择商品下单!');
+            return app('json')->fail(410202);
         }
         $productInfo = is_object($productInfo) ? $productInfo->toArray() : $productInfo;
 
@@ -69,7 +69,7 @@ class StoreIntegralOrderController
         try {
             //弹出队列
             if (!CacheService::popStock($unique, $num, 4)) {
-                return app('json')->fail('该商品库存不足');
+                return app('json')->fail(410296);
             }
             $order = $this->services->createOrder($uid, $addressId, $mark, $request->user()->toArray(), $num, $productInfo);
         } catch (\Throwable $e) {
@@ -77,7 +77,7 @@ class StoreIntegralOrderController
             CacheService::setStock($unique, $num, 4, false);
             return app('json')->fail($e->getMessage());
         }
-        return app('json')->status('success', '订单创建成功', ['orderId' => $order['order_id']]);
+        return app('json')->status('success', 410203, ['orderId' => $order['order_id']]);
     }
 
     /**
@@ -88,12 +88,12 @@ class StoreIntegralOrderController
      */
     public function detail(Request $request, $uni)
     {
-        if (!strlen(trim($uni))) return app('json')->fail('参数错误');
+        if (!strlen(trim($uni))) return app('json')->fail(100100);
         $order = $this->services->getOne(['order_id' => $uni, 'is_del' => 0]);
-        if (!$order) return app('json')->fail('订单不存在');
+        if (!$order) return app('json')->fail(410173);
         $order = $order->toArray();
         $orderData = $this->services->tidyOrder($order);
-        return app('json')->successful('ok', $orderData);
+        return app('json')->success($orderData);
     }
 
     /**
@@ -107,7 +107,7 @@ class StoreIntegralOrderController
         $where['is_del'] = 0;
         $where['is_system_del'] = 0;
         $list = $this->services->getOrderApiList($where);
-        return app('json')->successful($list);
+        return app('json')->success($list);
     }
 
     /**
@@ -120,12 +120,12 @@ class StoreIntegralOrderController
         list($order_id) = $request->postMore([
             ['order_id', ''],
         ], true);
-        if (!$order_id) return app('json')->fail('参数错误!');
+        if (!$order_id) return app('json')->fail(100100);
         $order = $this->services->takeOrder($order_id, (int)$request->uid());
         if ($order) {
-            return app('json')->successful('收货成功');
+            return app('json')->success(410204);
         } else
-            return app('json')->fail('收货失败');
+            return app('json')->fail(410205);
     }
 
     /**
@@ -136,13 +136,13 @@ class StoreIntegralOrderController
      */
     public function express(Request $request, ExpressServices $expressServices, $uni)
     {
-        if (!$uni || !($order = $this->services->getUserOrderDetail($uni, $request->uid()))) return app('json')->fail('查询订单不存在!');
-        if ($order['delivery_type'] != 'express' || !$order['delivery_id']) return app('json')->fail('该订单不存在快递单号!');
+        if (!$uni || !($order = $this->services->getUserOrderDetail($uni, $request->uid()))) return app('json')->fail(410173);
+        if ($order['delivery_type'] != 'express' || !$order['delivery_id']) return app('json')->fail(410206);
         $cacheName = 'integral' . $order['order_id'] . $order['delivery_id'];
-        return app('json')->successful([
+        return app('json')->success([
             'order' => $order,
             'express' => [
-                'result' => ['list' => $expressServices->query($cacheName, $order['delivery_id'], $order['delivery_code'])
+                'result' => ['list' => $expressServices->query($cacheName, $order['delivery_id'], $order['delivery_code'], $order['user_phone'])
                 ]
             ]
         ]);
@@ -158,12 +158,12 @@ class StoreIntegralOrderController
         [$order_id] = $request->postMore([
             ['order_id', ''],
         ], true);
-        if (!$order_id) return app('json')->fail('参数错误!');
+        if (!$order_id) return app('json')->fail(100100);
         $res = $this->services->removeOrder($order_id, (int)$request->uid());
         if ($res) {
-            return app('json')->successful();
+            return app('json')->success(100002);
         } else {
-            return app('json')->fail('删除失败');
+            return app('json')->fail(100008);
         }
     }
 }

@@ -6,9 +6,11 @@
 <script>
 	import diy from './diy'
 	import visualization from './visualization'
+	import Cache from '@/utils/cache';
 	import {
 		getShare
 	} from "@/api/public.js";
+	let app = getApp();
 	export default {
 		data() {
 			return {
@@ -21,6 +23,7 @@
 			visualization
 		},
 		onShow() {
+			uni.hideTabBar()
 			uni.$on('is_diy', (data) => {
 				this.isDiy = data
 			})
@@ -72,7 +75,7 @@
 			let that = this;
 			return {
 				title: this.shareInfo.title,
-				path: "/pages/index/index",
+				path: "/pages/index/index?spid=" + this.$store.state.app.uid || 0,
 				imageUrl: this.shareInfo.img,
 			};
 		},
@@ -80,6 +83,9 @@
 		onShareTimeline() {
 			return {
 				title: this.shareInfo.title,
+				query: {
+					spid: this.$store.state.app.uid || 0
+				},
 				imageUrl: this.shareInfo.img,
 			};
 		},

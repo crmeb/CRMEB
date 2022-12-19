@@ -6,7 +6,7 @@
 				<view class="input">
 					<input type="number" placeholder="0" v-model="verify_code" />
 				</view>
-				<view class="bnt" @click="codeChange">立即核销</view>
+				<view class="bnt" @click="codeChange">{{$t(`立即核销`)}}</view>
 			</view>
 			<!-- #ifdef MP || MP-WEIXIN || APP-PLUS -->
 			<view class="scan" @click="scanCode">
@@ -26,12 +26,12 @@
 				</view>
 				<view class="num acea-row row-center-wrapper">
 					<text>{{ orderInfo.order_id }}</text>
-					<view class="views" @click='goOrderDetails(orderInfo.order_id,orderInfo.order_type)'>查看<text
+					<view class="views" @click='goOrderDetails(orderInfo.order_id,orderInfo.order_type)'>{{$t(`查看`)}}<text
 							class='iconfont icon-jiantou views-jian'></text></view>
 				</view>
-				<view class="tip">确定要核销此订单吗？</view>
-				<view class="sure" @click="confirm">确定核销</view>
-				<view class="sure cancel" @click="cancel">取消</view>
+				<view class="tip">{{$t(`确定要核销此订单吗`)}}</view>
+				<view class="sure" @click="confirm">{{$t(`确定核销`)}}</view>
+				<view class="sure cancel" @click="cancel">{{$t(`取消`)}}</view>
 			</view>
 			<view class="mask"></view>
 		</view>
@@ -76,7 +76,7 @@
 					});
 				} else {
 					uni.navigateTo({
-						url: '/pages/users/admin_order_detail/index?id=' + id + '&goname=look'
+						url: '/pages/goods/admin_order_detail/index?id=' + id + '&goname=look'
 					});
 				}
 			},
@@ -85,13 +85,13 @@
 				let self = this
 				let ref = /[0-9]{12}/;
 				if (!this.verify_code) return self.$util.Tips({
-					title: '请输入核销码'
+					title: this.$t(`请输入核销码`)
 				});
 				if (!ref.test(this.verify_code)) return self.$util.Tips({
-					title: '请输入正确的核销码'
+					title: this.$t(`请输入正确的核销码`)
 				});
 				self.$util.Tips({
-					title: '查询中'
+					title: this.$t(`查询中`)
 				});
 				setTimeout(() => {
 					orderVerific(this.verify_code, 0)
@@ -231,7 +231,7 @@
 
 	.WriteOff {
 		width: 560rpx;
-		height: 800rpx;
+		height: 860rpx;
 		background-color: #fff;
 		border-radius: 20rpx;
 		position: fixed;
@@ -322,8 +322,8 @@
 	}
 
 	.WriteOff .sure.cancel {
-		background-image: none;
-		color: #999;
+		// background-image: none;
+		// color: #999;
 		margin-top: 10rpx;
 	}
 

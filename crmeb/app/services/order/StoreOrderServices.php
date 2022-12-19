@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -12,11 +12,15 @@
 namespace app\services\order;
 
 use app\dao\order\StoreOrderDao;
+use app\jobs\AutoCommentJob;
 use app\services\activity\combination\StorePinkServices;
 use app\services\activity\seckill\StoreSeckillServices;
 use app\services\BaseServices;
+use app\services\other\PosterServices;
+use app\services\pay\OrderPayServices;
 use app\services\pay\PayServices;
 use app\services\product\product\StoreProductLogServices;
+use app\services\system\attachment\SystemAttachmentServices;
 use app\services\system\store\SystemStoreServices;
 use app\services\user\UserInvoiceServices;
 use app\services\user\UserServices;
@@ -25,13 +29,14 @@ use app\services\user\UserAddressServices;
 use app\services\user\UserBillServices;
 use app\services\user\UserLevelServices;
 use app\services\wechat\WechatUserServices;
+use crmeb\exceptions\AdminException;
+use crmeb\exceptions\ApiException;
 use crmeb\services\CacheService;
 use crmeb\services\FormBuilder as Form;
 use crmeb\services\printer\Printer;
 use crmeb\services\SystemConfigService;
 use crmeb\traits\ServicesTrait;
 use crmeb\utils\Arr;
-use think\exception\ValidateException;
 use think\facade\Log;
 
 /**
@@ -57,7 +62,13 @@ class StoreOrderServices extends BaseServices
      * 发货类型
      * @var string[]
      */
-    public $deliveryType = ['send' => '商家配送', 'express' => '快递配送', 'fictitious' => '虚拟发货', 'delivery_part_split' => '拆分部分发货', 'delivery_split' => '拆分发货完成'];
+    public $deliveryType = [
+        'send' => '商家配送',
+        'express' => '快递配送',
+        'fictitious' => '虚拟发货',
+        'delivery_part_split' => '拆分部分发货',
+        'delivery_split' => '拆分发货完成'
+    ];
 
     /**
      * StoreOrderProductServices constructor.
@@ -164,6 +175,7 @@ class StoreOrderServices extends BaseServices
         $data['yue_pay_status'] = (int)sys_config('balance_func_status') && (int)sys_config('yue_pay_status') == 1 ? (int)1 : (int)2;//余额支付 1 开启 2 关闭
         $data['pay_weixin_open'] = (int)sys_config('pay_weixin_open') ?? 0;//微信支付 1 开启 0 关闭
         $data['ali_pay_status'] = (bool)sys_config('ali_pay_status');//支付包支付 1 开启 0 关闭
+        $data['friend_pay_status'] = (int)sys_config('friend_pay_status') ?? 0;//好友代付 1 开启 0 关闭
         return $data;
     }
 
@@ -539,13 +551,7 @@ class StoreOrderServices extends BaseServices
                             $img[] = $itemImg;
                     }
                 }
-                $status_name['status_name'] = <<<HTML
-<b style="color:#f124c7">申请退款</b><br/>
-<span>退款原因：{$item['refund_reason_wap']}</span><br/>
-<span>备注说明：{$item['refund_reason_wap_explain']}</span><br/>
-<span>退款时间：{$refundReasonTime}</span><br/>
-<span>退款凭证：</span>
-HTML;
+                $status_name['status_name'] = '退款中';
                 $status_name['pics'] = $img;
             } else if ($item['paid'] == 1 && $item['refund_status'] == 2) {
                 $status_name['status_name'] = '已退款';
@@ -740,7 +746,7 @@ HTML;
     {
         $product = $this->dao->get($id);
         if (!$product) {
-            throw new ValidateException('Data does not exist!');
+            throw new AdminException(100026);
         }
         $f = [];
         $f[] = Form::input('order_id', '订单编号', $product->getData('order_id'))->disabled(true);
@@ -762,7 +768,7 @@ HTML;
     {
         $order = $this->dao->getOne(['id' => $id, 'is_del' => 0]);
         if (!$order) {
-            throw new ValidateException('订单不存在或已删除');
+            throw new AdminException(400118);
         }
         /** @var StoreOrderCreateServices $createServices */
         $createServices = app()->make(StoreOrderCreateServices::class);
@@ -781,9 +787,9 @@ HTML;
                 $order = $this->dao->getOne(['id' => $id, 'is_del' => 0]);
                 //改价短信提醒
                 event('notice.notice', [['order' => $order, 'pay_price' => $data['pay_price']], 'price_revision']);
-                return true;
+                return $data['order_id'];
             } else {
-                throw new ValidateException('Modification failed');
+                throw new AdminException(100007);
             }
         });
     }
@@ -1426,22 +1432,27 @@ HTML;
         $info[3]['total_name'] = '本月新增用户';
         return $info;
     }
+    //TODO
 
     /**
      * 打印订单
-     * @param $order
-     * @param array $cartId
+     * @param int $id
      * @throws \think\db\exception\DataNotFoundException
      * @throws \think\db\exception\DbException
      * @throws \think\db\exception\ModelNotFoundException
      */
-    public function orderPrint($order, array $cartId)
+    public function orderPrint(int $id)
     {
+        $order = $this->get($id);
+        if (!$order) {
+            throw new AdminException(400118);
+        }
+
         /** @var StoreOrderCartInfoServices $cartServices */
         $cartServices = app()->make(StoreOrderCartInfoServices::class);
-        $product = $cartServices->getCartInfoPrintProduct($cartId);
+        $product = $cartServices->getCartInfoPrintProduct($order->cart_id);
         if (!$product) {
-            throw new ValidateException('订单商品获取失败,无法打印!');
+            throw new AdminException(400533);
         }
         $data = [
             'clientId' => sys_config('printing_client_id', ''),
@@ -1450,7 +1461,7 @@ HTML;
             'terminal' => sys_config('terminal_number', '')
         ];
         if (!$data['clientId'] || !$data['apiKey'] || !$data['partner'] || !$data['terminal']) {
-            throw new ValidateException('请先配置小票打印开发者');
+            throw new AdminException(400099);
         }
         $printer = new Printer('yi_lian_yun', $data);
         $res = $printer->setPrinterContent([
@@ -1459,7 +1470,7 @@ HTML;
             'product' => $product
         ])->startPrinter();
         if (!$res) {
-            throw new ValidateException($printer->getError());
+            throw new AdminException($printer->getError());
         }
         return $res;
     }
@@ -1552,6 +1563,7 @@ HTML;
         $data['offline_pay_status'] = (int)sys_config('offline_pay_status') ?? (int)2;
         $data['yue_pay_status'] = (int)sys_config('balance_func_status') && (int)sys_config('yue_pay_status') == 1 ? (int)1 : (int)2;//余额支付 1 开启 2 关闭
         $data['pay_weixin_open'] = (int)sys_config('pay_weixin_open') ?? 0;//微信支付 1 开启 0 关闭
+        $data['friend_pay_status'] = (int)sys_config('friend_pay_status') ?? 0;//好友代付 1 开启 0 关闭
         $data['store_self_mention'] = (int)sys_config('store_self_mention') ?? 0;//门店自提是否开启
         /** @var SystemStoreServices $systemStoreServices */
         $systemStoreServices = app()->make(SystemStoreServices::class);
@@ -1569,6 +1581,7 @@ HTML;
         /** @var UserBillServices $userBillServices */
         $userBillServices = app()->make(UserBillServices::class);
         $data['usable_integral'] = bcsub((string)$user['integral'], (string)$userBillServices->getBillSum(['uid' => $user['uid'], 'is_frozen' => 1]), 0);
+        $data['integral_open'] = sys_config('integral_ratio', 0) > 0;
         return $data;
     }
 
@@ -1700,11 +1713,11 @@ HTML;
     {
         $order = $this->getUserOrderDetail($uni, $uid);
         if (!$order) {
-            throw new ValidateException('订单不存在!');
+            throw new ApiException(410173);
         }
         $order = $this->tidyOrder($order);
         if ($order['_status']['_type'] != 0 && $order['_status']['_type'] != -2 && $order['_status']['_type'] != 4)
-            throw new ValidateException('该订单无法删除!');
+            throw new ApiException(410256);
 
         $order->is_del = 1;
         /** @var StoreOrderStatusServices $statusService */
@@ -1726,14 +1739,14 @@ HTML;
                     //回退库存
                     $res = $res && $refundServices->regressionStock($order);
                     if (!$res) {
-                        throw new ValidateException('取消订单失败!');
+                        throw new ApiException(100020);
                     }
                 });
 
             }
             return true;
         } else
-            throw new ValidateException('订单删除失败!');
+            throw new ApiException(100020);
     }
 
     /**
@@ -1749,10 +1762,10 @@ HTML;
     {
         $order = $this->dao->getOne(['order_id' => $order_id, 'uid' => $uid, 'is_del' => 0]);
         if (!$order) {
-            throw new ValidateException('没有查到此订单');
+            throw new ApiException(410173);
         }
         if ($order->paid) {
-            throw new ValidateException('订单已经支付无法取消');
+            throw new ApiException(410257);
         }
         /** @var StoreOrderCartInfoServices $cartServices */
         $cartServices = app()->make(StoreOrderCartInfoServices::class);
@@ -1764,7 +1777,7 @@ HTML;
             $res = $refundServices->integralAndCouponBack($order) && $refundServices->regressionStock($order);
             $order->is_del = 1;
             if (!($res && $order->save())) {
-                throw new ValidateException('取消订单失败');
+                throw new ApiException(100020);
             }
         });
         /** @var StoreSeckillServices $seckiiServices */
@@ -1786,9 +1799,8 @@ HTML;
         //订单商品全部评价完成
         $replyServices->count(['unique' => $uniqueList, 'oid' => $oid]);
         if ($replyServices->count(['unique' => $uniqueList, 'oid' => $oid]) == count($uniqueList)) {
-            event('StoreProductOrderOver', [$oid]);
             $res = $this->dao->update($oid, ['status' => '3']);
-            if (!$res) throw new ValidateException('评价后置操作失败!');
+            if (!$res) throw new ApiException(100007);
             /** @var StoreOrderStatusServices $statusService */
             $statusService = app()->make(StoreOrderStatusServices::class);
             $statusService->save([
@@ -1829,7 +1841,7 @@ HTML;
         $userServices = app()->make(UserServices::class);
         $user = $userServices->getUserInfo($uid);
         if (!$user) {
-            throw  new ValidateException('数据不存在');
+            throw new AdminException(100026);
         }
         [$page, $limit] = $this->getPageValue();
         $where = ['uid' => $uid, 'paid' => 1, 'refund_status' => 0, 'pid' => 0];
@@ -1984,7 +1996,7 @@ HTML;
                         //修改订单状态
                         $res = $res && $this->dao->update($order['id'], ['is_del' => 1, 'mark' => '订单未支付已超过系统预设时间']);
                         if (!$res) {
-                            throw new ValidateException('订单号' . $order['order_id'] . '自动取消订单失败');
+                            Log::error('订单号' . $order['order_id'] . '自动取消订单失败');
                         }
                         return true;
                     });
@@ -2098,7 +2110,7 @@ HTML;
             'change_time' => time()
         ]);
         if ($res) return true;
-        throw new ValidateException('操作失败');
+        throw new AdminException(100005);
     }
 
     /**
@@ -2133,11 +2145,11 @@ HTML;
      */
     public function getFriendDetail($orderId, $uid)
     {
-        $orderInfo = $this->dao->getOne(['order_id' => $orderId]);
+        $orderInfo = $this->dao->getOne(['order_id' => $orderId, 'is_del' => 0]);
         if ($orderInfo) {
             $orderInfo = $orderInfo->toArray();
         } else {
-            throw new ValidateException('订单不存在');
+            throw new ApiException(410173);
         }
         $orderInfo = $this->tidyOrder($orderInfo, true);
         /** @var UserServices $userServices */
@@ -2175,7 +2187,7 @@ HTML;
     {
         $orderInfo = $this->dao->get($id);
         if (!$orderInfo) {
-            throw new ValidateException('订单不存在');
+            throw new ApiException(410173);
         }
         $orderInfo = $this->tidyOrder($orderInfo, true);
         $cartInfo = $orderInfo['cartInfo'] ?? [];
@@ -2183,7 +2195,7 @@ HTML;
         if ($cart_ids) {
             foreach ($cart_ids as $cart) {
                 if (!isset($cart['cart_id']) || !$cart['cart_id'] || !isset($cart['cart_num']) || !$cart['cart_num'] || $cart['cart_num'] <= 0) {
-                    throw new ValidateException('请重新选择退款商品，或件数');
+                    throw new ApiException(410223);
                 }
             }
             $cart_ids = array_combine(array_column($cart_ids, 'cart_id'), $cart_ids);
@@ -2199,5 +2211,245 @@ HTML;
         $data['_status'] = $orderInfo['_status'] ?? [];
         $data['cartInfo'] = $data['cartInfo'] ?? $cartInfo;
         return $data;
+    }
+
+    /**
+     * 再次下单
+     * @param string $uni
+     * @param int $uid
+     * @return array
+     */
+    public function againOrder(StoreCartServices $services, string $uni, int $uid): array
+    {
+        if (!$uni) throw new ApiException(100100);
+        $order = $this->getUserOrderDetail($uni, $uid);
+        if (!$order) throw new ApiException(410173);
+        $order = $this->tidyOrder($order, true);
+        $cateId = [];
+
+        foreach ($order['cartInfo'] as $v) {
+            if ($v['combination_id']) throw new ApiException(410258);
+            elseif ($v['bargain_id']) throw new ApiException(410259);
+            elseif ($v['seckill_id']) throw new ApiException(410260);
+            elseif ($v['advance_id']) throw new ApiException(410261);
+            else $cateId[] = $services->setCart($uid, (int)$v['product_id'], (int)$v['cart_num'], $v['productInfo']['attrInfo']['unique'] ?? '', '0', true);
+        }
+        if (!$cateId) throw new ApiException(410262);
+        return $cateId;
+    }
+
+    /**
+     * 支付宝单独支付
+     * @param OrderPayServices $payServices
+     * @param OtherOrderServices $services
+     * @param string $key
+     * @param string $quitUrl
+     * @return array|string
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     */
+    public function aliPayOrder(OrderPayServices $payServices, OtherOrderServices $services, string $key, string $quitUrl)
+    {
+        if (!$key) {
+            throw new ApiException(100100);
+        }
+        if (!$quitUrl) {
+            throw new ApiException(100100);
+        }
+
+        $orderCache = CacheService::get($key);
+        if (!$orderCache || !isset($orderCache['order_id'])) {
+            throw new ApiException(410263);
+        }
+
+        $payType = isset($orderCache['other_pay_type']) && $orderCache['other_pay_type'] == true;
+        if ($payType) {
+            $orderInfo = $services->getOne(['order_id' => $orderCache['order_id'], 'is_del' => 0, 'paid' => 0]);
+        } else {
+            $orderInfo = $this->get(['order_id' => $orderCache['order_id'], 'paid' => 0, 'is_del' => 0]);
+        }
+
+        if (!$orderInfo) {
+            throw new ApiException(410264);
+        }
+        return $payServices->alipayOrder($orderInfo->toArray(), $quitUrl);
+    }
+
+    /**
+     * 用户订单信息
+     * @param StoreOrderEconomizeServices $services
+     * @param string $uni
+     * @param int $uid
+     * @return void
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     */
+    public function getUserOrderByKey(StoreOrderEconomizeServices $services, string $uni, int $uid): array
+    {
+        $order = $this->getUserOrderDetail($uni, $uid, ['split', 'invoice']);
+        if (!$order) throw new ApiException(410294);
+        $order = $order->toArray();
+        $splitNum = [];
+        //是否开启门店自提
+        $store_self_mention = sys_config('store_self_mention');
+        //关闭门店自提后 订单隐藏门店信息
+        if ($store_self_mention == 0) $order['shipping_type'] = 1;
+        if ($order['verify_code']) {
+            $verify_code = $order['verify_code'];
+            $verify[] = substr($verify_code, 0, 4);
+            $verify[] = substr($verify_code, 4, 4);
+            $verify[] = substr($verify_code, 8);
+            $order['_verify_code'] = implode(' ', $verify);
+        }
+        $order['add_time_y'] = date('Y-m-d', $order['add_time']);
+        $order['add_time_h'] = date('H:i:s', $order['add_time']);
+        $order['system_store'] = false;
+        if ($order['store_id']) {
+            /** @var SystemStoreServices $storeServices */
+            $storeServices = app()->make(SystemStoreServices::class);
+            $order['system_store'] = $storeServices->getStoreDispose($order['store_id']);
+        }
+        if (($order['shipping_type'] === 2 || $order['delivery_uid'] != 0) && $order['verify_code']) {
+            $name = $order['verify_code'] . '.jpg';
+            /** @var SystemAttachmentServices $attachmentServices */
+            $attachmentServices = app()->make(SystemAttachmentServices::class);
+            $imageInfo = $attachmentServices->getInfo(['name' => $name]);
+            $siteUrl = sys_config('site_url');
+            if (!$imageInfo) {
+                $imageInfo = PosterServices::getQRCodePath($order['verify_code'], $name);
+                if (is_array($imageInfo)) {
+                    $attachmentServices->attachmentAdd($imageInfo['name'], $imageInfo['size'], $imageInfo['type'], $imageInfo['dir'], $imageInfo['thumb_path'], 1, $imageInfo['image_type'], $imageInfo['time'], 2);
+                    $url = $imageInfo['dir'];
+                } else
+                    $url = '';
+            } else $url = $imageInfo['att_dir'];
+            if (isset($imageInfo['image_type']) && $imageInfo['image_type'] == 1) $url = $siteUrl . $url;
+            $order['code'] = $url;
+        }
+        $order['mapKey'] = sys_config('tengxun_map_key');
+        $order['yue_pay_status'] = (int)sys_config('balance_func_status') && (int)sys_config('yue_pay_status') == 1 ? (int)1 : (int)2;//余额支付 1 开启 2 关闭
+        $order['pay_weixin_open'] = (int)sys_config('pay_weixin_open') ?? 0;//微信支付 1 开启 0 关闭
+        $order['ali_pay_status'] = (bool)sys_config('ali_pay_status');//支付包支付 1 开启 0 关闭
+        $order['friend_pay_status'] = (int)sys_config('friend_pay_status') ?? 0;//好友代付 1 开启 0 关闭
+        $orderData = $this->tidyOrder($order, true, true);
+        $vipTruePrice = 0;
+        foreach ($orderData['cartInfo'] ?? [] as $key => $cart) {
+            $vipTruePrice = bcadd((string)$vipTruePrice, (string)$cart['vip_sum_truePrice'], 2);
+            if (isset($splitNum[$cart['id']])) {
+                $orderData['cartInfo'][$key]['cart_num'] = $cart['cart_num'] - $splitNum[$cart['id']];
+                if ($orderData['cartInfo'][$key]['cart_num'] == 0) unset($orderData['cartInfo'][$key]);
+            }
+        }
+        $orderData['cartInfo'] = array_merge($orderData['cartInfo']);
+        $orderData['vip_true_price'] = $vipTruePrice;
+        $economize = $services->get(['order_id' => $order['order_id']], ['postage_price', 'member_price']);
+        if ($economize) {
+            $orderData['postage_price'] = $economize['postage_price'];
+            $orderData['member_price'] = $economize['member_price'];
+        } else {
+            $orderData['postage_price'] = 0;
+            $orderData['member_price'] = 0;
+        }
+        $orderData['routine_contact_type'] = sys_config('routine_contact_type', 0);
+        /** @var UserInvoiceServices $userInvoice */
+        $userInvoice = app()->make(UserInvoiceServices::class);
+        $invoice_func = $userInvoice->invoiceFuncStatus();
+        $orderData['invoice_func'] = $invoice_func['invoice_func'];
+        $orderData['special_invoice'] = $invoice_func['special_invoice'];
+        $orderData['refund_cartInfo'] = $orderData['cartInfo'];
+        $orderData['refund_total_num'] = $orderData['total_num'];
+        $orderData['refund_pay_price'] = $orderData['pay_price'];
+        $orderData['is_apply_refund'] = true;
+        $orderData['help_info'] = [
+            'pay_uid' => $orderData['pay_uid'],
+            'pay_nickname' => '',
+            'pay_avatar' => '',
+            'help_status' => 0
+        ];
+        if ($orderData['uid'] != $orderData['pay_uid']) {
+            /** @var UserServices $userServices */
+            $userServices = app()->make(UserServices::class);
+            $payUser = $userServices->get($orderData['pay_uid']);
+            $orderData['help_info'] = [
+                'pay_uid' => $orderData['pay_uid'],
+                'pay_nickname' => $payUser['nickname'],
+                'pay_avatar' => $payUser['avatar'],
+                'help_status' => 1
+            ];
+        }
+        return $orderData;
+    }
+
+    /**
+     * 获取确认订单页面是否展示快递配送和到店自提
+     * @param $uid
+     * @param $cartIds
+     * @param $new
+     * @return array
+     * @throws \Psr\SimpleCache\InvalidArgumentException
+     */
+    public function checkShipping($uid, $cartIds, $new)
+    {
+        if ($new) {
+            $cartIds = explode(',', $cartIds);
+            $cartInfo = [];
+            $redis = CacheService::redisHandler();
+            foreach ($cartIds as $key) {
+                $info = $redis->get($key);
+                if ($info) {
+                    $cartInfo[] = $info;
+                }
+            }
+        } else {
+            /** @var StoreCartServices $cartServices */
+            $cartServices = app()->make(StoreCartServices::class);
+            $cartInfo = $cartServices->getCartList(['uid' => $uid, 'status' => 1, 'id' => $cartIds], 0, 0, ['productInfo', 'attrInfo']);
+        }
+        if (!$cartInfo) {
+            throw new ApiException(100026);
+        }
+        $arr = [];
+        foreach ($cartInfo as $item) {
+            $arr[] = $item['productInfo']['logistics'];
+        }
+        $res = array_unique(explode(',', implode(',', $arr)));
+        if (count($res) == 2) {
+            return ['type' => 0];
+        } else {
+            if ($res[0] == 2 && sys_config('store_self_mention') == 0) {
+                return ['type' => 1];
+            }
+            return ['type' => (int)$res[0]];
+        }
+    }
+
+    /**
+     * 自动评价
+     * @return bool
+     */
+    public function autoComment()
+    {
+        //自动评价天数
+        $systemCommentTime = (int)sys_config('system_comment_time', 0);
+        //0为取消自动默认好评功能
+        if ($systemCommentTime == 0) {
+            return true;
+        }
+        $sevenDay = strtotime(date('Y-m-d H:i:s', strtotime('-' . $systemCommentTime . ' day')));
+        /** @var StoreOrderStoreOrderStatusServices $service */
+        $service = app()->make(StoreOrderStoreOrderStatusServices::class);
+        $orderList = $service->getTakeOrderIds([
+            'change_time' => $sevenDay,
+            'is_del' => 0,
+            'paid' => 1,
+            'status' => 2,
+            'change_type' => ['take_delivery']
+        ], 30);
+        foreach ($orderList as $item) {
+            AutoCommentJob::dispatch([$item['id'], $item['cart_id']]);
+        }
+        return true;
     }
 }

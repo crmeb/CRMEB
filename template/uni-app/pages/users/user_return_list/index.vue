@@ -15,33 +15,33 @@
 				<view class='iconfont icon-daituihuo1 powder' v-if="item.refund_type==4"></view>
 				<view class='iconfont icon-tuikuanzhong powder' v-if="item.refund_type==5"></view>
 				<view class='iconfont icon-yituikuan' v-if="item.refund_type==6"></view>
-				<view class='orderNum'>订单号：{{item.order_id}}</view>
-				<view class='item acea-row row-between-wrapper' v-for="(item,index) in item.cart_info" :key="index">
+				<view class='orderNum'>{{$t(`订单号`)}}：{{item.order_id}}</view>
+				<view class='item acea-row row-between-wrapper' v-for="(items,index) in item.cart_info" :key="index">
 					<view class='pictrue'>
-						<image :src='item.productInfo.attrInfo?item.productInfo.attrInfo.image:item.productInfo.image'>
+						<image :src='items.productInfo.attrInfo?items.productInfo.attrInfo.image:items.productInfo.image'>
 						</image>
 					</view>
 					<view class='text'>
 						<view class='acea-row row-between-wrapper'>
-							<view class='name line1'>{{item.productInfo.store_name}}</view>
-							<view class='num'>x {{item.cart_num}}</view>
+							<view class='name line1'>{{items.productInfo.store_name}}</view>
+							<view class='num'>x {{items.cart_num}}</view>
 						</view>
-						<view class='attr line1' v-if="item.productInfo.attrInfo">{{item.productInfo.attrInfo.suk}}
+						<view class='attr line1' v-if="items.productInfo.attrInfo">{{items.productInfo.attrInfo.suk}}
 						</view>
-						<view class='attr line1' v-else>{{item.productInfo.store_name}}</view>
+						<view class='attr line1' v-else>{{items.productInfo.store_name}}</view>
 						<view class='money'>
-							￥{{item.productInfo.attrInfo?item.productInfo.attrInfo.price:item.productInfo.price}}</view>
+							{{$t(`￥`)}}{{items.productInfo.attrInfo?items.productInfo.attrInfo.price:items.productInfo.price}}</view>
 					</view>
 				</view>
-				<view class='totalSum'>共 {{item.refund_num || 0}} 件商品，总金额 <text
-						class='font-color price'>￥{{item.refund_price}}</text></view>
+				<view class='totalSum'>{{$t(`共`)}} {{item.refund_num || 0}} {{$t(`件商品，总金额`)}} <text
+						class='font-color price'>{{$t(`￥`)}}{{item.refund_price}}</text></view>
 			</view>
 		</view>
 		<view class='loadingicon acea-row row-center-wrapper' v-if="orderList.length > 0">
 			<text class='loading iconfont icon-jiazai' :hidden='loading==false'></text>{{loadTitle}}
 		</view>
 		<view v-if="orderList.length == 0  && !loading">
-			<emptyPage title="暂无退款订单~"></emptyPage>
+			<emptyPage :title="$t(`暂无退款订单~`)"></emptyPage>
 		</view>
 		<!-- #ifdef MP -->
 		<!-- <authorize @onLoadFun="onLoadFun" :isAuto="isAuto" :isShowAuth="isShowAuth" @authColse="authColse"></authorize> -->
@@ -82,7 +82,7 @@
 				type: 0,
 				loading: false,
 				loadend: false,
-				loadTitle: '加载更多', //提示语
+				loadTitle: this.$t(`加载更多`), //提示语
 				orderList: [], //订单数组
 				orderStatus: -3, //订单状态
 				page: 1,
@@ -91,11 +91,11 @@
 				isShowAuth: false, //是否隐藏授权
 				tabsList: [{
 					key: 0,
-					name: '全部'
+					name: this.$t(`全部`)
 				},
 				{
 					key: 1,
-					name: '申请中'
+					name: this.$t(`申请中`)
 				},
 				// {
 				// 	key: 2,
@@ -107,7 +107,7 @@
 				// }, 
 				{
 					key: 2,
-					name: '已退款'
+					name: this.$t(`已退款`)
 				}]
 			};
 		},
@@ -148,10 +148,10 @@
 			 */
 			goOrderDetails: function(order_id) {
 				if (!order_id) return that.$util.Tips({
-					title: '缺少订单号无法查看订单详情'
+					title: that.$t(`缺少订单号无法查看订单详情`)
 				});
 				uni.navigateTo({
-					url: '/pages/users/order_details/index?order_id=' + order_id + '&isReturen=1'
+					url: '/pages/goods/order_details/index?order_id=' + order_id + '&isReturen=1'
 				})
 			},
 			changeTabs(index) {
@@ -183,11 +183,11 @@
 					that.$set(that, 'orderList', that.orderList);
 					that.loadend = loadend;
 					that.loading = false;
-					that.loadTitle = loadend ? "没有更多内容啦~" : '加载更多';
+					that.loadTitle = loadend ? that.$t(`我也是有底线的`) : that.$t(`加载更多`);
 					that.page = that.page + 1;
 				}).catch(err => {
 					that.loading = false;
-					that.loadTitle = "加载更多";
+					that.loadTitle = that.$t(`加载更多`);
 				});
 			}
 		}

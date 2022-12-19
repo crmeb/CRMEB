@@ -1,33 +1,22 @@
 <template>
   <div>
-    <div class="i-layout-page-header mb20">
-      <div class="i-layout-page-header">
-        <span class="ivu-page-header-title">{{ $route.meta.title }}</span>
-      </div>
-    </div>
-    <Card :bordered="false" dis-hover>
+    <Card :bordered="false" dis-hover class="ivu-mt">
       <div class="headers">
         <div class="search">
           <div>
             <span>是否显示：</span>
-            <Select v-model="formValidate.status" style="width: 200px">
-              <Option value="">全部</Option>
+            <Select v-model="formValidate.status" style="width: 200px" clearable>
+              <!-- <Option value="">全部</Option> -->
               <Option :value="1">显示</Option>
               <Option :value="0">不显示</Option>
             </Select>
           </div>
           <div>
             <span>等级名称：</span>
-            <Input
-              v-model="formValidate.keyword"
-              placeholder="请输入等级名称"
-              style="width: 200px"
-            />
+            <Input v-model="formValidate.keyword" placeholder="请输入等级名称" style="width: 200px" />
           </div>
           <Button type="primary" @click="search">搜索</Button>
-          <Button type="success" icon="md-add" @click="groupAdd()" class="ml20"
-            >添加数据</Button
-          >
+          <Button type="success" icon="md-add" @click="groupAdd()" class="ml20">添加数据</Button>
         </div>
       </div>
       <Row type="flex">
@@ -97,11 +86,7 @@
             </div>
             <div>
               <span>任务名称：</span>
-              <Input
-                v-model="taskData.keyword"
-                placeholder="请输入任务名称"
-                style="width: 200px"
-              />
+              <Input v-model="taskData.keyword" placeholder="请输入任务名称" style="width: 200px" />
             </div>
             <Button type="primary" @click="searchTask">搜索</Button>
           </div>
@@ -158,7 +143,7 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
+import { mapState } from 'vuex';
 import {
   membershipDataAddApi,
   membershipDataListApi,
@@ -168,9 +153,9 @@ import {
   levelTaskListDataAddApi,
   levelTaskDataEditApi,
   levelTaskDataAddApi,
-} from "@/api/membershipLevel";
+} from '@/api/membershipLevel';
 export default {
-  name: "list",
+  name: 'list',
   data() {
     return {
       grid: {
@@ -183,16 +168,16 @@ export default {
       modal1: false,
       modal2: false,
       formValidate: {
-        status: "",
+        status: '',
         page: 1,
         limit: 20,
         gid: 0,
       },
       taskData: {
-        keyword: "",
+        keyword: '',
         page: 1,
         limit: 20,
-        status: "",
+        status: '',
       },
       total: 0,
       taskTotal: 0,
@@ -200,105 +185,105 @@ export default {
       taskTabList: [],
       columns1: [
         {
-          key: "id",
+          key: 'id',
           minWidth: 35,
-          title: "ID",
+          title: 'ID',
         },
         {
-          slot: "image",
+          slot: 'image',
           minWidth: 35,
-          title: "图标",
+          title: '图标',
         },
         {
-          key: "name",
+          key: 'name',
           minWidth: 35,
-          title: "名称",
+          title: '名称',
         },
         {
-          key: "grade",
+          key: 'grade',
           minWidth: 35,
-          title: "等级",
+          title: '等级',
         },
         {
-          key: "one_brokerage",
+          key: 'one_brokerage',
           minWidth: 35,
-          title: "一级返佣上浮比例(%)",
+          title: '一级返佣上浮比例(%)',
         },
         {
-          key: "two_brokerage",
+          key: 'two_brokerage',
           minWidth: 35,
-          title: "二级返佣上浮比例(%)",
+          title: '二级返佣上浮比例(%)',
         },
         {
-          slot: "status",
+          slot: 'status',
           minWidth: 35,
-          title: "是否显示",
+          title: '是否显示',
         },
         {
-          fixed: "right",
+          fixed: 'right',
           minWidth: 120,
-          slot: "action",
-          title: "操作",
+          slot: 'action',
+          title: '操作',
         },
       ],
       columns2: [
         {
-          key: "id",
+          key: 'id',
           minWidth: 35,
-          title: "ID",
+          title: 'ID',
         },
         {
-          key: "name",
+          key: 'name',
           minWidth: 35,
-          title: "名称",
+          title: '名称',
         },
         {
-          key: "type_name",
+          key: 'type_name',
           minWidth: 35,
-          title: "任务类型",
+          title: '任务类型',
         },
         {
-          key: "number",
+          key: 'number',
           minWidth: 35,
-          title: "限定数量",
+          title: '限定数量',
         },
         {
-          slot: "status",
+          slot: 'status',
           minWidth: 35,
-          title: "是否显示",
+          title: '是否显示',
         },
         {
-          key: "sort",
+          key: 'sort',
           minWidth: 35,
-          title: "排序",
+          title: '排序',
         },
         {
-          fixed: "right",
+          fixed: 'right',
           minWidth: 120,
-          slot: "action",
-          title: "操作",
+          slot: 'action',
+          title: '操作',
         },
       ],
       FromData: null,
       loading: false,
       taskLoading: false,
-      titleType: "group",
+      titleType: 'group',
       groupAll: [],
-      theme3: "light",
+      theme3: 'light',
       labelSort: [],
       sortName: null,
       current: 0,
-      model1: "",
-      value1: "",
+      model1: '',
+      value1: '',
     };
   },
   computed: {
-    ...mapState("admin/layout", ["isMobile"]),
+    ...mapState('admin/layout', ['isMobile']),
     labelWidth() {
       return this.isMobile ? undefined : 75;
     },
     labelPosition() {
-      return this.isMobile ? "top" : "right";
+      return this.isMobile ? 'top' : 'right';
     },
   },
   watch: {
@@ -367,17 +352,12 @@ export default {
     },
     // 添加表单
     groupAdd() {
-      this.$modalForm(
-        membershipDataAddApi({}, "/agent/level/create")
-      ).then(() => this.getList());
+      this.$modalForm(membershipDataAddApi({}, '/agent/level/create')).then(() => this.getList());
     },
     taskAdd() {
-      this.$modalForm(
-        levelTaskDataAddApi(
-          {},
-          "/agent/level_task/create?level_id=" + this.taskData.id
-        )
-      ).then(() => this.getTaskList());
+      this.$modalForm(levelTaskDataAddApi({}, '/agent/level_task/create?level_id=' + this.taskData.id)).then(() =>
+        this.getTaskList(),
+      );
     },
     // 修改是否显示
     onchangeIsShow(row) {
@@ -413,18 +393,14 @@ export default {
       let data = {
         gid: row.gid,
       };
-      this.$modalForm(
-        membershipDataEditApi(data, `agent/level/${row.id}/edit`)
-      ).then(() => this.getList());
+      this.$modalForm(membershipDataEditApi(data, `agent/level/${row.id}/edit`)).then(() => this.getList());
     },
     // 编辑
     editTask(row) {
       let data = {
         gid: row.gid,
       };
-      this.$modalForm(
-        levelTaskDataEditApi(data, `agent/level_task/${row.id}/edit`)
-      ).then(() => this.getTaskList());
+      this.$modalForm(levelTaskDataEditApi(data, `agent/level_task/${row.id}/edit`)).then(() => this.getTaskList());
     },
     // 删除
     del(row, tit, num) {
@@ -432,8 +408,8 @@ export default {
         title: tit,
         num: num,
         url: `agent/level/${row.id}`,
-        method: "DELETE",
-        ids: "",
+        method: 'DELETE',
+        ids: '',
       };
       this.$modalSure(delfromData)
         .then((res) => {
@@ -450,8 +426,8 @@ export default {
         title: tit,
         num: num,
         url: `agent/level_task/${row.id}`,
-        method: "DELETE",
-        ids: "",
+        method: 'DELETE',
+        ids: '',
       };
       this.$modalSure(delfromData)
         .then((res) => {

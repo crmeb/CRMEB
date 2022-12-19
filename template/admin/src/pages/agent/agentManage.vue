@@ -1,10 +1,5 @@
 <template>
   <div>
-    <div class="i-layout-page-header">
-      <div class="i-layout-page-header">
-        <span class="ivu-page-header-title">{{ $route.meta.title }}</span>
-      </div>
-    </div>
     <Card :bordered="false" dis-hover class="ivu-mt">
       <Form
         ref="formValidate"
@@ -22,12 +17,7 @@
                 @on-change="selectChange(formValidate.data)"
                 class="mr"
               >
-                <Radio
-                  :label="item.val"
-                  v-for="(item, i) in fromList.fromTxt"
-                  :key="i"
-                  >{{ item.text }}</Radio
-                >
+                <Radio :label="item.val" v-for="(item, i) in fromList.fromTxt" :key="i">{{ item.text }}</Radio>
               </RadioGroup>
               <DatePicker
                 :editable="false"
@@ -53,21 +43,12 @@
             </FormItem>
           </Col>
           <Col v-bind="grid">
-            <Button
-              v-auth="['export-userAgent']"
-              class="export"
-              icon="ios-share-outline"
-              @click="exports"
-              >导出</Button
-            >
+            <Button v-auth="['export-userAgent']" class="export" icon="ios-share-outline" @click="exports">导出</Button>
           </Col>
         </Row>
       </Form>
     </Card>
-    <cards-data
-      :cardLists="cardLists"
-      v-if="cardLists.length >= 0"
-    ></cards-data>
+    <cards-data :cardLists="cardLists" v-if="cardLists.length >= 0"></cards-data>
     <Card :bordered="false" dis-hover>
       <Table
         ref="selection"
@@ -87,13 +68,13 @@
           </div>
         </template>
         <template slot-scope="{ row }" slot="agentLevel">
-          <div>{{ row.agentLevel ? row.agentLevel.name : "--" }}</div>
+          <div>{{ row.agentLevel ? row.agentLevel.name : '--' }}</div>
         </template>
         <template slot-scope="{ row, index }" slot="right">
           <a @click="promoters(row, 'man')">推广人</a>
           <Divider type="vertical" />
           <template>
-            <Dropdown @on-click="changeMenu(row, $event, index)">
+            <Dropdown @on-click="changeMenu(row, $event, index)" transfer="true">
               <a href="javascript:void(0)">
                 更多
                 <Icon type="ios-arrow-down"></Icon>
@@ -124,15 +105,7 @@
     <!-- 推广人列表-->
     <promoters-list ref="promotersLists"></promoters-list>
     <!-- 推广方式-->
-    <Modal
-      v-model="modals"
-      scrollable
-      footer-hide
-      closable
-      title="推广二维码"
-      :mask-closable="false"
-      width="600"
-    >
+    <Modal v-model="modals" scrollable footer-hide closable title="推广二维码" :mask-closable="false" width="600">
       <div class="acea-row row-around">
         <div class="acea-row row-column-around row-between-wrapper">
           <div class="QRpic" v-if="code_src"><img v-lazy="code_src" /></div>
@@ -150,19 +123,8 @@
       <Spin size="large" fix v-if="spinShow"></Spin>
     </Modal>
     <!--修改推广人-->
-    <Modal
-      v-model="promoterShow"
-      scrollable
-      title="修改推广人"
-      class="order_box"
-      :closable="false"
-    >
-      <Form
-        ref="formInline"
-        :model="formInline"
-        :label-width="100"
-        @submit.native.prevent
-      >
+    <Modal v-model="promoterShow" scrollable title="修改推广人" class="order_box" :closable="false">
+      <Form ref="formInline" :model="formInline" :label-width="100" @submit.native.prevent>
         <FormItem label="用户头像：" prop="image">
           <div class="picBox" @click="customer">
             <div class="pictrue" v-if="formInline.image">
@@ -179,25 +141,16 @@
         <Button @click="cancel('formInline')">取消</Button>
       </div>
     </Modal>
-    <Modal
-      v-model="customerShow"
-      scrollable
-      title="请选择商城用户"
-      :closable="false"
-      width="50%"
-    >
-      <customerInfo
-        v-if="customerShow"
-        @imageObject="imageObject"
-      ></customerInfo>
+    <Modal v-model="customerShow" scrollable title="请选择商城用户" :closable="false" width="50%">
+      <customerInfo v-if="customerShow" @imageObject="imageObject"></customerInfo>
     </Modal>
   </div>
 </template>
 
 <script>
-import cardsData from "@/components/cards/cards";
-import searchFrom from "@/components/publicSearchFrom";
-import { mapState } from "vuex";
+import cardsData from '@/components/cards/cards';
+import searchFrom from '@/components/publicSearchFrom';
+import { mapState } from 'vuex';
 import {
   agentListApi,
   statisticsApi,
@@ -206,12 +159,12 @@ import {
   lookh5CodeApi,
   userAgentApi,
   agentSpreadApi,
-} from "@/api/agent";
-import promotersList from "./handle/promotersList";
-import customerInfo from "@/components/customerInfo";
-import { membershipDataAddApi } from "@/api/membershipLevel";
+} from '@/api/agent';
+import promotersList from './handle/promotersList';
+import customerInfo from '@/components/customerInfo';
+import { membershipDataAddApi } from '@/api/membershipLevel';
 export default {
-  name: "agentManage",
+  name: 'agentManage',
   components: { cardsData, searchFrom, promotersList, customerInfo },
   data() {
     return {
@@ -227,26 +180,26 @@ export default {
         xs: 24,
       },
       fromList: {
-        title: "选择时间",
+        title: '选择时间',
         custom: true,
         fromTxt: [
-          { text: "全部", val: "" },
-          { text: "今天", val: "today" },
-          { text: "昨天", val: "yesterday" },
-          { text: "最近7天", val: "lately7" },
-          { text: "最近30天", val: "lately30" },
-          { text: "本月", val: "month" },
-          { text: "本年", val: "year" },
+          { text: '全部', val: '' },
+          { text: '今天', val: 'today' },
+          { text: '昨天', val: 'yesterday' },
+          { text: '最近7天', val: 'lately7' },
+          { text: '最近30天', val: 'lately30' },
+          { text: '本月', val: 'month' },
+          { text: '本年', val: 'year' },
         ],
       },
       rows: {},
       formValidate: {
-        nickname: "",
-        data: "",
+        nickname: '',
+        data: '',
         page: 1,
         limit: 15,
       },
-      date: "all",
+      date: 'all',
       total: 0,
       cardLists: [],
       loading: false,
@@ -259,117 +212,115 @@ export default {
         //     align: 'center'
         // },
         {
-          title: "ID",
-          key: "uid",
+          title: 'ID',
+          key: 'uid',
           width: 80,
         },
         {
-          title: "头像",
-          key: "headimgurl",
+          title: '头像',
+          key: 'headimgurl',
           minWidth: 60,
           render: (h, params) => {
-            return h("viewer", [
+            return h('viewer', [
               h(
-                "div",
+                'div',
                 {
                   style: {
-                    width: "36px",
-                    height: "36px",
-                    borderRadius: "4px",
-                    cursor: "pointer",
+                    width: '36px',
+                    height: '36px',
+                    borderRadius: '4px',
+                    cursor: 'pointer',
                   },
                 },
                 [
-                  h("img", {
+                  h('img', {
                     attrs: {
-                      src: params.row.headimgurl
-                        ? params.row.headimgurl
-                        : require("../../assets/images/moren.jpg"),
+                      src: params.row.headimgurl ? params.row.headimgurl : require('../../assets/images/moren.jpg'),
                     },
                     style: {
-                      width: "100%",
-                      height: "100%",
+                      width: '100%',
+                      height: '100%',
                     },
                   }),
-                ]
+                ],
               ),
             ]);
           },
         },
         {
-          title: "用户信息",
-          slot: "nickname",
+          title: '用户信息',
+          slot: 'nickname',
           minWidth: 120,
         },
         {
-          title: "推广用户数量",
-          key: "spread_count",
+          title: '推广用户数量',
+          key: 'spread_count',
           minWidth: 125,
         },
         {
-          title: "分销等级",
-          slot: "agentLevel",
+          title: '分销等级',
+          slot: 'agentLevel',
           minWidth: 120,
         },
         {
-          title: "订单数量",
-          key: "order_count",
+          title: '订单数量',
+          key: 'order_count',
           minWidth: 90,
         },
         {
-          title: "订单金额",
-          key: "order_price",
+          title: '订单金额',
+          key: 'order_price',
           minWidth: 120,
         },
         {
-          title: "佣金金额",
-          key: "brokerage_money",
+          title: '佣金金额',
+          key: 'brokerage_money',
           minWidth: 120,
         },
         {
-          title: "已提现金额",
-          key: "extract_count_price",
+          title: '已提现金额',
+          key: 'extract_count_price',
           minWidth: 120,
         },
         {
-          title: "提现次数",
-          key: "extract_count_num",
+          title: '提现次数',
+          key: 'extract_count_num',
           minWidth: 100,
         },
         {
-          title: "未提现金额",
-          key: "new_money",
+          title: '未提现金额',
+          key: 'new_money',
           minWidth: 105,
         },
         {
-          title: "上级推广人",
-          key: "spread_name",
+          title: '上级推广人',
+          key: 'spread_name',
           minWidth: 105,
         },
         {
-          title: "操作",
-          slot: "right",
-          fixed: "right",
+          title: '操作',
+          slot: 'right',
+          fixed: 'right',
           minWidth: 130,
         },
       ],
-      code_src: "",
-      code_xcx: "",
-      code_h5: "",
+      code_src: '',
+      code_xcx: '',
+      code_h5: '',
       formInline: {
         uid: 0,
         spread_uid: 0,
-        image: "",
+        image: '',
       },
     };
   },
   computed: {
-    ...mapState("media", ["isMobile"]),
+    ...mapState('media', ['isMobile']),
     labelWidth() {
       return this.isMobile ? undefined : 80;
     },
     labelPosition() {
-      return this.isMobile ? "top" : "right";
+      return this.isMobile ? 'top' : 'right';
     },
   },
   created() {
@@ -382,7 +333,7 @@ export default {
       this.$refs[name].validate((valid) => {
         if (valid) {
           if (!this.formInline.spread_uid) {
-            return this.$Message.error("请上传用户");
+            return this.$Message.error('请上传用户');
           }
           agentSpreadApi(this.formInline)
             .then((res) => {
@@ -415,24 +366,22 @@ export default {
     // 操作
     changeMenu(row, name, index) {
       switch (name) {
-        case "1":
-          this.promoters(row, "order");
+        case '1':
+          this.promoters(row, 'order');
           break;
-        case "2":
+        case '2':
           this.spreadQR(row);
           break;
-        case "3":
+        case '3':
           this.editS(row);
           break;
-        case "4":
-          this.del(row, "解除【 " + row.nickname + " 】的上级推广人", index);
-        case "5":
-          this.$modalForm(
-            membershipDataAddApi({ uid: row.uid }, "/agent/get_level_form")
-          ).then(() => this.getList());
+        case '4':
+          this.del(row, '解除【 ' + row.nickname + ' 】的上级推广人', index);
+        case '5':
+          this.$modalForm(membershipDataAddApi({ uid: row.uid }, '/agent/get_level_form')).then(() => this.getList());
           break;
         default:
-          this.del_open(row, "解除【 " + row.nickname + " 】的推广资格", index);
+          this.del_open(row, '解除【 ' + row.nickname + ' 】的推广资格', index);
           break;
       }
     },
@@ -454,8 +403,8 @@ export default {
         title: tit,
         num: num,
         url: `agent/stair/delete_spread/${row.uid}`,
-        method: "PUT",
-        ids: "",
+        method: 'PUT',
+        ids: '',
       };
       this.$modalSure(delfromData)
         .then((res) => {
@@ -472,8 +421,8 @@ export default {
         title: tit,
         num: num,
         url: `agent/stair/delete_system_spread/${row.uid}`,
-        method: "PUT",
-        ids: "",
+        method: 'PUT',
+        ids: '',
       };
       this.$modalSure(delfromData)
         .then((res) => {
@@ -515,10 +464,10 @@ export default {
     // 具体日期
     onchangeTime(e) {
       this.timeVal = e;
-      this.formValidate.data = this.timeVal.join("-");
+      this.formValidate.data = this.timeVal.join('-');
       this.formValidate.page = 1;
       if (!e[0]) {
-        this.formValidate.data = "";
+        this.formValidate.data = '';
       }
       this.getList();
       this.getStatistics();
@@ -568,7 +517,7 @@ export default {
       this.spinShow = true;
       let data = {
         uid: this.rows.uid,
-        action: "wechant_code",
+        action: 'wechant_code',
       };
       lookCodeApi(data)
         .then(async (res) => {

@@ -6,12 +6,12 @@
 					<view class='text'>
 						<view class='name line1'>
 							<text class="iconfont icon-jingpintuijian1"></text>
-							{{titleInfo[0].val}}
+							{{$t(titleInfo[0].val)}}
 						</view>
-						<view class='line1 txt-btn'>{{titleInfo[1].val}}</view>
+						<view class='line1 txt-btn'>{{$t(titleInfo[1].val)}}</view>
 					</view>
 					<view class='more' @click="gopage(titleInfo[2].val)">
-						更多
+						{{$t(`更多`)}}
 						<text class='iconfont icon-jiantou'></text>
 					</view>
 				</view>
@@ -26,18 +26,18 @@
 						<view class='text'>
 							<view class='name line2'>{{item.store_name}}</view>
 							<view class="type">
-								<view class="type-sty" v-if="item.activity && item.activity.type == '1'">秒杀</view>
-								<view class="type-sty" v-if="item.activity && item.activity.type == '2'">砍价</view>
-								<view class="type-sty" v-if="item.activity && item.activity.type == '3'">砍价</view>
+								<view class="type-sty" v-if="item.activity && item.activity.type == '1'">{{$t(`秒杀`)}}</view>
+								<view class="type-sty" v-if="item.activity && item.activity.type == '2'">{{$t(`砍价`)}}</view>
+								<view class="type-sty" v-if="item.activity && item.activity.type == '3'">{{$t(`砍价`)}}</view>
 							</view>
 							<view class='vip acea-row'>
-								<view class='money font-color'>￥<text class='num'>{{item.price}}</text></view>
+								<view class='money font-color'>{{$t(`￥`)}}<text class='num'>{{item.price}}</text></view>
 								<view class='vip-money' v-if="item.vip_price && item.vip_price > 0 && item.base">
-									￥{{item.vip_price}}
+									{{$t(`￥`)}}{{item.vip_price}}
 									<image src='/static/images/jvip.png' class="jvip"></image>
 								</view>
 								<view class='vip-money' v-if="item.vip_price && item.vip_price > 0 && item.is_vip">
-									￥{{item.vip_price}}
+									{{$t(`￥`)}}{{item.vip_price}}
 									<image src='/static/images/vip.png'></image>
 								</view>
 								<!-- <view>已售{{item.sales}}{{item.unit_name}}</view> -->
@@ -57,7 +57,7 @@
 						<view class='line1 txt-btn'>{{titleInfo[1].val}}</view>
 					</view>
 					<view class='more' @click="gopage(titleInfo[2].val)">
-						更多
+						{{$t(`更多`)}}
 						<text class='iconfont icon-jiantou'></text>
 					</view>
 				</view>
@@ -73,19 +73,19 @@
 						<view class='text'>
 							<view class='name line2'>{{item.store_name}}</view>
 							<view class="type">
-								<view class="type-sty" v-if="item.activity && item.activity.type == '1'">秒杀</view>
-								<view class="type-sty" v-if="item.activity && item.activity.type == '2'">砍价</view>
-								<view class="type-sty" v-if="item.activity && item.activity.type == '3'">砍价</view>
-								<view class="type-sty" v-if="item.checkCoupon">券</view>
+								<view class="type-sty" v-if="item.activity && item.activity.type == '1'">{{$t(`秒杀`)}}</view>
+								<view class="type-sty" v-if="item.activity && item.activity.type == '2'">{{$t(`砍价`)}}</view>
+								<view class="type-sty" v-if="item.activity && item.activity.type == '3'">{{$t(`砍价`)}}</view>
+								<view class="type-sty" v-if="item.checkCoupon">{{$t(`ticket`)}}</view>
 							</view>
-							<view class='money font-color'>￥<text class='num'>{{item.price}}</text></view>
+							<view class='money font-color'>{{$t(`￥`)}}<text class='num'>{{item.price}}</text></view>
 							<view class='vip acea-row row-between-wrapper'>
 								<view class='vip-money' v-if="item.vip_price && item.vip_price > 0 && item.base">
-									￥{{item.vip_price}}
+									{{$t(`￥`)}}{{item.vip_price}}
 									<image src='/static/images/jvip.png' class="jvip"></image>
 								</view>
 								<view class='vip-money' v-if="item.vip_price && item.vip_price > 0 && item.is_vip">
-									￥{{item.vip_price}}
+									{{$t(`￥`)}}{{item.vip_price}}
 									<image src='/static/images/vip.png'></image>
 								</view>
 								<!-- <view>已售{{item.sales}}{{item.unit_name}}</view> -->
@@ -104,11 +104,11 @@
 							</view>
 							<view class='line1 txt-btn'>{{titleInfo[1].val}}</view>
 						</view>
-						<navigator class='more' open-type="switchTab" :url="titleInfo[2].val">更多<text
+						<navigator class='more' open-type="switchTab" :url="titleInfo[2].val">{{$t(`更多`)}}<text
 								class='iconfont icon-jiantou'></text></navigator>
 					</view>
 					<view class='scroll-product'>
-						<view class="empty-img">精品推荐，暂无数据</view>
+						<view class="empty-img">{{$t(`精品推荐，暂无数据`)}}</view>
 					</view>
 				</view>
 			</block>

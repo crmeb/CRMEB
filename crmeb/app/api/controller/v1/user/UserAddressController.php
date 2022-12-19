@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -36,47 +36,41 @@ class UserAddressController
      * @param Request $request
      * @param $id
      * @return mixed
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\ModelNotFoundException
-     * @throws \think\exception\DbException
      */
     public function address(Request $request, $id)
     {
         if (!$id) {
-            app('json')->fail('缺少参数');
+            app('json')->fail(100100);
         }
-        return app('json')->successful($this->services->address((int)$id));
+        return app('json')->success($this->services->address((int)$id));
     }
 
     /**
      * 地址列表
      * @param Request $request
-     * @param $page
-     * @param $limit
      * @return mixed
      */
     public function address_list(Request $request)
     {
         $uid = (int)$request->uid();
-        return app('json')->successful($this->services->getUserAddressList($uid, 'id,real_name,phone,province,city,district,detail,is_default,city_id'));
+        return app('json')->success($this->services->getUserAddressList($uid, 'id,real_name,phone,province,city,district,detail,is_default,city_id'));
     }
 
     /**
      * 设置默认地址
-     *
      * @param Request $request
      * @return mixed
      */
     public function address_default_set(Request $request)
     {
         list($id) = $request->getMore([['id', 0]], true);
-        if (!$id || !is_numeric($id)) return app('json')->fail('参数错误!');
+        if (!$id || !is_numeric($id)) return app('json')->fail(100100);
         $uid = (int)$request->uid();
         $res = $this->services->setDefault($uid, (int)$id);
         if (!$res)
-            return app('json')->fail('地址不存在!');
+            return app('json')->fail(410150);
         else
-            return app('json')->successful();
+            return app('json')->success(100014);
     }
 
     /**
@@ -90,9 +84,9 @@ class UserAddressController
         $defaultAddress = $this->services->getUserDefaultAddress($uid, 'id,real_name,phone,province,city,district,detail,is_default');
         if ($defaultAddress) {
             $defaultAddress = $defaultAddress->toArray();
-            return app('json')->successful('ok', $defaultAddress);
+            return app('json')->success($defaultAddress);
         }
-        return app('json')->successful('empty', []);
+        return app('json')->success('empty', []);
     }
 
     /**
@@ -112,36 +106,35 @@ class UserAddressController
             [['id', 'd'], 0],
             [['type', 'd'], 0]
         ]);
-        if (!isset($addressInfo['address']['province']) || !$addressInfo['address']['province'] || $addressInfo['address']['province'] == '省') return app('json')->fail('收货地址格式错误!');
-        if (!isset($addressInfo['address']['city']) || !$addressInfo['address']['city'] || $addressInfo['address']['city'] == '市') return app('json')->fail('收货地址格式错误或系统未完善当前地址!');
-        if (!isset($addressInfo['address']['district']) || !$addressInfo['address']['district'] || $addressInfo['address']['district'] == '区') return app('json')->fail('收货地址格式错误或系统未完善当前地址!');
-        if (!isset($addressInfo['address']['city_id']) && $addressInfo['type'] == 0) return app('json')->fail('收货地址格式错误!请重新选择!');
-        if (!$addressInfo['detail']) return app('json')->fail('请填写详细地址!');
+        if (!isset($addressInfo['address']['province']) || !$addressInfo['address']['province'] || $addressInfo['address']['province'] == '省') return app('json')->fail(410151);
+        if (!isset($addressInfo['address']['city']) || !$addressInfo['address']['city'] || $addressInfo['address']['city'] == '市') return app('json')->fail(410152);
+        if (!isset($addressInfo['address']['district']) || !$addressInfo['address']['district'] || $addressInfo['address']['district'] == '区') return app('json')->fail(410152);
+        if (!isset($addressInfo['address']['city_id']) && $addressInfo['type'] == 0) return app('json')->fail(410153);
+        if (!$addressInfo['detail']) return app('json')->fail(410154);
         $uid = (int)$request->uid();
         $res = $this->services->editAddress($uid, $addressInfo);
         if ($res) {
-            return app('json')->success($res['type'] == 'edit' ? $res['msg'] : $res['data']);
+            return app('json')->success($res['type'] == 'edit' ? 100001 : $res['data']);
         } else {
-            return app('json')->fail('处理失败');
+            return app('json')->fail(100007);
         }
 
     }
 
     /**
      * 删除地址
-     *
      * @param Request $request
      * @return mixed
      */
     public function address_del(Request $request)
     {
         list($id) = $request->postMore([['id', 0]], true);
-        if (!$id || !is_numeric($id)) return app('json')->fail('参数错误!');
+        if (!$id || !is_numeric($id)) return app('json')->fail(100100);
         $uid = (int)$request->uid();
         $re = $this->services->delAddress($uid, (int)$id);
         if ($re)
-            return app('json')->successful();
+            return app('json')->success(100002);
         else
-            return app('json')->fail('删除地址失败!');
+            return app('json')->fail(100008);
     }
 }

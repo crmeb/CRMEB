@@ -12,11 +12,7 @@
         <div class="acea-row row-between-wrapper">
           <div>
             <span>短信状态：</span>
-            <RadioGroup
-              type="button"
-              v-model="tableFrom.type"
-              @on-change="selectChange(tableFrom.type)"
-            >
+            <RadioGroup type="button" v-model="tableFrom.type" @on-change="selectChange(tableFrom.type)">
               <Radio label="">全部</Radio>
               <Radio label="1">成功</Radio>
               <Radio label="2">失败</Radio>
@@ -25,9 +21,7 @@
           </div>
           <div>
             <Button type="primary" @click="shortMes">短信模板</Button>
-            <Button style="margin-left: 20px" @click="editSign"
-              >修改签名</Button
-            >
+            <Button style="margin-left: 20px" @click="editSign">修改签名</Button>
           </div>
         </div>
         <Table
@@ -67,11 +61,7 @@
           no-filtered-userFrom-text="暂无筛选结果"
           class="mt25"
         >
-          <template
-            slot-scope="{ row }"
-            slot="num"
-            v-if="isChecked === '3' && query.open === 1"
-          >
+          <template slot-scope="{ row }" slot="num" v-if="isChecked === '3' && query.open === 1">
             <div>{{ row.content.num }}</div>
           </template>
         </Table>
@@ -101,31 +91,21 @@
           <div class="wuTu"><img src="../../../assets/images/wutu.png" /></div>
           <span v-if="isChecked === '1'">
             <span class="wuSp1">短信服务未开通哦</span>
-            <span class="wuSp2"
-              >点击立即开通按钮，即可使用短信服务哦～～～</span
-            >
+            <span class="wuSp2">点击立即开通按钮，即可使用短信服务哦～～～</span>
           </span>
           <span v-if="isChecked === '4'">
             <span class="wuSp1">商品采集服务未开通哦</span>
-            <span class="wuSp2"
-              >点击立即开通按钮，即可使用商品采集服务哦～～～</span
-            >
+            <span class="wuSp2">点击立即开通按钮，即可使用商品采集服务哦～～～</span>
           </span>
           <span v-if="isChecked === '3'">
             <span class="wuSp1">物流查询未开通哦</span>
-            <span class="wuSp2"
-              >点击立即开通按钮，即可使用物流查询服务哦～～～</span
-            >
+            <span class="wuSp2">点击立即开通按钮，即可使用物流查询服务哦～～～</span>
           </span>
           <span v-if="isChecked === '2'">
             <span class="wuSp1">电子面单打印未开通哦</span>
-            <span class="wuSp2"
-              >点击立即开通按钮，即可使用电子面单打印服务哦～～～</span
-            >
+            <span class="wuSp2">点击立即开通按钮，即可使用电子面单打印服务哦～～～</span>
           </span>
-          <Button size="default" type="primary" @click="onOpen"
-            >立即开通</Button
-          >
+          <Button size="default" type="primary" @click="onOpen">立即开通</Button>
         </div>
         <!--短信立即开通-->
         <div class="smsBox" v-if="isSms && isChecked === '1'">
@@ -149,14 +129,7 @@
                 />
               </FormItem>
               <FormItem class="maxInpt">
-                <Button
-                  type="primary"
-                  long
-                  size="default"
-                  @click="handleSubmit('formInline')"
-                  class="btn"
-                  >登录</Button
-                >
+                <Button type="primary" long size="default" @click="handleSubmit('formInline')" class="btn">登录</Button>
               </FormItem>
             </Form>
           </div>
@@ -165,12 +138,8 @@
         <div class="smsBox" v-if="isDump && isChecked === '2'">
           <div class="index_from page-account-container">
             <div class="page-account-top">
-              <span class="page-account-top-tit" v-if="isChecked === '2'"
-                >开通电子面单服务</span
-              >
-              <span class="page-account-top-tit" v-if="isChecked === '3'"
-                >开通物流查询服务</span
-              >
+              <span class="page-account-top-tit" v-if="isChecked === '2'">开通电子面单服务</span>
+              <span class="page-account-top-tit" v-if="isChecked === '3'">开通物流查询服务</span>
             </div>
             <Form
               ref="formInlineDump"
@@ -186,12 +155,7 @@
                   @on-change="onChangeExport"
                   style="text-align: left"
                 >
-                  <Option
-                    v-for="(item, index) in exportList"
-                    :value="item.code"
-                    :key="index"
-                    >{{ item.name }}</Option
-                  >
+                  <Option v-for="(item, index) in exportList" :value="item.code" :key="index">{{ item.name }}</Option>
                 </Select>
               </FormItem>
               <FormItem prop="temp_id" class="tempId maxInpt">
@@ -203,12 +167,9 @@
                     :class="[formInlineDump.temp_id ? 'width9' : 'width10']"
                     @on-change="onChangeImg"
                   >
-                    <Option
-                      v-for="(item, index) in exportTempList"
-                      :value="item.temp_id"
-                      :key="index"
-                      >{{ item.title }}</Option
-                    >
+                    <Option v-for="(item, index) in exportTempList" :value="item.temp_id" :key="index">{{
+                      item.title
+                    }}</Option>
                   </Select>
                   <div v-if="formInlineDump.temp_id">
                     <span class="tempImg">预览</span>
@@ -251,12 +212,7 @@
                 />
               </FormItem>
               <FormItem class="maxInpt">
-                <Button
-                  type="primary"
-                  long
-                  size="default"
-                  @click="handleSubmitDump('formInlineDump')"
-                  class="btn"
+                <Button type="primary" long size="default" @click="handleSubmitDump('formInlineDump')" class="btn"
                   >立即开通</Button
                 >
               </FormItem>
@@ -274,13 +230,7 @@
       class="order_box"
       @on-cancel="cancel('formInline')"
     >
-      <Form
-        ref="formInline"
-        :model="formInline"
-        :rules="ruleInline"
-        :label-width="100"
-        @submit.native.prevent
-      >
+      <Form ref="formInline" :model="formInline" :rules="ruleInline" :label-width="100" @submit.native.prevent>
         <FormItem>
           <Input
             v-model="accountInfo.account"
@@ -319,19 +269,11 @@
               size="large"
               style="width: 75%"
             />
-            <Button :disabled="!this.canClick" @click="cutDown" size="large">{{
-              cutNUm
-            }}</Button>
+            <Button :disabled="!this.canClick" @click="cutDown" size="large">{{ cutNUm }}</Button>
           </div>
         </FormItem>
         <FormItem>
-          <Button
-            type="primary"
-            long
-            size="large"
-            @click="editSubmit('formInline')"
-            class="btn"
-            style="width: 87%"
+          <Button type="primary" long size="large" @click="editSubmit('formInline')" class="btn" style="width: 87%"
             >确认修改</Button
           >
         </FormItem>
@@ -357,9 +299,9 @@ import {
   serveSign,
   captchaApi,
   serveOpen,
-} from "@/api/setting";
+} from '@/api/setting';
 export default {
-  name: "tableList",
+  name: 'tableList',
   props: {
     copy: {
       type: Object,
@@ -385,28 +327,28 @@ export default {
   data() {
     const validatePhone = (rule, value, callback) => {
       if (!value) {
-        return callback(new Error("请填写手机号"));
+        return callback(new Error('请填写手机号'));
       } else if (!/^1[3456789]\d{9}$/.test(value)) {
-        callback(new Error("手机号格式不正确!"));
+        callback(new Error('手机号格式不正确!'));
       } else {
         callback();
       }
     };
     return {
-      cutNUm: "获取验证码",
+      cutNUm: '获取验证码',
       canClick: true,
       spinShow: true,
       formInline: {
-        sign: "",
-        phone: "",
-        code: "",
+        sign: '',
+        phone: '',
+        code: '',
       },
       ruleInline: {
-        sign: [{ required: true, message: "请输入短信签名", trigger: "blur" }],
-        phone: [{ required: true, validator: validatePhone, trigger: "blur" }],
-        code: [{ required: true, message: "请输入验证码", trigger: "blur" }],
+        sign: [{ required: true, message: '请输入短信签名', trigger: 'blur' }],
+        phone: [{ required: true, validator: validatePhone, trigger: 'blur' }],
+        code: [{ required: true, message: '请输入验证码', trigger: 'blur' }],
       },
-      isChecked: "1",
+      isChecked: '1',
       columns1: [
         // {
         //     title: 'ID',
@@ -414,28 +356,28 @@ export default {
         //     width: 80
         // },
         {
-          title: "手机号",
-          key: "phone",
+          title: '手机号',
+          key: 'phone',
           minWidth: 100,
         },
         {
-          title: "模板内容",
-          key: "content",
+          title: '模板内容',
+          key: 'content',
           minWidth: 590,
         },
         {
-          title: "条数(每67/+1)",
-          key: "num",
+          title: '条数(每67/+1)',
+          key: 'num',
           minWidth: 100,
         },
         {
-          title: "发送时间",
-          key: "add_time",
+          title: '发送时间',
+          key: 'add_time',
           minWidth: 150,
         },
         {
-          title: "状态码",
-          key: "_resultcode",
+          title: '状态码',
+          key: '_resultcode',
           minWidth: 100,
         },
       ],
@@ -443,36 +385,28 @@ export default {
       tableFrom: {
         page: 1,
         limit: 20,
-        type: "",
+        type: '',
       },
       total: 0,
       loading: false,
       tableList: [],
       formInlineDump: {
-        temp_id: "",
-        com: "",
-        to_name: "",
-        to_tel: "",
-        siid: "",
-        to_address: "",
+        temp_id: '',
+        com: '',
+        to_name: '',
+        to_tel: '',
+        siid: '',
+        to_address: '',
       },
       ruleInlineDump: {
-        com: [{ required: true, message: "请选择快递公司", trigger: "change" }],
-        temp_id: [
-          { required: true, message: "请选择打印模板", trigger: "change" },
-        ],
-        to_name: [
-          { required: true, message: "请输寄件人姓名", trigger: "blur" },
-        ],
-        to_tel: [{ required: true, validator: validatePhone, trigger: "blur" }],
-        siid: [
-          { required: true, message: "请输入云打印机编号", trigger: "blur" },
-        ],
-        to_address: [
-          { required: true, message: "请输寄件人地址", trigger: "blur" },
-        ],
+        com: [{ required: true, message: '请选择快递公司', trigger: 'change' }],
+        temp_id: [{ required: true, message: '请选择打印模板', trigger: 'change' }],
+        to_name: [{ required: true, message: '请输寄件人姓名', trigger: 'blur' }],
+        to_tel: [{ required: true, validator: validatePhone, trigger: 'blur' }],
+        siid: [{ required: true, message: '请输入云打印机编号', trigger: 'blur' }],
+        to_address: [{ required: true, message: '请输寄件人地址', trigger: 'blur' }],
       },
-      tempImg: "", // 图片
+      tempImg: '', // 图片
       exportTempList: [], // 电子面单模板
       exportList: [], // 快递公司列表
       isSms: false, // 是否开通短信
@@ -488,7 +422,7 @@ export default {
     },
   },
   created() {
-    if (this.isChecked === "1" && this.sms.open === 1) this.getList();
+    if (this.isChecked === '1' && this.sms.open === 1) this.getList();
   },
   // mounted() {
   //     serveDumpOpen().then(res=>{
@@ -499,7 +433,7 @@ export default {
     //短信模板页
     shortMes() {
       this.$router.push({
-        path: "/admin/setting/sms/sms_template_apply/index",
+        path: '/admin/setting/sms/sms_template_apply/index',
       });
     },
     // 短信验证码
@@ -521,13 +455,13 @@ export default {
         let time = setInterval(() => {
           this.cutNUm--;
           if (this.cutNUm === 0) {
-            this.cutNUm = "获取验证码";
+            this.cutNUm = '获取验证码';
             this.canClick = true;
             clearInterval(time);
           }
         }, 1000);
       } else {
-        this.$Message.warning("请填写手机号!");
+        this.$Message.warning('请填写手机号!');
       }
     },
     editSign() {
@@ -571,7 +505,7 @@ export default {
     },
     // 快递公司选择
     onChangeExport(val) {
-      this.formInlineDump.temp_id = "";
+      this.formInlineDump.temp_id = '';
       this.exportTemp(val);
     },
     // 电子面单模板
@@ -585,21 +519,14 @@ export default {
         });
     },
     onChangeType() {
-      if (this.isChecked === "1" && this.sms.open === 1) {
-        this.tableFrom.type = "";
+      if (this.isChecked === '1' && this.sms.open === 1) {
+        this.tableFrom.type = '';
         this.getList();
       } else {
         // if ((this.isChecked === '2' && this.query.open === 0) || (this.dump.open === 0 && this.isChecked === '3')) this.isDump = false
-        if (this.isChecked === "2" && this.query.open === 0)
-          this.isDump = false;
-        if (this.isChecked === "3" && this.query.open === 0)
-          this.isLogistics = false;
-        if (
-          this.dump.open === 1 ||
-          this.query.open === 1 ||
-          this.copy.open === 1
-        )
-          this.getRecordList();
+        if (this.isChecked === '2' && this.query.open === 0) this.isDump = false;
+        if (this.isChecked === '3' && this.query.open === 0) this.isLogistics = false;
+        if (this.dump.open === 1 || this.query.open === 1 || this.copy.open === 1) this.getRecordList();
       }
     },
     // 其他列表
@@ -612,65 +539,65 @@ export default {
           this.tableList = data.data;
           this.total = res.data.count;
           switch (this.isChecked) {
-            case "2":
+            case '2':
               this.columns2 = [
                 {
-                  title: "订单号",
-                  key: "order_id",
+                  title: '订单号',
+                  key: 'order_id',
                   minWidth: 150,
                 },
                 {
-                  title: "发货人",
-                  key: "from_name",
+                  title: '发货人',
+                  key: 'from_name',
                   minWidth: 120,
                 },
                 {
-                  title: "收货人",
-                  key: "to_name",
+                  title: '收货人',
+                  key: 'to_name',
                   minWidth: 120,
                 },
                 {
-                  title: "快递单号",
-                  key: "num",
+                  title: '快递单号',
+                  key: 'num',
                   minWidth: 120,
                 },
                 {
-                  title: "快递公司编码",
-                  key: "code",
+                  title: '快递公司编码',
+                  key: 'code',
                   minWidth: 120,
                 },
                 {
-                  title: "状态",
-                  key: "_resultcode",
+                  title: '状态',
+                  key: '_resultcode',
                   minWidth: 100,
                 },
                 {
-                  title: "打印时间",
-                  key: "add_time",
+                  title: '打印时间',
+                  key: 'add_time',
                   minWidth: 150,
                 },
               ];
               break;
-            case "3":
+            case '3':
               this.columns2 = [
                 {
-                  title: "快递单号",
-                  slot: "num",
+                  title: '快递单号',
+                  slot: 'num',
                   minWidth: 120,
                 },
                 {
-                  title: "快递公司编码",
-                  key: "code",
+                  title: '快递公司编码',
+                  key: 'code',
                   minWidth: 120,
                 },
                 {
-                  title: "状态",
-                  key: "_resultcode",
+                  title: '状态',
+                  key: '_resultcode',
                   minWidth: 120,
                 },
                 {
-                  title: "添加时间",
-                  key: "add_time",
+                  title: '添加时间',
+                  key: 'add_time',
                   minWidth: 150,
                 },
               ];
@@ -678,18 +605,18 @@ export default {
             default:
               this.columns2 = [
                 {
-                  title: "复制URL",
-                  key: "url",
+                  title: '复制URL',
+                  key: 'url',
                   minWidth: 400,
                 },
                 {
-                  title: "请求状态",
-                  key: "_resultcode",
+                  title: '请求状态',
+                  key: '_resultcode',
                   minWidth: 120,
                 },
                 {
-                  title: "添加时间",
-                  key: "add_time",
+                  title: '添加时间',
+                  key: 'add_time',
                   minWidth: 150,
                 },
               ];
@@ -712,9 +639,9 @@ export default {
         if (valid) {
           serveSmsOpenApi(this.formInline)
             .then(async (res) => {
-              this.$Message.success("开通成功!");
+              this.$Message.success('开通成功!');
               this.getList();
-              this.$emit("openService", "sms");
+              this.$emit('openService', 'sms');
             })
             .catch((res) => {
               this.$Message.error(res.msg);
@@ -727,42 +654,42 @@ export default {
     // 首页去开通
     onOpenIndex(val) {
       switch (val) {
-        case "sms":
-          this.isChecked = "1";
+        case 'sms':
+          this.isChecked = '1';
           this.isSms = true;
           break;
-        case "copy":
-          this.isChecked = "4";
+        case 'copy':
+          this.isChecked = '4';
           this.openOther();
           break;
-        case "query":
-          this.isChecked = "3";
+        case 'query':
+          this.isChecked = '3';
           this.onDumpOpen();
           break;
         default:
-          this.isChecked = "2";
+          this.isChecked = '2';
           this.openDump();
           break;
       }
     },
     // 开通按钮
     onOpen() {
-      if (this.isChecked === "1") this.isSms = true;
-      if (this.isChecked === "2") this.openDump();
-      if (this.isChecked === "3") this.onDumpOpen();
-      if (this.isChecked === "4") this.openOther();
+      if (this.isChecked === '1') this.isSms = true;
+      if (this.isChecked === '2') this.openDump();
+      if (this.isChecked === '3') this.onDumpOpen();
+      if (this.isChecked === '4') this.openOther();
     },
     // 开通物流
     onDumpOpen() {
       this.$Modal.confirm({
-        title: "开通物流查询吗",
-        content: "<p>确定要开通物流查询吗</p>",
+        title: '开通物流查询吗',
+        content: '<p>确定要开通物流查询吗</p>',
         onOk: () => {
           serveOpen().then((res) => {
             this.getRecordList();
             this.isLogistics = true;
             this.$Message.info(res.msg);
-            this.$emit("openService", "query");
+            this.$emit('openService', 'query');
           });
         },
         onCancel: () => {},
@@ -771,8 +698,8 @@ export default {
     // 开通其他
     openOther() {
       this.$Modal.confirm({
-        title: "开通商品采集吗",
-        content: "<p>确定要开通商品采集吗</p>",
+        title: '开通商品采集吗',
+        content: '<p>确定要开通商品采集吗</p>',
         loading: true,
         onOk: () => {
           this.$Modal.remove();
@@ -780,7 +707,7 @@ export default {
             serveOpnOtherApi({ type: 1 })
               .then(async (res) => {
                 this.getRecordList();
-                this.$emit("openService", "copy");
+                this.$emit('openService', 'copy');
               })
               .catch((res) => {
                 this.$Message.error(res.msg);
@@ -831,9 +758,9 @@ export default {
         if (valid) {
           serveOpnExpressApi(this.formInlineDump)
             .then(async (res) => {
-              this.$Message.success("开通成功!");
+              this.$Message.success('开通成功!');
               this.getRecordList();
-              this.$emit("openService", "dump");
+              this.$emit('openService', 'dump');
             })
             .catch((res) => {
               this.$Message.error(res.msg);
@@ -847,7 +774,7 @@ export default {
 };
 </script>
 <style lang="less" scoped>
-@aaa: ~">>>";
+@aaa: ~'>>>';
 .order_box /deep/.ivu-form-item-content {
   margin-left: 50px !important;
 }

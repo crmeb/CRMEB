@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -54,12 +54,12 @@ class MemberCardBatchServices extends BaseServices
      */
     public function save(int $id, array $data)
     {
-        if (!$data['title']) throw new AdminException("请填写批次名称");
-        if (!$data['total_num']) throw new AdminException("请填写要生成卡的数量");
-        if (!is_numeric($data['total_num']) || $data['total_num'] < 0) throw new AdminException("卡片数量只能为正整数");
-        if ($data['total_num'] > 6000) throw new AdminException("单次制卡数量最高不得超过6000张");
-        if (!$data['use_day'] || !is_numeric($data['use_day'])) throw new AdminException("请填写免费使用天数");
-        if ($data['use_day'] < 0) throw new AdminException("免费使用天数只能为正整数");
+        if (!$data['title']) throw new AdminException(400614);
+        if (!$data['total_num']) throw new AdminException(400615);
+        if (!is_numeric($data['total_num']) || $data['total_num'] < 0) throw new AdminException(400616);
+        if ($data['total_num'] > 6000) throw new AdminException(400617);
+        if (!$data['use_day'] || !is_numeric($data['use_day'])) throw new AdminException(400618);
+        if ($data['use_day'] < 0) throw new AdminException(400619);
         /**
          * 具体时间段试用，业务需要打开即可
          */
@@ -107,8 +107,8 @@ class MemberCardBatchServices extends BaseServices
      */
     public function setValue(int $id, array $data)
     {
-        if (!is_numeric($id) || !$id) throw new AdminException("参数缺失");
-        if (!isset($data['field']) || !isset($data['value']) || !$data['field']) throw new AdminException("参数错误");
+        if (!is_numeric($id) || !$id) throw new AdminException(100100);
+        if (!isset($data['field']) || !isset($data['value']) || !$data['field']) throw new AdminException(100100);
         /**  */
         $this->dao->update($id, [$data['field'] => $data['value']]);
     }

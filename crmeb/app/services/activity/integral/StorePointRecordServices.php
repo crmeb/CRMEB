@@ -75,10 +75,12 @@ class StorePointRecordServices extends BaseServices
      */
     public function recordRemark($id, $mark)
     {
+        if (!$id) throw new AdminException(100100);
+        if ($mark === '') throw new AdminException(400106);
         if ($this->dao->update($id, ['mark' => $mark])) {
             return true;
         } else {
-            throw new AdminException('备注失败');
+            throw new AdminException(100025);
         }
     }
 
@@ -105,7 +107,7 @@ class StorePointRecordServices extends BaseServices
     public function getTrend($where)
     {
         $time = explode('-', $where['time']);
-        if (count($time) != 2) throw new AdminException('参数错误');
+        if (count($time) != 2) throw new AdminException(100100);
         $dayCount = (strtotime($time[1]) - strtotime($time[0])) / 86400 + 1;
         $data = [];
         if ($dayCount == 1) {
@@ -188,7 +190,7 @@ class StorePointRecordServices extends BaseServices
             $list[] = [
                 'name' => $item['name'],
                 'value' => $item['value'],
-                'percent' => $count != 0 ? bcmul((string)bcdiv((string)$item['value'], (string)$count, 4), '100', 2) : 0,
+                'percent' => $count != 0 ? bcmul((string)bcdiv((string)$item['value'], (string)$count, 4), '100', 1) : 0,
             ];
         }
         array_multisort(array_column($list, 'value'), SORT_DESC, $list);
@@ -220,7 +222,7 @@ class StorePointRecordServices extends BaseServices
             $list[] = [
                 'name' => $item['name'],
                 'value' => $item['value'],
-                'percent' => $count != 0 ? bcmul((string)bcdiv((string)$item['value'], (string)$count, 4), '100', 2) : 0,
+                'percent' => $count != 0 ? bcmul((string)bcdiv((string)$item['value'], (string)$count, 4), '100', 1) : 0,
             ];
         }
         array_multisort(array_column($list, 'value'), SORT_DESC, $list);

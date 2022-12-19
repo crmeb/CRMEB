@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -132,10 +132,10 @@ class SystemAttachmentCategoryServices extends BaseServices
     public function save(array $data)
     {
         if ($this->dao->getOne(['name' => $data['name']])) {
-            throw new AdminException('该分类已经存在');
+            throw new AdminException(400101);
         }
         $res = $this->dao->save($data);
-        if (!$res) throw new AdminException('新增失败！');
+        if (!$res) throw new AdminException(100022);
         return $res;
     }
 
@@ -148,10 +148,10 @@ class SystemAttachmentCategoryServices extends BaseServices
     {
         $attachment = $this->dao->getOne(['name' => $data['name']]);
         if ($attachment && $attachment['id'] != $id) {
-            throw new AdminException('该分类已经存在');
+            throw new AdminException(400101);
         }
         $res = $this->dao->update($id, $data);
-        if (!$res) throw new AdminException('编辑失败！');
+        if (!$res) throw new AdminException(100007);
     }
 
     /**
@@ -162,10 +162,10 @@ class SystemAttachmentCategoryServices extends BaseServices
     {
         $count = $this->dao->getCount(['pid' => $id]);
         if ($count) {
-            throw new AdminException('请先删除下级分类！');
+            throw new AdminException(400102);
         } else {
             $res = $this->dao->delete($id);
-            if (!$res) throw new AdminException('请先删除下级分类！');
+            if (!$res) throw new AdminException(400102);
         }
     }
 

@@ -43,6 +43,7 @@ $(function(){
 	    host:'<?php echo $host;?>',
         https:'<?php echo 'http://'.$host;?>',
         version:'<?php echo $version;?>',
+        version_code:'<?php echo $platform;?>',
         ip:<?php echo json_encode($ip);?>
     },
 	dataType: 'json',

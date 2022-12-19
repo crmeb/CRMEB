@@ -20,12 +20,12 @@
 				</block>
 			</swiper>
 			<!-- #ifndef H5  -->
-			<view class='keep bg-color' @click='savePosterPathMp(posterImage[swiperIndex])'>保存海报</view>
+			<view class='keep bg-color' @click='savePosterPathMp(posterImage[swiperIndex])'>{{$t(`保存海报`)}}</view>
 			<!-- #endif -->
 			<!-- #ifndef MP || APP-PLUS -->
 			<div class="preserve acea-row row-center-wrapper">
 				<div class="line"></div>
-				<div class="tip">长按保存图片</div>
+				<div class="tip">{{$t(`长按保存图片`)}}</div>
 				<div class="line"></div>
 			</div>
 			<!-- #endif -->
@@ -77,7 +77,7 @@
 			home,
 			zbCode
 		},
-		mixins:[colors],
+		mixins: [colors],
 		data() {
 			return {
 				imgUrls: [],
@@ -146,14 +146,14 @@
 		},
 		async onReady() {
 			if (this.isLogin) {
-				this.val = `${HTTP_REQUEST_URL}?spread=${this.uid}`
+				this.val = `${HTTP_REQUEST_URL}?spid=${this.uid}`
 				await this.spreadMsgs()
-				getUserInfo().then(res=>{
+				getUserInfo().then(res => {
 					this.userInfo = res.data
 				})
 			} else {
 				toLogin();
-		
+
 			}
 
 		},
@@ -174,7 +174,7 @@
 		// #ifdef MP
 		onShareAppMessage() {
 			return {
-				title: this.userInfo.nickname + '-分销海报',
+				title: this.userInfo.nickname + '-' + this.$t(`分销海报`),
 				imageUrl: this.spreadList[0],
 				path: '/pages/index/index?spread=' + this.userInfo.uid,
 			};
@@ -203,7 +203,7 @@
 				let mpUrl = await this.downloadFilestoreImage(this.mpUrl)
 				// #endif
 				uni.showLoading({
-					title: '海报生成中',
+					title: this.$t(`海报生成中`),
 					mask: true
 				});
 				// #ifdef H5
@@ -229,9 +229,9 @@
 						tempFilePath) => {
 						that.$set(that.posterImage, i, tempFilePath);
 						// #ifdef MP
-						if(!that.posterImage.length){
+						if (!that.posterImage.length) {
 							return that.$util.Tips({
-								title: '小程序二维码需要发布正式版后才能获取到'
+								title: that.$t(`小程序二维码需要发布正式版后才能获取到`)
 							});
 						}
 						// #endif
@@ -242,8 +242,7 @@
 			downloadImg() {
 				uni.saveImageToPhotosAlbum({
 					filePath: this.posterImage[this.swiperIndex],
-					success: function() {
-					}
+					success: function() {}
 				});
 			},
 			async routineCode() {
@@ -282,13 +281,13 @@
 										filePath: url,
 										success: function(res) {
 											that.$util.Tips({
-												title: '保存成功',
+												title: that.$t(`保存成功`),
 												icon: 'success'
 											});
 										},
 										fail: function(res) {
 											that.$util.Tips({
-												title: '保存失败'
+												title: that.$t(`保存失败`),
 											});
 										}
 									});
@@ -299,13 +298,13 @@
 								filePath: url,
 								success: function(res) {
 									that.$util.Tips({
-										title: '保存成功',
+										title: that.$t(`保存成功`),
 										icon: 'success'
 									});
 								},
 								fail: function(res) {
 									that.$util.Tips({
-										title: '保存失败'
+										title: that.$t(`保存失败`),
 									});
 								}
 							});
@@ -321,13 +320,13 @@
 					filePath: url,
 					success: function(res) {
 						that.$util.Tips({
-							title: '保存成功',
+							title: that.$t(`保存成功`),
 							icon: 'success'
 						});
 					},
 					fail: function(res) {
 						that.$util.Tips({
-							title: '保存失败'
+							title: that.$t(`保存失败`),
 						});
 					}
 				});
@@ -355,8 +354,8 @@
 					if (this.isLogin) {
 						getUserInfo().then(res => {
 							let configAppMessage = {
-								desc: '分销海报',
-								title: res.data.nickname + '-分销海报',
+								desc: this.$t(`分销海报`),
+								title: res.data.nickname + '-' + this.$t(`分销海报`),
 								link: '/pages/index/index?spread=' + res.data.uid,
 								imgUrl: this.spreadList[0]
 							};
@@ -372,7 +371,7 @@
 			userSpreadBannerList: function() {
 				let that = this;
 				uni.showLoading({
-					title: '获取中',
+					title: that.$t(`获取中`),
 					mask: true,
 				})
 				spreadBanner().then(res => {

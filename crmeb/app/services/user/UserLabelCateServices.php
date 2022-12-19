@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -14,9 +14,9 @@ namespace app\services\user;
 
 use app\dao\other\CategoryDao;
 use app\services\BaseServices;
+use crmeb\exceptions\AdminException;
 use crmeb\services\CacheService;
 use crmeb\services\FormBuilder;
-use think\exception\ValidateException;
 use think\Model;
 
 /**
@@ -117,7 +117,7 @@ class UserLabelCateServices extends BaseServices
     {
         $labelCate = $this->dao->get($id);
         if (!$labelCate) {
-            throw new ValidateException('分类标签没有查到');
+            throw new AdminException(100026);
         }
         return create_form('编辑标签分类', $this->labelCateForm($labelCate->toArray()), $this->url('user/user_label_cate/' . $id), 'PUT');
     }

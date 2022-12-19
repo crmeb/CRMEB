@@ -1,17 +1,23 @@
 <template>
   <div>
-    <div class="i-layout-page-header">
-      <div class="i-layout-page-header">
-        <span class="ivu-page-header-title">{{ $route.meta.title }}</span>
+    <div class="i-layout-page-header header_top">
+      <div class="i-layout-page-header fl_header">
+        <router-link :to="{ path: '/admin/system/config/system_config_tab/index' }"
+          ><Button icon="ios-arrow-back" size="small" type="text">返回</Button></router-link
+        >
+        <Divider type="vertical" />
+        <span
+          class="ivu-page-header-title mr20"
+          style="padding: 0"
+          v-text="$route.meta.title"
+        ></span>
       </div>
     </div>
     <Card :bordered="false" dis-hover class="ivu-mt">
       <Row type="flex">
         <Col v-bind="grid">
           <Button type="primary" @click="goIndex" class="mr20">配置分类</Button>
-          <Button type="primary" icon="md-add" @click="configureAdd"
-            >添加配置</Button
-          >
+          <Button type="primary" icon="md-add" @click="configureAdd">添加配置</Button>
         </Col>
       </Row>
       <Divider dashed />
@@ -25,24 +31,12 @@
       >
         <template slot-scope="{ row, index }" slot="values">
           <span
-            v-if="
-              row.type === 'text' ||
-              row.type === 'textarea' ||
-              row.type === 'radio' ||
-              row.type === 'checkbox'
-            "
+            v-if="row.type === 'text' || row.type === 'textarea' || row.type === 'radio' || row.type === 'checkbox'"
             >{{ row.value }}</span
           >
-          <div
-            class="valBox acea-row"
-            v-if="row.type === 'upload' && row.upload_type === 3"
-          >
+          <div class="valBox acea-row" v-if="row.type === 'upload' && row.upload_type === 3">
             <div v-if="row.value instanceof Array">
-              <div
-                class="valPicbox acea-row row-column-around"
-                v-for="(item, index) in row.value"
-                :key="index"
-              >
+              <div class="valPicbox acea-row row-column-around" v-for="(item, index) in row.value" :key="index">
                 <div class="valPicbox_pic"><Icon type="md-document" /></div>
                 <span class="valPicbox_sp">{{ item.filename }}</span>
               </div>
@@ -54,16 +48,9 @@
             <!--                            </div>-->
             <!--                        </div>-->
           </div>
-          <div
-            class="valBox acea-row"
-            v-if="row.type === 'upload' && row.upload_type !== 3"
-          >
+          <div class="valBox acea-row" v-if="row.type === 'upload' && row.upload_type !== 3">
             <div v-if="row.value instanceof Array">
-              <div
-                class="valPicbox acea-row row-column-around"
-                v-for="(item, index) in row.value"
-                :key="index"
-              >
+              <div class="valPicbox acea-row row-column-around" v-for="(item, index) in row.value" :key="index">
                 <div class="valPicbox_pic"><img v-lazy="item.filepath" /></div>
                 <span class="valPicbox_sp">{{ item.filename }}</span>
               </div>
@@ -130,26 +117,17 @@
       ></form-create>
     </Modal>
     <!-- 编辑表单-->
-    <edit-from
-      ref="edits"
-      :FromData="FromData"
-      @submitFail="submitFail"
-    ></edit-from>
+    <edit-from ref="edits" :FromData="FromData" @submitFail="submitFail"></edit-from>
   </div>
 </template>
 
 <script>
-import {
-  configTabListApi,
-  configTabAddApi,
-  configTabEditApi,
-  configSetStatusApi,
-} from "@/api/system";
-import formCreate from "@form-create/iview";
-import editFrom from "@/components/from/from";
-import request from "@/libs/request";
+import { configTabListApi, configTabAddApi, configTabEditApi, configSetStatusApi } from '@/api/system';
+import formCreate from '@form-create/iview';
+import editFrom from '@/components/from/from';
+import request from '@/libs/request';
 export default {
-  name: "list",
+  name: 'list',
   components: { formCreate: formCreate.$form(), editFrom },
   data() {
     return {
@@ -170,45 +148,45 @@ export default {
       total: 0,
       columns1: [
         {
-          title: "ID",
-          key: "id",
+          title: 'ID',
+          key: 'id',
           width: 80,
         },
         {
-          title: "配置名称",
-          key: "info",
+          title: '配置名称',
+          key: 'info',
           minWidth: 130,
         },
         {
-          title: "字段变量",
-          key: "menu_name",
+          title: '字段变量',
+          key: 'menu_name',
           minWidth: 140,
         },
         {
-          title: "字段类型",
-          key: "type",
+          title: '字段类型',
+          key: 'type',
           minWidth: 90,
         },
         {
-          title: "值",
-          slot: "values",
+          title: '值',
+          slot: 'values',
           minWidth: 230,
         },
         {
-          title: "是否显示",
-          slot: "statuss",
+          title: '是否显示',
+          slot: 'statuss',
           minWidth: 90,
         },
         {
-          title: "操作",
-          slot: "action",
-          fixed: "right",
+          title: '操作',
+          slot: 'action',
+          fixed: 'right',
           minWidth: 120,
         },
       ],
       FromData: null,
       FromRequestData: {},
-      modalTitleSs: "",
+      modalTitleSs: '',
       classList: [],
       num: 0,
       typeFrom: {
@@ -296,7 +274,7 @@ export default {
     // 跳转到配置分类页面
     goIndex() {
       this.$router.push({
-        path: "/admin/system/config/system_config_tab/index",
+        path: '/admin/system/config/system_config_tab/index',
       });
     },
     // 添加配置
@@ -330,8 +308,8 @@ export default {
         title: tit,
         num: num,
         url: `/setting/config/${row.id}`,
-        method: "DELETE",
-        ids: "",
+        method: 'DELETE',
+        ids: '',
       };
       this.$modalSure(delfromData)
         .then((res) => {

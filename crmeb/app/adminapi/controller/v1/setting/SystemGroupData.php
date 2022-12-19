@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2021 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -46,7 +46,7 @@ class SystemGroupData extends AuthController
             ['gid', 0],
             ['config_name', '']
         ], true);
-        if (!$gid && !$config_name) return $this->fail('参数错误');
+        if (!$gid && !$config_name) return app('json')->fail(100100);
         if (!$gid) {
             $gid = $services->value(['config_name' => $config_name], 'id');
         }
@@ -65,7 +65,7 @@ class SystemGroupData extends AuthController
             ['status', ''],
             ['config_name', '']
         ]);
-        if (!$where['gid'] && !$where['config_name']) return app('json')->fail('参数错误');
+        if (!$where['gid'] && !$where['config_name']) return app('json')->fail(100100);
         if (!$where['gid']) {
             $where['gid'] = $group->value(['config_name' => $where['config_name']], 'id');
         }
@@ -82,10 +82,10 @@ class SystemGroupData extends AuthController
     {
         $gid = $this->request->param('gid/d');
         if ($this->services->isGroupGidSave($gid, 4, 'index_categy_images')) {
-            return app('json')->fail('不能大于四个！');
+            return app('json')->fail(400298);
         }
         if ($this->services->isGroupGidSave($gid, 7, 'sign_day_num')) {
-            return app('json')->fail('签到天数配置不能大于7天');
+            return app('json')->fail(400299);
         }
         return app('json')->success($this->services->createForm($gid));
     }
@@ -105,11 +105,11 @@ class SystemGroupData extends AuthController
             foreach ($groupDatas as $groupData) {
                 $groupData = json_decode($groupData, true);
                 if (isset($groupData['order_status']['value']) && $groupData['order_status']['value'] == $params['order_status']) {
-                    return app('json')->fail('已存在请不要重复添加');
+                    return app('json')->fail(400188);
                 }
             }
         }
-        $this->checkSeckillTime($services, $gid, $params);
+        $this->services->checkSeckillTime($services, $gid, $params);
         $this->checkSign($services, $gid, $params);
         $fields = json_decode($group['fields'], true) ?? [];
         $value = [];
@@ -117,7 +117,7 @@ class SystemGroupData extends AuthController
             foreach ($fields as $index => $field) {
                 if ($key == $field["title"]) {
                     if ($param == "")
-                        return app('json')->fail($field["name"] . "不能为空！");
+                        return app('json')->fail(400297);
                     else {
                         $value[$key]["type"] = $field["type"];
                         $value[$key]["value"] = $param;
@@ -134,7 +134,7 @@ class SystemGroupData extends AuthController
         ];
         $this->services->save($data);
         \crmeb\services\CacheService::clear();
-        return app('json')->success('添加数据成功!');
+        return app('json')->success(400189);
     }
 
     /**
@@ -158,7 +158,7 @@ class SystemGroupData extends AuthController
     {
         $gid = $this->request->param('gid/d');
         if (!$gid) {
-            return app('json')->fail('缺少参数');
+            return app('json')->fail(100100);
         }
         return app('json')->success($this->services->updateForm((int)$gid, (int)$id));
     }
@@ -175,14 +175,14 @@ class SystemGroupData extends AuthController
         $groupData = $this->services->get($id);
         $fields = $services->getValueFields((int)$groupData["gid"]);
         $params = request()->post();
-        $this->checkSeckillTime($services, $groupData["gid"], $params, $id);
+        $this->services->checkSeckillTime($services, $groupData["gid"], $params, $id);
         $this->checkSign($services, $groupData["gid"], $params);
         $value = [];
         foreach ($params as $key => $param) {
             foreach ($fields as $index => $field) {
                 if ($key == $field["title"]) {
                     if ($param == '')
-                        return app('json')->fail($field["name"] . "不能为空！");
+                        return app('json')->fail(400297);
                     else {
                         $value[$key]["type"] = $field["type"];
                         $value[$key]["value"] = $param;
@@ -197,7 +197,7 @@ class SystemGroupData extends AuthController
         ];
         $this->services->update($id, $data);
         \crmeb\services\CacheService::clear();
-        return app('json')->success('修改成功!');
+        return app('json')->success(100001);
     }
 
     /**
@@ -209,10 +209,10 @@ class SystemGroupData extends AuthController
     public function delete($id)
     {
         if (!$this->services->delete($id))
-            return app('json')->fail('删除失败,请稍候再试!');
+            return app('json')->fail(100008);
         else {
             \crmeb\services\CacheService::clear();
-            return app('json')->success('删除成功!');
+            return app('json')->success(100002);
         }
     }
 
@@ -224,54 +224,13 @@ class SystemGroupData extends AuthController
      */
     public function set_status($id, $status)
     {
-        if ($status == '' || $id == 0) return app('json')->fail('参数错误');
+        if ($status == '' || $id == 0) return app('json')->fail(100100);
         $this->services->update($id, ['status' => $status]);
         \crmeb\services\CacheService::clear();
-        return app('json')->success($status == 0 ? '隐藏成功' : '显示成功');
+        return app('json')->success(100014);
     }
 
-    /**
-     * 检查秒杀时间段
-     * @param SystemGroupServices $services
-     * @param $gid
-     * @param $params
-     * @param int $id
-     * @return mixed
-     */
-    public function checkSeckillTime(SystemGroupServices $services, $gid, $params, $id = 0)
-    {
-        $name = $services->value(['id' => $gid], 'config_name');
-        if ($name == 'routine_seckill_time') {
-            if ($params['time'] == '') {
-                throw new AdminException('请输入开始时间');
-            }
-            if (!$params['continued']) {
-                throw new AdminException('请输入持续时间');
-            }
-            if (!preg_match('/^(\d|1\d|2[0-3])$/', $params['time'])) {
-                throw new AdminException('请输入0-23点之前的整点数');
-            }
-            if (!preg_match('/^([1-9]|1\d|2[0-4])$/', $params['continued'])) {
-                throw new AdminException('请输入1-24点之前的持续时间');
-            }
-            if (($params['time'] + $params['continued']) > 24) throw new AdminException('开始时间+持续时间不能大于24小时');
-            $list = $this->services->getColumn(['gid' => $gid], 'value', 'id');
-            if ($id) unset($list[$id]);
-            $times = $time = [];
-            foreach ($list as $item) {
-                $info = json_decode($item, true);
-                for ($i = 0; $i < $info['continued']['value']; $i++) {
-                    $times[] = $info['time']['value'] + $i;
-                }
-            }
-            for ($i = 0; $i < $params['continued']; $i++) {
-                $time[] = $params['time'] + $i;
-            }
-            foreach ($time as $v) {
-                if (in_array($v, $times)) throw new AdminException('时段已占用');
-            }
-        }
-    }
+
 
     /**
      * 检查签到配置
@@ -286,10 +245,10 @@ class SystemGroupData extends AuthController
         $name = $services->value(['id' => $gid], 'config_name');
         if ($name == 'sign_day_num') {
             if (!$params['sign_num']) {
-                throw new AdminException('请输入签到赠送积分');
+                throw new AdminException(400196);
             }
             if (!preg_match('/^\+?[1-9]\d*$/', $params['sign_num'])) {
-                throw new AdminException('请输入大于等于0的整数');
+                throw new AdminException(400197);
             }
         }
     }
@@ -316,17 +275,17 @@ class SystemGroupData extends AuthController
         /** @var CacheServices $cache */
         $cache = app()->make(CacheServices::class);
         $cache->setDbCache('kf_adv', $content);
-        return app('json')->success('设置成功');
+        return app('json')->success(100014);
     }
 
     public function saveAll()
     {
         $params = request()->post();
         if (!isset($params['config_name']) || !isset($params['data'])) {
-            return app('json')->fail('缺少参数');
+            return app('json')->fail(100100);
         }
         $this->services->saveAllData($params['data'], $params['config_name']);
-        return app('json')->success('添加数据成功!');
+        return app('json')->success(400295);
     }
 
 
@@ -352,6 +311,6 @@ class SystemGroupData extends AuthController
         /** @var CacheServices $cache */
         $cache = app()->make(CacheServices::class);
         $cache->setDbCache('user_agreement', $content);
-        return app('json')->success('设置成功');
+        return app('json')->success(100014);
     }
 }

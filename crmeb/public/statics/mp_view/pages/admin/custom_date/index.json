@@ -1,6 +1,6 @@
 {
   "navigationBarTitleText": "选择日期",
   "usingComponents": {
-    "uni-calendar": "/components/uni-calendar/uni-calendar"
+    "uni-calendar": "/pages/admin/components/uni-calendar/uni-calendar"
   }
 }

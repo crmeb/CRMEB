@@ -13,33 +13,31 @@
         <!--<Button size="small" style="margin-left: 10px" v-clipboard:copy="item.example"-->
         <!--v-clipboard:success="onCopy"-->
         <!--v-clipboard:error="onError">复制</Button>-->
-        <span class="copy copy-data" :data-clipboard-text="item.example"
-          >复制</span
-        >
+        <span class="copy copy-data" @click="onCopy(item.example)">复制</span>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import ClipboardJS from "clipboard";
-import { getUrl } from "@/api/diy";
+import ClipboardJS from 'clipboard';
+import { getUrl } from '@/api/diy';
 export default {
-  name: "links",
+  name: 'links',
   data() {
     return {
       list: [
         {
-          name: "商城首页",
-          url: "/pages/users/order_list/index",
+          name: '商城首页',
+          url: '/pages/goods/order_list/index',
           parameter: [{}],
-          example: "/pages/activity/bargain/index",
+          example: '/pages/activity/bargain/index',
         },
         {
-          name: "商城首页",
-          url: "/pages/users/order_list/index",
+          name: '商城首页',
+          url: '/pages/goods/order_list/index',
           parameter: [{}],
-          example: "/pages/activity/bargain/index",
+          example: '/pages/activity/bargain/index',
         },
       ],
       clipboard: undefined,
@@ -52,9 +50,9 @@ export default {
   },
   mounted: function () {
     this.$nextTick(function () {
-      this.clipboard = new ClipboardJS(".copy-data");
-      this.clipboard.on("success", () => {
-        this.$Message.success("复制成功");
+      this.clipboard = new ClipboardJS('.copy-data');
+      this.clipboard.on('success', () => {
+        this.$Message.success('复制成功');
       });
     });
   },
@@ -63,9 +61,15 @@ export default {
     this.clipboard.destroy();
   },
   methods: {
-    // onCopy () {
-    //     this.$Message.success('复制成功');
-    // },
+    onCopy(copyData) {
+      this.$copyText(copyData)
+        .then((message) => {
+          this.$Message.success('复制成功');
+        })
+        .catch((err) => {
+          this.$Message.error('复制失败');
+        });
+    },
     // onError () {
     //     this.$Message.error('复制成功');
     // }

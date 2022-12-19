@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -16,8 +16,8 @@ use app\services\BaseServices;
 use app\dao\user\UserLevelDao;
 use app\services\system\SystemUserLevelServices;
 use crmeb\exceptions\AdminException;
+use crmeb\exceptions\ApiException;
 use crmeb\services\FormBuilder as Form;
-use think\exception\ValidateException;
 use think\facade\Route as Url;
 
 /**
@@ -77,7 +77,7 @@ class UserLevelServices extends BaseServices
             $re = $this->dao->update($uids, ['is_del' => 1, 'status' => 0], 'uid');
         }
         if (!$re)
-            throw new AdminException('修改用户等级信息失败');
+            throw new AdminException(400671);
         $where[] = ['category', 'IN', ['exp']];
         /** @var UserBillServices $userbillServices */
         $userbillServices = app()->make(UserBillServices::class);
@@ -124,7 +124,7 @@ class UserLevelServices extends BaseServices
         if (!$vipinfo) {
             $vipinfo = $systemLevelServices->getLevel($level_id);
             if (!$vipinfo) {
-                throw new AdminException('用户等级不存在');
+                throw new AdminException(400672);
             }
         }
         /** @var  $user */
@@ -140,7 +140,7 @@ class UserLevelServices extends BaseServices
             $data['status'] = 1;
             $data['is_del'] = 0;
             if (!$this->dao->update(['id' => $uservipinfo['id']], $data))
-                throw new AdminException('修改用户等级信息失败');
+                throw new AdminException(400671);
         } else {
             $data = array_merge($data, [
                 'is_forever' => $vipinfo->is_forever,
@@ -152,7 +152,7 @@ class UserLevelServices extends BaseServices
                 'discount' => $vipinfo->discount,
             ]);
             $data['valid_time'] = 0;
-            if (!$this->dao->save($data)) throw new AdminException('写入用户等级信息失败');
+            if (!$this->dao->save($data)) throw new AdminException(100006);
         }
         if ($level_id > $userinfo['level']) {
             $change_exp = $vipinfo['exp_num'] - $userinfo['exp'];
@@ -179,8 +179,8 @@ class UserLevelServices extends BaseServices
         $bill_data['add_time'] = time();
         /** @var UserBillServices $userBillService */
         $userBillService = app()->make(UserBillServices::class);
-        if (!$userBillService->save($bill_data)) throw new AdminException('增加记录失败');
-        if (!$user->update(['uid' => $uid], ['level' => $level_id, 'exp' => $vipinfo['exp_num']])) throw new AdminException('修改用户用户等级失败');
+        if (!$userBillService->save($bill_data)) throw new AdminException(100006);
+        if (!$user->update(['uid' => $uid], ['level' => $level_id, 'exp' => $vipinfo['exp_num']])) throw new AdminException(100007);
         return true;
     }
 
@@ -210,7 +210,7 @@ class UserLevelServices extends BaseServices
             $vipinfo->image = set_file_url($vipinfo->image);
             $vipinfo->icon = set_file_url($vipinfo->icon);
             if (!$vipinfo) {
-                throw new AdminException('数据不存在');
+                throw new AdminException(100026);
             }
             $field[] = Form::hidden('id', $id);
             $msg = '编辑用户等级';
@@ -220,7 +220,7 @@ class UserLevelServices extends BaseServices
         $field[] = Form::input('name', '等级名称', isset($vipinfo) ? $vipinfo->name : '')->col(24)->required();
 //        $field[] = Form::number('valid_date', '有效时间(天)', isset($vipinfo) ? $vipinfo->valid_date : 0)->min(0)->col(12);
         $field[] = Form::number('grade', '等级', isset($vipinfo) ? $vipinfo->grade : 0)->min(0)->precision(0)->col(8)->required();
-        $field[] = Form::number('discount', '享受折扣', isset($vipinfo) ? $vipinfo->discount : 100)->min(0)->col(8)->placeholder('输入折扣数100，代表原价，90代表9折')->required();
+        $field[] = Form::number('discount', '享受折扣', isset($vipinfo) ? $vipinfo->discount : 100)->min(0)->max(100)->col(8)->placeholder('输入折扣数100，代表原价，90代表9折')->required();
         $field[] = Form::number('exp_num', '解锁需经验值达到', isset($vipinfo) ? $vipinfo->exp_num : 0)->min(0)->precision(0)->col(8)->required();
         $field[] = Form::frameImage('icon', '图标', Url::buildUrl('admin/widget.images/index', array('fodder' => 'icon')), isset($vipinfo) ? $vipinfo->icon : '')->icon('ios-add')->width('950px')->height('505px')->modal(['footer-hide' => true]);
         $field[] = Form::frameImage('image', '用户等级背景', Url::buildUrl('admin/widget.images/index', array('fodder' => 'image')), isset($vipinfo) ? $vipinfo->image : '')->icon('ios-add')->width('950px')->height('505px')->modal(['footer-hide' => true]);
@@ -244,34 +244,34 @@ class UserLevelServices extends BaseServices
         $levelPre = $systemUserLevel->getPreLevel($data['grade']);
         $levelNext = $systemUserLevel->getNextLevel($data['grade']);
         if ($levelPre && $data['exp_num'] <= $levelPre['exp_num']) {
-            throw new AdminException('用户等级经验必须大于上一等级设置的经验');
+            throw new AdminException(400673);
         }
         if ($levelNext && $data['exp_num'] >= $levelNext['exp_num']) {
-            throw new AdminException('用户等级经验必须小于下一等级设置的经验');
+            throw new AdminException(400674);
         }
         //修改
         if ($id) {
             if (($levelOne && $levelOne['id'] != $id) || ($levelThree && $levelThree['id'] != $id)) {
-                throw new AdminException('已检测到您设置过的用户等级，此等级不可重复');
+                throw new AdminException(400675);
             }
             if ($levelTwo && $levelTwo['id'] != $id) {
-                throw new AdminException('已检测到您设置过该用户等级经验值，经验值不可重复');
+                throw new AdminException(400676);
             }
             if (!$systemUserLevel->update($id, $data)) {
-                throw new AdminException('修改失败');
+                throw new AdminException(100007);
             }
             return '修改成功';
         } else {
             if ($levelOne || $levelThree) {
-                throw new AdminException('已检测到您设置过的用户等级，此等级不可重复');
+                throw new AdminException(400675);
             }
             if ($levelTwo) {
-                throw new AdminException('已检测到您设置过该用户等级经验值，经验值不可重复');
+                throw new AdminException(400676);
             }
             //新增
             $data['add_time'] = time();
             if (!$systemUserLevel->save($data)) {
-                throw new AdminException('添加失败');
+                throw new AdminException(100022);
             }
             return '添加成功';
         }
@@ -289,7 +289,7 @@ class UserLevelServices extends BaseServices
         $level = $systemUserLevel->getWhereLevel(['id' => $id]);
         if ($level && $level['is_del'] != 1) {
             if (!$systemUserLevel->update($id, ['is_del' => 1]))
-                throw new AdminException('删除失败');
+                throw new AdminException(100008);
         }
         return '删除成功';
     }
@@ -305,11 +305,11 @@ class UserLevelServices extends BaseServices
         /** @var SystemUserLevelServices $systemUserLevel */
         $systemUserLevel = app()->make(SystemUserLevelServices::class);
         if (!$systemUserLevel->getWhereLevel(['id' => $id]))
-            throw new AdminException('数据不存在');
+            throw new AdminException(100026);
         if ($systemUserLevel->update($id, ['is_show' => $is_show])) {
-            return $is_show == 1 ? '显示成功' : '隐藏成功';
+            return 100014;
         } else {
-            throw new AdminException($is_show == 1 ? '显示失败' : '隐藏失败');
+            throw new AdminException(100015);
         }
     }
 
@@ -324,11 +324,11 @@ class UserLevelServices extends BaseServices
         /** @var SystemUserLevelServices $systemUserLevel */
         $systemUserLevel = app()->make(SystemUserLevelServices::class);
         if (!$systemUserLevel->getWhereLevel(['id' => $id]))
-            throw new AdminException('数据不存在');
+            throw new AdminException(100026);
         if ($systemUserLevel->update($id, [$data['field'] => $data['value']])) {
             return true;
         } else {
-            throw new AdminException('保存失败');
+            throw new AdminException(100006);
         }
     }
 
@@ -347,7 +347,7 @@ class UserLevelServices extends BaseServices
         $userServices = app()->make(UserServices::class);
         $user = $userServices->getUserInfo($uid);
         if (!$user) {
-            throw new ValidateException('没有此用户，无法检测升级用户等级');
+            throw new ApiException(410284);
         }
         /** @var SystemUserLevelServices $systemUserLevel */
         $systemUserLevel = app()->make(SystemUserLevelServices::class);
@@ -369,7 +369,7 @@ class UserLevelServices extends BaseServices
                 $data['status'] = 1;
                 $data['is_del'] = 0;
                 if (!$this->dao->update($uservip['id'], $data, 'id')) {
-                    throw new ValidateException('检测升级失败');
+                    throw new ApiException(410285);
                 }
             } else {
                 $data = array_merge($data, [
@@ -382,13 +382,13 @@ class UserLevelServices extends BaseServices
                     'discount' => $vipinfo['discount'],
                 ]);
                 if (!$this->dao->save($data)) {
-                    throw new ValidateException('检测升级失败');
+                    throw new ApiException(410285);
                 }
             }
             $data['add_time'] += 1;
         }
         if (!$userServices->update($uid, ['level' => end($userAllLevel)['id']], 'uid')) {
-            throw new ValidateException('检测升级失败');
+            throw new ApiException(410285);
         }
         return true;
     }
@@ -407,7 +407,7 @@ class UserLevelServices extends BaseServices
         $userServices = app()->make(UserServices::class);
         $user = $userServices->getUserInfo($uid);
         if (!$user) {
-            throw new ValidateException('没有此用户，无法检测升级用户等级');
+            throw new ApiException(410284);
         }
         $userLevelInfo = $this->getUerLevelInfoByUid($uid);
         if (empty($userLevelInfo)) {
@@ -436,7 +436,7 @@ class UserLevelServices extends BaseServices
         $userServices = app()->make(UserServices::class);
         $user = $userServices->getUserInfo($uid);
         if (!$user) {
-            throw new ValidateException('没有此用户等级');
+            throw new ApiException(410032);
         }
         $data['user'] = $user;
         /** @var SystemUserLevelServices $systemUserLevel */
@@ -477,7 +477,7 @@ class UserLevelServices extends BaseServices
         $userServices = app()->make(UserServices::class);
         $user = $userServices->getUserInfo($uid);
         if (!$user) {
-            throw new ValidateException('没有此用户');
+            throw new ApiException(410032);
         }
         /** @var UserBillServices $userBill */
         $userBill = app()->make(UserBillServices::class);

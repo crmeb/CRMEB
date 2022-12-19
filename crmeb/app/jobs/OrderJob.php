@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -15,8 +15,9 @@ use app\services\activity\bargain\StoreBargainServices;
 use app\services\activity\combination\StoreCombinationServices;
 use app\services\activity\seckill\StoreSeckillServices;
 use app\services\activity\coupon\StoreCouponUserServices;
-use app\services\message\service\StoreServiceServices;
-use app\services\message\sms\SmsSendServices;
+use app\services\kefu\service\StoreServiceServices;
+use app\services\message\notice\SmsService;
+use app\services\order\OutStoreOrderServices;
 use app\services\order\StoreOrderCartInfoServices;
 use app\services\order\StoreOrderEconomizeServices;
 use app\services\order\StoreOrderServices;
@@ -27,7 +28,7 @@ use app\services\user\UserLevelServices;
 use app\services\user\UserServices;
 use app\services\wechat\WechatUserServices;
 use crmeb\basic\BaseJobs;
-use crmeb\services\WechatService;
+use crmeb\services\app\WechatService;
 use crmeb\services\workerman\ChannelService;
 use crmeb\traits\QueueTrait;
 use think\exception\ValidateException;
@@ -165,7 +166,6 @@ class OrderJob extends BaseJobs
     }
 
 
-
     /**
      * 订单支付成功后给客服发送客服消息
      * @param $order
@@ -190,12 +190,7 @@ class OrderJob extends BaseJobs
             $bargainServices = app()->make(StoreBargainServices::class);
             /** @var StoreOrderCartInfoServices $cartInfoServices */
             $cartInfoServices = app()->make(StoreOrderCartInfoServices::class);
-            /** @var SmsSendServices $smsServices */
-            $smsServices = app()->make(SmsSendServices::class);
-            $switch = (bool)sys_config('admin_pay_success_switch');
-            foreach ($serviceOrderNotice as $key => $item) {
-                $admin_name = $item['nickname'];
-                $order_id = $order['order_id'];
+            foreach ($serviceOrderNotice as $item) {
                 $userInfo = $wechatUserServices->getOne(['uid' => $item['uid'], 'user_type' => 'wechat']);
                 if ($userInfo) {
                     $userInfo = $userInfo->toArray();
@@ -250,22 +245,12 @@ class OrderJob extends BaseJobs
     }
 
     /**
-     *  支付成功短信提醒
-     * @param string $order_id
-     */
-    public function mssageSendPaySuccess($order)
-    {
-        $switch = (bool)sys_config('lower_order_switch');
-        //模板变量
-        $pay_price = $order['pay_price'];
-        $order_id = $order['order_id'];
-        /** @var SmsSendServices $smsServices */
-        $smsServices = app()->make(SmsSendServices::class);
-        $smsServices->send($switch, $order['user_phone'], compact('order_id', 'pay_price'), 'PAY_SUCCESS_CODE');
-    }
-
-    /**计算节约金额
+     * 计算节约金额
      * @param $order
+     * @return false|mixed
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
      */
     public function setEconomizeMoney($order)
     {
@@ -298,7 +283,7 @@ class OrderJob extends BaseJobs
                 if ($cartInfo) {
                     foreach ($cartInfo as $k => $item) {
                         foreach ($item as $value) {
-                            if ($value['price_type'] == 'member') $memberPrice += bcmul($value['vip_truePrice'], $value['cart_num'] ?: 1, 2);
+                            if (isset($value['price_type']) && $value['price_type'] == 'member') $memberPrice += bcmul($value['vip_truePrice'], $value['cart_num'] ?: 1, 2);
                         }
                     }
                 }

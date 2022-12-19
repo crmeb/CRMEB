@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -10,14 +10,13 @@
 // +----------------------------------------------------------------------
 namespace app\adminapi\controller\v1\agent;
 
-
 use app\adminapi\controller\AuthController;
 use app\services\agent\AgentLevelServices;
 use app\services\agent\AgentLevelTaskServices;
 use think\facade\App;
 
-
 /**
+ * 分销等级控制器
  * Class AgentLevel
  * @package app\controller\admin\v1\agent
  */
@@ -35,9 +34,11 @@ class AgentLevel extends AuthController
     }
 
     /**
-     * 显示资源列表
-     *
-     * @return \think\Response
+     * 后台分销等级列表
+     * @return mixed
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
      */
     public function index()
     {
@@ -49,9 +50,9 @@ class AgentLevel extends AuthController
     }
 
     /**
-     * 显示创建资源表单页.
-     *
-     * @return \think\Response
+     * 添加分销等级表单
+     * @return mixed
+     * @throws \FormBuilder\Exception\FormBuilderException
      */
     public function create()
     {
@@ -59,9 +60,8 @@ class AgentLevel extends AuthController
     }
 
     /**
-     * 保存新建的资源
-     *
-     * @return \think\Response
+     * 保存分销等级
+     * @return mixed
      */
     public function save()
     {
@@ -72,37 +72,35 @@ class AgentLevel extends AuthController
             ['one_brokerage', 0],
             ['two_brokerage', 0],
             ['status', 0]]);
-        if (!$data['name']) return app('json')->fail('请输入等级名称');
-        if (!$data['grade']) return app('json')->fail('请输入等级');
-        if (!$data['image']) return app('json')->fail('请选择等级图标');
+        if (!$data['name']) return app('json')->fail(400200);
+        if (!$data['grade']) return app('json')->fail(400201);
+        if (!$data['image']) return app('json')->fail(400202);
         if ($data['two_brokerage'] > $data['one_brokerage']) {
-            return app('json')->fail('二级返佣比例不能大于一级');
+            return app('json')->fail(400203);
         }
         $grade = $this->services->get(['grade' => $data['grade'], 'is_del' => 0]);
         if ($grade) {
-            return app('json')->fail('当前等级已存在');
+            return app('json')->fail(400204);
         }
         $data['add_time'] = time();
         $this->services->save($data);
-        return app('json')->success('添加等级成功!');
+        return app('json')->success(400205);
     }
 
     /**
      * 显示指定的资源
-     *
-     * @param int $id
-     * @return \think\Response
+     * @param $id
      */
     public function read($id)
     {
-        //
+
     }
 
     /**
-     * 显示编辑资源表单页.
-     *
-     * @param int $id
-     * @return \think\Response
+     * 编辑分销等级表单
+     * @param $id
+     * @return mixed
+     * @throws \FormBuilder\Exception\FormBuilderException
      */
     public function edit($id)
     {
@@ -110,10 +108,12 @@ class AgentLevel extends AuthController
     }
 
     /**
-     * 保存更新的资源
-     *
-     * @param int $id
-     * @return \think\Response
+     * 修改分销等级
+     * @param $id
+     * @return mixed
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
      */
     public function update($id)
     {
@@ -124,16 +124,16 @@ class AgentLevel extends AuthController
             ['one_brokerage', 0],
             ['two_brokerage', 0],
             ['status', 0]]);
-        if (!$data['name']) return app('json')->fail('请输入等级名称');
-        if (!$data['grade']) return app('json')->fail('请输入等级');
-        if (!$data['image']) return app('json')->fail('请选择等级图标');
+        if (!$data['name']) return app('json')->fail(400200);
+        if (!$data['grade']) return app('json')->fail(400201);
+        if (!$data['image']) return app('json')->fail(400202);
         if ($data['two_brokerage'] > $data['one_brokerage']) {
-            return app('json')->fail('二级分拥比例不能大于一级');
+            return app('json')->fail(400203);
         }
-        if (!$levelInfo = $this->services->getLevelInfo((int)$id)) return app('json')->fail('编辑的等级不存在!');
+        if (!$levelInfo = $this->services->getLevelInfo((int)$id)) return app('json')->fail(400206);
         $grade = $this->services->get(['grade' => $data['grade'], 'is_del' => 0]);
         if ($grade && $grade['id'] != $id) {
-            return app('json')->fail('当前等级已存在');
+            return app('json')->fail(400204);
         }
 
         $levelInfo->name = $data['name'];
@@ -143,11 +143,11 @@ class AgentLevel extends AuthController
         $levelInfo->two_brokerage = $data['two_brokerage'];
         $levelInfo->status = $data['status'];
         $levelInfo->save();
-        return app('json')->success('修改成功!');
+        return app('json')->success(100001);
     }
 
     /**
-     * 删除指定资源
+     * 删除分销等级
      * @param $id
      * @return mixed
      * @throws \think\db\exception\DataNotFoundException
@@ -156,17 +156,20 @@ class AgentLevel extends AuthController
      */
     public function delete($id)
     {
-        if (!$id) return app('json')->fail('参数错误，请重新打开');
+        if (!$id) return app('json')->fail(100100);
+        //检查分销等级数据是否存在
         $levelInfo = $this->services->getLevelInfo((int)$id);
         if ($levelInfo) {
+            //更新数据为已删除
             $res = $this->services->update($id, ['is_del' => 1]);
             if (!$res)
-                return app('json')->fail('删除失败,请稍候再试!');
+                return app('json')->fail(100008);
+            //删除该等级的任务为已删除
             /** @var AgentLevelTaskServices $agentLevelTaskServices */
             $agentLevelTaskServices = app()->make(AgentLevelTaskServices::class);
             $agentLevelTaskServices->update(['level_id' => $id], ['is_del' => 1]);
         }
-        return app('json')->success('删除成功!');
+        return app('json')->success(100002);
     }
 
     /**
@@ -177,8 +180,8 @@ class AgentLevel extends AuthController
      */
     public function set_status($id = 0, $status = '')
     {
-        if ($status == '' || $id == 0) return app('json')->fail('参数错误');
+        if ($status == '' || $id == 0) return app('json')->fail(100100);
         $this->services->update($id, ['status' => $status]);
-        return app('json')->success($status == 0 ? '隐藏成功' : '显示成功');
+        return app('json')->success(100014);
     }
 }

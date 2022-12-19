@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -87,8 +87,6 @@ Route::group('order', function () {
     Route::get('invoice_order_info/:id', 'v1.order.StoreOrderInvoice/orderInfo')->name('StoreOrderorInvoiceOrderInfo')->option(['real_name' => '开票订单详情']);
     //配送员列表
     Route::get('delivery/index', 'v1.order.DeliveryService/index')->option(['real_name' => '配送员列表']);
-    //新增配送员选择用户列表
-    Route::get('delivery/create', 'v1.order.DeliveryService/create')->option(['real_name' => '新增配送员选择用户列表']);
     //新增配送表单
     Route::get('delivery/add', 'v1.order.DeliveryService/add')->option(['real_name' => '新增配送表单']);
     //保存新建的数据
@@ -111,7 +109,7 @@ Route::group('order', function () {
 })->middleware([
     \app\http\middleware\AllowOriginMiddleware::class,
     \app\adminapi\middleware\AdminAuthTokenMiddleware::class,
-    \app\adminapi\middleware\AdminCkeckRoleMiddleware::class,
+    \app\adminapi\middleware\AdminCheckRoleMiddleware::class,
     \app\adminapi\middleware\AdminLogMiddleware::class
 ]);
 
@@ -138,6 +136,6 @@ Route::group('refund', function () {
 })->middleware([
     \app\http\middleware\AllowOriginMiddleware::class,
     \app\adminapi\middleware\AdminAuthTokenMiddleware::class,
-    \app\adminapi\middleware\AdminCkeckRoleMiddleware::class,
+    \app\adminapi\middleware\AdminCheckRoleMiddleware::class,
     \app\adminapi\middleware\AdminLogMiddleware::class
 ]);

@@ -1,6 +1,8 @@
 <?php
+//文件签名
+$fileValue = '';
 //最低php版本要求
-define('PHP_EDITION','7.1.0');
+define('PHP_EDITION', '7.1.0');
 //服务环境检测
 if (function_exists('saeAutoLoader') || isset($_SERVER['HTTP_BAE_ENV_APPID']))
     showHtml('对不起，当前环境不支持本系统，请使用独立服务或云主机！');
@@ -142,60 +144,62 @@ switch ($step) {
             'runtime',
         );
         $file = array(
-            '.env'
+            '.env',
+            '.version',
+            '.constant',
         );
         //必须开启函数
-        $disabled = explode(',', ini_get('disable_functions'));
-
-
-        if (function_exists('file_put_contents')) {
-            $file_put_contents = '<span class="correct_span">&radic;</span> 启用';
-        } else {
-            $file_put_contents = '<span class="correct_span error_span">&radic;</span> 禁用';
-            $err++;
-        }
-        if (function_exists('imagettftext')) {
-            $imagettftext = '<span class="correct_span">&radic;</span> 启用';
-        } else {
-            $imagettftext = '<span class="correct_span error_span">&radic;</span> 禁用';
-            $err++;
-        }
-        if (!in_array('proc_open', $disabled)) {
-            $proc_open = '<span class="correct_span">&radic;</span> 启用';
-        } else {
-            $proc_open = '<span class="correct_span error_span">&radic;</span> 禁用';
-            $err++;
-        }
-        if (!in_array('pcntl_signal', $disabled)) {
-            $pcntl_signal = '<span class="correct_span">&radic;</span> 启用';
-        } else {
-            $pcntl_signal = '<span class="correct_span error_span">&radic;</span> 禁用';
-            $err++;
-        }
-        if (!in_array('pcntl_signal_dispatch', $disabled)) {
-            $pcntl_signal_dispatch = '<span class="correct_span">&radic;</span> 启用';
-        } else {
-            $pcntl_signal_dispatch = '<span class="correct_span error_span">&radic;</span> 禁用';
-            $err++;
-        }
-        if (!in_array('pcntl_fork', $disabled)) {
-            $pcntl_fork = '<span class="correct_span">&radic;</span> 启用';
-        } else {
-            $pcntl_fork = '<span class="correct_span error_span">&radic;</span> 禁用';
-            $err++;
-        }
-        if (!in_array('pcntl_wait', $disabled)) {
-            $pcntl_wait = '<span class="correct_span">&radic;</span> 启用';
-        } else {
-            $pcntl_wait = '<span class="correct_span error_span">&radic;</span> 禁用';
-            $err++;
-        }
-        if (!in_array('pcntl_alarm', $disabled)) {
-            $pcntl_alarm = '<span class="correct_span">&radic;</span> 启用';
-        } else {
-            $pcntl_alarm = '<span class="correct_span error_span">&radic;</span> 禁用';
-            $err++;
-        }
+//        $disabled = explode(',', ini_get('disable_functions'));
+//
+//
+//        if (function_exists('file_put_contents')) {
+//            $file_put_contents = '<span class="correct_span">&radic;</span> 启用';
+//        } else {
+//            $file_put_contents = '<span class="correct_span error_span">&radic;</span> 禁用';
+//            $err++;
+//        }
+//        if (function_exists('imagettftext')) {
+//            $imagettftext = '<span class="correct_span">&radic;</span> 启用';
+//        } else {
+//            $imagettftext = '<span class="correct_span error_span">&radic;</span> 禁用';
+//            $err++;
+//        }
+//        if (!in_array('proc_open', $disabled)) {
+//            $proc_open = '<span class="correct_span">&radic;</span> 启用';
+//        } else {
+//            $proc_open = '<span class="correct_span error_span">&radic;</span> 禁用';
+//            $err++;
+//        }
+//        if (!in_array('pcntl_signal', $disabled)) {
+//            $pcntl_signal = '<span class="correct_span">&radic;</span> 启用';
+//        } else {
+//            $pcntl_signal = '<span class="correct_span error_span">&radic;</span> 禁用';
+//            $err++;
+//        }
+//        if (!in_array('pcntl_signal_dispatch', $disabled)) {
+//            $pcntl_signal_dispatch = '<span class="correct_span">&radic;</span> 启用';
+//        } else {
+//            $pcntl_signal_dispatch = '<span class="correct_span error_span">&radic;</span> 禁用';
+//            $err++;
+//        }
+//        if (!in_array('pcntl_fork', $disabled)) {
+//            $pcntl_fork = '<span class="correct_span">&radic;</span> 启用';
+//        } else {
+//            $pcntl_fork = '<span class="correct_span error_span">&radic;</span> 禁用';
+//            $err++;
+//        }
+//        if (!in_array('pcntl_wait', $disabled)) {
+//            $pcntl_wait = '<span class="correct_span">&radic;</span> 启用';
+//        } else {
+//            $pcntl_wait = '<span class="correct_span error_span">&radic;</span> 禁用';
+//            $err++;
+//        }
+//        if (!in_array('pcntl_alarm', $disabled)) {
+//            $pcntl_alarm = '<span class="correct_span">&radic;</span> 启用';
+//        } else {
+//            $pcntl_alarm = '<span class="correct_span error_span">&radic;</span> 禁用';
+//            $err++;
+//        }
         include_once("./templates/step2.php");
         exit();
 
@@ -207,9 +211,9 @@ switch ($step) {
             $conn = @mysqli_connect($dbHost, $_POST['dbUser'], $_POST['dbPwd'], NULL, $_POST['dbport']);
 //            var_dump(mysqli_connect_errno($conn));
             if ($error = mysqli_connect_errno($conn)) {
-                if($error == 2002) {
+                if ($error == 2002) {
                     die(json_encode(2002));//地址或端口错误
-                } else if($error == 1045) {
+                } else if ($error == 1045) {
                     die(json_encode(1045));//用户名或密码错误
                 } else {
                     die(json_encode(-1));//链接失败
@@ -297,7 +301,7 @@ switch ($step) {
             $dbPrefix = empty($_POST['dbprefix']) ? 'eb_' : trim($_POST['dbprefix']);
 
             $username = trim($_POST['manager']);
-            $password = trim($_POST['manager_pwd']) ?:'crmeb.com';
+            $password = trim($_POST['manager_pwd']) ?: 'crmeb.com';
             $email = trim($_POST['manager_email']);
 
             if (!function_exists('mysqli_connect')) {
@@ -340,7 +344,7 @@ switch ($step) {
              */
             $counts = count($sqlFormat);
             for ($i = $n; $i < $counts; $i++) {
-                $sql = trim($sqlFormat[$i]);
+                $sql = str_replace('demo.crmeb.com', $_SERVER['SERVER_NAME'], trim($sqlFormat[$i]));
                 if (strstr($sql, 'CREATE TABLE')) {
                     preg_match('/CREATE TABLE (IF NOT EXISTS)? `eb_([^ ]*)`/is', $sql, $matches);
                     mysqli_query($conn, "DROP TABLE IF EXISTS `$matches[2]");
@@ -373,6 +377,7 @@ switch ($step) {
                 $tables = mysqli_fetch_all($result);//参数MYSQL_ASSOC、MYSQLI_NUM、MYSQLI_BOTH规定产生数组类型
                 $bl_table = array('eb_system_admin'
                 , 'eb_system_role'
+                , 'eb_cache'
                 , 'eb_agent_level'
                 , 'eb_page_link'
                 , 'eb_page_categroy'
@@ -383,6 +388,9 @@ switch ($step) {
                 , 'eb_express'
                 , 'eb_system_group'
                 , 'eb_system_group_data'
+                , 'eb_lang_code'
+                , 'eb_lang_country'
+                , 'eb_lang_type'
                 , 'eb_template_message'
                 , 'eb_shipping_templates'
                 , "eb_shipping_templates_region"
@@ -393,6 +401,7 @@ switch ($step) {
                 , 'eb_agreement'
                 , 'eb_store_service_speechcraft'
                 , 'eb_system_user_level'
+                , 'eb_out_interface'
                 , 'eb_cache');
                 foreach ($bl_table as $k => $v) {
                     $bl_table[$k] = str_replace('eb_', $dbPrefix, $v);
@@ -473,9 +482,11 @@ switch ($step) {
         $host = $_SERVER['HTTP_HOST'];
         $curent_version = getversion();
         $version = trim($curent_version['version']);
+        $platform = trim($curent_version['platform']);
         installlog();
         include_once("./templates/step5.php");
         @touch('../install.lock');
+        generateSignature();
         exit();
 }
 //读取版本号
@@ -668,17 +679,80 @@ function delFile($dir, $file_type = '')
         if (file_exists($dir)) unlink($dir);
     }
 }
+
 //错误提示方法
-function showHtml($str) {
+function showHtml($str)
+{
     echo '
 		<html>
         <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
         </head>
         <body>
-        '.$str.'
+        ' . $str . '
         </body>
         </html>';
     exit;
 }
+
+/**
+ * 计算签名
+ * @param string $path
+ * @throws Exception
+ */
+function getFileSignature(string $path)
+{
+    global $fileValue;
+    if (!is_dir($path)) {
+        $fileValue .= @md5_file($path);
+    } else {
+        if (!$dh = opendir($path)) throw new Exception($path . " File open failed!");
+        while (($file = readdir($dh)) != false) {
+            if ($file == "." || $file == "..") {
+                continue;
+            } else {
+                getFileSignature($path . DIRECTORY_SEPARATOR . $file);
+            }
+        }
+        closedir($dh);
+    }
+}
+
+/**
+ * 写入签名
+ * @return void
+ * @throws Exception
+ */
+function generateSignature()
+{
+    $file = APP_DIR . '.version';
+    if (!$data = @file($file)) {
+        throw new Exception('.version读取失败');
+    }
+    $list = [];
+    if (!empty($data)) {
+        foreach ($data as $datum) {
+            list($name, $value) = explode('=', $datum);
+            $list[$name] = rtrim($value);
+        }
+    }
+
+    if (!isset($list['project_signature'])) {
+        $list['project_signature'] = '';
+    }
+
+    global $fileValue;
+    getFileSignature(APP_DIR . DIRECTORY_SEPARATOR . 'app');
+    getFileSignature(APP_DIR . DIRECTORY_SEPARATOR . 'crmeb');
+
+    $list['project_signature'] = md5($fileValue);
+
+    $str = "";
+    foreach ($list as $key => $item) {
+        $str .= "{$key}={$item}\n";
+    }
+
+    file_put_contents($file, $str);
+}
+
 ?>

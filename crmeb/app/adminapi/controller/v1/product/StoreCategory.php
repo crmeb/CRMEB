@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -85,9 +85,9 @@ class StoreCategory extends AuthController
      */
     public function set_show($is_show = '', $id = '')
     {
-        if ($is_show == '' || $id == '') return app('json')->fail('缺少参数');
+        if ($is_show == '' || $id == '') return app('json')->fail(100100);
         $this->service->setShow($id, $is_show);
-        return app('json')->success($is_show == 1 ? '显示成功' : '隐藏成功');
+        return app('json')->success($is_show == 1 ? 100003 : 100004);
     }
 
     /**
@@ -114,11 +114,8 @@ class StoreCategory extends AuthController
             ['sort', 0],
             ['is_show', 0]
         ]);
-        if (!$data['cate_name']) {
-            return app('json')->fail('请输入分类名称');
-        }
         $this->service->createData($data);
-        return app('json')->success('添加分类成功!');
+        return app('json')->success(100000);
     }
 
     /**
@@ -147,11 +144,9 @@ class StoreCategory extends AuthController
             ['sort', 0],
             ['is_show', 0]
         ]);
-        if (!$data['cate_name']) {
-            return app('json')->fail('请输入分类名称');
-        }
+
         $this->service->editData($id, $data);
-        return app('json')->success('修改成功!');
+        return app('json')->success(100001);
     }
 
     /**
@@ -162,6 +157,6 @@ class StoreCategory extends AuthController
     public function delete($id)
     {
         $this->service->del((int)$id);
-        return app('json')->success('删除成功!');
+        return app('json')->success(100002);
     }
 }

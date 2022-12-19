@@ -1,19 +1,8 @@
 <template>
   <div>
-    <Form
-      ref="formItem"
-      :model="formItem"
-      :label-width="100"
-      @submit.native.prevent
-    >
+    <Form ref="formItem" :model="formItem" :label-width="100" @submit.native.prevent>
       <FormItem label="编号：" v-if="formItem.uid">
-        <Input
-          class="form-sty"
-          disabled
-          v-model="formItem.uid"
-          placeholder="请输入编号"
-          style="width: 80%"
-        ></Input>
+        <Input class="form-sty" disabled v-model="formItem.uid" placeholder="请输入编号" style="width: 80%"></Input>
       </FormItem>
       <FormItem label="真实姓名：">
         <Input
@@ -24,12 +13,7 @@
         ></Input>
       </FormItem>
       <FormItem label="手机号码：">
-        <Input
-          class="form-sty"
-          v-model="formItem.phone"
-          placeholder="请输入手机号码"
-          style="width: 80%"
-        ></Input>
+        <Input class="form-sty" v-model="formItem.phone" placeholder="请输入手机号码" style="width: 80%"></Input>
       </FormItem>
       <FormItem label="生日：">
         <DatePicker
@@ -43,28 +27,13 @@
         ></DatePicker>
       </FormItem>
       <FormItem label="身份证号：">
-        <Input
-          class="form-sty"
-          v-model.trim="formItem.card_id"
-          placeholder="请输入身份证号"
-          style="width: 80%"
-        ></Input>
+        <Input class="form-sty" v-model.trim="formItem.card_id" placeholder="请输入身份证号" style="width: 80%"></Input>
       </FormItem>
       <FormItem label="用户地址：">
-        <Input
-          class="form-sty"
-          v-model="formItem.addres"
-          placeholder="请输入用户地址"
-          style="width: 80%"
-        ></Input>
+        <Input class="form-sty" v-model="formItem.addres" placeholder="请输入用户地址" style="width: 80%"></Input>
       </FormItem>
       <FormItem label="用户备注：">
-        <Input
-          class="form-sty"
-          v-model="formItem.mark"
-          placeholder="请输入用户备注"
-          style="width: 80%"
-        ></Input>
+        <Input class="form-sty" v-model="formItem.mark" placeholder="请输入用户备注" style="width: 80%"></Input>
       </FormItem>
       <FormItem label="登录密码：">
         <Input
@@ -87,22 +56,14 @@
 
       <FormItem label="用户等级：">
         <Select v-model="formItem.level" class="form-sty">
-          <Option
-            v-for="(item, index) in infoData.levelInfo"
-            :key="index"
-            :value="item.id"
-            >{{ item.name }}</Option
-          >
+          <Option v-for="(item, index) in infoData.levelInfo" :key="index" :value="item.id">{{ item.name }}</Option>
         </Select>
       </FormItem>
       <FormItem label="用户分组：">
         <Select v-model="formItem.group_id" class="form-sty">
-          <Option
-            v-for="(item, index) in infoData.groupInfo"
-            :key="index"
-            :value="item.id"
-            >{{ item.group_name }}</Option
-          >
+          <Option v-for="(item, index) in infoData.groupInfo" :key="index" :value="item.id">{{
+            item.group_name
+          }}</Option>
         </Select>
       </FormItem>
       <FormItem label="用户标签：">
@@ -115,19 +76,12 @@
           >
         </Select> -->
         <div style="display: flex">
-          <div
-            class="labelInput acea-row row-between-wrapper"
-            @click="openLabel"
-          >
+          <div class="labelInput acea-row row-between-wrapper" @click="openLabel">
             <div style="width: 90%">
               <div v-if="dataLabel.length">
-                <Tag
-                  closable
-                  v-for="(item, index) in dataLabel"
-                  :key="index"
-                  @on-close="closeLabel(item)"
-                  >{{ item.label_name }}</Tag
-                >
+                <Tag closable v-for="(item, index) in dataLabel" :key="index" @on-close="closeLabel(item)">{{
+                  item.label_name
+                }}</Tag>
               </div>
               <span class="span" v-else>选择用户关联标签</span>
             </div>
@@ -141,9 +95,7 @@
           <Radio :label="1">启用</Radio>
           <Radio :label="0">禁用</Radio>
         </RadioGroup>
-        <div class="tip">
-          禁用用户的推广资格后，在任何分销模式下该用户都无分销权限
-        </div>
+        <div class="tip">禁用用户的推广资格后，在任何分销模式下该用户都无分销权限</div>
       </FormItem>
       <FormItem label="推广权限：">
         <RadioGroup v-model="formItem.is_promoter" class="form-sty">
@@ -160,14 +112,7 @@
       </FormItem>
     </Form>
 
-    <Modal
-      v-model="labelShow"
-      scrollable
-      title="请选择用户标签"
-      :closable="false"
-      width="500"
-      :footer-hide="true"
-    >
+    <Modal v-model="labelShow" scrollable title="请选择用户标签" :closable="false" width="500" :footer-hide="true">
       <userLabel
         v-if="labelShow"
         :only_get="true"
@@ -180,11 +125,11 @@
 </template>
 
 <script>
-import userLabel from "@/components/userLabel";
+import userLabel from '@/components/userLabel';
 
-import { userLabelAddApi } from "@/api/user";
+import { userLabelAddApi } from '@/api/user';
 export default {
-  name: "userEdit",
+  name: 'userEdit',
   components: { userLabel },
   props: {
     // modals: {
@@ -206,16 +151,16 @@ export default {
       splitSwitch: true,
       formItem: {
         uid: 0,
-        real_name: "",
-        phone: "",
-        birthday: "",
-        card_id: "",
-        addres: "",
-        mark: "",
-        pwd: "",
-        true_pwd: "",
-        level: "",
-        group_id: "",
+        real_name: '',
+        phone: '',
+        birthday: '',
+        card_id: '',
+        addres: '',
+        mark: '',
+        pwd: '',
+        true_pwd: '',
+        level: '',
+        group_id: '',
         label_id: [],
         spread_open: 0,
         is_promoter: 0,
@@ -239,16 +184,15 @@ export default {
     };
   },
   mounted() {
-    console.log(this.userData, "1111111111");
-    this.$set(this.infoData, "groupInfo", this.userData.groupInfo);
-    this.$set(this.infoData, "levelInfo", this.userData.levelInfo);
-    this.$set(this.infoData, "labelInfo", this.userData.labelInfo);
+    this.$set(this.infoData, 'groupInfo', this.userData.groupInfo);
+    this.$set(this.infoData, 'levelInfo', this.userData.levelInfo);
+    this.$set(this.infoData, 'labelInfo', this.userData.labelInfo);
     let arr = Object.keys(this.formItem);
     if (this.userData.userInfo.uid) {
       arr.map((i) => {
         this.formItem[i] = this.userData.userInfo[i];
       });
-      if (!this.formItem.birthday) this.formItem.birthday = "";
+      if (!this.formItem.birthday) this.formItem.birthday = '';
       if (this.formItem.label_id.length) {
         this.dataLabel = this.formItem.label_id;
       }
@@ -261,9 +205,7 @@ export default {
       this.$modalForm(userLabelAddApi(0)).then(() => {});
     },
     closeLabel(label) {
-      let index = this.dataLabel.indexOf(
-        this.dataLabel.filter((d) => d.id == label.id)[0]
-      );
+      let index = this.dataLabel.indexOf(this.dataLabel.filter((d) => d.id == label.id)[0]);
       this.dataLabel.splice(index, 1);
     },
     changeModal(status) {
@@ -274,9 +216,7 @@ export default {
     },
     openLabel(row) {
       this.labelShow = true;
-      this.$refs.userLabel.userLabel(
-        JSON.parse(JSON.stringify(this.infoData.labelInfo))
-      );
+      this.$refs.userLabel.userLabel(JSON.parse(JSON.stringify(this.infoData.labelInfo)));
     },
     cancel() {},
     activeData(dataLabel) {
@@ -288,24 +228,22 @@ export default {
       this.labelShow = false;
     },
     closeLabel(label) {
-      let index = this.dataLabel.indexOf(
-        this.dataLabel.filter((d) => d.id == label.id)[0]
-      );
+      let index = this.dataLabel.indexOf(this.dataLabel.filter((d) => d.id == label.id)[0]);
       this.dataLabel.splice(index, 1);
     },
     reset() {
       this.formItem = {
         uid: 0,
-        real_name: "",
-        phone: "",
-        birthday: "",
-        card_id: "",
-        addres: "",
-        mark: "",
-        pwd: "",
-        true_pwd: "",
-        level: "",
-        group_id: "",
+        real_name: '',
+        phone: '',
+        birthday: '',
+        card_id: '',
+        addres: '',
+        mark: '',
+        pwd: '',
+        true_pwd: '',
+        level: '',
+        group_id: '',
         label_id: [],
         spread_open: 0,
         is_promoter: 0,

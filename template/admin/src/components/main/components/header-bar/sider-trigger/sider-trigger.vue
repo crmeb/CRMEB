@@ -1,22 +1,16 @@
 <template>
-  <a
-    @click="handleChange"
-    type="text"
-    :class="['sider-trigger-a', collapsed ? 'collapsed' : '']"
-    ><i
-      class="iconfont"
-      :class="collapsed ? 'iconcaidanzhankai' : 'iconcaidanshouqi'"
-    ></i
+  <a @click="handleChange" type="text" :class="['sider-trigger-a', collapsed ? 'collapsed' : '']"
+    ><i class="iconfont" :class="collapsed ? 'iconcaidanzhankai' : 'iconcaidanshouqi'"></i
   ></a>
 </template>
 <script>
 export default {
-  name: "siderTrigger",
+  name: 'siderTrigger',
   props: {
     collapsed: Boolean,
     icon: {
       type: String,
-      default: "navicon-round",
+      default: 'navicon-round',
     },
     size: {
       type: Number,
@@ -25,13 +19,13 @@ export default {
   },
   methods: {
     handleChange() {
-      this.$emit("on-change", !this.collapsed);
+      this.$emit('on-change', !this.collapsed);
     },
   },
 };
 </script>
 <style lang="less" scoped>
-@import "./sider-trigger.less";
+@import './sider-trigger.less';
 .sider-trigger-a {
   padding: 14px 6px;
   margin-left: 10px;

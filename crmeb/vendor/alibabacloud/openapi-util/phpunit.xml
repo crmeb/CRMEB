@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit bootstrap="./tests/bootstrap.php" colors="true" processIsolation="false" stopOnFailure="false"
+         convertErrorsToExceptions="true" convertNoticesToExceptions="true" convertWarningsToExceptions="true"
+         testSuiteLoaderFile="phpunit/src/Runner/StandardTestSuiteLoader.php">
+
+    <testsuites>
+        <testsuite name="All">
+            <directory>tests</directory>
+        </testsuite>
+        <testsuite name="Unit">
+            <directory suffix="Test.php">./tests/Unit</directory>
+        </testsuite>
+    </testsuites>
+
+    <groups>
+        <exclude>
+            <group>integration</group>
+        </exclude>
+    </groups>
+
+    <logging>
+        <log type="coverage-html" target="cache/coverage" lowUpperBound="35" highLowerBound="70"/>
+        <log type="coverage-clover" target="cache/coverage.clover"/>
+    </logging>
+
+    <filter>
+        <whitelist processUncoveredFilesFromWhitelist="true">
+            <directory suffix=".php">./src</directory>
+        </whitelist>
+    </filter>
+</phpunit>

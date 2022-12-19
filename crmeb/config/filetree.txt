@@ -1,0 +1,26 @@
+.
+├── app.php //
+├── cache.php //缓存配置
+├── captcha.php //验证码配置
+├── console.php //命令行配置
+├── cookie.php //cookie配置
+├── database.php //数据库配置
+├── filesystem.php //系统文件目录配置
+├── lang.php //多语言配置
+├── log.php //日志配置
+├── pay.php //支付配置
+├── plat.php //对接平台配置
+├── printer.php //小票打印机配置
+├── qrcode.php //二维码配置
+├── queue.php //队列配置
+├── route.php //路由配置
+├── session.php //session配置
+├── sms.php //短信发送配置
+├── template.php //微信模版消息配置
+├── trace.php //调试配置
+├── upload.php //上传配置
+├── view.php //模版配置
+├── workerman.php //workerman配置
+└── filetree.txt //目录文件说明
+
+0 directories, 23 files

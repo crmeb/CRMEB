@@ -1,21 +1,9 @@
 <template>
   <div>
-    <div class="i-layout-page-header">
-      <div class="i-layout-page-header">
-        <span class="ivu-page-header-title">用户管理</span>
-        <div>
-          <Tabs @on-click="onClickTab">
-            <TabPane
-              :label="item.name"
-              :name="item.type"
-              v-for="(item, index) in headeNum"
-              :key="index"
-            />
-          </Tabs>
-        </div>
-      </div>
-    </div>
     <Card :bordered="false" dis-hover class="ivu-mt listbox">
+      <Tabs @on-click="onClickTab" class="mb20">
+        <TabPane :label="item.name" :name="item.type" v-for="(item, index) in headeNum" :key="index" />
+      </Tabs>
       <Form
         ref="userFrom"
         :model="userFrom"
@@ -28,17 +16,8 @@
             <Col span="24">
               <Col v-bind="grid">
                 <FormItem label="用户搜索：" label-for="nickname">
-                  <Input
-                    v-model="userFrom.nickname"
-                    placeholder="请输入用户"
-                    element-id="nickname"
-                    clearable
-                  >
-                    <Select
-                      v-model="field_key"
-                      slot="prepend"
-                      style="width: 80px"
-                    >
+                  <Input v-model="userFrom.nickname" placeholder="请输入用户" element-id="nickname" clearable>
+                    <Select v-model="field_key" slot="prepend" style="width: 80px">
                       <Option value="all">全部</Option>
                       <Option value="uid">UID</Option>
                       <Option value="phone">手机号</Option>
@@ -53,46 +32,25 @@
             <Col span="18">
               <Col v-bind="grid">
                 <FormItem label="用户等级：" label-for="level">
-                  <Select
-                    v-model="level"
-                    placeholder="请选择用户等级"
-                    element-id="level"
-                    clearable
-                  >
+                  <Select v-model="level" placeholder="请选择用户等级" element-id="level" clearable>
                     <Option value="all">全部</Option>
-                    <Option
-                      :value="item.id"
-                      v-for="(item, index) in levelList"
-                      :key="index"
-                      >{{ item.name }}</Option
-                    >
+                    <Option :value="item.id" v-for="(item, index) in levelList" :key="index">{{ item.name }}</Option>
                   </Select>
                 </FormItem>
               </Col>
               <Col v-bind="grid">
                 <FormItem label="用户分组：" label-for="group_id">
-                  <Select
-                    v-model="group_id"
-                    placeholder="请选择用户分组"
-                    element-id="group_id"
-                    clearable
-                  >
+                  <Select v-model="group_id" placeholder="请选择用户分组" element-id="group_id" clearable>
                     <Option value="all">全部</Option>
-                    <Option
-                      :value="item.id"
-                      v-for="(item, index) in groupList"
-                      :key="index"
-                      >{{ item.group_name }}</Option
-                    >
+                    <Option :value="item.id" v-for="(item, index) in groupList" :key="index">{{
+                      item.group_name
+                    }}</Option>
                   </Select>
                 </FormItem>
               </Col>
               <Col v-bind="grid">
                 <FormItem label="用户标签：" label-for="label_id">
-                  <div
-                    class="labelInput acea-row row-between-wrapper"
-                    @click="openSelectLabel"
-                  >
+                  <div class="labelInput acea-row row-between-wrapper" @click="openSelectLabel">
                     <div style="width: 90%">
                       <div v-if="selectDataLabel.length">
                         <Tag
@@ -152,12 +110,7 @@
               </Col>
               <Col v-bind="grid" v-if="userFrom.country === 'domestic'">
                 <FormItem label="省份：">
-                  <Cascader
-                    :data="addresData"
-                    :value="address"
-                    v-model="address"
-                    @on-change="handleChange"
-                  ></Cascader>
+                  <Cascader :data="addresData" :value="address" v-model="address" @on-change="handleChange"></Cascader>
                 </FormItem>
               </Col>
             </Col>
@@ -199,12 +152,7 @@
             <Col span="18">
               <Col v-bind="grid">
                 <FormItem label="访问情况：" label-for="user_time_type">
-                  <Select
-                    v-model="user_time_type"
-                    placeholder="请选择访问情况"
-                    element-id="user_time_type"
-                    clearable
-                  >
+                  <Select v-model="user_time_type" placeholder="请选择访问情况" element-id="user_time_type" clearable>
                     <Option value="">全部</Option>
                     <Option value="visitno">时间段未访问</Option>
                     <Option value="visit">时间段访问过</Option>
@@ -233,12 +181,7 @@
             <Col span="18">
               <Col v-bind="grid">
                 <FormItem label="下单次数：" label-for="pay_count">
-                  <Select
-                    v-model="pay_count"
-                    placeholder="请选择下单次数"
-                    element-id="pay_count"
-                    clearable
-                  >
+                  <Select v-model="pay_count" placeholder="请选择下单次数" element-id="pay_count" clearable>
                     <Option value="all">全部</Option>
                     <Option value="-1">0次</Option>
                     <Option value="0">1次以上</Option>
@@ -253,21 +196,10 @@
           </template>
           <Col span="6" class="ivu-text-right userFrom">
             <FormItem>
-              <Button
-                type="primary"
-                icon="ios-search"
-                label="default"
-                class="mr15"
-                @click="userSearchs"
-                >搜索</Button
-              >
-              <Button class="ResetSearch" @click="reset('userFrom')"
-                >重置</Button
-              >
+              <Button type="primary" icon="ios-search" label="default" class="mr15" @click="userSearchs">搜索</Button>
+              <Button class="ResetSearch" @click="reset('userFrom')">重置</Button>
               <a class="ivu-ml-8 font14 ml10" @click="collapse = !collapse">
-                <template v-if="!collapse">
-                  展开 <Icon type="ios-arrow-down" />
-                </template>
+                <template v-if="!collapse"> 展开 <Icon type="ios-arrow-down" /> </template>
                 <template v-else> 收起 <Icon type="ios-arrow-up" /> </template>
               </a>
             </FormItem>
@@ -277,16 +209,8 @@
       <Divider dashed />
       <Row type="flex" justify="space-between" class="mt20">
         <Col span="24">
-          <Button
-            v-auth="['admin-user-save']"
-            type="primary"
-            class="mr20"
-            @click="edit({ uid: 0 })"
-            >添加用户</Button
-          >
-          <Button v-auth="['admin-user-coupon']" class="mr20" @click="onSend"
-            >发送优惠券</Button
-          >
+          <Button v-auth="['admin-user-save']" type="primary" class="mr20" @click="edit({ uid: 0 })">添加用户</Button>
+          <Button v-auth="['admin-user-coupon']" class="mr20" @click="onSend">发送优惠券</Button>
           <Button
             v-auth="['admin-wechat-news']"
             class="greens mr20"
@@ -297,18 +221,8 @@
             <Icon type="md-list"></Icon>
             发送图文消息
           </Button>
-          <Button
-            v-auth="['admin-user-group_set']"
-            class="mr20"
-            @click="setGroup"
-            >批量设置分组</Button
-          >
-          <Button
-            v-auth="['admin-user-set_label']"
-            class="mr20"
-            @click="setLabel"
-            >批量设置标签</Button
-          >
+          <Button v-auth="['admin-user-group_set']" class="mr20" @click="setGroup">批量设置分组</Button>
+          <Button v-auth="['admin-user-set_label']" class="mr20" @click="setLabel">批量设置标签</Button>
 
           <!-- <Button v-auth="['admin-user-synchro']" class="mr20" @click="synchro">同步公众号用户</Button> -->
         </Col>
@@ -340,26 +254,15 @@
         </template>
         <template slot-scope="{ row, index }" slot="nickname">
           <div class="acea-row">
-            <Icon
-              type="md-male"
-              v-show="row.sex === '男'"
-              color="#2db7f5"
-              size="15"
-              class="mr5"
-            />
-            <Icon
-              type="md-female"
-              v-show="row.sex === '女'"
-              color="#ed4014"
-              size="15"
-              class="mr5"
-            />
+            <Icon type="md-male" v-show="row.sex === '男'" color="#2db7f5" size="15" class="mr5" />
+            <Icon type="md-female" v-show="row.sex === '女'" color="#ed4014" size="15" class="mr5" />
             <div v-text="row.nickname"></div>
           </div>
-          <!--                    <div v-show="row.vip_name" class="vipName">{{row.vip_name}}</div>-->
+          <div v-if="row.is_del == 1" style="color: red">用户已注销</div>
+          <!-- <div v-show="row.vip_name" class="vipName">{{row.vip_name}}</div> -->
         </template>
         <template slot-scope="{ row, index }" slot="isMember">
-          <div>{{ row.isMember ? "是" : "否" }}</div>
+          <div>{{ row.isMember ? '是' : '否' }}</div>
         </template>
         <!--                <template slot-scope="{ row, index }" slot="status">-->
         <!--                    <i-switch v-model="row.status" :value="row.status" :true-value="1" :false-value="0" @on-change="onchangeIsShow(row)" size="large">-->
@@ -371,7 +274,7 @@
           <a @click="edit(row)">编辑</a>
           <Divider type="vertical" />
           <template>
-            <Dropdown @on-click="changeMenu(row, $event, index)">
+            <Dropdown @on-click="changeMenu(row, $event, index)" :transfer="true">
               <a href="javascript:void(0)">
                 更多
                 <Icon type="ios-arrow-down"></Icon>
@@ -384,9 +287,7 @@
                 <DropdownItem name="5">设置分组</DropdownItem>
                 <DropdownItem name="6">设置标签</DropdownItem>
                 <DropdownItem name="7">修改上级推广人</DropdownItem>
-                <DropdownItem name="8" v-if="row.spread_uid"
-                  >清除上级推广人</DropdownItem
-                >
+                <DropdownItem name="8" v-if="row.spread_uid">清除上级推广人</DropdownItem>
               </DropdownMenu>
             </Dropdown>
           </template>
@@ -405,25 +306,13 @@
       </div>
     </Card>
     <!-- 编辑表单 积分余额-->
-    <edit-from
-      ref="edits"
-      :FromData="FromData"
-      @submitFail="submitFail"
-    ></edit-from>
+    <edit-from ref="edits" :FromData="FromData" @submitFail="submitFail"></edit-from>
     <!-- 发送优惠券-->
     <send-from ref="sends" :userIds="ids.toString()"></send-from>
     <!-- 会员详情-->
     <user-details ref="userDetails"></user-details>
     <!--发送图文消息 -->
-    <Modal
-      v-model="modal13"
-      scrollable
-      title="发送消息"
-      width="1200"
-      height="800"
-      footer-hide
-      class="modelBox"
-    >
+    <Modal v-model="modal13" scrollable title="发送消息" width="1200" height="800" footer-hide class="modelBox">
       <news-category
         v-if="modal13"
         :isShowSend="isShowSend"
@@ -435,19 +324,8 @@
       ></news-category>
     </Modal>
     <!--修改推广人-->
-    <Modal
-      v-model="promoterShow"
-      scrollable
-      title="修改推广人"
-      class="order_box"
-      :closable="false"
-    >
-      <Form
-        ref="formInline"
-        :model="formInline"
-        :label-width="100"
-        @submit.native.prevent
-      >
+    <Modal v-model="promoterShow" scrollable title="修改推广人" class="order_box" :closable="false">
+      <Form ref="formInline" :model="formInline" :label-width="100" @submit.native.prevent>
         <FormItem v-if="formInline" label="选择推广人：" prop="image">
           <div class="picBox" @click="customer">
             <div class="pictrue" v-if="formInline.image">
@@ -464,26 +342,10 @@
         <Button @click="cancel('formInline')">取消</Button>
       </div>
     </Modal>
-    <Modal
-      v-model="customerShow"
-      scrollable
-      title="请选择商城用户"
-      :closable="false"
-      width="50%"
-    >
-      <customerInfo
-        v-if="customerShow"
-        @imageObject="imageObject"
-      ></customerInfo>
+    <Modal v-model="customerShow" scrollable title="请选择商城用户" :closable="false" width="50%">
+      <customerInfo v-if="customerShow" @imageObject="imageObject"></customerInfo>
     </Modal>
-    <Modal
-      v-model="labelShow"
-      scrollable
-      title="请选择用户标签"
-      :closable="false"
-      width="500"
-      :footer-hide="true"
-    >
+    <Modal v-model="labelShow" scrollable title="请选择用户标签" :closable="false" width="500" :footer-hide="true">
       <userLabel
         v-if="labelShow"
         :uid="labelActive.uid"
@@ -493,14 +355,7 @@
         @onceGetList="onceGetList"
       ></userLabel>
     </Modal>
-    <Modal
-      v-model="modals"
-      title="用户信息填写"
-      class="order_box"
-      :closable="false"
-      width="600"
-      :z-index="50"
-    >
+    <Modal v-model="modals" title="用户信息填写" class="order_box" :closable="false" width="600" :z-index="50">
       <userEdit ref="userEdit" v-if="modals" :userData="userData"></userEdit>
       <div slot="footer">
         <Button @click="modals = false">取消</Button>
@@ -530,10 +385,10 @@
 </template>
 
 <script>
-import userLabel from "@/components/userLabel";
-import { mapState } from "vuex";
-import expandRow from "./tableExpand.vue";
-import userEdit from "./handle/userEdit.vue";
+import userLabel from '@/components/userLabel';
+import { mapState } from 'vuex';
+import expandRow from './tableExpand.vue';
+import userEdit from './handle/userEdit.vue';
 import {
   userList,
   getUserData,
@@ -552,16 +407,16 @@ import {
   setUser,
   editUser,
   saveSetLabel,
-} from "@/api/user";
-import { agentSpreadApi } from "@/api/agent";
-import editFrom from "../../../components/from/from";
-import sendFrom from "@/components/sendCoupons/index";
-import userDetails from "./handle/userDetails";
-import newsCategory from "@/components/newsCategory/index";
-import city from "@/utils/city";
-import customerInfo from "@/components/customerInfo";
+} from '@/api/user';
+import { agentSpreadApi } from '@/api/agent';
+import editFrom from '../../../components/from/from';
+import sendFrom from '@/components/sendCoupons/index';
+import userDetails from './handle/userDetails';
+import newsCategory from '@/components/newsCategory/index';
+import city from '@/utils/city';
+import customerInfo from '@/components/customerInfo';
 export default {
-  name: "user_list",
+  name: 'user_list',
   components: {
     expandRow,
     editFrom,
@@ -588,106 +443,70 @@ export default {
       formInline: {
         uid: 0,
         spread_uid: 0,
-        image: "",
+        image: '',
       },
       options: {
         shortcuts: [
           {
-            text: "今天",
+            text: '今天',
             value() {
               const end = new Date();
               const start = new Date();
-              start.setTime(
-                new Date(
-                  new Date().getFullYear(),
-                  new Date().getMonth(),
-                  new Date().getDate()
-                )
-              );
+              start.setTime(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate()));
               return [start, end];
             },
           },
           {
-            text: "昨天",
+            text: '昨天',
             value() {
               const end = new Date();
               const start = new Date();
               start.setTime(
-                start.setTime(
-                  new Date(
-                    new Date().getFullYear(),
-                    new Date().getMonth(),
-                    new Date().getDate() - 1
-                  )
-                )
+                start.setTime(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate() - 1)),
               );
               end.setTime(
-                end.setTime(
-                  new Date(
-                    new Date().getFullYear(),
-                    new Date().getMonth(),
-                    new Date().getDate() - 1
-                  )
-                )
+                end.setTime(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate() - 1)),
               );
               return [start, end];
             },
           },
           {
-            text: "最近7天",
+            text: '最近7天',
             value() {
               const end = new Date();
               const start = new Date();
               start.setTime(
-                start.setTime(
-                  new Date(
-                    new Date().getFullYear(),
-                    new Date().getMonth(),
-                    new Date().getDate() - 6
-                  )
-                )
+                start.setTime(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate() - 6)),
               );
               return [start, end];
             },
           },
           {
-            text: "最近30天",
+            text: '最近30天',
             value() {
               const end = new Date();
               const start = new Date();
               start.setTime(
-                start.setTime(
-                  new Date(
-                    new Date().getFullYear(),
-                    new Date().getMonth(),
-                    new Date().getDate() - 29
-                  )
-                )
+                start.setTime(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate() - 29)),
               );
               return [start, end];
             },
           },
           {
-            text: "本月",
+            text: '本月',
             value() {
               const end = new Date();
               const start = new Date();
-              start.setTime(
-                start.setTime(
-                  new Date(new Date().getFullYear(), new Date().getMonth(), 1)
-                )
-              );
+              start.setTime(start.setTime(new Date(new Date().getFullYear(), new Date().getMonth(), 1)));
               return [start, end];
             },
           },
           {
-            text: "本年",
+            text: '本年',
             value() {
               const end = new Date();
               const start = new Date();
-              start.setTime(
-                start.setTime(new Date(new Date().getFullYear(), 0, 1))
-              );
+              start.setTime(start.setTime(new Date(new Date().getFullYear(), 0, 1)));
               return [start, end];
             },
           },
@@ -695,21 +514,21 @@ export default {
       },
       collapse: false,
       headeNum: [
-        { type: "", name: "全部" },
-        { type: "wechat", name: "微信公众号" },
-        { type: "routine", name: "微信小程序" },
-        { type: "h5", name: "H5" },
-        { type: "pc", name: "PC" },
-        { type: "app", name: "APP" },
+        { type: '', name: '全部' },
+        { type: 'wechat', name: '微信公众号' },
+        { type: 'routine', name: '微信小程序' },
+        { type: 'h5', name: 'H5' },
+        { type: 'pc', name: 'PC' },
+        { type: 'app', name: 'APP' },
       ],
       address: [],
       addresData: city,
       isShowSend: true,
       modal13: false,
       maxCols: 4,
-      scrollerHeight: "600",
-      contentTop: "130",
-      contentWidth: "98%",
+      scrollerHeight: '600',
+      contentTop: '130',
+      contentWidth: '98%',
       grid: {
         xl: 8,
         lg: 8,
@@ -727,34 +546,34 @@ export default {
       loading: false,
       total: 0,
       userFrom: {
-        label_id: "",
-        user_type: "",
-        status: "",
-        sex: "",
-        is_promoter: "",
-        country: "",
-        isMember: "",
-        pay_count: "",
-        user_time_type: "",
-        user_time: "",
-        nickname: "",
-        province: "",
-        city: "",
+        label_id: '',
+        user_type: '',
+        status: '',
+        sex: '',
+        is_promoter: '',
+        country: '',
+        isMember: '',
+        pay_count: '',
+        user_time_type: '',
+        user_time: '',
+        nickname: '',
+        province: '',
+        city: '',
         page: 1,
         limit: 15,
-        level: "",
-        group_id: "",
-        field_key: "",
+        level: '',
+        group_id: '',
+        field_key: '',
       },
-      field_key: "",
-      level: "",
-      group_id: "",
-      label_id: "",
-      user_time_type: "",
-      pay_count: "",
+      field_key: '',
+      level: '',
+      group_id: '',
+      label_id: '',
+      user_time_type: '',
+      pay_count: '',
       columns: [
         {
-          type: "expand",
+          type: 'expand',
           width: 40,
           render: (h, params) => {
             return h(expandRow, {
@@ -765,54 +584,54 @@ export default {
           },
         },
         {
-          type: "selection",
+          type: 'selection',
           width: 60,
-          align: "center",
+          align: 'center',
         },
         {
-          title: "ID",
-          key: "uid",
+          title: 'ID',
+          key: 'uid',
           width: 80,
         },
         {
-          title: "头像",
-          slot: "avatars",
+          title: '头像',
+          slot: 'avatars',
           minWidth: 60,
         },
         {
-          title: "姓名",
-          slot: "nickname",
+          title: '姓名',
+          slot: 'nickname',
           minWidth: 150,
         },
         {
-          title: "付费会员",
-          slot: "isMember",
+          title: '付费会员',
+          slot: 'isMember',
           minWidth: 90,
         },
         {
-          title: "用户等级",
-          key: "level",
+          title: '用户等级',
+          key: 'level',
           minWidth: 90,
         },
         {
-          title: "分组",
-          key: "group_id",
+          title: '分组',
+          key: 'group_id',
           minWidth: 100,
         },
         {
-          title: "手机号",
-          key: "phone",
+          title: '手机号',
+          key: 'phone',
           minWidth: 100,
         },
         {
-          title: "用户类型",
-          key: "user_type",
+          title: '用户类型',
+          key: 'user_type',
           minWidth: 100,
         },
         {
-          title: "余额",
-          key: "now_money",
-          sortable: "custom",
+          title: '余额',
+          key: 'now_money',
+          sortable: 'custom',
           minWidth: 100,
         },
         // {
@@ -821,23 +640,23 @@ export default {
         //     minWidth: 100
         // },
         {
-          title: "操作",
-          slot: "action",
-          fixed: "right",
+          title: '操作',
+          slot: 'action',
+          fixed: 'right',
           minWidth: 120,
         },
       ],
       userLists: [],
       FromData: null,
       selectionList: [],
-      user_ids: "",
+      user_ids: '',
       selectedData: [],
       timeVal: [],
       groupList: [],
       levelList: [],
       labelFrom: {
         page: 1,
-        limit: "",
+        limit: '',
       },
       labelLists: [],
       selectedIds: new Set(), //选中合并项的id
@@ -845,12 +664,12 @@ export default {
     };
   },
   computed: {
-    ...mapState("media", ["isMobile"]),
+    ...mapState('media', ['isMobile']),
     labelWidth() {
       return this.isMobile ? undefined : 100;
     },
     labelPosition() {
-      return this.isMobile ? "top" : "right";
+      return this.isMobile ? 'top' : 'right';
     },
   },
   created() {
@@ -910,7 +729,7 @@ export default {
       this.$refs[name].validate((valid) => {
         if (valid) {
           if (!this.formInline.spread_uid) {
-            return this.$Message.error("请上传用户");
+            return this.$Message.error('请上传用户');
           }
           agentSpreadApi(this.formInline)
             .then((res) => {
@@ -968,7 +787,7 @@ export default {
     userGroup() {
       let data = {
         page: 1,
-        limit: "",
+        limit: '',
       };
       userGroupApi(data).then((res) => {
         this.groupList = res.data.list;
@@ -977,8 +796,8 @@ export default {
     levelLists() {
       let data = {
         page: 1,
-        limit: "",
-        title: "",
+        limit: '',
+        title: '',
         is_show: 1,
       };
       levelListApi(data).then((res) => {
@@ -988,18 +807,16 @@ export default {
     // 批量设置分组；
     setGroup() {
       if (this.ids.length === 0) {
-        this.$Message.warning("请选择要设置分组的用户");
+        this.$Message.warning('请选择要设置分组的用户');
       } else {
         let uids = { uids: this.ids };
-        this.$modalForm(userSetGroup(uids)).then(() =>
-          this.$refs.sends.getList()
-        );
+        this.$modalForm(userSetGroup(uids)).then(() => this.$refs.sends.getList());
       }
     },
     // 批量设置标签；
     setLabel() {
       if (this.ids.length === 0) {
-        this.$Message.warning("请选择要设置标签的用户");
+        this.$Message.warning('请选择要设置标签的用户');
       } else {
         let uids = { uids: this.ids };
         this.labelActive.uid = 0;
@@ -1010,7 +827,6 @@ export default {
       }
     },
     activeSelectData(data) {
-      console.log(data);
       // let labels = [];
       // if (!data.length) return;
       // data.map((i) => {
@@ -1027,7 +843,7 @@ export default {
         labels.push(i.id);
       });
       saveSetLabel({
-        uids: this.ids.join(","),
+        uids: this.ids.join(','),
         label_id: labels,
       }).then((res) => {
         this.labelShow = false;
@@ -1043,10 +859,10 @@ export default {
     },
     // 选择国家
     changeCountry() {
-      if (this.userFrom.country === "abroad" || !this.userFrom.country) {
+      if (this.userFrom.country === 'abroad' || !this.userFrom.country) {
         this.selectedData = [];
-        this.userFrom.province = "";
-        this.userFrom.city = "";
+        this.userFrom.province = '';
+        this.userFrom.city = '';
         this.address = [];
       }
     },
@@ -1059,7 +875,7 @@ export default {
     // 具体日期
     onchangeTime(e) {
       this.timeVal = e;
-      this.userFrom.user_time = this.timeVal.join("-");
+      this.userFrom.user_time = this.timeVal.join('-');
     },
     // 操作
     changeMenu(row, name, index) {
@@ -1067,40 +883,30 @@ export default {
       uid.push(row.uid);
       let uids = { uids: uid };
       switch (name) {
-        case "1":
+        case '1':
           this.$refs.userDetails.modals = true;
           this.$refs.userDetails.getDetails(row.uid);
           break;
-        case "2":
+        case '2':
           this.getOtherFrom(row.uid);
           break;
-        case "3":
+        case '3':
           this.giveLevelTime(row.uid);
           break;
-        case "4":
-          this.del(
-            row,
-            "清除 【 " + row.nickname + " 】的会员等级",
-            index,
-            "user"
-          );
+        case '4':
+          this.del(row, '清除 【 ' + row.nickname + ' 】的会员等级', index, 'user');
           break;
-        case "5":
+        case '5':
           this.$modalForm(userSetGroup(uids)).then(() => this.getList());
           break;
-        case "6":
+        case '6':
           this.openLabel(row);
           break;
-        case "7":
+        case '7':
           this.editS(row);
           break;
         default:
-          this.del(
-            row,
-            "解除【 " + row.nickname + " 】的上级推广人",
-            index,
-            "tuiguang"
-          );
+          this.del(row, '解除【 ' + row.nickname + ' 】的上级推广人', index, 'tuiguang');
       }
     },
     openLabel(row) {
@@ -1159,12 +965,9 @@ export default {
       let delfromData = {
         title: tit,
         num: num,
-        url:
-          name === "user"
-            ? `user/del_level/${row.uid}`
-            : `agent/stair/delete_spread/${row.uid}`,
-        method: name === "user" ? "DELETE" : "PUT",
-        ids: "",
+        url: name === 'user' ? `user/del_level/${row.uid}` : `agent/stair/delete_spread/${row.uid}`,
+        method: name === 'user' ? 'DELETE' : 'PUT',
+        ids: '',
       };
       this.$modalSure(delfromData)
         .then((res) => {
@@ -1181,27 +984,23 @@ export default {
     },
     // 会员列表
     getList() {
-      console.log("1111111111111");
-      console.log(this.selectDataLabel);
       if (this.selectDataLabel.length) {
         let activeIds = [];
         this.selectDataLabel.forEach((item) => {
           activeIds.push(item.id);
         });
-        console.log(activeIds);
-        this.userFrom.label_id = activeIds.join(",");
+        this.userFrom.label_id = activeIds.join(',');
       }
-      this.userFrom.user_type = this.userFrom.user_type || "";
-      this.userFrom.status = this.userFrom.status || "";
-      this.userFrom.sex = this.userFrom.sex || "";
-      this.userFrom.is_promoter = this.userFrom.is_promoter || "";
-      this.userFrom.country = this.userFrom.country || "";
-      this.userFrom.pay_count = this.pay_count === "all" ? "" : this.pay_count;
-      this.userFrom.user_time_type =
-        this.user_time_type === "all" ? "" : this.user_time_type;
-      this.userFrom.field_key = this.field_key === "all" ? "" : this.field_key;
-      this.userFrom.level = this.level === "all" ? "" : this.level;
-      this.userFrom.group_id = this.group_id === "all" ? "" : this.group_id;
+      this.userFrom.user_type = this.userFrom.user_type || '';
+      this.userFrom.status = this.userFrom.status || '';
+      this.userFrom.sex = this.userFrom.sex || '';
+      this.userFrom.is_promoter = this.userFrom.is_promoter || '';
+      this.userFrom.country = this.userFrom.country || '';
+      this.userFrom.pay_count = this.pay_count === 'all' ? '' : this.pay_count;
+      this.userFrom.user_time_type = this.user_time_type === 'all' ? '' : this.user_time_type;
+      this.userFrom.field_key = this.field_key === 'all' ? '' : this.field_key;
+      this.userFrom.level = this.level === 'all' ? '' : this.level;
+      this.userFrom.group_id = this.group_id === 'all' ? '' : this.group_id;
       this.loading = true;
       userList(this.userFrom)
         .then(async (res) => {
@@ -1232,28 +1031,28 @@ export default {
     reset(name) {
       this.userFrom = {
         user_type: this.userFrom.user_type,
-        status: "",
-        sex: "",
-        is_promoter: "",
-        country: "",
-        pay_count: "",
-        user_time_type: "",
-        user_time: "",
-        nickname: "",
-        field_key: "",
-        level: "",
-        group_id: "",
-        label_id: "",
+        status: '',
+        sex: '',
+        is_promoter: '',
+        country: '',
+        pay_count: '',
+        user_time_type: '',
+        user_time: '',
+        nickname: '',
+        field_key: '',
+        level: '',
+        group_id: '',
+        label_id: '',
         page: 1, // 当前页
         limit: 20, // 每页显示条数
       };
-      this.field_key = "";
-      this.level = "";
-      this.group_id = "";
+      this.field_key = '';
+      this.level = '';
+      this.group_id = '';
       this.dataLabel = [];
       this.selectDataLabel = [];
-      this.user_time_type = "";
-      this.pay_count = "";
+      this.user_time_type = '';
+      this.pay_count = '';
       this.timeVal = [];
       this.selectedIds = new Set();
       this.getList();
@@ -1313,7 +1112,7 @@ export default {
     // 点击发送优惠券
     onSend() {
       if (this.ids.length === 0) {
-        this.$Message.warning("请选择要发送优惠券的用户");
+        this.$Message.warning('请选择要发送优惠券的用户');
       } else {
         this.$refs.sends.modals = true;
         this.$refs.sends.getList();
@@ -1322,7 +1121,7 @@ export default {
     // 发送图文消息
     onSendPic() {
       if (this.ids.length === 0) {
-        this.$Message.warning("请选择要发送图文消息的用户");
+        this.$Message.warning('请选择要发送图文消息的用户');
       } else {
         this.modal13 = true;
       }

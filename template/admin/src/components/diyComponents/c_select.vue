@@ -5,18 +5,10 @@
         {{ datas[name].title }}
       </Col>
       <Col span="19" class="slider-box">
-        <Select
-          v-model="datas[name].activeValue"
-          clearable
-          style="width: 350px"
-          @on-change="sliderChange"
-        >
-          <Option
-            v-for="(item, index) in datas[name].list"
-            :value="item.activeValue"
-            :key="index"
-            >{{ item.title }}</Option
-          >
+        <Select v-model="datas[name].activeValue" clearable style="width: 350px" @on-change="sliderChange">
+          <Option v-for="(item, index) in datas[name].list" :value="item.activeValue" :key="index">{{
+            item.title
+          }}</Option>
         </Select>
       </Col>
     </div>
@@ -25,7 +17,7 @@
 
 <script>
 export default {
-  name: "c_select",
+  name: 'c_select',
   props: {
     name: {
       type: String,
@@ -35,7 +27,7 @@ export default {
     },
     configNum: {
       type: Number | String,
-      default: "default",
+      default: 'default',
     },
   },
   data() {
@@ -45,8 +37,8 @@ export default {
     };
   },
   mounted() {
-    if (this.name === "selectConfig") {
-      this.bus.$on("upData", (data) => {
+    if (this.name === 'selectConfig') {
+      this.bus.$on('upData', (data) => {
         this.datas[this.name].list = data;
         this.bus.$off();
       });
@@ -62,7 +54,7 @@ export default {
   },
   methods: {
     sliderChange(e) {
-      this.$emit("getConfig", { name: "select", values: e });
+      this.$emit('getConfig', { name: 'select', values: e });
     },
   },
 };

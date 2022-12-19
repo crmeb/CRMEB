@@ -1,7 +1,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2021 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -97,6 +97,17 @@ export function follow() {
 		noAuth: true
 	});
 }
+
+/**
+ * code生成用户
+ * @returns {*}
+ */
+export function authLogin(data) {
+	return request.get("v2/wechat/silence_auth_login", data, {
+		noAuth: true
+	});
+}
+
 
 /**
  * 获取图片base64

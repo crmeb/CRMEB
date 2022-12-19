@@ -60,11 +60,7 @@
       </div>
     </div>
     <div class="acea-row mb20">
-      <div
-        class="infoBox acea-row mb30"
-        v-for="(item, index) in list"
-        :key="index"
-      >
+      <div class="infoBox acea-row mb30" v-for="(item, index) in list" :key="index">
         <div
           class="iconCrl mr15"
           :class="{
@@ -81,48 +77,29 @@
           <span
             class="sp2"
             v-if="index === list.length - 1"
-            v-text="
-              item.money ? (parseInt(item.money * 100) / 100).toFixed(2) : '0.00'
-            "
+            v-text="item.money ? (parseInt(item.money * 100) / 100).toFixed(2) : '0.00'"
           ></span>
-          <span
-            class="sp2"
-            v-else
-            v-text="
-              item.money ? (parseInt(item.money * 100) / 100).toFixed(2) : '0.00'
-            "
-          ></span>
+          <span class="sp2" v-else v-text="item.money ? (parseInt(item.money * 100) / 100).toFixed(2) : '0.00'"></span>
           <span class="content-time spBlock"
-            >环比增长：<i
-              class="content-is"
-              :class="Number(item.rate) >= 0 ? 'up' : 'down'"
-              >{{ item.rate }}%</i
+            >环比增长：<i class="content-is" :class="Number(item.rate) >= 0 ? 'up' : 'down'">{{ item.rate }}%</i
             ><Icon
               :color="Number(item.rate) >= 0 ? '#F5222D' : '#39C15B'"
-              :type="
-                Number(item.rate) >= 0 ? 'md-arrow-dropup' : 'md-arrow-dropdown'
-              "
+              :type="Number(item.rate) >= 0 ? 'md-arrow-dropup' : 'md-arrow-dropdown'"
           /></span>
         </div>
       </div>
     </div>
-    <echarts-new
-      :option-data="optionData"
-      :styles="style"
-      height="100%"
-      width="100%"
-      v-if="optionData"
-    ></echarts-new>
+    <echarts-new :option-data="optionData" :styles="style" height="100%" width="100%" v-if="optionData"></echarts-new>
     <Spin size="large" fix v-if="spinShow"></Spin>
   </Card>
 </template>
 
 <script>
-import { statisticBottomTradeApi, statisticTrendApi } from "@/api/statistic";
-import echartsNew from "@/components/echartsNew/index";
-import { formatDate } from "@/utils/validate";
+import { statisticBottomTradeApi, statisticTrendApi } from '@/api/statistic';
+import echartsNew from '@/components/echartsNew/index';
+import { formatDate } from '@/utils/validate';
 export default {
-  name: "transaction",
+  name: 'transaction',
   components: {
     echartsNew,
   },
@@ -136,31 +113,22 @@ export default {
         xs: 24,
       },
       options: this.$timeOptions,
-      name: "近30天",
+      name: '近30天',
       timeVal: [],
-      dataTime: "",
+      dataTime: '',
       list: {},
       optionData: {},
-      style: { height: "400px" },
-      getExcel: "",
+      style: { height: '400px' },
+      getExcel: '',
       spinShow: false,
     };
   },
   created() {
     const end = new Date();
     const start = new Date();
-    start.setTime(
-      start.setTime(
-        new Date(
-          new Date().getFullYear(),
-          new Date().getMonth(),
-          new Date().getDate() - 29
-        )
-      )
-    );
+    start.setTime(start.setTime(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate() - 29)));
     this.timeVal = [start, end];
-    this.dataTime =
-      formatDate(start, "yyyy/MM/dd") + "-" + formatDate(end, "yyyy/MM/dd");
+    this.dataTime = formatDate(start, 'yyyy/MM/dd') + '-' + formatDate(end, 'yyyy/MM/dd');
   },
   mounted() {
     this.getStatistics();
@@ -172,7 +140,7 @@ export default {
     // 具体日期
     onchangeTime(e) {
       this.timeVal = e;
-      this.dataTime = this.timeVal.join("-");
+      this.dataTime = this.timeVal.join('-');
       this.name = this.dataTime;
     },
     // 统计
@@ -182,19 +150,19 @@ export default {
         .then(async (res) => {
           const cardLists = res.data;
           const incons = [
-            "iconyingyee",
-            "iconjiaoyijine",
-            "iconshangpinzhifujine",
-            "icongoumaihuiyuanjine",
-            "iconchongzhijianshu",
-            "iconxianxiashouyinjine",
-            "iconzhichujine",
-            "iconyuezhifujine",
-            "iconzhifuyongjinjine",
-            "iconshangpintuikuanjine",
+            'iconyingyee',
+            'iconjiaoyijine',
+            'iconshangpinzhifujine',
+            'icongoumaihuiyuanjine',
+            'iconchongzhijianshu',
+            'iconxianxiashouyinjine',
+            'iconzhichujine',
+            'iconyuezhifujine',
+            'iconzhifuyongjinjine',
+            'iconshangpintuikuanjine',
           ];
           for (var i = 0; i < cardLists.series.length; i++) {
-            this.$set(cardLists.series[i], "icon", incons[i]);
+            this.$set(cardLists.series[i], 'icon', incons[i]);
           }
           this.list = cardLists.series;
           this.getExcel = cardLists.export;
@@ -213,14 +181,7 @@ export default {
       let legend = dataList.map((item) => {
         return item.name;
       });
-      let col = [
-        "#5B8FF9",
-        "#5AD8A6",
-        "#5D7092",
-        "#F5222D",
-        "#FFAB2B",
-        "#B37FEB",
-      ];
+      let col = ['#5B8FF9', '#5AD8A6', '#5D7092', '#F5222D', '#FFAB2B', '#B37FEB'];
       let seriesData = [];
       dataList.map((item, index) => {
         let series = [];
@@ -229,7 +190,7 @@ export default {
         });
         seriesData.push({
           name: item.name,
-          type: "line",
+          type: 'line',
           data: series,
           itemStyle: {
             normal: {
@@ -241,22 +202,22 @@ export default {
       });
       this.optionData = {
         tooltip: {
-          trigger: "axis",
+          trigger: 'axis',
           axisPointer: {
-            type: "cross",
+            type: 'cross',
             label: {
-              backgroundColor: "#6a7985",
+              backgroundColor: '#6a7985',
             },
           },
         },
         legend: {
-          x: "center",
+          x: 'center',
           data: legend,
         },
         grid: {
-          left: "3%",
-          right: "4%",
-          bottom: "3%",
+          left: '3%',
+          right: '4%',
+          bottom: '3%',
           containLabel: true,
         },
         toolbox: {
@@ -265,19 +226,19 @@ export default {
           },
         },
         xAxis: {
-          type: "category",
+          type: 'category',
           boundaryGap: true,
           axisLabel: {
             interval: 0,
             rotate: 40,
             textStyle: {
-              color: "#000000",
+              color: '#000000',
             },
           },
           data: extract.x,
         },
         yAxis: {
-          type: "value",
+          type: 'value',
           axisLine: {
             show: false,
           },
@@ -286,13 +247,13 @@ export default {
           },
           axisLabel: {
             textStyle: {
-              color: "#7F8B9C",
+              color: '#7F8B9C',
             },
           },
           splitLine: {
             show: true,
             lineStyle: {
-              color: "#F5F7F9",
+              color: '#F5F7F9',
             },
           },
         },
@@ -310,12 +271,12 @@ export default {
             return item.name;
           });
           let xAxis = res.data.xAxis;
-          let col = ["#5B8FF9", "#5AD8A6", "#5D7092", "#5D7092"];
+          let col = ['#5B8FF9', '#5AD8A6', '#5D7092', '#5D7092'];
           let series = [];
           res.data.series.map((item, index) => {
             series.push({
               name: item.name,
-              type: "line",
+              type: 'line',
               data: item.value,
               itemStyle: {
                 normal: {
@@ -326,23 +287,23 @@ export default {
           });
           this.optionData = {
             tooltip: {
-              trigger: "axis",
+              trigger: 'axis',
               axisPointer: {
-                type: "cross",
+                type: 'cross',
                 label: {
-                  backgroundColor: "#6a7985",
+                  backgroundColor: '#6a7985',
                 },
               },
             },
             legend: {
-              x: "1px",
-              y: "10px",
+              x: '1px',
+              y: '10px',
               data: legend,
             },
             grid: {
-              left: "3%",
-              right: "4%",
-              bottom: "3%",
+              left: '3%',
+              right: '4%',
+              bottom: '3%',
               containLabel: true,
             },
             toolbox: {
@@ -351,7 +312,7 @@ export default {
               },
             },
             xAxis: {
-              type: "category",
+              type: 'category',
               boundaryGap: true,
               // axisTick:{
               //     show:false
@@ -366,13 +327,13 @@ export default {
                 interval: 0,
                 rotate: 40,
                 textStyle: {
-                  color: "#000000",
+                  color: '#000000',
                 },
               },
               data: xAxis,
             },
             yAxis: {
-              type: "value",
+              type: 'value',
               splitLine: {
                 show: false,
               },

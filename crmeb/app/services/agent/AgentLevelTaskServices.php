@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -16,8 +16,8 @@ use app\services\BaseServices;
 use app\services\order\StoreOrderServices;
 use app\services\user\UserServices;
 use crmeb\exceptions\AdminException;
+use crmeb\exceptions\ApiException;
 use crmeb\services\FormBuilder as Form;
-use think\exception\ValidateException;
 use think\facade\Route as Url;
 
 
@@ -156,7 +156,7 @@ class AgentLevelTaskServices extends BaseServices
         /** @var AgentLevelServices $levelServices */
         $levelServices = app()->make(AgentLevelServices::class);
         if (!$levelServices->getLevelInfo($level_id)) {
-            throw new AdminException('选择的等级不存在，请返回重新选择');
+            throw new AdminException(400443);
         }
         $taskList = $this->getTaskTypeAll();
         $setOptionLabel = function () use ($taskList) {
@@ -169,7 +169,7 @@ class AgentLevelTaskServices extends BaseServices
         $field[] = Form::hidden('level_id', $level_id);
         $field[] = Form::select('type', '任务类型')->setOptions(Form::setOptions($setOptionLabel))->filterable(true);
         $field[] = Form::input('name', '任务名称')->col(24);
-        $field[] = Form::number('number', '限定数量', 0);
+        $field[] = Form::number('number', '限定数量', 0)->precision(0);
         $field[] = Form::textarea('desc', '任务描述');
         $field[] = Form::number('sort', '排序', 0)->precision(0);
         $field[] = Form::radio('status', '是否显示', 1)->options([['value' => 1, 'label' => '显示'], ['value' => 0, 'label' => '隐藏']]);
@@ -186,7 +186,7 @@ class AgentLevelTaskServices extends BaseServices
     {
         $levelTaskInfo = $this->getLevelTaskInfo($id);
         if (!$levelTaskInfo)
-            throw new AdminException('数据不存在');
+            throw new AdminException(100026);
         $field = [];
         $field[] = Form::hidden('id', $id);
         $taskList = $this->getTaskTypeAll();
@@ -247,13 +247,13 @@ class AgentLevelTaskServices extends BaseServices
         $userServices = app()->make(UserServices::class);
         $user = $userServices->getUserInfo($uid);
         if (!$user) {
-            throw new ValidateException('没有此用户');
+            throw new ApiException(410032);
         }
         /** @var AgentLevelServices $levelServices */
         $levelServices = app()->make(AgentLevelServices::class);
         $levelInfo = $levelServices->getLevelInfo($level_id);
         if (!$levelInfo) {
-            throw new ValidateException('没有此分销等级');
+            throw new ApiException(410071);
         }
         $taskList = $this->dao->getTaskList(['level_id' => $level_id, 'is_del' => 0, 'status' => 1]);
         if ($taskList) {
@@ -372,12 +372,12 @@ class AgentLevelTaskServices extends BaseServices
     public function checkTypeTask(int $id, array $data)
     {
         if (!$id && (!isset($data['level_id']) || !$data['level_id'])) {
-            throw new ValidateException('缺少等级任务必要参数');
+            throw new AdminException(100100);
         }
         if ($id) {
             $task = $this->getLevelTaskInfo($id);
             if (!$task) {
-                throw new ValidateException('编辑的任务不存在');
+                throw new AdminException(100026);
             }
             $data['level_id'] = $task['level_id'];
         }
@@ -385,21 +385,21 @@ class AgentLevelTaskServices extends BaseServices
         $agentLevelServices = app()->make(AgentLevelServices::class);
         $levelInfo = $agentLevelServices->getLevelInfo($data['level_id']);
         if (!$levelInfo) {
-            throw new ValidateException('所选择的分销等级不存在或者删除，请重新选择');
+            throw new AdminException(100026);
         }
         $task = $this->dao->getOne(['level_id' => $data['level_id'], 'type' => $data['type'], 'is_del' => 0]);
         if (($id && $task && $task['id'] != $id) || (!$id && $task)) {
-            throw new ValidateException('该等级已存在此类型任务');
+            throw new AdminException(400444);
         }
         $taskList = $this->dao->getTypTaskList($data['type']);
         if ($taskList) {
             foreach ($taskList as $taskInfo) {
                 if (is_null($taskInfo['grade'])) continue;
                 if ($levelInfo['grade'] > $taskInfo['grade'] && $data['number'] <= $taskInfo['number']) {
-                    throw new ValidateException('不能小于低等级同类型任务限定数量');
+                    throw new AdminException(400445);
                 }
                 if ($levelInfo['grade'] < $taskInfo['grade'] && $data['number'] >= $taskInfo['number']) {
-                    throw new ValidateException('不能大于高等级同类型任务限定数量');
+                    throw new AdminException(400446);
                 }
             }
         }

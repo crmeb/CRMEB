@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -40,7 +40,7 @@ class UserExtractController
     public function bank(Request $request)
     {
         $uid = (int)$request->uid();
-        return app('json')->successful($this->services->bank($uid));
+        return app('json')->success($this->services->bank($uid));
     }
 
     /**
@@ -62,21 +62,21 @@ class UserExtractController
         ]);
         $extractType = Config::get('pay.extractType', []);
         if (!in_array($extractInfo['extract_type'], $extractType))
-            return app('json')->fail('提现方式不存在');
-        if (!preg_match('/^[0-9]+(.[0-9]{1,2})?$/', (float)$extractInfo['money'])) return app('json')->fail('提现金额输入有误');
+            return app('json')->fail(410114);
+        if (!preg_match('/^[0-9]+(.[0-9]{1,2})?$/', (float)$extractInfo['money'])) return app('json')->fail(410115);
         if (!$extractInfo['cardnum'] == '')
             if (!preg_match('/^([1-9]{1})(\d{15}|\d{16}|\d{18})$/', $extractInfo['cardnum']))
-                return app('json')->fail('银行卡号输入有误');
+                return app('json')->fail(410116);
         if ($extractInfo['extract_type'] == 'alipay') {
-            if (trim($extractInfo['name']) == '') return app('json')->fail('请输入支付宝账号');
+            if (trim($extractInfo['name']) == '') return app('json')->fail(410117);
         } else if ($extractInfo['extract_type'] == 'bank') {
-            if (!$extractInfo['cardnum']) return app('json')->fail('请输入银行卡账号');
-            if (!$extractInfo['bankname']) return app('json')->fail('请输入开户行信息');
+            if (!$extractInfo['cardnum']) return app('json')->fail(410118);
+            if (!$extractInfo['bankname']) return app('json')->fail(410119);
         }
         $uid = (int)$request->uid();
         if ($this->services->cash($uid, $extractInfo))
-            return app('json')->successful('申请提现成功!');
+            return app('json')->success(410120);
         else
-            return app('json')->fail('提现失败');
+            return app('json')->fail(410121);
     }
 }

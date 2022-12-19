@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -11,7 +11,6 @@
 namespace app\api\controller\v1\store;
 
 use app\Request;
-use app\services\other\QrcodeServices;
 use app\services\product\product\StoreCategoryServices;
 use app\services\product\product\StoreProductReplyServices;
 use app\services\product\product\StoreProductServices;
@@ -38,7 +37,11 @@ class StoreProductController
     /**
      * 商品列表
      * @param Request $request
+     * @param StoreCategoryServices $services
      * @return mixed
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
      */
     public function lst(Request $request, StoreCategoryServices $services)
     {
@@ -63,6 +66,10 @@ class StoreProductController
         }
         if ($where['ids'] && is_string($where['ids'])) {
             $where['ids'] = explode(',', $where['ids']);
+            foreach ($where['ids'] as $key => &$item) {
+                $where['ids'][$key] = (int)$item;
+                if ($where['ids'][$key] == 0) unset($where['ids'][$key]);
+            }
         }
         if (!$where['ids']) {
             unset($where['ids']);
@@ -70,7 +77,7 @@ class StoreProductController
         $type = 'big';
         $field = ['image', 'recommend_image'];
         $list = $this->services->getGoodsList($where, (int)$request->uid());
-        return app('json')->successful(get_thumb_water($list, $type, $field));
+        return app('json')->success(get_thumb_water($list, $type, $field));
     }
 
     /**
@@ -81,41 +88,8 @@ class StoreProductController
      */
     public function code(Request $request, $id)
     {
-        $id = (int)$id;
-        if (!$id || !$this->services->isValidProduct($id)) {
-            return app('json')->fail('商品不存在或已下架');
-        }
-        $userType = $request->get('user_type', 'wechat');
-        $user = $request->user();
-        try {
-            switch ($userType) {
-                case 'wechat':
-                    //公众号
-                    $name = $id . '_product_detail_' . $user['uid'] . '_is_promoter_' . $user['is_promoter'] . '_wap.jpg';
-                    /** @var QrcodeServices $qrcodeService */
-                    $qrcodeService = app()->make(QrcodeServices::class);
-                    $url = $qrcodeService->getWechatQrcodePath($name, '/pages/goods_details/index?id=' . $id . '&spread=' . $user['uid']);
-                    if ($url === false)
-                        return app('json')->fail('二维码生成失败');
-                    else
-                        return app('json')->successful(['code' => image_to_base64($url)]);
-                    break;
-                case 'routine':
-                    /** @var QrcodeServices $qrcodeService */
-                    $qrcodeService = app()->make(QrcodeServices::class);
-                    $url = $qrcodeService->getRoutineQrcodePath($id, $user['uid'], 0, ['is_promoter' => $user['is_promoter']]);
-                    if (!$url)
-                        return app('json')->fail('二维码生成失败');
-                    else
-                        return app('json')->successful(['code' => $url]);
-            }
-        } catch (\Exception $e) {
-            return app('json')->fail($e->getMessage(), [
-                'code' => $e->getCode(),
-                'line' => $e->getLine(),
-                'message' => $e->getMessage()
-            ]);
-        }
+        $code = $this->services->getCode((int)$id, $request->get('user_type', 'wechat'), $request->user());
+        return app('json')->success(['code' => $code]);
     }
 
     /**
@@ -124,16 +98,23 @@ class StoreProductController
      * @param $id
      * @param int $type
      * @return mixed
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
      */
     public function detail(Request $request, $id, $type = 0)
     {
         $data = $this->services->productDetail($request, (int)$id, (int)$type);
-        return app('json')->successful($data);
+        return app('json')->success($data);
     }
 
     /**
      * 为你推荐
+     * @param Request $request
      * @return mixed
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
      */
     public function product_hot(Request $request)
     {
@@ -148,8 +129,8 @@ class StoreProductController
      * @param $type
      * @return mixed
      * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
      * @throws \think\db\exception\ModelNotFoundException
-     * @throws \think\exception\DbException
      */
     public function groom_list(Request $request, $type)
     {
@@ -170,7 +151,7 @@ class StoreProductController
         } else if ($type == 5) {//TODO 会员商品
             $info['list'] = $this->services->getRecommendProduct($request->uid(), 'is_vip');//TODO 会员商品
         }
-        return app('json')->successful($info);
+        return app('json')->success($info);
     }
 
     /**
@@ -183,15 +164,17 @@ class StoreProductController
         /** @var StoreProductReplyServices $replyService */
         $replyService = app()->make(StoreProductReplyServices::class);
         $count = $replyService->productReplyCount($id);
-        return app('json')->successful($count);
+        return app('json')->success($count);
     }
 
     /**
      * 获取商品评论
      * @param Request $request
      * @param $id
-     * @param $type
      * @return mixed
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
      */
     public function reply_list(Request $request, $id)
     {
@@ -201,7 +184,7 @@ class StoreProductController
         /** @var StoreProductReplyServices $replyService */
         $replyService = app()->make(StoreProductReplyServices::class);
         $list = $replyService->getProductReplyList($id, $type);
-        return app('json')->successful(get_thumb_water($list, 'mid', ['pics']));
+        return app('json')->success(get_thumb_water($list, 'big', ['pics']));
     }
 
     /**
@@ -214,7 +197,7 @@ class StoreProductController
         $where = $request->getMore([
             [['time_type', 'd'], 0]
         ]);
-        return app('json')->successful($this->services->getAdvanceList($where));
+        return app('json')->success($this->services->getAdvanceList($where));
     }
 
 }

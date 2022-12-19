@@ -1,0 +1,126 @@
+.
+├── activity
+│   ├── advance
+│   ├── bargain
+│   ├── combination
+│   ├── coupon
+│   ├── integral
+│   ├── live
+│   ├── lottery
+│   └── seckill
+├── agent
+│   ├── AgentLevelDao.php
+│   ├── AgentLevelTaskDao.php
+│   ├── AgentLevelTaskRecordDao.php
+│   └── DivisionAgentApplyDao.php
+├── article
+│   ├── ArticleCategoryDao.php
+│   ├── ArticleContentDao.php
+│   └── ArticleDao.php
+├── diy
+│   ├── DiyDao.php
+│   ├── PageCategoryDao.php
+│   └── PageLinkDao.php
+├── order
+│   ├── DeliveryServiceDao.php
+│   ├── OtherOrderDao.php
+│   ├── OtherOrderStatusDao.php
+│   ├── StoreCartDao.php
+│   ├── StoreOrderCartInfoDao.php
+│   ├── StoreOrderDao.php
+│   ├── StoreOrderEconomizeDao.php
+│   ├── StoreOrderInvoiceDao.php
+│   ├── StoreOrderRefundDao.php
+│   ├── StoreOrderStatusDao.php
+│   ├── StoreOrderStoreOrderCartInfoDao.php
+│   └── StoreOrderStoreOrderStatusDao.php
+├── other
+│   ├── AgreementDao.php
+│   ├── AuxiliaryDao.php
+│   ├── CacheDao.php
+│   ├── CategoryDao.php
+│   ├── QrcodeDao.php
+│   └── TemplateMessageDao.php
+├── product
+│   ├── product
+│   └── sku
+├── service
+│   ├── StoreServiceAuxiliaryDao.php
+│   ├── StoreServiceDao.php
+│   ├── StoreServiceFeedbackDao.php
+│   ├── StoreServiceLogDao.php
+│   ├── StoreServiceRecordDao.php
+│   └── StoreServiceSpeechcraftDao.php
+├── shipping
+│   ├── ExpressDao.php
+│   ├── ShippingTemplatesDao.php
+│   ├── ShippingTemplatesFreeCityDao.php
+│   ├── ShippingTemplatesFreeDao.php
+│   ├── ShippingTemplatesNoDeliveryCityDao.php
+│   ├── ShippingTemplatesNoDeliveryDao.php
+│   ├── ShippingTemplatesRegionCityDao.php
+│   ├── ShippingTemplatesRegionDao.php
+│   └── SystemCityDao.php
+├── sms
+│   ├── SmsAdminDao.php
+│   └── SmsRecordDao.php
+├── system
+│   ├── admin
+│   ├── attachment
+│   ├── config
+│   ├── log
+│   ├── statistics
+│   ├── store
+│   ├── AppVersionDao.php
+│   ├── MessageSystemDao.php
+│   ├── SystemMenusDao.php
+│   ├── SystemNotificationDao.php
+│   └── SystemUserLevelDao.php
+├── user
+│   ├── MemberCardBatchDao.php
+│   ├── MemberCardDao.php
+│   ├── MemberRightDao.php
+│   ├── MemberShipDao.php
+│   ├── UserAddressDao.php
+│   ├── UserAuthDao.php
+│   ├── UserBillDao.php
+│   ├── UserBillStoreOrderDao.php
+│   ├── UserBrokerageDao.php
+│   ├── UserBrokerageFrozenDao.php
+│   ├── UserCancelDao.php
+│   ├── UserDao.php
+│   ├── UserExtractDao.php
+│   ├── UserFriendsDao.php
+│   ├── UserGroupDao.php
+│   ├── UserInvoiceDao.php
+│   ├── UserLabelCateDao.php
+│   ├── UserLabelDao.php
+│   ├── UserLabelRelationDao.php
+│   ├── UserLevelDao.php
+│   ├── UserMoneyDao.php
+│   ├── UserRechargeDao.php
+│   ├── UserSearchDao.php
+│   ├── UserSignDao.php
+│   ├── UserSpreadDao.php
+│   ├── UserStoreOrderDao.php
+│   ├── UserTaskFinishDao.php
+│   ├── UserUserBillDao.php
+│   ├── UserUserBrokerageDao.php
+│   ├── UserVisitDao.php
+│   └── UserWechatUserDao.php
+├── wechat
+│   ├── WechatKeyDao.php
+│   ├── WechatMediaDao.php
+│   ├── WechatMenuDao.php
+│   ├── WechatMessageDao.php
+│   ├── WechatNewsCategoryDao.php
+│   ├── WechatQrcodeCateDao.php
+│   ├── WechatQrcodeDao.php
+│   ├── WechatQrcodeRecordDao.php
+│   ├── WechatReplyDao.php
+│   ├── WechatReplyKeyDao.php
+│   └── WechatUserDao.php
+├── BaseDao.php
+└── filetree.txt
+
+29 directories, 95 files

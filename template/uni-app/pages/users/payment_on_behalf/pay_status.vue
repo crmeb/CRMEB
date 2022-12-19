@@ -2,20 +2,20 @@
 	<view :style="colorStyle" class="main">
 		<view class='payment-status'>
 			<view class='iconfont icons icon-duihao2 bg-color'></view>
-			<view class='status'>代付成功</view>
+			<view class='status'>{{$t(`代付成功`)}}</view>
 			<view class='wrapper'>
-				<view class='itemCom'> <text class="rmb">¥</text> {{resData.pay_price || 0.00}}</view>
+				<view class='itemCom'> <text class="rmb">{{$t(`￥`)}}</text> {{resData.pay_price || 0.00}}</view>
 			</view>
 			<view class="head-other">
 				<view class="user-img">
 					<image class="" :src="resData.avatar" mode=""></image>
 				</view>
 				<view class="order-status">
-					谢谢你为我付款，还可以再去看看其他商品哟~
+					{{$t(`谢谢你为我付款，还可以再去看看其他商品哟~`)}}
 				</view>
 			</view>
 		</view>
-		<button @click="goIndex" class='returnBnt' formType="submit" hover-class='none'>返回首页</button>
+		<button @click="goIndex" class='returnBnt' formType="submit" hover-class='none'>{{$t(`返回首页`)}}</button>
 	</view>
 </template>
 
@@ -57,7 +57,7 @@
 		onLoad(options) {
 			this.options = options
 			if (!options.order_id) return this.$util.Tips({
-				title: '缺少参数无法查看订单支付状态'
+				title: this.$t(`缺少参数无法查看订单支付状态`)
 			}, {
 				tab: 3,
 				url: 1
@@ -74,10 +74,9 @@
 		methods: {
 			getDetail() {
 				friendDetail(this.orderId).then(res => {
-					console.log(res)
 					if (this.resData.paid == 0) {
 						return this.$util.Tips({
-							title: '该订单暂未支付'
+							title: this.$t(`该订单暂未支付`)
 						}, {
 							tab: 3,
 							url: 1
@@ -99,13 +98,13 @@
 			getOrderPayInfo() {
 				let that = this;
 				uni.showLoading({
-					title: '正在加载中'
+					title: that.$t(`正在加载中`)
 				});
 				getOrderDetail(that.orderId).then(res => {
 					uni.hideLoading();
 					that.$set(that, 'order_pay_info', res.data);
 					uni.setNavigationBarTitle({
-						title: res.data.paid ? '支付成功' : '未支付'
+						title: res.data.paid ? that.$t(`支付成功`) : that.$t(`未支付`)
 					});
 					this.loading = true
 				}).catch(err => {

@@ -11,8 +11,13 @@ import {
 	imageBase64
 } from "@/api/public";
 import {
-	getProductCode
+	getProductCode, // 普通商品小程序code
 } from "@/api/store.js";
+import {
+	scombinationCode, // 拼团code
+	seckillCode // 秒杀
+} from '@/api/activity.js';
+import i18n from '../utils/lang.js';
 let sysHeight = uni.getSystemInfoSync().statusBarHeight + 'px';
 export const sharePoster = {
 	data() {
@@ -62,50 +67,21 @@ export const sharePoster = {
 				})
 				.catch(() => {});
 		},
-		/**
-		 * 生成海报
-		 */
-		goPoster() {
+		initPoster(arr2) {
 			let that = this;
-			that.posters = false;
-			that.$set(that, "canvasStatus", true);
-			let arr2
-			// #ifdef MP
-			arr2 = [that.posterbackgd, that.storeImage, that.PromotionCode];
-			if (that.isDown)
-				return that.$util.Tips({
-					title: "正在下载海报,请稍后再试",
-				});
-			// #endif
-			// #ifdef H5 || APP-PLUS
-			arr2 = [that.posterbackgd, that.storeImageBase64, that.PromotionCode];
-			if (!that.storeImageBase64)
-				return that.$util.Tips({
-					title: "正在下载海报,请稍后再试",
-				});
-			// #endif
 			uni.getImageInfo({
 				src: that.PromotionCode,
-				fail: function(res) {
-					// #ifdef H5
-					return that.$util.Tips({
-						title: res,
-					});
-					// #endif
-					// #ifdef MP
-					return that.$util.Tips({
-						title: "正在下载海报,请稍后再试",
-					});
-					// #endif
-				},
 				success() {
 					if (arr2[2] == "") {
 						//海报二维码不存在则从新下载
-						that.downloadFilePromotionCode(function(msgPromotionCode) {
+						that.downloadFilePromotionCode(function(
+							msgPromotionCode) {
 							arr2[2] = msgPromotionCode;
 							if (arr2[2] == "")
 								return that.$util.Tips({
-									title: "海报二维码生成失败！",
+									title: i18n.t(
+										`海报二维码生成失败`
+									),
 								});
 							that.$util.PosterCanvas(
 								arr2,
@@ -113,11 +89,20 @@ export const sharePoster = {
 								that.storeInfo.price,
 								that.storeInfo.ot_price,
 								function(tempFilePath) {
-									that.$set(that, "posterImage", tempFilePath);
-									that.$set(that, "posterImageStatus", true);
-									that.$set(that, "canvasStatus", false);
-									that.$set(that, "actionSheetHidden", !that
-										.actionSheetHidden);
+									that.$set(that,
+										"posterImage",
+										tempFilePath);
+									that.$set(that,
+										"posterImageStatus",
+										true);
+									that.$set(that,
+										"canvasStatus",
+										false);
+									that.$set(that,
+										"actionSheetHidden",
+										!that
+										.actionSheetHidden
+									);
 								}
 							);
 						});
@@ -130,28 +115,94 @@ export const sharePoster = {
 								that.storeInfo.price,
 								that.storeInfo.ot_price,
 								function(tempFilePath) {
-									that.$set(that, "posterImage", tempFilePath);
-									that.$set(that, "posterImageStatus", true);
-									that.$set(that, "canvasStatus", false);
-									that.$set(that, "actionSheetHidden", !that
-										.actionSheetHidden);
+									that.$set(that,
+										"posterImage",
+										tempFilePath);
+									that.$set(that,
+										"posterImageStatus",
+										true);
+									that.$set(that,
+										"canvasStatus",
+										false);
+									that.$set(that,
+										"actionSheetHidden",
+										!that
+										.actionSheetHidden
+									);
 								}
 							);
 						})
 
 					}
 				},
+				fail: function(res) {
+					// #ifdef H5
+					return that.$util.Tips({
+						title: res,
+					});
+					// #endif
+					// #ifdef MP
+					return that.$util.Tips({
+						title: i18n.t(`正在下载海报,请稍后再试`),
+					});
+					// #endif
+				},
 			});
 		},
+		/**
+		 * 生成海报
+		 */
+		async goPoster(type) {
+			let that = this;
+			that.posters = false;
+			that.$set(that, "canvasStatus", true);
+			let arr2
+			// #ifdef MP
+			let met = type === 'scombination' ? scombinationCode(that.id) : type === 'seckill' ? seckillCode(that
+				.id) : getProductCode(that.id)
+			met.then((res) => {
+					uni.downloadFile({
+						url: that.setDomain(res.data.code),
+						success: function(res) {
+							that.$set(that, "isDown", false);
+							that.$set(that, "PromotionCode", res.tempFilePath)
+							if (typeof successFn == "function")
+								successFn && successFn(res.tempFilePath);
+							arr2 = [that.posterbackgd, that.storeImage, that.PromotionCode];
+							that.initPoster(arr2)
+						},
+						fail: function() {
+							that.$set(that, "isDown", false);
+							that.$set(that, "PromotionCode", "");
+						},
+					});
+				})
+				.catch((err) => {
+					that.$set(that, "isDown", false);
+					that.$set(that, "PromotionCode", "");
+					return that.$util.Tips({
+						title: err,
+					});
+				});
+			// #endif
+			// #ifdef H5 || APP-PLUS
+			arr2 = [that.posterbackgd, that.storeImageBase64, that.PromotionCode];
+			if (!that.storeImageBase64)
+				return that.$util.Tips({
+					title: i18n.t(`正在下载海报,请稍后再试`),
+				});
+			that.initPoster(arr2)
+			// #endif
+		},
 		//替换安全域名
-		setDomain: function(url) {
+		setDomain(url) {
 			url = url ? url.toString() : "";
 			//本地调试打开,生产请注销
 			if (url.indexOf("https://") > -1) return url;
 			else return url.replace("http://", "https://");
 		},
 		//获取海报产品图
-		downloadFilestoreImage: function() {
+		downloadFilestoreImage() {
 			let that = this;
 			uni.downloadFile({
 				url: that.setDomain(that.storeInfo.image),
@@ -172,7 +223,7 @@ export const sharePoster = {
 		 * @param function successFn 下载完成回调
 		 *
 		 */
-		downloadFilePromotionCode: function(successFn) {
+		downloadFilePromotionCode(successFn) {
 			let that = this;
 			// #ifdef MP
 			getProductCode(that.id)
@@ -194,6 +245,9 @@ export const sharePoster = {
 				.catch((err) => {
 					that.$set(that, "isDown", false);
 					that.$set(that, "PromotionCode", "");
+					return that.$util.Tips({
+						title: err,
+					});
 				});
 			// #endif
 			// #ifdef APP-PLUS

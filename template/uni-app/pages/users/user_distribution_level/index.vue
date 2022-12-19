@@ -1,7 +1,7 @@
 <template>
 	<view :style="colorStyle">
 		<view class='member-center'>
-			<image class="bag" src="../static/jf-head.png" mode=""></image>
+			<image class="bag" src="../../../static/images/jf-head.png" mode=""></image>
 			<view class='header'>
 				<swiper class="swiper" :current="swiperIndex" previous-margin="55rpx" next-margin="55rpx"
 					@change="swiperChange">
@@ -15,7 +15,7 @@
 										<view class="text">
 											<view class="name">{{userInfo.nickname}}</view>
 											<view class="level" :class="{'level-sty':item.grade > (levelInfo.grade || 0)}">
-												{{item.name}}
+												{{$t(item.name)}}
 											</view>
 										</view>
 									</view>
@@ -30,13 +30,13 @@
 								<template>
 									<view class="level-grow-wrap">
 										<view class="level-info" :class="{'lock-sty':item.grade > (levelInfo.grade || 0)}">
-											<view class="level-info-title">一级分佣上浮</view>
+											<view class="level-info-title">{{$t(`一级分佣上浮`)}}</view>
 											<view class="num">{{item.one_brokerage}}
 												<text class="percent">%</text>
 											</view>
 										</view>
 										<view class="level-info" :class="{'lock-sty':item.grade > (levelInfo.grade || 0)}">
-											<view class="level-info-title">二级分佣上浮</view>
+											<view class="level-info-title">{{$t(`二级分佣上浮`)}}</view>
 											<view class="num">{{item.two_brokerage}}<text class="percent">%</text>
 											</view>
 										</view>
@@ -54,7 +54,7 @@
 						<view class="line-left">
 						</view>
 						<text>
-							快速升级技巧
+							{{$t(`快速升级技巧`)}}
 						</text>
 					</view>
 					<view class="task">
@@ -71,11 +71,11 @@
 						<view class="text">
 							<view class="title">
 								<view class="name line2">
-									{{item.name}}
+									{{$t(item.name)}}
 									<text class="iconfont icon-wenti" @click="opHelp(index)"></text>
 								</view>
 
-								<text class="mark">{{item.finish?'已完成':'未完成'}}</text>
+								<text class="mark">{{item.finish?$t(`已完成`):$t(`未完成`)}}</text>
 							</view>
 							<view class="process">
 								<view
@@ -83,7 +83,7 @@
 									class="fill"></view>
 							</view>
 							<view class="info-box">
-								<view class="info">{{item.finish ? '' : item.task_type_title}}</view>
+								<view class="info">{{item.finish ? '' : $t(item.task_type_title)}}</view>
 								<view class="link" hover-class="none">
 									<text class="new-number">{{item.new_number}}</text>
 									/{{item.number}}
@@ -195,7 +195,6 @@
 					if (this.levelInfo.rate > 100) {
 						this.levelInfo.rate = 100;
 					}
-					console.log(level_info, level_list)
 					const index = level_list.findIndex((
 							grade, v
 						) =>
@@ -266,7 +265,7 @@
 			}
 		},
 		onReachBottom() {
-			if (!that.hotScroll) {
+			if (!this.hotScroll) {
 				this.get_host_product();
 			}
 		}

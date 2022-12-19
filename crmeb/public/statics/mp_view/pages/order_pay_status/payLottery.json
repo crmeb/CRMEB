@@ -1,9 +1,0 @@
-{
-  "navigationBarTitleText": "支付成功",
-  "usingComponents": {
-    "authorize": "/components/Authorize",
-    "grids-lottery": "/components/lottery/index",
-    "lottery-aleart": "/pages/order_pay_status/components/lotteryAleart",
-    "user-address": "/pages/order_pay_status/components/userAddress"
-  }
-}

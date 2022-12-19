@@ -10,12 +10,12 @@
 
     <Row class="mb10 content">
       <Col span="16">
-      <WangEditor style="width: 100%" :content="formValidate.content" @editorContent="getEditorContent"></WangEditor>
+        <WangEditor style="width: 100%" :content="formValidate.content" @editorContent="getEditorContent"></WangEditor>
       </Col>
       <Col span="6" style="width: 33%">
-      <div class="ifam">
-        <div class="content" v-html="content"></div>
-      </div>
+        <div class="ifam">
+          <div class="content" v-html="content"></div>
+        </div>
       </Col>
     </Row>
     <!-- <Row class="mb10 content">
@@ -23,8 +23,12 @@
         >保存</Button
       >
     </Row> -->
-    <Card :bordered="false" dis-hover class="fixed-card"
-      :style="{ left: `${!menuCollapse ? '200px' : isMobile ? '0' : '80px'}` }">
+    <Card
+      :bordered="false"
+      dis-hover
+      class="fixed-card"
+      :style="{ left: `${!menuCollapse ? '200px' : isMobile ? '0' : '80px'}` }"
+    >
       <div class="acea-row row-center">
         <Button class="bnt" type="primary" @click="save" :loading="loadingExist">保存</Button>
       </div>
@@ -33,48 +37,47 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
-import WangEditor from "@/components/wangEditor/index.vue";
-import { getAgreements, setAgreements } from "@/api/system";
+import { mapState } from 'vuex';
+import WangEditor from '@/components/wangEditor/index.vue';
+import { getAgreements, setAgreements } from '@/api/system';
 
 export default {
   components: { WangEditor },
   data() {
     return {
       loadingExist: false,
-      currentTab: "1",
+      currentTab: '1',
       headerList: [
-        { label: "付费会员协议", value: "1" },
-        { label: "代理商协议", value: "2" },
-        { label: "隐私协议", value: "3" },
-        { label: "用户协议", value: "4" },
-        { label: "注销协议", value: "5" },
-        { label: "积分协议", value: "6" },
+        { label: '付费会员协议', value: '1' },
+        { label: '代理商协议', value: '2' },
+        { label: '隐私协议', value: '3' },
+        { label: '用户协议', value: '4' },
+        { label: '注销协议', value: '5' },
+        { label: '积分协议', value: '6' },
       ],
       ueConfig: {
         autoHeightEnabled: false,
         initialFrameHeight: 500,
-        initialFrameWidth: "100%",
-        UEDITOR_HOME_URL: "/admin/UEditor/",
-        serverUrl: "",
+        initialFrameWidth: '100%',
+        UEDITOR_HOME_URL: '/admin/UEditor/',
+        serverUrl: '',
       },
       id: 0,
       formValidate: {
-        content: "",
+        content: '',
       },
-      content: "",
+      content: '',
       spinShow: false,
     };
   },
   computed: {
-    ...mapState("admin/layout", ["isMobile", "menuCollapse"]),
+    ...mapState('admin/layout', ['isMobile', 'menuCollapse']),
   },
   created() {
     this.changeTab(this.currentTab);
   },
   methods: {
     save() {
-      console.log(this.content)
       this.formValidate.content = this.content;
       setAgreements(this.formValidate)
         .then(async (res) => {
@@ -88,7 +91,7 @@ export default {
       this.content = content;
     },
     changeTab(data) {
-      this.formValidate.content = " "
+      this.formValidate.content = ' ';
       getAgreements(data).then((res) => {
         this.formValidate.id = res.data.id || 0;
         this.formValidate.type = res.data.type;

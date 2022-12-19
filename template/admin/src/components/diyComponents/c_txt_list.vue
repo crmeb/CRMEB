@@ -2,17 +2,8 @@
   <div class="c_product" v-if="datas">
     <div class="title">{{ datas[name].title }}</div>
     <div class="list-box">
-      <draggable
-        class="dragArea list-group"
-        :list="datas[name].list"
-        group="peoples"
-        handle=".move-icon"
-      >
-        <div
-          class="item"
-          v-for="(item, index) in datas[name].list"
-          :key="index"
-        >
+      <draggable class="dragArea list-group" :list="datas[name].list" group="peoples" handle=".move-icon">
+        <div class="item" v-for="(item, index) in datas[name].list" :key="index">
           <div class="move-icon">
             <span class="iconfont icondrag2"></span>
           </div>
@@ -39,12 +30,7 @@
                   <span>{{ list.title }}</span>
                 </Col>
                 <Col span="19" class="slider-box">
-                  <Input
-                    v-model="list.val"
-                    :placeholder="list.pla"
-                    :maxlength="list.max"
-                    style="text-align: right"
-                  />
+                  <Input v-model="list.val" :placeholder="list.pla" :maxlength="list.max" style="text-align: right" />
                 </Col>
               </div>
               <!-- <span>{{ list.title }}</span>
@@ -57,40 +43,19 @@
             <div class="con-item" v-if="item.link">
               <span>{{ item.link.title }}</span>
               <Select v-model="item.link.activeVal" style="">
-                <Option
-                  v-for="(item, j) in item.link.optiops"
-                  :value="item.value"
-                  :key="j"
-                  >{{ item.label }}
-                </Option>
+                <Option v-for="(item, j) in item.link.optiops" :value="item.value" :key="j">{{ item.label }} </Option>
               </Select>
             </div>
           </div>
-          <div
-            class="delete"
-            @click.stop="bindDelete(index)"
-            v-if="datas[name].max > 1"
-          >
+          <div class="delete" @click.stop="bindDelete(index)" v-if="datas[name].max > 1">
             <Icon type="ios-close-circle" size="26" />
           </div>
         </div>
       </draggable>
     </div>
     <div v-if="datas[name]">
-      <div
-        class="add-btn"
-        @click="addHotTxt"
-        v-if="datas[name].list.length < datas[name].max"
-      >
-        <Button
-          type="primary"
-          ghost
-          style="
-            width: 100%;
-            height: 40px;
-            border-color: #1890ff;
-            color: #1890ff;
-          "
+      <div class="add-btn" @click="addHotTxt" v-if="datas[name].list.length < datas[name].max">
+        <Button type="primary" ghost style="width: 100%; height: 40px; border-color: #1890ff; color: #1890ff"
           >添加模块</Button
         >
       </div>
@@ -100,11 +65,11 @@
 </template>
 
 <script>
-import vuedraggable from "vuedraggable";
-import linkaddress from "@/components/linkaddress";
+import vuedraggable from 'vuedraggable';
+import linkaddress from '@/components/linkaddress';
 
 export default {
-  name: "c_txt_list",
+  name: 'c_txt_list',
   props: {
     name: {
       type: String,
@@ -114,7 +79,7 @@ export default {
     },
     configNum: {
       type: Number | String,
-      default: "default",
+      default: 'default',
     },
   },
   components: {
@@ -146,32 +111,27 @@ export default {
       this.$refs.linkaddres.modals = true;
     },
     linkUrl(e) {
-      this.datas[this.name].list[this.activeIndex].chiild[this.keyIndex].val =
-        e;
+      this.datas[this.name].list[this.activeIndex].chiild[this.keyIndex].val = e;
     },
     addHotTxt() {
       let val = {
         children: [
           {
             max: 20,
-            pla: "选填，不超过四个字",
-            title: "标题",
-            val: "CRMEB v4.2.2 正式发布",
+            pla: '选填，不超过四个字',
+            title: '标题',
+            val: 'CRMEB v4.2.2 正式发布',
           },
           {
             max: 99,
-            pla: "选填",
-            title: "链接",
-            val: "链接",
+            pla: '选填',
+            title: '链接',
+            val: '链接',
           },
         ],
       };
-      if (this.name == "newList") {
-        let obj = JSON.parse(
-          JSON.stringify(
-            this.datas[this.name].list[this.datas[this.name].list.length - 1]
-          )
-        );
+      if (this.name == 'newList') {
+        let obj = JSON.parse(JSON.stringify(this.datas[this.name].list[this.datas[this.name].list.length - 1]));
         this.datas[this.name].list.push(obj);
         return;
       }
@@ -179,11 +139,7 @@ export default {
         let txtListData = this.$store.state.userInfo.txtListData;
         this.datas[this.name].list.push(txtListData);
       } else {
-        let obj = JSON.parse(
-          JSON.stringify(
-            this.datas[this.name].list[this.datas[this.name].list.length - 1]
-          )
-        );
+        let obj = JSON.parse(JSON.stringify(this.datas[this.name].list[this.datas[this.name].list.length - 1]));
         this.datas[this.name].list.push(obj);
       }
     },
@@ -191,7 +147,7 @@ export default {
     bindDelete(index) {
       if (this.datas[this.name].list.length == 1) {
         let itemObj = this.datas[this.name].list[0];
-        this.$store.commit("userInfo/txtList", itemObj);
+        this.$store.commit('userInfo/txtList', itemObj);
       }
       this.datas[this.name].list.splice(index, 1);
     },

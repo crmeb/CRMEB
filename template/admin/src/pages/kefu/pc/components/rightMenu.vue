@@ -25,7 +25,7 @@
         <div class="user-info">
           <div class="item">
             <span>手机号</span>
-            {{ activeUserInfo.phone || "暂无" }}
+            {{ activeUserInfo.phone || '暂无' }}
           </div>
           <!-- <div class="item">
                         <span>分组</span>
@@ -45,11 +45,7 @@
           <div class="label-list">
             <span>用户标签</span>
             <div class="con">
-              <div
-                class="label-item"
-                v-for="(item, index) in activeUserInfo.labelNames"
-                :key="index"
-              >
+              <div class="label-item" v-for="(item, index) in activeUserInfo.labelNames" :key="index">
                 {{ item }}
               </div>
             </div>
@@ -75,9 +71,7 @@
             <span>余额</span>
             {{ activeUserInfo.now_money }}
           </div>
-          <div class="item">
-            <span>推广员</span>{{ activeUserInfo.is_promoter ? "是" : "否" }}
-          </div>
+          <div class="item"><span>推广员</span>{{ activeUserInfo.is_promoter ? '是' : '否' }}</div>
           <div class="item">
             <span>生日</span>
             {{ activeUserInfo.birthday | getDay }}
@@ -109,47 +103,23 @@
           />
         </div>
         <div v-if="orderList.length > 0">
-          <Scroll
-            :on-reach-bottom="orderReachBottom"
-            height="650"
-            class="right-scroll"
-          >
+          <Scroll :on-reach-bottom="orderReachBottom" height="650" class="right-scroll">
             <div class="order-list">
-              <div
-                class="order-item"
-                v-for="(item, index) in orderList"
-                :key="index"
-              >
+              <div class="order-item" v-for="(item, index) in orderList" :key="index">
                 <div class="head">
                   <div class="left">
                     <div class="font-box">
-                      <span
-                        class="iconfont icondaishouhuo"
-                        v-if="item.status == 1"
-                      ></span>
-                      <span
-                        class="iconfont icondaifahuo"
-                        v-if="item.status == 0"
-                      ></span>
-                      <span
-                        class="iconfont icondaipingjia"
-                        v-if="item.status == 2"
-                      ></span>
-                      <span
-                        class="iconfont iconshouhou-tuikuan"
-                        v-if="item.status < 0"
-                      ></span>
+                      <span class="iconfont icondaishouhuo" v-if="item.status == 1"></span>
+                      <span class="iconfont icondaifahuo" v-if="item.status == 0"></span>
+                      <span class="iconfont icondaipingjia" v-if="item.status == 2"></span>
+                      <span class="iconfont iconshouhou-tuikuan" v-if="item.status < 0"></span>
                     </div>
                     {{ item._status._title }}
                   </div>
                   <div class="time">{{ item._pay_time }}</div>
                 </div>
                 <div class="goods-list" :class="{ auto: !isOrderHidden }">
-                  <div
-                    class="goods-item"
-                    v-for="goods in item.cartInfo"
-                    :key="goods.id"
-                  >
+                  <div class="goods-item" v-for="goods in item.cartInfo" :key="goods.id">
                     <div class="img-box">
                       <img :src="goods.productInfo.image" alt="" />
                     </div>
@@ -160,32 +130,18 @@
                       <div class="sku">
                         {{ goods.productInfo.attrInfo.suk }}
                       </div>
-                      <div class="price">
-                        ¥{{ goods.productInfo.price }} x {{ goods.cart_num }}
-                      </div>
+                      <div class="price">¥{{ goods.productInfo.price }} x {{ goods.cart_num }}</div>
                     </div>
                   </div>
                 </div>
-                <div
-                  class="more-box"
-                  v-if="item.cartInfo.length > 2"
-                  @click.stop="isOrderHidden = !isOrderHidden"
-                >
-                  <span>{{ isOrderHidden ? "展开" : "合上" }}</span>
+                <div class="more-box" v-if="item.cartInfo.length > 2" @click.stop="isOrderHidden = !isOrderHidden">
+                  <span>{{ isOrderHidden ? '展开' : '合上' }}</span>
                 </div>
                 <div class="order-info">
-                  <div class="info-item">
-                    <span>订单编号：</span>{{ item.order_id }}
-                  </div>
-                  <div class="info-item">
-                    <span>付款时间：</span>{{ item._pay_time }}
-                  </div>
-                  <div class="info-item">
-                    <span>邮费：</span>¥ {{ item.pay_postage }}
-                  </div>
-                  <div class="info-item">
-                    <span>实收款：</span>¥ {{ item.pay_price }}
-                  </div>
+                  <div class="info-item"><span>订单编号：</span>{{ item.order_id }}</div>
+                  <div class="info-item"><span>付款时间：</span>{{ item._pay_time }}</div>
+                  <div class="info-item"><span>邮费：</span>¥ {{ item.pay_postage }}</div>
+                  <div class="info-item"><span>实收款：</span>¥ {{ item.pay_price }}</div>
                 </div>
                 <div class="btn-wrapper">
                   <Button
@@ -200,7 +156,7 @@
                     type="info"
                     ghost
                     style="color: #1890ff; border-color: #1890ff"
-                    v-if="item.refund_type != 6"
+                    v-if="item.refund_type == 1 || item.refund_type == 5"
                     @click.stop="orderRecord(item.id)"
                     >退款</Button
                   >
@@ -226,26 +182,10 @@
             </div>
           </Scroll>
         </div>
-        <empty
-          v-if="orderList.length == 0 && orderConfig.type === ''"
-          status="3"
-          msg="暂无订单信息"
-        ></empty>
-        <empty
-          v-if="orderList.length == 0 && orderConfig.type === 0"
-          status="4"
-          msg="暂无未支付订单"
-        ></empty>
-        <empty
-          v-if="orderList.length == 0 && orderConfig.type == 1"
-          status="5"
-          msg="暂无未发货订单"
-        ></empty>
-        <empty
-          v-if="orderList.length == 0 && orderConfig.type == -1"
-          status="6"
-          msg="暂无退款订单"
-        ></empty>
+        <empty v-if="orderList.length == 0 && orderConfig.type === ''" status="3" msg="暂无订单信息"></empty>
+        <empty v-if="orderList.length == 0 && orderConfig.type === 0" status="4" msg="暂无未支付订单"></empty>
+        <empty v-if="orderList.length == 0 && orderConfig.type == 1" status="5" msg="暂无未发货订单"></empty>
+        <empty v-if="orderList.length == 0 && orderConfig.type == -1" status="6" msg="暂无退款订单"></empty>
       </div>
     </template>
     <template v-if="curStatus == 2">
@@ -271,11 +211,7 @@
           />
         </div>
         <div class="list-wrapper" v-if="goodsConfig.buyList.length > 0">
-          <Scroll
-            :on-reach-bottom="goodsReachBottom"
-            height="650"
-            class="right-scroll"
-          >
+          <Scroll :on-reach-bottom="goodsReachBottom" height="650" class="right-scroll">
             <div class="list-item" v-for="item in goodsConfig.buyList">
               <div class="img-box">
                 <img :src="item.image" alt="" />
@@ -299,12 +235,7 @@
     </template>
     <!-- 发货弹窗 -->
     <Modal v-model="isDelivery" title="订单发送货" :footer-hide="true">
-      <delivery
-        v-if="isDelivery"
-        @close="deliveryClose"
-        @ok="deliveryOk"
-        :orderId="orderId"
-      ></delivery>
+      <delivery v-if="isDelivery" @close="deliveryClose" @ok="deliveryOk" :orderId="orderId"></delivery>
     </Modal>
     <!-- 订单备注 -->
     <Modal
@@ -316,41 +247,17 @@
       :closable="false"
       class="none-radius"
     >
-      <remarks
-        :remarkId="remarkId"
-        v-if="isRemarks"
-        @close="deliveryClose"
-        @remarkSuccess="remarkSuccess"
-      ></remarks>
+      <remarks :remarkId="remarkId" v-if="isRemarks" @close="deliveryClose" @remarkSuccess="remarkSuccess"></remarks>
     </Modal>
     <!-- 用户标签 -->
-    <Modal
-      v-model="isUserLabel"
-      :footer-hide="true"
-      width="320"
-      class="label-box"
-      :closable="false"
-      :mask="true"
-    >
+    <Modal v-model="isUserLabel" :footer-hide="true" width="320" class="label-box" :closable="false" :mask="true">
       <p class="label-head" slot="header">
         <span>选择用户标签</span>
       </p>
-      <userLabel
-        v-if="isUserLabel"
-        @close="deliveryClose"
-        :uid="uid"
-        @editLabel="editLabel"
-      ></userLabel>
+      <userLabel v-if="isUserLabel" @close="deliveryClose" :uid="uid" @editLabel="editLabel"></userLabel>
     </Modal>
     <!-- 用户标签 -->
-    <Modal
-      v-model="isUserGroup"
-      :footer-hide="true"
-      width="320"
-      class="label-box"
-      :closable="false"
-      :mask="true"
-    >
+    <Modal v-model="isUserGroup" :footer-hide="true" width="320" class="label-box" :closable="false" :mask="true">
       <p class="label-head" slot="header">
         <span>选择分组</span>
       </p>
@@ -367,10 +274,10 @@
 </template>
 
 <script>
-import delivery from "./delivery";
-import remarks from "./remarks";
-import userLabel from "./userLabel";
-import userGroup from "./userGroup";
+import delivery from './delivery';
+import remarks from './remarks';
+import userLabel from './userLabel';
+import userGroup from './userGroup';
 import {
   userInfo,
   getorderList,
@@ -381,11 +288,11 @@ import {
   productVisit,
   userGroupApi,
   putGroupApi,
-} from "@/api/kefu";
-import empty from "../../components/empty";
-import dayjs from "dayjs";
+} from '@/api/kefu';
+import empty from '../../components/empty';
+import dayjs from 'dayjs';
 export default {
-  name: "rightMenu",
+  name: 'rightMenu',
   components: {
     delivery,
     remarks,
@@ -400,42 +307,42 @@ export default {
     },
     status: {
       type: String | Number,
-      default: "",
+      default: '',
     },
     //用户uid
     uid: {
       type: String | Number,
-      default: "",
+      default: '',
     },
     webType: {
       type: String | Number,
-      default: "",
+      default: '',
     },
   },
   filters: {
     statusFilters: function (value) {
       const statusMap = {
-        "-1": "申请退款",
-        "-2": "退货成功",
-        0: "待发货",
-        1: "待收货",
-        2: "已收货",
-        3: "待评价",
-        "-1": "已退款",
+        '-1': '申请退款',
+        '-2': '退货成功',
+        0: '待发货',
+        1: '待收货',
+        2: '已收货',
+        3: '待评价',
+        '-1': '已退款',
       };
       return statusMap[value];
     },
     getDay(val) {
       if (val) {
-        return dayjs.unix(val).format("YYYY年M月D日");
+        return dayjs.unix(val).format('YYYY年M月D日');
       }
     },
     typeFilters(value) {
       const statusMap = {
-        h5: "H5",
-        wechat: "公众号",
-        routine: "小程序",
-        pc: "PC",
+        h5: 'H5',
+        wechat: '公众号',
+        routine: '小程序',
+        pc: 'PC',
       };
       return statusMap[value];
     },
@@ -444,33 +351,33 @@ export default {
     return {
       userGroup: [],
       userGroupSelect: [],
-      model1: "",
+      model1: '',
       curMenuIndex: 0,
       menuList: [
         {
-          key: "",
-          title: "全部",
+          key: '',
+          title: '全部',
         },
         {
           key: 0,
-          title: "未支付",
+          title: '未支付',
         },
         {
           key: 1,
-          title: "未发货",
+          title: '未发货',
         },
         {
           key: -1,
-          title: "退款中",
+          title: '退款中',
         },
       ],
-      activeUserInfo: "", //用户详情
+      activeUserInfo: '', //用户详情
       curStatus: this.status,
       limit: 10,
       orderConfig: {
         page: 1,
-        type: "",
-        searchTxt: "",
+        type: '',
+        searchTxt: '',
       },
       orderList: [],
       isOrderScroll: true,
@@ -481,15 +388,15 @@ export default {
       goodsTab: [
         {
           key: 0,
-          title: "购买",
+          title: '购买',
         },
         {
           key: 1,
-          title: "足迹",
+          title: '足迹',
         },
         {
           key: 2,
-          title: "热销",
+          title: '热销',
         },
       ],
       isGoodsScroll: true,
@@ -499,9 +406,9 @@ export default {
         buyList: [],
       },
       isUserLabel: false,
-      remarkId: "",
-      orderId: "",
-      storeName: "",
+      remarkId: '',
+      orderId: '',
+      storeName: '',
     };
   },
   watch: {
@@ -513,9 +420,7 @@ export default {
         this.page = 1;
         this.isGoodsScroll = true;
         this.goodsConfig.buyList = [];
-        Promise.all[
-          (this.getUserInfo(), this.getOrderList(), this.getUserGroup())
-        ];
+        Promise.all[(this.getUserInfo(), this.getOrderList(), this.getUserGroup())];
         if (this.goodsConfig.type == 0) {
           this.productCart();
         } else if (this.goodsConfig.type == 1) {
@@ -527,7 +432,7 @@ export default {
     },
     isTourist(nVal, oVal) {
       if (nVal == 1) {
-        this.activeUserInfo = "";
+        this.activeUserInfo = '';
         this.orderList = [];
         this.goodsConfig.buyList = [];
       }
@@ -535,16 +440,11 @@ export default {
   },
   mounted() {
     let self = this;
-    this.bus.$on("selectRightMenu", (arg) => {
+    this.bus.$on('selectRightMenu', (arg) => {
       this.curStatus = arg;
     });
     if (this.uid && this.isTourist == 0)
-      Promise.all[
-        (this.getUserInfo(),
-        this.getOrderList(),
-        this.productCart(),
-        this.getUserGroup())
-      ];
+      Promise.all[(this.getUserInfo(), this.getOrderList(), this.productCart(), this.getUserGroup())];
   },
   methods: {
     // 设置分组
@@ -577,7 +477,7 @@ export default {
       this.isRemarks = true;
     },
     remarkSuccess() {
-      this.remarkId = "";
+      this.remarkId = '';
       this.isRemarks = false;
     },
     //获取左侧用户列表用户详情
@@ -587,7 +487,7 @@ export default {
           this.activeUserInfo = res.data;
         })
         .catch((error) => {
-          this.activeUserInfo = "";
+          this.activeUserInfo = '';
         });
     },
     // 获取订单列表
@@ -718,7 +618,7 @@ export default {
     },
     // 商品推送
     pushGoods(item) {
-      this.$emit("bindPush", item.id);
+      this.$emit('bindPush', item.id);
     },
     // 商品搜索
     productSearch() {

@@ -9,13 +9,13 @@
 						</view>
 						<view class='text'>
 							<view class='line1'>{{userInfo.nickname}}</view>
-							<view class='integral acea-row'><text>积分: {{userInfo.integral}}</text></view>
+							<view class='integral acea-row'><text>{{$t(`积分`)}}: {{userInfo.integral}}</text></view>
 						</view>
 					</view>
 					<navigator class='right acea-row row-middle' hover-class='none'
 						url='/pages/users/user_sgin_list/index'>
 						<view class='iconfont icon-caidan'></view>
-						<view>明细</view>
+						<view>{{$t(`明细`)}}</view>
 					</navigator>
 				</view>
 			</view>
@@ -23,7 +23,7 @@
 				<view class='list acea-row row-between-wrapper'>
 					<view class='item' v-for="(item,index) in signSystemList" :key="index">
 						<view :class='(index+1) == signSystemList.length ? "rewardTxt" : ""'>
-							{{(item.day=='第七天' || item.day=='第7天')?'奖励':item.day}}
+							{{(item.day==$t(`第七天`) || item.day==$t(`第7天`))?$t(`奖励`):$t(item.day)}}
 						</view>
 						<view class='venus'
 							:class="(index + 1 === signSystemList.length ? 'reward' : '') + ' ' +(sign_index >= index + 1 ? 'venusSelect' : '')">
@@ -31,31 +31,31 @@
 						<view class='num' :class="sign_index >= index + 1 ? 'on' : ''">+{{item.sign_num}}</view>
 					</view>
 				</view>
-				<button class='but bg-color on' v-if="userInfo.is_day_sgin">已签到</button>
+				<button class='but bg-color on' v-if="userInfo.is_day_sgin">{{$t(`已签到`)}}</button>
 				<form @submit="goSign" v-else>
-					<button class='but bg-color' formType="submit">立即签到</button>
+					<button class='but bg-color' formType="submit">{{$t(`立即签到`)}}</button>
 				</form>
 				<view class='lock'></view>
 			</view>
 			<view class='wrapper wrapper2'>
-				<view class='tip'>已累计签到</view>
+				<view class='tip'>{{$t(`已累计签到`)}}</view>
 				<view class='list2 acea-row row-center row-bottom'>
 					<view class='item'>{{signCount[0] || 0}}</view>
 					<view class='item'>{{signCount[1] || 0}}</view>
 					<view class='item'>{{signCount[2] || 0}}</view>
 					<view class='item'>{{signCount[3] || 0}}</view>
-					<view class='data'>天</view>
+					<view class='data'>{{$t(`天`)}}</view>
 				</view>
-				<view class='tip2'>据说连续签到第{{day}}天可获得超额积分，一定要坚持签到哦~~~</view>
+				<view class='tip2'>{{$t(`据说连续签到第`)}}{{day}}{{$t(`天可获得超额积分，一定要坚持签到哦~~~`)}}</view>
 				<view class='list3'>
 					<view class='item acea-row' v-for="(item,index) in signList" :key="index">
 						<view>
-							<view class='name line1'>{{item.title}}</view>
+							<view class='name line1'>{{$t(item.title)}}</view>
 							<view class='data'>{{item.add_time}}</view>
 						</view>
 						<view class='num'>+{{item.number}}</view>
 					</view>
-					<view class='loading' @click='goSignList' v-if="signList.length >= 3">点击加载更多<text
+					<view class='loading' @click='goSignList' v-if="signList.length >= 3">{{$t(`点击加载更多`)}}<text
 							class='iconfont icon-xiangyou'></text></view>
 				</view>
 			</view>
@@ -63,11 +63,11 @@
 				<view class='signTipLight loadingpic'></view>
 				<view class='signTipCon'>
 					<view class="signHeight">
-						<image src="../../../static/images/signH.png"></image>
+						<image src="../static/signH.png"></image>
 					</view>
-					<view class='state'>签到成功</view>
-					<view class='integral'>获得{{integral}}积分</view>
-					<view class='signTipBnt' @click='close'>好的</view>
+					<view class='state'>{{$t(`签到成功`)}}</view>
+					<view class='integral'>{{$t(`获得`)}}{{integral}}{{$t(`积分`)}}</view>
+					<view class='signTipBnt' @click='close'>{{$t(`好的`)}}</view>
 				</view>
 			</view>
 			<view class='mask' @touchmove.stop.prevent="false" :hidden='active==false'></view>
@@ -231,7 +231,7 @@
 				let that = this,
 					sum_sgin_day = that.userInfo.sum_sgin_day;
 				if (that.userInfo.is_day_sgin) return this.$util.Tips({
-					title: '您今日已签到!'
+					title: that.$t(`您今日已签到!`)
 				});
 				setSignIntegral().then(res => {
 					that.active = true;
@@ -309,7 +309,8 @@
 	}
 
 	.sign .header .headerCon .right {
-		width: 142rpx;
+		// width: 142rpx;
+		padding-right: 20rpx;
 		height: 66rpx;
 		background-color: #fff;
 		border-radius: 50rpx 0 0 50rpx;

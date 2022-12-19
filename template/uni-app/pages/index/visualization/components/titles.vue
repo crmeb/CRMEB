@@ -1,23 +1,23 @@
 <template>
 	<view class="index-wrapper" :class="{'off': sty ==='off'}">
-		<view class='titles' v-if="isIframe && !titleConfig.length">暂无标题</view>
+		<view class='titles' v-if="isIframe && !titleConfig.length">{{$t(`暂无标题`)}}</view>
 		<view class='title acea-row row-between-wrapper' v-if="isShow && titleConfig.length && !isIframe">
 			<view class='text'>
 				<view class='name line1'>{{titleConfig[0].val}}</view>
-				<view class='line1 txt-btn'>诚意推荐品质商品</view>
+				<view class='line1 txt-btn'>{{$t(`诚意推荐品质商品`)}}</view>
 			</view>
 			<navigator hover-class="none" :url="titleConfig[1].val" class='more'>
-				更多
+				{{$t(`更多`)}}
 				<text class='iconfont icon-jiantou'></text>
 			</navigator>
 		</view>
 		<view class='title acea-row row-between-wrapper' v-if="isIframe && titleConfig.length">
 			<view class='text'>
 				<view class='name line1'>{{titleConfig[0].val}}</view>
-				<view class='line1 txt-btn'>诚意推荐品质商品</view>
+				<view class='line1 txt-btn'>{{$t(`诚意推荐品质商品`)}}</view>
 			</view>
 			<view class='more'>
-				更多
+				{{$t(`更多`)}}
 				<text class='iconfont icon-jiantou'></text>
 			</view>
 		</view>

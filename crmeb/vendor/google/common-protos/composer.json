@@ -1,0 +1,21 @@
+{
+  "name": "google/common-protos",
+  "type": "library",
+  "description": "Google API Common Protos for PHP",
+  "keywords": ["google"],
+  "homepage": "https://github.com/googleapis/common-protos-php",
+  "license": "Apache-2.0",
+  "require": {
+    "google/protobuf": "^3.6.1"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^4.8.36||^8.5",
+    "sami/sami": "*"
+  },
+  "autoload": {
+    "psr-4": {
+      "Google\\": "src",
+      "GPBMetadata\\Google\\": "metadata"
+    }
+  }
+}

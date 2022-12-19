@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -16,12 +16,9 @@ use app\services\BaseServices;
 use app\dao\other\QrcodeDao;
 use app\services\system\attachment\SystemAttachmentServices;
 use crmeb\exceptions\AdminException;
-use crmeb\services\MiniProgramService;
-use crmeb\services\UploadService;
-use crmeb\services\UtilService;
-use crmeb\services\WechatService;
+use crmeb\services\app\MiniProgramService;
+use crmeb\services\app\WechatService;
 use Guzzle\Http\EntityBody;
-use think\exception\ValidateException;
 
 /**
  *
@@ -55,14 +52,14 @@ class QrcodeServices extends BaseServices
         $where['third_id'] = $id;
         $where['third_type'] = $type;
         $res = $this->dao->getOne($where);
-        if ($res) {
+        if (!$res) {
             $this->createTemporaryQrcode($id, $type);
             $res = $this->getTemporaryQrcode($type, $id);
         } else if (empty($res['expire_seconds']) || $res['expire_seconds'] < time()) {
             $this->createTemporaryQrcode($id, $type, $res['id']);
             $res = $this->getTemporaryQrcode($type, $id);
         }
-        if (!$res['ticket']) throw new AdminException('临时二维码获取错误');
+        if (!$res['ticket']) throw new AdminException(400552);
         return $res;
     }
 
@@ -108,7 +105,7 @@ class QrcodeServices extends BaseServices
             $this->createForeverQrcode($id, $type);
             $res = $this->getForeverQrcode($type, $id);
         }
-        if (!$res['ticket']) throw new AdminException('永久二维码获取错误');
+        if (!$res['ticket']) throw new AdminException(400553);
         return $res;
     }
 
@@ -133,6 +130,43 @@ class QrcodeServices extends BaseServices
 
     /**
      * 获取二维码完整路径，不存在则自动生成
+     * @param string $name 路径名
+     * @param string $link 需要生成二维码的跳转路径
+     * @param int $type https 1 = http , 0 = https
+     * @param bool $force 是否返回false
+     * @return bool|mixed|string
+     */
+    public function getWechatQrcodePathAgent(string $name, string $link, bool $force = false)
+    {
+        /** @var SystemAttachmentServices $systemAttchment */
+        $systemAttchment = app()->make(SystemAttachmentServices::class);
+        try {
+            $imageInfo = $systemAttchment->getInfo(['name'=>$name]);
+            $siteUrl = sys_config('site_url');
+            if (!$imageInfo) {
+                $codeUrl = PosterServices::setHttpType($siteUrl . $link, request()->isSsl() ? 0 : 1);//二维码链接
+                $imageInfo = PosterServices::getQRCodePath($codeUrl, $name);
+                if (is_string($imageInfo) && $force)
+                    return false;
+                if (is_array($imageInfo)) {
+                    $systemAttchment->attachmentAdd($imageInfo['name'], $imageInfo['size'], $imageInfo['type'], $imageInfo['dir'], $imageInfo['thumb_path'], 1, $imageInfo['image_type'], $imageInfo['time'], 2);
+                    $url = $imageInfo['dir'];
+                } else {
+                    $url = '';
+                    $imageInfo = ['image_type' => 0];
+                }
+            } else $url = $imageInfo['att_dir'];
+            if ($imageInfo['image_type'] == 1 && $url) $url = $siteUrl . $url;
+            return $url;
+        } catch (\Throwable $e) {
+            if ($force)
+                return false;
+            else
+                return '';
+        }
+    }
+    /**
+     * 获取二维码完整路径，不存在则自动生成
      * @param string $name
      * @param string $link
      * @param bool $force
@@ -150,8 +184,8 @@ class QrcodeServices extends BaseServices
             }
             $siteUrl = sys_config('site_url');
             if (!$imageInfo) {
-                $codeUrl = UtilService::setHttpType($siteUrl . $link, request()->isSsl() ? 0 : 1);//二维码链接
-                $imageInfo = UtilService::getQRCodePath($codeUrl, $name);
+                $codeUrl = PosterServices::setHttpType($siteUrl . $link, request()->isSsl() ? 0 : 1);//二维码链接
+                $imageInfo = PosterServices::getQRCodePath($codeUrl, $name);
                 if (is_string($imageInfo) && $force)
                     return false;
                 if (is_array($imageInfo)) {
@@ -244,8 +278,9 @@ class QrcodeServices extends BaseServices
             }
             $siteUrl = sys_config('site_url');
             if (!$imageInfo) {
-                $res = MiniProgramService::qrcodeService()->appCodeUnlimit($data, $page, 280);
+                $res = MiniProgramService::appCodeUnlimitService($data, $page, 280);
                 if (!$res) return false;
+                if ($res->getSize() < 100) return 'unpublished';
                 $uploadType = (int)sys_config('upload_type', 1);
                 $upload = UploadService::init();
                 $res = (string)EntityBody::factory($res);
@@ -255,8 +290,8 @@ class QrcodeServices extends BaseServices
                 }
                 $imageInfo = $upload->getUploadInfo();
                 $imageInfo['image_type'] = $uploadType;
-                if ($imageInfo['image_type'] == 1) $remoteImage = UtilService::remoteImage($siteUrl . $imageInfo['dir']);
-                else $remoteImage = UtilService::remoteImage($imageInfo['dir']);
+                if ($imageInfo['image_type'] == 1) $remoteImage = PosterServices::remoteImage($siteUrl . $imageInfo['dir']);
+                else $remoteImage = PosterServices::remoteImage($imageInfo['dir']);
                 if (!$remoteImage['status']) return false;
                 if ($isSaveAttach) {
                     $systemAttachmentService->save([
@@ -318,7 +353,7 @@ class QrcodeServices extends BaseServices
         $data['url_time'] = '';
         $data['qrcode_url'] = $qrCodeLink;
         if (!$re = $this->dao->save($data)) {
-            throw new ValidateException('生成失败');
+            throw new AdminException(400237);
         }
         return $re;
     }
@@ -333,11 +368,22 @@ class QrcodeServices extends BaseServices
     {
         if (!$id) return false;
         if (!$this->dao->get((int)$id)) {
-            throw new ValidateException('数据不存在');
+            throw new AdminException(100026);
         }
         if (!$re = $this->dao->update($id, $data, 'id')) {
-            throw new ValidateException('修改数据失败');
+            throw new AdminException(100007);
         }
         return $re;
+    }
+
+    /**
+     * 检测是否存在
+     * @param int $thirdId
+     * @param string $thirdType
+     * @return bool
+     */
+    public function qrCodeExist($thirdId = 0, $thirdType = 'spread')
+    {
+        return !!$this->dao->getCount(['third_id' => $thirdId, 'third_type' => $thirdType]);
     }
 }

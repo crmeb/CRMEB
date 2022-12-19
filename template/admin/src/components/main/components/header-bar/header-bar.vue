@@ -1,9 +1,6 @@
 <template>
   <div class="header-bar">
-    <sider-trigger
-      :collapsed="collapsed"
-      @on-change="handleCollpasedChange"
-    ></sider-trigger>
+    <sider-trigger :collapsed="collapsed" @on-change="handleCollpasedChange"></sider-trigger>
     <span class="i-layout-header-trigger" @click="handleReload">
       <Icon type="ios-refresh" />
     </span>
@@ -35,13 +32,13 @@
 }
 </style>
 <script>
-import siderTrigger from "./sider-trigger";
-import customBreadCrumb from "./custom-bread-crumb";
-import { R } from "@/libs/util";
+import siderTrigger from './sider-trigger';
+import customBreadCrumb from './custom-bread-crumb';
+import { R } from '@/libs/util';
 
-import "./header-bar.less";
+import './header-bar.less';
 export default {
-  name: "HeaderBar",
+  name: 'HeaderBar',
   components: {
     siderTrigger,
     customBreadCrumb,
@@ -79,17 +76,16 @@ export default {
           }
         });
       }
-      // console.log(selectMenu)
       return selectMenu;
     },
   },
   mounted() {},
   methods: {
     handleCollpasedChange(state) {
-      this.$emit("on-coll-change", state);
+      this.$emit('on-coll-change', state);
     },
     handleReload() {
-      this.$emit("on-reload");
+      this.$emit('on-reload');
     },
   },
 };

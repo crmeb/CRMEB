@@ -1,10 +1,5 @@
 <template>
   <div>
-    <div class="i-layout-page-header">
-      <div class="i-layout-page-header">
-        <span class="ivu-page-header-title">{{ $route.meta.title }}</span>
-      </div>
-    </div>
     <Card :bordered="false" dis-hover class="ivu-mt">
       <Form
         ref="tableFrom"
@@ -16,12 +11,7 @@
         <Row type="flex" :gutter="24">
           <Col v-bind="grid">
             <FormItem label="预售活动状态：">
-              <Select
-                placeholder="请选择活动状态"
-                v-model="tableFrom.time_type"
-                clearable
-                @on-change="userSearchs"
-              >
+              <Select placeholder="请选择活动状态" v-model="tableFrom.time_type" clearable @on-change="userSearchs">
                 <Option value="0">全部</Option>
                 <Option value="1">未开始</Option>
                 <Option value="2">正在进行</Option>
@@ -31,12 +21,7 @@
           </Col>
           <Col v-bind="grid">
             <FormItem label="预售商品状态：">
-              <Select
-                placeholder="请选择商品状态"
-                v-model="tableFrom.status"
-                clearable
-                @on-change="userSearchs"
-              >
+              <Select placeholder="请选择商品状态" v-model="tableFrom.status" clearable @on-change="userSearchs">
                 <Option value="">全部</Option>
                 <Option value="1">上架</Option>
                 <Option value="0">下架</Option>
@@ -57,12 +42,7 @@
         </Row>
         <Row type="flex" class="mb20">
           <Col v-bind="grid">
-            <Button
-              v-auth="['marketing-store_bargain-create']"
-              type="primary"
-              icon="md-add"
-              @click="add"
-              class="mr10"
+            <Button v-auth="['marketing-store_bargain-create']" type="primary" icon="md-add" @click="add" class="mr10"
               >添加预售商品</Button
             >
             <!-- <Button
@@ -84,12 +64,7 @@
         no-filtered-userFrom-text="暂无筛选结果"
       >
         <template slot-scope="{ row, index }" slot="is_fail">
-          <Icon
-            type="md-checkmark"
-            v-if="row.is_fail === 1"
-            color="#0092DC"
-            size="14"
-          />
+          <Icon type="md-checkmark" v-if="row.is_fail === 1" color="#0092DC" size="14" />
           <Icon type="md-close" v-else color="#ed5565" size="14" />
         </template>
         <template slot-scope="{ row, index }" slot="image">
@@ -139,20 +114,16 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
-import {
-  presellListApi,
-  advanceSetStatusApi,
-  stroeBargainApi,
-} from "@/api/marketing";
-import { formatDate } from "@/utils/validate";
+import { mapState } from 'vuex';
+import { presellListApi, advanceSetStatusApi, stroeBargainApi } from '@/api/marketing';
+import { formatDate } from '@/utils/validate';
 export default {
-  name: "storeBargain",
+  name: 'storeBargain',
   filters: {
     formatDate(time) {
       if (time !== 0) {
         let date = new Date(time * 1000);
-        return formatDate(date, "yyyy-MM-dd hh:mm");
+        return formatDate(date, 'yyyy-MM-dd hh:mm');
       }
     },
   },
@@ -161,54 +132,54 @@ export default {
       loading: false,
       columns1: [
         {
-          title: "ID",
-          key: "id",
+          title: 'ID',
+          key: 'id',
           width: 80,
         },
         {
-          title: "预售图片",
-          slot: "image",
+          title: '预售图片',
+          slot: 'image',
           minWidth: 90,
         },
         {
-          title: "预售名称",
-          key: "title",
+          title: '预售名称',
+          key: 'title',
           minWidth: 130,
         },
         {
-          title: "预售价格",
-          key: "price",
+          title: '预售价格',
+          key: 'price',
           minWidth: 100,
         },
         {
-          title: "已售商品数",
-          key: "sales",
+          title: '已售商品数',
+          key: 'sales',
           minWidth: 100,
         },
         {
-          title: "限量",
-          key: "quota_show",
+          title: '限量',
+          key: 'quota_show',
           minWidth: 100,
         },
         {
-          title: "限量剩余",
-          key: "quota",
+          title: '限量剩余',
+          key: 'quota',
           minWidth: 100,
         },
         {
-          title: "活动时间",
-          slot: "stop_time",
+          title: '活动时间',
+          slot: 'stop_time',
           minWidth: 150,
         },
         {
-          title: "预售状态",
-          slot: "status",
+          title: '预售状态',
+          slot: 'status',
           minWidth: 130,
         },
         {
-          title: "操作",
-          slot: "action",
-          fixed: "right",
+          title: '操作',
+          slot: 'action',
+          fixed: 'right',
           minWidth: 130,
         },
       ],
@@ -221,27 +192,27 @@ export default {
         xs: 24,
       },
       tableFrom: {
-        status: "",
+        status: '',
         time_type: 0,
-        title: "",
+        title: '',
         page: 1,
         limit: 15,
       },
       tableFrom2: {
-        status: "",
-        store_name: "",
+        status: '',
+        store_name: '',
         export: 1,
       },
       total: 0,
     };
   },
   computed: {
-    ...mapState("media", ["isMobile"]),
+    ...mapState('media', ['isMobile']),
     labelWidth() {
       return this.isMobile ? undefined : 100;
     },
     labelPosition() {
-      return this.isMobile ? "top" : "left";
+      return this.isMobile ? 'top' : 'left';
     },
   },
   created() {
@@ -250,7 +221,7 @@ export default {
   methods: {
     // 添加
     add() {
-      this.$router.push({ path: "/admin/marketing/presell/create/0" });
+      this.$router.push({ path: '/admin/marketing/presell/create/0' });
     },
     // 导出
     exports() {
@@ -270,13 +241,13 @@ export default {
     // 编辑
     edit(row) {
       this.$router.push({
-        path: "/admin/marketing/presell/create/" + row.id + "/0",
+        path: '/admin/marketing/presell/create/' + row.id + '/0',
       });
     },
     // 一键复制
     copy(row) {
       this.$router.push({
-        path: "/admin/marketing/presell/create/" + row.id + "/1",
+        path: '/admin/marketing/presell/create/' + row.id + '/1',
       });
     },
     // 删除
@@ -285,8 +256,8 @@ export default {
         title: tit,
         num: num,
         url: `marketing/advance/${row.id}`,
-        method: "DELETE",
-        ids: "",
+        method: 'DELETE',
+        ids: '',
       };
       this.$modalSure(delfromData)
         .then((res) => {
@@ -300,7 +271,7 @@ export default {
     // 列表
     getList() {
       this.loading = true;
-      this.tableFrom.status = this.tableFrom.status || "";
+      this.tableFrom.status = this.tableFrom.status || '';
       presellListApi(this.tableFrom)
         .then(async (res) => {
           let data = res.data;

@@ -30,7 +30,7 @@ class WechatQrcodeDao extends BaseDao
     public function getList($where, $page = 0, $limit = 0)
     {
         return $this->search($where)->with(['user', 'record' => function ($query) {
-            $query->where('is_follow', 1)->field('qid,count(distinct uid) as number')->bind(['y_follow' => 'number']);
+            $query->where('is_follow', 1)->whereDay('add_time', 'yesterday')->field('qid,count(distinct uid) as number')->bind(['y_follow' => 'number']);
         }])->when($page && $limit, function ($query) use ($page, $limit) {
             $query->page($page, $limit);
         })->order('id desc')->select()->toArray();

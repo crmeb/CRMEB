@@ -1,10 +1,5 @@
 <template>
   <div>
-    <div class="i-layout-page-header">
-      <div class="i-layout-page-header">
-        <span class="ivu-page-header-title">{{ $route.meta.title }}</span>
-      </div>
-    </div>
     <Card :bordered="false" dis-hover class="ivu-mt">
       <Form
         ref="levelFrom"
@@ -27,11 +22,7 @@
                 <Option value="1">通过</Option>
                 <Option value="1">拒绝</Option>
               </Select> -->
-              <RadioGroup
-                v-model="levelFrom.status"
-                type="button"
-                @on-change="userSearchs(levelFrom.status)"
-              >
+              <RadioGroup v-model="levelFrom.status" type="button" @on-change="userSearchs(levelFrom.status)">
                 <Radio label="">全部</Radio>
                 <Radio label="0">待审核</Radio>
                 <Radio label="1">通过</Radio>
@@ -86,13 +77,13 @@
   </div>
 </template>
 <script>
-import { mapState, mapMutations } from "vuex";
-import { userCancelList, userCancelSetMark } from "@/api/user";
-import taskList from "./handle/task";
-import editFrom from "@/components/from/from";
-import remark from "@/components/remark/index";
+import { mapState, mapMutations } from 'vuex';
+import { userCancelList, userCancelSetMark } from '@/api/user';
+import taskList from './handle/task';
+import editFrom from '@/components/from/from';
+import remark from '@/components/remark/index';
 export default {
-  name: "user_level",
+  name: 'user_level',
   components: { remark },
   data() {
     return {
@@ -103,54 +94,54 @@ export default {
         sm: 24,
         xs: 24,
       },
-      id: "",
+      id: '',
       loading: false,
       columns1: [
         {
-          title: "ID",
-          key: "id",
+          title: 'ID',
+          key: 'id',
           width: 80,
         },
         {
-          title: "昵称",
-          key: "name",
+          title: '昵称',
+          key: 'name',
           minWidth: 100,
         },
         {
-          title: "手机号",
-          key: "phone",
+          title: '手机号',
+          key: 'phone',
           minWidth: 100,
         },
         {
-          title: "状态",
-          key: "status",
+          title: '状态',
+          key: 'status',
           minWidth: 120,
         },
         {
-          title: "申请时间",
-          key: "add_time",
+          title: '申请时间',
+          key: 'add_time',
           minWidth: 100,
         },
         {
-          title: "审核时间",
-          key: "up_time",
+          title: '审核时间',
+          key: 'up_time',
           minWidth: 100,
         },
         {
-          title: "备注",
-          key: "remark",
+          title: '备注',
+          key: 'remark',
           minWidth: 100,
         },
         {
-          title: "操作",
-          slot: "action",
-          fixed: "right",
+          title: '操作',
+          slot: 'action',
+          fixed: 'right',
           minWidth: 120,
         },
       ],
       levelFrom: {
-        status: "",
-        keywords: "",
+        status: '',
+        keywords: '',
         page: 1,
         limit: 15,
       },
@@ -162,27 +153,26 @@ export default {
     this.getList();
   },
   computed: {
-    ...mapState("media", ["isMobile"]),
+    ...mapState('media', ['isMobile']),
     labelWidth() {
       return this.isMobile ? undefined : 75;
     },
     labelPosition() {
-      return this.isMobile ? "top" : "right";
+      return this.isMobile ? 'top' : 'right';
     },
   },
   methods: {
-    ...mapMutations("userLevel", ["getlevelId"]),
+    ...mapMutations('userLevel', ['getlevelId']),
     remark(row) {
-      console.log(this.$refs);
       this.id = row.id;
       this.$refs.remark.formValidate.remark = row.remark;
       this.$refs.remark.modals = true;
     },
     agree(row) {
       this.delfromData = {
-        title: "注销用户",
+        title: '注销用户',
         url: `/user/cancel/agree/${row.id}`,
-        method: "get",
+        method: 'get',
       };
       this.$modalSure(this.delfromData)
         .then((res) => {
@@ -195,10 +185,10 @@ export default {
     },
     refuse(row) {
       this.delfromData = {
-        title: "拒绝注销用户",
-        info: "您确认拒绝注销此用户吗?",
+        title: '拒绝注销用户',
+        info: '您确认拒绝注销此用户吗?',
         url: `/user/cancel/refuse/${row.id}`,
-        method: "get",
+        method: 'get',
       };
       this.$modalSure(this.delfromData)
         .then((res) => {
@@ -228,7 +218,7 @@ export default {
 
     getList() {
       this.loading = true;
-      this.levelFrom.status = this.levelFrom.status || "";
+      this.levelFrom.status = this.levelFrom.status || '';
       userCancelList(this.levelFrom)
         .then(async (res) => {
           let data = res.data;

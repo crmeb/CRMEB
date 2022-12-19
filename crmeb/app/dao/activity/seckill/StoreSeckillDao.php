@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -60,6 +60,7 @@ class StoreSeckillDao extends BaseDao
             $query->where('time_id', $where['time_id']);
         });
     }
+
     /**
      * 条件获取数量
      * @param array $where
@@ -69,6 +70,7 @@ class StoreSeckillDao extends BaseDao
     {
         return $this->search($where)->count();
     }
+
     /**获取秒杀列表
      * @param array $where
      * @param int $page
@@ -85,13 +87,13 @@ class StoreSeckillDao extends BaseDao
                 $time = time();
                 switch ($where['start_status']) {
                     case -1:
-                        $query->where('stop_time', '<', $time - 86400)->whereOr('status',0);
+                        $query->where('stop_time', '<', $time - 86400)->whereOr('status', 0);
                         break;
                     case 0:
-                        $query->where('start_time', '>', $time)->whereOr('status',1);
+                        $query->where('start_time', '>', $time)->whereOr('status', 1);
                         break;
                     case 1:
-                        $query->where('start_time', '<=', $time)->where('stop_time', '>=', $time - 86400)->whereOr('status',1);
+                        $query->where('start_time', '<=', $time)->where('stop_time', '>=', $time - 86400)->whereOr('status', 1);
                         break;
                 }
             })->when(isset($where['ids']) && $where['ids'], function ($query) use ($where) {
@@ -104,6 +106,7 @@ class StoreSeckillDao extends BaseDao
                 $query->page($page, $limit);
             })->with(['product'])->order('sort desc,id desc')->select()->toArray();
     }
+
     /**获取秒杀列表
      * @param array $where
      * @param int $page
@@ -115,7 +118,7 @@ class StoreSeckillDao extends BaseDao
      */
     public function getHomeList(array $where, int $page = 0, int $limit = 0)
     {
-        return $this->search($where)->where('is_del', 0)->where('status',1)
+        return $this->search($where)->where('is_del', 0)->where('status', 1)
             ->where('start_time', '<=', time())
             ->where('stop_time', '>=', time() - 86400)
             ->when($page != 0 && $limit != 0, function ($query) use ($page, $limit) {
@@ -144,6 +147,7 @@ class StoreSeckillDao extends BaseDao
                 }
             })->with(['product'])->select()->toArray();
     }
+
     /**
      * 根据商品id获取当前正在开启秒杀产品的列表以数组返回
      * @param array $ids 为空查询所有

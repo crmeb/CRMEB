@@ -2,7 +2,7 @@
 	<view v-show="!isSortType" :style="{padding:'0 '+prConfig*2+'rpx'}">
 		<view class="articleList" :class="{borderRadius15:bgStyle===1}" :style="'background-color:'+bgColor+';margin-top:'+ mbConfig*2 +'rpx;'" v-if="articleList.length">
 			<view v-if="listStyle">
-				<navigator :url='"/pages/news_details/index?id="+item.id' hover-class='none' class="item acea-row row-between-wrapper" :class="conStyle?'borderRadius15':''"
+				<navigator :url='"/pages/extension/news_details/index?id="+item.id' hover-class='none' class="item acea-row row-between-wrapper" :class="conStyle?'borderRadius15':''"
 				 :style="'margin-bottom:'+itemConfig*2+'rpx;'" v-for="(item,index) in articleList" :key='index'>
 					<view class="pictrue">
 						<image :src="item.image_input[0]" mode="aspectFill"></image>
@@ -14,7 +14,7 @@
 				</navigator>
 			</view>
 			<view v-else>
-				<navigator :url='"/pages/news_details/index?id="+item.id' hover-class='none' class="item acea-row row-between-wrapper" :class="conStyle?'borderRadius15':''"
+				<navigator :url='"/pages/extension/news_details/index?id="+item.id' hover-class='none' class="item acea-row row-between-wrapper" :class="conStyle?'borderRadius15':''"
 				 :style="'margin-bottom:'+itemConfig*2+'rpx;'" v-for="(item,index) in articleList" :key='index'>
 					<view class="text">
 						<view class="name line2">{{item.title}}</view>
@@ -61,7 +61,6 @@
 		},
 		created() {},
 		mounted() {
-			console.log('121212',this.conStyle);
 			this.getCidArticle();
 		},
 		methods: {

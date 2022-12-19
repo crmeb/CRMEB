@@ -58,7 +58,7 @@ class WechatQrcodeCateServices extends BaseServices
         } else {
             $res = $this->dao->save($data);
         }
-        if (!$res) throw new AdminException('保存失败');
+        if (!$res) throw new AdminException(100006);
         return true;
     }
 
@@ -69,9 +69,9 @@ class WechatQrcodeCateServices extends BaseServices
      */
     public function delCate($id = 0)
     {
-        if (!$id) throw new AdminException('参数错误');
+        if (!$id) throw new AdminException(100100);
         $res = $this->dao->update($id, ['is_del' => 1]);
-        if (!$res) throw new AdminException('删除失败');
+        if (!$res) throw new AdminException(100008);
         return true;
     }
 
