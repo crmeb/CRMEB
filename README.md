@@ -2,7 +2,7 @@
 <div align="center" >
     <img src="https://images.gitee.com/uploads/images/2021/1109/164354_0aafe3d2_892944.gif" />
 </div>
-<div align="center">
+<div align="center"> 
 
 支持免费商用的PHP **多语言** 商城系统
 
