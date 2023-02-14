@@ -34,7 +34,7 @@
       </Table>
     </Card>
     <Modal v-model="modal" :title="`${rowModelType}${rowEdit && rowEdit.title}会员`" footer-hide @on-cancel="cancel">
-      <form-create v-model="fapi" :rule="rule" @on-submit="onSubmit"></form-create>
+      <form-create v-model="fapi" :rule="rule" @submit="onSubmit"></form-create>
     </Modal>
   </div>
 </template>

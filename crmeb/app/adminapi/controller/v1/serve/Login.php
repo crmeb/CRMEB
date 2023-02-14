@@ -107,7 +107,7 @@ class Login extends AuthController
         $res = $this->services->user()->login($account, $password);
         if ($res) {
             CacheService::clear();
-            CacheService::redisHandler()->set('sms_account', $account);
+            CacheService::set('sms_account', $account);
             $services->updateSmsConfig($account, $password);
             return app('json')->success(400139, $res);
         } else {

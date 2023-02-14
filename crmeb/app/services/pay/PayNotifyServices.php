@@ -24,7 +24,7 @@ class PayNotifyServices
 {
 
     /**
-     * 订单支付成功之后
+     * 微信支付-订单支付成功之后
      * @param string|null $order_id 订单id
      * @return bool
      */
@@ -43,7 +43,7 @@ class PayNotifyServices
     }
 
     /**
-     * 充值成功后
+     * 微信支付-充值成功后
      * @param string|null $order_id 订单id
      * @return bool
      */
@@ -53,14 +53,14 @@ class PayNotifyServices
             /** @var UserRechargeServices $userRecharge */
             $userRecharge = app()->make(UserRechargeServices::class);
             if ($userRecharge->be(['order_id' => $order_id, 'paid' => 1])) return true;
-            return $userRecharge->rechargeSuccess($order_id,['trade_no' => $trade_no]);
+            return $userRecharge->rechargeSuccess($order_id, ['trade_no' => $trade_no]);
         } catch (\Exception $e) {
             return false;
         }
     }
 
     /**
-     * 购买会员
+     * 微信支付-购买会员
      * @param string|null $order_id
      * @return bool
      */
@@ -72,14 +72,14 @@ class PayNotifyServices
             $orderInfo = $services->getOne(['order_id' => $order_id]);
             if (!$orderInfo) return true;
             if ($orderInfo->paid) return true;
-            return $services->paySuccess($orderInfo->toArray(), PayServices::WEIXIN_PAY);
+            return $services->paySuccess($orderInfo->toArray());
         } catch (\Exception $e) {
             return false;
         }
     }
 
     /**
-     * 支付宝支付异步回调处理事件
+     * 支付宝支付-异步回调处理事件
      * @param string|null $order_id
      * @param string|null $trade_no
      * @return bool
@@ -102,7 +102,7 @@ class PayNotifyServices
     }
 
     /**
-     * 购买会员卡支付宝异步回调
+     * 支付宝支付-购买会员卡
      * @param string|null $order_id
      * @param string|null $trade_no
      * @return bool
@@ -120,6 +120,61 @@ class PayNotifyServices
             if ($orderInfo->paid) return true;
             return $services->paySuccess($orderInfo->toArray(), PayServices::ALIAPY_PAY, ['trade_no' => $trade_no]);
         } catch (\Throwable $e) {
+            return false;
+        }
+    }
+
+    /**
+     * 通联支付-订单支付成功之后
+     * @param string|null $order_id 订单id
+     * @return bool
+     */
+    public function allinProduct(string $order_id = null, string $trade_no = null)
+    {
+        try {
+            /** @var StoreOrderSuccessServices $services */
+            $services = app()->make(StoreOrderSuccessServices::class);
+            $orderInfo = $services->getOne(['order_id' => $order_id]);
+            if (!$orderInfo) return true;
+            if ($orderInfo->paid) return true;
+            return $services->paySuccess($orderInfo->toArray(), PayServices::ALLIN_PAY, ['trade_no' => $trade_no]);
+        } catch (\Exception $e) {
+            return false;
+        }
+    }
+
+    /**
+     * 通联支付-充值成功后
+     * @param string|null $order_id 订单id
+     * @return bool
+     */
+    public function allinUserRecharge(string $order_id = null, string $trade_no = null)
+    {
+        try {
+            /** @var UserRechargeServices $userRecharge */
+            $userRecharge = app()->make(UserRechargeServices::class);
+            if ($userRecharge->be(['order_id' => $order_id, 'paid' => 1])) return true;
+            return $userRecharge->rechargeSuccess($order_id, ['trade_no' => $trade_no]);
+        } catch (\Exception $e) {
+            return false;
+        }
+    }
+
+    /**
+     * 通联支付-购买会员
+     * @param string|null $order_id
+     * @return bool
+     */
+    public function allinMember(string $order_id = null, string $trade_no = null)
+    {
+        try {
+            /** @var OtherOrderServices $services */
+            $services = app()->make(OtherOrderServices::class);
+            $orderInfo = $services->getOne(['order_id' => $order_id]);
+            if (!$orderInfo) return true;
+            if ($orderInfo->paid) return true;
+            return $services->paySuccess($orderInfo->toArray(), PayServices::ALLIN_PAY);
+        } catch (\Exception $e) {
             return false;
         }
     }

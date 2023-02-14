@@ -54,7 +54,11 @@ class WechatMessageServices extends BaseServices
 
     /**
      * 微信消息前置操作
-     * @param $event
+     * @param $message
+     * @return bool
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
      */
     public function wechatMessageBefore($message)
     {

@@ -394,7 +394,7 @@ export function importCard(data) {
  * @param {Number} param id {Number} 属性id
  * @param {Object} param data {Object} 传值参数
  */
- export function batchSetting(data) {
+export function batchSetting(data) {
   return request({
     url: `product/batch/setting`,
     method: 'POST',

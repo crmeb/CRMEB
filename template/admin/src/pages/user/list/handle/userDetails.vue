@@ -1,6 +1,6 @@
 <template>
   <div style="width: 100%">
-    <Modal v-model="modals" scrollable footer-hide closable title="用户详情" :mask-closable="false" width="900">
+    <Drawer title="用户详情" :closable="false" width="900" scrollable v-model="modals">
       <Spin size="large" fix v-if="spinShow"></Spin>
       <div class="acea-row">
         <div class="avatar mr15"><img :src="psInfo.avatar" /></div>
@@ -13,15 +13,22 @@
           </div>
         </div>
       </div>
+
       <Row type="flex" justify="space-between" class="mt25">
-        <Col span="4" class="user_menu">
+        <!-- <Col span="4" class="user_menu">
           <Menu :theme="theme2" :active-name="activeName" @on-select="changeType">
             <MenuItem :name="item.val" v-for="(item, index) in list" :key="index">
-              {{ item.label }}
+              
             </MenuItem>
           </Menu>
+        </Col> -->
+        <Col span="24">
+          <Tabs class="mb20" :value="activeName" @on-click="changeType">
+            <TabPane :name="item.val" v-for="(item, index) in list" :key="index" :label="item.label"></TabPane>
+          </Tabs>
         </Col>
-        <Col span="20">
+
+        <Col span="24">
           <Table
             :columns="columns"
             :data="userLists"
@@ -49,7 +56,7 @@
           </div>
         </Col>
       </Row>
-    </Modal>
+    </Drawer>
   </div>
 </template>
 
@@ -150,11 +157,6 @@ export default {
                     title: '商品数量',
                     key: 'total_num',
                     minWidth: 90,
-                  },
-                  {
-                    title: '商品总价',
-                    key: 'total_price',
-                    minWidth: 110,
                   },
                   {
                     title: '实付金额',
@@ -380,6 +382,7 @@ export default {
 }
 </style>
 <style scoped lang="stylus">
-.user_menu >>> .ivu-menu
-    width 100% !important
+.user_menu >>> .ivu-menu {
+  width: 100% !important;
+}
 </style>

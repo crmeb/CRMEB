@@ -3,6 +3,7 @@
   "navigationStyle": "custom",
   "usingComponents": {
     "mobile-login": "/pages/users/components/login_mobile/index",
-    "routine-phone": "/pages/users/components/login_mobile/routine_phone"
+    "routine-phone": "/pages/users/components/login_mobile/routine_phone",
+    "edit-user-modal": "/components/eidtUserModal/index"
   }
 }

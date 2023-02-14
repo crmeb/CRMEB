@@ -15,7 +15,7 @@
 						<view hover-class="none" class='item'
 							@click="gopage('/pages/goods/goods_list/index?sid='+item.id+'&title='+item.cate_name)">
 							<view class='img-box'>
-								<image :src='item.pic'></image>
+								<easy-loadimage mode="widthFix" :image-src="item.pic"></easy-loadimage>
 							</view>
 							<view class='pro-info line1'>{{$t(item.cate_name)}}</view>
 						</view>
@@ -204,7 +204,21 @@
 		border-radius: 10rpx;
 	}
 
+	.scroll-product .item .img-box {
+
+		/deep/,
+		/deep/image,
+		/deep/.easy-loadimage,
+		/deep/uni-image {
+
+			width: 160rpx;
+			height: 160rpx;
+			border-radius: 10rpx;
+		}
+	}
+
 	.scroll-product .item .pro-info {
+		max-width: 180rpx;
 		font-size: 24rpx;
 		text-align: center;
 		height: 60rpx;

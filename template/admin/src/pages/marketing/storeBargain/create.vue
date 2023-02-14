@@ -141,7 +141,10 @@
                   </RadioGroup>
                 </FormItem>
               </Col>
-              <Col span="24" v-if="formValidate.freight != 3 && formValidate.freight != 1 && formValidate.virtual_type == 0">
+              <Col
+                span="24"
+                v-if="formValidate.freight != 3 && formValidate.freight != 1 && formValidate.virtual_type == 0"
+              >
                 <FormItem label="">
                   <div class="acea-row">
                     <InputNumber
@@ -838,7 +841,6 @@ export default {
     // 下一步
     next(name) {
       if (this.current === 3) {
-
         this.formValidate.description = this.description;
         this.formValidate.rule = this.rule;
         this.$refs[name].validate((valid) => {

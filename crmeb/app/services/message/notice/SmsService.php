@@ -34,7 +34,7 @@ class SmsService extends NoticeService
      * 判断是否开启权限
      * @var bool
      */
-    private $isopend = true;
+    private $isOpen = true;
 
     /**
      * 短信类型
@@ -49,7 +49,7 @@ class SmsService extends NoticeService
      */
     public function isOpen(string $mark)
     {
-        $this->isopend = $this->notceinfo['is_sms'] === 1;
+        $this->isOpen = $this->noticeInfo['is_sms'] === 1;
         return $this;
 
     }
@@ -63,10 +63,18 @@ class SmsService extends NoticeService
     public function sendSms($phone, array $data)
     {
         try {
-            $this->isopend = $this->notceinfo['is_sms'] === 1;
-            $mark = $this->notceinfo['mark'];
-            if ($this->isopend) {
-                SmsJob::dispatch('doJob', [$phone, $data, $mark]);
+            $this->isOpen = $this->noticeInfo['is_sms'] === 1;
+            $mark = $this->noticeInfo['mark'];
+            if ($this->isOpen) {
+                try{
+                    /** @var SmsService $smsServices */
+                    $smsServices = app()->make(SmsService::class);
+                    $smsServices->send(true, $phone, $data, $mark);
+                    return true;
+                }catch (\Throwable $e) {
+                    Log::error('发送短信失败,失败原因:' . $e->getMessage());
+                }
+                //SmsJob::dispatch('doJob', [$phone, $data, $mark]);
             }
         } catch (\Exception $e) {
             Log::error($e->getMessage());
@@ -107,7 +115,6 @@ class SmsService extends NoticeService
             if ($res === false) {
                 throw new ApiException($smsMake->getError());
             }
-            TaskJob::dispatchDo('modifyResultCode');
             return true;
         } else {
             return false;

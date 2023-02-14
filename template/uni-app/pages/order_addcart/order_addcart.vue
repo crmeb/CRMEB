@@ -941,7 +941,12 @@
 			if (that.cartList.valid.length == 0 && that.cartList.invalid.length == 0) {
 				that.getHostProduct();
 			}
-		}
+		},
+		// 滚动监听
+		onPageScroll(e) {
+			// 传入scrollTop值并触发所有easy-loadimage组件下的滚动监听事件
+			uni.$emit('scroll');
+		},
 	}
 </script>
 
@@ -1205,7 +1210,8 @@
 		z-index: 999;
 		width: 100%;
 		height: 96rpx;
-		background-color: #fafafa;
+		background-color: rgba(255, 255, 255, 0.85);
+		backdrop-filter: blur(10px);
 		position: fixed;
 		padding: 0 30rpx;
 		box-sizing: border-box;

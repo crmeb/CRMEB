@@ -44,7 +44,7 @@ class GroupDataService
             if ($isCaChe)
                 return $callable();
 
-            return CacheService::get($cacheName, $callable);
+            return CacheService::remember($cacheName, $callable);
 
         } catch (\Throwable $e) {
             return $callable();
@@ -78,7 +78,7 @@ class GroupDataService
             if ($isCaChe)
                 return $callable();
 
-            return CacheService::get($cacheName, $callable);
+            return CacheService::remember($cacheName, $callable);
 
         } catch (\Throwable $e) {
             return $callable();

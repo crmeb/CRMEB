@@ -67,7 +67,7 @@ class SystemMenus extends BaseModel
      * @param $value
      * @return mixed|string
      */
-    public function getPidAttr($value)
+    public function getPidStrAttr($value)
     {
         return !$value ? '顶级' : $this->where('pid', $value)->value('menu_name');
     }

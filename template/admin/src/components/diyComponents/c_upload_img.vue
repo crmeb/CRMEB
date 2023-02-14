@@ -92,8 +92,7 @@ export default {
       deep: true,
     },
   },
-  mounted() {
-  },
+  mounted() {},
   methods: {
     // 点击图文封面
     modalPicTap(title) {

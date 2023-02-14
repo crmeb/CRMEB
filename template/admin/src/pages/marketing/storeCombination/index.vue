@@ -116,6 +116,8 @@
 import { combinationListApi, combinationSetStatusApi, storeCombinationApi } from '@/api/marketing';
 import { mapState } from 'vuex';
 import { formatDate } from '@/utils/validate';
+import { exportCombinationList } from '@/api/export.js';
+
 export default {
   name: 'index',
   filters: {
@@ -256,20 +258,35 @@ export default {
   },
   methods: {
     // 导出
-    exports() {
-      let formValidate = this.formValidate;
-      let data = {
-        is_show: formValidate.is_show,
-        store_name: formValidate.store_name,
-      };
-      storeCombinationApi(data)
-        .then((res) => {
-          location.href = res.data[0];
-        })
-        .catch((res) => {
-          this.$Message.error(res.msg);
-        });
+    async exports() {
+      let [th, filekey, data, fileName] = [[], [], [], ''];
+      let excelData = JSON.parse(JSON.stringify(this.formValidate));
+      excelData.page = 1;
+      excelData.limit = 200;
+      for (let i = 0; i < excelData.page + 1; i++) {
+        let lebData = await this.getExcelData(excelData);
+        if (!fileName) fileName = lebData.filename;
+        if (!filekey.length) {
+          filekey = lebData.fileKey;
+        }
+        if (!th.length) th = lebData.header;
+        if (lebData.export.length) {
+          data = data.concat(lebData.export);
+          excelData.page++;
+        } else {
+          this.$exportExcel(th, filekey, fileName, data);
+          return;
+        }
+      }
     },
+    getExcelData(excelData) {
+      return new Promise((resolve, reject) => {
+        exportCombinationList(excelData).then((res) => {
+          resolve(res.data);
+        });
+      });
+    },
+
     // 添加
     add() {
       this.$router.push({ path: '/admin/marketing/store_combination/create' });

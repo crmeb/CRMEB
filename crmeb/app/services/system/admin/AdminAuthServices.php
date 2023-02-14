@@ -40,8 +40,11 @@ class AdminAuthServices extends BaseServices
     /**
      * 获取Admin授权信息
      * @param string $token
+     * @param int $code
      * @return array
-     * @throws \Psr\SimpleCache\InvalidArgumentException
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
      */
     public function parseToken(string $token, int $code = 110003): array
     {
@@ -58,30 +61,17 @@ class AdminAuthServices extends BaseServices
 
         //检测token是否过期
         $md5Token = md5($token);
-        if (!$cacheService->hasToken($md5Token) || !($cacheToken = $cacheService->getTokenBucket($md5Token))) {
+        if (!$cacheService->has($md5Token) || !$cacheService->get($md5Token, '', NULL, 'admin')) {
             $this->authFailAfter($id, $type);
             throw new AuthException($code);
         }
-        //是否超出有效次数
-        if (isset($cacheToken['invalidNum']) && $cacheToken['invalidNum'] >= 3) {
-            if (!request()->isCli()) {
-                $cacheService->clearToken($md5Token);
-            }
-            $this->authFailAfter($id, $type);
-            throw new AuthException($code);
-        }
-
 
         //验证token
         try {
             $jwtAuth->verifyToken();
-            $cacheService->setTokenBucket($md5Token, $cacheToken, $cacheToken['exp']);
-        } catch (ExpiredException $e) {
-            $cacheToken['invalidNum'] = isset($cacheToken['invalidNum']) ? $cacheToken['invalidNum']++ : 1;
-            $cacheService->setTokenBucket($md5Token, $cacheToken, $cacheToken['exp']);
         } catch (\Throwable $e) {
             if (!request()->isCli()) {
-                $cacheService->clearToken($md5Token);
+                $cacheService->delete($md5Token);
             }
             $this->authFailAfter($id, $type);
             throw new AuthException($code);
@@ -91,7 +81,7 @@ class AdminAuthServices extends BaseServices
         $adminInfo = $this->dao->get($id);
         if (!$adminInfo || !$adminInfo->id) {
             if (!request()->isCli()) {
-                $cacheService->clearToken($md5Token);
+                $cacheService->delete($md5Token);
             }
             $this->authFailAfter($id, $type);
             throw new AuthException($code);

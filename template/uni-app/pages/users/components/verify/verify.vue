@@ -11,9 +11,17 @@
 				<!-- 验证码容器 -->
 				<!-- 滑动 -->
 				<view v-if="componentType=='VerifySlide'">
+					<!-- #ifndef H5 -->
 					<VerifySlide @success="success" :captchaType="captchaType" :type="verifyType" :figure="figure"
 						:arith="arith" :mode="mode" :vSpace="vSpace" :explain="explain" :imgSize="imgSize"
 						:blockSize="blockSize" :barSize="barSize" :defaultImg="defaultImg" ref="instance"></VerifySlide>
+					<!-- #endif -->
+					<!-- #ifdef H5 -->
+					<verifySliderPc @success="success" :captchaType="captchaType" :type="verifyType" :figure="figure"
+						:arith="arith" :mode="mode" :vSpace="vSpace" :explain="explain" :imgSize="imgSize"
+						:blockSize="blockSize" :barSize="barSize" :defaultImg="defaultImg" ref="instance">
+					</verifySliderPc>
+					<!-- #endif -->
 				</view>
 				<!-- 点选 -->
 				<view v-if="componentType=='VerifyPoints'">
@@ -31,6 +39,7 @@
 	 * @description 分发验证码使用
 	 * */
 	import VerifySlide from './verifySlider/verifySlider'
+	import verifySliderPc from './verifySlider/verifySliderPc'
 	import VerifyPoint from "./verifyPoint/verifyPoint"
 
 	export default {
@@ -197,7 +206,8 @@
 		},
 		components: {
 			VerifySlide,
-			VerifyPoint
+			VerifyPoint,
+			verifySliderPc
 		},
 	}
 </script>

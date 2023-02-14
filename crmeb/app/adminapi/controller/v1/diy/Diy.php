@@ -89,6 +89,7 @@ class Diy extends AuthController
             }
         }
         $data['value'] = json_encode($value);
+        $data['version'] = uniqid();
         $this->services->saveData($id, $data);
         return app('json')->success(100000);
     }
@@ -169,6 +170,7 @@ class Diy extends AuthController
         $data['version'] = '1.0';
         $data['type'] = 2;
         $data['is_diy'] = 1;
+        $data['version'] = uniqid();
         return app('json')->success($id ? 100001 : 100000, ['id' => $this->services->saveData($id, $data)]);
     }
 

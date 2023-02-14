@@ -144,7 +144,10 @@
                   </RadioGroup>
                 </FormItem>
               </Col>
-              <Col span="24" v-if="formValidate.freight != 3 && formValidate.freight != 1 && formValidate.virtual_type == 0">
+              <Col
+                span="24"
+                v-if="formValidate.freight != 3 && formValidate.freight != 1 && formValidate.virtual_type == 0"
+              >
                 <FormItem label="">
                   <div class="acea-row">
                     <InputNumber

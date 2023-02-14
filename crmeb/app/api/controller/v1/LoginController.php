@@ -53,7 +53,7 @@ class LoginController
         [$account, $password, $spread] = $request->postMore([
             'account', 'password', 'spread'
         ], true);
-        TaskJob::dispatchDo('emptyYesterdayAttachment');
+        TaskJob::dispatch('emptyYesterdayAttachment');
         if (!$account || !$password) {
             return app('json')->fail(410000);
         }
@@ -68,7 +68,7 @@ class LoginController
     public function logout(Request $request)
     {
         $key = trim(ltrim($request->header(Config::get('cookie.token_name')), 'Bearer'));
-        CacheService::redisHandler()->delete($key);
+        CacheService::delete(md5($key));
         return app('json')->success(410002);
     }
 

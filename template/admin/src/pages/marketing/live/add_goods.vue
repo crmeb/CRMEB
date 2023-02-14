@@ -59,7 +59,9 @@
         </Table>
 
         <div class="sub_btn">
-          <Button type="primary" style="width: 8%" @click="bindSub" :disabled="disabled" :loading="loadings">提交</Button>
+          <Button type="primary" style="width: 8%" @click="bindSub" :disabled="disabled" :loading="loadings"
+            >提交</Button
+          >
         </div>
       </div>
     </Card>

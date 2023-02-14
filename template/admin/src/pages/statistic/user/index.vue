@@ -1,6 +1,6 @@
 <template>
   <div class="article-manager">
-    <div class="i-layout-page-header  pt10">
+    <div class="i-layout-page-header pt10">
       <Form ref="formInline" :model="formInline" inline>
         <FormItem class="mr20">
           用户渠道:
@@ -109,14 +109,14 @@ export default {
 </script>
 
 <style scoped>
-.pt10{
+.pt10 {
   padding-top: 10px;
 }
-.i-layout-page-header{
+.i-layout-page-header {
   margin: 10px 0 10px 0;
 }
-.ivu-form-item{
+.ivu-form-item {
   padding-bottom: 10px;
   margin-bottom: 0;
 }
-  </style>
+</style>

@@ -16,7 +16,13 @@
             <Input type="text" v-model="formInline.account" prefix="ios-contact-outline" placeholder="请输入手机号" />
           </FormItem> -->
             <FormItem prop="sms_token" class="maxInpt">
-              <Input type="password" size="large" v-model="formInline.password" prefix="ios-lock-outline" placeholder="请输入密码" />
+              <Input
+                type="password"
+                size="large"
+                v-model="formInline.password"
+                prefix="ios-lock-outline"
+                placeholder="请输入密码"
+              />
               <div class="trip">提示：config/filesystem.php中手动配置password后使用，不能为空</div>
             </FormItem>
             <FormItem class="maxInpt">

@@ -1,0 +1,124 @@
+.wrap{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+.section{
+    height: 100%;
+    z-index: 11;
+    position: absolute;
+    background: rgba(34, 34, 34,0.6);
+    border-radius: 36px 36px 36px 36px;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+}
+.logo{
+    width: 186px;
+    height: 70px;
+    margin-bottom: 20px;
+}
+.bottom{
+    color: #5A487D;
+    width: 110px;
+    height: 32px;
+    background: #FFFFFF;
+    border-radius: 137px 137px 137px 137px;
+    font-size: 14px;
+    line-height: 32px;
+    margin: 0 auto;
+    margin-top: 20px;
+    cursor: pointer;
+    text-align: center;
+    /*font-size: 400px;*/
+    transition: all 0.3s;
+}
+.bottom:hover{
+    box-shadow: 0 2px 25px rgba(0, 234, 250, 0.5);
+}
+.bottom .btn{
+    display:block;
+    width: 100%;
+    height: 100%;
+    font-weight: 600;
+}
+.more-text{
+    background: linear-gradient(to right, #134392 0%,  #363A8A 100%);
+    -webkit-background-clip: text;
+    color: transparent;
+}
+.agreement{
+    height: 21px;
+    margin: 6px 0 10px 0;
+}
+.agreements{
+    color: #A8CDE7;
+}
+.solgen{
+    position: absolute;
+    width: 364px;
+    height: 16px;
+    bottom: 45px;
+    left: 218px;
+}
+.radio-box{
+    border: 1px solid #fff;
+    border-radius: 50%;
+    width: 14px;
+    height: 14px;
+    position: relative;
+    margin-right: 10px;
+    font-size: 14px;
+}
+.is-shock{
+    animation: shock 0.5s infinite;
+}
+.agreement span{
+    line-height: 14px;
+}
+.radio-box img{
+    position: absolute;
+    left: -1px;
+    top: -1px;
+    width: 16px;
+    height: 16px;
+    animation: show 0.3s;
+}
+@keyframes show {
+    0% {
+        transform:scale(0);
+        -moz-transform:scale(0);
+        -webkit-transform:scale(0);
+    }
+
+    100% {
+        transform:scale(1);
+        -moz-transform:scale(1);
+        -webkit-transform:scale(1);
+    }
+}
+
+@keyframes shock {
+    0% {
+        margin-top: 0px;
+    }
+    20% {
+        margin-bottom: 10px;
+    }
+    40% {
+        margin-bottom: 0px;
+    }
+    60% {
+        margin-bottom: 8px;
+    }
+    70% {
+        margin-bottom: 0px;
+    }
+    90% {
+        margin-bottom: 4px;
+    }
+    100% {
+        margin-bottom: 0px;
+
+    }
+}

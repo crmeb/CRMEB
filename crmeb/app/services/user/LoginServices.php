@@ -252,7 +252,7 @@ class LoginServices extends BaseServices
      */
     public function reset($account, $password)
     {
-        $user = $this->dao->getOne(['account|phone' => $account, 'is_del' => 0]);
+        $user = $this->dao->getOne(['account|phone' => $account, 'is_del' => 0], 'uid');
         if (!$user) {
             throw new ApiException(410032);
         }
@@ -349,7 +349,7 @@ class LoginServices extends BaseServices
         if (!$key) {
             throw new ApiException(410037);
         }
-        [$openid, $wechatInfo, $spreadId, $login_type, $userType] = $createData = CacheService::getTokenBucket($key);
+        [$openid, $wechatInfo, $spreadId, $login_type, $userType] = $createData = CacheService::get($key);
         if (!$createData) {
             throw new ApiException(410037);
         }

@@ -14,7 +14,6 @@ namespace app\services\activity\integral;
 
 use app\dao\activity\integral\StoreIntegralOrderStatusDao;
 use app\services\BaseServices;
-use crmeb\traits\ServicesTrait;
 
 /**
  * 订单状态
@@ -23,7 +22,6 @@ use crmeb\traits\ServicesTrait;
  */
 class StoreIntegralOrderStatusServices extends BaseServices
 {
-    use ServicesTrait;
 
     /**
      * 构造方法

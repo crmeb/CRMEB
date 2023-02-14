@@ -59,7 +59,7 @@ class TemplateJob extends BaseJobs
             //判断小程序还是公众号，获取数据id
             $is_type = $type == 'wechat' ? 'is_wechat' : 'is_routine';
             $key = $is_type == 'is_wechat' ? 'wechat_' . $tempCode : 'routine_' . $tempCode;
-            $tempid = CacheService::get($key, function () use ($type, $tempCode, $is_type) {
+            $tempid = CacheService::remember($key, function () use ($type, $tempCode, $is_type) {
                 /** @var SystemNotificationServices $notifyServices */
                 $notifyServices = app()->make(SystemNotificationServices::class);
                 return $notifyServices->getNotInfo(['type' => $is_type, 'mark' => $tempCode])['tempid'];

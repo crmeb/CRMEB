@@ -14,6 +14,21 @@ use think\facade\Route;
  * 导出excel相关路由
  */
 Route::group('export', function () {
+    //用户列表
+    Route::get('user_list', 'v1.export.ExportExcel/userList')->option(['real_name' => '用户列表导出']);
+    //订单列表
+    Route::get('order_list', 'v1.export.ExportExcel/orderList')->option(['real_name' => '订单列表导出']);
+    //商品列表
+    Route::get('product_list', 'v1.export.ExportExcel/productList')->option(['real_name' => '商品列表导出']);
+    //砍价列表
+    Route::get('bargain_list', 'v1.export.ExportExcel/bargainList')->option(['real_name' => '砍价商品列表导出']);
+    //拼团列表
+    Route::get('combination_list', 'v1.export.ExportExcel/combinationList')->option(['real_name' => '拼团商品列表导出']);
+    //秒杀列表
+    Route::get('seckill_list', 'v1.export.ExportExcel/seckillList')->option(['real_name' => '秒杀商品列表导出']);
+    //导出会员卡
+    Route::get('member_card/:id', 'v1.export.ExportExcel/memberCardList')->option(['real_name' => '会员卡导出']);
+
     //用户资金监控
     Route::get('userFinance', 'v1.export.ExportExcel/userFinance')->option(['real_name' => '用户资金导出']);
     //用户佣金

@@ -34,6 +34,7 @@ return [
         'text/xml',
         'image/x-icon',
         'image/vnd.microsoft.icon',
+        'application/x-x509-ca-cert',
     ],
     //驱动模式，此配置优先与后台配置，后台添加配置请加前缀，例如添加七牛云配置：accessKey 后台添加变量名 qiniu_accessKey
     'stores' => [

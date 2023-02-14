@@ -6,7 +6,8 @@
 				v-if="order_pay_info.paid || order_pay_info.pay_type == 'offline'"></view>
 			<view class='iconfont icons icon-iconfontguanbi' v-else></view>
 			<!-- 失败时：订单支付失败 -->
-			<view class='status' v-if="order_pay_info.pay_type != 'offline'">{{order_pay_info.paid ? $t(`订单支付成功`):$t(`订单支付失败`)}}
+			<view class='status' v-if="order_pay_info.pay_type != 'offline'">
+				{{order_pay_info.paid ? $t(`订单支付成功`):$t(payType ? `订单支付中`:`订单支付失败`)}}
 			</view>
 			<view class='status' v-else>{{$t(`订单创建成功`)}}</view>
 			<view class='wrapper'>
@@ -36,6 +37,9 @@
 			<!--失败时： 重新购买 -->
 			<view @tap="goOrderDetails" v-if="status==0">
 				<button formType="submit" class='returnBnt bg-color' hover-class='none'>{{$t(`查看订单`)}}</button>
+			</view>
+			<view @tap="getOrderPayInfo" v-if="payType == 'ALLINPAY_PAY'">
+				<button class='returnBnt bg-color' hover-class='none'>{{$t(`刷新支付状态`)}}</button>
 			</view>
 			<view @tap="goOrderDetails" v-if="order_pay_info.paid==0 && status==1">
 				<button class='returnBnt bg-color' hover-class='none'>{{$t(`重新购买`)}}</button>
@@ -67,7 +71,8 @@
 						<view class="text">
 							<view class="name line1">{{item.coupon_title}}</view>
 							<view class="priceMin">{{$t(`满`)}}{{item.use_min_price}}{{$t(`元可用`)}}</view>
-							<view class="time">{{$t(`有效期`)}}:{{ item.add_time ? item.add_time + "-" : ""}}{{ item.end_time }}
+							<view class="time">
+								{{$t(`有效期`)}}:{{ item.add_time ? item.add_time + "-" : ""}}{{ item.end_time }}
 							</view>
 						</view>
 					</view>
@@ -126,7 +131,8 @@
 				msg: '',
 				couponsHidden: true,
 				couponList: [],
-				options: {}
+				options: {},
+				payType: ''
 			};
 		},
 		computed: mapGetters(['isLogin']),
@@ -151,7 +157,8 @@
 			this.orderId = options.order_id;
 			this.status = options.status || 0;
 			this.msg = options.msg || '';
-	
+			this.payType = options.payType || '';
+
 			// // #ifdef H5
 			// document.addEventListener('visibilitychange', (e) => {
 			// 	let state = document.visibilityState
@@ -342,7 +349,7 @@
 		color: #fff;
 		text-align: center;
 		line-height: 140rpx;
-		text-shadow: 0px 4px 0px rgba(255,255,255,0.5);
+		text-shadow: 0px 4px 0px rgba(255, 255, 255, 0.5);
 		border: 6rpx solid #f5f5f5;
 		margin: -76rpx auto 0 auto;
 		background-color: #999;

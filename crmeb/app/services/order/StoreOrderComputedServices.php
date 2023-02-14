@@ -175,9 +175,10 @@ class StoreOrderComputedServices extends BaseServices
                 case 1://品类券
                     /** @var StoreCategoryServices $storeCategoryServices */
                     $storeCategoryServices = app()->make(StoreCategoryServices::class);
-                    $cateGorys = $storeCategoryServices->getAllById((int)$couponInfo['category_id']);
-                    if ($cateGorys) {
-                        $cateIds = array_column($cateGorys, 'id');
+                    $coupon_category = explode(',', (string)$couponInfo['category_id']);
+                    $category_ids = $storeCategoryServices->getAllById($coupon_category);
+                    if ($category_ids) {
+                        $cateIds = array_column($category_ids, 'id');
                         foreach ($cartInfo as $cart) {
                             if (isset($cart['productInfo']['cate_id']) && array_intersect(explode(',', $cart['productInfo']['cate_id']), $cateIds)) {
                                 $price = bcadd($price, bcmul((string)$cart['truePrice'], (string)$cart['cart_num'], 2), 2);
@@ -318,7 +319,9 @@ class StoreOrderComputedServices extends BaseServices
         $sumPrice = $this->getOrderSumPrice($cartInfo, 'sum_price');//获取订单原总金额
         $totalPrice = $this->getOrderSumPrice($cartInfo, 'truePrice');//获取订单svip、用户等级优惠之后总金额
         $costPrice = $this->getOrderSumPrice($cartInfo, 'costPrice');//获取订单成本价
-        $vipPrice = $this->getOrderSumPrice($cartInfo, 'vip_truePrice');//获取订单会员优惠金额
+        $vipPrice = $this->getOrderSumPrice($cartInfo, 'vip_truePrice');//获取订单等级和付费会员总优惠金额
+        $levelPrice = $this->getOrderSumPrice($cartInfo, 'level');//获取会员等级优惠
+        $memberPrice = $this->getOrderSumPrice($cartInfo, 'member');//获取付费会员优惠
 
         // 判断商品包邮和固定运费
         foreach ($cartInfo as $key => &$item) {
@@ -513,7 +516,7 @@ class StoreOrderComputedServices extends BaseServices
                 $storePostage = $storePostage;
             }
         }
-        return compact('storePostage', 'storeFreePostage', 'isStoreFreePostage', 'sumPrice', 'totalPrice', 'costPrice', 'vipPrice', 'storePostageDiscount', 'cartInfo');
+        return compact('storePostage', 'storeFreePostage', 'isStoreFreePostage', 'sumPrice', 'totalPrice', 'costPrice', 'vipPrice', 'storePostageDiscount', 'cartInfo', 'levelPrice', 'memberPrice');
     }
 
     /**
@@ -529,7 +532,13 @@ class StoreOrderComputedServices extends BaseServices
         foreach ($cartInfo as $cart) {
             if (isset($cart['cart_info'])) $cart = $cart['cart_info'];
             if ($is_unit) {
-                $SumPrice = bcadd($SumPrice, bcmul($cart['cart_num'], $cart[$key], 2), 2);
+                if ($key == 'level' || $key == 'member') {
+                    if ($cart['price_type'] == $key) {
+                        $SumPrice = bcadd($SumPrice, bcmul($cart['cart_num'], $cart['vip_truePrice'], 2), 2);
+                    }
+                } else {
+                    $SumPrice = bcadd($SumPrice, bcmul($cart['cart_num'], $cart[$key], 2), 2);
+                }
             } else {
                 $SumPrice = bcadd($SumPrice, $cart[$key], 2);
             }

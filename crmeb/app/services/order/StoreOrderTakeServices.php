@@ -93,7 +93,7 @@ class StoreOrderTakeServices extends BaseServices
         //获取购物车内的商品标题
         /** @var StoreOrderCartInfoServices $orderInfoServices */
         $orderInfoServices = app()->make(StoreOrderCartInfoServices::class);
-        $storeName = $orderInfoServices->getCarIdByProductTitle($order['id'], $order['cart_id']);
+        $storeName = $orderInfoServices->getCarIdByProductTitle((int)$order['id']);
         $storeTitle = Str::substrUTf8($storeName, 20, 'UTF-8', '');
 
         $res = $this->transaction(function () use ($order, $userInfo, $storeTitle) {
@@ -352,15 +352,7 @@ class StoreOrderTakeServices extends BaseServices
         if (!$userServices->checkUserPromoter($one_spread_uid)) {
             return $this->backOrderBrokerageTwo($orderInfo, $userInfo, $isSelfBrokerage);
         }
-        $onebrokerage = $orderInfo['one_brokerage'] ?? 0;
-        if ($onebrokerage) {//订单中取出
-            $brokeragePrice = $onebrokerage;
-        } else {
-            $cartId = is_string($orderInfo['cart_id']) ? json_decode($orderInfo['cart_id'], true) : $orderInfo['cart_id'];
-            /** @var StoreOrderCartInfoServices $cartServices */
-            $cartServices = app()->make(StoreOrderCartInfoServices::class);
-            $brokeragePrice = $cartServices->getProductBrokerage($cartId);
-        }
+        $brokeragePrice = $orderInfo['one_brokerage'] ?? 0;
         // 返佣金额小于等于0 直接返回不返佣金
         if ($brokeragePrice <= 0) {
             return true;
@@ -431,15 +423,7 @@ class StoreOrderTakeServices extends BaseServices
         if (!$userServices->checkUserPromoter($spread_two_uid)) {
             return true;
         }
-        $twobrokerage = $orderInfo['two_brokerage'] ?? 0;
-        if ($twobrokerage) {
-            $brokeragePrice = $twobrokerage;
-        } else {//兼容之前下单未计算佣金类订单 重新计算一次
-            $cartId = is_string($orderInfo['cart_id']) ? json_decode($orderInfo['cart_id'], true) : $orderInfo['cart_id'];
-            /** @var StoreOrderCartInfoServices $cartServices */
-            $cartServices = app()->make(StoreOrderCartInfoServices::class);
-            $brokeragePrice = $cartServices->getProductBrokerage($cartId, false);
-        }
+        $brokeragePrice = $orderInfo['two_brokerage'] ?? 0;
         // 返佣金额小于等于0 直接返回不返佣金
         if ($brokeragePrice <= 0) {
             return true;

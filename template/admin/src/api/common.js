@@ -10,20 +10,19 @@
 
 import request from '@/libs/request';
 
-
-export function ajCaptcha(params){
+export function ajCaptcha(params) {
   return request({
-    url:'ajcaptcha',
-    method:'get',
-    params:params
+    url: 'ajcaptcha',
+    method: 'get',
+    params: params,
   });
 }
 
-export function ajCaptchaCheck(data){
+export function ajCaptchaCheck(data) {
   return request({
-    url:'ajcheck',
-    method:'post',
-    data:data
+    url: 'ajcheck',
+    method: 'post',
+    data: data,
   });
 }
 

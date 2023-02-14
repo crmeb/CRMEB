@@ -3,7 +3,7 @@
 		<block v-for="(item,index) in benefit" :key="index">
 			<view class='item' @tap="goDetail(item)" hover-class="none">
 				<view class='pictrue'>
-					<image :src='item.image'></image>
+					<easy-loadimage mode="widthFix" :image-src="item.image"></easy-loadimage>
 				</view>
 				<view class='money'>
 					<text class="rmb">{{$t(`￥`)}} </text><text class="price"> {{item.price}}</text>
@@ -70,12 +70,22 @@
 				height: 198rpx;
 				border-radius: 12rpx;
 
+
+
+				/deep/,
+				/deep/image,
+				/deep/.easy-loadimage,
+				/deep/uni-image {
+					width: 100%;
+					height: 198rpx;
+					border-radius: 12rpx;
+				}
+
 				image {
 					width: 100%;
 					height: 100%;
 					border-radius: 12rpx;
 				}
-
 			}
 
 			.money {

@@ -65,7 +65,6 @@ export default {
       path: 'system_config/:type?/:tab_id?',
       name: `${pre}setApp`,
       meta: {
-        ...meta,
         title: '应用设置',
       },
       component: () => import('@/pages/setting/setSystem/index'),
@@ -74,7 +73,6 @@ export default {
       path: 'system_config/payment/:type?/:tab_id?',
       name: `${pre}payment`,
       meta: {
-        ...meta,
         title: '支付配置',
       },
       component: () => import('@/pages/setting/setSystem/index'),

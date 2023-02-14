@@ -88,16 +88,11 @@ class LoginServices extends BaseServices
         $cacheService = app()->make(CacheService::class);
         //检测token是否过期
         $md5Token = md5($token);
-        if (!$token || !$cacheService->hasToken($md5Token) || !($cacheToken = $cacheService->getTokenBucket($md5Token))) {
+        if (!$token || !$cacheService->has($md5Token) || !($cacheService->get($md5Token, '', NULL, 'kefu'))) {
             throw new AuthException(110005);
         }
         if ($token === 'undefined') {
             throw new AuthException(110005);
-        }
-        //是否超出有效次数
-        if (isset($cacheToken['invalidNum']) && $cacheToken['invalidNum'] >= 3) {
-            $cacheService->clearToken($md5Token);
-            throw new AuthException(110006);
         }
 
         /** @var JwtAuth $jwtAuth */
@@ -108,19 +103,15 @@ class LoginServices extends BaseServices
         //验证token
         try {
             $jwtAuth->verifyToken();
-            $cacheService->setTokenBucket($md5Token, $cacheToken, $cacheToken['exp']);
-        } catch (ExpiredException $e) {
-            $cacheToken['invalidNum'] = isset($cacheToken['invalidNum']) ? $cacheToken['invalidNum']++ : 1;
-            $cacheService->setTokenBucket($md5Token, $cacheToken, $cacheToken['exp']);
         } catch (\Throwable $e) {
-            $noCli && $cacheService->clearToken($md5Token);
+            $noCli && $cacheService->delete($md5Token);
             throw new AuthException(110006);
         }
 
         //获取管理员信息
         $adminInfo = $this->dao->get($id);
         if (!$adminInfo || !$adminInfo->id) {
-            $noCli && $cacheService->clearToken($md5Token);
+            $noCli && $cacheService->delete($md5Token);
             throw new AuthException(110007);
         }
 

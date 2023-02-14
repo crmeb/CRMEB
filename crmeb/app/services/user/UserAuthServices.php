@@ -39,7 +39,9 @@ class UserAuthServices extends BaseServices
      * 获取授权信息
      * @param $token
      * @return array
-     * @throws \Psr\SimpleCache\InvalidArgumentException\
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
      */
     public function parseToken($token): array
     {
@@ -48,7 +50,7 @@ class UserAuthServices extends BaseServices
         if ($token === 'undefined') {
             throw new AuthException(110002);
         }
-        if (!$token || !$tokenData = CacheService::getTokenBucket($md5Token))
+        if (!$token || !$tokenData = CacheService::get($md5Token, '', NULL, 'api'))
             throw new AuthException(110002);
 
         if (!is_array($tokenData) || empty($tokenData) || !isset($tokenData['uid'])) {
@@ -64,14 +66,14 @@ class UserAuthServices extends BaseServices
         try {
             $jwtAuth->verifyToken();
         } catch (\Throwable $e) {
-            if (!request()->isCli()) CacheService::clearToken($md5Token);
+            if (!request()->isCli()) CacheService::delete($md5Token);
             throw new AuthException(110003);
         }
 
         $user = $this->dao->get(['uid' => $id, 'is_del' => 0]);
 
         if (!$user || $user->uid != $tokenData['uid']) {
-            if (!request()->isCli()) CacheService::clearToken($md5Token);
+            if (!request()->isCli()) CacheService::delete($md5Token);
             throw new AuthException(110004);
         }
         $tokenData['type'] = $type;

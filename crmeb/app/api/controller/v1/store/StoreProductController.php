@@ -55,7 +55,8 @@ class StoreProductController
             [['type', 0], 0],
             ['ids', ''],
             ['selectId', ''],
-            ['productId', '']
+            ['productId', ''],
+            ['coupon_category_id', '']
         ]);
         if ($where['selectId'] && (!$where['sid'] || !$where['cid'])) {
             if ($services->value(['id' => $where['selectId']], 'pid')) {

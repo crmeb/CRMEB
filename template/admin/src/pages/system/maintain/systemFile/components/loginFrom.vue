@@ -5,12 +5,7 @@
         <div class="page-account-top">
           <span class="page-account-top-tit">文件管理登录</span>
         </div>
-        <Form
-          ref="formInline"
-          :model="formInline"
-          :rules="ruleInline"
-          @submit.native.prevent
-        >
+        <Form ref="formInline" :model="formInline" :rules="ruleInline" @submit.native.prevent>
           <!-- <FormItem prop="sms_account" class="maxInpt">
             <Input type="text" v-model="formInline.account" prefix="ios-contact-outline" placeholder="请输入手机号" />
           </FormItem> -->
@@ -27,9 +22,7 @@
 </template>
 
 <script>
-import {
-		opendirLoginApi
-	} from '@/api/system';
+import { opendirLoginApi } from '@/api/system';
 export default {
   name: 'file_login',
   data() {
@@ -69,7 +62,7 @@ export default {
           opendirLoginApi(this.formInline)
             .then(async (res) => {
               this.$Message.success('登录成功!');
-              this.$emit('on-Login',res.data);
+              this.$emit('on-Login', res.data);
             })
             .catch((res) => {
               this.$Message.error(res.msg);

@@ -57,6 +57,9 @@ class RechargeServices
                 $userType = PayServices::ALIAPY_PAY;
                 break;
         }
+
+        $userType = get_pay_type($userType);
+
         if (!$userType) {
             throw new ApiException(410278);
         }
@@ -70,7 +73,14 @@ class RechargeServices
         } else {
             $openid = '';
         }
-        return $this->pay->pay($recharge['recharge_type'], $openid, $recharge['order_id'], $recharge['price'], 'user_recharge', '用户充值');
+
+        $res = $this->pay->pay($recharge['recharge_type'], $openid, $recharge['order_id'], $recharge['price'], 'user_recharge', '用户充值');
+
+        if ($userType === PayServices::ALLIN_PAY) {
+            $res['pay_type'] = $userType;
+        }
+
+        return $res;
     }
 
 }

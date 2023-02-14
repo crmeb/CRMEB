@@ -39,7 +39,8 @@ class StoreSeckillController
         //秒杀时间段
         $seckillTime = GroupDataService::getData('routine_seckill_time') ?? [];
         $seckillTimeIndex = -1;
-        $timeCount = count($seckillTime);
+        $timeCount = count($seckillTime);//总数
+        $unTimeCunt = 0;//即将开始
         if ($timeCount) {
             $today = strtotime(date('Y-m-d'));
             $currentHour = date('H');
@@ -62,6 +63,7 @@ class StoreSeckillController
                         $value['state'] = '即将开始';
                         $value['status'] = 2;
                         $value['stop'] = (int)bcadd($today, bcmul($activityEndHour, 3600, 0));
+                        $unTimeCunt += 1;
                     } else if ($currentHour >= $activityEndHour) {
                         $value['time'] = strlen((int)$value['time']) == 2 ? (int)$value['time'] . ':00' : '0' . (int)$value['time'] . ':00';
                         $value['state'] = '已结束';
@@ -71,9 +73,16 @@ class StoreSeckillController
                 }
             }
             //有时间段但是都不在抢购中
-            if ($seckillTimeIndex == -1) {
-                if ($currentHour < (int)$seckillTime[0]['time'] ?? 0) {
+            if ($seckillTimeIndex == -1 && $currentHour <= (int)$seckillTime[$timeCount - 1]['time'] ?? 0) {
+                if ($currentHour < (int)$seckillTime[0]['time'] ?? 0) {//当前时间
                     $seckillTimeIndex = 0;
+                } elseif ($unTimeCunt) {//存在未开始的
+                    foreach ($seckillTime as $key => $item) {
+                        if ($item['status'] == 2) {
+                            $seckillTimeIndex = $key;
+                            break;
+                        }
+                    }
                 } else {
                     $seckillTimeIndex = $timeCount - 1;
                 }
@@ -123,11 +132,11 @@ class StoreSeckillController
      * @param $id
      * @return mixed
      */
-    public function code(Request $request, $id, $stop_time = '')
+    public function code(Request $request, $id)
     {
         /** @var QrcodeServices $qrcodeService */
         $qrcodeService = app()->make(QrcodeServices::class);
-        $url = $qrcodeService->getRoutineQrcodePath($id, $request->uid(), 2, compact('stop_time'));
+        $url = $qrcodeService->getRoutineQrcodePath($id, $request->uid(), 2);
         if ($url) {
             return app('json')->success(['code' => $url]);
         } else {

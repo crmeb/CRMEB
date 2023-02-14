@@ -255,7 +255,12 @@
 		},
 		onReachBottom() {
 			this.getUserCollectProduct();
-		}
+		},
+		// 滚动监听
+		onPageScroll(e) {
+			// 传入scrollTop值并触发所有easy-loadimage组件下的滚动监听事件
+			uni.$emit('scroll');
+		},
 	}
 </script>
 

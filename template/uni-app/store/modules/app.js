@@ -25,7 +25,8 @@ const state = {
 	uid: Cache.get(UID) || 0,
 	homeActive: false,
 	phoneStatus: true,
-	pageFooter: uni.getStorageSync('pageFoot') || {}
+	pageFooter: uni.getStorageSync('pageFoot') || {},
+	activityTab: ''
 };
 
 const mutations = {
@@ -42,6 +43,9 @@ const mutations = {
 	},
 	UPDATE_LOGIN(state, token) {
 		state.token = token;
+	},
+	ACTIVITYTAB(state, tab) {
+		state.activityTab = tab;
 	},
 	LOGOUT(state) {
 		state.token = false;
@@ -71,6 +75,7 @@ const mutations = {
 };
 
 const actions = {
+
 	USERINFO({
 		state,
 		commit

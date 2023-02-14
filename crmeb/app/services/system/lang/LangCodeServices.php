@@ -136,7 +136,7 @@ class LangCodeServices extends BaseServices
         $typeList = $langTypeServices->getColumn(['status' => 1, 'is_del' => 0], 'file_name');
         foreach ($typeList as $value) {
             $langStr = 'api_lang_' . str_replace('-', '_', $value);
-            CacheService::redisHandler()->delete($langStr);
+            CacheService::delete($langStr);
         }
         return true;
     }

@@ -478,9 +478,13 @@ class StoreSeckillServices extends BaseServices
         $productInfo = $storeProductService->get($storeInfo['product_id']);
         $storeInfo['total'] = $productInfo['sales'] + $productInfo['ficti'];
 
-        /** @var QrcodeServices $qrcodeService */
-        $qrcodeService = app()->make(QrcodeServices::class);
-        $storeInfo['code_base'] = $qrcodeService->getWechatQrcodePath($id . '_' . $uid . '_product_seckill_detail_wap.jpg', '/pages/activity/goods_seckill_details/index?id=' . $id . '&spread=' . $uid);
+        if (sys_config('share_qrcode', 0) && request()->isWechat()) {
+            /** @var QrcodeServices $qrcodeService */
+            $qrcodeService = app()->make(QrcodeServices::class);
+            $storeInfo['wechat_code'] = $qrcodeService->getTemporaryQrcode('seckill-' . $id, $uid)->url;
+        } else {
+            $storeInfo['wechat_code'] = '';
+        }
 
         /** @var StoreOrderServices $storeOrderServices */
         $storeOrderServices = app()->make(StoreOrderServices::class);
@@ -513,7 +517,7 @@ class StoreSeckillServices extends BaseServices
         if ($storeInfo['status'] == 1) {
             if ($storeInfo['start_time'] > time()) {
                 $storeInfo['status'] = 2;
-            } elseif ($storeInfo['stop_time'] < time()) {
+            } elseif (($storeInfo['stop_time'] + 86400) < time()) {
                 $storeInfo['status'] = 0;
             } else {
                 /** @var SystemGroupDataServices $systemGroupDataService */
@@ -612,7 +616,7 @@ class StoreSeckillServices extends BaseServices
         $cache = app()->make(CacheService::class);
         $res = true;
         if (!$isPush) {
-            $cache->del($name);
+            $cache->delete($name);
         }
         for ($i = 1; $i <= $number; $i++) {
             $res = $res && $cache->lPush($name, $i);
@@ -689,7 +693,7 @@ class StoreSeckillServices extends BaseServices
     {
         /** @var CacheService $cache */
         $cache = app()->make(CacheService::class);
-        return $cache->redisHandler()->lLen('seckill_' . $unique . '_' . $type) >= $number;
+        return $cache->lLen('seckill_' . $unique . '_' . $type) >= $number;
     }
 
     /**

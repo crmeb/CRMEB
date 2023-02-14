@@ -14,6 +14,7 @@ use crmeb\exceptions\AdminException;
 use crmeb\exceptions\ApiException;
 use crmeb\services\FormBuilder as Form;
 use app\services\other\UploadService;
+use think\facade\Log;
 use think\facade\Route;
 
 class DivisionAgentApplyServices extends BaseServices
@@ -202,26 +203,32 @@ class DivisionAgentApplyServices extends BaseServices
             $item['orderCount'] = $item['pay_count'];
             $item['numberCount'] = $orderService->sum(['uid' => $item['uid']], 'pay_price');
         }
-        /** @var SystemAttachmentServices $systemAttachment */
-        $systemAttachment = app()->make(SystemAttachmentServices::class);
-        $name = 'agent_' . $where['agent_id'] . '.jpg';
-        $siteUrl = sys_config('site_url', '');
-        $imageInfo = $systemAttachment->getInfo(['name' => $name]);
-        if (!$imageInfo) {
-            /** @var QrcodeServices $qrCode */
-            $qrCode = app()->make(QrcodeServices::class);
-            //公众号
-            $resCode = $qrCode->getForeverQrcode('agent', $where['agent_id']);
-            if ($resCode) {
-                $res = ['res' => $resCode, 'id' => $resCode['id']];
-            } else {
-                $res = false;
+        $codeUrl = '';
+        try {
+            /** @var SystemAttachmentServices $systemAttachment */
+            $systemAttachment = app()->make(SystemAttachmentServices::class);
+            $name = 'agent_' . $where['agent_id'] . '.jpg';
+            $siteUrl = sys_config('site_url', '');
+            $imageInfo = $systemAttachment->getInfo(['name' => $name]);
+            if (!$imageInfo) {
+                /** @var QrcodeServices $qrCode */
+                $qrCode = app()->make(QrcodeServices::class);
+                //公众号
+                $resCode = $qrCode->getForeverQrcode('agent', $where['agent_id']);
+                if ($resCode) {
+                    $res = ['res' => $resCode, 'id' => $resCode['id']];
+                } else {
+                    $res = false;
+                }
+                if (!$res) throw new ApiException(410167);
+                $imageInfo = $this->downloadImage($resCode['url'], $name);
+                $systemAttachment->attachmentAdd($name, $imageInfo['size'], $imageInfo['type'], $imageInfo['att_dir'], $imageInfo['att_dir'], 1, $imageInfo['image_type'], time(), 2);
             }
-            if (!$res) throw new ApiException(410167);
-            $imageInfo = $this->downloadImage($resCode['url'], $name);
-            $systemAttachment->attachmentAdd($name, $imageInfo['size'], $imageInfo['type'], $imageInfo['att_dir'], $imageInfo['att_dir'], 1, $imageInfo['image_type'], time(), 2);
+            $codeUrl = strpos($imageInfo['att_dir'], 'http') === false ? $siteUrl . $imageInfo['att_dir'] : $imageInfo['att_dir'];
+        } catch (\Exception $e) {
+            Log::error('邀请员工二维码生成失败，失败原因' . $e->getMessage());
         }
-        $codeUrl = strpos($imageInfo['att_dir'], 'http') === false ? $siteUrl . $imageInfo['att_dir'] : $imageInfo['att_dir'];
+
         return compact('list', 'count', 'codeUrl');
     }
 

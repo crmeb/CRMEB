@@ -94,6 +94,7 @@ class SyncMessageJob extends BaseJobs
     /**
      * 同步公众号模版消息
      * @param $template
+     * @return bool
      */
     public function syncWechat($template)
     {

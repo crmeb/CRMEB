@@ -287,10 +287,10 @@ class UpgradeServices extends BaseServices
         }
 
         CacheService::set($token . '_database_backup', 1, 86400);
-        UpgradeJob::dispatchDo('databaseBackup', [$token]);
+        UpgradeJob::dispatch('databaseBackup', [$token]);
 
         CacheService::set($token . '_project_backup', 1, 86400);
-        UpgradeJob::dispatchDo('projectBackup', [$token]);
+        UpgradeJob::dispatch('projectBackup', [$token]);
 
         CacheService::set('upgrade_token', $token, 86400);
         CacheService::set($token . '_upgrade_data', $data, 86400);
@@ -347,7 +347,7 @@ class UpgradeServices extends BaseServices
         $fileName = substr($packageLink, strrpos($packageLink, '/') + 1);
         $filePath = app()->getRootPath() . 'upgrade' . DS . date('Y-m-d');;
         if (!is_dir($filePath)) mkdir($filePath, 0755, true);
-        UpgradeJob::dispatchDo('download', [$seq, $packageLink, $filePath, $fileName, 300]);
+        UpgradeJob::dispatch('download', [$seq, $packageLink, $filePath, $fileName, 300]);
         CacheService::set($seq, 1, 86400);
     }
 

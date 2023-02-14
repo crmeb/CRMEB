@@ -54,7 +54,7 @@ class WechatTemplate extends AuthController
             WechatService::deleleTemplate($v['template_id']);
         }
         foreach ($all['list'] as $template) {
-            SyncMessageJob::dispatchDo('SyncWechat', [$template]);
+            SyncMessageJob::dispatch('SyncWechat', [$template]);
         }
         return app('json')->success(100038);
     }

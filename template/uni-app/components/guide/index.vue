@@ -1,7 +1,7 @@
 <template>
 	<view class="content">
-		<swiper class="swiper" :autoplay="autoplay" indicator-dots="true" indicator-color="rgba(255,255,255,0.6)" :duration="duration"
-			v-if="advData.type == 'pic' && advData.value.length">
+		<swiper class="swiper" :autoplay="autoplay" indicator-dots="true" indicator-color="rgba(255,255,255,0.6)"
+			:duration="duration" v-if="advData.type == 'pic' && advData.value.length">
 			<swiper-item v-for="(item,index) in advData.value" :key="index" @click="jump(item.link)">
 				<view class="swiper-item">
 					<view class="swiper-item-img">
@@ -14,7 +14,8 @@
 			<video class="vid" :src="advData.video_link" :autoplay="true" :loop="true" :muted="true"
 				:controls="false"></video>
 		</view>
-		<view class="jump-over" @click.stop="launchFlag()">{{$t(`跳过`)}}<text v-if="closeType == 1">{{times}}</text></view>
+		<view class="jump-over" @click.stop="launchFlag()">{{$t(`跳过`)}}<text v-if="closeType == 1">{{times}}</text>
+		</view>
 	</view>
 </template>
 
@@ -44,6 +45,9 @@
 		mounted() {
 			this.timer()
 		},
+		onHide() {
+			clearInterval(this.timecount)
+		},
 		methods: {
 			timer() {
 				this.times = this.advData.time
@@ -65,12 +69,13 @@
 			},
 			jump(url) {
 				if (url) {
+					clearInterval(this.timecount)
 					if (url.indexOf("http") != -1) {
 						uni.navigateTo({
 							url: `/pages/annex/web_view/index?url=${url}`
 						});
 					} else {
-						uni.navigateTo({
+						uni.reLaunch({
 							url: url,
 							fail: () => {
 								uni.switchTab({
@@ -79,7 +84,6 @@
 							}
 						})
 					}
-					clearInterval(this.timecount)
 				}
 
 			},

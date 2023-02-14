@@ -38,4 +38,15 @@ class CategoryController
         $category = $this->services->getCategory($where);
         return app('json')->success($category);
     }
+
+    /**
+     * @author 等风来
+     * @email 136327134@qq.com
+     * @date 2022/11/11
+     * @return mixed
+     */
+    public function getCategoryVersion()
+    {
+        return app('json')->success(['version' => $this->services->getCategoryVersion()]);
+    }
 }

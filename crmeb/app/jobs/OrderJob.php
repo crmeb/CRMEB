@@ -212,7 +212,7 @@ class OrderJob extends BaseJobs
                                 $description .= '砍价商品：' . $title;
                                 $image = $bargainServices->value(['id' => $order['bargain_id']], 'image');
                             } else {
-                                $productIds = $cartInfoServices->getCartIdsProduct($order['cart_id']);
+                                $productIds = $cartInfoServices->getCartIdsProduct($order['id']);
                                 $storeProduct = $services->getProductArray([['id', 'in', $productIds]], 'image,store_name', 'id');
                                 if (count($storeProduct)) {
                                     foreach ($storeProduct as $value) {

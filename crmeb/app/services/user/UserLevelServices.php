@@ -8,7 +8,7 @@
 // +----------------------------------------------------------------------
 // | Author: CRMEB Team <admin@crmeb.com>
 // +----------------------------------------------------------------------
-declare (strict_types = 1);
+declare (strict_types=1);
 
 namespace app\services\user;
 
@@ -206,10 +206,10 @@ class UserLevelServices extends BaseServices
     {
 
         if ($id) {
-            $vipinfo = app()->make(SystemUserLevelServices::class)->getlevel($id);
-            $vipinfo->image = set_file_url($vipinfo->image);
-            $vipinfo->icon = set_file_url($vipinfo->icon);
-            if (!$vipinfo) {
+            $vipInfo = app()->make(SystemUserLevelServices::class)->getlevel($id);
+            $vipInfo->image = set_file_url($vipInfo->image);
+            $vipInfo->icon = set_file_url($vipInfo->icon);
+            if (!$vipInfo) {
                 throw new AdminException(100026);
             }
             $field[] = Form::hidden('id', $id);
@@ -217,15 +217,13 @@ class UserLevelServices extends BaseServices
         } else {
             $msg = '添加用户等级';
         }
-        $field[] = Form::input('name', '等级名称', isset($vipinfo) ? $vipinfo->name : '')->col(24)->required();
-//        $field[] = Form::number('valid_date', '有效时间(天)', isset($vipinfo) ? $vipinfo->valid_date : 0)->min(0)->col(12);
-        $field[] = Form::number('grade', '等级', isset($vipinfo) ? $vipinfo->grade : 0)->min(0)->precision(0)->col(8)->required();
-        $field[] = Form::number('discount', '享受折扣', isset($vipinfo) ? $vipinfo->discount : 100)->min(0)->max(100)->col(8)->placeholder('输入折扣数100，代表原价，90代表9折')->required();
-        $field[] = Form::number('exp_num', '解锁需经验值达到', isset($vipinfo) ? $vipinfo->exp_num : 0)->min(0)->precision(0)->col(8)->required();
-        $field[] = Form::frameImage('icon', '图标', Url::buildUrl('admin/widget.images/index', array('fodder' => 'icon')), isset($vipinfo) ? $vipinfo->icon : '')->icon('ios-add')->width('950px')->height('505px')->modal(['footer-hide' => true]);
-        $field[] = Form::frameImage('image', '用户等级背景', Url::buildUrl('admin/widget.images/index', array('fodder' => 'image')), isset($vipinfo) ? $vipinfo->image : '')->icon('ios-add')->width('950px')->height('505px')->modal(['footer-hide' => true]);
-        $field[] = Form::radio('is_show', '是否显示', isset($vipinfo) ? $vipinfo->is_show : 0)->options([['label' => '显示', 'value' => 1], ['label' => '隐藏', 'value' => 0]])->col(24);
-        $field[] = Form::textarea('explain', '等级说明', isset($vipinfo) ? $vipinfo->explain : '')->required();
+        $field[] = Form::input('name', '等级名称', isset($vipInfo) ? $vipInfo->name : '')->col(24)->required();
+        $field[] = Form::number('grade', '等级', isset($vipInfo) ? $vipInfo->grade : 0)->min(0)->precision(0)->col(8)->required();
+        $field[] = Form::number('discount', '享受折扣', isset($vipInfo) ? $vipInfo->discount : 100)->min(0)->max(100)->col(8)->placeholder('输入折扣数100，代表原价，90代表9折')->required();
+        $field[] = Form::number('exp_num', '解锁需经验值达到', isset($vipInfo) ? $vipInfo->exp_num : 0)->min(0)->precision(0)->col(8)->required();
+        $field[] = Form::frameImage('icon', '图标', Url::buildUrl('admin/widget.images/index', array('fodder' => 'icon')), isset($vipInfo) ? $vipInfo->icon : '')->icon('ios-add')->width('950px')->height('505px')->modal(['footer-hide' => true]);
+        $field[] = Form::frameImage('image', '用户等级背景', Url::buildUrl('admin/widget.images/index', array('fodder' => 'image')), isset($vipInfo) ? $vipInfo->image : '')->icon('ios-add')->width('950px')->height('505px')->modal(['footer-hide' => true]);
+        $field[] = Form::radio('is_show', '是否显示', isset($vipInfo) ? $vipInfo->is_show : 0)->options([['label' => '显示', 'value' => 1], ['label' => '隐藏', 'value' => 0]])->col(24);
         return create_form($msg, $field, Url::buildUrl('/user/user_level'), 'POST');
     }
 
@@ -260,7 +258,7 @@ class UserLevelServices extends BaseServices
             if (!$systemUserLevel->update($id, $data)) {
                 throw new AdminException(100007);
             }
-            return '修改成功';
+            return true;
         } else {
             if ($levelOne || $levelThree) {
                 throw new AdminException(400675);
@@ -273,7 +271,7 @@ class UserLevelServices extends BaseServices
             if (!$systemUserLevel->save($data)) {
                 throw new AdminException(100022);
             }
-            return '添加成功';
+            return true;
         }
     }
 
@@ -291,7 +289,7 @@ class UserLevelServices extends BaseServices
             if (!$systemUserLevel->update($id, ['is_del' => 1]))
                 throw new AdminException(100008);
         }
-        return '删除成功';
+        return 100002;
     }
 
     /**

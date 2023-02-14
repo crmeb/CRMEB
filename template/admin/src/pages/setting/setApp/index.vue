@@ -12,7 +12,7 @@
       </div>
     </div>
     <Card :bordered="false" dis-hover class="ivu-mt" v-if="currentTab === 'onsale'">
-      <!--<form-create  :rule="Array.from(FromData.rules)" @on-submit="onSubmit" ></form-create>-->
+      <!--<form-create  :rule="Array.from(FromData.rules)" @submit="onSubmit" ></form-create>-->
     </Card>
   </div>
 </template>

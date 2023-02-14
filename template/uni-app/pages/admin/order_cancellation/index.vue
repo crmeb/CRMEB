@@ -4,7 +4,7 @@
 			<view class="header"></view>
 			<view class="whiteBg">
 				<view class="input">
-					<input type="number" placeholder="0" v-model="verify_code" />
+					<input type="number" placeholder="请输入核销码" v-model="verify_code" />
 				</view>
 				<view class="bnt" @click="codeChange">{{$t(`立即核销`)}}</view>
 			</view>

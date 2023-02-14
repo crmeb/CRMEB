@@ -57,7 +57,7 @@ export default {
 					case 1:
 						//一定时间后跳转至 table
 						setTimeout(function() {
-							uni.navigateTo({
+							uni.switchTab({
 								url: url
 							})
 						}, endtime);

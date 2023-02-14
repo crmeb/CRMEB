@@ -23,8 +23,7 @@ return [
         'LogLevel' => [],
         'LogWrite' => [],
         'queue.start' => [\app\listener\queue\QueueStart::class],
-        'user.login' => [\app\listener\user\Login::class], //
-        'admin.info' => [\app\listener\admin\AdminInfo::class],//管理员登录前获取登录信息事件
+        'user.login' => [\app\listener\user\Login::class],
         'admin.login' => [\app\listener\admin\AdminLogin::class],//管理员登录
         'user.register' => [\app\listener\user\Register::class], //用户注册后置事件
         'wechat.auth' => [\app\listener\wechat\Auth::class], //用户授权后置事件
@@ -39,10 +38,8 @@ return [
         'user.userVisit' => [\app\listener\user\UserVisit::class], //用户访问事件
         'notice.notice' => [\app\listener\notice\Notice::class], //通知->消息事件
         'pay.notify' => [\app\listener\pay\Notify::class],//支付异步回调
+        'SystemTimer' => [\app\listener\timer\SystemTimer::class],//定时任务事件
     ],
-    'subscribe' => [
-        \app\subscribes\TaskSubscribe::class,//定时任务事件订阅类
-    ]
 ];
 
 

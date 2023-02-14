@@ -23,7 +23,7 @@
       <form-create
         :option="config"
         :rule="Array.from(FromData.rules)"
-        @on-submit="onSubmit"
+        @submit="onSubmit"
         class="formBox"
         ref="fc"
         handleIcon="false"

@@ -140,7 +140,10 @@
                   </RadioGroup>
                 </FormItem>
               </Col>
-              <Col span="24" v-if="formValidate.freight != 3 && formValidate.freight != 1 && formValidate.virtual_type == 0">
+              <Col
+                span="24"
+                v-if="formValidate.freight != 3 && formValidate.freight != 1 && formValidate.virtual_type == 0"
+              >
                 <FormItem label="">
                   <div class="acea-row">
                     <InputNumber
@@ -281,13 +284,11 @@
               <Col span="24">
                 <FormItem label="拼团是否参与分销：" props="is_commission" label-for="is_commission">
                   <div class="acea-row row-middle">
-                  <RadioGroup element-id="is_commission" v-model="formValidate.is_commission">
-                    <Radio :label="1" class="radio">开启</Radio>
-                    <Radio :label="0">关闭</Radio>
-                  </RadioGroup>
-                  <div class="ml10 grey">
-                      拼团商品是否参与商城分销返佣
-                  </div>
+                    <RadioGroup element-id="is_commission" v-model="formValidate.is_commission">
+                      <Radio :label="1" class="radio">开启</Radio>
+                      <Radio :label="0">关闭</Radio>
+                    </RadioGroup>
+                    <div class="ml10 grey">拼团商品是否参与商城分销返佣</div>
                   </div>
                 </FormItem>
               </Col>
@@ -783,7 +784,7 @@ export default {
           postage: row.postage, //设置运费金额
           custom_form: row.custom_form, //自定义表单数据
           virtual_type: row.virtual_type, //虚拟商品类型
-          head_commission: 0
+          head_commission: 0,
         };
         this.productAttrs(row);
       }, 500);

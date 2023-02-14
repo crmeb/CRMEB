@@ -13,7 +13,7 @@
       <div class="acea-row">
         <span class="sp">优惠券名称：</span
         ><Input
-          v-model="page.title"
+          v-model="page.coupon_title"
           search
           enter-button
           placeholder="请输入优惠券名称"
@@ -97,7 +97,7 @@ export default {
         page: 1, // 当前页
         limit: 15,
         coupon_title: '',
-        receive_type: 3,
+        receive_type: 1,
       },
       total: 0, // 总条数
     };

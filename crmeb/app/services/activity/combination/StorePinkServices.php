@@ -18,6 +18,7 @@ use app\services\BaseServices;
 use app\services\order\StoreOrderRefundServices;
 use app\services\order\StoreOrderServices;
 use app\services\other\PosterServices;
+use app\services\other\QrcodeServices;
 use app\services\system\attachment\SystemAttachmentServices;
 use app\services\user\UserServices;
 use crmeb\exceptions\ApiException;
@@ -465,7 +466,7 @@ class StorePinkServices extends BaseServices
             $number = (int)bcsub((string)$pink['people'], '1', 0);
             if ($number) CacheService::setStock(md5($pink['id']), $number, 3);
 
-            PinkJob::dispatchSece((int)(($product->effective_time * 3600) + 60), [$pink['id']]);
+            PinkJob::dispatchSecs((int)(($product->effective_time * 3600) + 60), [$pink['id']]);
             // 开团成功发送模板消息
             event('notice.notice', [['orderInfo' => $orderInfo, 'title' => $product['title'], 'pink' => $pink], 'open_pink_success']);
 
@@ -883,6 +884,12 @@ class StorePinkServices extends BaseServices
                 $data['url'] = $url;
                 if ($imageInfo['image_type'] == 1)
                     $data['url'] = $siteUrl . $url;
+            } else {
+                if (sys_config('share_qrcode', 0) && request()->isWechat()) {
+                    /** @var QrcodeServices $qrcodeService */
+                    $qrcodeService = app()->make(QrcodeServices::class);
+                    $data['url'] = $qrcodeService->getTemporaryQrcode('pink-' . $id, $user['uid'])->url;
+                }
             }
         } catch (\Throwable $e) {
         }

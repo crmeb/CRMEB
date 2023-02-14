@@ -97,6 +97,8 @@
 import { mapState } from 'vuex';
 import { seckillListApi, seckillStatusApi, storeSeckillApi } from '@/api/marketing';
 import { formatDate } from '@/utils/validate';
+import { exportSeckillList } from '@/api/export.js';
+
 export default {
   name: 'storeSeckill',
   filters: {
@@ -208,20 +210,35 @@ export default {
       this.$router.push({ path: '/admin/marketing/store_seckill/create' });
     },
     // 导出
-    exports() {
-      let formValidate = this.tableFrom;
-      let data = {
-        status: formValidate.status,
-        store_name: formValidate.store_name,
-      };
-      storeSeckillApi(data)
-        .then((res) => {
-          location.href = res.data[0];
-        })
-        .catch((res) => {
-          this.$Message.error(res.msg);
-        });
+    async exports() {
+      let [th, filekey, data, fileName] = [[], [], [], ''];
+      let excelData = JSON.parse(JSON.stringify(this.tableFrom));
+      excelData.page = 1;
+      excelData.limit = 200;
+      for (let i = 0; i < excelData.page + 1; i++) {
+        let lebData = await this.getExcelData(excelData);
+        if (!fileName) fileName = lebData.filename;
+        if (!filekey.length) {
+          filekey = lebData.fileKey;
+        }
+        if (!th.length) th = lebData.header;
+        if (lebData.export.length) {
+          data = data.concat(lebData.export);
+          excelData.page++;
+        } else {
+          this.$exportExcel(th, filekey, fileName, data);
+          return;
+        }
+      }
     },
+    getExcelData(excelData) {
+      return new Promise((resolve, reject) => {
+        exportSeckillList(excelData).then((res) => {
+          resolve(res.data);
+        });
+      });
+    },
+
     // 编辑
     edit(row) {
       this.$router.push({

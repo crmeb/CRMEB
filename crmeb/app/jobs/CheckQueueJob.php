@@ -26,8 +26,7 @@ class CheckQueueJob extends BaseJobs
 {
     use QueueTrait;
 
-
-    public function handle($key)
+    public function doJob($key)
     {
         $path = root_path('runtime') . '.queue';
         file_put_contents($path, $key);

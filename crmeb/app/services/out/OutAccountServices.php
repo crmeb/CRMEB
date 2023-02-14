@@ -159,7 +159,7 @@ class OutAccountServices extends BaseServices
         $authInfo = $this->dao->getOne(['id' => $id, 'is_del' => 0]);
         $this->checkAuth($authInfo, $md5Token, $cacheService);
 
-        $cacheService->clearToken($md5Token);
+        $cacheService->delete($md5Token);
 
         $token = $jwtAuth->createToken($id, $type);
         $data['last_time'] = time();
@@ -182,14 +182,14 @@ class OutAccountServices extends BaseServices
     {
         if (!$authInfo) {
             if (!request()->isCli()) {
-                $cacheService->clearToken($md5Token);
+                $cacheService->delete($md5Token);
             }
             throw new AuthException(110003);
         }
 
         if ($authInfo->status == 2) {
             if (!request()->isCli()) {
-                $cacheService->clearToken($md5Token);
+                $cacheService->delete($md5Token);
             }
             throw new AuthException(400595);
         }
@@ -212,15 +212,7 @@ class OutAccountServices extends BaseServices
 
         $md5Token = md5($token);
 
-        if (!$cacheService->hasToken($md5Token) || !($cacheToken = $cacheService->getTokenBucket($md5Token))) {
-            throw new AuthException(110006);
-        }
-
-        //是否超出有效次数
-        if (isset($cacheToken['invalidNum']) && $cacheToken['invalidNum'] >= 3) {
-            if (!request()->isCli()) {
-                $cacheService->clearToken($md5Token);
-            }
+        if (!$cacheService->has($md5Token) || !($cacheToken = $cacheService->get($md5Token, '', NULL, 'out'))) {
             throw new AuthException(110006);
         }
 
@@ -232,13 +224,9 @@ class OutAccountServices extends BaseServices
 
         try {
             $jwtAuth->verifyToken();
-            $cacheService->setTokenBucket($md5Token, $cacheToken, $cacheToken['exp']);
-        } catch (ExpiredException $e) {
-            $cacheToken['invalidNum'] = isset($cacheToken['invalidNum']) ? $cacheToken['invalidNum']++ : 1;
-            $cacheService->setTokenBucket($md5Token, $cacheToken, $cacheToken['exp']);
         } catch (\Throwable $e) {
             if (!request()->isCli()) {
-                $cacheService->clearToken($md5Token);
+                $cacheService->delete($md5Token);
             }
             throw new AuthException(400172);
         }

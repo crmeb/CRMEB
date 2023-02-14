@@ -1,15 +1,15 @@
 <template>
-	<view>
-		<view v-if="newData" class="page-footer" id="target">
+	<view v-if="newData">
+		<view class="page-footer" id="target">
 			<view class="foot-item" v-for="(item,index) in newData.menuList" :key="index" @click="goRouter(item)"
 				:style="{'background-color':newData.bgColor.color[0].item}">
-				<block v-if="item.link == activeRouter">
-					<image :src="item.imgList[0]"></image>
-					<view class="txt" :style="{color:newData.activeTxtColor.color[0].item}">{{item.name}}</view>
+				<block v-if="item.link == activityTab">
+					<image :src="item.imgList[0]" class="active"></image>
+					<view class="txt" :style="{color:newData.activeTxtColor.color[0].item}">{{$t(item.name)}}</view>
 				</block>
 				<block v-else>
 					<image :src="item.imgList[1]"></image>
-					<view class="txt" :style="{color:newData.txtColor.color[0].item}">{{item.name}}</view>
+					<view class="txt" :style="{color:newData.txtColor.color[0].item}">{{$t(item.name)}}</view>
 				</block>
 				<div class="count-num" v-if="item.link === '/pages/order_addcart/order_addcart' &&  cartNum>0">
 					{{cartNum > 99 ? '99+' : cartNum}}
@@ -17,6 +17,7 @@
 			</view>
 		</view>
 	</view>
+
 </template>
 
 <script>
@@ -44,16 +45,24 @@
 		},
 		data() {
 			return {
-				newData: undefined
+				newData: undefined,
+				footHeight: 0,
+				isShow: false // 弹出动画
 			}
 		},
 		computed: {
 			...mapState({
-				configData: state => state.app.pageFooter
-			})
+				configData: state => state.app.pageFooter,
+			}),
 		},
-		computed: mapGetters(['isLogin', 'cartNum']),
+		computed: mapGetters(['isLogin', 'cartNum', 'activityTab']),
 		watch: {
+			activityTab: {
+				handler(nVal, oVal) {
+					console.log(nVal, 'nval')
+				},
+				deep: true
+			},
 			configData: {
 				handler(nVal, oVal) {
 					let self = this
@@ -74,10 +83,7 @@
 		created() {
 			let routes = getCurrentPages(); // 获取当前打开过的页面路由数组
 			let curRoute = routes[routes.length - 1].route //获取当前页面路由
-			this.activeRouter = '/' + curRoute
-		},
-		onShow() {
-
+			this.$store.commit('ACTIVITYTAB', '/' + curRoute);
 		},
 		mounted() {
 			getNavigation().then(res => {
@@ -87,24 +93,18 @@
 			})
 			let that = this
 			uni.hideTabBar()
-			console.log(this.cartNum, 'cartNum')
 			this.newData = this.$store.state.app.pageFooter
 			if (this.isLogin) {
 				this.getCartNum()
 			}
 		},
-		data() {
-			return {
-				newData: {},
-				activeRouter: '/',
-				footHeight: 0
-			}
-		},
+
 		methods: {
 			goRouter(item) {
 				var pages = getCurrentPages();
-				var page = (pages[pages.length - 1]).$page.fullPath;
-				if (item.link == page) return
+				var page = pages[pages.length - 1].route;
+				this.$store.commit('ACTIVITYTAB', item.link);
+				if (item.link == '/' + page) return
 				uni.switchTab({
 					url: item.link,
 					fail(err) {
@@ -128,20 +128,26 @@
 <style lang="scss" scoped>
 	.page-footer {
 		position: fixed;
+		left: 0;
 		bottom: 0;
-		z-index: 30;
+		z-index: 999;
 		display: flex;
 		align-items: center;
 		justify-content: space-around;
+		flex-wrap: nowrap;
 		width: 100%;
+		height: 98rpx;
 		height: calc(98rpx+ constant(safe-area-inset-bottom)); ///兼容 IOS<11.2/
 		height: calc(98rpx + env(safe-area-inset-bottom)); ///兼容 IOS>11.2/
 		box-sizing: border-box;
 		border-top: solid 1rpx #F3F3F3;
+		backdrop-filter: blur(10px);
 		background-color: #fff;
 		box-shadow: 0px 0px 17rpx 1rpx rgba(206, 206, 206, 0.32);
 		padding-bottom: constant(safe-area-inset-bottom); ///兼容 IOS<11.2/
 		padding-bottom: env(safe-area-inset-bottom); ///兼容 IOS>11.2/
+		// transform: translate3d(0, 100%, 0);
+		// transition: all .3s cubic-bezier(.25, .5, .5, .9);
 
 		.foot-item {
 			display: flex;
@@ -152,6 +158,7 @@
 			position: relative;
 			width: 100%;
 			height: 100%;
+
 
 			.count-num {
 				position: absolute;
@@ -169,6 +176,39 @@
 				border-radius: 50%;
 				padding: 4rpx;
 			}
+
+			.active {
+				animation: mymove 1s 1;
+			}
+
+			@keyframes mymove {
+				0% {
+					transform: scale(1);
+					/*开始为原始大小*/
+				}
+
+				10% {
+					transform: scale(0.8);
+				}
+
+				30% {
+					transform: scale(1.1);
+					/*放大1.1倍*/
+				}
+
+				50% {
+					transform: scale(0.9);
+					/*放大1.1倍*/
+				}
+
+				70% {
+					transform: scale(1.05);
+				}
+
+				90% {
+					transform: scale(1);
+				}
+			}
 		}
 
 		.foot-item image {
@@ -182,7 +222,7 @@
 			font-size: 24rpx;
 
 
-			&.active {}
+
 		}
 	}
 </style>

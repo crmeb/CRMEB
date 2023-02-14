@@ -3,7 +3,7 @@
 		<view class='hotList skeleton-rect index-wrapper' v-if="isShow && hotList.length">
 			<!-- <view class='hot-bg'>
 			</view> -->
-<!-- 			<view class='title acea-row row-between-wrapper'>
+			<!-- 			<view class='title acea-row row-between-wrapper'>
 				<view class='text line1'>
 					<text class='label'><text class="iconfont icon-paihangbang"></text>{{titleInfo[0].val}}</text>
 					{{titleInfo[1].val}}
@@ -31,7 +31,7 @@
 				<block v-for="(item,index) in hotList" :key='index'>
 					<view class='item' @click="gopage('/pages/goods_details/index?id='+item.id)">
 						<view class='pictrue'>
-							<image :src='item.image'></image>
+							<easy-loadimage mode="widthFix" :image-src="item.image"></easy-loadimage>
 							<image v-if="index == 0" src='/static/images/one.png' class='numPic'></image>
 							<image v-else-if="index == 1" src='/static/images/two.png' class='numPic'></image>
 							<image v-else-if="index == 2" src='/static/images/three.png' class='numPic'></image>
@@ -49,7 +49,7 @@
 			</view>
 		</view>
 		<view class='hotList index-wrapper' v-if="!isShow && isIframe && hotList.length">
-	<!-- 		<view class='hot-bg'>
+			<!-- 		<view class='hot-bg'>
 				<view class='title acea-row row-between-wrapper'>
 					<view class='text line1'>
 						<text class='label'><text class="iconfont icon-paihangbang"></text>{{titleInfo[0].val}}</text>
@@ -260,6 +260,7 @@
 
 	.hotList .title .text {
 		display: flex;
+
 		.txt-btn {
 			display: flex;
 			align-items: flex-end;
@@ -332,6 +333,19 @@
 		width: 100%;
 		height: 100%;
 		border-radius: 12rpx;
+	}
+
+	.hotList .list .item .pictrue {
+
+		/deep/,
+		/deep/image,
+		/deep/.easy-loadimage,
+		/deep/uni-image {
+
+			width: 180rpx;
+			height: 180rpx;
+			border-radius: 12rpx;
+		}
 	}
 
 	.hotList .list .item .pictrue .numPic {

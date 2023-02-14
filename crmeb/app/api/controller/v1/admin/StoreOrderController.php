@@ -130,6 +130,7 @@ class StoreOrderController
         if (!$order) return app('json')->fail(410173);
         if ($order['paid']) {
             $order['nickname'] = $userServices->value(['uid' => $order['uid']], 'nickname');
+            $order['config_export_open'] = (bool)((int)sys_config('config_export_open'));
             $order = $order->hidden(['uid', 'status', 'paid'])->toArray();
             return app('json')->success($order);
         }

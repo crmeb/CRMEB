@@ -1,6 +1,6 @@
 <template>
   <div v-if="orderDatalist">
-    <Modal v-model="modals" scrollable title="订单信息" width="700" class="order_box" footer-hide>
+    <Drawer title="订单详情" :closable="false" width="700" v-model="modals" scrollable>
       <Card :bordered="false" dis-hover class="i-table-no-border">
         <div class="ivu-description-list-title">收货信息</div>
         <Row class="mb10">
@@ -26,11 +26,14 @@
           <Col span="12">优惠券金额：{{ orderDatalist.orderInfo.coupon_price }}</Col>
         </Row>
         <Row class="mb10">
-          <Col span="12">会员商品优惠：{{ orderDatalist.orderInfo.vip_true_price || 0.0 }}</Col>
-          <Col span="12">积分抵扣：{{ orderDatalist.orderInfo.deduction_price || 0.0 }}</Col>
+          <Col span="12">用户等级优惠：{{ orderDatalist.orderInfo.levelPrice || 0.0 }}</Col>
+          <Col span="12">付费会员优惠：{{ orderDatalist.orderInfo.memberPrice || 0.0 }}</Col>
         </Row>
         <Row class="mb10">
-          <Col span="12" class="mb10">实际支付：{{ orderDatalist.orderInfo.pay_price }}</Col>
+          <Col span="12">积分抵扣：{{ orderDatalist.orderInfo.deduction_price || 0.0 }}</Col>
+          <Col span="12">实际支付：{{ orderDatalist.orderInfo.pay_price }}</Col>
+        </Row>
+        <Row class="mb10">
           <Col span="12" class="fontColor3 mb10" v-if="parseFloat(orderDatalist.orderInfo.refund_price)"
             >退款金额：{{ parseFloat(orderDatalist.orderInfo.refund_price) }}</Col
           >
@@ -123,7 +126,7 @@
           </Row>
         </div>
       </Card>
-    </Modal>
+    </Drawer>
     <Modal v-model="modal2" scrollable title="物流查询" width="350" class="order_box2">
       <div class="logistics acea-row row-top">
         <div class="logistics_img">

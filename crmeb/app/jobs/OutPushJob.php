@@ -31,11 +31,11 @@ class OutPushJob extends BaseJobs
             /** @var OutStoreOrderServices $services */
             $services = app()->make(OutStoreOrderServices::class);
             if (!$services->orderCreatePush($oid, $pushUrl)) {
-                OutPushJob::dispatchSece(($step + 1) * 5, 'orderCreate', [$oid, $pushUrl, $step + 1]);
+                OutPushJob::dispatchSecs(($step + 1) * 5, 'orderCreate', [$oid, $pushUrl, $step + 1]);
             }
         } catch (\Exception $e) {
             Log::error('订单' . $oid . '推送失败,失败原因:' . $e->getMessage());
-            OutPushJob::dispatchSece(($step + 1) * 5, 'orderCreate', [$oid, $pushUrl, $step + 1]);
+            OutPushJob::dispatchSecs(($step + 1) * 5, 'orderCreate', [$oid, $pushUrl, $step + 1]);
         }
 
         return true;
@@ -59,11 +59,11 @@ class OutPushJob extends BaseJobs
             /** @var OutStoreOrderServices $services */
             $services = app()->make(OutStoreOrderServices::class);
             if (!$services->paySuccessPush($oid, $pushUrl)) {
-                OutPushJob::dispatchSece(($step + 1) * 5, 'paySuccess', [$oid, $pushUrl, $step + 1]);
+                OutPushJob::dispatchSecs(($step + 1) * 5, 'paySuccess', [$oid, $pushUrl, $step + 1]);
             }
         } catch (\Exception $e) {
             Log::error('订单支付' . $oid . '推送失败,失败原因:' . $e->getMessage());
-            OutPushJob::dispatchSece(($step + 1) * 5, 'paySuccess', [$oid, $pushUrl, $step + 1]);
+            OutPushJob::dispatchSecs(($step + 1) * 5, 'paySuccess', [$oid, $pushUrl, $step + 1]);
         }
 
         return true;
@@ -87,11 +87,11 @@ class OutPushJob extends BaseJobs
             /** @var OutStoreOrderRefundServices $services */
             $services = app()->make(OutStoreOrderRefundServices::class);
             if (!$services->refundCreatePush($oid, $pushUrl)) {
-                OutPushJob::dispatchSece(($step + 1) * 5, 'refundCreate', [$oid, $pushUrl, $step + 1]);
+                OutPushJob::dispatchSecs(($step + 1) * 5, 'refundCreate', [$oid, $pushUrl, $step + 1]);
             }
         } catch (\Exception $e) {
             Log::error('售后单' . $oid . '推送失败,失败原因:' . $e->getMessage());
-            OutPushJob::dispatchSece(($step + 1) * 5, 'refundCreate', [$oid, $pushUrl, $step + 1]);
+            OutPushJob::dispatchSecs(($step + 1) * 5, 'refundCreate', [$oid, $pushUrl, $step + 1]);
         }
         return true;
     }
@@ -114,11 +114,11 @@ class OutPushJob extends BaseJobs
             /** @var OutStoreOrderRefundServices $services */
             $services = app()->make(OutStoreOrderRefundServices::class);
             if (!$services->cancelApplyPush($oid, $pushUrl)) {
-                OutPushJob::dispatchSece(($step + 1) * 5, 'refundCancel', [$oid, $pushUrl, $step + 1]);
+                OutPushJob::dispatchSecs(($step + 1) * 5, 'refundCancel', [$oid, $pushUrl, $step + 1]);
             }
         } catch (\Exception $e) {
             Log::error('取消售后单' . $oid . '推送失败,失败原因:' . $e->getMessage());
-            OutPushJob::dispatchSece(($step + 1) * 5, 'refundCancel', [$oid, $pushUrl, $step + 1]);
+            OutPushJob::dispatchSecs(($step + 1) * 5, 'refundCancel', [$oid, $pushUrl, $step + 1]);
         }
         return true;
     }
@@ -141,10 +141,10 @@ class OutPushJob extends BaseJobs
             /** @var UserServices $services */
             $services = app()->make(UserServices::class);
             if (!$services->userUpdate($data, $pushUrl)) {
-                OutPushJob::dispatchSece(($step + 1) * 5, 'userUpdate', [$data, $pushUrl, $step + 1]);
+                OutPushJob::dispatchSecs(($step + 1) * 5, 'userUpdate', [$data, $pushUrl, $step + 1]);
             }
         } catch (\Exception $e) {
-            OutPushJob::dispatchSece(($step + 1) * 5, 'userUpdate', [$data, $pushUrl, $step + 1]);
+            OutPushJob::dispatchSecs(($step + 1) * 5, 'userUpdate', [$data, $pushUrl, $step + 1]);
         }
         return true;
     }

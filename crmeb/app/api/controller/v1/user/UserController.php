@@ -93,9 +93,9 @@ class UserController
         }
         $uid = (int)$request->uid();
         if ($this->services->eidtNickname($uid, ['avatar' => $avatar, 'nickname' => $nickname])) {
-            return app('json')->success(100001);
+            return app('json')->success(100014);
         }
-        return app('json')->fail(100007);
+        return app('json')->fail(100015);
     }
 
     /**

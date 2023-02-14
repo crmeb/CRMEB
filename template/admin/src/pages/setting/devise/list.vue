@@ -56,7 +56,7 @@
                   <div class="font-blue">首页</div>
                 </template>
                 <template slot-scope="{ row, index }" slot="type_name">
-                  <Tag color="primary" v-if="row.is_diy">{{ row.type_name }}{{row.id}}</Tag>
+                  <Tag color="primary" v-if="row.is_diy">{{ row.type_name }}{{ row.id }}</Tag>
                   <Tag color="warning" v-else>{{ row.type_name }}</Tag>
                   <Tag color="success" v-if="row.status == 1">首页</Tag>
                 </template>

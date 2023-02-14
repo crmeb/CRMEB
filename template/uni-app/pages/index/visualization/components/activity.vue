@@ -2,15 +2,17 @@
 	<view>
 		<view v-if="isShow" class="specialArea acea-row row-between-wrapper">
 			<view class="assemble skeleton-rect" hover-class="none" @click="gopage(activityOne.info[2].value)">
-				<image :src="activityOne.img" alt="img" />
-				<!-- <view class="text" v-if="activityOne.info">
+				<!-- <easy-loadimage mode="widthFix" :image-src="activityOne.img"></easy-loadimage> -->
+				<image :src="activityOne.img" alt="" srcset="">
+					<!-- <view class="text" v-if="activityOne.info">
 					<view class="name">{{ activityOne.info[0].value }}</view>
 					<view class="infor">{{ activityOne.info[1].value }}</view>
 				</view> -->
 			</view>
 			<view class="list acea-row row-column-between">
-				<view class="item skeleton-rect" v-for="(item, index) in activity" :key="index" @click="gopage(item.info[2].value)">
-					<image :src="item.img" alt="img" />
+				<view class="item skeleton-rect" v-for="(item, index) in activity" :key="index"
+					@click="gopage(item.info[2].value)">
+					<easy-loadimage mode="widthFix" :image-src="item.img"></easy-loadimage>
 					<!-- 	<view class="text">
 						<view class="name">{{ item.info[0].value }}</view>
 						<view class="infor">{{ item.info[1].value}}</view>
@@ -103,7 +105,7 @@
 	}
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 	.specialArea {
 		background: linear-gradient(180deg, #fff 0%, #f5f5f5 100%);
 		// background-color: $uni-bg-color;
@@ -122,6 +124,19 @@
 		width: 100%;
 		height: 100%;
 		border-radius: 5rpx;
+	}
+
+	.specialArea .assemble {
+
+		/deep/,
+		/deep/image,
+		/deep/.easy-loadimage,
+		/deep/uni-image {
+
+			width: 336rpx;
+			height: 300rpx;
+			border-radius: 5rpx;
+		}
 	}
 
 	.specialArea .assemble .text {
@@ -155,6 +170,18 @@
 	.specialArea .item img {
 		width: 100%;
 		height: 100%;
+	}
+
+	.specialArea .item {
+
+		/deep/,
+		/deep/image,
+		/deep/.easy-loadimage,
+		/deep/uni-image {
+
+			width: 100%;
+			height: 146rpx;
+		}
 	}
 
 	.specialArea .item .text {

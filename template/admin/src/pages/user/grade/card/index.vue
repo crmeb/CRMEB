@@ -72,7 +72,7 @@
       </div>
     </Card>
     <Modal v-model="modal" title="添加批次" footer-hide>
-      <form-create v-model="fapi" :rule="rule" @on-submit="onSubmit"></form-create>
+      <form-create v-model="fapi" :rule="rule" @submit="onSubmit"></form-create>
     </Modal>
     <Modal v-model="cardModal" title="卡列表" footer-hide width="1000">
       <cardList v-if="cardModal" :id="id"></cardList>
@@ -104,6 +104,7 @@
 import { mapState } from 'vuex';
 import cardList from './list.vue';
 import { userMemberBatch, memberBatchSave, memberBatchSetValue, exportMemberCard, userMemberScan } from '@/api/user';
+import { exportmberCardList } from '@/api/export.js';
 
 export default {
   name: 'index',
@@ -316,18 +317,24 @@ export default {
           this.$Message.error(err.msg);
         });
     },
-    // 查看
-    exportExcel(row) {
-      this.$Spin.show();
-      exportMemberCard(row.id)
-        .then((res) => {
-          this.$Spin.hide();
-          location.href = res.data[0];
-        })
-        .catch((err) => {
-          this.$Spin.hide();
-          this.$Message.error(err.msg);
+    // 导出
+    async export(row) {
+      let [th, filekey, data, fileName] = [[], [], [], ''];
+      let lebData = await this.getExcelData(row.id);
+      if (!fileName) fileName = lebData.filename;
+      if (!filekey.length) {
+        filekey = lebData.fileKey;
+      }
+      if (!th.length) th = lebData.header;
+      data = data.concat(lebData.export);
+      this.$exportExcel(th, filekey, fileName, data);
+    },
+    getExcelData(excelData) {
+      return new Promise((resolve, reject) => {
+        exportmberCardList(excelData).then((res) => {
+          resolve(res.data);
         });
+      });
     },
     // 更多
     changeMenu(row, name) {
@@ -342,7 +349,7 @@ export default {
           this.cardModal = true;
           break;
         case '3':
-          this.exportExcel(row);
+          this.export(row);
           break;
       }
     },

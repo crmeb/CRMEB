@@ -18,6 +18,7 @@ use app\Request;
 use app\services\BaseServices;
 use app\services\order\StoreOrderServices;
 use app\services\other\PosterServices;
+use app\services\other\QrcodeServices;
 use app\services\product\product\StoreCategoryServices;
 use app\services\product\product\StoreDescriptionServices;
 use app\services\product\product\StoreProductServices;
@@ -864,6 +865,7 @@ class StoreBargainServices extends BaseServices
      * 获取砍价海报信息
      * @param int $bargainId
      * @param $user
+     * @return array
      * @throws \think\db\exception\DataNotFoundException
      * @throws \think\db\exception\DbException
      * @throws \think\db\exception\ModelNotFoundException
@@ -937,6 +939,12 @@ class StoreBargainServices extends BaseServices
                     $data['url'] = $url;
                 }
             } catch (\Throwable $e) {
+            }
+        } else {
+            if (sys_config('share_qrcode', 0) && request()->isWechat()) {
+                /** @var QrcodeServices $qrcodeService */
+                $qrcodeService = app()->make(QrcodeServices::class);
+                $data['url'] = $qrcodeService->getTemporaryQrcode('bargain-' . $bargainId . '-' . $user['uid'], $user['uid'])->url;
             }
         }
         return $data;

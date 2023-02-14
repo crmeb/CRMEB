@@ -21,7 +21,7 @@
 	const app = getApp();
 	import sendVerifyCode from "@/mixins/SendVerifyCode";
 	import Routine from '@/libs/routine';
-	import Verify from '@/components/verify/verify.vue';
+	import Verify from '../verify/verify.vue';
 	import Cache from '@/utils/cache';
 	import {
 		loginMobile,
@@ -46,6 +46,10 @@
 			isUp: {
 				type: Boolean,
 				default: false,
+			},
+			canClose: {
+				type: Boolean,
+				default: true,
 			},
 			authKey: {
 				type: String,
@@ -107,8 +111,10 @@
 					});
 				});
 			},
-			close() {
-				this.$emit('close', false)
+			close(new_user) {
+				if (this.canClose) {
+					this.$emit('close', new_user)
+				}
 			},
 			// 登录
 			loginBtn() {
@@ -197,7 +203,7 @@
 						token: res.data.token,
 						time: time
 					});
-					this.getUserInfo();
+					this.getUserInfo(res.data.new_user);
 				}).catch(error => {
 					self.$util.Tips({
 						title: error
@@ -208,7 +214,7 @@
 			/**
 			 * 获取个人用户信息
 			 */
-			getUserInfo: function() {
+			getUserInfo: function(new_user) {
 				let that = this;
 				getUserInfo().then(res => {
 					uni.hideLoading();
@@ -216,13 +222,20 @@
 					that.$store.commit("SETUID", res.data.uid);
 					that.$store.commit("UPDATE_USERINFO", res.data);
 					// #ifdef MP
-					that.$util.Tips({
-						title: that.$t(`登录成功`),
-						icon: 'success'
-					}, {
-						tab: 3
-					})
-					that.close()
+					if (!new_user) {
+						that.$util.Tips({
+							title: that.$t(`登录成功`),
+							icon: 'success'
+						}, {
+							tab: 3
+						})
+					} else {
+						that.$util.Tips({
+							title: that.$t(`登录成功`),
+							icon: 'success'
+						})
+					}
+					that.close(new_user || 0)
 					// #endif
 					// #ifdef H5
 					that.$emit('wechatPhone', true)

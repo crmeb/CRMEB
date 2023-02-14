@@ -146,7 +146,7 @@ class SystemCityServices extends BaseServices
      */
     public function cityList()
     {
-        return CacheService::get('CITY_LIST', function () {
+        return CacheService::remember('CITY_LIST', function () {
             $allCity = $this->dao->getCityList([], 'city_id as v,name as n,parent_id');
             return sort_city_tier($allCity, 0);
         }, 0);

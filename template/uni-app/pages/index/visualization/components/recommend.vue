@@ -18,7 +18,7 @@
 				<view class="item-box">
 					<view class='item' v-for="(item,index) in bastList" :key="index" @click="goDetail(item)">
 						<view class='pictrue'>
-							<image :src='item.image'></image>
+							<easy-loadimage mode="widthFix" :image-src="item.image"></easy-loadimage>
 							<!-- 			<span class="pictrue_log_class pictrue_log_big" v-if="item.activity && item.activity.type === '1'">秒杀</span>
 						<span class="pictrue_log_class pictrue_log_big" v-if="item.activity && item.activity.type === '2'">砍价</span>
 						<span class="pictrue_log_class pictrue_log_big" v-if="item.activity && item.activity.type === '3'">拼团</span> -->
@@ -26,9 +26,12 @@
 						<view class='text'>
 							<view class='name line2'>{{item.store_name}}</view>
 							<view class="type">
-								<view class="type-sty" v-if="item.activity && item.activity.type == '1'">{{$t(`秒杀`)}}</view>
-								<view class="type-sty" v-if="item.activity && item.activity.type == '2'">{{$t(`砍价`)}}</view>
-								<view class="type-sty" v-if="item.activity && item.activity.type == '3'">{{$t(`砍价`)}}</view>
+								<view class="type-sty" v-if="item.activity && item.activity.type == '1'">{{$t(`秒杀`)}}
+								</view>
+								<view class="type-sty" v-if="item.activity && item.activity.type == '2'">{{$t(`砍价`)}}
+								</view>
+								<view class="type-sty" v-if="item.activity && item.activity.type == '3'">{{$t(`砍价`)}}
+								</view>
 							</view>
 							<view class='vip acea-row'>
 								<view class='money font-color'>{{$t(`￥`)}}<text class='num'>{{item.price}}</text></view>
@@ -73,9 +76,12 @@
 						<view class='text'>
 							<view class='name line2'>{{item.store_name}}</view>
 							<view class="type">
-								<view class="type-sty" v-if="item.activity && item.activity.type == '1'">{{$t(`秒杀`)}}</view>
-								<view class="type-sty" v-if="item.activity && item.activity.type == '2'">{{$t(`砍价`)}}</view>
-								<view class="type-sty" v-if="item.activity && item.activity.type == '3'">{{$t(`砍价`)}}</view>
+								<view class="type-sty" v-if="item.activity && item.activity.type == '1'">{{$t(`秒杀`)}}
+								</view>
+								<view class="type-sty" v-if="item.activity && item.activity.type == '2'">{{$t(`砍价`)}}
+								</view>
+								<view class="type-sty" v-if="item.activity && item.activity.type == '3'">{{$t(`砍价`)}}
+								</view>
 								<view class="type-sty" v-if="item.checkCoupon">{{$t(`ticket`)}}</view>
 							</view>
 							<view class='money font-color'>{{$t(`￥`)}}<text class='num'>{{item.price}}</text></view>
@@ -286,6 +292,19 @@
 		width: 100%;
 		height: 100%;
 		border-radius: 10rpx;
+	}
+
+	.productList .item .pictrue {
+
+		/deep/,
+		/deep/image,
+		/deep/.easy-loadimage,
+		/deep/uni-image {
+
+			width: 180rpx;
+			height: 180rpx;
+			border-radius: 10rpx;
+		}
 	}
 
 	.productList .item:nth-child(even) {

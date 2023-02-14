@@ -84,7 +84,7 @@
               <Icon type="md-list"></Icon>
               订单核销
             </Button>
-            <Button v-auth="['export-storeOrder']" class="export" icon="ios-share-outline" @click="exports"
+            <Button v-auth="['export-storeOrder']" class="export" icon="ios-share-outline" @click="exportList"
               >导出</Button
             >
           </div>
@@ -92,7 +92,14 @@
       </Row>
     </Form>
     <!--订单核销模态框-->
-    <Modal v-model="modals2" title="订单核销" class="paymentFooter" scrollable width="400">
+    <Modal
+      v-model="modals2"
+      title="订单核销"
+      class="paymentFooter"
+      :closable="false"
+      width="400"
+      @on-visible-change="changeModal"
+    >
       <Form
         ref="writeOffFrom"
         :model="writeOffFrom"
@@ -102,16 +109,7 @@
         @submit.native.prevent
       >
         <FormItem prop="code" label-for="code">
-          <Input
-            search
-            enter-button="验证"
-            style="width: 100%"
-            type="text"
-            placeholder="请输入12位核销码"
-            @on-search="search('writeOffFrom')"
-            v-model.number="writeOffFrom.code"
-            number
-          />
+          <Input style="width: 100%" type="text" placeholder="请输入12位核销码" v-model.number="writeOffFrom.code" />
         </FormItem>
       </Form>
       <div slot="footer">
@@ -125,6 +123,7 @@
 <script>
 import { mapState, mapMutations } from 'vuex';
 import { putWrite, storeOrderApi } from '@/api/order';
+import { exportOrderList } from '@/api/export';
 export default {
   name: 'table_from',
   data() {
@@ -173,6 +172,7 @@ export default {
         real_name: '',
         field_key: 'all',
         pay_type: '',
+        type: '',
       },
       modalTitleSs: '',
       statusType: '',
@@ -264,7 +264,8 @@ export default {
     };
   },
   computed: {
-    ...mapState('order', ['orderChartType', 'isDels', 'delIdList']),
+    ...mapState('order', ['orderChartType', 'isDels', 'delIdList', 'orderType']),
+
     today() {
       const end = new Date();
       const start = new Date();
@@ -294,23 +295,38 @@ export default {
       this.getOrderStatus(this.orderData.status);
       this.$emit('getList', 1);
     },
+    changeModal(status) {
+      if (!status) this.writeOffFrom.code = '';
+    },
     // 导出
-    exports() {
-      let formValidate = this.orderData;
-      let id = this.delIdList;
-      let data = {
-        status: formValidate.status,
-        data: formValidate.data,
-        real_name: formValidate.real_name,
-        ids: id.join(),
-      };
-      storeOrderApi(data)
-        .then((res) => {
-          location.href = res.data[0];
-        })
-        .catch((res) => {
-          this.$Message.error(res.msg);
+    async exportList() {
+      this.orderData.type = this.orderType === 0 ? '' : this.orderType;
+      let [th, filekey, data, fileName] = [[], [], [], ''];
+      let excelData = JSON.parse(JSON.stringify(this.orderData));
+      excelData.page = 1;
+      excelData.limit = 200;
+      for (let i = 0; i < excelData.page + 1; i++) {
+        let lebData = await this.getExcelData(excelData);
+        if (!fileName) fileName = lebData.filename;
+        if (!filekey.length) {
+          filekey = lebData.fileKey;
+        }
+        if (!th.length) th = lebData.header;
+        if (lebData.export.length) {
+          data = data.concat(lebData.export);
+          excelData.page++;
+        } else {
+          this.$exportExcel(th, filekey, fileName, data);
+          return;
+        }
+      }
+    },
+    getExcelData(excelData) {
+      return new Promise((resolve, reject) => {
+        exportOrderList(excelData).then((res) => {
+          resolve(res.data);
         });
+      });
     },
     // 具体日期
     onchangeTime(e) {
@@ -437,6 +453,7 @@ export default {
     },
     del(name) {
       this.modals2 = false;
+      this.writeOffFrom.code = '';
       this.$refs[name].resetFields();
     },
     handleSubmit() {

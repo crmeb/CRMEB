@@ -22,7 +22,8 @@
 				</view>
 			</view>
 		</view>
-		<view v-if="isIframe && !tabbar.length" class="empty-img uni-tabbar acea-row row-around row-middle">{{$t(`暂无数据，请设置`)}}
+		<view v-if="isIframe && !tabbar.length" class="empty-img uni-tabbar acea-row row-around row-middle">
+			{{$t(`暂无数据，请设置`)}}
 		</view>
 	</view>
 </template>
@@ -134,6 +135,8 @@
 		box-shadow: 0px 0px 17rpx 1rpx rgba(206, 206, 206, 0.32);
 		display: flex;
 		flex-wrap: nowrap;
+		align-items: center;
+		justify-content: space-around;
 
 		.uni-tabbar_item {
 			width: 100%;

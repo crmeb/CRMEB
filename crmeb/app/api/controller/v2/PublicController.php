@@ -75,6 +75,21 @@ class PublicController
     }
 
     /**
+     * @param int $id
+     * @return mixed
+     * @author 等风来
+     * @email 136327134@qq.com
+     * @date 2023/2/8
+     */
+    public function getVersion($id = 0)
+    {
+        /** @var DiyServices $diyService */
+        $diyService = app()->make(DiyServices::class);
+        $version = $diyService->getDiyVersion((int)$id);
+        return app('json')->success(['version' => $version ?: '']);
+    }
+
+    /**
      * 是否强制绑定手机号
      * @return mixed
      */

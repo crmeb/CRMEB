@@ -96,6 +96,21 @@ Route::group('system', function () {
     Route::get('upgrade_export/:id/:type', 'UpgradeController/export')->option(['real_name' => '导出备份']);
     //文件管理登录
     Route::post('file/login', 'v1.system.SystemFile/login')->option(['real_name' => '文件管理登录']);
+
+    /** 定时任务 */
+    //定时任务列表
+    Route::get('timer/list', 'v1.system.SystemTimer/getTimerList')->option(['real_name' => '定时任务列表']);
+    //定时任务类型
+    Route::get('timer/mark', 'v1.system.SystemTimer/getMarkList')->option(['real_name' => '定时任务类型']);
+    //定时任务详情
+    Route::get('timer/info/:id', 'v1.system.SystemTimer/getTimerInfo')->option(['real_name' => '定时任务详情']);
+    //定时任务添加编辑
+    Route::post('timer/save', 'v1.system.SystemTimer/saveTimer')->option(['real_name' => '定时任务添加编辑']);
+    //删除定时任务
+    Route::delete('timer/del/:id', 'v1.system.SystemTimer/delTimer')->option(['real_name' => '删除定时任务']);
+    //定时任务是否开启开关
+    Route::get('timer/set_open/:id/:is_open', 'v1.system.SystemTimer/setTimerStatus')->option(['real_name' => '定时任务是否开启开关']);
+
 })->middleware([
     \app\http\middleware\AllowOriginMiddleware::class,
     \app\adminapi\middleware\AdminAuthTokenMiddleware::class,

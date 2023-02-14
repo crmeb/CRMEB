@@ -85,8 +85,7 @@
 					</view>
 			</view>
 		</form>
-		<Verify @success="success" :captchaType="'blockPuzzle'" :imgSize="{ width: '330px', height: '155px' }"
-			ref="verify"></Verify>
+
 		<view class="settlementAgreement" v-if="showProtocol">
 			<view class="setAgCount">
 				<i class="icon iconfont icon-cha" @click="showProtocol = false"></i>
@@ -104,6 +103,8 @@
 		<!-- #ifdef MP -->
 		<authorize @onLoadFun="onLoadFun" :isAuto="isAuto" :isShowAuth="isShowAuth" @authColse="authColse"></authorize>
 		<!-- #endif -->
+		<Verify @success="success" :captchaType="'blockPuzzle'" :imgSize="{ width: '330px', height: '155px' }"
+			ref="verify"></Verify>
 	</view>
 	<view class="settledSuccessMain" v-else-if='status == 0'>
 		<view class="settledSuccessful">
@@ -135,7 +136,7 @@
 					{{$t(`返回首页`)}}
 				</view>
 		</view>
-
+		
 	</view>
 </template>
 <script>
@@ -161,7 +162,7 @@
 	import authorize from '@/components/Authorize';
 	// #endif
 	import colors from "@/mixins/color";
-	import Verify from '@/components/verify/verify.vue';
+	import Verify from '../components/verify/verify.vue';
 	import sendVerifyCode from "@/mixins/SendVerifyCode";
 	const app = getApp();
 	export default {

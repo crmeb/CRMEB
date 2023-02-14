@@ -107,19 +107,19 @@ class User extends AuthController
             ['is_promoter', 0],
             ['status', 0]
         ]);
-        if ($data['phone']) {
-            if (!check_phone($data['phone'])) {
-                return app('json')->fail(400252);
-            }
-            if ($this->services->count(['phone' => $data['phone'], 'is_del' => 0])) {
-                return app('json')->fail(400314);
-            }
-            if (trim($data['real_name']) != '') {
-                $data['nickname'] = $data['real_name'];
-            } else {
-                $data['nickname'] = substr_replace($data['phone'], '****', 3, 4);
-            }
+        if (!$data['real_name']) {
+            return app('json')->fail(410245);
         }
+        if (!$data['phone']) {
+            return app('json')->fail(410245);
+        }
+        if (!check_phone($data['phone'])) {
+            return app('json')->fail(400252);
+        }
+        if ($this->services->count(['phone' => $data['phone'], 'is_del' => 0])) {
+            return app('json')->fail(400314);
+        }
+        $data['nickname'] = $data['real_name'];
         if ($data['card_id']) {
             if (!check_card($data['card_id'])) return app('json')->fail(400315);
         }
@@ -129,6 +129,9 @@ class User extends AuthController
             }
             if ($data['pwd'] != $data['true_pwd']) {
                 return app('json')->fail(400264);
+            }
+            if (strlen($data['pwd']) < 6 || strlen($data['pwd']) > 32) {
+                return app('json')->fail(400762);
             }
             $data['pwd'] = md5($data['pwd']);
         } else {
@@ -388,6 +391,9 @@ class User extends AuthController
             }
             if ($data['pwd'] != $data['true_pwd']) {
                 return app('json')->fail(400264);
+            }
+            if (strlen($data['pwd']) < 6 || strlen($data['pwd']) > 32) {
+                return app('json')->fail(400762);
             }
             $data['pwd'] = md5($data['pwd']);
         } else {

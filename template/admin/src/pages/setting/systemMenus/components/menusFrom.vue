@@ -162,32 +162,32 @@
 </template>
 
 <script>
-import { addMenusApi, addMenus, getRuleList } from "@/api/systemMenus";
-import icon from "@/utils/icon";
+import { addMenusApi, addMenus, getRuleList } from '@/api/systemMenus';
+import icon from '@/utils/icon';
 
 export default {
-  name: "menusFrom",
+  name: 'menusFrom',
   props: {
     formValidate: {
       type: Object,
-      default: null
+      default: null,
     },
     titleFrom: {
       type: String,
-      default: ""
-    }
+      default: '',
+    },
   },
   data() {
     return {
       arrs: [],
-      searchRule: "",
-      iconVal: "",
+      searchRule: '',
+      iconVal: '',
       grid: {
         xl: 12,
         lg: 12,
         md: 12,
         sm: 24,
-        xs: 24
+        xs: 24,
       },
       modals: false,
       modal12: false,
@@ -198,28 +198,27 @@ export default {
       authType: true,
       search: icon,
       ruleModal: false,
-      ruleList: []
+      ruleList: [],
     };
   },
   watch: {
-    "formValidate.header": function(n) {
+    'formValidate.header': function (n) {
       this.formValidate.is_header = n ? 1 : 0;
     },
-    "formValidate.auth_type": function(n) {
+    'formValidate.auth_type': function (n) {
       if (n === undefined) {
         n = 1;
       }
       this.authType = n === 1;
     },
-    "formValidate.data": function(n) {
-    }
+    'formValidate.data': function (n) {},
   },
   computed: {
     /* eslint-disable */
     optionsList() {
       let a = [];
       this.FromData.map((item) => {
-        if ("pid" === item.field) {
+        if ('pid' === item.field) {
           a = item.options;
         }
       });
@@ -228,7 +227,7 @@ export default {
     headerOptionsList() {
       let a = [];
       this.FromData.map((item) => {
-        if ("header" === item.field) {
+        if ('header' === item.field) {
           a = item.options;
         }
       });
@@ -237,7 +236,7 @@ export default {
     optionsListmodule() {
       let a = [];
       this.FromData.map((item) => {
-        if ("module" === item.field) {
+        if ('module' === item.field) {
           a = item.options;
         }
       });
@@ -246,7 +245,7 @@ export default {
     optionsRadio() {
       let a = [];
       this.FromData.map((item) => {
-        if ("auth_type" === item.field) {
+        if ('auth_type' === item.field) {
           a = item.options;
         }
       });
@@ -255,7 +254,7 @@ export default {
     isheaderRadio() {
       let a = [];
       this.FromData.map((item) => {
-        if ("is_header" === item.field) {
+        if ('is_header' === item.field) {
           a = item.options;
         }
       });
@@ -264,7 +263,7 @@ export default {
     isShowRadio() {
       let a = [];
       this.FromData.map((item) => {
-        if ("is_show" === item.field) {
+        if ('is_show' === item.field) {
           a = item.options;
         }
       });
@@ -273,7 +272,7 @@ export default {
     isShowPathRadio() {
       let a = [];
       this.FromData.map((item) => {
-        if ("is_show_path" === item.field) {
+        if ('is_show_path' === item.field) {
           a = item.options;
         }
       });
@@ -282,12 +281,12 @@ export default {
     menuList() {
       let a = [];
       this.FromData.map((item) => {
-        if ("menu_list" === item.field) {
+        if ('menu_list' === item.field) {
           a = item.props.data;
         }
       });
       return a;
-    }
+    },
   },
   methods: {
     // 获取权限列表
@@ -300,7 +299,7 @@ export default {
     modalchange(type) {
       if (!type) {
         this.arrs = [];
-        this.ruleModal = "";
+        this.ruleModal = '';
         this.ruleModal = false;
       }
     },
@@ -310,7 +309,7 @@ export default {
       }
     },
     selectRule(data) {
-      this.$emit("selectRule", data);
+      this.$emit('selectRule', data);
       this.$nextTick((e) => {
         this.ruleModal = false;
       });
@@ -342,13 +341,13 @@ export default {
       }
     },
     init() {
-      this.searchRule = "";
+      this.searchRule = '';
       this.arrs = [];
     },
     handleCreate1(val) {
       this.headerOptionsList.push({
         value: val,
-        label: val
+        label: val,
       });
     },
     // 获取新增表单
@@ -376,26 +375,26 @@ export default {
         this.formValidate.pid = this.formValidate.path[length - 1] || 0;
       }
       let data = {
-        url: this.formValidate.id ? `/setting/menus/${this.formValidate.id}` : "/setting/menus",
-        method: this.formValidate.id ? "put" : "post",
-        datas: this.formValidate
+        url: this.formValidate.id ? `/setting/menus/${this.formValidate.id}` : '/setting/menus',
+        method: this.formValidate.id ? 'put' : 'post',
+        datas: this.formValidate,
       };
       if (this.authType) {
         if (!this.formValidate.menu_name) {
-          return this.$Message.warning("请填写按钮名称");
+          return this.$Message.warning('请填写按钮名称');
         }
         if (!this.formValidate.menu_path) {
-          return this.$Message.warning("请填写路由地址");
+          return this.$Message.warning('请填写路由地址');
         }
       } else {
         if (!this.formValidate.menu_name) {
-          return this.$Message.warning("请填写接口名称");
+          return this.$Message.warning('请填写接口名称');
         }
         if (!this.formValidate.methods) {
-          return this.$Message.warning("请选择请求方式");
+          return this.$Message.warning('请选择请求方式');
         }
         if (!this.formValidate.api_url) {
-          return this.$Message.warning("请选择接口地址");
+          return this.$Message.warning('请选择接口地址');
         }
       }
       this.valids = true;
@@ -403,9 +402,9 @@ export default {
         .then(async (res) => {
           this.$Message.success(res.msg);
           this.modals = false;
-          this.$emit("getList");
+          this.$emit('getList');
           this.getAddFrom();
-          this.$store.dispatch("admin/menus/getMenusNavList");
+          this.$store.dispatch('admin/menus/getMenusNavList');
         })
         .catch((res) => {
           this.valids = false;
@@ -415,14 +414,14 @@ export default {
     handleReset() {
       this.modals = false;
       this.authType = true;
-      this.$refs["formValidate"].resetFields();
-      this.$emit("clearFrom");
-    }
+      this.$refs['formValidate'].resetFields();
+      this.$emit('clearFrom');
+    },
   },
   created() {
     this.list = this.search;
     this.getAddFrom();
-  }
+  },
 };
 </script>
 

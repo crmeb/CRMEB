@@ -29,7 +29,7 @@ class RoutineTemplateListService extends NoticeService
      * 判断是否开启权限
      * @var bool
      */
-    private $isopend = true;
+    private $isOpen = true;
 
     /**
      * 是否开启权限
@@ -38,7 +38,7 @@ class RoutineTemplateListService extends NoticeService
      */
     public function isOpen(string $mark)
     {
-        $this->isopend = $this->notceinfo['is_routine'] === 1;
+        $this->isOpen = $this->noticeInfo['is_routine'] === 1;
         return $this;
 
     }
@@ -66,11 +66,11 @@ class RoutineTemplateListService extends NoticeService
     public function sendTemplate(int $uid, array $data, string $link = null, string $color = null)
     {
         try {
-            $this->isopend = $this->notceinfo['is_routine'] === 1;
-            if ($this->isopend) {
+            $this->isOpen = $this->noticeInfo['is_routine'] === 1;
+            if ($this->isOpen) {
                 $openid = $this->getOpenidByUid($uid);
                 //放入队列执行
-                TemplateJob::dispatchDo('doJob', ['subscribe', $openid, $this->notceinfo['mark'], $data, $link, $color]);
+                TemplateJob::dispatch('doJob', ['subscribe', $openid, $this->noticeInfo['mark'], $data, $link, $color]);
             }
         } catch (\Exception $e) {
             Log::error($e->getMessage());

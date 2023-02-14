@@ -2,8 +2,8 @@
     "name" : "CRMEB标准版",
     "appid" : "__UNI__A3F1ED4",
     "description" : "CRMEB标准版",
-    "versionName" : "1.0.0",
-    "versionCode" : 100,
+    "versionName" : "4.6.0",
+    "versionCode" : 461,
     "transformPx" : false,
     /* 5+App特有相关 */
     "app-plus" : {
@@ -63,7 +63,12 @@
             "ios" : {
                 "capabilities" : {
                     "entitlements" : {
-                        "com.apple.developer.associated-domains" : [ "applinks:", "applinks:", "applinks:" ]
+                        "com.apple.developer.associated-domains" : [
+                            "applinks:",
+                            "applinks:",
+                            "applinks:",
+                            "applinks:static-679f0930-8f60-425c-9033-8c135f397ea5.bspapp.com"
+                        ]
                     }
                 },
                 "privacyDescription" : {
@@ -74,7 +79,8 @@
                     "NSLocationAlwaysUsageDescription" : "根据客户地理位置推荐最近门店",
                     "NSCameraUsageDescription" : "上传用户头像保存分享海报"
                 },
-                "idfa" : false
+                "idfa" : false,
+                "dSYMs" : false
             },
             /* SDK配置 */
             "sdkConfigs" : {
@@ -84,14 +90,14 @@
                     },
                     "weixin" : {
                         "__platform__" : [ "ios", "android" ],
-                        "appid" : "",
-                        "UniversalLinks" : ""
+                        "appid" : "wx277a269f3d736d67",
+                        "UniversalLinks" : "https://bzapp.crmeb.net/uni-universallinks/__UNI__A3F1ED4/"
                     }
                 },
                 "share" : {
                     "weixin" : {
-                        "appid" : "",
-                        "UniversalLinks" : ""
+                        "appid" : "wx277a269f3d736d67",
+                        "UniversalLinks" : "https://bzapp.crmeb.net/uni-universallinks/__UNI__A3F1ED4/"
                     }
                 },
                 "push" : {},
@@ -104,9 +110,9 @@
                 "oauth" : {
                     "apple" : {},
                     "weixin" : {
-                        "appid" : "",
-                        "appsecret" : "",
-                        "UniversalLinks" : ""
+                        "appid" : "wx277a269f3d736d67",
+                        "appsecret" : "bd08741a055c2ecac5826ff1c048464b",
+                        "UniversalLinks" : "https://bzapp.crmeb.net/uni-universallinks/__UNI__A3F1ED4/"
                     }
                 },
                 "ad" : {},
@@ -179,6 +185,9 @@
                 "desc" : "你的位置信息将用于和门店的距离长度"
             }
         },
+        "optimization" : {
+            "subPackages" : true
+        },
         "usingComponents" : true,
         "requiredPrivateInfos" : [
             "getLocation",
@@ -215,7 +224,8 @@
         "optimization" : {
             "treeShaking" : {
                 "enable" : true
-            }
+            },
+            "subPackages" : true
         },
         "async" : {
             "timeout" : 200000
@@ -227,7 +237,8 @@
             "immersed" : true
         }
     },
-    "_spaceID" : "679f0930-8f60-425c-9033-8c135f397ea5"
+    "_spaceID" : "679f0930-8f60-425c-9033-8c135f397ea5",
+    "lazyCodeLoading" : "requiredComponents"
 }
 /* ios打包配置 */
 

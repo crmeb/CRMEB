@@ -81,7 +81,7 @@ export default {
       isTemplate: false,
       loading: false,
       tableFrom: {
-        receive_type: 3,
+        receive_type: 1,
         page: 1,
         limit: 10,
       },

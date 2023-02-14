@@ -679,3 +679,9 @@ body {
   padding: 0 10px 10px;
 }
 
+/* form-create tips 样式 */
+.tips-info {
+  line-height: 18px;
+  margin-top: 8px;
+  color: rgb(153, 153, 153);
+}

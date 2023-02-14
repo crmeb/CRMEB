@@ -97,7 +97,7 @@ import { auth, getVersion, crmebProduct, saveCrmebCopyRight, getCrmebCopyRight }
 import { mapState } from 'vuex';
 import { formatDate } from '@/utils/validate';
 import QRCode from 'qrcodejs2';
-import Vcode from 'vue-puzzle-vcode';
+// import Vcode from 'vue-puzzle-vcode';
 
 export default {
   name: 'system_auth',
@@ -163,7 +163,6 @@ export default {
     },
   },
   components: {
-    Vcode,
     uploadPictures,
   },
   mounted() {

@@ -5,12 +5,12 @@
         <FormItem label="账号" prop="">
           <Input type="text" v-model="account" :disabled="true" class="input"></Input>
         </FormItem>
-		<FormItem label="文件管理新密码" prop="file_pwd">
-		  <Input type="password" v-model="formValidate.file_pwd" class="input"></Input>
-		</FormItem>
-		<FormItem label="文件管理确认新密码" prop="conf_file_pwd">
-		  <Input type="password" v-model="formValidate.conf_file_pwd" class="input"></Input>
-		</FormItem>
+        <FormItem label="文件管理新密码" prop="file_pwd">
+          <Input type="password" v-model="formValidate.file_pwd" class="input"></Input>
+        </FormItem>
+        <FormItem label="文件管理确认新密码" prop="conf_file_pwd">
+          <Input type="password" v-model="formValidate.conf_file_pwd" class="input"></Input>
+        </FormItem>
         <FormItem>
           <Button type="primary" @click="handleSubmit('formValidate')">提交</Button>
         </FormItem>
@@ -38,12 +38,12 @@ export default {
     return {
       account: '',
       formValidate: {
-		file_pwd: '',
-		conf_file_pwd: '',
+        file_pwd: '',
+        conf_file_pwd: '',
       },
       ruleValidate: {
-		file_pwd: [{ required: true, message: '请输入您的文件管理新密码', trigger: 'blur' }],
-		conf_file_pwd: [{ required: true, message: '请确认您的文件管理新密码', trigger: 'blur' }],
+        file_pwd: [{ required: true, message: '请输入您的文件管理新密码', trigger: 'blur' }],
+        conf_file_pwd: [{ required: true, message: '请确认您的文件管理新密码', trigger: 'blur' }],
       },
     };
   },

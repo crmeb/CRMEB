@@ -113,6 +113,11 @@
 				hotScroll: false
 			};
 		},
+		// 滚动监听
+		onPageScroll(e) {
+			// 传入scrollTop值并触发所有easy-loadimage组件下的滚动监听事件
+			uni.$emit('scroll');
+		},
 		onLoad: function(options) {
 			this.where.cid = options.cid || 0;
 			this.$set(this.where, 'sid', options.sid || 0);
@@ -121,6 +126,7 @@
 			this.get_product_list();
 			this.get_host_product();
 		},
+		
 		methods: {
 			// 去详情页
 			godDetail(item) {

@@ -4,7 +4,7 @@ module.exports = {
 	// 请求域名 格式： https://您的域名
 	HTTP_REQUEST_URL: `https://demo.crmeb.com`,
 	// #endif
-	
+
 	// H5配置
 	// #ifdef H5
 	//H5接口是浏览器地址，非单独部署不用修改

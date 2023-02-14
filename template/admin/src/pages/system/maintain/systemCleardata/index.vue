@@ -74,10 +74,10 @@ export default {
           type: 'recycle',
         },
         {
-            title: '清除用户数据',
-            tlt: '用户相关的所有表都将被清除，谨慎操作',
-            typeName: 'error',
-            type: 'user'
+          title: '清除用户数据',
+          tlt: '用户相关的所有表都将被清除，谨慎操作',
+          typeName: 'error',
+          type: 'user',
         },
         {
           title: '清除商城数据',

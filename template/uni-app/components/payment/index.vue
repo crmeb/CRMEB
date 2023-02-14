@@ -5,7 +5,7 @@
 				{{$t(`选择付款方式`)}}<text class="iconfont icon-guanbi" @click='close'></text>
 			</view>
 			<view class="item acea-row row-between-wrapper" v-for="(item,index) in payMode" :key="index"
-				v-if='item.payStatus' @click="payType(item.number || 0 , item.value,index)">
+				v-show='item.payStatus' @click="payType(item.number || 0 , item.value,index)">
 				<view class="left acea-row row-between-wrapper">
 					<view class="iconfont" :class="item.icon"></view>
 					<view class="text">
@@ -18,8 +18,10 @@
 				</view>
 				<view class="iconfont" :class="active==index?'icon-xuanzhong11 font-num':'icon-weixuan'"></view>
 			</view>
-			<view class="payMoney">{{$t(`支付`)}}<span class="font-color">{{$t(`￥`)}}<span class="money">{{totalPrice}}</span></span></view>
-			<view class="button bg-color acea-row row-center-wrapper" @click='goPay(number, paytype)'>{{$t(`去付款`)}}</view>
+			<view class="payMoney">{{$t(`支付`)}}<span class="font-color">{{$t(`￥`)}}<span
+						class="money">{{totalPrice}}</span></span></view>
+			<view class="button bg-color acea-row row-center-wrapper" @click='goPay(number, paytype)'>{{$t(`去付款`)}}
+			</view>
 		</view>
 		<view class="mask" @click='close' v-if="pay_close"></view>
 		<view v-show="false" v-html="formContent"></view>
@@ -100,6 +102,7 @@
 				});
 			},
 			goPay: function(number, paytype) {
+				console.log(paytype)
 				if (this.isCall) {
 					return this.$emit('onChangeFun', {
 						action: 'payCheck',
@@ -125,6 +128,7 @@
 						complete: () => {}
 					});
 				}
+				console.log('11111')
 				orderPay({
 					uni: that.order_id,
 					paytype: paytype,
@@ -154,11 +158,11 @@
 							});
 
 							// #ifdef MP
-							let mp_pay_name=''
-							if(uni.requestOrderPayment){
-								mp_pay_name='requestOrderPayment'
-							}else{
-								mp_pay_name='requestPayment'
+							let mp_pay_name = ''
+							if (uni.requestOrderPayment) {
+								mp_pay_name = 'requestOrderPayment'
+							} else {
+								mp_pay_name = 'requestPayment'
 							}
 							uni[mp_pay_name]({
 								timeStamp: jsConfig.timestamp,
@@ -189,7 +193,8 @@
 								},
 								complete: function(e) {
 									uni.hideLoading();
-									if (e.errMsg == 'requestPayment:cancel' || e.errMsg == 'requestOrderPayment:cancel') return that.$util
+									if (e.errMsg == 'requestPayment:cancel' || e.errMsg ==
+										'requestOrderPayment:cancel') return that.$util
 										.Tips({
 											title: that.$t(`取消支付`)
 										}, () => {
@@ -225,7 +230,7 @@
 											});
 										});
 									})
-									.catch(()=> {
+									.catch(() => {
 										return that.$util.Tips({
 											title: that.$t(`支付失败`),
 										}, () => {
@@ -241,7 +246,8 @@
 								provider: 'wxpay',
 								orderInfo: jsConfig,
 								success: (e) => {
-									let url = '/pages/goods/order_pay_status/index?order_id=' + orderId +
+									let url = '/pages/goods/order_pay_status/index?order_id=' +
+										orderId +
 										'&msg=支付成功';
 									uni.showToast({
 										title: that.$t(`支付成功`)
@@ -304,6 +310,7 @@
 								});
 							});
 							break;
+
 						case 'alipay':
 							uni.hideLoading();
 							//#ifdef H5
@@ -337,7 +344,6 @@
 											action: 'pay_complete'
 										});
 									}, 2000)
-
 								},
 								fail: (e) => {
 									uni.showModal({
@@ -485,6 +491,10 @@
 
 	.payment .item .left .iconfont.icon-yuezhifu1 {
 		color: #eb6623;
+	}
+
+	.payment .item .left .iconfont.icon-tonglianzhifu1 {
+		color: #305fd8;
 	}
 
 	.payment .item .iconfont {

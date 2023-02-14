@@ -4,7 +4,7 @@
 			:class="(attr.cartAttr === true ? 'on' : '') + ' ' + (iSbnt?'join':'') + ' ' + (iScart?'joinCart':'')">
 			<view class="textpic acea-row row-between-wrapper">
 				<view class="pictrue" @click="showImg()">
-					<image :src="attr.productSelect.image" ></image>
+					<image :src="attr.productSelect.image"></image>
 				</view>
 				<view class="text">
 					<view class="line1">
@@ -19,8 +19,9 @@
 								<image src="../../static/images/svip.gif"></image>
 							</view>
 						</view>
-						<text class="stock" v-if='isShow'>{{$t(`库存`)}}: {{ attr.productSelect.stock }}</text>
-						<text class='stock' v-if="limitNum">{{type ? $t(`库存`) : $t(`限量`)}}: {{attr.productSelect.quota}}</text>
+						<text class="stock" v-if='isShow && !type'>{{$t(`库存`)}}: {{ attr.productSelect.stock }}</text>
+						<text class='stock'
+							v-if="limitNum">{{type ? $t(`库存`) : $t(`限量`)}}:{{type ? attr.productSelect.quota : limitNum + unitName}}</text>
 					</view>
 				</view>
 				<view class="iconfont icon-guanbi" @click="closeAttr"></view>
@@ -56,23 +57,25 @@
 								@input="bindCode(attr.productSelect.cart_num)"></input>
 						</view>
 						<view v-if="iSplus" class="item plus acea-row row-center-wrapper" :class="
-				      attr.productSelect.cart_num >= attr.productSelect.stock
+				      attr.productSelect.cart_num >= attr.productSelect.stock || (limitNum && attr.productSelect.cart_num >= limitNum)
 				        ? 'on'
 				        : ''
 				    " @click="CartNumAdd">
 							<text class="iconfont icon-shangpinshuliang-jia"></text>
 						</view>
 						<view v-else class='item plus'
-							:class='(attr.productSelect.cart_num >= attr.productSelect.quota) || (attr.productSelect.cart_num >= attr.productSelect.product_stock) || (attr.productSelect.cart_num >= attr.productSelect.num) || (type=="seckill" && attr.productSelect.cart_num >= attr.productSelect.once_num)? "on":""'
+							:class='(attr.productSelect.cart_num >= attr.productSelect.quota) || (attr.productSelect.cart_num >= attr.productSelect.product_stock) || (attr.productSelect.cart_num >= attr.productSelect.num) || (type=="seckill" && attr.productSelect.cart_num >= attr.productSelect.once_num) ? "on":""'
 							@click='CartNumAdd'>+</view>
 					</view>
 				</view>
 			</view>
 			<view class="joinBnt bg-color"
-				v-if="iSbnt && attr.productSelect.product_stock>0 &&attr.productSelect.quota>0" @click="goCat">{{$t(`我要参团`)}}
+				v-if="iSbnt && attr.productSelect.product_stock>0 &&attr.productSelect.quota>0" @click="goCat">
+				{{$t(`我要参团`)}}
 			</view>
 			<view class="joinBnt on"
-				v-else-if="(iSbnt && attr.productSelect.quota<=0)||(iSbnt &&attr.productSelect.product_stock<=0)">{{$t(`已售罄`)}}
+				v-else-if="(iSbnt && attr.productSelect.quota<=0)||(iSbnt &&attr.productSelect.product_stock<=0)">
+				{{$t(`已售罄`)}}
 			</view>
 			<view class="joinBnt bg-color" v-if="iScart && attr.productSelect.stock" @click="goCat">{{$t(`确定`)}}</view>
 			<view class="joinBnt on" v-else-if="iScart && !attr.productSelect.stock">{{$t(`已售罄`)}}</view>
@@ -122,12 +125,16 @@
 				type: String,
 				default: ''
 			},
+			unitName: {
+				type: String,
+				default: ''
+			},
 		},
 		data() {
 			return {};
 		},
 		mounted() {
-			
+
 		},
 		methods: {
 			getpreviewImage: function() {
@@ -156,7 +163,7 @@
 				this.$emit('ChangeCartNum', true);
 			},
 			tapAttr: function(indexw, indexn) {
-				
+
 				let that = this;
 				that.$emit("attrVal", {
 					indexw: indexw,
@@ -167,10 +174,10 @@
 					.getCheckedValue()
 					.join(",");
 				that.$emit("ChangeAttr", value);
-				if(this.limitNum == 1){
-					if(this.attr.productSelect.quota>0){
+				if (this.limitNum == 1) {
+					if (this.attr.productSelect.quota > 0) {
 						this.attr.productSelect.cart_num = 1
-					}else{
+					} else {
 						this.attr.productSelect.cart_num = 0
 					}
 				}
@@ -277,6 +284,7 @@
 	.product-window .textpic .text .money .stock {
 		color: #999;
 		margin-left: 6rpx;
+		margin-right: 20rpx;
 	}
 
 	.product-window .textpic .iconfont {

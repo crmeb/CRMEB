@@ -113,7 +113,8 @@
 							</view>
 							<view class='right acea-row row-middle'>
 								<view>
-									<view class='lack'>{{$t(`还差`)}}<text class='font-num'>{{item.count}}</text>{{$t(`人成团`)}}</view>
+									<view class='lack'>{{$t(`还差`)}}<text
+											class='font-num'>{{item.count}}</text>{{$t(`人成团`)}}</view>
 									<view class='time'>
 										<count-down :is-day="false" :tip-text="' '" :day-text="' '" :hour-text="':'"
 											:minute-text="':'" :second-text="' '" :datatime="item.stop_time">
@@ -132,8 +133,9 @@
 							<view class='more' @tap='showAll' v-if="pink.length > AllIndex">{{$t(`查看更多`)}}<text
 									class='iconfont icon-xiangxia'></text></view>
 							<view class='more' @tap='hideAll'
-								v-else-if="pink.length === AllIndex && pink.length !== AllIndexDefault">{{$t(`收起`)}}<text
-									class='iconfont icon-xiangshang'></text></view>
+								v-else-if="pink.length === AllIndex && pink.length !== AllIndexDefault">
+								{{$t(`收起`)}}<text class='iconfont icon-xiangshang'></text>
+							</view>
 						</template>
 					</view>
 					<view class='playWay'>
@@ -178,7 +180,7 @@
 					</view>
 				</view>
 			</scroll-view>
-			<view class='footer acea-row row-between-wrapper'>
+			<view class='footer acea-row row-between-wrapper' :class="{'eject':storeInfo.id}">
 				<navigator hover-class="none" class="item" open-type="switchTab" url="/pages/index/index">
 					<view class="iconfont icon-shouye6"></view>
 					<view class="p_center">{{$t(`首页`)}}</view>
@@ -316,7 +318,9 @@
 	import {
 		sharePoster
 	} from "@/mixins/sharePoster";
-	import {HTTP_REQUEST_URL} from '@/config/app';
+	import {
+		HTTP_REQUEST_URL
+	} from '@/config/app';
 	import homeList from '@/components/homeList';
 	let sysHeight = uni.getSystemInfoSync().statusBarHeight + 'px';
 	export default {
@@ -341,7 +345,7 @@
 		mixins: [colors, sharePoster],
 		data() {
 			return {
-				imgHost:HTTP_REQUEST_URL,
+				imgHost: HTTP_REQUEST_URL,
 				dataShow: 0,
 				navH: '',
 				id: 0,
@@ -367,7 +371,7 @@
 				limitNum: 1,
 				timeer: null,
 				iSplus: false,
-				navList: [ this.$t(`商品`), this.$t(`评价`), this.$t(`详情`)],
+				navList: [this.$t(`商品`), this.$t(`评价`), this.$t(`详情`)],
 				opacity: 0,
 				scrollY: 0,
 				topArr: [],
@@ -459,7 +463,6 @@
 			});
 			//扫码携带参数处理
 			// #ifdef MP
-
 			if (options.scene) {
 				let value = this.$util.getUrlParams(decodeURIComponent(options.scene));
 				if (value.id) options.id = value.id;
@@ -506,14 +509,7 @@
 					})
 				}
 			};
-			// #ifdef H5
-			this.codeVal = window.location.origin + '/pages/activity/goods_combination_details/index?id=' + this.id +
-				'&spid=' + this.$store.state.app.uid
-			// #endif	
-			// #ifdef APP-PLUS
-			this.codeVal = HTTP_REQUEST_URL + '/pages/activity/goods_combination_details/index?id=' + this.id +
-				'&spid=' + this.$store.state.app.uid
-			// #endif	
+
 		},
 		onNavigationBarButtonTap(e) {
 			this.currentPage = !this.currentPage
@@ -605,7 +601,7 @@
 			combinationDetail() {
 				var that = this;
 				var data = that.id;
-				getCombinationDetail(data).then(function(res) {
+				getCombinationDetail(data).then((res)=> {
 					that.dataShow = 1;
 					uni.setNavigationBarTitle({
 						title: res.data.storeInfo.title.substring(0, 16)
@@ -624,7 +620,20 @@
 					that.replyChance = res.data.replyChance;
 					that.attribute.productAttr = res.data.productAttr;
 					that.productValue = res.data.productValue;
-					// that.PromotionCode = res.data.storeInfo.code_base;
+					if (!this.storeInfo.wechat_code) {
+						// #ifdef H5
+						this.codeVal = window.location.origin +
+							'/pages/activity/goods_combination_details/index?id=' + this.id +
+							'&spid=' + this.$store.state.app.uid
+						// #endif	
+						// #ifdef APP-PLUS
+						this.codeVal = HTTP_REQUEST_URL + '/pages/activity/goods_combination_details/index?id=' +
+							this.id +
+							'&spid=' + this.$store.state.app.uid
+						// #endif	
+					} else {
+						that.$set(that, "PromotionCode", this.storeInfo.wechat_code);
+					}
 					that.routineContact = Number(res.data.routine_contact_type);
 					for (let key in res.data.productValue) {
 						let obj = res.data.productValue[key];
@@ -656,6 +665,7 @@
 					}, 500);
 
 				}).catch(function(err) {
+					console.log(err)
 					that.$util.Tips({
 						title: err
 					}, {
@@ -1528,12 +1538,15 @@
 		bottom: 0;
 		width: 100%;
 		box-sizing: border-box;
-		background-color: #fff;
 		z-index: 277;
 		border-top: 1rpx solid #f0f0f0;
 		height: 100rpx;
 		height: calc(100rpx+ constant(safe-area-inset-bottom)); ///兼容 IOS<11.2/
 		height: calc(100rpx + env(safe-area-inset-bottom)); ///兼容 IOS>11.2/
+		background-color: rgba(255, 255, 255, 0.85);
+		backdrop-filter: blur(10px);
+		transform: translate3d(0, 100%, 0);
+		transition: all .3s cubic-bezier(.25, .5, .5, .9);
 	}
 
 	.product-con .footer .item {

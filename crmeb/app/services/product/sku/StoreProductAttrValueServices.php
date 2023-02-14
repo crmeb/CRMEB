@@ -205,11 +205,11 @@ class StoreProductAttrValueServices extends BaseServices
     public function getSeckillAttrStock(int $productId, string $unique, bool $isNew = false)
     {
         $key = md5('seclkill_attr_stock_' . $productId . '_' . $unique);
-        $stock = CacheService::redisHandler()->get($key);
+        $stock = CacheService::get($key);
         if (!$stock || $isNew) {
             $stock = $this->dao->getOne(['product_id' => $productId, 'unique' => $unique, 'type' => 1], 'suk,quota');
             if ($stock) {
-                CacheService::redisHandler()->set($key, $stock, 60);
+                CacheService::set($key, $stock, 60);
             }
         }
         return $stock;
@@ -227,7 +227,7 @@ class StoreProductAttrValueServices extends BaseServices
     {
         if (!$suk && !$unique) return 0;
         $key = md5('product_attr_stock_' . $productId . '_' . $suk . '_' . $unique);
-        $stock = CacheService::redisHandler()->get($key);
+        $stock = CacheService::get($key);
         if (!$stock || $isNew) {
             $where = ['product_id' => $productId, 'type' => 0];
             if ($suk) {
@@ -237,7 +237,7 @@ class StoreProductAttrValueServices extends BaseServices
                 $where['unique'] = $unique;
             }
             $stock = $this->dao->value($where, 'stock');
-            CacheService::redisHandler()->set($key, $stock, 60);
+            CacheService::set($key, $stock, 60);
         }
         return $stock;
     }

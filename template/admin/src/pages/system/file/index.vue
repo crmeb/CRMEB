@@ -22,24 +22,22 @@ export default {
     console.log(this.$refs.picBox.clientWidth);
 
     this.$nextTick(() => {
-      let winwidth = this.$refs.picBox.clientWidth;
+      let winWidth = this.$refs.picBox.clientWidth;
       let winHeight = document.body.clientHeight - 170;
-      console.log(winwidth,winHeight);
-      if (winwidth < 1018) {
+      if (winWidth < 1018) {
         this.pageLimit = 18;
         this.pageLimit = winHeight > 790 ? 24 : 18;
-
-      } else if (winwidth < 1185) {
-        this.pageLimit = winHeight > 790 ? 30  : 18;
-      } else if (winwidth < 1222) {
+      } else if (winWidth < 1185) {
+        this.pageLimit = winHeight > 790 ? 30 : 18;
+      } else if (winWidth < 1222) {
         this.pageLimit = 30;
-      } else if (winwidth < 1327) {
+      } else if (winWidth < 1327) {
         this.pageLimit = 32;
-      } else if (winwidth < 1750) {
+      } else if (winWidth < 1750) {
         this.pageLimit = 40;
-      } else if (winwidth < 2100) {
-          this.pageLimit = winHeight > 790 ? 60 : 48;
-      } else if (winwidth > 2100) {
+      } else if (winWidth < 2100) {
+        this.pageLimit = winHeight > 790 ? 60 : 48;
+      } else if (winWidth > 2100) {
         this.pageLimit = winHeight > 790 ? 75 : 60;
       }
       this.uploadShow = true;

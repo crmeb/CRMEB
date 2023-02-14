@@ -1,5 +1,5 @@
 <template>
-  <Modal v-model="modals" scrollable title="订单记录" width="700" class="order_box" footer-hide>
+  <Drawer title="订单记录" :closable="false" width="700" scrollable v-model="modals">
     <Card :bordered="false" dis-hover>
       <Table
         :columns="columns"
@@ -15,7 +15,7 @@
       <!--                      :page-size="page.limit"/>-->
       <!--            </div>-->
     </Card>
-  </Modal>
+  </Drawer>
 </template>
 
 <script>

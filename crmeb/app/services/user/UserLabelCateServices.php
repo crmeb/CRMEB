@@ -77,7 +77,7 @@ class UserLabelCateServices extends BaseServices
      */
     public function getLabelCateAll()
     {
-        return CacheService::get($this->cacheName, function () {
+        return CacheService::remember($this->cacheName, function () {
             return $this->dao->getCateList(['type' => 0]);
         });
     }

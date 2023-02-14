@@ -12,6 +12,13 @@
 // [ 应用入口文件 ]
 namespace think;
 
+if ('7.1.0' > phpversion()) {
+    exit('您的php版本过低，不能安装本软件，兼容php版本7.1~7.4，谢谢！');
+}
+if (phpversion() >= '8.0.0') {
+    exit('您的php版本太高，不能安装本软件，兼容php版本7.1~7.4，谢谢！');
+}
+
 define('DS', DIRECTORY_SEPARATOR);
 
 //检测是否已安装CRMEB系统

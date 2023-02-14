@@ -57,15 +57,15 @@ const frameIn = [
         },
         component: () => import('@/pages/setting/user/index'),
       },
-	  {
-	    path: '/admin/system/files',
-	    name: `systemFiles`,
-	    meta: {
-	      auth: ['admin-setting-files'],
-	      title: '文件管理',
-	    },
-	    component: () => import('@/pages/setting/userFile/index'),
-	  },
+      {
+        path: '/admin/system/files',
+        name: `systemFiles`,
+        meta: {
+          auth: ['admin-setting-files'],
+          title: '文件管理',
+        },
+        component: () => import('@/pages/setting/userFile/index'),
+      },
       // 刷新页面 必须保留
       {
         path: 'refresh',

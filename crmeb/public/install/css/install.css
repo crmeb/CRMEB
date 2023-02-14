@@ -200,26 +200,43 @@ body{
 	color:#333;
 	background:url(../images/install/bg.png);
 }
+a{
+	text-decoration:none;
+}
 a:link{
-	color:#246EA5;
 	text-decoration:none;
 }
 a:hover{
-	text-decoration:underline;
+	text-decoration:none;
 }
-a:visited{
-	color:#762e9c;
+
+.p8{
+	color: rgba(255,255,255,0.8)
 }
+.df{
+	display: flex;
+	align-items: center;
+}
+.mid{
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
 /*
 ===================
 包裹
 ===================
 */
 .wrap{
-	margin:0px auto 0;
-	box-shadow:0 0 10px #ccc;
 	width:800px;
-	background:#fff;
+	height: 640px;
+	margin:0px auto 0;
+	background: linear-gradient(180deg, #134392 0%, #363A8A 100%);
+	box-shadow: 0px 6px 20px 10px rgba(48,114,229,0.15);
+	border-radius: 36px 36px 36px 36px;
+	font-family: PingFang SC, serif;
+	position: relative;
 }
 /*
 ===================
@@ -233,14 +250,24 @@ a:visited{
 	color:#fff;
 	background:#246fa6 url(../images/install/header.png) 0 0 repeat-x;
 }
+.wrap > .title{
+	text-align: center;
+	padding: 23px 0 52px 0;
+	color: rgba(255,255,255,0.8);
+	font-size: 14px;
+}
 /*
 ===================
 主体
 ===================
 */
 .main{
-	padding-top:35px;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
 }
+
 
 /*
 ===================
@@ -249,15 +276,39 @@ a:visited{
 */
 .footer{
 	text-align:center;
-	padding:15px 0 50px;
+	/*padding:15px 0 50px;*/
 	color:#999999;
+	margin-top: calc(100vh - 50px);
+	position: absolute;
 }
 .footer a{
-	color:#999;
+	color:#999!important;
 	text-decoration:none;
 }
-.bottom{
-	padding:0 0 25px;
+
+input[type=checkbox] {
+	position: relative;
+	cursor: pointer;
+}
+
+input[type=checkbox]:after {
+	display: inline-block;
+	content: "";
+	width: 14px;
+	height: 14px;
+	border-radius: 3px;
+	background: #fff;
+	border: 1px solid #fff;
+}
+
+input[type=checkbox]:checked:after {
+	content: "✓";
+	font-size: 12px;
+	font-weight: bold;
+	color: #fff;
+	background-color: #37CA71;
+	border: 1px solid #37CA71;
+	text-align: center;
 }
 
 /*
@@ -265,20 +316,27 @@ a:visited{
 协议
 ===================
 */
+.pact::-webkit-scrollbar { width: 0 !important }
+
+/*IE 10+*/
+
+.pact { -ms-overflow-style: none; }
+
+/*Firefox*/
+
+.pact { overflow: -moz-scrollbars-none; }
 .pact{
-	box-shadow:5px 5px 5px #f7f7f7 inset;
-	border:1px solid #bdbcbc;
-	width:730px;
-	height:500px;
-	padding:10px;
+	width:700px;
+	height:480px;
 	overflow:hidden;
 	display:block;
 	overflow-y:scroll;
-	margin:0 auto;
+	padding: 20px 50px;
+	margin:20px auto;
 	font-size:12px;
 	line-height:1.5;
-	margin-bottom:22px;
 	outline:none;
+	color: #EEEEEE;
 }
 pre{
 	white-space: pre-wrap;
@@ -288,6 +346,38 @@ pre{
 	word-wrap: break-word;
 	word-break : normal;
 }
+.section .title{
+	margin-bottom: 27px;
+	text-align: center;
+}
+/*step1*/
+#step1 .title{
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+.title h1{
+	color: #FFFFFF;
+	font-size: 32px;
+	letter-spacing:1px;
+}
+.title .radio{
+	font-size: 14px;
+	font-weight: normal;
+	color: rgba(255,255,255,0.8);
+	margin: 15px 0;
+	line-height: 16px;
+}
+.el-radio{
+	line-height: 16px;
+	margin-right: 4px;
+}
+.el-radio__input.is-checked+.el-radio__label{
+	color: rgba(255,255,255,0.8) !important;
+}
+
+/* step2 */
+
 /*
 ===================
 版本号
@@ -303,15 +393,32 @@ pre{
 LOGO
 ===================
 */
-.logo{
-	float:left;
-	width:230px;
-	height:80px;
-	background:url(../images/install/logo.png) no-repeat center;
-	overflow:hidden;
-	text-indent:-2000em;
+/*.logo{*/
+/*	float:left;*/
+/*	width:230px;*/
+/*	height:80px;*/
+/*	background:url(../images/install/logo.png) no-repeat center;*/
+/*	overflow:hidden;*/
+/*	text-indent:-2000em;*/
+/*}*/
+.upload{
+	width: 12px;
+	height: 10px;
 }
-
+.yes{
+	width: 13px;
+	height: 11px;
+	margin-right: 5px;
+}
+.no{
+	width: 14px;
+	height: 14px;
+	margin-right: 5px;
+}
+.ls-td{
+	display: flex;
+	align-items: center;
+}
 /*
 ===================
 安装类型文案
@@ -338,37 +445,6 @@ LOGO
 按钮
 ===================
 */
-.btn,
-.btn_old{
-	display:inline-block;
-	width:100px;
-	height:30px;
-	background:url(../images/install/btn.png) no-repeat;
-	font:bold 14px/30px Arial,"Microsoft Yahei",Simsun;
-	text-decoration:none;
-	color:#fff !important;
-	margin:0 5px;
-	border:0 none;
-	cursor:pointer;
-	vertical-align:top;
-}
-.btn:hover{
-	background-position:0 -30px;
-	text-decoration:none;
-}
-a.btn:visited{
-	color:#ffffff;
-}
-.btn_old,
-.btn_old:hover{
-	background-position:0 -60px;
-	color:#999 !important;
-	cursor:default;
-	text-decoration:none;
-}
-a.btn_old:visited{
-	color:#999 !important;
-}
 
 /*
 ===================
@@ -426,82 +502,26 @@ a.btn_old:visited{
 
 /*
 ===================
-服务器检测/信息输入
-===================
-*/
-.server{
-	padding:20px 20px 20px 35px;
-}
-.server table{
-	margin-bottom:20px;
-}
-.server td{
-	padding:3px 5px;
-}
-.server .td1{
-	color:#417b9d;
-	font-weight:700;
-}
-.server .input{
-	border:1px solid;
-	border-color:#e3e9ef;
-	padding:3px;
-	width:200px;
-}
-.server .input:hover,
-.server .input:focus{
-	border:1px solid #0e85d5;
-	outline:none;
-}
-.gray{
-	color:#bbb;
-}
-.server tr:hover .gray{
-	color:#333;
-}
-
-/*
-===================
-正确错误
-===================
-*/
-.correct_span,
-.error_span{
-	display:block;
-	float:left;
-	width:20px;
-	height:16px;
-	text-indent:-2000em;
-	overflow:hidden;
-	background:url(../images/install/icon.png) no-repeat;
-	margin-right:5px;
-}
-.error_span{
-	background-position:0 -23px;
-}
-
-/*
-===================
 数据表写入
 ===================
 */
-.install{
-	box-shadow:5px 5px 5px #f7f7f7 inset;
-	border:1px solid #bdbcbc;
-	width:670px;
-	height:350px;
-	padding:10px;
-	overflow:hidden;
-	display:block;
-	overflow-y:scroll;
-	margin:25px auto;
-	font-size:12px;
-	margin-bottom:22px;
-	outline:none;
-}
-.install ul{
-	line-height:1.8;
-}
+/*.install{*/
+/*	box-shadow:5px 5px 5px #f7f7f7 inset;*/
+/*	border:1px solid #bdbcbc;*/
+/*	width:670px;*/
+/*	height:350px;*/
+/*	padding:10px;*/
+/*	overflow:hidden;*/
+/*	display:block;*/
+/*	overflow-y:scroll;*/
+/*	margin:25px auto;*/
+/*	font-size:12px;*/
+/*	margin-bottom:22px;*/
+/*	outline:none;*/
+/*}*/
+/*.install ul{*/
+/*	line-height:1.8;*/
+/*}*/
 
 /*
 ===================
@@ -517,9 +537,6 @@ a.btn_old:visited{
 .success_tip a,.s4{
 	color:#0166a5;
 	text-decoration:none;
-}
-.success_tip a:hover{
-	text-decoration:underline;
 }
 .error_tip{
 	background:url(../images/install/ignore.png) 130px 45px no-repeat;
@@ -559,19 +576,25 @@ a.btn_old:visited{
 }
 .tips_error,
 .tips_success{
-	color:#cc3333;
+	font-size: 12px;
 	padding-left:16px;
-	background:url(../images/install/tips_system.png) -20px 2px no-repeat;
 	display:inline-block;
 	line-height:18px;
 }
-.tips_success{
-	color:#008800;
-	background-position:0 -19px;
+.tips_error{
+	background:url(../images/install/warring.png) 0px 3px no-repeat;
+	color: #fff;
+	background-size: 12px 12px;
+
 }
+.tips_success{
+	color: #37CA71;
+	background:url(../images/install/success.png) 0px 3px no-repeat;
+	background-size: 12px 12px;
+}
+
 .tips_loading{
-	color:#cc3333;
-	color:#333333;
+	color:#37CA71;
 	display:inline-block;
 	line-height:20px;
 }
@@ -706,5 +729,18 @@ loading
 	border:1px solid #186196;
 	cursor:pointer;
 	letter-spacing:2px;
+}
+
+.bottom{
+	width: 110px;
+	height: 32px;
+	background: #FFFFFF;
+	border-radius: 137px 137px 137px 137px;
+	font-size: 14px;
+	line-height: 32px;
+	margin: 0 auto;
+	margin-top: 20px;
+	cursor: pointer;
+	text-align: center;
 }
 

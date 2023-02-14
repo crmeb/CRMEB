@@ -89,6 +89,9 @@ class SystemConfigServices extends BaseServices
                     'show_value' => 2
                 ],
                 'spread_banner' => '',
+                'brokerage_level' => '',
+                'division_status' => '',
+                'member_brokerage' => '',
             ],
             'show_value' => 1
         ],
@@ -96,13 +99,6 @@ class SystemConfigServices extends BaseServices
             'son_type' => [
                 'uni_brokerage_price' => '',
                 'day_brokerage_price_upper' => '',
-            ],
-            'show_value' => 1
-        ],
-        'wss_open' => [
-            'son_type' => [
-                'wss_local_cert' => '',
-                'wss_local_pk' => '',
             ],
             'show_value' => 1
         ],
@@ -128,32 +124,24 @@ class SystemConfigServices extends BaseServices
             ],
             'show_value' => 1
         ],
-        'ali_pay_status' => [
+        'allin_pay_status' => [
             'son_type' => [
-                'ali_pay_appid' => '',
-                'alipay_merchant_private_key' => '',
-                'alipay_public_key' => '',
+                'allin_appid' => '',
+                'allin_cusid' => '',
+                'allin_private_key' => '',
             ],
             'show_value' => 1
         ],
-        'pay_weixin_open' => [
+        'pay_wechat_type' => [
             'son_type' => [
-                'pay_weixin_mchid' => '',
-                'pay_wechat_type' => [
-                    'son_type' => [
-                        'pay_weixin_key' => '',
-                    ],
-                    'show_value' => 0
-                ],
-                'pay_wechat_type@' => [
-                    'son_type' => [
-                        'pay_weixin_serial_no' => '',
-                        'pay_weixin_key_v3' => ''
-                    ],
-                    'show_value' => 1
-                ],
-                'pay_weixin_client_cert' => '',
-                'pay_weixin_client_key' => '',
+                'pay_weixin_key' => '',
+            ],
+            'show_value' => 0
+        ],
+        'pay_wechat_type@' => [
+            'son_type' => [
+                'pay_weixin_serial_no' => '',
+                'pay_weixin_key_v3' => ''
             ],
             'show_value' => 1
         ],
@@ -354,24 +342,36 @@ class SystemConfigServices extends BaseServices
     {
         $formbuider = [];
         switch ($type) {
-            case 'input':
-                $data['value'] = isset($data['value']) ? json_decode($data['value'], true) : '';
-                $formbuider[] = $this->builder->input($data['menu_name'], $data['info'], $data['value'])->info($data['desc'])->placeholder($data['desc'])->col(13);
-                break;
             case 'number':
                 $data['value'] = isset($data['value']) ? json_decode($data['value'], true) : 0;
-                $formbuider[] = $this->builder->number($data['menu_name'], $data['info'], (float)$data['value'])->info($data['desc']);
+                $formbuider[] = $this->builder->number($data['menu_name'], $data['info'], (float)$data['value'])->appendRule('suffix', [
+                    'type' => 'div',
+                    'class' => 'tips-info',
+                    'domProps' => ['innerHTML' => $data['desc']]
+                ]);
                 break;
             case 'dateTime':
-                $formbuider[] = $this->builder->dateTime($data['menu_name'], $data['info'], $data['value'])->info($data['desc']);
+                $formbuider[] = $this->builder->dateTime($data['menu_name'], $data['info'], $data['value'])->appendRule('suffix', [
+                    'type' => 'div',
+                    'class' => 'tips-info',
+                    'domProps' => ['innerHTML' => $data['desc']]
+                ]);
                 break;
             case 'color':
                 $data['value'] = isset($data['value']) ? json_decode($data['value'], true) : '';
-                $formbuider[] = $this->builder->color($data['menu_name'], $data['info'], $data['value'])->info($data['desc']);
+                $formbuider[] = $this->builder->color($data['menu_name'], $data['info'], $data['value'])->appendRule('suffix', [
+                    'type' => 'div',
+                    'class' => 'tips-info',
+                    'domProps' => ['innerHTML' => $data['desc']]
+                ]);
                 break;
             default:
                 $data['value'] = isset($data['value']) ? json_decode($data['value'], true) : '';
-                $formbuider[] = $this->builder->input($data['menu_name'], $data['info'], $data['value'])->info($data['desc'])->placeholder($data['desc'])->col(13);
+                $formbuider[] = $this->builder->input($data['menu_name'], $data['info'], $data['value'])->appendRule('suffix', [
+                    'type' => 'div',
+                    'class' => 'tips-info',
+                    'domProps' => ['innerHTML' => $data['desc']]
+                ])->col(13);
                 break;
         }
         return $formbuider;
@@ -385,7 +385,11 @@ class SystemConfigServices extends BaseServices
     public function createTextareaForm(array $data)
     {
         $data['value'] = json_decode($data['value'], true) ?: '';
-        $formbuider[] = $this->builder->textarea($data['menu_name'], $data['info'], $data['value'])->placeholder($data['desc'])->info($data['desc'])->rows(6)->col(13);
+        $formbuider[] = $this->builder->textarea($data['menu_name'], $data['info'], $data['value'])->placeholder($data['desc'])->appendRule('suffix', [
+            'type' => 'div',
+            'class' => 'tips-info',
+            'domProps' => ['innerHTML' => $data['desc']]
+        ])->rows(6)->col(13);
         return $formbuider;
     }
 
@@ -409,7 +413,11 @@ class SystemConfigServices extends BaseServices
                     $options[] = ['label' => $pdata[1], 'value' => (int)$pdata[0]];
                 }
             }
-            $formbuider[] = $radio = $this->builder->radio($data['menu_name'], $data['info'], (int)$data['value'])->options($options)->info($data['desc'])->col(13);
+            $formbuider[] = $radio = $this->builder->radio($data['menu_name'], $data['info'], (int)$data['value'])->options($options)->appendRule('suffix', [
+                'type' => 'div',
+                'class' => 'tips-info',
+                'domProps' => ['innerHTML' => $data['desc']]
+            ])->col(13);
             if ($control) {
                 $radio->appendControl($data['show_value'] ?? 1, is_array($control) ? $control : [$control]);
             }
@@ -434,7 +442,11 @@ class SystemConfigServices extends BaseServices
                 $data['value'] = json_decode($data['value'], true) ?: '';
                 if ($data['value'] != '') $data['value'] = set_file_url($data['value']);
                 $formbuider[] = $this->builder->frameImage($data['menu_name'], $data['info'], $this->url('admin/widget.images/index', ['fodder' => $data['menu_name']], true), $data['value'])
-                    ->icon('ios-image')->width('950px')->height('505px')->modal(['footer-hide' => true])->info($data['desc'])->col(13);
+                    ->icon('ios-image')->width('950px')->height('505px')->modal(['footer-hide' => true])->appendRule('suffix', [
+                        'type' => 'div',
+                        'class' => 'tips-info',
+                        'domProps' => ['innerHTML' => $data['desc']]
+                    ])->col(13);
                 break;
             case 2:
                 $data['value'] = json_decode($data['value'], true) ?: [];
@@ -442,13 +454,21 @@ class SystemConfigServices extends BaseServices
                     $data['value'] = set_file_url($data['value']);
                 $formbuider[] = $this->builder->frameImages($data['menu_name'], $data['info'], $this->url('admin/widget.images/index', ['fodder' => $data['menu_name'], 'type' => 'many', 'maxLength' => 5], true), $data['value'])
                     ->maxLength(5)->icon('ios-images')->width('950px')->height('505px')->modal(['footer-hide' => true])
-                    ->info($data['desc'])->col(13);
+                    ->appendRule('suffix', [
+                        'type' => 'div',
+                        'class' => 'tips-info',
+                        'domProps' => ['innerHTML' => $data['desc']]
+                    ])->col(13);
                 break;
             case 3:
                 $data['value'] = json_decode($data['value'], true) ?: '';
                 if ($data['value'] != '') $data['value'] = set_file_url($data['value']);
                 $formbuider[] = $this->builder->uploadFile($data['menu_name'], $data['info'], $this->url('/adminapi/file/upload/1', ['type' => 1], false, true), $data['value'])
-                    ->name('file')->info($data['desc'])->col(13)->data(['menu_name' => $data['menu_name']])->headers([
+                    ->name('file')->appendRule('suffix', [
+                        'type' => 'div',
+                        'class' => 'tips-info',
+                        'domProps' => ['innerHTML' => $data['desc']]
+                    ])->col(13)->data(['menu_name' => $data['menu_name']])->headers([
                         'Authori-zation' => app()->request->header('Authori-zation'),
                     ]);
                 break;
@@ -475,7 +495,11 @@ class SystemConfigServices extends BaseServices
                     $options[] = ['label' => $pdata[1], 'value' => $pdata[0]];
                 }
             }
-            $formbuider[] = $this->builder->checkbox($data['menu_name'], $data['info'], $data['value'])->options($options)->info($data['desc'])->col(13);
+            $formbuider[] = $this->builder->checkbox($data['menu_name'], $data['info'], $data['value'])->options($options)->appendRule('suffix', [
+                'type' => 'div',
+                'class' => 'tips-info',
+                'domProps' => ['innerHTML' => $data['desc']]
+            ])->col(13);
         }
         return $formbuider;
     }
@@ -499,7 +523,11 @@ class SystemConfigServices extends BaseServices
                     $options[] = ['label' => $pdata[1], 'value' => $pdata[0]];
                 }
             }
-            $formbuider[] = $this->builder->select($data['menu_name'], $data['info'], $data['value'])->options($options)->info($data['desc'])->col(13);
+            $formbuider[] = $this->builder->select($data['menu_name'], $data['info'], $data['value'])->options($options)->appendRule('suffix', [
+                'type' => 'div',
+                'class' => 'tips-info',
+                'domProps' => ['innerHTML' => $data['desc']]
+            ])->col(13);
         }
         return $formbuider;
     }
@@ -512,7 +540,11 @@ class SystemConfigServices extends BaseServices
     public function createColorForm(array $data)
     {
         $data['value'] = json_decode($data['value'], true) ?: '';
-        $formbuider[] = $this->builder->color($data['menu_name'], $data['info'], $data['value'])->info($data['desc'])->col(13);
+        $formbuider[] = $this->builder->color($data['menu_name'], $data['info'], $data['value'])->appendRule('suffix', [
+            'type' => 'div',
+            'class' => 'tips-info',
+            'domProps' => ['innerHTML' => $data['desc']]
+        ])->col(13);
         return $formbuider;
     }
 
@@ -904,7 +936,7 @@ class SystemConfigServices extends BaseServices
                 break;
         }
         $formbuider[] = $this->builder->number('sort', '排序', (int)$menu['sort']);
-        $formbuider[] = $this->builder->radio('status', '状态', $menu['status'])->options([['value' => 1, 'label' => '显示'], ['value' => 2, 'label' => '隐藏']]);
+        $formbuider[] = $this->builder->radio('status', '状态', $menu['status'])->options([['value' => 1, 'label' => '显示'], ['value' => 0, 'label' => '隐藏']]);
         return create_form('编辑字段', $formbuider, $this->url('/setting/config/' . $id), 'PUT');
     }
 
@@ -914,7 +946,7 @@ class SystemConfigServices extends BaseServices
      */
     public function formStatus(): array
     {
-        return [['value' => 1, 'label' => '显示'], ['value' => 2, 'label' => '隐藏']];
+        return [['value' => 1, 'label' => '显示'], ['value' => 0, 'label' => '隐藏']];
     }
 
     /**

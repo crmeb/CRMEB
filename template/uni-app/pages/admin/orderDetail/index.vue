@@ -57,14 +57,14 @@
 				</view>
 			</navigator>
 		</view>
-		<view class="public-total">
+		<view class="public-total" v-if="orderInfo.total_num">
 			{{$t(`共`)}}{{ orderInfo.total_num }}{{$t(`件商品，应支付`)}}
 			<span class="money">{{$t(`￥`)}}{{ orderInfo.pay_price }}</span> ( {{$t(`邮费`)}} {{$t(`￥`)}}{{
         orderInfo.pay_postage
       }}
 			)
 		</view>
-		<view class="wrapper">
+		<view class="wrapper" v-if="orderInfo.order_id">
 			<view class="item acea-row row-between">
 				<view>{{$t(`订单编号`)}}：</view>
 				<view class="conter acea-row row-middle row-right">
@@ -112,18 +112,18 @@
 		<view class="wrapper">
 			<view class="item acea-row row-between">
 				<view>{{$t(`支付金额`)}}：</view>
-				<view class="conter">{{$t(`￥`)}}{{ orderInfo.total_price }}</view>
+				<view class="conter">{{$t(`￥`)}}{{ orderInfo.total_price || 0 }}</view>
 			</view>
 			<view class="item acea-row row-between">
 				<view>{{$t(`优惠券抵扣`)}}：</view>
-				<view class="conter">-{{$t(`￥`)}}{{ orderInfo.coupon_price }}</view>
+				<view class="conter">-{{$t(`￥`)}}{{ orderInfo.coupon_price || 0 }}</view>
 			</view>
 			<view class="item acea-row row-between">
 				<view>{{$t(`运费`)}}：</view>
-				<view class="conter">{{$t(`￥`)}}{{ orderInfo.pay_postage }}</view>
+				<view class="conter">{{$t(`￥`)}}{{ orderInfo.pay_postage || 0 }}</view>
 			</view>
 			<view class="actualPay acea-row row-right">
-				{{$t(`实付款`)}}：<span class="money">{{$t(`￥`)}}{{ orderInfo.pay_price }}</span>
+				{{$t(`实付款`)}}：<span class="money">{{$t(`￥`)}}{{ orderInfo.pay_price || 0 }}</span>
 			</view>
 		</view>
 

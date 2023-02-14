@@ -17,7 +17,6 @@ use app\services\user\UserServices;
 use crmeb\exceptions\AdminException;
 use crmeb\exceptions\ApiException;
 use crmeb\services\FormBuilder;
-use crmeb\traits\ServicesTrait;
 
 /**
  * 客服
@@ -27,7 +26,6 @@ use crmeb\traits\ServicesTrait;
  */
 class StoreServiceServices extends BaseServices
 {
-    use ServicesTrait;
 
     /**
      * 创建form表单

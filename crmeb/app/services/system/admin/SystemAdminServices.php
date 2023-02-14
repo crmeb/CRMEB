@@ -11,6 +11,7 @@
 
 namespace app\services\system\admin;
 
+use app\jobs\CheckQueueJob;
 use app\services\BaseServices;
 use app\services\order\StoreOrderServices;
 use app\services\product\product\StoreProductReplyServices;
@@ -154,7 +155,7 @@ class SystemAdminServices extends BaseServices
     public function getLoginInfo()
     {
         $key = uniqid();
-        event('admin.info', [$key]);
+        CheckQueueJob::dispatch([$key]);
         $data = [
             'slide' => sys_data('admin_login_slide') ?? [],
             'logo_square' => sys_config('site_logo_square'),//透明
@@ -166,7 +167,7 @@ class SystemAdminServices extends BaseServices
             'key' => $key,
             'login_captcha' => 0
         ];
-        if (CacheService::redisHandler()->get('login_captcha', 1) > 1) {
+        if (CacheService::get('login_captcha', 1) > 1) {
             $data['login_captcha'] = 1;
         }
         return $data;

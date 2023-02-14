@@ -11,6 +11,7 @@
 
 namespace app\services;
 
+use crmeb\traits\ServicesTrait;
 use crmeb\utils\JwtAuth;
 use think\facade\Db;
 use think\facade\Config;
@@ -22,6 +23,9 @@ use think\facade\Route as Url;
  */
 abstract class BaseServices
 {
+
+    use ServicesTrait;
+
     /**
      * 模型注入
      * @var object
@@ -64,7 +68,9 @@ abstract class BaseServices
      * 创建token
      * @param int $id
      * @param $type
+     * @param string $pwd
      * @return array
+     * @throws \Psr\SimpleCache\InvalidArgumentException
      */
     public function createToken(int $id, $type, $pwd = '')
     {

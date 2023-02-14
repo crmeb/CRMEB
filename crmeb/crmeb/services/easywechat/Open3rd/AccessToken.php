@@ -153,10 +153,10 @@ class AccessToken extends HttpService
     public function getComponentToken()
     {
         $accessTokenKey = md5($this->component_appid . '_' . $this->component_appid . '_' . $this->component_verify_ticket . '_' . $this->cacheTokenPrefix);
-        $component_access_token = $this->cache->redisHandler()->get($accessTokenKey);
+        $component_access_token = $this->cache->get($accessTokenKey);
         if (!$component_access_token) {
             $getToken = $this->getTokenFromServer();
-            $this->cache->redisHandler()->set($accessTokenKey, $getToken['component_access_token'], $getToken['expires_in'] ? $getToken['expires_in'] - 200 : 7000);
+            $this->cache->set($accessTokenKey, $getToken['component_access_token'], $getToken['expires_in'] ? $getToken['expires_in'] - 200 : 7000);
             $component_access_token = $getToken['component_access_token'];
         }
         $this->component_access_token = $component_access_token;
@@ -194,16 +194,16 @@ class AccessToken extends HttpService
     public function getAccessToken($authorizer_appid)
     {
         $accessTokenKey = md5('authorizer_access_token' . $authorizer_appid . '_' . $this->cacheTokenPrefix);
-        $authorizer_access_token = $this->cache->redisHandler()->get($accessTokenKey);
+        $authorizer_access_token = $this->cache->get($accessTokenKey);
         if (!$authorizer_access_token) {
             $refreshTokenKey = md5('authorizer_refresh_token' . $authorizer_appid . '_' . $this->cacheTokenPrefix);
-            $authorizer_refresh_token = $this->cache->redisHandler()->get($refreshTokenKey);
+            $authorizer_refresh_token = $this->cache->get($refreshTokenKey);
             if (!$authorizer_refresh_token) {
                 throw new ApiException('请重新授权');
             }
             $res = $this->freshAuthorizationToken($authorizer_appid, $authorizer_refresh_token);
-            $this->cache->redisHandler()->set(md5('authorizer_access_token' . $res['authorizer_appid'] . '_' . $this->cacheTokenPrefix), $res['authorizer_access_token'], $res['expires_in'] ? $res['expires_in'] - 200 : 7000);
-            $this->cache->redisHandler()->set(md5('authorizer_refrssh_token' . $res['authorizer_appid'] . '_' . $this->cacheTokenPrefix), $res['authorizer_refresh_token'], 30 * 24 * 3600);
+            $this->cache->set(md5('authorizer_access_token' . $res['authorizer_appid'] . '_' . $this->cacheTokenPrefix), $res['authorizer_access_token'], $res['expires_in'] ? $res['expires_in'] - 200 : 7000);
+            $this->cache->set(md5('authorizer_refrssh_token' . $res['authorizer_appid'] . '_' . $this->cacheTokenPrefix), $res['authorizer_refresh_token'], 30 * 24 * 3600);
             $authorizer_access_token = $res['authorizer_access_token'];
         }
         return $authorizer_access_token;
@@ -224,10 +224,10 @@ class AccessToken extends HttpService
             throw new ApiException('获取authorizer_access_token失败');
         }
         $res = $res['authorization_info'];
-        $this->cache->redisHandler()->set(md5('authorizer_access_token' . $res['authorizer_appid'] . '_' . $this->cacheTokenPrefix), $res['authorizer_access_token'], $res['expires_in'] ? $res['expires_in'] - 200 : 7000);
+        $this->cache->set(md5('authorizer_access_token' . $res['authorizer_appid'] . '_' . $this->cacheTokenPrefix), $res['authorizer_access_token'], $res['expires_in'] ? $res['expires_in'] - 200 : 7000);
         //在授权的公众号具备API权限时，才有此返回值
         if (isset($res['authorizer_refrsh_token'])) {
-            $this->cache->redisHandler()->set(md5('authorizer_refresh_token' . $res['authorizer_appid'] . '_' . $this->cacheTokenPrefix), $res['authorizer_refrsh_token'], 30 * 24 * 3600);
+            $this->cache->set(md5('authorizer_refresh_token' . $res['authorizer_appid'] . '_' . $this->cacheTokenPrefix), $res['authorizer_refrsh_token'], 30 * 24 * 3600);
         }
         return $res;
     }

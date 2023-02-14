@@ -14,7 +14,6 @@ namespace app\services\other;
 
 use app\dao\other\CategoryDao;
 use app\services\BaseServices;
-use crmeb\traits\ServicesTrait;
 
 /**
  * Class CategoryServices
@@ -22,8 +21,6 @@ use crmeb\traits\ServicesTrait;
  */
 class CategoryServices extends BaseServices
 {
-
-    use ServicesTrait;
 
     protected $cacheName = 'crmeb_cate';
 

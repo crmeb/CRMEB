@@ -34,7 +34,7 @@
             <Button v-auth="['marketing-store_bargain-create']" type="primary" icon="md-add" @click="add" class="mr10"
               >添加砍价商品</Button
             >
-            <Button v-auth="['export-storeBargain']" class="export" icon="ios-share-outline" @click="exports"
+            <Button v-auth="['export-storeBargain']" class="export" icon="ios-share-outline" @click="exportList"
               >导出</Button
             >
           </Col>
@@ -110,6 +110,7 @@
 import { mapState } from 'vuex';
 import { bargainListApi, bargainSetStatusApi, stroeBargainApi } from '@/api/marketing';
 import { formatDate } from '@/utils/validate';
+import { exportBargainList } from '@/api/export';
 export default {
   name: 'storeBargain',
   filters: {
@@ -207,7 +208,6 @@ export default {
       tableFrom: {
         status: '',
         store_name: '',
-        export: 0,
         page: 1,
         limit: 15,
       },
@@ -237,19 +237,35 @@ export default {
       this.$router.push({ path: '/admin/marketing/store_bargain/create/0' });
     },
     // 导出
-    exports() {
-      let formValidate = this.tableFrom;
-      let data = {
-        status: formValidate.status,
-        store_name: formValidate.store_name,
-      };
-      stroeBargainApi(data)
-        .then((res) => {
-          location.href = res.data[0];
-        })
-        .catch((res) => {
-          this.$Message.error(res.msg);
+    // 用户导出
+    async exportList() {
+      this.tableFrom.status = this.tableFrom.status || '';
+      let [th, filekey, data, fileName] = [[], [], [], ''];
+      let excelData = JSON.parse(JSON.stringify(this.tableFrom));
+      excelData.page = 1;
+      excelData.limit = 50;
+      for (let i = 0; i < excelData.page + 1; i++) {
+        let lebData = await this.getExcelData(excelData);
+        if (!fileName) fileName = lebData.filename;
+        if (!filekey.length) {
+          filekey = lebData.fileKey;
+        }
+        if (!th.length) th = lebData.header;
+        if (lebData.export.length) {
+          data = data.concat(lebData.export);
+          excelData.page++;
+        } else {
+          this.$exportExcel(th, filekey, fileName, data);
+          return;
+        }
+      }
+    },
+    getExcelData(excelData) {
+      return new Promise((resolve, reject) => {
+        exportBargainList(excelData).then((res) => {
+          resolve(res.data);
         });
+      });
     },
     // 编辑
     edit(row) {

@@ -2,26 +2,12 @@
 <div align="center" >
     <img src="https://images.gitee.com/uploads/images/2021/1109/164354_0aafe3d2_892944.gif" />
 </div>
-<div align="center"> 
+<div align="center">
 
 支持免费商用的PHP **多语言** 商城系统
 
 </div>
 
-<div align="center" >
-    <a href="http://www.crmeb.com">
-        <img src="https://img.shields.io/badge/Licence-GPL3.0-green.svg?style=flat" />
-    </a>
-    <a href="http://www.crmeb.com">
-        <img src="https://img.shields.io/badge/Edition-4.5-blue.svg" />
-    </a>
-     <a href="https://gitee.com/ZhongBangKeJi/CRMEB/repository/archive/master.zip">
-        <img src="https://img.shields.io/badge/Download-150m-red.svg" />
-    </a>
-    <a href='https://gitee.com/ZhongBangKeJi/CRMEB/stargazers'>
-       <img src='https://gitee.com/ZhongBangKeJi/CRMEB/badge/star.svg?theme=gvp' alt='star'></img>
-    </a>
-</div>
 
 #### 
 
@@ -43,6 +29,8 @@
 CRMEB打通版是历经6年时间匠心之作！系统全开源可商用，包含小程序商城、H5商城、公众号商城、PC商城、App，多种分销模式、拼团、砍价、秒杀、优惠券、抽奖、积分、会员等级、小程序直播、页面DIY，前后端分离全部100%开源。方便二开，更有详细使用文档、接口文档、数据字典、二开文档/视频教程。为开发者赋能，助力企业发展、国家富强，致力于打造最受欢迎的商城项目
 
 CRMEB开源商城Java版：https://gitee.com/ZhongBangKeJi/crmeb_java
+
+
 
 ### 系统亮点
 ~~~
@@ -124,10 +112,12 @@ APP下载：http://app.crmeb.cn/bzv （苹果手机直接在APP Store里搜索CR
 | [![](https://img.shields.io/badge/就眠儀式-LayuiVue-blue.svg)](https://gitee.com/layui/layui-vue) | [![](https://gitee.com/layui/layui-vue/badge/star.svg)](https://gitee.com/layui/layui-vue/stargazers) | layui-vue(谐音:类UI)是一套Vue3.0 的桌面端组件库.  |
 | [![](https://img.shields.io/badge/逆天的蝈蝈-TpFlow-blue.svg)](https://gitee.com/ntdgg/tpflow) | [![](https://gitee.com/ntdgg/tpflow/badge/star.svg?theme=gvp)](https://gitee.com/ntdgg/tpflow/stargazers) | TpFlow工作流引擎是一套规范化的流程管理系统，基于业务而驱动系统生命力的一套引擎.  |
 
-### 贡献支持
+### 商业版购买
 开源不易，以下如果有需要，请支持一下，感谢您的支持，让我们更多动力！
 
 [![](readme/pic/gitee2.png)](https://www.crmeb.com/index/criteria)
+
+### 🔥🔥庆祝：CRMEB开源商城系统Gitee star突破10000+  专属活动福利 [点击了解](https://www.crmeb.com/ask/thread/20738)
 
 ### 感谢参与开发者
 感谢大神们提交代码（排名不分先后）

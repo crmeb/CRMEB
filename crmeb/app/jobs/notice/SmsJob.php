@@ -37,7 +37,7 @@ class SmsJob extends BaseJobs
             $smsServices->send(true, $phone, $data, $template);
             return true;
         }catch (\Throwable $e) {
-            Log::error('发送企业群消息失败,失败原因:' . $e->getMessage());
+            Log::error('发送短信失败,失败原因:' . $e->getMessage());
         }
 
     }

@@ -150,5 +150,14 @@ export default {
       },
       component: () => import('@/pages/system/onlineUpgrade/index'),
     },
+    {
+      path: 'crontab',
+      name: `${pre}crontab`,
+      meta: {
+        auth: ['system-crontab-index'],
+        title: '定时任务',
+      },
+      component: () => import('@/pages/system/crontab/index'),
+    },
   ],
 };

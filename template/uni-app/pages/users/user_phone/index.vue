@@ -25,7 +25,7 @@
 
 <script>
 	import sendVerifyCode from "@/mixins/SendVerifyCode";
-	import Verify from '@/components/verify/verify.vue';
+	import Verify from '../components/verify/verify.vue';
 	import {
 		registerVerify,
 		bindingUserPhone,

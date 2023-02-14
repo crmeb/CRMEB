@@ -42,7 +42,7 @@ class StoreCouponIssue extends BaseModel
      */
     public function used()
     {
-        return $this->hasOne(StoreCouponIssueUser::class, 'issue_coupon_id', 'id')->field('issue_coupon_id');
+        return $this->hasMany(StoreCouponIssueUser::class, 'issue_coupon_id', 'id');
     }
 
     /**

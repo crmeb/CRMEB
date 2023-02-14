@@ -27,7 +27,7 @@ class Timer extends Command
     /**
      * @var int|float
      */
-    protected $interval = 2;
+    protected $interval = 1;
 
     protected function configure()
     {
@@ -59,35 +59,11 @@ class Timer extends Command
         $this->init($input, $output);
         Worker::$pidFile = app()->getRootPath().'runtime/timer.pid';
         $task = new Worker();
+        date_default_timezone_set('PRC');
         $task->count = 1;
-        event('Task_6');
-        $task->onWorkerStart = [$this, 'start'];
+        $task->onWorkerStart = function () {
+            event('SystemTimer');
+        };
         $task->runAll();
     }
-
-    public function stop()
-    {
-        \Workerman\Lib\Timer::del($this->timer);
-    }
-
-    public function start()
-    {
-        $last = time();
-        $task = [6 => $last, 10 => $last, 30 => $last, 60 => $last, 180 => $last, 300 => $last];
-        $this->timer = \Workerman\Lib\Timer::add($this->interval, function () use (&$task) {
-            try {
-                $now = time();
-                event('Task_2');
-                foreach ($task as $sec => $time) {
-                    if ($now - $time >= $sec) {
-                        event('Task_' . $sec);
-                        $task[$sec] = $now;
-                    }
-                }
-            } catch (\Throwable $e) {
-            }
-        });
-    }
-
-
 }

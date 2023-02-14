@@ -64,7 +64,7 @@ class SmsConfig extends AuthController
      */
     public function is_login(ServeServices $services)
     {
-        $sms_info = CacheService::redisHandler()->get('sms_account');
+        $sms_info = CacheService::get('sms_account');
         $data = ['status' => false, 'info' => ''];
         if ($sms_info) {
             try {
@@ -87,7 +87,7 @@ class SmsConfig extends AuthController
             if ($account && $password) {
                 $res = $services->user()->login($account, $password);
                 if ($res) {
-                    CacheService::redisHandler()->set('sms_account', $account);
+                    CacheService::set('sms_account', $account);
                     $data['status'] = true;
                     $data['info'] = $account;
                 }
@@ -103,7 +103,7 @@ class SmsConfig extends AuthController
      */
     public function logout()
     {
-        $res = CacheService::redisHandler()->delete('sms_account');
+        $res = CacheService::delete('sms_account');
         if ($res) {
             $this->services->updateSmsConfig('', '');
             CacheService::clear();

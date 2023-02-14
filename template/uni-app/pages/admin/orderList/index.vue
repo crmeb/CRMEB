@@ -378,7 +378,7 @@
 			position: fixed;
 			top: 0;
 			left: 0;
-			z-index: 999;
+			z-index: 99;
 			.input {
 				width: 598rpx;
 				background-color: #f7f7f7;
@@ -422,7 +422,7 @@
 		position: fixed;
 		top: 96rpx;
 		left: 0;
-		z-index: 9999;
+		z-index: 99;
 	}
 
 	.pos-order-list .nav .item.on {
@@ -477,6 +477,8 @@
 	.pos-order-list .list .item .operation {
 		padding: 20upx 30upx;
 		margin-top: 3upx;
+		display: flex;
+		justify-content: right;
 	}
 
 	.pos-order-list .list .item .operation .more {

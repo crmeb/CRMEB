@@ -1,8 +1,10 @@
 <template>
 	<view :style="colorStyle">
 		<view class="navbar acea-row row-around">
-			<view class="item acea-row row-center-wrapper" :class="{ on: navOn === 1 }" @click="onNav(1)">{{$t(`未使用`)}}</view>
-			<view class="item acea-row row-center-wrapper" :class="{ on: navOn === 2 }" @click="onNav(2)">{{$t(`已使用/过期`)}}</view>
+			<view class="item acea-row row-center-wrapper" :class="{ on: navOn === 1 }" @click="onNav(1)">{{$t(`未使用`)}}
+			</view>
+			<view class="item acea-row row-center-wrapper" :class="{ on: navOn === 2 }" @click="onNav(2)">
+				{{$t(`已使用/过期`)}}</view>
 		</view>
 		<view class='coupon-list' v-if="couponsList.length">
 			<view class='item acea-row row-center-wrapper' v-for='(item,index) in couponsList' :key="index"
@@ -10,7 +12,8 @@
 				<view class="moneyCon acea-row row-center-wrapper">
 					<view class='money' :class='item._type == 0 ? "moneyGray" : ""'>
 						<view>{{$t(`￥`)}}<text class='num'>{{item.coupon_price}}</text></view>
-						<view class="pic-num" v-if="item.use_min_price > 0">{{$t(`满`)}}{{item.use_min_price}}{{$t(`元可用`)}}</view>
+						<view class="pic-num" v-if="item.use_min_price > 0">
+							{{$t(`满`)}}{{item.use_min_price}}{{$t(`元可用`)}}</view>
 						<view class="pic-num" v-else>{{$t(`无门槛券`)}}</view>
 					</view>
 				</view>
@@ -25,7 +28,7 @@
 								v-else>{{$t(`商品券`)}}</view>
 							<image src="../../../static/images/fvip.png" class="pic" v-if="item.receive_type===4">
 							</image>
-							<text>{{$t(item.coupon_title)}}</text>
+							{{$t(item.coupon_title)}}
 						</view>
 					</view>
 					<view class='data acea-row row-between-wrapper'>
@@ -65,7 +68,9 @@
 	// #endif
 	import home from '@/components/home';
 	import colors from '@/mixins/color.js';
-	import {HTTP_REQUEST_URL} from '@/config/app';
+	import {
+		HTTP_REQUEST_URL
+	} from '@/config/app';
 	export default {
 		components: {
 			// #ifdef MP
@@ -73,10 +78,10 @@
 			// #endif
 			home
 		},
-		mixins:[colors],
+		mixins: [colors],
 		data() {
 			return {
-				imgHost:HTTP_REQUEST_URL,
+				imgHost: HTTP_REQUEST_URL,
 				couponsList: [],
 				loading: false,
 				isAuto: false, //没有授权的不会自动授权
@@ -116,25 +121,21 @@
 				this.finished = false;
 				this.getUseCoupons();
 			},
-			useCoupon(item){
+			useCoupon(item) {
 				let url = '';
 				if (item.category_id == 0 && item.product_id == '') {
 					url = '/pages/goods/goods_list/index?title=默认'
 				}
 				if (item.category_id != 0) {
-					if (item.category_type == 1) {
-						url = '/pages/goods/goods_list/index?cid='+item.category_id+'&title='+item.category_name
-					}else{
-						url = '/pages/goods/goods_list/index?sid='+item.category_id+'&title='+item.category_name
-					}
+					url = `/pages/goods/goods_list/index?title=${item.coupon_title}&coupon_category_id=${item.category_id}`
 				}
 				if (item.product_id != '') {
 					let arr = item.product_id.split(',');
 					let num = arr.length;
 					if (num == 1) {
-						url = '/pages/goods_details/index?id='+item.product_id
+						url = '/pages/goods_details/index?id=' + item.product_id
 					} else {
-						url = '/pages/goods/goods_list/index?productId='+item.product_id+'&title=默认'
+						url = '/pages/goods/goods_list/index?productId=' + item.product_id + '&title=默认'
 					}
 				}
 				uni.navigateTo({
@@ -202,10 +203,11 @@
 	}
 
 	.coupon-list .item .text .condition .name {
-		font-size: 26rpx;
+		font-size: 24rpx;
 		font-weight: 500;
-		display: flex;
-		align-items: center;
+		line-height: 28rpx;
+		/* display: flex;
+		align-items: center; */
 	}
 
 	.coupon-list .item .text .condition .pic {
@@ -216,12 +218,11 @@
 		display: inline-block;
 		vertical-align: middle;
 	}
-
 	.condition .line-title {
 		/* width: 70rpx; */
-		height: 32rpx !important;
+		height: 36rpx !important;
 		padding: 0 5px;
-		line-height: 30rpx;
+		line-height: 32rpx;
 		text-align: center;
 		box-sizing: border-box;
 		background: rgba(255, 247, 247, 1);

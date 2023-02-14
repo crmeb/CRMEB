@@ -164,18 +164,24 @@ class StoreCategoryDao extends BaseDao
 
     /**
      * 通过分类id 获取（自己以及下级）的所有分类
-     * @param int $id
+     * @param $id
      * @param string $field
      * @return array
      * @throws \think\db\exception\DataNotFoundException
      * @throws \think\db\exception\DbException
      * @throws \think\db\exception\ModelNotFoundException
      */
-    public function getAllById(int $id, string $field = 'id')
+    public function getAllById($id, string $field = 'id')
     {
-        return $this->getModel()->where(function ($query) use ($id) {
-            $query->where('id', $id)->whereOr('pid', $id);
-        })->where('is_show', 1)->field($field)->select()->toArray();
+        if (is_array($id)) {
+            return $this->getModel()->where(function ($query) use ($id) {
+                $query->whereIn('id', $id)->whereOr('pid', 'in', $id);
+            })->where('is_show', 1)->field($field)->select()->toArray();
+        } else {
+            return $this->getModel()->where(function ($query) use ($id) {
+                $query->where('id', $id)->whereOr('pid', $id);
+            })->where('is_show', 1)->field($field)->select()->toArray();
+        }
     }
 
     /**

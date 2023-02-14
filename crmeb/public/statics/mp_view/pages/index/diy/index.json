@@ -3,7 +3,7 @@
   "usingComponents": {
     "recommend": "/components/recommend/index",
     "loading": "/components/Loading/index",
-    "page-footer": "/components/pageFooter/index",
+    "page-foot": "/components/pageFooter/index",
     "coupon-window": "/components/couponWindow/index",
     "authorize": "/components/Authorize",
     "active-party": "/pages/index/diy/components/activeParty",

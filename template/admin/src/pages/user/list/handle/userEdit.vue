@@ -55,12 +55,12 @@
       </FormItem>
 
       <FormItem label="用户等级：">
-        <Select v-model="formItem.level" class="form-sty">
+        <Select v-model="formItem.level" class="form-sty" clearable>
           <Option v-for="(item, index) in infoData.levelInfo" :key="index" :value="item.id">{{ item.name }}</Option>
         </Select>
       </FormItem>
       <FormItem label="用户分组：">
-        <Select v-model="formItem.group_id" class="form-sty">
+        <Select v-model="formItem.group_id"  class="form-sty" clearable>
           <Option v-for="(item, index) in infoData.groupInfo" :key="index" :value="item.id">{{
             item.group_name
           }}</Option>

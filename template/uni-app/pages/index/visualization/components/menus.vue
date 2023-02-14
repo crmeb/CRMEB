@@ -4,7 +4,8 @@
 			<block v-for="(item,index) in menus" :key="index">
 				<view class='item' @click="menusTap(item.info[1].value)">
 					<view class='pictrue'>
-						<image class="skeleton-radius" :src='item.img'></image>
+						<easy-loadimage mode="widthFix" :image-src='item.img'></easy-loadimage>
+						<!-- <image class="skeleton-radius" :src='item.img'></image> -->
 					</view>
 					<view class="menu-txt">{{$t(item.info[0].value)}}</view>
 				</view>
@@ -101,6 +102,8 @@
 		background-color: #fff;
 	}
 
+
+
 	.nav {
 		margin: 0 30rpx;
 		// margin:  $uni-index-margin-row $uni-index-margin-col;
@@ -129,9 +132,12 @@
 					}
 				}
 
-				image {
-					width: 100%;
-					height: 100%;
+				/deep/,
+				/deep/image,
+				/deep/.easy-loadimage,
+				/deep/uni-image {
+					width: 90rpx;
+					height: 90rpx;
 					border-radius: 50%;
 				}
 			}

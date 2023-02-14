@@ -17,7 +17,6 @@ use app\services\BaseServices;
 use crmeb\exceptions\AdminException;
 use crmeb\services\FormBuilder;
 use app\services\other\UploadService;
-use crmeb\traits\ServicesTrait;
 
 /**
  * Class SystemStorageServices
@@ -25,7 +24,6 @@ use crmeb\traits\ServicesTrait;
  */
 class SystemStorageServices extends BaseServices
 {
-    use ServicesTrait;
 
     /**
      * SystemStorageServices constructor.
@@ -86,7 +84,7 @@ class SystemStorageServices extends BaseServices
         $rule = [
             FormBuilder::input('name', '空间名称')->required(),
             FormBuilder::select('region', '空间区域')->options($upload->getRegion())->required(),
-            FormBuilder::radio('acl', '读写权限','public-read')->options([
+            FormBuilder::radio('acl', '读写权限', 'public-read')->options([
                 ['label' => '公共读(推荐)', 'value' => 'public-read'],
                 ['label' => '公共读写', 'value' => 'public-read-write'],
             ])->required(),
@@ -178,6 +176,9 @@ class SystemStorageServices extends BaseServices
         }
         $storageInfo->is_delete = 1;
         $storageInfo->save();
+
+        $this->cacheDriver()->clear();
+
         return true;
     }
 
@@ -253,6 +254,9 @@ class SystemStorageServices extends BaseServices
         $data['update_time'] = time();
         $config = $this->getStorageConfig($type);
         $data['access_key'] = $config['accessKey'];
+
+        $this->cacheDriver()->clear();
+
         return $this->dao->save($data);
     }
 
@@ -337,6 +341,9 @@ class SystemStorageServices extends BaseServices
         if ($data) {
             $this->dao->saveAll($data);
         }
+
+        $this->cacheDriver()->clear();
+
         return true;
     }
 
@@ -449,6 +456,9 @@ class SystemStorageServices extends BaseServices
             }
             return $info->save();
         }
+
+        $this->cacheDriver()->clear();
+
         return true;
     }
 }

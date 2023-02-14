@@ -125,7 +125,7 @@ class StoreOrderDeliveryServices extends BaseServices
             $expData['siid'] = sys_config('config_export_siid');
             $expData['temp_id'] = $data['express_temp_id'];
             $expData['count'] = $orderInfo->total_num;
-            $expData['cargo'] = $orderInfoServices->getCarIdByProductTitle($orderInfo->id, $orderInfo->cart_id, true);
+            $expData['cargo'] = $orderInfoServices->getCarIdByProductTitle((int)$orderInfo->id, true);
             $expData['order_id'] = $orderInfo->order_id;
             if (!sys_config('config_export_open', 0)) {
                 throw new AdminException(400528);
@@ -436,7 +436,7 @@ class StoreOrderDeliveryServices extends BaseServices
         //获取购物车内的商品标题
         /** @var StoreOrderCartInfoServices $orderInfoServices */
         $orderInfoServices = app()->make(StoreOrderCartInfoServices::class);
-        $storeName = $orderInfoServices->getCarIdByProductTitle((int)$orderInfo->id, $orderInfo->cart_id);
+        $storeName = $orderInfoServices->getCarIdByProductTitle((int)$orderInfo->id);
         switch ($type) {
             case 1://快递发货
                 $this->orderDeliverGoods($id, $data, $orderInfo, $storeName);
@@ -499,7 +499,7 @@ class StoreOrderDeliveryServices extends BaseServices
             $expData['temp_id'] = $data['express_temp_id'];
             $expData['count'] = $orderInfo->total_num;
             $expData['weight'] = $this->getOrderSumWeight($id);
-            $expData['cargo'] = $orderInfoServices->getCarIdByProductTitle((int)$orderInfo->id, $orderInfo->cart_id, true);
+            $expData['cargo'] = $orderInfoServices->getCarIdByProductTitle((int)$orderInfo->id, true);
             $expData['order_id'] = $orderInfo->order_id;
             if (!sys_config('config_export_open', 0)) {
                 throw new AdminException(400528);

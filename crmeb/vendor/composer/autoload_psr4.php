@@ -16,6 +16,7 @@ return array(
     'crmeb\\' => array($baseDir . '/crmeb'),
     'app\\' => array($baseDir . '/app'),
     'ZipStream\\' => array($vendorDir . '/maennchen/zipstream-php/src'),
+    'Workerman\\Crontab\\' => array($vendorDir . '/workerman/crontab/src'),
     'Workerman\\' => array($vendorDir . '/workerman/workerman'),
     'Volc\\' => array($vendorDir . '/volcengine/volc-sdk-php/src'),
     'Test\\' => array($vendorDir . '/volcengine/volc-sdk-php/tests'),

@@ -741,9 +741,9 @@ export function getType(params) {
 
 /**
  * 秒杀统计
- * @param {*} id 
- * @param {*} params 
- * @returns 
+ * @param {*} id
+ * @param {*} params
+ * @returns
  */
 export function getseckillStatistics(id, params) {
   return request({
@@ -755,9 +755,9 @@ export function getseckillStatistics(id, params) {
 
 /**
  * 秒杀参与人
- * @param {*} id 
- * @param {*} params 
- * @returns 
+ * @param {*} id
+ * @param {*} params
+ * @returns
  */
 export function getseckillStatisticsPeople(id, params) {
   return request({
@@ -769,9 +769,9 @@ export function getseckillStatisticsPeople(id, params) {
 
 /**
  * 秒杀订单
- * @param {*} id 
- * @param {*} params 
- * @returns 
+ * @param {*} id
+ * @param {*} params
+ * @returns
  */
 export function getseckillStatisticsOrder(id, params) {
   return request({
@@ -783,11 +783,11 @@ export function getseckillStatisticsOrder(id, params) {
 
 /**
  * 拼团统计
- * @param {*} id 
- * @param {*} params 
- * @returns 
+ * @param {*} id
+ * @param {*} params
+ * @returns
  */
- export function getcombinationStatistics(id, params) {
+export function getcombinationStatistics(id, params) {
   return request({
     url: `marketing/combination/statistics/head/${id}`,
     method: 'get',
@@ -797,9 +797,9 @@ export function getseckillStatisticsOrder(id, params) {
 
 /**
  * 拼团列表
- * @param {*} id 
- * @param {*} params 
- * @returns 
+ * @param {*} id
+ * @param {*} params
+ * @returns
  */
 export function getcombinationStatisticsPeople(id, params) {
   return request({
@@ -811,9 +811,9 @@ export function getcombinationStatisticsPeople(id, params) {
 
 /**
  * 拼团订单
- * @param {*} id 
- * @param {*} params 
- * @returns 
+ * @param {*} id
+ * @param {*} params
+ * @returns
  */
 export function getcombinationStatisticsOrder(id, params) {
   return request({
@@ -825,11 +825,11 @@ export function getcombinationStatisticsOrder(id, params) {
 
 /**
  * 砍价统计
- * @param {*} id 
- * @param {*} params 
- * @returns 
+ * @param {*} id
+ * @param {*} params
+ * @returns
  */
- export function getbargainStatistics(id, params) {
+export function getbargainStatistics(id, params) {
   return request({
     url: `marketing/bargain/statistics/head/${id}`,
     method: 'get',
@@ -839,9 +839,9 @@ export function getcombinationStatisticsOrder(id, params) {
 
 /**
  * 砍价列表
- * @param {*} id 
- * @param {*} params 
- * @returns 
+ * @param {*} id
+ * @param {*} params
+ * @returns
  */
 export function getbargainStatisticsPeople(id, params) {
   return request({
@@ -853,9 +853,9 @@ export function getbargainStatisticsPeople(id, params) {
 
 /**
  * 砍价订单
- * @param {*} id 
- * @param {*} params 
- * @returns 
+ * @param {*} id
+ * @param {*} params
+ * @returns
  */
 export function getbargainStatisticsOrder(id, params) {
   return request({

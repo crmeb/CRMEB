@@ -29,7 +29,7 @@ class SystemMsgService extends NoticeService
      * 判断是否开启权限
      * @var bool
      */
-    private $isopend = true;
+    private $isOpen = true;
 
     /**
      * 是否开启权限
@@ -38,7 +38,7 @@ class SystemMsgService extends NoticeService
      */
     public function isOpen(string $mark)
     {
-        $this->isopend = $this->notceinfo['is_system'] === 1;
+        $this->isOpen = $this->noticeInfo['is_system'] === 1;
         return $this;
 
     }
@@ -51,17 +51,17 @@ class SystemMsgService extends NoticeService
      */
     public function sendMsg(int $uid, $data)
     {
-        $this->isopend = $this->notceinfo['is_system'] === 1;
+        $this->isOpen = $this->noticeInfo['is_system'] === 1;
         try {
-            if ($this->isopend) {
-                $title = $this->notceinfo['system_title'];
-                $str = $this->notceinfo['system_text'];
+            if ($this->isOpen) {
+                $title = $this->noticeInfo['system_title'];
+                $str = $this->noticeInfo['system_text'];
                 foreach ($data as $key => $item) {
                     $str = str_replace('{' . $key . '}', $item, $str);
                     $title = str_replace('{' . $key . '}', $item, $title);
                 }
                 $sdata = [];
-                $sdata['mark'] = $this->notceinfo['mark'];
+                $sdata['mark'] = $this->noticeInfo['mark'];
                 $sdata['uid'] = $uid;
                 $sdata['content'] = $str;
                 $sdata['title'] = $title;
@@ -91,16 +91,16 @@ class SystemMsgService extends NoticeService
         $StoreServiceServices = app()->make(StoreServiceServices::class);
         $adminList = $StoreServiceServices->getStoreServiceOrderNotice();
         try {
-            if ($this->isopend) {
+            if ($this->isOpen) {
                 $save = [];
-                $title = $this->notceinfo['system_title'];
-                $str = $this->notceinfo['system_text'];
+                $title = $this->noticeInfo['system_title'];
+                $str = $this->noticeInfo['system_text'];
                 foreach ($data as $k => $val) {
                     $str = str_replace('{' . $k . '}', $val, $str);
                     $title = str_replace('{' . $k . '}', $val, $title);
                 }
                 foreach ($adminList as $key => $item) {
-                    $save[$key]['mark'] = $this->notceinfo['mark'];
+                    $save[$key]['mark'] = $this->noticeInfo['mark'];
                     $save[$key]['uid'] = $item['uid'];
                     $save[$key]['content'] = $str;
                     $save[$key]['title'] = $title;

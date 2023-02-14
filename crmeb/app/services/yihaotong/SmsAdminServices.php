@@ -121,7 +121,7 @@ class SmsAdminServices extends BaseServices
                 }
             }
             CacheService::clear();
-            CacheService::redisHandler()->set('sms_account', $account);
+            CacheService::set('sms_account', $account);
             return true;
         } else {
             return false;

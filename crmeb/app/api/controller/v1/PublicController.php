@@ -284,12 +284,14 @@ class PublicController
     /**
      * 记录用户分享
      * @param Request $request
+     * @param UserBillServices $services
      * @return mixed
      */
     public function user_share(Request $request, UserBillServices $services)
     {
         $uid = (int)$request->uid();
-        return app('json')->success($services->setUserShare($uid));
+        $services->setUserShare($uid);
+        return app('json')->success(100012);
     }
 
     /**
@@ -306,11 +308,11 @@ class PublicController
         if ($imageUrl !== '' && !preg_match('/.*(\.png|\.jpg|\.jpeg|\.gif)$/', $imageUrl)) {
             return app('json')->success(['code' => false, 'image' => false]);
         }
-        if ($codeUrl !== '' && !preg_match('/.*(\.png|\.jpg|\.jpeg|\.gif)$/', $codeUrl)) {
+        if ($codeUrl !== '' && !(preg_match('/.*(\.png|\.jpg|\.jpeg|\.gif)$/', $codeUrl) || strpos($codeUrl, 'https://mp.weixin.qq.com/cgi-bin/showqrcode') !== false)) {
             return app('json')->success(['code' => false, 'image' => false]);
         }
         try {
-            $code = CacheService::get($codeUrl, function () use ($codeUrl) {
+            $code = CacheService::remember($codeUrl, function () use ($codeUrl) {
                 $codeTmp = $code = $codeUrl ? image_to_base64($codeUrl) : false;
                 if (!$codeTmp) {
                     $putCodeUrl = put_image($codeUrl);
@@ -319,7 +321,7 @@ class PublicController
                 }
                 return $code;
             });
-            $image = CacheService::get($imageUrl, function () use ($imageUrl) {
+            $image = CacheService::remember($imageUrl, function () use ($imageUrl) {
                 $imageTmp = $image = $imageUrl ? image_to_base64($imageUrl) : false;
                 if (!$imageTmp) {
                     $putImageUrl = put_image($imageUrl);
@@ -556,32 +558,11 @@ class PublicController
      */
     public function copyright()
     {
-        try {
-            if (Cache::has('nncnL_crmeb_copyright')) {
-                $copyrightContext = Cache::get('nncnL_crmeb_copyright');
-            } else {
-                /** @var SystemConfigServices $services */
-                $services = app()->make(SystemConfigServices::class);
-                $copyrightContext = $services->value(['menu_name' => 'nncnL_crmeb_copyright'], 'value');
-                $copyrightContext = $copyrightContext ? json_decode($copyrightContext, true) : null;
-                Cache::set('nncnL_crmeb_copyright', $copyrightContext, 3600);
-            }
-
-            // dump(Cache::has('nncnL_crmeb_copyright_image'));
-            if (Cache::has('nncnL_crmeb_copyright_image')) {
-                $copyrightImage = Cache::get('nncnL_crmeb_copyright_image');
-            } else {
-                /** @var SystemConfigServices $services */
-                $services = app()->make(SystemConfigServices::class);
-                $copyrightImage = $services->value(['menu_name' => 'nncnL_crmeb_copyright_image'], 'value');
-                $copyrightImage = $copyrightImage ? json_decode($copyrightImage, true) : null;
-                Cache::set('nncnL_crmeb_copyright_image', $copyrightImage, 3600);
-            }
-        } catch (\Throwable $e) {
-            $copyrightContext = '';
-            $copyrightImage = '';
-        }
-        return app('json')->success(compact('copyrightContext', 'copyrightImage'));
+        $copyrightContext = sys_config('nncnL_crmeb_copyright', '');
+        $copyrightImage = sys_config('nncnL_crmeb_copyright_image', '');
+        $siteName = sys_config('site_name', '');
+        $siteLogo = sys_config('wap_login_logo', '');
+        return app('json')->success(compact('copyrightContext', 'copyrightImage', 'siteName', 'siteLogo'));
     }
 
     /**
@@ -636,7 +617,7 @@ class PublicController
         $langStr = 'api_lang_' . str_replace('-', '_', $langData[$typeId]);
 
         //读取当前语言的语言包
-        $lang = CacheService::redisHandler()->remember($langStr, function () use ($typeId, $range) {
+        $lang = CacheService::remember($langStr, function () use ($typeId, $range) {
             /** @var LangCodeServices $langCodeServices */
             $langCodeServices = app()->make(LangCodeServices::class);
             return $langCodeServices->getColumn(['type_id' => $typeId, 'is_admin' => 0], 'lang_explain', 'code');

@@ -9,6 +9,7 @@
 // | Author: CRMEB Team <admin@crmeb.com>
 // +----------------------------------------------------------------------
 
+use app\api\middleware\BlockerMiddleware;
 use think\facade\Route;
 use think\facade\Config;
 use think\Response;
@@ -134,7 +135,7 @@ Route::group(function () {
     Route::get('sign/list', 'v1.user.UserSignController/sign_list')->name('signList');//签到列表
     Route::get('sign/month', 'v1.user.UserSignController/sign_month')->name('signIntegral');//签到列表（年月）
     Route::post('sign/user', 'v1.user.UserSignController/sign_user')->name('signUser');//签到用户信息
-    Route::post('sign/integral', 'v1.user.UserSignController/sign_integral')->name('signIntegral');//签到
+    Route::post('sign/integral', 'v1.user.UserSignController/sign_integral')->name('signIntegral')->middleware(BlockerMiddleware::class);//签到
     //优惠券类
     Route::post('coupon/receive', 'v1.store.StoreCouponsController/receive')->name('couponReceive'); //领取优惠券
     Route::post('coupon/receive/batch', 'v1.store.StoreCouponsController/receive_batch')->name('couponReceiveBatch'); //批量领取优惠券
@@ -151,14 +152,14 @@ Route::group(function () {
     Route::post('order/check_shipping', 'v1.order.StoreOrderController/checkShipping')->name('checkShipping'); //检测是否显示快递和自提标签
     Route::post('order/confirm', 'v1.order.StoreOrderController/confirm')->name('orderConfirm'); //订单确认
     Route::post('order/computed/:key', 'v1.order.StoreOrderController/computedOrder')->name('computedOrder'); //计算订单金额
-    Route::post('order/create/:key', 'v1.order.StoreOrderController/create')->name('orderCreate'); //订单创建
+    Route::post('order/create/:key', 'v1.order.StoreOrderController/create')->name('orderCreate')->middleware(BlockerMiddleware::class); //订单创建
     Route::get('order/data', 'v1.order.StoreOrderController/data')->name('orderData'); //订单统计数据
     Route::get('order/list', 'v1.order.StoreOrderController/lst')->name('orderList'); //订单列表
     Route::get('order/detail/:uni/[:cartId]', 'v1.order.StoreOrderController/detail')->name('orderDetail'); //订单详情
     Route::get('order/refund_detail/:uni/[:cartId]', 'v1.order.StoreOrderController/refund_detail')->name('refundDetail'); //退款订单详情
-    Route::get('order/refund/reason', 'v1.order.StoreOrderController/refund_reason')->name('orderRefundReason'); //订单退款理由
-    Route::post('order/refund/verify', 'v1.order.StoreOrderController/refund_verify')->name('orderRefundVerify'); //订单退款审核
-    Route::post('order/take', 'v1.order.StoreOrderController/take')->name('orderTake'); //订单收货
+    Route::get('order/refund/reason', 'v1.order.StoreOrderController/refund_reason')->name('orderRefundReason')->middleware(BlockerMiddleware::class); //订单退款理由
+    Route::post('order/refund/verify', 'v1.order.StoreOrderController/refund_verify')->name('orderRefundVerify')->middleware(BlockerMiddleware::class); //订单退款审核
+    Route::post('order/take', 'v1.order.StoreOrderController/take')->name('orderTake')->middleware(BlockerMiddleware::class); //订单收货
     Route::get('order/express/:uni/[:type]', 'v1.order.StoreOrderController/express')->name('orderExpress'); //订单查看物流
     Route::post('order/del', 'v1.order.StoreOrderController/del')->name('orderDel'); //订单删除
     Route::post('order/again', 'v1.order.StoreOrderController/again')->name('orderAgain'); //订单 再次下单
@@ -287,6 +288,7 @@ Route::group(function () {
     Route::get('search/keyword', 'v1.PublicController/search')->name('searchKeyword');//热门搜索关键字获取
     //商品分类类
     Route::get('category', 'v1.store.CategoryController/category')->name('category');
+    Route::get('category_version', 'v1.store.CategoryController/getCategoryVersion')->name('getCategoryVersion');//商品分类类版本
     //商品类
     Route::post('image_base64', 'v1.PublicController/get_image_base64')->name('getImageBase64');// 获取图片base64
     Route::get('product/detail/:id/[:type]', 'v1.store.StoreProductController/detail')->name('detail');//商品详情
@@ -388,6 +390,30 @@ Route::group(function () {
     Route::get('get_lang_json', 'v1.PublicController/getLangJson')->name('getLangJson');
     //获取当前后台设置的默认语言类型
     Route::get('get_default_lang_type', 'v1.PublicController/getDefaultLangType')->name('getLangJson');
+
+    /** 定时任务接口 */
+    //检测定时任务接口
+    Route::get('timer/check', 'v1.TimerController/timerCheck')->name('timerCheck');
+    //未支付自动取消订单
+    Route::get('timer/order_cancel', 'v1.TimerController/orderUnpaidCancel')->name('orderUnpaidCancel');
+    //拼团到期订单处理
+    Route::get('timer/pink_expiration', 'v1.TimerController/pinkExpiration')->name('pinkExpiration');
+    //自动解绑上级绑定
+    Route::get('timer/agent_unbind', 'v1.TimerController/agentUnbind')->name('agentUnbind');
+    //更新直播商品状态
+    Route::get('timer/live_product_status', 'v1.TimerController/syncGoodStatus')->name('syncGoodStatus');
+    //更新直播间状态
+    Route::get('timer/live_room_status', 'v1.TimerController/syncRoomStatus')->name('syncRoomStatus');
+    //自动收货
+    Route::get('timer/take_delivery', 'v1.TimerController/autoTakeOrder')->name('autoTakeOrder');
+    //查询预售到期商品自动下架
+    Route::get('timer/advance_off', 'v1.TimerController/downAdvance')->name('downAdvance');
+    //自动好评
+    Route::get('timer/product_replay', 'v1.TimerController/autoComment')->name('autoComment');
+    //清除昨日海报
+    Route::get('timer/clear_poster', 'v1.TimerController/emptyYesterdayAttachment')->name('emptyYesterdayAttachment');
+
+
 })->middleware(\app\http\middleware\AllowOriginMiddleware::class)->middleware(\app\api\middleware\StationOpenMiddleware::class)->middleware(\app\api\middleware\AuthTokenMiddleware::class, false);
 
 Route::miss(function () {

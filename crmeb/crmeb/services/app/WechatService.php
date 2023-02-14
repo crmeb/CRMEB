@@ -146,7 +146,12 @@ class WechatService
                             $response = $messageService->wechatEventView($message);
                             break;
                         case 'funds_order_pay':
-                            $prefix = substr($message['order_info']['trade_no'], 0, 2);
+                            if (($count = strpos($message['order_info']['trade_no'], '_')) !== false) {
+                                $trade_no = substr($message['order_info']['trade_no'], $count + 1);
+                            } else {
+                                $trade_no = $message['order_info']['trade_no'];
+                            }
+                            $prefix = substr($trade_no, 0, 2);
                             //处理一下参数
                             switch ($prefix) {
                                 case 'cp':

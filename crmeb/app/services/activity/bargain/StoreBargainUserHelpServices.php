@@ -17,7 +17,6 @@ use app\dao\activity\bargain\StoreBargainUserHelpDao;
 use app\services\user\UserServices;
 use crmeb\exceptions\AdminException;
 use crmeb\exceptions\ApiException;
-use crmeb\traits\ServicesTrait;
 
 /**
  *
@@ -28,8 +27,6 @@ use crmeb\traits\ServicesTrait;
  */
 class StoreBargainUserHelpServices extends BaseServices
 {
-
-    use ServicesTrait;
 
     /**
      * StoreBargainUserHelpServices constructor.

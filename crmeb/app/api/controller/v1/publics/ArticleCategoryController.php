@@ -33,7 +33,7 @@ class ArticleCategoryController
      */
     public function lst()
     {
-        $cateInfo = CacheService::get('ARTICLE_CATEGORY', function () {
+        $cateInfo = CacheService::remember('ARTICLE_CATEGORY', function () {
             $cateInfo = $this->services->getArticleCategory();
             array_unshift($cateInfo, ['id' => 0, 'title' => '热门']);
             return $cateInfo;

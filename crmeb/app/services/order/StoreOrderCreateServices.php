@@ -355,7 +355,7 @@ class StoreOrderCreateServices extends BaseServices
         //删除购物车
         if ($group['news']) {
             array_map(function ($key) {
-                CacheService::redisHandler()->delete($key);
+                CacheService::delete($key);
             }, $group['cartIds']);
         } else {
             /** @var StoreCartServices $cartServices */
@@ -650,9 +650,10 @@ class StoreOrderCreateServices extends BaseServices
                     case 1://品类券
                         /** @var StoreCategoryServices $storeCategoryServices */
                         $storeCategoryServices = app()->make(StoreCategoryServices::class);
-                        $cateGorys = $storeCategoryServices->getAllById((int)$couponInfo['category_id']);
-                        if ($cateGorys) {
-                            $cateIds = array_column($cateGorys, 'id');
+                        $coupon_category = explode(',', (string)$couponInfo['category_id']);
+                        $category_ids = $storeCategoryServices->getAllById($coupon_category);
+                        if ($category_ids) {
+                            $cateIds = array_column($category_ids, 'id');
                             foreach ($cartInfo as $cart) {
                                 if (isset($cart['productInfo']['cate_id']) && array_intersect(explode(',', $cart['productInfo']['cate_id']), $cateIds)) {
                                     $total_price = bcadd((string)$total_price, (string)bcmul((string)$cart['truePrice'], (string)$cart['cart_num'], 4), 2);

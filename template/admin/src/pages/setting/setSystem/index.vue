@@ -18,7 +18,7 @@
           :key="index"
         ></TabPane>
       </Tabs>
-      <form-create :option="option" :rule="rules" @on-submit="onSubmit" v-if="rules.length !== 0"></form-create>
+      <form-create :option="option" :rule="rules" @submit="onSubmit" v-if="rules.length !== 0"></form-create>
       <Spin size="large" fix v-if="spinShow"></Spin>
     </Card>
   </div>
@@ -177,6 +177,7 @@ export default {
       if (this.$route.query.from === 'download') {
         await this.getHeader(2);
       } else if (this.$route.params.type !== '3') {
+        this.childrenId = '';
         await this.getHeader();
       } else {
         this.headerList = [];

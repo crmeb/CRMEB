@@ -67,10 +67,11 @@ class StoreCouponIssue extends AuthController
             ['is_permanent', 0],
             ['total_count', 0],
             ['product_id', ''],
-            ['category_id', 0],
+            ['category_id', []],
             ['type', 0],
             ['sort', 0],
             ['status', 0],
+            ['receive_limit', 1],
         ]);
         $res = $this->services->saveCoupon($data);
         if ($res) return app('json')->success(100000);
@@ -108,6 +109,12 @@ class StoreCouponIssue extends AuthController
                     'product_id' => $item,
                     'image' => $productImages[$item]
                 ];
+            }
+        }
+        if ($info['category_id'] != '') {
+            $info['category_id'] = explode(',', $info['category_id']);
+            foreach ($info['category_id'] as &$category_id) {
+                $category_id = (int)$category_id;
             }
         }
         return app('json')->success($info);

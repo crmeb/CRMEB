@@ -169,7 +169,7 @@ class SystemAdmin extends AuthController
             ['new_pwd', ''],
             ['conf_pwd', ''],
         ]);
-        if(!preg_match('/^(?![^a-zA-Z]+$)(?!\D+$).{6,}$/',$data['new_pwd'])){
+        if (!preg_match('/^(?![^a-zA-Z]+$)(?!\D+$).{6,}$/', $data['new_pwd'])) {
             return app('json')->fail(400183);
         }
         if ($this->services->updateAdmin($this->adminId, $data))
@@ -177,6 +177,7 @@ class SystemAdmin extends AuthController
         else
             return app('json')->fail(100007);
     }
+
     /**
      * 修改当前登陆admin的文件管理密码
      * @return mixed
@@ -187,7 +188,7 @@ class SystemAdmin extends AuthController
             ['file_pwd', ''],
             ['conf_file_pwd', ''],
         ]);
-        if(!preg_match('/^(?![^a-zA-Z]+$)(?!\D+$).{6,}$/',$data['file_pwd'])){
+        if (!preg_match('/^(?![^a-zA-Z]+$)(?!\D+$).{6,}$/', $data['file_pwd'])) {
             return app('json')->fail(400183);
         }
         if ($this->services->setFilePassword($this->adminId, $data))
@@ -203,7 +204,7 @@ class SystemAdmin extends AuthController
     public function logout()
     {
         $key = trim(ltrim($this->request->header(Config::get('cookie.token_name')), 'Bearer'));
-        CacheService::redisHandler()->delete($key);
+        CacheService::delete(md5($key));
         return app('json')->success();
     }
 }

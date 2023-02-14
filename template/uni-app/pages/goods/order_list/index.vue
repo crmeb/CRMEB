@@ -15,6 +15,10 @@
 				</view>
 			</view>
 			<view class="nav acea-row row-around">
+				<view class="item" :class="orderStatus == 9 ? 'on' : ''" @click="statusClick(9)">
+					<view>{{$t(`全部`)}}</view>
+					<view class="num">{{ orderData.order_count || 0 }}</view>
+				</view>
 				<view class="item" :class="orderStatus == 0 ? 'on' : ''" @click="statusClick(0)">
 					<view>{{$t(`待付款`)}}</view>
 					<view class="num">{{ orderData.unpaid_count || 0 }}</view>
@@ -31,10 +35,7 @@
 					<view>{{$t(`待评价`)}}</view>
 					<view class="num">{{ orderData.evaluated_count || 0 }}</view>
 				</view>
-				<view class="item" :class="orderStatus == 4 ? 'on' : ''" @click="statusClick(4)">
-					<view>{{$t(`已完成`)}}</view>
-					<view class="num">{{ orderData.complete_count || 0 }}</view>
-				</view>
+
 			</view>
 			<view class="list">
 				<view class="item" v-for="(item, index) in orderList" :key="index">
@@ -78,10 +79,11 @@
 							</view>
 
 						</view>
-						<view class="item-info acea-row row-between row-top" v-for="(items, index) in item.cartInfo"
-							:key="index">
+						<view class="item-info acea-row row-between row-top" v-for="(items, indexCat) in item.cartInfo"
+							:key="indexCat">
 							<view class="pictrue">
-								<image :src="items.productInfo.image"></image>
+								<easy-loadimage mode="widthFix" :image-src="items.productInfo.image"></easy-loadimage>
+								<!-- <image :src="items.productInfo.image"></image> -->
 							</view>
 							<view class="text  row-between">
 								<text class="name line2">{{ items.productInfo.store_name }}</text>
@@ -183,7 +185,7 @@
 				loadTitle: this.$t(`加载更多`), //提示语
 				orderList: [], //订单数组
 				orderData: {}, //订单详细统计
-				orderStatus: 0, //订单状态
+				orderStatus: 9, //订单状态
 				page: 1,
 				limit: 20,
 				payMode: [{
@@ -478,7 +480,12 @@
 		},
 		onReachBottom: function() {
 			this.getOrderList();
-		}
+		},
+		// 滚动监听
+		onPageScroll(e) {
+			// 传入scrollTop值并触发所有easy-loadimage组件下的滚动监听事件
+			uni.$emit('scroll');
+		},
 	};
 </script>
 
@@ -527,6 +534,7 @@
 		text-align: center;
 		font-size: 26rpx;
 		color: #282828;
+		width: 3rem;
 		padding: 27rpx 0;
 		border-bottom: 5rpx solid transparent;
 	}
@@ -579,6 +587,16 @@
 	.my-order .list .item .item-info .pictrue {
 		width: 120rpx;
 		height: 120rpx;
+
+		/deep/,
+		/deep/image,
+		/deep/.easy-loadimage,
+		/deep/uni-image {
+
+			width: 120rpx;
+			height: 120rpx;
+			border-radius: 6rpx;
+		}
 	}
 
 	.my-order .list .item .item-info .pictrue image {

@@ -9,7 +9,7 @@
 		<view class='coupon-list' v-if="couponsList.length">
 			<view class='item acea-row row-center-wrapper' v-for="(item,index) in couponsList" :key="index" :class="{svip: item.receive_type === 4}">
 				<view class="moneyCon acea-row row-center-wrapper">
-					<view class='money' :class='item.is_use ? "moneyGray" : "" '>
+					<view class='money' :class='item.is_use >= item.receive_limit ? "moneyGray" : "" '>
 						<view>{{$t(`￥`)}}<text class='num'>{{item.coupon_price}}</text></view>
 						<view class="pic-num" v-if="item.use_min_price > 0">{{$t(`满`)}} {{item.use_min_price}} {{$t(`元可用`)}}</view>
 						<view class="pic-num" v-else>{{$t(`无门槛券`)}}</view>
@@ -18,9 +18,9 @@
 				<view class="text">
 					<view class="condition">
 						<view class="name line2">
-							<view class="line-title" :class="item.is_use == true || item.is_use == 2 ? 'bg-color-huic' : ''" v-if="item.type === 0">{{$t(`通用劵`)}}</view>
-							<view class="line-title" :class="item.is_use == true || item.is_use == 2 ? 'bg-color-huic' : ''" v-else-if="item.type === 1">{{$t(`品类券`)}}</view>
-							<view class="line-title" :class="item.is_use == true || item.is_use == 2 ? 'bg-color-huic' : ''" v-else>{{$t(`商品券`)}}</view>
+							<view class="line-title" :class="item.is_use >= item.receive_limit ? 'bg-color-huic' : ''" v-if="item.type === 0">{{$t(`通用劵`)}}</view>
+							<view class="line-title" :class="item.is_use >= item.receive_limit ? 'bg-color-huic' : ''" v-else-if="item.type === 1">{{$t(`品类券`)}}</view>
+							<view class="line-title" :class="item.is_use >= item.receive_limit ? 'bg-color-huic' : ''" v-else>{{$t(`商品券`)}}</view>
 							<image v-if="item.receive_type === 4" class="pic" src="/static/images/fvip.png"></image>
 							{{ $t(item.title) }}
 						</view>
@@ -28,8 +28,8 @@
 					<view class="data acea-row row-between-wrapper">
 						<view v-if="item.coupon_time">{{$t(`领取后`)}} {{item.coupon_time}} {{$t(`天内可用`)}}</view>
 						<view v-else>{{ item.start_use_time ? item.start_use_time + '-' : '' }}{{ item.end_use_time }}</view>
-						<view class="bnt gray" v-if="item.is_use == true">{{$t(`已领取`)}}</view>
-						<view class="bnt gray" v-else-if="item.is_use == 2">{{$t(`已领完`)}}</view>
+						<view class="bnt gray" v-if="item.is_use >= item.receive_limit">{{$t(`已领取`)}}</view>
+						<view class="bnt gray" v-else-if="item.is_permanent == 0 && item.remain_count == 0">{{$t(`已领完`)}}</view>
 						<view class="bnt bg-color" v-else @click="getCoupon(item.id, index)">{{$t(`立即领取`)}}</view>
 					</view>
 				</view>
@@ -147,7 +147,7 @@
 				let list = that.couponsList;
 				//领取优惠券
 				setCouponReceive(id).then(function(res) {
-					list[index].is_use = true;
+					list[index].is_use = list[index].is_use + 1;
 					that.$set(that, 'couponsList', list);
 					that.$util.Tips({
 						title: that.$t(`领取成功`)
@@ -241,8 +241,9 @@
 	.coupon-list .item .text .condition .name {
 		font-size: 26rpx;
 		font-weight: 500;
-		display: flex;
-		align-items: center;
+		line-height: 40rpx;
+		/* display: flex;
+		align-items: center; */
 	}
 	
 	.coupon-list .item .text .condition .pic {
@@ -255,13 +256,13 @@
 	}
 	
 	.condition .line-title {
-		width: 70rpx;
-		height: 32rpx !important;
-		line-height: 30rpx;
+		width: 90rpx;
+		height: 40rpx !important;
+		line-height: 40rpx;
 		text-align: center;
 		box-sizing: border-box;
 		background: rgba(255, 247, 247, 1);
-		border: 1px solid var(--view-theme);
+		border: 1rpx solid var(--view-theme);
 		opacity: 1;
 		border-radius: 20rpx;
 		font-size: 18rpx !important;

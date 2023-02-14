@@ -71,8 +71,9 @@
 	.cartf {
 		width: 96rpx;
 		height: 96rpx;
-		background: #FFFFFF;
+		background: rgba(255, 255, 255, 0.8);
 		box-shadow: 0 3rpx 16rpx rgba(0, 0, 0, 0.08);
+		backdrop-filter: blur(10px);
 		border-radius: 50%;
 		font-size: 47rpx;
 		color: #666;

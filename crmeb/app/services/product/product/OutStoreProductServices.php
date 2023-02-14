@@ -465,7 +465,7 @@ class OutStoreProductServices extends BaseServices
             }
 
             if ($goods) {
-                ProductStockJob::dispatchDo('distribute', [$goods]);
+                ProductStockJob::dispatch('distribute', [$goods]);
             }
             return true;
         });

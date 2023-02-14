@@ -18,7 +18,6 @@ use crmeb\exceptions\AdminException;
 use crmeb\exceptions\ApiException;
 use crmeb\exceptions\UploadException;
 use app\services\other\UploadService;
-use crmeb\traits\ServicesTrait;
 
 /**
  *
@@ -29,8 +28,6 @@ use crmeb\traits\ServicesTrait;
  */
 class SystemAttachmentServices extends BaseServices
 {
-
-    use ServicesTrait;
 
     /**
      * SystemAttachmentServices constructor.
@@ -213,7 +210,7 @@ class SystemAttachmentServices extends BaseServices
      * @return bool
      * @throws \Exception
      */
-    public function emptyYesterdayAttachment()
+    public function emptyYesterdayAttachment(): bool
     {
         try {
             $list = $this->dao->getYesterday();
@@ -249,6 +246,10 @@ class SystemAttachmentServices extends BaseServices
      */
     public function videoUpload($data, $file)
     {
+        $pathinfo = pathinfo($data['filename']);
+        if (isset($pathinfo['extension']) && !in_array($pathinfo['extension'], ['avi', 'mp4', 'wmv', 'rm', 'mpg', 'mpeg', 'mov', 'flv', 'swf'])) {
+            throw new AdminException(400558);
+        }
         $public_dir = app()->getRootPath() . 'public';
         $dir = '/uploads/attach/' . date('Y') . DIRECTORY_SEPARATOR . date('m') . DIRECTORY_SEPARATOR . date('d');
         $all_dir = $public_dir . $dir;

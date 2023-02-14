@@ -14,7 +14,7 @@
 				<view v-if="userInfo.is_money_level">{{$t(`已累积为您节省`)}} {{$t(`￥`)}}<text class="num">{{userInfo.economize_money}}</text>
 				</view>
 				<view v-else>{{$t(`开通即享会员权益`)}}</view>
-				<view class="btn" @click="scrollToCard">{{userInfo.is_money_level ? $t(`续费会员`) : $t(`开通会员`)}}</view>
+				<view class="btn" @click="scrollToCard" v-if="!userInfo.is_ever_level">{{userInfo.is_money_level ? $t(`续费会员`) : $t(`开通会员`)}}</view>
 			</view>
 		</view>
 		<view class="right-section">
@@ -32,7 +32,7 @@
 				</view>
 			</view>
 		</view>
-		<view class="type-section" id="card">
+		<view class="type-section" id="card" v-if="!userInfo.is_ever_level">
 			<view class="title">
 				<view class="bold">{{userInfo.is_money_level ? $t(`续费会员`) : $t(`开通会员`)}}</view>
 				<view>{{$t(`有效期至`)}}<text class="time">{{memberEndTime}}</text></view>

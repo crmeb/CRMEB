@@ -116,7 +116,8 @@ class StoreCategoryServices extends BaseServices
         if (!$res) {
             throw new AdminException(100005);
         } else {
-            CacheService::delete('CATEGORY');
+            $this->cacheDriver()->clear();
+            $this->cacheDriver()->set('category_version', uniqid());
         }
     }
 
@@ -155,7 +156,7 @@ class StoreCategoryServices extends BaseServices
         } else {
             $f[] = Form::select('pid', '上级分类', (int)($info['pid'] ?? ''))->setOptions($this->menus())->filterable(1);
         }
-        $f[] = Form::input('cate_name', '分类名称', $info['cate_name'] ?? '')->maxlength(30)->required();
+        $f[] = Form::input('cate_name', '分类名称', $info['cate_name'] ?? '')->maxlength(8)->required();
         $f[] = Form::frameImage('pic', '分类图标(180*180)', Url::buildUrl('admin/widget.images/index', array('fodder' => 'pic')), $info['pic'] ?? '')->icon('ios-add')->width('950px')->height('505px')->modal(['footer-hide' => true]);
         $f[] = Form::frameImage('big_pic', '分类大图(468*340)', Url::buildUrl('admin/widget.images/index', array('fodder' => 'big_pic')), $info['big_pic'] ?? '')->icon('ios-add')->width('950px')->height('505px')->modal(['footer-hide' => true]);
         $f[] = Form::number('sort', '排序', (int)($info['sort'] ?? 0))->min(0)->precision(0);
@@ -202,8 +203,10 @@ class StoreCategoryServices extends BaseServices
         $data['add_time'] = time();
         $res = $this->dao->save($data);
         if (!$res) throw new AdminException(100006);
-        CacheService::delete('CATEGORY');
-        CacheService::delete('CATEGORY_LIST');
+
+        $this->cacheDriver()->clear();
+        $this->cacheDriver()->set('category_version', uniqid());
+
         return (int)$res->id;
     }
 
@@ -234,8 +237,9 @@ class StoreCategoryServices extends BaseServices
             $res = $res && $productCate->update(['cate_id' => $id], ['cate_pid' => $data['pid']]);
             if (!$res) throw new AdminException(100007);
         });
-        CacheService::delete('CATEGORY');
-        CacheService::delete('CATEGORY_LIST');
+
+        $this->cacheDriver()->clear();
+        $this->cacheDriver()->set('category_version', uniqid());
     }
 
     /**
@@ -249,8 +253,22 @@ class StoreCategoryServices extends BaseServices
         }
         $res = $this->dao->delete($id);
         if (!$res) throw new AdminException(100008);
-        CacheService::delete('CATEGORY');
-        CacheService::delete('CATEGORY_LIST');
+
+        $this->cacheDriver()->clear();
+        $this->cacheDriver()->set('category_version', uniqid());
+    }
+
+    /**
+     * @return mixed
+     * @author 等风来
+     * @email 136327134@qq.com
+     * @date 2023/2/8
+     */
+    public function getCategoryVersion()
+    {
+        return $this->cacheDriver()->remember('category_version', function () {
+            return uniqid();
+        });
     }
 
     /**
@@ -273,7 +291,7 @@ class StoreCategoryServices extends BaseServices
         if ($limit) {
             return $this->dao->getALlByIndex($where, 'id,cate_name,pid,pic', $limit);
         } else {
-            return CacheService::get('CATEGORY', function () {
+            return $this->cacheDriver()->remember('CATEGORY', function () {
                 return $this->dao->getCategory();
             });
         }
@@ -302,7 +320,7 @@ class StoreCategoryServices extends BaseServices
      */
     public function getCategoryList(array $where)
     {
-        return CacheService::get('CATEGORY_LIST', function () use ($where) {
+        return $this->cacheDriver()->remember('CATEGORY_LIST', function () use ($where) {
             return $this->dao->getALlByIndex($where, 'id, cate_name, pid, pic, big_pic, sort, is_show, add_time');
         }, 86400);
     }

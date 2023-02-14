@@ -116,15 +116,14 @@ class Local extends BaseUpload
             return $this->setError('Upload file does not exist');
         }
         if ($this->validate) {
-            try {
-                $error = [
-                    $file . '.filesize' => 'Upload filesize error',
-                    $file . '.fileExt' => 'Upload fileExt error',
-                    $file . '.fileMime' => 'Upload fileMine error'
-                ];
-                validate([$file => $this->validate], $error)->check([$file => $fileHandle]);
-            } catch (ValidateException $e) {
-                return $this->setError($e->getMessage());
+            if (!in_array(pathinfo($fileHandle->getOriginalName(), PATHINFO_EXTENSION), $this->validate['fileExt'])) {
+                return $this->setError('Upload fileExt error');
+            }
+            if (filesize($fileHandle) > $this->validate['filesize']) {
+                return $this->setError('Upload filesize error');
+            }
+            if (!in_array($fileHandle->getOriginalMime(), $this->validate['fileMime'])) {
+                return $this->setError('Upload fileMine error');
             }
         }
         if ($realName) {
@@ -361,7 +360,7 @@ class Local extends BaseUpload
     {
         if (file_exists($filePath)) {
             try {
-                $fileArr = explode('/',$filePath);
+                $fileArr = explode('/', $filePath);
                 $fileName = end($fileArr);
                 unlink($filePath);
                 unlink(str_replace($fileName, 'big_' . $fileName, $filePath));

@@ -34,6 +34,9 @@ class WechatQrcodeServices extends BaseServices
      * 获取渠道码列表
      * @param $where
      * @return array
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
      */
     public function qrcodeList($where)
     {

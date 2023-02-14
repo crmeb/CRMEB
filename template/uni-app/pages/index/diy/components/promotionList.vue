@@ -1,19 +1,29 @@
 <template>
-	<view class="index-product-wrapper" :class="iSshowH?'on':''" :style="'margin-top:'+mbConfig*2+'rpx;'" v-show="!isSortType">
-		<view class="nav-bd" :style="{justifyContent:titleConfig===0?'flex-start':titleConfig===1?'space-around':'flex-end'}">
-			<view class="item" v-for="(item,index) in explosiveMoney" :index="index" @click="ProductNavTab(item.link.activeVal,index)">
-				<view class="txt" :style="{ 'color': index==ProductNavindex ? themeColor : '' }">{{$t(item.chiild[0].val)}}</view>
-				<view class="label" :style="{ 'background': index==ProductNavindex ? themeColor : '','color': index==ProductNavindex ? '#fff' : '' }">{{$t(item.chiild[1].val)}}</view>
+	<view class="index-product-wrapper" :class="iSshowH?'on':''" :style="'margin-top:'+mbConfig*2+'rpx;'"
+		v-show="!isSortType">
+		<view class="nav-bd"
+			:style="{justifyContent:titleConfig===0?'flex-start':titleConfig===1?'space-around':'flex-end'}">
+			<view class="item" v-for="(item,index) in explosiveMoney" :index="index"
+				@click="ProductNavTab(item.link.activeVal,index)">
+				<view class="txt" :style="{ 'color': index==ProductNavindex ? themeColor : '' }">
+					{{$t(item.chiild[0].val)}}</view>
+				<view class="label"
+					:style="{ 'background': index==ProductNavindex ? themeColor : '','color': index==ProductNavindex ? '#fff' : '' }">
+					{{$t(item.chiild[1].val)}}</view>
 			</view>
 		</view>
 		<!-- 首发新品 -->
 		<view class="list-box animated" :class='tempArr.length > 0?"fadeIn on":""'>
 			<view class="item" v-for="(item,index) in tempArr" :key="index" @click="goDetail(item)">
 				<view class="pictrue">
-					<span class="pictrue_log pictrue_log_class" :style="'background-color:'+labelColor" v-if="item.activity && item.activity.type === '1'">{{$t(`秒杀`)}}</span>
-					<span class="pictrue_log pictrue_log_class" :style="'background-color:'+labelColor" v-if="item.activity && item.activity.type === '2'">{{$t(`砍价`)}}</span>
-					<span class="pictrue_log pictrue_log_class" :style="'background-color:'+labelColor" v-if="item.activity && item.activity.type === '3'">{{$t(`拼团`)}}</span>
-					<image :src="item.image" mode="aspectFit"></image>
+					<span class="pictrue_log pictrue_log_class" :style="'background-color:'+labelColor"
+						v-if="item.activity && item.activity.type === '1'">{{$t(`秒杀`)}}</span>
+					<span class="pictrue_log pictrue_log_class" :style="'background-color:'+labelColor"
+						v-if="item.activity && item.activity.type === '2'">{{$t(`砍价`)}}</span>
+					<span class="pictrue_log pictrue_log_class" :style="'background-color:'+labelColor"
+						v-if="item.activity && item.activity.type === '3'">{{$t(`拼团`)}}</span>
+					<!-- <image :src="item.image" mode="aspectFit"></image> -->
+					<easy-loadimage mode="widthFix" :image-src="item.image"></easy-loadimage>
 				</view>
 				<view class="text-info">
 					<view class="title line1" v-if="titleShow">{{item.store_name}}</view>
@@ -22,7 +32,8 @@
 						<view v-if="priceShow">
 							<text>{{$t(`￥`)}}</text>{{item.price}}
 						</view>
-						<view class="txt" :style="'border:1px solid '+labelColor+';color:'+labelColor" :class="priceShow?'':'on'" v-if="item.checkCoupon && couponShow">{{$t(`券`)}}</view>
+						<view class="txt" :style="'border:1px solid '+labelColor+';color:'+labelColor"
+							:class="priceShow?'':'on'" v-if="item.checkCoupon && couponShow">{{$t(`券`)}}</view>
 					</view>
 				</view>
 			</view>
@@ -46,9 +57,9 @@
 				type: Boolean,
 				default: false
 			},
-			isSortType:{
+			isSortType: {
 				type: String | Number,
-				default:0
+				default: 0
 			}
 		},
 		data() {
@@ -62,22 +73,21 @@
 				titleShow: this.dataConfig.titleShow.val, //标题是否显示
 				opriceShow: this.dataConfig.opriceShow.val, //原价是否显示
 				priceShow: this.dataConfig.priceShow.val, //价格是否显示
-				couponShow: this.dataConfig.couponShow.val,//优惠券标签是否显示
+				couponShow: this.dataConfig.couponShow.val, //优惠券标签是否显示
 				titleConfig: this.dataConfig.titleConfig.type, //标题位置
 				fontColor: this.dataConfig.fontColor.color[0].item,
 				labelColor: this.dataConfig.labelColor.color[0].item
 			};
 		},
-		created() {
-		},
+		created() {},
 		methods: {
 			// 首发新品切换
 			ProductNavTab(type, index) {
 				this.ProductNavindex = index;
 				this.$emit('changeTab', type);
 			},
-			goDetail(item){
-				this.$emit('detail',item);
+			goDetail(item) {
+				this.$emit('detail', item);
 			}
 		}
 	}
@@ -102,8 +112,8 @@
 				align-items: center;
 				justify-content: center;
 				width: 25%;
-				
-				&.on{
+
+				&.on {
 					border-radius: 0;
 				}
 
@@ -139,6 +149,11 @@
 				border-radius: 20rpx;
 				overflow: hidden;
 				position: relative;
+
+				/deep/.easy-loadimage image {
+					width: 100%;
+					height: 346rpx;
+				}
 
 				.pictrue_log {
 					width: 92rpx;
@@ -195,7 +210,8 @@
 							border-radius: 4rpx;
 							font-size: 20rpx;
 							font-weight: normal;
-							&.on{
+
+							&.on {
 								margin-left: 0;
 							}
 						}

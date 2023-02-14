@@ -270,6 +270,7 @@ import { mapState } from 'vuex';
 import taoBao from './taoBao';
 import goodsDetail from './components/goodsDetail.vue';
 import couponList from '@/components/couponList';
+import { exportProductList } from '@/api/export';
 
 import {
   getGoodHeade,
@@ -324,8 +325,7 @@ export default {
         limit: 15,
         cate_id: '',
         type: '1',
-        store_name: '',
-        excel: 0,
+        store_name: ''
       },
       list: [],
       tableList: [],
@@ -556,20 +556,33 @@ export default {
       this.getDataList();
     },
     // 导出
-    exports() {
-      let formValidate = this.artFrom;
-      let data = {
-        cate_id: formValidate.cate_id,
-        type: formValidate.type,
-        store_name: formValidate.store_name,
-      };
-      storeProductApi(data)
-        .then((res) => {
-          location.href = res.data[0];
-        })
-        .catch((res) => {
-          this.$Message.error(res.msg);
+    async exports() {
+      let [th, filekey, data, fileName] = [[], [], [], ''];
+      let excelData = JSON.parse(JSON.stringify(this.artFrom));
+      excelData.page = 1;
+      excelData.limit = 50;
+      for (let i = 0; i < excelData.page + 1; i++) {
+        let lebData = await this.getExcelData(excelData);
+        if (!fileName) fileName = lebData.filename;
+        if (!filekey.length) {
+          filekey = lebData.fileKey;
+        }
+        if (!th.length) th = lebData.header;
+        if (lebData.export.length) {
+          data = data.concat(lebData.export);
+          excelData.page++;
+        } else {
+          this.$exportExcel(th, filekey, fileName, data);
+          return;
+        }
+      }
+    },
+    getExcelData(excelData) {
+      return new Promise((resolve, reject) => {
+        exportProductList(excelData).then((res) => {
+          resolve(res.data);
         });
+      });
     },
     changeTemplate(e) {
       // this.template = e;
@@ -849,13 +862,14 @@ export default {
     overflow: auto;
   }
 }
-.batch-box{
-   >>> .ivu-modal-body {
+
+.batch-box {
+  >>> .ivu-modal-body {
     overflow: auto;
     min-height: 350px;
-
   }
 }
+
 .tabBox_img {
   width: 36px;
   height: 36px;

@@ -388,7 +388,11 @@ class UserBillController
 
     /**
      * 获取海报详细信息
+     * @param Request $request
      * @return mixed
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
      */
     public function getSpreadInfo(Request $request)
     {
@@ -402,8 +406,18 @@ class UserBillController
                 $routineSpreadBanner[] = ['pic' => $item];
             }
         }
+
+        if (sys_config('share_qrcode', 0) && request()->isWechat()) {
+            /** @var QrcodeServices $qrcodeService */
+            $qrcodeService = app()->make(QrcodeServices::class);
+            $qrcode = $qrcodeService->getTemporaryQrcode('spread', $request->uid())->url;
+        } else {
+            $qrcode = '';
+        }
+
         return app('json')->success([
             'spread' => $routineSpreadBanner,
+            'qrcode' => $qrcode,
             'nickname' => $request->user('nickname'),
             'site_name' => sys_config('site_name')
         ]);
@@ -413,6 +427,9 @@ class UserBillController
      * 积分记录
      * @param Request $request
      * @return mixed
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
      */
     public function integral_list(Request $request)
     {

@@ -40,8 +40,8 @@
 										:url='"/pages/goods/goods_list/index?sid="+itemn.id+"&title="+itemn.cate_name'
 										class='item acea-row row-column row-middle'>
 										<view class='picture'>
-											<image :src='itemn.pic' v-if="itemn.pic"></image>
-											<image src="/static/images/sort-img.png" v-else></image>
+											<easy-loadimage mode="widthFix" :image-src="itemn.pic"></easy-loadimage>
+											<!-- <image src="/static/images/sort-img.png" v-else></image> -->
 										</view>
 										<view class='name line1'>{{$t(itemn.cate_name)}}</view>
 									</navigator>
@@ -119,8 +119,6 @@
 			let curRoute = routes[routes.length - 1].route
 			this.activeRouter = '/' + curRoute
 			this.getAllCategory();
-
-
 		},
 		methods: {
 			getNav() {
@@ -143,7 +141,6 @@
 			},
 			footHeight(data) {
 				this.footH = data
-
 			},
 			infoScroll: function() {
 				let that = this;
@@ -200,6 +197,7 @@
 						this.navActive = scrollArr.length - 1
 					}
 				}
+				uni.$emit('scroll');
 			},
 			searchSubmitValue: function(e) {
 				if (this.$util.trim(e.detail.value).length > 0)
@@ -367,10 +365,23 @@
 		border-radius: 50%;
 	}
 
-	.productSort .conter .list .item .picture image {
-		width: 100%;
-		height: 100%;
-		border-radius: 50%;
+	// .productSort .conter .list .item .picture image {
+	// 	width: 100%;
+	// 	height: 100%;
+	// 	border-radius: 50%;
+	// }
+
+	.productSort .conter .list .item .picture {
+
+		/deep/,
+		/deep/image,
+		/deep/.easy-loadimage,
+		/deep/uni-image {
+
+			width: 120rpx;
+			height: 120rpx;
+			border-radius: 50%;
+		}
 	}
 
 	.productSort .conter .list .item .name {

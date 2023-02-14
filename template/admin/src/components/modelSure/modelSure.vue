@@ -6,13 +6,13 @@
     </p>
     <div>
       <p>{{ `您确定要${delfromData.title}吗?` }}</p>
-      <p>{{ `${delfromData.title}后将无法恢复，请谨慎操作！` }}</p>
+      <p v-if="delfromData.info !== undefined">{{ `${delfromData.info}` }}</p>
     </div>
     <div slot="footer" class="acea-row row-right">
       <Button type="warning" :loading="modal_loading" @click="ok">确定</Button>
       <Button type="primary" @click="cancel">取消</Button>
     </div>
-  </Modal>
+  </Modal> 
 </template>
 
 <script>

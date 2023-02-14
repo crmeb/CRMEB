@@ -27857,6 +27857,7 @@ CREATE TABLE IF NOT EXISTS `eb_store_coupon_issue` (
   `end_time` int(10) NOT NULL DEFAULT '0' COMMENT '优惠券领取结束时间',
   `total_count` int(10) NOT NULL DEFAULT '0' COMMENT '优惠券领取数量',
   `remain_count` int(10) NOT NULL DEFAULT '0' COMMENT '优惠券剩余领取数量',
+  `receive_limit` int(10) NOT NULL DEFAULT '0' COMMENT '每个人个领取的优惠券数量',
   `is_permanent` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否无限张数',
   `status` tinyint(1) NOT NULL DEFAULT '1' COMMENT '1 正常 0 未开启 -1 已无效',
   `is_give_subscribe` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否首次关注赠送 0-否(默认) 1-是',
@@ -27889,8 +27890,8 @@ CREATE TABLE IF NOT EXISTS `eb_store_coupon_issue` (
 -- 转存表中的数据 `eb_store_coupon_issue`
 --
 
-INSERT INTO `eb_store_coupon_issue` (`id`, `cid`, `coupon_title`, `start_time`, `end_time`, `total_count`, `remain_count`, `is_permanent`, `status`, `is_give_subscribe`, `is_full_give`, `full_reduction`, `is_del`, `add_time`, `title`, `integral`, `coupon_price`, `use_min_price`, `coupon_time`, `product_id`, `category_id`, `type`, `receive_type`, `start_use_time`, `end_use_time`, `sort`) VALUES
-(1, 0, '优惠券', 0, 0, 0, 0, 1, 1, 0, 0, '0.00', 0, 1642574082, '优惠券', 0, '10.00', '30.00', 15, '', 0, 0, 1, 0, 0, 0);
+INSERT INTO `eb_store_coupon_issue` (`id`, `cid`, `coupon_title`, `start_time`, `end_time`, `total_count`, `remain_count`, `receive_limit`, `is_permanent`, `status`, `is_give_subscribe`, `is_full_give`, `full_reduction`, `is_del`, `add_time`, `title`, `integral`, `coupon_price`, `use_min_price`, `coupon_time`, `product_id`, `category_id`, `type`, `receive_type`, `start_use_time`, `end_use_time`, `sort`) VALUES
+(1, 0, '优惠券', 0, 0, 0, 0, 0, 1, 1, 0, 0, '0.00', 0, 1642574082, '优惠券', 0, '10.00', '30.00', 15, '', 0, 0, 1, 0, 0, 0);
 
 -- --------------------------------------------------------
 
@@ -27901,8 +27902,7 @@ INSERT INTO `eb_store_coupon_issue` (`id`, `cid`, `coupon_title`, `start_time`, 
 CREATE TABLE IF NOT EXISTS `eb_store_coupon_issue_user` (
   `uid` int(10) NOT NULL DEFAULT '0' COMMENT '领取优惠券用户ID',
   `issue_coupon_id` int(10) NOT NULL DEFAULT '0' COMMENT '优惠券前台领取ID',
-  `add_time` int(10) NOT NULL DEFAULT '0' COMMENT '领取时间',
-  UNIQUE KEY `uid` (`uid`,`issue_coupon_id`) USING BTREE
+  `add_time` int(10) NOT NULL DEFAULT '0' COMMENT '领取时间'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='优惠券前台用户领取记录表';
 
 -- --------------------------------------------------------
@@ -27914,6 +27914,7 @@ CREATE TABLE IF NOT EXISTS `eb_store_coupon_issue_user` (
 CREATE TABLE IF NOT EXISTS `eb_store_coupon_product` (
   `coupon_id` int(11) NOT NULL DEFAULT '0' COMMENT '优惠卷模板id',
   `product_id` int(11) NOT NULL DEFAULT '0' COMMENT '商品id',
+  `category_id` int(11) NOT NULL DEFAULT '0' COMMENT '分类id',
   KEY `coupon_id` (`coupon_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='优惠卷模板关联列表';
 
@@ -28051,7 +28052,7 @@ CREATE TABLE IF NOT EXISTS `eb_store_order` (
   `real_name` varchar(32) NOT NULL DEFAULT '' COMMENT '用户姓名',
   `user_phone` varchar(18) NOT NULL DEFAULT '' COMMENT '用户电话',
   `user_address` varchar(100) NOT NULL DEFAULT '' COMMENT '详细地址',
-  `cart_id` varchar(256) NOT NULL DEFAULT '[]' COMMENT '购物车id',
+  `cart_id` text COMMENT '购物车id',
   `freight_price` decimal(8,2) NOT NULL DEFAULT '0.00' COMMENT '运费金额',
   `total_num` int(11) UNSIGNED NOT NULL DEFAULT '0' COMMENT '订单商品总数',
   `total_price` decimal(8,2) UNSIGNED NOT NULL DEFAULT '0.00' COMMENT '订单总价',
@@ -33008,7 +33009,7 @@ CREATE TABLE IF NOT EXISTS `eb_system_config` (
   `sort` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '排序',
   `status` tinyint(1) UNSIGNED NOT NULL DEFAULT '0' COMMENT '是否隐藏',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=418 DEFAULT CHARSET=utf8 COMMENT='配置表';
+) ENGINE=InnoDB AUTO_INCREMENT=428 DEFAULT CHARSET=utf8 COMMENT='配置表';
 
 --
 -- 转存表中的数据 `eb_system_config`
@@ -33019,21 +33020,21 @@ INSERT INTO `eb_system_config` (`id`, `menu_name`, `type`, `input_type`, `config
 (2, 'site_url', 'text', 'input', 26, '', 1, 'required:true,url:true', 100, 0, '\"\"', '网站地址', '安装自动配置，不要轻易修改，更换会影响网站访问、接口请求、本地文件储存、支付回调、微信授权、支付、小程序图片访问、部分二维码、官方授权等', 9, 1),
 (3, 'site_logo', 'upload', '', 26, '', 1, '', 0, 0, '\"\\/statics\\/system_images\\/admin_logo_big.png\"', '后台大LOGO', '菜单展开左上角logo,建议尺寸[170*50]', 3, 1),
 (4, 'site_phone', 'text', 'input', 1, '', 0, '', 100, 0, '\"\"', '联系电话', '联系电话', 0, 0),
-(13, 'wechat_appid', 'text', 'input', 2, '', 1, '', 0, 0, '\"\"', 'AppID', 'AppID', 99, 1),
-(14, 'wechat_appsecret', 'text', 'input', 2, '', 1, '', 0, 0, '\"\"', 'AppSecret', 'AppSecret', 95, 1),
+(13, 'wechat_appid', 'text', 'input', 2, '', 1, '', 0, 0, '\"\"', 'AppID', '微信公众号的AppID', 99, 1),
+(14, 'wechat_appsecret', 'text', 'input', 2, '', 1, '', 0, 0, '\"\"', 'AppSecret', '微信公众号的AppSecret', 95, 1),
 (15, 'wechat_token', 'text', 'input', 2, '', 1, '', 0, 0, '\"\"', '微信验证TOKEN', '微信验证TOKEN', 88, 1),
-(16, 'wechat_encode', 'radio', 'input', 2, '0=>明文模式\n1=>兼容模式\n2=>安全模式', 1, '', 0, 0, '0', '消息加解密方式', '如需使用安全模式请在管理中心修改，仅限服务号和认证订阅号', 84, 1),
-(17, 'wechat_encodingaeskey', 'text', 'input', 2, '', 1, '', 0, 0, '\"\"', 'EncodingAESKey', '公众号消息加解密Key,在使用安全模式情况下要填写该值，请先在管理中心修改，然后填写该值，仅限服务号和认证订阅号', 80, 1),
+(16, 'wechat_encode', 'radio', 'input', 2, '0=>明文模式\n1=>兼容模式\n2=>安全模式', 1, '', 0, 0, '0', '消息加解密方式', '如需使用安全模式请在管理中心修改，仅限服务号和认证订阅号', 84, 0),
+(17, 'wechat_encodingaeskey', 'text', 'input', 2, '', 1, '', 0, 0, '\"\"', 'EncodingAESKey', '公众号消息加解密Key,在使用安全模式情况下要填写该值，请先在管理中心修改，然后填写该值，仅支持认证服务号', 80, 1),
 (18, 'wechat_share_img', 'upload', '', 70, '', 1, '', 0, 0, '\"\\/statics\\/system_images\\/share_image.jpeg\"', '微信分享图片', '若填写此图片地址，则分享网页出去时会分享此图片。可有效防止分享图片变形', 0, 1),
-(19, 'wechat_qrcode', 'upload', 'input', 2, '', 1, '', 0, 0, '\"\"', '公众号关注二维码', '公众号关注二维码', 76, 1),
+(19, 'wechat_qrcode', 'upload', 'input', 2, '', 1, '', 0, 0, '\"\"', '公众号关注二维码', '引导关注公众号显示的公众号关注二维码', 76, 1),
 (21, 'wechat_share_title', 'text', 'input', 70, '', 0, 'required:true', 100, 0, '\"CRMEB v4\\u6807\\u51c6\\u7248\"', '微信分享标题', '微信分享标题', 0, 1),
 (22, 'wechat_share_synopsis', 'textarea', '', 70, '', 0, '', 100, 5, '\"\\u5b8c\\u5584\\u7684\\u6587\\u6863 \\u5168\\u201c\\u5fc3\\u201d\\u800c\\u6765\\uff01\"', '微信分享简介', '微信分享简介', 0, 1),
 (25, 'pay_weixin_mchid', 'text', 'input', 4, '', 0, '', 100, 0, '\"\"', 'Mchid', '受理商ID，身份标识', 0, 1),
 (26, 'pay_weixin_client_cert', 'upload', 'input', 4, '', 3, '', 0, 0, '\"\"', '微信支付证书', '微信支付证书，在微信商家平台中可以下载！文件名一般为apiclient_cert.pem', 0, 1),
 (27, 'pay_weixin_client_key', 'upload', 'input', 4, '', 3, '', 0, 0, '\"\"', '微信支付证书密钥', '微信支付证书密钥，在微信商家平台中可以下载！文件名一般为apiclient_key.pem', 0, 1),
 (28, 'pay_weixin_key', 'text', 'input', 4, '', 0, '', 100, 0, '\"\"', 'Key', '商户支付密钥Key。审核通过后，在微信发送的邮件中查看。', 0, 1),
-(29, 'pay_weixin_open', 'radio', 'input', 4, '1=>开启\n0=>关闭', 0, '', 0, 0, '1', '开启', '是否启用微信支付', 0, 1),
-(32, 'store_free_postage', 'text', 'number', 27, '', 0, 'number:true,min:-1', 100, 0, '1000000', '满额包邮', '商城商品满多少金额即可包邮', 100, 1),
+(29, 'pay_weixin_open', 'radio', 'input', 109, '1=>开启\n0=>关闭', 1, '', 0, 0, '\"1\"', '微信支付', '是否启用微信支付', 100, 1),
+(32, 'store_free_postage', 'text', 'number', 27, '', 0, 'number:true,min:-1', 100, 0, '1000000', '满额包邮', '商城商品满多少金额即可包邮，此项优先于其他的运费设置', 100, 1),
 (33, 'offline_postage', 'radio', 'input', 27, '1=>包邮\n0=>不包邮', 1, '', 0, 0, '0', '线下支付是否包邮', '用户选择线下支付时是否包邮', 97, 1),
 (34, 'integral_ratio', 'text', 'input', 11, '', 0, 'number:true', 100, 0, '\"0.1\"', '积分抵用', '积分抵用比例(1积分抵多少金额)单位：元', 10, 1),
 (44, 'store_user_min_recharge', 'text', 'number', 28, '', 1, 'required:true,number:true,min:0', 100, 0, '0.01', '用户最低充值金额', '用户单次最低充值金额', 3, 1),
@@ -33043,14 +33044,14 @@ INSERT INTO `eb_system_config` (`id`, `menu_name`, `type`, `input_type`, `config
 (58, 'replenishment_num', 'text', 'number', 27, '', 0, 'required:true,number:true,min:0', 100, 0, '5', '待补货数量', '商品待补货数量低于多少时，提示补货', 0, 1),
 (59, 'routine_appId', 'text', 'input', 7, '', 0, '', 100, 0, '\"\"', 'appId', '小程序appID', 0, 1),
 (60, 'routine_appsecret', 'text', 'input', 7, '', 0, '', 100, 0, '\"\"', 'AppSecret', '小程序AppSecret', 0, 1),
-(61, 'api', 'text', 'input', 2, '', 1, '', 0, 0, '\"\\/api\\/wechat\\/serve\"', '接口地址', '微信接口例如：http://www.abc.com/api/wechat/serve', 92, 1),
+(61, 'api', 'text', 'input', 2, '', 1, '', 0, 0, '\"\\/api\\/wechat\\/serve\"', '接口地址', '配置服务器域名使用的接口地址，填入https://您的域名/api/wechat/serve', 92, 1),
 (74, 'routine_name', 'text', 'input', 7, '', 0, '', 100, 0, '\"\"', '小程序名称', '小程序名称', 0, 1),
-(77, 'store_stock', 'text', 'number', 27, '', 0, '', 100, 0, '2', '警戒库存', '警戒库存提醒值', 0, 1),
-(85, 'stor_reason', 'textarea', '', 69, '', 0, '', 100, 8, '\"\\u6536\\u8d27\\u5730\\u5740\\u586b\\u9519\\u4e86\\n\\u4e0e\\u63cf\\u8ff0\\u4e0d\\u7b26\\n\\u4fe1\\u606f\\u586b\\u9519\\u4e86\\uff0c\\u91cd\\u65b0\\u62cd\\n\\u6536\\u5230\\u5546\\u54c1\\u635f\\u574f\\u4e86\\n\\u672a\\u6309\\u9884\\u5b9a\\u65f6\\u95f4\\u53d1\\u8d27\\n\\u5176\\u5b83\\u539f\\u56e0\"', '退货理由', '配置退货理由，一行一个理由', 0, 1),
+(77, 'store_stock', 'text', 'number', 27, '', 1, '', 0, 0, '\"2\"', '警戒库存', '商品待补货数量低于多少时，提示库存不足', 0, 1),
+(85, 'stor_reason', 'textarea', 'input', 71, '', 1, '', 100, 8, '\"\\u6536\\u8d27\\u5730\\u5740\\u586b\\u9519\\u4e86\\n\\u4e0e\\u63cf\\u8ff0\\u4e0d\\u7b26\\n\\u4fe1\\u606f\\u586b\\u9519\\u4e86\\uff0c\\u91cd\\u65b0\\u62cd\\n\\u6536\\u5230\\u5546\\u54c1\\u635f\\u574f\\u4e86\\n\\u672a\\u6309\\u9884\\u5b9a\\u65f6\\u95f4\\u53d1\\u8d27\\n\\u5176\\u5b83\\u539f\\u56e0\"', '退货理由', '配置退货理由，一行一个理由', 0, 1),
 (87, 'store_brokerage_two', 'text', 'input', 73, '', 0, 'required:true,min:0,max:100,number:true', 100, 0, '\"5\"', '二级返佣比例', '订单交易成功后给上级返佣的比例0 - 100,例:5 = 反订单商品金额的5%', 4, 1),
 (88, 'store_brokerage_statu', 'radio', '', 72, '1=>指定分销\n2=>人人分销\n3=>满额分销', 0, '', 0, 0, '1', '分销模式', '人人分销”默认每个人都可以分销，“指定分销”仅可后台手动设置推广员，“满额分销”指用户购买商品满足消费金额后自动开启分销', 95, 1),
 (99, 'user_extract_bank', 'textarea', '', 74, '', 0, '', 100, 5, '\"\\u4e2d\\u56fd\\u94f6\\u884c\"', '提现银行卡', '配置提现银行卡类型，每个银行换行', 0, 1),
-(108, 'upload_type', 'radio', '', 31, '1=>本地存储\n2=>七牛云存储\n3=>阿里云OSS\n4=>腾讯COS', 1, '', 0, 0, '1', '上传类型', '文件储存配置，注意：一旦配置就不要轻易修改，会导致文件不能使用', 100, 1),
+(108, 'upload_type', 'radio', '', 31, '1=>本地存储\n2=>七牛云存储\n3=>阿里云OSS\n4=>腾讯COS', 1, '', 0, 0, '\"1\"', '上传类型', '文件储存配置，注意：一旦配置就不要轻易修改，会导致文件不能使用', 100, 1),
 (110, 'accessKey', 'text', 'input', 32, '', 0, '', 100, 0, '\"\"', '阿里云云存储accessKey', 'accessKey', 0, 1),
 (111, 'secretKey', 'text', 'input', 32, '', 0, '', 100, 0, '\"\"', '阿里云云存储secretKey', 'secretKey', 0, 1),
 (113, 'order_cancel_time', 'text', 'number', 27, '', 0, '', 100, 0, '2', '普通商品未支付取消订单时间', '普通商品未支付取消订单时间，单位（小时）', 0, 1),
@@ -33061,16 +33062,16 @@ INSERT INTO `eb_system_config` (`id`, `menu_name`, `type`, `input_type`, `config
 (122, 'system_delivery_time', 'text', 'number', 27, '', 0, 'required:true,digits:true,min:0', 100, 0, '7', '自动收货时间', '系统自动收货时间,单位(天),0为不设置自动收货', 80, 1),
 (123, 'sms_account', 'text', 'input', 18, '', 0, '', 100, 0, '\"\"', '一号通账号', '短信后台的登录账号', 0, 1),
 (137, 'sms_token', 'text', 'input', 18, '', 0, '', 100, 0, '\"\"', '一号通密码', '短信后台的登录密码)', 0, 1),
-(138, 'h5_avatar', 'upload', 'input', 101, '', 1, '', 0, 0, '\"\\/statics\\/system_images\\/default_avatar.jpeg\"', '用户H5默认头像', '用户H5默认头像尺寸(80*80)', 3, 1),
-(139, 'offline_pay_status', 'radio', '', 29, '1=>开启\n2=>关闭', 0, '', 0, 0, '1', '线下支付状态', '线下支付请选择开启或关闭', 0, 1),
-(141, 'recharge_switch', 'radio', 'input', 28, '1=>开启\n0=>关闭', 1, '', 0, 0, '0', '小程序充值开关', '小程序提交审核前,需要关闭此功能', 4, 1),
+(138, 'h5_avatar', 'upload', 'input', 101, '', 1, '', 0, 0, '\"\\/statics\\/system_images\\/default_avatar.jpeg\"', '用户默认头像', '用户默认头像，后台添加用户以及用户登录的默认头像显示，尺寸(80*80)', 3, 1),
+(139, 'offline_pay_status', 'radio', 'input', 109, '1=>开启\n2=>关闭', 1, '', 0, 0, '\"1\"', '线下支付', '线下支付请选择开启或关闭', 89, 1),
+(141, 'recharge_switch', 'radio', 'input', 28, '1=>开启\n0=>关闭', 1, '', 0, 0, '0', '小程序充值开关', '仅小程序端的充值开关，小程序提交审核前,需要关闭此功能', 4, 1),
 (142, 'tengxun_map_key', 'text', 'input', 26, '', 1, '', 0, 0, '\"SMJBZ-WCHK4-ZPZUA-DSIXI-XDDVQ-XWFX7\"', '腾讯地图KEY', '腾讯地图KEY，申请地址：https://lbs.qq.com', 0, 1),
 (143, 'store_self_mention', 'radio', 'input', 27, '1=>开启\n0=>关闭', 1, '', 0, 0, '1', '是否开启到店自提', '开启后下单页面支持到店自提，需要在设置->发货设置->提货点设置中添加提货点，关闭则隐藏此功能', 95, 1),
-(145, 'pay_success_printing_switch', 'radio', 'input', 86, '1=>开\n0=>关', 1, '', 0, 0, '0', '小票打印开关', '支付成功自动小票打印功能，需要购买易联云K4无线打印机', 10, 1),
-(146, 'develop_id', 'text', 'input', 87, '', 1, '', 0, 0, '\"\"', '开发者ID', '易联云开发者ID', 0, 1),
-(147, 'printing_api_key', 'text', 'input', 87, '', 1, '', 0, 0, '\"\"', '应用密钥', '易联应用密钥', 0, 1),
-(148, 'printing_client_id', 'text', 'input', 87, '', 1, '', 0, 0, '\"\"', '应用ID', '易联应用ID', 0, 1),
-(149, 'terminal_number', 'text', 'input', 87, '', 1, '', 0, 0, '\"\"', '终端号', '易联云打印机终端号', 0, 1),
+(145, 'pay_success_printing_switch', 'radio', 'input', 86, '1=>开\n0=>关', 1, '', 0, 0, '0', '小票打印开关', '支付成功自动小票打印功能，需要购买易联云K4或者K6无线打印机，或者购买飞鹅云V58系列', 10, 1),
+(146, 'develop_id', 'text', 'input', 87, '', 1, '', 0, 0, '\"\"', '开发者ID', '易联云申请应用后页面开发者信息中的用户ID', 0, 1),
+(147, 'printing_api_key', 'text', 'input', 87, '', 1, '', 0, 0, '\"\"', '应用密钥', '易联云申请应用后页面开发者信息中的应用密钥', 0, 1),
+(148, 'printing_client_id', 'text', 'input', 87, '', 1, '', 0, 0, '\"\"', '应用ID', '易联云申请应用后页面开发者信息中的应用ID', 0, 1),
+(149, 'terminal_number', 'text', 'input', 87, '', 1, '', 0, 0, '\"\"', '终端号', '易联云打印机标签上的终端号', 0, 1),
 (150, 'lower_order_switch', 'radio', '', 20, '0=>关闭\n1=>开启', 0, '', 0, 0, '0', '支付成功提醒开关', '支付成功提醒开关', 0, 1),
 (151, 'deliver_goods_switch', 'radio', '', 20, '0=>关闭\n1=>开启', 0, '', 0, 0, '0', '发货提醒开关', '发货提醒开关', 0, 1),
 (152, 'confirm_take_over_switch', 'radio', '', 20, '0=>关闭\n1=>开启', 0, '', 0, 0, '0', '确认收货提醒开关', '确认收货提醒开关', 0, 1),
@@ -33083,19 +33084,19 @@ INSERT INTO `eb_system_config` (`id`, `menu_name`, `type`, `input_type`, `config
 (160, 'store_brokerage_price', 'text', 'input', 72, '', 0, '', 100, 0, '\"100\"', '满额分销最低金额', '满额分销满足金额开通分销权限', 0, 1),
 (162, 'price_revision_switch', 'radio', 'input', 20, '0=>关闭\n1=>开启', 0, '', 0, 0, '0', '改价短信提醒开关', '改价短信提醒开关', 0, 1),
 (168, 'site_logo_square', 'upload', 'input', 26, '', 1, '', 0, 0, '\"\\/statics\\/system_images\\/admin_logo_small.png\"', '后台小LOGO', '后台菜单缩进小LOGO，尺寸180*180', 6, 1),
-(170, 'yue_pay_status', 'radio', '', 30, '1=>开启\n2=>关闭', 0, '', 0, 0, '1', '余额支付状态', '余额支付请选择开启或关闭', 0, 1),
+(170, 'yue_pay_status', 'radio', 'input', 109, '1=>开启\n2=>关闭', 1, '', 0, 0, '\"1\"', '余额支付', '余额支付请选择开启或关闭', 95, 1),
 (171, 'login_logo', 'upload', 'input', 26, '', 1, '', 0, 0, '\"\\/statics\\/system_images\\/admin_login_logo.png\"', '后台登录页LOGO', '后台登录页LOGO，建议尺寸270x75', 8, 1),
 (173, 'qiniu_accessKey', 'text', 'input', 80, '', 0, '', 100, 0, '\"\"', 'accessKey', '七牛云accessKey', 0, 1),
 (174, 'qiniu_secretKey', 'text', 'input', 80, '', 0, '', 100, 0, '\"\"', 'secretKey', '七牛云secretKey', 0, 1),
 (178, 'tengxun_accessKey', 'text', 'input', 82, '', 0, '', 100, 0, '\"\"', 'accessKey', '腾讯云accessKey', 0, 1),
 (179, 'tengxun_secretKey', 'text', '', 82, '', 0, '', 100, 0, '\"\"', 'secretKey', '腾讯云secretKey', 0, 1),
-(187, 'copy_product_apikey', 'text', 'input', 90, '', 1, '', 0, 0, '\"\"', '99Api apiKey', '复制商品第三方平台接口秘钥', 0, 1),
+(187, 'copy_product_apikey', 'text', 'input', 90, '', 1, '', 0, 0, '\"\"', '99Api apiKey', '注册99api采集接口在个人中心复制key', 0, 1),
 (189, 'balance_func_status', 'radio', 'input', 28, '1=>开启\n0=>关闭\n', 1, '', 0, 0, '1', '余额功能启用', '商城余额功能启用或者关闭', 5, 1),
 (190, 'brokerage_func_status', 'radio', '', 72, '1=>开启\n0=>关闭', 0, '', 0, 0, '1', '分销启用', '商城分销功能开启|关闭', 100, 1),
 (191, 'order_give_integral', 'text', 'input', 11, '', 0, '', 100, 0, '\"1\"', '下单赠送积分', '下单支付金额按比例赠送积分（实际支付1元赠送多少积分）', 0, 1),
 (193, 'member_func_status', 'radio', '', 45, '1=>开启\n0=>关闭', 0, '', 0, 0, '1', '用户等级启用', '商城用户等级功能开启|关闭', 0, 1),
 (194, 'member_price_status', 'radio', '', 67, '1=>开启\n0=>关闭', 0, '', 0, 0, '1', '商品会员折扣价展示启用', '商城商城会员折扣价格展示', 0, 1),
-(195, 'store_user_mobile', 'radio', '', 101, '1=>强制\n0=>不强制', 0, '', 0, 0, '0', '强制手机号登录', '商城用户强制手机号登录', 0, 1),
+(195, 'store_user_mobile', 'radio', '', 101, '1=>强制\n0=>不强制', 1, '', 0, 0, '0', '强制手机号登录', '用户在授权之后强制绑定手机号，可以实现用户多端统一', 0, 1),
 (196, 'order_give_exp', 'text', 'input', 45, '', 0, '', 100, 0, '\"1\"', '下单赠送用户经验比例（实际支付1元赠送多少经验）', '下单赠送用户经验比例（实际支付1元赠送多少经验）', 0, 1),
 (198, 'sign_give_exp', 'text', 'input', 45, '', 0, '', 100, 0, '\"20\"', '签到赠送用户经验值', '签到赠送用户经验值', 0, 1),
 (199, 'invite_user_exp', 'text', 'input', 45, '', 0, '', 100, 0, '\"50\"', '邀请新用户赠送用户经验值', '邀请一个新用户赠送用户经验值', 0, 1),
@@ -33104,8 +33105,8 @@ INSERT INTO `eb_system_config` (`id`, `menu_name`, `type`, `input_type`, `config
 (236, 'verify_expire_time', 'text', 'input', 20, '', 0, '', 100, 0, '\"5\"', '短信验证码过期时间（分钟）', '短信验证码过期时间（分钟）', 0, 1),
 (246, 'invoice_func_status', 'radio', '', 50, '1=>开启\n0=>关闭', 0, '', 0, 0, '1', '发票功能启用', '发票功能开启|关闭', 0, 1),
 (247, 'special_invoice_status', 'radio', '', 50, '1=>开启\n0=>关闭', 0, '', 0, 0, '1', '专用发票启用', '专用发票功能开启|关闭', 0, 1),
-(287, 'ali_pay_status', 'radio', '', 63, '1=>开启\n0=>关闭', 0, '', 0, 0, '1', '支付宝支付状态', '支付宝支付请选择开启(启用)或关闭(不启用)', 100, 1),
-(288, 'alipay_public_key', 'textarea', '', 63, '', 0, '', 100, 5, '\"\"', '支付应用公钥', '支付应用公钥', 0, 1),
+(287, 'ali_pay_status', 'radio', 'input', 109, '1=>开启\n0=>关闭', 1, '', 0, 0, '\"1\"', '支付宝支付', '支付宝支付请选择开启(启用)或关闭(不启用)', 98, 1),
+(288, 'alipay_public_key', 'textarea', '', 63, '', 1, '', 100, 5, '\"\"', '支付应用公钥', '支付宝加签完成后申城的支付宝公钥', 0, 1),
 (289, 'alipay_merchant_private_key', 'textarea', '', 63, '', 0, '', 100, 5, '\"\"', '支付应用私钥', '支付应用私钥', 0, 1),
 (290, 'ali_pay_appid', 'text', 'input', 63, '', 0, '', 100, 0, '\"\"', '支付应用Appid', '支付应用Appid', 91, 1),
 (291, 'logistics_type', 'radio', 'input', 91, '1=>一号通\n2=>阿里云物流查询', 1, '', 0, 0, '1', '接口选择', '建议使用一号通更方便不用配置密钥，阿里云云市场购买链接：https://0x9.me/w9vnq', 0, 1),
@@ -33115,46 +33116,44 @@ INSERT INTO `eb_system_config` (`id`, `menu_name`, `type`, `input_type`, `config
 (301, 'config_export_to_name', 'text', 'input', 94, '', 1, '', 0, 0, '\"\"', '发货人姓名', '快递面单发货人姓名', 0, 1),
 (302, 'config_export_to_tel', 'text', 'input', 94, '', 1, '', 0, 0, '\"\"', '发货人电话', '快递面单发货人电话', 0, 1),
 (303, 'config_export_to_address', 'text', 'input', 94, '', 1, '', 0, 0, '\"\"', '发货人详细地址', '快递面单发货人详细地址', 0, 1),
-(304, 'config_export_siid', 'text', 'input', 94, '', 1, '', 0, 0, '\"\"', '电子面单打印机编号', '请购买快递100电子面单打印机，淘宝地址：https://m.tb.cn/h.437NvI0 官网：https://www.kuaidi100.com/cloud/print/cloudprinterSecond.shtml', 0, 1),
-(305, 'service_feedback', 'textarea', '', 69, '', 0, '', 100, 7, '\"\\u5c0a\\u656c\\u7684\\u7528\\u6237\\uff0c\\u5ba2\\u670d\\u5f53\\u524d\\u4e0d\\u5728\\u7ebf\\uff0c\\u6709\\u95ee\\u9898\\u8bf7\\u7559\\u8a00\\uff0c\\u6211\\u4eec\\u4f1a\\u7b2c\\u4e00\\u65f6\\u95f4\\u8fdb\\u884c\\u5904\\u7406\\uff01\\uff01\\uff01\"', '客服反馈', '客服反馈头部文字', 0, 1),
+(304, 'config_export_siid', 'text', 'input', 94, '', 1, '', 0, 0, '\"\"', '电子面单打印机编号', '请购买快递100二代云打印机(KX100L3)，官网：https://www.kuaidi100.com/cloud/print/cloudprinterSecond.shtml', 0, 1),
+(305, 'service_feedback', 'textarea', 'input', 69, '', 1, '', 100, 7, '\"\\u5c0a\\u656c\\u7684\\u7528\\u6237\\uff0c\\u5ba2\\u670d\\u5f53\\u524d\\u4e0d\\u5728\\u7ebf\\uff0c\\u6709\\u95ee\\u9898\\u8bf7\\u7559\\u8a00\\uff0c\\u6211\\u4eec\\u4f1a\\u7b2c\\u4e00\\u65f6\\u95f4\\u8fdb\\u884c\\u5904\\u7406\\uff01\\uff01\\uff01\"', '客服反馈', '暂无客服在线是，联系客服跳转的客服反馈页面的显示文字', 0, 1),
 (307, 'integral_max_num', 'text', 'input', 11, '', 0, '', 100, 0, '\"100\"', '积分抵扣上限', '单次下单积分使用上限,0不限制', 0, 1),
 (308, 'brokerage_type', 'radio', 'input', 74, '0=>线下手动转账\n1=>自动到微信零钱', 1, '', 0, 0, '0', '佣金到账方式', '佣金到账方式支持线下转账和微信零钱自动转账，手动转账更安全，自动转账更方便', 0, 1),
 (309, 'bargain_subscribe', 'radio', '', 27, '1=>是\n0=>否', 0, '', 0, 0, '0', '砍价是否需要关注公众号', '砍价是否需要关注公众号', 50, 0),
 (310, 'member_card_status', 'radio', 'input', 67, '1=>开启\n0=>关闭', 1, '', 0, 0, '1', '是否开启付费会员', '付费会员开关', 0, 1),
-(323, 'tourist_avatar', 'upload', '', 69, '', 2, '', 0, 0, '[\"\\/statics\\/system_images\\/customer_1.png\",\"\\/statics\\/system_images\\/customer_2.png\",\"\\/statics\\/system_images\\/customer_3.png\",\"\\/statics\\/system_images\\/customer_4.png\"]', '客服游客头像', '客服游客头像', 0, 1),
 (324, 'spread_banner', 'upload', '', 72, '', 2, '', 0, 0, '[\"\\/statics\\/system_images\\/spread_1.jpeg\",\"\\/statics\\/system_images\\/spread_2.jpeg\"]', '分销海报图', '个人中心分销海报图片，建议尺寸600x1000', 0, 1),
 (325, 'config_export_open', 'radio', 'input', 93, '1=>打开\n0=>关闭', 1, '', 0, 0, '0', '电子面单是否开启', '电子面单是否开启', 111, 1),
 (326, 'wap_login_logo', 'upload', 'input', 26, '', 1, '', 0, 0, '\"\\/statics\\/system_images\\/login_logo.jpeg\"', '移动端登录logo', '移动端登录logo，建议尺寸86x86，建议png格式', 3, 1),
-(327, 'pc_logo', 'upload', '', 75, '', 1, '', 0, 0, '\"\\/statics\\/system_images\\/pc_logo.png\"', 'PC端LOGO', 'PC端LOGO', 0, 1),
-(328, 'record_No', 'text', 'input', 26, '', 0, '', 100, 0, '\"\"', '备案号', '备案号', 0, 1),
-(329, 'routine_contact_type', 'radio', '', 7, '1=>小程序客服\n0=>跟随系统', 0, '', 0, 0, '0', '小程序客服类型', '小程序客服类型', 0, 1),
-(330, 'station_open', 'radio', '', 26, '1=>开启\n0=>关闭', 0, '', 0, 0, '1', '站点开启', '站点开始|关闭（用于升级等临时关闭）', 11, 1),
+(327, 'pc_logo', 'upload', '', 75, '', 1, '', 0, 0, '\"\\/statics\\/system_images\\/pc_logo.png\"', 'PC端LOGO', 'PC端LOGO', 0, 0),
+(328, 'record_No', 'text', 'input', 26, '', 1, '', 0, 0, '\"\"', '备案号', '网站的备案号，显示在H5和PC端底部', 0, 1),
+(329, 'routine_contact_type', 'radio', 'input', 7, '0=>跟随系统\n1=>小程序客服', 1, '', 0, 0, '0', '小程序客服类型', '跟随系统：跟随系统使用默认客服、电话或者跳转链接；小程序客服：需要在小程序后台配置客服用户；', 0, 1),
+(330, 'station_open', 'radio', 'input', 26, '1=>开启\n0=>关闭', 1, '', 0, 0, '\"1\"', '站点开启', '站点开始|关闭（用于升级等临时关闭），关闭后前端会弹窗显示站点升级中，请稍后访问', 11, 1),
 (331, 'uni_brokerage_price', 'text', 'input', 73, '', 0, '', 100, 0, '\"2\"', '推广佣金单价（每推广一个用户）', '分销推广佣金单价（每推广一个用户）', 93, 1),
 (332, 'day_brokerage_price_upper', 'text', 'input', 73, '', 0, '', 100, 0, '\"-1\"', '每日推广佣金上限', '每日推广佣金上限（0:不发佣金-1:不限制；注最好是推广佣金单价的整数倍）', 92, 1),
 (333, 'is_self_brokerage', 'radio', '', 73, '0=>关闭\n1=>开启', 0, '', 0, 0, '0', '自购返佣', '是否开启自购返佣（开启：分销员自己购买商品，享受一级返佣，上级享受二级返佣； 关闭：分销员自己购买商品没有返佣）', 94, 1),
 (334, 'store_brokerage_binding_status', 'radio', '', 72, '1=>永久\n2=>有效期\n3=>临时', 0, '', 0, 0, '1', '绑定模式', '永久”一次绑定永久有效，“有效期”绑定后一段时间内有效，“临时” 临时有效', 91, 1),
 (335, 'store_brokerage_binding_time', 'text', 'input', 72, '', 0, '', 100, 0, '\"1\"', '绑定有效期', '绑定有效期（绑定后N天内有效）', 90, 1),
-(336, 'refund_name', 'text', 'input', 71, '', 0, '', 100, 0, '\"\"', '退货收货人姓名', '退货收货人姓名', 90, 1),
-(337, 'refund_phone', 'text', 'input', 71, '', 0, '', 100, 0, '\"\"', '退货收货人电话', '退货收货人电话', 90, 1),
-(338, 'refund_address', 'text', 'input', 71, '', 0, '', 100, 0, '\"\"', '退货收货人地址', '退货收货人地址', 90, 1),
-(339, 'brokerage_user_status', 'radio', '', 73, '0=>关闭\n1=>开启', 0, '', 100, 0, '0', '推广用户返佣', '分销推广用户获取佣金', 94, 1),
-(340, 'wechat_open_app_id', 'text', 'input', 75, '', 0, '', 100, 0, '\"\"', '开放平台appid', '开放平台appid', 0, 1),
-(341, 'wechat_open_app_secret', 'text', 'input', 75, '', 0, '', 100, 0, '\"\"', '开放平台secret', '开放平台secret', 0, 1),
-(342, 'contact_number', 'text', 'input', 75, '', 0, '', 100, 0, '\"\"', '联系电话', '联系电话', 0, 1),
-(343, 'company_address', 'text', 'input', 75, '', 0, '', 100, 0, '\"\"', '公司地址', '公司地址', 0, 1),
-(344, 'copyright', 'text', 'input', 75, '', 0, '', 100, 0, '\"\"', '版权信息', '版权信息', 0, 1),
-(345, 'site_keywords', 'text', 'input', 75, '', 0, '', 100, 0, '\"\"', '关键词', '网站关键词', 0, 1),
-(346, 'site_description', 'textarea', '', 75, '', 0, '', 100, 5, '\"\"', '网站描述', '网站描述', 0, 1),
-(347, 'product_phone_buy_url', 'radio', '', 75, '1=>公众号\n2=>小程序', 0, '', 0, 0, '1', '商品手机购买跳转地址', '商品手机购买跳转地址（小程序|公众号）', 0, 1),
+(336, 'refund_name', 'text', 'input', 71, '', 1, '', 0, 0, '\"\"', '退货收货人姓名', '用户退货退款后台同意之后，显示在退货订单详情显示的接受退货的人员姓名', 90, 1),
+(337, 'refund_phone', 'text', 'input', 71, '', 1, '', 0, 0, '\"\"', '退货收货人电话', '用户退货退款后台同意之后，显示在退货订单详情显示的接受退货的人员电话', 90, 1),
+(338, 'refund_address', 'text', 'input', 71, '', 1, '', 0, 0, '\"\"', '退货收货人地址', '用户退货退款后台同意之后，显示在退货订单详情显示的接受退货的地址信息', 90, 1),
+(339, 'brokerage_user_status', 'radio', '', 73, '0=>关闭\n1=>开启', 0, '', 100, 0, '1', '推广用户返佣', '分销推广用户获取佣金', 94, 1),
+(340, 'wechat_open_app_id', 'text', 'input', 75, '', 1, '', 0, 0, '\"\"', '开放平台AppID', '微信开放平台申请网页应用后给予的AppID', 0, 1),
+(341, 'wechat_open_app_secret', 'text', 'input', 75, '', 1, '', 0, 0, '\"\"', '开放平台AppSecret', '微信开放平台申请网页应用后给予的AppSecret', 0, 1),
+(342, 'contact_number', 'text', 'input', 75, '', 1, '', 0, 0, '\"\"', '联系电话', 'PC底部显示的联系电话', 0, 1),
+(343, 'company_address', 'text', 'input', 75, '', 1, '', 0, 0, '\"\"', '公司地址', 'PC底部显示的公司地址', 0, 1),
+(345, 'site_keywords', 'text', 'input', 75, '', 0, '', 100, 0, '\"\"', '关键词', '网站关键词', 0, 0),
+(346, 'site_description', 'textarea', '', 75, '', 0, '', 100, 5, '\"\"', '网站描述', '网站描述', 0, 0),
+(347, 'product_phone_buy_url', 'radio', 'input', 75, '1=>公众号\n2=>小程序', 1, '', 0, 0, '\"1\"', '商品手机购买跳转地址', '商品详情手机购买显示公众号码或者小程序码', 0, 1),
 (348, 'bast_number', 'text', 'number', 75, '', 0, 'required:true,digits:true,min:1', 100, 0, '0', '精品推荐个数', '首页配置精品推荐个数', 0, 1),
 (349, 'first_number', 'text', 'number', 75, '', 0, 'required:true,digits:true,min:1', 100, 0, '0', '首发新品个数', '首页配置首发新品个数', 0, 1),
-(350, 'customer_type', 'radio', 'radio', 69, '0=>系统客服\n1=>拨打电话\n2=>跳转链接', 0, '', 0, 0, '0', '客服类型', '客服类型', 0, 1),
-(351, 'customer_url', 'text', 'input', 69, '', 0, '', 100, 0, '\"\"', '客服链接', '客服链接', 0, 1),
-(352, 'customer_phone', 'text', 'input', 69, '', 0, '', 100, 0, '\"\"', '客服电话', '客服电话', 0, 1),
-(353, 'wechat_app_appid', 'text', 'input', 77, '', 0, '', 100, 0, '\"\"', '公众平台开放应用APPID', '公众平台开放应用APPID', 0, 1),
-(354, 'wechat_app_appsecret', 'text', 'input', 77, '', 0, '', 100, 0, '\"\"', '公众平台开放应用AppSecret', '公众平台开放应用AppSecret', 0, 1),
-(355, 'statistic_script', 'textarea', 'input', 26, '', 1, '', 100, 10, '\"\"', '统计代码', '统计代码', 0, 1),
-(359, 'weixin_ckeck_file', 'upload', 'input', 2, '', 3, '', 0, 0, '\"\"', '微信校验文件', '微信校验文件', 72, 1),
+(350, 'customer_type', 'radio', 'input', 69, '0=>系统客服\n1=>拨打电话\n2=>跳转链接', 0, '', 0, 0, '0', '客服类型', '系统客服：点击联系客服使用系统的自带客服；拨打电话：点击联系客服拨打客服电话；跳转链接：跳转外部链接联系客服', 0, 1),
+(351, 'customer_url', 'text', 'input', 69, '', 1, '', 0, 0, '\"\"', '客服链接', '客服类型选择跳转链接时，跳转的链接地址', 0, 1),
+(352, 'customer_phone', 'text', 'input', 69, '', 1, '', 0, 0, '\"\"', '客服电话', '客服类型选择不打电话是，用户点击联系客服的联系电话', 0, 1),
+(353, 'wechat_app_appid', 'text', 'input', 77, '', 1, '', 0, 0, '\"\"', '公众平台开放应用APPID', '微信开放平台申请移动应用后给予的APPID', 0, 1),
+(354, 'wechat_app_appsecret', 'text', 'input', 77, '', 1, '', 0, 0, '\"\"', '公众平台开放应用AppSecret', '微信开放平台申请移动应用后给予的AppSecret', 0, 1),
+(355, 'statistic_script', 'textarea', 'input', 26, '', 1, '', 100, 10, '\"\"', '统计代码', '程序访问统计代码，填写script标签内的内容', 0, 1),
+(359, 'weixin_ckeck_file', 'upload', 'input', 2, '', 3, '', 0, 0, '\"\"', '微信校验文件', '配置微信网页授权域名时候下载的微信校验文件，在此处上传', 72, 1),
 (360, 'thumb_big_width', 'text', 'input', 31, '', 0, '', 100, 0, '\"800\"', '缩略大图（单位：px）：宽', '缩略大图（单位：px）：宽', 99, 1),
 (361, 'thumb_big_height', 'text', 'input', 31, '', 0, '', 100, 0, '\"800\"', '缩略大图（单位：px）：高', '缩略大图（单位：px）：高', 98, 1),
 (362, 'thumb_mid_width', 'text', 'input', 31, '', 0, '', 50, 0, '\"300\"', '缩略中图（单位：px）：宽', '缩略中图（单位：px）：宽', 97, 1),
@@ -33173,20 +33172,20 @@ INSERT INTO `eb_system_config` (`id`, `menu_name`, `type`, `input_type`, `config
 (375, 'watermark_text_angle', 'text', 'input', 31, '', 0, '', 100, 0, '\"\"', '水印字体旋转角度', '水印字体旋转角度', 24, 1),
 (376, 'watermark_x', 'text', 'input', 31, '', 0, '', 100, 0, '\"\"', '水印横坐标偏移量（单位：px）', '水印横坐标偏移量（单位：px）', 23, 1),
 (377, 'watermark_y', 'text', 'input', 31, '', 0, '', 100, 0, '\"\"', '水印纵坐标偏移量（单位：px）', '水印纵坐标偏移量（单位：px）', 22, 1),
-(379, 'ico_path', 'upload', 'input', 26, '', 3, '', 0, 0, '\"\"', 'ICO图标', 'ICO图标', 1, 1),
-(383, 'tengxun_appid', 'text', 'input', 82, '', 0, '', 0, 0, '\"\"', '腾讯云APPID', '腾讯云APPID', 0, 1),
+(379, 'ico_path', 'upload', 'input', 26, '', 3, '', 0, 0, '\"\"', 'ICO图标', '程序ICO图标，更换后需要清除浏览器缓存', 1, 1),
+(383, 'tengxun_appid', 'text', 'input', 82, '', 0, '', 0, 0, '\"100012434764\"', '腾讯云APPID', '腾讯云APPID', 0, 1),
 (384, 'extract_type', 'checkbox', 'input', 74, '0=>银行卡\n1=>微信\n2=>支付宝', 1, '', 0, 0, '[\"0\",\"1\",\"2\"]', '提现方式', '提现方式', 0, 1),
 (385, 'integral_frozen', 'text', 'input', 11, '', 1, '', 100, 0, '\"0\"', '积分冻结(天)', '积分冻结(天)', 0, 1),
-(386, 'print_type', 'radio', 'input', 86, '1=>易联云', 1, '', 0, 0, '\"1\"', '平台选择', '平台选择', 0, 1),
-(387, 'config_export_type', 'radio', 'input', 93, '1=>一号通', 1, '', 0, 0, '\"1\"', '电子面单类型', '电子面单类型', 0, 1),
-(388, 'customer_corpId', 'text', 'input', 69, '', 1, '', 100, 0, '\"\"', '企业ID', '小程序需要跳转企业微信客服的话需要配置此项', 0, 1),
+(386, 'print_type', 'radio', 'input', 86, '1=>易联云\n2=>飞鹅云', 1, '', 0, 0, '\"1\"', '平台选择', '打印平台选择', 0, 1),
+(387, 'config_export_type', 'radio', 'input', 93, '1=>一号通', 1, '', 0, 0, '1', '电子面单类型', '电子面单类型', 0, 1),
+(388, 'customer_corpId', 'text', 'input', 69, '', 1, '', 0, 0, '\"\"', '企业ID', '如果客服链接填写企业微信客服，小程序需要跳转企业微信客服的话需要配置此项，并且在小程序客服中绑定企业ID', 0, 1),
 (389, 'create_wechat_user', 'radio', 'input', 2, '1=>开启\r\n0=>关闭', 1, '', 0, 0, '0', '关注公众号是否生成用户', '关注公众号是否生成用户', 0, 1),
-(390, 'friend_pay_status', 'radio', 'input', 95, '1=>开启\r\n0=>关闭', 1, '', 0, 0, '0', '好友代付开关', '好友代付开关，关闭后付款类型不显示好友代付', 0, 1),
+(390, 'friend_pay_status', 'radio', 'input', 109, '1=>开启\r\n0=>关闭', 1, '', 0, 0, '0', '好友代付', '好友代付开关，关闭后付款类型不显示好友代付', 0, 1),
 (392, 'brokerage_level', 'radio', 'input', 72, '1=>一级分销\r\n2=>二级分销', 1, '', 0, 0, '2', '分销层级', '分销层级，一级是只返上级一层的佣金，二级是返上级和上上级的佣金', 98, 1),
 (393, 'sms_type', 'radio', 'input', 97, '0=>一号通\r\n1=>阿里云\r\n2=>腾讯云', 1, '', 0, 0, '0', '短信类型', '短信类型，选择发送的短信类型', 0, 1),
 (394, 'aliyun_AccessKeyId', 'text', 'input', 98, '', 1, '', 0, 0, '\"\"', '阿里云AccessKeyId', '阿里云AccessKeyId', 100, 1),
 (395, 'aliyun_AccessKeySecret', 'text', 'input', 98, '', 1, '', 100, 0, '\"\"', '阿里云AccessKeySecret', '阿里云AccessKeySecret', 99, 1),
-(396, 'aliyun_RegionId', 'text', 'input', 98, '', 1, '', 100, 0, '\"\"', '阿里云RegionId', '阿里云RegionId', 98, 1),
+(396, 'aliyun_RegionId', 'text', 'input', 98, '', 1, '', 100, 0, '\"\"', '阿里云RegionId', '阿里云RegionId', 98, 0),
 (397, 'aliyun_SignName', 'text', 'input', 98, '', 1, '', 100, 0, '\"\"', '短信签名', '短信签名', 97, 1),
 (398, 'tencent_sms_app_id', 'text', 'input', 99, '', 1, '', 100, 0, '\"\"', 'SKD AppID', '腾讯云短信应用SKD APPID', 0, 1),
 (399, 'tencent_sms_secret_id', 'text', 'input', 99, '', 1, '', 100, 0, '\"\"', 'AccessKeyId', '腾讯云AccessKeyId', 0, 1),
@@ -33203,7 +33202,19 @@ INSERT INTO `eb_system_config` (`id`, `menu_name`, `type`, `input_type`, `config
 (416, 'reward_money', 'text', 'number', 105, '', 1, '', 0, 0, '\"0\"', '赠送余额(元)', '新用户奖励金额，必须大于等于0，0为不赠送', 0, 1),
 (417, 'reward_integral', 'text', 'number', 105, '', 1, '', 0, 0, '\"0\"', '赠送积分', '新用户奖励积分，必须大于等于0，0为不赠送', 0, 1),
 (418, 'hs_accesskey', 'text', 'input', 106, '', 1, '', 0, 0, '\"AKLTMzkzZTEzNjg3OTg2NDViM2IwNmFlYzhmNzE4MmI4YmI\"', '火山翻译AccessKey', '机器翻译仅支持火山翻译', 1, 1),
-(419, 'hs_secretkey', 'text', 'input', 106, '', 1, '', 0, 0, '\"TVRneU16STFOVFV4WVRkbE5ERTJaV0pqWm1aaU1UaGlNVFppWldZeE1HUQ==\"', '火山翻译SecretKey', '机器翻译仅支持火山翻译', 0, 1);
+(419, 'hs_secretkey', 'text', 'input', 106, '', 1, '', 0, 0, '\"TVRneU16STFOVFV4WVRkbE5ERTJaV0pqWm1aaU1UaGlNVFppWldZeE1HUQ==\"', '火山翻译SecretKey', '机器翻译仅支持火山翻译', 0, 1),
+(420, 'fey_user', 'text', 'input', 107, '', 1, '', 0, 0, '\"\"', '飞鹅云USER', '飞鹅云后台注册账号', 10, 1),
+(421, 'fey_ukey', 'text', 'input', 107, '', 1, '', 0, 0, '\"\"', '飞鹅云UYEK', '飞鹅云后台注册账号后生成的UKEY 【备注：这不是填打印机的KEY】', 7, 1),
+(422, 'fey_sn', 'text', 'input', 107, '', 1, '', 100, 0, '\"\"', '飞鹅云SN', '打印机标签上的编号，必须要在管理后台里添加打印机或调用API接口添加之后，才能调用API', 0, 1),
+(423, 'allin_private_key', 'textarea', 'input', 108, '', 1, '', 100, 5, '\"\"', '通联RSA私钥', '通联支付的RSA私钥，可以在商户后台设置中进行配置', 96, 1),
+(425, 'allin_cusid', 'text', '', 108, '', 1, '', 100, 0, '\"\"', '通联商户号', '通联支付商户号，由贵公司申请获得', 99, 1),
+(426, 'allin_appid', 'text', '', 108, '', 1, '', 100, 0, '\"\"', '通联支付Appid', '通联商户后台的设置-》对接设置中查看', 98, 1),
+(427, 'allin_pay_status', 'radio', 'input', 108, '1=>开启\n0=>关闭', 1, '', 0, 0, '0', '通联支付开关', '开启可以在微信公众号和微信小程序中使用通联支付', 100, 1),
+(428, 'queue_open', 'radio', 'input', 26, '0=>关闭\n1=>开启', 1, '', 0, 0, '\"0\"', '消息队列', '是否启用消息队列，启用后提升程序运行速度，启用前必须配置Redis缓存', 0, 1),
+(429, 'get_avatar', 'radio', 'input', 7, '0=>关闭\n1=>开启', 1, '', 0, 0, '\"0\"', '强制获取昵称头像', '是否在小程序用户授权之后，弹窗获取用户的昵称和头像', 0, 1),
+(430, 'wechat_pay_type', 'radio', 'input', 4, '0=>普通微信支付\n1=>通联微信支付', 1, '', 0, 0, '\"0\"', '支付方式', '微信支付的支付方式，普通微信支付或者通联聚合支付中的微信支付', 0, 1),
+(431, 'alipay_pay_type', 'radio', 'input', 63, '0=>默认支付宝支付\n1=>通联支付宝支付', 1, '', 0, 0, '\"0\"', '支付方式', '支付宝支付方式，普通支付宝支付和通联聚合支付中支付宝支付', 0, 1);
+
 -- --------------------------------------------------------
 
 --
@@ -33221,7 +33232,7 @@ CREATE TABLE IF NOT EXISTS `eb_system_config_tab` (
   `type` int(2) NOT NULL DEFAULT '0' COMMENT '配置类型',
   `sort` int(11) NOT NULL DEFAULT '0' COMMENT '排序',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=106 DEFAULT CHARSET=utf8 COMMENT='配置分类表';
+) ENGINE=InnoDB AUTO_INCREMENT=109 DEFAULT CHARSET=utf8 COMMENT='配置分类表';
 
 --
 -- 转存表中的数据 `eb_system_config_tab`
@@ -33241,8 +33252,6 @@ INSERT INTO `eb_system_config_tab` (`id`, `pid`, `title`, `eng_title`, `status`,
 (26, 1, '站点配置', 'web_site', 1, 0, '', 0, 100),
 (27, 5, '商城基础配置', 'store_base', 1, 0, '', 0, 100),
 (28, 100, '用户充值配置', 'recharge_site', 1, 0, '', 0, 2),
-(29, 23, '线下支付配置', 'offline_pay', 1, 0, '', 3, 0),
-(30, 23, '余额支付配置', 'balance_pay', 1, 0, '', 3, 0),
 (31, 79, '基础配置', 'base_config', 0, 0, '', 0, 0),
 (41, 65, '采集商品配置', 'copy_product', 1, 0, '', 3, 0),
 (45, 100, '用户等级配置', 'store_member', 1, 0, '', 0, 3),
@@ -33273,7 +33282,6 @@ INSERT INTO `eb_system_config_tab` (`id`, `pid`, `title`, `eng_title`, `status`,
 (92, 64, '阿里云配置', 'logistics_aliyun', 1, 0, '', 3, 0),
 (93, 66, '基础配置', 'electronic_basic', 1, 0, '', 3, 0),
 (94, 66, '一号通配置', 'system_electronic_config', 1, 0, '', 3, 0),
-(95, 23, '好友代付', 'friend_pay', 1, 0, '', 3, 0),
 (96, 65, '短信接口配置', 'sms_config', 1, 0, '', 3, 0),
 (97, 96, '基础配置', 'sms_config_basic', 1, 0, '', 3, 0),
 (98, 96, '阿里云配置', 'sms_aliyun', 1, 0, '', 3, 0),
@@ -33284,7 +33292,10 @@ INSERT INTO `eb_system_config_tab` (`id`, `pid`, `title`, `eng_title`, `status`,
 (103, 102, '基础配置', 'out_basic', 1, 0, '', 3, 0),
 (104, 102, '推送配置', 'out_push', 1, 0, '', 3, 0),
 (105, 100, '新用户设置', 'new_user_setting', 1, 0, '', 0, 0),
-(106, 5, '机器翻译配置', 'online_translation', 1, 0, '', 0, 0);
+(106, 5, '机器翻译配置', 'online_translation', 1, 0, '', 0, 0),
+(107, 21, '飞鹅云配置', 'fey_config', 1, 0, '', 3, 0),
+(108, 23, '通联支付', 'allinpay', 1, 0, '', 3, 0),
+(109, 23, '基础配置', 'pay_basic', 1, 0, '', 3, 100);
 
 -- --------------------------------------------------------
 
@@ -33506,7 +33517,7 @@ CREATE TABLE IF NOT EXISTS `eb_system_menus` (
   KEY `pid` (`pid`) USING BTREE,
   KEY `is_show` (`is_show`) USING BTREE,
   KEY `access` (`access`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=1076 DEFAULT CHARSET=utf8 COMMENT='菜单表';
+) ENGINE=InnoDB AUTO_INCREMENT=1077 DEFAULT CHARSET=utf8 COMMENT='菜单表';
 
 --
 -- 转存表中的数据 `eb_system_menus`
@@ -33517,7 +33528,7 @@ INSERT INTO `eb_system_menus` (`id`, `pid`, `icon`, `menu_name`, `module`, `cont
 (2, 1, '', '商品管理', 'admin', 'product.product', 'index', '', '', '[]', 1, 1, 0, 1, '/admin/product/product_list', '', 1, '', 0, 'admin-store-storeProuduct-index', 0),
 (3, 1, '', '商品分类', 'admin', 'product.storeCategory', 'index', '', '', '[]', 1, 1, 0, 1, '/admin/product/product_classify', '', 1, 'product', 0, 'admin-store-storeCategory-index', 0),
 (4, 0, 'md-cart', '订单', 'admin', 'order', 'index', '', '', '[]', 120, 1, 0, 1, '/admin/order', '', 1, 'home', 1, 'admin-order', 0),
-(5, 4, '', '订单管理', 'admin', 'order.store_order', 'index', '', '', '[]', 1, 1, 0, 1, '/admin/order/list', '', 1, 'order', 0, 'admin-order-storeOrder-index', 0),
+(5, 4, '', '订单管理', 'admin', 'order.store_order', 'index', '', '', '[]', 10, 1, 0, 1, '/admin/order/list', '4', 1, 'order', 1, 'admin-order-storeOrder-index', 0),
 (6, 1, '', '商品评论', 'admin', 'store.store_product_reply', 'index', '', '', '[]', 0, 1, 0, 1, '/admin/product/product_reply', '', 1, 'product', 0, 'product-product-reply', 0),
 (7, 0, 'md-home', '主页', 'admin', 'index', '', '', '', '[]', 127, 1, 0, 1, '/admin/home/', '', 1, 'home', 1, 'admin-index-index', 0),
 (9, 0, 'md-person', '用户', 'admin', 'user.user', '', '', '', '[]', 125, 1, 0, 1, '/admin/user', '', 1, 'user', 1, 'admin-user', 0),
@@ -33729,7 +33740,7 @@ INSERT INTO `eb_system_menus` (`id`, `pid`, `icon`, `menu_name`, `module`, `cont
 (299, 297, '', '保存退款', 'admin', '', '', 'finance/recharge/<id>', 'PUT', '[]', 0, 0, 0, 1, '', '', 2, '', 0, '', 0),
 (300, 144, '', '提货点', 'admin', 'merchant.system_store', 'index', '', '', '[]', 0, 1, 0, 1, '/admin/setting/merchant/system_store/list', '', 1, 'setting', 1, 'setting-merchant-system-store', 0),
 (301, 144, '', '核销员', 'admin', '', '', '', '', '[]', 0, 1, 0, 1, '/admin/setting/merchant/system_store_staff/index', '', 1, 'setting', 1, 'setting-merchant-system-store-staff', 0),
-(302, 144, '', '核销订单', 'admin', '', 'index', '', '', '[]', 0, 1, 0, 1, '/admin/setting/merchant/system_verify_order/index', '', 1, 'setting', 1, 'setting-merchant-system-verify-order', 0),
+(302, 4, '', '核销订单', 'admin', '', 'index', '', '', '[]', 0, 1, 0, 1, '/admin/setting/merchant/system_verify_order/index', '4', 1, 'setting', 1, 'setting-merchant-system-verify-order', 0),
 (303, 12, '', '发货设置', 'admin', 'setting', 'index', '', '', '[]', 0, 1, 0, 1, '/admin/setting/freight', '', 1, '', 0, '', 0),
 (304, 303, '', '物流配置', 'admin', 'setting.systemConfig', 'index', '', '', '[]', 0, 0, 0, 1, '/admin/setting/system_config_logistics/3/10', '', 1, '', 0, 'setting-system-config-logistics', 0),
 (305, 44, '', '文章列表', 'admin', '', '', 'cms/cms', 'GET', '[]', 0, 0, 0, 1, '', '', 2, '', 0, '', 0),
@@ -34193,7 +34204,7 @@ INSERT INTO `eb_system_menus` (`id`, `pid`, `icon`, `menu_name`, `module`, `cont
 (894, 589, '', '会员标签列表', 'admin', '', '', 'user/user_label', 'GET', '[]', 0, 0, 0, 1, '', '9/589', 2, '', 0, '', 0),
 (895, 585, '', '新增客服选择用户列表', 'admin', '', '', 'app/wechat/kefu/create', 'GET', '[]', 0, 0, 0, 1, '', '9/10/585', 2, '', 0, '', 0),
 (896, 26, '', '分销等级', 'admin', '', '', '', '', '[]', 0, 1, 0, 1, '/admin/setting/membership_level/index', '26', 1, '', 0, '', 0),
-(897, 4, '', '售后订单', 'admin', '', '', '', '', '[]', 0, 1, 0, 1, '/admin/order/refund', '4', 1, '', 0, 'admin-order-refund', 0),
+(897, 4, '', '售后订单', 'admin', '', '', '', '', '[]', 9, 1, 0, 1, '/admin/order/refund', '4', 1, '', 0, 'admin-order-refund', 0),
 (898, 12, '', '消息管理', 'admin', '', '', '', '', '[]', 9, 1, 0, 1, '/admin/setting/notification/index', '12', 1, '', 0, 'setting-notification', 0),
 (902, 656, '', '主题风格', 'admin', '', '', '', '', '[]', 2, 1, 0, 1, '/admin/setting/theme_style', '12/656', 1, '', 0, 'admin-setting-theme_style', 0),
 (903, 656, '', 'PC商城', 'admin', '', '', '', '', '[]', 2, 1, 0, 1, '/admin/setting/pc_group_data', '12/656', 1, '', 0, 'setting-system-pc_data', 0),
@@ -34331,7 +34342,8 @@ INSERT INTO `eb_system_menus` (`id`, `pid`, `icon`, `menu_name`, `module`, `cont
 (1071, 56, '', '文件管理', 'admin', '', '', '', '', '[]', 0, 1, 0, 1, '/admin/system/maintain/system_file/opendir', '25/56', 1, '', 0, 'system-maintain-system-file', 0),
 (1072, 1064, '', '接口文档', 'admin', '', '', '', '', '[]', 0, 1, 0, 1, '/admin/setting/system_out_interface/index', '56/1064', 1, '', 0, 'setting-system-out-interface-index', 0),
 (1073, 25, '', '数据维护', 'admin', '', '', '', '', '[]', 7, 1, 0, 1, 'system/database/index', '25', 1, '', 0, 'system-database-index', 0),
-(1075, 731, '', '会员配置', 'admin', '', '', '', '', '[]', 6, 1, 0, 1, '/admin/marketing/member/system_config/3/67', '27/731', 1, '', 0, 'marketing-member-system_config', 0);
+(1075, 731, '', '会员配置', 'admin', '', '', '', '', '[]', 6, 1, 0, 1, '/admin/marketing/member/system_config/3/67', '27/731', 1, '', 0, 'marketing-member-system_config', 0),
+(1076, 56, '', '定时任务', 'admin', '', '', '', '', '[]', 0, 1, 0, 1, '/admin/system/crontab', '25/56', 1, '', 0, 'system-crontab-index', 0);
 
 -- --------------------------------------------------------
 
@@ -34527,6 +34539,46 @@ CREATE TABLE IF NOT EXISTS `eb_system_store_staff` (
   `add_time` int(10) NOT NULL DEFAULT '0' COMMENT '添加时间',
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='门店店员表';
+
+-- --------------------------------------------------------
+
+--
+-- 表的结构 `eb_system_timer`
+--
+
+CREATE TABLE IF NOT EXISTS `eb_system_timer` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) NOT NULL DEFAULT '' COMMENT '定时器名称',
+  `mark` varchar(255) NOT NULL DEFAULT '' COMMENT '标签',
+  `content` varchar(255) NOT NULL DEFAULT '' COMMENT '说明',
+  `type` tinyint(1) NOT NULL DEFAULT '0' COMMENT '周期状态 1=每隔多少秒 2=每隔多少分钟 3=每隔多少小时 4=每隔多少天 5=每天几点执行 6=每周周几几点执行 7=每月几号几点执行',
+  `week` int(11) NOT NULL DEFAULT '0' COMMENT '周',
+  `day` int(11) NOT NULL DEFAULT '0' COMMENT '日',
+  `hour` int(11) NOT NULL DEFAULT '0' COMMENT '时',
+  `minute` int(11) NOT NULL DEFAULT '0' COMMENT '分',
+  `second` int(11) NOT NULL DEFAULT '0' COMMENT '秒',
+  `last_execution_time` int(11) NOT NULL DEFAULT '0' COMMENT '上次执行时间',
+  `next_execution_time` int(11) NOT NULL DEFAULT '0' COMMENT '下次执行时间',
+  `add_time` int(11) NOT NULL DEFAULT '0' COMMENT '添加时间',
+  `is_del` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否删除',
+  `is_open` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否开启',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8 COMMENT='定时器';
+
+--
+-- 转存表中的数据 `eb_system_timer`
+--
+
+INSERT INTO `eb_system_timer` (`id`, `name`, `mark`, `content`, `type`, `week`, `day`, `hour`, `minute`, `second`, `last_execution_time`, `next_execution_time`, `add_time`, `is_del`, `is_open`) VALUES
+(1, '未支付自动取消订单', 'order_cancel', '每隔30秒执行自动取消到期未支付的订单', 1, 1, 1, 1, 30, 30, 0, 1670642407, 1670642377, 0, 1),
+(2, '拼团到期订单处理', 'pink_expiration', '每隔1分钟拼团到期之后的操作', 2, 1, 1, 1, 1, 0, 0, 1670642487, 1670642427, 0, 1),
+(3, '到期自动解绑上级', 'agent_unbind', '每隔1分钟执行到期的绑定关系的解除', 2, 1, 1, 1, 1, 0, 0, 1670642534, 1670642474, 0, 1),
+(4, '自动更新直播商品状态', 'live_product_status', '每隔3分钟执行更新直播商品状态', 2, 1, 1, 1, 3, 0, 0, 1670642694, 1670642514, 0, 1),
+(5, '自动更新直播间状态', 'live_room_status', '每隔3分钟执行更新直播间状态', 2, 1, 1, 1, 3, 0, 0, 1670642709, 1670642529, 0, 1),
+(6, '订单自动收货', 'take_delivery', '每隔5分钟执行订单到期自动收货', 2, 1, 1, 1, 5, 0, 0, 1670642891, 1670642591, 0, 1),
+(7, '预售商品到期自动下架', 'advance_off', '每隔5分钟执行预售商品到期下架', 2, 1, 1, 1, 5, 0, 0, 1670642913, 1670642613, 0, 1),
+(8, '订单商品自动好评', 'product_replay', '每隔5分钟执行订单到期商品好评', 2, 1, 1, 1, 5, 0, 0, 1670642933, 1670642633, 0, 1),
+(9, '清除昨日海报', 'clear_poster', '每天0时30分0秒执行一次清除昨日海报', 5, 1, 1, 0, 30, 0, 0, 1670862600, 1670815378, 0, 1);
 
 -- --------------------------------------------------------
 

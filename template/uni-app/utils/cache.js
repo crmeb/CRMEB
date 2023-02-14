@@ -94,7 +94,7 @@ class Cache {
 							this.cacheClearHandler(key);
 							if (index !== false) {
 								tag.splice(index, 1)
-								this.cacheClearHandler(this.cacheExpire, tag);
+								this.cacheSetHandler(this.cacheExpire, tag);
 							}
 						}
 						return false;

@@ -6,11 +6,7 @@
           ><Button icon="ios-arrow-back" size="small" type="text">返回</Button></router-link
         >
         <Divider type="vertical" />
-        <span
-          class="ivu-page-header-title mr20"
-          style="padding: 0"
-          v-text="$route.meta.title"
-        ></span>
+        <span class="ivu-page-header-title mr20" style="padding: 0" v-text="$route.meta.title"></span>
       </div>
     </div>
     <Card :bordered="false" dis-hover class="ivu-mt">
@@ -35,32 +31,20 @@
             >{{ row.value }}</span
           >
           <div class="valBox acea-row" v-if="row.type === 'upload' && row.upload_type === 3">
-            <div v-if="row.value instanceof Array">
+            <div v-if="row.value.length">
               <div class="valPicbox acea-row row-column-around" v-for="(item, index) in row.value" :key="index">
                 <div class="valPicbox_pic"><Icon type="md-document" /></div>
                 <span class="valPicbox_sp">{{ item.filename }}</span>
               </div>
             </div>
-            <!--                        <div v-else>-->
-            <!--                            <div class="valPicbox acea-row row-column-around">-->
-            <!--                                <div class="valPicbox_pic"><Icon type="md-document" /></div>-->
-            <!--                                <span class="valPicbox_sp">{{row.filename}}</span>-->
-            <!--                            </div>-->
-            <!--                        </div>-->
           </div>
           <div class="valBox acea-row" v-if="row.type === 'upload' && row.upload_type !== 3">
-            <div v-if="row.value instanceof Array">
+            <div v-if="row.value.length">
               <div class="valPicbox acea-row row-column-around" v-for="(item, index) in row.value" :key="index">
                 <div class="valPicbox_pic"><img v-lazy="item.filepath" /></div>
                 <span class="valPicbox_sp">{{ item.filename }}</span>
               </div>
             </div>
-            <!--                        <div v-else>-->
-            <!--                            <div class="valPicbox acea-row row-column-around">-->
-            <!--                                <div class="valPicbox_pic"><img :src="row.filepath ? row.filepath : require('../../../assets/images/moren.jpg')"></div>-->
-            <!--                                <span class="valPicbox_sp">{{row.filename}}</span>-->
-            <!--                            </div>-->
-            <!--                        </div>-->
           </div>
         </template>
         <template slot-scope="{ row, index }" slot="statuss">
@@ -110,7 +94,7 @@
       <form-create
         v-if="rules.length != 0"
         :rule="rules"
-        @on-submit="onSubmit"
+        @submit="onSubmit"
         class="formBox"
         ref="fc"
         handleIcon="false"

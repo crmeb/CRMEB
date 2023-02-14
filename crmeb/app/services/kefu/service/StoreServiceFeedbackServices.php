@@ -16,7 +16,6 @@ use app\dao\service\StoreServiceFeedbackDao;
 use app\services\BaseServices;
 use crmeb\exceptions\AdminException;
 use crmeb\services\FormBuilder;
-use crmeb\traits\ServicesTrait;
 
 /**
  * 客服反馈
@@ -25,8 +24,6 @@ use crmeb\traits\ServicesTrait;
  */
 class StoreServiceFeedbackServices extends BaseServices
 {
-
-    use ServicesTrait;
 
     /**
      * StoreServiceFeedbackServices constructor.

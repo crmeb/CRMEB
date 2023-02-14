@@ -58,17 +58,21 @@
       </template>
       <template slot-scope="{ row, index }" slot="user_type">
         <span v-if="row.user_type === 'wechat'">公众号</span>
-        <span v-if="row.user_type === 'routine'">小程序</span>
-        <span v-if="row.user_type === 'h5'">H5</span>
-        <span v-if="row.user_type === 'pc'">PC</span>
+        <span v-else-if="row.user_type === 'routine'">小程序</span>
+        <span v-else-if="row.user_type === 'h5'">H5</span>
+        <span v-else-if="row.user_type === 'pc'">PC</span>
+        <span v-else>--</span>
+
       </template>
       <template slot-scope="{ row, index }" slot="sex">
         <span v-show="row.sex === 1">男</span>
         <span v-show="row.sex === 2">女</span>
         <span v-show="row.sex === 0">保密</span>
+        <span v-show="row.sex === null">--</span>
       </template>
       <template slot-scope="{ row, index }" slot="country">
-        <span>{{ row.country + row.province + row.city }}</span>
+        <span v-if="row.country || row.province || row.city">{{ row.country + row.province + row.city }}</span>
+        <span v-else>--</span>
       </template>
       <template slot-scope="{ row, index }" slot="subscribe">
         <span v-text="row.subscribe === 1 ? '关注' : '未关注'"></span>

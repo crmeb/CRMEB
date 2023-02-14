@@ -209,7 +209,7 @@
 						that.$util.Tips({
 							title: that.$t(`您目前暂无推广权限`)
 						}, {
-							tab: 2,
+							tab: 1,
 							url: '/pages/index/index'
 						});
 					}

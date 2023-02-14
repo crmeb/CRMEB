@@ -9,13 +9,17 @@
 				<view>{{$t(`好评率`)}}<text class='font-num'>{{replyData.reply_chance}}%</text></view>
 			</view>
 			<view class='nav acea-row row-middle'>
-				<view class='item' :class='type==0 ? "bg-color":""' @click='changeType(0)'>{{$t(`全部`)}}({{replyData.sum_count}})
+				<view class='item' :class='type==0 ? "bg-color":""' @click='changeType(0)'>
+					{{$t(`全部`)}}({{replyData.sum_count}})
 				</view>
-				<view class='item' :class='type==1 ? "bg-color":""' @click='changeType(1)'>{{$t(`好评`)}}({{replyData.good_count}})
+				<view class='item' :class='type==1 ? "bg-color":""' @click='changeType(1)'>
+					{{$t(`好评`)}}({{replyData.good_count}})
 				</view>
-				<view class='item' :class='type==2 ? "bg-color":""' @click='changeType(2)'>{{$t(`中评`)}}({{replyData.in_count}})
+				<view class='item' :class='type==2 ? "bg-color":""' @click='changeType(2)'>
+					{{$t(`中评`)}}({{replyData.in_count}})
 				</view>
-				<view class='item' :class='type==3 ? "bg-color":""' @click='changeType(3)'>{{$t(`差评`)}}({{replyData.poor_count}})
+				<view class='item' :class='type==3 ? "bg-color":""' @click='changeType(3)'>
+					{{$t(`差评`)}}({{replyData.poor_count}})
 				</view>
 			</view>
 			<userEvaluation :reply="reply"></userEvaluation>
@@ -25,6 +29,9 @@
 			<view class='noCommodity' v-if="reply.length==0">
 				<view class='emptyBox'>
 					<image :src="imgHost + '/statics/images/noMessage.png'"></image>
+				</view>
+				<view class="text">
+					{{$t(`暂无评论`)}}
 				</view>
 			</view>
 		</view>
@@ -38,7 +45,9 @@
 	} from '@/api/store.js';
 	import userEvaluation from '@/components/userEvaluation';
 	import colors from '@/mixins/color.js';
-	import {HTTP_REQUEST_URL} from '@/config/app';
+	import {
+		HTTP_REQUEST_URL
+	} from '@/config/app';
 	import {
 		toLogin
 	} from '@/libs/login.js';
@@ -53,7 +62,7 @@
 		computed: mapGetters(['isLogin']),
 		data() {
 			return {
-				imgHost:HTTP_REQUEST_URL,
+				imgHost: HTTP_REQUEST_URL,
 				replyData: {},
 				product_id: 0,
 				reply: [],
@@ -68,7 +77,7 @@
 		/**
 		 * 生命周期函数--监听页面加载
 		 */
-		onLoad: function(options) {
+		onLoad(options) {
 			let that = this;
 			if (!options.product_id) return that.$util.Tips({
 				title: that.$t(`缺少参数`)
@@ -186,17 +195,28 @@
 	.evaluate-list .nav .item.bg-color {
 		color: #fff;
 	}
-	
+
 	.noCommodity {
 		background-color: #fff;
 		padding-bottom: 30rpx;
-		.emptyBox{
+		padding-top: 100rpx;
+
+		.text {
+			padding-top: 40rpx;
+			text-align: center;
+			color: #aaa;
+		}
+
+		.emptyBox {
 			text-align: center;
 			padding-top: 20rpx;
-			.tips{
+
+			.tips {
 				color: #aaa;
 				font-size: 26rpx;
+				text-align: center;
 			}
+
 			image {
 				width: 414rpx;
 				height: 304rpx;

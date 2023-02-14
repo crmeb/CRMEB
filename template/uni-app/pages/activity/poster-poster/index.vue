@@ -140,7 +140,6 @@
 					'&spread=' +
 					this.$store.state.app.uid
 			}
-
 			// #endif
 			setTimeout(e => {
 				this.getPosterInfo();
@@ -196,9 +195,8 @@
 				}
 
 				// #ifdef H5 || APP-PLUS
-				goods_img = await this.imgToBase(resData.image)
-				mp_code = await this.imgToBase(resData.url)
-				arr = [this.posterBag, goods_img, mp_code || this.codeSrc]
+				let imgData = await this.imgToBase(resData.image, resData.url)
+				arr = [this.posterBag, imgData.image, imgData.code || this.codeSrc]
 				// #endif
 				// #ifdef MP
 				mpUrl = resData.url ? await this.downloadFilestoreImage(resData.url) : await this
@@ -238,18 +236,19 @@
 				})
 			},
 			//替换安全域名
-			setDomain: function(url) {
+			setDomain: function(image, url) {
 				url = url ? url.toString() : '';
 				//本地调试打开,生产请注销
 				if (url.indexOf('https://') > -1) return url;
 				else return url.replace('http://', 'https://');
 			},
-			async imgToBase(url) {
+			async imgToBase(image, url) {
 				let res = await imgToBase({
-					image: url
+					image: image,
+					code: url
 				})
 
-				return res.data.image
+				return res.data
 			},
 			downloadImg() {
 

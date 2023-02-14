@@ -36,4 +36,14 @@ use think\Model;
 trait ServicesTrait
 {
 
+    /**
+     * @return \crmeb\utils\Cache
+     * @author 等风来
+     * @email 136327134@qq.com
+     * @date 2023/2/8
+     */
+    public function cacheDriver()
+    {
+        return new \crmeb\utils\Cache($this->dao->getTableName());
+    }
 }

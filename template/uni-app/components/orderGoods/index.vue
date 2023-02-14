@@ -2,7 +2,7 @@
 	<view class="orderGoods">
 		<view class='total' v-if="is_behalf"><text>
 				{{$t(`代付金额`)}}：
-				<text class="pay-price">￥{{pay_price}}</text>
+				<text class="pay-price">￥{{pay_price || 0}}</text>
 			</text>
 		</view>
 		<view class='total' v-else-if="!split && !is_behalf">{{$t(`共`)}}{{totalNmu}}{{$t(`件商品`)}}</view>

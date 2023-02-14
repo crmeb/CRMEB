@@ -16,7 +16,6 @@ use app\services\activity\advance\StoreAdvanceServices;
 use app\services\BaseServices;
 use app\dao\order\StoreCartDao;
 use app\services\activity\coupon\StoreCouponIssueServices;
-use app\services\activity\coupon\StoreCouponIssueUserServices;
 use app\services\shipping\ShippingTemplatesNoDeliveryServices;
 use app\services\system\SystemUserLevelServices;
 use app\services\user\member\MemberCardServices;
@@ -88,9 +87,8 @@ class StoreCartServices extends BaseServices
         if ($new) {
             $cartIds = explode(',', $cartIds);
             $cartInfo = [];
-            $redis = CacheService::redisHandler();
             foreach ($cartIds as $key) {
-                $info = $redis->get($key);
+                $info = CacheService::get($key);
                 if ($info) {
                     $cartInfo[] = $info;
                 }
@@ -171,11 +169,6 @@ class StoreCartServices extends BaseServices
                     $issueCoupon = app()->make(StoreCouponIssueServices::class);
                     if (!$issueCoupon->getCount(['id' => $attrInfo['coupon_id'], 'status' => 1, 'is_del' => 0])) {
                         throw new ApiException(410234);
-                    }
-                    /** @var StoreCouponIssueUserServices $issueUserCoupon */
-                    $issueUserCoupon = app()->make(StoreCouponIssueUserServices::class);
-                    if ($issueUserCoupon->getCount(['uid' => $uid, 'issue_coupon_id' => $attrInfo['coupon_id']])) {
-                        throw new ApiException(410235);
                     }
                 }
                 $stockNum = $this->dao->value(['product_id' => $productId, 'product_attr_unique' => $unique, 'uid' => $uid, 'status' => 1], 'cart_num') ?: 0;
@@ -278,7 +271,7 @@ class StoreCartServices extends BaseServices
             $info['trueStock'] = $info['productInfo']['attrInfo']['stock'];
             $info['costPrice'] = $info['productInfo']['attrInfo']['cost'];
             try {
-                CacheService::redisHandler()->set($key, $info, 3600);
+                CacheService::set($key, $info, 3600);
             } catch (\Throwable $e) {
                 throw new ApiException($e->getMessage());
             }
@@ -324,9 +317,27 @@ class StoreCartServices extends BaseServices
         if (!$id || !$number || !$uid) return false;
         $where = ['uid' => $uid, 'id' => $id];
         $carInfo = $this->dao->getOne($where, 'product_id,combination_id,seckill_id,bargain_id,product_attr_unique,cart_num');
-        /** @var StoreProductServices $StoreProduct */
-        $StoreProduct = app()->make(StoreProductServices::class);
-        $stock = $StoreProduct->getProductStock($carInfo->product_id, $carInfo->product_attr_unique);
+
+        //购物车修改数量检查限购
+        /** @var StoreProductServices $productServices */
+        $productServices = app()->make(StoreProductServices::class);
+        $limitInfo = $productServices->get($carInfo->product_id, ['is_limit', 'limit_type', 'limit_num']);
+        if ($limitInfo['is_limit']) {
+            if ($limitInfo['limit_type'] == 1 && $number > $limitInfo['limit_num']) {
+                throw new ApiException(410239, ['limit' => $limitInfo['limit_num']]);
+            } else if ($limitInfo['limit_type'] == 2) {
+                /** @var StoreOrderCartInfoServices $orderCartServices */
+                $orderCartServices = app()->make(StoreOrderCartInfoServices::class);
+                $orderPayNum = $orderCartServices->sum(['uid' => $uid, 'product_id' => $carInfo->product_id], 'cart_num');
+                $orderRefundNum = $orderCartServices->sum(['uid' => $uid, 'product_id' => $carInfo->product_id], 'refund_num');
+                $orderNum = $orderPayNum - $orderRefundNum;
+                if (($number + $orderNum) > $limitInfo['limit_num']) {
+                    throw new ApiException(410240, ['limit' => $limitInfo['limit_num'], 'pay_num' => $orderNum]);
+                }
+            }
+        }
+
+        $stock = $productServices->getProductStock($carInfo->product_id, $carInfo->product_attr_unique);
         if (!$stock) throw new ApiException(410237);
         if ($stock < $number) throw new ApiException(410297, ['num' => $number]);
         if ($carInfo->cart_num == $number) return true;
@@ -603,6 +614,8 @@ class StoreCartServices extends BaseServices
                     $item['truePrice'] = $truePrice;
                     $item['vip_truePrice'] = $vip_truePrice;
                     $item['price_type'] = $type;
+                } else {
+                    $item['price_type'] = 'activity';
                 }
             } else {
                 $item['costPrice'] = $item['productInfo']['cost'] ?? 0;
@@ -614,6 +627,8 @@ class StoreCartServices extends BaseServices
                     $item['truePrice'] = $truePrice;
                     $item['vip_truePrice'] = $vip_truePrice;
                     $item['price_type'] = $type;
+                } else {
+                    $item['price_type'] = 'activity';
                 }
             }
             if (isset($item['status']) && $item['status'] == 0) {

@@ -61,17 +61,9 @@
 
 			}
 		}
-		//#ifdef H5
-		,
-		{
-			"path": "pages/auth/index",
-			"style": {
-				"navigationBarTitleText": ""
-			}
-		}
-		//#endif
+
 	],
-	"subPackages": [{
+	"subPackages": [{  // 模块分包
 			"root": "pages/extension",
 			"name": "extension",
 			"pages": [{
@@ -940,6 +932,15 @@
 						// #endif
 					}
 				}
+				// #ifdef H5
+				,
+				{
+					"path": "auth/index",
+					"style": {
+						"navigationBarTitleText": ""
+					}
+				}
+				// #endif
 			],
 			"plugins": {
 				"live-player-plugin": {
@@ -1526,7 +1527,7 @@
 			]
 		}
 	],
-	"tabBar": {
+	"tabBar": {  // 底部菜单
 		"color": "#282828",
 		"selectedColor": "#ff3366",
 		"borderStyle": "white",

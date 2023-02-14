@@ -252,7 +252,7 @@ export default {
         coupon_title: '',
         receive_type: '',
         page: 1,
-        limit: 15,
+        limit: 10,
       },
       receive_type: '',
       tableList: [],

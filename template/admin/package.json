@@ -5,6 +5,7 @@
   "private": false,
   "scripts": {
     "serve": "vue-cli-service serve --open --mode=dev",
+    "dev": "vue-cli-service serve --open --mode=dev",
     "build": "vue-cli-service build --mode=production",
     "eslint:comment": "使用 ESLint 检查并自动修复 src 目录下所有扩展名为 .js 和 .vue 的文件",
     "eslint": "eslint --ext .js,.vue,.ts --ignore-path .gitignore --fix src",
@@ -15,7 +16,7 @@
     "@babel/polyfill": "^7.8.7",
     "@babel/runtime": "^7.2.0",
     "@better-scroll/core": "^2.0.5",
-    "@form-create/iview": "^1.0.18",
+    "@form-create/iview": "^2.5.27",
     "async-validator": "^3.4.0",
     "awe-dnd": "^0.3.4",
     "better-scroll": "^1.15.2",

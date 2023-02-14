@@ -147,10 +147,8 @@
 		async onReady() {
 			if (this.isLogin) {
 				this.val = `${HTTP_REQUEST_URL}?spid=${this.uid}`
+				await this.getUser()
 				await this.spreadMsgs()
-				getUserInfo().then(res => {
-					this.userInfo = res.data
-				})
 			} else {
 				toLogin();
 
@@ -181,6 +179,11 @@
 		},
 		// #endif
 		methods: {
+			getUser() {
+				getUserInfo().then(res => {
+					this.userInfo = res.data
+				})
+			},
 			onLoadFun: function(e) {
 				this.$set(this, 'userInfo', e);
 				this.userSpreadBannerList();
@@ -197,7 +200,6 @@
 				// #ifdef MP
 				this.qrcode = await this.imgToBase(res.data.qrcode)
 				// #endif
-				let codeUrl = "?spread=" + this.userInfo.uid
 				// #ifdef MP
 				await this.routineCode()
 				let mpUrl = await this.downloadFilestoreImage(this.mpUrl)
@@ -206,11 +208,6 @@
 					title: this.$t(`海报生成中`),
 					mask: true
 				});
-				// #ifdef H5
-				if (this.$wechat.isWeixin() && res.data.qrcode) {
-					this.qrcode = await this.imgToBase(res.data.qrcode)
-				}
-				// #endif
 				for (let i = 0; i < res.data.spread.length; i++) {
 					let that = this
 					let arr2, img
@@ -218,8 +215,8 @@
 					arr2 = [mpUrl, await this.downloadFilestoreImage(res.data.spread[i].pic)]
 					// #endif
 					// #ifdef H5
-					img = await this.imgToBase(res.data.spread[i].pic)
-					arr2 = [this.qrcode || this.codeSrc, img]
+					img = await this.imgToBase(res.data.spread[i].pic, res.data.qrcode)
+					arr2 = [img.code || this.codeSrc, img.image]
 					// #endif
 					// #ifdef APP-PLUS
 					img = await this.downloadFilestoreImage(res.data.spread[i].pic)
@@ -249,11 +246,12 @@
 				let res = await routineCode()
 				this.mpUrl = res.data.url
 			},
-			async imgToBase(url) {
+			async imgToBase(url, code) {
 				let res = await imgToBase({
-					image: url
+					image: url,
+					code: code
 				})
-				return res.data.image
+				return res.data
 			},
 			// 二维码生成
 			codeImg() {

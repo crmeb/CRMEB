@@ -13,18 +13,18 @@
           <Col span="24">
             <FormItem label="语言分类：">
               <RadioGroup type="button" v-model="formValidate.is_admin" class="mr15" @on-change="selChange">
-                <Radio :label="item.value" v-for="(item, index) in langType.isAdmin" :key="index">{{
-                  item.title
-                }}</Radio>
+                <Radio :label="item.value" v-for="(item, index) in langType.isAdmin" :key="index"
+                  >{{ item.title }}
+                </Radio>
               </RadioGroup>
             </FormItem>
           </Col>
           <Col span="24">
             <FormItem label="语言类型：">
               <RadioGroup type="button" v-model="formValidate.type_id" class="mr15" @on-change="selChange">
-                <Radio :label="item.value" v-for="(item, index) in langType.langType" :key="index">{{
-                  item.title
-                }}</Radio>
+                <Radio :label="item.value" v-for="(item, index) in langType.langType" :key="index"
+                  >{{ item.title }}
+                </Radio>
               </RadioGroup>
             </FormItem>
           </Col>
@@ -50,8 +50,8 @@
       使用说明
       <template slot="desc"
         >添加用户端页面语言，添加完成之后状态码为中文文字，前端页面使用 $t(`xxxx`)，js文件中使用 this.t(`xxxx`) 或者使用
-        that.t(`xxxx`)<br />添加后端接口语言，添加完成之后状态码为6位数字，后台抛错或者控制器返回文字的时候直接填写状态码数字</template
-      >
+        that.t(`xxxx`)<br />添加后端接口语言，添加完成之后状态码为6位数字，后台抛错或者控制器返回文字的时候直接填写状态码数字
+      </template>
     </Alert>
     <Card :bordered="false" dis-hover>
       <Row type="flex">
@@ -89,6 +89,7 @@
       v-model="addlangModal"
       width="750"
       title="添加语言"
+      :loading="FormLoading"
       @on-ok="ok"
       @on-cancel="addlangModal = false"
       @on-visible-change="modalChange"
@@ -131,6 +132,7 @@
 <script>
 import { mapState } from 'vuex';
 import { langCodeList, langCodeInfo, langCodeSettingSave, langCodeTranslate } from '@/api/setting';
+
 export default {
   data() {
     return {
@@ -145,6 +147,7 @@ export default {
         limit: 20,
       },
       total: 0,
+      FormLoading: true,
       loading: false,
       ruleValidate: {
         code: [{ required: true, message: '请输入状态码/文字', trigger: 'blur' }],
@@ -231,15 +234,14 @@ export default {
         text: this.langFormData.remarks,
       })
         .then((res) => {
-          console.log(this.langFormData.list);
-
           this.langFormData.list.map((e) => {
             e.lang_explain = res.data[e.type_id];
           });
           this.traTabLoading = false;
         })
         .catch((err) => {
-          this.$Message.error(err);
+          this.traTabLoading = false;
+          this.$Message.error(err.msg);
         });
     },
     add() {
@@ -254,11 +256,26 @@ export default {
       this.addlangModal = true;
     },
     ok() {
-      console.log(this.langFormData);
-      langCodeSettingSave(this.langFormData).then((res) => {
-        this.$Message.success(res.msg);
-        this.getList();
-      });
+      if (!this.langFormData.remarks.trim()) {
+        this.FormLoading = false;
+        this.$nextTick(() => {
+          this.FormLoading = true;
+        });
+        return this.$Message.error('请先输入语言说明');
+      }
+      langCodeSettingSave(this.langFormData)
+        .then((res) => {
+          this.addlangModal = false;
+          this.$Message.success(res.msg);
+          this.getList();
+        })
+        .catch((err) => {
+          this.FormLoading = false;
+          this.$nextTick(() => {
+            this.FormLoading = true;
+          });
+          this.$Message.error(err.msg);
+        });
     },
     edit(row) {
       this.langFormData.is_admin = this.formValidate.is_admin;
@@ -352,7 +369,7 @@ export default {
   margin-bottom: 10px;
 }
 
-.status >>> .item~.item {
+.status >>> .item ~ .item {
   margin-left: 6px;
 }
 
@@ -378,7 +395,8 @@ export default {
     height: 100%;
   }
 }
-.mb20 /deep/ .ivu-table-wrapper > .ivu-spin-fix{
+
+.mb20 /deep/ .ivu-table-wrapper > .ivu-spin-fix {
   border: none;
 }
 </style>

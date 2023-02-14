@@ -81,7 +81,7 @@ class RoutineServices extends BaseServices
             //更新用户信息
             $wechatUserServices->wechatUpdata([$user['uid'], $createData[1]]);
         }
-        $token = $this->createToken((int)$user['uid'], 'routine');
+        $token = $this->createToken((int)$user['uid'], 'api');
         if ($token) {
             /** @var UserVisitServices $visitServices */
             $visitServices = app()->make(UserVisitServices::class);
@@ -131,7 +131,7 @@ class RoutineServices extends BaseServices
         $storeUserMobile = sys_config('store_user_mobile');
         if ($storeUserMobile && !$user) {
             $userInfoKey = md5($openid . '_' . time() . '_rouine');
-            CacheService::setTokenBucket($userInfoKey, $createData, 7200);
+            CacheService::set($userInfoKey, $createData, 7200);
             return ['key' => $userInfoKey];
         } else if (!$user) {
             $user = $wechatUserServices->wechatOauthAfter($createData);
@@ -139,7 +139,7 @@ class RoutineServices extends BaseServices
             //更新用户信息
             $wechatUserServices->wechatUpdata([$user['uid'], $createData[1]]);
         }
-        $token = $this->createToken((int)$user['uid'], 'routine');
+        $token = $this->createToken((int)$user['uid'], 'api');
         if ($token) {
             /** @var UserVisitServices $visitServices */
             $visitServices = app()->make(UserVisitServices::class);
@@ -195,7 +195,7 @@ class RoutineServices extends BaseServices
      */
     public function tempIds()
     {
-        return CacheService::get('TEMP_IDS_LIST', function () {
+        return CacheService::remember('TEMP_IDS_LIST', function () {
             /** @var SystemNotificationServices $sysNotify */
             $sysNotify = app()->make(SystemNotificationServices::class);
             $marks = $sysNotify->getColumn([['routine_id', '>', 0]], 'routine_id', 'mark');
@@ -220,7 +220,7 @@ class RoutineServices extends BaseServices
      */
     public function live($page, $limit)
     {
-        $list = CacheService::get('WECHAT_LIVE_LIST_' . $page . '_' . $limit, function () use ($page, $limit) {
+        $list = CacheService::remember('WECHAT_LIVE_LIST_' . $page . '_' . $limit, function () use ($page, $limit) {
             $list = MiniProgramService::getLiveInfo((int)$page, (int)$limit);
             foreach ($list as &$item) {
                 $item['_start_time'] = date('m-d H:i', $item['start_time']);
@@ -269,13 +269,14 @@ class RoutineServices extends BaseServices
         $storeUserMobile = sys_config('store_user_mobile');
         if ($storeUserMobile && !$user) {
             $userInfoKey = md5($openid . '_' . time() . '_routine');
-            CacheService::setTokenBucket($userInfoKey, $createData, 7200);
+            CacheService::set($userInfoKey, $createData, 7200);
             return ['key' => $userInfoKey];
         } else if (!$user) {
             //写入用户信息
             $user = $wechatUserServices->wechatOauthAfter($createData);
-            $token = $this->createToken((int)$user['uid'], 'routine');
+            $token = $this->createToken((int)$user['uid'], 'api');
             if ($token) {
+                $token['new_user'] = (int)sys_config('get_avatar', 0);
                 return $token;
             } else
                 throw new ApiException(410019);
@@ -283,11 +284,12 @@ class RoutineServices extends BaseServices
             if (!$user['status']) throw new ApiException(410027);
             //更新用户信息
             $wechatUserServices->wechatUpdata([$user['uid'], ['code' => $spid]]);
-            $token = $this->createToken((int)$user['uid'], 'routine');
+            $token = $this->createToken((int)$user['uid'], 'api');
             /** @var UserVisitServices $visitServices */
             $visitServices = app()->make(UserVisitServices::class);
             $visitServices->loginSaveVisit($user);
             if ($token) {
+                $token['new_user'] = 0;
                 return $token;
             } else
                 throw new ApiException(410019);
@@ -330,12 +332,12 @@ class RoutineServices extends BaseServices
 
         if (!$user) {
             $userInfoKey = md5($openid . '_' . time() . '_routine');
-            CacheService::setTokenBucket($userInfoKey, $createData, 7200);
+            CacheService::set($userInfoKey, $createData, 7200);
             return ['auth_login' => 1, 'key' => $userInfoKey];
         } else {
             //更新用户信息
             $wechatUserServices->wechatUpdata([$user['uid'], ['code' => $spid]]);
-            $token = $this->createToken((int)$user['uid'], 'routine');
+            $token = $this->createToken((int)$user['uid'], 'api');
             /** @var UserVisitServices $visitServices */
             $visitServices = app()->make(UserVisitServices::class);
             $visitServices->loginSaveVisit($user);
@@ -384,11 +386,12 @@ class RoutineServices extends BaseServices
         $createData = [$openid, $routineInfo, $spid, '', 'routine'];
         //写入用户信息
         $user = $wechatUserServices->wechatOauthAfter($createData);
-        $token = $this->createToken((int)$user['uid'], 'routine');
+        $token = $this->createToken((int)$user['uid'], 'api');
         /** @var UserVisitServices $visitServices */
         $visitServices = app()->make(UserVisitServices::class);
         $visitServices->loginSaveVisit($user);
         if ($token) {
+            $token['new_user'] = $user['new_user'];
             return $token;
         } else
             throw new ApiException(410019);
@@ -413,7 +416,7 @@ class RoutineServices extends BaseServices
         $userInfo = [];
         $userType = $login_type = 'routine';
         if ($key) {
-            [$openid, $wechatInfo, $spreadId, $login_type, $userType] = $createData = CacheService::getTokenBucket($key);
+            [$openid, $wechatInfo, $spreadId, $login_type, $userType] = $createData = CacheService::get($key);
         }
 
         /** @var OAuth $oauth */
@@ -444,7 +447,7 @@ class RoutineServices extends BaseServices
         $wechatUserServices = app()->make(WechatUserServices::class);
         //写入用户信息
         $user = $wechatUserServices->wechatOauthAfter([$openid, $wechatInfo, $spreadId, $login_type, $userType]);
-        $token = $this->createToken((int)$user['uid'], 'routine');
+        $token = $this->createToken((int)$user['uid'], 'api');
         if ($token) {
             /** @var UserVisitServices $visitServices */
             $visitServices = app()->make(UserVisitServices::class);

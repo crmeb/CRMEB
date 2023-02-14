@@ -67,7 +67,7 @@ class StoreOrder extends AuthController
         ], true);
         if ($status != '') $data['status'] = $status;
         $data['is_show'] = 1;
-        $list = CacheService::get('EXPRESS_LIST', function () use ($services, $data) {
+        $list = CacheService::remember('EXPRESS_LIST', function () use ($services, $data) {
             return $services->express($data);
         }, 86400);
         return app('json')->success($list);

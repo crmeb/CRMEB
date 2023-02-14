@@ -33,7 +33,7 @@ class OrderCreateAfter implements ListenerInterface
         $orderCreate->orderCreateAfter($order, $group, $combinationId || $seckillId || $bargainId);
 
         //清除订单缓存
-        CacheService::redisHandler()->delete('user_order_' . $uid . $key);
+        CacheService::delete('user_order_' . $uid . $key);
 
         //写入订单记录表
         /** @var StoreOrderStatusServices $statusService */
@@ -81,8 +81,8 @@ class OrderCreateAfter implements ListenerInterface
             $secs = $systemValue['order_cancel_time'];
         }
         //未支付10分钟后发送短信
-        UnpaidOrderSend::dispatchSece(600, [$orderId]);
+        UnpaidOrderSend::dispatchSecs(600, [$orderId]);
         //未支付根据系统设置事件取消订单
-        UnpaidOrderCancelJob::dispatchSece((int)($secs * 3600), [$orderId]);
+        UnpaidOrderCancelJob::dispatchSecs((int)($secs * 3600), [$orderId]);
     }
 }

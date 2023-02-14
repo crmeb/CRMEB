@@ -1,0 +1,157 @@
+.wrap{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.wrap > .title{
+    text-align: center;
+    padding: 23px 0 27px 0;
+    color: rgba(255,255,255,0.8);
+    font-size: 14px;
+}
+.content{
+    display: flex;
+}
+
+.menu {
+    color: #fff;
+    width: 210px;
+}
+.menu .again{
+    padding-bottom: 4px;
+    padding-left: 9px;
+    color: #37CA71;
+}
+.menu .head{
+    display: flex;
+    align-items: flex-end;
+}
+.menu .p8{
+    color: rgba(255,255,255,0.8)
+}
+.menu .tab{
+    margin-top: 25px;
+    padding: 18px 19px;
+    cursor: pointer;
+}
+.menu .tab.on{
+    background: rgba(0,0,0,0.2);
+    border-radius: 13px 13px 13px 13px;
+}
+.config-list{
+    width: 485px;
+}
+
+/*
+===================
+服务器检测/信息输入
+===================
+*/
+.server::-webkit-scrollbar { width: 0 !important;
+    height: 0 !important; }
+
+/*IE 10+*/
+
+.server { -ms-overflow-style: none; }
+
+/*Firefox*/
+
+.server { overflow: -moz-scrollbars-none; }
+
+.server{
+    padding:0px 20px 20px 35px;
+    width: 560px;
+    height: 475px;
+    overflow: scroll;
+}
+.server table{
+    margin-bottom:20px;
+}
+.server td{
+    padding:6px 5px;
+    color: #fff;
+    font-size: 12px;
+}
+.server .td1{
+    font-weight: normal;
+    color: #FFFFFF;
+    font-size: 14px;
+    text-align: right;
+    padding-right: 12px
+}
+.server .el-radio{
+    color: rgba(255,255,255,0.8);
+}
+.server .el-radio__label{
+    font-size: 12px;
+
+}
+.server .input{
+    border:none;
+    border-radius: 20px;
+    background-color: rgba(0,0,0,0.1);
+    padding:0px 15px;
+    width: 186px;
+    height: 30px;
+    color: #fff;
+}
+.server .input:hover,
+.server .input:focus{
+    outline:none;
+}
+.server input::placeholder {
+    color: rgba(255,255,255,0.2);
+}
+.gray{
+    color:#bbb;
+}
+.server tr:hover .gray{
+    /*color:#333;*/
+}
+.server .el-radio__input.is-checked .el-radio__inner {
+    border-color: #37CA71;
+    background: #37CA71;
+}
+/*
+===================
+正确错误
+===================
+*/
+.correct_span,
+.error_span{
+    display:block;
+    float:left;
+    width:20px;
+    height:16px;
+    text-indent:-2000em;
+    overflow:hidden;
+    background:url(../images/install/icon.png) no-repeat;
+    margin-right:5px;
+}
+.error_span{
+    background-position:0 -23px;
+}
+.section .bottom{
+    margin: 0;
+}
+.bottom a{
+    display:block;
+    width: 100%;
+    height: 100%;
+
+}
+.bottom-btn{
+    display: flex;
+    justify-content: center;
+}
+.next{
+    color: #5A487D;
+}
+.bottom-btn .up-btn{
+    margin-right: 10px;
+    background-color: rgba(255,255,255,0.1);
+}
+.bottom-btn .up-btn a:link,a:visited{
+    color: rgba(255,255,255,0.6);
+    text-decoration: none;
+}

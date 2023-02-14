@@ -35,13 +35,57 @@ class AuthController
     }
 
     /**
-     * 小程序授权登录
-     * @param Request $request
+     * 静默授权
+     * @param $code
+     * @param string $spread_code
+     * @param string $spread_spid
      * @return mixed
      * @throws \Psr\SimpleCache\InvalidArgumentException
      * @throws \think\db\exception\DataNotFoundException
      * @throws \think\db\exception\ModelNotFoundException
-     * @throws \think\exception\DbException
+     */
+    public function silenceAuth($code, $spread_code = '', $spread_spid = '')
+    {
+        $token = $this->services->silenceAuth($code, $spread_code, $spread_spid);
+        if ($token && isset($token['key'])) {
+            return app('json')->success(410022, $token);
+        } else if ($token) {
+            return app('json')->success(410001, ['token' => $token['token'], 'expires_time' => $token['params']['exp'], 'new_user' => $token['new_user']]);
+        } else
+            return app('json')->fail(410019);
+    }
+
+    /**
+     * 授权获取小程序用户手机号 直接绑定
+     * @param string $code
+     * @param string $iv
+     * @param string $encryptedData
+     * @param string $spread_code
+     * @param string $spread_spid
+     * @param string $key
+     * @return mixed
+     * @throws \Psr\SimpleCache\InvalidArgumentException
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     */
+    public function authBindingPhone($code = '', $iv = '', $encryptedData = '', $spread_code = '', $spread_spid = '', $key = '')
+    {
+        if (!$code || !$iv || !$encryptedData)
+            return app('json')->fail(100100);
+        $token = $this->services->authBindingPhone($code, $iv, $encryptedData, $spread_code, $spread_spid, $key);
+        if ($token) {
+            return app('json')->success(410001, $token);
+        } else
+            return app('json')->fail(410019);
+    }
+
+    /** 以下方法该版本暂未使用 */
+    /**
+     * 小程序授权登录
+     * @param Request $request
+     * @return mixed
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
      */
     public function auth(Request $request)
     {
@@ -64,29 +108,12 @@ class AuthController
     }
 
     /**
-     * 静默授权
-     * @param $code
-     * @param string $spread_code
-     * @param string $spread_spid
-     * @return mixed
-     */
-    public function silenceAuth($code, $spread_code = '', $spread_spid = '')
-    {
-        $token = $this->services->silenceAuth($code, $spread_code, $spread_spid);
-        if ($token && isset($token['key'])) {
-            return app('json')->success(410022, $token);
-        } else if ($token) {
-            return app('json')->success(410001, ['token' => $token['token'], 'expires_time' => $token['params']['exp']]);
-        } else
-            return app('json')->fail(410019);
-    }
-
-    /**
      * 静默授权 不登录
      * @param $code
      * @param string $spread_code
      * @param string $spread_spid
      * @return mixed
+     * @throws \Psr\SimpleCache\InvalidArgumentException
      */
     public function silenceAuthNoLogin($code, $spread_code = '', $spread_spid = '')
     {
@@ -107,7 +134,8 @@ class AuthController
      * @param string $phone
      * @param string $captcha
      * @return mixed
-     * @throws \Psr\SimpleCache\InvalidArgumentException
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
      */
     public function silenceAuthBindingPhone($code = '', $spread_code = '', $spread_spid = '', $phone = '', $captcha = '')
     {
@@ -123,37 +151,19 @@ class AuthController
         CacheService::delete('code_' . $phone);
         $token = $this->services->silenceAuthBindingPhone($code, $spread_code, $spread_spid, $phone);
         if ($token) {
-            return app('json')->success(410001, ['token' => $token['token'], 'expires_time' => $token['params']['exp']]);
+            return app('json')->success(410001, ['token' => $token['token'], 'expires_time' => $token['params']['exp'], 'new_user' => $token['new_user']]);
         } else
             return app('json')->fail(410019);
     }
 
     /**
-     * 授权获取小程序用户手机号 直接绑定
-     * @param string $code
-     * @param string $iv
-     * @param string $encryptedData
-     * @param string $spread_code
-     * @param string $spread_spid
-     * @param string $key
-     * @return mixed
-     */
-    public function authBindingPhone($code = '', $iv = '', $encryptedData ='', $spread_code ='', $spread_spid = '', $key = '')
-    {
-        if (!$code || !$iv || !$encryptedData)
-            return app('json')->fail(100100);
-        $token = $this->services->authBindingPhone($code, $iv, $encryptedData, $spread_code, $spread_spid, $key);
-        if ($token) {
-            return app('json')->success(410001, $token);
-        } else
-            return app('json')->fail(410019);
-    }
-
-    /**
-     *  更新用户信息
+     * 更新用户信息
      * @param Request $request
      * @param $userInfo
      * @return mixed
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
      */
     public function updateInfo(Request $request, $userInfo)
     {

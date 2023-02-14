@@ -311,14 +311,7 @@ export default {
     getStatistics(id) {
       console.log(id);
       getcombinationStatistics(id).then((res) => {
-        let arr = [
-          'people_count',
-          'spread_count',
-          'start_count',
-          'success_count',
-          'pay_price',
-          'pay_count',
-        ];
+        let arr = ['people_count', 'spread_count', 'start_count', 'success_count', 'pay_price', 'pay_count'];
         this.cardLists.map((i, index) => {
           i.count = res.data[arr[index]];
         });

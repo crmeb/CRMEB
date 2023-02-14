@@ -75,7 +75,12 @@
         no-filtered-data-text="暂无筛选结果"
       >
         <template slot-scope="{ row, index }" slot="right">
-          <a href="javascript:void(0);" v-if="row.refund_price <= 0 && row.paid && row.recharge_type != 'system'" @click="refund(row)">退款</a>
+          <a
+            href="javascript:void(0);"
+            v-if="row.refund_price <= 0 && row.paid && row.recharge_type != 'system'"
+            @click="refund(row)"
+            >退款</a
+          >
           <!--                    <Divider type="vertical"  v-if="row.paid"/>-->
           <a href="javascript:void(0);" v-if="row.paid === 0" @click="del(row, '此条充值记录', index)">删除</a>
         </template>

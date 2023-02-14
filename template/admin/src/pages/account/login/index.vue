@@ -3,7 +3,7 @@
     <div class="container" :class="[fullWidth > 768 ? 'containerSamll' : 'containerBig']">
       <swiper :options="swiperOption" class="swiperPross" v-if="fullWidth > 768">
         <swiper-slide class="swiperPic" v-for="(item, index) in swiperList" :key="index">
-          <img :src="item.slide" />
+          <img :src="item.slide" alt="" />
         </swiper-slide>
         <div class="swiper-pagination" slot="pagination"></div>
       </swiper>
@@ -70,11 +70,9 @@
 <script>
 import { AccountLogin, loginInfoApi } from '@/api/account';
 import { getWorkermanUrl } from '@/api/kefu';
-import Setting from '@/setting';
 import { setCookies } from '@/libs/util';
 import '@/assets/js/canvas-nest.min';
 import Verify from '@/components/verifition/Verify';
-
 export default {
   components: {
     Verify,
@@ -109,9 +107,8 @@ export default {
     };
   },
   created() {
-    var _this = this;
-    top != window && (top.location.href = location.href);
-    document.onkeydown = function (e) {
+    const _this = this;
+    document.onkeydown = function () {
       if (_this.$route.name === 'login') {
         let key = window.event.keyCode;
         if (key === 13) {
@@ -183,6 +180,7 @@ export default {
     // 关闭模态框
     closeModel(params) {
       this.isShow = false;
+      // noinspection JSVoidFunctionReturnValueUsed
       let msg = this.$Message.loading({
         content: '登录中...',
         duration: 0,
@@ -244,10 +242,10 @@ export default {
           return this.$router.replace({ path: '/admin/home/' || '/admin/' });
         })
         .catch((res) => {
-          msg();
+          msg()
           let data = res === undefined ? {} : res;
-          this.login_captcha = res.data.login_captcha;
           this.$Message.error(data.msg || '登录失败');
+          this.login_captcha = res.data.login_captcha;
         });
       setTimeout((e) => {
         this.loading = false;

@@ -68,7 +68,7 @@ class DiyServices extends BaseServices
      * @param int $id
      * @param array $data
      */
-    public function saveData(int $id = 0, array $data)
+    public function saveData(int $id = 0, array $data = [])
     {
         if ($id) {
             $data['update_time'] = time();
@@ -81,6 +81,11 @@ class DiyServices extends BaseServices
             if (!$res) throw new AdminException(100006);
             $id = $res->id;
         }
+
+        $this->cacheDriver()->clear();
+        $this->cacheDriver()->set('index_diy_' . $id, $data['version']);
+        $this->updateCacheDiyVersion();
+
         return $id;
     }
 
@@ -95,6 +100,8 @@ class DiyServices extends BaseServices
         if ($count) throw new AdminException(400458);
         $res = $this->dao->update($id, ['is_del' => 1]);
         if (!$res) throw new AdminException(100008);
+
+        $this->cacheDriver()->clear();
     }
 
     /**
@@ -106,6 +113,47 @@ class DiyServices extends BaseServices
         $this->dao->update(['is_diy' => 1], ['is_show' => 1, 'type' => 2]);
         $this->dao->update([['id', '<>', $id]], ['status' => 0]);
         $this->dao->update($id, ['status' => 1, 'update_time' => time()]);
+
+        $this->cacheDriver()->clear();
+        $this->updateCacheDiyVersion();
+    }
+
+    /**
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @author 等风来
+     * @email 136327134@qq.com
+     * @date 2023/2/8
+     */
+    public function updateCacheDiyVersion()
+    {
+        $diyInfo = $this->dao->get(['status' => 1, 'is_del' => 0], ['id', 'version']);
+        if (!$diyInfo) {
+            $this->cacheDriver()->delete('index_diy_default');
+        } else {
+            $this->cacheDriver()->set('index_diy_default', $diyInfo['version']);
+        }
+    }
+
+    /**
+     * @param int $id
+     * @return mixed|string|null
+     * @author 等风来
+     * @email 136327134@qq.com
+     * @date 2023/2/8
+     */
+    public function getDiyVersion(int $id)
+    {
+        if ($id) {
+            return $this->cacheDriver()->remember('index_diy_' . $id, function () use ($id) {
+                return $this->dao->value(['id' => $id], 'version');
+            });
+        } else {
+            return $this->cacheDriver()->remember('index_diy_default', function () {
+                return $this->dao->value(['status' => 1, 'is_del' => 0], 'version');
+            });
+        }
     }
 
     /**
@@ -119,13 +167,17 @@ class DiyServices extends BaseServices
     public function getDiy($id = 0)
     {
         $field = 'name,value,is_show,is_bg_color,color_picker,bg_pic,bg_tab_val,is_bg_pic,order_status,is_diy,title';
-        if ($id) {
-            $info = $this->dao->getOne(['id' => $id], $field);
-        } else {
-            $info = $this->dao->getOne(['status' => 1, 'is_del' => 0], $field);
-        }
+
+        $info = $this->cacheDriver()->remember('diy_info_' . $id, function () use ($field, $id) {
+            if ($id) {
+                $info = $this->dao->getOne(['id' => $id], $field);
+            } else {
+                $info = $this->dao->getOne(['status' => 1, 'is_del' => 0], $field);
+            }
+            return $info ? $info->toArray() : [];
+        });
+
         if ($info) {
-            $info = $info->toArray();
             if ($info['value']) {
                 $info['value'] = json_decode($info['value'], true);
                 if ($info['is_diy']) {
@@ -345,10 +397,14 @@ class DiyServices extends BaseServices
      */
     public function getNavigation(string $template_name)
     {
-        $value = $this->dao->value(['status' => 1], 'value');
-        if (!$value) {
-            $value = $this->dao->value(['template_name' => 'default'], 'value');
-        }
+        $value = $this->cacheDriver()->remember('navigation', function () {
+            $value = $this->dao->value(['status' => 1], 'value');
+            if (!$value) {
+                $value = $this->dao->value(['template_name' => 'default'], 'value');
+            }
+            return $value;
+        });
+
         $navigation = [];
         if ($value) {
             $value = json_decode($value, true);

@@ -35,7 +35,6 @@ use crmeb\services\CacheService;
 use crmeb\services\FormBuilder as Form;
 use crmeb\services\printer\Printer;
 use crmeb\services\SystemConfigService;
-use crmeb\traits\ServicesTrait;
 use crmeb\utils\Arr;
 use think\facade\Log;
 
@@ -55,8 +54,6 @@ use think\facade\Log;
  */
 class StoreOrderServices extends BaseServices
 {
-
-    use ServicesTrait;
 
     /**
      * 发货类型
@@ -140,13 +137,12 @@ class StoreOrderServices extends BaseServices
     /**
      * 获取订单数量
      * @param int $uid
-     * @return mixed
+     * @return array
+     * @throws \ReflectionException
      */
-    public function getOrderData(int $uid = 0, $del = true, $isPid = false)
+    public function getOrderData(int $uid = 0)
     {
-        $where = ['uid' => $uid, 'paid' => 1, 'refund_status' => [0, 3], 'pid' => 0];
-        if (!$del) $where = $where + ['is_del' => 0, 'is_system_del' => 0];
-        $data['order_count'] = (string)$this->dao->count($where);
+        $data['order_count'] = (string)$this->dao->count(['uid' => $uid, 'refund_status' => [0, 3], 'pid' => 0, 'is_del' => 0, 'is_system_del' => 0]);
         $data['sum_price'] = (string)$this->dao->sum([
             ['uid', '=', $uid],
             ['paid', '=', 1],
@@ -162,7 +158,6 @@ class StoreOrderServices extends BaseServices
         $data['received_count'] = (string)$this->dao->count(['status' => 2] + $countWhere + ['pid' => 0]);
         $data['evaluated_count'] = (string)$this->dao->count(['status' => 3] + $countWhere + ['pid' => 0]);
         $data['complete_count'] = (string)$this->dao->count(['status' => 4] + $countWhere + ['pid' => 0]);
-        if (!$isPid) $countWhere = $countWhere + ['pid' => 0];
 
         /** @var StoreOrderRefundServices $storeOrderRefundServices */
         $storeOrderRefundServices = app()->make(StoreOrderRefundServices::class);
@@ -173,8 +168,8 @@ class StoreOrderServices extends BaseServices
         $data['refunded_count'] = (string)$storeOrderRefundServices->count($refund_where + ['refund_type' => 6]);
         $data['refund_count'] = bcadd(bcadd($data['refunding_count'], $data['refunded_count'], 0), $data['no_refund_count'], 0);
         $data['yue_pay_status'] = (int)sys_config('balance_func_status') && (int)sys_config('yue_pay_status') == 1 ? (int)1 : (int)2;//余额支付 1 开启 2 关闭
-        $data['pay_weixin_open'] = (int)sys_config('pay_weixin_open') ?? 0;//微信支付 1 开启 0 关闭
-        $data['ali_pay_status'] = (bool)sys_config('ali_pay_status');//支付包支付 1 开启 0 关闭
+        $data['pay_weixin_open'] = is_wecaht_pay();//微信支付 1 开启 0 关闭
+        $data['ali_pay_status'] = is_ali_pay();//支付包支付 1 开启 0 关闭
         $data['friend_pay_status'] = (int)sys_config('friend_pay_status') ?? 0;//好友代付 1 开启 0 关闭
         return $data;
     }
@@ -508,18 +503,12 @@ class StoreOrderServices extends BaseServices
                 }
             } else {
                 switch ($item['pay_type']) {
-                    case PayServices::WEIXIN_PAY:
-                        $item['pay_type_name'] = '微信未支付';
-                        break;
-                    case PayServices::ALIAPY_PAY:
-                        $item['pay_type_name'] = '支付宝未支付';
-                        break;
                     case 'offline':
                         $item['pay_type_name'] = '线下支付';
                         $item['pay_type_info'] = 1;
                         break;
                     default:
-                        $item['pay_type_name'] = '未支付';
+                        $item['pay_type_name'] = '';
                         break;
                 }
             }
@@ -1432,54 +1421,80 @@ HTML;
         $info[3]['total_name'] = '本月新增用户';
         return $info;
     }
-    //TODO
 
     /**
-     * 打印订单
+     * 订单小票打印
      * @param int $id
+     * @param bool $start
+     * @return bool|void
      * @throws \think\db\exception\DataNotFoundException
      * @throws \think\db\exception\DbException
      * @throws \think\db\exception\ModelNotFoundException
+     * @throws \Exception
      */
-    public function orderPrint(int $id)
+    public function orderPrintTicket(int $id)
     {
         $order = $this->get($id);
         if (!$order) {
             throw new AdminException(400118);
         }
-
         /** @var StoreOrderCartInfoServices $cartServices */
         $cartServices = app()->make(StoreOrderCartInfoServices::class);
-        $product = $cartServices->getCartInfoPrintProduct($order->cart_id);
+        $product = $cartServices->getCartInfoPrintProduct($order['id']);
         if (!$product) {
-            throw new AdminException(400533);
+            throw new AdminException(400463);
         }
-        $data = [
-            'clientId' => sys_config('printing_client_id', ''),
-            'apiKey' => sys_config('printing_api_key', ''),
-            'partner' => sys_config('develop_id', ''),
-            'terminal' => sys_config('terminal_number', '')
-        ];
-        if (!$data['clientId'] || !$data['apiKey'] || !$data['partner'] || !$data['terminal']) {
-            throw new AdminException(400099);
+        $switch = (bool)sys_config('pay_success_printing_switch');
+        if (!$switch) {
+            throw new AdminException(400464);
         }
-        $printer = new Printer('yi_lian_yun', $data);
+        if (sys_config('print_type', 1) == 1) {
+            $name = 'yi_lian_yun';
+            $configData = [
+                'clientId' => sys_config('printing_client_id', ''),
+                'apiKey' => sys_config('printing_api_key', ''),
+                'partner' => sys_config('develop_id', ''),
+                'terminal' => sys_config('terminal_number', '')
+            ];
+            if (!$configData['clientId'] || !$configData['apiKey'] || !$configData['partner'] || !$configData['terminal']) {
+                throw new AdminException(400465);
+            }
+        } else {
+            $name = 'fei_e_yun';
+            $configData = [
+                'feyUser' => sys_config('fey_user', ''),
+                'feyUkey' => sys_config('fey_ukey', ''),
+                'feySn' => sys_config('fey_sn', '')
+            ];
+            if (!$configData['feyUser'] || !$configData['feyUkey'] || !$configData['feySn']) {
+                throw new AdminException(400465);
+            }
+        }
+        $printer = new Printer($name, $configData);
         $res = $printer->setPrinterContent([
             'name' => sys_config('site_name'),
+            'url' => sys_config('site_url'),
             'orderInfo' => is_object($order) ? $order->toArray() : $order,
             'product' => $product
         ])->startPrinter();
         if (!$res) {
             throw new AdminException($printer->getError());
         }
-        return $res;
+        return true;
     }
 
     /**
      * 获取订单确认数据
      * @param array $user
      * @param $cartId
-     * @return mixed
+     * @param bool $new
+     * @param int $addressId
+     * @param int $shipping_type
+     * @return array
+     * @throws \Psr\SimpleCache\InvalidArgumentException
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
      */
     public function getOrderConfirmData(array $user, $cartId, bool $new, int $addressId, int $shipping_type = 1)
     {
@@ -1562,7 +1577,7 @@ HTML;
         $data['integralRatio'] = $other['integralRatio'];
         $data['offline_pay_status'] = (int)sys_config('offline_pay_status') ?? (int)2;
         $data['yue_pay_status'] = (int)sys_config('balance_func_status') && (int)sys_config('yue_pay_status') == 1 ? (int)1 : (int)2;//余额支付 1 开启 2 关闭
-        $data['pay_weixin_open'] = (int)sys_config('pay_weixin_open') ?? 0;//微信支付 1 开启 0 关闭
+        $data['pay_weixin_open'] = is_wecaht_pay();//微信支付 1 开启 0 关闭
         $data['friend_pay_status'] = (int)sys_config('friend_pay_status') ?? 0;//好友代付 1 开启 0 关闭
         $data['store_self_mention'] = (int)sys_config('store_self_mention') ?? 0;//门店自提是否开启
         /** @var SystemStoreServices $systemStoreServices */
@@ -1570,7 +1585,7 @@ HTML;
         $store_count = $systemStoreServices->count(['type' => 0]);
         $data['store_self_mention'] = $data['store_self_mention'] && $store_count;
 
-        $data['ali_pay_status'] = (bool)sys_config('ali_pay_status');//支付包支付 1 开启 0 关闭
+        $data['ali_pay_status'] = is_ali_pay();//支付包支付 1 开启 0 关闭
         $data['system_store'] = [];//门店信息
         /** @var UserInvoiceServices $userInvoice */
         $userInvoice = app()->make(UserInvoiceServices::class);
@@ -1598,7 +1613,7 @@ HTML;
     public function cacheOrderInfo($uid, $cartInfo, $priceGroup, $other = [], $cacheTime = 600)
     {
         $key = $this->getCacheKey();
-        CacheService::redisHandler()->set('user_order_' . $uid . $key, compact('cartInfo', 'priceGroup', 'other'), $cacheTime);
+        CacheService::set('user_order_' . $uid . $key, compact('cartInfo', 'priceGroup', 'other'), $cacheTime);
         return $key;
     }
 
@@ -1638,8 +1653,8 @@ HTML;
     public function getCacheOrderInfo(int $uid, string $key)
     {
         $cacheName = 'user_order_' . $uid . $key;
-        if (!CacheService::redisHandler()->has($cacheName)) return null;
-        return CacheService::redisHandler()->get($cacheName);
+        if (!CacheService::has($cacheName)) return null;
+        return CacheService::get($cacheName);
     }
 
     /**
@@ -1688,6 +1703,8 @@ HTML;
             case PayServices::FRIEND:
                 $res = sys_config('friend_pay_status', 1) == 1;
                 break;
+            case PayServices::ALLIN_PAY:
+                $res = sys_config('allin_pay_status') == 1;
         }
         return $res;
     }
@@ -2334,9 +2351,11 @@ HTML;
         $order['ali_pay_status'] = (bool)sys_config('ali_pay_status');//支付包支付 1 开启 0 关闭
         $order['friend_pay_status'] = (int)sys_config('friend_pay_status') ?? 0;//好友代付 1 开启 0 关闭
         $orderData = $this->tidyOrder($order, true, true);
-        $vipTruePrice = 0;
+        $vipTruePrice = $memberPrice = $levelPrice = 0;
         foreach ($orderData['cartInfo'] ?? [] as $key => $cart) {
             $vipTruePrice = bcadd((string)$vipTruePrice, (string)$cart['vip_sum_truePrice'], 2);
+            if ($cart['price_type'] == 'member') $memberPrice = bcadd((string)$memberPrice, (string)$cart['vip_sum_truePrice'], 2);
+            if ($cart['price_type'] == 'level') $levelPrice = bcadd((string)$levelPrice, (string)$cart['vip_sum_truePrice'], 2);
             if (isset($splitNum[$cart['id']])) {
                 $orderData['cartInfo'][$key]['cart_num'] = $cart['cart_num'] - $splitNum[$cart['id']];
                 if ($orderData['cartInfo'][$key]['cart_num'] == 0) unset($orderData['cartInfo'][$key]);
@@ -2344,6 +2363,8 @@ HTML;
         }
         $orderData['cartInfo'] = array_merge($orderData['cartInfo']);
         $orderData['vip_true_price'] = $vipTruePrice;
+        $orderData['levelPrice'] = $levelPrice;
+        $orderData['memberPrice'] = $memberPrice;
         $economize = $services->get(['order_id' => $order['order_id']], ['postage_price', 'member_price']);
         if ($economize) {
             $orderData['postage_price'] = $economize['postage_price'];
@@ -2395,9 +2416,8 @@ HTML;
         if ($new) {
             $cartIds = explode(',', $cartIds);
             $cartInfo = [];
-            $redis = CacheService::redisHandler();
             foreach ($cartIds as $key) {
-                $info = $redis->get($key);
+                $info = CacheService::get($key);
                 if ($info) {
                     $cartInfo[] = $info;
                 }

@@ -281,6 +281,7 @@
 				isFixed: false,
 			};
 		},
+
 		created() {
 			uni.hideTabBar();
 			// #ifdef APP-PLUS

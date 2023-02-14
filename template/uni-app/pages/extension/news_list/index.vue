@@ -23,10 +23,8 @@
 							<view class='line bg-color' v-if="active==item.id"></view>
 						</view>
 					</block>
-
-
 				</scroll-view>
-				<scroll-view class="scroll-view_x" scroll-x scroll-with-animation style="width:auto;overflow:hidden;">
+				<scroll-view v-if="coutList.length" class="scroll-view_x" scroll-x scroll-with-animation style="width:auto;overflow:hidden;">
 					<view class="coutry-list">
 						<view class="coutry" :class='activeCou==coutry.id?"on":""' v-for="(coutry,index) in coutList"
 							:key="index" @click="getCidArticle(coutry.id,1)">
@@ -386,10 +384,10 @@
 	.coutry-list {
 		display: flex;
 		align-items: center;
-		margin-top: 10rpx;
-		padding-top: 20rpx;
+		margin: 10rpx 0;
+		padding-top: 10rpx;
 		border-top: 1px solid #F2F2F2;
-
+		height: 80rpx;
 		.coutry {
 			// background-color: #F5F5F5;
 			border-radius: 26rpx;

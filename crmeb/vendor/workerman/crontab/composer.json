@@ -1,0 +1,34 @@
+{
+    "name": "workerman/crontab",
+    "type": "library",
+    "keywords": [
+        "crontab"
+    ],
+    "homepage": "http://www.workerman.net",
+    "license": "MIT",
+    "description": "A crontab written in PHP based on workerman",
+    "authors": [
+        {
+            "name": "walkor",
+            "email": "walkor@workerman.net",
+            "homepage": "http://www.workerman.net",
+            "role": "Developer"
+        }
+    ],
+    "support": {
+        "email": "walkor@workerman.net",
+        "issues": "https://github.com/walkor/workerman/issues",
+        "forum": "http://wenda.workerman.net/",
+        "wiki": "http://doc.workerman.net/",
+        "source": "https://github.com/walkor/crontab"
+    },
+    "require": {
+        "php": ">=7.0",
+        "workerman/workerman": ">=3.5.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Workerman\\Crontab\\": "./src"
+        }
+    }
+}

@@ -19,7 +19,8 @@
 						<view class='iconfont icon-wuliu'></view>
 						<view class='text'>
 							<view><text class='name line1'>{{$t(`物流公司`)}}：</text> {{orderInfo.delivery_name}}</view>
-							<view class='express line1'><text class='name'>{{$t(`快递单号`)}}：</text> {{orderInfo.delivery_id}}</view>
+							<view class='express line1'><text class='name'>{{$t(`快递单号`)}}：</text>
+								{{orderInfo.delivery_id}}</view>
 						</view>
 					</view>
 					<!-- #ifndef H5 -->
@@ -71,7 +72,7 @@
 			authorize
 			// #endif
 		},
-		mixins:[colors],
+		mixins: [colors],
 		data() {
 			return {
 				orderId: '',
@@ -118,6 +119,11 @@
 				});
 			});
 			// #endif
+		},
+		// 滚动监听
+		onPageScroll(e) {
+			// 传入scrollTop值并触发所有easy-loadimage组件下的滚动监听事件
+			uni.$emit('scroll');
 		},
 		methods: {
 			/**

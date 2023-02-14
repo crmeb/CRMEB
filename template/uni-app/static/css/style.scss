@@ -328,9 +328,9 @@
 .coupon-list .item .money,.coupons .list .item .price{background-repeat:no-repeat;background-size:100% 100%;background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHgAAABVCAMAAAC1iNAIAAAAolBMVEUAAAD////////////////////////////////////////////////////////////////w8PD////x8fH////////////////////09PT4+Pj4+Pj5+fn29vb29vb39/f09PT09PT29vb09PT19fX19fX39/f19fX29vb29vb19fX19fX09PT19fX19fX29vb19fX29vb19fX09PT09PT19fUjCUKaAAAANHRSTlMAAQIDBAUGBwgJCgsMDQ4PEBEREhITFBojRERHUlNXZHJzc3d7fX1+iJSdycvN8fL5+/3+S5lxYgAABUVJREFUaN69Wmlj3CYQBXTflDLUSY/E6eFeSWo3/P+/1g8SC0jDsa4UPnrZHc313puRidZa/0OuOrSkoY+01vrvq8y2AkQTMfzTNXarBZRSsgwa/uMSs8UISiml1IB//vzXJf7SXqrtzOQrnoaDsRvy+JLkztasghq/9OnNZcndDBf4tS9PJye3k55dBSzg8dtT7dbcN6sUVF8hueW8NxsursdvTjPLBqmQI3GXX96fiI8KPaK60nC9BMwqpWAeh/qaUJdT2KwxXlyKj64pwb3O4sXZAIImF5aaEupCp5rOBZAKSy6IdlUAzGkwWZwIIDt8NCaGG1wxnkTt85I7udxf354MmrOquuF4cv1bMx7q1/dxNaPJ7fbyrt2uwXgKgDA0uTAcuajZLgp2AoDQDm2hGRN2/fZpfwn5KaWAo0qWCqy0XgUgKPkp6SaXdtyU9i3F3f9UIDj5wVjsy12sfxkDavNOAKEBfKyQiEy+YWjOJj9/TGGDuSIIIYR0NhktfWVVFyj5yZ7i5S4pIYSU4DzhNLTs7j4O4WMRKHcDGDu1K9s7DTcZyfUiYgCD7poA2ntCHSc/rNxt+9COS3C+Ltl55IeUO7goRpmThPWRMgAkh/yOEYEdfDrEPOcBCE5+vE6U+5ZKjJjnHAAp0+SHR0RxhoP2ATxxfEyTXxMQ8sAbVpTOzcXkKFnVOeRXxYQ8AEh7W3jJj/Qxjo8e+eHljs9OBsK2gTlsmIk0PkqVcZb19pANIMf8IuSXcTYXp1DVJV3GyS/b8OiPUTEAaSGD/LJD7fyanGcEQIqbX3TJIL90cW1lzbyCOAAI7aW4magAJ78l36wjPDr3Wxj5gRWiIzIcpGdhfx9gI9U7Y6tf1dtwYGeNQibIL31cjVe0vSlJt48tGthJtoc4+WWXFtkF3Bp2N2N2oKRDLj4Ga2vftat7t1D7w8FCs+VAsrjGPTxIp7hKXBel5UCO5amk1HVkWtvpDVowguXIAfvjcdNCSG5xYFBKKfLlCS0YGNKz8C2LY9t26X3TwnyPv19wlZ6f3PUZS5mZ7JUeCeUplX5YBAegac6s73VeJj8/JLYYdYr8zF54SVZZ5Rr+99eoSs8gP7OC58mLpaM2D4Y9oMrCx20FT2Umhq3JJb89BIVcJj6uQyEpIC/ShNRSKUUgqNJzyW8zXEI2W9QCgHz+AVfpRTb5cX+rFHTYAUNa1eTL7/iKaryXfrrcSG/n849bcnd/L0K1AnLX1pOvXtNKxDGAraj6QOg4Y77iGomvXoM59hnv8Tvwhdxhxto9eE0Ioc1s3e5z8WPyl6gfltHDx3K/g0RLiRSDcbtznhNEBF5B8mW5CYuX99Qnv3k/3Sl8wUBYy8FWK5VrxljKcyMlXbFXzeDKngpSQqYaJWz3mclYlQSSNrAI5jTSUnsFxdqtPhgfCmy9FBS8ZoSxw4GNJtJSh7az1eFrqiSrbCOMS35WVnfoaquLT3uFzOLlT28P5Gd1IaoSFMipjr2Fypb4B/Kz6BYCYFhalr+I26V4Dejjtwj5zcdXKEe3h/JVytt0zcsvEMPVGNnB3GDKG0QfG543Fj1Kn92IF/sNEK7T5VqfMLCo8DPd+vQQg5fACgYl0sGRMBGta5Ag9HG0pY4bkRWyLMuFA2VgIvT5hO0j4u96eofl6nCG5PrN54/vEoIB/Y2FYZhlkXSOvjxv64porf/EFQ31prsg0JeTKLP/T8HuGonWWr+LkwhWKZMLPtPdIKIU0VrrjzjCsEhLrSWyuea9kaZ5GzCitdbPgW6JtZQsbq4BL9NL5P35Dy6VtHEa3VHxAAAAAElFTkSuQmCC');}
 .coupon-list .item .money.moneyGray,.coupons .list .item .price.moneyGray{background-color: #ccc;}
 .coupon-list .item .money .num{font-size:60rpx;}
-.coupon-list .item .text{width:470rpx;padding:0 17rpx 0 24rpx;box-sizing:border-box;background-color:#fff;}
+.coupon-list .item .text{width:470rpx;padding:6rpx 17rpx 0 24rpx;box-sizing:border-box;background-color:#fff;}
 .coupon-list .item .text .condition{font-size:30rpx;color:#282828;height:93rpx;}
-.coupon-list .item .text .data{font-size:20rpx;color:#999;height:76rpx;display: flex;flex-wrap: nowrap;}
+.coupon-list .item .text .data{font-size:20rpx;color:#999;height:70rpx;display: flex;flex-wrap: nowrap;}
 .coupon-list .item .text .data .bnt{width:136rpx;height:44rpx;border-radius:22rpx;font-size:22rpx;text-align:center;line-height:44rpx;color:#fff;}
 .coupon-list .item .text .data .bnt.gray{background:#ccc!important;}
 .coupon-list .item.svip .money{background-color: #EDBB75;}
@@ -763,4 +763,7 @@ uni-toast .uni-toast {
 	width: 100%;
 	height: var(--status-bar-height);
 	background: #e93323;
+}
+.eject{
+	transform: translate3d(0, 0, 0) !important;
 }

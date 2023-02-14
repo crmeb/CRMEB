@@ -49,4 +49,3 @@ export function rankApi() {
     method: 'get',
   });
 }
-

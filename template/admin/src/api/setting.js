@@ -1016,7 +1016,7 @@ export function saveType(type) {
 /**
  * @description 多语言-语言类型列表
  */
- export function langTypeList(data) {
+export function langTypeList(data) {
   return request({
     url: `setting/lang_type/list`,
     method: 'get',
@@ -1026,9 +1026,9 @@ export function saveType(type) {
 
 /**
  * @description 多语言-语言类型新增编辑
- * @param {Number} param id {Number} 
+ * @param {Number} param id {Number}
  */
- export function langTypeForm(id) {
+export function langTypeForm(id) {
   return request({
     url: `setting/lang_type/form/${id}`,
     method: 'get',
@@ -1038,7 +1038,7 @@ export function saveType(type) {
 /**
  * @description 多语言-语言详情列表
  */
- export function langCodeList(data) {
+export function langCodeList(data) {
   return request({
     url: `setting/lang_code/list`,
     method: 'get',
@@ -1049,7 +1049,7 @@ export function saveType(type) {
 /**
  * @description 获取语言信息
  */
- export function langCodeInfo(data) {
+export function langCodeInfo(data) {
   return request({
     url: `setting/lang_code/info`,
     method: 'get',
@@ -1060,7 +1060,7 @@ export function saveType(type) {
 /**
  * @description 修改语言详情
  */
- export function langCodeSettingSave(data) {
+export function langCodeSettingSave(data) {
   return request({
     url: `setting/lang_code/save`,
     method: 'post',
@@ -1071,7 +1071,7 @@ export function saveType(type) {
 /**
  * @description 国家列表
  */
- export function langCountryList(data) {
+export function langCountryList(data) {
   return request({
     url: `setting/lang_country/list`,
     method: 'get',
@@ -1080,10 +1080,10 @@ export function saveType(type) {
 }
 /**
  * 添加语言地区表单
- * @param {*} id 
- * @returns 
+ * @param {*} id
+ * @returns
  */
- export function langCountryForm(id) {
+export function langCountryForm(id) {
   return request({
     url: `setting/lang_country/form/${id}`,
     method: 'get',
@@ -1091,10 +1091,10 @@ export function saveType(type) {
 }
 /**
  * 添加语言地区表单
- * @param {*} id 
- * @returns 
+ * @param {*} id
+ * @returns
  */
- export function langTypeStatus(id,status) {
+export function langTypeStatus(id, status) {
   return request({
     url: `setting/lang_type/status/${id}/${status}`,
     method: 'put',
@@ -1104,7 +1104,7 @@ export function saveType(type) {
 /**
  * @description 一键翻译
  */
- export function langCodeTranslate(data) {
+export function langCodeTranslate(data) {
   return request({
     url: `setting/lang_code/translate`,
     method: 'post',

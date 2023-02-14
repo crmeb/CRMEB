@@ -22,42 +22,78 @@ use crmeb\services\pay\Pay;
  */
 class PayServices
 {
-    /**
-     * 微信支付类型
-     */
+    //微信支付类型
     const WEIXIN_PAY = 'weixin';
 
-    /**
-     * 余额支付
-     */
+    //余额支付
     const YUE_PAY = 'yue';
 
-    /**
-     * 线下支付
-     */
+    //线下支付
     const OFFLINE_PAY = 'offline';
 
-    /**
-     * 支付宝
-     */
+    //支付宝
     const ALIAPY_PAY = 'alipay';
 
-    /**
-     * 好友代付
-     */
+    //通联支付
+    const ALLIN_PAY = 'allinpay';
+
+    //好友代付
     const FRIEND = 'friend';
 
-    /**
-     * 支付方式
-     * @var string[]
-     */
+    //支付方式
     const PAY_TYPE = [
         PayServices::WEIXIN_PAY => '微信支付',
         PayServices::YUE_PAY => '余额支付',
         PayServices::OFFLINE_PAY => '线下支付',
         PayServices::ALIAPY_PAY => '支付宝',
         PayServices::FRIEND => '好友代付',
+        PayServices::ALLIN_PAY => '通联支付'
     ];
+
+    /**
+     * @var array
+     */
+    protected $options = [];
+
+    /**
+     * @param string $key
+     * @param $value
+     * @return $this
+     * @author 等风来
+     * @email 136327134@qq.com
+     * @date 2023/1/16
+     */
+    public function setOption(string $key, $value)
+    {
+        $this->options[$key] = $value;
+        return $this;
+    }
+
+    /**
+     * @param array $value
+     * @return $this
+     * @author 等风来
+     * @email 136327134@qq.com
+     * @date 2023/1/16
+     */
+    public function setOptions(array $value)
+    {
+        $this->options = $value;
+        return $this;
+    }
+
+    /**
+     * @param string $key
+     * @param null $default
+     * @return mixed|null
+     * @author 等风来
+     * @email 136327134@qq.com
+     * @date 2023/1/16
+     */
+    protected function getOption(string $key, $default = null)
+    {
+        return $this->options[$key] ?? $default;
+    }
 
     /**
      * 发起支付
@@ -86,10 +122,23 @@ class PayServices
                 $payType = 'ali_pay';
             }
 
+
+            $options = [];
+            if (self::ALLIN_PAY === $payType) {
+                $options['returl'] = $this->getOption('returl');
+                if ($options['returl']) {
+                    $options['returl'] = str_replace('http://', 'https://', $options['returl']);
+                }
+                $options['is_wechat'] = $this->getOption('is_wechat', false);
+                $options['appid'] = sys_config('routine_appId');
+                $payType = 'allin_pay';
+            }
+
             /** @var Pay $pay */
             $pay = app()->make(Pay::class, [$payType]);
 
-            return $pay->create($orderId, $price, $successAction, $body, '', ['openid' => $openid, 'isCode' => $isCode, 'pay_new_weixin_open' => (bool)sys_config('pay_new_weixin_open')]);
+
+            return $pay->create($orderId, $price, $successAction, $body, '', ['openid' => $openid, 'isCode' => $isCode, 'pay_new_weixin_open' => (bool)sys_config('pay_new_weixin_open')] + $options);
 
         } catch (\Exception $e) {
             if (strpos($e->getMessage(), 'api unauthorized rid') !== false) {

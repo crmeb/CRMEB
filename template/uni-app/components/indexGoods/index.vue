@@ -4,7 +4,8 @@
 			<view class="product-box">
 				<view class="product-list" v-for="(item, i1) in tmp_data" :key="i1" @click="goGoodsDetail(item)">
 					<view class="product-item">
-						<image :src="item.image" mode="scaleToFill" fade-show style="width: 100%;"></image>
+						<!-- <image :src="item.image" mode="scaleToFill" fade-show style="width: 100%;"></image> -->
+						<easy-loadimage mode="widthFix" :image-src="item.image"></easy-loadimage>
 						<view class="info">
 							<view class="title line2">
 								<text class="tag" v-if="item.activity && item.activity.type === '1'">{{$t(`秒杀`)}}</text>
@@ -72,7 +73,7 @@
 				this.loadErr = []
 				this.tmp_data = this.dataLists
 			},
-		}
+		},
 	};
 </script>
 
@@ -129,8 +130,10 @@
 			display: flex;
 			flex-direction: column;
 			justify-content: space-between;
-
-			image {
+			
+			/deep/image,
+			/deep/.easy-loadimage,
+			/deep/uni-image {
 				width: 100%;
 				height: 330rpx;
 				border-radius: 10rpx 10rpx 0 0;

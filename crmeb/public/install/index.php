@@ -4,24 +4,26 @@ $fileValue = '';
 //最低php版本要求
 define('PHP_EDITION', '7.1.0');
 //服务环境检测
-if (function_exists('saeAutoLoader') || isset($_SERVER['HTTP_BAE_ENV_APPID']))
+if (function_exists('saeAutoLoader') || isset($_SERVER['HTTP_BAE_ENV_APPID'])) {
     showHtml('对不起，当前环境不支持本系统，请使用独立服务或云主机！');
+}
 
 define('APP_DIR', _dir_path(substr(dirname(__FILE__), 0, -15)));//项目目录
 define('SITE_DIR', _dir_path(substr(dirname(__FILE__), 0, -8)));//入口文件目录
 
 if (file_exists('../install.lock')) {
-    showHtml('你已经安装过该系统，如果想重新安装，请先删除install目录下的 install.lock 文件，然后再安装。');
+    showHtml('你已经安装过该系统，如果想重新安装，请先删除public目录下的 install.lock 文件，然后再安装。');
 }
+
 @set_time_limit(1000);
 
-if (PHP_EDITION > phpversion()) {
-    showHtml('您的php版本过低，不能安装本软件，请升级到' . PHP_EDITION . '或更高版本再安装，谢谢！');
+if ('7.1.0' > phpversion()) {
+    exit('您的php版本过低，不能安装本软件，兼容php版本7.1~7.4，谢谢！');
 }
-if (phpversion() > '8.0') {
-    showHtml('您的php版本太高，不能安装本软件，兼容php版本7.1~7.4，谢谢！');
+if (phpversion() >= '8.0.0') {
+    exit('您的php版本太高，不能安装本软件，兼容php版本7.1~7.4，谢谢！');
 }
-define("CRMEB_VERSION", '20180601');
+
 date_default_timezone_set('PRC');
 error_reporting(E_ALL & ~E_NOTICE);
 header('Content-Type: text/html; charset=UTF-8');
@@ -46,160 +48,102 @@ $step = $_GET['step'] ?? 1;
 
 //地址
 $scriptName = !empty($_SERVER["REQUEST_URI"]) ? $scriptName = $_SERVER["REQUEST_URI"] : $scriptName = $_SERVER["PHP_SELF"];
-$rootpath = @preg_replace("/\/(I|i)nstall\/index\.php(.*)$/", "", $scriptName);
+$rootPath = @preg_replace("/\/(I|i)nstall\/index\.php(.*)$/", "", $scriptName);
 $domain = empty($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : $_SERVER['SERVER_NAME'];
 if ((int)$_SERVER['SERVER_PORT'] != 80) {
     $domain .= ":" . $_SERVER['SERVER_PORT'];
 }
-$domain = $domain . $rootpath;
+$domain = $domain . $rootPath;
 
 switch ($step) {
-
     case '1':
         include_once("./templates/step1.php");
         exit();
 
     case '2':
-
-        if (phpversion() <= PHP_EDITION) {
-            die('本系统需要PHP版本 >= ' . PHP_EDITION . '环境，当前PHP版本为：' . phpversion());
+        if (phpversion() < '7.1.0' || phpversion() >= '8.0.0') {
+            die('本系统需要PHP为 7.1~7.4 版本，当前PHP版本为：' . phpversion());
         }
 
-        $phpv = @ phpversion();
+        $passOne = $passTwo = 'yes';
         $os = PHP_OS;
-        //$os = php_uname();
-        $tmp = function_exists('gd_info') ? gd_info() : array();
         $server = $_SERVER["SERVER_SOFTWARE"];
-        $host = (empty($_SERVER["SERVER_ADDR"]) ? $_SERVER["SERVER_HOST"] : $_SERVER["SERVER_ADDR"]);
-        $name = $_SERVER["SERVER_NAME"];
-        $max_execution_time = ini_get('max_execution_time');
-        $allow_reference = (ini_get('allow_call_time_pass_reference') ? '<font color=green>[√]On</font>' : '<font color=red>[×]Off</font>');
-        $allow_url_fopen = (ini_get('allow_url_fopen') ? '<font color=green>[√]On</font>' : '<font color=red>[×]Off</font>');
-        $safe_mode = (ini_get('safe_mode') ? '<span class="correct_span error_span">&radic;</span> 关闭' : '<span class="correct_span">&radic;</span> 启用');
-
-        $err = 0;
-        if (empty($tmp['GD Version'])) {
-            $gd = '<span class="correct_span error_span">&radic;</span> 未安装';
-            $err++;
-        } else {
-            $gd = '<span class="correct_span">&radic;</span> ' . $tmp['GD Version'];
-        }
-
-
-        if (extension_loaded('redis')) {
-            $redis = '<span class="correct_span">&radic;</span> 已安装';
-        } else {
-            $redis = '<a href="https://doc.crmeb.com/web/single/crmeb_v4/913" target="_blank"><span class="correct_span error_span">&radic;</span> 点击查看帮助</a>';
-            $err++;
-        }
-
-        if (function_exists('mysqli_connect')) {
-            $mysql = '<span class="correct_span">&radic;</span> 已安装';
-        } else {
-            $mysql = '<span class="correct_span error_span">&radic;</span> 请安装mysqli扩展';
-            $err++;
-        }
+        $phpv = phpversion();
         if (ini_get('file_uploads')) {
-            $uploadSize = '<span class="correct_span">&radic;</span> ' . ini_get('upload_max_filesize');
+            $uploadSize = '<img class="yes" src="images/install/yes.png" alt="对">' . ini_get('upload_max_filesize');
         } else {
-            $uploadSize = '<span class="correct_span error_span">&radic;</span>禁止上传';
+            $passOne = 'no';
+            $uploadSize = '<img class="no" src="images/install/warring.png" alt="错">禁止上传';
         }
         if (function_exists('session_start')) {
-            $session = '<span class="correct_span">&radic;</span> 启用';
+            $session = '<img class="yes" src="images/install/yes.png" alt="对">启用';
         } else {
-            $session = '<span class="correct_span error_span">&radic;</span> 关闭';
-            $err++;
+            $passOne = 'no';
+            $session = '<img class="no" src="images/install/warring.png" alt="错">关闭';
+        }
+        if (!ini_get('safe_mode')) {
+            $safe_mode = '<img class="yes" src="images/install/yes.png" alt="对">启用';
+        } else {
+            $passOne = 'no';
+            $safe_mode = '<img class="no" src="images/install/warring.png" alt="错">关闭';
+        }
+        $tmp = function_exists('gd_info') ? gd_info() : array();
+        if (!empty($tmp['GD Version'])) {
+            $gd = '<img class="yes" src="images/install/yes.png" alt="对">' . $tmp['GD Version'];
+        } else {
+            $passOne = 'no';
+            $gd = '<img class="no" src="images/install/warring.png" alt="错">未安装';
+        }
+        if (function_exists('mysqli_connect')) {
+            $mysql = '<img class="yes" src="images/install/yes.png" alt="对">已安装';
+        } else {
+            $passOne = 'no';
+            $mysql = '<img class="no" src="images/install/warring.png" alt="错">请安装mysqli扩展';
         }
         if (function_exists('curl_init')) {
-            $curl = '<span class="correct_span">&radic;</span> 启用';
+            $curl = '<img class="yes" src="images/install/yes.png" alt="对">启用';
         } else {
-            $curl = '<span class="correct_span error_span">&radic;</span> 关闭';
-            $err++;
+            $passOne = 'no';
+            $curl = '<img class="no" src="images/install/warring.png" alt="错">关闭';
         }
-
         if (function_exists('bcadd')) {
-            $bcmath = '<span class="correct_span">&radic;</span> 启用';
+            $bcmath = '<img class="yes" src="images/install/yes.png" alt="对">启用';
         } else {
-            $bcmath = '<span class="correct_span error_span">&radic;</span> 关闭';
-            $err++;
+            $passOne = 'no';
+            $bcmath = '<img class="no" src="images/install/warring.png" alt="错">关闭';
         }
         if (function_exists('openssl_encrypt')) {
-            $openssl = '<span class="correct_span">&radic;</span> 启用';
+            $openssl = '<img class="yes" src="images/install/yes.png" alt="对">启用';
         } else {
-            $openssl = '<span class="correct_span error_span">&radic;</span> 关闭';
-            $err++;
+            $passOne = 'no';
+            $openssl = '<img class="no" src="images/install/warring.png" alt="错">关闭';
         }
-
-        if (function_exists('finfo_open')) {
-            $finfo_open = '<span class="correct_span">&radic;</span> 启用';
-        } else {
-            $finfo_open = '<a href="https://doc.crmeb.com/web/single/crmeb_v4/913" target="_blank"><span class="correct_span error_span">&radic;</span>点击查看帮助</a>';
-            $err++;
-        }
-
 
         $folder = array(
             'public',
-            'public/uploads',
             'runtime',
         );
+        foreach ($folder as $dir) {
+            if (!is_file(APP_DIR . $dir)) {
+                if (!is_dir(APP_DIR . $dir)) {
+                    dir_create(APP_DIR . $dir);
+                }
+            }
+            if (!testwrite(APP_DIR . $dir) || !is_readable(APP_DIR . $dir)) {
+                $passTwo = 'no';
+            }
+        }
         $file = array(
             '.env',
             '.version',
             '.constant',
         );
-        //必须开启函数
-//        $disabled = explode(',', ini_get('disable_functions'));
-//
-//
-//        if (function_exists('file_put_contents')) {
-//            $file_put_contents = '<span class="correct_span">&radic;</span> 启用';
-//        } else {
-//            $file_put_contents = '<span class="correct_span error_span">&radic;</span> 禁用';
-//            $err++;
-//        }
-//        if (function_exists('imagettftext')) {
-//            $imagettftext = '<span class="correct_span">&radic;</span> 启用';
-//        } else {
-//            $imagettftext = '<span class="correct_span error_span">&radic;</span> 禁用';
-//            $err++;
-//        }
-//        if (!in_array('proc_open', $disabled)) {
-//            $proc_open = '<span class="correct_span">&radic;</span> 启用';
-//        } else {
-//            $proc_open = '<span class="correct_span error_span">&radic;</span> 禁用';
-//            $err++;
-//        }
-//        if (!in_array('pcntl_signal', $disabled)) {
-//            $pcntl_signal = '<span class="correct_span">&radic;</span> 启用';
-//        } else {
-//            $pcntl_signal = '<span class="correct_span error_span">&radic;</span> 禁用';
-//            $err++;
-//        }
-//        if (!in_array('pcntl_signal_dispatch', $disabled)) {
-//            $pcntl_signal_dispatch = '<span class="correct_span">&radic;</span> 启用';
-//        } else {
-//            $pcntl_signal_dispatch = '<span class="correct_span error_span">&radic;</span> 禁用';
-//            $err++;
-//        }
-//        if (!in_array('pcntl_fork', $disabled)) {
-//            $pcntl_fork = '<span class="correct_span">&radic;</span> 启用';
-//        } else {
-//            $pcntl_fork = '<span class="correct_span error_span">&radic;</span> 禁用';
-//            $err++;
-//        }
-//        if (!in_array('pcntl_wait', $disabled)) {
-//            $pcntl_wait = '<span class="correct_span">&radic;</span> 启用';
-//        } else {
-//            $pcntl_wait = '<span class="correct_span error_span">&radic;</span> 禁用';
-//            $err++;
-//        }
-//        if (!in_array('pcntl_alarm', $disabled)) {
-//            $pcntl_alarm = '<span class="correct_span">&radic;</span> 启用';
-//        } else {
-//            $pcntl_alarm = '<span class="correct_span error_span">&radic;</span> 禁用';
-//            $err++;
-//        }
+        foreach ($file as $filename) {
+            if (!is_writeable(APP_DIR . $filename) || !is_readable(APP_DIR . $filename)) {
+                $passTwo = 'no';
+            }
+        }
+
         include_once("./templates/step2.php");
         exit();
 
@@ -208,8 +152,9 @@ switch ($step) {
         $_POST['dbport'] = $_POST['dbport'] ?: '3306';
         if ($_GET['mysqldbpwd']) {
             $dbHost = $_POST['dbHost'];
-            $conn = @mysqli_connect($dbHost, $_POST['dbUser'], $_POST['dbPwd'], NULL, $_POST['dbport']);
-//            var_dump(mysqli_connect_errno($conn));
+            $conn = mysqli_init();
+            mysqli_options($conn, MYSQLI_OPT_CONNECT_TIMEOUT, 2);
+            @mysqli_real_connect($conn, $dbHost, $_POST['dbUser'], $_POST['dbPwd'], NULL, $_POST['dbport']);
             if ($error = mysqli_connect_errno($conn)) {
                 if ($error == 2002) {
                     die(json_encode(2002));//地址或端口错误
@@ -219,7 +164,6 @@ switch ($step) {
                     die(json_encode(-1));//链接失败
                 }
             } else {
-
                 $result = mysqli_query($conn, "SELECT @@global.sql_mode");
                 $result = $result->fetch_array();
                 $version = mysqli_get_server_info($conn);
@@ -246,10 +190,7 @@ switch ($step) {
                         mysqli_close($conn);
                         exit(json_encode(1));//数据库配置成功
                     }
-
                 }
-
-
             }
         }
         if ($_GET['redisdbpwd']) {
@@ -285,7 +226,6 @@ switch ($step) {
         include_once("./templates/step3.php");
         exit();
 
-
     case '4':
         if (intval($_GET['install'])) {
             $n = intval($_GET['n']);
@@ -302,7 +242,6 @@ switch ($step) {
 
             $username = trim($_POST['manager']);
             $password = trim($_POST['manager_pwd']) ?: 'crmeb.com';
-            $email = trim($_POST['manager_email']);
 
             if (!function_exists('mysqli_connect')) {
                 $arr['msg'] = "请安装 mysqli 扩展!";
@@ -328,7 +267,7 @@ switch ($step) {
                 }
                 if ($n == -1) {
                     $arr['n'] = 0;
-                    $arr['msg'] = "成功创建数据库:{$dbName}<br>";
+                    $arr['msg'] = "成功创建数据库:{$dbName}";
                     exit(json_encode($arr));
                 }
                 mysqli_select_db($conn, $dbName);
@@ -344,29 +283,29 @@ switch ($step) {
              */
             $counts = count($sqlFormat);
             for ($i = $n; $i < $counts; $i++) {
-                $sql = str_replace('demo.crmeb.com', $_SERVER['SERVER_NAME'], trim($sqlFormat[$i]));
+                $sql = trim($sqlFormat[$i]);
                 if (strstr($sql, 'CREATE TABLE')) {
                     preg_match('/CREATE TABLE (IF NOT EXISTS)? `eb_([^ ]*)`/is', $sql, $matches);
                     mysqli_query($conn, "DROP TABLE IF EXISTS `$matches[2]");
                     $sql = str_replace('`eb_', '`' . $dbPrefix, $sql);//替换表前缀
                     $ret = mysqli_query($conn, $sql);
                     if ($ret) {
-                        $message = '<li><span class="correct_span">&radic;</span>创建数据表[' . $dbPrefix . $matches[2] . ']完成!<span style="float: right;">' . date('Y-m-d H:i:s') . '</span></li> ';
+                        $message = '创建数据表[' . $dbPrefix . $matches[2] . ']完成!';
                     } else {
                         $err = mysqli_error($conn);
-                        $message = '<li><span class="correct_span error_span">&radic;</span>创建数据表[' . $dbPrefix . $matches[2] . ']失败!失败原因：' . $err . '<span style="float: right;">' . date('Y-m-d H:i:s') . '</span></li>';
+                        $message = '创建数据表[' . $dbPrefix . $matches[2] . ']失败!失败原因：' . $err;
                     }
                     $i++;
-                    $arr = array('n' => $i, 'msg' => $message);
+                    $arr = array('n' => $i, 'count' => $counts, 'msg' => $message, 'time' => date('Y-m-d H:i:s'));
                     exit(json_encode($arr));
                 } else {
                     if (trim($sql) == '')
                         continue;
                     $sql = str_replace('`eb_', '`' . $dbPrefix, $sql);//替换表前缀
+                    $sql = str_replace('demo.crmeb.com', $_SERVER['SERVER_NAME'], $sql);//替换图片域名
                     $ret = mysqli_query($conn, $sql);
                     $message = '';
-                    $arr = array('n' => $i, 'msg' => $message);
-//                    echo json_encode($arr); exit;
+                    $arr = array('n' => $i, 'count' => $counts, 'msg' => $message, 'time' => date('Y-m-d H:i:s'));
                 }
             }
 
@@ -397,6 +336,7 @@ switch ($step) {
                 , 'eb_system_city'
                 , 'eb_diy'
                 , 'eb_member_ship'
+                , 'eb_system_timer'
                 , 'eb_member_right'
                 , 'eb_agreement'
                 , 'eb_store_service_speechcraft'
@@ -412,8 +352,10 @@ switch ($step) {
                         mysqli_query($conn, "truncate table " . $val[0]);
                     }
                 }
-                delFile(APP_DIR . '/uploads'); // 清空测试图片
             }
+
+            $unique = uniqid();
+
             //读取配置文件，并替换真实配置数据1
             $strConfig = file_get_contents(SITE_DIR . 'install/' . $configFile);
             $strConfig = str_replace('#DB_HOST#', $dbHost, $strConfig);
@@ -423,7 +365,12 @@ switch ($step) {
             $strConfig = str_replace('#DB_PORT#', $_POST['dbport'], $strConfig);
             $strConfig = str_replace('#DB_PREFIX#', $dbPrefix, $strConfig);
             $strConfig = str_replace('#DB_CHARSET#', 'utf8', $strConfig);
-            // $strConfig = str_replace('#DB_DEBUG#', false, $strConfig);
+
+            //缓存配置
+            $cachetype = $_POST['cache_type'] == 0 ? 'file' : 'redis';
+            $strConfig = str_replace('#CACHE_TYPE#', $cachetype, $strConfig);
+            $strConfig = str_replace('#CACHE_PREFIX#', 'cache_' . $unique . ':', $strConfig);
+            $strConfig = str_replace('#CACHE_TAG_PREFIX#', 'cache_tag_' . $unique . ':', $strConfig);
 
             //redis数据库信息
             $rbhost = $_POST['rbhost'] ?? '127.0.0.1';
@@ -436,18 +383,10 @@ switch ($step) {
             $strConfig = str_replace('#RB_SELECT#', $rbselect, $strConfig);
 
             //需改队列名称
-            $strConfig = str_replace('#QUEUE_NAME#', uniqid(), $strConfig);
+            $strConfig = str_replace('#QUEUE_NAME#', $unique, $strConfig);
 
             @chmod(APP_DIR . '/.env', 0777); //数据库配置文件的地址
             @file_put_contents(APP_DIR . '/.env', $strConfig); //数据库配置文件的地址
-
-            //读取配置文件，并替换换配置
-//            $strConfig = file_get_contents(SITE_DIR . '/application/config.php');
-//            $strConfig = str_replace('CRMEB_cache_prefix', $uniqid_str, $strConfig);
-//            @chmod(SITE_DIR . '/application/config.php',0777); //配置文件的地址
-//            @file_put_contents(SITE_DIR . '/application/config.php', $strConfig); //配置文件的地址
-
-            //更新网站配置信息2
 
             //插入管理员表字段tp_admin表
             $time = time();
@@ -463,15 +402,8 @@ switch ($step) {
                 $site_url = '\'"http://' . $_SERVER['SERVER_NAME'] . '"\'';
                 $res2 = mysqli_query($conn, 'UPDATE `' . $dbPrefix . 'system_config` SET `value`=' . $site_url . ' WHERE `menu_name`="site_url"');
             }
-            if ($res) {
-                $message = '成功添加管理员<br />成功写入配置文件<br>安装完成．';
-                $arr = array('n' => 999999, 'msg' => $message);
-                exit(json_encode($arr));
-            } else {
-                $message = '添加管理员失败<br />成功写入配置文件<br>安装完成．';
-                $arr = array('n' => 999999, 'msg' => $message);
-                exit(json_encode($arr));
-            }
+            $arr = array('n' => 999999, 'count' => $counts, 'msg' => '安装完成', 'time' => date('Y-m-d H:i:s'));
+            exit(json_encode($arr));
 
         }
         include_once("./templates/step4.php");

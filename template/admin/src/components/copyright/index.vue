@@ -5,7 +5,7 @@
     </div>
     <div class="ivu-global-footer-copyright" v-if="copyright">{{ copyright }}</div>
     <div class="ivu-global-footer-copyright" v-else>
-      Copyright © 2014-2022 
+      Copyright © 2014-2022
       <a href="https://www.crmeb.com" target="_blank">{{ version }}</a>
     </div>
   </div>

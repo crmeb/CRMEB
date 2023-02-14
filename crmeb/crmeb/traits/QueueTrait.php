@@ -23,7 +23,7 @@ trait QueueTrait
 {
     /**
      * 列名
-     * @return string
+     * @return null
      */
     protected static function queueName()
     {
@@ -32,25 +32,36 @@ trait QueueTrait
 
     /**
      * 加入队列
-     * @param array|string|int $action
+     * @param $action
      * @param array $data
      * @param string|null $queueName
      * @return mixed
      */
     public static function dispatch($action, array $data = [], string $queueName = null)
     {
-        $queue = Queue::instance()->job(__CLASS__);
-        if (is_array($action)) {
-            $queue->data(...$action);
-        } else if (is_string($action)) {
-            $queue->do($action)->data(...$data);
+        if (sys_config('queue_open', 0) == 1) {
+            $queue = Queue::instance()->job(__CLASS__);
+            if (is_array($action)) {
+                $queue->data(...$action);
+            } else if (is_string($action)) {
+                $queue->do($action)->data(...$data);
+            }
+            if ($queueName) {
+                $queue->setQueueName($queueName);
+            } else if (static::queueName()) {
+                $queue->setQueueName(static::queueName());
+            }
+            return $queue->push();
+        } else {
+            $className = '\\' . __CLASS__;
+            $res = new $className();
+            if (is_array($action)) {
+                $res->doJob(...$action);
+            } else {
+                $res->$action(...$data);
+            }
+
         }
-        if ($queueName) {
-            $queue->setQueueName($queueName);
-        } else if (static::queueName()) {
-            $queue->setQueueName(static::queueName());
-        }
-        return $queue->push();
     }
 
     /**
@@ -61,45 +72,21 @@ trait QueueTrait
      * @param string|null $queueName
      * @return mixed
      */
-    public static function dispatchSece(int $secs, $action, array $data = [], string $queueName = null)
+    public static function dispatchSecs(int $secs, $action, array $data = [], string $queueName = null)
     {
-        $queue = Queue::instance()->job(__CLASS__)->secs($secs);
-        if (is_array($action)) {
-            $queue->data(...$action);
-        } else if (is_string($action)) {
-            $queue->do($action)->data(...$data);
+        if (sys_config('queue_open', 0) == 1) {
+            $queue = Queue::instance()->job(__CLASS__)->secs($secs);
+            if (is_array($action)) {
+                $queue->data(...$action);
+            } else if (is_string($action)) {
+                $queue->do($action)->data(...$data);
+            }
+            if ($queueName) {
+                $queue->setQueueName($queueName);
+            } else if (static::queueName()) {
+                $queue->setQueueName(static::queueName());
+            }
+            return $queue->push();
         }
-        if ($queueName) {
-            $queue->setQueueName($queueName);
-        } else if (static::queueName()) {
-            $queue->setQueueName(static::queueName());
-        }
-        return $queue->push();
     }
-
-    /**
-     * 加入小队列
-     * @param string $do
-     * @param array $data
-     * @param int|null $secs
-     * @param string|null $queueName
-     * @return mixed
-     */
-    public static function dispatchDo(string $do, array $data = [], int $secs = null, string $queueName = null)
-    {
-        $queue = Queue::instance()->job(__CLASS__)->do($do);
-        if ($secs) {
-            $queue->secs($secs);
-        }
-        if ($data) {
-            $queue->data(...$data);
-        }
-        if ($queueName) {
-            $queue->setQueueName($queueName);
-        } else if (static::queueName()) {
-            $queue->setQueueName(static::queueName());
-        }
-        return $queue->push();
-    }
-
 }

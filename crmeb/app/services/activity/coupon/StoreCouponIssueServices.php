@@ -68,7 +68,8 @@ class StoreCouponIssueServices extends BaseServices
         return compact('list', 'count');
     }
 
-    /**获取会员优惠券列表
+    /**
+     * 获取会员优惠券列表
      * @param array $where
      * @return array
      * @throws \think\db\exception\DataNotFoundException
@@ -117,17 +118,25 @@ class StoreCouponIssueServices extends BaseServices
         $data['end_time'] = strtotime((string)$data['end_time']);
         $data['title'] = $data['coupon_title'];
         $data['remain_count'] = $data['total_count'];
+        $data['category_id'] = implode(',', $data['category_id']);
         if ($data['receive_type'] == 2 || $data['receive_type'] == 3) {
             $data['is_permanent'] = 1;
             $data['total_count'] = 0;
         }
         $data['add_time'] = time();
         $res = $this->dao->save($data);
-        if ($data['product_id'] !== '' && $res) {
-            $productIds = explode(',', $data['product_id']);
+        if (($data['product_id'] !== '' || $data['category_id'] !== '') && $res) {
             $couponData = [];
-            foreach ($productIds as $product_id) {
-                $couponData[] = ['product_id' => $product_id, 'coupon_id' => $res->id];
+            if ($data['product_id'] !== '') {
+                $productIds = explode(',', $data['product_id']);
+                foreach ($productIds as $product_id) {
+                    $couponData[] = ['product_id' => $product_id, 'coupon_id' => $res->id];
+                }
+            } elseif ($data['category_id'] !== '') {
+                $categoryIds = explode(',', $data['category_id']);
+                foreach ($categoryIds as $category_id) {
+                    $couponData[] = ['category_id' => $category_id, 'coupon_id' => $res->id];
+                }
             }
             /** @var StoreCouponProductServices $storeCouponProductService */
             $storeCouponProductService = app()->make(StoreCouponProductServices::class);
@@ -237,30 +246,27 @@ class StoreCouponIssueServices extends BaseServices
             $ids = array_column($couponList, 'id');
             /** @var StoreCouponIssueUserServices $issueUser */
             $issueUser = app()->make(StoreCouponIssueUserServices::class);
-            $userCouponIds = $issueUser->getColumn([['uid', '=', $uid], ['issue_coupon_id', 'in', $ids]], 'issue_coupon_id') ?? [];
             foreach ($couponList as $item) {
-                if (!$userCouponIds || !in_array($item['id'], $userCouponIds)) {
-                    $data['cid'] = $item['id'];
-                    $data['uid'] = $uid;
-                    $data['coupon_title'] = $item['title'];
-                    $data['coupon_price'] = $item['coupon_price'];
-                    $data['use_min_price'] = $item['use_min_price'];
-                    if ($item['coupon_time']) {
-                        $data['add_time'] = $time;
-                        $data['end_time'] = $data['add_time'] + $item['coupon_time'] * 86400;
-                    } else {
-                        $data['add_time'] = $item['start_use_time'];
-                        $data['end_time'] = $item['end_use_time'];
-                    }
-                    $data['type'] = 'get';
-                    $issue['uid'] = $uid;
-                    $issue['issue_coupon_id'] = $item['id'];
-                    $issue['add_time'] = $time;
-                    $issueUserData[] = $issue;
-                    $couponData[] = $data;
-                    unset($data);
-                    unset($issue);
+                $data['cid'] = $item['id'];
+                $data['uid'] = $uid;
+                $data['coupon_title'] = $item['title'];
+                $data['coupon_price'] = $item['coupon_price'];
+                $data['use_min_price'] = $item['use_min_price'];
+                if ($item['coupon_time']) {
+                    $data['add_time'] = $time;
+                    $data['end_time'] = $data['add_time'] + $item['coupon_time'] * 86400;
+                } else {
+                    $data['add_time'] = $item['start_use_time'];
+                    $data['end_time'] = $item['end_use_time'];
                 }
+                $data['type'] = 'get';
+                $issue['uid'] = $uid;
+                $issue['issue_coupon_id'] = $item['id'];
+                $issue['add_time'] = $time;
+                $issueUserData[] = $issue;
+                $couponData[] = $data;
+                unset($data);
+                unset($issue);
             }
             if ($couponData) {
                 /** @var StoreCouponUserServices $storeCouponUser */
@@ -290,24 +296,22 @@ class StoreCouponIssueServices extends BaseServices
     public function getIssueCouponList(int $uid, array $where)
     {
         [$page, $limit] = $this->getPageValue();
+        $cateId = [];
         if ($where['product_id'] == 0) {
-            $typeId = 0;
-            $cateId = 0;
             if ($where['type'] == -1) { // PC端获取优惠券
-                $list = $this->dao->getPcIssueCouponList($uid, [], 0, 0);
+                $list = $this->dao->getPcIssueCouponList($uid, []);
             } else {
-                $list = $this->dao->getIssueCouponList($uid, (int)$where['type'], $typeId, $page, $limit);
-                if (!$list) $list = $this->dao->getIssueCouponList($uid, 1, $typeId, $page, $limit);
-                if (!$list) $list = $this->dao->getIssueCouponList($uid, 2, $typeId, $page, $limit);
+                $list = $this->dao->getIssueCouponList($uid, (int)$where['type'], 0, $page, $limit);
+                if (!$list) $list = $this->dao->getIssueCouponList($uid, 1, 0, $page, $limit);
+                if (!$list) $list = $this->dao->getIssueCouponList($uid, 2, 0, $page, $limit);
             }
         } else {
             /** @var StoreProductServices $storeProductService */
             $storeProductService = app()->make(StoreProductServices::class);
             /** @var StoreCategoryServices $storeCategoryService */
             $storeCategoryService = app()->make(StoreCategoryServices::class);
-
             $cateId = $storeProductService->value(['id' => $where['product_id']], 'cate_id');
-            $cateId = explode(',', $cateId);
+            $cateId = explode(',', (string)$cateId);
             $cateId = array_merge($cateId, $storeCategoryService->cateIdByPid($cateId));
             $cateId = array_diff($cateId, [0]);
             if ($where['type'] == -1) { // PC端获取优惠券
@@ -326,10 +330,10 @@ class StoreCouponIssueServices extends BaseServices
         foreach ($list as &$v) {
             $v['coupon_price'] = floatval($v['coupon_price']);
             $v['use_min_price'] = floatval($v['use_min_price']);
-            $v['is_use'] = $uid && isset($v['used']);
+            $v['is_use'] = count($v['used']);
             if ($v['end_use_time']) {
                 $v['start_use_time'] = date('Y/m/d', $v['start_use_time']);
-                $v['end_use_time'] = $v['end_use_time'] ? date('Y/m/d', $v['end_use_time']) : date('Y/m/d', time() + 86400);
+                $v['end_use_time'] = date('Y/m/d', $v['end_use_time']);
             }
             if ($v['start_time']) {
                 $v['start_time'] = date('Y/m/d', $v['start_time']);
@@ -341,7 +345,16 @@ class StoreCouponIssueServices extends BaseServices
         return $data;
     }
 
-    public function issueUserCoupon($id, $user)
+    /**
+     * 领取优惠券
+     * @param $id
+     * @param $user
+     * @param bool $is_receive
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     */
+    public function issueUserCoupon($id, $user, bool $is_receive = false)
     {
         $issueCouponInfo = $this->dao->getInfo((int)$id);
         $uid = $user->uid;
@@ -354,9 +367,14 @@ class StoreCouponIssueServices extends BaseServices
         }
         /** @var StoreCouponIssueUserServices $issueUserService */
         $issueUserService = app()->make(StoreCouponIssueUserServices::class);
+        if ($is_receive) {
+            $alreadyReceived = $issueUserService->count(['uid' => $uid, 'issue_coupon_id' => $id]);
+            if ($alreadyReceived >= $issueCouponInfo['receive_limit']) {
+                throw new ApiException(400518);
+            }
+        }
         /** @var StoreCouponUserServices $couponUserService */
         $couponUserService = app()->make(StoreCouponUserServices::class);
-        if ($issueUserService->getOne(['uid' => $uid, 'issue_coupon_id' => $id])) throw new ApiException(400517);
         if ($issueCouponInfo->remain_count <= 0 && !$issueCouponInfo->is_permanent) throw new ApiException(400518);
         $this->transaction(function () use ($issueUserService, $uid, $id, $couponUserService, $issueCouponInfo) {
             $issueUserService->save(['uid' => $uid, 'issue_coupon_id' => $id, 'add_time' => time()]);
@@ -432,29 +450,24 @@ class StoreCouponIssueServices extends BaseServices
         $storeCouponUser = app()->make(StoreCouponUserServices::class);
         /** @var StoreCouponIssueUserServices $storeCouponIssueUser */
         $storeCouponIssueUser = app()->make(StoreCouponIssueUserServices::class);
-        $uids = $storeCouponIssueUser->getColumn(['issue_coupon_id' => $coupon['id']], 'uid');
         foreach ($user as $k => $v) {
-            if (in_array($v, $uids)) {
-                continue;
+            $data[$k]['cid'] = $coupon['id'];
+            $data[$k]['uid'] = $v;
+            $data[$k]['coupon_title'] = $coupon['title'];
+            $data[$k]['coupon_price'] = $coupon['coupon_price'];
+            $data[$k]['use_min_price'] = $coupon['use_min_price'];
+            $data[$k]['add_time'] = time();
+            if ($coupon['coupon_time']) {
+                $data[$k]['start_time'] = $data[$k]['add_time'];
+                $data[$k]['end_time'] = $data[$k]['add_time'] + $coupon['coupon_time'] * 86400;
             } else {
-                $data[$k]['cid'] = $coupon['id'];
-                $data[$k]['uid'] = $v;
-                $data[$k]['coupon_title'] = $coupon['title'];
-                $data[$k]['coupon_price'] = $coupon['coupon_price'];
-                $data[$k]['use_min_price'] = $coupon['use_min_price'];
-                $data[$k]['add_time'] = time();
-                if ($coupon['coupon_time']) {
-                    $data[$k]['start_time'] = $data[$k]['add_time'];
-                    $data[$k]['end_time'] = $data[$k]['add_time'] + $coupon['coupon_time'] * 86400;
-                } else {
-                    $data[$k]['start_time'] = $coupon['start_use_time'];
-                    $data[$k]['end_time'] = $coupon['end_use_time'];
-                }
-                $data[$k]['type'] = 'send';
-                $issueData[$k]['uid'] = $v;
-                $issueData[$k]['issue_coupon_id'] = $coupon['id'];
-                $issueData[$k]['add_time'] = time();
+                $data[$k]['start_time'] = $coupon['start_use_time'];
+                $data[$k]['end_time'] = $coupon['end_use_time'];
             }
+            $data[$k]['type'] = 'send';
+            $issueData[$k]['uid'] = $v;
+            $issueData[$k]['issue_coupon_id'] = $coupon['id'];
+            $issueData[$k]['add_time'] = time();
         }
         if (!empty($data)) {
             if (!$storeCouponUser->saveAll($data)) {
@@ -464,8 +477,6 @@ class StoreCouponIssueServices extends BaseServices
                 throw new AdminException(100031);
             }
             return true;
-        } else {
-            throw new AdminException(400519);
         }
     }
 

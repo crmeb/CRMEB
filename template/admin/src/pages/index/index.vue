@@ -9,7 +9,7 @@
     <!--用户-->
     <user-chart ref="userChart" />
     <!--版本升级-->
-    <upgrade v-if="force_reminder == 1"/>
+    <upgrade v-if="force_reminder == 1" />
   </div>
 </template>
 
@@ -24,7 +24,6 @@ import { auth } from '@/api/system';
 import { Notice } from 'iview';
 import { getCookies, setCookies } from '@/libs/util';
 import { upgradeStatusApi } from '@/api/system';
-
 
 export default {
   name: 'index',
@@ -51,7 +50,7 @@ export default {
       auth()
         .then((res) => {
           let data = res.data || {};
-          this.force_reminder = data.force_reminder
+          this.force_reminder = data.force_reminder;
           if (data.auth_code && data.auth) {
             this.authCode = data.auth_code;
             this.auth = true;

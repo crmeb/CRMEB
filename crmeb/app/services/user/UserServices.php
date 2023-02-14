@@ -1195,6 +1195,11 @@ class UserServices extends BaseServices
         return [$integral_count, $sign_count, $balanceChang_count];
     }
 
+    /**
+     * 用户详情
+     * @param int $uid
+     * @return array
+     */
     public function read(int $uid)
     {
         $userInfo = $this->getUserInfo($uid);
@@ -1421,7 +1426,7 @@ class UserServices extends BaseServices
         $user['is_complete'] = $wechatUserInfo['is_complete'] ?? 0;
         $user['couponCount'] = $storeCoupon->getUserValidCouponCount((int)$uid);
         $user['like'] = app()->make(StoreProductRelationServices::class)->getUserCollectCount($user['uid']);
-        $user['orderStatusNum'] = $storeOrder->getOrderData($uid, true, true);
+        $user['orderStatusNum'] = $storeOrder->getOrderData($uid);
         $user['notice'] = 0;
         /** @var UserMoneyServices $userMoney */
         $userMoney = app()->make(UserMoneyServices::class);
@@ -1514,6 +1519,7 @@ class UserServices extends BaseServices
         $user['integral'] = intval($user['integral']);
         $user['is_agent_level'] = $agentLevelServices->count(['status' => 1, 'is_del' => 0]) > 0 ? 1 : 0;
         $user['division_open'] = (int)sys_config('division_status', 0);
+        $user['is_default_avatar'] = $user['avatar'] == sys_config('h5_avatar') ? 1 : 0;
         $user['avatar'] = strpos($user['avatar'], '/statics/system_images/') !== false ? set_file_url($user['avatar']) : $user['avatar'];
         return $user;
     }
@@ -1545,7 +1551,7 @@ class UserServices extends BaseServices
      */
     public function eidtNickname(int $uid, array $data)
     {
-        if (!$this->getUserInfo($uid)) {
+        if (!$this->dao->count(['uid' => $uid])) {
             throw new ApiException(400214);
         }
         if (!$this->dao->update($uid, $data, 'uid')) {
@@ -1591,7 +1597,7 @@ class UserServices extends BaseServices
      */
     public function spread(int $uid, int $spreadUid, $code)
     {
-        $userInfo = $this->getUserInfo($uid);
+        $userInfo = $this->dao->value(['uid' => $uid], 'uid,spread_uid,spread_time,add_time,last_time');
         if (!$userInfo) {
             throw new ApiException(100026);
         }
@@ -1631,7 +1637,7 @@ class UserServices extends BaseServices
         }
         if ($userInfo['uid'] == $userSpreadUid || $userInfo['spread_uid'] == $spreadUid) $check = false;
         if ($check) {
-            $spreadInfo = $this->dao->get($spreadUid);
+            $spreadInfo = $this->dao->get($spreadUid, ['division_id', 'agent_id', 'staff_id']);
             $data = [];
             $data['spread_uid'] = $spreadUid;
             $data['spread_time'] = time();
@@ -1654,7 +1660,7 @@ class UserServices extends BaseServices
      */
     public function setVisit(array $data)
     {
-        $userInfo = $this->getUserInfo($data['uid']);
+        $userInfo = $this->getUserInfo($data['uid'], 'uid,user_type');
         if (!$userInfo) {
             throw new ApiException(100026);
         }
@@ -1774,7 +1780,7 @@ class UserServices extends BaseServices
     public function checkUserPromoter(int $uid, $user = [])
     {
         if (!$user) {
-            $user = $this->getUserInfo($uid);
+            $user = $this->getUserInfo($uid, 'spread_open,is_promoter');
         }
         if (!$user) {
             return false;
@@ -1896,7 +1902,7 @@ class UserServices extends BaseServices
     public function setMemberOverdueTime($vip_day, int $user_id, int $is_money_level, $member_type = false)
     {
         if ($vip_day == 0) throw new ApiException(410289);
-        $user_info = $this->getUserInfo($user_id);
+        $user_info = $this->getUserInfo($user_id, 'is_money_level,overdue_time');
         if (!$user_info) throw new ApiException(410032);
         if (!$member_type) $member_type = "month";
         if ($member_type == 'ever') {
@@ -1930,7 +1936,7 @@ class UserServices extends BaseServices
     {
         if (!$uid) return false;
         if (!$userInfo) {
-            $userInfo = $this->dao->get($uid);
+            $userInfo = $this->dao->get($uid, ['is_ever_level', 'is_money_level', 'overdue_time']);
         }
         if (!$userInfo) return false;
         if ($userInfo['is_ever_level'] == 0 && $userInfo['is_money_level'] > 0 && $userInfo['overdue_time'] < time()) {

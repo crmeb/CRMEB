@@ -1,5 +1,5 @@
 <template>
-	<form class="form" @submit="checkForm">
+	<form class="form" @submit="checkForm" :style="colorStyle">
 		<view class="input-section">
 			<view class="section-hd">{{$t(`支付金额`)}}</view>
 			<view class="section-bd">
@@ -15,10 +15,10 @@
 			<radio-group class="section-bd" name="method">
 				<label class="item" v-if="yuePay">
 					<text class="iconfont icon-yue"></text>
-					<text class="name">
-						{{$t(`余额支付`)}}
+					<view class="name">
+						<text>{{$t(`余额支付`)}}</text>
 						<text class="money">{{$t(`可用余额`)}}:{{$t(`￥`)}}{{ now_money || 0 }}</text>
-					</text>
+					</view>
 					<radio value="yue" :checked="payType === 'yue'" />
 				</label>
 				<label v-if="wxpay" class="item">
@@ -45,8 +45,10 @@
 	import {
 		mapGetters
 	} from "vuex";
+		import colors from "@/mixins/color";
 	const app = getApp();
 	export default {
+		mixins: [colors],
 		data() {
 			return {
 				money: '',
@@ -417,6 +419,11 @@
 			padding-right: 30rpx;
 			padding-bottom: 30rpx;
 			border-bottom: 1rpx solid #f5f5f5;
+			.name{
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+			}
 		}
 
 		.iconfont {

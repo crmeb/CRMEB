@@ -61,7 +61,7 @@ class RoutineTemplate extends AuthController
         }
         if ($all['list']) {
             foreach ($all['list'] as $template) {
-                SyncMessageJob::dispatchDo('SyncSubscribe', [$template]);
+                SyncMessageJob::dispatch('SyncSubscribe', [$template]);
             }
         }
         return app('json')->success(100038);

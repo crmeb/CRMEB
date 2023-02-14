@@ -45,10 +45,10 @@
 					<productConSwiper :imgUrls='imgUrls'></productConSwiper>
 					<view class="bg-color">
 						<view class='nav acea-row row-between-wrapper'>
-							<view class='money'>{{$t(`￥`)}}<text class='num'>{{storeInfo.price}}</text>
+							<view class='money'>{{$t(`￥`)}}<text class='num'>{{storeInfo.price || ''}}</text>
 								<text
 									v-if="attribute.productAttr.length && (attribute.productAttr.length?attribute.productAttr[0].attr_values.length:0) > 1">{{$t(`起`)}}</text>
-								<text class='y-money'>{{$t(`￥`)}}{{storeInfo.ot_price}}</text>
+								<text class='y-money'>{{$t(`￥`)}}{{storeInfo.ot_price || ''}}</text>
 							</view>
 							<view class='acea-row row-middle'>
 								<view class='timeItem' v-if="status == 1">
@@ -65,7 +65,7 @@
 					</view>
 					<view class='wrapper'>
 						<view class='introduce acea-row row-between'>
-							<view class='infor'> {{storeInfo.title}}</view>
+							<view class='infor'> {{storeInfo.title || ''}}</view>
 							<!-- <button class='iconfont icon-fenxiang' open-type='share'></button> -->
 							<view class='iconfont icon-fenxiang' @click="listenerActionSheet"></view>
 						</view>
@@ -74,7 +74,8 @@
 							<view class='stock'>
 								{{$t(`累计销售`)}}：{{storeInfo.total?storeInfo.total:0}}{{$t(storeInfo.unit_name) || ''}}
 							</view>
-							<view>{{$t(`限量`)}}: {{ storeInfo.quota ? storeInfo.quota : 0 }}{{$t(storeInfo.unit_name) || ''}}
+							<view>{{$t(`限量`)}}:
+								{{ storeInfo.quota ? storeInfo.quota : 0 }}{{$t(storeInfo.unit_name) || ''}}
 							</view>
 						</view>
 					</view>
@@ -127,7 +128,7 @@
 					</view>
 				</view>
 			</scroll-view>
-			<view class='footer acea-row row-between-wrapper'>
+			<view class='footer acea-row row-between-wrapper' :class="{'eject':storeInfo.id}">
 				<navigator hover-class="none" open-type="switchTab" class="item" url="/pages/index/index">
 					<view class="iconfont icon-shouye6"></view>
 					<view class="p_center">{{$t(`首页`)}}</view>
@@ -271,7 +272,9 @@
 	import {
 		sharePoster
 	} from "@/mixins/sharePoster";
-	import {HTTP_REQUEST_URL} from '@/config/app';
+	import {
+		HTTP_REQUEST_URL
+	} from '@/config/app';
 	import homeList from '@/components/homeList'
 	let sysHeight = uni.getSystemInfoSync().statusBarHeight + 'px';
 
@@ -294,7 +297,7 @@
 		},
 		data() {
 			return {
-				imgHost:HTTP_REQUEST_URL,
+				imgHost: HTTP_REQUEST_URL,
 				showMenuIcon: false,
 				dataShow: 0,
 				id: 0,
@@ -557,9 +560,23 @@
 					that.storeImage = that.storeInfo.image
 					that.getImageBase64();
 					// #endif
+					if (!this.storeInfo.wechat_code) {
+						// #ifdef H5
+						this.codeVal = window.location.origin +
+							'/pages/activity/goods_seckill_details/index?id=' +
+							that.id + '&spid=' + that.storeInfo.uid
+						// #endif	
+						// #ifdef APP-PLUS
+						this.codeVal = HTTP_REQUEST_URL + '/pages/activity/goods_seckill_details/index?id=' +
+							that
+							.id + '&spid=' + that.storeInfo.uid
+						// #endif	
+					} else {
+						that.$set(that, "PromotionCode", this.storeInfo.wechat_code);
+					}
 					// #ifdef APP-PLUS
 					uni.downloadFile({
-						url: that.setDomain(res.data.storeInfo.code_base),
+						url: that.setDomain(res.data.storeInfo.wechat_code),
 						success: function(res) {
 							that.PromotionCode = res.tempFilePath;
 						},
@@ -569,7 +586,8 @@
 							});
 						},
 					});
-					// that.PromotionCode = res.data.storeInfo.code_base
+
+
 					that.downloadFilestoreImage();
 					// #endif
 					// #ifdef H5
@@ -583,14 +601,7 @@
 					setTimeout(() => {
 						that.infoScroll();
 					}, 500);
-					// #ifdef H5
-					this.codeVal = window.location.origin + '/pages/activity/goods_seckill_details/index?id=' +
-						that.id + '&spid=' + that.storeInfo.uid
-					// #endif	
-					// #ifdef APP-PLUS
-					this.codeVal = HTTP_REQUEST_URL + '/pages/activity/goods_seckill_details/index?id=' + that
-						.id + '&spid=' + that.storeInfo.uid
-					// #endif	
+
 					app.globalData.openPages = '/pages/activity/goods_seckill_details/index?id=' + that.id +
 						'&spid=' + that.storeInfo.uid;
 					// wxParse.wxParse('description', 'html', that.data.storeInfo.description || '', that, 0);
@@ -1375,12 +1386,15 @@
 		bottom: 0;
 		width: 100%;
 		box-sizing: border-box;
-		background-color: #fff;
+		background-color: rgba(255, 255, 255, 0.85);
+		backdrop-filter: blur(10px);
 		z-index: 277;
 		border-top: 1rpx solid #f0f0f0;
 		height: 100rpx;
 		height: calc(100rpx+ constant(safe-area-inset-bottom)); ///兼容 IOS<11.2/
 		height: calc(100rpx + env(safe-area-inset-bottom)); ///兼容 IOS>11.2/
+		transform: translate3d(0, 100%, 0);
+		transition: all .3s cubic-bezier(.25, .5, .5, .9);
 	}
 
 	.product-con .footer .item {

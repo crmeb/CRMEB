@@ -36,7 +36,7 @@ class UserInvoiceServices extends BaseServices
     /**
      * 检测系统设置发票功能
      * @param bool $is_speclial
-     * @return bool
+     * @return bool|array
      */
     public function invoiceFuncStatus(bool $is_speclial = true)
     {

@@ -41,7 +41,7 @@ class SystemConfigService
             if ($isCaChe) {
                 return $callable();
             }
-            return CacheService::get(self::CACHE_SYSTEM . ':' . $key, $callable);
+            return CacheService::remember(self::CACHE_SYSTEM . ':' . $key, $callable);
         } catch (\Throwable $e) {
             return $default;
         }
@@ -64,7 +64,7 @@ class SystemConfigService
             if ($isCaChe)
                 return $callable();
 
-            return CacheService::get(self::CACHE_SYSTEM . ':' . md5(implode(',', $keys)), $callable);
+            return CacheService::remember(self::CACHE_SYSTEM . ':' . md5(implode(',', $keys)), $callable);
         } catch (\Throwable $e) {
             return Arr::getDefaultValue($keys);
         }

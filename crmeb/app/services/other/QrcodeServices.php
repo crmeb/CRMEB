@@ -223,10 +223,12 @@ class QrcodeServices extends BaseServices
      * 获取小程序分享二维码
      * @param int $id
      * @param int $uid
-     * @param int $type 1 = 拼团,2 = 秒杀
-     * @return bool|string
+     * @param int $type
+     * @param array $param
+     * @param bool $isSaveAttach
+     * @return false|mixed|string
      */
-    public function getRoutineQrcodePath(int $id, int $uid, int $type, array $parame = [], bool $isSaveAttach = true)
+    public function getRoutineQrcodePath(int $id, int $uid, int $type, array $param = [], bool $isSaveAttach = true)
     {
         /** @var SystemAttachmentServices $systemAttachmentService */
         $systemAttachmentService = app()->make(SystemAttachmentServices::class);
@@ -236,7 +238,7 @@ class QrcodeServices extends BaseServices
         switch ($type) {
             case 0:
                 $page = 'pages/goods_details/index';
-                $namePath = $id . '_' . $uid . '_' . $parame['is_promoter'] . '_product.jpg';
+                $namePath = $id . '_' . $uid . '_' . $param['is_promoter'] . '_product.jpg';
                 break;
             case 1:
                 $page = 'pages/activity/goods_combination_details/index';
@@ -245,10 +247,6 @@ class QrcodeServices extends BaseServices
             case 2:
                 $page = 'pages/activity/goods_seckill_details/index';
                 $namePath = 'seckill_' . $id . '_' . $uid . '.jpg';
-                if (isset($parame['stop_time']) && $parame['stop_time']) {
-                    $data .= '&time=' . $parame['stop_time'];
-                    $namePath = $parame['stop_time'] . $namePath;
-                }
                 break;
             case 3:
                 $page = 'pages/annex/offline_pay/index';

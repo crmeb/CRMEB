@@ -45,7 +45,8 @@
 						<view class="acea-row row-between">
 							<view class="broadcast_details_pic">
 								{{$t(`￥`)}}{{ orderInfo.cartInfo[0].productInfo.price }}
-								<text class="broadcast_details_pic_num">{{$t(`￥`)}}{{ orderInfo.cartInfo[0].costPrice }}</text>
+								<text
+									class="broadcast_details_pic_num">{{$t(`￥`)}}{{ orderInfo.cartInfo[0].costPrice }}</text>
 							</view>
 							<view class="broadcast_details_btn" @click="sendOrder">{{$t(`发送客服`)}}</view>
 						</view>
@@ -86,7 +87,9 @@
 									<view class="product-info">
 										<view class="name line2">{{ item.orderInfo.cartInfo[0].productInfo.store_name }}
 										</view>
-										<view class="price">{{$t(`￥`)}}{{ item.orderInfo.cartInfo[0].productInfo.price }}</view>
+										<view class="price">
+											{{$t(`￥`)}}{{ item.orderInfo.cartInfo[0].productInfo.price }}
+										</view>
 									</view>
 								</view>
 							</view>
@@ -108,7 +111,8 @@
 			<swiper class="swiper-wrapper" :autoplay="autoplay" :circular="circular" :interval="interval"
 				:duration="duration" v-if="emojiGroup.length > 0">
 				<block v-for="(emojiList, index) in emojiGroup" :key="index">
-					<swiper-item><i class="em" :class="emoji" :style="'background-image:url('+ httpUrl +')'" v-for="emoji in emojiList" :key="emoji" @click="addEmoji(emoji)"></i></swiper-item>
+					<swiper-item><i class="em" :class="emoji" :style="'background-image:url('+ httpUrl +')'"
+							v-for="emoji in emojiList" :key="emoji" @click="addEmoji(emoji)"></i></swiper-item>
 				</block>
 			</swiper>
 		</view>
@@ -238,47 +242,52 @@
 			let dom = document.querySelector(".chat-box");
 			dom.style.height = window.innerHeight + 'px'
 			// #endif
-			// 初始化
-			if (app.globalData.isWsOpen) {
-				this.$socket.send({
-					data: {
-						token: this.$store.state.app.token,
+			let initSocket = () => {
+				if (app.globalData.isWsOpen) {
+					this.$socket.send({
+						data: {
+							token: this.$store.state.app.token,
+							//#ifdef MP || APP-PLUS
+							form_type: 2,
+							//#endif
+							//#ifdef H5
+							form_type: this.$wechat.isWeixin() ? 1 : 3
+							//#endif
+						},
+						type: 'login'
+					});
+					this.getChatList();
+				} else {
+					let form_type
+					//#ifdef MP || APP-PLUS
+					form_type = 2
+					//#endif
+					//#ifdef H5
+					form_type = this.$wechat.isWeixin() ? 1 : 3
+					//#endif
+					this.$socket.onStart(this.$store.state.app.token, form_type);
+				}
+				uni.$once('socketOpen', () => {
+					// 登录
+					this.$socket.send({
+						data: this.$store.state.app.token,
 						//#ifdef MP || APP-PLUS
 						form_type: 2,
 						//#endif
 						//#ifdef H5
-						form_type: this.$wechat.isWeixin() ? 1 : 3
+						form_type: this.$wechat.isWeixin() ? 1 : 3,
 						//#endif
-					},
-					type: 'login'
+						type: 'login'
+					});
+					this.$nextTick(e => {
+						this.getChatList();
+					})
 				});
-				this.getChatList();
-			} else {
-				let form_type
-				//#ifdef MP || APP-PLUS
-				form_type = 2
-				//#endif
-				//#ifdef H5
-				form_type = this.$wechat.isWeixin() ? 1 : 3
-				//#endif
-				this.$socket.onStart(this.$store.state.app.token, form_type);
 			}
-			uni.$once('socketOpen', () => {
-				// 登录
-				this.$socket.send({
-					data: this.$store.state.app.token,
-					//#ifdef MP || APP-PLUS
-					form_type: 2,
-					//#endif
-					//#ifdef H5
-					form_type: this.$wechat.isWeixin() ? 1 : 3,
-					//#endif
-					type: 'login'
-				});
-				this.$nextTick(e => {
-					this.getChatList();
-				})
-			});
+			initSocket()
+			// 初始化
+
+
 			// 监听客服转接
 			uni.$on('to_transfer', data => {
 				this.toUid = data.toUid;
@@ -294,6 +303,15 @@
 						el.avatar = data.avatar
 					}
 				})
+			});
+			// 超时了
+			uni.$once('timeout', () => {
+				uni.showLoading({
+					title: '重连中',
+					mask: true
+				})
+				this.chatList = []
+				initSocket()
 			});
 			// 链接成功
 			uni.$once('success', () => {

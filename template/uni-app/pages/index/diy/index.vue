@@ -145,7 +145,7 @@
 				<view v-if="site_config" class="site-config" @click="goICP">{{ site_config }}</view>
 				<!-- #endif -->
 				<view class="uni-p-b-98"></view>
-				<pageFooter></pageFooter>
+				<pageFoot></pageFoot>
 			</view>
 		</view>
 		<view v-else>
@@ -168,7 +168,9 @@
 				<view class="title">{{$t(`服务协议与隐私政策`)}}</view>
 				<view class="content">
 					{{$t(`请务必审慎阅读、充分理解“服务协议与 隐私政策”各条款，包括但不限于：为了 向你提供即时通讯、内容分享等服务，我 们需要收集你的设备信息、操作日志等个 人信息。你可以在“设置”中查看、变更、删除个人信息并管理你的授权。`)}}<br>
-					{{$t(`你可以阅读`)}}<navigator url="/pages/users/privacy/index?type=3">{{$t(`《服务协议与隐私政策》`)}}</navigator>{{$t(`了解详细信息。如你同意，请点击“我同意”开始接受我们的服务。`)}}
+					{{$t(`你可以阅读`)}}
+					<navigator url="/pages/users/privacy/index?type=3">{{$t(`《服务协议与隐私政策》`)}}</navigator>
+					{{$t(`了解详细信息。如你同意，请点击“我同意”开始接受我们的服务。`)}}
 				</view>
 				<view class="btn-box">
 					<view class="btn-item" @click="confirmApp">{{$t(`我同意`)}}</view>
@@ -247,8 +249,10 @@
 	import {
 		toLogin
 	} from '@/libs/login.js';
-	import {HTTP_REQUEST_URL} from '@/config/app';
-	import pageFooter from '@/components/pageFooter/index.vue';
+	import {
+		HTTP_REQUEST_URL
+	} from '@/config/app';
+	import pageFoot from '@/components/pageFooter/index.vue';
 	import Loading from '@/components/Loading/index.vue';
 	import recommend from '@/components/recommend';
 	export default {
@@ -257,7 +261,7 @@
 		components: {
 			recommend,
 			Loading,
-			pageFooter,
+			pageFoot,
 			couponWindow,
 			// #ifdef H5
 			...mConfig,
@@ -291,7 +295,7 @@
 		computed: mapGetters(['isLogin', 'cartNum']),
 		data() {
 			return {
-				imgHost:HTTP_REQUEST_URL,
+				imgHost: HTTP_REQUEST_URL,
 				showSkeleton: true, //骨架屏显示隐藏
 				isNodes: 0, //控制什么时候开始抓取元素节点,只要数值改变就重新抓取
 				styleConfig: [],
@@ -322,7 +326,6 @@
 				curSort: 0,
 				sortMpTop: 0,
 				loaded: false,
-				loading: false,
 				hostProduct: [],
 				hotScroll: false,
 				hotPage: 1,
@@ -676,7 +679,7 @@
 					}
 					this.pageShow = data.is_show
 					uni.setNavigationBarTitle({
-						title: res.data.title
+						title: this.$t(res.data.title)
 					});
 					let temp = [];
 					let lastArr = that.objToArr(res.data.value);
@@ -816,6 +819,7 @@
 
 		},
 		onPageScroll(e) {
+			uni.$emit('scroll');
 			// #ifdef H5
 			if (this.isHeaderSerch) {
 				if (e.scrollTop > this.domOffsetTop) {
@@ -1093,15 +1097,17 @@
 			}
 		}
 	}
-	
-	.emptyBox{
+
+	.emptyBox {
 		text-align: center;
 		padding-top: 20rpx;
-		.tips{
+
+		.tips {
 			color: #aaa;
 			font-size: 26rpx;
 			padding-bottom: 20rpx;
 		}
+
 		image {
 			width: 414rpx;
 			height: 304rpx;

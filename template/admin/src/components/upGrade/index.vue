@@ -1,39 +1,46 @@
 <template>
-    <div>
+  <div>
     <!-- 修复升级 -->
-    <Modal v-model="upgrade" width="390" height="96" :closable="false" class-name="vertical-center-modal" :mask-closable="false">
+    <Modal
+      v-model="upgrade"
+      width="390"
+      height="96"
+      :closable="false"
+      class-name="vertical-center-modal"
+      :mask-closable="false"
+    >
       <p slot="header" class="header-modal3">
-        <img src="../../assets/images/bg3.png" alt="">
+        <img src="../../assets/images/bg3.png" alt="" />
       </p>
       <div class="describe">
         <h2>您有新的修复版本可升级</h2>
         <p>更多惊喜内容等你来探索，快来看看吧～</p>
       </div>
       <div slot="footer" class="footer">
-          <Button class="cancel" shape="circle" @click="upgrade = false">暂不升级</Button>
-          <Button shape="circle" type="primary" @click="upgradeNow()">立即升级</Button>
+        <Button class="cancel" shape="circle" @click="upgrade = false">暂不升级</Button>
+        <Button shape="circle" type="primary" @click="upgradeNow()">立即升级</Button>
       </div>
     </Modal>
-    </div>
+  </div>
 </template>
 <script>
 export default {
-    data() {
-        return {
-            upgrade: true,
-        }
+  data() {
+    return {
+      upgrade: true,
+    };
+  },
+  methods: {
+    upgradeNow() {
+      this.$router.push({
+        path: '/admin/system/onlineUpgrade/index',
+        params: { items: true },
+      });
+      this.$store.commit('upgrade/TOGGLE_STATUS', true);
+      sessionStorage.setItem('status', true);
     },
-    methods: {
-        upgradeNow() {
-          this.$router.push({
-            path: "/admin/system/onlineUpgrade/index",
-            params: {items: true},
-          })
-          this.$store.commit("upgrade/TOGGLE_STATUS",true)
-          sessionStorage.setItem("status",true)
-        }
-    },
-}
+  },
+};
 </script>
 <style scoped lang="stylus">
   .ivu-modal-content {
@@ -201,7 +208,7 @@ export default {
     display: flex;
     align-items: center;
     justify-content: center;
-  
+
     .ivu-modal {
       top: 0;
     }

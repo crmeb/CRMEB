@@ -361,30 +361,8 @@ class Common extends AuthController
      */
     public function copyright()
     {
-        try {
-            if (Cache::has('nncnL_crmeb_copyright')) {
-                $copyrightContext = Cache::get('nncnL_crmeb_copyright');
-            } else {
-                /** @var SystemConfigServices $services */
-                $services = app()->make(SystemConfigServices::class);
-                $copyrightContext = $services->value(['menu_name' => 'nncnL_crmeb_copyright'], 'value');
-                $copyrightContext = $copyrightContext ? json_decode($copyrightContext, true) : null;
-                Cache::set('nncnL_crmeb_copyright', $copyrightContext, 3600);
-            }
-
-            if (Cache::has('nncnL_crmeb_copyright_image')) {
-                $copyrightImage = Cache::get('nncnL_crmeb_copyright_image');
-            } else {
-                /** @var SystemConfigServices $services */
-                $services = app()->make(SystemConfigServices::class);
-                $copyrightImage = $services->value(['menu_name' => 'nncnL_crmeb_copyright_image'], 'value');
-                $copyrightImage = $copyrightImage ? json_decode($copyrightImage, true) : null;
-                Cache::set('nncnL_crmeb_copyright_image', $copyrightImage, 3600);
-            }
-        } catch (\Throwable $e) {
-            $copyrightContext = '';
-            $copyrightImage = '';
-        }
+        $copyrightContext = sys_config('nncnL_crmeb_copyright', '');
+        $copyrightImage = sys_config('nncnL_crmeb_copyright_image', '');
         return app('json')->success(compact('copyrightContext', 'copyrightImage'));
     }
 
@@ -395,15 +373,10 @@ class Common extends AuthController
     public function saveCopyright()
     {
         [$copyright, $copyrightImg] = $this->request->postMore(['copyright', 'copyright_img',], true);
-
         /** @var SystemConfigServices $services */
         $services = app()->make(SystemConfigServices::class);
         if ($services->count(['menu_name' => 'nncnL_crmeb_copyright'])) {
-            $services->update([
-                'menu_name' => 'nncnL_crmeb_copyright'
-            ], [
-                'value' => json_encode($copyright)
-            ]);
+            $services->update(['menu_name' => 'nncnL_crmeb_copyright'], ['value' => json_encode($copyright)]);
         } else {
             $services->save([
                 'menu_name' => 'nncnL_crmeb_copyright',
@@ -415,13 +388,8 @@ class Common extends AuthController
                 'info' => ''
             ]);
         }
-
         if ($services->count(['menu_name' => 'nncnL_crmeb_copyright_image'])) {
-            $services->update([
-                'menu_name' => 'nncnL_crmeb_copyright_image'
-            ], [
-                'value' => json_encode($copyrightImg)
-            ]);
+            $services->update(['menu_name' => 'nncnL_crmeb_copyright_image'], ['value' => json_encode($copyrightImg)]);
         } else {
             $services->save([
                 'menu_name' => 'nncnL_crmeb_copyright_image',
@@ -433,9 +401,6 @@ class Common extends AuthController
                 'info' => ''
             ]);
         }
-
-        Cache::set('nncnL_crmeb_copyright', $copyright, 3600);
-        Cache::set('nncnL_crmeb_copyright_image', $copyrightImg, 3600);
         return app('json')->success(100000);
     }
 

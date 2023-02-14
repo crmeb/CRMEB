@@ -22,7 +22,7 @@ class OrderDelivery implements ListenerInterface
         $time = sys_config('system_delivery_time') ?? 0;
         if ($time != 0) {
             $sevenDay = 24 * 3600 * $time;
-            TakeOrderJob::dispatchSece((int)$sevenDay, [$orderInfo->id]);
+            TakeOrderJob::dispatchSecs((int)$sevenDay, [$orderInfo->id]);
         }
     }
 }

@@ -964,7 +964,11 @@ export default {
       let sum = 0;
       sum = this.sumArr(this.specsData, 'chance');
       for (let j = 0; j < this.specsData.length; j++) {
-        this.$set(this.specsData[j], 'probability', ((this.specsData[j].chance / sum) * 100).toFixed(2) + '%');
+        if (sum == 0) {
+          this.$set(this.specsData[j], 'probability', '0%');
+        } else {
+          this.$set(this.specsData[j], 'probability', ((this.specsData[j].chance / sum) * 100).toFixed(2) + '%');
+        }
       }
     },
     //修改排序

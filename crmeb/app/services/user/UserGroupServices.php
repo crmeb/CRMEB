@@ -16,7 +16,6 @@ use app\services\BaseServices;
 use app\dao\user\UserGroupDao;
 use crmeb\exceptions\AdminException;
 use crmeb\services\FormBuilder as Form;
-use crmeb\traits\ServicesTrait;
 use think\facade\Route as Url;
 
 /**
@@ -26,7 +25,6 @@ use think\facade\Route as Url;
  */
 class UserGroupServices extends BaseServices
 {
-    use ServicesTrait;
 
     /**
      * UserGroupServices constructor.

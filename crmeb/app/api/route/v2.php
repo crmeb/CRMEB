@@ -8,6 +8,7 @@
 // +----------------------------------------------------------------------
 // | Author: CRMEB Team <admin@crmeb.com>
 // +----------------------------------------------------------------------
+use app\api\middleware\BlockerMiddleware;
 use think\facade\Route;
 
 /**
@@ -30,6 +31,7 @@ Route::group('v2', function () {
         Route::get('wechat/wx_silence_auth_login', 'v2.wechat.WechatController/silenceAuth');
         //DIY接口
         Route::get('diy/get_diy/[:name]', 'v2.PublicController/getDiy');
+        Route::get('diy/get_version/[:name]', 'v2.PublicController/getVersion');
         //是否强制绑定手机号
         Route::get('bind_status', 'v2.PublicController/bindPhoneStatus');
         //小程序授权绑定手机号
@@ -79,9 +81,9 @@ Route::group('v2', function () {
         //抽奖活动详情
         Route::get('lottery/info/:factor', 'v2.activity.LuckLotteryController/lotteryInfo')->mame('lotteryInfo');
         //参与抽奖
-        Route::post('lottery', 'v2.activity.LuckLotteryController/luckLottery')->mame('luckLottery');
+        Route::post('lottery', 'v2.activity.LuckLotteryController/luckLottery')->mame('luckLottery')->middleware(BlockerMiddleware::class);
         //领取奖品
-        Route::post('lottery/receive', 'v2.activity.LuckLotteryController/lotteryReceive')->mame('lotteryReceive');
+        Route::post('lottery/receive', 'v2.activity.LuckLotteryController/lotteryReceive')->mame('lotteryReceive')->middleware(BlockerMiddleware::class);
         //抽奖记录
         Route::get('lottery/record', 'v2.activity.LuckLotteryController/lotteryRecord')->mame('lotteryRecord');
 

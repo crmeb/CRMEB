@@ -23,7 +23,7 @@
         </template>
         <template slot-scope="{ row, index }" slot="language_name">
           <div class="acea-row row-middle">
-            <span>{{row.language_name}}</span>
+            <span>{{ row.language_name }}</span>
             <Tag class="ml10" color="default" v-if="row.is_default">默认</Tag>
           </div>
         </template>

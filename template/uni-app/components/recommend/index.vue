@@ -6,12 +6,16 @@
 			<text class='iconfont icon-zhuangshixian lefticon'></text>
 		</view>
 		<view class='recommendList acea-row row-between-wrapper'>
-			<view class='item' v-for="(item,index) in hostProduct" :key="index" hover-class='none' @tap="goDetail(item)">
+			<view class='item' v-for="(item,index) in hostProduct" :key="index" hover-class='none'
+				@tap="goDetail(item)">
 				<view class='pictrue'>
-					<image :src='item.image'></image>
-					<span class="pictrue_log_big pictrue_log_class" v-if="item.activity && item.activity.type === '1'">{{$t(`秒杀`)}}</span>
-					<span class="pictrue_log_big pictrue_log_class" v-if="item.activity && item.activity.type === '2'">{{$t(`砍价`)}}</span>
-					<span class="pictrue_log_big pictrue_log_class" v-if="item.activity && item.activity.type === '3'">{{$t(`拼团`)}}</span>
+					<easy-loadimage mode="widthFix" :image-src="item.image"></easy-loadimage>
+					<span class="pictrue_log_big pictrue_log_class"
+						v-if="item.activity && item.activity.type === '1'">{{$t(`秒杀`)}}</span>
+					<span class="pictrue_log_big pictrue_log_class"
+						v-if="item.activity && item.activity.type === '2'">{{$t(`砍价`)}}</span>
+					<span class="pictrue_log_big pictrue_log_class"
+						v-if="item.activity && item.activity.type === '3'">{{$t(`拼团`)}}</span>
 				</view>
 				<view class='name line1'>{{item.store_name}}</view>
 				<view class='money font-color'>{{$t(`￥`)}}<text class='num'>{{item.price}}</text></view>
@@ -21,11 +25,15 @@
 </template>
 
 <script>
-	import {mapGetters} from "vuex";
-	import { goShopDetail } from '@/libs/order.js'
+	import {
+		mapGetters
+	} from "vuex";
+	import {
+		goShopDetail
+	} from '@/libs/order.js'
 	import colors from "@/mixins/color";
 	export default {
-	computed: mapGetters(['uid']),
+		computed: mapGetters(['uid']),
 		props: {
 			hostProduct: {
 				type: Array,
@@ -41,10 +49,10 @@
 			};
 		},
 		methods: {
-			goDetail(item){
-				goShopDetail(item,this.uid).then(res=>{
+			goDetail(item) {
+				goShopDetail(item, this.uid).then(res => {
 					uni.navigateTo({
-						url:`/pages/goods_details/index?id=${item.id}`
+						url: `/pages/goods_details/index?id=${item.id}`
 					})
 				})
 			}
@@ -84,7 +92,8 @@
 		width: 335rpx;
 		margin-bottom: 30rpx;
 		border-radius: 20rpx 20rpx 0 0;
-		box-shadow: 0rpx 3rpx 10rpx 2rpx rgba(0, 0, 0, 0.03);;
+		box-shadow: 0rpx 3rpx 10rpx 2rpx rgba(0, 0, 0, 0.03);
+		;
 	}
 
 	.recommend .recommendList .item .pictrue {
@@ -93,10 +102,18 @@
 		height: 335rpx;
 	}
 
-	.recommend .recommendList .item .pictrue image {
-		width: 100%;
-		height: 100%;
-		border-radius: 20rpx;
+
+	.recommend .recommendList .item .pictrue {
+
+		/deep/,
+		/deep/image,
+		/deep/.easy-loadimage,
+		/deep/uni-image {
+
+			width: 100%;
+			height: 335rpx;
+			border-radius: 20rpx;
+		}
 	}
 
 	.recommend .recommendList .item .name {

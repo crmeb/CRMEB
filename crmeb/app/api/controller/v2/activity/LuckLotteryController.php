@@ -75,10 +75,10 @@ class LuckLotteryController
 
         $uid = (int)$request->uid();
         $key = 'lucklotter_limit_' . $uid;
-        if (CacheService::redisHandler()->get($key)) {
+        if (CacheService::get($key)) {
             return app('json')->fail('您求的频率太过频繁,请稍后请求!');
         }
-        CacheService::redisHandler()->set('lucklotter_limit_' . $uid, $uid, 1);
+        CacheService::set('lucklotter_limit_' . $uid, $uid, 1);
 
         if ($type == 5 && request()->isWechat()) {
             /** @var WechatServices $wechat */

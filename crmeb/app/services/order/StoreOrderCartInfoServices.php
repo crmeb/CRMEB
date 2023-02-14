@@ -49,7 +49,8 @@ class StoreOrderCartInfoServices extends BaseServices
     /**
      * 获取指定订单下的商品详情
      * @param int $oid
-     * @return array|mixed
+     * @return array|bool|mixed
+     * @throws \ReflectionException
      */
     public function getOrderCartInfo(int $oid)
     {
@@ -76,19 +77,22 @@ class StoreOrderCartInfoServices extends BaseServices
     /**
      * 查找购物车里的所有商品标题
      * @param int $oid
-     * @param $cartId
      * @param false $goodsNum
      * @return bool|mixed|string
      * @throws \think\db\exception\DataNotFoundException
      * @throws \think\db\exception\DbException
      * @throws \think\db\exception\ModelNotFoundException
      */
-    public function getCarIdByProductTitle(int $oid, $cartId, $goodsNum = false)
+    public function getCarIdByProductTitle(int $oid, bool $goodsNum = false)
     {
-        $key = md5('store_order_cart_product_title_' . $oid . '_' . is_array($cartId) ? implode('_', $cartId) : $cartId);
+        if ($goodsNum) {
+            $key = md5('store_order_cart_product_title_num' . $oid);
+        } else {
+            $key = md5('store_order_cart_product_title_' . $oid);
+        }
         $title = CacheService::get($key);
         if (!$title) {
-            $orderCart = $this->dao->getCartInfoList(['oid' => $oid, 'cart_id' => $cartId], ['cart_info']);
+            $orderCart = $this->dao->getCartInfoList(['oid' => $oid], ['cart_info']);
             foreach ($orderCart as $item) {
                 if (isset($item['cart_info']['productInfo']['store_name'])) {
                     if ($goodsNum && isset($item['cart_info']['cart_num'])) {
@@ -108,15 +112,15 @@ class StoreOrderCartInfoServices extends BaseServices
 
     /**
      * 获取打印订单的商品信息
-     * @param array $cartId
+     * @param $oid
      * @return array
      * @throws \think\db\exception\DataNotFoundException
      * @throws \think\db\exception\DbException
      * @throws \think\db\exception\ModelNotFoundException
      */
-    public function getCartInfoPrintProduct(array $cartId)
+    public function getCartInfoPrintProduct($oid)
     {
-        $cartInfo = $this->dao->getCartInfoList(['cart_id' => $cartId], ['cart_info']);
+        $cartInfo = $this->dao->getCartInfoList(['oid' => $oid], ['cart_info']);
         $product = [];
         foreach ($cartInfo as $item) {
             $value = is_string($item['cart_info']) ? json_decode($item['cart_info'], true) : $item['cart_info'];
@@ -128,68 +132,12 @@ class StoreOrderCartInfoServices extends BaseServices
     }
 
     /**
-     * 获取产品返佣金额
-     * @param array $cartId
-     * @param bool $type true = 一级返佣, fasle = 二级返佣
-     * @return string
-     */
-    public function getProductBrokerage(array $cartId, bool $type = true)
-    {
-        $cartInfo = $this->dao->getCartInfoList(['cart_id' => $cartId], ['cart_info']);
-        $oneBrokerage = '0';//一级返佣金额
-        $twoBrokerage = '0';//二级返佣金额
-        $sumProductPrice = '0';//非指定返佣商品总金额
-        foreach ($cartInfo as $value) {
-            $cartNum = $value['cart_info']['cart_num'] ?? 0;
-            if (isset($value['cart_info']['productInfo'])) {
-                $productInfo = $value['cart_info']['productInfo'];
-                //指定返佣金额
-                if (isset($productInfo['is_sub']) && $productInfo['is_sub'] == 1) {
-                    $oneBrokerage = bcadd($oneBrokerage, bcmul($cartNum, $productInfo['attrInfo']['brokerage'] ?? 0, 2), 2);
-                    $twoBrokerage = bcadd($twoBrokerage, bcmul($cartNum, $productInfo['attrInfo']['brokerage_two'] ?? 0, 2), 2);
-                } else {
-                    //比例返佣
-                    if (isset($productInfo['attrInfo'])) {
-                        $sumProductPrice = bcadd($sumProductPrice, bcmul($cartNum, $productInfo['attrInfo']['price'] ?? 0, 2), 2);
-                    } else {
-                        $sumProductPrice = bcadd($sumProductPrice, bcmul($cartNum, $productInfo['price'] ?? 0, 2), 2);
-                    }
-                }
-            }
-        }
-        if ($type) {
-            //获取后台一级返佣比例
-            $storeBrokerageRatio = sys_config('store_brokerage_ratio');
-            //一级返佣比例 小于等于零时直接返回 不返佣
-            if ($storeBrokerageRatio <= 0) {
-                return $oneBrokerage;
-            }
-            //计算获取一级返佣比例
-            $brokerageRatio = bcdiv($storeBrokerageRatio, 100, 4);
-            $brokeragePrice = bcmul($sumProductPrice, $brokerageRatio, 2);
-            //固定返佣 + 比例返佣 = 一级总返佣金额
-            return bcadd($oneBrokerage, $brokeragePrice, 2);
-        } else {
-            //获取二级返佣比例
-            $storeBrokerageTwo = sys_config('store_brokerage_two');
-            //二级返佣比例小于等于0 直接返回
-            if ($storeBrokerageTwo <= 0) {
-                return $twoBrokerage;
-            }
-            //计算获取二级返佣比例
-            $brokerageRatio = bcdiv($storeBrokerageTwo, 100, 4);
-            $brokeragePrice = bcmul($sumProductPrice, $brokerageRatio, 2);
-            //固定返佣 + 比例返佣 = 二级总返佣金额
-            return bcadd($twoBrokerage, $brokeragePrice, 2);
-        }
-    }
-
-    /**
      * 保存购物车info
      * @param $oid
      * @param $uid
      * @param array $cartInfo
-     * @return int
+     * @return \think\Collection
+     * @throws \Exception
      */
     public function setCartInfo($oid, $uid, array $cartInfo)
     {
@@ -228,12 +176,12 @@ class StoreOrderCartInfoServices extends BaseServices
 
     /**
      * 商品编号
-     * @param $cartId
+     * @param $oid
      * @return array
      */
-    public function getCartIdsProduct($cartId)
+    public function getCartIdsProduct($oid)
     {
-        return $this->dao->getColumn([['cart_id', 'in', $cartId]], 'product_id', 'oid');
+        return $this->dao->getColumn(['oid' => $oid], 'product_id', 'oid');
     }
 
     /**

@@ -15,6 +15,7 @@ use app\services\pay\PayServices;
 use app\services\shipping\ExpressServices;
 use app\services\system\admin\SystemAdminServices;
 use app\services\user\UserInvoiceServices;
+use crmeb\services\pay\extend\allinpay\AllinPay;
 use app\services\activity\{lottery\LuckLotteryServices,
     bargain\StoreBargainServices,
     combination\StoreCombinationServices,
@@ -213,7 +214,7 @@ class StoreOrderController
             }
         }
         if ($from != 'pc') {
-            if (!$this->services->checkPaytype($payType)) {
+            if (!$this->services->checkPaytype(get_pay_type($payType))) {
                 return app('json')->fail(410213);
             }
         } else {
@@ -342,6 +343,16 @@ class StoreOrderController
                 case 'pc':
                 case 'friend':
                     return app('json')->status('success', 410203, $info);
+                case PayServices::ALLIN_PAY:
+                    /** @var OrderPayServices $payServices */
+                    $payServices = app()->make(OrderPayServices::class);
+                    $info['jsConfig'] = $payServices->orderPay($orderInfo, $payType, [
+                        'returl' => sys_config('site_url') . '/pages/index/index',
+                    ]);
+                    if ($request->isWechat()) {
+                        $info['pay_url'] = AllinPay::UNITODER_H5UNIONPAY;
+                    }
+                    return app('json')->status(PayServices::ALLIN_PAY . '_pay', 410203, $info);
             }
         } else return app('json')->fail(410200);
     }
@@ -408,8 +419,7 @@ class StoreOrderController
                     break;
                 case 'routine':
                     if ($type == 1 || in_array($order['is_channel'], [0, 2, 3, 4])) {
-                        $order['order_id'] = app()->make(StoreOrderCreateServices::class)->getNewOrderId('cp');
-                        $this->services->update($order['id'], ['order_id' => $order['order_id']], 'id');
+                        $order['order_id'] = mt_rand(100, 999) . '_' . $order['order_id'];
                     }
                     break;
                 case 'app':
@@ -423,7 +433,7 @@ class StoreOrderController
                     break;
             }
         }
-        $order['pay_type'] = $paytype; //重新支付选择支付方式
+        $order['pay_type'] = get_pay_type($paytype); //重新支付选择支付方式
         switch ($order['pay_type']) {
             case PayServices::WEIXIN_PAY:
                 $jsConfig = $payServices->orderPay($order->toArray(), $from);
@@ -460,6 +470,16 @@ class StoreOrderController
                     return app('json')->status('success', 410203);
                 else
                     return app('json')->status('success', 410216);
+            case PayServices::ALLIN_PAY:
+                /** @var OrderPayServices $payServices */
+                $payServices = app()->make(OrderPayServices::class);
+                $info['jsConfig'] = $payServices->orderPay($order->toArray(), $order['pay_type'], [
+                    'returl' => sys_config('site_url') . '/pages/index/index',
+                ]);
+                if ($request->isWechat()) {
+                    $info['pay_url'] = AllinPay::UNITODER_H5UNIONPAY;
+                }
+                return app('json')->status(PayServices::ALLIN_PAY . '_pay', 410203, $info);
         }
         return app('json')->fail(410218);
     }
@@ -501,7 +521,7 @@ class StoreOrderController
         $where['is_system_del'] = 0;
         if (in_array($where['status'], [-1, -2, -3])) {
             $where['not_pid'] = 1;
-        } elseif (in_array($where['status'], [0, 1, 2, 3, 4])) {
+        } elseif (in_array($where['status'], [0, 1, 2, 3, 4, 9])) {
             $where['pid'] = 0;
         }
         $list = $this->services->getOrderApiList($where);
@@ -778,7 +798,7 @@ class StoreOrderController
      */
     public function data(Request $request)
     {
-        return app('json')->success($this->services->getOrderData((int)$request->uid(), true));
+        return app('json')->success($this->services->getOrderData((int)$request->uid()));
     }
 
     /**

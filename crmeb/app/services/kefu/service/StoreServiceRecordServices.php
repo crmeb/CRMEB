@@ -14,7 +14,6 @@ namespace app\services\kefu\service;
 
 use app\dao\service\StoreServiceRecordDao;
 use app\services\BaseServices;
-use crmeb\traits\ServicesTrait;
 use crmeb\utils\Str;
 use think\Model;
 
@@ -25,8 +24,6 @@ use think\Model;
  */
 class StoreServiceRecordServices extends BaseServices
 {
-
-    use ServicesTrait;
 
     /**
      * StoreServiceRecordServices constructor.

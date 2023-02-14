@@ -68,10 +68,11 @@ class ProductController
      */
     public function getProductRoutineCode(Request $request)
     {
-        list($product_id) = $request->getMore([
+        list($product_id, $type) = $request->getMore([
             ['product_id', 0],
+            ['type', 'product'],
         ], true);
-        $routineCode = $this->services->getProductRoutineCode((int)$product_id);
+        $routineCode = $this->services->getProductRoutineCode((int)$product_id, $type);
         return app('json')->success(['routineCode' => $routineCode]);
     }
 

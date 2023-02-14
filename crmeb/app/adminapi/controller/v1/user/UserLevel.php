@@ -63,18 +63,16 @@ class UserLevel extends AuthController
             ['icon', ''],
             ['image', ''],
             ['is_show', ''],
-            ['explain', ''],
             ['exp_num', 0]
         ]);
         if ($data['valid_date'] == 0) $data['is_forever'] = 1;//有效时间为0的时候就是永久
         if (!$data['name']) return app('json')->fail(400324);
         if (!$data['grade']) return app('json')->fail(400325);
-        if (!$data['explain']) return app('json')->fail(400326);
         if (!$data['icon']) return app('json')->fail(400327);
         if (!$data['image']) return app('json')->fail(400328);
         if (!$data['exp_num']) return app('json')->fail(400329);
-
-        return app('json')->success($this->services->save((int)$data['id'], $data));
+        $this->services->save((int)$data['id'], $data);
+        return app('json')->success(100000);
     }
 
     /*

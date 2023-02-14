@@ -60,7 +60,7 @@ class StoreCouponsController
 
         /** @var StoreCouponIssueServices $couponIssueService */
         $couponIssueService = app()->make(StoreCouponIssueServices::class);
-        $couponIssueService->issueUserCoupon($couponId, $request->user());
+        $couponIssueService->issueUserCoupon($couponId, $request->user(), true);
         return app('json')->success(410319);
     }
 

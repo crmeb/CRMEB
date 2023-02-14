@@ -145,9 +145,10 @@ class StoreCouponUserServices extends BaseServices
                     case 1://品类券
                         /** @var StoreCategoryServices $storeCategoryServices */
                         $storeCategoryServices = app()->make(StoreCategoryServices::class);
-                        $cateGorys = $storeCategoryServices->getAllById((int)$coupon['category_id']);
-                        if ($cateGorys) {
-                            $cateIds = array_column($cateGorys, 'id');
+                        $coupon_category = explode(',', (string)$coupon['category_id']);
+                        $category_ids = $storeCategoryServices->getAllById($coupon_category);
+                        if ($category_ids) {
+                            $cateIds = array_column($category_ids, 'id');
                             foreach ($cartInfo as $cart) {
                                 if (isset($cart['productInfo']['cate_id']) && array_intersect(explode(',', $cart['productInfo']['cate_id']), $cateIds)) {
                                     $price += bcmul((string)$cart['truePrice'], (string)$cart['cart_num'], 2);
@@ -302,18 +303,6 @@ class StoreCouponUserServices extends BaseServices
         }
         [$page, $limit] = $this->getPageValue();
         $list = $this->dao->getCouponListByOrder($where, 'status ASC,add_time DESC', $page, $limit);
-        /** @var StoreCategoryServices $categoryServices */
-        $categoryServices = app()->make(StoreCategoryServices::class);
-        $category = $categoryServices->getColumn([], 'pid,cate_name', 'id');
-        foreach ($list as &$item) {
-            if ($item['category_id']) {
-                $item['category_type'] = $category[$item['category_id']]['pid'] == 0 ? 1 : 2;
-                $item['category_name'] = $category[$item['category_id']]['cate_name'];
-            } else {
-                $item['category_type'] = '';
-                $item['category_name'] = '';
-            }
-        }
         return $list ? $this->tidyCouponList($list) : [];
     }
 

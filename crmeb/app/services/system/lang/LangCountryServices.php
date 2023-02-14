@@ -87,6 +87,7 @@ class LangCountryServices extends BaseServices
             $res = $this->dao->save($data);
         }
         if (!$res) throw new AdminException(100007);
+        $this->cacheDriver()->clear();
         return true;
     }
 
@@ -99,6 +100,7 @@ class LangCountryServices extends BaseServices
     {
         $res = $this->dao->delete($id);
         if (!$res) throw new AdminException(100008);
+        $this->cacheDriver()->clear();
         return true;
     }
 }

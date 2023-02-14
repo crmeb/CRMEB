@@ -220,6 +220,17 @@ class StoreOrderRefundServices extends BaseServices
                         //支付宝退款
                         AliPayService::instance()->refund(strpos($refundOrder['trade_no'], '_') !== false ? $refundOrder['trade_no'] : $refundOrder['order_id'], floatval($refundData['refund_price']), $refund_id);
                         break;
+                    case PayServices::ALLIN_PAY:
+                        /** @var Pay $pay */
+                        $pay = app()->make(Pay::class, ['allin_pay']);
+                        /** @var StoreOrderServices $orderServices */
+                        $orderServices = app()->make(StoreOrderServices::class);
+                        $trade_no = $orderServices->value(['id' => $orderRefundInfo['store_order_id']], 'trade_no');
+                        $pay->refund($trade_no, [
+                            'order_id' => $refundOrder['order_id'],
+                            'refund_price' => $refundData['refund_price']
+                        ]);
+                        break;
                 }
             }
             //订单记录
@@ -1249,6 +1260,17 @@ class StoreOrderRefundServices extends BaseServices
             $storeOrderCartInfoServices->update(['oid' => $oid, 'cart_id' => $cart['id']], ['refund_num' => $refund_num]);
         }
         $storeOrderCartInfoServices->clearOrderCartInfo($oid);
+
+        //写入订单记录表
+        /** @var StoreOrderStatusServices $statusService */
+        $statusService = app()->make(StoreOrderStatusServices::class);
+        $statusService->save([
+            'oid' => $oid,
+            'change_type' => 'cancel_refund_order',
+            'change_message' => '取消退款',
+            'change_time' => time()
+        ]);
+
         //售后订单取消后置事件
         event('order.orderRefundCancelAfter', [$orderRefundInfo]);
         // 推送订单

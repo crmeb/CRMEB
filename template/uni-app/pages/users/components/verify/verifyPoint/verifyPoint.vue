@@ -223,7 +223,6 @@
                     let y =Math.round(155 * p.y/parseInt(imgSize.height)) 
                     return {x,y}
                 })
-                // console.log(newPointArr,"newPointArr");
                 return newPointArr
             },
         },
@@ -236,8 +235,10 @@
                 }
             }
         },
-		mounted() {}
-    }
+		mounted() {
+			console.log(this.defaultImg)
+		}
+  }
 </script>
 
 <style scoped>

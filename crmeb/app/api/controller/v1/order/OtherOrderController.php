@@ -19,7 +19,7 @@ use app\services\pay\YuePayServices;
 use app\services\user\member\MemberCardServices;
 use app\services\user\UserServices;
 use crmeb\services\CacheService;
-use crmeb\services\SystemConfigService;
+use crmeb\services\pay\extend\allinpay\AllinPay;
 use app\Request;
 
 /**
@@ -115,6 +115,8 @@ class OtherOrderController
 
         $info = compact('order_id');
 
+        $payType = get_pay_type($payType);
+
         if ($order_id) {
             switch ($payType) {
                 case PayServices::WEIXIN_PAY:
@@ -168,10 +170,20 @@ class OtherOrderController
                         $payKey = md5($orderInfo['order_id']);
                         CacheService::set($payKey, ['order_id' => $orderInfo['order_id'], 'other_pay_type' => true], 300);
                         $info['pay_key'] = $payKey;
-                        return app('json')->status(PayServices::ALIAPY_PAY . '_pay',  410196, $info);
+                        return app('json')->status(PayServices::ALIAPY_PAY . '_pay', 410196, $info);
                     }
                 case PayServices::OFFLINE_PAY:
                     return app('json')->status('success', 410196, $info);
+                case PayServices::ALLIN_PAY:
+                    /** @var OrderPayServices $payServices */
+                    $payServices = app()->make(OrderPayServices::class);
+                    $info['jsConfig'] = $payServices->orderPay($orderInfo, $payType, [
+                        'returl' => sys_config('site_url') . '/pages/index/index',
+                    ]);
+                    if ($request->isWechat()) {
+                        $info['pay_url'] = AllinPay::UNITODER_H5UNIONPAY;
+                    }
+                    return app('json')->status(PayServices::ALLIN_PAY . '_pay', 410196, $info);
             }
         } else return app('json')->fail(410200);
     }
@@ -182,9 +194,8 @@ class OtherOrderController
      */
     public function pay_type(Request $request)
     {
-        /** @var SystemConfigService $systemConfigService */
-        $systemConfigService = app()->make(SystemConfigService::class);
-        $payType = $systemConfigService->more(['ali_pay_status', 'pay_weixin_open']);
+        $payType['ali_pay_status'] = is_ali_pay();
+        $payType['pay_weixin_open'] = is_wecaht_pay();
         $payType['site_name'] = sys_config('site_name');
         $payType['now_money'] = $request->user('now_money');
         $payType['offline_pay_status'] = true;

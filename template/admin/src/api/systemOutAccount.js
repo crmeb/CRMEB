@@ -144,10 +144,10 @@ export function interfaceDel(id) {
  * @param {*} data
  * @returns
  */
- export function textOutUrl(data) {
+export function textOutUrl(data) {
   return request({
     url: `setting/system_out_account/text_out_url`,
     method: 'post',
-    data
+    data,
   });
 }

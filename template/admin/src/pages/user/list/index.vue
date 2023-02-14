@@ -223,6 +223,7 @@
           </Button>
           <Button v-auth="['admin-user-group_set']" class="mr20" @click="setGroup">批量设置分组</Button>
           <Button v-auth="['admin-user-set_label']" class="mr20" @click="setLabel">批量设置标签</Button>
+          <Button class="mr20" icon="ios-share-outline" @click="exportList">导出</Button>
 
           <!-- <Button v-auth="['admin-user-synchro']" class="mr20" @click="synchro">同步公众号用户</Button> -->
         </Col>
@@ -271,9 +272,9 @@
         <!--                    </i-switch>-->
         <!--                </template>-->
         <template slot-scope="{ row, index }" slot="action">
-          <a @click="edit(row)">编辑</a>
-          <Divider type="vertical" />
-          <template>
+          <template v-if="row.is_del != 1">
+            <a @click="edit(row)">编辑</a>
+            <Divider type="vertical" />
             <Dropdown @on-click="changeMenu(row, $event, index)" :transfer="true">
               <a href="javascript:void(0)">
                 更多
@@ -290,6 +291,9 @@
                 <DropdownItem name="8" v-if="row.spread_uid">清除上级推广人</DropdownItem>
               </DropdownMenu>
             </Dropdown>
+          </template>
+          <template v-else>
+            <div v-if="row.is_del == 1" style="color: red">已注销</div>
           </template>
         </template>
       </Table>
@@ -355,13 +359,13 @@
         @onceGetList="onceGetList"
       ></userLabel>
     </Modal>
-    <Modal v-model="modals" title="用户信息填写" class="order_box" :closable="false" width="600" :z-index="50">
+    <Drawer :closable="false" width="700" v-model="modals" title="用户信息填写">
       <userEdit ref="userEdit" v-if="modals" :userData="userData"></userEdit>
-      <div slot="footer">
-        <Button @click="modals = false">取消</Button>
+      <div class="demo-drawer-footer">
+        <Button style="margin-right: 8px" @click="modals = false">取消</Button>
         <Button type="primary" @click="setUser">提交</Button>
       </div>
-    </Modal>
+    </Drawer>
     <!-- 用户标签 -->
     <Modal
       v-model="selectLabelShow"
@@ -409,6 +413,7 @@ import {
   saveSetLabel,
 } from '@/api/user';
 import { agentSpreadApi } from '@/api/agent';
+import { exportUserList } from '@/api/export';
 import editFrom from '../../../components/from/from';
 import sendFrom from '@/components/sendCoupons/index';
 import userDetails from './handle/userDetails';
@@ -1017,6 +1022,52 @@ export default {
           this.$Message.error(res.msg);
         });
     },
+    // 用户导出
+    async exportList() {
+      if (this.selectDataLabel.length) {
+        let activeIds = [];
+        this.selectDataLabel.forEach((item) => {
+          activeIds.push(item.id);
+        });
+        this.userFrom.label_id = activeIds.join(',');
+      }
+      this.userFrom.user_type = this.userFrom.user_type || '';
+      this.userFrom.status = this.userFrom.status || '';
+      this.userFrom.sex = this.userFrom.sex || '';
+      this.userFrom.is_promoter = this.userFrom.is_promoter || '';
+      this.userFrom.country = this.userFrom.country || '';
+      this.userFrom.pay_count = this.pay_count === 'all' ? '' : this.pay_count;
+      this.userFrom.user_time_type = this.user_time_type === 'all' ? '' : this.user_time_type;
+      this.userFrom.field_key = this.field_key === 'all' ? '' : this.field_key;
+      this.userFrom.level = this.level === 'all' ? '' : this.level;
+      this.userFrom.group_id = this.group_id === 'all' ? '' : this.group_id;
+      let [th, filekey, data, fileName] = [[], [], [], ''];
+      //   let fileName = "";
+      let excelData = JSON.parse(JSON.stringify(this.userFrom));
+      excelData.page = 1;
+      for (let i = 0; i < excelData.page + 1; i++) {
+        let lebData = await this.getExcelData(excelData);
+        if (!fileName) fileName = lebData.filename;
+        if (!filekey.length) {
+          filekey = lebData.fileKey;
+        }
+        if (!th.length) th = lebData.header;
+        if (lebData.export.length) {
+          data = data.concat(lebData.export);
+          excelData.page++;
+        } else {
+          this.$exportExcel(th, filekey, fileName, data);
+          return;
+        }
+      }
+    },
+    getExcelData(excelData) {
+      return new Promise((resolve, reject) => {
+        exportUserList(excelData).then((res) => {
+          resolve(res.data);
+        });
+      });
+    },
     pageChange(index) {
       this.selectionList = [];
       this.userFrom.page = index;
@@ -1290,4 +1341,14 @@ img {
     color: #808695;
   }
 }
+.demo-drawer-footer{
+        width: 100%;
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        border-top: 1px solid #e8e8e8;
+        padding: 10px 16px;
+        text-align: right;
+        background: #fff;
+    }
 </style>

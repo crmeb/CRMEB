@@ -99,6 +99,8 @@
 		justify-content: center;
 		align-items: center;
 		background: var(--view-theme) !important;
+		opacity: 0.8;
+		backdrop-filter: blur(10px);
 	}
 
 	.home .homeCon .iconfont {

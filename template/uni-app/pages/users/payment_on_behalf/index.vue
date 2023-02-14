@@ -46,7 +46,7 @@
 				</view>
 				<view class="order-num">
 					<text class="icon">{{$t(`￥`)}}</text>
-					{{resData.pay_price}}
+					{{resData.pay_price || 0}}
 				</view>
 			</view>
 			<!-- #ifdef APP-PLUS -->
@@ -70,7 +70,8 @@
 			</button>
 			<button class="order-btn" v-if="!resData.paid && resData.type" @tap='payOpen()'>{{$t(`立即付款`)}}</button>
 			<button class="order-btn on-pay" v-if="resData.paid && resData.type">{{$t(`订单已支付`)}}</button>
-			<button class="order-btn" v-if="resData.paid && !resData.type" @tap='goOrderDetail()'>{{$t(`查看订单详情`)}}</button>
+			<button class="order-btn" v-if="resData.paid && !resData.type"
+				@tap='goOrderDetail()'>{{$t(`查看订单详情`)}}</button>
 			<view class="order-trip" v-if="resData.pay_uid === $store.state.app.uid && resData.type">
 				{{$t(`如果订单申请退款，已支付金额将原路退还给您`)}}
 			</view>
@@ -173,7 +174,7 @@
 			return {
 				title: "",
 				imageUrl: "",
-				path: "/pages/users/payment_on_behalf/index?order_id=" + that.order_id + "&spread=" + this.$store.state.app
+				path: "/pages/users/payment_on_behalf/index?order_id=" + that.id + "&spread=" + this.$store.state.app
 					.uid,
 			};
 		},

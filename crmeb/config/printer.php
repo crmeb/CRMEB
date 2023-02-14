@@ -10,5 +10,7 @@ return [
     'stores' => [
         //易联云
         'yi_lian_yun' => [],
+        //飞鹅云
+        'fei_e_yun' => [],
     ]
 ];

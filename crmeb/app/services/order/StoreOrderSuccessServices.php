@@ -74,7 +74,7 @@ class StoreOrderSuccessServices extends BaseServices
         }
         /** @var StoreOrderCartInfoServices $orderInfoServices */
         $orderInfoServices = app()->make(StoreOrderCartInfoServices::class);
-        $orderInfo['storeName'] = $orderInfoServices->getCarIdByProductTitle((int)$orderInfo['id'], $orderInfo['cart_id']);
+        $orderInfo['storeName'] = $orderInfoServices->getCarIdByProductTitle((int)$orderInfo['id']);
         $res1 = $this->dao->update($orderInfo['id'], $updata);
         $resPink = true;
         if ($orderInfo['combination_id'] && $res1 && !$orderInfo['refund_status']) {

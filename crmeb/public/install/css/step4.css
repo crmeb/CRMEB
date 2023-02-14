@@ -1,0 +1,127 @@
+.wrap{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.title {
+    text-align: center;
+    padding: 23px 0 30px 0;
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 14px;
+}
+
+.section .title {
+    margin-bottom: 0;
+}
+
+.section {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 60%;
+    height: 60%;
+    max-height: 60%;
+}
+
+.section .progress {
+    width: 100%;
+}
+
+.section .el-progress-bar {
+    padding-right: 0px;
+}
+
+.msg {
+    width: 300px;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.8);
+    text-align: center;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap
+}
+
+.msg li {
+    width: 350px;
+    display: flex;
+    flex-wrap: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap
+}
+
+.open {
+    font-size: 12px;
+    color: #fff;
+    cursor: pointer;
+}
+
+.btn_old {
+    color: #5A487D;
+}
+
+.section .bottom {
+    width: 120px;
+    margin: 0;
+}
+
+.progress-msg {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 14px 0 30px 0;
+}
+.install {
+    display: flex;
+    flex-direction: column;
+    width: 96%;
+    max-height: 550px;
+    color: #fff;
+    overflow-y: scroll;
+    margin: 25px auto;
+    font-size: 12px;
+    background-color: rgba(255,255,255,0.1);
+    padding: 0 2%;
+    border-radius: 6px;
+}
+.shuaxin{
+    -webkit-animation:changeright 1s linear infinite;
+    width: 16px;
+    height: 16px;
+}
+@-webkit-keyframes changeright{
+    0%{-webkit-transform:rotate(0deg);}
+    50%{-webkit-transform:rotate(180deg);}
+    100%{-webkit-transform:rotate(360deg);}
+}
+.install::-webkit-scrollbar { width: 0 !important }
+.item{
+    display: flex;
+    justify-content: space-between;
+}
+/*IE 10+*/
+
+.install { -ms-overflow-style: none; }
+
+/*Firefox*/
+
+.install { overflow: -moz-scrollbars-none; }
+.bottom-btn {
+    display: flex;
+    justify-content: center;
+}
+
+.bottom-btn .up-btn {
+    color: #FFFFFF;
+    margin-right: 10px;
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.bottom-btn .up-btn a:link, a:visited {
+    color: #fff;
+}
+
+.trip {
+
+}

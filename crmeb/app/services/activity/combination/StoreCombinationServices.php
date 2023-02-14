@@ -386,9 +386,14 @@ class StoreCombinationServices extends BaseServices
         $storeInfo['userLike'] = false;
         $storeInfo['store_name'] = $storeInfo['title'];
 
-        /** @var QrcodeServices $qrcodeService */
-        $qrcodeService = app()->make(QrcodeServices::class);
-        $storeInfo['code_base'] = $qrcodeService->getWechatQrcodePath($id . '_product_combination_detail_wap.jpg', '/pages/activity/goods_combination_details/index?id=' . $id);
+        if (sys_config('share_qrcode', 0) && request()->isWechat()) {
+            /** @var QrcodeServices $qrcodeService */
+            $qrcodeService = app()->make(QrcodeServices::class);
+            $storeInfo['wechat_code'] = $qrcodeService->getTemporaryQrcode('combination-' . $id, $uid)->url;
+        } else {
+            $storeInfo['wechat_code'] = '';
+        }
+
         $data['storeInfo'] = get_thumb_water($storeInfo, 'big', ['image', 'images']);
         $storeInfoNew = get_thumb_water($storeInfo, 'small');
         $data['storeInfo']['small_image'] = $storeInfoNew['image'];

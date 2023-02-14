@@ -46,6 +46,12 @@ class PayController
                     $pay = app()->make(Pay::class);
                 }
                 return $pay->handleNotify()->getContent();
+            default:
+                if (strstr($type, 'allin') !== false) {
+                    /** @var Pay $pay */
+                    $pay = app()->make(Pay::class, ['allin_pay']);
+                    return $pay->handleNotify($type);
+                }
         }
     }
 

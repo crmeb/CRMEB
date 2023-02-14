@@ -18,6 +18,7 @@ use app\services\pay\PayServices;
 use app\services\statistic\CapitalFlowServices;
 use app\services\user\member\MemberShipServices;
 use app\services\user\UserBillServices;
+use app\services\user\UserBrokerageServices;
 use app\services\user\UserServices;
 use app\services\user\member\MemberCardServices;
 use crmeb\exceptions\ApiException;
@@ -335,7 +336,50 @@ class OtherOrderServices extends BaseServices
             $capitalFlowServices->setFlow($orderInfo, $type);
         }
         $res = $res1 && $res2 && $res3 && $res4;
+
+        //购买付费会员返佣设置
+        if (sys_config('member_brokerage', 0) == 1 && sys_config('brokerage_func_status', 0) == 1) {
+            $spread_one = sys_config('is_self_brokerage') ? $orderInfo['uid'] : $userServices->getSpreadUid($orderInfo['uid']);
+            $spread_two = sys_config('brokerage_level', 2) == 2 ? $userServices->getSpreadUid($spread_one) : 0;
+            $spread_one_price = bcmul((string)$orderInfo['pay_price'], (string)bcdiv((string)sys_config('store_brokerage_ratio', 0), '100', 4), 2);
+            $spread_two_price = bcmul((string)$orderInfo['pay_price'], (string)bcdiv((string)sys_config('store_brokerage_two', 0), '100', 4), 2);
+            if ($spread_one && $spread_one_price > 0) $this->memberBrokerage($spread_one, $spread_one_price, sys_config('is_self_brokerage') ? 'get_self_brokerage' : 'get_brokerage', $orderInfo);
+            if ($spread_two && $spread_two_price > 0) $this->memberBrokerage($spread_two, $spread_two_price, 'get_two_brokerage', $orderInfo);
+        }
+
         return false !== $res;
+    }
+
+    /**
+     * 购买付费会员返佣
+     * @param $uid
+     * @param $price
+     * @param $type
+     * @param $orderInfo
+     */
+    public function memberBrokerage($uid, $price, $type, $orderInfo)
+    {
+        /** @var UserServices $userServices */
+        $userServices = app()->make(UserServices::class);
+        $userInfo = $userServices->get($uid);
+        // 上级推广员返佣之后的金额
+        $balance = bcadd($userInfo['brokerage_price'], $price, 2);
+        // 添加用户佣金
+        $res1 = $userServices->bcInc($uid, 'brokerage_price', $price, 'uid');
+        if ($res1) {
+            //冻结时间
+            $broken_time = intval(sys_config('extract_time'));
+            $frozen_time = time() + $broken_time * 86400;
+            // 添加佣金记录
+            /** @var UserBrokerageServices $userBrokerageServices */
+            $userBrokerageServices = app()->make(UserBrokerageServices::class);
+            $userBrokerageServices->income($type, $uid, [
+                'nickname' => $userInfo['nickname'],
+                'pay_price' => floatval($price),
+                'number' => floatval($userInfo['brokerage_price']),
+                'frozen_time' => $frozen_time
+            ], $balance, $orderInfo['id']);
+        }
     }
 
     /**
@@ -372,7 +416,7 @@ class OtherOrderServices extends BaseServices
         $newMemberRight = $memberCardService->getMemberTypeValue();
         if (!array_key_exists($mcId, $newMemberRight)) throw new ApiException(410230);
         $price = $newMemberRight[$mcId]['pre_price'];
-        if ($payPrice != $price || ($memberType != 'free' && $payPrice <= 0))throw new ApiException(100100);
+        if ($payPrice != $price || ($memberType != 'free' && $payPrice <= 0)) throw new ApiException(100100);
         if ($memberType == 'free' && $newMemberRight[$mcId]['vip_day'] <= 0) throw new ApiException(100100);
         switch ($memberType) {
             case "free"://免费会员

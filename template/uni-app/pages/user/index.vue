@@ -271,6 +271,8 @@
 				<image :src="copyRightPic" alt="" class='support'></image>
 				<view class="uni-p-b-98"></view>
 			</scroll-view>
+			<editUserModal :isShow="editModal" @closeEdit="closeEdit" @editSuccess="editSuccess">
+			</editUserModal>
 		</view>
 		<tabBar v-if="!is_diy" :pagePath="'/pages/user/index'"></tabBar>
 		<pageFooter v-else></pageFooter>
@@ -307,10 +309,12 @@
 	import {
 		getCustomer
 	} from '@/utils/index.js'
+	import editUserModal from '@/components/eidtUserModal/index.vue'
 	export default {
 		components: {
 			tabBar,
-			pageFooter
+			pageFooter,
+			editUserModal
 		},
 		// computed: mapGetters(['isLogin','cartNum']),
 		computed: {
@@ -335,6 +339,7 @@
 		mixins: [colors],
 		data() {
 			return {
+				editModal: false, // 编辑头像信息
 				storeMenu: [], // 商家管理
 				orderMenu: [{
 						img: 'icon-daifukuan',
@@ -477,6 +482,13 @@
 				}).catch(res => {
 
 				})
+			},
+			editSuccess() {
+				this.editModal = false
+				this.getUserInfo();
+			},
+			closeEdit() {
+				this.editModal = false
 			},
 			// 记录会员访问
 			setVisit() {
@@ -648,6 +660,12 @@
 				if (this.isLogin == false) {
 					toLogin();
 				} else {
+					// #ifdef MP
+					if (this.userInfo.is_default_avatar) {
+						this.editModal = true
+						return
+					}
+					// #endif
 					uni.navigateTo({
 						url: '/pages/users/user_info/index'
 					})

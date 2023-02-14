@@ -8,7 +8,7 @@
 // +----------------------------------------------------------------------
 // | Author: CRMEB Team <admin@crmeb.com>
 // +----------------------------------------------------------------------
-declare (strict_types = 1);
+declare (strict_types=1);
 
 namespace app\services\activity\coupon;
 
@@ -42,6 +42,10 @@ class StoreCouponIssueUserServices extends BaseServices
     {
         [$page, $limit] = $this->getPageValue();
         $list = $this->dao->getList($where, $page, $limit);
+        $site_url = sys_config('site_url');
+        foreach ($list as &$item) {
+            $item['avatar'] = strpos($item['avatar'], 'http') === false ? ($site_url . $item['avatar']) : $item['avatar'];
+        }
         $count = $this->dao->count($where);
         return compact('list', 'count');
     }

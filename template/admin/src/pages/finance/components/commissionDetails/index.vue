@@ -35,7 +35,7 @@
         <div>{{ row.extract_price }}</div>
       </template>
       <template slot-scope="{ row }" slot="pay_type">
-          <span > {{ row.pay_type_name }} </span>
+        <span> {{ row.pay_type_name }} </span>
       </template>
       <template slot-scope="{ row }" slot="price">
         <div v-if="row.price >= 0" class="z-price">+{{ row.price }}</div>

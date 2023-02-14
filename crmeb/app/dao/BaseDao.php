@@ -127,6 +127,17 @@ abstract class BaseDao
     }
 
     /**
+     * @return string
+     * @author 等风来
+     * @email 136327134@qq.com
+     * @date 2023/2/8
+     */
+    public function getTableName()
+    {
+        return $this->getModel()->getName();
+    }
+
+    /**
      * 获取一条数据
      * @param $id
      * @param array|null $field

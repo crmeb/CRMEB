@@ -4,8 +4,8 @@
       :cardLists="cardLists"
       v-if="cardLists.length >= 0"
     ></cards-data> -->
-      <table-form @getList="getData" />
-      <table-list ref="table" @on-changeCards="getCards" @changeGetTabs="changeGetTabs" />
+    <table-form @getList="getData" />
+    <table-list ref="table" @on-changeCards="getCards" @changeGetTabs="changeGetTabs" />
   </div>
 </template>
 

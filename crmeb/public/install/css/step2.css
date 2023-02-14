@@ -1,0 +1,170 @@
+.wrap{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.content{
+    display: flex;
+}
+
+.menu {
+    color: #fff;
+    width: 210px;
+}
+.menu .again{
+    padding-bottom: 4px;
+    padding-left: 9px;
+    color: #37CA71;
+    text-decoration:none;
+}
+.menu .head{
+    display: flex;
+    align-items: flex-end;
+}
+.menu .p8{
+    color: rgba(255,255,255,0.8)
+}
+.menu .tab{
+    margin-top: 25px;
+    padding: 18px 19px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+}
+.left-img{
+    position: relative;
+    margin-right: 20px;
+}
+.warring{
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    right: -6px;
+    bottom: 0px;
+}
+.btn-warning{
+    bottom: 2px;
+
+}
+
+.env{
+    width: 25px;
+    height: 25px;
+}
+.jur{
+    width: 25px;
+    height: 28px;
+}
+.menu .tab{
+    transition: all 0.1s;
+}
+.menu .tab.on{
+    background: rgba(0,0,0,0.2);
+    border-radius: 13px 13px 13px 13px;
+}
+.config-list{
+    width: 485px;
+}
+/*
+===================
+服务器检测/信息输入
+===================
+*/
+.server{
+    height: 430px;
+    padding:0px 20px 3px 35px;
+}
+.server table{
+    margin-bottom:20px;
+}
+.server td{
+    padding:6px 5px;
+    color: #fff;
+    font-size: 12px;
+    align-items: center;
+}
+.server .td1{
+    color:rgba(255,255,255, 0.6);
+    font-size: 12px;
+}
+.server .input{
+    border:none;
+    border-radius: 30px;
+    padding:3px;
+    width:200px;
+}
+.server .input:hover,
+.server .input:focus{
+    outline:none;
+}
+.gray{
+    color:#bbb;
+}
+.server tr:hover .gray{
+    color:#333;
+}
+
+.trip{
+    color: #EDB90F;
+    font-size: 12px;
+    height: 17px;
+}
+.trip img{
+    width: 14px;
+    height: 14px;
+    margin-right: 5px;
+}
+/*
+===================
+正确错误
+===================
+*/
+.correct_span,
+.error_span{
+    display:block;
+    float:left;
+    width:20px;
+    height:16px;
+    text-indent:-2000em;
+    overflow:hidden;
+    background:url(../images/install/icon.png) no-repeat;
+    margin-right:5px;
+}
+.error_span{
+    background-position:0 -23px;
+}
+.bottom{
+    width: 110px;
+    height: 32px;
+    background: #FFFFFF;
+    border-radius: 137px 137px 137px 137px;
+    font-size: 14px;
+    line-height: 32px;
+    margin: 0 auto;
+    margin-top: 20px;
+    cursor: pointer;
+    text-align: center;
+}
+.bottom a{
+    display:block;
+    width: 100%;
+    height: 100%;
+}
+.bottom-btn{
+    display: flex;
+}
+.bottom-btn .up-btn{
+    color: rgba(255,255,255,0.6);
+    margin-right: 10px;
+    background-color: rgba(255,255,255,0.1);
+}
+.bottom-btn .next{
+    color: #5A487D;
+}
+.bottom-btn .up-btn a{
+    color: rgba(255,255,255,0.6);
+}
+.bottom-btn .up-btn a:link,a:visited{
+    color: rgba(255,255,255,0.6);
+    text-decoration: none;
+}

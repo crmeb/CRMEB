@@ -60,10 +60,12 @@ export const sharePoster = {
 		},
 		getImageBase64() {
 			let that = this;
-			imageBase64(that.storeImage, '')
+			imageBase64(that.storeImage, this.storeInfo.wechat_code)
 				.then((res) => {
 					that.storeImageBase64 = res.data.image;
-					// that.PromotionCode = res.data.code;
+					if (this.storeInfo.wechat_code) {
+						that.PromotionCode = res.data.code;
+					}
 				})
 				.catch(() => {});
 		},
@@ -158,7 +160,8 @@ export const sharePoster = {
 			that.$set(that, "canvasStatus", true);
 			let arr2
 			// #ifdef MP
-			let met = type === 'scombination' ? scombinationCode(that.id) : type === 'seckill' ? seckillCode(that
+			let met = type === 'scombination' ? scombinationCode(that.id) : type === 'seckill' ? seckillCode(
+				that
 				.id) : getProductCode(that.id)
 			met.then((res) => {
 					uni.downloadFile({
@@ -187,6 +190,7 @@ export const sharePoster = {
 			// #endif
 			// #ifdef H5 || APP-PLUS
 			arr2 = [that.posterbackgd, that.storeImageBase64, that.PromotionCode];
+			console.log(arr2)
 			if (!that.storeImageBase64)
 				return that.$util.Tips({
 					title: i18n.t(`正在下载海报,请稍后再试`),

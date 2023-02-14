@@ -11,10 +11,10 @@
 
 namespace app\services\message\notice;
 
-use app\services\message\NoticeService;
 use app\jobs\notice\EnterpriseWechatJob;
+use app\services\message\NoticeService;
+use crmeb\services\HttpService;
 use think\facade\Log;
-
 
 /**
  * 企业微信发送消息
@@ -24,12 +24,11 @@ use think\facade\Log;
  */
 class EnterpriseWechatService extends NoticeService
 {
-
     /**
      * 判断是否开启权限
      * @var bool
      */
-    private $isopend = true;
+    private $isOpen = true;
 
     /**
      * 是否开启权限
@@ -38,30 +37,39 @@ class EnterpriseWechatService extends NoticeService
      */
     public function isOpen(string $mark)
     {
-        $this->isopend = $this->notceinfo['is_ent_wechat'] == 1 && $this->notceinfo['url'] !== '';
+        $this->isOpen = $this->noticeInfo['is_ent_wechat'] == 1 && $this->noticeInfo['url'] !== '';
         return $this;
 
     }
 
-
     /**
-     * 发送消息
-     * @param $uid uid
-     * @param array $data 模板内容
+     * 发送企业微信客服消息
+     * @param $data
      */
-    public function sendMsg($data)
+    public function weComSend($data)
     {
-        try {
-            if ($this->isopend) {
-                $url = $this->notceinfo['url'];
-                $ent_wechat_text = $this->notceinfo['ent_wechat_text'];
-                EnterpriseWechatJob::dispatchDo('doJob', [$data, $url, $ent_wechat_text]);
+        if ($this->isOpen) {
+            $url = $this->noticeInfo['url'];
+            $ent_wechat_text = $this->noticeInfo['ent_wechat_text'];
+            try {
+                $str = $ent_wechat_text;
+                foreach ($data as $key => $item) {
+                    $str = str_replace('{' . $key . '}', $item, $str);
+                }
+                $s = explode('\n', $str);
+                $d = '';
+                foreach ($s as $item) {
+                    $d .= $item . "\n>";
+                }
+                $d = substr($d, 0, strlen($d) - 2);
+                HttpService::postRequest($url, json_encode([
+                    'msgtype' => 'markdown',
+                    'markdown' => ['content' => $d]
+                ]));
+            } catch (\Throwable $e) {
+                Log::error('发送企业群消息失败,失败原因:' . $e->getMessage());
+
             }
-        } catch (\Exception $e) {
-            Log::error($e->getMessage());
-            return true;
         }
     }
-
-
 }

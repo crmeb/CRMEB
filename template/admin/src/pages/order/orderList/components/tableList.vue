@@ -158,7 +158,7 @@
     <!-- 编辑 退款 退积分 不退款-->
     <edit-from ref="edits" :FromData="FromData" @submitFail="submitFail"></edit-from>
     <!-- 详情 -->
-    <details-from ref="detailss" :orderDatalist="orderDatalist" :orderId="orderId"></details-from>
+    <details-from ref="details" :orderDatalist="orderDatalist" :orderId="orderId"></details-from>
     <!-- 备注 -->
     <order-remark ref="remarks" :orderId="orderId" @submitFail="submitFail"></order-remark>
     <!-- 记录 -->
@@ -262,7 +262,7 @@ export default {
           width: 100,
         },
         {
-          title: '支付状态',
+          title: '支付方式',
           key: 'pay_type_name',
           width: 80,
         },
@@ -580,7 +580,7 @@ export default {
     getData(id) {
       getDataInfo(id)
         .then(async (res) => {
-          this.$refs.detailss.modals = true;
+          this.$refs.details.modals = true;
           this.orderDatalist = res.data;
           if (this.orderDatalist.orderInfo.refund_reason_wap_img) {
             try {

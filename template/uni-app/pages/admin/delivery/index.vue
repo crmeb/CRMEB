@@ -81,7 +81,7 @@
 									range-key="title">
 									<view class="uni-input">{{expTemp[expIndex].title}}</view>
 								</picker>
-								<div class="look" @click="previewImage">{{$t(`preview`)}}</div>
+								<div class="look" @click="previewImage">{{$t(`预览`)}}</div>
 							</div>
 
 						</view>

@@ -15,7 +15,6 @@ namespace app\services\kefu;
 use app\dao\user\UserDao;
 use app\services\BaseServices;
 use crmeb\exceptions\ApiException;
-use crmeb\traits\ServicesTrait;
 use app\services\user\UserLabelServices;
 use app\services\system\SystemUserLevelServices;
 use app\services\user\UserLabelRelationServices;
@@ -27,7 +26,6 @@ use app\services\kefu\service\StoreServiceRecordServices;
  */
 class UserServices extends BaseServices
 {
-    use ServicesTrait;
 
     /**
      * UserServices constructor.

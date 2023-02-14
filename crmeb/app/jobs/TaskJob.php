@@ -26,24 +26,15 @@ class TaskJob extends BaseJobs
     use QueueTrait;
 
     /**
-     * 修改短信发送记录短信状态
-     */
-    public function modifyResultCode()
-    {
-        /** @var SmsRecordServices $smsRecord */
-        $smsRecord = app()->make(SmsRecordServices::class);
-        return $smsRecord->modifyResultCode();
-    }
-
-    /**
      * 清除昨日海报
      * @return bool
      * @throws \Exception
      */
-    public function emptyYesterdayAttachment()
+    public function emptyYesterdayAttachment(): bool
     {
         /** @var SystemAttachmentServices $attach */
         $attach = app()->make(SystemAttachmentServices::class);
-        return $attach->emptyYesterdayAttachment();
+        $attach->emptyYesterdayAttachment();
+        return true;
     }
 }

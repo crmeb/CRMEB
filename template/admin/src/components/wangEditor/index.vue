@@ -135,7 +135,8 @@ export default {
       let _this = this;
       _this.modalVideo = false;
       this.video = data;
-      let videoHTML = '<video src="' + this.video + '" controls style="max-width:100%;min-height:500rpx"></video>';
+      let videoHTML =
+        '<video src="' + this.video + '" controls style="max-width:100%;min-height:500rpx"></video><p><br></p>';
       this.editor.cmd.do('insertHTML', videoHTML);
     },
 
@@ -181,7 +182,7 @@ export default {
       ];
       // 配置全屏功能按钮是否展示
       //   this.editor.config.showFullScreen = false
-      this.editor.config.uploadImgShowBase64 = true;
+      this.editor.config.uploadImgShowBase64 = false;
       //   this.editor.config.uploadImgAccept = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp']
       this.editor.config.zIndex = 0;
       //   this.editor.config.uploadImgMaxSize = this.uploadSize * 1024 * 1024

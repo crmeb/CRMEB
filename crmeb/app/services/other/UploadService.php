@@ -115,7 +115,9 @@ class UploadService
         $fileHost = $fileArr['scheme'] . '://' . $fileArr['host'];
         /** @var SystemStorageServices $storageServices */
         $storageServices = app()->make(SystemStorageServices::class);
-        $storageArr = $storageServices->selectList([])->toArray();
+        $storageArr = $storageServices->cacheDriver()->remember('storage_list', function () use ($storageServices) {
+            return $storageServices->selectList([], 'domain')->toArray();
+        });
         foreach ($storageArr as $item) {
             if ($fileHost == $item['domain']) {
                 return self::init($item['type'])->setFilepath($filePath);

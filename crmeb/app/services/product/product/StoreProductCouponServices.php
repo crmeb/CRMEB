@@ -84,7 +84,7 @@ class StoreProductCouponServices extends BaseServices
             throw new ApiException(410173);
         }
         $key = 'order_product_coupon_' . $uid . '_' . $order['id'];
-        return CacheService::redisHandler()->get($key, []);
+        return CacheService::get($key, []);
     }
 
     /**
@@ -124,7 +124,7 @@ class StoreProductCouponServices extends BaseServices
             }
         }
         $key = 'order_product_coupon_' . $uid . '_' . $orderId;
-        CacheService::redisHandler()->set($key, $list, 7200);
+        CacheService::set($key, $list, 7200);
         return true;
     }
 }

@@ -54,7 +54,7 @@
           </Col>
         </Row>
       </Form>
-       <Table
+      <Table
         :columns="columns"
         :data="orderList"
         ref="table"

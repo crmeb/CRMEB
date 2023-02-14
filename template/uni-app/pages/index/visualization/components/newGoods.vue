@@ -22,7 +22,7 @@
 						<block v-for="(item,index) in firstList" :key='index'>
 							<view class='item' @click="goDetail(item)">
 								<view class='img-box'>
-									<image :src='item.image'></image>
+									<easy-loadimage mode="widthFix" :image-src="item.image"></easy-loadimage>
 									<text class="pictrue_log_medium pictrue_log_class"
 										v-if="item.activity && item.activity.type ==='1'">
 										{{$t(`秒杀`)}}
@@ -279,6 +279,19 @@
 		width: 100%;
 		height: 100%;
 		border-radius: 12rpx 12rpx 0 0;
+	}
+
+	.wrapper .newProducts .item .img-box {
+
+		/deep/,
+		/deep/image,
+		/deep/.easy-loadimage,
+		/deep/uni-image {
+
+			width: 100%;
+			height: 200rpx;
+			border-radius: 12rpx 12rpx 0 0;
+		}
 	}
 
 	.wrapper .newProducts .item .pro-info {

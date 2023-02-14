@@ -23,7 +23,6 @@ use crmeb\exceptions\AdminException;
 use crmeb\exceptions\ApiException;
 use crmeb\services\FormBuilder as Form;
 use crmeb\services\printer\Printer;
-use crmeb\traits\ServicesTrait;
 
 /**
  * Class StoreIntegralOrderServices
@@ -34,8 +33,6 @@ use crmeb\traits\ServicesTrait;
  */
 class StoreIntegralOrderServices extends BaseServices
 {
-
-    use ServicesTrait;
 
     /**
      * 发货类型

@@ -29,7 +29,7 @@ class ProductStockJob extends BaseJobs
     {
         try {
             foreach ($data as $key => $item) {
-                ProductStockJob::dispatchDo('calcValueStock', [$key]);
+                ProductStockJob::dispatch('calcValueStock', [$key]);
             }
         } catch (\Exception $e) {
             Log::error(['msg' => '拆分计算失败,错误原因:' . $e->getMessage(), 'data' => $data]);

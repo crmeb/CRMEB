@@ -317,6 +317,7 @@ class WechatUserServices extends BaseServices
         }
         if ($userInfo) {
             $uid = (int)$userInfo['uid'];
+            $userInfo['new_user'] = 0;
         }
         $wechatInfo['user_type'] = $userType;
         //user表存在和wechat_user表同时存在
@@ -354,6 +355,7 @@ class WechatUserServices extends BaseServices
                 if (!$this->dao->save($wechatInfo)) {
                     throw new AuthException(410083);
                 }
+                $userInfo['new_user'] = (int)sys_config('get_avatar', 0);
                 return $userInfo;
             });
         }

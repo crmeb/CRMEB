@@ -82,7 +82,19 @@ class LangTypeServices extends BaseServices
         }
         //设置默认
         if ($data['is_default'] == 1) $this->dao->update([['id', '<>', $id]], ['is_default' => 0]);
+        $this->setDefaultLangName();
         return true;
+    }
+
+    /**
+     * @author 等风来
+     * @email 136327134@qq.com
+     * @date 2023/2/10
+     */
+    public function setDefaultLangName()
+    {
+        $fileName = $this->dao->value(['is_default' => 1], 'file_name');
+        $this->cacheDriver()->set('range_name', $fileName);
     }
 
     /**
@@ -94,7 +106,8 @@ class LangTypeServices extends BaseServices
     public function langTypeStatus($id, $status)
     {
         $res = $this->dao->update(['id' => $id], ['status' => $status]);
-        if(!$res) throw new AdminException(100015);
+        if (!$res) throw new AdminException(100015);
+        $this->setDefaultLangName();
         return true;
     }
 
@@ -112,6 +125,7 @@ class LangTypeServices extends BaseServices
         /** @var LangCodeServices $codeServices */
         $codeServices = app()->make(LangCodeServices::class);
         $codeServices->delete(['type_id' => $id]);
+        $this->setDefaultLangName();
         return true;
     }
 }
