@@ -540,13 +540,6 @@
 						value: 'friend',
 						title: this.$t(`找微信好友支付`),
 						payStatus: 1,
-					},
-					{
-						"name": this.$t(`通联支付`),
-						"icon": "icon-tonglianzhifu1",
-						value: 'allinpay',
-						title: this.$t(`使用通联支付付款`),
-						payStatus: 1,
 					}
 				],
 				pay_close: false,
@@ -960,9 +953,6 @@
 						}
 						if (item.value == 'friend') {
 							item.payStatus = res.data.friend_pay_status == 1 ? true : false;
-						}
-						if (item.value == 'allinpay') {
-							item.payStatus = res.data.pay_allin_open == 1 ? true : false;
 						}
 					});
 					

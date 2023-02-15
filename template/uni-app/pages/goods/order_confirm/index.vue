@@ -338,14 +338,6 @@
 						title: this.$t(`找微信好友支付`),
 						payStatus: 1,
 					},
-					{
-						"name": this.$t(`通联支付`),
-						"icon": "icon-tonglianzhifu1",
-						value: 'allinpay',
-						title: this.$t(`使用通联支付付款`),
-						payStatus: 1,
-					}
-
 				],
 				virtual_type: 0,
 				formContent: '',
@@ -869,7 +861,6 @@
 					that.cartArr[1].payStatus = res.data.ali_pay_status || 0;
 					//#ifdef MP
 					that.cartArr[1].payStatus = 0;
-					that.cartArr[5].payStatus = res.data.pay_allin_open || 0;
 					//#endif
 					//余额支付是否开启
 					// that.cartArr[2].title = '可用余额:' + res.data.userInfo.now_money;
