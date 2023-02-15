@@ -4,10 +4,24 @@
 </div>
 <div align="center">
 
-支持免费商用的PHP **多语言** 商城系统 
+支持免费商用的PHP **多语言** 商城系统
 
 </div>
 
+<div align="center" >
+    <a href="http://www.crmeb.com">
+        <img src="https://img.shields.io/badge/Licence-GPL3.0-green.svg?style=flat" />
+    </a>
+    <a href="http://www.crmeb.com">
+        <img src="https://img.shields.io/badge/Edition-4.5-blue.svg" />
+    </a>
+     <a href="https://gitee.com/ZhongBangKeJi/CRMEB/repository/archive/master.zip">
+        <img src="https://img.shields.io/badge/Download-150m-red.svg" />
+    </a>
+    <a href='https://gitee.com/ZhongBangKeJi/CRMEB/stargazers'>
+       <img src='https://gitee.com/ZhongBangKeJi/CRMEB/badge/star.svg?theme=gvp' alt='star'></img>
+    </a>
+</div>
 
 #### 
 
@@ -153,7 +167,7 @@ UI：xy-yyds、LXT
 
 本项目包含的第三方源码和二进制文件之版权信息另行标注。
 
-版权所有Copyright © 2017-2022 by CRMEB (https://www.crmeb.com)
+版权所有Copyright © 2017-2023 by CRMEB (https://www.crmeb.com)
 
 All rights reserved。
 

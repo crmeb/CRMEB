@@ -5,7 +5,7 @@
     </div>
     <div class="ivu-global-footer-copyright" v-if="copyright">{{ copyright }}</div>
     <div class="ivu-global-footer-copyright" v-else>
-      Copyright © 2014-2022
+      Copyright © 2014-2023
       <a href="https://www.crmeb.com" target="_blank">{{ version }}</a>
     </div>
   </div>
@@ -33,7 +33,7 @@ export default {
           href: 'http://doc.crmeb.com',
         },
       ],
-      copyright: 'Copyright © 2014-2022',
+      copyright: 'Copyright © 2014-2023',
       version: '',
     };
   },
@@ -52,8 +52,6 @@ export default {
 </script>
 <style lang="less">
 .ivu-global-footer {
-  /* margin: 48px 0 24px 0; */
-  /* padding: 0 16px; */
   margin: 5px 0px;
   text-align: center;
   box-sizing: border-box;

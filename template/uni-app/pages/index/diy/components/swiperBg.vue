@@ -84,7 +84,7 @@
 				let that = this;
 				this.$nextTick((e) => {
 					uni.getImageInfo({
-						src: that.setDomain(that.imgUrls[0].img),
+						src: that.imgUrls[0].img,
 						success: (res) => {
 							if (res && res.height > 0) {
 								// that.$set(that, 'imageH',

@@ -122,6 +122,7 @@ switch ($step) {
         $folder = array(
             'public',
             'runtime',
+            'backup',
         );
         foreach ($folder as $dir) {
             if (!is_file(APP_DIR . $dir)) {
