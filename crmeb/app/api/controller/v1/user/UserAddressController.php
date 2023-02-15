@@ -40,7 +40,7 @@ class UserAddressController
     public function address(Request $request, $id)
     {
         if (!$id) {
-            app('json')->fail(100100);
+            return app('json')->fail(100100);
         }
         return app('json')->success($this->services->address((int)$id));
     }

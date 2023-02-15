@@ -14,7 +14,6 @@ namespace crmeb\services;
 use think\cache\Driver;
 use think\cache\TagSet;
 use think\facade\Cache;
-use think\facade\Cache as CacheStatic;
 use think\facade\Config;
 
 /**
@@ -246,47 +245,33 @@ class CacheService
 
     /**
      * 检查锁
-     * @param int $uid
+     * @param string $key
      * @param int $timeout
      * @return bool
      * @author 等风来
      * @email 136327134@qq.com
      * @date 2022/11/22
      */
-    public static function setMutex(string $key, int $timeout = 10)
+    public static function setMutex(string $key, int $timeout = 10): bool
     {
         $curTime = time();
         $readMutexKey = "redis:mutex:{$key}";
-        $mutexRes = self::redisHandler()->handler()->setnx($readMutexKey, $curTime + $timeout);
+        $mutexRes = Cache::store('redis')->handler()->setnx($readMutexKey, $curTime + $timeout);
         if ($mutexRes) {
             return true;
         }
         //就算意外退出，下次进来也会检查key，防止死锁
-        $time = self::redisHandler()->handler()->get($readMutexKey);
+        $time = Cache::store('redis')->handler()->get($readMutexKey);
         if ($curTime > $time) {
-            self::redisHandler()->handler()->del($readMutexKey);
-            return self::redisHandler()->handler()->setnx($readMutexKey, $curTime + $timeout);
+            Cache::store('redis')->handler()->del($readMutexKey);
+            return Cache::store('redis')->handler()->setnx($readMutexKey, $curTime + $timeout);
         }
         return false;
     }
 
     /**
-     * Redis缓存句柄
-     *
-     * @return Driver|TagSet
-     */
-    public static function redisHandler($type = null)
-    {
-        if ($type) {
-            return CacheStatic::store('redis')->tag($type);
-        } else {
-            return CacheStatic::store('redis');
-        }
-    }
-
-    /**
      * 删除锁
-     * @param $uid
+     * @param string $key
      * @author 等风来
      * @email 136327134@qq.com
      * @date 2022/11/22
@@ -294,6 +279,23 @@ class CacheService
     public static function delMutex(string $key)
     {
         $readMutexKey = "redis:mutex:{$key}";
-        self::redisHandler()->handler()->del($readMutexKey);
+        Cache::store('redis')->handler()->del($readMutexKey);
+    }
+
+    /**
+     * Redis缓存句柄
+     * @param null $type
+     * @return mixed
+     * @author 吴汐
+     * @email 442384644@qq.com
+     * @date 2023/02/10
+     */
+    public static function redisHandler($type = null)
+    {
+        if ($type) {
+            return Cache::store('redis')->tag($type);
+        } else {
+            return Cache::store('redis');
+        }
     }
 }

@@ -35,6 +35,7 @@ use app\services\system\store\SystemStoreServices;
 use app\services\activity\combination\StoreCombinationServices;
 use app\services\product\product\StoreProductServices;
 use think\facade\Cache;
+use think\facade\Config;
 use think\facade\Log;
 
 /**
@@ -61,17 +62,28 @@ class StoreOrderCreateServices extends BaseServices
     public function getNewOrderId(string $prefix = 'wx')
     {
         $snowflake = new \Godruoyi\Snowflake\Snowflake();
-        $is_callable = function ($currentTime) {
-            $redis = Cache::store('redis');
-            $swooleSequenceResolver = new \Godruoyi\Snowflake\RedisSequenceResolver($redis->handler());
-            return $swooleSequenceResolver->sequence($currentTime);
-        };
-        //32位
-        if (PHP_INT_SIZE == 4) {
-            $id = abs($snowflake->setSequenceResolver($is_callable)->id());
+
+        if (Config::get('cache.default') == 'file') {
+            //32位
+            if (PHP_INT_SIZE == 4) {
+                $id = abs($snowflake->id());
+            } else {
+                $id = $snowflake->setStartTimeStamp(time() * 1000)->id();
+            }
         } else {
-            $id = $snowflake->setStartTimeStamp(strtotime('2020-06-05') * 1000)->setSequenceResolver($is_callable)->id();
+            $is_callable = function ($currentTime) {
+                $redis = Cache::store('redis');
+                $swooleSequenceResolver = new \Godruoyi\Snowflake\RedisSequenceResolver($redis->handler());
+                return $swooleSequenceResolver->sequence($currentTime);
+            };
+            //32位
+            if (PHP_INT_SIZE == 4) {
+                $id = abs($snowflake->setSequenceResolver($is_callable)->id());
+            } else {
+                $id = $snowflake->setStartTimeStamp(time() * 1000)->setSequenceResolver($is_callable)->id();
+            }
         }
+
         return $prefix . $id;
     }
 

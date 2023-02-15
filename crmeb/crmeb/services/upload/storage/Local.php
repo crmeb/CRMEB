@@ -150,11 +150,11 @@ class Local extends BaseUpload
 
     /**
      * 文件流上传
-     * @param $fileContent
+     * @param string $fileContent
      * @param string|null $key
      * @return array|bool|mixed|\StdClass
      */
-    public function stream($fileContent, string $key = null)
+    public function stream(string $fileContent, string $key = null)
     {
         if (!$key) {
             $key = $this->saveFileName();

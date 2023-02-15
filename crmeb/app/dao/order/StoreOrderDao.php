@@ -797,7 +797,7 @@ class StoreOrderDao extends BaseDao
      */
     public function getOrderListByWhere(array $where, $field = "*")
     {
-        return $this->search($where)->field()->select($field)->toArray();
+        return $this->search($where)->field($field)->select()->toArray();
     }
 
     /**批量修改订单

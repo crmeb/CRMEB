@@ -14,6 +14,7 @@ use app\adminapi\controller\AuthController;
 use app\services\system\admin\SystemAdminServices;
 use app\services\system\admin\SystemRoleServices;
 use app\services\system\SystemMenusServices;
+use crmeb\services\CacheService;
 use think\facade\App;
 
 /**
@@ -79,12 +80,12 @@ class SystemRole extends AuthController
         $data['rules'] = implode(',', $data['rules']);
         if ($id) {
             if (!$this->services->update($id, $data)) return app('json')->fail(100007);
-            \think\facade\Cache::clear();
+            CacheService::clear();
             return app('json')->success(100001);
         } else {
             $data['level'] = $this->adminInfo['level'] + 1;
             if (!$this->services->save($data)) return app('json')->fail(400223);
-            \think\facade\Cache::clear();
+            CacheService::clear();
             return app('json')->success(400222);
         }
     }
@@ -122,7 +123,7 @@ class SystemRole extends AuthController
         if (!$this->services->delete($id))
             return app('json')->fail(100008);
         else {
-            \think\facade\Cache::clear();
+            CacheService::clear();
             return app('json')->success(100002);
         }
     }
@@ -144,7 +145,7 @@ class SystemRole extends AuthController
         }
         $role->status = $status;
         if ($role->save()) {
-            \think\facade\Cache::clear();
+            CacheService::clear();
             return app('json')->success(100001);
         } else {
             return app('json')->fail(100007);

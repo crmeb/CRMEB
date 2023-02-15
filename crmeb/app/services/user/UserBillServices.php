@@ -692,7 +692,7 @@ class UserBillServices extends BaseServices
         $where = [];
         $where['not_type'] = ['gain', 'system_sub', 'deduction', 'sign'];
         $where['not_category'] = ['exp', 'integral'];
-        return Cache::get('user_type_list', function () use ($where) {
+        return $this->cacheDriver()->remember('user_type_list', function () use ($where) {
             return ['list' => $this->getBillType($where)];
         }, 600);
     }

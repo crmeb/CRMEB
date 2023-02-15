@@ -1600,12 +1600,19 @@ class StoreProductServices extends BaseServices
 
     /**
      * 商品是否存在
-     * @param $productId
-     * @return bool
+     * @param int $productId
+     * @param string $field
+     * @return array|\think\Model|null
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @author 吴汐
+     * @email 442384644@qq.com
+     * @date 2023/02/15
      */
-    public function isValidProduct(int $productId)
+    public function isValidProduct(int $productId, string $field = '*')
     {
-        return $this->dao->getOne(['id' => $productId, 'is_del' => 0, 'is_show' => 1]);
+        return $this->dao->getOne(['id' => $productId, 'is_del' => 0, 'is_show' => 1], $field);
     }
 
     /**

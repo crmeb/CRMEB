@@ -1713,7 +1713,7 @@ HTML;
     /**
      * 修改支付方式为线下支付
      * @param string $orderId
-     * @return bool
+     * @return bool|\crmeb\basic\BaseModel
      */
     public function setOrderTypePayOffline(string $orderId)
     {

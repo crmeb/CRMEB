@@ -46,7 +46,7 @@ class UserInvoiceController
     public function invoice($id)
     {
         if (!$id) {
-            app('json')->fail(100100);
+            return app('json')->fail(100100);
         }
         return app('json')->success($this->services->getInvoice((int)$id));
     }

@@ -265,7 +265,7 @@ class SystemAdminServices extends BaseServices
 
         return $this->transaction(function () use ($data) {
             if ($this->dao->save($data)) {
-                \think\facade\Cache::clear();
+                CacheService::clear();
                 return true;
             } else {
                 throw new AdminException(100022);
@@ -329,7 +329,7 @@ class SystemAdminServices extends BaseServices
         $adminInfo->account = $data['account'] ?? $adminInfo->account;
         $adminInfo->status = $data['status'];
         if ($adminInfo->save()) {
-            \think\facade\Cache::clear();
+            CacheService::clear();
             return true;
         } else {
             return false;

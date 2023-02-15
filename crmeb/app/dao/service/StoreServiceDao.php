@@ -25,7 +25,7 @@ class StoreServiceDao extends BaseDao
     /**
      * 不存在的用户直接禁止掉
      * @param array $uids
-     * @return bool
+     * @return bool|\crmeb\basic\BaseModel
      */
     public function deleteNonExistentService(array $uids = [])
     {

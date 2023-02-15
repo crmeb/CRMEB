@@ -105,7 +105,7 @@ class SystemRoleServices extends BaseServices
         }
 
         // 获取所有接口类型以及对应的接口
-        $allAuth = Cache::get('all_auth', function () {
+        $allAuth = $this->cacheDriver()->remember('all_auth', function () {
             /** @var SystemMenusServices $menusService */
             $menusService = app()->make(SystemMenusServices::class);
             $allList = $menusService->getColumn([['api_url', '<>', ''], ['auth_type', '=', 2]], 'api_url,methods');
@@ -140,7 +140,7 @@ class SystemRoleServices extends BaseServices
     {
         if (empty($rules)) return [];
         $cacheName = md5($cachePrefix . '_' . $type . '_' . implode('_', $rules));
-        return Cache::get($cacheName, function () use ($rules, $type) {
+        return $this->cacheDriver()->remember($cacheName, function () use ($rules, $type) {
             /** @var SystemMenusServices $menusService */
             $menusService = app()->make(SystemMenusServices::class);
             $authList = $menusService->getColumn([['id', 'IN', $this->getRoleIds($rules)], ['auth_type', '=', $type]], 'api_url,methods');
