@@ -68,7 +68,7 @@ class StoreOrderCreateServices extends BaseServices
             if (PHP_INT_SIZE == 4) {
                 $id = abs($snowflake->id());
             } else {
-                $id = $snowflake->setStartTimeStamp(time() * 1000)->id();
+                $id = $snowflake->setStartTimeStamp(strtotime('2022-01-01') * 1000)->id();
             }
         } else {
             $is_callable = function ($currentTime) {
@@ -80,7 +80,7 @@ class StoreOrderCreateServices extends BaseServices
             if (PHP_INT_SIZE == 4) {
                 $id = abs($snowflake->setSequenceResolver($is_callable)->id());
             } else {
-                $id = $snowflake->setStartTimeStamp(time() * 1000)->setSequenceResolver($is_callable)->id();
+                $id = $snowflake->setStartTimeStamp(strtotime('2022-01-01') * 1000)->setSequenceResolver($is_callable)->id();
             }
         }
 
