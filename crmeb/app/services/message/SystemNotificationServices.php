@@ -70,8 +70,6 @@ class SystemNotificationServices extends BaseServices
      */
     public function getNotInfo(array $where)
     {
-        /** @var ServeServices $ServeServices */
-        $ServeServices = app()->make(ServeServices::class);
         /** @var TemplateMessageServices $TemplateMessageServices */
         $TemplateMessageServices = app()->make(TemplateMessageServices::class);
 
