@@ -81,6 +81,7 @@ class StoreOrder extends AuthController
         ]);
         $where['is_system_del'] = 0;
         $where['pid'] = 0;
+        if ($where['status'] == 1) $where = $where + ['shipping_type' => 1];
         return app('json')->success($this->services->getOrderList($where, ['*'], ['split' => function ($query) {
             $query->field('id,pid');
         }, 'pink', 'invoice', 'division']));

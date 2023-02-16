@@ -780,7 +780,7 @@ class UserBillServices extends BaseServices
         $userExtract = app()->make(UserExtractServices::class);
         $extractSumList = $userExtract->getUsersSumList($uids);
         foreach ($list as &$item) {
-            $item['sum_number'] = $item['income'] > $item['pay'] ? bcsub($item['income'], $item['pay'], 2) : 0;
+            $item['sum_number'] = $item['income'];
             $item['nickname'] = $item['nickname'] . "|" . ($item['phone'] ? $item['phone'] . "|" : '') . $item['uid'];
             $item['extract_price'] = $extractSumList[$item['uid']] ?? 0;
             $item['time'] = $item['time'] ? date('Y-m-d H:i:s', $item['time']) : '';
