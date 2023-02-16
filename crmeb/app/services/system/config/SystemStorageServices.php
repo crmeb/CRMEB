@@ -45,6 +45,7 @@ class SystemStorageServices extends BaseServices
         $where['access_key'] = $config['accessKey'];
         $list = $this->dao->getList($where, ['*'], $page, $limit, 'add_time');
         foreach ($list as &$item) {
+            $item['cname'] = str_replace('https://', '', $item['domain']);
             $item['_add_time'] = date('Y-m-d H:i:s', $item['add_time']);
             $item['_update_time'] = date('Y-m-d H:i:s', $item['update_time']);
             $service = UploadService::init($item['type']);
