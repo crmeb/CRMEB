@@ -7,7 +7,7 @@
           >如何配置密钥</a
         >
         <span v-else
-          >您当前剩余{{ copyConfig.copy_num }}条采集次数，<a href="#" @click="mealPay('copy')">增加采集次数</a></span
+          >您当前剩余{{ copyConfig.copy_num }}条采集次数，<a class="add" @click="mealPay('copy')">增加采集次数</a></span
         >
       </div>
       <div>商品采集设置：设置 > 系统设置 > 第三方接口设置 > 采集商品配置</div>
@@ -458,7 +458,7 @@ export default {
   methods: {
     mealPay(val) {
       this.$router.push({
-        path: '/admin/setting/sms/sms_pay/index',
+        path: this.$routeProStr + '/setting/sms/sms_pay/index',
         query: { type: val },
       });
     },
@@ -663,7 +663,7 @@ export default {
         function (editor, uiName) {
           // 创建 dialog
           let dialog = new window.UE.ui.Dialog({
-            iframeUrl: '/admin/widget.images/index.html?fodder=dialog',
+            iframeUrl: this.$routeProStr + '/widget.images/index.html?fodder=dialog',
             editor: editor,
             name: uiName,
             title: '上传图片',
@@ -721,7 +721,10 @@ export default {
 .Box .numPut {
   width: 100% !important;
 }
-
+.add{
+  color: #2D8cF0;
+  cursor pointer
+}
 .lunBox {
   /* width 80px */
   display: flex;

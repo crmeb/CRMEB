@@ -577,7 +577,6 @@ export default {
     initEditor() {
       let that = this;
       that.$nextTick(() => {
-        console.log(monaco);
         // 初始化编辑器，确保dom已经渲染
         that.editor = monaco.editor.create(document.getElementById('container_' + that.indexEditor), {
           value: that.code, //编辑器初始显示文字

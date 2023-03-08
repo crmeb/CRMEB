@@ -49,18 +49,19 @@ class UserRechargeController
         if (!in_array($type, [0, 1])) return app('json')->fail(410123);
         if (!in_array($from, [PayServices::WEIXIN_PAY, 'weixinh5', 'routine', PayServices::ALIAPY_PAY])) return app('json')->fail(410123);
         $storeMinRecharge = sys_config('store_user_min_recharge');
-        if ($price < $storeMinRecharge) return app('json')->fail(410124, null, ['money' => $storeMinRecharge]);
+        if (!$recharId && $price < $storeMinRecharge) return app('json')->fail(410124, null, ['money' => $storeMinRecharge]);
         $uid = (int)$request->uid();
-        $re = $this->services->recharge($uid, $price, $recharId, $type, $from);
+        $re = $this->services->recharge($uid, $price, $recharId, $type, $from, true);
         if ($re) {
-            unset($re['msg']);
-            return app('json')->success(410125, $re);
+            $payType = $re['pay_type'];
+            unset($re['pay_type']);
+            return app('json')->status($payType, 410125, $re);
         }
         return app('json')->fail(410126);
     }
 
     /**
-     * 小程序充值
+     * TODO 小程序充值 弃用
      * @param Request $request
      * @return mixed
      */
@@ -81,7 +82,7 @@ class UserRechargeController
     }
 
     /**
-     * 公众号充值
+     * TODO 公众号充值 弃用
      * @param Request $request
      * @return mixed
      */

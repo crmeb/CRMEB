@@ -148,14 +148,10 @@
 			if (this.isLogin) {
 				this.val = `${HTTP_REQUEST_URL}?spid=${this.uid}`
 				await this.getUser()
-				await this.spreadMsgs()
 			} else {
 				toLogin();
 
 			}
-
-		},
-		onShow() {
 			this.$nextTick(() => {
 				let selector = uni.createSelectorQuery().select('.aaa');
 				selector.fields({
@@ -165,6 +161,12 @@
 					this.hg = data.height
 				}).exec();
 			})
+		},
+		onShow() {
+
+		},
+		onHide() {
+			uni.hideLoading();
 		},
 		/**
 		 * 用户点击右上角分享
@@ -190,9 +192,11 @@
 			},
 			qrR(res) {
 				this.codeSrc = res
+				this.spreadMsgs()
 			},
 			//获取图片
 			async spreadMsgs() {
+
 				let res = await spreadMsg()
 				this.spreadData = res.data.spread
 				this.nickName = res.data.nickname
@@ -208,6 +212,7 @@
 					title: this.$t(`海报生成中`),
 					mask: true
 				});
+
 				for (let i = 0; i < res.data.spread.length; i++) {
 					let that = this
 					let arr2, img
@@ -219,22 +224,25 @@
 					arr2 = [img.code || this.codeSrc, img.image]
 					// #endif
 					// #ifdef APP-PLUS
-					img = await this.downloadFilestoreImage(res.data.spread[i].pic)
-					arr2 = [this.codeSrc, img]
+					img = await this.imgToBase(res.data.spread[i].pic, res.data.qrcode)
+					arr2 = [img.code || this.codeSrc, res.data.spread[i].pic]
 					// #endif
-					that.$util.userPosterCanvas(arr2, res.data.nickname, res.data.site_name, i, this.wd, this.hg, (
-						tempFilePath) => {
-						that.$set(that.posterImage, i, tempFilePath);
-						// #ifdef MP
-						if (!that.posterImage.length) {
-							return that.$util.Tips({
-								title: that.$t(`小程序二维码需要发布正式版后才能获取到`)
-							});
-						}
-						// #endif
-					});
+					that.$util.userPosterCanvas(arr2, res.data.nickname, res.data.site_name, i, this
+						.wd,
+						this.hg, (
+							tempFilePath) => {
+							that.$set(that.posterImage, i, tempFilePath);
+							// #ifdef MP
+							if (!that.posterImage.length) {
+								return that.$util.Tips({
+									title: that.$t(`小程序二维码需要发布正式版后才能获取到`)
+								});
+							}
+							// #endif
+						});
 				}
 				uni.hideLoading();
+
 			},
 			downloadImg() {
 				uni.saveImageToPhotosAlbum({

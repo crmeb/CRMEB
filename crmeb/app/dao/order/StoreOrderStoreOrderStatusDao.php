@@ -81,6 +81,12 @@ class StoreOrderStoreOrderStatusDao extends BaseDao
      * @param array $where
      * @param int $limit
      * @return array
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @author 吴汐
+     * @email 442384644@qq.com
+     * @date 2023/03/01
      */
     public function getTakeOrderIds(array $where, int $limit = 0)
     {

@@ -157,7 +157,7 @@ export default {
       this.$refs[name].validate((valid) => {
         if (valid) {
           setCookies('moveLink', this.formItem.link);
-          this.$router.push({ path: '/admin/setting/pages/diy', query: { id: this.formItem.id, type: 1 } });
+          this.$router.push({ path: this.$routeProStr + '/setting/pages/diy', query: { id: this.formItem.id, type: 1 } });
         } else {
           return false;
         }
@@ -206,7 +206,7 @@ export default {
       if (row.type) {
         this.isTemplate = true;
       } else {
-        this.$router.push({ path: '/admin/setting/pages/diy', query: { id: row.id, type: 0 } });
+        this.$router.push({ path: this.$routeProStr + '/setting/pages/diy', query: { id: row.id, type: 0 } });
       }
     },
     // 删除

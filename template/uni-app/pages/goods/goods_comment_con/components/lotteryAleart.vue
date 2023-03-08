@@ -34,17 +34,8 @@
 			}
 		},
 		watch: {
-			aleartType(type) {
-				if (type === 1) {
-					this.aleartData = {
-						title: '暂无抽奖资格',
-						msg: `1、您未关注公众号
-2、您未获得VIP权限，获取VIP途径：
-（1）购买过打通版的用户可在会员群联系官方客服开通
-（2）官方小程序商城购买CRMEB打通版、企业版后自动开通`,
-						btn: '我知道了'
-					}
-				} else if (type === 2) {
+			aleartType() {
+				if (type === 2) {
 					this.aleartData = {
 						title: '抽奖结果',
 						img: this.alData.image,

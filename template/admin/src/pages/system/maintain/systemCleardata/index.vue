@@ -1,13 +1,11 @@
 <template>
   <div>
-    <div class="i-layout-page-header">
-      <div class="i-layout-page-header">
+    <div class="i-layout-page-header header-title">
         <span class="ivu-page-header-title">{{ $route.meta.title }}</span>
-        <div class="clear_tit">
+        <span class="clear_tit">
           <Icon type="md-information-circle" color="#ED4014" />
           <span>清除数据请谨慎，清除就无法恢复哦！</span>
-        </div>
-      </div>
+        </span>
     </div>
     <Card :bordered="false" dis-hover class="ivu-mt">
       <Row type="flex" :gutter="24">
@@ -171,12 +169,11 @@ export default {
 
 <style scoped lang="stylus">
 .clear_tit
-    display flex
     align-items center
+    margin: 15px
     span
         font-size 14px
         color #ED4014
-        margin: 15px 0
 .clear_box
     border 1px solid #DADFE6
     border-radius 3px

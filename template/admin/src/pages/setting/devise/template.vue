@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="i-layout-page-header">
-      <router-link :to="{ path: '/admin/setting/pages/devise' }"
+      <router-link :to="{ path: $routeProStr + '/setting/pages/devise' }"
         ><Button icon="ios-arrow-back" size="small" class="mr20">返回</Button></router-link
       >
       <span class="ivu-page-header-title mr20">页面设计</span>

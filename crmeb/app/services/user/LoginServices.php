@@ -117,9 +117,9 @@ class LoginServices extends BaseServices
                 $data['division_id'] = $spreadInfo->division_id;
                 $data['staff_id'] = $spreadInfo->staff_id;
                 //绑定用户后置事件
-                event('user.register', [$spreadUid, $userInfo['user_type'], $userInfo['nickname'], $userInfo['uid'], 0]);
+                event('UserRegisterListener', [$spreadUid, $userInfo['user_type'], $userInfo['nickname'], $userInfo['uid'], 0]);
                 //推送消息
-                event('notice.notice', [['spreadUid' => $spreadUid, 'user_type' => $userInfo['user_type'], 'nickname' => $userInfo['nickname']], 'bind_spread_uid']);
+                event('NoticeListener', [['spreadUid' => $spreadUid, 'user_type' => $userInfo['user_type'], 'nickname' => $userInfo['nickname']], 'bind_spread_uid']);
             }
         } else {
             //永久绑定
@@ -141,9 +141,9 @@ class LoginServices extends BaseServices
                             $data['division_id'] = $spreadInfo->division_id;
                             $data['staff_id'] = $spreadInfo->staff_id;
                             //绑定用户后置事件
-                            event('user.register', [$spreadUid, $userInfo['user_type'], $userInfo['nickname'], $userInfo['uid'], 0]);
+                            event('UserRegisterListener', [$spreadUid, $userInfo['user_type'], $userInfo['nickname'], $userInfo['uid'], 0]);
                             //推送消息
-                            event('notice.notice', [['spreadUid' => $spreadUid, 'user_type' => $userInfo['user_type'], 'nickname' => $userInfo['nickname']], 'bind_spread_uid']);
+                            event('NoticeListener', [['spreadUid' => $spreadUid, 'user_type' => $userInfo['user_type'], 'nickname' => $userInfo['nickname']], 'bind_spread_uid']);
                         }
                     }
                 }
@@ -234,9 +234,9 @@ class LoginServices extends BaseServices
         } else {
             $userServices->rewardNewUser((int)$re->uid);
             //用户生成后置事件
-            event('user.register', [$spread, $user_type, $data['nickname'], $re->uid, 1]);
+            event('UserRegisterListener', [$spread, $user_type, $data['nickname'], $re->uid, 1]);
             //推送消息
-            event('notice.notice', [['spreadUid' => $spread, 'user_type' => $user_type, 'nickname' => $data['nickname']], 'bind_spread_uid']);
+            event('NoticeListener', [['spreadUid' => $spread, 'user_type' => $user_type, 'nickname' => $data['nickname']], 'bind_spread_uid']);
             return $re;
         }
     }

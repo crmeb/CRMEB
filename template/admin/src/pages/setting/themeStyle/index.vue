@@ -1,28 +1,6 @@
 <template>
   <div>
-    <!-- <div class="i-layout-page-header">
-      <PageHeader
-        class="product_tabs"
-        :title="$route.meta.title"
-        hidden-breadcrumb
-      >
-        <div slot="title">
-          <div style="float: left">
-            <span v-text="$route.meta.title" class="mr20"></span>
-          </div>
-          <div style="float: right">
-            <Button
-              class="bnt"
-              type="primary"
-              @click="submit"
-              :loading="loadingExist"
-              >保存</Button
-            >
-          </div>
-        </div>
-      </PageHeader>
-    </div> -->
-    <div class="i-layout-page-header">
+    <div class="i-layout-page-header header-title">
       <span class="ivu-page-header-title mr20">{{ $route.meta.title }}</span>
       <div>
         <div style="float: right">
@@ -248,9 +226,6 @@ export default {
 }
 
 /deep/.i-layout-page-header {
-  height: 66px;
-  background-color: #fff;
-  border-bottom: 1px solid #e8eaec;
   display: flex;
   align-items: center;
   justify-content: space-between;

@@ -78,7 +78,7 @@
 			lotteryAleart,
 			userAddress
 		},
-		mixins:[colors],
+		mixins: [colors],
 		props: {
 			options: {
 				type: Object
@@ -122,12 +122,10 @@
 			},
 			options: {
 				handler: function(newV, oldV) {
-					if (newV) {
-						this.orderId = newV.order_id;
-						this.totalPrice = newV.totalPrice;
-						this.type = newV.type
-						this.getLotteryData(newV.type)
-					}
+					this.orderId = newV.order_id;
+					this.totalPrice = newV.totalPrice;
+					this.type = newV.type
+					this.getLotteryData(newV.type)
 				},
 				deep: true
 			}

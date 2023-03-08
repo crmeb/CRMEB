@@ -43,7 +43,7 @@ class StoreIntegralOrderStatusDao extends BaseDao
      */
     public function getStatusList(array $where, int $page, int $limit)
     {
-        return $this->search($where)->page($page, $limit)->select()->toArray();
+        return $this->search($where)->page($page, $limit)->order('change_time desc')->select()->toArray();
     }
 
 }

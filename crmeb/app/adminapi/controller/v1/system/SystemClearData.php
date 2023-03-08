@@ -136,7 +136,7 @@ class SystemClearData extends AuthController
         //删除商品收藏记录
         /** @var StoreProductReplyServices $productRelation */
         $productRelation = app()->make(StoreProductReplyServices::class);
-        $productRelation->delete([['product_id', 'in', $ids], ['category', '=', 'product']]);
+        $productRelation->delete([['product_id', 'in', $ids], ['reply_type', '=', 'product']]);
 
         //删除商品的评论
         /** @var StoreProductReplyServices $productReply */

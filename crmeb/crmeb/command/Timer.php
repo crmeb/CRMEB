@@ -62,7 +62,7 @@ class Timer extends Command
         date_default_timezone_set('PRC');
         $task->count = 1;
         $task->onWorkerStart = function () {
-            event('SystemTimer');
+            event('CrontabListener');
         };
         $task->runAll();
     }

@@ -1,6 +1,6 @@
 <template>
   <div :style="bgcolors">
-    <div class="i-layout-page-header">
+    <div class="i-layout-page-header header-title">
       <span class="ivu-page-header-title mr20">{{ $route.meta.title }}</span>
       <div>
         <div style="float: right">
@@ -535,7 +535,7 @@ export default {
         autoHeightEnabled: false, // 编辑器不自动被内容撑高
         initialFrameHeight: 500, // 初始容器高度
         initialFrameWidth: '100%', // 初始容器宽度
-        UEDITOR_HOME_URL: '/admin/UEditor/',
+        UEDITOR_HOME_URL: '/UEditor/',
         serverUrl: '',
       },
       a: 0, //判断的隐私协议
@@ -1491,7 +1491,7 @@ export default {
 .left-wrapper {
   min-width: 213px;
   background: #fff;
-  border-right: 1px solid #dcdee2;
+  border-right: 1px solid #f2f2f2;
 }
 
 .menu-item {
@@ -1773,12 +1773,6 @@ export default {
   // width 80px!important
 }
 
-/deep/.i-layout-page-header {
-  height: 66px;
-  background-color: #fff;
-  border-bottom: 1px solid #e8eaec;
-}
-
 /deep/.ivu-page-header {
   border-bottom: unset;
   position: fixed;
@@ -1787,9 +1781,6 @@ export default {
 }
 
 /deep/.i-layout-page-header {
-  height: 66px;
-  background-color: #fff;
-  border-bottom: 1px solid #e8eaec;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -1801,7 +1792,7 @@ export default {
   padding: 20px;
   background-color: #fff;
   border-radius: 5px;
-  margin: 20px;
+  min-height: 600px;
 }
 
 .iview-video-style {

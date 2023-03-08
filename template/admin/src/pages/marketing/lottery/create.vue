@@ -1,28 +1,12 @@
 <template>
   <div>
-    <div class="i-layout-page-header header_top">
-      <div class="i-layout-page-header fl_header">
-        <!-- <router-link :to="{ path: '/admin/marketing/lottery/index' }"
-          ><Button icon="ios-arrow-back" size="small" type="text"
-            >返回</Button
-          ></router-link
-        > -->
-        <!-- <Divider type="vertical" /> -->
-        <span
-          class="ivu-page-header-title mr20"
-          style="padding: 0"
-          v-text="$route.params.id ? '编辑抽奖信息' : '添加抽奖信息'"
-        ></span>
-      </div>
-    </div>
-
     <Card :bordered="false" dis-hover class="ivu-mt">
       <div>
         <Tabs v-model="formValidate.factor" @on-click="onClickTab">
           <TabPane v-for="(item, index) in tabs" :label="item.name" :name="item.type" :key="index" />
         </Tabs>
       </div>
-      <Row type="flex" class="mt30 acea-row row-middle row-center">
+      <Row type="flex" class="mt10 acea-row row-middle row-center">
         <Col span="23">
           <Form
             class="form mt30"
@@ -454,7 +438,7 @@ export default {
         autoHeightEnabled: false, // 编辑器不自动被内容撑高
         initialFrameHeight: 500, // 初始容器高度
         initialFrameWidth: '100%', // 初始容器宽度
-        UEDITOR_HOME_URL: '/admin/UEditor/',
+        UEDITOR_HOME_URL: '/UEditor/',
         serverUrl: '',
       },
       isChoice: '单选',

@@ -78,6 +78,12 @@
 			pageFooter,
 			tabBar
 		},
+		props: {
+			isNew: {
+				type: Boolean,
+				default: false
+			}
+		},
 		data() {
 			return {
 				navlist: [],
@@ -119,6 +125,13 @@
 			let curRoute = routes[routes.length - 1].route
 			this.activeRouter = '/' + curRoute
 			this.getAllCategory();
+		},
+		watch: {
+			isNew(newVal) {
+				if (newVal) {
+					this.getAllCategory();
+				}
+			}
 		},
 		methods: {
 			getNav() {
@@ -173,12 +186,20 @@
 			},
 			getAllCategory: function() {
 				let that = this;
-				getCategoryList().then(res => {
-					that.productList = res.data;
+				if (this.isNew || !uni.getStorageSync('CAT1_DATA')) {
+					getCategoryList().then(res => {
+						uni.setStorageSync('CAT1_DATA', res.data)
+						that.productList = res.data;
+						that.$nextTick(res => {
+							that.infoScroll();
+						})
+					})
+				} else {
+					that.productList = uni.getStorageSync('CAT1_DATA')
 					that.$nextTick(res => {
 						that.infoScroll();
 					})
-				})
+				}
 			},
 			scroll: function(e) {
 				let scrollTop = e.detail.scrollTop;

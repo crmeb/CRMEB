@@ -127,4 +127,18 @@ class WechatUser extends BaseModel
         return $query->where('user_type', $value);
     }
 
+    /**
+     * is_del 搜索器
+     * @param $query
+     * @param $value
+     * @return void
+     * @author 吴汐
+     * @email 442384644@qq.com
+     * @date 2023/03/03
+     */
+    public function searchIsDelAttr($query, $value)
+    {
+        if($value !== '') return $query->where('is_del', $value);
+    }
+
 }

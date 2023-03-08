@@ -91,7 +91,6 @@ class SystemConfigServices extends BaseServices
                 'spread_banner' => '',
                 'brokerage_level' => '',
                 'division_status' => '',
-                'member_brokerage' => '',
             ],
             'show_value' => 1
         ],
@@ -121,14 +120,6 @@ class SystemConfigServices extends BaseServices
                 'recharge_attention' => '',
                 'recharge_switch' => '',
                 'store_user_min_recharge' => '',
-            ],
-            'show_value' => 1
-        ],
-        'allin_pay_status' => [
-            'son_type' => [
-                'allin_appid' => '',
-                'allin_cusid' => '',
-                'allin_private_key' => '',
             ],
             'show_value' => 1
         ],
@@ -367,11 +358,19 @@ class SystemConfigServices extends BaseServices
                 break;
             default:
                 $data['value'] = isset($data['value']) ? json_decode($data['value'], true) : '';
-                $formbuider[] = $this->builder->input($data['menu_name'], $data['info'], $data['value'])->appendRule('suffix', [
-                    'type' => 'div',
-                    'class' => 'tips-info',
-                    'domProps' => ['innerHTML' => $data['desc']]
-                ])->col(13);
+                if ($data['menu_name'] == 'api') {
+                    $formbuider[] = $this->builder->input($data['menu_name'], $data['info'], strpos($data['value'], 'http') === false ? sys_config('site_url') . $data['value'] : $data['value'])->appendRule('suffix', [
+                        'type' => 'div',
+                        'class' => 'tips-info',
+                        'domProps' => ['innerHTML' => $data['desc']]
+                    ])->col(13)->readonly(true);
+                } else {
+                    $formbuider[] = $this->builder->input($data['menu_name'], $data['info'], $data['value'])->appendRule('suffix', [
+                        'type' => 'div',
+                        'class' => 'tips-info',
+                        'domProps' => ['innerHTML' => $data['desc']]
+                    ])->col(13);
+                }
                 break;
         }
         return $formbuider;
@@ -410,10 +409,12 @@ class SystemConfigServices extends BaseServices
             foreach ($parameter as $v) {
                 if (strstr($v, $this->cuttingStr) !== false) {
                     $pdata = explode($this->cuttingStr, $v);
-                    $options[] = ['label' => $pdata[1], 'value' => (int)$pdata[0]];
+                    $res = preg_match('/^[0-9]$/', $pdata[0]);
+                    $options[] = ['label' => $pdata[1], 'value' => $res ? (int)$pdata[0] : $pdata[0]];
                 }
             }
-            $formbuider[] = $radio = $this->builder->radio($data['menu_name'], $data['info'], (int)$data['value'])->options($options)->appendRule('suffix', [
+            $res = preg_match('/^[0-9]$/', $data['value']);
+            $formbuider[] = $radio = $this->builder->radio($data['menu_name'], $data['info'], $res ? (int)$data['value'] : $data['value'])->options($options)->appendRule('suffix', [
                 'type' => 'div',
                 'class' => 'tips-info',
                 'domProps' => ['innerHTML' => $data['desc']]

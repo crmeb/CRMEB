@@ -187,8 +187,14 @@ class StoreBargainUserServices extends BaseServices
         if (!$bargainUserUid) return [];
         [$page, $limit] = $this->getPageValue();
         $list = $this->dao->userAll($bargainUserUid, $page, $limit);
+        $bargainHelpServices = app()->make(StoreBargainUserHelpServices::class);
         foreach ($list as &$item) {
             $item['residue_price'] = bcsub((string)$item['bargain_price'], (string)$item['price'], 2);
+            if ($item['status'] == 3) {
+                $item['success_time'] = date('Y-m-d H:i:s', (int)$bargainHelpServices->getMax(['bargain_user_id' => $item['id']], 'add_time'));
+            } else {
+                $item['success_time'] = '';
+            }
         }
         return $list;
     }

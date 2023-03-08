@@ -21,7 +21,7 @@
 	const app = getApp();
 	import sendVerifyCode from "@/mixins/SendVerifyCode";
 	import Routine from '@/libs/routine';
-	import Verify from '../verify/verify.vue';
+	import Verify from '../verify/index.vue';
 	import Cache from '@/utils/cache';
 	import {
 		loginMobile,

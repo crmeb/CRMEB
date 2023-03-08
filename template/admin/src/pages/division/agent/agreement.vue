@@ -1,9 +1,7 @@
 <template>
   <div>
-    <div class="i-layout-page-header">
-      <div class="i-layout-page-header">
+    <div class="i-layout-page-header header-title">
         <span class="ivu-page-header-title">{{ $route.meta.title }}</span>
-      </div>
     </div>
     <Card :bordered="false" dis-hover class="ivu-mt">
       <Form :label-width="80" @submit.native.prevent>
@@ -31,7 +29,7 @@ export default {
         autoHeightEnabled: false,
         initialFrameHeight: 500,
         initialFrameWidth: '100%',
-        UEDITOR_HOME_URL: '/admin/UEditor/',
+        UEDITOR_HOME_URL: '/UEditor/',
         serverUrl: '',
       },
       agreement: {

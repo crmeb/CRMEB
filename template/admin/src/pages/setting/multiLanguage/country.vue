@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Card :bordered="false" dis-hover class="ivu-mt">
+    <Card :bordered="false" dis-hover class="ivu-mt mb10">
       <Form
         ref="formValidate"
         :model="formValidate"
@@ -37,7 +37,7 @@
         ref="table"
         :columns="columns"
         :data="tabList"
-        class="ivu-mt"
+        class="ivu-mt mt25"
         :loading="loading"
         no-data-text="暂无数据"
         no-filtered-data-text="暂无筛选结果"

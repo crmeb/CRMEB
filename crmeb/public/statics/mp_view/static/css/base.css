@@ -429,6 +429,7 @@ checkbox .uni-checkbox-input.uni-checkbox-input-checked::before {
 	font-size: 45rpx;
 	color: #000;
 	width: 50rpx;
+	height: 50rpx;
 }
 
 .loadingicon {

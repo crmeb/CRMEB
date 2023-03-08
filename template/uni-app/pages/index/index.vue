@@ -1,6 +1,6 @@
 <template>
-	<diy ref="diy" v-if="isDiy"></diy>
-	<visualization v-else></visualization>
+	<diy ref="diy" v-if="isDiy && loading"></diy>
+	<visualization ref='vis' v-else-if="!isDiy && loading"></visualization>
 </template>
 
 <script>
@@ -8,31 +8,58 @@
 	import visualization from './visualization'
 	import Cache from '@/utils/cache';
 	import {
-		getShare
+		getShare,
+		getVersion
 	} from "@/api/public.js";
 	let app = getApp();
 	export default {
 		data() {
 			return {
 				isDiy: uni.getStorageSync('is_diy'),
-				shareInfo: {}
+				shareInfo: {},
+				loading: false,
 			}
 		},
 		components: {
 			diy,
 			visualization
 		},
-		onShow() {
+		onLoad() {
 			uni.hideTabBar()
 			uni.$on('is_diy', (data) => {
 				this.isDiy = data
 			})
 			this.setOpenShare();
 		},
+		onShow() {
+			this.getVersion(0);
+		},
 		onHide() {
 			// this.isDiy = -1
 		},
 		methods: {
+			getVersion(name) {
+				getVersion(name).then(res => {
+					this.version = res.data.version
+					this.isDiy = res.data.is_diy
+					this.loading = true
+					uni.setStorageSync('is_diy', res.data.is_diy)
+					if (!uni.getStorageSync('DIY_VERSION') || res.data.version != uni.getStorageSync(
+							'DIY_VERSION')) {
+						if (uni.getStorageSync('DIY_VERSION')) {
+							uni.setStorageSync('DIY_VERSION', res.data.version)
+							if (this.isDiy) {
+								this.$refs.diy.reconnect()
+							} else {
+								this.$refs.vis.reconnect()
+							}
+						}
+						uni.setStorageSync('DIY_VERSION', res.data.version)
+					} else {}
+				}).catch(err => {
+					this.loading = true
+				})
+			},
 			// 微信分享；
 			setOpenShare: function() {
 				let that = this;

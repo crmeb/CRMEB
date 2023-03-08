@@ -1,10 +1,10 @@
 <template>
   <div>
-    <Form ref="formItem" :model="formItem" :label-width="100" @submit.native.prevent>
-      <FormItem label="编号：" v-if="formItem.uid">
+    <Form ref="formItem" :rules="ruleValidate" :model="formItem" :label-width="100" @submit.native.prevent>
+      <FormItem label="用户ID：" v-if="formItem.uid">
         <Input class="form-sty" disabled v-model="formItem.uid" placeholder="请输入编号" style="width: 80%"></Input>
       </FormItem>
-      <FormItem label="真实姓名：">
+      <FormItem label="真实姓名：" prop="real_name">
         <Input
           class="form-sty"
           v-model.trim="formItem.real_name"
@@ -12,7 +12,7 @@
           style="width: 80%"
         ></Input>
       </FormItem>
-      <FormItem label="手机号码：">
+      <FormItem label="手机号码：" prop="phone">
         <Input class="form-sty" v-model="formItem.phone" placeholder="请输入手机号码" style="width: 80%"></Input>
       </FormItem>
       <FormItem label="生日：">
@@ -35,21 +35,21 @@
       <FormItem label="用户备注：">
         <Input class="form-sty" v-model="formItem.mark" placeholder="请输入用户备注" style="width: 80%"></Input>
       </FormItem>
-      <FormItem label="登录密码：">
+      <FormItem label="登录密码：" prop="pwd">
         <Input
           class="form-sty"
           type="password"
           v-model="formItem.pwd"
-          placeholder="请输入登录密码"
+          placeholder="请输入登录密码（修改用户可不填写，不填写不修改原密码）"
           style="width: 80%"
         ></Input>
       </FormItem>
-      <FormItem label="确认密码：">
+      <FormItem label="确认密码：" prop="true_pwd">
         <Input
           class="form-sty"
           type="password"
           v-model="formItem.true_pwd"
-          placeholder="请输入确认密码"
+          placeholder="请输入确认密码（修改用户可不填写，不填写不修改原密码）"
           style="width: 80%"
         ></Input>
       </FormItem>
@@ -60,7 +60,7 @@
         </Select>
       </FormItem>
       <FormItem label="用户分组：">
-        <Select v-model="formItem.group_id"  class="form-sty" clearable>
+        <Select v-model="formItem.group_id" class="form-sty" clearable>
           <Option v-for="(item, index) in infoData.groupInfo" :key="index" :value="item.id">{{
             item.group_name
           }}</Option>
@@ -146,9 +146,6 @@ export default {
     return {
       modals: false,
       labelShow: false,
-      orderStatus: 0,
-      total_num: 0,
-      splitSwitch: true,
       formItem: {
         uid: 0,
         real_name: '',
@@ -166,12 +163,6 @@ export default {
         is_promoter: 0,
         status: 1,
       },
-      express: [],
-      expressTemp: [],
-      deliveryList: [],
-      temp: {},
-      export_open: true,
-      manyFormValidate: [],
       groupInfo: [],
       labelInfo: [],
       levelInfo: [],
@@ -179,6 +170,12 @@ export default {
         groupInfo: [],
         labelInfo: [],
         levelInfo: [],
+      },
+      ruleValidate: {
+        real_name: [{ required: true, message: ' ', trigger: 'blur' }],
+        phone: [{ required: true, message: ' ', trigger: 'blur' }],
+        pwd: [{ required: true, message: ' ', trigger: 'blur' }],
+        true_pwd: [{ required: true, message: ' ', trigger: 'blur' }],
       },
       dataLabel: [],
     };
@@ -188,7 +185,7 @@ export default {
     this.$set(this.infoData, 'levelInfo', this.userData.levelInfo);
     this.$set(this.infoData, 'labelInfo', this.userData.labelInfo);
     let arr = Object.keys(this.formItem);
-    if (this.userData.userInfo.uid) {
+    if (this.userData.userInfo) {
       arr.map((i) => {
         this.formItem[i] = this.userData.userInfo[i];
       });
@@ -196,6 +193,8 @@ export default {
       if (this.formItem.label_id.length) {
         this.dataLabel = this.formItem.label_id;
       }
+    } else {
+      this.reset();
     }
 
     // this.formItem = this.userData.userInfo;
@@ -233,7 +232,7 @@ export default {
     },
     reset() {
       this.formItem = {
-        uid: 0,
+        uid: '',
         real_name: '',
         phone: '',
         birthday: '',

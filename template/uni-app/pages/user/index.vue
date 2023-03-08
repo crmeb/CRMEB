@@ -52,20 +52,20 @@
 								<!-- #endif -->
 							</view>
 							<view class="info">
-								<!-- #ifdef MP -->
+								<!-- #ifdef MP || APP-PLUS -->
 								<view class="name" v-if="!userInfo.uid" @click="openAuto"
 									style="height: 100%; display: flex; align-items: center;">
 									{{$t('请点击授权')}}
 								</view>
 								<!-- #endif -->
 								<!-- #ifdef H5 -->
-								<view class="name" v-if="!userInfo.uid && isWeixin" @click="openAuto"
+								<view class="name" v-if="!userInfo.uid" @click="openAuto"
 									style="height: 100%; display: flex; align-items: center;">
-									{{$t('请点击授权')}}
+									{{$t(isWeixin ? '请点击授权' : '请点击登录')}}
 								</view>
 								<!-- #endif -->
 								<view class="name" v-if="userInfo.uid">
-									{{userInfo.nickname}}
+									<text class="line1 nickname">{{userInfo.nickname}}</text>
 									<image class="live" :src="userInfo.vip_icon" v-if="userInfo.vip_icon"></image>
 									<view class="vip" v-if="userInfo.is_money_level> 0 && userInfo.svip_open">
 										<image src="/static/images/svip.png"></image>
@@ -77,9 +77,15 @@
 										<image src="/static/images/edit.png" mode=""></image>
 									</view> -->
 								</view>
+								<!-- #ifdef MP -->
+								<button class="phone" v-if="!userInfo.phone && isLogin" open-type="getPhoneNumber"
+									@getphonenumber="getphonenumber">{{$t(`绑定手机号`)}}</button>
+								<!-- #endif -->
+								<!-- #ifndef MP -->
 								<view class="phone" v-if="!userInfo.phone && isLogin" @tap="bindPhone">
 									{{$t('绑定手机号')}}
 								</view>
+								<!-- #endif -->
 							</view>
 							<view class="message">
 								<navigator url="/pages/users/user_info/index" hover-class="none">
@@ -284,7 +290,8 @@
 		getMenuList,
 		getUserInfo,
 		setVisit,
-		updateUserInfo
+		updateUserInfo,
+		mpBindingPhone
 	} from '@/api/user.js';
 	import {
 		wechatAuthV2,
@@ -520,6 +527,32 @@
 				uni.navigateTo({
 					url: '/pages/users/user_phone/index'
 				})
+			},
+			getphonenumber(e) {
+				Routine.getCode()
+					.then(code => {
+						let data = {
+							code,
+							iv: e.detail.iv,
+							encryptedData: e.detail.encryptedData,
+						}
+						mpBindingPhone(data).then(res => {
+							this.getUserInfo()
+							this.$util.Tips({
+								title: res.msg,
+								icon: 'success'
+							});
+						}).catch(err => {
+							return this.$util.Tips({
+								title: err
+							});
+						})
+					})
+					.catch(error => {
+						uni.hideLoading();
+					});
+
+				console.log(e)
 			},
 			/**
 			 * 获取个人用户信息
@@ -1009,6 +1042,10 @@
 							color: #fff;
 							font-size: 31rpx;
 
+							.nickname {
+								max-width: 8em;
+							}
+
 							.vip {
 								margin-left: 10rpx;
 
@@ -1256,6 +1293,7 @@
 			background-color: #CCC;
 			border-radius: 15px;
 			width: max-content;
+			font-size: 28rpx;
 			padding: 0 10px;
 		}
 

@@ -5,7 +5,7 @@
       <!--<Avatar :src="avatars"/>-->
       <!--</Badge>-->
       <!--<Icon :size="18" type="md-arrow-dropdown"></Icon>-->
-      <span>{{ info.account }}</span>
+      <span class="account">{{ info.account }}</span>
       <DropdownMenu slot="list">
         <!--<DropdownItem name="message">-->
         <!--消息中心<Badge style="margin-left: 10px" :count="messageUnreadCount"></Badge>-->
@@ -22,6 +22,9 @@
   font-size: 18px;
   margin-right: 6px;
   margin-bottom: 2px;
+}
+.account {
+  color: rgba(0, 0, 0, 0.65);
 }
 .user-avatar-dropdown .ivu-dropdown-item ~ .ivu-dropdown-item {
   border-top: 1px solid #e8eaec;
@@ -62,11 +65,12 @@ export default {
           AccountLogout()
             .then((res) => {
               that.$Message.success('您已成功退出');
-              that.$router.replace('/admin/login');
+              that.$router.replace({ name: 'login' });
               localStorage.clear();
               removeCookies('token');
               removeCookies('expires_time');
               removeCookies('uuid');
+              sessionStorage.clear();
               // window.location.reload()
             })
             .catch((res) => {});
@@ -74,10 +78,10 @@ export default {
       });
     },
     userCenter() {
-      this.$router.push('/admin/system/user');
+      this.$router.push({ name: 'systemUser' });
     },
     fileEdit() {
-      this.$router.push('/admin/system/files');
+      this.$router.push({ name: 'systemFiles' });
     },
     message() {
       this.$router.push({

@@ -59,12 +59,10 @@
 			<newGoods :dataConfig="goodList.cc" @click.native="bindEdit('goodList', 'cc')"></newGoods>
 			<!-- 精品推荐 -->
 			<!-- <mBanner :dataConfig="swiperBg.cc" @click.native="bindEdit('swiperBg','cc')"></mBanner> -->
-
 			<!-- <titles :dataConfig="titles.default" :sty="'off'" @click.native="bindEdit('titles','default')"></titles> -->
 			<!-- 商品轮播 -->
-
 			<!-- 		<customerService :dataConfig="customerService.default" @click.native="bindEdit('customerService','default')"></customerService> -->
-			<!-- 促销单品 -->
+			<!-- 精选单品 -->
 			<promotion :dataConfig="goodList.dd" @click.native="bindEdit('goodList', 'dd')"></promotion>
 			<!-- 商品分类 -->
 			<tabNav class="sticky-box" :style="'top:' + isTop + 'px;'" :dataConfig="tabNav.default"
@@ -74,13 +72,12 @@
 			<indexGoods v-if="!isIframe && tabNav.default && tabNav.default.isShow.val" :dataLists="goodLists"
 				@click.native="bindEdit('List')"></indexGoods>
 			<!-- <recommend :dataConfig="goodList.aa" @click.native="bindEdit('goodList','aa')"></recommend> -->
-			<Loading class="loading-sty" :loaded="loaded" :loading="loading"></Loading>
+			<!-- <Loading class="loading-sty" :loaded="loaded" :loading="loading"></Loading> -->
 			<view class="" v-if="
           !isIframe &&
           tabNav.default &&
           tabNav.default.isShow.val &&
-          goodLists.length == 0 &&
-          !loading
+          goodLists.length == 0
         ">
 				<view class='emptyBox'>
 					<image :src="imgHost + '/statics/images/no-thing.png'"></image>
@@ -498,6 +495,10 @@
 				// #endif
 			},
 			onLoadFun() {},
+			reconnect() {
+				this.diyData();
+				this.getIndexData();
+			},
 			diyData() {
 				let that = this;
 				getDiy().then((res) => {
@@ -524,6 +525,7 @@
 					setTimeout(() => {
 						this.showSkeleton = false;
 					}, 300);
+					uni.setStorageSync('VIS_DATA', res.data)
 				}).catch(error => {
 					// #ifdef APP-PLUS
 					if (error.status) {

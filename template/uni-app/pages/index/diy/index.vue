@@ -132,10 +132,6 @@
 					</view>
 				</view>
 				<!-- #endif -->
-				<!-- 	<view class="loadingicon acea-row row-center-wrapper" v-if="tempArr.length && styleConfig[styleConfig.length - 1].name == 'promotionList'">
-					<text class="loading iconfont icon-jiazai" :hidden="loading == false"></text>
-					{{ loadTitle }}
-				</view> -->
 				<!-- #ifdef MP -->
 				<!-- <authorize @onLoadFun="onLoadFun" :isAuto="isAuto" :isShowAuth="isShowAuth" @authColse="authColse" :isGoIndex="false"></authorize> -->
 				<!-- #endif -->
@@ -302,8 +298,6 @@
 				tempArr: [],
 				goodType: 3,
 				loading: false,
-				loadend: false,
-				loadTitle: this.$t(`下拉加载更多`), //提示语
 				page: 1,
 				limit: this.$config.LIMIT,
 				iSshowH: false,
@@ -466,6 +460,7 @@
 				uni.showLoading({
 					title: this.$t(`加载中`)
 				})
+				console.log('1111')
 				this.diyData();
 				this.getIndexData();
 				getShare().then(res => {
@@ -665,6 +660,8 @@
 			diyData() {
 				let that = this;
 				getDiy(0).then(res => {
+					uni.hideLoading()
+					uni.setStorageSync('DIY_DATA', res.data)
 					setTimeout(() => {
 						this.isNodes++;
 					}, 0);
@@ -692,17 +689,6 @@
 							that.goodType = item.tabConfig.list[0].link.activeVal;
 							that.getGroomList();
 						}
-						if (item.name == 'tabNav') {
-							// #ifndef APP-PLUS
-							// uni.showLoading({
-							// 	title: '加载中',
-							// 	mask: true,
-							// });
-							// #endif
-							// setTimeout(function() {
-							// 	uni.hideLoading();
-							// }, 8000);
-						}
 						temp = arr;
 					});
 
@@ -717,7 +703,6 @@
 					uni.stopPullDownRefresh({
 						success: (e) => {},
 					});
-
 				}).catch(error => {
 					// #ifdef APP-PLUS
 					if (error.status) {
@@ -734,6 +719,7 @@
 					}
 					// #endif
 				});
+
 			},
 			getIndexData() {},
 			changeBarg(item) {
@@ -748,9 +734,7 @@
 			// 促销列表的点击事件；
 			changeTab(type) {
 				this.goodType = type;
-				this.tempArr = [];
 				this.page = 1;
-				this.loadend = false;
 				let onloadH = true;
 				this.getGroomList(onloadH);
 			},
@@ -771,20 +755,11 @@
 						data
 					}) => {
 						that.$set(that, 'iSshowH', false);
-						let maxPage = Math.ceil(this.numConfig / this.limit);
-						let list = data.list,
-							loadend = list.length < that.limit || that.page >= maxPage;
-						let tempArr = that.$util.SplitArray(list, that.tempArr);
-						that.$set(that, 'tempArr', tempArr.slice(0, this.numConfig));
-						that.loadend = loadend;
-						that.loadTitle = loadend ? that.$t(`没有更多内容啦~`) : that.$t(`加载更多`);
-						that.page = that.page + 1;
+						let list = data.list
+						that.$set(that, 'tempArr', data.list);
 						that.loading = false;
 					})
-					.catch(res => {
-						that.loading = false;
-						that.loadTitle = that.$t(`加载更多`);
-					});
+					.catch(res => {});
 			},
 			goRouter(item) {
 				var pages = getCurrentPages();

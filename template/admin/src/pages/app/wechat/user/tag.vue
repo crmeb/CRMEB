@@ -76,7 +76,7 @@ export default {
   methods: {
     // 添加
     add() {
-      if (this.$route.path === '/admin/app/wechat/wechat_user/user/tag') {
+      if (this.$route.path === (this.$routeProStr + '/app/wechat/wechat_user/user/tag')) {
         this.$modalForm(wechatTagCreateApi()).then(() => this.getList());
       } else {
         this.$modalForm(wechatGroupCreateApi()).then(() => this.getList());
@@ -84,7 +84,7 @@ export default {
     },
     // 编辑
     edit(row) {
-      if (this.$route.path === '/admin/app/wechat/wechat_user/user/tag') {
+      if (this.$route.path === (this.$routeProStr + '/app/wechat/wechat_user/user/tag')) {
         this.$modalForm(wechatTagEditApi(row.id)).then(() => this.getList());
       } else {
         this.$modalForm(wechatGroupEditApi(row.id)).then(() => this.getList());
@@ -93,7 +93,7 @@ export default {
     // 删除
     del(row, tit, num) {
       let delfromData = null;
-      if (this.$route.path === '/admin/app/wechat/wechat_user/user/tag') {
+      if (this.$route.path === (this.$routeProStr + '/app/wechat/wechat_user/user/tag')) {
         delfromData = {
           title: tit,
           num: num,
@@ -123,7 +123,7 @@ export default {
     getList() {
       this.loading = true;
       let fountion;
-      if (this.$route.path === '/admin/app/wechat/wechat_user/user/tag') {
+      if (this.$route.path === (this.$routeProStr + '/app/wechat/wechat_user/user/tag')) {
         fountion = wechatTagListApi();
       } else {
         fountion = wechatGroupListApi();

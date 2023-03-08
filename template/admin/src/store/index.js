@@ -15,6 +15,7 @@ import VuexPersistence from 'vuex-persist';
 import user from './module/user';
 import app from './module/app';
 import menus from './module/menus';
+import menu from './module/menu';
 import userInfo from './module/userInfo';
 import userLevel from './module/userLevel';
 import order from './module/order';
@@ -27,6 +28,7 @@ import kefu from './module/kefu';
 import integralOrder from './module/integralOrder';
 import mobildConfig from './module/mobildConfig';
 import upgrade from './module/upgrade';
+import layout from './module/layout';
 
 Vue.use(Vuex);
 // 持久化储存
@@ -51,6 +53,7 @@ export default new Vuex.Store({
         user: state.user, //这个就是存入localStorage的值
         app: state.app,
         menus: state.menus,
+        menu: state.menu,
         userInfo: state.userInfo,
         userLevel: state.userLevel,
         order: state.order,
@@ -59,6 +62,7 @@ export default new Vuex.Store({
         integralOrder: state.integralOrder,
         mobildConfig: state.mobildConfig,
         upgrade: state.upgrade,
+        layout: state.layout,
       }),
       storage: window.localStorage,
     }).plugin,
@@ -67,6 +71,7 @@ export default new Vuex.Store({
     user,
     app,
     menus,
+    menu,
     userInfo,
     userLevel,
     order,
@@ -79,5 +84,6 @@ export default new Vuex.Store({
     mobildConfig,
     integralOrder,
     upgrade,
+    layout,
   },
 });

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Card :bordered="false" dis-hover class="ivu-mt">
+    <Card :bordered="false" dis-hover class="ivu-mb-16">
       <dateRadio @selectDate="onSelectDate"></dateRadio>
       <DatePicker
         :editable="false"
@@ -16,14 +16,14 @@
         class="mr20"
       ></DatePicker>
     </Card>
-    <cards-data :cardLists="cardLists" v-if="cardLists.length >= 0"></cards-data>
+    <cards-data  :cardLists="cardLists" v-if="cardLists.length >= 0"></cards-data>
     <Card :bordered="false" dis-hover>
       <h3>积分使用趋势</h3>
       <echarts-new :option-data="optionData" :styles="style" height="100%" width="100%" v-if="optionData"></echarts-new>
     </Card>
     <Spin size="large" fix v-if="spinShow"></Spin>
     <div class="code-row-bg">
-      <Card :bordered="false" dis-hover class="ivu-mt">
+      <Card :bordered="false" dis-hover class="ivu-mt mt10 mr10">
         <div class="acea-row row-between-wrapper">
           <h3 class="header-title">积分来源分析</h3>
           <div class="change-style" @click="echartLeft = !echartLeft">切换样式</div>
@@ -52,7 +52,7 @@
           </Table>
         </div>
       </Card>
-      <Card :bordered="false" dis-hover class="ivu-mt">
+      <Card :bordered="false" dis-hover class="ivu-mt mt10">
         <div class="acea-row row-between-wrapper">
           <h3 class="header-title">积分消耗</h3>
           <div class="change-style" @click="echartRight = !echartRight">切换样式</div>
@@ -338,7 +338,6 @@ export default {
 }
 .code-row-bg .ivu-mt {
   width: 100%;
-  margin: 0 5px;
 }
 .ech-box {
   margin-top: 10px;
@@ -375,6 +374,6 @@ export default {
 .num {
   white-space: nowrap;
   margin: 0 10px;
-  width: 15px;
+  width: 30px;
 }
 </style>

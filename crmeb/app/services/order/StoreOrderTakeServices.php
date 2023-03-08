@@ -65,15 +65,7 @@ class StoreOrderTakeServices extends BaseServices
             throw new ApiException(410266);
         }
         $order->status = 2;
-        /** @var StoreOrderStatusServices $statusService */
-        $statusService = app()->make(StoreOrderStatusServices::class);
-        $res = $order->save() && $statusService->save([
-                'oid' => $order['id'],
-                'change_type' => 'user_take_delivery',
-                'change_message' => '用户已收货',
-                'change_time' => time()
-            ]);
-        $res = $res && $this->storeProductOrderUserTakeDelivery($order);
+        $res = $order->save() && $this->storeProductOrderUserTakeDelivery($order);
         if (!$res) {
             throw new ApiException(410205);
         }
@@ -114,11 +106,11 @@ class StoreOrderTakeServices extends BaseServices
         if ($res) {
             try {
                 // 收货成功后置队列
-                event('order.orderTake', [$order, $userInfo, $storeTitle]);
+                event('OrderTakeListener', [$order, $userInfo, $storeTitle]);
                 //收货给用户发送消息
-                event('notice.notice', [['order' => $order, 'storeTitle' => $storeTitle], 'order_take']);
+                event('NoticeListener', [['order' => $order, 'storeTitle' => $storeTitle], 'order_take']);
                 //收货给客服发送消息
-                event('notice.notice', [['order' => $order, 'storeTitle' => $storeTitle], 'send_admin_confirm_take_over']);
+                event('NoticeListener', [['order' => $order, 'storeTitle' => $storeTitle], 'send_admin_confirm_take_over']);
             } catch (\Throwable $exception) {
 
             }
@@ -190,7 +182,7 @@ class StoreOrderTakeServices extends BaseServices
             /** @var StoreOrderServices $orderServices */
             $orderServices = app()->make(StoreOrderServices::class);
             $orderServices->update($order['id'], ['gain_integral' => $give_integral], 'id');
-            event('notice.notice', [['order' => $order, 'storeTitle' => $storeTitle, 'give_integral' => $give_integral, 'integral' => $integral], 'integral_accout']);
+            event('NoticeListener', [['order' => $order, 'storeTitle' => $storeTitle, 'give_integral' => $give_integral, 'integral' => $integral], 'integral_accout']);
             return true;
         }
         return true;
@@ -481,7 +473,7 @@ class StoreOrderTakeServices extends BaseServices
             $goodsPrice = $brokeragePrice;
         }
         //提醒推送
-        event('notice.notice', [['spread_uid' => $spread_uid, 'userType' => $userType, 'brokeragePrice' => $brokeragePrice, 'goodsName' => $goodsName, 'goodsPrice' => $goodsPrice, 'add_time' => $orderInfo['add_time'] ?? time()], 'order_brokerage']);
+        event('NoticeListener', [['spread_uid' => $spread_uid, 'userType' => $userType, 'brokeragePrice' => $brokeragePrice, 'goodsName' => $goodsName, 'goodsPrice' => $goodsPrice, 'add_time' => $orderInfo['add_time'] ?? time()], 'order_brokerage']);
     }
 
 
@@ -518,7 +510,7 @@ class StoreOrderTakeServices extends BaseServices
         }
 
         //用户升级事件
-        event('user.userLevel', [$order['uid']]);
+        event('UserLevelListener', [$order['uid']]);
 
         return $res;
     }

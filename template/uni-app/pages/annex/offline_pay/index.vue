@@ -7,7 +7,7 @@
 					{{$t(`￥`)}}
 					<input v-model.number="money" class="input" name="money" type="digit" @input="inputChange" placeholder="0.00" />
 				</view>
-				<view v-if="payPrice" class="discount">{{$t(`会员优惠价`)}}：{{$t(`￥`)}}{{ payPrice }}</view>
+				<view v-if="payPrice && show" class="discount">{{$t(`会员优惠价`)}}：{{$t(`￥`)}}{{ payPrice }}</view>
 			</view>
 		</view>
 		<view class="radio-section">
@@ -62,17 +62,9 @@
 				now_money: 0,
 				isWeixin: false,
 				site_name: '',
-				isCommitted: false
+				isCommitted: false,
+				show: false
 			};
-		},
-		watch: {
-			money(newValue, oldValue) {
-				if (newValue && typeof newValue === 'number') {
-					this.checkPrice();
-				} else {
-					this.payPrice = '';
-				}
-			}
 		},
 		computed: mapGetters(['isLogin']),
 		onLoad(options) {
@@ -104,7 +96,7 @@
 				e.target.value = (e.target.value.match(/^\d*(.?\d{0,2})/g)[0]) || ""
 				this.$nextTick(() => {
 					this.money = e.target.value
-					this.checkPrice()
+					this.checkPrice();
 				})
 			},
 			getPayType() {
@@ -169,6 +161,7 @@
 					})
 					.then(res => {
 						this.payPrice = res.data.pay_price;
+						this.show = res.data.show
 					})
 					.catch(err => {
 						uni.showToast({
@@ -322,7 +315,7 @@
 						uni.showToast({
 							title: res.msg,
 							success() {
-								location.href = jsConfig.mweb_url;
+								location.href = jsConfig.h5_url;
 							}
 						});
 						break;

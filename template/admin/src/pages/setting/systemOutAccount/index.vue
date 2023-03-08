@@ -396,9 +396,7 @@ export default {
       };
       this.getIntList();
     },
-    selectTree(e, i) {
-      console.log(e, i);
-    },
+    selectTree(e, i) {},
     getIntList(type, list) {
       interfaceList().then((res) => {
         this.intList = res.data;
@@ -505,7 +503,6 @@ export default {
         });
     },
     ok(name) {
-      console.log(this.$refs.tree.getCheckedAndIndeterminateNodes());
       let fuc = this.modalsid ? outSavesApi : outSaveApi;
       this.$refs[name].validate((valid) => {
         if (valid) {

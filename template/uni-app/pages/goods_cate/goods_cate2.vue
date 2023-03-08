@@ -7,7 +7,8 @@
 				@click="jumpIndex">
 				<text class="iconfont icon-shouye3"></text>
 			</navigator>
-			<navigator url="/pages/goods/goods_search/index" class="search acea-row row-center-wrapper" hover-class="none">
+			<navigator url="/pages/goods/goods_search/index" class="search acea-row row-center-wrapper"
+				hover-class="none">
 				<text class="iconfont icon-xiazai5"></text>
 				{{$t(`搜索商品名称`)}}
 			</navigator>
@@ -108,7 +109,19 @@
 		toLogin
 	} from '@/libs/login.js';
 	export default {
-		props: {},
+		props: {
+			isNew: {
+				type: Boolean,
+				default: false
+			}
+		},
+		watch: {
+			isNew(newVal) {
+				if (newVal) {
+					this.getAllCategory();
+				}
+			}
+		},
 		computed: mapGetters(['isLogin', 'uid']),
 		components: {
 			productWindow,
@@ -625,8 +638,30 @@
 			},
 			getAllCategory: function() {
 				let that = this;
-				getCategoryList().then(res => {
-					let data = res.data;
+				if (this.isNew || !uni.getStorageSync('CAT2_DATA')) {
+					getCategoryList().then(res => {
+						uni.setStorageSync('CAT2_DATA', res.data)
+						let data = res.data;
+						data.forEach(item => {
+							item.children.unshift({
+								'id': 0,
+								'cate_name': that.$t(`全部`)
+							})
+						})
+						that.categoryTitle = data[0].cate_name;
+						that.cid = data[0].id;
+						that.sid = 0;
+						that.navActive = 0;
+						that.tabClick = 0;
+						that.categoryList = data;
+						that.categoryErList = res.data[0].children ? res.data[0].children : [];
+						that.page = 1;
+						that.loadend = false;
+						that.tempArr = [];
+						that.productslist();
+					})
+				} else {
+					let data = uni.getStorageSync('CAT2_DATA')
 					data.forEach(item => {
 						item.children.unshift({
 							'id': 0,
@@ -639,12 +674,13 @@
 					that.navActive = 0;
 					that.tabClick = 0;
 					that.categoryList = data;
-					that.categoryErList = res.data[0].children ? res.data[0].children : [];
+					that.categoryErList = data[0].children ? data[0].children : [];
 					that.page = 1;
 					that.loadend = false;
 					that.tempArr = [];
 					that.productslist();
-				})
+				}
+
 			},
 			tapNav(index, item) {
 				let list = this.categoryList[index];

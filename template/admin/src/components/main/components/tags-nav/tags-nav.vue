@@ -1,7 +1,7 @@
 <template>
   <div class="tags-nav">
     <div class="close-con">
-      <Dropdown transfer @on-click="handleTagsOption" style="margin-top: 7px">
+      <Dropdown transfer @on-click="handleTagsOption" style="margin-top: 10px">
         <Button size="small" type="text">
           <Icon :size="18" type="ios-close-circle-outline" />
         </Button>
@@ -41,6 +41,7 @@
             @contextmenu.prevent.native="contextMenu(item, $event)"
             >{{ showTitleInside(item) }}</Tag
           >
+          <!-- <div class="tag" v-for="(item, index) in list" :key="`tag-nav-${index}`">{{ showTitleInside(item) }}</div> -->
         </transition-group>
       </div>
     </div>
@@ -183,8 +184,8 @@ export default {
       }
       this.visible = true;
       const offsetLeft = this.$el.getBoundingClientRect().left;
-      this.contextMenuLeft = e.clientX - offsetLeft + 10;
-      this.contextMenuTop = e.clientY - 64;
+      this.contextMenuLeft = e.clientX - offsetLeft;
+      this.contextMenuTop = e.clientY - 34;
     },
     closeMenu() {
       this.visible = false;

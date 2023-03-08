@@ -7,7 +7,9 @@
           >如何配置密钥</a
         >
         <span v-else
-          >您当前剩余{{ copyConfig.copy_num }}条采集次数，<a href="#" @click="mealPay('copy')">增加采集次数</a></span
+          >您当前剩余{{ copyConfig.copy_num }}条采集次数，<span class="add" @click="mealPay('copy')"
+            >增加采集次数</span
+          ></span
         >
       </div>
       <div>商品采集设置：设置 > 系统设置 > 第三方接口设置 > 采集商品配置</div>
@@ -72,7 +74,8 @@ export default {
   },
   methods: {
     mealPay(val) {
-      this.$router.push({ path: '/admin/setting/sms/sms_pay/index', query: { type: val } });
+      console.log(val);
+      this.$router.push({ path: this.$routeProStr + '/setting/sms/sms_pay/index', query: { type: val } });
     },
     getCopyConfig() {
       copyConfigApi().then((res) => {
@@ -115,7 +118,10 @@ export default {
 .Box .ivu-radio-wrapper {
     margin-right: 25px;
 }
-
+.add{
+  color: #2D8cF0;
+  cursor pointer
+}
 .Box .numPut {
     width: 100% !important;
 }

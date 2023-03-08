@@ -33,7 +33,7 @@ export default {
   methods: {
     upgradeNow() {
       this.$router.push({
-        path: '/admin/system/onlineUpgrade/index',
+        name: 'system_upgradeclient',
         params: { items: true },
       });
       this.$store.commit('upgrade/TOGGLE_STATUS', true);

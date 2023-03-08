@@ -75,6 +75,24 @@ Redis
 
 > 温馨提示：虚拟空间不支持，推荐使用bt宝塔面板，服务器推荐阿里云ecs或腾讯云cvm 云服务器：<a href="https://promotion.aliyun.com/ntms/yunparter/invite.html?userCode=dligum2z" target="_blank">  查看 </a>
 
+### 官方论坛
+
+
+[![输入图片说明](readme/pic/gflt.jpg)](https://www.crmeb.com/ask/thread/list/147)
+
+产品BUG、优化建议，欢迎社区反馈：https://www.crmeb.com/ask/thread/list?id=147
+
+
+---
+
+#### 体验云部署
+ 不懂服务器？不懂技术？无法解决高并发？想数据私有化？还想后期定制开发？
+
+ 推荐云部署版一键超低价格低至 :collision:  9.9元/年，解决以上所有问题<a href='https://saas.crmeb.com/saas-home-software-detail-50043-s-y.html' target='_blank'>点击了解 </a>
+
+---
+
+
 
 ###  系统演示
 
@@ -87,21 +105,6 @@ H5端：http://v4.crmeb.net/（移动端打开）
 PC端：http://v4.crmeb.net/（电脑端打开）
 
 APP下载：http://app.crmeb.cn/bzv （苹果手机直接在APP Store里搜索CRMEB下载）
-
----
-
-#### 体验云部署
- 不懂服务器？不懂技术？无法解决高并发？想数据私有化？还想后期定制开发？
-
- 推荐云部署版一键超低价格低至 :collision:  9.9元/年，解决以上所有问题<a href='https://saas.crmeb.com/saas-home-software-detail-50043-s-y.html' target='_blank'>点击了解 </a>
-
----
-
-### 官方论坛
-
-
-产品BUG、优化建议，欢迎社区反馈：https://www.crmeb.com/ask/thread/list?id=147
-
 
 ### 页面展示
 (页面仅展示部分UI)

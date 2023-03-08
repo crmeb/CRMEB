@@ -169,6 +169,7 @@
 				this.uid = userData.data.uid
 				let goods_img, mp_code, resData, arr, mpUrl
 				// #ifdef MP
+				
 				// #endif
 				uni.showLoading({
 					title: that.$t(`海报生成中`),
@@ -199,6 +200,7 @@
 				arr = [this.posterBag, imgData.image, imgData.code || this.codeSrc]
 				// #endif
 				// #ifdef MP
+				resData.image = that.setDomain(resData.image);
 				mpUrl = resData.url ? await this.downloadFilestoreImage(resData.url) : await this
 					.downloadFilestoreImage(this.mpUrl)
 				arr = [this.posterBag, await this.downloadFilestoreImage(resData.image), mpUrl]
@@ -219,7 +221,6 @@
 			},
 			//图片转符合安全域名路径
 			downloadFilestoreImage(url) {
-				url = this.setDomain(url)
 				return new Promise((resolve, reject) => {
 					let that = this;
 					uni.downloadFile({
@@ -236,7 +237,7 @@
 				})
 			},
 			//替换安全域名
-			setDomain: function(image, url) {
+			setDomain: function(url) {
 				url = url ? url.toString() : '';
 				//本地调试打开,生产请注销
 				if (url.indexOf('https://') > -1) return url;

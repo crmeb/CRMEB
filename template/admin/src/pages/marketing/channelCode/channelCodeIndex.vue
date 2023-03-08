@@ -109,7 +109,7 @@
               <Divider type="vertical" />
               <a @click="del(row, '删除二维码', index)">删除</a>
               <Divider type="vertical" />
-              <Dropdown @on-click="changeMenu(row, $event)" transfer="true">
+              <Dropdown @on-click="changeMenu(row, $event)" :transfer="true">
                 <a href="javascript:void(0)"
                   >更多
                   <Icon type="ios-arrow-down"></Icon>
@@ -326,7 +326,7 @@ export default {
           break;
         case '2':
           this.$router.push({
-            path: '/admin/marketing/channel_code/code_statistic?id=' + row.id,
+            path: this.$routeProStr + '/marketing/channel_code/code_statistic?id=' + row.id,
           });
           break;
         case '3':
@@ -460,13 +460,13 @@ export default {
     // 编辑
     edit(row) {
       this.$router.push({
-        path: '/admin/marketing/channel_code/create?id=' + row.id,
+        path: this.$routeProStr + '/marketing/channel_code/create?id=' + row.id,
       });
     },
     // 添加
     add() {
       this.$router.push({
-        path: '/admin/marketing/channel_code/create',
+        path: this.$routeProStr + '/marketing/channel_code/create',
       });
     },
     //
@@ -600,7 +600,7 @@ export default {
 .left-wrapper {
   height: 904px;
   background: #fff;
-  border-right: 1px solid #dcdee2;
+  border-right: 1px solid #f2f2f2;
 }
 
 .menu-item {

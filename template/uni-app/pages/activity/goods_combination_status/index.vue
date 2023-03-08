@@ -660,9 +660,8 @@
 					.then(res => {
 						that.$util.Tips({
 							title: res.msg
-						}, {
-							tab: 3
 						});
+						this.getCombinationPink()
 					})
 					.catch(res => {
 						that.$util.Tips({

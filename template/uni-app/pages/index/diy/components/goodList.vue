@@ -14,7 +14,7 @@
 								v-if="item.activity && item.activity.type === '2'">{{$t(`砍价`)}}</span>
 							<span class="pictrue_log pictrue_log_class" :style="'background-color:'+labelColor"
 								v-if="item.activity && item.activity.type === '3'">{{$t(`拼团`)}}</span>
-							<image :src="item.image" mode="aspectFit"></image>
+							<image :src="item.image" mode=""></image>
 						</view>
 						<view class="text-info"
 							style="display: flex; flex-direction: column; justify-content: space-between;">
@@ -117,8 +117,8 @@
 							v-if="item.activity && item.activity.type === '2'">{{$t(`砍价`)}}</span>
 						<span class="pictrue_log_big pictrue_log_class" :style="'background-color:'+labelColor"
 							v-if="item.activity && item.activity.type === '3'">{{$t(`拼团`)}}</span>
-						<image :src="item.recommend_image" mode="aspectFill" v-if="item.recommend_image"></image>
-						<image :src="item.image" mode="widthFix" v-else></image>
+						<image :src="item.recommend_image" mode="" v-if="item.recommend_image"></image>
+						<image :src="item.image" mode="" v-else></image>
 					</view>
 					<view class="name line2"><span class="coupon"
 							:style="'border:1px solid '+labelColor+';color:'+labelColor"
@@ -303,8 +303,10 @@
 				}
 
 				image {
-					width: 100%;
 					// height: 346rpx;
+					// width: 347rpx;
+					// height: 347rpx;
+					width: 100%;
 					height: 100%;
 					display: block;
 				}
@@ -370,8 +372,8 @@
 					width: 100%;
 
 					.pictrue {
-						width: 220rpx;
-						height: 220rpx;
+						width: 220rpx !important;
+						height: 220rpx !important;
 					}
 
 					.text-info {

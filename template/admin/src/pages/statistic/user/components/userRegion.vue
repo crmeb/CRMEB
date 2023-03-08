@@ -1,7 +1,7 @@
 <template>
   <Row :gutter="16">
     <Col :xs="24" :sm="24" :md="24" :lg="18">
-      <Card :bordered="false" dis-hover class="ivu-mt">
+      <Card :bordered="false" dis-hover class="ivu-mt-16">
         <div class="acea-row row-between-wrapper">
           <div class="header-title mb20">用户地域分布</div>
         </div>
@@ -20,7 +20,7 @@
       </Card>
     </Col>
     <Col :xs="24" :sm="24" :md="24" :lg="6">
-      <Card :bordered="false" dis-hover class="ivu-mt">
+      <Card :bordered="false" dis-hover class="ivu-mt-16">
         <div class="acea-row row-between-wrapper">
           <div class="header-title mb20">用户性别比例</div>
         </div>

@@ -10,7 +10,7 @@
     </div> -->
     <div class="i-layout-page-header header_top">
       <div class="i-layout-page-header fl_header">
-        <router-link :to="{ path: '/admin/setting/notification/index' }"
+        <router-link :to="{ path: $routeProStr + '/setting/notification/index' }"
           ><Button icon="ios-arrow-back" size="small" type="text">返回</Button></router-link
         >
         <Divider type="vertical" />

@@ -40,13 +40,13 @@
                 <span class="suffix">日</span>
               </div>
             </Col>
-            <Col v-if="[3, 5, 6, 7].includes(formValidate.type)" span="4">
+            <Col v-if="[3, 4, 5, 6, 7].includes(formValidate.type)" span="4">
               <div class="input-number-wrapper">
                 <InputNumber v-model="formValidate.hour" :max="23" :min="0"></InputNumber>
                 <span class="suffix">时</span>
               </div>
             </Col>
-            <Col span="4" v-if="[2, 5, 6, 7].includes(formValidate.type)">
+            <Col span="4" v-if="[2, 3, 4, 5, 6, 7].includes(formValidate.type)">
               <div class="input-number-wrapper">
                 <InputNumber
                   v-model="formValidate.minute"
@@ -170,10 +170,10 @@ export default {
             this.trip = `每隔${nVal.minute}分钟执行一次`;
             break;
           case 3:
-            this.trip = `每隔${nVal.hour}小时执行一次`;
+            this.trip = `每隔${nVal.hour}小时的${nVal.minute}分执行一次`;
             break;
           case 4:
-            this.trip = `每隔${nVal.day}天执行一次`;
+            this.trip = `每隔${nVal.day}天的${nVal.hour}时${nVal.minute}分执行一次`;
             break;
           case 5:
             this.trip = `每天${nVal.hour}时${nVal.minute}分${nVal.second}秒执行一次`;
@@ -214,8 +214,6 @@ export default {
       }
     },
     timerInfo(id) {
-      console.log(id);
-
       timerInfo(id).then((res) => {
         this.modal = true;
         this.formValidate = res.data;
@@ -228,7 +226,6 @@ export default {
     },
     // 提交
     handleSubmit() {
-      console.log(this.formValidate);
       if (!this.formValidate.mark) {
         return this.$Message.error({
           content: '请选择任务名称',
@@ -306,10 +303,10 @@ export default {
     line-height: 33px;
     color: #333333;
   }
-
 }
- .trip{
-    padding-left 15px
-    color #aaa
-  }
+
+.trip {
+  padding-left: 15px;
+  color: #aaa;
+}
 </style>

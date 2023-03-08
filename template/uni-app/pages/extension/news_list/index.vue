@@ -124,7 +124,8 @@
 		 * 生命周期函数--监听页面显示
 		 */
 		onShow: function() {
-			this.getArticleHot();
+			// this.getArticleHot();
+			this.getCidArticle(0);
 			this.getArticleBanner();
 			this.getArticleCate();
 			this.status = false;

@@ -6,20 +6,28 @@
 				<view class="text">
 					<view class="name">{{userInfo.nickname}}</view>
 					<view v-if="userInfo.is_ever_level">{{$t(`永久SVIP会员`)}}</view>
-					<view v-else-if="userInfo.is_money_level">{{$t(`SVIP会员`)}} {{userInfo.overdue_time | dateFormat}} {{$t(`到期`)}}</view>
-					<view v-else>{{$t(`您与`)}} {{userInfo.shop_name}} {{$t(`商城的第`)}} {{userInfo.register_days}} {{$t(`天.`)}}</view>
+					<view v-else-if="userInfo.is_money_level">{{$t(`SVIP会员`)}} {{userInfo.overdue_time | dateFormat}}
+						{{$t(`到期`)}}
+					</view>
+					<view v-else>{{$t(`您与`)}} {{userInfo.shop_name}} {{$t(`商城的第`)}} {{userInfo.register_days}}
+						{{$t(`天.`)}}
+					</view>
 				</view>
 			</view>
 			<view class="acea-row row-between-wrapper info">
-				<view v-if="userInfo.is_money_level">{{$t(`已累积为您节省`)}} {{$t(`￥`)}}<text class="num">{{userInfo.economize_money}}</text>
+				<view v-if="userInfo.is_money_level">{{$t(`已累积为您节省`)}} {{$t(`￥`)}}<text
+						class="num">{{userInfo.economize_money}}</text>
 				</view>
 				<view v-else>{{$t(`开通即享会员权益`)}}</view>
-				<view class="btn" @click="scrollToCard" v-if="!userInfo.is_ever_level">{{userInfo.is_money_level ? $t(`续费会员`) : $t(`开通会员`)}}</view>
+				<view class="btn" @click="scrollToCard" v-if="!userInfo.is_ever_level">
+					{{userInfo.is_money_level ? $t(`续费会员`) : $t(`开通会员`)}}
+				</view>
 			</view>
 		</view>
 		<view class="right-section">
 			<view class="section-hd acea-row row-center-wrapper">
-				<view class="title acea-row row-center row-bottom"><text class="iconfont icon-huiyuan2"></text>{{$t(`SVIP会员尊享权`)}}
+				<view class="title acea-row row-center row-bottom"><text
+						class="iconfont icon-huiyuan2"></text>{{$t(`SVIP会员尊享权`)}}
 				</view>
 			</view>
 			<view class="section-bd acea-row row-between-wrapper">
@@ -42,7 +50,7 @@
 					@click="checkType(item)">
 					<view>{{item.title}}</view>
 					<view class="new">{{$t(`￥`)}}<text class="num">{{item.pre_price | moneyFormat}}</text></view>
-					<view v-if="item.type === 'free'" class="info">{{$t(`试用`)}}{{item.vip_day}}{{$t(`天.`)}}</view>
+					<view v-if="item.type === 'free'" class="info">{{$t(`试用`)}}{{item.vip_day}}{{$t(`天`)}}</view>
 					<view v-else class="old">{{$t(`￥`)}}{{item.price | moneyFormat}}</view>
 				</view>
 			</scroll-view>
@@ -174,10 +182,10 @@
 					// #ifdef H5 ||APP-PLUS
 					,
 					{
-						name: this.$t(`支付宝支付`) ,
+						name: this.$t(`支付宝支付`),
 						icon: 'icon-zhifubao',
 						value: 'alipay',
-						title: this.$t(`支付宝支付`) ,
+						title: this.$t(`支付宝支付`),
 						payStatus: true
 					},
 					// #endif
@@ -194,7 +202,8 @@
 				// #endif
 				type: '',
 				svip: null,
-				mc_id: 0
+				mc_id: 0,
+				initIn: false
 			}
 		},
 		watch: {
@@ -214,6 +223,28 @@
 				this.getOrderPayType();
 			} else {
 				toLogin();
+			}
+		},
+		onShow() {
+			this.payClose();
+			let options = wx.getEnterOptionsSync();
+			if (options.scene == '1038' && options.referrerInfo.appId == 'wxef277996acc166c3' && this.initIn) {
+				// 代表从收银台小程序返回
+				let extraData = options.referrerInfo.extraData;
+				this.initIn = false
+				if (!extraData) {
+					this.memberCard();
+					// "当前通过物理按键返回，未接收到返参，建议自行查询交易结果";
+				} else {
+					if (extraData.code == 'success') {
+						this.memberCard();
+					} else if (extraData.code == 'cancel') {
+						this.memberCard();
+					} else {
+						this.memberCard();
+						// "支付失败：" + extraData.errmsg;
+					}
+				}
 			}
 		},
 		onReachBottom() {
@@ -332,9 +363,9 @@
 						ali_pay_status,
 						pay_weixin_open
 					} = res.data;
-					this.payMode[0].payStatus = pay_weixin_open === 1 ? true : false;
+					this.payMode[0].payStatus = pay_weixin_open;
 					// #ifdef APP-PLUS || H5
-					this.payMode[1].payStatus = !!ali_pay_status;
+					this.payMode[1].payStatus = ali_pay_status;
 					// #endif
 					//#ifdef MP
 					this.payMode[1].payStatus = false;
@@ -423,7 +454,8 @@
 					price: this.svip.pre_price,
 					money: this.svip.price,
 					// #ifdef H5
-					quitUrl: location.port ? location.protocol + '//' + location.hostname + ':' + location.port +
+					quitUrl: location.port ? location.protocol + '//' + location.hostname + ':' + location
+						.port +
 						'/pages/annex/vip_paid/index' : location.protocol + '//' + location.hostname +
 						'/pages/annex/vip_paid/index'
 					// #endif
@@ -437,7 +469,7 @@
 						this.groomList();
 						uni.hideLoading();
 						uni.showToast({
-							title: this.$t(`成功开启0元试用`),
+							title: this.$t(`成功开启试用`),
 						});
 					}
 				}).catch(err => {
@@ -456,7 +488,7 @@
 						this.groomList();
 						uni.hideLoading();
 						uni.showToast({
-							title: this.$t(`成功开启0元试用`),
+							title: this.$t(`成功开启试用`),
 						});
 					}
 				}).catch(err => {
@@ -466,6 +498,23 @@
 					});
 				});
 				// #endif
+			},
+			formpost(url, postData) {
+				let tempform = document.createElement("form");
+				tempform.action = url;
+				tempform.method = "post";
+				tempform.target = "_self";
+				tempform.style.display = "none";
+				for (let x in postData) {
+					let opt = document.createElement("input");
+					opt.name = x;
+					opt.value = postData[x];
+					tempform.appendChild(opt);
+				}
+				document.body.appendChild(tempform);
+				this.$nextTick(e => {
+					tempform.submit();
+				})
 			},
 			// 调用支付
 			callPay(data) {
@@ -480,6 +529,45 @@
 				switch (status) {
 					case 'ORDER_EXIST':
 					case 'EXTEND_ORDER':
+					case 'ALLINPAY_PAY':
+						uni.hideLoading();
+						// #ifdef MP
+						this.initIn = true
+						wx.openEmbeddedMiniProgram({
+							appId: 'wxef277996acc166c3',
+							extraData: {
+								cusid: jsConfig.cusid,
+								appid: jsConfig.appid,
+								version: jsConfig.version,
+								trxamt: jsConfig.trxamt,
+								reqsn: jsConfig.reqsn,
+								notify_url: jsConfig.notify_url,
+								body: jsConfig.body,
+								remark: jsConfig.remark,
+								validtime: jsConfig.validtime,
+								randomstr: jsConfig.randomstr,
+								paytype: jsConfig.paytype,
+								sign: jsConfig.sign,
+								signtype: jsConfig.signtype
+							}
+						})
+						this.jumpData = {
+							orderId: data.data.result.orderId,
+							msg: data.msg,
+						}
+						// #endif
+						// #ifdef APP-PLUS
+						plus.runtime.openURL(jsConfig.payinfo);
+						setTimeout(e => {
+							uni.reLaunch({
+								url: '/pages/annex/vip_paid/index'
+							})
+						}, 1000)
+						// #endif
+						// #ifdef H5
+						this.formpost(data.data.result.pay_url, jsConfig)
+						// #endif
+						break;
 					case 'PAY_ERROR':
 						uni.hideLoading();
 						this.$util.Tips({
@@ -501,11 +589,11 @@
 						break;
 					case 'WECHAT_PAY':
 						// #ifdef MP
-						let mp_pay_name=''
-						if(uni.requestOrderPayment){
-							mp_pay_name='requestOrderPayment'
-						}else{
-							mp_pay_name='requestPayment'
+						let mp_pay_name = ''
+						if (uni.requestOrderPayment) {
+							mp_pay_name = 'requestOrderPayment'
+						} else {
+							mp_pay_name = 'requestPayment'
 						}
 						uni[mp_pay_name]({
 							timeStamp: jsConfig.timestamp,
@@ -581,7 +669,7 @@
 						uni.showToast({
 							title: data.msg,
 							success() {
-								location.href = jsConfig.mweb_url;
+								location.href = jsConfig.h5_url;
 							}
 						});
 						break;

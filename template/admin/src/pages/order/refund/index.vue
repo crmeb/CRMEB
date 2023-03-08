@@ -53,7 +53,6 @@
         :columns="thead"
         :data="tbody"
         ref="table"
-        class="mt25"
         :loading="loading"
         highlight-row
         no-userFrom-text="暂无数据"
@@ -162,7 +161,7 @@
           <!--            "-->
           <!--          />-->
           <template>
-            <Dropdown @on-click="changeMenu(row, $event)" transfer="true">
+            <Dropdown @on-click="changeMenu(row, $event)" :transfer="true">
               <a href="javascript:void(0)"
                 >更多
                 <Icon type="ios-arrow-down"></Icon>
@@ -668,7 +667,9 @@ export default {
 .code {
   position: relative;
 }
-
+.ivu-form-item{
+  
+}
 .QRpic {
   width: 180px;
   height: 259px;

@@ -1,6 +1,6 @@
 <template>
   <div class="agreemant">
-    <Card :bordered="false" dis-hover class="ivu-mt" :padding="0">
+    <Card :bordered="false" dis-hover class="ivu-mt">
       <div class="new_card_pd">
         <Tabs v-model="currentTab" @on-click="changeTab">
           <TabPane :label="item.label" :name="item.value.toString()" v-for="(item, index) in headerList" :key="index" />
@@ -8,7 +8,7 @@
       </div>
     </Card>
 
-    <Row class="mb10 content">
+    <Row class="content">
       <Col span="16">
         <WangEditor style="width: 100%" :content="formValidate.content" @editorContent="getEditorContent"></WangEditor>
       </Col>
@@ -23,11 +23,12 @@
         >保存</Button
       >
     </Row> -->
+
     <Card
       :bordered="false"
       dis-hover
       class="fixed-card"
-      :style="{ left: `${!menuCollapse ? '200px' : isMobile ? '0' : '80px'}` }"
+      :style="{ left: `${!menuCollapse ? '240px' : isMobile ? '0' : '80px'}` }"
     >
       <div class="acea-row row-center">
         <Button class="bnt" type="primary" @click="save" :loading="loadingExist">保存</Button>
@@ -59,7 +60,7 @@ export default {
         autoHeightEnabled: false,
         initialFrameHeight: 500,
         initialFrameWidth: '100%',
-        UEDITOR_HOME_URL: '/admin/UEditor/',
+        UEDITOR_HOME_URL: '/UEditor/',
         serverUrl: '',
       },
       id: 0,
@@ -71,7 +72,8 @@ export default {
     };
   },
   computed: {
-    ...mapState('admin/layout', ['isMobile', 'menuCollapse']),
+    ...mapState('layout', ['menuCollapse']),
+    ...mapState('admin/layout', ['isMobile']),
   },
   created() {
     this.changeTab(this.currentTab);
@@ -107,12 +109,10 @@ export default {
 <style lang="stylus" scoped>
 .agreemant {
   background-color: #fff;
-  padding: 5px 15px ;
-  margin-top 10px;
 }
 
 .content {
-  padding: 10px 0px;
+  padding: 10px 16px;
 }
 
 .ifam {
@@ -150,7 +150,7 @@ export default {
   right: 0;
   bottom: 0;
   left: 200px;
-  z-index: 99;
+  z-index: 8;
   box-shadow: 0 -1px 2px rgb(240, 240, 240);
 
   /deep/ .ivu-card-body {

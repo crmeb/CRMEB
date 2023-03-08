@@ -52,6 +52,8 @@ export default {
 </script>
 <style lang="less">
 .ivu-global-footer {
+  /* margin: 48px 0 24px 0; */
+  /* padding: 0 16px; */
   margin: 5px 0px;
   text-align: center;
   box-sizing: border-box;

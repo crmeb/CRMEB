@@ -2,8 +2,8 @@
     "name" : "CRMEB标准版",
     "appid" : "__UNI__A3F1ED4",
     "description" : "CRMEB标准版",
-    "versionName" : "4.6.0",
-    "versionCode" : 461,
+    "versionName" : "4.7.0",
+    "versionCode" : 470,
     "transformPx" : false,
     /* 5+App特有相关 */
     "app-plus" : {
@@ -15,6 +15,12 @@
             "autoclose" : true,
             "delay" : 0
         },
+        "screenOrientation" : [
+            "portrait-primary",
+            "portrait-secondary",
+            "landscape-primary",
+            "landscape-secondary"
+        ],
         /* 模块配置 */
         "modules" : {
             "Payment" : {},
@@ -173,7 +179,7 @@
     "quickapp" : {},
     /* 小程序特有相关 */
     "mp-weixin" : {
-        "appid" : "wx1234567890",
+        "appid" : "wx3b82801238ca1b57",
         "setting" : {
             "urlCheck" : false,
             "minified" : true,

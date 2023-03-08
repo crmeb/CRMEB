@@ -36,9 +36,9 @@
           </Col>
         </Row>
       </Form>
-      <Divider dashed />
+      <!-- <Divider dashed /> -->
       <vxe-table
-        class="vxeTable"
+        class="vxeTable mt25"
         highlight-hover-row
         :loading="loading"
         header-row-class-name="false"
@@ -237,7 +237,7 @@ export default {
     // 查看文章
     lookUp(row) {
       this.$router.push({
-        path: '/admin/cms/article/index',
+        path: this.$routeProStr + '/cms/article/index',
         query: {
           id: row.id,
         },

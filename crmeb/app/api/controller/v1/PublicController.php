@@ -645,4 +645,16 @@ class PublicController
     {
         return app('json')->success(['version' => get_crmeb_version()]);
     }
+
+    /**
+     * 获取多语言缓存
+     * @return \think\Response
+     * @author 吴汐
+     * @email 442384644@qq.com
+     * @date 2023/03/06
+     */
+    public function getLangVersion()
+    {
+        return app('json')->success(app()->make(LangCodeServices::class)->getLangVersion());
+    }
 }

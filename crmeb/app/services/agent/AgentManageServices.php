@@ -373,7 +373,7 @@ class AgentManageServices extends BaseServices
     {
         /** @var UserServices $userServices */
         $userServices = app()->make(UserServices::class);
-        if (!$userServices->getUserInfo($uid)) {
+        if (!$userServices->getUserInfo($uid, 'uid')) {
             throw new AdminException(100026);
         }
         if ($userServices->update($uid, ['spread_open' => 0]) !== false)

@@ -346,6 +346,7 @@ class Common extends AuthController
             $pid = $item->getData('pid');
             $data[$key] = json_decode($item, true);
             $data[$key]['pid'] = $pid;
+            $data[$key]['menu_path'] = '/' . config('app.admin_prefix', 'admin') . $item['menu_path'];
             if (in_array($item->id, $counts)) {
                 $data[$key]['type'] = 1;
             } else {

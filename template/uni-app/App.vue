@@ -23,7 +23,8 @@
 
 	} from '@/api/api.js';
 	import {
-		getLangJson
+		getLangJson,
+		getLangVersion
 	} from '@/api/user.js'
 	import {
 		mapGetters
@@ -152,14 +153,19 @@
 						break
 				}
 			});
-			if (!Cache.has('localeSet')) {
-				getLangJson().then(res => {
-					Cache.set('locale', Object.keys(res.data)[0])
-					uni.setStorageSync('localeJson', res.data);
-					Cache.set('localeSet', true, 600) // 语言类型缓存时间
-				})
-			}
-
+			getLangVersion().then(res => {
+				let version = res.data.version
+				if (version != uni.getStorageSync('LANG_VERSION')) {
+					console.log('我变了')
+					getLangJson().then(res => {
+						let value = Object.keys(res.data)[0]
+						Cache.set('locale', Object.keys(res.data)[0])
+						this.$i18n.setLocaleMessage(value, res.data[value]);
+						uni.setStorageSync('localeJson', res.data);
+					})
+				}
+				uni.setStorageSync('LANG_VERSION', version)
+			})
 			// #ifdef APP-PLUS || H5
 			uni.getSystemInfo({
 				success: function(res) {

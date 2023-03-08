@@ -11,7 +11,7 @@
 				</view>
 				<transition name="tips">
 					<text v-if="tipWords" class="verify-tips"
-						:class="passFlag ? 'suc-bg' : 'err-bg'">{{ tipWords }}</text>
+						:class="passFalg ? 'suc-bg' : 'err-bg'">{{ tipWords }}</text>
 				</transition>
 			</view>
 		</view>
@@ -123,7 +123,7 @@ export default {
   data() {
     return {
       secretKey: "", // 后端返回的加密秘钥 字段
-      passFlag: "", // 是否通过的标识
+      passFalg: "", // 是否通过的标识
       backImgBase: "", // 验证码背景图片
       blockBackImgBase: "", // 验证滑块的背景图片
       backToken: "", // 后端返回的唯一token值
@@ -491,13 +491,13 @@ export default {
 		bottom: 0px;
 		width: 100%;
 		height: 30px;
-		background-color: rgb(231, 27, 27, .5);
+		background-color: rgb(17, 200, 26, 0.5);;
 		line-height: 30px;
 		color: #fff;
 	}
 
 	.suc-bg {
-		background-color: rgba(92, 184, 92, .5);
+		background-color: rgb(17, 200, 26, 0.5);;
 		filter: progid:DXImageTransform.Microsoft.gradient(startcolorstr=#7f5CB85C, endcolorstr=#7f5CB85C);
 	}
 

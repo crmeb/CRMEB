@@ -69,7 +69,7 @@ service.interceptors.response.use(
         removeCookies('token');
         removeCookies('expires_time');
         removeCookies('uuid');
-        router.replace({ path: '/admin/login' });
+        router.replace({ name: 'login' });
         break;
       case 110005:
       case 110006:
@@ -81,7 +81,7 @@ service.interceptors.response.use(
         router.replace({ path: '/kefu' });
         break;
       case 110008:
-        router.replace({ path: '/admin/system/maintain/system_file/login' });
+        router.replace({ name: 'system_opendir_login' });
         break;
       default:
         return Promise.reject(obj || { msg: '未知错误' });

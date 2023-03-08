@@ -5,32 +5,34 @@
     :class="hideTitle ? '' : 'collased-menu-dropdown'"
     :transfer="hideTitle"
     :placement="placement"
+    transfer-class-name="dro-style"
   >
     <a
       class="drop-menu-a"
       type="text"
+      :class="{ on: parentItem.path == activeMenuPath }"
       @mouseover="handleMousemove($event, children)"
       :style="{ textAlign: !hideTitle ? 'left' : '' }"
-      ><common-icon :size="rootIconSize" :color="textColor" :type="parentItem.icon" /><span
-        class="menu-title"
+      @click="handClick(parentItem.path)"
+      ><common-icon :type="parentItem.icon" /><Icon
+        style="float: right"
         v-if="!hideTitle"
-        >{{ parentItem.title }}</span
-      ><Icon style="float: right" v-if="!hideTitle" type="ios-arrow-forward" :size="16"
-    /></a>
-    <DropdownMenu ref="dropdown" slot="list">
+        type="ios-arrow-forward"
+        :size="16"
+      />
+      <span class="title">{{ parentItem.title }}</span></a
+    >
+    <DropdownMenu ref="dropdown" slot="list" v-if="children">
       <div v-for="child in children">
         <template v-if="child.auth === undefined">
           <collapsed-menu
             class="child-menu"
             v-if="showChildren(child)"
-            :icon-size="iconSize"
             :parent-item="child"
             :key="`drop-${child.path}`"
           ></collapsed-menu>
           <DropdownItem v-else :key="`drop-${child.path}`" :name="child.path"
-            ><common-icon :size="iconSize" :type="child.icon" /><span class="menu-title">{{
-              child.title
-            }}</span></DropdownItem
+            ><common-icon :type="child.icon" /><span class="menu-title">{{ child.title }}</span></DropdownItem
           >
         </template>
       </div>
@@ -41,6 +43,7 @@
 import mixin from './mixin';
 import itemMixin from './item-mixin';
 import { findNodeUpperByClasses } from '@/libs/util';
+import settings from '@/setting';
 
 export default {
   name: 'CollapsedMenu',
@@ -54,6 +57,10 @@ export default {
       type: Number,
       default: 16,
     },
+    activeMenuPath: {
+      type: String,
+      default: '',
+    },
   },
   data() {
     return {
@@ -62,7 +69,10 @@ export default {
   },
   methods: {
     handleClick(name) {
-      this.$emit('on-click', name);
+      this.$emit('on-click', name, this.activeMenuPath);
+    },
+    handClick(name) {
+      this.$emit('on-click', name, this.activeMenuPath);
     },
     handleMousemove(event, children) {
       const { pageY } = event;
@@ -77,16 +87,38 @@ export default {
   },
 };
 </script>
-<style lang="stylus" scoped>
->>> .menu-title {
-  // width: 100px !important;
+<style lang="less" scoped>
+@import './side-menu.less';
+
+/deep/ .collased-menu-dropdown {
+  width: @side-width;
 }
-.collased-menu-dropdown{
-  width 100%
+
+.child-menu {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
 }
-.child-menu{
-  display flex
-  justify-content space-between
-  width 100%
+.ivu-dropdown-menu {
+  padding: 5px 0px;
+  width: 140px !important;
+}
+.ivu-dropdown-menu /deep/ .ivu-dropdown-rel {
+  width: 100% !important;
+  font-size: 14px;
+  line-height: 14px;
+  padding: 14px 20px;
+}
+.ivu-dropdown-menu /deep/ .ivu-dropdown-item {
+  width: 140px !important;
+  padding: 14px 20px;
+  font-size: 14px !important;
+  line-height: 14px;
+}
+.drop-menu-a /deep/ .ivu-dropdown-rel {
+  width: 160px !important;
+  font-size: 14px;
+  line-height: 14px;
+  color: #fff;
 }
 </style>

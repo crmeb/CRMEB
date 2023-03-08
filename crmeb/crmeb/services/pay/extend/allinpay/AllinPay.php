@@ -193,28 +193,19 @@ class AllinPay extends Client
      * @email 136327134@qq.com
      * @date 2023/1/15
      */
-    public function pcPay(string $trxamt, string $orderId, string $body, string $returl)
+    public function pcPay(string $trxamt, string $orderId, string $body, string $remark, bool $isWechat = true)
     {
-        $totalFee = (int)bcmul($trxamt, '100');
-
-        $data = [
-            'paytype' => 'B2C',
-            'trxamt' => $totalFee,
-            'orderid' => $orderId,
-            'notifyurl' => $this->notifyUrl,
-            'goodsinf' => $body,
-            'validtime' => $this->validtime,
-            'returl' => $returl,
-            'cusid' => $this->cusid,
-            'appid' => $this->appid,
-            'signtype' => $this->signType,
-            'randomstr' => uniqid(),
-            'charset' => 'UTF-8'
-        ];
-
-        $data['sign'] = $this->sign($data);
-
-        return $data;
+        $this->api = self::UNITODER_PAY_API;
+        $this->payType = $isWechat ? 'W01' : 'A01';
+        $this->version = self::VERSION_NUM_11;
+        $res = $this->create($trxamt, $orderId, $body, null, null, null, '', $remark);
+        $invalid = time() + 60;
+        if ($isWechat) {
+            $key = 'code_url';
+        } else {
+            $key = 'qrCode';
+        }
+        return ['invalid' => $invalid, 'logo' => sys_config('wap_login_logo'), $key => $res['payinfo']];
     }
 
     /**
@@ -270,11 +261,11 @@ class AllinPay extends Client
 
         $data['cusid'] = $this->cusid;
         $data['appid'] = $this->appid;
-        $data['signtype'] = 'RSA';
+        $data['signtype'] = $this->signType;
         $data['randomstr'] = uniqid();
         $data['sign'] = $this->sign($data);
 
-        return $this->send(self::UNITODER_QPAY_AGREEAPPLY, ['data' => $data]);
+        return $this->request(self::UNITODER_QPAY_AGREEAPPLY, $data);
     }
 
 

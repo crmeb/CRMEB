@@ -1,26 +1,31 @@
 <template>
-  <div class="article-manager">
-    <Card :bordered="false" dis-hover class="ivu-mt fromBox">
-      <Tabs v-model="currentTab" @on-click="changeTab" v-if="headerList.length">
-        <TabPane
-          :icon="item.icon"
-          :label="item.label"
-          :name="item.value.toString()"
-          v-for="(item, index) in headerList"
-          :key="index"
-        />
-      </Tabs>
-      <Tabs type="card" v-model="childrenId" v-if="headerChildrenList.length" @on-click="changeChildrenTab">
-        <TabPane
-          :label="item.label"
-          :name="item.id.toString()"
-          v-for="(item, index) in headerChildrenList"
-          :key="index"
-        ></TabPane>
-      </Tabs>
-      <form-create :option="option" :rule="rules" @submit="onSubmit" v-if="rules.length !== 0"></form-create>
-      <Spin size="large" fix v-if="spinShow"></Spin>
-    </Card>
+  <div>
+    <div class="i-layout-page-header header-title" v-if="!headerList.length">
+      <span class="ivu-page-header-title">{{ $route.meta.title }}</span>
+    </div>
+    <div class="article-manager">
+      <Card :bordered="false" dis-hover class="ivu-mt fromBox">
+        <Tabs v-model="currentTab" @on-click="changeTab" v-if="headerList.length">
+          <TabPane
+            :icon="item.icon"
+            :label="item.label"
+            :name="item.value.toString()"
+            v-for="(item, index) in headerList"
+            :key="index"
+          />
+        </Tabs>
+        <Tabs type="card" v-model="childrenId" v-if="headerChildrenList.length" @on-click="changeChildrenTab">
+          <TabPane
+            :label="item.label"
+            :name="item.id.toString()"
+            v-for="(item, index) in headerChildrenList"
+            :key="index"
+          ></TabPane>
+        </Tabs>
+        <form-create :option="option" :rule="rules" @submit="onSubmit" v-if="rules.length !== 0"></form-create>
+        <Spin size="large" fix v-if="spinShow"></Spin>
+      </Card>
+    </div>
   </div>
 </template>
 
@@ -200,17 +205,13 @@ export default {
         data: formData,
       })
         .then((res) => {
-          this.getAdminTitle();
           this.$Message.success(res.msg);
+          localStorage.setItem('ADMIN_TITLE', formData.site_name);
+          window.document.title = `${formData.site_name} - 系统设置`;
         })
         .catch((res) => {
           this.$Message.error(res.msg);
         });
-    },
-    getAdminTitle() {
-      getLogo().then((res) => {
-        localStorage.setItem('ADMIN_TITLE', res.data.site_name);
-      });
     },
   },
 };
@@ -222,6 +223,10 @@ export default {
 }
 
 .fromBox {
-  min-height: 600px;
+  min-height: calc(100vh - 200px);
+  margin-top: 0px !important ;
+}
+.article-manager /deep/ .ivu-form-item{
+  margin-bottom: 20px !important;
 }
 </style>

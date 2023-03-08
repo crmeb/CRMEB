@@ -10,15 +10,14 @@
 					vertical="true" circular="true">
 					<block v-for="(item,index) in itemNew" :key='index'>
 						<swiper-item catchtouchmove='catchTouchMove'>
-							<navigator :url='item.chiild[1].val' class='acea-row row-between-wrapper'
-								hover-class='none'>
+							<view @click="jump(item.chiild[1].val)" class='acea-row row-between-wrapper'>
 								<view class='text acea-row row-between-wrapper'>
 									<view class='newsTitle line1'
 										:style="'text-align:'+ (txtStyle==1?'center':txtStyle==2?'right':'left') +';color:'+txtColor+';'">
 										{{item.chiild[0].val}}</view>
 								</view>
 								<view class='iconfont icon-xiangyou'></view>
-							</navigator>
+							</view>
 						</swiper-item>
 					</block>
 				</swiper>
@@ -57,7 +56,18 @@
 		},
 		created() {},
 		mounted() {},
-		methods: {}
+		methods: {
+			jump(url){
+				uni.navigateTo({
+					url:url,
+					fail:()=>{
+						uni.switchTab({
+							url:url
+						})
+					}
+				})
+			}
+		}
 	}
 </script>
 

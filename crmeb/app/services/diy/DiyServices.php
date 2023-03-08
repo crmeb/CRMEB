@@ -147,11 +147,11 @@ class DiyServices extends BaseServices
     {
         if ($id) {
             return $this->cacheDriver()->remember('index_diy_' . $id, function () use ($id) {
-                return $this->dao->value(['id' => $id], 'version');
+                return $this->dao->getOne(['id' => $id], 'version,is_diy');
             });
         } else {
             return $this->cacheDriver()->remember('index_diy_default', function () {
-                return $this->dao->value(['status' => 1, 'is_del' => 0], 'version');
+                return $this->dao->getOne(['status' => 1, 'is_del' => 0], 'version,is_diy');
             });
         }
     }

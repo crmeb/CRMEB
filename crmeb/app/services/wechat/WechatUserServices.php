@@ -198,6 +198,10 @@ class WechatUserServices extends BaseServices
      * 授权后获取用户信息
      * @param $openid
      * @param $user_type
+     * @return array|\think\Model|null
+     * @author 吴汐
+     * @email 442384644@qq.com
+     * @date 2023/02/24
      */
     public function getAuthUserInfo($openid, $user_type)
     {
@@ -256,10 +260,14 @@ class WechatUserServices extends BaseServices
 
     /**
      * 微信授权成功后
-     * @param $event
+     * @param array $data
+     * @return array|mixed|\think\Model|null
      * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
      * @throws \think\db\exception\ModelNotFoundException
-     * @throws \think\exception\DbException
+     * @author 吴汐
+     * @email 442384644@qq.com
+     * @date 2023/02/24
      */
     public function wechatOauthAfter(array $data)
     {

@@ -1,11 +1,11 @@
 <template>
   <div>
-    <div class="i-layout-page-header">
-      <div class="i-layout-page-header">
+    <div class="i-layout-page-header header-title">
+      <div class="fl_header">
         <span>
-          <Button class="return" icon="ios-arrow-back" size="small" type="text" @click="$router.go(-1)">返回</Button>
+          <Button icon="ios-arrow-back" size="small" type="text" @click="$router.go(-1)">返回</Button>
         </span>
-        <Divider class="return" type="vertical" />
+        <Divider type="vertical" />
         <span class="ivu-page-header-title">{{ $route.meta.title }}</span>
       </div>
     </div>
@@ -309,7 +309,6 @@ export default {
   methods: {
     // 统计
     getStatistics(id) {
-      console.log(id);
       getcombinationStatistics(id).then((res) => {
         let arr = ['people_count', 'spread_count', 'start_count', 'success_count', 'pay_price', 'pay_count'];
         this.cardLists.map((i, index) => {
@@ -406,10 +405,10 @@ export default {
   margin-bottom: 6px;
 }
 
-.i-layout-page-header {
-  padding-left: 13px;
+/deep/ .ivu-tabs-nav-scroll{
+  background-color: #fff;
+  padding-top 5px
 }
-
 .tabBox_img {
   width: 36px;
   height: 36px;

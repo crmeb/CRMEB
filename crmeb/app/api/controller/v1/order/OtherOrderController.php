@@ -56,7 +56,7 @@ class OtherOrderController
         $uid = $request->uid();
         /** @var UserServices $userService */
         $userService = app()->make(UserServices::class);
-        $user_info = $userService->get($uid);
+        $user_info = $userService->get($uid, ['is_money_level']);
         //会员线下享受折扣
         if ($user_info->is_money_level > 0) {
             //看是否开启线下享受折扣
@@ -115,30 +115,20 @@ class OtherOrderController
 
         $info = compact('order_id');
 
-        $payType = get_pay_type($payType);
+        $payType = app()->make(OrderPayServices::class)->getPayType($payType);
+
+        //支付金额为0
+        if (bcsub((string)$orderInfo['pay_price'], '0', 2) <= 0) {
+            //创建订单jspay支付
+            $payPriceStatus = $OtherOrderServices->zeroYuanPayment($orderInfo);
+            if ($payPriceStatus)//0元支付成功
+                return app('json')->status('success', 410199, $info);
+            else
+                return app('json')->status('pay_error');
+        }
 
         if ($order_id) {
             switch ($payType) {
-                case PayServices::WEIXIN_PAY:
-                    if ($orderInfo['paid']) return app('json')->fail(410174);
-                    //支付金额为0
-                    if (bcsub((string)$orderInfo['pay_price'], '0', 2) <= 0) {
-                        //创建订单jspay支付
-                        $payPriceStatus = $OtherOrderServices->zeroYuanPayment($orderInfo, $uid);
-                        if ($payPriceStatus)//0元支付成功
-                            return app('json')->status('success', 410195, $info);
-                        else
-                            return app('json')->status('pay_error');
-                    } else {
-                        /** @var OrderPayServices $payServices */
-                        $payServices = app()->make(OrderPayServices::class);
-                        $info['jsConfig'] = $payServices->orderPay($orderInfo, $from);
-                        if ($from == 'weixinh5') {
-                            return app('json')->status('wechat_h5_pay', 410196, $info);
-                        } else {
-                            return app('json')->status('wechat_pay', 410196, $info);
-                        }
-                    }
                 case PayServices::YUE_PAY:
                     /** @var YuePayServices $yueServices */
                     $yueServices = app()->make(YuePayServices::class);
@@ -151,39 +141,12 @@ class OtherOrderController
                         else
                             return app('json')->status('pay_error', $pay);
                     }
-                case PayServices::ALIAPY_PAY:
-                    if (!$quitUrl && $from != 'routine' && !request()->isApp()) {
-                        return app('json')->status('pay_error', 410198, $info);
-                    }
-                    //支付金额为0
-                    if (bcsub((string)$orderInfo['pay_price'], '0', 2) <= 0) {
-                        //创建订单jspay支付
-                        $payPriceStatus = $OtherOrderServices->zeroYuanPayment($orderInfo);
-                        if ($payPriceStatus)//0元支付成功
-                            return app('json')->status('success', 410199, $info);
-                        else
-                            return app('json')->status('pay_error');
-                    } else {
-                        /** @var OrderPayServices $payServices */
-                        $payServices = app()->make(OrderPayServices::class);
-                        $info['jsConfig'] = $payServices->alipayOrder($orderInfo, $quitUrl, $from == 'routine');
-                        $payKey = md5($orderInfo['order_id']);
-                        CacheService::set($payKey, ['order_id' => $orderInfo['order_id'], 'other_pay_type' => true], 300);
-                        $info['pay_key'] = $payKey;
-                        return app('json')->status(PayServices::ALIAPY_PAY . '_pay', 410196, $info);
-                    }
                 case PayServices::OFFLINE_PAY:
                     return app('json')->status('success', 410196, $info);
-                case PayServices::ALLIN_PAY:
-                    /** @var OrderPayServices $payServices */
+                default:
                     $payServices = app()->make(OrderPayServices::class);
-                    $info['jsConfig'] = $payServices->orderPay($orderInfo, $payType, [
-                        'returl' => sys_config('site_url') . '/pages/index/index',
-                    ]);
-                    if ($request->isWechat()) {
-                        $info['pay_url'] = AllinPay::UNITODER_H5UNIONPAY;
-                    }
-                    return app('json')->status(PayServices::ALLIN_PAY . '_pay', 410196, $info);
+                    $payInfo = $payServices->beforePay($order->toArray(), $payType, ['quitUrl' => $quitUrl]);
+                    return app('json')->status($payInfo['status'], $payInfo['payInfo']);
             }
         } else return app('json')->fail(410200);
     }
@@ -194,8 +157,8 @@ class OtherOrderController
      */
     public function pay_type(Request $request)
     {
-        $payType['ali_pay_status'] = is_ali_pay();
-        $payType['pay_weixin_open'] = is_wecaht_pay();
+        $payType['ali_pay_status'] = sys_config('ali_pay_status', '0') != '0';
+        $payType['pay_weixin_open'] = sys_config('pay_weixin_open', '0') != '0';
         $payType['site_name'] = sys_config('site_name');
         $payType['now_money'] = $request->user('now_money');
         $payType['offline_pay_status'] = true;

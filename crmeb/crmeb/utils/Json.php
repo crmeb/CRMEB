@@ -68,6 +68,6 @@ class Json
             $result = $msg;
             $msg = 'success';
         }
-        return app('json')->success($msg, compact('status', 'result'));
+        return $this->success($msg, compact('status', 'result'));
     }
 }

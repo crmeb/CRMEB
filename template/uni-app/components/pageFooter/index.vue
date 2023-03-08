@@ -59,7 +59,6 @@
 		watch: {
 			activityTab: {
 				handler(nVal, oVal) {
-					console.log(nVal, 'nval')
 				},
 				deep: true
 			},
@@ -220,9 +219,6 @@
 
 		.foot-item .txt {
 			font-size: 24rpx;
-
-
-
 		}
 	}
 </style>

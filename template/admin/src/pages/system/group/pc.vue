@@ -1,22 +1,6 @@
 <template>
   <div>
-    <!-- <div class="i-layout-page-header">
-			<PageHeader
-					class="product_tabs"
-					:title="$route.meta.title"
-					hidden-breadcrumb
-			>
-				<div slot="title">
-					<div style="float: left;">
-						<span v-text="$route.meta.title" class="mr20"></span>
-					</div>
-					<div style="float: right;">
-						<Button class="bnt" type="primary" @click="save">保存</Button>
-					</div><strong></strong>
-				</div>
-			</PageHeader>
-		</div> -->
-    <div class="i-layout-page-header">
+    <div class="i-layout-page-header header-title">
       <span class="ivu-page-header-title mr20">{{ $route.meta.title }}</span>
       <div>
         <div style="float: right">
@@ -25,8 +9,8 @@
       </div>
     </div>
     <Card :bordered="false" dis-hover class="ivu-mt">
-      <Row class="ivu-mt box-wrapper">
-        <Col :xs="24" :sm="24" :md="6" :lg="3" class="left-wrapper">
+      <Row class="box-wrapper">
+        <Col :xs="24" :sm="24" :md="6" :lg="3">
           <div class="left_box">
             <div class="left_cont" :class="pageId == 1 ? 'on' : ''" @click="menu(1)">网站LOGO</div>
             <div class="left_cont" :class="pageId == 'pc_home_banner' ? 'on' : ''" @click="menu('pc_home_banner')">
@@ -303,7 +287,7 @@ export default {
         autoHeightEnabled: false, // 编辑器不自动被内容撑高
         initialFrameHeight: 500, // 初始容器高度
         initialFrameWidth: '100%', // 初始容器宽度
-        UEDITOR_HOME_URL: '/admin/UEditor/',
+        UEDITOR_HOME_URL: '/UEditor/',
         serverUrl: '',
       },
       activeIndexs: 0,
@@ -493,7 +477,9 @@ export default {
 /deep/ .ivu-menu-vertical.ivu-menu-light:after {
   display: none;
 }
-
+.ivu-mt {
+  min-height: calc(100vh - 280px);
+}
 .nofonts {
   text-align: center;
   line-height: 137px;
@@ -636,12 +622,6 @@ export default {
     cursor: pointer;
     padding: 14px 24px;
   }
-}
-
-.left-wrapper {
-  // height 904px
-  background: #fff;
-  border-right: 1px solid #dcdee2;
 }
 
 .on {
@@ -868,9 +848,6 @@ export default {
 }
 
 /deep/.i-layout-page-header {
-  height: 66px;
-  background-color: #fff;
-  border-bottom: 1px solid #e8eaec;
   display: flex;
   align-items: center;
   justify-content: space-between;

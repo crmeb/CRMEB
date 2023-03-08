@@ -43,15 +43,25 @@
 					</view>
 					<view class='item acea-row row-between-wrapper'>
 						<view>{{$t(`昵称`)}}</view>
-						<view class='input'><input type='nickname' name='nickname' :maxlength="16" :value='userInfo.nickname'></input>
+						<view class='input'><input type='nickname' name='nickname' :maxlength="16"
+								:value='userInfo.nickname'></input>
 						</view>
 					</view>
 					<view class='item acea-row row-between-wrapper'>
 						<view>{{$t(`手机号码`)}}</view>
+						<!-- #ifdef MP -->
+						<button class="input" open-type="getPhoneNumber" @getphonenumber="getphonenumber"
+							v-if="!userInfo.phone">{{$t(`点击绑定手机号`)}}
+							<text class="iconfont icon-xiangyou"></text>
+						</button>
+						<!-- #endif -->
+						<!-- #ifndef MP -->
 						<navigator url="/pages/users/user_phone/index" hover-class="none" class="input"
 							v-if="!userInfo.phone">
 							{{$t(`点击绑定手机号`)}}<text class="iconfont icon-xiangyou"></text>
 						</navigator>
+						<!-- #endif -->
+
 						<view class='input acea-row row-between-wrapper' v-else>
 							<input type='text' disabled='true' name='phone' :value='userInfo.phone' class='id'></input>
 							<text class='iconfont icon-suozi'></text>
@@ -160,7 +170,8 @@
 		userEdit,
 		getLogout,
 		getLangList,
-		getLangJson
+		getLangJson,
+		mpBindingPhone
 	} from '@/api/user.js';
 	import {
 		switchH5Login,
@@ -174,6 +185,7 @@
 	import dayjs from "@/plugin/dayjs/dayjs.min.js";
 	// #ifdef MP
 	import authorize from '@/components/Authorize';
+	import Routine from '@/libs/routine';
 	// #endif
 	import Cache from '@/utils/cache';
 	import colors from '@/mixins/color.js';
@@ -244,6 +256,31 @@
 					title: this.$t(`当前为最新版本`)
 				});
 			},
+			getphonenumber(e) {
+				Routine.getCode()
+					.then(code => {
+						let data = {
+							code,
+							iv: e.detail.iv,
+							encryptedData: e.detail.encryptedData,
+						}
+						mpBindingPhone(data).then(res => {
+							this.getUserInfo()
+							this.$util.Tips({
+								title: res.msg,
+								icon: 'success'
+							});
+						}).catch(err => {
+							return this.$util.Tips({
+								title: err
+							});
+						})
+					})
+					.catch(error => {
+						uni.hideLoading();
+					});
+
+			},
 			setLang() {
 				this.array.map((item, i) => {
 					if (this.$i18n.locale == item.value) {
@@ -261,7 +298,6 @@
 					this.$nextTick(e => {
 						this.$i18n.locale = this.array[this.setIndex].value;
 					})
-					Cache.set('localeSet', true, 600)
 				})
 			},
 
@@ -640,7 +676,9 @@
 		max-width: 400rpx;
 		text-align: right;
 		color: #868686;
-		.icon-suozi{
+		font-size: 28rpx;
+
+		.icon-suozi {
 			margin-left: 10rpx;
 		}
 	}

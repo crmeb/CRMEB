@@ -342,9 +342,17 @@ export function rechargeRoutine(data) {
 }
 /*
  * 公众号充值
- * */
+ * 
+ */
 export function rechargeWechat(data) {
 	return request.post("recharge/wechat", data);
+}
+/*
+ * 公众号充值
+ * 
+ */
+export function recharge(data) {
+	return request.post("recharge/recharge", data);
 }
 /**
  * 获取默认地址
@@ -688,4 +696,23 @@ export function getLangJson() {
 	return request.get('get_lang_json', {}, {
 		noAuth: true
 	})
+}
+
+/**
+ * 获取多语言是否切换
+ */
+
+export function getLangVersion() {
+	return request.get('lang_version', {}, {
+		noAuth: true
+	})
+}
+
+/**
+ * 
+ * 小程序绑定手机号
+ * @param object data
+ */
+export function mpBindingPhone(data) {
+	return request.post('v2/routine/binding_phone', data);
 }

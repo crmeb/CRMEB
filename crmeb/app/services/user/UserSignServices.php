@@ -93,7 +93,7 @@ class UserSignServices extends BaseServices
             //检测会员等级
             try {
                 //用户升级事件
-                event('user.userLevel', [$uid]);
+                event('UserLevelListener', [$uid]);
             } catch (\Throwable $e) {
                 Log::error('会员等级升级失败,失败原因:' . $e->getMessage());
             }

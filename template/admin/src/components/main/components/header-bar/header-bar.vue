@@ -1,26 +1,23 @@
 <template>
   <div class="header-bar">
-    <sider-trigger :collapsed="collapsed" @on-change="handleCollpasedChange"></sider-trigger>
-    <span class="i-layout-header-trigger" @click="handleReload">
-      <Icon type="ios-refresh" />
-    </span>
-    <custom-bread-crumb
-      show-icon
-      style="margin-left: 30px"
-      :list="breadCrumbList"
-      :listLast="crumbPast"
-      :collapsed="collapsed"
-    ></custom-bread-crumb>
+    <div class="header-l">
+      <sider-trigger @on-change="handleCollpasedChange"></sider-trigger>
+      <!-- <span class="i-layout-header-trigger" @click="handleReload">
+      <Icon type="ios-refresh" color='#fff' />
+    </span> -->
+      <custom-bread-crumb
+        show-icon
+        :list="breadCrumbList"
+        :listLast="crumbPast"
+      ></custom-bread-crumb>
+    </div>
+
     <div class="custom-content-con">
       <slot></slot>
     </div>
   </div>
 </template>
 <style scoped lang="less">
-.ivu-icon-ios-refresh {
-  color: #999 !important;
-  font-size: 23px;
-}
 .i-layout-header-trigger {
   position: absolute;
   margin: 0 10px;
@@ -35,7 +32,7 @@
 import siderTrigger from './sider-trigger';
 import customBreadCrumb from './custom-bread-crumb';
 import { R } from '@/libs/util';
-
+import { mapState } from 'vuex';
 import './header-bar.less';
 export default {
   name: 'HeaderBar',
@@ -44,9 +41,10 @@ export default {
     customBreadCrumb,
   },
   props: {
-    collapsed: Boolean,
+    // collapsed: Boolean,
   },
   computed: {
+    ...mapState('layout', ['menuCollapse']),
     breadCrumbList() {
       let openMenus = this.$store.state.menus.openMenus;
       let menuList = this.$store.state.menus.menusName;
@@ -62,7 +60,6 @@ export default {
         });
       }
       return selectMenu;
-      // return this.$store.state.app.breadCrumbList
     },
     crumbPast() {
       let that = this;

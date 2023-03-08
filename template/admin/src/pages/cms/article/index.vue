@@ -34,7 +34,7 @@
         </Row>
         <Row type="flex">
           <Col v-bind="grid">
-            <router-link :to="'/admin/cms/article/add_article'" v-auth="['cms-article-creat']"
+            <router-link :to="$routeProStr + '/cms/article/add_article'" v-auth="['cms-article-creat']"
               ><Button type="primary" class="bnt" icon="md-add">添加文章</Button></router-link
             >
           </Col>
@@ -282,7 +282,7 @@ export default {
     },
     // 编辑
     edit(row) {
-      this.$router.push({ path: '/admin/cms/article/add_article/' + row.id });
+      this.$router.push({ path: this.$routeProStr + '/cms/article/add_article/' + row.id });
     },
     // 关联
     artRelation(row, tit, num) {

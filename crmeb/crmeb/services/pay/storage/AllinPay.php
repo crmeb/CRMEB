@@ -15,12 +15,14 @@ namespace crmeb\services\pay\storage;
 
 
 use app\services\pay\PayNotifyServices;
+use app\services\pay\PayServices;
 use crmeb\exceptions\PayException;
 use crmeb\services\pay\BasePay;
 use crmeb\services\pay\PayInterface;
 use crmeb\services\pay\extend\allinpay\AllinPay as AllinPayService;
 use crmeb\utils\Hook;
 use EasyWeChat\Payment\Order;
+use think\facade\Event;
 
 /**
  * 通联支付
@@ -74,6 +76,13 @@ class AllinPay extends BasePay implements PayInterface
     {
         $this->authSetPayType();
 
+        $options['returl'] = sys_config('site_url') . '/pages/index/index';
+        if ($options['returl']) {
+            $options['returl'] = str_replace('http://', 'https://', $options['returl']);
+        }
+        $options['appid'] = sys_config('routine_appId');
+
+
         $notifyUrl = trim(sys_config('site_url')) . '/api/pay/notify/allin' . $attach;
         $this->pay->setNotifyUrl($notifyUrl);
 
@@ -86,6 +95,8 @@ class AllinPay extends BasePay implements PayInterface
                 } else {
                     return $this->pay->h5Pay($totalFee, $orderId, $body, $options['returl'] ?? '', $attach);
                 }
+            case Order::NATIVE:
+                return $this->pay->pcPay($totalFee, $orderId, $body, $attach, !empty($options['wechat']));
             default:
                 throw new PayException('通联支付:支付类型错误或者暂不支持此环境下支付');
         }
@@ -125,14 +136,18 @@ class AllinPay extends BasePay implements PayInterface
     public function handleNotify(string $attach = '')
     {
         $attach = str_replace('allin', '', $attach);
+
         return $this->pay->handleNotify(function ($notify) use ($attach) {
+
             if (isset($notify['cusorderid'])) {
-                $notify['trade_no'] = $notify['trxid'];
-                $notify['out_trade_no'] = $notify['cusorderid'];
-                if (($count = strpos($notify['cusorderid'], '_')) !== false) {
-                    $notify['out_trade_no'] = substr($notify['cusorderid'], $count + 1);
-                }
-                return (new Hook(PayNotifyServices::class, 'allin'))->listen($attach, $notify['out_trade_no'], $notify['trade_no']);
+
+                $data = [
+                    'attach' => $attach,
+                    'out_trade_no' => $notify['cusorderid'],
+                    'transaction_id' => $notify['trxid']
+                ];
+
+                return Event::until('NotifyListener', [$data, PayServices::ALLIN_PAY]);
             }
             return false;
         });

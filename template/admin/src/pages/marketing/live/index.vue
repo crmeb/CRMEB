@@ -211,7 +211,7 @@ export default {
     // 添加直播间
     menusAdd() {
       this.$router.push({
-        path: '/admin/marketing/live/add_live_room',
+        path: this.$routeProStr + '/marketing/live/add_live_room',
       });
     },
     // 分页

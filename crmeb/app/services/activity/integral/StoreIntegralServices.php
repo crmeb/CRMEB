@@ -87,7 +87,7 @@ class StoreIntegralServices extends BaseServices
                 $res = $this->dao->update($id, $data);
                 $storeDescriptionServices->saveDescription((int)$id, $description, 4);
                 $skuList = $storeProductServices->validateProductAttr($items, $detail, (int)$id, 4);
-                $valueGroup = $storeProductAttrServices->saveProductAttr($skuList, (int)$id, 4);
+                $storeProductAttrServices->saveProductAttr($skuList, (int)$id, 4);
                 if (!$res) throw new AdminException(100007);
             } else {
                 if (!$storeProductServices->getOne(['is_show' => 1, 'is_del' => 0, 'id' => $data['product_id']])) {
@@ -97,15 +97,8 @@ class StoreIntegralServices extends BaseServices
                 $res = $this->dao->save($data);
                 $storeDescriptionServices->saveDescription((int)$res->id, $description, 4);
                 $skuList = $storeProductServices->validateProductAttr($items, $detail, (int)$res->id, 4);
-                $valueGroup = $storeProductAttrServices->saveProductAttr($skuList, (int)$res->id, 4);
+                $storeProductAttrServices->saveProductAttr($skuList, (int)$res->id, 4);
                 if (!$res) throw new AdminException(100022);
-            }
-            $res = true;
-            foreach ($valueGroup->toArray() as $item) {
-                $res = $res && CacheService::setStock($item['unique'], (int)$item['quota_show'], 4);
-            }
-            if (!$res) {
-                throw new AdminException(400092);
             }
         });
     }
@@ -391,9 +384,6 @@ class StoreIntegralServices extends BaseServices
         }
         $product_stock = $attrValueServices->value(['product_id' => $StoreIntegralInfo['product_id'], 'suk' => $res['suk'], 'type' => 0], 'stock');
         if ($product_stock < $num) {
-            throw new ApiException(410297, ['num' => $num]);
-        }
-        if (!CacheService::checkStock($unique, $num, 4)) {
             throw new ApiException(410297, ['num' => $num]);
         }
         return $unique;

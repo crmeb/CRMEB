@@ -1,12 +1,12 @@
 <template>
   <div>
-    <div class="i-layout-page-header header_top">
-      <div class="i-layout-page-header fl_header">
-        <router-link :to="{ path: '/admin/marketing/live/live_room' }"
-          ><Button icon="ios-arrow-back" size="small" type="text">返回</Button></router-link
-        >
-        <Divider type="vertical" />
-        <span class="ivu-page-header-title" style="padding: 0">{{ $route.meta.title }}</span>
+    <div class="i-layout-page-header header-title">
+      <div class="fl_header">
+        <span>
+          <Button icon="ios-arrow-back" size="small" type="text" @click="$router.go(-1)">返回</Button>
+        </span>
+        <Divider type="vertical"/>
+        <span class="ivu-page-header-title">{{ $route.meta.title }}</span>
       </div>
     </div>
     <Card :bordered="false" dis-hover class="ivu-mt">
@@ -384,7 +384,7 @@ export default {
           this.$Message.success('添加成功');
           setTimeout(() => {
             this.loading = false;
-            this.$router.push({ path: '/admin/marketing/live/live_room' });
+            this.$router.push({ path: this.$routeProStr + '/marketing/live/live_room' });
           }, 500);
         })
         .catch((error) => {

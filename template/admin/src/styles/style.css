@@ -3,6 +3,10 @@
 .ivu-date-picker .ivu-select-dropdown {
   /* top: 33px!important; */
 }
+.vxe-tree-cell,
+.vxe-cell {
+  font-size: 12px;
+}
 .plusColor {
   color: #e83323;
 }
@@ -186,6 +190,7 @@ body {
 
 .ivu-layout-content {
   overflow-x: hidden !important;
+  height: 100%;
 }
 
 .page {
@@ -203,9 +208,12 @@ body {
 }
 
 /*表格公共样式*/
-.ivu-table-header table {
-  border-top: 1px #e8eaec dashed !important;
+.ivu-table-header .ivu-table-cell {
+  color: #999;
+  font-size: 13px;
+  padding: 10px 5px !important;
 }
+
 .ivu-form .ivu-form-item-label,
 .ivu-radio-group-button .ivu-radio-wrapper,
 .ivu-table {
@@ -213,7 +221,7 @@ body {
 }
 
 .ivu-table-cell {
-  padding: 6px 18px !important;
+  padding: 10px 5px !important;
 }
 
 .ivu-table th {
@@ -225,7 +233,7 @@ body {
 }
 
 .ivu-icon-ios-refresh {
-  color: #1890ff !important;
+  color: #1890ff;
 }
 
 .product_tabs .ivu-tabs-bar {
@@ -390,6 +398,7 @@ body {
 .fl_header {
   display: flex;
   align-items: center;
+  padding-left: 0px !important;
 }
 .header_top {
   padding-bottom: 16px !important;
@@ -436,11 +445,9 @@ body {
 /*作用于运费模板组件*/
 .Modals .ivu-table .ivu-table-header table {
   border-top: 0 !important;
+  box-shadow: -2px 2px 6px -2px rgba(0, 0, 0, 0.1) !important;
 }
 
-.ivu-table-cell {
-  padding: 10px 5px !important;
-}
 .ivu-table-cell-with-expand {
   line-height: 31px !important;
 }
@@ -458,8 +465,9 @@ body {
   text-align: center !important;
 }
 .ivu-table-fixed-right {
-  box-shadow: -2px 0 6px -2px rgba(0, 0, 0, 0.1) !important;
-  top: 1px !important;
+  margin-top: 1px;
+  color: #999;
+  box-shadow: -2px 2px 6px -2px rgba(0, 0, 0, 0.1) !important;
 }
 .ivu-table-fixed-right tr:last-child(1) td {
   border-bottom: 0;
@@ -499,7 +507,6 @@ body {
 .ivu-mb-16 {
   margin-bottom: 16px !important;
 }
-.ivu-mt,
 .ivu-mt-16 {
   margin-top: 16px !important;
 }
@@ -507,21 +514,42 @@ body {
   border: 0;
 }
 .i-layout-page-header {
-  margin: 0 -18px;
+  margin: 0;
   /* display: none; */
   background-color: #fff;
   padding: 7px 32px 0 32px;
+}
+.header-title {
+  padding: 10px 20px;
+  border-bottom: 1px solid #f2f2f2;
+  margin-bottom: 10px;
+  border-radius: 5px;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  -webkit-box-pack: justify;
+  -ms-flex-pack: justify;
+  justify-content: space-between;
 }
 .ivu-page-header-title {
   display: inline-block;
   color: #17233d;
   font-weight: 500;
   font-size: 20px;
-  padding-bottom: 16px;
-  margin-left: 10px;
 }
 .main .content-wrapper {
-  padding-top: 0;
+  padding: 16px;
+  height: calc(100% - 80px);
+  overflow: auto;
+  background-color: #f5f7f9;
+}
+.left-wrapper {
+  height: calc(100vh - 120px);
+  background: #fff;
+  border-right: 1px solid #f2f2f2;
 }
 .ivu-tabs-bar {
   margin-bottom: 0;
@@ -682,6 +710,9 @@ body {
 /* form-create tips 样式 */
 .tips-info {
   line-height: 18px;
-  margin-top: 8px;
+  margin-top: 3px;
   color: rgb(153, 153, 153);
+}
+.pt10 {
+  padding-top: 10px;
 }

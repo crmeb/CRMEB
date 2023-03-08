@@ -10,9 +10,10 @@ Route::miss(function () {
         $appRequest = str_replace('//', '/', $appRequest);
         $appName = explode('/', $appRequest)[0] ?? '';
     }
+
     switch (strtolower($appName)) {
-        case 'admin':
-            return view(app()->getRootPath() . 'public' . DS . 'admin' . DS . 'index.html');
+        case config('app.admin_prefix','admin'):
+            return view(app()->getRootPath() . 'public'  . DS . 'system.html');
         case 'home':
             if (request()->isMobile()) {
                 return redirect(app()->route->buildUrl('/'));
@@ -20,7 +21,7 @@ Route::miss(function () {
                 return view(app()->getRootPath() . 'public' . DS . 'home' . DS . 'index.html');
             }
         case 'kefu':
-            return view(app()->getRootPath() . 'public' . DS . 'admin' . DS . 'index.html');
+            return view(app()->getRootPath() . 'public'  . DS . 'system.html');
         case 'pages':
             return view(app()->getRootPath() . 'public' .DS . 'index.html');
         default:

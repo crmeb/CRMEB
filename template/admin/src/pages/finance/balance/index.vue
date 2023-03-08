@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Card :bordered="false" dis-hover class="ivu-mt">
+    <Card :bordered="false" dis-hover class="ivu-mt mb10">
       <Form
         ref="formValidate"
         :model="formValidate"
@@ -293,10 +293,6 @@ export default {
 <style scoped lang="stylus">
 .ivu-mt .type .item {
   margin: 3px 0;
-}
-
-.tabform {
-  margin-bottom: 10px;
 }
 
 .Refresh {

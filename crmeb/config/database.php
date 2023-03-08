@@ -76,7 +76,7 @@ return [
         //每页截取key
         'limitKey' => 'limit',
         //每页截取最大值
-        'limitMax' => 50,
+        'limitMax' => 100,
         //默认条数
         'defaultLimit' => 10,
     ]

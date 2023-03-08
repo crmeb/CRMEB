@@ -61,7 +61,6 @@
         :columns="thead"
         :data="tbody"
         ref="table"
-        class="mt25"
         :loading="loading"
         highlight-row
         no-userFrom-text="暂无数据"

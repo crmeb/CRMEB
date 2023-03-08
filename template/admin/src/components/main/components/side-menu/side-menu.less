@@ -1,18 +1,24 @@
+@side-width: 80px;
+@side-height: 50px;
+@side-child-width: 160px;
+@child-menu-height: 50px;
+@side-dark-theme: #282c34;
+@side-dark-theme-font-color: #fff;
 .side-menu-wrapper {
   user-select: none;
+  height: 100%;
   .menu-collapsed {
-    padding-top: 10px;
-
+    height: 100%;
+    background-color: @side-dark-theme;
+    color: #fff !important;
     .ivu-dropdown {
       width: 100%;
-      margin-bottom: 10px;
       .ivu-dropdown-rel a {
         width: 100%;
       }
     }
     .ivu-tooltip {
       width: 100%;
-      margin-bottom: 10px;
 
       .ivu-tooltip-rel {
         width: 100%;
@@ -29,13 +35,17 @@
     }
   }
   a.drop-menu-a {
-    display: inline-block;
-    padding: 6px 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: @side-height;
+    line-height: @side-height;
     width: 100%;
     text-align: center;
-    color: #495060;
+    color: @side-dark-theme-font-color;
   }
 }
+
 .menu-title {
-  padding-left: 6px;
+  // padding-left: 6px;
 }

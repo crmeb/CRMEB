@@ -85,8 +85,8 @@ class PublicController
     {
         /** @var DiyServices $diyService */
         $diyService = app()->make(DiyServices::class);
-        $version = $diyService->getDiyVersion((int)$id);
-        return app('json')->success(['version' => $version ?: '']);
+        $data = $diyService->getDiyVersion((int)$id);
+        return app('json')->success(['version' => $data['version'] ?: '', 'is_diy' => $data['is_diy']]);
     }
 
     /**

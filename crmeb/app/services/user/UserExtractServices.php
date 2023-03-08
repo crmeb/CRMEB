@@ -23,7 +23,10 @@ use crmeb\exceptions\ApiException;
 use crmeb\services\FormBuilder as Form;
 use crmeb\services\app\WechatService;
 use crmeb\services\pay\Pay;
+use crmeb\services\wechat\Payment;
 use crmeb\services\workerman\ChannelService;
+use EasyWeChat\Payment\Order;
+use think\exception\ValidateException;
 use think\facade\Route as Url;
 
 /**
@@ -139,7 +142,7 @@ class UserExtractServices extends BaseServices
             }
         });
 
-        event('notice.notice', [['uid' => $uid, 'userType' => strtolower($user['user_type']), 'extract_number' => $extract_number, 'nickname' => $user['nickname'], 'message' => $message], 'user_balance_change']);
+        event('NoticeListener', [['uid' => $uid, 'userType' => strtolower($user['user_type']), 'extract_number' => $extract_number, 'nickname' => $user['nickname'], 'message' => $message], 'user_balance_change']);
         return true;
     }
 
@@ -161,7 +164,7 @@ class UserExtractServices extends BaseServices
         $userType = $userServices->value(['uid' => $userExtract['uid']], 'user_type');
         $nickname = $userServices->value(['uid' => $userExtract['uid']], 'nickname');
         $phone = $userServices->value(['uid' => $userExtract['uid']], 'phone');
-        event('notice.notice', [['uid' => $userExtract['uid'], 'userType' => strtolower($userType), 'extractNumber' => $extractNumber, 'nickname' => $nickname], 'user_extract']);
+        event('NoticeListener', [['uid' => $userExtract['uid'], 'userType' => strtolower($userType), 'extractNumber' => $extractNumber, 'nickname' => $nickname], 'user_extract']);
 
         if (!$this->dao->update($id, ['status' => 1])) {
             throw new AdminException(100007);
@@ -182,12 +185,24 @@ class UserExtractServices extends BaseServices
         }
 
         $insertData = ['order_id' => $order_id, 'nickname' => $nickname, 'phone' => $phone];
-        
+
         //自动提现到零钱
         if ($userExtract['extract_type'] == 'weixin' && sys_config('brokerage_type', 0)) {
 
             $openid = $wechatServices->uidToOpenid($userExtract['uid'], 'wechat');
-            if (!$openid) $openid = $wechatServices->uidToOpenid($userExtract['uid'], 'routine');
+            $type = Order::JSAPI;
+            if (!$openid) {
+                $openid = $wechatServices->uidToOpenid($userExtract['uid'], 'routine');
+                $type = 'mini';
+            }
+            if (!$openid) {
+                $openid = $wechatServices->uidToOpenid((int)$userExtract['uid'], 'app');
+                $type = Order::APP;
+            }
+
+            if (!$openid) {
+                throw new ValidateException('该用户暂不支持企业付款到零钱，请手动转账');
+            }
 
             /** @var StoreOrderCreateServices $services */
             $services = app()->make(StoreOrderCreateServices::class);
@@ -197,6 +212,7 @@ class UserExtractServices extends BaseServices
             if (sys_config('pay_wechat_type')) {
                 $pay = new Pay('v3_wechat_pay');
                 $res = $pay->merchantPay($openid, $insertData['order_id'], $userExtract['extract_price'], [
+                    'type' => $type,
                     'batch_name' => '提现佣金到零钱',
                     'batch_remark' => '您于' . date('Y-m-d H:i:s') . '提现.' . $userExtract['extract_price'] . '元'
                 ]);
@@ -362,7 +378,7 @@ class UserExtractServices extends BaseServices
     {
         /** @var UserServices $userService */
         $userService = app()->make(UserServices::class);
-        $user = $userService->getUserInfo($uid);
+        $user = $userService->getUserInfo($uid, 'brokerage_price,uid');
         if (!$user) {
             throw new ApiException(100026);
         }
@@ -495,7 +511,7 @@ class UserExtractServices extends BaseServices
         $systemAdmin = app()->make(SystemAdminServices::class);
         $systemAdmin->adminNewPush();
         //消息
-        event('notice.notice', [['nickname' => $user['nickname'], 'money' => $data['money']], 'kefu_send_extract_application']);
+        event('NoticeListener', [['nickname' => $user['nickname'], 'money' => $data['money']], 'kefu_send_extract_application']);
 
         return true;
     }

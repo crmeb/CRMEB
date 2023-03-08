@@ -1,8 +1,8 @@
 <template>
   <div class="diy-page">
-    <div class="i-layout-page-header header_top">
-      <div class="i-layout-page-header fl_header">
-        <router-link :to="{ path: '/admin/setting/pages/devise' }"
+    <div class="i-layout-page-header header-title">
+      <div class="fl_header">
+        <router-link :to="{ path: $routeProStr + '/setting/pages/devise' }"
           ><Button icon="ios-arrow-back" size="small" type="text">返回</Button></router-link
         >
         <Divider type="vertical" />
@@ -19,7 +19,7 @@
     </div>
 
     <Card :bordered="false" dis-hover class="ivu-mt" style="margin: 0 10px">
-      <div class="diy-wrapper" :style="'height:' + (clientHeight - 150) + 'px;'">
+      <div class="diy-wrapper">
         <!-- 左侧 -->
         <div class="left">
           <div class="title-bar">
@@ -33,7 +33,7 @@
               {{ item.title }}
             </div>
           </div>
-          <div class="wrapper" :style="'height:' + (clientHeight - 150) + 'px;'" v-if="tabCur == 0">
+          <div class="wrapper"  v-if="tabCur == 0">
             <div v-for="(item, index) in leftMenu" :key="index">
               <div class="tips" @click="item.isOpen = !item.isOpen">
                 {{ item.title }}
@@ -120,9 +120,7 @@
                       (colorTxt ? colorPickerTxt : '') +
                       ';background-image: url(' +
                       (picTxt ? picUrlTxt : '') +
-                      ');height:' +
-                      rollHeight +
-                      'px;'
+                      ');height:calc(100vh - 200px)'
                     "
                     ref="imgContainer"
                   >
@@ -351,12 +349,12 @@ export default {
       } else {
         this.showTitle();
       }
-      this.clientHeight = `${document.documentElement.clientHeight}` - 65.81; //获取浏览器可视区域高度
+      this.clientHeight = `${document.documentElement.clientHeight}`; //获取浏览器可视区域高度
       let H = `${document.documentElement.clientHeight}` - 180;
       this.rollHeight = H > 650 ? 650 : H;
       let that = this;
       window.onresize = function () {
-        that.clientHeight = `${document.documentElement.clientHeight}` - 65.81;
+        that.clientHeight = `${document.documentElement.clientHeight}`;
         let H = `${document.documentElement.clientHeight}` - 180;
         that.rollHeight = H > 650 ? 650 : H;
       };
@@ -883,6 +881,7 @@ export default {
 </script>
 
 <style scoped lang="stylus">
+
 .ysize {
   background-size: 100%;
 }
@@ -902,7 +901,9 @@ export default {
 .wrapper-con {
   /* min-width 700px; */
 }
-
+.main .content-wrapper{
+  padding: 0 !important;
+}
 .defaultData {
   /* margin-left 20px; */
   cursor: pointer;
@@ -988,6 +989,7 @@ export default {
 .ivu-mt {
   display: flex;
   justify-content: space-between;
+  margin-bottom: 10px;
 }
 
 .iconfont-diy {
@@ -1000,9 +1002,7 @@ export default {
   min-width: 1100px;
   display: flex;
   justify-content: space-between;
-  margin-bottom: 20px;
-
-  /* height: 84.5vh; */
+  height: 100%;
   .left {
     min-width: 300px;
     max-width: 300px;
@@ -1363,6 +1363,9 @@ export default {
 
 /deep/ .ivu-card-body {
   width: 100%;
+  padding:0;
+  height: calc(100vh - 73px);
+
 }
 
 .rbtn {

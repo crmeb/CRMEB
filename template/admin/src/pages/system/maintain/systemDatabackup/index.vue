@@ -1,9 +1,9 @@
 <template>
   <div>
-    <Card :bordered="false" dis-hover class="ivu-mt tableBox">
-      <div slot="title">
-        <span class="ivu-pl-8">数据库备份记录</span>
-      </div>
+    <div class="i-layout-page-header header-title">
+      <span class="ivu-page-header-title">{{ $route.meta.title }}</span>
+    </div>
+    <Card :bordered="false" dis-hover class="ivu-mt">
       <Table
         ref="selection"
         :columns="columns4"

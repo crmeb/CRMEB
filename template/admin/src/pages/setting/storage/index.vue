@@ -1,6 +1,6 @@
 <template>
-  <div class="message">
-    <div class="table-box" style="padding-bottom: 0">
+  <div >
+    <div class="message">
       <Card :bordered="false" dis-hover class="">
         <div class="mb20">
           <Tabs v-model="currentTab" @on-click="changeTab">
@@ -42,7 +42,7 @@
         </template>
       </Card>
     </div>
-    <div class="table-box" style="padding-top: 10px" v-if="currentTab == 1">
+    <div class="pt10" v-if="currentTab == 1">
       <Card :bordered="false" dis-hover class="ivu-mt">
         <Row type="flex">
           <Col span="24">
@@ -322,8 +322,8 @@
       </Card>
     </div>
     <!-- 缩略图配置 -->
-    <div class="table-box" style="padding-top: 10px" v-else-if="currentTab == 5"></div>
-    <div class="table-box" style="padding-top: 10px" v-else>
+    <div class="pt10" v-else-if="currentTab == 5"></div>
+    <div class="pt10" v-else>
       <Card :bordered="false" dis-hover class="ivu-mt">
         <Row type="flex" class="mb20">
           <Col span="24">

@@ -1,11 +1,11 @@
 <template>
   <div>
-    <div class="i-layout-page-header header_top">
-      <div class="i-layout-page-header fl_header">
-        <router-link :to="{ path: '/admin/system/config/system_group/index' }"
+    <div class="i-layout-page-header header-title">
+      <div class="fl_header">
+        <router-link v-if="$route.params.id != 49" :to="{ path: $routeProStr + '/system/config/system_group/index' }"
           ><Button icon="ios-arrow-back" size="small" type="text">返回</Button></router-link
         >
-        <Divider type="vertical" />
+        <Divider v-if="$route.params.id != 49" type="vertical" />
         <span class="ivu-page-header-title mr20" style="padding: 0" v-text="$route.meta.title"></span>
       </div>
     </div>
@@ -27,70 +27,68 @@
           </Menu>
         </Col>
         <Col :xs="24" :sm="24" :md="$route.params.id ? 24 : 17" :lg="$route.params.id ? 24 : 20" ref="rightBox">
-          <Card :bordered="false" dis-hover>
-            <Form
-              ref="formValidate"
-              :model="formValidate"
-              :label-width="labelWidth"
-              :label-position="labelPosition"
-              @submit.native.prevent
-            >
-              <Row type="flex" :gutter="24">
-                <Col v-bind="grid">
-                  <FormItem label="是否显示：">
-                    <Select v-model="formValidate.status" placeholder="请选择" clearable @on-change="userSearchs">
-                      <Option value="1">显示</Option>
-                      <Option value="0">不显示</Option>
-                    </Select>
-                  </FormItem>
-                </Col>
-              </Row>
-              <Row type="flex">
-                <Col v-bind="grid">
-                  <Button type="primary" icon="md-add" @click="groupAdd('添加数据')" class="mr20">添加数据</Button>
-                </Col>
-              </Row>
-            </Form>
-            <Table
-              :columns="columns1"
-              :data="tabList"
-              ref="table"
-              class="mt25"
-              :loading="loading"
-              highlight-row
-              no-userFrom-text="暂无数据"
-              no-filtered-userFrom-text="暂无筛选结果"
-            >
-              <template slot-scope="{ row, index }" slot="status">
-                <i-switch
-                  v-model="row.status"
-                  :value="row.status"
-                  :true-value="1"
-                  :false-value="0"
-                  @on-change="onchangeIsShow(row)"
-                  size="large"
-                >
-                  <span slot="open">显示</span>
-                  <span slot="close">隐藏</span>
-                </i-switch>
-              </template>
-              <template slot-scope="{ row, index }" slot="action">
-                <a @click="edit(row, '编辑')">编辑</a>
-                <Divider type="vertical" />
-                <a @click="del(row, '删除这条信息', index)">删除</a>
-              </template>
-            </Table>
-            <div class="acea-row row-right page">
-              <Page
-                :total="total"
-                :current="formValidate.page"
-                show-elevator
-                show-total
-                @on-change="pageChange"
-                :page-size="formValidate.limit"
-              />
-            </div>
-          </Card>
+          <Form
+            ref="formValidate"
+            :model="formValidate"
+            :label-width="labelWidth"
+            :label-position="labelPosition"
+            @submit.native.prevent
+          >
+            <Row type="flex" :gutter="24">
+              <Col v-bind="grid">
+                <FormItem label="是否显示：">
+                  <Select v-model="formValidate.status" placeholder="请选择" clearable @on-change="userSearchs">
+                    <Option value="1">显示</Option>
+                    <Option value="0">不显示</Option>
+                  </Select>
+                </FormItem>
+              </Col>
+            </Row>
+            <Row type="flex">
+              <Col v-bind="grid">
+                <Button type="primary" icon="md-add" @click="groupAdd('添加数据')" class="mr20">添加数据</Button>
+              </Col>
+            </Row>
+          </Form>
+          <Table
+            :columns="columns1"
+            :data="tabList"
+            ref="table"
+            class="mt25"
+            :loading="loading"
+            highlight-row
+            no-userFrom-text="暂无数据"
+            no-filtered-userFrom-text="暂无筛选结果"
+          >
+            <template slot-scope="{ row, index }" slot="status">
+              <i-switch
+                v-model="row.status"
+                :value="row.status"
+                :true-value="1"
+                :false-value="0"
+                @on-change="onchangeIsShow(row)"
+                size="large"
+              >
+                <span slot="open">显示</span>
+                <span slot="close">隐藏</span>
+              </i-switch>
+            </template>
+            <template slot-scope="{ row, index }" slot="action">
+              <a @click="edit(row, '编辑')">编辑</a>
+              <Divider type="vertical" />
+              <a @click="del(row, '删除这条信息', index)">删除</a>
+            </template>
+          </Table>
+          <div class="acea-row row-right page">
+            <Page
+              :total="total"
+              :current="formValidate.page"
+              show-elevator
+              show-total
+              @on-change="pageChange"
+              :page-size="formValidate.limit"
+            />
+          </div>
         </Col>
       </Row>
     </Card>
@@ -188,7 +186,7 @@ export default {
     },
     // 返回
     back() {
-      this.$router.push({ path: '/admin/system/config/system_group/index' });
+      this.$router.push({ path: this.$routeProStr + '/system/config/system_group/index' });
     },
     getUrl(type) {
       let url = 'setting/group_data' + type;
@@ -348,7 +346,6 @@ export default {
 /deep/ .ivu-menu-vertical.ivu-menu-light:after{
     display none
 }
-
 .left-wrapper
     height 904px
     background #fff

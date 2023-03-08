@@ -225,7 +225,7 @@ export default {
     // 添加商品
     menusAdd() {
       this.$router.push({
-        path: '/admin/marketing/live/add_live_goods',
+        path: this.$routeProStr + '/marketing/live/add_live_goods',
       });
     },
     // 同步商品

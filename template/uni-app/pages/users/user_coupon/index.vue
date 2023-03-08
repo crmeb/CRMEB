@@ -4,7 +4,8 @@
 			<view class="item acea-row row-center-wrapper" :class="{ on: navOn === 1 }" @click="onNav(1)">{{$t(`未使用`)}}
 			</view>
 			<view class="item acea-row row-center-wrapper" :class="{ on: navOn === 2 }" @click="onNav(2)">
-				{{$t(`已使用/过期`)}}</view>
+				{{$t(`已使用/过期`)}}
+			</view>
 		</view>
 		<view class='coupon-list' v-if="couponsList.length">
 			<view class='item acea-row row-center-wrapper' v-for='(item,index) in couponsList' :key="index"
@@ -13,7 +14,8 @@
 					<view class='money' :class='item._type == 0 ? "moneyGray" : ""'>
 						<view>{{$t(`￥`)}}<text class='num'>{{item.coupon_price}}</text></view>
 						<view class="pic-num" v-if="item.use_min_price > 0">
-							{{$t(`满`)}}{{item.use_min_price}}{{$t(`元可用`)}}</view>
+							{{$t(`满`)}}{{item.use_min_price}}{{$t(`元可用`)}}
+						</view>
 						<view class="pic-num" v-else>{{$t(`无门槛券`)}}</view>
 					</view>
 				</view>
@@ -122,6 +124,7 @@
 				this.getUseCoupons();
 			},
 			useCoupon(item) {
+				if (this.navOn == 2) return
 				let url = '';
 				if (item.category_id == 0 && item.product_id == '') {
 					url = '/pages/goods/goods_list/index?title=默认'
@@ -218,6 +221,7 @@
 		display: inline-block;
 		vertical-align: middle;
 	}
+
 	.condition .line-title {
 		/* width: 70rpx; */
 		height: 36rpx !important;

@@ -130,7 +130,7 @@
 			display: flex;
 			flex-direction: column;
 			justify-content: space-between;
-			
+
 			/deep/image,
 			/deep/.easy-loadimage,
 			/deep/uni-image {
@@ -149,6 +149,7 @@
 				.title {
 					font-size: 28rpx;
 					height: 76rpx;
+					line-height: 38rpx;
 				}
 
 				.tag {

@@ -9,7 +9,7 @@
 // +----------------------------------------------------------------------
 /* eslint-disable */
 require('script-loader!file-saver');
-require('script-loader!@/vendor/Blob');
+require('./Blob');
 require('script-loader!xlsx/dist/xlsx.core.min');
 function generateArray(table) {
   var out = [];

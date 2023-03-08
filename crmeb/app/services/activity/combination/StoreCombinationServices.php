@@ -118,13 +118,6 @@ class StoreCombinationServices extends BaseServices
                 $valueGroup = $storeProductAttrServices->saveProductAttr($skuList, (int)$res->id, 3);
                 if (!$res) throw new AdminException(100022);
             }
-            $res = true;
-            foreach ($valueGroup->toArray() as $item) {
-                $res = $res && CacheService::setStock($item['unique'], (int)$item['quota_show'], 3);
-            }
-            if (!$res) {
-                throw new AdminException(400092);
-            }
         });
     }
 
@@ -425,7 +418,7 @@ class StoreCombinationServices extends BaseServices
         $data['routine_contact_type'] = sys_config('routine_contact_type', 0);
 
         //用户访问事件
-        event('user.userVisit', [$uid, $id, 'combination', $storeInfo['product_id'], 'view']);
+        event('UserVisitListener', [$uid, $id, 'combination', $storeInfo['product_id'], 'view']);
         //浏览记录
         ProductLogJob::dispatch(['visit', ['uid' => $uid, 'product_id' => $storeInfo['product_id']]]);
         return $data;

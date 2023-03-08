@@ -59,6 +59,7 @@ export default {
   },
   mounted() {
     this.account = this.$store.state.userInfo.userInfo.account;
+    this.formValidate.real_name = this.$store.state.userInfo.userInfo.real_name;
   },
   methods: {
     handleSubmit(name) {
@@ -66,6 +67,7 @@ export default {
         if (valid) {
           updtaeAdmin(this.formValidate)
             .then((res) => {
+              this.$store.commit('userInfo/userRealName', this.formValidate.real_name);
               this.$Message.success(res.msg);
             })
             .catch((res) => {

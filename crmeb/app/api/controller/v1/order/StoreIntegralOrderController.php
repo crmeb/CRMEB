@@ -65,18 +65,8 @@ class StoreIntegralOrderController
 
         $num = (int)$num;
         //判断积分商品限量
-        $unique = $storeIntegralServices->checkoutProductStock($uid, $productInfo['product_id'], $num, $unique);
-        try {
-            //弹出队列
-            if (!CacheService::popStock($unique, $num, 4)) {
-                return app('json')->fail(410296);
-            }
-            $order = $this->services->createOrder($uid, $addressId, $mark, $request->user()->toArray(), $num, $productInfo);
-        } catch (\Throwable $e) {
-            //生成失败归还库存
-            CacheService::setStock($unique, $num, 4, false);
-            return app('json')->fail($e->getMessage());
-        }
+        $storeIntegralServices->checkoutProductStock($uid, $productInfo['product_id'], $num, $unique);
+        $order = $this->services->createOrder($uid, $addressId, $mark, $request->user()->toArray(), $num, $productInfo);
         return app('json')->status('success', 410203, ['orderId' => $order['order_id']]);
     }
 

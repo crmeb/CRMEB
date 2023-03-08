@@ -336,51 +336,56 @@
 
 				<view class="more" v-if="(invoice_func || invoiceData) && orderInfo.paid && !orderInfo.refund_status"
 					@click="more">{{$t(`更多`)}}<span class='iconfont icon-xiangshang'></span></view>
+				<view class="" v-else></view>
 				<view class="more-box" v-if="moreBtn">
 					<view class="more-btn" v-if="invoice_func && !invoiceData" @click="invoiceApply">{{$t(`申请开票`)}}
 					</view>
 					<view class="more-btn" v-if="invoiceData" @click="aleartStatusChange">{{$t(`查看发票`)}}</view>
 				</view>
+				<view class="right-btn">
+					<view class="qs-btn" v-if="status.type == 0 || status.type == -9" @click.stop="cancelOrder">
+						{{$t(`取消订单`)}}
+					</view>
+					<view class='bnt bg-color' v-if="status.type==0" @tap='pay_open(orderInfo.order_id)'>{{$t(`立即付款`)}}
+					</view>
+					<view
+						@click="openSubcribe(`/pages/goods/${cartInfo.length > 1 ? 'goods_return_list' : 'goods_return'}/index?orderId=`+orderInfo.order_id+ '&id=' + orderInfo.id)"
+						class='bnt cancel'
+						v-else-if="orderInfo.is_apply_refund && orderInfo.refund_status == 0 && cartInfo.length>1 && !orderInfo.virtual_type">
+						{{cartInfo.length>1?$t(`批量退款`):$t(`申请退款`)}}
+					</view>
+					<navigator class='bnt cancel'
+						v-if="orderInfo.delivery_type == 'express' && status.class_status==3 && status.type==2 && !split.length"
+						hover-class='none' :url="'/pages/goods/goods_logistics/index?orderId='+ orderInfo.order_id">
+						{{$t(`查看物流`)}}
+					</navigator>
+					<view class='bnt bg-color' v-if="orderInfo.type == 3 && orderInfo.refund_type == 0"
+						@tap='goJoinPink'>
+						{{$t(`查看拼团`)}}
+					</view>
+					<view class='bnt bg-color' v-if="status.class_status==3 && !split.length" @click='confirmOrder()'>
+						{{$t(`确认收货`)}}
+					</view>
+					<view class='bnt bg-color' v-if="status.class_status==5" @tap='goOrderConfirm'>{{$t(`再次购买`)}}
+					</view>
+					<view class='bnt bg-color refundBnt'
+						v-if="[1,2,4].includes(orderInfo.refund_type) && !orderInfo.is_cancel && orderInfo.type !=3 && orderInfo.refund_status != 2"
+						@tap='cancelRefundOrder'>
+						{{$t(`取消申请`)}}
+					</view>
+					<view class='bnt bg-color refundBnt' v-if="orderInfo.refund_type== 4" @tap='refundInput'>
+						{{$t(`填写退货信息`)}}
+					</view>
+					<navigator class='bnt cancel refundBnt' v-if="orderInfo.refund_type == 5" hover-class='none'
+						:url="'/pages/goods/goods_logistics/index?orderId='+ orderInfo.order_id + '&type=refund'">
+						{{$t(`查看退货物流`)}}
+					</navigator>
+					<view class='bnt cancel' v-if="status.type==4 &&  !split.length || status.type == -2"
+						@tap='delOrder'>
+						{{$t(`删除订单`)}}
+					</view>
+				</view>
 
-				<view class="qs-btn" v-if="status.type == 0 || status.type == -9" @click.stop="cancelOrder">
-					{{$t(`取消订单`)}}
-				</view>
-				<view class='bnt bg-color' v-if="status.type==0" @tap='pay_open(orderInfo.order_id)'>{{$t(`立即付款`)}}
-				</view>
-				<view
-					@click="openSubcribe(`/pages/goods/${cartInfo.length > 1 ? 'goods_return_list' : 'goods_return'}/index?orderId=`+orderInfo.order_id+ '&id=' + orderInfo.id)"
-					class='bnt cancel'
-					v-else-if="orderInfo.is_apply_refund && orderInfo.refund_status == 0 && cartInfo.length>1 && !orderInfo.virtual_type">
-					{{cartInfo.length>1?$t(`批量退款`):$t(`申请退款`)}}
-				</view>
-				<navigator class='bnt cancel'
-					v-if="orderInfo.delivery_type == 'express' && status.class_status==3 && status.type==2 && !split.length"
-					hover-class='none' :url="'/pages/goods/goods_logistics/index?orderId='+ orderInfo.order_id">
-					{{$t(`查看物流`)}}
-				</navigator>
-				<view class='bnt bg-color' v-if="orderInfo.type == 3 && orderInfo.refund_type == 0" @tap='goJoinPink'>
-					{{$t(`查看拼团`)}}
-				</view>
-				<view class='bnt bg-color' v-if="status.class_status==3 && !split.length" @click='confirmOrder()'>
-					{{$t(`确认收货`)}}
-				</view>
-				<view class='bnt bg-color' v-if="status.class_status==5" @tap='goOrderConfirm'>{{$t(`再次购买`)}}
-				</view>
-				<view class='bnt bg-color refundBnt'
-					v-if="[1,2,4].includes(orderInfo.refund_type) && !orderInfo.is_cancel && orderInfo.type !=3"
-					@tap='cancelRefundOrder'>
-					{{$t(`取消申请`)}}
-				</view>
-				<view class='bnt bg-color refundBnt' v-if="orderInfo.refund_type== 4" @tap='refundInput'>
-					{{$t(`填写退货信息`)}}
-				</view>
-				<navigator class='bnt cancel refundBnt' v-if="orderInfo.refund_type == 5" hover-class='none'
-					:url="'/pages/goods/goods_logistics/index?orderId='+ orderInfo.order_id + '&type=refund'">
-					{{$t(`查看退货物流`)}}
-				</navigator>
-				<view class='bnt cancel' v-if="status.type==4 &&  !split.length || status.type == -2" @tap='delOrder'>
-					{{$t(`删除订单`)}}
-				</view>
 			</view>
 		</view>
 		<home v-show="!aleartStatus && !invShow"></home>
@@ -540,6 +545,13 @@
 						value: 'friend',
 						title: this.$t(`找微信好友支付`),
 						payStatus: 1,
+					},
+					{
+						"name": this.$t(`通联支付`),
+						"icon": "icon-tonglianzhifu1",
+						value: 'allinpay',
+						title: this.$t(`使用通联支付付款`),
+						payStatus: 1,
 					}
 				],
 				pay_close: false,
@@ -575,12 +587,12 @@
 			}
 		},
 		onShow() {
+			this.payClose()
 			if (this.isLogin) {
 				this.getOrderInfo();
 				this.getUserInfo();
 				this.getCustomerType();
 				let options = wx.getEnterOptionsSync();
-				console.log(options)
 				if (options.scene == '1038' && options.referrerInfo.appId == 'wxef277996acc166c3') {
 					// 代表从收银台小程序返回
 					let extraData = options.referrerInfo.extraData;
@@ -829,9 +841,12 @@
 			 * 
 			 */
 			pay_open: function() {
-				this.pay_close = true;
-				this.pay_order_id = this.orderInfo.order_id;
-				this.totalPrice = this.orderInfo.pay_price;
+				uni.navigateTo({
+					url: `/pages/goods/cashier/index?order_id=${this.orderInfo.order_id}&from_type=order`
+				})
+				// this.pay_close = true;
+				// this.pay_order_id = this.orderInfo.order_id;
+				// this.totalPrice = this.orderInfo.pay_price;
 			},
 			/**
 			 * 支付成功回调
@@ -954,11 +969,14 @@
 						if (item.value == 'friend') {
 							item.payStatus = res.data.friend_pay_status == 1 ? true : false;
 						}
+						if (item.value == 'allinpay') {
+							item.payStatus = res.data.pay_allin_open == 1 ? true : false;
+						}
 					});
-					
+
 					that.getOrderStatus();
 				}).catch(err => {
-					console.log(err,'err')
+					console.log(err, 'err')
 					uni.hideLoading();
 					that.$util.Tips({
 						title: err
@@ -1263,7 +1281,8 @@
 		line-height: 60rpx;
 		border-radius: 50rpx;
 		font-size: 27rpx;
-		padding: 0 3%;
+		white-space: nowrap;
+		padding: 0 26rpx;
 		color: #666;
 		border: 1px solid #ccc;
 		margin-right: 20rpx;
@@ -1368,6 +1387,11 @@
 		}
 
 		/* #endif */
+	}
+
+	.order-details {
+		padding-bottom: calc(15rpx + constant(safe-area-inset-bottom)); ///兼容 IOS<11.2/
+		padding-bottom: calc(15rpx + env(safe-area-inset-bottom)); ///兼容 IOS>11.2/
 	}
 
 	.order-details .header {
@@ -1547,16 +1571,19 @@
 
 	.order-details .footer {
 		width: 100%;
-		height: 100rpx;
 		position: fixed;
+		display: flex;
+		justify-content: space-between;
 		bottom: 0;
 		left: 0;
 		background-color: #fff;
-		padding: 0 30rpx;
+		padding: 20rpx 30rpx;
+		padding-bottom: calc(20rpx + constant(safe-area-inset-bottom)); ///兼容 IOS<11.2/
+		padding-bottom: calc(20rpx + env(safe-area-inset-bottom)); ///兼容 IOS>11.2/
 		box-sizing: border-box;
 
 		.more {
-			position: absolute;
+			// position: absolute;
 			left: 30rpx;
 			font-size: 26rpx;
 			color: #333;
@@ -1565,6 +1592,10 @@
 				margin-left: 6rpx;
 				font-size: 22rpx;
 			}
+		}
+
+		.right-btn {
+			display: flex;
 		}
 
 		.more-box {
@@ -1579,7 +1610,11 @@
 			-webkit-box-shadow: 0px 0px 3px 0px rgba(200, 200, 200, 0.75);
 			-moz-box-shadow: 0px 0px 3px 0px rgba(200, 200, 200, 0.75);
 			box-shadow: 0px 0px 3px 0px rgba(200, 200, 200, 0.75);
+			// #ifdef MP
+			bottom: calc(110rpx + constant(safe-area-inset-bottom)); ///兼容 IOS<11.2/
+			bottom: calc(110rpx + env(safe-area-inset-bottom)); ///兼容 IOS>11.2/
 
+			// #endif
 			.more-btn {
 				color: #333;
 				padding: 4rpx;
@@ -1990,16 +2025,6 @@
 		font-size: 30rpx;
 	}
 
-	.order-details .footer {
-		width: 100%;
-		height: 100rpx;
-		position: fixed;
-		bottom: 0;
-		left: 0;
-		background-color: #fff;
-		padding: 0 30rpx;
-		box-sizing: border-box;
-	}
 
 	.order-details .footer .bnt {
 		width: 160rpx;

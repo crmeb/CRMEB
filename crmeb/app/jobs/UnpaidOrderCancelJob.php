@@ -65,13 +65,6 @@ class UnpaidOrderCancelJob extends BaseJobs
                 $orderInfo->is_del = 1;
                 $orderInfo->mark   = '订单未支付已超过系统预设时间';
                 $orderInfo->save();
-                try {
-                    /** @var StoreSeckillServices $seckiiServices */
-                    $seckiiServices = app()->make(StoreSeckillServices::class);
-                    $seckiiServices->cancelOccupySeckillStock($cartInfo, $orderInfo['unique']);
-                    $seckiiServices->rollBackStock($cartInfo);
-                } catch (\Throwable $e) {
-                }
             }
             return $res;
         } catch (\Throwable $e) {

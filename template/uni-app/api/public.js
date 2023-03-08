@@ -202,3 +202,22 @@ export function getUpdateInfo(type) {
 		noAuth: true
 	});
 }
+
+/**
+ * 获取首页DIY数据版本号
+ * 
+ */
+export function getVersion(name) {
+	return request.get(`v2/diy/get_version/${name}`, {}, {
+		noAuth: true
+	});
+}
+/**
+ * 获取商品分类版本号
+ * 
+ */
+export function getCategoryVersion(name) {
+	return request.get(`category_version`, {}, {
+		noAuth: true
+	});
+}

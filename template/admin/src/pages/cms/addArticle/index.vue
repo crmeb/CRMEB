@@ -1,16 +1,12 @@
 <template>
   <div class="article-manager">
-    <div class="i-layout-page-header header_top">
-      <div class="i-layout-page-header fl_header">
-        <router-link :to="{ path: '/admin/cms/article/index' }"
-          ><Button icon="ios-arrow-back" size="small" type="text">返回</Button></router-link
-        >
-        <Divider type="vertical" />
-        <span
-          class="ivu-page-header-title mr20"
-          style="padding: 0"
-          v-text="$route.params.id ? '编辑文章' : '添加文章'"
-        ></span>
+    <div class="i-layout-page-header header-title">
+      <div class="fl_header">
+        <span>
+          <Button icon="ios-arrow-back" size="small" type="text" @click="$router.go(-1)">返回</Button>
+        </span>
+        <Divider type="vertical"/>
+        <span class="ivu-page-header-title">{{ $route.params.id ? '编辑文章' : '添加文章' }}</span>
       </div>
     </div>
     <Card :bordered="false" dis-hover class="ivu-mt">
@@ -207,7 +203,7 @@ export default {
         autoHeightEnabled: false, // 编辑器不自动被内容撑高
         initialFrameHeight: 500, // 初始容器高度
         initialFrameWidth: '100%', // 初始容器宽度
-        UEDITOR_HOME_URL: '/admin/UEditor/',
+        UEDITOR_HOME_URL: '/UEditor/',
         serverUrl: '',
       },
     };
@@ -272,7 +268,7 @@ export default {
             .then(async (res) => {
               this.$Message.success(res.msg);
               setTimeout(() => {
-                this.$router.push({ path: '/admin/cms/article/index' });
+                this.$router.push({ path: this.$routeProStr + '/cms/article/index' });
               }, 500);
             })
             .catch((res) => {

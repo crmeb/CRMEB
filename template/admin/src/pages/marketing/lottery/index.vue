@@ -241,7 +241,7 @@ export default {
   methods: {
     // 添加
     add() {
-      this.$router.push({ path: '/admin/marketing/lottery/create' });
+      this.$router.push({ path:this.$routeProStr +  '/marketing/lottery/create' });
     },
     // 编辑
     edit(row) {
@@ -283,7 +283,7 @@ export default {
     //查看抽奖记录
     getRecording(row) {
       this.$router.push({
-        path: `/admin/marketing/lottery/recording_list`,
+        path: this.$routeProStr + `/marketing/lottery/recording_list`,
         query: {
           id: row.id,
         },

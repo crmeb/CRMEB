@@ -1,7 +1,8 @@
+@bar-height: 50px;
+
 .main {
   .logo-con {
-    height: 64px;
-    padding: 10px;
+    height: @bar-height;
     img {
       height: 44px;
       width: auto;
@@ -13,48 +14,44 @@
     background: #fff;
     padding: 0 20px;
     width: 100%;
+    border-bottom: 1px solid #f2f2f2;
   }
   .ivu-layout-header {
-    height: 50px;
-    line-height: 50px;
+    height: @bar-height;
+    line-height: @bar-height;
   }
   .main-layout-con {
-    height: 100%;
+    height: calc(~"100vh - 60px");
     overflow: hidden;
   }
   .main-content-con {
-    height: ~'calc(100% - 60px)';
+    height: ~'calc(100vh - 60px)';
     overflow: hidden;
   }
-  .tag-nav-wrapper {
-    padding: 0;
-    height: 42px;
-    background: #f0f0f0;
-  }
   .content-wrapper {
-    padding: 18px;
+    padding: 0 16px;
     height: ~'calc(100% - 80px)';
     overflow: auto;
   }
   .left-sider {
     .ivu-layout-sider-children {
       overflow-y: scroll;
-      margin-right: -18px;
+      //margin-right: -16px;
       overflow-x: hidden;
     }
   }
 }
 .ivu-menu-item > i {
-  margin-right: 8px !important;
+  margin-right: 6px !important;
 }
 .ivu-menu-submenu > .ivu-menu > .ivu-menu-item > i {
-  margin-right: 8px !important;
+  margin-right: 6px !important;
 }
 .collased-menu-dropdown {
   width: 100%;
   margin: 0;
   line-height: normal;
-  padding: 7px 0 6px 16px;
+  // padding: 7px 0 6px 16px;
   clear: both;
   font-size: 12px !important;
   white-space: nowrap;
@@ -76,5 +73,9 @@
 }
 
 .ivu-select-dropdown.ivu-dropdown-transfer {
-  max-height: 400px;
+  max-height: 800px;
+}
+
+.dro-style {
+  // padding: 0 !important;
 }

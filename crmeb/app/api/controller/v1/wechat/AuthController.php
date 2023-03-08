@@ -37,7 +37,12 @@ class AuthController
     /**
      * 小程序授权登录
      * @param Request $request
-     * @return mixed
+     * @return \think\Response
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @author 吴汐
+     * @email 442384644@qq.com
+     * @date 2023/02/24
      */
     public function mp_auth(Request $request)
     {
@@ -79,7 +84,7 @@ class AuthController
      */
     public function notify()
     {
-        $this->services->notify();
+        return $this->services->notify();
     }
 
     /**

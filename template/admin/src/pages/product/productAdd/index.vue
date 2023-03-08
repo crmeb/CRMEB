@@ -1,8 +1,8 @@
 <template>
   <div class="" id="shopp-manager">
-    <div class="i-layout-page-header header_top">
-      <div class="i-layout-page-header fl_header">
-        <router-link :to="{ path: '/admin/product/product_list' }"
+    <div class="i-layout-page-header header-title">
+      <div class=" fl_header">
+        <router-link :to="{ path: $routeProStr + '/product/product_list' }"
           ><Button icon="ios-arrow-back" size="small" type="text">返回</Button></router-link
         >
         <Divider type="vertical" />
@@ -294,7 +294,7 @@
             >
               <!-- 批量设置-->
 
-              <Col span="24" v-if="!formValidate.is_virtual">
+              <Col span="24" v-if="[0, 3].includes(formValidate.virtual_type)">
                 <FormItem label="批量设置：" class="labeltop">
                   <Table :data="oneFormBatch" :columns="formValidate.is_virtual ? columns3 : columns2" border>
                     <template slot-scope="{ row, index }" slot="pic">
@@ -660,7 +660,7 @@
         <!-- 营销设置-->
         <Row :gutter="24" type="flex" v-show="headTab.length === 6 ? currentTab === '5' : currentTab === '4'">
           <Col span="24">
-            <FormItem label="虚拟销量：">
+            <FormItem label="已售数量：">
               <InputNumber :min="0" :max="999999" v-model="formValidate.ficti" placeholder="请输入虚拟销量" />
             </FormItem>
           </Col>
@@ -1944,6 +1944,10 @@ export default {
               this.formValidate.spec_type = this.spec_type;
               this.$Message.error(res.msg);
             });
+        } else {
+          if (this.formValidate.spec_type == 1) {
+            this.generate(1);
+          }
         }
       }
       switch (index) {
@@ -2052,7 +2056,7 @@ export default {
       this.content = data;
     },
     cancel() {
-      this.$router.push({ path: '/admin/product/product_list' });
+      this.$router.push({ path: this.$routeProStr + '/product/product_list' });
     },
     // 上传头部token
     getToken() {
@@ -2137,6 +2141,7 @@ export default {
     },
     end() {
       this.moveIndex = '';
+      this.generate(1);
     },
     // 单独设置会员设置
     checkAllGroupChange(data) {
@@ -2308,7 +2313,6 @@ export default {
       }
       productGetTempKeysApi()
         .then((res) => {
-          console.log(res, '??');
           that.$videoCloud
             .videoUpload({
               type: res.data.type,
@@ -2761,7 +2765,7 @@ export default {
               }
               setTimeout(() => {
                 this.openSubimit = false;
-                this.$router.push({ path: '/admin/product/product_list' });
+                this.$router.push({ path: this.$routeProStr + '/product/product_list' });
               }, 500);
             })
             .catch((res) => {
@@ -3244,9 +3248,9 @@ export default {
 .titTip {
   display: inline-bolck;
   font-size: 12px;
+  line-height: 24px;
   font-weight: 400;
   color: #999999;
-  margin-top: 14px;
 }
 
 .videbox {

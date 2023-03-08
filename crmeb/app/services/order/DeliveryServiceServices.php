@@ -158,7 +158,7 @@ class DeliveryServiceServices extends BaseServices
      */
     public function saveDeliveryService(array $data)
     {
-        if ($data['image'] == '') throw new AdminException(400466);
+        if ($data['image'] == '') throw new AdminException(400250);
         $data['uid'] = $data['image']['uid'];
         /** @var UserServices $userService */
         $userService = app()->make(UserServices::class);

@@ -95,6 +95,7 @@ class ExportExcel extends AuthController
             ['pay_type', ''],
             ['order', ''],
             ['field_key', ''],
+            ['ids', []],
         ]);
         $where['is_system_del'] = 0;
         $where['pid'] = 0;
@@ -110,7 +111,8 @@ class ExportExcel extends AuthController
         $where = $this->request->getMore([
             ['store_name', ''],
             ['cate_id', ''],
-            ['type', 1]
+            ['type', 1],
+            ['ids', []]
         ]);
         return app('json')->success($this->service->exportProductList($where));
     }
@@ -206,6 +208,7 @@ class ExportExcel extends AuthController
             ['price_max', ''],
             ['price_min', ''],
             ['excel', '1'],
+            ['time', ''],
         ]);
         $data = $services->getCommissionList($where, false);
         return app('json')->success($this->service->userCommission($data['list'] ?? []));

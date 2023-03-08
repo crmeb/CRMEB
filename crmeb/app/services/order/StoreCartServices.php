@@ -208,9 +208,6 @@ class StoreCartServices extends BaseServices
             if ($product_stock < $cartNum) {
                 throw new ApiException(410297, ['num' => $cartNum]);
             }
-            if ($type != 5 && !CacheService::checkStock($unique, (int)$cartNum, $type)) {
-                throw new ApiException(410297, ['num' => $cartNum]);
-            }
         }
         return [$attrInfo, $unique, $bargainUserInfo['bargain_price_min'] ?? 0, $cartNum, $productInfo];
     }
@@ -435,6 +432,9 @@ class StoreCartServices extends BaseServices
      */
     public function setCartNum($uid, $productId, $num, $unique, $type)
     {
+        //检查限购
+        $this->checkLimit($uid, $productId, $num, 0);
+
         /** @var StoreProductAttrValueServices $attrValueServices */
         $attrValueServices = app()->make(StoreProductAttrValueServices::class);
 
@@ -444,7 +444,7 @@ class StoreCartServices extends BaseServices
         /** @var StoreProductServices $productServices */
         $productServices = app()->make(StoreProductServices::class);
 
-        if (!$productServices->isValidProduct((int)$productId)) {
+        if (!$productServices->isValidProduct((int)$productId, 'id')) {
             throw new ApiException(410295);
         }
         if (!($unique && $attrValueServices->getAttrvalueCount($productId, $unique, 0))) {
@@ -540,7 +540,14 @@ class StoreCartServices extends BaseServices
      * @param int $uid
      * @param array $cartList
      * @param array $addr
+     * @param int $shipping_type
      * @return array
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @author 吴汐
+     * @email 442384644@qq.com
+     * @date 2023/02/16
      */
     public function handleCartList(int $uid, array $cartList, array $addr = [], int $shipping_type = 1)
     {

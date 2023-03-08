@@ -17,7 +17,6 @@ use app\services\pay\PayNotifyServices;
 use crmeb\services\easywechat\Application;
 use EasyWeChat\Payment\Order;
 use think\facade\Log;
-use think\facade\Route as Url;
 use crmeb\utils\Hook;
 use think\facade\Cache;
 
@@ -113,7 +112,7 @@ class MiniProgramService
             'key' => trim($payment['pay_weixin_key']),
             'cert_path' => substr(public_path(parse_url($payment['pay_weixin_client_cert'])['path']), 0, strlen(public_path(parse_url($payment['pay_weixin_client_cert'])['path'])) - 1),
             'key_path' => substr(public_path(parse_url($payment['pay_weixin_client_key'])['path']), 0, strlen(public_path(parse_url($payment['pay_weixin_client_key'])['path'])) - 1),
-            'notify_url' => trim($wechat['site_url']) . Url::buildUrl('/api/routine/notify')
+            'notify_url' => trim($wechat['site_url']) . '/api/pay/notify/routine'
         ];
         return $config;
     }

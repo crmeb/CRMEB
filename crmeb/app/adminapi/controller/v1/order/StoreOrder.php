@@ -591,7 +591,7 @@ class StoreOrder extends AuthController
         }
         $services->storeProductOrderRefundNo((int)$id, $refund_reason);
         //提醒推送
-        event('notice.notice', [['orderInfo' => $orderInfo], 'send_order_refund_no_status']);
+        event('NoticeListener', [['orderInfo' => $orderInfo], 'send_order_refund_no_status']);
         return app('json')->success(100010);
     }
 

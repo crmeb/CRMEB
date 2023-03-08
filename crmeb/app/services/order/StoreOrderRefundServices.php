@@ -278,7 +278,7 @@ class StoreOrderRefundServices extends BaseServices
         app()->make(StoreOrderInvoiceServices::class)->update(['order_id' => $order['id']], ['is_refund' => 1]);
         //订单退款记录
         ProductLogJob::dispatch(['refund', ['uid' => $order['uid'], 'order_id' => $order['id']]]);
-        event('notice.notice', [['data' => $refundData, 'order' => $order], 'order_refund']);
+        event('NoticeListener', [['data' => $refundData, 'order' => $order], 'order_refund']);
         return true;
     }
 
@@ -286,6 +286,12 @@ class StoreOrderRefundServices extends BaseServices
      * 商家同意用户退货
      * @param $id
      * @return bool
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @author 吴汐
+     * @email 442384644@qq.com
+     * @date 2023/02/16
      */
     public function agreeExpress($id)
     {
@@ -424,17 +430,23 @@ class StoreOrderRefundServices extends BaseServices
      */
     public function integralAndCouponBack($order)
     {
+        /** @var StoreOrderStatusServices $statusService */
+        $statusService = app()->make(StoreOrderStatusServices::class);
         $res = true;
         //回退优惠卷 拆分子订单不退优惠券
         if (!$order['pid'] && $order['coupon_id'] && $order['coupon_price']) {
             /** @var StoreCouponUserServices $coumonUserServices */
             $coumonUserServices = app()->make(StoreCouponUserServices::class);
             $res = $res && $coumonUserServices->recoverCoupon((int)$order['coupon_id']);
+            $statusService->save([
+                'oid' => $order['id'],
+                'change_type' => 'coupon_back',
+                'change_message' => '商品退优惠券',
+                'change_time' => time()
+            ]);
         }
         //回退积分
         $order = $this->regressionIntegral($order);
-        /** @var StoreOrderStatusServices $statusService */
-        $statusService = app()->make(StoreOrderStatusServices::class);
         $statusService->save([
             'oid' => $order['id'],
             'change_type' => 'integral_back',
@@ -490,6 +502,8 @@ class StoreOrderRefundServices extends BaseServices
                 //记录赠送积分收回
                 $integral = $integral - $give_integral;
                 $res2 = $userBillServices->income('integral_refund', $order['uid'], $give_integral, $integral, $order['id']);
+                //清除积分冻结
+                $userBillServices->update(['link_id' => $order['id']], ['frozen_time' => 0]);
             }
         }
         //返还下单使用积分
@@ -512,6 +526,10 @@ class StoreOrderRefundServices extends BaseServices
      * 回退库存
      * @param $order
      * @return bool
+     * @throws \Psr\SimpleCache\InvalidArgumentException
+     * @author 吴汐
+     * @email 442384644@qq.com
+     * @date 2023/03/01
      */
     public function regressionStock($order)
     {
@@ -519,7 +537,6 @@ class StoreOrderRefundServices extends BaseServices
         $combination_id = $order['combination_id'];
         $seckill_id = $order['seckill_id'];
         $bargain_id = $order['bargain_id'];
-        $advance_id = $order['advance_id'];
         $res5 = true;
         /** @var StoreOrderCartInfoServices $cartServices */
         $cartServices = app()->make(StoreOrderCartInfoServices::class);
@@ -539,20 +556,15 @@ class StoreOrderRefundServices extends BaseServices
             //增库存减销量
             $unique = isset($cart['cart_info']['productInfo']['attrInfo']) ? $cart['cart_info']['productInfo']['attrInfo']['unique'] : '';
             $cart_num = (int)$cart['cart_info']['cart_num'];
-            $type = 0;
             if ($combination_id) {
-                $type = 3;
                 $res5 = $res5 && $pinkServices->incCombinationStock($cart_num, (int)$combination_id, $unique);
             } else if ($seckill_id) {
-                $type = 1;
                 $res5 = $res5 && $seckillServices->incSeckillStock($cart_num, (int)$seckill_id, $unique);
             } else if ($bargain_id) {
-                $type = 2;
                 $res5 = $res5 && $bargainServices->incBargainStock($cart_num, (int)$bargain_id, $unique);
             } else {
                 $res5 = $res5 && $services->incProductStock($cart_num, (int)$cart['cart_info']['productInfo']['id'], $unique);
             }
-            if ($type) CacheService::setStock($unique, $cart_num, $type, false);
         }
         return $res5;
     }
@@ -587,7 +599,7 @@ class StoreOrderRefundServices extends BaseServices
             $capitalFlowServices->setFlow($order, 'refund');
         }
 
-        event('notice.notice', [['data' => $data, 'order' => $order], 'order_refund']);
+        event('NoticeListener', [['data' => $data, 'order' => $order], 'order_refund']);
     }
 
     /**
@@ -681,7 +693,7 @@ class StoreOrderRefundServices extends BaseServices
                 'change_time' => time()
             ]);
         });
-        event('notice.notice', [['orderInfo' => $orderRefundInfo], 'send_order_refund_no_status']);
+        event('NoticeListener', [['orderInfo' => $orderRefundInfo], 'send_order_refund_no_status']);
         return true;
     }
 
@@ -838,7 +850,7 @@ class StoreOrderRefundServices extends BaseServices
         } catch (\Exception $e) {
         }
         //提醒推送
-        event('notice.notice', [['order' => $order], 'send_order_apply_refund']);
+        event('NoticeListener', [['order' => $order], 'send_order_apply_refund']);
 
         return true;
 
@@ -992,8 +1004,6 @@ class StoreOrderRefundServices extends BaseServices
                     $res4 = $res4 && $storeOrderCartInfoServices->update(['oid' => $id, 'cart_id' => $cart['cart_id']], ['refund_num' => (($cartInfo[$cart['cart_id']]['refund_num'] ?? 0) + $cart['cart_num'])]);
                 }
             } else {
-                //修改原订单状态
-                $res2 = false !== $orderServices->update(['id' => $order['id']], ['refund_status' => 1]);
                 foreach ($cartInfos as $cart) {
                     $res4 = $res4 && $storeOrderCartInfoServices->update(['oid' => $id, 'cart_id' => $cart['cart_id']], ['refund_num' => $cart['cart_num']]);
                 }
@@ -1002,11 +1012,11 @@ class StoreOrderRefundServices extends BaseServices
         });
         $storeOrderCartInfoServices->clearOrderCartInfo($order['id']);
         //申请退款事件
-        event('order.orderRefundCreateAfter', [$order]);
+        event('OrderRefundCreateAfterListener', [$order]);
         //提醒推送
-        event('notice.notice', [['order' => $order], 'send_order_apply_refund']);
+        event('NoticeListener', [['order' => $order], 'send_order_apply_refund']);
         //推送订单
-        event('out.outPush', ['refund_create_push', ['order_id' => (int)$order['id']]]);
+        event('OutPushListener', ['refund_create_push', ['order_id' => (int)$order['id']]]);
         try {
             ChannelService::instance()->send('NEW_REFUND_ORDER', ['order_id' => $order['order_id']]);
         } catch (\Exception $e) {
@@ -1027,7 +1037,13 @@ class StoreOrderRefundServices extends BaseServices
         foreach ($cartInfo as $cart) {
             if (isset($cart['cart_info'])) $cart = $cart['cart_info'];
             if ($is_unit) {
-                $SumPrice = bcadd($SumPrice, bcmul($cart['cart_num'] ?? 1, $cart[$key] ?? 0, 2), 2);
+                if ($key == 'level' || $key == 'member') {
+                    if ($cart['price_type'] == $key) {
+                        $SumPrice = bcadd($SumPrice, bcmul($cart['cart_num'] ?? 1, $cart['vip_truePrice'], 2), 2);
+                    }
+                } else {
+                    $SumPrice = bcadd($SumPrice, bcmul($cart['cart_num'] ?? 1, $cart[$key] ?? 0, 2), 2);
+                }
             } else {
                 $SumPrice = bcadd($SumPrice, $cart[$key] ?? 0, 2);
             }
@@ -1048,7 +1064,7 @@ class StoreOrderRefundServices extends BaseServices
         if ($list) {
             foreach ($list as &$item) {
                 $item['paid'] = 1;
-                $item['add_time'] = isset($item['add_time']) ? date('Y-m-d H:i', (int)$item['add_time']) : '';
+                $item['add_time'] = $item['_add_time'] = isset($item['add_time']) ? date('Y-m-d H:i', (int)$item['add_time']) : '';
                 $item['cartInfo'] = $item['cart_info'];
                 if (in_array($item['refund_type'], [1, 2, 4, 5])) {
                     $item['refund_status'] = 1;
@@ -1098,7 +1114,13 @@ class StoreOrderRefundServices extends BaseServices
     /**
      * 退款订单详情
      * @param $uni
-     * @return mixed
+     * @return array
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @author 吴汐
+     * @email 442384644@qq.com
+     * @date 2023/02/17
      */
     public function refundDetail($uni)
     {
@@ -1123,6 +1145,12 @@ class StoreOrderRefundServices extends BaseServices
         $orderData['store_order_sn'] = $orderInfo['order_id'];
         $orderData['cartInfo'] = $orderData['cart_info'];
         $orderData['_pay_time'] = date('Y-m-d H:i:s', $orderInfo['pay_time']);
+        $orderData['type'] = 0;
+        if ($orderInfo['seckill_id'] || $orderInfo['bargain_id'] || $orderInfo['combination_id']) {
+            if ($orderInfo['seckill_id']) $orderData['type'] = 1;
+            if ($orderInfo['bargain_id']) $orderData['type'] = 2;
+            if ($orderInfo['combination_id']) $orderData['type'] = 3;
+        }
         //核算优惠金额
         $vipTruePrice = 0;
         $total_price = 0;
@@ -1149,6 +1177,8 @@ class StoreOrderRefundServices extends BaseServices
         $orderData['pay_postage'] = $this->getOrderSumPrice($orderData['cart_info'], 'origin_postage_price', false);
         $orderData['member_price'] = 0;
         $orderData['routine_contact_type'] = sys_config('routine_contact_type', 0);
+        $orderData['levelPrice'] = $this->getOrderSumPrice($orderData['cart_info'], 'level');//获取会员等级优惠
+        $orderData['memberPrice'] = $this->getOrderSumPrice($orderData['cart_info'], 'member');//获取付费会员优惠
 
         switch ($orderInfo['pay_type']) {
             case PayServices::WEIXIN_PAY:
@@ -1162,6 +1192,9 @@ class StoreOrderRefundServices extends BaseServices
                 break;
             case PayServices::ALIAPY_PAY:
                 $pay_type_name = '支付宝支付';
+                break;
+            case PayServices::ALLIN_PAY:
+                $pay_type_name = '通联支付';
                 break;
             default:
                 $pay_type_name = '其他支付';
@@ -1272,9 +1305,9 @@ class StoreOrderRefundServices extends BaseServices
         ]);
 
         //售后订单取消后置事件
-        event('order.orderRefundCancelAfter', [$orderRefundInfo]);
+        event('OrderRefundCancelAfterListener', [$orderRefundInfo]);
         // 推送订单
-        event('out.outPush', ['refund_cancel_push', ['order_id' => (int)$orderRefundInfo['id']]]);
+        event('OutPushListener', ['refund_cancel_push', ['order_id' => (int)$orderRefundInfo['id']]]);
         return true;
     }
 

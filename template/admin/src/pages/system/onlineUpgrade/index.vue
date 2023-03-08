@@ -46,7 +46,7 @@
             <div class="acea-row row-top off" @mouseenter="quearyEvear(item.id,index)" v-for="(item,index) in upgradeLogList" :key="index" :class="{active:index==dynamic}">
                 <div class="time">
                     <div v-if="index == 0">最近更新</div>
-                    <div>{{item.upgrade_time}}</div>  
+                    <div>{{item.upgrade_time}}</div>
                   </div>
                 <Timeline class="list">
                     <TimelineItem>
@@ -68,7 +68,7 @@
             </div>
         </div>
         </Scroll>
-        
+
     </Card>
     <!-- 免责声明 -->
     <Modal :loading="modal_loading" v-model="declaration" width="340" height="96" :closable="false" class-name="vertical-center-modal" :mask-closable="false">
@@ -231,7 +231,6 @@ export default {
       }
     },
     handleClick(tab, event) {
-      console.log(tab, event)
       this.page = 1
       if(tab == 1){
         this.getupgradeableList();
@@ -249,7 +248,6 @@ export default {
       let res = await upgradeListApi(data);
       this.upgradeList = res.data.list;
       this.upgradeList = res.data.list;
-      console.log('升级列表', this.upgradeList);
     },
     // 升级记录
     getUpgradeLogList() {
@@ -269,25 +267,22 @@ export default {
           this.$Message.error(res.msg);
         });
     },
- 
+
     // 可升级列表
     async getupgradeableList() {
       let res = await upgradeableListApi();
-      console.log('111111')
       this.upgradeableList = res.data;
       let firstVer = res.data[0]
       if(this.$store.state.upgrade.toggleStatus || this.upgradeStatus.force_reminder){
         const data = res.data.find(item => item.force_reminder === 1)
         this.newKey = data.package_key;
-        console.log('data',data)
-
         this.forceVersion = data.first_version + '.' + data.second_version + '.' + data.third_version + '.' + data.fourth_version
       }else{
         this.params_key = this.upgradeableList[0].package_key
         this.forceVersion = firstVer.first_version + '.' + firstVer.second_version + '.' + firstVer.third_version + '.' + firstVer.fourth_version
       }
- 
-      
+
+
       // arr.forEach((item) => {
       //   this.$set(
       //     item,
@@ -322,15 +317,11 @@ export default {
     },
     // 下载升级包
     getdownload() {
-      console.log(this.newKey);
-      console.log(this.$store.state.upgrade.toggleStatus);
       if (this.$store.state.upgrade.toggleStatus || this.upgradeStatus.force_reminder) {
         this.params_key = this.newKey;
       }
-      console.log('下载key', this.params_key);
       downloadApi(this.params_key)
         .then((res) => {
-          console.log('下载升级包调用成功', res.status);
           // this.downloadStatus = res.status;
           if (res.status == 200) {
             if (this.upgradeProgress.speed !== '100.0') {
@@ -444,7 +435,7 @@ export default {
       AccountLogout()
         .then((res) => {
           this.$Message.success('您已成功退出');
-          this.$router.replace('/admin/login');
+          this.$router.replace(this.$routeProStr + '/login');
           localStorage.clear();
           removeCookies('token');
           removeCookies('expires_time');

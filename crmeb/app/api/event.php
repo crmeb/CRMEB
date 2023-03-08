@@ -17,8 +17,6 @@ return [
         'HttpEnd'  => [],
         'LogLevel' => [],
         'LogWrite' => [],
-        'UserLogin'=>[
-//             \crmeb\listeners\user\UserLogin::class
-        ]
+        'UserLogin'=> []
     ]
 ];

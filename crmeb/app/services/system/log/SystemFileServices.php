@@ -167,7 +167,7 @@ class SystemFileServices extends BaseServices
                 $update_time = stat($vo);
                 $cthash = md5_file($vo);
                 $cha[] = [
-                    'filename' => $vo,
+                    'filename' => str_replace($rootPath, '', $vo),
                     'cthash' => $cthash,
                     'atime' => date('Y-m-d H:i:s', $update_time['atime']),
                     'mtime' => date('Y-m-d H:i:s', $update_time['mtime']),

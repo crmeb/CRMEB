@@ -47,7 +47,7 @@ class SystemAdminDao extends BaseDao
      */
     public function accountByAdmin(string $account)
     {
-        return $this->search(['account' => $account, 'is_del' => 0, 'status' => 1])->find();
+        return $this->search(['account' => $account, 'is_del' => 0])->find();
     }
 
     /**

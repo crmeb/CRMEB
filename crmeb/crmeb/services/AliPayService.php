@@ -12,6 +12,7 @@
 namespace crmeb\services;
 
 use Alipay\EasySDK\Payment\Wap\Models\AlipayTradeWapPayResponse;
+use app\services\pay\PayServices;
 use crmeb\utils\Hook;
 use think\facade\Event;
 use think\facade\Log;
@@ -201,15 +202,16 @@ class AliPayService
     {
         return self::instance()->notify(function ($notify) {
             if (isset($notify->out_trade_no)) {
-                if (isset($notify->attach) && $notify->attach) {
-                    if (($count = strpos($notify->out_trade_no, '_')) !== false) {
-                        $notify->trade_no = $notify->out_trade_no;
-                        $notify->out_trade_no = substr($notify->out_trade_no, $count + 1);
-                    }
-                    return (new Hook(PayNotifyServices::class, 'aliyun'))->listen($notify->attach, $notify->out_trade_no, $notify->trade_no);
-                }
-                return false;
+
+                $data = [
+                    'attach' => $notify->attach,
+                    'out_trade_no' => $notify->out_trade_no,
+                    'transaction_id' => $notify->trade_no
+                ];
+
+                return Event::until('NotifyListener', [$data, PayServices::ALIAPY_PAY]);
             }
+            return false;
         });
     }
 

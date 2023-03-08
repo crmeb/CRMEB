@@ -57,8 +57,16 @@ class LangCountryServices extends BaseServices
     {
         if ($id) $info = $this->dao->get($id);
         $field = [];
-        $field[] = Form::input('name', '所属地区', $info['name'] ?? '')->required('请填写所属地区');
-        $field[] = Form::input('code', '语言码', $info['code'] ?? '')->required('请填写语言码');
+        $field[] = Form::input('name', '所属地区', $info['name'] ?? '')->required('请填写所属地区')->appendRule('suffix', [
+            'type' => 'div',
+            'class' => 'tips-info',
+            'domProps' => ['innerHTML' => '例如：中国、香港、德国']
+        ]);
+        $field[] = Form::input('code', '语言识别码', $info['code'] ?? '')->required('请填写浏览器语言识别码')->appendRule('suffix', [
+            'type' => 'div',
+            'class' => 'tips-info',
+            'domProps' => ['innerHTML' => '浏览器语言识别码']
+        ]);
         /** @var LangTypeServices $langTypeServices */
         $langTypeServices = app()->make(LangTypeServices::class);
         $list = $langTypeServices->getColumn(['is_del' => 0, 'status' => 1], 'language_name,file_name,id', 'id');
@@ -69,7 +77,11 @@ class LangCountryServices extends BaseServices
             }
             return $menus;
         };
-        $field[] = Form::select('type_id', '语言类型', $info['type_id'] ?? 0)->setOptions(Form::setOptions($setOption))->filterable(true);
+        $field[] = Form::select('type_id', '关联语言', $info['type_id'] ?? 0)->setOptions(Form::setOptions($setOption))->filterable(true)->appendRule('suffix', [
+            'type' => 'div',
+            'class' => 'tips-info',
+            'domProps' => ['innerHTML' => '请选择关联语言，语言类型是由您自行添加的']
+        ]);
         return create_form($id ? '修改语言地区' : '新增语言地区', $field, Url::buildUrl('/setting/lang_country/save/' . $id), 'POST');
     }
 

@@ -9,11 +9,13 @@
 // +---------------------------------------------------------------------
 
 import BasicLayout from '@/components/main';
+import setting  from '@/setting'
+let routePre = setting.routePre;
 
 const pre = 'cms_';
 
 export default {
-  path: '/admin/cms',
+  path: routePre + '/cms',
   name: 'cms',
   header: 'cms',
   redirect: {

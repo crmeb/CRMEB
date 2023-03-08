@@ -27,7 +27,7 @@
 		<!-- #ifndef MP -->
 		<home></home>
 		<!-- #endif -->
-		<pageFooter></pageFooter>
+		<!-- <pageFooter></pageFooter> -->
 	</div>
 </template>
 <script>

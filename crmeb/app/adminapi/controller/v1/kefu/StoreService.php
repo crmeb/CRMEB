@@ -62,6 +62,7 @@ class StoreService extends AuthController
             ['data', '', '', 'time'],
             ['type', '', '', 'user_type'],
         ]);
+        $where['is_del'] = 0;
         [$list, $count] = $services->getWhereUserList($where, 'u.nickname,u.uid,u.avatar as headimgurl,w.subscribe,w.province,w.country,w.city,w.sex,u.user_type,u.is_del');
         return app('json')->success(compact('list', 'count'));
     }

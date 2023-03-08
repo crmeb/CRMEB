@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Card :bordered="false" dis-hover class="mt10">
+    <Card :bordered="false" dis-hover>
       <Tabs class="mb20" v-model="currentTab" @on-click="onClickTab" v-if="tablists">
         <TabPane v-for="(item, index) in tabs" :label="item.label" :name="item.type" :key="index" />
       </Tabs>
@@ -192,8 +192,9 @@ export default {
   margin-bottom: 0px !important;
 }
 
-.i-layout-page-header /deep/ .ivu-badge-count-alone {
+/deep/ .ivu-badge-count-alone {
   top: -7px;
+  right: 2px;
 }
 
 .i-layout-page-header /deep/ .ivu-badge-count {

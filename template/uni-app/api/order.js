@@ -367,3 +367,11 @@ export function refundOrderDetail(uni) {
 export function cancelRefundOrder(uni) {
 	return request.post('order/refund/cancel/' + uni);
 }
+
+/**
+ * 收银台订单信息
+ * @param object data
+ */
+export function getCashierOrder(orderId, type) {
+	return request.get(`order/cashier/${orderId}/${type}`);
+}

@@ -1,83 +1,77 @@
 <template>
   <div>
-    <div class="i-layout-page-header">
-      <div class="i-layout-page-header">
-        <span class="ivu-page-header-title" v-if="!isShowList">短信账户</span>
-        <div v-if="isShowList" class="acea-row row-between-wrapper picTxt">
-          <div slot="content">
-            <Avatar class="dashboard-workplace-header-avatar" :src="imgUrl" />
-            <div class="dashboard-workplace-header-tip">
-              <p class="dashboard-workplace-header-tip-title">{{ smsAccount }}，祝您每一天开心！</p>
-              <p class="dashboard-workplace-header-tip-desc">
-                <a href="#" @click="onChangePassswordIndex">修改密码</a>
-                <Divider type="vertical" />
-                <!-- <a href="#" @click="onChangePhone">修改手机号</a>
+    <div class="i-layout-page-header header-title">
+      <span class="ivu-page-header-title" v-if="!isShowList">短信账户</span>
+      <div v-if="isShowList" class="acea-row row-between-wrapper picTxt">
+        <div slot="content">
+          <Avatar class="dashboard-workplace-header-avatar" :src="imgUrl" />
+          <div class="dashboard-workplace-header-tip">
+            <p class="dashboard-workplace-header-tip-title">{{ smsAccount }}，祝您每一天开心！</p>
+            <p class="dashboard-workplace-header-tip-desc">
+              <a href="#" @click="onChangePassswordIndex">修改密码</a>
+              <Divider type="vertical" />
+              <!-- <a href="#" @click="onChangePhone">修改手机号</a>
                 <Divider type="vertical" /> -->
-                <a href="#" @click="signOut">退出登录</a>
-              </p>
-            </div>
+              <a href="#" @click="signOut">退出登录</a>
+            </p>
           </div>
-          <div class="dashboard">
-            <div class="dashboard-workplace-header-extra">
-              <div class="acea-row">
-                <div class="header-extra">
-                  <p class="mb5"><span>短信条数</span></p>
-                  <div v-if="sms.open === 0">
-                    <p>暂未开通</p>
-                    <Button size="small" type="primary" class="mt3 samll_font" @click="onOpen('sms')">开通服务</Button>
-                  </div>
-                  <div v-else>
-                    <p>{{ sms.num || 0 }}</p>
-                    <Button
-                      size="small"
-                      type="primary"
-                      class="mt3 samll_font"
-                      style="textalign: center"
-                      @click="mealPay('sms')"
-                      >套餐购买</Button
-                    >
-                  </div>
+        </div>
+        <div class="dashboard">
+          <div class="dashboard-workplace-header-extra">
+            <div class="acea-row">
+              <div class="header-extra">
+                <p class="mb5"><span>短信条数</span></p>
+                <div v-if="sms.open === 0">
+                  <p>暂未开通</p>
+                  <Button size="small" type="primary" class="mt3 samll_font" @click="onOpen('sms')">开通服务</Button>
                 </div>
-                <div class="header-extra">
-                  <p class="mb5"><span>采集次数</span></p>
-                  <div v-if="copy.open === 0">
-                    <p>暂未开通</p>
-                    <Button size="small" type="primary" class="mt3 samll_font" @click="onOpen('copy')">开通服务</Button>
-                  </div>
-                  <div v-else>
-                    <p>{{ copy.num || 0 }}</p>
-                    <Button size="small" type="primary" class="mt3 samll_font" @click="mealPay('copy')"
-                      >套餐购买</Button
-                    >
-                  </div>
+                <div v-else>
+                  <p>{{ sms.num || 0 }}</p>
+                  <Button
+                    size="small"
+                    type="primary"
+                    class="mt3 samll_font"
+                    style="textalign: center"
+                    @click="mealPay('sms')"
+                    >套餐购买</Button
+                  >
                 </div>
-                <div class="header-extra">
-                  <p class="mb5"><span>物流查询次数</span></p>
-                  <div v-if="query.open === 0">
-                    <p>暂未开通</p>
-                    <Button size="small" type="primary" class="mt3 samll_font" @click="onOpen('query')"
-                      >开通服务</Button
-                    >
-                  </div>
-                  <div v-else>
-                    <p>{{ query.num || 0 }}</p>
-                    <Button size="small" type="primary" class="mt3 samll_font" @click="mealPay('expr_query')"
-                      >套餐购买</Button
-                    >
-                  </div>
+              </div>
+              <div class="header-extra">
+                <p class="mb5"><span>采集次数</span></p>
+                <div v-if="copy.open === 0">
+                  <p>暂未开通</p>
+                  <Button size="small" type="primary" class="mt3 samll_font" @click="onOpen('copy')">开通服务</Button>
                 </div>
-                <div class="header-extra" style="border: none">
-                  <p class="mb5"><span>面单打印次数</span></p>
-                  <div v-if="dump.open === 0">
-                    <p>暂未开通</p>
-                    <Button size="small" type="primary" class="mt3 samll_font" @click="onOpen('dump')">开通服务</Button>
-                  </div>
-                  <div v-else>
-                    <p>{{ dump.num || 0 }}</p>
-                    <Button size="small" type="primary" class="mt3 samll_font" @click="mealPay('expr_dump')"
-                      >套餐购买</Button
-                    >
-                  </div>
+                <div v-else>
+                  <p>{{ copy.num || 0 }}</p>
+                  <Button size="small" type="primary" class="mt3 samll_font" @click="mealPay('copy')">套餐购买</Button>
+                </div>
+              </div>
+              <div class="header-extra">
+                <p class="mb5"><span>物流查询次数</span></p>
+                <div v-if="query.open === 0">
+                  <p>暂未开通</p>
+                  <Button size="small" type="primary" class="mt3 samll_font" @click="onOpen('query')">开通服务</Button>
+                </div>
+                <div v-else>
+                  <p>{{ query.num || 0 }}</p>
+                  <Button size="small" type="primary" class="mt3 samll_font" @click="mealPay('expr_query')"
+                    >套餐购买</Button
+                  >
+                </div>
+              </div>
+              <div class="header-extra" style="border: none">
+                <p class="mb5"><span>面单打印次数</span></p>
+                <div v-if="dump.open === 0">
+                  <p>暂未开通</p>
+                  <Button size="small" type="primary" class="mt3 samll_font" @click="onOpen('dump')">开通服务</Button>
+                </div>
+                <div v-else>
+                  <p>{{ dump.num || 0 }}</p>
+                  <Button size="small" type="primary" class="mt3 samll_font" @click="mealPay('expr_dump')"
+                    >套餐购买</Button
+                  >
                 </div>
               </div>
             </div>
@@ -85,7 +79,7 @@
         </div>
       </div>
     </div>
-    <Card :bordered="false" dis-hover class="ivu-mt">
+    <Card :bordered="false" dis-hover class="ivu-mt" style="min-height: 600px">
       <login-from
         @on-change="onChangePasssword"
         v-if="isShowLogn"
@@ -151,7 +145,7 @@ export default {
       this.$refs.tableLists.onOpenIndex(val);
     },
     mealPay(val) {
-      this.$router.push({ path: '/admin/setting/sms/sms_pay/index', query: { type: val } });
+      this.$router.push({ path: this.$routeProStr + '/setting/sms/sms_pay/index', query: { type: val } });
     },
     // 开通服务
     openService(val) {
@@ -271,7 +265,7 @@ export default {
     onLogin() {
       let url = this.$route.query.url;
       if (url) {
-        this.$router.replace(url);
+        this.$router.replace(url + '?type=' + this.$route.query.type);
       } else {
         this.isShowLogn = false;
         this.isShow = false;

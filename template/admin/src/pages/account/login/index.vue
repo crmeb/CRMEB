@@ -44,7 +44,7 @@
               <img :src="imgcode" class="pictrue" @click="captchas" />
             </div>
           </FormItem> -->
-          <FormItem>
+          <FormItem class="pt10">
             <Button type="primary" long :loading="loading" size="large" @click="handleSubmit('formInline')" class="btn"
               >登录</Button
             >
@@ -159,7 +159,8 @@ export default {
     swiperData() {
       loginInfoApi()
         .then((res) => {
-          localStorage.setItem('ADMIN_TITLE', res.data.site_name);
+          window.document.title = `${res.data.site_name} - 登录`;
+          localStorage.setItem('ADMIN_TITLE', res.data.site_name || '');
           let data = res.data || {};
           this.login_logo = data.login_logo ? data.login_logo : require('@/assets/images/logo.png');
           this.swiperList = data.slide.length ? data.slide : [{ slide: this.defaultSwiperList }];
@@ -224,25 +225,27 @@ export default {
             if (data.queue === false) {
               this.$Notice.warning({
                 title: '温馨提示',
-                desc: '您的【消息队列】未开启，没有开启会导致异步任务无法执行。请尽快执行命令开启！！<a href="https://doc.crmeb.com/single/crmeb_v4/6963" target="_blank">点击查看开启方法</a>',
+                desc: '您的【消息队列】未开启，没有开启会导致异步任务无法执行。请尽快执行命令开启！！<a href="https://doc.crmeb.com/single/crmeb_v4/7217" target="_blank">点击查看开启方法</a>',
                 duration: 30,
               });
             }
             if (data.timer === false) {
               this.$Notice.warning({
                 title: '温馨提示',
-                desc: '您的【定时任务】未开启，没有开启会导致定时执行的任务无法执行。请尽快执行命令开启！！<a href="https://doc.crmeb.com/single/crmeb_v4/6962" target="_blank">点击查看开启方法</a>',
+                desc: '您的【定时任务】未开启，没有开启会导致自动收货、未支付自动取消订单、订单自动好评、拼团到期退款等任务无法正常执行。请尽快执行命令开启！！<a href="https://doc.crmeb.com/single/crmeb_v4/7211" target="_blank">点击查看开启方法</a>',
                 duration: 30,
               });
             }
 
             this.checkSocket();
           } catch (e) {}
-
-          return this.$router.replace({ path: '/admin/home/' || '/admin/' });
+          // console.log(this.findFirstNonNullChildren(res.data.menus), 1111);
+          return this.$router.replace({
+            path: this.findFirstNonNullChildren(res.data.menus).path || this.$routeProStr + '/',
+          });
         })
         .catch((res) => {
-          msg()
+          msg();
           let data = res === undefined ? {} : res;
           this.$Message.error(data.msg || '登录失败');
           this.login_captcha = res.data.login_captcha;
@@ -250,6 +253,26 @@ export default {
       setTimeout((e) => {
         this.loading = false;
       }, 1000);
+    },
+    findFirstNonNullChildren(arr) {
+      // 如果数组为空，返回null
+      if (!arr || arr.length === 0) {
+        return null;
+      }
+      // 找到第一个对象
+      const firstObj = arr[0];
+      // 如果第一个对象没有children属性，返回该对象
+      if (!firstObj.children) {
+        return firstObj;
+      }
+
+      // 如果第一个对象的children属性是数组，
+      // 递归查找children属性中的第一个非null children属性
+      if (Array.isArray(firstObj.children)) {
+        return this.findFirstNonNullChildren(firstObj.children);
+      }
+      // 如果数组中没有非null children属性，返回null
+      return null;
     },
     checkSocket() {
       getWorkermanUrl().then((res) => {
@@ -265,7 +288,7 @@ export default {
             isNotice = true;
             this.$Notice.warning({
               title: '温馨提示',
-              desc: '您的【长连接】未开启，没有开启会导致客服消息无法发送,后台订单通知无法收到。请尽快执行命令开启！！<a href="https://doc.crmeb.com/single/crmeb_v4/6931" target="_blank">点击查看开启方法</a>',
+              desc: '您的【长连接】未开启，没有开启会导致系统默认客服无法使用,后台订单通知无法收到。请尽快执行命令开启！！<a href="https://doc.crmeb.com/single/crmeb_v4/7219" target="_blank">点击查看开启方法</a>',
               duration: 30,
             });
           }
@@ -275,7 +298,7 @@ export default {
             isNotice = true;
             this.$Notice.warning({
               title: '温馨提示',
-              desc: '您的【长连接】未开启，没有开启会导致客服消息无法发送,后台订单通知无法收到。请尽快执行命令开启！！<a href="https://doc.crmeb.com/single/crmeb_v4/6931" target="_blank">点击查看开启方法</a>',
+              desc: '您的【长连接】未开启，没有开启会导致系统默认客服无法使用,后台订单通知无法收到。请尽快执行命令开启！！<a href="https://doc.crmeb.com/single/crmeb_v4/7219" target="_blank">点击查看开启方法</a>',
               duration: 30,
             });
           }
@@ -387,7 +410,7 @@ export default {
 }
 
 .page-account-top {
-  padding: 20px 0 !important;
+  padding: 20px 0 24px 0!important;
   box-sizing: border-box !important;
   display: flex;
   justify-content: center;

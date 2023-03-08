@@ -194,7 +194,7 @@ export default {
           title: '操作',
           slot: 'action',
           fixed: 'right',
-          minWidth: 130,
+          minWidth: 160,
         },
       ],
       tableList: [],
@@ -234,7 +234,7 @@ export default {
   methods: {
     // 添加
     add() {
-      this.$router.push({ path: '/admin/marketing/store_bargain/create/0' });
+      this.$router.push({ path: this.$routeProStr + '/marketing/store_bargain/create/0' });
     },
     // 导出
     // 用户导出
@@ -270,13 +270,13 @@ export default {
     // 编辑
     edit(row) {
       this.$router.push({
-        path: '/admin/marketing/store_bargain/create/' + row.id + '/0',
+        path: this.$routeProStr + '/marketing/store_bargain/create/' + row.id + '/0',
       });
     },
     // 一键复制
     copy(row) {
       this.$router.push({
-        path: '/admin/marketing/store_bargain/create/' + row.id + '/1',
+        path: this.$routeProStr + '/marketing/store_bargain/create/' + row.id + '/1',
       });
     },
     // 删除
@@ -299,7 +299,7 @@ export default {
     },
     viewInfo(row) {
       this.$router.push({
-        path: '/admin/marketing/store_bargain/statistics/' + row.id,
+        path: this.$routeProStr + '/marketing/store_bargain/statistics/' + row.id,
       });
     },
     // 列表

@@ -1,8 +1,8 @@
 <template>
   <div>
-    <div class="i-layout-page-header header_top">
-      <div class="i-layout-page-header fl_header">
-        <router-link :to="{ path: '/admin/system/config/system_config_tab/index' }"
+    <div class="i-layout-page-header header-title">
+      <div class="fl_header">
+        <router-link :to="{ path: $routeProStr + '/system/config/system_config_tab/index' }"
           ><Button icon="ios-arrow-back" size="small" type="text">返回</Button></router-link
         >
         <Divider type="vertical" />
@@ -258,7 +258,7 @@ export default {
     // 跳转到配置分类页面
     goIndex() {
       this.$router.push({
-        path: '/admin/system/config/system_config_tab/index',
+        path: this.$routeProStr + '/system/config/system_config_tab/index',
       });
     },
     // 添加配置

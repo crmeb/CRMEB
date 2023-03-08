@@ -46,17 +46,18 @@
         </Row>
       </Form>
     </Card>
-    <Alert class="mt10">
+    <Alert class="mt10" closable="true">
       使用说明
-      <template slot="desc"
-        >添加用户端页面语言，添加完成之后状态码为中文文字，前端页面使用 $t(`xxxx`)，js文件中使用 this.t(`xxxx`) 或者使用
-        that.t(`xxxx`)<br />添加后端接口语言，添加完成之后状态码为6位数字，后台抛错或者控制器返回文字的时候直接填写状态码数字
+      <template slot="desc" >
+        1、前端页面：添加用户端页面语言，添加完成之后状态码为中文文字，前端页面使用 $t(`xxxx`)，js文件中使用 this.t(`xxxx`) 或者使用
+        that.t(`xxxx`)<br />
+        2、后端接口：添加后端接口语言，添加完成之后状态码为6位数字，后台抛错或者控制器返回文字的时候直接填写状态码数字
       </template>
     </Alert>
     <Card :bordered="false" dis-hover>
-      <Row type="flex">
+      <Row type="flex" class="mb15">
         <Col>
-          <Button type="primary" icon="md-add" @click="add">添加词汇</Button>
+          <Button type="primary" icon="md-add" @click="add">添加语句</Button>
         </Col>
       </Row>
       <Table
@@ -88,30 +89,30 @@
     <Modal
       v-model="addlangModal"
       width="750"
-      title="添加词汇"
+      title="添加需要翻译的语句"
       :loading="FormLoading"
       @on-ok="ok"
       @on-cancel="addlangModal = false"
       @on-visible-change="modalChange"
     >
-      <Form ref="langFormData" :model="langFormData" :rules="ruleValidate" :label-width="120">
-        <FormItem label="语言分类：" class="mb20">
+      <Form ref="langFormData" :model="langFormData" :rules="ruleValidate" >
+        <FormItem label="应用端：" class="mb20" :label-width="120">
           <RadioGroup type="button" v-model="langFormData.is_admin" class="mr15">
             <Radio :label="item.value" v-for="(item, index) in langType.isAdmin" :key="index">{{ item.title }}</Radio>
           </RadioGroup>
         </FormItem>
         <Input v-model="langFormData.edit" v-show="false"></Input>
-        <FormItem label="语言说明：" prop="remarks" class="mb20">
+        <FormItem label="需要翻译的语句：" prop="remarks" class="mb20">
           <Input
             v-model="langFormData.remarks"
-            placeholder="请输入语言说明"
+            placeholder="请输入需要添加翻译的语句"
             style="width: 330px"
             search
             enter-button="翻译"
             @on-search="translate"
           ></Input>
         </FormItem>
-        <FormItem label="对应语言：" prop="remark" class="mb20">
+        <FormItem prop="remark" class="mb20">
           <Table
             ref="langTable"
             :loading="traTabLoading"
@@ -160,24 +161,24 @@ export default {
           width: 80,
         },
         {
-          title: '所属语言',
-          key: 'language_name',
-          minWidth: 180,
-        },
-        {
-          title: '状态码/文字',
-          key: 'code',
-          minWidth: 300,
-        },
-        {
-          title: '备注说明',
+          title: '原语句',
           key: 'remarks',
-          minWidth: 300,
+          minWidth: 250,
         },
         {
-          title: '对应语言',
+          title: '对应语言翻译',
           key: 'lang_explain',
-          minWidth: 150,
+          minWidth: 250,
+        },
+        {
+          title: '状态码/文字(接口/页面调用参考)',
+          key: 'code',
+          minWidth: 100,
+        },
+        {
+          title: '语言类型',
+          key: 'language_name',
+          minWidth: 100,
         },
         {
           title: '操作',
@@ -188,12 +189,12 @@ export default {
       ],
       langColumns: [
         {
-          title: '所属语言',
+          title: '语言类型',
           key: 'language_name',
           width: 120,
         },
         {
-          title: '对应语言',
+          title: '对应语言翻译',
           slot: 'lang_explain',
           minWidth: 250,
         },

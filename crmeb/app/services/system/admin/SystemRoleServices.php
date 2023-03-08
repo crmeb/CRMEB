@@ -17,8 +17,6 @@ use app\Request;
 use app\services\BaseServices;
 use app\services\system\SystemMenusServices;
 use crmeb\exceptions\AuthException;
-use think\facade\Cache;
-
 
 /**
  * Class SystemRoleServices

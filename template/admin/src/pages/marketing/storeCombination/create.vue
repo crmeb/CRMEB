@@ -1,8 +1,8 @@
 <template>
   <div>
-    <div class="i-layout-page-header header_top">
-      <div class="i-layout-page-header fl_header">
-        <router-link :to="{ path: '/admin/marketing/store_combination/index' }"
+    <div class="i-layout-page-header header-title">
+      <div class="fl_header">
+        <router-link :to="{ path: $routeProStr + '/marketing/store_combination/index' }"
           ><Button icon="ios-arrow-back" size="small" type="text">返回</Button></router-link
         >
         <Divider type="vertical" />
@@ -479,7 +479,7 @@ export default {
         autoHeightEnabled: false, // 编辑器不自动被内容撑高
         initialFrameHeight: 500, // 初始容器高度
         initialFrameWidth: '100%', // 初始容器宽度
-        UEDITOR_HOME_URL: '/admin/UEditor/',
+        UEDITOR_HOME_URL: '/UEditor/',
         serverUrl: '',
       },
       modals: false,
@@ -854,7 +854,7 @@ export default {
                 this.$Message.success(res.msg);
                 setTimeout(() => {
                   this.$router.push({
-                    path: '/admin/marketing/store_combination/index',
+                    path: this.$routeProStr + '/marketing/store_combination/index',
                   });
                 }, 500);
               })

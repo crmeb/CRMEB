@@ -101,8 +101,8 @@
           </i-switch>
         </template>
         <template slot-scope="{ row, index }" slot="action">
-          <a @click="edit(row)">编辑</a>
-          <Divider type="vertical" />
+<!--          <a @click="edit(row)">编辑</a>-->
+<!--          <Divider type="vertical" />-->
           <template>
             <Dropdown @on-click="changeMenu(row, $event, index)" :transfer="true">
               <a href="javascript:void(0)">
@@ -110,7 +110,8 @@
                 <Icon type="ios-arrow-down"></Icon>
               </a>
               <DropdownMenu slot="list">
-                <!--                                <DropdownItem name="1">等级任务</DropdownItem>-->
+<!--                                                <DropdownItem name="1">等级任务</DropdownItem>-->
+                <DropdownItem name="3">编辑等级</DropdownItem>
                 <DropdownItem name="2">删除等级</DropdownItem>
               </DropdownMenu>
             </Dropdown>
@@ -181,6 +182,11 @@ export default {
           key: 'discount',
           minWidth: 100,
         },
+        {
+          title: '经验值要求',
+          key: 'exp_num',
+          minWidth: 100,
+        },
         // {
         //     title: '有效时间',
         //     key: 'valid_date',
@@ -199,7 +205,7 @@ export default {
         {
           title: '是否显示',
           slot: 'is_shows',
-          minWidth: 120,
+          minWidth: 80,
         },
         // {
         //   title: '等级说明',
@@ -210,7 +216,7 @@ export default {
           title: '操作',
           slot: 'action',
           fixed: 'right',
-          minWidth: 120,
+          minWidth: 80,
         },
       ],
       levelFrom: {
@@ -253,6 +259,9 @@ export default {
           this.getlevelId(this.levelId);
           this.$refs.tasks.modals = true;
           this.$refs.tasks.getList();
+          break;
+        case '3':
+          this.edit(row);
           break;
         default:
           this.del(row, '删除等级', num);

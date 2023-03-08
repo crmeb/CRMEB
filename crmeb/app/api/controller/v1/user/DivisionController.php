@@ -42,6 +42,7 @@ class DivisionController
         ]);
         $verifyCode = CacheService::get('code_' . $data['phone']);
         if ($verifyCode != $data['code']) return app('json')->fail(410010);
+        if ($data['division_invite'] == 0) return app('json')->fail(500028);
         $this->services->applyAgent($data, $id);
         return app('json')->success(100017);
     }

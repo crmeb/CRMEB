@@ -190,13 +190,6 @@ class StoreSeckillServices extends BaseServices
                 $valueGroup = $storeProductAttrServices->saveProductAttr($skuList, (int)$res->id, 1);
                 if (!$res) throw new AdminException(100022);
             }
-            $res = true;
-            foreach ($valueGroup->toArray() as $item) {
-                $res = $res && CacheService::setStock($item['unique'], (int)$item['quota_show'], 1);
-            }
-            if (!$res) {
-                throw new AdminException(400092);
-            }
         });
     }
 
@@ -569,7 +562,7 @@ class StoreSeckillServices extends BaseServices
         $data['routine_contact_type'] = sys_config('routine_contact_type', 0);
 
         //用户访问事件
-        event('user.userVisit', [$uid, $id, 'seckill', $storeInfo['product_id'], 'view']);
+        event('UserVisitListener', [$uid, $id, 'seckill', $storeInfo['product_id'], 'view']);
         //浏览记录
         ProductLogJob::dispatch(['visit', ['uid' => $uid, 'product_id' => $storeInfo['product_id']]]);
         return $data;
@@ -602,33 +595,18 @@ class StoreSeckillServices extends BaseServices
     }
 
     /**
-     * 秒杀库存添加入redis的队列中
-     * @param string $unique sku唯一值
-     * @param int $type 类型
-     * @param int $number 库存个数
-     * @param bool $isPush 是否放入之前删除当前队列
-     * @return bool|int
-     */
-    public function pushSeckillStock(string $unique, int $type, int $number, bool $isPush = false)
-    {
-        $name = 'seckill_' . $unique . '_' . $type;
-        /** @var CacheService $cache */
-        $cache = app()->make(CacheService::class);
-        $res = true;
-        if (!$isPush) {
-            $cache->delete($name);
-        }
-        for ($i = 1; $i <= $number; $i++) {
-            $res = $res && $cache->lPush($name, $i);
-        }
-        return $res;
-    }
-
-    /**
-     * @param int $productId
-     * @param string $unique
+     * 检查秒杀库存
+     * @param int $uid
+     * @param int $seckillId
      * @param int $cartNum
-     * @param string $value
+     * @param string $unique
+     * @return array
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @author 吴汐
+     * @email 442384644@qq.com
+     * @date 2023/03/01
      */
     public function checkSeckillStock(int $uid, int $seckillId, int $cartNum = 1, string $unique = '')
     {
@@ -662,138 +640,17 @@ class StoreSeckillServices extends BaseServices
     }
 
     /**
-     * 弹出redis队列中的库存条数
-     * @param string $unique
-     * @param int $type
-     * @return mixed
-     */
-    public function popSeckillStock(string $unique, int $type, int $number = 1)
-    {
-        $name = 'seckill_' . $unique . '_' . $type;
-        /** @var CacheService $cache */
-        $cache = app()->make(CacheService::class);
-        if ($number > $cache->lLen($name)) {
-            return false;
-        }
-        $res = true;
-        for ($i = 1; $i <= $number; $i++) {
-            $res = $res && $cache->lPop($name);
-        }
-        return $res;
-    }
-
-    /**
-     * 是否有库存
-     * @param string $unique
-     * @param int $type
-     * @return mixed
-     * @throws \Psr\SimpleCache\InvalidArgumentException
-     */
-    public function isSeckillStock(string $unique, int $type, int $number)
-    {
-        /** @var CacheService $cache */
-        $cache = app()->make(CacheService::class);
-        return $cache->lLen('seckill_' . $unique . '_' . $type) >= $number;
-    }
-
-    /**
-     * 回滚库存
-     * @param array $cartInfo
-     * @param int $number
-     * @return bool
-     */
-    public function rollBackStock(array $cartInfo)
-    {
-        $res = true;
-        foreach ($cartInfo as $item) {
-            $value = $item['cart_info'];
-            if ($value['seckill_id']) {
-                $res = $res && $this->pushSeckillStock($value['product_attr_unique'], 1, (int)$value['cart_num'], true);
-            }
-        }
-        return $res;
-    }
-
-    /**
-     * 占用库存
-     * @param $cartInfo
-     */
-    public function occupySeckillStock($cartInfo, $key, $time = 0)
-    {
-        //占用库存
-        if ($cartInfo) {
-            if (!$time) {
-                $time = time() + 600;
-            }
-            foreach ($cartInfo as $val) {
-                if ($val['seckill_id']) {
-                    $this->setSeckillStock($val['product_id'], $val['product_attr_unique'], $time, $key, (int)$val['cart_num']);
-                }
-            }
-        }
-        return true;
-    }
-
-    /**
-     * 取消秒杀占用的库存
-     * @param array $cartInfo
-     * @param string $key
-     * @return bool
-     */
-    public function cancelOccupySeckillStock(array $cartInfo, string $key)
-    {
-        if ($cartInfo) {
-            foreach ($cartInfo as $val) {
-                if (isset($val['seckill_id']) && $val['seckill_id']) {
-                    $this->backSeckillStock((int)$val['product_id'], $val['product_attr_unique'], $key, (int)$val['cart_num']);
-                }
-            }
-        }
-        return true;
-    }
-
-    /**
-     * 存入当前秒杀商品属性有序集合
-     * @param $product_id
-     * @param $unique
-     * @param $score
-     * @param $value
-     * @param int $cart_num
-     * @return bool
-     */
-    public function setSeckillStock($product_id, $unique, $score, $value, $cart_num = 1)
-    {
-        $set_key = md5('seckill_set_attr_stock_' . $product_id . '_' . $unique);
-        $i = 0;
-        for ($i; $i < $cart_num; $i++) {
-            CacheService::zAdd($set_key, $score, $value . $i);
-        }
-        return true;
-    }
-
-    /**
-     * 取消集合中的秒杀商品
-     * @param int $product_id
-     * @param string $unique
-     * @param $value
-     * @param int $cart_num
-     * @return bool
-     */
-    public function backSeckillStock(int $product_id, string $unique, $value, int $cart_num = 1)
-    {
-        $set_key = md5('seckill_set_attr_stock_' . $product_id . '_' . $unique);
-        $i = 0;
-        for ($i; $i < $cart_num; $i++) {
-            CacheService::zRem($set_key, $value . $i);
-        }
-        return true;
-    }
-
-    /**
      * 修改秒杀库存
      * @param int $num
      * @param int $seckillId
+     * @param string $unique
      * @return bool
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @author 吴汐
+     * @email 442384644@qq.com
+     * @date 2023/03/01
      */
     public function decSeckillStock(int $num, int $seckillId, string $unique = '')
     {

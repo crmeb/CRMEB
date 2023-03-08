@@ -106,10 +106,7 @@ class StoreSeckill extends AuthController
         $storeProductAttrValueServices = app()->make(StoreProductAttrValueServices::class);
         $unique = $storeProductAttrValueServices->value(['product_id' => $id, 'type' => 1], 'unique');
         if ($unique) {
-            $name = 'seckill_' . $unique . '_1';
-            /** @var CacheService $cache */
-            $cache = app()->make(CacheService::class);
-            $cache->del($name);
+            CacheService::delete('seckill_' . $unique . '_1');
         }
         return app('json')->success(100002);
     }

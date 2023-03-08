@@ -14,7 +14,6 @@ namespace app\dao\system\config;
 
 use app\dao\BaseDao;
 use app\model\system\config\SystemStorage;
-use crmeb\traits\SearchDaoTrait;
 
 /**
  * Class SystemStorageDao
@@ -23,14 +22,44 @@ use crmeb\traits\SearchDaoTrait;
 class SystemStorageDao extends BaseDao
 {
 
-    use SearchDaoTrait;
-
     /**
      * @return string
      */
     protected function setModel(): string
     {
         return SystemStorage::class;
+    }
+
+    /**
+     * 获取列表
+     * @param array $where
+     * @param array|string[] $field
+     * @param int $page
+     * @param int $limit
+     * @param null $sort
+     * @param array $with
+     * @return array
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     */
+    public function getList(array $where = [], array $field = ['*'], int $page = 0, int $limit = 0, $sort = null, array $with = [])
+    {
+        return $this->search($where)->field($field)->when($page && $limit, function ($query) use ($page, $limit) {
+            $query->page($page, $limit);
+        })->when($sort, function ($query) use ($sort) {
+            if (is_array($sort)) {
+                foreach ($sort as $v => $k) {
+                    if (is_numeric($v)) {
+                        $query->order($k, 'desc');
+                    } else {
+                        $query->order($v, $k);
+                    }
+                }
+            } else {
+                $query->order($sort, 'desc');
+            }
+        })->with($with)->select()->toArray();
     }
 
     /**

@@ -1,7 +1,7 @@
 <template>
   <div v-if="showFullScreenBtn" class="full-screen-btn-con">
     <Tooltip :content="value ? '退出全屏' : '全屏'" placement="bottom">
-      <Icon @click.native="handleChange" :type="value ? 'ios-contract' : 'ios-qr-scanner'" :size="23"></Icon>
+      <Icon @click.native="handleChange" :type="value ? 'ios-contract' : 'ios-qr-scanner'" :size="22"></Icon>
     </Tooltip>
   </div>
 </template>
@@ -85,6 +85,8 @@ export default {
 }
 .full-screen-btn-con .ivu-tooltip-rel i {
   font-size: 20px !important;
+  color: rgba(0, 0, 0, 0.65);
+
 }
 .full-screen-btn-con .ivu-tooltip-rel {
   height: 50px;

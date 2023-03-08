@@ -11,7 +11,7 @@ abstract class AbstractDecoder
     /**
      * Initiates new image from path in filesystem
      *
-     * @param  string $path
+     * @param string $path
      * @return \Intervention\Image\Image
      */
     abstract public function initFromPath($path);
@@ -19,7 +19,7 @@ abstract class AbstractDecoder
     /**
      * Initiates new image from binary data
      *
-     * @param  string $data
+     * @param string $data
      * @return \Intervention\Image\Image
      */
     abstract public function initFromBinary($data);
@@ -27,7 +27,7 @@ abstract class AbstractDecoder
     /**
      * Initiates new image from GD resource
      *
-     * @param  Resource $resource
+     * @param Resource $resource
      * @return \Intervention\Image\Image
      */
     abstract public function initFromGdResource($resource);
@@ -60,30 +60,30 @@ abstract class AbstractDecoder
     /**
      * Init from given URL
      *
-     * @param  string $url
+     * @param string $url
      * @return \Intervention\Image\Image
      */
     public function initFromUrl($url)
     {
-        
+
         $options = [
             'http' => [
-                'method'=>"GET",
-                'protocol_version'=>1.1, // force use HTTP 1.1 for service mesh environment with envoy
-                'header'=>"Accept-language: en\r\n".
-                "User-Agent: Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.71 Safari/537.36\r\n"
-          ]
+                'method' => "GET",
+                'protocol_version' => 1.1, // force use HTTP 1.1 for service mesh environment with envoy
+                'header' => "Accept-language: en\r\n" .
+                    "User-Agent: Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.71 Safari/537.36\r\n"
+            ]
         ];
-        
-        $context  = stream_context_create($options);
-        
+
+        $context = stream_context_create($options);
+
 
         if ($data = @file_get_contents($url, false, $context)) {
             return $this->initFromBinary($data);
         }
 
         throw new NotReadableException(
-            "Unable to init from given url (".$url.")."
+            "Unable to init from given url (" . $url . ")."
         );
     }
 
@@ -213,7 +213,7 @@ abstract class AbstractDecoder
      */
     public function isUrl()
     {
-        return (bool) filter_var($this->data, FILTER_VALIDATE_URL);
+        return (bool)filter_var($this->data, FILTER_VALIDATE_URL);
     }
 
     /**
@@ -238,8 +238,8 @@ abstract class AbstractDecoder
     public function isBinary()
     {
         if (is_string($this->data)) {
-            $mime = finfo_buffer(finfo_open(FILEINFO_MIME_TYPE), $this->data);
-            return (substr($mime, 0, 4) != 'text' && $mime != 'application/x-empty');
+            $mime = getimagesize($this->data)['mime'] ?? '';
+            return !in_array($mime, ['image/jpeg', 'image/png', 'image/gif']);
         }
 
         return false;
@@ -274,7 +274,7 @@ abstract class AbstractDecoder
     /**
      * Initiates new Image from Intervention\Image\Image
      *
-     * @param  Image $object
+     * @param Image $object
      * @return \Intervention\Image\Image
      */
     public function initFromInterventionImage($object)
@@ -285,7 +285,7 @@ abstract class AbstractDecoder
     /**
      * Parses and decodes binary image data from data-url
      *
-     * @param  string $data_url
+     * @param string $data_url
      * @return string
      */
     private function decodeDataUrl($data_url)
@@ -307,7 +307,7 @@ abstract class AbstractDecoder
     /**
      * Initiates new image from mixed data
      *
-     * @param  mixed $data
+     * @param mixed $data
      * @return \Intervention\Image\Image
      */
     public function init($data)
@@ -359,6 +359,6 @@ abstract class AbstractDecoder
      */
     public function __toString()
     {
-        return (string) $this->data;
+        return (string)$this->data;
     }
 }

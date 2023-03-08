@@ -9,13 +9,15 @@
 // +---------------------------------------------------------------------
 
 import BasicLayout from '@/components/main';
+import setting  from '@/setting'
+let routePre = setting.routePre;
 
 const pre = 'agent_';
 const meta = {
   auth: true,
 };
 export default {
-  path: '/admin/agent',
+  path: `${routePre}/agent`,
   name: 'agent',
   header: 'agent',
   redirect: {

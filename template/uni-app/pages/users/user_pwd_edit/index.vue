@@ -52,7 +52,7 @@
 	import authorize from '@/components/Authorize';
 	// #endif
 	import colors from '@/mixins/color.js';
-	import Verify from '../components/verify/verify.vue';
+	import Verify from '../components/verify/index.vue';
 	export default {
 		mixins: [sendVerifyCode, colors],
 		components: {

@@ -103,14 +103,10 @@ class SmsConfig extends AuthController
      */
     public function logout()
     {
-        $res = CacheService::delete('sms_account');
-        if ($res) {
-            $this->services->updateSmsConfig('', '');
-            CacheService::clear();
-            return app('json')->success(100042);
-        } else {
-            return app('json')->fail(100043);
-        }
+        CacheService::delete('sms_account');
+        $this->services->updateSmsConfig('', '');
+        CacheService::clear();
+        return app('json')->success(100042);
     }
 
     /**

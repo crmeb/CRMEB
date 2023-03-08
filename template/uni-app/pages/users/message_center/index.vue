@@ -320,7 +320,7 @@
 					})
 			},
 			replace_em(str) {
-				str = str.replace(/\[em-([a-z_]*)\]/g, "<span class='em em-$1'/></span>");
+				str = str.replace(/\[([^\[\]]+)\]/g, "<span class='em $1'/></span>");
 				return str;
 			},
 			goChat(id) {

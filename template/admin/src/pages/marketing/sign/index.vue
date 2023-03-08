@@ -1,5 +1,8 @@
 <template>
   <div :style="bgcolors">
+    <div class="i-layout-page-header header-title">
+      <span class="ivu-page-header-title">{{ $route.meta.title }}</span>
+    </div>
     <div class="box-wrapper">
       <div v-if="name == 'sign_day_num'" class="iframe" :bordered="false">
         <div class="iframe-box">
@@ -115,7 +118,7 @@ export default {
         autoHeightEnabled: false, // 编辑器不自动被内容撑高
         initialFrameHeight: 500, // 初始容器高度
         initialFrameWidth: '100%', // 初始容器宽度
-        UEDITOR_HOME_URL: '/admin/UEditor/',
+        UEDITOR_HOME_URL: '/UEditor/',
         serverUrl: '',
       },
       a: 0, //判断的隐私协议
@@ -864,7 +867,7 @@ export default {
 .left-wrapper {
   min-width: 213px;
   background: #fff;
-  border-right: 1px solid #dcdee2;
+  border-right: 1px solid #f2f2f2;
 }
 
 .menu-item {
@@ -1146,11 +1149,6 @@ export default {
   // width 80px!important
 }
 
-/deep/.i-layout-page-header {
-  height: 66px;
-  background-color: #fff;
-  border-bottom: 1px solid #e8eaec;
-}
 
 /deep/.ivu-page-header {
   border-bottom: unset;
@@ -1159,14 +1157,7 @@ export default {
   width: 100%;
 }
 
-/deep/.i-layout-page-header {
-  height: 66px;
-  background-color: #fff;
-  border-bottom: 1px solid #e8eaec;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
+
 
 .box-wrapper {
   display: flex;
@@ -1174,7 +1165,6 @@ export default {
   padding: 20px;
   background-color: #fff;
   border-radius: 5px;
-  margin: 20px;
 }
 
 .iview-video-style {

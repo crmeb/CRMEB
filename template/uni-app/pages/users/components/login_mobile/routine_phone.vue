@@ -60,7 +60,6 @@
 				});
 				Routine.getCode()
 					.then(code => {
-
 						this.getUserPhoneNumber(e.detail.encryptedData, e.detail.iv, code);
 					})
 					.catch(error => {

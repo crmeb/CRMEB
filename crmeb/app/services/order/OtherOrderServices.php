@@ -336,15 +336,14 @@ class OtherOrderServices extends BaseServices
             $capitalFlowServices->setFlow($orderInfo, $type);
         }
         $res = $res1 && $res2 && $res3 && $res4;
-
         //购买付费会员返佣设置
         if (sys_config('member_brokerage', 0) == 1 && sys_config('brokerage_func_status', 0) == 1) {
             $spread_one = sys_config('is_self_brokerage') ? $orderInfo['uid'] : $userServices->getSpreadUid($orderInfo['uid']);
             $spread_two = sys_config('brokerage_level', 2) == 2 ? $userServices->getSpreadUid($spread_one) : 0;
             $spread_one_price = bcmul((string)$orderInfo['pay_price'], (string)bcdiv((string)sys_config('store_brokerage_ratio', 0), '100', 4), 2);
             $spread_two_price = bcmul((string)$orderInfo['pay_price'], (string)bcdiv((string)sys_config('store_brokerage_two', 0), '100', 4), 2);
-            if ($spread_one && $spread_one_price > 0) $this->memberBrokerage($spread_one, $spread_one_price, sys_config('is_self_brokerage') ? 'get_self_brokerage' : 'get_brokerage', $orderInfo);
-            if ($spread_two && $spread_two_price > 0) $this->memberBrokerage($spread_two, $spread_two_price, 'get_two_brokerage', $orderInfo);
+            if ($spread_one && $spread_one_price > 0) $this->memberBrokerage($spread_one, $spread_one_price, sys_config('is_self_brokerage') ? 'get_self_member_brokerage' : 'get_member_brokerage', $orderInfo);
+            if ($spread_two && $spread_two_price > 0) $this->memberBrokerage($spread_two, $spread_two_price, 'get_two_member_brokerage', $orderInfo);
         }
 
         return false !== $res;
@@ -375,8 +374,8 @@ class OtherOrderServices extends BaseServices
             $userBrokerageServices = app()->make(UserBrokerageServices::class);
             $userBrokerageServices->income($type, $uid, [
                 'nickname' => $userInfo['nickname'],
-                'pay_price' => floatval($price),
-                'number' => floatval($userInfo['brokerage_price']),
+                'pay_price' => floatval($orderInfo['pay_price']),
+                'number' => floatval($price),
                 'frozen_time' => $frozen_time
             ], $balance, $orderInfo['id']);
         }
@@ -562,6 +561,9 @@ class OtherOrderServices extends BaseServices
                         break;
                     case "alipay" :
                         $v['pay_type'] = "支付宝";
+                        break;
+                    case 'allinpay':
+                        $v['pay_type'] = "通联支付";
                         break;
                     case "admin" :
                         $v['pay_type'] = "后台赠送";

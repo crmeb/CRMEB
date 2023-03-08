@@ -332,7 +332,7 @@ input[type=checkbox]:checked:after {
 	display:block;
 	overflow-y:scroll;
 	padding: 20px 50px;
-	margin:20px auto;
+	margin:30px auto 10px auto;
 	font-size:12px;
 	line-height:1.5;
 	outline:none;

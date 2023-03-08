@@ -288,12 +288,12 @@ export default {
           this.menusList = data.menus;
           this.menusList.map((item, index) => {
             if (item.title === '主页') {
-              item.checked = true;
-              item.disableCheckbox = true;
+              // item.checked = true;
+              // item.disableCheckbox = true;
               if (item.children.length) {
                 item.children.map((v) => {
-                  v.checked = true;
-                  v.disableCheckbox = true;
+                  // v.checked = true;
+                  // v.disableCheckbox = true;
                 });
               }
             }

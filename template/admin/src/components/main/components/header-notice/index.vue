@@ -3,10 +3,10 @@
     <Dropdown @on-click="jumpUrl" :transfer="true">
       <div>
         <Badge dot :count="needList.length ? needList.length : 0">
-          <Icon type="ios-notifications-outline" size="26"></Icon>
+          <Icon class="icon" type="md-notifications-outline" size="20"></Icon>
         </Badge>
       </div>
-      <DropdownMenu slot="list">
+      <DropdownMenu slot="list" v-show="needList.length">
         <DropdownItem :name="item.url" v-for="(item, index) in needList" :key="index"
           ><Icon :type="item.icon" :style="'background-color:' + item.iconColor" class="iconImg" />{{
             item.title
@@ -16,9 +16,22 @@
     </Dropdown>
   </div>
 </template>
+<style scoped>
+.ivu-dropdown-item {
+  display: flex;
+  align-items: center;
+}
+.icon {
+  color: rgba(0, 0, 0, 0.65);
+}
+.ivu-dropdown-item .iconImg {
+  margin-right: 10px;
+}
+</style>
 <style lang="less">
 .header-notice {
   margin-right: 30px;
+  cursor: pointer;
 }
 .header-notice .ivu-dropdown-item {
   font-size: 14px !important;
@@ -34,9 +47,9 @@
   height: 32px;
   line-height: 32px;
   border-radius: 50%;
-  color: #fff;
+  color: rgba(0, 0, 0, 0.65);
   font-size: 18px;
-  margin-right: 10px;
+  padding-right: 10px;
   vertical-align: middle;
 }
 .header-notice .ivu-dropdown {
@@ -48,6 +61,8 @@
 }
 .header-notice .ivu-badge-dot {
   z-index: 0 !important;
+  top: 4px;
+  right: -4px;
 }
 </style>
 <script>

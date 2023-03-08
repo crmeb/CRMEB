@@ -217,7 +217,7 @@ class UserLevelServices extends BaseServices
         } else {
             $msg = '添加用户等级';
         }
-        $field[] = Form::input('name', '等级名称', isset($vipInfo) ? $vipInfo->name : '')->col(24)->required();
+        $field[] = Form::input('name', '等级名称', isset($vipInfo) ? $vipInfo->name : '')->maxlength(10)->col(24)->required();
         $field[] = Form::number('grade', '等级', isset($vipInfo) ? $vipInfo->grade : 0)->min(0)->precision(0)->col(8)->required();
         $field[] = Form::number('discount', '享受折扣', isset($vipInfo) ? $vipInfo->discount : 100)->min(0)->max(100)->col(8)->placeholder('输入折扣数100，代表原价，90代表9折')->required();
         $field[] = Form::number('exp_num', '解锁需经验值达到', isset($vipInfo) ? $vipInfo->exp_num : 0)->min(0)->precision(0)->col(8)->required();

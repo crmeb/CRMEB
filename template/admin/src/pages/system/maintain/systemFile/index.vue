@@ -1,5 +1,8 @@
 <template>
   <div>
+    <div class="i-layout-page-header header-title">
+      <span class="ivu-page-header-title">{{ $route.meta.title }}</span>
+    </div>
     <Card :bordered="false" dis-hover class="ivu-mt">
       <Table
         ref="selection"
@@ -8,7 +11,6 @@
         :loading="loading"
         no-data-text="暂无数据"
         highlight-row
-        class="mt25"
         no-filtered-data-text="暂无筛选结果"
       >
         <template slot-scope="{ row }" slot="nickname">

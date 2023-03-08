@@ -46,7 +46,7 @@ class AliPay extends BasePay implements PayInterface
     public function create(string $orderId, string $totalFee, string $attach, string $body, string $detail, array $options = [])
     {
         $code = false;
-        if (request()->isPC() || request()->isRoutine() || !empty($options['isCode'])) {
+        if (request()->isPC() || request()->isRoutine()) {
             $code = true;
         }
 

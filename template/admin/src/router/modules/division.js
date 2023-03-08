@@ -9,13 +9,15 @@
 // +---------------------------------------------------------------------
 
 import BasicLayout from '@/components/main';
+import setting  from '@/setting'
+let routePre = setting.routePre;
 
 const pre = 'division_';
 const meta = {
   auth: true,
 };
 export default {
-  path: '/admin/division',
+  path: routePre + '/division',
   name: 'division',
   header: 'division',
   redirect: {

@@ -1,6 +1,6 @@
 {
   "component": true,
   "usingComponents": {
-    "verify": "/pages/users/components/verify/verify"
+    "verify": "/pages/users/components/verify/index"
   }
 }

@@ -9,11 +9,13 @@
 // +---------------------------------------------------------------------
 
 import BasicLayout from '@/components/main';
+import setting  from '@/setting'
+let routePre = setting.routePre;
 
 const pre = 'echarts_';
 
 export default {
-  path: '/admin/echarts',
+  path: routePre+'/echarts',
   name: 'echarts',
   header: 'echarts',
   redirect: {

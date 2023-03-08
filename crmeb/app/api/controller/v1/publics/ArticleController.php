@@ -34,8 +34,13 @@ class ArticleController
      */
     public function lst($cid)
     {
+        if ($cid == 0) {
+            $where = ['is_hot' => 1];
+        } else {
+            $where = ['cid' => $cid];
+        }
         [$page, $limit] = $this->services->getPageValue();
-        $list = $this->services->cidByArticleList(['cid' => $cid], $page, $limit, "id,title,image_input,visit,from_unixtime(add_time,'%Y-%m-%d %H:%i') as add_time,synopsis,url");
+        $list = $this->services->cidByArticleList($where, $page, $limit, "id,title,image_input,visit,from_unixtime(add_time,'%Y-%m-%d %H:%i') as add_time,synopsis,url");
         return app('json')->success($list);
     }
 

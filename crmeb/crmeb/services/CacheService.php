@@ -145,104 +145,6 @@ class CacheService
         }
     }
 
-    /** 以下三个方法仅开启redis之后才使用 */
-    /**
-     * 设置redis入库队列
-     * @param string $unique
-     * @param int $number
-     * @param int $type
-     * @param bool $isPush
-     * @return false
-     * @throws \Psr\SimpleCache\InvalidArgumentException
-     */
-    public static function setStock(string $unique, int $number, int $type = 1, bool $isPush = true)
-    {
-        if (Config::get('cache.default') == 'file') return true;
-        if (!$unique || !$number) return false;
-        $name = (self::$redisQueueKey[$type] ?? '') . '_' . $type . '_' . $unique;
-        if ($isPush) {
-            Cache::store('redis')->delete($name);
-        }
-        $data = [];
-        for ($i = 1; $i <= $number; $i++) {
-            $data[] = $i;
-        }
-        return Cache::store('redis')->lPush($name, ...$data);
-    }
-
-    /**
-     * 是否有库存|返回库存
-     * @param string $unique
-     * @param int $number
-     * @param int $type
-     * @return bool
-     */
-    public static function checkStock(string $unique, int $number = 0, int $type = 1)
-    {
-        if (Config::get('cache.default') == 'file') return true;
-        $name = (self::$redisQueueKey[$type] ?? '') . '_' . $type . '_' . $unique;
-        if ($number) {
-            return Cache::store('redis')->lLen($name) >= $number;
-        } else {
-            return Cache::store('redis')->lLen($name);
-        }
-    }
-
-    /**
-     * 弹出redis队列中的库存条数
-     * @param string $unique
-     * @param int $number
-     * @param int $type
-     * @return bool
-     */
-    public static function popStock(string $unique, int $number, int $type = 1)
-    {
-        if (Config::get('cache.default') == 'file') return true;
-        if (!$unique || !$number) return false;
-        $name = (self::$redisQueueKey[$type] ?? '') . '_' . $type . '_' . $unique;
-        $res = true;
-        if ($number > Cache::store('redis')->lLen($name)) {
-            return false;
-        }
-        for ($i = 1; $i <= $number; $i++) {
-            $res = $res && Cache::store('redis')->lPop($name);
-        }
-        return $res;
-    }
-
-    /**
-     * 存入当前秒杀商品属性有序集合
-     * @param $set_key
-     * @param $score
-     * @param $value
-     * @return false
-     */
-    public static function zAdd($set_key, $score, $value)
-    {
-        if (Config::get('cache.default') == 'file') return true;
-        try {
-            return Cache::store('redis')->zAdd($set_key, $score, $value);
-        } catch (\Throwable $e) {
-            return false;
-        }
-    }
-
-    /**
-     * 取消集合中的秒杀商品
-     * @param $set_key
-     * @param $value
-     * @return false
-     */
-    public static function zRem($set_key, $value)
-    {
-        if (Config::get('cache.default') == 'file') return true;
-        try {
-            return Cache::store('redis')->zRem($set_key, $value);
-        } catch (\Throwable $e) {
-            return false;
-        }
-    }
-
     /**
      * 检查锁
      * @param string $key
@@ -297,5 +199,23 @@ class CacheService
         } else {
             return Cache::store('redis');
         }
+    }
+
+    /**
+     * 数据库锁
+     * @param $key
+     * @param $fn
+     * @param int $ex
+     * @return mixed
+     * @author 吴汐
+     * @email 442384644@qq.com
+     * @date 2023/03/01
+     */
+    public static function lock($key, $fn, int $ex = 6)
+    {
+        if (Config::get('cache.default') == 'file') {
+            return $fn();
+        }
+        return app()->make(LockService::class)->exec($key, $fn, $ex);
     }
 }

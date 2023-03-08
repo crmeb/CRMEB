@@ -12,9 +12,9 @@
 							<view class="money"><text>{{$t(`¥`)}}</text>{{item.coupon_price}}</view>
 							<view class="info">{{$t(`满`)}}{{item.use_min_price}}{{$t(`元可用`)}}</view>
 						</view>
-						<view class="bnt" v-if="item.is_use===true"><text>{{$t(`已领取`)}}</text></view>
-						<view class="bnt" v-else-if="item.is_use===false" @click="receiveCoupon(item)"><text>{{$t(`立即领取`)}}</text></view>
-						<view class="bnt" v-else-if="item.is_use===2"><text>{{$t(`已过期`)}}</text></view>
+						<view class="bnt" v-if="item.is_use==1"><text>{{$t(`已领取`)}}</text></view>
+						<view class="bnt" v-else-if="!item.is_use" @click="receiveCoupon(item)"><text>{{$t(`立即领取`)}}</text></view>
+						<view class="bnt" v-else-if="item.is_use==2"><text>{{$t(`已过期`)}}</text></view>
 					</view>
 					<view class="roll up-roll" :style="{background:bgColor}"></view>
 					<view class="roll down-roll" :style="{background:bgColor}"></view>

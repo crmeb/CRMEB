@@ -161,6 +161,8 @@
 		onLoad(option) {
 			let type = option.types;
 			this.where.status = type;
+		},
+		onShow() {
 			this.init();
 		},
 		methods: {
@@ -175,9 +177,6 @@
 			},
 			searchBut() {
 				let that = this;
-				if (!that.where.keywords.trim()) return this.$util.Tips({
-					title: that.$t(`请输入要搜索的商品`)
-				});
 				that.focus = false;
 				that.where.page = 1;
 				that.loading = false;
@@ -371,6 +370,7 @@
 <style lang="scss" scoped>
 	.pos-order-list {
 		padding-top: 96rpx;
+
 		.search {
 			padding-left: 30rpx;
 			padding-top: 30rpx;
@@ -379,6 +379,7 @@
 			top: 0;
 			left: 0;
 			z-index: 99;
+
 			.input {
 				width: 598rpx;
 				background-color: #f7f7f7;

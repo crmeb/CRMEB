@@ -21,8 +21,8 @@
 					</div>
 					<div class="bottom acea-row row-between-wrapper">
 						<div class="purple" v-if="item.status === 1">{{$t(`活动进行中`)}}</div>
-						<div class="success" v-else-if="item.status === 3">{{$t(`砍价成功`)}}</div>
-						<div class="end" v-else>{{$t(`活动已结束`)}}</div>
+						<div class="success" v-if="item.status === 3">{{$t(`砍价成功`)}}</div>
+						<div class="end" v-if="item.status === 2">{{$t(`活动已结束`)}}</div>
 						<div class="acea-row row-middle row-right">
 							<div class="bnt cancel" v-if="item.status === 1"
 								@click="getBargainUserCancel(item.bargain_id)">
@@ -31,7 +31,9 @@
 							<div class="bnt bg-color-red" v-if="item.status === 1" @click="goDetail(item.bargain_id)">
 								{{$t(`继续砍价`)}}
 							</div>
-							<!-- <div class="bnt bg-color-red" v-else @click="goList">重开一个</div> -->
+						</div>
+						<div class="acea-row row-middle row-right success"  v-if="item.status === 3">
+							{{item.success_time}}
 						</div>
 					</div>
 				</div>

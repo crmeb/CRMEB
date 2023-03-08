@@ -1,5 +1,8 @@
 <template>
   <div>
+    <div class="i-layout-page-header header-title">
+      <span class="ivu-page-header-title">{{ $route.meta.title }}</span>
+    </div>
     <Card :bordered="false" dis-hover class="ivu-mt">
       <div class="flex-wrapper">
         <!-- :src="iframeUrl" -->
@@ -16,7 +19,7 @@
             </div>
             <Alert v-if="!pageData.appId && !pageData.code">
               <template slot="desc">
-                您尚未配置小程序信息，请<router-link :to="{ path: '/admin/setting/system_config_retail/3/7' }"
+                您尚未配置小程序信息，请<router-link :to="{ path: $routeProStr +'/setting/system_config_retail/3/7' }"
                   >立即设置</router-link
                 ></template
               >

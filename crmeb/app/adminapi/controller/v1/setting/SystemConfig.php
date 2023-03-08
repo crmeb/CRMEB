@@ -307,6 +307,9 @@ class SystemConfig extends AuthController
                 return app('json')->fail(400763);
             }
         }
+        if (isset($post['uni_brokerage_price']) && preg_match('/\.[0-9]{2,}[1-9][0-9]*$/', (string)$post['uni_brokerage_price']) > 0) {
+            return app('json')->fail(500029);
+        }
 
         //支付接口类型选择，如果有订单就不能再进行切换
 //        if (isset($post['pay_wechat_type'])) {

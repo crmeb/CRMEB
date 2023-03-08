@@ -104,7 +104,7 @@
 		data() {
 			return {
 				page: 1,
-				limit: 5,
+				limit: 8,
 				status: false,
 				recordList: [],
 				times: [],
@@ -173,7 +173,7 @@
 						}
 					}
 					that.count = res.data.count || 0;
-					that.status = res.data.list.length < 5;
+					that.status = res.data.list.length < 8;
 					that.page += 1;
 				});
 			}

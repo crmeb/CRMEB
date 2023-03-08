@@ -49,6 +49,7 @@ class WechatQrcodeServices extends BaseServices
             $item['stop'] = $item['end_time'] ? $item['end_time'] > time() ? 1 : -1 : 0;
             $item['label_name'] = $userLabel->getColumn([['id', 'in', $item['label_id']]], 'label_name');
             $item['end_time'] = date('Y-m-d H:i:s', $item['end_time']);
+            $item['add_time'] = date('Y-m-d H:i:s', $item['add_time']);
         }
         $count = $this->dao->count($where);
         return compact('list', 'count');

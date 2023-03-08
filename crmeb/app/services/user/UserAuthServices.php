@@ -50,7 +50,7 @@ class UserAuthServices extends BaseServices
         if ($token === 'undefined') {
             throw new AuthException(110002);
         }
-        if (!$token || !$tokenData = CacheService::get($md5Token, '', NULL, 'api'))
+        if (!$token || !$tokenData = CacheService::get($md5Token))
             throw new AuthException(110002);
 
         if (!is_array($tokenData) || empty($tokenData) || !isset($tokenData['uid'])) {
@@ -70,7 +70,7 @@ class UserAuthServices extends BaseServices
             throw new AuthException(110003);
         }
 
-        $user = $this->dao->get(['uid' => $id, 'is_del' => 0]);
+        $user = $this->dao->get(['uid' => $id, 'is_del' => 0, 'status' => 1]);
 
         if (!$user || $user->uid != $tokenData['uid']) {
             if (!request()->isCli()) CacheService::delete($md5Token);

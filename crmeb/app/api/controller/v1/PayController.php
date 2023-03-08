@@ -13,6 +13,7 @@ namespace app\api\controller\v1;
 
 
 use app\Request;
+use crmeb\services\app\MiniProgramService;
 use crmeb\services\pay\Pay;
 
 /**
@@ -36,8 +37,11 @@ class PayController
                 /** @var Pay $pay */
                 $pay = app()->make(Pay::class, ['ali_pay']);
                 return $pay->handleNotify();
-            case 'wechat':
+            case 'v3wechat':
+                return app()->make(Pay::class, ['v3_wechat_pay'])->handleNotify()->getContent();
             case 'routine':
+                return MiniProgramService::handleNotify();
+            case 'wechat':
                 if (sys_config('pay_wechat_type')) {
                     /** @var Pay $pay */
                     $pay = app()->make(Pay::class, ['v3_wechat_pay']);

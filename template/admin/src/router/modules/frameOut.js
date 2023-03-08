@@ -8,12 +8,14 @@
 // | Author: CRMEB Team <admin@crmeb.com>
 // +---------------------------------------------------------------------
 
+import setting from '@/setting';
+let routePre = setting.routePre;
 const pre = 'kefu_';
 
 export default [
   // 登录
   {
-    path: '/admin/login',
+    path: routePre + '/login',
     name: 'login',
     meta: {
       title: '登录',
@@ -23,12 +25,15 @@ export default [
   },
   // 客服
   {
-    path: '/kefu',
+    path: routePre + '/kefu',
     name: `${pre}index`,
     meta: {
       auth: true,
       title: '客服管理',
       kefu: true,
+    },
+    redirect: {
+      name: `setting_service`,
     },
     component: () => import('@/pages/kefu/index'),
   },

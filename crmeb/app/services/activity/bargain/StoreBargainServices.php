@@ -171,13 +171,6 @@ class StoreBargainServices extends BaseServices
                 $valueGroup = $storeProductAttrServices->saveProductAttr($skuList, (int)$res->id, 2);
                 if (!$res) throw new AdminException(100022);
             }
-            $res = true;
-            foreach ($valueGroup->toArray() as $item) {
-                $res = $res && CacheService::setStock($item['unique'], (int)$item['quota_show'], 2);
-            }
-            if (!$res) {
-                throw new AdminException(400092);
-            }
         });
     }
 
@@ -505,7 +498,7 @@ class StoreBargainServices extends BaseServices
         $data['bargain']['price'] = bcsub($data['bargain']['price'], (string)$userBargainInfo['alreadyPrice'], 2);
 
         //用户访问事件
-        event('user.userVisit', [$user['uid'], $id, 'bargain', $bargain['product_id'], 'view']);
+        event('UserVisitListener', [$user['uid'], $id, 'bargain', $bargain['product_id'], 'view']);
 
         //浏览记录
         ProductLogJob::dispatch(['visit', ['uid' => $user['uid'], 'product_id' => $bargain['product_id']]]);
@@ -646,7 +639,7 @@ class StoreBargainServices extends BaseServices
         $price = $userHelpService->setBargainRecord($uid, $bargainUserInfo, $bargainInfo);
         if ($price) {
             if (!$bargainUserService->getSurplusPrice($bargainUserTableId, 1)) {
-                event('notice.notice', [['uid' => $bargainUserUid, 'bargainInfo' => $bargainInfo, 'bargainUserInfo' => $bargainUserInfo,], 'bargain_success']);
+                event('NoticeListener', [['uid' => $bargainUserUid, 'bargainInfo' => $bargainInfo, 'bargainUserInfo' => $bargainUserInfo,], 'bargain_success']);
             }
         }
         return ['bargainUserInfo' => $bargainUserInfo, 'price' => $price];

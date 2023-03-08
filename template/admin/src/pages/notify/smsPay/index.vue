@@ -2,7 +2,7 @@
   <div>
     <div class="i-layout-page-header header_top">
       <div class="i-layout-page-header fl_header">
-        <router-link :to="{ path: '/admin/setting/sms/sms_config/index' }"
+        <router-link :to="{ path: $routeProStr + '/setting/sms/sms_config/index' }"
           ><Button icon="ios-arrow-back" size="small" type="text">返回</Button></router-link
         >
         <Divider type="vertical" />
@@ -106,6 +106,7 @@ export default {
   created() {
     this.isChecked = this.$route.query.type;
     this.onIsLogin();
+    console.log(this.$route);
   },
   methods: {
     // 查看是否登录
@@ -116,7 +117,12 @@ export default {
           let data = res.data;
           if (!data.status) {
             this.$Message.warning('请先登录');
-            this.$router.push('/admin/setting/sms/sms_config/index?url=' + this.$route.path);
+            this.$router.push({
+              path: this.$routeProStr + '/setting/sms/sms_config/index?url=' + this.$route.path,
+              query: {
+                type: this.$route.query.type,
+              },
+            });
           } else {
             this.getServeInfo();
             this.getPrice();

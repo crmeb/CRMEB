@@ -667,7 +667,7 @@ class UserBillServices extends BaseServices
         //检测会员等级
         try {
             //用户升级事件
-            event('user.userLevel', [$spreadUid]);
+            event('UserLevelListener', [$spreadUid]);
         } catch (\Throwable $e) {
             Log::error('会员等级升级失败,失败原因:' . $e->getMessage());
         }
@@ -750,7 +750,7 @@ class UserBillServices extends BaseServices
         $where_data = [];
         $where_data['time'] = $where['time'];
         if (isset($where['nickname']) && $where['nickname']) {
-            $where_data[] = ['u.account|u.nickname|u.uid|u.phone', 'LIKE', "%$where[nickname]%"];
+            $where_data[] = ['u.nickname|u.uid', 'LIKE', "%$where[nickname]%"];
         }
         if (isset($where['price_max']) && isset($where['price_min'])) {
             if ($where['price_max'] != '' && $where['price_min'] != '') {
@@ -1185,7 +1185,7 @@ class UserBillServices extends BaseServices
     {
         /** @var UserServices $userService */
         $userService = app()->make(UserServices::class);
-        if (!$userService->getUserInfo($uid)) {
+        if (!$userService->getUserInfo($uid, 'uid')) {
             throw new ApiException(100026);
         }
         $result = ['list' => [], 'time' => [], 'count' => 0];

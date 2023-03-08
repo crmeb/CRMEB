@@ -31,7 +31,7 @@
 				<view class='item acea-row row-between-wrapper'
 					v-if="order_pay_info.paid==0 && order_pay_info.pay_type != 'offline'">
 					<view>{{$t(`失败原因`)}}</view>
-					<view class='itemCom'>{{status==2 ? $t(`取消支付`):msg}}</view>
+					<view class='itemCom'>{{$t(`未支付`)}}</view>
 				</view>
 			</view>
 			<!--失败时： 重新购买 -->
@@ -146,7 +146,7 @@
 				deep: true
 			}
 		},
-		onLoad: function(options) {
+		onLoad(options) {
 			this.options = options
 			if (!options.order_id) return this.$util.Tips({
 				title: this.$t(`缺少参数无法查看订单支付状态`)

@@ -1,7 +1,7 @@
 <template>
   <div>
-    <Card :bordered="false" dis-hover class="ive-mt tablebox">
-      <div class="ive-mt tabbox">
+    <Card :bordered="false" dis-hover class="ivu-mt">
+      <div class="ivu-mt tabbox">
         <Tabs @on-click="onClickTab" class="mb20">
           <TabPane label="日账单" name="day" />
           <TabPane label="周账单" name="week" />
@@ -280,16 +280,11 @@ export default {
 </script>
 
 <style scoped lang="less">
-/deep/.ivu-page-header,
-/deep/.ivu-tabs-bar {
-  border-bottom: 1px solid #ffffff;
-}
+
 /deep/.ivu-card-body {
   padding: 0;
 }
-/deep/.ivu-tabs-nav {
-  height: 45px;
-}
+
 .tabbox {
   padding: 16px 20px 0px;
 }

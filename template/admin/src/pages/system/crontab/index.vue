@@ -1,5 +1,12 @@
 <template>
   <Card :bordered="false" dis-hover>
+    <Alert closable="true">
+      <template slot="desc">
+        启动定时任务两种方式：<br />
+        1、使用命令启动：php think timer start --d；如果更改了执行周期、编辑是否开启、删除定时任务需要重新启动下定时任务确保生效；<br />
+        2、使用接口触发定时任务，建议每分钟调用一次，接口地址 https://您的域名/api/crontab/run
+      </template>
+    </Alert>
     <Button type="primary" @click="addTask">添加定时任务</Button>
     <Table :columns="columns" :data="tableData" :loading="loading" class="ivu-mt">
       <template slot-scope="{ row }" slot="execution_cycle">
@@ -13,7 +20,6 @@
       </template>
       <template slot-scope="{ row }" slot="action">
         <a @click="edit(row.id)">编辑</a>
-
         <Divider type="vertical" />
         <a @click="handleDelete(row, '删除秒杀商品', index)">删除</a>
       </template>
@@ -69,7 +75,6 @@ export default {
           title: '操作',
           slot: 'action',
           align: 'center',
-          fixed: 'right',
           minWidth: 100,
         },
       ],
@@ -120,11 +125,9 @@ export default {
         });
     },
     addTask() {
-      console.log(this.$refs.addTask);
       this.$refs.addTask.modal = true;
     },
     edit(id) {
-      console.log(id);
       this.$refs.addTask.timerInfo(id);
     },
     // 删除
@@ -132,7 +135,7 @@ export default {
       let delfromData = {
         title: tit,
         num: num,
-        url: `system/timer/del/${row.id}`,
+        url: `system/crontab/del/${row.id}`,
         method: 'delete',
         ids: '',
       };
@@ -164,4 +167,8 @@ export default {
 };
 </script>
 
-<style lang="stylus" scoped></style>
+<style lang="stylus" scoped>
+.ivu-mt {
+  padding-top:10px
+}
+</style>

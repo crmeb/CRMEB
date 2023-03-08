@@ -46,7 +46,7 @@
         :data="classList"
         row-id="id"
       >
-        <vxe-table-column field="id" title="ID" tooltip min-width="60"></vxe-table-column>
+        <vxe-table-column field="id" title="ID" tooltip width="60"></vxe-table-column>
         <vxe-table-column field="title" tree-node title="分类名称" min-width="150"></vxe-table-column>
         <vxe-table-column field="eng_title" title="分类字段" min-width="150"></vxe-table-column>
         <vxe-table-column field="statuss" title="状态" min-width="150">
@@ -137,7 +137,7 @@ export default {
     // 跳转到配置列表页面
     goList(row) {
       this.$router.push({
-        path: '/admin/system/config/system_config_tab/list/' + row.id,
+        path: this.$routeProStr + '/system/config/system_config_tab/list/' + row.id,
       });
     },
     // 添加配置分类

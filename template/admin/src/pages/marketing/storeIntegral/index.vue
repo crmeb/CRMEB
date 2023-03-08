@@ -30,7 +30,7 @@
               <Select
                 placeholder="请选择"
                 clearable
-                style="width: 150px"
+                style="width: 200px"
                 v-model="tableFrom.is_show"
                 @on-change="userSearchs"
               >
@@ -230,16 +230,16 @@ export default {
   methods: {
     // 添加
     add() {
-      this.$router.push({ path: '/admin/marketing/store_integral/create' });
+      this.$router.push({ path: this.$routeProStr + '/marketing/store_integral/create' });
     },
     addMore() {
       this.$router.push({
-        path: '/admin/marketing/store_integral/add_store_integral',
+        path: this.$routeProStr + '/marketing/store_integral/add_store_integral',
       });
     },
     orderList(row) {
       this.$router.push({
-        path: '/admin/marketing/store_integral/order_list',
+        path: this.$routeProStr + '/marketing/store_integral/order_list',
         query: {
           product_id: row.id,
         },
@@ -264,13 +264,13 @@ export default {
     // 编辑
     edit(row) {
       this.$router.push({
-        path: '/admin/marketing/store_integral/create/' + row.id + '/0',
+        path: this.$routeProStr + '/marketing/store_integral/create/' + row.id + '/0',
       });
     },
     // 一键复制
     copy(row) {
       this.$router.push({
-        path: '/admin/marketing/store_integral/create/' + row.id + '/1',
+        path: this.$routeProStr + '/marketing/store_integral/create/' + row.id + '/1',
       });
     },
     // 删除

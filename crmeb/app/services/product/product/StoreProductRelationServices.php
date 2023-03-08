@@ -61,8 +61,15 @@ class StoreProductRelationServices extends BaseServices
     }
 
     /**
+     * 收藏
      * @param int $uid
-     * @return mixed
+     * @return array
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @author 吴汐
+     * @email 442384644@qq.com
+     * @date 2023/03/01
      */
     public function getUserCollectProduct(int $uid)
     {

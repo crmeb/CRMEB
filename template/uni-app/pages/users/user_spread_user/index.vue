@@ -7,8 +7,8 @@
 					<view>
 						<view class="user-msg">
 							<image class="avatar" :src="userInfo.avatar" mode=""></image>
-							<view class="nickname">{{userInfo.nickname}}</view>
-							<view v-if="userInfo.is_agent_level" class="level" @click="jumbPath">
+							<view class="nickname line1">{{userInfo.nickname}}</view>
+							<view v-if="userInfo.is_agent_level" class="level line1" @click="jumbPath">
 								<text>{{userInfo.agent_level_name?$t(userInfo.agent_level_name):$t(`分销等级`)}}</text>
 								<text v-if="userInfo.is_agent_level" class='iconfont icon-xiangyou'></text>
 							</view>
@@ -271,6 +271,7 @@
 			.nickname {
 				font-size: 32rpx;
 				margin: 10rpx 0;
+				max-width: 8rem;
 			}
 
 			.level {
@@ -281,7 +282,7 @@
 				transform: scale(0.9);
 				display: flex;
 				align-items: center;
-
+				max-width: 10rem;
 				.icon-xiangyou {
 					transform: scale(0.7);
 					font-size: 28rpx;

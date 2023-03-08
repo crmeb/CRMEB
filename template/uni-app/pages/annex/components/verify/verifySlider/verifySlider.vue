@@ -392,13 +392,13 @@
 		bottom: 0px;
 		width: 100%;
 		height: 30px;
-		background-color: rgb(231, 27, 27, .5);
+		background-color: rgb(17, 200, 26, 0.5);
 		line-height: 30px;
 		color: #fff;
 	}
 
 	.suc-bg {
-		background-color: rgba(92, 184, 92, .5);
+		background-color: rgb(17, 200, 26, 0.5);
 		filter: progid:DXImageTransform.Microsoft.gradient(startcolorstr=#7f5CB85C, endcolorstr=#7f5CB85C);
 	}
 

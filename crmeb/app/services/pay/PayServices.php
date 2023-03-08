@@ -105,7 +105,7 @@ class PayServices
      * @param string $body
      * @return array|string
      */
-    public function pay(string $payType, string $openid, string $orderId, string $price, string $successAction, string $body, bool $isCode = false)
+    public function pay(string $payType, string $orderId, string $price, string $successAction, string $body, array $options = [])
     {
         try {
 
@@ -116,29 +116,19 @@ class PayServices
                 if (sys_config('pay_wechat_type') == 1) {
                     $payType = 'v3_wechat_pay';
                 }
-            }
-
-            if ($payType == 'alipay') {
-                $payType = 'ali_pay';
-            }
-
-
-            $options = [];
-            if (self::ALLIN_PAY === $payType) {
-                $options['returl'] = $this->getOption('returl');
-                if ($options['returl']) {
-                    $options['returl'] = str_replace('http://', 'https://', $options['returl']);
+            } else {
+                if ($payType == 'alipay') {
+                    $payType = 'ali_pay';
+                } elseif ($payType == 'allinpay') {
+                    $payType = 'allin_pay';
                 }
-                $options['is_wechat'] = $this->getOption('is_wechat', false);
-                $options['appid'] = sys_config('routine_appId');
-                $payType = 'allin_pay';
             }
 
             /** @var Pay $pay */
             $pay = app()->make(Pay::class, [$payType]);
 
 
-            return $pay->create($orderId, $price, $successAction, $body, '', ['openid' => $openid, 'isCode' => $isCode, 'pay_new_weixin_open' => (bool)sys_config('pay_new_weixin_open')] + $options);
+            return $pay->create($orderId, $price, $successAction, $body, '', ['pay_new_weixin_open' => (bool)sys_config('pay_new_weixin_open')] + $options);
 
         } catch (\Exception $e) {
             if (strpos($e->getMessage(), 'api unauthorized rid') !== false) {
@@ -147,4 +137,57 @@ class PayServices
             throw new ApiException($e->getMessage());
         }
     }
+
+    /**
+     * TODO 发起支付 弃用
+     * @param string $payType
+     * @param string $openid
+     * @param string $orderId
+     * @param string $price
+     * @param string $successAction
+     * @param string $body
+     * @return array|string
+     */
+//    public function pay(string $payType, string $openid, string $orderId, string $price, string $successAction, string $body, bool $isCode = false)
+//    {
+//        try {
+//
+//            //这些全都是微信支付
+//            if (in_array($payType, ['routine', 'weixinh5', 'weixin', 'pc', 'store'])) {
+//                $payType = 'wechat_pay';
+//                //判断是否使用v3
+//                if (sys_config('pay_wechat_type') == 1) {
+//                    $payType = 'v3_wechat_pay';
+//                }
+//            }
+//
+//            if ($payType == 'alipay') {
+//                $payType = 'ali_pay';
+//            }
+//
+//
+//            $options = [];
+//            if (self::ALLIN_PAY === $payType) {
+//                $options['returl'] = $this->getOption('returl');
+//                if ($options['returl']) {
+//                    $options['returl'] = str_replace('http://', 'https://', $options['returl']);
+//                }
+//                $options['is_wechat'] = $this->getOption('is_wechat', false);
+//                $options['appid'] = sys_config('routine_appId');
+//                $payType = 'allin_pay';
+//            }
+//
+//            /** @var Pay $pay */
+//            $pay = app()->make(Pay::class, [$payType]);
+//
+//
+//            return $pay->create($orderId, $price, $successAction, $body, '', ['openid' => $openid, 'isCode' => $isCode, 'pay_new_weixin_open' => (bool)sys_config('pay_new_weixin_open')] + $options);
+//
+//        } catch (\Exception $e) {
+//            if (strpos($e->getMessage(), 'api unauthorized rid') !== false) {
+//                throw new ApiException('请在微信支付配置中将小程序商户号选择改为商户号绑定');
+//            }
+//            throw new ApiException($e->getMessage());
+//        }
+//    }
 }

@@ -10,7 +10,7 @@
 					<view class='text acea-row row-between'>
 						<view class='name line2'>{{item.productInfo.store_name}}</view>
 						<view class='money'>
-							<view>{{$t(`￥`)}}{{item.truePrice}}</view>
+							<view>{{$t(`￥`)}}{{(parseFloat(item.truePrice)+parseFloat(item.postage_price)).toFixed(2)}}</view>
 							<view class='num'>x{{item.cart_num}}</view>
 						</view>
 					</view>
@@ -55,7 +55,7 @@
 					<view class='item acea-row row-between upload'>
 						<view class='title acea-row row-between-wrapper'>
 							<view>{{$t(`上传图片`)}}</view>
-							<view class='tip'>{{$t(`上传图片`)}}</view>
+							<view class='tip'></view>
 						</view>
 						<view class='upload acea-row row-middle'>
 							<view class='pictrue' v-for="(item,index) in refund_reason_wap_img" :key="index">
@@ -114,7 +114,8 @@
 				returnGoods: 0,
 				orderId: 0,
 				refundNumData: [],
-				refund_num_index: 0
+				refund_num_index: 0,
+				isRes: false
 			};
 		},
 		computed: mapGetters(['isLogin']),
@@ -200,6 +201,7 @@
 			 * 申请退货
 			 */
 			subRefund: function(e) {
+				if (this.isRes) return
 				uni.showLoading({
 					title: this.$t(`申请中`)
 				});
@@ -216,6 +218,7 @@
 						cart_num: this.refund_num_index + 1
 					}]
 				}
+				this.isRes = true
 				returnGoodsSubmit(this.id, {
 					text: that.RefundArray[that.index] || '',
 					refund_reason_wap_explain: value.refund_reason_wap_explain,
@@ -225,6 +228,7 @@
 					cart_ids: this.cartIds
 				}).then(res => {
 					uni.hideLoading();
+					this.isRes = false
 					return this.$util.Tips({
 						title: this.$t(`申请成功`),
 						icon: 'success'
@@ -234,6 +238,7 @@
 					});
 				}).catch(err => {
 					uni.hideLoading();
+					this.isRes = false
 					return this.$util.Tips({
 						title: err
 					});
@@ -364,9 +369,11 @@
 	.list /deep/ .uni-input-input {
 		text-align: right;
 	}
+
 	.acea-row {
 		flex-wrap: nowrap;
 	}
+
 	.upload {
 		flex-wrap: wrap;
 	}

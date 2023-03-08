@@ -1,8 +1,8 @@
 <template>
   <div>
-    <div class="i-layout-page-header header_top">
-      <div class="i-layout-page-header fl_header">
-        <router-link :to="{ path: '/admin/marketing/store_bargain/index' }"
+    <div class="i-layout-page-header header-title">
+      <div class="fl_header">
+        <router-link :to="{ path: $routeProStr + '/marketing/store_bargain/index' }"
           ><Button icon="ios-arrow-back" size="small" type="text">返回</Button></router-link
         >
         <Divider type="vertical" />
@@ -397,7 +397,7 @@ export default {
         autoHeightEnabled: false, // 编辑器不自动被内容撑高
         initialFrameHeight: 500, // 初始容器高度
         initialFrameWidth: '100%', // 初始容器宽度
-        UEDITOR_HOME_URL: '/admin/UEditor/',
+        UEDITOR_HOME_URL: '/UEditor/',
         serverUrl: '',
       },
       isChoice: '',
@@ -854,7 +854,7 @@ export default {
                 this.$Message.success(res.msg);
                 setTimeout(() => {
                   this.$router.push({
-                    path: '/admin/marketing/store_bargain/index',
+                    path: this.$routeProStr + '/marketing/store_bargain/index',
                   });
                 }, 500);
               })
@@ -962,7 +962,7 @@ export default {
           // 创建 dialog
           let dialog = new window.UE.ui.Dialog({
             // 指定弹出层中页面的路径，这里只能支持页面，路径参考常见问题 2
-            iframeUrl: '/admin/widget.images/index.html?fodder=dialog',
+            iframeUrl: this.$routeProStr + '/widget.images/index.html?fodder=dialog',
             // 需要指定当前的编辑器实例
             editor: editor,
             // 指定 dialog 的名字

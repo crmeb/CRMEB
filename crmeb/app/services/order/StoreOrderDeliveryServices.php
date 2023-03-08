@@ -364,6 +364,12 @@ class StoreOrderDeliveryServices extends BaseServices
      * @param int $id
      * @param array $data
      * @return bool
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @author 吴汐
+     * @email 442384644@qq.com
+     * @date 2023/02/21
      */
     public function splitDelivery(int $id, array $data)
     {
@@ -396,10 +402,8 @@ class StoreOrderDeliveryServices extends BaseServices
         }
 
         $cart_ids = $data['cart_ids'];
-        /** @var StoreOrderCartInfoServices $storeOrderCartInfoServices */
-        $storeOrderCartInfoServices = app()->make(StoreOrderCartInfoServices::class);
         unset($data['cart_ids']);
-        $this->transaction(function () use ($id, $cart_ids, $orderInfo, $data, $storeOrderCartInfoServices) {
+        $this->transaction(function () use ($id, $cart_ids, $orderInfo, $data) {
             /** @var StoreOrderSplitServices $storeOrderSplitServices */
             $storeOrderSplitServices = app()->make(StoreOrderSplitServices::class);
             //订单拆单
@@ -440,11 +444,11 @@ class StoreOrderDeliveryServices extends BaseServices
         switch ($type) {
             case 1://快递发货
                 $this->orderDeliverGoods($id, $data, $orderInfo, $storeName);
-                event('notice.notice', [['orderInfo' => $orderInfo, 'storeName' => $storeName, 'data' => $data], 'order_postage_success']);
+                event('NoticeListener', [['orderInfo' => $orderInfo, 'storeName' => $storeName, 'data' => $data], 'order_postage_success']);
                 break;
             case 2://配送
                 $this->orderDelivery($id, $data, $orderInfo, $storeName);
-                event('notice.notice', [['orderInfo' => $orderInfo, 'storeName' => $storeName, 'data' => $data], 'order_deliver_success']);
+                event('NoticeListener', [['orderInfo' => $orderInfo, 'storeName' => $storeName, 'data' => $data], 'order_deliver_success']);
                 break;
             case 3://虚拟发货
                 $this->orderVirtualDelivery($id, $data, $orderInfo, $storeName);
@@ -453,7 +457,7 @@ class StoreOrderDeliveryServices extends BaseServices
                 throw new AdminException(400522);
         }
         //到期自动收货
-        event('order.orderDelivery', [$orderInfo, $storeName, $data, $type]);
+        event('OrderDeliveryListener', [$orderInfo, $storeName, $data, $type]);
         return true;
     }
 

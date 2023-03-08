@@ -6,8 +6,10 @@
       placeholder="菜单搜索"
       filterable
       remote
+      clearable
       :remote-method="remoteMethod"
       :loading="loading"
+      @on-change="remoteMethod"
     >
       <Option
         v-for="(option, index) in menusList"
@@ -19,19 +21,31 @@
     </Select>
   </div>
 </template>
-<style>
-.search .ivu-select-selection {
+<style scoped>
+.search /deep/ .ivu-select-selection {
   margin-right: 20px;
+  border-radius: 30px;
+  border: none !important;
 }
-.search .ivu-select-visible .ivu-select-selection {
+.search /deep/ .ivu-select-visible .ivu-select-selection {
   box-shadow: unset !important;
+  border: none !important;
 }
-.search li.ivu-select-item {
+.search /deep/ .ivu-select-selection:hover,
+.search /deep/ .ivu-select-selection:active {
+  border: none;
+}
+.search /deep/ li.ivu-select-item {
   text-align: left;
 }
-.search .select .ivu-select-input,
-.search .select .ivu-select-item {
-  font-size: 14px !important;
+.search /deep/ .select .ivu-select-input,
+.search /deep/ .select .ivu-select-item {
+  font-size: 13px !important;
+}
+.search /deep/ .ivu-select-input {
+  padding-left: 19px;
+  border-radius: 30px;
+  background-color: #f8f8f9;
 }
 </style>
 <script>

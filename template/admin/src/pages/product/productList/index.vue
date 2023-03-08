@@ -34,7 +34,7 @@
         </Row>
       </Form>
       <div class="Button">
-        <router-link v-auth="['product-product-save']" :to="'/admin/product/add_product'"
+        <router-link v-auth="['product-product-save']" :to="$routeProStr + '/product/add_product'"
           ><Button type="primary" class="bnt mr15" icon="md-add">添加商品</Button></router-link
         >
         <Button v-auth="['product-crawl-save']" type="success" class="bnt mr15" @click="onCopy">商品采集</Button>
@@ -55,6 +55,7 @@
         <Button
           v-auth="['product-product-product_show']"
           class="bnt mr15"
+          type="info"
           @click="onDismount"
           v-show="artFrom.type === '1'"
           >批量下架</Button
@@ -72,7 +73,7 @@
         ref="table"
         :columns="artFrom.type !== '1' && artFrom.type !== '2' ? columns2 : columns"
         :data="tableList"
-        class="ivu-mt"
+        class="ivu-mt mt25"
         :loading="loading"
         highlight-row
         @on-select="handleSelectRow"
@@ -108,7 +109,7 @@
           <Divider type="vertical" />
           <a @click="edit(row)">编辑</a>
           <Divider type="vertical" />
-          <router-link :to="{ path: '/admin/product/product_reply/' + row.id }"><a>查看评论</a></router-link>
+          <router-link :to="{ path: $routeProStr + '/product/product_reply/' + row.id }"><a>查看评论</a></router-link>
           <Divider type="vertical" />
           <a @click="del(row, '恢复商品', index)" v-if="artFrom.type === '6'">恢复商品</a>
           <a @click="del(row, '移入回收站', index)" v-else>移到回收站</a>
@@ -144,12 +145,12 @@
       v-model="batchModal"
       class="batch-box"
       scrollable
-      closable
+      :closable="false"
       title="批量设置"
       :mask-closable="false"
       width="1000"
       @on-ok="batchSub"
-      @on-visible-change="clearBatchData"
+      @on-cancel="clearBatchData"
     >
       <Form
         class="batchFormData"
@@ -325,7 +326,7 @@ export default {
         limit: 15,
         cate_id: '',
         type: '1',
-        store_name: ''
+        store_name: '',
       },
       list: [],
       tableList: [],
@@ -427,7 +428,7 @@ export default {
   },
   watch: {
     $route() {
-      if (this.$route.fullPath === '/admin/product/product_list?type=5') {
+      if (this.$route.fullPath === (this.$routeProStr + '/product/product_list?type=5')) {
         this.getPath();
       }
     },
@@ -436,7 +437,7 @@ export default {
   activated() {
     this.goodHeade();
     this.goodsCategory();
-    if (this.$route.fullPath === '/admin/product/product_list?type=5') {
+    if (this.$route.fullPath === (this.$routeProStr + '/product/product_list?type=5')) {
       this.getPath();
     } else {
       this.getDataList();
@@ -444,7 +445,6 @@ export default {
   },
   methods: {
     batchSub() {
-      console.log(this.selectedIds, this.ids);
       let data = this.batchFormData;
       data.ids = this.ids;
       data.type = this.batchType;
@@ -457,7 +457,9 @@ export default {
         .then((res) => {
           this.$Message.success(res.msg);
           this.getDataList();
-          this.clearBatchData();
+          this.clearBatchData(false);
+          this.ids = [];
+          this.clearAll(false);
         })
         .catch((err) => {
           this.$Message.error(err.msg);
@@ -476,16 +478,13 @@ export default {
           coupon_ids: [],
           recommend: [],
         };
-        this.ids = [];
         this.dataLabel = [];
-        this.clearAll(false);
       }
     },
     // 批量设置商品
     batchSelect(type) {
-      console.log(type);
       if (!this.ids.length) {
-        this.$Message.warning('请选择要设置的商品');
+        this.$Message.warning('请选择要修改的商品');
       } else {
         this.batchType = type;
         this.batchModal = true;
@@ -561,6 +560,7 @@ export default {
       let excelData = JSON.parse(JSON.stringify(this.artFrom));
       excelData.page = 1;
       excelData.limit = 50;
+      excelData.ids = this.ids;
       for (let i = 0; i < excelData.page + 1; i++) {
         let lebData = await this.getExcelData(excelData);
         if (!fileName) fileName = lebData.filename;
@@ -695,7 +695,7 @@ export default {
     // 复制淘宝
     onCopy() {
       this.$router.push({
-        path: '/admin/product/add_product',
+        path: this.$routeProStr + '/product/add_product',
         query: { type: -1 },
       });
       // this.modals = true
@@ -817,7 +817,7 @@ export default {
     },
     // 编辑
     edit(row) {
-      this.$router.push({ path: '/admin/product/add_product/' + row.id });
+      this.$router.push({ path: this.$routeProStr + '/product/add_product/' + row.id });
     },
     // 确认
     del(row, tit, num) {

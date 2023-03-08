@@ -1,7 +1,7 @@
 <template>
   <div>
     <Row class="ivu-mt box-wrapper">
-      <Col span="3" class="left-wrapper">
+      <Col v-bind="grid1" class="left-wrapper">
         <Menu :theme="theme3" :active-name="sortName" width="auto">
           <MenuGroup>
             <MenuItem
@@ -13,10 +13,10 @@
               @click.native="bindMenuItem(item, index)"
             >
               {{ item.name }}
-              <div class="icon-box" v-if="index != 0">
+              <div class="icon-box" v-if="item.id != 0">
                 <Icon type="ios-more" size="24" @click.stop="showMenu(item)" />
               </div>
-              <div class="right-menu ivu-poptip-inner" v-show="item.status" v-if="index != 0">
+              <div class="right-menu ivu-poptip-inner" v-show="item.status" v-if="item.id != 0">
                 <div class="ivu-poptip-body" @click="labelEdit(item)">
                   <div class="ivu-poptip-body-content"><div class="ivu-poptip-body-content-inner">编辑小组</div></div>
                 </div>
@@ -28,7 +28,7 @@
           </MenuGroup>
         </Menu>
       </Col>
-      <Col span="21" ref="rightBox">
+      <Col v-bind="grid2" ref="rightBox">
         <Card :bordered="false" dis-hover>
           <Row type="flex" class="mb20">
             <Col span="24">
@@ -109,6 +109,20 @@ export default {
   },
   data() {
     return {
+      grid1: {
+        xl: 4,
+        lg: 4,
+        md: 6,
+        sm: 8,
+        xs: 0,
+      },
+      grid2: {
+        xl: 20,
+        lg: 20,
+        md: 18,
+        sm: 16,
+        xs: 24,
+      },
       isChat: true,
       formValidate3: {
         page: 1,
@@ -600,7 +614,7 @@ export default {
 .left-wrapper
     height 904px
     background #fff
-    border-right 1px solid #dcdee2
+    border-right 1px solid #f2f2f2
 .menu-item
     z-index 50
     position: relative;

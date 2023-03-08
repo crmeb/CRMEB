@@ -1,8 +1,8 @@
 <template>
   <div style="width: 100%">
-    <Drawer title="用户详情" :closable="false" width="900" scrollable v-model="modals">
+    <Drawer title="用户详情" :closable="false" width="1100" scrollable v-model="modals" @on-visible-change="draChange">
       <Spin size="large" fix v-if="spinShow"></Spin>
-      <div class="acea-row">
+      <div class="acea-row head">
         <div class="avatar mr15"><img :src="psInfo.avatar" /></div>
         <div class="dashboard-workplace-header-tip">
           <p class="dashboard-workplace-header-tip-title" v-text="psInfo.nickname || '-'"></p>
@@ -11,6 +11,11 @@
               item.title + '：' + item.value
             }}</span>
           </div>
+        </div>
+        <div class="edit-btn">
+          <Button v-if="!isEdit" type="primary" @click="edit">编辑</Button>
+          <Button v-if="isEdit" class="mr20" @click="edit">取消</Button>
+          <Button v-if="isEdit" type="primary" @click="editSave">保存</Button>
         </div>
       </div>
 
@@ -29,31 +34,37 @@
         </Col>
 
         <Col span="24">
-          <Table
-            :columns="columns"
-            :data="userLists"
-            max-height="400"
-            ref="table"
-            :loading="loading"
-            no-userFrom-text="暂无数据"
-            no-filtered-userFrom-text="暂无筛选结果"
-          >
-            <template slot-scope="{ row }" slot="number">
-              <div :class="row.pm ? 'plusColor' : 'reduceColor'">
-                {{ row.pm ? '+' + row.number : '-' + row.number }}
-              </div>
-            </template>
-          </Table>
-          <div class="acea-row row-right page">
-            <Page
-              :total="total"
-              :current="userFrom.page"
-              show-elevator
-              show-total
-              @on-change="pageChange"
-              :page-size="userFrom.limit"
-            />
-          </div>
+          <template v-if="activeName === 'user'">
+            <userEditForm ref="editForm" :userId="userId" @success="getDetails(userId)" v-if="isEdit"></userEditForm>
+            <user-info :ps-info="psInfo" v-else></user-info>
+          </template>
+          <template v-else>
+            <Table
+              :columns="columns"
+              :data="userLists"
+              max-height="400"
+              ref="table"
+              :loading="loading"
+              no-userFrom-text="暂无数据"
+              no-filtered-userFrom-text="暂无筛选结果"
+            >
+              <template slot-scope="{ row }" slot="number">
+                <div :class="row.pm ? 'plusColor' : 'reduceColor'">
+                  {{ row.pm ? '+' + row.number : '-' + row.number }}
+                </div>
+              </template>
+            </Table>
+            <div class="acea-row row-right page">
+              <Page
+                :total="total"
+                :current="userFrom.page"
+                show-elevator
+                show-total
+                @on-change="pageChange"
+                :page-size="userFrom.limit"
+              />
+            </div>
+          </template>
         </Col>
       </Row>
     </Drawer>
@@ -62,13 +73,18 @@
 
 <script>
 import { detailsApi, infoApi } from '@/api/user';
+import userInfo from './userInfo';
+import userEditForm from './userEditForm';
 
 export default {
   name: 'userDetails',
+  components: { userInfo, userEditForm },
   data() {
     return {
+      isEdit: false,
       theme2: 'light',
       list: [
+        { val: 'user', label: '用户信息' },
         { val: 'order', label: '消费记录' },
         { val: 'integral', label: '积分明细' },
         { val: 'sign', label: '签到记录' },
@@ -90,23 +106,36 @@ export default {
       columns: [],
       userLists: [],
       psInfo: {},
-      activeName: 'order',
+      activeName: 'user',
     };
   },
   created() {},
   methods: {
+    edit() {
+      this.activeName = 'user';
+      this.isEdit = !this.isEdit;
+    },
+    editSave() {
+      this.$refs.editForm.setUser();
+    },
+    draChange(status) {
+      if (!status) {
+        this.isEdit = false;
+      }
+    },
     // 会员详情
     getDetails(id) {
-      this.activeName = 'order';
+      this.activeName = 'user';
       this.userId = id;
       this.spinShow = true;
+      this.isEdit = false;
       detailsApi(id)
         .then(async (res) => {
           if (res.status === 200) {
             let data = res.data;
             this.detailsData = data.headerList;
             this.psInfo = data.ps_info;
-            this.changeType('order');
+            // this.changeType('user');
             this.spinShow = false;
           } else {
             this.spinShow = false;
@@ -127,6 +156,8 @@ export default {
       this.loading = true;
       this.userFrom.type = name;
       this.activeName = name;
+      this.isEdit = false;
+      if (name == 'user') return;
       if (this.userFrom.type === '') {
         this.userFrom.type = 'order';
       }
@@ -324,6 +355,16 @@ export default {
   img {
     width: 100%;
     height: 100%;
+  }
+}
+.head {
+  position: relative;
+  .edit-btn {
+    position: absolute;
+    right: 10px;
+    top: 0px;
+    display: flex;
+    align-items: center;
   }
 }
 .dashboard-workplace {

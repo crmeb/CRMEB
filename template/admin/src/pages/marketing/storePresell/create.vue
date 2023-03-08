@@ -2,7 +2,7 @@
   <div>
     <div class="i-layout-page-header">
       <div class="i-layout-page-header">
-        <router-link :to="{ path: '/admin/marketing/presell/index' }">
+        <router-link :to="{ path: $routeProStr + '/marketing/presell/index' }">
           <Button icon="ios-arrow-back" size="small" class="mr20">返回 </Button>
         </router-link>
         <span
@@ -406,7 +406,7 @@ export default {
         autoHeightEnabled: false, // 编辑器不自动被内容撑高
         initialFrameHeight: 500, // 初始容器高度
         initialFrameWidth: '100%', // 初始容器宽度
-        UEDITOR_HOME_URL: '/admin/UEditor/',
+        UEDITOR_HOME_URL: '/UEditor/',
         serverUrl: '',
       },
       modals: false,
@@ -776,7 +776,7 @@ export default {
                 this.$Message.success(res.msg);
                 setTimeout(() => {
                   this.$router.push({
-                    path: '/admin/marketing/presell/index',
+                    path: this.$routeProStr + '/marketing/presell/index',
                   });
                 }, 500);
               })

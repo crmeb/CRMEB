@@ -78,6 +78,9 @@ class LiveRoom extends AuthController
             ['replay_status', 1],
             ['sort', 0]
         ]);
+        if (mb_strlen($data['name']) < 6 || mb_strlen($data['name']) > 17) {
+            return app('json')->fail(500030);
+        }
         $this->validate($data, \app\adminapi\validate\marketing\LiveRoomValidate::class, 'save');
         $this->services->add($data);
         return app('json')->success(100000);

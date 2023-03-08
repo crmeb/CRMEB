@@ -173,7 +173,8 @@
           <div class="listBig" v-if="list.length > 0">
             <div class="itemBig" :class="conStyle ? '' : 'itemOn'" v-for="(item, index) in list" :key="index">
               <div class="img-box">
-                <img v-if="item.image" :src="item.image" alt="" />
+                <img v-if="item.recommend_image" :src="item.recommend_image" alt="" />
+                <img v-else-if="item.image" :src="item.image" alt="" />
                 <div v-else class="empty-box"><span class="iconfont-diy icontupian"></span></div>
                 <div class="label" :style="{ background: labelColor }" v-if="index == 0">标签</div>
               </div>
@@ -533,6 +534,7 @@ export default {
                width 100%
                height 160px
                border-radius 10px 10px 0 0
+               object-fit unset
             .empty-box
                 border-radius 8px 8px 0 0;
             .label

@@ -18,7 +18,6 @@ namespace crmeb\basic;
  */
 abstract class BaseStorage
 {
-    use \crmeb\traits\ErrorTrait;
 
     /**
      * 驱动名称
@@ -33,6 +32,12 @@ abstract class BaseStorage
     protected $configFile;
 
     /**
+     * 错误信息
+     * @var string
+     */
+    protected $error;
+
+    /**
      * BaseStorage constructor.
      * @param string $name 驱动名
      * @param string $configFile 驱动配置名
@@ -43,6 +48,29 @@ abstract class BaseStorage
         $this->name = $name;
         $this->configFile = $configFile;
         $this->initialize($config);
+    }
+
+
+    /**
+     * 设置错误信息
+     * @param string|null $error
+     * @return bool
+     */
+    protected function setError(?string $error = null)
+    {
+        $this->error = $error ?: '未知错误';
+        return false;
+    }
+
+    /**
+     * 获取错误信息
+     * @return string
+     */
+    public function getError()
+    {
+        $error = $this->error;
+        $this->error = null;
+        return $error;
     }
 
     /**

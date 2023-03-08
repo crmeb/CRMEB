@@ -35,7 +35,8 @@
         "order_confirm/index",
         "order_details/index",
         "order_list/index",
-        "order_refund_goods/index"
+        "order_refund_goods/index",
+        "cashier/index"
       ],
       "name": "goods"
     },

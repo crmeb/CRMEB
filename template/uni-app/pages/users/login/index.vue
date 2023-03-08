@@ -129,7 +129,7 @@
 	// #endif
 	const BACK_URL = "login_back_url";
 	import colors from '@/mixins/color.js';
-	import Verify from '../components/verify/verify.vue';
+	import Verify from '../components/verify/index.vue';
 	export default {
 		name: "Login",
 		components: {

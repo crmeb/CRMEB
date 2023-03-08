@@ -85,7 +85,7 @@ class StoreOrderSplitServices extends BaseServices
         if (empty($cart_ids_arr['other'])) return [$old_order, ['id' => 0]];
         return $this->transaction(function () use ($id, $cart_ids_arr, $orderInfo, $orderInfoOld, $cartInfo, $storeOrderCreateServices, $storeOrderCartInfoServices, $statusService) {
             $order = $otherOrder = [];
-            $statusData = $statusService->getColumn(['oid' => $id], '*');
+            $statusData = $statusService->selectList(['oid' => $id])->toArray();
             //订单实际支付金额
             $order_pay_price = bcsub((string)bcadd((string)$orderInfo['total_price'], (string)$orderInfo['pay_postage'], 2), (string)bcadd((string)$orderInfo['deduction_price'], (string)$orderInfo['coupon_price'], 2), 2);
             //有改价
@@ -106,6 +106,7 @@ class StoreOrderSplitServices extends BaseServices
                     $allData = [];
                     foreach ($statusData as $data) {
                         $data['oid'] = $new_id;
+                        $data['change_time'] = strtotime($data['change_time']);
                         $allData[] = $data;
                     }
                     if ($allData) {

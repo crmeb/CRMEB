@@ -9,8 +9,6 @@
 // | Author: CRMEB Team <admin@crmeb.com>
 // +----------------------------------------------------------------------
 
-//declare (strict_types=1);
-
 namespace app\services\user;
 
 use app\jobs\UserJob;
@@ -44,7 +42,6 @@ use think\Exception;
 use think\facade\Route as Url;
 
 /**
- *
  * Class UserServices
  * @package app\services\user
  * @method array getUserInfoArray(array $where, string $field, string $key) 根据条件查询对应的用户信息以数组形式返回
@@ -71,8 +68,15 @@ class UserServices extends BaseServices
 
     /**
      * 获取用户信息
-     * @param $id
-     * @param $field
+     * @param int $uid
+     * @param string $field
+     * @return array|\think\Model|null
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @author 吴汐
+     * @email 442384644@qq.com
+     * @date 2023/03/01
      */
     public function getUserInfo(int $uid, $field = '*')
     {
@@ -142,9 +146,9 @@ class UserServices extends BaseServices
         //新用户注册奖励
         $this->rewardNewUser((int)$res->uid);
         //用户生成后置事件
-        event('user.register', [$spreadUid, $userType, $user['nickname'], $res->uid, 1]);
+        event('UserRegisterListener', [$spreadUid, $userType, $user['nickname'], $res->uid, 1]);
         //推送消息
-        event('notice.notice', [['spreadUid' => $spreadUid, 'user_type' => $userType, 'nickname' => $user['nickname']], 'bind_spread_uid']);
+        event('NoticeListener', [['spreadUid' => $spreadUid, 'user_type' => $userType, 'nickname' => $user['nickname']], 'bind_spread_uid']);
         return $res;
     }
 
@@ -778,7 +782,7 @@ class UserServices extends BaseServices
                 }
                 $res1 = $userMoneyServices->income('system_sub', $user['uid'], $data['money'], $edit['now_money'], $data['adminId'] ?? 0);
             }
-            event('out.outPush', ['user_update_push', ['uid' => $id, 'type' => 'money', 'value' => $data['money_status'] == 2 ? -floatval($data['money']) : $data['money']]]);
+            event('OutPushListener', ['user_update_push', ['uid' => $id, 'type' => 'money', 'value' => $data['money_status'] == 2 ? -floatval($data['money']) : $data['money']]]);
         } else {
             $res1 = true;
         }
@@ -799,7 +803,7 @@ class UserServices extends BaseServices
                 $integral_data['mark'] = '系统扣除了' . floatval($data['integration']) . '积分';
                 $res2 = $userBill->expendIntegral($user['uid'], 'system_sub', $integral_data);
             }
-            event('out.outPush', ['user_update_push', ['uid' => $id, 'type' => 'point', 'value' => $data['integration_status'] == 2 ? -intval($data['integration']) : $data['integration']]]);
+            event('OutPushListener', ['user_update_push', ['uid' => $id, 'type' => 'point', 'value' => $data['integration_status'] == 2 ? -intval($data['integration']) : $data['integration']]]);
         } else {
             $res2 = true;
         }
@@ -1017,13 +1021,24 @@ class UserServices extends BaseServices
 
     /**
      * 赠送付费会员时长
-     * @param int $uid
-     * @return mixed
-     * */
+     * @param $id
+     * @return array
+     * @throws \FormBuilder\Exception\FormBuilderException
+     * @author 吴汐
+     * @email 442384644@qq.com
+     * @date 2023/03/01
+     */
     public function giveLevelTime($id)
     {
-        if (!$this->getUserInfo($id)) {
+        $userInfo = $this->getUserInfo($id);
+        if (!$userInfo) {
             throw new AdminException(400214);
+        }
+        $timeDiff = $userInfo['is_ever_level'] == 1 ? '永久' : date('Y-m-d H:i:s', $userInfo['overdue_time']);
+        $dayDiff = $userInfo['overdue_time'] > time() ? intval(($userInfo['overdue_time'] - time()) / 86400) : 0;
+        $field[] = Form::input('time_diff', '到期时间', $timeDiff)->style(['width' => '200px'])->readonly(true);
+        if ($userInfo['is_ever_level'] == 0) {
+            $field[] = Form::input('day_diff', '剩余天数', $dayDiff)->style(['width' => '200px'])->readonly(true);
         }
         $field[] = Form::number('days', '增加时长(天)')->precision(0)->style(['width' => '200px'])->required();
         return create_form('赠送付费会员时长', $field, Url::buildUrl('/user/save_give_level_time/' . $id), 'PUT');
@@ -1464,11 +1479,11 @@ class UserServices extends BaseServices
             $user['vip'] = (bool)$userLevel;
             if ($user['vip']) {
                 $user['vip_id'] = $userLevel['id'] ?? 0;
-                $user['vip_icon'] = $userLevel['icon'] ?? '';
+                $user['vip_icon'] = set_file_url($userLevel['icon']) ?? '';
                 $user['vip_name'] = $userLevel['name'] ?? '';
             }
         }
-        $user['yesterDay'] = $userBill->getUsersBokerageSum(['uid' => $uid, 'pm' => 1], 'yesterday');
+        $user['yesterDay'] = $frozenPrices->getUsersBokerageSum(['uid' => $uid, 'pm' => 1], 'yesterday');
         $user['recharge_switch'] = (int)sys_config('recharge_switch');//充值开关
         $user['adminid'] = $storeService->checkoutIsService(['uid' => $uid, 'status' => 1, 'customer' => 1]);
         if ($user['phone'] && $user['user_type'] != 'h5') {
@@ -1597,7 +1612,7 @@ class UserServices extends BaseServices
      */
     public function spread(int $uid, int $spreadUid, $code)
     {
-        $userInfo = $this->dao->value(['uid' => $uid], 'uid,spread_uid,spread_time,add_time,last_time');
+        $userInfo = $this->dao->getOne(['uid' => $uid], 'uid,spread_uid,spread_time,add_time,last_time');
         if (!$userInfo) {
             throw new ApiException(100026);
         }
@@ -1635,7 +1650,7 @@ class UserServices extends BaseServices
                 $check = true;
             }
         }
-        if ($userInfo['uid'] == $userSpreadUid || $userInfo['spread_uid'] == $spreadUid) $check = false;
+        if ($userInfo['uid'] == $spreadUid || $userInfo['uid'] == $userSpreadUid) $check = false;
         if ($check) {
             $spreadInfo = $this->dao->get($spreadUid, ['division_id', 'agent_id', 'staff_id']);
             $data = [];

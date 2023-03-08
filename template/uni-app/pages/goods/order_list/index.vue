@@ -220,6 +220,7 @@
 				pay_close: false,
 				pay_order_id: '',
 				totalPrice: '0',
+				initIn: false,
 				isAuto: false, //没有授权的不会自动授权
 				isShowAuth: false //是否隐藏授权
 			};
@@ -230,10 +231,27 @@
 				this.page = 1;
 				this.orderList = []
 				this.loadend = false;
+				this.pay_close = false;
 				this.onLoadFun();
 				this.getOrderList();
 			} else {
 				toLogin();
+			}
+			let options = wx.getEnterOptionsSync();
+			if (options.scene == '1038' && options.referrerInfo.appId == 'wxef277996acc166c3' && this.initIn) {
+				// 代表从收银台小程序返回
+				let extraData = options.referrerInfo.extraData;
+				this.initIn = false
+				if (!extraData) {
+					this.getOrderList();
+					// "当前通过物理按键返回，未接收到返参，建议自行查询交易结果";
+				} else {
+					if (extraData.code == 'success') {
+						this.getOrderList();
+					} else if (extraData.code == 'cancel') {} else {
+						// "支付失败：" + extraData.errmsg;
+					}
+				}
 			}
 		},
 		methods: {
@@ -341,9 +359,12 @@
 			 *
 			 */
 			goPay: function(pay_price, order_id) {
-				this.$set(this, 'pay_close', true);
-				this.$set(this, 'pay_order_id', order_id);
-				this.$set(this, 'totalPrice', pay_price);
+				uni.navigateTo({
+					url: `/pages/goods/cashier/index?order_id=${order_id}&from_type=order`
+				})
+				// this.$set(this, 'pay_close', true);
+				// this.$set(this, 'pay_order_id', order_id);
+				// this.$set(this, 'totalPrice', pay_price);
 			},
 			/**
 			 * 支付成功回调

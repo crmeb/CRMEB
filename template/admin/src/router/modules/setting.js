@@ -9,6 +9,8 @@
 // +---------------------------------------------------------------------
 
 import BasicLayout from '@/components/main';
+import setting from '@/setting';
+let routePre = setting.routePre;
 
 const meta = {
   auth: true,
@@ -17,11 +19,11 @@ const meta = {
 const pre = 'setting_';
 
 export default {
-  path: '/admin/setting',
+  path: routePre + '/setting',
   name: 'setting',
   header: 'setting',
   redirect: {
-    name: `${pre}systemRole`,
+    name: `${pre}setSystem`,
   },
   component: BasicLayout,
   children: [
@@ -82,7 +84,7 @@ export default {
       name: `${pre}distributionSet`,
       meta: {
         ...meta,
-        title: '分销设置',
+        title: '小程序配置',
       },
       component: () => import('@/pages/setting/setSystem/index'),
     },
@@ -382,6 +384,14 @@ export default {
         title: '主题风格',
       },
       component: () => import('@/pages/setting/themeStyle/index'),
+    },
+    {
+      path: 'pages',
+      name: `${pre}page`,
+      header: 'setting',
+      redirect: {
+        name: `${pre}devise`,
+      },
     },
     {
       path: 'pages/devise',

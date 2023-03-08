@@ -53,7 +53,7 @@
                 class="label"
                 :style="'border:1px solid ' + labelColor + ';color:' + labelColor"
                 :class="priceShow ? '' : 'on'"
-                v-if="couponShow && item.checkCoupon"
+                v-if="couponShow"
               >
                 券
               </div>
@@ -408,6 +408,7 @@ export default {
                         text-align center
                         line-height 18px
                         font-size 11px
+                        border-radius 3px
                         &.on
                            margin-left 0;
 </style>

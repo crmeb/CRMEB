@@ -123,20 +123,19 @@ class User extends AuthController
         if ($data['card_id']) {
             if (!check_card($data['card_id'])) return app('json')->fail(400315);
         }
-        if ($data['pwd']) {
-            if (!$data['true_pwd']) {
-                return app('json')->fail(400263);
-            }
-            if ($data['pwd'] != $data['true_pwd']) {
-                return app('json')->fail(400264);
-            }
-            if (strlen($data['pwd']) < 6 || strlen($data['pwd']) > 32) {
-                return app('json')->fail(400762);
-            }
-            $data['pwd'] = md5($data['pwd']);
-        } else {
-            unset($data['pwd']);
+        if (!$data['pwd']) {
+            return app('json')->fail(400256);
         }
+        if (!$data['true_pwd']) {
+            return app('json')->fail(400263);
+        }
+        if ($data['pwd'] != $data['true_pwd']) {
+            return app('json')->fail(400264);
+        }
+        if (strlen($data['pwd']) < 6 || strlen($data['pwd']) > 32) {
+            return app('json')->fail(400762);
+        }
+        $data['pwd'] = md5($data['pwd']);
         unset($data['true_pwd']);
         $data['avatar'] = sys_config('h5_avatar');
         $data['adminId'] = $this->adminId;
@@ -379,6 +378,12 @@ class User extends AuthController
             ['spread_open', 1]
         ]);
         if (!$id) return app('json')->fail(100100);
+        if (!$data['real_name']) {
+            return app('json')->fail(410245);
+        }
+        if (!$data['phone']) {
+            return app('json')->fail(410245);
+        }
         if ($data['phone']) {
             if (!preg_match("/^1[3456789]\d{9}$/", $data['phone'])) return app('json')->fail(400252);
         }

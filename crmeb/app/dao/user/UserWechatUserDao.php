@@ -240,6 +240,10 @@ class UserWechatUserDao extends BaseDao
         if (isset($where['time'])) {
             $model->withSearch(['time'], ['time' => $where['time'], 'timeKey' => 'u.add_time']);
         }
+
+        if (isset($where['is_del'])) {
+            $model->where($userAlias . 'is_del', $where['is_del']);
+        }
         return $field ? $model->field($field) : $model;
     }
 

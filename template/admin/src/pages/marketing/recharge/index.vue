@@ -142,7 +142,7 @@ export default {
         autoHeightEnabled: false, // 编辑器不自动被内容撑高
         initialFrameHeight: 500, // 初始容器高度
         initialFrameWidth: '100%', // 初始容器宽度
-        UEDITOR_HOME_URL: '/admin/UEditor/',
+        UEDITOR_HOME_URL: '/UEditor/',
         serverUrl: '',
       },
       a: 0, //判断的隐私协议
@@ -1076,7 +1076,7 @@ export default {
 .left-wrapper {
   min-width: 213px;
   background: #fff;
-  border-right: 1px solid #dcdee2;
+  border-right: 1px solid #f2f2f2;
 }
 
 .menu-item {
@@ -1386,7 +1386,6 @@ export default {
   padding: 20px;
   background-color: #fff;
   border-radius: 5px;
-  margin: 20px;
 }
 
 .iview-video-style {

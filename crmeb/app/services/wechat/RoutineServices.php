@@ -461,6 +461,34 @@ class RoutineServices extends BaseServices
             throw new ApiException(410019);
     }
 
+    /**
+     * @param $code
+     * @param $iv
+     * @param $encryptedData
+     * @return bool
+     * @author 吴汐
+     * @email 442384644@qq.com
+     * @date 2023/02/24
+     */
+    public function bindingPhone($code, $iv, $encryptedData)
+    {
+        [$userInfoCong, $userInfo] = app()->make(OAuth::class, ['mini_program'])->oauth($code, [
+            'iv' => $iv,
+            'encryptedData' => $encryptedData
+        ]);
+        if (!$userInfo || !isset($userInfo['purePhoneNumber'])) {
+            throw new ApiException(410079);
+        }
+        $uid = app()->make(WechatUserServices::class)->openidTouid($userInfoCong['openid']);
+        $userServices = app()->make(UserServices::class);
+        if ($userServices->count(['phone' => $userInfo['purePhoneNumber']])) {
+            throw new ApiException(410028);
+        }
+        $res = app()->make(UserServices::class)->update(['uid' => $uid], ['phone' => $userInfo['purePhoneNumber']]);
+        if ($res) return true;
+        throw new ApiException(410017);
+    }
+
 
     /**
      * 更新用户信息

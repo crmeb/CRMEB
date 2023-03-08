@@ -79,6 +79,23 @@ class AuthController
             return app('json')->fail(410019);
     }
 
+    /**
+     * 小程序绑定手机号
+     * @param string $code
+     * @param string $iv
+     * @param string $encryptedData
+     * @return \think\Response
+     * @author 吴汐
+     * @email 442384644@qq.com
+     * @date 2023/02/24
+     */
+    public function bindingPhone($code = '', $iv = '', $encryptedData = '')
+    {
+        if (!$code || !$iv || !$encryptedData) return app('json')->fail(100100);
+        $this->services->bindingPhone($code, $iv, $encryptedData);
+        return app('json')->success(410016);
+    }
+
     /** 以下方法该版本暂未使用 */
     /**
      * 小程序授权登录

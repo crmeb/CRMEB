@@ -59,6 +59,8 @@ class Arr
         $newData = [];
         foreach ($data as $k => $v) {
             $temp = [];
+            $temp['id'] = $v['id'];
+            $temp['pid'] = $v['pid'];
             $temp['path'] = $v['menu_path'];
             $temp['title'] = $v['menu_name'];
             $temp['icon'] = $v['icon'];

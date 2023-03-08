@@ -440,7 +440,6 @@ export default {
     // 阻止浏览器默认换行操作
     listen(e) {
       if (e.shiftKey && e.keyCode == 13) {
-        console.log('换行');
       } else if (e.keyCode == 13) {
         if (e.target.value == '') {
           return this.$Message.error('请输入消息');
@@ -457,7 +456,7 @@ export default {
     },
     // 聊天表情转换
     replace_em(str) {
-      str = str.replace(/\[em-([\s\S]*)\]/g, "<span class='em em-$1'/></span>");
+      str = str.replace(/\[([^\[\]]+)\]/g, "<span class='em $1'/></span>");
       return str;
     },
     // 获取是否游客

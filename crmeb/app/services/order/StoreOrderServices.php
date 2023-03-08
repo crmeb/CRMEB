@@ -23,6 +23,7 @@ use app\services\product\product\StoreProductLogServices;
 use app\services\system\attachment\SystemAttachmentServices;
 use app\services\system\store\SystemStoreServices;
 use app\services\user\UserInvoiceServices;
+use app\services\user\UserRechargeServices;
 use app\services\user\UserServices;
 use app\services\product\product\StoreProductReplyServices;
 use app\services\user\UserAddressServices;
@@ -31,6 +32,7 @@ use app\services\user\UserLevelServices;
 use app\services\wechat\WechatUserServices;
 use crmeb\exceptions\AdminException;
 use crmeb\exceptions\ApiException;
+use crmeb\exceptions\PayException;
 use crmeb\services\CacheService;
 use crmeb\services\FormBuilder as Form;
 use crmeb\services\printer\Printer;
@@ -51,6 +53,7 @@ use think\facade\Log;
  * @method getTrendData($time, $type, $timeType, $str) 用户趋势
  * @method getRegion($time, $channelType) 地域统计
  * @method getProductTrend($time, $timeType, $field, $str) 商品趋势
+ * @method getList(array $where, array $field, int $page = 0, int $limit = 0, array $with = [])
  */
 class StoreOrderServices extends BaseServices
 {
@@ -168,8 +171,9 @@ class StoreOrderServices extends BaseServices
         $data['refunded_count'] = (string)$storeOrderRefundServices->count($refund_where + ['refund_type' => 6]);
         $data['refund_count'] = bcadd(bcadd($data['refunding_count'], $data['refunded_count'], 0), $data['no_refund_count'], 0);
         $data['yue_pay_status'] = (int)sys_config('balance_func_status') && (int)sys_config('yue_pay_status') == 1 ? (int)1 : (int)2;//余额支付 1 开启 2 关闭
-        $data['pay_weixin_open'] = is_wecaht_pay();//微信支付 1 开启 0 关闭
-        $data['ali_pay_status'] = is_ali_pay();//支付包支付 1 开启 0 关闭
+        $data['pc_order_count'] = $data['order_count'] + $data['refunding_count'] + $data['refunded_count'];
+        $data['pay_weixin_open'] = sys_config('pay_weixin_open', '0') != '0';//微信支付 1 开启 0 关闭
+        $data['ali_pay_status'] = sys_config('ali_pay_status', '0') != '0';//支付包支付 1 开启 0 关闭
         $data['friend_pay_status'] = (int)sys_config('friend_pay_status') ?? 0;//好友代付 1 开启 0 关闭
         return $data;
     }
@@ -497,6 +501,9 @@ class StoreOrderServices extends BaseServices
                     case PayServices::ALIAPY_PAY:
                         $item['pay_type_name'] = '支付宝支付';
                         break;
+                    case PayServices::ALLIN_PAY:
+                        $item['pay_type_name'] = '通联支付';
+                        break;
                     default:
                         $item['pay_type_name'] = '其他支付';
                         break;
@@ -775,7 +782,7 @@ HTML;
             if ($res) {
                 $order = $this->dao->getOne(['id' => $id, 'is_del' => 0]);
                 //改价短信提醒
-                event('notice.notice', [['order' => $order, 'pay_price' => $data['pay_price']], 'price_revision']);
+                event('NoticeListener', [['order' => $order, 'pay_price' => $data['pay_price']], 'price_revision']);
                 return $data['order_id'];
             } else {
                 throw new AdminException(100007);
@@ -981,10 +988,46 @@ HTML;
                     ]
                 ]]
                 ];
+                $series3 = ['normal' => ['color' => [
+                    'x' => 0, 'y' => 0, 'x2' => 0, 'y2' => 1,
+                    'colorStops' => [
+                        [
+                            'offset' => 0,
+                            'color' => '#69cdff'
+                        ],
+                        [
+                            'offset' => 0.5,
+                            'color' => '#3eb3f7'
+                        ],
+                        [
+                            'offset' => 1,
+                            'color' => '#1495eb'
+                        ]
+                    ]
+                ]]
+                ];
+                $series4 = ['normal' => ['color' => [
+                    'x' => 0, 'y' => 0, 'x2' => 0, 'y2' => 1,
+                    'colorStops' => [
+                        [
+                            'offset' => 0,
+                            'color' => '#6fdeab'
+                        ],
+                        [
+                            'offset' => 0.5,
+                            'color' => '#44d693'
+                        ],
+                        [
+                            'offset' => 1,
+                            'color' => '#2cc981'
+                        ]
+                    ]
+                ]]
+                ];
                 $chartdata['series'][] = ['name' => $chartdata['legend'][0], 'type' => 'bar', 'itemStyle' => $series1, 'data' => $data['pre']['price']];//分类1值
-                $chartdata['series'][] = ['name' => $chartdata['legend'][1], 'type' => 'bar', 'itemStyle' => $series1, 'data' => $data['now']['price']];//分类1值
-                $chartdata['series'][] = ['name' => $chartdata['legend'][2], 'type' => 'line', 'itemStyle' => $series2, 'data' => $data['pre']['count'], 'yAxisIndex' => 1];//分类2值
-                $chartdata['series'][] = ['name' => $chartdata['legend'][3], 'type' => 'line', 'itemStyle' => $series2, 'data' => $data['now']['count'], 'yAxisIndex' => 1];//分类2值
+                $chartdata['series'][] = ['name' => $chartdata['legend'][1], 'type' => 'bar', 'itemStyle' => $series2, 'data' => $data['now']['price']];//分类1值
+                $chartdata['series'][] = ['name' => $chartdata['legend'][2], 'type' => 'line', 'itemStyle' => $series3, 'data' => $data['pre']['count'], 'yAxisIndex' => 1];//分类2值
+                $chartdata['series'][] = ['name' => $chartdata['legend'][3], 'type' => 'line', 'itemStyle' => $series4, 'data' => $data['now']['count'], 'yAxisIndex' => 1];//分类2值
 
                 //统计总数上期
                 $pre_total = $this->dao->preTotalFind($datebefor, $dateafter);
@@ -1102,10 +1145,46 @@ HTML;
                     ]
                 ]]
                 ];
+                $series3 = ['normal' => ['color' => [
+                    'x' => 0, 'y' => 0, 'x2' => 0, 'y2' => 1,
+                    'colorStops' => [
+                        [
+                            'offset' => 0,
+                            'color' => '#69cdff'
+                        ],
+                        [
+                            'offset' => 0.5,
+                            'color' => '#3eb3f7'
+                        ],
+                        [
+                            'offset' => 1,
+                            'color' => '#1495eb'
+                        ]
+                    ]
+                ]]
+                ];
+                $series4 = ['normal' => ['color' => [
+                    'x' => 0, 'y' => 0, 'x2' => 0, 'y2' => 1,
+                    'colorStops' => [
+                        [
+                            'offset' => 0,
+                            'color' => '#6fdeab'
+                        ],
+                        [
+                            'offset' => 0.5,
+                            'color' => '#44d693'
+                        ],
+                        [
+                            'offset' => 1,
+                            'color' => '#2cc981'
+                        ]
+                    ]
+                ]]
+                ];
                 $chartdata['series'][] = ['name' => $chartdata['legend'][0], 'type' => 'bar', 'itemStyle' => $series1, 'data' => $data['pre']['price']];//分类1值
-                $chartdata['series'][] = ['name' => $chartdata['legend'][1], 'type' => 'bar', 'itemStyle' => $series1, 'data' => $data['now']['price']];//分类1值
-                $chartdata['series'][] = ['name' => $chartdata['legend'][2], 'type' => 'line', 'itemStyle' => $series2, 'data' => $data['pre']['count'], 'yAxisIndex' => 1];//分类2值
-                $chartdata['series'][] = ['name' => $chartdata['legend'][3], 'type' => 'line', 'itemStyle' => $series2, 'data' => $data['now']['count'], 'yAxisIndex' => 1];//分类2值
+                $chartdata['series'][] = ['name' => $chartdata['legend'][1], 'type' => 'bar', 'itemStyle' => $series2, 'data' => $data['now']['price']];//分类1值
+                $chartdata['series'][] = ['name' => $chartdata['legend'][2], 'type' => 'line', 'itemStyle' => $series3, 'data' => $data['pre']['count'], 'yAxisIndex' => 1];//分类2值
+                $chartdata['series'][] = ['name' => $chartdata['legend'][3], 'type' => 'line', 'itemStyle' => $series4, 'data' => $data['now']['count'], 'yAxisIndex' => 1];//分类2值
 
                 //统计总数上期
                 $pre_total = $this->dao->preTotalFind($datebefor, $dateafter);
@@ -1221,10 +1300,46 @@ HTML;
                     ]
                 ]]
                 ];
+                $series3 = ['normal' => ['color' => [
+                    'x' => 0, 'y' => 0, 'x2' => 0, 'y2' => 1,
+                    'colorStops' => [
+                        [
+                            'offset' => 0,
+                            'color' => '#69cdff'
+                        ],
+                        [
+                            'offset' => 0.5,
+                            'color' => '#3eb3f7'
+                        ],
+                        [
+                            'offset' => 1,
+                            'color' => '#1495eb'
+                        ]
+                    ]
+                ]]
+                ];
+                $series4 = ['normal' => ['color' => [
+                    'x' => 0, 'y' => 0, 'x2' => 0, 'y2' => 1,
+                    'colorStops' => [
+                        [
+                            'offset' => 0,
+                            'color' => '#6fdeab'
+                        ],
+                        [
+                            'offset' => 0.5,
+                            'color' => '#44d693'
+                        ],
+                        [
+                            'offset' => 1,
+                            'color' => '#2cc981'
+                        ]
+                    ]
+                ]]
+                ];
                 $chartdata['series'][] = ['name' => $chartdata['legend'][0], 'type' => 'bar', 'itemStyle' => $series1, 'data' => $data['pre']['price']];//分类1值
-                $chartdata['series'][] = ['name' => $chartdata['legend'][1], 'type' => 'bar', 'itemStyle' => $series1, 'data' => $data['now']['price']];//分类1值
-                $chartdata['series'][] = ['name' => $chartdata['legend'][2], 'type' => 'line', 'itemStyle' => $series2, 'data' => $data['pre']['count'], 'yAxisIndex' => 1];//分类2值
-                $chartdata['series'][] = ['name' => $chartdata['legend'][3], 'type' => 'line', 'itemStyle' => $series2, 'data' => $data['now']['count'], 'yAxisIndex' => 1];//分类2值
+                $chartdata['series'][] = ['name' => $chartdata['legend'][1], 'type' => 'bar', 'itemStyle' => $series2, 'data' => $data['now']['price']];//分类1值
+                $chartdata['series'][] = ['name' => $chartdata['legend'][2], 'type' => 'line', 'itemStyle' => $series3, 'data' => $data['pre']['count'], 'yAxisIndex' => 1];//分类2值
+                $chartdata['series'][] = ['name' => $chartdata['legend'][3], 'type' => 'line', 'itemStyle' => $series4, 'data' => $data['now']['count'], 'yAxisIndex' => 1];//分类2值
 
                 //统计总数上期
                 $pre_total = $this->dao->preTotalFind($datebefor, $dateafter);
@@ -1316,24 +1431,24 @@ HTML;
         $yesterday_sales = $this->dao->todaySales('yesterday');
         //日同比
         $sales_today_ratio = $this->growth($today_sales, $yesterday_sales);
-        //周销售额
-        //本周
-        $this_week_sales = $this->dao->thisWeekSales('week');
-        //上周
-        $last_week_sales = $this->dao->thisWeekSales('last week');
-        //周同比
-        $sales_week_ratio = $this->growth($this_week_sales, $last_week_sales);
+//        //周销售额
+//        //本周
+//        $this_week_sales = $this->dao->thisWeekSales('week');
+//        //上周
+//        $last_week_sales = $this->dao->thisWeekSales('last week');
+//        //周同比
+//        $sales_week_ratio = $this->growth($this_week_sales, $last_week_sales);
         //总销售额
         $total_sales = $this->dao->totalSales('month');
         $sales = [
             'today' => $today_sales,
             'yesterday' => $yesterday_sales,
             'today_ratio' => $sales_today_ratio,
-            'week' => $this_week_sales,
-            'last_week' => $last_week_sales,
-            'week_ratio' => $sales_week_ratio,
+//            'week' => $this_week_sales,
+//            'last_week' => $last_week_sales,
+//            'week_ratio' => $sales_week_ratio,
             'total' => $total_sales . '元',
-            'date' => '昨日'
+            'date' => '今日'
         ];
         //TODO:用户访问量
         //今日访问量
@@ -1342,23 +1457,23 @@ HTML;
         $yesterday_visits = $productLogServices->count(['time' => 'yesterday', 'type' => 'visit']);
         //日同比
         $visits_today_ratio = $this->growth($today_visits, $yesterday_visits);
-        //本周访问量
-        $this_week_visits = $productLogServices->count(['time' => 'week', 'type' => 'visit']);
-        //上周访问量
-        $last_week_visits = $productLogServices->count(['time' => 'last week', 'type' => 'visit']);
-        //周同比
-        $visits_week_ratio = $this->growth($this_week_visits, $last_week_visits);
+//        //本周访问量
+//        $this_week_visits = $productLogServices->count(['time' => 'week', 'type' => 'visit']);
+//        //上周访问量
+//        $last_week_visits = $productLogServices->count(['time' => 'last week', 'type' => 'visit']);
+//        //周同比
+//        $visits_week_ratio = $this->growth($this_week_visits, $last_week_visits);
         //总访问量
         $total_visits = $productLogServices->count(['time' => 'month', 'type' => 'visit']);
         $visits = [
             'today' => $today_visits,
             'yesterday' => $yesterday_visits,
             'today_ratio' => $visits_today_ratio,
-            'week' => $this_week_visits,
-            'last_week' => $last_week_visits,
-            'week_ratio' => $visits_week_ratio,
+//            'week' => $this_week_visits,
+//            'last_week' => $last_week_visits,
+//            'week_ratio' => $visits_week_ratio,
             'total' => $total_visits . 'Pv',
-            'date' => '昨日'
+            'date' => '今日'
         ];
         //TODO 订单量
         //今日订单量
@@ -1367,23 +1482,23 @@ HTML;
         $yesterday_order = $this->dao->todayOrderVisit('yesterday', 1);
         //订单日同比
         $order_today_ratio = $this->growth($today_order, $yesterday_order);
-        //本周订单量
-        $this_week_order = $this->dao->todayOrderVisit('week', 2);
-        //上周订单量
-        $last_week_order = $this->dao->todayOrderVisit('last week', 2);
-        //订单周同比
-        $order_week_ratio = $this->growth($this_week_order, $last_week_order);
+//        //本周订单量
+//        $this_week_order = $this->dao->todayOrderVisit('week', 2);
+//        //上周订单量
+//        $last_week_order = $this->dao->todayOrderVisit('last week', 2);
+//        //订单周同比
+//        $order_week_ratio = $this->growth($this_week_order, $last_week_order);
         //总订单量
         $total_order = $this->dao->count(['time' => 'month', 'paid' => 1, 'refund_status' => 0, 'pid' => 0]);
         $order = [
             'today' => $today_order,
             'yesterday' => $yesterday_order,
             'today_ratio' => $order_today_ratio,
-            'week' => $this_week_order,
-            'last_week' => $last_week_order,
-            'week_ratio' => $order_week_ratio,
+//            'week' => $this_week_order,
+//            'last_week' => $last_week_order,
+//            'week_ratio' => $order_week_ratio,
             'total' => $total_order . '单',
-            'date' => '昨日'
+            'date' => '今日'
         ];
         //TODO 用户
         //今日新增用户
@@ -1392,23 +1507,23 @@ HTML;
         $yesterday_user = $uSercice->todayAddVisits('yesterday', 1);
         //新增用户日同比
         $user_today_ratio = $this->growth($today_user, $yesterday_user);
-        //本周新增用户
-        $this_week_user = $uSercice->todayAddVisits('week', 2);
-        //上周新增用户
-        $last_week_user = $uSercice->todayAddVisits('last week', 2);
-        //新增用户周同比
-        $user_week_ratio = $this->growth($this_week_user, $last_week_user);
+//        //本周新增用户
+//        $this_week_user = $uSercice->todayAddVisits('week', 2);
+//        //上周新增用户
+//        $last_week_user = $uSercice->todayAddVisits('last week', 2);
+//        //新增用户周同比
+//        $user_week_ratio = $this->growth($this_week_user, $last_week_user);
         //所有用户
         $total_user = $uSercice->count(['time' => 'month']);
         $user = [
             'today' => $today_user,
             'yesterday' => $yesterday_user,
             'today_ratio' => $user_today_ratio,
-            'week' => $this_week_user,
-            'last_week' => $last_week_user,
-            'week_ratio' => $user_week_ratio,
+//            'week' => $this_week_user,
+//            'last_week' => $last_week_user,
+//            'week_ratio' => $user_week_ratio,
             'total' => $total_user . '人',
-            'date' => '昨日'
+            'date' => '今日'
         ];
         $info = array_values(compact('sales', 'visits', 'order', 'user'));
         $info[0]['title'] = '销售额';
@@ -1577,7 +1692,7 @@ HTML;
         $data['integralRatio'] = $other['integralRatio'];
         $data['offline_pay_status'] = (int)sys_config('offline_pay_status') ?? (int)2;
         $data['yue_pay_status'] = (int)sys_config('balance_func_status') && (int)sys_config('yue_pay_status') == 1 ? (int)1 : (int)2;//余额支付 1 开启 2 关闭
-        $data['pay_weixin_open'] = is_wecaht_pay();//微信支付 1 开启 0 关闭
+        $data['pay_weixin_open'] = sys_config('pay_weixin_open', '0') != '0';//微信支付 1 开启 0 关闭
         $data['friend_pay_status'] = (int)sys_config('friend_pay_status') ?? 0;//好友代付 1 开启 0 关闭
         $data['store_self_mention'] = (int)sys_config('store_self_mention') ?? 0;//门店自提是否开启
         /** @var SystemStoreServices $systemStoreServices */
@@ -1585,7 +1700,7 @@ HTML;
         $store_count = $systemStoreServices->count(['type' => 0]);
         $data['store_self_mention'] = $data['store_self_mention'] && $store_count;
 
-        $data['ali_pay_status'] = is_ali_pay();//支付包支付 1 开启 0 关闭
+        $data['ali_pay_status'] = sys_config('ali_pay_status', '0') != '0';//支付包支付 1 开启 0 关闭
         $data['system_store'] = [];//门店信息
         /** @var UserInvoiceServices $userInvoice */
         $userInvoice = app()->make(UserInvoiceServices::class);
@@ -1689,7 +1804,7 @@ HTML;
         $res = false;
         switch ($payType) {
             case PayServices::WEIXIN_PAY:
-                $res = (bool)sys_config('pay_weixin_open');
+                $res = sys_config('pay_weixin_open', '0') != '0';
                 break;
             case PayServices::YUE_PAY:
                 $res = sys_config('balance_func_status') && sys_config('yue_pay_status') == 1;
@@ -1698,7 +1813,7 @@ HTML;
                 $res = sys_config('offline_pay_status') == 1;
                 break;
             case PayServices::ALIAPY_PAY:
-                $res = sys_config('ali_pay_status') == 1;
+                $res = sys_config('ali_pay_status', '0') != '0';
                 break;
             case PayServices::FRIEND:
                 $res = sys_config('friend_pay_status', 1) == 1;
@@ -1717,6 +1832,24 @@ HTML;
      */
     public function setOrderTypePayOffline(string $orderId)
     {
+        if (($count = strpos($orderId, '_')) !== false) {
+            $orderId = substr($orderId, $count + 1);
+        }
+        if (sys_config('offline_postage', 0) == 1) {
+            $orderInfo = $this->dao->get(['order_id' => $orderId]);
+            $cartInfoService = app()->make(StoreOrderCartInfoServices::class);
+            $cartInfo = $cartInfoService->getColumn(['oid' => $orderInfo['id']], 'cart_info', 'id');
+            foreach ($cartInfo as $key => &$item) {
+                $item_arr = json_decode($item, true);
+                $item_arr['postage_price'] = $item_arr['origin_postage_price'] = 0;
+                $cartInfoService->update(['id' => $key], ['cart_info' => json_encode($item_arr)]);
+            }
+            return $this->dao->update($orderId, [
+                'pay_type' => 'offline',
+                'pay_price' => bcsub((string)$orderInfo['pay_price'], (string)$orderInfo['pay_postage'], 2),
+                'pay_postage' => 0
+            ], 'order_id');
+        }
         return $this->dao->update($orderId, ['pay_type' => 'offline'], 'order_id');
     }
 
@@ -1797,10 +1930,6 @@ HTML;
                 throw new ApiException(100020);
             }
         });
-        /** @var StoreSeckillServices $seckiiServices */
-        $seckiiServices = app()->make(StoreSeckillServices::class);
-        $seckiiServices->cancelOccupySeckillStock($cartInfo, $order['unique']);
-        $seckiiServices->rollBackStock($cartInfo);
         return true;
     }
 
@@ -1856,7 +1985,7 @@ HTML;
     {
         /** @var UserServices $userServices */
         $userServices = app()->make(UserServices::class);
-        $user = $userServices->getUserInfo($uid);
+        $user = $userServices->getUserInfo($uid, 'uid');
         if (!$user) {
             throw new AdminException(100026);
         }
@@ -2021,10 +2150,6 @@ HTML;
                     /** @var StoreOrderCartInfoServices $cartServices */
                     $cartServices = app()->make(StoreOrderCartInfoServices::class);
                     $cartInfo = $cartServices->getOrderCartInfo((int)$order['id']);
-                    /** @var StoreSeckillServices $seckiiServices */
-                    $seckiiServices = app()->make(StoreSeckillServices::class);
-                    $seckiiServices->cancelOccupySeckillStock($cartInfo, $order['unique']);
-                    $seckiiServices->rollBackStock($cartInfo);
 
                 } catch (\Throwable $e) {
                     Log::error('自动取消订单失败,失败原因:' . $e->getMessage(), $e->getTrace());
@@ -2290,7 +2415,7 @@ HTML;
         if (!$orderInfo) {
             throw new ApiException(410264);
         }
-        return $payServices->alipayOrder($orderInfo->toArray(), $quitUrl);
+        return $payServices->beforePay($orderInfo->toArray(), PayServices::ALIAPY_PAY, ['quitUrl' => $quitUrl]);
     }
 
     /**
@@ -2347,8 +2472,8 @@ HTML;
         }
         $order['mapKey'] = sys_config('tengxun_map_key');
         $order['yue_pay_status'] = (int)sys_config('balance_func_status') && (int)sys_config('yue_pay_status') == 1 ? (int)1 : (int)2;//余额支付 1 开启 2 关闭
-        $order['pay_weixin_open'] = (int)sys_config('pay_weixin_open') ?? 0;//微信支付 1 开启 0 关闭
-        $order['ali_pay_status'] = (bool)sys_config('ali_pay_status');//支付包支付 1 开启 0 关闭
+        $order['pay_weixin_open'] = sys_config('pay_weixin_open') != '0';//微信支付 1 开启 0 关闭
+        $order['ali_pay_status'] = sys_config('ali_pay_status', '0') != '0';//支付包支付 1 开启 0 关闭
         $order['friend_pay_status'] = (int)sys_config('friend_pay_status') ?? 0;//好友代付 1 开启 0 关闭
         $orderData = $this->tidyOrder($order, true, true);
         $vipTruePrice = $memberPrice = $levelPrice = 0;
@@ -2392,7 +2517,7 @@ HTML;
         if ($orderData['uid'] != $orderData['pay_uid']) {
             /** @var UserServices $userServices */
             $userServices = app()->make(UserServices::class);
-            $payUser = $userServices->get($orderData['pay_uid']);
+            $payUser = $userServices->get($orderData['pay_uid'], ['nickname', 'avatar']);
             $orderData['help_info'] = [
                 'pay_uid' => $orderData['pay_uid'],
                 'pay_nickname' => $payUser['nickname'],
@@ -2471,5 +2596,82 @@ HTML;
             AutoCommentJob::dispatch([$item['id'], $item['cart_id']]);
         }
         return true;
+    }
+
+    /**
+     * @param string $orderId
+     * @param string $type
+     * @return array
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @author 等风来
+     * @email 136327134@qq.com
+     * @date 2023/2/13
+     */
+    public function getCashierInfo(int $uid, string $orderId, string $type)
+    {
+        //支付类型开关
+        $data = [
+            'ali_pay_status' => sys_config('ali_pay_status', '0') != '0',
+            'wechat_pay_status' => sys_config('pay_weixin_open', '0') != '0',
+            'offline_pay_status' => (int)sys_config('offline_pay_status') == 1,
+            'friend_pay_status' => (int)sys_config('friend_pay_status') == 1,
+            'yue_pay_status' => (int)sys_config('balance_func_status') && (int)sys_config('yue_pay_status') == 1,
+        ];
+
+        $data['order_id'] = $orderId;
+        $data['pay_price'] = '0';
+        $data['now_money'] = app()->make(UserServices::class)->value(['uid' => $uid], 'now_money');
+
+        switch ($type) {
+            case 'order':
+                $info = $this->dao->get(['order_id' => $orderId], ['pay_price', 'add_time', 'combination_id', 'seckill_id', 'bargain_id', 'pay_postage']);
+                if (!$info) {
+                    throw new PayException('您支付的订单不存在');
+                }
+                $orderCancelTime = (int)sys_config('order_cancel_time', 0);
+                $orderActivityTime = (int)sys_config('order_activity_time', 0);
+                if ($info->combination_id) {
+                    $time = ((int)sys_config('order_pink_time', 0) ?: $orderActivityTime) * 60 * 60 + ((int)$info->add_time);
+                } else if ($info->seckill_id) {
+                    $time = ((int)sys_config('order_seckill_time', 0) ?: $orderActivityTime) * 60 * 60 + ((int)$info->add_time);
+                } else if ($info->bargain_id) {
+                    $time = ((int)sys_config('order_bargain_time', 0) ?: $orderActivityTime) * 60 * 60 + ((int)$info->add_time);
+                } else {
+                    $time = $orderCancelTime * 60 * 60 + ((int)$info->add_time);
+                }
+
+                if ($time < 0) {
+                    $time = 0;
+                }
+
+                $data['pay_price'] = $info['pay_price'];
+                $data['pay_postage'] = $info['pay_postage'];
+                $data['offline_postage'] = sys_config('offline_postage', 0);
+                $data['invalid_time'] = $time;
+
+                break;
+            case 'svip':
+                $info = app()->make(OtherOrderServices::class)->get(['order_id' => $orderId], ['pay_price', 'add_time']);
+                if (!$info) {
+                    throw new PayException('您支付的订单不存在');
+                }
+                $data['pay_price'] = $info['pay_price'];
+                $data['invalid_time'] = $info->add_time + 86400;
+                break;
+            case 'recharge':
+                $info = app()->make(UserRechargeServices::class)->get(['order_id' => $orderId], ['price', 'add_time']);
+                if (!$info) {
+                    throw new PayException('您支付的订单不存在');
+                }
+                $data['pay_price'] = $info['price'];
+                $data['invalid_time'] = $info->add_time + 86400;
+                break;
+            default:
+                throw new PayException('暂不支持其他类型订单支付');
+        }
+
+        return $data;
     }
 }

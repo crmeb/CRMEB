@@ -254,6 +254,7 @@
 	.flash-sale .timeLsit .item.on .state {
 		width: 120rpx;
 		height: 30rpx;
+		line-height: 30rpx;
 		border-radius: 15rpx;
 		background: var(--view-theme);
 		color: #fff;

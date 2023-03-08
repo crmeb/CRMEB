@@ -82,6 +82,8 @@
 import linkaddress from '@/components/linkaddress';
 
 import uploadPictures from '@/components/uploadPictures';
+import settings  from '@/setting'
+
 import vuedraggable from 'vuedraggable';
 export default {
   name: 'c_upload_list',
@@ -194,7 +196,7 @@ export default {
         'test-dialog',
         function (editor, uiName) {
           let dialog = new window.UE.ui.Dialog({
-            iframeUrl: '/admin/widget.images/index.html?fodder=dialog',
+            iframeUrl: settings.routePre + '/widget.images/index.html?fodder=dialog',
             editor: editor,
             name: uiName,
             title: '上传图片',

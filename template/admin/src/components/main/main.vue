@@ -3,34 +3,32 @@
     <Sider
       hide-trigger
       collapsible
-      :width="200"
+      :width="sider.length ? 240 : 80"
       :collapsed-width="isMobile ? 0 : 80"
-      v-model="collapsed"
-      class="left-sider"
+      v-model="menuCollapse"
       :style="{ overflow: 'hidden' }"
       v-if="!headMenuNoShow"
     >
       <side-menu
         accordion
         ref="sideMenu"
+        @on-coll-change="handleCollapsedChange"
         :active-name="$route.path"
-        :collapsed="collapsed"
         @on-select="turnToPage"
-        :menu-list="menuList"
       >
         <!-- 需要放在菜单上面的内容，如Logo，写在side-menu标签内部，如下 -->
         <div class="logo-con">
-          <img v-show="!collapsed" :src="maxLogo" key="max-logo" />
-          <img v-show="collapsed" :src="minLogo" key="min-logo" />
+          <img :src="minLogo" key="min-logo" />
         </div>
       </side-menu>
     </Sider>
     <Layout>
       <Header class="header-con" v-if="!headMenuNoShow">
-        <header-bar :collapsed="collapsed" @on-coll-change="handleCollapsedChange" @on-reload="handleReload">
+        <header-bar @on-coll-change="handleCollapsedChange">
           <user :message-unread-count="unreadCount" :user-avatar="userAvatar" />
           <language v-if="$config.useI18n" @on-lang-change="setLocal" style="margin-right: 10px" :lang="local" />
           <header-notice></header-notice>
+          <Reload @on-reload="handleReload"></Reload>
           <fullscreen v-model="isFullscreen" style="margin-right: 10px" />
           <error-store
             v-if="$config.plugin['error-store'] && $config.plugin['error-store'].showInHeader"
@@ -40,7 +38,7 @@
           <header-search></header-search>
         </header-bar>
       </Header>
-      <Content class="main-content-con">
+      <Content class="main-content-con" :class="{ 'all-desk': headMenuNoShow }">
         <Layout class="main-layout-con">
           <div class="tag-nav-wrapper" v-if="!headMenuNoShow">
             <tags-nav :value="$route" @input="handleClick" :list="tagNavList" @on-close="handleCloseTag" />
@@ -50,13 +48,19 @@
               <router-view v-if="reload" style="min-height: 600px" />
             </keep-alive> -->
             <keep-alive>
-              <router-view v-if="$route.meta.keepAlive && reload" style="min-height: 600px"></router-view>
+              <router-view v-if="$route.meta.keepAlive && reload" class="main-warper"></router-view>
             </keep-alive>
-            <router-view v-if="!$route.meta.keepAlive && reload" style="min-height: 600px"></router-view>
+            <router-view v-if="!$route.meta.keepAlive && reload" class="main-warper"></router-view>
             <!-- <router-view v-if="reload" style="min-height: 600px" /> -->
-            <!--<ABackTop :height="100" :bottom="80" :right="50" container=".content-wrapper"></ABackTop>-->
+            <ABackTop
+              v-if="!headMenuNoShow"
+              :height="100"
+              :bottom="80"
+              :right="50"
+              container=".content-wrapper"
+            ></ABackTop>
+            <i-copyright v-if="!headMenuNoShow" />
           </Content>
-          <i-copyright />
         </Layout>
       </Content>
     </Layout>
@@ -77,6 +81,7 @@ import Language from './components/language';
 import ErrorStore from './components/error-store';
 import HeaderSearch from './components/header-search';
 import HeaderNotice from './components/header-notice';
+import Reload from './components/reload';
 
 import Setting from '@/setting';
 import iView from 'iview';
@@ -101,10 +106,11 @@ export default {
     iCopyright,
     HeaderSearch,
     HeaderNotice,
+    Reload,
   },
   data() {
     return {
-      collapsed: JSON.parse(getCookies('collapsed') || 'false'),
+      // collapsed: JSON.parse(getCookies('collapsed') || 'false'),
       minLogo,
       maxLogo,
       isFullscreen: false,
@@ -114,9 +120,15 @@ export default {
       headMenuNoShow: false,
     };
   },
+  watch: {
+    sider(val) {},
+  },
   computed: {
     ...mapGetters(['errorCount']),
+    ...mapState('menu', ['sider']),
     ...mapState('media', ['isMobile']),
+    ...mapState('layout', ['menuCollapse']),
+
     tagNavList() {
       return this.$store.state.app.tagNavList;
     },
@@ -134,20 +146,6 @@ export default {
           : []),
       ];
       return list;
-    },
-    menuList() {
-      let menus = this.$store.state.menus.menusName;
-      let newArray = [];
-      menus.forEach((now, index) => {
-        newArray[index] = now;
-        if (newArray[index].children && now.children) {
-          newArray[index].children = now.children.filter((item) => {
-            return !item.auth;
-          });
-        }
-      });
-      return newArray;
-      // return this.$store.state.menus.menusName
     },
     local() {
       return this.$store.state.app.local;
@@ -180,8 +178,8 @@ export default {
       });
     },
     handleCollapsedChange(state) {
-      this.collapsed = state;
-      setCookies('collapsed', state);
+      // this.collapsed = state;
+      // setCookies('collapsed', state);
     },
     handleCloseTag(res, type, route) {
       if (type !== 'others') {
@@ -227,8 +225,6 @@ export default {
   watch: {
     $route(newRoute) {
       this.headMenuNoShow = this.$route.meta.fullScreen;
-      let openNames = getMenuopen(newRoute, this.menuList);
-      this.$store.commit('menus/setopenMenus', openNames);
       const { name, query, params, meta } = newRoute;
       this.addTag({
         route: { name, query, params, meta },
@@ -247,11 +243,13 @@ export default {
       return (() => {
         this.screenWidth = document.body.clientWidth;
         if (this.screenWidth <= 1060) {
-          this.collapsed = true;
-          setCookies('collapsed', true);
+          // this.collapsed = true;
+          // setCookies('collapsed', true);
+          this.$store.commit('layout/changeCol', true);
         } else {
-          this.collapsed = false;
-          setCookies('collapsed', false);
+          // this.collapsed = false;
+          // setCookies('collapsed', false);
+          this.$store.commit('layout/changeCol', false);
         }
       })();
     };
@@ -281,14 +279,14 @@ export default {
 </script>
 <style lang="less">
 .main .header-con {
-  padding: 0 20px 0 0px;
+  padding: 0 0px 0 0px;
+  display: flex;
+  background: #fff;
+  box-shadow: 1px 1px 4px rgba(49, 103, 154, 0.08);
 }
 .main .logo-con img {
   height: 50px;
-}
-.main .tag-nav-wrapper {
-  // height: 10px;
-  background: unset;
+  transition: all 1s;
 }
 .open-image {
   display: flex;
@@ -303,6 +301,19 @@ export default {
   z-index: 1000;
   img {
     width: 800px;
+  }
+}
+.main-warper {
+  min-height: calc(~'100vh - 196px');
+}
+.all-desk {
+  height: 100vh !important;
+  padding: 0 !important;
+  .main-content-con,
+  .main-warper,
+  .main-layout-con,
+  .content-wrapper {
+    height: 100vh !important;
   }
 }
 </style>

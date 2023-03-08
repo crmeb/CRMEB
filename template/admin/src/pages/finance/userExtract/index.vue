@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Card :bordered="false" dis-hover class="ivu-mt">
+    <Card :bordered="false" dis-hover class="ivu-mb-16">
       <Form
         ref="formValidate"
         :model="formValidate"
@@ -62,7 +62,7 @@
                   v-model="formValidate.nireid"
                   style="width: 30%"
                 />
-                <router-link to="/admin/finance/finance/commission" class="ml20">佣金记录</router-link>
+                <router-link :to="$routeProStr + '/finance/finance/commission'" class="ml20">佣金记录</router-link>
               </div>
             </FormItem>
           </Col>
@@ -240,6 +240,7 @@ export default {
         fromTxt: [
           { text: '全部', val: '' },
           { text: '今天', val: 'today' },
+          { text: '昨天', val: 'yesterday' },
           { text: '本周', val: 'week' },
           { text: '本月', val: 'month' },
           { text: '本季度', val: 'quarter' },
@@ -300,7 +301,7 @@ export default {
   },
   watch: {
     $route() {
-      if (this.$route.fullPath === '/admin/finance/user_extract/index?status=0') {
+      if (this.$route.fullPath === (this.$routeProStr +'/finance/user_extract/index?status=0')) {
         this.getPath();
       }
     },
@@ -315,7 +316,7 @@ export default {
     },
   },
   mounted() {
-    if (this.$route.fullPath === '/admin/finance/user_extract/index?status=0') {
+    if (this.$route.fullPath === (this.$routeProStr + '/finance/user_extract/index?status=0')) {
       this.getPath();
     } else {
       this.getList();

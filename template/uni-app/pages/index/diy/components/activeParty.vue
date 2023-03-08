@@ -11,7 +11,8 @@
 				</view>
 			</view>
 			<view class="bd">
-				<view class="item skeleton-rect" @click="goDetail(item)" v-for="(item,index) in explosiveMoney" :key="index">
+				<view class="item skeleton-rect" @click="goDetail(item)" v-for="(item,index) in explosiveMoney"
+					:key="index">
 					<view class="con-box">
 						<view class="title line1">{{$t(item.info[0].value)}}</view>
 						<view class="con line2">{{$t(item.info[1].value)}}</view>
@@ -99,6 +100,7 @@
 			.txt {
 				padding: 0 10rpx;
 				height: 36rpx;
+				line-height: 36rpx;
 				// background: linear-gradient(90deg, rgba(255, 168, 0, 1) 0%, rgba(255, 34, 15, 1) 100%);
 				border-radius: 26rpx 0px 26rpx 0px;
 				color: #fff;

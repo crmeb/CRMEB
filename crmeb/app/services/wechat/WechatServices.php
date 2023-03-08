@@ -378,8 +378,8 @@ class WechatServices extends BaseServices
             if ($userInfo['unionid'] && $storeUserMobile) {
                 /** @var UserServices $userServices */
                 $userServices = app()->make(UserServices::class);
-                $uid = $this->dao->value(['unionid' => $userInfo['unionid']], 'uid');
-                $res = $userServices->value(['uid' => $uid], 'phone');
+                $uid = $this->dao->value(['unionid' => $userInfo['unionid'], 'is_del' => 0], 'uid');
+                $res = $userServices->value(['uid' => $uid, 'is_del' => 0], 'phone');
                 if (!$uid && !$res) {
                     return false;
                 }

@@ -2,6 +2,8 @@
 const VUE_APP_API_URL = process.env.VUE_APP_API_URL || `${location.origin}/adminapi`;
 
 const Setting = {
+  // 路由前缀
+  routePre: '/admin',
   // 接口请求地址
   apiBaseURL: VUE_APP_API_URL,
   // 路由模式，可选值为 history 或 hash

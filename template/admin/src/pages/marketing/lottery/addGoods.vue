@@ -223,7 +223,7 @@ export default {
     let keys = Object.keys(this.editData);
     keys.forEach((item) => {
       this.formValidate[item] = this.editData[item];
-      if (item === 'coupon_title') {
+      if (item === 'coupon_title' && this.editData[item]) {
         this.couponName.push({
           title: this.editData[item],
           id: this.editData.coupon_id,

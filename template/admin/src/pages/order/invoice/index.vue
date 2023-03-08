@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Card :bordered="false" dis-hover class="ivu-mt">
+    <Card :bordered="false" dis-hover class="ivu-mb-16">
       <div class="table_box">
         <Form
           ref="orderData"
@@ -68,6 +68,8 @@
           </Row>
         </Form>
       </div>
+    </card>
+    <Card :bordered="false" dis-hover>
       <Tabs v-model="currentTab" @on-click="onClickTab" v-if="tablists" class="mb20">
         <TabPane :label="'全部发票（' + tablists.all + '）'" name=" " />
         <TabPane :label="'待开发票（' + tablists.noOpened + '）'" name="1" />
@@ -78,7 +80,6 @@
         :columns="columns"
         :data="orderList"
         ref="table"
-        class="mt25"
         :loading="loading"
         highlight-row
         no-userFrom-text="暂无数据"
@@ -100,14 +101,15 @@
           <div v-else-if="row.status === 1">待收货</div>
           <div v-else-if="row.status === 2">待评价</div>
           <div v-else-if="row.status === 3">已完成</div>
+          <div v-else-if="row.status === -2">已退款</div>
         </template>
         <template slot-scope="{ row, index }" slot="header_type">
           <div v-if="row.header_type === 1">个人</div>
           <div v-else>企业</div>
         </template>
         <template slot-scope="{ row, index }" slot="action">
-          <a @click="edit(row)">编辑</a>
-          <Divider type="vertical" />
+          <a v-if="row.status != -2" @click="edit(row)">编辑</a>
+          <Divider v-if="row.status != -2" type="vertical" />
           <a @click="orderInfo(row.id)">订单信息</a>
         </template>
       </Table>
@@ -349,9 +351,9 @@ export default {
         ],
       },
       grid: {
-        xl: 8,
-        lg: 8,
-        md: 8,
+        xl: 12,
+        lg: 16,
+        md: 24,
         sm: 24,
         xs: 24,
       },

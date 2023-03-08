@@ -23,7 +23,7 @@ class Decoder extends \Intervention\Image\AbstractDecoder
         }
 
         // get mime type of file
-        $mime = finfo_file(finfo_open(FILEINFO_MIME_TYPE), $path);
+        $mime =  getimagesize($path)['mime'] ?? '';
 
         // define core
         switch (strtolower($mime)) {

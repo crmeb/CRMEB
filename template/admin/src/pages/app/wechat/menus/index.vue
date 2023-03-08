@@ -1,9 +1,7 @@
 <template>
   <div class="article-manager">
-    <div class="i-layout-page-header">
-      <div class="i-layout-page-header">
+    <div class="i-layout-page-header header-title">
         <span class="ivu-page-header-title">{{ $route.meta.title }}</span>
-      </div>
     </div>
     <Card :bordered="false" dis-hover class="ivu-mt">
       <!-- 公众号设置 -->

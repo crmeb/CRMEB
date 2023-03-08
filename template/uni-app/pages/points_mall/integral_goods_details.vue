@@ -54,6 +54,9 @@
 						<view class="introduce acea-row row-between">
 							<view class="infor"> {{ storeInfo.title }}</view>
 						</view>
+						<view class="limit_good" v-if="storeInfo.num > 0">
+							{{ $t(`最多可兑换`)}}: {{storeInfo.num}}{{$t(storeInfo.unit_name)}}
+						</view>
 						<view class="label acea-row row-middle">
 							<view class="stock">{{$t(`划线价`)}}：{{ storeInfo.product_price }}</view>
 							<view class="stock">{{$t(`限量`)}}:
@@ -401,7 +404,7 @@
 					this.replyCount = res.data.replyCount;
 					this.reply = res.data.reply ? [res.data.reply] : [];
 					this.replyChance = res.data.replyChance;
-					that.routineContact = res.data.routine_contact_type;
+					that.routineContact = Number(res.data.routine_contact_type);
 					for (let key in res.data.productValue) {
 						let obj = res.data.productValue[key];
 						that.skuArr.push(obj);
@@ -880,6 +883,12 @@
 
 	.product-con .wrapper .introduce {
 		margin: 0;
+	}
+
+	.limit_good {
+		font-size: 16rpx;
+		margin: 10rpx 0rpx;
+		color: red;
 	}
 
 	.product-con .wrapper .introduce .infor {

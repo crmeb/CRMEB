@@ -9,10 +9,12 @@
 // +---------------------------------------------------------------------
 
 import BasicLayout from '@/components/main';
+import setting  from '@/setting'
+let routePre = setting.routePre;
 
 const pre = 'finance_';
 export default {
-  path: '/admin/finance',
+  path: routePre+'/finance',
   name: 'finance',
   header: 'finance',
   meta: {

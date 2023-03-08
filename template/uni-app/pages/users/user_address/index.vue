@@ -42,7 +42,8 @@
 				<view class="wechatAddress" v-if="!id" @click="getWxAddress">{{$t(`导入微信地址`)}}</view>
 				<!-- #endif -->
 				<!-- #ifdef H5 -->
-				<view class="wechatAddress" v-if="this.$wechat.isWeixin() && !id" @click="getAddress">{{$t(`导入微信地址`)}}</view>
+				<view class="wechatAddress" v-if="this.$wechat.isWeixin() && !id" @click="getAddress">{{$t(`导入微信地址`)}}
+				</view>
 				<!-- #endif -->
 			</view>
 		</form>
@@ -382,8 +383,12 @@
 							post_code: userInfo.postalCode,
 							type: 1,
 						})
-						.then(() => {
-							setTimeout(function() {
+						.then((res) => {
+							// close();
+							that.$util.Tips({
+								title: that.$t(`添加成功`),
+								icon: 'success'
+							}, () => {
 								if (that.cartId) {
 									let cartId = that.cartId;
 									let pinkId = that.pinkId;
@@ -395,10 +400,9 @@
 										url: '/pages/goods/order_confirm/index?cartId=' +
 											cartId + '&addressId=' + (that.id ? that.id :
 												res.data
-												.id) + '&pinkId=' + pinkId + '&couponId=' +
-											couponId + '&new=' + that.news +
-											'&noCoupon=' + that
-											.noCoupon
+												.id) + '&pinkId=' + pinkId +
+											'&couponId=' +
+											couponId + '&new=' + that.news
 									});
 								} else {
 									uni.navigateTo({
@@ -406,11 +410,6 @@
 									})
 									// history.back();
 								}
-							}, 1000);
-							// close();
-							that.$util.Tips({
-								title: that.$t(`添加成功`),
-								icon: 'success'
 							});
 						})
 						.catch(err => {

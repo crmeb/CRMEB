@@ -117,17 +117,17 @@ class Qiniu extends BaseUpload
     {
         $fileHandle = app()->request->file($file);
         if (!$fileHandle) {
-            return $this->setError('Upload file does not exist');
+            return $this->setError('上传的文件不存在');
         }
         if ($this->validate) {
             if (!in_array(pathinfo($fileHandle->getOriginalName(), PATHINFO_EXTENSION), $this->validate['fileExt'])) {
-                return $this->setError('Upload fileExt error');
+                return $this->setError('不合法的文件后缀');
             }
             if (filesize($fileHandle) > $this->validate['filesize']) {
-                return $this->setError('Upload filesize error');
+                return $this->setError('文件过大');
             }
             if (!in_array($fileHandle->getOriginalMime(), $this->validate['fileMime'])) {
-                return $this->setError('Upload fileMine error');
+                return $this->setError('不合法的文件类型');
             }
         }
         $key = $this->saveFileName($fileHandle->getRealPath(), $fileHandle->getOriginalExtension());

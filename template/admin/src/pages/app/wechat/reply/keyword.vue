@@ -205,11 +205,11 @@ export default {
     },
     // 添加
     add() {
-      this.$router.push({ path: '/admin/app/wechat/reply/keyword/save/0' });
+      this.$router.push({ path: this.$routeProStr + '/app/wechat/reply/keyword/save/0' });
     },
     // 编辑
     edit(row) {
-      this.$router.push({ path: '/admin/app/wechat/reply/keyword/save/' + row.id });
+      this.$router.push({ path: this.$routeProStr + '/app/wechat/reply/keyword/save/' + row.id });
     },
     del(row, tit, num) {
       let delfromData = {

@@ -276,7 +276,7 @@ export default {
   },
   watch: {
     $route() {
-      if (this.$route.fullPath === '/admin/order/list?status=1') {
+      if (this.$route.fullPath === (this.$routeProStr + '/order/list?status=1')) {
         this.getPath();
       }
     },
@@ -284,7 +284,7 @@ export default {
   created() {
     // this.timeVal = this.today;
     // this.orderData.data = this.timeVal.join('-');
-    if (this.$route.fullPath === '/admin/order/list?status=1') {
+    if (this.$route.fullPath === (this.$routeProStr + '/order/list?status=1')) {
       this.getPath();
     }
   },
@@ -305,6 +305,7 @@ export default {
       let excelData = JSON.parse(JSON.stringify(this.orderData));
       excelData.page = 1;
       excelData.limit = 200;
+      excelData.ids = this.delIdList;
       for (let i = 0; i < excelData.page + 1; i++) {
         let lebData = await this.getExcelData(excelData);
         if (!fileName) fileName = lebData.filename;

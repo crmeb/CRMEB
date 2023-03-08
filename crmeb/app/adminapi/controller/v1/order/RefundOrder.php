@@ -57,7 +57,13 @@ class RefundOrder extends AuthController
     /**
      * 订单详情
      * @param $uni
-     * @return mixed
+     * @return \think\Response
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @author 吴汐
+     * @email 442384644@qq.com
+     * @date 2023/03/02
      */
     public function getRefundInfo($uni)
     {
@@ -163,12 +169,12 @@ class RefundOrder extends AuthController
                     return app('json')->fail(400147);
                 }
                 $refund_price = $data['refund_price'];
+            }
 
-                $data['refunded_price'] = bcadd($data['refund_price'], $orderRefund['refunded_price'], 2);
-                $bj = bccomp((string)$orderRefund['refund_price'], (string)$data['refunded_price'], 2);
-                if ($bj < 0) {
-                    return app('json')->fail(400148);
-                }
+            $data['refunded_price'] = bcadd($data['refund_price'], $orderRefund['refunded_price'], 2);
+            $bj = bccomp((string)$orderRefund['refund_price'], (string)$data['refunded_price'], 2);
+            if ($bj < 0) {
+                return app('json')->fail(400148);
             }
 
             unset($data['type']);
@@ -184,7 +190,7 @@ class RefundOrder extends AuthController
             $refund_data['open_id'] = $wechatUserServices->uidToOpenid((int)$order['uid'], 'routine') ?? '';
             $refund_data['refund_no'] = $orderRefund['order_id'];
             //修改订单退款状态
-            unset($data['refund_price']);
+            $data['refund_price'] = $data['refunded_price'];
             if ($this->services->agreeRefund($id, $refund_data)) {
                 $this->services->update($id, $data);
                 return app('json')->success(400149);

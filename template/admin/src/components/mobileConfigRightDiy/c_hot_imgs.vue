@@ -53,6 +53,7 @@ import vuedraggable from 'vuedraggable';
 import { mapState, mapActions } from 'vuex';
 import uploadPictures from '@/components/uploadPictures';
 import { wechatNewsAddApi, wechatNewsInfotApi } from '@/api/app';
+import settings  from '@/setting'
 export default {
   name: 'c_hot_imgs',
   props: {
@@ -152,7 +153,7 @@ export default {
         'test-dialog',
         function (editor, uiName) {
           let dialog = new window.UE.ui.Dialog({
-            iframeUrl: '/admin/widget.images/index.html?fodder=dialog',
+            iframeUrl: settings.routePre +'/widget.images/index.html?fodder=dialog',
             editor: editor,
             name: uiName,
             title: '上传图片',

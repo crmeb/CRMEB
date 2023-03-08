@@ -1,7 +1,7 @@
 <template>
   <div>
-    <div class="i-layout-page-header">
-      <span class="ivu-page-header-title mr20">页面装修</span>
+    <div class="i-layout-page-header header-title">
+      <span class="ivu-page-header-title mr20">{{ $route.meta.title }}</span>
       <div>
         <div style="float: right" v-if="cardShow == 1 || cardShow == 2">
           <Button class="bnt" type="primary" @click="submit" :loading="loadingExist">保存</Button>
@@ -66,7 +66,7 @@
                       v-if="row.is_diy === 1"
                       class="target"
                       ref="target"
-                      :href="`${url}/admin/setting/pages/diy_index?id=${row.id}&name=${row.template_name || 'moren'}`"
+                      :href="`${url}${$routeProStr}/setting/pages/diy_index?id=${row.id}&name=${row.template_name || 'moren'}`"
                       target="_blank"
                     >
                       编辑</a
@@ -291,6 +291,12 @@ export default {
     cancel() {
       this.$refs['formItem'].resetFields();
     },
+    refreshFrame() {
+      this.imgUrl = '';
+      setTimeout((e) => {
+        this.imgUrl = `${location.origin}/pages/index/index?type=iframeWindow`;
+      }, 200);
+    },
     getChildData(e) {
       this.loadingExist = e;
     },
@@ -350,7 +356,7 @@ export default {
         if (valid) {
           setCookies('moveLink', this.formItem.link);
           this.$router.push({
-            path: '/admin/setting/pages/diy',
+            path: this.$routeProStr + '/setting/pages/diy',
             query: { id: this.formItem.id, type: 1 },
           });
         } else {
@@ -408,7 +414,7 @@ export default {
           this.$Message.error('请先设为首页在进行编辑');
         } else {
           this.$router.push({
-            path: '/admin/setting/pages/diy',
+            path: this.$routeProStr + '/setting/pages/diy',
             query: { id: row.id, type: 0 },
           });
         }
@@ -421,7 +427,7 @@ export default {
     // 添加
     add() {
       this.$router.push({
-        path: '/admin/setting/pages/diy_index',
+        path: this.$routeProStr + '/setting/pages/diy_index',
         query: { id: 0, name: '首页', type: 1 },
       });
     },
@@ -454,26 +460,10 @@ export default {
             type: 1,
           })
             .then((res) => {
+              this.refreshFrame();
               this.$Message.success(res.msg);
               this.$Modal.remove();
               this.getList();
-              // if (res.data.status) {
-              //   this.$Message.success(res.data.msg);
-              //   this.$Modal.remove();
-              //   this.getList();
-              // } else {
-              //   setTimeout((e) => {
-              //     this.$Modal.confirm({
-              //       title: "提示",
-              //       content: "<p>尚未安装模板，请购买安装后再试！</p>",
-              //       loading: false,
-              //       okText: "点击购买",
-              //       onOk: () => {
-              //         window.open("http://s.crmeb.com/goods_cate", `_blank`);
-              //       },
-              //     });
-              //   }, 200);
-              // }
             })
             .catch((res) => {
               this.$Modal.remove();
@@ -523,9 +513,6 @@ export default {
 }
 
 /deep/.i-layout-page-header {
-  height: 66px;
-  background-color: #fff;
-  border-bottom: 1px solid #e8eaec;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -626,7 +613,7 @@ export default {
 
 .left-wrapper {
   background: #fff;
-  border-right: 1px solid #dcdee2;
+  border-right: 1px solid #f2f2f2;
 }
 
 .picCon {

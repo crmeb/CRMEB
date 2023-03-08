@@ -1,7 +1,7 @@
 <template>
   <div>
     <Row class="expand-row">
-      <Col span="8">
+      <Col span="8" class="mr20">
         <span class="expand-key">商品分类：</span>
         <span class="expand-value">{{ row.cate_name }}</span>
       </Col>

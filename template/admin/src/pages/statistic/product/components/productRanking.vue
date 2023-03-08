@@ -1,5 +1,5 @@
 <template>
-  <Card :bordered="false" dis-hover class="ivu-mt">
+  <Card :bordered="false" dis-hover class="ivu-mt-16">
     <div class="acea-row row-between-wrapper mb20">
       <div class="header-title">商品排行</div>
       <div class="acea-row">

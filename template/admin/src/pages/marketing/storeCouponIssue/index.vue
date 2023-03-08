@@ -385,12 +385,12 @@ export default {
     },
     // 添加优惠券
     add() {
-      this.$router.push({ path: '/admin/marketing/store_coupon_issue/create' });
+      this.$router.push({ path: this.$routeProStr + '/marketing/store_coupon_issue/create' });
     },
     // 复制
     copy(data) {
       this.$router.push({
-        path: `/admin/marketing/store_coupon_issue/create/${data.id}`,
+        path: this.$routeProStr + `/marketing/store_coupon_issue/create/${data.id}`,
       });
     },
     // 是否开启

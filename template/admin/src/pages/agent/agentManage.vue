@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Card :bordered="false" dis-hover class="ivu-mt">
+    <Card :bordered="false" dis-hover class="ivu-mb-16">
       <Form
         ref="formValidate"
         :model="formValidate"
@@ -20,7 +20,8 @@
                 <Radio :label="item.val" v-for="(item, i) in fromList.fromTxt" :key="i">{{ item.text }}</Radio>
               </RadioGroup>
               <DatePicker
-                :editable="false"
+                :editable="true"
+                :clearable="true"
                 @on-change="onchangeTime"
                 :value="timeVal"
                 format="yyyy/MM/dd"
@@ -74,18 +75,18 @@
           <a @click="promoters(row, 'man')">推广人</a>
           <Divider type="vertical" />
           <template>
-            <Dropdown @on-click="changeMenu(row, $event, index)" transfer="true">
+            <Dropdown @on-click="changeMenu(row, $event, index)" :transfer="true">
               <a href="javascript:void(0)">
                 更多
                 <Icon type="ios-arrow-down"></Icon>
               </a>
               <DropdownMenu slot="list">
                 <DropdownItem name="1">推广订单</DropdownItem>
-                <DropdownItem name="2">推广方式</DropdownItem>
-                <!--                                <DropdownItem name="3">修改上级推广人</DropdownItem>-->
-                <!--                                <DropdownItem name="4">清除上级推广人</DropdownItem>-->
-                <!--                                <DropdownItem name="5">取消推广资格</DropdownItem>-->
-                <DropdownItem name="5">赠送分销等级</DropdownItem>
+                <DropdownItem name="2">推广二维码</DropdownItem>
+                <DropdownItem name="3">修改上级推广人</DropdownItem>
+                <DropdownItem name="4" v-if="row.spread_uid">清除上级推广人</DropdownItem>
+                <DropdownItem name="5">取消推广资格</DropdownItem>
+                <DropdownItem name="6">修改分销等级</DropdownItem>
               </DropdownMenu>
             </Dropdown>
           </template>
@@ -104,7 +105,7 @@
     </Card>
     <!-- 推广人列表-->
     <promoters-list ref="promotersLists"></promoters-list>
-    <!-- 推广方式-->
+    <!-- 推广二维码-->
     <Modal v-model="modals" scrollable footer-hide closable title="推广二维码" :mask-closable="false" width="600">
       <div class="acea-row row-around">
         <div class="acea-row row-column-around row-between-wrapper">
@@ -273,7 +274,7 @@ export default {
           minWidth: 120,
         },
         {
-          title: '佣金金额',
+          title: '佣金总金额',
           key: 'brokerage_money',
           minWidth: 120,
         },
@@ -367,21 +368,24 @@ export default {
     changeMenu(row, name, index) {
       switch (name) {
         case '1':
-          this.promoters(row, 'order');
+          this.promoters(row, 'order'); //推广人订单
           break;
         case '2':
-          this.spreadQR(row);
+          this.spreadQR(row); //推广方式二维码
           break;
         case '3':
-          this.editS(row);
+          this.editS(row); //修改上级推广人
           break;
-        case '4':
-          this.del(row, '解除【 ' + row.nickname + ' 】的上级推广人', index);
-        case '5':
+        case '4': //清除上级推广人
+          this.del_parent(row, '清除【 ' + row.nickname + ' 】的上级推广人', index);
+          break;
+        case '5': //取消推广资格
+          this.del_agent(row, '取消【 ' + row.nickname + ' 】的推广资格', index);
+          break;
+        case '6': //修改推广等级
           this.$modalForm(membershipDataAddApi({ uid: row.uid }, '/agent/get_level_form')).then(() => this.getList());
           break;
         default:
-          this.del_open(row, '解除【 ' + row.nickname + ' 】的推广资格', index);
           break;
       }
     },
@@ -397,16 +401,16 @@ export default {
       this.formInline.spread_uid = e.uid;
       this.formInline.image = e.image;
     },
-    // 删除
-    del(row, tit, num) {
-      let delfromData = {
-        title: tit,
+    // 清除上级关系
+    del_parent(rows, titile, num) {
+      let delfromDatap = {
+        title: titile,
         num: num,
-        url: `agent/stair/delete_spread/${row.uid}`,
+        url: `agent/stair/delete_spread/${rows.uid}`,
         method: 'PUT',
         ids: '',
       };
-      this.$modalSure(delfromData)
+      this.$modalSure(delfromDatap)
         .then((res) => {
           this.$Message.success(res.msg);
           this.getList();
@@ -415,8 +419,8 @@ export default {
           this.$Message.error(res.msg);
         });
     },
-    // 删除
-    del_open(row, tit, num) {
+    // 取消自己推广资格
+    del_agent(row, tit, num) {
       let delfromData = {
         title: tit,
         num: num,

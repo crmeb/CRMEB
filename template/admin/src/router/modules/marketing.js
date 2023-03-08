@@ -9,14 +9,17 @@
 // +---------------------------------------------------------------------
 
 import BasicLayout from '@/components/main';
+import setting  from '@/setting'
+let routePre = setting.routePre;
+
 const pre = 'marketing_';
 
 export default {
-  path: '/admin/marketing',
+  path: routePre+'/marketing',
   name: 'marketing',
   header: 'marketing',
   redirect: {
-    name: `${pre}storeCoupon`,
+    name: `${pre}storeCouponIssue`,
   },
   component: BasicLayout,
   children: [

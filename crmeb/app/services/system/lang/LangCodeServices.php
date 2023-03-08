@@ -138,6 +138,7 @@ class LangCodeServices extends BaseServices
             $langStr = 'api_lang_' . str_replace('-', '_', $value);
             CacheService::delete($langStr);
         }
+        $this->cacheDriver()->clear();
         return true;
     }
 
@@ -168,5 +169,21 @@ class LangCodeServices extends BaseServices
             $data[$item['id']] = $translator->translateText("", $lang, array($text))[0]['Translation'];
         }
         return $data;
+    }
+
+    /**
+     * 获取多语言缓存
+     * @return mixed
+     * @author 吴汐
+     * @email 442384644@qq.com
+     * @date 2023/03/06
+     */
+    public function getLangVersion()
+    {
+        return $this->cacheDriver()->remember('lang_version', function () {
+            return [
+                'version' => uniqid()
+            ];
+        });
     }
 }

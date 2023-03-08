@@ -19,8 +19,6 @@ export default {
     };
   },
   mounted() {
-    console.log(this.$refs.picBox.clientWidth);
-
     this.$nextTick(() => {
       let winWidth = this.$refs.picBox.clientWidth;
       let winHeight = document.body.clientHeight - 170;

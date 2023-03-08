@@ -14,6 +14,7 @@
 namespace crmeb\services\pay\storage;
 
 use app\services\pay\PayNotifyServices;
+use app\services\pay\PayServices;
 use app\services\wechat\WechatMessageServices;
 use crmeb\exceptions\PayException;
 use crmeb\services\app\MiniProgramService;
@@ -22,6 +23,7 @@ use crmeb\services\pay\BasePay;
 use crmeb\services\pay\PayInterface;
 use crmeb\utils\Hook;
 use EasyWeChat\Payment\Order;
+use think\facade\Event;
 use think\facade\Log;
 
 /**
@@ -68,7 +70,7 @@ class V3WechatPay extends BasePay implements PayInterface
                 'serial_no' => sys_config('pay_weixin_serial_no'),
                 'cert_path' => public_path() . $this->getPemPath(sys_config('pay_weixin_client_cert')),
                 'key_path' => public_path() . $this->getPemPath(sys_config('pay_weixin_client_key')),
-                'notify_url' => trim(sys_config('site_url')) . '/api/wechat/v3notify',
+                'notify_url' => trim(sys_config('site_url')) . '/api/pay/notify/v3wechat',
             ]
         ];
         $this->instance = new Application($config);
@@ -148,7 +150,7 @@ class V3WechatPay extends BasePay implements PayInterface
      */
     public function merchantPay(string $openid, string $orderId, string $amount, array $options = [])
     {
-        $res = $this->instance->v3pay->batches(
+        $res = $this->instance->v3pay->setType($options['type'])->batches(
             $orderId,
             $amount,
             $options['batch_name'],
@@ -198,19 +200,18 @@ class V3WechatPay extends BasePay implements PayInterface
     public function handleNotify()
     {
         return $this->instance->v3pay->handleNotify(function ($notify, $successful) {
-            Log::error('支付回调:' . json_encode($notify));
-            if ($successful && isset($notify->out_trade_no)) {
-                if (isset($notify->attach) && $notify->attach) {
-                    if (($count = strpos($notify->out_trade_no, '_')) !== false) {
-                        $notify->out_trade_no = substr($notify->out_trade_no, $count + 1);
-                    }
-                    return (new Hook(PayNotifyServices::class, 'wechat'))->listen($notify->attach, $notify->out_trade_no, $notify->transaction_id);
-                }
-                /** @var WechatMessageServices $wechatMessageService */
-                $wechatMessageService = app()->make(WechatMessageServices::class);
-                $wechatMessageService->setOnceMessage($notify, $notify->openid, 'payment_success', $notify->out_trade_no);
-                return false;
+
+            if ($successful) {
+                $data = [
+                    'attach' => $notify->attach,
+                    'out_trade_no' => $notify->out_trade_no,
+                    'transaction_id' => $notify->transaction_id
+                ];
+
+                return Event::until('NotifyListener', [$data, PayServices::WEIXIN_PAY]);
             }
+
+            return false;
         });
     }
 }

@@ -1,5 +1,5 @@
 <template>
-  <div class="ivu-mt-16">
+  <div>
     <!--头部-->
     <base-info ref="baseInfo" />
     <!--小方块-->

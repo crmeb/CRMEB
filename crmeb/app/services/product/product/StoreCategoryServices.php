@@ -14,6 +14,7 @@ namespace app\services\product\product;
 
 use app\dao\product\product\StoreCategoryDao;
 use app\services\BaseServices;
+use app\services\diy\DiyServices;
 use crmeb\exceptions\AdminException;
 use crmeb\services\CacheService;
 use crmeb\services\FormBuilder as Form;
@@ -95,7 +96,7 @@ class StoreCategoryServices extends BaseServices
         $where = [];
         if ($show !== '') $where['is_show'] = $show;
         if (!$type) $where['pid'] = 0;
-        $data = get_tree_children($this->dao->getTierList($where, ['id as value', 'cate_name as label', 'pid']), 'children', 'value');
+        $data = get_tree_children($this->dao->getTierList($where, ['id', 'id as value', 'cate_name as label', 'cate_name as title', 'pid']), 'children', 'id');
         foreach ($data as &$item) {
             if (!isset($item['children'])) {
                 $item['disabled'] = true;
@@ -117,7 +118,6 @@ class StoreCategoryServices extends BaseServices
             throw new AdminException(100005);
         } else {
             $this->cacheDriver()->clear();
-            $this->cacheDriver()->set('category_version', uniqid());
         }
     }
 
@@ -205,7 +205,6 @@ class StoreCategoryServices extends BaseServices
         if (!$res) throw new AdminException(100006);
 
         $this->cacheDriver()->clear();
-        $this->cacheDriver()->set('category_version', uniqid());
 
         return (int)$res->id;
     }
@@ -214,6 +213,12 @@ class StoreCategoryServices extends BaseServices
      * 保存修改数据
      * @param $id
      * @param $data
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @author 吴汐
+     * @email 442384644@qq.com
+     * @date 2023/02/23
      */
     public function editData($id, $data)
     {
@@ -239,7 +244,6 @@ class StoreCategoryServices extends BaseServices
         });
 
         $this->cacheDriver()->clear();
-        $this->cacheDriver()->set('category_version', uniqid());
     }
 
     /**
@@ -255,7 +259,6 @@ class StoreCategoryServices extends BaseServices
         if (!$res) throw new AdminException(100008);
 
         $this->cacheDriver()->clear();
-        $this->cacheDriver()->set('category_version', uniqid());
     }
 
     /**
@@ -267,7 +270,10 @@ class StoreCategoryServices extends BaseServices
     public function getCategoryVersion()
     {
         return $this->cacheDriver()->remember('category_version', function () {
-            return uniqid();
+            return [
+                'is_diy' => app()->make(DiyServices::class)->value(['status' => 1], 'is_diy'),
+                'version' => uniqid()
+            ];
         });
     }
 
@@ -275,6 +281,12 @@ class StoreCategoryServices extends BaseServices
      * 获取指定id下的分类,一=以数组形式返回
      * @param string $cateIds
      * @return array
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @author 吴汐
+     * @email 442384644@qq.com
+     * @date 2023/02/23
      */
     public function getCateArray(string $cateIds)
     {
@@ -283,7 +295,14 @@ class StoreCategoryServices extends BaseServices
 
     /**
      * 前台分类列表
-     * @return bool|mixed|null
+     * @param array $where
+     * @return array|mixed
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @author 吴汐
+     * @email 442384644@qq.com
+     * @date 2023/02/23
      */
     public function getCategory(array $where)
     {

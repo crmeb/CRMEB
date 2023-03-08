@@ -1,7 +1,7 @@
 <template>
   <div>
     <Row class="ivu-mt box-wrapper">
-      <Col span="3" class="left-wrapper">
+      <Col v-bind="grid1"  class="left-wrapper">
         <Menu :theme="theme3" :active-name="sortName" width="auto">
           <MenuGroup>
             <MenuItem
@@ -32,10 +32,10 @@
           </MenuGroup>
         </Menu>
       </Col>
-      <Col span="21" ref="rightBox">
+      <Col v-bind="grid2" ref="rightBox">
         <Card :bordered="false" dis-hover>
           <Row type="flex">
-            <Col v-bind="grid">
+            <Col>
               <Button v-auth="['admin-user-label_add']" type="primary" icon="md-add" @click="add">添加标签</Button>
               <Button
                 v-auth="['admin-user-label_add']"
@@ -69,7 +69,7 @@
             </template>
           </Table>
           <div class="acea-row row-right page">
-            <Page :total="total" show-elevator show-total @on-change="pageChange" :page-size="labelFrom.limit" />
+            <Page :total="total" :model-value="labelFrom.page" show-elevator show-total @on-change="pageChange" :page-size="labelFrom.limit" />
           </div>
         </Card>
       </Col>
@@ -84,31 +84,40 @@ export default {
   name: 'user_label',
   data() {
     return {
-      grid: {
-        xl: 7,
-        lg: 7,
-        md: 12,
-        sm: 24,
+      grid1: {
+        xl: 4,
+        lg: 4,
+        md: 6,
+        sm: 8,
+        xs: 0,
+      },
+      grid2: {
+        xl: 20,
+        lg: 20,
+        md: 18,
+        sm: 16,
         xs: 24,
       },
+
       loading: false,
       columns1: [
         {
           title: 'ID',
           key: 'id',
           align: 'center',
-          width: 120,
+          width: 80,
+        },
+        {
+          title: '标签名称',
+          key: 'label_name',
+          align: 'left',
         },
         {
           title: '分类名称',
           key: 'cate_name',
           align: 'center',
         },
-        {
-          title: '标签名称',
-          key: 'label_name',
-          align: 'center',
-        },
+
         {
           title: '操作',
           slot: 'action',
@@ -182,7 +191,6 @@ export default {
         .then((res) => {
           this.$Message.success(res.msg);
           this.labelLists.splice(num, 1);
-          this.labelFrom.page = 1;
           this.getList();
         })
         .catch((res) => {
@@ -274,9 +282,9 @@ export default {
 }
 
 .left-wrapper {
-  height: 904px;
+  height: 920px;
   background: #fff;
-  border-right: 1px solid #dcdee2;
+  border-right: 1px solid #f2f2f2;
 }
 
 .menu-item {

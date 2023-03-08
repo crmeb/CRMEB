@@ -9,11 +9,13 @@
 // +---------------------------------------------------------------------
 
 import BasicLayout from '@/components/main';
+import setting  from '@/setting'
+let routePre = setting.routePre;
 
 const pre = 'system_';
 
 export default {
-  path: '/admin/system',
+  path: routePre+'/system',
   name: 'system',
   header: 'system',
   redirect: {

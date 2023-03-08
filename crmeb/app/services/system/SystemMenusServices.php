@@ -51,8 +51,13 @@ class SystemMenusServices extends BaseServices
     {
         $data = [];
         foreach ($menusList as $item) {
-            $data[] = $item->getData();
+            $item = $item->getData();
+            if (isset($item['menu_path'])) {
+                $item['menu_path'] = '/' . config('app.admin_prefix', 'admin') . $item['menu_path'];
+            }
+            $data[] = $item;
         }
+
         return $data;
     }
 

@@ -723,7 +723,7 @@ export function upgradeableListApi(params) {
  */
 export function timerIndex(params) {
   return request({
-    url: `system/timer/list`,
+    url: `system/crontab/list`,
     params,
   });
 }
@@ -735,7 +735,7 @@ export function timerIndex(params) {
  */
 export function showTimer(id, is_open) {
   return request({
-    url: `system/timer/set_open/${id}/${is_open}`,
+    url: `system/crontab/set_open/${id}/${is_open}`,
   });
 }
 
@@ -746,7 +746,7 @@ export function showTimer(id, is_open) {
  */
 export function timerInfo(id) {
   return request({
-    url: `system/timer/info/${id}`,
+    url: `system/crontab/info/${id}`,
   });
 }
 
@@ -757,7 +757,7 @@ export function timerInfo(id) {
  */
 export function saveTimer(data) {
   return request({
-    url: `system/timer/save`,
+    url: `system/crontab/save`,
     method: 'post',
     data,
   });
@@ -771,7 +771,7 @@ export function saveTimer(data) {
  */
 export function updateTimer(id, data) {
   return request({
-    url: `system/timer/update/${id}`,
+    url: `system/crontab/update/${id}`,
     method: 'post',
     data,
   });
@@ -783,6 +783,6 @@ export function updateTimer(id, data) {
  */
 export function timerTask() {
   return request({
-    url: `/system/timer/mark`,
+    url: `system/crontab/mark`,
   });
 }

@@ -1,10 +1,5 @@
 <template>
   <div>
-    <div class="i-layout-page-header">
-      <div class="i-layout-page-header">
-        <span class="ivu-page-header-title">{{ $route.meta.title }}</span>
-      </div>
-    </div>
     <Row type="flex">
       <Col span="24">
         <div class="index_from page-account-container">
@@ -23,7 +18,7 @@
                 prefix="ios-lock-outline"
                 placeholder="请输入密码"
               />
-              <div class="trip">提示：config/filesystem.php中手动配置password后使用，不能为空</div>
+              <div class="trip">提示：密码配置在 /config/filesystem.php 文件中修改 'password' => '密码'</div>
             </FormItem>
             <FormItem class="maxInpt">
               <Button type="primary" long size="large" @click="handleSubmit('formInline')" class="btn">登录</Button>
@@ -83,7 +78,7 @@ export default {
               // 记录用户登陆信息
               setCookies('file_token', res.data.token, expires);
               this.$router.push({
-                path: '/admin/system/maintain/system_file/opendir',
+                path: this.$routeProStr + '/system/maintain/system_file/opendir',
               });
             })
             .catch((res) => {
@@ -105,10 +100,11 @@ export default {
 </script>
 
 <style scoped lang="stylus">
+
 .maxInpt{
-    max-width 400px
-    margin-left auto
-    margin-right auto
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
 }
 .index_from{
   display: flex;
@@ -117,27 +113,33 @@ export default {
   align-items: center;
 }
 .trip{
-    width 400px
+    width: 400px;
     text-align: left;
-    color #aaa
+    color: #aaa;
 }
 .page-account-container{
-    text-align center
-    padding 200px 0
+    text-align: center;
+    padding: 200px 0;
 }
 .page-account-top{
-    margin-bottom 50px
+    margin-bottom: 50px;
 }
-.page-account-top-tit
-    font-size 30px
-    color #1890FF
-    font-weight 500
-.page-account-other
-    text-align center
-    color #1890FF
-    font-size 12px
-    span
-        cursor pointer
+.page-account-top-tit{
+  font-size:30px;
+  color:#1890FF;
+  font-weight:500;
+}
+
+.page-account-other{
+  text-align:center;
+  color:#1890FF;
+  font-size:12px;
+  span{
+    cursor: pointe;
+  }
+}
+
+
 >>> .btn{
   font-size: 15px !important;
 }

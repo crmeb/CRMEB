@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Card :bordered="false" dis-hover class="ivu-mt">
+    <Card :bordered="false" dis-hover class="ivu-mb-16">
       <dateRadio @selectDate="onSelectDate"></dateRadio>
       <DatePicker
         :editable="false"
@@ -13,11 +13,11 @@
         placeholder="请选择时间"
         style="width: 200px"
         :options="options"
-        class="mr20"
+        class="mr20 "
       ></DatePicker>
     </Card>
     <cards-data :cardLists="cardLists" v-if="cardLists.length >= 0"></cards-data>
-    <Card :bordered="false" dis-hover>
+    <Card class="ivu-mb-16" :bordered="false" dis-hover>
       <h3>余额使用趋势</h3>
       <echarts-new :option-data="optionData" :styles="style" height="100%" width="100%" v-if="optionData"></echarts-new>
     </Card>
@@ -52,7 +52,7 @@
           </Table>
         </div>
       </Card>
-      <Card :bordered="false" dis-hover class="ivu-mt">
+      <Card :bordered="false" dis-hover class="ivu-mt ml10">
         <div class="acea-row row-between-wrapper">
           <h3 class="header-title">余额消耗</h3>
           <div class="change-style" @click="echartRight = !echartRight">切换样式</div>
@@ -335,10 +335,10 @@ export default {
 .code-row-bg {
   display: flex;
   flex-wrap: nowrap;
+  justify-content: space-between;
 }
 .code-row-bg .ivu-mt {
-  min-width: 50%;
-  margin: 0 5px;
+  min-width: 49%;
 }
 .ech-box {
   margin-top: 10px;

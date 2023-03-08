@@ -150,4 +150,25 @@ class StoreOrderRefundDao extends BaseDao
             })
             ->order('add_time ASC')->select()->toArray();
     }
+
+    /**
+     * @param $time
+     * @param $timeType
+     * @param $field
+     * @param $str
+     * @return mixed
+     * @author 吴汐
+     * @email 442384644@qq.com
+     * @date 2023/03/06
+     */
+    public function getProductTrend($time, $timeType, $field, $str)
+    {
+        return $this->getModel()->where(function ($query) use ($time, $field) {
+            if ($time[0] == $time[1]) {
+                $query->whereDay($field, $time[0]);
+            } else {
+                $query->whereTime($field, 'between', $time);
+            }
+        })->field("FROM_UNIXTIME($field,'$timeType') as days,$str as num")->group('days')->select()->toArray();
+    }
 }

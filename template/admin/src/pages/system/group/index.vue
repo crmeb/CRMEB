@@ -154,7 +154,7 @@ export default {
     // 跳转到组合数据列表页面
     goList(row) {
       this.$router.push({
-        path: '/admin/system/config/system_group/list/' + row.id,
+        path: this.$routeProStr + '/system/config/system_group/list/' + row.id,
       });
     },
     // 列表

@@ -153,7 +153,7 @@
 				/deep/.easy-loadimage image {
 					width: 100%;
 					height: 346rpx;
-          border-radius: 20rpx 20rpx 0 0;
+					border-radius: 20rpx 20rpx 0 0;
 				}
 
 				.pictrue_log {
@@ -167,7 +167,7 @@
 					width: 100%;
 					height: 346rpx;
 					display: block;
-          border-radius: 20rpx 20rpx 0 0;
+					border-radius: 20rpx 20rpx 0 0;
 				}
 
 				.text-info {

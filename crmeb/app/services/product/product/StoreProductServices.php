@@ -93,8 +93,14 @@ class StoreProductServices extends BaseServices
 
     /**
      * 获取列表
-     * @param $where
+     * @param array $where
      * @return array
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @author 吴汐
+     * @email 442384644@qq.com
+     * @date 2023/02/17
      */
     public function getList(array $where)
     {
@@ -648,15 +654,34 @@ class StoreProductServices extends BaseServices
 
                 //采集商品下载图片
                 if ($type == -1) {
+                    $s_image_down = $d_image_down = [];
                     //下载商品轮播图
                     foreach ($slider_image as $s_image) {
-                        ProductCopyJob::dispatch('copySliderImage', [$res->id, $s_image, count($slider_image)]);
-                    }
-                    preg_match_all('#<img.*?src="([^"]*)"[^>]*>#i', $description, $match);
-                    foreach ($match[1] as $d_image) {
-                        ProductCopyJob::dispatch('copyDescriptionImage', [$res->id, $description, $d_image, count($match[1])]);
+                        if (sys_config('queue_open', 0) == 1) {
+                            ProductCopyJob::dispatch('copySliderImage', [$res->id, $s_image, count($slider_image)]);
+                        } else {
+                            //下载图片
+                            $s_image_down[] = app()->make(CopyTaobaoServices::class)->downloadCopyImage($s_image);
+                        }
                     }
 
+                    //下载商品详情图
+                    preg_match_all('#<img.*?src="([^"]*)"[^>]*>#i', $description, $match);
+                    foreach ($match[1] as $d_image) {
+                        if (sys_config('queue_open', 0) == 1) {
+                            ProductCopyJob::dispatch('copyDescriptionImage', [$res->id, $description, $d_image, count($match[1])]);
+                        } else {
+                            if (!is_int(strpos($d_image, 'http'))) $d_image = 'http://' . ltrim($d_image, '\//');
+                            $d_image_down[] = $d_img = app()->make(CopyTaobaoServices::class)->downloadCopyImage($d_image);
+                            $description = str_replace($d_image, $d_img, $description);
+                        }
+                    }
+
+                    if (sys_config('queue_open', 0) == 0) {
+                        $this->update($res->id, ['slider_image' => $s_image_down ? json_encode($s_image_down) : '', 'image' => $s_image_down[0]]);
+                        app()->make(StoreProductAttrValueServices::class)->update(['product_id' => $res->id], ['image' => $s_image_down[0]]);
+                        $storeDescriptionServices->saveDescription((int)$res->id, $description);
+                    }
                 }
             }
         });
@@ -1368,7 +1393,7 @@ class StoreProductServices extends BaseServices
             }
             $data['priceName'] = $this->getPacketPrice($storeInfo, $attrValue, $uid);
             //用户访问事件
-            event('user.userVisit', [$uid, $id, 'product', $storeInfo['cate_id'], 'view']);
+            event('UserVisitListener', [$uid, $id, 'product', $storeInfo['cate_id'], 'view']);
         }
 
         /** @var StoreProductReplyServices $storeProductReplyService */
@@ -1938,7 +1963,7 @@ class StoreProductServices extends BaseServices
      */
     public function getCode(int $id, string $userType, $user)
     {
-        if (!$id || !$this->isValidProduct($id)) {
+        if (!$id || !$this->isValidProduct($id, 'id')) {
             throw new ApiException(410294);
         }
         if ($userType == 'routine') {
@@ -1992,13 +2017,15 @@ class StoreProductServices extends BaseServices
                 break;
             case 2:
                 foreach ($ids as $product_id) {
-                    $batchData[] = [
-                        'id' => $product_id,
-                        'logistics' => implode(',', $data['logistics']),
-                        'freight' => $data['freight'],
-                        'postage' => $data['freight'] == 2 ? $data['postage'] : 0,
-                        'temp_id' => $data['freight'] == 3 ? $data['temp_id'] : 0
-                    ];
+                    if ($this->dao->value(['id' => $product_id], 'virtual_type') == 0) {
+                        $batchData[] = [
+                            'id' => $product_id,
+                            'logistics' => implode(',', $data['logistics']),
+                            'freight' => $data['freight'],
+                            'postage' => $data['freight'] == 2 ? $data['postage'] : 0,
+                            'temp_id' => $data['freight'] == 3 ? $data['temp_id'] : 0
+                        ];
+                    }
                 }
                 if (count($batchData)) $this->dao->saveAll($batchData);
                 break;

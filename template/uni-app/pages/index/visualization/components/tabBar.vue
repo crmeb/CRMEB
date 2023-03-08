@@ -124,11 +124,9 @@
 		left: 0;
 		z-index: 999;
 		width: 100%;
-		height: 98rpx;
-		height: calc(98rpx+ constant(safe-area-inset-bottom)); ///兼容 IOS<11.2/
-		height: calc(98rpx + env(safe-area-inset-bottom)); ///兼容 IOS>11.2/
-		padding-bottom: calc(constant(safe-area-inset-bottom)); ///兼容 IOS<11.2/
-		padding-bottom: calc(env(safe-area-inset-bottom)); ///兼容 IOS>11.2/
+		padding: 6rpx 0;
+		padding-bottom: calc(6rpx + constant(safe-area-inset-bottom)); ///兼容 IOS<11.2/
+		padding-bottom: calc(6rpx + env(safe-area-inset-bottom)); ///兼容 IOS>11.2/
 		box-sizing: border-box;
 		border-top: solid 1rpx #F3F3F3;
 		background-color: #fff;

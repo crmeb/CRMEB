@@ -1,5 +1,7 @@
 <template>
-	<view class="pictureCube skeleton-rect" :class="{pageOn:bgStyle===1}" :style="{margin:'0 '+prConfig*2+'rpx',marginTop:slider*2+'rpx',background:bgColor}" v-if="picList.length" v-show="!isSortType">
+	<view class="pictureCube skeleton-rect" :class="{pageOn:bgStyle===1}"
+		:style="{margin:'0 '+prConfig*2+'rpx',marginTop:slider*2+'rpx',background:bgColor}" v-if="picList.length"
+		v-show="!isSortType">
 		<view class="advertItem01" v-for="(item,index) in picList" :key="index" v-if="style==0" @click="goDetail(item)">
 			<image :src="item.image" mode="widthFix"></image>
 		</view>
@@ -15,14 +17,14 @@
 		</view>
 		<view class="advertItem04 acea-row" v-if="style==3">
 			<view class="item" @click="goDetail(picList[0])">
-				<image :src="picList[0].image" mode="aspectFill"></image>
+				<image :src="picList[0].image"></image>
 			</view>
 			<view class="item">
-				<view class="pic"  @click="goDetail(picList[1])">
-					<image :src="picList[1].image" mode="aspectFill"></image>
+				<view class="pic" @click="goDetail(picList[1])">
+					<image :src="picList[1].image"></image>
 				</view>
-				<view class="pic"  @click="goDetail(picList[2])">
-					<image :src="picList[2].image" mode="aspectFill"></image>
+				<view class="pic" @click="goDetail(picList[2])">
+					<image :src="picList[2].image"></image>
 				</view>
 			</view>
 		</view>
@@ -65,28 +67,29 @@
 			};
 		},
 		mounted() {
-			if(this.picList.length){
+			if (this.picList.length) {
 				let that = this;
 				this.$nextTick((e) => {
-					if(this.style==1){
+					if (this.style == 1) {
 						this.widthC = 375
-					}else if(this.style==2){
+					} else if (this.style == 2) {
 						this.widthC = 250
-					}else if(this.style==4){
+					} else if (this.style == 4) {
 						this.widthC = 188
 					}
 					uni.getImageInfo({
 						src: that.setDomain(that.picList[0].image),
 						success: (res) => {
 							if (res && res.height > 0) {
-								let height = res.height * ((that.widthC-that.prConfig*2) / res.width)
-								that.$set(that, 'imageH', height);	
+								let height = res.height * ((that.widthC - that.prConfig * 2) / res
+									.width)
+								that.$set(that, 'imageH', height);
 							} else {
-								that.$set(that, 'imageH', (that.widthC-that.prConfig*2)*2);
+								that.$set(that, 'imageH', (that.widthC - that.prConfig * 2) * 2);
 							}
 						},
 						fail: function(error) {
-							that.$set(that, 'imageH', (that.widthC-that.prConfig*2)*2);
+							that.$set(that, 'imageH', (that.widthC - that.prConfig * 2) * 2);
 						}
 					})
 				})
@@ -130,167 +133,196 @@
 </script>
 
 <style lang="scss">
-	 .pageOn{
-	        border-radius:24rpx!important;
-	        .advertItem01{
-	            image{
-	                border-radius:20rpx;
-	            }
-	        }
-	        .advertItem02{
-	            .item{
-	                &:nth-child(1){
-	                    image{
-	                        border-radius:20rpx 0 0 20rpx
-	                    }
-	                }
-	                &:nth-child(2){
-	                    image{
-	                        border-radius:0 20rpx 20rpx 0
-	                    }
-	                }
-	            }
-	        }
-	        .advertItem03{
-	            .item{
-	                &:nth-child(1){
-	                    image{
-	                        border-radius:20rpx 0 0 20rpx
-	                    }
-	                }
-	                &:nth-child(2){
-	                    image{
-	                        border-radius:0
-	                    }
-	                }
-	                &:nth-child(3){
-	                    image{
-	                        border-radius:0 20rpx 20rpx 0
-	                    }
-	                }
-	            }
-	        }
-	        .advertItem04{
-	            .item{
-	                &:nth-child(1){
-	                    image{
-	                        border-radius:20rpx 0 0 20rpx
-	                    }
-	                }
-	                &:nth-child(2){
-	                    .pic{
-	                        &:nth-child(1){
-	                            image{
-	                                border-radius:0 20rpx 0 0
-	                            }
-	                        }
-	                        &:nth-child(2){
-	                            image{
-	                                border-radius:0 0 20rpx 0
-	                            }
-	                        }
-	                    }
-	                }
-	            }
-	        }
-	        .advertItem05{
-	            .item{
-	                &:nth-child(1){
-	                    image{
-	                        border-radius:20rpx 0 0 20rpx
-	                    }
-	                }
-	                &:nth-child(2){
-	                    image{
-	                        border-radius:0
-	                    }
-	                }
-	                &:nth-child(4){
-	                    image{
-	                        border-radius:0 20rpx 20rpx 0
-	                    }
-	                }
-	            }
-	        }
-	        .advertItem06{
-	            .item{
-	                &:nth-child(1){
-	                    image{
-	                        border-radius:20rpx 0 0 0
-	                    }
-	                }
-	                &:nth-child(2){
-	                    image{
-	                        border-radius:0 20rpx 0 0
-	                    }
-	                }
-	                &:nth-child(3){
-	                    image{
-	                        border-radius:0 0 0 20rpx
-	                    }
-	                }
-	                &:nth-child(4){
-	                    image{
-	                        border-radius:0 0 20rpx 0
-	                    }
-	                }
-	            }
-	        }
-	    }
+	.pageOn {
+		border-radius: 24rpx !important;
+
+		.advertItem01 {
+			image {
+				border-radius: 20rpx;
+			}
+		}
+
+		.advertItem02 {
+			.item {
+				&:nth-child(1) {
+					image {
+						border-radius: 20rpx 0 0 20rpx
+					}
+				}
+
+				&:nth-child(2) {
+					image {
+						border-radius: 0 20rpx 20rpx 0
+					}
+				}
+			}
+		}
+
+		.advertItem03 {
+			.item {
+				&:nth-child(1) {
+					image {
+						border-radius: 20rpx 0 0 20rpx
+					}
+				}
+
+				&:nth-child(2) {
+					image {
+						border-radius: 0
+					}
+				}
+
+				&:nth-child(3) {
+					image {
+						border-radius: 0 20rpx 20rpx 0
+					}
+				}
+			}
+		}
+
+		.advertItem04 {
+			.item {
+				&:nth-child(1) {
+					image {
+						border-radius: 20rpx 0 0 20rpx
+					}
+				}
+
+				&:nth-child(2) {
+					.pic {
+						&:nth-child(1) {
+							image {
+								border-radius: 0 20rpx 0 0
+							}
+						}
+
+						&:nth-child(2) {
+							image {
+								border-radius: 0 0 20rpx 0
+							}
+						}
+					}
+				}
+			}
+		}
+
+		.advertItem05 {
+			.item {
+				&:nth-child(1) {
+					image {
+						border-radius: 20rpx 0 0 20rpx
+					}
+				}
+
+				&:nth-child(2) {
+					image {
+						border-radius: 0
+					}
+				}
+
+				&:nth-child(4) {
+					image {
+						border-radius: 0 20rpx 20rpx 0
+					}
+				}
+			}
+		}
+
+		.advertItem06 {
+			.item {
+				&:nth-child(1) {
+					image {
+						border-radius: 20rpx 0 0 0
+					}
+				}
+
+				&:nth-child(2) {
+					image {
+						border-radius: 0 20rpx 0 0
+					}
+				}
+
+				&:nth-child(3) {
+					image {
+						border-radius: 0 0 0 20rpx
+					}
+				}
+
+				&:nth-child(4) {
+					image {
+						border-radius: 0 0 20rpx 0
+					}
+				}
+			}
+		}
+	}
+
 	.pictureCube {
 		background-color: #fff;
+
 		.advertItem01 {
 			width: 100%;
 			height: auto;
+
 			image {
 				width: 100%;
 				height: 100%;
 				display: block;
 			}
 		}
-		.advertItem02{
+
+		.advertItem02 {
 			// /deep/uni-image>img{
 			// 	position: unset;
 			// }
 			width: 100%;
-			.item{
+
+			.item {
 				width: 50%;
 				height: auto;
-				image{
+
+				image {
 					width: 100%;
 					height: 100%;
 					display: block;
 				}
 			}
 		}
-		.advertItem03{
-			.item{
+
+		.advertItem03 {
+			.item {
 				width: 33.3333%;
 			}
 		}
-		.advertItem04{
+
+		.advertItem04 {
 			width: 100%;
-			.item{
+
+			.item {
 				width: 50%;
 				height: 376rpx;
-				.pic{
+
+				.pic {
 					width: 100%;
 					height: 188rpx;
 				}
-				image{
+
+				image {
 					width: 100%;
 					height: 100%;
 					display: block;
 				}
 			}
 		}
-		.advertItem05{
-			.item{
+
+		.advertItem05 {
+			.item {
 				width: 25%;
 			}
 		}
-		.advertItem06{
-			.item{
+
+		.advertItem06 {
+			.item {
 				width: 50%;
 				height: 188rpx;
 			}

@@ -221,7 +221,7 @@ export default {
   methods: {
     // 添加
     add() {
-      this.$router.push({ path: '/admin/marketing/presell/create/0' });
+      this.$router.push({ path:this.$routeProStr + '/marketing/presell/create/0' });
     },
     // 导出
     exports() {
@@ -241,13 +241,13 @@ export default {
     // 编辑
     edit(row) {
       this.$router.push({
-        path: '/admin/marketing/presell/create/' + row.id + '/0',
+        path: this.$routeProStr + '/marketing/presell/create/' + row.id + '/0',
       });
     },
     // 一键复制
     copy(row) {
       this.$router.push({
-        path: '/admin/marketing/presell/create/' + row.id + '/1',
+        path: this.$routeProStr + '/marketing/presell/create/' + row.id + '/1',
       });
     },
     // 删除

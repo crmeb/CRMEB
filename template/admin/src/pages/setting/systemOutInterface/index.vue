@@ -505,7 +505,6 @@ export default {
   },
   methods: {
     onClicksss(e) {
-      console.log(e);
     },
     methodsColor(newVal) {
       let method = newVal.toUpperCase();
@@ -520,13 +519,10 @@ export default {
       }
     },
     insertBefore(params) {
-      console.log(params);
     },
     insertAfter(params) {
-      console.log(params);
     },
     moveInto(params) {
-      console.log(params);
     },
     async addTableData() {
       const { row: data } = await $table.insertAt(newRow, -1);
@@ -535,7 +531,6 @@ export default {
     getInterfaceList(disk_type) {
       interfaceList()
         .then((res) => {
-          console.log(res);
           res.data[0].expand = false;
           this.treeData = new Tree(res.data);
 
@@ -550,14 +545,11 @@ export default {
         });
     },
     onClick(params) {
-      console.log(params);
       if (params.method) {
         this.isEdit = false;
         interfaceDet(params.id)
           .then((res) => {
-            console.log(res);
             this.formValidate = res.data;
-            console.log(this.formValidate);
           })
           .catch((err) => {
             this.$Message.error(err);
@@ -577,7 +569,6 @@ export default {
       this.formValidate.error_code = await this.$refs.codeTable.getTableData().tableData;
       await interfaceSave(this.formValidate)
         .then((res) => {
-          console.log(res);
           this.isEdit = false;
           this.$Message.success(res.msg);
           this.getInterfaceList();
@@ -679,7 +670,6 @@ export default {
     },
 
     addFac(params) {
-      console.log('1111');
       this.formValidate = {
         id: params ? params.id : 0,
       };
@@ -702,7 +692,6 @@ export default {
     },
     //侧边栏右键点击事件
     handleContextMenu(data, event, position) {
-      console.log('右键');
       position.left = Number(position.left.slice(0, -2)) + 75 + 'px';
       this.contextData = data;
     },
@@ -792,7 +781,6 @@ export default {
     },
     //
     onDel(node) {
-      console.log(node.id);
       this.$Modal.confirm({
         title: '警告',
         content: '<p>删除后无法恢复，请确认后删除！</p>',
@@ -892,7 +880,7 @@ export default {
   .main-btn {}
   .card-tree{
     width: 270px;
-    height: calc(100vh - 190px);
+    height: calc(100vh - 115px);
     overflow-y: scroll;
   }
   >>> .tree {
@@ -981,7 +969,7 @@ export default {
   }
   .right-card {
     flex: 1;
-    max-height: calc(100vh - 190px);
+    max-height: calc(100vh - 115px);
     overflow-y: scroll;
   }
 

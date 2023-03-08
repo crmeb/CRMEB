@@ -63,7 +63,7 @@
 		}
 
 	],
-	"subPackages": [{  // 模块分包
+	"subPackages": [{ // 模块分包
 			"root": "pages/extension",
 			"name": "extension",
 			"pages": [{
@@ -318,6 +318,18 @@
 							// #endif
 						}
 					}
+				},{
+					"path": "cashier/index",
+					"style": {
+						"navigationBarTitleText": "收银台",
+						"app-plus": {
+							// #ifdef APP-PLUS
+							"titleNView": {
+								"type": "default"
+							}
+							// #endif
+						}
+					}
 				}
 			]
 		}, {
@@ -352,7 +364,7 @@
 				{
 					"path": "user_cancellation/index",
 					"style": {
-						"navigationBarTitleText": "注销说明",
+						"navigationBarTitleText": "注销协议",
 						"app-plus": {
 							// #ifdef APP-PLUS
 							"titleNView": {
@@ -498,7 +510,7 @@
 						"app-plus": {
 							// #ifdef APP-PLUS
 							"titleNView": {
-				  		"type": "default"
+								"type": "default"
 							}
 							// #endif
 						}
@@ -1527,7 +1539,7 @@
 			]
 		}
 	],
-	"tabBar": {  // 底部菜单
+	"tabBar": { // 底部菜单
 		"color": "#282828",
 		"selectedColor": "#ff3366",
 		"borderStyle": "white",
@@ -1572,5 +1584,6 @@
 			"path": "", //启动页面，必选
 			"query": "" //启动参数，在页面的onLoad函数里面得到
 		}]
-	}
+	},
+	"embeddedAppIdList": ["wxef277996acc166c3"] //通联支付appid
 }

@@ -411,9 +411,10 @@ export const scrollTop = (el, from = 0, to, duration = 500, endCallback) => {
  * @param {Object} vm Vue实例
  */
 export const setTitle = (routeItem, vm) => {
+  let winTitle = localStorage.getItem('ADMIN_TITLE') || title;
   const handledRoute = getRouteTitleHandled(routeItem);
   const pageTitle = showTitle(handledRoute, vm);
-  const resTitle = pageTitle ? `${title} - ${pageTitle}` : title;
+  const resTitle = pageTitle ? `${winTitle} - ${pageTitle}` : winTitle;
   window.document.title = resTitle;
 };
 

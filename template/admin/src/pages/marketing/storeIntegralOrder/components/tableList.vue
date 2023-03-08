@@ -12,7 +12,7 @@
       @on-select-all="selectAll"
       @on-select-all-cancel="selectAll"
       @on-select-cancel="onSelectCancel"
-      class="orderData mt25"
+      class="orderData"
     >
       <template slot-scope="{ row, index }" slot="order_id">
         <span v-text="row.order_id" style="display: block"></span>
@@ -36,7 +36,7 @@
         <a @click="delivery(row)" v-if="row.status === 2">配送信息</a>
         <Divider type="vertical" v-if="row.status === 1 || row.status === 2" />
         <template>
-          <Dropdown @on-click="changeMenu(row, $event)">
+          <Dropdown @on-click="changeMenu(row, $event)" :transfer="true">
             <a href="javascript:void(0)">
               更多
               <Icon type="ios-arrow-down"></Icon>

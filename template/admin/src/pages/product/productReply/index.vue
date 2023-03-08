@@ -1,12 +1,10 @@
 <template>
   <div class="article-manager">
-    <div class="i-layout-page-header">
-      <div class="i-layout-page-header">
-        <router-link :to="{ path: '/admin/product/product_list' }" v-if="$route.params.id"
+    <div class="i-layout-page-header header-title">
+        <router-link :to="{ path: $routeProStr + '/product/product_list' }" v-if="$route.params.id"
           ><Button icon="ios-arrow-back" size="small" class="mr20">返回</Button></router-link
         >
         <span class="ivu-page-header-title mr20">商品评论管理</span>
-      </div>
     </div>
     <Card :bordered="false" dis-hover class="ivu-mt">
       <Form ref="formValidate" :model="formValidate" :label-width="75" label-position="left" @submit.native.prevent>
@@ -70,7 +68,7 @@
       <Row type="flex">
         <Col v-bind="grid">
           <Button v-auth="['product-reply-save_fictitious_reply']" type="primary" icon="md-add" @click="add"
-            >添加虚拟评论</Button
+            >添加自评</Button
           >
         </Col>
       </Row>
@@ -78,7 +76,7 @@
         ref="table"
         :columns="columns"
         :data="tableList"
-        class="ivu-mt"
+        class="ivu-mt mt25"
         :loading="loading"
         @on-sort-change="sortMethod"
         no-data-text="暂无数据"

@@ -43,7 +43,7 @@
             </FormItem>
           </Col>
         </Col>
-        <Col span="24" class="ivu-text-left" v-if="$route.path === '/admin/echarts/trade/order'">
+        <Col span="24" class="ivu-text-left" v-if="$route.path === routePro + '/echarts/trade/order'">
           <FormItem label="订单类型：">
             <RadioGroup v-model="currentTab" type="button" @on-change="onClickTab(currentTab)">
               <Radio label="">全部</Radio>
@@ -68,6 +68,7 @@ export default {
   },
   data() {
     return {
+      routePro:this.$routeProStr,
       currentTab: '',
       grid: {
         xl: 8,

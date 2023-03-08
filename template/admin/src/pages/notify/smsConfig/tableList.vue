@@ -433,7 +433,7 @@ export default {
     //短信模板页
     shortMes() {
       this.$router.push({
-        path: '/admin/setting/sms/sms_template_apply/index',
+        path: this.$routeProStr + '/setting/sms/sms_template_apply/index',
       });
     },
     // 短信验证码

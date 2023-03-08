@@ -36,7 +36,6 @@ Route::group(function () {
     Route::get('get_workerman_url', 'PublicController/getWorkerManUrl')->option(['real_name' => '获取客服数据']);
     //测试
     Route::get('index', 'Test/index')->option(['real_name' => '测试地址']);
-    Route::get('h5', 'Test/h5pay')->option(['real_name' => '测试地址2']);
 })->middleware(AllowOriginMiddleware::class);
 
 /**

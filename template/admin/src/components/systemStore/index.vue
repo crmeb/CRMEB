@@ -10,9 +10,6 @@
       @on-cancel="cancel"
     >
       <div class="article-manager">
-        <!--<div class="i-layout-page-header">-->
-        <!--<PageHeader class="product_tabs" :title="$route.meta.title" hidden-breadcrumb></PageHeader>-->
-        <!--</div>-->
         <Card :bordered="false" dis-hover class="ivu-mt">
           <Form
             ref="formItem"

@@ -11,6 +11,9 @@
 						<checkbox v-show="checkbox_show" :value="item.pid.toString()" :checked="item.checked" />
 						<view class='pictrue'>
 							<image :src="item.image"></image>
+							<view class="invalid acea-row row-center-wrapper" v-if="!item.is_show">
+								已下架
+							</view>
 						</view>
 					</view>
 					<view class='text acea-row row-column-between' @click="jump(item)">
@@ -71,7 +74,9 @@
 	// #endif
 	import home from '@/components/home';
 	import colors from '@/mixins/color.js';
-	import {HTTP_REQUEST_URL} from '@/config/app';
+	import {
+		HTTP_REQUEST_URL
+	} from '@/config/app';
 	export default {
 		components: {
 			recommend,
@@ -83,7 +88,7 @@
 		mixins: [colors],
 		data() {
 			return {
-				imgHost:HTTP_REQUEST_URL,
+				imgHost: HTTP_REQUEST_URL,
 				ids: [],
 				hostProduct: [],
 				checkbox_show: false,
@@ -92,7 +97,7 @@
 				loadend: false,
 				collectProductList: [],
 				count: 0,
-				limit: 8,
+				limit: 15,
 				page: 1,
 				isAuto: false, //没有授权的不会自动授权
 				isShowAuth: false, //是否隐藏授权
@@ -186,9 +191,16 @@
 				}
 			},
 			jump(item) {
-				uni.navigateTo({
-					url: "/pages/goods_details/index?id=" + item.pid
-				})
+				if (item.is_show) {
+					uni.navigateTo({
+						url: "/pages/goods_details/index?id=" + item.pid
+					})
+				} else {
+					this.$util.Tips({
+						title: that.$t(`该商品已下架`)
+					})
+				}
+
 			},
 			/**
 			 * 授权回调
@@ -289,6 +301,18 @@
 		width: 130rpx;
 		height: 130rpx;
 		margin-left: 20rpx;
+		position: relative;
+
+		.invalid {
+			position: absolute;
+			width: 100%;
+			height: 100%;
+			top: 0;
+			left: 0;
+			background-color: rgba(0, 0, 0, 0.4);
+			backdrop-filter: blur(3px);
+			color: #fff;
+		}
 
 	}
 
@@ -300,8 +324,10 @@
 
 	.collectionGoods .item .text {
 		height: 130rpx;
+		flex: 1;
 		font-size: 28rpx;
 		color: #282828;
+		padding-right: 20rpx;
 	}
 
 	.collectionGoods .item .text .name {

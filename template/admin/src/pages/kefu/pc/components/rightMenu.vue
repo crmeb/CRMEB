@@ -156,7 +156,7 @@
                     type="info"
                     ghost
                     style="color: #1890ff; border-color: #1890ff"
-                    v-if="item.refund_type == 1 || item.refund_type == 5"
+                    v-if="item.refund_status == 1"
                     @click.stop="orderRecord(item.id)"
                     >退款</Button
                   >

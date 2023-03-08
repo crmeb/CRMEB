@@ -16,7 +16,7 @@
             <Input v-model="formValidate.keyword" placeholder="请输入等级名称" style="width: 200px" />
           </div>
           <Button type="primary" @click="search">搜索</Button>
-          <Button type="success" icon="md-add" @click="groupAdd()" class="ml20">添加数据</Button>
+          <Button type="success" icon="md-add" @click="groupAdd()" class="ml20">添加等级</Button>
         </div>
       </div>
       <Row type="flex">
@@ -26,7 +26,6 @@
         :columns="columns1"
         :data="tabList"
         ref="table"
-        class="mt25"
         :loading="loading"
         highlight-row
         no-userFrom-text="暂无数据"
@@ -38,6 +37,18 @@
               <img v-lazy="row.image" />
             </div>
           </viewer>
+        </template>
+        <template slot-scope="{ row }" slot="one_brokerage">
+          <span>{{row.one_brokerage}}%</span>
+        </template>
+        <template slot-scope="{ row }" slot="one_brokerage_ratio">
+           <span>{{row.one_brokerage_ratio}}%</span>
+        </template>
+        <template slot-scope="{ row }" slot="two_brokerage">
+           <span>{{row.two_brokerage}}%</span>
+        </template>
+        <template slot-scope="{ row }" slot="two_brokerage_ratio">
+           <span>{{row.two_brokerage_ratio}}%</span>
         </template>
         <template slot-scope="{ row }" slot="status">
           <i-switch
@@ -78,8 +89,8 @@
           <div class="search">
             <div>
               <span>是否显示：</span>
-              <Select v-model="taskData.status" style="width: 200px">
-                <Option value="">全部</Option>
+              <Select v-model="taskData.status" style="width: 200px" clearable>
+                <!-- <Option :value="''">全部</Option> -->
                 <Option :value="1">显示</Option>
                 <Option :value="0">不显示</Option>
               </Select>
@@ -125,7 +136,7 @@
                 <a @click="delTask(row, '删除这条信息', index)">删除</a>
               </template>
             </Table>
-            <div class="acea-row row-right page">
+            <!-- <div class="acea-row row-right page">
               <Page
                 :total="taskTotal"
                 :current="taskData.page"
@@ -134,7 +145,7 @@
                 @on-change="pageTaskChange"
                 :page-size="taskData.limit"
               />
-            </div>
+            </div> -->
           </div>
         </div>
       </Modal>
@@ -192,7 +203,7 @@ export default {
         {
           slot: 'image',
           minWidth: 35,
-          title: '图标',
+          title: '背景图',
         },
         {
           key: 'name',
@@ -205,14 +216,24 @@ export default {
           title: '等级',
         },
         {
-          key: 'one_brokerage',
+          slot: 'one_brokerage',
           minWidth: 35,
-          title: '一级返佣上浮比例(%)',
+          title: '一级上浮比例',
         },
         {
-          key: 'two_brokerage',
+          slot: 'one_brokerage_ratio',
           minWidth: 35,
-          title: '二级返佣上浮比例(%)',
+          title: '一级分佣比例(上浮后)',
+        },
+        {
+          slot: 'two_brokerage',
+          minWidth: 35,
+          title: '二级上浮比例',
+        },
+        {
+          slot: 'two_brokerage_ratio',
+          minWidth: 35,
+          title: '二级分佣比例(上浮后)',
         },
         {
           slot: 'status',
@@ -220,7 +241,6 @@ export default {
           title: '是否显示',
         },
         {
-          fixed: 'right',
           minWidth: 120,
           slot: 'action',
           title: '操作',
@@ -454,7 +474,7 @@ export default {
 .left-wrapper {
   height: 904px;
   background: #fff;
-  border-right: 1px solid #dcdee2;
+  border-right: 1px solid #f2f2f2;
 }
 
 .menu-item {
@@ -525,6 +545,7 @@ export default {
 
 .headers {
   background-color: #fff;
+  margin-bottom: 20px;
 }
 
 /deep/ .ivu-modal-mask {

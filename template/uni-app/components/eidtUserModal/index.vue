@@ -125,7 +125,6 @@
 			 * 提交修改
 			 */
 			formSubmit(e) {
-				console.log(e, 'eeeeee')
 				let that = this
 				if (!this.userInfo.avatar) return that.$util.Tips({
 					title: that.$t(`请上传头像`)

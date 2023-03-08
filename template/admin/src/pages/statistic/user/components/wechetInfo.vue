@@ -1,5 +1,5 @@
 <template>
-  <Card :bordered="false" dis-hover class="ivu-mt">
+  <Card :bordered="false" dis-hover class="ivu-mt-16">
     <div class="acea-row row-between-wrapper">
       <div class="header-title mb20">
         公众号用户概括

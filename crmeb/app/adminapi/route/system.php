@@ -99,17 +99,17 @@ Route::group('system', function () {
 
     /** 定时任务 */
     //定时任务列表
-    Route::get('timer/list', 'v1.system.SystemTimer/getTimerList')->option(['real_name' => '定时任务列表']);
+    Route::get('crontab/list', 'v1.system.SystemCrontab/getTimerList')->option(['real_name' => '定时任务列表']);
     //定时任务类型
-    Route::get('timer/mark', 'v1.system.SystemTimer/getMarkList')->option(['real_name' => '定时任务类型']);
+    Route::get('crontab/mark', 'v1.system.SystemCrontab/getMarkList')->option(['real_name' => '定时任务类型']);
     //定时任务详情
-    Route::get('timer/info/:id', 'v1.system.SystemTimer/getTimerInfo')->option(['real_name' => '定时任务详情']);
+    Route::get('crontab/info/:id', 'v1.system.SystemCrontab/getTimerInfo')->option(['real_name' => '定时任务详情']);
     //定时任务添加编辑
-    Route::post('timer/save', 'v1.system.SystemTimer/saveTimer')->option(['real_name' => '定时任务添加编辑']);
+    Route::post('crontab/save', 'v1.system.SystemCrontab/saveTimer')->option(['real_name' => '定时任务添加编辑']);
     //删除定时任务
-    Route::delete('timer/del/:id', 'v1.system.SystemTimer/delTimer')->option(['real_name' => '删除定时任务']);
+    Route::delete('crontab/del/:id', 'v1.system.SystemCrontab/delTimer')->option(['real_name' => '删除定时任务']);
     //定时任务是否开启开关
-    Route::get('timer/set_open/:id/:is_open', 'v1.system.SystemTimer/setTimerStatus')->option(['real_name' => '定时任务是否开启开关']);
+    Route::get('crontab/set_open/:id/:is_open', 'v1.system.SystemCrontab/setTimerStatus')->option(['real_name' => '定时任务是否开启开关']);
 
 })->middleware([
     \app\http\middleware\AllowOriginMiddleware::class,

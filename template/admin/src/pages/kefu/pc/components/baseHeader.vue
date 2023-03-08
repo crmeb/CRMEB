@@ -1,6 +1,6 @@
 <template>
   <div class="base-header">
-    <div class="left-wrapper">
+    <div class="left-header-wrapper">
       <Input
         class="search_box"
         prefix="ios-search"
@@ -138,7 +138,7 @@ export default {
     background: linear-gradient(270deg, #1890FF 0%, #3875EA 100%);
     color #fff
     flex-shrink 0
-    .left-wrapper
+    .left-header-wrapper
         position relative
         display flex
         flex 1

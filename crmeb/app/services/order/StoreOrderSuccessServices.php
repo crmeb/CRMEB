@@ -69,6 +69,7 @@ class StoreOrderSuccessServices extends BaseServices
     {
         $updata = ['paid' => 1, 'pay_type' => $paytype, 'pay_time' => time()];
         $orderInfo['pay_time'] = $updata['pay_time'];
+        $orderInfo['pay_type'] = $paytype;
         if ($other && isset($other['trade_no'])) {
             $updata['trade_no'] = $other['trade_no'];
         }
@@ -92,13 +93,13 @@ class StoreOrderSuccessServices extends BaseServices
         }
         $orderInfo['send_name'] = $orderInfo['real_name'];
         //订单支付成功后置事件
-        event('order.orderPaySuccess', [$orderInfo]);
+        event('OrderPaySuccessListener', [$orderInfo]);
         //用户推送消息事件
-        event('notice.notice', [$orderInfo, 'order_pay_success']);
+        event('NoticeListener', [$orderInfo, 'order_pay_success']);
         //支付成功给客服发送消息
-        event('notice.notice', [$orderInfo, 'admin_pay_success_code']);
+        event('NoticeListener', [$orderInfo, 'admin_pay_success_code']);
         // 推送订单
-        event('out.outPush', ['order_pay_push', ['order_id' => (int)$orderInfo['id']]]);
+        event('OutPushListener', ['order_pay_push', ['order_id' => (int)$orderInfo['id']]]);
         $res = $res1 && $resPink;
         return false !== $res;
     }

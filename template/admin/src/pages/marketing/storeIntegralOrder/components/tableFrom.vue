@@ -268,7 +268,7 @@ export default {
   },
   watch: {
     $route() {
-      if (this.$route.fullPath === '/admin/order/list?status=1') {
+      if (this.$route.fullPath === (this.$routeProStr + '/order/list?status=1')) {
         this.getPath();
       }
     },
@@ -276,7 +276,7 @@ export default {
   created() {
     // this.timeVal = this.today;
     // this.orderData.data = this.timeVal.join('-');
-    if (this.$route.fullPath === '/admin/order/list?status=1') {
+    if (this.$route.fullPath === (this.$routeProStr + '/order/list?status=1')) {
       this.getPath();
     }
     // this.getToken();

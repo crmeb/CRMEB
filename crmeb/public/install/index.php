@@ -120,9 +120,9 @@ switch ($step) {
         }
 
         $folder = array(
+            'backup',
             'public',
             'runtime',
-            'backup',
         );
         foreach ($folder as $dir) {
             if (!is_file(APP_DIR . $dir)) {
@@ -165,6 +165,9 @@ switch ($step) {
                     die(json_encode(-1));//链接失败
                 }
             } else {
+                if (mysqli_get_server_info($conn) < 5.1) {
+                    die(json_encode(-5));//版本过低
+                }
                 $result = mysqli_query($conn, "SELECT @@global.sql_mode");
                 $result = $result->fetch_array();
                 $version = mysqli_get_server_info($conn);
@@ -203,6 +206,9 @@ switch ($step) {
             $rbselect = $_POST['rbselect'] ?? 0;
 
             try {
+                if (!class_exists('redis')) {
+                    exit(json_encode(-1));
+                }
                 $redis = new Redis();
                 if (!$redis) {
                     exit(json_encode(-1));

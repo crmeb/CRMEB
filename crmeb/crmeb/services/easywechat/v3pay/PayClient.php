@@ -15,6 +15,8 @@ namespace crmeb\services\easywechat\v3pay;
 
 
 use crmeb\exceptions\PayException;
+use crmeb\services\wechat\Payment;
+use EasyWeChat\Payment\Order;
 
 /**
  * v3支付
@@ -37,6 +39,24 @@ class PayClient extends BaseClient
     const API_REFUND_URL = 'v3/refund/domestic/refunds';
     //退款查询接口
     const API_REFUND_QUERY_URL = 'v3/refund/domestic/refunds/{out_refund_no}';
+
+    /**
+     * @var string
+     */
+    protected $type = Order::JSAPI;
+
+    /**
+     * @param string $type
+     * @return $this
+     * @author 等风来
+     * @email 136327134@qq.com
+     * @date 2023/2/10
+     */
+    public function setType(string $type)
+    {
+        $this->type = $type;
+        return $this;
+    }
 
     /**
      * 公众号jsapi支付下单
@@ -192,7 +212,7 @@ class PayClient extends BaseClient
         $totalFee = '0';
         $amount = bcadd($amount, '0', 2);
         foreach ($transferDetailList as &$item) {
-            if ($item['transfer_amount'] >= 2000 && !empty($item['user_name'])) {
+            if ($item['transfer_amount'] >= 2000 && empty($item['user_name'])) {
                 throw new PayException('明细金额大于等于2000时,收款人姓名必须填写');
             }
             $totalFee = bcadd($totalFee, $item['transfer_amount'], 2);
@@ -208,8 +228,21 @@ class PayClient extends BaseClient
 
         $amount = (int)bcmul($amount, 100, 0);
 
+        $appid = null;
+        if ($this->type === Order::JSAPI) {
+            $appid = $this->app['config']['wechat']['appid'];
+        } else if ($this->type === 'mini') {
+            $appid = $this->app['config']['miniprog']['appid'];
+        } else if ($this->type === Order::APP) {
+            $appid = $this->app['config']['app']['appid'];
+        }
+
+        if (!$appid) {
+            throw new PayException('暂时只支持微信用户、小程序用户、APP微信登录用户提现');
+        }
+
         $data = [
-            'appid' => $this->app['config']['wechat']['appid'],
+            'appid' => $appid,
             'out_batch_no' => $outBatchNo,
             'batch_name' => $batchName,
             'batch_remark' => $remark,

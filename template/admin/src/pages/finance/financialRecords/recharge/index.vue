@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Card :bordered="false" dis-hover class="ivu-mt">
+    <Card :bordered="false" dis-hover class="ivu-mb-16">
       <Form
         ref="formValidate"
         :model="formValidate"
@@ -83,6 +83,7 @@
           >
           <!--                    <Divider type="vertical"  v-if="row.paid"/>-->
           <a href="javascript:void(0);" v-if="row.paid === 0" @click="del(row, '此条充值记录', index)">删除</a>
+          <span class="refund" v-if="row.refund_price > 0">已退款</span>
         </template>
       </Table>
       <div class="acea-row row-right page">
@@ -247,6 +248,7 @@ export default {
         .then((res) => {
           this.$Message.success(res.msg);
           this.tabList.splice(delfromData.num, 1);
+          this.getList();
         })
         .catch((res) => {
           this.$Message.error(res.msg);

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Dropdown trigger="click" @on-click="selectLang" transfer="true">
+    <Dropdown trigger="click" @on-click="selectLang" :transfer="true">
       <a href="javascript:void(0)">
         {{ title }}
         <Icon :size="18" type="md-arrow-dropdown" />

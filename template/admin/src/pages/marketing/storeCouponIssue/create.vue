@@ -1,8 +1,8 @@
 <template>
   <div>
-    <div class="i-layout-page-header header_top">
-      <div class="i-layout-page-header fl_header">
-        <router-link :to="{ path: '/admin/marketing/store_coupon_issue/index' }"
+    <div class="i-layout-page-header header-title">
+      <div class="fl_header">
+        <router-link :to="{ path: $routeProStr + '/marketing/store_coupon_issue/index' }"
           ><Button icon="ios-arrow-back" size="small" type="text">返回</Button></router-link
         >
         <Divider type="vertical" />
@@ -336,7 +336,7 @@ export default {
           setTimeout(() => {
             this.disabled = false;
             this.$router.push({
-              path: '/admin/marketing/store_coupon_issue/index',
+              path: this.$routeProStr + '/marketing/store_coupon_issue/index',
             });
           }, 1000);
         })

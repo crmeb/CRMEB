@@ -96,6 +96,23 @@
 				this.number = number;
 				this.$emit('changePayType', paytype)
 			},
+			formpost(url, postData) {
+				let tempform = document.createElement("form");
+				tempform.action = url;
+				tempform.method = "post";
+				tempform.target = "_self";
+				tempform.style.display = "none";
+				for (let x in postData) {
+					let opt = document.createElement("input");
+					opt.name = x;
+					opt.value = postData[x];
+					tempform.appendChild(opt);
+				}
+				document.body.appendChild(tempform);
+				this.$nextTick(e => {
+					tempform.submit();
+				})
+			},
 			close: function() {
 				this.$emit('onChangeFun', {
 					action: 'payClose'
@@ -151,220 +168,256 @@
 					// #endif
 				}).then(res => {
 					let jsConfig = res.data.result.jsConfig;
-					switch (paytype) {
-						case 'weixin':
-							if (res.data.result === undefined) return that.$util.Tips({
-								title: that.$t(`缺少支付参数`)
-							});
-
-							// #ifdef MP
-							let mp_pay_name = ''
-							if (uni.requestOrderPayment) {
-								mp_pay_name = 'requestOrderPayment'
-							} else {
-								mp_pay_name = 'requestPayment'
+					console.log(paytype)
+					if (res.data.status == 'ALLINPAY_PAY') {
+						uni.hideLoading();
+						// #ifdef MP
+						wx.openEmbeddedMiniProgram({
+							appId: 'wxef277996acc166c3',
+							extraData: {
+								cusid: jsConfig.cusid,
+								appid: jsConfig.appid,
+								version: jsConfig.version,
+								trxamt: jsConfig.trxamt,
+								reqsn: jsConfig.reqsn,
+								notify_url: jsConfig.notify_url,
+								body: jsConfig.body,
+								remark: jsConfig.remark,
+								validtime: jsConfig.validtime,
+								randomstr: jsConfig.randomstr,
+								paytype: jsConfig.paytype,
+								sign: jsConfig.sign,
+								signtype: jsConfig.signtype
 							}
-							uni[mp_pay_name]({
-								timeStamp: jsConfig.timestamp,
-								nonceStr: jsConfig.nonceStr,
-								package: jsConfig.package,
-								signType: jsConfig.signType,
-								paySign: jsConfig.paySign,
-								success: function(res) {
-									uni.hideLoading();
-									return that.$util.Tips({
-										title: res.msg,
-										icon: 'success'
-									}, () => {
-										that.$emit('onChangeFun', {
-											action: 'pay_complete'
-										});
-									});
-								},
-								fail: function(e) {
-									uni.hideLoading();
-									return that.$util.Tips({
-										title: that.$t(`取消支付`)
-									}, () => {
-										that.$emit('onChangeFun', {
-											action: 'pay_fail'
-										});
-									});
-								},
-								complete: function(e) {
-									uni.hideLoading();
-									if (e.errMsg == 'requestPayment:cancel' || e.errMsg ==
-										'requestOrderPayment:cancel') return that.$util
-										.Tips({
-											title: that.$t(`取消支付`)
-										}, () => {
-											that.$emit('onChangeFun', {
-												action: 'pay_fail'
-											});
-										});
-								},
-							});
-							// #endif
-							// #ifdef H5
-							let data = res.data;
-							if (data.status == "WECHAT_H5_PAY") {
-								uni.hideLoading();
-								location.replace(data.result.jsConfig.mweb_url);
-								return that.$util.Tips({
-									title: that.$t(`支付成功`),
-									icon: 'success'
-								}, () => {
-									that.$emit('onChangeFun', {
-										action: 'pay_complete'
-									});
+						})
+						this.jumpData = {
+							orderId: res.data.result.orderId,
+							msg: res.msg,
+						}
+						// #endif
+						// #ifdef APP-PLUS
+						plus.runtime.openURL(jsConfig.payinfo);
+						// #endif
+						// #ifdef H5
+						this.formpost(res.data.result.pay_url, jsConfig)
+						// #endif
+					} else {
+						switch (paytype) {
+							case 'weixin':
+								if (res.data.result === undefined) return that.$util.Tips({
+									title: that.$t(`缺少支付参数`)
 								});
-							} else {
-								that.$wechat.pay(data.result.jsConfig)
-									.then(() => {
+
+								// #ifdef MP
+								let mp_pay_name = ''
+								if (uni.requestOrderPayment) {
+									mp_pay_name = 'requestOrderPayment'
+								} else {
+									mp_pay_name = 'requestPayment'
+								}
+								uni[mp_pay_name]({
+									timeStamp: jsConfig.timestamp,
+									nonceStr: jsConfig.nonceStr,
+									package: jsConfig.package,
+									signType: jsConfig.signType,
+									paySign: jsConfig.paySign,
+									success: function(res) {
+										uni.hideLoading();
 										return that.$util.Tips({
-											title: that.$t(`支付成功`),
+											title: res.msg,
 											icon: 'success'
 										}, () => {
 											that.$emit('onChangeFun', {
 												action: 'pay_complete'
 											});
 										});
-									})
-									.catch(() => {
+									},
+									fail: function(e) {
+										uni.hideLoading();
 										return that.$util.Tips({
-											title: that.$t(`支付失败`),
+											title: that.$t(`取消支付`)
 										}, () => {
 											that.$emit('onChangeFun', {
 												action: 'pay_fail'
 											});
 										});
+									},
+									complete: function(e) {
+										uni.hideLoading();
+										if (e.errMsg == 'requestPayment:cancel' || e.errMsg ==
+											'requestOrderPayment:cancel') return that.$util
+											.Tips({
+												title: that.$t(`取消支付`)
+											}, () => {
+												that.$emit('onChangeFun', {
+													action: 'pay_fail'
+												});
+											});
+									},
+								});
+								// #endif
+								// #ifdef H5
+								let data = res.data;
+								if (data.status == "WECHAT_H5_PAY") {
+									uni.hideLoading();
+									location.replace(data.result.jsConfig.h5_url);
+									return that.$util.Tips({
+										title: that.$t(`支付成功`),
+										icon: 'success'
+									}, () => {
+										that.$emit('onChangeFun', {
+											action: 'pay_complete'
+										});
 									});
-							}
-							// #endif
-							// #ifdef APP-PLUS
-							uni.requestPayment({
-								provider: 'wxpay',
-								orderInfo: jsConfig,
-								success: (e) => {
-									let url = '/pages/goods/order_pay_status/index?order_id=' +
-										orderId +
-										'&msg=支付成功';
-									uni.showToast({
-										title: that.$t(`支付成功`)
-									})
-									setTimeout(res => {
-										that.$emit('onChangeFun', {
-											action: 'pay_complete'
-										});
-									}, 2000)
-								},
-								fail: (e) => {
-									uni.showModal({
-										content: that.$t(`支付失败`),
-										showCancel: false,
-										success: function(res) {
-											if (res.confirm) {
+								} else {
+									that.$wechat.pay(data.result.jsConfig)
+										.then(() => {
+											return that.$util.Tips({
+												title: that.$t(`支付成功`),
+												icon: 'success'
+											}, () => {
+												that.$emit('onChangeFun', {
+													action: 'pay_complete'
+												});
+											});
+										})
+										.catch(() => {
+											return that.$util.Tips({
+												title: that.$t(`支付失败`),
+											}, () => {
 												that.$emit('onChangeFun', {
 													action: 'pay_fail'
 												});
-											} else if (res.cancel) {}
-										}
-									})
-								},
-								complete: () => {
-									uni.hideLoading();
-								},
-							});
-							// #endif
-							break;
-						case 'yue':
-							uni.hideLoading();
-							return that.$util.Tips({
-								title: res.msg,
-								icon: 'success'
-							}, () => {
-								that.$emit('onChangeFun', {
-									action: 'pay_complete'
+											});
+										});
+								}
+								// #endif
+								// #ifdef APP-PLUS
+								uni.requestPayment({
+									provider: 'wxpay',
+									orderInfo: jsConfig,
+									success: (e) => {
+										let url = '/pages/goods/order_pay_status/index?order_id=' +
+											orderId +
+											'&msg=支付成功';
+										uni.showToast({
+											title: that.$t(`支付成功`)
+										})
+										setTimeout(res => {
+											that.$emit('onChangeFun', {
+												action: 'pay_complete'
+											});
+										}, 2000)
+									},
+									fail: (e) => {
+										uni.showModal({
+											content: that.$t(`支付失败`),
+											showCancel: false,
+											success: function(res) {
+												if (res.confirm) {
+													that.$emit('onChangeFun', {
+														action: 'pay_fail'
+													});
+												} else if (res.cancel) {}
+											}
+										})
+									},
+									complete: () => {
+										uni.hideLoading();
+									},
 								});
-							});
-							break;
-						case 'offline':
-							uni.hideLoading();
-							return that.$util.Tips({
-								title: res.msg,
-								icon: 'success'
-							}, () => {
-								that.$emit('onChangeFun', {
-									action: 'pay_complete'
-								});
-							});
-							break;
-						case 'friend':
-							uni.hideLoading();
-							return that.$util.Tips({
-								title: res.msg,
-								icon: 'success'
-							}, () => {
-								that.$emit('onChangeFun', {
-									action: 'pay_complete'
-								});
-							});
-							break;
-
-						case 'alipay':
-							uni.hideLoading();
-							//#ifdef H5
-							if (this.$wechat.isWeixin()) {
-								uni.redirectTo({
-									url: `/pages/users/alipay_invoke/index?id=${res.data.result.order_id}&pay_key=${res.data.result.pay_key}`
-								});
-							} else {
+								// #endif
+								break;
+							case 'yue':
 								uni.hideLoading();
-								that.formContent = res.data.result.jsConfig;
-								that.$nextTick(() => {
-									document.getElementById('alipaysubmit').submit();
+								return that.$util.Tips({
+									title: res.msg,
+									icon: 'success'
+								}, () => {
+									that.$emit('onChangeFun', {
+										action: 'pay_complete'
+									});
 								});
-							}
-							//#endif
-							// #ifdef MP
-							uni.navigateTo({
-								url: `/pages/users/alipay_invoke/index?id=${res.data.result.order_id}&link=${res.data.result.jsConfig.qrCode}`
-							});
-							// #endif
-							// #ifdef APP-PLUS
-							uni.requestPayment({
-								provider: 'alipay',
-								orderInfo: jsConfig,
-								success: (e) => {
-									uni.showToast({
-										title: that.$t(`支付成功`)
-									})
-									setTimeout(res => {
-										that.$emit('onChangeFun', {
-											action: 'pay_complete'
-										});
-									}, 2000)
-								},
-								fail: (e) => {
-									uni.showModal({
-										content: that.$t(`支付失败`),
-										showCancel: false,
-										success: function(res) {
-											if (res.confirm) {
-												that.$emit('onChangeFun', {
-													action: 'pay_fail'
-												});
-											} else if (res.cancel) {}
-										}
-									})
-								},
-								complete: () => {
+								break;
+							case 'offline':
+								uni.hideLoading();
+								return that.$util.Tips({
+									title: res.msg,
+									icon: 'success'
+								}, () => {
+									that.$emit('onChangeFun', {
+										action: 'pay_complete'
+									});
+								});
+								break;
+							case 'friend':
+								uni.hideLoading();
+								return that.$util.Tips({
+									title: res.msg,
+									icon: 'success'
+								}, () => {
+									that.$emit('onChangeFun', {
+										action: 'pay_complete'
+									});
+								});
+								break;
+
+							case 'alipay':
+								uni.hideLoading();
+								//#ifdef H5
+								if (this.$wechat.isWeixin()) {
+									uni.redirectTo({
+										url: `/pages/users/alipay_invoke/index?id=${res.data.result.order_id}&pay_key=${res.data.result.pay_key}`
+									});
+								} else {
 									uni.hideLoading();
-								},
-							});
-							// #endif
-							break;
+									that.formContent = res.data.result.jsConfig;
+									that.$nextTick(() => {
+										document.getElementById('alipaysubmit').submit();
+									});
+								}
+								//#endif
+								// #ifdef MP
+								uni.navigateTo({
+									url: `/pages/users/alipay_invoke/index?id=${res.data.result.order_id}&link=${res.data.result.jsConfig.qrCode}`
+								});
+								// #endif
+								// #ifdef APP-PLUS
+								uni.requestPayment({
+									provider: 'alipay',
+									orderInfo: jsConfig,
+									success: (e) => {
+										uni.showToast({
+											title: that.$t(`支付成功`)
+										})
+										setTimeout(res => {
+											that.$emit('onChangeFun', {
+												action: 'pay_complete'
+											});
+										}, 2000)
+									},
+									fail: (e) => {
+										uni.showModal({
+											content: that.$t(`支付失败`),
+											showCancel: false,
+											success: function(res) {
+												if (res.confirm) {
+													that.$emit('onChangeFun', {
+														action: 'pay_fail'
+													});
+												} else if (res.cancel) {}
+											}
+										})
+									},
+									complete: () => {
+										uni.hideLoading();
+									},
+								});
+								// #endif
+								break;
+						}
 					}
+
 				}).catch(err => {
 					uni.hideLoading();
 					return that.$util.Tips({
