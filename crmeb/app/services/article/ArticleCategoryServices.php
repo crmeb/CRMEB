@@ -84,7 +84,7 @@ class ArticleCategoryServices extends BaseServices
         $f[] = Form::select('pid', '上级分类', (int)($info['pid'] ?? ''))->setOptions($this->menus($pid))->filterable(1);
         $f[] = Form::input('title', '分类名称', $info['title'] ?? '')->maxlength(20)->required();
         $f[] = Form::input('intr', '分类简介', $info['intr'] ?? '')->type('textarea')->required();
-        $f[] = Form::frameImage('image', '分类图片', Url::buildUrl('admin/widget.images/index', array('fodder' => 'image')), $info['image'] ?? '')->icon('ios-add')->width('950px')->height('505px')->modal(['footer-hide' => true]);
+        $f[] = Form::frameImage('image', '分类图片', Url::buildUrl(config('app.admin_prefix', 'admin') . '/widget.images/index', array('fodder' => 'image')), $info['image'] ?? '')->icon('ios-add')->width('950px')->height('505px')->modal(['footer-hide' => true]);
         $f[] = Form::number('sort', '排序', (int)($info['sort'] ?? 0))->precision(0);
         $f[] = Form::radio('status', '状态', $info['status'] ?? 1)->options([['value' => 1, 'label' => '显示'], ['value' => 0, 'label' => '隐藏']]);
         return create_form('添加分类', $f, Url::buildUrl($url), $method);

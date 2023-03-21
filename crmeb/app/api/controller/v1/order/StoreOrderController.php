@@ -168,7 +168,7 @@ class StoreOrderController
         $userInfo = $request->user()->toArray();
         if ($checkOrder = $this->services->getOne(['order_id|unique' => $key, 'uid' => $userInfo['uid'], 'is_del' => 0]))
             return app('json')->status('extend_order', 410209, ['orderId' => $checkOrder['order_id'], 'key' => $key]);
-        [$addressId, $couponId, $payType, $useIntegral, $mark, $combinationId, $pinkId, $seckillId, $bargainId, $shipping_type, $real_name, $phone, $storeId, $news, $invoice_id, $quitUrl, $advanceId, $virtual_type, $customForm] = $request->postMore([
+        [$addressId, $couponId, $payType, $useIntegral, $mark, $combinationId, $pinkId, $seckillId, $bargainId, $shipping_type, $real_name, $phone, $storeId, $news, $invoice_id, $advanceId, $customForm] = $request->postMore([
             [['addressId', 'd'], 0],
             [['couponId', 'd'], 0],
             ['payType', ''],
@@ -184,9 +184,7 @@ class StoreOrderController
             [['store_id', 'd'], 0],
             ['new', 0],
             [['invoice_id', 'd'], 0],
-            ['quitUrl', ''],
             [['advanceId', 'd'], 0],
-            ['virtual_type', 0],
             ['custom_form', []],
         ], true);
         $payType = strtolower($payType);

@@ -101,7 +101,7 @@ class SystemStoreStaffServices extends BaseServices
     public function createStoreStaffForm(array $formData = [])
     {
         if ($formData) {
-            $field[] = $this->builder->frameImage('image', '更换头像', $this->url('admin/widget.images/index', array('fodder' => 'image'),true), $formData['avatar'] ?? '')->icon('ios-add')->width('950px')->height('505px')->modal(['footer-hide' => true]);
+            $field[] = $this->builder->frameImage('image', '更换头像', $this->url(config('app.admin_prefix', 'admin') . '/widget.images/index', array('fodder' => 'image'),true), $formData['avatar'] ?? '')->icon('ios-add')->width('950px')->height('505px')->modal(['footer-hide' => true]);
         } else {
             $field[] = $this->builder->frameImage('image', '商城用户', $this->url('admin/system.User/list', ['fodder' => 'image'], true))->icon('ios-add')->width('950px')->height('505px')->modal(['footer-hide' => true])->Props(['srcKey' => 'image']);
         }

@@ -84,7 +84,7 @@ class KefuApiExceptionHandle extends Handle
             'trace' => $e->getTrace(),
             'previous' => $e->getPrevious(),
         ] : [];
-        $message = Env::get('app_debug', false) ? $e->getMessage() : '很抱歉，系统开小差了';
+        $message = $e->getMessage();
         // 添加自定义异常处理机制
         if ($e instanceof AuthException || $e instanceof AdminException || $e instanceof ApiException || $e instanceof ValidateException) {
             return app('json')->make($e->getCode() ?: 400, $message, $massageData);

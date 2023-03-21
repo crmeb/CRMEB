@@ -442,7 +442,7 @@ class SystemConfigServices extends BaseServices
             case 1:
                 $data['value'] = json_decode($data['value'], true) ?: '';
                 if ($data['value'] != '') $data['value'] = set_file_url($data['value']);
-                $formbuider[] = $this->builder->frameImage($data['menu_name'], $data['info'], $this->url('admin/widget.images/index', ['fodder' => $data['menu_name']], true), $data['value'])
+                $formbuider[] = $this->builder->frameImage($data['menu_name'], $data['info'], $this->url(config('app.admin_prefix', 'admin') . '/widget.images/index', ['fodder' => $data['menu_name']], true), $data['value'])
                     ->icon('ios-image')->width('950px')->height('505px')->modal(['footer-hide' => true])->appendRule('suffix', [
                         'type' => 'div',
                         'class' => 'tips-info',
@@ -453,7 +453,7 @@ class SystemConfigServices extends BaseServices
                 $data['value'] = json_decode($data['value'], true) ?: [];
                 if ($data['value'])
                     $data['value'] = set_file_url($data['value']);
-                $formbuider[] = $this->builder->frameImages($data['menu_name'], $data['info'], $this->url('admin/widget.images/index', ['fodder' => $data['menu_name'], 'type' => 'many', 'maxLength' => 5], true), $data['value'])
+                $formbuider[] = $this->builder->frameImages($data['menu_name'], $data['info'], $this->url(config('app.admin_prefix', 'admin') . '/widget.images/index', ['fodder' => $data['menu_name'], 'type' => 'many', 'maxLength' => 5], true), $data['value'])
                     ->maxLength(5)->icon('ios-images')->width('950px')->height('505px')->modal(['footer-hide' => true])
                     ->appendRule('suffix', [
                         'type' => 'div',

@@ -49,7 +49,13 @@ class StoreOrderWriteOffServices extends BaseServices
      */
     public function writeOffOrder(string $code, int $confirm, int $uid = 0)
     {
-        $orderInfo = $this->dao->getOne(['verify_code' => $code, 'paid' => 1, 'refund_status' => 0, 'is_del' => 0]);
+        $orderInfo = $this->dao->getOne([
+            ['verify_code', '=', $code],
+            ['paid', '=', 1],
+            ['refund_status', '=', 0],
+            ['is_del', '=', 0],
+            ['pid', '>=', 0]
+        ]);
         if (!$orderInfo) {
             throw new ApiException(410173);
         }

@@ -67,12 +67,12 @@ class StoreProductReplyServices extends BaseServices
         } else {
             $field[] = Form::hidden('product_id', $product_id);
         }
-        $field[] = Form::frameImage('avatar', '用户头像', Url::buildUrl('admin/widget.images/index', array('fodder' => 'avatar')))->icon('ios-add')->width('950px')->height('505px')->modal(['footer-hide' => true]);
+        $field[] = Form::frameImage('avatar', '用户头像', Url::buildUrl(config('app.admin_prefix', 'admin') . '/widget.images/index', array('fodder' => 'avatar')))->icon('ios-add')->width('950px')->height('505px')->modal(['footer-hide' => true]);
         $field[] = Form::input('nickname', '用户名称')->col(24);
         $field[] = Form::input('comment', '评价文字')->type('textarea');
         $field[] = Form::rate('product_score', '商品分数', 0)->allowHalf(false);
         $field[] = Form::rate('service_score', '服务分数', 0)->allowHalf(false);
-        $field[] = Form::frameImages('pics', '评价图片', Url::buildUrl('admin/widget.images/index', array('fodder' => 'pics', 'type' => 'many', 'maxLength' => 8)))->maxLength(8)->icon('ios-add')->width('950px')->height('505px')->modal(['footer-hide' => true])->props(['closeBtn' => false, 'okBtn' => false]);
+        $field[] = Form::frameImages('pics', '评价图片', Url::buildUrl(config('app.admin_prefix', 'admin') . '/widget.images/index', array('fodder' => 'pics', 'type' => 'many', 'maxLength' => 8)))->maxLength(8)->icon('ios-add')->width('950px')->height('505px')->modal(['footer-hide' => true])->props(['closeBtn' => false, 'okBtn' => false]);
         $field[] = Form::dateTime('add_time', '评论时间', '')->placeholder('请选择评论时间(不选择默认当前添加时间)')->style(['width' => '300px']);
         return create_form('添加虚拟评论', $field, Url::buildUrl('/product/reply/save_fictitious_reply'), 'POST');
     }

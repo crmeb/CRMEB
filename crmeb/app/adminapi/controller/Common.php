@@ -60,7 +60,7 @@ class Common extends AuthController
         $res = $res ? json_decode($res, true) : [];
 
         //兼容test.
-        if ($res['data']['status'] !== 1) {
+        if (!isset($res['data']['status']) || $res['data']['status'] !== 1) {
             $host = str_replace('test.', '', $host);
             $res = HttpService::request('http://authorize.crmeb.net/api/auth_cert_query', 'post', [
                 'domain_name' => $host,
@@ -71,7 +71,7 @@ class Common extends AuthController
         }
 
         //如果是主域名兼容www.
-        if ($res['data']['status'] !== 1) {
+        if (!isset($res['data']['status']) || $res['data']['status'] !== 1) {
             $host = str_replace('www.', '', $host);
             $res = HttpService::request('http://authorize.crmeb.net/api/auth_cert_query', 'post', [
                 'domain_name' => $host,
@@ -82,9 +82,9 @@ class Common extends AuthController
         }
 
         //升级状态
-        /** @var UpgradeServices $upgradeServices */
-        $upgradeServices = app()->make(UpgradeServices::class);
-        $upgradeStatus = $upgradeServices->getUpgradeStatus();
+//        /** @var UpgradeServices $upgradeServices */
+//        $upgradeServices = app()->make(UpgradeServices::class);
+//        $upgradeStatus = $upgradeServices->getUpgradeStatus();
 
         $status = $res['data']['status'] ?? -9;
         switch ((int)$status) {

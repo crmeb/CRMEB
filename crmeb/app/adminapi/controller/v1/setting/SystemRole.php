@@ -80,12 +80,12 @@ class SystemRole extends AuthController
         $data['rules'] = implode(',', $data['rules']);
         if ($id) {
             if (!$this->services->update($id, $data)) return app('json')->fail(100007);
-            CacheService::clear();
+            $this->services->cacheDriver()->clear();
             return app('json')->success(100001);
         } else {
             $data['level'] = $this->adminInfo['level'] + 1;
             if (!$this->services->save($data)) return app('json')->fail(400223);
-            CacheService::clear();
+            $this->services->cacheDriver()->clear();
             return app('json')->success(400222);
         }
     }
@@ -123,7 +123,7 @@ class SystemRole extends AuthController
         if (!$this->services->delete($id))
             return app('json')->fail(100008);
         else {
-            CacheService::clear();
+            $this->services->cacheDriver()->clear();
             return app('json')->success(100002);
         }
     }
@@ -145,7 +145,7 @@ class SystemRole extends AuthController
         }
         $role->status = $status;
         if ($role->save()) {
-            CacheService::clear();
+            $this->services->cacheDriver()->clear();
             return app('json')->success(100001);
         } else {
             return app('json')->fail(100007);

@@ -157,8 +157,8 @@ class StoreCategoryServices extends BaseServices
             $f[] = Form::select('pid', '上级分类', (int)($info['pid'] ?? ''))->setOptions($this->menus())->filterable(1);
         }
         $f[] = Form::input('cate_name', '分类名称', $info['cate_name'] ?? '')->maxlength(8)->required();
-        $f[] = Form::frameImage('pic', '分类图标(180*180)', Url::buildUrl('admin/widget.images/index', array('fodder' => 'pic')), $info['pic'] ?? '')->icon('ios-add')->width('950px')->height('505px')->modal(['footer-hide' => true]);
-        $f[] = Form::frameImage('big_pic', '分类大图(468*340)', Url::buildUrl('admin/widget.images/index', array('fodder' => 'big_pic')), $info['big_pic'] ?? '')->icon('ios-add')->width('950px')->height('505px')->modal(['footer-hide' => true]);
+        $f[] = Form::frameImage('pic', '分类图标(180*180)', Url::buildUrl(config('app.admin_prefix', 'admin') . '/widget.images/index', array('fodder' => 'pic')), $info['pic'] ?? '')->icon('ios-add')->width('950px')->height('505px')->modal(['footer-hide' => true]);
+        $f[] = Form::frameImage('big_pic', '分类大图(468*340)', Url::buildUrl(config('app.admin_prefix', 'admin') . '/widget.images/index', array('fodder' => 'big_pic')), $info['big_pic'] ?? '')->icon('ios-add')->width('950px')->height('505px')->modal(['footer-hide' => true]);
         $f[] = Form::number('sort', '排序', (int)($info['sort'] ?? 0))->min(0)->precision(0);
         $f[] = Form::radio('is_show', '状态', $info['is_show'] ?? 1)->options([['label' => '显示', 'value' => 1], ['label' => '隐藏', 'value' => 0]]);
         return $f;

@@ -91,10 +91,7 @@ class SystemNotification extends AuthController
         if ($data['mark'] == 'verify_code') $data['type'] = 'is_sms';
         if (!$data['id']) return app('json')->fail(100100);
         if ($this->services->saveData($data)) {
-            CacheService::delete('NOTICE_SMS_' . $data['mark']);
-            CacheService::delete('wechat_' . $data['mark']);
-            CacheService::delete('routine_' . $data['mark']);
-            CacheService::delete('TEMP_IDS_LIST');
+            CacheService::clear();
             return app('json')->success(100001);
         } else {
             return app('json')->fail(100007);
@@ -117,10 +114,7 @@ class SystemNotification extends AuthController
         if ($type == '' || $status == '' || $id == 0) return app('json')->fail(100100);
         $this->services->update($id, [$type => $status]);
         $res = $this->services->getOneNotce(['id' => $id]);
-        CacheService::delete('NOTICE_SMS_' . $res->mark);
-        CacheService::delete('wechat_' . $res->mark);
-        CacheService::delete('routine_' . $res->mark);
-        CacheService::delete('TEMP_IDS_LIST');
+        CacheService::clear();
         return app('json')->success(100014);
     }
 }

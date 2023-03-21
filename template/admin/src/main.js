@@ -235,9 +235,9 @@ new Vue({
       // this.getMenus().then(menus => {
       // 处理手动清除db 跳转403问题
       if (!menus.length) {
-        if (path !== '/admin/login') {
-          this.$router.replace('/admin/login');
-        }
+        // if (path !== '/admin/login') {
+        //   this.$router.replace('/admin/login');
+        // }
         return;
       }
       // 在 404 时，是没有 headerName 的

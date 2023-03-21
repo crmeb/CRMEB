@@ -262,7 +262,7 @@ class AgentLevelServices extends BaseServices
     {
         $field[] = Form::input('name', '等级名称')->maxlength(8)->col(24);
         $field[] = Form::number('grade', '等级', 0)->min(0)->precision(0);
-        $field[] = Form::frameImage('image', '背景图', Url::buildUrl('admin/widget.images/index', array('fodder' => 'image')))->icon('ios-add')->width('950px')->height('505px')->modal(['footer-hide' => true]);
+        $field[] = Form::frameImage('image', '背景图', Url::buildUrl(config('app.admin_prefix', 'admin') . '/widget.images/index', array('fodder' => 'image')))->icon('ios-add')->width('950px')->height('505px')->modal(['footer-hide' => true]);
         $field[] = Form::number('one_brokerage', '一级上浮', 0)->appendRule('suffix', [
             'type' => 'div',
             'class' => 'tips-info',
@@ -292,7 +292,7 @@ class AgentLevelServices extends BaseServices
         $field[] = Form::hidden('id', $id);
         $field[] = Form::input('name', '等级名称', $levelInfo['name'])->maxlength(8)->col(24);
         $field[] = Form::number('grade', '等级', $levelInfo['grade'])->min(0)->precision(0);
-        $field[] = Form::frameImage('image', '背景图', Url::buildUrl('admin/widget.images/index', array('fodder' => 'image')), $levelInfo['image'])->icon('ios-add')->width('950px')->height('505px')->modal(['footer-hide' => true]);
+        $field[] = Form::frameImage('image', '背景图', Url::buildUrl(config('app.admin_prefix', 'admin') . '/widget.images/index', array('fodder' => 'image')), $levelInfo['image'])->icon('ios-add')->width('950px')->height('505px')->modal(['footer-hide' => true]);
         $field[] = Form::number('one_brokerage', '一级上浮', $levelInfo['one_brokerage'])->appendRule('suffix', [
             'type' => 'div',
             'class' => 'tips-info',

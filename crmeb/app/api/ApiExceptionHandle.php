@@ -85,7 +85,7 @@ class ApiExceptionHandle extends Handle
             'trace' => $e->getTrace(),
             'previous' => $e->getPrevious(),
         ] : [];
-        $message = Env::get('app_debug', false) ? $e->getMessage() : '很抱歉，系统开小差了';
+        $message = $e->getMessage();
         // 添加自定义异常处理机制
         if ($e instanceof ApiStatusException) {
             return app('json')->status($e->getApiStatus(), $message, $e->getApiData());
