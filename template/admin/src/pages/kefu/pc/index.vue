@@ -393,10 +393,7 @@ export default {
         //这里就是判断是否有粘贴进来的文件且文件为图片格式
         file = e.clipboardData.items[0].getAsFile();
       } else {
-        this.$message({
-          type: 'warning',
-          message: '上传的文件必须为图片且无法复制本地图片且无法同时复制多张图片',
-        });
+        this.$Message.warning('上传的文件必须为图片且无法复制本地图片且无法同时复制多张图片');
         return;
       }
       this.update(file);
