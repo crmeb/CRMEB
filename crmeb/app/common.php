@@ -564,6 +564,7 @@ if (!function_exists('put_image')) {
 
             //文件保存路径
             ob_start();
+            $url = str_replace('phar://', '', $url);
             readfile($url);
             $img = ob_get_contents();
             ob_end_clean();

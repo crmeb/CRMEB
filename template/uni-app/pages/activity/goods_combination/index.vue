@@ -30,7 +30,7 @@
 				<image src="../static/groupLine.png"></image>
 			</view>
 		</view>
-		<view class="list">
+		<view class="list" v-if="combinationList.length">
 			<view class="item acea-row row-between-wrapper" v-for="(item,index) in combinationList" :key='index'
 				@tap="openSubcribe(item)">
 				<view class="pictrue">
@@ -305,7 +305,8 @@
 					.name {
 						color: #333;
 						font-size: 30rpx;
-						height: 82rpx;
+						line-height: 38rpx;
+						height: 70rpx;
 					}
 
 					.bottom {

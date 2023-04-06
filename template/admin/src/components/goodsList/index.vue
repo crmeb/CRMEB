@@ -95,6 +95,12 @@ export default {
       type: Boolean,
       default: false,
     },
+    selectIds: {
+      type: Array,
+      default: () => {
+        return [];
+      },
+    },
     datas: {
       type: Object,
       default: function () {
@@ -259,6 +265,7 @@ export default {
     } else {
       this.getList();
     }
+    console.log(this.diy);
   },
   methods: {
     productList() {
@@ -324,7 +331,22 @@ export default {
         }
         changeListApi(this.formValidate)
           .then(async (res) => {
+            console.log(this.selectIds);
+
             let data = res.data;
+            if (this.selectIds.length) {
+              let arr = []
+              this.selectIds.map((item) => {
+                data.list.map((i) => {
+                  if (i.id == item) {
+                    console.log(i);
+                    i._checked = true;
+                    arr.push(i)
+                  }
+                });
+              });
+              this.changeCheckbox(arr)
+            }
             this.tableList = data.list;
             this.total = res.data.count;
             this.loading = false;
@@ -347,9 +369,23 @@ export default {
             data.list.forEach((el) => {
               el.image = el.cover_img;
             });
-            this.tableList = data.list;
-            this.total = res.data.count;
-            this.loading = false;
+
+            console.log(this.selectIds);
+            if (this.selectIds.length) {
+              this.selectIds.map((item) => {
+                data.list.map((i) => {
+                  if (i.id == item) {
+                    console.log(i);
+                    i._checked = true;
+                  }
+                });
+              });
+            }
+            this.$nextTick((e) => {
+              this.tableList = data.list;
+              this.total = res.data.count;
+              this.loading = false;
+            });
           })
           .catch((res) => {
             this.loading = false;

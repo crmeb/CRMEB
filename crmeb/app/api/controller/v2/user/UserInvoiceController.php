@@ -142,7 +142,11 @@ class UserInvoiceController
         $uid = (int)$request->uid();
         $re = $this->services->saveInvoice($uid, $data);
         if ($re) {
-            return app('json')->success($re['type'] == 'edit' ? 100001 : $re['data']);
+            if ($re['type'] == 'edit') {
+                return app('json')->success(100001);
+            } else {
+                return app('json')->success(100021, $re['data']);
+            }
         } else {
             return app('json')->fail(100005);
         }

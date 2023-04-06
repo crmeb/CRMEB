@@ -8,10 +8,10 @@
       class="tabform"
       @submit.native.prevent
     >
-      <Row :gutter="24" type="flex" justify="end">
+      <Row :gutter="24">
         <Col span="8" class="ivu-text-left">
           <FormItem label="订单状态：">
-            <RadioGroup v-model="orderData.status" type="button" @on-change="selectChange2(orderData.status)">
+            <RadioGroup v-model="orderData.status" type="button" @on-change="selectChange2(orderData.status)" style="width: 400px">
               <Radio label="">全部 {{ '(' + orderChartType.statusAll ? orderChartType.statusAll : 0 + ')' }}</Radio>
               <Radio label="1">未发货 {{ '(' + orderChartType.unshipped ? orderChartType.unshipped : 0 + ')' }}</Radio>
               <Radio label="2">待收货 {{ '(' + orderChartType.untake ? orderChartType.untake : 0 + ')' }}</Radio>
@@ -35,7 +35,9 @@
             ></DatePicker>
           </FormItem>
         </Col>
-        <Col span="8">
+      </Row>
+      <Row :gutter="24" type="flex">
+        <Col span="12">
           <div class="df">
             <FormItem label="搜索：" prop="real_name" label-for="real_name">
               <Input
@@ -268,7 +270,7 @@ export default {
   },
   watch: {
     $route() {
-      if (this.$route.fullPath === (this.$routeProStr + '/order/list?status=1')) {
+      if (this.$route.fullPath === this.$routeProStr + '/order/list?status=1') {
         this.getPath();
       }
     },
@@ -276,7 +278,7 @@ export default {
   created() {
     // this.timeVal = this.today;
     // this.orderData.data = this.timeVal.join('-');
-    if (this.$route.fullPath === (this.$routeProStr + '/order/list?status=1')) {
+    if (this.$route.fullPath === this.$routeProStr + '/order/list?status=1') {
       this.getPath();
     }
     // this.getToken();

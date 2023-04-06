@@ -96,6 +96,7 @@
 
 				.name {
 					font-size: 30rpx;
+					line-height: 41rpx;
 					color: #282828;
 					height: 82rpx;
 				}

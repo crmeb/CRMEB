@@ -70,17 +70,15 @@
 					"path": "customer_list/chat",
 					"style": {
 						"navigationBarTitleText": "对话详情",
-						"navigationStyle": "custom",
+						"navigationBarBackgroundColor": "#3875EA",
+						"navigationBarTextStyle": "white",
 						"app-plus": {
-							"scrollIndicator": false //禁用原生导航栏
-								// #ifdef APP-PLUS
-								,
+							// #ifdef APP-PLUS
 							"titleNView": {
 								"type": "default"
 							}
 							// #endif
-						},
-						"disableScroll": true
+						}
 					}
 				},
 				{
@@ -318,7 +316,7 @@
 							// #endif
 						}
 					}
-				},{
+				}, {
 					"path": "cashier/index",
 					"style": {
 						"navigationBarTitleText": "收银台",
@@ -404,7 +402,7 @@
 				{
 					"path": "user_invoice_order/index",
 					"style": {
-						"navigationBarTitleText": "订单详情",
+						"navigationBarTitleText": "发票详情",
 						"app-plus": {
 							// #ifdef APP-PLUS
 							"titleNView": {

@@ -747,6 +747,22 @@ export default {
 
 		return 0
 	},
+	/*
+	* 获取当前时间
+	*/
+	getNowTime() {
+		let today = new Date();
+		let year = today.getFullYear(); // 获取当前年份
+		let month = today.getMonth() + 1; // 获取当前月份（注意：月份从 0 开始计数，所以需要加 1）
+		let day = today.getDate(); // 获取当前日（几号）
+		let hour = today.getHours(); // 获取当前小时
+		let minute = today.getMinutes(); // 获取当前分钟
+		let second = today.getSeconds(); // 获取当前秒钟
+
+		// 格式化输出当前时间
+		let nowTime = year + '/' + month + '/' + day + ' ' + hour + ':' + minute + ':' + second;
+		return nowTime
+	},
 	/**
 	 * 处理服务器扫码带进来的参数
 	 * @param string param 扫码携带参数

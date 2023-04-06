@@ -117,9 +117,7 @@
 		},
 		watch: {
 			isNew(newVal) {
-				if (newVal) {
-					this.getAllCategory();
-				}
+				this.getAllCategory(1);
 			}
 		},
 		computed: mapGetters(['isLogin', 'uid']),
@@ -168,15 +166,7 @@
 				storeInfo: {}
 			}
 		},
-		// onShow(){
-		// 	if(this.isLogin){
-		// 		this.getCartNum();
-		// 		this.getCartList(1);
-		// 	}
-		// 	this.getAllCategory();
-		// },
 		mounted() {
-			// this.getAllCategory();
 			let that = this;
 			// 获取设备宽度
 			uni.getSystemInfo({
@@ -521,10 +511,16 @@
 					if (
 						that.attr.productAttr.length &&
 						productSelect === undefined
-					)
+					) {
 						return that.$util.Tips({
 							title: that.$t(`该产品没有更多库存了`)
 						});
+					}
+					if (that.attr.productSelect.cart_num <= 0) {
+						return that.$util.Tips({
+							title: that.$t(`最少添加 1 件商品`)
+						});
+					}
 				}
 				let q = {
 					product_id: id,
@@ -636,9 +632,9 @@
 			closeTap() {
 				this.iSlong = true
 			},
-			getAllCategory: function() {
+			getAllCategory: function(type) {
 				let that = this;
-				if (this.isNew || !uni.getStorageSync('CAT2_DATA')) {
+				if (type|| !uni.getStorageSync('CAT2_DATA')) {
 					getCategoryList().then(res => {
 						uni.setStorageSync('CAT2_DATA', res.data)
 						let data = res.data;

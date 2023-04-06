@@ -246,7 +246,7 @@
 	.list {
 		padding: 14rpx 32rpx;
 		margin-top: 90rpx;
-		margin-bottom: 140rpx;
+		padding-bottom: 180rpx;
 	}
 
 	.list .item {

@@ -13,6 +13,7 @@ import Modal from './modal';
 import Vue from 'vue';
 import { Message, Spin, Notice } from 'iview';
 let modalInstance;
+let btnStop = false;
 
 function getModalInstance(render = undefined) {
   modalInstance =
@@ -88,12 +89,9 @@ export default function (formRequestPromise, { width = '700' } = { width: '700' 
             },
           },
         };
-        let btnStop = false;
         data.config.onSubmit = (formData, $f) => {
           $f.btn.loading(true);
           $f.btn.disabled(true);
-          if (btnStop) return;
-          btnStop = true;
           request[data.method.toLowerCase()](data.action, formData)
             .then((res) => {
               modalInstance.remove();
@@ -104,7 +102,6 @@ export default function (formRequestPromise, { width = '700' } = { width: '700' 
               Message.error(err.msg || '提交失败');
             })
             .finally(() => {
-              btnStop = false;
               $f.btn.loading(false);
               $f.btn.disabled(false);
             });
@@ -143,7 +140,12 @@ export default function (formRequestPromise, { width = '700' } = { width: '700' 
                   },
                   on: {
                     click: () => {
+                      if (btnStop) return;
+                      btnStop = true;
                       fApi.submit();
+                      setTimeout(() => {
+                        btnStop = false;
+                      }, 1000);
                     },
                   },
                 },

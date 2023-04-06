@@ -33,7 +33,7 @@ class UnpaidOrderCancelJob extends BaseJobs
     public function doJob($orderId)
     {
         /** @var StoreOrderServices $services */
-        $services  = app()->make(StoreOrderServices::class);
+        $services = app()->make(StoreOrderServices::class);
         $orderInfo = $services->get($orderId);
         if (!$orderInfo) {
             return true;
@@ -49,21 +49,21 @@ class UnpaidOrderCancelJob extends BaseJobs
         }
         /** @var StoreOrderCartInfoServices $cartServices */
         $cartServices = app()->make(StoreOrderCartInfoServices::class);
-        $cartInfo     = $cartServices->getOrderCartInfo($orderId);
+        $cartInfo = $cartServices->getOrderCartInfo($orderId);
         /** @var StoreOrderRefundServices $refundServices */
         $refundServices = app()->make(StoreOrderRefundServices::class);
 
         try {
             $res = $refundServices->transaction(function () use ($orderInfo, $refundServices) {
                 //回退积分和优惠卷
-                $refundServices->integralAndCouponBack($orderInfo);
+                $refundServices->integralAndCouponBack($orderInfo, 'cancel');
                 //回退库存和销量
                 $refundServices->regressionStock($orderInfo);
                 return true;
             });
             if ($res) {
                 $orderInfo->is_del = 1;
-                $orderInfo->mark   = '订单未支付已超过系统预设时间';
+                $orderInfo->mark = '订单未支付已超过系统预设时间';
                 $orderInfo->save();
             }
             return $res;

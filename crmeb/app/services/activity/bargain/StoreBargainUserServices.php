@@ -234,6 +234,9 @@ class StoreBargainUserServices extends BaseServices
      * 砍价列表
      * @param $where
      * @return array
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
      */
     public function bargainUserList($where)
     {

@@ -148,11 +148,12 @@ class UserExtractServices extends BaseServices
 
     /**
      * 通过提现申请
-     * @param $id
+     * @param int $id
+     * @param $userExtract
      * @return bool
      * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
      * @throws \think\db\exception\ModelNotFoundException
-     * @throws \think\exception\DbException
      */
     public function changeSuccess(int $id, $userExtract)
     {
@@ -164,11 +165,7 @@ class UserExtractServices extends BaseServices
         $userType = $userServices->value(['uid' => $userExtract['uid']], 'user_type');
         $nickname = $userServices->value(['uid' => $userExtract['uid']], 'nickname');
         $phone = $userServices->value(['uid' => $userExtract['uid']], 'phone');
-        event('NoticeListener', [['uid' => $userExtract['uid'], 'userType' => strtolower($userType), 'extractNumber' => $extractNumber, 'nickname' => $nickname], 'user_extract']);
 
-        if (!$this->dao->update($id, ['status' => 1])) {
-            throw new AdminException(100007);
-        }
         switch ($userExtract['extract_type']) {
             case 'bank':
                 $order_id = $userExtract['bank_code'];
@@ -246,6 +243,12 @@ class UserExtractServices extends BaseServices
             'nickname' => $insertData['nickname'],
             'phone' => $insertData['phone']
         ], 'extract');
+
+        if (!$this->dao->update($id, ['status' => 1])) {
+            throw new AdminException(100007);
+        }
+        event('NoticeListener', [['uid' => $userExtract['uid'], 'userType' => strtolower($userType), 'extractNumber' => $extractNumber, 'nickname' => $nickname], 'user_extract']);
+
         return true;
     }
 
@@ -339,8 +342,10 @@ class UserExtractServices extends BaseServices
 
     /**
      * 通过
-     * @param $id
+     * @param int $id
      * @return mixed
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
      */
     public function adopt(int $id)
     {

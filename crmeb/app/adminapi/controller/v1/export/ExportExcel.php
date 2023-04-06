@@ -72,7 +72,8 @@ class ExportExcel extends AuthController
             ['label_id', ''],
             ['now_money', 'normal'],
             ['field_key', ''],
-            ['isMember', '']
+            ['isMember', ''],
+            ['ids', []]
         ]);
         return app('json')->success($this->service->exportUserList($where));
     }

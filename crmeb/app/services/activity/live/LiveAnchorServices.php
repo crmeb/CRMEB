@@ -92,10 +92,13 @@ class LiveAnchorServices extends BaseServices
      * @param int $id
      * @param array $data
      * @return mixed
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
      */
     public function save(int $id, array $data)
     {
-        $liveAnchor = $this->dao->get(['wechat' => $data['wechat']]);
+        $liveAnchor = $this->dao->get(['wechat' => $data['wechat'], 'is_del' => 0]);
         if (!MiniProgramService::getRoleList(2, 0, 30, $data['wechat'])) {
             throw new AdminException(400426);
         }

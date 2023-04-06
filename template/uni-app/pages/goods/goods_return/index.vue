@@ -10,7 +10,8 @@
 					<view class='text acea-row row-between'>
 						<view class='name line2'>{{item.productInfo.store_name}}</view>
 						<view class='money'>
-							<view>{{$t(`￥`)}}{{(parseFloat(item.truePrice)+parseFloat(item.postage_price)).toFixed(2)}}</view>
+							<view>{{$t(`￥`)}}{{(parseFloat(item.truePrice)+parseFloat(item.postage_price/item.cart_num)).toFixed(2)}}
+							</view>
 							<view class='num'>x{{item.cart_num}}</view>
 						</view>
 					</view>
@@ -31,12 +32,16 @@
 					</view>
 					<view class='item acea-row row-between-wrapper' v-if="status && status._type !== 1">
 						<view>{{$t(`退款类型`)}}</view>
-						<picker class='num' @change="returnGoodsChange" :value="returnGoods" :range="returnGoodsData">
+						<picker v-if="status._is_back" class='num' @change="returnGoodsChange" :value="returnGoods"
+							:range="returnGoodsData">
 							<view class="picker acea-row row-between-wrapper">
 								<view class='reason'>{{returnGoodsData[returnGoods]}}</view>
 								<text class='iconfont icon-jiantou'></text>
 							</view>
 						</picker>
+						<view class="" v-else>
+							仅退款
+						</view>
 					</view>
 					<view class='item acea-row row-between-wrapper'>
 						<view>{{$t(`退款原因`)}}</view>

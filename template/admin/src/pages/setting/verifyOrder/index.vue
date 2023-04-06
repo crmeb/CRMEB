@@ -27,7 +27,7 @@
           </Col>
           <Col span="12" class="ivu-text-left">
             <FormItem label="筛选条件：">
-              <Input enter-button placeholder="请输入搜索内容" v-model="formValidate.real_name" style="width: 90%">
+              <Input enter-button placeholder="请输入搜索内容" v-model="formValidate.real_name" style="width: 430px">
                 <Select v-model="field_key" slot="prepend" style="width: 80px">
                   <Option value="all">全部</Option>
                   <Option value="order_id">订单号</Option>
@@ -41,7 +41,8 @@
           </Col>
           <Col span="12" class="mr">
             <FormItem label="选择门店：" label-for="store_name">
-              <Select v-model="formValidate.store_id" element-id="store_id" clearable @on-change="userSearchs">
+                
+              <Select v-model="formValidate.store_id" element-id="store_id" clearable @on-change="userSearchs" style="width: 430px">
                 <Option v-for="item in storeSelectList" :value="item.id" :key="item.id">{{ item.name }}</Option>
               </Select>
             </FormItem>

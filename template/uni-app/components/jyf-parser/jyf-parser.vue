@@ -1,11 +1,3 @@
-<!--
-  parser 主模块组件
-  github：https://github.com/jin-yufeng/Parser 
-  docs：https://jin-yufeng.github.io/Parser
-  插件市场：https://ext.dcloud.net.cn/plugin?id=805
-  author：JinYufeng
-  update：2020/04/14
--->
 <template>
 	<view>
 		<slot v-if="!nodes.length" />
@@ -369,6 +361,7 @@
 				_ts.videoContexts = videos;
 				for (let video, i = 0; video = videos[i++];) {
 					video.style.maxWidth = '100%';
+					video.style.height = 'auto';
 					video.onerror = function() {
 						_ts.$emit('error', {
 							source: 'video',

@@ -63,7 +63,7 @@ class StoreProductReplyServices extends BaseServices
     public function createForm(int $product_id)
     {
         if ($product_id == 0) {
-            $field[] = Form::frameImage('image', '商品', Url::buildUrl('admin/store.StoreProduct/index', array('fodder' => 'image')))->icon('ios-add')->width('950px')->height('505px')->modal(['footer-hide' => true])->Props(['srcKey' => 'image']);
+            $field[] = Form::frameImage('image', '商品', Url::buildUrl(config('app.admin_prefix', 'admin') . '/store.StoreProduct/index', array('fodder' => 'image')))->icon('ios-add')->width('950px')->height('505px')->modal(['footer-hide' => true])->Props(['srcKey' => 'image']);
         } else {
             $field[] = Form::hidden('product_id', $product_id);
         }

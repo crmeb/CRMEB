@@ -32,6 +32,10 @@ class MemberCardBatchServices extends BaseServices
     /**
      * 获取会员卡批次列表
      * @param array $where
+     * @return array
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
      */
     public function getList(array $where = [])
     {

@@ -33,7 +33,7 @@
 						v-for="(item,index) in navList" :key='index' @click='nav(index)'><text class='iconfont'
 							:class="item.icon"></text>{{item.name}}</view>
 				</view>
-				<view class='list' :hidden='current!=0'>
+				<view class='list' :class="{'bag-white': integralList.length}" :hidden='current!=0'>
 					<view class='tip acea-row row-middle' v-if="!isTime"><text
 							class='iconfont icon-shuoming'></text>{{$t(`提示：积分数值的高低会直接影响您的会员等级`)}}</view>
 					<view class='tip acea-row row-middle' v-else><text
@@ -50,7 +50,7 @@
 					<view class='loadingicon acea-row row-center-wrapper' v-if="integralList.length>0">
 						<text class='loading iconfont icon-jiazai' :hidden='loading==false'></text>{{loadTitle}}
 					</view>
-					<view v-if="integralList.length == 0">
+					<view class="no-thing" v-if="integralList.length == 0">
 						<emptyPage :title="$t(`暂无积分记录哦～`)"></emptyPage>
 					</view>
 				</view>
@@ -310,8 +310,11 @@
 	}
 
 	.integral-details .wrapper .list {
-		background-color: #fff;
 		padding: 24rpx 30rpx;
+	}
+
+	.integral-details .wrapper .list.bag-white {
+		background-color: #fff;
 	}
 
 	.integral-details .wrapper .list .tip {
@@ -416,5 +419,9 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
+	}
+
+	.empty-box {
+		padding-bottom: 300rpx;
 	}
 </style>

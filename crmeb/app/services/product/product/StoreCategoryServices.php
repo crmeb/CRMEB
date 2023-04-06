@@ -107,17 +107,16 @@ class StoreCategoryServices extends BaseServices
 
     /**
      * 设置分类状态
-     * @param $id
-     * @param $is_show
+     * @param int $id
+     * @param int $is_show
      */
     public function setShow(int $id, int $is_show)
     {
         $res = $this->dao->update($id, ['is_show' => $is_show]);
         $res = $res && $this->dao->update($id, ['is_show' => $is_show], 'pid');
+        $this->cacheDriver()->clear();
         if (!$res) {
             throw new AdminException(100005);
-        } else {
-            $this->cacheDriver()->clear();
         }
     }
 
@@ -184,6 +183,10 @@ class StoreCategoryServices extends BaseServices
     /**
      * 保存新增数据
      * @param $data
+     * @return int
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
      */
     public function createData($data)
     {

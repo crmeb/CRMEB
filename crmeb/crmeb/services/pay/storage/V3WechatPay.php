@@ -13,18 +13,14 @@
 
 namespace crmeb\services\pay\storage;
 
-use app\services\pay\PayNotifyServices;
 use app\services\pay\PayServices;
-use app\services\wechat\WechatMessageServices;
 use crmeb\exceptions\PayException;
 use crmeb\services\app\MiniProgramService;
 use crmeb\services\easywechat\Application;
 use crmeb\services\pay\BasePay;
 use crmeb\services\pay\PayInterface;
-use crmeb\utils\Hook;
 use EasyWeChat\Payment\Order;
 use think\facade\Event;
-use think\facade\Log;
 
 /**
  * Class 微信支付v3
@@ -150,7 +146,7 @@ class V3WechatPay extends BasePay implements PayInterface
      */
     public function merchantPay(string $openid, string $orderId, string $amount, array $options = [])
     {
-        $res = $this->instance->v3pay->setType($options['type'])->batches(
+        return $this->instance->v3pay->setType($options['type'])->batches(
             $orderId,
             $amount,
             $options['batch_name'],
@@ -164,8 +160,6 @@ class V3WechatPay extends BasePay implements PayInterface
                 ]
             ]
         );
-
-        return $res;
     }
 
     /**

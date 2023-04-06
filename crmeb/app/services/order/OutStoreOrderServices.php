@@ -225,7 +225,7 @@ class OutStoreOrderServices extends BaseServices
      * @param array $list
      * @return array
      */
-    public function tidyCartList(array $cartInfo, array $list, int $cartId = 0): array
+    public function tidyCartList(array $cartInfo, array $list, $cartId = 0): array
     {
         $list[] = [
             'cart_id' => $cartId,

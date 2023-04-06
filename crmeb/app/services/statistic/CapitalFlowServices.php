@@ -104,6 +104,9 @@ class CapitalFlowServices extends BaseServices
      * 获取资金流水
      * @param $where
      * @return array
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
      */
     public function getFlowList($where)
     {

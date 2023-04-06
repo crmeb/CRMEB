@@ -569,6 +569,7 @@ class StoreOrderDeliveryServices extends BaseServices
     /**
      * 虚拟商品自动发货
      * @param $orderInfo
+     * @throws \ReflectionException
      */
     public function virtualSend($orderInfo)
     {

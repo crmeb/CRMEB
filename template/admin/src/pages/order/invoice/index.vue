@@ -68,7 +68,7 @@
           </Row>
         </Form>
       </div>
-    </card>
+    </Card>
     <Card :bordered="false" dis-hover>
       <Tabs v-model="currentTab" @on-click="onClickTab" v-if="tablists" class="mb20">
         <TabPane :label="'全部发票（' + tablists.all + '）'" name=" " />
@@ -94,7 +94,7 @@
         </template>
         <template slot-scope="{ row, index }" slot="is_invoice">
           <div v-if="row.is_invoice === 1">已开票</div>
-          <div v-else>未开票</div>
+          <div v-else>--</div>
         </template>
         <template slot-scope="{ row, index }" slot="status">
           <div v-if="row.status === 0">未发货</div>
@@ -151,8 +151,8 @@
           <div class="list">
             <div class="title row">联系信息</div>
             <Row class="row">
-              <Col span="12">真实姓名: {{ invoiceDetails.real_name }}</Col>
-              <Col span="12">联系电话: {{ invoiceDetails.user_phone }}</Col>
+              <Col span="12">真实姓名: {{ invoiceDetails.name }}</Col>
+              <Col span="12">联系电话: {{ invoiceDetails.drawer_phone }}</Col>
             </Row>
             <Row class="row">
               <Col span="12">联系邮箱: {{ invoiceDetails.email }}</Col>
@@ -178,7 +178,7 @@
           <div class="list">
             <div class="title row">联系信息</div>
             <Row class="row">
-              <Col span="12">真实姓名: {{ invoiceDetails.real_name }}</Col>
+              <Col span="12">真实姓名: {{ invoiceDetails.name }}</Col>
               <Col span="12">联系电话: {{ invoiceDetails.user_phone }}</Col>
             </Row>
             <Row class="row">
@@ -502,6 +502,7 @@ export default {
           this.invoiceShow = false;
           this.getList();
           this.empty();
+          this.getTabs();
         })
         .catch((err) => {
           this.$Message.error(err.msg);
@@ -534,7 +535,7 @@ export default {
       this.getList();
     },
     getTabs() {
-      orderInvoiceChart()
+      orderInvoiceChart(this.orderData)
         .then((res) => {
           this.tablists = res.data;
         })
@@ -545,6 +546,7 @@ export default {
     // 精确搜索()
     orderSearch() {
       this.orderData.page = 1;
+      this.getTabs();
       this.getList();
     },
     // 具体日期搜索()；
@@ -553,6 +555,7 @@ export default {
       this.timeVal = e;
       this.orderData.data = this.timeVal[0] ? this.timeVal.join('-') : '';
       this.getList();
+      this.getTabs();
     },
     //订单状态搜索()
     selectChange() {

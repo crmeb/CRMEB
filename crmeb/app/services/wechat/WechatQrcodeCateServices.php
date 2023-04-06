@@ -69,6 +69,8 @@ class WechatQrcodeCateServices extends BaseServices
      */
     public function delCate($id = 0)
     {
+        $count = app()->make(WechatQrcodeServices::class)->count(['cate_id' => $id]);
+        if ($count) throw new AdminException(400454);
         if (!$id) throw new AdminException(100100);
         $res = $this->dao->update($id, ['is_del' => 1]);
         if (!$res) throw new AdminException(100008);

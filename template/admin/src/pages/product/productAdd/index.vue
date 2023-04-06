@@ -1231,9 +1231,11 @@
                   <Input v-model="disk_info" size="large" type="textarea" :rows="4" placeholder="填写卡密信息" />
                 </div>
                 <div class="stock-input">
-                  <Input type="number" v-model="stock" size="large" placeholder="填写库存数量">
+                  <!-- <Input type="number" v-model="stock" size="large" :min='0' placeholder="填写库存数量">
                     <span slot="append">件</span>
-                  </Input>
+                  </Input> -->
+                  <InputNumber :max="100000" :min="1" :step="1" :precision="0" v-model="stock" />
+                  <span class="pl10">件</span>
                 </div>
               </div>
               <div class="scroll-virtual" v-if="disk_type == 2">

@@ -170,6 +170,8 @@ class StoreCouponUserServices extends BaseServices
                     $coupon['start_time'] = $coupon['start_time'] ? date('Y/m/d', $coupon['start_time']) : date('Y/m/d', $coupon['add_time']);
                     $coupon['add_time'] = date('Y/m/d', $coupon['add_time']);
                     $coupon['end_time'] = date('Y/m/d', $coupon['end_time']);
+                    $coupon['start_use_time'] = $coupon['start_use_time'] > 0 ? date('Y/m/d', $coupon['start_use_time']) : 0;
+                    $coupon['end_use_time'] = $coupon['start_use_time'] > 0 ? date('Y/m/d', $coupon['end_use_time']) : 0;
                     $coupon['title'] = $coupon['coupon_title'];
                     $coupon['type'] = $coupon['applicable_type'];
                     $coupon['use_min_price'] = floatval($coupon['use_min_price']);

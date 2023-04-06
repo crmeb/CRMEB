@@ -147,7 +147,7 @@
                   <Button
                     class="btn"
                     type="primary"
-                    v-if="item._status._type == 1 && item._status._type != 0"
+                    v-if="item._status._type == 1 && item._status._type != 0 && item.shipping_type != 2"
                     @click.stop="openDelivery(item)"
                     >发货</Button
                   >

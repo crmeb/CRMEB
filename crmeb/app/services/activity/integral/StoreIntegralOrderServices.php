@@ -160,8 +160,7 @@ class StoreIntegralOrderServices extends BaseServices
         if (!$addressId) {
             throw new ApiException(410045);
         }
-        if (!$addressInfo = $addressServices->getOne(['uid' => $uid, 'id' => $addressId, 'is_del' => 0]))
-        throw new ApiException(410046);
+        if (!$addressInfo = $addressServices->getOne(['uid' => $uid, 'id' => $addressId, 'is_del' => 0])) throw new ApiException(410046);
         $addressInfo = $addressInfo->toArray();
         $total_price = bcmul($productInfo['price'], $num, 2);
         /** @var UserBillServices $userBillServices */
@@ -226,7 +225,7 @@ class StoreIntegralOrderServices extends BaseServices
             $res2 = false !== $userServices->bcDec($userInfo['uid'], 'integral', $priceIntegral, 'uid');
             /** @var UserBillServices $userBillServices */
             $userBillServices = app()->make(UserBillServices::class);
-            $res3 = $userBillServices->income('storeIntegral_use_integral', $uid, $priceIntegral, $userInfo['integral'], $orderId);
+            $res3 = $userBillServices->income('storeIntegral_use_integral', $uid, $priceIntegral, $userInfo['integral'] - $priceIntegral, $orderId);
             $res2 = $res2 && false != $res3;
         }
         if (!$res2) {
@@ -334,7 +333,7 @@ class StoreIntegralOrderServices extends BaseServices
         /** @var StoreProductAttrValueServices $StoreProductAttrValueServices */
         $StoreProductAttrValueServices = app()->make(StoreProductAttrValueServices::class);
         $attrValue = $StoreProductAttrValueServices->uniqueByField($unique, 'product_id,suk,price,image,unique');
-        if(!$attrValue || !isset($attrValue['storeIntegral']) || !$attrValue['storeIntegral']){
+        if (!$attrValue || !isset($attrValue['storeIntegral']) || !$attrValue['storeIntegral']) {
             throw new ApiException(410295);
         }
         $data = [];
@@ -725,13 +724,16 @@ class StoreIntegralOrderServices extends BaseServices
      * @param int $id
      * @param string $remark
      * @return mixed
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
      */
     public function remark(int $id, string $remark)
     {
         if (!$remark) throw new AdminException(400106);
         if (!$id) throw new AdminException(100100);
-        if (!$order = $this->services->get($id)) {
-           throw new AdminException(100025);
+        if (!$order = $this->dao->get($id)) {
+            throw new AdminException(100025);
         }
 
         $order->remark = $remark;

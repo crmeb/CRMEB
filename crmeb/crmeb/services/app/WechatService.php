@@ -12,12 +12,10 @@
 namespace crmeb\services\app;
 
 use app\services\message\wechat\MessageServices;
-use app\services\order\StoreOrderServices;
 use app\services\pay\PayServices;
 use app\services\wechat\WechatMessageServices;
 use app\services\wechat\WechatReplyServices;
 use crmeb\exceptions\AdminException;
-use app\services\pay\PayNotifyServices;
 use crmeb\exceptions\ApiException;
 use crmeb\services\easywechat\Application;
 use EasyWeChat\Message\Article;
@@ -33,7 +31,6 @@ use Symfony\Component\HttpFoundation\Request;
 use think\facade\Event;
 use think\facade\Log;
 use think\Response;
-use crmeb\utils\Hook;
 use think\facade\Cache;
 use crmeb\services\SystemConfigService;
 
@@ -395,7 +392,7 @@ class WechatService
         if ($result->return_code == 'SUCCESS' && $result->result_code != 'FAIL') {
             return true;
         } else {
-            throw new ApiException(410089);
+            throw new ApiException($result->err_code_des ?? 400658);
         }
     }
 

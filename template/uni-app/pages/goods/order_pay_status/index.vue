@@ -38,9 +38,11 @@
 			<view @tap="goOrderDetails" v-if="status==0">
 				<button formType="submit" class='returnBnt bg-color' hover-class='none'>{{$t(`查看订单`)}}</button>
 			</view>
-			<view @tap="getOrderPayInfo" v-if="payType == 'ALLINPAY_PAY'">
+			<!-- #ifdef H5 -->
+			<view @tap="getOrderPayInfo" v-if="order_pay_info.paid==0">
 				<button class='returnBnt bg-color' hover-class='none'>{{$t(`刷新支付状态`)}}</button>
 			</view>
+			<!-- #endif -->
 			<view @tap="goOrderDetails" v-if="order_pay_info.paid==0 && status==1">
 				<button class='returnBnt bg-color' hover-class='none'>{{$t(`重新购买`)}}</button>
 			</view>

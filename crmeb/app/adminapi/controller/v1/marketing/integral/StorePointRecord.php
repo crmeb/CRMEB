@@ -37,7 +37,7 @@ class StorePointRecord extends AuthController
     {
         $where = $this->request->getMore([
             ['time', ''],
-            ['trading_type', 0]
+            ['trading_type', '']
         ]);
         $date = $this->services->pointRecord($where);
         return app('json')->success($date);

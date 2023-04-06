@@ -214,7 +214,7 @@ export default {
                     minWidth: 120,
                   },
                   {
-                    title: '变化前积分',
+                    title: '变化后积分',
                     key: 'balance',
                     minWidth: 120,
                   },

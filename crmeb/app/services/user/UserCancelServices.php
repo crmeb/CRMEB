@@ -32,6 +32,7 @@ class UserCancelServices extends BaseServices
         /** @var WechatUserServices $wechatUserServices */
         $wechatUserServices = app()->make(WechatUserServices::class);
         $userServices->update($uid, ['is_del' => 1]);
+        $userServices->update(['spread_uid' => $uid], ['spread_uid' => 0, 'spread_time' => 0]);
         $wechatUserServices->update(['uid' => $uid], ['is_del' => 1]);
     }
 

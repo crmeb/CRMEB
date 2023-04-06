@@ -121,9 +121,7 @@
 		},
 		watch: {
 			isNew(newVal) {
-				if (newVal) {
-					this.getAllCategory();
-				}
+				this.getAllCategory(1);
 			}
 		},
 		data() {
@@ -561,6 +559,11 @@
 							title: that.$t(`该产品没有更多库存了`)
 						});
 				}
+				if (that.attr.productSelect.cart_num == 0) {
+					return that.$util.Tips({
+						title: that.$t(`不能输入0喔`)
+					});
+				}
 				let q = {
 					product_id: id,
 					num: duo ? that.attr.productSelect.cart_num : 1,
@@ -672,9 +675,9 @@
 			closeTap() {
 				this.iSlong = true
 			},
-			getAllCategory: function() {
+			getAllCategory: function(type) {
 				let that = this;
-				if (this.isNew || !uni.getStorageSync('CAT3_DATA')) {
+				if (type || !uni.getStorageSync('CAT3_DATA')) {
 					getCategoryList().then(res => {
 						let data = res.data;
 						uni.setStorageSync('CAT3_DATA', data)

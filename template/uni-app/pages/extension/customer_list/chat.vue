@@ -1,13 +1,13 @@
 <template>
 	<view class="chat-box" :style="colorStyle">
 		<!-- #ifdef MP -->
-		<view class="head-box">
+		<!-- 		<view class="head-box">
 			<view class="system-head" :style="{ height: sysHead }"></view>
 			<view class="title-hd">
 				<view class="iconfont icon-fanhui" @click="goBack"></view>
 				<view>{{ titleName }}</view>
 			</view>
-		</view>
+		</view> -->
 		<!-- #endif -->
 		<view class="broadcast-details_order">
 			<!-- 商品信息 -->
@@ -80,7 +80,8 @@
 								</view>
 							</view>
 							<!-- 订单 -->
-							<view class="order-box" v-if="item.msn_type == 6 && item.orderInfo.length" @click="goOrder(item)">
+							<view class="order-box" v-if="item.msn_type == 6 && item.orderInfo"
+								@click="goOrder(item)">
 								<view class="title">{{$t(`订单号`)}}: {{ item.orderInfo.order_id }}</view>
 								<view class="info">
 									<image :src="item.orderInfo.cartInfo[0].productInfo.image"></image>
@@ -641,10 +642,16 @@
 			padding: 0 30rpx;
 			color: rgba(0, 0, 0, 0.8);
 			background: #f7f7f7;
+			/* #ifdef APP-PLUS */
+			height: 70rpx;
+			height: (70rpx + constant(safe-area-inset-bottom)); ///兼容 IOS<11.2/
+			height: calc(70rpx + env(safe-area-inset-bottom)); ///兼容 IOS>11.2/
+			/* #endif */
+			/* #ifndef APP-PLUS */
 			height: 100rpx;
 			height: calc(100rpx+ constant(safe-area-inset-bottom)); ///兼容 IOS<11.2/
 			height: calc(100rpx + env(safe-area-inset-bottom)); ///兼容 IOS>11.2/
-
+			/* #endif */
 			.words .icon-tupian {
 				font-size: 50rpx;
 			}
@@ -709,6 +716,9 @@
 
 	.slider-banner {
 		background: #fff;
+		padding-bottom: 0rpx;
+		padding-bottom: calc(constant(safe-area-inset-bottom)); ///兼容 IOS<11.2/
+		padding-bottom: calc(env(safe-area-inset-bottom)); ///兼容 IOS>11.2/
 	}
 
 	.words-mask {

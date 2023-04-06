@@ -49,16 +49,15 @@ class MemberCardServices extends BaseServices
         }
         unset($where['is_use']);
         $list = $this->dao->getSearchList($where, $page, $limit);
-        if ($list) {
-            foreach ($list as $k => $v) {
-                if ($v['use_uid']) {
-                    $user_info = $userService->getUserInfo($v['use_uid'], ['nickname', 'phone', 'real_name']);
-                    $list[$k]['username'] = $user_info['real_name'] ? $user_info['real_name'] : $user_info['nickname'];
-                    $list[$k]['phone'] = $user_info ? $user_info['phone'] : "";
-                }
-                $list[$k]['add_time'] = date('Y-m-d H:i:s', $v['add_time']);
-                $list[$k]['use_time'] = $v['use_time'] != 0 ? date('Y-m-d H:i:s', $v['use_time']) : "未使用";
+        $userIds = array_column($list->toArray(), 'use_uid');
+        $userList = $userService->getColumn([['uid', 'in', $userIds]], 'nickname,phone,real_name', 'uid');
+        foreach ($list as $k => $v) {
+            if ($v['use_uid']) {
+                $list[$k]['username'] = $userList[$v['use_uid']]['real_name'] ?: $userList[$v['use_uid']]['nickname'];
+                $list[$k]['phone'] = $userList[$v['use_uid']] ? $userList[$v['use_uid']]['phone'] : "";
             }
+            $list[$k]['add_time'] = date('Y-m-d H:i:s', $v['add_time']);
+            $list[$k]['use_time'] = $v['use_time'] != 0 ? date('Y-m-d H:i:s', $v['use_time']) : "未使用";
         }
         $count = $this->dao->count($where);
         return compact('list', 'count');

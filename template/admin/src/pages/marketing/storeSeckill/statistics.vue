@@ -5,7 +5,7 @@
         <span>
           <Button icon="ios-arrow-back" size="small" type="text" @click="$router.go(-1)">返回</Button>
         </span>
-        <Divider type="vertical"/>
+        <Divider type="vertical" />
         <span class="ivu-page-header-title">{{ $route.meta.title }}</span>
       </div>
     </div>
@@ -26,8 +26,7 @@
         <Row type="flex" :gutter="24">
           <Col span="6" v-if="type == 1">
             <FormItem label="订单状态：" label-for="status">
-              <Select v-model="pagination.status" placeholder="请选择订单状态">
-                <Option value="">全部</Option>
+              <Select v-model="pagination.status" clearable placeholder="请选择订单状态" @on-change="changeStatus">
                 <Option value="0">未支付</Option>
                 <Option value="1">待发货</Option>
                 <Option value="2">待收货</Option>
@@ -199,6 +198,10 @@ export default {
     this.getList(this.id);
   },
   methods: {
+    changeStatus() {
+      this.pagination.page = 1;
+      this.getList(this.id);
+    },
     // 统计
     getStatistics(id) {
       getseckillStatistics(id).then((res) => {
@@ -246,7 +249,7 @@ export default {
 };
 </script>
 
-<style lang='less' scoped>
+<style lang="less" scoped>
 .cl {
   margin-right: 20px;
 }
@@ -261,7 +264,7 @@ export default {
 .ech-box {
   margin-top: 10px;
 }
-/deep/ .ivu-tabs-nav-scroll{
+/deep/ .ivu-tabs-nav-scroll {
   background-color: #fff;
   padding-top: 5px;
 }

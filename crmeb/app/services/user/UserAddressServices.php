@@ -82,6 +82,9 @@ class UserAddressServices extends BaseServices
      * @param int $uid
      * @param string $field
      * @return array
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
      */
     public function getUserDefaultAddress(int $uid, string $field = '*')
     {

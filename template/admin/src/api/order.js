@@ -26,10 +26,11 @@ export function orderList(data) {
  * @description 发票头部统计
  * @param {Object} param data {Object} 传值参数
  */
-export function orderInvoiceChart() {
+export function orderInvoiceChart(data) {
   return request({
     url: 'order/invoice/chart',
     method: 'get',
+    params: data,
   });
 }
 

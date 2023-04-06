@@ -360,12 +360,15 @@
 		font-size: 24rpx;
 		color: #282828;
 		font-weight: bold;
+		display: flex;
+		align-items: center;
 	}
 
 	.productList .item .text .vip .vip-money image {
-		width: 46rpx;
-		height: 21rpx;
+		width: 64rpx;
+		height: 26rpx;
 		margin-left: 4rpx;
+		margin-top: 4rpx;
 	}
 
 	.empty-img {

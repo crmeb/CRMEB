@@ -58,8 +58,7 @@
 		computed: mapGetters(['isLogin', 'cartNum', 'activityTab']),
 		watch: {
 			activityTab: {
-				handler(nVal, oVal) {
-				},
+				handler(nVal, oVal) {},
 				deep: true
 			},
 			configData: {
@@ -83,6 +82,14 @@
 			let routes = getCurrentPages(); // 获取当前打开过的页面路由数组
 			let curRoute = routes[routes.length - 1].route //获取当前页面路由
 			this.$store.commit('ACTIVITYTAB', '/' + curRoute);
+			uni.$on('uploadFooter', () => {
+				let routes = getCurrentPages(); // 获取当前打开过的页面路由数组
+				let curRoute = routes[routes.length - 1].route //获取当前页面路由
+				this.$store.commit('ACTIVITYTAB', '/' + curRoute);
+			})
+		},
+		onShow() {
+
 		},
 		mounted() {
 			getNavigation().then(res => {
@@ -97,7 +104,9 @@
 				this.getCartNum()
 			}
 		},
-
+		onHide() {
+			uni.$off(['uploadFooter'])
+		},
 		methods: {
 			goRouter(item) {
 				var pages = getCurrentPages();

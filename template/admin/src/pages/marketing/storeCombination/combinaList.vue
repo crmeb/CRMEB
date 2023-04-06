@@ -249,7 +249,7 @@ export default {
         },
         {
           title: '金额',
-          key: 'price',
+          key: 'total_price',
         },
         {
           title: '订单状态',

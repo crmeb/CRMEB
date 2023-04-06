@@ -165,10 +165,14 @@ class ArticleCategory extends AuthController
     /**
      * 树形列表
      * @return mixed
+     * @throws \ReflectionException
      */
     public function getTreeList()
     {
         $list = $this->service->getTreeList();
+        foreach ($list as &$item) {
+            $item['disabled'] = !$item['status'] || $item['is_del'];
+        }
         return app('json')->success($list);
     }
 }

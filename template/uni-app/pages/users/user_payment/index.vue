@@ -26,6 +26,7 @@
 						@click="picCharge(picList.length)">
 						<input type="number" :placeholder="$t(`其他`)" v-model="money"
 							class="pic-box-money pic-number-pic"
+							:placeholder-class="activePic == picList.length ? 'active' :''"
 							:class="activePic == picList.length ? 'pic-box-color-active' : ''" />
 					</view>
 					<view class="tips-box">
@@ -523,14 +524,18 @@
 						},
 					})
 				} else {
-					if(this.numberPic == '') this.numberPic = this.money;
+					if (this.numberPic == '') this.numberPic = this.money;
 					this.pay()
 				}
 			}
 		},
 	}
 </script>
-
+<style lang="scss">
+	.tip .pic-box-color .active {
+		color: #fff !important;
+	}
+</style>
 <style lang="scss" scoped>
 	page {
 		width: 100%;
@@ -675,6 +680,10 @@
 			font-size: 38rpx;
 			margin-right: 10rpx;
 			text-align: center;
+		}
+
+		.active {
+			color: #fff !important;
 		}
 
 		.pic-box-color-active {

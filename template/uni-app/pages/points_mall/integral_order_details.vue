@@ -55,8 +55,12 @@
 					<view>{{$t(`支付积分`)}}：</view>
 					<view class='conter'>{{cartInfo.total_price}}</view>
 				</view>
+				<view class='item acea-row row-between' v-if="cartInfo.mark">
+					<view>{{$t(`订单备注`)}}：</view>
+					<view class='conter'>{{cartInfo.mark}}</view>
+				</view>
 				<view class='item acea-row row-between' v-if="cartInfo.remark">
-					<view>{{$t(`备注`)}}：</view>
+					<view>{{$t(`商家备注`)}}：</view>
 					<view class='conter'>{{cartInfo.remark}}</view>
 				</view>
 				<view class='item acea-row row-between' v-if="cartInfo.delivery_type === 'express'">

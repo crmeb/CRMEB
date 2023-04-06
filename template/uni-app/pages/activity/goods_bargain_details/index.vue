@@ -1,7 +1,7 @@
 <template>
 	<view style="background-color: var(--view-theme);padding-bottom: 50rpx;" :style="colorStyle">
 		<view class="bargain">
-			<!-- #ifndef APP-PLUS -->
+			<!-- #ifndef APP-PLUS || MP -->
 			<view class="iconfont icon-xiangzuo" v-if="retunTop" @tap="goBack" :style="'top:' + navH + 'px'"></view>
 			<!-- #endif -->
 			<view :style="'background-image: url('+(bargainUid != userInfo.uid ?picUrl.support:picUrl.barga)+');'"

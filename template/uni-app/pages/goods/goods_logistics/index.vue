@@ -8,7 +8,7 @@
 				<view class='text acea-row row-between'>
 					<view class='name line2'>{{item.productInfo.store_name}}</view>
 					<view class='money'>
-						<view>{{$t(`￥`)}}{{item.truePrice}}</view>
+						<view>{{$t(`￥`)}}{{(parseFloat(item.truePrice)+parseFloat(item.postage_price/item.cart_num)).toFixed(2)}}</view>
 						<view>x{{item.cart_num}}</view>
 					</view>
 				</view>

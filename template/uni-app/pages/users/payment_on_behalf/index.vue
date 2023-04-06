@@ -174,7 +174,7 @@
 			return {
 				title: "",
 				imageUrl: "",
-				path: "/pages/users/payment_on_behalf/index?order_id=" + that.id + "&spread=" + this.$store.state.app
+				path: "/pages/users/payment_on_behalf/index?order_id=" + that.order_id + "&spread=" + this.$store.state.app
 					.uid,
 			};
 		},

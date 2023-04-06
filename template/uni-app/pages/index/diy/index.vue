@@ -14,6 +14,7 @@
 					</component>
 				</view>
 				<!-- #endif -->
+				
 				<!-- #ifdef MP || APP-PLUS -->
 				<block v-for="(item, index) in styleConfig" :key="index">
 					<activeParty v-if="item.name == 'activeParty'" :dataConfig="item" :isSortType="isSortType">
@@ -141,7 +142,9 @@
 				<view v-if="site_config" class="site-config" @click="goICP">{{ site_config }}</view>
 				<!-- #endif -->
 				<view class="uni-p-b-98"></view>
+				<!-- #ifndef H5 -->
 				<pageFoot></pageFoot>
+				<!-- #endif -->
 			</view>
 		</view>
 		<view v-else>
@@ -460,7 +463,6 @@
 				uni.showLoading({
 					title: this.$t(`加载中`)
 				})
-				console.log('1111')
 				this.diyData();
 				this.getIndexData();
 				getShare().then(res => {

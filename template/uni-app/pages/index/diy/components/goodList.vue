@@ -21,8 +21,7 @@
 							<view>
 								<view class="title line2" v-if="titleShow">{{ item.store_name }}</view>
 								<view class="old-price" v-if="opriceShow">
-									<text>{{$t(`￥`)}}</text>
-									{{ item.ot_price }}
+									{{$t(`￥`)}}{{ item.ot_price }}
 								</view>
 							</view>
 							<view class="price" :style="'color:'+fontColor">
@@ -54,12 +53,11 @@
 						<view class="text-info">
 							<view class="title line1" v-if="titleShow">{{ item.store_name }}</view>
 							<view class="old-price" v-if="opriceShow">
-								<text>{{$t(`￥`)}}</text>
-								{{ item.ot_price }}
+								{{$t(`￥`)}}{{ item.ot_price }}
 							</view>
 							<view class="price" :style="'color:'+fontColor">
 								<view v-if="priceShow">
-									<text>{{$t(`￥`)}}</text>
+									{{$t(`￥`)}}
 									{{ item.price }}
 								</view>
 								<view class="txt" :style="'border:1px solid '+labelColor+';color:'+labelColor"
@@ -88,8 +86,7 @@
 							<view>
 								<view class="title line1" v-if="titleShow">{{ item.store_name }}</view>
 								<view class="old-price" v-if="opriceShow">
-									<text>{{$t(`￥`)}}</text>
-									{{ item.ot_price }}
+									{{$t(`￥`)}}{{ item.ot_price }}
 								</view>
 							</view>
 							<view class="price" :style="'color:'+fontColor">
@@ -320,7 +317,7 @@
 
 					.old-price {
 						margin-top: 4rpx;
-						font-size: 26rpx;
+						font-size: 20rpx;
 						color: #aaaaaa;
 						text-decoration: line-through;
 

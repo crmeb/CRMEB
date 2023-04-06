@@ -46,6 +46,9 @@ class LuckLotteryRecordServices extends BaseServices
      * 获取抽奖记录列表
      * @param array $where
      * @return array
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
      */
     public function getList(array $where)
     {
@@ -108,7 +111,11 @@ class LuckLotteryRecordServices extends BaseServices
      * 写入中奖纪录
      * @param int $uid
      * @param array $prize
+     * @param array $userInfo
      * @return mixed
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
      */
     public function insertPrizeRecord(int $uid, array $prize, array $userInfo = [])
     {
@@ -218,13 +225,6 @@ class LuckLotteryRecordServices extends BaseServices
                         throw new ApiException(410053);
                     }
                     break;
-                case 7:
-                    //TODO 未完善
-                    break;
-                case 8:
-                    break;
-                case 9:
-                    break;
             }
             $this->dao->update($lottery_record_id, $data, 'id');
         });
@@ -272,7 +272,11 @@ class LuckLotteryRecordServices extends BaseServices
     /**
      * 获取中奖记录
      * @param int $uid
+     * @param array $where
      * @return array
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
      */
     public function getRecord(int $uid, $where = [])
     {

@@ -102,7 +102,11 @@ class LuckLotteryController
     /**
      * 领取奖品
      * @param Request $request
+     * @param LuckLotteryRecordServices $lotteryRecordServices
      * @return mixed
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
      */
     public function lotteryReceive(Request $request, LuckLotteryRecordServices $lotteryRecordServices)
     {
@@ -125,6 +129,9 @@ class LuckLotteryController
      * @param Request $request
      * @param LuckLotteryRecordServices $lotteryRecordServices
      * @return mixed
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
      */
     public function lotteryRecord(Request $request, LuckLotteryRecordServices $lotteryRecordServices)
     {

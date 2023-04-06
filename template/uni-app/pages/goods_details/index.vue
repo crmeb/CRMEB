@@ -66,7 +66,7 @@
 								</view>
 								<view class="iconfont icon-fenxiang" @click="listenerActionSheet"></view>
 							</view>
-							<view class="introduce" v-text="storeInfo.store_name"></view>
+							<view class="introduce" v-text="storeInfo.store_name || ''"></view>
 							<view class="limit_good" v-if="storeInfo.limit_type > 0">
 								{{storeInfo.limit_type == 1 ? $t(`单次限购`) : $t(`永久限购`)}}{{storeInfo.limit_num}}{{$t(storeInfo.unit_name)}}
 							</view>

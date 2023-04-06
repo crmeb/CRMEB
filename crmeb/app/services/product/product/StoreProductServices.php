@@ -654,7 +654,7 @@ class StoreProductServices extends BaseServices
 
                 //采集商品下载图片
                 if ($type == -1) {
-                    $s_image_down = $d_image_down = [];
+                    $s_image_down = [];
                     //下载商品轮播图
                     foreach ($slider_image as $s_image) {
                         if (sys_config('queue_open', 0) == 1) {
@@ -671,8 +671,7 @@ class StoreProductServices extends BaseServices
                         if (sys_config('queue_open', 0) == 1) {
                             ProductCopyJob::dispatch('copyDescriptionImage', [$res->id, $description, $d_image, count($match[1])]);
                         } else {
-                            if (!is_int(strpos($d_image, 'http'))) $d_image = 'http://' . ltrim($d_image, '\//');
-                            $d_image_down[] = $d_img = app()->make(CopyTaobaoServices::class)->downloadCopyImage($d_image);
+                            $d_img = app()->make(CopyTaobaoServices::class)->downloadCopyImage(!is_int(strpos($d_image, 'http')) ? 'http://' . ltrim($d_image, '\//') : $d_image);
                             $description = str_replace($d_image, $d_img, $description);
                         }
                     }
@@ -951,7 +950,7 @@ class StoreProductServices extends BaseServices
         }
         $header[] = ['title' => '图片', 'slot' => 'pic', 'align' => 'center', 'minWidth' => 120];
         if ($type == 1) {
-            $header[] = ['title' => '秒杀价', 'slot' => 'price', 'align' => 'center', 'minWidth' => 80];
+            $header[] = ['title' => '秒杀价', 'type' => 1, 'key' => 'price', 'align' => 'center', 'minWidth' => 80];
             $header[] = ['title' => '成本价', 'key' => 'cost', 'align' => 'center', 'minWidth' => 80];
             $header[] = ['title' => '原价', 'key' => 'ot_price', 'align' => 'center', 'minWidth' => 80];
         } elseif ($type == 2) {
@@ -1260,7 +1259,7 @@ class StoreProductServices extends BaseServices
             $page = 1;
             $limit = $num;
         }
-        $list = $this->dao->getSearchList($where, $page, $limit, ['id,store_name,cate_id,image,IFNULL(sales, 0) + IFNULL(ficti, 0) as sales,price,stock,activity,unit_name,presale']);
+        $list = $this->dao->getSearchList($where, $page, $limit, ['id,store_name,cate_id,image,IFNULL(sales, 0) + IFNULL(ficti, 0) as sales,price,stock,activity,unit_name,presale,is_vip,vip_price']);
         $list = $this->getActivityList($list);
         return $list;
     }
@@ -1816,7 +1815,7 @@ class StoreProductServices extends BaseServices
             $memberCardService = app()->make(MemberCardServices::class);
             $vipStatus = $memberCardService->isOpenMemberCard('vip_price');
             foreach ($list as &$item) {
-                if (!($vipStatus && $item['is_vip'])) {
+                if (!$this->vipIsOpen(!!$item['is_vip'], $vipStatus)) {
                     $item['vip_price'] = 0;
                 }
             }

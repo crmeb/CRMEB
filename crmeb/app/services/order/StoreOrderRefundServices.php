@@ -245,7 +245,7 @@ class StoreOrderRefundServices extends BaseServices
             $this->storeOrderServices->update($splitOrderInfo['id'], [
                 'status' => -2,
                 'refund_status' => 2,
-                'refund_type' => $orderRefundInfo['refund_type'],
+                'refund_type' => 6,
                 'refund_express' => $orderRefundInfo['refund_express'],
                 'refund_express_name' => $orderRefundInfo['refund_express_name'],
                 'refund_reason_wap_img' => $orderRefundInfo['refund_img'],
@@ -426,18 +426,19 @@ class StoreOrderRefundServices extends BaseServices
     /**
      * 回退积分和优惠卷
      * @param $order
+     * @param string $type
      * @return bool
      */
-    public function integralAndCouponBack($order)
+    public function integralAndCouponBack($order, $type = 'refund')
     {
         /** @var StoreOrderStatusServices $statusService */
         $statusService = app()->make(StoreOrderStatusServices::class);
         $res = true;
-        //回退优惠卷 拆分子订单不退优惠券
-        if (!$order['pid'] && $order['coupon_id'] && $order['coupon_price']) {
-            /** @var StoreCouponUserServices $coumonUserServices */
-            $coumonUserServices = app()->make(StoreCouponUserServices::class);
-            $res = $res && $coumonUserServices->recoverCoupon((int)$order['coupon_id']);
+        //取消的订单退回优惠券
+        if ($type == 'cancel' && $order['coupon_id'] && $order['coupon_price']) {
+            /** @var StoreCouponUserServices $couponUserServices */
+            $couponUserServices = app()->make(StoreCouponUserServices::class);
+            $res = $couponUserServices->recoverCoupon((int)$order['coupon_id']);
             $statusService->save([
                 'oid' => $order['id'],
                 'change_type' => 'coupon_back',
@@ -1064,7 +1065,7 @@ class StoreOrderRefundServices extends BaseServices
         if ($list) {
             foreach ($list as &$item) {
                 $item['paid'] = 1;
-                $item['add_time'] = $item['_add_time'] = isset($item['add_time']) ? date('Y-m-d H:i', (int)$item['add_time']) : '';
+                $item['add_time'] = $item['_add_time'] = isset($item['add_time']) ? date('Y-m-d H:i:s', (int)$item['add_time']) : '';
                 $item['cartInfo'] = $item['cart_info'];
                 if (in_array($item['refund_type'], [1, 2, 4, 5])) {
                     $item['refund_status'] = 1;

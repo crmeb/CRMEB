@@ -7,10 +7,14 @@
 .side-menu-wrapper {
   user-select: none;
   height: 100%;
+  ::-webkit-scrollbar{width:0;}
+  -ms-overflow-style: none;
   .menu-collapsed {
     height: 100%;
     background-color: @side-dark-theme;
     color: #fff !important;
+    overflow-y: scroll;
+    
     .ivu-dropdown {
       width: 100%;
       .ivu-dropdown-rel a {

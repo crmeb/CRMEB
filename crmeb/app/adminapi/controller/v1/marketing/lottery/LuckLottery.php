@@ -85,6 +85,9 @@ class LuckLottery extends AuthController
     /**
      * 添加抽奖
      * @return mixed
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
      */
     public function add()
     {

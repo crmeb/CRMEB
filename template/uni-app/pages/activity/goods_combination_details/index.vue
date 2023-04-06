@@ -258,7 +258,7 @@
 		<!-- #ifdef MP -->
 		<!-- <authorize @onLoadFun="onLoadFun" :isAuto="isAuto" :isShowAuth="isShowAuth" @authColse="authColse"></authorize> -->
 		<!-- #endif -->
-		<product-window :attr='attribute' :limitNum='1' @myevent="onMyEvent" @ChangeAttr="ChangeAttr"
+		<product-window :attr='attribute' :limitNum='attribute.productSelect.quota' @myevent="onMyEvent" @ChangeAttr="ChangeAttr"
 			@ChangeCartNum="ChangeCartNum" @iptCartNum="iptCartNum" @attrVal="attrVal" @getImg="showImg">
 		</product-window>
 		<cus-previewImg ref="cusPreviewImg" :list="skuArr" @changeSwitch="changeSwitch"

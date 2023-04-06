@@ -305,10 +305,10 @@ class PublicController
             ['image', ''],
             ['code', ''],
         ], true);
-        if ($imageUrl !== '' && !preg_match('/.*(\.png|\.jpg|\.jpeg|\.gif)$/', $imageUrl)) {
+        if ($imageUrl !== '' && !preg_match('/.*(\.png|\.jpg|\.jpeg|\.gif)$/', $imageUrl) && strpos($imageUrl, "phar://") !== false) {
             return app('json')->success(['code' => false, 'image' => false]);
         }
-        if ($codeUrl !== '' && !(preg_match('/.*(\.png|\.jpg|\.jpeg|\.gif)$/', $codeUrl) || strpos($codeUrl, 'https://mp.weixin.qq.com/cgi-bin/showqrcode') !== false)) {
+        if ($codeUrl !== '' && !(preg_match('/.*(\.png|\.jpg|\.jpeg|\.gif)$/', $codeUrl) || strpos($codeUrl, 'https://mp.weixin.qq.com/cgi-bin/showqrcode') !== false) && strpos($codeUrl, "phar://") !== false) {
             return app('json')->success(['code' => false, 'image' => false]);
         }
         try {

@@ -1,6 +1,6 @@
 <template>
 	<view>
-		<view class="title">{{agreement.title}}</view>
+		<view class="title">{{agreement.title || ''}}</view>
 		<view class="cont" v-html="agreement.content"></view>
 	</view>
 </template>
@@ -46,17 +46,17 @@
 
 <style scoped lang="scss">
 	.title {
-		padding-top: 60rpx;
+		padding-top: 10rpx;
 		font-size: 30rpx;
 		text-align: center;
+		font-weight: bold;
 	}
 
 	.cont {
 		padding: 50rpx 30rpx;
-	    /deep/ img {
-			max-width: 100% !important; 
+
+		/deep/ img {
+			max-width: 100% !important;
 		}
 	}
-	
-	
 </style>

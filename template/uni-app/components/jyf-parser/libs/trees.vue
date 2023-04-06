@@ -1,11 +1,3 @@
-<!--
-  trees 递归显示组件
-  github：https://github.com/jin-yufeng/Parser 
-  docs：https://jin-yufeng.github.io/Parser
-  插件市场：https://ext.dcloud.net.cn/plugin?id=805
-  author：JinYufeng
-  update：2020/04/13
--->
 <template>
 	<view class="interlayer">
 		<block v-for="(n, index) in nodes" v-bind:key="index">

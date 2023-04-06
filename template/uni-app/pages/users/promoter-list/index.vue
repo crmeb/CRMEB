@@ -14,16 +14,18 @@
 				<view :class="grade == 0 ? 'item on' : 'item'" @click='setType(0)'>{{$t(`一级`)}}({{total}})</view>
 				<view :class="grade == 1 ? 'item on' : 'item'" @click='setType(1)'>{{$t(`二级`)}}({{totalLevel}})</view>
 			</view>
-		<!-- 	<form @submit.prevent="submitForm">
+			<!-- 	<form @submit.prevent="submitForm">
 				
 			</form> -->
 			<view class='search acea-row row-between-wrapper'>
-				<view class='input'><input :placeholder='$t(`点击搜索会员名称`)' placeholder-class='placeholder' v-model="keyword" @confirm="submitForm" confirm-type='search' name="search"></input></view>
+				<view class='input'><input :placeholder='$t(`点击搜索会员名称`)' placeholder-class='placeholder'
+						v-model="keyword" @confirm="submitForm" confirm-type='search' name="search"></input></view>
 				<button class='iconfont icon-sousuo2' @click="submitForm"></button>
 			</view>
 			<view class='list'>
 				<view class="sortNav acea-row row-middle">
-					<view class="sortItem" @click='setSort("childCount ASC")' v-if="sort == 'childCount DESC'">{{$t(`团队排序`)}}
+					<view class="sortItem" @click='setSort("childCount ASC")' v-if="sort == 'childCount DESC'">
+						{{$t(`团队排序`)}}
 						<image src='../static/sort1.png'></image>
 					</view>
 					<view class="sortItem" @click='setSort("")' v-else-if="sort == 'childCount ASC'">{{$t(`团队排序`)}}
@@ -32,7 +34,8 @@
 					<view class="sortItem" @click='setSort("childCount DESC")' v-else>{{$t(`团队排序`)}}
 						<image src='../static/sort2.png'></image>
 					</view>
-					<view class="sortItem" @click='setSort("numberCount ASC")' v-if="sort == 'numberCount DESC'">{{$t(`金额排序`)}}
+					<view class="sortItem" @click='setSort("numberCount ASC")' v-if="sort == 'numberCount DESC'">
+						{{$t(`金额排序`)}}
 						<image src='../static/sort1.png'></image>
 					</view>
 					<view class="sortItem" @click='setSort("")' v-else-if="sort == 'numberCount ASC'">{{$t(`金额排序`)}}
@@ -41,7 +44,8 @@
 					<view class="sortItem" @click='setSort("numberCount DESC")' v-else>{{$t(`金额排序`)}}
 						<image src='../static/sort2.png'></image>
 					</view>
-					<view class="sortItem" @click='setSort("orderCount ASC")' v-if="sort == 'orderCount DESC'">{{$t(`订单排序`)}}
+					<view class="sortItem" @click='setSort("orderCount ASC")' v-if="sort == 'orderCount DESC'">
+						{{$t(`订单排序`)}}
 						<image src='../static/sort1.png'></image>
 					</view>
 					<view class="sortItem" @click='setSort("")' v-else-if="sort == 'orderCount ASC'">{{$t(`订单排序`)}}
@@ -63,12 +67,19 @@
 							</view>
 						</view>
 						<view class="right">
-							<view><text class='num font-num'>{{item.childCount ? item.childCount : 0}}</text>{{$t(`人`)}}</view>
+							<view><text class='num font-num'>{{item.childCount ? item.childCount : 0}}</text>{{$t(`人`)}}
+							</view>
 							<view><text class="num">{{item.orderCount ? item.orderCount : 0}}</text>{{$t(`单`)}}</view>
 							<view><text class="num">{{item.numberCount ? item.numberCount : 0}}</text>{{$t(`元`)}}</view>
 						</view>
 					</view>
 				</block>
+				<view class="no-data" v-if="!recordList.length && !loading">
+					<view class='emptyBox'>
+						<image :src="imgHost + '/statics/images/no-thing.png'"></image>
+						<view class="tips">{{$t(`暂无数据`)}}</view>
+					</view>
+				</view>
 			</view>
 		</view>
 		<!-- #ifdef MP -->
@@ -95,6 +106,9 @@
 	// #endif
 	import home from '@/components/home';
 	import colors from '@/mixins/color.js';
+	import {
+		HTTP_REQUEST_URL
+	} from '@/config/app';
 	export default {
 		components: {
 			// #ifdef MP
@@ -102,9 +116,10 @@
 			// #endif
 			home
 		},
-		mixins:[colors],
+		mixins: [colors],
 		data() {
 			return {
+				imgHost: HTTP_REQUEST_URL,
 				total: 0,
 				totalLevel: 0,
 				teamCount: 0,
@@ -116,8 +131,9 @@
 				status: false,
 				recordList: [],
 				isAuto: false, //没有授权的不会自动授权
-				isShowAuth: false ,//是否隐藏授权
-				brokerage_level: 0
+				isShowAuth: false, //是否隐藏授权
+				brokerage_level: 0,
+				loading: false
 			};
 		},
 		computed: mapGetters(['isLogin']),
@@ -129,7 +145,7 @@
 			}
 		},
 		onShow: function() {
-			if (this.is_show) this.userSpreadNewList();
+			// if (this.is_show) this.userSpreadNewList();
 		},
 		onHide: function() {
 			this.is_show = true;
@@ -161,7 +177,7 @@
 				this.$set(this, 'recordList', []);
 				this.userSpreadNewList();
 			},
-			
+
 			setType: function(grade) {
 				if (this.grade != grade) {
 					this.grade = grade;
@@ -175,6 +191,8 @@
 				}
 			},
 			userSpreadNewList: function() {
+				if (this.loading) return
+				this.loading = true
 				let that = this;
 				let page = that.page;
 				let limit = that.limit;
@@ -202,11 +220,16 @@
 					that.page = page + 1;
 					that.$set(that, 'recordList', recordListNew);
 					that.brokerage_level = res.data.brokerage_level;
-				});
+					this.loading = false
+				}).catch(err => {
+					this.loading = false
+				})
 			}
 		},
 		onReachBottom: function() {
-			this.userSpreadNewList();
+			if (this.teamCount > this.recordList.length) {
+				this.userSpreadNewList();
+			}
 		}
 	}
 </script>
@@ -303,7 +326,7 @@
 		font-size: 24rpx;
 		color: #666;
 	}
-	
+
 	.promoter-list .list .item .picTxt {
 		width: 440rpx;
 	}
@@ -341,8 +364,29 @@
 		font-size: 22rpx;
 		color: #333;
 	}
-	
-	.promoter-list .list .item .right .num{
+
+	.promoter-list .list .item .right .num {
 		margin-right: 7rpx;
+	}
+
+	.no-data {
+		background-color: #fff;
+		padding-bottom: 30rpx;
+		padding: 180rpx 0 calc(100vh - 1030rpx);
+
+		.emptyBox {
+			text-align: center;
+			padding-top: 20rpx;
+
+			.tips {
+				color: #aaa;
+				font-size: 26rpx;
+			}
+
+			image {
+				width: 414rpx;
+				height: 304rpx;
+			}
+		}
 	}
 </style>

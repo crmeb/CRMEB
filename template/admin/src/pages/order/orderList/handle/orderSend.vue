@@ -190,7 +190,7 @@ export default {
       expressTemp: [],
       deliveryList: [],
       temp: {},
-      export_open: true,
+      export_open: false,
       manyFormValidate: [],
       header: [
         {

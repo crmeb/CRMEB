@@ -78,7 +78,7 @@
       <cardList v-if="cardModal" :id="id"></cardList>
     </Modal>
     <Modal v-model="modal2" title="编辑批次名" footer-hide>
-      <form-create :rule="rule2" @on-submit="onSubmit2"></form-create>
+      <form-create :rule="rule2" @submit="onSubmit2"></form-create>
     </Modal>
     <Modal v-model="modal3" title="二维码" footer-hide>
       <div v-if="qrcode" class="acea-row row-around">
@@ -377,6 +377,7 @@ export default {
         });
     },
     onSubmit2(formData) {
+      console.log('1')
       memberBatchSetValue(formData.id, {
         field: 'title',
         value: formData.title,

@@ -43,7 +43,7 @@
 					</view>
 					<view class='item acea-row row-between-wrapper'>
 						<view>{{$t(`昵称`)}}</view>
-						<view class='input'><input type='nickname' name='nickname' :maxlength="16"
+						<view class='input'><input type='nickname' name='nickname' :maxlength="10"
 								:value='userInfo.nickname'></input>
 						</view>
 					</view>
@@ -257,29 +257,30 @@
 				});
 			},
 			getphonenumber(e) {
-				Routine.getCode()
-					.then(code => {
-						let data = {
-							code,
-							iv: e.detail.iv,
-							encryptedData: e.detail.encryptedData,
-						}
-						mpBindingPhone(data).then(res => {
-							this.getUserInfo()
-							this.$util.Tips({
-								title: res.msg,
-								icon: 'success'
-							});
-						}).catch(err => {
-							return this.$util.Tips({
-								title: err
-							});
+				if (e.detail.errMsg == 'getPhoneNumber:ok') {
+					Routine.getCode()
+						.then(code => {
+							let data = {
+								code,
+								iv: e.detail.iv,
+								encryptedData: e.detail.encryptedData,
+							}
+							mpBindingPhone(data).then(res => {
+								this.getUserInfo()
+								this.$util.Tips({
+									title: res.msg,
+									icon: 'success'
+								});
+							}).catch(err => {
+								return this.$util.Tips({
+									title: err
+								});
+							})
 						})
-					})
-					.catch(error => {
-						uni.hideLoading();
-					});
-
+						.catch(error => {
+							uni.hideLoading();
+						});
+				}
 			},
 			setLang() {
 				this.array.map((item, i) => {
@@ -544,7 +545,11 @@
 		color: var(--view-theme);
 		border: 1px solid var(--view-theme);
 	}
-
+	.personal-data{
+		padding-bottom: 50rpx;
+		padding-bottom: calc(50rpx+ constant(safe-area-inset-bottom)); ///兼容 IOS<11.2/
+		padding-bottom: calc(50rpx + env(safe-area-inset-bottom)); ///兼容 IOS>11.2/
+	}
 	.personal-data .wrapper {
 		margin: 10rpx 0;
 		background-color: #fff;

@@ -219,7 +219,7 @@ class WechatQrcodeServices extends BaseServices
      * @param int $isFollow
      * @return mixed
      */
-    public function wechatQrcodeRecord($qrcodeInfo, $userInfo, $spreadInfo, $isFollow = 0)
+    public function wechatQrcodeRecord($qrcodeInfo, $userInfo, $spreadInfo, $isFollow = 1)
     {
         $response = $this->transaction(function () use ($qrcodeInfo, $userInfo, $spreadInfo, $isFollow) {
 

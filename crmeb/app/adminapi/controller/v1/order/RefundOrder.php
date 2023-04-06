@@ -146,7 +146,7 @@ class RefundOrder extends AuthController
             return app('json')->fail(400144);
         }
 
-        if ($data['type'] == 1) {
+        if ($data['type'] == 1 || $data['type'] == 5) {
             $data['refund_type'] = 6;
         } else if ($data['type'] == 2) {
             $data['refund_type'] = 3;
@@ -190,7 +190,8 @@ class RefundOrder extends AuthController
             $refund_data['open_id'] = $wechatUserServices->uidToOpenid((int)$order['uid'], 'routine') ?? '';
             $refund_data['refund_no'] = $orderRefund['order_id'];
             //修改订单退款状态
-            $data['refund_price'] = $data['refunded_price'];
+//            $data['refund_price'] = $data['refunded_price'];
+            unset($data['refund_price']);
             if ($this->services->agreeRefund($id, $refund_data)) {
                 $this->services->update($id, $data);
                 return app('json')->success(400149);

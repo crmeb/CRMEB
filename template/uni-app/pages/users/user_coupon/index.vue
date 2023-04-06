@@ -199,16 +199,17 @@
 		color: #ffffff;
 		font-size: 24rpx;
 	}
-
+	.coupon-list .item .text{
+		padding: 14rpx 10rpx;
+	}
 	.coupon-list .item .text .condition {
 		display: flex;
-		align-items: center;
 	}
 
 	.coupon-list .item .text .condition .name {
 		font-size: 24rpx;
 		font-weight: 500;
-		line-height: 28rpx;
+		line-height: 34rpx;
 		/* display: flex;
 		align-items: center; */
 	}

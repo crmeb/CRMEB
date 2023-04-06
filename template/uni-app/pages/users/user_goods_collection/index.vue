@@ -6,7 +6,7 @@
 				<view class="admin" @click="showRadio">{{checkbox_show?$t(`取消`):$t(`管理`)}}</view>
 			</view>
 			<checkbox-group @change="checkboxChange">
-				<view class='item acea-row' v-for="(item,index) in collectProductList" :key="index">
+				<view class='item acea-row' v-for="(item,index) in collectProductList" :key="index" @click="jump(item)">
 					<view class="left">
 						<checkbox v-show="checkbox_show" :value="item.pid.toString()" :checked="item.checked" />
 						<view class='pictrue'>
@@ -16,7 +16,7 @@
 							</view>
 						</view>
 					</view>
-					<view class='text acea-row row-column-between' @click="jump(item)">
+					<view class='text acea-row row-column-between'>
 						<view class='name line2'>{{item.store_name}}</view>
 						<view class='acea-row row-between-wrapper'>
 							<view class='money font-color'>{{$t(`￥`)}}{{item.price}}</view>

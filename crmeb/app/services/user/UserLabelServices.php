@@ -40,6 +40,9 @@ class UserLabelServices extends BaseServices
      * 获取某一本标签
      * @param $id
      * @return array|\think\Model|null
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
      */
     public function getLable($id)
     {
@@ -110,6 +113,9 @@ class UserLabelServices extends BaseServices
      * @param int $id
      * @param array $data
      * @return mixed
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
      */
     public function save(int $id, array $data)
     {
@@ -144,8 +150,11 @@ class UserLabelServices extends BaseServices
 
     /**
      * 删除
-     * @param $id
-     * @throws \Exception
+     * @param int $id
+     * @return bool
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
      */
     public function delLabel(int $id)
     {

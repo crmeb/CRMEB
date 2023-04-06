@@ -40,6 +40,10 @@ class LiveRoomServices extends BaseServices
         $where['is_del'] = 0;
         [$page, $limit] = $this->getPageValue();
         $list = $this->dao->getList($where, '*', [], $page, $limit);
+        $liveProductServices = app()->make(LiveRoomGoodsServices::class);
+        foreach ($list as &$item) {
+            $item['product_ids'] = array_column($liveProductServices->selectList(['live_room_id' => $item['id']])->toArray(), 'live_goods_id');
+        }
         $count = $this->dao->count($where);
         return compact('count', 'list');
     }
@@ -238,6 +242,7 @@ class LiveRoomServices extends BaseServices
     /**
      * 同步直播间状态
      * @return bool
+     * @throws \Exception
      */
     public function syncRoomStatus()
     {
@@ -245,7 +250,6 @@ class LiveRoomServices extends BaseServices
         $limit = 50;
         $data = $dataAll = [];
         $rooms = $this->dao->getColumn([], 'id,room_id,live_status', 'room_id');
-//        if (!$rooms) return true;
         do {
             $wxRooms = MiniProgramService::getLiveInfo($start, $limit);
             foreach ($wxRooms as $room) {

@@ -128,9 +128,8 @@
 		},
 		watch: {
 			isNew(newVal) {
-				if (newVal) {
-					this.getAllCategory();
-				}
+
+				this.getAllCategory(1);
 			}
 		},
 		methods: {
@@ -184,9 +183,9 @@
 				this.navActive = index;
 				this.$set(this, 'lock', true);
 			},
-			getAllCategory: function() {
+			getAllCategory: function(type) {
 				let that = this;
-				if (this.isNew || !uni.getStorageSync('CAT1_DATA')) {
+				if (type || !uni.getStorageSync('CAT1_DATA')) {
 					getCategoryList().then(res => {
 						uni.setStorageSync('CAT1_DATA', res.data)
 						that.productList = res.data;

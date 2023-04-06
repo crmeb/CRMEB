@@ -28,7 +28,7 @@ export default {
       classList: [
         { image: require('@/assets/images/sort01.jpg'), name: '样式1' },
         { image: require('@/assets/images/sort02.jpg'), name: '样式2' },
-        { image: require('@/assets/images/sort03.jpg'), name: '样式3' },
+        { image: require('@/assets/images/sort03.png'), name: '样式3' },
       ],
       activeStyle: '-1',
     };

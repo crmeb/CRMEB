@@ -5,7 +5,7 @@
         <span>
           <Button icon="ios-arrow-back" size="small" type="text" @click="$router.go(-1)">返回</Button>
         </span>
-        <Divider type="vertical"/>
+        <Divider type="vertical" />
         <span class="ivu-page-header-title">{{ $route.meta.title }}</span>
       </div>
     </div>
@@ -16,6 +16,7 @@
         :label-width="labelWidth"
         :label-position="labelPosition"
         class="tabform"
+        :rules="ruleValidate"
         @submit.native.prevent
       >
         <Col span="24">
@@ -26,7 +27,7 @@
           >
         </Col>
         <Col span="24">
-          <FormItem label="选择主播：">
+          <FormItem label="选择主播：" prop="anchor_wechat">
             <Select
               v-model="formValidate.anchor_wechat"
               filterable
@@ -40,7 +41,7 @@
         </Col>
         <Row :gutter="24" type="flex">
           <Col span="24">
-            <FormItem label="直播间名称：">
+            <FormItem label="直播间名称：" prop="name">
               <Input
                 enter-button
                 placeholder="请输入直播间名称"
@@ -52,7 +53,7 @@
           </Col>
           <Col span="24">
             <div style="display: flex">
-              <FormItem label="背景图：">
+              <FormItem label="背景图：" prop="name">
                 <div @click="modalPicTap(0)" class="box">
                   <img :src="formValidate.cover_img" alt="" v-if="formValidate.cover_img" />
                   <div class="upload-box" v-else>
@@ -65,7 +66,7 @@
           </Col>
           <Col span="24">
             <div style="display: flex">
-              <FormItem label="分享图：">
+              <FormItem label="分享图：" prop="name">
                 <div @click="modalPicTap(1)" class="box">
                   <img :src="formValidate.share_img" alt="" v-if="formValidate.share_img" />
                   <div class="upload-box" v-else>
@@ -93,7 +94,7 @@
             </FormItem>
           </Col>
           <Col span="24">
-            <FormItem label="直播时间：">
+            <FormItem label="直播时间：" prop="name">
               <DatePicker
                 type="datetimerange"
                 format="yyyy-MM-dd HH:mm"
@@ -116,7 +117,7 @@
               />
             </FormItem>
           </Col>
-          <Col span="24">
+          <!-- <Col span="24">
             <FormItem label="显示样式：">
               <RadioGroup v-model="formValidate.screen_type">
                 <Radio :label="item.label" v-for="(item, index) in screen_type" :key="index">
@@ -124,7 +125,7 @@
                 </Radio>
               </RadioGroup>
             </FormItem>
-          </Col>
+          </Col> -->
           <Col span="24">
             <FormItem label="直播间类型：">
               <RadioGroup v-model="formValidate.type">
@@ -322,6 +323,10 @@ export default {
       activeIndex: 0,
       liveList: [],
       modal3: false,
+      ruleValidate: {
+        anchor_wechat: [{ required: true, message: 'Please select the city', trigger: 'change' }],
+        name: [{ required: true, message: 'The name cannot be empty', trigger: 'blur' }],
+      },
     };
   },
   mounted() {

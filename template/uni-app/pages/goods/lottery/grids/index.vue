@@ -16,7 +16,7 @@
 					<noticeBar :showMsg="userList.data"></noticeBar>
 				</view>
 				<view class="grids-box">
-					<gridsLottery class="" :prizeData="prize" @get_winingIndex='getWiningIndex'
+					<gridsLottery class="" :prizeData="prize" :lotteryNum="lottery_num" @get_winingIndex='getWiningIndex'
 						@luck_draw_finish='luck_draw_finish'>
 					</gridsLottery>
 				</view>

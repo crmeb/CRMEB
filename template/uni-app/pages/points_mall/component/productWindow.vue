@@ -33,7 +33,7 @@
 						</view>
 					</view>
 				</view>
-				<view class="cart acea-row row-between-wrapper">
+				<!-- <view class="cart acea-row row-between-wrapper">
 					<view class="title">{{$t(`数量`)}}</view>
 					<view class="carnum acea-row row-left">
 						<view class="item reduce acea-row row-center-wrapper"
@@ -49,7 +49,7 @@
 							:class='(attr.productSelect.stock >= attr.productSelect.cart_num)? "on":""'
 							@click='CartNumAdd'>+</view>
 					</view>
-				</view>
+				</view> -->
 			</view>
 
 		</view>

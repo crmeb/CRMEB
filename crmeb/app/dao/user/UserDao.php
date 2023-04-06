@@ -82,7 +82,9 @@ class UserDao extends BaseDao
 
     /**
      * @param $uid
+     * @param string $field
      * @return \think\Collection
+     * @throws \ReflectionException
      * @throws \think\db\exception\DataNotFoundException
      * @throws \think\db\exception\DbException
      * @throws \think\db\exception\ModelNotFoundException
@@ -164,6 +166,7 @@ class UserDao extends BaseDao
             ->order('count desc')
             ->order('t0.uid desc')
             ->where('t1.spread_time', 'BETWEEN', $time)
+            ->where('t0.is_del', 0)
             ->page($page, $limit)
             ->group('t0.uid')
             ->select()->toArray();

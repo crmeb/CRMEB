@@ -2,7 +2,7 @@
 	<view>
 		<view class="CommissionRank" :style="colorStyle">
 			<view class="header">
-				<view class="rank" v-if="position">{{$t(`您目前的排名`)}}<text class="num">{{position}}</text></view>
+				<view class="rank" v-if="position">{{$t(`您目前的排名`)}}<text class="num">{{ position }}</text></view>
 				<view class="rank" v-else>{{$t(`您目前暂无排名`)}}</view>
 			</view>
 			<view class="wrapper">
@@ -17,7 +17,7 @@
 						<view class="num" v-if="index <= 2">
 							<image :src="'../static/medal0'+(index+1)+'.png'"></image>
 						</view>
-						<view class="num" v-else>
+						<view class="num more-num" v-else>
 							{{index+1}}
 						</view>
 						<view class="picTxt acea-row row-between-wrapper">
@@ -163,12 +163,18 @@
 		position: absolute;
 		top: 160rpx;
 		left: 48rpx;
+		display: flex;
+		align-items: baseline;
 	}
 
 	.CommissionRank .header .rank .num {
 		font-size: 51rpx;
 		font-weight: bold;
 		margin: 0 10rpx;
+		line-height: 51rpx;
+		span{
+			line-height: 51rpx;
+		}
 	}
 
 	.CommissionRank .wrapper {
@@ -209,6 +215,10 @@
 	.CommissionRank .wrapper .list .item .num {
 		color: #666;
 		width: 70rpx;
+	}
+
+	.CommissionRank .wrapper .list .item .num.more-num {
+		padding-left: 8rpx;
 	}
 
 	.CommissionRank .wrapper .list .item .num image {

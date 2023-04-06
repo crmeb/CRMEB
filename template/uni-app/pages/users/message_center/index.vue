@@ -12,7 +12,7 @@
 			</view>
 		</view>
 		<view v-if="list.length && type ===1" class="list">
-			<view v-for="(item, index) in list" :key="index" class="item" @click="goChat(item.to_uid)">
+			<view v-for="(item, index) in list" :key="index" class="item" @click="goChat(item)">
 				<view class="image-wrap">
 					<image class="image" :src="item.avatar"></image>
 				</view>
@@ -323,9 +323,10 @@
 				str = str.replace(/\[([^\[\]]+)\]/g, "<span class='em $1'/></span>");
 				return str;
 			},
-			goChat(id) {
+			goChat(item) {
+				item.mssage_num = 0
 				uni.navigateTo({
-					url: '/pages/extension/customer_list/chat?to_uid=' + id + '&type=1'
+					url: '/pages/extension/customer_list/chat?to_uid=' + item.to_uid + '&type=1'
 				})
 			},
 			goDetail(id) {

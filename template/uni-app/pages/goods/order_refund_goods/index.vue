@@ -4,20 +4,22 @@
 			<view class='apply-return'>
 				<view class='goodsStyle acea-row row-between' v-for="(item,index) in orderInfo.cart_info" :key="index">
 					<view class='pictrue'>
-						<image :src='item.productInfo.attrInfo?item.productInfo.attrInfo.image:item.productInfo.image'></image>
+						<image :src='item.productInfo.attrInfo?item.productInfo.attrInfo.image:item.productInfo.image'>
+						</image>
 					</view>
 					<view class='text acea-row row-between'>
 						<view class='name line2'>{{item.productInfo.store_name}}</view>
 						<view class='money'>
-							<view>{{$t(`￥`)}}{{item.truePrice}}</view>
-							<view class='num'>x{{item.cart_num}}</view>
+							<view>{{$t(`￥`)}}{{item.truePrice }}</view>
+							<view class='num'>x{{item.cart_num }}</view>
 						</view>
 					</view>
 				</view>
 				<view class='list'>
 					<view class='item acea-row row-between-wrapper' v-if="expressList.length">
 						<view>{{$t(`快递公司`)}}</view>
-						<picker class='num' @change="bindPickerChange" :value="seIndex" :range="expressList" range-key="name">
+						<picker class='num' @change="bindPickerChange" :value="seIndex" :range="expressList"
+							range-key="name">
 							<view class="picker acea-row row-between-wrapper">
 								<view class='reason'>{{expressList[seIndex].name}}</view>
 								<text class='iconfont icon-jiantou'></text>
@@ -26,17 +28,20 @@
 					</view>
 					<view class='item acea-row row-between-wrapper'>
 						<view>{{$t(`快递单号`)}}</view>
-						<input type="text" :placeholder="$t(`填写快递单号`)" placeholder-class='placeholder' v-model="refundInfo.refund_express" />
+						<input class="input" type="text" :placeholder="$t(`填写快递单号`)" placeholder-class='placeholder'
+							v-model="refundInfo.refund_express" />
 					</view>
 					<view class='item acea-row row-between-wrapper'>
 						<view>{{$t(`联系电话`)}}</view>
-						<input type="number" :placeholder="$t(`请输入手机号`)" placeholder-class='placeholder' v-model="refundInfo.refund_phone" />
+						<input class="input" type="number" :placeholder="$t(`请输入手机号`)" placeholder-class='placeholder'
+							v-model="refundInfo.refund_phone" />
 					</view>
 					<view class='item textarea acea-row row-between'>
 						<view>{{$t(`备注说明`)}}</view>
-						<textarea :placeholder='$t(`填写备注信息，100字以内`)' class='num' v-model="refundInfo.refund_explain"></textarea>
+						<textarea :placeholder='$t(`填写备注信息，100字以内`)' class='num'
+							v-model="refundInfo.refund_explain"></textarea>
 					</view>
-				  <view class='item acea-row row-between'>
+					<view class='item acea-row row-between'>
 						<view class='title acea-row row-between-wrapper'>
 							<view>{{$t(`上传图片`)}}</view>
 							<view class='tip'>{{$t(`最多可上传3张`)}}</view>
@@ -60,7 +65,10 @@
 	</view>
 </template>
 <script>
-	import { refundOrderDetail, refundExpress } from '@/api/order.js';
+	import {
+		refundOrderDetail,
+		refundExpress
+	} from '@/api/order.js';
 	import {
 		toLogin
 	} from '@/libs/login.js';
@@ -72,17 +80,17 @@
 		mixins: [colors],
 		data() {
 			return {
-				expressList:[],
-				orderInfo:{},
+				expressList: [],
+				orderInfo: {},
 				seIndex: 0,
 				refund_reason_wap_img: [],
-				refundInfo:{
-					refund_express:'',
-					refund_phone:'',
-					refund_explain:'',
-					id:'',
-					refund_express_name:'',
-					refund_img:''
+				refundInfo: {
+					refund_express: '',
+					refund_phone: '',
+					refund_explain: '',
+					id: '',
+					refund_express_name: '',
+					refund_img: ''
 				}
 			};
 		},
@@ -147,7 +155,7 @@
 				that.refund_reason_wap_img.splice(index, 1);
 				that.$set(that, 'refund_reason_wap_img', that.refund_reason_wap_img);
 			},
-			
+
 			/**
 			 * 上传文件
 			 * 
@@ -191,6 +199,10 @@
 		border-bottom: 1rpx solid #eee;
 		font-size: 30rpx;
 		color: #333;
+
+		.input {
+			text-align: right;
+		}
 	}
 
 	.apply-return .list .item .num {

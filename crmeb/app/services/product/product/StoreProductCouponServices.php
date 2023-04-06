@@ -92,6 +92,9 @@ class StoreProductCouponServices extends BaseServices
      * @param int $uid
      * @param $orderId
      * @return array
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
      */
     public function giveOrderProductCoupon(int $uid, $orderId)
     {

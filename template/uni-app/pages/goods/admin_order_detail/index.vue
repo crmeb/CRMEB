@@ -3,19 +3,19 @@
 		<view class="header acea-row row-middle">
 			<view class="state">{{ $t(title) }}</view>
 			<view class="data">
-				<view class="order-num">{{$t(`订单号`)}}：{{ orderInfo.order_id }}</view>
+				<view class="order-num">{{$t(`订单`)}}：{{ orderInfo.order_id || '' }}</view>
 				<view>
-					<span class="time">{{ orderInfo._add_time }}</span>
+					<span class="time">{{ orderInfo._add_time || '' }}</span>
 				</view>
 			</view>
 		</view>
 		<view class="orderingUser acea-row row-middle">
-			<span class="iconfont icon-yonghu2"></span>{{ orderInfo.nickname }}
+			<span class="iconfont icon-yonghu2"></span>{{ orderInfo.nickname || '' }}
 		</view>
 		<view class="address">
 			<view class="name">
-				{{ orderInfo.real_name
-        }}<span class="phone">{{ orderInfo.user_phone }}</span>
+				{{ orderInfo.real_name  || ''
+        }}<span class="phone">{{ orderInfo.user_phone || '' }}</span>
 			</view>
 			<view>{{ orderInfo.user_address }}</view>
 		</view>
@@ -31,36 +31,36 @@
 					</view>
 					<view class="text acea-row row-between row-column">
 						<view class="info line2">
-							{{ item.productInfo.store_name }}
+							{{ item.productInfo.store_name || '' }}
 						</view>
 						<view class="attr">{{ item.productInfo.suk }}</view>
 					</view>
 				</view>
 				<view class="money">
-					<view class="x-money">{{$t(`￥`)}}{{ item.productInfo.attrInfo.price }}</view>
+					<view class="x-money">{{$t(`￥`)}}{{ item.productInfo.attrInfo.price || 0 }}</view>
 					<view class="num">x{{ item.cart_num }}</view>
-					<view class="y-money">{{$t(`￥`)}}{{ item.productInfo.attrInfo.ot_price }}</view>
+					<view class="y-money">{{$t(`￥`)}}{{ item.productInfo.attrInfo.ot_price || 0 }}</view>
 				</view>
 			</navigator>
 		</view>
 		<view class="public-total">
-			{{$t(`共`)}}{{ orderInfo.total_num }}{{$t(`件商品`)}}
-			<span class="money">{{$t(`￥`)}}{{ orderInfo.pay_price }}</span> ( {{$t(`邮费`)}} {{$t(`￥`)}}{{
-        orderInfo.pay_postage
+			{{$t(`共`)}}{{ orderInfo.total_num || 0 }}{{$t(`件商品，应支付`)}}
+			<span class="money">{{$t(`￥`)}}{{ orderInfo.pay_price || 0 }}</span> ( {{$t(`邮费`)}} {{$t(`￥`)}}{{
+        orderInfo.pay_postage || 0
       }}
 			)
 		</view>
 		<view class="wrapper">
 			<view class="item acea-row row-between">
-				<view>{{$t(`订单号`)}}：</view>
+				<view>{{$t(`订单编号`)}}：</view>
 				<view class="conter acea-row row-middle row-right">
-					{{ orderInfo.order_id
+					{{ orderInfo.order_id || ''
           }}
 				</view>
 			</view>
 			<view class="item acea-row row-between">
 				<view>{{$t(`下单时间`)}}：</view>
-				<view class="conter">{{ orderInfo._add_time }}</view>
+				<view class="conter">{{ orderInfo._add_time || '' }}</view>
 			</view>
 			<view class="item acea-row row-between">
 				<view>{{$t(`支付状态`)}}：</view>
@@ -74,7 +74,7 @@
 			</view>
 			<view class="item acea-row row-between">
 				<view>{{$t(`买家留言`)}}：</view>
-				<view class="conter">{{ orderInfo.mark }}</view>
+				<view class="conter">{{ orderInfo.mark || '' }}</view>
 			</view>
 		</view>
 		<view class='wrapper' v-if="customForm && customForm.length">
@@ -90,25 +90,34 @@
 			</view>
 		</view>
 		<view class="wrapper">
-			<view class="item acea-row row-between">
-				<view>{{$t(`支付金额`)}}：</view>
-				<view class="conter">{{$t(`￥`)}}{{ orderInfo.total_price }}</view>
+			<view class='item acea-row row-between'>
+				<view>{{$t(`商品总价`)}}：</view>
+				<view class='conter'>
+					{{$t(`￥`)}}{{(parseFloat(orderInfo.total_price)+parseFloat(orderInfo.vip_true_price)).toFixed(2)}}
+				</view>
 			</view>
-			<view class='item acea-row row-between' v-if='orderInfo.coupon_id'>
+			<view class='item acea-row row-between' v-if="orderInfo.pay_postage > 0">
+				<view>{{$t(`配送运费`)}}：</view>
+				<view class='conter'>{{$t(`￥`)}}{{parseFloat(orderInfo.pay_postage).toFixed(2)}}</view>
+			</view>
+			<view v-if="orderInfo.levelPrice > 0" class='item acea-row row-between'>
+				<view>{{$t(`用户等级优惠`)}}：</view>
+				<view class='conter'>-{{$t(`￥`)}}{{parseFloat(orderInfo.levelPrice).toFixed(2)}}</view>
+			</view>
+			<view v-if="orderInfo.memberPrice > 0" class='item acea-row row-between'>
+				<view>{{$t(`付费会员优惠`)}}：</view>
+				<view class='conter'>-{{$t(`￥`)}}{{parseFloat(orderInfo.memberPrice).toFixed(2)}}</view>
+			</view>
+			<view class='item acea-row row-between' v-if='orderInfo.coupon_price > 0'>
 				<view>{{$t(`优惠券抵扣`)}}：</view>
-				<view class='conter'>-{{$t(`￥`)}}{{orderInfo.coupon_price}}</view>
+				<view class='conter'>-{{$t(`￥`)}}{{parseFloat(orderInfo.coupon_price).toFixed(2)}}</view>
 			</view>
 			<view class='item acea-row row-between' v-if="orderInfo.use_integral > 0">
 				<view>{{$t(`积分抵扣`)}}：</view>
-				<view class='conter'>-{{$t(`￥`)}}{{orderInfo.deduction_price}}</view>
+				<view class='conter'>-{{$t(`￥`)}}{{parseFloat(orderInfo.deduction_price).toFixed(2)}}</view>
 			</view>
-			<view class='item acea-row row-between' v-if="orderInfo.pay_postage > 0">
-				<view>{{$t(`运费`)}}：</view>
-				<view class='conter'>{{$t(`￥`)}}{{orderInfo.pay_postage}}</view>
-			</view>
-			<view class="actualPay acea-row row-right">
-				{{$t(`实际支付`)}}：<span class="money">{{$t(`￥`)}}{{ orderInfo.pay_price }}</span>
-			</view>
+			<view class='actualPay acea-row row-right'>{{$t(`实付款`)}}：<text
+					class='money'>{{$t(`￥`)}}{{parseFloat(orderInfo.pay_price).toFixed(2)}}</text></view>
 		</view>
 		<view class="wrapper" v-if="
         orderInfo.delivery_type != 'fictitious' && orderInfo._status._type === 2
@@ -123,13 +132,13 @@
 			<view class="item acea-row row-between">
 				<view v-if="orderInfo.delivery_type === 'express'">{{$t(`快递公司`)}}：</view>
 				<view v-if="orderInfo.delivery_type === 'send'">{{$t(`送货人`)}}：</view>
-				<view class="conter">{{ orderInfo.delivery_name }}</view>
+				<view class="conter">{{ orderInfo.delivery_name || '' }}</view>
 			</view>
 			<view class="item acea-row row-between">
 				<view v-if="orderInfo.delivery_type === 'express'">{{$t(`快递单号`)}}：</view>
 				<view v-if="orderInfo.delivery_type === 'send'">{{$t(`送货人电话`)}}：</view>
 				<view class="conter">
-					{{ orderInfo.delivery_id}}
+					{{ orderInfo.delivery_id || ''}}
 				</view>
 			</view>
 		</view>
@@ -461,7 +470,6 @@
 
 	.order-details .wrapper .item .conter {
 		color: #868686;
-		width: 500upx;
 		text-align: right;
 	}
 

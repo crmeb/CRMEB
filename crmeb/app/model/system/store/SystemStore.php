@@ -78,6 +78,4 @@ class SystemStore extends BaseModel
             $query->where('id|name|introduction|phone', 'LIKE', "%$value%");
         }
     }
-
-
 }

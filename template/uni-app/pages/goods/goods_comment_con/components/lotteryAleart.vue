@@ -34,7 +34,7 @@
 			}
 		},
 		watch: {
-			aleartType() {
+			aleartType(type) {
 				if (type === 2) {
 					this.aleartData = {
 						title: '抽奖结果',

@@ -8,7 +8,7 @@
           <Radio label="3">虚拟</Radio>
         </RadioGroup>
       </FormItem>
-      <FormItem v-show="formItem.type === '1' && export_open" label="发货类型：">
+      <FormItem v-show="formItem.type == '1' && export_open" label="发货类型：">
         <RadioGroup v-model="formItem.express_record_type" @on-change="changeExpress">
           <Radio label="1">手动填写</Radio>
           <Radio label="2">电子面单打印</Radio>
@@ -142,7 +142,7 @@ export default {
       //     ]
       // },
       temp: {},
-      export_open: true,
+      export_open: false,
     };
   },
   methods: {

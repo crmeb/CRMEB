@@ -75,11 +75,11 @@ class StoreOrderCreateServices extends BaseServices
                 $id = $snowflake->setStartTimeStamp(strtotime('2022-01-01') * 1000)->id();
             }
             $replace = '';
-            $chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
-            for ($i = 0; $i < 3; $i++) {
+            $chars = '0123456789';
+            for ($i = 0; $i < 6; $i++) {
                 $replace .= $chars[mt_rand(0, strlen($chars) - 1)];
             }
-            $id = substr_replace($id, $replace, -3);
+            $id = substr_replace($id, $replace, -6);
         } else {
             $is_callable = function ($currentTime) {
                 $redis = Cache::store('redis');
@@ -281,10 +281,8 @@ class StoreOrderCreateServices extends BaseServices
         }
         /** @var StoreOrderCartInfoServices $cartServices */
         $cartServices = app()->make(StoreOrderCartInfoServices::class);
-        /** @var StoreSeckillServices $seckillServices */
-        $seckillServices = app()->make(StoreSeckillServices::class);
         $priceData['coupon_id'] = $couponId;
-        $order = $this->transaction(function () use ($cartIds, $orderInfo, $cartInfo, $key, $userInfo, $useIntegral, $priceData, $combinationId, $seckillId, $bargainId, $cartServices, $seckillServices, $uid, $addressId, $advanceId) {
+        $order = $this->transaction(function () use ($cartIds, $orderInfo, $cartInfo, $key, $userInfo, $useIntegral, $priceData, $combinationId, $seckillId, $bargainId, $cartServices, $uid, $addressId, $advanceId) {
             //创建订单
             $order = $this->dao->save($orderInfo);
             if (!$order) {
@@ -800,7 +798,7 @@ class StoreOrderCreateServices extends BaseServices
                 //计算商品金额
                 if (sys_config('user_brokerage_type') == 1) {
                     //按照实际支付价格返佣
-                    $price = bcmul((string)$cart['truePrice'], $cartNum, 4);
+                    $price = bcmul((string)bcadd((string)$cart['truePrice'], (string)$cart['postage_price'], 2), $cartNum, 4);
                 } else {
                     //按照商品价格返佣
                     if (isset($productInfo['attrInfo'])) {

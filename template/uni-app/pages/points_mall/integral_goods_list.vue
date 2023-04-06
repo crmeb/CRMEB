@@ -3,8 +3,8 @@
 		<view class='productList'>
 			<view class='search bg-color acea-row row-between-wrapper'>
 				<view class='input acea-row row-between-wrapper'><text class='iconfont icon-sousuo'></text>
-					<input :placeholder='$t(`搜索商品名称`)' placeholder-class='placeholder' confirm-type='search' name="search"
-						:value='where.store_name' @confirm="searchSubmit"></input>
+					<input :placeholder='$t(`搜索商品名称`)' placeholder-class='placeholder' confirm-type='search'
+						name="search" :value='where.store_name' @confirm="searchSubmit"></input>
 				</view>
 				<view class='iconfont' :class='is_switch==true?"icon-pailie":"icon-tupianpailie"' @click='Changswitch'>
 				</view>
@@ -35,7 +35,8 @@
 						<view class='money font-color' :class='is_switch==true?"":"on"'><text
 								class='num'>{{item.price}}{{$t(`积分`)}}</text></view>
 						<view class='vip acea-row row-between-wrapper' :class='is_switch==true?"":"on"'>
-							<view class='vip-money' v-if="item.vip_price && item.vip_price > 0">{{item.vip_price}} {{$t(`积分`)}}
+							<view class='vip-money' v-if="item.vip_price && item.vip_price > 0">{{item.vip_price}}
+								{{$t(`积分`)}}
 								<image src='../../static/images/vip.png'></image>
 							</view>
 							<view class="sales">
@@ -80,7 +81,9 @@
 		goShopDetail
 	} from '@/libs/order.js'
 	import colors from "@/mixins/color";
-	import {HTTP_REQUEST_URL} from '@/config/app';
+	import {
+		HTTP_REQUEST_URL
+	} from '@/config/app';
 	export default {
 		computed: mapGetters(['uid']),
 		components: {
@@ -90,7 +93,7 @@
 		mixins: [colors],
 		data() {
 			return {
-				imgHost:HTTP_REQUEST_URL,
+				imgHost: HTTP_REQUEST_URL,
 				productList: [],
 				is_switch: true,
 				where: {
@@ -126,7 +129,7 @@
 			this.get_product_list();
 			this.get_host_product();
 		},
-		
+
 		methods: {
 			// 去详情页
 			godDetail(item) {
@@ -416,21 +419,24 @@
 	}
 
 	.productList .list .item .text .vip .vip-money image {
-		width: 46rpx;
-		height: 21rpx;
+		width: 64rpx;
+		height: 26rpx;
 		margin-left: 4rpx;
 	}
 
 	.noCommodity {
 		background-color: #fff;
 		padding-bottom: 30rpx;
-		.emptyBox{
+
+		.emptyBox {
 			text-align: center;
 			padding-top: 20rpx;
-			.tips{
+
+			.tips {
 				color: #aaa;
 				font-size: 26rpx;
 			}
+
 			image {
 				width: 414rpx;
 				height: 304rpx;

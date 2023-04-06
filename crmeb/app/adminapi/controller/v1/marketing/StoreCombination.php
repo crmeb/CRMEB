@@ -182,7 +182,11 @@ class StoreCombination extends AuthController
 
     /**
      * 拼团人列表
+     * @param $id
      * @return mixed
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
      */
     public function order_pink($id)
     {
@@ -207,12 +211,20 @@ class StoreCombination extends AuthController
      * 活动参与人
      * @param $id
      * @return mixed
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
      */
     public function combinationStatisticsList($id)
     {
+        $where = $this->request->getMore([
+            ['real_name', '', '', 'keyword'],
+            ['status', '']
+        ]);
+        $where['cid'] = $id;
         /** @var StorePinkServices $storePinkServices */
         $storePinkServices = app()->make(StorePinkServices::class);
-        $list = $storePinkServices->systemPage(['cid' => $id]);
+        $list = $storePinkServices->systemPage($where);
         return app('json')->success($list);
     }
 

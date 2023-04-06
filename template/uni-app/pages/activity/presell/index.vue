@@ -9,7 +9,7 @@
 					<view class='timeList'>
 						<block v-for="(item,index) in timeList" :key='index'>
 							<view @tap='settimeList(item,item.key)' class='item' :class="active == index + 1?'on':''">
-								<view class='time'><span>{{item.name}}</span></view>
+								<view class='time'><span>{{item.name || ''}}</span></view>
 							</view>
 						</block>
 					</view>
@@ -21,10 +21,10 @@
 								<image :src='item.image'></image>
 							</view>
 							<view class='text acea-row row-column-around'>
-								<view class='name line2'>{{item.store_name}}</view>
+								<view class='name line2'>{{item.store_name || ''}}</view>
 								<view class='booking'>
 									<text v-if="item.presell_type != 0 && active != 1" class="count"
-										style="color: #999;">{{$t(`已预定`)}}{{item.sales ? item.sales : 0}}{{item.unit_name}}</text>
+										style="color: #999;">{{$t(`已预定`)}}{{item.sales ? item.sales : 0}}{{item.unit_name || ''}}</text>
 									<text v-else style="color: #999; font-size: 24rpx;">{{$t(`未开始`)}}</text>
 								</view>
 								<view v-if="item.coupon" class='coupon acea-row row-between-wrapper'

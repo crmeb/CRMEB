@@ -42,7 +42,7 @@
           <Icon type="md-close" v-else color="#ed5565" size="14" />
         </template>
         <template slot-scope="{ row, index }" slot="add_time">
-          <span> {{ row.add_time | formatDate }}</span>
+          <span> {{ row.start_time | formatDate }}</span>
         </template>
         <template slot-scope="{ row, index }" slot="end_time">
           <span> {{ row.end_time | formatDate }}</span>

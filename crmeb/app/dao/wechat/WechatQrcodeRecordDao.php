@@ -44,6 +44,7 @@ class WechatQrcodeRecordDao extends BaseDao
      * @param $timeType
      * @param $field
      * @param $str
+     * @param string $orderStatus
      * @return mixed
      */
     public function getRecordTrend($qid, $time, $timeType, $field, $str, $orderStatus = '')

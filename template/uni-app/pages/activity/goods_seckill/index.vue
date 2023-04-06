@@ -30,7 +30,7 @@
 						</view>
 						<view class='text acea-row row-column-around'>
 							<view class='name line1'>{{item.title}}</view>
-							<view class='money'>{{$t(`￥`)}}
+							<view class='money font-color'>{{$t(`￥`)}}
 								<text class='num font-color'>{{item.price}}</text>
 								<text class="y_money">{{$t(`￥`)}}{{item.ot_price}}</text>
 							</view>
@@ -180,8 +180,8 @@
 	}
 	
 	.noCommodity {
-		background-color: #fff;
 		padding-bottom: 30rpx;
+		padding: 200rpx 0;
 		.emptyBox{
 			text-align: center;
 			padding-top: 20rpx;
@@ -317,7 +317,6 @@
 
 	.flash-sale .list .item .text .money {
 		font-size: 30rpx;
-		color: #E93323;
 	}
 
 	.flash-sale .list .item .text .money .num {

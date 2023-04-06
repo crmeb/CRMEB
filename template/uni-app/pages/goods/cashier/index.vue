@@ -256,6 +256,7 @@
 					title: that.$t(`支付中`)
 				});
 				if (paytype == 'friend' && that.orderId) {
+					uni.hideLoading();
 					return uni.navigateTo({
 						url: '/pages/users/payment_on_behalf/index?order_id=' + that.orderId + '&spread=' +
 							this.$store.state.app.uid,
@@ -290,7 +291,6 @@
 						'&spread=' +
 						this
 						.$store.state.app.uid
-
 					switch (status) {
 						case 'ORDER_EXIST':
 						case 'EXTEND_ORDER':

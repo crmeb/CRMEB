@@ -18,13 +18,17 @@
         <FormItem label="优惠券名称">
           <Input v-model="formData.coupon_title" :maxlength="18" placeholder="请输入优惠券名称"></Input>
         </FormItem>
+        <FormItem label="优惠券面值">
+          <InputNumber :min="1" :max="99999" v-model="formData.coupon_price"></InputNumber>
+        </FormItem>
         <FormItem label="发送方式">
           <RadioGroup v-model="formData.receive_type">
-            <Radio :label="1">普通券</Radio>
-            <Radio :label="2">新人券</Radio>
-            <!-- <Radio :label="3">赠送券</Radio> -->
-            <Radio :label="4">会员券</Radio>
+            <Radio :label="1">手动领取</Radio>
+            <Radio :label="2">新用户自动发放</Radio>
+            <Radio :label="3">后台赠送</Radio>
+            <Radio :label="4">付费会员专享</Radio>
           </RadioGroup>
+          <div class="tip">手动领取：用户需要手动领取优惠券；新用户自动发放：新注册的用户自动发放；后台赠送：后台发放制定用户或者添加到商品里面用户购买该商品获得；付费会员专享：仅付费会员可以领取和使用</div>
         </FormItem>
         <FormItem label="优惠劵类型">
           <RadioGroup v-model="formData.type">
@@ -49,9 +53,6 @@
             <Option v-for="item in categoryList" :value="item.id" :key="item.id">{{ item.cate_name }}</Option>
           </Select>
           <div class="info">选择商品的品类</div>
-        </FormItem>
-        <FormItem label="优惠券面值">
-          <InputNumber :min="1" :max="99999" v-model="formData.coupon_price"></InputNumber>
         </FormItem>
         <FormItem label="使用门槛">
           <RadioGroup v-model="isMinPrice">
@@ -82,7 +83,7 @@
             @on-change="dateChange"
           ></DatePicker>
         </FormItem>
-        <FormItem label="领取时间">
+        <FormItem label="领取时间" v-if="formData.receive_type != 2 && formData.receive_type != 3">
           <RadioGroup v-model="isReceiveTime">
             <Radio :label="1">限时</Radio>
             <Radio :label="0">不限时</Radio>
@@ -461,5 +462,8 @@ export default {
   top: 0;
   right: 0;
   transform: translate(50%, -50%);
+}
+.tip {
+  color: #888;
 }
 </style>

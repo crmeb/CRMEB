@@ -440,4 +440,14 @@ class User extends BaseModel
     {
         if ($value !== '') $query->where('is_del', $value);
     }
+
+    /**
+     * 不等于uid搜索器
+     * @param $query
+     * @param $value
+     */
+    public function searchNotUidAttr($query, $value)
+    {
+        if ($value !== '') $query->where('uid', '<>', $value);
+    }
 }

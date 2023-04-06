@@ -34,8 +34,10 @@ class SystemNotification extends AuthController
 
     /**
      * 显示资源列表
-     *
      * @return \think\Response
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
      */
     public function index()
     {
@@ -47,8 +49,10 @@ class SystemNotification extends AuthController
 
     /**
      * 显示编辑
-     *
      * @return \think\Response
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
      */
     public function info()
     {

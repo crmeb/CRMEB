@@ -37,6 +37,10 @@
 					return []
 				}
 			},
+			lotteryNum: {
+				type: Number | String,
+				default: 0
+			}
 		},
 		onLoad() {
 
@@ -44,7 +48,11 @@
 
 		methods: {
 			luck_draw(event) {
-				if (this.lotteryBtn) {
+				if (Number(this.lotteryNum) <= 0) {
+					return this.$util.Tips({
+						title: this.$t(`剩余抽奖次数为0`)
+					});
+				} else if (this.lotteryBtn) {
 					this.lotteryBtn = false
 				} else {
 					return

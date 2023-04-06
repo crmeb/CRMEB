@@ -122,6 +122,10 @@
 						title: this.$t(`领取成功`)
 					});
 					this.addressModel = false
+					this.where.page = 1
+					this.loadend = false;
+					this.lotteryList = [];
+					this.getLotteryList()
 				}).catch(err => {
 					this.$util.Tips({
 						title: err

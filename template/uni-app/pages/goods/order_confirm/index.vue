@@ -11,9 +11,9 @@
 						v-if='store_self_mention && is_shipping'></view>
 				</view>
 				<view class='address acea-row row-between-wrapper' @tap='onAddress' v-if='shippingType == 0'>
-					<view class='addressCon' v-if="addressInfo.real_name">
-						<view class='name'>{{addressInfo.real_name}}
-							<text class='phone'>{{addressInfo.phone}}</text>
+					<view class='addressCon' v-if="addressInfo.real_name || ''">
+						<view class='name'>{{addressInfo.real_name || ''}}
+							<text class='phone'>{{addressInfo.phone || ''}}</text>
 						</view>
 						<view class="line1">
 							<text class='default font-num'
@@ -29,8 +29,8 @@
 				<view class='address acea-row row-between-wrapper' v-else @tap="showStoreList">
 					<block v-if="storeList.length>0">
 						<view class='addressCon'>
-							<view class='name'>{{system_store.name}}
-								<text class='phone'>{{system_store.phone}}</text>
+							<view class='name'>{{system_store.name || ''}}
+								<text class='phone'>{{system_store.phone || ''}}</text>
 							</view>
 							<view class="line1"> {{system_store.address}}{{", " + system_store.detailed_address}}</view>
 						</view>
@@ -172,7 +172,7 @@
 				<view class='item acea-row row-between-wrapper'>
 					<view>{{$t(`商品总价`)}}：</view>
 					<view class='money'>
-						{{$t(`￥`)}}{{(parseFloat(priceGroup.totalPrice)+parseFloat(priceGroup.vipPrice)).toFixed(2)}}
+						{{$t(`￥`)}}{{allPrice || 0}}
 					</view>
 				</view>
 				<view class='item acea-row row-between-wrapper'
@@ -388,6 +388,7 @@
 				priceGroup: {},
 				animated: false,
 				totalPrice: 0,
+				allPrice: 0,
 				integralRatio: "0",
 				pagesUrl: "",
 				orderKey: "",
@@ -812,6 +813,9 @@
 					that.$set(that, 'totalPrice', that.$util.$h.Add(parseFloat(res.data.priceGroup.totalPrice),
 						parseFloat(res.data
 							.priceGroup.storePostage)));
+					that.$set(that, 'allPrice', that.$util.$h.Add(parseFloat(res.data.priceGroup.totalPrice),
+						parseFloat(res.data
+							.priceGroup.vipPrice)).toFixed(2));
 					that.$set(that, 'seckillId', parseInt(res.data.seckill_id));
 					that.$set(that, 'invoice_func', res.data.invoice_func);
 					that.$set(that, 'special_invoice', res.data.special_invoice);
@@ -1452,6 +1456,12 @@
 
 	.alipaysubmit {
 		display: none;
+	}
+
+	.order-submission {
+		/* #ifdef APP-PLUS */
+		padding-bottom: 70rpx;
+		/* #endif */
 	}
 
 	.order-submission .line {

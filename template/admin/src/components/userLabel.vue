@@ -30,7 +30,7 @@ export default {
   props: {
     uid: {
       type: String | Number,
-      default: '',
+      default: 0,
     },
     only_get: {
       default: false,
@@ -64,7 +64,7 @@ export default {
   },
   methods: {
     getList() {
-      getUserLabel(this.uid).then((res) => {
+      getUserLabel(this.uid || 0).then((res) => {
         if (this.selectDataLabel && this.selectDataLabel.length) {
           this.selectDataLabel.map((el) => {
             res.data.map((re) => {

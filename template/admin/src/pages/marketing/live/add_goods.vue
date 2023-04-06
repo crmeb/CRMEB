@@ -5,7 +5,7 @@
         <span>
           <Button icon="ios-arrow-back" size="small" type="text" @click="$router.go(-1)">返回</Button>
         </span>
-        <Divider type="vertical"/>
+        <Divider type="vertical" />
         <span class="ivu-page-header-title">{{ $route.meta.title }}</span>
       </div>
     </div>
@@ -24,9 +24,9 @@
               <div class="box">
                 <div class="box-item" v-for="(item, index) in goodsList" :key="index">
                   <img :src="item.image" alt="" />
-                  <Icon type="ios-close-circle" size="20" @click="bindDelete(index)" />
+                  <Icon type="ios-close-circle" size="20" @click="bindDelete(index, item)" />
                 </div>
-                <div class="upload-box" @click="modals = true">
+                <div class="upload-box" @click="selectGoods">
                   <Icon type="ios-camera-outline" size="36" />
                 </div>
               </div>
@@ -66,7 +66,13 @@
       </div>
     </Card>
     <Modal v-model="modals" title="商品列表" class="paymentFooter" scrollable width="900" :footer-hide="true">
-      <goods-list ref="goodslist" @getProductId="getProductId" v-if="modals" :ischeckbox="true"></goods-list>
+      <goods-list
+        ref="goodslist"
+        :selectIds="selectIds"
+        @getProductId="getProductId"
+        v-if="modals"
+        :ischeckbox="true"
+      ></goods-list>
     </Modal>
   </div>
 </template>
@@ -100,40 +106,41 @@ export default {
       columns1: [
         { key: 'id', title: '商品ID' },
         { slot: 'img', title: '商品信息' },
-        {
-          key: 'price',
-          title: '直播售价',
-          render: (h, params) => {
-            return h('Input', {
-              props: {
-                type: 'number',
-                value: params.row.price,
-              },
-              on: {
-                input: (val) => {
-                  this.tabList[params.index].price = val;
-                },
-              },
-            });
-          },
-        },
-        {
-          key: 'cost_price',
-          title: '直播原价',
-          render: (h, params) => {
-            return h('Input', {
-              props: {
-                type: 'number',
-                value: params.row.cost_price,
-              },
-              on: {
-                input: (val) => {
-                  this.tabList[params.index].cost_price = val;
-                },
-              },
-            });
-          },
-        },
+        { key: 'price', title: '直播售价' },
+        // {
+        //   key: 'price',
+        //   title: '直播售价',
+        //   render: (h, params) => {
+        //     return h('Input', {
+        //       props: {
+        //         type: 'number',
+        //         value: params.row.price,
+        //       },
+        //       on: {
+        //         input: (val) => {
+        //           this.tabList[params.index].price = val;
+        //         },
+        //       },
+        //     });
+        //   },
+        // },
+        // {
+        //   key: 'cost_price',
+        //   title: '直播原价',
+        //   render: (h, params) => {
+        //     return h('Input', {
+        //       props: {
+        //         type: 'number',
+        //         value: params.row.cost_price,
+        //       },
+        //       on: {
+        //         input: (val) => {
+        //           this.tabList[params.index].cost_price = val;
+        //         },
+        //       },
+        //     });
+        //   },
+        // },
         { key: 'stock', title: '库存' },
         { slot: 'action', fixed: 'right', title: '操作' },
       ],
@@ -143,6 +150,13 @@ export default {
     };
   },
   methods: {
+    selectGoods() {
+      this.modals = true;
+      this.selectIds = this.goodsList.map((i) => {
+        return i.product_id;
+      });
+      console.log(this.selectIds, this.goodsList);
+    },
     // 生成直播商品
     liveGoods() {
       let array = [];
@@ -161,18 +175,28 @@ export default {
         });
     },
     getProductId(data) {
-      this.goodsList = this.goodsList.concat(data);
+      this.goodsList = data;
       this.$nextTick((res) => {
         setTimeout(() => {
           this.modals = false;
         }, 300);
       });
     },
-    bindDelete(index) {
+    bindDelete(index, item) {
       this.goodsList.splice(index, 1);
+      let i = this.tabList.findIndex((e) => e.id == item.product_id);
+      this.tabList.splice(i, 1);
+      if (!this.goodsList.length) {
+        this.isShowBox = false;
+      }
     },
     del(row, index) {
       this.tabList.splice(index, 1);
+      let i = this.goodsList.findIndex((e) => e.product_id == row.id);
+      this.goodsList.splice(i, 1);
+      if (!this.tabList.length) {
+        this.isShowBox = false;
+      }
     },
     // 提交
     bindSub() {

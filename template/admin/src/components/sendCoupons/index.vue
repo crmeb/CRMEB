@@ -97,7 +97,7 @@ export default {
         page: 1, // 当前页
         limit: 15,
         coupon_title: '',
-        receive_type: 1,
+        receive_type: 3,
       },
       total: 0, // 总条数
     };

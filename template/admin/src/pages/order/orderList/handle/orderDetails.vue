@@ -8,14 +8,23 @@
           <Col span="12">收货人：{{ orderDatalist.orderInfo.real_name }}</Col>
         </Row>
         <Row class="mb10">
-          <Col span="12">联系电话：{{ orderDatalist.orderInfo.user_phone }}</Col>
-          <Col span="12">收货地址：{{ orderDatalist.orderInfo.user_address }}</Col>
+          <Col span="12">联系电话：{{ orderDatalist.orderInfo.user_phone || '' }}</Col>
+          <Col span="12">收货地址：{{ orderDatalist.orderInfo.user_address || '' }}</Col>
         </Row>
         <Divider style="margin: 20px 0 !important" />
         <div class="ivu-description-list-title">订单信息</div>
         <Row class="mb10">
           <Col span="12">订单ID：{{ orderDatalist.orderInfo.order_id }}</Col>
-          <Col span="12" class="fontColor1">订单状态：{{ orderDatalist.orderInfo._status._title }}</Col>
+          <Col span="12" class="fontColor1"
+            >订单状态：{{ orderDatalist.orderInfo._status._title }}
+            {{
+              orderDatalist.orderInfo.refund && orderDatalist.orderInfo.refund.length
+                ? orderDatalist.orderInfo.is_all_refund
+                  ? '退款中'
+                  : '部分退款中'
+                : ''
+            }}
+          </Col>
         </Row>
         <Row class="mb10">
           <Col span="12">商品总数：{{ orderDatalist.orderInfo.total_num }}</Col>
@@ -34,7 +43,10 @@
           <Col span="12">实际支付：{{ orderDatalist.orderInfo.pay_price }}</Col>
         </Row>
         <Row class="mb10">
-          <Col span="12" class="fontColor3 mb10" v-if="parseFloat(orderDatalist.orderInfo.refund_price)"
+          <Col
+            span="12"
+            class="fontColor3 mb10"
+            v-if="parseFloat(orderDatalist.orderInfo.refund_price) && orderDatalist.orderInfo.refund_type != 3"
             >退款金额：{{ parseFloat(orderDatalist.orderInfo.refund_price) }}</Col
           >
           <Col span="12" class="fontColor3 mb10" v-if="parseFloat(orderDatalist.orderInfo.use_integral)"

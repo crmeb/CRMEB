@@ -391,7 +391,7 @@ class StoreOrderComputedServices extends BaseServices
                     foreach ($temp_num as $k => $v) {
                         if (isset($temp[$v['temp_id']]['appoint']) && $temp[$v['temp_id']]['appoint'] && isset($freeList[$v['temp_id']])) {
                             $free = $freeList[$v['temp_id']];
-                            $condition = $v['type'] == 1 ? $free['number'] <= $v['number'] : $free['number'] >= $v['number'];
+                            $condition = $free['number'] <= $v['number'];
                             if ($free['price'] <= $v['price'] && $condition) {
                                 unset($temp_num[$k]);
                             }

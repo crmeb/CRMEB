@@ -93,7 +93,7 @@ class StoreServiceServices extends BaseServices
         if ($formData) {
             $field[] = $this->builder->frameImage('avatar', '客服头像', $this->url(config('app.admin_prefix', 'admin') . '/widget.images/index', ['fodder' => 'avatar'], true), $formData['avatar'] ?? '')->icon('ios-add')->width('950px')->height('505px')->modal(['footer-hide' => true]);
         } else {
-            $field[] = $this->builder->frameImage('image', '选择用户', $this->url('admin/system.user/list', ['fodder' => 'image'], true))->icon('ios-add')->width('950px')->height('505px')->modal(['footer-hide' => true])->Props(['srcKey' => 'image']);
+            $field[] = $this->builder->frameImage('image', '选择用户', $this->url(config('app.admin_prefix', 'admin') . '/system.user/list', ['fodder' => 'image'], true))->icon('ios-add')->width('950px')->height('505px')->modal(['footer-hide' => true])->Props(['srcKey' => 'image']);
             $field[] = $this->builder->hidden('uid', 0);
             $field[] = $this->builder->hidden('avatar', '');
         }

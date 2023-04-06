@@ -45,7 +45,7 @@ class StoreCouponUserUserServices extends BaseServices
         [$page, $limit] = $this->getPageValue();
         $list = $this->dao->sysPage($where, $page, $limit);
         foreach ($list as $k => &$v) {
-            $v['start_time'] = $v['add_time'];
+            $v['start_time'] = $v['start_time'] > 0 ? $v['start_time'] : $v['add_time'];
             if ($v['end_time'] < time() || $v['use_time'] != 0) $v['is_fail'] = 1;
         }
         $count = $this->dao->sysCount($where);

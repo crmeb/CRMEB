@@ -36,6 +36,9 @@ class UserRechargeController
      * 用户充值
      * @param Request $request
      * @return mixed
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
      */
     public function recharge(Request $request)
     {

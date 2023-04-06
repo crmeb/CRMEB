@@ -37,7 +37,7 @@
             <FormItem label="文章分类：" label-for="cid" prop="cid">
               <div class="perW90">
                 <Select v-model="formValidate.cid">
-                  <Option v-for="item in treeData" :value="item.id" :key="item.id">{{ item.html + item.title }}</Option>
+                  <Option v-for="item in treeData" :value="item.id" :disabled="item.disabled" :key="item.id">{{ item.html + item.title }}</Option>
                 </Select>
               </div>
             </FormItem>

@@ -114,7 +114,7 @@
 				</view>
 			</view>
 			<textarea v-show="active === 2" v-model="fictitious_content" class="textarea" @blur="bindTextAreaBlur"
-				:placeholder="$t(`remark`)" :maxlength="500" auto-height />
+				:placeholder="$t(`备注`)" :maxlength="500" auto-height />
 		</view>
 		<view style="height:1.2rem;"></view>
 		<view class="confirm" @click="saveInfo">{{$t(`确认提交`)}}</view>
@@ -324,7 +324,7 @@
 					}
 					if (!that.to_addr) {
 						return this.$util.Tips({
-							title: that.$t(`填写寄件人地址`) 
+							title: that.$t(`填写寄件人地址`)
 						})
 					}
 					if (that.expTemp.length == 0) {

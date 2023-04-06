@@ -57,7 +57,11 @@ class StoreCategory extends AuthController
 
     /**
      * 商品分类搜索
+     * @param $type
      * @return mixed
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
      */
     public function tree_list($type)
     {
@@ -103,6 +107,9 @@ class StoreCategory extends AuthController
     /**
      * 保存新增分类
      * @return mixed
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
      */
     public function save()
     {
@@ -133,6 +140,9 @@ class StoreCategory extends AuthController
      * 更新分类
      * @param $id
      * @return mixed
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
      */
     public function update($id)
     {

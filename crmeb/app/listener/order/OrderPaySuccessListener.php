@@ -46,10 +46,12 @@ class OrderPaySuccessListener implements ListenerInterface
             'change_time' => time()
         ]);
 
-        //赠送购买商品优惠券
-        /** @var StoreProductCouponServices $storeProductCouponServices */
-        $storeProductCouponServices = app()->make(StoreProductCouponServices::class);
-        $storeProductCouponServices->giveOrderProductCoupon((int)$orderInfo['uid'], $orderInfo['id']);
+        //赠送购买商品优惠券，仅普通商品订单才会赠送
+        if (!$orderInfo['seckill_id'] && !$orderInfo['bargain_id'] && !$orderInfo['combination_id']) {
+            /** @var StoreProductCouponServices $storeProductCouponServices */
+            $storeProductCouponServices = app()->make(StoreProductCouponServices::class);
+            $storeProductCouponServices->giveOrderProductCoupon((int)$orderInfo['uid'], $orderInfo['id']);
+        }
 
         //修改开票数据支付状态
         $orderInvoiceServices = app()->make(StoreOrderInvoiceServices::class);

@@ -43,14 +43,13 @@ class MemberCardBatch extends AuthController
     {
         $where = $this->request->getMore([
             ['title', ''],
-//            ['page', 1],
-//            ['limit', 20],
         ]);
         $data = $this->services->getList($where);
         return app('json')->success($data);
     }
 
-    /** 保存卡片资源
+    /**
+     * 保存卡片资源
      * @param $id
      * @return mixed
      */

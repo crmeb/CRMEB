@@ -160,6 +160,7 @@ class StoreOrderSplitServices extends BaseServices
                             'cart_info' => json_encode($_info),
                         ];
                     }
+                    $storeOrderCartInfoServices->update(['oid' => $id, 'cart_id' => $cart['cart_id']], ['surplus_num' => 0, 'split_status' => 2]);
                 }
 
                 if ($orderInfo['pid'] > 0 && $key == 'other') {

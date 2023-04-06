@@ -26,7 +26,10 @@ class PayNotifyServices
     /**
      * 订单支付成功之后
      * @param string|null $order_id 订单id
+     * @param string|null $trade_no
+     * @param string $payType
      * @return bool
+     * @throws \Psr\SimpleCache\InvalidArgumentException
      */
     public function wechatProduct(string $order_id = null, string $trade_no = null, string $payType = PayServices::WEIXIN_PAY)
     {

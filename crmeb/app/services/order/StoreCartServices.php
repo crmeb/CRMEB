@@ -232,8 +232,10 @@ class StoreCartServices extends BaseServices
     public function setCart(int $uid, int $product_id, int $cart_num = 1, string $product_attr_unique = '', int $type = 0, bool $new = true, int $combination_id = 0, int $seckill_id = 0, int $bargain_id = 0, int $advance_id = 0)
     {
         if ($cart_num < 1) $cart_num = 1;
-        //检查限购
-        $this->checkLimit($uid, $product_id, $cart_num, $new);
+        if ($type == 0) {
+            //检查限购
+            $this->checkLimit($uid, $product_id, $cart_num, $new);
+        }
         //检测库存限量
         [$attrInfo, $product_attr_unique, $bargainPriceMin, $cart_num, $productInfo] = $this->checkProductStock($uid, $cart_num, $product_attr_unique, $type, $product_id, $seckill_id, $bargain_id, $combination_id, $advance_id);
         if ($new) {
@@ -432,8 +434,10 @@ class StoreCartServices extends BaseServices
      */
     public function setCartNum($uid, $productId, $num, $unique, $type)
     {
-        //检查限购
-        $this->checkLimit($uid, $productId, $num, 0);
+        if ($type == 1) {
+            //检查限购
+            $this->checkLimit($uid, $productId, $num, 0);
+        }
 
         /** @var StoreProductAttrValueServices $attrValueServices */
         $attrValueServices = app()->make(StoreProductAttrValueServices::class);
@@ -677,6 +681,7 @@ class StoreCartServices extends BaseServices
      * @param $num
      * @param $new
      * @return bool
+     * @throws \ReflectionException
      */
     public function checkLimit($uid, $product_id, $num, $new)
     {
@@ -699,8 +704,8 @@ class StoreCartServices extends BaseServices
             }
         } else if ($limitInfo['limit_type'] == 2) {
             $cartNum = $this->dao->sum(['uid' => $uid, 'product_id' => $product_id], 'cart_num');
-            $orderPayNum = $orderCartServices->sum(['uid' => $uid, 'product_id' => $product_id], 'cart_num');
-            $orderRefundNum = $orderCartServices->sum(['uid' => $uid, 'product_id' => $product_id], 'refund_num');
+            $orderPayNum = $orderCartServices->sum(['uid' => $uid, 'product_id' => $product_id, 'split_status' => 0], 'cart_num');
+            $orderRefundNum = $orderCartServices->sum(['uid' => $uid, 'product_id' => $product_id, 'split_status' => 0], 'refund_num');
             $orderNum = $orderPayNum - $orderRefundNum;
             if (($num + $orderNum + $cartNum) > $limitInfo['limit_num']) {
                 throw new ApiException(410240, ['limit' => $limitInfo['limit_num'], 'pay_num' => $orderNum]);

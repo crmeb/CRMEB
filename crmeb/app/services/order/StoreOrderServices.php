@@ -82,6 +82,8 @@ class StoreOrderServices extends BaseServices
     /**
      * 获取列表
      * @param array $where
+     * @param array $field
+     * @param array $with
      * @return array
      * @throws \think\db\exception\DataNotFoundException
      * @throws \think\db\exception\DbException
@@ -768,7 +770,7 @@ HTML;
         }
         /** @var StoreOrderCreateServices $createServices */
         $createServices = app()->make(StoreOrderCreateServices::class);
-        $data['order_id'] = $createServices->getNewOrderId();
+        $data['order_id'] = $createServices->getNewOrderId('cp');
         /** @var StoreOrderStatusServices $services */
         $services = app()->make(StoreOrderStatusServices::class);
         return $this->transaction(function () use ($id, $data, $services) {
@@ -1855,9 +1857,10 @@ HTML;
 
     /**
      * 删除订单
-     * @param $uni
-     * @param $uid
+     * @param string $uni
+     * @param int $uid
      * @return bool
+     * @throws \Psr\SimpleCache\InvalidArgumentException
      */
     public function removeOrder(string $uni, int $uid)
     {
@@ -1879,21 +1882,6 @@ HTML;
             'change_time' => time()
         ]);
         if ($order->save() && $res) {
-            //未支付和已退款的状态下才可以退积分退库存退优惠券
-            if ($order['_status']['_type'] == 0 || $order['_status']['_type'] == -2) {
-                /** @var StoreOrderRefundServices $refundServices */
-                $refundServices = app()->make(StoreOrderRefundServices::class);
-                $this->transaction(function () use ($order, $refundServices) {
-                    //回退积分和优惠卷
-                    $res = $refundServices->integralAndCouponBack($order);
-                    //回退库存
-                    $res = $res && $refundServices->regressionStock($order);
-                    if (!$res) {
-                        throw new ApiException(100020);
-                    }
-                });
-
-            }
             return true;
         } else
             throw new ApiException(100020);
@@ -1924,7 +1912,7 @@ HTML;
         $refundServices = app()->make(StoreOrderRefundServices::class);
 
         $this->transaction(function () use ($refundServices, $order) {
-            $res = $refundServices->integralAndCouponBack($order) && $refundServices->regressionStock($order);
+            $res = $refundServices->integralAndCouponBack($order, 'cancel') && $refundServices->regressionStock($order);
             $order->is_del = 1;
             if (!($res && $order->save())) {
                 throw new ApiException(100020);
@@ -2136,7 +2124,7 @@ HTML;
                 try {
                     $this->transaction(function () use ($order, $refundServices) {
                         //回退积分和优惠卷
-                        $res = $refundServices->integralAndCouponBack($order);
+                        $res = $refundServices->integralAndCouponBack($order, 'cancel');
                         //回退库存和销量
                         $res = $res && $refundServices->regressionStock($order);
                         //修改订单状态
@@ -2351,6 +2339,7 @@ HTML;
             }
         }
         $data['_status'] = $orderInfo['_status'] ?? [];
+        $data['_status']['_is_back'] = $orderInfo['delivery_type'] != 'fictitious' && $orderInfo['virtual_type'] == 0;
         $data['cartInfo'] = $data['cartInfo'] ?? $cartInfo;
         return $data;
     }
@@ -2577,12 +2566,12 @@ HTML;
     public function autoComment()
     {
         //自动评价天数
-        $systemCommentTime = (int)sys_config('system_comment_time', 0);
+        $systemCommentTime = sys_config('system_comment_time', 0);
         //0为取消自动默认好评功能
         if ($systemCommentTime == 0) {
             return true;
         }
-        $sevenDay = strtotime(date('Y-m-d H:i:s', strtotime('-' . $systemCommentTime . ' day')));
+        $sevenDay = bcsub((string)time(), bcmul((string)$systemCommentTime, '86400'));
         /** @var StoreOrderStoreOrderStatusServices $service */
         $service = app()->make(StoreOrderStoreOrderStatusServices::class);
         $orderList = $service->getTakeOrderIds([
@@ -2590,7 +2579,7 @@ HTML;
             'is_del' => 0,
             'paid' => 1,
             'status' => 2,
-            'change_type' => ['take_delivery']
+            'change_type' => ['take_delivery','user_take_delivery']
         ], 30);
         foreach ($orderList as $item) {
             AutoCommentJob::dispatch([$item['id'], $item['cart_id']]);
@@ -2599,6 +2588,7 @@ HTML;
     }
 
     /**
+     * @param int $uid
      * @param string $orderId
      * @param string $type
      * @return array
@@ -2630,14 +2620,14 @@ HTML;
                 if (!$info) {
                     throw new PayException('您支付的订单不存在');
                 }
-                $orderCancelTime = (int)sys_config('order_cancel_time', 0);
-                $orderActivityTime = (int)sys_config('order_activity_time', 0);
+                $orderCancelTime = sys_config('order_cancel_time', 0);
+                $orderActivityTime = sys_config('order_activity_time', 0);
                 if ($info->combination_id) {
-                    $time = ((int)sys_config('order_pink_time', 0) ?: $orderActivityTime) * 60 * 60 + ((int)$info->add_time);
+                    $time = (sys_config('order_pink_time', 0) ?: $orderActivityTime) * 60 * 60 + ((int)$info->add_time);
                 } else if ($info->seckill_id) {
-                    $time = ((int)sys_config('order_seckill_time', 0) ?: $orderActivityTime) * 60 * 60 + ((int)$info->add_time);
+                    $time = (sys_config('order_seckill_time', 0) ?: $orderActivityTime) * 60 * 60 + ((int)$info->add_time);
                 } else if ($info->bargain_id) {
-                    $time = ((int)sys_config('order_bargain_time', 0) ?: $orderActivityTime) * 60 * 60 + ((int)$info->add_time);
+                    $time = (sys_config('order_bargain_time', 0) ?: $orderActivityTime) * 60 * 60 + ((int)$info->add_time);
                 } else {
                     $time = $orderCancelTime * 60 * 60 + ((int)$info->add_time);
                 }
@@ -2648,7 +2638,7 @@ HTML;
 
                 $data['pay_price'] = $info['pay_price'];
                 $data['pay_postage'] = $info['pay_postage'];
-                $data['offline_postage'] = sys_config('offline_postage', 0);
+                $data['offline_postage'] = (int)sys_config('offline_postage', 0);
                 $data['invalid_time'] = $time;
 
                 break;

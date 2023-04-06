@@ -170,6 +170,9 @@ class User extends AuthController
      * 获取用户账户详情
      * @param $id
      * @return mixed
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
      */
     public function read($id)
     {
@@ -194,6 +197,9 @@ class User extends AuthController
      * 执行赠送会员等级
      * @param $id
      * @return mixed
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
      */
     public function save_give_level($id)
     {
@@ -208,6 +214,7 @@ class User extends AuthController
      * 赠送付费会员时长表单
      * @param $id
      * @return mixed
+     * @throws \FormBuilder\Exception\FormBuilderException
      */
     public function give_level_time($id)
     {
@@ -219,6 +226,9 @@ class User extends AuthController
      * 执行赠送付费会员时长
      * @param $id
      * @return mixed
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
      */
     public function save_give_level_time($id)
     {
@@ -386,6 +396,9 @@ class User extends AuthController
         }
         if ($data['phone']) {
             if (!preg_match("/^1[3456789]\d{9}$/", $data['phone'])) return app('json')->fail(400252);
+        }
+        if ($this->services->count(['phone' => $data['phone'], 'is_del' => 0, 'not_uid' => $id])) {
+            return app('json')->fail(400314);
         }
         if ($data['card_id']) {
             if (!check_card($data['card_id'])) return app('json')->fail(400315);

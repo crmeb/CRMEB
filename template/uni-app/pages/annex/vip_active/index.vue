@@ -22,8 +22,8 @@
 				<view v-for="item in memberRights" :key="item.id" class="acea-row row-middle item">
 					<image class="image" :src="item.pic"></image>
 					<view class="text">
-						<view class="name">{{item.title}}</view>
-						<view>{{item.explain}}</view>
+						<view class="name">{{item.title || ''}}</view>
+						<view>{{item.explain || ''}}</view>
 					</view>
 				</view>
 			</view>

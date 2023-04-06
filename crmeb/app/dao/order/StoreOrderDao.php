@@ -41,6 +41,7 @@ class StoreOrderDao extends BaseDao
      * 订单搜索
      * @param array $where
      * @return \crmeb\basic\BaseModel|mixed|\think\Model
+     * @throws \ReflectionException
      */
     public function search(array $where = [])
     {
@@ -445,8 +446,9 @@ class StoreOrderDao extends BaseDao
 
     /**
      * 获取订单详情
-     * @param $uid
-     * @param $key
+     * @param string $key
+     * @param int $uid
+     * @param array $with
      * @return array|\think\Model|null
      * @throws \think\db\exception\DataNotFoundException
      * @throws \think\db\exception\DbException
@@ -454,7 +456,9 @@ class StoreOrderDao extends BaseDao
      */
     public function getUserOrderDetail(string $key, int $uid, $with = [])
     {
-        return $this->getOne(['order_id|unique' => $key, 'uid' => $uid, 'is_del' => 0], '*', $with);
+        $where = ['order_id|unique' => $key, 'is_del' => 0];
+        if ($uid > 0) $where = $where + ['uid' => $uid];
+        return $this->getOne($where, '*', $with);
     }
 
     /**
@@ -495,7 +499,7 @@ class StoreOrderDao extends BaseDao
      */
     public function chartTimePrice($start, $stop)
     {
-        return $this->search(['is_del' => 0, 'paid' => 1, 'refund_status' => 0])
+        return $this->search(['pid' => 0, 'is_del' => 0, 'paid' => 1, 'refund_status' => [0, 3]])
             ->where('add_time', '>=', $start)
             ->where('add_time', '<', $stop)
             ->field('sum(pay_price) as num,FROM_UNIXTIME(add_time, \'%Y-%m-%d\') as time')
@@ -511,7 +515,7 @@ class StoreOrderDao extends BaseDao
      */
     public function chartTimeNumber($start, $stop)
     {
-        return $this->search(['is_del' => 0, 'paid' => 1, 'refund_status' => 0])
+        return $this->search(['pid' => 0, 'is_del' => 0, 'paid' => 1, 'refund_status' => [0, 3]])
             ->where('add_time', '>=', $start)
             ->where('add_time', '<', $stop)
             ->field('count(id) as num,FROM_UNIXTIME(add_time, \'%Y-%m-%d\') as time')
@@ -894,7 +898,7 @@ class StoreOrderDao extends BaseDao
      */
     public function seckillPeople($id, $keyword, $page = 0, $limit = 0)
     {
-        return $this->getModel()
+        return $this->getModel()->where('paid', 1)->whereIn('refund_type', [0, 3])->where('is_del', 0)
             ->when($id != 0, function ($query) use ($id) {
                 $query->where('seckill_id', $id);
             })->when($keyword != '', function ($query) use ($keyword) {
@@ -902,6 +906,7 @@ class StoreOrderDao extends BaseDao
             })->where('paid', 1)->field([
                 'real_name',
                 'uid',
+                'user_phone',
                 'SUM(total_num) as goods_num',
                 'COUNT(id) as order_num',
                 'SUM(pay_price) as total_price',
@@ -927,7 +932,7 @@ class StoreOrderDao extends BaseDao
         return $this->search($where)->where('seckill_id', $id)
             ->when($page && $limit, function ($query) use ($page, $limit) {
                 $query->page($page, $limit);
-            })->field(['order_id', 'real_name', 'status', 'pay_price', 'total_num', 'add_time', 'pay_time', 'paid'])->select()->toArray();
+            })->field(['order_id', 'real_name', 'status', 'pay_price', 'total_num', 'add_time', 'pay_time', 'paid'])->order('add_time desc')->select()->toArray();
     }
 
     /**
@@ -946,7 +951,7 @@ class StoreOrderDao extends BaseDao
         return $this->search($where)->where('bargain_id', $id)
             ->when($page && $limit, function ($query) use ($page, $limit) {
                 $query->page($page, $limit);
-            })->field(['order_id', 'real_name', 'status', 'pay_price', 'total_num', 'add_time', 'pay_time', 'paid'])->select()->toArray();
+            })->field(['uid', 'order_id', 'real_name', 'status', 'pay_price', 'total_num', 'add_time', 'pay_time', 'paid'])->order('add_time desc')->select()->toArray();
     }
 
     /**
@@ -965,6 +970,6 @@ class StoreOrderDao extends BaseDao
         return $this->search($where)->where('combination_id', $id)
             ->when($page && $limit, function ($query) use ($page, $limit) {
                 $query->page($page, $limit);
-            })->field(['order_id', 'real_name', 'status', 'pay_price', 'total_num', 'add_time', 'pay_time', 'paid'])->select()->toArray();
+            })->field(['uid', 'order_id', 'real_name', 'status', 'pay_price', 'total_num', 'add_time', 'pay_time', 'paid'])->order('add_time desc')->select()->toArray();
     }
 }

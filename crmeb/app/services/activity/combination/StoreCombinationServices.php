@@ -643,8 +643,8 @@ class StoreCombinationServices extends BaseServices
         $spread_count = $pinkServices->getDistinctCount([['cid', '=', $id], ['k_id', '>', 0]], 'uid', false);
         $start_count = $pinkServices->count(['cid' => $id, 'k_id' => 0]);
         $success_count = $pinkServices->count(['cid' => $id, 'k_id' => 0, 'status' => 2]);
-        $pay_price = $orderServices->sum(['combination_id' => $id, 'paid' => 1], 'pay_price', true);
-        $pay_count = $orderServices->getDistinctCount([['combination_id', '=', $id], ['paid', '=', 1]], 'uid', false);
+        $pay_price = $orderServices->sum([['combination_id', '=', $id], ['paid', '=', 1], ['refund_type', 'in', [0, 3]], ['is_del', '=', 0]], 'pay_price', false);
+        $pay_count = $orderServices->getDistinctCount([['combination_id', '=', $id], ['paid', '=', 1], ['refund_type', 'in', [0, 3]], ['is_del', '=', 0]], 'uid', false);
         return compact('people_count', 'spread_count', 'start_count', 'success_count', 'pay_price', 'pay_count');
     }
 
@@ -659,6 +659,7 @@ class StoreCombinationServices extends BaseServices
         /** @var StoreOrderServices $orderServices */
         $orderServices = app()->make(StoreOrderServices::class);
         [$page, $limit] = $this->getPageValue();
+        $where = $where + ['paid' => 1, 'refund_status' => 0, 'is_del' => 0];
         $list = $orderServices->combinationStatisticsOrder($id, $where, $page, $limit);
         $where['combination_id'] = $id;
         $count = $orderServices->count($where);

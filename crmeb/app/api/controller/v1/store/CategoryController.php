@@ -28,7 +28,11 @@ class CategoryController
 
     /**
      * 获取分类列表
+     * @param Request $request
      * @return mixed
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
      */
     public function category(Request $request)
     {

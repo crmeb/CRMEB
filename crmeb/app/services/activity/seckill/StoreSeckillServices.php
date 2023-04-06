@@ -362,7 +362,7 @@ class StoreSeckillServices extends BaseServices
             $header[] = ['title' => $item['value'], 'key' => 'value' . ($key + 1), 'align' => 'center', 'minWidth' => 80];
         }
         $header[] = ['title' => '图片', 'slot' => 'pic', 'align' => 'center', 'minWidth' => 120];
-        $header[] = ['title' => '秒杀价', 'slot' => 'price', 'align' => 'center', 'minWidth' => 80];
+        $header[] = ['title' => '秒杀价', 'type' => 1, 'key' => 'price', 'align' => 'center', 'minWidth' => 80];
         $header[] = ['title' => '成本价', 'key' => 'cost', 'align' => 'center', 'minWidth' => 80];
         $header[] = ['title' => '原价', 'key' => 'ot_price', 'align' => 'center', 'minWidth' => 80];
         $header[] = ['title' => '库存', 'key' => 'stock', 'align' => 'center', 'minWidth' => 80];
@@ -716,6 +716,9 @@ class StoreSeckillServices extends BaseServices
      * @param $id
      * @param string $field
      * @return array|false|\PDOStatement|string|\think\Model
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
      */
     public function getValidProduct($id, $field = '*')
     {
@@ -724,15 +727,19 @@ class StoreSeckillServices extends BaseServices
 
     /**
      * 秒杀统计
+     * @param $id
      * @return array
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
      */
     public function seckillStatistics($id)
     {
         /** @var StoreOrderServices $orderServices */
         $orderServices = app()->make(StoreOrderServices::class);
-        $pay_count = $orderServices->getDistinctCount([['seckill_id', '=', $id], ['paid', '=', 1]], 'uid', false);
-        $order_count = $orderServices->getDistinctCount([['seckill_id', '=', $id]], 'uid', false);
-        $all_price = $orderServices->sum([['seckill_id', '=', $id], ['refund_type', 'in', [0, 3]]], 'pay_price');
+        $pay_count = $orderServices->getDistinctCount([['seckill_id', '=', $id], ['paid', '=', 1], ['refund_type', 'in', [0, 3]]], 'uid', false);
+        $order_count = $orderServices->getDistinctCount([['seckill_id', '=', $id], ['refund_type', 'in', [0, 3]]], 'uid', false);
+        $all_price = $orderServices->sum([['seckill_id', '=', $id], ['refund_type', 'in', [0, 3]], ['paid', '=', 1]], 'pay_price');
         $seckillInfo = $this->dao->get($id);
         $pay_rate = $seckillInfo['quota'] . '/' . $seckillInfo['quota_show'];
         return compact('pay_count', 'order_count', 'all_price', 'pay_rate');
@@ -768,6 +775,7 @@ class StoreSeckillServices extends BaseServices
         /** @var StoreOrderServices $orderServices */
         $orderServices = app()->make(StoreOrderServices::class);
         [$page, $limit] = $this->getPageValue();
+        $where = $where + ['paid' => 1, 'refund_status' => 0, 'is_del' => 0];
         $list = $orderServices->seckillOrder($id, $where, $page, $limit);
         $where['seckill_id'] = $id;
         $count = $orderServices->count($where);

@@ -187,6 +187,7 @@ class UserBrokerageServices extends BaseServices
      * @param array|string[] $type
      * @param string $time
      * @return float
+     * @throws \ReflectionException
      */
     public function getUserBrokerageSum(int $uid, array $type = ['one_brokerage', 'two_brokerage', 'brokerage_user'], $time = '')
     {
@@ -271,7 +272,7 @@ class UserBrokerageServices extends BaseServices
      */
     public function brokerageRankList(string $time = 'week')
     {
-        $where = [];
+        $where = ['pm' => 1];
         if ($time) {
             $where['time'] = $time;
         }
@@ -296,10 +297,14 @@ class UserBrokerageServices extends BaseServices
      * 获取用户排名
      * @param int $uid
      * @param string $time
+     * @return false|int|string
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
      */
     public function getUserBrokerageRank(int $uid, string $time = 'week')
     {
-        $where = [];
+        $where = ['pm' => 1];
         if ($time) {
             $where['time'] = $time;
         }
@@ -327,6 +332,9 @@ class UserBrokerageServices extends BaseServices
      * 推广数据    昨天的佣金   累计提现金额  当前佣金
      * @param int $uid
      * @return mixed
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
      */
     public function commission(int $uid)
     {
@@ -354,6 +362,7 @@ class UserBrokerageServices extends BaseServices
      * @param array $where
      * @param int $time
      * @return mixed
+     * @throws \ReflectionException
      */
     public function getUsersBokerageSum(array $where, $time = 0)
     {
@@ -372,6 +381,10 @@ class UserBrokerageServices extends BaseServices
      * @param $uid
      * @param $type
      * @return array
+     * @throws \ReflectionException
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
      */
     public function getBrokerageList($uid, $type)
     {

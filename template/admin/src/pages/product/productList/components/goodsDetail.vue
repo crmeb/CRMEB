@@ -162,6 +162,9 @@ export default {
     padding-bottom: 20px;
     background: #f0f2f5;
     width: 335px;
+   .content /deep/ video{
+      width 100% !important
+    }
   }
 }
 </style>

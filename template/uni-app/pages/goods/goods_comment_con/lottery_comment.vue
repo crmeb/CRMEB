@@ -8,7 +8,7 @@
 						{{$t(`评价完成`)}}
 					</text>
 					<text class="date">
-						{{new Date().toLocaleString()}}
+						{{$util.getNowTime()}}
 					</text>
 				</view>
 			</view>
@@ -28,7 +28,7 @@
 		<view class="grids" v-show="lotteryShow">
 			<image class="grids-bag" src="../static/pay-lottery-bag.png" mode=""></image>
 			<view class="grids-box">
-				<gridsLottery class="" :prizeData="prize" @get_winingIndex='getWiningIndex'
+				<gridsLottery class="" :lotteryNum="lottery_num" :prizeData="prize" @get_winingIndex='getWiningIndex'
 					@luck_draw_finish='luck_draw_finish'>
 				</gridsLottery>
 			</view>
@@ -48,6 +48,9 @@
 	import {
 		openOrderSubscribe
 	} from '@/utils/SubscribeMessage.js';
+	import {
+		getNowTime
+	} from '@/utils/util.js'
 	import {
 		toLogin
 	} from '@/libs/login.js';
@@ -163,7 +166,6 @@
 				this.$set(this, 'couponsHidden', !this.couponsHidden);
 			},
 			getWiningIndex(callback) {
-				this.aleartType = 0
 				startLottery({
 					id: this.id
 				}).then(res => {
@@ -174,6 +176,7 @@
 							callback(this.lottery_draw_param);
 						}
 					})
+					this.aleartType = 0
 				}).catch(err => {
 					this.$util.Tips({
 						title: err

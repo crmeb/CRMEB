@@ -186,7 +186,7 @@
 		}
 
 		.name-group {
-			display: inline-flex;
+			display: flex;
 			align-items: center;
 			max-width: 100%;
 		}
@@ -200,13 +200,15 @@
 			font-weight: bold;
 			font-size: 30rpx;
 			color: #282828;
+			line-height: 28rpx;
 		}
 
 		.default {
 			max-width: 100rpx;
-			height: 28rpx;
 			border: 1rpx solid var(--view-theme);
 			margin-left: 20rpx;
+			border-radius: 6rpx;
+			padding: 0 4rpx;
 			font-size: 20rpx;
 			line-height: 28rpx;
 			text-align: center;

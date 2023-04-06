@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Row class="ivu-mt box-wrapper">
+    <Row class="ivu-mt box-wrapper" ref="warpper">
       <Col span="3" class="left-wrapper">
         <Menu :theme="theme3" :active-name="sortName" width="auto">
           <MenuGroup>
@@ -86,7 +86,11 @@
             </template>
             <template slot-scope="{ row, index }" slot="add_time">
               <span v-if="row.stop === 0"> 永久 </span>
-              <span v-if="row.stop === 1"> {{ row.add_time }} - {{ row.end_time }}</span>
+              <span v-if="row.stop === 1">
+                <div>{{ row.add_time }}</div>
+                <div>-</div>
+                <div>{{ row.end_time }}</div>
+              </span>
               <span v-if="row.stop === -1">已过期</span>
             </template>
             <template slot-scope="{ row, index }" slot="status">
@@ -167,6 +171,8 @@ import {
   wechatQrcodeStatusApi,
   getUserList,
 } from '@/api/setting';
+import { scrollTop } from '@/libs/util';
+
 export default {
   name: 'index',
   filters: {
@@ -256,31 +262,36 @@ export default {
           title: '二维码',
           slot: 'image',
           width: 80,
+          align: 'center',
         },
         {
           title: '二维码名称',
           key: 'name',
-          minWidth: 120,
+          minWidth: 80,
+          align: 'center',
         },
         {
           title: '总关注数',
           key: 'follow',
-          minWidth: 120,
+          minWidth: 80,
+          align: 'center',
         },
         {
           title: '昨日新增关注',
           key: 'y_follow',
-          minWidth: 120,
+          minWidth: 80,
+          align: 'center',
         },
         {
           title: '用户标签',
           slot: 'label_name',
-          minWidth: 60,
+          minWidth: 80,
         },
         {
           title: '时间',
           slot: 'add_time',
-          minWidth: 120,
+          width: 140,
+          align: 'center',
         },
         {
           title: '关联推广员',
@@ -291,6 +302,7 @@ export default {
           title: '状态',
           slot: 'status',
           minWidth: 60,
+          align: 'center',
         },
         {
           title: '操作',
@@ -316,7 +328,12 @@ export default {
   },
   activated() {
     this.getUserLabelAll();
+    this.$nextTick(() => {
+      let scrollElem = document.querySelector('.content-wrapper');
+      scrollElem.scrollTo({ top: 0, behavior: 'smooth' });
+    });
   },
+  mounted() {},
   methods: {
     changeMenu(row, name) {
       this.orderId = row.id;
@@ -349,6 +366,7 @@ export default {
         canvas.height = image.height;
         var context = canvas.getContext('2d');
         context.drawImage(image, 0, 0, image.width, image.height);
+
         var url = canvas.toDataURL(); //得到图片的base64编码数据
         var a = document.createElement('a'); // 生成一个a元素
         var event = new MouseEvent('click'); // 创建一个单击事件

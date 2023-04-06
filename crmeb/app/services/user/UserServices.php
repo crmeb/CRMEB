@@ -117,6 +117,7 @@ class UserServices extends BaseServices
      * @param int $spreadUid
      * @param string $userType
      * @return User|\think\Model
+     * @throws Exception
      */
     public function setUserInfo($user, int $spreadUid = 0, string $userType = 'wechat')
     {
@@ -992,9 +993,13 @@ class UserServices extends BaseServices
 
     /**
      * 执行赠送会员等级
-     * @param int $uid
+     * @param int $id
+     * @param int $level_id
      * @return mixed
-     * */
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     */
     public function saveGiveLevel(int $id, int $level_id)
     {
         if (!$this->getUserInfo($id)) {
@@ -1039,19 +1044,26 @@ class UserServices extends BaseServices
         $field[] = Form::input('time_diff', '到期时间', $timeDiff)->style(['width' => '200px'])->readonly(true);
         if ($userInfo['is_ever_level'] == 0) {
             $field[] = Form::input('day_diff', '剩余天数', $dayDiff)->style(['width' => '200px'])->readonly(true);
+            $field[] = Form::number('days', '增加时长(天)')->precision(0)->style(['width' => '200px'])->required();
         }
-        $field[] = Form::number('days', '增加时长(天)')->precision(0)->style(['width' => '200px'])->required();
         return create_form('赠送付费会员时长', $field, Url::buildUrl('/user/save_give_level_time/' . $id), 'PUT');
     }
 
     /**
      * 执行赠送付费会员时长
-     * @param int $uid
+     * @param int $id
+     * @param int $days
      * @return mixed
-     * */
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     */
     public function saveGiveLevelTime(int $id, int $days)
     {
         $userInfo = $this->getUserInfo($id);
+        if ($userInfo->is_ever_level == 1) {
+            return true;
+        }
         if (!$userInfo) {
             throw new AdminException(400214);
         }
@@ -1117,7 +1129,12 @@ class UserServices extends BaseServices
 
     /**
      * 用户详细信息
-     * @param $uid
+     * @param int $uid
+     * @param array $userIfno
+     * @return array
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
      */
     public function getUserDetailed(int $uid, $userIfno = [])
     {
@@ -1214,6 +1231,9 @@ class UserServices extends BaseServices
      * 用户详情
      * @param int $uid
      * @return array
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
      */
     public function read(int $uid)
     {
@@ -1222,6 +1242,20 @@ class UserServices extends BaseServices
             throw new AdminException(100026);
         }
         $userInfo['avatar'] = strpos($userInfo['avatar'], 'http') === false ? (sys_config('site_url') . $userInfo['avatar']) : $userInfo['avatar'];
+        $userInfo['overdue_time'] = date('Y-m-d H:i:s', $userInfo['overdue_time']);
+        $userInfo['birthday'] = $userInfo['birthday'] < 0 ? 0 : $userInfo['birthday'];
+        if ($userInfo['addres'] == '') {
+            $defaultAddressInfo = app()->make(UserAddressServices::class)->getUserDefaultAddress($uid);
+            if ($defaultAddressInfo) {
+                $userInfo['addres'] = $defaultAddressInfo['province'] . $defaultAddressInfo['city'] . $defaultAddressInfo['district'] . $defaultAddressInfo['detail'];
+            } else {
+                $userInfo['addres'] = '';
+            }
+        }
+        $userInfo['vip_name'] = app()->make(SystemUserLevelServices::class)->value(['grade' => $userInfo['level']], 'name');
+        $userInfo['group_name'] = app()->make(UserGroupServices::class)->value(['id' => $userInfo['group_id']], 'group_name');
+        $userInfo['spread_uid_nickname'] = $this->dao->value(['uid' => $userInfo['spread_uid']], 'nickname') . '（' . $userInfo['spread_uid'] . '）';
+        $userInfo['label_list'] = implode(',', array_column(app()->make(UserLabelRelationServices::class)->getUserLabelList([$uid]), 'label_name'));
         return [
             'uid' => $uid,
             'userinfo' => $this->getUserDetailed($uid, $userInfo),

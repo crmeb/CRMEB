@@ -295,7 +295,7 @@
                 </FormItem>
               </Col>
             </Row>
-            <div v-show="current === 2">
+            <div v-if="current === 2">
               <FormItem label="内容：">
                 <WangEditor
                   style="width: 90%"
@@ -304,7 +304,7 @@
                 ></WangEditor>
               </FormItem>
             </div>
-            <div v-show="current === 3">
+            <div v-if="current === 3">
               <FormItem label="规则：">
                 <WangEditor
                   style="width: 90%"
@@ -789,6 +789,8 @@ export default {
           this.formValidate = info;
           this.formValidate.rule = info.rule === null ? '' : info.rule;
           this.$set(this.formValidate, 'items', info.attrs.items);
+          this.description = this.formValidate.description;
+
           this.columns = info.attrs.header;
           let radio = {
             title: '选择',
@@ -885,6 +887,9 @@ export default {
               }
             }
             this.current += 1;
+            setTimeout((e) => {
+              this.formValidate.description += ' ';
+            }, 0);
           } else {
             return this.$Message.warning('请完善您的信息');
           }
@@ -892,6 +897,11 @@ export default {
       } else {
         if (this.formValidate.image) {
           this.current += 1;
+          if (this.current == 3) {
+            setTimeout((e) => {
+              this.formValidate.rule += ' ';
+            }, 0);
+          }
         } else {
           this.$Message.warning('请选择商品');
         }

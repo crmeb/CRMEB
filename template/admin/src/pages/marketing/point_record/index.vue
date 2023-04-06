@@ -9,32 +9,33 @@
         @submit.native.prevent
       >
         <Row :gutter="24" type="flex">
-          <Col span="24">
+          <Col span="6">
             <FormItem label="订单时间：">
               <!-- <dateRadio @selectDate="onSelectDate"></dateRadio> -->
               <DatePicker
                 :editable="false"
-                :clearable="false"
                 @on-change="onchangeTime"
                 :value="timeVal"
                 format="yyyy/MM/dd"
                 type="daterange"
                 placement="bottom-start"
                 placeholder="请选择时间"
-                style="width: 200px"
+                style="width: 100%"
                 :options="options"
+                clearable
                 class="mr20"
               ></DatePicker>
             </FormItem>
           </Col>
-          <Col span="24">
+          <Col span="6">
             <FormItem label="交易类型：">
               <Select
                 type="button"
                 v-model="formValidate.trading_type"
                 class="mr15"
                 @on-change="selChange"
-                style="width: 30%"
+                style="width: 100%"
+                clearable
               >
                 <Option
                   :label="item"

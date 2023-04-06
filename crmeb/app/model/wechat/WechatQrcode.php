@@ -59,7 +59,7 @@ class WechatQrcode extends BaseModel
 
     public function searchNameAttr($query, $value)
     {
-        if ($value != '') $query->where('name', $value);
+        if ($value != '') $query->whereLike('name', '%' . $value . '%');
     }
 
     public function searchIsDelAttr($query, $value)

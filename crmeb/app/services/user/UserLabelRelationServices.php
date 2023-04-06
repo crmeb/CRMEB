@@ -47,8 +47,10 @@ class UserLabelRelationServices extends BaseServices
 
     /**
      * 用户设置标签
-     * @param int $uid
+     * @param $uids
      * @param array $labels
+     * @return bool
+     * @throws \Exception
      */
     public function setUserLable($uids, array $labels)
     {

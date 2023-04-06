@@ -249,14 +249,12 @@
 		onLoad(options) {
 			uni.hideTabBar()
 			let that = this;
-			if (that.isLogin == false) {
-				toLogin();
-			}
 			let routes = getCurrentPages(); // 获取当前打开过的页面路由数组
 			let curRoute = routes[routes.length - 1].route //获取当前页面路由
 			this.activeRouter = '/' + curRoute
 		},
 		onShow() {
+			if (!this.isLogin) toLogin();
 			this.canShow = false
 			if (this.isLogin == true) {
 				this.hotPage = 1;
@@ -701,7 +699,7 @@
 						that.cartList.valid[index] = item;
 						that.getCartNum();
 						that.switchSelect();
-					}).catch(err => {
+					}, () => {
 						item.cart_num = Number(item.cart_num) + 1
 					})
 				}
@@ -724,15 +722,16 @@
 					that.cartList.valid[index] = item;
 					that.getCartNum();
 					that.switchSelect();
-				}).catch(err => {
+				}, () => {
 					item.cart_num = Number(item.cart_num) - 1
 				})
 			},
-			setCartNum(cartId, cartNum, successCallback) {
+			setCartNum(cartId, cartNum, successCallback, errorCallback) {
 				let that = this;
 				changeCartNum(cartId, cartNum).then(res => {
 					successCallback && successCallback(res.data);
 				}).catch(err => {
+					errorCallback && errorCallback()
 					return that.$util.Tips({
 						title: err
 					});

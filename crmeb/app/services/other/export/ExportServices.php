@@ -306,7 +306,7 @@ class ExportServices extends BaseServices
                     'ot_price' => $item['ot_price'],
                     'quota' => $item['quota'],
                     'start_name' => $item['start_name'],
-                    'activity_time' => date('Y-m-d H:i:s', $item['start_time']) . '至' . date('Y-m-d H:i:s', $item['stop_time']),
+                    'activity_time' => date('Y-m-d', $item['start_time']) . '至' . date('Y-m-d', $item['stop_time']),
                     'add_time' => $item['add_time']
                 ];
                 $export[] = $one_data;
@@ -336,13 +336,19 @@ class ExportServices extends BaseServices
         $filename = $data['title'] . '批次列表_' . date('YmdHis', time());
         $export = $fileKey = [];
         if (!empty($data['data'])) {
+            $userIds = array_column($data['data']->toArray(), 'use_uid');
+            /** @var  UserServices $userService */
+            $userService = app()->make(UserServices::class);
+            $userList = $userService->getColumn([['uid', 'in', $userIds]], 'nickname,phone,real_name', 'uid');
+
+
             $i = 0;
             foreach ($data['data'] as $item) {
                 $one_data = [
                     'card_number' => $item['card_number'],
                     'card_password' => $item['card_password'],
-                    'user_name' => $item['user_name'],
-                    'user_phone' => $item['user_phone'],
+                    'user_name' => $userList[$item['use_uid']]['real_name'] ?: $userList[$item['use_uid']]['nickname'],
+                    'user_phone' => $userList[$item['use_uid']] ? $userList[$item['use_uid']]['phone'] : "",
                     'use_time' => $item['use_time'],
                     'use_uid' => $item['use_uid'] ? '已领取' : '未领取'
                 ];

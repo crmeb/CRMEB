@@ -1,5 +1,5 @@
 {
-  "navigationBarTitleText": "订单详情",
+  "navigationBarTitleText": "发票详情",
   "usingComponents": {
     "payment": "/components/payment/index",
     "home": "/components/home/index",

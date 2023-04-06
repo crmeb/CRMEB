@@ -25,15 +25,12 @@ export default [
   },
   // 客服
   {
-    path: routePre + '/kefu',
+    path: '/kefu',
     name: `${pre}index`,
     meta: {
       auth: true,
       title: '客服管理',
       kefu: true,
-    },
-    redirect: {
-      name: `setting_service`,
     },
     component: () => import('@/pages/kefu/index'),
   },

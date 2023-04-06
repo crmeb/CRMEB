@@ -522,12 +522,12 @@ class StoreOrderTakeServices extends BaseServices
     public function autoTakeOrder()
     {
         //7天前时间戳
-        $systemDeliveryTime = (int)sys_config('system_delivery_time', 0);
+        $systemDeliveryTime = sys_config('system_delivery_time', 0);
         //0为取消自动收货功能
         if ($systemDeliveryTime == 0) {
             return true;
         }
-        $sevenDay = strtotime(date('Y-m-d H:i:s', strtotime('-' . $systemDeliveryTime . ' day')));
+        $sevenDay = bcsub((string)time(), bcmul((string)$systemDeliveryTime, '86400'));
         /** @var StoreOrderStoreOrderStatusServices $service */
         $service = app()->make(StoreOrderStoreOrderStatusServices::class);
         $orderList = $service->getTakeOrderIds([

@@ -88,12 +88,12 @@
 								<!-- #endif -->
 							</view>
 							<view class="message">
-								<navigator url="/pages/users/user_info/index" hover-class="none">
+								<navigator v-if="isLogin" url="/pages/users/user_info/index" hover-class="none">
 									<view class="iconfont icon-shezhi"></view>
 								</navigator>
 							</view>
 							<view class="message">
-								<navigator url="/pages/users/message_center/index" hover-class="none">
+								<navigator v-if="isLogin" url="/pages/users/message_center/index" hover-class="none">
 									<view v-if="userInfo.service_num" class="num">
 										{{userInfo.service_num >= 100 ? '99+' : userInfo.service_num}}
 									</view>
@@ -529,30 +529,30 @@
 				})
 			},
 			getphonenumber(e) {
-				Routine.getCode()
-					.then(code => {
-						let data = {
-							code,
-							iv: e.detail.iv,
-							encryptedData: e.detail.encryptedData,
-						}
-						mpBindingPhone(data).then(res => {
-							this.getUserInfo()
-							this.$util.Tips({
-								title: res.msg,
-								icon: 'success'
-							});
-						}).catch(err => {
-							return this.$util.Tips({
-								title: err
-							});
+				if (e.detail.errMsg == 'getPhoneNumber:ok') {
+					Routine.getCode()
+						.then(code => {
+							let data = {
+								code,
+								iv: e.detail.iv,
+								encryptedData: e.detail.encryptedData,
+							}
+							mpBindingPhone(data).then(res => {
+								this.getUserInfo()
+								this.$util.Tips({
+									title: res.msg,
+									icon: 'success'
+								});
+							}).catch(err => {
+								return this.$util.Tips({
+									title: err
+								});
+							})
 						})
-					})
-					.catch(error => {
-						uni.hideLoading();
-					});
-
-				console.log(e)
+						.catch(error => {
+							uni.hideLoading();
+						});
+				}
 			},
 			/**
 			 * 获取个人用户信息

@@ -120,7 +120,7 @@ class StoreServiceLogServices extends BaseServices
         foreach ($list as &$item) {
             $item['_add_time'] = $item['add_time'];
             $item['add_time'] = strtotime($item['_add_time']);
-            $item['productInfo'] = $item['orderInfo'] = [];
+            $item['productInfo'] = $item['orderInfo'] = null;
             if ($item['msn_type'] == self::MSN_TYPE_GOODS && $item['msn']) {
                 $productIds[] = $item['msn'];
             } elseif ($item['msn_type'] == self::MSN_TYPE_ORDER && $item['msn']) {
@@ -155,7 +155,7 @@ class StoreServiceLogServices extends BaseServices
 
         foreach ($list as &$item) {
             if ($item['msn_type'] == self::MSN_TYPE_GOODS && $item['msn']) {
-                $item['productInfo'] = $productList[$item['msn']] ?? [];
+                $item['productInfo'] = $productList[$item['msn']] ?? null;
             } elseif ($item['msn_type'] == self::MSN_TYPE_ORDER && $item['msn']) {
                 $order = $orderInfo[$item['msn']] ?? null;
                 if ($order) {
@@ -164,7 +164,7 @@ class StoreServiceLogServices extends BaseServices
                     $order['add_time_h'] = date('H:i:s', $order['add_time']);
                     $item['orderInfo'] = $order;
                 } else {
-                    $item['orderInfo'] = [];
+                    $item['orderInfo'] = null;
                 }
             }
             $item['msn_type'] = (int)$item['msn_type'];

@@ -146,7 +146,7 @@
 						<image src="../static/shuoming.png" mode=""></image>
 						{{$t(`拒绝退款`)}}
 					</view>
-					<view class="con">{{$t(`拒绝原因`)}}：{{orderInfo.refuse_reason}}</view>
+					<view class="con">{{$t(`拒绝原因`)}}：{{orderInfo.refuse_reason || ''}}</view>
 				</view>
 			</view>
 			<orderGoods v-for="(item,index) in split" :key="item.id" :evaluate='item._status._type == 3 ? 3 : 0'
@@ -359,7 +359,7 @@
 						hover-class='none' :url="'/pages/goods/goods_logistics/index?orderId='+ orderInfo.order_id">
 						{{$t(`查看物流`)}}
 					</navigator>
-					<view class='bnt bg-color' v-if="orderInfo.type == 3 && orderInfo.refund_type == 0"
+					<view class='bnt bg-color' v-if="orderInfo.type == 3 && orderInfo.refund_type == 0 && orderInfo.paid"
 						@tap='goJoinPink'>
 						{{$t(`查看拼团`)}}
 					</view>
@@ -1602,7 +1602,6 @@
 			color: #333;
 			position: absolute;
 			left: 30rpx;
-			bottom: 110rpx;
 			background-color: #fff;
 			padding: 18rpx 24rpx;
 			border-radius: 4rpx;
@@ -1610,11 +1609,12 @@
 			-webkit-box-shadow: 0px 0px 3px 0px rgba(200, 200, 200, 0.75);
 			-moz-box-shadow: 0px 0px 3px 0px rgba(200, 200, 200, 0.75);
 			box-shadow: 0px 0px 3px 0px rgba(200, 200, 200, 0.75);
-			// #ifdef MP
+			bottom: 110rpx;
+			/* #ifdef APP-PLUS */ 
 			bottom: calc(110rpx + constant(safe-area-inset-bottom)); ///兼容 IOS<11.2/
 			bottom: calc(110rpx + env(safe-area-inset-bottom)); ///兼容 IOS>11.2/
 
-			// #endif
+			/* #endif */ 
 			.more-btn {
 				color: #333;
 				padding: 4rpx;

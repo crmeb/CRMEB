@@ -59,6 +59,7 @@
 		<view class='noCommodity' v-if="productList.length==0 && where.page > 1">
 			<view class='emptyBox'>
 				<image :src="imgHost + '/statics/images/no-thing.png'"></image>
+				<view class="tips">{{$t(`暂无商品，去看点别的吧`)}}</view>
 			</view>
 			<recommend :hostProduct="hostProduct"></recommend>
 		</view>
@@ -408,11 +409,13 @@
 		font-size: 24rpx;
 		color: #282828;
 		font-weight: bold;
+		display: flex;
+		align-items: center;
 	}
 
 	.productList .list .item .text .vip .vip-money image {
-		width: 46rpx;
-		height: 21rpx;
+		width: 64rpx;
+		height: 26rpx;
 		margin-left: 4rpx;
 	}
 

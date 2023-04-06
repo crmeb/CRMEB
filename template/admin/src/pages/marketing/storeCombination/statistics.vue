@@ -26,8 +26,7 @@
         <Row type="flex" :gutter="24">
           <Col span="6" v-if="type == 1">
             <FormItem label="订单状态：" label-for="status">
-              <Select v-model="pagination.status" placeholder="请选择订单状态">
-                <Option value="">全部</Option>
+              <Select v-model="pagination.status" placeholder="请选择订单状态" clearable  @on-change="searchList">
                 <Option value="0">未支付</Option>
                 <Option value="1">待发货</Option>
                 <Option value="2">待收货</Option>
@@ -42,7 +41,7 @@
                 search
                 enter-button
                 v-model="pagination.real_name"
-                placeholder="请输入用户姓名|手机号|UID"
+                :placeholder="type == 1 ? '请输入用户|订单号|UID' : '请输入用户姓名|UID'"
                 @on-search="searchList"
               />
             </FormItem>
@@ -292,7 +291,7 @@ export default {
         },
         {
           title: '金额',
-          key: 'price',
+          key: 'total_price',
         },
         {
           title: '订单状态',

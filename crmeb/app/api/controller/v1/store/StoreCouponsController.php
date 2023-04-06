@@ -50,6 +50,9 @@ class StoreCouponsController
      * 领取优惠券
      * @param Request $request
      * @return mixed
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
      */
     public function receive(Request $request)
     {
@@ -82,6 +85,7 @@ class StoreCouponsController
      * @param StoreCouponIssueServices $service
      * @param $cartId
      * @param $new
+     * @param $shippingType
      * @return mixed
      * @throws \Psr\SimpleCache\InvalidArgumentException
      * @throws \think\db\exception\DataNotFoundException

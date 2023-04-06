@@ -104,11 +104,8 @@ class UserRechargeServices extends BaseServices
 
         foreach ($list as &$item) {
             switch ($item['recharge_type']) {
-                case 'routine':
-                    $item['_recharge_type'] = '小程序充值';
-                    break;
                 case PayServices::WEIXIN_PAY:
-                    $item['_recharge_type'] = '公众号充值';
+                    $item['_recharge_type'] = '微信充值';
                     break;
                 case 'system':
                     $item['_recharge_type'] = '系统充值';
@@ -138,8 +135,8 @@ class UserRechargeServices extends BaseServices
         $data = [];
         $data['sumPrice'] = $this->getRechargeSum($where, 'price');
         $data['sumRefundPrice'] = $this->getRechargeSum($where, 'refund_price');
-        $where['recharge_type'] = 'routine';
-        $data['sumRoutinePrice'] = $this->getRechargeSum($where, 'price');
+        $where['recharge_type'] = 'alipay';
+        $data['sumAlipayPrice'] = $this->getRechargeSum($where, 'price');
         $where['recharge_type'] = 'weixin';
         $data['sumWeixinPrice'] = $this->getRechargeSum($where, 'price');
         return [
@@ -158,14 +155,14 @@ class UserRechargeServices extends BaseServices
                 'col' => 6,
             ],
             [
-                'name' => '小程序充值金额',
+                'name' => '支付宝充值金额',
                 'field' => '元',
-                'count' => $data['sumRoutinePrice'],
+                'count' => $data['sumAlipayPrice'],
                 'className' => 'logo-bitcoin',
                 'col' => 6,
             ],
             [
-                'name' => '公众号充值金额',
+                'name' => '微信充值金额',
                 'field' => '元',
                 'count' => $data['sumWeixinPrice'],
                 'className' => 'ios-bicycle',
@@ -174,9 +171,14 @@ class UserRechargeServices extends BaseServices
         ];
     }
 
-    /**退款表单
-     * @param $id
-     * @return mixed|void
+    /**
+     * 退款表单
+     * @param int $id
+     * @return array
+     * @throws \FormBuilder\Exception\FormBuilderException
+     * @author 吴汐
+     * @email 442384644@qq.com
+     * @date 2023/03/24
      */
     public function refund_edit(int $id)
     {
@@ -196,15 +198,17 @@ class UserRechargeServices extends BaseServices
         $f = array();
         $f[] = Form::input('order_id', '退款单号', $UserRecharge->getData('order_id'))->disabled(true);
         $f[] = Form::radio('refund_price', '状态', 1)->options([['label' => '本金(扣赠送余额)', 'value' => 1], ['label' => '仅本金', 'value' => 0]]);
-//        $f[] = Form::number('refund_price', '退款金额', (float)$UserRecharge->getData('price'))->precision(2)->min(0)->max($UserRecharge->getData('price'));
         return create_form('编辑', $f, Url::buildUrl('/finance/recharge/' . $id), 'PUT');
     }
 
     /**
      * 退款操作
      * @param int $id
-     * @param $refund_price
+     * @param string $refund_price
      * @return mixed
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
      */
     public function refund_update(int $id, string $refund_price)
     {
@@ -314,6 +318,9 @@ class UserRechargeServices extends BaseServices
      * @param int $uid
      * @param $price
      * @return bool
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
      */
     public function importNowMoney(int $uid, $price)
     {
@@ -340,7 +347,7 @@ class UserRechargeServices extends BaseServices
         //写入充值记录
         $rechargeInfo = [
             'uid' => $uid,
-            'order_id' => $this->getOrderId(),
+            'order_id' => app()->make(StoreOrderCreateServices::class)->getNewOrderId('cz'),
             'recharge_type' => 'balance',
             'price' => $price,
             'give_price' => 0,
@@ -381,7 +388,15 @@ class UserRechargeServices extends BaseServices
     /**
      * 申请充值
      * @param int $uid
+     * @param $price
+     * @param $recharId
+     * @param $type
+     * @param $from
+     * @param bool $renten
      * @return mixed
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
      */
     public function recharge(int $uid, $price, $recharId, $type, $from, bool $renten = false)
     {
@@ -437,8 +452,13 @@ class UserRechargeServices extends BaseServices
     }
 
     /**
-     * //TODO用户充值成功后
+     * 用户充值成功后
      * @param $orderId
+     * @param array $other
+     * @return bool
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
      */
     public function rechargeSuccess($orderId, array $other = [])
     {
@@ -475,8 +495,12 @@ class UserRechargeServices extends BaseServices
         return true;
     }
 
-    /**根据查询用户充值金额
+    /**
+     * 根据查询用户充值金额
      * @param array $where
+     * @param string $rechargeSumField
+     * @param string $selectType
+     * @param string $group
      * @return float|int
      */
     public function getRechargeMoneyByWhere(array $where, string $rechargeSumField, string $selectType, string $group = "")

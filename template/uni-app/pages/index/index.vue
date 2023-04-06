@@ -39,6 +39,7 @@
 		},
 		methods: {
 			getVersion(name) {
+				uni.$emit('uploadFooter')
 				getVersion(name).then(res => {
 					this.version = res.data.version
 					this.isDiy = res.data.is_diy

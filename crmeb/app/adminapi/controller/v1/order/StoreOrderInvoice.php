@@ -45,6 +45,8 @@ class StoreOrderInvoice extends AuthController
     {
         $where = $this->request->getMore([
             ['data', '', '', 'time'],
+            ['real_name', ''],
+            ['field_key', ''],
             [['type', 'd'], 0],
         ]);
         $data = $this->services->chart($where);

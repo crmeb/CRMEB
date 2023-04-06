@@ -3,9 +3,9 @@
 		<view class="application-record" v-if="listData.length">
 			<view class="card-list" v-for="item in listData" :key="item.mer_intention_id">
 				<view class="card-top">
-					<view class="title">{{item.mer_name}}</view>
-					<view class="time">{{$t(`提交时间`)}}：{{item.create_time}}</view>
-					<view v-if="item.fail_msg" class="reason">{{$t(`原因`)}}：{{item.fail_msg}}</view>
+					<view class="title">{{item.mer_name || ''}}</view>
+					<view class="time">{{$t(`提交时间`)}}：{{item.create_time || ''}}</view>
+					<view v-if="item.fail_msg" class="reason">{{$t(`原因`)}}：{{item.fail_msg || ''}}</view>
 				</view>
 				<view class="line"></view>
 				<view class="card-bottom">

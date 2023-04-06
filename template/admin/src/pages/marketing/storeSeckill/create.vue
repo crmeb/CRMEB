@@ -5,7 +5,7 @@
         <span>
           <Button icon="ios-arrow-back" size="small" type="text" @click="$router.go(-1)">返回</Button>
         </span>
-        <Divider type="vertical"/>
+        <Divider type="vertical" />
         <span class="ivu-page-header-title">{{ $route.params.id ? '编辑秒杀商品' : '添加秒杀商品' }}</span>
       </div>
     </div>
@@ -267,7 +267,7 @@
               <Col span="24">
                 <FormItem label="规格选择：">
                   <Table :data="specsData" :columns="columns" border @on-selection-change="changeCheckbox">
-                    <template slot-scope="{ row, index }" slot="price">
+                    <!-- <template slot-scope="{ row, index }" slot="price">
                       <InputNumber
                         v-model="row.price"
                         :min="0.01"
@@ -280,7 +280,7 @@
                         "
                         :active-change="false"
                       ></InputNumber>
-                    </template>
+                    </template> -->
                     <template slot-scope="{ row, index }" slot="pic">
                       <div
                         class="acea-row row-middle row-center-wrapper"
@@ -630,18 +630,19 @@ export default {
           title: title,
           key: key,
           align: 'center',
-          minWidth: 100,
+          minWidth: 120,
           render: (h, params) => {
             return h('div', [
               h('InputNumber', {
                 props: {
-                  min: 1,
-                  precision: 0,
-                  value: params.row.quota,
+                  min: 0,
+                  value: key === 'price' ? params.row.price : params.row.quota,
+                  formatter: (value) =>
+                    key === 'price' ? `${value}`.match(/^\d+(?:\.\d{0,2})?/) : `${value}`.match(/^\d+(?:\.\d{0,-1})?/),
                 },
                 on: {
                   'on-change': (e) => {
-                    params.row.quota = e;
+                    key === 'price' ? (params.row.price = e) : (params.row.quota = e);
                     that.specsData[params.index] = params.row;
                     if (!!that.formValidate.attrs && that.formValidate.attrs.length) {
                       that.formValidate.attrs.forEach((v, index) => {

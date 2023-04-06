@@ -145,9 +145,9 @@
 			<view class='wrapper'>
 				<view class='item acea-row row-between'>
 					<view>{{$t(`支付金额`)}}：</view>
-					<view class='conter'>{{$t(`￥`)}}{{orderInfo.total_price}}</view>
+					<view class='conter'>{{$t(`￥`)}}{{orderInfo.pay_price}}</view>
 				</view>
-				<view class='item acea-row row-between' v-if='orderInfo.coupon_id'>
+				<!-- <view class='item acea-row row-between' v-if='orderInfo.coupon_id'>
 					<view>{{$t(`优惠券抵扣`)}}：</view>
 					<view class='conter'>-{{$t(`￥`)}}{{orderInfo.coupon_price}}</view>
 				</view>
@@ -158,7 +158,7 @@
 				<view class='item acea-row row-between' v-if="orderInfo.pay_postage > 0">
 					<view>{{$t(`运费`)}}：</view>
 					<view class='conter'>{{$t(`￥`)}}{{orderInfo.pay_postage}}</view>
-				</view>
+				</view> -->
 			</view>
 		</view>
 		<!-- #ifndef MP -->

@@ -90,7 +90,7 @@
               </Col>
             </Col>
             <Col span="18">
-              <Col v-bind="grid">
+              <!-- <Col v-bind="grid">
                 <FormItem label="性别：" label-for="sex">
                   <RadioGroup v-model="userFrom.sex" type="button">
                     <Radio label="">
@@ -107,7 +107,7 @@
                     </Radio>
                   </RadioGroup>
                 </FormItem>
-              </Col>
+              </Col> -->
               <Col v-bind="grid">
                 <FormItem label="身份：" label-for="is_promoter">
                   <RadioGroup v-model="userFrom.is_promoter" type="button">
@@ -824,7 +824,7 @@ export default {
         this.$Message.warning('请选择要设置分组的用户');
       } else {
         let uids = { uids: this.ids };
-        this.$modalForm(userSetGroup(uids)).then(() => this.$refs.sends.getList());
+        this.$modalForm(userSetGroup(uids)).then(() => this.getList());
       }
     },
     // 批量设置标签；
@@ -1042,6 +1042,9 @@ export default {
           activeIds.push(item.id);
         });
         this.userFrom.label_id = activeIds.join(',');
+      }
+      if (this.ids.length) {
+        this.userFrom.ids = this.ids;
       }
       this.userFrom.user_type = this.userFrom.user_type || '';
       this.userFrom.status = this.userFrom.status || '';
@@ -1353,14 +1356,15 @@ img {
     color: #808695;
   }
 }
-.demo-drawer-footer{
-        width: 100%;
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        border-top: 1px solid #e8e8e8;
-        padding: 10px 16px;
-        text-align: right;
-        background: #fff;
-    }
+
+.demo-drawer-footer {
+  width: 100%;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  border-top: 1px solid #e8e8e8;
+  padding: 10px 16px;
+  text-align: right;
+  background: #fff;
+}
 </style>

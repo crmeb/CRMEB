@@ -154,7 +154,6 @@ class LuckLotteryServices extends BaseServices
         }
         $lottery = $lottery->toArray();
         if (isset($lottery['prize']) && $lottery['prize']) {
-            $products = $coupons = [];
             $product_ids = array_unique(array_column($lottery['prize'], 'product_id'));
             $coupon_ids = array_unique(array_column($lottery['prize'], 'coupon_id'));
             /** @var StoreProductServices $productServices */
@@ -173,6 +172,9 @@ class LuckLotteryServices extends BaseServices
                 }
             }
         }
+        foreach ($lottery['user_level'] as &$item) {
+            $item = (int)$item;
+        }
         /** @var UserLabelServices $userLabelServices */
         $userLabelServices = app()->make(UserLabelServices::class);
         $lottery['user_label'] = !empty($lottery['user_label']) ? $userLabelServices->getLabelList(['ids' => $lottery['user_label']], ['id', 'label_name']) : [];
@@ -183,6 +185,9 @@ class LuckLotteryServices extends BaseServices
      * 添加抽奖活动以及奖品
      * @param array $data
      * @return mixed
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
      */
     public function add(array $data)
     {
@@ -400,6 +405,11 @@ class LuckLotteryServices extends BaseServices
      * 抽奖
      * @param int $uid
      * @param int $lottery_id
+     * @return mixed
+     * @throws \Psr\SimpleCache\InvalidArgumentException
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
      */
     public function luckLottery(int $uid, int $lottery_id)
     {

@@ -465,7 +465,8 @@
 									color: #fff;
 									font-size: 22rpx;
 									border-radius: 50%;
-									padding: 22rpx 0;
+									// padding: 22rpx 0;
+									line-height: 110rpx;
 									text-align: center;
 								}
 							}

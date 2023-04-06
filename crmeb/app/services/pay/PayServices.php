@@ -40,6 +40,9 @@ class PayServices
     //好友代付
     const FRIEND = 'friend';
 
+    //银行转账
+    const BANK = 'bank';
+
     //支付方式
     const PAY_TYPE = [
         PayServices::WEIXIN_PAY => '微信支付',
@@ -47,7 +50,8 @@ class PayServices
         PayServices::OFFLINE_PAY => '线下支付',
         PayServices::ALIAPY_PAY => '支付宝',
         PayServices::FRIEND => '好友代付',
-        PayServices::ALLIN_PAY => '通联支付'
+        PayServices::ALLIN_PAY => '通联支付',
+        PayServices::BANK => '银行转账',
     ];
 
     /**

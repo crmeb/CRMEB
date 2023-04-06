@@ -36,21 +36,28 @@ class StoreOrderInvoiceServices extends BaseServices
 
     public function chart(array $where)
     {
+        $where['is_pay'] = 1;
         //全部
-        $data['all'] = (string)$this->dao->count(['is_pay' => 1, 'time' => $where['time']]);
+        $data['all'] = (string)$this->dao->count($where);
         //待开
-        $data['noOpened'] = (string)$this->dao->count(['is_pay' => 1, 'time' => $where['time'], 'type' => 1]);
+        $where['type'] = 1;
+        $data['noOpened'] = (string)$this->dao->count($where);
         //已开
-        $data['opened'] = (string)$this->dao->count(['is_pay' => 1, 'time' => $where['time'], 'type' => 2]);
+        $where['type'] = 2;
+        $data['opened'] = (string)$this->dao->count($where);
         //退款
-        $data['refund'] = (string)$this->dao->count(['is_pay' => 1, 'time' => $where['time'], 'type' => 3]);
+        $where['type'] = 3;
+        $data['refund'] = (string)$this->dao->count($where);
         return $data;
     }
 
     /**
      * 后台获取开票列表
-     * @param $where
+     * @param array $where
      * @return array
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
      */
     public function getList(array $where)
     {
@@ -155,7 +162,9 @@ class StoreOrderInvoiceServices extends BaseServices
         if (!$orderInvoice) {
             throw new ApiException(100026);
         }
-        $data['invoice_time'] = time();
+        if ($data['is_invoice'] == 1) {
+            $data['invoice_time'] = time();
+        }
         if (!$this->dao->update($id, $data, 'id')) {
             throw new ApiException(100015);
         }

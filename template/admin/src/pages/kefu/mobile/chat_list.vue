@@ -2,7 +2,7 @@
   <div class="chat-list">
     <div class="head-box">
       <div class="hd">
-        <div class="left-wrapper">
+        <div class="left-wrappers">
           <img v-lazy="kefuInfo.avatar" />
           <div class="info" @click="isOnLine = !isOnLine">
             <div>{{ kefuInfo.nickname }}</div>
@@ -45,7 +45,7 @@
     <div class="list-box" v-if="list.length > 0">
       <vue-scroll ref="vs" :ops="ops" @load-before-deactivate="handleBeforeDeactivate">
         <div class="item" v-for="(item, index) in list" :key="index" @click="goPage(item)">
-          <div class="left-wrapper">
+          <div class="left-wrappers">
             <div class="img-box">
               <img v-lazy="item.avatar" />
               <div class="online" :class="{ on: item.online }"></div>
@@ -351,7 +351,7 @@ export default {
             padding: 0 .3rem;
             background: linear-gradient(90deg, #3875EA 0%, #1890FC 100%);
 
-            .left-wrapper {
+            .left-wrappers {
                 position: relative;
                 display: flex;
                 align-items: center;
@@ -488,7 +488,7 @@ export default {
             padding: .23rem .3rem;
             height: 1.5rem;
 
-            .left-wrapper {
+            .left-wrappers {
                 display: flex;
                 align-items: center;
                 .img-box{

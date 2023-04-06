@@ -70,6 +70,7 @@ class NoticeListener implements ListenerInterface
                     case 'bind_spread_uid':
                         if (isset($data['spreadUid']) && $data['spreadUid']) {
                             $name = $data['nickname'] ?? '';
+                            crmebLog('绑定推广关系');
                             //站内信
                             $SystemMsg->sendMsg($data['spreadUid'], ['nickname' => $name]);
                             //模板消息公众号模版消息
@@ -354,7 +355,7 @@ class NoticeListener implements ListenerInterface
                         $link = '/pages/admin/orderDetail/index?id=' . $order['order_id'];
                         $WechatTemplateList->sendAdminOrder($order['order_id'], $storeName, $title, $status, $link);
                         //企业微信通知
-                        EnterpriseWechatJob::dispatch(['order_id' => $order['order_id']]);
+                        $EnterpriseWechat->weComSend(['order_id' => $order['order_id']]);
                         break;
                     //确认收货给客服
                     case 'send_admin_confirm_take_over':
@@ -371,7 +372,7 @@ class NoticeListener implements ListenerInterface
                         $link = '/pages/admin/orderDetail/index?id=' . $order['order_id'];
                         $WechatTemplateList->sendAdminOrder($order['order_id'], $storeName, $title, $status, $link);
                         //企业微信通知
-                        EnterpriseWechatJob::dispatch(['storeTitle' => $storeTitle, 'order_id' => $order['order_id']]);
+                        $EnterpriseWechat->weComSend(['storeTitle' => $storeTitle, 'order_id' => $order['order_id']]);
                         break;
                     //申请退款给客服发消息
                     case 'send_order_apply_refund':
@@ -381,7 +382,7 @@ class NoticeListener implements ListenerInterface
                         //短信
                         $NoticeSms->sendAdminRefund($order);
                         //企业微信通知
-                        EnterpriseWechatJob::dispatch(['order_id' => $order['order_id']]);
+                        $EnterpriseWechat->weComSend(['order_id' => $order['order_id']]);
                         //公众号
                         $storeName = $orderInfoServices->getCarIdByProductTitle((int)$order['id']);
                         $title = '亲，您有个退款订单待处理！';
@@ -394,7 +395,7 @@ class NoticeListener implements ListenerInterface
                         //站内信
                         $SystemMsg->kefuSystemSend($data);
                         //企业微信通知
-                        EnterpriseWechatJob::dispatch($data);
+                        $EnterpriseWechat->weComSend($data);
                         break;
                 }
 

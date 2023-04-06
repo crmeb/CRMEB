@@ -179,7 +179,7 @@
                 >
                   <div class="goodsTitle acea-row"></div>
                   <FormItem label="" prop="content" style="margin: 0px">
-                    <WangEditor :content="formValidate.content" @editorContent="getEditorContent"></WangEditor>
+                    <WangEditor :content="content" @editorContent="getEditorContent"></WangEditor>
                   </FormItem>
                 </Form>
               </div>
@@ -227,6 +227,7 @@ export default {
       formValidate: {
         content: '',
       },
+      content: '',
       pclogo: '',
       grid: {
         xl: 7,
@@ -314,9 +315,6 @@ export default {
       this.tabList.list[this.activeIndexs].url = e;
       // item.url = e
     },
-    getContent(val) {
-      this.formValidate.content = val;
-    },
     // 提交数据
     onsubmit(name) {
       this.$refs[name].validate((valid) => {
@@ -341,6 +339,7 @@ export default {
           this.formValidate = {
             content: data.content,
           };
+          this.content = data.content;
         })
         .catch((res) => {
           this.loading = false;
@@ -660,6 +659,7 @@ export default {
     width: 92px;
     height: 201px;
     background-color: #fff;
+    word-break: break-word;
   }
 
   .pcmoddile_goods {

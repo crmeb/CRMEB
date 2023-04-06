@@ -1,7 +1,7 @@
 {
   "navigationBarTitleText": "对话详情",
-  "navigationStyle": "custom",
-  "disableScroll": true,
+  "navigationBarBackgroundColor": "#3875EA",
+  "navigationBarTextStyle": "white",
   "usingComponents": {
     "loading": "/components/Loading/index"
   }

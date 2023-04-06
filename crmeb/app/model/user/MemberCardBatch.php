@@ -45,7 +45,7 @@ class MemberCardBatch extends BaseModel
     public function searchTitleAttr($query, $value)
     {
         if ($value !== '') {
-            $query->where('title', $value);
+            $query->where('title', 'like', '%' . $value . '%');
         }
     }
 

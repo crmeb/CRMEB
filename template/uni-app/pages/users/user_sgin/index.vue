@@ -8,8 +8,9 @@
 							<image :src='userInfo.avatar'></image>
 						</view>
 						<view class='text'>
-							<view class='line1'>{{userInfo.nickname}}</view>
-							<view class='integral acea-row'><text>{{$t(`积分`)}}: {{userInfo.integral}}</text></view>
+							<view class='line1'>{{userInfo.nickname || ''}}</view>
+							<view class='integral acea-row'><text>{{$t(`积分`)}}: {{userInfo.integral || ''}}</text>
+							</view>
 						</view>
 					</view>
 					<navigator class='right acea-row row-middle' hover-class='none'

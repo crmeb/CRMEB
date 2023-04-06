@@ -548,7 +548,9 @@ a:link, a:visited, a:hover, a:active {
     background-position: left top !important;
     display: flex;
   }
-
+  .wrapper-box .foot-box {
+    text-align: center !important;
+  }
   .content {
     display: none;
   }

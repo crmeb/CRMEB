@@ -64,6 +64,7 @@ class LoginServices extends BaseServices
         $token = $this->createToken($kefuInfo->id, 'kefu');
         $kefuInfo->update_time = time();
         $kefuInfo->ip = request()->ip();
+        $kefuInfo->online = 1;
         $kefuInfo->save();
         return [
             'token' => $token['token'],

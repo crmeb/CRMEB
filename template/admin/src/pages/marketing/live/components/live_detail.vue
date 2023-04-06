@@ -12,7 +12,8 @@
         </div>
         <div class="list sp">
           <label class="name">直播间ID：</label>
-          <span class="info">{{ FormData.room_id }}</span>
+          <span class="info">{{ FormData.id }}</span>
+          <span class="info">（微信直播间ID：{{ FormData.room_id }}）</span>
         </div>
         <div class="list sp">
           <label class="name">主播昵称：</label>
@@ -51,15 +52,15 @@
           <img style="max-width: 150px; height: 80px" :src="FormData.share_img" />
         </div>
         <div class="list sp">
-          <label class="name">是否关闭点赞：</label>
+          <label class="name">是否开启点赞：</label>
           <span class="info blue">{{ FormData.close_like | filterClose }}</span>
         </div>
         <div class="list sp">
-          <label class="name">是否关闭货架：</label>
+          <label class="name">是否开启货架：</label>
           <span class="info blue">{{ FormData.close_goods | filterClose }}</span>
         </div>
         <div class="list sp">
-          <label class="name">是否关闭评论：</label>
+          <label class="name">是否开启评论：</label>
           <span class="info blue">{{ FormData.close_comment | filterClose }}</span>
         </div>
 

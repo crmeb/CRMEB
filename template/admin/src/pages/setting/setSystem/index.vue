@@ -206,8 +206,10 @@ export default {
       })
         .then((res) => {
           this.$Message.success(res.msg);
-          localStorage.setItem('ADMIN_TITLE', formData.site_name);
-          window.document.title = `${formData.site_name} - 系统设置`;
+          if (formData.site_name) {
+            localStorage.setItem('ADMIN_TITLE', formData.site_name);
+            window.document.title = `${formData.site_name} - 系统设置`;
+          }
         })
         .catch((res) => {
           this.$Message.error(res.msg);
@@ -224,9 +226,10 @@ export default {
 
 .fromBox {
   min-height: calc(100vh - 200px);
-  margin-top: 0px !important ;
+  margin-top: 0px !important;
 }
-.article-manager /deep/ .ivu-form-item{
+
+.article-manager /deep/ .ivu-form-item {
   margin-bottom: 20px !important;
 }
 </style>

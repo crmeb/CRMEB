@@ -33,6 +33,10 @@ class UserBrokerageDao extends BaseDao
      * @param int $limit
      * @param array $typeWhere
      * @return array
+     * @throws \ReflectionException
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
      */
     public function getList(array $where, string $field = '*', int $page = 0, int $limit = 0, array $typeWhere = [])
     {
@@ -68,7 +72,8 @@ class UserBrokerageDao extends BaseDao
      */
     public function brokerageRankList(array $where, int $page = 0, int $limit = 0)
     {
-        return $this->search($where)->field('uid,SUM(IF(pm=1,`number`,-`number`)) as brokerage_price')->with(['user' => function ($query) {
+        //SUM(IF(pm=1,`number`,-`number`))
+        return $this->search($where)->field('uid,SUM(number) as brokerage_price')->with(['user' => function ($query) {
             $query->field('uid,avatar,nickname');
         }])->order('brokerage_price desc')->group('uid')->when($page && $limit, function ($query) use ($page, $limit) {
             $query->page($page, $limit);
@@ -79,6 +84,7 @@ class UserBrokerageDao extends BaseDao
      * 获取某些条件的佣金总数
      * @param array $where
      * @return mixed
+     * @throws \ReflectionException
      */
     public function getBrokerageSumColumn(array $where)
     {
@@ -92,6 +98,7 @@ class UserBrokerageDao extends BaseDao
      * 获取某个账户下的冻结佣金
      * @param int $uid
      * @return float
+     * @throws \ReflectionException
      */
     public function getUserFrozenPrice(int $uid)
     {
