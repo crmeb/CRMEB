@@ -335,6 +335,7 @@ class StoreOrderSplitServices extends BaseServices
      * 部分发货重新计算订单商品：实际金额、优惠、积分等金额
      * @param int $cart_num
      * @param array $cart_info
+     * @param string $orderType
      * @return array
      */
     public function slpitComputeOrderCart(int $cart_num, array $cart_info, $orderType = 'new')
@@ -353,9 +354,17 @@ class StoreOrderSplitServices extends BaseServices
             if ($field == 'use_integral') $scale = 0;
             $new_cart_info[$field] = bcmul((string)$cart_num, bcdiv((string)$cart_info[$field], (string)$cart_info['cart_num'], 4), $scale);
             if ($orderType == 'new') {//拆出
-                $new_cart_info[$field] = bcmul((string)$cart_num, bcdiv((string)$cart_info[$field], (string)$cart_info['cart_num'], 4), $scale);
+                if ($field == 'sum_true_price') {
+                    $new_cart_info[$field] = round(bcmul((string)$cart_num, bcdiv((string)$cart_info[$field], (string)$cart_info['cart_num'], 4), 4), 2, PHP_ROUND_HALF_UP);
+                } else {
+                    $new_cart_info[$field] = bcmul((string)$cart_num, bcdiv((string)$cart_info[$field], (string)$cart_info['cart_num'], 4), $scale);
+                }
             } else {
-                $field_number = bcmul((string)bcsub((string)$cart_info['cart_num'], (string)$cart_num, 0), bcdiv((string)$cart_info[$field], (string)$cart_info['cart_num'], 4), $scale);
+                if ($field == 'sum_true_price') {
+                    $field_number = round(bcmul((string)bcsub((string)$cart_info['cart_num'], (string)$cart_num, 0), bcdiv((string)$cart_info[$field], (string)$cart_info['cart_num'], 4), 4), 2, PHP_ROUND_HALF_UP);
+                } else {
+                    $field_number = bcmul((string)bcsub((string)$cart_info['cart_num'], (string)$cart_num, 0), bcdiv((string)$cart_info[$field], (string)$cart_info['cart_num'], 4), $scale);
+                }
                 $new_cart_info[$field] = bcsub((string)$cart_info[$field], (string)$field_number, $scale);
             }
         }

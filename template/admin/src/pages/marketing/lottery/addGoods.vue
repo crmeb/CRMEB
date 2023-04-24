@@ -49,7 +49,7 @@
           </div>
         </template>
         <div v-else class="upLoad pictrueTab acea-row row-center-wrapper">
-          <Icon type="ios-camera-outline" size="26" @click="modals = true" />
+          <Icon type="ios-camera-outline" size="26" @click="changeGoods" />
         </div>
       </FormItem>
       <FormItem label="奖品名称" prop="name">
@@ -116,7 +116,7 @@
       width="900"
       @on-cancel="cancel"
     >
-      <goods-list ref="goodslist" v-if="modals" @getProductId="getProductId"></goods-list>
+      <goods-list ref="goodslist" @getProductId="getProductId"></goods-list>
     </Modal>
     <coupon-list ref="couponTemplates" :luckDraw="true" @getCouponId="getCouponId"></coupon-list>
     <!--<coupon-list-->
@@ -232,6 +232,14 @@ export default {
     });
   },
   methods: {
+    // 选择商品
+    changeGoods() {
+      this.modals = true;
+      this.$refs.goodslist.formValidate.is_presale = 0;
+      this.$refs.goodslist.formValidate.is_virtual = 0;
+      this.$refs.goodslist.getList();
+      this.$refs.goodslist.goodsCategory();
+    }, 
     getCouponId(e) {
       this.formValidate.coupon_id = e.id;
       this.formValidate.coupon_title = e.coupon_title;

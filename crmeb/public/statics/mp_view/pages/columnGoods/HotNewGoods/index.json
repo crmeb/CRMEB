@@ -1,9 +1,0 @@
-{
-  "navigationBarTitleText": "精品推荐",
-  "usingComponents": {
-    "good-list": "/components/goodList/index",
-    "empty-page": "/components/emptyPage",
-    "home": "/components/home/index",
-    "page-footer": "/components/pageFooter/index"
-  }
-}

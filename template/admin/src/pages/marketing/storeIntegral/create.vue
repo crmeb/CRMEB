@@ -699,6 +699,7 @@ export default {
     changeGoods() {
       this.modals = true;
       this.$refs.goodslist.formValidate.is_presale = 0;
+      this.$refs.goodslist.formValidate.is_virtual = 0;
       this.$refs.goodslist.getList();
       this.$refs.goodslist.goodsCategory();
     }, // 移动

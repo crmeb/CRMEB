@@ -1,8 +1,0 @@
-{
-  "navigationBarTitleText": "分销海报",
-  "usingComponents": {
-    "zb-code": "/components/zb-code/zb-code",
-    "authorize": "/components/Authorize",
-    "home": "/components/home/index"
-  }
-}

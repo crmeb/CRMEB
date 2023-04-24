@@ -1,8 +1,0 @@
-{
-  "component": true,
-  "usingComponents": {
-    "easy-loadimage": "/components/easy-loadimage/easy-loadimage",
-    "page-footer": "/components/pageFooter/index",
-    "tab-bar": "/pages/index/visualization/components/tabBar"
-  }
-}

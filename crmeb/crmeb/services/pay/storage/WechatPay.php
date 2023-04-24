@@ -103,18 +103,22 @@ class WechatPay extends BasePay implements PayInterface
         $refundNo = $opt['refund_id'] ?? $outTradeNo;
         $opUserId = $opt['op_user_id'] ?? null;
         $type = $opt['type'] ?? 'out_trade_no';
-        /*仅针对老资金流商户使用
-        REFUND_SOURCE_UNSETTLED_FUNDS---未结算资金退款（默认使用未结算资金退款）
-        REFUND_SOURCE_RECHARGE_FUNDS---可用余额退款
-        */
+        /**
+         * 仅针对老资金流商户使用
+         * REFUND_SOURCE_UNSETTLED_FUNDS---未结算资金退款（默认使用未结算资金退款）
+         * REFUND_SOURCE_RECHARGE_FUNDS---可用余额退款
+         */
         $refundAccount = $opt['refund_account'] ?? 'REFUND_SOURCE_UNSETTLED_FUNDS';
         if (isset($opt['wechat'])) {
-            return WechatService::refund($outTradeNo, $refundNo, $totalFee, $refundFee, $opUserId, $refundReason, $type, $refundAccount);
+            $result = WechatService::refund($outTradeNo, $refundNo, $totalFee, $refundFee, $opUserId, $refundReason, $type, $refundAccount);
+            if ($result['status'] != 'SUCCESS') throw new AdminException($result['status']);
         } else {
             if ($opt['pay_new_weixin_open']) {
-                return MiniProgramService::miniRefund($outTradeNo, $totalFee, $refundFee, $opt);
+                $result = MiniProgramService::miniRefund($outTradeNo, $totalFee, $refundFee, $opt);
+                if ($result['errcode'] != 0) throw new AdminException($result['errmsg']);
             } else {
-                return MiniProgramService::refund($outTradeNo, $refundNo, $totalFee, $refundFee, $opUserId, $refundReason, $type, $refundAccount);
+                $result = MiniProgramService::refund($outTradeNo, $refundNo, $totalFee, $refundFee, $opUserId, $refundReason, $type, $refundAccount);
+                if ($result['status'] != 'SUCCESS') throw new AdminException($result['status']);
             }
         }
     }

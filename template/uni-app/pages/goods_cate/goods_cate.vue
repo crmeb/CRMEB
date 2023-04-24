@@ -46,6 +46,7 @@
 		},
 		methods: {
 			getCategoryVersion() {
+				uni.$emit('uploadFooter')
 				getCategoryVersion().then(res => {
 					if (!uni.getStorageSync('CAT_VERSION') || res.data.version != uni.getStorageSync(
 							'CAT_VERSION')) {

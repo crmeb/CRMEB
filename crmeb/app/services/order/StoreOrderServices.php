@@ -771,6 +771,15 @@ HTML;
         /** @var StoreOrderCreateServices $createServices */
         $createServices = app()->make(StoreOrderCreateServices::class);
         $data['order_id'] = $createServices->getNewOrderId('cp');
+        if (sys_config('user_brokerage_type') == 1) {
+            $percent = bcdiv((string)$data['pay_price'], (string)$order['pay_price'], 6);
+            if ($order['one_brokerage'] > 0) {
+                $data['one_brokerage'] = bcmul((string)$order['one_brokerage'], $percent, 2);
+            }
+            if ($order['two_brokerage'] > 0) {
+                $data['two_brokerage'] = bcmul((string)$order['two_brokerage'], $percent, 2);
+            }
+        }
         /** @var StoreOrderStatusServices $services */
         $services = app()->make(StoreOrderStatusServices::class);
         return $this->transaction(function () use ($id, $data, $services) {
@@ -2579,7 +2588,7 @@ HTML;
             'is_del' => 0,
             'paid' => 1,
             'status' => 2,
-            'change_type' => ['take_delivery','user_take_delivery']
+            'change_type' => ['take_delivery', 'user_take_delivery']
         ], 30);
         foreach ($orderList as $item) {
             AutoCommentJob::dispatch([$item['id'], $item['cart_id']]);

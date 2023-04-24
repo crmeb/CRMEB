@@ -14,7 +14,8 @@
 									<view class="user-msg">
 										<view class="text">
 											<view class="name">{{userInfo.nickname}}</view>
-											<view class="level" :class="{'level-sty':item.grade > (levelInfo.grade || 0)}">
+											<view class="level"
+												:class="{'level-sty':item.grade > (levelInfo.grade || 0)}">
 												{{$t(item.name)}}
 											</view>
 										</view>
@@ -29,13 +30,15 @@
 								</view>
 								<template>
 									<view class="level-grow-wrap">
-										<view class="level-info" :class="{'lock-sty':item.grade > (levelInfo.grade || 0)}">
+										<view class="level-info"
+											:class="{'lock-sty':item.grade > (levelInfo.grade || 0)}">
 											<view class="level-info-title">{{$t(`一级分佣上浮`)}}</view>
 											<view class="num">{{item.one_brokerage}}
 												<text class="percent">%</text>
 											</view>
 										</view>
-										<view class="level-info" :class="{'lock-sty':item.grade > (levelInfo.grade || 0)}">
+										<view class="level-info"
+											:class="{'lock-sty':item.grade > (levelInfo.grade || 0)}">
 											<view class="level-info-title">{{$t(`二级分佣上浮`)}}</view>
 											<view class="num">{{item.two_brokerage}}<text class="percent">%</text>
 											</view>
@@ -123,7 +126,7 @@
 		components: {
 			recommend
 		},
-		mixins:[colors],
+		mixins: [colors],
 		data() {
 			return {
 				reach_count: 0,
@@ -176,6 +179,11 @@
 				toLogin();
 			}
 			this.get_host_product();
+		},
+		// 滚动监听
+		onPageScroll(e) {
+			// 传入scrollTop值并触发所有easy-loadimage组件下的滚动监听事件
+			uni.$emit('scroll');
 		},
 		methods: {
 			agentLevelList: function() {
@@ -361,7 +369,7 @@
 			font-size: 24rpx;
 			color: #fff;
 			border-radius: 4rpx;
-			border:1px solid #fff;
+			border: 1px solid #fff;
 			padding: 3rpx 8rpx;
 		}
 	}

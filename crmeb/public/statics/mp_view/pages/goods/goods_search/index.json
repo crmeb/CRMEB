@@ -1,7 +1,0 @@
-{
-  "navigationBarTitleText": "搜索商品",
-  "usingComponents": {
-    "good-list": "/components/goodList/index",
-    "recommend": "/components/recommend/index"
-  }
-}

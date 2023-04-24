@@ -27,7 +27,7 @@
 				</view>
 				<view class="text-info">
 					<view class="title line1" v-if="titleShow">{{item.store_name}}</view>
-					<view class="old-price" v-if="opriceShow">{{$t(`￥`)}}{item.ot_price}}</view>
+					<view class="old-price" v-if="opriceShow">{{$t(`￥`)}}{{item.ot_price}}</view>
 					<view class="price" :style="{color:fontColor}">
 						<view v-if="priceShow">
 							<text>{{$t(`￥`)}}</text>{{item.price}}

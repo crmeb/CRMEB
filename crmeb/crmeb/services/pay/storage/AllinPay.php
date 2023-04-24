@@ -14,6 +14,7 @@
 namespace crmeb\services\pay\storage;
 
 use app\services\pay\PayServices;
+use crmeb\exceptions\AdminException;
 use crmeb\exceptions\PayException;
 use crmeb\services\pay\BasePay;
 use crmeb\services\pay\PayInterface;
@@ -115,7 +116,8 @@ class AllinPay extends BasePay implements PayInterface
      */
     public function refund(string $outTradeNo, array $options = [])
     {
-        return $this->pay->refund($options['refund_price'], $options['order_id'], $outTradeNo);
+        $result = $this->pay->refund($options['refund_price'], $options['order_id'], $outTradeNo);
+        if ($result['retcode'] != 'SUCCESS') throw new AdminException($result['retmsg']);
     }
 
     public function queryRefund(string $outTradeNo, string $outRequestNo, array $other = [])

@@ -150,11 +150,11 @@ class Local extends BaseUpload
 
     /**
      * 文件流上传
-     * @param string $fileContent
+     * @param $fileContent
      * @param string|null $key
      * @return array|bool|mixed|\StdClass
      */
-    public function stream(string $fileContent, string $key = null)
+    public function stream($fileContent, string $key = null)
     {
         if (!$key) {
             $key = $this->saveFileName();
@@ -313,7 +313,7 @@ class Local extends BaseUpload
         $savePath = public_path() . $filePath;
         try {
             $Image = Image::open(app()->getRootPath() . 'public' . $filePath);
-            $Image->water($watermark_image, $waterConfig['watermark_position'] ?: 1, $waterConfig['watermark_opacity'])->save($savePath);
+            $Image->water($watermark_image, $waterConfig['watermark_position'] ?: 1, (int)$waterConfig['watermark_opacity'])->save($savePath);
         } catch (\Throwable $e) {
             throw new AdminException($e->getMessage());
         }
@@ -344,7 +344,7 @@ class Local extends BaseUpload
             if (strlen($waterConfig['watermark_text_color']) > 7) {
                 $waterConfig['watermark_text_color'] = substr($waterConfig['watermark_text_color'], 0, 7);
             }
-            $Image->text($waterConfig['watermark_text'], $waterConfig['watermark_text_font'], $waterConfig['watermark_text_size'], $waterConfig['watermark_text_color'], $waterConfig['watermark_position'], [$waterConfig['watermark_x'], $waterConfig['watermark_y'], $waterConfig['watermark_text_angle']])->save($savePath);
+            $Image->text($waterConfig['watermark_text'], $waterConfig['watermark_text_font'], (float)$waterConfig['watermark_text_size'], $waterConfig['watermark_text_color'], $waterConfig['watermark_position'], [$waterConfig['watermark_x'], $waterConfig['watermark_y'], $waterConfig['watermark_text_angle']])->save($savePath);
         } catch (\Throwable $e) {
             throw new AdminException($e->getMessage() . $e->getLine());
         }
