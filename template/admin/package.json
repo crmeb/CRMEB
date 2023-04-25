@@ -80,7 +80,7 @@
     "@vue/cli-plugin-babel": "^4.4.6",
     "@vue/cli-plugin-eslint": "^4.4.6",
     "@vue/cli-plugin-unit-jest": "^3.2.3",
-    "@vue/cli-plugin-unit-mocha": "^3.0.1",
+    "@vue/cli-plugin-unit-mocha": "^5.0.8",
     "@vue/cli-service": "^3.0.1",
     "@vue/eslint-config-prettier": "^7.0.0",
     "@vue/eslint-config-standard": "^3.0.0-beta.10",
